@@ -11,7 +11,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ThePallidMask.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.ThePallidMask.Helpers
 import Arkham.Window (getBatchId)
 
 newtype NarrowShaft = NarrowShaft LocationAttrs

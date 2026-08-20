@@ -197,8 +197,8 @@ import Arkham.Random
 import Arkham.Scenario
 import Arkham.Scenario.Types hiding (scenario)
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.HorrorInHighGear.Helpers (getRear)
-import Arkham.Scenarios.WakingNightmare.InfestationBag
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.InfestationBag
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers (getRear)
 import Arkham.Skill.Types (Field (..), Skill, SkillAttrs (..))
 import Arkham.SkillTest.Runner hiding (stepL)
 import Arkham.SkillTestResult

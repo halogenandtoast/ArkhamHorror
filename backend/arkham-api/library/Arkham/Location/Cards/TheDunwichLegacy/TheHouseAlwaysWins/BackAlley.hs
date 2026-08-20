@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Cards (backAlley)
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheHouseAlwaysWins.Helpers
 
 newtype BackAlley = BackAlley LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

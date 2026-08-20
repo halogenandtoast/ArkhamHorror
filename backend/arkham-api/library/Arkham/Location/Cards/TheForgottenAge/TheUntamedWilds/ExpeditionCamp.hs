@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheForgottenAge.TheUntamedWilds qualified as Car
 import Arkham.Location.Import.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheUntamedWilds.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheUntamedWilds.Helpers
 
 newtype ExpeditionCamp = ExpeditionCamp LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

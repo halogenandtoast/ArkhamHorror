@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as 
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.HemlockHouse.Helpers (getFloorNumber)
+import Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.Helpers (getFloorNumber)
 import Arkham.Token (Token (..))
 
 newtype BedroomHemlockHouse32 = BedroomHemlockHouse32 LocationAttrs

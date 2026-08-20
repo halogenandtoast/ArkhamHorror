@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheDrownedCity.TheApiary qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheApiary.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheApiary.Helpers
 import Arkham.Spawn
 import Arkham.Trait (Trait (Cultist, Stowaway))
 

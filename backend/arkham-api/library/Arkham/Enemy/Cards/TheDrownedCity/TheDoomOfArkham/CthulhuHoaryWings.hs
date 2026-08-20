@@ -7,7 +7,7 @@ import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (..))
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (getCthulhuRage)
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (getCthulhuRage)
 import Arkham.Window qualified as Window
 
 newtype CthulhuHoaryWings = CthulhuHoaryWings EnemyAttrs

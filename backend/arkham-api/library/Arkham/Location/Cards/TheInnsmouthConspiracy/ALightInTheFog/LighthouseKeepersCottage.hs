@@ -11,7 +11,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified 
 import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ALightInTheFog.Helpers.Location
+import Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers.Location
 
 newtype LighthouseKeepersCottage = LighthouseKeepersCottage LocationAttrs
   deriving anyclass IsLocation

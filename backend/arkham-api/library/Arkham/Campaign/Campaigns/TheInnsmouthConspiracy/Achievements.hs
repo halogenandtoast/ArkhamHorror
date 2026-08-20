@@ -60,7 +60,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (ScenarioMeta))
 import Arkham.ScenarioLogKey (ScenarioCountKey (Barriers))
-import Arkham.Scenarios.InTooDeep.Helpers qualified as InTooDeep
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers qualified as InTooDeep
 import Arkham.Target
 import Arkham.Trait (Trait (DeepOne, Vehicle))
 import Arkham.UltimatumsAndBoons.Types

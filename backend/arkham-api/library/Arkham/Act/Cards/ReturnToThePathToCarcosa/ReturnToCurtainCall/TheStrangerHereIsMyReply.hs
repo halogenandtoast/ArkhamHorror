@@ -8,7 +8,7 @@ import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Matcher
-import Arkham.Scenarios.CurtainCall.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.CurtainCall.Helpers
 
 newtype TheStrangerHereIsMyReply = TheStrangerHereIsMyReply ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

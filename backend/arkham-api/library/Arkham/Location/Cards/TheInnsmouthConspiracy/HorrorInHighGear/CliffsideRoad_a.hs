@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Projection
-import Arkham.Scenarios.HorrorInHighGear.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers
 
 newtype CliffsideRoad_a = CliffsideRoad_a LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

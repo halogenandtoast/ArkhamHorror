@@ -7,7 +7,7 @@ import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheUnspeakableOath.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.TheUnspeakableOath.Helpers
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 

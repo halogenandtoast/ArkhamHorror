@@ -15,7 +15,7 @@ import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 import Arkham.Phase
 import Arkham.Projection
-import Arkham.Scenarios.CongressOfTheKeys.Helpers
+import Arkham.Scenarios.TheScarletKeys.CongressOfTheKeys.Helpers
 
 newtype SecretsAndLiesV2 = SecretsAndLiesV2 ActAttrs
   deriving anyclass IsAct

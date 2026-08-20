@@ -7,7 +7,7 @@ import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Location.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.CurtainCall.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.CurtainCall.Helpers
 
 newtype CurtainCall = CurtainCall ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

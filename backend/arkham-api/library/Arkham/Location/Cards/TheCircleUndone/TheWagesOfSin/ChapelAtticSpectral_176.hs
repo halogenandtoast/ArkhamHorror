@@ -13,7 +13,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Locat
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 
 newtype ChapelAtticSpectral_176 = ChapelAtticSpectral_176 LocationAttrs
   deriving anyclass IsLocation

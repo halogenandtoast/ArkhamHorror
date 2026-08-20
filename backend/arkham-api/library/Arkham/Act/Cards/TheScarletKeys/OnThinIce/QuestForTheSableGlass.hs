@@ -16,7 +16,7 @@ import Arkham.Matcher.Card
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Placement
-import Arkham.Scenarios.OnThinIce.Helpers
+import Arkham.Scenarios.TheScarletKeys.OnThinIce.Helpers
 
 newtype QuestForTheSableGlass = QuestForTheSableGlass ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

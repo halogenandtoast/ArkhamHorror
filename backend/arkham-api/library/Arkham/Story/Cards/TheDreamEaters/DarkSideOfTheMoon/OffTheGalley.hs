@@ -6,7 +6,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Movement
 import Arkham.Projection
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 import Arkham.Story.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
 import Arkham.Story.Import.Lifted
 

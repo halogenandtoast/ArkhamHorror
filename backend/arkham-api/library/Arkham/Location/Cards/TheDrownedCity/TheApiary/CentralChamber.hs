@@ -13,7 +13,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier (UIModifier (..))
-import Arkham.Scenarios.TheApiary.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheApiary.Helpers
 
 newtype CentralChamber = CentralChamber LocationAttrs
   deriving anyclass IsLocation

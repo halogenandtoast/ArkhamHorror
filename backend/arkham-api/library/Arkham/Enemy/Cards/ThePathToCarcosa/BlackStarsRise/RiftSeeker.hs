@@ -5,7 +5,7 @@ import Arkham.Enemy.CardDefs.ThePathToCarcosa.BlackStarsRise qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.BlackStarsRise.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.BlackStarsRise.Helpers
 
 newtype RiftSeeker = RiftSeeker EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

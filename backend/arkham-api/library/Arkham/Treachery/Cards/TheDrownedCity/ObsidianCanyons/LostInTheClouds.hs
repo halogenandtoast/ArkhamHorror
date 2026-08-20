@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.TheDrownedCity.ObsidianCanyons.LostInTheClouds (lo
 
 import Arkham.I18n (countVar, unscoped)
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 import Arkham.Treachery.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

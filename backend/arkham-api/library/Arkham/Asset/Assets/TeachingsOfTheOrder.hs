@@ -9,7 +9,7 @@ import Arkham.Location.FloodLevel
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Scenarios.InTooDeep.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers (scenarioI18n)
 import Arkham.Trait (Trait (Sanctum))
 
 newtype TeachingsOfTheOrder = TeachingsOfTheOrder AssetAttrs

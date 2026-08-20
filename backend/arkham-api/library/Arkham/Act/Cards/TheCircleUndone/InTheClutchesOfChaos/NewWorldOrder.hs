@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Car
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Enemies
 import Arkham.Matcher
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 
 newtype NewWorldOrder = NewWorldOrder ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

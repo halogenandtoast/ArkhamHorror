@@ -7,7 +7,7 @@ import Arkham.Campaigns.TheCircleUndone.Memento
 import Arkham.Helpers.Log (inRecordSet)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 import Arkham.Treachery.CardDefs.TheCircleUndone.AgentsOfAzathoth qualified as Treacheries
 
 newtype ItAwaits = ItAwaits AgendaAttrs

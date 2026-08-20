@@ -5,7 +5,7 @@ import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

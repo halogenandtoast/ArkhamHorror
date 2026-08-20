@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype RecoverTheRelic = RecoverTheRelic ActAttrs
   deriving anyclass IsAct

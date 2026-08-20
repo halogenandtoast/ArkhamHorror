@@ -6,7 +6,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Projection
-import Arkham.Scenarios.AtDeathsDoorstep.Helpers
+import Arkham.Scenarios.TheCircleUndone.AtDeathsDoorstep.Helpers
 
 newtype TrophyRoomSpectral = TrophyRoomSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

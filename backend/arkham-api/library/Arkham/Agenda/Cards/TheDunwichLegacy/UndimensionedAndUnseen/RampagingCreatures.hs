@@ -6,7 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Matcher hiding (ChosenRandomLocation)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen.Helpers
 
 newtype RampagingCreatures = RampagingCreatures AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

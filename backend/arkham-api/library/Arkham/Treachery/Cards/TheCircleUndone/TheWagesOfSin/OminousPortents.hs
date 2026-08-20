@@ -5,7 +5,7 @@ import Arkham.Helpers (unDeck)
 import Arkham.Keyword (Keyword (Peril))
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 import Arkham.Treachery.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

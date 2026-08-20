@@ -5,7 +5,7 @@ import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as E
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

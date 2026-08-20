@@ -8,7 +8,7 @@ import Arkham.Location.Types (Field (LocationLabel))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.HorrorInHighGear.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers
 
 newtype ForkInTheRoad_a = ForkInTheRoad_a LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

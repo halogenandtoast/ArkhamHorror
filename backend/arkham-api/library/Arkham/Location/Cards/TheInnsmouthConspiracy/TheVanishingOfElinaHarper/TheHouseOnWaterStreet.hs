@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers
 
 newtype TheHouseOnWaterStreet = TheHouseOnWaterStreet LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

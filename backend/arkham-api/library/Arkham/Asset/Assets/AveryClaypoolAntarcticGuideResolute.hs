@@ -11,7 +11,7 @@ import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Helpers.Window (getChaosToken)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.FatalMirage.Helpers (scenarioI18n)
+import Arkham.Scenarios.EdgeOfTheEarth.FatalMirage.Helpers (scenarioI18n)
 
 newtype AveryClaypoolAntarcticGuideResolute = AveryClaypoolAntarcticGuideResolute AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -41,6 +41,7 @@ instance RunMessage AveryClaypoolAntarcticGuideResolute where
       chooseOneM iid $ scenarioI18n do
         labeled' "averyClaypoolAntarcticGuideResolute.revealANewChaosToken" do
           getSkillTestInvestigator >>= traverse_ drawAnotherChaosToken
-        labeled' "averyClaypoolAntarcticGuideResolute.spend1Supply" $ spendUses (attrs.ability 1) attrs Supply 1
+        labeled' "averyClaypoolAntarcticGuideResolute.spend1Supply"
+          $ spendUses (attrs.ability 1) attrs Supply 1
       pure a
     _ -> AveryClaypoolAntarcticGuideResolute <$> liftRunMessage msg attrs

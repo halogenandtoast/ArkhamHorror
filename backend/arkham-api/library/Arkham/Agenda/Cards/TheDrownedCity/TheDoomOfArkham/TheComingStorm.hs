@@ -7,7 +7,7 @@ import Arkham.Campaigns.TheDrownedCity.Helpers (increaseFloodLevel)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
-import Arkham.Scenarios.TheDoomOfArkhamPartI.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartI.Helpers
 
 newtype TheComingStorm = TheComingStorm AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

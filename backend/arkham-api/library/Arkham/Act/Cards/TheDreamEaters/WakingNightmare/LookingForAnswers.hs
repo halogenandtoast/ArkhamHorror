@@ -6,7 +6,7 @@ import Arkham.Helpers.Agenda
 import Arkham.Helpers.Query
 import Arkham.Location.CardDefs.TheDreamEaters.WakingNightmare qualified as Locations
 import Arkham.Matcher
-import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
 
 newtype LookingForAnswers = LookingForAnswers ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

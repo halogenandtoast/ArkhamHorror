@@ -12,7 +12,7 @@ import Arkham.Location.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Locat
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype Metadata = Metadata {mariaDeSilvasLocation :: Maybe LocationId}
   deriving stock (Show, Eq, Generic)

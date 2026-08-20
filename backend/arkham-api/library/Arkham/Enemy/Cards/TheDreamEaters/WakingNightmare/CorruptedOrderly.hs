@@ -7,7 +7,7 @@ import Arkham.Enemy.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

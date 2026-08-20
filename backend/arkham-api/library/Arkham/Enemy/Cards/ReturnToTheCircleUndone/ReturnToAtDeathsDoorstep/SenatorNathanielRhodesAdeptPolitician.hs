@@ -5,7 +5,7 @@ import Arkham.Enemy.CardDefs.ReturnToTheCircleUndone.ReturnToAtDeathsDoorstep qu
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.AtDeathsDoorstep.Helpers
+import Arkham.Scenarios.TheCircleUndone.AtDeathsDoorstep.Helpers
 
 newtype SenatorNathanielRhodesAdeptPolitician = SenatorNathanielRhodesAdeptPolitician EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

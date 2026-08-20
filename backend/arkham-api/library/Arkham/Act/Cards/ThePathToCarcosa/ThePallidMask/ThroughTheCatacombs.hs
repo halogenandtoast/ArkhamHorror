@@ -7,7 +7,7 @@ import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
 import Arkham.Location.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Locations
 import Arkham.Matcher
-import Arkham.Scenarios.ThePallidMask.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.ThePallidMask.Helpers
 
 newtype ThroughTheCatacombs = ThroughTheCatacombs ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

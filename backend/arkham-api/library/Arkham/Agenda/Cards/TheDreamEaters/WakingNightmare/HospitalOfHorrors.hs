@@ -7,7 +7,7 @@ import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
-import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
 import Arkham.Trait (Trait (Spider))
 
 newtype HospitalOfHorrors = HospitalOfHorrors AgendaAttrs

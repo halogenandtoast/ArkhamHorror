@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Cards (laBellaLuna)
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheHouseAlwaysWins.Helpers
 
 newtype LaBellaLuna = LaBellaLuna LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

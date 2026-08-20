@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.TheScarletKeys.DogsOfWar.LocusPulse (locusPulse) w
 
 import Arkham.Ability
 import Arkham.Matcher
-import Arkham.Scenarios.DogsOfWar.Helpers
+import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers
 import Arkham.Treachery.CardDefs.TheScarletKeys.DogsOfWar qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

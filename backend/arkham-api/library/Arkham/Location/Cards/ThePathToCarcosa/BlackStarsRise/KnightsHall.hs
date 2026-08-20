@@ -10,7 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.BlackStarsRise.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.BlackStarsRise.Helpers
 
 newtype KnightsHall = KnightsHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -7,7 +7,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheGrandVault.Helpers (activateLocation, activatedLocation)
+import Arkham.Scenarios.TheDrownedCity.TheGrandVault.Helpers (activateLocation, activatedLocation)
 import Arkham.Trait (Trait (Vault))
 
 newtype ShroudedCistern = ShroudedCistern LocationAttrs

@@ -6103,287 +6103,287 @@ library
       Arkham.Scenario.Options
       Arkham.Scenario.Runner
       Arkham.Scenario.Scenarios
-      Arkham.Scenario.Scenarios.ALightInTheFog
       Arkham.Scenario.Scenarios.AllOrNothing
-      Arkham.Scenario.Scenarios.APhantomOfTruth
-      Arkham.Scenario.Scenarios.AtDeathsDoorstep
-      Arkham.Scenario.Scenarios.AThousandShapesOfHorror
       Arkham.Scenario.Scenarios.BadBlood
-      Arkham.Scenario.Scenarios.BeforeTheBlackThrone
-      Arkham.Scenario.Scenarios.BeyondTheGatesOfSleep
-      Arkham.Scenario.Scenarios.BlackStarsRise
-      Arkham.Scenario.Scenarios.BloodOnTheAltar
+      Arkham.Scenario.Scenarios.BrethrenOfAsh.QueenOfAsh
+      Arkham.Scenario.Scenarios.BrethrenOfAsh.SmokeAndMirrors
+      Arkham.Scenario.Scenarios.BrethrenOfAsh.SpreadingFlames
       Arkham.Scenario.Scenarios.ByTheBook
       Arkham.Scenario.Scenarios.CarnevaleOfHorrors
-      Arkham.Scenario.Scenarios.CityOfTheElderThings
-      Arkham.Scenario.Scenarios.CongressOfTheKeys
-      Arkham.Scenario.Scenarios.CourtOfTheAncients
+      Arkham.Scenario.Scenarios.ChildrenOfBlood.RiverOfBlood
       Arkham.Scenario.Scenarios.CurseOfTheRougarou
-      Arkham.Scenario.Scenarios.CurtainCall
-      Arkham.Scenario.Scenarios.DancingMad
-      Arkham.Scenario.Scenarios.DarkSideOfTheMoon
-      Arkham.Scenario.Scenarios.DeadHeat
-      Arkham.Scenario.Scenarios.DealingsInTheDark
-      Arkham.Scenario.Scenarios.DevilReef
-      Arkham.Scenario.Scenarios.DimCarcosa
-      Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate
-      Arkham.Scenario.Scenarios.DogsOfWar
-      Arkham.Scenario.Scenarios.EchoesOfThePast
+      Arkham.Scenario.Scenarios.EdgeOfTheEarth.CityOfTheElderThings
+      Arkham.Scenario.Scenarios.EdgeOfTheEarth.FatalMirage
+      Arkham.Scenario.Scenarios.EdgeOfTheEarth.IceAndDeathPart1
+      Arkham.Scenario.Scenarios.EdgeOfTheEarth.IceAndDeathPart2
+      Arkham.Scenario.Scenarios.EdgeOfTheEarth.IceAndDeathPart3
+      Arkham.Scenario.Scenarios.EdgeOfTheEarth.TheHeartOfMadnessPart1
+      Arkham.Scenario.Scenarios.EdgeOfTheEarth.TheHeartOfMadnessPart2
+      Arkham.Scenario.Scenarios.EdgeOfTheEarth.ToTheForbiddenPeaks
       Arkham.Scenario.Scenarios.EnthrallingEncore
-      Arkham.Scenario.Scenarios.ExtracurricularActivity
-      Arkham.Scenario.Scenarios.FatalMirage
-      Arkham.Scenario.Scenarios.FateOfTheVale
       Arkham.Scenario.Scenarios.FilmFatale
-      Arkham.Scenario.Scenarios.ForTheGreaterGood
       Arkham.Scenario.Scenarios.FortuneAndFolly
-      Arkham.Scenario.Scenarios.HeartOfTheElders
-      Arkham.Scenario.Scenarios.HemlockHouse
-      Arkham.Scenario.Scenarios.HorrorInHighGear
-      Arkham.Scenario.Scenarios.IceAndDeathPart1
-      Arkham.Scenario.Scenarios.IceAndDeathPart2
-      Arkham.Scenario.Scenarios.IceAndDeathPart3
-      Arkham.Scenario.Scenarios.InTheClutchesOfChaos
-      Arkham.Scenario.Scenarios.InTooDeep
-      Arkham.Scenario.Scenarios.IntoTheMaelstrom
+      Arkham.Scenario.Scenarios.GuardiansOfTheAbyss.TheEternalSlumber
+      Arkham.Scenario.Scenarios.GuardiansOfTheAbyss.TheNightsUsurper
       Arkham.Scenario.Scenarios.LaidToRest
-      Arkham.Scenario.Scenarios.LostInTimeAndSpace
       Arkham.Scenario.Scenarios.MachinationsThroughTime
       Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel
-      Arkham.Scenario.Scenarios.ObsidianCanyons
-      Arkham.Scenario.Scenarios.OneLastJob
-      Arkham.Scenario.Scenarios.OnThinIce
-      Arkham.Scenario.Scenarios.PointOfNoReturn
-      Arkham.Scenario.Scenarios.PreludeDawnOfTheFinalDay
-      Arkham.Scenario.Scenarios.PreludeDawnOfTheSecondDay
-      Arkham.Scenario.Scenarios.PreludeTheFinalEvening
-      Arkham.Scenario.Scenarios.PreludeWelcomeToHemlockVale
-      Arkham.Scenario.Scenarios.QueenOfAsh
+      Arkham.Scenario.Scenarios.NightOfTheZealot.TheDevourerBelow
+      Arkham.Scenario.Scenarios.NightOfTheZealot.TheGathering
+      Arkham.Scenario.Scenarios.NightOfTheZealot.TheMidnightMasks
       Arkham.Scenario.Scenarios.ReadOrDie
       Arkham.Scenario.Scenarios.RedTideRising
       Arkham.Scenario.Scenarios.RelicsOfThePast
-      Arkham.Scenario.Scenarios.ReturnToAPhantomOfTruth
-      Arkham.Scenario.Scenarios.ReturnToAtDeathsDoorstep
-      Arkham.Scenario.Scenarios.ReturnToBeforeTheBlackThrone
-      Arkham.Scenario.Scenarios.ReturnToBlackStarsRise
-      Arkham.Scenario.Scenarios.ReturnToBloodOnTheAltar
-      Arkham.Scenario.Scenarios.ReturnToCurtainCall
-      Arkham.Scenario.Scenarios.ReturnToDimCarcosa
-      Arkham.Scenario.Scenarios.ReturnToDisappearanceAtTheTwilightEstate
-      Arkham.Scenario.Scenarios.ReturnToEchoesOfThePast
-      Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities
-      Arkham.Scenario.Scenarios.ReturnToForTheGreaterGood
-      Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart1
-      Arkham.Scenario.Scenarios.ReturnToHeartOfTheEldersPart2
-      Arkham.Scenario.Scenarios.ReturnToInTheClutchesOfChaos
-      Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace
-      Arkham.Scenario.Scenarios.ReturnToShatteredAeons
-      Arkham.Scenario.Scenarios.ReturnToTheBoundaryBeyond
-      Arkham.Scenario.Scenarios.ReturnToTheCityOfArchives
-      Arkham.Scenario.Scenarios.ReturnToTheDepthsOfYoth
-      Arkham.Scenario.Scenarios.ReturnToTheDevourerBelow
-      Arkham.Scenario.Scenarios.ReturnToTheDoomOfEztli
-      Arkham.Scenario.Scenarios.ReturnToTheEssexCountyExpress
-      Arkham.Scenario.Scenarios.ReturnToTheGathering
-      Arkham.Scenario.Scenarios.ReturnToTheHouseAlwaysWins
-      Arkham.Scenario.Scenarios.ReturnToTheLastKing
-      Arkham.Scenario.Scenarios.ReturnToTheMidnightMasks
-      Arkham.Scenario.Scenarios.ReturnToTheMiskatonicMuseum
-      Arkham.Scenario.Scenarios.ReturnToThePallidMask
-      Arkham.Scenario.Scenarios.ReturnToTheSecretName
-      Arkham.Scenario.Scenarios.ReturnToTheUnspeakableOath
-      Arkham.Scenario.Scenarios.ReturnToTheUntamedWilds
-      Arkham.Scenario.Scenarios.ReturnToTheWagesOfSin
-      Arkham.Scenario.Scenarios.ReturnToTheWitchingHour
-      Arkham.Scenario.Scenarios.ReturnToThreadsOfFate
-      Arkham.Scenario.Scenarios.ReturnToTurnBackTime
-      Arkham.Scenario.Scenarios.ReturnToUndimensionedAndUnseen
-      Arkham.Scenario.Scenarios.ReturnToUnionAndDisillusion
-      Arkham.Scenario.Scenarios.ReturnToWhereDoomAwaits
-      Arkham.Scenario.Scenarios.RiddlesAndRain
-      Arkham.Scenario.Scenarios.RiverOfBlood
-      Arkham.Scenario.Scenarios.SanguineShadows
-      Arkham.Scenario.Scenarios.SepulchreOfTheSleeper
-      Arkham.Scenario.Scenarios.ShadesOfSuffering
-      Arkham.Scenario.Scenarios.ShatteredAeons
-      Arkham.Scenario.Scenarios.SmokeAndMirrors
-      Arkham.Scenario.Scenarios.SpreadingFlames
-      Arkham.Scenario.Scenarios.TheApiary
+      Arkham.Scenario.Scenarios.ReturnToNightOfTheZealot.ReturnToTheDevourerBelow
+      Arkham.Scenario.Scenarios.ReturnToNightOfTheZealot.ReturnToTheGathering
+      Arkham.Scenario.Scenarios.ReturnToNightOfTheZealot.ReturnToTheMidnightMasks
+      Arkham.Scenario.Scenarios.ReturnToTheCircleUndone.ReturnToAtDeathsDoorstep
+      Arkham.Scenario.Scenarios.ReturnToTheCircleUndone.ReturnToBeforeTheBlackThrone
+      Arkham.Scenario.Scenarios.ReturnToTheCircleUndone.ReturnToDisappearanceAtTheTwilightEstate
+      Arkham.Scenario.Scenarios.ReturnToTheCircleUndone.ReturnToForTheGreaterGood
+      Arkham.Scenario.Scenarios.ReturnToTheCircleUndone.ReturnToInTheClutchesOfChaos
+      Arkham.Scenario.Scenarios.ReturnToTheCircleUndone.ReturnToTheSecretName
+      Arkham.Scenario.Scenarios.ReturnToTheCircleUndone.ReturnToTheWagesOfSin
+      Arkham.Scenario.Scenarios.ReturnToTheCircleUndone.ReturnToTheWitchingHour
+      Arkham.Scenario.Scenarios.ReturnToTheCircleUndone.ReturnToUnionAndDisillusion
+      Arkham.Scenario.Scenarios.ReturnToTheDunwichLegacy.ReturnToBloodOnTheAltar
+      Arkham.Scenario.Scenarios.ReturnToTheDunwichLegacy.ReturnToExtracurricularActivities
+      Arkham.Scenario.Scenarios.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpace
+      Arkham.Scenario.Scenarios.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpress
+      Arkham.Scenario.Scenarios.ReturnToTheDunwichLegacy.ReturnToTheHouseAlwaysWins
+      Arkham.Scenario.Scenarios.ReturnToTheDunwichLegacy.ReturnToTheMiskatonicMuseum
+      Arkham.Scenario.Scenarios.ReturnToTheDunwichLegacy.ReturnToUndimensionedAndUnseen
+      Arkham.Scenario.Scenarios.ReturnToTheDunwichLegacy.ReturnToWhereDoomAwaits
+      Arkham.Scenario.Scenarios.ReturnToTheForgottenAge.ReturnToHeartOfTheEldersPart1
+      Arkham.Scenario.Scenarios.ReturnToTheForgottenAge.ReturnToHeartOfTheEldersPart2
+      Arkham.Scenario.Scenarios.ReturnToTheForgottenAge.ReturnToShatteredAeons
+      Arkham.Scenario.Scenarios.ReturnToTheForgottenAge.ReturnToTheBoundaryBeyond
+      Arkham.Scenario.Scenarios.ReturnToTheForgottenAge.ReturnToTheCityOfArchives
+      Arkham.Scenario.Scenarios.ReturnToTheForgottenAge.ReturnToTheDepthsOfYoth
+      Arkham.Scenario.Scenarios.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli
+      Arkham.Scenario.Scenarios.ReturnToTheForgottenAge.ReturnToTheUntamedWilds
+      Arkham.Scenario.Scenarios.ReturnToTheForgottenAge.ReturnToThreadsOfFate
+      Arkham.Scenario.Scenarios.ReturnToTheForgottenAge.ReturnToTurnBackTime
+      Arkham.Scenario.Scenarios.ReturnToThePathToCarcosa.ReturnToAPhantomOfTruth
+      Arkham.Scenario.Scenarios.ReturnToThePathToCarcosa.ReturnToBlackStarsRise
+      Arkham.Scenario.Scenarios.ReturnToThePathToCarcosa.ReturnToCurtainCall
+      Arkham.Scenario.Scenarios.ReturnToThePathToCarcosa.ReturnToDimCarcosa
+      Arkham.Scenario.Scenarios.ReturnToThePathToCarcosa.ReturnToEchoesOfThePast
+      Arkham.Scenario.Scenarios.ReturnToThePathToCarcosa.ReturnToTheLastKing
+      Arkham.Scenario.Scenarios.ReturnToThePathToCarcosa.ReturnToThePallidMask
+      Arkham.Scenario.Scenarios.ReturnToThePathToCarcosa.ReturnToTheUnspeakableOath
       Arkham.Scenario.Scenarios.TheBlobThatAteEverything
-      Arkham.Scenario.Scenarios.TheBoundaryBeyond
-      Arkham.Scenario.Scenarios.TheCityOfArchives
-      Arkham.Scenario.Scenarios.TheDepthsOfYoth
-      Arkham.Scenario.Scenarios.TheDevourerBelow
-      Arkham.Scenario.Scenarios.TheDoomOfArkhamPartI
-      Arkham.Scenario.Scenarios.TheDoomOfArkhamPartII
-      Arkham.Scenario.Scenarios.TheDoomOfEztli
-      Arkham.Scenario.Scenarios.TheDrownedQuarter
-      Arkham.Scenario.Scenarios.TheEssexCountyExpress
-      Arkham.Scenario.Scenarios.TheEternalSlumber
-      Arkham.Scenario.Scenarios.TheGathering
-      Arkham.Scenario.Scenarios.TheGrandVault
-      Arkham.Scenario.Scenarios.TheHeartOfMadnessPart1
-      Arkham.Scenario.Scenarios.TheHeartOfMadnessPart2
-      Arkham.Scenario.Scenarios.TheHouseAlwaysWins
+      Arkham.Scenario.Scenarios.TheCircleUndone.AtDeathsDoorstep
+      Arkham.Scenario.Scenarios.TheCircleUndone.BeforeTheBlackThrone
+      Arkham.Scenario.Scenarios.TheCircleUndone.DisappearanceAtTheTwilightEstate
+      Arkham.Scenario.Scenarios.TheCircleUndone.ForTheGreaterGood
+      Arkham.Scenario.Scenarios.TheCircleUndone.InTheClutchesOfChaos
+      Arkham.Scenario.Scenarios.TheCircleUndone.TheSecretName
+      Arkham.Scenario.Scenarios.TheCircleUndone.TheWagesOfSin
+      Arkham.Scenario.Scenarios.TheCircleUndone.TheWitchingHour
+      Arkham.Scenario.Scenarios.TheCircleUndone.UnionAndDisillusion
+      Arkham.Scenario.Scenarios.TheDreamEaters.AThousandShapesOfHorror
+      Arkham.Scenario.Scenarios.TheDreamEaters.BeyondTheGatesOfSleep
+      Arkham.Scenario.Scenarios.TheDreamEaters.DarkSideOfTheMoon
+      Arkham.Scenario.Scenarios.TheDreamEaters.PointOfNoReturn
+      Arkham.Scenario.Scenarios.TheDreamEaters.TheSearchForKadath
+      Arkham.Scenario.Scenarios.TheDreamEaters.WakingNightmare
+      Arkham.Scenario.Scenarios.TheDreamEaters.WeaverOfTheCosmos
+      Arkham.Scenario.Scenarios.TheDreamEaters.WhereTheGodsDwell
+      Arkham.Scenario.Scenarios.TheDrownedCity.CourtOfTheAncients
+      Arkham.Scenario.Scenarios.TheDrownedCity.ObsidianCanyons
+      Arkham.Scenario.Scenarios.TheDrownedCity.OneLastJob
+      Arkham.Scenario.Scenarios.TheDrownedCity.SepulchreOfTheSleeper
+      Arkham.Scenario.Scenarios.TheDrownedCity.TheApiary
+      Arkham.Scenario.Scenarios.TheDrownedCity.TheDoomOfArkhamPartI
+      Arkham.Scenario.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII
+      Arkham.Scenario.Scenarios.TheDrownedCity.TheDrownedQuarter
+      Arkham.Scenario.Scenarios.TheDrownedCity.TheGrandVault
+      Arkham.Scenario.Scenarios.TheDrownedCity.TheWesternWall
+      Arkham.Scenario.Scenarios.TheDunwichLegacy.BloodOnTheAltar
+      Arkham.Scenario.Scenarios.TheDunwichLegacy.ExtracurricularActivity
+      Arkham.Scenario.Scenarios.TheDunwichLegacy.LostInTimeAndSpace
+      Arkham.Scenario.Scenarios.TheDunwichLegacy.TheEssexCountyExpress
+      Arkham.Scenario.Scenarios.TheDunwichLegacy.TheHouseAlwaysWins
+      Arkham.Scenario.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum
+      Arkham.Scenario.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen
+      Arkham.Scenario.Scenarios.TheDunwichLegacy.WhereDoomAwaits
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.FateOfTheVale
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.HemlockHouse
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.PreludeDawnOfTheFinalDay
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.PreludeDawnOfTheSecondDay
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.PreludeTheFinalEvening
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.PreludeWelcomeToHemlockVale
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.TheLongestNight
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.TheLostSister
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.TheSilentHeath
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.TheThingInTheDepths
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow
+      Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.WrittenInRock
+      Arkham.Scenario.Scenarios.TheForgottenAge.HeartOfTheElders
+      Arkham.Scenario.Scenarios.TheForgottenAge.ShatteredAeons
+      Arkham.Scenario.Scenarios.TheForgottenAge.TheBoundaryBeyond
+      Arkham.Scenario.Scenarios.TheForgottenAge.TheCityOfArchives
+      Arkham.Scenario.Scenarios.TheForgottenAge.TheDepthsOfYoth
+      Arkham.Scenario.Scenarios.TheForgottenAge.TheDoomOfEztli
+      Arkham.Scenario.Scenarios.TheForgottenAge.TheUntamedWilds
+      Arkham.Scenario.Scenarios.TheForgottenAge.ThreadsOfFate
+      Arkham.Scenario.Scenarios.TheForgottenAge.TurnBackTime
+      Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.ALightInTheFog
+      Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.DevilReef
+      Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear
+      Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.InTooDeep
+      Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom
+      Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon
+      Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.ThePitOfDespair
+      Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper
       Arkham.Scenario.Scenarios.TheLabyrinthsOfLunacy
-      Arkham.Scenario.Scenarios.TheLairOfDagon
-      Arkham.Scenario.Scenarios.TheLastKing
-      Arkham.Scenario.Scenarios.TheLongestNight
-      Arkham.Scenario.Scenarios.TheLostSister
-      Arkham.Scenario.Scenarios.TheMidnightMasks
       Arkham.Scenario.Scenarios.TheMidwinterGala
-      Arkham.Scenario.Scenarios.TheMiskatonicMuseum
-      Arkham.Scenario.Scenarios.TheNightsUsurper
-      Arkham.Scenario.Scenarios.ThePallidMask
-      Arkham.Scenario.Scenarios.ThePitOfDespair
-      Arkham.Scenario.Scenarios.TheSearchForKadath
-      Arkham.Scenario.Scenarios.TheSecretName
-      Arkham.Scenario.Scenarios.TheSilentHeath
-      Arkham.Scenario.Scenarios.TheThingInTheDepths
-      Arkham.Scenario.Scenarios.TheTwistedHollow
-      Arkham.Scenario.Scenarios.TheUnspeakableOath
-      Arkham.Scenario.Scenarios.TheUntamedWilds
-      Arkham.Scenario.Scenarios.TheVanishingOfElinaHarper
-      Arkham.Scenario.Scenarios.TheWagesOfSin
-      Arkham.Scenario.Scenarios.TheWesternWall
-      Arkham.Scenario.Scenarios.TheWitchingHour
-      Arkham.Scenario.Scenarios.ThreadsOfFate
-      Arkham.Scenario.Scenarios.ToTheForbiddenPeaks
-      Arkham.Scenario.Scenarios.TurnBackTime
-      Arkham.Scenario.Scenarios.UndimensionedAndUnseen
-      Arkham.Scenario.Scenarios.UnionAndDisillusion
-      Arkham.Scenario.Scenarios.WakingNightmare
+      Arkham.Scenario.Scenarios.ThePathToCarcosa.APhantomOfTruth
+      Arkham.Scenario.Scenarios.ThePathToCarcosa.BlackStarsRise
+      Arkham.Scenario.Scenarios.ThePathToCarcosa.CurtainCall
+      Arkham.Scenario.Scenarios.ThePathToCarcosa.DimCarcosa
+      Arkham.Scenario.Scenarios.ThePathToCarcosa.EchoesOfThePast
+      Arkham.Scenario.Scenarios.ThePathToCarcosa.TheLastKing
+      Arkham.Scenario.Scenarios.ThePathToCarcosa.ThePallidMask
+      Arkham.Scenario.Scenarios.ThePathToCarcosa.TheUnspeakableOath
+      Arkham.Scenario.Scenarios.TheScarletKeys.CongressOfTheKeys
+      Arkham.Scenario.Scenarios.TheScarletKeys.DancingMad
+      Arkham.Scenario.Scenarios.TheScarletKeys.DeadHeat
+      Arkham.Scenario.Scenarios.TheScarletKeys.DealingsInTheDark
+      Arkham.Scenario.Scenarios.TheScarletKeys.DogsOfWar
+      Arkham.Scenario.Scenarios.TheScarletKeys.OnThinIce
+      Arkham.Scenario.Scenarios.TheScarletKeys.RiddlesAndRain
+      Arkham.Scenario.Scenarios.TheScarletKeys.SanguineShadows
+      Arkham.Scenario.Scenarios.TheScarletKeys.ShadesOfSuffering
+      Arkham.Scenario.Scenarios.TheScarletKeys.WithoutATrace
       Arkham.Scenario.Scenarios.WarOfTheOuterGods
-      Arkham.Scenario.Scenarios.WeaverOfTheCosmos
-      Arkham.Scenario.Scenarios.WhereDoomAwaits
-      Arkham.Scenario.Scenarios.WhereTheGodsDwell
-      Arkham.Scenario.Scenarios.WithoutATrace
-      Arkham.Scenario.Scenarios.WrittenInRock
       Arkham.Scenario.Setup
       Arkham.Scenario.Types
       Arkham.ScenarioLogKey
-      Arkham.Scenarios.ALightInTheFog.Helpers
-      Arkham.Scenarios.ALightInTheFog.Helpers.Location
       Arkham.Scenarios.AllOrNothing.Helpers
-      Arkham.Scenarios.APhantomOfTruth.Helpers
-      Arkham.Scenarios.AtDeathsDoorstep.Helpers
-      Arkham.Scenarios.AThousandShapesOfHorror.Helpers
       Arkham.Scenarios.BadBlood.Helpers
       Arkham.Scenarios.BadBlood.Meta
-      Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
-      Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
-      Arkham.Scenarios.BeforeTheBlackThrone.Helpers
-      Arkham.Scenarios.BeyondTheGatesOfSleep.Helpers
-      Arkham.Scenarios.BlackStarsRise.Helpers
-      Arkham.Scenarios.BloodOnTheAltar.Helpers
+      Arkham.Scenarios.BrethrenOfAsh.QueenOfAsh.Helpers
+      Arkham.Scenarios.BrethrenOfAsh.SmokeAndMirrors.Helpers
+      Arkham.Scenarios.BrethrenOfAsh.SpreadingFlames.Helpers
       Arkham.Scenarios.ByTheBook.Helpers
       Arkham.Scenarios.CarnevaleOfHorrors.Helpers
-      Arkham.Scenarios.CityOfTheElderThings.Helpers
-      Arkham.Scenarios.CongressOfTheKeys.Helpers
-      Arkham.Scenarios.CourtOfTheAncients.Helpers
+      Arkham.Scenarios.ChildrenOfBlood.RiverOfBlood.Helpers
       Arkham.Scenarios.CurseOfTheRougarou.Helpers
-      Arkham.Scenarios.CurtainCall.Helpers
-      Arkham.Scenarios.DancingMad.Helpers
-      Arkham.Scenarios.DarkSideOfTheMoon.Helpers
-      Arkham.Scenarios.DeadHeat.Helpers
-      Arkham.Scenarios.DealingsInTheDark.Helpers
-      Arkham.Scenarios.DevilReef.Helpers
-      Arkham.Scenarios.DimCarcosa.Helpers
-      Arkham.Scenarios.DisappearanceAtTheTwilightEstate.Helpers
-      Arkham.Scenarios.DogsOfWar.Helpers
-      Arkham.Scenarios.EchoesOfThePast.Helpers
+      Arkham.Scenarios.EdgeOfTheEarth.CityOfTheElderThings.Helpers
+      Arkham.Scenarios.EdgeOfTheEarth.FatalMirage.Helpers
+      Arkham.Scenarios.EdgeOfTheEarth.ToTheForbiddenPeaks.Helpers
       Arkham.Scenarios.EnthrallingEncore.Helpers
-      Arkham.Scenarios.ExtracurricularActivity.Helpers
-      Arkham.Scenarios.FatalMirage.Helpers
-      Arkham.Scenarios.FateOfTheVale.CosmicEmissary
-      Arkham.Scenarios.FateOfTheVale.Helpers
       Arkham.Scenarios.FilmFatale.Helpers
-      Arkham.Scenarios.ForTheGreaterGood.Helpers
       Arkham.Scenarios.FortuneAndFolly.Helpers
       Arkham.Scenarios.FortuneAndFolly.PlayingCard
-      Arkham.Scenarios.HeartOfTheElders.Helpers
-      Arkham.Scenarios.HemlockHouse.Helpers
-      Arkham.Scenarios.HemlockHouse.PredationBag
-      Arkham.Scenarios.HorrorInHighGear.Helpers
+      Arkham.Scenarios.GuardiansOfTheAbyss.TheEternalSlumber.Helpers
+      Arkham.Scenarios.GuardiansOfTheAbyss.TheNightsUsurper.Helpers
       Arkham.Scenarios.IceAndDeath.Helpers
-      Arkham.Scenarios.InTheClutchesOfChaos.Helpers
-      Arkham.Scenarios.InTooDeep.Helpers
-      Arkham.Scenarios.IntoTheMaelstrom.Helpers
       Arkham.Scenarios.LaidToRest.Helpers
-      Arkham.Scenarios.LostInTimeAndSpace.Helpers
       Arkham.Scenarios.MachinationsThroughTime.Helpers
       Arkham.Scenarios.MurderAtTheExcelsiorHotel.Helpers
-      Arkham.Scenarios.ObsidianCanyons.Helpers
-      Arkham.Scenarios.OneLastJob.Helpers
-      Arkham.Scenarios.OnThinIce.Helpers
-      Arkham.Scenarios.PointOfNoReturn.Helpers
-      Arkham.Scenarios.QueenOfAsh.Helpers
+      Arkham.Scenarios.NightOfTheZealot.TheDevourerBelow.Helpers
+      Arkham.Scenarios.NightOfTheZealot.TheGathering.Helpers
+      Arkham.Scenarios.NightOfTheZealot.TheMidnightMasks.Helpers
       Arkham.Scenarios.ReadOrDie.Helpers
       Arkham.Scenarios.RedTideRising.Helpers
       Arkham.Scenarios.RelicsOfThePast.Helpers
-      Arkham.Scenarios.RiddlesAndRain.Helpers
-      Arkham.Scenarios.RiverOfBlood.Helpers
-      Arkham.Scenarios.SanguineShadows.Helpers
-      Arkham.Scenarios.SepulchreOfTheSleeper.Helpers
-      Arkham.Scenarios.ShadesOfSuffering.Helpers
-      Arkham.Scenarios.ShatteredAeons.Helpers
-      Arkham.Scenarios.SmokeAndMirrors.Helpers
-      Arkham.Scenarios.SpreadingFlames.Helpers
-      Arkham.Scenarios.TheApiary.Helpers
       Arkham.Scenarios.TheBlobThatAteEverything.Helpers
-      Arkham.Scenarios.TheBoundaryBeyond.Helpers
-      Arkham.Scenarios.TheCityOfArchives.Helpers
-      Arkham.Scenarios.TheDepthsOfYoth.Helpers
-      Arkham.Scenarios.TheDevourerBelow.Helpers
-      Arkham.Scenarios.TheDoomOfArkhamPartI.Helpers
-      Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
-      Arkham.Scenarios.TheDoomOfEztli.Helpers
-      Arkham.Scenarios.TheDrownedQuarter.Helpers
-      Arkham.Scenarios.TheEssexCountyExpress.Helpers
-      Arkham.Scenarios.TheEternalSlumber.Helpers
-      Arkham.Scenarios.TheGathering.Helpers
-      Arkham.Scenarios.TheGrandVault.Helpers
+      Arkham.Scenarios.TheCircleUndone.AtDeathsDoorstep.Helpers
+      Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos
+      Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos.Types
+      Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
+      Arkham.Scenarios.TheCircleUndone.DisappearanceAtTheTwilightEstate.Helpers
+      Arkham.Scenarios.TheCircleUndone.ForTheGreaterGood.Helpers
+      Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
+      Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
+      Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
+      Arkham.Scenarios.TheCircleUndone.TheWitchingHour.Helpers
+      Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
+      Arkham.Scenarios.TheDreamEaters.AThousandShapesOfHorror.Helpers
+      Arkham.Scenarios.TheDreamEaters.BeyondTheGatesOfSleep.Helpers
+      Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
+      Arkham.Scenarios.TheDreamEaters.PointOfNoReturn.Helpers
+      Arkham.Scenarios.TheDreamEaters.TheSearchForKadath.Helpers
+      Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
+      Arkham.Scenarios.TheDreamEaters.WakingNightmare.InfestationBag
+      Arkham.Scenarios.TheDreamEaters.WeaverOfTheCosmos.Helpers
+      Arkham.Scenarios.TheDreamEaters.WhereTheGodsDwell.Helpers
+      Arkham.Scenarios.TheDrownedCity.CourtOfTheAncients.Helpers
+      Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
+      Arkham.Scenarios.TheDrownedCity.OneLastJob.Helpers
+      Arkham.Scenarios.TheDrownedCity.SepulchreOfTheSleeper.Helpers
+      Arkham.Scenarios.TheDrownedCity.TheApiary.Helpers
+      Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartI.Helpers
+      Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers
+      Arkham.Scenarios.TheDrownedCity.TheDrownedQuarter.Helpers
+      Arkham.Scenarios.TheDrownedCity.TheGrandVault.Helpers
+      Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers
+      Arkham.Scenarios.TheDunwichLegacy.BloodOnTheAltar.Helpers
+      Arkham.Scenarios.TheDunwichLegacy.ExtracurricularActivity.Helpers
+      Arkham.Scenarios.TheDunwichLegacy.LostInTimeAndSpace.Helpers
+      Arkham.Scenarios.TheDunwichLegacy.TheEssexCountyExpress.Helpers
+      Arkham.Scenarios.TheDunwichLegacy.TheHouseAlwaysWins.Helpers
+      Arkham.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum.Helpers
+      Arkham.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen.Helpers
+      Arkham.Scenarios.TheDunwichLegacy.WhereDoomAwaits.Helpers
+      Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.CosmicEmissary
+      Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers
+      Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.Helpers
+      Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.PredationBag
+      Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers
+      Arkham.Scenarios.TheFeastOfHemlockVale.TheLostSister.Helpers
+      Arkham.Scenarios.TheFeastOfHemlockVale.TheSilentHeath.Helpers
+      Arkham.Scenarios.TheFeastOfHemlockVale.TheThingInTheDepths.Helpers
+      Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers
+      Arkham.Scenarios.TheFeastOfHemlockVale.WrittenInRock.Helpers
+      Arkham.Scenarios.TheForgottenAge.HeartOfTheElders.Helpers
+      Arkham.Scenarios.TheForgottenAge.ShatteredAeons.Helpers
+      Arkham.Scenarios.TheForgottenAge.TheBoundaryBeyond.Helpers
+      Arkham.Scenarios.TheForgottenAge.TheCityOfArchives.Helpers
+      Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
+      Arkham.Scenarios.TheForgottenAge.TheDoomOfEztli.Helpers
+      Arkham.Scenarios.TheForgottenAge.TheUntamedWilds.Helpers
+      Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
+      Arkham.Scenarios.TheForgottenAge.TurnBackTime.Helpers
       Arkham.Scenarios.TheHeartOfMadness.Helpers
       Arkham.Scenarios.TheHeartOfMadness.Pylon
-      Arkham.Scenarios.TheHouseAlwaysWins.Helpers
+      Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers
+      Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers.Location
+      Arkham.Scenarios.TheInnsmouthConspiracy.DevilReef.Helpers
+      Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers
+      Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
+      Arkham.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom.Helpers
+      Arkham.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon.Helpers
+      Arkham.Scenarios.TheInnsmouthConspiracy.ThePitOfDespair.Helpers
+      Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers
       Arkham.Scenarios.TheLabyrinthsOfLunacy.Helpers
       Arkham.Scenarios.TheLabyrinthsOfLunacy.Key
       Arkham.Scenarios.TheLabyrinthsOfLunacy.Meta
-      Arkham.Scenarios.TheLairOfDagon.Helpers
-      Arkham.Scenarios.TheLastKing.Helpers
-      Arkham.Scenarios.TheLongestNight.Helpers
-      Arkham.Scenarios.TheLostSister.Helpers
-      Arkham.Scenarios.TheMidnightMasks.Helpers
       Arkham.Scenarios.TheMidwinterGala.Faction
       Arkham.Scenarios.TheMidwinterGala.Helpers
       Arkham.Scenarios.TheMidwinterGala.Meta
-      Arkham.Scenarios.TheMiskatonicMuseum.Helpers
-      Arkham.Scenarios.TheNightsUsurper.Helpers
-      Arkham.Scenarios.ThePallidMask.Helpers
-      Arkham.Scenarios.ThePitOfDespair.Helpers
-      Arkham.Scenarios.TheSearchForKadath.Helpers
-      Arkham.Scenarios.TheSecretName.Helpers
-      Arkham.Scenarios.TheSilentHeath.Helpers
-      Arkham.Scenarios.TheThingInTheDepths.Helpers
-      Arkham.Scenarios.TheTwistedHollow.Helpers
-      Arkham.Scenarios.TheUnspeakableOath.Helpers
-      Arkham.Scenarios.TheUntamedWilds.Helpers
-      Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
-      Arkham.Scenarios.TheWagesOfSin.Helpers
-      Arkham.Scenarios.TheWesternWall.Helpers
-      Arkham.Scenarios.TheWitchingHour.Helpers
-      Arkham.Scenarios.ThreadsOfFate.Helpers
-      Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
-      Arkham.Scenarios.TurnBackTime.Helpers
-      Arkham.Scenarios.UndimensionedAndUnseen.Helpers
-      Arkham.Scenarios.UnionAndDisillusion.Helpers
-      Arkham.Scenarios.WakingNightmare.Helpers
-      Arkham.Scenarios.WakingNightmare.InfestationBag
+      Arkham.Scenarios.ThePathToCarcosa.APhantomOfTruth.Helpers
+      Arkham.Scenarios.ThePathToCarcosa.BlackStarsRise.Helpers
+      Arkham.Scenarios.ThePathToCarcosa.CurtainCall.Helpers
+      Arkham.Scenarios.ThePathToCarcosa.DimCarcosa.Helpers
+      Arkham.Scenarios.ThePathToCarcosa.EchoesOfThePast.Helpers
+      Arkham.Scenarios.ThePathToCarcosa.TheLastKing.Helpers
+      Arkham.Scenarios.ThePathToCarcosa.ThePallidMask.Helpers
+      Arkham.Scenarios.ThePathToCarcosa.TheUnspeakableOath.Helpers
+      Arkham.Scenarios.TheScarletKeys.CongressOfTheKeys.Helpers
+      Arkham.Scenarios.TheScarletKeys.DancingMad.Helpers
+      Arkham.Scenarios.TheScarletKeys.DeadHeat.Helpers
+      Arkham.Scenarios.TheScarletKeys.DealingsInTheDark.Helpers
+      Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers
+      Arkham.Scenarios.TheScarletKeys.OnThinIce.Helpers
+      Arkham.Scenarios.TheScarletKeys.RiddlesAndRain.Helpers
+      Arkham.Scenarios.TheScarletKeys.SanguineShadows.Helpers
+      Arkham.Scenarios.TheScarletKeys.ShadesOfSuffering.Helpers
+      Arkham.Scenarios.TheScarletKeys.WithoutATrace.Helpers
       Arkham.Scenarios.WarOfTheOuterGods.Helpers
-      Arkham.Scenarios.WeaverOfTheCosmos.Helpers
-      Arkham.Scenarios.WhereDoomAwaits.Helpers
-      Arkham.Scenarios.WhereTheGodsDwell.Helpers
-      Arkham.Scenarios.WithoutATrace.Helpers
-      Arkham.Scenarios.WrittenInRock.Helpers
       Arkham.Script
       Arkham.Search
       Arkham.SideStory

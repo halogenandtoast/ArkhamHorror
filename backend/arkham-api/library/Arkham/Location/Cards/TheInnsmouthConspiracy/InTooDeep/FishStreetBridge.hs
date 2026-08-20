@@ -11,7 +11,7 @@ import Arkham.Ability
 import Arkham.SortedPair
 import Arkham.Helpers.Modifiers (modifySelf, ModifierType(..))
 import Arkham.Matcher
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 import Data.Map.Strict qualified as Map
 
 newtype FishStreetBridge = FishStreetBridge LocationAttrs

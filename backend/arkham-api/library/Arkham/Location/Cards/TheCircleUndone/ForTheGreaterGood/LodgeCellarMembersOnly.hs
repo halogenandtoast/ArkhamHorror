@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Scenarios.ForTheGreaterGood.Helpers
+import Arkham.Scenarios.TheCircleUndone.ForTheGreaterGood.Helpers
 
 newtype LodgeCellarMembersOnly = LodgeCellarMembersOnly LocationAttrs
   deriving anyclass IsLocation

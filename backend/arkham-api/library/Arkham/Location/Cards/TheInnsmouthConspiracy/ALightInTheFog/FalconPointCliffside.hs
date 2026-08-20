@@ -7,8 +7,8 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified 
 import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ALightInTheFog.Helpers
-import Arkham.Scenarios.ALightInTheFog.Helpers.Location
+import Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers.Location
 
 newtype FalconPointCliffside = FalconPointCliffside LocationAttrs
   deriving anyclass IsLocation

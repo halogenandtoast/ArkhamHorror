@@ -7,7 +7,7 @@ import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
-import Arkham.Scenarios.FatalMirage.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.FatalMirage.Helpers
 import Arkham.Story.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Stories
 
 newtype BaseCamp = BaseCamp LocationAttrs

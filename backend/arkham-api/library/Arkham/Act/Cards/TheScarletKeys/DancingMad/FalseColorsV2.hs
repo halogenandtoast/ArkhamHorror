@@ -17,7 +17,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.DancingMad.Helpers
+import Arkham.Scenarios.TheScarletKeys.DancingMad.Helpers
 import Arkham.Trait (Trait (Coterie))
 
 newtype FalseColorsV2 = FalseColorsV2 ActAttrs

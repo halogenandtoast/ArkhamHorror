@@ -15,7 +15,7 @@ import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 import Arkham.Window qualified as Window
 
 newtype JourneyToTheNexus = JourneyToTheNexus ActAttrs

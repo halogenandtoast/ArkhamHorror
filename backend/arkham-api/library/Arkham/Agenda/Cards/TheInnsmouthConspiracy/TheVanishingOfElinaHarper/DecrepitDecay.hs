@@ -13,7 +13,7 @@ import Arkham.Helpers.Window
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers
 
 newtype DecrepitDecay = DecrepitDecay AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

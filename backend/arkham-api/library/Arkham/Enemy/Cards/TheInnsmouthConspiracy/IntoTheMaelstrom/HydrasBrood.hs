@@ -7,7 +7,7 @@ import Arkham.I18n
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.IntoTheMaelstrom.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom.Helpers
 
 newtype HydrasBrood = HydrasBrood EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.ReturnToTheDunwichLegacy.ReturnToTheHouseAlwaysWins.CaughtCheating (caughtCheating) where
 
-import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheHouseAlwaysWins.Helpers
 import Arkham.Treachery.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheHouseAlwaysWins qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

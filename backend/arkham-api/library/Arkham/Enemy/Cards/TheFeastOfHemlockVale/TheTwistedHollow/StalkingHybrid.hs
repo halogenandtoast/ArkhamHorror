@@ -7,7 +7,7 @@ import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers
 
 newtype StalkingHybrid = StalkingHybrid EnemyAttrs
   deriving anyclass IsEnemy

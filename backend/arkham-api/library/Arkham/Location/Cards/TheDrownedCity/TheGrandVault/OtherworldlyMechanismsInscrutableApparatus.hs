@@ -7,7 +7,7 @@ import Arkham.Investigator.Projection ()
 import Arkham.Location.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheGrandVault.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheGrandVault.Helpers
 import Arkham.Trait (Trait (Glyph))
 
 newtype OtherworldlyMechanismsInscrutableApparatus

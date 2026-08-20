@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Card
 import Arkham.Location.Import.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck (ScenarioDeckKey (CthulhuDeck))
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (sharedI18n)
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (sharedI18n)
 import Arkham.Strategy
 
 newtype NorthsideRuined = NorthsideRuined LocationAttrs

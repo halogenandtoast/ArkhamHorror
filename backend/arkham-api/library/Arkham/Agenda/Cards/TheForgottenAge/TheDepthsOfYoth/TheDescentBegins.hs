@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.TheForgottenAge.TheDepthsOfYoth.TheDescentBegins (the
 
 import Arkham.Agenda.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 
 newtype TheDescentBegins = TheDescentBegins AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

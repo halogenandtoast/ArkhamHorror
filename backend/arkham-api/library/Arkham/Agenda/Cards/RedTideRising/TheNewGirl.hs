@@ -8,7 +8,7 @@ import Arkham.Enemy.Creation (createExhausted)
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher
-import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers (shuffleIntoLeadsDeck)
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers (shuffleIntoLeadsDeck)
 import Arkham.Trait (Trait (Hideout, Monster, Suspect))
 
 newtype TheNewGirl = TheNewGirl AgendaAttrs

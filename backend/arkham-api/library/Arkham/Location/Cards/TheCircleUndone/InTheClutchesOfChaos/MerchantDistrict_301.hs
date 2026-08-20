@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Location.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 
 newtype MerchantDistrict_301 = MerchantDistrict_301 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

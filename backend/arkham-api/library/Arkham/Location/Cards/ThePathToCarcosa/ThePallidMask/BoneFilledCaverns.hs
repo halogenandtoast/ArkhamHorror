@@ -11,7 +11,7 @@ import Arkham.Location.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Card
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ThePallidMask.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.ThePallidMask.Helpers
 
 newtype Metadata = Metadata {affectedInvestigator :: Maybe InvestigatorId}
   deriving stock (Show, Eq, Generic)

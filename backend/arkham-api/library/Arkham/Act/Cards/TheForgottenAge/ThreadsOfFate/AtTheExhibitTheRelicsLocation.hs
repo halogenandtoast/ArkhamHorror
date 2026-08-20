@@ -8,7 +8,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Location.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype AtTheExhibitTheRelicsLocation = AtTheExhibitTheRelicsLocation ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

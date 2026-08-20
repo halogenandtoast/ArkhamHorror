@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheLostSister.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLostSister.Helpers
 import Arkham.Strategy
 
 newtype Akwan = Akwan LocationAttrs

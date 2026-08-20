@@ -5,7 +5,7 @@ import Arkham.Enemy.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (getCthulhuRage)
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (getCthulhuRage)
 
 newtype CthulhuWickedClawEnraged = CthulhuWickedClawEnraged EnemyAttrs
   deriving anyclass IsEnemy

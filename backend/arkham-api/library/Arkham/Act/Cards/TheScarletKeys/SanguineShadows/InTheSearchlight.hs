@@ -21,7 +21,7 @@ import Arkham.Message.Lifted.Placement
 import Arkham.Modifier
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.SanguineShadows.Helpers
+import Arkham.Scenarios.TheScarletKeys.SanguineShadows.Helpers
 import Arkham.Token qualified as Token
 
 newtype InTheSearchlight = InTheSearchlight ActAttrs

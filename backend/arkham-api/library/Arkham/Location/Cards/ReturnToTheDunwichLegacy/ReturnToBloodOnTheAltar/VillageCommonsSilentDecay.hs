@@ -5,7 +5,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToBloodOnTheAltar qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.BloodOnTheAltar.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.BloodOnTheAltar.Helpers
 
 newtype VillageCommonsSilentDecay = VillageCommonsSilentDecay LocationAttrs
   deriving anyclass IsLocation

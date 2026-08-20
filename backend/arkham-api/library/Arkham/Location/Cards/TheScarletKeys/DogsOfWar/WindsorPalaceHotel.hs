@@ -4,7 +4,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.CardDefs.TheScarletKeys.DogsOfWar qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.DogsOfWar.Helpers
+import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers
 
 newtype WindsorPalaceHotel = WindsorPalaceHotel LocationAttrs
   deriving anyclass (IsLocation, RunMessage)

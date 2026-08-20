@@ -7,7 +7,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 import Arkham.Treachery.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Location.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.AtDeathsDoorstep.Helpers
+import Arkham.Scenarios.TheCircleUndone.AtDeathsDoorstep.Helpers
 
 newtype OfficeSpectral = OfficeSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

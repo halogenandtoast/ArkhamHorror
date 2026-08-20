@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
 
 newtype ShatteredRuins = ShatteredRuins LocationAttrs
   deriving anyclass IsLocation

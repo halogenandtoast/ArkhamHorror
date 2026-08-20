@@ -4,7 +4,7 @@ import Arkham.Enemy.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Matcher
-import Arkham.Scenarios.TheGrandVault.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheGrandVault.Helpers
 
 newtype VaultAttendant = VaultAttendant EnemyAttrs
   deriving anyclass IsEnemy

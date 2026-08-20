@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.TheCircleUndone.TheWagesOfSin.Heretic_E (heretic_E) wh
 
 import Arkham.Enemy.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 import Arkham.Story.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Story
 
 newtype Heretic_E = Heretic_E EnemyAttrs

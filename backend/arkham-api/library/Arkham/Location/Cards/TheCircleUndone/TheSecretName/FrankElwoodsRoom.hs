@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
 
 newtype FrankElwoodsRoom = FrankElwoodsRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

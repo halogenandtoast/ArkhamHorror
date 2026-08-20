@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers
 
 newtype GlimmeringWoods = GlimmeringWoods LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

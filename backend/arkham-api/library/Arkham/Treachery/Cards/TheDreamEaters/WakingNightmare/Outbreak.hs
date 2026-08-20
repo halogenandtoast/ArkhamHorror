@@ -5,7 +5,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
 import Arkham.Story.CardDefs.TheDreamEaters.WakingNightmare qualified as Stories
 import Arkham.Treachery.CardDefs.TheDreamEaters.WakingNightmare qualified as Cards
 import Arkham.Treachery.Import.Lifted

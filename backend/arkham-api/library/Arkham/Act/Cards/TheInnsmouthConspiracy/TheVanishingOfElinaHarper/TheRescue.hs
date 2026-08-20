@@ -10,7 +10,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
-import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers
 
 newtype TheRescue = TheRescue ActAttrs
   deriving anyclass IsAct

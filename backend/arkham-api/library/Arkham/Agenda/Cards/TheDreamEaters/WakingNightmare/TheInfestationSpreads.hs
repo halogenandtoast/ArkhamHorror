@@ -14,7 +14,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
 
 newtype TheInfestationSpreads = TheInfestationSpreads AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

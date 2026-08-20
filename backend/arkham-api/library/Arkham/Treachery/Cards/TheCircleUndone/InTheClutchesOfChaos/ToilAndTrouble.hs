@@ -6,7 +6,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 import Arkham.Trait (Trait (Power))
 import Arkham.Treachery.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
 import Arkham.Treachery.Import.Lifted

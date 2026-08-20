@@ -8,7 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
 
 newtype SalemGaol1692 = SalemGaol1692 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

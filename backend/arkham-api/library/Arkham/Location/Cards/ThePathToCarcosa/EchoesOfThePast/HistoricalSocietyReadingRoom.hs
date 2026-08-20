@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Ca
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.EchoesOfThePast.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.EchoesOfThePast.Helpers
 
 newtype HistoricalSocietyReadingRoom = HistoricalSocietyReadingRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

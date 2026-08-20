@@ -9,7 +9,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
-import Arkham.Scenarios.LostInTimeAndSpace.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.LostInTimeAndSpace.Helpers
 
 newtype SethBishopThrallOfYogSothoth = SethBishopThrallOfYogSothoth EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

@@ -9,7 +9,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.WrittenInRock.Helpers (swapLocations)
+import Arkham.Scenarios.TheFeastOfHemlockVale.WrittenInRock.Helpers (swapLocations)
 import Arkham.Trait (Trait (Vault))
 
 newtype MovingPlatformObservationStation = MovingPlatformObservationStation LocationAttrs

@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Ca
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.WeaverOfTheCosmos.Helpers
+import Arkham.Scenarios.TheDreamEaters.WeaverOfTheCosmos.Helpers
 
 newtype TheGreatWebCosmicWeb = TheGreatWebCosmicWeb LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

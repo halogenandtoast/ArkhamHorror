@@ -5,7 +5,7 @@ import Arkham.Enemy.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Matcher
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 
 newtype PrimevalTerror = PrimevalTerror EnemyAttrs
   deriving anyclass IsEnemy

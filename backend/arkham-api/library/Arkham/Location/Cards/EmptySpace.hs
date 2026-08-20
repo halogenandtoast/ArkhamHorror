@@ -10,7 +10,7 @@ import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 
 newtype EmptySpace = EmptySpace LocationAttrs
   deriving anyclass IsLocation

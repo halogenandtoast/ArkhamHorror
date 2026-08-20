@@ -7,7 +7,7 @@ import Arkham.Helpers.Window (getEnemy)
 import Arkham.Location.CardDefs.TheScarletKeys.DeadHeat qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.DeadHeat.Helpers
+import Arkham.Scenarios.TheScarletKeys.DeadHeat.Helpers
 import Arkham.Token
 
 newtype SaadiansTombs = SaadiansTombs LocationAttrs

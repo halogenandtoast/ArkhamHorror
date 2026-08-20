@@ -12,7 +12,7 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Scenarios.FateOfTheVale.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers (scenarioI18n)
 import Arkham.Token (Token (Kindling))
 import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.Fire qualified as Treacheries
 

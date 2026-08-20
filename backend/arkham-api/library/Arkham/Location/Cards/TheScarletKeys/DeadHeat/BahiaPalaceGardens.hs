@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheScarletKeys.DeadHeat qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DeadHeat.Helpers
+import Arkham.Scenarios.TheScarletKeys.DeadHeat.Helpers
 
 newtype BahiaPalaceGardens = BahiaPalaceGardens LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -6,7 +6,7 @@ import Arkham.Enemy.Import.Lifted hiding (DiscoverClues)
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Matcher
-import Arkham.Scenarios.FatalMirage.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.FatalMirage.Helpers
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

@@ -27,7 +27,7 @@ import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.FateOfTheVale.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers
 import Arkham.SkillTest
 import Arkham.SkillTestResult
 import Arkham.Story.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Stories

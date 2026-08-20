@@ -6,7 +6,7 @@ import Arkham.I18n
 import Arkham.Location.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 import Arkham.Treachery.CardDefs.ReturnToTheForgottenAge.ReturnToTheDepthsOfYoth qualified as Cards
 import Arkham.Treachery.Import.Lifted
 import Arkham.Window (Result (..))

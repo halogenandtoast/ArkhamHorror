@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
-import Arkham.Scenarios.ALightInTheFog.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers
 
 newtype WorshippersOfTheDeep = WorshippersOfTheDeep ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

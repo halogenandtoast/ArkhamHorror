@@ -9,7 +9,7 @@ import Arkham.Location.Brazier
 import Arkham.Location.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 
 newtype TheBindingRite = TheBindingRite ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

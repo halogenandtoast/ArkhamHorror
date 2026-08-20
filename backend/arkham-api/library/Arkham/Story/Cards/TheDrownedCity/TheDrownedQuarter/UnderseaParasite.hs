@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (enemyMoveTo)
 import Arkham.Projection
-import Arkham.Scenarios.TheDrownedQuarter.Helpers (UnderseaParasiteFlip (..))
+import Arkham.Scenarios.TheDrownedCity.TheDrownedQuarter.Helpers (UnderseaParasiteFlip (..))
 import Arkham.Story.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Cards
 import Arkham.Story.Import.Lifted
 

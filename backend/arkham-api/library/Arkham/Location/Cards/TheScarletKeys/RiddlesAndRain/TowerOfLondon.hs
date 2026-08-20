@@ -7,7 +7,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Scenarios.RiddlesAndRain.Helpers
+import Arkham.Scenarios.TheScarletKeys.RiddlesAndRain.Helpers
 
 newtype TowerOfLondon = TowerOfLondon LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

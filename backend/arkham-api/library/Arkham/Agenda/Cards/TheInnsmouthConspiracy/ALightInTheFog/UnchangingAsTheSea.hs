@@ -14,7 +14,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field(..))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Scenarios.ALightInTheFog.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Treacheries
 
 newtype UnchangingAsTheSea = UnchangingAsTheSea AgendaAttrs

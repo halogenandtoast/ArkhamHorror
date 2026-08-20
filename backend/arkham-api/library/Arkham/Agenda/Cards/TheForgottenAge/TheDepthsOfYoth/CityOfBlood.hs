@@ -9,7 +9,7 @@ import Arkham.Helpers.Log (whenHasRecord)
 import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 import Arkham.Zone
 
 newtype CityOfBlood = CityOfBlood AgendaAttrs

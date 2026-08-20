@@ -6,7 +6,7 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers
 import Arkham.Story.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Cards
 import Arkham.Story.Import.Lifted
 

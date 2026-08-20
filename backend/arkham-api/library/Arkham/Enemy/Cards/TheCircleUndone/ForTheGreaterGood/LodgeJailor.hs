@@ -8,7 +8,7 @@ import Arkham.I18n
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ForTheGreaterGood.Helpers
+import Arkham.Scenarios.TheCircleUndone.ForTheGreaterGood.Helpers
 import Arkham.Trait (Trait (Sanctum))
 
 newtype LodgeJailor = LodgeJailor EnemyAttrs

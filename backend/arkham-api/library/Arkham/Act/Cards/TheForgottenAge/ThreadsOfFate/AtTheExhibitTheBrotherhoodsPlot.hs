@@ -9,7 +9,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Placement
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype AtTheExhibitTheBrotherhoodsPlot = AtTheExhibitTheBrotherhoodsPlot ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

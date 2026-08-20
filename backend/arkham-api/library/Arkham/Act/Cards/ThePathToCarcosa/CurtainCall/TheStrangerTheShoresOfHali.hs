@@ -12,7 +12,7 @@ import Arkham.Effect.Import
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Helpers.SkillTest (getSkillTestTarget)
 import Arkham.Matcher hiding (Discarded)
-import Arkham.Scenarios.CurtainCall.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.CurtainCall.Helpers
 import Arkham.Trait hiding (ElderThing)
 import Arkham.Window (getBatchId)
 

@@ -4,7 +4,7 @@ import Arkham.Campaigns.TheScarletKeys.Helpers (shift)
 import Arkham.Campaigns.TheScarletKeys.Key.Cards qualified as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ShadesOfSuffering.Helpers
+import Arkham.Scenarios.TheScarletKeys.ShadesOfSuffering.Helpers
 import Arkham.Treachery.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

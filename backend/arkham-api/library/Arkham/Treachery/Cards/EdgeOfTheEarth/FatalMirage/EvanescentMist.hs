@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.FatalMirage.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.FatalMirage.Helpers
 import Arkham.Treachery.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

@@ -5,7 +5,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 import Arkham.Treachery.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Treacheries
 import Arkham.Window (getBatchId)
 

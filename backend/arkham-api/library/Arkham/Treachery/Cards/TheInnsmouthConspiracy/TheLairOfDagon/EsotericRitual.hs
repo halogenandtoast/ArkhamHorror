@@ -5,7 +5,7 @@ import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheLairOfDagon.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon.Helpers (scenarioI18n)
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

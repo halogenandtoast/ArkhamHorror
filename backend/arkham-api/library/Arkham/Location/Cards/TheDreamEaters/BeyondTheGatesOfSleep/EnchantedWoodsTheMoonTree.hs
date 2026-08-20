@@ -7,7 +7,7 @@ where
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Prelude
-import Arkham.Scenarios.BeyondTheGatesOfSleep.Helpers
+import Arkham.Scenarios.TheDreamEaters.BeyondTheGatesOfSleep.Helpers
 
 import Arkham.GameValue
 import Arkham.Investigator.Types (Field (..))

@@ -6,7 +6,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Projection
-import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers
 import Arkham.Trait (Trait (Lit))
 import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Cards
 import Arkham.Treachery.Import.Lifted

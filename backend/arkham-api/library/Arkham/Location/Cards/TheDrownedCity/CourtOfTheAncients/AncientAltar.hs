@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as C
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose (chooseBeginSkillTest)
-import Arkham.Scenarios.CourtOfTheAncients.Helpers (getVictoryGlyphCount)
+import Arkham.Scenarios.TheDrownedCity.CourtOfTheAncients.Helpers (getVictoryGlyphCount)
 
 newtype AncientAltar = AncientAltar LocationAttrs
   deriving anyclass IsLocation

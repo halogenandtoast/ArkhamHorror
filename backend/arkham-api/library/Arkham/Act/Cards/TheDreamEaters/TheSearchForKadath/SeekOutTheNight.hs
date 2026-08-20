@@ -10,7 +10,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenario.Types
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheSearchForKadath.Helpers
+import Arkham.Scenarios.TheDreamEaters.TheSearchForKadath.Helpers
 import Arkham.Trait (Trait (Port))
 
 newtype SeekOutTheNight = SeekOutTheNight ActAttrs

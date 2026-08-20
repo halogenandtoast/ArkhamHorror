@@ -8,7 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 import Arkham.Window (Window)
 import Arkham.Window qualified as Window
 

@@ -7,7 +7,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTarget, withSkillTest)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 import Arkham.Treachery.CardDefs.ReturnToTheCircleUndone.ReturnToUnionAndDisillusion qualified as Cards
 import Arkham.Treachery.Import.Lifted
 import Data.List.Extra (groupOn)

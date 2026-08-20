@@ -6,7 +6,7 @@ import Arkham.Location.BreachStatus hiding (removeBreaches)
 import Arkham.Location.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 
 newtype FrenchHill_291 = FrenchHill_291 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

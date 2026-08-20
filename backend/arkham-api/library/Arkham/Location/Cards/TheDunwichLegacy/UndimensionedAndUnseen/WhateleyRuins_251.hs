@@ -11,7 +11,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen.Helpers
 
 newtype WhateleyRuins_251 = WhateleyRuins_251 LocationAttrs
   deriving anyclass IsLocation

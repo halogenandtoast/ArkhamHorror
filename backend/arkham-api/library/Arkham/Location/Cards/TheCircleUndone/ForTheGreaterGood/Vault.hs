@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ForTheGreaterGood.Helpers
+import Arkham.Scenarios.TheCircleUndone.ForTheGreaterGood.Helpers
 
 newtype Vault = Vault LocationAttrs
   deriving anyclass IsLocation

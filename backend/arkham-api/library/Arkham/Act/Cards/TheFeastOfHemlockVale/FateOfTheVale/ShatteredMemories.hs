@@ -20,7 +20,7 @@ import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.FateOfTheVale.Helpers (revealCardsFromAbyss, scenarioI18n)
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers (revealCardsFromAbyss, scenarioI18n)
 import Arkham.SkillTest
 import Arkham.SkillTestResult
 import Arkham.Trait (Trait (Cave, Lair))

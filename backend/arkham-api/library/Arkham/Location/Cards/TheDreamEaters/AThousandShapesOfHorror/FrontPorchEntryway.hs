@@ -7,7 +7,7 @@ import Arkham.Location.Runner
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Prelude
-import Arkham.Scenarios.AThousandShapesOfHorror.Helpers
+import Arkham.Scenarios.TheDreamEaters.AThousandShapesOfHorror.Helpers
 
 newtype FrontPorchEntryway = FrontPorchEntryway LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

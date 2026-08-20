@@ -1,6 +1,6 @@
 module Arkham.Treachery.Cards.TheDunwichLegacy.TheHouseAlwaysWins.SomethingInTheDrinks (somethingInTheDrinks) where
 
-import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheHouseAlwaysWins.Helpers
 import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

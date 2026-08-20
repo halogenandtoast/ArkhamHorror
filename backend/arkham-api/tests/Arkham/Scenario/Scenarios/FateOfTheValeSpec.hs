@@ -3,7 +3,7 @@ module Arkham.Scenario.Scenarios.FateOfTheValeSpec (spec) where
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Key
 import Arkham.Helpers.Log (getHasRecord)
-import Arkham.Scenario.Scenarios.FateOfTheVale (crossOutUncontrolledResidents)
+import Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.FateOfTheVale (crossOutUncontrolledResidents)
 import TestImport.New
 
 {- | Resolutions 1, 4 and 5 cross out "the name of each resident that was not

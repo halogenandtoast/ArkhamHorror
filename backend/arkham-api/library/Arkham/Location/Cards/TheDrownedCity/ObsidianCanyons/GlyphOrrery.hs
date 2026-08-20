@@ -6,7 +6,7 @@ import Arkham.Helpers.Story (readStory)
 import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 import Arkham.Story.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Stories
 import Arkham.Window (getBatchId)
 

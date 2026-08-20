@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Modifier
-import Arkham.Scenarios.FatalMirage.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.FatalMirage.Helpers
 import Arkham.Story.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Stories
 
 newtype HedgeMaze = HedgeMaze LocationAttrs

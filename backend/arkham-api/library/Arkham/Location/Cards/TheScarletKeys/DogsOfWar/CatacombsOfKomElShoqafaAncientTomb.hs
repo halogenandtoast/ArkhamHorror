@@ -8,7 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Scenarios.DogsOfWar.Helpers
+import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers
 
 newtype CatacombsOfKomElShoqafaAncientTomb = CatacombsOfKomElShoqafaAncientTomb LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

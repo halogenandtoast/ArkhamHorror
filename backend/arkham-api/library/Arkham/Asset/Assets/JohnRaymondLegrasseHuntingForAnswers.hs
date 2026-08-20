@@ -7,7 +7,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelf)
 import Arkham.Helpers.SkillTest (getSkillTestAction, getSkillTestTargetedEnemy, withSkillTest)
 import Arkham.Matcher
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (getCthulhuRage)
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (getCthulhuRage)
 import Arkham.Trait (Trait (DeepOne, StarSpawn))
 
 newtype JohnRaymondLegrasseHuntingForAnswers = JohnRaymondLegrasseHuntingForAnswers AssetAttrs
@@ -31,11 +31,12 @@ instance HasModifiersFor JohnRaymondLegrasseHuntingForAnswers where
     -- "You get +1 skill value while fighting [[Deep One]] and [[Star Spawn]]
     -- enemies."
     for_ a.controller \iid -> do
-      bonus <- fromMaybe [] <$> runMaybeT do
-        Action.Fight <- MaybeT getSkillTestAction
-        enemy <- MaybeT getSkillTestTargetedEnemy
-        guardM $ lift $ enemy <=~> mapOneOf EnemyWithTrait [DeepOne, StarSpawn]
-        pure [AnySkillValue 1]
+      bonus <-
+        fromMaybe [] <$> runMaybeT do
+          Action.Fight <- MaybeT getSkillTestAction
+          enemy <- MaybeT getSkillTestTargetedEnemy
+          guardM $ lift $ enemy <=~> mapOneOf EnemyWithTrait [DeepOne, StarSpawn]
+          pure [AnySkillValue 1]
       modified_ a iid bonus
 
 instance HasAbilities JohnRaymondLegrasseHuntingForAnswers where

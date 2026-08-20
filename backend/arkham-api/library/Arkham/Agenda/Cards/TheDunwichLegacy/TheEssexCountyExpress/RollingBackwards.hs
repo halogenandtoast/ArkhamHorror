@@ -4,7 +4,7 @@ import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified a
 import Arkham.Agenda.Import.Lifted
 import Arkham.Direction
 import Arkham.Matcher
-import Arkham.Scenarios.TheEssexCountyExpress.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheEssexCountyExpress.Helpers
 
 newtype RollingBackwards = RollingBackwards AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

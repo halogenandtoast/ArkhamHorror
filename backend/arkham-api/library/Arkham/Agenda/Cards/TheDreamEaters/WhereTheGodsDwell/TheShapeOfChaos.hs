@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.WhereTheGodsDwell.Helpers
+import Arkham.Scenarios.TheDreamEaters.WhereTheGodsDwell.Helpers
 
 newtype TheShapeOfChaos = TheShapeOfChaos AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

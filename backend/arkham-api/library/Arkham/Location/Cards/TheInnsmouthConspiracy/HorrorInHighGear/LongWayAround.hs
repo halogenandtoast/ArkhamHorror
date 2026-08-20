@@ -7,7 +7,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.HorrorInHighGear.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers
 
 newtype LongWayAround = LongWayAround LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

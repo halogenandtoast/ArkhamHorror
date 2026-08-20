@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Scenarios.CourtOfTheAncients.Helpers
+import Arkham.Scenarios.TheDrownedCity.CourtOfTheAncients.Helpers
 
 newtype GreatLiftActive = GreatLiftActive LocationAttrs
   deriving anyclass IsLocation

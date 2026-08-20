@@ -7,7 +7,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.RiddlesAndRain.Helpers
+import Arkham.Scenarios.TheScarletKeys.RiddlesAndRain.Helpers
 
 newtype RainyLondonStreets = RainyLondonStreets LocationAttrs
   deriving anyclass IsLocation

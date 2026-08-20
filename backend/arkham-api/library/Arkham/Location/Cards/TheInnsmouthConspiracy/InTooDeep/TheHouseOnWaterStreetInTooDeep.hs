@@ -9,7 +9,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 
 newtype TheHouseOnWaterStreetInTooDeep = TheHouseOnWaterStreetInTooDeep LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

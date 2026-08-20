@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheHouseAlwaysW
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheHouseAlwaysWins.Helpers
 import Arkham.Strategy
 
 newtype ReturnToCloverClubLounge = ReturnToCloverClubLounge LocationAttrs

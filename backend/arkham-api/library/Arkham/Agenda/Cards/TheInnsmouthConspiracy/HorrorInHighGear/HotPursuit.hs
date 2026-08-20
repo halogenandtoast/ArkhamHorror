@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified 
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Scenarios.HorrorInHighGear.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers
 
 newtype HotPursuit = HotPursuit AgendaAttrs
   deriving anyclass IsAgenda

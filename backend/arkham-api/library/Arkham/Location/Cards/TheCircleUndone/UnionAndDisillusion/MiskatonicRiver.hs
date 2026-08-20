@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 
 newtype MiskatonicRiver = MiskatonicRiver LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.TheDunwichLegacy.TheEssexCountyExpress.TheMawWidens (
 
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Scenarios.TheEssexCountyExpress.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheEssexCountyExpress.Helpers
 
 newtype TheMawWidens = TheMawWidens AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

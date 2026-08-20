@@ -13,7 +13,7 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.ShadesOfSuffering.Helpers
+import Arkham.Scenarios.TheScarletKeys.ShadesOfSuffering.Helpers
 import Arkham.Token
 
 newtype TzuSanNiangOutForBlood = TzuSanNiangOutForBlood EnemyAttrs

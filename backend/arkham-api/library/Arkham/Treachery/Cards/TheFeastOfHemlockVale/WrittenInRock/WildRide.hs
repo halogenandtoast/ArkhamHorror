@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.TheFeastOfHemlockVale.WrittenInRock.WildRide (wild
 import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.WrittenInRock.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.WrittenInRock.Helpers
 import Arkham.Trait (Trait (Ally, Resident))
 import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Cards
 import Arkham.Treachery.Import.Lifted

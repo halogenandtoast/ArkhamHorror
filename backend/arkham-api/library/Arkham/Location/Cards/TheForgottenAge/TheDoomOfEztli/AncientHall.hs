@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Card
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheDoomOfEztli.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDoomOfEztli.Helpers
 
 newtype AncientHall = AncientHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -13,7 +13,7 @@ import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Matcher hiding (Discarded)
-import Arkham.Scenarios.CurtainCall.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.CurtainCall.Helpers
 
 newtype TheStrangerThePathIsMine = TheStrangerThePathIsMine ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

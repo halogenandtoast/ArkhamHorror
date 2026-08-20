@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.TheDrownedCity.TheDoomOfArkham.ArkhamUnderAssault (arkhamUnderAssault) where
 
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (drawCthulhuDeckCard)
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (drawCthulhuDeckCard)
 import Arkham.Treachery.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

@@ -9,7 +9,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (remember)
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.FateOfTheVale.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers
 
 newtype TheAtwoodHouseNight = TheAtwoodHouseNight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

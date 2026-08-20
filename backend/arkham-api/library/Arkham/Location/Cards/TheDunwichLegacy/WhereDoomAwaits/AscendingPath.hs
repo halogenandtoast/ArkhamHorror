@@ -7,7 +7,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Location.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.WhereDoomAwaits.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.WhereDoomAwaits.Helpers
 
 newtype AscendingPath = AscendingPath LocationAttrs
   deriving anyclass IsLocation

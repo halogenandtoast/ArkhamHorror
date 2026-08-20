@@ -9,7 +9,7 @@ import Arkham.Location.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualifi
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Scenarios.ExtracurricularActivity.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.ExtracurricularActivity.Helpers
 
 newtype AlchemyLabs = AlchemyLabs LocationAttrs
   deriving anyclass IsLocation

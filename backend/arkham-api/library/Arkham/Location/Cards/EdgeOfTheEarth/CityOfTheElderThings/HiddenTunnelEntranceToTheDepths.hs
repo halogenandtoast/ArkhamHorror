@@ -10,7 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.CityOfTheElderThings.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.CityOfTheElderThings.Helpers
 
 newtype HiddenTunnelEntranceToTheDepths = HiddenTunnelEntranceToTheDepths LocationAttrs
   deriving anyclass IsLocation

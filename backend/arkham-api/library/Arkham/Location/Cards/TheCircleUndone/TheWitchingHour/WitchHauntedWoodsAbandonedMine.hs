@@ -9,7 +9,7 @@ import Arkham.Location.Import.Lifted hiding (to)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.TheWitchingHour.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWitchingHour.Helpers
 
 newtype WitchHauntedWoodsAbandonedMine = WitchHauntedWoodsAbandonedMine LocationAttrs
   deriving anyclass IsLocation

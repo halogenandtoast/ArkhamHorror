@@ -16,8 +16,8 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.HemlockHouse.Helpers (scenarioI18n)
-import Arkham.Scenarios.HemlockHouse.PredationBag
+import Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.PredationBag
 import Arkham.Story.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Story.Types (StoryAttrs (..))

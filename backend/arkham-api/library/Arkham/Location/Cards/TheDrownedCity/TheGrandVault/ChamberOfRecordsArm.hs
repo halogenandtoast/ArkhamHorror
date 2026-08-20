@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheGrandVault.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheGrandVault.Helpers
 
 newtype ChamberOfRecordsArm = ChamberOfRecordsArm LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -5,7 +5,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.ObsidianCanyons.Helpers (isOpenSky)
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers (isOpenSky)
 import Arkham.Treachery.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

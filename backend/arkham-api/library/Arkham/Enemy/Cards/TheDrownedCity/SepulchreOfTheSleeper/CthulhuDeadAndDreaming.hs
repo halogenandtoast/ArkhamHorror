@@ -5,7 +5,7 @@ import Arkham.Enemy.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as C
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.SepulchreOfTheSleeper.Helpers
+import Arkham.Scenarios.TheDrownedCity.SepulchreOfTheSleeper.Helpers
 
 newtype CthulhuDeadAndDreaming = CthulhuDeadAndDreaming EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

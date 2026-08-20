@@ -10,7 +10,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.ShadesOfSuffering.Helpers
+import Arkham.Scenarios.TheScarletKeys.ShadesOfSuffering.Helpers
 
 newtype TinMine = TinMine LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

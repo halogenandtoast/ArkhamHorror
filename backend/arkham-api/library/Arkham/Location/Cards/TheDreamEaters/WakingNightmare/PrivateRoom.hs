@@ -10,7 +10,7 @@ import Arkham.Location.CardDefs.TheDreamEaters.WakingNightmare qualified as Card
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 

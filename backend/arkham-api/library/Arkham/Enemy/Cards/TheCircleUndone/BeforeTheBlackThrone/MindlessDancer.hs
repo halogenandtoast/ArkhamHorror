@@ -8,7 +8,7 @@ import Arkham.Label
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos
 import Arkham.Window qualified as Window
 
 newtype MindlessDancer = MindlessDancer EnemyAttrs

@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.ReturnToThePathToCarcosa.ReturnToThePallidMask q
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ThePallidMask.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.ThePallidMask.Helpers
 
 newtype ReturnToSecretPassage = ReturnToSecretPassage LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

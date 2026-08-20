@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheWesternWall.Helpers (treacherousPathModifiers)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (treacherousPathModifiers)
 
 newtype TreacherousPathSlickSteps = TreacherousPathSlickSteps LocationAttrs
   deriving anyclass IsLocation

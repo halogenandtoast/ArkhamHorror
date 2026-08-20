@@ -10,7 +10,7 @@ import Arkham.Helpers.Query (getJustLocationByName, getSetAsideCardsMatching)
 import Arkham.Location.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Locations
 import Arkham.Matcher hiding (EncounterDeck)
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 import Arkham.Treachery.CardDefs.TheCircleUndone.TheWatcher qualified as Treacheries
 import Arkham.Treachery.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Treacheries
 

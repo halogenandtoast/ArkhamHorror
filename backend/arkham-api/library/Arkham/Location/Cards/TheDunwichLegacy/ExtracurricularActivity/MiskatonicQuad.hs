@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualifi
   miskatonicQuad,
  )
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.ExtracurricularActivity.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.ExtracurricularActivity.Helpers
 
 newtype MiskatonicQuad = MiskatonicQuad LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

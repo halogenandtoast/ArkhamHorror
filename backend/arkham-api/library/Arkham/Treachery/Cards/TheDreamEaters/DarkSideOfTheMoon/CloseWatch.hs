@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.TheDreamEaters.DarkSideOfTheMoon.CloseWatch (close
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers (raiseAlarmLevel, scenarioI18n)
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers (raiseAlarmLevel, scenarioI18n)
 import Arkham.Treachery.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

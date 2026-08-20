@@ -8,7 +8,7 @@ import Arkham.Helpers.Log (getHasRecord)
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 import Arkham.Window (Window (windowType), getBatchId)
 import Arkham.Window qualified as Window
 

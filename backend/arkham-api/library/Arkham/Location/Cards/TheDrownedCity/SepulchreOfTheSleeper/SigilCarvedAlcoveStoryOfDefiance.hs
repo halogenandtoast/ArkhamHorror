@@ -6,7 +6,7 @@ import Arkham.Enemy.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as E
 import Arkham.Location.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.SepulchreOfTheSleeper.Helpers
+import Arkham.Scenarios.TheDrownedCity.SepulchreOfTheSleeper.Helpers
 
 newtype SigilCarvedAlcoveStoryOfDefiance = SigilCarvedAlcoveStoryOfDefiance LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

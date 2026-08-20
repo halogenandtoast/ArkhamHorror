@@ -10,7 +10,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.HemlockHouse.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.Helpers
 import Arkham.Story.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Stories
 import Arkham.Token (Token (..))
 import Arkham.Trait (Trait (Dormant))

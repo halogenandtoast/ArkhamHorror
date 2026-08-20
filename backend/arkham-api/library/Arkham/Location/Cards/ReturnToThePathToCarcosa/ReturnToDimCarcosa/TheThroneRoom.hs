@@ -5,7 +5,7 @@ import Arkham.Location.CardDefs.ReturnToThePathToCarcosa.ReturnToDimCarcosa qual
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (revealedL)
 import Arkham.Matcher
-import Arkham.Scenarios.DimCarcosa.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.DimCarcosa.Helpers
 import Arkham.Story.CardDefs.ReturnToThePathToCarcosa.ReturnToDimCarcosa qualified as Story
 
 newtype TheThroneRoom = TheThroneRoom LocationAttrs

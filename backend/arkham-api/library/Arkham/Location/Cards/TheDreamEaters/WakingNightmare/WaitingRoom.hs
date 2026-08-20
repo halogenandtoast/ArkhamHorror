@@ -9,7 +9,7 @@ import Arkham.Prelude
 import Arkham.GameValue
 import Arkham.Location.CardDefs.TheDreamEaters.WakingNightmare qualified as Cards
 import Arkham.Location.Runner
-import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
 import Arkham.Token
 
 newtype WaitingRoom = WaitingRoom LocationAttrs

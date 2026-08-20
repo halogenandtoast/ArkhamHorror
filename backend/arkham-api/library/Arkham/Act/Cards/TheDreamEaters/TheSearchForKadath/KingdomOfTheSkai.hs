@@ -13,7 +13,7 @@ import Arkham.Helpers.Query
 import Arkham.Location.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Locations
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Scenarios.TheSearchForKadath.Helpers
+import Arkham.Scenarios.TheDreamEaters.TheSearchForKadath.Helpers
 import Arkham.Trait (Trait (Port))
 
 newtype KingdomOfTheSkai = KingdomOfTheSkai ActAttrs

@@ -6,7 +6,7 @@ import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Projection
-import Arkham.Scenarios.HemlockHouse.Helpers (locationSealCount)
+import Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.Helpers (locationSealCount)
 import Arkham.Trait (Trait (Dormant))
 import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Cards
 import Arkham.Treachery.Import.Lifted

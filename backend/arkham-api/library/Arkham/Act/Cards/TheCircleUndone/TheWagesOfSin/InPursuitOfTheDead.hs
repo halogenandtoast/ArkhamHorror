@@ -9,7 +9,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName, getSetAsideCardsMatching)
 import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 import Arkham.Trait (Trait (Spectral))
 
 newtype InPursuitOfTheDead = InPursuitOfTheDead ActAttrs

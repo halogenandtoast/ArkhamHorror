@@ -8,7 +8,7 @@ import Arkham.Card
 import Arkham.Enemy.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Enemies
 import Arkham.Enemy.Creation
 import Arkham.Matcher
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 
 newtype DarkKnowledgeV2 = DarkKnowledgeV2 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

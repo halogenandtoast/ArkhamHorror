@@ -10,7 +10,7 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Scenarios.CongressOfTheKeys.Helpers
+import Arkham.Scenarios.TheScarletKeys.CongressOfTheKeys.Helpers
 import Data.Map.Strict qualified as Map
 
 newtype TheWorldUnbidden = TheWorldUnbidden AgendaAttrs

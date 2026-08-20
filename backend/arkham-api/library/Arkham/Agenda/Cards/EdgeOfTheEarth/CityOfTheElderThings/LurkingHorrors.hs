@@ -14,7 +14,7 @@ import Arkham.I18n
 import Arkham.Matcher hiding (AssetDefeated, DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.CityOfTheElderThings.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.CityOfTheElderThings.Helpers
 
 newtype LurkingHorrors = LurkingHorrors AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

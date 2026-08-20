@@ -5,7 +5,7 @@ import Arkham.Matcher hiding (StoryCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 import Arkham.Story.Types (Field (..))
 import Arkham.Trait (Trait (Geist))
 import Arkham.Treachery.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Cards

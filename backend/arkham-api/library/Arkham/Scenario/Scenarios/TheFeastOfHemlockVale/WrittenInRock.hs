@@ -1,0 +1,434 @@
+module Arkham.Scenario.Scenarios.TheFeastOfHemlockVale.WrittenInRock (writtenInRock) where
+
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Acts
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Agendas
+import Arkham.Agenda.Types (Field (AgendaDoom))
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Campaigns.TheFeastOfHemlockVale.Key
+import Arkham.Card.CardCode
+import Arkham.Card.CardDef
+import Arkham.Direction
+import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.HorrorsInTheRock qualified as Enemies
+import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Enemies
+import Arkham.Enemy.Creation (createExhausted)
+import Arkham.Helpers.Act
+import Arkham.Helpers.FlavorText
+import Arkham.Helpers.GameValue (perPlayer)
+import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.Query (allInvestigators, getSetAsideCardsMatching)
+import Arkham.Helpers.Xp
+import Arkham.I18n
+import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Locations
+import Arkham.Location.Grid
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
+import Arkham.Message.Lifted.Placement as Place
+import Arkham.Projection
+import Arkham.Resolution
+import Arkham.Scenario.Import.Lifted
+import Arkham.Scenarios.TheFeastOfHemlockVale.WrittenInRock.Helpers
+import Arkham.Token
+import Arkham.Trait (Trait (Cave, Rail))
+
+newtype WrittenInRock = WrittenInRock ScenarioAttrs
+  deriving anyclass IsScenario
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+writtenInRock :: Difficulty -> WrittenInRock
+writtenInRock difficulty =
+  scenarioWith WrittenInRock "10501" "Written in Rock" difficulty []
+    $ referenceL
+    .~ if difficulty `elem` [Easy, Standard] then "10501" else "10502"
+
+instance HasModifiersFor WrittenInRock where
+  getModifiersFor (WrittenInRock a) = do
+    n <- getCurrentActStepMaybe
+    when (n == Just 2) do
+      selectEach Anywhere \locA -> do
+        -- a location that isn't on the grid has no position, and nothing here
+        -- applies to it
+        mpos <- field LocationPosition locA
+        for_ mpos \pos -> do
+          whenMatch locA (LocationWithoutModifier CannotBeSlidOrSwapped) do
+            unlessM (null <$> getEmptyPositions locA) $ modified_ a locA [CanBeSlid]
+          defA <- field LocationCardDef locA
+          for_ (lookup "rails" (cdMeta defA)) \railsA -> do
+            for_ (toResultDefault [] railsA) \dir -> do
+              selectEach (LocationInPosition $ updatePosition pos dir) \locB -> do
+                defB <- field LocationCardDef locB
+                for_ (lookup "rails" (cdMeta defB)) \rails -> do
+                  when (oppositeDirection dir `elem` toResultDefault [] rails) do
+                    modified_ a locA [ConnectedToWhen (LocationWithId locA) (LocationWithId locB)]
+
+instance HasChaosTokenValue WrittenInRock where
+  getChaosTokenValue iid tokenFace (WrittenInRock attrs) = case tokenFace of
+    Skull -> do
+      n <- runDefaultMaybeT 0 do
+        loc <- MaybeT $ getLocationOf iid
+        pos <- MaybeT $ field LocationPosition loc
+        pure pos.column
+      pure $ toChaosTokenValue attrs Skull n (n * 2)
+    Cultist -> do
+      n <- getCurrentActStep
+      pure $ toChaosTokenValue attrs Cultist (if n == 1 then 1 else 2) 3
+    Tablet -> do
+      n <- getCurrentActStep
+      pure $ toChaosTokenValue attrs Tablet (if n == 1 then 2 else 3) 4
+    ElderThing -> do
+      n <- getCurrentActStep
+      pure $ toChaosTokenValue attrs ElderThing (if n == 1 then 3 else 4) 5
+    otherFace -> getChaosTokenValue iid otherFace attrs
+
+instance RunMessage WrittenInRock where
+  runMessage msg s@(WrittenInRock attrs) = runQueueT $ scenarioI18n $ case msg of
+    StandaloneSetup -> do
+      day <- getCampaignDay
+      setChaosTokens $ hemlockStandaloneBag day
+      pure s
+    PreScenarioSetup -> do
+      whenM getIsStandalone $ setupStandaloneDayAndTime Nothing
+      flavor $ scope "intro" do
+        h "title"
+        p "body"
+      pure s
+    Setup -> runScenarioSetup WrittenInRock attrs do
+      setScenarioDayAndTime
+
+      day <- getCampaignDay
+      time <- getCampaignTime
+      standalone <- getIsStandalone
+
+      setup $ ul do
+        li "gatherSets"
+        li "currentDaySet"
+        li "currentDayMarker"
+        li "caves"
+        li "otherLocations"
+        li.nested "scrap" do
+          li "startAt"
+        li.nested.validate (time == Day) "residents" do
+          if time == Day
+            then do
+              li.validate (day == Day1) "riverHawthorne"
+              li.validate (day /= Day3) "simeonAtwood"
+              li.validate (day == Day3) "leahAtwood"
+              li "remainingResidents"
+            else do
+              li "riverHawthorne"
+              li "simeonAtwood"
+              li "leahAtwood"
+              li "remainingResidents"
+        li.validate (time == Day) "subterraneanBeast"
+        li "scenarioReference"
+        li "setOutOfPlay"
+        unscoped $ li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
+
+      setUsesGrid
+      gather Set.WrittenInRock
+      gather Set.HorrorsInTheRock
+      gather Set.Refractions
+      gather Set.ChillingCold
+      gather Set.Ghouls
+
+      -- Standalone Mode removes agenda 1, act 1 and the Rail Exit, and begins
+      -- with agenda 2 / act 2 already in play via Scenario Interlude: The
+      -- Cave-In (pushed at the end of setup, below).
+      if standalone
+        then do
+          setAgendaDeck [Agendas.dangerousRide]
+          setActDeck [Acts.theUndergroundMaze]
+          removeEvery [Locations.railExit]
+          -- turns on the extra Forced ability the guide grants agenda 2
+          gameModifier ScenarioSource ScenarioTarget (ScenarioModifier "standaloneRailReset")
+        else do
+          setAgendaDeck [Agendas.undergroundSurvey, Agendas.dangerousRide]
+          setActDeck [Acts.descentIntoTheMines, Acts.theUndergroundMaze]
+
+      setupHemlockDay day time
+      when (time == Day) $ case day of
+        Day1 -> setAside [Assets.simeonAtwoodDedicatedTroublemaker]
+        Day2 -> setAside [Assets.simeonAtwoodDedicatedTroublemaker]
+        Day3 -> setAside [Assets.leahAtwoodTheValeCook]
+
+      controlStation <- placeInGrid (Pos 5 1) Locations.controlStation
+      placeTokens ScenarioSource controlStation Scrap 1
+
+      caves <- sampleListN 4 =<< fromGathered (#location <> withTrait Cave)
+      setAside =<< fromGathered #location
+
+      -- reverse so all caves are places when start at is triggered
+      for_ (reverse $ withIndex1 caves) \(x, cave) -> do
+        loc <- placeCardInGrid (Pos x 1) cave
+        placeTokens ScenarioSource loc Scrap 1
+        when (x == 1) $ startAt loc
+        when (x == 3 && day == Day1 && time == Day) $ assetAt_ Assets.riverHawthorneBigInNewYork loc
+
+      when (time == Day) $ removeEvery [Enemies.subterraneanBeast]
+      setAside =<< fromGathered (CardFromEncounterSet Set.WrittenInRock)
+      setAside =<< fromGathered (cardIs Enemies.crystalParasite)
+      when standalone $ scenarioSpecific_ "theCaveIn"
+    ResolveChaosToken _ Cultist _iid | isEasyStandard attrs -> do
+      n <- getCurrentActStep
+      placeTokens Cultist attrs (if n == 1 then Scrap else Switch) 1
+      pure s
+    ResolveChaosToken _ Tablet _iid | isHardExpert attrs -> do
+      n <- getCurrentActStep
+      when (n == 1) $ removeTokens Tablet attrs Scrap 1
+      when (n == 2) do
+        mineCart <- selectJust $ assetIs Assets.mineCartReliableButBroken
+        whenMatch mineCart (not_ $ AssetWithModifier CannotMove)
+          $ scenarioSpecific_ "moveMineCart"
+      pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      n <- getCurrentActStep
+      if n == 1
+        then assignDamage iid ElderThing 1
+        else removeTokens ElderThing attrs Switch 1
+      pure s
+    PassedSkillTest _iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Cultist | isHardExpert attrs -> do
+          n <- getCurrentActStep
+          placeTokens Cultist attrs (if n == 1 then Scrap else Switch) 1
+        _ -> pure ()
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        Tablet | isEasyStandard attrs -> do
+          n <- getCurrentActStep
+          when (n == 1) $ removeTokens Tablet attrs Scrap 1
+          when (n == 2) do
+            mineCart <- selectJust $ assetIs Assets.mineCartReliableButBroken
+            whenMatch mineCart (not_ $ AssetWithModifier CannotMove)
+              $ scenarioSpecific_ "moveMineCart"
+        ElderThing | isEasyStandard attrs -> do
+          n <- getCurrentActStep
+          if n == 1
+            then assignDamage iid ElderThing 1
+            else removeTokens ElderThing attrs Switch 1
+        _ -> pure ()
+      pure s
+    ScenarioSpecific "theCaveIn" _ -> do
+      let scrap = attrs.token Scrap
+      isDay <- (== Day) <$> getCampaignTime
+      -- Standalone Mode starts here, with the Rail Exit removed and a flat 2
+      -- switches on the reference card instead of one per scrap collected.
+      standalone <- getIsStandalone
+      flavor do
+        setTitle "theCaveIn"
+        p "theCaveIn1"
+        ul do
+          li.validate isDay "proceedToTheCaveIn2"
+          li.validate (not isDay) "skipToTheCaveIn3"
+
+      flavor $ setTitle "theCaveIn" >> p (if isDay then "theCaveIn2" else "theCaveIn3")
+      flavor $ setTitle "theCaveIn" >> p "theCaveIn4"
+      scope "slidingAndSwappingLocations" $ flavor $ setTitle "title" >> p "body"
+      scope "theMineCart" $ flavor $ setTitle "title" >> p "body"
+      controlStation <- selectJust $ locationIs Locations.controlStation
+      push $ PlaceGrid (GridLocation (Pos 1 1) controlStation)
+      unless standalone $ placeLocationInGrid_ (Pos 5 5) =<< fetchCard Locations.railExit
+      topOfColumn2 <- placeLocationInGrid (Pos 2 4) =<< fetchCard Locations.sunkenRailA
+      atwoods <-
+        getSetAsideCardsMatching
+          (mapOneOf cardIs [Assets.simeonAtwoodDedicatedTroublemaker, Assets.leahAtwoodTheValeCook])
+      for_ atwoods (`createAssetAt_` AtLocation topOfColumn2)
+
+      forkedRails <- getSetAsideCardsMatching (cardIs Locations.forkedRail)
+      for_ (zip [Pos 2 2, Pos 3 3] forkedRails) (uncurry placeLocationInGrid_)
+
+      placeLocationInGrid_ (Pos 4 2)
+        =<< fetchCard
+        =<< sample2 Locations.alkalineRailA Locations.warpedRailA
+      placeLocationInGrid_ (Pos 4 4)
+        =<< fetchCard
+        =<< sample2 Locations.rightTurnA Locations.rightTurnB
+      bottomOfColumn5 <-
+        placeLocationInGrid (Pos 5 1)
+          =<< fetchCard
+          =<< sample2 Locations.leftTurnA Locations.leftTurnB
+
+      createAssetAt_ Assets.prismaticShardAlienMeteorite $ AtLocation bottomOfColumn5
+
+      placeLocationInGrid_ (Pos 5 3)
+        =<< fetchCard
+        =<< sample2 Locations.railBridge Locations.alkalineRailB
+
+      unless isDay do
+        createSetAsideEnemyWith_ Enemies.subterraneanBeast (AtLocation controlStation) createExhausted
+
+      doStep 2 msg -- ensure set aside cards are updated
+      mineCart <- createAssetAt Assets.mineCartReliableButBroken (AtLocation controlStation)
+      eachInvestigator (`Place.place` InVehicle mineCart)
+      leadChooseOneM do
+        questionLabeled' "mineCart.facing"
+        labeled' "mineCart.faceNorth" $ scenarioSpecific "rotate" North
+        labeled' "mineCart.faceEast" $ scenarioSpecific "rotate" East
+
+      doStep 3 msg -- ensure set aside cards are updated
+      pure
+        $ WrittenInRock
+        $ attrs
+        & (tokensL %~ addTokens Switch (if standalone then 2 else scrap + 1) . removeAllTokens Scrap)
+        & (referenceL %~ flippedCardCode)
+        & (gridL %~ deleteInGrid controlStation)
+    DoStep 2 (ScenarioSpecific "theCaveIn" _) -> do
+      rails <- getSetAsideCardsMatching (CardWithTrait Rail)
+      let positions = [Pos 1 2, Pos 1 3, Pos 1 4, Pos 2 1, Pos 3 4, Pos 4 1, Pos 5 2]
+      for_ (zip positions rails) (uncurry placeLocationInGrid_)
+      pure s
+    DoStep 3 (ScenarioSpecific "theCaveIn" _) -> do
+      -- every Rail location has been placed by now, so only the remaining
+      -- encounter cards go back in. Never shuffle a location into the encounter
+      -- deck: drawing one puts it into play with no grid position.
+      shuffleSetAsideIntoEncounterDeck $ fromSets [Set.WrittenInRock] <> not_ #location
+      shuffleEncounterDiscardBackIn
+      pure s
+    ScenarioSpecific "codex" v -> scope "codex" do
+      let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
+      let entry x = scope x $ flavor $ setTitle "title" >> p.green "body"
+      case n of
+        2 -> do
+          entry "leahAtwood"
+          controlled <- selectAny $ assetIs Assets.leahAtwoodTheValeCook <> AssetControlledBy Anyone
+          if controlled
+            then do
+              codexFinished 2
+              placeTokens source ScenarioTarget Switch 1
+            else do
+              iids <- allInvestigators
+              leah <- selectJust $ assetIs Assets.leahAtwoodTheValeCook
+              leadChooseOneM do
+                unscoped $ nameVar Assets.leahAtwoodTheValeCook $ questionLabeled' "takeControlOf"
+                questionLabeledCard Assets.leahAtwoodTheValeCook
+                portraits iids (`takeControlOfAsset` leah)
+        3 -> do
+          entry "simeonAtwood"
+          controlled <-
+            selectAny $ assetIs Assets.simeonAtwoodDedicatedTroublemaker <> AssetControlledBy Anyone
+          if controlled
+            then do
+              codexFinished 3
+              placeTokens source ScenarioTarget Switch 2
+            else do
+              iids <- allInvestigators
+              simeon <- selectJust $ assetIs Assets.simeonAtwoodDedicatedTroublemaker
+              leadChooseOneM do
+                unscoped $ nameVar Assets.simeonAtwoodDedicatedTroublemaker $ questionLabeled' "takeControlOf"
+                questionLabeledCard Assets.simeonAtwoodDedicatedTroublemaker
+                portraits iids (`takeControlOfAsset` simeon)
+        5 -> do
+          codexFinished 5
+          entry "riverHawthorne"
+          iids <- allInvestigators
+          river <- selectJust $ assetIs Assets.riverHawthorneBigInNewYork
+          leadChooseOneM do
+            unscoped $ nameVar Assets.riverHawthorneBigInNewYork $ questionLabeled' "takeControlOf"
+            questionLabeledCard Assets.riverHawthorneBigInNewYork
+            portraits iids (`takeControlOfAsset` river)
+        Theta -> do
+          entry "drRosaMarquez"
+          step <- getCurrentActStep
+          if step == 1
+            then do
+              codexFinishedUntilNewAct Theta
+              placeTokens source ScenarioTarget Scrap 1
+            else do
+              codexFinished Theta
+              locations <- select LocationCanBeSwapped
+              chooseTargetM iid locations $ handleTarget iid attrs
+        _ -> error "invalid codex entry"
+      pure s
+    HandleTargetChoice iid (isSource attrs -> True) (LocationTarget lid) -> do
+      pos <- fieldJust LocationPosition lid
+      locations <-
+        select $ mapOneOf LocationInPosition (adjacentPositions pos) <> LocationCanBeSwapped
+      chooseTargetM iid locations (swapLocations lid)
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      let
+        resolution6 = do
+          clues <- getSum <$> selectAgg Sum InvestigatorClues Anyone
+          helpedRiver <- (clues >=) <$> perPlayer 2
+          let riverBonus = if helpedRiver then toBonus "bonus.river" 1 else NoBonus
+          case r of
+            Resolution 1 -> do
+              resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "bonus.simeon" 2 <> riverBonus
+            Resolution 2 -> do
+              resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs $ toBonus "bonus.leah" 2 <> riverBonus
+            _ -> resolutionWithXp "resolution6" $ allGainXpWithBonus' attrs riverBonus
+          hasShard <- selectAny $ AssetControlledBy Anyone <> assetIs Assets.prismaticShardAlienMeteorite
+          when hasShard do
+            investigators <- allInvestigators
+            forceAddCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.prismaticShardAlienMeteorite
+          if helpedRiver
+            then incrementRecordCount RiverHawthorneRelationshipLevel 1
+            else do
+              ok <- selectAny $ AssetControlledBy Anyone <> assetIs Assets.riverHawthorneBigInNewYork
+              when ok $ decrementRecordCount RiverHawthorneRelationshipLevel 1
+          record $ AreasSurveyed NorthPointMine
+          endOfScenario
+
+      standalone <- getIsStandalone
+      case r of
+        -- Standalone Mode is unwinnable; the only ending is every investigator
+        -- being defeated, and the "score" is the flat doom on the agenda.
+        NoResolution | standalone -> do
+          doom <- selectOne AnyAgenda >>= maybe (pure 0) (field AgendaDoom)
+          withVars ["doom" .= doom] $ resolution "standalone"
+          endOfScenario
+        NoResolution -> scope "noResolution" do
+          time <- getCampaignTime
+          day <- getCampaignDay
+          resolutionFlavor do
+            setTitle "title"
+            p "body"
+            ul do
+              li.validate (time == Night) "skipToResolution6"
+              li.validate (time == Day && day `elem` [Day1, Day2]) "skipToResolution3"
+              li.validate (time == Day && day == Day3) "skipToResolution4"
+
+          if
+            | time == Night -> do
+                record SimeonCrossedOut
+                push R6
+            | day `elem` [Day1, Day2] -> push R3
+            | otherwise -> push R4
+        Resolution 1 -> do
+          record SimeonSurvived
+          incrementRecordCount SimeonAtwoodRelationshipLevel 2
+          resolution "resolution1"
+          resolution6
+        Resolution 2 -> do
+          record LeahSawSomethingInTheMine
+          incrementRecordCount LeahAtwoodRelationshipLevel 1
+          resolution "resolution2"
+          resolution6
+        Resolution 3 -> do
+          record SimeonDisappeared
+          record SimeonCrossedOut
+          resolution "resolution3"
+          resolution6
+        Resolution 4 -> do
+          record LeahAndSimeonWereReunited
+          record LeahCrossedOut
+          resolution "resolution4"
+          resolution6
+        Resolution 5 -> do
+          record TheInvestigatorsSurvivedTheHorrorsInTheRock
+          resolution "resolution5"
+          resolution6
+        -- Reached directly from the No Resolution "skip to Resolution 6" branch
+        -- above; Resolutions 1-5 fall into resolution6 inline instead.
+        Resolution 6 -> resolution6
+        _ -> error "invalid resolution"
+      pure s
+    _ -> WrittenInRock <$> liftRunMessage msg attrs

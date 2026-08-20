@@ -7,7 +7,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheGathering.Helpers
+import Arkham.Scenarios.NightOfTheZealot.TheGathering.Helpers
 
 newtype WhatsGoingOn = WhatsGoingOn AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

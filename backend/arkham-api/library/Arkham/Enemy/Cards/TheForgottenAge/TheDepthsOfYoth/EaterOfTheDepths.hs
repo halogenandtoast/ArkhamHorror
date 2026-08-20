@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.TheForgottenAge.TheDepthsOfYoth.EaterOfTheDepths (eate
 import Arkham.Enemy.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 
 newtype EaterOfTheDepths = EaterOfTheDepths EnemyAttrs
   deriving anyclass IsEnemy

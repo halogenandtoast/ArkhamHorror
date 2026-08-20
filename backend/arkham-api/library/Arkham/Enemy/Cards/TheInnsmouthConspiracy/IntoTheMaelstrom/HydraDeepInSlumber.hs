@@ -10,7 +10,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualifie
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.IntoTheMaelstrom.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom.Helpers
 
 newtype HydraDeepInSlumber = HydraDeepInSlumber EnemyAttrs
   deriving anyclass IsEnemy

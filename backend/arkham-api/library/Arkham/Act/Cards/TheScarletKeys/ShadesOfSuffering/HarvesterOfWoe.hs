@@ -7,7 +7,7 @@ import Arkham.Enemy.CardDefs.TheScarletKeys.ShadesOfSuffering qualified as Enemi
 import Arkham.Helpers.Window (dealtDamage, dealtHorror)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ShadesOfSuffering.Helpers
+import Arkham.Scenarios.TheScarletKeys.ShadesOfSuffering.Helpers
 import Arkham.Window qualified as W
 
 newtype HarvesterOfWoe = HarvesterOfWoe ActAttrs

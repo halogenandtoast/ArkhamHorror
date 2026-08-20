@@ -8,7 +8,7 @@ import Arkham.Helpers.Window
 import Arkham.Location.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum.Helpers
 
 newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

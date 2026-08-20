@@ -21,7 +21,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.ShadesOfSuffering.Helpers
+import Arkham.Scenarios.TheScarletKeys.ShadesOfSuffering.Helpers
 import Arkham.Trait (Trait (Clairvoyant, Geist, Sorcerer))
 
 newtype TheLadyWithTheRedParasol = TheLadyWithTheRedParasol ActAttrs

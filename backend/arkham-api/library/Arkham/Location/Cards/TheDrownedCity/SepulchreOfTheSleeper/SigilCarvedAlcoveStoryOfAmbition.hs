@@ -7,7 +7,7 @@ import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.Location.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.SepulchreOfTheSleeper.Helpers
+import Arkham.Scenarios.TheDrownedCity.SepulchreOfTheSleeper.Helpers
 
 newtype SigilCarvedAlcoveStoryOfAmbition = SigilCarvedAlcoveStoryOfAmbition LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

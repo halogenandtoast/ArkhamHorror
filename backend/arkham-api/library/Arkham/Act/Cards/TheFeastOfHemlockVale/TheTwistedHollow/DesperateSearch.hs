@@ -13,7 +13,7 @@ import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers
 import Arkham.Spawn
 import Arkham.Trait (Trait (Lair))
 

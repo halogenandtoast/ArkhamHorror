@@ -15,7 +15,7 @@ import Arkham.Location.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Locat
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 import Arkham.Treachery.Types
 
 newtype StrangeOccurences = StrangeOccurences ActAttrs

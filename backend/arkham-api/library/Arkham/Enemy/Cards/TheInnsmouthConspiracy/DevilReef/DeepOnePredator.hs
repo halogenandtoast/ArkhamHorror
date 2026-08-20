@@ -8,7 +8,7 @@ import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DevilReef.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.DevilReef.Helpers
 
 newtype DeepOnePredator = DeepOnePredator EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

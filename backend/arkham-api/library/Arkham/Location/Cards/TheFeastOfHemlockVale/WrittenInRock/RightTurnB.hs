@@ -5,7 +5,7 @@ import Arkham.Location.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as
 import Arkham.Location.Grid
 import Arkham.Location.Import.Lifted
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.WrittenInRock.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.WrittenInRock.Helpers
 
 newtype RightTurnB = RightTurnB LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

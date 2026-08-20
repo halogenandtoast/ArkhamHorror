@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Story
 import Arkham.Movement
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 import Data.List (cycle)
 import Data.Map.Strict qualified as Map
 

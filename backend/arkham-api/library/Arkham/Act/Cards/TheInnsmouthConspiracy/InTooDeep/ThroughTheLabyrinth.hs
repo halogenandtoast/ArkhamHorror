@@ -7,7 +7,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 
 newtype ThroughTheLabyrinth = ThroughTheLabyrinth ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

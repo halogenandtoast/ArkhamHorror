@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
 import Arkham.Strategy
 import Arkham.Trait (Trait (Blessed, Item))
 

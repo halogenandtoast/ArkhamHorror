@@ -6,7 +6,7 @@ import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move (moveTo)
-import Arkham.Scenarios.TheGrandVault.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheGrandVault.Helpers
 import Arkham.Trait (Trait (Vault))
 import Arkham.Treachery.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Treachery.Import.Lifted

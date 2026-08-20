@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
 
 newtype LandlordsQuarters = LandlordsQuarters LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

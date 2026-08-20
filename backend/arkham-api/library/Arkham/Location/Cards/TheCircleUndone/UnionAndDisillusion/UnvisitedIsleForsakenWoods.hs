@@ -13,7 +13,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleForsakenWoods = UnvisitedIsleForsakenWoods LocationAttrs
   deriving anyclass IsLocation

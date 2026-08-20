@@ -5,7 +5,7 @@ import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Location.CardDefs.TheScarletKeys.OnThinIce qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.OnThinIce.Helpers
+import Arkham.Scenarios.TheScarletKeys.OnThinIce.Helpers
 
 newtype Anchorage = Anchorage LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

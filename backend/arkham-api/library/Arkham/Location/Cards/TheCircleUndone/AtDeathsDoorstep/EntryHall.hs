@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.AtDeathsDoorstep.Helpers
+import Arkham.Scenarios.TheCircleUndone.AtDeathsDoorstep.Helpers
 
 newtype EntryHall = EntryHall LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -8,7 +8,7 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToThreadsOfFate qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype DiscoverTheTruth = DiscoverTheTruth ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

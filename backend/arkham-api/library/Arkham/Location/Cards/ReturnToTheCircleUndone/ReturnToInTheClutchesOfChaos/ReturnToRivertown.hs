@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToInTheClutchesOfC
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 
 newtype ReturnToRivertown = ReturnToRivertown LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

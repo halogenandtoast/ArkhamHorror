@@ -11,7 +11,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 import Arkham.Trait (Trait (Spectral))
 
 newtype HauntedFieldsSpectral = HauntedFieldsSpectral LocationAttrs

@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Ca
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.AtDeathsDoorstep.Helpers
+import Arkham.Scenarios.TheCircleUndone.AtDeathsDoorstep.Helpers
 
 newtype BalconySpectral = BalconySpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

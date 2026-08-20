@@ -8,7 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (remember)
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.FateOfTheVale.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers
 
 newtype TheCommonsNight = TheCommonsNight LocationAttrs
   deriving anyclass IsLocation

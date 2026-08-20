@@ -13,7 +13,7 @@ import Arkham.Location.Brazier
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 
 newtype BeyondTheMistV4 = BeyondTheMistV4 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

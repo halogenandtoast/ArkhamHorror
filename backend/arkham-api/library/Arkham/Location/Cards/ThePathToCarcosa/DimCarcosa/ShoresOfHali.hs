@@ -4,7 +4,7 @@ import Arkham.GameValue
 import Arkham.Location.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (revealedL)
-import Arkham.Scenarios.DimCarcosa.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.DimCarcosa.Helpers
 import Arkham.Story.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Story
 
 newtype ShoresOfHali = ShoresOfHali LocationAttrs

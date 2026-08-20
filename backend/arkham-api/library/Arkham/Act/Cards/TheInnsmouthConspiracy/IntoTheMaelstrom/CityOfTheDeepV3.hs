@@ -7,7 +7,7 @@ import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified a
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.IntoTheMaelstrom.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom.Helpers
 
 newtype CityOfTheDeepV3 = CityOfTheDeepV3 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

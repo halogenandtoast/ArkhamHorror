@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as C
 import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.CourtOfTheAncients.Helpers (greatLiftConnections)
+import Arkham.Scenarios.TheDrownedCity.CourtOfTheAncients.Helpers (greatLiftConnections)
 
 newtype GreatLiftInactive = GreatLiftInactive LocationAttrs
   deriving anyclass IsLocation

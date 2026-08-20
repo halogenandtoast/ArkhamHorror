@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualifie
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.IntoTheMaelstrom.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom.Helpers
 import Arkham.Trait (Trait (Sanctum))
 
 newtype LairOfDagon = LairOfDagon LocationAttrs

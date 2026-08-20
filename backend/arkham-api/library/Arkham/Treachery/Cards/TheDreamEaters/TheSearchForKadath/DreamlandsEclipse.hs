@@ -7,7 +7,7 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Scenarios.TheSearchForKadath.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheDreamEaters.TheSearchForKadath.Helpers (scenarioI18n)
 import Arkham.Treachery.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

@@ -5,7 +5,7 @@ import Arkham.Enemy.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks, pattern EnemyAttacks)
 import Arkham.Helpers.Story
 import Arkham.Matcher
-import Arkham.Scenarios.TheDrownedQuarter.Helpers (UnderseaParasiteFlip (..))
+import Arkham.Scenarios.TheDrownedCity.TheDrownedQuarter.Helpers (UnderseaParasiteFlip (..))
 import Arkham.Story.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Stories
 
 newtype UnderseaParasite = UnderseaParasite EnemyAttrs

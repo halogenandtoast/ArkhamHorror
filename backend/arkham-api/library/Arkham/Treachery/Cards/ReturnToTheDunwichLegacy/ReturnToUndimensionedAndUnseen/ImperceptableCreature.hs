@@ -4,7 +4,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen.Helpers
 import Arkham.Trait (Trait (Elite))
 import Arkham.Treachery.CardDefs.ReturnToTheDunwichLegacy.ReturnToUndimensionedAndUnseen qualified as Cards
 import Arkham.Treachery.Import.Lifted

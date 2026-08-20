@@ -4,7 +4,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.TheLastKing.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.TheLastKing.Helpers
 import Arkham.Trait
 import Arkham.Treachery.CardDefs.ThePathToCarcosa.TheLastKing qualified as Cards
 import Arkham.Treachery.Import.Lifted

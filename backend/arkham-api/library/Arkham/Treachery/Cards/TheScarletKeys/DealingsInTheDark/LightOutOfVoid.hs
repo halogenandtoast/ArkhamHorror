@@ -6,7 +6,7 @@ import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DealingsInTheDark.Helpers
+import Arkham.Scenarios.TheScarletKeys.DealingsInTheDark.Helpers
 import Arkham.Treachery.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

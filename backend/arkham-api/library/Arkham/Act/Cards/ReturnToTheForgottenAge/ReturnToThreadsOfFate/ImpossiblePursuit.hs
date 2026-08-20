@@ -8,7 +8,7 @@ import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qual
 import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype ImpossiblePursuit = ImpossiblePursuit ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.ToTheForbiddenPeaks.Helpers
 
 newtype SteepIncline = SteepIncline LocationAttrs
   deriving anyclass IsLocation

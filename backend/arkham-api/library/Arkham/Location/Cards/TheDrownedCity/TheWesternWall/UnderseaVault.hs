@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Story (readStory)
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheWesternWall.Helpers (locationLevel)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (locationLevel)
 import Arkham.Story.CardDefs.TheDrownedCity.TheWesternWall qualified as Stories
 
 newtype UnderseaVault = UnderseaVault LocationAttrs

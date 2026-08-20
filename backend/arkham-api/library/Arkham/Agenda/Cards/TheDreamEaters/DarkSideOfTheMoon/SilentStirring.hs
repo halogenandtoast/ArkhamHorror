@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheDreamEaters.DarkSideOfTheMoon.SilentStirring (sile
 import Arkham.Agenda.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Query
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 
 newtype SilentStirring = SilentStirring AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

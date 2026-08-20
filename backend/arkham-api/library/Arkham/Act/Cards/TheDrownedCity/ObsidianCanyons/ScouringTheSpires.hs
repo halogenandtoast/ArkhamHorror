@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 
 newtype ScouringTheSpires = ScouringTheSpires ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

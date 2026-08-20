@@ -10,7 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.FatalMirage.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.FatalMirage.Helpers
 import Arkham.Story.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Stories
 
 newtype DyersClassroom = DyersClassroom LocationAttrs

@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified a
  )
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum.Helpers
 
 newtype MuseumEntrance = MuseumEntrance LocationAttrs
   deriving anyclass IsLocation

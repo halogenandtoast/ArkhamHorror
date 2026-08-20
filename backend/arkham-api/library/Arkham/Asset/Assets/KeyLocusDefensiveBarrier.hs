@@ -14,7 +14,7 @@ import Arkham.Helpers.SkillTest.Lifted (fight)
 import Arkham.History
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Scenarios.DogsOfWar.Helpers (pattern IsKeyLocus)
+import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers (pattern IsKeyLocus)
 import Arkham.Window qualified as Window
 
 newtype KeyLocusDefensiveBarrier = KeyLocusDefensiveBarrier AssetAttrs
@@ -30,7 +30,9 @@ instance HasModifiersFor KeyLocusDefensiveBarrier where
 
 instance HasAbilities KeyLocusDefensiveBarrier where
   getAbilities (KeyLocusDefensiveBarrier a) =
-    [ basicAbility $ restricted a AbilityAttack OnSameLocation $ ActionAbility #fight #combat (ActionCost 1)
+    [ basicAbility
+        $ restricted a AbilityAttack OnSameLocation
+        $ ActionAbility #fight #combat (ActionCost 1)
     , restricted a 1 OnSameLocation $ actionAbilityWithCost (ClueCost $ Static 1)
     , mkAbility a 2 $ forced $ AssetDefeated #when ByAny (be a)
     ]

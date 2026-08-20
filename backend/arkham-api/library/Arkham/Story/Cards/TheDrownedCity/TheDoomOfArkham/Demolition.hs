@@ -6,7 +6,7 @@ import Arkham.Location.Types (Field (LocationTokens))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers
 import Arkham.Story.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Token (Token (Damage), countTokens)

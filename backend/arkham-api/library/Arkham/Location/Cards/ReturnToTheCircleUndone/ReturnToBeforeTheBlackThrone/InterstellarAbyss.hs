@@ -6,8 +6,8 @@ import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToBeforeTheBlackTh
 import Arkham.Location.CardDefs.TheCircleUndone.BeforeTheBlackThrone qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 
 newtype InterstellarAbyss = InterstellarAbyss LocationAttrs
   deriving anyclass IsLocation

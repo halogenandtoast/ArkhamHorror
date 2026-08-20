@@ -7,7 +7,7 @@ import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 import Arkham.Trait (Trait (Monster))
 import Arkham.Window (getBatchId)
 

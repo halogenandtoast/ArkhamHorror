@@ -14,7 +14,7 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.FateOfTheVale.Helpers (revealCardsFromAbyss, scenarioI18n)
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers (revealCardsFromAbyss, scenarioI18n)
 import Arkham.SkillTest
 import Arkham.SkillTestResult
 import Arkham.Trait (Trait (Lair))

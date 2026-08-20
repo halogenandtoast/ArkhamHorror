@@ -29,7 +29,7 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Scenarios.RedTideRising.Helpers
-import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers (
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers (
   getLeadsDeck,
   hideouts,
   shuffleIntoLeadsDeck,

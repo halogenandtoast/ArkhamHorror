@@ -7,7 +7,7 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Location.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Cards (destroyedPath)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.WhereDoomAwaits.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.WhereDoomAwaits.Helpers
 
 newtype DestroyedPath = DestroyedPath LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

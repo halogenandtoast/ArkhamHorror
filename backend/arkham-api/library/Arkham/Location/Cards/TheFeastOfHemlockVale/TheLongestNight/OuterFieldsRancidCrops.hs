@@ -5,7 +5,7 @@ import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified 
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheLongestNight.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers
 import Arkham.Token
 
 newtype OuterFieldsRancidCrops = OuterFieldsRancidCrops LocationAttrs

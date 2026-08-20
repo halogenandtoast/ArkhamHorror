@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.TheFeastOfHemlockVale.FateOfTheVale.CosmicEmissaryTheA
 import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Scenarios.FateOfTheVale.CosmicEmissary
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.CosmicEmissary
 
 newtype CosmicEmissaryTheAbyss = CosmicEmissaryTheAbyss EnemyAttrs
   deriving anyclass IsEnemy

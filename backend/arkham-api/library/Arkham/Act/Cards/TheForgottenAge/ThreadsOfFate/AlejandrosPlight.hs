@@ -8,7 +8,7 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype AlejandrosPlight = AlejandrosPlight ActAttrs
   deriving anyclass IsAct

@@ -2,7 +2,7 @@ module Arkham.Agenda.Cards.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpres
 
 import Arkham.Agenda.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheEssexCountyExpress qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Scenarios.TheEssexCountyExpress.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheEssexCountyExpress.Helpers
 
 newtype ATearInRealityV2 = ATearInRealityV2 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

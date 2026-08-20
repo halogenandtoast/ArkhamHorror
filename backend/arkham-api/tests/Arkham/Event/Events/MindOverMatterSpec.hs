@@ -2,7 +2,7 @@ module Arkham.Event.Events.MindOverMatterSpec (spec) where
 
 import Arkham.Calculation
 import Arkham.Event.Cards qualified as Events
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 import TestImport.New
 
 spec :: Spec
@@ -40,7 +40,8 @@ spec = describe "Mind over Matter" $ do
       duringTurn self $ do
         self `playEvent` Events.mindOverMatter
         sid <- getRandom
-        runQueueT $ circleTest sid (toId self) (TestSource mempty) TestTarget [#intellect, #combat] (Fixed 2)
+        runQueueT
+          $ circleTest sid (toId self) (TestSource mempty) TestTarget [#intellect, #combat] (Fixed 2)
         runMessages
 
         chooseOptionMatching "use intellect instead of combat" \case
@@ -59,13 +60,14 @@ spec = describe "Mind over Matter" $ do
       duringTurn self $ do
         self `playEvent` Events.mindOverMatter
         sid <- getRandom
-        runQueueT $ circleTest
-          sid
-          (toId self)
-          (TestSource mempty)
-          TestTarget
-          [#intellect, #combat, #agility, #willpower]
-          (Fixed 3)
+        runQueueT
+          $ circleTest
+            sid
+            (toId self)
+            (TestSource mempty)
+            TestTarget
+            [#intellect, #combat, #agility, #willpower]
+            (Fixed 3)
         runMessages
 
         chooseOptionMatching "use intellect instead of combat" \case

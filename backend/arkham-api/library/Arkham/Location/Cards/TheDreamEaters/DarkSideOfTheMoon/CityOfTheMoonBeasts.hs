@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 
 newtype CityOfTheMoonBeasts = CityOfTheMoonBeasts LocationAttrs
   deriving anyclass IsLocation

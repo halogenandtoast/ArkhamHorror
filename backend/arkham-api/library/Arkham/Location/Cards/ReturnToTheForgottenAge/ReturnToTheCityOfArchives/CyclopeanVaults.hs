@@ -9,7 +9,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheCityOfArchives.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheCityOfArchives.Helpers
 
 newtype CyclopeanVaults = CyclopeanVaults LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

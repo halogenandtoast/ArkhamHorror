@@ -5,7 +5,7 @@ import Arkham.Enemy.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as C
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 
 newtype WitnessOfChaos = WitnessOfChaos EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

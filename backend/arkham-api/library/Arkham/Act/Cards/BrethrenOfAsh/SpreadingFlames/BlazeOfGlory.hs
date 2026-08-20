@@ -7,7 +7,7 @@ import Arkham.Enemy.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Enemies
 import Arkham.Helpers.GameValue
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.SpreadingFlames.Helpers
+import Arkham.Scenarios.BrethrenOfAsh.SpreadingFlames.Helpers
 
 newtype BlazeOfGlory = BlazeOfGlory ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

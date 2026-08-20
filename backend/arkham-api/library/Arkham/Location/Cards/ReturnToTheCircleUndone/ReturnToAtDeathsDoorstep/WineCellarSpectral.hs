@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToAtDeathsDoorstep
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.AtDeathsDoorstep.Helpers
+import Arkham.Scenarios.TheCircleUndone.AtDeathsDoorstep.Helpers
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype WineCellarSpectral = WineCellarSpectral LocationAttrs

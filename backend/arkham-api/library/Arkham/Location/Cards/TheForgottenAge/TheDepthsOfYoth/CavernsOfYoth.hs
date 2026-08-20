@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Location.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 
 newtype CavernsOfYoth = CavernsOfYoth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

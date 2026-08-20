@@ -4,7 +4,7 @@ import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Enemy.CardDefs.TheCircleUndone.TheWatcher qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 import Arkham.Treachery.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

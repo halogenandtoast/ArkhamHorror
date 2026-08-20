@@ -11,7 +11,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
 
 newtype CourtOfTheGreatOldOnesANotTooDistantFuture
   = CourtOfTheGreatOldOnesANotTooDistantFuture LocationAttrs

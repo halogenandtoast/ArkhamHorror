@@ -7,7 +7,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.Location.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 import Arkham.Trait
 
 newtype TheCaveOfDarknessEmbroiledInBattle = TheCaveOfDarknessEmbroiledInBattle ActAttrs

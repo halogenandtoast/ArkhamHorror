@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.TheCircleUndone.BeforeTheBlackThrone.WhisperedBarg
 import Arkham.Enemy.CardDefs.TheCircleUndone.BeforeTheBlackThrone qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 import Arkham.Treachery.CardDefs.TheCircleUndone.BeforeTheBlackThrone qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

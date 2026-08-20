@@ -4,7 +4,7 @@ import Arkham.Enemy.CardDefs.TheScarletKeys.DogsOfWar qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Scenarios.DogsOfWar.Helpers
+import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers
 
 newtype CoterieProvocateur = CoterieProvocateur EnemyAttrs
   deriving anyclass (IsEnemy, RunMessage)

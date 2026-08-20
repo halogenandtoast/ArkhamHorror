@@ -10,7 +10,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
-import Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.ToTheForbiddenPeaks.Helpers
 
 newtype RooflessRampart = RooflessRampart LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

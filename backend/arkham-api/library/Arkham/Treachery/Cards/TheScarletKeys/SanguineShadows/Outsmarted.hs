@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.TheScarletKeys.SanguineShadows.Outsmarted (outsmar
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.SanguineShadows.Helpers
+import Arkham.Scenarios.TheScarletKeys.SanguineShadows.Helpers
 import Arkham.Trait (Trait (Coterie))
 import Arkham.Treachery.CardDefs.TheScarletKeys.SanguineShadows qualified as Cards
 import Arkham.Treachery.Import.Lifted

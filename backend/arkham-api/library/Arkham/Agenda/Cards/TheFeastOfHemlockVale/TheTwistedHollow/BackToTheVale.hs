@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Placement
-import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers
 import Arkham.Spawn
 import Arkham.Token
 import Arkham.Trait (Trait (Dark))

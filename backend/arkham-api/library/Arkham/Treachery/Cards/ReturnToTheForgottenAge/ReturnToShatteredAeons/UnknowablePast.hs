@@ -5,7 +5,7 @@ import Arkham.Deck
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ShatteredAeons.Helpers
+import Arkham.Scenarios.TheForgottenAge.ShatteredAeons.Helpers
 import Arkham.Treachery.CardDefs.ReturnToTheForgottenAge.ReturnToShatteredAeons qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

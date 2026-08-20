@@ -7,7 +7,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.RedTideRising.Helpers
-import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers (getLeadsDeck)
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers (getLeadsDeck)
 import Arkham.Trait (Trait (Hideout, Suspect))
 
 newtype SearchingForDad = SearchingForDad ActAttrs

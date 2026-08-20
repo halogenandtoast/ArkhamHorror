@@ -7,7 +7,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.ShadesOfSuffering.Helpers
+import Arkham.Scenarios.TheScarletKeys.ShadesOfSuffering.Helpers
 
 newtype KualaLumpurStationWestWing = KualaLumpurStationWestWing LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -1,0 +1,67 @@
+module Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers where
+
+import Arkham.Action
+import Arkham.Calculation
+import Arkham.Campaigns.TheCircleUndone.Helpers
+import Arkham.Classes.HasQueue
+import Arkham.Criteria
+import Arkham.Field
+import Arkham.I18n
+import Arkham.Id
+import Arkham.Location.Brazier
+import Arkham.Location.Types
+import Arkham.Matcher
+import Arkham.Message
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Queue
+import Arkham.Prelude
+import Arkham.SkillTest.Base
+import Arkham.SkillTest.Type
+import Arkham.SkillType
+import Arkham.Source
+import Arkham.Target
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "unionAndDisillusion" a
+
+lightBrazier :: ReverseQueue m => LocationId -> m ()
+lightBrazier locationId = push $ UpdateLocation locationId (LocationBrazier ?=. Lit)
+
+unlightBrazier :: ReverseQueue m => LocationId -> m ()
+unlightBrazier locationId = push $ UpdateLocation locationId (LocationBrazier ?=. Unlit)
+
+circleTest
+  :: (Sourceable source, Targetable target, ReverseQueue m)
+  => SkillTestId
+  -> InvestigatorId
+  -> source
+  -> target
+  -> [SkillType]
+  -> GameCalculation
+  -> m ()
+circleTest sid iid source target skillTypes n =
+  push
+    $ BeginSkillTest
+    $ ( buildSkillTest
+          sid
+          iid
+          source
+          target
+          (AndSkillTest skillTypes)
+          (AndSkillBaseValue skillTypes)
+          (SkillTestDifficulty n)
+      )
+      { skillTestAction = Just Circle
+      }
+
+passedCircleTest :: ReverseQueue m => InvestigatorId -> LocationAttrs -> m ()
+passedCircleTest iid attrs = chooseOneM iid $ scenarioI18n do
+  case locationBrazier attrs of
+    Just Lit -> labeled' "unlightTheBrazier" $ unlightBrazier attrs.id
+    _unlit -> labeled' "lightTheBrazier" $ lightBrazier attrs.id
+  labeled' "leaveBrazierAlone" nothing
+
+pattern DuringCircleAction :: Criterion
+pattern DuringCircleAction <- DuringSkillTest (SkillTestWithAction (ActionIs Circle))
+  where
+    DuringCircleAction = DuringSkillTest (SkillTestWithAction (ActionIs Circle))

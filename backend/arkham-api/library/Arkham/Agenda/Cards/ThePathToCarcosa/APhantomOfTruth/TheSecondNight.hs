@@ -5,7 +5,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Scenarios.APhantomOfTruth.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.APhantomOfTruth.Helpers
 
 newtype TheSecondNight = TheSecondNight AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

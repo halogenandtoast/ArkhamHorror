@@ -13,7 +13,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
 import Arkham.Trait (Trait (Hex))
 
 newtype Metadata = Metadata {revealTopCard :: Bool}

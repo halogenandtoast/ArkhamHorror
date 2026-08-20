@@ -4,7 +4,7 @@ import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Location.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DimCarcosa.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.DimCarcosa.Helpers
 import Arkham.Story.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Cards
 import Arkham.Story.Import.Lifted
 

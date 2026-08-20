@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper q
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Window
 import Arkham.Matcher
-import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers
 
 newtype FranticPursuit = FranticPursuit AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

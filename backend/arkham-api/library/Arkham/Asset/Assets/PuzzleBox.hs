@@ -9,7 +9,7 @@ import Arkham.Location.Brazier
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ForTheGreaterGood.Helpers
+import Arkham.Scenarios.TheCircleUndone.ForTheGreaterGood.Helpers
 
 newtype PuzzleBox = PuzzleBox AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

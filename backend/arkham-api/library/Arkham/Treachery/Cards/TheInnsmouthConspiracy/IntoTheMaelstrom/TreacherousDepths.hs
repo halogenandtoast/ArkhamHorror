@@ -7,7 +7,7 @@ import Arkham.I18n
 import Arkham.Location.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.IntoTheMaelstrom.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom.Helpers (scenarioI18n)
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

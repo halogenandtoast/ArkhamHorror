@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers (modifySelf)
 import Arkham.Matcher
-import Arkham.Scenarios.DogsOfWar.Helpers (pattern IsKeyLocus)
+import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers (pattern IsKeyLocus)
 
 newtype KeyLocusLastBastion = KeyLocusLastBastion AssetAttrs
   deriving anyclass IsAsset

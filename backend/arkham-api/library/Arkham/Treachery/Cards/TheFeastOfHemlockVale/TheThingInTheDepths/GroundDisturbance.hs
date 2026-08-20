@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.TheFeastOfHemlockVale.TheThingInTheDepths.GroundDi
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheThingInTheDepths.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheThingInTheDepths.Helpers
 import Arkham.SkillTest.Base
 import Arkham.Trait (Trait (Bog))
 import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified as Cards

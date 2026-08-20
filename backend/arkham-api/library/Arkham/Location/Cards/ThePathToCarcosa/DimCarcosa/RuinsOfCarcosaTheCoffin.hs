@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (revealedL)
 import Arkham.Matcher hiding (NonAttackDamageEffect)
-import Arkham.Scenarios.DimCarcosa.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.DimCarcosa.Helpers
 import Arkham.Story.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Story
 
 newtype RuinsOfCarcosaTheCoffin = RuinsOfCarcosaTheCoffin LocationAttrs

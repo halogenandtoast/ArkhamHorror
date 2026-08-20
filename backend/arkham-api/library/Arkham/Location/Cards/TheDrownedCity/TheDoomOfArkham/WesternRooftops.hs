@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Card
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Modifier (setActiveDuringSetup)
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (rooftopsReachConnecting)
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (rooftopsReachConnecting)
 
 newtype WesternRooftops = WesternRooftops LocationAttrs
   deriving anyclass IsLocation

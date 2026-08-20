@@ -8,7 +8,7 @@ import Arkham.Location.FloodLevel
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.DevilReef.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.DevilReef.Helpers
 
 newtype CyclopeanRuins_176b = CyclopeanRuins_176b LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

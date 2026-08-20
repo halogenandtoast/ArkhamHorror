@@ -14,7 +14,7 @@ import Arkham.Helpers.Text
 import Arkham.Matcher hiding (AssetDefeated)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.ToTheForbiddenPeaks.Helpers
 import Arkham.Trait (Trait (Expedition))
 
 newtype ForbiddenPeaks = ForbiddenPeaks AgendaAttrs

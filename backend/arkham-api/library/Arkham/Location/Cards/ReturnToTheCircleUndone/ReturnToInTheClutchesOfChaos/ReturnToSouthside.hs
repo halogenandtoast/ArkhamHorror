@@ -11,7 +11,7 @@ import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToInTheClutchesOfC
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 
 newtype ReturnToSouthside = ReturnToSouthside LocationAttrs
   deriving anyclass IsLocation

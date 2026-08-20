@@ -10,7 +10,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Log (remember)
 import Arkham.Phase
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.FateOfTheVale.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers
 import Arkham.SkillTest
 import Arkham.SkillTestResult
 import Arkham.Trait (Trait (Shattered))

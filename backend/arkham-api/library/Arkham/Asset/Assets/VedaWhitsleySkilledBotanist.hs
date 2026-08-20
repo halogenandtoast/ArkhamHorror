@@ -9,7 +9,7 @@ import Arkham.Card
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 import Arkham.Strategy
 
 newtype VedaWhitsleySkilledBotanist = VedaWhitsleySkilledBotanist AssetAttrs

@@ -110,7 +110,7 @@ import Arkham.Resolution
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Options
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos.Types
 import Arkham.Search
 import {-# SOURCE #-} Arkham.SkillTest.Base
 import Arkham.SkillTest.Type

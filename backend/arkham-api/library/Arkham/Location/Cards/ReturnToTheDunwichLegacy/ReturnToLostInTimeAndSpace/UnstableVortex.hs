@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.LostInTimeAndSpace.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.LostInTimeAndSpace.Helpers
 
 newtype UnstableVortex = UnstableVortex LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

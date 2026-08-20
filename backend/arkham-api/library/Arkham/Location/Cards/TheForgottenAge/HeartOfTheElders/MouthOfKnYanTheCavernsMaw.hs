@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Ca
 import Arkham.Location.Import.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.HeartOfTheElders.Helpers
+import Arkham.Scenarios.TheForgottenAge.HeartOfTheElders.Helpers
 
 newtype MouthOfKnYanTheCavernsMaw = MouthOfKnYanTheCavernsMaw LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -6,7 +6,7 @@ import Arkham.Campaigns.TheForgottenAge.Helpers
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Helpers.Query
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 
 newtype EndlessCaverns = EndlessCaverns AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

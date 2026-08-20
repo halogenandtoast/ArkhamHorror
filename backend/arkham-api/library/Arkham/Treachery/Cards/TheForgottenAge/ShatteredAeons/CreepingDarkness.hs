@@ -10,7 +10,7 @@ import Arkham.I18n
 import Arkham.Location.CardDefs.TheForgottenAge.ShatteredAeons qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ShatteredAeons.Helpers
+import Arkham.Scenarios.TheForgottenAge.ShatteredAeons.Helpers
 import Arkham.Treachery.CardDefs.TheForgottenAge.ShatteredAeons qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

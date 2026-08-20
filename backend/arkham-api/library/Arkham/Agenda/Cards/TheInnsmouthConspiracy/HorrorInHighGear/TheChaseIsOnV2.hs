@@ -7,7 +7,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Matcher
-import Arkham.Scenarios.HorrorInHighGear.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers
 import Arkham.Trait (Trait (Vehicle))
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.Malfunction qualified as Treacheries
 

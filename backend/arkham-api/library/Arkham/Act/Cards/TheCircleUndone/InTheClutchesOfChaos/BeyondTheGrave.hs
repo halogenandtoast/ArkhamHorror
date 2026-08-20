@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Enemies
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 
 newtype BeyondTheGrave = BeyondTheGrave ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

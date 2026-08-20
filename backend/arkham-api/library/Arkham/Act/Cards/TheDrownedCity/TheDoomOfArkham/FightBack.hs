@@ -7,7 +7,7 @@ import Arkham.Act.Sequence
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Matcher
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers
 import Arkham.Trait (Trait (Cthulhu))
 
 newtype FightBack = FightBack ActAttrs

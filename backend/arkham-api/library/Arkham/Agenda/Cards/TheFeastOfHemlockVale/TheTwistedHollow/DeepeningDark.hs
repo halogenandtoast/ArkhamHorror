@@ -15,7 +15,7 @@ import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers
 import Arkham.Spawn
 import Arkham.Token
 import Arkham.Trait (Trait (Dark))

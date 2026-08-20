@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Location.CardDefs.NightOfTheZealot.TheDevourerBelow qualified as Cards (mainPath)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheDevourerBelow.Helpers
+import Arkham.Scenarios.NightOfTheZealot.TheDevourerBelow.Helpers
 import Arkham.Trait
 
 newtype MainPath = MainPath LocationAttrs

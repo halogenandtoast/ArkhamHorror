@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as C
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Scenarios.ForTheGreaterGood.Helpers
+import Arkham.Scenarios.TheCircleUndone.ForTheGreaterGood.Helpers
 
 newtype Lounge = Lounge LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -13,7 +13,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 
 newtype InnsmouthSquare = InnsmouthSquare LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

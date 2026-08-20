@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.ThePathToCarcosa.APhantomOfTruth.TheThirdNight (theTh
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers
-import Arkham.Scenarios.APhantomOfTruth.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.APhantomOfTruth.Helpers
 
 newtype TheThirdNight = TheThirdNight AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

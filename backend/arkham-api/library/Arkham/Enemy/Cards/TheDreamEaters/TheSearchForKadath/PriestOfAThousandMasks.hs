@@ -7,7 +7,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Keyword (Keyword (Retaliate))
 import Arkham.Modifier qualified as Mod
 import Arkham.Prelude
-import Arkham.Scenarios.TheSearchForKadath.Helpers
+import Arkham.Scenarios.TheDreamEaters.TheSearchForKadath.Helpers
 
 newtype PriestOfAThousandMasks = PriestOfAThousandMasks EnemyAttrs
   deriving anyclass IsEnemy

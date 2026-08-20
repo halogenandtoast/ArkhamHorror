@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Scenario (getDifficulty)
 import Arkham.Location.CardDefs.TheScarletKeys.SanguineShadows qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.SanguineShadows.Helpers
+import Arkham.Scenarios.TheScarletKeys.SanguineShadows.Helpers
 
 newtype AvenidaDeMayo = AvenidaDeMayo LocationAttrs
   deriving anyclass IsLocation

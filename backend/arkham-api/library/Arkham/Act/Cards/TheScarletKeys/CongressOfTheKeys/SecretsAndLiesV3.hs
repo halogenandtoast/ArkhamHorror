@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier (setActiveDuringSetup)
-import Arkham.Scenarios.CongressOfTheKeys.Helpers
+import Arkham.Scenarios.TheScarletKeys.CongressOfTheKeys.Helpers
 
 newtype SecretsAndLiesV3 = SecretsAndLiesV3 ActAttrs
   deriving anyclass IsAct

@@ -10,7 +10,7 @@ import Arkham.Helpers.Window (getDoomAmount, getEnemy)
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.DealingsInTheDark.Helpers
+import Arkham.Scenarios.TheScarletKeys.DealingsInTheDark.Helpers
 import Arkham.Story.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Cards
 import Arkham.Story.Import.Lifted
 

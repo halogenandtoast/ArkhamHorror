@@ -8,7 +8,7 @@ import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
 
 newtype ContainingTheOutbreak = ContainingTheOutbreak ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

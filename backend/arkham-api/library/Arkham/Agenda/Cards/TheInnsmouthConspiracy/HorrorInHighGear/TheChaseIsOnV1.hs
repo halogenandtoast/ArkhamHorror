@@ -9,7 +9,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher.Asset
 import Arkham.Matcher.Investigator
 import Arkham.Matcher.Window
-import Arkham.Scenarios.HorrorInHighGear.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers
 
 newtype TheChaseIsOnV1 = TheChaseIsOnV1 AgendaAttrs
   deriving anyclass IsAgenda

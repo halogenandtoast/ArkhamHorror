@@ -11,7 +11,7 @@ import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 
 newtype SearchingTheSpires = SearchingTheSpires ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

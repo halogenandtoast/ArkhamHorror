@@ -11,7 +11,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Placement
 import Arkham.Name qualified as Name
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheHouseAlwaysWins.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheHouseAlwaysWins.Helpers
 import Arkham.Trait (Trait (Criminal))
 import Arkham.Treachery.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheHouseAlwaysWins qualified as Cards
 import Arkham.Treachery.Import.Lifted

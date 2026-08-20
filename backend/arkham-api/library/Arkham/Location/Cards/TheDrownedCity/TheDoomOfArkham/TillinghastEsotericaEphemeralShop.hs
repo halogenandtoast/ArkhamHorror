@@ -10,7 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (Field (LocationLabel))
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Scenarios.TheDoomOfArkhamPartI.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartI.Helpers
 import Arkham.Trait (Trait (Artifact))
 
 newtype TillinghastEsotericaEphemeralShop = TillinghastEsotericaEphemeralShop LocationAttrs

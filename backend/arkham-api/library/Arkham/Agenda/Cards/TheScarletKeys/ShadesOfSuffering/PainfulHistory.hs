@@ -12,7 +12,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.ShadesOfSuffering.Helpers
+import Arkham.Scenarios.TheScarletKeys.ShadesOfSuffering.Helpers
 
 newtype PainfulHistory = PainfulHistory AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

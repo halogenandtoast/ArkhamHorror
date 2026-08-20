@@ -8,7 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 
 newtype MarshRefinery = MarshRefinery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

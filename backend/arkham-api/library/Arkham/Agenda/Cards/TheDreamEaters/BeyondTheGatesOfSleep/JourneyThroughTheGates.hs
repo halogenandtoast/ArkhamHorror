@@ -9,7 +9,7 @@ import Arkham.I18n
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Scenarios.BeyondTheGatesOfSleep.Helpers
+import Arkham.Scenarios.TheDreamEaters.BeyondTheGatesOfSleep.Helpers
 import Arkham.Trait (Trait (Steps))
 
 newtype JourneyThroughTheGates = JourneyThroughTheGates AgendaAttrs

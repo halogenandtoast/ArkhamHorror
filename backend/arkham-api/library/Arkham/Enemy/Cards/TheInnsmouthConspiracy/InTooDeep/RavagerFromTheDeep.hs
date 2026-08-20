@@ -12,7 +12,7 @@ import Arkham.Helpers.SkillTest (getSkillTestInvestigator)
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
 import Arkham.Matcher
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 
 newtype RavagerFromTheDeep = RavagerFromTheDeep EnemyAttrs
   deriving anyclass IsEnemy

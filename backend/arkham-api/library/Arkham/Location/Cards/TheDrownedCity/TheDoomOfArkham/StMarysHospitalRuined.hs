@@ -9,7 +9,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (scenarioI18n)
 import Arkham.Token (Token (Clue))
 
 newtype StMarysHospitalRuined = StMarysHospitalRuined LocationAttrs

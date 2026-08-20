@@ -7,7 +7,7 @@ import Arkham.Investigator.Projection ()
 import Arkham.Location.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.SepulchreOfTheSleeper.Helpers
+import Arkham.Scenarios.TheDrownedCity.SepulchreOfTheSleeper.Helpers
 
 newtype SigilCarvedAlcoveStoryOfTheVoyage = SigilCarvedAlcoveStoryOfTheVoyage LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

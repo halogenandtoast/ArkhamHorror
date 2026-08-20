@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 import Arkham.Window (getBatchId)
 
 newtype EasternAthenaeum = EasternAthenaeum LocationAttrs

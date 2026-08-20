@@ -6,7 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.Matcher
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 
 newtype TheRedDepths = TheRedDepths AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

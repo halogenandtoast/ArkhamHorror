@@ -6,7 +6,7 @@ import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.FateOfTheVale.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers (scenarioI18n)
 import Arkham.Trait (Trait (Emissary))
 import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Cards
 import Arkham.Treachery.Import.Lifted

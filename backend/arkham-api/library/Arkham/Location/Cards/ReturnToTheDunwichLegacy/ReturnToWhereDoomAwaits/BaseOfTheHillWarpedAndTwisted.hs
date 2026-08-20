@@ -7,7 +7,7 @@ import Arkham.Helpers.Window
 import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToWhereDoomAwaits qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.WhereDoomAwaits.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.WhereDoomAwaits.Helpers
 
 newtype BaseOfTheHillWarpedAndTwisted = BaseOfTheHillWarpedAndTwisted LocationAttrs
   deriving anyclass IsLocation

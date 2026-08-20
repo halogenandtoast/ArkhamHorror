@@ -14,7 +14,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Name qualified as Name
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
 
 newtype MoldyHallsEarlierTonight = MoldyHallsEarlierTonight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

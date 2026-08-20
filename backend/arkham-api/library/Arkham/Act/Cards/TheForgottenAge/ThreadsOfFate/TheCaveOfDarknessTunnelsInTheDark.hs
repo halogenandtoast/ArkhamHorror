@@ -7,7 +7,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Location.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Locations
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype TheCaveOfDarknessTunnelsInTheDark = TheCaveOfDarknessTunnelsInTheDark ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

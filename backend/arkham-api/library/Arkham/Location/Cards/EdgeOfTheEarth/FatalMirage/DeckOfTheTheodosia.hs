@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Scenarios.FatalMirage.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.FatalMirage.Helpers
 import Arkham.Story.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Stories
 
 newtype DeckOfTheTheodosia = DeckOfTheTheodosia LocationAttrs

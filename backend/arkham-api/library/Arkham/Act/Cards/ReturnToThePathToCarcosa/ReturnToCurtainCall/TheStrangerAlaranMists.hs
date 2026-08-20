@@ -10,7 +10,7 @@ import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.CurtainCall.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.CurtainCall.Helpers
 
 newtype TheStrangerAlaranMists = TheStrangerAlaranMists ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -14,7 +14,7 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log (record)
-import Arkham.Scenarios.TheGrandVault.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheGrandVault.Helpers
 import Arkham.Trait (Trait (Vault))
 import Arkham.Treachery.CardDefs.TheDrownedCity.TheInescapable qualified as Treacheries
 

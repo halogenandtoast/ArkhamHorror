@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.TheScarletKeys.DeadHeat.Cornered (cornered) where
 import Arkham.Helpers.Location
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DeadHeat.Helpers
+import Arkham.Scenarios.TheScarletKeys.DeadHeat.Helpers
 import Arkham.Treachery.CardDefs.TheScarletKeys.DeadHeat qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

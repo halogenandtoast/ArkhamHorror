@@ -10,7 +10,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.CityOfTheElderThings.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.CityOfTheElderThings.Helpers
 
 newtype PursuitOfTheUnknownV1 = PursuitOfTheUnknownV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

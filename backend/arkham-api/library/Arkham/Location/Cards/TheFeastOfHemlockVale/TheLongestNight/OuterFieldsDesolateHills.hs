@@ -10,7 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheLongestNight.Helpers (discardFromEnemyDeck)
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers (discardFromEnemyDeck)
 
 newtype Meta = Meta {topCards :: [Card]}
   deriving stock (Show, Eq, Generic)

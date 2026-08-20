@@ -12,7 +12,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Locat
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 import Arkham.Trait (Trait (Hex))
 
 newtype ChapelCryptSpectral_174 = ChapelCryptSpectral_174 LocationAttrs

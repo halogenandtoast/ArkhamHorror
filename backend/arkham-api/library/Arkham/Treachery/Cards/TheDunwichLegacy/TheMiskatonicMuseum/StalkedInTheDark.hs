@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.TheDunwichLegacy.TheMiskatonicMuseum.StalkedInTheDark (stalkedInTheDark) where
 
 import Arkham.Matcher
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

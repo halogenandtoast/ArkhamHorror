@@ -9,7 +9,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
 import Arkham.Matcher
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype StrangeRelicsMariasInformation = StrangeRelicsMariasInformation ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

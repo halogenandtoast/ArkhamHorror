@@ -9,7 +9,7 @@ import Arkham.Helpers.Enemy (insteadOfDamage)
 import Arkham.Helpers.Window (damagedEnemyAmount)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.WithoutATrace.Helpers
+import Arkham.Scenarios.TheScarletKeys.WithoutATrace.Helpers
 
 newtype MimeticNemesisOtherworldlySubjugator = MimeticNemesisOtherworldlySubjugator EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

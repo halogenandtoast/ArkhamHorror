@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheForgottenAge.ThreadsOfFate.ThreeFates (threeFates)
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype ThreeFates = ThreeFates AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

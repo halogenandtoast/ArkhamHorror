@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 
 newtype ReturnToTheShoreline = ReturnToTheShoreline ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

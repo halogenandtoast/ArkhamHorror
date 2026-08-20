@@ -12,8 +12,8 @@ import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 
 newtype InfinityOfDarkness = InfinityOfDarkness LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

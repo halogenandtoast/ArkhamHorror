@@ -9,7 +9,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Cards
 import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (PlaceUnderneath)
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 
 newtype ChapelAtticSpectral_175 = ChapelAtticSpectral_175 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

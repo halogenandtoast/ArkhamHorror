@@ -9,7 +9,7 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheSearchForKadath.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheDreamEaters.TheSearchForKadath.Helpers (scenarioI18n)
 
 newtype VirgilGray = VirgilGray AssetAttrs
   deriving anyclass IsAsset
@@ -45,7 +45,8 @@ instance RunMessage VirgilGray where
         whenM (can.gain.resources iid) do
           (withI18n $ countVar 1 $ labeled' "gainResources") $ gainResources iid (attrs.ability 1) 1
         whenM (selectAny $ HealableAsset (attrs.ability 1) #horror (be attrs)) do
-          (scenarioI18n $ labeled' "virgilGray.heal1HorrorFromVirgilGray") $ healHorror attrs (attrs.ability 1) 1
+          (scenarioI18n $ labeled' "virgilGray.heal1HorrorFromVirgilGray")
+            $ healHorror attrs (attrs.ability 1) 1
       others <- select $ not_ (InvestigatorWithId iid)
       when (notNull others) do
         chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)

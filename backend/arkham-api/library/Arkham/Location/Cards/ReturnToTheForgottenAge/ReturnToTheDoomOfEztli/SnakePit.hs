@@ -10,7 +10,7 @@ import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli q
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheDoomOfEztli.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDoomOfEztli.Helpers
 
 newtype SnakePit = SnakePit LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

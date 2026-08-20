@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Cards (villageCommons)
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.BloodOnTheAltar.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.BloodOnTheAltar.Helpers
 
 newtype VillageCommons = VillageCommons LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

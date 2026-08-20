@@ -8,7 +8,7 @@ import Arkham.Helpers.Log
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Scenarios.ShatteredAeons.Helpers
+import Arkham.Scenarios.TheForgottenAge.ShatteredAeons.Helpers
 import Arkham.Story.CardDefs.TheForgottenAge.ShatteredAeons qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Trait qualified as Trait

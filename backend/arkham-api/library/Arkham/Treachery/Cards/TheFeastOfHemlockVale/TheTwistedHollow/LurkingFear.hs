@@ -4,7 +4,7 @@ import Arkham.Helpers.Enemy
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers
 import Arkham.Spawn
 import Arkham.Trait (Trait (Dark))
 import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Cards

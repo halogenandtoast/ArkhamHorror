@@ -9,7 +9,7 @@ import Arkham.Helpers.Enemy (getUniqueEnemy)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Matcher
-import Arkham.Scenarios.TheThingInTheDepths.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheThingInTheDepths.Helpers
 import Arkham.Trait (Trait (Abomination))
 
 newtype DiscoveryOfALifetime = DiscoveryOfALifetime ActAttrs

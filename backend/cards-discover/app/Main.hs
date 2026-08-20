@@ -12,6 +12,7 @@ data Opts = Opts
   , homebrewDefs :: Bool
   , buildersFor :: Maybe String
   , defsFor :: Maybe String
+  , scenarioBuilders :: Bool
   , sourceName :: FilePath
   , sourceLocation :: FilePath
   , targetFile :: FilePath
@@ -21,6 +22,7 @@ main :: IO ()
 main = do
   Opts {..} <- execParser infoParser
   let mode
+        | scenarioBuilders = ScenarioBuilders
         | Just kind <- buildersFor = CardBuilders kind
         | Just kind <- defsFor = CardDefsRegistry kind
         | homebrewContent = HomebrewContent
@@ -48,6 +50,8 @@ main = do
         ( strOption
             (long "defs" <> metavar "KIND" <> help "Emit all<KIND>CardDefs from discovered card-def modules")
         )
+      <*> switch
+        (long "scenario-builders" <> help "Emit allScenarioBuilders from discovered scenario modules")
       <*> argument str (metavar "NAME" <> help "Name of the source file")
       <*> argument str (metavar "PATH" <> help "Path to the input file")
       <*> argument str (metavar "PATH" <> help "Path to the output file")

@@ -18,7 +18,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers
 import Arkham.Story.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Stories
 
 newtype TheSearchForAgentHarper = TheSearchForAgentHarper ActAttrs

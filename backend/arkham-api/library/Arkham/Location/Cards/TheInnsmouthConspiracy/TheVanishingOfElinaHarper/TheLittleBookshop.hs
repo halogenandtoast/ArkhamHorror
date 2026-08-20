@@ -6,7 +6,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheVanishingOfElinaHarper.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers
 
 newtype TheLittleBookshop = TheLittleBookshop LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Campaigns.ThePathToCarcosa.Key
 import Arkham.Matcher
-import Arkham.Scenarios.APhantomOfTruth.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.APhantomOfTruth.Helpers
 
 newtype PursuingShadows = PursuingShadows ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

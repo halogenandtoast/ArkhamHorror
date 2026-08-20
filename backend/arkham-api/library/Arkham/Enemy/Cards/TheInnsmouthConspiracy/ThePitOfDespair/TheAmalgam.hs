@@ -12,7 +12,7 @@ import Arkham.Key
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Scenarios.ThePitOfDespair.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ThePitOfDespair.Helpers
 
 newtype TheAmalgam = TheAmalgam EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

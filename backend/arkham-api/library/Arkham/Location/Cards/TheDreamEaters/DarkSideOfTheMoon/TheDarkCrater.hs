@@ -9,7 +9,7 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
 import Arkham.Prelude
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 
 data Meta = Meta
   { discoveredCluesThisTurn :: [InvestigatorId]

@@ -15,7 +15,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier
-import Arkham.Scenarios.DealingsInTheDark.Helpers
+import Arkham.Scenarios.TheScarletKeys.DealingsInTheDark.Helpers
 
 newtype SearchForTheManuscript = SearchForTheManuscript ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

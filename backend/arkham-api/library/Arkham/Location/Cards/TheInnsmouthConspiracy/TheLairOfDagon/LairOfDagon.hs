@@ -9,7 +9,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified 
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheLairOfDagon.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon.Helpers
 
 newtype LairOfDagon = LairOfDagon LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

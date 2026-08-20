@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Location.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 
 newtype SouthChurch_298 = SouthChurch_298 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

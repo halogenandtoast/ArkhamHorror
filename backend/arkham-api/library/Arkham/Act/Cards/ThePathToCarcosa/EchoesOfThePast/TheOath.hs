@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.EchoesOfThePast.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.EchoesOfThePast.Helpers
 import Arkham.Trait
 
 newtype TheOath = TheOath ActAttrs

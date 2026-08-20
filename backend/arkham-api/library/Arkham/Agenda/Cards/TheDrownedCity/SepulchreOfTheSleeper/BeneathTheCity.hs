@@ -7,7 +7,7 @@ import Arkham.Card
 import Arkham.Enemy.CardDefs.TheDrownedCity.SepulchreOfTheSleeper qualified as Enemies
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Matcher
-import Arkham.Scenarios.SepulchreOfTheSleeper.Helpers
+import Arkham.Scenarios.TheDrownedCity.SepulchreOfTheSleeper.Helpers
 
 newtype BeneathTheCity = BeneathTheCity AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

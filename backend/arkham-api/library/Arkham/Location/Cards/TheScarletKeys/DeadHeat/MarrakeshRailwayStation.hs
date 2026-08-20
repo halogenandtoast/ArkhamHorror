@@ -8,7 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.DeadHeat.Helpers
+import Arkham.Scenarios.TheScarletKeys.DeadHeat.Helpers
 
 newtype MarrakeshRailwayStation = MarrakeshRailwayStation LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

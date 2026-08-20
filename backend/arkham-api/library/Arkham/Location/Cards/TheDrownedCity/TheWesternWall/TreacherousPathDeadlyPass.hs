@@ -5,7 +5,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (increaseThisFloodLevelOr
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheWesternWall.Helpers (locationLevel, treacherousPathModifiers)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (locationLevel, treacherousPathModifiers)
 
 newtype TreacherousPathDeadlyPass = TreacherousPathDeadlyPass LocationAttrs
   deriving anyclass IsLocation

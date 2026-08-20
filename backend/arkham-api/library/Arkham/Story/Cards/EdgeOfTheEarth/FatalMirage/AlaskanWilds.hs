@@ -3,7 +3,7 @@ module Arkham.Story.Cards.EdgeOfTheEarth.FatalMirage.AlaskanWilds (alaskanWilds)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Enemies
 import Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Locations
-import Arkham.Scenarios.FatalMirage.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.FatalMirage.Helpers
 import Arkham.Story.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Cards
 import Arkham.Story.Import.Lifted
 

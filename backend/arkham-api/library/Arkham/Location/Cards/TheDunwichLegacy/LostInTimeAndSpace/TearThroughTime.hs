@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Location.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Cards
 import Arkham.Location.Helpers (resignActionWithCost)
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.LostInTimeAndSpace.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.LostInTimeAndSpace.Helpers
 
 newtype TearThroughTime = TearThroughTime LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor, RunMessage)

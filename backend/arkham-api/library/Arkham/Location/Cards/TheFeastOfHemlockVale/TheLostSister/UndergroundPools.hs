@@ -6,7 +6,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheLostSister.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLostSister.Helpers
 
 newtype UndergroundPools = UndergroundPools LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

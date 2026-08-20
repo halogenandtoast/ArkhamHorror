@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified a
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 import Arkham.Trait (Trait (Power))
 
 newtype Southside_294 = Southside_294 LocationAttrs

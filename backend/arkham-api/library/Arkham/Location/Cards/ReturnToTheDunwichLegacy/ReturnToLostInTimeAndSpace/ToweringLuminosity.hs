@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSp
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.LostInTimeAndSpace.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.LostInTimeAndSpace.Helpers
 
 newtype ToweringLuminosity = ToweringLuminosity LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

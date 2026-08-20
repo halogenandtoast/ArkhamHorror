@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.TheForgottenAge.ThreadsOfFate.TheSecretMustBeKept 
 
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 import Arkham.Treachery.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToForTheGreaterGoo
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ForTheGreaterGood.Helpers
+import Arkham.Scenarios.TheCircleUndone.ForTheGreaterGood.Helpers
 
 newtype RelicStorage = RelicStorage LocationAttrs
   deriving anyclass IsLocation

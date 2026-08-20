@@ -10,7 +10,7 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.LostInTimeAndSpace.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.LostInTimeAndSpace.Helpers
 
 newtype YogSothoth = YogSothoth EnemyAttrs
   deriving anyclass IsEnemy

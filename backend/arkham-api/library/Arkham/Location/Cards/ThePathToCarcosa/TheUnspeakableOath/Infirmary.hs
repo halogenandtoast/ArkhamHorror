@@ -6,7 +6,7 @@ import Arkham.Helpers.Investigator
 import Arkham.Location.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheUnspeakableOath.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.TheUnspeakableOath.Helpers
 
 newtype Infirmary = Infirmary LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

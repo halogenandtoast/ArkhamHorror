@@ -10,7 +10,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Locat
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Modifier
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 
 newtype HangmansBrookSpectral = HangmansBrookSpectral LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

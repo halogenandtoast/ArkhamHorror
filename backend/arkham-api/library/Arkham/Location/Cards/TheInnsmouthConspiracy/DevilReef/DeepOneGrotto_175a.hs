@@ -11,7 +11,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Ca
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.DevilReef.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.DevilReef.Helpers
 
 newtype DeepOneGrotto_175a = DeepOneGrotto_175a LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.BrethrenOfAsh.SmokeAndMirrors qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Query
 import Arkham.Matcher.Card (cardIs)
-import Arkham.Scenarios.SmokeAndMirrors.Helpers
+import Arkham.Scenarios.BrethrenOfAsh.SmokeAndMirrors.Helpers
 import Arkham.Treachery.CardDefs.BrethrenOfAsh.SmokeAndMirrors qualified as Treacheries
 
 newtype ArkhamAlive = ArkhamAlive AgendaAttrs

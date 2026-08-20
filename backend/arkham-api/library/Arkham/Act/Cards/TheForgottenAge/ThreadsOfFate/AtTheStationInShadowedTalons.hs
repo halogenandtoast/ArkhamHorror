@@ -8,7 +8,7 @@ import Arkham.Enemy.CardDefs.NightOfTheZealot.Nightgaunts qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype AtTheStationInShadowedTalons = AtTheStationInShadowedTalons ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

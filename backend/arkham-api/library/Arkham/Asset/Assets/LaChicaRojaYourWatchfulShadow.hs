@@ -15,7 +15,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier (UIModifier (..))
-import Arkham.Scenarios.SanguineShadows.Helpers
+import Arkham.Scenarios.TheScarletKeys.SanguineShadows.Helpers
 import Arkham.Spawn
 
 newtype LaChicaRojaYourWatchfulShadow = LaChicaRojaYourWatchfulShadow AssetAttrs

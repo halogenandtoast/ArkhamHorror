@@ -7,7 +7,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelf)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (
   cthulhuPatrolledMarker,
   getCthulhuBoardEnemies,
  )

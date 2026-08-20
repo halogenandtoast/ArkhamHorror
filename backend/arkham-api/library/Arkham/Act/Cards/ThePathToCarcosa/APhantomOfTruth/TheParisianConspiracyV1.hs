@@ -8,7 +8,7 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario (getIsReturnTo)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.APhantomOfTruth.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.APhantomOfTruth.Helpers
 
 newtype TheParisianConspiracyV1 = TheParisianConspiracyV1 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

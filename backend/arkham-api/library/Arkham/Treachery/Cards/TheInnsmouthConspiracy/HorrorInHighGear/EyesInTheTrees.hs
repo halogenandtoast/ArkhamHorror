@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.HorrorInHighGear.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers (scenarioI18n)
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

@@ -16,7 +16,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 import Arkham.Window (Window (windowType))
 import Arkham.Window qualified as Window
 

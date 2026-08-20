@@ -4,7 +4,7 @@ import Arkham.Helpers.ChaosBag
 import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.ToTheForbiddenPeaks.Helpers
 import Arkham.Treachery.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

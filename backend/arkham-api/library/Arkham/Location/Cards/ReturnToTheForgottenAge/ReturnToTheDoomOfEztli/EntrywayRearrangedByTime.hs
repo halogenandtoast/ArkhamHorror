@@ -10,7 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheDoomOfEztli.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDoomOfEztli.Helpers
 
 newtype EntrywayRearrangedByTime = EntrywayRearrangedByTime LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

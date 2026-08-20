@@ -6,7 +6,7 @@ import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as E
 import Arkham.Location.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheHouseAlwaysWins qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Treacheries
 
 newtype ExhibitHallTheArchives = ExhibitHallTheArchives LocationAttrs

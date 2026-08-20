@@ -7,8 +7,8 @@ import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToBeforeTheBlackTh
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos.Types
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos.Types
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 
 newtype WindingGulf = WindingGulf LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

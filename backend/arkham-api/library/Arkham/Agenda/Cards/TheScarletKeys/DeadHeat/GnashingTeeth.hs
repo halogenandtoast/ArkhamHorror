@@ -10,7 +10,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.DeadHeat.Helpers
+import Arkham.Scenarios.TheScarletKeys.DeadHeat.Helpers
 import Arkham.Spawn
 import Arkham.Trait (Trait (Ghoul, Risen))
 

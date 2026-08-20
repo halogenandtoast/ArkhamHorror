@@ -6,7 +6,7 @@ import Arkham.I18n
 import Arkham.Location.Types (Field (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheUnspeakableOath.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.TheUnspeakableOath.Helpers
 import Arkham.Treachery.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

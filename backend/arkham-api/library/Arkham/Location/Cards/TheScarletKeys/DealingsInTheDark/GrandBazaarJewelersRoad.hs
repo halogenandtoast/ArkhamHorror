@@ -9,7 +9,7 @@ import Arkham.Location.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Ca
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DealingsInTheDark.Helpers
+import Arkham.Scenarios.TheScarletKeys.DealingsInTheDark.Helpers
 import Arkham.Trait (Trait (Charm, Relic))
 import Arkham.Window (defaultWindows)
 

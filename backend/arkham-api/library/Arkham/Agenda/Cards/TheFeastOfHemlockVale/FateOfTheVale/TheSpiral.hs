@@ -6,7 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.Matcher
-import Arkham.Scenarios.FateOfTheVale.Helpers (revealEncounterCardFromAbyss)
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers (revealEncounterCardFromAbyss)
 
 newtype TheSpiral = TheSpiral AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

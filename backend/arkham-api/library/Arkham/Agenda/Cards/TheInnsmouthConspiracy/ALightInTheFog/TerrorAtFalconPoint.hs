@@ -6,7 +6,7 @@ import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as 
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Scenarios.ALightInTheFog.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers
 
 newtype TerrorAtFalconPoint = TerrorAtFalconPoint AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

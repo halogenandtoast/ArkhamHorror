@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.TheDunwichLegacy.UndimensionedAndUnseen.RuinAndDestruction (ruinAndDestruction) where
 
 import Arkham.Matcher
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen.Helpers
 import Arkham.Treachery.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

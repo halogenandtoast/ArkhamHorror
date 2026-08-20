@@ -10,7 +10,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Ca
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 
 newtype GilmanHouse = GilmanHouse LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -11,7 +11,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheSearchForKadath.Helpers
+import Arkham.Scenarios.TheDreamEaters.TheSearchForKadath.Helpers
 import Arkham.Story.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Trait (Trait (Item, Supply))

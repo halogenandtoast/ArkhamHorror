@@ -18,7 +18,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Name (nameTitle)
 import Arkham.Projection
 import Arkham.Scenario.Deck (ScenarioEncounterDeckKey (RegularEncounterDeck))
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers
 import Arkham.Trait (Trait (Ruined))
 
 newtype TheDoomOfArkham = TheDoomOfArkham AgendaAttrs

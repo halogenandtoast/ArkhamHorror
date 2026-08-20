@@ -10,7 +10,7 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
-import Arkham.Scenarios.TheLongestNight.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers
 
 newtype TheFarmhouse = TheFarmhouse LocationAttrs
   deriving anyclass IsLocation

@@ -3,7 +3,7 @@ module Arkham.Location.Cards.TheFeastOfHemlockVale.WrittenInRock.RailExit (railE
 import Arkham.Helpers.Modifiers (modifySelf)
 import Arkham.Location.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.WrittenInRock.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.WrittenInRock.Helpers
 
 newtype RailExit = RailExit LocationAttrs
   deriving anyclass (IsLocation, RunMessage)

@@ -13,7 +13,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.HeartOfTheElders.Helpers
+import Arkham.Scenarios.TheForgottenAge.HeartOfTheElders.Helpers
 import Arkham.Token
 
 newtype FeatheredSerpent = FeatheredSerpent EnemyAttrs

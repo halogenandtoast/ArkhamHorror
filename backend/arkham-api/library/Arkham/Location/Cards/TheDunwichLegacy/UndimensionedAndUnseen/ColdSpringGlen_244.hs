@@ -10,7 +10,7 @@ import Arkham.Location.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualifie
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen.Helpers
 import Arkham.Trait
 
 newtype ColdSpringGlen_244 = ColdSpringGlen_244 LocationAttrs

@@ -9,7 +9,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.WrittenInRock.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.WrittenInRock.Helpers
 import Arkham.Trait (Trait (Rail))
 
 newtype ControlStation = ControlStation LocationAttrs

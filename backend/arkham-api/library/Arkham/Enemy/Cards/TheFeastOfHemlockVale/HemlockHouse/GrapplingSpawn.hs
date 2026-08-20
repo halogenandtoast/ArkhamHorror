@@ -5,7 +5,7 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Projection
-import Arkham.Scenarios.HemlockHouse.Helpers (getFloorNumber)
+import Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.Helpers (getFloorNumber)
 
 newtype GrapplingSpawn = GrapplingSpawn EnemyAttrs
   deriving anyclass (IsEnemy, RunMessage)

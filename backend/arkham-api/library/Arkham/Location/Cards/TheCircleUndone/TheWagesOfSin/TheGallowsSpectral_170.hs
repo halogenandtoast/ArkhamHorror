@@ -12,7 +12,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Locat
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 import Arkham.Trait (Trait (Geist), toTraits)
 
 newtype TheGallowsSpectral_170 = TheGallowsSpectral_170 LocationAttrs

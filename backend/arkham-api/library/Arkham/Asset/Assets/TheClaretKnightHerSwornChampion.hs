@@ -7,7 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key.Cards as Keys
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf, modifySelect)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
@@ -15,7 +15,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.DogsOfWar.Helpers
+import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers
 
 newtype TheClaretKnightHerSwornChampion = TheClaretKnightHerSwornChampion AssetAttrs
   deriving anyclass IsAsset

@@ -5,7 +5,7 @@ import Arkham.Enemy.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Scenarios.APhantomOfTruth.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.APhantomOfTruth.Helpers
 
 newtype TheOrganistDrapedInMystery = TheOrganistDrapedInMystery EnemyAttrs
   deriving anyclass IsEnemy

@@ -5,7 +5,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ObsidianCanyons.Helpers (canEnterOpenSky)
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers (canEnterOpenSky)
 
 newtype OpenSky = OpenSky LocationAttrs
   deriving anyclass IsLocation

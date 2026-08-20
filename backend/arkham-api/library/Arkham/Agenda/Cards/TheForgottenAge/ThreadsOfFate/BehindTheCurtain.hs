@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheForgottenAge.ThreadsOfFate.BehindTheCurtain (behin
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype BehindTheCurtain = BehindTheCurtain AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

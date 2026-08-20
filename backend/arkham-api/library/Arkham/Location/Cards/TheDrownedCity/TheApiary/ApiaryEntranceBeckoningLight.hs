@@ -9,7 +9,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck (ScenarioEncounterDeckKey (..))
-import Arkham.Scenarios.TheApiary.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheApiary.Helpers
 
 newtype ApiaryEntranceBeckoningLight = ApiaryEntranceBeckoningLight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

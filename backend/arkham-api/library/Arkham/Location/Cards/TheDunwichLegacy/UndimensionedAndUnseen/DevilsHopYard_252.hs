@@ -10,7 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Location.Runner (locationEnemiesWithTrait, locationInvestigatorsWithClues)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen.Helpers
 import Arkham.Trait
 
 newtype DevilsHopYard_252 = DevilsHopYard_252 LocationAttrs

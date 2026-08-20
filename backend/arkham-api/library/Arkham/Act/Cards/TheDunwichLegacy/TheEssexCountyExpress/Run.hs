@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheDunwichLegacy.TheEssexCountyExpress qualified as C
 import Arkham.Act.Import.Lifted hiding (Run)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheEssexCountyExpress.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheEssexCountyExpress.Helpers
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 

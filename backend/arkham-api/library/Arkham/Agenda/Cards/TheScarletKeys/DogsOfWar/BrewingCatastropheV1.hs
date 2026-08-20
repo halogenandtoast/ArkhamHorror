@@ -7,7 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelect, modifySelf)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Scenarios.DogsOfWar.Helpers
+import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers
 
 newtype BrewingCatastropheV1 = BrewingCatastropheV1 AgendaAttrs
   deriving anyclass IsAgenda

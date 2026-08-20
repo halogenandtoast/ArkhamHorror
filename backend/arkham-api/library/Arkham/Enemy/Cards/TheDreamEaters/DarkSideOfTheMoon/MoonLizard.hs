@@ -7,7 +7,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Modifiers qualified as Mod
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 import Arkham.Trait (Trait (Cave))
 
 newtype MoonLizard = MoonLizard EnemyAttrs

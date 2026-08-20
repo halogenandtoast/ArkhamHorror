@@ -6,7 +6,7 @@ import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (getCthulhuRage)
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (getCthulhuRage)
 
 newtype CthulhuFierceVisageEnraged = CthulhuFierceVisageEnraged EnemyAttrs
   deriving anyclass IsEnemy

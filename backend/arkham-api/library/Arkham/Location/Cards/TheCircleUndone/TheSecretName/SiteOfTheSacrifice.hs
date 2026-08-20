@@ -9,7 +9,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
 
 newtype SiteOfTheSacrifice = SiteOfTheSacrifice LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

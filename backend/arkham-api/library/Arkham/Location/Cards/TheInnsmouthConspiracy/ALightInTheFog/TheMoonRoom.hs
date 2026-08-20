@@ -10,7 +10,7 @@ import Arkham.Location.FloodLevel
 import Arkham.Location.Helpers (resignAction)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ALightInTheFog.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers
 
 newtype TheMoonRoom = TheMoonRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

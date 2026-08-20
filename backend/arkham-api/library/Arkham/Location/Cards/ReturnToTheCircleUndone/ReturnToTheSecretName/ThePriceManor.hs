@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToTheSecretName qu
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
 
 newtype ThePriceManor = ThePriceManor LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

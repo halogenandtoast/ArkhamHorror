@@ -3,7 +3,7 @@ module Arkham.Treachery.Cards.TheForgottenAge.HeartOfTheElders.Pitfall (pitfall)
 import Arkham.Deck
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.HeartOfTheElders.Helpers
+import Arkham.Scenarios.TheForgottenAge.HeartOfTheElders.Helpers
 import Arkham.Treachery.CardDefs.TheForgottenAge.HeartOfTheElders qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

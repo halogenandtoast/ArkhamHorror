@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Card
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 import Arkham.Trait (Trait (Summit))
 import Arkham.Window (getBatchId)
 

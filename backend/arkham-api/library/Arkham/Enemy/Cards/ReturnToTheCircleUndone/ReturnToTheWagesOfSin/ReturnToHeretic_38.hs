@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.ReturnToTheCircleUndone.ReturnToTheWagesOfSin.ReturnTo
 
 import Arkham.Enemy.CardDefs.ReturnToTheCircleUndone.ReturnToTheWagesOfSin qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 import Arkham.Story.CardDefs.ReturnToTheCircleUndone.ReturnToTheWagesOfSin qualified as Story
 
 newtype ReturnToHeretic_38 = ReturnToHeretic_38 EnemyAttrs

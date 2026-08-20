@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.BrethrenOfAsh.SmokeAndMirrors.EmergentEvils (emergent
 import Arkham.Ability
 import Arkham.Agenda.CardDefs.BrethrenOfAsh.SmokeAndMirrors qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Scenarios.SmokeAndMirrors.Helpers
+import Arkham.Scenarios.BrethrenOfAsh.SmokeAndMirrors.Helpers
 
 newtype EmergentEvils = EmergentEvils AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

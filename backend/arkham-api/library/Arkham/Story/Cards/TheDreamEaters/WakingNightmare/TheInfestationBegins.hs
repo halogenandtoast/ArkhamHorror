@@ -10,8 +10,8 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getInvestigators, getLead, getPlayerCount)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.WakingNightmare.Helpers
-import Arkham.Scenarios.WakingNightmare.InfestationBag
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.InfestationBag
 import Arkham.Story.CardDefs.TheDreamEaters.WakingNightmare qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Story.Types (StoryAttrs (..))

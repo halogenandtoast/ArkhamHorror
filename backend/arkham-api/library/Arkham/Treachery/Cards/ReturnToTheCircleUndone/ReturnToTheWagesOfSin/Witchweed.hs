@@ -5,7 +5,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 import Arkham.Treachery.CardDefs.ReturnToTheCircleUndone.ReturnToTheWagesOfSin qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

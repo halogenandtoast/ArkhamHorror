@@ -10,7 +10,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Ca
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 
 newtype EsotericOrderOfDagonInTooDeep = EsotericOrderOfDagonInTooDeep LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

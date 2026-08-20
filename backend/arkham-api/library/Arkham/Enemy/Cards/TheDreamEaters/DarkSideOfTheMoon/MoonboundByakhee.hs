@@ -6,7 +6,7 @@ import Arkham.Enemy.Runner
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 import Arkham.Token
 import Arkham.Trait (Trait (Surface))
 

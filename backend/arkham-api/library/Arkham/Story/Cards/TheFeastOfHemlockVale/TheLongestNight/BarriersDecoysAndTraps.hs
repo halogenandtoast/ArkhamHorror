@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheLongestNight.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers
 import Arkham.SortedPair
 import Arkham.Story.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Cards
 import Arkham.Story.Import.Lifted

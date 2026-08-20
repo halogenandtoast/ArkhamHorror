@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.ForTheGreaterGood.Helpers
+import Arkham.Scenarios.TheCircleUndone.ForTheGreaterGood.Helpers
 
 newtype LobbyWeveBeenExpectingYou = LobbyWeveBeenExpectingYou LocationAttrs
   deriving anyclass IsLocation

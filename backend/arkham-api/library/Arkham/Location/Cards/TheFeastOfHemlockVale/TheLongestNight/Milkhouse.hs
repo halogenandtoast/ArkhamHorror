@@ -8,7 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Scenarios.TheLongestNight.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers
 import Arkham.Token
 import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.Fire qualified as Treacheries
 import Arkham.Window (getBatchId, windowType)

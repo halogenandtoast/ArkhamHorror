@@ -9,7 +9,7 @@ import Arkham.Location.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualifie
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen.Helpers
 import Arkham.Trait
 
 newtype BlastedHeath_248 = BlastedHeath_248 LocationAttrs

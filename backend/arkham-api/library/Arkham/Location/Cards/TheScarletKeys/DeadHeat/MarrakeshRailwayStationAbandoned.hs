@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.CardDefs.TheScarletKeys.DeadHeat qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.DeadHeat.Helpers
+import Arkham.Scenarios.TheScarletKeys.DeadHeat.Helpers
 
 newtype MarrakeshRailwayStationAbandoned = MarrakeshRailwayStationAbandoned LocationAttrs
   deriving anyclass IsLocation

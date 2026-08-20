@@ -11,7 +11,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DancingMad.Helpers
+import Arkham.Scenarios.TheScarletKeys.DancingMad.Helpers
 
 newtype SilenceSpeaks = SilenceSpeaks AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

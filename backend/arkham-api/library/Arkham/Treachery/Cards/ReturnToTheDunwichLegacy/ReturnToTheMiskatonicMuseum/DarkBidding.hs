@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Placement
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.CardDefs.ReturnToTheDunwichLegacy.ReturnToTheMiskatonicMuseum qualified as Cards
 import Arkham.Treachery.Import.Lifted hiding (EnemyAttacks)
 

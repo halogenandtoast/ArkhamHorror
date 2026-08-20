@@ -7,7 +7,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Enemies
 import Arkham.Matcher hiding (AssetCard)
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype StrangeRelicsMariaDeSilva = StrangeRelicsMariaDeSilva ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

@@ -4,7 +4,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheLongestNight.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers
 import Arkham.Treachery.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

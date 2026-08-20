@@ -11,7 +11,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 
 newtype TheBlackThrone = TheBlackThrone LocationAttrs
   deriving anyclass IsLocation

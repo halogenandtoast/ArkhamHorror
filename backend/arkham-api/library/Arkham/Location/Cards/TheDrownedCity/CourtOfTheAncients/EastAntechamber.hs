@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (DuringTurn)
-import Arkham.Scenarios.CourtOfTheAncients.Helpers
+import Arkham.Scenarios.TheDrownedCity.CourtOfTheAncients.Helpers
 import Arkham.Trait (Trait (Lift))
 
 newtype EastAntechamber = EastAntechamber LocationAttrs

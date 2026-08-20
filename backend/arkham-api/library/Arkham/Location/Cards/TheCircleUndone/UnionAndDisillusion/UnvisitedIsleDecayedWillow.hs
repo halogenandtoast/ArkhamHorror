@@ -11,7 +11,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as
 import Arkham.Location.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Locations
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 
 newtype UnvisitedIsleDecayedWillow = UnvisitedIsleDecayedWillow LocationAttrs
   deriving anyclass IsLocation

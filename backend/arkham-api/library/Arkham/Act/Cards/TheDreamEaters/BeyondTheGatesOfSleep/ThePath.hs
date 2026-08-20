@@ -8,7 +8,7 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Scenarios.BeyondTheGatesOfSleep.Helpers
+import Arkham.Scenarios.TheDreamEaters.BeyondTheGatesOfSleep.Helpers
 
 newtype ThePath = ThePath ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

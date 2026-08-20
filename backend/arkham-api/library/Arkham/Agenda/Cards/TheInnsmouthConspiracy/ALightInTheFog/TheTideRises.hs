@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified 
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.ALightInTheFog.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers
 import Arkham.Trait (Trait (FalconPoint))
 import Arkham.Zone
 

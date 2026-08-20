@@ -26,7 +26,7 @@ import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (Swap))
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.TheApiary.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheApiary.Helpers
 import Arkham.Trait (Trait (Cultist, Sanctum))
 
 newtype UnsettlingSigns = UnsettlingSigns ActAttrs

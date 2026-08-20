@@ -7,7 +7,7 @@ import Arkham.Card
 import Arkham.GameValue
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.FateOfTheVale.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers (scenarioI18n)
 import Arkham.Window (Window, getBatchId, windowType)
 import Arkham.Window qualified as Window
 

@@ -12,7 +12,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (remember)
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.FateOfTheVale.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers
 
 newtype BoardingHouseNight = BoardingHouseNight LocationAttrs
   deriving anyclass IsLocation

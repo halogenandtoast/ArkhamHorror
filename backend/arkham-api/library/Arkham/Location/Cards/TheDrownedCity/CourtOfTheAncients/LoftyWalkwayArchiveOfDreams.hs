@@ -8,7 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.CourtOfTheAncients.Helpers
+import Arkham.Scenarios.TheDrownedCity.CourtOfTheAncients.Helpers
 import Arkham.Trait (Trait (Passageway))
 
 newtype LoftyWalkwayArchiveOfDreams = LoftyWalkwayArchiveOfDreams LocationAttrs

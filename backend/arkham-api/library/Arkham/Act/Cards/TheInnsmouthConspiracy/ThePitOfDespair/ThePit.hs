@@ -9,7 +9,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ThePitOfDespair.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ThePitOfDespair.Helpers
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Treacheries
 
 newtype ThePit = ThePit ActAttrs

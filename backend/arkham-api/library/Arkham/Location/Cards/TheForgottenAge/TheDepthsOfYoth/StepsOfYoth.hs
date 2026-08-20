@@ -7,7 +7,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 
 newtype StepsOfYoth = StepsOfYoth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

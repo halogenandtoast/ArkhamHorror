@@ -5,7 +5,7 @@ import Arkham.Classes
 import Arkham.Helpers.Investigator
 import Arkham.Matcher
 import Arkham.Prelude
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 import Arkham.Treachery.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

@@ -11,7 +11,7 @@ import Arkham.Location.Brazier
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier (ModifierType (..))
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 
 newtype BeyondTheMistV5 = BeyondTheMistV5 ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

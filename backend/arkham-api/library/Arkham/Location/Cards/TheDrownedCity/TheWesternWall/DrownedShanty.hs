@@ -4,7 +4,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelf
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
 import Arkham.Trait (Trait (DeepOne))
 
 newtype DrownedShanty = DrownedShanty LocationAttrs

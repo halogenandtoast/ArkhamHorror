@@ -10,7 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Scenarios.BlackStarsRise.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.BlackStarsRise.Helpers
 import Arkham.Trait
 
 newtype BrokenSteps_290 = BrokenSteps_290 LocationAttrs

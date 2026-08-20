@@ -16,8 +16,8 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 
 newtype PathwayIntoVoid = PathwayIntoVoid LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

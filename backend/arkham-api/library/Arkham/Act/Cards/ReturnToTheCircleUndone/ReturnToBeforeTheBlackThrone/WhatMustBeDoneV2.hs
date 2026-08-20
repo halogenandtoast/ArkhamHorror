@@ -12,7 +12,7 @@ import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Message.Lifted.Choose
 import Arkham.Movement
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 import Data.List qualified as List
 
 newtype WhatMustBeDoneV2 = WhatMustBeDoneV2 ActAttrs

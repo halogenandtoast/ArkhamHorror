@@ -12,7 +12,7 @@ import Arkham.Location.Grid (GridLocation (..), flattenGrid)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move (moveToEdit)
 import Arkham.Movement
-import Arkham.Scenarios.HemlockHouse.Helpers (flipLocationOver, locationIsUnsealed)
+import Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.Helpers (flipLocationOver, locationIsUnsealed)
 import Arkham.Token (Token (..))
 import Arkham.Trait (Trait (Dormant, Room))
 

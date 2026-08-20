@@ -8,7 +8,7 @@ import Arkham.Keyword (Keyword (Retaliate))
 import Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.FatalMirage.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.FatalMirage.Helpers
 import Arkham.Story.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Stories
 
 newtype OttomanFront = OttomanFront LocationAttrs

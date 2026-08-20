@@ -4,7 +4,7 @@ import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified a
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.IntoTheMaelstrom.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom.Helpers (scenarioI18n)
 import Arkham.Trait (Trait (AncientOne, Sanctum))
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards
 import Arkham.Treachery.Import.Lifted

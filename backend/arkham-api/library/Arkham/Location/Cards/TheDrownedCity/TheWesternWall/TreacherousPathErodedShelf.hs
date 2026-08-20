@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheWesternWall.Helpers (getLocationLevel, treacherousPathModifiers)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (getLocationLevel, treacherousPathModifiers)
 
 newtype TreacherousPathErodedShelf = TreacherousPathErodedShelf LocationAttrs
   deriving anyclass IsLocation

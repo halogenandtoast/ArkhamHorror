@@ -11,7 +11,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 import Arkham.Trait (Trait (Void))
 
 newtype CourtOfTheGreatOldOnes = CourtOfTheGreatOldOnes LocationAttrs

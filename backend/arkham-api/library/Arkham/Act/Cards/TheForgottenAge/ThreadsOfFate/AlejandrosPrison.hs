@@ -7,7 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ThreadsOfFate.Helpers
+import Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers
 
 newtype AlejandrosPrison = AlejandrosPrison ActAttrs
   deriving anyclass IsAct

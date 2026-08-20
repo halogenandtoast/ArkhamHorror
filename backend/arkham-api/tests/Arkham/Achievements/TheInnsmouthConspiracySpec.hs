@@ -32,7 +32,7 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Locations
 import Arkham.Placement
 import Arkham.ScenarioLogKey (ScenarioCountKey (Barriers))
-import Arkham.Scenarios.InTooDeep.Helpers qualified as InTooDeep
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers qualified as InTooDeep
 import Arkham.SortedPair (sortedPair)
 import Arkham.Trait (Trait (DeepOne))
 import Data.Map.Strict qualified as Map

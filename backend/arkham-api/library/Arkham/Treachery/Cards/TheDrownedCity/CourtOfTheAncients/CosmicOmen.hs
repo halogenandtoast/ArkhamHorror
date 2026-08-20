@@ -5,7 +5,7 @@ import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.CourtOfTheAncients.Helpers
+import Arkham.Scenarios.TheDrownedCity.CourtOfTheAncients.Helpers
 import Arkham.Trait (Trait (Glyph))
 import Arkham.Treachery.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Cards
 import Arkham.Treachery.Import.Lifted

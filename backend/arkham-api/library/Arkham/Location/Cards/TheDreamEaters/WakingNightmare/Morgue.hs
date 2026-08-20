@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheDreamEaters.WakingNightmare qualified as Card
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
-import Arkham.Scenarios.WakingNightmare.Helpers
+import Arkham.Scenarios.TheDreamEaters.WakingNightmare.Helpers
 
 newtype Morgue = Morgue LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

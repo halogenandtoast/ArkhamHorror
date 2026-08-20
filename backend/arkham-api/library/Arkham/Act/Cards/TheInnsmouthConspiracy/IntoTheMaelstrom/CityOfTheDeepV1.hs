@@ -7,7 +7,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.IntoTheMaelstrom.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom.Helpers
 import Arkham.Trait (Trait (AncientOne, Lair, Sanctum))
 
 newtype CityOfTheDeepV1 = CityOfTheDeepV1 ActAttrs

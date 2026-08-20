@@ -4,7 +4,7 @@ import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.APhantomOfTruth.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.APhantomOfTruth.Helpers
 import Arkham.Treachery.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Cards
 import Arkham.Treachery.Import.Lifted
 

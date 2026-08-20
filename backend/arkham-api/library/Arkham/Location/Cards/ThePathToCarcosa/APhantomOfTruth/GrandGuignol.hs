@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Ca
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.APhantomOfTruth.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.APhantomOfTruth.Helpers
 
 newtype GrandGuignol = GrandGuignol LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

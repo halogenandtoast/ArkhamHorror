@@ -11,7 +11,7 @@ import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Name
-import Arkham.Scenarios.HorrorInHighGear.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers (scenarioI18n)
 import Arkham.Trait (Trait (Road))
 import Arkham.Window qualified as Window
 

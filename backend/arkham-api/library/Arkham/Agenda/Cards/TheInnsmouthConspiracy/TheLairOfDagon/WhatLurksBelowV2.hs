@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Scenario.Types (Field (..))
-import Arkham.Scenarios.TheLairOfDagon.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon.Helpers
 
 newtype WhatLurksBelowV2 = WhatLurksBelowV2 AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

@@ -8,7 +8,7 @@ import Arkham.Helpers.Query
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 
 newtype CatsFromSaturn = CatsFromSaturn EnemyAttrs
   deriving anyclass IsEnemy

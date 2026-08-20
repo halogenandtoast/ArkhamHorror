@@ -12,7 +12,7 @@ import Arkham.Id
 import Arkham.Location.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Cards
 import Arkham.Location.Import.Lifted hiding (investigate)
 import Arkham.Matcher
-import Arkham.Scenarios.WhereTheGodsDwell.Helpers
+import Arkham.Scenarios.TheDreamEaters.WhereTheGodsDwell.Helpers
 
 newtype ForsakenTowerOfIllusionAndMyth = ForsakenTowerOfIllusionAndMyth LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

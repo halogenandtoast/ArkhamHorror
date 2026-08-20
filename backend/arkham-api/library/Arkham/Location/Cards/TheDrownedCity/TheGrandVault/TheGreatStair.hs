@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheGrandVault.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheGrandVault.Helpers
 
 newtype TheGreatStair = TheGreatStair LocationAttrs
   deriving anyclass IsLocation

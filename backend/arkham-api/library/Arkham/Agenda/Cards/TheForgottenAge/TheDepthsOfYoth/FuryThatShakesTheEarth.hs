@@ -6,7 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Matcher
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 
 newtype FuryThatShakesTheEarth = FuryThatShakesTheEarth AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheTwistedHollow.Helpers (placeValeLanternAtNearestLocation)
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers (placeValeLanternAtNearestLocation)
 
 newtype ValeLanternExtinguishedLight = ValeLanternExtinguishedLight AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)

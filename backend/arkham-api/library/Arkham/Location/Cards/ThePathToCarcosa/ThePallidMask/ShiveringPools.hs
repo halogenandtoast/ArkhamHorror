@@ -13,7 +13,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ThePallidMask.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.ThePallidMask.Helpers
 
 newtype ShiveringPools = ShiveringPools LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

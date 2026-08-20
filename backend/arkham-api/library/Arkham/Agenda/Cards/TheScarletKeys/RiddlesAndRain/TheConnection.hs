@@ -7,7 +7,7 @@ import Arkham.Enemy.CardDefs.TheScarletKeys.CrimsonConspiracy qualified as Enemi
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.RiddlesAndRain.Helpers
+import Arkham.Scenarios.TheScarletKeys.RiddlesAndRain.Helpers
 
 newtype TheConnection = TheConnection AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

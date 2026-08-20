@@ -9,7 +9,7 @@ import Arkham.Attack
 import Arkham.Location.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.WhereTheGodsDwell.Helpers
+import Arkham.Scenarios.TheDreamEaters.WhereTheGodsDwell.Helpers
 
 newtype ForsakenTowerOfTheQueenOfNight = ForsakenTowerOfTheQueenOfNight LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

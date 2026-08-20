@@ -18,7 +18,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier (setActiveDuringSetup)
 import Arkham.Projection
-import Arkham.Scenarios.DealingsInTheDark.Helpers
+import Arkham.Scenarios.TheScarletKeys.DealingsInTheDark.Helpers
 import Arkham.Story.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Stories
 import Arkham.Token
 

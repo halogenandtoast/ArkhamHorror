@@ -4,7 +4,7 @@ import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 
 newtype AbandonedSite = AbandonedSite LocationAttrs
   deriving anyclass IsLocation

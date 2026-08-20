@@ -6,7 +6,7 @@ import Arkham.Key
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ThePitOfDespair.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ThePitOfDespair.Helpers
 
 newtype IdolChamber = IdolChamber LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

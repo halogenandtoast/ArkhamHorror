@@ -11,7 +11,7 @@ import Arkham.Helpers.Query (getInvestigators, getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.WithoutATrace.Helpers
+import Arkham.Scenarios.TheScarletKeys.WithoutATrace.Helpers
 import Arkham.Window (Window (..))
 import Arkham.Window qualified as Window
 

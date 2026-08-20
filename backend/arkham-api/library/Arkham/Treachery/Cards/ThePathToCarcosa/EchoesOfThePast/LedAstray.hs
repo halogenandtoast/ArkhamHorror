@@ -5,7 +5,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.EchoesOfThePast.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.EchoesOfThePast.Helpers
 import Arkham.Trait
 import Arkham.Treachery.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Cards
 import Arkham.Treachery.Import.Lifted

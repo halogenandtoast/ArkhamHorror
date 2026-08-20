@@ -7,7 +7,7 @@ import Arkham.Helpers.Location
 import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Cards
 import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Locations
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 
 newtype HangmansBrook = HangmansBrook LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

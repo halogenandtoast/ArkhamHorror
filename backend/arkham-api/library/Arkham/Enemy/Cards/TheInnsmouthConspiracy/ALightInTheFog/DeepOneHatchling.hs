@@ -10,7 +10,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
-import Arkham.Scenarios.DevilReef.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.DevilReef.Helpers
 import Arkham.Trait (Trait (DeepOne))
 
 newtype DeepOneHatchling = DeepOneHatchling EnemyAttrs

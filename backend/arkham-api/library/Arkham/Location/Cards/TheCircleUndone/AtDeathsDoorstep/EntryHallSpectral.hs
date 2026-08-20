@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.AtDeathsDoorstep.Helpers
+import Arkham.Scenarios.TheCircleUndone.AtDeathsDoorstep.Helpers
 import Arkham.Trait (Trait (SilverTwilight))
 
 newtype EntryHallSpectral = EntryHallSpectral LocationAttrs

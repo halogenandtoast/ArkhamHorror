@@ -12,7 +12,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
 import Arkham.Modifier (ModifierType (DoNotTakeUpSlot))
-import Arkham.Scenarios.SpreadingFlames.Helpers
+import Arkham.Scenarios.BrethrenOfAsh.SpreadingFlames.Helpers
 import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 
 newtype SearchingForDrArmitage = SearchingForDrArmitage ActAttrs

@@ -15,7 +15,7 @@ import Arkham.Investigator.Cards qualified as Investigators
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
-import Arkham.Scenarios.AtDeathsDoorstep.Helpers
+import Arkham.Scenarios.TheCircleUndone.AtDeathsDoorstep.Helpers
 import Arkham.Trait (Trait (Monster, SilverTwilight))
 
 newtype JusticeXI = JusticeXI AgendaAttrs

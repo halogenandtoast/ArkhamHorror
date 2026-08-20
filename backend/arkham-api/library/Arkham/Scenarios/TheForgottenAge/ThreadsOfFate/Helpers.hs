@@ -1,0 +1,54 @@
+module Arkham.Scenarios.TheForgottenAge.ThreadsOfFate.Helpers where
+
+import Arkham.Act.Sequence qualified as Act
+import Arkham.Campaigns.TheForgottenAge.Helpers
+import Arkham.Card
+import Arkham.Classes.HasGame
+import Arkham.Classes.Query
+import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Helpers.Scenario
+import Arkham.I18n
+import Arkham.Id
+import Arkham.Matcher
+import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Log
+import Arkham.Modifier
+import Arkham.Name
+import Arkham.Prelude
+import Arkham.Scenario.Types (Field (..))
+import Arkham.ScenarioLogKey
+import Arkham.Source
+
+getActDecksInPlayCount :: HasGame m => m Int
+getActDecksInPlayCount = do
+  hasDeckA <- selectAny $ ActOneOf [ActWithSide Act.A, ActWithSide Act.B]
+  hasDeckC <- selectAny $ ActOneOf [ActWithSide Act.C, ActWithSide Act.D]
+  hasDeckE <- selectAny $ ActOneOf [ActWithSide Act.E, ActWithSide Act.F]
+  hasDeckG <- selectAny $ ActOneOf [ActWithSide Act.G, ActWithSide Act.H]
+  pure $ count id [hasDeckA, hasDeckC, hasDeckE, hasDeckG]
+
+isIchtacasPrey :: HasGame m => EnemyId -> m Bool
+isIchtacasPrey eid = scenarioFieldMap ScenarioRemembered $ any $ \case
+  IchtacasPrey (Labeled _ eid' `With` _) -> eid == eid'
+  _ -> False
+
+rememberIchtacasPrey :: (ReverseQueue m, HasCardDef card) => EnemyId -> card -> m ()
+rememberIchtacasPrey eid (toCardDef -> card) = do
+  scenarioI18n
+    $ gameModifier
+      ScenarioSource
+      eid
+      (UIModifier $ ImportantToScenario $ ikey' "ui.ichtacasPrey")
+  remember $ IchtacasPrey $ Labeled (toName card) eid `With` Envelope @"cardCode" card.cardCode
+
+rememberIchtacasDestination :: (ReverseQueue m, HasCardDef card) => LocationId -> card -> m ()
+rememberIchtacasDestination lid (toCardDef -> card) = do
+  scenarioI18n
+    $ gameModifier
+      ScenarioSource
+      lid
+      (UIModifier $ ImportantToScenario $ ikey' "ui.ichtacasDestination")
+  remember $ IchtacasDestination $ Labeled (toName card) lid `With` Envelope @"cardCode" card.cardCode
+
+scenarioI18n :: (HasI18n => a) -> a
+scenarioI18n a = campaignI18n $ scope "threadsOfFate" a

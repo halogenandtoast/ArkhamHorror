@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.InTooDeep.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.InTooDeep.Helpers
 
 newtype SawboneAlleyInTooDeep = SawboneAlleyInTooDeep LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

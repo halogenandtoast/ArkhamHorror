@@ -8,7 +8,7 @@ import Arkham.Location.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified a
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.InTheClutchesOfChaos.Helpers
+import Arkham.Scenarios.TheCircleUndone.InTheClutchesOfChaos.Helpers
 
 newtype MerchantDistrict_300 = MerchantDistrict_300 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

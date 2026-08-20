@@ -9,7 +9,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Locations
 import Arkham.Matcher
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheUnspeakableOath.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.TheUnspeakableOath.Helpers
 import Arkham.Trait
 
 newtype NoAsylum = NoAsylum ActAttrs

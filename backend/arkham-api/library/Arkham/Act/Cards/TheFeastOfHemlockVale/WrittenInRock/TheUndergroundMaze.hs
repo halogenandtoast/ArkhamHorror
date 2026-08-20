@@ -10,7 +10,7 @@ import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.WrittenInRock.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.WrittenInRock.Helpers
 
 newtype TheUndergroundMaze = TheUndergroundMaze ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

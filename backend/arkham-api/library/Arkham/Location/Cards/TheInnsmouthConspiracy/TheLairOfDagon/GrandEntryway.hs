@@ -9,7 +9,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheLairOfDagon.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon.Helpers
 import Arkham.Trait (Trait (Cave))
 
 newtype GrandEntryway = GrandEntryway LocationAttrs

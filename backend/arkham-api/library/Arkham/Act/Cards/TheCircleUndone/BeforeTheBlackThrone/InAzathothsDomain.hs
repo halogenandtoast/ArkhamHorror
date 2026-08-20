@@ -19,8 +19,8 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Movement
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 import Data.List qualified as List
 import Data.List.Extra qualified as List
 

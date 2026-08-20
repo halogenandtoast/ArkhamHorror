@@ -8,7 +8,7 @@ import Arkham.Helpers.Window (locationLeavingPlay)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 import Arkham.Trait (Trait (Central))
 
 newtype OtherworldlyStorms = OtherworldlyStorms AgendaAttrs

@@ -12,7 +12,7 @@ import Arkham.Location.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified a
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum.Helpers
 import Arkham.Spawn
 
 newtype BreakingAndEntering = BreakingAndEntering ActAttrs

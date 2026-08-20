@@ -10,7 +10,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualifie
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.HorrorInHighGear.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers
 
 newtype DimlyLitRoad_b = DimlyLitRoad_b LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

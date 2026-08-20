@@ -9,7 +9,7 @@ import Arkham.Location.CardDefs.TheForgottenAge.TheCityOfArchives qualified as C
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Projection
-import Arkham.Scenarios.TheCityOfArchives.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheCityOfArchives.Helpers
 
 newtype TowersOfPnakotus = TowersOfPnakotus LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

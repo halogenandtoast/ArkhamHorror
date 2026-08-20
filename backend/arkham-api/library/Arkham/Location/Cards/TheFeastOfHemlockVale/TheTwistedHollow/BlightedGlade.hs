@@ -6,7 +6,7 @@ import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheTwistedHollow.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers
 import Arkham.Spawn
 
 newtype BlightedGlade = BlightedGlade LocationAttrs

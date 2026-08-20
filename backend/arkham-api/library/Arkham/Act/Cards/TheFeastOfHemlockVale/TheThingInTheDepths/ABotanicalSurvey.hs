@@ -9,7 +9,7 @@ import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheThingInTheDepths qualified
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheThingInTheDepths.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheThingInTheDepths.Helpers
 
 newtype ABotanicalSurvey = ABotanicalSurvey ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

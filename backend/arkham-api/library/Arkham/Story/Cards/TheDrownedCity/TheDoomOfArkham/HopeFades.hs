@@ -6,7 +6,7 @@ import Arkham.ChaosToken
 import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers
 import Arkham.Story.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Cards
 import Arkham.Story.Import.Lifted
 

@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Locatio
 import Arkham.Matcher
 import Arkham.Message (ReplaceStrategy (DefaultReplace))
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DimCarcosa.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.DimCarcosa.Helpers
 import Arkham.Story.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Cards
 import Arkham.Story.Import.Lifted
 

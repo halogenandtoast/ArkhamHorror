@@ -12,8 +12,8 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
-import Arkham.Scenarios.BeforeTheBlackThrone.Cosmos
-import Arkham.Scenarios.BeforeTheBlackThrone.Helpers
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos
+import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers
 import Data.List qualified as List
 
 newtype DancersMist = DancersMist LocationAttrs

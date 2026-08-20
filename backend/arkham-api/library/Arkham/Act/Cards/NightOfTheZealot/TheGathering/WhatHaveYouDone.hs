@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheGathering.Helpers
+import Arkham.Scenarios.NightOfTheZealot.TheGathering.Helpers
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

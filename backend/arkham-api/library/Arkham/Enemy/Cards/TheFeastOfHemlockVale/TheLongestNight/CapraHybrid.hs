@@ -4,7 +4,7 @@ import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as 
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (modifySelf)
 import Arkham.Matcher
-import Arkham.Scenarios.TheLongestNight.Helpers (pattern IgnoreDecoys)
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers (pattern IgnoreDecoys)
 
 newtype CapraHybrid = CapraHybrid EnemyAttrs
   deriving anyclass (IsEnemy, RunMessage)

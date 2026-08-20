@@ -13,7 +13,7 @@ import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message (ReplaceStrategy (Swap))
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers
 import Arkham.Trait (Trait (Ally, Cthulhu))
 
 newtype BanishHim = BanishHim ActAttrs

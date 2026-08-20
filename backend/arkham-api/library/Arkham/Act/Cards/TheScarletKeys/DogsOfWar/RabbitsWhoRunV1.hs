@@ -5,7 +5,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Attack (enemyAttack)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
-import Arkham.Scenarios.DogsOfWar.Helpers
+import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers
 
 newtype RabbitsWhoRunV1 = RabbitsWhoRunV1 ActAttrs
   deriving anyclass IsAct

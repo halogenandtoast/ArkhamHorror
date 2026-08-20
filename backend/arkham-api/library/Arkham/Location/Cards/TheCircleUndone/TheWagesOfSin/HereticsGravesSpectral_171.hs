@@ -11,7 +11,7 @@ import Arkham.Helpers.SkillTest (getSkillTestInvestigator, isInvestigating)
 import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Cards
 import Arkham.Location.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Locations
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheWagesOfSin.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers
 
 newtype HereticsGravesSpectral_171 = HereticsGravesSpectral_171 LocationAttrs
   deriving anyclass IsLocation

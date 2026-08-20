@@ -10,7 +10,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Window (locationLeavingPlay)
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 import Arkham.Trait (Trait (Central))
 
 newtype EncroachingStorms = EncroachingStorms AgendaAttrs

@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier qualified as Mod
 import Arkham.Phase
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 
 newtype SpectralRaven = SpectralRaven EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

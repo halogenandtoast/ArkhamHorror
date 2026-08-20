@@ -3,7 +3,7 @@ module Arkham.Location.Cards.TheDrownedCity.TheWesternWall.ObsidianFoundations (
 import Arkham.Ability
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
 import Arkham.Treachery.CardDefs.TheDrownedCity.TheWesternWall qualified as Treacheries
 
 newtype ObsidianFoundations = ObsidianFoundations LocationAttrs

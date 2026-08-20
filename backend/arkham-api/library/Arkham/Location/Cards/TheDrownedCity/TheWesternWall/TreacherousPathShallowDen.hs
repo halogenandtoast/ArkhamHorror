@@ -8,7 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Phase
-import Arkham.Scenarios.TheWesternWall.Helpers (treacherousPathModifiers)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (treacherousPathModifiers)
 
 newtype TreacherousPathShallowDen = TreacherousPathShallowDen LocationAttrs
   deriving anyclass IsLocation

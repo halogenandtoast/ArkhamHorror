@@ -9,7 +9,7 @@ import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.ThePallidMask.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.ThePallidMask.Helpers
 
 newtype LabyrinthOfBones = LabyrinthOfBones LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -10,7 +10,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Projection
-import Arkham.Scenarios.DogsOfWar.Helpers
+import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers
 
 newtype ZanEtElSettat = ZanEtElSettat LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

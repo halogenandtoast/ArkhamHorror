@@ -8,7 +8,7 @@ import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.SpreadingFlames.Helpers
+import Arkham.Scenarios.BrethrenOfAsh.SpreadingFlames.Helpers
 import Arkham.Treachery.CardDefs.BrethrenOfAsh.Fire1 qualified as Treacheries
 
 newtype LitUp = LitUp AgendaAttrs

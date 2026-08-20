@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.CardDefs.ThePathToCarcosa.TheLastKing qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheLastKing.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.TheLastKing.Helpers
 
 newtype Foyer = Foyer LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

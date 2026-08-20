@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.TheFeastOfHemlockVale.FateOfTheVale.CosmicEmissaryTheM
 import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
-import Arkham.Scenarios.FateOfTheVale.CosmicEmissary
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.CosmicEmissary
 
 newtype CosmicEmissaryTheMiasmaShattered = CosmicEmissaryTheMiasmaShattered EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

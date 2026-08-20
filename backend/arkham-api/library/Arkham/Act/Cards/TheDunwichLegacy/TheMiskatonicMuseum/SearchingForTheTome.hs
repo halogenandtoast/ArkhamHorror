@@ -6,7 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Location.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum.Helpers
 
 newtype SearchingForTheTome = SearchingForTheTome ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)

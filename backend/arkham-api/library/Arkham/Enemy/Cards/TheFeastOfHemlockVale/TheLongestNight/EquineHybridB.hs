@@ -6,7 +6,7 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Location.Grid
 import Arkham.Matcher
-import Arkham.Scenarios.TheLongestNight.Helpers (pattern IgnoreTraps)
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers (pattern IgnoreTraps)
 
 newtype EquineHybridB = EquineHybridB EnemyAttrs
   deriving anyclass IsEnemy

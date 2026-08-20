@@ -7,7 +7,7 @@ import Arkham.Direction (GridDirection (GridRight))
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Scenarios.ObsidianCanyons.Helpers
+import Arkham.Scenarios.TheDrownedCity.ObsidianCanyons.Helpers
 import Arkham.Story.CardDefs.TheDrownedCity.ObsidianCanyons qualified as Cards
 import Arkham.Story.Import.Lifted
 

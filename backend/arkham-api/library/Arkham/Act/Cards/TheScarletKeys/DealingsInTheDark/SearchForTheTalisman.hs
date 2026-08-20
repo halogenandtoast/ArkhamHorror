@@ -19,7 +19,7 @@ import Arkham.Message.Lifted.Move
 import Arkham.Modifier
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.DealingsInTheDark.Helpers
+import Arkham.Scenarios.TheScarletKeys.DealingsInTheDark.Helpers
 import Arkham.Story.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Stories
 
 newtype SearchForTheTalisman = SearchForTheTalisman ActAttrs

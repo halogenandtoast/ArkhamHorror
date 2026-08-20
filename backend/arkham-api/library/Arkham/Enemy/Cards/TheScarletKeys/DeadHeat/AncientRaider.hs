@@ -5,7 +5,7 @@ import Arkham.Enemy.CardDefs.TheScarletKeys.DeadHeat qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Scenarios.DeadHeat.Helpers
+import Arkham.Scenarios.TheScarletKeys.DeadHeat.Helpers
 import Arkham.Token
 
 newtype AncientRaider = AncientRaider EnemyAttrs

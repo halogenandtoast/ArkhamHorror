@@ -53,6 +53,7 @@ data DiscoverMode
   | HomebrewCardDefs
   | CardBuilders String
   | CardDefsRegistry String
+  | ScenarioBuilders
 
 {- | How a discovery mode that reads its inputs renders them: which module
 supplies the registration helpers, which tag type and class instance to emit,
@@ -142,6 +143,22 @@ homebrewSpec = \case
           -- @otherSideIs :: CardDef -> CardDef@ are not mistaken for definitions
           hsHelper = \case
             "CardDef" -> Just ""
+            _ -> Nothing
+        }
+  {- Scenario builders are @foo :: Difficulty -> Foo@, so the result type is
+  what distinguishes them from helpers such as @chaosBag :: Difficulty ->
+  [ChaosTokenFace]@ that share the argument. -}
+  ScenarioBuilders ->
+    Just
+      $ HomebrewSpec
+        { hsImports = ["Arkham.Scenario.Types"]
+        , hsTarget =
+            TargetBinding
+              { dtBindingName = "allScenarioBuilders"
+              , dtBindingType = "[SomeScenario]"
+              }
+        , hsHelper = \rhs -> case words rhs of
+            ["Difficulty", "->", c : ty] | isUpper c, all isAlphaNum ty -> Just "SomeScenario"
             _ -> Nothing
         }
   _ -> Nothing

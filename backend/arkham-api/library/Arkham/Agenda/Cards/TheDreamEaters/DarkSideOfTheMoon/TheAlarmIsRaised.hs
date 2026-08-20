@@ -6,7 +6,7 @@ import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Enemy.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Enemies
 import Arkham.Helpers.Log (whenHasRecord)
 import Arkham.Helpers.Query (getInvestigators, getLead)
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 
 newtype TheAlarmIsRaised = TheAlarmIsRaised AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

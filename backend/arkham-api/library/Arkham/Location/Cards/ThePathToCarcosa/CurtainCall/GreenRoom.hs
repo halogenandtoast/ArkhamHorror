@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Location.CardDefs.ThePathToCarcosa.CurtainCall qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Modifier
-import Arkham.Scenarios.CurtainCall.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.CurtainCall.Helpers
 
 newtype GreenRoom = GreenRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -9,7 +9,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Location.Runner (locationInvestigatorsWithClues)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen.Helpers
 import Arkham.Trait
 
 newtype DunwichVillage_242 = DunwichVillage_242 LocationAttrs

@@ -7,7 +7,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
 import Arkham.Projection
-import Arkham.Scenarios.BlackStarsRise.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.BlackStarsRise.Helpers
 import Arkham.Source
 import Arkham.Story.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Cards
 import Arkham.Story.Import.Lifted

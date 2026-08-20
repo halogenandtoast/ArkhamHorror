@@ -7,7 +7,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
-import Arkham.Scenarios.TheDepthsOfYoth.Helpers
+import Arkham.Scenarios.TheForgottenAge.TheDepthsOfYoth.Helpers
 
 newtype HorrificDescent = HorrificDescent AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

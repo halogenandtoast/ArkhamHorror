@@ -9,7 +9,7 @@ import Arkham.Effect.Import
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.CurtainCall.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.CurtainCall.Helpers
 import Arkham.Trait (Trait (Ally, Item))
 
 newtype TheStrangerUnderTheCity = TheStrangerUnderTheCity ActAttrs

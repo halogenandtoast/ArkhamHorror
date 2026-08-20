@@ -7,7 +7,7 @@ import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Matcher
 import Arkham.Message.Lifted
 import Arkham.Prelude
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 
 newtype MoonBeast = MoonBeast EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)

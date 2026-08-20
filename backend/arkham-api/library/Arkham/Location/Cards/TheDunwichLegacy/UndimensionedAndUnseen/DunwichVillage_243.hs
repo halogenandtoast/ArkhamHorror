@@ -9,7 +9,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.UndimensionedAndUnseen.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.UndimensionedAndUnseen.Helpers
 
 newtype DunwichVillage_243 = DunwichVillage_243 LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

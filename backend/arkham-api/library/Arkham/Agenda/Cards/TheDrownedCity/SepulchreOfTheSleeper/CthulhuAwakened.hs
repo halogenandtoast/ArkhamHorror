@@ -8,7 +8,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.SepulchreOfTheSleeper.Helpers
+import Arkham.Scenarios.TheDrownedCity.SepulchreOfTheSleeper.Helpers
 import Arkham.Trait (Trait (Artifact))
 
 newtype CthulhuAwakened = CthulhuAwakened AgendaAttrs

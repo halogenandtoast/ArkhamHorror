@@ -9,7 +9,7 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Location.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.UnionAndDisillusion.Helpers
+import Arkham.Scenarios.TheCircleUndone.UnionAndDisillusion.Helpers
 
 newtype TheGeistTrap = TheGeistTrap LocationAttrs
   deriving anyclass IsLocation

@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified 
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.ALightInTheFog.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers
 
 newtype PumpRoom = PumpRoom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

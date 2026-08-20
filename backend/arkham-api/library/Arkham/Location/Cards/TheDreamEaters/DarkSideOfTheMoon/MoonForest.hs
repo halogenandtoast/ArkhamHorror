@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Ca
 import Arkham.Location.Runner hiding (beginSkillTest)
 import Arkham.Message.Lifted
 import Arkham.Prelude
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 
 newtype Meta = Meta {hasUsedSuccess :: [InvestigatorId]}
   deriving stock Generic

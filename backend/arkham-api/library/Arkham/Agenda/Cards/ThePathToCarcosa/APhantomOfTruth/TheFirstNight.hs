@@ -4,7 +4,7 @@ import Arkham.Agenda.CardDefs.ThePathToCarcosa.APhantomOfTruth qualified as Card
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
-import Arkham.Scenarios.APhantomOfTruth.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.APhantomOfTruth.Helpers
 
 newtype TheFirstNight = TheFirstNight AgendaAttrs
   deriving anyclass (IsAgenda, HasAbilities)

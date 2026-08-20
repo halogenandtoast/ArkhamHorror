@@ -6,7 +6,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Placement
-import Arkham.Scenarios.ToTheForbiddenPeaks.Helpers
+import Arkham.Scenarios.EdgeOfTheEarth.ToTheForbiddenPeaks.Helpers
 import Arkham.Trait (Trait (Expedition))
 
 newtype WhiteBluff = WhiteBluff LocationAttrs

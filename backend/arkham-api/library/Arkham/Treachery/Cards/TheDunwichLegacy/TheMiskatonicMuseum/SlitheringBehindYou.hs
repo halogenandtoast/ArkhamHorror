@@ -5,7 +5,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Enemy.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Enemies
 import Arkham.Helpers.Location
 import Arkham.Matcher
-import Arkham.Scenarios.TheMiskatonicMuseum.Helpers
+import Arkham.Scenarios.TheDunwichLegacy.TheMiskatonicMuseum.Helpers
 import Arkham.Treachery.CardDefs.TheDunwichLegacy.TheMiskatonicMuseum qualified as Cards
 import Arkham.Treachery.Import.Lifted
 import Arkham.Zone

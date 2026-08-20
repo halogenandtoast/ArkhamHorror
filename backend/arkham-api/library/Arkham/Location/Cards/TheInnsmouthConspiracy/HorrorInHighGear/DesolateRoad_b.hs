@@ -6,7 +6,7 @@ import Arkham.Direction
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.HorrorInHighGear.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers
 import Arkham.Trait (Trait (Vehicle))
 
 newtype DesolateRoad_b = DesolateRoad_b LocationAttrs

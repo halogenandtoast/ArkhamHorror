@@ -7,7 +7,7 @@ import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Scenarios.HemlockHouse.Helpers (flipLocationOver, scenarioI18n)
+import Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.Helpers (flipLocationOver, scenarioI18n)
 import Arkham.Story.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Stories
 import Arkham.Token (Token (..))
 

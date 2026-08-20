@@ -8,7 +8,7 @@ import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Location.CardDefs.NightOfTheZealot.TheGathering qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheGathering.Helpers
+import Arkham.Scenarios.NightOfTheZealot.TheGathering.Helpers
 
 newtype Parlor = Parlor LocationAttrs
   deriving anyclass IsLocation

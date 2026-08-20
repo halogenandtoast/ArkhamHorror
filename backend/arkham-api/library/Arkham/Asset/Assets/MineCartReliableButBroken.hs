@@ -15,7 +15,7 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.Placement (Placement (..))
 import Arkham.Projection
-import Arkham.Scenarios.WrittenInRock.Helpers
+import Arkham.Scenarios.TheFeastOfHemlockVale.WrittenInRock.Helpers
 import Arkham.Token
 import Arkham.Window qualified as Window
 

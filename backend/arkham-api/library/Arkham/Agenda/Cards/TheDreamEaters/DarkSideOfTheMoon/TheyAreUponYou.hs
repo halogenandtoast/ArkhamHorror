@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheDreamEaters.DarkSideOfTheMoon.TheyAreUponYou (They
 import Arkham.Agenda.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Query (allInvestigators)
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
 
 newtype TheyAreUponYou = TheyAreUponYou AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor, HasAbilities)

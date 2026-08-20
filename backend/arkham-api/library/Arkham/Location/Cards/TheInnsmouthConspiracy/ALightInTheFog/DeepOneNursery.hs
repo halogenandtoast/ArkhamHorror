@@ -7,7 +7,7 @@ import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified 
 import Arkham.Location.FloodLevel
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.ALightInTheFog.Helpers
+import Arkham.Scenarios.TheInnsmouthConspiracy.ALightInTheFog.Helpers
 
 newtype DeepOneNursery = DeepOneNursery LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)

@@ -7,7 +7,7 @@ import Arkham.Capability
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.DarkSideOfTheMoon.Helpers (scenarioI18n)
+import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers (scenarioI18n)
 
 newtype VirgilGrayTrulyInspired = VirgilGrayTrulyInspired AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -38,7 +38,8 @@ instance RunMessage VirgilGrayTrulyInspired where
         whenM (can.gain.resources iid) do
           (withI18n $ countVar 1 $ labeled' "gainResources") $ gainResources iid (attrs.ability 1) 1
         whenM (selectAny $ HealableAsset (attrs.ability 1) #horror (be attrs)) do
-          (scenarioI18n $ labeled' "virgilGrayTrulyInspired.heal1HorrorFromVirgilGray") $ healHorror attrs (attrs.ability 1) 1
+          (scenarioI18n $ labeled' "virgilGrayTrulyInspired.heal1HorrorFromVirgilGray")
+            $ healHorror attrs (attrs.ability 1) 1
       when (notNull others) $ chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)
       pure a
     UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do

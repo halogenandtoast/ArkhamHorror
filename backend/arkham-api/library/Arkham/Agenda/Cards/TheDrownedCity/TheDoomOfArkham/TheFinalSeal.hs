@@ -7,7 +7,7 @@ import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheDoomOfArkhamPartII.Helpers (drawCthulhuDeckCard)
+import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (drawCthulhuDeckCard)
 import Arkham.Token (Token (Resource))
 import Arkham.Trait (Trait (Artifact, Cthulhu, Rooftop, Ruined))
 

@@ -5,7 +5,7 @@ import Arkham.GameValue
 import Arkham.Location.CardDefs.ThePathToCarcosa.EchoesOfThePast qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.EchoesOfThePast.Helpers
+import Arkham.Scenarios.ThePathToCarcosa.EchoesOfThePast.Helpers
 import Arkham.Trait
 
 newtype EntryHall = EntryHall LocationAttrs

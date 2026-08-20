@@ -12,7 +12,7 @@ import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Modifier
-import Arkham.Scenarios.TheSecretName.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers
 import Arkham.Trait (Trait (Extradimensional))
 
 newtype The9thWard = The9thWard LocationAttrs

@@ -12,7 +12,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
-import Arkham.Scenarios.TheWitchingHour.Helpers
+import Arkham.Scenarios.TheCircleUndone.TheWitchingHour.Helpers
 
 newtype WitchHauntedWoodsTheLonelyTree = WitchHauntedWoodsTheLonelyTree LocationAttrs
   deriving anyclass IsLocation

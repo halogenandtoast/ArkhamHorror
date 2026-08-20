@@ -447,6 +447,7 @@ data ModifierType
   | RevealChaosTokensBeforeCommittingCards
   | SanityModifier Int
   | CampaignModifier Text
+  | InvestigatorModifier Text
   | ScenarioModifier Text
   | ScenarioModifierValue Text Value
   | SearchDepth Int

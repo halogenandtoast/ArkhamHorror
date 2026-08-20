@@ -231,6 +231,7 @@ allowsPlayerCardSource = \case
   SourceIsEvent _ -> True
   SourceWithTrait _ -> True
   SourceWithCard _ -> True
+  SourceWithExtendedCard _ -> True
   SourceIsType t -> t `elem` playerCardTypes
   SourceMatchesAny ms -> any allowsPlayerCardSource ms
   SourceMatches ms -> all allowsPlayerCardSource ms

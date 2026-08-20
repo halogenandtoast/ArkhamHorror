@@ -39,6 +39,7 @@ data SourceMatcher
   | NotSource SourceMatcher
   | SourceIs Source
   | SourceWithCard CardMatcher
+  | SourceWithExtendedCard ExtendedCardMatcher
   | SourceIsCardEffect
   | SourceIsScenarioCardEffect
   | ScenarioCardSource

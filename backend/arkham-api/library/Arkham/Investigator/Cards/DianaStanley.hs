@@ -38,7 +38,12 @@ instance HasAbilities DianaStanley where
     [ playerLimit PerPhase
         $ restricted a 1 (Self <> fewerThan5CardBeneath)
         $ freeReaction
-        $ CancelledOrIgnoredCardOrGameEffect (SourceOwnedBy You <> NotSource #investigator) Nothing
+        $ CancelledOrIgnoredCardOrGameEffect
+          ( SourceOwnedBy You
+              <> NotSource #investigator
+              <> NotSource (SourceWithExtendedCard $ CardWithModifier $ InvestigatorModifier "playedFromBeneath")
+          )
+          Nothing
     ]
    where
     fewerThan5CardBeneath = if length a.cardsUnderneath < 5 then NoRestriction else Never

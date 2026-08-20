@@ -352,24 +352,27 @@ sourceMatches s = \case
       UseAbilitySource _ s' _ -> sourceMatches s' Matcher.SourceIsPlayerCard
       _ -> pure False
   Matcher.SourceWithCard cardMatcher -> do
-    let
-      getCardSource = \case
-        AbilitySource source' _ -> getCardSource source'
-        UseAbilitySource _ source' _ -> getCardSource source'
-        AssetSource aid -> fieldMay AssetCard aid
-        EventSource eid -> fieldMay EventCard eid
-        SkillSource sid -> fieldMay SkillCard sid
-        EnemySource eid -> fieldMay EnemyCard eid
-        TreacherySource tid -> fieldMay TreacheryCard tid
-        LocationSource lid -> fieldMay LocationCard lid
-        StorySource sid -> fieldMay StoryCard sid
-        InvestigatorSource _ -> pure Nothing
-        CardIdSource cid -> Just <$> getCard cid
-        _ -> pure Nothing
-    mCard <- getCardSource s
+    mCard <- sourceCard s
     pure $ case mCard of
       Just c -> c `cardMatch` cardMatcher
       Nothing -> False
+  Matcher.SourceWithExtendedCard cardMatcher ->
+    sourceCard s >>= maybe (pure False) (<=~> cardMatcher)
+
+sourceCard :: HasGame m => Source -> m (Maybe Card)
+sourceCard = \case
+  AbilitySource source' _ -> sourceCard source'
+  UseAbilitySource _ source' _ -> sourceCard source'
+  AssetSource aid -> fieldMay AssetCard aid
+  EventSource eid -> fieldMay EventCard eid
+  SkillSource sid -> fieldMay SkillCard sid
+  EnemySource eid -> fieldMay EnemyCard eid
+  TreacherySource tid -> fieldMay TreacheryCard tid
+  LocationSource lid -> fieldMay LocationCard lid
+  StorySource sid -> fieldMay StoryCard sid
+  InvestigatorSource _ -> pure Nothing
+  CardIdSource cid -> Just <$> getCard cid
+  _ -> pure Nothing
 
 sourceTypes :: (HasCallStack, HasGame m) => Source -> m (Set CardType)
 sourceTypes = \case

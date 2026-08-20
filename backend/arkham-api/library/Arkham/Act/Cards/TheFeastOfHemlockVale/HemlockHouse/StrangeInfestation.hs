@@ -11,7 +11,10 @@ import Arkham.Helpers.Scenario (scenarioFieldMap)
 import Arkham.Location.Grid (GridLocation (..), Pos (..))
 import Arkham.Matcher
 import Arkham.Scenario.Types (Field (ScenarioVictoryDisplay))
-import Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.Helpers (locationIsUnsealed, locationSealCount)
+import Arkham.Scenarios.TheFeastOfHemlockVale.HemlockHouse.Helpers (
+  locationIsUnsealed,
+  locationSealCount,
+ )
 import Arkham.Token (Token (..))
 import Arkham.Trait (Trait (Dormant))
 

@@ -4,7 +4,10 @@ import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (ShroudModifier), modifySelf)
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (cannotEnterFromCluedLocation, locationLevel)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (
+  cannotEnterFromCluedLocation,
+  locationLevel,
+ )
 
 newtype WesternWall_11530 = WesternWall_11530 LocationAttrs
   deriving anyclass IsLocation

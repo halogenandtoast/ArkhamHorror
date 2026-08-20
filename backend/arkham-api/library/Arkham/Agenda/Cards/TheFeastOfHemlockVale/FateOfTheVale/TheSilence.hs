@@ -13,7 +13,10 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 import Arkham.Scenario.Deck
-import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers (revealEncounterCardFromAbyss, scenarioI18n)
+import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers (
+  revealEncounterCardFromAbyss,
+  scenarioI18n,
+ )
 
 newtype TheSilence = TheSilence AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)

@@ -10,7 +10,10 @@ import Arkham.Helpers.Modifiers (
   setActiveDuringSetup,
  )
 import Arkham.Matcher
-import Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers (pattern IgnoreBarriers, pattern IgnoreDecoys)
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheLongestNight.Helpers (
+  pattern IgnoreBarriers,
+  pattern IgnoreDecoys,
+ )
 import Arkham.Trait (Trait (Field))
 
 newtype UrsineHybridStarvingAbomination = UrsineHybridStarvingAbomination EnemyAttrs

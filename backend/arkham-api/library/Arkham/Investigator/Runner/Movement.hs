@@ -1,9 +1,8 @@
-{-# OPTIONS_GHC -Wno-unused-record-wildcards -Wno-unused-imports -Wno-unused-matches -Wno-missing-signatures -Wno-orphans #-}
 {-# LANGUAGE TypeAbstractions #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-unused-record-wildcards -Wno-unused-imports -Wno-unused-matches -Wno-missing-signatures -Wno-orphans #-}
 
 module Arkham.Investigator.Runner.Movement where
-
 
 import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
@@ -31,7 +30,6 @@ import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Actions (actionsToList)
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
@@ -120,12 +118,12 @@ import Arkham.History
 import Arkham.I18n (countVar, ikey', withI18n)
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
+import Arkham.Investigator.Runner.Damage
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Key
 import Arkham.Keyword (Keyword (Starting))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
-  basic,
   AssetMatcher (..),
   CardMatcher (..),
   EnemyMatcher (..),
@@ -140,6 +138,7 @@ import Arkham.Matcher (
   assetControlledBy,
   assetIs,
   at_,
+  basic,
   cardIs,
   colocatedWith,
   enemyEngagedWith,
@@ -172,7 +171,6 @@ import Arkham.Slot
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
-import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..), defaultWindows, mkAfter, mkWhen, mkWindow, primaryWindowTarget)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -184,9 +182,8 @@ import Data.Map.Strict qualified as Map
 import Data.Monoid
 import Data.Set qualified as Set
 import Data.UUID (nil)
-import Arkham.Investigator.Runner.Damage
 
-handleMoveAction a@InvestigatorAttrs{..} iid lid cost = do
+handleMoveAction a@InvestigatorAttrs {..} iid lid cost = do
   beforeWindowMsg <- checkWindows [mkWhen (Window.PerformAction iid #move)]
   afterWindowMsg <- checkWindows [mkAfter (Window.PerformAction iid #move)]
   pushAll
@@ -201,7 +198,7 @@ handleMoveAction a@InvestigatorAttrs{..} iid lid cost = do
   movement <- move iid iid lid
   pure $ a & movementL ?~ movement
 
-handleMoveActionV2 a@InvestigatorAttrs{..} iid lid = do
+handleMoveActionV2 a@InvestigatorAttrs {..} iid lid = do
   from <- fromMaybe (LocationId nil) <$> field InvestigatorLocation iid
   afterWindowMsg <- Helpers.checkWindows [mkAfter $ Window.MoveAction iid from lid]
   mods <- getModifiers iid
@@ -215,7 +212,7 @@ handleMoveActionV2 a@InvestigatorAttrs{..} iid lid = do
   push afterWindowMsg
   pure a
 
-handleMove a@InvestigatorAttrs{..} movement = do
+handleMove a@InvestigatorAttrs {..} movement = do
   scenarioEffect <- sourceMatches movement.source SourceIsScenarioCardEffect
   canMove <-
     withoutModifiers a $ CannotMove
@@ -413,7 +410,7 @@ handleWhenCanMove a@InvestigatorAttrs {..} iid msgs = do
     when (canMove || not movement.cancelable) $ pushAll msgs
   pure a
 
-handleMoveAllTo a@InvestigatorAttrs{..} source lid = do
+handleMoveAllTo a@InvestigatorAttrs {..} source lid = do
   moveToEdit source investigatorId lid \m ->
     m
       { moveMeans = Place
@@ -422,7 +419,7 @@ handleMoveAllTo a@InvestigatorAttrs{..} source lid = do
       }
   pure a
 
-handleMoveToward a@InvestigatorAttrs{..} target locationMatcher = do
+handleMoveToward a@InvestigatorAttrs {..} target locationMatcher = do
   mods <- getModifiers investigatorId
   unless (CannotMove `elem` mods) do
     withLocationOf investigatorId \loc -> do
@@ -433,7 +430,7 @@ handleMoveToward a@InvestigatorAttrs{..} target locationMatcher = do
           Choose.chooseTargetM investigatorId closestLocationIds $ moveTo GameSource investigatorId
   pure a
 
-handleMoveUntil a@InvestigatorAttrs{..} lid target = do
+handleMoveUntil a@InvestigatorAttrs {..} lid target = do
   mods <- getModifiers investigatorId
   unless (CannotMove `elem` mods) do
     withLocationOf investigatorId \loc ->
@@ -445,21 +442,21 @@ handleMoveUntil a@InvestigatorAttrs{..} lid target = do
             push $ MoveUntil lid target
   pure a
 
-handleMoveTo a@InvestigatorAttrs{..} movement = do
+handleMoveTo a@InvestigatorAttrs {..} movement = do
   pushAll [ResolveMovement investigatorId, ResolvedMovement investigatorId movement.id]
   pure $ a & movementL ?~ movement
 
-handleSetMovement a@InvestigatorAttrs{..} iid movement = do
+handleSetMovement a@InvestigatorAttrs {..} iid movement = do
   pure $ a & movementL ?~ movement
 
-handleResolvedMovement a@InvestigatorAttrs{..} iid movementId = do
+handleResolvedMovement a@InvestigatorAttrs {..} iid movementId = do
   pure
     $ a
     & ( usedAbilitiesL
           %~ filter (\ab -> ab.limitType /= Just PerMove && ab.limitType /= Just (PerMovement movementId))
       )
 
-handleResolveMovement a@InvestigatorAttrs{..} iid msg = do
+handleResolveMovement a@InvestigatorAttrs {..} iid msg = do
   mods <- getModifiers iid
   let
     isForcedMove = maybe False (.forced) investigatorMovement
@@ -470,7 +467,7 @@ handleResolveMovement a@InvestigatorAttrs{..} iid msg = do
   when (canMove || isForcedMove) $ push $ Do msg
   pure a
 
-handleDoResolveMovement a@InvestigatorAttrs{..} iid = do
+handleDoResolveMovement a@InvestigatorAttrs {..} iid = do
   case investigatorMovement of
     Nothing -> pure a
     Just movement -> case moveDestination movement of
@@ -529,8 +526,8 @@ handleDoResolveMovement a@InvestigatorAttrs{..} iid = do
           $ [DisengageEnemy iid eid | eid <- disengagers]
           <> [WhenWillEnterLocation iid lid]
           <> [ Simultaneously
-                $ Run [Do (WhenWillEnterLocation iid lid), EnterLocation iid lid]
-                : [EnemyEnteredFollowing iid eid lid | eid <- followers]
+                 $ Run [Do (WhenWillEnterLocation iid lid), EnterLocation iid lid]
+                 : [EnemyEnteredFollowing iid eid lid | eid <- followers]
              ]
           <> [After (MoveTo movement)]
 
@@ -565,25 +562,25 @@ handleDoResolveMovement a@InvestigatorAttrs{..} iid = do
           <> [afterEntering]
         pure $ a & movementL .~ Nothing
 
-handleDoWhenWillEnterLocation a@InvestigatorAttrs{..} iid lid = do
+handleDoWhenWillEnterLocation a@InvestigatorAttrs {..} iid lid = do
   let prevLoc = case investigatorPlacement of
         AtLocation l -> Just l
         _ -> Nothing
   pure $ a & placementL .~ AtLocation lid & previousLocationL .~ prevLoc
 
-handleSwapPlaces a@InvestigatorAttrs{..} aTarget newLocation = do
+handleSwapPlaces a@InvestigatorAttrs {..} aTarget newLocation = do
   push $ CheckEnemyEngagement a.id
   pure $ a & placementL .~ AtLocation newLocation
 
-handleSwapPlacesV2 a@InvestigatorAttrs{..} newLocation bTarget = do
+handleSwapPlacesV2 a@InvestigatorAttrs {..} newLocation bTarget = do
   push $ CheckEnemyEngagement a.id
   pure $ a & placementL .~ AtLocation newLocation
 
-handleRemovedLocation a@InvestigatorAttrs{..} lid = do
+handleRemovedLocation a@InvestigatorAttrs {..} lid = do
   -- needs to look at the "real" location not as if
   pure $ a & placementL .~ Unplaced
 
-handleDoPlaceInvestigator a@InvestigatorAttrs{..} iid placement = do
+handleDoPlaceInvestigator a@InvestigatorAttrs {..} iid placement = do
   when (placement == Unplaced) do
     enemies <- select $ enemyEngagedWith iid
     pushAll $ case investigatorLocation a of
@@ -594,4 +591,3 @@ handleDoPlaceInvestigator a@InvestigatorAttrs{..} iid placement = do
 
 investigatorLocation :: InvestigatorAttrs -> Maybe LocationId
 investigatorLocation a = preview _AtLocation a.placement
-

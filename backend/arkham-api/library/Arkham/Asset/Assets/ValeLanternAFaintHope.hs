@@ -11,7 +11,9 @@ import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers (placeValeLanternAtNearestLocation)
+import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers (
+  placeValeLanternAtNearestLocation,
+ )
 import Arkham.Trait (Trait (Dark))
 import Arkham.Window qualified as Window
 

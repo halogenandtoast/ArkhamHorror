@@ -1,9 +1,8 @@
-{-# OPTIONS_GHC -Wno-unused-record-wildcards -Wno-unused-imports -Wno-unused-matches -Wno-missing-signatures -Wno-orphans #-}
 {-# LANGUAGE TypeAbstractions #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-unused-record-wildcards -Wno-unused-imports -Wno-unused-matches -Wno-missing-signatures -Wno-orphans #-}
 
 module Arkham.Investigator.Runner.Action where
-
 
 import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
@@ -31,7 +30,6 @@ import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Actions (actionsToList)
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
@@ -121,12 +119,12 @@ import Arkham.History
 import Arkham.I18n (countVar, ikey', withI18n)
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
+import Arkham.Investigator.Runner.Damage
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Key
 import Arkham.Keyword (Keyword (Starting))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
-  basic,
   AssetMatcher (..),
   CardMatcher (..),
   EnemyMatcher (..),
@@ -141,6 +139,7 @@ import Arkham.Matcher (
   assetControlledBy,
   assetIs,
   at_,
+  basic,
   cardIs,
   colocatedWith,
   enemyEngagedWith,
@@ -151,12 +150,12 @@ import Arkham.Matcher (
   pattern AnyInPlayEnemy,
   pattern AssetWithAnyClues,
  )
-import Arkham.Metrics (withMetric)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted (obtainCard, takeControlOfAsset)
 import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Message.Lifted.Choose qualified as Choose
 import Arkham.Message.Lifted.Move (moveTo, moveToEdit)
+import Arkham.Metrics (withMetric)
 import Arkham.Modifier
 import Arkham.Modifier qualified as Modifier
 import Arkham.Modifier.Builder (runCachedQueryT)
@@ -175,7 +174,6 @@ import Arkham.Slot
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
-import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..), defaultWindows, mkAfter, mkWhen, mkWindow, primaryWindowTarget)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -187,9 +185,8 @@ import Data.Map.Strict qualified as Map
 import Data.Monoid
 import Data.Set qualified as Set
 import Data.UUID (nil)
-import Arkham.Investigator.Runner.Damage
 
-handlePerformAction a@InvestigatorAttrs{..} iid source action = do
+handlePerformAction a@InvestigatorAttrs {..} iid source action = do
   let windows' = defaultWindows iid
   let decreaseCost = flip applyAbilityModifiers [ActionCostModifier (-1)]
   actions <-
@@ -205,7 +202,7 @@ handlePerformAction a@InvestigatorAttrs{..} iid source action = do
       <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
   pure a
 
-handleSpendResources a@InvestigatorAttrs{..} iid n msg = do
+handleSpendResources a@InvestigatorAttrs {..} iid n msg = do
   let defaultFlow = do
         beforeWindowMsg <- checkWindows [mkWhen (Window.SpendsResources iid n)]
         pushAll [beforeWindowMsg, Do msg]
@@ -225,17 +222,17 @@ handleSpendResources a@InvestigatorAttrs{..} iid n msg = do
         <> replicate a.resources (ResourceLabel iid [Do (SpendResources iid 1)])
       pure a
 
-handleDoSpendResources a@InvestigatorAttrs{..} iid n = do
+handleDoSpendResources a@InvestigatorAttrs {..} iid n = do
   Lifted.checkAfter (Window.SpendsResources iid n)
   pure $ a & tokensL %~ subtractTokens Resource n
 
-handleLoseResources a@InvestigatorAttrs{..} iid source n msg = do
+handleLoseResources a@InvestigatorAttrs {..} iid source n msg = do
   beforeWindowMsg <- checkWindows [mkWhen (Window.LostResources iid source n)]
   afterWindowMsg <- checkWindows [mkAfter (Window.LostResources iid source n)]
   pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
   pure a
 
-handleTakeResources a@InvestigatorAttrs{..} iid n source = do
+handleTakeResources a@InvestigatorAttrs {..} iid n source = do
   let ability = restricted iid ResourceAbility (Self <> Never) (ActionAbility #resource Nothing $ ActionCost 1)
   whenActivateAbilityWindow <- checkWhen $ Window.ActivateAbility iid [] ability
   afterActivateAbilityWindow <- checkAfter $ Window.ActivateAbility iid [] ability
@@ -265,17 +262,17 @@ handleTakeResources a@InvestigatorAttrs{..} iid n source = do
          ]
   pure a
 
-handleTakeResourcesV2 a@InvestigatorAttrs{..} iid n source msg = do
+handleTakeResourcesV2 a@InvestigatorAttrs {..} iid n source msg = do
   canGain <- can.gain.resources (sourceToFromSource source) iid
   when canGain do
     beforeWindowMsg <- checkWindows [mkWhen (Window.GainsResources iid source n)]
     pushAll [beforeWindowMsg, Do msg]
   pure a
 
-handleSpendActions a@InvestigatorAttrs{..} iid = do
+handleSpendActions a@InvestigatorAttrs {..} iid = do
   pure a
 
-handleSpendActionsV2 a@InvestigatorAttrs{..} iid source mAction n = do
+handleSpendActionsV2 a@InvestigatorAttrs {..} iid source mAction n = do
   -- We want to try and spend the most restrictive action so we get any
   -- action that is not any additional action first, and if not that then the
   -- any additional action
@@ -323,7 +320,7 @@ handleSpendActionsV2 a@InvestigatorAttrs{..} iid source mAction n = do
           ]
       pure a
 
-handleUseEffectAction a@InvestigatorAttrs{..} iid eid = do
+handleUseEffectAction a@InvestigatorAttrs {..} iid eid = do
   additionalActions <- getAdditionalActions a
   let
     isEffectAction aAction = case additionalActionType aAction of
@@ -333,13 +330,13 @@ handleUseEffectAction a@InvestigatorAttrs{..} iid eid = do
     Nothing -> pure a
     Just aAction -> pure $ a & usedAdditionalActionsL %~ (aAction :)
 
-handleLoseActions a@InvestigatorAttrs{..} iid source n msg = do
+handleLoseActions a@InvestigatorAttrs {..} iid source n msg = do
   beforeWindowMsg <- checkWindows [mkWhen $ Window.LostActions iid source n]
   afterWindowMsg <- checkWindows [mkAfter $ Window.LostActions iid source n]
   pushAll [beforeWindowMsg, Do msg, afterWindowMsg]
   pure a
 
-handleDoLoseActions a@InvestigatorAttrs{..} iid n = do
+handleDoLoseActions a@InvestigatorAttrs {..} iid n = do
   -- TODO: after losing all remaining actions we can lose additional actions
   additionalActions <- getAdditionalActions a
   let
@@ -360,7 +357,7 @@ handleDoLoseActions a@InvestigatorAttrs{..} iid n = do
           pure a'
     else pure a'
 
-handleSetActions a@InvestigatorAttrs{..} iid = do
+handleSetActions a@InvestigatorAttrs {..} iid = do
   additionalActions <- getAdditionalActions a
   pure
     $ a
@@ -369,21 +366,21 @@ handleSetActions a@InvestigatorAttrs{..} iid = do
     & usedAdditionalActionsL
     .~ nub (investigatorUsedAdditionalActions <> additionalActions)
 
-handleSetActionsV2 a@InvestigatorAttrs{..} iid n = do
+handleSetActionsV2 a@InvestigatorAttrs {..} iid n = do
   pure $ a & remainingActionsL .~ n
 
-handleGainActions a@InvestigatorAttrs{..} iid n = do
+handleGainActions a@InvestigatorAttrs {..} iid n = do
   -- TODO: If we add a window here we need to reconsider Ace of Rods, likely it would need a Do variant
   pure $ a & remainingActionsL +~ n
 
-handleLoseAdditionalAction a@InvestigatorAttrs{..} iid n = do
+handleLoseAdditionalAction a@InvestigatorAttrs {..} iid n = do
   pure $ a & usedAdditionalActionsL %~ (n :)
 
-handleTakeActions a@InvestigatorAttrs{..} iid actions cost = do
+handleTakeActions a@InvestigatorAttrs {..} iid actions cost = do
   push $ PayForAbility (abilityEffect a actions cost) []
   pure a
 
-handleTakenActions a@InvestigatorAttrs{..} iid actions = do
+handleTakenActions a@InvestigatorAttrs {..} iid actions = do
   let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
   let duplicated = actions `List.intersect` previous
   let streak = longestUniqueStreak (actions : reverse investigatorActionsPerformed)
@@ -403,7 +400,7 @@ handleTakenActions a@InvestigatorAttrs{..} iid actions = do
 
   pure $ a & actionsTakenL %~ (<> [actions]) & actionsPerformedL %~ (<> [actions])
 
-handlePerformedActions a@InvestigatorAttrs{..} iid actions = do
+handlePerformedActions a@InvestigatorAttrs {..} iid actions = do
   let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
   let duplicated = actions `List.intersect` previous
 
@@ -417,7 +414,7 @@ handlePerformedActions a@InvestigatorAttrs{..} iid actions = do
 
   pure $ a & actionsPerformedL %~ (<> [actions])
 
-handlePlayerWindow a@InvestigatorAttrs{..} iid additionalActions isAdditional immediate = do
+handlePlayerWindow a@InvestigatorAttrs {..} iid additionalActions isAdditional immediate = do
   modifiers <- lift $ withMetric "getModifiers" $ getModifiers iid
   mTurnInvestigator <-
     if immediate
@@ -517,7 +514,7 @@ handlePlayerWindow a@InvestigatorAttrs{..} iid additionalActions isAdditional im
         <> effectActions
   pure a
 
-handlePlayerWindowV2 a@InvestigatorAttrs{..} iid additionalActions isAdditional = do
+handlePlayerWindowV2 a@InvestigatorAttrs {..} iid additionalActions isAdditional = do
   let windows = [mkWhen Window.FastPlayerWindow]
   actions <- getActions investigatorId windows
   anyForced <- anyM (isForcedAbility investigatorId) actions
@@ -559,7 +556,7 @@ handlePlayerWindowV2 a@InvestigatorAttrs{..} iid additionalActions isAdditional 
       <> [SkipTriggersButton investigatorId]
   pure a
 
-handleUseCardAbility a@InvestigatorAttrs{..} iid = do
+handleUseCardAbility a@InvestigatorAttrs {..} iid = do
   otherInvestigators <- select $ colocatedWith a <> not_ (InvestigatorWithId investigatorId)
   case nonEmpty otherInvestigators of
     Nothing -> error "No other investigators"
@@ -580,7 +577,7 @@ handleUseCardAbility a@InvestigatorAttrs{..} iid = do
           ]
   pure a
 
-handleUseCardAbilityV2 a@InvestigatorAttrs{..} iid = do
+handleUseCardAbilityV2 a@InvestigatorAttrs {..} iid = do
   otherInvestigators <- select $ colocatedWith a <> not_ (InvestigatorWithId investigatorId)
   case nonEmpty otherInvestigators of
     Nothing -> error "No other investigators"
@@ -600,7 +597,7 @@ handleUseCardAbilityV2 a@InvestigatorAttrs{..} iid = do
           ]
   pure a
 
-handleUseCardAbilityV3 a@InvestigatorAttrs{..} iid = do
+handleUseCardAbilityV3 a@InvestigatorAttrs {..} iid = do
   otherInvestigators <-
     selectWithField InvestigatorSeals $ colocatedWith a
       <> not_ (InvestigatorWithId investigatorId)
@@ -623,11 +620,11 @@ handleUseCardAbilityV3 a@InvestigatorAttrs{..} iid = do
           ]
   pure a
 
-handleUseAbility a@InvestigatorAttrs{..} ab msg = do
+handleUseAbility a@InvestigatorAttrs {..} ab msg = do
   push $ Do msg
   pure a
 
-handleDoUseAbility a@InvestigatorAttrs{..} iid ability windows = do
+handleDoUseAbility a@InvestigatorAttrs {..} iid ability windows = do
   activeInvestigator <- selectOne ActiveInvestigator
   mods <- filter (\m -> m.kind == MayIgnoreLocationEffectsAndKeywords) <$> getFullModifiers iid
   -- mayIgnoreLocationEffectsAndKeywords <- hasModifier iid MayIgnoreLocationEffectsAndKeywords
@@ -654,7 +651,10 @@ handleDoUseAbility a@InvestigatorAttrs{..} iid ability windows = do
     [] -> pushAll resolveAbility
     [x] -> do
       after <- checkAfter $ Window.CancelledOrIgnoredCardOrGameEffect x.source (toCardId <$> x.card)
-      push $ chooseOne player [Label "$label.ignoreEffect" [after], Label "$label.doNotIgnoreEffect" resolveAbility]
+      push
+        $ chooseOne
+          player
+          [Label "$label.ignoreEffect" [after], Label "$label.doNotIgnoreEffect" resolveAbility]
     _ -> error "Multiple may ignore modifiers, not sure which one to use"
   case find ((== ability) . usedAbility) investigatorUsedAbilities of
     Nothing -> do
@@ -692,14 +692,14 @@ handleDoUseAbility a@InvestigatorAttrs{..} iid ability windows = do
           | otherwise = used
       pure $ a & usedAbilitiesL %~ map updateUsed
 
-handleDoNotCountUseTowardsAbilityLimit a@InvestigatorAttrs{..} iid ability = do
+handleDoNotCountUseTowardsAbilityLimit a@InvestigatorAttrs {..} iid ability = do
   let
     updateUsed used
       | usedAbility used == ability = used {usedTimes = max 0 (usedTimes used - 1)}
       | otherwise = used
   pure $ a & usedAbilitiesL %~ map updateUsed
 
-handleResolvedAbility a@InvestigatorAttrs{..} = do
+handleResolvedAbility a@InvestigatorAttrs {..} = do
   depth <- getWindowDepth
   pure
     $ a

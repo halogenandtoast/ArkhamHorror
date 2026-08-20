@@ -8,7 +8,10 @@ import Arkham.Location.Import.Lifted
 import Arkham.Location.Types (Field (LocationPosition))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (cannotEnterFromCluedLocation, scenarioI18n)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (
+  cannotEnterFromCluedLocation,
+  scenarioI18n,
+ )
 
 newtype SunkenStairway = SunkenStairway LocationAttrs
   deriving anyclass IsLocation

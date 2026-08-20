@@ -1,9 +1,8 @@
-{-# OPTIONS_GHC -Wno-unused-record-wildcards -Wno-unused-imports -Wno-unused-matches -Wno-missing-signatures -Wno-orphans #-}
 {-# LANGUAGE TypeAbstractions #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# OPTIONS_GHC -Wno-unused-record-wildcards -Wno-unused-imports -Wno-unused-matches -Wno-missing-signatures -Wno-orphans #-}
 
 module Arkham.Investigator.Runner.Search where
-
 
 import Arkham.Ability as X hiding (PaidCost)
 import Arkham.ChaosToken as X
@@ -31,7 +30,6 @@ import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Actions (actionsToList)
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
@@ -120,12 +118,12 @@ import Arkham.History
 import Arkham.I18n (countVar, ikey', withI18n)
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
+import Arkham.Investigator.Runner.Damage
 import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Key
 import Arkham.Keyword (Keyword (Starting))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher (
-  basic,
   AssetMatcher (..),
   CardMatcher (..),
   EnemyMatcher (..),
@@ -140,6 +138,7 @@ import Arkham.Matcher (
   assetControlledBy,
   assetIs,
   at_,
+  basic,
   cardIs,
   colocatedWith,
   enemyEngagedWith,
@@ -172,7 +171,6 @@ import Arkham.Slot
 import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
-import Arkham.Treachery.Cards qualified as Treacheries
 import Arkham.Window (Window (..), defaultWindows, mkAfter, mkWhen, mkWindow, primaryWindowTarget)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -184,12 +182,11 @@ import Data.Map.Strict qualified as Map
 import Data.Monoid
 import Data.Set qualified as Set
 import Data.UUID (nil)
-import Arkham.Investigator.Runner.Damage
 
-handleRemoveCardFromSearch a@InvestigatorAttrs{..} iid cardId = do
+handleRemoveCardFromSearch a@InvestigatorAttrs {..} iid cardId = do
   pure $ a & foundCardsL %~ Map.map (filter ((/= cardId) . toCardId))
 
-handleDiscardUntilFirst a@InvestigatorAttrs{..} iid' source iid matcher = do
+handleDiscardUntilFirst a@InvestigatorAttrs {..} iid' source iid matcher = do
   (discards, remainingDeck) <- breakM (`extendedCardMatch` matcher) (unDeck investigatorDeck)
   let (discards', essenceOfTheDreams) = partition ((/= "06113") . toCardCode) discards
   case remainingDeck of
@@ -214,7 +211,7 @@ handleDiscardUntilFirst a@InvestigatorAttrs{..} iid' source iid matcher = do
         & bondedCardsL
         <>~ map toCard essenceOfTheDreams
 
-handleRevealUntilFirst a@InvestigatorAttrs{..} iid source iid' matcher = do
+handleRevealUntilFirst a@InvestigatorAttrs {..} iid source iid' matcher = do
   (revealed, remainingDeck) <- breakM ((<=~> matcher) . toCard) (unDeck investigatorDeck)
   case remainingDeck of
     [] -> do
@@ -233,7 +230,7 @@ handleRevealUntilFirst a@InvestigatorAttrs{..} iid source iid' matcher = do
           (map PlayerCard revealed)
       pure $ a & deckL .~ Deck xs
 
-handleUpdateSearchReturnStrategy a@InvestigatorAttrs{..} iid zone returnStrategy = do
+handleUpdateSearchReturnStrategy a@InvestigatorAttrs {..} iid zone returnStrategy = do
   let
     updateZone = \case
       (z@(FromTopOfDeck _), _) | zone == FromDeck -> (z, returnStrategy)
@@ -244,7 +241,7 @@ handleUpdateSearchReturnStrategy a@InvestigatorAttrs{..} iid zone returnStrategy
     Nothing -> pure a
     Just s -> pure $ a & searchL ?~ s {searchZones = map updateZone (searchZones s)}
 
-handleEndSearch a@InvestigatorAttrs{..} iid iid' = do
+handleEndSearch a@InvestigatorAttrs {..} iid iid' = do
   let cardSources = maybe [] searchZones investigatorSearch
   let
     foundKey = \case
@@ -316,7 +313,7 @@ handleEndSearch a@InvestigatorAttrs{..} iid iid' = do
             _ -> True
       )
 
-handleEndSearchV2 a@InvestigatorAttrs{..} iid = do
+handleEndSearchV2 a@InvestigatorAttrs {..} iid = do
   pure
     $ a
     & usedAbilitiesL
@@ -327,7 +324,7 @@ handleEndSearchV2 a@InvestigatorAttrs{..} iid = do
             _ -> True
       )
 
-handleSearchEnded a@InvestigatorAttrs{..} = do
+handleSearchEnded a@InvestigatorAttrs {..} = do
   case investigatorSearch of
     Just search' -> do
       when (notNull $ search' ^. Search.drawnCardsL) do
@@ -338,9 +335,9 @@ handleSearchEnded a@InvestigatorAttrs{..} = do
 
   pure $ a & searchL .~ Nothing
 
-handleCancelSearch a@InvestigatorAttrs{..} = pure $ a & searchL .~ Nothing
+handleCancelSearch a@InvestigatorAttrs {..} = pure $ a & searchL .~ Nothing
 
-handleSearch a@InvestigatorAttrs{..} searchType iid iid' zones msg = do
+handleSearch a@InvestigatorAttrs {..} searchType iid iid' zones msg = do
   let deck = Deck.InvestigatorDeck iid'
   if searchType == Searching && any (zoneIsFromDeck . fst) zones
     then wouldDo msg (Window.WouldSearchDeck iid deck) (Window.SearchedDeck iid deck)
@@ -350,7 +347,7 @@ handleSearch a@InvestigatorAttrs{..} searchType iid iid' zones msg = do
 
   pure a
 
-handleResolveSearch a@InvestigatorAttrs{..} = do
+handleResolveSearch a@InvestigatorAttrs {..} = do
   case investigatorSearch of
     Just
       ( MkSearch
@@ -534,7 +531,9 @@ handleResolveSearch a@InvestigatorAttrs{..} = do
             pushAll
               $ if null choices
                 then
-                  [ chooseOne player [Label "$label.noCardsFound" [ShuffleDeck (Deck.InvestigatorDeck a.id) | shouldShuffle]]
+                  [ chooseOne
+                      player
+                      [Label "$label.noCardsFound" [ShuffleDeck (Deck.InvestigatorDeck a.id) | shouldShuffle]]
                   ]
                 else
                   let cards = concat $ toList targetCards

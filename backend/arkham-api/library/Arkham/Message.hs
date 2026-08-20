@@ -1176,12 +1176,13 @@ data Message
   | -- UI
     ClearUI
   | Priority Message
-  | -- | Wraps the 'Ask' / 'AskMap' publishing a question whose seats must survive
-    -- another seat's answer. Every accepted answer pushes 'ClearUI', which wipes
-    -- the whole published question map, and 'Entity.Answer' only re-parks the
-    -- seats it knows are durable. A multi-seat ask that is neither rebuilt by the
-    -- queue nor barriered has to say so, or its other seats are silently dropped
-    -- along with their baked messages (#4787).
+  | {- | Wraps the 'Ask' / 'AskMap' publishing a question whose seats must survive
+    another seat's answer. Every accepted answer pushes 'ClearUI', which wipes
+    the whole published question map, and 'Entity.Answer' only re-parks the
+    seats it knows are durable. A multi-seat ask that is neither rebuilt by the
+    queue nor barriered has to say so, or its other seats are silently dropped
+    along with their baked messages (#4787).
+    -}
     Retain Message
   | Simultaneously [Message]
   | -- Debug

@@ -181,6 +181,11 @@ targetMatches s = \case
           _ -> isLocation TreacheryLocation tid
       EventTarget eid -> fieldMapM EventPlacement placementLocation eid <&> maybe False (`elem` locations)
       ProxyTarget proxyTarget _ -> targetMatches proxyTarget (TargetAtLocation ls)
+      BothTarget left right ->
+        orM
+          [ targetMatches left (TargetAtLocation ls)
+          , targetMatches right (TargetAtLocation ls)
+          ]
       _ -> pure False
   TargetWithDoom -> case s of
     AssetTarget aid -> fieldSome AssetDoom aid

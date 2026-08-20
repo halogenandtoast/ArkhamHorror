@@ -188,7 +188,7 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
               _ -> pure ()
             handleWindows
             pure updated
-      _ -> pure updated
+      _ -> handleWindows >> pure updated
   FinishedEvent eid | eid == eventId -> do
     mods <- liftA2 (<>) (getModifiers eid) (getModifiers $ toCardId $ toCard a)
     let

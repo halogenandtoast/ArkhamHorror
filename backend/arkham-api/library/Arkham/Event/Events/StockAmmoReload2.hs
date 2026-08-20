@@ -14,15 +14,14 @@ stockAmmoReload2 = event StockAmmoReload2 Cards.stockAmmoReload2
 
 instance RunMessage StockAmmoReload2 where
   runMessage msg e@(StockAmmoReload2 attrs) = runQueueT $ case msg of
-    PlayThisEvent _iid (is attrs -> True) -> do
-      doStep 5 msg
+    PlayThisEvent iid (is attrs -> True) -> do
+      ammoAssets <- select $ assetControlledBy iid <> #firearm <> AssetCanHaveUses Ammo
+      case ammoAssets of
+        [] -> pure ()
+        [asset] -> addUses attrs asset Ammo 5
+        assets -> chooseAssetAmounts iid "Distribute 5 Ammo" 5 assets attrs
       pure e
-    DoStep n msg'@(PlayThisEvent iid (is attrs -> True)) -> do
-      when (n > 0) do
-        ammoAssets <- select $ assetControlledBy iid <> #firearm <> AssetCanHaveUses Ammo
-        unless (null ammoAssets) do
-          chooseOrRunTargetM iid ammoAssets \asset ->
-            addUses attrs asset Ammo 1
-          doStep (n - 1) msg'
+    ResolveAmounts _ choices (isTarget attrs -> True) -> do
+      for_ choices \(nu, n) -> addUses attrs (AssetId nu.nuUUID) Ammo n
       pure e
     _ -> StockAmmoReload2 <$> liftRunMessage msg attrs

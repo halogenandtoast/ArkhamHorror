@@ -1114,6 +1114,19 @@ chooseInvestigatorAmounts iid label maxAmount iids target = do
     (map (\x -> (toTitle x, (0, maxAmount))) xs)
     target
 
+{- | Like 'chooseAmounts', but keys each choice by the asset's own id so the
+answer maps back to a specific asset even when two copies share a name.
+-}
+chooseAssetAmounts
+  :: (ReverseQueue m, Targetable target)
+  => InvestigatorId -> Text -> Int -> [AssetId] -> target -> m ()
+chooseAssetAmounts iid label maxAmount assets target = do
+  player <- getPlayer iid
+  choices <- for assets \aid -> do
+    name <- field Field.AssetName aid
+    pure $ AmountChoice (unAssetId aid) (toTitle name) 0 maxAmount
+  push $ Ask player $ ChooseAmounts label (TotalAmountTarget maxAmount) choices (toTarget target)
+
 withInvestigatorAmounts
   :: ReverseQueue m => [(NamedUUID, Int)] -> (InvestigatorId -> Int -> m ()) -> m ()
 withInvestigatorAmounts choices f = do

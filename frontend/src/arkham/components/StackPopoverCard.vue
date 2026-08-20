@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { ArrowPathIcon } from '@heroicons/vue/20/solid'
 import { useI18n } from 'vue-i18n'
 import { useCardFlip } from '@/arkham/composables/useCardFlip'
@@ -22,7 +22,14 @@ const canFlip = computed(() => Boolean(props.passed && props.back))
 const showingBack = ref(true)
 
 const face = computed(() => (canFlip.value && showingBack.value ? props.back! : props.src))
-const { displayedImage, flipping } = useCardFlip(face)
+const { displayedImage, flipping, flippingDiagonally } = useCardFlip(face)
+
+// Fetch the side that is not on screen now rather than on click: the flip has to
+// measure both faces to pick its axis, and only a loaded image can be measured.
+watchEffect(() => {
+  if (!canFlip.value) return
+  new Image().src = displayedImage.value === props.back ? props.src : props.back!
+})
 </script>
 
 <template>
@@ -34,6 +41,7 @@ const { displayedImage, flipping } = useCardFlip(face)
         'slot__card--passed': passed,
         'slot__card--current': current,
         'card--flipping': flipping,
+        'card--flipping-diagonal': flippingDiagonally,
       }"
     />
     <button

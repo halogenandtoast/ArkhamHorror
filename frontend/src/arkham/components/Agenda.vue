@@ -61,7 +61,7 @@ const image = computed(() => {
   }
   return cardCodeImage(id.value)
 })
-const { displayedImage, flipping } = useCardFlip(image)
+const { displayedImage, flipping, flippingDiagonally } = useCardFlip(image)
 
 /* Errata that applies only to an agenda's back, so it is shown while the agenda is
  * flipped and not before. Keyed by agenda id; the overlay picks it up from
@@ -293,7 +293,7 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
     <div class="agenda-main">
       <div class="agenda-card">
         <img
-        :class="{ 'agenda--can-progress': interactAction !== -1, 'card--sideways': !isVertical, 'card--flipping': flipping }"
+        :class="{ 'agenda--can-progress': interactAction !== -1, 'card--sideways': !isVertical, 'card--flipping': flipping, 'card--flipping-diagonal': flippingDiagonally }"
           class="card card--agenda"
           @click="$emit('choose', interactAction)"
           @load="updateOrientation"

@@ -81,7 +81,7 @@ const cardCode = computed(() => {
 const image = computed(() => {
   return cardImg(cardCode.value)
 })
-const { displayedImage, flipping } = useCardFlip(image)
+const { displayedImage, flipping, flippingDiagonally } = useCardFlip(image)
 
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
@@ -358,6 +358,7 @@ const nextToScarletKeys = computed(() =>
             'act--can-interact': canInteract,
             'card--sideways': !isVertical,
             'card--flipping': flipping,
+            'card--flipping-diagonal': flippingDiagonally,
           }"
           class="card"
           @click="clicked"

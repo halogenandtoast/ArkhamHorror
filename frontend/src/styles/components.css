@@ -34,6 +34,22 @@
   }
 }
 
+/* Faces that land in the other orientation (a sideways agenda over a vertical
+   enemy) turn about the 45-degree diagonal: 180 degrees about that axis maps a
+   w-by-h card onto h-by-w, so it flips into the shape it is becoming. Carried
+   through rather than bounced back, with the direction reversed at the edge-on
+   midpoint where nothing is visible, which keeps the art unmirrored. */
+.card--flipping.card--flipping-diagonal {
+  animation-name: card-flip-diagonal;
+}
+
+@keyframes card-flip-diagonal {
+  0% { transform: perspective(700px) rotate3d(1, 1, 0, 0deg); }
+  49.9% { transform: perspective(700px) rotate3d(1, 1, 0, 90deg); }
+  50% { transform: perspective(700px) rotate3d(1, 1, 0, -90deg); }
+  100% { transform: perspective(700px) rotate3d(1, 1, 0, 0deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .card--flipping {
     animation: none;

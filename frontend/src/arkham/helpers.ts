@@ -151,7 +151,9 @@ export function pluralize(w: string, n: number) {
 export function formatContent(body: string) {
   return replaceIcons(body).
     replace(/_([^_]*)_/g, '<strong>$1</strong>').
-    replace(/\*([^\*]*)\*/g, '<i>$1</i>')
+    replace(/\*([^\*]*)\*/g, '<i>$1</i>').
+    replace(/{asterisk}/g, '*').
+    replace(/{underscore}/g, '_')
 }
 
 export function replaceIcons(body: string) {

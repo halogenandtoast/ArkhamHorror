@@ -1192,8 +1192,11 @@ async function recordSpokenHastur() {
   if (!investigatorId) return
 
   await updateGameRaw(props.game.id, {
-    tag: 'PlaceTokens',
-    contents: [{ tag: 'CampaignSource' }, { tag: 'InvestigatorTarget', contents: investigatorId }, 'Horror', 1],
+    tag: 'InvestigatorMessage',
+    contents: {
+      tag: 'InvestigatorAssignDamage_',
+      contents: [investigatorId, { tag: 'CampaignSource' }, { tag: 'DamageAny' }, 0, 1],
+    },
   })
 }
 

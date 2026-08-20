@@ -2,7 +2,6 @@ module Arkham.Location.Cards.UptownStMarysHospital (uptownStMarysHospital) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.I18n
 import Arkham.Location.Cards qualified as Cards (uptownStMarysHospital)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -32,12 +31,17 @@ instance HasAbilities UptownStMarysHospital where
 
 instance RunMessage UptownStMarysHospital where
   runMessage msg l@(UptownStMarysHospital attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      doStep 2 msg
+      pure l
+    DoStep n msg'@(UseThisAbility iid (isSource attrs -> True) 1) | n > 0 -> do
       let source = UseAbilitySource iid (toSource attrs) 1
       investigators <- select $ HealableInvestigator source #damage $ investigatorAt attrs
       allies <- select $ HealableAsset source #damage $ #ally <> assetAt attrs
-      withI18n $ chooseUpToNM' iid 2 "done" do
-        targets investigators $ healDamageOn source 1
-        targets allies $ healDamageOn source 1
+      unless (null investigators && null allies) do
+        chooseOneM iid do
+          targets investigators \i -> healDamage i source 1 >> doStep (n - 1) msg'
+          targets allies \asset -> healDamage asset source 1 >> doStep (n - 1) msg'
+          labeledI "done" nothing
       pure l
     _ -> UptownStMarysHospital <$> liftRunMessage msg attrs

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.ReturnToExtracurricularActivities (returnToExtracurricularActivities) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Acts
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.EncounterSet qualified as Set

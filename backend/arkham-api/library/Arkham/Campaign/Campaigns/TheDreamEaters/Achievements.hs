@@ -26,7 +26,9 @@ module Arkham.Campaign.Campaigns.TheDreamEaters.Achievements (
 ) where
 
 import Arkham.Achievement
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.WakingNightmare qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Acts
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Asset
 import Arkham.Campaign.Types (campaignDifficulty)

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.AllOrNothing (allOrNothing) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.AllOrNothing qualified as Acts
 import Arkham.Act.Types (Field (ActResources))
 import Arkham.Agenda.CardDefs.AllOrNothing qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets

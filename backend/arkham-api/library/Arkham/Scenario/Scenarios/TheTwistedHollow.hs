@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheTwistedHollow (theTwistedHollow) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Acts
 import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Agendas
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Asset.Cards qualified as Assets

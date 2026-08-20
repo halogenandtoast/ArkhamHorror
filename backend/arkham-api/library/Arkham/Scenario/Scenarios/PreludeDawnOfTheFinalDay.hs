@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.PreludeDawnOfTheFinalDay (preludeDawnOfTheFinalDay) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.DayOfTheFeast qualified as Acts
 import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.DayOfTheFeast qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Calculation

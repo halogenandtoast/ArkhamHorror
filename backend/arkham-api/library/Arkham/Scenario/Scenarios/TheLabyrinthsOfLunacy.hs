@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheLabyrinthsOfLunacy (theLabyrinthsOfLunacy) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheLabyrinthsOfLunacy qualified as Acts
 import Arkham.Agenda.CardDefs.TheLabyrinthsOfLunacy qualified as Agendas
 import Arkham.Agenda.Types (Field (AgendaDoom, AgendaDoomThreshold))
 import Arkham.Asset.Cards qualified as Assets
@@ -141,7 +141,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
             , ".                  chamberOfSecrets   ."
             , "labyrinthineHalls2 .                  labyrinthineHalls3"
             ]
-          setActDeck [Acts.sealedInGroupA, Acts.distortionsInTimeGroupA, Acts.theEscapeTheLabyrinthsOfLunacy]
+          setActDeck [Acts.sealedInGroupA, Acts.distortionsInTimeGroupA, Acts.theEscape]
           setAside [Locations.chamberOfDecay]
           secrets <-
             sample
@@ -159,7 +159,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
             , ".                  chamberOfPoison    .                  ."
             , ".                  abandonedWarehouse .                  ."
             ]
-          setActDeck [Acts.wateryGraveGroupB, Acts.seepingDeathGroupB, Acts.theEscapeTheLabyrinthsOfLunacy]
+          setActDeck [Acts.wateryGraveGroupB, Acts.seepingDeathGroupB, Acts.theEscape]
           setAside [Assets.keyOfMysteries, Locations.chamberOfRot, Locations.chamberOfPoison]
           rain <- place Locations.chamberOfRain
           sorrows <- place Locations.chamberOfSorrows
@@ -180,7 +180,7 @@ instance RunMessage TheLabyrinthsOfLunacy where
             , ".                  abandonedWarehouse ."
             , "labyrinthineHalls2 .                  labyrinthineHalls3"
             ]
-          setActDeck [Acts.theLeversGroupC, Acts.thePetGroupC, Acts.theEscapeTheLabyrinthsOfLunacy]
+          setActDeck [Acts.theLeversGroupC, Acts.thePetGroupC, Acts.theEscape]
           setAside [Assets.keyOfMysteries, Locations.chamberOfHunger]
           night <- place Locations.chamberOfNight
           place_ Locations.chamberOfRegret

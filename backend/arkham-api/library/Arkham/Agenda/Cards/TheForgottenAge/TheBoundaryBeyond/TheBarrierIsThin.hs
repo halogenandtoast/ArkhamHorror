@@ -1,6 +1,6 @@
 module Arkham.Agenda.Cards.TheForgottenAge.TheBoundaryBeyond.TheBarrierIsThin (theBarrierIsThin) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Acts
 import Arkham.Agenda.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Agendas
 import Arkham.Agenda.CardDefs.TheForgottenAge.TheBoundaryBeyond qualified as Cards
 import Arkham.Agenda.Import.Lifted

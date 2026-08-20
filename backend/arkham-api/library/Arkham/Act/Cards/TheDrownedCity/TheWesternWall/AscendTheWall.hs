@@ -1,0 +1,43 @@
+module Arkham.Act.Cards.TheDrownedCity.TheWesternWall.AscendTheWall (ascendTheWall) where
+
+import Arkham.Ability
+import Arkham.Act.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
+import Arkham.Act.Import.Lifted
+import Arkham.Campaigns.TheDrownedCity.Helpers
+import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Matcher
+
+newtype AscendTheWall = AscendTheWall ActAttrs
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+ascendTheWall :: ActCard AscendTheWall
+ascendTheWall = act (1, A) AscendTheWall Cards.ascendTheWall Nothing
+
+instance HasAbilities AscendTheWall where
+  getAbilities (AscendTheWall a) =
+    extend
+      a
+      [ restricted a 1 (youExist $ at_ FloodedLocation)
+          $ FastAbility (GroupClueCost (PerPlayer 1) Anywhere)
+      , onlyOnce
+          $ restricted
+            a
+            2
+            (EachUndefeatedInvestigator (at_ $ RevealedLocation <> LocationWithTitle "Western Wall"))
+          $ Objective
+          $ forced AnyWindow
+      ]
+
+instance RunMessage AscendTheWall where
+  runMessage msg a@(AscendTheWall attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      withLocationOf iid decreaseFloodLevel
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
+      pure a
+    AdvanceAct (isSide A attrs -> True) _ _ -> do
+      push R2
+      pure a
+    _ -> AscendTheWall <$> liftRunMessage msg attrs

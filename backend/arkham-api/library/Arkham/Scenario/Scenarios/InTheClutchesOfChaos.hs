@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.InTheClutchesOfChaos (setupInTheClutchesOfChaos, inTheClutchesOfChaos, InTheClutchesOfChaos (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Acts
 import Arkham.Agenda.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Agendas
 import Arkham.Campaigns.TheCircleUndone.Key
 import Arkham.EncounterSet qualified as Set

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.RelicsOfThePast (relicsOfThePast) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.RelicsOfThePast qualified as Acts
 import Arkham.Agenda.CardDefs.RelicsOfThePast qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheForgottenAge.Helpers

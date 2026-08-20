@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.RiddlesAndRain (riddlesAndRain) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Acts
 import Arkham.Agenda.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Agendas
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key

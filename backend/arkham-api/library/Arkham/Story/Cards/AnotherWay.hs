@@ -1,6 +1,6 @@
 module Arkham.Story.Cards.AnotherWay (anotherWay) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheForgottenAge.ShatteredAeons qualified as Acts
 import Arkham.Act.Sequence
 import Arkham.Enemy.Cards qualified as Enemies
 import Arkham.Matcher
@@ -32,7 +32,7 @@ instance RunMessage AnotherWay where
         labeled' "anotherWay.accept" do
           removeEnemy alejandro
           advanceToAct' attrs 1 Acts.timelock A
-          eachInvestigator \iid' -> 
+          eachInvestigator \iid' ->
             gameModifiers
               attrs
               iid'

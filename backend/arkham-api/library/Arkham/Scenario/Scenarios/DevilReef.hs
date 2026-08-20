@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.DevilReef (devilReef) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Acts
 import Arkham.Act.Types (Field (..))
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets

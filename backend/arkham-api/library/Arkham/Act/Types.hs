@@ -206,13 +206,14 @@ instance FromJSON ActAttrs where
     actCardId <- v .: "cardId"
     actSequence <- v .: "sequence"
     actAdvanceCost <- v .:? "advanceCost"
-    actTokens <- v .:? "tokens" >>= \case
-      Just tokens -> pure tokens
-      -- Fallback for games serialized before acts tracked a token map: lift the
-      -- old standalone clue count into the tokens map.
-      Nothing -> do
-        clues <- v .:? "clues" .!= 0
-        pure $ if clues > 0 then singletonMap Clue clues else mempty
+    actTokens <-
+      v .:? "tokens" >>= \case
+        Just tokens -> pure tokens
+        -- Fallback for games serialized before acts tracked a token map: lift the
+        -- old standalone clue count into the tokens map.
+        Nothing -> do
+          clues <- v .:? "clues" .!= 0
+          pure $ if clues > 0 then singletonMap Clue clues else mempty
     actDeckId <- v .: "deckId"
     actBreaches <- v .:? "breaches"
     actUsedWheelOfFortuneX <- v .: "usedWheelOfFortuneX"

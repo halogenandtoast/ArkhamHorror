@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.EnthrallingEncore (enthrallingEncore) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.EnthrallingEncore qualified as Acts
 import Arkham.Agenda.CardDefs.EnthrallingEncore qualified as Agendas
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.Cards qualified as Enemies

@@ -8,7 +8,8 @@ ending, which is what every "win the campaign" achievement keys on.
 -}
 module Arkham.Achievements.TheScarletKeysSpec (spec) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.DealingsInTheDark qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.DogsOfWar qualified as Acts
 import Arkham.Agenda.CardDefs.TheScarletKeys.SanguineShadows qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Types qualified as Campaign

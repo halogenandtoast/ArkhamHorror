@@ -1,6 +1,7 @@
 module Arkham.Scenario.Scenarios.ReturnToLostInTimeAndSpace (returnToLostInTimeAndSpace) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpace qualified as Acts
+import Arkham.Act.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Acts
 import Arkham.Agenda.CardDefs.ReturnToTheDunwichLegacy.ReturnToLostInTimeAndSpace qualified as Agendas
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Agendas
 import Arkham.Campaigns.TheDunwichLegacy.Key

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheHouseAlwaysWins (theHouseAlwaysWins, TheHouseAlwaysWins (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Acts
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDunwichLegacy.ChaosBag

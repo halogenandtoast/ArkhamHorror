@@ -1,6 +1,6 @@
 module Arkham.Agenda.Cards.FilmFatale.ShowbusinessAsUsual (showbusinessAsUsual, showbusinessAsUsualEffect) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.FilmFatale qualified as Acts
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.CardDefs.FilmFatale qualified as Cards
 import Arkham.Agenda.Import.Lifted

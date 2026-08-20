@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.WhereTheGodsDwell (whereTheGodsDwell) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Acts
 import Arkham.Agenda.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Agendas
 import Arkham.Attack
 import Arkham.Campaigns.TheDreamEaters.Helpers

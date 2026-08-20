@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.SealedPassage (sealedPassage) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheForgottenAge.TurnBackTime qualified as Acts
 import Arkham.Act.Sequence qualified as ActSequence
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card

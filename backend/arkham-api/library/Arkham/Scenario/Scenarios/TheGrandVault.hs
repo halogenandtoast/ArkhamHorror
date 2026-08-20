@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheGrandVault (theGrandVault) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDrownedCity.TheGrandVault qualified as Acts
 import Arkham.Agenda.CardDefs.TheDrownedCity.TheGrandVault qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (pattern CourtOfTheAncients, pattern TheApiary)

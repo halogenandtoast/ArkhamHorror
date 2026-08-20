@@ -1,6 +1,7 @@
 module Arkham.Scenario.Scenarios.ThreadsOfFate (setupThreadsOfFate, threadsOfFate, ThreadsOfFate (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ReturnToTheForgottenAge.ReturnToThreadsOfFate qualified as Acts
+import Arkham.Act.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Acts
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.CardDefs.TheForgottenAge.ThreadsOfFate qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets

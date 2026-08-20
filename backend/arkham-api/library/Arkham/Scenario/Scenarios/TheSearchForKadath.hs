@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheSearchForKadath (theSearchForKadath) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Acts
 import Arkham.Act.Sequence
 import Arkham.Action qualified as Action
 import Arkham.Agenda.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Agendas

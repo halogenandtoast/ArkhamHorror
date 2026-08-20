@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.ReadOrDie (readOrDie, ReadOrDie (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ReadOrDie qualified as Acts
 import Arkham.Agenda.CardDefs.ReadOrDie qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.RedTideRising (redTideRising) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.RedTideRising qualified as Acts
 import Arkham.Agenda.CardDefs.RedTideRising qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheMidnightMasks (setupTheMidnightMasks, theMidnightMasks, TheMidnightMasks (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Acts
 import Arkham.Agenda.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Agendas
 import Arkham.Agenda.CardDefs.ReturnToNightOfTheZealot.ReturnToTheMidnightMasks qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets

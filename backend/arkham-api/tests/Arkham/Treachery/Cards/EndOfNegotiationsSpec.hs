@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.EndOfNegotiationsSpec (spec) where
 
 import Arkham.Ability.Types (abilityIndex)
 import Arkham.Act (lookupAct)
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDrownedCity.OneLastJob qualified as Acts
 import Arkham.Act.Types (Act)
 import Arkham.Calculation (GameCalculation (Fixed))
 import Arkham.Enemy.Cards qualified as Enemies

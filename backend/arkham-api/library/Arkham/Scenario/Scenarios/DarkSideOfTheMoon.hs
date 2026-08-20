@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.DarkSideOfTheMoon (darkSideOfTheMoon) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.ByTheBook (byTheBook, ByTheBook (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ByTheBook qualified as Acts
 import Arkham.Agenda.CardDefs.ByTheBook qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card

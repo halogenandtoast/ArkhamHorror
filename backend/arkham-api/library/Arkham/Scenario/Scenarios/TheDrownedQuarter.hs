@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheDrownedQuarter (theDrownedQuarter) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Acts
 import Arkham.Agenda.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDrownedCity.CampaignSteps (pattern TheApiary, pattern TheWesternWall)

@@ -1,6 +1,7 @@
 module Arkham.Scenario.Scenarios.UnionAndDisillusion (setupUnionAndDisillusion, unionAndDisillusion, UnionAndDisillusion (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ReturnToTheCircleUndone.ReturnToUnionAndDisillusion qualified as Acts
+import Arkham.Act.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Acts
 import Arkham.Action
 import Arkham.Agenda.CardDefs.TheCircleUndone.UnionAndDisillusion qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets

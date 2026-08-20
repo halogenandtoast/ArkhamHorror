@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheLongestNight (theLongestNight) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Acts
 import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.PointOfNoReturn (pointOfNoReturn) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.OnThinIce (onThinIce) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.OnThinIce qualified as Acts
 import Arkham.Agenda.CardDefs.TheScarletKeys.OnThinIce qualified as Agendas
 import Arkham.Campaigns.TheScarletKeys.CampaignSteps qualified as CS
 import Arkham.Campaigns.TheScarletKeys.Helpers

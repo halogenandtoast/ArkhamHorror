@@ -1,1 +1,1 @@
-{-# OPTIONS_GHC -F -pgmF cards-discover -optF --agenda-builders #-}
+{-# OPTIONS_GHC -F -pgmF cards-discover -optF --builders=Agenda #-}

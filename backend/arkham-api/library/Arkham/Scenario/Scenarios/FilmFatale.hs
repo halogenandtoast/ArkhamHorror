@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.FilmFatale (filmFatale) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.FilmFatale qualified as Acts
 import Arkham.Agenda.CardDefs.FilmFatale qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Types (Field (..))

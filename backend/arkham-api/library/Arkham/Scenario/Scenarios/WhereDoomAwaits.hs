@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.WhereDoomAwaits (whereDoomAwaits, WhereDoomAwaits (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Acts
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.WhereDoomAwaits qualified as Agendas
 import Arkham.Agenda.Sequence qualified as AS
 import Arkham.Agenda.Types (Field (..))

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.WrittenInRock (writtenInRock) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Acts
 import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Agendas
 import Arkham.Agenda.Types (Field (AgendaDoom))
 import Arkham.Asset.Cards qualified as Assets

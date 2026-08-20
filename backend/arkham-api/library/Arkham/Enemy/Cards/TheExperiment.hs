@@ -1,7 +1,7 @@
 module Arkham.Enemy.Cards.TheExperiment (theExperiment) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Acts
 import Arkham.Act.Sequence
 import Arkham.Enemy.Cards qualified as Cards
 import Arkham.Enemy.Import.Lifted

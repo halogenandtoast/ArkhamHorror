@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.BadBlood (badBlood) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.BadBlood qualified as Acts
 import Arkham.Agenda.CardDefs.BadBlood qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card

@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheDepthsOfYoth (setupTheDepthsOfYoth, theDepthsOfYoth, TheDepthsOfYoth (..)) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Acts
 import Arkham.Agenda.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLog

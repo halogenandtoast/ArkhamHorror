@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.ALightInTheFog (aLightInTheFog) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Acts
 import Arkham.Act.Types (Field(ActKeys))
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Agendas
 import Arkham.Agenda.Sequence

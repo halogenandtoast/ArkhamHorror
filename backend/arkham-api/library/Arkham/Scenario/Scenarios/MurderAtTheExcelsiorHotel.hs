@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.MurderAtTheExcelsiorHotel (murderAtTheExcelsiorHotel) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.MurderAtTheExcelsiorHotel qualified as Acts
 import Arkham.Agenda.CardDefs.MurderAtTheExcelsiorHotel qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey

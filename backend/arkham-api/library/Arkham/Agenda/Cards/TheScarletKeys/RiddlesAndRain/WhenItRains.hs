@@ -1,7 +1,7 @@
 module Arkham.Agenda.Cards.TheScarletKeys.RiddlesAndRain.WhenItRains (whenItRains) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Acts
 import Arkham.Agenda.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.Cards qualified as Enemies

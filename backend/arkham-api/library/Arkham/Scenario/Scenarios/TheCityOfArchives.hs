@@ -1,6 +1,7 @@
 module Arkham.Scenario.Scenarios.TheCityOfArchives (theCityOfArchives, TheCityOfArchives (..), setupTheCityOfArchives) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ReturnToTheForgottenAge.ReturnToTheCityOfArchives qualified as Acts
+import Arkham.Act.CardDefs.TheForgottenAge.TheCityOfArchives qualified as Acts
 import Arkham.Agenda.CardDefs.TheForgottenAge.TheCityOfArchives qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignStep

@@ -1,7 +1,7 @@
 module Arkham.Agenda.Cards.TheScarletKeys.WithoutATrace.OtherworldlySlaughter (otherworldlySlaughter) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.WithoutATrace qualified as Acts
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.CardDefs.TheScarletKeys.WithoutATrace qualified as Cards
 import Arkham.Agenda.Import.Lifted

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheBlobThatAteEverything (theBlobThatAteEverything) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheBlobThatAteEverything qualified as Acts
 import Arkham.Agenda.CardDefs.TheBlobThatAteEverything qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option (CampaignOption (PlayWithTheBlobThatAteEverythingElse))

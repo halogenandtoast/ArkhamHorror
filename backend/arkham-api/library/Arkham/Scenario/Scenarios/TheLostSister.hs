@@ -1,7 +1,7 @@
 module Arkham.Scenario.Scenarios.TheLostSister (theLostSister) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Acts
 import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.TheLostSister qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (AssetLocation))

@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheMidwinterGala (theMidwinterGala) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheMidwinterGala qualified as Acts
 import Arkham.Agenda.CardDefs.TheMidwinterGala qualified as Agendas
 import Arkham.Agenda.Sequence
 import Arkham.Agenda.Types (Field (AgendaSequence))

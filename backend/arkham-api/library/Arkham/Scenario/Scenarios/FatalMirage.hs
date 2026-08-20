@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.FatalMirage (fatalMirage) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Acts
 import Arkham.Agenda.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option

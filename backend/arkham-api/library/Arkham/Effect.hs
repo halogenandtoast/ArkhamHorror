@@ -20,16 +20,30 @@ import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
 
-import Arkham.Act.Acts (
+import Arkham.Act.Cards.GuardiansOfTheAbyss.TheEternalSlumber.CurseOfEndlessSleep (
   curseOfEndlessSleepEffect,
-  infiltratingTheLodgeEffect,
-  theStrangerACityAflameEffect,
+ )
+import Arkham.Act.Cards.ReturnToThePathToCarcosa.ReturnToCurtainCall.TheStrangerAlaranMists (
   theStrangerAlaranMistsEffect,
+ )
+import Arkham.Act.Cards.ReturnToThePathToCarcosa.ReturnToCurtainCall.TheStrangerHereIsMyReply (
   theStrangerHereIsMyReplyEffect,
-  theStrangerThePathIsMineEffect,
-  theStrangerTheShoresOfHaliEffect,
+ )
+import Arkham.Act.Cards.ReturnToThePathToCarcosa.ReturnToCurtainCall.TheStrangerUnderTheCity (
   theStrangerUnderTheCityEffect,
-  theYithianRelicEffect,
+ )
+import Arkham.Act.Cards.TheCircleUndone.ForTheGreaterGood.InfiltratingTheLodge (
+  infiltratingTheLodgeEffect,
+ )
+import Arkham.Act.Cards.TheForgottenAge.ShatteredAeons.TheYithianRelic (theYithianRelicEffect)
+import Arkham.Act.Cards.ThePathToCarcosa.CurtainCall.TheStrangerACityAflame (
+  theStrangerACityAflameEffect,
+ )
+import Arkham.Act.Cards.ThePathToCarcosa.CurtainCall.TheStrangerThePathIsMine (
+  theStrangerThePathIsMineEffect,
+ )
+import Arkham.Act.Cards.ThePathToCarcosa.CurtainCall.TheStrangerTheShoresOfHali (
+  theStrangerTheShoresOfHaliEffect,
  )
 import Arkham.Agenda.Cards.FilmFatale.ShowbusinessAsUsual (showbusinessAsUsualEffect)
 import Arkham.Agenda.Cards.TheCircleUndone.UnionAndDisillusion.TheLoversVI (theLoversVIEffect)

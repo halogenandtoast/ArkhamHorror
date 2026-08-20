@@ -1,0 +1,127 @@
+module Arkham.Act.Cards.TheFeastOfHemlockVale.FateOfTheVale.ShatteredMemories (shatteredMemories) where
+
+import Arkham.Ability
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Cards
+import Arkham.Act.Import.Lifted
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
+import Arkham.Card
+import Arkham.Deck qualified as Deck
+import Arkham.Helpers.GameValue
+import Arkham.Helpers.Query (getSetAsideCardsMatching)
+import Arkham.Helpers.Scenario
+import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Investigator.Types (Field (InvestigatorDoom))
+import Arkham.Location.Types (Field (..))
+import Arkham.Matcher hiding (DuringTurn)
+import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
+import Arkham.Modifier
+import Arkham.Placement
+import Arkham.Projection
+import Arkham.Scenario.Deck
+import Arkham.Scenarios.FateOfTheVale.Helpers (revealCardsFromAbyss, scenarioI18n)
+import Arkham.SkillTest
+import Arkham.SkillTestResult
+import Arkham.Trait (Trait (Cave, Lair))
+
+newtype ShatteredMemories = ShatteredMemories ActAttrs
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+shatteredMemories :: ActCard ShatteredMemories
+shatteredMemories = act (1, A) ShatteredMemories Cards.shatteredMemories Nothing
+
+instance HasAbilities ShatteredMemories where
+  getAbilities (ShatteredMemories a) =
+    extend
+      a
+      [ restricted a 1 (DuringTurn You)
+          $ freeReaction
+          $ SkillTestResult #after You (SkillTestAt $ LocationWithTrait Lair) #success
+      , restricted a 2 DuringYourSkillTest $ FastAbility $ ClueCost $ Static 1
+      , onlyOnce
+          $ restricted a 3 (EachUndefeatedInvestigator $ not_ $ investigatorIs Investigators.shatteredSelf)
+          $ Objective
+          $ forced AnyWindow
+      ]
+
+resolveTrueSelf :: ReverseQueue m => Source -> InvestigatorId -> Card -> m ()
+resolveTrueSelf source fallback card = do
+  let owner = fromMaybe fallback $ toCardOwner card
+  void $ setOwner owner card
+  healAllDamageAndHorror source owner
+  -- Doom placed on the Shattered Self card remains on it as the card flips to
+  -- its Old Memory side (per FFG ruling, issue #5184). returnFromShatteredSelf
+  -- carries the doom back onto the true self, so move it onto Old Memory here.
+  doom <- field InvestigatorDoom owner
+  oldMemory <- setOwner owner =<< genCard Assets.oldMemory
+  oldMemoryId <- createAssetAt oldMemory (InPlayArea owner)
+  scenarioSpecific "returnFromShatteredSelf" owner
+  when (doom > 0) do
+    removeAllDoom source owner
+    placeDoom source oldMemoryId doom
+
+revealFromBottomOfAbyss :: ReverseQueue m => Source -> InvestigatorId -> Int -> m ()
+revealFromBottomOfAbyss _source iid n = do
+  abyss <- getScenarioDeck AbyssDeck
+  let revealed = drop (max 0 (length abyss - n)) abyss
+  unless (null revealed)
+    $ revealCardsFromAbyss iid revealed
+    $ ScenarioSpecific "shatteredMemoriesChooseFromRevealedAbyss" (toJSON (iid, revealed))
+
+instance RunMessage ShatteredMemories where
+  runMessage msg a@(ShatteredMemories attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      getSkillTest >>= traverse_ \st -> case skillTestResult st of
+        SucceededBy _ n | n > 0 -> revealFromBottomOfAbyss (attrs.ability 1) iid n
+        _ -> pure ()
+      pure a
+    ScenarioSpecific "shatteredMemoriesChooseFromRevealedAbyss" v -> do
+      let (iid, originallyRevealed) = toResult v :: (InvestigatorId, [Card])
+      abyss <- getScenarioDeck AbyssDeck
+      let revealed = filter ((`elem` map toCardId abyss) . toCardId) originallyRevealed
+      unless (null revealed) $ chooseOneM iid do
+        targets revealed \card -> do
+          let rest = filter (/= card) revealed
+          for_ revealed \c -> scenarioSpecific "removeFromAbyss" (toCardId c)
+          shuffleCardsIntoTopOfDeck (Deck.ScenarioDeckByKey AbyssDeck) 0 rest
+          if toCardType card == InvestigatorType
+            then resolveTrueSelf (attrs.ability 1) iid card
+            else scenarioSpecific "drawFromAbyss" (iid, card)
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      withSkillTest \sid -> skillTestModifier sid (attrs.ability 2) iid (AnySkillValue 2)
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 3 -> do
+      advanceVia #other attrs (attrs.ability 3)
+      pure a
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      locations <- select RevealedLocation
+      for_ locations \lid -> do
+        clueValue <- fieldMapM LocationRevealClues getGameValue lid
+        clues <- field LocationClues lid
+        when (clueValue > clues) $ placeClues attrs lid (clueValue - clues)
+
+      crossedOut <- getCrossedOutResidents
+      let crossedResidents = nub $ MotherRachel : crossedOut
+      record $ crossedOutKey MotherRachel
+
+      crossedResidentCards <- getSetAsideCardsMatching $ mapOneOf cardIs crossedResidents
+      caveLocations <- getSetAsideCardsMatching $ CardWithTrait Cave <> CardWithType LocationType
+      shuffleCardsIntoDeck (Deck.ScenarioDeckByKey AbyssDeck) (crossedResidentCards <> caveLocations)
+
+      eachInvestigator (`forInvestigator` msg)
+      advanceActDeck attrs
+      pure a
+    ForInvestigator iid (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      choices <- forMaybeM [minBound .. maxBound] \resident -> do
+        level <- getRelationshipLevel resident
+        mSetAside <- listToMaybe <$> getSetAsideCardsMatching (cardIs resident)
+        pure $ guard (level >= 4) *> fmap (\card -> (resident, card)) mSetAside
+      when (notNull choices) do
+        chooseOneM iid do
+          scenarioI18n $ labeled' "shatteredMemories.doNotTakeControl" nothing
+          for_ choices \(_resident, card) -> cardLabeled card $ takeControlOfSetAsideAsset iid card
+      pure a
+    _ -> ShatteredMemories <$> liftRunMessage msg attrs

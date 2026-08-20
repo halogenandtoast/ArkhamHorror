@@ -1,7 +1,7 @@
 module Arkham.Agenda.Cards.TheInnsmouthConspiracy.ALightInTheFog.FogOnTheBay (fogOnTheBay) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Acts
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Cards
 import Arkham.Agenda.Import.Lifted

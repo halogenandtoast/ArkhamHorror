@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.DimCarcosa (setupDimCarcosa, dimCarcosa, DimCarcosa (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Acts
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Agendas
 import Arkham.Campaigns.ThePathToCarcosa.Import
 import Arkham.Card (genCards, toCard, _PlayerCard)

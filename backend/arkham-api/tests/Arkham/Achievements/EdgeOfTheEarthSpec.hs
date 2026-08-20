@@ -10,7 +10,8 @@ rather than on resolutions.
 -}
 module Arkham.Achievements.EdgeOfTheEarthSpec (spec) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.EdgeOfTheEarth.FatalMirage qualified as Acts
+import Arkham.Act.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Acts
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Asset
 import Arkham.Campaign.Types qualified as Campaign

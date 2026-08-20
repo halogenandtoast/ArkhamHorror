@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.SpreadingFlames (spreadingFlames) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Acts
 import Arkham.Agenda.CardDefs.BrethrenOfAsh.SpreadingFlames qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.BrethrenOfAsh.Import

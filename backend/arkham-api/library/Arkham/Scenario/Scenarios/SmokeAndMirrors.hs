@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.SmokeAndMirrors (smokeAndMirrors) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.BrethrenOfAsh.SmokeAndMirrors qualified as Acts
 import Arkham.Agenda.CardDefs.BrethrenOfAsh.SmokeAndMirrors qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.BrethrenOfAsh.Import

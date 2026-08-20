@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.ThePallidMask (setupThePallidMask, thePallidMask, ThePallidMask (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets

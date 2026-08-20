@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.IntoTheMaelstrom (intoTheMaelstrom) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers

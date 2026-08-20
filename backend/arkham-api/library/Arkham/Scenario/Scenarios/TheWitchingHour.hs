@@ -1,6 +1,7 @@
 module Arkham.Scenario.Scenarios.TheWitchingHour (setupTheWitchingHour, theWitchingHour, TheWitchingHour (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ReturnToTheCircleUndone.ReturnToTheWitchingHour qualified as Acts
+import Arkham.Act.CardDefs.TheCircleUndone.TheWitchingHour qualified as Acts
 import Arkham.Act.Sequence (ActStep (..), actStep)
 import Arkham.Act.Types (Field (ActSequence))
 import Arkham.Agenda.CardDefs.TheCircleUndone.TheWitchingHour qualified as Agendas

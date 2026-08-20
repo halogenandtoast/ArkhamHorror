@@ -1,7 +1,7 @@
 module Arkham.Agenda.Cards.ThePathToCarcosa.BlackStarsRise.LetTheStormRageTheFloodBelow (letTheStormRageTheFloodBelow) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ThePathToCarcosa.BlackStarsRise qualified as Acts
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.BlackStarsRise qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card

@@ -10,7 +10,9 @@ messages rather than on resolutions.
 -}
 module Arkham.Achievements.TheDrownedCitySpec (spec) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Acts
+import Arkham.Act.CardDefs.TheDrownedCity.OneLastJob qualified as Acts
+import Arkham.Act.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Acts
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Asset
 import Arkham.CampaignLogKey (recorded, toCampaignLogKey)

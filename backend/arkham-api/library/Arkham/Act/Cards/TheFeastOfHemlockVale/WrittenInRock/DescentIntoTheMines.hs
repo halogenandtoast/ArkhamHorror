@@ -1,0 +1,52 @@
+module Arkham.Act.Cards.TheFeastOfHemlockVale.WrittenInRock.DescentIntoTheMines (descentIntoTheMines) where
+
+import Arkham.Ability
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Cards
+import Arkham.Act.Import.Lifted
+import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.WrittenInRock qualified as Agendas
+import Arkham.Agenda.Sequence qualified as AS
+import Arkham.Asset.Cards qualified as Assets
+import Arkham.Helpers.Agenda
+import Arkham.Location.Cards qualified as Locations
+import Arkham.Matcher
+import Arkham.Message (TokenLoss (..))
+import Arkham.Token
+import Arkham.Trait (Trait (Cave))
+
+newtype DescentIntoTheMines = DescentIntoTheMines ActAttrs
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+descentIntoTheMines :: ActCard DescentIntoTheMines
+descentIntoTheMines = act (1, A) DescentIntoTheMines Cards.descentIntoTheMines Nothing
+
+instance HasAbilities DescentIntoTheMines where
+  getAbilities (DescentIntoTheMines a) =
+    [ restricted a 1 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.controlStation)
+        $ Objective
+        $ forced (RoundEnds #when)
+    ]
+
+instance RunMessage DescentIntoTheMines where
+  runMessage msg a@(DescentIntoTheMines attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      advancedWithOther attrs
+      pure a
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      selectEach (location_ $ withTrait Cave) removeLocation
+      selectForMaybeM
+        (assetIs Assets.riverHawthorneBigInNewYork <> not_ (AssetControlledBy Anyone))
+        removeFromGame
+      eachInvestigator \iid -> do
+        push $ LoseTokens iid (toSource attrs) Clue (AllLostBut 2)
+
+      whenM (currentAgendaSequenceIs (== AS.Sequence 1 AS.A)) do
+        advanceToAgendaA attrs Agendas.dangerousRide
+        placeDoomOnAgenda =<< getDoomOnAgenda
+
+      scenarioSpecific_ "theCaveIn"
+      advanceActDeck attrs
+      selectEach (assetIs Assets.drRosaMarquezBestInHerField) \asset -> do
+        clearAbilityUse $ AbilityRef (toSource asset) 1
+      pure a
+    _ -> DescentIntoTheMines <$> liftRunMessage msg attrs

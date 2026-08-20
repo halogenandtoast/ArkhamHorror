@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.DancingMad (dancingMad) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.DancingMad qualified as Acts
 import Arkham.Agenda.CardDefs.TheScarletKeys.DancingMad qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers

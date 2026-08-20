@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.ForTheGreaterGood (setupForTheGreaterGood, forTheGreaterGood, ForTheGreaterGood (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Acts
 import Arkham.Agenda.CardDefs.TheCircleUndone.ForTheGreaterGood qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignStep

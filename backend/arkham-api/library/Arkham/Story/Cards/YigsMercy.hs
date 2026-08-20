@@ -1,6 +1,6 @@
 module Arkham.Story.Cards.YigsMercy (yigsMercy) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheForgottenAge.ShatteredAeons qualified as Acts
 import Arkham.Act.Sequence
 import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Enemy.Cards qualified as Enemies

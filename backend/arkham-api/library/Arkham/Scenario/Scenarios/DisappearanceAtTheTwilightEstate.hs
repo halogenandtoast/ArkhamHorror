@@ -4,7 +4,7 @@ module Arkham.Scenario.Scenarios.DisappearanceAtTheTwilightEstate (
   DisappearanceAtTheTwilightEstate (..),
 ) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheCircleUndone.DisappearanceAtTheTwilightEstate qualified as Acts
 import Arkham.Act.Types (Field (..))
 import Arkham.Agenda.CardDefs.TheCircleUndone.DisappearanceAtTheTwilightEstate qualified as Agendas
 import Arkham.Campaigns.TheCircleUndone.ChaosBag

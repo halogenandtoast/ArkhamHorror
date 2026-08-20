@@ -1,6 +1,6 @@
 module Arkham.Scenarios.IntoTheMaelstrom.Helpers where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Acts
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory

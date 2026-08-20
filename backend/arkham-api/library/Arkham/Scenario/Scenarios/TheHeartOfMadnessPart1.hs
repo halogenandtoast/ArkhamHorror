@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheHeartOfMadnessPart1 (theHeartOfMadnessPart1) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Acts
 import Arkham.Agenda.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option

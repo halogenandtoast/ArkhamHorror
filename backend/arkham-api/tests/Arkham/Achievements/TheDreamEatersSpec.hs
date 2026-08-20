@@ -14,7 +14,9 @@ this same harness.
 -}
 module Arkham.Achievements.TheDreamEatersSpec (spec) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.WakingNightmare qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Acts
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign (lookupCampaign)
 import Arkham.Campaign.Types (CampaignAttrs (campaignLog, campaignMeta))

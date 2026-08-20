@@ -1,6 +1,6 @@
 module Arkham.Scenarios.FateOfTheVale.Helpers where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Acts
 import Arkham.Act.Types (Field (ActCard))
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Card

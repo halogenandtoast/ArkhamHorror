@@ -14,7 +14,8 @@ what "Don't Wake Daddy" needs to span The Lair of Dagon and Into the Maelstrom.
 -}
 module Arkham.Achievements.TheInnsmouthConspiracySpec (spec) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Acts
+import Arkham.Act.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Acts
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Asset
 import Arkham.CampaignLogKey (recorded, toCampaignLogKey)

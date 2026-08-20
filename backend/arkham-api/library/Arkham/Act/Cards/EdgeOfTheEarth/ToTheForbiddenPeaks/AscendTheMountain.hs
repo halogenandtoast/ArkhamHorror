@@ -1,0 +1,42 @@
+module Arkham.Act.Cards.EdgeOfTheEarth.ToTheForbiddenPeaks.AscendTheMountain (ascendTheMountain) where
+
+import Arkham.Ability
+import Arkham.Act.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Cards
+import Arkham.Act.Import.Lifted
+import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Trait (Trait (Expedition))
+
+newtype AscendTheMountain = AscendTheMountain ActAttrs
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+ascendTheMountain :: ActCard AscendTheMountain
+ascendTheMountain = act (1, A) AscendTheMountain Cards.ascendTheMountain Nothing
+
+instance HasAbilities AscendTheMountain where
+  getAbilities (AscendTheMountain x) =
+    extend
+      x
+      [ restricted
+          x
+          1
+          (exists $ at_ YourLocation <> withTrait Expedition <> not_ (AssetControlledBy You))
+          actionAbility
+      , restricted x 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
+      ]
+
+instance RunMessage AscendTheMountain where
+  runMessage msg a@(AscendTheMountain attrs) = runQueueT $ case msg of
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R1
+      pure a
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      assets <-
+        select $ at_ (locationWithInvestigator iid) <> withTrait Expedition <> not_ (assetControlledBy iid)
+      chooseTargetM iid assets $ takeControlOfAsset iid
+      pure a
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      advancedWithOther attrs
+      pure a
+    _ -> AscendTheMountain <$> liftRunMessage msg attrs

@@ -1,8 +1,8 @@
 module Arkham.Location.Cards.TheTwistedHollow (theTwistedHollow) where
 
 import Arkham.Ability
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.TheTwistedHollow qualified as Acts
 import Arkham.Act.Sequence
-import Arkham.Act.Cards qualified as Acts
 import Arkham.Location.Cards qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher

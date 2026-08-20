@@ -1,0 +1,27 @@
+module Arkham.Act.Cards.TheDreamEaters.PointOfNoReturn.TheBlackExpanse (TheBlackExpanse (..), theBlackExpanse) where
+
+import Arkham.Ability
+import Arkham.Act.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Cards
+import Arkham.Act.Import.Lifted
+import Arkham.Matcher
+
+newtype TheBlackExpanse = TheBlackExpanse ActAttrs
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+theBlackExpanse :: ActCard TheBlackExpanse
+theBlackExpanse = act (3, A) TheBlackExpanse Cards.theBlackExpanse Nothing
+
+instance HasAbilities TheBlackExpanse where
+  getAbilities (TheBlackExpanse x) =
+    [mkAbility x 1 $ forced $ IfEnemyDefeated #after Anyone ByAny $ EnemyWithClues $ atLeast 1]
+
+instance RunMessage TheBlackExpanse where
+  runMessage msg a@(TheBlackExpanse attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      push $ GainClues iid (attrs.ability 1) 1
+      pure a
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
+      push R1
+      pure a
+    _ -> TheBlackExpanse <$> liftRunMessage msg attrs

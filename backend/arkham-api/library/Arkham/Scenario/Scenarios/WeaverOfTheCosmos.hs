@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.WeaverOfTheCosmos (weaverOfTheCosmos) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Acts
 import Arkham.Action qualified as Action
 import Arkham.Agenda.CardDefs.TheDreamEaters.WeaverOfTheCosmos qualified as Agendas
 import Arkham.Attack

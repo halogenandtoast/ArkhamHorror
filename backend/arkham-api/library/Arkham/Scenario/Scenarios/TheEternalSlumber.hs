@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheEternalSlumber (theEternalSlumber) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.GuardiansOfTheAbyss.TheEternalSlumber qualified as Acts
 import Arkham.Agenda.CardDefs.GuardiansOfTheAbyss.TheEternalSlumber qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignLogKey

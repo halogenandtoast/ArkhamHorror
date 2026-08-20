@@ -36,8 +36,8 @@ import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Matcher hiding (FastPlayerWindow, InvestigatorResigned)
-import Arkham.Metrics (withMetric)
 import Arkham.Message qualified as Msg
+import Arkham.Metrics (withMetric)
 import Arkham.Modifier
 import Arkham.Tarot
 import Arkham.Token (Token (Clue, Doom), addTokens)
@@ -95,11 +95,14 @@ instance RunMessage ActAttrs where
     -- Doom is routed through the PlaceDoom handler below so it raises a
     -- WouldPlaceDoom window (mirroring Agenda/Runner). This matters for acts
     -- that behave as agendas (ActIsAgenda, e.g. The Final Mirage).
-    PlaceTokens _ (ActTarget aid) token n | aid == actId, token /= Doom ->
-      pure $ a & tokensL %~ addTokens token n
+    PlaceTokens _ (ActTarget aid) token n
+      | aid == actId
+      , token /= Doom ->
+          pure $ a & tokensL %~ addTokens token n
     MoveTokens _ (InvestigatorSource _) (ActTarget aid) Clue _ | aid == actId -> pure a
-    MoveTokens _ _ (ActTarget aid) token n | aid == actId ->
-      pure $ a & tokensL %~ addTokens token n
+    MoveTokens _ _ (ActTarget aid) token n
+      | aid == actId ->
+          pure $ a & tokensL %~ addTokens token n
     PlaceBreaches (isTarget a -> True) n -> do
       let total = maybe n (+ n) actBreaches
       pure $ a & breachesL ?~ total

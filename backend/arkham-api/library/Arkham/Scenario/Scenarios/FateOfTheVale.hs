@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.FateOfTheVale (fateOfTheVale, crossOutUncontrolledResidents) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Acts
 import Arkham.Act.Types (Field (ActCard))
 import Arkham.Agenda.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets

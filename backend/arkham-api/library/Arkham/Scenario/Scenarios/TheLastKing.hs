@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.TheLastKing (setupTheLastKing, theLastKing, TheLastKing (..)) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ThePathToCarcosa.TheLastKing qualified as Acts
 import Arkham.Act.Types (Field (..))
 import Arkham.Agenda.CardDefs.ReturnToThePathToCarcosa.ReturnToTheLastKing qualified as Agendas
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.TheLastKing qualified as Agendas

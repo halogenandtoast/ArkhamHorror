@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.SanguineShadows (sanguineShadows) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.SanguineShadows qualified as Acts
 import Arkham.Agenda.CardDefs.TheScarletKeys.SanguineShadows qualified as Agendas
 import Arkham.Campaigns.TheScarletKeys.Helpers
 import Arkham.Campaigns.TheScarletKeys.Key

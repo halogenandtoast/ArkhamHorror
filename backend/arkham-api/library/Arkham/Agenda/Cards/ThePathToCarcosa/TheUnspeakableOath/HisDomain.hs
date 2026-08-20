@@ -1,7 +1,7 @@
 module Arkham.Agenda.Cards.ThePathToCarcosa.TheUnspeakableOath.HisDomain (hisDomain) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Acts
 import Arkham.Act.Sequence qualified as ActSequence
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Cards
 import Arkham.Agenda.Import.Lifted

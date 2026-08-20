@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.DogsOfWar (dogsOfWar) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.DogsOfWar qualified as Acts
 import Arkham.Agenda.CardDefs.TheScarletKeys.DogsOfWar qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheScarletKeys.Helpers

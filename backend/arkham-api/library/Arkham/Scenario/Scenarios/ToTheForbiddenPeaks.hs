@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.ToTheForbiddenPeaks (toTheForbiddenPeaks) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Acts
 import Arkham.Agenda.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Option

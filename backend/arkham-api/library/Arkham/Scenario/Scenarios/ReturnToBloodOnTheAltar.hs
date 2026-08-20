@@ -1,6 +1,6 @@
 module Arkham.Scenario.Scenarios.ReturnToBloodOnTheAltar (returnToBloodOnTheAltar) where
 
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Acts
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.BloodOnTheAltar qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheDunwichLegacy.Key

@@ -27,7 +27,9 @@ module Arkham.Campaign.Campaigns.TheDrownedCity.Achievements (
 ) where
 
 import Arkham.Achievement
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Acts
+import Arkham.Act.CardDefs.TheDrownedCity.OneLastJob qualified as Acts
+import Arkham.Act.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Acts
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Asset
 import Arkham.Campaign.Types (campaignDifficulty)

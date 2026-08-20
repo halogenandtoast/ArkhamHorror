@@ -51,8 +51,8 @@ data DiscoverMode
   | InstancesOnly
   | HomebrewContent
   | HomebrewCardDefs
-  | AgendaBuilders
-  | AgendaDefs
+  | CardBuilders String
+  | CardDefsRegistry String
 
 {- | How a discovery mode that reads its inputs renders them: which module
 supplies the registration helpers, which tag type and class instance to emit,
@@ -111,31 +111,34 @@ homebrewSpec = \case
             "PlayerCardDef" -> Just "playerCardDefEntry"
             _ -> Nothing
         }
-  AgendaBuilders ->
+  {- Both registries are derived from the entity kind, so a new card type needs
+  only a pragma (@-optF --builders=Location@), not a code change. -}
+  CardBuilders kind ->
     Just
       $ HomebrewSpec
-        { hsImports = ["Arkham.Agenda.Types"]
+        { hsImports = ["Arkham." ++ kind ++ ".Types"]
         , hsTarget =
             TargetBinding
-              { dtBindingName = "allAgendaCardBuilders"
-              , dtBindingType = "[SomeAgendaCard]"
+              { dtBindingName = "all" ++ kind ++ "CardBuilders"
+              , dtBindingType = "[Some" ++ kind ++ "Card]"
               }
-        , -- @foo :: AgendaCard Foo@ — head of the signature, so the extra
+        , -- @foo :: ActCard Foo@ — head of the signature only, so the extra
           -- @fooEffect :: EffectArgs -> ...@ builders are not registered
-          hsHelper = \rhs -> case takeWhile (not . isSpace) rhs of
-            "AgendaCard" -> Just "SomeAgendaCard"
-            _ -> Nothing
+          hsHelper = \rhs ->
+            if takeWhile (not . isSpace) rhs == kind ++ "Card"
+              then Just ("Some" ++ kind ++ "Card")
+              else Nothing
         }
-  AgendaDefs ->
+  CardDefsRegistry kind ->
     Just
       $ HomebrewSpec
         { hsImports = ["Arkham.Card.CardDef"]
         , hsTarget =
             TargetBinding
-              { dtBindingName = "allAgendaCardDefs"
+              { dtBindingName = "all" ++ kind ++ "CardDefs"
               , dtBindingType = "[CardDef]"
               }
-        , -- the whole signature, so @agenda :: ... -> CardDef@ in Base.hs and
+        , -- the whole signature, so @act :: ... -> CardDef@ in Base.hs and
           -- @otherSideIs :: CardDef -> CardDef@ are not mistaken for definitions
           hsHelper = \case
             "CardDef" -> Just ""
@@ -244,8 +247,26 @@ decides how much of it has to match, so a helper such as
 readHomebrewEntries :: HomebrewSpec -> Module -> IO [HomebrewEntry]
 readHomebrewEntries spec mod' = do
   source <- readFile $ modulePath mod'
-  pure $ mapMaybe (lineEntry mod') (lines source)
+  pure $ mapMaybe (lineEntry mod') (logicalLines $ lines source)
  where
+  {- fourmolu wraps a long signature onto the following line:
+
+  @
+  friendsInHighPlacesHenrysInformation
+    :: ActCard FriendsInHighPlacesHenrysInformation
+  @
+
+  Neither half is a registrable declaration on its own, so scanning raw lines
+  drops the card silently.  Glue a continuation back onto its name first. -}
+  logicalLines = foldr glue []
+   where
+    glue l (next : rest)
+      | "::" `isPrefixOf` dropWhile isSpace next
+      , not (null (dropWhile isSpace l))
+      , not ("::" `isPrefixOf` dropWhile isSpace l) =
+          (l ++ " " ++ dropWhile isSpace next) : rest
+    glue l rest = l : rest
+
   lineEntry m line = do
     let stripped = dropWhile isSpace line
     guard $ not ("--" `isPrefixOf` stripped)

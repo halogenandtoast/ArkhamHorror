@@ -1,7 +1,8 @@
 module Arkham.Scenario.Scenarios.TheGathering (setupTheGathering, theGathering, TheGathering (..)) where
 
 import Arkham.Achievement (Achievement (..), NightOfTheZealotAchievement (..), earnAchievement)
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.NightOfTheZealot.TheGathering qualified as Acts
+import Arkham.Act.CardDefs.ReturnToNightOfTheZealot.ReturnToTheGathering qualified as Acts
 import Arkham.Agenda.CardDefs.NightOfTheZealot.TheGathering qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.NightOfTheZealot.Import

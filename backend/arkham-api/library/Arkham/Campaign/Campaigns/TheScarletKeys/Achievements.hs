@@ -22,7 +22,7 @@ module Arkham.Campaign.Campaigns.TheScarletKeys.Achievements (
 ) where
 
 import Arkham.Achievement
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.DogsOfWar qualified as Acts
 import Arkham.Agenda.CardDefs.TheScarletKeys.SanguineShadows qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types qualified as Asset

@@ -1,7 +1,7 @@
 module Arkham.Agenda.Cards.TheScarletKeys.CongressOfTheKeys.ConfluxOfConsequence (confluxOfConsequence) where
 
 import Arkham.Ability
-import Arkham.Act.Cards qualified as Acts
+import Arkham.Act.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Acts
 import Arkham.Act.Types (Field (..))
 import Arkham.Agenda.CardDefs.TheScarletKeys.CongressOfTheKeys qualified as Cards
 import Arkham.Agenda.Import.Lifted

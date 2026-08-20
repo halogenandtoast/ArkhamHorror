@@ -17,6 +17,7 @@ import Supplies from '@/arkham/components/Supplies.vue'
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue'
 import { type XpBreakdown as XpBreakdownType, type XpBreakdownStep, xpBreakdownDecoder } from '@/arkham/types/Xp'
 import { type TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken'
+import { type ChaosBagChange, chaosBagChangeDecoder } from '@/arkham/types/Campaign'
 import * as JsonDecoder from 'ts.data.json'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
@@ -180,6 +181,14 @@ if (otherCampaignAttrs.value?.chaosBag) {
     .decodePromise(otherCampaignAttrs.value.chaosBag)
     .then(res => { otherChaosBag.value = res })
     .catch(() => { otherChaosBag.value = null })
+}
+
+const otherChaosBagHistory = ref<ChaosBagChange[] | null>(null)
+if (otherCampaignAttrs.value?.chaosBagHistory) {
+  JsonDecoder.array(chaosBagChangeDecoder, 'ChaosBagChange[]')
+    .decodePromise(otherCampaignAttrs.value.chaosBagHistory)
+    .then(res => { otherChaosBagHistory.value = res })
+    .catch(() => { otherChaosBagHistory.value = null })
 }
 
 // A mapping of title → LogContents. When there is no split, we expose just the main one.
@@ -544,6 +553,10 @@ const recordedCounts = computed(() =>
 const partners = computed(() => (selectedLog.value as any).partners ?? {})
 const chaosBag = computed(() =>
   showingMain.value ? (props.game.campaign?.chaosBag ?? []) : (otherChaosBag.value ?? [])
+)
+
+const chaosBagHistory = computed<ChaosBagChange[]>(() =>
+  showingMain.value ? (props.game.campaign?.chaosBagHistory ?? []) : (otherChaosBagHistory.value ?? [])
 )
 const hasSupplies = computed(() => Object.values(investigators.value).some(i => i.supplies.length > 0))
 
@@ -945,7 +958,9 @@ onUnmounted(() => {
 
           <CampaignLogChaosBag
             v-if="chaosBag.length > 0"
+            :game="game"
             :chaosBag="chaosBag"
+            :history="chaosBagHistory"
           />
 
           <CampaignLogUltimatumsAndBoons

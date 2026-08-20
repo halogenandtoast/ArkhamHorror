@@ -158,7 +158,7 @@ defaultCampaignRunner msg a = case msg of
     spendSideStoryXp sid
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
-  SetCampaignChaosBag tokens' -> pure $ updateAttrs a (chaosBagL .~ tokens')
+  SetCampaignChaosBag tokens' -> pure $ updateAttrs a (overCampaignChaosBag (const tokens'))
   AddCampaignCardToDeck iid _ card -> do
     card' <- setOwner iid card
     pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid [card'])
@@ -173,10 +173,10 @@ defaultCampaignRunner msg a = case msg of
     pure $ updateAttrs a (storyCardsL %~ Map.map (map (\c -> if toCardId c == cardId then card else c)))
   AddChaosToken token -> do
     if token `notElem` [CurseToken, BlessToken]
-      then pure $ updateAttrs a (chaosBagL %~ (token :))
+      then pure $ updateAttrs a (overCampaignChaosBag (token :))
       else pure a
-  RemoveChaosToken token -> pure $ updateAttrs a (chaosBagL %~ deleteFirstMatch (== token))
-  RemoveAllChaosTokens token -> pure $ updateAttrs a (chaosBagL %~ filter (/= token))
+  RemoveChaosToken token -> pure $ updateAttrs a (overCampaignChaosBag (deleteFirstMatch (== token)))
+  RemoveAllChaosTokens token -> pure $ updateAttrs a (overCampaignChaosBag (filter (/= token)))
   RemoveOption option -> pure $ updateAttrs a (logL . optionsL %~ deleteSet option)
   InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDecklist = mDecklist, initDeckDeck = deck} -> do
     playerCount <- getPlayerCount

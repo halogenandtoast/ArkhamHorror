@@ -32,6 +32,21 @@ export function compareTokenFaces(a: TokenFace, b: TokenFace): number {
   return (tokenOrderIndex.get(a) ?? tokenOrder.length) - (tokenOrderIndex.get(b) ?? tokenOrder.length)
 }
 
+/**
+ * Multiset difference: the faces in `xs` that `ys` does not account for. Used to
+ * turn a before/after pair of chaos bags into what was added and removed.
+ */
+export function tokenFaceDifference(xs: TokenFace[], ys: TokenFace[]): TokenFace[] {
+  const remaining = [...ys]
+  const difference: TokenFace[] = []
+  for (const face of xs) {
+    const index = remaining.indexOf(face)
+    if (index === -1) difference.push(face)
+    else remaining.splice(index, 1)
+  }
+  return difference
+}
+
 /** The standard chaos tokens, i.e. everything before the campaign-specific ones. */
 export const standardTokenFaces: readonly TokenFace[] = tokenOrder.slice(0, tokenOrderIndex.get('CurseToken'))
 

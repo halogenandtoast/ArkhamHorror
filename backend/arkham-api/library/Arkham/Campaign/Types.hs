@@ -76,6 +76,18 @@ data XpBreakdownStep = XpBreakdownStep
   }
   deriving stock (Show, Eq, Ord, Generic, Data)
 
+{- | A recorded change to the campaign chaos bag, grouped by the campaign step it
+happened during. The bag is kept in full on both sides so the campaign log can show
+what was added and removed (the multiset difference) and what the bag looked like
+before and after.
+-}
+data ChaosBagChange = ChaosBagChange
+  { cbcStep :: CampaignStep
+  , cbcBefore :: [ChaosTokenFace]
+  , cbcAfter :: [ChaosTokenFace]
+  }
+  deriving stock (Show, Eq, Ord, Generic, Data)
+
 data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
   , campaignName :: Text
@@ -83,6 +95,7 @@ data CampaignAttrs = CampaignAttrs
   , campaignStoryCards :: Map InvestigatorId [Card]
   , campaignDifficulty :: Difficulty
   , campaignChaosBag :: [ChaosTokenFace]
+  , campaignChaosBagHistory :: [ChaosBagChange]
   , campaignLog :: CampaignLog
   , campaignStep :: CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
@@ -207,6 +220,25 @@ usedAbilitiesL = lens campaignUsedAbilities $ \m x -> m {campaignUsedAbilities =
 xpBreakdownL :: Lens' CampaignAttrs [XpBreakdownStep]
 xpBreakdownL = lens campaignXpBreakdown $ \m x -> m {campaignXpBreakdown = x}
 
+chaosBagHistoryL :: Lens' CampaignAttrs [ChaosBagChange]
+chaosBagHistoryL = lens campaignChaosBagHistory $ \m x -> m {campaignChaosBagHistory = x}
+
+{- | Change the campaign chaos bag, recording the change so the campaign log can show
+the bag's history. Everything that happens during one campaign step folds into a
+single entry, and an entry that nets back to where it started is dropped.
+-}
+overCampaignChaosBag :: ([ChaosTokenFace] -> [ChaosTokenFace]) -> CampaignAttrs -> CampaignAttrs
+overCampaignChaosBag f attrs
+  | sort before == sort after = attrs
+  | otherwise = attrs & chaosBagL .~ after & chaosBagHistoryL %~ record
+ where
+  before = campaignChaosBag attrs
+  after = f before
+  step = normalizedCampaignStep (campaignStep attrs)
+  record = \case
+    c : rest | c.cbcStep == step -> [c {cbcAfter = after} | sort c.cbcBefore /= sort after] <> rest
+    history -> ChaosBagChange step before after : history
+
 completeStep :: CampaignStep -> [CampaignStep] -> [CampaignStep]
 completeStep step' steps = step' : steps
 
@@ -295,6 +327,7 @@ campaign f campaignId' name difficulty =
       , campaignStoryCards = mempty
       , campaignDifficulty = difficulty
       , campaignChaosBag = campaignTokens @a difficulty
+      , campaignChaosBagHistory = mempty
       , campaignLog = mkCampaignLog
       , campaignStep = ContinueCampaignStep $ Continuation PrologueStep False False Nothing False
       , campaignCompletedSteps = []
@@ -361,6 +394,13 @@ instance FromJSON XpBreakdownStep where
   parseJSON = withObject "XpBreakdownStep" $ \o ->
     XpBreakdownStep <$> o .: "step" <*> o .: "investigators" <*> o .: "entries"
 
+instance ToJSON ChaosBagChange where
+  toJSON c = object ["step" .= c.cbcStep, "before" .= c.cbcBefore, "after" .= c.cbcAfter]
+
+instance FromJSON ChaosBagChange where
+  parseJSON = withObject "ChaosBagChange" $ \o ->
+    ChaosBagChange <$> o .: "step" <*> o .: "before" <*> o .: "after"
+
 oldBreakdown :: Map ScenarioId XpBreakdown -> [(CampaignStep, XpBreakdown)]
 oldBreakdown = map (first ScenarioStep) . Map.toList
 
@@ -381,6 +421,7 @@ instance FromJSON CampaignAttrs where
       (o .: "storyCards") <|> (o .: "storyCards" >>= parseEitherCards)
     campaignDifficulty <- o .: "difficulty"
     campaignChaosBag <- o .: "chaosBag"
+    campaignChaosBagHistory <- o .:? "chaosBagHistory" .!= mempty
     campaignLog <- o .: "log"
     campaignStep <- o .: "step"
     campaignCompletedSteps <- o .: "completedSteps"

@@ -87,6 +87,8 @@ data Trait
   | Cursed
   | Dark
   | DarkYoung
+  | Dawn
+  | Day
   | DeepOne
   | Depths
   | Desert
@@ -103,6 +105,7 @@ data Trait
   | Dreamlands
   | Drifter
   | Dunwich
+  | Dusk
   | Eidolon
   | ElderThing
   | Eldritch
@@ -182,6 +185,7 @@ data Trait
   | Key
   | Kingsport
   | KualaLumpur
+  | Lab
   | Lair
   | LanternClub
   | Lead
@@ -219,6 +223,7 @@ data Trait
   | Nest
   | NewOrleans
   | NewYorkCity
+  | Night
   | Nightgaunt
   | Obstacle
   | Occult
@@ -355,6 +360,7 @@ data Trait
   | Void
   | Walkway
   | Warden
+  | Warehouse
   | Wastes
   | Wayfarer
   | Weapon

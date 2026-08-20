@@ -63,6 +63,7 @@ library
       Arkham.Act.CardDefs.BrethrenOfAsh.SpreadingFlames
       Arkham.Act.CardDefs.ByTheBook
       Arkham.Act.CardDefs.CarnevaleOfHorrors
+      Arkham.Act.CardDefs.ChildrenOfBlood.RiverOfBlood
       Arkham.Act.CardDefs.CurseOfTheRougarou
       Arkham.Act.CardDefs.EdgeOfTheEarth.CityOfTheElderThings
       Arkham.Act.CardDefs.EdgeOfTheEarth.FatalMirage
@@ -192,6 +193,8 @@ library
       Arkham.Act.Cards.CarnevaleOfHorrors.GetToTheBoats
       Arkham.Act.Cards.CarnevaleOfHorrors.Row
       Arkham.Act.Cards.CarnevaleOfHorrors.TheCarnevaleConspiracy
+      Arkham.Act.Cards.ChildrenOfBlood.RiverOfBlood.CornerTheSuspect
+      Arkham.Act.Cards.ChildrenOfBlood.RiverOfBlood.LocateTheLair
       Arkham.Act.Cards.CurseOfTheRougarou.FindingLadyEsprit
       Arkham.Act.Cards.CurseOfTheRougarou.HuntingTheRougarou
       Arkham.Act.Cards.EdgeOfTheEarth.CityOfTheElderThings.PursuitOfTheUnknownV1
@@ -697,10 +700,10 @@ library
       Arkham.Agenda.Cards.CarnevaleOfHorrors.ChaosAtTheCarnevale
       Arkham.Agenda.Cards.CarnevaleOfHorrors.TheFestivitiesBegin
       Arkham.Agenda.Cards.CarnevaleOfHorrors.TheShadowOfTheEclipse
+      Arkham.Agenda.Cards.ChildrenOfBlood.RiverOfBlood.TheFinalNight
       Arkham.Agenda.Cards.ChildrenOfBlood.RiverOfBlood.TheFirstDay
       Arkham.Agenda.Cards.ChildrenOfBlood.RiverOfBlood.TheFirstNight
       Arkham.Agenda.Cards.ChildrenOfBlood.RiverOfBlood.TheSecondDay
-      Arkham.Agenda.Cards.ChildrenOfBlood.RiverOfBlood.TheSecondNight
       Arkham.Agenda.Cards.CurseOfTheRougarou.ACreatureOfTheBayou
       Arkham.Agenda.Cards.CurseOfTheRougarou.TheCurseSpreads
       Arkham.Agenda.Cards.CurseOfTheRougarou.TheRougarouFeeds
@@ -1267,6 +1270,7 @@ library
       Arkham.Asset.Assets.DeloresGadling
       Arkham.Asset.Assets.Dendromorphosis
       Arkham.Asset.Assets.DesiderioDelgadoAlvarez
+      Arkham.Asset.Assets.DetectiveReynoldsInOverHisHead
       Arkham.Asset.Assets.DetectivesColt1911s
       Arkham.Asset.Assets.DetectiveSherman3
       Arkham.Asset.Assets.DeVermisMysteriis2
@@ -1402,6 +1406,7 @@ library
       Arkham.Asset.Assets.Fame
       Arkham.Asset.Assets.FamiliarSpirit
       Arkham.Asset.Assets.FamilyInheritance
+      Arkham.Asset.Assets.FangOfZburamoarte
       Arkham.Asset.Assets.Farsight4
       Arkham.Asset.Assets.FavorOfTheMoon1
       Arkham.Asset.Assets.FavorOfTheSun1
@@ -2191,6 +2196,7 @@ library
       Arkham.Asset.Cards.AndrePatel
       Arkham.Asset.Cards.Base
       Arkham.Asset.Cards.CarolynFern2
+      Arkham.Asset.Cards.ChildrenOfBlood
       Arkham.Asset.Cards.Core2026
       Arkham.Asset.Cards.EdgeOfTheEarth
       Arkham.Asset.Cards.Import
@@ -2467,6 +2473,12 @@ library
       Arkham.Enemy.CardDefs.BrethrenOfAsh.SpreadingFlames
       Arkham.Enemy.CardDefs.ByTheBook
       Arkham.Enemy.CardDefs.CarnevaleOfHorrors
+      Arkham.Enemy.CardDefs.ChildrenOfBlood.AgentsOfZburamoarte
+      Arkham.Enemy.CardDefs.ChildrenOfBlood.ChildrenOfBlood
+      Arkham.Enemy.CardDefs.ChildrenOfBlood.Mongrels
+      Arkham.Enemy.CardDefs.ChildrenOfBlood.PreyedUpon
+      Arkham.Enemy.CardDefs.ChildrenOfBlood.RiverOfBlood
+      Arkham.Enemy.CardDefs.ChildrenOfBlood.Vermin
       Arkham.Enemy.CardDefs.Core2026
       Arkham.Enemy.CardDefs.CurseOfTheRougarou
       Arkham.Enemy.CardDefs.DarkRituals
@@ -2721,6 +2733,10 @@ library
       Arkham.Enemy.Cards.CarnevaleOfHorrors.SalvatoreNeri
       Arkham.Enemy.Cards.CarnevaleOfHorrors.SavioCorvi
       Arkham.Enemy.Cards.CarnevaleOfHorrors.WrithingAppendage
+      Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.JuliaSternOnTheRun
+      Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.JuliaSternPreyingUponArkham
+      Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.JuliaSternStalkingTheStreets
+      Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.WaterfrontCivilian
       Arkham.Enemy.Cards.CurseOfTheRougarou.BogGator
       Arkham.Enemy.Cards.CurseOfTheRougarou.DarkYoungHost
       Arkham.Enemy.Cards.CurseOfTheRougarou.MarshGug
@@ -4601,6 +4617,7 @@ library
       Arkham.Location.CardDefs.BrethrenOfAsh.SpreadingFlames
       Arkham.Location.CardDefs.ByTheBook
       Arkham.Location.CardDefs.CarnevaleOfHorrors
+      Arkham.Location.CardDefs.ChildrenOfBlood.RiverOfBlood
       Arkham.Location.CardDefs.CurseOfTheRougarou
       Arkham.Location.CardDefs.EdgeOfTheEarth.CityOfTheElderThings
       Arkham.Location.CardDefs.EdgeOfTheEarth.FatalMirage
@@ -4773,6 +4790,22 @@ library
       Arkham.Location.Cards.CarnevaleOfHorrors.StreetsOfVenice
       Arkham.Location.Cards.CarnevaleOfHorrors.TheGuardian
       Arkham.Location.Cards.CarnevaleOfHorrors.VenetianGarden
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.BackAlleyDawn
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.BackAlleyDusk
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.ErwinBridgeDawn
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.ErwinBridgeDusk
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.GarrisonStreetDawn
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.GarrisonStreetDusk
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.MainStreetDawn
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.MainStreetDusk
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.RiverDocksDawn
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.RiverDocksDusk
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.UnvisitedIsleDawn
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.UnvisitedIsleDusk
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.WaterfrontWarehouseDawn
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.WaterfrontWarehouseDusk
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.WaterStreetDawn
+      Arkham.Location.Cards.ChildrenOfBlood.RiverOfBlood.WaterStreetDusk
       Arkham.Location.Cards.CurseOfTheRougarou.AudubonPark
       Arkham.Location.Cards.CurseOfTheRougarou.BrackishWaters
       Arkham.Location.Cards.CurseOfTheRougarou.Broadmoor
@@ -6860,6 +6893,16 @@ library
       Arkham.Treachery.CardDefs.BrethrenOfAsh.SmokeAndMirrors
       Arkham.Treachery.CardDefs.BrethrenOfAsh.SpreadingFlames
       Arkham.Treachery.CardDefs.CarnevaleOfHorrors
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.Afflicted
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.AgentsOfZburaMoarte
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.BloodBlight
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.BloodMoon
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.ChildrenOfBlood
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.Hunted
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.Infected
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.Misinformation
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.PreyedUpon
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.RiverOfBlood
       Arkham.Treachery.CardDefs.Core2026
       Arkham.Treachery.CardDefs.CurseOfTheRougarou
       Arkham.Treachery.CardDefs.EdgeOfTheEarth
@@ -7158,6 +7201,7 @@ library
       Arkham.Treachery.Cards.CarnevaleOfHorrors.WatchersGaze
       Arkham.Treachery.Cards.CastAdrift
       Arkham.Treachery.Cards.CaughtRedHanded
+      Arkham.Treachery.Cards.ChildrenOfBlood.RiverOfBlood.BurningDaylight
       Arkham.Treachery.Cards.Chronophobia
       Arkham.Treachery.Cards.Confiscation
       Arkham.Treachery.Cards.CoverUp

@@ -1248,6 +1248,10 @@ allAssets =
       , --- story [core2026]
         SomeAssetCard drHenryArmitage_SpreadingFlames
       , SomeAssetCard collector
+      , -- Children of Blood
+        --- River of Blood [cob]
+        SomeAssetCard detectiveReynoldsInOverHisHead
+      , SomeAssetCard fangOfZburamoarte
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeAssetCard physicalTraining2

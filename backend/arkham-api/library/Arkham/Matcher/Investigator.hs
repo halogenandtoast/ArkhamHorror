@@ -86,6 +86,7 @@ data InvestigatorMatcher
   | InvestigatorCanMoveTo Source LocationMatcher
   | InvestigatorWithToken Token
   | InvestigatorWithSealedChaosToken ChaosTokenMatcher
+  | InvestigatorWithMostSealedChaosToken ChaosTokenMatcher
   | You
   | ThatInvestigator
   | UnengagedInvestigator

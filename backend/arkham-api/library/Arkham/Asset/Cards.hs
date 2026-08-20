@@ -2,6 +2,7 @@ module Arkham.Asset.Cards (module Arkham.Asset.Cards, module X) where
 
 import Arkham.Asset.Cards.AndrePatel as X
 import Arkham.Asset.Cards.CarolynFern2 as X
+import Arkham.Asset.Cards.ChildrenOfBlood as X
 import Arkham.Asset.Cards.Core2026 as X
 import Arkham.Asset.Cards.EdgeOfTheEarth as X
 import Arkham.Asset.Cards.MarieLambeau2 as X

@@ -53,6 +53,7 @@ data Keyword
   | ScenarioKeyword Text
   | ScenarioModifierKeyword Text Value Keyword
   | ScenarioKeywordX Text Int
+  | Predator
   deriving stock (Show, Eq, Ord, Data)
 
 class HasKeywords a where

@@ -1,9 +1,12 @@
 module Arkham.Scenario.Scenarios.ChildrenOfBlood.RiverOfBlood (riverOfBlood) where
 
+import Arkham.Act.CardDefs.ChildrenOfBlood.RiverOfBlood qualified as Acts
 import Arkham.Agenda.CardDefs.ChildrenOfBlood.RiverOfBlood qualified as Agendas
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.CardDefs.ChildrenOfBlood.RiverOfBlood qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getPlayerCount)
+import Arkham.Location.CardDefs.ChildrenOfBlood.RiverOfBlood qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ChildrenOfBlood.RiverOfBlood.Helpers
@@ -14,7 +17,21 @@ newtype RiverOfBlood = RiverOfBlood ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 riverOfBlood :: Difficulty -> RiverOfBlood
-riverOfBlood difficulty = scenario RiverOfBlood "13001" "River of Blood" difficulty []
+riverOfBlood difficulty =
+  scenario
+    RiverOfBlood
+    "13001"
+    "River of Blood"
+    difficulty
+    [ ".             heart     ."
+    , "square        heart     triangle"
+    , "square        .         triangle"
+    , "unvisitedIsle circle    ."
+    , "unvisitedIsle circle    ."
+    , "t             .         moon"
+    , "t             hourglass moon"
+    , ".             hourglass ."
+    ]
 
 instance HasChaosTokenValue RiverOfBlood where
   getChaosTokenValue iid tokenFace (RiverOfBlood attrs) = case tokenFace of
@@ -68,8 +85,44 @@ instance RunMessage RiverOfBlood where
 
       setAgendaDeck
         [Agendas.theFirstDay, Agendas.theFirstNight, Agendas.theSecondDay, Agendas.theSecondNight]
+      setActDeck [Acts.locateTheLair, Acts.cornerTheSuspect]
 
       if isEasyStandard attrs
-        then removeCards =<< amongGathered (#location <> CardWithTrait Dusk)
-        else removeCards =<< amongGathered (#location <> CardWithTrait Dawn)
+        then do
+          removeCards =<< amongGathered (#location <> CardWithTrait Dusk)
+          startAt =<< place Locations.waterStreetDawn
+          mainStreet <- place Locations.mainStreetDawn
+          garrisonStreet <- place Locations.garrisonStreetDawn
+          enemyAt_ Enemies.waterfrontCivilian mainStreet
+          when (n >= 3) $ enemyAt_ Enemies.waterfrontCivilian garrisonStreet
+          placeAll
+            [ Locations.riverDocksDawn
+            , Locations.erwinBridgeDawn
+            , Locations.unvisitedIsleDawn
+            , Locations.waterfrontWarehouseDawn
+            , Locations.backAlleyDawn
+            ]
+        else do
+          removeCards =<< amongGathered (#location <> CardWithTrait Dawn)
+          startAt =<< place Locations.waterStreetDusk
+          mainStreet <- place Locations.mainStreetDusk
+          garrisonStreet <- place Locations.garrisonStreetDusk
+          enemyAt_ Enemies.waterfrontCivilian mainStreet
+          when (n >= 3) $ enemyAt_ Enemies.waterfrontCivilian garrisonStreet
+          placeAll
+            [ Locations.riverDocksDusk
+            , Locations.erwinBridgeDusk
+            , Locations.unvisitedIsleDusk
+            , Locations.waterfrontWarehouseDusk
+            , Locations.backAlleyDusk
+            ]
+
+      setAside
+        [ case attrs.difficulty of
+            Easy -> Enemies.juliaSternOnTheRun
+            Standard -> Enemies.juliaSternStalkingTheStreets
+            _ -> Enemies.juliaSternPreyingUponArkham
+        ]
+      removeCards =<< amongGathered (#enemy <> CardWithTitle "Julia Stern")
+      setAside =<< amongGathered (cardIs Enemies.waterfrontCivilian)
     _ -> RiverOfBlood <$> liftRunMessage msg attrs

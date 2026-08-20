@@ -10,7 +10,7 @@ import Arkham.Id
 import Arkham.Prelude hiding (fold)
 import Control.Monad.Fail (fail)
 
-data MissingAct = MissingAct CardCode
+newtype MissingAct = MissingAct CardCode
   deriving stock (Show, Eq)
 
 instance Exception MissingAct

@@ -1064,6 +1064,11 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
             . attr investigatorSealedChaosTokens
         )
         as
+    InvestigatorWithMostSealedChaosToken chaosTokenMatcher -> do
+      most <-
+        highestAmongst UneliminatedInvestigator
+          $ fieldMapM InvestigatorSealedChaosTokens (countM (`matches` IncludeSealed chaosTokenMatcher))
+      as & runMatchesM \i -> pure $ toId i `elem` most
     ThatInvestigator -> error "ThatInvestigator must be resolved in criteria"
     InvestigatorWithAnyFailedSkillTestsThisTurn -> flip runMatchesM as \i -> do
       x <- getHistoryField TurnHistory (toId i) HistorySkillTestsPerformed
@@ -1108,11 +1113,15 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
     AliveInvestigator -> flip runMatchesM as $ \i -> do
       let attrs = toAttrs i
       pure $ not $ investigatorKilled attrs || investigatorDrivenInsane attrs
-    FewestCardsInHand -> flip runMatchesM as $ \i ->
-      isLowestAmongst (toId i) UneliminatedInvestigator (fieldMap InvestigatorHand length)
-    MostDamage -> flip runMatchesM as $ \i -> isHighestAmongst (toId i) UneliminatedInvestigator (field InvestigatorDamage)
-    MostCardsInHand -> flip runMatchesM as $ \i ->
-      isHighestAmongst (toId i) UneliminatedInvestigator (fieldMap InvestigatorHand length)
+    FewestCardsInHand -> do
+      fewest <- lowestAmongst UneliminatedInvestigator (fieldMap InvestigatorHand length)
+      flip runMatchesM as $ \i -> pure $ toId i `elem` fewest
+    MostDamage -> do
+      most <- highestAmongst UneliminatedInvestigator (field InvestigatorDamage)
+      flip runMatchesM as $ \i -> pure $ toId i `elem` most
+    MostCardsInHand -> do
+      most <- highestAmongst UneliminatedInvestigator (fieldMap InvestigatorHand length)
+      flip runMatchesM as $ \i -> pure $ toId i `elem` most
     LowestRemainingHealth -> do
       lowestRemainingHealth <-
         getMin <$> selectAgg Min InvestigatorRemainingHealth UneliminatedInvestigator
@@ -1259,10 +1268,12 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         HomunculusForm -> coerce (toId a) == cardCode
         ShatteredForm -> coerce (toId a) == cardCode
         RegularForm -> False
-    InvestigatorWithLowestSkill skillType inner -> flip runMatchesM as $ \i ->
-      isLowestAmongst (toId i) inner (getSkillValue skillType)
-    InvestigatorWithHighestSkill skillType inner -> flip runMatchesM as $ \i ->
-      isHighestAmongst (toId i) inner (getSkillValue skillType)
+    InvestigatorWithLowestSkill skillType inner -> do
+      lowest <- lowestAmongst inner (getSkillValue skillType)
+      flip runMatchesM as $ \i -> pure $ toId i `elem` lowest
+    InvestigatorWithHighestSkill skillType inner -> do
+      highest <- highestAmongst inner (getSkillValue skillType)
+      flip runMatchesM as $ \i -> pure $ toId i `elem` highest
     InvestigatorWithCluesInPool gameValueMatcher -> flip runMatchesM as $ \i -> do
       clues <- field InvestigatorCluesInPool (toId i)
       gameValueMatches clues gameValueMatcher
@@ -1511,8 +1522,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
                 if CannotHealHorror `elem` mods
                   then elem (toId i) <$> select (healGuard $ matcher' <> You)
                   else elem (toId i) <$> select (healGuard matcher')
-    InvestigatorWithMostCardsInPlayArea -> flip runMatchesM as $ \i ->
-      isHighestAmongst (toId i) UneliminatedInvestigator getCardsInPlayCount
+    InvestigatorWithMostCardsInPlayArea -> do
+      most <- highestAmongst UneliminatedInvestigator getCardsInPlayCount
+      flip runMatchesM as $ \i -> pure $ toId i `elem` most
     InvestigatorWithPhysicalTrauma -> pure $ runMatches ((> 0) . attr investigatorPhysicalTrauma) as
     InvestigatorWithMentalTrauma -> pure $ runMatches ((> 0) . attr investigatorMentalTrauma) as
     InvestigatorCanAddCardsToDeck -> pure $ runMatches (or . sequence [(/= "11068b") . toId, attr investigatorKilled]) as
@@ -1588,35 +1600,13 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         EncounterDeckTarget -> scenarioField ScenarioHasEncounterDeck
         _ -> pure True
 
-isHighestAmongst
-  :: HasGame m
-  => InvestigatorId
-  -> InvestigatorMatcher
-  -> (InvestigatorId -> m Int)
-  -> m Bool
-isHighestAmongst iid matcher f = do
-  allIds <- select matcher
-  if iid `elem` allIds
-    then do
-      highestCount <- getMax0 <$> foldMapM (fmap Max0 . f) allIds
-      thisCount <- f iid
-      pure $ highestCount == thisCount
-    else pure False
+highestAmongst
+  :: HasGame m => InvestigatorMatcher -> (InvestigatorId -> m Int) -> m [InvestigatorId]
+highestAmongst matcher f = maxes <$> (select matcher >>= (`forToSnd` f))
 
-isLowestAmongst
-  :: HasGame m
-  => InvestigatorId
-  -> InvestigatorMatcher
-  -> (InvestigatorId -> m Int)
-  -> m Bool
-isLowestAmongst iid matcher f = do
-  allIds <- select matcher
-  if iid `elem` allIds
-    then do
-      lowestCount <- getMin <$> foldMapM (fmap Min . f) allIds
-      thisCount <- f iid
-      pure $ lowestCount == thisCount
-    else pure False
+lowestAmongst
+  :: HasGame m => InvestigatorMatcher -> (InvestigatorId -> m Int) -> m [InvestigatorId]
+lowestAmongst matcher f = mins <$> (select matcher >>= (`forToSnd` f))
 
 getCardsInPlayCount :: HasGame m => InvestigatorId -> m Int
 getCardsInPlayCount i = do

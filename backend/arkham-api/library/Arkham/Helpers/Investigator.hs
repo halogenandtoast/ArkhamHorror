@@ -25,6 +25,7 @@ import Arkham.Helpers.ChaosBag
 import {-# SOURCE #-} Arkham.Helpers.Criteria
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Slot
+import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Id
 import Arkham.Investigator.Types
 import Arkham.Location.Types (Field (..))
@@ -222,15 +223,21 @@ canDiscoverCluesAtYourLocation isInvestigate iid = do
     Nothing -> pure False
     Just lid -> getCanDiscoverClues isInvestigate iid lid
 
--- | Whether @iid@ is allowed to expose a concealed mini-card at @lid@ at all.
-getCanExposeAt :: HasGame m => InvestigatorId -> LocationId -> m Bool
-getCanExposeAt iid lid =
+{- | Whether @iid@ is allowed to expose a concealed mini-card at @lid@ using
+@source@. Coterie Envoy only blocks exposure "via player card effects", so its
+location ban is skipped for the basic Investigate action, which is sourced to
+the location's own ability.
+-}
+getCanExposeAt
+  :: (HasGame m, Sourceable source) => InvestigatorId -> source -> LocationId -> m Bool
+getCanExposeAt iid (toSource -> source) lid = do
+  isPlayerSource <- sourceMatches source SourceIsPlayerCard
   andM
-    [ matches lid $ LocationWithoutModifier NoExposeAt
-    , matches iid
-        $ InvestigatorWithoutModifier CannotExpose
-        <> InvestigatorWithoutModifier (noExposeAt lid)
-    ]
+    $ [matches lid $ LocationWithoutModifier NoExposeAt | isPlayerSource]
+    <> [ matches iid
+           $ InvestigatorWithoutModifier CannotExpose
+           <> InvestigatorWithoutModifier (noExposeAt lid)
+       ]
 
 getCanDiscoverClues
   :: HasGame m => IsInvestigate -> InvestigatorId -> LocationId -> m Bool
@@ -238,7 +245,11 @@ getCanDiscoverClues isInvestigation iid lid = do
   modifiers <- getModifiers iid
   hasClues <- fieldSome LocationClues lid
   hasConcealed <- matches lid LocationWithConcealedCard
-  canExpose <- getCanExposeAt iid lid
+  -- capability question, so ask about the always-available route: the basic
+  -- Investigate action, sourced to the location, which Coterie Envoy does not
+  -- restrict. Player card effects are checked against their own source at the
+  -- point they try to expose.
+  canExpose <- getCanExposeAt iid (LocationSource lid) lid
   (&& or [hasClues, hasConcealed && canExpose]) . not <$> anyM match modifiers
  where
   match CannotDiscoverClues {} = pure True

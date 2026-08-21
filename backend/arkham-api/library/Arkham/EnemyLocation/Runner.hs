@@ -138,7 +138,7 @@ instance RunMessage EnemyLocationAttrs where
       let clues = a.clues
       let (before, _, after) = frame $ Window.SuccessfullyInvestigateWithNoClues iid $ toId a
       option <-
-        withExposeInsteadOfInvestigating iid a.id
+        withExposeInsteadOfInvestigating iid source a.id
           $ [before | clues == 0]
           <> [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
              , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n

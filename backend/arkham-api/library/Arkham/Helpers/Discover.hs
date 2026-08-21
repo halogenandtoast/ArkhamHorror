@@ -56,20 +56,21 @@ getDiscoveredTotal iid d =
     pure $ maybe n (min n) mMax
 
 withExposeInsteadOfInvestigating
-  :: ReverseQueue m => InvestigatorId -> LocationId -> [Message] -> m [Message]
-withExposeInsteadOfInvestigating iid lid msgs = do
+  :: (ReverseQueue m, Sourceable source)
+  => InvestigatorId -> source -> LocationId -> [Message] -> m [Message]
+withExposeInsteadOfInvestigating iid (toSource -> source) lid msgs = do
   mods <- getModifiers iid
   -- riders are locations where we can discover additional clues, since the replacement
   -- effect should cover the entire effect we can only expose one card
   let riders = nub [olid | DiscoveredCluesAt olid _ <- mods, olid /= lid]
   concealed <- concatForM (lid : riders) \lid' ->
-    getCanExposeAt iid lid' >>= \case
+    getCanExposeAt iid source lid' >>= \case
       False -> pure []
-      True -> getConcealedAt (ForExpose $ toSource iid) lid'
+      True -> getConcealedAt (ForExpose source) lid'
   if null concealed
     then pure msgs
     else evalQueueT $ chooseOneM iid do
-      labeledI "exposeConcealedCard" $ chooseTargetM iid concealed (exposeConcealed iid iid . (.id))
+      labeledI "exposeConcealedCard" $ chooseTargetM iid concealed (exposeConcealed iid source . (.id))
       labeledI "doNotExposeConcealed" $ pushAll msgs
 
 {- | Resolve a successful @Investigate@ at a location (regular or enemy-location).

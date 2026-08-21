@@ -170,6 +170,7 @@ instance RunMessage LocationAttrs where
       option <-
         withExposeInsteadOfInvestigating
           iid
+          source
           locationId
           [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
           , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
@@ -187,6 +188,7 @@ instance RunMessage LocationAttrs where
       option <-
         withExposeInsteadOfInvestigating
           iid
+          source
           locationId
           [Successful (Action.Investigate, toTarget a) iid source actual n]
       push

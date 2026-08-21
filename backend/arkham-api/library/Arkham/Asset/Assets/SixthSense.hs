@@ -5,8 +5,8 @@ import Arkham.Aspect hiding (aspect)
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
-import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFace)
 import Arkham.Effect.Import
+import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFace)
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers)
@@ -74,6 +74,7 @@ instance RunMessage SixthSenseEffect where
                   batching batchId do
                     push $ PayAdditionalCost iid batchId cost
                     push $ SetSkillTestTarget (toTarget location)
+                    skillTestModifier sid attrs.source iid (AsIfAt location)
                     chooseOneM iid do
                       labeledI "useNewLocationShroud" do
                         skillTestModifier sid attrs.source sid (SetDifficulty shroud)

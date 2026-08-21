@@ -99,6 +99,11 @@ data ModifierType
   | AnySkillValue Int
   | AnySkillValueCalculated GameCalculation
   | AsIfAt LocationId
+  | {- | "as if you were at that location in addition to your location". Unlike
+    'AsIfAt' this does not replace 'InvestigatorLocation'; both the physical
+    location and this one satisfy the @Here@ criterion.
+    -}
+    AsIfAlsoAt LocationId
   | CanBeAttackedAsIfEnemy
   | CanPlayUnderControlOf CardMatcher InvestigatorMatcher
   | AsIfEnemyFight Int

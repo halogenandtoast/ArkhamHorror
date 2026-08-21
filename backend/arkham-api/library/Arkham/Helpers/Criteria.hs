@@ -387,13 +387,18 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
     EnemySource iid' -> elem modifier <$> getModifiers (EnemyTarget iid')
     AssetSource aid' -> elem modifier <$> getModifiers aid'
     _ -> pure False
-  Criteria.Here -> case source of
-    LocationSource lid -> fieldP InvestigatorLocation (== Just lid) iid
-    ProxySource (LocationSource lid) _ ->
-      fieldP InvestigatorLocation (== Just lid) iid
-    IndexedSource _ (LocationSource lid) ->
-      fieldP InvestigatorLocation (== Just lid) iid
-    _ -> pure False
+  Criteria.Here -> do
+    let
+      here lid =
+        orM
+          [ fieldP InvestigatorLocation (== Just lid) iid
+          , elem (AsIfAlsoAt lid) <$> getModifiers iid
+          ]
+    case source of
+      LocationSource lid -> here lid
+      ProxySource (LocationSource lid) _ -> here lid
+      IndexedSource _ (LocationSource lid) -> here lid
+      _ -> pure False
   Criteria.HasSupply s -> fieldP InvestigatorSupplies (elem s) iid
   Criteria.ControlsThis ->
     let

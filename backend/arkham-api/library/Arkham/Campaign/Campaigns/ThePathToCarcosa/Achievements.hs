@@ -14,7 +14,7 @@ Carcosa, so several of them observe cards ("Host of Insanity", the Lunatic
 Dianne Devine, the Secret Passage) that only exist in the Return-to setup.
 
 "Say My Name" (speak the name of Hastur aloud seven or more times) is tracked
-from the scenario-reference helper button that applies the warning's horror.
+from the scenario-reference helper button that assigns the warning's horror.
 -}
 module Arkham.Campaign.Campaigns.ThePathToCarcosa.Achievements (
   runCarcosaAchievements,
@@ -60,16 +60,12 @@ runCarcosaAchievements
   :: (HasGame m, HasQueue Message m) => Message -> m ()
 runCarcosaAchievements msg = whenEligibleCampaign $ case msg of
   -- "Say My Name": speak HASTUR aloud seven or more times after heeding
-  -- Daniel's warning. The UI button records this by placing the warning's
-  -- horror from CampaignSource; keep the count in achievement-only store, not
-  -- the public campaign log.
-  PlaceTokens CampaignSource (InvestigatorTarget _) Horror n | n > 0 -> do
-    whenM (getHasRecord YouHeadedDanielsWarning) do
-      c <- storedInt spokenHasturKey
-      setStore spokenHasturKey (c + n)
-      when (c + n >= 7) do
-        earn SayMyName
-
+  -- Daniel's warning. The UI button records this by assigning the warning's
+  -- horror from CampaignSource; we count the speaking, not where the horror
+  -- lands. Keep the count in achievement-only store, not the public campaign
+  -- log. The PlaceTokens arm is the pre-#5465 button, kept for older clients.
+  InvestigatorAssignDamage _ CampaignSource _ 0 n | n > 0 -> countSpokenHastur n
+  PlaceTokens CampaignSource (InvestigatorTarget _) Horror n | n > 0 -> countSpokenHastur n
   -- "First Steps": each VIP interviewed in The Last King checks off their
   -- box (the resolution inserts every interviewed VIP's asset card code into
   -- VIPsInterviewed in a single write); the API layer accumulates the
@@ -249,6 +245,12 @@ possessionTreacheries =
   , Treacheries.possessionTorturous
   , Treacheries.possessionMurderous
   ]
+
+countSpokenHastur :: (HasGame m, HasQueue Message m) => Int -> m ()
+countSpokenHastur n = whenM (getHasRecord YouHeadedDanielsWarning) do
+  c <- storedInt spokenHasturKey
+  setStore spokenHasturKey (c + n)
+  when (c + n >= 7) $ earn SayMyName
 
 -- Campaign store plumbing. Writes go through the queue ('SetGlobal' is handled
 -- by the campaign runner); reads see all previously processed writes.

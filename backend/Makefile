@@ -25,13 +25,36 @@ API_ENV ?=
 # Where api.watch.redis looks for Redis. Any hedis-parseable URL works.
 REDIS_CONN ?= redis://localhost:6379
 
+# How the watch targets detect changes.
+#
+# Neither stack mode really works on this tree any more:
+#
+#   --file-watch opens one FSEventStream, CFRunLoop OS thread and pipe per
+#   *directory* holding a watched file. Nesting cards under campaign/scenario
+#   dirs took the library from 271 directories to 1256, and past roughly a
+#   thousand streams macOS stops delivering events to the later ones. Only the
+#   first couple of watches still fire, so editing a card does nothing while
+#   editing stack.yaml or package.yaml still kicks a build.
+#
+#   --file-watch-poll instead stats every source file on a loop. With ~8k files
+#   over 1331 directories that pegs a core permanently and starves stack itself:
+#   the build finishes but --exec never runs, so the server never comes up.
+#
+# --file-watch is the less broken of the two, so it stays the default, but the
+# working setups are api.watch.entr (entr drives the loop) or api.watch plus
+# watch.poke in a second shell. Both are below.
+#
+# Note that `make -n` RUNS those targets instead of printing them, since their
+# recipes mention $(MAKE) and make treats such lines as recursive.
+FILE_WATCH ?= --file-watch
+
 .PHONY: core.watch
 core.watch:
 	cd arkham-api && \
 	stack build --test --no-run-tests --pedantic --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
-	  --file-watch \
+	  $(FILE_WATCH) \
 		$(EXTRA_STACK_FLAGS)
 
 .PHONY: api.watch
@@ -40,9 +63,25 @@ api.watch:
 	stack build --test --no-run-tests --pedantic --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
-	  --file-watch \
+	  $(FILE_WATCH) \
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true $(API_ENV) stack exec arkham-api &\"" \
+
+## Sidecar for api.watch, run in a second shell. stack no longer sees edits
+## under library/ (see FILE_WATCH above), but its watch on this directory still
+## fires, so watch the tree here -- one recursive kqueue watcher instead of 1331
+## FSEvent streams -- and rewrite stack.yaml to poke stack into rebuilding.
+## Rewriting picks up new card files too, since entr -d returns when one appears.
+.PHONY: watch.poke
+watch.poke:
+	@command -v entr >/dev/null || { echo "watch.poke needs entr: brew install entr"; exit 1; }
+	@while :; do \
+	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
+	    | entr -dnpz true >/dev/null 2>&1; \
+	  cp stack.yaml .stack.yaml.poke && cat .stack.yaml.poke > stack.yaml; \
+	  rm -f .stack.yaml.poke; \
+	  echo "poked stack at $$(date +%T)"; \
+	done
 
 ## Like api.watch, but tees output into a size-capped rolling log
 ## (.claude/build.log at the repo root) so agents can read compile errors.
@@ -70,6 +109,40 @@ api.watch.redis: redis.check
 .PHONY: api.watch.redis.log
 api.watch.redis.log: redis.check
 	$(MAKE) api.watch.log API_ENV="REDIS_CONN=$(REDIS_CONN)"
+
+## One build plus a server restart -- the unit api.watch.entr loops over.
+.PHONY: api.rebuild
+api.rebuild:
+	cd arkham-api && \
+	stack build --test --no-run-tests --pedantic --fast arkham-api \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+		$(EXTRA_STACK_FLAGS) \
+	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true $(API_ENV) stack exec arkham-api &\"" \
+
+## api.watch with no stack watcher in the loop at all: entr holds one recursive
+## kqueue watch over the tree and reruns api.rebuild per change. Trades a stack
+## startup per change for not depending on --file-watch; watch.poke is the other
+## way round, keeping stack resident and poking it. Pick whichever you prefer.
+## entr -d returns when a new file appears, so the loop re-runs find and picks
+## up new card modules.
+.PHONY: api.watch.entr
+api.watch.entr:
+	@command -v entr >/dev/null || { echo "api.watch.entr needs entr: brew install entr"; exit 1; }
+	@while :; do \
+	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
+	    | entr -dn $(MAKE) --no-print-directory api.rebuild; \
+	done
+
+## api.watch.entr + the rolling build log (see api.watch.log).
+.PHONY: api.watch.entr.log
+api.watch.entr.log:
+	$(MAKE) api.watch.entr 2>&1 | scripts/rolling-log.sh ../.claude/build.log
+
+## api.watch.entr with Redis as the websocket message broker (see api.watch.redis).
+.PHONY: api.watch.entr.redis
+api.watch.entr.redis: redis.check
+	$(MAKE) api.watch.entr API_ENV="REDIS_CONN=$(REDIS_CONN)"
 
 ## Fail early with a useful message rather than letting checkedConnect throw.
 ## Skipped when redis-cli isn't installed, since absence of the CLI says
@@ -99,7 +172,7 @@ api.watch.test:
 	stack build --test --no-run-tests --pedantic --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
-	  --file-watch \
+	  $(FILE_WATCH) \
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api || true; DEVELOPMENT=true stack exec arkham-api & stack build --test --pedantic --fast arkham-api --ghc-options '-DDEVELOPMENT $(GHC_OPTIONS)' --interleaved-output $(EXTRA_STACK_FLAGS) || echo 'Tests failed; server left running.'\"" \
 
@@ -121,7 +194,7 @@ api.prof:
 	stack build --profile --test --no-run-tests --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
-	  --file-watch \
+	  $(FILE_WATCH) \
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true stack exec --profile -- arkham-api +RTS -p &\"" \
 
@@ -151,7 +224,7 @@ validate.watch:
 	stack build --test --no-run-tests --pedantic --fast validate \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
-		--file-watch \
+		$(FILE_WATCH) \
 		$(EXTRA_STACK_FLAGS) \
 		--exec "bash -c \"cd .. && DEVELOPMENT=true stack exec validate\"" \
 
@@ -170,7 +243,7 @@ test.watch:
 	stack build --pedantic --test --fast arkham-api \
 	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
 	  --interleaved-output \
-	  --file-watch \
+	  $(FILE_WATCH) \
 		$(EXTRA_STACK_FLAGS)
 
 .PHONY: data

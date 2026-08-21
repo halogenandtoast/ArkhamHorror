@@ -6,6 +6,7 @@ import Arkham.Asset.Runner
 import Arkham.DamageEffect
 import Arkham.Fight
 import Arkham.Helpers.Modifiers
+import Arkham.Matcher
 import Arkham.Prelude
 
 newtype Chainsaw4 = Chainsaw4 AssetAttrs
@@ -27,15 +28,19 @@ instance RunMessage Chainsaw4 where
       pushAll [enabled, chooseFight]
       pure a
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      getSkillTestTarget >>= \case
-        Just (EnemyTarget eid) -> do
-          player <- getPlayer iid
-          push
-            $ chooseOne
-              player
-              [ Label "$label.cards.chainsaw4.place1SupplyOnChainsaw" [AddUses (attrs.ability 1) (toId attrs) Supply 1]
-              , Label "$label.cards.chainsaw4.deal1DamageToTheAttackedEnemy" [DealDamage (EnemyTarget eid) $ nonAttack (Just iid) (attrs.ability 1) 1]
-              ]
-        _ -> error "invalid call"
+      mEnemy <- (.enemy) <$> getSkillTestTarget
+      canDamage <- maybe (pure False) (selectAny . EnemyWithId) mEnemy
+      player <- getPlayer iid
+      push
+        $ chooseOne player
+        $ Label
+          "$label.cards.chainsaw4.place1SupplyOnChainsaw"
+          [AddUses (attrs.ability 1) (toId attrs) Supply 1]
+        : [ Label
+              "$label.cards.chainsaw4.deal1DamageToTheAttackedEnemy"
+              [DealDamage (EnemyTarget eid) $ nonAttack (Just iid) (attrs.ability 1) 1]
+          | canDamage
+          , eid <- maybeToList mEnemy
+          ]
       pure a
     _ -> Chainsaw4 <$> runMessage msg attrs

@@ -65,6 +65,7 @@ const TOKEN_CONFIG: Partial<Record<Token, { type: string; tooltip?: string }>> =
   Chance: { type: 'resource', tooltip: 'Chance' },
   Obsession: { type: 'resource', tooltip: 'Obsession' },
   Sign: { type: 'resource', tooltip: 'Sign' },
+  Snare: { type: 'resource', tooltip: 'Snare' },
 }
 
 const props = withDefaults(defineProps<{

@@ -54,6 +54,7 @@ export const TOKENS = [
   "Shell",
   "Shipment",
   "Sign",
+  "Snare",
   "Study",
   "Supply",
   "Suspicion",

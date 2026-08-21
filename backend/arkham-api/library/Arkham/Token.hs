@@ -59,6 +59,7 @@ data Token
   | Shell
   | Shipment
   | Sign
+  | Snare
   | Study
   | Supply
   | Suspicion

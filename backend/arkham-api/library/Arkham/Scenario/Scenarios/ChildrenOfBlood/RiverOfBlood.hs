@@ -2,15 +2,20 @@ module Arkham.Scenario.Scenarios.ChildrenOfBlood.RiverOfBlood (riverOfBlood) whe
 
 import Arkham.Act.CardDefs.ChildrenOfBlood.RiverOfBlood qualified as Acts
 import Arkham.Agenda.CardDefs.ChildrenOfBlood.RiverOfBlood qualified as Agendas
+import Arkham.Card
 import Arkham.EncounterSet qualified as Set
+import Arkham.Enemy.CardDefs.ChildrenOfBlood.AgentsOfZburamoarte qualified as Enemies
+import Arkham.Enemy.CardDefs.ChildrenOfBlood.PreyedUpon qualified as Enemies
 import Arkham.Enemy.CardDefs.ChildrenOfBlood.RiverOfBlood qualified as Enemies
+import Arkham.Helpers.Agenda
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Location.CardDefs.ChildrenOfBlood.RiverOfBlood qualified as Locations
 import Arkham.Matcher
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ChildrenOfBlood.RiverOfBlood.Helpers
-import Arkham.Trait (Trait (Dawn, Dusk))
+import Arkham.Trait (Trait (Dawn, Dusk, Lair))
+import Arkham.Token qualified as Token
 
 newtype RiverOfBlood = RiverOfBlood ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -35,10 +40,11 @@ riverOfBlood difficulty =
 
 instance HasChaosTokenValue RiverOfBlood where
   getChaosTokenValue iid tokenFace (RiverOfBlood attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <- getCurrentAgendaStep
+      pure $ toChaosTokenValue attrs Skull n (n + 1)
+    Tablet -> pure $ toChaosTokenValue attrs Tablet 2 3
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 3 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage RiverOfBlood where
@@ -74,11 +80,12 @@ instance RunMessage RiverOfBlood where
       gather Set.Infected
       gather Set.Misinformation
       if isEasyStandard attrs
-        then gather Set.PreyedUpon
+        then do
+          gather Set.PreyedUpon
+          gather Set.Vermin
         else do
           gather Set.AgentsOfZburamoarte
           gather Set.Mongrels
-      gather Set.Vermin
       gather Set.DeadEnds
       gather Set.FlyingTerrors
       when (n >= 3) $ gather Set.Afflicted
@@ -102,6 +109,7 @@ instance RunMessage RiverOfBlood where
             , Locations.waterfrontWarehouseDawn
             , Locations.backAlleyDawn
             ]
+          setAsideEvery (cardIs Enemies.nightFeeder)
         else do
           removeCards =<< amongGathered (#location <> CardWithTrait Dawn)
           startAt =<< place Locations.waterStreetDusk
@@ -116,13 +124,56 @@ instance RunMessage RiverOfBlood where
             , Locations.waterfrontWarehouseDusk
             , Locations.backAlleyDusk
             ]
+          setAsideEvery (cardIs Enemies.spawnOfZburamoarte)
 
       setAside
         [ case attrs.difficulty of
             Easy -> Enemies.juliaSternOnTheRun
             Standard -> Enemies.juliaSternStalkingTheStreets
-            _ -> Enemies.juliaSternPreyingUponArkham
+            _other -> Enemies.juliaSternPreyingUponArkham
         ]
       removeCards =<< amongGathered (#enemy <> CardWithTitle "Julia Stern")
       setAside =<< amongGathered (cardIs Enemies.waterfrontCivilian)
+      doStep 1 Setup
+    DoStep 1 Setup -> do
+      xs <- map toCard . toList . take 2 <$> getEncounterDeck
+      julia <- fetchCard $ case attrs.difficulty of
+        Easy -> Enemies.juliaSternOnTheRun
+        Standard -> Enemies.juliaSternStalkingTheStreets
+        _other -> Enemies.juliaSternPreyingUponArkham
+      xs' <- shuffle $ julia : xs
+      lairs <- select $ LocationWithTrait Lair
+      for_ (zip lairs xs') \(lair, x) -> placeUnderneath lair (only x)
+      pure s
+    ResolveChaosToken _ Tablet iid -> do
+      when (isHardExpert attrs) do
+        whenMatch iid (InvestigatorAt $ LocationWithTrait Lair) $ assignHorror iid Tablet 1
+      pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      whenAny (SealedOnInvestigator (InvestigatorWithId iid) #blood) do
+        afterSkillTestQuiet $ doStep 1 msg
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ | isEasyStandard attrs -> do
+      case token.face of
+        Tablet -> whenMatch iid (InvestigatorAt $ LocationWithTrait Lair) do
+          assignHorror iid Tablet 1
+        ElderThing -> whenAny (SealedOnInvestigator (InvestigatorWithId iid) #blood) do
+          afterSkillTestQuiet $ doStep 1 msg
+        _ -> pure ()
+      pure s
+    DoStep 1 (FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _) | token.face == ElderThing && isEasyStandard attrs -> do
+      mtkn <- selectOne $ SealedOnInvestigator (InvestigatorWithId iid) #blood
+      for_ mtkn \tkn -> do
+        unsealChaosToken tkn
+        assignHorror iid Tablet 1
+      pure s
+    DoStep 1 (ResolveChaosToken _ ElderThing iid) -> do
+      mtkn <- selectOne $ SealedOnInvestigator (InvestigatorWithId iid) #blood
+      for_ mtkn \tkn -> do
+        unsealChaosToken tkn
+        assignHorror iid Tablet 1
+      pure s
+    ScenarioSpecific "placeSnare" _ -> do
+      withMatch (EnemyWithTitle "Julia Stern") $ placeTokensOn ScenarioSource Token.Snare 1
+      pure s
     _ -> RiverOfBlood <$> liftRunMessage msg attrs

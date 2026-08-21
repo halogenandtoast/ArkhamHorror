@@ -92,6 +92,9 @@ instance IsLabel "any" ChaosTokenMatcher where
 instance IsLabel "frost" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs FrostToken
 
+instance IsLabel "blood" ChaosTokenMatcher where
+  fromLabel = ChaosTokenFaceIs BloodToken
+
 instance IsLabel "skull" ChaosTokenMatcher where
   fromLabel = ChaosTokenFaceIs Skull
 

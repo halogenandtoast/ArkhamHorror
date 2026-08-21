@@ -3,8 +3,8 @@ module Arkham.Enemy.CardDefs.ChildrenOfBlood.AgentsOfZburamoarte where
 import Arkham.Enemy.CardDefs.Import
 import Arkham.Keyword qualified as Keyword
 
-spawnOfZburaMoarte :: CardDef
-spawnOfZburaMoarte =
+spawnOfZburamoarte :: CardDef
+spawnOfZburamoarte =
   (enemy "13097" "Spawn of Zburamoarte" AgentsOfZburamoarte 3)
     { cdHealthDamage = healthDamage 2
     , cdSanityDamage = sanityDamage 1

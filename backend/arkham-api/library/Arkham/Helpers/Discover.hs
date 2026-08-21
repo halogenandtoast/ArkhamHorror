@@ -55,22 +55,17 @@ getDiscoveredTotal iid d =
     mMax :: Maybe Int <- foldr getMaybeMax Nothing <$> getModifiers lid'
     pure $ maybe n (min n) mMax
 
-{- | Wrap the consequence of a successful investigation so the investigator may expose a concealed
-mini-card at the investigated location instead.
-
-Exposing replaces the standard effects of the action or ability that exposed it, so the choice has
-to be offered before those effects resolve. @Do (DiscoverClues …)@ keeps its own prompt for the
-other trigger --- /automatically/ discovering a clue --- but an investigation that discovers
-nothing never reaches it: an empty Divination, Burglary (2), Unearth the Ancients, or a treachery
-whose investigate ability just discards it. (#5387)
--}
 withExposeInsteadOfInvestigating
   :: ReverseQueue m => InvestigatorId -> LocationId -> [Message] -> m [Message]
 withExposeInsteadOfInvestigating iid lid msgs = do
-  concealed <-
-    getCanExposeAt iid lid >>= \case
+  mods <- getModifiers iid
+  -- riders are locations where we can discover additional clues, since the replacement
+  -- effect should cover the entire effect we can only expose one card
+  let riders = nub [olid | DiscoveredCluesAt olid _ <- mods, olid /= lid]
+  concealed <- concatForM (lid : riders) \lid' ->
+    getCanExposeAt iid lid' >>= \case
       False -> pure []
-      True -> getConcealedAt (ForExpose $ toSource iid) lid
+      True -> getConcealedAt (ForExpose $ toSource iid) lid'
   if null concealed
     then pure msgs
     else evalQueueT $ chooseOneM iid do

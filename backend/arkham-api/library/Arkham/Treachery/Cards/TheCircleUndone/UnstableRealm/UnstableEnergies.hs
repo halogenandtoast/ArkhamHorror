@@ -16,7 +16,7 @@ unstableEnergies = treachery UnstableEnergies Cards.unstableEnergies
 
 instance HasAbilities UnstableEnergies where
   getAbilities (UnstableEnergies a) =
-    [ mkAbility a 1 $ forced $ Leaves #when You (LocationWithTreachery (be a))
+    [ mkAbility a 1 $ forced $ Leaves #after You (LocationWithTreachery (be a))
     , restricted a 2 (thisExists a $ TreacheryAttachedToLocation LocationWithoutInvestigators)
         $ forced
         $ RoundEnds #when

@@ -222,10 +222,14 @@ handleMove a@InvestigatorAttrs {..} movement = do
     case moveDestination movement of
       ToLocationMatching matcher -> do
         lids <- getCanMoveToMatchingLocations investigatorId (moveSource movement) matcher
-        player <- getPlayer investigatorId
-        push
-          $ chooseOrRunOne player
-          $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
+        -- The only match can be the location you are already at (Salem Gaol's
+        -- haunted ability while you stand in Keziah's Room), which this query
+        -- excludes. A move with nowhere to go is a no-op, not a crash. See #5483.
+        unless (null lids) do
+          player <- getPlayer investigatorId
+          push
+            $ chooseOrRunOne player
+            $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
       ToLocation destinationLocationId -> do
         batchId <- getRandom
 

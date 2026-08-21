@@ -155,7 +155,9 @@ instance RunMessage RunicAxe where
                 ]
       pure a
     Do msg'@(ChoseEnemy _sid iid (isAbilitySource attrs 1 -> True) _) -> do
-      choices <- availableInscriptions iid attrs meta
+      -- Scriptweaver's pair comes from one charge and must be two different inscriptions
+      let sameCharge = take 1 (inscriptions meta)
+      choices <- filter (`notElem` sameCharge) <$> availableInscriptions iid attrs meta
       chooseOne iid
         $ Label "$cards.label.runicAxe.doNotUseAdditionalImbue" []
         : [ Label

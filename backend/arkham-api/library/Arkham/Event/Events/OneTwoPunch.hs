@@ -22,18 +22,26 @@ instance RunMessage OneTwoPunch where
       skillTestModifier sid attrs iid (SkillModifier #combat 1)
       chooseFightEnemy sid iid attrs
       pure e
-    PassedThisSkillTest iid (isSource attrs -> True) | getEventMetaDefault True attrs -> do
-      skillTest <- fromJustNote "invalid call" <$> getSkillTest
-      isStillAlive <- case skillTest.target of
-        EnemyTarget eid -> selectAny $ EnemyWithId eid
-        LocationTarget lid -> selectAny $ LocationWithId lid
-        AssetTarget aid -> selectAny $ AssetWithId aid
-        _ -> error "invalid call"
-      sid <- getRandom
-      enabled <- capture $ skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
-      chooseOrRunOneM iid $ cardI18n do
-        labeledValidate' isStillAlive "oneTwoPunch.again" do
-          push $ BeginSkillTestWithPreMessages' enabled (resetSkillTest sid skillTest)
-        labeled' "oneTwoPunch.skip" nothing
+    PassedThisSkillTest _ (isSource attrs -> True) | getEventMetaDefault True attrs -> do
+      doStep 1 msg
       pure . OneTwoPunch $ attrs & setMeta False
+    DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
+      mSkillTest <- getSkillTest
+      for_ mSkillTest \skillTest -> do
+        let
+          stillFightable target = case target of
+            EnemyTarget eid -> selectAny $ EnemyWithId eid
+            LocationTarget lid -> selectAny $ LocationWithId lid
+            AssetTarget aid -> selectAny $ AssetWithId aid
+            ConcealedCardTarget cid -> selectAny $ ConcealedCardWithId cid
+            ProxyTarget t _ -> stillFightable t
+            _ -> pure False
+        whenM (stillFightable skillTest.target) do
+          sid <- getRandom
+          enabled <- capture $ skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
+          chooseOrRunOneM iid $ cardI18n do
+            labeled' "oneTwoPunch.again" do
+              push $ BeginSkillTestWithPreMessages' enabled (resetSkillTest sid skillTest)
+            labeled' "oneTwoPunch.skip" nothing
+      pure e
     _ -> OneTwoPunch <$> liftRunMessage msg attrs

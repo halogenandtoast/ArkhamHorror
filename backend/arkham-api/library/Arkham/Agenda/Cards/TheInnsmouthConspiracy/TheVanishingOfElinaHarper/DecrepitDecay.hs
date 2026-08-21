@@ -7,7 +7,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Enemy.CardDefs.NightOfTheZealot.Nightgaunts qualified as Enemies
-import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.FogOverInnsmouth qualified as Enemies
 import Arkham.Helpers.Query
 import Arkham.Helpers.Window
 import Arkham.Matcher

@@ -6,8 +6,8 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.NightOfTheZealot.Nightgaunts qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.FogOverInnsmouth qualified as Enemies
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
-import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Card (getVictoryPoints)

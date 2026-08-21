@@ -9,6 +9,7 @@ import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.NightOfTheZealot.Nightgaunts qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.FogOverInnsmouth qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
 import Arkham.Helpers.Scenario
@@ -26,7 +27,6 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Helpers
 import Arkham.Story.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Stories
 import Arkham.Treachery.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Treacheries
-import Arkham.Enemy.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Enemies
 
 newtype TheVanishingOfElinaHarper = TheVanishingOfElinaHarper ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

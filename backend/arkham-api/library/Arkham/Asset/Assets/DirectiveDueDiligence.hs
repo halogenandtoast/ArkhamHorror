@@ -29,7 +29,9 @@ instance HasAbilities DirectiveDueDiligence where
     [ controlled
         a
         1
-        (DuringSkillTest (oneOf [#investigating, #evading, #parleying]) <> exists (EnemyIsEngagedWith You))
+        ( DuringSkillTest (oneOf [#investigating, WhileEvading, #parleying])
+            <> exists (EnemyIsEngagedWith You)
+        )
         $ FastAbility (exhaust a)
     | not a.flipped
     ]

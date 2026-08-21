@@ -163,7 +163,24 @@ function modifierSource(mod: Modifier) {
   return sourceCardCode(mod.source, props.game)
 }
 
-const targetCardId = computed(() => props.skillTest.targetCard ?? props.skillTest.sourceCard)
+const concealedTarget = computed(() => {
+  // ConcealedCardTarget carries the mini-card's id, and targetDecoder flattens a
+  // ProxyTarget down to the proxied target's contents, so both land here as a string
+  const contents = props.skillTest.target?.contents
+  if (typeof contents !== 'string') return null
+  return props.game.concealed[contents] ?? null
+})
+
+const isConcealed = computed(() => {
+  if (concealedTarget.value) return true
+  return props.skillTest.source.tag === 'AbilitySource' && props.skillTest.source.contents[0].tag === 'ConcealedCardSource'
+})
+
+// a concealed mini-card has no card to show, and falling back to the source would
+// put the attacking asset in the target slot
+const targetCardId = computed(() =>
+  props.skillTest.targetCard ?? (isConcealed.value ? null : props.skillTest.sourceCard)
+)
 
 const targetCard = computed(() => {
   if (!targetCardId.value) return null
@@ -179,10 +196,6 @@ const cardIsRevealed = (cardId: string | null | undefined) => {
 }
 
 const targetCardRevealed = computed(() => cardIsRevealed(targetCardId.value))
-
-const isConcealed = computed(() => {
-  return props.skillTest.source.tag === 'AbilitySource' && props.skillTest.source.contents[0].tag === 'ConcealedCardSource'
-})
 
 type SwarmEnemy = Omit<Enemy, "placement"> & {
   placement: { tag: "AsSwarm"; swarmHost: string; swarmCard: Cards.Card };

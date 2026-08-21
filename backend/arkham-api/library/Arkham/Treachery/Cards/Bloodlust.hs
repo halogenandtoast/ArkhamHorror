@@ -25,7 +25,7 @@ instance HasAbilities Bloodlust where
           1
           ( DuringSkillTest
               $ YourSkillTest
-              $ WhileAttackingAnEnemy AnyEnemy
+              $ WhileAttacking
               <> SkillTestSourceMatches (SourceIsAsset $ assetIs Assets.theHungeringBlade1 <> AssetControlledBy You)
           )
         $ FastAbility (ShuffleIntoDeckCost $ toTarget attrs)

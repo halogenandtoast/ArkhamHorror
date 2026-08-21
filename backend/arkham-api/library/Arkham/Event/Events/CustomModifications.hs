@@ -66,7 +66,7 @@ instance HasAbilities CustomModifications where
             a
             1
             ( DuringSkillTest
-                $ #fighting
+                $ WhileAttacking
                 <> SkillTestSourceMatches (SourceIsAsset (AssetControlledBy You <> AssetWithId aid))
             )
             $ triggered (RevealChaosToken #cancel You (not_ #autofail)) (exhaust a)

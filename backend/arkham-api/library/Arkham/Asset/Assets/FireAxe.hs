@@ -32,7 +32,7 @@ instance HasAbilities FireAxe where
     , limited (PlayerLimit PerTest 3)
         $ fastAbility a 2 (ResourceCost 1)
         $ ControlsThis
-        <> DuringSkillTest (WhileAttackingAnEnemy AnyEnemy <> UsingThis)
+        <> DuringSkillTest (WhileAttacking <> UsingThis)
     ]
 
 instance RunMessage FireAxe where

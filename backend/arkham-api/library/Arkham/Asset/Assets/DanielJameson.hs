@@ -19,7 +19,7 @@ instance HasModifiersFor DanielJameson where
 instance HasAbilities DanielJameson where
   getAbilities (DanielJameson a) =
     [ controlled_ a 1
-        $ triggered (SkillTestResult #after You (oneOf [#fighting, #evading]) #failure) (exhaust a)
+        $ triggered (SkillTestResult #after You (oneOf [WhileAttacking, WhileEvading]) #failure) (exhaust a)
     ]
 
 instance RunMessage DanielJameson where

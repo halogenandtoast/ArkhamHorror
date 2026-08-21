@@ -19,7 +19,7 @@ instance HasAbilities ArkhamWoodsWoodenBridge where
   getAbilities (ArkhamWoodsWoodenBridge a) =
     extendRevealed1 a
       $ playerLimit PerTest
-      $ restricted a 1 (Here <> DuringSkillTest (WhileEvadingAnEnemy AnyEnemy))
+      $ restricted a 1 (Here <> DuringSkillTest WhileEvading)
       $ forced
       $ RevealChaosToken #when You AnyChaosToken
 

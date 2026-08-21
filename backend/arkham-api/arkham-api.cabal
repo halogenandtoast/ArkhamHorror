@@ -2733,10 +2733,15 @@ library
       Arkham.Enemy.Cards.CarnevaleOfHorrors.SalvatoreNeri
       Arkham.Enemy.Cards.CarnevaleOfHorrors.SavioCorvi
       Arkham.Enemy.Cards.CarnevaleOfHorrors.WrithingAppendage
+      Arkham.Enemy.Cards.ChildrenOfBlood.AgentsOfZburamoarte.SpawnOfZburamoarte
+      Arkham.Enemy.Cards.ChildrenOfBlood.ChildrenOfBlood.ChildOfBlood
+      Arkham.Enemy.Cards.ChildrenOfBlood.Mongrels.BloodCrazedMongrel
+      Arkham.Enemy.Cards.ChildrenOfBlood.PreyedUpon.NightFeeder
       Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.JuliaSternOnTheRun
       Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.JuliaSternPreyingUponArkham
       Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.JuliaSternStalkingTheStreets
       Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.WaterfrontCivilian
+      Arkham.Enemy.Cards.ChildrenOfBlood.Vermin.BloodCrazedVermin
       Arkham.Enemy.Cards.CurseOfTheRougarou.BogGator
       Arkham.Enemy.Cards.CurseOfTheRougarou.DarkYoungHost
       Arkham.Enemy.Cards.CurseOfTheRougarou.MarshGug
@@ -6619,6 +6624,7 @@ library
       Arkham.Story.CardDefEntries
       Arkham.Story.CardDefs.BadBlood
       Arkham.Story.CardDefs.Base
+      Arkham.Story.CardDefs.ChildrenOfBlood
       Arkham.Story.CardDefs.EdgeOfTheEarth.FatalMirage
       Arkham.Story.CardDefs.EdgeOfTheEarth.IceAndDeath
       Arkham.Story.CardDefs.FortuneAndFolly
@@ -6663,6 +6669,7 @@ library
       Arkham.Story.CardDefs.TheScarletKeys.ShadesOfSuffering
       Arkham.Story.Cards
       Arkham.Story.Cards.BadBlood.TriumphAndSubjugation
+      Arkham.Story.Cards.ChildrenOfBlood.BloodToken
       Arkham.Story.Cards.EdgeOfTheEarth.FatalMirage.Airfield
       Arkham.Story.Cards.EdgeOfTheEarth.FatalMirage.AlaskanWilds
       Arkham.Story.Cards.EdgeOfTheEarth.FatalMirage.BaseCamp
@@ -6894,7 +6901,7 @@ library
       Arkham.Treachery.CardDefs.BrethrenOfAsh.SpreadingFlames
       Arkham.Treachery.CardDefs.CarnevaleOfHorrors
       Arkham.Treachery.CardDefs.ChildrenOfBlood.Afflicted
-      Arkham.Treachery.CardDefs.ChildrenOfBlood.AgentsOfZburaMoarte
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.AgentsOfZburamoarte
       Arkham.Treachery.CardDefs.ChildrenOfBlood.BloodBlight
       Arkham.Treachery.CardDefs.ChildrenOfBlood.BloodMoon
       Arkham.Treachery.CardDefs.ChildrenOfBlood.ChildrenOfBlood
@@ -7201,6 +7208,19 @@ library
       Arkham.Treachery.Cards.CarnevaleOfHorrors.WatchersGaze
       Arkham.Treachery.Cards.CastAdrift
       Arkham.Treachery.Cards.CaughtRedHanded
+      Arkham.Treachery.Cards.ChildrenOfBlood.Afflicted.FrenziedHunger
+      Arkham.Treachery.Cards.ChildrenOfBlood.Afflicted.RottingRemains
+      Arkham.Treachery.Cards.ChildrenOfBlood.Afflicted.TorturousTransformation
+      Arkham.Treachery.Cards.ChildrenOfBlood.AgentsOfZburamoarte.UnnaturalStrength
+      Arkham.Treachery.Cards.ChildrenOfBlood.BloodBlight.BlightedBlood
+      Arkham.Treachery.Cards.ChildrenOfBlood.BloodBlight.GrislyCompulsion
+      Arkham.Treachery.Cards.ChildrenOfBlood.BloodMoon.BloodMoon
+      Arkham.Treachery.Cards.ChildrenOfBlood.ChildrenOfBlood.GraspingHands
+      Arkham.Treachery.Cards.ChildrenOfBlood.Hunted.NowhereToHide
+      Arkham.Treachery.Cards.ChildrenOfBlood.Hunted.OfTheNight
+      Arkham.Treachery.Cards.ChildrenOfBlood.Infected.TheBloodBlight
+      Arkham.Treachery.Cards.ChildrenOfBlood.Misinformation.Misinformation
+      Arkham.Treachery.Cards.ChildrenOfBlood.PreyedUpon.FeedingGrounds
       Arkham.Treachery.Cards.ChildrenOfBlood.RiverOfBlood.BurningDaylight
       Arkham.Treachery.Cards.Chronophobia
       Arkham.Treachery.Cards.Confiscation

@@ -57,12 +57,32 @@ erwinBridgeDusk =
 unvisitedIsleDawn :: CardDef
 unvisitedIsleDawn =
   victory 2
-    $ location_ "13018" "Unvisited Isle" [Lair, Dawn] RiverOfBlood
+    $ locationWithUnrevealed
+      "13018"
+      "Unvisited Isle"
+      [Lair, Dawn]
+      NoSymbol
+      []
+      "Unvisited Isle"
+      [Lair, Dawn]
+      NoSymbol
+      [T]
+      RiverOfBlood
 
 unvisitedIsleDusk :: CardDef
 unvisitedIsleDusk =
   victory 2
-    $ location_ "13019" "Unvisited Isle" [Lair, Dusk] RiverOfBlood
+    $ locationWithUnrevealed
+      "13019"
+      "Unvisited Isle"
+      [Lair, Dusk]
+      NoSymbol
+      []
+      "Unvisited Isle"
+      [Lair, Dawn]
+      NoSymbol
+      [T]
+      RiverOfBlood
 
 waterfrontWarehouseDawn :: CardDef
 waterfrontWarehouseDawn =

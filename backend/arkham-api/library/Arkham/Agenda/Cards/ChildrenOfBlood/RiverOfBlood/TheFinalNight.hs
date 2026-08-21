@@ -13,6 +13,6 @@ theFinalNight = agenda (4, A) TheFinalNight Cards.theFinalNight (Static 5)
 instance RunMessage TheFinalNight where
   runMessage msg a@(TheFinalNight attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      advanceAgendaDeck attrs
+      push R3
       pure a
     _ -> TheFinalNight <$> liftRunMessage msg attrs

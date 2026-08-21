@@ -933,6 +933,28 @@ instance RunMessage EnemyAttrs where
           InThreatArea iid -> push $ DisengageEnemy iid enemyId
           _ -> pure ()
       pure a
+    PredatorsAttack | not enemyExhausted && not enemyDefeated && isInPlayPlacement a.placement -> do
+      keywords <- getModifiedKeywords a
+      unengaged <- matches enemyId UnengagedEnemy
+      mfight <- field EnemyFight enemyId
+      for_ (guard (Keyword.Predator `elem` keywords && unengaged) *> mfight) \predatorFight -> do
+        candidates <-
+          filter (/= enemyId)
+            <$> select
+              ( EnemyAt (locationWithEnemy enemyId)
+                  <> EnemyWithoutTrait Elite
+                  <> EnemyCanBeDamagedBySource (toSource a)
+              )
+        weaker <- filterM (fieldMap EnemyFight (maybe False (< predatorFight))) candidates
+        prey <- mapMaybe (\(x, y) -> (x,) <$> y) <$> forToSnd weaker (field EnemyRemainingHealth)
+        -- prefers the weakest prey, damaging every enemy tied for lowest
+        for_ (minimumMay $ map snd prey) \lowest ->
+          pushAll
+            [ nonAttackEnemyDamage Nothing (toSource a) 1 eid
+            | (eid, health) <- prey
+            , health == lowest
+            ]
+      pure a
     HuntersMove | not enemyExhausted && not (isSwarm a) && isInPlayPlacement a.placement -> do
       let isAttached = isJust a.placement.attachedTo
       unless isAttached do
@@ -1910,7 +1932,9 @@ instance RunMessage EnemyAttrs where
           }
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
     AddToVictory _miid (isTarget a -> True) -> do
-      push $ RemoveFromPlay (toSource a)
+      -- Do (AddToVictory ...) raises the leave-play windows itself, once the card
+      -- is actually in the victory display, so only the cleanup belongs here
+      push $ RemovedFromPlay (toSource a)
       push $ Do msg
       pure a
     Do (AddToVictory miid (isTarget a -> True)) -> do
@@ -2439,7 +2463,9 @@ instance RunMessage EnemyAttrs where
     PlaceUnderneath (isTarget a -> True) cards -> do
       pure $ a & cardsUnderneathL %~ (nubBy ((==) `on` toCardId) . (<> cards))
     PlaceUnderneath _ cards -> do
-      when (toCard a `elem` cards) $ push $ RemoveEnemy (toId a)
+      -- Going underneath something is leaving play, so route through
+      -- RemoveFromPlay for the leave-play windows and attachment cleanup.
+      when (toCard a `elem` cards) $ push $ removeFromGameMessage a
       pure a
     ObtainCard c -> do
       pure $ a & cardsUnderneathL %~ filter ((/= c) . toCardId)
@@ -2485,9 +2511,9 @@ instance RunMessage EnemyAttrs where
     RemoveFromGame target | a `isTarget` target -> do
       a <$ push (RemoveFromPlay $ toSource a)
     RemoveFromPlay source | isSource a source -> do
-      windowMsg <-
-        checkWindows $ (`Window.mkWindow` Window.LeavePlay (toTarget a)) <$> [#when, #at, #after]
-      pushAll [windowMsg, RemovedFromPlay source]
+      whenLeavePlay <- checkWindows $ (`Window.mkWindow` Window.LeavePlay (toTarget a)) <$> [#when, #at]
+      afterLeavePlay <- checkWindows [mkAfter $ Window.LeavePlay (toTarget a)]
+      pushAll [whenLeavePlay, RemovedFromPlay source, afterLeavePlay]
       pure a
     DoBatch _ msg' -> do
       -- generic DoBatch handler

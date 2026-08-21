@@ -687,6 +687,8 @@ data Message
   | EngageMessage EngageMessage
   | SpawnMessage SpawnMessage
   | HuntMessage HuntMessage
+  | -- | Enemy phase 3.2b: each predator enemy damages weaker prey at its location
+    PredatorsAttack
   | ClueMessage ClueMessage
   | DoomMessage DoomMessage
   | TokenMessage TokenMessage

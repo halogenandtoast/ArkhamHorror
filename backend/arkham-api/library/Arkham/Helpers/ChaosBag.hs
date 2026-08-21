@@ -40,6 +40,9 @@ getRemainingCurseTokens = selectCount $ InTokenPool #curse
 getRemainingBlessTokens :: HasGame m => m Int
 getRemainingBlessTokens = selectCount $ InTokenPool #bless
 
+getRemainingBloodTokens :: HasGame m => m Int
+getRemainingBloodTokens = selectCount $ InTokenPool #blood
+
 getSealedChaosTokens :: HasGame m => m [ChaosToken]
 getSealedChaosTokens =
   concat

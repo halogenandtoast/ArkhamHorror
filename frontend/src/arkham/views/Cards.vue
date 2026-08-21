@@ -141,7 +141,11 @@ const sortCards = (cards: Arkham.CardDef[]) => [...cards].sort((a, b) => {
   return 0
 })
 
-const isCampaignCard = (card: Arkham.CardDef) => card.encounterSet != null
+// Blood Token is an encounter card that belongs to no encounter set, so the usual
+// test would file it with the player cards.
+const setlessEncounterCards = new Set(['13119'])
+
+const isCampaignCard = (card: Arkham.CardDef) => card.encounterSet != null || setlessEncounterCards.has(card.art)
 
 const cardInPool = (card: Arkham.CardDef, cardPool: CardPoolMode) => {
   if (cardPool === 'both') return true

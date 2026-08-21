@@ -561,7 +561,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         then push FailSkillTest
         else do
           let shouldRevealAnother = DoNotRevealAnotherChaosToken `notElem` mods
-          when (token `elem` [#curse, #bless, #frost]) do
+          when (token `elem` [#curse, #bless, #frost, #blood]) do
             pushWhen shouldRevealAnother (DrawAnotherChaosToken iid)
           -- Homebrew custom tokens: engine-level reveal behavior comes from the
           -- token's registered 'CustomTokenReveal'. ResolveChaosToken only
@@ -1942,6 +1942,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & setAsideKeysL %~ insertSet k & keysL %~ deleteSet k
   PlaceKey target k | not (isTarget a target) -> do
     pure $ a & (setAsideKeysL %~ deleteSet k)
+  MoveTokens s source _ tType n | isSource a source -> liftRunMessage (RemoveTokens s ScenarioTarget tType n) a
   MoveTokens s _ target tType n | isTarget a target -> liftRunMessage (PlaceTokens s target tType n) a
   PlaceTokens _ ScenarioTarget token amount -> do
     pure $ a & tokensL %~ addTokens token amount

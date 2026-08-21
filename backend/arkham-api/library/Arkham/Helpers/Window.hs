@@ -2207,7 +2207,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               useLastKnownLocation (EnemyAt inner) = EnemyWasAt inner
               useLastKnownLocation other = other
              in
-              elem eid <$> select (over biplate (transform useLastKnownLocation) enemyMatcher)
+              -- The enemy has already left play by the time this fires, so the
+              -- default in-play zone filter would drop it
+              elem eid
+                <$> select
+                  (IncludeOutOfPlayEnemy $ over biplate (transform useLastKnownLocation) enemyMatcher)
       Window.LeavePlay (EnemyTarget eid) -> elem eid <$> select enemyMatcher
       _ -> noMatch
     Matcher.Explored timing whoMatcher fromLocationMatcher resultMatcher -> guardTiming timing $ \case

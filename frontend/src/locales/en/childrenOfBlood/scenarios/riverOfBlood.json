@@ -18,5 +18,9 @@
     "preyingUponArkham": "If you are playing on Hard or Expert difficulty, set Julia Stern (*Preying Upon Arkham*) aside, out of play. Remove each other copy of Julia Stern from the game.",
     "setOutOfPlay": "Set the following cards aside, out of play: each remaining Waterfront Civilian enemy, each Night Feeder enemy (or each Spawn of Zburamoarte enemy if playing on Hard or Expert difficulty), each card in the _Infected_ encounter set, the Detective Reynolds story asset, and the Fang of Zburamoarte story asset.",
     "lairs": "Shuffle the top 2 cards of the encounter deck together with the set-aside Julia Stern enemy. Place 1 of these cards facedown, at random, beneath each _Lair_ location."
+  },
+  "label": {
+    "r1": "\"There might still be hope for her.\" (→ _R1_)",
+    "r2": "\"We need to put an end to this monster.\" (→ _R2_)"
   }
 }

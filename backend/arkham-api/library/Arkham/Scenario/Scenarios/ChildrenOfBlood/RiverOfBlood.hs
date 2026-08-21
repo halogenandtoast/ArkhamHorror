@@ -14,8 +14,9 @@ import Arkham.Location.CardDefs.ChildrenOfBlood.RiverOfBlood qualified as Locati
 import Arkham.Matcher
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ChildrenOfBlood.RiverOfBlood.Helpers
-import Arkham.Trait (Trait (Dawn, Dusk, Lair))
+import Arkham.Story.CardDefs.ChildrenOfBlood qualified as Stories
 import Arkham.Token qualified as Token
+import Arkham.Trait (Trait (Dawn, Dusk, Lair))
 
 newtype RiverOfBlood = RiverOfBlood ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -134,6 +135,7 @@ instance RunMessage RiverOfBlood where
         ]
       removeCards =<< amongGathered (#enemy <> CardWithTitle "Julia Stern")
       setAside =<< amongGathered (cardIs Enemies.waterfrontCivilian)
+      placeStory Stories.bloodToken
       doStep 1 Setup
     DoStep 1 Setup -> do
       xs <- map toCard . toList . take 2 <$> getEncounterDeck
@@ -142,6 +144,7 @@ instance RunMessage RiverOfBlood where
         Standard -> Enemies.juliaSternStalkingTheStreets
         _other -> Enemies.juliaSternPreyingUponArkham
       xs' <- shuffle $ julia : xs
+      traverse_ obtainCard xs'
       lairs <- select $ LocationWithTrait Lair
       for_ (zip lairs xs') \(lair, x) -> placeUnderneath lair (only x)
       pure s

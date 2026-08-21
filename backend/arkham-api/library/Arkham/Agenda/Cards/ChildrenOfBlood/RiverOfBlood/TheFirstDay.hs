@@ -64,7 +64,7 @@ instance RunMessage TheFirstDay where
             then do
               topOfEncounterDeck <- map toCard . toList . take 1 <$> getEncounterDeck
               juliaCard <- flippedOverCapture julia
-              obtainCard juliaCard
+              traverse_ obtainCard (juliaCard : topOfEncounterDeck)
               placeUnderneath lid =<< shuffleM (juliaCard : topOfEncounterDeck)
             else do
               moveTowardsMatching (attrs.ability 1) julia $ NearestLocationToLocation lid $ LocationWithTrait Lair

@@ -12,7 +12,9 @@ juliaSternOnTheRun =
     , cdHealth = health 6
     , cdEvade = evade 4
     , cdCardTraits = setFromList [Humanoid, Monster, Elite]
-    , cdKeywords = setFromList [Keyword.Elusive, Keyword.Patrol (LocationWithEnemy $ EnemyWithTrait Civilian), Keyword.Predator]
+    , cdKeywords =
+        setFromList
+          [Keyword.Elusive, Keyword.Patrol (LocationWithEnemy $ EnemyWithTrait Civilian), Keyword.Predator]
     , cdVictoryPoints = Just 2
     , cdUnique = True
     }
@@ -26,7 +28,13 @@ juliaSternStalkingTheStreets =
     , cdHealth = health 8
     , cdEvade = evade 4
     , cdCardTraits = setFromList [Humanoid, Monster, Elite]
-    , cdKeywords = setFromList [Keyword.Elusive, Keyword.Patrol (LocationWithEnemy $ EnemyWithTrait Civilian), Keyword.Predator, Keyword.Retaliate]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Elusive
+          , Keyword.Patrol (LocationWithEnemy $ EnemyWithTrait Civilian)
+          , Keyword.Predator
+          , Keyword.Retaliate
+          ]
     , cdVictoryPoints = Just 2
     , cdUnique = True
     }
@@ -40,7 +48,13 @@ juliaSternPreyingUponArkham =
     , cdHealth = health 8
     , cdEvade = evade 4
     , cdCardTraits = setFromList [Humanoid, Monster, Elite]
-    , cdKeywords = setFromList [Keyword.Elusive, Keyword.Patrol (LocationWithEnemy $ EnemyWithTrait Civilian), Keyword.Predator, Keyword.Retaliate]
+    , cdKeywords =
+        setFromList
+          [ Keyword.Elusive
+          , Keyword.Patrol (LocationWithEnemy $ EnemyWithTrait Civilian)
+          , Keyword.Predator
+          , Keyword.Retaliate
+          ]
     , cdVictoryPoints = Just 2
     , cdUnique = True
     }

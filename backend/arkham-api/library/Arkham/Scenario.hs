@@ -548,6 +548,10 @@ instance HasChaosTokenValue Scenario where
             pure
               $ ChaosTokenValue chaosTokenFace
               $ if count (== #frost) revealed == 2 then AutoFailModifier else NegativeModifier 1
+          -- Children of Blood, additional rules: every {blood} is "-1. Reveal
+          -- another token."; what happens to the token afterwards is up to
+          -- whatever card or campaign is defining it.
+          BloodToken -> pure $ ChaosTokenValue chaosTokenFace (NegativeModifier 1)
           -- Circus Ex Mortis guide p1: the moon token's printed value is 0; its
           -- seal-and-reveal-another effect is handled at ResolveChaosToken.
           CustomToken _ -> pure $ ChaosTokenValue chaosTokenFace NoModifier

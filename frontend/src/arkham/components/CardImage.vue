@@ -66,7 +66,7 @@ const vertical = computed(() => flipped.value && backVertical.value)
         @error="onFrontError"
         v-bind="attrs"
       />
-      <button v-if="flippable" @click.prevent="wantsFlip = !wantsFlip"><ArrowPathIcon aria-hidden="true" /></button>
+      <button v-if="flippable" @click.prevent.stop="wantsFlip = !wantsFlip"><ArrowPathIcon aria-hidden="true" /></button>
     </div>
     <div v-if="flippable" class="back" :class="{flipped}">
       <img
@@ -77,7 +77,7 @@ const vertical = computed(() => flipped.value && backVertical.value)
         @error="backMissing = true"
         v-bind="attrs"
       />
-      <button @click.prevent="wantsFlip = !wantsFlip"><ArrowPathIcon aria-hidden="true" /></button>
+      <button @click.prevent.stop="wantsFlip = !wantsFlip"><ArrowPathIcon aria-hidden="true" /></button>
     </div>
   </div>
 </template>

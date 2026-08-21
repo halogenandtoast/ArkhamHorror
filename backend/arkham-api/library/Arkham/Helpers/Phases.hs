@@ -26,7 +26,7 @@ runEnemyPhase endMsg = do
   let phaseStep step msgs = Msg.PhaseStep (EnemyPhaseStep step) msgs
   pushAll
     [ phaseStep EnemyPhaseBeginsStep [phaseBeginsWindow]
-    , phaseStep HunterEnemiesMoveStep [Msg.HuntersMove, afterHuntersMoveWindow]
+    , phaseStep HunterEnemiesMoveStep [Msg.HuntersMove, afterHuntersMoveWindow, Msg.PredatorsAttack]
     , phaseStep ResolveAttacksWindow [fastWindow, enemiesAttackWindow]
     , phaseStep ResolveAttacksStep [Msg.EnemiesAttack]
     , phaseStep AfterResolveAttacksWindow [fastWindow]

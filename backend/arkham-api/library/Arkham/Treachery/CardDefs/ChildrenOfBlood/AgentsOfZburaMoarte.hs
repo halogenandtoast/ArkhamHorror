@@ -1,4 +1,4 @@
-module Arkham.Treachery.CardDefs.ChildrenOfBlood.AgentsOfZburaMoarte where
+module Arkham.Treachery.CardDefs.ChildrenOfBlood.AgentsOfZburamoarte where
 
 import Arkham.Treachery.CardDefs.Import
 

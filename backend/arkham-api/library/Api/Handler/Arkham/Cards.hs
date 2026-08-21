@@ -43,6 +43,15 @@ browsableCardDefs defs = filter (\def -> exactCardCode def `Set.notMember` backS
       , exactCardCode otherSide `Set.member` codes
       ]
 
+-- | Blood Token is an encounter card that belongs to no encounter set, so the
+-- usual test would file it with the player cards.
+setlessEncounterCards :: Set CardCode
+setlessEncounterCards = Set.fromList ["13119"]
+
+isCampaignCardDef :: CardDef -> Bool
+isCampaignCardDef def =
+  isJust (cdEncounterSet def) || toCardCode def `Set.member` setlessEncounterCards
+
 getApiV1ArkhamCardsR :: Handler [CardDef]
 getApiV1ArkhamCardsR = do
   cardPool <- fromMaybe "player" <$> lookupGetParam "cardPool"
@@ -54,8 +63,8 @@ getApiV1ArkhamCardsR = do
         <> allEncounterCards
         <> allScenarioCards
         <> allEncounterInvestigatorCards
-    playerCards = Map.filter (isNothing . cdEncounterSet) allCards
-    campaignCards = Map.filter (isJust . cdEncounterSet) allCards
+    playerCards = Map.filter (not . isCampaignCardDef) allCards
+    campaignCards = Map.filter isCampaignCardDef allCards
     cards = case cardPool of
       "campaign" -> campaignCards
       "both" -> allCards

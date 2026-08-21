@@ -971,6 +971,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     -- the fight rather than narrowing it, so it must still offer as-if-enemy targets
     -- (Mist-Pylons, Key Loci). canMoveToConnected is exactly this Hunt-source case.
     let includeAsIfEnemy = coveredByAnyInPlayEnemy enemyMatcher || canMoveToConnected
+    let asIfEnemyLocations =
+          if canMoveToConnected
+            then orConnected ForMovement (locationWithInvestigator investigatorId)
+            else locationWithInvestigator investigatorId
     locationIds <-
       if includeAsIfEnemy
         then
@@ -978,11 +982,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             $ asIfTurn investigatorId
             $ select
             $ LocationWithModifier CanBeAttackedAsIfEnemy
-            <> if canMoveToConnected
-              then orConnected ForMovement (locationWithInvestigator investigatorId)
-              else locationWithInvestigator investigatorId
+            <> asIfEnemyLocations
         else pure []
-    concealed <- if includeAsIfEnemy then getConcealedIds NotForExpose investigatorId else pure []
+    concealed <-
+      if includeAsIfEnemy
+        then map toId <$> getConcealedChoicesAt NotForExpose asIfEnemyLocations
+        else pure []
     assetIds <-
       if includeAsIfEnemy
         then

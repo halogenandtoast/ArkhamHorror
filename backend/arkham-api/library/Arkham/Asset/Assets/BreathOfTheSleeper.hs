@@ -24,7 +24,8 @@ breathOfTheSleeper = asset BreathOfTheSleeper Cards.breathOfTheSleeper
 instance HasAbilities BreathOfTheSleeper where
   getAbilities (BreathOfTheSleeper a) =
     [ restricted a 1 ControlsThis fightAction_
-    , controlled a 2 (DuringSkillTest $ SkillTestOnAsset (be a))
+    , perTest
+        $ controlled a 2 (DuringSkillTest $ SkillTestOnAsset (be a))
         $ ConstantReaction "Spend Charges" (WouldRevealChaosTokens #when You) (UseCostUpTo (be a) Charge 1 3)
     ]
 
@@ -52,11 +53,12 @@ instance RunMessage BreathOfTheSleeper where
       -- the Sleeper second would replace their structure wholesale.
       mchoice <- getChaosBagChoice
       let steps = maybe [Undecided Draw] getSteps mchoice
-      let nested = mchoice >>= \case
-            Resolved {} -> Nothing
-            Decided s -> guard (s /= Draw) $> s
-            Undecided s -> guard (s /= Draw) $> s
-            Deciding s -> guard (s /= Draw) $> s
+      let nested =
+            mchoice >>= \case
+              Resolved {} -> Nothing
+              Decided s -> guard (s /= Draw) $> s
+              Undecided s -> guard (s /= Draw) $> s
+              Deciding s -> guard (s /= Draw) $> s
       push
         $ ReplaceCurrentDraw drawSource iid
         $ Choose (toSource attrs) 1 ResolveChoice (steps <> replicate n (Undecided Draw)) [] nested

@@ -133,8 +133,9 @@ instance RunMessage RunicAxe where
                         <=~> (enemyAtLocationWith iid <> oneOf [AloofEnemy <> EnemyIsEngagedWith Anyone, not_ AloofEnemy])
                     )
             , not <$> (coerce eid <=~> locationWithInvestigator iid)
-            , -- concealed cards are always at the investigator's location, so Hunt is never needed for them
-              not <$> selectAny (ConcealedCardWithId (coerce eid))
+            , not
+                <$> selectAny
+                  (ConcealedCardWithId (coerce eid) <> ConcealedCardAt (locationWithInvestigator iid))
             ]
         let imbueAgain = if attrs `hasCustomization` Scriptweaver then [Do msg, msg] else [msg]
         if needsHunt && attrs `hasCustomization` InscriptionOfTheHunt
@@ -174,21 +175,22 @@ instance RunMessage RunicAxe where
         Hunt -> do
           mLoc <- getLocationOf iid
           isLocation <- coerce eid <=~> Anywhere
-          isConcealed <- selectAny (ConcealedCardWithId (coerce eid))
+          mConcealed <- selectOne (ConcealedCardWithId (coerce eid))
+          let
+            huntToward loc = for_ mLoc \loc' -> do
+              accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
+              closestLocationIds <- select $ ClosestPathLocation loc' loc
+              let locations = filter (`elem` closestLocationIds) accessibleLocations
+              chooseOneM iid $ targets locations (moveTo (attrs.ability 1) iid)
           if isLocation
             then moveTo (attrs.ability 1) iid (coerce @_ @LocationId eid)
-            -- concealed cards are always local; Hunt's movement/engage logic does not apply
-            else
-              unless isConcealed
-                $ getLocationOf eid
-                >>= traverse_ \loc -> do
+            else case mConcealed of
+              -- concealed cards can't be engaged, so Hunt can only close the distance
+              Just c -> getLocationOf c.id >>= traverse_ \loc -> when (Just loc /= mLoc) (huntToward loc)
+              Nothing ->
+                getLocationOf eid >>= traverse_ \loc -> do
                   if Just loc /= mLoc
-                    then do
-                      for_ mLoc \loc' -> do
-                        accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
-                        closestLocationIds <- select $ ClosestPathLocation loc' loc
-                        let locations = filter (`elem` closestLocationIds) accessibleLocations
-                        chooseOneM iid $ targets locations (moveTo (attrs.ability 1) iid)
+                    then huntToward loc
                     else do
                       engaged <- eid <=~> enemyEngagedWith iid
                       if engaged

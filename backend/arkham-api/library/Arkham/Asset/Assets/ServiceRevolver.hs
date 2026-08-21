@@ -17,7 +17,8 @@ serviceRevolver = asset ServiceRevolver Cards.serviceRevolver
 
 instance HasAbilities ServiceRevolver where
   getAbilities (ServiceRevolver a) =
-    [ skillTestAbility
+    [ withFightCriteriaOverride (CriteriaOverride canFightAtAnyLocation)
+        $ skillTestAbility
         $ controlled_ a 1
         $ triggeredAction
           #fight

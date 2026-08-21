@@ -23,11 +23,7 @@ instance HasAbilities SwordCane where
     [ controlled
         x
         1
-        ( oneOf
-            [ any_ [CanEvadeEnemy (x.ability 2), CanFightEnemy (x.ability 2)]
-            , exists $ YourLocation <> LocationWithConcealedCard
-            ]
-        )
+        (oneOf [canFightSomething (x.ability 2), canEvadeSomething (x.ability 2)])
         $ freeReaction
         $ AssetEntersPlay #after (be x)
     , restricted x 2 ControlsThis

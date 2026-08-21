@@ -538,6 +538,24 @@ canDamageEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =
           ]
       else exists (EnemyAt locationMatcher <> EnemyCanBeDamagedBySource source <> enemyMatcher)
 
+{- | "There is something here I can attack": a fightable enemy, or a concealed
+mini-card, which may be attacked as if it were an engaged enemy to expose it.
+-}
+canFightSomething :: Sourceable source => source -> Criterion
+canFightSomething (toSource -> source) =
+  oneOf -- technically Criteria
+    [ exists (CanFightEnemy source)
+    , exists (YourLocation <> LocationWithExposableConcealedCard source)
+    ]
+
+-- | Evade counterpart of 'canFightSomething'.
+canEvadeSomething :: Sourceable source => source -> Criterion
+canEvadeSomething (toSource -> source) =
+  oneOf -- technically Criteria
+    [ exists (CanEvadeEnemy source)
+    , exists (YourLocation <> LocationWithExposableConcealedCard source)
+    ]
+
 canEvadeEnemyAtMatch
   :: Sourceable source => source -> LocationMatcher -> EnemyMatcher -> Criterion
 canEvadeEnemyAtMatch (toSource -> source) locationMatcher enemyMatcher =

@@ -86,7 +86,7 @@ instance RunMessage ConcealedCard where
           st {skillTestAction = Just #fight}
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityAttack -> True) -> do
-      whenM (getCanExpose iid c) do
+      whenM (getCanExpose iid (c.ability AbilityAttack) c) do
         push $ Flip iid (c.ability AbilityAttack) (toTarget c)
       pure c
     UseThisAbility iid (isSource c -> True) AbilityEvade -> do
@@ -98,21 +98,21 @@ instance RunMessage ConcealedCard where
           st {skillTestAction = Just #evade}
       pure c
     PassedThisSkillTest iid (isAbilitySource c AbilityEvade -> True) -> do
-      whenM (getCanExpose iid c) do
+      whenM (getCanExpose iid (c.ability AbilityEvade) c) do
         push $ Flip iid (c.ability AbilityEvade) (toTarget c)
       pure c
     Flip iid _ (isTarget c -> True) -> do
       unless c.concealedCardFlipped $ chooseTargetM iid [c] \_ -> doStep 1 msg
       pure $ c {concealedCardFlipped = not c.concealedCardFlipped, concealedCardKnown = True}
-    DoStep 1 msg'@(Flip iid _ (isTarget c -> True)) -> do
+    DoStep 1 msg'@(Flip iid flipSource (isTarget c -> True)) -> do
       case concealedToCardDef c of
         Nothing -> do
           case c.kind of
-            Decoy -> exposedDecoy iid c Nothing
-            DecoyVoidChimeraFellbeak -> exposedDecoy iid c (Just "decoyVoidChimeraFellbeak")
-            DecoyVoidChimeraEarsplitter -> exposedDecoy iid c (Just "decoyVoidChimeraEarsplitter")
-            DecoyVoidChimeraGorefeaster -> exposedDecoy iid c (Just "decoyVoidChimeraGorefeaster")
-            DecoyVoidChimeraFellhound -> exposedDecoy iid c (Just "decoyVoidChimeraFellhound")
+            Decoy -> exposedDecoy iid flipSource c Nothing
+            DecoyVoidChimeraFellbeak -> exposedDecoy iid flipSource c (Just "decoyVoidChimeraFellbeak")
+            DecoyVoidChimeraEarsplitter -> exposedDecoy iid flipSource c (Just "decoyVoidChimeraEarsplitter")
+            DecoyVoidChimeraGorefeaster -> exposedDecoy iid flipSource c (Just "decoyVoidChimeraGorefeaster")
+            DecoyVoidChimeraFellhound -> exposedDecoy iid flipSource c (Just "decoyVoidChimeraFellhound")
             CityOfRemnantsL -> scenarioSpecific "exposed[CityOfRemnantsL]" (iid, c)
             CityOfRemnantsM -> scenarioSpecific "exposed[CityOfRemnantsM]" (iid, c)
             CityOfRemnantsR -> scenarioSpecific "exposed[CityOfRemnantsR]" (iid, c)
@@ -169,7 +169,7 @@ instance RunMessage ConcealedCard where
       fight sid iid source target skillType difficulty
       pure c
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ _ | isEnemyTarget c target -> do
-      push $ Flip iid source (toTarget c)
+      whenM (getCanExpose iid source c) $ push $ Flip iid source (toTarget c)
       pure c
     TryEvadeEnemy sid iid eid source mTarget skillType | eid == coerce (unConcealedCardId c.id) -> do
       mlocation <- concealedLocationFor iid c
@@ -181,7 +181,7 @@ instance RunMessage ConcealedCard where
           evade sid iid source target skillType difficulty
       pure c
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ _ | isEnemyTarget c target -> do
-      push $ Flip iid source (toTarget c)
+      whenM (getCanExpose iid source c) $ push $ Flip iid source (toTarget c)
       pure c
     RemoveAllConcealed -> do
       removeFromGame (toTarget c)

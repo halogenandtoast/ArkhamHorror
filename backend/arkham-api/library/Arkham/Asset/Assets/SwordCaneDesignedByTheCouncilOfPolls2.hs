@@ -26,12 +26,9 @@ instance HasAbilities SwordCaneDesignedByTheCouncilOfPolls2 where
         x
         1
         ( oneOf
-            [ any_
-                [ CanEvadeEnemy (x.ability 2)
-                , CanFightEnemy (x.ability 2)
-                , EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (x.ability 2)
-                ]
-            , exists $ YourLocation <> LocationWithConcealedCard
+            [ canFightSomething (x.ability 2)
+            , canEvadeSomething (x.ability 2)
+            , exists $ EnemyIsEngagedWith You <> EnemyCanBeDamagedBySource (x.ability 2)
             ]
         )
         $ freeReaction

@@ -503,7 +503,7 @@ spectralRazor2 =
     { cdSkills = [#willpower, #combat, #wild]
     , cdCardTraits = singleton Spell
     , cdActions = #fight
-    , cdCriteria = Just $ exists $ oneOf [CanFightEnemy ThisCard, CanEngageEnemy ThisCard]
+    , cdCriteria = Just $ oneOf [Criteria.canFightSomething ThisCard, exists $ CanEngageEnemy ThisCard]
     , cdOverrideActionPlayableIfCriteriaMet = True
     , cdLevel = Just 2
     }

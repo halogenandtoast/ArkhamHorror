@@ -30,6 +30,7 @@ import Arkham.Helpers.Campaign (getCampaignMeta, getCampaignStoryCards)
 import Arkham.Helpers.Modifiers (getModifiers)
 import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.Scenario (getGrid, unlessStandalone)
+import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Helpers.Xp
 import Arkham.I18n
 import Arkham.Id
@@ -143,19 +144,27 @@ exposed iid enemy c body = do
   checkAfter $ Window.CampaignEvent idkey (Just iid) Null
   checkAfter $ Window.CampaignEvent "exposed[enemy]" (Just iid) Null
 
-getCanExpose :: HasGame m => InvestigatorId -> ConcealedCard -> m Bool
-getCanExpose iid card = runValidT do
+getCanExpose
+  :: (HasGame m, Sourceable source) => InvestigatorId -> source -> ConcealedCard -> m Bool
+getCanExpose iid (toSource -> source) card = runValidT do
   imods <- lift $ getModifiers iid
   guard $ CannotExpose `notElem` imods
   case card.placement of
     AtLocation location -> do
       guard $ noExposeAt location `notElem` imods
-      liftGuardM $ matches location $ LocationWithoutModifier NoExposeAt
+      -- Coterie Envoy only blocks exposure "via player card effects"
+      isPlayerSource <- lift $ sourceMatches source SourceIsPlayerCard
+      when isPlayerSource
+        $ liftGuardM
+        $ matches location
+        $ LocationWithoutModifier NoExposeAt
     _ -> pure ()
 
-exposedDecoy :: ReverseQueue m => InvestigatorId -> ConcealedCard -> Maybe Text -> m ()
-exposedDecoy iid card@(toTarget -> c) mtext = do
-  whenM (getCanExpose iid card) do
+exposedDecoy
+  :: (ReverseQueue m, Sourceable source)
+  => InvestigatorId -> source -> ConcealedCard -> Maybe Text -> m ()
+exposedDecoy iid source card@(toTarget -> c) mtext = do
+  whenM (getCanExpose iid source card) do
     let ekey = "exposed[decoy]"
     mods <- getModifiers c
     batched \_ -> do

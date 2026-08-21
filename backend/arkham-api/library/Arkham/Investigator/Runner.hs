@@ -1106,7 +1106,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           (canEvadeMatcher <> enemyMatcher <> mustChooseMatchers)
           modifiers
     player <- getPlayer a.id
-    concealed <- getConcealedIds NotForExpose investigatorId
+    -- A mini-card is not an enemy, so it can only satisfy an unqualified evade
+    -- matcher. Mirrors the fight side's 'includeAsIfEnemy' gate.
+    concealed <-
+      if coveredByAnyInPlayEnemy enemyMatcher
+        then getConcealedIds NotForExpose investigatorId
+        else pure []
     let choices = enemyIds <> map coerce concealed
     let elabel eid = if skillType /= #agility then EvadeLabelWithSkill eid skillType else EvadeLabel eid
     unless (null choices) do

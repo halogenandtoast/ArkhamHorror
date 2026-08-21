@@ -50,17 +50,19 @@ instance RunMessage TheEyeOfChaos where
           case p of
             HiddenInHand iid -> do
               card <- field EnemyCard nyarlathotep
-              push $ FocusCards [card]
-              chooseOneM iid $ scenarioI18n $ scope "theEyeOfChaos" do
-                questionLabeled' "choose"
-                questionLabeledCard card
-                labeled' "nyarlathotepAttackOnce" do
-                  initiateEnemyAttack nyarlathotep attrs iid
-                  shuffleBackIntoEncounterDeck nyarlathotep
-                labeled' "nyarlathotepAttackThrice" do
-                  initiateEnemyAttack nyarlathotep attrs iid
-                  initiateEnemyAttack nyarlathotep attrs iid
-                  initiateEnemyAttack nyarlathotep attrs iid
+              focusCard card do
+                chooseOneM iid $ scenarioI18n $ scope "theEyeOfChaos" do
+                  questionLabeled' "choose"
+                  questionLabeledCard card
+                  labeled' "nyarlathotepAttackOnce" do
+                    unfocusCards
+                    initiateEnemyAttack nyarlathotep attrs iid
+                    shuffleBackIntoEncounterDeck nyarlathotep
+                  labeled' "nyarlathotepAttackThrice" do
+                    unfocusCards
+                    initiateEnemyAttack nyarlathotep attrs iid
+                    initiateEnemyAttack nyarlathotep attrs iid
+                    initiateEnemyAttack nyarlathotep attrs iid
             _ -> pure ()
 
       advanceAgendaDeck attrs

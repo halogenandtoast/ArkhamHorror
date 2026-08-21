@@ -197,6 +197,17 @@ getAllAbilities = cached GetAllAbilitiesKey $ getAbilities <$> getGame
 getSettings :: HasGame m => m Settings
 getSettings = gameSettings <$> getGame
 
+{- | Whether "as if" should be ignored for this investigator right now. The
+Chapter 2 ruling confines the altered state to the ability being resolved, so
+windows that offer other abilities bracket themselves with 'SetAsIfAtIgnored'.
+Chapter 1 keeps the altered state throughout and always answers False.
+-}
+getAsIfIgnored :: HasGame m => InvestigatorId -> m Bool
+getAsIfIgnored iid = do
+  settings <- getSettings
+  g <- getGame
+  pure $ settingsStrictAsIfAt settings && iid `member` gameAsIfAtIgnored g
+
 getCurrentBatchId :: HasGame m => m (Maybe BatchId)
 getCurrentBatchId = gameCurrentBatchId <$> getGame
 

@@ -392,7 +392,7 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
       here lid =
         orM
           [ fieldP InvestigatorLocation (== Just lid) iid
-          , elem (AsIfAlsoAt lid) <$> getModifiers iid
+          , andM [not <$> getAsIfIgnored iid, elem (AsIfAlsoAt lid) <$> getModifiers iid]
           ]
     case source of
       LocationSource lid -> here lid

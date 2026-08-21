@@ -36,3 +36,29 @@ spec = describe "Sixth Sense (4)" do
     self.horror `shouldReturn` 2
     -- "in addition to": you never left your own location
     self.location `shouldReturn` Just (toId currentLocation)
+
+  -- FAQ v2.5 Q63: one test, results applied to BOTH locations.
+  it "applies the results of the test to both locations" . gameTest $ \self -> do
+    withProp @"willpower" 5 self
+    (currentLocation, connectingLocation) <-
+      testConnectedLocations (revealedL .~ True) (revealedL .~ True)
+    updateProp @"shroud" 0 currentLocation
+    updateProp @"clues" 1 currentLocation
+    updateProp @"shroud" 0 connectingLocation
+    updateProp @"clues" 1 connectingLocation
+    self `moveTo` currentLocation
+
+    sixthSense <- self `putAssetIntoPlay` Assets.sixthSense4
+    setChaosTokens [Skull]
+
+    [investigateAction] <- self `getActionsFrom` sixthSense
+    self `useAbility` investigateAction
+    startSkillTest
+    chooseTarget connectingLocation
+    clickLabel "$label.useOriginalLocationsShroud"
+    applyResults
+    chooseFirstOption "resolve one location's investigation result"
+
+    self.clues `shouldReturn` 2
+    currentLocation.clues `shouldReturn` 0
+    connectingLocation.clues `shouldReturn` 0

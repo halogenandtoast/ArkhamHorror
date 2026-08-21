@@ -249,6 +249,19 @@ onlyCampaignAbilities UsedAbility {..} = case abilityLimitType (abilityLimit use
   Just PerCampaign -> True
   _ -> False
 
+{- | Under the Chapter 2 "as if" ruling (Grimoire) the altered game state applies
+only to the ability being resolved; other abilities triggering during it see the
+actual game state. Bracket the windows where those other abilities get offered.
+Chapter 1 keeps the altered state throughout, so the bracket is a no-op there.
+-}
+withoutAsIfFor :: HasGame m => InvestigatorId -> [Message] -> m [Message]
+withoutAsIfFor iid msgs = do
+  settings <- getSettings
+  pure
+    $ if settingsStrictAsIfAt settings
+      then [SetAsIfAtIgnored iid True] <> msgs <> [SetAsIfAtIgnored iid False]
+      else msgs
+
 -- There are a few conditions that can occur that mean we must need to use an ability.
 -- No valid targets. For example Marksmanship
 -- Can't afford card. For example On Your Own
@@ -2632,11 +2645,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               ]
             _ -> []
           else windows
-    pushM
-      $ checkWindows
-      $ mkWhen (Window.FailSkillTest iid n)
-      : mkAfter (Window.FailSkillTest iid n)
-      : windows'
+    windowMsg <-
+      checkWindows
+        $ mkWhen (Window.FailSkillTest iid n)
+        : mkAfter (Window.FailSkillTest iid n)
+        : windows'
+    pushAllM $ withoutAsIfFor iid [windowMsg]
     pure a
   When (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
@@ -2661,7 +2675,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       -- SuccessfulEvadeEnemy fires from the enemy's evade resolution (around
       -- EnemyEvaded) so reactions see the enemy exhausted; see Enemy.Runner.
       _ -> pure []
-    pushM $ checkWindows $ mkWhen (Window.PassSkillTest mAction source iid n) : windows
+    windowMsg <- checkWindows $ mkWhen (Window.PassSkillTest mAction source iid n) : windows
+    pushAllM $ withoutAsIfFor iid [windowMsg]
     pure a
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n) | iid == iid' && iid == toId a -> do
     mTarget <- getSkillTestTarget
@@ -2686,7 +2701,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       -- SuccessfulEvadeEnemy fires from the enemy's evade resolution (around
       -- EnemyEvaded) so reactions see the enemy exhausted; see Enemy.Runner.
       _ -> pure []
-    pushM $ checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
+    windowMsg <- checkWindows $ mkAfter (Window.PassSkillTest mAction source iid n) : windows
+    pushAllM $ withoutAsIfFor iid [windowMsg]
     pure a
   PlayerWindow iid additionalActions isAdditional immediate | iid == investigatorId -> handlePlayerWindow a iid additionalActions isAdditional immediate
   -- investigatorSkippedWindow: the seat declined this window via SkipTriggersButton.

@@ -65,6 +65,7 @@ getCardMaybe :: HasGame m => CardId -> m (Maybe Card)
 findCard :: HasGame m => (Card -> Bool) -> m (Maybe Card)
 findAllCards :: HasGame m => (Card -> Bool) -> m [Card]
 getSettings :: HasGame m => m Settings
+getAsIfIgnored :: HasGame m => InvestigatorId -> m Bool
 getAllPlayers :: HasGame m => m [PlayerId]
 getActivePlayer :: HasGame m => m PlayerId
 getCardUses :: HasGame m => CardCode -> m [InvestigatorId]

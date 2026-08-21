@@ -50,7 +50,6 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Prelude
-import Data.Data (cast, gmapQ)
 import Arkham.Projection
 import Arkham.Search (searchSource)
 import Arkham.Skill.Types qualified as Field
@@ -66,6 +65,7 @@ import Arkham.Window
 import Arkham.Window qualified as Window
 import Control.Lens (over, transform)
 import Control.Monad.Trans.Class
+import Data.Data (cast, gmapQ)
 import Data.Data.Lens (biplate)
 
 checkWindow :: HasGame m => Window -> m Message
@@ -1755,6 +1755,11 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.IgnoreChaosToken who token ->
           andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
         _ -> noMatch
+    Matcher.ChaosTokenSealedOn timing whoMatcher tokenMatcher ->
+      guardTiming timing $ \case
+        Window.ChaosTokenSealedOn who token ->
+          andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
+        _ -> noMatch
     Matcher.ChaosTokenSealed timing whoMatcher tokenMatcher ->
       guardTiming timing $ \case
         Window.ChaosTokenSealed who token ->
@@ -1999,6 +2004,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
+    Matcher.EnemyDealsDamage timing enemyMatcher -> guardTiming timing $ \case
+      Window.DealtDamage source' _ _ _ -> sourceMatches source' (Matcher.SourceIsEnemy enemyMatcher)
+      _ -> noMatch
     Matcher.EnemyDealtDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
       guardTiming timing $ \case
         Window.DealtDamage source' damageEffect (EnemyTarget eid) _ ->

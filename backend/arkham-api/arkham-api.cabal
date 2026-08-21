@@ -1192,6 +1192,7 @@ library
       Arkham.Asset.Assets.Chainsaw4
       Arkham.Asset.Assets.Charisma3
       Arkham.Asset.Assets.CharlesRossEsq
+      Arkham.Asset.Assets.CharlieKaneKnowsAGuy
       Arkham.Asset.Assets.CharonsObol1
       Arkham.Asset.Assets.ChemistrySet
       Arkham.Asset.Assets.CherishedKeepsake
@@ -2282,6 +2283,7 @@ library
       Arkham.Campaigns.ChildrenOfBlood.CampaignSteps
       Arkham.Campaigns.ChildrenOfBlood.ChaosBag
       Arkham.Campaigns.ChildrenOfBlood.Helpers
+      Arkham.Campaigns.ChildrenOfBlood.Key
       Arkham.Campaigns.EdgeOfTheEarth.CampaignSteps
       Arkham.Campaigns.EdgeOfTheEarth.Helpers
       Arkham.Campaigns.EdgeOfTheEarth.Key
@@ -2478,6 +2480,7 @@ library
       Arkham.Enemy.CardDefs.ChildrenOfBlood.Mongrels
       Arkham.Enemy.CardDefs.ChildrenOfBlood.PreyedUpon
       Arkham.Enemy.CardDefs.ChildrenOfBlood.RiverOfBlood
+      Arkham.Enemy.CardDefs.ChildrenOfBlood.SanguineSecrets
       Arkham.Enemy.CardDefs.ChildrenOfBlood.Vermin
       Arkham.Enemy.CardDefs.Core2026
       Arkham.Enemy.CardDefs.CurseOfTheRougarou
@@ -2741,6 +2744,8 @@ library
       Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.JuliaSternPreyingUponArkham
       Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.JuliaSternStalkingTheStreets
       Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.WaterfrontCivilian
+      Arkham.Enemy.Cards.ChildrenOfBlood.SanguineSecrets.BloodCrazedZealot
+      Arkham.Enemy.Cards.ChildrenOfBlood.SanguineSecrets.SanguineCultist
       Arkham.Enemy.Cards.ChildrenOfBlood.Vermin.BloodCrazedVermin
       Arkham.Enemy.Cards.CurseOfTheRougarou.BogGator
       Arkham.Enemy.Cards.CurseOfTheRougarou.DarkYoungHost
@@ -6904,12 +6909,15 @@ library
       Arkham.Treachery.CardDefs.ChildrenOfBlood.AgentsOfZburamoarte
       Arkham.Treachery.CardDefs.ChildrenOfBlood.BloodBlight
       Arkham.Treachery.CardDefs.ChildrenOfBlood.BloodMoon
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.Bloodthirst
       Arkham.Treachery.CardDefs.ChildrenOfBlood.ChildrenOfBlood
       Arkham.Treachery.CardDefs.ChildrenOfBlood.Hunted
       Arkham.Treachery.CardDefs.ChildrenOfBlood.Infected
       Arkham.Treachery.CardDefs.ChildrenOfBlood.Misinformation
       Arkham.Treachery.CardDefs.ChildrenOfBlood.PreyedUpon
       Arkham.Treachery.CardDefs.ChildrenOfBlood.RiverOfBlood
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.SanguineSecrets
+      Arkham.Treachery.CardDefs.ChildrenOfBlood.Stalked
       Arkham.Treachery.CardDefs.Core2026
       Arkham.Treachery.CardDefs.CurseOfTheRougarou
       Arkham.Treachery.CardDefs.EdgeOfTheEarth
@@ -7215,6 +7223,7 @@ library
       Arkham.Treachery.Cards.ChildrenOfBlood.BloodBlight.BlightedBlood
       Arkham.Treachery.Cards.ChildrenOfBlood.BloodBlight.GrislyCompulsion
       Arkham.Treachery.Cards.ChildrenOfBlood.BloodMoon.BloodMoon
+      Arkham.Treachery.Cards.ChildrenOfBlood.Bloodthirst.Bloodthirst
       Arkham.Treachery.Cards.ChildrenOfBlood.ChildrenOfBlood.GraspingHands
       Arkham.Treachery.Cards.ChildrenOfBlood.Hunted.NowhereToHide
       Arkham.Treachery.Cards.ChildrenOfBlood.Hunted.OfTheNight
@@ -7222,6 +7231,9 @@ library
       Arkham.Treachery.Cards.ChildrenOfBlood.Misinformation.Misinformation
       Arkham.Treachery.Cards.ChildrenOfBlood.PreyedUpon.FeedingGrounds
       Arkham.Treachery.Cards.ChildrenOfBlood.RiverOfBlood.BurningDaylight
+      Arkham.Treachery.Cards.ChildrenOfBlood.SanguineSecrets.MorbidRituals
+      Arkham.Treachery.Cards.ChildrenOfBlood.Stalked.InTheShadows
+      Arkham.Treachery.Cards.ChildrenOfBlood.Stalked.VoicesInTheNight
       Arkham.Treachery.Cards.Chronophobia
       Arkham.Treachery.Cards.Confiscation
       Arkham.Treachery.Cards.CoverUp

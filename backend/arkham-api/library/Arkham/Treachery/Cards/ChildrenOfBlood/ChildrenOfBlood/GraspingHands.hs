@@ -1,16 +1,15 @@
 module Arkham.Treachery.Cards.ChildrenOfBlood.ChildrenOfBlood.GraspingHands (graspingHands) where
 
 import Arkham.Treachery.CardDefs.ChildrenOfBlood.ChildrenOfBlood qualified as Cards
+import Arkham.Treachery.Cards.NightOfTheZealot.Ghouls.GraspingHands qualified as Base
 import Arkham.Treachery.Import.Lifted
 
-newtype GraspingHands = GraspingHands TreacheryAttrs
-  deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+newtype GraspingHands = GraspingHands Base.GraspingHands
+  deriving anyclass IsTreachery
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor, HasAbilities)
 
 graspingHands :: TreacheryCard GraspingHands
-graspingHands = treachery GraspingHands Cards.graspingHands
+graspingHands = treachery (GraspingHands . Base.GraspingHands) Cards.graspingHands
 
 instance RunMessage GraspingHands where
-  runMessage msg t@(GraspingHands attrs) = runQueueT $ case msg of
-    Revelation _iid (isSource attrs -> True) -> pure t
-    _ -> GraspingHands <$> liftRunMessage msg attrs
+  runMessage msg (GraspingHands inner) = GraspingHands <$> runMessage msg inner

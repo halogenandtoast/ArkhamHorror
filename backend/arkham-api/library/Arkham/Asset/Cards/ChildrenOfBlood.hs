@@ -20,3 +20,12 @@ fangOfZburamoarte =
     , cdSlots = [#hand]
     , cdUses = uses Charge 4
     }
+
+charlieKaneKnowsAGuy :: CardDef
+charlieKaneKnowsAGuy =
+  (storyAsset "13105" ("Charlie Kane" <:> "Knows a Guy") 3 FriendsInLowPlaces)
+    { cdSkills = [#agility, #agility]
+    , cdCardTraits = setFromList [Ally, Patron]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    }

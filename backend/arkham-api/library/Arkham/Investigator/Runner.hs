@@ -459,6 +459,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     when (a.id `elem` miid) do
       Lifted.checkWhen (Window.ChaosTokenSealed a.id token)
       Lifted.checkAfter (Window.ChaosTokenSealed a.id token)
+    Lifted.checkWhen (Window.ChaosTokenSealedOn a.id token)
+    Lifted.checkAfter (Window.ChaosTokenSealedOn a.id token)
     pure $ a & sealedChaosTokensL %~ (token :)
   SealedChaosToken token miid _ -> do
     when (a.id `elem` miid) do

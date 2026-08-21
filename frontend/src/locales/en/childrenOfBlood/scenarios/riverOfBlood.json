@@ -21,6 +21,47 @@
   },
   "label": {
     "r1": "\"There might still be hope for her.\" (→ _R1_)",
-    "r2": "\"We need to put an end to this monster.\" (→ _R2_)"
+    "r2": "\"We need to put an end to this monster.\" (→ _R2_)",
+    "spendExperienceToRemoveBlood": "Spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag",
+    "doNotSpendExperience": "Do not spend experience"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator was defeated)_: It doesn’t take long before it becomes clear that there are more creatures stalking the night than simply the monster that was Julia Stern. Their unending hunt proved too much for you. The last thing you remember is the creatures looming over you before you mercifully lost consciousness. You awaken to the burning yellow light of dawn. Collecting yourself, you meet up with Detective Reynolds once more.</p><ul><li>In your campaign log, record that *the investigators failed to stop Julia Stern*.</li><li>Add 1 {'{'}blood{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Each investigator becomes the bearer of a set-aside The Blood Blight weakness.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display. Each investigator also earns 3 bonus experience as they learn from their mistakes.<ul><li>_Experience_: {xp}</li></ul></li><li>Skip to _Resolution 4_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: After a grueling conflict, you finally subdue your quarry. Rather than take her life, you knock Julia unconscious and prepare to regroup with Detective Reynolds, holding out hope that there may be some way to save her. When you return to collect her, however, you discover that she has disappeared into the shadows once more. You hope you made the right choice. For now, however, the only path forward for you is to reconnect with Detective Reynolds and get to the bottom of what caused all of this bloodshed in the first place.</p><ul><li>In your campaign log, record that *the investigators spared Julia Stern*.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators may decide to spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag.</li><li>Skip to _Resolution 4_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: At long last, your hunt comes to an end. Ending Julia’s life, and the lives of her victims, is a regrettable course of action, but it had to be done to make the Waterfront District safe again. After three bloody nights on the banks of the Miskatonic River, you’re hoping that you can reconnect with Detective Reynolds and get to the bottom of what caused all of this in the first place.</p><ul><li>In your campaign log, record that *the investigators killed Julia Stern*.</li><li>Remove 1 {'{'}blood{'}'} token from the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Skip to _Resolution 4_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: The hunt through the night is long and arduous, but Julia proves too crafty and too swift for your efforts. By the morning of the third day of your search, you worry that you’ll have to wait until she strikes again. For now, however, the only path forward for you is to reconnect with Detective Reynolds and get to the bottom of what caused all of this bloodshed in the first place.</p><ul><li>In your campaign log, record that *the investigators failed to stop Julia Stern*.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.</li><li>Each investigator earns 2 bonus experience as they are better prepared for what is to come.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to _Resolution 4_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: Back at Detective Reynolds’ office, you explain what you’ve learned. He tells you that his leads also pointed towards the New Horizons meat packing facility, and a suspicious group that had been seen around the building, dressed in robes instead of the more standard aprons and coveralls of the workers. “The same place where Julia worked,” Reynolds says. “Seems like that place is worth a visit.”</p><ul><li>Detective Reynolds joins the investigation! Choose an investigator to become the bearer of the set-aside Detective Reynolds story asset.</li><li>If “the investigators found a sacrificial dagger,” choose an investigator to become the bearer of the set-aside Fang of Zburamoarte story asset.</li><li>Each investigator who ended the scenario with 3 {'{'}blood{'}'} tokens sealed on their investigator becomes the bearer of a set-aside The Blood Blight weakness if they are not already a bearer of it.</li><li>Release each sealed {'{'}blood{'}'} token and return them to the chaos bag.</li><li>Proceed to _Scenario II: New Horizons_.</li></ul>"
+    }
+  },
+  "xp": {
+    "noResolution": "as they learn from their mistakes",
+    "resolution3": "as they are better prepared for what is to come"
+  },
+  "spendExperience": "Spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current agenda number.",
+      "tablet": "-2. If you fail and are at a _Lair_ location, take 1 horror.",
+      "elderThing": "-3. If you fail and there are 1 or more {'{'}blood{'}'} (*blood*) tokens sealed on your investigator, after this test resolves, release 1 of those tokens and take 1 damage."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the current agenda number.",
+      "tablet": "-3. If you are at a _Lair_ location, take 1 horror.",
+      "elderThing": "-4. If there are 1 or more {'{'}blood{'}'} (*blood*) tokens sealed on your investigator, after this test resolves, release 1 of those tokens and take 1 direct damage."
+    }
   }
 }

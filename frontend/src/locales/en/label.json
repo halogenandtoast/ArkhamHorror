@@ -317,6 +317,7 @@
   "takeControlOf": "Take control of {name}",
   "takeDamage": "Take {count} damage",
   "takeEvadeAction": "Take evade action",
+  "addBloodToken": "Add 1 {'{'}blood{'}'} to the chaos bag",
   "takeFightAction": "Take fight action",
   "takeInvestigateAction": "Take investigate action",
   "takeNoMoreActions": "Take no more actions",

@@ -2,14 +2,13 @@ module Arkham.Enemy.Cards.ChildrenOfBlood.ChildrenOfBlood.ChildOfBlood (childOfB
 
 import Arkham.Enemy.CardDefs.ChildrenOfBlood.ChildrenOfBlood qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Matcher
 
 newtype ChildOfBlood = ChildOfBlood EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving anyclass (IsEnemy, HasModifiersFor, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 childOfBlood :: EnemyCard ChildOfBlood
-childOfBlood = enemy ChildOfBlood Cards.childOfBlood
-
-instance RunMessage ChildOfBlood where
-  runMessage msg (ChildOfBlood attrs) = runQueueT $ case msg of
-    _ -> ChildOfBlood <$> liftRunMessage msg attrs
+childOfBlood =
+  enemy ChildOfBlood Cards.childOfBlood
+    & setPrey (InvestigatorWithMostSealedChaosToken #blood)

@@ -369,6 +369,11 @@ data WindowType
   | ResolvesTreachery InvestigatorId TreacheryId
   | ResolvesChaosToken InvestigatorId ChaosToken
   | ChaosTokenSealed InvestigatorId ChaosToken
+  | {- | Raised on the investigator the token is sealed ON, whoever sealed it.
+    'ChaosTokenSealed' instead names the investigator who did the sealing, and
+    fires for seals onto their assets too.
+    -}
+    ChaosTokenSealedOn InvestigatorId ChaosToken
   | ChaosTokenReleased InvestigatorId ChaosToken
   | IgnoreChaosToken InvestigatorId ChaosToken
   | CancelChaosToken InvestigatorId ChaosToken

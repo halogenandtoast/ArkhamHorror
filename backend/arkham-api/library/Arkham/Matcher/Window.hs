@@ -166,6 +166,10 @@ data WindowMatcher
   | AssetDealtDamageOrHorror Timing SourceMatcher AssetMatcher
   | LastClueRemovedFromAsset Timing AssetMatcher
   | EnemyDealtDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
+  | {- | The enemy DEALING damage, to any target. Contrast 'EnemyDealtDamage',
+    which is damage dealt TO the enemy.
+    -}
+    EnemyDealsDamage Timing EnemyMatcher
   | EnemyDealtExcessDamage Timing DamageEffectMatcher EnemyMatcher SourceMatcher
   | EnemyTakeDamage Timing DamageEffectMatcher EnemyMatcher ValueMatcher SourceMatcher
   | InvestigatorTakeDamage Timing Who SourceMatcher
@@ -192,6 +196,10 @@ data WindowMatcher
   | TokensWouldBeRemovedFromChaosBag Timing ChaosTokenMatcher
   | ResolvesChaosToken Timing Who ChaosTokenMatcher
   | ChaosTokenSealed Timing Who ChaosTokenMatcher
+  | {- | A token being sealed ON an investigator, whoever sealed it. Contrast
+    'ChaosTokenSealed', which matches on the investigator doing the sealing.
+    -}
+    ChaosTokenSealedOn Timing Who ChaosTokenMatcher
   | ChaosTokenReleased Timing Who ChaosTokenMatcher
   | CancelChaosToken Timing Who ChaosTokenMatcher
   | IgnoreChaosToken Timing Who ChaosTokenMatcher

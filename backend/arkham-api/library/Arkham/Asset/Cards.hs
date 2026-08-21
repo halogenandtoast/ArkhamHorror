@@ -199,6 +199,7 @@ allPlayerAssetCards =
       , chainsaw4
       , charisma3
       , charlesRossEsq
+      , charlieKaneKnowsAGuy
       , charonsObol1
       , chemistrySet
       , cherishedKeepsake
@@ -265,6 +266,7 @@ allPlayerAssetCards =
       , delilahORourke3
       , deloresGadling
       , dendromorphosis
+      , detectiveReynoldsInOverHisHead
       , detectivesColt1911s
       , detectiveSherman3
       , deVermisMysteriis2
@@ -385,6 +387,7 @@ allPlayerAssetCards =
       , falseCovenant2
       , familiarSpirit
       , familyInheritance
+      , fangOfZburamoarte
       , farsight4
       , favorOfTheMoon1
       , favorOfTheSun1

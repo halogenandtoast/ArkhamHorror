@@ -1,4 +1,4 @@
-module Arkham.Treachery.Cards.NightOfTheZealot.Ghouls.GraspingHands (graspingHands) where
+module Arkham.Treachery.Cards.NightOfTheZealot.Ghouls.GraspingHands (graspingHands, GraspingHands (..)) where
 
 import Arkham.Treachery.CardDefs.NightOfTheZealot.Ghouls qualified as Cards
 import Arkham.Treachery.Import.Lifted

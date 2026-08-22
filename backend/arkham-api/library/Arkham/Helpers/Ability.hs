@@ -204,16 +204,14 @@ canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \ca
       canMoveToConnected <- case ab.source.asset of
         Just aid -> aid <=~> Matcher.AssetWithCustomization InscriptionOfTheHunt
         _ -> pure False
+      let asIfEnemyLocations =
+            if canMoveToConnected
+              then Matcher.orConnected ForMovement (Matcher.locationWithInvestigator iid)
+              else Matcher.locationWithInvestigator iid
       locations <-
-        selectAny
-          $ Matcher.LocationWithModifier CanBeAttackedAsIfEnemy
-          <> if canMoveToConnected
-            then Matcher.orConnected ForMovement (Matcher.locationWithInvestigator iid)
-            else Matcher.locationWithInvestigator iid
+        selectAny $ Matcher.LocationWithModifier CanBeAttackedAsIfEnemy <> asIfEnemyLocations
       concealed <-
-        selectAny
-          $ Matcher.locationWithInvestigator iid
-          <> Matcher.LocationWithExposableConcealedCard ab.source
+        selectAny $ asIfEnemyLocations <> Matcher.LocationWithExposableConcealedCard ab.source
       assets <-
         selectAny
           $ Matcher.AssetWithModifier CanBeAttackedAsIfEnemy

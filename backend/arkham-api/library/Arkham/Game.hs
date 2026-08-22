@@ -4325,16 +4325,15 @@ enemyMatcherFilter es matcher' = do
         if excluded || sourceIsExcluded
           then pure False
           else
-            anyM
-              ( andM
-                  . sequence
-                    [ pure . (`abilityIs` Action.Evade)
-                    , getCanPerformAbility iid [window]
-                        . (`decreaseAbilityActionCost` 1)
-                        . overrideFunc
-                    ]
-              )
-              (getAbilities enemy)
+            Helpers.withModifiersOf iid GameSource [IgnoreActionCost]
+              $ anyM
+                ( andM
+                    . sequence
+                      [ pure . (`abilityIs` Action.Evade)
+                      , getCanPerformAbility iid [window] . overrideFunc
+                      ]
+                )
+                (getAbilities enemy)
     EnemyCanBeDefeatedBy source -> flip filterM es \enemy -> do
       modifiers <- getModifiers enemy
       let

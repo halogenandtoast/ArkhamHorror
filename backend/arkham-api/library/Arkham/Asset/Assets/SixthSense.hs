@@ -48,40 +48,40 @@ sixthSenseEffect = cardEffect SixthSenseEffect Cards.sixthSense
 instance RunMessage SixthSenseEffect where
   runMessage msg e@(SixthSenseEffect attrs) = runQueueT $ case msg of
     RevealChaosToken (SkillTestSource sid) iid token | maybe False (isTarget sid) attrs.metaTarget -> do
-      priority $ push $ If (Window.RevealChaosTokenEffect iid token attrs.id) [DoStep 1 msg]
+      faces <- getModifiedChaosTokenFace token
+      when (any (`elem` [Skull, Cultist, Tablet, ElderThing]) faces) $ do
+        priority $ push $ If (Window.RevealChaosTokenEffect iid token attrs.id) [DoStep 1 msg]
+        disable attrs
       pure e
-    DoStep 1 (RevealChaosToken (SkillTestSource sid) iid token) | maybe False (isTarget sid) attrs.metaTarget -> do
+    DoStep 1 (RevealChaosToken (SkillTestSource sid) iid _) | maybe False (isTarget sid) attrs.metaTarget -> do
       case attrs.target of
         InvestigationTarget iid' lid | iid == iid' -> do
-          faces <- getModifiedChaosTokenFace token
-          when (any (`elem` [Skull, Cultist, Tablet, ElderThing]) faces) $ do
-            currentShroud <- fieldJust LocationShroud lid
-            locations <-
-              selectWithField
-                LocationShroud
-                (connectedFrom (locationWithInvestigator iid) <> RevealedLocation)
-                <&> mapMaybe (\(loc, mshroud) -> (loc,) <$> mshroud)
-            locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> do
-              mods <- getModifiers lid'
-              let costs = fold [m | AdditionalCostToInvestigate m <- mods]
-              canAfford <- getCanAffordCost iid attrs [#investigate] [] costs
-              pure $ guard canAfford $> (location, costs)
-            batchId <- getRandom
-            chooseOneM iid do
-              labeledI "doNotChooseOtherLocation" nothing
-              for_ locationsWithAdditionalCosts \((location, shroud), cost) -> do
-                targeting location do
-                  batching batchId do
-                    push $ PayAdditionalCost iid batchId cost
-                    push $ SetSkillTestTarget (toTarget location)
-                    skillTestModifier sid attrs.source iid (AsIfAt location)
-                    chooseOneM iid do
-                      labeledI "useNewLocationShroud" do
-                        skillTestModifier sid attrs.source sid (SetDifficulty shroud)
+          currentShroud <- fieldJust LocationShroud lid
+          locations <-
+            selectWithField
+              LocationShroud
+              (connectedFrom (locationWithInvestigator iid) <> RevealedLocation)
+              <&> mapMaybe (\(loc, mshroud) -> (loc,) <$> mshroud)
+          locationsWithAdditionalCosts <- forMaybeM locations \location@(lid', _) -> do
+            mods <- getModifiers lid'
+            let costs = fold [m | AdditionalCostToInvestigate m <- mods]
+            canAfford <- getCanAffordCost iid attrs [#investigate] [] costs
+            pure $ guard canAfford $> (location, costs)
+          batchId <- getRandom
+          chooseOneM iid do
+            labeledI "doNotChooseOtherLocation" nothing
+            for_ locationsWithAdditionalCosts \((location, shroud), cost) -> do
+              targeting location do
+                batching batchId do
+                  push $ PayAdditionalCost iid batchId cost
+                  push $ SetSkillTestTarget (toTarget location)
+                  skillTestModifier sid attrs.source iid (AsIfAt location)
+                  chooseOneM iid do
+                    labeledI "useNewLocationShroud" do
+                      skillTestModifier sid attrs.source sid (SetDifficulty shroud)
 
-                      labeledI "useOriginalLocationsShroud" do
-                        skillTestModifier sid attrs.source sid (SetDifficulty currentShroud)
-            disable attrs
+                    labeledI "useOriginalLocationsShroud" do
+                      skillTestModifier sid attrs.source sid (SetDifficulty currentShroud)
         _ -> error "Invalid target"
       pure e
     SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> disableReturn e

@@ -71,7 +71,12 @@ instance RunMessage DevilInTheMachine where
         (<>)
           <$> getSetAsideCardsMatching (cardIs Treacheries.stillBehindYou)
           <*> select (VictoryDisplayCardMatch $ basic $ cardIs Treacheries.stillBehindYou)
-      starSpawns <- getSetAsideCardsMatching $ CardWithTrait StarSpawn
+      -- The Inescapable is a Star Spawn but is never one of the set-aside random Star
+      -- Spawn enemies (see Bowels of the City).
+      starSpawns <-
+        getSetAsideCardsMatching
+          $ CardWithTrait StarSpawn
+          <> not_ (cardIs Enemies.theInescapable)
       randomStarSpawn <- maybe (pure []) (fmap pure . sample) (nonEmpty starSpawns)
       shuffleCardsIntoDeck Deck.EncounterDeck (stillBehindYou <> randomStarSpawn)
       shuffleEncounterDiscardBackIn

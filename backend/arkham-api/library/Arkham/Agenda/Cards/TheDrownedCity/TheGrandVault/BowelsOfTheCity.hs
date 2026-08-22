@@ -39,7 +39,12 @@ instance RunMessage BowelsOfTheCity where
         $ targets investigators \iid -> beginSkillTest sid iid attrs attrs #agility (Fixed 4)
 
       stillBehindYou <- getSetAsideCardsMatching $ cardIs Treacheries.stillBehindYou
-      starSpawns <- getSetAsideCardsMatching $ CardWithTrait StarSpawn
+      -- The Inescapable is a Star Spawn and its creation above is only queued, so it is
+      -- still set aside here and must not be shuffled in as the random Star Spawn.
+      starSpawns <-
+        getSetAsideCardsMatching
+          $ CardWithTrait StarSpawn
+          <> not_ (cardIs Enemies.theInescapable)
       randomStarSpawn <- maybe (pure []) (fmap pure . sample) (nonEmpty starSpawns)
       shuffleCardsIntoDeck Deck.EncounterDeck (stillBehindYou <> randomStarSpawn)
       shuffleEncounterDiscardBackIn

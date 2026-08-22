@@ -45,5 +45,19 @@
       "setAside": "Set the following cards aside, out of play: the Night Watchman enemy, each copy of the Blighted Worker enemy, each copy of the Echoing in Darkness treachery, the _Infected_ and _Flying Terrors_ encounter sets, and the Forged Permit and Sanguine Song story assets.",
       "removeJavierRivera": "Remove the Javier Rivera enemy and each copy of Factory Worker from the game."
     }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is the current act number.",
+      "cultist": "-1. If there is a {'{'}blood{'}'} token sealed on your investigator, reveal an additional token. After this skill test resolves, release 1 {'{'}blood{'}'} token sealed on you.",
+      "tablet": "-3 (-5 instead if there is a {'{'}blood{'}'} token sealed on your investigator. After this test resolves, release 1 {'{'}blood{'}'} token sealed on you).",
+      "elderThing": "-4. If you fail and there is a {'{'}blood{'}'} token sealed on your investigator, take 1 damage and release 1 {'{'}blood{'}'} token sealed on you."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 1 more than the current act number.",
+      "cultist": "-2. If there is a {'{'}blood{'}'} token sealed on your investigator, reveal an additional token.",
+      "tablet": "-3. If there is a {'{'}blood{'}'} token sealed on your investigator, you automatically fail instead.",
+      "elderThing": "-4. After this test resolves, if there is a {'{'}blood{'}'} token sealed on your investigator, take 1 damage and release 1 {'{'}blood{'}'} token sealed on you."
+    }
   }
 }

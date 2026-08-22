@@ -5,6 +5,8 @@ import Arkham.Agenda.CardDefs.ChildrenOfBlood.NewHorizons qualified as Agendas
 import Arkham.Asset.Cards.ChildrenOfBlood qualified as Assets
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.ChildrenOfBlood.NewHorizons qualified as Enemies
+import Arkham.Classes.HasGame
+import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.FlavorText
 import Arkham.Id
 import Arkham.Location.CardDefs.ChildrenOfBlood.NewHorizons qualified as Locations
@@ -36,10 +38,17 @@ newHorizons difficulty =
 
 instance HasChaosTokenValue NewHorizons where
   getChaosTokenValue iid tokenFace (NewHorizons attrs) = case tokenFace of
-    Skull -> pure $ toChaosTokenValue attrs Skull 3 5
-    Cultist -> pure $ ChaosTokenValue Cultist NoModifier
-    Tablet -> pure $ ChaosTokenValue Tablet NoModifier
-    ElderThing -> pure $ ChaosTokenValue ElderThing NoModifier
+    Skull -> do
+      n <- getCurrentActStep
+      pure $ toChaosTokenValue attrs Skull n (n + 1)
+    Cultist -> pure $ toChaosTokenValue attrs Cultist 1 2
+    Tablet -> do
+      sealedBlood <- hasSealedBlood iid
+      pure
+        $ if sealedBlood && isHardExpert attrs
+          then ChaosTokenValue Tablet AutoFailModifier
+          else toChaosTokenValue attrs Tablet (if sealedBlood then 5 else 3) 3
+    ElderThing -> pure $ toChaosTokenValue attrs ElderThing 4 4
     otherFace -> getChaosTokenValue iid otherFace attrs
 
 instance RunMessage NewHorizons where
@@ -60,6 +69,22 @@ instance RunMessage NewHorizons where
           labeled' "searchDuringTheDay" $ setScenarioMeta $ object ["searchAfterDark" .= False]
           labeled' "searchAfterDark" $ setScenarioMeta $ object ["searchAfterDark" .= True]
       pure s
+    ResolveChaosToken _ Cultist iid -> do
+      whenM (hasSealedBlood iid) do
+        push $ DrawAnotherChaosToken iid
+        when (isEasyStandard attrs) $ afterSkillTestQuiet $ doStep 1 msg
+      pure s
+    DoStep 1 (ResolveChaosToken _ Cultist iid) -> releaseBlood iid >> pure s
+    ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
+      whenM (hasSealedBlood iid) $ afterSkillTestQuiet $ doStep 1 msg
+      pure s
+    DoStep 1 (ResolveChaosToken _ Tablet iid) -> releaseBlood iid >> pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      afterSkillTestQuiet $ doStep 1 msg
+      pure s
+    DoStep 1 (ResolveChaosToken _ ElderThing iid) -> bleed iid >> pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _
+      | token.face == ElderThing && isEasyStandard attrs -> bleed iid >> pure s
     Setup -> do
       afterDark <- getScenarioMetaKeyDefault "searchAfterDark" False
       doStep (if afterDark then 2 else 1) Setup
@@ -147,6 +172,21 @@ instance RunMessage NewHorizons where
       setAsideCommon
       removeEvery [Enemies.javierRivera, Enemies.factoryWorker]
     _ -> NewHorizons <$> liftRunMessage msg attrs
+
+hasSealedBlood :: HasGame m => InvestigatorId -> m Bool
+hasSealedBlood iid = selectAny $ SealedOnInvestigator (InvestigatorWithId iid) #blood
+
+releaseBlood :: ReverseQueue m => InvestigatorId -> m ()
+releaseBlood iid = do
+  mtkn <- selectOne $ SealedOnInvestigator (InvestigatorWithId iid) #blood
+  for_ mtkn unsealChaosToken
+
+bleed :: ReverseQueue m => InvestigatorId -> m ()
+bleed iid = do
+  mtkn <- selectOne $ SealedOnInvestigator (InvestigatorWithId iid) #blood
+  for_ mtkn \tkn -> do
+    unsealChaosToken tkn
+    assignDamage iid ElderThing 1
 
 startAtFactoryFloor :: ReverseQueue m => ScenarioAttrs -> [LocationId] -> ScenarioBuilderT m ()
 startAtFactoryFloor attrs factoryFloors =

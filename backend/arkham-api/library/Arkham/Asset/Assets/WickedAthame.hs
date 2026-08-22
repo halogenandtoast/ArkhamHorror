@@ -32,7 +32,7 @@ instance RunMessage WickedAthame where
       for_ attrs.controller \iid -> do
         selectOneToHandle iid (attrs.ability 1)
           $ assetControlledBy iid
-          <> oneOf [AssetWithUses Charge, AssetWithUses Offering]
+          <> oneOf [AssetWithUseType Charge, AssetWithUseType Offering]
           <> AssetNotAtUsesX
         pure ()
       pure a

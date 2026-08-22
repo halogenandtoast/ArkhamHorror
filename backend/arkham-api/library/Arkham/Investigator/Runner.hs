@@ -505,6 +505,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       %~ (\counts -> insertMap key (max 0 (findWithDefault 0 key counts + n)) counts)
   EndCheckWindow -> do
     depth <- getWindowDepth
+    -- only re-arm records whose window is still open, otherwise a record from a
+    -- closed window at the same depth is marked used again and blocks its ability
+    currentWindows <- concat <$> getWindowStack
     let
       filterAbility UsedAbility {..} = do
         getAbilityLimit (toId a) usedAbility <&> \case
@@ -518,7 +521,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         ( \u ->
             if usedDepth u > depth
               then u {usedThisWindow = False}
-              else if usedDepth u == depth && depth > 0 then u {usedThisWindow = True} else u
+              else
+                if usedDepth u == depth && depth > 0 && any (`elem` currentWindows) (usedAbilityWindows u)
+                  then u {usedThisWindow = True}
+                  else u
         )
         <$> filterM filterAbility investigatorUsedAbilities
     pure $ a & usedAbilitiesL .~ usedAbilities

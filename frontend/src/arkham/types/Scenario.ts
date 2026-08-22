@@ -448,9 +448,9 @@ export function scenarioIdToI18n(scenarioId: string): string {
     case "12105": return "brethrenOfAsh.spreadingFlames"
     case "12133": return "brethrenOfAsh.smokeAndMirrors"
     case "12168": return "brethrenOfAsh.queenOfAsh"
-    case "13001": return "brethrenOfAsh.riverOfBlood"
-    case "13031": return "brethrenOfAsh.newHorizons"
-    case "13068": return "brethrenOfAsh.bloodMoney"
+    case "13001": return "childrenOfBlood.riverOfBlood"
+    case "13031": return "childrenOfBlood.newHorizons"
+    case "13068": return "childrenOfBlood.bloodMoney"
     default: throw new Error(`Unknown scenario id: ${scenarioId}`)
   }
 }

@@ -1,0 +1,18 @@
+module Arkham.Agenda.Cards.ChildrenOfBlood.NewHorizons.BusyDay (busyDay) where
+
+import Arkham.Agenda.CardDefs.ChildrenOfBlood.NewHorizons qualified as Cards
+import Arkham.Agenda.Import.Lifted
+
+newtype BusyDay = BusyDay AgendaAttrs
+  deriving anyclass (IsAgenda, HasAbilities, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+busyDay :: AgendaCard BusyDay
+busyDay = agenda (1, A) BusyDay Cards.busyDay (Static 5)
+
+instance RunMessage BusyDay where
+  runMessage msg a@(BusyDay attrs) = runQueueT $ case msg of
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      advanceAgendaDeck attrs
+      pure a
+    _ -> BusyDay <$> liftRunMessage msg attrs

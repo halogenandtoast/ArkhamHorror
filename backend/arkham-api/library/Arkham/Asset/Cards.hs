@@ -423,6 +423,7 @@ allPlayerAssetCards =
       , forbiddenTomeSecretsRevealed3
       , forcedLearning
       , forensicKit
+      , forgedPermit
       , fortyFiveAutomatic
       , fortyFiveAutomatic2
       , fortyFiveThompson
@@ -829,6 +830,7 @@ allPlayerAssetCards =
       , safeguard
       , safeguard2
       , samuelBlakeObsessiveProducer
+      , sanguineSong
       , sarahVanShaw
       , sawedOffShotgun5
       , scavenging

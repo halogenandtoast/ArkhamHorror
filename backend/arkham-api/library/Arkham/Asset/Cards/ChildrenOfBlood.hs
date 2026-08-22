@@ -1,6 +1,7 @@
 module Arkham.Asset.Cards.ChildrenOfBlood where
 
 import Arkham.Asset.Cards.Import
+import Arkham.Trait qualified as Trait
 
 detectiveReynoldsInOverHisHead :: CardDef
 detectiveReynoldsInOverHisHead =
@@ -19,6 +20,22 @@ fangOfZburamoarte =
     , cdUnique = True
     , cdSlots = [#hand]
     , cdUses = uses Charge 4
+    }
+
+sanguineSong :: CardDef
+sanguineSong =
+  (storyAsset "13066" "Sanguine Song" 3 NewHorizons)
+    { cdSkills = [#intellect, #intellect]
+    , cdCardTraits = singleton Spell
+    , cdSlots = [#arcane]
+    , cdUses = uses Charge 4
+    }
+
+forgedPermit :: CardDef
+forgedPermit =
+  (storyAsset "13067" "Forged Permit" 1 NewHorizons)
+    { cdSkills = [#wild, #wild]
+    , cdCardTraits = setFromList [Item, Trait.Evidence, Illicit]
     }
 
 charlieKaneKnowsAGuy :: CardDef

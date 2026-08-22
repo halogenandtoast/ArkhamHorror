@@ -22,7 +22,7 @@
   "label": {
     "r1": "\"There might still be hope for her.\" (→ _R1_)",
     "r2": "\"We need to put an end to this monster.\" (→ _R2_)",
-    "spendExperienceToRemoveBlood": "Spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag",
+    "spendExperienceToRemoveBlood": "<p>Spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag<p>",
     "doNotSpendExperience": "Do not spend experience"
   },
   "resolutions": {

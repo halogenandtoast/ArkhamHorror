@@ -196,6 +196,56 @@ spec = describe "Enemy engagement" do
       enemy.location `shouldReturn` Just (toId location1)
       self.engagedEnemies `shouldReturn` []
 
+  -- Regression for issue #5500 (Luke Robinson's Gate Box). The ability disengages
+  -- every enemy engaged with him and then moves him to the Dream-Gate, leaving the
+  -- enemy ready and unengaged at a location that still held another investigator.
+  -- Nothing rechecked engagement until `After (EndTurn _)`.
+  it "engages an investigator left behind when the mover disengages and leaves"
+    . gameTest
+    $ \self -> do
+      other <- addInvestigator Investigators.rolandBanks
+      location1 <- testLocation
+      location2 <- testLocation
+
+      self `moveTo` location1
+      other `moveTo` location2
+
+      enemy <- testEnemy
+      enemy `spawnAt` location1
+      run $ EnemyEngageInvestigator (toId enemy) (toId self)
+      other `moveTo` location1
+
+      run $ DisengageEnemy (toId self) (toId enemy)
+      self `moveTo` location2
+
+      enemy.location `shouldReturn` Just (toId location1)
+      self.engagedEnemies `shouldReturn` []
+      other.engagedEnemies `shouldReturn` [toId enemy]
+
+  -- The same guard as the placement case: an evaded (exhausted) enemy left behind
+  -- stays unengaged.
+  it "leaves an exhausted enemy unengaged when the mover disengages and leaves"
+    . gameTest
+    $ \self -> do
+      other <- addInvestigator Investigators.rolandBanks
+      location1 <- testLocation
+      location2 <- testLocation
+
+      self `moveTo` location1
+      other `moveTo` location2
+
+      enemy <- testEnemy
+      enemy `spawnAt` location1
+      run $ EnemyEngageInvestigator (toId enemy) (toId self)
+      other `moveTo` location1
+
+      exhaust enemy
+      run $ DisengageEnemy (toId self) (toId enemy)
+      self `moveTo` location2
+
+      enemy.location `shouldReturn` Just (toId location1)
+      other.engagedEnemies `shouldReturn` []
+
   -- Regression for issue #5313 (Virescent Rot on a Nightriders host). Engaged
   -- swarm cards are reported alongside their host, and their
   -- `EnemyEnteredFollowing` redirects to the host — so a host that had just

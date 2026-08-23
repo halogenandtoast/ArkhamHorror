@@ -560,10 +560,17 @@ handleDoResolveMovement a@InvestigatorAttrs {..} iid = do
           Helpers.checkWindows
             $ mkAfter (Window.Entering iid lid)
             : [mkAfter (Window.EnteringLocationWithEnemy iid lid) | enteredWithEnemy]
+        -- An enemy left standing where we were -- disengaged just above because it
+        -- could not follow, or disengaged by the effect that moved us (Gate Box,
+        -- Cat Burglar, On Wings of Darkness) -- is unengaged at a location that
+        -- still holds investigators, and nothing rechecked until `After (EndTurn _)`
+        -- (#5500). `iid` has not been re-placed yet, so this is the origin.
+        stayingBehind <- select $ colocatedWith iid <> NotInvestigator (InvestigatorWithId iid)
         pushAll $ moveAfter movement
           <> [afterMoveButBeforeEnemyEngagement | movement.means /= Place]
           <> [CheckEnemyEngagement iid | not movement.skipEngagement]
           <> [afterEntering]
+          <> map CheckEnemyEngagement stayingBehind
         pure $ a & movementL .~ Nothing
 
 handleDoWhenWillEnterLocation a@InvestigatorAttrs {..} iid lid = do

@@ -71,6 +71,7 @@ instance RunMessage TruthAndLies where
           gameModifier attrs trueShape (GainVictory victory)
           gameModifiers attrs trueShape (map AddKeyword $ toList keywords)
           enemyMoveTo attrs trueShape theGreatHall
+          selectEach (LocationWithTitle "Forsaken Tower") $ placeCluesUpToClueValue attrs
         else push R1
       advanceActDeck attrs
       pure a

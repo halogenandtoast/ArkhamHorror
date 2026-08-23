@@ -31,6 +31,13 @@ interface UnimplementedCardError {
 
 function validationErrorsFromResponse(err: unknown): string[] {
   const response = err as { response?: { data?: unknown } }
+  // No response object at all means the request never completed -- it timed out,
+  // the connection dropped, or something blocked it. That is not the server
+  // telling us anything about the deck, so it must not be reported as one.
+  if (!response.response) {
+    requestFailed.value = true
+    return []
+  }
   const payload = response.response?.data
   if (!Array.isArray(payload)) {
     if (payload && typeof payload === 'object' && 'message' in payload) {
@@ -57,6 +64,7 @@ interface ArkhamDBCard {
 }
 
 const errors = ref<string[]>([])
+const requestFailed = ref(false)
 const valid = ref(false)
 const saveDeck = computed(() => props.alwaysSave ? true : saveDeckToggle.value)
 const saveDeckToggle = ref(true)
@@ -128,6 +136,7 @@ watch(deckList, loadDeck)
 async function loadDeck() {
   valid.value = false
   errors.value = []
+  requestFailed.value = false
   investigator.value = null
   investigatorError.value = null
 
@@ -161,6 +170,7 @@ const cardByCode = computed(() => {
 async function runValidations() {
   valid.value = false
   errors.value = []
+  requestFailed.value = false
   try {
     if (!deckList.value) return
     await validateDeck(deckList.value)
@@ -172,6 +182,7 @@ async function runValidations() {
 
 async function createDeck() {
   errors.value = []
+  requestFailed.value = false
   if (!valid.value || !deckList.value) return
 
   if (!saveDeck.value) {
@@ -223,6 +234,9 @@ async function createDeck() {
     </div>
     <div class="errors" v-if="investigatorError">
       {{investigatorError}}
+    </div>
+    <div class="errors" v-if="requestFailed">
+      {{ t('newDeck.requestFailed') }}
     </div>
     <div class="errors" v-if="errors.length > 0">
       <p>{{ t('newDeck.unimplementedError') }}</p>

@@ -130,8 +130,18 @@ export const newDeck = async (
   return deckDecoder.decodePromise(data)
 }
 
-export const validateDeck = ( deckList: ArkhamDbDecklist): Promise<void> =>
-  api.post('arkham/decks/validate', deckList)
+/* Validation reads nothing and writes nothing, so a request that produced no
+ * response at all is safe to send again. Worth doing because a browser that
+ * loses a request mid-flight will not retry a POST on its own -- Firefox on
+ * HTTP/3 hangs here rather than falling back (see terraform's http3_enabled). */
+export const validateDeck = async (deckList: ArkhamDbDecklist): Promise<void> => {
+  try {
+    await api.post('arkham/decks/validate', deckList, { timeout: 15000 })
+  } catch (err) {
+    if ((err as { response?: unknown }).response) throw err
+    await api.post('arkham/decks/validate', deckList, { timeout: 15000 })
+  }
+}
 
 export const fetchDeckList = async (url: string): Promise<ArkhamDbDecklist> => {
   const { data } = await api.post('arkham/decks/fetch', { url })

@@ -244,7 +244,8 @@
     "save": "Save",
     "saveAndUse": "Save & Use",
     "useWithoutSaving": "Use Without Saving",
-    "unimplementedError": "Could not create deck, the following cards are unimplemented:"
+    "unimplementedError": "Could not create deck, the following cards are unimplemented:",
+    "requestFailed": "Could not reach the server to validate this deck. Check your connection and try again."
   },
   "deckSyncedSuccessfully": "Deck synced successfully",
   "areYouSureDeleteDeck": "Are you sure you want to delete this deck?",

@@ -171,7 +171,26 @@ variable "tls_enabled" {
 variable "http3_enabled" {
   description = "Advertise HTTP/3 (QUIC) on UDP 443 at the LB. Requires tls_enabled; the HTTPS rule on 443 stays either way, so clients that can't reach UDP 443 fall back to TCP."
   type        = bool
-  default     = true
+
+  # Off, because DO's QUIC endpoint for this LB is lossy. Measured 2026-08-23
+  # against arkhamhorror.app, same machine, back to back:
+  #
+  #   TCP  12/12 responses, 0.64-0.69s, no spread
+  #   h3   erratic 0.42-7.7s, one request with no response at all
+  #   h3 to cloudflare.com (control) 10/10 at 0.08s -- so not the local path
+  #
+  # The spread lands on ~1s/3s/7s, i.e. QUIC retransmission backoff: UDP
+  # packets are being dropped somewhere at the LB. Chrome hides this by racing
+  # h3 against TCP and abandoning h3 quickly; Firefox stays on the h3
+  # connection, so requests it cannot safely retry -- POSTs -- simply never
+  # return. That is how this surfaced: deck validation hanging in Firefox on
+  # production only.
+  #
+  # Note ma=86400 on the alt-svc header: clients that already cached it keep
+  # trying UDP 443 for up to a day after this is turned off. They fail fast to
+  # TCP once nothing is listening, but the first request after each cache entry
+  # expires may still be slow.
+  default = false
 }
 
 variable "tls_domains" {

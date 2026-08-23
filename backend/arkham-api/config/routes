@@ -53,6 +53,7 @@
           /open-seats ApiV1ArkhamGameOpenSeatsR GET
           /claim-seat ApiV1ArkhamGameClaimSeatR POST
           /achievements ApiV1ArkhamGameAchievementsR GET
+          /step ApiV1ArkhamGameStepR GET
       /events ApiV1ArkhamEventsP:
         / ApiV1ArkhamEventsR GET POST
         /#ArkhamEpicEventId ApiV1ArkhamEventP:

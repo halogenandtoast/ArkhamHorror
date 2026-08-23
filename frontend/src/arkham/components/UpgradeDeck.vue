@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { displayTabooList } from '@/arkham/taboo';
 import { ref, computed, inject, onUnmounted } from 'vue';
-import { fetchGame, upgradeDeck } from '@/arkham/api';
+import { fetchGame, fetchGameStep, upgradeDeck } from '@/arkham/api';
 import { imgsrc, localizeArkhamDBBaseUrl, processArkhamBuildDeck } from '@/arkham/helpers';
 import { ArkhamDbDecklist } from '@/arkham/types/Deck';
 import { Game } from '@/arkham/types/Game';
@@ -47,16 +47,25 @@ function hasUpgradeQuestions(game: Game): boolean {
   )
 }
 
+// Last step we pulled the full game for; null means "not probed yet", so the
+// first tick resyncs once. Probing the step first keeps this off the expensive
+// game endpoint for every tick where nobody has answered anything.
+let waitingStep: number | null = null
+
 async function pollWaitingGame() {
   try {
-    const { game } = await fetchGame(props.game.id)
-    emit('update', game)
-    if (hasUpgradeQuestions(game)) {
-      waitingPoll = setTimeout(pollWaitingGame, 1000)
-    } else {
-      waiting.value = false
-      waitingPoll = null
+    const step = await fetchGameStep(props.game.id)
+    if (step !== waitingStep) {
+      waitingStep = step
+      const { game } = await fetchGame(props.game.id)
+      emit('update', game)
+      if (!hasUpgradeQuestions(game)) {
+        waiting.value = false
+        waitingPoll = null
+        return
+      }
     }
+    waitingPoll = setTimeout(pollWaitingGame, 1000 + Math.floor(Math.random() * 500))
   } catch {
     waitingPoll = setTimeout(pollWaitingGame, 2000)
   }
@@ -64,7 +73,10 @@ async function pollWaitingGame() {
 
 function waitForOtherPlayers() {
   waiting.value = true
-  if (waitingPoll === null) waitingPoll = setTimeout(pollWaitingGame, 500)
+  if (waitingPoll === null) {
+    waitingStep = null
+    waitingPoll = setTimeout(pollWaitingGame, 500)
+  }
 }
 
 onUnmounted(() => {

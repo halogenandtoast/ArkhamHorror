@@ -49,6 +49,14 @@ export const fetchGame = async (gameId: string, spectate = false): Promise<Fetch
   return { playerId, game: gameData, multiplayerMode, eventId: eventId ?? null }
 }
 
+/* The "did anything happen?" probe: a single Int column, no game JSON, no lock.
+ * fetchGame is the most expensive endpoint we have, so a poller asks this first
+ * and only pays for the whole game when the step actually moved. */
+export const fetchGameStep = async (gameId: string): Promise<number> => {
+  const { data } = await api.get(`arkham/games/${gameId}/step`, { params: { _: Date.now() } })
+  return data.step
+}
+
 export const fetchGameReplay = async (gameId: string, step: number): Promise<FetchReplay> => {
   const { data } = await api.get(`arkham/games/${gameId}/replay/${step}`)
   const { totalSteps, game } = data

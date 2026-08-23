@@ -39,6 +39,7 @@ import processingJSON from '@/assets/processing.json'
 import api from '@/api'
 import {
   fetchGame,
+  fetchGameStep,
   buildWebsocketUrl,
   undoChoice,
   undoScenarioChoice,
@@ -479,16 +480,26 @@ watch(questionPlayerId, (owner) => {
 // carry the UI through the whole chain. Keep the game view synchronized until
 // the engine leaves IsChooseDecks.
 let chooseDecksPoll: ReturnType<typeof setTimeout> | null = null
+// Last step this poll has already pulled the full game for. Null means we have
+// not probed yet, which counts as "changed" so the first tick resyncs once.
+let chooseDecksStep: number | null = null
+// Jittered so a table full of clients cannot line up on the same instant.
+const chooseDecksInterval = () => 750 + Math.floor(Math.random() * 250)
+
 async function pollChooseDecksState() {
   try {
-    const latest = await fetchGame(props.gameId, props.spectate)
-    game.value = latest.game
-    if (latest.playerId && !latest.game.question[playerId.value ?? '']) {
-      playerId.value = latest.playerId
+    const step = await fetchGameStep(props.gameId)
+    if (step !== chooseDecksStep) {
+      chooseDecksStep = step
+      const latest = await fetchGame(props.gameId, props.spectate)
+      game.value = latest.game
+      if (latest.playerId && !latest.game.question[playerId.value ?? '']) {
+        playerId.value = latest.playerId
+      }
+      followPendingUpgradeQuestion(latest.game)
     }
-    followPendingUpgradeQuestion(latest.game)
-    if (latest.game.gameState.tag === 'IsChooseDecks') {
-      chooseDecksPoll = setTimeout(pollChooseDecksState, 750)
+    if (game.value?.gameState.tag === 'IsChooseDecks') {
+      chooseDecksPoll = setTimeout(pollChooseDecksState, chooseDecksInterval())
     } else {
       chooseDecksPoll = null
     }
@@ -501,6 +512,7 @@ watch(
   () => game.value?.gameState.tag,
   (tag) => {
     if (tag === 'IsChooseDecks' && chooseDecksPoll === null) {
+      chooseDecksStep = null
       chooseDecksPoll = setTimeout(pollChooseDecksState, 500)
     } else if (tag !== 'IsChooseDecks' && chooseDecksPoll !== null) {
       clearTimeout(chooseDecksPoll)

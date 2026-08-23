@@ -6,6 +6,7 @@
 module Api.Handler.Arkham.Games (
   getApiV1ArkhamGameR,
   getApiV1ArkhamGameSpectateR,
+  getApiV1ArkhamGameStepR,
   getApiV1ArkhamGamesR,
   postApiV1ArkhamGamesR,
   putApiV1ArkhamGameR,
@@ -54,6 +55,29 @@ import Entity.Arkham.GameRaw
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
 import Yesod.WebSockets
+
+{- | Step counter only: one indexed Int column, no game JSON touched, no lock.
+
+The full game GET is the most expensive endpoint we have (whole game plus log),
+so nothing that merely wants to know "did anything happen?" should be hitting it
+on a timer. Poll this instead and fetch the game only when the step moved.
+-}
+getApiV1ArkhamGameStepR :: ArkhamGameId -> Handler GameStepJson
+getApiV1ArkhamGameStepR gameId = do
+  void getRequestUserId
+  steps <- runDB $ select do
+    games <- from $ table @ArkhamGame
+    where_ $ games.id ==. val gameId
+    pure games.step
+  case steps of
+    Value step : _ -> pure $ GameStepJson step
+    [] -> notFound
+
+newtype GameStepJson = GameStepJson
+  { step :: Int
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass ToJSON
 
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do

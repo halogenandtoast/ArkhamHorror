@@ -76,6 +76,24 @@ spec = describe "Jim Culver (4)" do
     fmap length self.hand `shouldReturn` 1
     self.resources `shouldReturn` 1
 
+  -- Regression for #5496. FAQ (2.12) covers horror dealt straight to an asset you
+  -- control too (Field Agent (2) pays its cost that way), not just soaked horror.
+  it "triggers when horror is dealt straight to an asset you control" . gameTest $ \self -> do
+    location <- testLocation
+    self `moveTo` location
+    withDeck self [Assets.flashlight]
+    jimCulver <- self `putAssetIntoPlay` Assets.jimCulver4
+
+    run $ DealAssetDamage jimCulver (TestSource mempty) 0 1
+
+    useReactionOf jimCulver
+
+    self.horror `shouldReturn` 0
+    jimCulver.horror `shouldReturn` 1
+    jimCulver.exhausted `shouldReturn` True
+    fmap length self.hand `shouldReturn` 1
+    self.resources `shouldReturn` 1
+
   it "triggers when the investigator takes the damage themselves" . gameTest $ \self -> do
     location <- testLocation
     self `moveTo` location

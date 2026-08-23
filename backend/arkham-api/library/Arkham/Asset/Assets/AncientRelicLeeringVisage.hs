@@ -22,7 +22,9 @@ instance HasModifiersFor AncientRelicLeeringVisage where
 
 instance HasAbilities AncientRelicLeeringVisage where
   getAbilities (AncientRelicLeeringVisage a) =
-    [ controlled_ a 1 $ forced $ DealtDamage #after AnySource You
+    [ -- damage this deals to itself is dealt to you (FAQ 2.12), so exclude it or
+      -- the Forced ability retriggers off its own damage
+      controlled_ a 1 $ forced $ DealtDamage #after (NotSource $ SourceIs $ a.ability 1) You
     , controlled_ a 2 $ freeReaction $ GameEnds #when
     ]
 

@@ -1960,9 +1960,10 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     -- FAQ (2.12): "you" being dealt damage/horror also covers assets you control, so
     -- an attack soaked entirely by an ally still counts. TakeDamage/TakeHorror carry
     -- the total dealt to the investigator however it was assigned, and are raised
-    -- alongside the per-target DealtDamage/DealtHorror windows. Damage dealt straight
-    -- to an asset (Guard Dog) raises no investigator TakeDamage, so it stays unmatched
-    -- and self-damaging assets (Ancient Relic) cannot retrigger themselves.
+    -- alongside the per-target DealtDamage/DealtHorror windows -- including for damage
+    -- dealt straight to an asset (Field Agent's horror cost, #5496), which Asset.Runner
+    -- raises for the controller. Assets that damage themselves in response to "you"
+    -- being dealt damage (Ancient Relic) must exclude their own source.
     Matcher.DealtDamage timing sourceMatcher whoMatcher -> guardTiming timing $ \case
       Window.DealtDamage source' _ (InvestigatorTarget iid') _ ->
         andM [matchWho iid iid' whoMatcher, sourceMatches source' sourceMatcher]

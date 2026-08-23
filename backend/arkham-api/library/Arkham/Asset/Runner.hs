@@ -180,6 +180,16 @@ instance RunMessage AssetAttrs where
           damageEffect = case source of
             EnemyAttackSource _ -> AttackDamageEffect
             _ -> NonAttackDamageEffect
+        -- FAQ (2.12): damage/horror dealt to an asset you control is also dealt to
+        -- you, so the controller's aggregate take windows go up alongside the
+        -- asset's. The soak path raises these in Arkham.Investigator.Runner.Damage
+        -- instead; damage dealt straight to an asset only passes through here.
+        let
+          takeWindows mk = case a.controller of
+            Nothing -> []
+            Just iid ->
+              [mk (Window.TakeDamage source damageEffect (toTarget iid) damage') | damage' > 0]
+                <> [mk (Window.TakeHorror source (toTarget iid) horror') | horror' > 0]
         when (damage' > 0 || horror' > 0) do
           pushAll
             $ [PlaceDamage source (toTarget a) damage' | damage' > 0]
@@ -194,6 +204,7 @@ instance RunMessage AssetAttrs where
                    <> [ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage' horror')
                       | damage' > 0 || horror' > 0
                       ]
+                   <> takeWindows mkWhen
                , checkDefeated source aid
                , CheckWindows
                    $ [ mkAfter (Window.DealtDamage source damageEffect (toTarget a) damage')
@@ -205,6 +216,7 @@ instance RunMessage AssetAttrs where
                    <> [ mkWhen (Window.WouldTakeDamageOrHorror source (toTarget a) damage' horror')
                       | damage' > 0 || horror' > 0
                       ]
+                   <> takeWindows mkAfter
                ]
       pure a
     Msg.AssignAssetDamageWithCheck aid source damage horror doCheck | aid == assetId -> do

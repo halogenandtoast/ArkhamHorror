@@ -183,7 +183,7 @@ instance HasAbilities EmpiricalHypothesisEffect where
         if pessimisticOutlook (toResult attrs.extra)
           then AnyWindow
           else NotAnyWindow
-      Just (EffectInt 4) -> DealtDamageOrHorror #when AnySource matcher
+      Just (EffectInt 4) -> DealtDamageOrHorror #after AnySource matcher
       Just (EffectInt 5) ->
         oneOf
           [ EnemyDiscarded #when AnySource (EnemyDiscardedBy You)

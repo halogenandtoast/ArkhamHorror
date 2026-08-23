@@ -1,7 +1,10 @@
 module Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstromSpec (spec) where
 
+import Arkham.Agenda.Types (Field (AgendaCard))
 import Arkham.Helpers.Scenario (getAgendaDeckCards)
+import Arkham.Homebrew.DarkMatter.Helpers (advanceQuantumMaelstrom)
 import Arkham.Matcher
+import Arkham.Projection (field)
 import TestImport.New
 
 {- | Lost Quantum shuffles all three printings of agenda 1 together to form its
@@ -40,7 +43,11 @@ spec = describe "The Quantum Maelstrom" do
       deck <- getAgendaDeckCards 1
       liftIO $ length deck `shouldBe` 3
  where
+  -- Run the shared tail rather than a full AdvanceAgenda: setup shuffles the
+  -- three printings, and the flavor each one resolves before the tail (placing
+  -- a location and moving everyone onto it, drawing face-down cards) needs a
+  -- real board, so the full advance stalls on a prompt for some shuffles.
   advanceCurrentAgenda = do
-    agenda <- selectJust AnyAgenda
-    run $ AdvanceAgendaBy agenda AgendaAdvancedWithOther
-    chooseOnlyOption "advance agenda"
+    card <- field AgendaCard =<< selectJust AnyAgenda
+    runQueueT $ advanceQuantumMaelstrom card
+    runMessages

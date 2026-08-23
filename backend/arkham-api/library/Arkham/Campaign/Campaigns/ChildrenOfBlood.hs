@@ -47,10 +47,11 @@ instance RunMessage ChildrenOfBlood where
       pure c
     CampaignStep (InterludeStep 1 _) -> scope "friendsInLowPlaces" do
       bloods <- selectCount (chaosToken_ #blood)
-      flavor $ setTitle "title" >> p "friendsInLowPlaces1"
       if bloods == 12
-        then doStep 4 msg
-        else leadChooseOneM do
+        then do
+          flavor $ setTitle "title" >> p "friendsInLowPlaces1"
+          doStep 4 msg
+        else storyWithChooseOneM' (setTitle "title" >> p "friendsInLowPlaces1") do
           labeled' "thankCharlie" $ doStep 2 msg
           labeled' "inviteCharlie" $ doStep 3 msg
       nextCampaignStep
@@ -59,14 +60,21 @@ instance RunMessage ChildrenOfBlood where
       flavor $ setTitle "title" >> p "friendsInLowPlaces2"
       eachInvestigator \iid -> gainXp iid CampaignSource (ikey "xp.friendsInLowPlaces") 2
       pure c
-    DoStep 3 (CampaignStep (InterludeStep 1 _)) -> scope "friendsInLowPlaces" do
-      flavor $ setTitle "title" >> p "friendsInLowPlaces3"
+    DoStep 3 interlude@(CampaignStep (InterludeStep 1 _)) -> scope "friendsInLowPlaces" do
       settledJulia <-
         orM [getHasRecord InvestigatorsSparedJuliaStern, getHasRecord InvestigatorsKilledJuliaStern]
       completedSearch <- getHasRecord InvestigatorsCompletedTheirSearch
       storyCards <- getCampaignStoryCards
       let blighted = any (any ((== Treacheries.theBloodBlight) . toCardDef)) (toList storyCards)
-      doStep (if settledJulia && completedSearch && not blighted then 5 else 6) msg
+      flavor do
+        setTitle "title"
+        p "friendsInLowPlaces3"
+        p.basic "friendsInLowPlaces3Check"
+        ul do
+          li.validate settledJulia "juliaWasSettled"
+          li.validate completedSearch "completedTheirSearch"
+          li.validate (not blighted) "noBloodBlight"
+      doStep (if settledJulia && completedSearch && not blighted then 5 else 6) interlude
       pure c
     DoStep 4 (CampaignStep (InterludeStep 1 _)) -> scope "friendsInLowPlaces" do
       flavor $ setTitle "title" >> p "friendsInLowPlaces4"

@@ -171,6 +171,12 @@ const tokenChoices = computed(() => props.game.scenario?.chaosBag.choice)
 const damageAssignmentTokens = computed(() => ArkhamGame.damageAssignmentTokens(props.game, props.playerId))
 
 const requiresModal = computed(() => {
+  // Nothing inside the modal renders without a question, and undo/step transitions
+  // clear the question while focused cards, tokens and search results still hold
+  // the old state -- without this the modal stays up completely empty.
+  if (!question.value) {
+    return false
+  }
   // Damage/horror assignment is done by clicking cards; show the pending tokens
   // on the investigator instead of popping the choice modal.
   if (damageAssignmentTokens.value) {

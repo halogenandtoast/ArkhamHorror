@@ -1,13 +1,23 @@
 module Arkham.Campaign.Campaigns.ChildrenOfBlood (childrenOfBlood) where
 
+import Arkham.Asset.Cards.ChildrenOfBlood qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.ChildrenOfBlood.CampaignSteps
 import Arkham.Campaigns.ChildrenOfBlood.ChaosBag
 import Arkham.Campaigns.ChildrenOfBlood.Helpers
+import Arkham.Campaigns.ChildrenOfBlood.Key
+import Arkham.Card
+import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Log (getHasRecord)
+import Arkham.Helpers.Query (allInvestigators)
 import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens)
+import Arkham.I18n
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
+import Arkham.Source
 import Arkham.Target (pattern Initiator)
+import Arkham.Treachery.CardDefs.ChildrenOfBlood.Infected qualified as Treacheries
 
 newtype ChildrenOfBlood = ChildrenOfBlood CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -34,6 +44,41 @@ instance RunMessage ChildrenOfBlood where
         flavor $ setTitle "title" >> p "predator"
       scope "prologue" $ flavor $ setTitle "title" >> p "body"
       nextCampaignStep
+      pure c
+    CampaignStep (InterludeStep 1 _) -> scope "friendsInLowPlaces" do
+      bloods <- selectCount (chaosToken_ #blood)
+      flavor $ setTitle "title" >> p "friendsInLowPlaces1"
+      if bloods == 12
+        then doStep 4 msg
+        else leadChooseOneM do
+          labeled' "thankCharlie" $ doStep 2 msg
+          labeled' "inviteCharlie" $ doStep 3 msg
+      nextCampaignStep
+      pure c
+    DoStep 2 (CampaignStep (InterludeStep 1 _)) -> scope "friendsInLowPlaces" do
+      flavor $ setTitle "title" >> p "friendsInLowPlaces2"
+      eachInvestigator \iid -> gainXp iid CampaignSource (ikey "xp.friendsInLowPlaces") 2
+      pure c
+    DoStep 3 (CampaignStep (InterludeStep 1 _)) -> scope "friendsInLowPlaces" do
+      flavor $ setTitle "title" >> p "friendsInLowPlaces3"
+      settledJulia <-
+        orM [getHasRecord InvestigatorsSparedJuliaStern, getHasRecord InvestigatorsKilledJuliaStern]
+      completedSearch <- getHasRecord InvestigatorsCompletedTheirSearch
+      storyCards <- getCampaignStoryCards
+      let blighted = any (any ((== Treacheries.theBloodBlight) . toCardDef)) (toList storyCards)
+      doStep (if settledJulia && completedSearch && not blighted then 5 else 6) msg
+      pure c
+    DoStep 4 (CampaignStep (InterludeStep 1 _)) -> scope "friendsInLowPlaces" do
+      flavor $ setTitle "title" >> p "friendsInLowPlaces4"
+      eachInvestigator (`sufferMentalTrauma` 1)
+      pure c
+    DoStep 5 (CampaignStep (InterludeStep 1 _)) -> scope "friendsInLowPlaces" do
+      flavor $ setTitle "title" >> p "friendsInLowPlaces5"
+      investigators <- allInvestigators
+      addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.charlieKaneKnowsAGuy
+      pure c
+    DoStep 6 (CampaignStep (InterludeStep 1 _)) -> scope "friendsInLowPlaces" do
+      flavor $ setTitle "title" >> p "friendsInLowPlaces6"
       pure c
     FailedSkillTest iid _ _ (Initiator _) _ _ -> sealBloodOnFailure iid >> pure c
     After (FailedSkillTest iid _ _ (Initiator _) _ _) -> sealBloodOnFailure iid >> pure c

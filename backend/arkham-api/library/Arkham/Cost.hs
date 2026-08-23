@@ -86,6 +86,7 @@ data Payment
   | SupplyPayment Supply
   | AddCurseTokenPayment Int
   | AddFrostTokenPayment Int
+  | AddTokenPayment Int ChaosTokenFace
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Payment where
@@ -194,6 +195,10 @@ data Cost
   | SealMultiCost Int ChaosTokenMatcher
   | AddFrostTokenCost Int
   | AddCurseTokenCost Int
+  | -- | Add N chaos tokens of this face to the chaos bag. Faces drawn from a
+    -- limited pool (bless\/curse\/frost\/blood, and any homebrew face with a
+    -- 'tokenPool') can only be paid while that pool still has enough tokens.
+    AddTokenCost Int ChaosTokenFace
   | AddCurseTokensCost Int Int
   | AddCurseTokensEqualToShroudCost
   | AddCurseTokensEqualToSkillTestDifficulty

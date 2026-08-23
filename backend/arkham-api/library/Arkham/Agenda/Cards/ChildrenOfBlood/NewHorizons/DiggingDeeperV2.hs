@@ -13,6 +13,6 @@ diggingDeeperV2 = agenda (2, A) DiggingDeeperV2 Cards.diggingDeeperV2 (Static 14
 instance RunMessage DiggingDeeperV2 where
   runMessage msg a@(DiggingDeeperV2 attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      advanceAgendaDeck attrs
+      push R4
       pure a
     _ -> DiggingDeeperV2 <$> liftRunMessage msg attrs

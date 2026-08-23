@@ -256,6 +256,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       AddFrostTokenCost n -> do
         x <- getRemainingFrostTokens
         pure $ x >= n
+      AddTokenCost n face -> canAddChaosTokenFaces n face
       AddCurseTokenCost n -> do
         x <- getRemainingCurseTokens
         if x >= n

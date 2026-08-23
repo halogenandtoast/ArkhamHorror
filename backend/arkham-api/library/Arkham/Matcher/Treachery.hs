@@ -5,6 +5,7 @@ module Arkham.Matcher.Treachery where
 
 import Arkham.Card.CardCode
 import Arkham.Card.Id
+import Arkham.Deck (DeckSignifier)
 import Arkham.Id
 import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Base
@@ -50,6 +51,11 @@ data TreacheryMatcher
   | TreacheryWithVictory
   | TreacheryOnEnemy EnemyMatcher
   | TreacheryIsNonWeakness
+  | -- | The deck this treachery was drawn from. Only cards whose printed text
+    -- names a deck ("another treachery from the encounter deck") should use
+    -- this; note a search-and-draw records 'EncounterDiscard', not
+    -- 'EncounterDeck'.
+    TreacheryDrawnFromDeck DeckSignifier
   | TreacheryWithResolvedEffectsBy InvestigatorMatcher
   | TreacheryDiscardedBy InvestigatorMatcher
   | TreacheryWithModifier ModifierType

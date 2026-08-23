@@ -831,6 +831,15 @@ payCost msg c iid skipAdditionalCosts cost = do
               ]
           push $ Would batchId $ would : replicate x (AddChaosToken FrostToken)
           withPayment $ AddFrostTokenPayment x
+    AddTokenCost n face -> do
+      batchId <- getRandom
+      would <-
+        checkWindows
+          [ (mkWhen $ Window.WouldAddChaosTokensToChaosBag (Just iid) $ replicate n face)
+              {windowBatchId = Just batchId}
+          ]
+      push $ Would batchId $ would : replicate n (AddChaosToken face)
+      withPayment $ AddTokenPayment n face
     AddCurseTokenCost n -> do
       x <- min n <$> getRemainingCurseTokens
       if x < n

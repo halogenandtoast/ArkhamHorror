@@ -39,6 +39,9 @@ data AgendaMatcher
 
 instance IsMatcher AgendaMatcher
 
+instance Not AgendaMatcher where
+  not_ = NotAgenda
+
 instance Semigroup AgendaMatcher where
   AnyAgenda <> x = x
   x <> AnyAgenda = x

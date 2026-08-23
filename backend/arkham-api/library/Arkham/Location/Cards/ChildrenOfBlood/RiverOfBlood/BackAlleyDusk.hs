@@ -26,15 +26,12 @@ instance HasAbilities BackAlleyDusk where
         ( Here
             <> NoCluesOnThis
             <> not_ (thisIs a $ LocationWithCardsUnderneath AnyCards)
-            <> ChaosTokenCountIs (InTokenPool #blood) (atLeast 2)
         )
-        actionAbility
+        (actionAbilityWithCost $ AddTokenCost 2 #blood)
 
 instance RunMessage BackAlleyDusk where
   runMessage msg l@(BackAlleyDusk attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      addChaosToken #blood
-      addChaosToken #blood
       selectEach (investigatorAt attrs) \i -> do
         ls <- getConnectedMoveLocations i (attrs.ability 1)
         chooseTargetM i ls $ moveTo (attrs.ability 1) i

@@ -18,7 +18,8 @@ import Arkham.Helpers.Query (getActiveInvestigatorId, getInvestigators, getLead)
 import Arkham.Helpers.Window (checkWhen, checkWindows)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
-import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIsNot, IncludeSealed))
+import Arkham.Homebrew.Tokens (chaosTokenFacePool, pooledChaosTokenFaces)
+import Arkham.Matcher (ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIs, ChaosTokenFaceIsNot, IncludeSealed))
 import Arkham.Message.Lifted.Queue
 import Arkham.Modifier (_CancelAnyChaosToken, _CancelAnyChaosTokenAndDrawAnother)
 import Arkham.Prelude
@@ -649,17 +650,15 @@ instance RunMessage ChaosBag where
             $ rawTokens
             <> [AutoFail | failure]
       tokens'' <- traverse createChaosToken tokens'
-      blessTokens <- replicateM 10 $ createChaosToken #bless
-      curseTokens <- replicateM 10 $ createChaosToken #curse
-      frostTokens <- replicateM (8 - count (== #frost) tokens') $ createChaosToken #frost
-      bloodTokens <- replicateM (12 - count (== #blood) tokens') $ createChaosToken #blood
+      pool <- fmap concat $ for pooledChaosTokenFaces \(face, n) ->
+        replicateM (n - count (== face) tokens') $ createChaosToken face
       pure
         $ c
         & (chaosTokensL .~ sort tokens'')
         & (setAsideChaosTokensL .~ mempty)
-        & (tokenPoolL .~ blessTokens <> curseTokens <> frostTokens <> bloodTokens)
+        & (tokenPoolL .~ pool)
     ReturnChaosTokensToPool tokensToPool -> do
-      let toPool = and . sequence [(`elem` [#bless, #curse, #frost, #blood]) . (.face), not . (.cancelled)]
+      let toPool = and . sequence [isJust . chaosTokenFacePool . (.face), not . (.cancelled)]
       pure
         $ c
         & (chaosTokensL %~ filter (`notElem` tokensToPool))
@@ -1067,16 +1066,10 @@ instance RunMessage ChaosBag where
         & (setAsideChaosTokensL %~ filter (/= token))
         & (revealedChaosTokensL %~ filter (/= token))
     ResetTokenPool -> do
-      bless <- selectCount $ IncludeSealed #bless
-      curse <- selectCount $ IncludeSealed #curse
-      frost <- selectCount $ IncludeSealed #frost
-      blood <- selectCount $ IncludeSealed #blood
-
-      blessTokens <- replicateM (10 - bless) $ createChaosToken #bless
-      curseTokens <- replicateM (10 - curse) $ createChaosToken #curse
-      frostTokens <- replicateM (8 - frost) $ createChaosToken #frost
-      bloodTokens <- replicateM (12 - blood) $ createChaosToken #blood
-      pure $ c & tokenPoolL .~ blessTokens <> curseTokens <> frostTokens <> bloodTokens
+      pool <- fmap concat $ for pooledChaosTokenFaces \(face, n) -> do
+        inPlay <- selectCount $ IncludeSealed (ChaosTokenFaceIs face)
+        replicateM (n - inPlay) $ createChaosToken face
+      pure $ c & tokenPoolL .~ pool
     RemoveChaosToken face ->
       case find ((== face) . chaosTokenFace) chaosBagChaosTokens of
         Nothing -> pure c

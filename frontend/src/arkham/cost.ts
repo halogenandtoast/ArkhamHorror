@@ -3,6 +3,7 @@
 // branch maps onto an i18n key in `label.cost.*` (see locale files); unknown tags
 // fall back to a literal "X" so a missing case never breaks the UI.
 import type { Cost } from '@/arkham/types/Cost'
+import { chaosTokenTag, type TokenFace } from '@/arkham/types/ChaosToken'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 
 type Translate = (key: string, params?: Record<string, unknown>) => string
@@ -425,6 +426,11 @@ export function formatCost(cost: Cost, t: Translate): string {
       return t('label.cost.seal')
     case 'SealMultiCost':
       return t('label.cost.sealMulti', { count: intAt(cost, 0) })
+    case 'AddTokenCost':
+      return t('label.cost.addToken', {
+        count: intAt(cost, 0),
+        token: chaosTokenTag(get<unknown[]>(cost, 'contents')?.[1] as TokenFace),
+      })
     case 'AddFrostTokenCost':
       return t('label.cost.addFrostTokens', { count: num(cost, 'contents') })
     case 'AddCurseTokenCost':

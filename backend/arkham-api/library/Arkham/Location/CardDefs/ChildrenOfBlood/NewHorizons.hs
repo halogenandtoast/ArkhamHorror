@@ -92,7 +92,17 @@ cavernEntranceDarkestDepths =
 
 descendingTunnel :: CardDef
 descendingTunnel =
-  location "13051" "Descending Tunnel" [Cave, Central] Diamond [Plus] NewHorizons
+  locationWithUnrevealed
+    "13051"
+    "Descending Tunnel"
+    [Cave, Central]
+    Diamond
+    [Plus]
+    "Zburamoarte's Lair"
+    [Cave, Lair]
+    Diamond
+    [Plus]
+    NewHorizons
 
 hiddenLaboratoryShallowTunnels :: CardDef
 hiddenLaboratoryShallowTunnels =

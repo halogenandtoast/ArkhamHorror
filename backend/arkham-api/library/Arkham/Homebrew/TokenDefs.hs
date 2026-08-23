@@ -23,6 +23,10 @@ data CustomTokenDef = CustomTokenDef
   -- ^ e.g. @":circus-ex-mortis:moon"@; the segment after the last colon is
   -- the display key (format tag, label, frontend @ct_<key>.png@ icon).
   , tokenRevealEffect :: CustomTokenReveal
+  , tokenPool :: Maybe Int
+  -- ^ How many physical tokens of this face exist, when the face is drawn from
+  -- a limited supply like bless\/curse\/frost\/blood. 'Nothing' means the face
+  -- is minted on demand and can always be added to the chaos bag.
   }
 
 -- | Implement in your campaign's @Tokens.hs@ on a campaign-local tag type;

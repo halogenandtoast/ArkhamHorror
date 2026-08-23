@@ -120,6 +120,15 @@ const tokenImageNames: Record<typeof tokenOrder[number], string> = {
   BloodToken: 'blood',
 }
 
+/** The `{blood}`-style format tag for a face, homebrew faces included. */
+export function chaosTokenTag(face: TokenFace): string {
+  const name = tokenImageNames[face as typeof tokenOrder[number]]
+  if (name) return `{${name}}`
+
+  const key = face.split(':').pop()
+  return key ? `{${key}}` : ''
+}
+
 /** The single source of truth for chaos token art, homebrew faces included. */
 export function chaosTokenImage(face: TokenFace): string {
   const name = tokenImageNames[face as typeof tokenOrder[number]]

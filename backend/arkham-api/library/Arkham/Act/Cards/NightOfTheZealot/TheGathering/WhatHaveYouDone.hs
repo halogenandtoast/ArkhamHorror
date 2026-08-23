@@ -6,6 +6,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Modifier
 import Arkham.Scenarios.NightOfTheZealot.TheGathering.Helpers
 
 newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
@@ -27,7 +28,9 @@ instance RunMessage WhatHaveYouDone where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       leadChooseOneM do
-        labeledI18n "r1" $ push R1
+        labeledI18n "r1" do
+          selectEach Anywhere \loc -> gameModifier attrs loc (UIModifier OnFire)
+          push R1
         labeledI18n "r2" $ push R2
       pure a
     _ -> WhatHaveYouDone <$> liftRunMessage msg attrs

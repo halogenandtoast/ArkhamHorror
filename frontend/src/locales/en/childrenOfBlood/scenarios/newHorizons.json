@@ -9,7 +9,9 @@
   },
   "label": {
     "searchDuringTheDay": "Search during the day",
-    "searchAfterDark": "Search after dark"
+    "searchAfterDark": "Search after dark",
+    "spendExperienceToRemoveBlood": "<p>Spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag<p>",
+    "doNotSpendExperience": "Do not spend experience"
   },
   "version1": {
     "setup": {
@@ -58,6 +60,33 @@
       "cultist": "-2. If there is a {'{'}blood{'}'} token sealed on your investigator, reveal an additional token.",
       "tablet": "-3. If there is a {'{'}blood{'}'} token sealed on your investigator, you automatically fail instead.",
       "elderThing": "-4. After this test resolves, if there is a {'{'}blood{'}'} token sealed on your investigator, take 1 damage and release 1 {'{'}blood{'}'} token sealed on you."
+    }
+  },
+  "spendExperience": "Spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag",
+  "resolutions": {
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached (each investigator was defeated)_: “Things got pretty rough in there.”</p><p>You awaken to the voice of Detective Reynolds. Blinking in the light of the morning, you sit up, waves of pain shooting through your stiff joints. Reynolds puts a hand on your shoulder. “Let’s not push it,” he says. “Besides, I’ve been watching the back of the factory, to see whether anyone—or anything—is going to follow us out.”</p><ul><li>Add 1 {'{'}blood{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Skip to _Resolution 5_.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: At long last you emerge from the meat packing facility, feeling no better than the cattle flanks that hung from hooks within. You hope that what you were able to accomplish will prove to be useful enough, even if you didn’t get to the bottom of what the cult was doing in the warehouse. At the very least, you have a name to go off of—Howard Wilkes, the owner of New Horizons, and the leader of the cult that was dwelling in its depths.</p><ul><li>In your campaign log, record *the investigators did not complete their search*.</li><li>In your campaign log, record *the investigators left Zburamoarte alive*.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators may decide to spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag.</li><li>Skip to _Resolution 5_.</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: You have gotten to the bottom of the cult’s activities in the warehouse, and while you chose to leave whatever monsters lurked in the depths of the tunnels alive, you can only hope that your efforts will prove enough to put all of this to rest. At the very least, you have a name to go off of—Howard Wilkes, the owner of New Horizons, and the leader of the cult that was dwelling in its depths.</p><ul><li>In your campaign log, record *the investigators completed their search*.</li><li>In your campaign log, record *the investigators left Zburamoarte alive*.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>The investigators may decide to spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag.</li><li>Skip to _Resolution 5_.</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolution 3",
+      "body": "<p>_Resolution 3_: After a grueling fight against the truly massive foe, you finally put the abomination down. This beast, this Zburamoarte, was the source of the infected blood used in the cult’s rituals, spreading the blood blight throughout all of Arkham via the tainted meat. With the source of the blood blight defeated, you hope that no others can fall to the same fate as Julia Stern and others within the New Horizons factory. The case isn’t over, however, as you learned that a man named Howard Wilkes, the owner of New Horizons, was also leading of the cult of Zburamoarte. It’s time to make him answer for his crimes.</p><ul><li>In your campaign log, record *the investigators completed their search*.</li><li>In your campaign log, record *the investigators defeated Zburamoarte*.</li><li>Remove 1 {'{'}blood{'}'} token from the chaos bag.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Skip to _Resolution 5_.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolution 4",
+      "body": "<p>_Resolution 4_: You are quickly overwhelmed by the cult, dragging you down into the caves while repeating the name “Zburamoarte, Zburamoarte, Zburamoarte…” Mercifully, you black out during the course of the cult’s rituals, and when you come to again, you are alone on the floor of the factory, the first light of morning peeking through the windows. You pick yourself up, stretch your aching joints, and make a swift exit.</p><ul><li>In your campaign log, record *the investigators were left to the cult’s mercy*.</li><li>Add 2 {'{'}blood{'}'} tokens to the chaos bag for the remainder of the campaign.</li><li>Each investigator who does not have The Blood Blight weakness becomes the bearer of a set-aside The Blood Blight weakness.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Proceed to _Resolution 5_.</li></ul>"
+    },
+    "resolution5": {
+      "title": "Resolution 5",
+      "body": "<p>_Resolution 5_: You regroup with Detective Reynolds, ready to investigate this Howard Wilkes, and make him answer for what’s been happening at his facility.</p><ul><li>If “_the investigators found a sheet of arcane symbols_,” any investigator may become the bearer of the set-aside Sanguine Song story asset.</li><li>If “_the investigators found forged permits_,” any investigator may become the bearer of the set-aside Forged Permit story asset.</li><li>Each investigator who ended the scenario with 2 {'{'}blood{'}'} tokens sealed on their investigator becomes the bearer of a set-aside The Blood Blight weakness if they are not already a bearer of it.</li><li>Release each sealed {'{'}blood{'}'} token and return them to the chaos bag.</li><li>Proceed to _Interlude: Friends in Low Places_.</li></ul>"
     }
   }
 }

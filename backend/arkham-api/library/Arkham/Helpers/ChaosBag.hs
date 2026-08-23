@@ -10,6 +10,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Types (Field (..))
+import Arkham.Homebrew.Tokens (chaosTokenFacePool)
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -42,6 +43,15 @@ getRemainingBlessTokens = selectCount $ InTokenPool #bless
 
 getRemainingBloodTokens :: HasGame m => m Int
 getRemainingBloodTokens = selectCount $ InTokenPool #blood
+
+-- | Whether n more tokens of this face could be added to the chaos bag.
+canAddChaosTokenFaces :: HasGame m => Int -> ChaosTokenFace -> m Bool
+canAddChaosTokenFaces n face = case chaosTokenFacePool face of
+  Nothing -> pure True
+  Just _ -> (>= n) <$> selectCount (InTokenPool $ ChaosTokenFaceIs face)
+
+canAddChaosTokenFace :: HasGame m => ChaosTokenFace -> m Bool
+canAddChaosTokenFace = canAddChaosTokenFaces 1
 
 getSealedChaosTokens :: HasGame m => m [ChaosToken]
 getSealedChaosTokens =

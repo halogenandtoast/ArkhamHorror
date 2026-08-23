@@ -1766,6 +1766,7 @@ getTreacheriesMatching matcher = do
       pure $ discardee `elem` iids
     TreacheryIsNonWeakness ->
       fieldMap TreacheryCard (`cardMatch` NonWeaknessTreachery) . toId
+    TreacheryDrawnFromDeck deck -> fieldMap TreacheryDrawnFrom (== Just deck) . toId
     TreacheryWithTitle title -> pure . (`hasTitle` title)
     TreacheryWithFullTitle title subtitle ->
       pure . (== (title <:> subtitle)) . toName

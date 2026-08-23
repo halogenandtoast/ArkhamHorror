@@ -3,19 +3,34 @@ module Arkham.Scenario.Scenarios.ChildrenOfBlood.NewHorizons (newHorizons) where
 import Arkham.Act.CardDefs.ChildrenOfBlood.NewHorizons qualified as Acts
 import Arkham.Agenda.CardDefs.ChildrenOfBlood.NewHorizons qualified as Agendas
 import Arkham.Asset.Cards.ChildrenOfBlood qualified as Assets
+import Arkham.Campaigns.ChildrenOfBlood.Key
+import Arkham.Card
+import Arkham.Classes.HasGame
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.ChildrenOfBlood.NewHorizons qualified as Enemies
-import Arkham.Classes.HasGame
+import Arkham.Exception
 import Arkham.Helpers.Act (getCurrentActStep)
+import Arkham.Helpers.Campaign (getCampaignStoryCards)
+import Arkham.Helpers.ChaosBag (getSealedChaosTokens)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Query (allInvestigators, getLead, getPlayerCount)
+import Arkham.Helpers.Xp
+import Arkham.I18n
 import Arkham.Id
+import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.CardDefs.ChildrenOfBlood.NewHorizons qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
+import Arkham.Name (toTitle)
+import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ChildrenOfBlood.NewHorizons.Helpers
 import Arkham.Trait (Trait (Cave, Day, Night))
+import Arkham.Treachery.CardDefs.ChildrenOfBlood.Infected qualified as Treacheries
 import Arkham.Treachery.CardDefs.ChildrenOfBlood.NewHorizons qualified as Treacheries
 
 newtype NewHorizons = NewHorizons ScenarioAttrs
@@ -70,16 +85,15 @@ instance RunMessage NewHorizons where
           labeled' "searchAfterDark" $ setScenarioMeta $ object ["searchAfterDark" .= True]
       pure s
     ResolveChaosToken _ Cultist iid -> do
-      whenM (hasSealedBlood iid) do
-        push $ DrawAnotherChaosToken iid
-        when (isEasyStandard attrs) $ afterSkillTestQuiet $ doStep 1 msg
+      whenM (hasSealedBlood iid) $ drawAnotherChaosToken iid
+      when (isEasyStandard attrs) $ afterSkillTestQuiet $ doStep 1 msg
       pure s
     DoStep 1 (ResolveChaosToken _ Cultist iid) -> releaseBlood iid >> pure s
     ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
       whenM (hasSealedBlood iid) $ afterSkillTestQuiet $ doStep 1 msg
       pure s
     DoStep 1 (ResolveChaosToken _ Tablet iid) -> releaseBlood iid >> pure s
-    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+    ResolveChaosToken _ ElderThing _iid | isHardExpert attrs -> do
       afterSkillTestQuiet $ doStep 1 msg
       pure s
     DoStep 1 (ResolveChaosToken _ ElderThing iid) -> bleed iid >> pure s
@@ -171,6 +185,68 @@ instance RunMessage NewHorizons where
       setAside [Enemies.nightWatchman]
       setAsideCommon
       removeEvery [Enemies.javierRivera, Enemies.factoryWorker]
+    DoStep cost (ScenarioResolution r) | r `elem` [Resolution 1, Resolution 2] -> do
+      lead <- getLead
+      choices <- (traverse toChoice =<< allInvestigators) <&> filter ((> 0) . snd . snd)
+      chooseAmounts lead ("$" <> ikey "spendExperience") (TotalAmountTarget cost) choices attrs
+      pure s
+    ResolveAmounts _ choices (isTarget attrs -> True) -> do
+      iids <- allInvestigators
+      for_ iids \iid -> do
+        name <- field InvestigatorName iid
+        let n = getChoiceAmount (toTitle name) choices
+        when (n > 0) $ push $ SpendXP iid n
+      removeChaosToken #blood
+      pure s
+    ScenarioResolution r -> scope "resolutions" do
+      case r of
+        NoResolution -> do
+          addChaosToken #blood
+          resolutionWithXp "noResolution" $ allGainXp' attrs
+          push R5
+        Resolution 1 -> do
+          record InvestigatorsDidNotCompleteTheirSearch
+          record InvestigatorsLeftZburamoarteAlive
+          spendExperienceToRemoveBlood attrs msg "resolution1"
+          push R5
+        Resolution 2 -> do
+          record InvestigatorsCompletedTheirSearch
+          record InvestigatorsLeftZburamoarteAlive
+          spendExperienceToRemoveBlood attrs msg "resolution2"
+          push R5
+        Resolution 3 -> do
+          record InvestigatorsCompletedTheirSearch
+          record InvestigatorsDefeatedZburamoarte
+          removeChaosToken #blood
+          resolutionWithXp "resolution3" $ allGainXp' attrs
+          push R5
+        Resolution 4 -> do
+          record InvestigatorsWereLeftToTheCultsMercy
+          addChaosToken #blood
+          addChaosToken #blood
+          storyCards <- getCampaignStoryCards
+          eachInvestigator \iid -> do
+            let bearer = any ((== Treacheries.theBloodBlight) . toCardDef) (findWithDefault [] iid storyCards)
+            unless bearer $ addCampaignCardToDeck iid ShuffleIn Treacheries.theBloodBlight
+          resolutionWithXp "resolution4" $ allGainXp' attrs
+          push R5
+        Resolution 5 -> do
+          investigators <- allInvestigators
+          whenM (remembered TheInvestigatorsFoundASheetOfArcaneSymbols) do
+            addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.sanguineSong
+          whenM (remembered TheInvestigatorsFoundForgedPermits) do
+            addCampaignCardToDeckChoice investigators DoNotShuffleIn Assets.forgedPermit
+          storyCards <- getCampaignStoryCards
+          for_ investigators \iid -> do
+            sealed <- selectCount $ SealedOnInvestigator (InvestigatorWithId iid) #blood
+            let bearer = any ((== Treacheries.theBloodBlight) . toCardDef) (findWithDefault [] iid storyCards)
+            when (sealed >= 2 && not bearer) $ addCampaignCardToDeck iid ShuffleIn Treacheries.theBloodBlight
+          bloods <- filter ((== #blood) . (.face)) <$> getSealedChaosTokens
+          for_ bloods unsealChaosToken
+          resolution "resolution5"
+          endOfScenario
+        other -> throwIO $ UnknownResolution other
+      pure s
     _ -> NewHorizons <$> liftRunMessage msg attrs
 
 hasSealedBlood :: HasGame m => InvestigatorId -> m Bool
@@ -228,3 +304,34 @@ setAsideCommon = do
   setAsideEvery $ CardFromEncounterSet Set.Infected
   setAsideEvery $ CardFromEncounterSet Set.FlyingTerrors
   setAside [Assets.forgedPermit, Assets.sanguineSong]
+
+{- | Resolutions 1 and 2 both end with the optional group spend. The XP messages
+are still queued, so affordability has to count what each investigator is about
+to earn on top of what they hold.
+-}
+spendExperienceToRemoveBlood
+  :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> Message -> Scope -> m ()
+spendExperienceToRemoveBlood attrs msg key = do
+  xp <- allGainXp' attrs
+  hasBlood <- selectAny (chaosToken_ #blood)
+  cost <- (2 *) <$> getPlayerCount
+  gains <- mapFromList @(Map InvestigatorId Int) <$> getXp
+  available <-
+    fmap sum
+      . traverse (\iid -> (+ findWithDefault 0 iid gains) <$> field InvestigatorXp iid)
+      =<< allInvestigators
+  resolutionFlavorWithChooseOne
+    (withVars ["xp" .= xp] $ setTitle (key <> ".title") >> p (key <> ".body"))
+    $ popScope do
+      labeledValidate' (hasBlood && available >= cost) "spendExperienceToRemoveBlood"
+        $ doStep cost msg
+      labeled' "doNotSpendExperience" nothing
+
+{- | One amount row per investigator, capped at the experience they actually
+hold, so the group can split the cost unevenly.
+-}
+toChoice :: HasGame m => InvestigatorId -> m (Text, (Int, Int))
+toChoice iid = do
+  name <- field InvestigatorName iid
+  x <- field InvestigatorXp iid
+  pure (toTitle name, (0, x))

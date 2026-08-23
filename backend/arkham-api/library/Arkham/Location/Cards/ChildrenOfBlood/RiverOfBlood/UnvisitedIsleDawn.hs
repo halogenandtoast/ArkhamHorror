@@ -28,13 +28,12 @@ instance HasModifiersFor UnvisitedIsleDawn where
 instance HasAbilities UnvisitedIsleDawn where
   getAbilities (UnvisitedIsleDawn a) =
     extendRevealed1 a
-      $ restricted a 1 (Here <> NoCluesOnThis <> exists (InTokenPool #blood))
-      $ FastAbility Free
+      $ restricted a 1 (Here <> NoCluesOnThis)
+      $ FastAbility (AddTokenCost 1 #blood)
 
 instance RunMessage UnvisitedIsleDawn where
   runMessage msg l@(UnvisitedIsleDawn attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      addChaosToken #blood
       remember TheInvestigatorsFoundASacrificialDagger
       pure l
     _ -> UnvisitedIsleDawn <$> liftRunMessage msg attrs

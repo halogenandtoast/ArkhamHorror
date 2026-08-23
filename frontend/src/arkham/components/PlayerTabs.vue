@@ -145,7 +145,6 @@ function isEnabledAction(element: Element): element is HTMLElement {
 function actionLocations() {
   const scope = playerInfo.value?.closest<HTMLElement>('#scenario') ?? playerInfo.value
   const tabs = new Set<string>()
-  const forcedTabs = new Set<string>()
   let outsideTab = false
 
   for (const element of scope?.querySelectorAll(ACTIONABLE_SELECTOR) ?? []) {
@@ -156,13 +155,10 @@ function actionLocations() {
       continue
     }
     const playerId = tab.dataset.playerTab
-    if (playerId) {
-      tabs.add(playerId)
-      if (element.matches('.forced-ability-button')) forcedTabs.add(playerId)
-    }
+    if (playerId) tabs.add(playerId)
   }
 
-  return { tabs, forcedTabs, outsideTab }
+  return { tabs, outsideTab }
 }
 
 function humanQuestionPlayers() {
@@ -348,7 +344,7 @@ function inspectActions() {
   }
   manualSelectionAtStep = null
 
-  const { tabs, forcedTabs, outsideTab } = actionLocations()
+  const { tabs, outsideTab } = actionLocations()
   const questionPlayers = focusQuestionPlayers()
   const soleQuestionPlayer = questionPlayers.length === 1 ? questionPlayers[0] : null
   const answerableQuestionPlayers = questionPlayers.filter(pid => ArkhamGame.choices(props.game, pid).length > 0)
@@ -389,15 +385,17 @@ function inspectActions() {
     return
   }
 
-  // A forced ability can belong to a card in another investigator's play area,
-  // even though the active investigator owns the question. Keep that
-  // investigator's perspective while showing the only tab where the forced
-  // ability can actually be selected.
-  if (solo?.value === true && soleQuestionPlayer && tabs.size === 1 && forcedTabs.size === 1 && !forcedTabs.has(soleQuestionPlayer)) {
-    const [forcedTab] = forcedTabs
-    if (selectedTab.value !== forcedTab || props.playerId !== soleQuestionPlayer) {
-      if (!automaticSwitchIsStable(`forced-tab:${forcedTab}:${soleQuestionPlayer}`)) return
-      pushAutomaticFrame(forcedTab, soleQuestionPlayer, 'sole-question')
+  // The only control for the sole question can live in another investigator's
+  // play area: a forced ability, or a target choice such as Correlate All Its
+  // Contents placing a charge on an asset controlled by an investigator at your
+  // location (#5495). The sole-question rule below would otherwise keep the
+  // question owner's own -- empty -- tab in front of them. Keep their
+  // perspective while showing the only tab where the control can be selected.
+  if (solo?.value === true && soleQuestionPlayer && tabs.size === 1 && !tabs.has(soleQuestionPlayer)) {
+    const [actionTab] = tabs
+    if (selectedTab.value !== actionTab || props.playerId !== soleQuestionPlayer) {
+      if (!automaticSwitchIsStable(`action-tab:${actionTab}:${soleQuestionPlayer}`)) return
+      pushAutomaticFrame(actionTab, soleQuestionPlayer, 'sole-question')
     } else {
       automaticSwitchCandidate = null
     }

@@ -8519,6 +8519,7 @@ test-suite spec
       Arkham.Scenario.SpecHelpers
       Arkham.Scenario.TheMidwinterGalaSpec
       Arkham.ScenarioDeckKeySpec
+      Arkham.ScenarioRegistrySpec
       Arkham.Skill.Cards.ArroganceSpec
       Arkham.Skill.Cards.DeductionSpec
       Arkham.Skill.Cards.DoubleOrNothingSpec

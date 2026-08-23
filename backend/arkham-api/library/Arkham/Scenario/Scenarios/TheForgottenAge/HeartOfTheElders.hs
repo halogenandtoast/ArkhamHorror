@@ -123,7 +123,7 @@ heartOfTheEldersPart2 :: Difficulty -> HeartOfTheEldersPart2
 heartOfTheEldersPart2 difficulty =
   scenarioWith
     (HeartOfTheEldersPart2 . HeartOfTheElders . (`with` HeartOfTheEldersMetadata Two False Nothing))
-    "04205a"
+    "04205b"
     "Heart of the Elders, Part 2"
     difficulty
     heartOfTheEldersLayout

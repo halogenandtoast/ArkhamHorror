@@ -83,9 +83,8 @@ runForgottenAgeAchievements msg = whenEligibleCampaign $ case msg of
   PickSupply _ _ -> setStore boughtSupplyKey True
   -- "Scenario 5-What?": skip Heart of the Elders, Part 1. There is no record
   -- for the skip; Part 1's setup short-circuits (pushing R1 with no play) when
-  -- 6 paths are already known. Detect that condition at Part 1 setup. Only the
-  -- Return-to Part 1 scenario has a distinct id (the base Part 1/Part 2 share
-  -- "04205a"), and this list is Return-to only anyway.
+  -- 6 paths are already known. Detect that condition at Part 1 setup. This list
+  -- is Return-to only, so only the Return-to Part 1 id is checked.
   Setup -> whenReturnHeartOfTheEldersPart1 do
     paths <- getRecordCount PathsAreKnownToYou
     when (paths == 6) $ earn Scenario5What

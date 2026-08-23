@@ -1655,9 +1655,10 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.EnemyEvadedSuccessfully timing whoMatcher sourceMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.SuccessfulEvadeEnemy who source' enemyId _ -> do
+          -- tolerate removed enemies, Kymani's ability discards them mid-evade
           andM
             [ matchWho iid who whoMatcher
-            , matches enemyId enemyMatcher
+            , enemyMatches enemyId enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch

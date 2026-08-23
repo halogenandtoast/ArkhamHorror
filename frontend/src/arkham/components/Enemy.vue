@@ -22,7 +22,7 @@ import Treachery from '@/arkham/components/Treachery.vue'
 import Asset from '@/arkham/components/Asset.vue'
 import Event from '@/arkham/components/Event.vue'
 import Skill from '@/arkham/components/Skill.vue'
-import Token from '@/arkham/components/Token.vue'
+import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue'
 import Story from '@/arkham/components/Story.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import * as Arkham from '@/arkham/types/Enemy'
@@ -424,14 +424,11 @@ function onDrop(event: DragEvent) {
             <PoolItem v-if="!omnipotent && !attached && showDamage" type="health" :amount="enemyDamage" />
             <TokenPool :tokens="enemyTokens" />
             <PoolItem v-if="enemy.cardsUnderneath.length > 0" type="card" :amount="enemy.cardsUnderneath.length" />
-            <Token
-              v-for="(sealedToken, index) in enemy.sealedChaosTokens"
-              :key="index"
-              :token="sealedToken"
-              :playerId="playerId"
+            <SealedChaosTokens
+              :tokens="enemy.sealedChaosTokens"
               :game="game"
+              :playerId="playerId"
               @choose="choose"
-              class="sealed"
             />
           </div>
 
@@ -639,6 +636,14 @@ img.card.source-highlight {
   &:not(:has(.key--can-interact)) {
     pointer-events: none;
   }
+}
+
+/* A fanned-open sealed-token group reaches well past the card, so lift the
+   enemy above its neighbours while it is expanded. */
+.enemy--outer:has(.sealed-chaos-tokens--expanded),
+.enemy--outer:has(.sealed-chaos-tokens--expanded) > .enemy,
+.card-frame:has(.sealed-chaos-tokens--expanded) {
+  z-index: var(--z-index-30000);
 }
 
 .card-wrapper {

@@ -24,7 +24,7 @@ import Event from '@/arkham/components/Event.vue'
 import Story from '@/arkham/components/Story.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue'
 import Treachery from '@/arkham/components/Treachery.vue'
-import Token from '@/arkham/components/Token.vue'
+import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import TokenPool from '@/arkham/components/TokenPool.vue'
@@ -459,93 +459,6 @@ const investigators = computed(() => {
     .filter((i) => i.placement.tag === 'AtLocation')
 })
 
-type SealedChaosTokenLayout = {
-  positions: Array<{ '--sealed-x': string; '--sealed-y': string }>
-  width: number
-  height: number
-  shapePath: string
-}
-
-function tokenShapePath(points: Array<[number, number]>, closed: boolean) {
-  if (points.length === 0) return ''
-  if (points.length === 1) {
-    const [[x, y]] = points
-    return `M ${x - 1} ${y} a 1 1 0 1 0 2 0 a 1 1 0 1 0 -2 0`
-  }
-
-  return `M ${points.map(([x, y]) => `${x} ${y}`).join(' L ')}${closed ? ' Z' : ''}`
-}
-
-const sealedChaosTokenLayout = computed<SealedChaosTokenLayout>(() => {
-  const n = chaosTokensOnLocation.value.length
-  const tokenSize = 20
-  const padding = 18
-  const margin = padding / 2
-  const step = 26
-  if (n <= 0) return { positions: [], width: tokenSize, height: tokenSize, shapePath: '' }
-
-  let points: Array<[number, number]>
-  let outline: Array<[number, number]>
-  let closed = true
-
-  if (n === 1) {
-    points = [[0, 0]]
-    outline = points
-    closed = false
-  } else if (n === 2) {
-    points = [[0, 0], [step, 0]]
-    outline = points
-    closed = false
-  } else if (n === 3) {
-    points = [[step / 2, 0], [0, step], [step, step]]
-    outline = points
-  } else if (n === 4) {
-    points = [[0, 0], [step, 0], [0, step], [step, step]]
-    outline = [[0, 0], [step, 0], [step, step], [0, step]]
-  } else {
-    const outerCount = n >= 7 ? n - 1 : n
-    const radius = step
-    const center = radius
-    const outer = Array.from({ length: outerCount }, (_, index): [number, number] => {
-      const angle = -Math.PI / 2 + (2 * Math.PI * index) / outerCount
-      return [center + radius * Math.cos(angle), center + radius * Math.sin(angle)]
-    })
-
-    points = n >= 7 ? [[center, center], ...outer] : outer
-    outline = outer
-  }
-
-  const minX = Math.min(...points.map(([x]) => x))
-  const minY = Math.min(...points.map(([, y]) => y))
-  const maxX = Math.max(...points.map(([x]) => x))
-  const maxY = Math.max(...points.map(([, y]) => y))
-  const positions = points.map(([x, y]) => ({
-    '--sealed-x': `${x - minX + margin}px`,
-    '--sealed-y': `${y - minY + margin}px`,
-  }))
-
-  const width = maxX - minX + tokenSize + padding
-  const height = maxY - minY + tokenSize + padding
-  const shapePoints = outline.map(([x, y]) => [x - minX + margin + tokenSize / 2, y - minY + margin + tokenSize / 2] as [number, number])
-
-  return {
-    positions,
-    width,
-    height,
-    shapePath: tokenShapePath(shapePoints, closed),
-  }
-})
-
-const sealedChaosTokenPositions = computed(() => sealedChaosTokenLayout.value.positions)
-
-const sealedChaosTokenSpreadStyle = computed(() => ({
-  '--sealed-count': chaosTokensOnLocation.value.length,
-  '--sealed-bg-width': `${sealedChaosTokenLayout.value.width}px`,
-  '--sealed-bg-height': `${sealedChaosTokenLayout.value.height}px`,
-  '--sealed-bg-collapsed-scale': `${Math.min(1, 20 / Math.max(sealedChaosTokenLayout.value.width, sealedChaosTokenLayout.value.height))}`,
-}))
-const sealedChaosTokenShapePath = computed(() => sealedChaosTokenLayout.value.shapePath)
-const sealedChaosTokensExpanded = ref(false)
 
 const floodLevel = computed(() => {
   if (!props.location.floodLevel) return
@@ -796,33 +709,12 @@ const hasAnyLocationVehicleAssets = computed(() =>
               :amount="playerCardsUnderneath.length"
             />
 
-            <div
-              v-if="chaosTokensOnLocation.length > 0"
-              class="sealed-chaos-tokens no-card-overlay"
-              :class="{ 'sealed-chaos-tokens--expanded': sealedChaosTokensExpanded }"
-              :style="sealedChaosTokenSpreadStyle"
-              @mouseleave="sealedChaosTokensExpanded = false"
-            >
-              <svg
-                class="sealed-chaos-token-bg"
-                :viewBox="`0 0 ${sealedChaosTokenLayout.width} ${sealedChaosTokenLayout.height}`"
-                aria-hidden="true"
-              >
-                <path class="sealed-chaos-token-bg-border" :d="sealedChaosTokenShapePath" />
-                <path class="sealed-chaos-token-bg-fill" :d="sealedChaosTokenShapePath" />
-              </svg>
-              <Token
-                v-for="(sealedToken, index) in chaosTokensOnLocation"
-                :key="index"
-                :token="sealedToken"
-                :playerId="playerId"
-                :game="game"
-                @choose="choose"
-                class="sealed sealed-token"
-                :style="{ '--sealed-index': index, ...sealedChaosTokenPositions[index] }"
-                @mouseenter="sealedChaosTokensExpanded = true"
-              />
-            </div>
+            <SealedChaosTokens
+              :tokens="chaosTokensOnLocation"
+              :game="game"
+              :playerId="playerId"
+              @choose="choose"
+            />
           </div>
         </div>
 
@@ -1031,75 +923,6 @@ const hasAnyLocationVehicleAssets = computed(() =>
    follow it stay readable on top of the fire. */
 .card-frame:has(.on-fire) {
   z-index: var(--z-index-4);
-}
-
-.sealed-chaos-tokens {
-  --sealed-token-width: 20px;
-  --sealed-token-peek: 4px;
-  position: relative;
-  width: var(--sealed-token-width);
-  height: 30px;
-  pointer-events: auto;
-  overflow: visible;
-  isolation: isolate;
-  z-index: var(--z-index-4);
-}
-
-.sealed-chaos-token-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--sealed-bg-width);
-  height: var(--sealed-bg-height);
-  max-width: none;
-  opacity: 0;
-  transform: scale(var(--sealed-bg-collapsed-scale));
-  transform-origin: top left;
-  transition: opacity 0.08s ease, transform 0.16s ease;
-  pointer-events: none;
-  z-index: 0;
-  overflow: visible;
-}
-
-.sealed-chaos-token-bg path {
-  fill: rgba(0, 0, 0, 0.68);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-}
-
-.sealed-chaos-token-bg-border {
-  stroke: rgba(255, 255, 255, 0.32);
-  stroke-width: 39;
-}
-
-.sealed-chaos-token-bg-fill {
-  stroke: rgba(0, 0, 0, 0.68);
-  stroke-width: 36;
-}
-
-.sealed-chaos-tokens--expanded {
-  z-index: var(--z-index-30000);
-}
-
-.sealed-chaos-tokens--expanded .sealed-chaos-token-bg {
-  opacity: 1;
-  pointer-events: auto;
-  transform: scale(1);
-}
-
-.sealed-token {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: var(--sealed-token-width);
-  z-index: calc(1 + var(--sealed-index));
-  transform: translateX(calc(var(--sealed-index) * var(--sealed-token-peek)));
-  transition: transform 0.16s ease;
-}
-
-.sealed-chaos-tokens--expanded .sealed-token {
-  transform: translate(var(--sealed-x), var(--sealed-y));
 }
 
 .status-icon {

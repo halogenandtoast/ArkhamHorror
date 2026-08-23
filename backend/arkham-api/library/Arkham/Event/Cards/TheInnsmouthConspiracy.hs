@@ -62,7 +62,8 @@ tidesOfFate =
     { cdSkills = [#wild]
     , cdCardTraits = setFromList [Spell, Blessed]
     , cdFastWindow = Just $ oneOf [FastPlayerWindow, RoundBegins #when]
-    , cdCriteria = Just $ Criteria.ChaosTokenCountIs #curse (atLeast 1) <> Criteria.HasRemainingBlessTokens
+    , cdCriteria =
+        Just $ Criteria.ChaosTokenCountIs #curse (atLeast 1) <> Criteria.HasRemainingBlessTokens
     }
 
 wardOfRadiance :: CardDef
@@ -72,11 +73,18 @@ wardOfRadiance =
     , cdCardTraits = setFromList [Insight, Blessed]
     , cdFastWindow =
         Just
-          $ DrawCard
-            #when
-            (affectsOthers $ InvestigatorAt YourLocation)
-            (CanCancelRevelationEffect You $ basic NonWeaknessTreachery)
-            EncounterDeck
+          $ oneOf
+            [ DrawCard
+                #when
+                (affectsOthers $ NotYou <> InvestigatorAt YourLocation)
+                (CanCancelRevelationEffect You $ basic $ NonPeril <> NonWeaknessTreachery)
+                EncounterDeck
+            , DrawCard
+                #when
+                You
+                (CanCancelRevelationEffect You $ basic NonWeaknessTreachery)
+                EncounterDeck
+            ]
     }
 
 keepFaith :: CardDef
@@ -175,7 +183,10 @@ underSurveillance1 =
   (event "07157" "Under Surveillance" 3 Rogue)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Tactic, Trap]
-    , cdCriteria = Just $ Criteria.Negate (exists $ "Under Surveillance" <> AssetAt YourLocation) <> exists (YourLocation <> LocationCanHaveAttachments)
+    , cdCriteria =
+        Just
+          $ Criteria.Negate (exists $ "Under Surveillance" <> AssetAt YourLocation)
+          <> exists (YourLocation <> LocationCanHaveAttachments)
     , cdLevel = Just 1
     }
 

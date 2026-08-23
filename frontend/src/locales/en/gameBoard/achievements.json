@@ -18,7 +18,8 @@
     "51": "Return to the Dunwich Legacy",
     "52": "Return to The Path to Carcosa",
     "53": "Return to The Forgotten Age",
-    "54": "Return to The Circle Undone"
+    "54": "Return to The Circle Undone",
+    "13": "Children of Blood"
   },
   "entries": {
     "TheZealotsRevenge": {
@@ -942,6 +943,88 @@
     "HemlockExpertise": {
       "name": "Hemlock Expertise",
       "text": "Win The Feast of Hemlock Vale campaign on Expert difficulty."
+    },
+    "HideAndSeek": {
+      "name": "Hide and Seek",
+      "text": "Defeat Julia Stern before agenda 2a advances in River of Blood."
+    },
+    "FriendlyNeighborhoodInvestigator": {
+      "name": "Friendly Neighborhood Investigator",
+      "text": "Do not let a single Civilian enemy get defeated during River of Blood."
+    },
+    "TrophyCollector": {
+      "name": "Trophy Collector",
+      "text": "Add Fang of Zburamoarte to any investigator’s deck."
+    },
+    "NoMeatSlabUnhooked": {
+      "name": "No Meat-Slab Unhooked",
+      "text": "Finish New Horizons with every location revealed, and with no clues remaining on locations."
+    },
+    "FilingPaperwork": {
+      "name": "Filing Paperwork",
+      "text": "Add either Forged Permit or Sanguine Song to any investigator’s deck."
+    },
+    "ThatLlLearnHim": {
+      "name": "That’ll Learn Him",
+      "text": "Use the ability on Zburamoarte’s Lair to deal the killing blow to Zburamoarte in New Horizons."
+    },
+    "SafetyInspector": {
+      "name": "Safety Inspector",
+      "text": "Do not let a single Civilian enemy get defeated during New Horizons."
+    },
+    "ThanksForYourVote": {
+      "name": "Thanks for Your Vote",
+      "text": "Add Charlie Kane to any investigator’s deck."
+    },
+    "HellHathNoFury": {
+      "name": "Hell Hath No Fury",
+      "text": "Have Julia Stern deal the killing blow to Howard Wilkes in Blood Money."
+    },
+    "LookOutBelow": {
+      "name": "Look Out Below",
+      "text": "Use the Balcony location’s ability to defeat Howard Wilkes in Blood Money."
+    },
+    "APartyEveryoneCanEnjoy": {
+      "name": "A Party Everyone Can Enjoy",
+      "text": "Do not let a single Civilian enemy get defeated during Blood Money."
+    },
+    "IfYouCantBeatThem": {
+      "name": "If You Can’t Beat Them…",
+      "text": "Complete the Blood Money scenario with each available copy of Suspicious Guest in the victory display."
+    },
+    "YouGotRedOnYou": {
+      "name": "You Got Red on You",
+      "text": "Seal 3 {blood} tokens on your investigator in a single round."
+    },
+    "DontForgetYourPPE": {
+      "name": "Don’t Forget Your PPE",
+      "text": "Finish Children of Blood with 0 {blood} tokens in the chaos bag."
+    },
+    "BathedInBlood": {
+      "name": "Bathed in Blood",
+      "text": "Finish Children of Blood with 12 {blood} tokens in the chaos bag."
+    },
+    "AndAllIGotWereTheseBloodyFangs": {
+      "name": "And All I Got Were These Bloody Fangs",
+      "text": "Unlock the Chosen of Zburamoarte campaign reward card."
+    },
+    "ItsPartOfMyBackstory": {
+      "name": "It’s Part of My Backstory",
+      "text": "Complete Children of Blood with the following investigators:",
+      "items": {
+        "DanielaReyes": "Daniela Reyes",
+        "MigueldelaCruz": "Miguel de la Cruz"
+      }
+    },
+    "WaterfrontWetWork": {
+      "name": "Waterfront Wet Work",
+      "text": "Complete Children of Blood campaign on the following difficulties:",
+      "items": {
+        "Easy": "Easy",
+        "Standard": "Standard",
+        "Hard": "Hard",
+        "Expert": "Expert"
+      }
     }
   },
   "clearAll": "Clear all",

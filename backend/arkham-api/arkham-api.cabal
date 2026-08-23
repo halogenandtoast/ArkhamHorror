@@ -2262,6 +2262,7 @@ library
       Arkham.Campaign.Campaigns
       Arkham.Campaign.Campaigns.BrethrenOfAsh
       Arkham.Campaign.Campaigns.ChildrenOfBlood
+      Arkham.Campaign.Campaigns.ChildrenOfBlood.Achievements
       Arkham.Campaign.Campaigns.EdgeOfTheEarth
       Arkham.Campaign.Campaigns.EdgeOfTheEarth.Achievements
       Arkham.Campaign.Campaigns.GuardiansOfTheAbyss

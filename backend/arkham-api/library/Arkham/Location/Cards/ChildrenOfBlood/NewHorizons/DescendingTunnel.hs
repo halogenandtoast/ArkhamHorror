@@ -21,7 +21,7 @@ instance HasAbilities DescendingTunnel where
       a
       [ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
       , restricted a 2 (Here <> exists (enemyAt a <> EnemyWithTitle "Zburamoarte"))
-          $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) (be a))
+          $ fightAction (GroupClueCost (PerPlayer 1) (be a))
       ]
 
 instance RunMessage DescendingTunnel where

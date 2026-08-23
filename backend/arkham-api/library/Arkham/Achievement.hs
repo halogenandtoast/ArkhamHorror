@@ -15,7 +15,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Game.Base
 import Arkham.Game.Settings (settingsAchievementsEnabled)
-import Arkham.Id (unCampaignId)
+import Arkham.Id (InvestigatorId, unCampaignId)
 import Arkham.Message
 import Arkham.Prelude
 
@@ -48,11 +48,36 @@ earnAchievement achievement = do
     $ Priority
     $ EarnAchievement achievement
 
+{- | Earn an achievement for a single investigator's player only. Same gating
+and Priority rationale as 'earnAchievement'; the API layer resolves the
+investigator to its player row and inserts only that one.
+-}
+earnAchievementBy
+  :: (HasGame m, HasQueue Message m) => InvestigatorId -> Achievement -> m ()
+earnAchievementBy iid achievement = do
+  enabled <- settingsAchievementsEnabled . gameSettings <$> getGame
+  mCampaignId <- currentCampaignId
+  when (enabled && maybe False (`elem` achievementCampaigns achievement) mCampaignId)
+    $ push
+    $ Priority
+    $ EarnAchievementBy iid achievement
+
 {- | Report completed checklist items (see 'achievementChecklist') for a
 cross-playthrough achievement. Same gating and Priority rationale as
 'earnAchievement'; the API layer merges the items into the per-user
 progress row and awards the earn once the checklist is complete.
 -}
+-- | Report checklist items for a single investigator's player only.
+achievementProgressBy
+  :: (HasGame m, HasQueue Message m) => InvestigatorId -> Achievement -> [Text] -> m ()
+achievementProgressBy iid achievement items = do
+  enabled <- settingsAchievementsEnabled . gameSettings <$> getGame
+  mCampaignId <- currentCampaignId
+  when (enabled && notNull items && maybe False (`elem` achievementCampaigns achievement) mCampaignId)
+    $ push
+    $ Priority
+    $ AchievementProgressBy iid achievement items
+
 achievementProgress :: (HasGame m, HasQueue Message m) => Achievement -> [Text] -> m ()
 achievementProgress achievement items = do
   enabled <- settingsAchievementsEnabled . gameSettings <$> getGame

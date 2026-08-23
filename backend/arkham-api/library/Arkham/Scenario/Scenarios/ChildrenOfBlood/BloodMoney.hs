@@ -5,33 +5,45 @@ import Arkham.Agenda.CardDefs.ChildrenOfBlood.BloodMoney qualified as Agendas
 import Arkham.Asset.Cards.ChildrenOfBlood qualified as Assets
 import Arkham.Calculation
 import Arkham.Campaigns.ChildrenOfBlood.Key
+import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.ChildrenOfBlood.AgentsOfZburamoarte qualified as Enemies
 import Arkham.Enemy.CardDefs.ChildrenOfBlood.BloodMoney qualified as Enemies
 import Arkham.Enemy.CardDefs.ChildrenOfBlood.SanguineSecrets qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens, EnemyTokens))
+import Arkham.Exception
 import Arkham.ForMovement
-import Arkham.Helpers.Enemy (createEngagedWith)
+import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getConnectedMoveLocations)
-import Arkham.Helpers.Query (getPlayerCount, getSetAsideCardsMatching, selectAssetController)
+import Arkham.Helpers.Query (
+  allInvestigators,
+  getPlayerCount,
+  getSetAsideCardsMatching,
+  selectAssetController,
+ )
 import Arkham.Helpers.SkillTest (isEvadeWith, isFightWith)
+import Arkham.Helpers.Xp
 import Arkham.Id
+import Arkham.Investigator.Types (Field (InvestigatorHorror))
 import Arkham.Location.CardDefs.ChildrenOfBlood.BloodMoney qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.SkillTest.Base
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
-import Arkham.Placement
 import Arkham.Projection
+import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
+import Arkham.Scenario.Types (Field (ScenarioCardsUnderScenarioReference))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ChildrenOfBlood.BloodMoney.Helpers
 import Arkham.Token
 import Arkham.Trait (Trait (Monster))
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.CardDefs.ChildrenOfBlood.BloodMoney qualified as Treacheries
+import Arkham.Treachery.CardDefs.ChildrenOfBlood.Infected qualified as Treacheries
 
 newtype BloodMoney = BloodMoney ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -104,7 +116,9 @@ instance RunMessage BloodMoney where
               cultists <- getSetAsideCardsMatching (#enemy <> CardWithTrait Trait.Cultist)
               for_ (nonEmpty cultists) \xs -> do
                 card <- sample xs
-                spawned <- createEnemyWith card Unplaced (createEngagedWith iid)
+                -- SpawnEngagedWith overrides the enemy's own spawn instruction;
+                -- creating it Unplaced and engaging afterwards placed it twice.
+                spawned <- createEnemy card iid
                 sealChaosToken iid (fromMaybe spawned mPriscilla) token
             Tablet -> do
               entry "partyGuestTablet"
@@ -142,6 +156,7 @@ instance RunMessage BloodMoney where
       pure s
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid :: InvestigatorId, source :: Source, _ :: Int) = toResult v
+      entry "priscillaThomas"
       unlessM (remembered TheInvestigatorsSpokeWithPriscillaThomas) do
         entry "priscillaThomas1"
         remember TheInvestigatorsSpokeWithPriscillaThomas
@@ -156,23 +171,39 @@ instance RunMessage BloodMoney where
         placeTokens source priscilla Horror (length sealed)
         investigators <- select $ investigatorAt (locationWithInvestigator iid)
         sid <- getRandom
+        -- IndexedSource marks this as the codex test, so the horror below is not
+        -- also added when Priscilla is fought or evaded the ordinary way.
         chooseOrRunOneM iid $ targets investigators \iid' ->
-          chooseOneM iid' do
-            for_ [#willpower, #intellect] \kind ->
-              skillLabeled kind $ beginSkillTest sid iid' source priscilla kind (Fixed 3)
+          chooseBeginSkillTestEdit
+            sid
+            iid'
+            (IndexedSource priscillaCodex source)
+            priscilla
+            [#willpower, #intellect]
+            (Fixed 3)
+            (\st -> st {skillTestAction = Just #parley})
       pure s
-    PassedSkillTest _ _ (isSource ScenarioSource -> True) _ _ _ -> do
+    -- SkillTestInitiatorTarget only: PassedSkillTest is also pushed once per
+    -- skill-test subscriber (committed cards, tokens), which would stack horror.
+    PassedSkillTest _ _ (IndexedSource ((== priscillaCodex) -> True) _) SkillTestInitiatorTarget {} _ _ -> do
       whenJustM (selectOne $ enemyIs Enemies.priscillaThomas) \priscilla -> do
         placeTokens ScenarioSource priscilla Horror 1
+        -- the placement is still queued, so the threshold has to be read after it
+        doStep 4 (ScenarioSpecific "priscilla" Null)
+      pure s
+    DoStep 4 (ScenarioSpecific "priscilla" _) -> do
+      whenJustM (selectOne $ enemyIs Enemies.priscillaThomas) \priscilla -> do
         horror <- fieldMap EnemyTokens (countTokens Horror) priscilla
         when (horror >= 4) $ doStep 3 (ScenarioSpecific "priscilla" Null)
       pure s
     DoStep 3 (ScenarioSpecific "priscilla" _) -> scope "codex" do
       entry "priscillaThomas3"
       whenJustM (selectOne $ enemyIs Enemies.priscillaThomas) removeFromGame
-      eachInvestigator \iid -> chooseOneM iid $ withI18n do
-        countVar 2 $ labeled' "healHorror" $ healHorror iid ScenarioSource 2
-        countVar 3 $ labeled' "gainResources" $ gainResources iid ScenarioSource 3
+      eachInvestigator \iid -> do
+        horror <- field InvestigatorHorror iid
+        chooseOneM iid $ withI18n do
+          countVar 2 $ labeledValidate' (horror > 0) "healHorror" $ healHorror iid ScenarioSource 2
+          countVar 3 $ labeled' "gainResources" $ gainResources iid ScenarioSource 3
       pure s
     Setup -> runScenarioSetup BloodMoney attrs do
       n <- getPlayerCount
@@ -238,6 +269,7 @@ instance RunMessage BloodMoney where
       enemyAt_ Enemies.suspiciousGuest study
       when (n >= 2) $ enemyAt_ Enemies.suspiciousGuest office
       when (n >= 3) $ enemyAt_ Enemies.suspiciousGuest diningHall
+      replicateM_ (3 - min 3 n) $ removeOneOfEach [Enemies.suspiciousGuest]
 
       setAsideEvery $ #enemy <> CardWithTitle "Child of Blood"
       setAsideEvery $ cardIs Enemies.spawnOfZburamoarte
@@ -263,6 +295,50 @@ instance RunMessage BloodMoney where
       removeCards =<< amongGathered (#enemy <> CardWithTitle "Julia Stern")
 
       addChaosToken #cultist
+    ScenarioResolution r -> scope "resolutions" do
+      defeated <- select DefeatedInvestigator
+      unless (null defeated) do
+        resolution "investigatorDefeat"
+        for_ defeated $ kill ScenarioSource
+
+      underneath <- scenarioField ScenarioCardsUnderScenarioReference
+      let rescued = count (`cardMatch` (#enemy <> CardWithTrait Trait.Civilian)) underneath
+
+      case r of
+        NoResolution -> do
+          record InvestigatorsFailedToStopTheChildrenOfBlood
+          eachInvestigator \iid -> do
+            sufferPhysicalTrauma iid 1
+            sufferMentalTrauma iid 1
+          resolutionWithXp "noResolution" $ allGainXp' attrs
+          doStep 1 msg
+          endOfScenario
+        Resolution 1 -> do
+          record InvestigatorsStoppedTheChildrenOfBlood
+          resolutionWithXp "resolution1"
+            $ allGainXpWithBonus' attrs (toBonus "rescuedGuests" rescued)
+          doStep 1 msg
+          endOfScenario
+        Resolution 2 -> do
+          record InvestigatorsFailedToStopTheChildrenOfBlood
+          eachInvestigator \iid -> do
+            sufferPhysicalTrauma iid 1
+            sufferMentalTrauma iid 1
+          resolutionWithXp "resolution2"
+            $ allGainXpWithBonus' attrs (toBonus "rescuedGuests" rescued)
+          doStep 1 msg
+          endOfScenario
+        other -> throwIO $ UnknownResolution other
+      pure s
+    -- shared tail: The Blood Blight bearers, then the campaign reward card
+    DoStep 1 (ScenarioResolution _) -> do
+      storyCards <- getCampaignStoryCards
+      investigators <- allInvestigators
+      for_ investigators \iid -> do
+        sealed <- selectCount $ SealedOnInvestigator (InvestigatorWithId iid) #blood
+        let bearer = any ((== Treacheries.theBloodBlight) . toCardDef) (findWithDefault [] iid storyCards)
+        when (sealed >= 2 && not bearer) $ addCampaignCardToDeck iid ShuffleIn Treacheries.theBloodBlight
+      pure s
     _ -> BloodMoney <$> liftRunMessage msg attrs
 
 sealedBloodCount :: HasGame m => InvestigatorId -> m Int
@@ -275,3 +351,7 @@ isMonsterAttackOrEvade = orM [isFightWith (withTrait Monster), isEvadeWith (with
 -- | Chapter 2 codex entries render title + body inside the codex frame.
 entry :: (HasI18n, ReverseQueue m) => Scope -> m ()
 entry x = scope x $ flavor $ setTitle "title" >> compose.codex (h "title" >> p "body")
+
+-- | Index for the Codex B skill test, so its success handler is unambiguous.
+priscillaCodex :: Int
+priscillaCodex = 2

@@ -292,6 +292,7 @@
   "skip": "Skip",
   "spendActions": "Spend 1 action | Spend {count} actions",
   "spendClues": "Spend a clue | Spend {count} clues",
+  "spendCluesToSucceed": "Spend clues to automatically succeed",
   "spendResources": "Spend a resource | Spend {count} resources",
   "spendUseToEmpower": "Spend 1 use to empower",
   "spendX": "Spend X",

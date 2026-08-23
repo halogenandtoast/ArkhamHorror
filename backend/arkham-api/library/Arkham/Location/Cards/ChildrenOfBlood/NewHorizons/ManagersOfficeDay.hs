@@ -24,16 +24,14 @@ instance HasModifiersFor ManagersOfficeDay where
 
 instance HasAbilities ManagersOfficeDay where
   getAbilities (ManagersOfficeDay a) =
-    extendRevealed1 a
-      $ restricted a 1 (Here <> exists (enemyAt a <> ExhaustedEnemy)) actionAbility
+    extendRevealed1 a $ restricted a 1 Here actionAbility
 
 instance RunMessage ManagersOfficeDay where
   runMessage msg l@(ManagersOfficeDay attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       exhausted <- select $ enemyAt attrs <> ExhaustedEnemy
-      chooseTargetM iid exhausted \eid -> do
-        addToVictory iid eid
-        doStep 1 msg
+      chooseTargetM iid exhausted $ addToVictory iid
+      doStep 1 msg
       pure l
     DoStep 1 (UseThisAbility _ (isSource attrs -> True) 1) -> do
       west <- selectJust $ LocationWithFullTitle "Factory Floor" "West"

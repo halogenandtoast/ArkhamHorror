@@ -11,5 +11,7 @@ data ChildrenOfBloodKey
   | InvestigatorsLeftZburamoarteAlive
   | InvestigatorsDefeatedZburamoarte
   | InvestigatorsWereLeftToTheCultsMercy
+  | InvestigatorsStoppedTheChildrenOfBlood
+  | InvestigatorsFailedToStopTheChildrenOfBlood
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

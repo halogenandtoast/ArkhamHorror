@@ -4,7 +4,7 @@
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
 // Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '07', '08', '09', '10', '11', '50', '51', '52', '53', '54']
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '07', '08', '09', '10', '11', '13', '50', '51', '52', '53', '54']
 
 // Return To campaigns use ids in the 50s. They appear first on the standalone
 // achievements page; both groups otherwise follow campaign-id/release order.
@@ -146,6 +146,24 @@ export type AchievementTag =
   | 'Obligations'
   | 'DrownedCityLineInTheSand'
   | 'RlyehExpertise'
+  | 'HideAndSeek'
+  | 'FriendlyNeighborhoodInvestigator'
+  | 'TrophyCollector'
+  | 'NoMeatSlabUnhooked'
+  | 'FilingPaperwork'
+  | 'ThatLlLearnHim'
+  | 'SafetyInspector'
+  | 'ThanksForYourVote'
+  | 'HellHathNoFury'
+  | 'LookOutBelow'
+  | 'APartyEveryoneCanEnjoy'
+  | 'IfYouCantBeatThem'
+  | 'YouGotRedOnYou'
+  | 'DontForgetYourPPE'
+  | 'BathedInBlood'
+  | 'AndAllIGotWereTheseBloodyFangs'
+  | 'ItsPartOfMyBackstory'
+  | 'WaterfrontWetWork'
   | 'DoYouAlwaysFollowOrders'
   | 'AwwButTheyreSoCute'
   | 'LosingMyReligion'
@@ -311,6 +329,16 @@ export const achievementChecklists: Partial<Record<AchievementTag, string[]>> = 
     'GavriellaMizrah',
     'PennyWhite',
     'JeromeDavids',
+  ],
+  ItsPartOfMyBackstory: [
+    'DanielaReyes',
+    'MigueldelaCruz',
+  ],
+  WaterfrontWetWork: [
+    'Easy',
+    'Standard',
+    'Hard',
+    'Expert',
   ],
   WithYourPowersCombined: [
     'BarrierNode',
@@ -485,6 +513,24 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'Obligations', campaignId: '11' },
   { tag: 'DrownedCityLineInTheSand', campaignId: '11' },
   { tag: 'RlyehExpertise', campaignId: '11' },
+  { tag: 'HideAndSeek', campaignId: '13' },
+  { tag: 'FriendlyNeighborhoodInvestigator', campaignId: '13' },
+  { tag: 'TrophyCollector', campaignId: '13' },
+  { tag: 'NoMeatSlabUnhooked', campaignId: '13' },
+  { tag: 'FilingPaperwork', campaignId: '13' },
+  { tag: 'ThatLlLearnHim', campaignId: '13' },
+  { tag: 'SafetyInspector', campaignId: '13' },
+  { tag: 'ThanksForYourVote', campaignId: '13' },
+  { tag: 'HellHathNoFury', campaignId: '13' },
+  { tag: 'LookOutBelow', campaignId: '13' },
+  { tag: 'APartyEveryoneCanEnjoy', campaignId: '13' },
+  { tag: 'IfYouCantBeatThem', campaignId: '13' },
+  { tag: 'YouGotRedOnYou', campaignId: '13' },
+  { tag: 'DontForgetYourPPE', campaignId: '13' },
+  { tag: 'BathedInBlood', campaignId: '13' },
+  { tag: 'AndAllIGotWereTheseBloodyFangs', campaignId: '13' },
+  { tag: 'ItsPartOfMyBackstory', campaignId: '13' },
+  { tag: 'WaterfrontWetWork', campaignId: '13' },
   { tag: 'DoYouAlwaysFollowOrders', campaignId: '06', part: 'theDreamQuest' },
   { tag: 'AwwButTheyreSoCute', campaignId: '06', part: 'theDreamQuest' },
   { tag: 'LosingMyReligion', campaignId: '06', part: 'theDreamQuest' },

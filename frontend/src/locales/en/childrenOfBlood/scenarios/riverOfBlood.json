@@ -45,11 +45,11 @@
     "resolution4": {
       "title": "Resolution 4",
       "body": "<p>_Resolution 4_: Back at Detective Reynolds’ office, you explain what you’ve learned. He tells you that his leads also pointed towards the New Horizons meat packing facility, and a suspicious group that had been seen around the building, dressed in robes instead of the more standard aprons and coveralls of the workers. “The same place where Julia worked,” Reynolds says. “Seems like that place is worth a visit.”</p><ul><li>Detective Reynolds joins the investigation! Choose an investigator to become the bearer of the set-aside Detective Reynolds story asset.</li><li>If “the investigators found a sacrificial dagger,” choose an investigator to become the bearer of the set-aside Fang of Zburamoarte story asset.</li><li>Each investigator who ended the scenario with 3 {'{'}blood{'}'} tokens sealed on their investigator becomes the bearer of a set-aside The Blood Blight weakness if they are not already a bearer of it.</li><li>Release each sealed {'{'}blood{'}'} token and return them to the chaos bag.</li><li>Proceed to _Scenario II: New Horizons_.</li></ul>"
+    },
+    "xp": {
+      "noResolution": "as they learn from their mistakes",
+      "resolution3": "as they are better prepared for what is to come"
     }
-  },
-  "xp": {
-    "noResolution": "as they learn from their mistakes",
-    "resolution3": "as they are better prepared for what is to come"
   },
   "spendExperience": "Spend 2 {'{'}perPlayer{'}'} total experience, as a group, to remove 1 {'{'}blood{'}'} token from the chaos bag",
   "tokens": {

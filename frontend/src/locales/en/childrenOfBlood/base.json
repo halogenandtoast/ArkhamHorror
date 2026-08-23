@@ -29,7 +29,9 @@
     "investigatorsCompletedTheirSearch": "The investigators completed their search.",
     "investigatorsLeftZburamoarteAlive": "The investigators left Zburamoarte alive.",
     "investigatorsDefeatedZburamoarte": "The investigators defeated Zburamoarte.",
-    "investigatorsWereLeftToTheCultsMercy": "The investigators were left to the cult’s mercy."
+    "investigatorsWereLeftToTheCultsMercy": "The investigators were left to the cult’s mercy.",
+    "investigatorsStoppedTheChildrenOfBlood": "The investigators stopped the children of blood.",
+    "investigatorsFailedToStopTheChildrenOfBlood": "The investigators failed to stop the children of blood."
   },
   "additionalRulesAndClarifications": {
     "title": "Additional Rules and Clarifications",
@@ -55,5 +57,16 @@
     "xp": {
       "friendsInLowPlaces": "Friends in Low Places"
     }
+  },
+  "epilogue": {
+    "title": "Epilogue",
+    "checkCampaignLog": "Check your campaign log:",
+    "toEpilogue1": "If *the investigators failed to stop the children of blood*, proceed to _Epilogue 1_.",
+    "toEpilogue2": "If both *the investigators stopped the children of blood* and *the investigators defeated Zburamoarte* are recorded, skip to _Epilogue 2_.",
+    "toEpilogue3": "If *the investigators stopped the children of blood*, skip to _Epilogue 3_.",
+    "epilogue1": "<p>_Epilogue 1_: With no other choice, you put the penthouse of Arkham’s Northside district behind you. No matter how far you go, you worry there won’t be enough distance between you and the monsters that ravaged the party and turned it into a bloodbath. It doesn’t take long for word of those events to spread throughout Arkham, and for more disappearances to take place as the creatures continue to hunt and feed in the dead of night. Eventually you decide to leave the city, relocating to Boston and thinking that at long last you can try and forget about the calamity on the Miskatonic.</p><p>But no matter how far you go, no matter how close you are to forgetting everything, in a matter of months you hear reports similar to those that led up to the chaos that plagued Arkham. The tainted blood of Zburamoarte and the machinations of the Cult of the Sanguine Order are spreading across New England. How long will it be before you have nowhere else to run?</p>",
+    "epilogue2": "<p>_Epilogue 2_: The events of the penthouse in Northside finally behind you, it seems that at long last the city of Arkham can breathe a sigh of relief. As the days begin to pass, the people who were subjected to the tainted blood of Zburamoarte at the hands of the cult begin to recover. They are weak, disoriented, and lacking any memory of their transformations. Against all odds, it seems that the diabolical machinations of Howard Wilkes and the Cult of the Sanguine Order are finally put to rest.</p><p class='basic'>If *the investigators spared Julia Stern*, skip to _Epilogue 4_.</p>",
+    "epilogue3": "<p>_Epilogue 3_: The events of the penthouse in Northside finally behind you, it seems that at long last the city of Arkham can breathe a sigh of relief. As the days begin to pass, however, rumors and whispers of monsters in the night seem to return. In a matter of weeks, it seems Arkham is right back to where it started on that fateful night in the Waterfront District. More disappearances are reported throughout the city, and you fear the creatures have returned to hunt and feed in the dead of night. Eventually you decide to leave Arkham, relocating to Boston and thinking that at long last you can try and forget about the calamity on the Miskatonic.</p><p>But no matter how far you go, no matter how close you are to forgetting everything, in a matter of months you hear reports similar to those that led up to the chaos that plagued Arkham. The tainted blood of Zburamoarte, and the machinations of the Cult of the Sanguine Order, have returned, and are spreading across New England. How long will it be before you have nowhere else to run?</p>",
+    "epilogue4": "<p>_Epilogue 4_: Weeks later, you find yourself walking down the sidewalk of Water Street once again. That bloody and desperate night seems like a distant memory fading into shadows as the sun rises from the Eastern horizon. As you continue on your way, you catch a glimpse of a familiar face—a middle-aged woman, with long dark hair pulled back into a tight bun, dressed in the blue coveralls of a factory worker. She looks up as she crosses the street, and your eyes meet for a brief moment. She doesn’t recognize you, but you know immediately that it’s Julia. She offers a polite smile before she continues on, eventually disappearing into the growing crowds.</p>"
   }
 }

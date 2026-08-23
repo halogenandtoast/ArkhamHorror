@@ -1,6 +1,7 @@
 module Arkham.Campaign.Campaigns.ChildrenOfBlood (childrenOfBlood) where
 
 import Arkham.Asset.Cards.ChildrenOfBlood qualified as Assets
+import Arkham.Campaign.Campaigns.ChildrenOfBlood.Achievements (runChildrenOfBloodAchievements)
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.ChildrenOfBlood.CampaignSteps
 import Arkham.Campaigns.ChildrenOfBlood.ChaosBag
@@ -36,7 +37,8 @@ instance IsCampaign ChildrenOfBlood where
     other -> defaultNextStep other
 
 instance RunMessage ChildrenOfBlood where
-  runMessage msg c@(ChildrenOfBlood _attrs) = runQueueT $ campaignI18n $ case msg of
+  runMessage msg c@(ChildrenOfBlood _attrs) =
+    runQueueT $ campaignI18n $ lift (runChildrenOfBloodAchievements msg) *> case msg of
     CampaignStep PrologueStep -> do
       scope "intro" $ flavor $ setTitle "title" >> p "body"
       scope "additionalRulesAndClarifications" do
@@ -87,6 +89,29 @@ instance RunMessage ChildrenOfBlood where
       pure c
     DoStep 6 (CampaignStep (InterludeStep 1 _)) -> scope "friendsInLowPlaces" do
       flavor $ setTitle "title" >> p "friendsInLowPlaces6"
+      pure c
+    CampaignStep EpilogueStep -> scope "epilogue" do
+      failed <- getHasRecord InvestigatorsFailedToStopTheChildrenOfBlood
+      stopped <- getHasRecord InvestigatorsStoppedTheChildrenOfBlood
+      defeatedZburamoarte <- getHasRecord InvestigatorsDefeatedZburamoarte
+      flavor do
+        setTitle "title"
+        p.basic "checkCampaignLog"
+        ul do
+          li.validate failed "toEpilogue1"
+          li.validate (stopped && defeatedZburamoarte) "toEpilogue2"
+          li.validate (stopped && not defeatedZburamoarte) "toEpilogue3"
+      if failed
+        then flavor $ setTitle "title" >> p "epilogue1"
+        else
+          if defeatedZburamoarte
+            then do
+              flavor $ setTitle "title" >> p "epilogue2"
+              whenM (getHasRecord InvestigatorsSparedJuliaStern)
+                $ flavor
+                $ setTitle "title" >> p "epilogue4"
+            else flavor $ setTitle "title" >> p "epilogue3"
+      nextCampaignStep
       pure c
     FailedSkillTest iid _ _ (Initiator _) _ _ -> sealBloodOnFailure iid >> pure c
     After (FailedSkillTest iid _ _ (Initiator _) _ _) -> sealBloodOnFailure iid >> pure c

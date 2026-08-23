@@ -78,6 +78,10 @@
       "title": "Codex {'{'}elderSign{'}'}: Party Guest",
       "body": "<p>You find a small group of guests talking amongst themselves in hushed tones. You are able to loiter just outside of their huddle, and learn that each has their own suspicions about what is really going on at tonight’s party.</p><p class='basic right'>Automatically evade this enemy. Gain 1 clue (from the token pool). Then, if Detective Reynolds is in play under an investigator’s control, that investigator gains 1 clue (from the token pool).</p>"
     },
+    "priscillaThomas": {
+      "title": "Codex B: Priscilla Thomas",
+      "body": "<p class='basic'>If this is the first time this codex entry has been triggered this scenario, proceed to _Priscilla Thomas 1_. Otherwise, skip to _Priscilla Thomas 2_.</p>"
+    },
     "priscillaThomas1": {
       "title": "Codex B: Priscilla Thomas",
       "body": "<p>_Priscilla Thomas 1_: Priscilla Thomas stands near the door to the dining hall, watching the other guests with a look of bored frustration. “A host who arrives late to his own party is never a good sign,” she says. She turns to regard you as you approach, and her eyebrow goes up in suspicion. “I don’t suppose you know anything about that, do you?”</p><p class='basic right'>Proceed to _Priscilla Thomas 2_.</p>"
@@ -93,6 +97,27 @@
     "label": {
       "healHorror": "Heal {count} horror",
       "gainResources": "Gain {count} resources"
+    }
+  },
+  "resolutions": {
+    "investigatorDefeat": {
+      "title": "Investigator Defeat",
+      "body": "<p class='basic'>Before reading any other resolution, if at least 1 investigator was defeated: The defeated investigators read _Investigator Defeat_ first.</p><p>_Investigator Defeat_: You struggle against the monsters, but their numbers and ferocity overwhelm you, feeding on your flesh as you’re forced to the floor. Your entire world is a blood-soaked tempest of blinding pain before you finally give in to the darkness of death.</p><ul><li>Each defeated investigator is _killed_.</li><li>If another resolution was reached, the remaining investigators proceed to that resolution. Otherwise, in your Campaign Log, record *the investigators failed to stop the children of blood*. The investigators lose the campaign!</li></ul>"
+    },
+    "noResolution": {
+      "title": "No Resolution",
+      "body": "<p>_If no resolution was reached because each surviving investigator resigned during act 1a or act 2a_: Unable to bear the chaos of the party, you flee into the streets. You only hope that the problems of the New Horizons meat and the blighted blood will solve themselves.</p><ul><li>In your Campaign Log, record *the investigators failed to stop the children of blood*.</li><li>Each investigator suffers 1 physical trauma and 1 mental trauma, as they never fully recover from what they witnessed in their investigation.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>Each investigator who does not have The Blood Blight weakness and who ended the scenario with 2 or more {'{'}blood{'}'} tokens sealed on their investigator becomes the bearer of a set-aside The Blood Blight weakness.</li><li>The investigators lose the campaign!</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolution 1",
+      "body": "<p>_Resolution 1_: You walk out of the penthouse, leaving the defeated Howard Wilkes and the shattered remains of his cult behind. Arkham’s finest arrive as you head out into the street, and you let Detective Reynolds handle their questions. You head back out into Arkham as the first rays of the morning sun peek out over the Miskatonic River.</p><ul><li>In your campaign log, record *the investigators stopped the children of blood*.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>Each investigator earns 1 bonus experience for each _Civilian_ enemy beneath the scenario reference card when the scenario ended.</li><li>_Experience_: {xp}</li></ul></li><li>Each investigator who does not have The Blood Blight weakness and who ended the scenario with 2 or more {'{'}blood{'}'} tokens sealed on their investigator becomes the bearer of a set-aside The Blood Blight weakness.<ul><li>If at least 1 investigator has The Blood Blight weakness in their deck, the investigators have earned the Chosen of Zburamoarte campaign reward card. Add this card to the player card pool.</li></ul></li><li>The investigators win the campaign!</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolution 2",
+      "body": "<p>_Resolution 2_: You and the few guests you saved flee the penthouse as the Arkham police arrive. You watch as they rush into the penthouse, but you don’t stick around, heading out into Arkham just as the first rays of the morning sun peek out over the Miskatonic River.</p><ul><li>In your campaign log, record *the investigators failed to stop the children of blood*.</li><li>Each investigator suffers 1 physical trauma and 1 mental trauma, as they never fully recover from the horrors of the Cult of the Sanguine Order.</li><li>Each investigator earns experience equal to the _victory X_ value of each card in the victory display.<ul><li>Each investigator earns 1 bonus experience for each _Civilian_ enemy beneath the scenario reference card when the scenario ended.</li><li>_Experience_: {xp}</li></ul></li><li>Each investigator who does not have The Blood Blight weakness and who ended the scenario with 2 or more {'{'}blood{'}'} tokens sealed on their investigator becomes the bearer of a set-aside The Blood Blight weakness.<ul><li>If at least 1 investigator has The Blood Blight weakness in their deck, the investigators have earned the Chosen of Zburamoarte campaign reward card. Add this card to the player card pool.</li></ul></li><li>The investigators win the campaign!</li></ul>"
+    },
+    "xp": {
+      "rescuedGuests": "for each _Civilian_ enemy rescued"
     }
   }
 }

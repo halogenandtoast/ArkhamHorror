@@ -504,11 +504,20 @@ data Message
     toasted by the API layer (the engine only announces it).
     -}
     EarnAchievement Achievement
+  | {- | Like 'EarnAchievement', but credited to a single investigator's player
+    rather than the whole table -- for achievements whose text is about one
+    investigator ("Seal 3 {blood} tokens on your investigator...").
+    -}
+    EarnAchievementBy InvestigatorId Achievement
   | {- | Checklist items completed toward a cross-playthrough achievement
     (see 'achievementChecklist'); the API layer merges them into the
     per-user progress row and awards the earn when the list is complete.
     -}
     AchievementProgress Achievement [Text]
+  | {- | Like 'AchievementProgress', but credited to a single investigator's
+    player -- for checklists whose items are about who was played.
+    -}
+    AchievementProgressBy InvestigatorId Achievement [Text]
   | SetLocationOffset LocationId Double Double
   | ResetLocationOffsets
   | SetAsIfAtIgnored InvestigatorId Bool

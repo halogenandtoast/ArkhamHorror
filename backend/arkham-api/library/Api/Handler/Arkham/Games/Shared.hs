@@ -442,11 +442,16 @@ updateGame response gameId mRoom = do
         -- Above-the-table achievements: collect EarnAchievement messages via
         -- the (otherwise unused) runMessages message logger; persisted below.
         achievementsRef <- newIORef []
+        achievementsByRef <- newIORef []
         achievementProgressRef <- newIORef []
+        achievementProgressByRef <- newIORef []
         let
           collectAchievements = \case
             EarnAchievement a -> modifyIORef' achievementsRef (a :)
+            EarnAchievementBy iid a -> modifyIORef' achievementsByRef ((iid, a) :)
             AchievementProgress a items -> modifyIORef' achievementProgressRef ((a, items) :)
+            AchievementProgressBy iid a items ->
+              modifyIORef' achievementProgressByRef ((iid, a, items) :)
             _ -> pure ()
         mResult <- liftIO $ timeout runMessagesTimeoutMicros do
           runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) mEpicEnv) do
@@ -517,22 +522,38 @@ updateGame response gameId mRoom = do
         -- achievement, ever. insertUnique against UniqueUserAchievement makes
         -- re-earns no-ops; only genuinely new rows produce a toast.
         earned <- liftIO $ ordNub . reverse <$> readIORef achievementsRef
+        -- Single-investigator earns (EarnAchievementBy): credited only to the
+        -- player controlling that investigator.
+        earnedBy <- liftIO $ ordNub . reverse <$> readIORef achievementsByRef
         -- Checklist progress (AchievementProgress): merge this action's items
         -- per achievement, then per user below.
         progressed <- liftIO $ reverse <$> readIORef achievementProgressRef
+        progressedBy <- liftIO $ reverse <$> readIORef achievementProgressByRef
         let
           progressList =
             [ (a, ordNub $ concat [zs | (a', zs) <- progressed, a' == a])
             | a <- ordNub (map fst progressed)
             ]
         newAchievements <-
-          if null earned && null progressList
+          if null earned && null earnedBy && null progressList && null progressedBy
             then pure []
             else do
               players <- P.selectList [ArkhamPlayerArkhamGameId P.==. gameId] []
               let userIds = ordNub $ map (arkhamPlayerUserId . entityVal) players
+              let
+                usersFor iid =
+                  ordNub
+                    [ arkhamPlayerUserId p
+                    | p <- map entityVal players
+                    , arkhamPlayerInvestigatorId p == coerce iid
+                    ]
               directEarns <- fmap concat $ for earned \achievement -> do
                 inserted <- for userIds \uid ->
+                  P.insertUnique
+                    $ ArkhamAchievement uid achievement (Just now) (Just gameId) Null
+                pure [achievement | any isJust inserted]
+              soloEarns <- fmap concat $ for earnedBy \(iid, achievement) -> do
+                inserted <- for (usersFor iid) \uid ->
                   P.insertUnique
                     $ ArkhamAchievement uid achievement (Just now) (Just gameId) Null
                 pure [achievement | any isJust inserted]
@@ -543,7 +564,11 @@ updateGame response gameId mRoom = do
                 completions <- for userIds \uid ->
                   applyAchievementProgress uid achievement items gameId now
                 pure [achievement | or completions]
-              pure $ ordNub $ directEarns <> progressEarns
+              soloProgressEarns <- fmap concat $ for progressedBy \(iid, achievement, items) -> do
+                completions <- for (usersFor iid) \uid ->
+                  applyAchievementProgress uid achievement items gameId now
+                pure [achievement | or completions]
+              pure $ ordNub $ directEarns <> soloEarns <> progressEarns <> soloProgressEarns
 
         pure (g', oldLogEntries, updatedLog, mSharedUpdate, actAdvanced, newAchievements)
 

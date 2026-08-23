@@ -710,6 +710,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
             />
 
             <SealedChaosTokens
+              :style="{ '--sealed-token-image-width': '30px' }"
               :tokens="chaosTokensOnLocation"
               :game="game"
               :playerId="playerId"

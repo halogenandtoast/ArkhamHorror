@@ -197,6 +197,13 @@ const expanded = ref(false)
   transition: transform 0.16s ease;
 }
 
+/* Size the token art here rather than relying on the host card's pool rules,
+   so the group looks the same wherever it is mounted. */
+.sealed-chaos-tokens .sealed-token :deep(img.token) {
+  width: var(--sealed-token-image-width, var(--card-token-width, 25px));
+  height: auto;
+}
+
 .sealed-chaos-tokens.sealed-chaos-tokens--expanded .sealed-token {
   transform: translate(var(--sealed-x), var(--sealed-y));
 }

@@ -16,7 +16,7 @@ import * as Arkham from '@/arkham/types/Investigator'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
 import { cardId, toCardContents } from '@/arkham/types/Card'
-import Token from '@/arkham/components/Token.vue';
+import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composable/menu';
 import { useI18n } from 'vue-i18n';
@@ -507,7 +507,14 @@ const spadeInjury = computed(() => {
             :playerId="investigator.playerId"
             class="investigator-pending-tokens"
           />
-          <Token v-for="sealedToken in investigator.sealedChaosTokens" :key="sealedToken.id" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" class="sealed" />
+          <div v-if="investigator.sealedChaosTokens.length > 0" class="sealed">
+            <SealedChaosTokens
+              :tokens="investigator.sealedChaosTokens"
+              :game="game"
+              :playerId="playerId"
+              @choose="choose"
+            />
+          </div>
         </div>
       </div>
       <div>
@@ -1163,10 +1170,16 @@ img.card.ability-target {
 }
 
 .sealed {
+  --sealed-token-image-width: 30px;
   position: absolute;
-  width: calc(var(--card-width) / 2);
-  left: 0;
+  left: 4px;
   top: calc(var(--card-width) / 2);
+}
+
+/* The fanned-open group reaches past the card, so lift the image above the
+   buttons and cards that follow it. */
+.investigator-image:has(.sealed-chaos-tokens--expanded) {
+  z-index: var(--z-index-30000);
 }
 
 .captured {

@@ -1,1 +1,98 @@
-{}
+{
+  "intro": {
+    "title": "Scenario III: Blood Money",
+    "body": "<p>Howard Wilkes’s party is at his fancy new penthouse at the top of one of the rebuilt buildings in Northside, overlooking the dark and industrious district of Arkham. You ride the elevator up to the fourth floor, and follow the short, clean hallway to the door of the penthouse. Rapping on the door, you’re greeted by a tall man in a tuxedo who checks your name and allows you entrance. It would seem Charlie is as good as his word.</p><p>Detective Reynolds, also dressed in formalwear, makes his way over to you as soon as you step into the foyer. “Good, you’re here,” he says. “Problem is that Wilkes isn’t around, and nobody has seen him. I suggest we deal with Miss Thomas. Get her to rethink her business decision. Then we can chat up the rest of the party and see what else we can learn.” He glances around nervously at the other guests nearby, all of whom are looking at him and at you with suspicion. “And let’s be quick about it.”</p>"
+  },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets:<section class='encounter-sets grid'><div><img src='{setImgPath}/blood-money.png' /><span>Blood Money</span></div><div><img src='{setImgPath}/agents-of-zburamoarte.png' /><span>Agents of Zburamoarte</span></div><div><img src='{setImgPath}/bloodthirst.png' /><span>Bloodthirst</span></div><div><img src='{setImgPath}/children-of-blood.png' /><span>Children of Blood</span></div><div><img src='{setImgPath}/blood-blight.png' /><span>Blood Blight</span></div><div><img src='{setImgPath}/hunted.png' /><span>Hunted</span></div><div><img src='{setImgPath}/sanguine-secrets.png' /><span>Sanguine Secrets</span></div><div><img src='{setImgPath}/arcane-lock.png' /><span>Arcane Lock{'{'}asterisk{'}'}</span></div></section><div class='center'>{'{'}asterisk{'}'}This encounter set is found in the Arkham Horror: The Card Game core set.</div>",
+    "sanguineSecrets": "When gathering cards from the _Sanguine Secrets_ encounter set, only gather the three copies of Sanguine Cultist and the Blood-Crazed Zealot enemies. Do not gather the Morbid Rituals treacheries.",
+    "gatherAdditionalSets": "Additionally, if there are 3 or 4 investigators, gather all cards from the following encounter set:<section class='encounter-sets grid'><div><img src='{setImgPath}/afflicted.png' /><span>Afflicted</span></div></section>",
+    "placeLocations": "Put the Office, Study, Dining Hall, and Kitchen locations into play according to the diagram on page 24.",
+    "foyer": "Put Foyer into play, (*Boring Party*) side faceup.",
+    "masterBedroom": "Set Master Bedroom aside, out of play.",
+    "balcony": "If you are playing on Easy or Standard difficulty, also set the Balcony aside, out of play. Otherwise, remove it from the game.",
+    "startAt": "Each investigator begins play at Foyer.",
+    "priscillaThomas": "Spawn the Priscilla Thomas enemy at Dining Hall.",
+    "suspiciousGuests": "Gather each Suspicious Guest enemy. If the number of investigators in the game is…",
+    "onePlayer": "…exactly 1, spawn 1 Suspicious Guest at the Study. Remove 2 copies of that enemy from the game.",
+    "twoPlayers": "…exactly 2, spawn 1 Suspicious Guest at the Study and 1 at the Office. Remove 1 copy of that enemy from the game.",
+    "threeOrFourPlayers": "…exactly 3 or 4, spawn 1 Suspicious Guest at the Study, 1 at the Office, and 1 at the Dining Hall.",
+    "agendaDeck": "Check your campaign log.",
+    "feedingFrenzyV2": "If *the investigators defeated Zburamoarte* is recorded, construct the agenda deck using agenda 2a—“Feeding Frenzy (v. II).” Remove the other copy of agenda 2a from the game.",
+    "feedingFrenzyV1": "Otherwise, construct the agenda deck using agenda 2a—“Feeding Frenzy (v. I).” Remove the other copy of agenda 2a from the game.",
+    "setAside": "Set aside each copy of the Child of Blood enemy, the Spawn of Zburamoarte enemy, and the Sanguine Rebirth treachery, the Chosen of Zburamoarte double-sided story asset, as well as each enemy from the _Sanguine Secrets_ encounter set.",
+    "howardWilkes": "Gather each copy of the Howard Wilkes enemy.",
+    "firstChildOfZburamoarte": "If you are playing on Easy difficulty, set Howard Wilkes (*First Child of Zburamoarte*) aside, out of play. Remove each other copy of Howard Wilkes from the game.",
+    "tooFarGone": "If you are playing on Standard difficulty, set Howard Wilkes (*Too Far Gone*) aside, out of play. Remove each other copy of Howard Wilkes from the game.",
+    "ultimatePredator": "If you are playing on Hard or Expert difficulty, set Howard Wilkes (*Ultimate Predator*) aside, out of play. Remove each other copy of Howard Wilkes from the game.",
+    "juliaStern": "Check your campaign log. If *the investigators killed Julia Stern* is recorded, remove each copy of the Julia Stern enemy from the game. Otherwise, gather each copy of the Julia Stern enemy.",
+    "firstVictimOfNewHorizons": "If you are playing on Easy difficulty, set Julia Stern (*First Victim of New Horizons*) aside, out of play. Remove each other copy of Julia Stern from the game.",
+    "outForBlood": "If you are playing on Standard difficulty, set Julia Stern (*Out for Blood*) aside, out of play. Remove each other copy of Julia Stern from the game.",
+    "childOfVengeance": "If you are playing on Hard or Expert difficulty, set Julia Stern (*Child of Vengeance*) aside, out of play. Remove each other copy of Julia Stern from the game.",
+    "addCultist": "Add 1 {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign."
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X is 1 more than the number of {'{'}blood{'}'} tokens sealed on your investigator.",
+      "cultist": "-2. If you fail during an attack or evasion targeting a _Monster_ enemy, add 1 {'{'}blood{'}'} token to the chaos bag.",
+      "tablet": "-3. If you fail and there is a {'{'}blood{'}'} token sealed on your investigator, place 1 of your clues on your location.",
+      "elderThing": "-4. If you fail, ready the nearest exhausted _Monster_ enemy."
+    },
+    "hardExpert": {
+      "skull": "-X. X is 2 more than the number of {'{'}blood{'}'} tokens sealed on your investigator.",
+      "cultist": "-3. If this token is revealed during an attack or evasion targeting a _Monster_ enemy, after this test resolves, add 1 {'{'}blood{'}'} token to the chaos bag.",
+      "tablet": "-4. If you fail and there is a {'{'}blood{'}'} token sealed on your investigator, place 1 of your clues on your location.",
+      "elderThing": "-5. If you fail, ready the nearest exhausted _Monster_ enemy."
+    }
+  },
+  "codex": {
+    "partyGuest": {
+      "title": "Codex A: Party Guest",
+      "body": "<p>You chat up the party guest, trying to learn what you can while making sure they don’t interfere in your investigation.</p><p class='basic'>Reveal random tokens from the chaos bag until you reveal a token with a symbol that isn’t sealed on an enemy. If the token is…</p><ul><li>…a {'{'}skull{'}'} token: The guest regards you with suspicion.</li><li>…a {'{'}cultist{'}'} token: This guest is trying to not be noticed.</li><li>…a {'{'}tablet{'}'} token: Seated comfortably, this guest smiles at you.</li><li>…an {'{'}elderThing{'}'} token: This guest can’t eat their food fast enough.</li><li>…a {'{'}blood{'}'} token: This guest is dressed for business, not a party.</li><li>…an {'{'}autoFail{'}'} token: This guest is struggling to stand upright.</li><li>…an {'{'}elderSign{'}'} token: This guest joins a small group to gossip.</li></ul><p class='basic'>After resolving the codex matching the revealed token, any investigator may trigger this codex again.</p>"
+    },
+    "partyGuestSkull": {
+      "title": "Codex {'{'}skull{'}'}: Party Guest",
+      "body": "<p>The guest begins a long, boring, and painfully oblivious story about how they were shocked to see Howard Wilkes choose Northside—the “working district, of all places”—as the location for not only this party, but also his penthouse. You pretend to be interested as they ramble on, but find a quiet moment to steal away instead.</p><p class='basic right'>Automatically evade this enemy and seal this token on it (if Priscilla Thomas is in play, seal this token on her instead).</p>"
+    },
+    "partyGuestCultist": {
+      "title": "Codex {'{'}cultist{'}'}: Party Guest",
+      "body": "<p>As you approach the guest, they stare you down with a deathly glare. Before you can even ask them what’s wrong, a dagger, fashioned from an over-sized fang, flashes in their hands as it’s drawn from their jacket pocket. “I know what you’re trying to do!” they shout. “We won’t let you stop what has already been started!”</p><p class='basic right'>Discard this enemy and spawn 1 random set-aside Cultist enemy engaged with you. Seal this token on that enemy (if Priscilla Thomas is in play, seal this token on her instead).</p>"
+    },
+    "partyGuestTablet": {
+      "title": "Codex {'{'}tablet{'}'}: Party Guest",
+      "body": "<p>Your conversation with this guest, while enlightening about some strange happenings in French Hill, is otherwise unhelpful.</p><p class='basic right'>Automatically evade this enemy and seal this token on it. Draw 1 card.</p>"
+    },
+    "partyGuestElderThing": {
+      "title": "Codex {'{'}elderThing{'}'}: Party Guest",
+      "body": "<p>“Darling, you simply must try the hors d’oeuvres!” This guest approaches you, holding a cracker topped with some sort of blood-red meat-spread, ready to force it into your mouth. You grit your teeth, make a comment about needing to use the washroom, and make a swift exit.</p><p class='basic right'>Automatically evade this enemy and seal this token on it. You may move to a connecting location.</p>"
+    },
+    "partyGuestBlood": {
+      "title": "Codex {'{'}blood{'}'}: Party Guest",
+      "body": "<p>This guest remarks about how Howard Wilkes has met resistance when trying to distribute his product throughout Arkham, making a name for himself among local businesses as a ruthless megalomaniac. He’s brought Priscilla Thomas here this evening in hopes to find success outside of the city before his entire operation runs out of funding.</p><p class='basic right'>Automatically evade this enemy and seal this token on it (if Priscilla Thomas is in play, seal this token on her instead).</p>"
+    },
+    "partyGuestAutoFail": {
+      "title": "Codex {'{'}autoFail{'}'}: Party Guest",
+      "body": "<p>This guest stumbles a bit, leaning heavily against a marble statue. You approach cautiously, reaching out and asking whether they need help. No sooner does your hand touch their shoulder than they wheel about, a crazed look in their eyes and a snarl on their lips.</p><p class='basic right'>This enemy attacks you. After this attack, that enemy disengages from each investigator and moves to a connecting location (with no investigators, if able).</p>"
+    },
+    "partyGuestElderSign": {
+      "title": "Codex {'{'}elderSign{'}'}: Party Guest",
+      "body": "<p>You find a small group of guests talking amongst themselves in hushed tones. You are able to loiter just outside of their huddle, and learn that each has their own suspicions about what is really going on at tonight’s party.</p><p class='basic right'>Automatically evade this enemy. Gain 1 clue (from the token pool). Then, if Detective Reynolds is in play under an investigator’s control, that investigator gains 1 clue (from the token pool).</p>"
+    },
+    "priscillaThomas1": {
+      "title": "Codex B: Priscilla Thomas",
+      "body": "<p>_Priscilla Thomas 1_: Priscilla Thomas stands near the door to the dining hall, watching the other guests with a look of bored frustration. “A host who arrives late to his own party is never a good sign,” she says. She turns to regard you as you approach, and her eyebrow goes up in suspicion. “I don’t suppose you know anything about that, do you?”</p><p class='basic right'>Proceed to _Priscilla Thomas 2_.</p>"
+    },
+    "priscillaThomas2": {
+      "title": "Codex B: Priscilla Thomas",
+      "body": "<p>_Priscilla Thomas 2_: You try talking to Miss Thomas about her reason for being at the party, attempting to sow the seeds of doubt in her mind regarding Howard Wilkes and his business.</p><p class='basic'>Release each chaos token sealed on Priscilla Thomas. Place 1 horror (from the token pool) on Priscilla Thomas for each chaos token released this way.</p><p class='basic'>Choose an investigator at your location to test {'{'}willpower{'}'} or {'{'}intellect{'}'} (3). If that investigator succeeds, place 1 horror on Priscilla Thomas. Then, if there is 4 or more horror on Priscilla Thomas, proceed to _Priscilla Thomas 3_.</p><p class='basic'>Any investigator may trigger this codex entry again.</p>"
+    },
+    "priscillaThomas3": {
+      "title": "Codex B: Priscilla Thomas",
+      "body": "<p>_Priscilla Thomas 3_: Miss Thomas listens to your story, her face stoic but her eyes attentive. Eventually she nods, setting her drink down on a nearby end table. “Say no more,” she said. “I was already feeling like this was a bad deal. You’re only confirming my concerns. Thanks.” She turns to leave, and pauses in the doorway. “If ever you find yourself in Boston and need work, I could make use of your investigative skills. And you’d be paid well.” With that, she leaves, heading for the foyer.</p><p class='basic right'>Remove Priscilla Thomas from the game. Each investigator may heal 2 horror or gain 3 resources.</p>"
+    },
+    "label": {
+      "healHorror": "Heal {count} horror",
+      "gainResources": "Gain {count} resources"
+    }
+  }
+}

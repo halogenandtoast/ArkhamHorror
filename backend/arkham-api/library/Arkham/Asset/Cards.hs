@@ -205,6 +205,8 @@ allPlayerAssetCards =
       , cherishedKeepsake
       , cherishedKeepsake1
       , chicagoTypewriter4
+      , chosenOfZburamoarteCompelledToFeed
+      , chosenOfZburamoarteFightingTheHunger
       , chuckFergus2
       , chuckFergus5
       , claireWilson

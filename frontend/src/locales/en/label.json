@@ -320,6 +320,7 @@
   "takeEvadeAction": "Take evade action",
   "addBloodToken": "Add 1 {'{'}blood{'}'} to the chaos bag",
   "drawEncounterCard": "Draw the top card of the encounter deck",
+  "searchEncounterDeckAndDiscard": "Search the encounter deck and discard pile",
   "takeFightAction": "Take fight action",
   "takeInvestigateAction": "Take investigate action",
   "takeNoMoreActions": "Take no more actions",

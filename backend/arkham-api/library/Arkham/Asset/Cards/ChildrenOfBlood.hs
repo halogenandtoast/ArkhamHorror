@@ -38,6 +38,24 @@ forgedPermit =
     , cdCardTraits = setFromList [Item, Trait.Evidence, Illicit]
     }
 
+chosenOfZburamoarteFightingTheHunger :: CardDef
+chosenOfZburamoarteFightingTheHunger =
+  permanent
+    $ (storyAsset_ "13093a" ("Chosen of Zburamoarte" <:> "Fighting the Hunger") BloodMoney)
+      { cdCardTraits = setFromList [Condition, Trait.Blight, Trait.Reward]
+      , cdUnique = True
+      , cdOtherSide = Just "13093b"
+      }
+
+chosenOfZburamoarteCompelledToFeed :: CardDef
+chosenOfZburamoarteCompelledToFeed =
+  permanent
+    $ (storyAsset_ "13093b" ("Chosen of Zburamoarte" <:> "Compelled to Feed") BloodMoney)
+      { cdCardTraits = setFromList [Condition, Trait.Blight, Trait.Reward]
+      , cdUnique = True
+      , cdOtherSide = Just "13093a"
+      }
+
 charlieKaneKnowsAGuy :: CardDef
 charlieKaneKnowsAGuy =
   (storyAsset "13105" ("Charlie Kane" <:> "Knows a Guy") 3 FriendsInLowPlaces)

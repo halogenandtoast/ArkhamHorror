@@ -267,6 +267,7 @@ data Trait
   | Research
   | Resident
   | Resolute
+  | Reward
   | Restricted
   | Risen
   | Rlyeh

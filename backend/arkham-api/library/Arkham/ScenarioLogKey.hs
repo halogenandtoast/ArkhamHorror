@@ -192,6 +192,7 @@ data ScenarioLogKey
   | TheInvestigatorsFoundTheManagersKeys
   | TheInvestigatorsFoundForgedPermits
   | TheInvestigatorsFoundASheetOfArcaneSymbols
+  | TheInvestigatorsSpokeWithPriscillaThomas
   | -- Investigator Cards
     YouOweBiancaResources (Labeled InvestigatorId) Int
   deriving stock (Eq, Show, Ord, Data)

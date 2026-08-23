@@ -104,14 +104,16 @@ instance RunMessage SkillTest where
               (fromMaybe skillTestDifficulty skillTestOriginalDifficulty)
           )
           { skillTestAction = skillTestAction
+          , skillTestDifficultyIncrease = skillTestDifficultyIncrease
           }
       pure s
     IncreaseSkillTestDifficulty n -> do
       -- see: faqs/drawing-thin
-      -- This alters the test's *inherent* difficulty, so it must also apply to
-      -- the original difficulty a RepeatSkillTest (Live and Learn) restores.
-      let increase (SkillTestDifficulty d) = SkillTestDifficulty (SumCalculation [d, Fixed n])
-      pure $ s & difficultyL %~ increase & originalDifficultyL %~ fmap increase
+      -- Tracked apart from the difficulty calculation so a SetDifficulty effect
+      -- (Sixth Sense, Unearth the Ancients) replaces the base value without
+      -- swallowing the increase. It is the test's *inherent* difficulty though,
+      -- so a RepeatSkillTest (Live and Learn) carries it over.
+      pure $ s & difficultyIncreaseL +~ n
     ChaosTokenCanceled _ _ token -> do
       let cancelIf t = if t.id == token.id then token {chaosTokenCancelled = True} else t
       pure
@@ -432,6 +434,7 @@ instance RunMessage SkillTest where
             & (resultL .~ SucceededBy Automatic modifiedSkillValue')
             & (originalDifficultyL .~ skillTestOriginalDifficulty)
             & (difficultyL .~ SkillTestDifficulty (Fixed 0))
+            & (difficultyIncreaseL .~ 0)
       results <- calculateSkillTestResultsData s'
       push $ SkillTestResults results
       pure $ s' & stepL .~ DetermineSuccessOrFailureOfSkillTestStep
@@ -450,6 +453,7 @@ instance RunMessage SkillTest where
         $ s
         & (resultL .~ SucceededBy NonAutomatic n)
         & (difficultyL .~ SkillTestDifficulty (Fixed 0))
+        & (difficultyIncreaseL .~ 0)
     FailSkillTest -> do
       push $ Do FailSkillTest
       when (skillTestStep < SkillTestFastWindow2) $ push CheckAllAdditionalCommitCosts

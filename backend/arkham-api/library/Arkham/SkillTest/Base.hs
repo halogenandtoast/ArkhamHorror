@@ -38,6 +38,7 @@ data SkillTest = SkillTest
   , skillTestBaseValue :: SkillTestBaseValue
   , skillTestDifficulty :: SkillTestDifficulty
   , skillTestOriginalDifficulty :: Maybe SkillTestDifficulty
+  , skillTestDifficultyIncrease :: Int
   , skillTestSetAsideChaosTokens :: [ChaosToken]
   , skillTestRevealedChaosTokens :: [ChaosToken] -- tokens may change from physical representation
   , skillTestAdditionalRevealedChaosTokens :: [ChaosToken] -- tokens may change from physical representation
@@ -97,6 +98,9 @@ instance HasField "chaosTokens" SkillTest [ChaosToken] where
 
 instance HasField "step" SkillTest SkillTestStep where
   getField = skillTestStep
+
+instance HasField "difficultyIncrease" SkillTest Int where
+  getField = skillTestDifficultyIncrease
 
 setIsRevelation :: SkillTest -> SkillTest
 setIsRevelation st = st {skillTestIsRevelation = True}
@@ -161,6 +165,7 @@ buildSkillTest sid iid (toSource -> source) (toTarget -> target) stType bValue d
     , skillTestBaseValue = bValue
     , skillTestDifficulty = difficulty
     , skillTestOriginalDifficulty = Just difficulty
+    , skillTestDifficultyIncrease = 0
     , skillTestSetAsideChaosTokens = mempty
     , skillTestRevealedChaosTokens = mempty
     , skillTestAdditionalRevealedChaosTokens = mempty
@@ -218,6 +223,7 @@ instance FromJSON SkillTest where
     skillTestBaseValue <- o .: "baseValue"
     skillTestDifficulty <- o .: "difficulty"
     skillTestOriginalDifficulty <- o .:? "originalDifficulty"
+    skillTestDifficultyIncrease <- o .:? "difficultyIncrease" .!= 0
     skillTestSetAsideChaosTokens <- o .: "setAsideChaosTokens"
     skillTestRevealedChaosTokens <- o .: "revealedChaosTokens"
     skillTestAdditionalRevealedChaosTokens <- o .:? "additionalRevealedChaosTokens" .!= []

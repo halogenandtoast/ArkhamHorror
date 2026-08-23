@@ -580,7 +580,7 @@ getModifiedSkillTestDifficulty s = do
   imods <- filter forSkillTest <$> getModifiers s.investigator
   modifiers' <- (imods <>) <$> getModifiers (SkillTestTarget s.id)
   baseDifficulty <- getBaseSkillTestDifficulty s
-  let preModifiedDifficulty = foldr applyPreModifier baseDifficulty modifiers'
+  let preModifiedDifficulty = foldr applyPreModifier baseDifficulty modifiers' + s.difficultyIncrease
   let doubledDifficulty = foldr applyDoubler preModifiedDifficulty modifiers'
   max 0 <$> foldrM applyModifier doubledDifficulty modifiers'
  where

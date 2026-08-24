@@ -32,7 +32,7 @@ instance HasAbilities AerialWaterfall where
               $ FastAbility (ClueCost $ Static 1)
           , -- [action] Spend 1 clue (per investigator): put the set-aside Obsidian
             -- Claw into play under any investigator's control (Speed side faceup).
-            restricted a 2 Here
+            restricted a 2 (Here <> SetAsideCardExists (cardIs Assets.obsidianClaw))
               $ actionAbilityWithCost (ClueCost $ PerPlayer 1)
           ]
       else extendUnrevealed1 a (summitEntry a 9)

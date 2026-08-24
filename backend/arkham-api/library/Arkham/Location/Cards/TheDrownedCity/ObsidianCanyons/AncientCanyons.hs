@@ -25,7 +25,7 @@ instance HasAbilities AncientCanyons where
         extendRevealed
           a
           [ skillTestAbility $ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
-          , restricted a 2 Here actionAbility
+          , restricted a 2 (Here <> SetAsideCardExists (cardIs Assets.skyRelic)) actionAbility
           ]
       else extendUnrevealed1 a (summitEntry a 9)
 

@@ -43,7 +43,6 @@ instance RunMessage AncientDome where
       summitEntryFailed attrs 9 iid
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      erodedFrieze <- getSetAsideCard Treacheries.erodedFrieze
-      drawCard iid erodedFrieze
+      whenJustM (getSetAsideCardMaybe Treacheries.erodedFrieze) (drawCard iid)
       pure l
     _ -> AncientDome <$> liftRunMessage msg attrs

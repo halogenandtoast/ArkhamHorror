@@ -272,7 +272,11 @@ const tokenEffects = computed(() => {
     .flatMap((face) => {
       const key = chaosTokenEffectKey(scenario, face)
       if (!key) return []
-      return [`<img src='${chaosTokenImage(face)}' /><span>` + formatContent(t(key)) + `</span>`]
+      // Scenarios without a `tokens` block in their locale (every homebrew one
+      // so far) get the key back from `t`; showing it would leak the raw path.
+      const text = t(key)
+      if (text === key) return []
+      return [`<img src='${chaosTokenImage(face)}' /><span>` + formatContent(text) + `</span>`]
     })
 })
 

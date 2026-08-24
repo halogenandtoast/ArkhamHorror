@@ -1,4 +1,15 @@
 {
+  "interludes": {
+    "1": "Mission Briefing",
+    "2": "The Search for Fragment",
+    "3": "Introspection"
+  },
+  "headings": {
+    "interludes": {
+      "2": "Interlude",
+      "3": "Interlude II"
+    }
+  },
   "missionBriefing": {
     "title": "Interlude I: Mission Briefing",
     "missionBriefing1": "<p>_Mission Briefing 1:_ The virtual dreamscape around you swirls into a flurry of ephemeral blue code and dissipates into complete darkness. You find yourself back inside the Tatterdemalion. A sharp sting hurts you as a mechanical arm unplugs the cyber-cable out of the back of your head. K2-PS187 apologizes for the intrusive method it used to bring you into the virtual dreamlands and is now fully cooperative. The cybernetic supercomputer will help you in any way it can, starting with a summary of the recent events that have unfolded on the Tatterdemalion.</p><p class='basic right'>Proceed to _Mission Briefing 3_.</p>",
@@ -35,7 +46,9 @@
     "title": "Interlude II: Introspection",
     "body": "<p>The strange quantum shards, the golden disks obtained from the Mi-Go, the cryptic message from Earth… Despite travelling throughout the solar system to uncover these individual pieces of the puzzle, you still can’t seem to fit them together into one big picture. There is a key element missing – a connective tissue that will make sense of it all. Of course, there is also still one place you know for certain contains all of your answers, but you fear what you may find there. And that place is your own mind. Deep within your own subconscious, you can feel a shimmer of the cultist you embody – imprisoned in the edges between your thoughts. You know for certain that the other version of you remembers how to find Fragment. Entering one’s own virtual mind is particularly dangerous as any small mistake could send you spiraling into insanity. But you are ready to confront your past once and for all. With the help of K2-PS187, the cryo-chamber’s dream protocols are once again tinkered with to access your own personal memories this time. You lie back down in the cryo-chamber once more. With a flick of a switch, you begin to fall back into unconsciousness…</p>",
     "searchTheTatterdemalion": "<p class='basic'>The investigators may choose to take their time to search the Tatterdemalion for any more important details they may have missed. If you do so, add 1 tally mark to “Impending Doom” and to each investigator’s “Memories.”</p>",
-    "sideStory": "<p class='basic'>The investigators may choose to enter a simulation of the Earth’s histories to learn more about this future by playing a side-story, crossing out “Memories” instead of paying its experience cost. Experience earned by playing the side-story become “Memories” for investigators instead. (Resolve this manually if desired, adjusting Memories in the campaign log accordingly.) Based on your difficulty level, the indicated chaos token(s) are added to the chaos bag for the remainder of the campaign: Easy (–3), Standard (–5), Hard (–6 and Cultist), Expert (–7 and Cultist).</p>",
+    "sideStory": "<p class='basic'>The investigators may choose to enter a simulation of the Earth’s histories to learn more about this future by playing a side-story, crossing out “Memories” instead of paying its experience cost. Experience earned by playing the side-story become “Memories” for investigators instead. (Return to this section of the campaign guide after finishing the side-story.) <i>Resolve this manually if desired, adjusting “Memories” in the campaign log accordingly.</i></p>",
+    "chaosTokens": "<p class='basic'>Based on your difficulty level, add the following chaos token(s) to the chaos bag for the remainder of the campaign:</p><ul class='basic'><li>Easy: –3.</li><li>Standard: –5.</li><li>Hard: –6 and {'{'}elderThing{'}'}.</li><li>Expert: –7 and {'{'}elderThing{'}'}.</li></ul>",
+    "checkCampaignLog": "<p class='basic'>Check the Campaign Log. *If the investigators have uncovered the cultist’s inhuman methods:* Proceed to _Introspection 1_.</p><p class='basic'>Otherwise, skip to _Scenario IV: The Machine in Yellow_.</p>",
     "introspection1": "<p>Memories of your past life come flooding back to you – horrible visions of launching missiles onto mining outposts, spreading memetic biological viruses, and other unspeakable evils upon humanity. The cultist that you used to be must answer for their atrocities – and you are more than ready to finally extinguish their presence within you.</p><p class='basic'>Each investigator begins the following scenario with 1 additional resource and 1 additional card in their starting hand.</p>",
     "label": {
       "searchTheShip": "Search the Tatterdemalion. Add 1 tally mark to “Impending Doom” and to each investigator’s “Memories.”",

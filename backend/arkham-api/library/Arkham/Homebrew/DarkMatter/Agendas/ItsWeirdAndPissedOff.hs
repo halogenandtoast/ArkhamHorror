@@ -1,13 +1,11 @@
 module Arkham.Homebrew.DarkMatter.Agendas.ItsWeirdAndPissedOff (itsWeirdAndPissedOff) where
 
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead)
-import Arkham.Helpers.Window (assetLeavingPlay)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
-import Arkham.Homebrew.DarkMatter.Helpers (scanTopOfScanningDeck, scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (scanTopOfScanningDeck)
 import Arkham.Homebrew.DarkMatter.MotionScanning
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -37,9 +35,10 @@ instance RunMessage ItsWeirdAndPissedOff where
     the Entity instead." The asset is still in play here, so it survives the move
     as an entity — act 2b's version, which attaches crew that are only cards,
     has to place them underneath instead. -}
-    UseCardAbility _ (isSource attrs -> True) 2 (assetLeavingPlay -> aid) _ -> do
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      let aid = crewLeavingPlay ws
       selectOne (enemyIs Enemies.theEntity)
-        >>= traverse_ (push . PlaceAsset aid . AttachedToEnemy)
+        >>= traverse_ (insteadOfLosingCrew ws aid . PlaceAsset aid . AttachedToEnemy)
       pure a
     {- Agenda 4b:
 
@@ -50,16 +49,22 @@ instance RunMessage ItsWeirdAndPissedOff where
     The scenario never ends on this agenda ("Hint: The scenario will not end when
     this agenda advances"), so it always reverts. The attack has to wait for the
     move to land, so it is deferred behind the enemy rather than queued
-    alongside it — a blocked move would otherwise attack at the old location. -}
+    alongside it — a blocked move would otherwise attack at the old location.
+
+    'NearestLocationToLocation' drops the starting location, so the Entity's own
+    location has to be checked first: it is already at the nearest investigator
+    whenever anyone is standing on it, and moves nowhere. -}
     AdvanceAgenda (isSide B attrs -> True) -> do
-      scenarioI18n "inTheShadowOfEarth" $ scope "agenda4b" do
-        flavor $ setTitle "title" >> p "body"
       selectOne (enemyIs Enemies.theEntity) >>= traverse_ \eid ->
         withLocationOf eid \from -> do
-          dests <- select $ NearestLocationToLocation from (LocationWithInvestigator Anyone)
+          here <- from <=~> LocationWithInvestigator Anyone
+          dests <-
+            if here
+              then pure [from]
+              else select $ NearestLocationToLocation from (LocationWithInvestigator Anyone)
           lead <- getLead
           chooseOrRunOneM lead $ targets dests \dest -> do
-            enemyMoveTo attrs eid dest
+            unless (dest == from) $ enemyMoveTo attrs eid dest
             forTarget_ eid msg
       revertAgenda attrs
       pure a

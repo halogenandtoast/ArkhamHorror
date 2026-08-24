@@ -4,13 +4,12 @@ import Arkham.Ability
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card (toCard)
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Window (getDefeatedAsset)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
-import Arkham.Homebrew.DarkMatter.Helpers (addImpendingDoom, scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (addImpendingDoom)
 import Arkham.Homebrew.DarkMatter.Traits (pattern Brain)
 import Arkham.Matcher hiding (AssetDefeated)
 import Arkham.Matcher qualified as Matcher
@@ -45,8 +44,6 @@ instance RunMessage AgainstTheSun where
 
     The scenario never ends on this agenda; it keeps cycling. -}
     AdvanceAgenda (isSide B attrs -> True) -> do
-      scenarioI18n "strangeMoons" $ scope "agenda4b" do
-        flavor $ setTitle "title" >> p "body"
       shuffleEncounterDiscardBackIn
       lead <- getLead
       n <- perPlayer 1

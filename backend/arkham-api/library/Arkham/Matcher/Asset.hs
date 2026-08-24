@@ -58,6 +58,11 @@ data AssetMatcher
   | AssetControlledBy InvestigatorMatcher
   | AssetInPlayAreaOf InvestigatorMatcher
   | AssetInThreatAreaOf InvestigatorMatcher
+  | {- | Face *down* in a threat area (Dark Matter, "Lost Quantum"), the asset
+    sibling of 'TreacheryFacedownInThreatAreaOf'. A face-down card is not in
+    play, so ordinary threat-area effects must not see it.
+    -}
+    AssetFacedownInThreatAreaOf InvestigatorMatcher
   | InPlayAsset AssetMatcher
   | AssetOwnedBy InvestigatorMatcher
   | AssetWithMetaKeyValue Key Value

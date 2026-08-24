@@ -33,6 +33,6 @@ instance RunMessage SpaceArtillery where
           investigators <- select $ investigatorAt target
           for_ investigators \iid' -> assignDamage iid' (attrs.ability 1) 3
           enemies <- select $ enemyAt target
-          for_ enemies \enemy -> nonAttackEnemyDamage Nothing (attrs.ability 1) 3 enemy
+          for_ enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 3
       pure a
     _ -> SpaceArtillery <$> liftRunMessage msg attrs

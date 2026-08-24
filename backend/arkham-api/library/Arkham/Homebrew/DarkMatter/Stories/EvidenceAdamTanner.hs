@@ -24,7 +24,7 @@ newtype EvidenceAdamTanner = EvidenceAdamTanner StoryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 evidenceAdamTanner :: StoryCard EvidenceAdamTanner
-evidenceAdamTanner = story EvidenceAdamTanner Cards.evidenceAdamTanner
+evidenceAdamTanner = persistStory $ story EvidenceAdamTanner Cards.evidenceAdamTanner
 
 instance HasAbilities EvidenceAdamTanner where
   getAbilities (EvidenceAdamTanner a) =

@@ -24,6 +24,6 @@ instance RunMessage CallOfTheVoid where
       when (doom >= 3) do
         feaster <- getSetAsideCard Enemies.theFeasterFromAfar
         shuffleIntoScanningDeck [feaster]
-      push $ RemoveFromGame (toTarget attrs)
+      removeFromGame attrs
       pure t
     _ -> CallOfTheVoid <$> liftRunMessage msg attrs

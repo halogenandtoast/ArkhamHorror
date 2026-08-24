@@ -1,13 +1,14 @@
 module Arkham.Homebrew.DarkMatter.Acts.ElbrusStation (elbrusStation) where
 
 import Arkham.Act.Import.Lifted
-import Arkham.Card (toCard)
-import Arkham.Helpers (Deck (..))
-import Arkham.Helpers.Query (allInvestigators)
-import Arkham.Helpers.Scenario (getEncounterDeck)
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
-import Arkham.Homebrew.DarkMatter.Helpers (getImpendingDoom, placeCardsFacedownEvenly)
+import Arkham.Homebrew.DarkMatter.Helpers (
+  getImpendingDoom,
+  placeCardsFacedownEvenly,
+  takeTopOfEncounterDeck,
+ )
 import Arkham.Message.Lifted.Choose
 
 newtype ElbrusStation = ElbrusStation ActAttrs
@@ -27,18 +28,16 @@ instance RunMessage ElbrusStation where
           doStep 1 msg
         else do
           lead <- getLead
-          investigators <- allInvestigators
+          investigators <- getInvestigators
           erwin <- getSetAsideCard Assets.erwinSimmonsQuantumPhysicist
           chooseOrRunOneM lead $ targets investigators (`takeControlOfSetAsideAsset` erwin)
           advanceActDeck attrs
       pure a
     DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
       erwin <- getSetAsideCard Assets.erwinSimmonsFading
-      Deck encounterDeck <- getEncounterDeck
-      let (top, rest) = splitAt 3 encounterDeck
-      setEncounterDeck $ Deck rest
-      investigators <- allInvestigators
-      placeCardsFacedownEvenly investigators (erwin : map toCard top)
+      top <- takeTopOfEncounterDeck 3
+      investigators <- getInvestigators
+      placeCardsFacedownEvenly investigators (erwin : top)
       advanceToAct attrs Cards.destabilization A
       pure a
     _ -> ElbrusStation <$> liftRunMessage msg attrs

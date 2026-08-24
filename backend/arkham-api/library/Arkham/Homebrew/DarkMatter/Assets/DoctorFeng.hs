@@ -10,7 +10,7 @@ newtype DoctorFeng = DoctorFeng AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 doctorFeng :: AssetCard DoctorFeng
-doctorFeng = asset DoctorFeng Cards.doctorFeng
+doctorFeng = ally DoctorFeng Cards.doctorFeng (2, 2)
 
 {- | "Revelation - Put this card into play under your control.
 [action] [action]: Heal 1 damage from each investigator and [[Ally]] asset at your
@@ -18,7 +18,7 @@ location. (Group limit once per game.)"
 -}
 instance HasAbilities DoctorFeng where
   getAbilities (DoctorFeng a) =
-    [groupLimit PerGame $ controlled_ a 1 $ doubleActionAbilityWithCost mempty]
+    [groupLimit PerGame $ controlled_ a 1 doubleActionAbility]
 
 instance RunMessage DoctorFeng where
   runMessage msg a@(DoctorFeng attrs) = runQueueT $ case msg of

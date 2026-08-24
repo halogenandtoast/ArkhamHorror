@@ -100,17 +100,17 @@ evidenceSophie =
 theCultist :: CardDef
 theCultist =
   withScanIcons [LS.Hourglass, LS.Diamond]
-    $ story ":dark-matter:176" "The Cultist" Set.StrangeMoons
+    $ (story ":dark-matter:176" "The Cultist" Set.StrangeMoons) {cdVictoryPoints = Just 1}
 
 theMiner :: CardDef
 theMiner =
   withScanIcons [LS.Hourglass, LS.Equals]
-    $ story ":dark-matter:177" "The Miner" Set.StrangeMoons
+    $ (story ":dark-matter:177" "The Miner" Set.StrangeMoons) {cdVictoryPoints = Just 1}
 
 theTeacher :: CardDef
 theTeacher =
   withScanIcons [LS.Hourglass, LS.Square]
-    $ story ":dark-matter:178" "The Teacher" Set.StrangeMoons
+    $ (story ":dark-matter:178" "The Teacher" Set.StrangeMoons) {cdVictoryPoints = Just 1}
 
 -- Dark Matter (fan campaign by Axolotl): fragment_of_carcosa
 arrivalOfTheKing :: CardDef

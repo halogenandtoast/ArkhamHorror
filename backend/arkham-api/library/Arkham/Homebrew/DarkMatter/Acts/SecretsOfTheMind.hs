@@ -35,7 +35,10 @@ instance RunMessage SecretsOfTheMind where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceVia #other attrs attrs
       pure a
+    {- Act 2b: both branches ("If the current agenda is agenda 3 or agenda 4"
+    vs. otherwise) reach Resolution 2, and this is the last act in the deck, so
+    there is nothing else to advance to. -}
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      advanceActDeck attrs
+      push R2
       pure a
     _ -> SecretsOfTheMind <$> liftRunMessage msg attrs

@@ -3,6 +3,7 @@ module Arkham.Homebrew.DarkMatter.Scenarios.InTheShadowOfEarth (inTheShadowOfEar
 import Arkham.Asset.Types (Field (AssetDamage))
 import Arkham.Card
 import Arkham.Helpers.Card (getVictoryPoints)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Xp (XpBonus (..))
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
@@ -14,7 +15,6 @@ import Arkham.Homebrew.DarkMatter.Helpers
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.ScenarioDeckKeys (pattern EvidenceDeck)
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
-import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorDamage))
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
@@ -28,8 +28,25 @@ newtype InTheShadowOfEarth = InTheShadowOfEarth ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
+{- | The guide's "Suggested Location Placement" is an image; the grid is taken
+from the ArkhamCards flow data for this scenario
+(@arkham-cards-zdm\/in_the_shadow_of_earth.json@, step @location_layout@).
+Positions are location /labels/, which for these eight are name-derived — none
+of them uses 'symbolLabel'.
+-}
 inTheShadowOfEarth :: Difficulty -> InTheShadowOfEarth
-inTheShadowOfEarth difficulty = scenario InTheShadowOfEarth ":dark-matter:112" "In the Shadow of Earth" difficulty []
+inTheShadowOfEarth difficulty =
+  scenario
+    InTheShadowOfEarth
+    ":dark-matter:112"
+    "In the Shadow of Earth"
+    difficulty
+    [ "airlocks . . ."
+    , ". hydroponics infirmary ."
+    , "shipMainframe . . flightDeck"
+    , ". crewQuarters telecoms ."
+    , "engineRoom . . ."
+    ]
 
 {- | Scenario reference card, ":dark-matter:112" \/ z-dark-matter-115
 (docs\/homebrew\/data\/dark-matter-sets\/in_the_shadow_of_earth.md; the front
@@ -85,7 +102,20 @@ remainingLocations =
 
 instance RunMessage InTheShadowOfEarth where
   runMessage msg s@(InTheShadowOfEarth attrs) = runQueueT $ scenarioI18n "inTheShadowOfEarth" $ case msg of
+    PreScenarioSetup -> do
+      flavor $ scope "intro" $ h "title" >> p "body"
+      pure s
     Setup -> runScenarioSetup InTheShadowOfEarth attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "setAsideEnemies"
+        li "createScanningDeck"
+        li "createEvidenceDeck"
+        li "placeLocations"
+        li "setAsideEvidence"
+        unscoped $ li "shuffleRemainder"
+        unscoped $ li "readyToBegin"
+
       gather Set.InTheShadowOfEarth
       gather Set.DeepSpace
       setAgendaDeck
@@ -228,9 +258,10 @@ instance RunMessage InTheShadowOfEarth where
           limit." -}
           iids <- allInvestigators
           addCampaignCardToDeckChoice iids DoNotShuffleIn Assets.spaceArtillery
-          -- "Add 1 [cultist] token to the chaos bag for the remainder of the
-          -- campaign for catching the eye of the King in Yellow."
-          addChaosToken Cultist
+          -- "Add 1 [elder thing] token to the chaos bag for the remainder of the
+          -- campaign for catching the eye of the King in Yellow." Same token as
+          -- Lost Quantum's resolution 2, which prints the identical clause.
+          addChaosToken ElderThing
           -- "Add 1 tally mark under 'Impending Doom'. Then, add 1 additional
           -- tally mark for every 2 [[Crew]] story asset attached to the Entity."
           attached <- getCrewAttachedToTheEntity
@@ -238,8 +269,9 @@ instance RunMessage InTheShadowOfEarth where
           {- "Each investigator earns experience equal to the Victory X value of
           each card in the victory display and of each [[Crew]] story asset that
           the investigators control." The victory display half is what
-          'allGainXp' already computes; the surviving crew are still in play, so
-          they are added as a bonus. -}
+          'allGainXp' already computes. Act 3b has normally already moved the
+          surviving crew into the victory display, so this second half is a
+          safety net for any that are somehow still controlled. -}
           crew <- select $ AssetWithTrait Crew <> AssetControlledBy Anyone
           rescued <- sum . catMaybes <$> traverse getVictoryPoints crew
           earnXpWithBonus attrs "resolution4"

@@ -13,7 +13,7 @@ newtype AnAccident = AnAccident LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 anAccident :: LocationCard AnAccident
-anAccident = location AnAccident Cards.anAccident 3 (PerPlayer 1)
+anAccident = symbolLabel $ location AnAccident Cards.anAccident 3 (PerPlayer 1)
 
 {- | "Forced - When you reveal a [cultist] token during a skill test at this
 location: Take 1 damage."

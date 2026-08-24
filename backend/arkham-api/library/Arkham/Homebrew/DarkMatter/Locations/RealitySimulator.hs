@@ -12,7 +12,7 @@ newtype RealitySimulator = RealitySimulator LocationAttrs
 it)" — purely a reminder; the covering card owns that behaviour.
 -}
 realitySimulator :: LocationCard RealitySimulator
-realitySimulator = location RealitySimulator Cards.realitySimulator 3 (Static 0)
+realitySimulator = symbolLabel $ location RealitySimulator Cards.realitySimulator 3 (Static 0)
 
 instance RunMessage RealitySimulator where
   runMessage msg (RealitySimulator attrs) = RealitySimulator <$> runMessage msg attrs

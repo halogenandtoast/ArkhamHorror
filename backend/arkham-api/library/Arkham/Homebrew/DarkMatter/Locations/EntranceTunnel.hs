@@ -9,7 +9,7 @@ newtype EntranceTunnel = EntranceTunnel LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 entranceTunnel :: LocationCard EntranceTunnel
-entranceTunnel = location EntranceTunnel Cards.entranceTunnel 3 (Static 0)
+entranceTunnel = symbolLabel $ location EntranceTunnel Cards.entranceTunnel 3 (Static 0)
 
 -- "[action]: Resign. Return to the Tatterdemalion with all of your findings."
 instance HasAbilities EntranceTunnel where

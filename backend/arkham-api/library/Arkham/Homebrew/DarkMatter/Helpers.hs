@@ -2,13 +2,23 @@ module Arkham.Homebrew.DarkMatter.Helpers where
 
 import Arkham.Ability
 import Arkham.Actions (Actions (..))
-import Arkham.Asset.Types (Field (AssetCard, AssetPlacement))
+import Arkham.Agenda.Types (AgendaAttrs)
+import Arkham.Asset.Types (Field (AssetCard))
+import Arkham.Calculation (
+  GameCalculation (
+    CountAssets,
+    CountEnemies,
+    CountTreacheries,
+    ScenarioInDiscardCountCalculation,
+    SumCalculation
+  ),
+ )
 import Arkham.CampaignLog (campaignLogRecordedCounts)
 import Arkham.CampaignLogKey (toCampaignLogKey)
 import Arkham.Card
 import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
-import Arkham.Classes.HasQueue (push)
+import Arkham.Classes.HasQueue (push, pushAll)
 import Arkham.Classes.Query (select, selectAny, selectCount, selectOne, selectWithField)
 import Arkham.Deck qualified as Deck
 import Arkham.Direction
@@ -20,6 +30,7 @@ import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Game (getRemovedFromPlayCards)
 import Arkham.Helpers.Investigator (getMaybeLocation)
+import Arkham.Helpers.Location (replaceLocation, withLocationOf)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario (
@@ -33,6 +44,7 @@ import Arkham.Helpers.Xp
 import Arkham.Homebrew.DarkMatter.Actions (pattern Scan)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
+import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.DarkMatter.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.ScenarioDeckKeys (pattern EvidenceDeck, pattern ScanningDeck)
@@ -40,27 +52,31 @@ import Arkham.Homebrew.DarkMatter.Traits (pattern Brain, pattern Carcosa)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorLog, InvestigatorMentalTrauma))
-import Arkham.Location.Types (Field (LocationCard), LocationAttrs)
+import Arkham.Location.Types (Field (LocationCard, LocationPrintedSymbol), LocationAttrs)
 import Arkham.LocationSymbol
 import Arkham.Matcher (
-  AssetMatcher (AssetWithPlacement, AssetWithTrait),
+  AssetMatcher (AssetAt, AssetFacedownInThreatAreaOf, AssetWithPlacement, AssetWithTrait),
   CardMatcher (AnyCard, CardWithTrait),
-  EnemyMatcher (EnemyWithPlacement, IncludeOutOfPlayEnemy),
-  InvestigatorMatcher (InvestigatorAt, InvestigatorCanGainXp, InvestigatorWithId),
+  EnemyMatcher (EnemyFacedownInThreatAreaOf, EnemyWithPlacement, IncludeOutOfPlayEnemy),
+  InvestigatorMatcher (Anyone, InvestigatorAt, InvestigatorCanGainXp, InvestigatorWithId, You),
   LocationMatcher (
     LocationCanBeFlipped,
     LocationInDirection,
+    LocationWithAsset,
+    LocationWithCardId,
     LocationWithEnemy,
     LocationWithId,
-    LocationWithTitle,
     LocationWithToken,
-    LocationWithTrait
+    LocationWithTrait,
+    NearestLocationTo
   ),
   TreacheryMatcher (..),
-  WindowMatcher (ScenarioEvent),
+  WindowMatcher (CampaignEvent, ScenarioEvent),
   assetIs,
+  atLeast,
   connectedTo,
   enemyIs,
+  locationIs,
   locationWithAsset,
   locationWithInvestigator,
   mapOneOf,
@@ -84,18 +100,22 @@ import Arkham.Message (
     Would
   ),
   ReplaceStrategy (Swap),
+  resolve,
   pattern InvestigatorDrawEnemy,
+  pattern RemoveLocation,
  )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Message.Lifted.Move (moveTo)
+import Arkham.Message.Lifted.Placement qualified as Placement
 import Arkham.Message.Lifted.Story (resolveStory)
 import Arkham.Message.Story (StoryMessage (RemoveStory))
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Setup
-import Arkham.Scenario.Types (Field (ScenarioSetAsideCards))
+import Arkham.Scenario.Types (Field (ScenarioDiscard, ScenarioSetAsideCards))
 import Arkham.Source
 import Arkham.Story.Types (StoryAttrs)
 import Arkham.Target
@@ -193,14 +213,24 @@ assets each show one. These are the query side of a scan (the icon you scan
 printedIcons :: HasCardDef a => a -> [LocationSymbol]
 printedIcons a = fromMaybe [] $ lookup "printedIcons" (cdMeta $ toCardDef a) >>= maybeResult
 
-{- | The [[Brain]] story assets currently attached to a location. Strange Moons'
+{- | "a [[Brain]] story asset attached to this location". Strange Moons'
 [[Interface]] locations scan for their own icon plus the icon of a brain
 attached to them.
 -}
+brainAttachedTo :: LocationId -> AssetMatcher
+brainAttachedTo lid = AssetWithTrait Brain <> AssetWithPlacement (AttachedToLocation lid)
+
 brainsAttachedTo :: HasGame m => LocationId -> m [AssetId]
-brainsAttachedTo lid = do
-  assets <- select $ AssetWithTrait Brain
-  filterM (fmap (== AttachedToLocation lid) . field AssetPlacement) assets
+brainsAttachedTo = select . brainAttachedTo
+
+{- | "the nearest [[Brain]] story asset" (Innocent Mishap, and the [skull] token
+on Hard/Expert). Brains only ever sit attached to a location, so the nearest one
+is any brain on the nearest location holding one. Ties are left for the player.
+-}
+nearestBrain :: InvestigatorId -> AssetMatcher
+nearestBrain iid =
+  AssetWithTrait Brain
+    <> AssetAt (NearestLocationTo iid $ LocationWithAsset (AssetWithTrait Brain))
 
 {- | Setup: "Create the scanning deck. This is done by taking all the (other)
 encounter cards with icons at the bottom of their back side and shuffling
@@ -401,6 +431,21 @@ runPendingScan (PendingScan iid source icons) = do
       drawScannedCard iid source x
       checkScanWindows $ ScanResult iid icons (Just x) True scannedAt'
 
+-- | "Scan ... with an icon matching your current location" — the usual form.
+scanAtYourLocation :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
+scanAtYourLocation iid source = withLocationOf iid \lid -> do
+  symbol <- field LocationPrintedSymbol lid
+  scan iid source [symbol]
+
+{- | "If it is a location, put it into play and move to it." Drawing the scanned
+card normally places the location itself, so this only places it as a fallback.
+-}
+moveToScannedLocation
+  :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> ScanResult -> m ()
+moveToScannedLocation source iid r = for_ (scannedCard r) \card -> do
+  lid <- selectOne (LocationWithCardId card.id) >>= maybe (placeLocation card) pure
+  moveTo source iid lid
+
 {- | Motion scanning (In the Shadow of Earth): simply draw the top card of the
 scanning deck. The caller is responsible for the "only while at a location
 with a matching icon" restriction.
@@ -422,12 +467,19 @@ scanTopOfScanningDeck iid (toSource -> source) = do
 Simulator instead — that location prints "(Reminder - Reality Simulator is not in
 play while there is a card on top of it)", and Dream Diagnostics and Memory
 Scanner are the only things that can scan one up.
+
+Not a 'Swap': the [[Simulation]] locations arrive with their own clue value, and
+only 'DefaultReplace' pushes the @PlacedLocation@ that places it. Reality
+Simulator's card goes underneath so it can take its place again when the
+location on top leaves play, per the scenario's "Replacing Locations" rules box.
 -}
 drawScannedCard :: ReverseQueue m => InvestigatorId -> Source -> Card -> m ()
 drawScannedCard iid source card | toCardType card == LocationType = do
-  simulator <- selectOne $ LocationWithTitle "Reality Simulator"
-  case simulator of
-    Just lid -> push $ ReplaceLocation lid card Swap
+  selectOne (locationIs Locations.realitySimulator) >>= \case
+    Just lid -> do
+      simulator <- field LocationCard lid
+      replaceLocation lid card
+      placeUnderneath lid [simulator]
     Nothing -> drawScannedCard' iid source card
 drawScannedCard iid source card = drawScannedCard' iid source card
 
@@ -467,17 +519,46 @@ shuffleIntoScanningDeck :: (ReverseQueue m, IsCard card) => [card] -> m ()
 shuffleIntoScanningDeck cards =
   push $ ShuffleCardsIntoDeck (Deck.ScenarioDeckByKey ScanningDeck) (map toCard cards)
 
+-- | "an empty location without a resource token on it"
+emptyUnstabilizedLocation :: LocationMatcher
+emptyUnstabilizedLocation =
+  LocationWithoutInvestigators
+    <> LocationWithoutEnemies
+    <> not_ (LocationWithToken Token.Resource)
+
+{- | Send a location's card back to the scanning deck and take the location out
+of play. Deliberately not 'removeLocation': that diverts a victory location to
+the victory display, but a location worth victory points only scores if it is
+still in play at the end of the scenario, and this one has rejoined the deck.
+-}
+shuffleLocationIntoScanningDeck
+  :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
+shuffleLocationIntoScanningDeck (asId -> lid) = do
+  card <- field LocationCard lid
+  shuffleIntoScanningDeck [card]
+  pushAll $ resolve (RemoveLocation lid)
+
 shuffleEmptyUnstabilizedLocations :: ReverseQueue m => m ()
-shuffleEmptyUnstabilizedLocations = do
-  locations <-
-    select
-      $ LocationWithoutInvestigators
-      <> LocationWithoutEnemies
-      <> not_ (LocationWithToken Token.Resource)
-  for_ locations \lid -> do
-    card <- field LocationCard lid
-    shuffleIntoScanningDeck [card]
-    removeLocation lid
+shuffleEmptyUnstabilizedLocations =
+  selectEach emptyUnstabilizedLocation shuffleLocationIntoScanningDeck
+
+{- | The printed front of The Quantum Maelstrom, identical on all three
+printings:
+
+"[action]: Scan. Search for the topmost card in the scanning deck with an icon
+matching your current location and draw it. If it is a location, put it into
+play and move to it. Shuffle the scanning deck."
+
+Ability 2 defers the move until the scanned-card draw has had a chance to put
+the location into play; ability 3 then performs it.
+-}
+quantumMaelstromAbilities :: AgendaAttrs -> [Ability]
+quantumMaelstromAbilities a =
+  [ restricted a 1 NoRestriction scanAction_
+  , mkAbility a 2
+      $ SilentForcedAbility
+      $ CampaignEvent #after (Just You) (scanEventForCardType LocationType)
+  ]
 
 {- | The shared tail of all three printings of The Quantum Maelstrom:
 
@@ -501,6 +582,8 @@ advanceQuantumMaelstrom (toCard -> card) = do
       -- SetCurrentAgendaDeck pulls the new deck back out of the set aside pool
       setCurrentAgendaDeck =<< shuffle (card : setAsideAgendas)
     rest -> do
+      -- Not the lifted 'setCardAside': its 'obtainCard' would push ObtainCard
+      -- for a card that is still the in-play agenda.
       push $ SetCardAside card
       setCurrentAgendaDeck rest
 
@@ -543,18 +626,12 @@ crewForEvidence :: HasCardDef a => a -> Maybe CardDef
 crewForEvidence a = lookup (toCardDef a) evidenceCrew
 
 {- | Guide p14 (resolution 1) and act 2b, "Quarantine": "For each of the story
-cards, reveal 1 random chaos token from the chaos bag. If it is not a [skull],
-[tablet], '+1', or '0' token, the [[Crew]] story asset corresponding to that
-story card is an imitation of the Entity!"
-
-NOTE: the extracted campaign guide reads [tablet] here; the hand transcription
-this was implemented from read [cultist] instead. The guide spells [icon:
-cultist] out correctly in three other resolutions, so [tablet] is taken as
-authoritative. If that turns out to be wrong, this list is the only thing that
-has to change.
+cards, reveal 1 random chaos token from the chaos bag. If it is not a [elder
+sign], [bless], '+1', or '0' token, the [[Crew]] story asset corresponding to
+that story card is an imitation of the Entity!"
 -}
 clearsSuspicionTokens :: [ChaosTokenFace]
-clearsSuspicionTokens = [Skull, Tablet, PlusOne, Zero]
+clearsSuspicionTokens = [ElderSign, BlessToken, PlusOne, Zero]
 
 isImitationToken :: ChaosTokenFace -> Bool
 isImitationToken = (`notElem` clearsSuspicionTokens)
@@ -740,11 +817,42 @@ getFacedownCardCount iid =
       , selectCount (facedownAssetsOf iid)
       ]
 
+{- | "If you have N or more face-down encounter cards in your threat area", the
+'Criterion' counterpart of 'getFacedownCardCount'. The zone spans three entity
+types, so the total has to be summed in a calculation; 'TreacheryCount' and its
+siblings each only see one of them.
+-}
+yourFacedownCardsAtLeast :: Int -> Criterion
+yourFacedownCardsAtLeast n =
+  HasCalculation
+    ( SumCalculation
+        [ CountTreacheries (TreacheryFacedownInThreatAreaOf You)
+        , CountEnemies (EnemyFacedownInThreatAreaOf You)
+        , CountAssets (AssetFacedownInThreatAreaOf You)
+        ]
+    )
+    (atLeast n)
+
+{- | "if there are face-down encounter cards in any investigator's threat area".
+A trigger condition, so it has to be a 'Criterion': a 'Forced' ability that only
+checks this in its handler is still offered — and a forced ability is a
+mandatory click — every single time its window opens.
+-}
+anyFacedownEncounterCards :: Criterion
+anyFacedownEncounterCards =
+  oneOf
+    [ exists $ TreacheryFacedownInThreatAreaOf Anyone
+    , exists $ EnemyFacedownInThreatAreaOf Anyone
+    , exists $ AssetFacedownInThreatAreaOf Anyone
+    ]
+
 -- | "Place the top card of the encounter deck into your threat area, face-down."
 placeCardFacedownInThreatArea :: ReverseQueue m => InvestigatorId -> Card -> m ()
 placeCardFacedownInThreatArea iid card = case toCardType card of
   EnemyType -> push =<< Msg.createEnemyWithPlacement_ card placement
-  AssetType -> push =<< Msg.createAssetAt_ card placement
+  -- Erwin Simmons (Fading) is an @encounterAsset_@: EncounterAssetType, not
+  -- AssetType. Without it here the card falls through to the treachery branch.
+  cardType | cardType `elem` [AssetType, EncounterAssetType] -> createAssetAt_ card placement
   _ -> createTreacheryAt_ card placement
  where
   placement = FacedownInThreatArea iid
@@ -755,12 +863,62 @@ placeCardsFacedownEvenly investigators cards = unless (null investigators) do
   for_ (zip shuffled $ cycleN (length shuffled) investigators) \(card, iid) ->
     placeCardFacedownInThreatArea iid card
 
-placeFacedownInThreatArea :: ReverseQueue m => InvestigatorId -> Int -> m ()
-placeFacedownInThreatArea iid n =
+-- | Remove the top @n@ cards of the encounter deck and hand them back.
+takeTopOfEncounterDeck :: ReverseQueue m => Int -> m [Card]
+takeTopOfEncounterDeck n =
   getEncounterDeck >>= \case
     Deck (splitAt n -> (cards, rest)) -> do
       setEncounterDeck (Deck rest)
-      for_ cards $ placeCardFacedownInThreatArea iid . toCard
+      pure $ map toCard cards
+
+{- | @doPlaceFacedown@ — the tail of a placement that ran the encounter deck dry
+and is waiting on 'shuffleEncounterDiscardBackIn'. The reshuffle is a queued
+message, so the cards still owed can only be taken a step later;
+"Arkham.Homebrew.DarkMatter.Campaign" resolves this for every scenario, exactly
+as it resolves 'doScanKey'. Payload is the investigator and the number of cards
+still owed.
+-}
+doPlaceFacedownKey :: Text
+doPlaceFacedownKey = "doPlaceFacedown"
+
+{- | "Put the top card(s) of the encounter deck into your threat area, face-down."
+
+Rules Reference, Encounter Deck: "If the encounter deck is empty, shuffle the
+encounter discard pile back into the encounter deck." A short deck therefore
+places what it has, reshuffles, and comes back for the rest — mirroring the
+engine's own partial-draw loop in "Arkham.Scenario.Runner". With both deck and
+discard empty nothing is placed, and Lost Quantum's face-down rule takes over.
+-}
+placeFacedownInThreatArea :: ReverseQueue m => InvestigatorId -> Int -> m ()
+placeFacedownInThreatArea iid n = do
+  cards <- takeTopOfEncounterDeck n
+  traverse_ (placeCardFacedownInThreatArea iid) cards
+  let owed = n - length cards
+  when (owed > 0) do
+    discardPile <- scenarioField ScenarioDiscard
+    unless (null discardPile) do
+      shuffleEncounterDiscardBackIn
+      push $ CampaignSpecific doPlaceFacedownKey (toJSON (iid, owed))
+
+{- | Guard for an ability whose cost is "put the top card of the encounter deck
+into your threat area, face-down". 'EncounterDeckIsNotEmpty' alone is too strict:
+the placement reshuffles the discard, so only an empty deck *and* an empty
+discard makes the cost unpayable.
+-}
+canPlaceFacedownInThreatArea :: Criterion
+canPlaceFacedownInThreatArea =
+  oneOf
+    [ EncounterDeckIsNotEmpty
+    , HasCalculation (ScenarioInDiscardCountCalculation AnyCard) (atLeast 1)
+    ]
+
+{- | The 'HasGame' twin of 'canPlaceFacedownInThreatArea', for effects that offer
+the placement as one of several "you must (choose one)" options: an option with
+no potential to change the game state may not be offered at all.
+-}
+getCanPlaceFacedownInThreatArea :: HasGame m => m Bool
+getCanPlaceFacedownInThreatArea =
+  orM [notNull . unDeck <$> getEncounterDeck, notNull <$> scenarioField ScenarioDiscard]
 
 {- | "Draw a face-down encounter card in your threat area" — the card leaves the
 face-down zone and resolves as if just drawn.
@@ -852,7 +1010,8 @@ data FacedownEncounterCard
   = FacedownTreachery TreacheryId
   | FacedownEnemy EnemyId
   | FacedownAsset AssetId
-  deriving stock (Show, Eq)
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 getFacedownEncounterCards :: HasGame m => InvestigatorId -> m [FacedownEncounterCard]
 getFacedownEncounterCards iid =
@@ -869,22 +1028,75 @@ drawFacedownEncounterCard iid = \case
   FacedownEnemy eid -> drawFacedownEnemy iid eid
   FacedownAsset aid -> drawFacedownAsset iid aid
 
+placeFacedownEncounterCard :: ReverseQueue m => InvestigatorId -> FacedownEncounterCard -> m ()
+placeFacedownEncounterCard iid = \case
+  FacedownTreachery tid -> Placement.place tid placement
+  FacedownEnemy eid -> Placement.place eid placement
+  FacedownAsset aid -> Placement.place aid placement
+ where
+  placement = FacedownInThreatArea iid
+
+{- | The entity-level counterpart of 'placeCardsFacedownEvenly': shuffle cards
+that are already in play (or already face-down) and deal them back out
+round-robin, "as evenly as possible".
+-}
+placeFacedownEncounterCardsEvenly
+  :: ReverseQueue m => [InvestigatorId] -> [FacedownEncounterCard] -> m ()
+placeFacedownEncounterCardsEvenly investigators cards = unless (null investigators) do
+  shuffled <- shuffle cards
+  for_ (zip shuffled $ cycleN (length shuffled) investigators) \(card, iid) ->
+    placeFacedownEncounterCard iid card
+
 -- | Randomly draw one face-down encounter card. Returns whether a card existed.
 drawRandomFacedownCard :: ReverseQueue m => InvestigatorId -> m Bool
-drawRandomFacedownCard iid = do
-  cards <- getFacedownEncounterCards iid
-  case nonEmpty cards of
-    Nothing -> pure False
-    Just cards' -> do
-      drawFacedownEncounterCard iid =<< sample cards'
-      pure True
+drawRandomFacedownCard iid = drawRandomFacedownCardWith iid (const $ pure ())
 
+{- | 'drawRandomFacedownCard' with an extra step, run only when the drawn card is
+a treachery, between the flip and its revelation. See 'drawFacedownCardWith'.
+-}
+drawRandomFacedownCardWith
+  :: ReverseQueue m => InvestigatorId -> (TreacheryId -> m ()) -> m Bool
+drawRandomFacedownCardWith iid afterFlip = do
+  cards <- getFacedownEncounterCards iid
+  for_ (nonEmpty cards) $ sample >=> \case
+    FacedownTreachery tid -> drawFacedownCardWith iid tid (afterFlip tid)
+    card -> drawFacedownEncounterCard iid card
+  pure $ not (null cards)
+
+{- | @doDrawFacedown@ — the face-down cards a "one at a time" draw still owes.
+The cards to draw are picked up front, but the draws cannot all be queued up
+front: a drawn card can itself draw the rest of the zone (Quantum Collapse does
+exactly that), and re-drawing a card that has since resolved and been discarded
+throws @MissingEntity@ out of 'ResolveTreachery'. Each draw therefore hands what
+is left back to "Arkham.Homebrew.DarkMatter.Campaign", exactly as 'doScanKey' and
+'doPlaceFacedownKey' do, so the next card is only reached once the previous one
+has fully resolved.
+-}
+doDrawFacedownKey :: Text
+doDrawFacedownKey = "doDrawFacedown"
+
+{- | Draw the given face-down cards, one at a time, skipping any that something
+else has drawn out of the zone in the meantime.
+-}
+drawFacedownEncounterCards
+  :: ReverseQueue m => InvestigatorId -> [FacedownEncounterCard] -> m ()
+drawFacedownEncounterCards iid = \case
+  [] -> pure ()
+  card : rest -> do
+    stillFacedown <- elem card <$> getFacedownEncounterCards iid
+    when stillFacedown $ drawFacedownEncounterCard iid card
+    unless (null rest) $ push $ CampaignSpecific doDrawFacedownKey (toJSON (iid, rest))
+
+{- | "Draw @n@ face-down cards from your threat area." The cards are picked up
+front, and distinct: every draw here is only queued, so sampling once per draw
+would keep reading the same untouched threat area and could pick one card twice.
+-}
 drawFacedownCards :: ReverseQueue m => InvestigatorId -> Int -> m ()
-drawFacedownCards iid n = replicateM_ n $ void $ drawRandomFacedownCard iid
+drawFacedownCards iid n =
+  getFacedownEncounterCards iid >>= sampleListN n >>= drawFacedownEncounterCards iid
 
 drawAllFacedownCards :: ReverseQueue m => InvestigatorId -> m ()
-drawAllFacedownCards iid =
-  getFacedownEncounterCards iid >>= traverse_ (drawFacedownEncounterCard iid)
+drawAllFacedownCards iid = getFacedownEncounterCards iid >>= drawFacedownEncounterCards iid
 
 -- ** The [[Avatar]] children (Public School 187) ** --
 

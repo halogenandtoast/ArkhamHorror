@@ -1355,9 +1355,11 @@ instance RunMessage EnemyAttrs where
     Do (EnemyEvaded iid eid) | eid == enemyId -> do
       mods <- getModifiers iid
       emods <- getModifiers eid
+      -- Both halves read the enemy's own modifiers too: an enemy that "cannot be
+      -- disengaged" stays engaged when evaded, exactly as one that does not exhaust.
       for_
         ( evasionResult
-            (DoNotDisengageEvaded `notElem` mods)
+            (DoNotDisengageEvaded `notElem` (mods <> emods))
             (DoNotExhaustEvaded `notElem` (mods <> emods))
         )
         (`successfulEvasion` eid)

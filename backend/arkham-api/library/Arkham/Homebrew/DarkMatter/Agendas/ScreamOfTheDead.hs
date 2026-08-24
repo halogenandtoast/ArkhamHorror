@@ -3,10 +3,8 @@ module Arkham.Homebrew.DarkMatter.Agendas.ScreamOfTheDead (screamOfTheDead) wher
 import Arkham.Act.Sequence qualified as Act
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query (getLead)
-import Arkham.Helpers.Window (assetLeavingPlay)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
@@ -14,7 +12,6 @@ import Arkham.Homebrew.DarkMatter.Helpers (
   getEvidenceDeck,
   getScanningDeck,
   scanTopOfScanningDeck,
-  scenarioI18n,
  )
 import Arkham.Homebrew.DarkMatter.MotionScanning
 import Arkham.Homebrew.DarkMatter.ScenarioDeckKeys (pattern EvidenceDeck, pattern ScanningDeck)
@@ -37,8 +34,9 @@ instance RunMessage ScreamOfTheDead where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       scanTopOfScanningDeck iid (attrs.ability 1)
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 (assetLeavingPlay -> aid) _ -> do
-      push $ RemoveFromGame (AssetTarget aid)
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      let aid = crewLeavingPlay ws
+      insteadOfLosingCrew ws aid $ RemoveFromGame (AssetTarget aid)
       pure a
     {- Agenda 3b, "Hunger". Three mutually exclusive branches, and only the last
     one lets the agenda deck move on:
@@ -58,34 +56,31 @@ instance RunMessage ScreamOfTheDead where
     AdvanceAgenda (isSide B attrs -> True) -> do
       scanning <- getScanningDeck
       evidence <- getEvidenceDeck
-      scenarioI18n "inTheShadowOfEarth" $ scope "agenda3b" do
-        if
-          | notNull scanning -> do
-              flavor $ setTitle "title" >> p "hunger"
-              shuffle scanning >>= \case
-                [] -> pure ()
-                top : rest -> do
-                  setScenarioDeck ScanningDeck rest
-                  if toCardCode top == toCardCode Enemies.theFeasterFromAfar
-                    then do
-                      lead <- getLead
-                      withLocationOf lead $ void . createEnemyAt top
-                    else push $ RemovedFromGame top
-              revertAgenda attrs
-          | notNull evidence -> do
-              case evidence of
-                [] -> pure ()
-                top : rest -> do
-                  setScenarioDeck EvidenceDeck rest
-                  -- Face down, like the copies setup hides there: act 2b and
-                  -- resolution 1 both say to look at these without reading them.
-                  placeUnderneath ScenarioTarget . (: []) =<< setFacedown True top
-              revertAgenda attrs
-          | otherwise -> do
-              flavor $ setTitle "title" >> p "theEntityRevealsItself"
-              -- Act 2b ("Quarantine") is what spawns The Entity and attaches
-              -- the lost crew to it; it is reachable from here and nowhere else.
-              advanceToAct' attrs 1 Acts.saveOurSouls Act.B
-              advanceAgendaDeck attrs
+      if
+        | notNull scanning -> do
+            shuffle scanning >>= \case
+              [] -> pure ()
+              top : rest -> do
+                setScenarioDeck ScanningDeck rest
+                if toCardCode top == toCardCode Enemies.theFeasterFromAfar
+                  then do
+                    lead <- getLead
+                    withLocationOf lead $ void . createEnemyAt top
+                  else push $ RemovedFromGame top
+            revertAgenda attrs
+        | notNull evidence -> do
+            case evidence of
+              [] -> pure ()
+              top : rest -> do
+                setScenarioDeck EvidenceDeck rest
+                -- Face down, like the copies setup hides there: act 2b and
+                -- resolution 1 both say to look at these without reading them.
+                placeUnderneath ScenarioTarget . (: []) =<< setFacedown True top
+            revertAgenda attrs
+        | otherwise -> do
+            -- Act 2b ("Quarantine") is what spawns The Entity and attaches
+            -- the lost crew to it; it is reachable from here and nowhere else.
+            advanceToAct' attrs 1 Acts.saveOurSouls Act.B
+            advanceAgendaDeck attrs
       pure a
     _ -> ScreamOfTheDead <$> liftRunMessage msg attrs

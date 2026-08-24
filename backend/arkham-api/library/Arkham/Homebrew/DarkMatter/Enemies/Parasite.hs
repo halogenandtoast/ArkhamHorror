@@ -12,9 +12,12 @@ newtype Parasite = Parasite EnemyAttrs
 parasite :: EnemyCard Parasite
 parasite = enemy Parasite Cards.parasite
 
--- | "Cannot be disengaged."
+{- | "Cannot be disengaged." 'CannotBeDisengagedBy' covers effects that pick a
+disengageable enemy; 'DoNotDisengageEvaded' keeps it engaged when it is evaded
+(it still exhausts).
+-}
 instance HasModifiersFor Parasite where
-  getModifiersFor (Parasite a) = modifySelf a [CannotBeDisengagedBy AnySource]
+  getModifiersFor (Parasite a) = modifySelf a [CannotBeDisengagedBy AnySource, DoNotDisengageEvaded]
 
 instance RunMessage Parasite where
   runMessage msg (Parasite attrs) = Parasite <$> runMessage msg attrs

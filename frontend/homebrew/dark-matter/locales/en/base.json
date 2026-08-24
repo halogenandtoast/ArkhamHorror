@@ -32,6 +32,9 @@
     "body": "<p>You turn over the folded program in your hand, reading it for what seems like the hundredth time. “Miskatonic Playhouse presents: The King in Yellow,” it reads. “A special one-night engagement at Arkham’s very own Ward Theatre. An irresistible drama in two acts. Production staged and directed by Nigel Engram.” The cast is a small ensemble, with one unattributed credit at the end: “The Stranger.”</p><p>To have such a highly anticipated play come to Arkham all the way from Paris is a noteworthy event, even if it is just for one night. For weeks leading up to the show, it was the talk of the town. It seemed so unassuming… and yet, you have evidence something sinister is at work. It started with the disappearance of one of the stagehands at the theatre—a boy of only seventeen who missed rehearsal one night and was never seen again. Then, less than two weeks before the performance, there was the musician whose corpse was found with a gun in its mouth. Perhaps most chilling was the crazed man the coppers had picked up in Independence Square who had been ranting and raving about the “King’s return.” He was brought to Arkham Asylum, and you were surprised to discover that he was not alone in his delusions.</p><p>Finding these events suspicious, you and your companions have delved deeper into the matter. Although no connection can be proven, these weren’t the only strange events surrounding the up-and-coming play. Instances of suicide and madness have followed in its wake, and you are determined to discover why.</p><p>The lights in the auditorium dim, and a spotlight shines on the stage. What unfolds is not quite what you expected. Slow-paced and monotonous, the first act of <i>The King in Yellow</i> is a tedious bore. The setting and characters are compelling, but the meandering and nonsensical story does little to entertain or inform. You begin to wonder whether the dreadful events surrounding <i>The King in Yellow</i> aren’t connected, after all. Perhaps it was just your overactive imagination; how could such a trivial and unassuming show cause such pandemonium? You are surprised when the first act closes without any rising action or revelation. The lights rise for the intermission, and you consider leaving early, stifling a yawn. Before you are able to decide, however, you find yourself drifting… drifting… to sleep.</p><p class='basic right'>Proceed to <b>Scenario I: The Tatterdemalion</b>.</p>"
   },
   "label": {
+    "alienAid": {
+      "readyAndMoveMiGoScientist": "Ready Mi-Go Scientist and move it to any location"
+    },
     "biologyLab": {
       "healDamage": "Heal 1 damage from each investigator at your location",
       "healHorror": "Heal 1 horror from each investigator at your location"
@@ -51,11 +54,6 @@
     "desync": {
       "traumaAndExile": "Suffer 1 mental trauma and add 1 tally mark next to your “Memories”, then exile this card",
       "returnToDeck": "If your deck has 5 or more cards in it, shuffle this card back into your deck. Otherwise, discard it"
-    },
-    "erwinSimmons": {
-      "fight": "Fight",
-      "evade": "Evade",
-      "investigate": "Investigate"
     },
     "evaSuit": {
       "doNotPutIntoPlay": "Do not put EVA Suit into play"

@@ -6,10 +6,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
-import Arkham.Placement
-import Arkham.Projection
 import Arkham.Strategy
-import Arkham.Treachery.Types (Field (TreacheryPlacement))
 
 newtype TheEntity = TheEntity EnemyAttrs
   deriving anyclass (IsEnemy, HasAbilities)
@@ -30,13 +27,13 @@ be assigned to [[Ally]] assets first."
 -}
 instance HasModifiersFor TheEntity where
   getModifiersFor (TheEntity a) = do
-    {- "+2[per_investigator] health for each facedown card attached to it". No
-    matcher exists for treacheries attached to an *enemy*, so the attached cards
-    are counted from their placements. -}
-    attached <- select AnyTreachery
-    placements <- traverse (field TreacheryPlacement) attached
-    let facedown = count (== AttachedToEnemy a.id) placements
-    bonus <- perPlayer (2 * facedown)
+    {- "+2[per_investigator] health for each facedown card attached to it". Act 2b
+    and agenda 4a are the only things that attach cards here, and they do it in
+    two shapes: a crew member still in play survives as an asset with an
+    'AttachedToEnemy' placement, while one that is only a card (removed from the
+    game, or still in the scanning deck) is placed facedown underneath. -}
+    attached <- selectCount $ EnemyAsset a.id
+    bonus <- perPlayer (2 * (attached + length (enemyCardsUnderneath a)))
     modifySelf a
       $ [AddKeyword Keyword.Massive, AddKeyword Keyword.Hunter, AddKeyword Keyword.Alert]
       <> [HealthModifier bonus | bonus > 0]

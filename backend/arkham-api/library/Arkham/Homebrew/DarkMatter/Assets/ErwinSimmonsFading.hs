@@ -4,11 +4,12 @@ import Arkham.Ability
 import Arkham.Asset.Import.Lifted hiding (InvestigatorResigned)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (
-  FacedownEncounterCard (..),
+  FacedownEncounterCard (FacedownAsset),
+  anyFacedownEncounterCards,
   getFacedownEncounterCards,
+  placeFacedownEncounterCardsEvenly,
  )
 import Arkham.Matcher
-import Arkham.Message.Lifted.Placement
 
 newtype ErwinSimmonsFading = ErwinSimmonsFading AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -24,7 +25,7 @@ investigator's threat area, as evenly as possible."
 -}
 instance HasAbilities ErwinSimmonsFading where
   getAbilities (ErwinSimmonsFading a) =
-    [ controlled_ a 1
+    [ restricted a 1 (ControlsThis <> anyFacedownEncounterCards)
         $ forced
         $ oneOf [RoundEnds #when, InvestigatorResigned #when You]
     ]
@@ -36,14 +37,8 @@ instance RunMessage ErwinSimmonsFading where
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       investigators <- select UneliminatedInvestigator
-      unless (null investigators) do
-        facedown <- concat <$> traverse getFacedownEncounterCards investigators
-        unless (null facedown) do
-          shuffled <- shuffle $ FacedownAsset attrs.id : facedown
-          for_ (zip shuffled $ cycleN (length shuffled) investigators) \(card, iid) ->
-            case card of
-              FacedownTreachery tid -> place tid (FacedownInThreatArea iid)
-              FacedownEnemy eid -> place eid (FacedownInThreatArea iid)
-              FacedownAsset aid -> place aid (FacedownInThreatArea iid)
+      facedown <- concatMapM getFacedownEncounterCards investigators
+      unless (null facedown)
+        $ placeFacedownEncounterCardsEvenly investigators (FacedownAsset attrs.id : facedown)
       pure a
     _ -> ErwinSimmonsFading <$> liftRunMessage msg attrs

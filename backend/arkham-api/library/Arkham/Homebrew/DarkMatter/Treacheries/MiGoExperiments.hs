@@ -1,10 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.MiGoExperiments (miGoExperiments) where
 
 import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.SkillTest.Lifted (combinationSkillTestEdit)
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
-import Arkham.Message (pattern BeginSkillTest)
-import Arkham.SkillTest.Base
-import Arkham.SkillTest.Type
+import Arkham.SkillTest.Base (setIsRevelation)
 import Arkham.Treachery.Import.Lifted
 
 newtype MiGoExperiments = MiGoExperiments TreacheryAttrs
@@ -22,18 +21,9 @@ instance RunMessage MiGoExperiments where
   runMessage msg t@(MiGoExperiments attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      let skills = [#willpower, #willpower]
-      push
-        $ BeginSkillTest
-        $ buildSkillTest
-          sid
-          iid
-          attrs
-          iid
-          (AndSkillTest skills)
-          (AndSkillBaseValue skills)
-          (SkillTestDifficulty $ Fixed 3)
+      -- the reveal strategy is read when the test triggers, so arm it first
       skillTestModifier sid attrs sid RevealAnotherChaosToken
+      combinationSkillTestEdit sid iid attrs iid [#willpower, #willpower] (Fixed 3) setIsRevelation
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       assignHorror iid attrs n

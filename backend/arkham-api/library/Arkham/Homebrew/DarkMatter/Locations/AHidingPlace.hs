@@ -11,7 +11,7 @@ newtype AHidingPlace = AHidingPlace LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aHidingPlace :: LocationCard AHidingPlace
-aHidingPlace = location AHidingPlace Cards.aHidingPlace 4 (PerPlayer 1)
+aHidingPlace = symbolLabel $ location AHidingPlace Cards.aHidingPlace 4 (PerPlayer 1)
 
 {- | "While the investigator controlling K2-PS187 is at this location, reduce its
 shroud by 2."

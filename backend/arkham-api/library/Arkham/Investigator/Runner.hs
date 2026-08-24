@@ -2204,7 +2204,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         investigators <- getInvestigators
         for_ investigators \i -> do
           mustBeCommitted <- getMustBeCommittableCards i
-          for_ mustBeCommitted $ push . SkillTestCommitCard investigatorId
+          for_ mustBeCommitted $ push . SkillTestCommitCard i
         push $ Do msg
     pure a
   Do (CommitToSkillTest skillTestId triggerMessage') -> do

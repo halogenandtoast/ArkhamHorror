@@ -41,7 +41,7 @@ instance RunMessage QuantumCollapse where
         then place attrs (FacedownInThreatArea iid)
         else drawAllFacedownCards iid
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       assignHorror iid (attrs.ability 1) 1
       pure t
     _ -> QuantumCollapse <$> liftRunMessage msg attrs

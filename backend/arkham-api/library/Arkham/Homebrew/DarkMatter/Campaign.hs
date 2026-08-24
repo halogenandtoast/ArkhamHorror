@@ -48,6 +48,17 @@ instance RunMessage DarkMatter where
     CampaignSpecific k (maybeResult -> Just pending) | k == doScanKey -> do
       runPendingScan pending
       pure c
+    {- Likewise for a face-down placement that emptied the encounter deck: it
+    resumes here once 'shuffleEncounterDiscardBackIn' has resolved. -}
+    CampaignSpecific k (maybeResult -> Just (iid, n)) | k == doPlaceFacedownKey -> do
+      placeFacedownInThreatArea iid n
+      pure c
+    {- And likewise for the cards a "draw each face-down encounter card in your
+    threat area, one at a time" effect still owes: the next one is only reached
+    once the previous card has finished resolving. -}
+    CampaignSpecific k (maybeResult -> Just (iid, cards)) | k == doDrawFacedownKey -> do
+      drawFacedownEncounterCards iid cards
+      pure c
     CampaignStep PrologueStep -> do
       scope "intro" $ flavor $ setTitle "title" >> p "body"
       scope "additionalRulesAndClarifications" do
@@ -98,14 +109,18 @@ instance RunMessage DarkMatter where
       -- The side-story option (crossing out Memories instead of paying
       -- experience) is resolved manually; surface the guide text so players
       -- know it exists.
-      flavor $ setTitle "title" >> p "sideStory"
+      flavor do
+        setTitle "title"
+        p "sideStory"
+        p "chaosTokens"
+        p "checkCampaignLog"
       let difficulty = (toAttrs c).difficulty
       addChaosToken $ case difficulty of
         Easy -> MinusThree
         Standard -> MinusFive
         Hard -> MinusSix
         Expert -> MinusSeven
-      when (difficulty `elem` [Hard, Expert]) $ addChaosToken Cultist
+      when (difficulty `elem` [Hard, Expert]) $ addChaosToken ElderThing
       whenHasRecord YouHaveUncoveredTheCultistsInhumanMethods $ doStep 1 msg
       setNextCampaignStep TheMachineInYellow
       pure c

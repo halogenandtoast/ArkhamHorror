@@ -4,13 +4,15 @@ import Arkham.Ability
 import Arkham.Asset.Import.Lifted
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
 import Arkham.Matcher
+import Arkham.Window (windowType)
+import Arkham.Window qualified as Window
 
 newtype AdamTanner = AdamTanner AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 adamTanner :: AssetCard AdamTanner
-adamTanner = asset AdamTanner Cards.adamTanner
+adamTanner = ally AdamTanner Cards.adamTanner (2, 1)
 
 {- | "[reaction] When an enemy spawns at your location: You automatically evade it.
 (Group limit once per game.)"
@@ -28,8 +30,9 @@ instance RunMessage AdamTanner where
     Revelation iid (isSource attrs -> True) -> do
       putCardIntoPlay iid attrs
       pure a
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ EnemyAt (locationWithAsset attrs.id)
-      for_ enemies $ automaticallyEvadeEnemy iid
+    -- "You automatically evade *it*" — the enemy that spawned, which at #when is
+    -- not yet placed, so it can only come from the window.
+    UseCardAbility iid (isSource attrs -> True) 1 (map windowType -> [Window.EnemySpawns eid _]) _ -> do
+      automaticallyEvadeEnemy iid eid
       pure a
     _ -> AdamTanner <$> liftRunMessage msg attrs

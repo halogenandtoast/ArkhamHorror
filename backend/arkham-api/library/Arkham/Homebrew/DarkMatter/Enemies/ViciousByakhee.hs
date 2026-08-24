@@ -1,7 +1,6 @@
 module Arkham.Homebrew.DarkMatter.Enemies.ViciousByakhee (viciousByakhee) where
 
 import Arkham.Ability
-import Arkham.DamageEffect
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
@@ -34,9 +33,10 @@ instance RunMessage ViciousByakhee where
   runMessage msg e@(ViciousByakhee attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       migos <- select $ EnemyWithTrait MiGo <> EnemyAt (locationWithEnemy attrs)
-      for_ migos $ nonAttackEnemyDamage_ Nothing (attrs.ability 1) 2
+      for_ migos $ nonAttackEnemyDamage Nothing (attrs.ability 1) 2
+      -- `DealDamage` is enemy-only; an asset needs `dealAssetDamage` to be
+      -- damaged and checked for defeat.
       brains <- select $ AssetWithTrait Brain <> AssetAt (locationWithEnemy attrs)
-      for_ brains \aid ->
-        push $ DealDamage (toTarget aid) (nonAttack Nothing (attrs.ability 1) 2)
+      for_ brains \aid -> dealAssetDamage aid (attrs.ability 1) 2
       pure e
     _ -> ViciousByakhee <$> liftRunMessage msg attrs

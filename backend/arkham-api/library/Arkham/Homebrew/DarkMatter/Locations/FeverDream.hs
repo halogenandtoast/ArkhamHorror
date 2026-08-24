@@ -17,7 +17,7 @@ newtype FeverDream = FeverDream LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 feverDream :: LocationCard FeverDream
-feverDream = location FeverDream Cards.feverDream 3 (PerPlayer 2)
+feverDream = symbolLabel $ location FeverDream Cards.feverDream 3 (PerPlayer 2)
 
 {- | "As an additional cost to investigate Fever Dream, commit all eligible skill
 cards in your hand to that investigation." Every skill card in the

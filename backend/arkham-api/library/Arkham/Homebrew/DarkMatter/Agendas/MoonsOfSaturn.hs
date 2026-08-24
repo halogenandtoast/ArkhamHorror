@@ -1,10 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Agendas.MoonsOfSaturn (moonsOfSaturn) where
 
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (addImpendingDoom, scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (addImpendingDoom)
 import Arkham.Phase
 
 -- | "Do not draw cards from the encounter deck during the mythos phase."
@@ -26,8 +25,6 @@ instance RunMessage MoonsOfSaturn where
     "Add 1 tally mark under 'Impending Doom' in your Campaign Log.
     Flip this agenda back to agenda 1a." -}
     AdvanceAgenda (isSide B attrs -> True) -> do
-      scenarioI18n "strangeMoons" $ scope "agenda1b" do
-        flavor $ setTitle "title" >> p "body"
       addImpendingDoom 1
       revertAgenda attrs
       pure a

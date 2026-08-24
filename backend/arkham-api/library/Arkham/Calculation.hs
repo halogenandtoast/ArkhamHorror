@@ -39,6 +39,7 @@ data GameCalculation
   | SubtractCalculation GameCalculation GameCalculation
   | MultiplyCalculation GameCalculation GameCalculation
   | RecordedCount CampaignLogKey
+  | HasRecordCalculation CampaignLogKey
   | ScenarioCount ScenarioCountKey
   | CountActs ActMatcher
   | CountAgendas AgendaMatcher

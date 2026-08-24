@@ -1,7 +1,7 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.ColdVacuum (coldVacuum) where
 
 import Arkham.Discard
-import Arkham.Helpers.Message.Discard (discardFromHand)
+import Arkham.Helpers.Message.Discard.Lifted (discardFromHand)
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.I18n
 import Arkham.Matcher
@@ -30,8 +30,6 @@ instance RunMessage ColdVacuum where
           $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
         countVar 3
           $ labeled' "discardCardsFromHand"
-          $ push
-          $ toMessage
           $ discardFromHand iid attrs DiscardChoose 3
       pure t
     _ -> ColdVacuum <$> liftRunMessage msg attrs

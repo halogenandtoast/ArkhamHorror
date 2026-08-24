@@ -1,26 +1,41 @@
 {
   "inTheShadowOfEarth": {
-    "act1b": {
-      "title": "In Hiding",
-      "body": "<p>One of the crew members stumbles out in fear. “Thank god someone is here to help! I heard your calls but was too scared to answer. There’s something else with us on the ship — it’s already taken some of the crew, but not all of us. I don’t know who to trust!”</p><p>They describe an abomination that has been corrupting and consuming all biological and electronic mass on the ship. The entity is able to take on the form of the bodies and equipment it consumes, becoming a perfect imitation of the original. When it all went downhill, the Nostalgia II enacted a rudimentary quarantine procedure, and the crew have been hiding throughout the ship, waiting for help ever since.</p><p>You can lead the helpless crew member back to the safety of the Tatterdemalion — but if it is true that this abomination is able to create perfect imitations, how would you know if they are truly human?</p>"
+    "intro": {
+      "title": "Scenario IIIb: In the Shadow of Earth",
+      "body": "<p>“In the middle of the 21st century, Earth was in complete chaos. Rioting, crime, madness and worse had become the order of the day for the entire world. [...] In a last ditch of effort, two of the Arks were completed and the third vessel was stripped for parts. The two completed vessels set out for Mars, each carrying 3000 humans in suspended animation. One vessel, the Liberty, suffered a massive power plant failure and the crew and passengers were killed. The other ship, Hope, eventually reached Mars...”</p><p class='basic right'>— Maja, Information Archives</p><p>The planet Earth — what used to be humanity’s sanctuary, is now abandoned to the madness of the Ancient Ones. There is very little information of what remains on the Earth, but if anyone would attempt to send out a transmission, survey vessels stationed around the planet such as the Nostalgia II would hear those calls.</p><p>The trip itself was uneventful, and you spend your days watching the blue dot of Earth grow and grow in size. Around the time you can finally recognize a few of the continents, the Tatterdemalion picks up a lonely and distant beat — the echo of the Nostalgia II’s distress beacon. You try to hail the crew with your radios, but there is no response. The Tatterdemalion begins its deceleration, and with no time to waste, you prepare to board the godforsaken ship.</p>"
     },
-    "agenda1b": {
-      "title": "In the Open",
-      "body": "<p>You were not prepared to hear the horrible ear-piercing roar of disembodied cries. Your motion scanner bleeps uncontrollably — there is biological movement detected in every direction. Whatever thing that has corrupted this ship has finally noticed your arrival.</p>"
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: <i>In the Shadow of Earth</i> and <i>Deep Space</i>. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/in-the-shadow-of-earth.png' /><img src='{imgPath}/homebrew/dark-matter/sets/deep-space.png' /></section>",
+      "setAsideEnemies": "Set aside the The Entity and The Feaster from Afar enemies.",
+      "createScanningDeck": "Create the scanning deck. This is done by taking all the other encounter cards with icons at the bottom of their back side and shuffling them together.",
+      "createEvidenceDeck": "Create the facedown “Evidence” deck. This is done by taking all the one sided story cards and shuffling them together.",
+      "placeLocations": "Put all remaining locations into play. Each investigator begins play at the Airlocks.",
+      "setAsideEvidence": "Without looking at it, put the top card of the “Evidence” deck facedown under the scenario reference card. Repeat this process once for every 3 tally marks under “Impending Doom” in your Campaign Log. <i>(Example: If you had 5 Impending Doom, you would put a total of 2 cards under the scenario reference card.)</i>"
     },
-    "agenda2b": {
-      "title": "The Lost",
-      "body": "<p>You have come to understand that whatever plague has struck upon Earth has been transmitted to the ship as well. Perhaps the ship was too close to Earth’s atmosphere — or perhaps a crew member had accidentally watched one too many of the undecipherable and corrupting transmissions from Earth.</p><p>Whatever the invisible corruption is, it has begun to affect you as well — for every time you blink, you see visions of the hell left behind on Earth. Masses of flesh appear around you, sculpting into the shapes of people you once knew.</p>"
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is half the amount of damage on you and assets you control (rounded down).",
+        "cultist": "-2. If you fail, deal 1 damage or 1 horror to an *Ally* asset you control.",
+        "tablet": "Reveal another token. If you fail, take 1 damage and 1 horror.",
+        "elderThing": "0. You must either (choose one): Take 2 damage, or this test automatically fails."
+      },
+      "hardExpert": {
+        "skull": "-X. X is half the amount of damage on you and assets you control (rounded up).",
+        "cultist": "-3. If you fail, deal 1 damage or 1 horror to an *Ally* asset you control.",
+        "tablet": "-1. Reveal another token. If you fail, take 1 damage and 1 horror.",
+        "elderThing": "0. You must either (choose one): Take 3 damage, or this test automatically fails."
+      }
     },
-    "agenda3b": {
-      "title": "Hunger",
-      "hunger": "<p>Another unintelligible scream sounds throughout the Nostalgia II, trembling your ears with force — the abomination of Earth is closing upon its next prey.</p>",
-      "theEntityRevealsItself": "<p>The Entity reveals itself! Get ready for a fight!</p>"
-    },
-    "agenda4b": {
-      "title": "Hunger",
-      "body": "<p>The amalgamation catches you off guard — disassembling into a thousand separate entities and reforming itself right behind you.</p>"
-    },
+    "specialRules": [
+      {
+        "title": "Cards Removed from the Game",
+        "body": "<p class='basic'>In this scenario, you must keep track of cards that are removed from the game. Put any cards removed from the game in an area out of play that is still accessible.</p>"
+      },
+      {
+        "title": "Motion Scanning",
+        "body": "<p class='basic'>In this scenario, the <b>Scan</b> action designator functions slightly differently. <b>You may only scan when you are at a location with an icon matching the top card of the scanning deck.</b> When you scan, instead of searching for the topmost card of the scanning deck matching the icon you are scanning for, simply draw the top card of the scanning deck. As such, you will have to move around the ship and follow the icons depicted on the top card of the scanning deck.</p>"
+      }
+    ],
     "resolutions": {
       "noResolution": {
         "title": "No Resolution Was Reached",
@@ -28,28 +43,24 @@
       },
       "resolution1": {
         "title": "Resolution 1",
-        "body": "<p><b>Resolution 1:</b> You barely made it out of the madhouse alive. The horrors you’ve seen of what remains of the crew is almost too much for you to handle.</p>"
+        "body": "<p><b>Resolution 1:</b> You barely made it out of the madhouse alive. The horrors you’ve seen of what remains of the crew is almost too much for you to handle.</p><ul><li>If there are no <b>Crew</b> story assets in the victory display: Proceed directly to <b>Resolution 5</b>.</li><li>If there are <b>Crew</b> story assets in the victory display: Look at the story cards that are under the scenario reference card but do not read them. For each of the story cards, reveal 1 random chaos token from the chaos bag. If it is <i>not</i> a {'{'}elderSign{'}'}, {'{'}bless{'}'}, ‘+1’, or ‘0’ token, the <b>Crew</b> story asset corresponding to that story card is an imitation of the Entity!<ul><li>If any of the <b>Crew</b> story assets that are imitations are in the victory display: Proceed to <b>Resolution 2</b>.</li><li>If none of the <b>Crew</b> story assets that are imitations are in the victory display: Proceed to <b>Resolution 3</b>.</li></ul></li></ul>"
       },
       "resolution2": {
         "title": "Resolution 2",
-        "body": "<p><b>Resolution 2:</b> A horrible scream echoes through the halls of the Tatterdemalion. One of the crew members you’ve brought aboard was an imitation! They revealed themselves and consumed all the crew members you could have saved. You were eventually able to fight it off and eject it through an airlock. However, the damage is considerable and has set back your mission by many months.</p>"
+        "body": "<p><b>Resolution 2:</b> A horrible scream echoes through the halls of the Tatterdemalion. One of the crew members you’ve brought aboard was an imitation! They revealed themselves and consumed all the crew members you could have saved. You were eventually able to fight it off and eject it through an airlock. However, the damage is considerable and has set back your mission by many months.</p><ul><li>Proceed to <b>Resolution 5</b>.</li></ul>"
       },
       "resolution3": {
         "title": "Resolution 3",
-        "body": "<p><b>Resolution 3:</b> You managed to save some of the crew, and they mourn the lost for several days. Thankfully, none of the crew members you have brought aboard was an imitation. Over time, they describe how the madness only began a few days after they decoded a transmission from Earth — a cryptic poem.</p><blockquote><i>“Let the red dawn surmise<br/>What we shall do,<br/>When this blue starlight dies<br/>And all is through.”</i></blockquote><p>You believe this poem must be what the cultists were after — but it is meaningless to you and doesn’t help you uncover the coordinates of Fragment.</p><p>You finally deliver the remaining crew to a service station in the Martian orbit, and the survivors thank you once more for saving them and bid farewell. Despite all, you must leave this behind you and look forwards towards another lead.</p><p>{xp}</p>"
+        "body": "<p><b>Resolution 3:</b> You managed to save some of the crew, and they mourn the lost for several days. Thankfully, none of the crew members you have brought aboard was an imitation. Over time, they describe how the madness only began a few days after they decoded a transmission from Earth — a cryptic poem.</p><blockquote><i>“Let the red dawn surmise<br/>What we shall do,<br/>When this blue starlight dies<br/>And all is through.”</i></blockquote><p>You believe this poem must be what the cultists were after — but it is meaningless to you and doesn’t help you uncover the coordinates of Fragment.</p><p>You finally deliver the remaining crew to a service station in the Martian orbit, and the survivors thank you once more for saving them and bids farewell. Despite all, you must leave this behind you and look forwards towards another lead.</p><ul><li>Record in your Campaign Log that <i>you have rescued the remaining crew of the Nostalgia II</i>.</li><li>Add 1 tally mark under “Impending Doom” in your Campaign Log. Then, add 1 additional tally mark for every 2 <b>Crew</b> story asset removed from the game, attached to the Entity, or in the scanning deck.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><b>Experience</b>: {xp}</li></ul></li><li>Return to <b>The Search for Fragment</b>.</li></ul>"
       },
       "resolution4": {
         "title": "Resolution 4",
-        "body": "<p><b>Resolution 4:</b> The remaining crew of the Nostalgia II thank you for your help in defeating the abomination. They describe how the madness only began a few days after they decoded a transmission from Earth — a cryptic poem.</p><blockquote><i>“Let the red dawn surmise<br/>What we shall do,<br/>When this blue starlight dies<br/>And all is through.”</i></blockquote><p>You believe this poem must be what the cultists were after — but it is meaningless to you and doesn’t help you uncover the coordinates of Fragment.</p><p>Despite all, you must leave this behind you and look forwards towards another lead.</p><p>{xp}</p>"
+        "body": "<p><b>Resolution 4:</b> The remaining crew of the Nostalgia II thank you for your help in defeating the abomination. They describe how the madness only began a few days after they decoded a transmission from Earth — a cryptic poem.</p><blockquote><i>“Let the red dawn surmise<br/>What we shall do,<br/>When this blue starlight dies<br/>And all is through.”</i></blockquote><p>You believe this poem must be what the cultists were after — but it is meaningless to you and doesn’t help you uncover the coordinates of Fragment.</p><p>Despite all, you must leave this behind you and look forwards towards another lead.</p><ul><li>In your Campaign Log, record that <i>The Nostalgia II has been saved</i>.</li><li>An investigator may add the Space Artillery story asset to their deck. This card does not count towards that investigator’s deck limit.</li><li>Add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign for catching the eye of the King in Yellow.</li><li>Add 1 tally mark under “Impending Doom” in your Campaign Log. Then, add 1 additional tally mark for every 2 <b>Crew</b> story asset attached to the Entity.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display and of each <b>Crew</b> story asset that the investigators control.<ul><li><b>Experience</b>: {xp}</li></ul></li><li>Return to <b>The Search for Fragment</b>.</li></ul>"
       },
       "resolution5": {
         "title": "Resolution 5",
-        "body": "<p><b>Resolution 5:</b> You couldn’t save anyone. The one silver lining — during the ordeal, K2-PS187 was able to hack into the mainframe and uncover what the cultists retrieved, a cryptic message received from Earth. You spend some time attempting to decode the message — but to no avail. You must leave this decryption, and the traumatic experiences associated with it, behind for now and look forwards toward another lead.</p><p>{xp}</p>"
+        "body": "<p><b>Resolution 5:</b> You couldn’t save anyone. The one silver lining — during the ordeal, K2-PS187 was able to hack into the mainframe and uncover what the cultists retrieved, a cryptic message received from Earth. You spend some time attempting to decode the message — but to no avail. You must leave this decryption, and the traumatic experiences associated with it, behind for now and look forwards toward another lead.</p><ul><li>Record in your Campaign Log that <i>you couldn’t save the crew of the Nostalgia II</i>.</li><li>Record in your Campaign Log that <i>all investigators have been corrupted by the Earth</i>.</li><li>Add 4 tally marks under “Impending Doom” in your Campaign Log.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 additional experience as they have seen the unthinkable.<ul><li><b>Experience</b>: {xp}</li></ul></li><li>Return to <b>The Search for Fragment</b>.</li></ul>"
       }
-    },
-    "quarantine": {
-      "title": "Quarantine",
-      "body": "<p>You have isolated and confirmed the safety of as many crew members as you can. However, there are still a few that cannot be accounted for. Before you figure out what to do with the unconfirmed crew, the abomination reveals itself in a colony of molted flesh and metal, ready to use the corrupted mass it gathered to smother your existence.</p>"
     }
   }
 }

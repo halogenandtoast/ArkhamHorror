@@ -25,11 +25,10 @@ instance HasAbilities TheFeasterFromAfar where
 
 instance RunMessage TheFeasterFromAfar where
   runMessage msg e@(TheFeasterFromAfar attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
       push $ HealAllDamage (toTarget attrs) (attrs.ability 1)
-      -- "place it at the bottom of the scanning deck": modeled as shuffling the
-      -- card back into the scanning deck (which is reshuffled during scans), so
-      -- the enemy is removed from play and returns to the scanning pool.
-      shuffleIntoDeck (Deck.ScenarioDeckByKey ScanningDeck) attrs
+      -- Not shuffled in: the position matters, since Scream of the Dead reads
+      -- the top card of the scanning deck.
+      putOnBottomOfDeck iid (Deck.ScenarioDeckByKey ScanningDeck) attrs
       pure e
     _ -> TheFeasterFromAfar <$> liftRunMessage msg attrs

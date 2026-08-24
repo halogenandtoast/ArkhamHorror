@@ -21,7 +21,7 @@ Forced - At the end of the round, you must either (choose one): Discard attached
 -}
 instance HasAbilities Contamination where
   getAbilities (Contamination a) =
-    [mkAbility a 1 $ forced $ RoundEnds #when]
+    [restricted a 1 (youExist $ be a.drawnBy) $ forced $ RoundEnds #when]
 
 instance RunMessage Contamination where
   runMessage msg t@(Contamination attrs) = runQueueT $ case msg of
@@ -36,7 +36,7 @@ instance RunMessage Contamination where
         else chooseOrRunOneM iid $ targets allies $ attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      for_ attrs.attached \target -> case target of
+      for_ attrs.attached \case
         AssetTarget aid -> chooseOneM iid $ campaignI18n do
           labeled' "contamination.discardAlly" $ toDiscardBy iid (attrs.ability 1) aid
           labeled' "contamination.placeDoom" $ placeDoom (attrs.ability 1) aid 1

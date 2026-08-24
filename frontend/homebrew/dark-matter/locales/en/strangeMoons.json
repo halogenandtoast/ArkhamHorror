@@ -1,29 +1,70 @@
 {
   "strangeMoons": {
-    "agenda1b": {
-      "title": "Conspiracy Theory",
-      "body": "<p>The thick atmospheric pressure of Titan crushes you down into the ground. The Grey alien waits patiently in the tunnel, observing your every move. You realize that the alien appears to be completely immobile — as if it were a cardboard cut-out.</p>"
+    "intro": {
+      "title": "Scenario IIIc: Strange Moons",
+      "body": "<p>“Humanity’s first contact with the extraterrestrials was in the early 21st century, when a lunar expedition stumbled upon a vast underground network of alien structures underneath the sea of regolith. The Greys, as humanity has come to know them, were under the guise of a curious species that came to our solar system to observe and probe the young civilization. The true purpose of their lunar activities have remained concealed for many years…”</p><p class='basic right'>— Maja, Information Archives</p><p>You look out the view ports and can see only dense, orange clouds for most of the descent. Only after the landing shuttle dipped into the troposphere that the clouds are thin enough for you to peer at the ground below — miles and miles of windswept dunes of methane snow, broken by knife-like volcanic ridges of icy stone, open craters belching “lava flows” of liquid water, ammonia, and methane that freeze into fantastic shapes as they pour down the slopes. You could never have dreamed of anything like the beauty and alien landscape of Titan.</p><p>The craft lands smoothly onto a flat slab of ice. After K2-PS187 confirms that this is the coordinates of the unusual “business trips” that the cultists were conducting, you suit up, open the hatch and step out into the harsh terrain. A large tunnel nestled between the orange cliffs greets you. A green glow pulsates from within, illuminating a strange figure, guarding the entrance…</p>"
     },
-    "agenda2b": {
-      "title": "They Came from Above!",
-      "body": "<p>A roar of no creature on Earth resounds throughout the facility. A myriad of flying wings blot out the sun, swooping towards the facility. The lights within the chambers take on a darker, blueish hue — what you assume must be the Mi-Go’s equivalent to an alarm. You realize now that you are in the midst of an interstellar assault.</p>"
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: <i>Strange Moons</i> and <i>Deep Space</i>. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/strange-moons.png' /><img src='{imgPath}/homebrew/dark-matter/sets/deep-space.png' /></section>",
+      "setAsideInterstellarPredators": "Set aside the <i>Interstellar Predators</i> encounter set, out of play. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/interstellar-predators.png' /></section>",
+      "setAsideBrains": "Set aside each *Brain* story asset, out of play.",
+      "setAsideFeasterFromAfar": "Set aside The Feaster from Afar enemy (with a scanning back).",
+      "createScanningDeck": "Create the scanning deck. This is done by taking all the other encounter cards with icons at the bottom of their back side and shuffling them together.",
+      "placeLocations": "Put all remaining locations into play.",
+      "startAt": "Each investigator begins play at the Entrance Tunnel.",
+      "spawnTheGreys": "Spawn the The Greys enemy at the Entrance Tunnel."
     },
-    "agenda4b": {
-      "title": "They are Everywhere!",
-      "body": "<p>The alien forces do not stop. More and more they descend — you can hear nothing other than the constant fluttering of their hideous wings and the shrill of their beaks. It feels as though every time you fend off one of them, another two arrive in its place.</p>"
+    "tokens": {
+      "easyStandard": {
+        "skull": "-2. If you fail, deal 1 damage to a *Brain* story asset.",
+        "cultist": "-2. If you revealed another chaos token during this test, take 1 horror.",
+        "tablet": "Reveal 2 additional tokens for this test.",
+        "elderThing": "-3. If this is an attack or evasion attempt against a *Byakhee* enemy, reveal an additional token for this test."
+      },
+      "hardExpert": {
+        "skull": "-3. If you fail, deal 1 damage to the nearest *Brain* story asset.",
+        "cultist": "-3. If you revealed another chaos token during this test, take 1 horror.",
+        "tablet": "Reveal 2 additional tokens for this test.",
+        "elderThing": "-4. If this is an attack or evasion attempt against a *Byakhee* enemy, reveal an additional token for this test."
+      }
     },
+    "specialRules": [
+      {
+        "title": "Seal",
+        "body": "<p class='basic'>Some cards may have the ability to seal one or more chaos tokens as part of their effect. This is done as follows: Search the chaos bag for the specified token, remove it from the chaos bag, and place it on the card. If the specified token is not in the chaos bag, the effect fails.</p><p class='basic'>When a chaos token is “released,” it is returned to the chaos bag and is no longer considered sealed. <b>If a card with one or more chaos tokens sealed on it leaves play for any reason, any chaos tokens sealed on it are immediately released.</b></p>"
+      },
+      {
+        "title": "Patrol",
+        "body": "<p class='basic'>Some enemies have the patrol keyword. During the enemy phase (in framework step 3.2), each ready, unengaged enemy with the patrol keyword moves to a connecting location along the shortest path toward the designated location (as described in parentheses next to the word patrol).</p><ul><li>If there are multiple locations that qualify as the designated location, the lead investigator may choose which location the enemy moves toward.</li><li>If an enemy with patrol would be compelled to move to a location which is blocked by a card ability, the enemy does not move.</li></ul>"
+      },
+      {
+        "title": "Brain Scanning",
+        "body": "<p class='basic'>In this scenario, <b>Scan</b> abilities will instruct you to search the scanning deck for a card with two matching icons. A card that contains only one of the two icons is invalid, and cannot be chosen for the scan. The card in the scanning deck must contain both of the indicated icons, in any order.</p>"
+      },
+      {
+        "title": "Combined Skill Tests",
+        "body": "<p class='basic'>Some skill tests in this scenario will require investigators to test multiple skills at once. To perform such a skill test, simply add both indicated skills and reveal and resolve a chaos token, compare the modified skill value to the difficulty of the test. Such a test is considered to be a test of both skill types. Cards with either skill icon may be committed to the test, and both icons are considered matching skill icons. <i>(Skill icons only contribute once for skill tests that involve additions of the same skill.)</i></p>"
+      },
+      {
+        "title": "Replacing Locations",
+        "body": "<p class='basic'>Throughout this scenario, you may be instructed to place new locations on top of existing ones. When a location is placed on top of a location that is already in play, it takes its place. All tokens, attachments, investigators, enemies, and other cards at the former location are considered to now be at the new location (they have not “moved”—the location simply changed). If a location leaves play and there is another location underneath it, that location takes its place. All tokens, attachments, investigators, enemies, and other cards at the location leaving play are considered to now be at the former location.</p>"
+      }
+    ],
     "resolutions": {
+      "xp": {
+        "resolution1": "Further understanding of the agents of the King in Yellow"
+      },
       "noResolution": {
         "title": "No Resolution Was Reached",
         "body": "<p><b>If no resolution was reached:</b></p><ul><li>If at least 1 investigator resigned, proceed to <b>Resolution 2</b>.</li><li>If each investigator was defeated, proceed to <b>Resolution 1</b>.</li></ul>"
       },
       "resolution1": {
         "title": "Resolution 1",
-        "body": "<p><b>Resolution 1:</b> Flapping and screeching, you had no chance against the extraterrestrial swarm that descended onto Titan shortly after you arrived. Fortunately, it seems as though you were not their target. The alien facility has been ransacked and any clues you could have gleaned have been destroyed. At the very least, they left you alone. When the coast is finally clear of the flying monstrosities, you search through the ruins to find several golden disks of various radii. Aboard the Tatterdemalion, you fiddle with these disks and try to combine them in various orientations—but they don’t appear to have any use other than the value of the material itself. There is still much you don’t know, and with resolve, you prepare for the next expedition.</p><ul><li>Record in your Campaign Log that <i>you are not in good standing with the Mi-Go</i>.</li><li>If there are 3 story cards in the victory display, record in your Campaign Log that <i>you have uncovered the cultist’s inhuman methods</i>. Then, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign for catching the eye of the King in Yellow.</li><li>Add 1 tally mark under “Impending Doom” in your Campaign Log, and 1 additional tally mark for each Brain story asset in play.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 additional experience as they gain further understanding of the agents of the King in Yellow.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Return to <b>Search for Fragment</b>.</li></ul>"
+        "body": "<p><b>Resolution 1:</b> Flapping and screeching, you had no chance against the extraterrestrial swarm that descended onto Titan shortly after you have arrived. Fortunately — it seems as though you were not their target. The alien facility has been ransacked and any clues you could have gleaned have been destroyed. At the very least, they left you alone. When the coast is finally clear of the flying monstrosities, you search through the ruins to find several golden disks of various radii. Aboard the Tatterdemalion, you fiddle with these disks and try to combine them in various orientations — but they don’t appear to have any use other than the value of the material itself. There is still much you don’t know, and with resolve, you prepare for the next expedition.</p><ul><li>Record in your Campaign Log that <i>you are not in good standing with the Mi-Go</i>.</li><li>If there are 3 story cards in the victory display, record in your Campaign Log that <i>you have uncovered the cultist’s inhuman methods</i>. Then, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign for catching the eye of the King in Yellow.</li><li>Add 1 tally mark under “Impending Doom” in your Campaign Log, and 1 additional tally mark for each Brain story asset in play.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 additional experience as they gain further understanding of the agents of the King in Yellow.<ul><li><b>Experience</b>: {xp}</li></ul></li><li>Return to <b>The Search for Fragment</b>.</li></ul>"
       },
       "resolution2": {
         "title": "Resolution 2",
-        "body": "<p><b>Resolution 2:</b> On board the Tatterdemalion, you try to decipher the meaning of the various glimpses you’ve seen within the alien facility, but nothing strikes you as particularly significant. A thorough search of the cargo hold reveals a stack of the golden disks that were exchanged during the transaction. You fiddle with them and try to combine them in various orientations—but they don’t appear to have any use other than the value of the material itself. There is still much you don’t know, and with resolve, you prepare for the next expedition.</p><ul><li>If there are 3 story cards in the victory display, record in your Campaign Log that <i>you have uncovered the cultist’s inhuman methods</i>. Then, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign for catching the eye of the King in Yellow.</li><li>If a copy of Mi-Go Scientist is in the victory display, record in your Campaign Log that <i>you are not in good standing with the Mi-Go</i>. Otherwise, record that <i>you are allied with the Mi-Go</i>.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Add 1 tally mark under “Impending Doom” in your Campaign Log.</li><li>Return to <b>Search for Fragment</b>.</li></ul>"
+        "body": "<p><b>Resolution 2:</b> On board the Tatterdemalion, you try to decipher the meaning of the various glimpses you’ve seen within the alien facility, but nothing strikes you as particularly significant. A thorough search of the cargo hold reveals a stack of the golden disks that were exchanged during the transaction. You fiddle with them and try to combine them in various orientations — but they don’t appear to have any use other than the value of the material itself. There is still much you don’t know, and with resolve, you prepare for the next expedition.</p><ul><li>If there are 3 story cards in the victory display, record in your Campaign Log that <i>you have uncovered the cultist’s inhuman methods</i>. Then, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign for catching the eye of the King in Yellow.</li><li>If a copy of Mi-Go Scientist is in the victory display, record in your Campaign Log that <i>you are not in good standing with the Mi-Go</i>. Otherwise, record that <i>you are allied with the Mi-Go</i>.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><b>Experience</b>: {xp}</li></ul></li><li>Add 1 tally mark under “Impending Doom” in your Campaign Log.</li><li>Return to <b>The Search for Fragment</b>.</li></ul>"
       }
     }
   }

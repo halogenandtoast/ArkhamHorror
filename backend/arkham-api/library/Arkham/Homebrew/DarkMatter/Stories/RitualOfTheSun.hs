@@ -41,9 +41,9 @@ ritualCost =
     $ SubtractCalculation (Fixed 9)
     $ MultiplyCalculation (Fixed 2)
     $ SumCalculation
-      [ RecordedCount (toCampaignLogKey YouHaveWitnessedThePrimordialChaos)
-      , RecordedCount (toCampaignLogKey YouHaveWitnessedTheUnconsciousPandemonium)
-      , RecordedCount (toCampaignLogKey YouHaveWitnessedTheManifestedMadness)
+      [ HasRecordCalculation (toCampaignLogKey YouHaveWitnessedThePrimordialChaos)
+      , HasRecordCalculation (toCampaignLogKey YouHaveWitnessedTheUnconsciousPandemonium)
+      , HasRecordCalculation (toCampaignLogKey YouHaveWitnessedTheManifestedMadness)
       ]
 
 instance HasAbilities RitualOfTheSun where

@@ -147,6 +147,11 @@ data EnemyMatcher
   | IncludeOmnipotent EnemyMatcher
   | IncludeOutOfPlayEnemy EnemyMatcher
   | EnemyWithPlacement Placement
+  | {- | Face *down* in a threat area (Dark Matter, "Lost Quantum"), the enemy
+    sibling of 'TreacheryFacedownInThreatAreaOf'. A face-down card is not in
+    play, so ordinary threat-area effects must not see it.
+    -}
+    EnemyFacedownInThreatAreaOf InvestigatorMatcher
   | EnemyWithBounty -- Tony Morgan
   | PatrolEnemy
   | SwarmOf EnemyId

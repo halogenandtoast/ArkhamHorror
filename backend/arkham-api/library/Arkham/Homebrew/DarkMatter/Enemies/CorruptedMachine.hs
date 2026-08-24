@@ -20,13 +20,13 @@ Machine. If you fail, it immediately attacks you."
 -}
 instance HasAbilities CorruptedMachine where
   getAbilities (CorruptedMachine a) =
-    extend1 a $ restricted a 1 OnSameLocation parleyAction_
+    extend1 a $ skillTestAbility $ restricted a 1 OnSameLocation parleyAction_
 
 instance RunMessage CorruptedMachine where
   runMessage msg e@(CorruptedMachine attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      parley sid iid (attrs.ability 1) iid #willpower (Fixed 3)
+      parley sid iid (attrs.ability 1) attrs #willpower (Fixed 3)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

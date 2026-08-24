@@ -1,15 +1,16 @@
 module Arkham.Homebrew.DarkMatter.Locations.CrystalPeak (crystalPeak) where
 
 import Arkham.Ability
-import Arkham.Card (toCard)
 import Arkham.GameValue
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (shuffleIntoScanningDeck)
+import Arkham.Homebrew.DarkMatter.Helpers (
+  emptyUnstabilizedLocation,
+  shuffleLocationIntoScanningDeck,
+ )
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
-import Arkham.Token qualified as Token
 
 newtype CrystalPeak = CrystalPeak LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -27,14 +28,7 @@ instance HasAbilities CrystalPeak where
   getAbilities (CrystalPeak a) =
     extendRevealed
       a
-      [ restricted
-          a
-          1
-          ( thisExists a
-              $ LocationWithoutInvestigators
-              <> LocationWithoutEnemies
-              <> not_ (LocationWithToken Token.Resource)
-          )
+      [ restricted a 1 (thisExists a emptyUnstabilizedLocation)
           $ forced
           $ RoundEnds #when
       , groupLimit PerGame
@@ -45,8 +39,7 @@ instance HasAbilities CrystalPeak where
 instance RunMessage CrystalPeak where
   runMessage msg l@(CrystalPeak attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      shuffleIntoScanningDeck [toCard attrs]
-      push $ RemoveLocation attrs.id
+      shuffleLocationIntoScanningDeck attrs
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       record YouHaveWitnessedThePrimordialChaos

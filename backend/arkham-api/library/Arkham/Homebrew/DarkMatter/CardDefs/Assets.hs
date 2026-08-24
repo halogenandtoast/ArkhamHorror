@@ -187,6 +187,7 @@ adamTanner =
     $ (encounterAsset_ ":dark-matter:130" "Adam Tanner" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
+      , cdVictoryPoints = Just 1
       }
 
 captainBurr :: CardDef
@@ -195,6 +196,7 @@ captainBurr =
     $ (encounterAsset_ ":dark-matter:131" "Captain Burr" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
+      , cdVictoryPoints = Just 1
       }
 
 doctorFeng :: CardDef
@@ -203,6 +205,7 @@ doctorFeng =
     $ (encounterAsset_ ":dark-matter:132" "Doctor Feng" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
+      , cdVictoryPoints = Just 1
       }
 
 ltArcherMichaels :: CardDef
@@ -211,6 +214,7 @@ ltArcherMichaels =
     $ (encounterAsset_ ":dark-matter:133" "Lt. \"Archer\" Michaels" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
+      , cdVictoryPoints = Just 1
       }
 
 muD12Mudbug :: CardDef
@@ -219,6 +223,7 @@ muD12Mudbug =
     $ (encounterAsset_ ":dark-matter:134" "MU-D12 \"Mudbug\"" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
+      , cdVictoryPoints = Just 1
       }
 
 sophie :: CardDef
@@ -227,6 +232,7 @@ sophie =
     $ (encounterAsset_ ":dark-matter:135" "Sophie" Set.InTheShadowOfEarth)
       { cdCardTraits = setFromList [Ally, Crew]
       , cdUnique = True
+      , cdVictoryPoints = Just 1
       }
 
 -- strange_moons

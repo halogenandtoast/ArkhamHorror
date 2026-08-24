@@ -8,7 +8,9 @@ import { useDebug } from '@/arkham/debug'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import KeyToken from '@/arkham/components/Key.vue'
 import Treachery from '@/arkham/components/Treachery.vue'
+import Enemy from '@/arkham/components/Enemy.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue'
+import Story from '@/arkham/components/Story.vue'
 import StackIndicator from '@/arkham/components/StackIndicator.vue'
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue'
 import * as ArkhamGame from '@/arkham/types/Game'
@@ -343,6 +345,24 @@ const nextToScarletKeys = computed(() =>
     .filter((s) => s.placement.tag === 'NextToAct')
     .map((s) => s.id),
 )
+
+// Enemies that spawn "next to the act deck, at no specific location" (Hound of
+// Tindalos). They belong to no location and no threat area, so this is the only
+// place they are drawn.
+const nextToEnemies = computed(() =>
+  Object.values(props.game.enemies)
+    .filter((e) => e.placement.tag === 'NextToAct')
+    .map((e) => e.id),
+)
+
+// Stories that put themselves into play "next to the act deck" (In the Shadow of
+// Earth's Evidence cards). They have no location and no attachment, so this is
+// the only place they are drawn.
+const nextToStories = computed(() =>
+  Object.values(props.game.stories)
+    .filter((s) => s.placement.tag === 'NextToAct')
+    .map((s) => s.id),
+)
 </script>
 
 <template>
@@ -400,6 +420,22 @@ const nextToScarletKeys = computed(() =>
       v-for="treacheryId in act.treacheries"
       :key="treacheryId"
       :treachery="game.treacheries[treacheryId]"
+      :game="game"
+      :playerId="playerId"
+      @choose="$emit('choose', $event)"
+    />
+    <Enemy
+      v-for="enemyId in nextToEnemies"
+      :key="enemyId"
+      :enemy="game.enemies[enemyId]"
+      :game="game"
+      :playerId="playerId"
+      @choose="$emit('choose', $event)"
+    />
+    <Story
+      v-for="storyId in nextToStories"
+      :key="storyId"
+      :story="game.stories[storyId]"
       :game="game"
       :playerId="playerId"
       @choose="$emit('choose', $event)"

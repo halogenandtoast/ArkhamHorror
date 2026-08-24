@@ -4,12 +4,10 @@ import Arkham.Ability
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Classes.HasGame
-import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.DarkMatter.Helpers (
-  campaignI18n,
   crewForEvidence,
   getRemovedCrew,
   getScanningDeck,
@@ -26,10 +24,6 @@ newtype SaveOurSouls = SaveOurSouls ActAttrs
 
 saveOurSouls :: ActCard SaveOurSouls
 saveOurSouls = act (2, A) SaveOurSouls Cards.saveOurSouls Nothing
-
--- | Matches the scenario module's own scope: darkMatter.inTheShadowOfEarth.*
-scenarioI18n :: (HasI18n => a) -> a
-scenarioI18n a = campaignI18n $ scope "inTheShadowOfEarth" a
 
 -- "Objective - If each undefeated investigator has resigned: (-> R1)."
 instance HasAbilities SaveOurSouls where
@@ -56,11 +50,10 @@ instance RunMessage SaveOurSouls where
       pure a
     {- Act 2b, "Quarantine": "Look at the story cards that are under the scenario
     reference card but do not read them. For each of the story cards, reveal 1
-    random chaos token from the chaos bag. If it is not a [skull], [tablet],
+    random chaos token from the chaos bag. If it is not a [elder sign], [bless],
     '+1', or '0' token, the [[Crew]] story asset corresponding to that story card
     is an imitation of the Entity!" -}
-    AdvanceAct (isSide B attrs -> True) _ _ -> scenarioI18n $ scope "quarantine" do
-      flavor $ setTitle "title" >> p "body"
+    AdvanceAct (isSide B attrs -> True) _ _ -> do
       getHiddenEvidence >>= \case
         -- Nothing hidden means nothing to suspect; the Entity still reveals
         -- itself and the crew already lost to it are still attached.

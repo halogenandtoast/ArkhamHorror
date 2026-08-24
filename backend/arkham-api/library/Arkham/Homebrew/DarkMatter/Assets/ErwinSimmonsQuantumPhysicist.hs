@@ -7,11 +7,11 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (DoNotTakeUpSlot), modifySelfWhen)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (
-  campaignI18n,
+  canPlaceFacedownInThreatArea,
   drawAllFacedownCards,
   placeFacedownInThreatArea,
  )
-import Arkham.Investigate
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -21,11 +21,12 @@ newtype ErwinSimmonsQuantumPhysicist = ErwinSimmonsQuantumPhysicist AssetAttrs
 
 erwinSimmonsQuantumPhysicist :: AssetCard ErwinSimmonsQuantumPhysicist
 erwinSimmonsQuantumPhysicist =
-  assetWith
-    ErwinSimmonsQuantumPhysicist
-    Cards.erwinSimmonsQuantumPhysicist
-    ((healthL ?~ 3) . (sanityL ?~ 1))
+  ally ErwinSimmonsQuantumPhysicist Cards.erwinSimmonsQuantumPhysicist (3, 1)
 
+-- Elbrus Station 1b: "Put the set aside Erwin Simmons (Quantum Physicist) story
+-- asset into play under any investigator's control. This story asset does not
+-- take up an ally slot for this scenario." The ownerless check scopes it to that
+-- scenario copy; the copy earned at Resolution 3 is deck-owned.
 instance HasModifiersFor ErwinSimmonsQuantumPhysicist where
   getModifiersFor (ErwinSimmonsQuantumPhysicist a) =
     modifySelfWhen a (isNothing a.owner) [DoNotTakeUpSlot #ally]
@@ -42,7 +43,9 @@ the encounter deck face down" is not expressible as a 'Cost'.
 -}
 instance HasAbilities ErwinSimmonsQuantumPhysicist where
   getAbilities (ErwinSimmonsQuantumPhysicist a) =
-    [ restricted a 1 (ControlsThis <> EncounterDeckIsNotEmpty) $ freeReaction $ TurnBegins #when You
+    [ restricted a 1 (ControlsThis <> canPlaceFacedownInThreatArea)
+        $ freeReaction
+        $ TurnBegins #when You
     , controlled_ a 2 $ forced $ AssetLeavesPlay #when (be a)
     ]
 
@@ -53,14 +56,10 @@ instance RunMessage ErwinSimmonsQuantumPhysicist where
       sid <- getRandom
       canFight <- selectAny $ CanFightEnemy (toSource $ attrs.ability 1)
       canEvade <- selectAny $ enemyCanBeEvadedBy (attrs.ability 1)
-      chooseOneM iid $ campaignI18n do
-        when canFight
-          $ labeled' "erwinSimmons.fight"
-          $ chooseFightEnemy sid iid (attrs.ability 1)
-        when canEvade
-          $ labeled' "erwinSimmons.evade"
-          $ chooseEvadeEnemy sid iid (attrs.ability 1)
-        labeled' "erwinSimmons.investigate" $ pushM $ mkInvestigate sid iid (attrs.ability 1)
+      chooseOneM iid $ withI18n do
+        when canFight $ labeled' "fight" $ chooseFightEnemy sid iid (attrs.ability 1)
+        when canEvade $ labeled' "evade" $ chooseEvadeEnemy sid iid (attrs.ability 1)
+        labeled' "investigate" $ investigate sid iid (attrs.ability 1)
       pure a
     FailedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       dealAssetDamage attrs.id (attrs.ability 1) 1

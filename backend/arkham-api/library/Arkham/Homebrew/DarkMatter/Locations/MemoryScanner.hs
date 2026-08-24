@@ -5,6 +5,7 @@ import Arkham.Asset.Types (Field (AssetCard))
 import Arkham.GameValue
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (
+  brainAttachedTo,
   brainsAttachedTo,
   printedIcons,
   scan,
@@ -21,7 +22,7 @@ newtype MemoryScanner = MemoryScanner LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 memoryScanner :: LocationCard MemoryScanner
-memoryScanner = location MemoryScanner Cards.memoryScanner 3 (Static 0)
+memoryScanner = symbolLabel $ location MemoryScanner Cards.memoryScanner 3 (Static 0)
 
 {- | "[action] If Reality Simulator is in play: Scan. Search the scanning deck
 for a card with both this location's icon and the icon on a [[Brain]] story
@@ -31,7 +32,11 @@ into play on top of Reality Simulator."
 instance HasAbilities MemoryScanner where
   getAbilities (MemoryScanner a) =
     extendRevealed1 a
-      $ restricted a 1 (Here <> exists (locationIs Cards.realitySimulator)) scanAction_
+      $ restricted
+        a
+        1
+        (Here <> exists (brainAttachedTo a.id) <> exists (locationIs Cards.realitySimulator))
+        scanAction_
 
 instance RunMessage MemoryScanner where
   runMessage msg l@(MemoryScanner attrs) = runQueueT $ case msg of

@@ -2,6 +2,7 @@ module Arkham.Homebrew.DarkMatter.Locations.OmniTransmitters (omniTransmitters) 
 
 import Arkham.Ability
 import Arkham.GameValue
+import Arkham.Helpers.Modifiers (ModifierType (Semaphore), semaphore)
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (addMemories)
 import Arkham.Location.Import.Lifted
@@ -20,7 +21,7 @@ succeed, each investigator at this location adds 1 tally mark next to their
 -}
 instance HasAbilities OmniTransmitters where
   getAbilities (OmniTransmitters a) =
-    extendRevealed1 a $ groupLimit PerGame $ skillTestAbility $ restricted a 1 Here actionAbility
+    extendRevealed1 a $ skillTestAbility $ restricted a 1 Here actionAbility
 
 instance RunMessage OmniTransmitters where
   runMessage msg l@(OmniTransmitters attrs) = runQueueT $ case msg of
@@ -29,8 +30,9 @@ instance RunMessage OmniTransmitters where
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 2)
       pure l
-    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
-      here <- select $ investigatorAt attrs.id
-      for_ here (`addMemories` 1)
+    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
+      semaphore iid do
+        gameModifier (attrs.ability 1) iid Semaphore
+        selectEach (investigatorAt attrs.id) (`addMemories` 1)
       pure l
     _ -> OmniTransmitters <$> liftRunMessage msg attrs

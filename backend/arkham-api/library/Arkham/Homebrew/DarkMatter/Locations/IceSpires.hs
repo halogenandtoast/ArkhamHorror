@@ -3,13 +3,14 @@ module Arkham.Homebrew.DarkMatter.Locations.IceSpires (iceSpires) where
 import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (scanEventAt, shuffleIntoScanningDeck)
+import Arkham.Homebrew.DarkMatter.Helpers (
+  emptyUnstabilizedLocation,
+  scanEventAt,
+  shuffleLocationIntoScanningDeck,
+ )
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Types qualified as Loc
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Projection
-import Arkham.Token qualified as Token
 
 newtype IceSpires = IceSpires LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -24,21 +25,14 @@ a resource token on it back into the scanning deck."
 instance HasAbilities IceSpires where
   getAbilities (IceSpires a) =
     extendRevealed1 a
-      $ mkAbility a 1
+      $ restricted a 1 (exists emptyUnstabilizedLocation)
       $ forced
       $ CampaignEvent #after (Just You) (scanEventAt a.id)
 
 instance RunMessage IceSpires where
   runMessage msg l@(IceSpires attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      candidates <-
-        select
-          $ LocationWithoutInvestigators
-          <> LocationWithoutEnemies
-          <> not_ (LocationWithToken Token.Resource)
-      chooseOrRunOneM iid $ targets candidates \lid -> do
-        card <- field Loc.LocationCard lid
-        shuffleIntoScanningDeck [card]
-        push $ RemoveLocation lid
+      candidates <- select emptyUnstabilizedLocation
+      chooseOrRunOneM iid $ targets candidates shuffleLocationIntoScanningDeck
       pure l
     _ -> IceSpires <$> liftRunMessage msg attrs

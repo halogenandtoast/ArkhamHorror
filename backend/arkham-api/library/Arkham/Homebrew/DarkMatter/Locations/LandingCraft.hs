@@ -11,7 +11,7 @@ newtype LandingCraft = LandingCraft LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 landingCraft :: LocationCard LandingCraft
-landingCraft = symbolLabel $ location LandingCraft Cards.landingCraft 3 (PerPlayer 1)
+landingCraft = symbolLabel $ location LandingCraft Cards.landingCraft 3 (Static 1)
 
 {- | "[free]: Place 1 of your clues onto this location.
 While there are 2[per_investigator] or more clues on this location, it gains

@@ -4,6 +4,7 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (
   campaignI18n,
   drawFacedownCards,
+  getCanPlaceFacedownInThreatArea,
   placeFacedownInThreatArea,
  )
 import Arkham.Message.Lifted.Choose
@@ -23,8 +24,13 @@ paradoxicalThreat = treachery ParadoxicalThreat Cards.paradoxicalThreat
 instance RunMessage ParadoxicalThreat where
   runMessage msg t@(ParadoxicalThreat attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
+      -- "must ... choose one": with the encounter deck and discard both empty
+      -- the placement cannot change the game state, so it is not offered.
+      canPlace <- getCanPlaceFacedownInThreatArea
       chooseOneM iid $ campaignI18n do
-        labeled' "paradoxicalThreat.placeFacedown" $ placeFacedownInThreatArea iid 3
+        when canPlace
+          $ labeled' "paradoxicalThreat.placeFacedown"
+          $ placeFacedownInThreatArea iid 3
         labeled' "paradoxicalThreat.doomAndDraw" do
           placeDoomOnAgendaAndCheckAdvanceBy attrs 1
           drawFacedownCards iid 3

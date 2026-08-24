@@ -17,7 +17,7 @@ newtype BrainStorage = BrainStorage LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brainStorage :: LocationCard BrainStorage
-brainStorage = location BrainStorage Cards.brainStorage 4 (Static 0)
+brainStorage = symbolLabel $ location BrainStorage Cards.brainStorage 4 (Static 0)
 
 {- | "Forced - After you reveal Brain Storage: Attach each set aside [[Brain]]
 story asset to it." / "[action] Choose a [[Brain]] story asset in play: Attach

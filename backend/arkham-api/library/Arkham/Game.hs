@@ -3157,6 +3157,13 @@ getAssetsMatching matcher = do
           AttachedToAsset _ (Just inner) -> inThreatArea inner
           _ -> False
       filterM (fieldP AssetPlacement inThreatArea . toId) as
+    AssetFacedownInThreatAreaOf investigatorMatcher -> do
+      iids <- select $ IncludeEliminated investigatorMatcher
+      let
+        facedownInThreatArea = \case
+          FacedownInThreatArea iid' -> iid' `elem` iids
+          _ -> False
+      filterM (fieldP AssetPlacement facedownInThreatArea . toId) as
     AssetAttachedTo targetMatcher -> do
       let
         isValid a = case (assetPlacement (toAttrs a)).attachedTo of
@@ -3616,7 +3623,8 @@ getMaybeOutOfPlayEnemy outOfPlayZone eid = do
 zone (@OutOfPlay VoidZone/PursuitZone/TheDepths/SetAsideZone/...@) and not
 face-down in a threat area. To reach those, a matcher must decorate itself
 (@OutOfPlayEnemy zone@, @IncludeOutOfPlayEnemy@, @EnemyWithPlacement (OutOfPlay
-...)@, @EnemyWithPlacement (FacedownInThreatArea ...)@, or @DefeatedEnemy@);
+...)@, @EnemyWithPlacement (FacedownInThreatArea ...)@,
+@EnemyFacedownInThreatAreaOf@, or @DefeatedEnemy@);
 when it does, we leave the full candidate set intact so the decorator can find
 them. This makes @InPlayEnemy@ redundant (a no-op) for its one real job of
 excluding zone-resident enemies. Non-zone placements that are also \"not in
@@ -3646,6 +3654,7 @@ referencesOutOfPlay = any isOutOfPlayReference . universe
     IncludeOutOfPlayEnemy {} -> True
     DefeatedEnemy {} -> True
     EnemyWithPlacement p -> isOutOfPlayPlacement p
+    EnemyFacedownInThreatAreaOf {} -> True
     _ -> False
 
 getEnemiesMatching :: (HasCallStack, HasGame m) => EnemyMatcher -> m [Enemy]
@@ -4140,6 +4149,11 @@ enemyMatcherFilter es matcher' = do
     EnemyWithEvadeValue n -> filterM (fieldP EnemyEvade (== Just n) . toId) es
     EnemyWithFight -> filterM (fieldP EnemyFight isJust . toId) es
     EnemyWithPlacement p -> filterM (fieldP EnemyPlacement (== p) . toId) es
+    EnemyFacedownInThreatAreaOf investigatorMatcher -> do
+      iids <- select $ IncludeEliminated investigatorMatcher
+      pure $ flip filter es \enemy -> case enemyPlacement (toAttrs enemy) of
+        FacedownInThreatArea iid -> iid `elem` iids
+        _ -> False
     EnemyHiddenInHand investigatorMatcher -> do
       iids <- select investigatorMatcher
       pure $ flip filter es \enemy -> case enemyPlacement (toAttrs enemy) of

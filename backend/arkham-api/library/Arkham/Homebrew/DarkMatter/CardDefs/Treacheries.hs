@@ -44,6 +44,8 @@ callOfTheVoid =
   (treachery ":dark-matter:008" "Call of the Void" Set.DeepSpace 1)
     { cdCardTraits = setFromList [Omen]
     , cdKeywords = setFromList [Keyword.Surge]
+    , -- "Cannot be cancelled or ignored."
+      cdRevelation = CannotBeCanceledRevelation
     }
 
 coldVacuum :: CardDef

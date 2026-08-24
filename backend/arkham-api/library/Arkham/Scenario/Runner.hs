@@ -522,6 +522,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure $ a & noRemainingInvestigatorsHandlerL .~ target
   HandleNoRemainingInvestigators target | isTarget a target -> do
     clearQueue
+    -- inResolution is set below so a resolution that kills an investigator does
+    -- not re-enter here. That also makes the ScenarioResolution wrapper take its
+    -- already-resolving branch, which never opens the end-of-game window, so
+    -- open it here instead.
+    checkWhen Window.EndOfGame
     push (ScenarioResolution NoResolution)
     pure $ a & inResolutionL .~ True -- must set to avoid redundancy when scenario kills investigator
   InvestigatorWhenEliminated _ iid mmsg -> do

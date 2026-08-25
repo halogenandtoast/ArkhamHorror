@@ -492,7 +492,7 @@ instance RunMessage TheDreamEaters where
         randolphDidNotSurvive <- getHasRecord TheWebOfDreams RandolphDidNotSurviveTheDescent
 
         when (hasAHunch && randolphDidNotSurvive) do
-          flavor $ campaignTitledGreenFlavorText "where'sBlondie"
+          flavor $ campaignTitledGreenFlavorText "wheresBlondie"
           pushAll
             [ InTheDreamQuest (CrossOutRecord $ toCampaignLogKey TheBlackCatHasAHunch)
             , InTheWebOfDreams (CrossOutRecord $ toCampaignLogKey TheBlackCatHasAHunch)

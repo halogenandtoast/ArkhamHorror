@@ -67,6 +67,7 @@ data instance Field Event :: Type -> Type where
   EventWindows :: Field Event [Window]
   EventCustomizations :: Field Event Customizations
   EventMeta :: Field Event Value
+  EventPlayTarget :: Field Event (Maybe Target)
 
 data instance Field (InHandEntity Event) :: Type -> Type where
   InHandEventCardId :: Field (InHandEntity Event) CardId

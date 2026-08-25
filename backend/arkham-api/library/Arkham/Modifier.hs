@@ -308,6 +308,10 @@ data ModifierType
   | DoubleNegativeModifiersOnChaosTokens
   | DoubleModifiersOnChaosTokens
   | DoubleSkillIcons
+  | {- | Double only the listed icons on a committed card, leaving the rest
+    (notably @WildIcon@) counted once.
+    -}
+    DoubleSkillIconsOf [SkillIcon]
   | DoubleSuccess
   | DuringEnemyPhaseMustMoveToward Target
   | EffectsCannotBeCanceled

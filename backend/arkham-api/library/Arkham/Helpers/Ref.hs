@@ -100,6 +100,7 @@ sourceToMaybeTarget = \case
   AssetMatcherSource {} -> Nothing
   LocationMatcherSource {} -> Nothing
   EnemyMatcherSource {} -> Nothing
+  TreacheryMatcherSource {} -> Nothing
   EnemyAttackSource a -> Just $ EnemyTarget a
   EnemyDefeatSource a -> Just $ EnemyTarget a
   StorySource code -> Just $ StoryTarget code

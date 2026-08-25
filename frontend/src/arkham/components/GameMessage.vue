@@ -11,7 +11,11 @@ export default defineComponent({
     msg: { type: String, required: true },
   },
   render() {
-    const msg = handleEmbeddedI18n(this.msg, this.$t);
+    const msg = handleEmbeddedI18n(this.msg, this.$t)
+      // Logs written before custom token formatting was fixed contain the
+      // Haskell constructor and an extra pair of quotes. Keep saved logs
+      // renderable while new entries use the canonical homebrew slug.
+      .replace(/\{token:"CustomToken "([^"]+)""\}/g, '{token:"$1"}')
     const splits = msg.split(/({[^}]+})/)
     const els = splits.map(split => {
       if (/{card:"((?:[^"]|\\.)+)":"([^"]+)":"([^"]+)"}/.test(split)) {

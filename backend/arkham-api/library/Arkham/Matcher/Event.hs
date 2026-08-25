@@ -18,7 +18,7 @@ import {-# SOURCE #-} Arkham.Modifier
 import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
 import Arkham.Token
-import Arkham.Trait (Trait(Tactic, Upgrade))
+import Arkham.Trait (Trait (Tactic, Upgrade))
 import Data.Aeson.TH
 import GHC.OverloadedLabels
 
@@ -55,6 +55,8 @@ data EventMatcher
   | EventWithMetaKey Key
   | EventIsAction ActionMatcher
   | OutOfPlayEvent EventMatcher
+  | EventTargetsInvestigator
+  | EventTargetsEnemy
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "upgrade" EventMatcher where

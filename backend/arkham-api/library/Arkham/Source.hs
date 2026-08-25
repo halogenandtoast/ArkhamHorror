@@ -18,6 +18,7 @@ import Arkham.Matcher.Types (
   EnemyMatcher,
   LocationMatcher,
   SourceMatcher (..),
+  TreacheryMatcher,
  )
 import Arkham.Prelude
 import Arkham.Tarot
@@ -56,6 +57,7 @@ data Source
   | InvestigatorSource InvestigatorId
   | LocationMatcherSource LocationMatcher
   | EnemyMatcherSource EnemyMatcher
+  | TreacheryMatcherSource TreacheryMatcher
   | LocationSource LocationId
   | ProxySource {source :: Source, originalSource :: Source}
   | ResourceSource InvestigatorId
@@ -305,6 +307,9 @@ instance Sourceable LocationMatcher where
 
 instance Sourceable EnemyMatcher where
   toSource = EnemyMatcherSource
+
+instance Sourceable TreacheryMatcher where
+  toSource = TreacheryMatcherSource
 
 toAbilitySource :: Sourceable a => a -> Int -> Source
 toAbilitySource a n = case toSource a of

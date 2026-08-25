@@ -50,6 +50,7 @@ sourceTraits = \case
   EnemyAttackSource _ -> pure mempty
   EnemyDefeatSource _ -> pure mempty
   EnemyMatcherSource _ -> pure mempty
+  TreacheryMatcherSource _ -> pure mempty
   EnemySource eid -> fromMaybe mempty <$> fieldMay EnemyTraits eid
   EventSource eid -> fromMaybe mempty <$> fieldMay EventTraits eid
   GameSource -> pure mempty
@@ -248,6 +249,7 @@ sourceMatches s = \case
         InvestigatorSource {} -> True
         LocationMatcherSource {} -> True
         EnemyMatcherSource {} -> True
+        TreacheryMatcherSource {} -> True
         LocationSource {} -> True
         IndexedSource _ s' -> go s'
         ProxySource (CardIdSource _) s' -> go s'

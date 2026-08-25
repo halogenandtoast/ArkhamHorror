@@ -3,6 +3,7 @@
 
 module Arkham.Campaign.Types where
 
+import Arkham.Ability.Types (Ability)
 import Arkham.Ability.Used
 import Arkham.CampaignLog
 import Arkham.CampaignStep
@@ -56,6 +57,8 @@ class
   invalidCards :: a -> [CardCode]
   invalidCards _ = []
   campaignTokens :: Difficulty -> [ChaosTokenFace]
+  campaignAbilities :: a -> [Ability]
+  campaignAbilities _ = []
 
 data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
@@ -359,7 +362,7 @@ instance Data Campaign where
   dataTypeOf _ = error "dataTypeOf(Campaign)"
 
 instance HasAbilities Campaign where
-  getAbilities _ = []
+  getAbilities (Campaign a) = campaignAbilities a
 
 instance Eq Campaign where
   (Campaign (a :: a)) == (Campaign (b :: b)) = case eqT @a @b of

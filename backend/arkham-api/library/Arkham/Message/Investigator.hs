@@ -5,7 +5,6 @@ module Arkham.Message.Investigator where
 import Arkham.Card (Card, EncounterCard, PlayerCard)
 import Arkham.Card.Id (CardId)
 import Arkham.Cost.Status (ActionStatus)
-import Arkham.Strategy (DamageStrategy)
 import Arkham.Deck (DeckSignifier)
 import Arkham.Id
 import Arkham.Matcher (AssetMatcher)
@@ -13,19 +12,21 @@ import {-# SOURCE #-} Arkham.Message (Message)
 import Arkham.Prelude
 import Arkham.Slot (Slot, SlotType)
 import Arkham.Source (Source)
+import Arkham.Strategy (DamageStrategy)
 import Arkham.Target (Target)
 import Arkham.Window (Window)
 import Arkham.Zone (Zone)
 import Data.Aeson.TH
 
--- | Messages that are inherently scoped to one investigator (or to all
--- investigators): the damage-assignment flow, defeat/eliminate/kill cascade,
--- mulligan, resign, devour, clue spending/placing, asset-slot management,
--- card-draw notifications, and investigator-played-event signalling.
---
--- "Arkham.Message" exposes bidirectional pattern synonyms preserving the
--- pre-extraction public names; the underscore-suffixed constructors here are
--- the wrapped form.
+{- | Messages that are inherently scoped to one investigator (or to all
+investigators): the damage-assignment flow, defeat/eliminate/kill cascade,
+mulligan, resign, devour, clue spending/placing, asset-slot management,
+card-draw notifications, and investigator-played-event signalling.
+
+"Arkham.Message" exposes bidirectional pattern synonyms preserving the
+pre-extraction public names; the underscore-suffixed constructors here are
+the wrapped form.
+-}
 data InvestigatorMessage
   = InvestigatorAssignDamage_ InvestigatorId Source DamageStrategy Int Int
   | InvestigatorCommittedCard_ InvestigatorId Card
@@ -35,9 +36,18 @@ data InvestigatorMessage
   | InvestigatorDamageInvestigator_ InvestigatorId InvestigatorId
   | InvestigatorDefeated_ Source InvestigatorId
   | InvestigatorIsDefeated_ Source InvestigatorId
+  | InvestigatorNoLongerDefeated_ InvestigatorId
   | InvestigatorDirectDamage_ InvestigatorId Source Int Int
   | InvestigatorDiscardAllClues_ Source InvestigatorId
-  | InvestigatorDoAssignDamage_ InvestigatorId Source DamageStrategy AssetMatcher Int Int [Target] [Target]
+  | InvestigatorDoAssignDamage_
+      InvestigatorId
+      Source
+      DamageStrategy
+      AssetMatcher
+      Int
+      Int
+      [Target]
+      [Target]
   | InvestigatorDrawEnemy_ InvestigatorId EnemyId
   | InvestigatorDrewEncounterCard_ InvestigatorId EncounterCard
   | InvestigatorDrewEncounterCardFrom_ InvestigatorId EncounterCard (Maybe DeckSignifier)

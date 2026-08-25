@@ -1593,6 +1593,13 @@ pattern InvestigatorDefeated src iid = InvestigatorMessage (InvestigatorDefeated
 pattern InvestigatorIsDefeated :: Source -> InvestigatorId -> Message
 pattern InvestigatorIsDefeated src iid = InvestigatorMessage (InvestigatorIsDefeated_ src iid)
 
+{- | Clear an investigator's defeated state without undoing the defeat itself:
+they keep the trauma they suffered, but resume playing. Circus Ex Mortis' Blood
+on the Line revives investigators frozen beneath it when the act advances.
+-}
+pattern InvestigatorNoLongerDefeated :: InvestigatorId -> Message
+pattern InvestigatorNoLongerDefeated iid = InvestigatorMessage (InvestigatorNoLongerDefeated_ iid)
+
 pattern InvestigatorDirectDamage :: InvestigatorId -> Source -> Int -> Int -> Message
 pattern InvestigatorDirectDamage iid src d h = InvestigatorMessage (InvestigatorDirectDamage_ iid src d h)
 

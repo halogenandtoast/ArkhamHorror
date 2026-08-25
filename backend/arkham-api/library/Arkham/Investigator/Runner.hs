@@ -807,6 +807,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       pushAll [windowMsg, InvestigatorIsDefeated source iid]
     pure a
   InvestigatorIsDefeated source iid | iid == investigatorId -> handleInvestigatorIsDefeated a source iid
+  Msg.InvestigatorNoLongerDefeated iid
+    | iid == investigatorId ->
+        pure $ a & defeatedL .~ False & endedTurnL .~ False
   Msg.InvestigatorResigned iid | iid == investigatorId -> do
     pushAll [InvestigatorWhenEliminated (toSource a) iid (Just $ Do msg)]
     pure $ a & endedTurnL .~ True

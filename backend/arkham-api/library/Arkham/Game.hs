@@ -2097,6 +2097,11 @@ getGameAbilities = do
   -- so the HasGame-aware collector produces them here, already proxied so that
   -- ability.source.asset == trueMagickId for the matcher DSL.
   trueMagickInHandAbilities <- getTrueMagickInHandAbilities
+  -- Abilities the campaign grants onto cards in play (Circus Ex Mortis grants
+  -- reactions to Curse of the Rougarou / Lady Esprit for the rest of the
+  -- campaign). They are anchored by matcher-source proxies, so
+  -- replaceMatcherSources below drops them when the card is not in play.
+  let campaignAbilities' = foldMap getAbilities (modeCampaign $ g ^. modeL)
   inDiscardAssetAbilities <-
     concatMap (filter inDiscardAbility . getAbilities)
       <$> filterM unblanked (toList $ g ^. inDiscardEntitiesL . each . assetsL)
@@ -2112,6 +2117,7 @@ getGameAbilities = do
     <> inHandEventAbilities
     <> inHandAssetAbilities
     <> trueMagickInHandAbilities
+    <> campaignAbilities'
     <> inDiscardAssetAbilities
     <> actAbilities
     <> agendaAbilities
@@ -2137,6 +2143,9 @@ replaceMatcherSources ability = case abilitySource ability of
     pure $ map (\source -> ability {abilitySource = ProxySource source base}) sources
   ProxySource (EnemyMatcherSource m) base -> do
     sources <- selectMap EnemySource m
+    pure $ map (\source -> ability {abilitySource = ProxySource source base}) sources
+  ProxySource (TreacheryMatcherSource m) base -> do
+    sources <- selectMap TreacherySource m
     pure $ map (\source -> ability {abilitySource = ProxySource source base}) sources
   _ -> pure [ability]
 
@@ -3462,6 +3471,10 @@ getEventsMatching matcher = case matcher of
     EventWithDoom valueMatcher -> filterM ((`gameValueMatches` valueMatcher) . (.doom) . toAttrs) as
     EventWithToken tkn -> filterM (fieldMap EventTokens (Token.hasToken tkn) . toId) as
     EventReady -> pure $ filter (not . attr eventExhausted) as
+    EventTargetsInvestigator ->
+      pure $ filter (\a -> case attr eventTarget a of Just (InvestigatorTarget _) -> True; _ -> False) as
+    EventTargetsEnemy ->
+      pure $ filter (\a -> case attr eventTarget a of Just (EnemyTarget _) -> True; _ -> False) as
     EventMatches ms -> foldM filterMatcher as ms
     EventOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AnyEvent -> pure as
@@ -6095,6 +6108,7 @@ eventField e fld = do
     EventController -> pure eventController
     EventDoom -> pure attrs.doom
     EventCard -> pure $ toCard e
+    EventPlayTarget -> pure eventTarget
 
 instance Projection Event where
   getAttrs eid = toAttrs <$> getEvent eid

@@ -13,7 +13,7 @@ newtype LuminousArchivesArchiveOfMemory = LuminousArchivesArchiveOfMemory Locati
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 luminousArchivesArchiveOfMemory :: LocationCard LuminousArchivesArchiveOfMemory
-luminousArchivesArchiveOfMemory = location LuminousArchivesArchiveOfMemory Cards.luminousArchivesArchiveOfMemory 2 (Static 3)
+luminousArchivesArchiveOfMemory = location LuminousArchivesArchiveOfMemory Cards.luminousArchivesArchiveOfMemory 2 (PerPlayer 3)
 
 instance HasAbilities LuminousArchivesArchiveOfMemory where
   getAbilities (LuminousArchivesArchiveOfMemory a) =

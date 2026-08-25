@@ -11,7 +11,7 @@ newtype TheGreatStair = TheGreatStair LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 theGreatStair :: LocationCard TheGreatStair
-theGreatStair = location TheGreatStair Cards.theGreatStair 2 (Static 2)
+theGreatStair = location TheGreatStair Cards.theGreatStair 2 (PerPlayer 2)
 
 instance HasModifiersFor TheGreatStair where
   getModifiersFor (TheGreatStair a) = modifySelf a [CannotBeFlooded]

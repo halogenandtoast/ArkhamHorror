@@ -14,7 +14,7 @@ newtype CentralSpire = CentralSpire LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 centralSpire :: LocationCard CentralSpire
-centralSpire = location CentralSpire Cards.centralSpire 3 (Static 2)
+centralSpire = location CentralSpire Cards.centralSpire 3 (PerPlayer 2)
 
 instance HasModifiersFor CentralSpire where
   getModifiersFor (CentralSpire a) = modifySelf a [CannotBeMoved, CannotLeavePlay]

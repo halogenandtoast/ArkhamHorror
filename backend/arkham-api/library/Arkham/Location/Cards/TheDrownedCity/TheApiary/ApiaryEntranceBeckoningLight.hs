@@ -16,7 +16,7 @@ newtype ApiaryEntranceBeckoningLight = ApiaryEntranceBeckoningLight LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 apiaryEntranceBeckoningLight :: LocationCard ApiaryEntranceBeckoningLight
-apiaryEntranceBeckoningLight = location ApiaryEntranceBeckoningLight Cards.apiaryEntranceBeckoningLight 1 (Static 1)
+apiaryEntranceBeckoningLight = location ApiaryEntranceBeckoningLight Cards.apiaryEntranceBeckoningLight 1 (PerPlayer 1)
 
 instance HasAbilities ApiaryEntranceBeckoningLight where
   getAbilities (ApiaryEntranceBeckoningLight a) =

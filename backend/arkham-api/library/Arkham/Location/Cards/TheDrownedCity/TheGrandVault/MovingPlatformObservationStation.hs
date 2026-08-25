@@ -17,7 +17,7 @@ newtype MovingPlatformObservationStation = MovingPlatformObservationStation Loca
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 movingPlatformObservationStation :: LocationCard MovingPlatformObservationStation
-movingPlatformObservationStation = location MovingPlatformObservationStation Cards.movingPlatformObservationStation 2 (Static 2)
+movingPlatformObservationStation = location MovingPlatformObservationStation Cards.movingPlatformObservationStation 2 (PerPlayer 2)
 
 instance HasModifiersFor MovingPlatformObservationStation where
   getModifiersFor (MovingPlatformObservationStation a) = do

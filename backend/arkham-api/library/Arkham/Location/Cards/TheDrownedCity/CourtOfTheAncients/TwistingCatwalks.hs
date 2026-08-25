@@ -16,7 +16,7 @@ newtype TwistingCatwalks = TwistingCatwalks LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistingCatwalks :: LocationCard TwistingCatwalks
-twistingCatwalks = location TwistingCatwalks Cards.twistingCatwalks 3 (Static 1)
+twistingCatwalks = location TwistingCatwalks Cards.twistingCatwalks 3 (PerPlayer 1)
 
 instance HasAbilities TwistingCatwalks where
   getAbilities (TwistingCatwalks a) =

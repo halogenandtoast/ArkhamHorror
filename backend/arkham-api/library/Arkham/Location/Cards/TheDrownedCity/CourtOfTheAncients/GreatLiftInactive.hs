@@ -15,7 +15,7 @@ newtype GreatLiftInactive = GreatLiftInactive LocationAttrs
 
 greatLiftInactive :: LocationCard GreatLiftInactive
 greatLiftInactive =
-  locationWith GreatLiftInactive Cards.greatLiftInactive 2 (Static 1)
+  locationWith GreatLiftInactive Cards.greatLiftInactive 2 (PerPlayer 1)
     $ canBeFlippedL
     .~ True
 

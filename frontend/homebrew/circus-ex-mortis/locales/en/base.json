@@ -11,6 +11,24 @@
     "minnie": "<p>Minnie Klein of the Arkham Advertiser was the first one to bring the coincidences to your attention. You found Minnie waiting for you at Velma's Diner with her notepad in hand and a hungry look in her eyes – and it wasn't for the lunch specials. “Take a look at this,” she says, using her pencil like a teacher's pointer, “The New Moon Circus used to work the usual circuit in the south, hitting all the big cities like Atlanta and Jacksonville, and never going further north than Memphis. Then a month ago, the circus suddenly took off up the coast, and started working a bunch of podunk towns on the way north. Arkham's the biggest one they've hit since Savannah.”</p><p>You concede that there's probably something odd behind the circus's decision but you fail to see what about it has excited Minnie. She quickly elaborates. “Missing person cases <b>and</b> mysterious deaths in each town the New Moon Circus has visited at the time the circus was in town. And here's the kicker.” Minnie smiles proudly as she taps at the bottom of her pad. “The people who went to see the circus? Nobody can remember anything concrete about it. Two people who live three states away gave their local papers the exact same quote about their experience. How's that for fishy?”</p><p>Fishy enough to warrant your investigation at the very least. And so with tickets in hand and preparations made for any possible contingency, you set out for the circus. The evening is still bright owing to the time of year, but the full moon is already rising.</p>",
     "addMoonTokens": "Add 3 {'{'}moon{'}'} tokens to the chaos bag for the remainder of the campaign."
   },
+  "campaignReading": {
+    "title": "The Tarot Deck",
+    "body": "<p class='basic'>If investigators choose to use the Tarot Deck from the Return to the Circle Undone expansion, there is some thematic connection to the Circus Ex Mortis campaign. Investigators may choose to perform an 8-card Campaign Reading with these specific 8 cards, in this order: Magician, Hermit, Strength, Chariot, Devil, Temperance, Sun, Moon</p>",
+    "label": {
+      "performCampaignReading": "Perform Campaign Reading",
+      "performIndividualReadings": "Perform a tarot reading before each scenario instead"
+    }
+  },
+  "destiny": {
+    "oneNightOnly": "One Night Only",
+    "thePrimrosePath": "The Primrose Path",
+    "harm'sWay": "Harm's Way",
+    "allPointsWest": "All Points West",
+    "piperAtTheGatesOfDawn": "Piper at the Gates of Dawn",
+    "bacchanalia": "Bacchanalia",
+    "redSunrise": "Red Sunrise",
+    "thousandToOne": "Thousand to One"
+  },
   "moonToken": {
     "label": {
       "endOfRoundQuestion": "A {'{'}moon{'}'} token is sealed on your investigator card. You must choose one:",

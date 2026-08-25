@@ -1,25 +1,30 @@
 module Arkham.Homebrew.CircusExMortis.Campaign (circusExMortis) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
-import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as HBAssets
 import Arkham.Campaign.Import.Lifted
-import Arkham.Homebrew.CircusExMortis.CampaignSteps
-import Arkham.Homebrew.CircusExMortis.ChaosBag
-import Arkham.Homebrew.CircusExMortis.Helpers
-import Arkham.Homebrew.CircusExMortis.Key
+import Arkham.Classes.HasGame (getGame)
+import Arkham.Game.Base (gamePerformTarotReadings)
 import Arkham.Helpers.Campaign (getCompletedSteps, getOwner)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith, setActiveDuringSetup)
+import Arkham.Helpers.Query (getLeadPlayer)
 import Arkham.Helpers.Xp (toBonus)
+import Arkham.Homebrew.CircusExMortis.CampaignSteps
+import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as HBAssets
+import Arkham.Homebrew.CircusExMortis.CardDefs.Skills qualified as Skills
+import Arkham.Homebrew.CircusExMortis.ChaosBag
+import Arkham.Homebrew.CircusExMortis.Helpers
+import Arkham.Homebrew.CircusExMortis.Key
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
-import Arkham.Homebrew.CircusExMortis.CardDefs.Skills qualified as Skills
+import Arkham.Question (DestinyDrawing (..), Question (PickDestiny))
 import Arkham.Source
 import Arkham.Target (Target (GameTarget))
+import Arkham.Tarot (TarotCard (..), TarotCardArcana (..), TarotCardFacing (Upright))
 import Arkham.Trait (Trait (Believer, Chosen, Clairvoyant, Miskatonic, Scholar))
 
 newtype CircusExMortis = CircusExMortis CampaignAttrs
@@ -69,6 +74,37 @@ instance RunMessage CircusExMortis where
           p "minnie"
           ul $ li "addMoonTokens"
       replicateM_ 3 $ addChaosToken MoonToken
+      whenM (gamePerformTarotReadings <$> getGame) $ scope "campaignReading" do
+        leadPlayer <- getLeadPlayer
+        storyWithChooseOneM' (setTitle "title" >> p "body") do
+          labeled' "performCampaignReading" do
+            push $ SetPerformTarotReadings False
+            push
+              $ Ask leadPlayer
+              $ PickDestiny
+              $ zipWith
+                DestinyDrawing
+                [ "oneNightOnly"
+                , "thePrimrosePath"
+                , "harm'sWay"
+                , "allPointsWest"
+                , "piperAtTheGatesOfDawn"
+                , "bacchanalia"
+                , "redSunrise"
+                , "thousandToOne"
+                ]
+              $ map
+                (TarotCard Upright)
+                [ TheMagicianI
+                , TheHermitIX
+                , StrengthVIII
+                , TheChariotVII
+                , TheDevilXV
+                , TemperanceXIV
+                , TheSunXIX
+                , TheMoonXVIII
+                ]
+          labeled' "performIndividualReadings" nothing
       nextCampaignStep
       pure c
     -- Interlude: The Future and the Past (guide pp9-10)

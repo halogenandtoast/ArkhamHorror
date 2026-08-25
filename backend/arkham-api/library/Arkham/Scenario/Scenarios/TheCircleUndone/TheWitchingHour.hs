@@ -200,7 +200,7 @@ instance RunMessage TheWitchingHour where
                 $ zipWith
                   DestinyDrawing
                   [ "theWitchingHour"
-                  , "atDeathsDoorStep"
+                  , "atDeath'sDoorstep"
                   , "theSecretName"
                   , "theWagesOfSin"
                   , "forTheGreaterGood"

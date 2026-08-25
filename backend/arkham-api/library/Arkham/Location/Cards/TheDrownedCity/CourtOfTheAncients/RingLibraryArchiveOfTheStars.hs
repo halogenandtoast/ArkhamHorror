@@ -16,7 +16,7 @@ newtype RingLibraryArchiveOfTheStars = RingLibraryArchiveOfTheStars LocationAttr
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ringLibraryArchiveOfTheStars :: LocationCard RingLibraryArchiveOfTheStars
-ringLibraryArchiveOfTheStars = location RingLibraryArchiveOfTheStars Cards.ringLibraryArchiveOfTheStars 2 (Static 2)
+ringLibraryArchiveOfTheStars = location RingLibraryArchiveOfTheStars Cards.ringLibraryArchiveOfTheStars 2 (PerPlayer 2)
 
 instance HasAbilities RingLibraryArchiveOfTheStars where
   getAbilities (RingLibraryArchiveOfTheStars a) =

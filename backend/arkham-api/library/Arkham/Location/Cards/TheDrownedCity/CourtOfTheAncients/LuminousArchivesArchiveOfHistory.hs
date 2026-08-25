@@ -16,7 +16,7 @@ newtype LuminousArchivesArchiveOfHistory = LuminousArchivesArchiveOfHistory Loca
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 luminousArchivesArchiveOfHistory :: LocationCard LuminousArchivesArchiveOfHistory
-luminousArchivesArchiveOfHistory = location LuminousArchivesArchiveOfHistory Cards.luminousArchivesArchiveOfHistory 3 (Static 2)
+luminousArchivesArchiveOfHistory = location LuminousArchivesArchiveOfHistory Cards.luminousArchivesArchiveOfHistory 3 (PerPlayer 2)
 
 instance HasModifiersFor LuminousArchivesArchiveOfHistory where
   getModifiersFor (LuminousArchivesArchiveOfHistory a) = do

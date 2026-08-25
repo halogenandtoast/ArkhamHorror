@@ -369,6 +369,28 @@ const visibleCardIds = computed(() => new Set([
   ...(props.game.skillTest?.committedCards ?? []).map((card) => toCardContents(card).id),
 ]))
 
+// Scarlet keys draw their own ability buttons next to the key art. Collect the
+// keys that are actually on screen, so a key with no anchor still falls through
+// to the generic button list instead of losing its ability entirely.
+const renderedScarletKeyIds = computed(() => {
+  const ids = new Set<string>()
+  const add = (keys?: string[]) => keys?.forEach((id) => ids.add(id))
+
+  Object.values(props.game.investigators).forEach((i) => add(i.scarletKeys))
+  Object.values(props.game.enemies).forEach((e) => add(e.scarletKeys))
+  Object.values(props.game.assets).forEach((a) => add(a.scarletKeys))
+  Object.values(props.game.locations).forEach((l) =>
+    l.scarletKeys?.forEach((id) => {
+      if (props.game.scarletKeys[id]?.placement.tag === 'AttachedToLocation') ids.add(id)
+    })
+  )
+  Object.values(props.game.scarletKeys).forEach((k) => {
+    if (k.placement.tag === 'NextToAct') ids.add(k.id)
+  })
+
+  return ids
+})
+
 function abilityLabelHandledElsewhere(choice: Message) {
   if (choice.tag !== MessageType.ABILITY_LABEL) return false
 
@@ -395,6 +417,7 @@ function abilitySourceHandledElsewhere(source: any) {
     case 'EventSource': return source.contents in props.game.events || visibleCardIds.value.has(source.contents)
     case 'StorySource': return source.contents in props.game.stories
     case 'InvestigatorSource': return source.contents in props.game.investigators || source.contents in props.game.otherInvestigators
+    case 'ScarletKeySource': return renderedScarletKeyIds.value.has(source.contents)
     default: return false
   }
 }

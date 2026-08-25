@@ -1,10 +1,10 @@
 module Arkham.Homebrew.CircusExMortis.Acts.ForestOfIllusion (forestOfIllusion) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Helpers.Location (connectBothWays)
+import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
 import Arkham.Matcher
 import Arkham.Modifier
@@ -47,8 +47,6 @@ instance RunMessage ForestOfIllusion where
       -- Gradually unworking the illusions opens a route toward the camp.
       camp <- selectJust $ locationIs Locations.circusEncampment
       connectBothWays camp loc
-      -- TODO(homebrew): Misty Marsh's "additional cost to activate this ability
-      -- here: seal a moon token" is not modeled as a pre-cost.
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

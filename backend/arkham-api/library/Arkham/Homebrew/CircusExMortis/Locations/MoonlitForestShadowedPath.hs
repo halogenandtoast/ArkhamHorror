@@ -3,8 +3,8 @@ module Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestShadowedPath (
 ) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.Helpers (getSealedMoonTokens)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Helpers (getSealedMoonTokens)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 

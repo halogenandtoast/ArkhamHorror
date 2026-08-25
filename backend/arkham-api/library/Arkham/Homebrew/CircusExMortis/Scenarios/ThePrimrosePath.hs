@@ -91,15 +91,15 @@ instance RunMessage ThePrimrosePath where
   runMessage msg s@(ThePrimrosePath attrs) = runQueueT $ scenarioI18n "thePrimrosePath" $ case msg of
     PreScenarioSetup -> scope "intro" do
       bag <- getChaosBag
-      let moonInBag = any ((== MoonToken) . (.face)) bag.chaosBagChaosTokens
-          tabletInBag = any ((== Tablet) . (.face)) bag.chaosBagChaosTokens
+      let tabletInBag = any ((== Tablet) . (.face)) bag.chaosBagChaosTokens
+          cultistInBag = any ((== Cultist) . (.face)) bag.chaosBagChaosTokens
       storyWithChooseOneM' (setTitle "title" >> p "body") do
-        labeled' "useMoonlight" $ when moonInBag do
-          removeChaosToken MoonToken
-          addChaosToken Tablet
-        labeled' "shadows" $ when tabletInBag do
+        labeled' "useMoonlight" $ when tabletInBag do
           removeChaosToken Tablet
-          addChaosToken MoonToken
+          addChaosToken Cultist
+        labeled' "shadows" $ when cultistInBag do
+          removeChaosToken Cultist
+          addChaosToken Tablet
       pure s
     Setup -> runScenarioSetup ThePrimrosePath attrs do
       gather Set.ThePrimrosePath
@@ -138,12 +138,6 @@ instance RunMessage ThePrimrosePath where
       setAgendaDeck [Agendas.savageNature, Agendas.bloodMoon]
       setActDeck [Acts.forestOfIllusion]
       placeDoomOnAgenda 1
-    -- Moon token revealed during a skill test: seal it on the revealer's
-    -- investigator card and reveal another token (campaign guide p1).
-    ResolveChaosToken token MoonToken iid -> do
-      sealChaosToken iid iid token
-      drawAnotherChaosToken iid
-      pure s
     ResolveChaosToken _ Cultist iid -> do
       moons <- getSealedMoonTokens iid
       when (null moons) $ loseActions iid ScenarioSource 1

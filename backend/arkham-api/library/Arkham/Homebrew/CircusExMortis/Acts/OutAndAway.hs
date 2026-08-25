@@ -17,7 +17,7 @@ outAndAway =
 instance HasAbilities OutAndAway where
   getAbilities (OutAndAway x) =
     [ restricted x 1 (youExist hasSealedMoonToken) $ actionAbilityWithCost (HandDiscardCost 2 #any)
-    , restricted x 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
+    , onlyOnce $ restricted x 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
     ]
 
 instance RunMessage OutAndAway where

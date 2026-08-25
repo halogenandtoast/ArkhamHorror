@@ -1,14 +1,15 @@
 module Arkham.Homebrew.CircusExMortis.Treacheries.EndlessSpawn (endlessSpawn) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
-import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Card
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Helpers
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Monster))
-import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype EndlessSpawn = EndlessSpawn TreacheryAttrs
@@ -45,7 +46,7 @@ instance RunMessage EndlessSpawn where
         -- ponytail: "automatically succeed" modeled as a direct discard on the
         -- seal branch; outcome is identical to passing the test (discard Endless
         -- Spawn), and there is no clean primitive to force a specific test to pass.
-        when hasMoon $ campaignI18n $ labeled' "endlessSpawn.autoSucceed" do
+        when hasMoon $ campaignI18n $ scope "endlessSpawn" $ labeled' "autoSucceed" do
           selectOne (chaosToken_ (ChaosTokenFaceIs MoonToken)) >>= traverse_ (sealChaosToken iid iid)
           toDiscardBy iid (attrs.ability 2) attrs
       pure t

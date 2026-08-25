@@ -3,8 +3,8 @@ module Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestDeadGrove (
 ) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Location.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Matcher
 

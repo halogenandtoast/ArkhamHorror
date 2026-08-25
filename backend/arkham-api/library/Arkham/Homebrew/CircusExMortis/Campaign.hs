@@ -2,12 +2,14 @@ module Arkham.Homebrew.CircusExMortis.Campaign (circusExMortis) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
+import Arkham.CampaignLogKey (recorded)
 import Arkham.Classes.HasGame (getGame)
+import Arkham.Decklist.Type (investigator_name)
 import Arkham.Game.Base (gamePerformTarotReadings)
 import Arkham.Helpers.Campaign (getCompletedSteps, getOwner)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith, setActiveDuringSetup)
-import Arkham.Helpers.Query (getLeadPlayer)
+import Arkham.Helpers.Query (getInvestigators, getLeadPlayer)
 import Arkham.Helpers.Xp (toBonus)
 import Arkham.Homebrew.CircusExMortis.CampaignSteps
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as HBAssets
@@ -20,12 +22,14 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Name (toTitle)
 import Arkham.Projection
 import Arkham.Question (DestinyDrawing (..), Question (PickDestiny))
 import Arkham.Source
 import Arkham.Target (Target (GameTarget))
 import Arkham.Tarot (TarotCard (..), TarotCardArcana (..), TarotCardFacing (Upright))
 import Arkham.Trait (Trait (Believer, Chosen, Clairvoyant, Miskatonic, Scholar))
+import Data.Text qualified as T
 
 newtype CircusExMortis = CircusExMortis CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -160,6 +164,22 @@ instance RunMessage CircusExMortis where
           labeled' "addInvocationOfDiana"
             $ addCampaignCardToDeck iid DoNotShuffleIn Skills.invocationOfDiana
           labeled' "doNotAddInvocationOfDiana" nothing
+      flavor $ setTitle "title" >> p "destinyIntro"
+      investigators <- getInvestigators
+      let
+        destinyWords = ["heart", "pipes", "torch", "rock", "sigil", "stain", "prayer", "burden"]
+        chooseDestiny :: (HasI18n, ReverseQueue m) => [Text] -> [InvestigatorId] -> m ()
+        chooseDestiny _ [] = pure ()
+        chooseDestiny remaining (iid : rest) =
+          chooseOneM iid do
+            questionLabeledCard iid
+            questionLabeled' "destinyQuestion"
+            for_ remaining \word ->
+              labeled' word do
+                name <- toTitle <$> field InvestigatorName iid
+                recordSetInsert Destinies [String $ name <> ": " <> word]
+                chooseDestiny (filter (/= word) remaining) rest
+      chooseDestiny destinyWords investigators
       storyWithChooseOneM' (setTitle "title" >> p "role") do
         labeled' "determination" do
           flavor $ setTitle "title" >> p "determination"
@@ -205,6 +225,7 @@ instance RunMessage CircusExMortis where
       pure c
     -- Interlude: Good Omens (guide pp27-28)
     CampaignStep (InterludeStep 3 _) -> scope "goodOmens" do
+      flavor $ setTitle "title" >> p "destinyReminder"
       flavor $ setTitle "title" >> p "intro"
       mAmalthea <- getAmaltheaWeaverOwner
       case snd <$> mAmalthea of
@@ -318,6 +339,20 @@ instance RunMessage CircusExMortis where
               assignHorror iid CampaignSource 1
               releaseMoonToken token
       pure c
+    -- Written in Stone's Destinies (guide p19): "If an investigator is killed
+    -- or driven insane, their destiny is transferred to the investigator
+    -- chosen to replace them." Rewrite any "<old name>: <word>" entry to the
+    -- replacement's name; the decklist already carries their display name, so
+    -- no query against the (already-departed, by the time a deferred lookup
+    -- would run) old investigator is needed beyond this synchronous point.
+    ReplaceInvestigator oldIid decklist -> do
+      oldName <- toTitle <$> field InvestigatorName oldIid
+      let newName = investigator_name decklist
+      entries <- getSomeRecordSetJSON @Text Destinies
+      for_ entries \entry ->
+        for_ (T.stripPrefix (oldName <> ": ") entry) \word ->
+          recordSetReplace Destinies (recorded $ String entry) (recorded $ String $ newName <> ": " <> word)
+      lift $ defaultCampaignRunner msg c
     _ -> lift $ defaultCampaignRunner msg c
    where
     isAfterHarmsWay = do

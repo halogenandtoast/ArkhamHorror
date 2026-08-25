@@ -21,10 +21,11 @@ instance HasAbilities SmokeAndMirrors where
     [ playerLimit PerRound
         $ restricted x 1 (youExist hasSealedMoonToken)
         $ actionAbilityWithCost (HandDiscardCost 1 #any)
-    , restricted
-        x
-        2
-        (exists $ assetIs Assets.illusoryLocus <> AssetWithClues (AtLeast $ PerPlayer 2))
+    , onlyOnce
+        $ restricted
+          x
+          2
+          (exists $ assetIs Assets.illusoryLocus <> AssetWithClues (AtLeast $ PerPlayer 2))
         $ Objective
         $ forced AnyWindow
     ]

@@ -45,22 +45,66 @@ moonTokenValue = ChaosTokenValue MoonToken (NegativeModifier 0)
 hasSealedMoonToken :: InvestigatorMatcher
 hasSealedMoonToken = InvestigatorWithSealedChaosToken moonToken
 
+{- | Tokens sealed on cards at a location. Seals land on investigator cards (the
+☾ reveal effect) and on assets (De Cultus Bestiae), so those are the two pools
+"sealed on cards at your location" can draw from.
+-}
+getSealedTokensAtMatching :: HasGame m => ChaosTokenMatcher -> LocationId -> m [ChaosToken]
+getSealedTokensAtMatching matcher lid = do
+  onInvestigators <- select $ SealedOnInvestigator (InvestigatorAt $ LocationWithId lid) matcher
+  onAssets <- select $ SealedOnAsset (AssetAtLocation lid) matcher
+  pure $ nub (onInvestigators <> onAssets)
+
+-- | Moon tokens sealed on cards at a location.
+getSealedMoonTokensAt :: HasGame m => LocationId -> m [ChaosToken]
+getSealedMoonTokensAt = getSealedTokensAtMatching moonToken
+
+{- | Any sealed token on a card at a location: Amalthea's release riders say "a
+token", not "a ☾ token", and are read literally.
+-}
+getSealedTokensAt :: HasGame m => LocationId -> m [ChaosToken]
+getSealedTokensAt = getSealedTokensAtMatching AnyChaosToken
+
+-- | Moon tokens sealed on the cards an investigator controls.
+getSealedMoonTokensControlledBy :: HasGame m => InvestigatorId -> m [ChaosToken]
+getSealedMoonTokensControlledBy iid = do
+  own <- select $ SealedOnInvestigator (InvestigatorWithId iid) moonToken
+  onAssets <- select $ SealedOnAsset (assetControlledBy iid) moonToken
+  pure $ nub (own <> onAssets)
+
 -- | "Search the chaos bag for a ☾ token and seal it on your investigator card."
 sealMoonTokenOn :: ReverseQueue m => InvestigatorId -> m ()
-sealMoonTokenOn iid = selectOne moonToken >>= traverse_ (sealChaosToken iid iid)
+sealMoonTokenOn iid = sealMoonTokenOnTarget iid iid
 
--- | Release a sealed moon token: it returns to the chaos bag.
+-- | "Search the chaos bag for a ☾ token and seal it on <target>."
+sealMoonTokenOnTarget :: (ReverseQueue m, Targetable target) => InvestigatorId -> target -> m ()
+sealMoonTokenOnTarget iid target = selectOne moonToken >>= traverse_ (sealChaosToken iid target)
+
+-- | Release a sealed token: it returns to the chaos bag.
+releaseToken :: ReverseQueue m => ChaosToken -> m ()
+releaseToken = unsealChaosToken
+
+-- | Release a sealed moon token.
 releaseMoonToken :: ReverseQueue m => ChaosToken -> m ()
-releaseMoonToken = unsealChaosToken
+releaseMoonToken = releaseToken
 
 {- | The "release a ☾ token sealed on your investigator card" ability shared by
 'Smoke and Mirrors' and 'Out and Away'.
 -}
 releaseAMoonToken :: ReverseQueue m => InvestigatorId -> m ()
-releaseAMoonToken iid = do
-  moons <- getSealedMoonTokens iid
-  chooseOneM iid $ for_ moons \token ->
-    targeting (ChaosTokenTarget token) $ releaseMoonToken token
+releaseAMoonToken iid = chooseReleaseToken iid =<< getSealedMoonTokens iid
+
+-- | Pick one of @tokens@ to release.
+chooseReleaseToken :: ReverseQueue m => InvestigatorId -> [ChaosToken] -> m ()
+chooseReleaseToken iid tokens =
+  chooseOneM iid $ for_ tokens \token ->
+    targeting (ChaosTokenTarget token) $ releaseToken token
+
+-- | "Release up to @n@ tokens": the Done button covers the optional "may".
+chooseReleaseTokens :: ReverseQueue m => InvestigatorId -> Int -> [ChaosToken] -> m ()
+chooseReleaseTokens iid n tokens = unless (null tokens) do
+  chooseUpToNM_ iid n $ for_ tokens \token ->
+    targeting (ChaosTokenTarget token) $ releaseToken token
 
 -- * One Night Only
 

@@ -73,7 +73,7 @@
   },
   "endlessSpawn": {
     "label": {
-      "autoSucceed": "Release a {'{'}moon{'}'} token sealed on your investigator card to automatically succeed"
+      "autoSucceed": "Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card to automatically succeed"
     }
   },
   "lostAllControl": {
@@ -86,6 +86,17 @@
     "label": {
       "reduceTokens": "Attach Primordial Evils to the scenario reference card. Reduce the modifier of each {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, and {'{'}moon{'}'} token by 1",
       "placeDoom": "Place 1 doom on the current agenda. This effect can cause the current agenda to advance"
+    }
+  },
+  "amaltheaWeaverOracleOfMystery": {
+    "label": {
+      "drawTopCard": "Draw the top card of their deck",
+      "drawBottomCard": "Draw the bottom card of their deck"
+    }
+  },
+  "invocationOfDiana": {
+    "label": {
+      "releaseTokens": "Release up to 2 {'{'}moon{'}'} tokens sealed on cards they control"
     }
   }
 }

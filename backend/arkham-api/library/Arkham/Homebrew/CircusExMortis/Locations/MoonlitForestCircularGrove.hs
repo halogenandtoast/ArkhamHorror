@@ -10,10 +10,9 @@ newtype MoonlitForestCircularGrove = MoonlitForestCircularGrove LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- "This location loses its moon connection symbol." + an act-ability coupling that is
--- owned by the act, not this location.
--- TODO(homebrew): "loses its moon connection symbol" is implemented as cosmetic; the
--- intended effect is that this location has no adjacency (moon) connection. It is kept
--- connectsToAdjacent here to keep the grid traversable per the scenario author's ruling.
+-- owned by the act, not this location. Losing the moon symbol only affects
+-- moon-symbol-keyed effects, not grid adjacency — see local-faq
+-- 2026-08-25_moonlit-forest-loses-moon-symbol-not-adjacency.
 moonlitForestCircularGrove :: LocationCard MoonlitForestCircularGrove
 moonlitForestCircularGrove =
   locationWith

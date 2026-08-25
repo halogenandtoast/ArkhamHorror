@@ -94,7 +94,8 @@ const boonName = computed(() => {
 const isObjective = computed(() => ability.value && ability.value.type.tag === "Objective")
 const isFastActionAbility = computed(() => ability.value && ability.value.type.tag === "FastAbility")
 const isReactionAbility = computed(() => ability.value && ability.value.type.tag === "ReactionAbility")
-const isForcedAbility = computed(() => ability.value && ability.value.type.tag === "ForcedAbility")
+const isForcedAbility = computed(() =>
+  ability.value && (ability.value.type.tag === "ForcedAbility" || ability.value.type.tag === "ForcedAbilityWithCost"))
 const isDelayedAbility = computed(() => ability.value && ability.value.type.tag === "DelayedAbility")
 const isHaunted = computed(() => ability.value && ability.value.type.tag === "Haunted")
 
@@ -232,8 +233,15 @@ const abilityLabel = computed(() => {
     return boonName.value
   }
 
-  if (labelType.value?.tag === "ForcedAbility") {
+  if (labelType.value?.tag === "ForcedAbility" || labelType.value?.tag === "ForcedAbilityWithCost") {
     return t('Forced')
+  }
+
+  // "Anytime" abilities (SilentForcedAbility AnyWindow) are the only silent
+  // forced abilities the engine offers as a choice rather than auto-triggering,
+  // and they carry no window text of their own.
+  if (labelType.value?.tag === "SilentForcedAbility") {
+    return t('Use')
   }
 
   if (labelType.value?.tag === "Objective") {

@@ -391,6 +391,22 @@ const renderedScarletKeyIds = computed(() => {
   return ids
 })
 
+// Skills draw their own ability buttons on the skill card, wherever it is shown:
+// a player's play area, an enemy it is attached to, or the committed-cards row
+// of the skill test (matched there by card id).
+const renderedSkillIds = computed(() => {
+  const ids = new Set<string>()
+  Object.values(props.game.investigators).forEach((i) => i.skills.forEach((id) => ids.add(id)))
+  Object.values(props.game.enemies).forEach((e) => e.skills.forEach((id) => ids.add(id)))
+
+  const committed = new Set((props.game.skillTest?.committedCards ?? []).map((c) => toCardContents(c).id))
+  Object.values(props.game.skills).forEach((s) => {
+    if (committed.has(s.cardId)) ids.add(s.id)
+  })
+
+  return ids
+})
+
 function abilityLabelHandledElsewhere(choice: Message) {
   if (choice.tag !== MessageType.ABILITY_LABEL) return false
 
@@ -418,6 +434,7 @@ function abilitySourceHandledElsewhere(source: any) {
     case 'StorySource': return source.contents in props.game.stories
     case 'InvestigatorSource': return source.contents in props.game.investigators || source.contents in props.game.otherInvestigators
     case 'ScarletKeySource': return renderedScarletKeyIds.value.has(source.contents)
+    case 'SkillSource': return renderedSkillIds.value.has(source.contents)
     default: return false
   }
 }

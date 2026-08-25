@@ -24,6 +24,7 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card
 import Arkham.ChaosBag.Base
+import Arkham.ChaosBag.RevealStrategy (RevealStrategy (Reveal))
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasGame
@@ -45,6 +46,7 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Cost
+import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Effect (createCardEffect)
 import Arkham.Helpers.Game
@@ -76,6 +78,7 @@ import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.RequestedChaosTokenStrategy (RequestedChaosTokenStrategy (SetAside))
 import Arkham.Scenario.Deck (ScenarioDeckKey (TekeliliDeck))
 import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
@@ -362,7 +365,9 @@ payCost msg c iid skipAdditionalCosts cost = do
       if hasEnemy
         then payCost msg c iid skipAdditionalCosts cost'
         else pure c
-    CostOnlyWhen _ cost' -> payCost msg c iid skipAdditionalCosts cost'
+    CostOnlyWhen cr cost' -> do
+      ok <- passesCriteria iid Nothing c.source c.source c.windows cr
+      if ok then payCost msg c iid skipAdditionalCosts cost' else pure c
     CostWhenTreachery mtchr cost' -> do
       hasTreachery <- selectAny mtchr
       if hasTreachery
@@ -561,6 +566,26 @@ payCost msg c iid skipAdditionalCosts cost = do
     SealChaosTokenCost token -> do
       push $ SealChaosToken token
       pure $ c & costPaymentsL <>~ SealChaosTokenPayment token & costSealedChaosTokensL %~ (token :)
+    SealOnInvestigatorCost matcher -> do
+      ts <-
+        filterM (\t -> matchChaosToken iid t matcher)
+          =<< scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+      pushAll
+        [ FocusChaosTokens ts
+        , chooseOne player $ targetLabels ts $ only . pay . SealChaosTokenOnInvestigatorCost
+        , UnfocusChaosTokens
+        ]
+      pure c
+    SealChaosTokenOnInvestigatorCost token -> do
+      pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (InvestigatorTarget iid)]
+      pure $ c & costPaymentsL <>~ SealChaosTokenPayment token
+    RevealChaosTokensCost requester n -> do
+      push $ RequestChaosTokens requester (Just iid) (Reveal n) SetAside
+      push $ ResetChaosTokens requester
+      pure c
+    FindEncounterCardCost target zones matcher -> do
+      push $ FindEncounterCard iid target zones matcher LeadChooses
+      pure c
     ReleaseChaosTokensCost n matcher -> do
       case matcher of
         SealedOnAsset assetMatcher tokenMatcher' -> do
@@ -836,7 +861,8 @@ payCost msg c iid skipAdditionalCosts cost = do
       would <-
         checkWindows
           [ (mkWhen $ Window.WouldAddChaosTokensToChaosBag (Just iid) $ replicate n face)
-              {windowBatchId = Just batchId}
+              { windowBatchId = Just batchId
+              }
           ]
       push $ Would batchId $ would : replicate n (AddChaosToken face)
       withPayment $ AddTokenPayment n face

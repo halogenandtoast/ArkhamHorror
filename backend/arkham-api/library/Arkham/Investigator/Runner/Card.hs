@@ -807,7 +807,11 @@ handleDoDrawCardsV2 a@InvestigatorAttrs {..} iid cardDraw = do
               push $ continueDraw (n - length deck)
               pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
             else do
-              let (drawn, deck') = splitAt n deck
+              -- A bottom draw comes off the other end, bottom-most card first.
+              let (drawn, deck') = case cardDraw.position of
+                    DrawFromTop -> splitAt n deck
+                    DrawFromBottom ->
+                      let (kept, bottom) = splitAt (length deck - n) deck in (reverse bottom, kept)
               finalizedDraw (investigatorDrawnCards <> drawn) deck'
 
 handleInvestigatorDrewPlayerCardFrom a@InvestigatorAttrs {..} iid card mDeck msg = do

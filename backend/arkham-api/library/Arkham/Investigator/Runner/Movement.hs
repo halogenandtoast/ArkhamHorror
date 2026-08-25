@@ -362,7 +362,10 @@ handleMove a@InvestigatorAttrs {..} movement = do
                   <> maybeToList mRunAfterLeaving
               innerMsgs =
                 [MoveFrom source iid fromLocationId | fromLocationId <- maybeToList mFromLocation]
-                  <> [runWhenEntering, runAtIfEntering, PayAdditionalCost iid batchId enterCosts]
+                  -- Enter costs are paid before the entering windows fire, so a cost
+                  -- that redirects the move (Lost the Trail) has already retargeted the
+                  -- movement by the time "when you would enter" is offered.
+                  <> [PayAdditionalCost iid batchId enterCosts, runWhenEntering, runAtIfEntering]
                   <> if hasSkillTestCost enterCosts
                     then [MoveWithSkillTest (WhenCanMove iid postEnterMsgs)]
                     else postEnterMsgs

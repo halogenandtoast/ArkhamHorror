@@ -4112,6 +4112,20 @@ library
       Arkham.Homebrew.CircusExMortis.Agendas.MesmericMagic
       Arkham.Homebrew.CircusExMortis.Agendas.SavageNature
       Arkham.Homebrew.CircusExMortis.Agendas.TheTrueFace
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverAspirantOfCourage
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverAspirantOfWisdom
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverCircusFortuneTeller
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverOracleOfEnlightenment
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverOracleOfMystery
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverOracleOfPurity
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverOracleOfResolve
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeForgottenWorkOfApuleius
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeInterpretationOfConviction
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeInterpretationOfObsession
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeProphecyOfTheBehemoth
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeProphecyOfTheBeyond
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeProphecyOfTheEternal
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeProphecyOfTheHorde
       Arkham.Homebrew.CircusExMortis.Assets.IllusoryLocus
       Arkham.Homebrew.CircusExMortis.Assets.TerrifiedCaptives
       Arkham.Homebrew.CircusExMortis.Campaign
@@ -4129,6 +4143,7 @@ library
       Arkham.Homebrew.CircusExMortis.ChaosBag
       Arkham.Homebrew.CircusExMortis.Content
       Arkham.Homebrew.CircusExMortis.Defs
+      Arkham.Homebrew.CircusExMortis.DestinyAndProphecy
       Arkham.Homebrew.CircusExMortis.Enemies.CircusPredator
       Arkham.Homebrew.CircusExMortis.Enemies.DisguisedMonstrosity
       Arkham.Homebrew.CircusExMortis.Enemies.GrotesqueLion
@@ -4178,12 +4193,15 @@ library
       Arkham.Homebrew.CircusExMortis.Scenarios.ThePrimrosePath
       Arkham.Homebrew.CircusExMortis.Scenarios.ThousandToOne
       Arkham.Homebrew.CircusExMortis.Sets
+      Arkham.Homebrew.CircusExMortis.Skills.InvocationOfDiana
       Arkham.Homebrew.CircusExMortis.Tokens
       Arkham.Homebrew.CircusExMortis.Traits
+      Arkham.Homebrew.CircusExMortis.Treacheries.DenseTangle
       Arkham.Homebrew.CircusExMortis.Treacheries.EndlessSpawn
       Arkham.Homebrew.CircusExMortis.Treacheries.FeralImpulses
       Arkham.Homebrew.CircusExMortis.Treacheries.HypnoticGlamour
       Arkham.Homebrew.CircusExMortis.Treacheries.LostAllControl
+      Arkham.Homebrew.CircusExMortis.Treacheries.LostTheTrail
       Arkham.Homebrew.CircusExMortis.Treacheries.LunarInfluence
       Arkham.Homebrew.CircusExMortis.Treacheries.MaddeningSpectacle
       Arkham.Homebrew.CircusExMortis.Treacheries.MilkOfShubNiggurath

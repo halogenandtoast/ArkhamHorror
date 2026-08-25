@@ -1817,6 +1817,24 @@ drawCardsEdit
   -> m ()
 drawCardsEdit = drawCardsIfCanWith
 
+{- | "Draw the bottom card of your deck": an ordinary draw taken off the bottom
+of the deck. It does not search and does not shuffle.
+-}
+drawCardsFromBottom
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> source
+  -> Int
+  -> m ()
+drawCardsFromBottom iid source n = drawCardsEdit iid source n drawFromBottom
+
+drawCardFromBottom
+  :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
+  => investigator
+  -> source
+  -> m ()
+drawCardFromBottom iid source = drawCardsFromBottom iid source 1
+
 forcedDrawCards
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator

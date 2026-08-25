@@ -657,6 +657,12 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
         (>= n) <$> countM (\token -> matchChaosToken iid token tokenMatcher) tokens
       SealChaosTokenCost _ -> pure True
+      SealOnInvestigatorCost tokenMatcher -> do
+        tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+        anyM (\token -> matchChaosToken iid token tokenMatcher) tokens
+      SealChaosTokenOnInvestigatorCost _ -> pure True
+      RevealChaosTokensCost _ _ -> pure True
+      FindEncounterCardCost {} -> can.target.encounterDeck iid
       ReleaseChaosTokensCost n tokenMatcher -> do
         case tokenMatcher of
           Matcher.SealedOnAsset assetMatcher tokenMatcher' -> do

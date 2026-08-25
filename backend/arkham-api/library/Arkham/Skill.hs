@@ -5,6 +5,7 @@ module Arkham.Skill where
 import Arkham.Card
 import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Classes
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Id
 import Arkham.Placement
 import Arkham.Prelude
@@ -71,7 +72,8 @@ withSkillCardCode cCode f = case lookup cCode allSkills of
 
 allSkills :: Map CardCode SomeSkillCard
 allSkills =
-  mapFromList
+  (mapFromList (concatMap someSkillCardCodes Registry.skills) <>)
+    $ mapFromList
     $ concatMap
       someSkillCardCodes
       [ -- Night of the Zealot

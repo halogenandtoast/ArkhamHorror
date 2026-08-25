@@ -7,8 +7,8 @@ import Arkham.Homebrew.DarkMatter.Traits (pattern AI)
 import Arkham.Matcher
 
 newtype UplA21Demhe = UplA21Demhe EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 {- | "Spawn - Cargo Hold. Hunter. While moving or engaging, UPL-A21 'Demhe'
 ignores investigators without an [[AI]] encounter card in their threat area."

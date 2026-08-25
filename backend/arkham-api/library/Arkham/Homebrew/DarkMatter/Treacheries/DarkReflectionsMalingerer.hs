@@ -26,8 +26,8 @@ darkReflectionsMalingerer =
 
 instance HasAbilities DarkReflectionsMalingerer where
   getAbilities (DarkReflectionsMalingerer a) =
-    [ mkAbility a 1 $ forced $ DeckHasNoCards #after You
-    , restricted a 2 NoRestriction $ freeReaction $ PhaseBegins #when #investigation
+    [ restricted a 1 InYourHand $ forced $ DeckHasNoCards #after You
+    , restricted a 2 InYourHand $ freeReaction $ PhaseBegins #when #investigation
     ]
 
 instance RunMessage DarkReflectionsMalingerer where

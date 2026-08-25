@@ -26,8 +26,8 @@ this card."
 -}
 instance HasAbilities TheDarkForest where
   getAbilities (TheDarkForest a) =
-    [ mkAbility a 1 $ SilentForcedAbility $ ActivateAbility #after You AnyAbility
-    , restricted a 2 Here $ freeReaction $ TurnEnds #when You
+    [ restricted a 1 (InThreatAreaOf You) $ SilentForcedAbility $ ActivateAbility #after You AnyAbility
+    , skillTestAbility $ restricted a 2 (InThreatAreaOf You) $ freeReaction $ TurnEnds #when You
     ]
 
 instance RunMessage TheDarkForest where

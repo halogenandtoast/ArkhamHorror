@@ -27,8 +27,8 @@ solventInvestigators = InvestigatorAt YourLocation <> InvestigatorWithResources 
 
 instance HasAbilities DarkReflectionsSycophant where
   getAbilities (DarkReflectionsSycophant a) =
-    [ mkAbility a 1 $ forced $ DeckHasNoCards #after You
-    , restricted a 2 (exists solventInvestigators) actionAbility
+    [ restricted a 1 InYourHand $ forced $ DeckHasNoCards #after You
+    , restricted a 2 (InYourHand <> exists solventInvestigators) actionAbility
     ]
 
 instance RunMessage DarkReflectionsSycophant where

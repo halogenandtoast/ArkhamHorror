@@ -3,7 +3,6 @@ module Arkham.Homebrew.DarkMatter.CardDefs.Stories where
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
-import Arkham.Homebrew.DefsBase (PlayerCardDef)
 import Arkham.LocationSymbol qualified as LS
 import Arkham.Prelude
 import Arkham.Story.CardDefs.Base
@@ -115,13 +114,15 @@ theTeacher =
 -- Dark Matter (fan campaign by Axolotl): fragment_of_carcosa
 arrivalOfTheKing :: CardDef
 arrivalOfTheKing =
-  story ":dark-matter:224" "Arrival of the King" Set.FragmentOfCarcosa
+  (story ":dark-matter:224" "Arrival of the King" Set.FragmentOfCarcosa) {cdVictoryPoints = Just 1}
 
-delights :: PlayerCardDef
-delights = story ":dark-matter:225" "Delights" Set.FragmentOfCarcosa
+delights :: CardDef
+delights =
+  (story ":dark-matter:225" "Delights" Set.FragmentOfCarcosa) {cdVictoryPoints = Just 1}
 
 forYouAlone :: CardDef
-forYouAlone = story ":dark-matter:226" "For You Alone" Set.FragmentOfCarcosa
+forYouAlone =
+  (story ":dark-matter:226" "For You Alone" Set.FragmentOfCarcosa) {cdVictoryPoints = Just 1}
 
 lostExpedition :: CardDef
 lostExpedition = story ":dark-matter:227" "Lost Expedition" Set.FragmentOfCarcosa
@@ -135,6 +136,6 @@ ritualOfTheSun =
 withoutATrace :: CardDef
 withoutATrace =
   withScanIcons [LS.Hourglass]
-    $ story ":dark-matter:275" "Without a Trace" Set.Starfall
+    $ (story ":dark-matter:275" "Without a Trace" Set.Starfall) {cdVictoryPoints = Just 1}
 
 --- Circus Ex Mortis (homebrew)

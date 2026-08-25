@@ -14,7 +14,7 @@ newtype Yuggoth = Yuggoth LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 yuggoth :: LocationCard Yuggoth
-yuggoth = location Yuggoth Cards.yuggoth 2 (Static 1)
+yuggoth = symbolLabel $ location Yuggoth Cards.yuggoth 2 (Static 1)
 
 {- | "During your turn, if you are at a [[Pluto]] location or a [[Starship]]
 location attached to a [[Pluto]] location, reveal and resolve an additional chaos
@@ -24,11 +24,13 @@ instance HasModifiersFor Yuggoth where
   getModifiersFor (Yuggoth a) =
     modifySelect
       a
-      ( InvestigatorAt
-          $ oneOf
-            [ LocationWithTrait Pluto
-            , LocationWithTrait Starship <> connectedTo (LocationWithTrait Pluto)
-            ]
+      ( TurnInvestigator
+          <> InvestigatorAt
+            ( oneOf
+                [ LocationWithTrait Pluto
+                , LocationWithTrait Starship <> connectedTo (LocationWithTrait Pluto)
+                ]
+            )
       )
       [RevealAnotherChaosToken]
 

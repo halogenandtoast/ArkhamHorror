@@ -27,8 +27,8 @@ discardableAllies = #ally <> DiscardableAsset <> AssetControlledBy (Investigator
 
 instance HasAbilities DarkReflectionsMurderer where
   getAbilities (DarkReflectionsMurderer a) =
-    [ mkAbility a 1 $ forced $ DeckHasNoCards #after You
-    , restricted a 2 (exists discardableAllies) actionAbility
+    [ restricted a 1 InYourHand $ forced $ DeckHasNoCards #after You
+    , restricted a 2 (InYourHand <> exists discardableAllies) actionAbility
     ]
 
 instance RunMessage DarkReflectionsMurderer where

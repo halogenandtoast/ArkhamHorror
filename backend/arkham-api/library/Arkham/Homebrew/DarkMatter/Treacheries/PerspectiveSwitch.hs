@@ -3,7 +3,8 @@ module Arkham.Homebrew.DarkMatter.Treacheries.PerspectiveSwitch (perspectiveSwit
 import Arkham.Ability
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Keyword (Keyword (Hidden))
-import Arkham.Matcher
+import Arkham.Matcher hiding (Discarded)
+import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Treachery.Import.Lifted
@@ -22,9 +23,11 @@ from your current location."
 -}
 instance HasAbilities PerspectiveSwitch where
   getAbilities (PerspectiveSwitch a) =
-    [ mkAbility a 1
+    [ restricted a 1 InYourHand
+        -- hidden cards live in hand as treachery entities, so their discard
+        -- comes through the generic Discarded window, not DiscardedFromHand
         $ forced
-        $ DiscardedFromHand #after You AnySource (basic $ CardWithKeyword Hidden)
+        $ Matcher.Discarded #after (Just You) AnySource (basic $ CardWithKeyword Hidden)
     ]
 
 instance RunMessage PerspectiveSwitch where
@@ -33,8 +36,7 @@ instance RunMessage PerspectiveSwitch where
       addHiddenToHand iid attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      engaged <- select $ enemyEngagedWith iid
-      for_ engaged disengageFromAll
+      selectEach (enemyEngagedWith iid) (disengageEnemy iid)
       farthest <- select $ FarthestLocationFromInvestigator (InvestigatorWithId iid) RevealedLocation
       chooseTargetM iid farthest $ moveTo (attrs.ability 1) iid
       toDiscardBy iid attrs attrs

@@ -24,6 +24,7 @@ instance HasAbilities MiGoCollector where
     [ restricted a 1 (exists $ locationIs Locations.moonbaseLaboratory <> LocationWithoutClues)
         $ Objective
         $ forced AnyWindow
+    | a.placement.isInPlay
     ]
 
 instance RunMessage MiGoCollector where

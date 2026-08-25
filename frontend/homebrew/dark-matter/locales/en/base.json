@@ -35,6 +35,9 @@
     "alienAid": {
       "readyAndMoveMiGoScientist": "Ready Mi-Go Scientist and move it to any location"
     },
+    "arrivalOfTheKing": {
+      "memoriesToCrossOut": "Cross out any amount of tally marks next to your “Memories”"
+    },
     "biologyLab": {
       "healDamage": "Heal 1 damage from each investigator at your location",
       "healHorror": "Heal 1 horror from each investigator at your location"

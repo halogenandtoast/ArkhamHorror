@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ComputedRef, computed, ref, watch } from 'vue'
+import { Dropdown } from 'floating-vue'
 import { useCardStore } from '@/stores/cards'
 import { type Game } from '@/arkham/types/Game'
 import { type Card, cardImage, asCardCode, toCardContents } from '@/arkham/types/Card'
@@ -9,6 +10,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue'
 import KeyToken from '@/arkham/components/Key.vue'
 import Treachery from '@/arkham/components/Treachery.vue'
 import Enemy from '@/arkham/components/Enemy.vue'
+import Asset from '@/arkham/components/Asset.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue'
 import Story from '@/arkham/components/Story.vue'
 import StackIndicator from '@/arkham/components/StackIndicator.vue'
@@ -363,6 +365,79 @@ const nextToStories = computed(() =>
     .filter((s) => s.placement.tag === 'NextToAct')
     .map((s) => s.id),
 )
+
+// Story assets that place themselves "next to the act deck" (Starfall's Project
+// Origami, Last Hope and Repairing the Threshold, and the objectives the other
+// three contacts swap in). Like the enemies and stories above they belong to no
+// location and no play area, so this is the only place they are drawn.
+const nextToAssets = computed(() =>
+  Object.values(props.game.assets)
+    .filter((a) => a.placement.tag === 'NextToAct')
+    .map((a) => a.id),
+)
+
+// Three or more stories collapse into one visible card. The full collection
+// remains available in an overlay without adding height to the act column.
+const activeStoryId = ref<string | null>(null)
+const storyCollectionOpen = ref(false)
+
+watch(
+  nextToStories,
+  (storyIds) => {
+    if (!activeStoryId.value || !storyIds.includes(activeStoryId.value)) {
+      activeStoryId.value = storyIds[0] ?? null
+    }
+    if (storyIds.length < 3) storyCollectionOpen.value = false
+  },
+  { immediate: true },
+)
+
+const activeStory = computed(() =>
+  activeStoryId.value ? props.game.stories[activeStoryId.value] : null,
+)
+
+const storyCollectionHasForcedAbility = computed(() => {
+  const storyIds = new Set(nextToStories.value)
+
+  return choices.value.some((choice) => {
+    if (
+      choice.tag !== MessageType.ABILITY_LABEL ||
+      choice.ability.type.tag !== 'ForcedAbility'
+    ) {
+      return false
+    }
+
+    const { source } = choice.ability
+    if (source.sourceTag === 'ProxySource') {
+      return (
+        'contents' in source.source &&
+        typeof source.source.contents === 'string' &&
+        storyIds.has(source.source.contents)
+      )
+    }
+
+    return (
+      source.tag === 'StorySource' &&
+      typeof source.contents === 'string' &&
+      storyIds.has(source.contents)
+    )
+  })
+})
+
+watch(
+  storyCollectionHasForcedAbility,
+  (hasForcedAbility) => {
+    if (hasForcedAbility && nextToStories.value.length >= 3) {
+      storyCollectionOpen.value = true
+    }
+  },
+  { immediate: true },
+)
+
+const chooseFromStoryCollection = (choice: number) => {
+  storyCollectionOpen.value = false
+  emits('choose', choice)
+}
 </script>
 
 <template>
@@ -432,14 +507,74 @@ const nextToStories = computed(() =>
       :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
+    <Asset
+      v-for="assetId in nextToAssets"
+      :key="assetId"
+      :asset="game.assets[assetId]"
+      :game="game"
+      :playerId="playerId"
+      @choose="$emit('choose', $event)"
+    />
     <Story
-      v-for="storyId in nextToStories"
+      v-for="storyId in nextToStories.length < 3 ? nextToStories : []"
       :key="storyId"
       :story="game.stories[storyId]"
       :game="game"
       :playerId="playerId"
       @choose="$emit('choose', $event)"
     />
+    <section
+      v-if="nextToStories.length >= 3 && activeStory"
+      class="story-collection"
+      :aria-label="`${nextToStories.length} story cards next to the act`"
+    >
+      <Story
+        :story="activeStory"
+        :game="game"
+        :playerId="playerId"
+        @choose="$emit('choose', $event)"
+      />
+      <Dropdown
+        v-model:shown="storyCollectionOpen"
+        placement="right-start"
+        :distance="8"
+        :triggers="['click']"
+        :auto-hide="true"
+        theme="cards-under-popover"
+      >
+        <button
+          type="button"
+          class="story-collection__toggle cards-under-indicator"
+          :aria-label="`Story cards (${nextToStories.length}) — click to view`"
+          v-tooltip="`Story cards (${nextToStories.length}) — click to view`"
+        >
+          <span class="cards-under-indicator__icon" aria-hidden="true">
+            <span class="cards-under-indicator__card cards-under-indicator__card--back" />
+            <span class="cards-under-indicator__card cards-under-indicator__card--front" />
+          </span>
+          <span class="cards-under-indicator__count">{{ nextToStories.length }}</span>
+        </button>
+        <template #popper>
+          <div class="cards-under-popover">
+            <div class="cards-under-popover__header">Story cards ({{ nextToStories.length }})</div>
+            <div class="cards-under-popover__cards">
+              <article
+                v-for="storyId in nextToStories"
+                :key="storyId"
+                class="cards-under-popover__card-wrap"
+              >
+                <Story
+                  :story="game.stories[storyId]"
+                  :game="game"
+                  :playerId="playerId"
+                  @choose="chooseFromStoryCollection"
+                />
+              </article>
+            </div>
+          </div>
+        </template>
+      </Dropdown>
+    </section>
     <ScarletKey
       v-for="scarletKeyId in nextToScarletKeys"
       :scarletKey="game.scarletKeys[scarletKeyId]"
@@ -545,6 +680,125 @@ const nextToStories = computed(() =>
     border: 2px solid var(--select);
     cursor: pointer;
   }
+}
+
+.story-collection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.story-collection__toggle {
+  margin-top: 7px;
+}
+
+.cards-under-indicator {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 22px;
+  padding: 0 7px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.46);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  line-height: 1;
+  backdrop-filter: blur(4px);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.cards-under-indicator:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(0, 0, 0, 0.68);
+  transform: translateY(-1px);
+}
+
+.cards-under-indicator__icon {
+  display: flex;
+  flex: 0 0 20px;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 15px;
+  overflow: hidden;
+}
+
+.cards-under-indicator__card {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.cards-under-indicator__card--back {
+  opacity: 0.55;
+  transform: rotate(-6deg) translateY(1px);
+}
+
+.cards-under-indicator__card--front {
+  margin-left: -4px;
+  background: rgba(255, 255, 255, 0.28);
+  transform: rotate(6deg) translateY(-1px);
+}
+
+.cards-under-indicator__count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.35em;
+  height: 1.35em;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.story-collection__toggle:focus-visible {
+  outline: 2px solid var(--select);
+  outline-offset: 2px;
+}
+
+.cards-under-popover {
+  min-width: 0;
+  max-width: max(50vw, 300px);
+  padding: 10px;
+}
+
+.cards-under-popover__header {
+  margin: 0 0 8px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.cards-under-popover__cards {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  gap: 6px;
+  max-height: 50vh;
+  overflow: auto;
+}
+
+.cards-under-popover__card-wrap {
+  flex: 0 0 auto;
+  padding: 4px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+}
+
+.cards-under-popover__card-wrap :deep(.card) {
+  width: calc(var(--card-width, 100px) * 1.1);
 }
 
 /* Pseudo (shared-pool) clue tokens read slightly softer than real act tokens. */

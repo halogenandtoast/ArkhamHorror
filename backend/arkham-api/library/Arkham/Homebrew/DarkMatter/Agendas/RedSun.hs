@@ -7,6 +7,7 @@ import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (crossOffMemories)
 import Arkham.Homebrew.DarkMatter.Key
+import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Matcher
 
 {- | Like every Starfall agenda, this prints:
@@ -36,7 +37,13 @@ instance RunMessage RedSun where
       crossOffMemories iid 1
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) sid (Difficulty (-1))
       pure a
+    {- Agenda 2b:
+
+    "Shuffle the set aside Hastur's Gaze encounter set into the encounter deck,
+    along with the encounter discard pile." -}
     AdvanceAgenda (isSide B attrs -> True) -> do
+      shuffleEncounterDiscardBackIn
+      shuffleSetAsideEncounterSetIntoEncounterDeck Set.HastursGaze
       advanceAgendaDeck attrs
       pure a
     _ -> RedSun <$> liftRunMessage msg attrs

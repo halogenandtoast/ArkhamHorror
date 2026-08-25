@@ -6,16 +6,18 @@ import Arkham.Homebrew.DarkMatter.Helpers (flipToOtherSide)
 import Arkham.Location.Import.Lifted
 
 newtype HiddenPassage = HiddenPassage LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- | No printed ability; it is the [[Surface]]/[[Cave]] junction of the map.
 hiddenPassage :: LocationCard HiddenPassage
-hiddenPassage = locationWith HiddenPassage Cards.hiddenPassage 2 (Static 1) (canBeFlippedL .~ True)
+hiddenPassage =
+  symbolLabel
+    $ locationWith HiddenPassage Cards.hiddenPassage 2 (Static 1) (canBeFlippedL .~ True)
 
 instance RunMessage HiddenPassage where
   runMessage msg l@(HiddenPassage attrs) = runQueueT $ case msg of
-    Flip _ _ (isTarget attrs -> True) -> do
-      flipToOtherSide attrs
+    Flip iid _ (isTarget attrs -> True) -> do
+      flipToOtherSide iid attrs
       pure l
     _ -> HiddenPassage <$> liftRunMessage msg attrs

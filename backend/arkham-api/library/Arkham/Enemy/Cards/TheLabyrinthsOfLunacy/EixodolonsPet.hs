@@ -9,8 +9,8 @@ import Arkham.Placement
 import Arkham.Projection
 
 newtype EixodolonsPet = EixodolonsPet EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- While Eixodolon's Pet is "locked away" (in play near the Chamber of
 -- Hunger, but not at any location), it is immune to player card effects.

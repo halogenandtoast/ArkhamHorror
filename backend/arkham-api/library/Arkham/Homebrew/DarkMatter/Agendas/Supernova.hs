@@ -36,7 +36,18 @@ instance RunMessage Supernova where
       crossOffMemories iid 1
       withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) sid (Difficulty (-1))
       pure a
+    {- Agenda 3b:
+
+    "Each remaining investigator is defeated." No resolution is printed, and
+    the guide's "If no resolution was reached (each investigator resigned or
+    was defeated): Proceed to Resolution 1" covers it. The handler is claimed
+    first so the scenario's own no-investigators path (which clears the queue
+    and pushes NoResolution) does not race the defeats. -}
     AdvanceAgenda (isSide B attrs -> True) -> do
-      advanceAgendaDeck attrs
+      push $ SetNoRemainingInvestigatorsHandler (toTarget attrs)
+      eachInvestigator $ investigatorDefeated attrs
+      pure a
+    HandleNoRemainingInvestigators (isTarget attrs -> True) -> do
+      push R1
       pure a
     _ -> Supernova <$> liftRunMessage msg attrs

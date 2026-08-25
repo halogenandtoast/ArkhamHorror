@@ -8,8 +8,8 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheLabyrinthsOfLunacy.Helpers
 
 newtype TorturedVictim = TorturedVictim EnemyAttrs
-  deriving anyclass (IsEnemy, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 torturedVictim :: EnemyCard TorturedVictim
 torturedVictim = enemy TorturedVictim Cards.torturedVictim

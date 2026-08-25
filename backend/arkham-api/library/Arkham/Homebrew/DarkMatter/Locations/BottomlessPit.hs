@@ -17,7 +17,9 @@ newtype BottomlessPit = BottomlessPit LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bottomlessPit :: LocationCard BottomlessPit
-bottomlessPit = locationWith BottomlessPit Cards.bottomlessPit 4 (Static 0) (canBeFlippedL .~ True)
+bottomlessPit =
+  symbolLabel
+    $ locationWith BottomlessPit Cards.bottomlessPit 4 (Static 0) (canBeFlippedL .~ True)
 
 {- | "Forced - After you enter Bottomless Pit: Move to any other non-[[Surface]]
 location, take 3 direct damage and lose all remaining actions."
@@ -33,9 +35,9 @@ instance RunMessage BottomlessPit where
       chooseTargetM iid destinations $ moveTo (attrs.ability 1) iid
       directDamage iid (attrs.ability 1) 3
       remaining <- field InvestigatorRemainingActions iid
-      when (remaining > 0) $ push $ LoseActions iid (attrs.ability 1) remaining
+      when (remaining > 0) $ loseActions iid (attrs.ability 1) remaining
       pure l
-    Flip _ _ (isTarget attrs -> True) -> do
-      flipToOtherSide attrs
+    Flip iid _ (isTarget attrs -> True) -> do
+      flipToOtherSide iid attrs
       pure l
     _ -> BottomlessPit <$> liftRunMessage msg attrs

@@ -1484,8 +1484,12 @@ const agendaGroupedTreacheries = computed(() => Object.entries(groupBy(nextToTre
 const keys = computed(() => props.scenario.setAsideKeys)
 const spentKeys = computed(() => props.scenario.keys)
 // TODO: not showing cosmos should be more specific, as there could be a cosmos location in the future?
+// A [[Starship]] location (Starfall's The Tatterdemalion / The Cassilda) is
+// attached to another location but is still a location on the map, sitting in
+// its own berth cell. Only placements that take a location off the map entirely
+// (InPlayArea) are filtered out here.
 const locations = computed(() => Object.values(props.game.locations).
-  filter((a) => a.placement === null && a.label !== "cosmos"))
+  filter((a) => (a.placement === null || a.placement.tag === 'AttachedToLocation') && a.label !== "cosmos"))
 watch(locations, updateScrollMargins, { flush: 'post' })
 watch(layoutPadding, updateScrollMargins, { flush: 'post' })
 watch([locations, rotationSteps, locationsZoom], updateCellDimensions, { flush: 'post' })

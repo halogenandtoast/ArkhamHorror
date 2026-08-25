@@ -396,6 +396,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
           elem aid <$> select Matcher.AssetReady
         EventTarget eid ->
           elem eid <$> select Matcher.EventReady
+        EnemyTarget eid ->
+          elem eid <$> select Matcher.ReadyEnemy
         _ -> error $ "Not handled " <> show target
       ExhaustAssetCost matcher ->
         selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.AssetReady

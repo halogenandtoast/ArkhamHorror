@@ -260,14 +260,15 @@ brainCylinder367 =
 -- fragment_of_carcosa
 bottleOfWhispers :: CardDef
 bottleOfWhispers =
-  ( storyAsset
-      ":dark-matter:215"
-      ("Bottle of Whispers" <:> "It Was Meant for You")
-      1
-      Set.FragmentOfCarcosa
-  )
-    { cdCardTraits = setFromList [Item]
-    }
+  fast
+    $ ( storyAsset
+          ":dark-matter:215"
+          ("Bottle of Whispers" <:> "It Was Meant for You")
+          1
+          Set.FragmentOfCarcosa
+      )
+      { cdCardTraits = setFromList [Item]
+      }
 
 -- starfall
 projectOrigami :: CardDef

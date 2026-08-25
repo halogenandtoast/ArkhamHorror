@@ -35,7 +35,8 @@ defeated rather than 'EnemyDefeated', which would never fire.
 -}
 instance HasAbilities FirstEncounter where
   getAbilities (FirstEncounter a) =
-    [ restricted a 1 (CluesOnThis $ AtLeast $ PerPlayer 1)
+    [ onlyOnce
+        $ restricted a 1 (CluesOnThis $ AtLeast $ PerPlayer 1)
         $ Objective
         $ forced AnyWindow
     , mkAbility a 2

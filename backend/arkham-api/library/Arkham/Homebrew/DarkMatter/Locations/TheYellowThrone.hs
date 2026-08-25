@@ -17,7 +17,8 @@ newtype TheYellowThrone = TheYellowThrone LocationAttrs
 -- | The [[Carcosa]] face of Impassable Ravine.
 theYellowThrone :: LocationCard TheYellowThrone
 theYellowThrone =
-  locationWith TheYellowThrone Cards.theYellowThrone 2 (PerPlayer 1) (canBeFlippedL .~ True)
+  symbolLabel
+    $ locationWith TheYellowThrone Cards.theYellowThrone 2 (PerPlayer 1) (canBeFlippedL .~ True)
 
 {- | "{fast} If there are 6 [[Carcosa]] locations in play and each undefeated
 investigator is at this location: Read the set aside "Lost Expedition" story
@@ -26,7 +27,7 @@ card. (Max once per game.)"
 instance HasAbilities TheYellowThrone where
   getAbilities (TheYellowThrone a) =
     extendRevealed1 a
-      $ playerLimit PerGame
+      $ groupLimit PerGame
       $ restricted
         a
         1
@@ -34,14 +35,14 @@ instance HasAbilities TheYellowThrone where
             <> LocationCount 6 (LocationWithTrait Carcosa)
             <> not_ (exists $ UneliminatedInvestigator <> not_ (investigatorAt a.id))
         )
-      $ freeReaction AnyWindow
+        freeTrigger_
 
 instance RunMessage TheYellowThrone where
   runMessage msg l@(TheYellowThrone attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       readStory iid attrs.id Stories.lostExpedition
       pure l
-    Flip _ _ (isTarget attrs -> True) -> do
-      flipToOtherSide attrs
+    Flip iid _ (isTarget attrs -> True) -> do
+      flipToOtherSide iid attrs
       pure l
     _ -> TheYellowThrone <$> liftRunMessage msg attrs

@@ -17,8 +17,10 @@ reminiscencePledge = treachery ReminiscencePledge Cards.reminiscencePledge
 instance HasAbilities ReminiscencePledge where
   getAbilities (ReminiscencePledge a) = case a.placement of
     HiddenInHand iid ->
-      [ mkAbility a 1 $ forced $ oneOf [GameEnds #when, InvestigatorEliminated #when You]
-      , mkAbility a 2 $ freeReaction $ EnemyWouldBeDefeated #when (EnemyAt $ locationWithInvestigator iid)
+      [ restricted a 1 InYourHand $ forced $ oneOf [GameEnds #when, InvestigatorEliminated #when You]
+      , restricted a 2 InYourHand
+          $ freeReaction
+          $ EnemyWouldBeDefeated #when (EnemyAt $ locationWithInvestigator iid)
       ]
     _ -> []
 

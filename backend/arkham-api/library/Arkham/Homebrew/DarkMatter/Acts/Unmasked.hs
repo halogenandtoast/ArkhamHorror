@@ -5,6 +5,8 @@ import Arkham.Act.Import.Lifted hiding (InvestigatorDefeated)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Matcher
+import Arkham.Window (Window (..))
+import Arkham.Window qualified as Window
 
 newtype Unmasked = Unmasked ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -13,34 +15,34 @@ newtype Unmasked = Unmasked ActAttrs
 unmasked :: ActCard Unmasked
 unmasked = act (3, A) Unmasked Cards.unmasked Nothing
 
-{- | "Forced - When an investigator is defeated, if there is a copy of Your Other
-Self in their threat area: That copy is defeated as well." /
-"Objective - If there are no copies of Your Other Self in play, and at least 1
-investigator is undefeated, advance."
--}
 instance HasAbilities Unmasked where
   getAbilities (Unmasked a) =
-    [ restricted a 1 (exists $ enemyIs Enemies.yourOtherSelf)
+    [ mkAbility a 1
         $ forced
-        $ InvestigatorDefeated #when ByAny Anyone
-    , restricted
-        a
-        2
-        (not_ (exists $ enemyIs Enemies.yourOtherSelf) <> exists UneliminatedInvestigator)
+        $ InvestigatorDefeated #when ByAny (InvestigatorEngagedWith $ enemyIs Enemies.yourOtherSelf)
+    , onlyOnce
+        $ restricted
+          a
+          2
+          (not_ (exists $ enemyIs Enemies.yourOtherSelf) <> exists UneliminatedInvestigator)
         $ Objective
         $ forced AnyWindow
     ]
 
+defeatedInvestigators :: [Window] -> [InvestigatorId]
+defeatedInvestigators ws = [who | Window _ (Window.InvestigatorDefeated _ who) _ <- ws]
+
 instance RunMessage Unmasked where
   runMessage msg a@(Unmasked attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      copies <- select $ enemyIs Enemies.yourOtherSelf <> EnemyIsEngagedWith (InvestigatorWithId iid)
-      for_ copies \eid -> push $ DefeatEnemy eid iid (toSource attrs)
+    UseCardAbility _ (isSource attrs -> True) 1 (defeatedInvestigators -> iids) _ -> do
+      for_ iids \iid -> do
+        copies <- select $ enemyIs Enemies.yourOtherSelf <> EnemyIsEngagedWith (InvestigatorWithId iid)
+        for_ copies \copy -> defeatEnemy copy iid attrs
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceVia #other attrs attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      advanceActDeck attrs
+      push R2
       pure a
     _ -> Unmasked <$> liftRunMessage msg attrs

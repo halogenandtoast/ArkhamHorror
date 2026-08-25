@@ -18,7 +18,8 @@ newtype GardensOfThothut = GardensOfThothut LocationAttrs
 -- | The [[Carcosa]] face of Ice Cavity.
 gardensOfThothut :: LocationCard GardensOfThothut
 gardensOfThothut =
-  locationWith GardensOfThothut Cards.gardensOfThothut 3 (PerPlayer 1) (canBeFlippedL .~ True)
+  symbolLabel
+    $ locationWith GardensOfThothut Cards.gardensOfThothut 3 (PerPlayer 1) (canBeFlippedL .~ True)
 
 -- | "Gardens of Thothut gets +1 shroud for each connecting [[Carcosa]] location."
 instance HasModifiersFor GardensOfThothut where
@@ -32,16 +33,19 @@ set aside "Delights" story card. (Max once per game.)"
 instance HasAbilities GardensOfThothut where
   getAbilities (GardensOfThothut a) =
     extendRevealed1 a
-      $ playerLimit PerGame
-      $ restricted a 1 (Here <> not_ (exists $ LocationWithTrait Carcosa <> not_ (be a)))
-      $ freeReaction AnyWindow
+      $ groupLimit PerGame
+      $ restricted
+        a
+        1
+        (Here <> not_ (exists $ LocationWithTrait Carcosa <> not_ (be a)))
+        freeTrigger_
 
 instance RunMessage GardensOfThothut where
   runMessage msg l@(GardensOfThothut attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       readStory iid attrs.id Stories.delights
       pure l
-    Flip _ _ (isTarget attrs -> True) -> do
-      flipToOtherSide attrs
+    Flip iid _ (isTarget attrs -> True) -> do
+      flipToOtherSide iid attrs
       pure l
     _ -> GardensOfThothut <$> liftRunMessage msg attrs

@@ -8,8 +8,8 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted
 
 newtype ColdWastes = ColdWastes LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 coldWastes :: LocationCard ColdWastes
 coldWastes = symbolLabel $ location ColdWastes Cards.coldWastes 3 (Static 1)

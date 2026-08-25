@@ -2492,6 +2492,19 @@ placeUnderneath
   -> m ()
 placeUnderneath (toTarget -> target) cards = push $ Msg.PlaceUnderneath target $ map toCard (toList cards)
 
+removeFromUnderneath
+  :: ( ReverseQueue m
+     , Targetable target
+     , Element cards ~ card
+     , MonoFoldable cards
+     , IsCard card
+     )
+  => target
+  -> cards
+  -> m ()
+removeFromUnderneath (toTarget -> target) cards =
+  push $ Msg.RemoveFromUnderneath target $ map toCard (toList cards)
+
 gainActions
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
   => investigator -> source -> Int -> m ()

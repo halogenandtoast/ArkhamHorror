@@ -333,6 +333,11 @@ yourOtherSelf :: CardDef
 yourOtherSelf =
   (enemy ":dark-matter:197" "Your Other Self" Set.TheMachineInYellow 4)
     { cdSanityDamage = sanityDamage 1
+    , -- the engaged investigator's base combat/health/agility; the values come from
+      -- the card's own modifiers, which need a printed value to add to
+      cdFight = fightStar
+    , cdEvade = evadeStar
+    , cdHealth = healthStar
     , cdCardTraits = setFromList [Virtual, Humanoid, Elite]
     }
 

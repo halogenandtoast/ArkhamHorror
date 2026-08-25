@@ -214,6 +214,9 @@ instance RunMessage LocationAttrs where
       pure a
     PlaceUnderneath (isTarget a -> True) cards -> do
       pure $ a & cardsUnderneathL %~ (nubBy ((==) `on` toCardId) . (<> cards))
+    RemoveFromUnderneath (isTarget a -> True) cards -> do
+      let removedIds = map toCardId cards
+      pure $ a & cardsUnderneathL %~ filter ((`notElem` removedIds) . toCardId)
     SetLocationLabel lid label' | lid == locationId -> do
       pure $ a & labelL .~ label'
     PlacedLocationDirection lid direction lid2 | lid2 == locationId -> do

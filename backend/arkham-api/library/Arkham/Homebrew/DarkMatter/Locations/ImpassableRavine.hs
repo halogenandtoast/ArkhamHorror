@@ -17,11 +17,16 @@ newtype ImpassableRavine = ImpassableRavine LocationAttrs
 
 impassableRavine :: LocationCard ImpassableRavine
 impassableRavine =
-  locationWith ImpassableRavine Cards.impassableRavine 4 (PerPlayer 1) (canBeFlippedL .~ True)
+  symbolLabel
+    $ locationWith ImpassableRavine Cards.impassableRavine 4 (PerPlayer 1) (canBeFlippedL .~ True)
 
--- | "You cannot enter Impassable Ravine from connecting locations."
+{- | "You cannot enter Impassable Ravine from connecting locations." Only the
+investigators standing on a connecting location are barred, so the Bottomless
+Pit's forced move (and any other move from elsewhere) still gets you in.
+-}
 instance HasModifiersFor ImpassableRavine where
-  getModifiersFor (ImpassableRavine a) = modifySelect a Anyone [CannotEnter a.id]
+  getModifiersFor (ImpassableRavine a) =
+    modifySelect a (InvestigatorAt $ connectedTo (be a)) [CannotEnter a.id]
 
 {- | "[free] If there are no [[Carcosa]] locations in play and each undefeated
 investigator is at this location: Read the set aside 'Lost Expedition' story
@@ -30,7 +35,7 @@ card. (Max once per game.)"
 instance HasAbilities ImpassableRavine where
   getAbilities (ImpassableRavine a) =
     extendRevealed1 a
-      $ playerLimit PerGame
+      $ groupLimit PerGame
       $ restricted
         a
         1
@@ -38,14 +43,14 @@ instance HasAbilities ImpassableRavine where
             <> not_ (exists $ LocationWithTrait Carcosa)
             <> not_ (exists $ UneliminatedInvestigator <> not_ (investigatorAt a.id))
         )
-      $ freeReaction AnyWindow
+        freeTrigger_
 
 instance RunMessage ImpassableRavine where
   runMessage msg l@(ImpassableRavine attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       readStory iid attrs.id Stories.lostExpedition
       pure l
-    Flip _ _ (isTarget attrs -> True) -> do
-      flipToOtherSide attrs
+    Flip iid _ (isTarget attrs -> True) -> do
+      flipToOtherSide iid attrs
       pure l
     _ -> ImpassableRavine <$> liftRunMessage msg attrs

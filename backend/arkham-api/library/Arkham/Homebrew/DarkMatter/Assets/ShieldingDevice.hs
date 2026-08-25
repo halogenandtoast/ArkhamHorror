@@ -21,7 +21,7 @@ and/or horror."
 -}
 instance HasAbilities ShieldingDevice where
   getAbilities (ShieldingDevice a) =
-    [ controlled a 1 ControlsThis
+    [ controlled_ a 1
         $ triggered
           ( oneOf
               [ InvestigatorWouldTakeDamage #when (at_ YourLocation) AnySource AnyDamageType
@@ -39,8 +39,8 @@ instance RunMessage ShieldingDevice where
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 ws _ -> do
       for_ ws \w -> case windowType w of
-        Window.WouldTakeDamage _ (InvestigatorTarget iid') n _ -> push $ CancelDamage iid' n
-        Window.WouldTakeHorror _ (InvestigatorTarget iid') n -> push $ CancelHorror iid' n
+        Window.WouldTakeDamage _ (InvestigatorTarget iid') n _ -> cancelInvestigatorDamage iid' n
+        Window.WouldTakeHorror _ (InvestigatorTarget iid') n -> cancelInvestigatorHorror iid' n
         _ -> pure ()
       pure a
     _ -> ShieldingDevice <$> liftRunMessage msg attrs

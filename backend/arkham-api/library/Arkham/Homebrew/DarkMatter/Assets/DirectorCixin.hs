@@ -20,11 +20,17 @@ newtype DirectorCixin = DirectorCixin AssetAttrs
 directorCixin :: AssetCard DirectorCixin
 directorCixin = asset DirectorCixin Cards.directorCixin
 
+{- | Gated on the revelation having placed it: the After DrawCard window opens
+while a freshly drawn encounter asset is still 'Unplaced', and a forced ability
+offered from there both fires too early and has no card on the table to click.
+The same guard is on all six of Starfall's contacts.
+-}
 instance HasAbilities DirectorCixin where
   getAbilities (DirectorCixin a) =
     [ restricted a 1 (InVictoryDisplay (cardIs Enemies.martianCrab) (atLeast 1))
         $ Objective
         $ forced AnyWindow
+    | a.placement.isInPlay
     ]
 
 instance RunMessage DirectorCixin where

@@ -1,6 +1,7 @@
 module Arkham.Homebrew.DarkMatter.Locations.BrainStorage (brainStorage) where
 
 import Arkham.Ability
+import Arkham.Asset.Types (Field (AssetLocation))
 import Arkham.Classes.HasGame
 import Arkham.GameValue
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
@@ -11,6 +12,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Projection
 
 newtype BrainStorage = BrainStorage LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -49,7 +51,14 @@ instance RunMessage BrainStorage where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       brains <- select $ AssetWithTrait Brain
       chooseTargetM iid brains \aid -> do
-        locations <- filterM (canHoldBrain attrs) =<< select (LocationWithTrait Interface)
+        -- "Attach the chosen asset to any [[Interface]] location" is a move,
+        -- not a no-op, so the location it is already at is never offered
+        -- (also keeps 'canHoldBrain' honest: without this, a full-but-current
+        -- location would look eligible to itself).
+        currentLocation <- field AssetLocation aid
+        let notCurrent candidate = Just candidate /= currentLocation
+        interfaceLocations <- select (LocationWithTrait Interface)
+        locations <- filterM (canHoldBrain attrs) $ filter notCurrent interfaceLocations
         chooseTargetM iid locations \lid -> push $ PlaceAsset aid (AttachedToLocation lid)
       pure l
     _ -> BrainStorage <$> liftRunMessage msg attrs

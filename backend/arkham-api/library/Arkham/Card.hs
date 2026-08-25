@@ -283,7 +283,8 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   NotCard m -> not (cardMatch a m)
   CardWithAction action -> elem action $ actionsToList $ cdActions $ toCardDef a
   CardWithoutAction -> null $ actionsToList $ cdActions $ toCardDef a
-  CardIsStoryAsset -> and [isJust $ cdEncounterSet (toCardDef a), toCardType a == AssetType]
+  CardIsStoryAsset ->
+    and [isJust $ cdEncounterSet (toCardDef a), toCardType a `elem` [AssetType, EncounterAssetType]]
   CardWithPrintedLocationSymbol sym ->
     (== Just sym) . cdLocationRevealedSymbol $ toCardDef a
   CardWithPrintedLocationConnection sym ->

@@ -23,6 +23,7 @@ arNO = asset ArNO Cards.arNO
 instance HasAbilities ArNO where
   getAbilities (ArNO a) =
     [ restricted a 1 objectiveMet $ Objective $ forced AnyWindow
+    | a.placement.isInPlay
     ]
    where
     -- The Cassilda prints "connected to attached location and vice versa", so

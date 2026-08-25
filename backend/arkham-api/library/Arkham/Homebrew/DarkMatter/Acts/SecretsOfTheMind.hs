@@ -3,6 +3,7 @@ module Arkham.Homebrew.DarkMatter.Acts.SecretsOfTheMind (secretsOfTheMind) where
 import Arkham.Ability
 import Arkham.Act.Import.Lifted
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
+import Arkham.Homebrew.DarkMatter.Helpers (restoreCoveredSimulator)
 import Arkham.Homebrew.DarkMatter.Traits (pattern Simulation)
 import Arkham.Matcher
 
@@ -13,15 +14,12 @@ newtype SecretsOfTheMind = SecretsOfTheMind ActAttrs
 secretsOfTheMind :: ActCard SecretsOfTheMind
 secretsOfTheMind = act (2, A) SecretsOfTheMind Cards.secretsOfTheMind Nothing
 
-{- | "Forced - If a [[Simulation]] location has no clues on it: Add it to the
-victory display.
-Objective - If each undefeated investigator has resigned, advance."
--}
 instance HasAbilities SecretsOfTheMind where
   getAbilities (SecretsOfTheMind a) =
     [ restricted a 1 (exists $ LocationWithTrait Simulation <> LocationWithoutClues)
         $ forced AnyWindow
-    , restricted a 2 (not_ $ exists $ UneliminatedInvestigator <> not_ ResignedInvestigator)
+    , onlyOnce
+        $ restricted a 2 (not_ $ exists $ UneliminatedInvestigator <> not_ ResignedInvestigator)
         $ Objective
         $ forced AnyWindow
     ]
@@ -30,14 +28,11 @@ instance RunMessage SecretsOfTheMind where
   runMessage msg a@(SecretsOfTheMind attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       cleared <- select $ LocationWithTrait Simulation <> LocationWithoutClues
-      for_ cleared $ addToVictory iid
+      for_ cleared $ restoreCoveredSimulator iid
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceVia #other attrs attrs
       pure a
-    {- Act 2b: both branches ("If the current agenda is agenda 3 or agenda 4"
-    vs. otherwise) reach Resolution 2, and this is the last act in the deck, so
-    there is nothing else to advance to. -}
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       push R2
       pure a

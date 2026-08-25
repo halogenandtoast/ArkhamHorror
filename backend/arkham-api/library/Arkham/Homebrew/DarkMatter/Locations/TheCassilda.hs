@@ -2,13 +2,13 @@ module Arkham.Homebrew.DarkMatter.Locations.TheCassilda (theCassilda) where
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
+import Arkham.Homebrew.DarkMatter.Helpers (starshipAttachment, starshipDockTargets)
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Types (placementL)
-import Arkham.Matcher
+import Arkham.Location.Types (Field (LocationLabel), placementL)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Projection
 
 {- | Starfall's [[Starship]] location for the cultists' ship:
 
@@ -18,7 +18,8 @@ The Cassilda does not cost an action ([free]).
 any location may activate this ability. (Limit once per investigator per round.)"
 
 Attachment is 'locationPlacement': the starship's own placement is set to
-'AttachedToLocation', and the mutual connection is derived from it.
+'AttachedToLocation', and both the mutual connection and the free move are
+derived from it by 'starshipAttachment'.
 -}
 newtype TheCassilda = TheCassilda LocationAttrs
   deriving anyclass IsLocation
@@ -27,16 +28,8 @@ newtype TheCassilda = TheCassilda LocationAttrs
 theCassilda :: LocationCard TheCassilda
 theCassilda = location TheCassilda Cards.theCassilda 2 (Static 0)
 
--- | The location this starship is currently attached to, if any.
-attachedTo :: LocationAttrs -> Maybe LocationId
-attachedTo a = case locationPlacement a of
-  Just (AttachedToLocation lid) -> Just lid
-  _ -> Nothing
-
 instance HasModifiersFor TheCassilda where
-  getModifiersFor (TheCassilda a) = for_ (attachedTo a) \lid -> do
-    modifySelf a [ConnectedToWhen (be a) (LocationWithId lid), AdditionalCostToLeave Free]
-    modifySelect a (LocationWithId lid) [ConnectedToWhen (LocationWithId lid) (be a)]
+  getModifiersFor (TheCassilda a) = starshipAttachment a
 
 instance HasAbilities TheCassilda where
   getAbilities (TheCassilda a) =
@@ -48,9 +41,13 @@ instance HasAbilities TheCassilda where
 instance RunMessage TheCassilda where
   runMessage msg l@(TheCassilda attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locations <- select $ not_ (LocationWithId attrs.id)
+      locations <- select starshipDockTargets
       chooseHandleTargetM iid (attrs.ability 1) locations
       pure l
     HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do
+      -- Starfall's grid reserves an "l<host>"/"r<host>" berth column on either
+      -- side of every location; this ship always docks in the right one.
+      host <- field LocationLabel lid
+      push $ SetLocationLabel attrs.id ("r" <> host)
       pure . TheCassilda $ attrs & placementL ?~ AttachedToLocation lid
     _ -> TheCassilda <$> liftRunMessage msg attrs

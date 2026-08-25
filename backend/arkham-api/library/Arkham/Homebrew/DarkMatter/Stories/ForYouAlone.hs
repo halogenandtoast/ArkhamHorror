@@ -4,6 +4,7 @@ import Arkham.Helpers.Query (getSetAsideCard)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Stories qualified as Cards
 import Arkham.Matcher
+import Arkham.Message (ShuffleIn (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Story.Import.Lifted
 
@@ -23,7 +24,9 @@ instance RunMessage ForYouAlone where
     ResolveThisStory iid (is attrs -> True) -> do
       bottle <- getSetAsideCard Assets.bottleOfWhispers
       investigators <- select UneliminatedInvestigator
-      chooseTargetM iid investigators \bearer -> addToHand bearer [bottle]
+      chooseTargetM iid investigators \bearer -> do
+        addCampaignCardToDeck bearer DoNotShuffleIn bottle
+        addToHand bearer [bottle]
       addToVictory iid attrs
       pure s
     _ -> ForYouAlone <$> liftRunMessage msg attrs

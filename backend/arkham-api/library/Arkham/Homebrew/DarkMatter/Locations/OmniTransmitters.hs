@@ -30,9 +30,9 @@ instance RunMessage OmniTransmitters where
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 2)
       pure l
-    PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      semaphore iid do
-        gameModifier (attrs.ability 1) iid Semaphore
+    PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
+      semaphore attrs do
+        gameModifier (attrs.ability 1) attrs Semaphore
         selectEach (investigatorAt attrs.id) (`addMemories` 1)
       pure l
     _ -> OmniTransmitters <$> liftRunMessage msg attrs

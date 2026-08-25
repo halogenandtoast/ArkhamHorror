@@ -4,13 +4,13 @@ module Arkham.Homebrew.DarkMatter.Locations.TheTatterdemalionLocation (
 
 import Arkham.Ability
 import Arkham.GameValue
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
+import Arkham.Homebrew.DarkMatter.Helpers (starshipAttachment, starshipDockTargets)
 import Arkham.Location.Import.Lifted
-import Arkham.Location.Types (placementL)
-import Arkham.Matcher
+import Arkham.Location.Types (Field (LocationLabel), placementL)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Projection
 
 {- | Starfall's [[Starship]] location for the investigators' own ship:
 
@@ -20,7 +20,8 @@ or from The Tatterdemalion does not cost an action ([free]).
 location may activate this ability. (Limit once per investigator per round.)"
 
 Attachment is 'locationPlacement': the starship's own placement is set to
-'AttachedToLocation', and the mutual connection is derived from it.
+'AttachedToLocation', and both the mutual connection and the free move are
+derived from it by 'starshipAttachment'.
 
 The name carries the @Location@ suffix because the campaign and its first
 scenario are also called "The Tatterdemalion".
@@ -33,16 +34,8 @@ theTatterdemalionLocation :: LocationCard TheTatterdemalionLocation
 theTatterdemalionLocation =
   location TheTatterdemalionLocation Cards.theTatterdemalion 2 (Static 0)
 
--- | The location this starship is currently attached to, if any.
-attachedTo :: LocationAttrs -> Maybe LocationId
-attachedTo a = case locationPlacement a of
-  Just (AttachedToLocation lid) -> Just lid
-  _ -> Nothing
-
 instance HasModifiersFor TheTatterdemalionLocation where
-  getModifiersFor (TheTatterdemalionLocation a) = for_ (attachedTo a) \lid -> do
-    modifySelf a [ConnectedToWhen (be a) (LocationWithId lid), AdditionalCostToLeave Free]
-    modifySelect a (LocationWithId lid) [ConnectedToWhen (LocationWithId lid) (be a)]
+  getModifiersFor (TheTatterdemalionLocation a) = starshipAttachment a
 
 instance HasAbilities TheTatterdemalionLocation where
   getAbilities (TheTatterdemalionLocation a) =
@@ -53,9 +46,13 @@ instance HasAbilities TheTatterdemalionLocation where
 instance RunMessage TheTatterdemalionLocation where
   runMessage msg l@(TheTatterdemalionLocation attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locations <- select $ not_ (LocationWithId attrs.id)
+      locations <- select starshipDockTargets
       chooseHandleTargetM iid (attrs.ability 1) locations
       pure l
     HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do
+      -- Starfall's grid reserves an "l<host>"/"r<host>" berth column on either
+      -- side of every location; this ship always docks in the left one.
+      host <- field LocationLabel lid
+      push $ SetLocationLabel attrs.id ("l" <> host)
       pure . TheTatterdemalionLocation $ attrs & placementL ?~ AttachedToLocation lid
     _ -> TheTatterdemalionLocation <$> liftRunMessage msg attrs

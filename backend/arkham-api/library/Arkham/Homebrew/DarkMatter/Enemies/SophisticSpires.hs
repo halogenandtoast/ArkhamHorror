@@ -8,8 +8,8 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype SophisticSpires = SophisticSpires EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- | "Spawn - Nearest [[Carcosa]] location."
 sophisticSpires :: EnemyCard SophisticSpires
@@ -20,7 +20,7 @@ sophisticSpires =
 -- | "Massive. / Does not attack during the enemy phase."
 instance HasModifiersFor SophisticSpires where
   getModifiersFor (SophisticSpires a) =
-    modifySelf a [AddKeyword Keyword.Massive, CannotAttack]
+    modifySelf a [AddKeyword Keyword.Massive, CannotAttackDuringEnemyPhase]
 
 instance RunMessage SophisticSpires where
   runMessage msg (SophisticSpires attrs) = SophisticSpires <$> runMessage msg attrs

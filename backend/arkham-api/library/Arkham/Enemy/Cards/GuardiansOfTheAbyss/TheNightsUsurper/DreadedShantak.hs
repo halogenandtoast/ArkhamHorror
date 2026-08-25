@@ -6,8 +6,8 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Matcher
 
 newtype DreadedShantak = DreadedShantak EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 dreadedShantak :: EnemyCard DreadedShantak
 dreadedShantak = enemy DreadedShantak Cards.dreadedShantak

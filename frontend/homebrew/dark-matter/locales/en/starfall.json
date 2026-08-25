@@ -1,5 +1,43 @@
 {
   "starfall": {
+    "intro": {
+      "title": "Scenario VI: Starfall",
+      "body": "<p>It is beyond doubt. The sun is experiencing an unprecedented acceleration in the decay of its hydrogen core. K2-PS187 estimates that there are only a few years left before the fusion reactions that fuel our star will run out of gas and collapse on itself, generating a radioactive supernova that will destroy all life within a few light years. Whatever the cultists have done within Fragment has doomed our solar system to a premature end.</p><p>Your only hope now is to convince the remainder of the various colonies of humanity of this accelerated death and help them gather the resources and technology necessary to survive the supernova in any way possible. K2-PS187 makes the preparations for the navigation console as you brace for the many-months long journey ahead of you travelling across the solar system to save humanity.</p>",
+      "proceedToAnotherPath": "Check your Campaign Log. If the investigators <i>know of the Abjuration of the Throne</i>, proceed to <b>Another Path</b>.",
+      "skipToSetup": "Otherwise, skip to <b>Setup</b>."
+    },
+    "anotherPath": {
+      "title": "Another Path",
+      "body": "<p>Perhaps there is another way. The ritual you've glimpsed in the halls of Tassilda's temple will take many months to prepare—and you still do not know where it must be performed, but if it is possible, it will surely give humanity enough time to develop the technology necessary to survive. Now to find the ritual site is another question altogether…</p><ul><li>Proceed to <b>Setup</b>.</li></ul>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: <i>Starfall</i>, <i>Anachronism</i>, <i>Deep Space</i>, <i>Endtimes</i>, and <i>Agents of Yog-Sothoth</i>. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/starfall.png' /><img src='{imgPath}/homebrew/dark-matter/sets/anachronism.png' /><img src='{imgPath}/homebrew/dark-matter/sets/deep-space.png' /><img src='{imgPath}/homebrew/dark-matter/sets/endtimes.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
+      "setAsideHastursGaze": "Set aside the <i>Hastur's Gaze</i> encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/hasturs-gaze.png' /></section>",
+      "setAsideCards": "Set the following cards aside, out of play: the The Cassilda location, the Domaag T'eel enemy, the Mi-Go Sentinel enemy, the Yithian Guard enemy, and The Feaster from Afar.",
+      "setAsideAgenda": "Set aside the Dark Matter agenda and Tassilda's Awakening act, as well as the Tassilda enemy, out of play.",
+      "checkCampaignLog": "Check your Campaign Log:",
+      "elbrusStation": "If <i>Elbrus Station has been fully stabilized</i>, set aside the Ar-NO story asset, out of play. Otherwise, set aside the Project Origami story asset, out of play.",
+      "nostalgiaII": "If <i>the Nostalgia II has been saved</i>, set aside the Director Cixin story asset, out of play. Otherwise, set aside the Last Hope story asset, out of play.",
+      "miGoAlliance": "If <i>you are allied with the Mi-Go</i>, set aside the Mi-Go Collector story asset, out of play. Otherwise, set aside the Repairing the Threshold story asset, out of play.",
+      "createScanningDeck": "Create the scanning deck. This is done by taking all the other encounter cards with icons at the bottom of their back side and shuffling them together. (Including the cards above that have not been set aside.)",
+      "placeLocations": "Put the following locations into play: The Tatterdemalion, Mars, Asteroid Belt and Pluto.",
+      "startAt": "Each investigator begins play at The Tatterdemalion.",
+      "impendingDoom": "For every tally mark under “Impending Doom” in your Campaign Log, begin the scenario with 1 additional doom on the agenda."
+    },
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is half the number of revealed locations without clues (rounded up).",
+        "cultist": "-3. If you fail by 2 or more, take 1 damage and 1 horror.",
+        "tablet": "Increase the difficulty of this skill test by 1. Reveal another token.",
+        "elderThing": "-3. If you fail, you must either place 1 doom on the current agenda, or take 1 horror for each point you fail by."
+      },
+      "hardExpert": {
+        "skull": "-X. X is half the number of locations in play (rounded up).",
+        "cultist": "-4. If you fail by 2 or more, take 1 damage and 1 horror.",
+        "tablet": "Increase the difficulty of this skill test by 1. Reveal another token.",
+        "elderThing": "-4. If you fail, you must either place 1 doom on the current agenda, or take 1 horror for each point you fail by."
+      }
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution Was Reached",
@@ -7,7 +45,7 @@
       },
       "resolution1": {
         "title": "Resolution 1",
-        "body": "<p><b>Resolution 1:</b> A brilliant light shines over the solar system. The cataclysmic supernova radiates through the void, annihilating all unprotected life and stripping all the heavenly bodies of their precious atmosphere, leaving barren worlds in its wake.</p><ul><li>In your Campaign Log, record that <i>the sun went supernova and wiped out most of the solar system</i>.</li><li>If Repairing the Threshold is in the victory display, record that <i>Mi-Go safely returned to their home world</i>.</li><li>If Last Hope is in the victory display, record that <i>Hope was shielded from the blast</i>. The investigators who resigned in Hope read <b>Beyond Hope</b>.</li><li>If Project Origami is in the victory display, record that <i>the UCC escaped to another galaxy</i>. The investigators who resigned in New Brooklyn read <b>Far, Far Away</b>.</li><li>If none of the story cards mentioned above are in the victory display, the remaining investigators must read <b>The End 1</b>. Otherwise, they read <b>The End 2</b>.</li></ul>"
+        "body": "<p><b>Resolution 1:</b> A brilliant light shines over the solar system. The cataclysmic supernova radiates through the void, annihilating all unprotected life and stripping all the heavenly bodies of their precious atmosphere, leaving barren worlds in its wake.</p><ul><li>In your Campaign Log, record that <i>the sun went supernova and wiped out most of the solar system</i>.</li><li>If Repairing the Threshold is in the victory display, in your Campaign Log, record that <i>Mi-Go safely returned to their home world</i>.</li><li>If Last Hope is in the victory display, in your Campaign Log, record that <i>Hope was shielded from the blast</i>. The investigators who resigned in Hope read <b>Beyond Hope</b>.</li><li>If Project Origami is in the victory display, in your Campaign Log, record that <i>The UCC escaped to another galaxy</i>. The investigators who resigned in New Brooklyn read <b>Far, Far Away</b>.</li><li>If none of the story cards mentioned above are in the victory display, the remaining investigators must read <b>The End 1</b>. Otherwise, they read <b>The End 2</b>.</li></ul>"
       },
       "resolution2": {
         "title": "Resolution 2",
@@ -16,11 +54,23 @@
     },
     "beyondHope": {
       "title": "Beyond Hope",
-      "body": "<p>After the blackout finally ended, you and your fellow companions left the underground shelters of Hope to witness a dazzling array of painterly gases, and a faint white sphere—the residual legacy of the sun. Colony researchers have claimed that it would have been impossible for the electromagnetic shield to protect the entire planet from the blast without the unexpected but embraced energy spike originating from the nearby alien ruins. It is the dawn of a new beginning for mankind, the age of the White Sun. You live the rest of your days helping the megapolis sustain itself and recounting the fantasy stories of your life on Earth. And yet you wonder, as you look up to the light of the white dwarf, how long until it too inevitably decays and humanity will once more need to escape extinction…</p><ul><li>In your Campaign Log, record that your investigator <i>lived the remainder of their days, with Hope</i>.</li><li>The investigators win the campaign!</li><li>Proceed to the <b>Epilogue</b>.</li></ul>"
+      "body": "<p>After the blackout finally ended, you and your fellow companions left the underground shelters of Hope to witness a dazzling array of painterly gases, and a faint white sphere—the residual legacy of the sun. Colony researchers have claimed that it would have been impossible for the electromagnetic shield to protect the entire planet from the blast without the unexpected but embraced energy spike originating from the nearby alien ruins. It is the dawn of a new beginning for mankind, the age of the White Sun. You live the rest of your days helping the megapolis sustain itself and recounting the fantasy stories of your life on Earth. And yet you wonder, as you look up to the light of the white dwarf, how long until it too, inevitably decays and humanity will once more need to escape extinction…</p><ul><li>In your Campaign Log, record that your investigator <i>lived the remainder of their days, with Hope</i>.</li><li>The investigators win the campaign!</li><li>Proceed to the <b>Epilogue</b>.</li></ul>"
     },
     "farFarAway": {
       "title": "Far, Far Away",
-      "body": "<p>The scientists of Sinai activated the space-time warping device moments before the blast. The colony of New Brooklyn was jaunted along the folds of space-time, towards a new galaxy and a new future. The destination—a prospective binary system of many exoplanets—appears to be safe and far beyond the reach of the Ancient Ones of the old world. You live the rest of your days helping humanity build outposts under the virgin skies of a new home, a planet the settlers will call Paradise. You recount stories of your life on Earth to your descendants, stories that will become fairy tales and eventually legends. The inhabitants upon this new world live and work together in peace and prosperity. It is the dawn of a new beginning for mankind. And yet you wonder, as you look up to the light of your new stars, how long until they too inevitably decay and humanity will once more need to escape extinction…</p><ul><li>In your Campaign Log, record that your investigator <i>lived the remainder of their days, on Paradise</i>.</li><li>The investigators win the campaign!</li><li>Proceed to the <b>Epilogue</b>.</li></ul>"
+      "body": "<p>The scientists of Sinai activated the space-time warping device moments before the blast. The colony of New Brooklyn was jaunted along the folds of space time, towards a new galaxy, and a new future. The destination—a prospective binary system of many exoplanets—appears to be safe and far beyond the reach of the Ancient Ones of the old world. You live the rest of your days helping humanity build outposts under the virgin skies of a new home, a planet the settlers will call Paradise. You recount stories of your life on Earth to your descendants, stories that will become fairy tales and eventually legends. The inhabitants upon this new world live and work together in peace and prosperity. It is the dawn of a new beginning for mankind. And yet you wonder, as you look up to the light of your new stars, how long until they too, inevitably decay and humanity will once more need to escape extinction…</p><ul><li>In your Campaign Log, record that your investigator <i>lived the remainder of their days, on Paradise</i>.</li><li>The investigators win the campaign!</li><li>Proceed to the <b>Epilogue</b>.</li></ul>"
+    },
+    "theEnd1": {
+      "title": "The End 1",
+      "body": "<p>The light of the supernova engulfs the skies and surrounds you and your companions. Despite all of your efforts, you could not redeem yourself and prevent the demise of humanity. In your finals moments, before the shockwave strips you of your corporeal essence, a figure in a tattered yellow dress materializes in the light. You kneel before her and grab onto her hand, as Tassilda welcomes you into the dark realm of Carcosa.</p><ul><li>In your Campaign Log, record that <i>you have returned to the palaces of Dim Carcosa</i>.</li><li>Each investigator is <b>killed</b>.</li><li>The investigators lose the campaign.</li></ul>"
+    },
+    "theEnd2": {
+      "title": "The End 2",
+      "body": "<p>The light of the supernova engulfs the skies and surrounds you and your companions. Despite being unable to save yourself from the blast, you still feel accomplished—and redeemed—by what you have done to save others. In your finals moments, before the shockwave strips you of your corporeal essence, you shut your eyes in acceptance of your terrible fate.</p><ul><li>In your Campaign Log, record that your investigator <i>was caught in the supernova's blast</i>.</li><li>Each investigator is <b>killed</b>.</li><li>If all investigators are reading this, the investigators lose the campaign.</li><li>Proceed to the <b>Epilogue</b>.</li></ul>"
+    },
+    "theEnd3": {
+      "title": "The End 3",
+      "body": "<p>A roar of applause startles you awake. The crowd of the theatre rises to their feet, cheering endlessly. Several patrons in the front row are throwing roses to the actors on stage, who are bowing with wide smiles across their faces. A searing headache crawls through your temples. How did you get back here? Were you in the theatre all along? What about the Tatterdemalion? K2-PS187? Fragment? …the entire future? Was it all just a terrible dream? You exit the auditorium before the crowd rushes to do the same. Dizziness and exhaustion harries your senses. The weight of your lengthy adventure is crushing your mind. By the time you finally reach the lobby, you are clawing your way across the ground. The ground… Earth. You are finally home. A few of your thoughts wander towards the idea that this might be another simulation or a trick of the mind, but you don't care anymore. You can live with that. At least now, there is hope for a brighter future.</p><ul><li>In your Campaign Log, record that <i>the investigators have finally escaped Hastur's grasp and prevented him from escaping his prison</i>.</li><li>The investigators win the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Each investigator may heal up to 2 mental trauma, as they now have hope.</li><li>In your Campaign Log, record that <i>Hope was shielded from the blast</i>, <i>the UCC escaped to another galaxy</i> and <i>the Mi-Go safely returned to their home world</i>.</li><li>Proceed to the <b>Epilogue</b>.</li></ul>"
     }
   }
 }

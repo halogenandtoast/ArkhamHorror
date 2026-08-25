@@ -15,13 +15,17 @@ anachronism =
 -- dark_past
 hauntingPast :: CardDef
 hauntingPast =
-  (treachery ":dark-matter:002" "Haunting Past" Set.DarkPast 2) {cdCardTraits = setFromList [Scheme]}
+  (treachery ":dark-matter:002" "Haunting Past" Set.DarkPast 2)
+    { cdCardTraits = setFromList [Scheme]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
 
 reminiscencePledge :: CardDef
 reminiscencePledge =
   (treachery ":dark-matter:003" "Reminiscence (Pledge)" Set.DarkPast 1)
     { cdCardTraits = setFromList [Pact]
     , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
+    , cdVictoryPoints = Just 0
     }
 
 reminiscenceSecrets :: CardDef
@@ -29,6 +33,7 @@ reminiscenceSecrets =
   (treachery ":dark-matter:004" "Reminiscence (Secrets)" Set.DarkPast 1)
     { cdCardTraits = setFromList [Pact]
     , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
+    , cdVictoryPoints = Just 0
     }
 
 reminiscenceCovenant :: CardDef
@@ -36,6 +41,7 @@ reminiscenceCovenant =
   (treachery ":dark-matter:005" "Reminiscence (Covenant)" Set.DarkPast 1)
     { cdCardTraits = setFromList [Pact]
     , cdKeywords = setFromList [Keyword.Hidden, Keyword.Peril]
+    , cdVictoryPoints = Just 0
     }
 
 -- deep_space
@@ -67,7 +73,10 @@ theColorsOfSpace =
 -- endtimes
 grimFuture :: CardDef
 grimFuture =
-  (treachery ":dark-matter:012" "Grim Future" Set.Endtimes 2) {cdCardTraits = setFromList [Endtimes]}
+  (treachery ":dark-matter:012" "Grim Future" Set.Endtimes 2)
+    { cdCardTraits = setFromList [Endtimes]
+    , cdKeywords = setFromList [Keyword.Peril]
+    }
 
 futureEvils :: CardDef
 futureEvils =
@@ -479,4 +488,5 @@ radiantCrown :: CardDef
 radiantCrown =
   (treachery ":dark-matter:290" "Radiant Crown" Set.HastursGaze 2)
     { cdCardTraits = setFromList [Power]
+    , cdKeywords = setFromList [Keyword.Surge]
     }

@@ -41,7 +41,7 @@ instance RunMessage SolarEclipse where
           withSkillTest \sid ->
             for_ here \lid -> skillTestModifier sid (attrs.ability 1) lid (ShroudModifier 2)
       pure t
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      toDiscardBy iid (attrs.ability 2) attrs
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      toDiscard (attrs.ability 2) attrs
       pure t
     _ -> SolarEclipse <$> liftRunMessage msg attrs

@@ -929,6 +929,7 @@ data Message
   | RemoveEnemyLocation LocationId
   | PlaceUnderneath Target [Card]
   | PlacedUnderneath Target Card
+  | RemoveFromUnderneath Target [Card]
   | PlaceNextTo Target [Card]
   | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId

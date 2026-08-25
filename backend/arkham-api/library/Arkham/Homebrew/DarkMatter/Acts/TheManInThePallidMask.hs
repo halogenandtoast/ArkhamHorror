@@ -2,9 +2,14 @@ module Arkham.Homebrew.DarkMatter.Acts.TheManInThePallidMask (theManInThePallidM
 
 import Arkham.Ability
 import Arkham.Act.Import.Lifted hiding (DiscoverClues)
+import Arkham.Helpers.Query (getInvestigators, getSetAsideCardsMatching)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
+import Arkham.Homebrew.DarkMatter.Helpers (addMemories, scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Key
+import Arkham.I18n
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 newtype TheManInThePallidMask = TheManInThePallidMask ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -13,10 +18,6 @@ newtype TheManInThePallidMask = TheManInThePallidMask ActAttrs
 theManInThePallidMask :: ActCard TheManInThePallidMask
 theManInThePallidMask = act (2, A) TheManInThePallidMask Cards.theManInThePallidMask Nothing
 
-{- | "[reaction] After you successfully investigate or discover clues at The
-Stranger's location: Deal 2 damage to it. (Limit once per turn.)" /
-"Objective - After The Stranger is defeated, advance."
--}
 instance HasAbilities TheManInThePallidMask where
   getAbilities (TheManInThePallidMask a) =
     [ playerLimit PerTurn
@@ -30,11 +31,14 @@ instance HasAbilities TheManInThePallidMask where
               (SuccessResult AnyValue)
           , DiscoverClues #after You (LocationWithEnemy $ enemyIs Enemies.theStranger) AnyValue
           ]
-    , restricted a 2 (not_ $ exists $ enemyIs Enemies.theStranger) $ Objective $ forced AnyWindow
+    , onlyOnce
+        $ restricted a 2 (not_ $ exists $ enemyIs Enemies.theStranger)
+        $ Objective
+        $ forced AnyWindow
     ]
 
 instance RunMessage TheManInThePallidMask where
-  runMessage msg a@(TheManInThePallidMask attrs) = runQueueT $ case msg of
+  runMessage msg a@(TheManInThePallidMask attrs) = runQueueT $ scenarioI18n "theMachineInYellow" $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectOne (enemyIs Enemies.theStranger)
         >>= traverse_ (nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2)
@@ -43,6 +47,17 @@ instance RunMessage TheManInThePallidMask where
       advanceVia #other attrs attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
+      copies <- getSetAsideCardsMatching $ cardIs Enemies.yourOtherSelf
+      investigators <- getInvestigators
+      for_ (zip investigators copies) \(iid, copy) -> createEnemy_ copy iid
+      whenM (getHasRecord YouHaveUncoveredTheCultistsInhumanMethods) do
+        eachInvestigator \iid -> chooseOneM iid $ scope "theManInThePallidMask" do
+          labeled' "gainClueAndHeal" do
+            gainClues iid attrs 1
+            healDamage iid attrs 2
+            healHorror iid attrs 2
+          labeled' "addMemory" $ addMemories iid 1
+          unscoped $ labeled' "doNothing" nothing
       advanceActDeck attrs
       pure a
     _ -> TheManInThePallidMask <$> liftRunMessage msg attrs

@@ -28,7 +28,8 @@ saveOurSouls = act (2, A) SaveOurSouls Cards.saveOurSouls Nothing
 -- "Objective - If each undefeated investigator has resigned: (-> R1)."
 instance HasAbilities SaveOurSouls where
   getAbilities (SaveOurSouls a) =
-    [ restricted a 1 (not_ $ exists $ UneliminatedInvestigator <> not_ ResignedInvestigator)
+    [ onlyOnce
+        $ restricted a 1 (not_ $ exists $ UneliminatedInvestigator <> not_ ResignedInvestigator)
         $ Objective
         $ forced AnyWindow
     ]

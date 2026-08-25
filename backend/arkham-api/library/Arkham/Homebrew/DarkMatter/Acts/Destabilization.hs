@@ -20,27 +20,18 @@ newtype Destabilization = Destabilization ActAttrs
 destabilization :: ActCard Destabilization
 destabilization = act (2, A) Destabilization Cards.destabilization Nothing
 
-{- | "[action] Draw a face-down encounter card in your threat area. If it is a
-treachery, you may spend 1 clue to cancel its revelation effect.
-Objective - If each undefeated investigator has resigned, advance."
--}
 instance HasAbilities Destabilization where
   getAbilities (Destabilization a) =
     [ restricted a 1 (DuringTurn You) actionAbility
-    , restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
+    , onlyOnce $ restricted a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
     ]
 
 instance RunMessage Destabilization where
   runMessage msg a@(Destabilization attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      -- The rider is offered with the card face up but before its revelation is
-      -- initiated. IgnoreRevelation cancels that effect; the card was still
-      -- drawn and is discarded normally.
       void $ drawRandomFacedownCardWith iid \tid -> do
         clues <- getSpendableClueCount [iid]
         card <- field TreacheryCard tid
-        -- Call of the Void prints "Cannot be cancelled or ignored", and Schröd
-        -- Generators stops the investigators on it cancelling anything at all.
         canCancel <- card <=~> CanCancelRevelationEffect (InvestigatorWithId iid) #any
         when (clues > 0 && canCancel) do
           chooseOneM iid $ withI18n do
@@ -54,9 +45,6 @@ instance RunMessage Destabilization where
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceVia #other attrs attrs
       pure a
-    -- Advancing is the campaign guide's "no resolution was reached (each
-    -- investigator resigned or was defeated)", which the scenario then branches
-    -- to Resolution 3 or 1 on whether Erwin was resigned with.
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       noResolution
       pure a

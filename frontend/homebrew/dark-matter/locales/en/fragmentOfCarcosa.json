@@ -1,9 +1,49 @@
 {
   "fragmentOfCarcosa": {
+    "intro": {
+      "title": "Scenario V: Fragment of Carcosa",
+      "body": "<p>There is no time to waste. As if it were muscle-memory, you adorn the makeshift shrine by installing one of the quantum shards in the center. Several of the golden discs obtained from the Mi-Go must be placed in front — aligned to form a syzygy. With the components in order, you pronounce the unspeakable message from Earth:</p><p class='center'>“Let the red dawn surmise<br>What we shall do,<br>When this blue starlight dies<br>And all is through.”</p><p>The golden discs begin trembling, building momentum until they all turn upright and begin to roll around the shrine in one direction. The quantum artifact’s hue shifts into a yellow glare before glowing an intense and dense red. The discs spin around and around the surface at different, but consistent speeds, until they finally slow down to a crawl and fall over simultaneously. Then, as suddenly as it began, the red shard erupts in a fog of nebulous gas, blinding you in its flurry.</p><p>When your eyesight returns, all that remains are the golden discs resting at various locations across the floor. You instinctively recognize this as a schematic of the solar system. Upon closer examination, a single remnant of the purple shard remains between what you believe is Jupiter and Saturn’s orbits. K2-PS187 confirms that the depiction is accurate to the current star-time — and begins plotting a course towards the asteroid.</p><p>On the way there, you think of the different worlds you have visited and many adventures you have experienced, both in this world and in your own. Throughout every interaction, every quest, is the underlying sense of hope and optimism for the future. This future does not deserve to become another pawn to the mad king, and you intend to stop that from happening.</p><p>When you arrive, the asteroid does not resemble what you had expected. The egg-shaped asteroid is about 4 km at its widest, and looks awfully… normal. The yellow color is closer to a murky brown than gold. It is littered with craters and cavities, battered by the harshness of space. Without delay, you suit on and descend onto the surface of Fragment, ready to face the Royal Princess of Carcosa…</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: <i>Fragment of Carcosa</i> and <i>Inhabitants of Carcosa</i> <i>(from The Path to Carcosa)</i>. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/dark-matter/sets/fragment-of-carcosa.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /></section>",
+      "placeLocations": "Put the Surface of Fragment and Abandoned Lander locations into play.",
+      "startAt": "Each investigator begins play at Surface of Fragment.",
+      "setAsideLocations": "Set aside the 6 double-sided locations, out of play.",
+      "setAsideStoryCards": "Set aside the 4 one-sided story cards (Delights, Arrival of the King, For You Alone and Lost Expedition), out of play.",
+      "setAsideCards": "Set aside the Bottle of Whispers story asset, the Cave Dweller enemy, the Beast of Aldebaran enemy, and each copy of Spawn of Hali aside, out of play."
+    },
+    "tokens": {
+      "easyStandard": {
+        "skull": "-2. If you fail while you are at a *Cave* location, take 1 damage.",
+        "cultist": "-2. If you fail while you are at a *Carcosa* location, take 1 horror.",
+        "tablet": "-1. You must either (choose one): Reveal another token, or cross out 1 tally mark next to your “Memories”.",
+        "elderThing": "-2. If you are at a *Carcosa* location: Add 1 doom to the current agenda, or automatically fail this skill test."
+      },
+      "hardExpert": {
+        "skull": "-3. If you are at a *Cave* location, take 1 damage.",
+        "cultist": "-3. If you are at a *Carcosa* location, take 1 horror.",
+        "tablet": "-2. You must either (choose one): Reveal another token, or cross out 1 tally mark next to your “Memories”.",
+        "elderThing": "-3. If you are at a *Carcosa* location: Add 1 doom to the current agenda, or automatically fail this skill test."
+      }
+    },
+    "specialRules": [
+      {
+        "title": "Flipping Locations in Fragment",
+        "body": "<p class='basic'>In this scenario, you may be instructed to flip a location to its other side. When this occurs, simply flip the location, keeping all tokens, attachments, investigators, enemies, and other cards on that same location (which will have a different name). Then, add clues on that location up to its clue value.</p><p class='basic'>Locations with “Cannot be flipped.” will simply ignore the instructions to flip it, and will not prevent abilities from triggering.</p>"
+      }
+    ],
+    "label": {
+      "tablet": {
+        "revealAnotherToken": "Reveal another token",
+        "crossOffMemory": "Cross out 1 tally mark next to your “Memories”"
+      }
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution Was Reached",
-        "body": "<p><b>If each investigator was defeated:</b></p><ul><li>If it is act 1 or act 2, proceed to <b>Resolution 1</b>.</li><li>If it is act 3, proceed to <b>Resolution 2</b>.</li></ul>"
+        "body": "If each investigator was defeated:",
+        "proceedToResolution1": "If it is act 1 or act 2, proceed to <b>Resolution 1</b>.",
+        "proceedToResolution2": "If it is act 3, proceed to <b>Resolution 2</b>."
       },
       "resolution1": {
         "title": "Resolution 1",

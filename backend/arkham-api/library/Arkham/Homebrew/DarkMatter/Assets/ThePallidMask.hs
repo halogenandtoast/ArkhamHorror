@@ -19,7 +19,7 @@ move to any revealed location. If you fail, take 1 direct horror."
 -}
 instance HasAbilities ThePallidMask where
   getAbilities (ThePallidMask a) =
-    [controlled a 1 ControlsThis $ FastAbility (exhaust a)]
+    [skillTestAbility $ controlled_ a 1 $ FastAbility (exhaust a)]
 
 instance RunMessage ThePallidMask where
   runMessage msg a@(ThePallidMask attrs) = runQueueT $ case msg of

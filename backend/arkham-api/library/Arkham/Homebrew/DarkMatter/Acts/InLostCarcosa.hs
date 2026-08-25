@@ -2,9 +2,12 @@ module Arkham.Homebrew.DarkMatter.Acts.InLostCarcosa (inLostCarcosa) where
 
 import Arkham.Ability
 import Arkham.Act.Import.Lifted
+import Arkham.Enemy.CardDefs.ThePathToCarcosa.InhabitantsOfCarcosa qualified as InhabitantsOfCarcosa
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Matcher
+import Arkham.Trait (Trait (Cave))
 
 newtype InLostCarcosa = InLostCarcosa ActAttrs
   deriving anyclass (IsAct, HasModifiersFor)
@@ -13,15 +16,13 @@ newtype InLostCarcosa = InLostCarcosa ActAttrs
 inLostCarcosa :: ActCard InLostCarcosa
 inLostCarcosa = act (1, A) InLostCarcosa Cards.inLostCarcosa Nothing
 
-{- | "Objective - If Abandoned Lander is revealed and there are no clues on it,
-advance."
--}
 instance HasAbilities InLostCarcosa where
   getAbilities (InLostCarcosa a) =
-    [ restricted
-        a
-        1
-        (exists $ locationIs Locations.abandonedLander <> RevealedLocation <> LocationWithoutClues)
+    [ onlyOnce
+        $ restricted
+          a
+          1
+          (exists $ locationIs Locations.abandonedLander <> RevealedLocation <> LocationWithoutClues)
         $ Objective
         $ forced AnyWindow
     ]
@@ -32,6 +33,11 @@ instance RunMessage InLostCarcosa where
       advanceVia #other attrs attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
+      watchedHeir <- getHasRecord YouHaveWatchedThePerformanceOfHeirToCarcosa
+      when watchedHeir $ eachInvestigator \iid -> gainClues iid attrs 1
+      placeSetAsideLocationsMatching_ (CardWithTrait Cave)
+      unless watchedHeir
+        $ createSetAsideEnemy_ InhabitantsOfCarcosa.beastOfAldebaran Locations.cyclopeanCaverns
       advanceActDeck attrs
       pure a
     _ -> InLostCarcosa <$> liftRunMessage msg attrs

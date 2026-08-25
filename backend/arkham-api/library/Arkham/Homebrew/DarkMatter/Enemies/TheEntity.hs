@@ -9,8 +9,8 @@ import Arkham.Matcher
 import Arkham.Strategy
 
 newtype TheEntity = TheEntity EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 {- | "Damage and horror dealt by The Entity must be assigned to [[Ally]] assets
 first." — an attack damage strategy, not a modifier.

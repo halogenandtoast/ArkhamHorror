@@ -1197,7 +1197,8 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       mostKeyCount <- getMax0 <$> selectAgg (Max0 . Set.size) InvestigatorKeys UneliminatedInvestigator
       pure $ mostKeyCount == Set.size (investigatorKeys $ toAttrs i)
     InvestigatorWithHiddenCard -> flip runMatchesM as $ \i -> do
-      andM
+      -- A hidden card in hand is an enemy *or* a treachery, not both.
+      orM
         [ selectAny $ EnemyInHandOf (InvestigatorWithId $ toId i)
         , selectAny $ TreacheryInHandOf (InvestigatorWithId $ toId i)
         ]

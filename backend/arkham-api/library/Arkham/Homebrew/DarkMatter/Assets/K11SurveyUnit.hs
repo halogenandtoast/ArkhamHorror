@@ -22,7 +22,7 @@ location and draw it. Shuffle the scanning deck."
 -}
 instance HasAbilities K11SurveyUnit where
   getAbilities (K11SurveyUnit a) =
-    [controlled a 1 ControlsThis $ scanAction (exhaust a)]
+    [controlled_ a 1 $ scanAction (exhaust a)]
 
 instance RunMessage K11SurveyUnit where
   runMessage msg a@(K11SurveyUnit attrs) = runQueueT $ case msg of

@@ -1,7 +1,6 @@
 module Arkham.Homebrew.DarkMatter.Enemies.MiGoSentinel (miGoSentinel) where
 
 import Arkham.Ability
-import Arkham.ChaosToken.Types qualified as CT
 import Arkham.Enemy.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Enemy.Types (Field (EnemyClues))
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
@@ -35,7 +34,7 @@ instance HasAbilities MiGoSentinel where
           (youExist $ at_ (locationWithEnemy a.id) <> InvestigatorWithClues (atLeast 1))
           $ forced
           $ RevealChaosToken #after You
-          $ oneOf [ChaosTokenFaceIs f | f <- [CT.Skull, CT.Cultist, CT.Tablet, CT.ElderThing]]
+          $ oneOf [#skull, #cultist, #tablet, #elderthing]
       , mkAbility a 2 $ forced $ EnemyDefeated #when You ByAny (be a)
       ]
 

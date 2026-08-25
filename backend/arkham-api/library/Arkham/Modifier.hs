@@ -118,6 +118,7 @@ data ModifierType
   | AttackDealsEitherDamageOrHorror
   | AttacksCannotBeCancelled
   | Barricades [LocationId]
+  | BaseShroud Int
   | BaseSkill Int
   | BaseSkillOf {skillType :: SkillType, value :: Int}
   | BaseSkillOfCalculated {skillType :: SkillType, calculation :: GameCalculation}

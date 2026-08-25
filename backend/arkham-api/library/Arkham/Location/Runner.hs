@@ -617,12 +617,17 @@ getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
   base <- getGameValue (fromJustNote "Missing shroud" $ locationShroud attrs)
   let modifiedBase = foldr applyBaseModifier base modifiers'
-  pure $ max 0 $ foldr applyModifier modifiedBase modifiers'
+  -- SetShroud is the "set the shroud value to X" effect, which overrides every
+  -- other modifier, so it has to be applied last. BaseShroud only replaces the
+  -- printed value and can still be modified afterwards.
+  pure $ max 0 $ foldr applySetModifier (foldr applyModifier modifiedBase modifiers') modifiers'
  where
-  applyBaseModifier (SetShroud m) _ = m
+  applyBaseModifier (BaseShroud m) _ = m
   applyBaseModifier _ n = n
   applyModifier (ShroudModifier m) n = n + m
   applyModifier _ n = n
+  applySetModifier (SetShroud m) _ = m
+  applySetModifier _ n = n
 
 getInvestigateAllowed :: HasGame m => InvestigatorId -> LocationAttrs -> m Bool
 getInvestigateAllowed iid attrs = do

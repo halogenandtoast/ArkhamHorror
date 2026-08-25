@@ -26,7 +26,7 @@ bedroomHemlockHouse32 =
 instance HasModifiersFor BedroomHemlockHouse32 where
   getModifiersFor (BedroomHemlockHouse32 a) = do
     floorN <- getFloorNumber a.id
-    modifySelf a [SetShroud (floorN + 1)]
+    modifySelf a [BaseShroud (floorN + 1)]
 
 instance HasAbilities BedroomHemlockHouse32 where
   getAbilities (BedroomHemlockHouse32 a) =

@@ -30,7 +30,7 @@ instance HasModifiersFor OminousSilence where
 
 instance HasAbilities OminousSilence where
   getAbilities (OminousSilence a) =
-    [skillTestAbility $ restricted a 1 (InThreatAreaOf You) actionAbility]
+    [skillTestAbility $ restricted a 1 OnSameLocation actionAbility]
 
 instance RunMessage OminousSilence where
   runMessage msg t@(OminousSilence attrs) = runQueueT $ case msg of

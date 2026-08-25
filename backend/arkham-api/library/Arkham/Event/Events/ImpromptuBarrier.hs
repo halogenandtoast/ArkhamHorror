@@ -20,7 +20,7 @@ instance RunMessage ImpromptuBarrier where
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       chooseEvadeEnemyEdit sid iid attrs (setTarget attrs)
-      doStep 1 msg
+      shouldMoveWithSkillTest_ $ doStep 1 msg
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       when attrs.playedFromDiscard $ shuffleIntoDeck iid attrs

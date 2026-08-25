@@ -821,7 +821,15 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
       <$> countM
         (`Query.matches` Matcher.IncludeSealed matcher)
         (skillTestRevealedChaosTokens st <> skillTestAdditionalRevealedChaosTokens st)
-  Matcher.SkillTestOnCardWithTrait t -> elem t <$> sourceTraits (skillTestSource st)
+  -- The source may leave play mid-test (an event that shuffles itself back, for
+  -- example), so fall back to the card id captured when the test began.
+  Matcher.SkillTestOnCardWithTrait t -> do
+    traits <- sourceTraits (skillTestSource st)
+    if t `elem` traits
+      then pure True
+      else case st.sourceCard of
+        Nothing -> pure False
+        Just cid -> maybe False (`cardMatch` Matcher.CardWithTrait t) <$> getCardMaybe cid
   Matcher.SkillTestOnCard match -> (`cardMatch` match) <$> sourceToCard (skillTestSource st)
   Matcher.SkillTestOnLocation match -> case skillTestSource st of
     AbilitySource s n | n < 100 -> case s.location of

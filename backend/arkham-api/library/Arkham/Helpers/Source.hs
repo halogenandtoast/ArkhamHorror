@@ -51,16 +51,16 @@ sourceTraits = \case
   EnemyDefeatSource _ -> pure mempty
   EnemyMatcherSource _ -> pure mempty
   EnemySource eid -> fromMaybe mempty <$> fieldMay EnemyTraits eid
-  EventSource eid -> field EventTraits eid
+  EventSource eid -> fromMaybe mempty <$> fieldMay EventTraits eid
   GameSource -> pure mempty
   InvestigatorSource iid -> field InvestigatorTraits iid
   LocationMatcherSource _ -> pure mempty
-  LocationSource lid -> field LocationTraits lid
+  LocationSource lid -> fromMaybe mempty <$> fieldMay LocationTraits lid
   ProxySource s _ -> sourceTraits s
   IndexedSource _ s -> sourceTraits s
   ResourceSource _ -> pure mempty
   ScenarioSource -> pure mempty
-  SkillSource sid -> field SkillTraits sid
+  SkillSource sid -> fromMaybe mempty <$> fieldMay SkillTraits sid
   SkillTestSource {} -> pure mempty
   StorySource _ -> pure mempty
   TarotSource _ -> pure mempty

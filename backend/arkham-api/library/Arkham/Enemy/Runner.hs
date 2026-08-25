@@ -295,6 +295,16 @@ getPaths a destinations =
             pure $ if null barricadedPathIds then pathIds' else barricadedPathIds
           else pure pathIds'
 
+-- | Select locations with the enemy's `HunterConnectedTo` links applied to its own location
+selectWithEnemyConnections :: HasGame m => EnemyAttrs -> LocationMatcher -> m [LocationId]
+selectWithEnemyConnections a matcher =
+  getLocationOf a >>= \case
+    Nothing -> select matcher
+    Just loc -> do
+      mods <- getModifiers a
+      let additionalConnections = [ConnectedToWhen (LocationWithId loc) (LocationWithId lid') | HunterConnectedTo lid' <- mods]
+      withModifiers loc (toModifiers a additionalConnections) $ select matcher
+
 getActualAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
 getActualAvailablePrey a =
   getPreyMatcher a >>= \case
@@ -783,9 +793,12 @@ instance RunMessage EnemyAttrs where
             pushAll $ MoveToward (toTarget a) (LocationWithId destinationLocationId)
               : [Move $ movement {moveMeans = TowardsN (n - 1)} | n > 1]
         ToLocationMatching matcher -> do
-          lids <- select matcher
+          -- additional connections let an enemy on an otherwise disconnected
+          -- location (e.g. the unrevealed Unvisited Isle) still find a destination
+          lids <- selectWithEnemyConnections a matcher
           player <- getLeadPlayer
-          push
+          unless (null lids)
+            $ push
             $ chooseOrRunOne player
             $ [targetLabel lid [Move $ movement {moveDestination = ToLocation lid}] | lid <- lids]
       pure $ a & movementL ?~ movement {moveFromInPlay = isInPlayPlacement enemyPlacement}

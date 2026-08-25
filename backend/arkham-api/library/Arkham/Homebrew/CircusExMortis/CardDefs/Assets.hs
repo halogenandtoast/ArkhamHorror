@@ -290,3 +290,58 @@ terrifiedCaptives =
     , cdVictoryPoints = Just 1
     , cdRevelation = IsRevelation
     }
+
+-- harm_s_way: the six identical Kidnapped Citizen story backs
+kidnappedCitizen_059b :: CardDef
+kidnappedCitizen_059b =
+  (encounterAsset_ ":circus-ex-mortis:059b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:059"
+    , cdDoubleSided = True
+    }
+
+kidnappedCitizen_060b :: CardDef
+kidnappedCitizen_060b =
+  (encounterAsset_ ":circus-ex-mortis:060b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:060"
+    , cdDoubleSided = True
+    }
+
+kidnappedCitizen_061b :: CardDef
+kidnappedCitizen_061b =
+  (encounterAsset_ ":circus-ex-mortis:061b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:061"
+    , cdDoubleSided = True
+    }
+
+kidnappedCitizen_062b :: CardDef
+kidnappedCitizen_062b =
+  (encounterAsset_ ":circus-ex-mortis:062b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:062"
+    , cdDoubleSided = True
+    }
+
+kidnappedCitizen_063b :: CardDef
+kidnappedCitizen_063b =
+  (encounterAsset_ ":circus-ex-mortis:063b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:063"
+    , cdDoubleSided = True
+    }
+
+kidnappedCitizen_064b :: CardDef
+kidnappedCitizen_064b =
+  (encounterAsset_ ":circus-ex-mortis:064b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:064"
+    , cdDoubleSided = True
+    }

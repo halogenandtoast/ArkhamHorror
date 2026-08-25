@@ -1,0 +1,44 @@
+{
+  "harmsWay": {
+    "intro": {
+      "title": "Scenario III: Harm's Way",
+      "body": "<p><i>When you slip back out of the ringmaster's trailer, ghastly growls and other less identifiable sounds rumble through the camp. You nearly flinch as a shadow sweeps across the moon, which leads your view to a worse spectacle. Four massive figures tower above the camp, large enough to be oak trees &mdash; and indeed resembling them in silhouette &mdash; but far more horrible. Like the smaller abominations you encountered in the woods, these things are a horrid jumble of tentacles, mouths, hooves, and horns. They writhe and roar dully with sluggish movements. Perhaps these monsters are rousing from sleep, which lends a little more urgency to the mission. Thea holds a hand over her mouth in shock, but soon lowers it with a shudder. Whether or not she's seen them in her visions before, this appears to be the first time in person. It goes without saying that you must plan how to proceed in finding and rescuing the captives.</i></p><p class='basic'>The investigators must decide (choose one):</p>",
+      "label": {
+        "faster": "“The faster we get them out of here, the better.”",
+        "caution": "“Caution first. Saving them won't help otherwise.”"
+      }
+    },
+    "escapeActVI": {},
+    "escapeActVII": {},
+    "overdueDeparture": {},
+    "theCircusSleeps": {},
+    "treadingOnEggshells": {},
+    "sleepWhenYoureDead": {
+      "label": {
+        "physicalTrauma": "Suffer 1 physical trauma",
+        "mentalTrauma": "Suffer 1 mental trauma"
+      }
+    },
+    "theDarkYoungStir": {},
+    "hiddenInPlainSight": {},
+    "underLockAndKey": {},
+    "cautiousJailers": {},
+    "deepInTheDark": {},
+    "clappedInIrons": {},
+    "hypnoticState": {},
+    "resolutions": {
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>Overwhelmed by the threats lurking in the circus camp, you retreat into the woods, hoping that the illusions to keep intruders out of the camp will at least speed you away from the horrid site. By the time you gather your wits and shake off the injuries you've sustained, the moon is setting, and the first glow of dawn begins to saturate the woods. You trudge wearily back toward Arkham with the few captives you managed to keep close to you in your flight.</p>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>Your escape from the circus camp is a slow and quiet affair, and you do not breathe easily until the woods begin to thin and the outermost buildings of Arkham are visible in the pre-dawn light. The grateful citizens shed tears of relief, thanking you up and down for your heroic efforts in saving them. Your appreciation is muddled by the civilians all agreeing that beyond the circus performers and their animals, it was only the night playing tricks on them. Many of them have repressed the horrors, and are eager to leave them behind without another thought.</p><p>While you suppose the safety of the citizens was priority, it will be on your shoulders once again to discover just what deeper mysteries the circus is hiding. There is more at work than wanton murder, that much is certain.</p>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<p>After sending off the rescued victims and urging them to inform the police of last night's events, you are left with only Thea. There is still much to discuss of her visions and the stolen tome, and you invite her to enlighten you after you've both had some sorely-needed rest.</p><p>You sleep deeply through the morning, assured at least a little that the circus won't attack you in broad daylight in the heart of Arkham with their horrors in tow. Restful as it is, your dreams flash with the vivid imagery of the previous night. The circus. The grinning ringmaster. The moon. Those creatures. The forest. Voices. Chanting. Terror. You awaken with a sudden surge of adrenaline, but find nothing but the stillness of your own bedroom.</p><p>Thea is still fitfully asleep as you step out to visit the police. In the hours since your return, the public outcry forced a full investigation of the circus. Frustratingly &ndash; and predictably, perhaps &ndash; the police found nothing but trampled mud at the circus grounds, and even the few willing officers they sent into the woods reported only an abandoned campsite. Naturally they promised to keep on the case, but without anything immediate to chase, you expect that the New Moon Circus will be filed away in their cold case cabinets.</p><p>Once again the burden falls to you, but where to start? The only trace of the circus left in town are the posters that drew the public in to begin with. You find the nearest one that hasn't been torn down by traumatized citizens and inspect it.</p><p>While you expected another dead-end, you make a startling discovery at the bottom of the poster.</p><p class='center'><b>******** WITH SPECIAL MATINÉES AT ********</b></p><p class='center'><b>CHICAGO &ndash; Aug. 29 | ST. LOUIS &ndash; Sept. 2</b></p><p class='center'><b>DENVER &ndash; Sept. 5 | LOS ANGELES &ndash; Sept. 9</b></p><p class='center'><b>********* DON'T MISS YOUR CHANCE! *********</b></p><p>You couldn't have found a better roadmap if you planned it. There's no way to confirm if this schedule still holds true after the events last night, but from what little you know of Sylvester Blake, he's not the type to do anything halfway, nor keep an audience waiting.</p><p>Plans form and crumble in your head as you return to your home, but nothing has cemented by the time you arrive. You enter to find Thea at your kitchen table, studying Blake's tome carefully. She nearly jumps with surprise, but gives a relieved smile at the sight of you. “Mercy... I keep expecting something horrible after all those months.” Thea gestures to a telegram on the table that arrived while you were out &ndash; from Minnie Klein, your newspaper contact.</p><p>You've barely picked up the message when a knock sounds firmly at the door, startling both you and Thea. You open it cautiously, but find a broad man in dark blue work clothes with his cap in hand, with a young lady in similar clothes beside him. “I um... hope this is a good time,” he says with clear lack of practice with polite conversation. “You don't know me, but my boy told me that you saved his life after he snuck off to the circus last night. I'm Ralph Dykstra, engineer with the Old Colony Railroad. This is my daughter, Carrie.”</p><p>The young woman crosses her arms with a wry expression. “I'm your brakewoman, dad.” The engineer returns her look, but continues. “I'm a man who pays his debts, and if you need anything, I'll arrange it.” Even after insisting on the danger at your heels, Ralph and Carrie remain firm in helping you. Perhaps Thea is onto something with her talk of fate and prophecy. You take the folded circus poster from your pocket and glance between it and Minnie's telegram, deciding which course of action to take.</p>"
+      }
+    }
+  }
+}

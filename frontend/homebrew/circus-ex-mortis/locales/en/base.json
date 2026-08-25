@@ -98,5 +98,27 @@
     "label": {
       "releaseTokens": "Release up to 2 {'{'}moon{'}'} tokens sealed on cards they control"
     }
+  },
+  "hiddenInPlainSight": {
+    "label": {
+      "spendCluesToAutoSucceed": "Spend clues as a group to automatically succeed",
+      "doNotSpendClues": "Do not spend {'{'}count{'}'} clues"
+    }
+  },
+  "underLockAndKey": {
+    "label": {
+      "spendCluesToAutoSucceed": "Spend clues as a group to automatically succeed",
+      "doNotSpendClues": "Do not spend {'{'}count{'}'} clues"
+    }
+  },
+  "clappedInIrons": {
+    "label": {
+      "chooseDamage": "How much damage will the group take to reduce the clue cost?"
+    }
+  },
+  "hypnoticState": {
+    "label": {
+      "chooseHorror": "How much horror will the group take to reduce the clue cost?"
+    }
   }
 }

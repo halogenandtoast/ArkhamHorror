@@ -35,7 +35,8 @@ oneNightOnly difficulty =
     ":circus-ex-mortis:001"
     "One Night Only"
     difficulty
-    [ ". carousel carousel . . gamesGallery gamesGallery ."
+    [ ". . . circusGates circusGates . . ."
+    , ". carousel carousel . . gamesGallery gamesGallery ."
     , ". . . theBigTopFirstRing theBigTopFirstRing . . ."
     , "animalCages animalCages theBigTopSecondRing theBigTopSecondRing theBigTopThirdRing theBigTopThirdRing performerTrailers performerTrailers"
     ]

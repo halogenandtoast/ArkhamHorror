@@ -1,8 +1,10 @@
 module Arkham.Homebrew.CircusExMortis.Campaign (circusExMortis) where
 
+import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLogKey (recorded)
+import Arkham.Card
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Decklist.Type (investigator_name)
 import Arkham.Game.Base (gamePerformTarotReadings)
@@ -20,6 +22,7 @@ import Arkham.Homebrew.CircusExMortis.Key
 import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
+import Arkham.Message (pattern UseThisAbility)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Name (toTitle)
@@ -29,16 +32,51 @@ import Arkham.Source
 import Arkham.Target (Target (GameTarget))
 import Arkham.Tarot (TarotCard (..), TarotCardArcana (..), TarotCardFacing (Upright))
 import Arkham.Trait (Trait (Believer, Chosen, Clairvoyant, Miskatonic, Scholar))
+import Arkham.Treachery.CardDefs.CurseOfTheRougarou qualified as Treacheries
 import Data.Text qualified as T
 
 newtype CircusExMortis = CircusExMortis CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+{- | The grants Scenario IV hands out (guide p14) live on the campaign, so they
+must survive into later scenarios. Each is anchored onto the card it is granted
+to with a matcher proxy, so the ability exists only while that card is in play
+and reads, in the UI, as an ability of that card.
+-}
+data GrantedOn = GrantedOn Source CardCode
+
+instance Sourceable GrantedOn where
+  toSource (GrantedOn source _) = source
+
+instance HasCardCode GrantedOn where
+  toCardCode (GrantedOn _ cardCode) = cardCode
+
+grantedOn :: (HasCardCode def, Sourceable matcher) => def -> matcher -> GrantedOn
+grantedOn def matcher = GrantedOn (proxy matcher CampaignSource) (toCardCode def)
+
+releaseAMoonTokenReaction :: AbilityType
+releaseAMoonTokenReaction = freeReaction $ ChaosTokenReleased #after You moonToken
 
 circusExMortis :: Difficulty -> CircusExMortis
 circusExMortis = campaign CircusExMortis (CampaignId ":circus-ex-mortis") "Circus Ex Mortis"
 
 instance IsCampaign CircusExMortis where
   campaignTokens = chaosBagContents
+  campaignAbilities (CircusExMortis attrs)
+    | HarmsWay `notElem` attrs.completedSteps = []
+    | otherwise =
+        [ restricted
+            (grantedOn Treacheries.curseOfTheRougarou $ treacheryIs Treacheries.curseOfTheRougarou)
+            1
+            (TreacheryExists $ treacheryIs Treacheries.curseOfTheRougarou <> TreacheryInThreatAreaOf You)
+            releaseAMoonTokenReaction
+        , playerLimit PerRound
+            $ restricted
+              (grantedOn Assets.ladyEsprit $ assetIs Assets.ladyEsprit)
+              2
+              ControlsThis
+              releaseAMoonTokenReaction
+        ]
   nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> continue OneNightOnly
     OneNightOnly -> continue ThePrimrosePath
@@ -69,6 +107,16 @@ instance HasModifiersFor CircusExMortis where
 
 instance RunMessage CircusExMortis where
   runMessage msg c = runQueueT $ campaignI18n $ case msg of
+    -- "Curse of the Rougarou gains '[reaction] After you release a {moon}
+    -- token: Discard Curse of the Rougarou.'" (guide p14)
+    UseThisAbility iid source 1 | isProxySource (toAttrs c) source -> do
+      for_ source.treachery $ toDiscardBy iid source
+      pure c
+    -- "Lady Esprit gains '[reaction] After you release a {moon} token: Discover
+    -- a clue. (Limit once per round.)'" (guide p14)
+    UseThisAbility iid source 2 | isProxySource (toAttrs c) source -> do
+      discoverAtYourLocation NotInvestigate iid source 1
+      pure c
     CampaignStep PrologueStep -> do
       scope "additionalRules" $ flavor $ setTitle "title" >> p "moonTokens"
       scope "prologue" do

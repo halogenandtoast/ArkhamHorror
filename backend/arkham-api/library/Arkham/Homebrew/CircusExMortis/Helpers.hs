@@ -214,12 +214,20 @@ getFuryBag :: HasGame m => m [ChaosTokenFace]
 getFuryBag = getScenarioMetaKeyDefault furyBagKey initialFuryBag
 
 setFuryBag :: ReverseQueue m => [ChaosTokenFace] -> m ()
-setFuryBag bag = do
+setFuryBag = setScenarioMetaKey furyBagKey
+
+{- | Write one key of the scenario's meta object, leaving the rest alone.
+'setScenarioMeta' replaces the whole value, and the engine has no per-key
+setter, so this reads the current object first — which means one call per
+handler: two would both read the pre-write value.
+-}
+setScenarioMetaKey :: (ReverseQueue m, ToJSON a) => Key -> a -> m ()
+setScenarioMetaKey k v = do
   meta <- scenarioField ScenarioMeta
   let object' = case meta of
         Object o -> o
         _ -> KeyMap.empty
-  setScenarioMeta $ Object $ KeyMap.insert furyBagKey (toJSON bag) object'
+  setScenarioMeta $ Object $ KeyMap.insert k (toJSON v) object'
 
 -- | Setup: "Create a separate bag consisting of a ☠, ☾, 𝍎, and ✷ token."
 initFuryBag :: ReverseQueue m => m ()

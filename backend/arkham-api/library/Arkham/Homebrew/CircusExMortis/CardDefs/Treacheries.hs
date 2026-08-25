@@ -13,29 +13,29 @@ maddeningSpectacle =
 -- the_primrose_path
 feralImpulses :: CardDef
 feralImpulses =
-  (treachery ":circus-ex-mortis:039" "Feral Impulses" Set.ThePrimrosePath 3)
+  (treachery ":circus-ex-mortis:037" "Feral Impulses" Set.ThePrimrosePath 3)
     { cdCardTraits = setFromList [Madness]
     }
 
 moonlightIllusion :: CardDef
 moonlightIllusion =
-  (treachery ":circus-ex-mortis:040" "Moonlight Illusion" Set.ThePrimrosePath 3)
+  (treachery ":circus-ex-mortis:038" "Moonlight Illusion" Set.ThePrimrosePath 3)
     { cdCardTraits = setFromList [Hex]
     }
 
 -- harm_s_way
 closeWatch :: CardDef
 closeWatch =
-  (treachery ":circus-ex-mortis:072" "Close Watch" Set.HarmsWay 2)
+  (treachery ":circus-ex-mortis:070" "Close Watch" Set.HarmsWay 2)
     { cdCardTraits = setFromList [Scheme]
     }
 
 keepQuiet :: CardDef
-keepQuiet = (treachery ":circus-ex-mortis:073" "Keep Quiet" Set.HarmsWay 2)
+keepQuiet = treachery ":circus-ex-mortis:071" "Keep Quiet" Set.HarmsWay 2
 
 violentThrashing :: CardDef
 violentThrashing =
-  (treachery ":circus-ex-mortis:075" "Violent Thrashing" Set.HarmsWay 3)
+  (treachery ":circus-ex-mortis:073" "Violent Thrashing" Set.HarmsWay 3)
     { cdCardTraits = setFromList [Attack]
     }
 
@@ -43,44 +43,44 @@ violentThrashing =
 brokenCouplings :: CardDef
 brokenCouplings =
   peril
-    $ (treachery ":circus-ex-mortis:104" "Broken Couplings" Set.AllPointsWest 2)
+    $ (treachery ":circus-ex-mortis:102" "Broken Couplings" Set.AllPointsWest 2)
       { cdCardTraits = setFromList [Obstacle]
       }
 
 focusedSabotage :: CardDef
 focusedSabotage =
-  (treachery ":circus-ex-mortis:105" "Focused Sabotage" Set.AllPointsWest 2)
+  (treachery ":circus-ex-mortis:103" "Focused Sabotage" Set.AllPointsWest 2)
     { cdCardTraits = setFromList [Power, Scheme]
     }
 
 overloadedEngine :: CardDef
 overloadedEngine =
-  (treachery ":circus-ex-mortis:108" "Overloaded Engine" Set.AllPointsWest 3)
+  (treachery ":circus-ex-mortis:106" "Overloaded Engine" Set.AllPointsWest 3)
     { cdCardTraits = setFromList [Hazard]
     }
 
 ricketyRide :: CardDef
 ricketyRide =
-  (treachery ":circus-ex-mortis:109" "Rickety Ride" Set.AllPointsWest 3)
+  (treachery ":circus-ex-mortis:107" "Rickety Ride" Set.AllPointsWest 3)
     { cdCardTraits = setFromList [Hazard]
     }
 
 -- piper_at_the_gates_of_dawn
 duplicitousIllusion :: CardDef
 duplicitousIllusion =
-  (treachery ":circus-ex-mortis:121" "Duplicitous Illusion" Set.PiperAtTheGatesOfDawn 3)
+  (treachery ":circus-ex-mortis:119" "Duplicitous Illusion" Set.PiperAtTheGatesOfDawn 3)
     { cdCardTraits = setFromList [Hex, Paradox]
     }
 
 phantomBeasts :: CardDef
 phantomBeasts =
-  (treachery ":circus-ex-mortis:122" "Phantom Beasts" Set.PiperAtTheGatesOfDawn 3)
+  (treachery ":circus-ex-mortis:120" "Phantom Beasts" Set.PiperAtTheGatesOfDawn 3)
     { cdCardTraits = setFromList [Hex, Attack]
     }
 
 shadowyPerformance :: CardDef
 shadowyPerformance =
-  (treachery ":circus-ex-mortis:123" "Shadowy Performance" Set.PiperAtTheGatesOfDawn 3)
+  (treachery ":circus-ex-mortis:121" "Shadowy Performance" Set.PiperAtTheGatesOfDawn 3)
     { cdCardTraits = setFromList [Hex, Scheme]
     }
 
@@ -88,47 +88,47 @@ shadowyPerformance =
 allThatGlitters :: CardDef
 allThatGlitters =
   peril
-    $ (treachery ":circus-ex-mortis:146" "All That Glitters" Set.Bacchanalia 2)
+    $ (treachery ":circus-ex-mortis:144" "All That Glitters" Set.Bacchanalia 2)
       { cdCardTraits = setFromList [Scheme, Flaw]
       }
 
 bestLeftUnsaid :: CardDef
 bestLeftUnsaid =
-  (treachery ":circus-ex-mortis:147" "Best Left Unsaid" Set.Bacchanalia 2)
+  (treachery ":circus-ex-mortis:145" "Best Left Unsaid" Set.Bacchanalia 2)
     { cdCardTraits = setFromList [Scheme]
     }
 
 destructiveImpulses :: CardDef
 destructiveImpulses =
   peril
-    $ (treachery ":circus-ex-mortis:149" "Destructive Impulses" Set.Bacchanalia 2)
+    $ (treachery ":circus-ex-mortis:147" "Destructive Impulses" Set.Bacchanalia 2)
       { cdCardTraits = setFromList [Scheme, Flaw]
       }
 
 drinkAndBeMerry :: CardDef
 drinkAndBeMerry =
   peril
-    $ (treachery ":circus-ex-mortis:150" "Drink and Be Merry" Set.Bacchanalia 2)
+    $ (treachery ":circus-ex-mortis:148" "Drink and Be Merry" Set.Bacchanalia 2)
       { cdCardTraits = setFromList [Scheme, Flaw]
       }
 
 perfumeAndPassion :: CardDef
 perfumeAndPassion =
   peril
-    $ (treachery ":circus-ex-mortis:152" "Perfume and Passion" Set.Bacchanalia 2)
+    $ (treachery ":circus-ex-mortis:150" "Perfume and Passion" Set.Bacchanalia 2)
       { cdCardTraits = setFromList [Scheme, Flaw]
       }
 
 -- red_sunrise
 crashingTrees :: CardDef
 crashingTrees =
-  (treachery ":circus-ex-mortis:188" "Crashing Trees" Set.RedSunrise 2)
+  (treachery ":circus-ex-mortis:186" "Crashing Trees" Set.RedSunrise 2)
     { cdCardTraits = setFromList [Hazard]
     }
 
 silentForest :: CardDef
 silentForest =
-  (treachery ":circus-ex-mortis:191" "Silent Forest" Set.RedSunrise 2)
+  (treachery ":circus-ex-mortis:189" "Silent Forest" Set.RedSunrise 2)
     { cdCardTraits = setFromList [Terror]
     }
 
@@ -193,9 +193,10 @@ lunarInfluence =
 
 ominousMoonlight :: CardDef
 ominousMoonlight =
-  (treachery ":circus-ex-mortis:247" "Ominous Moonlight" Set.LunaticNight 3)
-    { cdCardTraits = setFromList [Mystery, Omen]
-    }
+  surge
+    $ (treachery ":circus-ex-mortis:247" "Ominous Moonlight" Set.LunaticNight 3)
+      { cdCardTraits = setFromList [Mystery, Omen]
+      }
 
 -- new_moon_daredevils
 recklessStunt :: CardDef

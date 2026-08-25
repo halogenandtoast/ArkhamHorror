@@ -14,42 +14,42 @@
     "i18n": "thePrimrosePath"
   },
   {
-    "id": ":circus-ex-mortis:042",
+    "id": ":circus-ex-mortis:040",
     "name": "Harm's Way",
     "campaign": ":circus-ex-mortis",
     "standalone": false,
     "i18n": "harmsWay"
   },
   {
-    "id": ":circus-ex-mortis:076",
+    "id": ":circus-ex-mortis:074",
     "name": "All Points West",
     "campaign": ":circus-ex-mortis",
     "standalone": false,
     "i18n": "allPointsWest"
   },
   {
-    "id": ":circus-ex-mortis:110",
+    "id": ":circus-ex-mortis:108",
     "name": "Piper at the Gates of Dawn",
     "campaign": ":circus-ex-mortis",
     "standalone": false,
     "i18n": "piperAtTheGatesOfDawn"
   },
   {
-    "id": ":circus-ex-mortis:124",
+    "id": ":circus-ex-mortis:122",
     "name": "Bacchanalia",
     "campaign": ":circus-ex-mortis",
     "standalone": false,
     "i18n": "bacchanalia"
   },
   {
-    "id": ":circus-ex-mortis:155",
+    "id": ":circus-ex-mortis:153",
     "name": "Red Sunrise",
     "campaign": ":circus-ex-mortis",
     "standalone": false,
     "i18n": "redSunrise"
   },
   {
-    "id": ":circus-ex-mortis:192",
+    "id": ":circus-ex-mortis:190",
     "name": "Thousand to One",
     "campaign": ":circus-ex-mortis",
     "standalone": false,

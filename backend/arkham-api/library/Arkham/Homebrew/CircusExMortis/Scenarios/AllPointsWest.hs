@@ -2,8 +2,8 @@ module Arkham.Homebrew.CircusExMortis.Scenarios.AllPointsWest (allPointsWest) wh
 
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
-import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Scenario.Import.Lifted
 
 -- Skeleton scenario for Circus Ex Mortis (homebrew). Chaos-token values, full
@@ -13,7 +13,7 @@ newtype AllPointsWest = AllPointsWest ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 allPointsWest :: Difficulty -> AllPointsWest
-allPointsWest difficulty = scenario AllPointsWest ":circus-ex-mortis:076" "All Points West" difficulty []
+allPointsWest difficulty = scenario AllPointsWest ":circus-ex-mortis:074" "All Points West" difficulty []
 
 instance HasChaosTokenValue AllPointsWest where
   getChaosTokenValue iid tokenFace (AllPointsWest attrs) = case tokenFace of
@@ -25,7 +25,8 @@ instance RunMessage AllPointsWest where
     Setup -> runScenarioSetup AllPointsWest attrs do
       gather Set.AllPointsWest
       setAgendaDeck [Agendas.scheduleToKeep]
-      setActDeck [Acts.throughTheForestsVI, Acts.noFreeRides, Acts.engineTrouble, Acts.theGreatTrainHorror]
+      setActDeck
+        [Acts.throughTheForestsVI, Acts.noFreeRides, Acts.engineTrouble, Acts.theGreatTrainHorror]
       startAt =<< place Locations.caboose
     ScenarioResolution _ -> do
       endOfScenario

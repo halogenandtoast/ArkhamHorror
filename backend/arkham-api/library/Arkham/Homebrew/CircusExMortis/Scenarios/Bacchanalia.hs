@@ -2,8 +2,8 @@ module Arkham.Homebrew.CircusExMortis.Scenarios.Bacchanalia (bacchanalia) where
 
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
-import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Scenario.Import.Lifted
 
 -- Skeleton scenario for Circus Ex Mortis (homebrew). Chaos-token values, full
@@ -13,7 +13,7 @@ newtype Bacchanalia = Bacchanalia ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 bacchanalia :: Difficulty -> Bacchanalia
-bacchanalia difficulty = scenario Bacchanalia ":circus-ex-mortis:124" "Bacchanalia" difficulty []
+bacchanalia difficulty = scenario Bacchanalia ":circus-ex-mortis:122" "Bacchanalia" difficulty []
 
 instance HasChaosTokenValue Bacchanalia where
   getChaosTokenValue iid tokenFace (Bacchanalia attrs) = case tokenFace of

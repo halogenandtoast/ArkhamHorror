@@ -15,7 +15,7 @@ illusoryLocus =
 carrieDykstra :: CardDef
 carrieDykstra =
   ( encounterAsset_
-      ":circus-ex-mortis:098"
+      ":circus-ex-mortis:096"
       ("Carrie Dykstra" <:> "Takes After Her Old Man")
       Set.AllPointsWest
   )
@@ -25,7 +25,7 @@ carrieDykstra =
 ralphDykstra :: CardDef
 ralphDykstra =
   ( encounterAsset_
-      ":circus-ex-mortis:099"
+      ":circus-ex-mortis:097"
       ("Ralph Dykstra" <:> "In For the Long Haul")
       Set.AllPointsWest
   )
@@ -35,7 +35,7 @@ ralphDykstra =
 -- bacchanalia
 cecilSharpe :: CardDef
 cecilSharpe =
-  (encounterAsset_ ":circus-ex-mortis:140" ("Cecil Sharpe" <:> "Keeps His Hands Clean") Set.Bacchanalia)
+  (encounterAsset_ ":circus-ex-mortis:138" ("Cecil Sharpe" <:> "Keeps His Hands Clean") Set.Bacchanalia)
     { cdCardTraits = setFromList [Socialite, LiberPater]
     , cdUnique = True
     }
@@ -43,7 +43,7 @@ cecilSharpe =
 estherMeredith :: CardDef
 estherMeredith =
   ( encounterAsset_
-      ":circus-ex-mortis:141"
+      ":circus-ex-mortis:139"
       ("Esther Meredith" <:> "Deals in Gold, Exclusively")
       Set.Bacchanalia
   )
@@ -54,7 +54,7 @@ estherMeredith =
 phillipHutchins :: CardDef
 phillipHutchins =
   ( encounterAsset_
-      ":circus-ex-mortis:142"
+      ":circus-ex-mortis:140"
       ("Phillip Hutchins" <:> "Woefully Out of Place")
       Set.Bacchanalia
   )
@@ -65,7 +65,7 @@ phillipHutchins =
 richardStratton :: CardDef
 richardStratton =
   ( encounterAsset_
-      ":circus-ex-mortis:143"
+      ":circus-ex-mortis:141"
       ("Richard Stratton" <:> "\"Connoisseur\" of Fine Wines")
       Set.Bacchanalia
   )
@@ -76,7 +76,7 @@ richardStratton =
 veraAshcroft :: CardDef
 veraAshcroft =
   ( encounterAsset_
-      ":circus-ex-mortis:144"
+      ":circus-ex-mortis:142"
       ("Vera Ashcroft" <:> "Recently Widowed, Again")
       Set.Bacchanalia
   )

@@ -2,8 +2,8 @@ module Arkham.Homebrew.CircusExMortis.Scenarios.HarmsWay (harmsWay) where
 
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
-import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Scenario.Import.Lifted
 
 -- Skeleton scenario for Circus Ex Mortis (homebrew). Chaos-token values, full
@@ -13,7 +13,7 @@ newtype HarmsWay = HarmsWay ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 harmsWay :: Difficulty -> HarmsWay
-harmsWay difficulty = scenario HarmsWay ":circus-ex-mortis:042" "Harm's Way" difficulty []
+harmsWay difficulty = scenario HarmsWay ":circus-ex-mortis:040" "Harm's Way" difficulty []
 
 instance HasChaosTokenValue HarmsWay where
   getChaosTokenValue iid tokenFace (HarmsWay attrs) = case tokenFace of

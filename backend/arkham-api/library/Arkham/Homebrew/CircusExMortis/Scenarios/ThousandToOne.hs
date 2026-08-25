@@ -2,8 +2,8 @@ module Arkham.Homebrew.CircusExMortis.Scenarios.ThousandToOne (thousandToOne) wh
 
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
-import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Scenario.Import.Lifted
 
 -- Skeleton scenario for Circus Ex Mortis (homebrew). Chaos-token values, full
@@ -13,7 +13,7 @@ newtype ThousandToOne = ThousandToOne ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 thousandToOne :: Difficulty -> ThousandToOne
-thousandToOne difficulty = scenario ThousandToOne ":circus-ex-mortis:192" "Thousand to One" difficulty []
+thousandToOne difficulty = scenario ThousandToOne ":circus-ex-mortis:190" "Thousand to One" difficulty []
 
 instance HasChaosTokenValue ThousandToOne where
   getChaosTokenValue iid tokenFace (ThousandToOne attrs) = case tokenFace of

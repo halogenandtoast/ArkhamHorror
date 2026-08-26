@@ -1457,15 +1457,16 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
       pure $ count (not . isEmptySlot) slots > 0
     InvestigatorWithMetaKey k -> flip runMatchesM as $ \i -> do
       hasEffectKey <- hasModifier (toId i) (MetaModifier (String k))
-      if hasEffectKey
-        then pure True
-        else
-          field InvestigatorMeta (toId i) >>= \case
-            Object o ->
-              case KeyMap.lookup (Key.fromText k) o of
-                Just (Bool b) -> pure b
-                _ -> pure False
-            _ -> pure False
+      -- a transfigured form's bookkeeping lands in formMeta, ours stays in meta
+      let
+        hasMetaKey = \case
+          Object o | Just (Bool b) <- KeyMap.lookup (Key.fromText k) o -> b
+          _ -> False
+        attrs = toAttrs i
+      pure
+        $ hasEffectKey
+        || hasMetaKey (investigatorMeta attrs)
+        || hasMetaKey (investigatorFormMeta attrs)
     ContributedMatchingIcons valueMatcher -> flip runMatchesM as $ \i -> do
       mSkillTest <- getSkillTest
       case mSkillTest of

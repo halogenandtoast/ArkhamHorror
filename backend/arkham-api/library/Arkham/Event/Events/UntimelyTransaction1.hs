@@ -36,7 +36,7 @@ instance RunMessage UntimelyTransaction1 where
       canAfford <- flip filterM otherInvestigators $ \other -> getIsPlayable other attrs (UnpaidCost NoAction) (defaultWindows other) card
       unless (null canAfford) do
         for_ canAfford \otherInvestigator -> do
-          cardResolutionModifier (toCard attrs) attrs otherInvestigator (AsIfInHand card)
+          cardResolutionModifier (toCard attrs) attrs otherInvestigator (AsIfInHandFor ForPlay card.id)
         player <- getPlayer iid
         otherPlayers <- forToSnd canAfford getPlayer
         played <- capture do

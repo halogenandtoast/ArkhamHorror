@@ -1210,6 +1210,10 @@
     "unrelenting1": {
       "doneSealingTokens": "结束封印标记"
     },
+    "untimelyTransaction1": {
+      "noOnePays": "没有人打出",
+      "playCard": "打出该支援"
+    },
     "virgilGray": {
       "heal1HorrorFromVirgilGray": "治愈维吉尔·格雷的1点恐惧"
     },
@@ -1556,10 +1560,6 @@
     },
     "trueMagickReworkingReality5": {
       "useTrueMagick": "使用真法魔典"
-    },
-    "untimelyTransaction1": {
-      "noOnePays": "没有人打出",
-      "playCard": "打出该支援"
     },
     "winchesterModel522": {
       "actionDiscardWinchester": "{'{'}action{'}'}: 弃掉温彻斯特52式步枪: _攻击({'{'}combat{'}'})_。你本次攻击得到+3{'{'}combat{'}'}。如果你检定成功，自动躲避对象敌人。",

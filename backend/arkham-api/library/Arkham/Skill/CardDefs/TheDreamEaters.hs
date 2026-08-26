@@ -1,7 +1,7 @@
 module Arkham.Skill.CardDefs.TheDreamEaters where
 
-import Arkham.Skill.CardDefs.Import
 import Arkham.Keyword qualified as Keyword
+import Arkham.Skill.CardDefs.Import
 
 daring :: CardDef
 daring =
@@ -48,7 +48,6 @@ threeAces1 =
     { cdKeywords = singleton Keyword.Myriad
     , cdCardTraits = setFromList [Fortune, Practiced]
     , cdLevel = Just 1
-    , cdCommitTrigger = True
     }
 
 sharpVision1 :: CardDef

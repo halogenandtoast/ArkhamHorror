@@ -1,0 +1,57 @@
+{
+  "heading": "Parte I",
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *La reunión*, *Ratas*, *Gules*, *Miedo paralizante*, *Males ancestrales* y *Frío glacial*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/the-gathering.png' /><img src='{setImgPath}/rats.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "placeLocations": "Pon en juego el Lugar Estudio. Deja aparte todos los demás Lugares, fuera de juego. Cada investigador comienza la partida en el Estudio.",
+    "setOutOfPlay": "Deja aparte las cartas Sacerdote de los gules y Lita Chantler, fuera de juego."
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X es el número de enemigos _Gul_ en tu Lugar.",
+      "cultist": "-1. Si fracasas, recibe 1 horror.",
+      "tablet": "-2. Si hay un enemigo _Gul_ en tu Lugar, recibe 1 daño."
+    },
+    "hardExpert": {
+      "skull": "-2. Si fracasas, después de esta prueba de habilidad, busca un enemigo _Gul_ en el mazo de Encuentro y en la pila de descartes de Encuentro, y róbalo. Baraja el mazo de Encuentro.",
+      "cultist": "Revela otra ficha. Si fracasas, recibe 2 horror.",
+      "tablet": "-4. Si hay un enemigo _Gul_ en tu Lugar, recibe 1 daño y 1 horror."
+    }
+  },
+  "intro": {
+    "title": "Parte I: La reunión",
+    "body": "<p>Tú y tus compañeros habéis estado investigando extraños sucesos que están ocurriendo en vuestra ciudad natal de Arkham, Massachusetts. En las últimas semanas, varios ciudadanos han desaparecido misteriosamente. Recientemente, sus cadáveres aparecieron en el bosque, destrozados y medio devorados. La policía y los periódicos han declarado que los responsables son animales salvajes, pero tú crees que hay algo más. Estáis reunidos en casa del investigador jefe para discutir estos extraños sucesos.</p>"
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'><p>_Si no se alcanzó ninguna resolución (cada investigador abandonó o fue derrotado):_ A duras penas lográis escapar de vuestra casa con vida. La mujer del salón os sigue hasta la puerta principal y la cierra de un portazo. «¡Necios! ¿Veis lo que habéis hecho?» Empuja una silla contra la puerta, encajándola bajo el pomo. «Debemos salir de aquí. Venid conmigo y os diré lo que sé. Somos los únicos que podemos impedir que la amenaza que acecha debajo se desate por toda la ciudad.» No estáis en condiciones de discutir. Asentís y seguís a la mujer mientras corre desde el porche hacia la calle lluviosa, en dirección al Barrio del río.</p><ul><li>En tu Registro de campaña, anota que *tu casa sigue en pie*.</li><li>En tu Registro de campaña, anota que *el Sacerdote de los gules sigue con vida*.</li><li>El investigador jefe obtiene la carta Lita Chantler y puede incluirla en su mazo. Esta carta no cuenta para el tamaño de mazo de ese investigador.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria (recuerda añadir a la zona de victoria los Lugares que corresponda). Cada investigador obtiene 2 de experiencia adicional al vislumbrar el mundo oculto de los Mitos.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1:_ Asientes y permites que la mujer pelirroja prenda fuego a las paredes y al suelo de tu casa. El incendio se extiende con rapidez y salís corriendo por la puerta principal para no quedar atrapados en el infierno. Desde la acera, contempláis cómo las llamas consumen todo lo que poseéis. «Venid conmigo», dice la mujer. «Debéis saber de la amenaza que acecha debajo. Por separado, estamos condenados… pero juntos podemos detenerla.»</p><ul><li>En tu Registro de campaña, anota que *tu casa se ha quemado hasta los cimientos*.</li><li>El investigador jefe obtiene la carta Lita Chantler y puede incluirla en su mazo. Esta carta no cuenta para el tamaño de mazo de ese investigador.</li><li>El investigador jefe sufre 1 trauma mental por ver cómo su hogar se convierte en una ruina humeante.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria (recuerda añadir a la zona de victoria los Lugares que corresponda). Cada investigador obtiene 2 de experiencia adicional al vislumbrar el mundo oculto de los Mitos.<ul><li>_Experiencia:_ {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2:_ Te niegas a seguir las órdenes de la mujer fanática y la echas de tu casa por miedo a que la incendie sin tu permiso. «¡Necios! ¡Estáis cometiendo un grave error!», os advierte. «¡No comprendéis la amenaza que acecha debajo… el terrible peligro que nos acecha a todos!» Todavía conmocionado por los sucesos de la noche, decides escucharla. Quizá pueda arrojar algo de luz sobre estos extraños acontecimientos… pero no parece fiarse mucho de vosotros.</p><ul><li>En tu Registro de campaña, anota que *tu casa sigue en pie*.</li><li>El investigador jefe obtiene 1 de experiencia, pues se niega a dejar que los sucesos de la noche destruyan su vida.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria (recuerda añadir a la zona de victoria los Lugares que corresponda). Cada investigador obtiene 2 de experiencia adicional al vislumbrar el mundo oculto de los Mitos.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3:_ Corres al vestíbulo para intentar encontrar una forma de escapar de la casa, pero la barrera abrasadora sigue bloqueando el paso. Atrapados, la horda de criaturas salvajes que ha invadido tu hogar se cierra sobre vosotros, y no tenéis adónde huir.</p><ul><li>En tu Registro de campaña, anota que *Lita se vio obligada a encontrar a otros para que la ayudaran*.</li><li>En tu Registro de campaña, anota que *tu casa sigue en pie*.</li><li>En tu Registro de campaña, anota que *el Sacerdote de los gules sigue con vida*.</li><li>Cada investigador que no haya abandonado es _muerto_. Si no hay suficientes investigadores para continuar la campaña, la campaña termina y los jugadores pierden. En caso contrario, pasa al siguiente escenario. (Cada jugador cuyo investigador haya muerto debe elegir un nuevo investigador del conjunto de investigadores disponibles. Consulta la página 13 de la Referencia de reglas para las reglas completas sobre investigadores muertos.)</li><li>Si el investigador jefe fue _muerto_, elige un investigador para que obtenga la carta Lita Chantler. Ese investigador puede incluir esta carta en su mazo. No cuenta para el tamaño de mazo de ese investigador.</li></ul></div>"
+    },
+    "xp": {
+      "resolution2": "Se negó a dejar que los sucesos de la noche destruyeran su vida",
+      "bonus": "Vislumbra el mundo oculto de los Mitos"
+    }
+  },
+  "label": {
+    "r1": "Nunca fue gran cosa como hogar. ¡Quemadla! (→ _R1_)",
+    "r2": "¡Este «pozo infernal» es mi casa! ¡De ninguna manera la quemamos! (→ _R2_)",
+    "whatsGoingOn": {
+      "horror": "El investigador jefe recibe 2 horror",
+      "discard": "Cada investigador descarta 1 carta aleatoria de su mano"
+    },
+    "parlor": {
+      "resign": "«¡Esto es demasiado para mí!» Sales corriendo por la puerta principal, huyendo aterrorizado."
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "heading": "Parte III",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X es el número de enemigos _Monstruo_ en juego.",
+      "cultist": "-2. Coloca 1 perdición sobre el enemigo más cercano.",
+      "tablet": "-3. Si hay un enemigo _Monstruo_ en tu Lugar, recibe 1 daño.",
+      "elderThing": "-5. Si hay un enemigo _Primigenio_ en juego, revela otra ficha."
+    },
+    "hardExpert": {
+      "skull": "-3. Si fracasas, después de esta prueba de habilidad, busca un enemigo _Monstruo_ en el mazo de Encuentro y en la pila de descartes de Encuentro, y róbalo. Baraja el mazo de Encuentro.",
+      "cultist": "-4. Coloca 2 perdición sobre el enemigo más cercano.",
+      "tablet": "-5. Si hay un enemigo _Monstruo_ en tu Lugar, recibe 1 daño y 1 horror.",
+      "elderThing": "-7. Si hay un enemigo _Primigenio_ en juego, revela otra ficha."
+    }
+  },
+  "tooltips": {
+    "mainPath": {
+      "resign": "«¡No hay nada que podamos hacer para detenerlos!» Huís de los bosques, abandonando Arkham a su horrible destino."
+    }
+  },
+  "intro": {
+    "title": "Parte III: El Devorador de las profundidades",
+    "body": "<p>Tras una frenética búsqueda nocturna por Arkham, habéis localizado e interrogado a varios miembros del culto. Vuestros hallazgos son inquietantes: afirman adorar a un ser conocido como Umôrdhoth, una entidad monstruosa de otro reino.</p><p>Podéis confirmar gran parte de la historia de Lita: el culto está agitado por la destrucción de una guarida de gules. Sin embargo, también sale a la luz un detalle sorprendente: quien invadió la guarida y puso en marcha los sucesos de esta noche no fue otra que la propia Lita Chantler. No estáis seguros de por qué omitió este importante detalle de su relato: ¿os contó sólo lo necesario para involucraros en su conflicto? Pero, visto de otro modo, parece estar luchando para proteger la ciudad de Arkham de una terrible amenaza.</p><p>La última pieza del rompecabezas se encontró escrita en un diario que poseía uno de los sectarios. Describe un oscuro ritual que se realizará esta misma noche en lo más profundo de los bosques al sur de Arkham. Según el diario, al completar el ritual se abrirá una puerta y el oscuro señor del culto llegará a este mundo. «Si no se detiene al culto», advierte Lita, «existe la posibilidad de que la venganza de Umôrdhoth lo consuma todo a su paso.» Aterrorizados, pero decididos a detener el ritual, os adentráis en los bosques…</p>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: El Devorador de las profundidades, Males ancestrales, Miedo paralizante, Gules y Secta oscura. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/the-devourer-below.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/dark-cult.png' /></section>",
+    "placeLocations": "Pon en juego el Lugar Senda principal. Baraja las 6 copias de Bosques de Arkham, elige 4 de ellas al azar y ponlas en juego sin mirar su lado revelado. Retira las otras 2 del juego. Cada investigador comienza la partida en la Senda principal.",
+    "setOutOfPlay": "Deja aparte las cartas Lugar del ritual y Umôrdhoth, fuera de juego.",
+    "randomSet": "Elige al azar uno de los 4 conjuntos de encuentro siguientes: Agentes de Yog-Sothoth, Agentes de Shub-Niggurath, Agentes de Cthulhu o Agentes de Hastur. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/agents-of-yog.png' /><img src='{setImgPath}/agents-of-shub.png' /><img src='{setImgPath}/agents-of-cthulhu.png' /><img src='{setImgPath}/agents-of-hastur.png' /></section>",
+    "cultistsWhoGotAway": {
+      "instructions": "Consulta el número de nombres anotados bajo «Sectarios que escaparon» en tu Registro de campaña.",
+      "zeroNames": "Si hay exactamente 0 nombres, no se realiza ningún cambio.",
+      "oneOrTwoNames": "Si hay exactamente 1 o 2 nombres, coloca 1 perdición sobre el Plan 1a.",
+      "threeOrFourNames": "Si hay exactamente 3 o 4 nombres, coloca 2 perdición sobre el Plan 1a.",
+      "fiveOrSixNames": "Si hay exactamente 5 o 6 nombres, coloca 3 perdición sobre el Plan 1a."
+    },
+    "pastMidnight": "Consulta el Registro de campaña. Si *es más de medianoche*: Cada jugador descarta 2 cartas aleatorias de su mano inicial.",
+    "ghoulPriest": "Consulta el Registro de campaña. Si *el Sacerdote de los gules sigue con vida*: Barájalo en el mazo de Encuentro."
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": {
+        "resolution1": "Salvó a Arkham de un terrible destino",
+        "resolution2": "Triunfó en combate contra un enemigo verdaderamente terrible"
+      }
+    },
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<p>_Si no se alcanzó ninguna resolución (cada investigador abandonó o fue derrotado)_: Demasiado aterrorizada para afrontar su destino, Lita huye en la noche. Comprende que ha fracasado y que la venganza de Umôrdhoth la perseguirá allá donde vaya. Los tentáculos de la criatura se extienden por la ciudad de Arkham, buscándola. Acecha en la oscuridad de cada rincón, tirando de las costuras de la realidad. Pero a Lita no se la encuentra en ninguna parte, así que la criatura permanece en las sombras hasta el día de hoy, buscando… matando.</p><ul><li>En tu Registro de campaña, anota que *Arkham sucumbió a la terrible venganza de Umôrdhoth.*</li><li>Cada investigador superviviente es _muerto_.</li><li>Los investigadores pierden.</li></ul>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<p>_Resolución 1:_ Habéis conseguido impedir que el culto invocara a su señor. Aunque no estáis seguros de qué habría ocurrido si el culto hubiera triunfado, os alivia que —al menos de momento— Arkham esté a salvo. Capturáis a tantos sectarios como podéis, pero muy pocos ciudadanos creen vuestro relato. Quizá, al fin y al cabo, todo estuviera en vuestra cabeza.</p><ul><li>En tu Registro de campaña, anota que *el ritual para invocar a Umôrdhoth se interrumpió*.</li><li>Cada investigador sufre 2 trauma mental, pues nunca se recupera del todo de su terrible experiencia.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 5 de experiencia adicional por haber salvado a Arkham de un terrible destino.<ul><li>_Experiencia_: {xp}</li></ul></li><li>¡Los investigadores ganan!</li></ul>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<p>_Resolución 2:_ A fuerza de armas y de voluntad, de algún modo sois capaces de herir a Umôrdhoth lo bastante como para enviarlo de vuelta, tambaleante, a la dimensión de la que surgió. El calor y la luz regresan a los bosques mientras la masa semejante al vacío se retrae sobre sí misma y desaparece en un instante. No estáis seguros de si un ser así puede morir, pero de momento parece haberse retirado. Cuando su señor se desvanece, los gules cercanos trepan hacia el pozo abierto, huyendo con terribles alaridos y chillidos. Habéis detenido un plan malvado, pero el combate ha pasado factura a vuestro cuerpo y a vuestra mente. Peor aún, no podéis evitar sentiros insignificantes ante los misterios del mundo. ¿Qué otros terrores existen en los rincones más profundos y oscuros de la realidad?</p><ul><li>En tu Registro de campaña, anota que *los investigadores rechazaron a Umôrdhoth.*</li><li>Cada investigador sufre 2 trauma físico y 2 trauma mental, pues el combate contra Umôrdhoth ha pasado factura a su cuerpo y a su mente.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 10 de experiencia adicional por haber triunfado en combate contra un enemigo verdaderamente terrible.<ul><li>_Experiencia_: {xp}</li></ul></li><li>¡Los investigadores ganan!</li></ul>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<p>_Resolución 3:_ Ante este horror, no creéis que haya nada que podáis hacer para detenerlo. Sólo os queda una esperanza si queréis sobrevivir. Os volvéis contra Lita y la arrojáis a la terrible monstruosidad, contemplando con pavor cómo la masa arremolinada semejante al vacío la consume. Ella grita de tormento mientras la vida es succionada de su cuerpo. «Umôrdhoth… Umôrdhoth…» cantan los sectarios. Lita Chantler desaparece sin dejar rastro. Durante un momento teméis que la criatura se vuelva ahora contra vosotros, pero oís a uno de los sectarios decir: «Umôrdhoth es un dios justo que sólo reclama a los culpables y a los muertos. Idos, y seréis perdonados.» La masa arremolinada se desvanece, y el calor y la luz regresan a los bosques. Los sectarios se escabullen, dejándoos con vida. Los últimos instantes de Lita quedan grabados para siempre en vuestra memoria.</p><ul><li>En tu Registro de campaña, anota que *los investigadores sacrificaron a Lita Chantler a Umôrdhoth.*</li><li>Cada investigador sufre 2 trauma físico y 2 trauma mental, pues la mera visión de Umôrdhoth ha pasado factura a su cuerpo y a su mente.</li><li>La culpa por sacrificar a Lita os atormenta para siempre. Cada investigador debe buscar en la colección una Debilidad Locura aleatoria y añadirla a su mazo.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Los investigadores han sobrevivido, pero sus actos pesan sobre su conciencia.</li></ul>"
+    }
+  }
+}

@@ -67,6 +67,7 @@ data SkillTestMessage
   | SkillTestResultOptions_ [SkillTestOption]
   | RecalculateSkillTestResults_
   | RecalculateSkillTestResultsCanChangeAutomatic_ Bool
+  | ResolveHauntedAbilities_ InvestigatorId LocationId
   | SkillTestApplyResults_
   | SkillTestApplyResultsAfter_
   | SkillTestAsk_ Message

@@ -1385,6 +1385,9 @@ pattern RecalculateSkillTestResultsCanChangeAutomatic :: Bool -> Message
 pattern RecalculateSkillTestResultsCanChangeAutomatic b =
   SkillTestMessage (RecalculateSkillTestResultsCanChangeAutomatic_ b)
 
+pattern ResolveHauntedAbilities :: InvestigatorId -> LocationId -> Message
+pattern ResolveHauntedAbilities iid lid = SkillTestMessage (ResolveHauntedAbilities_ iid lid)
+
 pattern SkillTestApplyResults :: Message
 pattern SkillTestApplyResults = SkillTestMessage SkillTestApplyResults_
 

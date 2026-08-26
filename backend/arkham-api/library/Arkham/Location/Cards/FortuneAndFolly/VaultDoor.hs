@@ -31,7 +31,7 @@ instance HasModifiersFor VaultDoor where
         , DeliveredADecoyPackage
         , IsamaraMesmerizedTheGuardsWithHerSong
         ]
-    modifySelfWhen a (n < 4) [Blocked]
+    modifySelfWhen a (a.unrevealed && n < 4) [Blocked]
 
 instance HasAbilities VaultDoor where
   getAbilities (VaultDoor a) =

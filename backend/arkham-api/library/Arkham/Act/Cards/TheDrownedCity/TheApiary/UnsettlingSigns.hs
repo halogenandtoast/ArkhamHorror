@@ -154,8 +154,8 @@ instance RunMessage UnsettlingSigns where
       reveal centralChamber
       createSetAsideEnemy_ Enemies.mother centralChamber
 
-      -- The eastern expedition leaves The Inescapable in the encounter deck, so it
-      -- only spawns here on the half of the campaign that set it aside.
+      -- The set is only aside if the creature was not already defeated; if it was,
+      -- setup removed it from the game.
       whenM (notNull <$> getSetAsideCardsMatching (cardIs Enemies.theInescapable))
         $ spawnTheInescapable id
       placeCluesOnRevealedLocations attrs

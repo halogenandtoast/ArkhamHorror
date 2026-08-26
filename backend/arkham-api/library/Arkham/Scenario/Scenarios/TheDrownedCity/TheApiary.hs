@@ -195,10 +195,10 @@ instance RunMessage TheApiary where
           setAside =<< amongGathered (CardFromEncounterSet Set.Pilgrims)
           setAside =<< amongGathered (CardFromEncounterSet Set.TheInescapable)
         else do
-          -- The eastern expedition leaves The Inescapable in the encounter deck,
-          -- unless the creature has already been dealt with.
-          when creatureWasDefeated do
-            removeCards =<< amongGathered (CardFromEncounterSet Set.TheInescapable)
+          -- Errata (FAQ v2.4): setup v.II's fifth bullet also sets The Inescapable
+          -- aside; the later bullet removes it instead if the creature was dealt with.
+          inescapable <- amongGathered (CardFromEncounterSet Set.TheInescapable)
+          if creatureWasDefeated then removeCards inescapable else setAside inescapable
 
       apiaryEntrance <- place Locations.apiaryEntranceBeckoningLight
       startAt apiaryEntrance

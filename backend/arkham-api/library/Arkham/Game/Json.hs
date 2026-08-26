@@ -38,6 +38,7 @@ instance ToJSON Game where
       , "gameMode" .= gameMode g
       , "gameEntities" .= gameEntities g
       , "gameActionRemovedEntities" .= gameActionRemovedEntities g
+      , "gameTombstones" .= gameTombstones g
       , "gamePlayers" .= gamePlayers g
       , "gameModifiers" .= gameModifiers g
       , "gameEncounterDiscardEntities" .= gameEncounterDiscardEntities g
@@ -107,6 +108,7 @@ instance ToJSON Game where
       <> ("gameMode" .= gameMode g)
       <> ("gameEntities" .= gameEntities g)
       <> ("gameActionRemovedEntities" .= gameActionRemovedEntities g)
+      <> ("gameTombstones" .= gameTombstones g)
       <> ("gamePlayers" .= gamePlayers g)
       <> ("gameModifiers" .= gameModifiers g)
       <> ("gameEncounterDiscardEntities" .= gameEncounterDiscardEntities g)
@@ -176,6 +178,7 @@ instance FromJSON Game where
     gameMode <- o .: "gameMode"
     gameEntities <- o .: "gameEntities"
     gameActionRemovedEntities <- o .: "gameActionRemovedEntities"
+    gameTombstones <- o .:? "gameTombstones" .!= mempty
     gamePlayers <- o .: "gamePlayers"
     gameModifiers <- o .: "gameModifiers"
     gameEncounterDiscardEntities <- o .: "gameEncounterDiscardEntities"
@@ -215,7 +218,8 @@ instance FromJSON Game where
     let gameActionSnapshot = Transient Nothing
     gameInAction <- o .: "gameInAction"
     gameCards <- o .: "gameCards"
-    gameCardUses <- o .: "gameCardUses" <|> (Map.map (`replicate` gameLeadInvestigatorId) <$> o .: "gameCardUses")
+    gameCardUses <-
+      o .: "gameCardUses" <|> (Map.map (`replicate` gameLeadInvestigatorId) <$> o .: "gameCardUses")
     gameActiveCost <- o .: "gameActiveCost"
     gameGitRevision <- o .: "gameGitRevision"
     gameAllowEmptySpaces <- o .: "gameAllowEmptySpaces"

@@ -14,6 +14,8 @@ import Arkham.Classes.Query (select, (<=~>))
 import Arkham.Cost qualified as Cost
 import Arkham.Effect.Types (Effect)
 import Arkham.Enemy.Types (Enemy, Field (EnemyRemainingHealth))
+import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
+import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
 import Arkham.Entities
 import Arkham.Event.Types (Event)
 import Arkham.Game.Base
@@ -27,8 +29,6 @@ import Arkham.Investigator (promoInvestigators)
 import Arkham.Investigator.Types (Field (..), Investigator, investigatorResources)
 import Arkham.Keyword (Sealing (..))
 import Arkham.Keyword qualified as Keyword
-import Arkham.EnemyLocation.EnemyProxy (toEnemyLocationEnemyProxy)
-import Arkham.EnemyLocation.Proxy (toEnemyLocationProxy)
 import Arkham.Location.Types (Location)
 import Arkham.Matcher.Target (matchTarget)
 import Arkham.Prelude
@@ -145,6 +145,11 @@ maybeAsset aid = do
     <|> preview (inHandEntitiesL . each . assetsL . ix aid) g
     <|> getInDiscardEntity assetsL aid g
     <|> getRemovedEntity assetsL aid g
+    -- Last resort: a leave-play window can surface an asset that has already been
+    -- swept out of every live map (see `getAssetsMatching`). Anything that then
+    -- projects a field off that id -- `selectAgg` totalling doom, say -- has to
+    -- find something rather than throw MissingEntity. #5518
+    <|> preview (tombstonesL . assetsL . ix aid) g
 
 getEffect :: (HasCallStack, HasGame m) => EffectId -> m Effect
 getEffect effectId = fromMaybe (throw missingEffect) <$> maybeEffect effectId
@@ -304,7 +309,7 @@ getCostForCard iid card isPlayAction = do
                     dynamicPart = case maxDynamic card of
                       Nothing -> Cost.UpTo (Fixed availableForX) (Cost.ResourceCost 1)
                       Just c -> Cost.UpTo (MaxCalculation c (Fixed availableForX)) (Cost.ResourceCost 1)
-                  in
+                   in
                     if resources == 0
                       then dynamicPart
                       else Cost.ResourceCost resources <> dynamicPart

@@ -300,6 +300,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameInSearchEntities = defaultEntities
         , gamePlayers = mempty
         , gameActionRemovedEntities = mempty
+        , gameTombstones = mempty
         , gameActivePlayerId = PlayerId nil
         , gameActiveInvestigatorId = InvestigatorId "00000"
         , gameTurnPlayerInvestigatorId = Nothing
@@ -749,9 +750,17 @@ publicOtherInvestigators = \case
           $ map (\iid -> (iid, asPublicInvestigator $ lookupInvestigator iid (PlayerId nil)))
           $ Map.keys (campaignDecks attrs)
 
+-- The wire encoding must never see tombstones. `getAssetsMatching` revives a
+-- defeated asset with its pre-removal placement while a leave-play window is open
+-- (#5518), which is right for a reaction asking "what was this when it left?" and
+-- wrong for everything here: `select (AssetWithPlacement (InPlayArea iid))` put the
+-- dead asset back in the investigator's published asset list, but `game.assets`
+-- only carries live entities, so the frontend dereferenced an id that was not
+-- there. Same class of bug as `getDoomCount` projecting a field off that id.
+-- Blinding the whole encoder is one line and covers every published list at once.
 instance ToJSON gid => ToJSON (PublicGame gid) where
   toEncoding (FailedToLoadGame e) = pairs ("tag" .= String "FailedToLoadGame" <> "error" .= toJSON e)
-  toEncoding (PublicGame gid name glog g@Game {..}) = flip runReader g do
+  toEncoding (PublicGame gid name glog g@Game {..}) = flip runReader (g & tombstonesL .~ mempty) do
     locations <-
       traverse withLocationConnectionData
         =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
@@ -851,7 +860,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
           . map (\iid -> (iid, asPublicInvestigator $ lookupInvestigator iid (PlayerId nil)))
           $ deadIids
   toJSON (FailedToLoadGame e) = object ["tag" .= String "FailedToLoadGame", "error" .= toJSON e]
-  toJSON (PublicGame gid name glog g@Game {..}) = flip runReader g do
+  toJSON (PublicGame gid name glog g@Game {..}) = flip runReader (g & tombstonesL .~ mempty) do
     locations <-
       traverse withLocationConnectionData
         =<< traverse withModifiers (filterMap (attr (not . locationOutOfGame)) $ gameLocations g)
@@ -3042,8 +3051,65 @@ guardYourLocation body = do
     Nothing -> pure []
     Just lid -> body lid
 
+{- | The assets named by leave-play windows currently on the stack.
+
+Only these are resurrected, not every tombstone: a leave-play window is open for
+a whole frame, and during it unrelated queries (@getDoomCount@ totalling doom for
+the UI, say) run too. Widening the result set for them surfaced ids that nothing
+downstream could dereference, throwing MissingEntity from `selectAgg`. Scoping to
+the window's own subject keeps the visibility to the entity the window is
+actually about. #5518
+
+Outside such a window nothing is resurrected at all: `select` is the liveness
+test that placement is not (#5426), and quietly reviving removed entities in
+ordinary queries is exactly the bug that comment exists to prevent.
+-}
+leavePlayWindowAssets :: HasGame m => m (Set AssetId)
+leavePlayWindowAssets = do
+  stack <- fromMaybe [] . gameWindowStack <$> getGame
+  pure $ setFromList $ mapMaybe (subjectOf . windowType) (concat stack)
+ where
+  subjectOf = \case
+    Window.AssetDefeated aid _ -> Just aid
+    Window.LeavePlay (AssetTarget aid) -> Just aid
+    Window.EntityDiscarded _ (AssetTarget aid) -> Just aid
+    _ -> Nothing
+
+{- | While a leave-play window is open, resolve asset queries against a game in
+which assets blanked by this frame's removals are restored to the snapshots
+parked by @RemoveFromPlay@ into @gameTombstones@ -- frozen copies that still
+carry their real placement. They have to live outside @gameActionRemovedEntities@:
+that map is in the message-dispatch chain, so @RemovedFromPlay@ reaches the parked
+copy too and blanks it exactly like the live one.
+
+It has to be the whole game, not just the candidate list: @filterMatcher@'s
+branches re-project by id (@AssetAt@ is
+@filterM (fieldP AssetLocation ... . toId) as@), so an entity handed in by value
+is ignored and the live, blanked copy is read instead. Same reason
+@getEnemiesMatching@'s @DefeatedEnemy@ branch re-inserts into the game env rather
+than filtering a list.
+
+The ReaderT layer has a no-op query cache (#4985), so this only wraps when a
+leave-play window is actually open; otherwise the hot path is untouched.
+-}
 getAssetsMatching :: HasGame m => AssetMatcher -> m [Asset]
 getAssetsMatching matcher = do
+  g <- getGame
+  let parked = g ^. tombstonesL . assetsL
+  if null parked
+    then getAssetsMatching' matcher
+    else do
+      subjects <- leavePlayWindowAssets
+      let revive = Map.filterWithKey (\aid _ -> aid `member` subjects) parked
+      if null revive
+        then getAssetsMatching' matcher
+        else do
+          let restore aid a = if a.placement.outOfGame then findWithDefault a aid revive else a
+          let g' = g & entitiesL . assetsL %~ \live -> mapWithKey restore live <> revive
+          runReaderT (getAssetsMatching' matcher) g'
+
+getAssetsMatching' :: HasGame m => AssetMatcher -> m [Asset]
+getAssetsMatching' matcher = do
   let
     ignoreVisibility = case matcher of
       IgnoreVisibility _ -> const True

@@ -577,6 +577,7 @@ runGameMessage msg g = case msg of
           & (activeCardL .~ Nothing)
           & (activeAbilitiesL .~ mempty)
           & (actionRemovedEntitiesL .~ mempty)
+          & (tombstonesL .~ mempty)
           & (activeAbilitiesL .~ mempty)
           -- A scenario-ending action (e.g. Resign) leaves the game "in action"
           -- with a revert diff/snapshot pointing at the entities we just tore
@@ -622,6 +623,7 @@ runGameMessage msg g = case msg of
       & (activeAbilitiesL .~ mempty)
       & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
       & (actionRemovedEntitiesL .~ mempty)
+      & (tombstonesL .~ mempty)
       & (activeAbilitiesL .~ mempty)
       & (foundCardsL .~ mempty)
       & (highlightedCardsL .~ mempty)
@@ -1276,6 +1278,17 @@ runGameMessage msg g = case msg of
           & actionRemovedEntitiesL
           %~ (\e -> addCardEntityWith iid setAssetPlacement (unsafeCardIdToUUID card.id) e card)
       else pure g
+  -- Snapshot an asset on its way out, while its placement is still real: the
+  -- Asset runner's `RemovedFromPlay` handler clobbers it to `OutOfPlay
+  -- RemovedZone`, after which `AssetAt`/`AssetControlledBy` can no longer resolve
+  -- it. `withRemovedEntities` splices this copy back in while a leave-play window
+  -- is open so reactions to the removal can still match what left. #5518
+  RemoveFromPlay (AssetSource aid) -> do
+    parked <-
+      maybeAsset aid <&> \case
+        Nothing -> id
+        Just asset -> tombstonesL . assetsL %~ insertEntity asset
+    pure $ g & parked
   RemoveAsset aid -> do
     removedEntitiesF <-
       if notNull (gameActiveAbilities g)
@@ -2635,6 +2648,7 @@ runGameMessage msg g = case msg of
       & (turnPlayerInvestigatorIdL ?~ x)
       & (activeAbilitiesL .~ mempty)
       & (actionRemovedEntitiesL .~ mempty)
+      & (tombstonesL .~ mempty)
       & (entitiesL %~ clearRemovedEntities)
       -- +1 because the batch processing this BeginTurn ends at the next Ask
       -- (the investigator's first action choice). We want undo to land there,

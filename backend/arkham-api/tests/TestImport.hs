@@ -905,6 +905,7 @@ newGame scenario' investigator = do
         , gameInHandEntities = mempty
         , gameInDiscardEntities = mempty
         , gameActionRemovedEntities = mempty
+        , gameTombstones = mempty
         , gameInSearchEntities = defaultEntities
         , gameGameState = IsActive
         , gameFoundCards = mempty

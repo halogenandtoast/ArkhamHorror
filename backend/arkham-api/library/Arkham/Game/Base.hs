@@ -74,6 +74,13 @@ data Game = Game
   , -- Entities
     gameEntities :: Entities
   , gameActionRemovedEntities :: Entities -- entities removed during the current action
+  , gameTombstones :: Entities
+  {- ^ Frozen copies of entities taken on their way out of play, before the
+  removal blanks their placement. Unlike 'gameActionRemovedEntities' these are
+  NOT in the message-dispatch chain, so nothing can mutate them after capture --
+  that is the whole point: they answer "what was this when it left?". Read only
+  while a leave-play window is open. See 'inLeavePlayWindow'.
+  -}
   , gamePlayers :: [PlayerId]
   , gameModifiers :: Map Target [Modifier]
   , gameEncounterDiscardEntities :: Entities
@@ -117,11 +124,12 @@ data Game = Game
     -- publish time and cleared by the next unretained ask, so it always
     -- describes the question currently on the game (#4787).
     gameRetainedQuestion :: Bool
-  , -- | Open multi-seat barriers, keyed by the batch that owns each one. Holds the
-    -- pending seats and the continuation, so "everyone is ready" is a pure
-    -- function of state rather than of where the queue happens to have drained to.
-    -- See "Arkham.SimultaneousAsk" and @docs/multi-seat-barrier.md@.
-    gameSimultaneousAsks :: Map BatchId (SimultaneousAsk Message)
+  , gameSimultaneousAsks :: Map BatchId (SimultaneousAsk Message)
+  {- ^ Open multi-seat barriers, keyed by the batch that owns each one. Holds the
+  pending seats and the continuation, so "everyone is ready" is a pure
+  function of state rather than of where the queue happens to have drained to.
+  See "Arkham.SimultaneousAsk" and @docs/multi-seat-barrier.md@.
+  -}
   , -- handling time warp
     gameActionCanBeUndone :: Bool
   , gameActionDiff :: [Diff.Patch]

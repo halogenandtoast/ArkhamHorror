@@ -8392,6 +8392,7 @@ test-suite spec
       Arkham.Asset.Assets.CatBurglar1Spec
       Arkham.Asset.Assets.CrystallizerOfDreamsSpec
       Arkham.Asset.Assets.DaisysToteBagSpec
+      Arkham.Asset.Assets.DecoratedSkullSpec
       Arkham.Asset.Assets.DendromorphosisSpec
       Arkham.Asset.Assets.DigDeep2Spec
       Arkham.Asset.Assets.DigDeepSpec

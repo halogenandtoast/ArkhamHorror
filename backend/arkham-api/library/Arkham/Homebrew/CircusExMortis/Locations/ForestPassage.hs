@@ -12,7 +12,7 @@ newtype ForestPassage = ForestPassage LocationAttrs
 
 forestPassage :: LocationCard ForestPassage
 forestPassage =
-  locationWith ForestPassage Cards.forestPassage 2 (Static 1) connectsToAdjacent
+  location ForestPassage Cards.forestPassage 2 (Static 1)
 
 instance HasAbilities ForestPassage where
   getAbilities (ForestPassage a) =

@@ -4,8 +4,8 @@
       "title": "Scenario II: The Primrose Path",
       "body": "<p>Stories have long been told and retold in Arkham about the strange and mystical things lurking in it. Witches, demons, humanoid beasts, the list goes on. Any one of those would be reason to not venture into the woods at night, but since you're already chancing things with the circus and its monsters, there's not much left to hold you back.</p><p>The full moon lends an eerie brightness to the woods. The same atmosphere of illusory magic that you saw on the circus grounds lingers between the trees. No doubt the circus has taken precautions to veil themselves from prying outsiders, and you wonder how they and the moon align. Until then, you must decide how you will proceed into this mystical forest.</p>",
       "label": {
-        "useMoonlight": "\"We'll use the moonlight to our advantage.\" If there is a {'{'}tablet{'}'} token in the chaos bag, remove it and add a {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.",
-        "shadows": "\"We'll stick the shadows as much as possible.\" If there is a {'{'}cultist{'}'} token in the chaos bag, remove it and add a {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign."
+        "useMoonlight": "<p>\"We'll use the moonlight to our advantage.\" If there is a {'{'}tablet{'}'} token in the chaos bag, remove it and add a {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.</p>",
+        "shadows": "<p>\"We'll stick the shadows as much as possible.\" If there is a {'{'}cultist{'}'} token in the chaos bag, remove it and add a {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</p>"
       }
     },
     "bloodMoon": {

@@ -11,6 +11,7 @@ export interface Scenario {
   standaloneDifficulties?: Difficulty[]
   standalone?: boolean
   epicMultiplayer?: boolean
+  allowCurvedPaths?: boolean
   miniCampaign?: boolean
   returnToVariant?: boolean
   show?: boolean

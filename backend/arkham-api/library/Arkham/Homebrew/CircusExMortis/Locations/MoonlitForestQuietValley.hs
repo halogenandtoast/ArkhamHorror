@@ -15,12 +15,11 @@ newtype MoonlitForestQuietValley = MoonlitForestQuietValley LocationAttrs
 
 moonlitForestQuietValley :: LocationCard MoonlitForestQuietValley
 moonlitForestQuietValley =
-  locationWith
+  location
     MoonlitForestQuietValley
     Cards.moonlitForestQuietValley
     2
     (Static 1)
-    connectsToAdjacent
 
 instance HasModifiersFor MoonlitForestQuietValley where
   getModifiersFor (MoonlitForestQuietValley a) =

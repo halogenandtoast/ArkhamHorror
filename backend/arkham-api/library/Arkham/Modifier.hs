@@ -24,6 +24,7 @@ import Arkham.Field
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
+import Arkham.LocationSymbol (LocationSymbol)
 import Arkham.Matcher.Types
 import Arkham.Phase
 import {-# SOURCE #-} Arkham.Placement
@@ -391,6 +392,7 @@ data ModifierType
   | LeaveCardWhereItIs
   | LookAtDepth Int
   | LosePatrol
+  | LosesConnectionSymbol LocationSymbol
   | ForcePatrol LocationMatcher
   | LoseVictory
   | MaxCluesDiscovered Int

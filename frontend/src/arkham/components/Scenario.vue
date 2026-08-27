@@ -55,6 +55,7 @@ import { useSoundsDisabled } from '@/composable/useSoundsDisabled';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { homebrewTotalsTokens } from '@/arkham/homebrewData';
+import scenarioMetadata from '@/arkham/data/scenarios';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import SkillTest from '@/arkham/components/SkillTest.vue';
@@ -91,6 +92,10 @@ export interface Props {
   realityAcidLightActive?: boolean
 }
 const props = defineProps<Props>()
+const allowCurvedPaths = computed(() => {
+  const scenarioId = props.scenario.id.replace(/^c(?=:)/, '')
+  return scenarioMetadata.find(metadata => metadata.id === scenarioId)?.allowCurvedPaths === true
+})
 const emit = defineEmits(['choose', 'update', 'toggleRealityAcidLight'])
 const debug = useDebug()
 const { addEntry, removeEntry } = useMenu()
@@ -2782,7 +2787,12 @@ async function addChaosToken(face: any){
           @click.capture="onStageClick"
         >
         <div class="location-cards-stage">
-        <Connections :game="game" :playerId="playerId" :enableCosmicEmissaryAnimation="enableCosmicEmissaryAnimation" />
+        <Connections
+          :game="game"
+          :playerId="playerId"
+          :allowCurvedPaths="allowCurvedPaths"
+          :enableCosmicEmissaryAnimation="enableCosmicEmissaryAnimation"
+        />
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :css="props.scenario.id !== 'c10651'" :style="locationStyles" @before-leave="beforeLeave">
           <!-- Keyed by id, not label: a location that changes grid label (the
                Great Lift sliding between levels) must stay the same element so

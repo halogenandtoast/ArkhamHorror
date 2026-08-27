@@ -14,12 +14,11 @@ newtype MoonlitForestDeadGrove = MoonlitForestDeadGrove LocationAttrs
 
 moonlitForestDeadGrove :: LocationCard MoonlitForestDeadGrove
 moonlitForestDeadGrove =
-  locationWith
+  location
     MoonlitForestDeadGrove
     Cards.moonlitForestDeadGrove
     3
     (Static 2)
-    connectsToAdjacent
 
 instance HasAbilities MoonlitForestDeadGrove where
   getAbilities (MoonlitForestDeadGrove a) =

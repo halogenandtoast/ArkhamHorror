@@ -14,12 +14,11 @@ newtype MoonlitForestShallowRiver = MoonlitForestShallowRiver LocationAttrs
 
 moonlitForestShallowRiver :: LocationCard MoonlitForestShallowRiver
 moonlitForestShallowRiver =
-  locationWith
+  location
     MoonlitForestShallowRiver
     Cards.moonlitForestShallowRiver
     2
     (Static 1)
-    connectsToAdjacent
 
 instance HasModifiersFor MoonlitForestShallowRiver where
   getModifiersFor (MoonlitForestShallowRiver a) =

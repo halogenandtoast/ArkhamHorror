@@ -4,7 +4,9 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
+import Arkham.Direction (Direction (..))
 import Arkham.Helpers.Campaign (getCompletedSteps, getOwner)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Scenario (getScenarioMetaKeyDefault, scenarioField, setScenarioMeta)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
@@ -336,3 +338,28 @@ drawFuryTokenForDirection = go =<< getFuryBag
       case furyDirection face of
         Just direction -> pure (Just direction)
         Nothing -> go (deleteFirst face pool)
+
+-- * The Primrose Path
+
+moonlitForests :: LocationMatcher
+moonlitForests = LocationWithTitle "Moonlit Forest"
+
+{- | Both Primrose Path agenda fronts read "Adjacent copies of Moonlit Forest are
+connected to each other." Adjacency is the scenario grid; every other connection in
+the scenario comes from the printed connection symbols.
+-}
+adjacentMoonlitForestConnection :: LocationId -> ModifierType
+adjacentMoonlitForestConnection lid =
+  ConnectedToWhen (LocationWithId lid)
+    $ LocationMatchAny [LocationInDirection d (LocationWithId lid) | d <- [minBound .. maxBound]]
+    <> moonlitForests
+
+{- | Remote Cabin and Woodland Overlook each sit at one end of the grid, connected to
+the whole column of three Moonlit Forest copies beside them (guide p7). Reading the
+column off whichever side has a neighbour keeps this independent of which end each
+location was placed at.
+-}
+neighbouringMoonlitForestColumn :: LocationMatcher -> LocationMatcher
+neighbouringMoonlitForestColumn self =
+  moonlitForests
+    <> LocationInColumnOf (LocationMatchAny [LocationInDirection d self | d <- [LeftOf, RightOf]])

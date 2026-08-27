@@ -15,12 +15,11 @@ newtype MoonlitForestGlassyLake = MoonlitForestGlassyLake LocationAttrs
 
 moonlitForestGlassyLake :: LocationCard MoonlitForestGlassyLake
 moonlitForestGlassyLake =
-  locationWith
+  location
     MoonlitForestGlassyLake
     Cards.moonlitForestGlassyLake
     1
     (Static 1)
-    connectsToAdjacent
 
 instance HasModifiersFor MoonlitForestGlassyLake where
   getModifiersFor (MoonlitForestGlassyLake a) =

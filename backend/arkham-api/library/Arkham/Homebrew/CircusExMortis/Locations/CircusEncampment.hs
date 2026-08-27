@@ -1,9 +1,9 @@
 module Arkham.Homebrew.CircusExMortis.Locations.CircusEncampment (circusEncampment) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.Helpers (getSealedMoonTokens, releaseMoonToken)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith, setActiveDuringSetup)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Helpers (getSealedMoonTokens, releaseMoonToken)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -14,14 +14,14 @@ newtype CircusEncampment = CircusEncampment LocationAttrs
 
 circusEncampment :: LocationCard CircusEncampment
 circusEncampment =
-  locationWith CircusEncampment Cards.circusEncampment 4 (Static 0) connectsToAdjacent
+  location CircusEncampment Cards.circusEncampment 4 (Static 0)
 
 instance HasModifiersFor CircusEncampment where
   getModifiersFor (CircusEncampment a) = do
     -- "Investigators cannot enter Circus Encampment while there are fewer than 5
     -- locations connected to it."
     connected <- selectCount $ connectedTo (be a)
-    modifySelect a Anyone [CannotEnter a.id | connected < 5]
+    modifySelectWith a Anyone setActiveDuringSetup [CannotEnter a.id | connected < 5]
 
 instance HasAbilities CircusEncampment where
   getAbilities (CircusEncampment a) =

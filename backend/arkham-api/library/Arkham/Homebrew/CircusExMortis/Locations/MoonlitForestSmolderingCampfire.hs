@@ -20,12 +20,11 @@ newtype MoonlitForestSmolderingCampfire
 moonlitForestSmolderingCampfire
   :: LocationCard MoonlitForestSmolderingCampfire
 moonlitForestSmolderingCampfire =
-  locationWith
+  location
     MoonlitForestSmolderingCampfire
     Cards.moonlitForestSmolderingCampfire
     1
     (Static 1)
-    connectsToAdjacent
 
 instance HasModifiersFor MoonlitForestSmolderingCampfire where
   getModifiersFor (MoonlitForestSmolderingCampfire a) =

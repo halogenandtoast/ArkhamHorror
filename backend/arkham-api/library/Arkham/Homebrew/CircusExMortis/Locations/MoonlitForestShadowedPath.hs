@@ -14,12 +14,11 @@ newtype MoonlitForestShadowedPath = MoonlitForestShadowedPath LocationAttrs
 
 moonlitForestShadowedPath :: LocationCard MoonlitForestShadowedPath
 moonlitForestShadowedPath =
-  locationWith
+  location
     MoonlitForestShadowedPath
     Cards.moonlitForestShadowedPath
     3
     (Static 2)
-    connectsToAdjacent
 
 instance HasAbilities MoonlitForestShadowedPath where
   getAbilities (MoonlitForestShadowedPath a) =

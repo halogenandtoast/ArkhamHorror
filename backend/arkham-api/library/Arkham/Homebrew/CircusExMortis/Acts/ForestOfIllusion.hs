@@ -3,7 +3,6 @@ module Arkham.Homebrew.CircusExMortis.Acts.ForestOfIllusion (forestOfIllusion) w
 import Arkham.Ability
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Investigator (getJustLocation)
-import Arkham.Helpers.Location (connectBothWays)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
 import Arkham.Matcher
@@ -44,9 +43,6 @@ instance RunMessage ForestOfIllusion where
       -- Victory) for the remainder of the game; a horror marks the reminder.
       gameModifier (attrs.ability 1) loc Blank
       placeTokens (attrs.ability 1) loc Horror 1
-      -- Gradually unworking the illusions opens a route toward the camp.
-      camp <- selectJust $ locationIs Locations.circusEncampment
-      connectBothWays camp loc
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

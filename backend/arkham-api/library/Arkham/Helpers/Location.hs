@@ -49,8 +49,14 @@ getConnectedMatcher forMovement l = cached (ConnectedMatcherKey l forMovement) $
       else field LocationConnectedMatchers l
 
   modifiers <- getModifiers (LocationTarget l)
+  -- A location that "loses" a connection symbol stops connecting to that symbol; the
+  -- symbol matchers are what the card def turned its printed connections into.
+  let lostSymbols = [sym | LosesConnectionSymbol sym <- modifiers]
+      keeps = \case
+        Matcher.LocationWithSymbol sym -> sym `notElem` lostSymbols
+        _ -> True
   LocationMatchAny
-    <$> foldM applyModifier (base <> directionalMatchers) modifiers
+    <$> foldM applyModifier (filter keeps base <> directionalMatchers) modifiers
  where
   applyModifier current (ConnectedToWhen whenMatcher matcher) = do
     matches <- elem l <$> select whenMatcher

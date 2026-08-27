@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Enemy.CardDefs.ReturnToThePathToCarcosa.ReturnToCurtainCall qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Enemy (insteadOfDiscarding)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement
@@ -22,13 +23,15 @@ instance HasModifiersFor LaComtesseSubverterOfPlans where
     HiddenInHand _ -> modified_ a (toCard a) [HandSizeCardCount 4]
     _ -> pure ()
 
--- The Per Phase limit on the second ability is a bit incorrect, however it's
--- easier than batching discards currently
+-- Going to hand replaces the discard, so ability 1 has to land before disposal
+-- (IfEnemyDefeated resolves after it). The Per Phase limit on the second
+-- ability is a bit incorrect, however it's easier than batching discards
+-- currently
 instance HasAbilities LaComtesseSubverterOfPlans where
   getAbilities (LaComtesseSubverterOfPlans a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ IfEnemyDefeated #after You ByAny (be a)
+      [ mkAbility a 1 $ forced $ EnemyDefeated #when You ByAny (be a)
       , playerLimit PerPhase
           $ restricted a 2 (InYourHand <> DuringPhase #upkeep)
           $ forced
@@ -38,8 +41,7 @@ instance HasAbilities LaComtesseSubverterOfPlans where
 instance RunMessage LaComtesseSubverterOfPlans where
   runMessage msg e@(LaComtesseSubverterOfPlans attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      cancelEnemyDefeat attrs
-      place attrs (HiddenInHand iid)
+      insteadOfDiscarding attrs $ place attrs (HiddenInHand iid)
       pure $ LaComtesseSubverterOfPlans $ attrs & tokensL .~ mempty & defeatedL .~ False
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       assignHorror iid (attrs.ability 2) 1

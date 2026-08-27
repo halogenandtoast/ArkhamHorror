@@ -1,0 +1,25 @@
+{
+  "prologue": "<h1>El hambre de los gules...</h1><p>Viernes, 18 de septiembre de 1925. Arkham, Massachusetts. Termina un verano largo y anormalmente caluroso. Empiezan a notarse los primeros indicios del otoño, pero persiste un calor sofocante e implacable. Una ira silenciosa e inconfesable atenaza la ciudad. Los ánimos están muy alterados y, tan sólo en la última semana, se han producido numerosos incidentes de ciudadanos que se han enzarzado en violentas peleas por simples malentendidos.</p> <p>Y ahora ha llamado James Hankerson. Afirma haber encontrado un cuerpo desmembrado en su granero.</p> <p>Sería demasiado fácil echarle la culpa al tiempo. A esta ciudad le pasa algo, y no es mucho lo que este viejo adivino puede hacer para detener su caída. Mis augurios indican que un pequeño grupo de investigadores se percatará pronto de estos extraños sucesos y se pondrá manos a la obra para arreglar las cosas. Estaré observando sus progresos... pero no contengo la respiración.</p>",
+  "key": {
+    "ghoulPriestIsStillAlive": "El Sacerdote de los gules sigue con vida",
+    "yourHouseIsStillStanding": "Tu casa sigue en pie",
+    "yourHouseHasBurnedToTheGround": "Tu casa se ha quemado hasta los cimientos",
+    "litaWasForcedToFindOthersToHelpHerCause": "Lita se vio obligada a encontrar a otros para que la ayudaran",
+    "cultistsWeInterrogated": "Sectarios a los que interrogamos",
+    "cultistsWhoGotAway": "Sectarios que escaparon",
+    "itIsPastMidnight": "Es más de medianoche",
+    "arkhamSuccumbedToUmordhothsTerribleVengeance": "Arkham sucumbió a la terrible venganza de Umôrdhoth",
+    "theRitualToSummonUmordhothWasBroken": "El ritual para invocar a Umôrdhoth se interrumpió",
+    "theInvestigatorsRepelledUmordoth": "Los investigadores rechazaron a Umôrdhoth",
+    "theInvestigatorsSacrificedLitaChantlerToUmordhoth": "Los investigadores sacrificaron a Lita Chantler a Umôrdhoth"
+  },
+  "label": {
+    "offerOfPower": {
+      "drawAndPlaceDoom": "Roba 2 cartas y coloca 2 perdición en el plan"
+    },
+    "discipleOfTheDevourer": {
+      "doom": "Coloca 1 perdición sobre Discípulo del Devorador",
+      "clue": "Coloca una de tus pistas en su Lugar"
+    }
+  }
+}

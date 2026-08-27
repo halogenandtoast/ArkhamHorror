@@ -1,0 +1,51 @@
+{
+  "heading": "Parte II",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X es la mayor cantidad de perdición sobre un enemigo _Sectario_ en juego.",
+      "cultist": "-2. Coloca 1 perdición sobre el enemigo _Sectario_ más cercano.",
+      "tablet": "-3. Si fracasas, coloca 1 de tus pistas en tu Lugar."
+    },
+    "hardExpert": {
+      "skull": "-X. X es la cantidad total de perdición en juego.",
+      "cultist": "-2. Coloca 1 perdición sobre cada enemigo _Sectario_ en juego. Si no hay enemigos _Sectario_ en juego, revela otra ficha.",
+      "tablet": "-4. Si fracasas, coloca todas tus pistas en tu Lugar."
+    }
+  },
+  "intro": {
+    "title": "Parte II: Las máscaras de medianoche",
+    "body": "<p class='basic'>Consulta el Registro de campaña. *Si Lita se vio obligada a encontrar a otros para que la ayudaran*: Lee la _Introducción 1_.</p><p class='basic'>En caso contrario, pasa a la _Introducción 2_.</p>"
+  },
+  "intro1": "<p>_Introducción 1_: La mujer acudió a vosotros aterrada, delirando acerca de monstruos que emergían del suelo en una casa cerca del Barrio del río. «He conseguido atraparlos», explica, «pero hay más. Otros pozos. Otros dominios.» Hace tan sólo una semana la habríais tomado por una lunática. Sin embargo, los sucesos recientes han puesto en entredicho vuestra idea de la normalidad. Decidís escucharla. Se presenta como Lita Chantler y os cuenta una historia que pone a prueba los límites de vuestra credulidad. «Las criaturas de las que hablo», afirma, «se llaman gules: seres crueles que infestan las criptas, cavernas y túneles bajo la ciudad de Arkham…»</p><p class='basic right'>Continúa con la _Introducción 3_.</p>",
+  "intro2": "<p>_Introducción 2_: Tras el desastre en vuestra casa, Lita Chantler, la mujer pelirroja de vuestro salón, os cuenta una historia que —incluso a la luz de lo que acabáis de presenciar— pone a prueba los límites de vuestra credulidad. «Las criaturas de vuestra casa», afirma, «se llaman gules: seres crueles que infestan las criptas, cavernas y túneles bajo la ciudad de Arkham…»</p><p class='basic right'>Continúa con la _Introducción 3_.</p>",
+  "intro3": "<p>_Introducción 3_: «Estas criaturas se alimentan de cadáveres humanos, y las sirve un culto oscuro de Arkham cuyos miembros han llegado inexplicablemente a adorar al antiguo señor de los gules. Este culto ha estado matando a gente inocente y entregándosela a los gules, saciando un hambre monstruosa. Se mantenía un oscuro equilibrio. Hasta ahora. Recientemente», continúa Lita, «una de sus guaridas, donde se almacenaban los cadáveres, fue destruida. Desde entonces, los gules han estado más activos de lo habitual. He seguido sus movimientos y he hecho todo lo posible por impedir que siembren el caos por la ciudad. Pero creo que está ocurriendo algo peor. El culto ha estado planeando algo más oscuro y ominoso que cualquier cosa que haya observado hasta ahora. Todo indica que este plan se consumará esta noche, poco después de medianoche. Más allá de eso, no alcanzo a imaginar qué esperar.</p><p>«Muchos de los sectarios», continúa Lita, «parecerán gente corriente, a pesar de sus infames intenciones. Cada vez que el culto se reúne, sus miembros se ponen máscaras con forma de cráneos de distintos animales para ocultar su identidad unos de otros. Esas máscaras son nuestra marca. Símbolos de muerte y decadencia. Debemos desenmascarar a los sectarios para exponer y descarrilar sus planes. Sólo nos quedan unas pocas horas. Cuantos más sectarios encontremos antes de medianoche, mejor.»</p><p class='basic right'>Continúa con la _Preparación_.</p>",
+  "resolutions": {
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'><p class='basic'>_Si no se alcanzó ninguna resolución (cada investigador abandonó o fue derrotado):_ Lee la _Resolución 1_.</p></div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1:_ Habéis conseguido obtener información útil sobre el culto y sus planes. Sólo os queda esperar que sea suficiente.</p><ul><li>En tu Registro de campaña, bajo «Sectarios a los que interrogamos», anota los nombres de cada enemigo único _Sectario_ que esté en la zona de victoria.</li><li>En tu Registro de campaña, bajo «Sectarios que escaparon», anota el nombre de cada enemigo único que siga restante en el mazo de Sectarios o en juego. Si estáis en el Plan 1, anota también «El cazador enmascarado».</li><li>Si el Sacerdote de los gules está en la zona de victoria, tacha «*el Sacerdote de los gules sigue con vida*» en tu Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2:_ Suenan las doce campanadas, anunciando la medianoche. Se os ha acabado el tiempo; el ritual del culto comenzará en breve. Habéis conseguido obtener información útil sobre el culto y sus planes. Sólo os queda esperar que sea suficiente.</p><ul><li>En tu Registro de campaña, bajo «Sectarios a los que interrogamos», anota los nombres de cada enemigo único _Sectario_ que esté en la zona de victoria.</li><li>En tu Registro de campaña, bajo «Sectarios que escaparon», anota el nombre de cada enemigo único que siga restante en el mazo de Sectarios o en juego.</li><li>En tu Registro de campaña, anota que *es más de medianoche.*</li><li>Si el Sacerdote de los gules está en la zona de victoria, tacha «*el Sacerdote de los gules sigue con vida*» en tu Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    }
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *Las máscaras de medianoche*, *Frío glacial*, *Engendros nocturnos*, *Secta oscura* y *Puertas cerradas*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "cultistDeck": "<div class='columns simple'><p class='basic'>Deja aparte el conjunto de encuentro *Culto de Umôrdhoth* como un «mazo de Sectarios» separado y barájalo. Este conjunto se indica con el siguiente icono:</p><section class='encounter-sets'><img src='{setImgPath}/cult-of-umordhoth.png' /></section></div>",
+    "placeLocations": "Elige al azar uno de los dos Lugares Centro y uno de los dos Lugares Barrio Sur y ponlos en juego. Retira del juego las demás versiones de Centro y Barrio Sur. A continuación, pon en juego los Lugares Barrio Norte, Barrio Este, Barrio del río, Hospital de Santa María, Cementerio, Universidad Miskatonic y Tu casa. (Consulta la página siguiente para una disposición sugerida.)",
+    "acolytes": {
+      "instructions": "Según el número de jugadores en la partida:",
+      "onePlayer": "Si hay exactamente 1 jugador en la partida, no se realiza ningún cambio.",
+      "twoPlayer": "Si hay exactamente 2 jugadores en la partida, busca en los conjuntos de encuentro reunidos 1 copia de Acólito y genérala en el Barrio Sur.",
+      "threePlayer": "Si hay exactamente 3 jugadores en la partida, busca en los conjuntos de encuentro reunidos 2 copias de Acólito. Genera 1 en el Barrio Sur y 1 en el Centro.",
+      "fourPlayer": "Si hay exactamente 4 jugadores en la partida, busca en los conjuntos de encuentro reunidos 3 copias de Acólito. Genera 1 en el Barrio Sur, 1 en el Centro y 1 en el Cementerio."
+    },
+    "burnedToTheGround": "Consulta el Registro de campaña. Si *tu casa se ha quemado hasta los cimientos*: Retira Tu casa del juego. Cada investigador comienza la partida en el Barrio del río.",
+    "houseStillStanding": "Consulta el Registro de campaña. Si *tu casa sigue en pie*: Cada investigador comienza la partida en Tu casa.",
+    "ghoulPriest": "Consulta el Registro de campaña. Si *el Sacerdote de los gules sigue con vida*: Barájalo en el mazo de Encuentro."
+  }
+}

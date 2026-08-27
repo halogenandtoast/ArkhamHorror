@@ -147,7 +147,8 @@ import Arkham.Timing qualified as Timing
 import Arkham.Token
 import Arkham.Token qualified as Token
 import Arkham.Treachery.CardDefs.TheCircleUndone.UnspeakableFate qualified as Treacheries
-import Arkham.Treachery.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as DarkSideOfTheMoon
+import Arkham.Treachery.CardDefs.TheDreamEaters.PointOfNoReturn qualified as PointOfNoReturn
 import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow, primaryWindowTarget)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
@@ -631,7 +632,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   , not
                       . ( `cardMatch`
                             oneOf
-                              [cardIs Treacheries.falseAwakening, cardIs Treacheries.falseAwakening]
+                              [cardIs DarkSideOfTheMoon.falseAwakening, cardIs PointOfNoReturn.falseAwakening]
                         )
                   ]
             )

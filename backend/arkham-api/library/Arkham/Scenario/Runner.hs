@@ -97,7 +97,8 @@ import Arkham.Skill.Types qualified as Field
 import Arkham.Story.Types (Field (..))
 import Arkham.Tarot
 import Arkham.Token
-import Arkham.Treachery.CardDefs.TheDreamEaters.PointOfNoReturn qualified as Treacheries
+import Arkham.Treachery.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as DarkSideOfTheMoon
+import Arkham.Treachery.CardDefs.TheDreamEaters.PointOfNoReturn qualified as PointOfNoReturn
 import Arkham.Treachery.Types (Field (..))
 import Arkham.UltimatumsAndBoons (
   Boon (..),
@@ -186,22 +187,15 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         push $ LoadDeck iid (Deck $ unDeck deck <> mapMaybe (preview _PlayerCard) investigatorStoryCards)
     pure $ overAttrs (inResolutionL .~ False) a
   BeginGame -> do
-    mFalseAwakeningPointOfNoReturn <-
-      getMaybeCampaignStoryCard Treacheries.falseAwakening
-    for_ mFalseAwakeningPointOfNoReturn \falseAwakening -> do
-      tid <- getRandom
-      pushAll
-        [ AttachStoryTreacheryTo tid (toCard falseAwakening) AgendaDeckTarget
-        , PlaceDoom (toSource tid) (toTarget tid) 1
-        ]
-
-    mFalseAwakening <- getMaybeCampaignStoryCard Treacheries.falseAwakening
-    for_ mFalseAwakening \falseAwakening -> do
-      tid <- getRandom
-      pushAll
-        [ AttachStoryTreacheryTo tid (toCard falseAwakening) AgendaDeckTarget
-        , PlaceDoom (toSource tid) (toTarget tid) 1
-        ]
+    -- both Dream-Eaters printings of False Awakening begin next to the agenda deck
+    for_ [DarkSideOfTheMoon.falseAwakening, PointOfNoReturn.falseAwakening] \def -> do
+      mFalseAwakening <- getMaybeCampaignStoryCard def
+      for_ mFalseAwakening \falseAwakening -> do
+        tid <- getRandom
+        pushAll
+          [ AttachStoryTreacheryTo tid (toCard falseAwakening) AgendaDeckTarget
+          , PlaceDoom (toSource tid) (toTarget tid) 1
+          ]
 
     pure a
   BeginRound -> do

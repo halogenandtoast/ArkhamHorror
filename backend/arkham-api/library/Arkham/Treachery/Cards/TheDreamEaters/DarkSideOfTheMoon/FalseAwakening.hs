@@ -8,8 +8,9 @@ import Arkham.Treachery.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as C
 import Arkham.Treachery.Import.Lifted
 
 -- NOTE: False Awakening's constant ability of starting next to the agenda deck
--- is hard coded (Investigator/Runner and Scenario/Runner). If we have another
--- card that does this we'll want to encode this somehome
+-- is hard coded (Investigator/Runner and Scenario/Runner). Both printings
+-- (Dark Side of the Moon and Point of No Return) must be listed at both sites.
+-- If we have another card that does this we'll want to encode this somehome
 
 newtype FalseAwakening = FalseAwakening TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)

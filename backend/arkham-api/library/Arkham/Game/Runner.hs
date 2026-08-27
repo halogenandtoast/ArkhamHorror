@@ -2561,8 +2561,10 @@ runGameMessage msg g = case msg of
     pure $ g & removedFromPlayL %~ (card :)
   AddToVictory miid (SkillTarget sid) -> do
     card <- field SkillCard sid
-    pushAll $ windows [Window.AddedToVictory miid card]
-    pure $ g & (entitiesL . skillsL %~ deleteMap sid) -- we might not want to remove here?
+    pushAll $ ObtainCard card.id : Do msg : windows [Window.AddedToVictory miid card]
+    pure g
+  Do (AddToVictory _ (SkillTarget sid)) -> do
+    pure $ g & (entitiesL . skillsL %~ deleteMap sid)
   AddToVictory miid (EventTarget eid) -> do
     card <- field EventCard eid
     pushAll $ windows [Window.AddedToVictory miid card]
@@ -2581,8 +2583,9 @@ runGameMessage msg g = case msg of
         pushAll $ windows [Window.AddedToVictory miid card']
         pure $ g & (entitiesL . storiesL %~ deleteMap sid)
   AddToVictory miid (TreacheryTarget tid) -> do
-    card <- field TreacheryCard tid
-    pushAll $ RemoveTreachery tid : windows [Window.AddedToVictory miid card]
+    whenM (selectAny $ TreacheryWithId tid) do
+      card <- field TreacheryCard tid
+      pushAll $ RemoveTreachery tid : windows [Window.AddedToVictory miid card]
     pure g
   AddToVictory miid (LocationTarget lid) -> do
     case preview (entitiesL . enemyLocationsL . ix lid) g of
@@ -3785,12 +3788,14 @@ runGameMessage msg g = case msg of
   Discard miid source (TreacheryTarget tid) -> do
     mcard <- fieldMay TreacheryCard tid
     for_ mcard \card -> do
-      miid' <- maybeSomeInvestigator miid
-      let windows'' = windows [Window.EntityDiscarded source (toTarget tid)]
-      wouldDo
-        (Run $ windows'' <> [Discarded (TreacheryTarget tid) source card])
-        (Window.WouldBeDiscarded (TreacheryTarget tid))
-        (Window.Discarded miid' source card)
+      inVictory <- selectAny $ VictoryDisplayCardMatch $ basic $ CardWithId $ toCardId card
+      unless inVictory do
+        miid' <- maybeSomeInvestigator miid
+        let windows'' = windows [Window.EntityDiscarded source (toTarget tid)]
+        wouldDo
+          (Run $ windows'' <> [Discarded (TreacheryTarget tid) source card])
+          (Window.WouldBeDiscarded (TreacheryTarget tid))
+          (Window.Discarded miid' source card)
 
     pure g
   UpdateHistory iid historyItem@(HistoryItem HistoryCardsDrawn n) -> do

@@ -740,7 +740,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       & (encounterDeckL %~ withDeck (filter (/= ec)))
       & (victoryDisplayL %~ filter (/= EncounterCard ec))
       & (setAsideCardsL %~ filter (/= EncounterCard ec))
-  AddToVictory _ (SkillTarget sid) -> do
+  Do (AddToVictory _ (SkillTarget sid)) -> do
     card <- field Field.SkillCard sid
     pure $ a & (victoryDisplayL %~ (card :))
   AddToVictory _ (EventTarget eid) -> do
@@ -755,8 +755,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     card <- field AssetCard tid
     pure $ a & (victoryDisplayL %~ nub . (card :))
   AddToVictory _ (TreacheryTarget tid) -> do
-    card <- field TreacheryCard tid
-    pure $ a & (victoryDisplayL %~ nub . (card :))
+    selectAny (Matcher.TreacheryWithId tid) >>= \case
+      False -> pure a
+      True -> do
+        card <- field TreacheryCard tid
+        pure $ a & (victoryDisplayL %~ nub . (card :))
   AddToVictory _ (ActTarget aid) -> do
     flipped <- field ActFlipped aid
     card <- field ActCard aid

@@ -131,6 +131,7 @@
       "startAt": "Each investigator begins play at Scarlet Halls.",
       "actDeck": "Build the act deck using only Act 1a—”Secrets and Lies (v. II).” Remove each other version of Act 1a from the game.",
       "yea": "Find each _Coterie_ enemy from the *Red Coterie* encounter set who voted “yea,” along with The Red-Gloved Man, and set each of those enemies aside, out of play. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/red-coterie.png'></section>",
+      "removeOtherCoterie": "Remove all other _Coterie_ enemies from the game.",
       "yeaNote": "*Note that the following characters may vote “yea,” but do not have enemy cards in this encounter set: Tuwile Masai, Abarran Arrigorriagakoa, and Razin Farhi.*",
       "nay": "For each member of the Coterie who voted “nay,” find their _Conspirator_ story asset version and put them into play under any investigator’s control. (*Note: These story assets are scattered across various encounter sets. Some of them are on the reverse sides of enemy cards.*)",
       "nayNote": "*Note that Tuwile Masai may vote “nay,” but does not have a _Conspirator_ story asset.*",

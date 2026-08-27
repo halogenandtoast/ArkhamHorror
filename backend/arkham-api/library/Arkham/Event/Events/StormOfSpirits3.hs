@@ -27,7 +27,7 @@ instance RunMessage StormOfSpirits3 where
     PlayThisEvent iid eid | eid == toId attrs -> do
       sid <- getRandom
       skillTestModifier sid attrs iid (SkillModifier #willpower 2)
-      createCardEffect Cards.stormOfSpirits3 Nothing attrs iid
+      createSkillTestCardEffect sid Cards.stormOfSpirits3 Nothing attrs iid
       aspect iid attrs (#willpower `InsteadOf` #combat) (setTarget attrs <$> mkChooseFight sid iid attrs)
       pure e
     Successful (Action.Fight, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
@@ -60,5 +60,4 @@ instance RunMessage StormOfSpirits3Effect where
         push $ If (Window.RevealChaosTokenEffect iid token attrs.id) msgs
         disable attrs
       pure e
-    SkillTestEnds {} -> disableReturn e
     _ -> StormOfSpirits3Effect <$> liftRunMessage msg attrs

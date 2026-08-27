@@ -40,7 +40,7 @@ instance RunMessage SpectralRazor2 where
     DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
       sid <- getRandom
       skillTestModifier sid attrs iid (AddSkillValue #willpower)
-      createCardEffect Cards.spectralRazor2 Nothing attrs iid
+      createSkillTestCardEffect sid Cards.spectralRazor2 Nothing attrs iid
       onRevealChaosTokenEffect sid IsSymbol attrs attrs do
         atEndOfTurn attrs iid $ addToHand iid (only $ toCard attrs)
       pushM $ mkChooseFight sid iid attrs
@@ -61,6 +61,4 @@ instance HasModifiersFor SpectralRazor2Effect where
     pure [DamageDealt $ if elite then 1 else 2]
 
 instance RunMessage SpectralRazor2Effect where
-  runMessage msg e@(SpectralRazor2Effect attrs) = runQueueT $ case msg of
-    SkillTestEnds {} -> disableReturn e
-    _ -> SpectralRazor2Effect <$> liftRunMessage msg attrs
+  runMessage msg (SpectralRazor2Effect attrs) = runQueueT $ SpectralRazor2Effect <$> liftRunMessage msg attrs

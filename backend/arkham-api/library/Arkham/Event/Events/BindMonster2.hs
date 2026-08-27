@@ -31,7 +31,7 @@ instance RunMessage BindMonster2 where
   runMessage msg e@(BindMonster2 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
       sid <- getRandom
-      createCardEffect Cards.bindMonster2 Nothing attrs sid
+      createSkillTestCardEffect sid Cards.bindMonster2 Nothing attrs sid
       aspect iid attrs (#willpower `InsteadOf` #agility) (mkChooseEvade sid iid attrs)
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
@@ -64,5 +64,4 @@ instance RunMessage BindMonster2Effect where
           disable attrs
         _ -> pure ()
       pure e
-    SkillTestEnds {} -> disableReturn e
     _ -> BindMonster2Effect <$> liftRunMessage msg attrs

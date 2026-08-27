@@ -26,7 +26,7 @@ instance RunMessage DreamersChronicle where
   runMessage msg a@(DreamersChronicle attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      createCardEffect Cards.dreamersChronicle Nothing (attrs.ability 1) iid
+      createSkillTestCardEffect sid Cards.dreamersChronicle Nothing (attrs.ability 1) iid
       investigate sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
@@ -51,11 +51,16 @@ dreamersChronicleEffect :: EffectArgs -> DreamersChronicleEffect
 dreamersChronicleEffect = cardEffect DreamersChronicleEffect Cards.dreamersChronicle
 
 instance RunMessage DreamersChronicleEffect where
-  runMessage msg e@(DreamersChronicleEffect attrs) = runQueueT $ case msg of
-    Do (CommitCard iid card) | Just iid == attrs.target.investigator -> do
-      withSkillTest \sid ->
-        skillTestModifier sid attrs card (AddSkillIcons [#wild])
-      disable attrs
-      pure e
-    SkillTestEnds {} -> disableReturn e
+  runMessage msg (DreamersChronicleEffect attrs) = runQueueT $ case msg of
+    Do (CommitCard iid card)
+      | Just iid == attrs.target.investigator
+      , not attrs.finished -> do
+          withSkillTest \sid ->
+            skillTestModifier sid attrs card (AddSkillIcons [#wild])
+          pure . DreamersChronicleEffect $ finishedEffect attrs
+    -- "The first card you commit to this investigation" re-arms for a repeated
+    -- attempt. Delegating rather than returning lets Effect.Runner re-point the
+    -- effect's skill test window at the same time.
+    RepeatSkillTest _ stId | Just stId == attrs.skillTest -> do
+      DreamersChronicleEffect <$> liftRunMessage msg (unfinishedEffect attrs)
     _ -> DreamersChronicleEffect <$> liftRunMessage msg attrs

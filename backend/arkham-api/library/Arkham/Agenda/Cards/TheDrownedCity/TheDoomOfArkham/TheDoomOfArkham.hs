@@ -16,6 +16,7 @@ import Arkham.Message (ReplaceStrategy (Swap))
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Name (nameTitle)
+import Arkham.Placement (Placement (AttachedToLocation))
 import Arkham.Projection
 import Arkham.Scenario.Deck (ScenarioEncounterDeckKey (RegularEncounterDeck))
 import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers
@@ -83,8 +84,12 @@ instance RunMessage TheDoomOfArkham where
       selectEach (enemyIs Enemies.cthulhuAncientEvil) \eid -> push $ EnemyMove eid lid
       decreaseFloodLevel lid
       removeAllClues attrs lid
-      selectEach (treacheryAt lid) (toDiscard attrs)
-      selectEach (assetAt lid) (toDiscard attrs)
+      {- Attachments only. 'assetAt'/'treacheryAt' resolve a location transitively, so
+      they also match everything in the play and threat areas of any investigator
+      standing here — which discarded their permanents. -}
+      selectEach (TreacheryWithPlacement $ AttachedToLocation lid) (toDiscard attrs)
+      selectEach (AssetWithPlacement $ AttachedToLocation lid) (toDiscard attrs)
+      selectEach (EventWithPlacement $ AttachedToLocation lid) (toDiscard attrs)
 
       {- The Ruined version shares its title with the location it replaces — which is
       what makes this work across the two-variant Downtown and Southside cards.

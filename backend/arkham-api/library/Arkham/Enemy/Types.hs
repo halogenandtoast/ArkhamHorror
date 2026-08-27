@@ -82,6 +82,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyCardCode :: Field Enemy CardCode
   EnemyCardId :: Field Enemy CardId
   EnemyLocation :: Field Enemy (Maybe LocationId)
+  EnemyAsSelfLocation :: Field Enemy (Maybe Text)
   EnemyPlacement :: Field Enemy Placement
   EnemyMeta :: Field Enemy Value
   EnemySealedChaosTokens :: Field Enemy [ChaosToken]
@@ -139,6 +140,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemyCardCode" -> pure $ SomeField EnemyCardCode
     "EnemyCardId" -> pure $ SomeField EnemyCardId
     "EnemyLocation" -> pure $ SomeField EnemyLocation
+    "EnemyAsSelfLocation" -> pure $ SomeField EnemyAsSelfLocation
     "EnemyPlacement" -> pure $ SomeField EnemyPlacement
     "EnemyMeta" -> pure $ SomeField EnemyMeta
     "EnemySealedChaosTokens" -> pure $ SomeField EnemySealedChaosTokens
@@ -503,6 +505,7 @@ fieldLens = \case
   EnemyCardCode -> cardCodeL
   EnemyCardId -> cardIdL
   EnemyLocation -> virtual
+  EnemyAsSelfLocation -> asSelfLocationL
   EnemyPlacement -> placementL
   EnemyMeta -> metaL
   EnemySealedChaosTokens -> sealedChaosTokensL

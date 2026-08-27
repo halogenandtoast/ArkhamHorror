@@ -4947,6 +4947,7 @@ getEnemyField f e = do
           then setFromList <$> select (InvestigatorAt $ locationWithEnemy enemyId)
           else pure mempty
     EnemyPlacement -> pure enemyPlacement
+    EnemyAsSelfLocation -> pure enemyAsSelfLocation
     EnemyCardsUnderneath -> pure enemyCardsUnderneath
     EnemyLastKnownLocation -> pure enemyLastKnownLocation
     Arkham.Enemy.Types.EnemyDrawnFrom -> pure enemyDrawnFrom

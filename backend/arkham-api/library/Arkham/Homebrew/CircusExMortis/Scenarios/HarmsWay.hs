@@ -2,6 +2,7 @@ module Arkham.Homebrew.CircusExMortis.Scenarios.HarmsWay (harmsWay) where
 
 import Arkham.Card
 import Arkham.ChaosToken
+import Arkham.Enemy.Types (Field (EnemyAsSelfLocation))
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.History (getHistoryField)
@@ -111,7 +112,12 @@ instance RunMessage HarmsWay where
 
       (removedYoung, keptYoung) <- splitAt 1 <$> shuffle toweringDarkYoungs
       removeEvery removedYoung
-      for_ keptYoung (`placeEnemy` Global)
+      -- Keep their mechanical Global placement while rendering the four enemies
+      -- in the otherwise-empty corners around the camp.
+      let cornerLabels = ["posn0101", "pos0101", "posn01n01", "pos01n01"]
+      for_ (zip keptYoung cornerLabels) \(def, label) -> do
+        eid <- placeEnemyCapture def Global
+        push $ UpdateEnemy eid $ Update EnemyAsSelfLocation (Just label)
 
       initFuryBag
       placeStory Stories.theDarkYoungStir

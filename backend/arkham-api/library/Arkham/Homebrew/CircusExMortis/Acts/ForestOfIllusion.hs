@@ -5,7 +5,7 @@ import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Modifier
 import Arkham.Token
 import Arkham.Trait (Trait (Woods))
@@ -30,9 +30,12 @@ instance HasAbilities ForestOfIllusion where
     [ restricted a 1 (youExist $ at_ validWoodsLocation)
         $ FastAbility
         $ GroupClueCost (PerPlayer 1) Anywhere
-    , restricted a 2 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.circusEncampment)
+    , restricted
+        a
+        2
+        (EachUndefeatedInvestigator (at_ $ locationIs Locations.circusEncampment) <> DuringTurn Anyone)
         $ Objective
-        $ forced (RoundEnds #when)
+        $ FastAbility Free
     ]
 
 instance RunMessage ForestOfIllusion where

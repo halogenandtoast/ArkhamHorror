@@ -301,19 +301,9 @@ function curveOffsets(candidates: ConnectionCandidate[]): Map<string, number> {
   return result
 }
 
-function primrosePathOuterCurve(candidate: ConnectionCandidate): number | null {
-  const locationById = new Map(locations.value.map(location => [location.id, location]))
-  const endpointCodes = [
-    locationById.get(candidate.start.dataset.id ?? '')?.cardCode,
-    locationById.get(candidate.end.dataset.id ?? '')?.cardCode,
-  ]
-  // Homebrew card codes are serialized with a `c:` prefix, so match their
-  // stable numeric suffix rather than the complete code.
-  const hasCard = (number: string) => endpointCodes.some(code => code?.endsWith(`:circus-ex-mortis:${number}`))
-  if (!hasCard('024')) return null
-
-  // Shifting an endpoint can make the direct route clear. Only retain the
-  // scenario's outside curve while another location actually blocks it.
+function obstructedChevronCurve(candidate: ConnectionCandidate): number | null {
+  // Shifting an endpoint can add or remove an obstruction, so base this on the
+  // current layout rather than particular cards or original grid positions.
   if (!svgEl) return null
   const svgRect = svgEl.getBoundingClientRect()
   const endpointIds = new Set([candidate.start.dataset.id, candidate.end.dataset.id])
@@ -353,7 +343,8 @@ function primrosePathOuterCurve(candidate: ConnectionCandidate): number | null {
   const midpointX = (candidate.x1 + candidate.x2) / 2
   const midpointY = (candidate.y1 + candidate.y2) / 2
   const outwardDot = (midpointX - boardCenter.x) * normalX + (midpointY - boardCenter.y) * normalY
-  const magnitude = Math.min(Math.max(distance * 0.45, 120), 220)
+  // A shallow lane clears a card without swinging into the next row.
+  const magnitude = Math.min(Math.max(distance * 0.28, 100), 140)
   return (outwardDot >= 0 ? 1 : -1) * magnitude
 }
 
@@ -887,7 +878,7 @@ function handleConnections(includeFateOfTheVale = true) {
           ? { connection: conn, start, end, ...points }
           : null
         const curveOffset = props.allowCurvedPaths && candidate
-          ? (primrosePathOuterCurve(candidate) ?? 0)
+          ? (obstructedChevronCurve(candidate) ?? 0)
           : 0
         makeOrUpdateChevrons(start, end, conn, curveOffset)
       }
@@ -897,10 +888,7 @@ function handleConnections(includeFateOfTheVale = true) {
   const candidates = Array.from(normalConnections.values())
   const offsets = props.allowCurvedPaths ? curveOffsets(candidates) : new Map<string, number>()
   for (const candidate of candidates) {
-    // Obstructed Moon/Circus Encampment links should travel around the
-    // forest's outer edge rather than cutting across its cards.
-    const outerCurve = props.allowCurvedPaths ? primrosePathOuterCurve(candidate) : null
-    makeOrUpdateConnectionPath(candidate, outerCurve ?? offsets.get(candidate.connection) ?? 0)
+    makeOrUpdateConnectionPath(candidate, offsets.get(candidate.connection) ?? 0)
   }
 
   const invalidMineCart = mineCartInvalidDirection()

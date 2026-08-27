@@ -35,7 +35,7 @@ instance RunMessage Armageddon4 where
       let source = toAbilitySource attrs 1
       sid <- getRandom
       skillTestModifiers sid source iid [DamageDealt 1, SkillModifier #willpower 2]
-      createCardEffect Cards.armageddon4 (effectMetaTarget sid) source iid
+      createSkillTestCardEffect sid Cards.armageddon4 Nothing source iid
       aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a
     _ -> Armageddon4 <$> liftRunMessage msg attrs
@@ -51,7 +51,7 @@ instance RunMessage Armageddon4Effect where
   runMessage msg e@(Armageddon4Effect attrs) = runQueueT $ case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
       withSkillTest \sid -> do
-        when (maybe False (isTarget sid) attrs.metaTarget) $ do
+        when (Just sid == attrs.skillTest) $ do
           let
             handleIt assetId = do
               when (token.face == #curse) do
@@ -75,6 +75,4 @@ instance RunMessage Armageddon4Effect where
             UseAbilitySource _ (IndexedSource _ (AssetSource assetId)) 1 -> handleIt assetId
             _ -> error "wrong source"
       pure e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
-      disableReturn e
     _ -> Armageddon4Effect <$> liftRunMessage msg attrs

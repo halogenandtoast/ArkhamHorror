@@ -745,6 +745,27 @@ assertNoReactionOf (toSource -> source) = do
     Nothing -> pure ()
     Just choice -> expectationFailure $ "expected no reaction from " <> show source <> ", but found:\n\n" <> show choice
 
+{- | Like 'assertNoReactionOf', but matches any ability from the source, forced
+abilities included. A forced trigger that fires for the wrong investigator shows
+up as an 'AbilityLabel' in someone's pending question, not as a reaction.
+-}
+assertNoAbilityOf :: (HasCallStack, Sourceable source) => source -> TestAppT ()
+assertNoAbilityOf (toSource -> source) = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choicesOf question = case stripQuestionWrappers question of
+      ChooseOne msgs -> msgs
+      PlayerWindowChooseOne msgs -> msgs
+      WindowChooseOne msgs -> msgs
+      _ -> []
+    isAbility = \case
+      AbilityLabel {ability} -> abilitySource ability == source
+      _ -> False
+  case find isAbility (concatMap (choicesOf . snd) (mapToList questionMap)) of
+    Nothing -> pure ()
+    Just choice ->
+      expectationFailure $ "expected no ability from " <> show source <> ", but found:\n\n" <> show choice
+
 assertNoReaction :: TestAppT ()
 assertNoReaction = do
   questionMap <- gameQuestion <$> getGame

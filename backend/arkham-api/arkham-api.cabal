@@ -8436,6 +8436,7 @@ test-suite spec
       Arkham.Asset.Assets.MacheteSpec
       Arkham.Asset.Assets.MagnifyingGlass1Spec
       Arkham.Asset.Assets.MagnifyingGlassSpec
+      Arkham.Asset.Assets.MeatCleaverSpec
       Arkham.Asset.Assets.MedicalTextsSpec
       Arkham.Asset.Assets.MiguelsKnapsackSpec
       Arkham.Asset.Assets.MitchBrownSpec
@@ -8681,6 +8682,7 @@ test-suite spec
       Arkham.Treachery.Cards.RexsCurseSpec
       Arkham.Treachery.Cards.RookieMistakeSpec
       Arkham.Treachery.Cards.SearchingForIzzieSpec
+      Arkham.Treachery.Cards.SelfDestructiveSpec
       Arkham.Treachery.Cards.ShockingDiscoverySpec
       Arkham.Treachery.Cards.SmiteTheWickedAdvancedSpec
       Arkham.Treachery.Cards.SmiteTheWickedSpec

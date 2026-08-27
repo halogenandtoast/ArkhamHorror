@@ -35,7 +35,7 @@ instance RunMessage EyeOfChaos4 where
       let source = attrs.ability 1
       sid <- getRandom
       skillTestModifiers sid source iid [SkillModifier #willpower 2, DiscoveredClues 1]
-      createCardEffect Cards.eyeOfChaos4 (effectMetaTarget sid) source iid
+      createSkillTestCardEffect sid Cards.eyeOfChaos4 Nothing source iid
       aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure a
     _ -> EyeOfChaos4 <$> liftRunMessage msg attrs
@@ -52,7 +52,7 @@ instance RunMessage EyeOfChaos4Effect where
     RevealChaosToken _ iid token -> do
       void $ runMaybeT do
         guard $ isTarget iid attrs.target
-        SkillTestTarget sid <- hoistMaybe attrs.metaTarget
+        sid <- hoistMaybe attrs.skillTest
         current <- MaybeT getSkillTestId
         guard $ sid == current
         lift do
@@ -79,6 +79,4 @@ instance RunMessage EyeOfChaos4Effect where
             UseAbilitySource _ (IndexedSource _ (AssetSource assetId)) 1 -> handleIt assetId
             _ -> error "wrong source"
       pure e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
-      disableReturn e
     _ -> EyeOfChaos4Effect <$> liftRunMessage msg attrs

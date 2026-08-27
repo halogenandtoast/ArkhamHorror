@@ -158,7 +158,7 @@ anyBloodBlightBearer = do
 
 -- | The killing source unwraps to ability @n@ on a location with this card def.
 isLocationAbility :: HasGame m => CardDef -> Int -> Source -> m Bool
-isLocationAbility def n source = case source of
+isLocationAbility def n source = case asAbilitySource source of
   AbilitySource (LocationSource lid) n' | n == n' -> fieldMap LocationCard ((== def) . toCardDef) lid
   _ -> pure False
 

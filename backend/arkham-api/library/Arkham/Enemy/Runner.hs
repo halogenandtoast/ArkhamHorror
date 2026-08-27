@@ -1730,15 +1730,12 @@ instance RunMessage EnemyAttrs where
               else getModifiedDamageAmount a damageAssignment
           let
             damageAssignment' = damageAssignment {damageAssignmentAmount = amount'}
-            combine l r =
-              if l.effect == r.effect
-                then l {damageAssignmentAmount = l.amount + r.amount}
-                else
-                  error
-                    $ "mismatched damage assignments\n\nassignment: "
-                    <> show l
-                    <> "\nnew assignment: "
-                    <> show r
+            -- Both halves are real damage and must count toward defeat, so
+            -- always sum. Since #5530 an ability's attack and non-attack damage
+            -- share a key (both are UseAbilitySource <attacker> <card> <idx>),
+            -- so the effects can differ; keep the incoming one rather than
+            -- crashing -- only the DealtExcessDamage window reads it.
+            combine l r = l {damageAssignmentAmount = l.amount + r.amount}
           push $ AssignedDamage (toTarget a) amount' 0
           unless damageAssignment'.delayed do
             push $ checkDefeated source eid

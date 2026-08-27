@@ -317,6 +317,13 @@ toAbilitySource a n = case toSource a of
   UseAbilitySource _ b n' -> AbilitySource b n'
   b -> AbilitySource b n
 
+{- | Drop the investigator credited on 'UseAbilitySource' so an ability source
+compares equal regardless of who used it.
+-}
+asAbilitySource :: Source -> Source
+asAbilitySource (UseAbilitySource _ s n) = AbilitySource s n
+asAbilitySource s = s
+
 isAbilitySource :: Sourceable a => a -> Int -> Source -> Bool
 isAbilitySource a idx (AbilitySource b idx') | idx == idx' = isSource a b
 isAbilitySource a idx (PaymentSource inner) = isAbilitySource a idx inner

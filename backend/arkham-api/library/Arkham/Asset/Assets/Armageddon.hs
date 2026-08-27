@@ -8,7 +8,7 @@ import Arkham.Asset.Uses
 import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Effect.Import
 import Arkham.Fight
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.SkillTest (getSkillTestId)
 import Arkham.I18n
 import Arkham.Matcher hiding (RevealChaosToken)
 import Arkham.Message.Lifted.Choose
@@ -33,7 +33,7 @@ instance RunMessage Armageddon where
       let source = toAbilitySource attrs 1
       sid <- getRandom
       skillTestModifier sid source iid (DamageDealt 1)
-      createCardEffect Cards.armageddon (effectMetaTarget sid) source iid
+      createSkillTestCardEffect sid Cards.armageddon Nothing source iid
       aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a
     _ -> Armageddon <$> liftRunMessage msg attrs
@@ -46,19 +46,24 @@ armageddonEffect :: EffectArgs -> ArmageddonEffect
 armageddonEffect = cardEffect ArmageddonEffect Cards.armageddon
 
 instance RunMessage ArmageddonEffect where
-  runMessage msg e@(ArmageddonEffect attrs) = runQueueT $ case msg of
+  runMessage msg (ArmageddonEffect attrs) = runQueueT $ case msg of
     RevealChaosToken _ iid token | InvestigatorTarget iid == attrs.target -> do
-      withSkillTest \sid -> do
-        when (maybe False (isTarget sid) attrs.metaTarget) $ do
+      fired <- runMaybeT do
+        guard $ not attrs.finished
+        guard $ token.face == #curse
+        sid <- hoistMaybe attrs.skillTest
+        current <- MaybeT getSkillTestId
+        guard $ sid == current
+        lift do
           let
             handleIt assetId = do
-              when (token.face == #curse) do
-                enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
+              enemies <- select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource attrs.source
 
-                concealed <- getConcealedIds (ForExpose $ toSource iid) iid
-                stillInPlay <- selectAny $ AssetWithId assetId
+              concealed <- getConcealedIds (ForExpose $ toSource iid) iid
+              stillInPlay <- selectAny $ AssetWithId assetId
 
-                when (stillInPlay || notNull enemies || notNull concealed) do
+              if stillInPlay || notNull enemies || notNull concealed
+                then do
                   chooseOrRunOneM iid $ cardI18n $ scope "armageddon" do
                     when stillInPlay do
                       labeled' "placeCharge" do
@@ -66,8 +71,8 @@ instance RunMessage ArmageddonEffect where
                     when (notNull enemies || notNull concealed) do
                       labeled' "dealDamageToEnemy" do
                         chooseDamageEnemy iid attrs.source (locationWithInvestigator iid) AnyEnemy 1
-
-                  disable attrs
+                  pure True
+                else pure False
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId
             AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
@@ -76,7 +81,8 @@ instance RunMessage ArmageddonEffect where
             UseAbilitySource _ (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
             UseAbilitySource _ (IndexedSource _ (AssetSource assetId)) 1 -> handleIt assetId
             _ -> error "wrong source"
-      pure e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
-      disableReturn e
+      pure $ ArmageddonEffect $ if fired == Just True then finishedEffect attrs else attrs
+    RepeatSkillTest _ stId
+      | Just stId == attrs.skillTest ->
+          ArmageddonEffect <$> liftRunMessage msg (unfinishedEffect attrs)
     _ -> ArmageddonEffect <$> liftRunMessage msg attrs

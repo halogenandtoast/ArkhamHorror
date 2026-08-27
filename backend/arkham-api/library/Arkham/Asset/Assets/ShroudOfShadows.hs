@@ -35,7 +35,7 @@ instance RunMessage ShroudOfShadows where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = toAbilitySource attrs 1
       sid <- getRandom
-      createCardEffect Cards.shroudOfShadows (effectMetaTarget sid) source iid
+      createSkillTestCardEffect sid Cards.shroudOfShadows Nothing source iid
       aspect
         iid
         source
@@ -60,27 +60,27 @@ shroudOfShadowsEffect :: EffectArgs -> ShroudOfShadowsEffect
 shroudOfShadowsEffect = cardEffect ShroudOfShadowsEffect Cards.shroudOfShadows
 
 instance RunMessage ShroudOfShadowsEffect where
-  runMessage msg e@(ShroudOfShadowsEffect attrs) = runQueueT $ case msg of
+  runMessage msg (ShroudOfShadowsEffect attrs) = runQueueT $ case msg of
     RevealChaosToken _ _ token -> do
-      void $ runMaybeT do
+      fired <- runMaybeT do
+        guard $ not attrs.finished
+        guard $ token.face == #curse
         iid <- hoistMaybe attrs.target.investigator
-        SkillTestTarget sid <- hoistMaybe attrs.metaTarget
+        sid <- hoistMaybe attrs.skillTest
         current <- MaybeT getSkillTestId
         guard $ sid == current
         lift do
           let
             handleIt assetId = do
-              when (token.face == #curse) do
-                locations <- getConnectedMoveLocations iid attrs.source
-                stillInPlay <- selectAny $ AssetWithId assetId
-                when (stillInPlay || notNull locations) do
-                  chooseOrRunOneM iid do
-                    when stillInPlay do
-                      cardI18n $ scope "shroudOfShadows" $ labeled' "placeCharge" do
-                        push $ AddUses attrs.source assetId Charge 1
-                    labeledI "moveToConnecting" do
-                      chooseTargetM iid locations $ moveTo attrs.source iid
-                disable attrs
+              locations <- getConnectedMoveLocations iid attrs.source
+              stillInPlay <- selectAny $ AssetWithId assetId
+              when (stillInPlay || notNull locations) do
+                chooseOrRunOneM iid do
+                  when stillInPlay do
+                    cardI18n $ scope "shroudOfShadows" $ labeled' "placeCharge" do
+                      push $ AddUses attrs.source assetId Charge 1
+                  labeledI "moveToConnecting" do
+                    chooseTargetM iid locations $ moveTo attrs.source iid
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId
             AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
@@ -89,6 +89,8 @@ instance RunMessage ShroudOfShadowsEffect where
             UseAbilitySource _ (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
             UseAbilitySource _ (IndexedSource _ (AssetSource assetId)) 1 -> handleIt assetId
             _ -> error "wrong source"
-      pure e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> disableReturn e
+      pure $ ShroudOfShadowsEffect $ if isJust fired then finishedEffect attrs else attrs
+    RepeatSkillTest _ stId
+      | Just stId == attrs.skillTest ->
+          ShroudOfShadowsEffect <$> liftRunMessage msg (unfinishedEffect attrs)
     _ -> ShroudOfShadowsEffect <$> liftRunMessage msg attrs

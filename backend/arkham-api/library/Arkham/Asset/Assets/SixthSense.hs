@@ -33,7 +33,7 @@ instance RunMessage SixthSense where
       withLocationOf iid \lid -> do
         let source = attrs.ability 1
         sid <- getRandom
-        createCardEffect Cards.sixthSense (effectMetaTarget sid) source (InvestigationTarget iid lid)
+        createSkillTestCardEffect sid Cards.sixthSense Nothing source (InvestigationTarget iid lid)
         aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure a
     _ -> SixthSense <$> liftRunMessage msg attrs
@@ -47,13 +47,16 @@ sixthSenseEffect = cardEffect SixthSenseEffect Cards.sixthSense
 
 instance RunMessage SixthSenseEffect where
   runMessage msg e@(SixthSenseEffect attrs) = runQueueT $ case msg of
-    RevealChaosToken (SkillTestSource sid) iid token | maybe False (isTarget sid) attrs.metaTarget -> do
-      faces <- getModifiedChaosTokenFace token
-      when (any (`elem` [Skull, Cultist, Tablet, ElderThing]) faces) $ do
-        priority $ push $ If (Window.RevealChaosTokenEffect iid token attrs.id) [DoStep 1 msg]
-        disable attrs
-      pure e
-    DoStep 1 (RevealChaosToken (SkillTestSource sid) iid _) | maybe False (isTarget sid) attrs.metaTarget -> do
+    RevealChaosToken (SkillTestSource sid) iid token
+      | Just sid == attrs.skillTest
+      , not attrs.finished -> do
+          faces <- getModifiedChaosTokenFace token
+          if any (`elem` [Skull, Cultist, Tablet, ElderThing]) faces
+            then do
+              priority $ push $ If (Window.RevealChaosTokenEffect iid token attrs.id) [DoStep 1 msg]
+              pure . SixthSenseEffect $ finishedEffect attrs
+            else pure e
+    DoStep 1 (RevealChaosToken (SkillTestSource sid) iid _) | Just sid == attrs.skillTest -> do
       case attrs.target of
         InvestigationTarget iid' lid | iid == iid' -> do
           currentShroud <- fieldJust LocationShroud lid
@@ -84,5 +87,7 @@ instance RunMessage SixthSenseEffect where
                       skillTestModifier sid attrs.source sid (SetDifficulty currentShroud)
         _ -> error "Invalid target"
       pure e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> disableReturn e
+    RepeatSkillTest _ stId
+      | Just stId == attrs.skillTest ->
+          SixthSenseEffect <$> liftRunMessage msg (unfinishedEffect attrs)
     _ -> SixthSenseEffect <$> liftRunMessage msg attrs

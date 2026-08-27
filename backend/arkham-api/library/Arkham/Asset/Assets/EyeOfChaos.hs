@@ -30,7 +30,7 @@ instance RunMessage EyeOfChaos where
       let source = attrs.ability 1
       sid <- getRandom
       skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
-      createCardEffect Cards.eyeOfChaos (effectMetaTarget sid) source iid
+      createSkillTestCardEffect sid Cards.eyeOfChaos Nothing source iid
       aspect iid source (#willpower `InsteadOf` #intellect) (mkInvestigate sid iid source)
       pure a
     _ -> EyeOfChaos <$> liftRunMessage msg attrs
@@ -43,29 +43,29 @@ eyeOfChaosEffect :: EffectArgs -> EyeOfChaosEffect
 eyeOfChaosEffect = cardEffect EyeOfChaosEffect Cards.eyeOfChaos
 
 instance RunMessage EyeOfChaosEffect where
-  runMessage msg e@(EyeOfChaosEffect attrs) = runQueueT $ case msg of
+  runMessage msg (EyeOfChaosEffect attrs) = runQueueT $ case msg of
     RevealChaosToken _ _ token -> do
-      void $ runMaybeT do
+      fired <- runMaybeT do
+        guard $ not attrs.finished
+        guard $ token.face == #curse
         iid <- hoistMaybe attrs.target.investigator
-        SkillTestTarget sid <- hoistMaybe attrs.metaTarget
+        sid <- hoistMaybe attrs.skillTest
         current <- MaybeT getSkillTestId
         guard $ sid == current
         lift do
           let
             handleIt assetId = do
-              when (token.face == #curse) do
-                lids <- select $ ConnectedLocation NotForMovement <> locationWithDiscoverableCluesBy iid
-                stillInPlay <- selectAny $ AssetWithId assetId
+              lids <- select $ ConnectedLocation NotForMovement <> locationWithDiscoverableCluesBy iid
+              stillInPlay <- selectAny $ AssetWithId assetId
 
-                when (stillInPlay || notNull lids) do
-                  chooseOrRunOneM iid do
-                    when stillInPlay do
-                      cardI18n $ scope "eyeOfChaos" $ labeled' "placeCharge" do
-                        addUses attrs.source assetId Charge 1
-                    unless (null lids) do
-                      withI18n $ countVar 1 $ labeled' "discoverCluesAtConnecting" do
-                        chooseTargetM iid lids $ discoverAt NotInvestigate iid attrs 1
-                disable attrs
+              when (stillInPlay || notNull lids) do
+                chooseOrRunOneM iid do
+                  when stillInPlay do
+                    cardI18n $ scope "eyeOfChaos" $ labeled' "placeCharge" do
+                      addUses attrs.source assetId Charge 1
+                  unless (null lids) do
+                    withI18n $ countVar 1 $ labeled' "discoverCluesAtConnecting" do
+                      chooseTargetM iid lids $ discoverAt NotInvestigate iid attrs 1
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId
             AbilitySource (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
@@ -74,7 +74,8 @@ instance RunMessage EyeOfChaosEffect where
             UseAbilitySource _ (ProxySource (CardIdSource _) (AssetSource assetId)) 1 -> handleIt assetId
             UseAbilitySource _ (IndexedSource _ (AssetSource assetId)) 1 -> handleIt assetId
             _ -> error "wrong source"
-      pure e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
-      disableReturn e
+      pure $ EyeOfChaosEffect $ if isJust fired then finishedEffect attrs else attrs
+    RepeatSkillTest _ stId
+      | Just stId == attrs.skillTest ->
+          EyeOfChaosEffect <$> liftRunMessage msg (unfinishedEffect attrs)
     _ -> EyeOfChaosEffect <$> liftRunMessage msg attrs

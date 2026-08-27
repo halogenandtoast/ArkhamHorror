@@ -31,7 +31,7 @@ instance RunMessage MeatCleaver where
       remainingSanity <- field InvestigatorRemainingSanity iid
       let n = if remainingSanity <= 3 then 2 else 1
       skillTestModifiers sid source iid $ SkillModifier #combat n : [DamageDealt 1 | payments.horror > 0]
-      createCardEffect Cards.meatCleaver (effectMetaTarget sid) source iid
+      createSkillTestCardEffect sid Cards.meatCleaver Nothing source iid
       chooseFightEnemy sid iid source
       pure a
     _ -> MeatCleaver <$> liftRunMessage msg attrs
@@ -45,13 +45,11 @@ meatCleaverEffect = cardEffect MeatCleaverEffect Cards.meatCleaver
 
 instance RunMessage MeatCleaverEffect where
   runMessage msg e@(MeatCleaverEffect attrs) = runQueueT $ case msg of
-    Defeated (EnemyTarget _) _ source _ | attrs.source == source -> do
+    Defeated (EnemyTarget _) _ (asAbilitySource -> source) _ | attrs.source == source -> do
       for_ attrs.target.investigator \iid -> do
         whenM (canHaveHorrorHealed attrs.source iid) do
           chooseOneM iid do
             labeledI "doNotHeal" nothing
             horrorLabeled iid $ healHorror iid attrs.source 1
-      disableReturn e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
       disableReturn e
     _ -> MeatCleaverEffect <$> liftRunMessage msg attrs

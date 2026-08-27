@@ -307,15 +307,17 @@ handleInvestigatorDamageEnemy a@InvestigatorAttrs {..} iid eid source = do
   cannotDamage <- hasModifier iid CannotDealDamage
   unless cannotDamage $ do
     damage <- damageValueFor 1 iid DamageForEnemy
-    -- For a basic attack, attribute the damage to the investigator (for
-    -- damage-dealt windows) while preserving the underlying ability source so
-    -- gating modifiers like CannotBeDamagedByPlayerSourcesExcept
-    -- (SourceIsAbility BasicAbility) still see the basic-ability exception.
+    -- Attribute the damage to the attacker (for damage-dealt windows and
+    -- SourceUsedBy) while preserving the underlying ability source so gating
+    -- modifiers like CannotBeDamagedByPlayerSourcesExcept (SourceIsAbility
+    -- BasicAbility) still see the basic-ability exception. Without the wrapper
+    -- SourceUsedBy has to guess the attacker from the active investigator,
+    -- which is wrong whenever that has been switched (issue #5530).
     let
       source' =
         case source of
-          AbilitySource s 100 -> UseAbilitySource iid s 100
-          UseAbilitySource _ s 100 -> UseAbilitySource iid s 100
+          AbilitySource s idx -> UseAbilitySource iid s idx
+          UseAbilitySource _ s idx -> UseAbilitySource iid s idx
           _ -> source
     push $ Msg.DealDamage (EnemyTarget eid) $ attack source' damage
   pure a

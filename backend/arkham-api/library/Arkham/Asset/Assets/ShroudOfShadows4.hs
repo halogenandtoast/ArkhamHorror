@@ -37,7 +37,7 @@ instance RunMessage ShroudOfShadows4 where
       let source = toAbilitySource attrs 1
       sid <- getRandom
       skillTestModifier sid source iid (SkillModifier #willpower 2)
-      createCardEffect Cards.shroudOfShadows4 (effectMetaTarget sid) source iid
+      createSkillTestCardEffect sid Cards.shroudOfShadows4 Nothing source iid
       aspect
         iid
         source
@@ -66,7 +66,7 @@ instance RunMessage ShroudOfShadows4Effect where
     RevealChaosToken _ _ token -> do
       void $ runMaybeT do
         iid <- hoistMaybe attrs.target.investigator
-        SkillTestTarget sid <- hoistMaybe attrs.metaTarget
+        sid <- hoistMaybe attrs.skillTest
         current <- MaybeT getSkillTestId
         guard $ sid == current
         lift do
@@ -91,5 +91,4 @@ instance RunMessage ShroudOfShadows4Effect where
             UseAbilitySource _ (IndexedSource _ (AssetSource assetId)) 1 -> handleIt assetId
             _ -> error "wrong source"
       pure e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> disableReturn e
     _ -> ShroudOfShadows4Effect <$> liftRunMessage msg attrs

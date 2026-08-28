@@ -1491,14 +1491,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
            , ResolvedPlayCard iid card
            ]
     pure a
-  CardEnteredPlay _ card -> do
-    pure
-      $ a
-      & (handL %~ filter (/= card))
-      & (discardL %~ filter ((/= card) . PlayerCard))
-      & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
-      & (cardsUnderneathL %~ filter ((/= card) . toCard))
-      & (foundCardsL . each %~ filter (/= card))
+  CardIsEnteringPlay _ card -> pure $ removeCardFromZones card a
+  CardEnteredPlay _ card -> pure $ removeCardFromZones card a
   InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckUrl = murl} | iid == investigatorId -> handleInitDeck a iid murl
   UpgradeDeck iid murl _ | iid == investigatorId -> handleUpgradeDeck a iid murl
   ObtainCard cardId -> handleObtainCard a cardId

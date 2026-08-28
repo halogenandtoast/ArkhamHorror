@@ -554,6 +554,15 @@ handlePutCardIntoPlay a@InvestigatorAttrs {..} card = do
     & (handL %~ filter (/= card))
     & (bondedCardsL %~ filter (/= card))
 
+removeCardFromZones :: Card -> InvestigatorAttrs -> InvestigatorAttrs
+removeCardFromZones card a =
+  a
+    & (handL %~ filter (/= card))
+    & (discardL %~ filter ((/= card) . PlayerCard))
+    & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+    & (cardsUnderneathL %~ filter ((/= card) . toCard))
+    & (foundCardsL . each %~ filter (/= card))
+
 handleDiscardTopOfDeck a@InvestigatorAttrs {..} iid n source mTarget = do
   ok <- can.manipulate.deck iid
   if ok

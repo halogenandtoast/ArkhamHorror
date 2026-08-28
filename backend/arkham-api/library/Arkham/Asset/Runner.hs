@@ -754,6 +754,8 @@ instance RunMessage AssetAttrs where
         _ -> False
 
       pure a
+    CardIsEnteringPlay _ card ->
+      pure $ a & cardsUnderneathL %~ filter (/= card)
     CardEnteredPlay _ card ->
       pure $ a & cardsUnderneathL %~ filter (/= card)
     Exhaust ea | a `isTarget` ea.target -> do

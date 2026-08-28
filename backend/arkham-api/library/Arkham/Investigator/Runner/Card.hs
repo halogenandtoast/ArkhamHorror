@@ -706,11 +706,16 @@ handleDoDrawCardsV2 a@InvestigatorAttrs {..} iid cardDraw = do
                 (\mtch -> partition (`cardMatch` mtch) allBeforeFilter)
                 cardDraw.discard
             doShuffleBackInEachWeakness = ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
+            -- Only the weaknesses go back unresolved, the rest of the draw is a normal draw
+            (unresolved, resolved) =
+              if doShuffleBackInEachWeakness
+                then partition (`cardMatch` WeaknessCard) allDrawn
+                else ([], allDrawn)
             handleCard c = pure $ drawThisCardFrom iid c (Just cardDraw.deck)
-          msgs <- if not doShuffleBackInEachWeakness then concatMapM handleCard allDrawn else pure []
+          msgs <- concatMapM handleCard resolved
           player <- getPlayer iid
           let
-            weaknesses = map PlayerCard $ filter (`cardMatch` WeaknessCard) allDrawn
+            weaknesses = map PlayerCard unresolved
             msgs' =
               (<> msgs)
                 $ guard (doShuffleBackInEachWeakness && notNull weaknesses)

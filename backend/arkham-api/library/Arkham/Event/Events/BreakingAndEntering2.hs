@@ -21,7 +21,12 @@ instance RunMessage BreakingAndEntering2 where
       investigate_ sid iid attrs
       pure e
     PassedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      when (n >= 1) $ chooseAutomaticallyEvadeAt iid attrs (locationWithInvestigator iid) AnyEnemy
+      when (n >= 1) $ skillTestCardOption attrs $ doStep 1 msg
       when (n >= 3) $ atEndOfTurn attrs iid $ addToHand iid (only attrs)
+      pure e
+    -- See CleanSweep2: the enemies are gathered when the option resolves, so the
+    -- investigation's own clue discovery has already had its say.
+    DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
+      chooseAutomaticallyEvadeAt iid attrs (locationWithInvestigator iid) AnyEnemy
       pure e
     _ -> BreakingAndEntering2 <$> liftRunMessage msg attrs

@@ -1,10 +1,11 @@
 module Arkham.Skill.Cards.ThreeAces1 (threeAces1) where
 
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.SkillTest (getsSkillTest, withSkillTest)
 import Arkham.Matcher
 import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
+import Arkham.SkillTest.Step
 import Arkham.Strategy
 import Arkham.Taboo
 
@@ -25,18 +26,21 @@ instance RunMessage ThreeAces1 where
           when (tabooed TabooList19 attrs) do
             for_ n \copy -> skillTestModifier stId attrs copy (SetAfterPlay RemoveThisFromGame)
           skillTestModifier stId attrs stId (MetaModifier "ThreeAces1")
-          -- Passing resolves the skill test inline, discarding every committed
-          -- copy. This copy's own commit is still queued behind us, and its
-          -- ObtainCard would then sweep it back out of the discard, leaving it
-          -- in no zone at all. Wait until the commit has fully resolved.
-          inserted <- insertAfterMatchingMaybe [DoStep 1 msg] \case
-            Do (CommitCard _ card) -> card.id == attrs.cardId
-            _ -> False
-          unless inserted $ doStep 1 msg
+          -- Passing the test here ended it inside the commit window, so anything
+          -- committed after us joined a test that no longer existed (#5540). Let
+          -- TriggerSkillTest apply the automatic success at ST.5 instead.
+          skillTestModifier stId attrs stId SkillTestAutomaticallySucceeds
+          -- This copy owns the "Then ..." clause, so it fires max once per test.
+          skillTestModifier stId attrs sid (MetaModifier "ThreeAces1.Resolves")
+          -- Committing this late (e.g. Isabelle Barnes) is past TriggerSkillTest,
+          -- which will never read the modifier, so pass the test directly.
+          step <- getsSkillTest (.step)
+          when (maybe False (>= RevealChaosTokenStep) step) passSkillTest
       ThreeAces1 <$> liftRunMessage msg attrs
-    DoStep 1 (InvestigatorCommittedSkill iid sid) | sid == attrs.id -> do
-      passSkillTest
-      drawCards iid attrs 3
-      gainResources iid attrs 3
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+      mods <- getModifiers attrs
+      when (MetaModifier "ThreeAces1.Resolves" `elem` mods) do
+        drawCards attrs.owner attrs 3
+        gainResources attrs.owner attrs 3
       pure s
     _ -> ThreeAces1 <$> liftRunMessage msg attrs

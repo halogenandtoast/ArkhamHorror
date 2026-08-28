@@ -15,7 +15,7 @@ artStudent = ally ArtStudent Cards.artStudent (1, 2)
 instance HasAbilities ArtStudent where
   getAbilities (ArtStudent x) =
     [ controlled x 1 (canDiscoverCluesAt YourLocation)
-        $ freeReaction (AssetEntersPlay #when (be x))
+        $ freeReaction (AssetEntersPlay #after (be x))
     ]
 
 instance RunMessage ArtStudent where

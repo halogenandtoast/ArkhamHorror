@@ -21,7 +21,7 @@ instance HasAbilities Hope where
   getAbilities (Hope a) =
     [ controlled a 1 (exists $ oneOf [assetIs Cards.zeal, assetIs Cards.augur])
         $ forced
-        $ AssetEntersPlay #when (be a)
+        $ AssetEntersPlay #after (be a)
     , controlled a 2 (exists $ be a <> AssetReady) $ evadeAction $ OrCost [exhaust a, discardCost a]
     ]
 

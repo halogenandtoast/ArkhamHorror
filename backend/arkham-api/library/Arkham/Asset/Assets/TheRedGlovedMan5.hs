@@ -21,7 +21,7 @@ theRedGlovedMan5 = ally (TheRedGlovedMan5 . (`with` Metadata [])) Cards.theRedGl
 
 instance HasAbilities TheRedGlovedMan5 where
   getAbilities (TheRedGlovedMan5 (x `With` _)) =
-    [ restricted x 1 ControlsThis $ freeReaction (AssetEntersPlay #when (AssetWithId $ toId x))
+    [ restricted x 1 ControlsThis $ freeReaction (AssetEntersPlay #after (AssetWithId $ toId x))
     , restricted x 2 ControlsThis $ ForcedAbility (PhaseEnds #when #mythos)
     ]
 

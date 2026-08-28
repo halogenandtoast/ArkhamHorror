@@ -19,7 +19,7 @@ healableAsset (toSource -> source) hType loc = HealableAsset source hType $ at_ 
 
 instance HasAbilities MedicalStudent where
   getAbilities (MedicalStudent x) =
-    [controlled x 1 criteria $ freeReaction (AssetEntersPlay #when (be x))]
+    [controlled x 1 criteria $ freeReaction (AssetEntersPlay #after (be x))]
    where
     healable hType = HealableInvestigator (toSource x) hType $ at_ YourLocation
     criteria =

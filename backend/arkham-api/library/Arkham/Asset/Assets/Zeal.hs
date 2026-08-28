@@ -22,7 +22,7 @@ instance HasAbilities Zeal where
   getAbilities (Zeal a) =
     [ controlledAbility a 1 (exists $ mapOneOf assetIs [Cards.hope, Cards.augur])
         $ forced
-        $ AssetEntersPlay #when (be a)
+        $ AssetEntersPlay #after (be a)
     , controlledAbility a 2 (exists $ be a <> AssetReady)
         $ fightAction
         $ OrCost [exhaust a, discardCost a]

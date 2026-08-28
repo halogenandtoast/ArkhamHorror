@@ -31,7 +31,7 @@ instance HasModifiersFor Geas2 where
 
 instance HasAbilities Geas2 where
   getAbilities (Geas2 a) =
-    [restrictedAbility a 1 ControlsThis $ forced $ AssetEntersPlay #when (be a)]
+    [restrictedAbility a 1 ControlsThis $ forced $ AssetEntersPlay #after (be a)]
 
 checkPromise
   :: (ReverseQueue m, HasGameLogger m) => AssetAttrs -> InvestigatorId -> Promise -> m AssetAttrs

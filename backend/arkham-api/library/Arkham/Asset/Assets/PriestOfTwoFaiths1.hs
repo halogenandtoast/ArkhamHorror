@@ -17,7 +17,7 @@ priestOfTwoFaiths1 = ally PriestOfTwoFaiths1 Cards.priestOfTwoFaiths1 (2, 2)
 
 instance HasAbilities PriestOfTwoFaiths1 where
   getAbilities (PriestOfTwoFaiths1 x) =
-    [ controlled x 1 HasRemainingBlessTokens $ freeReaction $ AssetEntersPlay #when (be x)
+    [ controlled x 1 HasRemainingBlessTokens $ freeReaction $ AssetEntersPlay #after (be x)
     , restricted x 2 ControlsThis $ forced $ PhaseEnds #when #upkeep
     ]
 

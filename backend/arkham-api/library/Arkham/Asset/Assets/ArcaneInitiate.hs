@@ -16,7 +16,7 @@ arcaneInitiate = ally ArcaneInitiate Cards.arcaneInitiate (1, 2)
 
 instance HasAbilities ArcaneInitiate where
   getAbilities (ArcaneInitiate a) =
-    [ restricted a 1 ControlsThis $ forced $ AssetEntersPlay #when (be a)
+    [ restricted a 1 ControlsThis $ forced $ AssetEntersPlay #after (be a)
     , restricted a 2 ControlsThis $ FastAbility (exhaust a)
     ]
 

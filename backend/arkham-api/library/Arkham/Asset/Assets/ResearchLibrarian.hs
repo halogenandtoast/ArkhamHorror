@@ -17,7 +17,7 @@ instance HasAbilities ResearchLibrarian where
   getAbilities (ResearchLibrarian x) =
     [ controlledAbility x 1 (CanSearchDeck <> CanShuffleDeck)
         $ freeReaction
-        $ AssetEntersPlay #when (be x)
+        $ AssetEntersPlay #after (be x)
     ]
 
 instance RunMessage ResearchLibrarian where

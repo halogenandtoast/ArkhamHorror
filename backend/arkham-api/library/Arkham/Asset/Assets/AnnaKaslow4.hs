@@ -23,7 +23,7 @@ instance HasAbilities AnnaKaslow4 where
     [ restricted a 1 InYourHand $ freeReaction $ GameBegins #when
     , controlled a 2 (CanSearchDeck <> CanShuffleDeck)
         $ freeReaction
-        $ AssetEntersPlay #when (be a)
+        $ AssetEntersPlay #after (be a)
     ]
 
 instance RunMessage AnnaKaslow4 where

@@ -87,9 +87,12 @@ const yourModifiers = computed(() => {
   return (investigator.modifiers ?? []).filter(shouldRenderYourModifiers)
 })
 
+const shouldRenderSkillTestModifier = (mod: Modifier) =>
+  mod.type.tag !== 'MetaModifier' || mod.type.contents === 'ThreeAces1'
+
 const modifiers = computed(() =>
   [...(props.game.investigators[props.skillTest.investigator]?.modifiers ?? []).
-    filter(shouldRender), ...yourModifiers.value, ...(props.skillTest.modifiers ?? [])]) 
+    filter(shouldRender), ...yourModifiers.value, ...(props.skillTest.modifiers ?? []).filter(shouldRenderSkillTestModifier)]) 
 const committedCards = computed(() => props.skillTest.committedCards)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const skipTriggersAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SKIP_TRIGGERS_BUTTON))
@@ -508,6 +511,9 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
             <span class="text">{{ $t('modifier.skillIconsSubtract') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'SkillTestAutomaticallySucceeds'">
+            <span class="text">{{ $t('modifier.skillTestAutomaticallySucceeds') }}</span>
+          </template>
+          <template v-if="modifier.type.tag === 'MetaModifier' && modifier.type.contents === 'ThreeAces1'">
             <span class="text">{{ $t('modifier.skillTestAutomaticallySucceeds') }}</span>
           </template>
           <template v-if="modifier.type.tag === 'OtherModifier' && modifier.type.contents === 'RevealAnotherChaosToken'">

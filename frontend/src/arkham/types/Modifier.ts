@@ -73,6 +73,7 @@ export type ModifierType
   | HandSizeCardCount
   | HandSize
   | ScenarioModifierValue
+  | MetaModifier
   | AsIfInHand
   | AsIfInHandFor
 
@@ -108,6 +109,11 @@ export type HandSize = {
 export type ScenarioModifierValue = {
   tag: "ScenarioModifierValue"
   contents: [string, any]
+}
+
+export type MetaModifier = {
+  tag: "MetaModifier"
+  contents: unknown
 }
 
 export type HandSizeCardCount = {
@@ -332,6 +338,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('HandSize'),
       contents: JsonDecoder.number()
     }, 'HandSize'),
+  JsonDecoder.object<MetaModifier>(
+    {
+      tag: JsonDecoder.literal('MetaModifier'),
+      contents: JsonDecoder.succeed()
+    }, 'MetaModifier'),
   JsonDecoder.object<DiscoveredClues>(
     {
       tag: JsonDecoder.literal('DiscoveredClues'),

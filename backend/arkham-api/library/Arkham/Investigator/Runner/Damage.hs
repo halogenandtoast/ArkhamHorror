@@ -738,6 +738,14 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
         healthDamageableAssets <-
           toList <$> getHealthDamageableAssets iid matcher source health damageTargets horrorTargets
         healthDamageableInvestigators <- select $ InvestigatorCanBeAssignedDamageBy iid
+        -- Composure assets (Moxie, Plucky, Combat Training, ...) read "non-direct
+        -- damage/horror must be assigned to this before it can be assigned to your
+        -- investigator card". They gate only your own card -- other assets and other
+        -- investigators stay available -- and they do so under every strategy, not
+        -- just DamageAny, so compute it once here off the unfiltered damageable set.
+        blockingDamageAssets <-
+          filterM (`hasModifier` NonDirectDamageMustBeAssignToThisFirst) healthDamageableAssets
+        let selfDamageBlocked = notNull blockingDamageAssets
         let
           assignRestOfHealthDamage rest =
             InvestigatorDoAssignDamage investigatorId source strategy matcher rest sanity
@@ -768,16 +776,25 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
             matchingAssets <- select $ mapOneOf AssetWithId healthDamageableAssets <> amatcher
             healthDamageableAssets' <-
               mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd matchingAssets (field AssetRemainingHealth)
+            -- Nothing matched the "assign to these first" clause and Composure has
+            -- gated your card, so offer the Composure assets: the damage still has
+            -- to land somewhere.
+            offeredAssets <-
+              if null healthDamageableAssets' && selfDamageBlocked
+                then
+                  mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd blockingDamageAssets (field AssetRemainingHealth)
+                else pure healthDamageableAssets'
             let
+              offerSelf = null healthDamageableAssets' && not selfDamageBlocked
               targetCount =
                 if null healthDamageableAssets'
-                  then 1 + length healthDamageableInvestigators
+                  then (if offerSelf then 1 else 0) + length healthDamageableInvestigators + length offeredAssets
                   else length healthDamageableAssets'
               applyAll = targetCount == 1
             pure
-              $ [damageInvestigator iid applyAll | null healthDamageableAssets']
+              $ [damageInvestigator iid applyAll | offerSelf]
               <> map (`damageInvestigator` applyAll) healthDamageableInvestigators
-              <> map (\(x, n) -> damageAsset x (n >= health && applyAll)) healthDamageableAssets'
+              <> map (\(x, n) -> damageAsset x (n >= health && applyAll)) offeredAssets
           go = \case
             AmongInvestigators imatcher -> do
               iids <- select imatcher
@@ -785,26 +802,33 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
               -- wish" and is *not* direct, so each point can also be soaked by an
               -- asset controlled by one of those investigators. Offer one point at a
               -- time across every matched investigator and their damageable assets.
-              soakAssets <-
-                fmap (toList . mconcat)
-                  $ for iids \i -> getHealthDamageableAssets i matcher source health damageTargets horrorTargets
+              -- Each investigator's own Composure asset gates only their own card, so
+              -- keep the soakable assets grouped per investigator to test them.
+              perInvestigator <- for iids \i -> do
+                soak <- toList <$> getHealthDamageableAssets i matcher source health damageTargets horrorTargets
+                blocked <- anyM (`hasModifier` NonDirectDamageMustBeAssignToThisFirst) soak
+                pure (i, soak, blocked)
+              let soakAssets = concatMap (\(_, soak, _) -> soak) perInvestigator
               pure $ case (iids, soakAssets) of
                 ([], _) -> []
                 ([iid'], []) -> [damageInvestigator iid' True]
                 _ ->
-                  [damageInvestigator iid' False | iid' <- iids]
+                  [damageInvestigator iid' False | (iid', _, False) <- perInvestigator]
                     <> [damageAsset aid False | aid <- soakAssets]
             DamageAssetsFirst amatcher -> assetsFirst amatcher
             DamageAndHorrorAssetsFirst amatcher -> assetsFirst amatcher
             HorrorAssetsFirst _ -> do
+              -- "Horror must be assigned to <assets> first" says nothing about damage,
+              -- so your own card stays available here -- unless a Composure asset is
+              -- soaking, which gates it for damage too.
               let
                 targetCount =
                   if null healthDamageableAssets
-                    then 1 + length healthDamageableInvestigators
+                    then (if selfDamageBlocked then 0 else 1) + length healthDamageableInvestigators
                     else length healthDamageableAssets
                 applyAll = targetCount == 1
               pure
-                $ [damageInvestigator iid applyAll]
+                $ [damageInvestigator iid applyAll | not selfDamageBlocked]
                 <> map (`damageInvestigator` applyAll) healthDamageableInvestigators
                 <> map (`damageAsset` applyAll) healthDamageableAssets
             DamageDirect -> pure [damageInvestigator iid True]
@@ -851,9 +875,9 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
               pure
                 $ if null validAssets
                   then
-                    damageInvestigator iid False
-                      : map (`damageAsset` False) healthDamageableAssets
-                        <> map (`damageInvestigator` False) healthDamageableInvestigators
+                    [damageInvestigator iid False | not selfDamageBlocked]
+                      <> map (`damageAsset` False) healthDamageableAssets
+                      <> map (`damageInvestigator` False) healthDamageableInvestigators
                   else map (`damageAsset` False) validAssets
             SingleTarget -> error "handled elsewhere"
             DamageEvenly -> error "handled elsewhere"
@@ -865,6 +889,10 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
         sanityDamageableAssets <-
           toList <$> getSanityDamageableAssets iid matcher source sanity damageTargets horrorTargets
         sanityDamageableInvestigators <- select $ InvestigatorCanBeAssignedHorrorBy iid
+        -- See the health branch: Composure gates your own card under every strategy.
+        blockingHorrorAssets <-
+          filterM (`hasModifier` NonDirectHorrorMustBeAssignToThisFirst) sanityDamageableAssets
+        let selfHorrorBlocked = notNull blockingHorrorAssets
         let
           assignRestOfSanityDamage rest =
             InvestigatorDoAssignDamage investigatorId source strategy matcher health rest
@@ -901,28 +929,39 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
           horrorAssetsFirst amatcher = do
             sanityDamageableAssets' <- select $ mapOneOf AssetWithId sanityDamageableAssets <> amatcher
             let
+              -- See the health branch: fall back to the Composure assets when nothing
+              -- matched, so the horror always has somewhere to go.
+              offeredAssets =
+                if null sanityDamageableAssets' && selfHorrorBlocked
+                  then blockingHorrorAssets
+                  else sanityDamageableAssets'
+              offerSelf = null sanityDamageableAssets' && not selfHorrorBlocked
               targetCount =
                 if null sanityDamageableAssets'
-                  then 1 + length sanityDamageableInvestigators
+                  then (if offerSelf then 1 else 0) + length sanityDamageableInvestigators + length offeredAssets
                   else length sanityDamageableAssets'
               applyAll = targetCount == 1
 
-            pure $ [damageInvestigator iid applyAll | null sanityDamageableAssets']
-              <> map (`damageAsset` applyAll) sanityDamageableAssets'
+            pure $ [damageInvestigator iid applyAll | offerSelf]
+              <> map (`damageAsset` applyAll) offeredAssets
               <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
           go = \case
             AmongInvestigators imatcher -> do
               iids <- select imatcher
               -- See the health branch: horror dealt "divided as they wish" is not
               -- direct, so allow soaking onto the matched investigators' assets.
-              soakAssets <-
-                fmap (toList . mconcat)
-                  $ for iids \i -> getSanityDamageableAssets i matcher source sanity damageTargets horrorTargets
+              -- Composure gates each investigator's own card, so keep the soakable
+              -- assets grouped per investigator to test them.
+              perInvestigator <- for iids \i -> do
+                soak <- toList <$> getSanityDamageableAssets i matcher source sanity damageTargets horrorTargets
+                blocked <- anyM (`hasModifier` NonDirectHorrorMustBeAssignToThisFirst) soak
+                pure (i, soak, blocked)
+              let soakAssets = concatMap (\(_, soak, _) -> soak) perInvestigator
               pure $ case (iids, soakAssets) of
                 ([], _) -> []
                 ([iid'], []) -> [damageInvestigator iid' True]
                 _ ->
-                  [damageInvestigator iid' False | iid' <- iids]
+                  [damageInvestigator iid' False | (iid', _, False) <- perInvestigator]
                     <> [damageAsset aid False | aid <- soakAssets]
             DamageAssetsFirst _ -> do
               sanityDamageableAssets' <-
@@ -930,11 +969,13 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
               let
                 targetCount =
                   if null sanityDamageableAssets'
-                    then 1 + length sanityDamageableInvestigators
+                    then (if selfHorrorBlocked then 0 else 1) + length sanityDamageableInvestigators
                     else length sanityDamageableAssets'
                 applyAll = targetCount == 1
 
-              pure $ [damageInvestigator iid applyAll]
+              -- "Damage must be assigned to <assets> first" says nothing about horror,
+              -- so your own card stays available -- unless Composure is soaking.
+              pure $ [damageInvestigator iid applyAll | not selfHorrorBlocked]
                 <> map (\(x, n) -> damageAsset x (n >= sanity && applyAll)) sanityDamageableAssets'
                 <> map (`damageInvestigator` applyAll) sanityDamageableInvestigators
             HorrorAssetsFirst amatcher -> horrorAssetsFirst amatcher
@@ -967,9 +1008,9 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
               pure
                 $ if null validAssets
                   then
-                    damageInvestigator iid False
-                      : map (`damageAsset` False) sanityDamageableAssets
-                        <> map (`damageInvestigator` False) sanityDamageableInvestigators
+                    [damageInvestigator iid False | not selfHorrorBlocked]
+                      <> map (`damageAsset` False) sanityDamageableAssets
+                      <> map (`damageInvestigator` False) sanityDamageableInvestigators
                   else map (`damageAsset` False) validAssets
             SingleTarget -> error "handled elsewhere"
             DamageEvenly -> error "handled elsewhere"

@@ -1038,7 +1038,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
       guardTiming timing $ \case
         Window.InvestigatorDefeated defeatedBy who ->
           andM
-            [ matchWho iid who whoMatcher
+            [ matchWho iid who whoMatcher.includeEliminated
             , defeatedByMatches defeatedBy defeatedByMatcher
             ]
         _ -> noMatch

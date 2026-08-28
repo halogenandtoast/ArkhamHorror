@@ -37,6 +37,7 @@ import Arkham.Token
 import Arkham.Trait (Trait)
 import Control.Lens.Plated (Plated)
 import Data.Aeson.TH
+import GHC.Records
 
 class IsInvestigatorMatcher a where
   toInvestigatorMatcher :: a -> InvestigatorMatcher
@@ -201,6 +202,11 @@ data InvestigatorMatcher
   | InvestigatorWithScarletKey ScarletKeyMatcher
   | InvestigatorIsPlayer PlayerId
   deriving stock (Show, Eq, Ord, Data)
+
+instance HasField "includeEliminated" InvestigatorMatcher InvestigatorMatcher where
+  getField = \case
+    IncludeEliminated x -> IncludeEliminated x
+    other -> IncludeEliminated other
 
 investigatorWithRecord :: IsCampaignLogKey k => k -> InvestigatorMatcher
 investigatorWithRecord = InvestigatorWithRecord . toCampaignLogKey

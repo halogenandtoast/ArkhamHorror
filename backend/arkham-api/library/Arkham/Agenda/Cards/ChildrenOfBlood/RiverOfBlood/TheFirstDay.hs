@@ -23,7 +23,13 @@ theFirstDay = agenda (1, A) TheFirstDay Cards.theFirstDay (Static 4)
 
 instance HasAbilities TheFirstDay where
   getAbilities (TheFirstDay a) =
-    [restricted a 1 (exists $ EnemyWithTitle "Julia Stern") $ forced $ PhaseEnds #when #enemy]
+    [ restricted
+        a
+        1
+        (exists $ EnemyWithTitle "Julia Stern" <> oneOf [ReadyEnemy, EnemyAt (LocationWithTrait Lair)])
+        $ forced
+        $ PhaseEnds #when #enemy
+    ]
 
 instance RunMessage TheFirstDay where
   runMessage msg a@(TheFirstDay attrs) = runQueueT $ case msg of
@@ -66,8 +72,7 @@ instance RunMessage TheFirstDay where
               juliaCard <- flippedOverCapture julia
               traverse_ obtainCard (juliaCard : topOfEncounterDeck)
               placeUnderneath lid =<< shuffleM (juliaCard : topOfEncounterDeck)
-            else do
+            else whenMatch julia ReadyEnemy do
               moveTowardsMatching (attrs.ability 1) julia $ NearestLocationToLocation lid $ LocationWithTrait Lair
-
       pure a
     _ -> TheFirstDay <$> liftRunMessage msg attrs

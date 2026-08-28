@@ -20,7 +20,7 @@ instance HasAbilities HiddenVault where
   getAbilities (HiddenVault a) =
     extendRevealed
       a
-      [ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
+      [ mkAbility a 1 $ forced $ LocationEntersPlay #after (be a)
       , restricted a 2 Here
           $ freeReaction
           $ SkillTestResult #after You (WhileEvadingAnEnemy $ enemyAt a) (SuccessResult $ atLeast 2)

@@ -53,11 +53,12 @@ instance RunMessage SixthSense4Effect where
       | Just sid == attrs.skillTest
       , not attrs.finished -> do
           faces <- getModifiedChaosTokenFace token
-          if any (`elem` [Skull, Cultist, Tablet, ElderThing]) faces
-            then do
-              priority $ push $ If (Window.RevealChaosTokenEffect iid token attrs.id) [DoStep 1 msg]
-              pure . SixthSense4Effect $ finishedEffect attrs
-            else pure e
+          -- The latch closes in DoStep 1, not here: a finished effect stops
+          -- receiving messages entirely (Arkham.Effect, RunMessage Effect), so
+          -- setting it now would swallow the DoStep we are about to queue.
+          when (any (`elem` [Skull, Cultist, Tablet, ElderThing]) faces) do
+            priority $ push $ If (Window.RevealChaosTokenEffect iid token attrs.id) [DoStep 1 msg]
+          pure e
     DoStep 1 (RevealChaosToken (SkillTestSource sid) iid _) | Just sid == attrs.skillTest -> do
       case attrs.target of
         InvestigationTarget iid' lid | iid == iid' -> do
@@ -90,7 +91,7 @@ instance RunMessage SixthSense4Effect where
                     labeledI "useOriginalLocationsShroud" do
                       skillTestModifier sid attrs.source sid (SetDifficulty currentShroud)
         _ -> error "Invalid target"
-      pure e
+      pure . SixthSense4Effect $ finishedEffect attrs
     RepeatSkillTest _ stId
       | Just stId == attrs.skillTest ->
           SixthSense4Effect <$> liftRunMessage msg (unfinishedEffect attrs)

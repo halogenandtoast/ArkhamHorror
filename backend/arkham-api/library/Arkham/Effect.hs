@@ -377,6 +377,10 @@ createSurgeEffect (toSource -> source) (toTarget -> target) = do
 instance RunMessage Effect where
   runMessage msg (Effect a) = case msg of
     UseThisAbility {} -> Effect <$> runMessage msg a
+    -- 'finishedEffect' is a spent once-per-attempt latch, not a dead effect, so
+    -- RepeatSkillTest has to get through for 'unfinishedEffect' to re-arm it.
+    -- Every user of that pattern was unreachable until this case existed.
+    RepeatSkillTest {} -> Effect <$> runMessage msg a
     _ -> do
       if effectFinished (toAttrs a)
         then pure $ Effect a

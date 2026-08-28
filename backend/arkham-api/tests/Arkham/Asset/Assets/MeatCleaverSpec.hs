@@ -21,6 +21,7 @@ spec = describe "Meat Cleaver" do
     [doFight] <- meatCleaver.abilities
     self `useAbility` doFight
     payUpTo 1 1
+    applyAllHorror
     self.horror `shouldReturn` 1
     click "choose enemy"
     click "start skill test"

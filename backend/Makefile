@@ -176,6 +176,13 @@ api.watch.test:
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api || true; DEVELOPMENT=true stack exec arkham-api & stack build --test --pedantic --fast arkham-api --ghc-options '-DDEVELOPMENT $(GHC_OPTIONS)' --interleaved-output $(EXTRA_STACK_FLAGS) || echo 'Tests failed; server left running.'\"" \
 
+## api.watch.test + the rolling build log (see api.watch.log). Failing examples
+## land in .claude/build.log alongside the compile errors, so an agent can read
+## the spec output instead of asking for it.
+.PHONY: api.watch.test.log
+api.watch.test.log:
+	$(MAKE) api.watch.test 2>&1 | scripts/rolling-log.sh ../.claude/build.log
+
 .PHONY: test
 test:
 	cd arkham-api && \
@@ -245,6 +252,12 @@ test.watch:
 	  --interleaved-output \
 	  $(FILE_WATCH) \
 		$(EXTRA_STACK_FLAGS)
+
+## test.watch + the rolling build log (see api.watch.log). Same log file as the
+## api.watch.* targets, so run one watcher at a time or they will interleave.
+.PHONY: test.watch.log
+test.watch.log:
+	$(MAKE) test.watch 2>&1 | scripts/rolling-log.sh ../.claude/build.log
 
 .PHONY: data
 data:

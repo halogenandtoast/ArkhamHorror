@@ -25,7 +25,7 @@ instance RunMessage LookOut where
   runMessage msg t@(LookOut attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
-      revelationSkillTest sid iid attrs #intellect (Fixed 3)
+      revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid

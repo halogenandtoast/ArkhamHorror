@@ -8556,6 +8556,7 @@ test-suite spec
       Arkham.Event.Events.HiddenPocketSpec
       Arkham.Event.Events.HotStreak4Spec
       Arkham.Event.Events.IllTakeThatSpec
+      Arkham.Event.Events.JoinTheCaravan1Spec
       Arkham.Event.Events.LieInWaitSpec
       Arkham.Event.Events.LiveAndLearnSpec
       Arkham.Event.Events.LookWhatIFoundSpec

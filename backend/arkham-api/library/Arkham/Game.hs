@@ -641,10 +641,22 @@ withInvestigatorConnectionData inner@(With target _) = case target of
 newtype WithDeckSize = WithDeckSize Investigator
   deriving newtype (Show, Targetable)
 
+-- The attrs keep the original investigator's printed values so the form can be
+-- dropped again, so the transfigured class is applied here, on the wire, the same
+-- way `field InvestigatorClass` applies it for the engine.
 instance ToJSON WithDeckSize where
   toJSON (WithDeckSize i) = case toJSON i of
-    Object o -> Object $ KeyMap.insert "deckSize" (toJSON $ length $ investigatorDeck $ toAttrs i) o
+    Object o ->
+      Object
+        $ KeyMap.insert "deckSize" (toJSON $ length $ investigatorDeck attrs)
+        $ case investigatorForm attrs of
+          TransfiguredForm inner ->
+            let iinvestigator = lookupInvestigator (InvestigatorId inner) attrs.player
+             in KeyMap.insert "class" (toJSON (toAttrs iinvestigator).classSymbol) o
+          _ -> o
     _ -> error "failed to serialize investigator"
+   where
+    attrs = toAttrs i
 
 withSkillTestModifiers :: HasGame m => ChaosToken -> m (With ChaosToken Value)
 withSkillTestModifiers token = do
@@ -5226,7 +5238,12 @@ instance Projection Investigator where
       InvestigatorSideDeck -> pure investigatorSideDeck
       InvestigatorDecks -> pure investigatorDecks
       InvestigatorDiscard -> pure investigatorDiscard
-      InvestigatorClass -> pure investigatorClass
+      InvestigatorClass -> case investigatorForm of
+        TransfiguredForm inner ->
+          pure
+            $ let iinvestigator = lookupInvestigator (InvestigatorId inner) investigatorPlayerId
+               in (toAttrs iinvestigator).classSymbol
+        _ -> pure investigatorClass
       InvestigatorActionsTaken -> pure investigatorActionsTaken
       InvestigatorActionsPerformed -> pure investigatorActionsPerformed
       InvestigatorSlots -> do

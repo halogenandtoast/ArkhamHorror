@@ -1,8 +1,12 @@
 module Arkham.Event.Events.Transfiguration2Spec (spec) where
 
+import Arkham.ClassSymbol
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Event.Cards qualified as Events
 import Arkham.Investigator.Cards qualified as Investigators
+import Arkham.Projection
+import Data.Aeson.Key qualified as Key
+import Data.Aeson.KeyMap qualified as KeyMap
 import TestImport.New
 
 spec :: Spec
@@ -40,6 +44,29 @@ spec = describe "Transfiguration (2)" do
       self `playEvent` Events.transfiguration2
       chooseHankSamson
       handSlots self `shouldReturn` 2
+
+  -- #5544: the class symbol is printed on the front too, but InvestigatorClass was
+  -- the one printed value with no TransfiguredForm branch, so a transfigured
+  -- investigator still reported their original class to InvestigatorWithClass,
+  -- DifferentClassAmong and SearchCollectionForRandom.
+  it "treats the front of your investigator card as the chosen card (class)" . gameTest $ \self -> do
+    -- Jenny Barnes is a Rogue, Hank Samson is a Survivor
+    field InvestigatorClass self.id `shouldReturn` Rogue
+    self `playEvent` Events.transfiguration2
+    chooseHankSamson
+    field InvestigatorClass self.id `shouldReturn` Survivor
+    run $ EndOfGame Nothing
+    field InvestigatorClass self.id `shouldReturn` Rogue
+
+  -- The attrs keep the original class so the form can be dropped again, so the
+  -- transfigured class has to be applied on the wire as well or the client themes
+  -- the investigator by their original class while showing the chosen card's front.
+  it "publishes the transfigured class" . gameTest $ \self -> do
+    self `playEvent` Events.transfiguration2
+    chooseHankSamson
+    publishedClass `shouldReturn` Just (toJSON Survivor)
+    run $ EndOfGame Nothing
+    publishedClass `shouldReturn` Just (toJSON Rogue)
 
   it "only lasts until the end of the game" . gameTest $ \self -> do
     self `playEvent` Events.transfiguration2
@@ -92,3 +119,17 @@ chooseInvestigatorCard name cCode = chooseOptionMatching ("choose " <> name) \ca
 
 handSlots :: Investigator -> TestAppT Int
 handSlots self = length . findWithDefault [] #hand <$> self.slots
+
+-- The class the client actually receives, read off the PublicGame encoding. The
+-- harness runs a single investigator, so take the only one published.
+publishedClass :: TestAppT (Maybe Value)
+publishedClass = do
+  game <- getGame
+  let
+    obj k (Object o) = KeyMap.lookup (Key.fromText k) o
+    obj _ _ = Nothing
+  pure $ case obj "investigators" (toJSON (PublicGame (1 :: Int) "test" [] game)) of
+    Just (Object invs) -> case KeyMap.elems invs of
+      [i] -> obj "class" i
+      _ -> Nothing
+    _ -> Nothing

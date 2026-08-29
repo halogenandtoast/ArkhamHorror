@@ -207,6 +207,7 @@ data WindowMatcher
   | WouldRevealChaosTokens Timing Who
   | Discarded Timing (Maybe Who) SourceMatcher ExtendedCardMatcher
   | DiscardedFromHand Timing Who SourceMatcher ExtendedCardMatcher
+  | DiscardedFromHandBatch Timing Who SourceMatcher
   | DiscardedFromDeck Timing Who SourceMatcher ExtendedCardMatcher
   | WouldDiscardFromHand Timing Who SourceMatcher
   | WouldDiscardFromDeck Timing Who SourceMatcher

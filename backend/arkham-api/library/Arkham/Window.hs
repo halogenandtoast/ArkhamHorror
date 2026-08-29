@@ -205,6 +205,11 @@ data WindowType
   | EncounterDeckRunsOutOfCards
   | Discarded (Maybe InvestigatorId) Source Card
   | DiscardedFromHand InvestigatorId Source Card
+  | {- | Fired once after a batch of cards has been discarded from hand. Cards that
+    care about discarding "1 or more cards" hang off this rather than the
+    per-card 'DiscardedFromHand' window, which opens once per card.
+    -}
+    DiscardedFromHandBatch InvestigatorId Source [Card]
   | DiscardedFromDeck InvestigatorId Source Card
   | WouldDiscardFromHand InvestigatorId Source
   | WouldDiscardFromDeck InvestigatorId Source

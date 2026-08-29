@@ -30,6 +30,7 @@ discardFromHand iid (toSource -> source) strategy amount =
     , discardTarget = Nothing
     , discardInvestigator = iid
     , discardDestination = ToDiscardPile
+    , discardBatchCards = []
     }
 
 chooseAndDiscardCard
@@ -78,13 +79,15 @@ discardAll iid (toSource -> source) matcher =
     , discardTarget = Nothing
     , discardInvestigator = iid
     , discardDestination = ToDiscardPile
+    , discardBatchCards = []
     }
 
--- | Walk a list of windows and, for each `WouldDiscardFromHand` window
--- targeting `iid`, rewrite the queued `Do (DiscardFromHand ...)` via `f`.
--- Use this to react to a discard the game is about to do — for example,
--- redirect it to the top of the deck, change its amount, or otherwise
--- rewrite the discard before it resolves.
+{- | Walk a list of windows and, for each `WouldDiscardFromHand` window
+targeting `iid`, rewrite the queued `Do (DiscardFromHand ...)` via `f`.
+Use this to react to a discard the game is about to do — for example,
+redirect it to the top of the deck, change its amount, or otherwise
+rewrite the discard before it resolves.
+-}
 updateWouldDiscardFromHand
   :: (MonadTrans t, HasQueue Message m)
   => InvestigatorId

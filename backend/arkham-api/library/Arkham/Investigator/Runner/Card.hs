@@ -324,9 +324,18 @@ handleDiscardCard a@InvestigatorAttrs {..} iid source cardId msg = do
       afterWindowMsg <- checkWindows [mkAfter (Window.Discarded (Just iid) source card)]
       beforeHandWindowMsg <- checkWindows [mkWhen (Window.DiscardedFromHand iid source card)]
       afterHandWindowMsg <- checkWindows [mkAfter (Window.DiscardedFromHand iid source card)]
+      -- A bare DiscardCard outside a DiscardFromHand batch never reaches
+      -- DoneDiscarding, so it opens its own single-card batch window here.
+      batchWindowMsgs <-
+        if isJust investigatorDiscarding
+          then pure []
+          else pure <$> checkWindows [mkAfter (Window.DiscardedFromHandBatch iid source [card])]
       if inMulligan
         then push (Do msg)
-        else pushAll [beforeWindowMsg, beforeHandWindowMsg, Do msg, afterWindowMsg, afterHandWindowMsg]
+        else
+          pushAll
+            $ [beforeWindowMsg, beforeHandWindowMsg, Do msg, afterWindowMsg, afterHandWindowMsg]
+            <> batchWindowMsgs
     Nothing -> do
       card <- getCard cardId
       beforeWindowMsg <- checkWindows [mkWhen (Window.Discarded (Just iid) source card)]
@@ -342,6 +351,7 @@ handleDoDiscardCard a@InvestigatorAttrs {..} iid cardId = do
           updateHandDiscard handDiscard =
             handDiscard
               { discardAmount = max 0 (discardAmount handDiscard - 1)
+              , discardBatchCards = discardBatchCards handDiscard <> [card]
               }
         push $ AddToDiscard iid pc
         pure $ a & handL %~ filter (/= card) & discardingL %~ fmap updateHandDiscard
@@ -354,6 +364,13 @@ handleDoDiscardCard a@InvestigatorAttrs {..} iid cardId = do
 handleDoneDiscarding a@InvestigatorAttrs {..} iid = case investigatorDiscarding of
   Nothing -> pure a
   Just handDiscard -> do
+    -- One window for the whole discard: "discard 1 or more cards from hand" is a
+    -- single event, so responders must not fire once per card.
+    unless (null $ discardBatchCards handDiscard) do
+      batchWindowMsg <-
+        checkWindows
+          [mkAfter (Window.DiscardedFromHandBatch iid handDiscard.source (discardBatchCards handDiscard))]
+      push batchWindowMsg
     when (discardAmount handDiscard == 0)
       $ for_ (discardThen handDiscard) push
     pure $ a & discardingL .~ Nothing

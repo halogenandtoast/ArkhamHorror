@@ -283,6 +283,10 @@ sourceMatches s = \case
     -- 'Matcher.ScenarioCardSource' below already does.
     let
       check = \case
+        -- Costs are paid under a 'PaymentSource' wrapper, so an encounter card's
+        -- own ability cost (Idle Hands' "take 2 damage") has to unwrap before it
+        -- can read as an encounter card source (issue #5545).
+        PaymentSource source' -> check source'
         AbilitySource source' n | notPlayerAbilityIndex n -> check source'
         UseAbilitySource _ source' n | notPlayerAbilityIndex n -> check source'
         AssetSource aid -> matches aid (Matcher.AssetCardMatch Matcher.IsEncounterCard <> Matcher.UncontrolledAsset)

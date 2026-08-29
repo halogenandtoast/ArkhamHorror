@@ -722,6 +722,7 @@ data Message
     PayForAbility Ability [Window]
   | CreatedCost ActiveCostId
   | CancelCost ActiveCostId
+  | CancelCostPayment ActiveCostId
   | SetCost ActiveCostId Cost
   | SetActiveCostChosenAction ActiveCostId Action
   | PaySealCost InvestigatorId CardId Cost

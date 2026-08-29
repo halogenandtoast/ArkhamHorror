@@ -2,6 +2,7 @@ module Arkham.Helpers.Cost where
 
 import Arkham.Ability
 import Arkham.Action (Action)
+import Arkham.ActiveCost.Base
 import Arkham.Asset.Types (Field (..))
 import Arkham.Asset.Uses
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
@@ -749,3 +750,20 @@ payEffectCost
   :: (Sourceable source, HasCardCode source, ReverseQueue m)
   => InvestigatorId -> source -> Cost -> m ()
 payEffectCost _iid source cost = push $ Msg.PayForAbility (abilityEffect source [] cost) []
+
+{- | Cancelling or ignoring any part of a cost means the cost was not paid, so
+the ability whose cost it was does not resolve its effect. What was already paid
+stays paid -- Idle Hands is still discarded when Deny Existence takes away the 2
+damage, you just do not get the additional action.
+
+Cost payments run under a 'PaymentSource' wrapper naming the active cost that is
+paying (see 'Arkham.ActiveCost.payCost'), which is what lets a "would take
+damage" window be traced back to the cost it belongs to. Anything else is not a
+cost payment and is left alone.
+-}
+cancelCostPaymentFrom :: (HasGame m, HasQueue Msg.Message m) => Source -> m ()
+cancelCostPaymentFrom = \case
+  PaymentSource s -> do
+    costs <- getActiveCosts
+    for_ (find ((== s) . activeCostSource) costs) $ push . Msg.CancelCostPayment . activeCostId
+  _ -> pure ()

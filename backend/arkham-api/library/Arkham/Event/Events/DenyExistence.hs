@@ -3,6 +3,7 @@ module Arkham.Event.Events.DenyExistence (denyExistence, DenyExistence (..)) whe
 import Arkham.Classes.HasQueue (popMessageMatching_, replaceMessageMatching)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (Discarded)
+import Arkham.Helpers.Cost (cancelCostPaymentFrom)
 import Arkham.Window
 
 newtype DenyExistence = DenyExistence EventAttrs
@@ -38,16 +39,21 @@ instance RunMessage DenyExistence where
       cancelWindowBatch [w]
       lift $ case windowType w of
         WouldDiscardFromHand iid source -> do
+          cancelCostPaymentFrom source
           popMessageMatching_ \case
             Do (DiscardFromHand handDiscard) -> handDiscard.investigator == iid && handDiscard.source == toSource source
             _ -> False
         LostResources iid source n -> do
+          cancelCostPaymentFrom source
           popMessageMatching_ (== Do (LoseResources iid source n))
         LostActions iid source n -> do
+          cancelCostPaymentFrom source
           popMessageMatching_ (== Do (LoseActions iid source n))
-        WouldTakeDamage _source (InvestigatorTarget iid) n _ -> do
+        WouldTakeDamage source (InvestigatorTarget iid) n _ -> do
+          cancelCostPaymentFrom source
           push $ CancelDamage iid n
-        WouldTakeHorror _source (InvestigatorTarget iid) n -> do
+        WouldTakeHorror source (InvestigatorTarget iid) n -> do
+          cancelCostPaymentFrom source
           push $ CancelHorror iid n
         _ -> error "Invalid window"
       popMessageMatching_ $ \case

@@ -106,15 +106,6 @@ activeCostActions ac = case ac.target of
 
 instance HasField "actions" ActiveCost [Action] where
   getField = activeCostActions
-activeCostSource :: ActiveCost -> Source
-activeCostSource ac = case activeCostTarget ac of
-  ForAbility a -> toSource a
-  ForCard _ c -> CardIdSource c.id
-  ForCost c -> CardIdSource c.id
-  ForAdditionalCost c -> BatchSource c
-
-instance HasField "source" ActiveCost Source where
-  getField = activeCostSource
 
 instance HasField "canModify" ActiveCost Bool where
   getField c = case c.target of
@@ -1750,6 +1741,12 @@ instance RunMessage ActiveCost where
                     then payCost msg c iid skipAdditionalCosts cost'
                     else throw $ InvalidState $ "Can't afford cost (a): " <> tshow cost'
                 else throw $ InvalidState $ "Can't afford cost (b): " <> tshow cost
+    -- An aspect of a cost that gets cancelled or ignored (Deny Existence on the
+    -- damage half of "take 2 damage and discard this: ...") means the cost was
+    -- not paid in full, so the ability's effect never resolves. What was already
+    -- paid stays paid.
+    CancelCostPayment acId | acId == c.id -> do
+      pure $ c {activeCostCancelled = True}
     SetCost acId cost | acId == c.id -> do
       pure $ c {activeCostCosts = cost}
     SetActiveCostChosenAction acId action | acId == c.id -> do
@@ -1760,7 +1757,9 @@ instance RunMessage ActiveCost where
       case c.target of
         ForAbility ability -> do
           if ability.index == NonActivateAbility
-            then push $ UseCardAbility c.investigator ability.source ability.index c.windows c.payments
+            then
+              pushWhen (not c.cancelled)
+                $ UseCardAbility c.investigator ability.source ability.index c.windows c.payments
             else do
               let
                 isAction = isActionAbility ability && ability.index > 0 && not (isFastAbility ability)
@@ -1803,7 +1802,7 @@ instance RunMessage ActiveCost where
               pushAll
                 $ [whenActivateAbilityWindow | not isForced]
                 <> [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
-                <> [UseCardAbility iid ability.source ability.index c.windows c.payments]
+                <> [UseCardAbility iid ability.source ability.index c.windows c.payments | not c.cancelled]
                 <> afterMsgs
                 <> [afterActivateAbilityWindow | not isForced]
         ForCard isPlayAction card -> do

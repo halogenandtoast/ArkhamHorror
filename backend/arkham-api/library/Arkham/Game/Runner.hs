@@ -1500,7 +1500,7 @@ runGameMessage msg g = case msg of
     pure $ g & entitiesL . investigatorsL %~ map (rewriteUsedAbilityWindows matchesP rewriteWT)
   CommitCard iid card -> do
     let alreadyCommitted = any ((== card.id) . toCardId) (g ^. entitiesL . skillsL)
-    if alreadyCommitted
+    if alreadyCommitted || isNothing (g ^. skillTestL)
       then pure g
       else do
         push $ InvestigatorCommittedCard iid card

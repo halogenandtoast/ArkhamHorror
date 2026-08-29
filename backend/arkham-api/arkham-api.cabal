@@ -8422,6 +8422,7 @@ test-suite spec
       Arkham.Asset.Assets.HardKnocks2Spec
       Arkham.Asset.Assets.HardKnocksSpec
       Arkham.Asset.Assets.HeirloomOfHyperboreaSpec
+      Arkham.Asset.Assets.HelplessPassengerSpec
       Arkham.Asset.Assets.HolyRosarySpec
       Arkham.Asset.Assets.Hyperawareness2Spec
       Arkham.Asset.Assets.HyperawarenessSpec

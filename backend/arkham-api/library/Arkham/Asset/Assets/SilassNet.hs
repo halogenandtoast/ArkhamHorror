@@ -28,8 +28,8 @@ instance RunMessage SilassNet where
       pure a
     SkillTestEnds _ iid (isAbilitySource attrs 1 -> True) -> do
       miid <- getSkillTestInvestigator
-      when (Just iid == miid) do
-        skills <- select $ skillOwnedBy iid
+      skills <- select $ skillOwnedBy iid
+      when (Just iid == miid && notNull skills) do
         chooseOneM iid do
           cardI18n $ scope "silassNet" $ labeled' "returnNetWithSkills" do
             returnToHand iid attrs
@@ -37,7 +37,8 @@ instance RunMessage SilassNet where
           labeledI "doNothing" nothing
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      getSkillTestTargetedEnemy >>= traverse_ \eid -> do
+      committedSkills <- select $ skillOwnedBy iid
+      when (notNull committedSkills) $ getSkillTestTargetedEnemy >>= traverse_ \eid -> do
         otherEnemies <- select $ enemyEngagedWith iid <> not_ (EnemyWithId eid)
         when (notNull otherEnemies) do
           chooseOneM iid do

@@ -1944,17 +1944,20 @@ instance RunMessage EnemyAttrs where
           }
       pure $ a & (defeatedL .~ False) & (exhaustedL .~ False)
     AddToVictory _miid (isTarget a -> True) -> do
-      -- Do (AddToVictory ...) raises the leave-play windows itself, once the card
-      -- is actually in the victory display, so only the cleanup belongs here
-      push $ RemovedFromPlay (toSource a)
-      push $ Do msg
+      whenLeavePlay <- checkWindows $ (`Window.mkWindow` Window.LeavePlay (toTarget a)) <$> [#when, #at]
+      pushAll [whenLeavePlay, RemovedFromPlay (toSource a), Do msg]
       pure a
     Do (AddToVictory miid (isTarget a -> True)) -> do
       selectEach (SwarmOf a.id) (push . RemoveEnemy)
       mloc <- getLocationOf a
       mods <- getModifiers a
       let card = toCard a
-      pushAll $ windows [Window.LeavePlay (toTarget a), Window.AddedToVictory miid card]
+      pushAll
+        [ CheckWindows [mkWhen $ Window.AddedToVictory miid card]
+        , CheckWindows [Window.mkWindow #at $ Window.AddedToVictory miid card]
+        , CheckWindows
+            [mkAfter $ Window.LeavePlay (toTarget a), mkAfter $ Window.AddedToVictory miid card]
+        ]
       unless (StayInVictory `elem` mods) $ removeEnemy a
       withLocationOf a $ for_ a.keys . placeKey
       pure

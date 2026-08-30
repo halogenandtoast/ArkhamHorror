@@ -9,8 +9,8 @@ import Arkham.Location.Types (Field (LocationPosition))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (
-  cannotEnterFromCluedLocation,
   scenarioI18n,
+  treacherousPathModifiers,
  )
 
 newtype SunkenStairway = SunkenStairway LocationAttrs
@@ -21,7 +21,7 @@ sunkenStairway :: LocationCard SunkenStairway
 sunkenStairway = withXShroud $ location SunkenStairway Cards.sunkenStairway 0 (Static 2)
 
 instance HasModifiersFor SunkenStairway where
-  getModifiersFor (SunkenStairway a) = cannotEnterFromCluedLocation a
+  getModifiersFor (SunkenStairway a) = treacherousPathModifiers a
 
 instance HasAbilities SunkenStairway where
   getAbilities (SunkenStairway a) =

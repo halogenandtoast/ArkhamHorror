@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (treacherousPathModifiers)
 
 newtype ShatteredRuins = ShatteredRuins LocationAttrs
   deriving anyclass IsLocation
@@ -14,7 +14,7 @@ shatteredRuins :: LocationCard ShatteredRuins
 shatteredRuins = withXShroud $ location ShatteredRuins Cards.shatteredRuins 0 (Static 2)
 
 instance HasModifiersFor ShatteredRuins where
-  getModifiersFor (ShatteredRuins a) = cannotEnterFromCluedLocation a
+  getModifiersFor (ShatteredRuins a) = treacherousPathModifiers a
 
 instance HasAbilities ShatteredRuins where
   getAbilities (ShatteredRuins a) =

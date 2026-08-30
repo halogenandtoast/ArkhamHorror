@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheDrownedCity.TheWesternWall.WesternWall_11530 (westernWall_11530) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (ShroudModifier), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (BaseShroud), modifySelf)
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (
@@ -18,7 +18,7 @@ westernWall_11530 = withXShroud $ location WesternWall_11530 Cards.westernWall_1
 
 instance HasModifiersFor WesternWall_11530 where
   getModifiersFor (WesternWall_11530 a) = do
-    modifySelf a [ShroudModifier $ maybe 1 locationLevel $ locationPosition a]
+    modifySelf a [BaseShroud $ maybe 1 locationLevel $ locationPosition a]
     cannotEnterFromCluedLocation a
 
 instance HasAbilities WesternWall_11530 where

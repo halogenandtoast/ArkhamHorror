@@ -3,7 +3,7 @@ module Arkham.Location.Cards.TheDrownedCity.TheWesternWall.ObsidianFoundations (
 import Arkham.Ability
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (treacherousPathModifiers)
 import Arkham.Treachery.CardDefs.TheDrownedCity.TheWesternWall qualified as Treacheries
 
 newtype ObsidianFoundations = ObsidianFoundations LocationAttrs
@@ -14,7 +14,7 @@ obsidianFoundations :: LocationCard ObsidianFoundations
 obsidianFoundations = withXShroud $ location ObsidianFoundations Cards.obsidianFoundations 0 (Static 2)
 
 instance HasModifiersFor ObsidianFoundations where
-  getModifiersFor (ObsidianFoundations a) = cannotEnterFromCluedLocation a
+  getModifiersFor (ObsidianFoundations a) = treacherousPathModifiers a
 
 instance HasAbilities ObsidianFoundations where
   getAbilities (ObsidianFoundations a) =

@@ -22,6 +22,7 @@ instance RunMessage StalkPrey where
       search iid attrs EncounterDeckTarget [(FromTopOfDeck 9, ShuffleBackIn)] #any (defer attrs IsDraw)
       pure e
     SearchNoneFound iid (isTarget attrs -> True) -> do
+      continue_ iid
       drawCards iid attrs 1
       discoverAtYourLocation NotInvestigate iid attrs 1
       pure e
@@ -29,6 +30,7 @@ instance RunMessage StalkPrey where
       let enemyCards = filter (`cardMatch` EnemyType) $ onlyEncounterCards cards
       case enemyCards of
         [] -> do
+          continue_ iid
           drawCards iid attrs 1
           discoverAtYourLocation NotInvestigate iid attrs 1
         _ -> chooseOneM iid do

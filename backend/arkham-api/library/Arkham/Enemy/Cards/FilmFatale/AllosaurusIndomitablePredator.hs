@@ -34,6 +34,7 @@ instance HasAbilities AllosaurusIndomitablePredator where
 instance RunMessage AllosaurusIndomitablePredator where
   runMessage msg e@(AllosaurusIndomitablePredator attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      removeTokens (attrs.ability 1) attrs Seal (countTokens Seal attrs.tokens)
       flipOverBy iid (attrs.ability 1) attrs
       pure e
     Flip _ _ (isTarget attrs -> True) -> do

@@ -358,16 +358,40 @@ const focusedCardGroups = computed<SearchedCardGroup[]>(() => {
   }))
 })
 
-const visibleCardIds = computed(() => new Set([
-  ...(investigator.value?.hand ?? []).map((card) => toCardContents(card).id),
-  ...focusedCards.value.map((card) => toCardContents(card).id),
-  ...searchedCards.value.flatMap((group) => group.cards.map((card) => toCardContents(card).id)),
-  ...(props.game.scenario?.victoryDisplay ?? []).map((card) => toCardContents(card).id),
-  ...Object.values(props.game.assets).flatMap((asset) => asset.cardsUnderneath.map((card) => toCardContents(card).id)),
-  // Committed cards are rendered (and clickable) by CommittedSkills, so a
-  // CardIdTarget on one must not also fall through to a generic Continue button.
-  ...(props.game.skillTest?.committedCards ?? []).map((card) => toCardContents(card).id),
-]))
+const cardIds = (cards: ArkhamCard[]) => cards.map((card) => toCardContents(card).id)
+
+const cardChoiceHandledElsewhereIds = computed(() => {
+  const scenario = props.game.scenario
+
+  return new Set([
+    ...(investigator.value?.hand ?? []).map((card) => toCardContents(card).id),
+    ...Object.values(props.game.investigators).flatMap((i) => [
+      ...i.discard.map((card) => card.id),
+      ...cardIds(i.cardsUnderneath),
+    ]),
+    ...focusedCards.value.map((card) => toCardContents(card).id),
+    ...searchedCards.value.flatMap((group) => cardIds(group.cards)),
+    ...cardIds(props.game.removedFromPlay),
+    ...Object.values(props.game.assets).flatMap((asset) => cardIds(asset.cardsUnderneath)),
+    ...Object.values(props.game.events).flatMap((event) => cardIds(event.cardsUnderneath)),
+    ...Object.values(props.game.locations).flatMap((location) => cardIds(location.cardsUnderneath)),
+    ...Object.values(props.game.acts).flatMap((act) => cardIds(act.cardsUnderneath)),
+    ...(scenario ? [
+      ...scenario.discard.map((card) => card.id),
+      ...cardIds(scenario.victoryDisplay),
+      ...cardIds(scenario.setAsideCards),
+      ...cardIds(scenario.cardsUnderScenarioReference),
+      ...cardIds(scenario.cardsUnderAgendaDeck),
+      ...cardIds(scenario.cardsUnderActDeck),
+      ...cardIds(scenario.cardsNextToAgendaDeck),
+      ...cardIds(scenario.cardsNextToActDeck),
+      ...scenario.deckDiscards.flatMap(([, cards]) => cardIds(cards)),
+    ] : []),
+    // Committed cards are rendered (and clickable) by CommittedSkills, so a
+    // CardIdTarget on one must not also fall through to a generic Continue button.
+    ...(props.game.skillTest?.committedCards ?? []).map((card) => toCardContents(card).id),
+  ])
+})
 
 // Scarlet keys draw their own ability buttons next to the key art. Collect the
 // keys that are actually on screen, so a key with no anchor still falls through
@@ -430,7 +454,7 @@ function abilitySourceHandledElsewhere(source: any) {
     case 'TreacherySource': return source.contents in props.game.treacheries
     case 'ActSource': return source.contents in props.game.acts
     case 'AgendaSource': return source.contents in props.game.agendas
-    case 'EventSource': return source.contents in props.game.events || visibleCardIds.value.has(source.contents)
+    case 'EventSource': return source.contents in props.game.events || cardChoiceHandledElsewhereIds.value.has(source.contents)
     case 'StorySource': return source.contents in props.game.stories
     case 'InvestigatorSource': return source.contents in props.game.investigators || source.contents in props.game.otherInvestigators
     case 'ScarletKeySource': return renderedScarletKeyIds.value.has(source.contents)
@@ -461,7 +485,7 @@ function targetLabelHandledElsewhere(choice: TargetLabel) {
       case 'ScarletKeyTarget': return contents in props.game.scarletKeys
       case 'ConcealedCardTarget':
       case 'ConcealedTarget': return contents in props.game.concealed
-      case 'CardIdTarget': return visibleCardIds.value.has(contents)
+      case 'CardIdTarget': return cardChoiceHandledElsewhereIds.value.has(contents)
       case 'ChaosTokenFaceTarget': return props.game.focusedChaosTokens.some((token) => token.face === contents)
       default: return false
     }

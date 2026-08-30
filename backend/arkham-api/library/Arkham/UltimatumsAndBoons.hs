@@ -247,17 +247,14 @@ runUltimatumsAndBoonsMessage msg = case msg of
       -- Ultimatum of the Spiral: a defeated investigator's deck gains a
       -- random basic weakness.
       whenM (hasUltimatum UltimatumOfTheSpiral) do
-        investigatorClass <- field InvestigatorClass iid
-        playerCount <- getPlayerCount
-        weakness <-
-          genCard
-            =<< sampleRandomBasicWeakness
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = investigatorClass
-                , rbwPlayerCount = playerCount
-                , rbwDecklist = Nothing
-                , rbwStandalone = False
-                }
+        ctx <-
+          RandomBasicWeaknessContext
+            <$> field InvestigatorClass iid
+            <*> getPlayerCount
+            <*> field InvestigatorTaboo iid
+            <*> field InvestigatorCardPool iid
+            <*> getIsStandalone
+        weakness <- genCard =<< sampleRandomBasicWeakness ctx
         push $ AddCampaignCardToDeck iid DoNotShuffleIn weakness
   -- Ultimatum of The Scream: a defeated unique non-story, non-weakness ally
   -- is removed from the game and banned for the rest of the campaign.

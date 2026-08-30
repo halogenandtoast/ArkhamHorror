@@ -28,6 +28,10 @@ import Arkham.DamageEffect
 import Arkham.Debug
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist
+import Arkham.Decklist.RandomBasicWeakness (
+  RandomBasicWeaknessContext (..),
+  sampleRandomBasicWeaknessMatching,
+ )
 import Arkham.Difficulty
 import Arkham.Effect
 import Arkham.Effect.Types (EffectAttrs (effectFinished, effectOnDisable))
@@ -120,7 +124,6 @@ import Arkham.Name
 import Arkham.Phase
 import Arkham.Placement
 import Arkham.Placement qualified as Placement
-import Arkham.PlayerCard
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario
@@ -353,6 +356,7 @@ runGameMessage msg g = case msg of
           updateAttrs (lookupInvestigator iid' playerId) \ia ->
             ia
               { investigatorTaboo = dl.taboo
+              , investigatorCardPool = dl.cardPool
               , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
               , investigatorSettings =
                   let settings = investigatorSettings ia
@@ -415,6 +419,7 @@ runGameMessage msg g = case msg of
           updateAttrs (lookupInvestigator iid' playerId) \ia ->
             ia
               { investigatorTaboo = dl.taboo
+              , investigatorCardPool = dl.cardPool
               , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
               , investigatorSettings =
                   let settings = ia.settings
@@ -458,6 +463,7 @@ runGameMessage msg g = case msg of
             ( \ia ->
                 ia
                   { investigatorTaboo = dl.taboo
+                  , investigatorCardPool = dl.cardPool
                   , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
                   , investigatorSettings =
                       let settings = investigatorSettings ia
@@ -3282,25 +3288,19 @@ runGameMessage msg g = case msg of
     pure $ g & (phaseHistoryL %~ insertHistory iid historyItem) & setTurnHistory
   FoundEncounterCardFrom {} -> pure $ g & (focusedCardsL .~ mempty) & (foundCardsL .~ mempty)
   FoundAndDrewEncounterCard {} -> pure $ g & (focusedCardsL .~ mempty) & (foundCardsL .~ mempty)
+  -- Every caller searches for a basic weakness, so this shares the deck building
+  -- sampler and only layers @matcher@ on top of the filters it already applies.
   SearchCollectionForRandom iid source matcher -> do
-    investigatorClass <- field Investigator.InvestigatorClass iid
-    playerCount <- getPlayerCount
-    let
-      multiplayerFilter =
-        if playerCount < 2
-          then notElem MultiplayerOnly . cdDeckRestrictions . toCardDef
-          else const True
-      notForClass = \case
-        OnlyClass c -> c /= investigatorClass
-        _ -> True
-      classOnlyFilter = not . any notForClass . cdDeckRestrictions . toCardDef
-      cardFilter = and . sequence [multiplayerFilter, classOnlyFilter, (`cardMatch` matcher)]
+    ctx <-
+      RandomBasicWeaknessContext
+        <$> field Investigator.InvestigatorClass iid
+        <*> getPlayerCount
+        <*> field Investigator.InvestigatorTaboo iid
+        <*> field Investigator.InvestigatorCardPool iid
+        <*> getIsStandalone
     mcard <-
-      case filter
-        (cardFilter . (`lookupPlayerCard` nullCardId))
-        (toList allPlayerCards) of
-        [] -> pure Nothing
-        (x : xs) -> Just <$> (genPlayerCard =<< sample (x :| xs))
+      traverse genPlayerCard
+        =<< sampleRandomBasicWeaknessMatching ((`cardMatch` matcher) . (`lookupPlayerCard` nullCardId)) [] ctx
     g <$ push (RequestedPlayerCard iid source mcard [])
   CancelSurge _ -> do
     ems <- effectModifiers GameSource [NoSurge]

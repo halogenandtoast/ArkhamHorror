@@ -40,9 +40,10 @@ standaloneI18n s a = withI18n $ scope "standalone" $ scope s a
 getIsReturnTo :: HasGame m => m Bool
 getIsReturnTo = selectJust TheScenario <&> \(ScenarioId c) -> T.take 1 (unCardCode c) == "5"
 
--- | True when the active scenario is a prelude (e.g. Feast of Hemlock Vale's
--- day preludes). Used to skip per-scenario effects that would otherwise
--- double-count across a prelude and the scenario it leads into.
+{- | True when the active scenario is a prelude (e.g. Feast of Hemlock Vale's
+day preludes). Used to skip per-scenario effects that would otherwise
+double-count across a prelude and the scenario it leads into.
+-}
 getIsPrelude :: HasGame m => m Bool
 getIsPrelude = fromMaybe False <$> scenarioFieldMaybe ScenarioIsPrelude
 
@@ -93,13 +94,7 @@ addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck = do
   drawWeakness acc _ = do
     cardDef <- sampleRandomBasicWeaknessExcluding (inDeck <> basicWeaknessCodes acc) context
     pure $ acc <> [cardDef]
-  context =
-    RandomBasicWeaknessContext
-      { rbwInvestigatorClass = investigatorClass
-      , rbwPlayerCount = playerCount
-      , rbwDecklist = mDecklist
-      , rbwStandalone = True
-      }
+  context = decklistWeaknessContext investigatorClass playerCount True mDecklist
 
 toChaosTokenValue :: ScenarioAttrs -> ChaosTokenFace -> Int -> Int -> ChaosTokenValue
 toChaosTokenValue attrs t esVal heVal =

@@ -551,6 +551,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         , investigatorLog = investigatorLog
         , investigatorSideDeck = investigatorSideDeck
         , investigatorTaboo = investigatorTaboo
+        , investigatorCardPool = investigatorCardPool
         , investigatorMutated = investigatorMutated
         , investigatorSlots = defaultSlots a.id
         , investigatorDeckUrl = investigatorDeckUrl

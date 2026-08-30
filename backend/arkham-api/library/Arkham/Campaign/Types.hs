@@ -105,11 +105,12 @@ data CampaignAttrs = CampaignAttrs
   , campaignResolutions :: Map ScenarioId Resolution
   , campaignXpBreakdown :: [XpBreakdownStep]
   , campaignModifiers :: Map InvestigatorId [Modifier]
-  , -- | Modifiers that apply to /all/ investigators for the remainder of the
-    -- campaign (current and future). Unlike 'campaignModifiers' these are not
-    -- snapshotted per-investigator; they are expanded onto every investigator
-    -- when modifiers are collected.
-    campaignModifiersForAll :: [ModifierType]
+  , campaignModifiersForAll :: [ModifierType]
+  {- ^ Modifiers that apply to /all/ investigators for the remainder of the
+  campaign (current and future). Unlike 'campaignModifiers' these are not
+  snapshotted per-investigator; they are expanded onto every investigator
+  when modifiers are collected.
+  -}
   , campaignMeta :: Value
   , campaignStore :: Map Text Value
   , campaignDestiny :: Map Scope TarotCard
@@ -265,14 +266,8 @@ getRandomBasicWeakness = getRandomBasicWeaknessExcluding []
 getRandomBasicWeaknessExcluding
   :: MonadRandom m => [CardCode] -> ClassSymbol -> Int -> Maybe ArkhamDBDecklist -> m CardDef
 getRandomBasicWeaknessExcluding excluded investigatorClass playerCount mDecklist =
-  sampleRandomBasicWeaknessExcluding
-    excluded
-    RandomBasicWeaknessContext
-      { rbwInvestigatorClass = investigatorClass
-      , rbwPlayerCount = playerCount
-      , rbwDecklist = mDecklist
-      , rbwStandalone = False
-      }
+  sampleRandomBasicWeaknessExcluding excluded
+    $ decklistWeaknessContext investigatorClass playerCount False mDecklist
 
 {- | Replace every random basic weakness placeholder in the deck with an actual weakness.
 Each draw excludes what the earlier draws produced, and the basic weaknesses already in
@@ -387,11 +382,12 @@ chaosBagOf = campaignChaosBag . toAttrs
 $(deriveToJSON (aesonOptions $ Just "campaign") ''CampaignAttrs)
 
 instance ToJSON XpBreakdownStep where
-  toJSON xs = object
-    [ "step" .= xs.xbsStep
-    , "investigators" .= xs.xbsInvestigators
-    , "entries" .= xs.xbsEntries
-    ]
+  toJSON xs =
+    object
+      [ "step" .= xs.xbsStep
+      , "investigators" .= xs.xbsInvestigators
+      , "entries" .= xs.xbsEntries
+      ]
 
 instance FromJSON XpBreakdownStep where
   parseJSON = withObject "XpBreakdownStep" $ \o ->
@@ -433,8 +429,8 @@ instance FromJSON CampaignAttrs where
         toXpBreakdownStep (s, e) = XpBreakdownStep s deckIids e
     campaignXpBreakdown <-
       (map toXpBreakdownStep . oldBreakdown <$> o .: "xpBreakdown")
-      <|> (map toXpBreakdownStep <$> o .:? "xpBreakdown" .!= mempty)
-      <|> (o .:? "xpBreakdown" .!= mempty)
+        <|> (map toXpBreakdownStep <$> o .:? "xpBreakdown" .!= mempty)
+        <|> (o .:? "xpBreakdown" .!= mempty)
     campaignModifiers <- o .: "modifiers"
     campaignModifiersForAll <- o .:? "modifiersForAll" .!= mempty
     campaignMeta <- o .: "meta"

@@ -463,6 +463,7 @@ investigator f cardDef Stats {..} =
                 , investigatorBeganRoundAt = Nothing
                 , investigatorPreviousLocation = Nothing
                 , investigatorTaboo = Nothing
+                , investigatorCardPool = Nothing
                 , investigatorMutated = Nothing
                 , investigatorDeckUrl = Nothing
                 , investigatorSettings = defaultCardSettings

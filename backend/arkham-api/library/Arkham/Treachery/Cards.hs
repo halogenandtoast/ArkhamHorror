@@ -6,6 +6,7 @@ module Arkham.Treachery.Cards (
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Card.CardType (CardType (TreacheryType))
 import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Prelude
 import Arkham.Treachery.CardDefEntries (allTreacheryCardDefs)
@@ -13,9 +14,6 @@ import Arkham.Treachery.CardDefEntries (allTreacheryCardDefs)
 allTreacheryCards :: Map CardCode CardDef
 allTreacheryCards = allPlayerTreacheryCards <> allEncounterTreacheryCards
 
-{- | A treachery belongs to a player deck exactly when it carries a card
-subtype (weakness or basic weakness); the rest are encounter cards.
--}
 allPlayerTreacheryCards :: Map CardCode CardDef
 allPlayerTreacheryCards =
   (Homebrew.playerTreacheriesMap <>)
@@ -28,4 +26,4 @@ allEncounterTreacheryCards =
   (Homebrew.treacheriesMap <>)
     $ mapFromList
     $ concatMap toCardCodePairs
-    $ filter (isNothing . cdCardSubType) allTreacheryCardDefs
+    $ filter ((== TreacheryType) . cdCardType) allTreacheryCardDefs

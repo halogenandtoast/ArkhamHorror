@@ -407,10 +407,13 @@ instance RunMessage LocationAttrs where
                   then locationClueCount' `div` 2
                   else locationClueCount'
           let currentClues = countTokens Clue locationTokens
+          -- A location re-entering play keeps the clues already on it and is topped up
+          -- to its clue value, not stocked afresh (FAQ 1.39), #5560
+          let cluesToPlace = max 0 (locationClueCount - currentClues)
 
           pushAll
-            $ [ PlaceClues (toSource a) (toTarget a) locationClueCount
-              | locationClueCount > 0
+            $ [ PlaceClues (toSource a) (toTarget a) cluesToPlace
+              | cluesToPlace > 0
               ]
           doPlace
           pure $ a & withoutCluesL .~ (locationClueCount + currentClues == 0)

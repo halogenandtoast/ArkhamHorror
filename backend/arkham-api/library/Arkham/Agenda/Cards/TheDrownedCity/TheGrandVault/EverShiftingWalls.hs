@@ -1,6 +1,5 @@
 module Arkham.Agenda.Cards.TheDrownedCity.TheGrandVault.EverShiftingWalls (everShiftingWalls) where
 
-import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers
@@ -42,11 +41,7 @@ instance HasModifiersFor EverShiftingWalls where
             ]
 
 instance HasAbilities EverShiftingWalls where
-  getAbilities (EverShiftingWalls a) =
-    [ restricted a 1 (youExist $ at_ FullyFloodedLocation)
-        $ forced
-        $ TurnBegins #when You
-    ]
+  getAbilities (EverShiftingWalls a) = [strugglesForAir a 1]
 
 instance RunMessage EverShiftingWalls where
   runMessage msg a@(EverShiftingWalls attrs) = runQueueT $ case msg of

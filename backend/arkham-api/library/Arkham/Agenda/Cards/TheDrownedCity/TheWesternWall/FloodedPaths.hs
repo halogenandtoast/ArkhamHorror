@@ -1,6 +1,5 @@
 module Arkham.Agenda.Cards.TheDrownedCity.TheWesternWall.FloodedPaths (floodedPaths) where
 
-import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers
@@ -31,17 +30,7 @@ instance HasModifiersFor FloodedPaths where
           ]
 
 instance HasAbilities FloodedPaths where
-  getAbilities (FloodedPaths a) =
-    [ restricted
-        a
-        1
-        ( youExist
-            $ at_ FullyFloodedLocation
-            <> InvestigatorWithoutModifier TreatFullyFloodedAsPartiallyFlooded
-        )
-        $ forced
-        $ TurnBegins #when You
-    ]
+  getAbilities (FloodedPaths a) = [strugglesForAir a 1]
 
 instance RunMessage FloodedPaths where
   runMessage msg a@(FloodedPaths attrs) = runQueueT $ case msg of

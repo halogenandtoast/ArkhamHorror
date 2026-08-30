@@ -1,10 +1,8 @@
 module Arkham.Agenda.Cards.TheDrownedCity.TheDrownedQuarter.CollapsingDome (collapsingDome) where
 
-import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers
-import Arkham.Matcher
 
 newtype CollapsingDome = CollapsingDome AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -14,11 +12,7 @@ collapsingDome :: AgendaCard CollapsingDome
 collapsingDome = agenda (2, A) CollapsingDome Cards.collapsingDome (Static 7)
 
 instance HasAbilities CollapsingDome where
-  getAbilities (CollapsingDome a) =
-    [ restricted a 1 (youExist $ at_ FullyFloodedLocation)
-        $ forced
-        $ TurnBegins #when You
-    ]
+  getAbilities (CollapsingDome a) = [strugglesForAir a 1]
 
 instance RunMessage CollapsingDome where
   runMessage msg a@(CollapsingDome attrs) = runQueueT $ case msg of

@@ -1,14 +1,14 @@
 module Arkham.Campaigns.TheDrownedCity.Effects.StruggleForAir where
 
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (getFloodLevelFor)
 import Arkham.Classes.Entity (Entity)
 import Arkham.Classes.HasAbilities (HasAbilities)
 import Arkham.Classes.HasModifiersFor (HasModifiersFor)
-import Arkham.Classes.Query
 import Arkham.Classes.RunMessage.Internal (RunMessage (..), liftRunMessage)
 import Arkham.Effect.Import
 import Arkham.Effect.Types qualified as Effect
 import Arkham.I18n
-import Arkham.Matcher
+import Arkham.Location.FloodLevel (FloodLevel (FullyFlooded))
 import Arkham.Message (Message (..))
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
@@ -42,6 +42,8 @@ instance RunMessage StruggleForAirEffect where
           -- flooded location, or decreased the flood level of their current
           -- location. Decreasing a fully flooded location always makes it at
           -- most partially flooded, so both cases reduce to: the investigator is
-          -- no longer at a fully flooded location.
-          foundAir <- selectAny $ locationWithInvestigator iid <> not_ FullyFloodedLocation
+          -- no longer at a fully flooded location. Read through
+          -- 'getFloodLevelFor' rather than the location's own level so a Diving
+          -- Suit picked up mid-turn counts, same as every other flood check.
+          foundAir <- (/= FullyFlooded) <$> getFloodLevelFor iid
           if foundAir then disableReturn e' else pure e'

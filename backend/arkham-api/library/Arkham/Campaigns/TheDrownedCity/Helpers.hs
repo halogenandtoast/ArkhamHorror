@@ -194,6 +194,23 @@ vanishing, keeping the buttons lined up with the printed choices.
 canEraseProgress :: (HasGame m, IsCampaignLogKey k) => InvestigatorId -> k -> m Bool
 canEraseProgress iid k = (> 0) <$> getRecordCountForInvestigator iid k
 
+{- | "When your turn begins, if you are at a fully flooded location, you struggle for
+air." Diving Suit lets its controller treat a fully flooded location as partially
+flooded, so they never begin the struggle. Checked on the modifier rather than on the
+asset so it keeps holding if the suit is blanked.
+-}
+strugglesForAir :: (HasCardCode a, Sourceable a) => a -> Int -> Ability
+strugglesForAir a n =
+  restricted
+    a
+    n
+    ( youExist
+        $ at_ FullyFloodedLocation
+        <> InvestigatorWithoutModifier TreatFullyFloodedAsPartiallyFlooded
+    )
+    $ forced
+    $ TurnBegins #when You
+
 struggleForAir
   :: (Sourceable a, HasGame m, HasQueue Message m) => a -> InvestigatorId -> m ()
 struggleForAir a iid = do

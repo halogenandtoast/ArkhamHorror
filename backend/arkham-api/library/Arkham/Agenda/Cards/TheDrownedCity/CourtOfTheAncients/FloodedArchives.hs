@@ -1,9 +1,8 @@
 module Arkham.Agenda.Cards.TheDrownedCity.CourtOfTheAncients.FloodedArchives (floodedArchives) where
 
-import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Campaigns.TheDrownedCity.Helpers (struggleForAir)
+import Arkham.Campaigns.TheDrownedCity.Helpers (struggleForAir, strugglesForAir)
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (decreaseThisFloodLevel)
 import Arkham.Card
 import Arkham.Deck qualified as Deck
@@ -20,11 +19,7 @@ floodedArchives :: AgendaCard FloodedArchives
 floodedArchives = agenda (1, A) FloodedArchives Cards.floodedArchives (Static 6)
 
 instance HasAbilities FloodedArchives where
-  getAbilities (FloodedArchives a) =
-    [ restricted a 1 (youExist $ at_ FullyFloodedLocation)
-        $ forced
-        $ TurnBegins #when You
-    ]
+  getAbilities (FloodedArchives a) = [strugglesForAir a 1]
 
 instance RunMessage FloodedArchives where
   runMessage msg a@(FloodedArchives attrs) = runQueueT $ case msg of

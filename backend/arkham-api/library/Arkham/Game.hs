@@ -3761,6 +3761,7 @@ referencesOutOfPlay = any isOutOfPlayReference . universe
     OutOfPlayEnemy {} -> True
     IncludeOutOfPlayEnemy {} -> True
     DefeatedEnemy {} -> True
+    EnemyWasAt {} -> True
     EnemyWithPlacement p -> isOutOfPlayPlacement p
     EnemyFacedownInThreatAreaOf {} -> True
     _ -> False

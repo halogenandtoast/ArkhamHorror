@@ -280,6 +280,9 @@ enemyIsExact = EnemyIsExact . toCardCode
 enemyAt :: (AsId a, IdOf a ~ LocationId) => a -> EnemyMatcher
 enemyAt = EnemyAt . LocationWithId . asId
 
+enemyWasAt :: (AsId a, IdOf a ~ LocationId) => a -> EnemyMatcher
+enemyWasAt = EnemyWasAt . LocationWithId . asId
+
 enemyAtLocationWith :: InvestigatorId -> EnemyMatcher
 enemyAtLocationWith = EnemyAt . locationWithInvestigator
 

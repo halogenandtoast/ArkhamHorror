@@ -6,6 +6,7 @@ import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Runner (filterOutEnemyMessages)
 import Arkham.Helpers.Enemy (insteadOfDiscarding)
+import Arkham.Helpers.Location (getLocationOf)
 import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
@@ -55,11 +56,13 @@ instance RunMessage TheAmalgam where
       pure e
     PlaceEnemyOutOfPlay TheDepths eid | eid == attrs.id -> do
       lift $ withQueue_ $ mapMaybe (filterOutEnemyMessages attrs.id)
+      mlid <- getLocationOf eid
       pure
         . TheAmalgam
         $ attrs
         & (tokensL %~ mempty)
         & (placementL .~ OutOfPlay TheDepths)
+        & (lastKnownLocationL .~ mlid)
         & (defeatedL .~ False)
         & (exhaustedL .~ False)
     _ -> TheAmalgam <$> liftRunMessage msg attrs

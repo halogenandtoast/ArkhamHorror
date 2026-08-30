@@ -20,8 +20,8 @@ instance HasAbilities OverdueDeparture where
     [ restricted a 1 NoRestriction
         $ freeReaction
         $ oneOf
-          [ EnemyEvaded #after You (EnemyAt campOutskirts)
-          , EnemyDefeated #after You ByAny (EnemyAt campOutskirts)
+          [ EnemyEvaded #after You (EnemyWasAt campOutskirts)
+          , EnemyDefeated #after You ByAny (EnemyWasAt campOutskirts)
           ]
     , onlyOnce
         $ restricted

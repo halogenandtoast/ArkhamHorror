@@ -26,6 +26,7 @@ import Arkham.Enemy.Runner as X (
   getEnemyMetaDefault,
   healthL,
   is,
+  lastKnownLocationL,
   placementL,
   preyIsBearer,
   preyIsOnlyBearer,

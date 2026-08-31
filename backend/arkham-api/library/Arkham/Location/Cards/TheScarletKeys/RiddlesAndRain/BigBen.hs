@@ -5,7 +5,7 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Helpers
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Location.CardDefs.TheScarletKeys.RiddlesAndRain qualified as Cards
 import Arkham.Location.Import.Lifted
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 
 newtype BigBen = BigBen LocationAttrs
@@ -20,7 +20,10 @@ instance HasAbilities BigBen where
     extendRevealed1 a
       $ playerLimit PerTurn
       $ skillTestAbility
-      $ restricted a 1 (Here <> exists (orConnected_ (location_ $ be a) <> LocationWithConcealedCard))
+      $ restricted
+        a
+        1
+        (DuringTurn Anyone <> Here <> exists (orConnected_ (location_ $ be a) <> LocationWithConcealedCard))
       $ FastAbility Free
 
 instance RunMessage BigBen where

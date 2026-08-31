@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.TheForgottenAge.TheDepthsOfYoth (setupTheDepthsOfYoth, theDepthsOfYoth, TheDepthsOfYoth (..)) where
+module Arkham.Scenario.Scenarios.TheForgottenAge.TheDepthsOfYoth (
+  setupTheDepthsOfYoth,
+  theDepthsOfYoth,
+  TheDepthsOfYoth (..),
+) where
 
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Acts

@@ -247,6 +247,16 @@ Then your campaign code records and reads keys by name, like `record Memories` o
 `getRecordCount ImpendingDoom`. (Keep the `Read` in the deriving list; the plug
 uses it.)
 
+Each key needs display text under `key.<camelCaseName>` in your `locales/en/base.json`
+— `TheRingmasterHasHisEyeOnYou` reads `key.theRingmasterHasHisEyeOnYou`. Miss one and
+the log shows the raw path instead of a sentence.
+
+You may optionally namespace keys as `HomebrewCampaignLogKey . ("yourCampaign." <>) . tshow`
+(Dark Matter does), which lets the frontend read the i18n scope straight off the key.
+It is not required — the log falls back to the scope of the campaign it is rendering.
+Do not add or remove that prefix mid-campaign: `hasRecord` compares the serialized key,
+so anything already recorded in a save stops matching.
+
 ### Custom chaos tokens
 
 Add a token in `Tokens.hs` — a slug and what happens when it's revealed:

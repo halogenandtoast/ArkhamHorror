@@ -1,4 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
+import { homebrewCampaignScope } from '@/arkham/homebrewData';
 
 type PartnerStatus = 'Eliminated' | 'Resolute' | 'Mia' | 'Safe' | 'Victim' | 'CannotTake' | 'TheEntity'
 
@@ -100,7 +101,13 @@ function isNestedContents(x: unknown): x is { tag: string; contents: string } {
   return isRecord(x) && typeof x.tag === "string" && "contents" in x && typeof x.contents === "string"
 }
 
-export function formatKey(key: LogKey): string {
+// ":circus-ex-mortis" -> "circusExMortis", or undefined for official campaigns.
+export function homebrewScopeFromCampaignId(campaignId: string | undefined): string | undefined {
+  if (!campaignId || !campaignId.startsWith(':')) return undefined
+  return homebrewCampaignScope(campaignId)
+}
+
+export function formatKey(key: LogKey, fallbackHomebrewScope?: string): string {
   const format = (str: string) => (str.slice(0, 1).toLowerCase() + str.slice(1)).replace(/'/g, '')
 
   const prefix = format(key.tag.replace(/Key$/, ""))
@@ -121,8 +128,11 @@ export function formatKey(key: LogKey): string {
 
   if (typeof key.contents === "string") {
     const [homebrewScope, homebrewKey] = key.contents.split('.', 2)
-    if (key.tag === 'HomebrewCampaignLogKey' && homebrewKey) {
-      return `${format(homebrewScope)}.key.${format(homebrewKey)}`
+    if (key.tag === 'HomebrewCampaignLogKey') {
+      if (homebrewKey) return `${format(homebrewScope)}.key.${format(homebrewKey)}`
+      // Keys recorded before the campaign added its scope prefix carry no scope of
+      // their own, so fall back to the campaign whose log we are rendering.
+      if (fallbackHomebrewScope) return `${fallbackHomebrewScope}.key.${format(key.contents)}`
     }
     return `${prefix}.key.${format(key.contents)}`
   }

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
-import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log'
+import { LogContents, LogKey, formatKey, homebrewScopeFromCampaignId, logContentsDecoder } from '@/arkham/types/Log'
 import { toCapitalizedWords, formatContent } from '@/arkham/helpers'
 import { cardArt } from '@/arkham/cardImages'
 import { computed, ref, onMounted, onUnmounted, watch, type Component } from 'vue'
@@ -109,6 +109,9 @@ const campaignDefinition = computed<CampaignDefinition | null>(() => {
   if (!campaignId) return null
   return (campaignJSON as CampaignDefinition[]).find((c) => c.id === campaignId) ?? null
 })
+
+// Scope for homebrew keys recorded before their campaign added a scope prefix.
+const homebrewScope = computed(() => homebrewScopeFromCampaignId(props.game.campaign?.id))
 
 const additionalLogSections = computed(() => campaignDefinition.value?.additional ?? [])
 const additionalTabId = (index: number): `additional:${number}` => `additional:${index}`
@@ -385,7 +388,7 @@ const recorded = computed(() => {
     .filter((c) => !isSection(c))
     .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_ARTIFACT_KEYS.has(String((c as any).contents))))
     .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_TASK_KEYS.has(String((c as any).contents))))
-    .map(formatKey)
+    .map((k: LogKey) => formatKey(k, homebrewScope.value))
 })
 
 type SectionModel = {
@@ -574,7 +577,7 @@ const investigatorRecorded = (log: LogContents) =>
   (log.recorded ?? [])
     .filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag))
     .filter(r => !isSection(r))
-    .map(formatKey)
+    .map((k: LogKey) => formatKey(k, homebrewScope.value))
 
 const investigatorRecordedCounts = (log: LogContents) =>
   (log.recordedCounts ?? []).filter(([k]) => !isSection(k))
@@ -1014,6 +1017,7 @@ onUnmounted(() => {
             :entries="(Object.entries(recordedSets) as [string, any[]][]).filter(([k]) => !k.toLowerCase().includes('discoveredglyph'))"
             :counts="recordedCounts"
             :displayRecordValue="displayRecordValue"
+            :homebrewScope="homebrewScope"
           />
 
           <CampaignLogPartners

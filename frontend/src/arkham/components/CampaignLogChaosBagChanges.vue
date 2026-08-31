@@ -22,22 +22,24 @@ const group = (faces: TokenFace[]): TokenGroup[] => {
     .sort((a, b) => compareTokenFaces(a.face, b.face))
 }
 
-type MarkedToken = { face: TokenFace, marked: boolean }
+type BagToken = { face: TokenFace, state: 'kept' | 'added' | 'removed' }
 
 /**
- * Sort a bag for display, flagging the token instances named by `mark` so the
- * before/after bags can highlight what left and what arrived. Faces repeat, so
- * the flag is spent per instance: N removed skulls mark N of the skulls present.
+ * The bag as it ends up, plus the tokens that left it, in one sorted list:
+ * green for what arrived, red for what was taken out. Faces repeat, so the
+ * added flag is spent per instance: N added skulls mark N of the skulls present.
  */
-const markBag = (faces: TokenFace[], mark: TokenFace[]): MarkedToken[] => {
-  const remaining = new Map<TokenFace, number>()
-  for (const face of mark) remaining.set(face, (remaining.get(face) ?? 0) + 1)
-  return [...faces].sort(compareTokenFaces).map((face) => {
-    const left = remaining.get(face) ?? 0
-    if (left === 0) return { face, marked: false }
-    remaining.set(face, left - 1)
-    return { face, marked: true }
+const unify = (after: TokenFace[], added: TokenFace[], removed: TokenFace[]): BagToken[] => {
+  const pending = new Map<TokenFace, number>()
+  for (const face of added) pending.set(face, (pending.get(face) ?? 0) + 1)
+  const kept: BagToken[] = after.map((face) => {
+    const left = pending.get(face) ?? 0
+    if (left === 0) return { face, state: 'kept' }
+    pending.set(face, left - 1)
+    return { face, state: 'added' }
   })
+  const gone: BagToken[] = removed.map((face) => ({ face, state: 'removed' }))
+  return [...kept, ...gone].sort((a, b) => compareTokenFaces(a.face, b.face))
 }
 
 const scenarioIcon = (change: ChaosBagChange): string | null => {
@@ -66,8 +68,8 @@ type Entry = {
   icon: string | null
   added: TokenGroup[]
   removed: TokenGroup[]
-  before: MarkedToken[]
-  after: MarkedToken[]
+  bag: BagToken[]
+  count: number
 }
 
 const entries = computed<Entry[]>(() =>
@@ -80,8 +82,8 @@ const entries = computed<Entry[]>(() =>
         icon: scenarioIcon(change),
         added: group(added),
         removed: group(removed),
-        before: markBag(change.before, removed),
-        after: markBag(change.after, added),
+        bag: unify(change.after, added, removed),
+        count: change.after.length,
       }
     })
     .filter((entry) => entry.added.length > 0 || entry.removed.length > 0)
@@ -122,35 +124,20 @@ const toggle = (index: number) => {
         </span>
         <svg class="chevron" :class="{ collapsed: !expanded.has(idx) }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
-      <div class="bags" v-if="expanded.has(idx)">
-        <section class="bag">
-          <h4>{{ t('campaignLog.bagBefore') }} <span class="count-pill">{{ entry.before.length }}</span></h4>
-          <div class="tokens">
-            <span
-              v-for="(token, i) in entry.before"
-              :key="`before${token.face}${i}`"
-              class="token-slot"
-              :class="{ removed: token.marked }"
-            >
-              <img class="token" :src="chaosTokenImage(token.face)" :title="token.face" />
-            </span>
-          </div>
-        </section>
-        <section class="bag">
-          <h4>{{ t('campaignLog.bagAfter') }} <span class="count-pill">{{ entry.after.length }}</span></h4>
-          <div class="tokens">
-            <span
-              v-for="(token, i) in entry.after"
-              :key="`after${token.face}${i}`"
-              class="token-slot"
-              :class="{ added: token.marked }"
-            >
-              <img class="token" :src="chaosTokenImage(token.face)" :title="token.face" />
-            </span>
-          </div>
-        </section>
+      <div class="bag" v-if="expanded.has(idx)">
+        <h4>{{ t('campaignLog.chaosBag') }} <span class="count-pill">{{ entry.count }}</span></h4>
+        <div class="tokens">
+          <span
+            v-for="(token, i) in entry.bag"
+            :key="`${token.face}${i}`"
+            class="token-slot"
+            :class="token.state"
+          >
+            <img class="token" :src="chaosTokenImage(token.face)" :title="token.face" />
+          </span>
+        </div>
+      </div>
     </div>
-  </div>
   </div>
 </template>
 
@@ -253,16 +240,8 @@ button.change-header:active:not(:disabled) {
   &.collapsed { transform: rotate(-90deg); }
 }
 
-.bags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.bag {
   padding: 0 10px 10px;
-
-  .bag {
-    flex: 1;
-    min-width: 200px;
-  }
 
   h4 {
     display: flex;
@@ -275,10 +254,6 @@ button.change-header:active:not(:disabled) {
     text-transform: uppercase;
     letter-spacing: 0.06em;
     margin: 0 0 6px;
-  }
-
-  @media (max-width: 800px) and (orientation: portrait) {
-    flex-direction: column;
   }
 }
 

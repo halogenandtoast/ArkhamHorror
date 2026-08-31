@@ -1,6 +1,12 @@
 {
   "name": "Circus Ex Mortis",
   "intro": "<h1>In the Shadow of the New Moon</h1><p>The New Moon Circus has come to Arkham for one night only &mdash; and missing person cases and mysterious deaths have followed it up the coast. <i>Circus Ex Mortis</i> is an eight-part fan-made campaign for <i>Arkham Horror: The Card Game</i>, designed by Tyler Gotch.</p>",
+  "specialRules": [
+    {
+      "title": "Moon Tokens",
+      "body": "@:circusExMortis.additionalRules.moonTokens"
+    }
+  ],
   "additionalRules": {
     "title": "Additional Rules: Moon Tokens",
     "moonTokens": "<p class='basic'>This campaign introduces a new kind of chaos token: the moon ({'{'}moon{'}'}) token. During the <i>Circus Ex Mortis</i> campaign, the moon plays a significant role, and the moon token represents both the strength and severity of its strange influence.</p><ul><li>{'{'}moon{'}'} tokens revealed during a skill test have the following effect: “0. Seal this token on your investigator card and reveal another token.”</li><li>{'{'}moon{'}'} tokens sealed on your investigator card have no effect on their own, but some card effects may reference whether or not there is a {'{'}moon{'}'} token sealed on your investigator card, or the number of {'{'}moon{'}'} tokens sealed on your investigator card.</li><li>At the end of the round, for each {'{'}moon{'}'} token sealed on your investigator card, you must (choose one):<ul><li>That token stays sealed on your investigator card.</li><li>Take 1 damage or 1 horror. Then, release that token.</li></ul></li><li>A {'{'}moon{'}'} token revealed outside of a skill test has no effect on its own unless otherwise specified by a card effect.</li></ul>"

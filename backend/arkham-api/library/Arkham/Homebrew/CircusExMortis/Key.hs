@@ -40,9 +40,10 @@ data CircusExMortisKey
   | -- | Recorded by The Prophecy Fulfilled / The Prophecy Unfulfilled (Thousand to One)
     TheProphecyWasFulfilled
   | TheProphecyWasUnfulfilled
-  | -- | Recorded set: the Fata Diana destinies ("The one who will strike the
-    -- heart", ...). Scenario VIII finds the story card matching each recorded
-    -- destiny. Record the destiny story card's card code.
+  | {- | Recorded set: the Fata Diana destinies ("The one who will strike the
+    heart", ...). Scenario VIII finds the story card matching each recorded
+    destiny. Record the destiny story card's card code.
+    -}
     Destinies
   | -- | Epilogue
     TheNewMoonCircusWasNeverSeenAgain
@@ -50,6 +51,10 @@ data CircusExMortisKey
   deriving stock (Show, Read, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+-- Keys serialize unscoped. Dark Matter namespaces its keys @"darkMatter." <> …@ so
+-- the frontend can pick the i18n scope out of the key itself; adding that prefix here
+-- now would stop 'hasRecord' matching anything already recorded in a save, so the
+-- frontend falls back to the campaign's own scope instead (see 'formatKey').
 instance IsCampaignLogKey CircusExMortisKey where
   toCampaignLogKey = HomebrewCampaignLogKey . tshow
   fromCampaignLogKey = \case

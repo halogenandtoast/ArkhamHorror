@@ -5,11 +5,14 @@ import type { LogKey } from '@/arkham/types/Log'
 import type { Seal } from '@/arkham/types/Seal'
 import { useI18n } from 'vue-i18n'
 
-defineProps<{
+const props = defineProps<{
   entries: [string, any[]][]
   counts: [LogKey, number][]
   displayRecordValue: (key: string, value: any) => string
+  homebrewScope?: string
 }>()
+
+const keyPath = (k: LogKey) => formatKey(k, props.homebrewScope)
 
 const { t } = useI18n()
 
@@ -64,8 +67,8 @@ const setValueKey = (setKey: string, setValue: any, idx: number): string => {
     </div>
   </template>
   <template v-if="counts.length > 0">
-    <div v-for="[k, v] in counts" :key="formatKey(k)" class="log-section">
-      <h3 class="section-title">{{ t(formatKey(k)) }}</h3>
+    <div v-for="[k, v] in counts" :key="keyPath(k)" class="log-section">
+      <h3 class="section-title">{{ t(keyPath(k)) }}</h3>
       <div class="count-value">{{ v }}</div>
     </div>
   </template>

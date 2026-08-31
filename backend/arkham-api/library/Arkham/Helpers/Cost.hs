@@ -732,6 +732,9 @@ getSpendableClueCount :: HasGame m => [InvestigatorId] -> m Int
 getSpendableClueCount investigatorIds =
   getSum <$> foldMapM (fmap Sum . Investigator.getSpendableClueCount) investigatorIds
 
+getSpendableClueCountOf :: HasGame m => Matcher.InvestigatorMatcher -> m Int
+getSpendableClueCountOf = select >=> getSpendableClueCount
+
 applyActionCostModifier :: [[Action]] -> [[Action]] -> [Action] -> ModifierType -> Int -> Int
 applyActionCostModifier _ _ actions (ActionCostOf (IsAction action') m) n
   | action' `elem` actions = n + m

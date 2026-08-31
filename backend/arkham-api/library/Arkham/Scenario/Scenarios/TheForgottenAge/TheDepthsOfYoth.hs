@@ -378,7 +378,7 @@ instance RunMessage TheDepthsOfYoth where
               <> oneOf [enemyAtLocationWith iid, EnemyAt $ connectedFrom (locationWithInvestigator iid)]
           for_ serpents \serpent -> do
             push $ HealDamage (toTarget serpent) (ChaosTokenEffectSource Cultist) 2
-        Tablet -> withLocationOf iid \location -> placeTokens Tablet location #clue 2
+        Tablet -> withLocationOf iid \location -> placeTokens Tablet location #clue 1
         _ -> pure ()
       pure s
     UseCardAbility _ ScenarioSource 1 _ _ -> do

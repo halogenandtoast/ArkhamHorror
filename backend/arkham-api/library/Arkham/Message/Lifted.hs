@@ -684,6 +684,7 @@ removeAllClues source target = push $ RemoveAllClues (toSource source) (toTarget
 
 placeTokens
   :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> Token -> Int -> m ()
+placeTokens _source _lid _token 0 = pure ()
 placeTokens source lid token n = push $ PlaceTokens (toSource source) (toTarget lid) token n
 
 placeTokensOn

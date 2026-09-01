@@ -18,16 +18,15 @@ instance RunMessage TerrorUnderThePyramids where
       sid <- getRandom
       revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
-    FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
-      push $ HandlePointOfFailure iid (toTarget attrs) n
+    FailedThisSkillTestBy _iid (isSource attrs -> True) n -> do
+      doStep n msg
       pure t
-    HandlePointOfFailure _ target 0 | isTarget attrs target -> pure t
-    HandlePointOfFailure iid target n | isTarget attrs target -> do
+    DoStep n (FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       cards <- select $ inHandOf NotForPlay iid <> basic DiscardableCard
       if null cards
         then assignHorror iid attrs n
         else do
           chooseAndDiscardCard iid attrs
-          push $ HandlePointOfFailure iid (toTarget attrs) (n - 1)
+          doNextStep msg
       pure t
     _ -> TerrorUnderThePyramids <$> liftRunMessage msg attrs

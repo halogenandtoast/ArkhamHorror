@@ -11,7 +11,7 @@ newtype FleshyPathsEasternBurrows = FleshyPathsEasternBurrows LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 fleshyPathsEasternBurrows :: LocationCard FleshyPathsEasternBurrows
-fleshyPathsEasternBurrows = location FleshyPathsEasternBurrows Cards.fleshyPathsEasternBurrows 2 (Static 1)
+fleshyPathsEasternBurrows = location FleshyPathsEasternBurrows Cards.fleshyPathsEasternBurrows 2 (PerPlayer 1)
 
 instance HasAbilities FleshyPathsEasternBurrows where
   getAbilities (FleshyPathsEasternBurrows attrs) =

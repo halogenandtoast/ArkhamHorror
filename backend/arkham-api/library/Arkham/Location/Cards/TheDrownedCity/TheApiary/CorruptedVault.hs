@@ -9,7 +9,7 @@ newtype CorruptedVault = CorruptedVault LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 corruptedVault :: LocationCard CorruptedVault
-corruptedVault = location CorruptedVault Cards.corruptedVault 3 (Static 1)
+corruptedVault = location CorruptedVault Cards.corruptedVault 3 (PerPlayer 1)
 
 instance HasAbilities CorruptedVault where
   getAbilities (CorruptedVault a) =

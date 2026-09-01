@@ -14,7 +14,7 @@ newtype FloatingSpire = FloatingSpire LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 floatingSpire :: LocationCard FloatingSpire
-floatingSpire = location FloatingSpire Cards.floatingSpire 4 (Static 1)
+floatingSpire = location FloatingSpire Cards.floatingSpire 4 (PerPlayer 1)
 
 instance HasModifiersFor FloatingSpire where
   getModifiersFor (FloatingSpire a) = modifySelf a [CannotBeMoved, CannotLeavePlay]

@@ -11,7 +11,7 @@ newtype TreacherousPathSlickSteps = TreacherousPathSlickSteps LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 treacherousPathSlickSteps :: LocationCard TreacherousPathSlickSteps
-treacherousPathSlickSteps = withXShroud $ location TreacherousPathSlickSteps Cards.treacherousPathSlickSteps 0 (Static 1)
+treacherousPathSlickSteps = withXShroud $ location TreacherousPathSlickSteps Cards.treacherousPathSlickSteps 0 (PerPlayer 1)
 
 -- V.I uses negative rows below Western Wall and V.II uses positive rows above
 -- it. In both layouts the physically higher adjacent row is row + 1.

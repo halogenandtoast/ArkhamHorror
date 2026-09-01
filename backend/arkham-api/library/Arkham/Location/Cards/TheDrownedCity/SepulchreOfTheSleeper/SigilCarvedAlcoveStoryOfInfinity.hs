@@ -14,7 +14,7 @@ newtype SigilCarvedAlcoveStoryOfInfinity = SigilCarvedAlcoveStoryOfInfinity Loca
 
 sigilCarvedAlcoveStoryOfInfinity :: LocationCard SigilCarvedAlcoveStoryOfInfinity
 sigilCarvedAlcoveStoryOfInfinity =
-  location SigilCarvedAlcoveStoryOfInfinity Cards.sigilCarvedAlcoveStoryOfInfinity 4 (Static 1)
+  location SigilCarvedAlcoveStoryOfInfinity Cards.sigilCarvedAlcoveStoryOfInfinity 4 (PerPlayer 1)
 
 instance HasAbilities SigilCarvedAlcoveStoryOfInfinity where
   getAbilities (SigilCarvedAlcoveStoryOfInfinity a) =

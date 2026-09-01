@@ -14,7 +14,7 @@ newtype WesternWall_11530 = WesternWall_11530 LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 westernWall_11530 :: LocationCard WesternWall_11530
-westernWall_11530 = withXShroud $ location WesternWall_11530 Cards.westernWall_11530 0 (Static 2)
+westernWall_11530 = withXShroud $ location WesternWall_11530 Cards.westernWall_11530 0 (PerPlayer 2)
 
 instance HasModifiersFor WesternWall_11530 where
   getModifiersFor (WesternWall_11530 a) = do

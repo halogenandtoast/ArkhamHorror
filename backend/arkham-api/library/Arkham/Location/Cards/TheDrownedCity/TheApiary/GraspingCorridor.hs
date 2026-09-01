@@ -12,7 +12,7 @@ newtype GraspingCorridor = GraspingCorridor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 graspingCorridor :: LocationCard GraspingCorridor
-graspingCorridor = location GraspingCorridor Cards.graspingCorridor 2 (Static 2)
+graspingCorridor = location GraspingCorridor Cards.graspingCorridor 2 (PerPlayer 2)
 
 instance HasAbilities GraspingCorridor where
   getAbilities (GraspingCorridor a) =

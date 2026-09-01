@@ -11,7 +11,7 @@ newtype DreamersRest = DreamersRest LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreamersRest :: LocationCard DreamersRest
-dreamersRest = location DreamersRest Cards.dreamersRest 1 (Static 5)
+dreamersRest = location DreamersRest Cards.dreamersRest 1 (PerPlayer 5)
 
 instance HasAbilities DreamersRest where
   getAbilities (DreamersRest a) =

@@ -14,7 +14,7 @@ newtype HiddenVault = HiddenVault LocationAttrs
 
 hiddenVault :: LocationCard HiddenVault
 hiddenVault =
-  locationWith HiddenVault Cards.hiddenVault 3 (Static 1) (canBeFlippedL .~ True)
+  locationWith HiddenVault Cards.hiddenVault 3 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities HiddenVault where
   getAbilities (HiddenVault a) =

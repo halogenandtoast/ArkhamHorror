@@ -13,7 +13,7 @@ newtype AncientGallery = AncientGallery LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ancientGallery :: LocationCard AncientGallery
-ancientGallery = location AncientGallery Cards.ancientGallery 3 (Static 3)
+ancientGallery = location AncientGallery Cards.ancientGallery 3 (PerPlayer 3)
 
 instance HasAbilities AncientGallery where
   getAbilities (AncientGallery a) =

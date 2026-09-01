@@ -12,7 +12,7 @@ newtype EastAntechamber = EastAntechamber LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 eastAntechamber :: LocationCard EastAntechamber
-eastAntechamber = location EastAntechamber Cards.eastAntechamber 3 (Static 1)
+eastAntechamber = location EastAntechamber Cards.eastAntechamber 3 (PerPlayer 1)
 
 instance HasAbilities EastAntechamber where
   getAbilities (EastAntechamber a) =

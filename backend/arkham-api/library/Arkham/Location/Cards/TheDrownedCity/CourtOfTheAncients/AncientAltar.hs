@@ -14,7 +14,7 @@ newtype AncientAltar = AncientAltar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ancientAltar :: LocationCard AncientAltar
-ancientAltar = location AncientAltar Cards.ancientAltar 4 (Static 2)
+ancientAltar = location AncientAltar Cards.ancientAltar 4 (PerPlayer 2)
 
 instance HasModifiersFor AncientAltar where
   getModifiersFor (AncientAltar a) = do

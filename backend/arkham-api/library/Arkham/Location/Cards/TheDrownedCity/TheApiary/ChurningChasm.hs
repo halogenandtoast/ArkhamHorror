@@ -13,7 +13,7 @@ newtype ChurningChasm = ChurningChasm LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 churningChasm :: LocationCard ChurningChasm
-churningChasm = location ChurningChasm Cards.churningChasm 2 (Static 1)
+churningChasm = location ChurningChasm Cards.churningChasm 2 (PerPlayer 1)
 
 instance HasAbilities ChurningChasm where
   getAbilities (ChurningChasm a) =

@@ -15,7 +15,7 @@ newtype SigilCarvedAlcoveStoryOfAmbition = SigilCarvedAlcoveStoryOfAmbition Loca
 
 sigilCarvedAlcoveStoryOfAmbition :: LocationCard SigilCarvedAlcoveStoryOfAmbition
 sigilCarvedAlcoveStoryOfAmbition =
-  location SigilCarvedAlcoveStoryOfAmbition Cards.sigilCarvedAlcoveStoryOfAmbition 4 (Static 1)
+  location SigilCarvedAlcoveStoryOfAmbition Cards.sigilCarvedAlcoveStoryOfAmbition 4 (PerPlayer 1)
 
 instance HasAbilities SigilCarvedAlcoveStoryOfAmbition where
   getAbilities (SigilCarvedAlcoveStoryOfAmbition a) =

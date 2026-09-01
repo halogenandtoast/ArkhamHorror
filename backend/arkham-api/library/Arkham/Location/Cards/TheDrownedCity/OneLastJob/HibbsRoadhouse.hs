@@ -8,7 +8,7 @@ newtype HibbsRoadhouse = HibbsRoadhouse LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hibbsRoadhouse :: LocationCard HibbsRoadhouse
-hibbsRoadhouse = location HibbsRoadhouse Cards.hibbsRoadhouse 3 (Static 2)
+hibbsRoadhouse = location HibbsRoadhouse Cards.hibbsRoadhouse 3 (PerPlayer 2)
 
 instance RunMessage HibbsRoadhouse where
   runMessage msg (HibbsRoadhouse attrs) = runQueueT $ HibbsRoadhouse <$> liftRunMessage msg attrs

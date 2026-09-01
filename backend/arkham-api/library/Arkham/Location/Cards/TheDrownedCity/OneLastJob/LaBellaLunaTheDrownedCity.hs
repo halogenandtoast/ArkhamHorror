@@ -8,7 +8,7 @@ newtype LaBellaLunaTheDrownedCity = LaBellaLunaTheDrownedCity LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 laBellaLunaTheDrownedCity :: LocationCard LaBellaLunaTheDrownedCity
-laBellaLunaTheDrownedCity = location LaBellaLunaTheDrownedCity Cards.laBellaLunaTheDrownedCity 3 (Static 2)
+laBellaLunaTheDrownedCity = location LaBellaLunaTheDrownedCity Cards.laBellaLunaTheDrownedCity 3 (PerPlayer 2)
 
 instance RunMessage LaBellaLunaTheDrownedCity where
   runMessage msg (LaBellaLunaTheDrownedCity attrs) =

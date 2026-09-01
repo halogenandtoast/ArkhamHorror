@@ -23,7 +23,7 @@ newtype CoreOfTheVaultHeartOfTheMachine = CoreOfTheVaultHeartOfTheMachine Locati
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coreOfTheVaultHeartOfTheMachine :: LocationCard CoreOfTheVaultHeartOfTheMachine
-coreOfTheVaultHeartOfTheMachine = location CoreOfTheVaultHeartOfTheMachine Cards.coreOfTheVaultHeartOfTheMachine 3 (Static 3)
+coreOfTheVaultHeartOfTheMachine = location CoreOfTheVaultHeartOfTheMachine Cards.coreOfTheVaultHeartOfTheMachine 3 (PerPlayer 3)
 
 instance HasModifiersFor CoreOfTheVaultHeartOfTheMachine where
   getModifiersFor (CoreOfTheVaultHeartOfTheMachine a) = do

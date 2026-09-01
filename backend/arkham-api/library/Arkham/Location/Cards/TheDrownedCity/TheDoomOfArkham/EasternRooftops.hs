@@ -12,7 +12,7 @@ newtype EasternRooftops = EasternRooftops LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 easternRooftops :: LocationCard EasternRooftops
-easternRooftops = location EasternRooftops Cards.easternRooftops 3 (Static 1)
+easternRooftops = location EasternRooftops Cards.easternRooftops 3 (PerPlayer 1)
 
 {- | "Easttown, Rivertown, and Southside are connected to Eastern Rooftops, and vice
 versa." The forward direction is already printed on the card def as connection

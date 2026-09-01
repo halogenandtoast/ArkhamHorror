@@ -18,7 +18,7 @@ newtype SunkenStairway = SunkenStairway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sunkenStairway :: LocationCard SunkenStairway
-sunkenStairway = withXShroud $ location SunkenStairway Cards.sunkenStairway 0 (Static 2)
+sunkenStairway = withXShroud $ location SunkenStairway Cards.sunkenStairway 0 (PerPlayer 2)
 
 instance HasModifiersFor SunkenStairway where
   getModifiersFor (SunkenStairway a) = treacherousPathModifiers a

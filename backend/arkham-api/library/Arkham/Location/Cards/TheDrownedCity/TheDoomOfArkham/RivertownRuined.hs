@@ -12,7 +12,7 @@ newtype RivertownRuined = RivertownRuined LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rivertownRuined :: LocationCard RivertownRuined
-rivertownRuined = location RivertownRuined Cards.rivertownRuined 2 (Static 1)
+rivertownRuined = location RivertownRuined Cards.rivertownRuined 2 (PerPlayer 1)
 
 drainable :: LocationAttrs -> LocationMatcher
 drainable a = oneOf [be a, connectedTo (be a)] <> FloodedLocation

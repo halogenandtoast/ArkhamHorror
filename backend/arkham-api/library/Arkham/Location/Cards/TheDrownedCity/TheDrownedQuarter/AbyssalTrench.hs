@@ -17,7 +17,7 @@ newtype AbyssalTrench = AbyssalTrench LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 abyssalTrench :: LocationCard AbyssalTrench
-abyssalTrench = withXShroud $ location AbyssalTrench Cards.abyssalTrench 0 (Static 1)
+abyssalTrench = withXShroud $ location AbyssalTrench Cards.abyssalTrench 0 (PerPlayer 1)
 
 instance HasModifiersFor AbyssalTrench where
   getModifiersFor (AbyssalTrench a) = whenRevealed a do

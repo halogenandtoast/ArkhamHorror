@@ -12,7 +12,7 @@ newtype DowntownRuined = DowntownRuined LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 downtownRuined :: LocationCard DowntownRuined
-downtownRuined = location DowntownRuined Cards.downtownRuined 4 (Static 1)
+downtownRuined = location DowntownRuined Cards.downtownRuined 4 (PerPlayer 1)
 
 instance HasAbilities DowntownRuined where
   getAbilities (DowntownRuined a) =

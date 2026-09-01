@@ -13,7 +13,7 @@ newtype BlastedRuinsSunkenCircle = BlastedRuinsSunkenCircle LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedRuinsSunkenCircle :: LocationCard BlastedRuinsSunkenCircle
-blastedRuinsSunkenCircle = location BlastedRuinsSunkenCircle Cards.blastedRuinsSunkenCircle 2 (Static 1)
+blastedRuinsSunkenCircle = location BlastedRuinsSunkenCircle Cards.blastedRuinsSunkenCircle 2 (PerPlayer 1)
 
 instance HasAbilities BlastedRuinsSunkenCircle where
   getAbilities (BlastedRuinsSunkenCircle a) =

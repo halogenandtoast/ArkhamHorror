@@ -11,7 +11,7 @@ newtype LostCampsite = LostCampsite LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lostCampsite :: LocationCard LostCampsite
-lostCampsite = location LostCampsite Cards.lostCampsite 4 (Static 1)
+lostCampsite = location LostCampsite Cards.lostCampsite 4 (PerPlayer 1)
 
 instance HasAbilities LostCampsite where
   getAbilities (LostCampsite a) =

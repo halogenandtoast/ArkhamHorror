@@ -12,7 +12,7 @@ newtype DrownedShanty = DrownedShanty LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 drownedShanty :: LocationCard DrownedShanty
-drownedShanty = withXShroud $ location DrownedShanty Cards.drownedShanty 0 (Static 2)
+drownedShanty = withXShroud $ location DrownedShanty Cards.drownedShanty 0 (PerPlayer 2)
 
 instance HasModifiersFor DrownedShanty where
   getModifiersFor (DrownedShanty a) = do

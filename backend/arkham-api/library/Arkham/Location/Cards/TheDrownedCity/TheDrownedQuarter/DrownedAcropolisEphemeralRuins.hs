@@ -16,7 +16,7 @@ newtype DrownedAcropolisEphemeralRuins = DrownedAcropolisEphemeralRuins Location
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drownedAcropolisEphemeralRuins :: LocationCard DrownedAcropolisEphemeralRuins
-drownedAcropolisEphemeralRuins = location DrownedAcropolisEphemeralRuins Cards.drownedAcropolisEphemeralRuins 3 (Static 2)
+drownedAcropolisEphemeralRuins = location DrownedAcropolisEphemeralRuins Cards.drownedAcropolisEphemeralRuins 3 (PerPlayer 2)
 
 instance HasAbilities DrownedAcropolisEphemeralRuins where
   getAbilities (DrownedAcropolisEphemeralRuins a) =

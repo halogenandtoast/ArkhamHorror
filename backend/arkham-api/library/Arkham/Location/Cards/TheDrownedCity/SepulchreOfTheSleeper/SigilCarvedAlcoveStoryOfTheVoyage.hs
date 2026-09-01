@@ -15,7 +15,7 @@ newtype SigilCarvedAlcoveStoryOfTheVoyage = SigilCarvedAlcoveStoryOfTheVoyage Lo
 
 sigilCarvedAlcoveStoryOfTheVoyage :: LocationCard SigilCarvedAlcoveStoryOfTheVoyage
 sigilCarvedAlcoveStoryOfTheVoyage =
-  location SigilCarvedAlcoveStoryOfTheVoyage Cards.sigilCarvedAlcoveStoryOfTheVoyage 4 (Static 1)
+  location SigilCarvedAlcoveStoryOfTheVoyage Cards.sigilCarvedAlcoveStoryOfTheVoyage 4 (PerPlayer 1)
 
 instance HasAbilities SigilCarvedAlcoveStoryOfTheVoyage where
   getAbilities (SigilCarvedAlcoveStoryOfTheVoyage a) =

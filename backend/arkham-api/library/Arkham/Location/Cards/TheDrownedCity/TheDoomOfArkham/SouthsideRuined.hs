@@ -12,7 +12,7 @@ newtype SouthsideRuined = SouthsideRuined LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 southsideRuined :: LocationCard SouthsideRuined
-southsideRuined = location SouthsideRuined Cards.southsideRuined 3 (Static 1)
+southsideRuined = location SouthsideRuined Cards.southsideRuined 3 (PerPlayer 1)
 
 itemInDiscard :: ExtendedCardMatcher
 itemInDiscard = InDiscardOf You <> basic (#asset <> CardWithTrait Item)

@@ -14,7 +14,7 @@ newtype NorthsideRuined = NorthsideRuined LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northsideRuined :: LocationCard NorthsideRuined
-northsideRuined = location NorthsideRuined Cards.northsideRuined 4 (Static 1)
+northsideRuined = location NorthsideRuined Cards.northsideRuined 4 (PerPlayer 1)
 
 instance HasModifiersFor NorthsideRuined where
   getModifiersFor (NorthsideRuined a) = modifySelf a [CannotBeFullyFlooded]

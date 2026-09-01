@@ -18,7 +18,7 @@ newtype StMarysHospitalRuined = StMarysHospitalRuined LocationAttrs
 
 stMarysHospitalRuined :: LocationCard StMarysHospitalRuined
 stMarysHospitalRuined =
-  location StMarysHospitalRuined Cards.stMarysHospitalRuined 3 (Static 1)
+  location StMarysHospitalRuined Cards.stMarysHospitalRuined 3 (PerPlayer 1)
 
 instance HasModifiersFor StMarysHospitalRuined where
   getModifiersFor (StMarysHospitalRuined a) = modifySelf a [CannotBeFullyFlooded]

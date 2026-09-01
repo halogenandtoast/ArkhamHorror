@@ -13,7 +13,7 @@ newtype UnderseaVault = UnderseaVault LocationAttrs
 
 underseaVault :: LocationCard UnderseaVault
 underseaVault =
-  locationWith UnderseaVault Cards.underseaVault 5 (Static 1) (canBeFlippedL .~ True)
+  locationWith UnderseaVault Cards.underseaVault 5 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities UnderseaVault where
   getAbilities (UnderseaVault a) =

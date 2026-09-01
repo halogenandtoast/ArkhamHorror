@@ -16,7 +16,7 @@ newtype GlyphOrrery = GlyphOrrery LocationAttrs
 
 glyphOrrery :: LocationCard GlyphOrrery
 glyphOrrery =
-  locationWith GlyphOrrery Cards.glyphOrrery 4 (Static 1) (canBeFlippedL .~ True)
+  locationWith GlyphOrrery Cards.glyphOrrery 4 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities GlyphOrrery where
   getAbilities (GlyphOrrery a) =

@@ -20,7 +20,7 @@ newtype CentralChamber = CentralChamber LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 centralChamber :: LocationCard CentralChamber
-centralChamber = location CentralChamber Cards.centralChamber 4 (Static 3)
+centralChamber = location CentralChamber Cards.centralChamber 4 (PerPlayer 3)
 
 {- | The Central Chamber sits in the centre of a 4-location ring and is only
 connected to the ring location it currently "faces" (the location beneath its

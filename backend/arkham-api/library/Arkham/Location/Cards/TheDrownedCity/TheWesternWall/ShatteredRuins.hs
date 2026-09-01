@@ -11,7 +11,7 @@ newtype ShatteredRuins = ShatteredRuins LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 shatteredRuins :: LocationCard ShatteredRuins
-shatteredRuins = withXShroud $ location ShatteredRuins Cards.shatteredRuins 0 (Static 2)
+shatteredRuins = withXShroud $ location ShatteredRuins Cards.shatteredRuins 0 (PerPlayer 2)
 
 instance HasModifiersFor ShatteredRuins where
   getModifiersFor (ShatteredRuins a) = treacherousPathModifiers a

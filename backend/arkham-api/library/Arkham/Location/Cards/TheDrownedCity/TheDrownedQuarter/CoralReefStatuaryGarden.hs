@@ -13,7 +13,7 @@ newtype CoralReefStatuaryGarden = CoralReefStatuaryGarden LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coralReefStatuaryGarden :: LocationCard CoralReefStatuaryGarden
-coralReefStatuaryGarden = location CoralReefStatuaryGarden Cards.coralReefStatuaryGarden 4 (Static 3)
+coralReefStatuaryGarden = location CoralReefStatuaryGarden Cards.coralReefStatuaryGarden 4 (PerPlayer 3)
 
 instance HasAbilities CoralReefStatuaryGarden where
   getAbilities (CoralReefStatuaryGarden a) =

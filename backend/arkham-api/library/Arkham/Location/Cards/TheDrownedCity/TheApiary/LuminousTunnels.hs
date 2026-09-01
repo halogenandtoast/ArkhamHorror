@@ -13,7 +13,7 @@ newtype LuminousTunnels = LuminousTunnels LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 luminousTunnels :: LocationCard LuminousTunnels
-luminousTunnels = location LuminousTunnels Cards.luminousTunnels 2 (Static 2)
+luminousTunnels = location LuminousTunnels Cards.luminousTunnels 2 (PerPlayer 2)
 
 instance HasAbilities LuminousTunnels where
   getAbilities (LuminousTunnels a) =

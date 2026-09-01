@@ -19,7 +19,7 @@ newtype TillinghastEsotericaEphemeralShop = TillinghastEsotericaEphemeralShop Lo
 
 tillinghastEsotericaEphemeralShop :: LocationCard TillinghastEsotericaEphemeralShop
 tillinghastEsotericaEphemeralShop =
-  location TillinghastEsotericaEphemeralShop Cards.tillinghastEsotericaEphemeralShop 4 (Static 3)
+  location TillinghastEsotericaEphemeralShop Cards.tillinghastEsotericaEphemeralShop 4 (PerPlayer 3)
 
 -- | The location this card was drawn from, recorded by its Revelation.
 drawnFrom :: LocationAttrs -> Maybe LocationId

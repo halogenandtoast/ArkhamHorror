@@ -20,21 +20,19 @@ instance HasAbilities BigBen where
     extendRevealed1 a
       $ playerLimit PerTurn
       $ skillTestAbility
-      $ restricted
-        a
-        1
-        (DuringTurn Anyone <> Here <> exists (orConnected_ (location_ $ be a) <> LocationWithConcealedCard))
+      $ restricted a 1 (DuringTurn Anyone <> Here <> exists (orConnected_ a.match <> WithConcealed))
       $ FastAbility Free
 
 instance RunMessage BigBen where
   runMessage msg l@(BigBen attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locations <- select (orConnected_ (LocationWithId attrs.id) <> LocationWithConcealedCard)
+      locations <- select $ orConnected_ attrs.match <> WithConcealed
+      chooseHandleTargetM iid (attrs.ability 1) locations
+      pure l
+    HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do
       sid <- getRandom
-      chooseTargetM iid locations \lid -> do
-        concealed <- map toId <$> getConcealedAt (ForExpose $ toSource attrs) lid
-        chooseOrRunOneM iid do
-          targets concealed \card -> beginSkillTest sid iid (attrs.ability 1) card #agility (Fixed 2)
+      cs <- toId <$$> getConcealedAtForExpose attrs lid
+      chooseOrRunTargetM iid cs \c -> beginSkillTest sid iid (attrs.ability 1) c #agility (Fixed 2)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       whenJustM getSkillTestTarget \case

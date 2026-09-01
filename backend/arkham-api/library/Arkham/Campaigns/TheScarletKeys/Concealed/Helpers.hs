@@ -165,6 +165,11 @@ pattern InvestigatorCanExpose <- InvestigatorWithoutModifier CannotExpose
   where
     InvestigatorCanExpose = InvestigatorWithoutModifier CannotExpose
 
+pattern WithConcealed :: LocationMatcher
+pattern WithConcealed <- LocationWithConcealedCard
+  where
+    WithConcealed = LocationWithConcealedCard
+
 concealedToCardDef :: ConcealedCard -> Maybe CardDef
 concealedToCardDef c = concealedKindToCardDef c.kind
 

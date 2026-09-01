@@ -17,10 +17,17 @@ import Data.Function (on)
 
 data ForExpose = ForExpose Source | NotForExpose
 
+forExpose :: Sourceable source => source -> ForExpose
+forExpose = ForExpose . toSource
+
 getConcealedChoicesAt :: HasGame m => ForExpose -> LocationMatcher -> m [ConcealedCard]
 getConcealedChoicesAt fe lmatcher = do
   locations <- select lmatcher
   concatForM locations (getConcealedAt fe)
+
+getConcealedAtForExpose
+  :: (HasGame m, Sourceable source, ToId location LocationId) => source -> location -> m [ConcealedCard]
+getConcealedAtForExpose source = getConcealedAt (forExpose source)
 
 getConcealedAt
   :: (HasGame m, ToId location LocationId) => ForExpose -> location -> m [ConcealedCard]

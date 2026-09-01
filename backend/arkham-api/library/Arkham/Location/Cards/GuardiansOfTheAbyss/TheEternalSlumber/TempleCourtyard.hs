@@ -21,7 +21,7 @@ instance HasModifiersFor TempleCourtyard where
   getModifiersFor (TempleCourtyard a) = do
     modifySelectWhen
       a
-      (a.clues == 0)
+      (a.revealed && a.clues == 0)
       (enemyIs Enemies.humbleSupplicant)
       [RemoveKeyword Keyword.Aloof]
 

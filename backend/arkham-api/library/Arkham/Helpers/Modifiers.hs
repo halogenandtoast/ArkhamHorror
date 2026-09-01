@@ -424,6 +424,7 @@ maybeModifySelf
   -> MaybeT m [ModifierType]
   -> m ()
 maybeModifySelf a = tell . MonoidalMap . singletonMap (toTarget a) <=< modified a . fromMaybe [] <=< runMaybeT
+
 modified_
   :: ( Sourceable a
      , Targetable target

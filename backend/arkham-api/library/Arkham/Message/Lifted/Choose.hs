@@ -424,6 +424,9 @@ skillLabeled skillType action = unterminated do
   msgs <- lift $ capture action
   tell [SkillLabel skillType msgs]
 
+skillsLabeled :: ReverseQueue m => [SkillType] -> (SkillType -> QueueT Message m ()) -> ChooseT m ()
+skillsLabeled skillTypes action = for_ skillTypes \sk -> skillLabeled sk $ action sk
+
 targeting :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> ChooseT m ()
 targeting target action = unterminated do
   msgs <- lift $ capture action

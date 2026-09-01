@@ -163,6 +163,7 @@ theTruthBeckons =
   (event "07154" "The Truth Beckons" 1 Seeker)
     { cdSkills = [#intellect, #agility]
     , cdCardTraits = setFromList [Insight]
+    , cdActions = #move
     , cdCriteria =
         Just
           $ notExists EnemyEngagedWithYou

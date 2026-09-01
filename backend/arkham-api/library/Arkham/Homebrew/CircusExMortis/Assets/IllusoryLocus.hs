@@ -2,13 +2,10 @@ module Arkham.Homebrew.CircusExMortis.Assets.IllusoryLocus (illusoryLocus) where
 
 import Arkham.Ability
 import Arkham.Asset.Import.Lifted
-import Arkham.ChaosBag.RevealStrategy
 import Arkham.Helpers.Cost
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
-import Arkham.I18n
 import Arkham.Matcher
-import Arkham.RequestedChaosTokenStrategy
 
 newtype IllusoryLocus = IllusoryLocus AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -20,35 +17,27 @@ illusoryLocus = asset IllusoryLocus Cards.illusoryLocus
 instance HasAbilities IllusoryLocus where
   getAbilities (IllusoryLocus x) = [restricted x 1 OnSameLocation actionAbility]
 
-revealTokens :: ReverseQueue m => AssetAttrs -> InvestigatorId -> Int -> m ()
-revealTokens attrs iid n =
-  push $ RequestChaosTokens (attrs.ability 1) (Just iid) (Reveal n) SetAside
-
 instance RunMessage IllusoryLocus where
   runMessage msg a@(IllusoryLocus attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      totalClues <- getSpendableClueCountOf $ InvestigatorAt (locationWithAsset attrs)
+      totalClues <- getSpendableClueCountOf $ at_ $ locationWithAsset attrs
       if totalClues > 0
-        then withI18n $ chooseAmount' iid "clues" "$clues" 0 totalClues attrs
-        else revealTokens attrs iid 4
-      pure $ a & overAttrs (setMeta (0 :: Int))
+        then chooseAmountI18n iid "clues" "$clues" 0 totalClues attrs
+        else requestChaosTokens_ iid (attrs.ability 1) 4
+      pure $ a & setMeta @Int 0
     ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) -> do
-      when (n > 0) do
-        iids <- select $ InvestigatorAt (locationWithAsset attrs)
-        push $ SpendClues n iids
-      revealTokens attrs iid (4 + 4 * n)
+      spendCluesAsAGroupMatch n $ at_ $ locationWithAsset attrs
+      requestChaosTokens_ iid (attrs.ability 1) (4 + 4 * n)
       pure a
-    RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) tokens -> do
-      let faces = map (.face) tokens
-      let moons = count (== MoonToken) faces
-      let total = toResultDefault 0 attrs.meta + moons
+    RequestedChaosTokens (isAbilitySource attrs 1 -> True) (Just iid) (map (.face) -> faces) -> do
+      let moons = toResultDefault 0 attrs.meta + count (== MoonToken) faces
       -- revealed [bless]/[curse] are ignored and replaced; they stay set aside so
       -- their replacements come from the rest of the bag
       case count (`elem` [#bless, #curse]) faces of
         0 -> do
           continue_ iid
-          placeTokens (attrs.ability 1) attrs #clue total
+          placeTokens (attrs.ability 1) attrs #clue moons
           resetChaosTokens (attrs.ability 1)
-        ignored -> revealTokens attrs iid ignored
-      pure $ a & overAttrs (setMeta total)
+        ignored -> requestChaosTokens_ iid (attrs.ability 1) ignored
+      pure $ a & setMeta moons
     _ -> IllusoryLocus <$> liftRunMessage msg attrs

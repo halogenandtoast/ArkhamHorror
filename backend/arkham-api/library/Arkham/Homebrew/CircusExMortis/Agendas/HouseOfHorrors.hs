@@ -19,16 +19,16 @@ houseOfHorrors = agenda (2, A) HouseOfHorrors Cards.houseOfHorrors (Static 5)
 instance RunMessage HouseOfHorrors where
   runMessage msg a@(HouseOfHorrors attrs) = runQueueT $ scenarioI18n "oneNightOnly" $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
-      eachInvestigator (`forInvestigator` msg)
+      forEachInvestigator (push msg)
       advanceAgendaDeck attrs
       pure a
     -- deferred per investigator: sealing removes a ☾ from the bag, so the next
     -- investigator's options must be recomputed against the bag as it now stands
     ForInvestigator iid (AdvanceAgenda (isSide B attrs -> True)) -> scope "houseOfHorrors" do
-      hand <- fieldMap InvestigatorHand length iid
+      hand <- fieldLength InvestigatorHand iid
       moonInBag <- selectAny moonToken
       chooseOneM iid do
-        labeled' "discardHalfHand" $ replicateM_ ((hand + 1) `div` 2) (chooseAndDiscardCard iid attrs)
-        when moonInBag $ labeled' "sealMoonToken" $ sealMoonTokenOn iid
+        labeled' "discardHalfHand" $ repeated ((hand + 1) `div` 2) $ chooseAndDiscardCard iid attrs
+        labeledValidate' moonInBag "sealMoonToken" $ sealMoonTokenOn iid
       pure a
     _ -> HouseOfHorrors <$> liftRunMessage msg attrs

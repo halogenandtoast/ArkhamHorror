@@ -180,6 +180,10 @@ instance WithTrait TreacheryMatcher where
   withTrait = TreacheryWithTrait
   {-# INLINE withTrait #-}
 
+instance WithTrait InvestigatorMatcher where
+  withTrait = InvestigatorWithTrait
+  {-# INLINE withTrait #-}
+
 -- ** Investigator Helpers **
 
 investigatorIs :: HasCardCode a => a -> InvestigatorMatcher

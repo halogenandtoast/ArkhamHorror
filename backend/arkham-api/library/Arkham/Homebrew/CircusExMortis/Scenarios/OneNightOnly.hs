@@ -2,9 +2,9 @@ module Arkham.Homebrew.CircusExMortis.Scenarios.OneNightOnly (oneNightOnly) wher
 
 import Arkham.Act.Types (Field (..))
 import Arkham.Card (toCardDef)
-import Arkham.Helpers.Act (getCurrentActStep)
+import Arkham.Helpers.Act (currentActStepIs)
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.SkillTest (getSkillTestTarget)
+import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
@@ -42,20 +42,18 @@ oneNightOnly difficulty =
     ]
 
 behindTheCurtainMatcher :: InvestigatorMatcher
-behindTheCurtainMatcher =
-  oneOf [investigatorIs Investigators.dexterDrake, InvestigatorWithTrait Performer]
+behindTheCurtainMatcher = oneOf [investigatorIs Investigators.dexterDrake, withTrait Performer]
 
 instance HasChaosTokenValue OneNightOnly where
   getChaosTokenValue iid tokenFace (OneNightOnly attrs) = case tokenFace of
     Skull -> do
       n <- selectCount $ EnemyWithTrait Creature
-      pure $ ChaosTokenValue Skull (NegativeModifier $ if isHardExpert attrs then n + 1 else n)
+      pure $ ChaosTokenValue Skull $ NegativeModifier $ if isHardExpert attrs then n + 1 else n
     Cultist -> pure $ toChaosTokenValue attrs Cultist 2 3
     ElderThing -> do
-      vsCreature <-
-        getSkillTestTarget >>= \case
-          Just (EnemyTarget eid) -> eid <=~> EnemyWithTrait Creature
-          _ -> pure False
+      vsCreature <- runDefaultMaybeT False do
+        eid <- MaybeT getSkillTestTargetedEnemy
+        eid `matches` EnemyWithTrait Creature
       pure
         $ if vsCreature
           then toChaosTokenValue attrs ElderThing 3 4
@@ -105,19 +103,17 @@ instance RunMessage OneNightOnly where
           labeled' "firstRing" $ moveTo_ attrs iid firstRing
           labeled' "secondRing" $ moveTo_ attrs iid secondRing
           labeled' "thirdRing" $ moveTo_ attrs iid thirdRing
-        behind <- iid <=~> behindTheCurtainMatcher
-        when behind $ gainClues iid attrs 1
+        whenMatch iid behindTheCurtainMatcher $ gainClues iid attrs 1
     FailedSkillTestWithToken iid Cultist -> do
-      moveTowardsMatching attrs iid (NearestLocationToYou $ LocationWithTitle "The Big Top")
+      moveTowardsMatching attrs iid $ NearestLocationToYou "The Big Top"
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
           resolution "resolution1"
           record TheRingmasterDoesNotSuspectYou
-          actStep <- getCurrentActStep
-          when (actStep == 1) do
-            selectOne AnyAct >>= traverse_ \aid -> do
+          whenM (currentActStepIs 1) do
+            withMatch AnyAct \aid -> do
               def <- fieldMap ActCard toCardDef aid
               for_ (lookupRatsInACage def) (addChaosToken . snd)
           push R3

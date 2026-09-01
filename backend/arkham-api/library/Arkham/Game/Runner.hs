@@ -1934,7 +1934,9 @@ runGameMessage msg g = case msg of
                     attrs
                       { eventWindows = windows'
                       , eventPlayedFrom = zone
-                      , eventTarget = mtarget
+                      , -- a target chosen before costs were paid (move events pick their
+                        -- destination up front) stands unless the play names one
+                        eventTarget = mtarget <|> eventTarget attrs
                       , eventOriginalCardCode = pcOriginalCardCode pc
                       , eventPayment = payment
                       , eventPlacement = Limbo

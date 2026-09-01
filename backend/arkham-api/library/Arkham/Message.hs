@@ -880,6 +880,7 @@ data Message
   | -- Maybe Target is handler for success
     Investigate Investigate
   | UpdateEventMeta EventId Value
+  | UpdateEventTarget EventId (Maybe Target)
   | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
   | LookAtRevealed InvestigatorId Source Target
   | LookAtTopOfDeck InvestigatorId Target Int

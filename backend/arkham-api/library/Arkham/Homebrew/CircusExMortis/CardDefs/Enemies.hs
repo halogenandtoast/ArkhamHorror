@@ -1,6 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.CardDefs.Enemies where
 
 import Arkham.Enemy.CardDefs.Import
+import Arkham.Keyword qualified as Keyword
 import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 
 -- one_night_only
@@ -13,6 +14,7 @@ disguisedMonstrosity =
     , cdEvade = evade 2
     , cdHealth = healthPerInvestigator 2
     , cdCardTraits = setFromList [Creature, Monster, Abomination, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
     , cdVictoryPoints = Just 1
     }
 
@@ -25,6 +27,7 @@ grotesqueLion =
     , cdEvade = evade 3
     , cdHealth = health 2
     , cdCardTraits = setFromList [Creature, Monster, Abomination]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 newMoonDrudge :: CardDef
@@ -35,6 +38,7 @@ newMoonDrudge =
     , cdEvade = evade 3
     , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Performer]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 -- the_primrose_path

@@ -14,10 +14,19 @@ physicalFitness2 = event PhysicalFitness2 Cards.physicalFitness2
 
 instance RunMessage PhysicalFitness2 where
   runMessage msg e@(PhysicalFitness2 attrs) = runQueueT $ case msg of
-    PlayThisEvent iid (is attrs -> True) -> do
+    -- the destination is chosen before costs are paid, so playing this can be
+    -- judged (attacks of opportunity included) knowing where you are going
+    BeforePlayEvent iid eid acId | eid == toId attrs -> do
       locations <- getAccessibleLocations iid attrs
-      chooseTargetM iid locations \lid -> do
-        moveTo attrs iid lid
-        healDamage iid attrs 3
+      unless (null locations) do
+        chooseTargetM iid locations \lid -> push $ UpdateEventTarget eid (Just $ toTarget lid)
+      push $ CreatedCost acId
+      pure e
+    PlayThisEvent iid (is attrs -> True) -> do
+      for_ attrs.target \case
+        LocationTarget lid -> do
+          moveTo attrs iid lid
+          healDamage iid attrs 3
+        _ -> pure ()
       pure e
     _ -> PhysicalFitness2 <$> liftRunMessage msg attrs

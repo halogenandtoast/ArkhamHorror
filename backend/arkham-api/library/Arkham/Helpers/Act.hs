@@ -17,6 +17,9 @@ import Arkham.Source
 getCurrentActStep :: (HasCallStack, HasGame m) => m Int
 getCurrentActStep = selectJust AnyAct >>= getActStep
 
+currentActStepIs :: (HasCallStack, HasGame m) => Int -> m Bool
+currentActStepIs n = getCurrentActStep <&> (== n)
+
 getCurrentActStepMaybe :: (HasCallStack, HasGame m) => m (Maybe Int)
 getCurrentActStepMaybe = selectOne AnyAct >>= traverse getActStep
 

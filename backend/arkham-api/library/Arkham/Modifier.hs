@@ -404,6 +404,7 @@ data ModifierType
   | MayIgnoreLocationEffectsAndKeywords
   | MetaModifier Value
   | ModifierIfSucceededBy Int Modifier
+  | MovingToDoesNotProvokeAttacksOfOpportunity LocationMatcher
   | Mulligans Int
   | MustBeCommitted
   | MustChooseEnemy EnemyMatcher

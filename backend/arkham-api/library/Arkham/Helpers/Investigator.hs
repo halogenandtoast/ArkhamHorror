@@ -74,6 +74,12 @@ getSkillValue st iid = do
       else pure 0
   pure $ fromMaybe (x + base) $ minimumMay [n | SetSkillValue st' n <- mods, st' == st]
 
+getHighestSkillValues :: HasGame m => InvestigatorId -> m (Int, [SkillType])
+getHighestSkillValues iid = do
+  skills <- forToSnd (#willpower :| [#intellect, #combat, #agility]) (`getSkillValue` iid)
+  let highest = maximum (toMinList $ snd <$> skills)
+  pure (highest, [sk | (sk, v) <- toList skills, v == highest])
+
 skillValueFor
   :: forall m
    . (HasCallStack, HasGame m)

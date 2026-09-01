@@ -35,7 +35,7 @@ import Arkham.Distance
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens, EnemyTokens))
-import Arkham.Event.Types (Field (EventCard, EventController))
+import Arkham.Event.Types (Field (EventCard, EventController, EventPlayTarget))
 import Arkham.Exception
 import Arkham.Exhaust (mkExhaustion)
 import Arkham.GameValue
@@ -174,17 +174,17 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
  where
   checkAttackOfOpportunity mods actions =
     (noAooFrom /= Just AnyEnemy)
-      && ( all (`notElem` nonAttackOfOpportunityActions) actions
-             || any (\action -> ActionDoesNotCauseAttacksOfOpportunity action `elem` mods) actions
-         )
+      && all (`notElem` nonAttackOfOpportunityActions) actions
+      && not (any (\action -> ActionDoesNotCauseAttacksOfOpportunity action `elem` mods) actions)
   handleActions actions = do
     mods <- getModifiers iid
+    let provokes = checkAttackOfOpportunity mods actions
     beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions]
     pushAll
       $ [BeginAction, beforeWindowMsg]
-      <> [Will (CheckAttackOfOpportunity iid False noAooFrom) | checkAttackOfOpportunity mods actions]
+      <> [Will (CheckAttackOfOpportunity iid False noAooFrom) | provokes]
       <> [PayCosts activeCostId]
-      <> [CheckAttackOfOpportunity iid False noAooFrom | checkAttackOfOpportunity mods actions]
+      <> [CheckAttackOfOpportunity iid False noAooFrom | provokes]
 
 nonAttackOfOpportunityActions :: [Action]
 nonAttackOfOpportunityActions = [#fight, #evade, #resign, #parley]
@@ -1607,10 +1607,15 @@ instance RunMessage ActiveCost where
           pure c
         ForCard _isPlayAction card -> do
           let cardDef = toCardDef card
-          -- For OrActions with no prior BeforePlayEvent, create a pending event
-          -- so the event itself can ask the player before costs begin
-          case (cardDef.cardActions, c.pendingEventId) of
-            (OrActions _, Nothing) -> do
+          -- Create a pending event so the card can ask the player before costs begin:
+          -- which action an OrActions card is taking, or where a move card is going.
+          -- The answer is settled before costs and attacks of opportunity are worked out.
+          let
+            asksBeforeCosts = case cardDef.cardActions of
+              OrActions _ -> True
+              _ -> cdCardType cardDef == EventType && #move `elem` cardDef.actions
+          case (asksBeforeCosts, c.pendingEventId) of
+            (True, Nothing) -> do
               eid <- getRandom
               pushAll [CreatePendingEvent card iid eid, BeforePlayEvent iid eid acId]
               pure $ c {activeCostPendingEventId = Just eid}
@@ -1626,11 +1631,25 @@ instance RunMessage ActiveCost where
               let
                 modifiersPreventAttackOfOpportunity = ActionDoesNotCauseAttacksOfOpportunity #play `elem` modifiers'
                 actions = c.actions
+                moveExemptions =
+                  [m | #move `elem` actions, MovingToDoesNotProvokeAttacksOfOpportunity m <- modifiers']
+                provokesAttackOfOpportunity =
+                  not modifiersPreventAttackOfOpportunity
+                    && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
+                    && isNothing cardDef.fastWindow
+                    && all (`notElem` nonAttackOfOpportunityActions) actions
+                    && (totalActionCost c.costs > 0)
                 mEffect =
                   guard cardDef.beforeEffect
                     *> [ enabled
                        , CheckAdditionalCosts acId
                        ]
+              -- where the move card is headed, chosen before costs. No destination
+              -- means nothing was moved between exempt locations, so it provokes
+              mDestination <- join <$> traverse (field EventPlayTarget) c.pendingEventId
+              moveIsExempt <- case (moveExemptions, mDestination) of
+                (ms@(_ : _), Just (LocationTarget lid)) -> anyM (lid <=~>) ms
+                _ -> pure False
               batchId <- getRandom
               beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
               wouldPayWindowMsg <- checkWindows [mkWhen $ Window.WouldPayCardCost iid acId batchId card]
@@ -1644,19 +1663,11 @@ instance RunMessage ActiveCost where
                    , Would
                        batchId
                        $ [ Will (CheckAttackOfOpportunity iid False Nothing)
-                         | not modifiersPreventAttackOfOpportunity
-                             && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
-                             && isNothing cardDef.fastWindow
-                             && all (`notElem` nonAttackOfOpportunityActions) actions
-                             && (totalActionCost c.costs > 0)
+                         | provokesAttackOfOpportunity && not moveIsExempt
                          ]
                        <> [PayCosts acId]
                        <> [ CheckAttackOfOpportunity iid False Nothing
-                          | not modifiersPreventAttackOfOpportunity
-                              && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
-                              && isNothing cardDef.fastWindow
-                              && all (`notElem` nonAttackOfOpportunityActions) actions
-                              && (totalActionCost c.costs > 0)
+                          | provokesAttackOfOpportunity && not moveIsExempt
                           ]
                        <> [PayCostFinished acId]
                    ]
@@ -1666,9 +1677,22 @@ instance RunMessage ActiveCost where
           let
             modifiersPreventAttackOfOpportunity =
               any ((`elem` modifiers') . ActionDoesNotCauseAttacksOfOpportunity) a.actions
+            moveExemptions = case abilityType of
+              ActionAbility {}
+                | not modifiersPreventAttackOfOpportunity
+                , isNothing abilityDoesNotProvokeAttacksOfOpportunity
+                , #move `elem` a.actions ->
+                    [m | MovingToDoesNotProvokeAttacksOfOpportunity m <- modifiers']
+              _ -> []
+          -- the basic move ability belongs to the destination location, so its
+          -- source is the location a "moving to" exemption matches; an ability
+          -- with any other source only knows its destination once it resolves
+          movePreventsAttackOfOpportunity <- case abilitySource of
+            LocationSource lid | notNull moveExemptions -> anyM (lid <=~>) moveExemptions
+            _ -> pure False
           pushAll [PaidInitialCostForAbility acId iid (abilityToRef a) c.payments, PayCostFinished acId]
           let aoo =
-                if modifiersPreventAttackOfOpportunity
+                if modifiersPreventAttackOfOpportunity || movePreventsAttackOfOpportunity
                   then Just AnyEnemy
                   else abilityDoesNotProvokeAttacksOfOpportunity
           startAbilityPayment c iid (mkWhen Window.NonFast) abilityType abilitySource aoo

@@ -127,8 +127,11 @@ ratsInACageVariants =
        , (Acts.ratsInACage_008, (Locations.performerTrailers, Cultist))
        ]
 
-lookupRatsInACage :: CardDef -> Maybe (CardDef, ChaosTokenFace)
-lookupRatsInACage def = lookup def (toList ratsInACageVariants)
+lookupRatsInACage :: HasCardDef a => a -> Maybe (CardDef, ChaosTokenFace)
+lookupRatsInACage (toCardDef -> def) = lookup def (toList ratsInACageVariants)
+
+bigTopRings :: LocationMatcher
+bigTopRings = LocationWithTitle "The Big Top"
 
 -- * Story-asset versions (Amalthea Weaver / De Cultus Bestiae)
 

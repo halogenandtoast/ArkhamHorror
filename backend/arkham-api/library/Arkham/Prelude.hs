@@ -498,6 +498,9 @@ maybeResult x = case fromJSON x of
   Success a -> Just a
   Error _ -> Nothing
 
+withMaybeResult :: FromJSON a => Value -> x -> (a -> x) -> x
+withMaybeResult a x f = maybe x f (maybeResult a)
+
 countOccurrences :: Ord a => [a] -> Map a Int
 countOccurrences = foldr (\x acc -> Map.insertWith (+) x 1 acc) Map.empty
 

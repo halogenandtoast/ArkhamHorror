@@ -642,6 +642,7 @@ spendClues
   => investigator
   -> Int
   -> m ()
+spendClues _investigator 0 = pure ()
 spendClues investigator n = push $ InvestigatorSpendClues (asId investigator) n
 
 spendCluesAsAGroup
@@ -649,7 +650,16 @@ spendCluesAsAGroup
   => [InvestigatorId]
   -> Int
   -> m ()
+spendCluesAsAGroup _investigators 0 = pure ()
 spendCluesAsAGroup investigators n = push $ SpendClues n investigators
+
+spendCluesAsAGroupMatch
+  :: ReverseQueue m
+  => Int
+  -> InvestigatorMatcher
+  -> m ()
+spendCluesAsAGroupMatch 0 = const (pure ())
+spendCluesAsAGroupMatch n = select >=> (`spendCluesAsAGroup` n)
 
 gainClues
   :: (ReverseQueue m, Sourceable source, AsId investigator, IdOf investigator ~ InvestigatorId)
@@ -1064,6 +1074,17 @@ chooseAmountLabeled iid title label choiceLabel minVal maxVal target = do
       (MaxAmountTarget maxVal)
       [(choiceLabel, (minVal, maxVal))]
       target
+
+chooseAmountI18n
+  :: (Targetable target, ReverseQueue m)
+  => InvestigatorId
+  -> Text
+  -> Text
+  -> Int
+  -> Int
+  -> target
+  -> m ()
+chooseAmountI18n iid label choiceLabel minVal maxVal target = withI18n $ chooseAmount' iid label choiceLabel minVal maxVal target
 
 chooseAmount'
   :: (Targetable target, ReverseQueue m, HasI18n)
@@ -3395,8 +3416,12 @@ spendActions = loseActions
 
 requestChaosTokens :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 requestChaosTokens iid source n = do
-  push $ RequestChaosTokens (toSource source) (Just iid) (Reveal n) SetAside
+  requestChaosTokens_ iid source n
   resetChaosTokens source
+
+requestChaosTokens_ :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+requestChaosTokens_ iid source n = do
+  push $ RequestChaosTokens (toSource source) (Just iid) (Reveal n) SetAside
 
 resetChaosTokens :: (ReverseQueue m, Sourceable source) => source -> m ()
 resetChaosTokens source = push $ ResetChaosTokens (toSource source)

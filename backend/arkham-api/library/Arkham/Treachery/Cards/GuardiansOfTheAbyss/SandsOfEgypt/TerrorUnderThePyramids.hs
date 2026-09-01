@@ -25,8 +25,9 @@ instance RunMessage TerrorUnderThePyramids where
     HandlePointOfFailure iid target n | isTarget attrs target -> do
       cards <- select $ inHandOf NotForPlay iid <> basic DiscardableCard
       if null cards
-        then assignHorror iid attrs 1
-        else chooseAndDiscardCard iid attrs
-      push $ HandlePointOfFailure iid (toTarget attrs) (n - 1)
+        then assignHorror iid attrs n
+        else do
+          chooseAndDiscardCard iid attrs
+          push $ HandlePointOfFailure iid (toTarget attrs) (n - 1)
       pure t
     _ -> TerrorUnderThePyramids <$> liftRunMessage msg attrs

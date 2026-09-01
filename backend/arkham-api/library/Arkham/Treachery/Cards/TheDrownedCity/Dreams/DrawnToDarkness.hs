@@ -15,7 +15,7 @@ drawnToDarkness = treachery DrawnToDarkness Cards.drawnToDarkness
 
 instance HasModifiersFor DrawnToDarkness where
   getModifiersFor (DrawnToDarkness attrs) =
-    inThreatAreaGets attrs [HandSize (-3), CheckHandSizeAfterDraw]
+    inThreatAreaGets attrs [HandSize (-3)]
 
 instance HasAbilities DrawnToDarkness where
   getAbilities (DrawnToDarkness a) =
@@ -24,10 +24,7 @@ instance HasAbilities DrawnToDarkness where
 instance RunMessage DrawnToDarkness where
   runMessage msg t@(DrawnToDarkness attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      hasCopy <- selectAny $ treacheryIs Cards.drawnToDarkness <> treacheryInThreatAreaOf iid
-      if hasCopy
-        then gainSurge attrs
-        else placeInThreatArea attrs iid
+      placeInThreatAreaOnlyOne attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       toDiscardBy iid (attrs.ability 1) attrs

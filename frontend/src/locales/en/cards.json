@@ -654,7 +654,7 @@
     "kohakuNarukami": {
       "addBless": "Add 1 {'{'}bless{'}'} token",
       "addCurse": "Add 1 {'{'}curse{'}'} token",
-      "removeAction": "Remove 2 {'{'}bless{'}'} tokens and 2 {'{'}curse{'}'} tokens from the chaos bag to take an additional action this turn"
+      "removeAction": "<span>Remove 2 {'{'}bless{'}'} tokens and 2 {'{'}curse{'}'} tokens from the chaos bag to take an additional action this turn</span>"
     },
     "kukri": {
       "spendActionForDamage": "Spend 1 action to deal +1 damage",

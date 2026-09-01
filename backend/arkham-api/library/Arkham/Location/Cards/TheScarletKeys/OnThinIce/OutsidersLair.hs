@@ -17,6 +17,6 @@ instance HasModifiersFor OutsidersLair where
   getModifiersFor (OutsidersLair a) = do
     modifySelectWhen
       a
-      (a.clues == 0)
+      (a.revealed && a.clues == 0)
       (enemyIs Enemies.voidChimeraTrueForm)
       [EnemyFight (-1), EnemyEvade (-1)]

@@ -3,7 +3,6 @@ module Arkham.Homebrew.CircusExMortis.Treacheries.HypnoticGlamour (hypnoticGlamo
 import Arkham.Ability
 import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers (campaignI18n, moonToken, sealMoonTokenOn)
-import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Import.Lifted
@@ -24,21 +23,15 @@ instance HasAbilities HypnoticGlamour where
 instance RunMessage HypnoticGlamour where
   runMessage msg t@(HypnoticGlamour attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      selectWhenNotNull
-        ( LocationWithMostClues
-            $ RevealedLocation
-            <> LocationWithoutTreachery (treacheryIs Cards.hypnoticGlamour)
-        )
-        \locations -> chooseOrRunOneM iid $ targets locations $ attachTreachery attrs
+      locations <-
+        select $ LocationWithMostClues $ #revealed <> locationWithoutTreachery Cards.hypnoticGlamour
+      chooseOrRunTargetM iid locations $ attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       moonInBag <- selectAny moonToken
-      chooseOneM iid $ withI18n do
+      chooseOneM iid $ campaignI18n do
         chooseTakeHorror iid attrs 1
-        when moonInBag
-          $ campaignI18n
-          $ labeled' "sealMoonToken"
-          $ sealMoonTokenOn iid
+        labeledValidate' moonInBag "sealMoonToken" $ sealMoonTokenOn iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

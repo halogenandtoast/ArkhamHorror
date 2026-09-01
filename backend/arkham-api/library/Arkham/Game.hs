@@ -2776,8 +2776,6 @@ getLocationsMatching lmatcher = do
                 matchingLocationIds <- map toId <$> getLocationsMatching matcher
                 getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
           pure $ filter ((`elem` matches') . toId) ls
-    AccessibleLocation -> guardYourLocation \yourLocation -> do
-      go ls (AccessibleFrom NotForMovement $ LocationWithId yourLocation)
     ConnectedLocation forMovement -> guardYourLocation $ \yourLocation -> do
       go ls (ConnectedFrom forMovement $ LocationWithId yourLocation)
     YourLocation -> guardYourLocation $ fmap (\l -> [l | l `elem` ls]) . getLocation
@@ -2839,7 +2837,10 @@ getLocationsMatching lmatcher = do
             if valid then getLocationsMatching connectedTo' else pure []
           matcherSupreme <- AnyLocationMatcher <$> Helpers.getConnectedMatcher forMovement start
           allOptions <- (<> others) <$> getLocationsMatching (getAnyLocationMatcher matcherSupreme)
-          pure $ filter (and . sequence [(`elem` allOptions), (`notElem` barricades) . toId]) ls
+          pure
+            $ filter
+              (and . sequence [(`elem` allOptions), (`notElem` (start : barricades)) . toId])
+              ls
         _ -> error "not designed to handle no or multiple starts"
     ConnectedFrom forMovement matcher -> do
       starts <- select matcher
@@ -2880,7 +2881,7 @@ getLocationsMatching lmatcher = do
         foldMapM (fmap AnyLocationMatcher . Helpers.getConnectedMatcher forMovement) starts
       allOptions <-
         (<> others) <$> getLocationsMatching (Unblocked <> getAnyLocationMatcher matcherSupreme)
-      pure $ filter (`elem` allOptions) ls
+      pure $ filter ((`notElem` starts) . toId) $ filter (`elem` allOptions) ls
     LocationWhenCriteria criteria -> do
       iid <- getLead
       passes <- passesCriteria iid Nothing GameSource GameSource [] criteria

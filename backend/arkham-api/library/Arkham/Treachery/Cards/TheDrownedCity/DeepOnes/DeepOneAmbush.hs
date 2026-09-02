@@ -25,7 +25,7 @@ instance RunMessage DeepOneAmbush where
       other <- selectAny $ TreacheryInThreatAreaOf (be iid) <> treacheryIs Cards.deepOneAmbush
       if other then toDiscard attrs attrs else placeInThreatArea attrs iid
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 [Window _ (Window.EnemyEngaged _ enemyId) _] _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 [Window _ (Window.EnemyEngaged _ enemyId) _ _] _ -> do
       initiateEnemyAttack enemyId (attrs.ability 1) iid
       toDiscardBy iid (attrs.ability 1) attrs
       pure t

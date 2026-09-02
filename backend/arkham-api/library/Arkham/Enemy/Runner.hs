@@ -1255,8 +1255,13 @@ instance RunMessage EnemyAttrs where
       let source = choose.source
       let sid = choose.skillTest
 
+      -- The after-window is built here but not checked until the whole attack
+      -- has resolved. Pin the tick so a card that enters play in between -- an
+      -- enemy spawned by an act the attack advanced, say -- can't react to an
+      -- attack that predates it (#5576).
+      conditionTick <- getWindowTick
       whenWindow <- checkWindows [mkWhen (Window.EnemyAttacked iid source enemyId)]
-      afterWindow <- checkWindows [mkAfter (Window.EnemyAttacked iid source enemyId)]
+      afterWindow <- checkWindowsAt conditionTick [mkAfter (Window.EnemyAttacked iid source enemyId)]
       attempt <- checkWindows [mkWhen (Window.AttemptToFightEnemy sid iid enemyId)]
       keywords <- getModifiedKeywords a
 
@@ -1361,8 +1366,9 @@ instance RunMessage EnemyAttrs where
       -- that replaces the evasion (Reminiscence (Covenant)) can CancelBatch and
       -- leave the enemy engaged and ready.
       (batchId, wouldMsgs) <- wouldWindows $ Window.EnemyWouldBeEvaded iid enemyId
+      conditionTick <- getWindowTick
       whenWindow <- checkWindows [mkWhen $ Window.EnemyEvaded iid enemyId]
-      afterWindow <- checkWindows [mkAfter $ Window.EnemyEvaded iid enemyId]
+      afterWindow <- checkWindowsAt conditionTick [mkAfter $ Window.EnemyEvaded iid enemyId]
       push $ Would batchId $ wouldMsgs <> [whenWindow, Do msg, afterWindow]
       pure a
     Do (EnemyEvaded iid eid) | eid == enemyId -> do

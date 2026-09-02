@@ -305,17 +305,17 @@ instance RunMessage SkillTest where
       withQueue_ $ filter $ \case
         Will FailedSkillTest {} -> False
         Will PassedSkillTest {} -> False
-        CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _] ->
+        CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _ _] ->
           False
-        CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _] ->
+        CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _ _] ->
           False
-        Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _]) ->
+        Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _ _]) ->
           False
-        Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _]) ->
+        Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _ _]) ->
           False
-        CheckWindows [Window Timing.After (Window.SkillTestStep ResolveChaosSymbolEffectsStep) _] ->
+        CheckWindows [Window Timing.After (Window.SkillTestStep ResolveChaosSymbolEffectsStep) _ _] ->
           False
-        Do (CheckWindows [Window Timing.After (Window.SkillTestStep ResolveChaosSymbolEffectsStep) _]) ->
+        Do (CheckWindows [Window Timing.After (Window.SkillTestStep ResolveChaosSymbolEffectsStep) _ _]) ->
           False
         Ask player' (ChooseOne [SkillTestApplyResultsButton])
           | player == player' -> False
@@ -1030,13 +1030,13 @@ instance RunMessage SkillTest where
         withQueue_ $ filter $ \case
           Will FailedSkillTest {} -> False
           Will PassedSkillTest {} -> False
-          CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _] ->
+          CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _ _] ->
             False
-          CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _] ->
+          CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _ _] ->
             False
-          Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _]) ->
+          Do (CheckWindows [Window Timing.When (Window.WouldFailSkillTest _ _) _ _]) ->
             False
-          Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _]) ->
+          Do (CheckWindows [Window Timing.When (Window.WouldPassSkillTest _ _) _ _]) ->
             False
           Ask player' (ChooseOne [SkillTestApplyResultsButton])
             | player == player' -> False

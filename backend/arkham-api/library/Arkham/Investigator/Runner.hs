@@ -2569,7 +2569,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
 
       when (searchType == Searching) $ do
         pushBatch batchId
-          $ CheckWindows [Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
+          $ CheckWindows [Window #when (Window.AmongSearchedCards batchId iid) (Just batchId) Nothing]
 
       pushBatch batchId $ ResolveSearch (toTarget investigatorId)
       pushBatch batchId $ EndSearch investigatorId source target cardSources

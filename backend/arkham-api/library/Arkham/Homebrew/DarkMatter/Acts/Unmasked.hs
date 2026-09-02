@@ -30,7 +30,7 @@ instance HasAbilities Unmasked where
     ]
 
 defeatedInvestigators :: [Window] -> [InvestigatorId]
-defeatedInvestigators ws = [who | Window _ (Window.InvestigatorDefeated _ who) _ <- ws]
+defeatedInvestigators ws = [who | Window _ (Window.InvestigatorDefeated _ who) _ _ <- ws]
 
 instance RunMessage Unmasked where
   runMessage msg a@(Unmasked attrs) = runQueueT $ case msg of

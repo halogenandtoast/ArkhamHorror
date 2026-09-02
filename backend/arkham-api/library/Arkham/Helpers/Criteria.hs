@@ -863,7 +863,7 @@ passesEnemyCriteria iid source windows' criterion = do
       -- TODO: should not be multiple enemies, but if so need to OR not AND matcher
       let
         getAttackingEnemy = \case
-          Window _ (Window.EnemyAttacks details) _ -> Just $ attackEnemy details
+          Window _ (Window.EnemyAttacks details) _ _ -> Just $ attackEnemy details
           _ -> Nothing
        in
         case mapMaybe getAttackingEnemy windows' of

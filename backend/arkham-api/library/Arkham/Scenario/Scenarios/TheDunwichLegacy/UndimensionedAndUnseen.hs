@@ -175,7 +175,7 @@ instance RunMessage UndimensionedAndUnseen where
 
       setAgendaDeck [Agendas.rampagingCreatures, Agendas.bidingItsTime, Agendas.horrorsUnleashed]
       setActDeck [Acts.saracenicScript, Acts.theyMustBeDestroyed]
-    Do (CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _]) -> do
+    Do (CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _ _]) -> do
       mcard <- findCardMatch Assets.powderOfIbnGhazi <$> field InvestigatorDeck iid
       for_ mcard $ \card -> do
         chooseOneM iid $ withI18n $ cardNameVar card do

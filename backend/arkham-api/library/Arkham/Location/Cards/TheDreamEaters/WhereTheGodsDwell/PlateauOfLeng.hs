@@ -38,9 +38,9 @@ instance RunMessage PlateauOfLeng where
     UseCardAbility _ (isSource attrs -> True) 1 (getEnemy -> enemy) _ -> do
       let
         replaceWindows = \case
-          Window timing (Window.EnemyAttemptsToSpawnAt eid EmptyLocation) batch
+          w@(Window.windowType -> Window.EnemyAttemptsToSpawnAt eid EmptyLocation)
             | eid == enemy ->
-                Window timing (Window.EnemyAttemptsToSpawnAt eid (LocationWithId attrs.id)) batch
+                w {Window.windowType = Window.EnemyAttemptsToSpawnAt eid (LocationWithId attrs.id)}
           other -> other
 
       mapQueue $ \case

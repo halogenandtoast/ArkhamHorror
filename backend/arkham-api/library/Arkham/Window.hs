@@ -42,11 +42,35 @@ data Window = Window
   { windowTiming :: Timing
   , windowType :: WindowType
   , windowBatchId :: Maybe BatchId
+  , windowConditionTick :: Maybe Int
+  {- ^ The window tick at which this window's triggering condition initiated,
+  for windows built ahead of the point where they are checked (e.g. the
+  after-window of an attack, built when the attack starts but checked once
+  it resolves). 'Nothing' means the condition initiated when the window
+  opened. See 'Arkham.Helpers.Action.getActionsWith'.
+  -}
   }
-  deriving stock (Show, Eq, Ord, Data)
+  deriving stock (Show, Data)
+
+{- | 'windowConditionTick' is bookkeeping, not identity: two windows that differ
+only by it are the same window. Ability limits compare recorded windows
+against the open ones ('Arkham.Helpers.Ability') and those recordings persist.
+-}
+instance Eq Window where
+  a == b = windowKey a == windowKey b
+
+instance Ord Window where
+  compare = comparing windowKey
+
+windowKey :: Window -> (Timing, WindowType, Maybe BatchId)
+windowKey w = (windowTiming w, windowType w, windowBatchId w)
 
 replaceWindowType :: WindowType -> Window -> Window
 replaceWindowType wType window = window {windowType = wType}
+
+-- | Pin the tick at which this window's triggering condition initiated.
+setWindowConditionTick :: Int -> Window -> Window
+setWindowConditionTick tick window = window {windowConditionTick = Just tick}
 
 instance HasField "timing" Window Timing where
   getField = windowTiming
@@ -55,19 +79,19 @@ instance HasField "kind" Window WindowType where
   getField = windowType
 
 mkWindow :: Timing -> WindowType -> Window
-mkWindow timing windowType = Window timing windowType Nothing
+mkWindow timing windowType = Window timing windowType Nothing Nothing
 
 mkCancel :: WindowType -> Window
-mkCancel windowType = Window #cancel windowType Nothing
+mkCancel windowType = Window #cancel windowType Nothing Nothing
 
 mkWhen :: WindowType -> Window
-mkWhen windowType = Window #when windowType Nothing
+mkWhen windowType = Window #when windowType Nothing Nothing
 
 mkAtIf :: WindowType -> Window
-mkAtIf windowType = Window #at windowType Nothing
+mkAtIf windowType = Window #at windowType Nothing Nothing
 
 mkAfter :: WindowType -> Window
-mkAfter windowType = Window #after windowType Nothing
+mkAfter windowType = Window #after windowType Nothing Nothing
 getBatchId :: [Window] -> BatchId
 getBatchId ws = case getMaybeBatchId ws of
   Just batchId -> batchId

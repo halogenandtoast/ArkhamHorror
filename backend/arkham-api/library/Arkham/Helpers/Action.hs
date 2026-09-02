@@ -217,33 +217,32 @@ getActionsWith iid ws f = do
         let abWindow = case (abilitySource ability).location of
               Nothing -> abilityWindow ability
               Just lid -> replaceThisLocation lid (abilityWindow ability)
-        -- 97% of these evaluations return False (measured: 9326 ability checks
-        -- per act advance, 257 matches), so rejecting on timing first is worth
-        -- far more than making the full check faster.
-        matched <-
-          anyM
-            (\w -> windowMatches iid (abilitySource ability) w abWindow)
-            ws
-        if not matched
-          then pure False
-          else do
-            -- A forced/reaction ability may only respond to a window that
-            -- opened strictly after its source card entered play. A card that
-            -- enters during an open window cannot respond to that window's
-            -- already-occurred triggering condition (#4927).
+        -- A forced/reaction ability may only respond to a triggering condition
+        -- that occurred while its source card was already in play. A card that
+        -- enters during an open window cannot respond to that window's
+        -- already-occurred triggering condition (#4927). A window built ahead of
+        -- the point at which it is checked -- an attack's after-window, say --
+        -- pins the tick its condition initiated at; otherwise the condition
+        -- began when the window opened (#5576).
+        let
+          respectsEntryTick w = do
             isForced <- isForcedAbility iid ability
-            let isReaction = isReactionAbility ability
-            if not (isForced || isReaction)
+            if not (isForced || isReactionAbility ability)
               then pure True
               else
                 sourceToMaybeCard (abilitySource ability) >>= \case
                   Nothing -> pure True
                   Just card -> case lookup card.id entryTicks of
                     Nothing -> pure True
-                    Just entryTick ->
-                      getCurrentWindowTick <&> \case
-                        Nothing -> True
-                        Just openTick -> openTick > entryTick
+                    Just entryTick -> case windowConditionTick w of
+                      Just conditionTick -> pure $ entryTick <= conditionTick
+                      Nothing -> getCurrentWindowTick <&> maybe True (> entryTick)
+        -- 97% of these evaluations return False (measured: 9326 ability checks
+        -- per act advance, 257 matches), so rejecting on timing first is worth
+        -- far more than making the full check faster.
+        flip anyM ws \w -> do
+          matched <- windowMatches iid (abilitySource ability) w abWindow
+          if matched then respectsEntryTick w else pure False
 
   let bountiesOnly = BountiesOnly `elem` investigatorModifiers
 

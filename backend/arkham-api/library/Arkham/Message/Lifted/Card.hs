@@ -2,7 +2,6 @@
 
 module Arkham.Message.Lifted.Card where
 
-
 import Arkham.Helpers.FetchCard as X
 
 import Arkham.Ability
@@ -91,8 +90,8 @@ import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
-import Arkham.Message.Lifted.Queue as X
 import Arkham.Message.Lifted.Base
+import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -242,7 +241,8 @@ changeDrawnBy drawer newDrawer =
     Window.DrawCard who _ _ -> who == drawer
     _ -> False
   changeWindow = \case
-    Window.Window t (Window.DrawCard who c f) batchId | who == drawer -> Window.Window t (Window.DrawCard newDrawer c f) batchId
+    w@(Window.windowType -> Window.DrawCard who c f)
+      | who == drawer -> w {Window.windowType = Window.DrawCard newDrawer c f}
     other -> other
 
 attach :: (HasQueue Message m, Attachable a, Targetable target) => a -> target -> m ()

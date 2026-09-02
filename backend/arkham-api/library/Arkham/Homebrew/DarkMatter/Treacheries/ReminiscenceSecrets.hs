@@ -43,7 +43,7 @@ instance RunMessage ReminiscenceSecrets where
     UseCardAbility iid (isSource attrs -> True) 2 ws _ -> do
       -- The clue was placed as the cost; all that is left is to replace the
       -- discovery itself, which would otherwise still resolve.
-      for_ [who | Window _ (Window.WouldDiscoverClues who _ _ _ _) _ <- ws] \who ->
+      for_ [who | Window _ (Window.WouldDiscoverClues who _ _ _ _) _ _ <- ws] \who ->
         insteadOfDiscoveringClues who \_ -> pure ()
       toDiscardBy iid (attrs.ability 2) attrs
       pure t

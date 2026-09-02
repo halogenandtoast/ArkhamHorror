@@ -1122,7 +1122,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
 
       when (searchType == Searching) $ do
         pushBatch batchId
-          $ CheckWindows [Window.Window #when (Window.AmongSearchedCards batchId iid) (Just batchId)]
+          $ CheckWindows [Window.Window #when (Window.AmongSearchedCards batchId iid) (Just batchId) Nothing]
 
       pushBatch batchId $ ResolveSearch (toTarget a)
       pushBatch batchId $ EndSearch iid source t cardSources

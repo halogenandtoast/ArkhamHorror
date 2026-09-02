@@ -700,12 +700,12 @@ healAdditional (toSource -> source) dType ws' additional = do
   -- the additional healing directly without opening another healing window.
   let
     updateHealed = \case
-      Window timing (Healed dType' t s n) mBatchId
-        | dType == dType' ->
-            Window timing (Healed dType' t s (n + additional)) mBatchId
+      w@(windowType -> Healed dType' t s n)
+        | dType == dType' -> w {windowType = Healed dType' t s (n + additional)}
       other -> other
     getHealed = \case
-      Window timing (Healed dType' t s _) _ | dType == dType' -> Just (timing, t, s)
+      Window {windowTiming = timing, windowType = Healed dType' t s _}
+        | dType == dType' -> Just (timing, t, s)
       _ -> Nothing
     (healedTiming, healedTarget, healedSource) =
       fromJustNote "wrong call" $ getFirst $ foldMap (First . getHealed) ws'

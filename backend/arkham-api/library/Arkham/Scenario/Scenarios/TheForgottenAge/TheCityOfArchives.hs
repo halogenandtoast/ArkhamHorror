@@ -162,7 +162,7 @@ instance RunMessage TheCityOfArchives where
     StandaloneSetup -> do
       setChaosTokens standaloneChaosTokens
       pure s
-    Do (CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _]) -> do
+    Do (CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _ _]) -> do
       uniqueItemAssetCards <- select $ inDeckOf iid <> basic (#asset <> #item <> CardIsUnique)
       uniqueItemAssets <- select $ #item <> UniqueAsset
       mAlejandro <- selectOne $ inDeckOf iid <> basic (cardIs Assets.alejandroVela)

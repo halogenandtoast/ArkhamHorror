@@ -52,6 +52,7 @@ getDistance :: HasGame m => LocationId -> LocationId -> m (Maybe Distance)
 getAllAbilities :: HasGame m => m [Ability]
 getWindowStack :: HasGame m => m [[Window]]
 getCurrentWindowTick :: HasGame m => m (Maybe Int)
+getWindowTick :: HasGame m => m Int
 getEntryTicks :: HasGame m => m (Map CardId Int)
 getActionCanBeUndone :: HasGame m => m Bool
 getGameInAction :: HasGame m => m Bool

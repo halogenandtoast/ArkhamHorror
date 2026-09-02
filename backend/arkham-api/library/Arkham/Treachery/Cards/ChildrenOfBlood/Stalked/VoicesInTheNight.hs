@@ -25,7 +25,7 @@ instance RunMessage VoicesInTheNight where
     Revelation iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 [Window _ (Window.EnemyEngaged _ enemyId) _] _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 [Window _ (Window.EnemyEngaged _ enemyId) _ _] _ -> do
       toDiscardBy iid (attrs.ability 1) attrs
       initiateEnemyAttack enemyId (attrs.ability 1) iid
       pure t

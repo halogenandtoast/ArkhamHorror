@@ -1367,11 +1367,7 @@ instance RunMessage EnemyAttrs where
       -- a batch fronted by the EnemyWouldBeEvaded would-windows, so a reaction
       -- that replaces the evasion (Reminiscence (Covenant)) can CancelBatch and
       -- leave the enemy engaged and ready.
-      (batchId, wouldMsgs) <- wouldWindows $ Window.EnemyWouldBeEvaded iid enemyId
-      conditionTick <- getWindowTick
-      whenWindow <- checkWindows [mkWhen $ Window.EnemyEvaded iid enemyId]
-      afterWindow <- checkWindowsAt conditionTick [mkAfter $ Window.EnemyEvaded iid enemyId]
-      push $ Would batchId $ wouldMsgs <> [whenWindow, Do msg, afterWindow]
+      Evade.pushEvadedWindows iid enemyId msg
       pure a
     Do (EnemyEvaded iid eid) | eid == enemyId -> do
       mods <- getModifiers iid

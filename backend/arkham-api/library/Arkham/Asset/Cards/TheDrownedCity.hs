@@ -889,7 +889,6 @@ mariaRivera :: CardDef
 mariaRivera =
   (storyAsset "11568" ("Maria Rivera" <:> "Lost Pilgrim") 3 TheApiary)
     { cdCardTraits = setFromList [Ally, Cultist]
-    , cdSlots = [#ally]
     , cdUnique = True
     , cdVictoryPoints = Just 0
     }

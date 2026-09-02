@@ -1333,9 +1333,11 @@ instance RunMessage EnemyAttrs where
     Failed (Action.Fight, target) iid _source _ _ | isTarget a target -> do
       mods <- getCombinedModifiers [toTarget iid, toTarget a]
       keywords <- getModifiedKeywords a
+      canAttack <- canBeAttackedBy enemyId iid
 
       when
-        ( (Keyword.Retaliate `elem` keywords)
+        ( canAttack
+            && (Keyword.Retaliate `elem` keywords)
             && (IgnoreRetaliate `notElem` mods)
             && (not enemyExhausted || CanRetaliateWhileExhausted `elem` mods)
         )
@@ -1476,9 +1478,11 @@ instance RunMessage EnemyAttrs where
     Failed (Action.Evade, target) iid _ _ _ | isTarget a target -> do
       mods <- getModifiers iid
       keywords <- getModifiedKeywords a
+      canAttack <- canBeAttackedBy enemyId iid
       pushAll
         [ EnemyAttack $ viaAlert $ (enemyAttack enemyId a iid) {attackDamageStrategy = enemyDamageStrategy}
-        | Keyword.Alert `elem` keywords
+        | canAttack
+        , Keyword.Alert `elem` keywords
         , IgnoreRetaliate `notElem` mods
         ]
       pure a

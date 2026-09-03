@@ -1578,7 +1578,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         for slots \slot -> do
           case slotItems slot of
             [] -> pure slot
-            assets -> do
+            occupants -> do
+              -- A dangling AssetId must not turn a slot read into MissingEntity (#5593)
+              (assets, missing) <- partitionM (fmap isJust . fieldMay AssetCardId) occupants
               ignored <-
                 assets & filterM \aid -> do
                   cardId <- field AssetCardId aid
@@ -1596,7 +1598,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   let lessSlots = if seenCount == slotCount then 1 else 0
                   when (lessSlots == 0) $ modify (aid :)
                   pure $ replicate lessSlots aid
-              pure $ foldr removeIfMatchesOnce (foldr removeIfMatches slot ignored) (concat assetsToRemove)
+              pure
+                $ foldr
+                  removeIfMatches
+                  (foldr removeIfMatchesOnce (foldr removeIfMatches slot ignored) (concat assetsToRemove))
+                  missing
       pure (slotType, slots')
     push $ RefillSlots iid xs
     pure $ a & slotsL .~ mapFromList updatedSlots

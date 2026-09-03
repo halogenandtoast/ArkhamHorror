@@ -81,6 +81,12 @@ removeIfMatchesOnce aid = \case
   RestrictedSlot source trait assets -> RestrictedSlot source trait (deleteFirst aid assets)
   AdjustableSlot source restriction trait assets -> AdjustableSlot source restriction trait (deleteFirst aid assets)
 
+retainSlotAssets :: (AssetId -> Bool) -> Slot -> Slot
+retainSlotAssets f = \case
+  Slot source assets -> Slot source (filter f assets)
+  RestrictedSlot source trait assets -> RestrictedSlot source trait (filter f assets)
+  AdjustableSlot source restriction trait assets -> AdjustableSlot source restriction trait (filter f assets)
+
 getPotentialSlots
   :: (HasGame m, IsCard a) => a -> InvestigatorId -> m [SlotType]
 getPotentialSlots card iid = do

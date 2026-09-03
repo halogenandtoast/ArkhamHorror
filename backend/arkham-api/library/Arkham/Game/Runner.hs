@@ -77,6 +77,7 @@ import Arkham.Helpers.Playable
 import Arkham.Helpers.Query
 import Arkham.Helpers.Ref
 import Arkham.Helpers.Scenario
+import Arkham.Helpers.Slot (retainSlotAssets, slotSource)
 import Arkham.Helpers.Source
 import Arkham.Helpers.Window hiding (getAsset, getEnemy, getLocation)
 import Arkham.History
@@ -600,12 +601,30 @@ runGameMessage msg g = case msg of
     persistedAssets <- select (AssetWithModifier Persist)
     let keepCardCache =
           Persist `elem` map modifierType (Map.findWithDefault [] GameTarget (gameModifiers g))
+    -- investigatorSlots is not part of gameEntities, so it survives the wipe below with
+    -- dangling AssetIds. `ForInvestigators [] ResetGame` normally rebuilds it right after,
+    -- but skipInvestigatorSetup (Hemlock Vale's afterPrelude) skips that message (#5593).
+    let assetSurvives aid = aid `elem` persistedAssets
+    let slotSourceGone = \case
+          AssetSource aid -> not (assetSurvives aid)
+          EventSource _ -> True
+          BothSource x y -> slotSourceGone x || slotSourceGone y
+          ProxySource x y -> slotSourceGone x || slotSourceGone y
+          _ -> False
+    let pruneSlots attrs =
+          attrs
+            { investigatorSlots =
+                Map.map
+                  (map (retainSlotAssets assetSurvives) . filter (not . slotSourceGone . slotSource))
+                  (investigatorSlots attrs)
+            }
     pure
       $ g
       & (encounterDiscardEntitiesL .~ defaultEntities)
       & (skillTestL .~ Nothing)
       & (skillTestResultsL .~ Nothing)
       & (entitiesL . assetsL %~ Map.filterWithKey (\k _ -> k `elem` persistedAssets))
+      & (entitiesL . investigatorsL . each %~ overAttrs pruneSlots)
       & (entitiesL . locationsL .~ mempty)
       & (entitiesL . enemiesL .~ mempty)
       & (entitiesL . enemyLocationsL .~ mempty)

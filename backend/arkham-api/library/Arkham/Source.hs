@@ -9,6 +9,7 @@ import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardType (playerCardTypes)
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
+import Arkham.Constants
 import Arkham.Id
 import Arkham.Matcher.Types (
   AbilityMatcher (..),
@@ -368,3 +369,13 @@ proxied b a = SourceableWithCardCode a (proxy b a)
 
 source_ :: Source -> Source
 source_ = id
+
+-- Basic actions are hosted by a card but aren't abilities *on* it.
+isBasicAbilitySource :: Source -> Bool
+isBasicAbilitySource = \case
+  PaymentSource s -> isBasicAbilitySource s
+  AbilitySource _ n -> isBasic n
+  UseAbilitySource _ _ n -> isBasic n
+  _ -> False
+ where
+  isBasic n = n `elem` [AbilityAttack, AbilityEvade, AbilityEngage, AbilityInvestigate, AbilityMove]

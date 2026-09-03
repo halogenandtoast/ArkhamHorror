@@ -323,27 +323,33 @@ insteadOfDefeatWithWindows e body = whenBeingDefeated e \miid defeatedBy -> do
   pushAll =<< capture body
   checkAfter $ Window.EnemyDefeated miid defeatedBy (asId e)
 
+-- See: Priest of Dagon
 insteadOfEvading
   :: HasQueue Message m => EnemyAttrs -> QueueT Message (QueueT Message m) () -> QueueT Message m ()
 insteadOfEvading attrs body = whenM (beingEvaded attrs) do
   cancelEvadeEnemy attrs
   pushAll =<< capture body
 
-cancelEvadeEnemy :: (HasQueue Message m, MonadTrans t) => EnemyAttrs -> t m ()
-cancelEvadeEnemy attrs = matchingDon't isEvadedMessage
- where
-  isEvadedMessage = \case
-    EnemyEvaded _ eid -> eid == attrs.id
-    Do msg -> isEvadedMessage msg
-    _ -> False
+{- | The evade cascade rides in a @Would@ batch (see "Arkham.Behavior.Evade"), so
+cancelling the batch is what drops the pending evade — filtering the nested
+message out on its own would leave the after-@EnemyEvaded@ window behind.
+-}
+cancelEvadeEnemy :: HasQueue Message m => EnemyAttrs -> QueueT Message m ()
+cancelEvadeEnemy attrs = do
+  batchIds <- fromQueue \q -> [bId | Would bId msgs <- q, any (isEvadedMessage attrs) msgs]
+  case batchIds of
+    bId : _ -> push $ CancelBatch bId
+    [] -> matchingDon't (isEvadedMessage attrs)
 
 beingEvaded :: (HasQueue Message m, MonadTrans t) => EnemyAttrs -> t m Bool
-beingEvaded attrs = fromQueue $ any isEvadedMessage
- where
-  isEvadedMessage = \case
-    EnemyEvaded _ eid -> eid == attrs.id
-    Do msg -> isEvadedMessage msg
-    _ -> False
+beingEvaded attrs = fromQueue $ any (isEvadedMessage attrs)
+
+isEvadedMessage :: EnemyAttrs -> Message -> Bool
+isEvadedMessage attrs = \case
+  EnemyEvaded _ eid -> eid == attrs.id
+  Do msg -> isEvadedMessage attrs msg
+  Would _ msgs -> any (isEvadedMessage attrs) msgs
+  _ -> False
 
 beingDefeated :: (HasQueue Message m, MonadTrans t, ToId enemy EnemyId) => enemy -> t m Bool
 beingDefeated (asId -> enemyId) = fromQueue $ any isDefeatedMessage

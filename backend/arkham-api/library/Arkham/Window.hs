@@ -92,6 +92,7 @@ mkAtIf windowType = Window #at windowType Nothing Nothing
 
 mkAfter :: WindowType -> Window
 mkAfter windowType = Window #after windowType Nothing Nothing
+
 getBatchId :: [Window] -> BatchId
 getBatchId ws = case getMaybeBatchId ws of
   Just batchId -> batchId

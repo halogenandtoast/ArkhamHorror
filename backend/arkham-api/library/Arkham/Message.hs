@@ -48,6 +48,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Card
+import Arkham.Card.CardOption
 import Arkham.Card.Settings
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
@@ -496,6 +497,8 @@ data Message
   | ClearAbilityUse AbilityRef
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
+  | -- | Set one option a card declares in @cdOptions@ for this investigator
+    SetCardOption InvestigatorId CardCode Text OptionValue
   | SetAsIfRuling AsIfRuling
   | SetUltimatumsAndBoonsEnabled Bool
   | -- | Ultimatum of The Scream: ban this ally for the rest of the campaign

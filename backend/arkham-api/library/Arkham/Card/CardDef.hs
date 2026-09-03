@@ -8,6 +8,7 @@ import Arkham.Actions as X
 import Arkham.Asset.Uses
 import Arkham.Calculation
 import Arkham.Card.CardCode
+import Arkham.Card.CardOption
 import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
@@ -272,6 +273,8 @@ data CardDef = CardDef
   decide whether to prompt the active player for ordering.
   -}
   , cdMeta :: Map Text Value
+  , cdOptions :: [CardOption]
+  -- ^ Player-configurable options this card offers; see "Arkham.Card.CardOption".
   , cdTags :: [Text]
   , cdOutOfPlayEffects :: [OutOfPlayEffect]
   , cdHealth :: Maybe Health
@@ -421,6 +424,7 @@ emptyCardDef cCode name cType =
     , cdCanCommitWhenNoIcons = False
     , cdCommitTrigger = False
     , cdMeta = mempty
+    , cdOptions = []
     , cdTags = []
     , cdOutOfPlayEffects = []
     , cdHealth = Nothing
@@ -562,6 +566,7 @@ cardDefKeyValues CardDef {..} =
         cdCanCommitWhenNoIcons
     , pairWhen cdCommitTrigger "commitTrigger" cdCommitTrigger
     , pairWhen (not $ null cdMeta) "meta" cdMeta
+    , pairWhen (not $ null cdOptions) "options" cdOptions
     , pairWhen (not $ null cdTags) "tags" cdTags
     , pairWhen (not $ null cdOutOfPlayEffects) "outOfPlayEffects" cdOutOfPlayEffects
     , pairJust "health" cdHealth
@@ -638,6 +643,7 @@ instance FromJSON CardDef where
       o .:? "canCommitWhenNoIcons" .!= (null cdSkills && cdCardType == SkillType)
     cdCommitTrigger <- o .:? "commitTrigger" .!= False
     cdMeta <- o .:? "meta" .!= mempty
+    cdOptions <- o .:? "options" .!= []
     cdTags <- o .:? "tags" .!= []
     inHandEffects <- o .:? "cardInHandEffects" .!= False
     inDiscardEffects <- o .:? "cardInDiscardEffects" .!= False

@@ -7,6 +7,7 @@
 module Arkham.Card.Settings where
 
 import Arkham.Card.CardCode
+import Arkham.Card.CardOption
 import Arkham.Prelude
 import Control.Lens (non)
 import Control.Monad.Fail (fail)
@@ -46,19 +47,24 @@ data PerCardSettings = PerCardSettings
   { cardIgnoreUnrelatedSkillTestTriggers :: Bool
   , cardIgnoreDuringSkillTests :: Bool
   , cardAttachments :: [CardCode]
+  , cardOptions :: Map Text OptionValue
+  {- ^ Values the controller has chosen for the options this card declares in
+  @cdOptions@. Absent keys fall back to the option's declared default.
+  -}
   }
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
 
 instance Semigroup PerCardSettings where
-  PerCardSettings i1 d1 a1 <> PerCardSettings i2 d2 a2 =
-    PerCardSettings (i1 || i2) (d1 || d2) (a1 <> a2)
+  PerCardSettings i1 d1 a1 o1 <> PerCardSettings i2 d2 a2 o2 =
+    PerCardSettings (i1 || i2) (d1 || d2) (a1 <> a2) (o1 <> o2)
 
 instance FromJSON PerCardSettings where
   parseJSON = withObject "PerCardSettings" \o -> do
     cardIgnoreUnrelatedSkillTestTriggers <- o .: "cardIgnoreUnrelatedSkillTestTriggers"
     cardIgnoreDuringSkillTests <- o .: "cardIgnoreDuringSkillTests"
     cardAttachments <- o .:? "cardAttachments" .!= []
+    cardOptions <- o .:? "cardOptions" .!= mempty
     pure PerCardSettings {..}
 
 data PerCardSetting a where
@@ -216,6 +222,7 @@ defaultPerCardSettings =
     { cardIgnoreUnrelatedSkillTestTriggers = False
     , cardIgnoreDuringSkillTests = False
     , cardAttachments = []
+    , cardOptions = mempty
     }
 
 globalSettingsL :: Lens' CardSettings GlobalSettings
@@ -243,6 +250,22 @@ cardIgnoreDuringSkillTestsL =
 
 cardAttachmentsL :: Lens' PerCardSettings [CardCode]
 cardAttachmentsL = lens cardAttachments \m x -> m {cardAttachments = x}
+
+cardOptionsL :: Lens' PerCardSettings (Map Text OptionValue)
+cardOptionsL = lens cardOptions \m x -> m {cardOptions = x}
+
+{- | Set one declared option for one card. Kept off the 'PerCardSetting' GADT on
+purpose: that exists for heterogeneous typed settings, and a keyed option map
+doesn't need its hand-rolled 'Data' instances.
+-}
+setCardOption :: CardCode -> Text -> OptionValue -> CardSettings -> CardSettings
+setCardOption cCode k v =
+  perCardSettingsL . at cCode . non defaultPerCardSettings . cardOptionsL . at k ?~ v
+
+-- | The value chosen for an option, or 'Nothing' to fall back to its default.
+lookupCardOption :: CardCode -> Text -> CardSettings -> Maybe OptionValue
+lookupCardOption cCode k settings =
+  lookup k . cardOptions =<< lookup cCode (perCardSettings settings)
 
 updateCardSetting :: CardCode -> SetCardSetting -> CardSettings -> CardSettings
 updateCardSetting cCode = \case

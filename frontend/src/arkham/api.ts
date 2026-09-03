@@ -197,6 +197,15 @@ export const setLocationOffset = (gameId: string, locationId: string, x: number,
 export const resetLocationOffsets = (gameId: string): Promise<void> =>
   updateGameRaw(gameId, { tag: 'ResetLocationOffsets' })
 
+export const setCardOption = (
+  gameId: string,
+  investigatorId: string,
+  cardCode: string,
+  key: string,
+  value: boolean | string,
+): Promise<void> =>
+  updateGameRaw(gameId, { tag: 'SetCardOption', contents: [investigatorId, cardCode, key, value] })
+
 export interface PlayabilityResponse {
   cardId: string
   cardCode: string

@@ -325,6 +325,11 @@ data Criterion
   | IfCostsAreIgnored Criterion
   | IgnoreModifiersFrom Source Criterion
   | IfCriteria Criterion Criterion Criterion
+  | {- | True when the investigator being asked has turned on this option for the
+    card the ability's source belongs to. Options are declared per card in
+    @cdOptions@; see "Arkham.Card.CardOption". Prefer 'whenOption'.
+    -}
+    CardOptionSet Text
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Criterion
@@ -513,6 +518,14 @@ canFightIgnoreAloof = canFightCriteriaObeyAloof False
 require :: Bool -> Criterion
 require True = NoRestriction
 require False = Never
+
+{- | Apply @c@ only when the controller has turned on the named card option; with
+the option off the ability is unrestricted. The inverse (a restriction that
+applies only when the option is /off/) is @IfCriteria (CardOptionSet k)
+NoRestriction c@.
+-}
+whenOption :: Text -> Criterion -> Criterion
+whenOption k c = IfCriteria (CardOptionSet k) c NoRestriction
 
 prohibit :: Bool -> Criterion
 prohibit = require . not

@@ -23,6 +23,7 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import TokenPool, { type TokenPoolItem } from '@/arkham/components/TokenPool.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
+import CardConfig from '@/arkham/components/CardConfig.vue'
 import Story from '@/arkham/components/Story.vue';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
 import Token from '@/arkham/components/Token.vue';
@@ -430,6 +431,7 @@ function startDrag(event: DragEvent) {
           :game="game"
           @choose="chooseAbility"
         />
+        <CardConfig :game="game" :playerId="playerId" :cardCode="cardCode" />
       </div>
       <CardsUnderIndicator
         v-if="cardsUnderneath.length > 0"

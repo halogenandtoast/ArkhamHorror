@@ -10,6 +10,7 @@ import { Seal, sealDecoder } from '@/arkham/types/Seal';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { TabooList, tabooListDecoder } from '@/arkham/types/TabooList';
+import type { OptionValue } from '@/arkham/types/CardDef';
 import { searchDecoder } from '@/arkham/types/Search';
 import {
   Card,
@@ -105,6 +106,7 @@ type CardSettings = {
     cardIgnoreUnrelatedSkillTestTriggers: boolean;
     cardIgnoreDuringSkillTests?: boolean;
     cardAttachments?: string[];
+    cardOptions?: Record<string, OptionValue>;
   }>;
 }
 
@@ -116,6 +118,10 @@ export const cardSettingsDecoder = JsonDecoder.object<CardSettings>({
     cardIgnoreUnrelatedSkillTestTriggers: JsonDecoder.boolean(),
     cardIgnoreDuringSkillTests: v2Optional(JsonDecoder.boolean()),
     cardAttachments: v2Optional(JsonDecoder.array<string>(JsonDecoder.string(), 'string[]')),
+    cardOptions: v2Optional(JsonDecoder.record<OptionValue>(
+      JsonDecoder.oneOf<OptionValue>([JsonDecoder.boolean(), JsonDecoder.string()], 'OptionValue'),
+      'Dict<string, OptionValue>',
+    )),
   }, 'PerCardSettings'), 'Dict<string, PerCardSettings>'),
 }, 'CardSettings');
 

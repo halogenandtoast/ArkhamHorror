@@ -17,6 +17,20 @@ type SkillIcon
 
 export type CustomizationDef = [string, number]
 
+export type CardOptionType
+  = { tag: "toggle", default: boolean }
+  | { tag: "choice", values: string[], default: string }
+
+export type CardOption = {
+  key: string;
+  type: CardOptionType;
+  /* Which of the card's abilities this option scopes to; absent means the
+   * option applies to the card as a whole. */
+  ability?: number;
+}
+
+export type OptionValue = boolean | string
+
 export type CardDef = {
   cardCode: string;
   doubleSided: boolean;
@@ -34,6 +48,7 @@ export type CardDef = {
   errata: string | null;
   encounterSet?: any;
   customizations?: CustomizationDef[];
+  options?: CardOption[];
 }
 
 const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
@@ -45,6 +60,21 @@ const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
   JsonDecoder.object({ tag: JsonDecoder.literal("AnyMatchingCardCost") }, 'AnyMatchingCardCost'),
   JsonDecoder.object({ tag: JsonDecoder.literal("MatchingEnemyFieldCost") }, 'MatchingEnemyFieldCost')
 ], 'CardCost')
+
+const cardOptionTypeDecoder = JsonDecoder.oneOf<CardOptionType>([
+  JsonDecoder.object({ tag: JsonDecoder.literal("toggle"), default: JsonDecoder.boolean() }, 'OptionToggle'),
+  JsonDecoder.object({
+    tag: JsonDecoder.literal("choice"),
+    values: JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'),
+    default: JsonDecoder.string(),
+  }, 'OptionChoice'),
+], 'CardOptionType')
+
+export const cardOptionDecoder = JsonDecoder.object<CardOption>({
+  key: JsonDecoder.string(),
+  type: cardOptionTypeDecoder,
+  ability: v2Optional(JsonDecoder.number()),
+}, 'CardOption')
 
 const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([
   JsonDecoder.object({ contents: JsonDecoder.string(), tag: JsonDecoder.literal("SkillIcon") }, 'SkillIcon'),
@@ -74,6 +104,7 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
     errata: withDefault(null, JsonDecoder.string()),
     encounterSet: v2Optional(JsonDecoder.succeed()),
     customizations: withDefault<CustomizationDef[]>([], JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.number()], 'CustomizationDef'), 'CustomizationDef[]')),
+    options: withDefault<CardOption[]>([], JsonDecoder.array<CardOption>(cardOptionDecoder, 'CardOption[]')),
   },
   'CardDef',
 );

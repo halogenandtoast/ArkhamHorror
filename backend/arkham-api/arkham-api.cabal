@@ -2407,6 +2407,7 @@ library
       Arkham.Card
       Arkham.Card.CardCode
       Arkham.Card.CardDef
+      Arkham.Card.CardOption
       Arkham.Card.CardType
       Arkham.Card.Class
       Arkham.Card.Cost
@@ -4034,6 +4035,7 @@ library
       Arkham.Helpers.Calculation
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card
+      Arkham.Helpers.CardOption
       Arkham.Helpers.ChaosBag
       Arkham.Helpers.ChaosBag.Lifted
       Arkham.Helpers.ChaosToken

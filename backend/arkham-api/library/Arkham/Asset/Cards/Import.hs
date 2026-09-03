@@ -5,6 +5,7 @@ import Arkham.Asset.Uses as X hiding (Civilian, Key, Lead)
 import Arkham.Calculation as X
 import Arkham.CampaignLogKey as X
 import Arkham.Card.CardDef as X
+import Arkham.Card.CardOption as X
 import Arkham.Card.CardType as X
 import Arkham.Card.Cost as X
 import Arkham.ClassSymbol as X

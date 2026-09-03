@@ -253,4 +253,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
           , scenarioPlayerDecks = scenarioPlayerDecks attrs
           , scenarioStoryCards = scenarioStoryCards attrs
           }
+    RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
+      for_ mcard (addCampaignCardToDeck iid ShuffleIn)
+      pure s
     _ -> MurderAtTheExcelsiorHotel <$> liftRunMessage msg attrs

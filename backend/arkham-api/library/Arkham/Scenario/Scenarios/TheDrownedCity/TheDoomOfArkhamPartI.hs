@@ -211,6 +211,9 @@ instance RunMessage TheDoomOfArkhamPartI where
           resolution1 attrs
         _ -> error $ "Unknown resolution: " <> show res
       pure s
+    RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
+      for_ mcard (addCampaignCardToDeck iid ShuffleIn)
+      pure s
     _ -> TheDoomOfArkhamPartI <$> liftRunMessage msg attrs
 
 {- | "Proceed to Resolution 1." Reached both by The Phantom Shop's 5-artifact branch

@@ -166,4 +166,7 @@ instance RunMessage FilmFatale where
 
       endOfScenario
       pure s
+    RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
+      for_ mcard (addCampaignCardToDeck iid ShuffleIn)
+      pure s
     _ -> FilmFatale <$> liftRunMessage msg attrs

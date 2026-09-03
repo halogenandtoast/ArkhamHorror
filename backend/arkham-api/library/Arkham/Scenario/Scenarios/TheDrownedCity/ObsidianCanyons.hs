@@ -439,4 +439,7 @@ instance RunMessage ObsidianCanyons where
           endOfScenarioThen $ if headedWest then SepulchreOfTheSleeper else CourtOfTheAncients
         _ -> error $ "Unknown resolution: " <> show res
       pure s
+    RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
+      for_ mcard (addCampaignCardToDeck iid ShuffleIn)
+      pure s
     _ -> ObsidianCanyons <$> liftRunMessage msg attrs

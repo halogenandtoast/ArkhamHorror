@@ -9,6 +9,7 @@ import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useSettingsFocus } from '@/composable/settingsFocus'
 import { useSettings } from '@/stores/settings'
+import CardOptionsSettings from '@/arkham/components/CardOptionsSettings.vue'
 
 const props = defineProps<{
   game: Game
@@ -309,6 +310,8 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </section>
+
+      <CardOptionsSettings :game="game" :playerId="playerId" />
 
       <section class="settings-section">
         <h3 class="section-title">Shared Game Settings</h3>

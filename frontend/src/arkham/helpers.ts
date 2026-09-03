@@ -1,5 +1,6 @@
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { replaceHomebrewIcons } from '@/arkham/homebrewAssets'
+import { iconClasses, runePlaceholder } from '@/arkham/icons'
 import { ref, type Ref } from 'vue';
 
 interface ImageHelper {
@@ -157,40 +158,10 @@ export function formatContent(body: string) {
 }
 
 export function replaceIcons(body: string) {
-  return replaceHomebrewIcons(body).
-    replace(/{action}/g, '<span class="action-icon"></span>').
-    replace(/{fast}/g, '<span class="fast-icon"></span>').
-    replace(/{reaction}/g, '<span class="reaction-icon"></span>').
-    replace(/{willpower}/g, '<span class="willpower-icon"></span>').
-    replace(/{intellect}/g, '<span class="intellect-icon"></span>').
-    replace(/{combat}/g, '<span class="combat-icon"></span>').
-    replace(/{agility}/g, '<span class="agility-icon"></span>').
-    replace(/{wild}/g, '<span class="wild-icon"></span>').
-    replace(/{guardian}/g, '<span class="guardian-icon"></span>').
-    replace(/{seeker}/g, '<span class="seeker-icon"></span>').
-    replace(/{rogue}/g, '<span class="rogue-icon"></span>').
-    replace(/{mystic}/g, '<span class="mystic-icon"></span>').
-    replace(/{survivor}/g, '<span class="survivor-icon"></span>').
-    replace(/{elderSign}/g, '<span class="elder-sign"></span>').
-    replace(/{autoFail}/g, '<span class="auto-fail"></span>').
-    replace(/{skull}/g, '<span class="skull-icon"></span>').
-    replace(/{cultist}/g, '<span class="cultist-icon"></span>').
-    replace(/{tablet}/g, '<span class="tablet-icon"></span>').
-    replace(/{elderThing}/g, '<span class="elder-thing-icon"></span>').
-    replace(/{bless}/g, '<span class="bless-icon"></span>').
-    replace(/{curse}/g, '<span class="curse-icon"></span>').
-    replace(/{frost}/g, '<span class="frost-icon"></span>').
-    replace(/{blood}/g, '<span class="blood-icon"></span>').
-    replace(/{sealA}/g, '<span class="seal-a-icon"></span>').
-    replace(/{sealB}/g, '<span class="seal-b-icon"></span>').
-    replace(/{sealC}/g, '<span class="seal-c-icon"></span>').
-    replace(/{sealD}/g, '<span class="seal-d-icon"></span>').
-    replace(/{sealE}/g, '<span class="seal-e-icon"></span>').
-    replace(/{codex}/g, '<span class="codex-icon"></span>').
-    replace(/{day}/g, '<span class="day-icon"></span>').
-    replace(/{night}/g, '<span class="night-icon"></span>').
-    replace(/{perPlayer}/g, '<span class="per-player"></span>').
-    replace(/{rune([A-Z])}/g, `<span class="rune-$1"></span>`)
+  return Object.entries(iconClasses).reduce(
+    (acc, [key, cls]) => acc.replaceAll(`{${key}}`, `<span class="${cls}"></span>`),
+    replaceHomebrewIcons(body),
+  ).replace(runePlaceholder, '<span class="rune-$1"></span>')
 }
 
 export type InvestigatorClass =

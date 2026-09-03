@@ -17,7 +17,7 @@ alienTablet = asset AlienTabletPrehistoricWritings Cards.alienTablet
 
 instance HasAbilities AlienTabletPrehistoricWritings where
   getAbilities (AlienTabletPrehistoricWritings a) =
-    [ controlledAbility
+    [ controlled
         a
         1
         (DuringSkillTest $ mapOneOf SkillTestOnCardWithTrait [Glyph, Rlyeh])

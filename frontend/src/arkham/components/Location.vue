@@ -616,7 +616,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           <div
             ref="innerFrame"
             class="card-frame-inner"
-            :class="{ highlighted, blocked, exhausted: isExhausted, 'card--flipping': flipping && !locationStory }"
+            :class="{ highlighted, blocked, 'blocked--selectable': blocked && canInteract && !hasObjective, exhausted: isExhausted, 'card--flipping': flipping && !locationStory }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
             :data-rotation="uiRotation || undefined"
           >
@@ -637,7 +637,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
                 :data-id="id"
                 class="card card--locations"
                 :src="displayedImage"
-                :class="{ 'location--can-interact': canInteract && !hasObjective, 'location--can-interact-cursor': canInteract }"
+                :class="{ 'location--can-interact': canInteract && !hasObjective && !blocked, 'location--can-interact-cursor': canInteract }"
                 draggable="false"
                 @drop="onDrop"
                 @dragover.prevent="dragover"
@@ -1149,8 +1149,24 @@ const hasAnyLocationVehicleAssets = computed(() =>
     &.exhausted {
       transform: rotate(calc(90deg + var(--ui-rotation))) translateX(-10px);
     }
-    &.blocked {
+    /* Dim the art, not the affordance. `filter` applies to the whole subtree, so
+       a blocked location that is also the pending choice used to render its
+       --select border in muted grey (#5592). */
+    &.blocked :deep(.card) {
       filter: grayscale(0.5) brightness(0.85);
+    }
+
+    /* A pseudo-element, not `outline`: an inset outline is swallowed by the
+       frame's `overflow: hidden`, and a non-inset one grows the tile. */
+    &.blocked--selectable::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      box-sizing: border-box;
+      border: 2px solid var(--select);
+      border-radius: 3px;
+      pointer-events: none;
+      z-index: var(--z-index-1);
     }
     --gradient-glow: #bde038, rebeccapurple, rebeccapurple, #bde038;
   }

@@ -44,7 +44,7 @@ instance HasAbilities ReactivateTheCore where
               (at_ $ LocationWithTitle "Barrier Core" <> locationIs Locations.barrierCoreActive)
           )
           $ Objective
-          $ forced (RoundEnds #when)
+          $ freeReaction (RoundEnds #when)
       ]
 
 instance RunMessage ReactivateTheCore where

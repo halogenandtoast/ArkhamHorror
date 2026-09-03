@@ -23,6 +23,7 @@ import Data.Aeson.TH
 -- because 'AttackMessage' already exists as a value in "Arkham.Message.Type".
 data EnemyAttackMessage
   = EnemiesAttack_
+  | RelentlessEnemiesAttack_
   | EnemyWillAttack_ EnemyAttackDetails
   | EnemyAttack_ EnemyAttackDetails
   | InitiateEnemyAttack_ EnemyAttackDetails

@@ -1176,10 +1176,6 @@ instance RunMessage EnemyAttrs where
               CannotBeAttacked -> pure False
               _ -> pure True
         when (iid `elem` iids) do
-          keywords <- getModifiedKeywords a
-          phase <- getPhase
-          let attackCount :: Int
-              attackCount = if phase == #enemy && Keyword.Relentless `elem` keywords then 2 else 1
           case iids of
             [] -> do
               whenAny (locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies) do
@@ -1187,25 +1183,21 @@ instance RunMessage EnemyAttrs where
                 scenarioSpecific "enemyAttacked" enemyId
               pure ()
             [x] ->
-              pushAll
-                [ EnemyWillAttack
-                    $ (enemyAttack enemyId a x)
-                      { attackDamageStrategy = enemyDamageStrategy
-                      , attackExhaustsEnemy = attackNumber == attackCount
-                      }
-                | attackNumber <- [1 .. attackCount]
-                ]
+              push
+                $ EnemyWillAttack
+                $ (enemyAttack enemyId a x)
+                  { attackDamageStrategy = enemyDamageStrategy
+                  , attackExhaustsEnemy = True
+                  }
             (x : xs) ->
-              pushAll
-                [ EnemyWillAttack
-                    $ (enemyAttack enemyId a x)
-                      { attackDamageStrategy = enemyDamageStrategy
-                      , attackExhaustsEnemy = attackNumber == attackCount
-                      , attackTarget = MassiveAttackTargets (map toTarget $ x : xs)
-                      , attackOriginalTarget = MassiveAttackTargets (map toTarget $ x : xs)
-                      }
-                | attackNumber <- [1 .. attackCount]
-                ]
+              push
+                $ EnemyWillAttack
+                $ (enemyAttack enemyId a x)
+                  { attackDamageStrategy = enemyDamageStrategy
+                  , attackExhaustsEnemy = True
+                  , attackTarget = MassiveAttackTargets (map toTarget $ x : xs)
+                  , attackOriginalTarget = MassiveAttackTargets (map toTarget $ x : xs)
+                  }
       pure a
     Do EnemiesAttack | not enemyExhausted && not enemyDefeated -> do
       mods <- getModifiers (EnemyTarget enemyId)
@@ -1219,10 +1211,6 @@ instance RunMessage EnemyAttrs where
               CannotBeAttackedBy matcher -> notElem enemyId <$> select matcher
               CannotBeAttacked -> pure False
               _ -> pure True
-        keywords <- getModifiedKeywords a
-        phase <- getPhase
-        let attackCount :: Int
-            attackCount = if phase == #enemy && Keyword.Relentless `elem` keywords then 2 else 1
         case iids of
           [] -> do
             whenAny (locationWithEnemy enemyId <> LocationWithModifier CountsAsInvestigatorForHunterEnemies) do
@@ -1230,25 +1218,21 @@ instance RunMessage EnemyAttrs where
               scenarioSpecific "enemyAttacked" enemyId
             pure ()
           [x] ->
-            pushAll
-              [ EnemyWillAttack
-                  $ (enemyAttack enemyId a x)
-                    { attackDamageStrategy = enemyDamageStrategy
-                    , attackExhaustsEnemy = attackNumber == attackCount
-                    }
-              | attackNumber <- [1 .. attackCount]
-              ]
+            push
+              $ EnemyWillAttack
+              $ (enemyAttack enemyId a x)
+                { attackDamageStrategy = enemyDamageStrategy
+                , attackExhaustsEnemy = True
+                }
           (x : xs) ->
-            pushAll
-              [ EnemyWillAttack
-                  $ (enemyAttack enemyId a x)
-                    { attackDamageStrategy = enemyDamageStrategy
-                    , attackExhaustsEnemy = attackNumber == attackCount
-                    , attackTarget = MassiveAttackTargets (map toTarget $ x : xs)
-                    , attackOriginalTarget = MassiveAttackTargets (map toTarget $ x : xs)
-                    }
-              | attackNumber <- [1 .. attackCount]
-              ]
+            push
+              $ EnemyWillAttack
+              $ (enemyAttack enemyId a x)
+                { attackDamageStrategy = enemyDamageStrategy
+                , attackExhaustsEnemy = True
+                , attackTarget = MassiveAttackTargets (map toTarget $ x : xs)
+                , attackOriginalTarget = MassiveAttackTargets (map toTarget $ x : xs)
+                }
       pure a
     AttackEnemy eid choose | eid == enemyId -> do
       let iid = choose.investigator

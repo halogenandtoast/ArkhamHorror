@@ -28,6 +28,7 @@ spec = describe "Elder Deep One" do
     run EnemiesAttack
     chooseTarget deepOneThrall
     applyAllDamage
+    run RelentlessEnemiesAttack
     chooseTarget deepOneThrall
     applyAllDamage
 
@@ -44,5 +45,6 @@ spec = describe "Elder Deep One" do
     run EnemiesAttack
     chooseTarget deepOneThrall
     applyAllDamage
+    run RelentlessEnemiesAttack
 
     self.damage `shouldReturn` 1

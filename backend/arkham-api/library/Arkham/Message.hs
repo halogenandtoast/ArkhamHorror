@@ -1748,6 +1748,10 @@ pattern RemoveLocation lid = Remove (LocationTarget lid)
 pattern EnemiesAttack :: Message
 pattern EnemiesAttack = EnemyAttackMessage EnemiesAttack_
 
+-- | Enemy phase, after 3.3: relentless enemies ready and attack again.
+pattern RelentlessEnemiesAttack :: Message
+pattern RelentlessEnemiesAttack = EnemyAttackMessage RelentlessEnemiesAttack_
+
 pattern EnemyWillAttack :: EnemyAttackDetails -> Message
 pattern EnemyWillAttack d = EnemyAttackMessage (EnemyWillAttack_ d)
 

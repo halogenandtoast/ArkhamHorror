@@ -8520,6 +8520,7 @@ test-suite spec
       Arkham.Enemy.Cards.TheDreamEaters.DarkSideOfTheMoon.MoonBeastSpec
       Arkham.Enemy.Cards.TheDreamEaters.TheSearchForKadath.HordeOfNightSpec
       Arkham.Enemy.Cards.TheDrownedCity.DeepOnes.ElderDeepOneSpec
+      Arkham.Enemy.Cards.TheDrownedCity.StarSpawn.CoralStarSpawnSpec
       Arkham.Enemy.Cards.TheFeastOfHemlockVale.TheTwistedHollow.StalkingHybridSpec
       Arkham.Enemy.Cards.TheInnsmouthConspiracy.IntoTheMaelstrom.DagonsBroodSpec
       Arkham.Enemy.Cards.ThePathToCarcosa.Hauntings.PoltergeistSpec

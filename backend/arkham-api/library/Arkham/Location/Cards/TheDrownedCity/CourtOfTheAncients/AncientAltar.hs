@@ -2,6 +2,7 @@ module Arkham.Location.Cards.TheDrownedCity.CourtOfTheAncients.AncientAltar (anc
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Campaigns.TheDrownedCity.Helpers (getTranslatedGlyphCount)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -44,12 +45,11 @@ instance RunMessage AncientAltar where
   runMessage msg l@(AncientAltar attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      -- "Test [willpower] or [intellect] (5)" -- player chooses which skill.
-      -- TODO: this test gets -1 difficulty for every 5 glyphs the investigators
-      -- have translated (max -4). The translated-glyph count isn't readable yet
-      -- (the campaign translateGlyph handler doesn't record a count), so we use a
-      -- fixed difficulty of 5 and omit the per-5-translated reduction for now.
-      chooseBeginSkillTest sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed 5)
+      -- "Test [willpower] or [intellect] (5)" -- player chooses which skill. The
+      -- test gets -1 difficulty for every 5 glyphs translated, to a max of -4.
+      translated <- getTranslatedGlyphCount
+      let difficulty = 5 - min 4 (translated `div` 5)
+      chooseBeginSkillTest sid iid (attrs.ability 1) attrs [#willpower, #intellect] (Fixed difficulty)
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       -- "take control of the set-aside Shard of Y'ch'lecht"

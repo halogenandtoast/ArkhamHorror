@@ -45,6 +45,7 @@ data ExtendedCardMatcher
   | WillGoIntoSlot SlotType
   | CardIsBeneathInvestigator Who
   | CardIsBeneathActDeck
+  | CardIsBeneathAct
   | CardSharesTitleWith ExtendedCardMatcher
   | CardIsBeneathAsset AssetMatcher
   | CardIsAsset AssetMatcher

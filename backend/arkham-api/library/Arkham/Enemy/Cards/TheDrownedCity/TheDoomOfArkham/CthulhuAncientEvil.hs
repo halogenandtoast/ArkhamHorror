@@ -3,8 +3,9 @@ module Arkham.Enemy.Cards.TheDrownedCity.TheDoomOfArkham.CthulhuAncientEvil (cth
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyHealthDamage, EnemySanityDamage))
-import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), interactAsOneOf, modifyEach, modifySelf)
 import Arkham.Keyword qualified as Keyword
+import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenarios.TheDrownedCity.TheDoomOfArkhamPartII.Helpers (
@@ -22,15 +23,11 @@ cthulhuAncientEvil = enemy CthulhuAncientEvil Cards.cthulhuAncientEvil
 
 instance HasModifiersFor CthulhuAncientEvil where
   getModifiersFor (CthulhuAncientEvil a) = do
-    modifySelf
-      a
-      [ CannotMakeAttacksOfOpportunity
-      , CannotBeAttacked
-      , CannotBeEvaded
-      , CannotBeDamaged
-      ]
+    modifySelf a [CannotMakeAttacksOfOpportunity]
 
     facets <- getCthulhuBoardEnemies
+    interactAsOneOf a (mapOneOf EnemyWithId facets)
+
     damage <- sum <$> traverse (field EnemyHealthDamage) facets
     horror <- sum <$> traverse (field EnemySanityDamage) facets
     modifySelf a [DamageDealt damage, HorrorDealt horror]

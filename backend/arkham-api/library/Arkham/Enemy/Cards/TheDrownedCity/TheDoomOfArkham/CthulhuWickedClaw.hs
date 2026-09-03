@@ -24,8 +24,9 @@ instance HasModifiersFor CthulhuWickedClaw where
   getModifiersFor (CthulhuWickedClaw a) = do
     -- "X is Cthulhu's Rage" — its fight and evade are equal to Cthulhu's Rage.
     rage <- getCthulhuRage
-    -- TODO: Cthulhu Board / shared traits / shared text / single-enemy
-    -- interaction across the four facets has no engine support yet.
+    -- Single-enemy interaction now goes through 'interactAsOneOf' on Cthulhu (Ancient
+    -- Evil). TODO: the Cthulhu Board's shared traits / shared text across the four
+    -- facets still has no engine support.
     modifySelf
       a
       [ EnemyFight rage

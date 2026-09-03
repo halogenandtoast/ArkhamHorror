@@ -139,6 +139,23 @@ modifySelf
   -> m ()
 modifySelf target mods = tell . MonoidalMap . singletonMap (toTarget target) =<< toModifiers target mods
 
+{- | Mark an enemy as a composite: it stands on the map for a group of enemy cards,
+and fighting or evading it means choosing one of that group instead. The @Cannot*@
+modifiers ride along so the card itself never appears on a target list of its own —
+they belong to 'InteractAsOneOf' and are set here rather than at each call site.
+-}
+interactAsOneOf
+  :: ( Targetable target
+     , Sourceable target
+     , HasGame m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => target
+  -> EnemyMatcher
+  -> m ()
+interactAsOneOf target matcher =
+  modifySelf target [InteractAsOneOf matcher, CannotBeAttacked, CannotBeEvaded, CannotBeDamaged]
+
 immuneToPlayerEffect :: [ModifierType]
 immuneToPlayerEffect =
   [ CannotBeAttackedByPlayerSourcesExcept $ SourceIsAbility BasicAbility

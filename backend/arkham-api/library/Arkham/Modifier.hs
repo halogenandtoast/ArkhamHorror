@@ -383,6 +383,13 @@ data ModifierType
   | IgnoreTextOnLocation LocationMatcher
   | InVictoryDisplayForCountingVengeance
   | IncreaseCostOf ExtendedCardMatcher Int
+  | {- | A composite enemy: several enemy cards that are a single enemy on the map
+    (Cthulhu and the facets on his Cthulhu Board). The card carrying this is never
+    itself fought or evaded; interacting with it means choosing one of the members.
+    Written with 'Arkham.Helpers.Modifiers.interactAsOneOf', which pairs it with the
+    @Cannot*@ modifiers that keep the card itself off every target list.
+    -}
+    InteractAsOneOf EnemyMatcher
   | InvestigateActionCriteria CriteriaOverride
   | IsEmptySpace
   | IsPointOfDamage

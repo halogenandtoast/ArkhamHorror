@@ -47,6 +47,7 @@ import Arkham.DefeatedBy
 import Arkham.Discover
 import Arkham.Draw.Types
 import Arkham.Enemy.Types qualified as Field
+import Arkham.Evade qualified as Evade
 import Arkham.Event.Types (Field (..))
 import Arkham.Fight.Types
 import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
@@ -62,6 +63,7 @@ import Arkham.Helpers.Cost (getAdditionalActionCosts, getCanAffordCost)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Discover
+import Arkham.Helpers.Enemy (expandCompositeEnemies, getInteractAsOneOf)
 import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Location (getCanMoveTo, isDiscoveringLastClue, withLocationOf)
 import Arkham.Helpers.Log (hasCampaignOption)
@@ -948,6 +950,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     modifiers <- getModifiers a
     let source = choose.source
     let enemyMatcher = choose.matcher
+    -- "When interacting with Cthulhu, choose one of the cards on the Cthulhu Board":
+    -- a fight aimed at a composite enemy is a fight aimed at its member cards. Only the
+    -- candidate select uses this; 'includeAsIfEnemy' below still reads the card's own
+    -- matcher, since the expansion is not the card narrowing or widening its targets.
+    expandedMatcher <- expandCompositeEnemies enemyMatcher
     let
       isOverride = \case
         EnemyFightActionCriteria override -> Just override
@@ -972,7 +979,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         $ select
         $ foldr
           applyMatcherModifiers
-          (canFightMatcher <> enemyMatcher <> mustChooseMatchers)
+          (canFightMatcher <> expandedMatcher <> mustChooseMatchers)
           (modifiers <> smods)
 
     canMoveToConnected <- case source.asset of
@@ -1081,8 +1088,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
            ]
     pure a
   FightEnemy eid choose | choose.investigator == investigatorId && not choose.isAction -> do
-    handleSkillTestNesting_ choose.skillTest msg do
-      push (AttackEnemy eid choose)
+    -- A card that fights a named enemy ("this attack targets the attacking enemy") can
+    -- name a composite one; hand the choice of member card back to the player rather
+    -- than attacking the card that only stands for the group.
+    getInteractAsOneOf eid >>= \case
+      Just members -> push $ toMessage choose {chooseFightEnemyMatcher = members}
+      Nothing -> handleSkillTestNesting_ choose.skillTest msg do
+        push (AttackEnemy eid choose)
     pure a
   FailedAttackEnemy iid eid | iid == investigatorId -> do
     doesNotDamageOtherInvestigators <- hasModifier a DoesNotDamageOtherInvestigator
@@ -1103,6 +1115,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     let enemyMatcher = choose.matcher
     let isAction = choose.isAction
     let payCost = choose.payCost
+    -- Mirrors the fight side: evading a composite enemy is evading one of its members.
+    expandedMatcher <- expandCompositeEnemies enemyMatcher
     let
       isOverride = \case
         EnemyEvadeActionCriteria override -> Just override
@@ -1123,7 +1137,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       select
         $ foldr
           applyMatcherModifiers
-          (canEvadeMatcher <> enemyMatcher <> mustChooseMatchers)
+          (canEvadeMatcher <> expandedMatcher <> mustChooseMatchers)
           modifiers
     player <- getPlayer a.id
     -- A mini-card is not an enemy, so it can only satisfy an unqualified evade
@@ -1218,9 +1232,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
         ]
     pure a
   EvadeEnemy sid iid eid source mTarget skillType False | iid == investigatorId -> do
-    handleSkillTestNesting_ sid msg do
-      attemptWindow <- checkWindows [mkWhen $ Window.AttemptToEvadeEnemy sid iid eid]
-      pushAll [attemptWindow, TryEvadeEnemy sid iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
+    -- Mirrors the fight side: an evade named at a composite enemy becomes a choice of
+    -- which member card to evade.
+    getInteractAsOneOf eid >>= \case
+      Just members -> do
+        choose <- Evade.mkChooseEvadeMatch sid iid source members
+        push $ toMessage $ maybe id setTarget mTarget $ Evade.withSkillType skillType choose
+      Nothing -> handleSkillTestNesting_ sid msg do
+        attemptWindow <- checkWindows [mkWhen $ Window.AttemptToEvadeEnemy sid iid eid]
+        pushAll [attemptWindow, TryEvadeEnemy sid iid eid source mTarget skillType, AfterEvadeEnemy iid eid]
     pure a
   MoveAction iid lid cost True | iid == investigatorId -> handleMoveAction a iid lid cost
   MoveAction iid lid _cost False | iid == investigatorId -> handleMoveActionV2 a iid lid

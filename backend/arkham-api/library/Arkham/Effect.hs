@@ -252,10 +252,28 @@ newtype NoEffect = NoEffect EffectAttrs
 instance RunMessage NoEffect where
   runMessage msg (NoEffect a) = NoEffect <$> runMessage msg a
 
+{- | Enemies only re-run their engagement check at @BeginRoundWindow@ and
+@After (EndTurn _)@, so an effect that makes an investigator unengageable and
+expires mid-round would leave the enemies at their location detached until the
+turn ended. Attach the re-check to the effect itself at creation so no card has
+to remember it.
+-}
+withEngagementRecheck :: Effect -> Effect
+withEngagementRecheck = overAttrs \a -> case (a.metadata, a.target) of
+  (Just (EffectModifiers mods), InvestigatorTarget iid)
+    | any (bansEngagement . modifierType) mods ->
+        a {effectOnDisable = Just $ CheckEnemyEngagement iid : fromMaybe [] (effectOnDisable a)}
+  _ -> a
+ where
+  bansEngagement = \case
+    CannotBeEngaged -> True
+    CannotBeEngagedBy _ -> True
+    _ -> False
+
 createEffect :: MonadRandom m => EffectBuilder -> m (EffectId, Effect)
 createEffect builder = do
   eid <- maybe getRandom pure (effectBuilderEffectId builder)
-  pure (eid, lookupEffect eid builder)
+  pure (eid, withEngagementRecheck $ lookupEffect eid builder)
 
 createChaosTokenValueEffect
   :: (HasGame m, MonadRandom m)
@@ -275,7 +293,7 @@ createWindowModifierEffect effectWindow effectMetadata source target = do
   eid <- getRandom
   pure
     ( eid
-    , buildWindowModifierEffect eid effectMetadata effectWindow source target
+    , withEngagementRecheck $ buildWindowModifierEffect eid effectMetadata effectWindow source target
     )
 
 createChaosTokenEffect

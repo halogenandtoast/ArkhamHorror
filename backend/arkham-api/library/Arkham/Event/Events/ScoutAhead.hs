@@ -40,7 +40,4 @@ instance RunMessage ScoutAhead where
           moveTo attrs iid lid
           doStep (n - 1) msg'
       pure e
-    ResolvedCard iid card | attrs.cardId == card.id -> do
-      push $ CheckEnemyEngagement iid
-      pure e
     _ -> ScoutAhead <$> liftRunMessage msg attrs

@@ -1796,7 +1796,7 @@ getTreacheriesMatching matcher = do
     TreacheryWithId treacheryId -> pure . (== treacheryId) . toId
     TreacheryWithTrait t -> fmap (member t) . field TreacheryTraits . toId
     TreacheryWithCardId cardId -> pure . (== cardId) . toCardId
-    TreacheryIs cardCode -> pure . (== cardCode) . toCardCode
+    TreacheryIs cardCode -> pure . isPrintingOf cardCode
     TreacheryWithVictory -> getHasVictoryPoints . toId
     TreacheryAt locationMatcher -> \treachery -> do
       targets <- select locationMatcher
@@ -2322,7 +2322,7 @@ getLocationsMatching lmatcher = do
     LocationWithSymbol locationSymbol -> pure $ filter ((== locationSymbol) . toLocationSymbol) ls
     LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
     Anywhere -> pure ls
-    LocationIs cardCode -> pure $ filter ((== cardCode) . toCardCode) ls
+    LocationIs cardCode -> pure $ filter (isPrintingOf cardCode) ls
     EmptyLocation ->
       filterM (andM . sequence [selectNone . investigatorAt . toId, selectNone . enemyAt . toId]) ls
     LocationWithToken tkn -> filterM (fieldMap LocationTokens (Token.hasToken tkn) . toId) ls
@@ -3301,7 +3301,7 @@ getAssetsMatching' matcher = do
       (== Just lid) <$> field AssetLocation a.id
     AssetOneOf ms -> nub . concat <$> traverse (filterMatcher as) ms
     AssetNonStory -> pure $ filter (not . attr assetIsStory) as
-    AssetIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
+    AssetIs cardCode -> pure $ filter (isPrintingOf cardCode) as
     AssetWithMatchingSkillTestIcon -> do
       skillIcons <- getSkillTestMatchingSkillIcons
       valids <- select (AssetCardMatch $ CardWithOneOf $ map CardWithSkillIcon $ setToList skillIcons)
@@ -3528,7 +3528,7 @@ getEventsMatching matcher = case matcher of
     EventWithTitle title -> pure $ filter (`hasTitle` title) as
     EventWithFullTitle title subtitle -> pure $ filter ((== (title <:> subtitle)) . toName) as
     EventWithId eventId -> pure $ filter ((== eventId) . toId) as
-    EventIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
+    EventIs cardCode -> pure $ filter (isPrintingOf cardCode) as
     EventWithClass role -> pure $ filter (member role . cdClassSymbols . toCardDef) as
     EventWithTrait t -> filterM (fmap (member t) . field EventTraits . toId) as
     EventWillNotBeRemoved -> do
@@ -3627,7 +3627,7 @@ getSkillsMatching matcher = do
         OutOfPlay RemovedZone -> False
         _ -> True
     SkillWithToken _ -> pure [] -- update if we ever have a skill that can hold tokens
-    SkillIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
+    SkillIs cardCode -> pure $ filter (isPrintingOf cardCode) as
     SkillMatches ms -> foldM filterMatcher as ms
     NotSkill m -> do
       matches' <- filterMatcher as m
@@ -4168,7 +4168,7 @@ enemyMatcherFilter es matcher' = do
     ExhaustedEnemy -> pure $ filter (attr enemyExhausted) es
     ReadyEnemy -> pure $ filter (not . attr enemyExhausted) es
     AnyEnemy -> pure es
-    EnemyIs cardCode -> pure $ filter ((== cardCode) . toCardCode) es
+    EnemyIs cardCode -> pure $ filter (isPrintingOf cardCode) es
     EnemyIsExact cardCode -> pure $ filter ((== exactCardCode cardCode) . exactCardCode . toCardCode) es
     NonWeaknessEnemy -> pure $ filter (isNothing . cdCardSubType . toCardDef) es
     SignatureEnemy -> pure $ filter (isSignature . toCardDef) es

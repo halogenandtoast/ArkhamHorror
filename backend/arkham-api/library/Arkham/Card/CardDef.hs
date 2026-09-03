@@ -167,6 +167,16 @@ may be different printings (their derived 'Eq' would say no).
 canonicalCardCode :: CardDef -> CardCode
 canonicalCardCode c = foldl' min (cdCardCode c) (cdAlternateCardCodes c)
 
+{- | Is @cardCode@ one of the printings of this entity's card? 'toCardCodePairs'
+gives every printing its own 'CardDef' with 'cdCardCode' rewritten, so a bare
+@toCardCode x == cardCode@ misses reprints (Revised Core, Chapter 2). Used by the
+'*Is' matchers; still goes through the loose 'Eq CardCode' so a/b sides keep
+cross-matching (see 'Arkham.Matcher.EnemyIsExact' for the strict variant).
+-}
+isPrintingOf :: (HasCardCode a, HasCardDef a) => CardCode -> a -> Bool
+isPrintingOf cardCode x =
+  toCardCode x == cardCode || cardCode `elem` (toCardDef x).cardCodes
+
 {- | 'cdTags' marker for cards with an ability that triggers on
 'Arkham.Matcher.EnemyReadies' or 'Arkham.Matcher.EnemyWouldReady'. Any such card MUST
 carry this tag: 'Arkham.Game.hasEnemyReadyAbilities' skips the enemy-ready window

@@ -34,6 +34,14 @@ import TestImport.New hiding (Cultist)
 winTheCampaign :: TestAppT ()
 winTheCampaign = run $ Record (toCampaignLogKey TheRitualToSummonUmordhothWasBroken)
 
+{- | Revised Core reprint of Baseball Bat. 'toCardCodePairs' hands each printing
+its own 'CardDef' with 'cdCardCode' rewritten, so this is not
+@Assets.baseballBat@ (see #5596).
+-}
+revisedCoreBaseballBat :: CardDef
+revisedCoreBaseballBat =
+  fromJustNote "missing Revised Core Baseball Bat" $ lookupCardDef ("01574" :: CardCode)
+
 spec :: Spec
 spec = describe "Return to the Night of the Zealot achievements" $ do
   context "I Don't Trust Her" $ do
@@ -230,6 +238,21 @@ spec = describe "Return to the Night of the Zealot achievements" $ do
     it "is earned when one Baseball Bat defeats three Ghouls" . gameTest $ \self -> do
       asReturnToNightOfTheZealot
       bat <- testAssetWithDef Assets.baseballBat id self
+      location <- testLocation
+      earned <- didEarn PinchHitter
+      let killWithBat = do
+            enemy <- testEnemy
+            enemy `spawnAt` location
+            run $ Defeated (toTarget enemy) (toCardId enemy) (AbilitySource (toSource bat) 1) [Ghoul]
+      killWithBat
+      killWithBat
+      earned `refShouldBe` False
+      killWithBat
+      earned `refShouldBe` True
+
+    it "is earned with the Revised Core printing of Baseball Bat" . gameTest $ \self -> do
+      asReturnToNightOfTheZealot
+      bat <- testAssetWithDef revisedCoreBaseballBat id self
       location <- testLocation
       earned <- didEarn PinchHitter
       let killWithBat = do

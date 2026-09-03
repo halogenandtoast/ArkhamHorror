@@ -907,6 +907,7 @@ grislyMask =
     { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
     , cdMeta = artifactBack
     , cdUnique = True
+    , cdOptions = [forAbility 1 $ cardToggle "onlyWhenEngaged" False]
     }
 
 tidalTablet :: CardDef

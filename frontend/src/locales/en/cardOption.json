@@ -1,5 +1,13 @@
 {
   "cardOption": {
-    "configure": "Card options"
+    "configure": "Card options",
+    "c11582": {
+      "abilities": {
+        "1": "{'{'}fast{'}'} Exhaust Grisly \"Mask\": Disengage from each enemy. Until the beginning of your next turn, you cannot move and cannot damage enemies or engage them."
+      },
+      "onlyWhenEngaged": {
+        "label": "Only offer when engaged"
+      }
+    }
   }
 }

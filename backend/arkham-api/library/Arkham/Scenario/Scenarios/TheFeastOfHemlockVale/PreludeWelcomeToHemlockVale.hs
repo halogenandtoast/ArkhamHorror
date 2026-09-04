@@ -14,6 +14,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getCanMoveToLocations)
+import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount)
 import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheVale qualified as Locations
@@ -29,8 +30,11 @@ import Arkham.Strategy
 import Arkham.Window (defaultWindows)
 
 newtype PreludeWelcomeToHemlockVale = PreludeWelcomeToHemlockVale ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor PreludeWelcomeToHemlockVale where
+  getModifiersFor (PreludeWelcomeToHemlockVale a) = modifySelect a Anyone [noCodexEntry Theta]
 
 preludeWelcomeToHemlockVale :: Difficulty -> PreludeWelcomeToHemlockVale
 preludeWelcomeToHemlockVale difficulty =

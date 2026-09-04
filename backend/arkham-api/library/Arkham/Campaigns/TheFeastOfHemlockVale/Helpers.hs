@@ -68,6 +68,10 @@ youCanTriggerCodex entry =
 codexDone :: Codex -> ModifierType
 codexDone entry = ScenarioModifierValue "codex:done" (toJSON entry)
 
+-- | This scenario's codex has no section for the entry.
+noCodexEntry :: Codex -> ModifierType
+noCodexEntry = codexDone
+
 codexFinished :: ReverseQueue m => Codex -> m ()
 codexFinished entry = eachInvestigator (codexFinishedFor entry)
 

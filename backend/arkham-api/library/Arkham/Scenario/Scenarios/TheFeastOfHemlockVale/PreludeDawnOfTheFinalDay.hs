@@ -15,6 +15,7 @@ import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log (getRecordCount)
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
+import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName, getLead, getPlayerCount)
 import Arkham.I18n
 import Arkham.Id (InvestigatorId, PlayerId, getPlayer)
@@ -35,8 +36,11 @@ import Arkham.Story.CardDefs.TheFeastOfHemlockVale.TheFinalDay qualified as Stor
 import Arkham.Strategy
 
 newtype PreludeDawnOfTheFinalDay = PreludeDawnOfTheFinalDay ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor PreludeDawnOfTheFinalDay where
+  getModifiersFor (PreludeDawnOfTheFinalDay a) = modifySelect a Anyone [noCodexEntry Theta]
 
 preludeDawnOfTheFinalDay :: Difficulty -> PreludeDawnOfTheFinalDay
 preludeDawnOfTheFinalDay difficulty =

@@ -15,6 +15,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getCanMoveToLocations)
+import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName, getPlayerCount)
 import Arkham.I18n
@@ -37,8 +38,11 @@ import Arkham.Strategy
 import Arkham.Window (defaultWindows)
 
 newtype PreludeDawnOfTheSecondDay = PreludeDawnOfTheSecondDay ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor PreludeDawnOfTheSecondDay where
+  getModifiersFor (PreludeDawnOfTheSecondDay a) = modifySelect a Anyone [noCodexEntry Theta]
 
 preludeDawnOfTheSecondDay :: Difficulty -> PreludeDawnOfTheSecondDay
 preludeDawnOfTheSecondDay difficulty =

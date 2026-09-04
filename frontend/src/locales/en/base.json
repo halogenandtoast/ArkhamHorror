@@ -20,6 +20,12 @@
   "hunter": {
     "move": "Hunter: choose a location for this enemy to move toward."
   },
+  "hunchDeck": {
+    "deckSoFar": "Hunch Deck",
+    "remaining": "1 more to add | {count} more to add",
+    "complete": "Complete",
+    "candidates": "Your _Insight_ events"
+  },
   "patrol": {
     "move": "Patrol: choose a location for this enemy to move toward."
   },

@@ -260,6 +260,15 @@ const title = computed(() => {
     }
   }
 
+  // A labelled question can name its own heading by adding a sibling of its
+  // "$...label..." key under "title" -- otherwise every one of them says "Choose".
+  if (body.value?.startsWith("$")) {
+    const titleKey = body.value.replace(".label.", ".title.")
+    if (titleKey !== body.value && te(titleKey.slice(1))) {
+      return titleKey
+    }
+  }
+
   if (!question.value) {
     return ""
   }
@@ -695,5 +704,14 @@ const title = computed(() => {
 .choice-modal-wrapper .body {
   text-align: center;
   margin: 0;
+}
+
+/* The hunch picker's panels carry the framing, so its lede stays plain text. */
+.choice-modal-wrapper:has(.hunch-picker) .body {
+  padding: 2px 2px 0;
+  border: 0;
+  background: none;
+  color: #e7dcc2;
+  font-size: 1.05em;
 }
 </style>

@@ -630,8 +630,8 @@
       "take2Resources": "Take 2 Resources"
     },
     "joeDiamond": {
-      "chooseHunchCards": "Choose 10 more cards for hunch deck",
-      "chooseHunch": "Choose 10 more cards for hunch deck",
+      "chooseHunchCards": "Set aside 11 _Insight_ events to form your hunch deck. _Unsolved Case_ is already in it.",
+      "chooseHunch": "Set aside 11 _Insight_ events to form your hunch deck. _Unsolved Case_ is already in it.",
       "doNotMove": "Do not move an insight"
     },
     "katana": {
@@ -1278,6 +1278,12 @@
     },
     "zeal": {
       "putIntoPlayFromDiscard": "Put into play from discard"
+    }
+  },
+  "title": {
+    "joeDiamond": {
+      "chooseHunchCards": "Hunch Deck",
+      "chooseHunch": "Hunch Deck"
     }
   },
   "tooltips": {

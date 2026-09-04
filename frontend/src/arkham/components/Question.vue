@@ -22,6 +22,7 @@ import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import QuestionChoices from '@/arkham/components/QuestionChoices.vue';
 import CardImage from '@/arkham/components/CardImage.vue';
+import HunchDeckPicker from '@/arkham/components/HunchDeckPicker.vue';
 
 export interface Props {
   game: Game
@@ -328,6 +329,15 @@ const isSummitDeckView = computed(() =>
   question.value?.tag === QuestionType.QUESTION_LABEL
     && question.value.label.includes('searchTheSpires.')
 )
+
+// Joe Diamond's setup picks the 11 Insight events that become his hunch deck.
+// It gets its own panel so the destination (and how much is left) is obvious.
+const hunchDeckPick = computed(() => {
+  const q = question.value
+  if (q?.tag !== QuestionType.QUESTION_LABEL) return null
+  if (!q.label.includes('joeDiamond.chooseHunch')) return null
+  return q.question.tag === QuestionType.CHOOSE_N ? q.question : null
+})
 
 const focusedCardGroups = computed<SearchedCardGroup[]>(() => {
   if (focusedCardsForGroups.value.length === 0) return []
@@ -929,7 +939,15 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
         </div>
 
         <div class='question-content'>
-          <div v-if="focusedCardGroups.length > 0 && choices.length > 0" class="modal">
+          <HunchDeckPicker
+            v-if="hunchDeckPick && focusedCardsForGroups.length > 0"
+            :game="game"
+            :playerId="playerId"
+            :cards="focusedCardsForGroups"
+            :remaining="hunchDeckPick.amount"
+            @choose="$emit('choose', $event)"
+          />
+          <div v-else-if="focusedCardGroups.length > 0 && choices.length > 0" class="modal">
             <div class="modal-contents searched-cards focused-cards">
               <div v-for="group in focusedCardGroups" :key="group.key" class="group">
                 <h2>{{ group.label }}</h2>

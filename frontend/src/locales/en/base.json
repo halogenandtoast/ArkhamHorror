@@ -227,6 +227,7 @@
   "Done With Mulligan": "Done With Mulligan",
   "skip": "Skip",
   "handSize": "Hand Size",
+  "needsSlots": "Needs slot(s)",
   "yes": "Yes",
   "no": "No",
   "succeededBy": "Succeeded by {amount}",

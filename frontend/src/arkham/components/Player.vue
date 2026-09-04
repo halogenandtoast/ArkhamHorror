@@ -149,6 +149,18 @@ const visibleAssets = computed(() =>
   tuckInertCards.value ? assets.value.filter(a => !isCardHidden(a)) : assets.value
 )
 
+// Played with every matching slot full: the engine holds the asset Unplaced
+// while it asks which one to discard. It is not in `investigator.assets`, so it
+// has to be read off the asset table.
+const pendingAssets = computed(() =>
+  Object.values(props.game.assets).filter((a) =>
+    a.placement.tag === 'OtherPlacement' &&
+    a.placement.contents === 'Unplaced' &&
+    a.controller === investigatorId.value &&
+    a.slots.length > 0
+  )
+)
+
 const visibleTreacheries = computed(() =>
   tuckInertCards.value ? threatTreacheries.value.filter(t => !isCardHidden(t)) : threatTreacheries.value
 )
@@ -1020,12 +1032,27 @@ function closeHand() {
               @choose="$emit('choose', $event)"
             />
             <Asset
+              v-for="asset in pendingAssets"
+              :asset="asset"
+              :game="game"
+              :playerId="playerId"
+              :key="asset.id"
+              :data-index="asset.cardId"
+              pending
+              @choose="$emit('choose', $event)"
+              @showCards="doShowCards"
+            />
+
+            <div v-if="pendingAssets.length > 0" :key="'pending-divider'" class="pending-divider" />
+
+            <Asset
               v-for="asset in visibleAssets"
               :asset="asset"
               :game="game"
               :playerId="playerId"
               :key="asset.id"
               :data-index="asset.cardId"
+              :discardToMakeRoom="pendingAssets.length > 0"
               @choose="$emit('choose', $event)"
               @showCards="doShowCards"
             />
@@ -1448,7 +1475,8 @@ function closeHand() {
     flex-shrink: 0;
   }
 
-  .threat-divider {
+  .threat-divider,
+  .pending-divider {
     width: 2px;
     align-self: stretch;
     margin: 0 8px;

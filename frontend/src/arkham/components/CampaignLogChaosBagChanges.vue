@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { imgsrc } from '@/arkham/helpers'
 import { chaosTokenImage, compareTokenFaces, tokenFaceDifference, type TokenFace } from '@/arkham/types/ChaosToken'
 import { type ChaosBagChange } from '@/arkham/types/Campaign'
-import { campaignStepName } from '@/arkham/types/CampaignStep'
+import { campaignStepIcon, campaignStepName } from '@/arkham/types/CampaignStep'
 import type { Game } from '@/arkham/types/Game'
 import { useI18n } from 'vue-i18n'
 
@@ -42,27 +41,6 @@ const unify = (after: TokenFace[], added: TokenFace[], removed: TokenFace[]): Ba
   return [...kept, ...gone].sort((a, b) => compareTokenFaces(a.face, b.face))
 }
 
-const scenarioIcon = (change: ChaosBagChange): string | null => {
-  const step = change.step
-  const scenarioId = step.tag === 'ScenarioStep'
-    ? step.contents
-    : step.tag === 'ScenarioStepWithOptions'
-      || step.tag === 'StandaloneScenarioStep'
-      || step.tag === 'StandaloneScenarioStepWithOptions'
-      ? step.contents[0]
-      : null
-
-  if (!scenarioId) return null
-
-  const homebrewMatch = scenarioId.match(/^c?:([^:]+):(.+)$/)
-  if (homebrewMatch) {
-    const [, campaignId, setId] = homebrewMatch
-    return imgsrc(`homebrew/${campaignId}/sets/${setId}.png`)
-  }
-
-  return imgsrc(`sets/${scenarioId.replace(/^c/, '')}.png`)
-}
-
 type Entry = {
   name: string
   icon: string | null
@@ -79,7 +57,7 @@ const entries = computed<Entry[]>(() =>
       const removed = tokenFaceDifference(change.before, change.after)
       return {
         name: campaignStepName(props.game, change.step),
-        icon: scenarioIcon(change),
+        icon: campaignStepIcon(change.step),
         added: group(added),
         removed: group(removed),
         bag: unify(change.after, added, removed),

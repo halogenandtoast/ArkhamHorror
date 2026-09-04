@@ -5,7 +5,7 @@ import { handleI18n } from '@/arkham/i18n';
 import { computed, ref } from 'vue'
 import { XpEntry } from '@/arkham/types/Xp'
 import { type Investigator } from '@/arkham/types/Investigator'
-import { type CampaignStep, campaignStepName } from '@/arkham/types/CampaignStep'
+import { type CampaignStep, campaignStepIcon, campaignStepName } from '@/arkham/types/CampaignStep'
 import { Game } from '@/arkham/types/Game'
 import { useI18n } from 'vue-i18n';
 import { useDbCardStore } from '@/stores/dbCards'
@@ -139,26 +139,7 @@ function getCardName(s: string) {
 
 const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
 
-const scenarioIcon = computed<string | null>(() => {
-  const s = props.step
-  const scenarioId = s.tag === 'ScenarioStep'
-    ? s.contents
-    : s.tag === 'ScenarioStepWithOptions'
-      || s.tag === 'StandaloneScenarioStep'
-      || s.tag === 'StandaloneScenarioStepWithOptions'
-      ? s.contents[0]
-      : null
-
-  if (!scenarioId) return null
-
-  const homebrewMatch = scenarioId.match(/^c?:([^:]+):(.+)$/)
-  if (homebrewMatch) {
-    const [, campaignId, setId] = homebrewMatch
-    return imgsrc(`homebrew/${campaignId}/sets/${setId}.png`)
-  }
-
-  return imgsrc(`sets/${scenarioId.replace(/^c/, '')}.png`)
-})
+const scenarioIcon = computed<string | null>(() => campaignStepIcon(props.step))
 </script>
 
 <template>

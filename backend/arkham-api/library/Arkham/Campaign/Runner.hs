@@ -178,7 +178,8 @@ defaultCampaignRunner msg a = case msg of
   RemoveChaosToken token -> pure $ updateAttrs a (overCampaignChaosBag (deleteFirstMatch (== token)))
   RemoveAllChaosTokens token -> pure $ updateAttrs a (overCampaignChaosBag (filter (/= token)))
   RemoveOption option -> pure $ updateAttrs a (logL . optionsL %~ deleteSet option)
-  InitDeck InitDeckAttrs {initDeckInvestigator = iid, initDeckDecklist = mDecklist, initDeckDeck = deck} -> do
+  InitDeck
+    InitDeckAttrs {initDeckInvestigator = iid, initDeckDecklist = mDecklist, initDeckDeck = deck} -> do
     playerCount <- getPlayerCount
     investigatorClass <- field InvestigatorClass iid
     let cardCodes = map toCardCode $ unDeck deck
@@ -195,7 +196,8 @@ defaultCampaignRunner msg a = case msg of
             Just _ -> pure Nothing
         else pure Nothing
 
-    (deck', baseRandomWeaknesses) <- addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck
+    (deck', baseRandomWeaknesses) <-
+      addRandomBasicWeaknessIfNeeded investigatorClass playerCount mDecklist deck
     -- Ultimatum of Disaster: deckbuilding requirements gain 1 additional
     -- random basic weakness.
     disaster <- hasUltimatum UltimatumOfDisaster
@@ -379,7 +381,7 @@ defaultCampaignRunner msg a = case msg of
       $ (logL . recordedL %~ deleteSet key)
       . (logL . crossedOutL %~ crossedOutModifier)
       . (logL . recordedSetsL %~ deleteMap key)
-      . (logL . recordedCountsL %~ deleteMap key)
+      . overRecordedCount key (const Nothing)
       . (logL . orderedKeysL %~ removeOrderedKey)
   Record key -> do
     send $ "Record \"" <> format key <> "\""
@@ -431,11 +433,11 @@ defaultCampaignRunner msg a = case msg of
         key
   RecordCount key int -> do
     send $ "Record \"" <> format key <> "\" (" <> tshow int <> ")"
-    pure $ updateAttrs a $ logL . recordedCountsL %~ insertMap key int
+    pure $ updateAttrs a $ overRecordedCount key (const $ Just int)
   IncrementRecordCount key int ->
-    pure $ updateAttrs a $ logL . recordedCountsL %~ alterMap (Just . maybe int (+ int)) key
+    pure $ updateAttrs a $ overRecordedCount key (Just . maybe int (+ int))
   DecrementRecordCount key int ->
-    pure $ updateAttrs a $ logL . recordedCountsL %~ alterMap (fmap (max 0 . subtract int)) key
+    pure $ updateAttrs a $ overRecordedCount key (fmap (max 0 . subtract int))
   ScenarioResolution r -> case (toAttrs a).step.scenario of
     Just sid -> pure $ updateAttrs a $ resolutionsL %~ insertMap sid r
     _ -> error $ "must be called in a scenario, but called in " <> show (campaignStep (toAttrs a))

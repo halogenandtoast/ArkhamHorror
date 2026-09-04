@@ -17,7 +17,7 @@ import Supplies from '@/arkham/components/Supplies.vue'
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue'
 import { type XpBreakdown as XpBreakdownType, type XpBreakdownStep, xpBreakdownDecoder } from '@/arkham/types/Xp'
 import { type TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken'
-import { type ChaosBagChange, chaosBagChangeDecoder } from '@/arkham/types/Campaign'
+import { type ChaosBagChange, type RecordCountChange, chaosBagChangeDecoder, recordCountChangeDecoder } from '@/arkham/types/Campaign'
 import * as JsonDecoder from 'ts.data.json'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
@@ -192,6 +192,14 @@ if (otherCampaignAttrs.value?.chaosBagHistory) {
     .decodePromise(otherCampaignAttrs.value.chaosBagHistory)
     .then(res => { otherChaosBagHistory.value = res })
     .catch(() => { otherChaosBagHistory.value = null })
+}
+
+const otherRecordCountHistory = ref<RecordCountChange[] | null>(null)
+if (otherCampaignAttrs.value?.recordCountHistory) {
+  JsonDecoder.array(recordCountChangeDecoder, 'RecordCountChange[]')
+    .decodePromise(otherCampaignAttrs.value.recordCountHistory)
+    .then(res => { otherRecordCountHistory.value = res })
+    .catch(() => { otherRecordCountHistory.value = null })
 }
 
 // A mapping of title → LogContents. When there is no split, we expose just the main one.
@@ -560,6 +568,10 @@ const chaosBag = computed(() =>
 
 const chaosBagHistory = computed<ChaosBagChange[]>(() =>
   showingMain.value ? (props.game.campaign?.chaosBagHistory ?? []) : (otherChaosBagHistory.value ?? [])
+)
+
+const recordCountHistory = computed<RecordCountChange[]>(() =>
+  showingMain.value ? (props.game.campaign?.recordCountHistory ?? []) : (otherRecordCountHistory.value ?? [])
 )
 const hasSupplies = computed(() => Object.values(investigators.value).some(i => i.supplies.length > 0))
 
@@ -1014,8 +1026,10 @@ onUnmounted(() => {
 
           <!-- Campaign recorded sets + counts -->
           <CampaignLogRecordedSets
+            :game="game"
             :entries="(Object.entries(recordedSets) as [string, any[]][]).filter(([k]) => !k.toLowerCase().includes('discoveredglyph'))"
             :counts="recordedCounts"
+            :countHistory="recordCountHistory"
             :displayRecordValue="displayRecordValue"
             :homebrewScope="homebrewScope"
           />

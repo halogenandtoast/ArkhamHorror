@@ -26,7 +26,7 @@ import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import CardConfig from '@/arkham/components/CardConfig.vue'
 import Story from '@/arkham/components/Story.vue';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
-import Token from '@/arkham/components/Token.vue';
+import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue';
 import * as Arkham from '@/arkham/types/Asset';
 import { useSettings } from '@/stores/settings';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
@@ -428,7 +428,12 @@ function startDrag(event: DragEvent) {
             <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <TokenPool :tokens="assetTokens" :extra-items="forcedTokenItems" @choose="chooseTokenPoolItem" />
-          <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
+          <SealedChaosTokens
+            :tokens="asset.sealedChaosTokens"
+            :game="game"
+            :playerId="playerId"
+            @choose="choose"
+          />
         </div>
         <AbilitiesMenu
           v-model="showAbilities"

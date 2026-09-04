@@ -3,7 +3,7 @@ import { useDbCardStore } from '@/stores/dbCards'
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import { useI18n } from 'vue-i18n';
 import { useDebouncedRef } from '@/composable/debouncedRef';
-import { handleEmbeddedI18n } from '@/arkham/i18n';
+import { handleEmbeddedI18n, parseInput } from '@/arkham/i18n';
 import { formatCost } from '@/arkham/cost';
 import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel, type Message, type TargetLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
@@ -22,7 +22,8 @@ import ChaosBagChoice from '@/arkham/components/ChaosBagChoice.vue';
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import QuestionChoices from '@/arkham/components/QuestionChoices.vue';
 import CardImage from '@/arkham/components/CardImage.vue';
-import HunchDeckPicker from '@/arkham/components/HunchDeckPicker.vue';
+import CardPoolPicker from '@/arkham/components/CardPoolPicker.vue';
+import { cardPoolForLabelKey } from '@/arkham/cardPools';
 
 export interface Props {
   game: Game
@@ -330,14 +331,45 @@ const isSummitDeckView = computed(() =>
     && question.value.label.includes('searchTheSpires.')
 )
 
-// Joe Diamond's setup picks the 11 Insight events that become his hunch deck.
-// It gets its own panel so the destination (and how much is left) is obvious.
-const hunchDeckPick = computed(() => {
+// Setup questions that build a set-aside pool from your own deck (Joe Diamond's
+// hunch deck, Underworld Market, Stick to the Plan) get their own panel so the
+// destination -- and how much of it is left -- is obvious.
+const cardPoolPick = computed(() => {
   const q = question.value
-  if (q?.tag !== QuestionType.QUESTION_LABEL) return null
-  if (!q.label.includes('joeDiamond.chooseHunch')) return null
-  return q.question.tag === QuestionType.CHOOSE_N ? q.question : null
+  if (q?.tag !== QuestionType.QUESTION_LABEL || !q.label.startsWith('$')) return null
+  const { key, params } = parseInput(q.label)
+  const pool = cardPoolForLabelKey(key)
+  if (!pool) return null
+
+  // ChooseN re-asks with the count decremented, so it is its own progress
+  // counter. One-at-a-time picks (ChooseUpToN) carry `remaining` on the label.
+  const remaining = q.question.tag === QuestionType.CHOOSE_N
+    ? q.question.amount
+    : typeof params.remaining === 'number' ? params.remaining : null
+  if (remaining === null) return null
+
+  return { pool, remaining, chosen: pool.chosen(props.game, props.playerId) }
 })
+
+// The cards the pool question is actually offering. Taking them from the
+// choices rather than from every revealed card keeps a deck-wide search (Stick
+// to the Plan) from showing cards that cannot be picked.
+const cardPoolCandidates = computed(() => {
+  const byId = new Map<string, ArkhamCard>()
+  for (const card of [...focusedCards.value, ...searchedCards.value.flatMap((g) => g.cards)]) {
+    byId.set(toCardContents(card).id, card)
+  }
+
+  return choices.value.flatMap((choice) => {
+    if (choice.tag !== MessageType.TARGET_LABEL) return []
+    const { target } = choice
+    if (target.tag !== 'CardIdTarget' || typeof target.contents !== 'string') return []
+    const card = byId.get(target.contents)
+    return card ? [card] : []
+  })
+})
+
+const cardPoolActive = computed(() => cardPoolPick.value !== null && cardPoolCandidates.value.length > 0)
 
 const focusedCardGroups = computed<SearchedCardGroup[]>(() => {
   if (focusedCardsForGroups.value.length === 0) return []
@@ -939,12 +971,16 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
         </div>
 
         <div class='question-content'>
-          <HunchDeckPicker
-            v-if="hunchDeckPick && focusedCardsForGroups.length > 0"
+          <CardPoolPicker
+            v-if="cardPoolActive && cardPoolPick"
             :game="game"
             :playerId="playerId"
-            :cards="focusedCardsForGroups"
-            :remaining="hunchDeckPick.amount"
+            :cards="cardPoolCandidates"
+            :chosen="cardPoolPick.chosen"
+            :remaining="cardPoolPick.remaining"
+            :titleKey="cardPoolPick.pool.titleKey"
+            :candidatesKey="cardPoolPick.pool.candidatesKey"
+            :accent="cardPoolPick.pool.accent"
             @choose="$emit('choose', $event)"
           />
           <div v-else-if="focusedCardGroups.length > 0 && choices.length > 0" class="modal">
@@ -969,7 +1005,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
               </div>
             </div>
           </div>
-          <div v-if="searchedCards.length > 0 && choices.length > 0" class="modal">
+          <div v-if="searchedCards.length > 0 && choices.length > 0 && !cardPoolActive" class="modal">
             <div class="modal-contents searched-cards">
               <div v-for="group in searchedCards" :key="group.key" class="group">
                 <h2>{{ group.label }}</h2>

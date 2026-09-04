@@ -617,29 +617,44 @@ function moveUp() {
     }
   }
 
-  &:has(.hunch-picker) {
+  /* A card-pool pick (hunch deck, market deck, Stick to the Plan) takes the
+     class color of the card that asked for it. */
+  &:has(.card-pool-picker) {
+    --pool-accent: var(--seeker);
+    --pool-accent-rgb: 239, 163, 69;
+
     background: rgba(28, 22, 16, 0.82);
-    border: 1px solid rgba(239, 163, 69, 0.28);
+    border: 1px solid rgba(var(--pool-accent-rgb), 0.28);
 
     > header {
-      background: rgba(34, 25, 14, 0.95);
-      border-bottom: 1px solid rgba(239, 163, 69, 0.35);
+      background: rgba(28, 22, 16, 0.95);
+      border-bottom: 1px solid rgba(var(--pool-accent-rgb), 0.35);
 
       :deep(h1) {
-        color: var(--seeker);
+        color: var(--pool-accent);
         letter-spacing: 0.06em;
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
       }
 
       .minimize-btn {
-        background: rgba(239, 163, 69, 0.18);
-        color: var(--seeker);
+        background: rgba(var(--pool-accent-rgb), 0.18);
+        color: var(--pool-accent);
 
         &:hover {
-          background: rgba(239, 163, 69, 0.34);
+          background: rgba(var(--pool-accent-rgb), 0.34);
         }
       }
     }
+  }
+
+  &:has(.card-pool-picker.pool--rogue) {
+    --pool-accent: var(--rogue);
+    --pool-accent-rgb: 72, 177, 79;
+  }
+
+  &:has(.card-pool-picker.pool--guardian) {
+    --pool-accent: var(--guardian);
+    --pool-accent-rgb: 92, 180, 253;
   }
 }
 

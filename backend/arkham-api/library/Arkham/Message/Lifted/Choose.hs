@@ -153,8 +153,11 @@ chooseOrRunOneM iid choices = do
 
 chooseOrRunNM :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseOrRunNM iid n choices = do
-  (_, choices') <- runChooseT choices
-  unless (shouldSkipQuestion choices') $ chooseOrRunN iid n choices'
+  ((_, ChooseState {label}), choices') <- runChooseT choices
+  unless (shouldSkipQuestion choices') do
+    case label of
+      Just l | length choices' /= n -> questionLabel l iid $ ChooseN n choices'
+      _ -> chooseOrRunN iid n choices'
 
 chooseOrRunOneAtATimeM :: ReverseQueue m => InvestigatorId -> ChooseT m a -> m ()
 chooseOrRunOneAtATimeM iid choices = do
@@ -177,8 +180,12 @@ chooseNM iid n choices = do
 
 chooseUpToNM :: (HasI18n, ReverseQueue m) => InvestigatorId -> Int -> Text -> ChooseT m a -> m ()
 chooseUpToNM iid n done choices = do
-  (_, choices') <- runChooseT choices
-  unless (shouldSkipQuestion choices') $ chooseUpToN iid n ("$" <> labelKey done) choices'
+  ((_, ChooseState {label}), choices') <- runChooseT choices
+  let lbl = "$" <> labelKey done
+  unless (shouldSkipQuestion choices') do
+    case label of
+      Nothing -> chooseUpToN iid n lbl choices'
+      Just l -> questionLabel l iid $ ChooseUpToN n (Done lbl : choices')
 
 chooseUpToNM_ :: ReverseQueue m => InvestigatorId -> Int -> ChooseT m a -> m ()
 chooseUpToNM_ iid n choices = chooseUpToNMI' iid n "done" choices

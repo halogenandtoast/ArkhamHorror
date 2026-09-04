@@ -73,6 +73,7 @@ instance RunMessage StickToThePlan3 where
             $ filterCards (#event <> mapOneOf CardWithTrait [Trait.Tactic, Trait.Supply]) cards
 
       cardI18n $ scope "stickToThePlan3" $ chooseUpToNM iid 1 "chooseNoMoreEvents" do
+        numberVar "remaining" n $ questionLabeled "chooseCards"
         targets tacticsAndSupplies \card -> do
           let remaining = filterCards (not_ (CardWithId card.id) <> not_ (CardWithTitle card.title)) tacticsAndSupplies
           push $ RemoveCardFromSearch iid (toCardId card)

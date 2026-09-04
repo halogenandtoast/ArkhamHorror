@@ -20,11 +20,21 @@
   "hunter": {
     "move": "Hunter: choose a location for this enemy to move toward."
   },
-  "hunchDeck": {
-    "deckSoFar": "Hunch Deck",
+  "cardPool": {
     "remaining": "1 more to add | {count} more to add",
     "complete": "Complete",
-    "candidates": "Your _Insight_ events"
+    "joeDiamond": {
+      "title": "Hunch Deck",
+      "candidates": "Your _Insight_ events"
+    },
+    "underworldMarket2": {
+      "title": "Market Deck",
+      "candidates": "Your _Illicit_ cards"
+    },
+    "stickToThePlan3": {
+      "title": "Stick to the Plan",
+      "candidates": "Your _Tactic_ and _Supply_ events"
+    }
   },
   "patrol": {
     "move": "Patrol: choose a location for this enemy to move toward."

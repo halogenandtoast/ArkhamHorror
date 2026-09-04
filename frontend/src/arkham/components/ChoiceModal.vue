@@ -264,7 +264,9 @@ const title = computed(() => {
   // "$...label..." key under "title" -- otherwise every one of them says "Choose".
   if (body.value?.startsWith("$")) {
     const titleKey = body.value.replace(".label.", ".title.")
-    if (titleKey !== body.value && te(titleKey.slice(1))) {
+    // The key can carry i18n vars ("$a.label.b var=i:1"); `te` needs the key alone.
+    const bareKey = titleKey.slice(1).split(' ')[0]
+    if (titleKey !== body.value && te(bareKey)) {
       return titleKey
     }
   }
@@ -706,8 +708,8 @@ const title = computed(() => {
   margin: 0;
 }
 
-/* The hunch picker's panels carry the framing, so its lede stays plain text. */
-.choice-modal-wrapper:has(.hunch-picker) .body {
+/* The card pool picker's panels carry the framing, so its lede stays plain text. */
+.choice-modal-wrapper:has(.card-pool-picker) .body {
   padding: 2px 2px 0;
   border: 0;
   background: none;

@@ -3,7 +3,7 @@ import { homebrewCampaignScope, homebrewScenarioI18n } from '@/arkham/homebrewDa
 import { type Search, searchDecoder } from '@/arkham/types/Search';
 import { type Name, nameDecoder } from '@/arkham/types/Name';
 import { CampaignStep, campaignStepDecoder} from '@/arkham/types/CampaignStep';
-import { v2Optional } from '@/arkham/parser';
+import { v2Optional, withDefault } from '@/arkham/parser';
 import {
   Card,
   cardDecoder,
@@ -50,6 +50,7 @@ export type Scenario = {
   reference: string;
   additionalReferences: string[];
   difficulty: Difficulty;
+  useHardExpertReference: boolean;
   locationLayout: string[] | null;
   usesGrid: boolean;
   decksLayout: string[];
@@ -152,6 +153,7 @@ export const scenarioDecoder = JsonDecoder.object<DecodedScenario>({
   additionalReferences: JsonDecoder.array(JsonDecoder.string(), 'string[]'),
   log: JsonDecoder.array(rememberedDecoder, 'remembered[]'),
   difficulty: difficultyDecoder,
+  useHardExpertReference: withDefault(false, JsonDecoder.boolean()),
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string(), 'GridLayout[]')),
   usesGrid: JsonDecoder.boolean(),
   decksLayout: JsonDecoder.array<string>(JsonDecoder.string(), 'GridLayout[]'),
@@ -256,6 +258,16 @@ export function campaignIdToI18n(campaignId: string): string | null {
 export const symbolChaosTokenFaces = ['Skull', 'Cultist', 'Tablet', 'ElderThing'] as const
 
 /**
+ * Mirrors the backend's isHardExpert: Ultimatum of Malevolence sets
+ * useHardExpertReference so an Easy/Standard game uses the Hard/Expert side.
+ * Pass `difficulty` to honor an optimistic (not yet round-tripped) difficulty change.
+ */
+export function usesHardExpertReference(scenario: Scenario, difficulty?: string): boolean {
+  return scenario.useHardExpertReference
+    || ['Hard', 'Expert'].includes(difficulty ?? scenario.difficulty)
+}
+
+/**
  * i18n key for a symbol token's scenario effect text, or null when the face has none
  * or the scenario has no i18n scope (unknown homebrew).
  */
@@ -269,7 +281,7 @@ export function chaosTokenEffectKey(scenario: Scenario, face: TokenFace): string
     return null
   }
 
-  const difficulty = ['Easy', 'Standard'].includes(scenario.difficulty) ? 'easyStandard' : 'hardExpert'
+  const difficulty = usesHardExpertReference(scenario) ? 'hardExpert' : 'easyStandard'
   const baseRef = scenario.reference.replace(/b$/, '')
   const tokenScope =
     baseRef === 'c10501' || baseRef === 'c10502'

@@ -1116,6 +1116,7 @@
       "fail": "Automatically fail this skill test to heal 1 damage and 1 horror"
     },
     "stickToThePlan3": {
+      "chooseCards": "Set aside up to 3 _Tactic_ or _Supply_ events from your deck.",
       "chooseNoMoreEvents": "Choose no more events"
     },
     "stormRuler": {
@@ -1284,6 +1285,7 @@
       "continue": "Continue"
     },
     "underworldMarket2": {
+      "chooseMarketDeck": "Set aside 10 _Illicit_ cards from your deck to form your market deck.",
       "placeTheRestOnTheBottomInAnyOrder": "Place the rest on the bottom, in any order",
       "spend1ResourceToDraw1OfThem": "Spend 1 resource to draw 1 of them"
     },
@@ -1330,6 +1332,12 @@
     "joeDiamond": {
       "chooseHunchCards": "Hunch Deck",
       "chooseHunch": "Hunch Deck"
+    },
+    "stickToThePlan3": {
+      "chooseCards": "Stick to the Plan"
+    },
+    "underworldMarket2": {
+      "chooseMarketDeck": "Market Deck"
     }
   },
   "tooltips": {

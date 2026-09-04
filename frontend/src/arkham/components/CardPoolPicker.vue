@@ -9,54 +9,50 @@ import Card from '@/arkham/components/Card.vue'
 export interface Props {
   game: Game
   playerId: string
+  /** Cards that can still be added to the pool. */
   cards: ArkhamCard[]
+  /** Cards already in the pool. */
+  chosen: ArkhamCard[]
   remaining: number
+  titleKey: string
+  candidatesKey: string
+  accent: string
 }
 
 const props = defineProps<Props>()
 defineEmits<{ choose: [value: number] }>()
 const { t } = useI18n()
 
-const investigator = computed(() =>
-  Object.values(props.game.investigators).find((i) => i.playerId === props.playerId)
-)
-
-// The hunch deck is built up by the very question we are answering, so its
-// current size is the honest "how far along am I" counter -- Unsolved Case is
-// already in it before the first pick.
-const hunchDeck = computed(
-  () => investigator.value?.decks.find(([key]) => key === 'HunchDeck')?.[1] ?? []
-)
-
-// Sorted, never in deck order: the deck is reshuffled after every pick and its
-// top card is what Joe reveals each investigation phase.
-const inHunchDeck = computed(() =>
-  [...hunchDeck.value].sort((a, b) =>
+// Sorted, never in pool order: these decks are shuffled as they are built, so
+// their order says nothing and a stable order keeps slots from jumping around.
+const inPool = computed(() =>
+  [...props.chosen].sort((a, b) =>
     toCardContents(a).cardCode.localeCompare(toCardContents(b).cardCode)
   )
 )
 
-const total = computed(() => hunchDeck.value.length + props.remaining)
+const total = computed(() => props.chosen.length + props.remaining)
 const slots = computed<(ArkhamCard | null)[]>(() =>
-  Array.from({ length: total.value }, (_, i) => inHunchDeck.value[i] ?? null)
+  Array.from({ length: total.value }, (_, i) => inPool.value[i] ?? null)
 )
 
 const emptySlot = { backgroundImage: `url(${imgsrc('backs/back_player.jpg')})` }
-const candidatesLabel = computed(() => formatContent(t('hunchDeck.candidates')))
+const title = computed(() => formatContent(t(props.titleKey)))
+const candidatesLabel = computed(() => formatContent(t(props.candidatesKey)))
 </script>
 
 <template>
-  <div class="hunch-picker">
-    <section class="hunch-group">
+  <div class="card-pool-picker" :class="`pool--${accent}`">
+    <section class="pool-group">
       <h2>
-        <span>{{ t('hunchDeck.deckSoFar') }}</span>
-        <span class="hunch-group__note">
-          {{ remaining === 0 ? t('hunchDeck.complete') : t('hunchDeck.remaining', { count: remaining }, remaining) }}
+        <span v-html="title"></span>
+        <span class="pool-group__note">
+          {{ remaining === 0 ? t('cardPool.complete') : t('cardPool.remaining', { count: remaining }, remaining) }}
         </span>
       </h2>
 
-      <ol class="hunch-slots">
-        <li v-for="(card, i) in slots" :key="i" class="hunch-slot">
+      <ol class="pool-slots">
+        <li v-for="(card, i) in slots" :key="i" class="pool-slot">
           <Card
             v-if="card"
             :card="card"
@@ -65,16 +61,16 @@ const candidatesLabel = computed(() => formatContent(t('hunchDeck.candidates')))
             :allowInteractions="false"
             :allowAbilityButtons="false"
           />
-          <span v-else class="hunch-slot__empty" :style="emptySlot"></span>
+          <span v-else class="pool-slot__empty" :style="emptySlot"></span>
         </li>
       </ol>
     </section>
 
-    <section class="hunch-group">
+    <section class="pool-group">
       <h2><span v-html="candidatesLabel"></span></h2>
 
-      <div class="hunch-candidates">
-        <div v-for="card in cards" :key="toCardContents(card).id" class="hunch-candidate">
+      <div class="pool-candidates">
+        <div v-for="card in cards" :key="toCardContents(card).id" class="pool-candidate">
           <Card :card="card" :game="game" :playerId="playerId" @choose="$emit('choose', $event)" />
         </div>
       </div>
@@ -83,7 +79,7 @@ const candidatesLabel = computed(() => formatContent(t('hunchDeck.candidates')))
 </template>
 
 <style scoped>
-.hunch-picker {
+.card-pool-picker {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -92,7 +88,7 @@ const candidatesLabel = computed(() => formatContent(t('hunchDeck.candidates')))
 }
 
 /* Matches the modal's other card groups so this reads as part of the app. */
-.hunch-group {
+.pool-group {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -105,7 +101,7 @@ const candidatesLabel = computed(() => formatContent(t('hunchDeck.candidates')))
     0 6px 18px rgba(0, 0, 0, 0.24);
 }
 
-.hunch-group h2 {
+.pool-group h2 {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -123,16 +119,16 @@ const candidatesLabel = computed(() => formatContent(t('hunchDeck.candidates')))
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
-.hunch-group__note {
+.pool-group__note {
   flex: 0 0 auto;
-  color: var(--seeker);
+  color: var(--pool-accent, var(--seeker));
   font-family: "Noto Sans", sans-serif;
   font-size: 0.8rem;
   letter-spacing: normal;
   text-transform: none;
 }
 
-.hunch-slots {
+.pool-slots {
   --card-width: min(52px, 9vw);
   display: flex;
   flex-wrap: wrap;
@@ -142,11 +138,11 @@ const candidatesLabel = computed(() => formatContent(t('hunchDeck.candidates')))
   list-style: none;
 }
 
-.hunch-slot {
+.pool-slot {
   display: flex;
 }
 
-.hunch-slot__empty {
+.pool-slot__empty {
   display: block;
   width: var(--card-width);
   margin: 2px;
@@ -157,7 +153,7 @@ const candidatesLabel = computed(() => formatContent(t('hunchDeck.candidates')))
   opacity: 0.22;
 }
 
-.hunch-candidates {
+.pool-candidates {
   --card-width: min(78px, 15vw);
   display: flex;
   flex-wrap: wrap;
@@ -165,32 +161,32 @@ const candidatesLabel = computed(() => formatContent(t('hunchDeck.candidates')))
   max-width: min(84vw, 700px);
 }
 
-.hunch-candidate {
+.pool-candidate {
   display: flex;
   transition: transform 0.15s ease;
 }
 
-.hunch-candidate:hover {
+.pool-candidate:hover {
   transform: translateY(-4px);
 }
 
 @media (max-width: 700px) {
-  .hunch-slots {
+  .pool-slots {
     --card-width: min(44px, 12vw);
   }
 
-  .hunch-candidates {
+  .pool-candidates {
     --card-width: min(74px, 20vw);
     max-width: 100%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hunch-candidate {
+  .pool-candidate {
     transition: none;
   }
 
-  .hunch-candidate:hover {
+  .pool-candidate:hover {
     transform: none;
   }
 }

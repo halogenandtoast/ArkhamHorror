@@ -64,7 +64,9 @@ instance RunMessage UnderworldMarket2 where
           deck' <- shuffle (selected <> marketDeck meta)
           pure . UnderworldMarket2 . (`with` Meta deck' []) $ attrs
         _ -> do
-          focusCards xs $ chooseOrRunNM iid 10 $ targets xs $ handleTarget iid (attrs.ability 1)
+          focusCards xs $ cardI18n $ scope "underworldMarket2" $ chooseOrRunNM iid 10 do
+            questionLabeled "chooseMarketDeck"
+            targets xs $ handleTarget iid (attrs.ability 1)
           pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
@@ -97,5 +99,8 @@ instance RunMessage UnderworldMarket2 where
       pure . UnderworldMarket2 . (`with` Meta rest knownRest) $ attrs
     HandleTargetChoice _iid (isAbilitySource attrs 2 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
-      pure . UnderworldMarket2 . (`with` Meta (marketDeck meta ++ [card]) (knownMarketDeck meta ++ [card])) $ attrs
+      pure
+        . UnderworldMarket2
+        . (`with` Meta (marketDeck meta ++ [card]) (knownMarketDeck meta ++ [card]))
+        $ attrs
     _ -> UnderworldMarket2 . (`with` meta) <$> liftRunMessage msg attrs

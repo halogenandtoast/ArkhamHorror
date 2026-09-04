@@ -15,7 +15,7 @@ import {
   provide
 } from 'vue';
 import { type Game } from '@/arkham/types/Game';
-import { type Scenario } from '@/arkham/types/Scenario';
+import { type Scenario, usesHardExpertReference } from '@/arkham/types/Scenario';
 import { type Story as StoryAttrs } from '@/arkham/types/Story';
 import { type Enemy } from '@/arkham/types/Enemy';
 import { type ConcealedCard } from '@/arkham/types/ConcealedCard';
@@ -1025,17 +1025,17 @@ watch(() => props.scenario.difficulty, (difficulty) => {
 
 const scenarioGuide = computed(() => {
   const { reference } = props.scenario
-  const difficulty = displayedScenarioDifficulty.value
+  const hardExpertSide = usesHardExpertReference(props.scenario, displayedScenarioDifficulty.value)
   const referenceCode = reference.replace(/^c/, '')
   const referenceBase = referenceCode.replace(/b$/, '')
 
   if (props.scenario.id === 'c10501' || referenceBase === '10501' || referenceBase === '10502') {
     const referenceSide = referenceCode.endsWith('b') ? 'b' : ''
-    const writtenInRockReference = difficulty === 'Hard' || difficulty === 'Expert' ? '10502' : '10501'
+    const writtenInRockReference = hardExpertSide ? '10502' : '10501'
     return cardCodeImage(`${writtenInRockReference}${referenceSide}`)
   }
 
-  const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert' ? 'b' : ''
+  const difficultySuffix = hardExpertSide ? 'b' : ''
   return cardCodeImage(reference, difficultySuffix)
 })
 

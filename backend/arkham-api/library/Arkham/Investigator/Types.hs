@@ -426,10 +426,12 @@ instance Entity InvestigatorAttrs where
   overAttrs f = f
 
 instance HasCardDef InvestigatorAttrs where
-  toCardDef e = case lookup (investigatorCardCode e) (allInvestigatorCards <> allEncounterInvestigatorCards) of
-    Just def -> def
-    Nothing ->
-      error $ "missing card def for enemy " <> show (investigatorCardCode e)
+  toCardDef e =
+    case lookup (investigatorCardCode e) (allInvestigatorCards <> allEncounterInvestigatorCards)
+      <|> lookupCustomCardDef (investigatorCardCode e) of
+      Just def -> def
+      Nothing ->
+        error $ "missing card def for investigator " <> show (investigatorCardCode e)
 
 instance Named InvestigatorAttrs where
   toName = investigatorName

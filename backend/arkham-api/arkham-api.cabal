@@ -2451,6 +2451,7 @@ library
       Arkham.Custom.Asset
       Arkham.Custom.Enemy
       Arkham.Custom.Event
+      Arkham.Custom.Investigator
       Arkham.Custom.Location
       Arkham.Custom.Schema
       Arkham.Custom.Schema.TH

@@ -88,8 +88,15 @@ export function customCardDef(code: string): CardDef | undefined {
 // back). Custom cards are single-sided, so fall back to the bare code.
 export function customCardArt(art: string): string | null {
   const code = stripCardCodePrefix(art)
-  const card = registry.get(code) ?? registry.get(code.replace(/[ab]$/, ''))
-  return card?.art ?? null
+  const exact = registry.get(code)
+  if (exact) return exact.art
+
+  // A back is asked for as "<code>b". An investigator draws its own back; other
+  // custom cards fall back to their face.
+  const base = registry.get(code.replace(/[ab]$/, ''))
+  if (!base) return null
+  if (code.endsWith('b') && base.def.meta?.backArt) return base.def.meta.backArt
+  return base.art
 }
 
 const escapeXml = (t: string) =>

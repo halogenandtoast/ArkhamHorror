@@ -120,6 +120,9 @@ artBucket = "arkham-horror-assets"
 artPrefix :: Text
 artPrefix = "img/custom/"
 
+maxArtBytes :: Int64
+maxArtBytes = 1024 * 1024
+
 extensionFor :: Maybe Text -> Text
 extensionFor = \case
   Just "image/png" -> "png"
@@ -139,6 +142,8 @@ postApiV1ArkhamCustomCardsArtR = do
   bytes <- BSL.fromStrict <$> fileSourceByteString file
   let contentType = fileContentType file
   unless ("image/" `T.isPrefixOf` contentType) $ invalidArgs ["Not an image"]
+  -- The browser downscales before uploading; this is the backstop.
+  when (BSL.length bytes > maxArtBytes) $ invalidArgs ["Image is larger than 1MB"]
 
   let
     filename =

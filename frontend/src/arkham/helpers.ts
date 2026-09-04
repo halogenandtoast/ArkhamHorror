@@ -103,6 +103,7 @@ export function imgsrc(src: string) {
   // dropped image) rather than living under the asset host.
   if (isCustomCardCode(src)) return customCardArt(src) ?? customCardPlaceholder(src)
 
+
   const store = useSiteSettingsStore()
   const language = localStorage.getItem('language') || 'en'
   const path = src.replace(/^\//, '')

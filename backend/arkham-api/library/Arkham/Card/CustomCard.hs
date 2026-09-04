@@ -79,6 +79,10 @@ shroud and clue value, an asset's health and sanity -- are carried in
 or unparseable keys fall back to the default.
 -}
 customMeta :: FromJSON a => Text -> a -> CardDef -> a
-customMeta k fallback def = fromMaybe fallback do
+customMeta k fallback = fromMaybe fallback . customMetaMaybe k
+
+-- | As 'customMeta', where absent and present-but-unparseable are both Nothing.
+customMetaMaybe :: FromJSON a => Text -> CardDef -> Maybe a
+customMetaMaybe k def = do
   v <- Map.lookup k (cdMeta def)
   parseMaybe parseJSON v

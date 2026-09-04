@@ -10,6 +10,7 @@ import Arkham.Prelude
 
 import Arkham.Card
 import Arkham.Classes.Entity.TH
+import Arkham.Custom.Investigator (CustomInvestigator, customInvestigator)
 import Arkham.Id
 import Arkham.Investigator.Investigators
 import Arkham.Investigator.Runner hiding (allInvestigators)
@@ -19,8 +20,12 @@ import Data.Typeable
 
 lookupInvestigator :: InvestigatorId -> PlayerId -> Investigator
 lookupInvestigator iid pid = case lookup (toCardCode iid) allInvestigators of
-  Nothing -> lookupPromoInvestigator iid pid
   Just c -> overAttrs (artL .~ CardCodeExact (toCardCode iid)) $ toInvestigator c pid
+  Nothing -> case lookupCustomCardDef (toCardCode iid) of
+    Just def ->
+      overAttrs (artL .~ CardCodeExact (toCardCode iid))
+        $ toInvestigator (SomeInvestigatorCard (customInvestigator def)) pid
+    Nothing -> lookupPromoInvestigator iid pid
 
 normalizeInvestigatorId :: InvestigatorId -> InvestigatorId
 normalizeInvestigatorId iid = findWithDefault iid iid promoInvestigators
@@ -63,6 +68,7 @@ withInvestigatorCardCode cCode f = case lookup cCode allInvestigators of
     "05048" -> f (SomeInvestigator @ValentinoRivas)
     "05049" -> f (SomeInvestigator @PennyWhite)
     "10661" -> f (SomeInvestigator @ShatteredSelf)
+    _ | isCustomCardCode cCode -> f (SomeInvestigator @CustomInvestigator)
     _ -> error ("invalid investigators: " <> show cCode)
   Just (SomeInvestigatorCard (_ :: InvestigatorCard a)) -> f (SomeInvestigator @a)
 

@@ -7,6 +7,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
 import { PLAYER_CARD_TYPES, renderCardPlaceholder, type CustomCard } from '@/arkham/customCards'
+import { libraryCards } from '@/arkham/customCardLibrary'
 import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
 
 const CARD_TYPES = [
@@ -20,6 +21,7 @@ const CARD_TYPES = [
   { value: 'EncounterAssetType', label: 'Asset (encounter back)' },
   { value: 'LocationType', label: 'Location' },
   { value: 'StoryType', label: 'Story' },
+  { value: 'InvestigatorType', label: 'Investigator' },
 ] as const
 
 const CLASSES = ['Guardian', 'Seeker', 'Rogue', 'Mystic', 'Survivor', 'Neutral', 'Mythos']
@@ -41,7 +43,7 @@ const KEYWORDS = [
 const blankForm = () => ({
   title: '',
   subtitle: '',
-  cardType: 'EnemyType' as string,
+  cardType: '' as string,
   classSymbol: 'Neutral',
   cost: '' as string,
   level: '' as string,
@@ -71,16 +73,44 @@ const blankForm = () => ({
   abilities: [] as any[],
   handlers: [] as any[],
   modifiers: [] as any[],
+  // investigator
+  willpower: '3',
+  intellect: '3',
+  combat: '3',
+  agility: '3',
+  investigatorHealth: '7',
+  investigatorSanity: '7',
+  signatures: [] as string[],
+  // art, one entry per slot
+  artUrls: {} as Record<string, string>,
+  artUploaded: {} as Record<string, string | null>,
   // escape hatch
   rawJson: '',
 })
 
 const form = reactive(blankForm())
-const artUrl = ref('')
-const artUploaded = ref<string | null>(null)
-const dragging = ref(false)
-const uploading = ref(false)
+const dragging = ref<string | null>(null)
+const uploading = ref<string | null>(null)
 const error = ref<string | null>(null)
+
+/* An investigator carries four images; everything else just its face. The extra
+ * ones ride in meta so the card model stays one def plus one piece of art. */
+const MAX_ART_BYTES = 1024 * 1024
+
+type ArtSlot = { key: string; label: string }
+
+const ART_SLOTS = computed<ArtSlot[]>(() =>
+  form.cardType === 'InvestigatorType'
+    ? [
+        { key: 'art', label: 'Card front' },
+        { key: 'backArt', label: 'Card back' },
+        { key: 'portrait', label: 'Portrait' },
+        { key: 'portraitBack', label: 'Portrait back' },
+      ]
+    : [{ key: 'art', label: 'Card art' }],
+)
+
+const artFor = (slot: string) => form.artUploaded[slot] || form.artUrls[slot]?.trim() || null
 
 const isEnemy = computed(() => form.cardType === 'EnemyType' || form.cardType === 'PlayerEnemyType')
 const isLocation = computed(() => form.cardType === 'LocationType')
@@ -88,7 +118,20 @@ const isAsset = computed(() => form.cardType === 'AssetType' || form.cardType ==
 const isPlayerCard = computed(() => PLAYER_CARD_TYPES.includes(form.cardType))
 const hasCost = computed(() => ['AssetType', 'EventType'].includes(form.cardType))
 
-const art = computed(() => artUploaded.value || artUrl.value.trim() || null)
+const art = computed(() => artFor('art'))
+const isInvestigator = computed(() => form.cardType === 'InvestigatorType')
+
+/* Signature cards are other cards in your library. Held on the investigator by
+ * card code, which is what the deck overlay needs to bring them along. */
+const signatureChoices = computed(() =>
+  libraryCards().filter((c) => c.def.cardType !== 'InvestigatorType'),
+)
+
+function toggleSignature(cardCode: string) {
+  const index = form.signatures.indexOf(cardCode)
+  if (index === -1) form.signatures.push(cardCode)
+  else form.signatures.splice(index, 1)
+}
 
 // ---------------------------------------------------------------- traits ---
 
@@ -212,6 +255,24 @@ function buildDef(cardCode: string): Record<string, any> {
     }
   }
 
+  if (isInvestigator.value) {
+    def.meta.health = num(form.investigatorHealth) ?? 0
+    def.meta.sanity = num(form.investigatorSanity) ?? 0
+    def.meta.willpower = num(form.willpower) ?? 0
+    def.meta.intellect = num(form.intellect) ?? 0
+    def.meta.combat = num(form.combat) ?? 0
+    def.meta.agility = num(form.agility) ?? 0
+    // The cards this investigator brings with them, by card code.
+    if (form.signatures.length) def.meta._signatures = form.signatures
+  }
+
+  // The face is the card's art; the rest ride in meta.
+  for (const slot of ART_SLOTS.value) {
+    if (slot.key === 'art') continue
+    const value = artFor(slot.key)
+    if (value) def.meta[slot.key] = value
+  }
+
   if (form.abilities.length) def.meta._abilities = form.abilities
   if (form.handlers.length) def.meta._handlers = form.handlers
   if (form.modifiers.length) def.meta._modifiers = form.modifiers
@@ -236,7 +297,6 @@ const previewDef = computed(() => {
   }
 })
 
-const previewArt = computed(() => art.value ?? renderCardPlaceholder(previewDef.value as any))
 
 // ------------------------------------------------------------------- art ---
 
@@ -264,39 +324,49 @@ async function readImage(file: File): Promise<Blob> {
   canvas.height = Math.round(image.height * scale)
   canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height)
 
-  return new Promise((resolve, reject) =>
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Could not encode image'))), 'image/webp', 0.85),
-  )
+  /* The server caps art at 1MB. 500px of WEBP is well under that, but step the
+   * quality down rather than fail on an image that happens not to be. */
+  for (const quality of [0.85, 0.7, 0.55, 0.4]) {
+    const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, 'image/webp', quality))
+    if (blob && blob.size <= MAX_ART_BYTES) return blob
+  }
+
+  throw new Error('Image is too large')
 }
 
-async function takeImage(file: File | undefined) {
+async function takeImage(slot: string, file: File | undefined) {
   if (!file || !file.type.startsWith('image/')) return
   error.value = null
-  uploading.value = true
+  uploading.value = slot
   try {
-    artUploaded.value = await Api.uploadCustomCardArt(await readImage(file))
-    artUrl.value = ''
+    form.artUploaded[slot] = await Api.uploadCustomCardArt(await readImage(file))
+    form.artUrls[slot] = ''
   } catch (e) {
     console.error(e)
-    error.value = 'Could not upload that image.'
+    error.value = 'Could not upload that image. Images must be under 1MB once scaled.'
   } finally {
-    uploading.value = false
+    uploading.value = null
   }
 }
 
-async function onDrop(event: DragEvent) {
-  dragging.value = false
-  await takeImage(event.dataTransfer?.files?.[0])
+async function onDrop(slot: string, event: DragEvent) {
+  dragging.value = null
+  await takeImage(slot, event.dataTransfer?.files?.[0])
 }
 
-async function onFile(event: Event) {
-  await takeImage((event.target as HTMLInputElement).files?.[0])
+async function onFile(slot: string, event: Event) {
+  await takeImage(slot, (event.target as HTMLInputElement).files?.[0])
 }
 
-function clearArt() {
-  artUploaded.value = null
-  artUrl.value = ''
+function clearArt(slot: string) {
+  form.artUploaded[slot] = null
+  form.artUrls[slot] = ''
 }
+
+/* The face is the card; the other slots fall back to the placeholder drawn from
+ * the def so an empty slot still reads as what it is. */
+const slotPreview = (slot: string) =>
+  artFor(slot) ?? (slot === 'art' ? renderCardPlaceholder(previewDef.value as any) : null)
 
 // ------------------------------------------------------------- load/save ---
 
@@ -307,7 +377,11 @@ const FORM_KEYS = [
   'unique', 'doubleSided', 'meta', 'cardSubType', 'cost', 'level', 'victoryPoints',
   'fight', 'health', 'evade', 'healthDamage', 'sanityDamage', 'slots', 'uses',
 ]
-const FORM_META_KEYS = ['shroud', 'revealClues', 'health', 'sanity', '_abilities', '_handlers', '_modifiers']
+const FORM_META_KEYS = [
+  'shroud', 'revealClues', 'health', 'sanity', 'willpower', 'intellect', 'combat', 'agility',
+  'backArt', 'portrait', 'portraitBack',
+  '_abilities', '_handlers', '_modifiers', '_signatures',
+]
 
 const gameValueNumber = (v: any) => (v && typeof v.contents === 'number' ? String(v.contents) : '')
 const isPerPlayer = (v: any) => v?.tag === 'PerPlayer'
@@ -347,6 +421,20 @@ async function loadCard(card: CustomCard) {
   form.useType = def.uses?.type ?? ''
   form.useCount = def.uses?.amount === undefined ? '' : String(def.uses.amount)
 
+  form.willpower = meta.willpower === undefined ? '3' : String(meta.willpower)
+  form.intellect = meta.intellect === undefined ? '3' : String(meta.intellect)
+  form.combat = meta.combat === undefined ? '3' : String(meta.combat)
+  form.agility = meta.agility === undefined ? '3' : String(meta.agility)
+  form.investigatorHealth = meta.health === undefined ? '7' : String(meta.health)
+  form.investigatorSanity = meta.sanity === undefined ? '7' : String(meta.sanity)
+  form.signatures = meta._signatures ?? []
+
+  form.artUploaded = { art: card.art }
+  form.artUrls = {}
+  for (const slot of ['backArt', 'portrait', 'portraitBack']) {
+    if (meta[slot]) form.artUploaded[slot] = meta[slot]
+  }
+
   form.abilities = meta._abilities ?? []
   form.handlers = meta._handlers ?? []
   form.modifiers = meta._modifiers ?? []
@@ -362,13 +450,10 @@ async function loadCard(card: CustomCard) {
   if (Object.keys(leftoverMeta).length) leftover.meta = leftoverMeta
   form.rawJson = Object.keys(leftover).length ? JSON.stringify(leftover, null, 2) : ''
 
-  artUploaded.value = card.art
-  artUrl.value = ''
 }
 
 function reset() {
   Object.assign(form, blankForm())
-  clearArt()
   error.value = null
 }
 
@@ -387,29 +472,53 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
 <template>
   <div class="custom-card-body">
     <div class="custom-card-preview">
-      <div
-        class="art-dropzone"
-        :class="{ dragging, uploading }"
-        @dragover.prevent="dragging = true"
-        @dragleave="dragging = false"
-        @drop.prevent="onDrop"
-      >
-        <img :src="previewArt" alt="" />
-        <span class="art-hint">{{ uploading ? 'Uploading…' : 'Drop an image' }}</span>
+      <div v-for="slot in ART_SLOTS" :key="slot.key" class="art-slot">
+        <span v-if="ART_SLOTS.length > 1" class="slot-label">{{ slot.label }}</span>
+        <div
+          class="art-dropzone"
+          :class="{ dragging: dragging === slot.key, uploading: uploading === slot.key }"
+          @dragover.prevent="dragging = slot.key"
+          @dragleave="dragging = null"
+          @drop.prevent="onDrop(slot.key, $event)"
+        >
+          <img v-if="slotPreview(slot.key)" :src="slotPreview(slot.key)!" alt="" />
+          <div v-else class="art-empty"></div>
+          <span class="art-hint">{{ uploading === slot.key ? 'Uploading…' : 'Drop an image' }}</span>
+        </div>
+        <label class="file-pick">
+          Choose an image
+          <input type="file" accept="image/*" @change="onFile(slot.key, $event)" />
+        </label>
+        <label>
+          …or a URL
+          <input v-model="form.artUrls[slot.key]" type="url" placeholder="https://…" @keydown.stop />
+        </label>
+        <button v-if="artFor(slot.key)" type="button" class="link" @click="clearArt(slot.key)">Clear</button>
       </div>
-      <label class="file-pick">
-        Choose an image
-        <input type="file" accept="image/*" @change="onFile" />
-      </label>
-      <label>
-        …or an image URL
-        <input v-model="artUrl" type="url" placeholder="https://…" @keydown.stop />
-      </label>
-      <button v-if="art" type="button" class="link" @click="clearArt">Clear art</button>
       <p v-if="error" class="custom-card-error">{{ error }}</p>
     </div>
 
         <div class="custom-card-form">
+          <div v-if="!form.cardType" class="type-picker">
+            <p class="type-prompt">What kind of card is this?</p>
+            <div class="type-grid">
+              <button
+                v-for="t in CARD_TYPES"
+                :key="t.value"
+                type="button"
+                @click="form.cardType = t.value"
+              >
+                {{ t.label }}
+              </button>
+            </div>
+          </div>
+
+          <template v-else>
+          <div class="chosen-type">
+            <strong>{{ CARD_TYPES.find((t) => t.value === form.cardType)?.label }}</strong>
+            <button type="button" class="link" @click="form.cardType = ''">Change type</button>
+          </div>
+
           <div class="row">
             <label>
               Title
@@ -422,12 +531,6 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
           </div>
 
           <div class="row">
-            <label>
-              Type
-              <select v-model="form.cardType">
-                <option v-for="t in CARD_TYPES" :key="t.value" :value="t.value">{{ t.label }}</option>
-              </select>
-            </label>
             <label>
               Class
               <select v-model="form.classSymbol">
@@ -445,7 +548,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
               Level
               <input v-model="form.level" type="number" @keydown.stop />
             </label>
-            <label>
+            <label v-if="!isInvestigator">
               Victory
               <input v-model="form.victory" type="number" @keydown.stop />
             </label>
@@ -493,6 +596,39 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
                 @click="toggle(form.keywords, keyword)"
               >
                 {{ keyword }}
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset v-if="isInvestigator">
+            <legend>Investigator</legend>
+            <div class="row">
+              <label>Willpower<input v-model="form.willpower" type="number" @keydown.stop /></label>
+              <label>Intellect<input v-model="form.intellect" type="number" @keydown.stop /></label>
+              <label>Combat<input v-model="form.combat" type="number" @keydown.stop /></label>
+              <label>Agility<input v-model="form.agility" type="number" @keydown.stop /></label>
+            </div>
+            <div class="row">
+              <label>Health<input v-model="form.investigatorHealth" type="number" @keydown.stop /></label>
+              <label>Sanity<input v-model="form.investigatorSanity" type="number" @keydown.stop /></label>
+            </div>
+          </fieldset>
+
+          <fieldset v-if="isInvestigator">
+            <legend>Signature cards</legend>
+            <p v-if="!signatureChoices.length" class="hint">
+              Build the cards first and they will be listed here to pick from.
+            </p>
+            <div v-else class="chips">
+              <button
+                v-for="card in signatureChoices"
+                :key="card.def.cardCode"
+                type="button"
+                class="chip"
+                :class="{ on: form.signatures.includes(card.def.cardCode) }"
+                @click="toggleSignature(card.def.cardCode)"
+              >
+                {{ card.def.name.title }}
               </button>
             </div>
           </fieldset>
@@ -578,6 +714,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
               @keydown.stop
             />
           </details>
+          </template>
         </div>
   </div>
 </template>
@@ -738,6 +875,68 @@ textarea {
 
 input[type='checkbox'] {
   width: auto;
+}
+
+.type-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.type-prompt {
+  margin: 0;
+  opacity: 0.85;
+}
+
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.4rem;
+
+  button {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid #4b5563;
+    border-radius: 6px;
+    color: #eee;
+    cursor: pointer;
+    padding: 0.6rem;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--button-highlight);
+    }
+  }
+}
+
+.chosen-type {
+  align-items: baseline;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.art-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.slot-label {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.art-empty {
+  aspect-ratio: 5 / 7;
+  background: #111827;
+  border-radius: 8px;
+  width: 200px;
+}
+
+.hint {
+  font-size: 0.8rem;
+  margin: 0;
+  opacity: 0.7;
 }
 
 .trait-preview {

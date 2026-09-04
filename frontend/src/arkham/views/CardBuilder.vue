@@ -150,7 +150,8 @@ async function onImport(event: Event) {
 </script>
 
 <template>
-  <div class="card-builder">
+  <div class="page-container">
+    <div class="card-builder">
     <aside class="library">
       <div class="library-head">
         <h2>Library</h2>
@@ -215,10 +216,18 @@ async function onImport(event: Event) {
 
       <CustomCardForm ref="form" />
     </main>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+.page-container {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+}
+
 .card-builder {
   display: flex;
   gap: 1.5rem;
@@ -240,7 +249,7 @@ async function onImport(event: Event) {
   max-height: calc(100vh - var(--nav-height) - 3rem);
   overflow: auto;
   position: sticky;
-  top: 1.5rem;
+  top: 0;
 
   @media (max-width: 900px) {
     position: static;

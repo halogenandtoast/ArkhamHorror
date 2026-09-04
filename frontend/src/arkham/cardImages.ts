@@ -1,4 +1,5 @@
 import { cardImg, imgsrc } from '@/arkham/helpers'
+import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Game } from '@/arkham/types/Game'
 import type { Source } from '@/arkham/types/Source'
@@ -62,6 +63,15 @@ export function cardFaceImages(card: CardDef): { front: string; back: string | n
 }
 
 export function portraitImage(cardCode: string, suffix: string = ''): string {
+  // A custom investigator carries its own portraits; there is nothing for it
+  // under the portrait directory.
+  if (isCustomCardCode(cardCode)) {
+    const def = customCardDef(cardCode)
+    const portrait = suffix === 'b' ? def?.meta?.portraitBack : def?.meta?.portrait
+    if (portrait) return portrait
+    return cardImg(cardArt(cardCode, suffix))
+  }
+
   return imgsrc(`portraits/${cardArt(cardCode, suffix)}.jpg`)
 }
 

@@ -1,0 +1,1016 @@
+[
+  {
+    "code": "06189",
+    "flavor": "« À l'intérieur, enveloppée dans un parchemin décoloré, il y avait une énorme clé d'argent terni, couverte d'arabesques occultes, mais aucune explication lisible. »\n– H. P. Lovecraft, La Clé d'Argent"
+  },
+  {
+    "code": "09057",
+    "text": "Utilisations (3 provisions).\n[action] Inclinez le Nécessaire à Empreintes Digitales et dépensez 1 provision : <b>Enquêter</b>. Vous gagnez +2 [intellect] pour cette enquête. En cas de réussite, vous découvrez 2 indices supplémentaires dans votre lieu."
+  },
+  {
+    "code": "12001",
+    "text": "[reaction] Après qu'un ennemi a attaqué un investigateur dans votre lieu : combattez cet ennemi <i>(en utilisant soit une action Combattre de base, soit une capacité </i><b>Combattre</b><i> d'une carte)</i>. (Limite d'une fois par round.)\n[elder_sign]: +1. Infligez 1 dégât à un ennemi dans votre lieu.",
+    "back_text": "<b>Taille du deck</b>: 30.\n<b>Construction du deck</b>: cartes Gardien ([guardian]) de niveaux 0 à 5, cartes Survivant ([survivor]) de niveaux 0 à 2, cartes Neutre de niveaux 0–5.\n<b>Exigences du deck</b> (ne comptent pas dans la limite de taille de deck): Clé à Molette de Daniela, Dans la Gueule du Loup, 1 faiblesse de base au hasard.",
+    "back_flavor": "Daniela a travaillé dur pour se faire un nom en tant que mécanicienne. Elle venait à peine de payer son nouveau garage quand Arkham a été dévastée par une inondation cataclysmique, plongeant littéralement son entreprise sous l'eau. Plutôt que de se morfondre, elle s'est retroussé les manches, comme toujours, et s'est remise au travail. Aujourd'hui, elle fait des heures supplémentaires pour régler les moteurs des nouvelles usines de conditionnement de viande. Mais elle commence à entendre parler de choses étranges qui se passent dans le quartier du front de mer : des habitants disparus, des cadavres vidés de leur sang et des rumeurs sur une silhouette obscure qui rôde dans les ruelles la nuit. Daniela sait qu'elle ne doit pas prendre ces histoires à la légère. Quelle que soit la situation, elle a l'intention d'être prête."
+  },
+  {
+    "code": "12002",
+    "text": "Deck de Daniela Reyes uniquement.\n[fast] Inclinez la Clé à Molette de Daniela : choisissez un ennemi dans votre lieu. Cet ennemi vous engage et effectue immédiatement une attaque.\n[action]: <b>Combattre</b> ([combat]). Vous gagnez +2 [combat] pour cette attaque. Si cet ennemi vous a attaqué à ce round, cette attaque inflige +1 dégât."
+  },
+  {
+    "code": "12003",
+    "text": "<b>Révélation</b> – Mettez en jeu Dans la Gueule du Loup dans votre zone de menace.\n<b>Forcé</b> – Après que vous avez infligé des dégâts à un ennemi : subissez 1 dégât et placez 1 dégât sur Dans la Gueule du Loup. S'il y a au moins 3 dégâts sur cette carte, défaussez-la.\n<b>Forcé</b> – Quand la partie se termine : subissez 1 traumatisme physique."
+  },
+  {
+    "code": "12004",
+    "text": "[reaction] Après que vous avez enquêté avec succès : piochez 1 carte. (Limite d'une fois par round.)\n[elder_sign]: +1. En cas de réussite, piochez 1 carte et gagnez 1 ressource.",
+    "back_text": "<b>Taille du deck</b>: 30.\n<b>Construction du deck</b>: cartes Chercheur ([seeker]) de niveaux 0 à 5, cartes Gardien ([guardian]) de niveaux 0 à 2, cartes Neutre de niveaux 0 à 5.\n<b>Exigences du deck</b> (ne comptent pas dans la limite de taille du deck) : L'Intuition du Détective, Culs-de-Sac, 1 faiblesse de base au hasard.",
+    "back_flavor": "Joe Diamond a été témoin de plus de phénomènes surnaturels que la plupart des gens. Il a aiguisé son intuition et développé un don pour aller au bout de chaque enquête, même les plus étranges, et il n'hésite pas à se salir les mains. Mais ces dernières semaines, même Joe a eu du mal à se concentrer sur son travail. Son bureau est inondé de photos de meurtres atroces et de rapports de disparitions : des individus de tous horizons se volatilisent sans laisser de traces. Joe n'a pas encore compris ce qui reliait tous ces événements, mais il n'a pas l'intention de lâcher le morceau."
+  },
+  {
+    "code": "12005",
+    "text": "Deck de Joe Diamond uniquement.\nGagnez 2 ressources et soignez 1 dégât ou 1 horreur.\n[reaction] Après que vous avez pioché L'Intuition du Détective pendant votre tour : révélez-la et piochez 2 cartes supplémentaires."
+  },
+  {
+    "code": "12006",
+    "text": "<b>Forcé</b> – Quand vous cherchez des cartes dans votre deck et que Culs-de-Sac fait partie des cartes consultées : piochez-la, annulez les effets de la recherche et mélangez votre deck.\n<b>Forcé</b> – Quand la partie se termine ou que vous êtes éliminé, si cette carte est dans votre main : vous recevez 2 points d'expérience de moins."
+  },
+  {
+    "code": "12007",
+    "text": "Vous avez le droit d'effectuer une action supplémentaire pendant votre tour, que vous pouvez seulement utiliser pour vous échapper.\n[elder_sign]: +0. Après que ce test a été résolu, vous avez le droit de vous désengager de chaque ennemi et de vous déplacer vers un lieu connexe.",
+    "back_text": "<b>Taille du deck</b>: 30.\n<b>Construction du deck</b>: cartes Truand ([rogue]) de niveaux 0 à 5, cartes Chercheur ([seeker]) de niveaux 0 à 2, cartes Neutre de niveaux 0 à 5.\n<b>Exigences du deck</b> (ne comptent pas dans la limite de taille de deck): Mission Secrète, Agent de la Chambre Noire, 1 faiblesse de base au hasard.",
+    "back_flavor": "Trish Scarborough a vécu une carrière passionnante et dangereuse en tant qu'espionne pour la Chambre Noire. Les subterfuges ne lui sont pas étrangers, mais elle ne s'attendait pas à se retrouver au centre de sa propre conspiration lorsqu'un nouveau directeur est arrivé à la tête de l'organisation. Après une série de missions de plus en plus insignifiantes, elle fut fortement encouragée à « prendre du temps pour elle ». Soupçonnant les véritables intentions de son directeur, elle fouilla dans les archives de la Chambre et découvrit des preuves de corruption jusqu'au plus haut niveau : des rumeurs faisant état d'une organisation connue sous le nom de « Coterie Rouge » qui œuvrerait dans l'ombre. Accusée d'avoir divulgué des informations sensibles, Trish est maintenant en fuite et doit laver sa réputation."
+  },
+  {
+    "code": "12009",
+    "text": "Chasseur. Proie (Trish Scarborough uniquement).\n<b>Forcé</b> – Après que vous avez échappé à l'Agent de la Chambre Noire : placez 1 de vos indices dans votre lieu. Si vous ne le pouvez pas, cet ennemi se redresse, vous engage et effectue immédiatement une attaque."
+  },
+  {
+    "code": "12010",
+    "text": "[reaction] Après que vous avez joué un soutien : soit vous renvoyez dans votre main un autre soutien non-histoire que vous contrôlez, soit vous jouez un soutien différent de votre main <i>(en payant son coût)</i>. (Limite d'une fois par round.)\n[elder_sign]: +1. Vous avez le droit de renvoyer dans la main de son propriétaire un soutien non-histoire dans votre lieu.",
+    "flavor": "« Je vais vous montrer ce qu'est la vraie magie. »"
+  },
+  {
+    "code": "12011",
+    "text": "Deck de Dexter Drake uniquement.\nCherchez un soutien [[Sort]] ou [[Objet]] dans votre deck et jouez-le, en réduisant de 2 son coût <i>(mélangez votre deck)</i>. Cette action ne provoque pas d'attaque d'opportunité."
+  },
+  {
+    "code": "12012",
+    "text": "<b>Révélation</b> – Mettez en jeu Le Necronomicon dans votre zone de menace. Il ne peut pas quitter le jeu, sauf par la capacité [action] ci-dessous.\nVous ne pouvez pas jouer de soutiens, ni déclencher de capacités sur d'autres soutiens que vous contrôlez.\n[action]: effectuez un test de [willpower] (5). En cas de réussite, défaussez le Necronomicon. En cas d'échec, mélangez-le dans votre deck et subissez 1 horreur."
+  },
+  {
+    "code": "12013",
+    "text": "[fast] Pendant un test de compétence que vous effectuez, subissez 1 horreur directe : attribuez à ce test une compétence éligible de votre pile de défausse. Après la résolution de ce test, mélangez cette compétence dans votre deck. (Limite d'une fois par round.)\n[elder_sign]: +1. En cas de réussite, soignez 1 horreur.",
+    "flavor": "« Ma sœur ne se sera pas sacrifiée en vain. »",
+    "back_text": "<b>Taille du deck</b>: 30.\n<b>Construction du deck</b>: cartes Survivant ([survivor]) de niveaux 0 à 5, cartes Mystique ([mystic]) de niveaux 0 à 2, cartes Neutre de niveaux 0 à 5.\n<b>Exigences du deck</b> (ne comptent pas dans la limite de taille de deck): Les .45 Jumeaux d'Isabelle, Point de Rupture, 1 faiblesse de base au hasard.",
+    "back_flavor": "Isabelle Barnes est en fuite depuis toujours. Elle a réussi à échapper à la famille Olmstead, une secte qui la considérait comme la « pièce finale » d'un sombre et cruel rituel. Elle ignore pourquoi la secte la trouvait si spéciale. Mais aujourd'hui, grâce à sa sœur Jenny, Isabelle est enfin libre. Cependant, la liberté a un coût. Sa sœur a tout donné pour qu'Isabelle revienne, et pour cela, Isabelle a l'intention de faire payer aux Olmstead le prix du sang, ainsi qu'à tous ceux qui s'en prennent aux faibles et aux innocents. Armée des deux calibres 45 de sa sœur disparue, Isabelle peut enfin faire volte-face et confronter ses poursuivants."
+  },
+  {
+    "code": "12014",
+    "name": "Les .45 Jumeaux d'Isabelle"
+  },
+  {
+    "code": "12015",
+    "text": "<b>Révélation</b> – Subissez 1 dégât direct. Ensuite, si votre santé mentale restante est de 6 ou moins, subissez 1 dégât direct. Ensuite, si votre santé mentale restante est de 3 ou moins, subissez 1 dégât direct."
+  },
+  {
+    "code": "12016",
+    "flavor": "« Je ne suis pas là pour vous aider à faire du shopping, je suis là pour vous garder en vie. »"
+  },
+  {
+    "code": "12017",
+    "text": "[fast] Dépensez 1 ressource : vous gagnez +1 [combat] pour ce test de compétence (+2 [combat] à la place s'il s'agit d'une attaque ou d'une évasion).\n[fast] Dépensez 1 ressource : vous gagnez +1 [agility] pour ce test de compétence (+2 [agility] à la place s'il s'agit d'une attaque ou d'une évasion)."
+  },
+  {
+    "code": "12020",
+    "name": "Machette",
+    "traits": "Objet. Arme. Corps-à-corps.",
+    "flavor": "Coupe aussi bien le lierre et les haies que les tentacules.",
+    "slot": "Main"
+  },
+  {
+    "code": "12022",
+    "text": "Rapide. À jouer après qu'un ennemi vous a attaqué.\nDécouvrez 1 indice dans votre lieu."
+  },
+  {
+    "code": "12024",
+    "text": "À jouer uniquement lors de votre première action.\nDécouvrez 1 indice dans votre lieu (2 indices à la place s'il y a un ennemi dans ce lieu). Cette action ne provoque pas d'attaque d'opportunité."
+  },
+  {
+    "code": "12025",
+    "name": "Coup Vicieux",
+    "text": "Si ce test de compétence est réussi pendant une attaque, cette attaque inflige +1 dégât.",
+    "traits": "Entraîné.",
+    "flavor": "Un bon gros coup de batte, dans la vilaine grosse bête."
+  },
+  {
+    "code": "12027",
+    "flavor": "« Je ne suis pas là pour vous aider à faire du shopping, je suis là pour vous garder en vie. »"
+  },
+  {
+    "code": "12028",
+    "text": "[action]: <b>Combattre</b> ([combat]). Cette attaque inflige +1 dégât.\n[action][action]: <b>Combattre</b> ([combat]). Vous gagnez +3 [combat] pour cette attaque. En cas de réussite, vous avez le droit d'incliner la Masse pour infliger +2 dégâts pour cette attaque."
+  },
+  {
+    "code": "12029",
+    "text": "Utilisations (3 munitions).\n[action] Dépensez 1 munition : <b>Combattre</b> ([combat]). Vous gagnez +3 [combat] pour cette attaque. En cas de réussite, cette attaque inflige +1 dégât pour chaque point de réussite (jusqu'à un maximum de +4). En cas d'échec qui devrait infliger des dégâts à un autre investigateur, cette attaque inflige 1 dégât pour chaque point manquant (jusqu'à un maximum de 5 dégâts)."
+  },
+  {
+    "code": "12030",
+    "text": "Vous gagnez +1 [intellect].\n[reaction] Après que vous avez enquêté avec succès avec un écart exact de 1 ou 3, inclinez Dorothy Simmons : gagnez 1 ressource.",
+    "flavor": "« Je me suis inscrite à tous les cours dispensés par le Dr Christopher ! »"
+  },
+  {
+    "code": "12031",
+    "name": "Kit d'Empreintes Digitales",
+    "text": "Utilisations (3 provisions).\n[action] Inclinez le Kit d'Empreintes Digitales et dépensez 1 provision : <b>Enquêter</b> ([intellect]). Vous gagnez +1 [intellect] pour cette enquête. En cas de réussite, découvrez 1 indice supplémentaire dans votre lieu.",
+    "traits": "Objet. Outil.",
+    "slot": "Main"
+  },
+  {
+    "code": "12032",
+    "name": "Assistante de Laboratoire",
+    "traits": "Allié. Miskatonic. Science.",
+    "flavor": "Elles sont juste là pour obtenir des crédits supplémentaires.",
+    "slot": "Allié"
+  },
+  {
+    "code": "12033",
+    "text": "Utilisations (4 secrets).\n[action] Dépensez 1 secret : <b>Enquêter</b> ([intellect]). Enquêtez dans un lieu connexe révélé. Vous gagnez +1 [intellect] pour cette enquête. En cas de réussite, vous avez le droit d'incliner la Carte des Environs pour vous déplacer vers ce lieu."
+  },
+  {
+    "code": "12034",
+    "flavor": "Une lentille pointée vers un monde inconnu peut révéler des choses que vous auriez préféré ignorer."
+  },
+  {
+    "code": "12035",
+    "text": "[fast] Dépensez 1 ressource : vous gagnez +1 [intellect] pour ce test de compétence (+2 [intellect] à la place s'il s'agit d'une enquête ou d'une discussion).\n[fast] Dépensez 1 ressource : vous gagnez +1 [willpower] pour ce test de compétence (+2 [willpower] à la place s'il s'agit d'une enquête ou d'une discussion)."
+  },
+  {
+    "code": "12036",
+    "name": "Rassembler des Informations"
+  },
+  {
+    "code": "12037",
+    "text": "<b>Échapper à</b> ([agility]). Vous gagnez +1 [agility] pour cette évasion pour chaque indice que vous contrôlez (jusqu'à un maximum de +3). En cas de réussite, vous avez le droit de vous désengager de chaque ennemi engagé avec vous et de vous déplacer vers un lieu connexe révélé."
+  },
+  {
+    "code": "12038",
+    "name": "Suivre Son Intuition"
+  },
+  {
+    "code": "12039",
+    "name": "Déduction",
+    "text": "Si ce test de compétence est réussi pendant que vous enquêtez dans un lieu, découvrez 1 indice supplémentaire dans ce lieu.",
+    "traits": "Entraîné.",
+    "flavor": "Ceci n'est qu'une petite pièce qui s'imbrique dans un mystère bien plus grand."
+  },
+  {
+    "code": "12040",
+    "text": "Utilisations (4 secrets).\n[fast] Lors de votre tour, dépensez 1 ou 2 secrets et inclinez le Grimoire Mystérieux : cherchez une carte parmi les 3 cartes du dessus de votre deck (ou 6 cartes à la place si vous avez dépensé 2 secrets) et piochez-la. Si 1 ou plusieurs faiblesses font partie des cartes consultées, piochez-la/les également. Mélangez votre deck."
+  },
+  {
+    "code": "12042",
+    "name": "Studieux",
+    "text": "Permanent.\nVous débutez chaque partie avec 1 carte supplémentaire dans votre main de départ.",
+    "flavor": "« Nous passâmes le reste de la nuit dans le bureau brillamment éclairé, à discuter fébrilement de ce qu'il fallait faire. »\n<i>— H.P. Lovecraft, « Les Rats dans les Murs »</i>"
+  },
+  {
+    "code": "12043",
+    "name": "Savoir Sans Limite"
+  },
+  {
+    "code": "12044",
+    "name": "Étui à Cigarettes Porte-Bonheur",
+    "text": "[reaction] Après que vous avez réussi un test de compétence avec une différence de 2 ou plus, inclinez l'Étui à Cigarettes Porte-Bonheur : piochez 1 carte.",
+    "traits": "Objet. Charme.",
+    "slot": "Accessoire"
+  },
+  {
+    "code": "12046",
+    "text": "Vous gagnez +1 [agility].\n[fast] Lors de votre tour, inclinez Olivier Bishop : déplacez-vous vers un lieu connexe."
+  },
+  {
+    "code": "12047",
+    "text": "[fast] Dépensez 1 ressource : vous gagnez +1 [intellect] pour ce test de compétence (+2 [intellect] à la place s'il s'agit d'une évasion ou d'une discussion).\n[fast] Dépensez 1 ressource : vous gagnez +1 [agility] pour ce test de compétence (+2 [agility] à la place s'il s'agit d'une évasion ou d'une discussion)."
+  },
+  {
+    "code": "12049",
+    "name": "Trousse de Cambrioleur",
+    "text": "Utilisations (6 provisions).\n[action] Dépensez 1 provision : <b>Enquêter</b> ([intellect] ou [agility]). En cas de réussite, gagnez 1 ressource.",
+    "traits": "Objet. Outil. Illicite.",
+    "slot": "Main"
+  },
+  {
+    "code": "12050",
+    "name": "Forcer l'Entrée",
+    "text": "<b>Enquêter</b> ([intellect]). Ajouter votre [agility] à votre [intellect] pour cette enquête. En cas de réussite avec une différence de 2 ou plus, vous avez le droit d'échapper automatiquement à un ennemi dans ce lieu. Cette action ne provoque pas d'attaque d'opportunité.",
+    "traits": "Ruse."
+  },
+  {
+    "code": "12051",
+    "flavor": "On ne peut pas acheter la célébrité.\nOu, peut-être que si ?"
+  },
+  {
+    "code": "12053",
+    "text": "1 max. attribuée par test de compétence.\nSi ce test est réussi avec une différence de 2 ou plus, l'investigateur qui effectue ce test a le droit de se désengager de chaque ennemi et de se déplacer vers un lieu connexe révélé."
+  },
+  {
+    "code": "12054",
+    "text": "Rapide. Limite de 1 par investigateur.\n[reaction] Après que vous avez échappé à un ennemi avec succès, inclinez les Mains Baladeuses : gagnez 1 ressource."
+  },
+  {
+    "code": "12055",
+    "text": "<b>Combattre</b> ([combat]). Vous gagnez +2 [combat] et infligez +1 dégât pour cette attaque. Si un ennemi est vaincu par cette attaque, gagnez 5 ressources."
+  },
+  {
+    "code": "12056",
+    "name": "À Chaque Jour Suffit sa Peine",
+    "text": "Permanent.\nVous débutez chaque partie avec 2 ressources supplémentaires.",
+    "flavor": "Vous avez perdu le sens des réalités il y a très longtemps déjà."
+  },
+  {
+    "code": "12057",
+    "text": "1 max. attribuée par test de compétence.\nSi ce test est réussi avec une différence de 1 ou plus, l'investigateur qui effectue ce test a le droit de se désengager de chaque ennemi et de se déplacer vers un lieu révélé éloigné de jusqu'à 2 connexions."
+  },
+  {
+    "code": "12058",
+    "text": "[reaction] Quand au moins 1 horreur est placée sur la Cape de Résonance, inclinez-la : infligez 1 dégât à un ennemi dans votre lieu.",
+    "flavor": "« Naîtra de 3 mesures d'éther, 2 de cinabre et au moins 3 livres de roquette d'ophe coillie d'une montagne bénie des cieux. »\n— Formule Alchimique No VIII ad. 1660"
+  },
+  {
+    "code": "12059",
+    "text": "Utilisations (3 charges).\n[action]: <b>Combattre</b> ([willpower]). En cas de réussite, vous avez le droit de dépenser 1 charge pour infliger +1 dégât pour cette attaque. Si vous révélez un pion [skull] lors de ce test, retirez 1 charge de la Flamme Cosmique (si vous ne le pouvez pas, subissez 1 dégât et défaussez cette carte)."
+  },
+  {
+    "code": "12060",
+    "text": "Vous gagnez +1 [willpower].\n[reaction] Après que vous avez subi au moins 1 dégât et/ou horreur, inclinez Jim Culver : piochez 1 carte."
+  },
+  {
+    "code": "12061",
+    "text": "Utilisations (4 charges).\n[fast] Dépensez 1 charge et inclinez le Porte-Bonheur : déplacez 1 dégât ou 1 horreur d'une carte dans votre lieu vers une carte que vous contrôlez <i>(ayant une valeur de vie ou de santé mentale)</i>."
+  },
+  {
+    "code": "12063",
+    "text": "[fast] Dépensez 1 ressource : vous gagnez +1 [willpower] pour ce test de compétence (+2 [willpower] à la place si ce test est sur une carte [[Sort]] ou [[Rituel]]).\n[fast] Dépensez 1 ressource : vous gagnez +1 [combat] pour ce test de compétence (+2 [combat] à la place si ce test est sur une carte [[Sort]] ou [[Rituel]])."
+  },
+  {
+    "code": "12064",
+    "name": "Prémonition",
+    "text": "Rapide. À jouer pendant n'importe quelle fenêtre [fast].\nMettez en jeu Prémonition et scellez dessus un pion Chaos pris au hasard dans la réserve du Chaos.\n<b>Forcé</b> – Quand un pion est censé être révélé de la réserve du Chaos : résolvez le pion scellé ici comme s'il venait juste d'être révélé, à la place. Ensuite, libérez ce pion et défaussez Prémonition.",
+    "traits": "Augure."
+  },
+  {
+    "code": "12065",
+    "name": "Sort de Protection",
+    "traits": "Sort. Esprit."
+  },
+  {
+    "code": "12068",
+    "slot": "Tête"
+  },
+  {
+    "code": "12070",
+    "text": "<b>Enquêter</b> ([intellect]). Ajoutez votre [willpower] à votre [intellect] pour cette enquête. En cas de réussite, découvrez 1 indice supplémentaire dans votre lieu. En cas de réussite et qu'un pion ayant un symbole a été révélé lors de ce test, vous avez le droit de défausser une traîtrise [[Terreur]] ou [[Sortilège]] de la zone de menace de n'importe quel investigateur."
+  },
+  {
+    "code": "12071",
+    "text": "Utilisations (4 charges).\n[action]: <b>Combattre</b> ([willpower]). Vous gagnez +2 [willpower] et infligez +1 dégât pour cette attaque. En cas de réussite, vous avez le droit de dépenser 1 charge pour infliger 1 dégât à un ennemi dans votre lieu. Si vous révélez un pion [skull] lors de ce test, retirez 1 charge de la Flamme Cosmique (si vous ne le pouvez pas, subissez 1 dégât et défaussez cette carte)."
+  },
+  {
+    "code": "12073",
+    "text": "Utilisations (3 provisions). S'il n'y a plus de provisions sur les Bandages, défaussez-les.\n[reaction] Après qu'un investigateur ou un soutien [[Allié]] dans votre lieu a subi au moins 1 dégât, dépensez 1 provision : soignez cette carte de 1 dégât.",
+    "traits": "Objet."
+  },
+  {
+    "code": "12074",
+    "text": "Limite de 1 par investigateur.\nUtilisations (3 provisions). S'il n'y a plus de provisions sur l'Instinct du Chasseur, défaussez-le.\n[reaction] Après que vous avez engagé un ennemi, dépensez 1 provision et inclinez l'Instinct du Chasseur : ajoutez à votre main un événement de niveau 0 de votre pile de défausse."
+  },
+  {
+    "code": "12075",
+    "flavor": "Dans les profondeurs de ses poches, on trouve souvent des choses qu'on pensait avoir perdues."
+  },
+  {
+    "code": "12077",
+    "name": "Couperet",
+    "text": "[action]: <b>Combattre</b> ([combat]). Vous gagnez +1 [combat] pour cette attaque (+2 [combat] à la place si votre santé mentale restante est de 3 ou moins). Si un ennemi est vaincu par cette attaque, vous avez le droit de soigner 1 horreur.\n[reaction] Quand vous déclenchez la capacité [action] ci-dessus, subissez 1 horreur : cette attaque inflige +1 dégât.",
+    "traits": "Objet. Arme. Corps-à-corps.",
+    "slot": "Main"
+  },
+  {
+    "code": "12078",
+    "name": "« Regardez ce que j'ai Trouvé »",
+    "traits": "Chance."
+  },
+  {
+    "code": "12079",
+    "text": "<b>Échapper à</b> ([agility]). En cas de réussite, infligez 1 dégât à l'ennemi auquel vous venez d'échapper. En cas d'échec, renvoyez « Dégage ! » dans votre main à la fin de votre tour."
+  },
+  {
+    "code": "12080",
+    "text": "Si ce test de compétence est réussi lors d'une évasion face à un ennemi non-[[Élite]], cet ennemi ne se redresse pas pendant la prochaine phase d'Entretien."
+  },
+  {
+    "code": "12087",
+    "slot": "Tête"
+  },
+  {
+    "code": "12088",
+    "flavor": "Fonctionne dans toutes les situations et les piles ne s'épuisent jamais ! —Catalogue de Schoffner, ed. Printemps 1927"
+  },
+  {
+    "code": "12090",
+    "name": "Cran",
+    "traits": "Inné."
+  },
+  {
+    "code": "12091",
+    "name": "Dextérité",
+    "text": "1 max. attribuée par test de compétence.\nSi ce test est réussi, l'investigateur qui effectue ce test pioche 1 carte.",
+    "traits": "Inné.",
+    "flavor": "Tout réside dans l'art de faire comme si c'était trop facile."
+  },
+  {
+    "code": "12092",
+    "name": "Maîtrise",
+    "traits": "Entraîné."
+  },
+  {
+    "code": "12093",
+    "traits": "Entraîné.",
+    "flavor": "Enfin, je l'ai trouvé !"
+  },
+  {
+    "code": "12094",
+    "name": "Courage Inattendu",
+    "text": "1 max. attribuée par test de compétence.",
+    "traits": "Inné."
+  },
+  {
+    "code": "12095",
+    "flavor": "Quand vous vous montrez charmant,\nvous pouvez galvaniser la terre entière."
+  },
+  {
+    "code": "12097",
+    "flavor": "Attendez... où suis-je ? Qu'étais-je en train de faire ?"
+  },
+  {
+    "code": "12098",
+    "text": "<b>Révélation</b> – Mettez en jeu Le Scarabée d'Or dans votre zone de menace. Il ne peut pas quitter le jeu sauf par la capacité [action] ci-dessous.\nVous avez -1 vie et -1 santé mentale.\n[action]: mélangez Le Scarabée d'Or dans votre deck."
+  },
+  {
+    "code": "12099",
+    "text": "Distant.\n<b>Génération</b> – Lieu vide le plus éloigné.\n<b>Forcé</b> – Quand la phase d'Investigation se termine, si Le Rôdeur Sans Nom est redressé et n'a pas de fatalité sur lui : placez 1 fatalité sur lui."
+  },
+  {
+    "code": "12100",
+    "name": "Trop Zélé",
+    "text": "<b>Révélation</b> – Piochez la carte du dessus du deck de rencontre. Cette carte gagne Renfort.",
+    "traits": "Défaut."
+  },
+  {
+    "code": "12101",
+    "name": "Paranoïa",
+    "text": "<b>Révélation</b> – Perdez toutes vos ressources.",
+    "traits": "Folie.",
+    "flavor": "C'était quoi ce bruit ?"
+  },
+  {
+    "code": "12102",
+    "text": "<b>Révélation</b> – Mettez en jeu Poursuivi dans votre zone de menace.\n<b>Forcé</b> – Après qu'un ennemi est entré dans votre lieu <i>(en se déplaçant ou en étant généré)</i> : subissez 1 horreur.\n[action][action]: défaussez Poursuivi."
+  },
+  {
+    "code": "12103",
+    "text": "<b>Révélation</b> – Mettez en jeu Contrainte de la Pègre dans votre zone de menace.\n<b>Forcé</b> – Après que vous avez dépensé au moins 1 ressource : subissez 1 dégât.\n[action][action]: défaussez Contrainte de la Pègre."
+  },
+  {
+    "code": "12104",
+    "text": "<b>Révélation</b> – Mettez en jeu Blessé dans votre zone de menace.\n<b>Forcé</b> – La première fois que vous vous déplacez à chaque tour : subissez 1 dégât.\n[action][action]: défaussez Blessé."
+  },
+  {
+    "code": "12105",
+    "name": "Les Flammes s'Étendent",
+    "text": "<b>FACILE / STANDARD</b>\n[skull] –X. X est le numéro de l'acte en cours.\n[tablet] –1. Révélez un autre pion. En cas d'échec, subissez 1 dégât.\n[elder_thing] –3. En cas d'échec avec une différence de 2 ou plus, piochez l'exemplaire d'Au Feu ! le plus proche du sommet de la pile de défausse Rencontre, si possible.",
+    "back_text": "<b>DIFFICILE / EXPERT</b>\n[skull] –X. X est le numéro de l'acte en cours plus 1.\n[tablet] –2. Révélez un autre pion. En cas d'échec, subissez 1 dégât.\n[elder_thing] –4. En cas d'échec, piochez l'exemplaire d'Au Feu ! le plus proche du sommet de la pile de défausse Rencontre, si possible."
+  },
+  {
+    "code": "12106",
+    "name": "Après le Couvre-Feu",
+    "text": "[action] : <b>Discussion</b>. Effectuez un test de [intellect] (2). En cas de réussite, défaussez un ennemi [[Témoin]] dans votre lieu.",
+    "flavor": "Le campus est étrangement silencieux et vous ne voyez aucun signe de votre ami. Des silhouettes encapuchonnées traversent la cour pendant que des étudiants nerveux se précipitent sous la lumière particulièrement crue des réverbères.",
+    "back_text": "Dans l'ordre des joueurs, chaque investigateur effectue un test de [willpower] (3). Chaque investigateur qui échoue subit 1 horreur.",
+    "back_flavor": "Le vent emporte l'odeur de la fumée de l'autre côté du campus. Une colonne de flammes s'élève d'un bâtiment."
+  },
+  {
+    "code": "12107",
+    "name": "Embrasement",
+    "text": "[action] : <b>Discussion</b>. Effectuez un test de [intellect] (2). En cas de réussite, défaussez un ennemi [[Témoin]] dans votre lieu.",
+    "flavor": "Le ciel luit d'une teinte orangée à mesure que les flammes s'étendent.",
+    "back_text": "S'ils sont toujours mis de côté, placez 4 exemplaires d'Au Feu ! dans la pile de défausse Rencontre.\nDans l'ordre des joueurs, chaque investigateur effectue un test de [agility] (3). Chaque investigateur qui échoue subit 1 dégât.",
+    "back_flavor": "Le vent charrie des cendres au-dessus de l'Université Miskatonic. La plainte lancinante d'une alarme incendie résonne dans toute la cour pendant que des douzaines d'étudiants effrayés fuient les lieux."
+  },
+  {
+    "code": "12108",
+    "name": "Flammes Dévorantes",
+    "text": "[action] : <b>Discussion</b>. Effectuez un test de [intellect] (2). En cas de réussite, défaussez un ennemi [[Témoin]] dans votre lieu.\n<b>Forcé</b> – Après que de la fatalité a été placée sur l'intrigue : l'investigateur principal pioche l'exemplaire d'Au Feu ! le plus proche du sommet de la pile de défausse Rencontre.",
+    "flavor": "Le campus est la proie des flammes !",
+    "back_text": "Chaque investigateur survivant qui n'a pas abandonné est vaincu et subit 1 traumatisme physique.",
+    "back_flavor": "Une épaisse fumée noire emplit l'air autour de vous et vous tombez à genoux en toussant. Des formes sombres et floues se déplacent quelque part au-delà des flammes rugissantes. Vous avez beau essayer, vous ne parvenez pas à vous mettre à l'abri. Votre vision se trouble et vous perdez conscience."
+  },
+  {
+    "code": "12109",
+    "name": "Pas de Fumée...",
+    "text": "<b>Objectif</b> – À la fin du round, les investigateurs ont le droit de dépenser collectivement le nombre requis d'indices pour avancer.",
+    "flavor": "Vous fouillez les dortoirs à la recherche d'un signe de votre ami.",
+    "back_text": "Défaussez chaque ennemi en jeu.\nMettez en jeu les lieux mis de côté Dortoirs et Cour de l'Université. Générez dans les Dortoirs le Serviteur de la Flamme mis de côté.\nAttachez 1 exemplaire mis de côté d'Au Feu ! à La Chambre de Votre Ami. Placez chaque autre exemplaire mis de côté d'Au Feu ! dans la pile de défausse Rencontre.",
+    "back_flavor": "Vous trouvez la sacoche de votre ami, marquée d'un emblème stylisé représentant une paume ouverte. Où que soit votre ami, vous imaginez qu'il n'y est pas allé de son plein gré. Alors que vous vous apprêtez à partir, vous êtes confronté à un personnage masqué couvert de flammes. La pièce s'embrase autour de vous, lorsque cette étrange apparition pousse un hurlement à glacer le sang."
+  },
+  {
+    "code": "12110",
+    "name": "Fuir les Dortoirs",
+    "text": "<b>Objectif</b> – Si chaque investigateur qui n'a pas été vaincu est dans la Cour de l'Université, avancez. (Conseil : parfois, il vaut mieux prendre ses jambes à son cou plutôt que de se battre !)",
+    "flavor": "Une apparition incandescente se tient entre vous et la sortie. Vous devez vous échapper des dortoirs !",
+    "back_text": "Cherchez le Serviteur de la Flamme dans toutes les zones en jeu et hors-jeu, soignez-le de tous ses dégâts et mettez-le de côté, hors-jeu.\nDéfaussez chaque ennemi en jeu.\nDéfaussez tous les pions et attachements de La Chambre de Votre Ami et retirez-la de la partie. Mettez en jeu chaque lieu mis de côté restant (Bibliothèque Orne, Quartier des Sciences, Observatoire Warren).",
+    "back_flavor": "Vous émergez des dortoirs dans la fraîcheur du soir d'automne, les poumons en feu. En regardant derrière vous, vous ne voyez aucune trace de votre poursuivant. Vous vous souvenez que votre ami avait prévu de rendre visite au bibliothécaire en chef de l'Université de Miskatonic, le Dr Henry Armitage. Il sera peut-être capable de vous aider à comprendre ce qui est à l'œuvre."
+  },
+  {
+    "code": "12111",
+    "name": "À la Recherche du Dr Armitage",
+    "text": "<b>Objectif</b> – À la fin du round, les investigateurs dans la Bibliothèque Orne ont le droit de dépenser collectivement le nombre requis d'indices pour avancer.",
+    "flavor": "Votre ami souhaitait rendre visite au bibliothécaire en chef, le Dr Henry Armitage. Des personnages étranges envahissent le campus, toujours plus nombreux, vous devez absolument trouver Armitage.",
+    "back_text": "Mettez en jeu le soutien d'histoire Dr Henry Armitage mis de côté, sous le contrôle de n'importe quel investigateur. Il n'occupe pas d'emplacement d'allié pendant ce scénario.\nMettez en jeu dans la Cour de l'Université le Serviteur de la Flamme mis de côté. Placez 3 [per_investigator] indices sur la Cour de l'Université.\nL'investigateur principal doit chercher 1 [per_investigator] exemplaire d'Au Feu ! dans le deck Rencontre et/ou la pile de défausse Rencontre et les piocher. (Mélangez le deck Rencontre s'il a été consulté.)",
+    "back_flavor": "Vous trouvez le Dr Armitage barricadé dans l'une des salles de cours de la bibliothèque Orne.\n« Certaines personnes sur le campus agissent bizarrement ces derniers temps. Cela vaut pour votre ami. Mais tout cela peut attendre. Nous devons affronter votre poursuivant et l'arrêter avant que tout le campus ne soit réduit en cendres ! », déclare le Dr Armitage."
+  },
+  {
+    "code": "12112",
+    "name": "L'Enfer du Devoir",
+    "text": "[fast] Dépensez collectivement 1 [per_investigator] indice : infligez 1 [per_investigator] dégât à un ennemi dans votre lieu.\n[action] : <b>Abandon</b>. Vous fuyez l'incendie qui fait rage dans le campus. (Cette action ne provoque pas d'attaque d'opportunité.)\n<b>Objectif</b> – Si le Serviteur de la Flamme est vaincu : avancez.",
+    "flavor": "Il serait intolérable que votre ardente némésis fasse plus de victimes parmi des innocents ! Avec l'aide du Dr Armitage, vous parviendrez peut-être à l'arrêter.",
+    "back_text": "(→ <b>C1</b>) (page 4)",
+    "back_flavor": "Votre poursuivant cauchemardesque recule, en portant les mains à son visage, comme s'il essayait d'arracher son masque. Le bruit des sirènes au loin s'intensifie. Vous vous retournez pour voir un groupe d'étudiants terrifiés s'enfuir non loin de vous. Lorsque vous reportez votre attention sur votre ennemi incandescent, il s'est volatilisé."
+  },
+  {
+    "code": "12113",
+    "name": "La Chambre de Votre Ami",
+    "text": "[action] : <b>Engager</b>. Choisissez un ennemi dans un lieu connexe. Cet ennemi se déplace ici et vous engage. Cette action ne provoque pas d'attaque d'opportunité.",
+    "flavor": "Les dortoirs sont vite envahis par la fumée.",
+    "back_flavor": "La chambre de votre ami est dans un grand désordre. Devez-vous y voir un signe de fatigue ou les indices d'une lutte récente ?"
+  },
+  {
+    "code": "12114",
+    "name": "Serviteur de la Flamme",
+    "subname": "Rage Brûlante",
+    "text": "Chasseur. Proie ([agility] la plus faible).\nRiposte.",
+    "traits": "Humanoïde. Élite."
+  },
+  {
+    "code": "12115",
+    "name": "Dr Henry Armitage"
+  },
+  {
+    "code": "12116",
+    "name": "Cour de l'Université",
+    "text": "[fast] Lors de votre tour, s'il y a exactement 1 ou 2 investigateurs dans la partie : déplacez-vous vers un lieu connexe. (Limite collective d'une fois par round.)",
+    "back_flavor": "La Cour est au cœur de l'Université Miskatonic."
+  },
+  {
+    "code": "12117",
+    "name": "Dortoirs",
+    "text": "[action] : soignez 1 dégât et 1 horreur. (Limite d'une fois par partie.)",
+    "flavor": "On ne s'ennuie jamais dans les dortoirs de l'université.",
+    "back_flavor": "Récemment rénovés, les dortoirs disposent des meilleures commodités modernes, notamment l'air conditionné, des toilettes à chasse d'eau et une glacière commune."
+  },
+  {
+    "code": "12118",
+    "name": "Quartier des Sciences",
+    "text": "<b>Forcé</b> – Après que vous avez découvert au moins 1 indice dans ce lieu : choisissez et défaussez 1 carte de votre main.",
+    "flavor": "Les étudiants s'attendent rarement à ce qu'ils sont sur le point de découvrir sous leur microscope.",
+    "back_flavor": "La construction du Mémorial Occidental du Quartier des Sciences, à l'extrémité nord du campus est pour le moins déroutante. Cependant, les étudiants sont plus que satisfaits des installations modernes et de l'équipement scientifique de pointe."
+  },
+  {
+    "code": "12119",
+    "name": "Observatoire Warren",
+    "text": "[reaction] Après que vous avez découvert au moins 1 indice dans ce lieu : piochez 1 carte. (Limite d'une fois par round.)",
+    "flavor": "À ce jour, les astronomes de Miskatonic ont identifié au moins 15 étoiles différentes qui semblent avoir disparu de l'Hémisphère Nord.",
+    "back_flavor": "Une généreuse subvention de l'entreprise Tillinghast a permis à l'université de rouvrir l'observatoire historique, avec plus d'espace et de meilleurs équipements."
+  },
+  {
+    "code": "12120",
+    "name": "Bibliothèque Orne",
+    "text": "[action] [action] : piochez 3 cartes. (Limite d'une fois par partie.)",
+    "flavor": "Des étudiants ont signalé des bruits étranges la nuit provenant des archives inoccupées...",
+    "back_flavor": "Depuis l'inondation, les responsables de la Bibliothèque Orne ont pris des mesures majeures en déménageant les archives du sous-sol et en cherchant à étanchéifier le bâtiment."
+  },
+  {
+    "code": "12121",
+    "name": "Cantor de la Flamme",
+    "text": "Riposte.",
+    "traits": "Humanoïde. Cultiste.",
+    "flavor": "« Par la flamme, par la lame, dans l'ombre et dans le sang / Notre reine renaît, du déluge, survivant. »\n— Édit des Cendres, Vol XIX"
+  },
+  {
+    "code": "12122",
+    "name": "Molosse Infernal",
+    "text": "Chasseur.\n<b>Forcé</b> – Après que le Molosse Infernal vous a attaqué pendant la phase des Ennemis : choisissez et défaussez 1 soutien que vous contrôlez.",
+    "traits": "Créature. Monstre."
+  },
+  {
+    "code": "12123",
+    "name": "Témoin",
+    "text": "Damné. (Quand cet ennemi est vaincu, placez 1 fatalité sur l'intrigue en cours. Cet effet peut faire avancer l'intrigue en cours).",
+    "traits": "Humanoïde. Civil.",
+    "flavor": "Ils sont toujours exactement là au mauvais endroit au mauvais moment."
+  },
+  {
+    "code": "12124",
+    "name": "Fléaux Cosmiques",
+    "text": "Péril.\n<b>Révélation</b> – Vous devez soit (choisir une option) :\n– Placer 1 fatalité sur l'intrigue en cours. Cet effet peut faire avancer l'intrigue en cours.\n– Subir 1 dégât direct et 1 horreur directe. Fléaux Cosmiques gagne Renfort.",
+    "traits": "Présage."
+  },
+  {
+    "code": "12125",
+    "name": "Vérités Indicibles",
+    "text": "<b>Révélation</b> – Mettez en jeu Vérités Indicibles dans votre zone de menace. Limite de 1 par investigateur.\n<b>Forcé</b> – Après que vous avez découvert au moins 1 indice : subissez 1 horreur.\n[action] [action] : défaussez Vérités Indicibles.",
+    "traits": "Terreur."
+  },
+  {
+    "code": "12126",
+    "name": "Secrets Interdits",
+    "text": "<b>Révélation</b> – Si vous n'avez pas d'indice, Secrets Interdits gagne Renfort. Sinon, effectuez un test de [intellect] (3). En cas d'échec, pour chaque point manquant vous devez soit placer 1 de vos indices sur votre lieu, soit subir 1 horreur.",
+    "traits": "Pacte.",
+    "flavor": "On dit souvent que la curiosité est un vilain défaut. Le défaut de trop ?"
+  },
+  {
+    "code": "12127",
+    "name": "Visions Extraplanaires",
+    "text": "<b>Révélation</b> – Effectuez un test de [willpower] ou de [intellect] (X), X étant le nombre de cartes dans votre main. En cas d'échec, subissez 1 dégât et défaussez 1 carte prise au hasard dans votre main.",
+    "traits": "Pouvoir."
+  },
+  {
+    "code": "12128",
+    "name": "Compulsion Incontrôlable",
+    "text": "<b>Révélation</b> – Effectuez un test de [willpower] (3). En cas d'échec, pour chaque point manquant vous devez soit défausser 1 carte prise au hasard dans votre main, soit perdre 1 ressource.",
+    "traits": "Folie. Fléau.",
+    "flavor": "« Que Dieu aide le rêveur qui aura ces visions folles lui montrant / Ces yeux morts figés en ces golfes de cristaux souterrains. »\n— H.P. Lovecraft, « Les Fungi de Yuggoth »"
+  },
+  {
+    "code": "12129",
+    "name": "Au Feu !",
+    "text": "<b>Révélation</b> – Attachez Au Feu ! au lieu le plus proche sans Au Feu ! attaché.\n<b>Forcé</b> – Quand la phase d'Investigation se termine : chaque carte non-[[Élite]] dans ce lieu ayant de la vie subit 1 dégât direct.\n[action] : effectuez un test de [agility] (3). En cas de réussite, défaussez Au Feu !.",
+    "traits": "Risque."
+  },
+  {
+    "code": "12130",
+    "name": "Fumée Nocive",
+    "text": "<b>Révélation</b> – Effectuez un test de [willpower] ou de [agility] (3). En cas d'échec, subissez 1 dégât pour chaque point manquant.",
+    "traits": "Risque.",
+    "flavor": "En général, il n'y a pas de fumée sans feu."
+  },
+  {
+    "code": "12131",
+    "name": "Des Mutations !",
+    "text": "<b>Révélation</b> – Effectuez un test de [willpower] (2). Augmentez de 2 la difficulté de ce test s'il y a un ennemi dans votre lieu. En cas d'échec, soit vous devez subir 2 dégâts, soit chaque investigateur dans votre lieu subit 1 horreur."
+  },
+  {
+    "code": "12132",
+    "name": "Cobaye en Mutation",
+    "text": "<b>Forcé</b> – Quand cet ennemi est vaincu : chaque investigateur dans son lieu subit 1 horreur.",
+    "traits": "Créature. Muté."
+  },
+  {
+    "code": "12133",
+    "name": "Une Vaste Fumisterie",
+    "text": "<b>FACILE / STANDARD</b>\n[skull] –X. X est le nombre total d'ennemis [[Élite]] dans la pile de victoire et sous l'acte.\n[cultist] –1. S'il s'agit d'un test ciblant un ennemi [[Élite]], révélez un autre pion.\n[tablet] –3. En cas d'échec, placez 1 de vos indices sur votre lieu.\n[elder_thing] –1 pour chaque indice que vous contrôlez.",
+    "back_text": "<b>DIFFICILE / EXPERT</b>\n[skull] –X. X est le nombre total d'ennemis [[Élite]] dans la pile de victoire et sous l'acte plus 2.\n[cultist] –3. S'il s'agit d'un test ciblant un ennemi [[Élite]], révélez un autre pion.\n[tablet] –4. En cas d'échec, placez 1 de vos indices sur votre lieu.\n[elder_thing] –2 pour chaque indice que vous contrôlez."
+  },
+  {
+    "code": "12134",
+    "name": "La Vie à Arkham",
+    "text": "[action] : <b>Abandon</b>. Vous rentrez voir le Dr Armitage pour lui faire part de vos réflexions.",
+    "flavor": "Une brume anormale envahit les rues d'Arkham. Certains habitants affirment que les collines à l'ouest brûlent. Malgré la fraîcheur de l'automne, les rues de la ville sont anormalement chaudes à la tombée de la nuit.",
+    "back_text": "L'un après l'autre, chaque investigateur pioche 1 exemplaire de la faiblesse Marque d'Elokoss mise de côté. Chaque investigateur est maintenant détenteur de cette faiblesse. (Ajoutez-la au deck de l'investigateur, en ignorant les restrictions du deck. Elle ne compte pas dans la taille du deck de cet investigateur.)",
+    "back_flavor": "Votre bras vous démange. Vous avez fait de votre mieux pour l'ignorer, mais cela devient insupportable. En tirant sur votre manche, vous découvrez une zone grise qui pèle. Avec précaution, vous grattez la peau morte pour révéler une cicatrice lisse, comme si vous aviez été marqué au fer rouge. La cicatrice ressemble à une main dans laquelle est inséré un œil grand ouvert. La toucher vous procure une sensation de chaleur et d'ivresse, comme si vous étiez en état d'ébriété."
+  },
+  {
+    "code": "12135",
+    "name": "Le Mal Afflue",
+    "text": "[action] : <b>Abandon</b>. Vous rentrez voir le Dr Armitage pour lui faire part de vos réflexions.",
+    "flavor": "De la vapeur s'échappe de la chaussée humide, comme si le sol sous la rue était en train de brûler.",
+    "back_text": "Chaque investigateur abandonne immédiatement.",
+    "back_flavor": "Vous consultez votre montre et réalisez qu'il est déjà 11 heures et demie. En jurant, vous hélez un taxi pour vous rendre dans le Quartier Est."
+  },
+  {
+    "code": "12136",
+    "name": "Présages des Flammes",
+    "text": "[action] Dépensez collectivement 2 [per_investigator] indices : piochez la carte face cachée sous votre lieu.\n<b>Objectif</b> – S'il y a un total de 6 ennemis [[Élite]] dans la pile de victoire et/ou sous l'acte, avancez. (Conseil : vainquez les suspects par la force ou bien résolvez leurs entrées du codex pour obtenir des pistes pour votre enquête !)",
+    "flavor": "Vous devez retrouver les suspects qui figurent sur la liste de votre ami.",
+    "back_text": "(→ <b>C1</b>) (page 10)",
+    "back_flavor": "Vos recherches ont donné des résultats intéressants. Avec tout ce que vous avez appris, vous et le Dr Armitage devriez avoir assez d'indices pour retrouver votre ami. Vous hélez un taxi pour retourner au Quartier Est, afin de discuter de vos découvertes."
+  },
+  {
+    "code": "12137",
+    "text": "<b>Révélation</b> – Mettez en jeu la Marque d'Elokoss dans votre zone de menace.\n<b>Forcé</b> – Quand votre tour se termine : subissez 1 dégât. Assignez ces dégâts à un soutien que vous contrôlez, si possible.\n[action] [action] : défaussez la Marque d'Elokoss.",
+    "traits": "Malédiction."
+  },
+  {
+    "code": "12138",
+    "name": "Serviteur de la Flamme",
+    "subname": "En Fuite",
+    "text": "Furtif. Chasseur. Riposte.\n<b>Forcé</b> – Quand le Serviteur de la Flamme est vaincu : ([codex] Φ).",
+    "traits": "Humanoïde. Cultiste. Élite."
+  },
+  {
+    "code": "12139",
+    "subname": "Eschatologue Désabusé",
+    "text": "Distant. (Cet ennemi n'engage pas automatiquement les investigateurs dans son lieu.)\n[reaction] Après que vous avez enquêté avec succès dans le lieu de David Renfield : ([codex] 1).",
+    "traits": "Humanoïde. Crépuscule d'Argent. Élite."
+  },
+  {
+    "code": "12140",
+    "subname": "Superviseuse Épuisée",
+    "text": "Alerte. (Après avoir échoué à un test de compétence lorsque vous tentez d'échapper à cet ennemi, il vous attaque.)\n[reaction] Après que vous avez échappé à Cornelia Akely avec succès : redressez-la. ([codex] 2).",
+    "traits": "Humanoïde. Travailleur. Élite."
+  },
+  {
+    "code": "12141",
+    "subname": "Fait Tourner cette Ville",
+    "text": "Riposte. (Après avoir échoué à un test de compétence lorsque vous combattez cet ennemi, il vous attaque.)\n[action] Dépensez 1 [per_investigator] ressource : <b>Discussion</b>. ([codex] 3).",
+    "traits": "Humanoïde. Syndicat. Élite."
+  },
+  {
+    "code": "12142",
+    "name": "Sgt Earl Monroe",
+    "subname": "Flic Véreux",
+    "text": "Furtif. (Après que cet ennemi a attaqué ou a été attaqué alors qu'il était redressé, il se déplace vers un lieu connexe sans investigateur dedans et s'incline.)\n[action] : <b>Discussion</b>. Effectuez un test de [combat] (4). Diminuez de 1 la difficulté de ce test pour chaque dégât sur le Sgt Earl Monroe. En cas de réussite, ([codex] 4).",
+    "traits": "Humanoïde. Police. Élite."
+  },
+  {
+    "code": "12143",
+    "subname": "Bibliothécaire Méfiante",
+    "text": "Distant. (Cet ennemi n'engage pas automatiquement les investigateurs dans son lieu.)\n[action] : <b>Discussion</b>. Effectuez un test de [intellect] (X), X étant le nombre d'indices sur le lieu d'Abigail Foreman. En cas de réussite, placez 1 indice (pris dans la réserve de pions) sur le lieu d'Abigail Foreman. ([codex] 5).",
+    "traits": "Humanoïde. Miskatonic. Élite."
+  },
+  {
+    "code": "12144",
+    "subname": "Chanteuse de Salon Séduisante",
+    "text": "Distant. (Cet ennemi n'engage pas automatiquement les investigateurs dans son lieu.)\n[reaction] Après que vous avez réussi un test de compétence avec une différence de 2 ou plus dans le lieu de Margaret Liu : ([codex] 6).",
+    "traits": "Humanoïde. Mondain. Élite."
+  },
+  {
+    "code": "12145",
+    "name": "Centre-Ville",
+    "subname": "Banque Principale d'Arkham",
+    "text": "[reaction] Après que vous avez découvert au moins 1 indice dans ce lieu : gagnez 1 ressource.",
+    "flavor": "Il est assez facile de contracter un prêt auprès de la Banque Principale d'Arkham, mais n'oubliez pas de lire les petits caractères...",
+    "back_flavor": "La nuit n'est jamais calme dans le centre-ville. Le quartier le plus animé d'Arkham abrite de nouveaux théâtres prestigieux, des hôtels, des gratte-ciels et les meilleurs restaurants de tout le Massachusetts (c'est du moins ce que l'on dit)."
+  },
+  {
+    "code": "12146",
+    "name": "Centre-Ville",
+    "subname": "Sanatorium d'Arkham",
+    "text": "[reaction] Après que vous avez découvert au moins 1 indice dans ce lieu : soignez 1 horreur d'un investigateur ou d'un soutien [[Allié]] dans ce lieu.",
+    "flavor": "Bien sûr, personne ne parle jamais du sanatorium.",
+    "back_flavor": "La nuit n'est jamais calme dans le centre-ville. Le quartier le plus animé d'Arkham abrite de nouveaux théâtres prestigieux, des hôtels, des gratte-ciels et les meilleurs restaurants de tout le Massachusetts (c'est du moins ce que l'on dit)."
+  },
+  {
+    "code": "12147",
+    "name": "Quartier Résidentiel",
+    "subname": "Hôpital St. Mary",
+    "text": "[action] : soignez jusqu'à un total de 2 dégâts répartis entre des investigateurs et/ou soutiens [[Allié]] dans ce lieu. (Limite d'une fois par partie.)",
+    "flavor": "Le seul hôpital d'Arkham déborde de patients et d'infirmières surmenées.",
+    "back_flavor": "Le quartier le plus récent d'Arkham regorge de boutiques à la mode.\nPartout on entend de la musique jazz entraînante qui séduit une population croissante d'étudiants et de jeunes nouveaux arrivants."
+  },
+  {
+    "code": "12148",
+    "name": "Quartier Résidentiel",
+    "subname": "L'Antyque Échoppe de Magye",
+    "text": "[action] Cherchez un soutien [[Sort]] ou [[Rituel]] parmi les 9 cartes du dessus de votre deck et ajoutez-le à votre main. Mélangez votre deck. Si aucune carte n'a été ajoutée par cet effet, piochez 1 carte.",
+    "flavor": "« Venez à l'Antyque Échoppe de Magye pour découvrir les miracles de la VRAIE magie. Prestidigitateurs d'opérette, s'abstenir. »\n— Publicité Locale",
+    "back_flavor": "Le quartier le plus récent d'Arkham regorge de boutiques à la mode.\nPartout on entend de la musique jazz entraînante qui séduit une population croissante d'étudiants et de jeunes nouveaux arrivants."
+  },
+  {
+    "code": "12149",
+    "name": "Quartier Nord",
+    "text": "[action] Dépensez 5 ressources : découvrez 1 indice dans n'importe quel lieu [[Arkham]] révélé. (Limite d'une fois par round.)",
+    "back_flavor": "Le Quartier Nord est un centre industriel qui abrite des usines modernes, des logements bon marché pour les travailleurs migrants, et l'Arkham Advertiser récemment restauré."
+  },
+  {
+    "code": "12150",
+    "name": "Quartier Est",
+    "text": "[reaction] Après que vous avez découvert le dernier indice du Quartier Est : cherchez un soutien [[Allié]] dans votre deck et jouez-le (en payant son coût). Mélangez votre deck. (Limite d'une fois par partie.)",
+    "back_flavor": "Le Quartier Est est le plus ancien d'Arkham, et il n'a pas bien vieilli. Hibb's Roadhouse et le Restaurant de Velma sont des établissements très fréquentés, mais les nouveaux arrivants ne trouvent pas grand-chose d'autre à leur goût."
+  },
+  {
+    "code": "12151",
+    "name": "Quartier Marchand",
+    "text": "[fast] Lors de votre tour, s'il y a exactement 1 ou 2 investigateurs dans la partie : déplacez-vous vers un lieu connexe. (Limite d'une fois par round.)",
+    "back_flavor": "Depuis l'inondation, le Quartier Marchand est devenu le centre névralgique des affaires et du développement d'Arkham. Tous les jours, il semble accueillir plus d'ouvriers, de constructions et d'industries."
+  },
+  {
+    "code": "12152",
+    "name": "Quartier du Front de Mer",
+    "text": "En tant que coût supplémentaire pour enquêter dans le Quartier du Front de Mer, vous devez dépenser 1 action.",
+    "flavor": "Si vous ne souhaitez pas avancer avec de l'eau jusqu'à la taille, vous aurez besoin d'embarquer avec un des résidents du coin.",
+    "back_flavor": "Les rues de l'ancien Quartier de la Rivière sont perpétuellement inondées, ce qui lui donne des allures de ville fantôme. Seules de mornes usines, et leurs imposantes fondations cimentées, parviennent à émerger entre les bicoques détrempées."
+  },
+  {
+    "code": "12153",
+    "name": "Quartier Sud",
+    "text": "[action] [action] : les investigateurs dans ce lieu piochent au total 3 cartes, réparties comme ils le souhaitent. (Limite collective d'une fois par round.)",
+    "back_flavor": "Situé sur le versant sud de French Hill, le Quartier Sud est sans doute le faubourg le plus accueillant et le plus calme d'Arkham."
+  },
+  {
+    "code": "12154",
+    "text": "[action] Choisissez et défaussez 1 carte de votre main : placez 1 charge ou 1 secret sur un soutien que vous contrôlez. (Limite d'une fois par round.)",
+    "back_flavor": "Les majestueuses demeures de French Hill sont tombées en ruines au fur et à mesure que les vieilles familles s'éteignaient."
+  },
+  {
+    "code": "12155",
+    "name": "Université Miskatonic",
+    "subname": "En Flammes",
+    "text": "<b>Forcé</b> – Quand la phase d'Investigation se termine : infligez 1 dégât direct à chaque carte Joueur ayant de la vie qui se trouve dans l'Université Miskatonic.",
+    "back_flavor": "L'Université Miskatonic d'Arkham est souvent l'objet de rumeurs et de commérages. Les archives privées de l'université suscitent toujours un grand intérêt et le campus résonne de bavardages concernant les étranges découvertes de sa curieuse faculté."
+  },
+  {
+    "code": "12156",
+    "name": "Université Miskatonic",
+    "subname": "Campus Silencieux",
+    "text": "[action] : jouez un soutien [[Livre]] ou [[Sort]] de votre pile de défausse, en réduisant de 2 son coût. (Limite d'une fois par partie.)",
+    "back_flavor": "L'Université Miskatonic d'Arkham est souvent l'objet de rumeurs et de commérages. Les archives privées de l'université suscitent toujours un grand intérêt et le campus résonne de bavardages concernant les étranges découvertes de sa curieuse faculté."
+  },
+  {
+    "code": "12157",
+    "name": "Verrou Ésotérique",
+    "text": "<b>Révélation</b> – Attachez le Verrou Ésotérique à votre lieu. Limite de 1 par lieu.\nEn tant que coût supplémentaire pour entrer ou sortir du lieu attaché, vous devez dépenser 1 action.\n[action] : effectuez un test de [willpower] ou de [intellect] (4). En cas de réussite, défaussez le Verrou Ésotérique.",
+    "traits": "Sortilège. Obstacle."
+  },
+  {
+    "code": "12158",
+    "name": "Pluie Torrentielle",
+    "text": "<b>Révélation</b> – Effectuez un test de [agility] (3). En cas d'échec, pour chaque point manquant vous devez soit perdre 1 action, soit placer 1 de vos indices dans votre lieu.",
+    "traits": "Risque.",
+    "flavor": "« ... la pluie torrentielle s'abattit si abondamment qu'elle forma un rideau aveuglant, si bien que trouver un refuge devint impératif. »\n— H.P. Lovecraft, « La Peur qui rôde »"
+  },
+  {
+    "code": "12159",
+    "name": "Inondation Soudaine",
+    "text": "<b>Révélation</b> – Attachez Inondation Soudaine à votre lieu.\nLe lieu attaché gagne +4 de valeur occulte.\n<b>Forcé</b> – Quand le round se termine : défaussez Inondation Soudaine.",
+    "traits": "Risque."
+  },
+  {
+    "code": "12160",
+    "name": "Susciter la Suspicion",
+    "text": "<b>Révélation</b> – Placez 1 fatalité sur l'ennemi le plus proche sans fatalité sur lui. Si aucune fatalité n'a été placée par cet effet, Susciter la Suspicion gagne Renfort.",
+    "traits": "Bévue.",
+    "flavor": "Au moins, vous avez essayé d'être discret."
+  },
+  {
+    "code": "12161",
+    "name": "Mauvaise Piste",
+    "text": "<b>Révélation</b> – Effectuez un test de [intellect] (2). Augmentez de 2 la difficulté de ce test si vous contrôlez au moins 2 indices. En cas d'échec, subissez 1 horreur et placez 1 de vos indices dans votre lieu.",
+    "traits": "Manigance."
+  },
+  {
+    "code": "12162",
+    "name": "Horrible Chauve-Souris",
+    "text": "Furtif. Chasseur.",
+    "traits": "Monstre.",
+    "flavor": "« ...une horde de choses ailées apprivoisées, entraînées, hybrides, flottait en rythme, sans qu'aucun œil valide ne puisse jamais en saisir entièrement la nature, ni aucun cerveau sain s'en souvenir complètement. »\n— H.P. Lovecraft, « Le Festival »"
+  },
+  {
+    "code": "12163",
+    "name": "Poursuite Aérienne",
+    "text": "Renfort.\n<b>Révélation</b> – L'ennemi non-[[Élite]] le plus proche se déplace une fois en direction de votre lieu. S'il engage un investigateur, il effectue immédiatement une attaque.",
+    "traits": "Manigance."
+  },
+  {
+    "code": "12164",
+    "name": "Gangster Mal Intentionné",
+    "text": "Chasseur. Proie (le plus de ressources).\nRiposte.\n<b>Forcé</b> – Après que le Gangster Mal Intentionné vous a engagé : perdez 1 ressource. Si vous ne le pouvez pas, cet ennemi vous attaque.",
+    "traits": "Humanoïde. Syndicat."
+  },
+  {
+    "code": "12165",
+    "name": "Fusillade",
+    "text": "<b>Révélation</b> – Effectuez un test de [agility] (3). En cas d'échec, chaque investigateur dans votre lieu subit 1 dégât.",
+    "traits": "Risque.",
+    "flavor": "« Baissez-vous ! »"
+  },
+  {
+    "code": "12166",
+    "name": "Engoulevent",
+    "text": "Distant. Chasseur.\nChaque investigateur dans le lieu de l'Engoulevent perd –1 [willpower], –1 [intellect], –1 [combat] et –1 [agility].",
+    "traits": "Créature.",
+    "flavor": "« On assure que ces oiseaux sont des psychopompes qui guettent les âmes des mourants... »\n— H. P. Lovecraft, « L'Abomination de Dunwich »"
+  },
+  {
+    "code": "12167",
+    "name": "Avides de Mort",
+    "text": "<b>Révélation</b> – Effectuez un test de [willpower] (2). Augmentez de 1 la difficulté de ce test pour chaque dégât sur vous. En cas d'échec, subissez 2 horreurs.",
+    "traits": "Présage.",
+    "flavor": "« S'ils parviennent à saisir l'âme fugitive au moment où elle quitte le corps, ils s'envolent aussitôt dans un caquetage de rires démoniaques... »\n— H. P. Lovecraft, « L'Abomination de Dunwich »"
+  },
+  {
+    "code": "12168",
+    "name": "La Reine des Cendres",
+    "text": "<b>FACILE / STANDARD</b>\n[skull] –X. X est le nombre de traîtrises Au Feu ! en jeu.\n[cultist] –2. S'il s'agit d'une attaque ou d'une tentative d'évasion ciblant un ennemi [[Cultiste]], révélez un autre pion.\n[tablet] –2 (–4 à la place si vous êtes dans un lieu [[Site du Rituel]]).\n[elder_thing] –3. En cas d'échec, piochez l'exemplaire d'Au Feu ! le plus proche du sommet de la pile de défausse Rencontre.",
+    "back_text": "<b>DIFFICILE / EXPERT</b>\n[skull] –X. X est le nombre de traîtrises Au Feu ! en jeu multiplié par 2.\n[cultist] –3. S'il s'agit d'une attaque ou d'une tentative d'évasion ciblant un ennemi [[Cultiste]], révélez un autre pion.\n[tablet] –4. Si vous êtes dans un lieu [[Site du Rituel]], vous échouez automatiquement à la place.\n[elder_thing] –5. En cas d'échec, piochez l'exemplaire d'Au Feu ! le plus proche du sommet de la pile de défausse Rencontre."
+  },
+  {
+    "code": "12169",
+    "name": "Un Rassemblement",
+    "text": "Aucun ennemi dans un lieu ayant un exemplaire d'Au Feu ! attaché ne peut subir de dégâts.",
+    "flavor": "Vous entendez l'écho des prières qui se répercute à travers les tunnels fétides. La renaissance du culte est à l'œuvre !",
+    "back_text": "Si l'ennemi Serviteur de la Flamme est mis de côté, générez-le dans la Citerne Souterraine.\nChaque investigateur doit effectuer un test de [willpower] (4). Chaque investigateur qui échoue subit 1 horreur directe.",
+    "back_flavor": "Quelque part, dans les entrailles de la ville, une flamme ardente gagne en intensité. Ceux qui portent la marque de la reine s'élèvent pour annoncer son retour."
+  },
+  {
+    "code": "12170",
+    "name": "Un Rituel",
+    "text": "Aucun ennemi dans un lieu ayant un exemplaire d'Au Feu ! attaché ne peut subir de dégâts.",
+    "flavor": "L'air est saturé de fumées empoisonnées et les prières gagnent en intensité.",
+    "back_text": "<b>Si c'est l'Acte 1 :</b>\nDes flammes dévorantes courent dans les tunnels, et les prières s'élèvent de plus en plus distinctement. Vous arrivez trop tard pour interrompre l'invocation.\nRévélez la Citerne Souterraine et générez-y Elokoss, face (Mère de la Flamme) visible. Remplacez l'acte et l'intrigue en cours par l'intrigue spéciale 3a : Fraternité des Cendres. C'est à la fois l'acte en cours et l'intrigue en cours.\n<b>Sinon :</b>\nL'antique reine des cendres s'éveille en poussant un horrible mugissement.\nRetournez Elokoss pour que sa face (Mère de la Flamme) soit visible, en conservant tous les dégâts et attachements sur elle.\nRemplacez l'acte et l'intrigue en cours par l'intrigue spéciale 3a : Fraternité des Cendres. C'est à la fois l'acte en cours et l'intrigue en cours."
+  },
+  {
+    "code": "12171",
+    "name": "Fraternité des Cendres",
+    "text": "<b>Forcé</b> – Quand de la fatalité est censée être placée sur une carte : chaque investigateur subit 1 dégât direct, à la place.\n<b>Forcé</b> – Si tous les investigateurs sont vaincus : avancez.\n<b>Objectif</b> – Si Elokoss est vaincue, (→ <b>C1</b>) (page 13).",
+    "back_text": "Chaque investigateur est <b>tué</b>.",
+    "back_flavor": "Une main noueuse, aux doigts crochus attrape votre bras, bientôt suivie d'une douzaine d'autres qui s'enroulent autour de vous pour vous étreindre. Leur contact est brûlant. Vous hurlez lorsqu'une mâchoire horrible et couverte de crocs s'ouvre dans le ventre d'Elokoss.\n« Ne t'inquiète pas. Elle souhaite seulement t'honorer », commente une voix familière.\nVous regardez derrière vous et réalisez que votre ami est vêtu de la même robe noire et rouge que le reste de la Fraternité des Cendres. Il vous adresse un large sourire lorsque des flammes émergent de la bouche brûlante pour vous envelopper comme un cocon de feu. La poitrine d'Elokoss est une fournaise chauffée à blanc lorsque vous êtes entraîné à l'intérieur.\nLa dernière chose que vous entendez est la voix de votre ami, et celle des autres membres du culte, chantant un hymne dissonant et entêtant pour célébrer votre renaissance."
+  },
+  {
+    "code": "12172",
+    "name": "Fouiller les Égouts",
+    "text": "<b>Objectif</b> – Quand un investigateur entre dans la Citerne Souterraine, avancez.",
+    "flavor": "La Fraternité des Cendres pourrait être n'importe où. Si vous souhaitez sauver votre ami, vous devez fouiller les égouts à la recherche du site où se déroule leur rituel.",
+    "back_text": "Générez dans la Citerne Souterraine l'ennemi Elokoss mis de côté, face (Braises Hésitantes) visible.\nL'investigateur dans la Citerne Souterraine pioche une des traîtrises Au Feu ! mises de côté.\nMélangez chaque autre exemplaire d'Au Feu ! dans le deck Rencontre, ainsi que les ennemis mis de côté Chevalier de la Reine et Héraut de la Flamme.\nMettez en jeu le lieu Vannes de Contrôle mis de côté.",
+    "back_flavor": "Les prières vous mènent à travers un labyrinthe de tunnels jusqu'à une citerne asséchée. Plusieurs dizaines de silhouettes encapuchonnées sont agenouillées devant un arbre enflammé. Votre ami est parmi eux. Vous devez les arrêter avant qu'ils ne se sacrifient pour Elokoss !"
+  },
+  {
+    "code": "12173",
+    "name": "Mettre Fin au Rituel",
+    "text": "[fast] Dépensez collectivement 1 [per_investigator] indice : défaussez un exemplaire d'Au Feu ! dans votre lieu.\n<b>Forcé</b> – Quand le round se termine : chaque ennemi [[Cultiste]] se déplace une fois en direction de la Citerne Souterraine.\n<b>Objectif</b> – Si Elokoss est vaincue, avancez.",
+    "flavor": "Vous devez interrompre le rituel à n'importe quel prix. Vous pouvez passer la citerne au peigne fin pour trouver un moyen d'arrêter le culte, ou vous pouvez essayer de réduire leur idole profane à l'état de petit bois !",
+    "back_text": "(→ <b>C1</b>) (page 13)",
+    "back_flavor": "Lorsque vous taillez dans l'arbre en feu pour le réduire à l'état de brindilles, un rugissement d'outre-terre remplit la pièce. Vous l'ignorez et poursuivez votre attaque en coordonnant vos assauts, l'un après l'autre, pour détruire ce mal ancestral. À la fin, l'effigie de la déesse de la Fraternité gît au sol à l'état de débris."
+  },
+  {
+    "code": "12174",
+    "name": "Citerne Souterraine",
+    "text": "<b>Forcé</b> – S'il n'y a pas d'indice sur la Citerne Souterraine : placez des indices dessus (pris dans la réserve de pions) jusqu'à sa valeur d'indice.\n<b>Forcé</b> – Quand la phase d'Investigation se termine : défaussez chaque ennemi [[Cultiste]] non-[[Élite]] redressé dans ce lieu. Placez 1 fatalité sur l'intrigue pour chaque ennemi ainsi défaussé.",
+    "traits": "Site du Rituel.",
+    "back_text": "En tant que coût supplémentaire pour entrer dans la Cité Souterraine, les investigateurs doivent dépenser collectivement 3 [per_investigator] indices.",
+    "back_flavor": "D'étranges cantiques résonnent dans les tunnels, permettant de localiser peu à peu le repaire du culte."
+  },
+  {
+    "code": "12175",
+    "name": "Vannes de Contrôle",
+    "text": "[action] : « Arrêtez-les à tout prix ! », vous essayez d'ouvrir les vannes. Effectuez un test de [agility] ou de [combat] (5). En cas de réussite, chaque ennemi est vaincu et chaque investigateur qui n'a pas abandonné est <b>tué</b> (→ <b>C3</b>) (page 14).",
+    "traits": "Égouts.",
+    "flavor": "C'est le moment ou jamais d'être un héros.",
+    "back_text": "En tant que coût supplémentaire pour entrer dans les Vannes de Contrôle, les investigateurs doivent dépenser collectivement 1 [per_investigator] indice.",
+    "back_flavor": "Un passage étroit mène de la citerne à une porte verrouillée. Bien que les vannes n'aient pas été ouvertes depuis des années, l'inondation qui s'ensuivrait pourrait suffire à anéantir tout ce qui se trouve dans les égouts... y compris vous."
+  },
+  {
+    "code": "12176",
+    "name": "Résurrection des Cendres",
+    "text": "<b>Révélation</b> – Effectuez un test de [willpower] (4). En cas d'échec, vous devez subir soit 2 dégâts directs, soit 2 horreurs directes (ce dont vous avez le plus).",
+    "traits": "Pouvoir.",
+    "flavor": "« Telle sera votre résurrection : une offrande offerte aux flammes à sa gloire, et un symbole de l'extase qui nous atteint tous à la fin. »\n— Édit des Cendres, Vol III"
+  },
+  {
+    "code": "12177",
+    "name": "Chevalier de la Reine",
+    "text": "Chasseur.\n<b>Forcé</b> – Quand le Chevalier de la Reine subit au moins 1 dégât : infligez 1 dégât à Elokoss.",
+    "traits": "Humanoïde. Cultiste."
+  },
+  {
+    "code": "12178",
+    "name": "Héraut de la Flamme",
+    "text": "Chasseur.\n<b>Forcé</b> – Après que cet ennemi a attaqué : soignez 1 dégât de chaque ennemi dans son lieu.",
+    "traits": "Monstre."
+  },
+  {
+    "code": "12179",
+    "subname": "Braises Hésitantes",
+    "text": "Massif. Riposte.\nElokoss gagne +5 [per_investigator] vies, ne peut pas se déplacer et ne peut pas effectuer d'attaque d'opportunité.\n[fast] Dépensez 1 [per_investigator] indice : placez 1 indice sur Elokoss. Si Elokoss a au moins 5 indices sur elle, (→ <b>C2</b>) (page 14).",
+    "traits": "Grand Ancien. Flore. Élite."
+  },
+  {
+    "code": "12179b",
+    "subname": "Mère de la Flamme",
+    "text": "Chasseur. Massif. Riposte.\nElokoss gagne +5 [per_investigator] vies.\n<b>Forcé</b> – Après que vous avez échappé à Elokoss : redressez-la. Elle ne peut pas vous attaquer pour le reste du round.",
+    "traits": "Grand Ancien. Flore. Élite."
+  },
+  {
+    "code": "12180",
+    "name": "Serviteur de la Flamme",
+    "subname": "Un Sacrifice Volontaire",
+    "text": "Chasseur. Riposte.\n<b>Forcé</b> – Quand le Serviteur de la Flamme est vaincu : ([codex] Φ).",
+    "traits": "Humanoïde. Cultiste. Élite."
+  },
+  {
+    "code": "12182",
+    "name": "Entrée des Égouts",
+    "text": "L'Entrée des Égouts est connexe à chaque lieu Tunnels des Égouts et vice versa.\n[action] : <b>Abandon</b>. « Je n'en peux plus ! » Vous sortez en courant des égouts.",
+    "traits": "Égouts. Central.",
+    "flavor": "Si vous y entrez, vous ne pourrez peut-être jamais en sortir.",
+    "back_text": "L'Entrée des Égouts est connexe à chaque lieu Tunnels des Égouts et vice versa.",
+    "back_flavor": "Si vous y entrez, vous ne pourrez peut-être jamais en sortir."
+  },
+  {
+    "code": "12183",
+    "name": "Tunnels des Égouts",
+    "subname": "Conduite Infestée",
+    "text": "<b>Forcé</b> – Après être entré dans ce lieu : défaussez des cartes du dessus du deck Rencontre jusqu'à ce qu'un ennemi soit défaussé et piochez-le.",
+    "traits": "Égouts.",
+    "flavor": "Ce qui se cache ici est pire que les rats.",
+    "back_flavor": "Une odeur fétide et putrescente envahit le réseau labyrinthique de tunnels qui court sous la ville."
+  },
+  {
+    "code": "12184",
+    "name": "Tunnels des Égouts",
+    "subname": "Envahis par la Végétation",
+    "text": "<b>Forcé</b> – Après être entré dans ce lieu : perdez 1 action.",
+    "traits": "Égouts.",
+    "flavor": "Des racines noueuses ont envahi le réseau de tunnels, les rendant difficilement praticables.",
+    "back_flavor": "Une odeur fétide et putrescente envahit le réseau labyrinthique de tunnels qui court sous la ville."
+  },
+  {
+    "code": "12185",
+    "name": "Tunnels des Égouts",
+    "subname": "Crypte Inondée",
+    "text": "<b>Forcé</b> – Quand votre tour se termine dans ce lieu : subissez 1 horreur.",
+    "traits": "Égouts.",
+    "flavor": "Ce qui a percé le mur n'essayait certainement pas d'entrer dans la crypte.",
+    "back_flavor": "Une odeur fétide et putrescente envahit le réseau labyrinthique de tunnels qui court sous la ville."
+  },
+  {
+    "code": "12186",
+    "name": "Tunnels des Égouts",
+    "subname": "Cache de Contrebandier",
+    "text": "[reaction] Quand votre tour se termine dans ce lieu : gagnez 1 ressource.",
+    "traits": "Égouts.",
+    "flavor": "À en juger par la qualité de la gnôle et de la contrebande, cette cachette a été mise en place par le gang Sheldon. Vous pouvez vous servir, tant qu'ils ne le découvrent pas.",
+    "back_flavor": "Une odeur fétide et putrescente envahit le réseau labyrinthique de tunnels qui court sous la ville."
+  },
+  {
+    "code": "12187",
+    "name": "Tunnels des Égouts",
+    "subname": "Fosse de Déchets Toxiques",
+    "text": "<b>Forcé</b> – Quand votre tour se termine dans ce lieu : choisissez et défaussez 1 carte de votre main.",
+    "traits": "Égouts.",
+    "flavor": "Qu'est-ce qui flotte, là, juste en surface ?",
+    "back_flavor": "Une odeur fétide et putrescente envahit le réseau labyrinthique de tunnels qui court sous la ville."
+  },
+  {
+    "code": "12188",
+    "name": "Zélateur",
+    "text": "Distant.\n<b>Forcé</b> – Après l'entrée en jeu de cet ennemi : placez 1 fatalité sur lui.",
+    "traits": "Humanoïde. Cultiste."
+  },
+  {
+    "code": "12189",
+    "name": "Magicien Noir",
+    "text": "Chasseur. Riposte.\n<b>Forcé</b> – Quand le round se termine : placez 1 fatalité sur l'ennemi le plus proche du Magicien Noir sans fatalité sur lui.",
+    "traits": "Humanoïde. Cultiste."
+  },
+  {
+    "code": "12190",
+    "name": "Invocation Blasphématoire",
+    "text": "<b>Révélation</b> – Effectuez un test de [willpower] (3). En cas d'échec, pour chaque point manquant placez 1 fatalité sur un ennemi [[Cultiste]] sans fatalité sur lui. Si vous avez échoué et qu'aucune fatalité n'a été placée, cherchez un ennemi [[Cultiste]] dans le deck Rencontre ou la pile de défausse Rencontre et piochez-le. (Mélangez le deck Rencontre s'il a été consulté.)",
+    "traits": "Sortilège."
+  },
+  {
+    "code": "12191",
+    "name": "Détérioration Surnaturelle",
+    "text": "<b>Révélation</b> – Effectuez un test de [willpower] (4). En cas d'échec, vous devez soit placer 1 fatalité sur un soutien que vous contrôlez, soit subir 2 dégâts.",
+    "traits": "Malédiction.",
+    "flavor": "Vous n'avez jamais rien vu rouiller aussi rapidement."
+  },
+  {
+    "code": "12192",
+    "name": "Vapeurs Putrides",
+    "text": "<b>Révélation</b> – Effectuez un test de [agility] (3). En cas d'échec, subissez 1 horreur et défaussez un soutien non-histoire que vous contrôlez.",
+    "traits": "Risque.",
+    "flavor": "« Le retrait de la dalle dévoila une ouverture noire, par laquelle s'échappa une émanation d'effluves miasmatiques si nauséabonde que nous avons reculé d'horreur. »\n— H.P. Lovecraft, « Le Témoignage de Randolph Carter »"
+  },
+  {
+    "code": "12193",
+    "name": "Langueur",
+    "text": "<b>Révélation</b> – Mettez en jeu Langueur dans votre zone de menace. Limite de 1 par investigateur.\n<b>Forcé</b> – Après le début de votre tour : défaussez la carte du dessus de votre deck. S'il s'agit d'une faiblesse, piochez-la. Sinon, vous ne pouvez pas jouer ou attribuer de cartes de ce type (soutien, événement ou compétence) à ce round.\n[action][action] : défaussez Langueur.",
+    "traits": "Sortilège. Fléau."
+  },
+  {
+    "code": "12194",
+    "name": "Discordance",
+    "text": "<b>Révélation</b> – Effectuez un test de [willpower] (3). En cas d'échec, perdez 1 action et choisissez un type de carte (soutien, événement ou compétence). Défaussez de votre main toutes les cartes non-faiblesse du type choisi.",
+    "traits": "Malédiction. Fléau."
+  },
+  {
+    "code": "12195",
+    "name": "Tourment",
+    "text": "Péril.\n<b>Révélation</b> – Effectuez un test de [willpower] (3). En cas d'échec, nommez un type de carte (soutien, événement ou compétence). Chaque investigateur défausse de sa main 1 carte du type nommé.",
+    "traits": "Pouvoir. Fléau."
+  }
+]

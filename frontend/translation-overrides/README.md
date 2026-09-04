@@ -21,6 +21,10 @@ Only list the fields that are actually wrong — everything else falls through t
 Overrides are matched by exact card code and are deliberately excluded from the importer's
 reprint-reuse pass, so an override never leaks onto a different printing.
 
+The importer also consults this file when two upstream pack files disagree about a card: a code
+listed here silences the conflict, since the override wins anyway. Use that only for genuine
+upstream data bugs, and say which copy you picked.
+
 **These entries are temporary.** When upstream fixes the underlying translation, delete the
 entry here and re-import.
 
@@ -38,3 +42,28 @@ entry here and re-import.
   [#5364](https://github.com/halogenandtoast/ArkhamHorror/issues/5364).
 
   The `flavor` on those entries is already correct and is left to upstream.
+
+### `fr.json`
+
+Two upstream pack files disagree, which made `--source-locale fr` throw and left
+`public/cards_fr.json` frozen at June 2025 with none of the 2026 core set:
+
+- `06168` and `06189` are duplicated between `translations/fr/pack/tcu/tsh_encounter.json` and
+  `tde/tsh_encounter.json`. The `tcu/` copies are untranslated English; the `tde/` copies are the
+  real translation. Per-field merging resolves `06168` on its own, but `06189`'s English `flavor`
+  carries an en-dash where `cards_en.json` has a hyphen, so it is not recognised as a placeholder
+  and is pinned here to the `tde/` value.
+- `09057` (Fingerprint Kit) appears in both `tsk/tskp.json` and `tdc/tskp.json`, both French,
+  differing on one word: the `tsk/` copy calls the card *Kit d'Empreintes Digitales* mid-text while
+  naming it *Nécessaire à Empreintes Digitales*. Pinned to the self-consistent `tdc/` copy.
+
+The remaining 171 entries are the **2026 core set (chapter 2)**, contributed in
+[#5259](https://github.com/halogenandtoast/ArkhamHorror/issues/5259) and transcribed from the
+printed VF cards. These are a bridge, not a correction of a one-off mistake:
+`translations/fr/pack/core/core_2026_encounter.json` upstream is a *verbatim English placeholder*
+for all 92 encounter cards, and `core_2026.json` covers 96 of the 104 player cards with real typos
+(`pas round` for `par round`, `Mélédiction` for `Malédiction`, `monter` for `montrer`). Without
+these entries 89 of the 196 chapter-2 cards render entirely in English.
+
+Delete this block once the data lands upstream in `Kamalisk/arkhamdb-json-data` and re-import.
+Apostrophes and ellipses are normalized to `'` and `...` to match the rest of the fr corpus.

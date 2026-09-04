@@ -29,11 +29,13 @@ import { IsMobile } from '@/arkham/isMobile';
 import { Modifier } from '@/arkham/types/Modifier';
 import { Enemy } from '@/arkham/types/Enemy';
 import type { Source } from '@/arkham/types/Source';
-import { XMarkIcon } from '@heroicons/vue/20/solid';
+import { XMarkIcon, EyeSlashIcon } from '@heroicons/vue/20/solid';
 import * as Api from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef';
 import { fullName } from '@/arkham/types/Name';
 import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard'
+import { useSettings } from '@/stores/settings';
+import { useCardStore } from '@/stores/cards';
 const { t } = useI18n();
 
 interface RefWrapper<T> {
@@ -71,6 +73,39 @@ const assets = computed(() => {
   )
   return xs
 })
+
+const settings = useSettings()
+const cardStore = useCardStore()
+
+// Cards whose whole text resolved at deck creation or during setup. They stay
+// in play, but once setup is over they only take up room, so the setting tucks
+// them into a stack beside the play area.
+const INERT_CARD_TAGS = ['no-gameplay-effect', 'setup-only']
+
+const inertCardCodes = computed(() =>
+  new Set(
+    cardStore.cards
+      .filter(c => c.tags?.some(tag => INERT_CARD_TAGS.includes(tag)))
+      .map(c => c.cardCode)
+  )
+)
+
+const tuckInertCards = computed(() => settings.hideInertCards && !props.game.inSetup)
+
+const visibleAssets = computed(() =>
+  tuckInertCards.value
+    ? assets.value.filter(a => !inertCardCodes.value.has(a.cardCode))
+    : assets.value
+)
+
+const inertCards = computed(() =>
+  tuckInertCards.value
+    ? assets.value
+        .filter(a => inertCardCodes.value.has(a.cardCode))
+        .map(a => props.game.cards[a.cardId])
+        .filter(Boolean)
+    : []
+)
 
 const currentTreacheries = computed(() => {
   return Object.
@@ -757,163 +792,178 @@ function closeHand() {
 <template>
   <div class="player-cards">
     <button class="in-play-toggle" @click="playAreaCollapsed = !playAreaCollapsed"></button>
-    <transition name="grow">
-      <section
-        class="in-play"
-        :class="{ 'in-play--collapsed': playAreaCollapsed }"
-        @drop="onDrop($event)"
-        @dragover.prevent="dragover($event)"
-        @dragenter.prevent
-      >
-        <transition-group @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
-          <EnemyView
-            v-for="enemy in spawningEnemies"
-            :key="enemy.id"
-            :enemy="enemy"
-            :game="game"
-            :data-index="enemy.cardId"
-            :playerId="playerId"
-            class="spawning-enemy"
-            @choose="$emit('choose', $event)"
-          />
+    <div class="in-play-row">
+      <transition name="grow">
+        <section
+          class="in-play"
+          :class="{ 'in-play--collapsed': playAreaCollapsed }"
+          @drop="onDrop($event)"
+          @dragover.prevent="dragover($event)"
+          @dragenter.prevent
+        >
+          <transition-group @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter">
+            <EnemyView
+              v-for="enemy in spawningEnemies"
+              :key="enemy.id"
+              :enemy="enemy"
+              :game="game"
+              :data-index="enemy.cardId"
+              :playerId="playerId"
+              class="spawning-enemy"
+              @choose="$emit('choose', $event)"
+            />
 
-          <Story
-            v-for="story in stories"
-            :key="story.id"
-            :story="story"
-            :game="game"
-            :data-index="story.cardId"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
+            <Story
+              v-for="story in stories"
+              :key="story.id"
+              :story="story"
+              :game="game"
+              :data-index="story.cardId"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+            />
 
-          <EnemyView
-            v-for="enemy in engagedEnemies"
-            :key="enemy.id"
-            data-card-movement="enemy"
-            :enemy="enemy"
-            :style="{ viewTransitionName: `enemy-${enemy.id}` }"
-            :game="game"
-            :data-index="enemy.cardId"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
+            <EnemyView
+              v-for="enemy in engagedEnemies"
+              :key="enemy.id"
+              data-card-movement="enemy"
+              :enemy="enemy"
+              :style="{ viewTransitionName: `enemy-${enemy.id}` }"
+              :game="game"
+              :data-index="enemy.cardId"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+            />
 
-          <Treachery
-            v-for="treacheryId in investigator.treacheries"
-            :key="treacheryId"
-            :treachery="game.treacheries[treacheryId]"
-            :game="game"
-            :data-index="game.treacheries[treacheryId].cardId"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
+            <Treachery
+              v-for="treacheryId in investigator.treacheries"
+              :key="treacheryId"
+              :treachery="game.treacheries[treacheryId]"
+              :game="game"
+              :data-index="game.treacheries[treacheryId].cardId"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+            />
 
-          <div
-            v-for="facedown in facedownThreatCards"
-            :key="facedown.id"
-            class="card-container"
-            :data-index="facedown.cardId"
-          >
-            <img class="card" :src="facedownThreatCardImage(facedown.cardId)" />
-          </div>
-
-          <div v-if="hasThreatArea" :key="'threat-divider'" class="threat-divider" />
-
-          <template v-if="tarotCards.length > 0">
-            <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
-              <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
-            </div>
-          </template>
-
-          <img
-            v-if="investigatorId === 'c89001'"
-            class="card"
-            @click="realityAcid = realityAcid === '89005' ? '89005b' : '89005'"
-            :src="imgsrc(`cards/${realityAcid}.avif`)"
-          />
-
-          <Treachery
-            v-for="treachery in currentTreacheries"
-            :key="treachery.id"
-            :treachery="treachery"
-            :game="game"
-            :data-index="treachery.cardId"
-            :playerId="playerId"
-            @choose="$emit('choose', $event)"
-          />
-
-          <Skill
-            v-for="skill in skills"
-            :skill="skill"
-            :game="game"
-            :playerId="playerId"
-            :key="skill.id"
-            :data-index="skill.cardId"
-            @choose="$emit('choose', $event)"
-            @showCards="doShowCards"
-          />
-          <EventView
-            v-for="event in events"
-            :event="event"
-            :game="game"
-            :playerId="playerId"
-            :key="event.id"
-            :data-index="event.cardId"
-            @choose="$emit('choose', $event)"
-            @showCards="doShowCards"
-          />
-
-          <ScarletKey
-            v-for="skId in investigator.scarletKeys"
-            :scarletKey="game.scarletKeys[skId]"
-            :game="game"
-            :playerId="playerId"
-            :key="skId"
-            @choose="$emit('choose', $event)"
-          />
-          <Asset
-            v-for="asset in assets"
-            :asset="asset"
-            :game="game"
-            :playerId="playerId"
-            :key="asset.id"
-            :data-index="asset.cardId"
-            @choose="$emit('choose', $event)"
-            @showCards="doShowCards"
-          />
-
-          <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot.tag}${idx}`">
-            <img :src="slotImg(slot)" />
-          </div>
-
-          <div v-if="debug.active" key="debug-add-slots" class="debug-add-slots" :class="{ expanded: showDebugSlotMenu }">
-            <button
-              type="button"
-              class="debug-add-slots-toggle"
-              :aria-expanded="showDebugSlotMenu"
-              @click="showDebugSlotMenu = !showDebugSlotMenu"
+            <div
+              v-for="facedown in facedownThreatCards"
+              :key="facedown.id"
+              class="card-container"
+              :data-index="facedown.cardId"
             >
-              <span>Add Slot</span>
-              <span>{{ showDebugSlotMenu ? '−' : '+' }}</span>
-            </button>
-            <div v-if="showDebugSlotMenu" class="debug-add-slots-menu">
-              <button
-                v-for="slot in debugSlotTypes"
-                :key="slot.type"
-                type="button"
-                :title="`Add ${slot.label} Slot`"
-                @click="debugAddSlot(slot.type)"
-              >
-                <img :src="imgsrc(slot.icon)" />
-                <span>{{ slot.label }}</span>
-              </button>
+              <img class="card" :src="facedownThreatCardImage(facedown.cardId)" />
             </div>
-          </div>
 
-        </transition-group>
-      </section>
-    </transition>
+            <div v-if="hasThreatArea" :key="'threat-divider'" class="threat-divider" />
+
+            <template v-if="tarotCards.length > 0">
+              <div v-for="tarotCard in tarotCards" :key="tarotCard.arcana" :data-index="tarotCard.arcana">
+                <img :src="imgsrc(`tarot/${tarotCardImage(tarotCard)}`)" class="card tarot-card" :class="{ [tarotCard.facing]: true, 'can-interact': tarotCardAbility(tarotCard) !== -1 }" @click="$emit('choose', tarotCardAbility(tarotCard))"/>
+              </div>
+            </template>
+
+            <img
+              v-if="investigatorId === 'c89001'"
+              class="card"
+              @click="realityAcid = realityAcid === '89005' ? '89005b' : '89005'"
+              :src="imgsrc(`cards/${realityAcid}.avif`)"
+            />
+
+            <Treachery
+              v-for="treachery in currentTreacheries"
+              :key="treachery.id"
+              :treachery="treachery"
+              :game="game"
+              :data-index="treachery.cardId"
+              :playerId="playerId"
+              @choose="$emit('choose', $event)"
+            />
+
+            <Skill
+              v-for="skill in skills"
+              :skill="skill"
+              :game="game"
+              :playerId="playerId"
+              :key="skill.id"
+              :data-index="skill.cardId"
+              @choose="$emit('choose', $event)"
+              @showCards="doShowCards"
+            />
+            <EventView
+              v-for="event in events"
+              :event="event"
+              :game="game"
+              :playerId="playerId"
+              :key="event.id"
+              :data-index="event.cardId"
+              @choose="$emit('choose', $event)"
+              @showCards="doShowCards"
+            />
+
+            <ScarletKey
+              v-for="skId in investigator.scarletKeys"
+              :scarletKey="game.scarletKeys[skId]"
+              :game="game"
+              :playerId="playerId"
+              :key="skId"
+              @choose="$emit('choose', $event)"
+            />
+            <Asset
+              v-for="asset in visibleAssets"
+              :asset="asset"
+              :game="game"
+              :playerId="playerId"
+              :key="asset.id"
+              :data-index="asset.cardId"
+              @choose="$emit('choose', $event)"
+              @showCards="doShowCards"
+            />
+
+            <div v-for="(slot, idx) in emptySlots" :key="idx" class="slot" :data-index="`${slot.tag}${idx}`">
+              <img :src="slotImg(slot)" />
+            </div>
+
+            <div v-if="debug.active" key="debug-add-slots" class="debug-add-slots" :class="{ expanded: showDebugSlotMenu }">
+              <button
+                type="button"
+                class="debug-add-slots-toggle"
+                :aria-expanded="showDebugSlotMenu"
+                @click="showDebugSlotMenu = !showDebugSlotMenu"
+              >
+                <span>Add Slot</span>
+                <span>{{ showDebugSlotMenu ? '−' : '+' }}</span>
+              </button>
+              <div v-if="showDebugSlotMenu" class="debug-add-slots-menu">
+                <button
+                  v-for="slot in debugSlotTypes"
+                  :key="slot.type"
+                  type="button"
+                  :title="`Add ${slot.label} Slot`"
+                  @click="debugAddSlot(slot.type)"
+                >
+                  <img :src="imgsrc(slot.icon)" />
+                  <span>{{ slot.label }}</span>
+                </button>
+              </div>
+            </div>
+
+          </transition-group>
+        </section>
+      </transition>
+      <CardsUnderIndicator
+        v-if="inertCards.length > 0 && !playAreaCollapsed"
+        class="inert-stack"
+        vertical
+        label="Hidden"
+        placement="left"
+        :cards="inertCards"
+        :game="game"
+        :playerId="playerId"
+        @choose="$emit('choose', $event)"
+      >
+        <template #icon><EyeSlashIcon /></template>
+      </CardsUnderIndicator>
+    </div>
 
     <ChoiceModal
       v-if="playerId === investigator.playerId"
@@ -1239,6 +1289,32 @@ function closeHand() {
   @media (max-width: 800px) and (orientation: portrait) {
     display: flex;
   }
+}
+
+.in-play-row {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.in-play-row > .in-play {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Pinned to the right edge of the play area, so it stays put while the assets
+   themselves scroll horizontally underneath. Carries the same background and
+   top/bottom rules as .in-play so it reads as part of that strip rather than a
+   control floating beside it. */
+.inert-stack {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  flex-shrink: 0;
+  padding: 10px 10px 10px 5px;
+  background: var(--background-dark);
+  border-top: 1px solid var(--background);
+  border-bottom: 1px solid var(--background);
 }
 
 .in-play {

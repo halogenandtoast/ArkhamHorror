@@ -269,6 +269,7 @@ underworldSupport =
     $ (asset "08046" "Underworld Support" 0 Rogue)
       { cdCardTraits = setFromList [Favor, Illicit]
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      , cdTags = [noGameplayEffectTag]
       }
 
 theRedClockBrokenButReliable2 :: CardDef
@@ -324,6 +325,7 @@ downTheRabbitHole =
     $ (asset "08059" "Down the Rabbit Hole" 0 Mystic)
       { cdCardTraits = setFromList [Talent]
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      , cdTags = [noGameplayEffectTag]
       }
 
 dragonPole :: CardDef
@@ -792,6 +794,7 @@ inTheThickOfIt =
       { cdCardTraits = singleton Curse
       , cdPurchaseTrauma = PurchaseAnyTrauma 2
       , cdGrantedXp = Just 3
+      , cdTags = [noGameplayEffectTag]
       }
 
 heavyFurs :: CardDef

@@ -18,6 +18,11 @@ const EXTRA_ANIMATIONS_KEY = 'arkhamExtraAnimations'
 // without changing what every other game does.
 const EXTRA_ANIMATIONS_SETTING = 'extraAnimations'
 
+// Tuck permanents that do nothing during play (the `no-gameplay-effect` and
+// `setup-only` card tags) into a stack beside the play area once setup is over.
+// Off by default: they are still real cards, and some players want to see them.
+const HIDE_INERT_CARDS_KEY = 'arkhamHideInertCards'
+
 export const useSettings = defineStore("settings", () => {
   const gameId = ref<string | null>(null)
   const splitView = ref(false)
@@ -92,6 +97,14 @@ export const useSettings = defineStore("settings", () => {
     }
   }
 
+  // Off unless explicitly turned on.
+  const hideInertCards = ref(localStorage.getItem(HIDE_INERT_CARDS_KEY) === 'true')
+
+  function setHideInertCards(enabled: boolean) {
+    hideInertCards.value = enabled
+    localStorage.setItem(HIDE_INERT_CARDS_KEY, String(enabled))
+  }
+
   const showBonded = ref(false)
 
   function toggleShowBonded() {
@@ -113,5 +126,7 @@ export const useSettings = defineStore("settings", () => {
     prefersReducedMotion,
     setExtraAnimationsGlobal,
     setExtraAnimationsOverride,
+    hideInertCards,
+    setHideInertCards,
   }
 })

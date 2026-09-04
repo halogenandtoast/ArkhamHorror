@@ -372,6 +372,7 @@ observed4 =
       { cdCardTraits = singleton Blessed
       , cdLevel = Just 4
       , cdLimits = [LimitPerInvestigator 1]
+      , cdTags = [setupOnlyTag]
       }
 
 theDevilXv :: CardDef

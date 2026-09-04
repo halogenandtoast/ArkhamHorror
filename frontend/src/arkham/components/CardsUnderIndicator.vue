@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<{
   showLabel?: boolean
   shown?: boolean
   fullWidth?: boolean
+  vertical?: boolean
 }>(), {
   label: 'Cards underneath',
   placement: 'bottom',
@@ -96,13 +97,19 @@ onBeforeUnmount(() => finishDrag())
     <button
       type="button"
       class="cards-under-indicator"
-      :class="{ 'cards-under-indicator--highlighted': isHighlighted, 'cards-under-indicator--with-label': showLabel, 'cards-under-indicator--full-width': fullWidth }"
+      :class="{ 'cards-under-indicator--highlighted': isHighlighted, 'cards-under-indicator--with-label': showLabel, 'cards-under-indicator--full-width': fullWidth, 'cards-under-indicator--vertical': vertical }"
       :aria-label="tooltip"
       v-tooltip="tooltip"
     >
-      <span class="cards-under-indicator__icon" aria-hidden="true">
-        <span class="cards-under-indicator__card cards-under-indicator__card--back" />
-        <span class="cards-under-indicator__card cards-under-indicator__card--front" />
+      <span
+        class="cards-under-indicator__icon"
+        :class="{ 'cards-under-indicator__icon--custom': !!$slots.icon }"
+        aria-hidden="true"
+      >
+        <slot name="icon">
+          <span class="cards-under-indicator__card cards-under-indicator__card--back" />
+          <span class="cards-under-indicator__card cards-under-indicator__card--front" />
+        </slot>
       </span>
       <span v-if="showLabel" class="cards-under-indicator__label">{{ label }}</span>
       <span class="cards-under-indicator__count">{{ count }}</span>
@@ -196,6 +203,13 @@ onBeforeUnmount(() => finishDrag())
   overflow: hidden;
 }
 
+/* A supplied icon fills the slot the stacked-cards glyph would have used, but
+   keeps its upright reading direction even when the pill is turned on its side. */
+.cards-under-indicator__icon--custom :deep(svg) {
+  width: 14px;
+  height: 14px;
+}
+
 .cards-under-indicator__card {
   flex: 0 0 auto;
   width: 10px;
@@ -250,6 +264,41 @@ onBeforeUnmount(() => finishDrag())
 
   .cards-under-indicator__icon {
     display: none;
+  }
+}
+
+/* Vertical variant: the same pill turned on its side, for pinning down the
+   edge of a play area rather than sitting in a row of controls. */
+.cards-under-indicator--vertical {
+  flex-direction: column;
+  width: 22px;
+  height: auto;
+  min-height: 60px;
+  padding: 7px 0;
+}
+
+.cards-under-indicator--vertical:hover {
+  transform: translateX(-1px);
+}
+
+.cards-under-indicator--vertical .cards-under-indicator__icon {
+  transform: rotate(90deg);
+}
+
+/* ...but a supplied icon reads as an icon, not as a turned-on-its-side glyph,
+   so it stays upright. */
+.cards-under-indicator--vertical .cards-under-indicator__icon--custom {
+  transform: none;
+}
+
+.cards-under-indicator--vertical .cards-under-indicator__label {
+  writing-mode: vertical-rl;
+  max-height: 14em;
+}
+
+@media (max-width: 800px) {
+  .cards-under-indicator--vertical {
+    padding: 5px 0;
   }
 }
 

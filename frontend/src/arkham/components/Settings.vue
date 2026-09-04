@@ -46,6 +46,11 @@ const extraAnimationsOverride = computed<'default' | 'on' | 'off'>({
   set: (value) => settings.setExtraAnimationsOverride(value === 'default' ? null : value === 'on'),
 })
 
+const hideInertCards = computed({
+  get: () => settings.hideInertCards,
+  set: (value: boolean) => settings.setHideInertCards(value),
+})
+
 const soundsDisabled = ref(localStorage.getItem('arkhamSoundsDisabled') === 'true')
 
 watch(soundsDisabled, (value) => {
@@ -246,6 +251,22 @@ onBeforeUnmount(() => {
               <label for="opt-showHands-on">{{ $t('On') }}</label>
               <input type="radio" id="opt-showHands-off" name="opt-showHands" :checked="!showOtherHands" @change="showOtherHands = false" />
               <label for="opt-showHands-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">Hide Cards With No Ongoing Effect</div>
+              <div class="toggle-desc">
+                Once setup is over, tuck permanents whose text only applied at deck creation or
+                setup — In the Thick of It, Adaptable, Observed — into a stack beside the play area.
+              </div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-hideInertCards-on" name="opt-hideInertCards" :checked="hideInertCards" @change="hideInertCards = true" />
+              <label for="opt-hideInertCards-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-hideInertCards-off" name="opt-hideInertCards" :checked="!hideInertCards" @change="hideInertCards = false" />
+              <label for="opt-hideInertCards-off">{{ $t('Off') }}</label>
             </div>
           </div>
 

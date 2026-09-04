@@ -49,6 +49,8 @@ export type CardDef = {
   encounterSet?: any;
   customizations?: CustomizationDef[];
   options?: CardOption[];
+  /* Behavioural markers from the card def's `cdTags`, e.g. "no-gameplay-effect". */
+  tags?: string[];
 }
 
 const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
@@ -105,6 +107,7 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
     encounterSet: v2Optional(JsonDecoder.succeed()),
     customizations: withDefault<CustomizationDef[]>([], JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.number()], 'CustomizationDef'), 'CustomizationDef[]')),
     options: withDefault<CardOption[]>([], JsonDecoder.array<CardOption>(cardOptionDecoder, 'CardOption[]')),
+    tags: withDefault<string[]>([], JsonDecoder.array<string>(JsonDecoder.string(), 'string[]')),
   },
   'CardDef',
 );

@@ -186,6 +186,19 @@ outright when no tagged card is in play, so an untagged card's ability never fir
 enemyReadyTag :: Text
 enemyReadyTag = "enemy-ready"
 
+{- | 'cdTags' marker for a card whose entire text resolves at deck creation or
+between scenarios (deck size, deckbuilding options, purchase cost, purchase
+trauma/XP). The engine never does anything with it during play.
+-}
+noGameplayEffectTag :: Text
+noGameplayEffectTag = "no-gameplay-effect"
+
+{- | 'cdTags' marker for a card whose entire text resolves during scenario setup
+and is driven from the setup code rather than the card's own module.
+-}
+setupOnlyTag :: Text
+setupOnlyTag = "setup-only"
+
 data IsRevelation
   = NoRevelation
   | IsRevelation

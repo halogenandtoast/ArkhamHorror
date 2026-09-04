@@ -359,4 +359,5 @@ collector =
       { cdCardTraits = singleton Talent
       , cdEncounterSet = Just QueenOfAsh
       , cdEncounterSetQuantity = Just 2
+      , cdTags = [noGameplayEffectTag]
       }

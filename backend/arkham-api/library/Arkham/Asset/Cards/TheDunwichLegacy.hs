@@ -223,6 +223,7 @@ adaptable1 =
     $ (asset "02110" "Adaptable" 0 Rogue)
       { cdCardTraits = setFromList [Talent]
       , cdLevel = Just 1
+      , cdTags = [noGameplayEffectTag]
       }
 
 songOfTheDead2 :: CardDef

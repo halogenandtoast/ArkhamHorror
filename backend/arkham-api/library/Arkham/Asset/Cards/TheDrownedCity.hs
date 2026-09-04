@@ -479,6 +479,7 @@ spiritualHealing4 =
       { cdCardTraits = setFromList [Condition, Blessed]
       , cdLevel = Just 4
       , cdDeckRestrictions = [PerDeckLimit 1]
+      , cdTags = [noGameplayEffectTag]
       }
 
 libraryPass1 :: CardDef

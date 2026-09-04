@@ -19,7 +19,7 @@ instance RunMessage SerpentsCall where
         True -> drawEncounterCards iid attrs 2
         False -> do
           chooseOneM iid $ campaignI18n do
-            labeled' "serpentsCall.poisoned" $ becomePoisoned iid
-            labeled' "serpentsCall.drawEncounterCards" $ drawEncounterCards iid attrs 2
+            labeled "serpentsCall.poisoned" $ becomePoisoned iid
+            labeled "serpentsCall.drawEncounterCards" $ drawEncounterCards iid attrs 2
       pure t
     _ -> SerpentsCall <$> liftRunMessage msg attrs

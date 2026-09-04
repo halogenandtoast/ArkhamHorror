@@ -294,8 +294,8 @@ instance RunMessage TheDoomOfEztli where
         Resolution 3 -> do
           resolution "resolution3"
           leadChooseOneM do
-            labeled' "goBackInside" $ do_ R4
-            labeled' "thisPlaceMustBeDestroyed" $ do_ R5
+            labeled "goBackInside" $ do_ R4
+            labeled "thisPlaceMustBeDestroyed" $ do_ R5
           pure s
         Resolution 4 -> do
           standalone <- getIsStandalone

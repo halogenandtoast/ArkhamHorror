@@ -37,7 +37,7 @@ instance RunMessage RexMurphy where
       pure i
     ResolveChaosToken _drawnToken ElderSign iid | iid == toId attrs -> do
       chooseOneM iid $ withI18n $ countVar 3 do
-        labeled' "automaticallyFailToDraw" $ failSkillTest >> drawCards iid ElderSign 3
-        unscoped $ labeled' "resolveNormally" nothing
+        labeled "automaticallyFailToDraw" $ failSkillTest >> drawCards iid ElderSign 3
+        unscoped $ labeled "resolveNormally" nothing
       pure i
     _ -> RexMurphy <$> liftRunMessage msg attrs

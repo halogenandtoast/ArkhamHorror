@@ -119,8 +119,8 @@ instance RunMessage SpreadingFlames where
           resolution "resolution1"
           addCampaignCardToDeckChoice_ Assets.drHenryArmitage_SpreadingFlames
           resolutionWithXpAndChooseOne "resolution1" (allGainXpWithBonus' attrs $ toBonus "bonus" 3) do
-            labeled' "r2" $ push $ ScenarioResolution $ Resolution 2
-            labeled' "r3" $ push $ ScenarioResolution $ Resolution 3
+            labeled "r2" $ push $ ScenarioResolution $ Resolution 2
+            labeled "r3" $ push $ ScenarioResolution $ Resolution 3
         Resolution 2 -> do
           record InvestigatorsSavedMiskatonicUniversity
           resolution "resolution2"

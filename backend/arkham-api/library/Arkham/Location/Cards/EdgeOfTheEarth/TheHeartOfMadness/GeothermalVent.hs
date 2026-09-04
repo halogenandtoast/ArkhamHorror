@@ -39,7 +39,7 @@ instance RunMessage GeothermalVent where
           push $ SpendClues targetAmount iids
           activateSeal SealD
           removeChaosToken #frost
-        labeled' "doNotSpendClues" nothing
+        labeled "doNotSpendClues" nothing
 
       pure l
     _ -> GeothermalVent <$> liftRunMessage msg attrs

@@ -33,7 +33,7 @@ instance RunMessage TheParisianConspiracyV2 where
         AdvancedWithClues -> do
           locations <- select $ FarthestLocationFromAll Anywhere
           leadChooseOneM do
-            scenarioI18n $ questionLabeled' "theParisianConspiracy.spawn"
+            scenarioI18n $ questionLabeled "theParisianConspiracy.spawn"
             targets locations $ createEnemyAt_ theOrganist
         _ -> do
           location <- selectJust LeadInvestigatorLocation

@@ -33,7 +33,7 @@ instance RunMessage StormRuler4 where
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeDamagedBySource (toSource attrs)
       when (tokens > 0 && notNull enemies) do
         chooseOneM iid $ cardI18n do
-          countVar tokens $ labeled' "stormRuler.exhaust" do
+          countVar tokens $ labeled "stormRuler.exhaust" do
             exhaustThis attrs
             chooseTargetM iid enemies (nonAttackEnemyDamage (Just iid) attrs tokens)
           labeledI "doNotExhaust" nothing

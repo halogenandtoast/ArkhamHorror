@@ -23,10 +23,10 @@ instance RunMessage OccultReliquary3 where
       let addSlot sType = push $ AddSlot iid sType slot
 
       chooseOneM iid $ withI18n do
-        questionLabeled' "cards.occultReliquary.choose"
-        keyVar "slot" "slot.hand" $ labeled' "startAsSlot" $ addSlot #hand
-        keyVar "slot" "slot.accessory" $ labeled' "startAsSlot" $ addSlot #accessory
-        keyVar "slot" "slot.arcane" $ labeled' "startAsSlot" $ addSlot #arcane
+        questionLabeled "cards.occultReliquary.choose"
+        keyVar "slot" "slot.hand" $ labeled "startAsSlot" $ addSlot #hand
+        keyVar "slot" "slot.accessory" $ labeled "startAsSlot" $ addSlot #accessory
+        keyVar "slot" "slot.arcane" $ labeled "startAsSlot" $ addSlot #arcane
 
       OccultReliquary3 <$> liftRunMessage msg attrs
     _ -> OccultReliquary3 <$> liftRunMessage msg attrs

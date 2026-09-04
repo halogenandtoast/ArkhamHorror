@@ -22,8 +22,8 @@ instance RunMessage TheFall where
       n <- perPlayer 2
       lid <- selectJust $ locationIs Locations.darkSpires
       chooseOneM iid $ scenarioI18n do
-        labeled' "theFall.cannot" $ push $ SetFlippable lid False
-        labeled' "theFall.push" do
+        labeled "theFall.cannot" $ push $ SetFlippable lid False
+        labeled "theFall.push" do
           assignHorror iid attrs 2
           storyEnemyDamage iid n hastur
       pure s

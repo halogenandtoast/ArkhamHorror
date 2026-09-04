@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.Encyclopedia2 (encyclopedia2) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
@@ -25,7 +26,9 @@ instance RunMessage Encyclopedia2 where
       chooseOneM iid do
         targets investigators \target ->
           chooseOneM iid do
-            for_ labeledSkills \(label, skill) ->
-              labeled label $ phaseModifier (attrs.ability 1) target $ SkillModifier skill 2
+            for_ allSkills \skill ->
+              (withI18n $ skillVar skill $ labeled "chooseSkill")
+                $ phaseModifier (attrs.ability 1) target
+                $ SkillModifier skill 2
       pure a
     _ -> Encyclopedia2 <$> liftRunMessage msg attrs

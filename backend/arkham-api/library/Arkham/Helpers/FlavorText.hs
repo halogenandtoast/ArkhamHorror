@@ -10,7 +10,7 @@ import Arkham.I18n
 import Arkham.I18n as X (HasI18n, countVar, scope, unscoped, withVar, withVars)
 import Arkham.Id
 import Arkham.Message qualified as Msg
-import Arkham.Message.Lifted (story, storyOnly)
+import Arkham.Message.Lifted (story)
 import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Tarot
@@ -38,13 +38,10 @@ setup' body = scope "setup" $ flavor do
 
 resolutionOnly
   :: (HasI18n, ReverseQueue m) => [InvestigatorId] -> (HasI18n => FlavorTextBuilder ()) -> m ()
-resolutionOnly iids builder = storyOnly iids do
-  case buildFlavor builder of
-    FlavorText {..} ->
-      FlavorText
-        { flavorTitle
-        , flavorBody = [ModifyEntry [ResolutionEntry] $ CompositeEntry flavorBody]
-        }
+resolutionOnly iids builder = storyOnlyBuild iids do
+  let FlavorText mtitle body = buildFlavor builder
+  modify \s -> s {flavorTitle = mtitle}
+  addEntry $ ModifyEntry [ResolutionEntry] $ CompositeEntry body
 
 resolutionFlavor :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
 resolutionFlavor builder = story do
@@ -75,6 +72,10 @@ newtype FlavorTextBuilder a = FlavorTextBuilder {runStoryBuilder :: State Flavor
 
 setTitle :: HasI18n => Text -> FlavorTextBuilder ()
 setTitle t = modify \s -> s {flavorTitle = Just ("$" <> FT.ikey t)}
+
+-- | Builder form of 'Arkham.Text.i18nWithTitle': the @.title@ heading plus the @.body@ paragraph.
+withTitle :: HasI18n => Scope -> FlavorTextBuilder ()
+withTitle t = setTitle (t <> ".title") >> p (t <> ".body")
 
 h :: HasI18n => Scope -> FlavorTextBuilder ()
 h t = setTitle t >> h_ t

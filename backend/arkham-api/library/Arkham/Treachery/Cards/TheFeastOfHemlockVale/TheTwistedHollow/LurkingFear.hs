@@ -30,7 +30,7 @@ instance RunMessage LurkingFear where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       enemies <- pursuitEnemiesWithHighestFight
       chooseOrRunOneM iid $ scenarioI18n do
-        unscoped $ countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
+        unscoped $ countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
         labeledValidate' (notNull enemies) "lurkingFear.pursuit" do
           chooseTargetM iid enemies \e -> spawnAt e (Just iid) (SpawnEngagedWith $ InvestigatorWithId iid)
       pure t

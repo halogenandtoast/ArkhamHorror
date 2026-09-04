@@ -41,11 +41,11 @@ instance RunMessage KohakuNarukami where
 
       chooseOrRunOneM iid $ cardI18n $ scope "kohakuNarukami" do
         when (bOut > 0 && length bIn <= length cIn) do
-          labeled' "addBless" $ push (AddChaosToken #bless)
+          labeled "addBless" $ push (AddChaosToken #bless)
         when (cOut > 0 && length cIn <= length bIn) do
-          labeled' "addCurse" $ addCurseTokens (Just iid) 1
+          labeled "addCurse" $ addCurseTokens (Just iid) 1
         when (length bIn >= 2 && length cIn >= 2) do
-          labeled' "removeAction"
+          labeled "removeAction"
             $ pushAll [ReturnChaosTokensToPool (take 2 bIn <> take 2 cIn), GainActions iid (toSource attrs) 1]
       pure i
     ElderSignEffect iid | iid == attrs.id -> do

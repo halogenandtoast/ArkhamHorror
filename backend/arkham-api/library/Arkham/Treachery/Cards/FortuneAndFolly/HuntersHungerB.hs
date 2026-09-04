@@ -23,7 +23,7 @@ instance RunMessage HuntersHungerB where
         labeledValidate' (notNull allies || notNull others) "huntersHunger.discard" do
           chooseTargetM iid allies $ toDiscardBy iid attrs
           for_ others \iid' -> assignHorror iid' attrs 1
-        labeled' "huntersHunger.test" $ revelationSkillTest sid iid attrs #agility (Fixed 3)
+        labeled "huntersHunger.test" $ revelationSkillTest sid iid attrs #agility (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       directDamageAndHorror iid attrs 1 1

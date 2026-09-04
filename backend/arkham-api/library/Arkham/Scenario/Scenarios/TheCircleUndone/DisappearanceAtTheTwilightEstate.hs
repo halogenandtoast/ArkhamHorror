@@ -140,8 +140,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
             [] -> error "no players"
             (player : _) -> do
               playerStoryWithChooseOneM' player (setTitle "title" >> p "returnToChoice") do
-                labeled' "returnToSkip" $ doStep 3 msg
-                labeled' "playNormally" $ doStep 1 msg
+                labeled "returnToSkip" $ doStep 3 msg
+                labeled "playNormally" $ doStep 1 msg
         else doStep 1 msg
       pure s
     DoStep 1 (LoadScenario opts) -> do
@@ -188,7 +188,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         player
         (setTitle "title" >> tarot arcana >> img card >> p (tshow arcana))
         do
-          unscoped $ labeled' "continue" nothing
+          unscoped $ labeled "continue" nothing
 
       case arcana of
         TheFool0 -> do

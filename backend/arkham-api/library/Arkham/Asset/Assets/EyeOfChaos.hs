@@ -61,10 +61,10 @@ instance RunMessage EyeOfChaosEffect where
               when (stillInPlay || notNull lids) do
                 chooseOrRunOneM iid do
                   when stillInPlay do
-                    cardI18n $ scope "eyeOfChaos" $ labeled' "placeCharge" do
+                    cardI18n $ scope "eyeOfChaos" $ labeled "placeCharge" do
                       addUses attrs.source assetId Charge 1
                   unless (null lids) do
-                    withI18n $ countVar 1 $ labeled' "discoverCluesAtConnecting" do
+                    withI18n $ countVar 1 $ labeled "discoverCluesAtConnecting" do
                       chooseTargetM iid lids $ discoverAt NotInvestigate iid attrs 1
           case attrs.source of
             AbilitySource (AssetSource assetId) 1 -> handleIt assetId

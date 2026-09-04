@@ -54,7 +54,7 @@ instance RunMessage TheDrownedQuarter where
   runMessage msg s@(TheDrownedQuarter attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      storyWithContinue' do
+      storyWithContinue do
         setTitle "title"
         p "drownedQuarter1"
         p.basic "checkCampaignLog"
@@ -75,7 +75,7 @@ instance RunMessage TheDrownedQuarter where
         hasPhysical <- fieldP InvestigatorPhysicalTrauma (> 0) iid
         hasMental <- fieldP InvestigatorMentalTrauma (> 0) iid
         canErase <- canEraseProgress iid Key.NoPlaceLikeHome
-        storyWithChooseOneM'
+        storyWithChooseOneM
           ( compose.green do
               h3 "noPlaceLikeHome.title"
               p "noPlaceLikeHome.instructions"
@@ -91,17 +91,17 @@ instance RunMessage TheDrownedQuarter where
               -- "Heal 1 mental or 1 physical trauma"; only offer what they have.
               when (hasPhysical || hasMental) do
                 chooseOneM iid do
-                  questionLabeled' "noPlaceLikeHome.healTraumaQuestion"
+                  questionLabeled "noPlaceLikeHome.healTraumaQuestion"
                   when hasPhysical
-                    $ labeled' "noPlaceLikeHome.healPhysicalTrauma"
+                    $ labeled "noPlaceLikeHome.healPhysicalTrauma"
                     $ push
                     $ HealTrauma iid 1 0
                   when hasMental
-                    $ labeled' "noPlaceLikeHome.healMentalTrauma"
+                    $ labeled "noPlaceLikeHome.healMentalTrauma"
                     $ push
                     $ HealTrauma iid 0 1
               decrementRecordCountForInvestigator iid Key.NoPlaceLikeHome 1
-            labeled' "noPlaceLikeHome.onMyOwn" do
+            labeled "noPlaceLikeHome.onMyOwn" do
               incrementRecordCountForInvestigator iid Key.NoPlaceLikeHome 2
               sufferMentalTrauma iid 1
               -- "The next scenario" is this one: the story is read in the intro,
@@ -189,15 +189,15 @@ instance RunMessage TheDrownedQuarter where
         lead <- getLead
         n <- getPlayerCount
         chooseNM lead n do
-          questionLabeled' "chooseFloodedSeaFloor"
+          questionLabeled "chooseFloodedSeaFloor"
           targets seaFloorIds increaseFloodLevel
 
       eachInvestigator (`forInvestigator` Setup)
     ForInvestigator iid Setup -> do
       artifacts <- getAvailableArtifacts
       chooseOneM iid do
-        questionLabeled' "chooseExpeditionAssetQuestion"
-        labeled' "noExpeditionAsset" nothing
+        questionLabeled "chooseExpeditionAssetQuestion"
+        labeled "noExpeditionAsset" nothing
         for_ (artifacts <> expeditionItems) \asset ->
           cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s

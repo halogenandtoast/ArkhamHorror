@@ -103,7 +103,7 @@ instance RunMessage TheWesternWall where
   runMessage msg s@(TheWesternWall attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      storyWithContinue' do
+      storyWithContinue do
         setTitle "title"
         p.basic "checkCampaignLog"
         ul do
@@ -120,7 +120,7 @@ instance RunMessage TheWesternWall where
         p.basic $ if headedWest then "proceedToWesternSetup" else "proceedToEasternSetup"
 
       when hasDoNoHarm do
-        storyWithChooseOneM'
+        storyWithChooseOneM
           ( compose.green do
               h3 "doNoHarm.title"
               p "doNoHarm.instructions"
@@ -131,8 +131,8 @@ instance RunMessage TheWesternWall where
                 li "doNoHarm.leaveBehind"
           )
           do
-            labeled' "doNoHarm.bringAlong" $ record TheExpeditionHelpedThePilgrim
-            labeled' "doNoHarm.leaveBehind" $ record TheExpeditionLeftThePilgrim
+            labeled "doNoHarm.bringAlong" $ record TheExpeditionHelpedThePilgrim
+            labeled "doNoHarm.leaveBehind" $ record TheExpeditionLeftThePilgrim
       pure s
     StandaloneSetup -> do
       setChaosTokens (chaosBagContents attrs.difficulty)
@@ -244,8 +244,8 @@ instance RunMessage TheWesternWall where
       eachInvestigator (`forInvestigator` Setup)
     ForInvestigator iid Setup -> do
       chooseOneM iid do
-        questionLabeled' "chooseExpeditionAssetQuestion"
-        labeled' "noExpeditionAsset" nothing
+        questionLabeled "chooseExpeditionAssetQuestion"
+        labeled "noExpeditionAsset" nothing
         for_
           [ Assets.expeditionGear
           , Assets.laudanum
@@ -303,11 +303,11 @@ instance RunMessage TheWesternWall where
                   sufferMentalTrauma iid 1
                   decrementRecordCountForInvestigator iid Key.DoNoHarm 1
           chooseResolution3 =
-            storyWithChooseOneM'
+            storyWithChooseOneM
               (compose.resolution $ scope "resolution3" $ setTitle "title" >> p "body")
               do
-                labeled' "resolution3.drownedQuarter" $ endOfScenarioThen TheDrownedQuarter
-                labeled' "resolution3.apiary" $ endOfScenarioThen TheApiary
+                labeled "resolution3.drownedQuarter" $ endOfScenarioThen TheDrownedQuarter
+                labeled "resolution3.apiary" $ endOfScenarioThen TheApiary
       case res of
         Resolution 1 -> do
           resolutionWithXp "resolution1" $ allGainXp' attrs

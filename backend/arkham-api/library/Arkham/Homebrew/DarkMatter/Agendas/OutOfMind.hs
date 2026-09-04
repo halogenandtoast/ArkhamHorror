@@ -55,7 +55,7 @@ instance RunMessage OutOfMind where
       wounded <- select InvestigatorWithMentalTrauma
       chooseOneM lead $ withI18n $ countVar 1 do
         targets wounded \iid -> push $ HealTrauma iid 0 1
-        labeled' "doNotHeal" nothing
+        labeled "doNotHeal" nothing
       revertAgenda attrs
       pure . overAttrs (setMeta True) $ a
     _ -> OutOfMind <$> liftRunMessage msg attrs

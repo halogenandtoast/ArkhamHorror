@@ -21,7 +21,7 @@ instance RunMessage WindowToAnotherTime where
     Revelation iid (isSource attrs -> True) -> do
       ancientLocations <- selectWithField LocationCard $ LocationWithTrait Ancient
       chooseOrRunOneM iid $ withI18n do
-        labeled' "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+        labeled "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
         for_ ancientLocations \(lid, card) -> do
           targeting lid do
             removeLocation lid

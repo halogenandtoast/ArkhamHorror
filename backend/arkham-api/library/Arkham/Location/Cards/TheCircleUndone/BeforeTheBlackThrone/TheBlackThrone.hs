@@ -39,8 +39,8 @@ instance RunMessage TheBlackThrone where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
       chooseOneM iid $ scenarioI18n do
-        labeled' "theBlackThrone.doom" $ placeDoom (attrs.ability 1) azathoth 1
-        labeled' "theBlackThrone.attack" $ initiateEnemyAttack azathoth (attrs.ability 1) iid
+        labeled "theBlackThrone.doom" $ placeDoom (attrs.ability 1) azathoth 1
+        labeled "theBlackThrone.attack" $ initiateEnemyAttack azathoth (attrs.ability 1) iid
       pure l
     Do (PlaceCosmos _ (is attrs -> True) cloc) -> do
       handleCosmos attrs cloc

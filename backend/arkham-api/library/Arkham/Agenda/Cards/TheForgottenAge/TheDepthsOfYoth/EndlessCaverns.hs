@@ -22,7 +22,7 @@ instance RunMessage EndlessCaverns where
       lead <- getLead
       iids <- getInvestigators
       chooseOneM lead do
-        scenarioI18n $ questionLabeled' "endlessCaverns.scout"
+        scenarioI18n $ questionLabeled "endlessCaverns.scout"
         targets iids $ handleTarget lead attrs
       advanceAgendaDeck attrs
       pure a

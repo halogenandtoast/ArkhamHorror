@@ -347,7 +347,7 @@ instance RunMessage TheDepthsOfYoth where
           when (collectedAStrangeLiquid && hasStickyGoop) $ do
             investigators <- getInvestigators
             leadChooseOneM do
-              questionLabeled' "stickyGoop"
+              questionLabeled "stickyGoop"
               portraits investigators (`pickSupply` KeyOfEztli)
 
           endOfScenario

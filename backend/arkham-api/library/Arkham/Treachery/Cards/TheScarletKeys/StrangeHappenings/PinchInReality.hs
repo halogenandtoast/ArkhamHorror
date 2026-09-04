@@ -24,7 +24,7 @@ instance RunMessage PinchInReality where
       chooseOrRunOneM iid do
         withI18n $ countVar 1 $ labeledValidate' canSpend "spendClues" $ spendClues iid 1
         campaignI18n $ countVar 2 $ labeledValidate' (n > 0) "pinchInReality.discard" $ doStep 1 msg
-        when (not canSpend && n == 0) $ withI18n $ labeled' "continue" nothing
+        when (not canSpend && n == 0) $ withI18n $ labeled "continue" nothing
       pure t
     DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
       n <- selectCount $ inHandOf NotForPlay iid <> basic NonWeakness

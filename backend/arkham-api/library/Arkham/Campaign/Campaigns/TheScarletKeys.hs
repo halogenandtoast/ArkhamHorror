@@ -142,9 +142,9 @@ instance RunMessage TheScarletKeys where
         nextCampaignStep
         pure $ TheScarletKeys $ attrs & metaL .~ toJSON initMeta
       CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
-        storyWithChooseOneM' (setTitle "title" >> p "theFoundation1") do
-          labeled' "tell" $ interludeStepPart 1 Nothing 2
-          labeled' "doNotTell" $ interludeStepPart 1 Nothing 3
+        storyWithChooseOneM (setTitle "title" >> p "theFoundation1") do
+          labeled "tell" $ interludeStepPart 1 Nothing 2
+          labeled "doNotTell" $ interludeStepPart 1 Nothing 3
         pure c
       CampaignStep (InterludeStepPart 1 _ 2) -> scope "interlude1" do
         swapTokens ElderThing Tablet
@@ -403,12 +403,12 @@ instance RunMessage TheScarletKeys where
       CampaignStep (InterludeStepPart 26 _ 1) -> scope "quidProQuo" do
         let meta = toResult @TheScarletKeysMeta attrs.meta
         let visitedMarrakesh = Marrakesh `elem` meta.visitedLocations
-        storyWithChooseOneM' (setTitle "title" >> p "quidProQuo1") do
-          labeled' "ticket" do
+        storyWithChooseOneM (setTitle "title" >> p "quidProQuo1") do
+          labeled "ticket" do
             lead <- getLead
             forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditedTicket
             campaignStep_ (embark attrs)
-          labeled' "supplies" do
+          labeled "supplies" do
             interludeXpAll (toBonus "supplies" 1)
             campaignStep_ (embark attrs)
           labeledValidate' (not visitedMarrakesh) "intel11" $ interludeStepPart 26 Nothing 3
@@ -416,12 +416,12 @@ instance RunMessage TheScarletKeys where
       CampaignStep (InterludeStepPart 26 _ 2) -> scope "quidProQuo" do
         let meta = toResult @TheScarletKeysMeta attrs.meta
         let visitedHavana = Havana `elem` meta.visitedLocations
-        storyWithChooseOneM' (setTitle "title" >> p "quidProQuo2") do
-          labeled' "ticket" do
+        storyWithChooseOneM (setTitle "title" >> p "quidProQuo2") do
+          labeled "ticket" do
             lead <- getLead
             forceAddCampaignCardToDeckChoice [lead] DoNotShuffleIn Assets.expeditedTicket
             campaignStep_ (embark attrs)
-          labeled' "supplies" do
+          labeled "supplies" do
             interludeXpAll (toBonus "supplies" 1)
             campaignStep_ (embark attrs)
           labeledValidate' (not visitedHavana) "intel28" $ interludeStepPart 26 Nothing 4
@@ -447,9 +447,9 @@ instance RunMessage TheScarletKeys where
         doStep (if noTrust then 2 else 5) msg
         pure c
       DoStep 2 msg'@(CampaignStep (InterludeStep 27 _)) -> scope "deadAndGone" do
-        storyWithChooseOneM' (setTitle "title" >> p "deadAndGone2") do
-          labeled' "truth" $ doStep 3 msg'
-          labeled' "secrets" $ doStep 4 msg'
+        storyWithChooseOneM (setTitle "title" >> p "deadAndGone2") do
+          labeled "truth" $ doStep 3 msg'
+          labeled "secrets" $ doStep 4 msg'
         pure c
       DoStep 3 msg'@(CampaignStep (InterludeStep 27 _)) -> scope "deadAndGone" do
         crossOut AgentQuinnDoesNotTrustTheCell
@@ -520,10 +520,10 @@ instance RunMessage TheScarletKeys where
         campaignStep_ (embark attrs)
         pure $ TheScarletKeys $ attrs & overMeta (psiL ?~ psi)
       DoStep 3 msg'@(CampaignStep (InterludeStep 32 _)) -> scope "theCoiledSerpent" do
-        storyWithChooseOneM' (setTitle "title" >> p "theCoiledSerpent3") do
-          labeled' "keepInquiring" $ doStep 4 msg'
-          labeled' "stickAround" $ doStep 5 msg'
-          labeled' "forgetHer" $ doStep 6 msg'
+        storyWithChooseOneM (setTitle "title" >> p "theCoiledSerpent3") do
+          labeled "keepInquiring" $ doStep 4 msg'
+          labeled "stickAround" $ doStep 5 msg'
+          labeled "forgetHer" $ doStep 6 msg'
         pure c
       DoStep 4 (CampaignStep (InterludeStep 32 _)) -> scope "theCoiledSerpent" do
         record FlintIsWorkingSolo
@@ -634,7 +634,7 @@ instance RunMessage TheScarletKeys where
         flavor $ setTitle "title" >> p "specialDelivery2"
         let faces = filter isNumberChaosToken $ nub attrs.chaosBag
         leadChooseOneM do
-          questionLabeled' "chooseToken"
+          questionLabeled "chooseToken"
           for_ faces \face ->
             when (face /= PlusOne) do
               chaosTokenLabeled face do
@@ -665,7 +665,7 @@ instance RunMessage TheScarletKeys where
         flavor $ setTitle "title" >> p "specialDelivery4"
         let faces = filter isNumberChaosToken $ nub attrs.chaosBag
         leadChooseOneM do
-          questionLabeled' "chooseToken"
+          questionLabeled "chooseToken"
           for_ faces \face ->
             when (face /= PlusOne) do
               chaosTokenLabeled face do
@@ -874,24 +874,24 @@ instance RunMessage TheScarletKeys where
           selectAny
             $ InvestigatorWithTrait Drifter
             <> not_ (mapOneOf investigatorIs [Investigators.wendyAdams, Investigators.wendyAdamsParallel])
-        storyWithChooseOneM'
+        storyWithChooseOneM
           ( setTitle "title"
               >> p "whistleOnTheWind1Part1"
               >> p.validate drifter "drifter"
               >> p "whistleOnTheWind1Part2"
           )
           do
-            labeled' "accept" $ doStep 2 msg
-            labeled' "reject" $ doStep 3 msg
+            labeled "accept" $ doStep 2 msg
+            labeled "reject" $ doStep 3 msg
         pure c
       DoStep 2 (CampaignStep (InterludeStep 53 _)) -> scope "whistleOnTheWind" do
         record TheCellPossessesAMysteriousWhistle
         swapTokens ElderThing Tablet
         flavor $ setTitle "title" >> p "whistleOnTheWind2"
         eachInvestigator \iid -> chooseOneM iid $ unscoped do
-          questionLabeled' "chooseTrauma"
-          countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
-          countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+          questionLabeled "chooseTrauma"
+          countVar 1 $ labeled "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+          countVar 1 $ labeled "sufferMentalTrauma" $ sufferMentalTrauma iid 1
         campaignStep_ (embark attrs)
         pure c
       DoStep 3 (CampaignStep (InterludeStep 53 _)) -> scope "whistleOnTheWind" do

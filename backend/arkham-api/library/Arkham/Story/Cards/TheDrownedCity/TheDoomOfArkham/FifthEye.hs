@@ -33,7 +33,7 @@ instance RunMessage FifthEye where
       candidates <- select $ mapOneOf (cthulhuFacet . snd) cthulhuBoardSlots <> EnemyWithDoom (static 0)
       lead <- getLead
       chooseOrRunOneM lead $ scenarioI18n do
-        questionLabeled' "chooseEnemyForDoom"
+        questionLabeled "chooseEnemyForDoom"
         targets candidates \eid -> placeDoom (attrs.ability 1) eid 1
       discardCthulhuCard attrs
       pure s

@@ -163,7 +163,6 @@ import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
-import Arkham.Plural
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.ScenarioLogKey
@@ -233,8 +232,8 @@ handleInvestigatorIsDefeated a@InvestigatorAttrs {..} source iid = do
 
   when chooseTrauma do
     Choose.chooseOneM iid $ withI18n do
-      Choose.labeled' "sufferPhysicalTrauma" $ Lifted.sufferPhysicalTrauma iid 1
-      Choose.labeled' "sufferMentalTrauma" $ Lifted.sufferMentalTrauma iid 1
+      Choose.labeled "sufferPhysicalTrauma" $ Lifted.sufferPhysicalTrauma iid 1
+      Choose.labeled "sufferMentalTrauma" $ Lifted.sufferMentalTrauma iid 1
 
   pushAll
     $ CheckTrauma iid

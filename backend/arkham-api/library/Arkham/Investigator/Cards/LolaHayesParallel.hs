@@ -32,9 +32,11 @@ instance HasModifiersFor LolaHayesParallel where
         , CannotCommitCards $ not_ $ oneOf $ WeaknessCard : map CardWithClass (nub [Neutral, role])
         ]
       Just cid ->
-        [ CannotPlay $ not_ $ oneOf $ WeaknessCard : CardWithId cid
+        [ CannotPlay $ not_ $ oneOf $ WeaknessCard
+            : CardWithId cid
             : map CardWithClass (nub [Neutral, role])
-        , CannotCommitCards $ not_ $ oneOf $ WeaknessCard : CardWithId cid
+        , CannotCommitCards $ not_ $ oneOf $ WeaknessCard
+            : CardWithId cid
             : map CardWithClass (nub [Neutral, role])
         ]
 
@@ -59,7 +61,7 @@ switchRole attrs = do
   let roles = filter (`notElem` [Mythos, currentRole]) [minBound .. maxBound]
   msamuel <- select $ assetIs Assets.samuelBlakeObsessiveProducer
   chooseOneM attrs.id $ for_ roles \role ->
-    labeled (tshow role) do
+    (withI18n $ keyVar "name" (tshow role) $ labeled "name") do
       investigatorSpecific attrs.id "setRole" role
       for_ msamuel \samuel ->
         when (role /= currentRole) $ assignHorror attrs.id samuel 1

@@ -25,11 +25,11 @@ instance RunMessage Enervation where
       cards <- select $ inHandOf NotForPlay iid
       let highestCost = maxesBy (.printedCost) cards
       chooseOrRunOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
+        countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
         unless (null highestCost) do
           cardI18n
             $ scope "enervation"
-            $ labeled' "discardHighestCost"
+            $ labeled "discardHighestCost"
             $ chooseTargetM iid highestCost
             $ discardCard iid attrs
       pure t

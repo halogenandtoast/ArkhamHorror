@@ -25,7 +25,8 @@
     "above": "Place Above",
     "below": "Place Below",
     "right": "Place to the Right",
-    "left": "Place to the Left"
+    "left": "Place to the Left",
+    "doneReadingActII": "Done having investigators read Act II"
   },
   "remembered": {
     "youOpenedASecretPassageway": "You opened a secret passageway."

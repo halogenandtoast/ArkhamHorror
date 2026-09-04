@@ -43,7 +43,7 @@ instance RunMessage HydrasBrood where
         Nothing -> do
           hydra <- selectJust $ IncludeOmnipotent $ enemyIs Cards.hydraAwakenedAndEnraged
           chooseOneM iid $ scenarioI18n $ scope "hydrasBrood" do
-            labeled' "placeDoomOnHydra" $ placeDoom (attrs.ability 1) hydra 1
-            labeled' "hydraAttacksYou" $ initiateEnemyAttack hydra (attrs.ability 1) iid
+            labeled "placeDoomOnHydra" $ placeDoom (attrs.ability 1) hydra 1
+            labeled "hydraAttacksYou" $ initiateEnemyAttack hydra (attrs.ability 1) iid
       pure e
     _ -> HydrasBrood <$> liftRunMessage msg attrs

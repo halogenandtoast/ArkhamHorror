@@ -62,7 +62,7 @@ instance RunMessage InnerChamber where
               let rest = deleteFirst card cards
               if hasChalk && notNull rest
                 then chooseOneM iid $ scenarioI18n do
-                  labeled' "innerChamber.doNotDrawAnother" do
+                  labeled "innerChamber.doNotDrawAnother" do
                     unfocusCards
                     shuffleCardsIntoDeck ExplorationDeck rest
                     drawSelected card

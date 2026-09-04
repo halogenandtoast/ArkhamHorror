@@ -98,9 +98,9 @@ instance RunMessage TheCircleUndone where
         showThePriceOfProgress5 = mInterludeKey == Just ThePriceOfProgress5
         showThePriceOfProgress6 = mInterludeKey == Just ThePriceOfProgress6
         lodgeChoices = do
-          labeled' "refuse" $ interludeStepPart 2 mInterludeKey 7
-          labeled' "agree" $ interludeStepPart 2 mInterludeKey 8
-          labeled' "lie" $ interludeStepPart 2 mInterludeKey 9
+          labeled "refuse" $ interludeStepPart 2 mInterludeKey 7
+          labeled "agree" $ interludeStepPart 2 mInterludeKey 8
+          labeled "lie" $ interludeStepPart 2 mInterludeKey 9
 
       flavor $ setTitle "title" >> p "instructions"
       flavor
@@ -119,11 +119,11 @@ instance RunMessage TheCircleUndone where
       when showThePriceOfProgress5 do
         record TheInvestigatorsRescuedJosef
         interludeXpAll (WithBonus "Gained insight into the inner workings of the Silver Twilight Lodge" 2)
-        storyWithChooseOneM' (setTitle "title" >> p "thePriceOfProgress5") lodgeChoices
+        storyWithChooseOneM (setTitle "title" >> p "thePriceOfProgress5") lodgeChoices
 
       when showThePriceOfProgress6 do
         record JosefIsAliveAndWell
-        storyWithChooseOneM' (setTitle "title" >> p "thePriceOfProgress6") lodgeChoices
+        storyWithChooseOneM (setTitle "title" >> p "thePriceOfProgress6") lodgeChoices
       pure c
     CampaignStep (InterludeStepPart 2 _ 7) -> scope "interlude2" do
       flavor $ setTitle "title" >> p "thePriceOfProgress7"
@@ -150,9 +150,9 @@ instance RunMessage TheCircleUndone where
       nextCampaignStep
       pure c
     CampaignStep (InterludeStep 3 mInterludeKey) -> scope "interlude3" do
-      storyWithChooseOneM' (setTitle "title" >> p "theInnerCircle1") do
-        labeled' "truth" $ interludeStepPart 3 mInterludeKey 2
-        labeled' "lie" $ interludeStepPart 3 mInterludeKey 3
+      storyWithChooseOneM (setTitle "title" >> p "theInnerCircle1") do
+        labeled "truth" $ interludeStepPart 3 mInterludeKey 2
+        labeled "lie" $ interludeStepPart 3 mInterludeKey 3
       pure c
     CampaignStep (InterludeStepPart 3 mInterludeKey 2) -> scope "interlude3" do
       rescuedJosef <- getHasRecord TheInvestigatorsRescuedJosef
@@ -171,19 +171,19 @@ instance RunMessage TheCircleUndone where
     CampaignStep (InterludeStepPart 3 mInterludeKey 4) -> scope "interlude3" do
       survived <- getHasRecord TheInvestigatorsSurvivedTheWatchersEmbrace
       storyWithChooseUpToNM' 3 "done" (setTitle "title" >> p "theInnerCircle4") do
-        labeled' "whatIsTheCreature" $ flavor $ p.green "whatIsTheCreature"
-        labeled' "whatDoYouWantWithTheCreature" $ flavor $ p.green "whatDoYouWantWithTheCreature"
-        labeled' "whatDoTheWitchesWantWithTheCreature"
+        labeled "whatIsTheCreature" $ flavor $ p.green "whatIsTheCreature"
+        labeled "whatDoYouWantWithTheCreature" $ flavor $ p.green "whatDoYouWantWithTheCreature"
+        labeled "whatDoTheWitchesWantWithTheCreature"
           $ flavor
           $ p.green "whatDoTheWitchesWantWithTheCreature"
-        labeled' "didYouKnowAboutTheCreature"
+        labeled "didYouKnowAboutTheCreature"
           $ flavor
           $ p.green "didYouKnowAboutTheCreatureBeforeTheCharityGala"
-        labeled' "whereAreTheFourMissingPeople"
+        labeled "whereAreTheFourMissingPeople"
           $ flavor
           $ p.green "whereAreTheFourMissingPeopleFromTheCharityGala"
         when survived
-          $ labeled' "whyAreYouLookingAtMeLikeThat"
+          $ labeled "whyAreYouLookingAtMeLikeThat"
           $ flavor
           $ p.green "whyAreYouLookingAtMeLikeThat"
       interludeStepPart 3 mInterludeKey 6
@@ -282,8 +282,8 @@ instance RunMessage TheCircleUndone where
           let collection = map (`lookupPlayerCard` nullCardId) (toList allPlayerCards)
           for_ investigators \iid -> do
             chooseOneM iid do
-              campaignI18n $ scope "returnTo" $ questionLabeled' "anetteTaughtYouTheSpellsOfOld"
-              withI18n $ labeled' "yes" do
+              campaignI18n $ scope "returnTo" $ questionLabeled "anetteTaughtYouTheSpellsOfOld"
+              withI18n $ labeled "yes" do
                 campaignI18n $ scope "returnTo" $ interludeXp iid $ toBonus "bonus" 4
                 investigatorClass <- field Investigator.InvestigatorClass iid
 
@@ -305,7 +305,7 @@ instance RunMessage TheCircleUndone where
                 chooseOneM iid do
                   cardsLabeled cards $ addCampaignCardToDeck iid DoNotShuffleIn
 
-              withI18n $ labeled' "no" nothing
+              withI18n $ labeled "no" nothing
 
       flavor $ setTitle "title" >> p "twistOfFate2"
       nextCampaignStep

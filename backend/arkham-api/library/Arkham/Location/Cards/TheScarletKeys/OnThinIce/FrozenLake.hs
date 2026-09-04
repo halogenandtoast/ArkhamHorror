@@ -28,7 +28,7 @@ instance RunMessage FrozenLake where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasCardsInHand <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
         labeledValidate' hasCardsInHand "discardCardsFromHand" $ chooseAndDiscardCard iid (attrs.ability 1)
       pure l
     _ -> FrozenLake <$> liftRunMessage msg attrs

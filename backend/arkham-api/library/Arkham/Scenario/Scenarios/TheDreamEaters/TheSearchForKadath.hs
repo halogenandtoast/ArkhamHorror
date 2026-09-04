@@ -15,7 +15,7 @@ import Arkham.Enemy.CardDefs.TheDreamEaters.Corsairs qualified as Enemies
 import Arkham.Enemy.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Enemies
 import Arkham.Enemy.Types (Field (EnemyCardCode))
 import Arkham.Exception
-import Arkham.Helpers.FlavorText (additionalRules, buildFlavor, flavor, li, setTitle, setup, ul)
+import Arkham.Helpers.FlavorText (additionalRules, flavor, li, setTitle, setup, storyOnlyBuild, ul)
 import Arkham.Helpers.Modifiers hiding (roundModifier, skillTestModifier)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
@@ -96,7 +96,7 @@ readInvestigatorDefeat = do
   defeated <- select DefeatedInvestigator
   unless (null defeated) do
     resigned <- select ResignedInvestigator
-    storyOnly defeated $ buildFlavor $ scenarioFlavorText "investigatorDefeat"
+    storyOnlyBuild defeated $ scenarioFlavorText "investigatorDefeat"
     for_ defeated $ \iid -> recordForInvestigator iid WasCaptured
     withOwner Assets.randolphCarterExpertDreamer $ \owner -> do
       when ((owner `elem` defeated) && notNull resigned) do
@@ -135,9 +135,9 @@ instance RunMessage TheSearchForKadath where
       doStep (if parleyed || savedByRandolph then 5 else 6) PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> do
-      storyWithChooseOneM (buildFlavor $ scenarioFlavorText "intro5") do
-        labeled' "leaveEmptyHanded" $ doStep 7 PreScenarioSetup
-        labeled' "forceIntoTemple" $ doStep 8 PreScenarioSetup
+      storyWithChooseOneM (scenarioFlavorText "intro5") do
+        labeled "leaveEmptyHanded" $ doStep 7 PreScenarioSetup
+        labeled "forceIntoTemple" $ doStep 8 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> do
       flavor $ scenarioFlavorText "intro6"
@@ -246,9 +246,9 @@ instance RunMessage TheSearchForKadath where
           chooseOneM iid $ withI18n do
             numberVar "damage" 1
               $ numberVar "horror" 1
-              $ labeled' "takeDamageAndHorror"
+              $ labeled "takeDamageAndHorror"
               $ assignDamageAndHorror iid Tablet 1 1
-            countVar 1 $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
+            countVar 1 $ labeled "placeAgendaDoom" $ placeDoomOnAgenda 1
         _ -> pure ()
       pure s
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
@@ -267,7 +267,7 @@ instance RunMessage TheSearchForKadath where
         for_ tenebrousNightgaunts \nightgaunt -> case cities of
           [location] -> push $ PlaceEnemy nightgaunt $ AtLocation location
           _ -> chooseOneM lead do
-            questionLabeled' "placeNightgaunt"
+            questionLabeled "placeNightgaunt"
             targets cities \location -> push $ PlaceEnemy nightgaunt $ AtLocation location
 
       pure s

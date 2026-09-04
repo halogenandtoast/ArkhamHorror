@@ -24,10 +24,10 @@ instance RunMessage RiverviewTheatre where
         for_ mDrKenslersOffice \loc ->
           withI18n
             $ keyVar "name" "Dr. Kensler's Office"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
         for_ mInfirmary \loc ->
-          withI18n $ keyVar "name" "Infirmary" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+          withI18n $ keyVar "name" "Infirmary" $ labeled "putSetAsideLocationIntoPlay" $ placeLocation_ loc
 
       pure s
     _ -> RiverviewTheatre <$> liftRunMessage msg attrs

@@ -44,7 +44,7 @@ instance RunMessage MiskatonicUniversityAllied where
   runMessage msg s@(MiskatonicUniversityAllied attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       clues <- field InvestigatorClues iid
-      withI18n $ chooseAmount' iid "cluesToPlace" "$clues" 0 (min 2 clues) attrs
+      withI18n $ chooseAmount iid "cluesToPlace" "$clues" 0 (min 2 clues) attrs
       pure s
     ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       spendClues iid n

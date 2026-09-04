@@ -99,19 +99,19 @@ instance RunMessage ReturnToMerchantDistrict where
           chooseTargetM iid allAssets \asset -> do
             chooseOrRunOneM iid $ scenarioI18n do
               when (asset `elem` chargeAssets) do
-                labeled' "merchantDistrict.removeCharge" do
+                labeled "merchantDistrict.removeCharge" do
                   spendUses (attrs.ability 1) asset #charge 1
                   push $ DoStep total (ResolveAmounts iid (updateAmounts "$charge") t)
               when (asset `elem` supplyAssets) do
-                labeled' "merchantDistrict.removeSupply" do
+                labeled "merchantDistrict.removeSupply" do
                   spendUses (attrs.ability 1) asset #supply 1
                   push $ DoStep total (ResolveAmounts iid (updateAmounts "$supply") t)
               when (asset `elem` secretAssets) do
-                labeled' "merchantDistrict.removeSecret" do
+                labeled "merchantDistrict.removeSecret" do
                   spendUses (attrs.ability 1) asset #secret 1
                   push $ DoStep total (ResolveAmounts iid (updateAmounts "$secret") t)
               when (asset `elem` ammoAssets) do
-                labeled' "merchantDistrict.removeAmmo" do
+                labeled "merchantDistrict.removeAmmo" do
                   spendUses (attrs.ability 1) asset #ammo 1
                   push $ DoStep total (ResolveAmounts iid (updateAmounts "$ammo") t)
       pure l

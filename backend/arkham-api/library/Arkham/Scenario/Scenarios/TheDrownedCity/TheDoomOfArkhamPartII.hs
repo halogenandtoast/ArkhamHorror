@@ -73,7 +73,7 @@ instance RunMessage TheDoomOfArkhamPartII where
     PreScenarioSetup -> scope "intro" do
       artifacts <- length <$> getUncrossedArtifacts
       let canRitual = artifacts >= 5
-      storyWithChooseOneM'
+      storyWithChooseOneM
         ( do
             setTitle "title"
             p "theDoomOfArkham1"
@@ -83,7 +83,7 @@ instance RunMessage TheDoomOfArkhamPartII where
               li.validate canRitual "anotherWay"
         )
         do
-          labeled' "lastStand" $ doStep 2 msg
+          labeled "lastStand" $ doStep 2 msg
           labeledValidate' canRitual "anotherWay" $ doStep 3 msg
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
@@ -217,7 +217,7 @@ instance RunMessage TheDoomOfArkhamPartII where
         if stoodTogether
           then do
             leadChooseOrRunOneM do
-              questionLabeled' "chooseAllyInvestigator"
+              questionLabeled "chooseAllyInvestigator"
               targets investigators $ createAssetAt_ (toCard card) . InPlayArea
           else push $ SetAsideCards [toCard card]
       -- "Gather all earned artifacts that are not crossed out ... Put each of them
@@ -236,7 +236,7 @@ instance RunMessage TheDoomOfArkhamPartII where
           card <- fetchCard def
           lead <- getLead
           chooseOrRunOneM lead do
-            questionLabeled' "chooseArtifactInvestigator"
+            questionLabeled "chooseArtifactInvestigator"
             targets [iid | (iid, n) <- counts, n == fewest] (createAssetAt_ card . InPlayArea)
       pure s
     {- "When drawing cards from the Cthulhu deck, resolve each effect, one at a time,
@@ -334,5 +334,5 @@ removeRandomBasicWeakness iid = do
   weaknesses <- select $ basic BasicWeaknessCard <> InDeckOf (InvestigatorWithId iid)
   unless (null weaknesses) do
     chooseOneM iid do
-      labeled' "removeNoWeakness" nothing
+      labeled "removeNoWeakness" nothing
       cardsLabeled weaknesses $ removeCardFromDeckForCampaign iid

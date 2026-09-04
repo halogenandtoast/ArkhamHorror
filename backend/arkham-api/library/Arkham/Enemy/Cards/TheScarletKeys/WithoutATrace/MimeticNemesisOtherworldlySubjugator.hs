@@ -42,7 +42,7 @@ instance RunMessage MimeticNemesisOtherworldlySubjugator where
         chooseOneM iid $ scenarioI18n do
           labeledValidate' (notNull cards) "mimeticNemesis.hollow" do
             chooseTargetM iid cards $ hollow iid
-          labeled' "mimeticNemesis.attack" do
+          labeled "mimeticNemesis.attack" do
             initiateEnemyAttack attrs (attrs.ability 2) iid
       pure e
     _ -> MimeticNemesisOtherworldlySubjugator <$> liftRunMessage msg attrs

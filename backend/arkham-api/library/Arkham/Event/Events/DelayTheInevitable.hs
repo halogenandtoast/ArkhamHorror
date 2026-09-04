@@ -43,8 +43,8 @@ instance RunMessage DelayTheInevitable where
     UseCardAbility iid (isSource attrs -> True) 1 (getDamageAndHorror -> (damage, horror)) _ -> do
       toDiscardBy iid (attrs.ability 1) attrs
       chooseOrRunOneM iid do
-        when (damage > 0) $ withI18n (countVar damage $ labeled' "cancelDamage" $ push $ CancelDamage iid damage)
-        when (horror > 0) $ withI18n (countVar horror $ labeled' "cancelHorror" $ push $ CancelHorror iid horror)
+        when (damage > 0) $ withI18n (countVar damage $ labeled "cancelDamage" $ push $ CancelDamage iid damage)
+        when (horror > 0) $ withI18n (countVar horror $ labeled "cancelHorror" $ push $ CancelHorror iid horror)
         when (damage > 0 && horror > 0) do
           labeledI "cancelHorrorAndDamage" $ pushAll [CancelDamage iid damage, CancelHorror iid horror]
       cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
@@ -53,7 +53,7 @@ instance RunMessage DelayTheInevitable where
       canAfford <- fieldMap InvestigatorResources (> 2) iid
       chooseOrRunOneM iid do
         when canAfford do
-          withI18n $ countVar 2 $ labeled' "spendResources" $ push $ SpendResources iid 2
-        withI18n $ cardNameVar attrs $ labeled' "discardName" $ toDiscardBy iid (attrs.ability 2) attrs
+          withI18n $ countVar 2 $ labeled "spendResources" $ push $ SpendResources iid 2
+        withI18n $ cardNameVar attrs $ labeled "discardName" $ toDiscardBy iid (attrs.ability 2) attrs
       pure e
     _ -> DelayTheInevitable <$> liftRunMessage msg attrs

@@ -38,7 +38,7 @@ chooseTemporalTest iid attrs = do
             <> [("agility", #agility, 3) | Present `member` traits, "agility" `notElem` testedSkills attrs]
             <> [("combat", #combat, 4) | Future `member` traits, "combat" `notElem` testedSkills attrs]
     chooseOneM iid $ withI18n do
-      labeled' "doNotTest" nothing
+      labeled "doNotTest" nothing
       for_ available \(label, skill, difficulty) ->
         chooseTest skill difficulty
           $ handleTarget iid attrs

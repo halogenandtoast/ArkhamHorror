@@ -37,7 +37,7 @@ instance RunMessage TheChamberOfStillRemains where
       investigators <- select $ investigatorAt chamberOfTime
 
       leadChooseOneM $ withI18n do
-        nameVar Assets.relicOfAgesRepossessThePast $ questionLabeled' "takeControlOf"
+        nameVar Assets.relicOfAgesRepossessThePast $ questionLabeled "takeControlOf"
         questionLabeledCard Assets.relicOfAgesRepossessThePast
         portraits investigators (`takeControlOfAsset` relicOfAges)
 

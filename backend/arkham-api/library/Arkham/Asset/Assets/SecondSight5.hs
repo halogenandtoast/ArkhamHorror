@@ -49,8 +49,8 @@ instance RunMessage SecondSight5 where
         )
         do
           chooseOneM iid $ cardI18n $ scope "secondSight5" do
-            labeled' "spendChargeForClue" $ doStep 2 msg
-            labeled' "doNotSpendCharge" nothing
+            labeled "spendChargeForClue" $ doStep 2 msg
+            labeled "doNotSpendCharge" nothing
       pure a
     DoStep 2 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
       spendUses (attrs.ability 1) attrs Charge 1

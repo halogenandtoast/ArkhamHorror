@@ -33,7 +33,7 @@ instance RunMessage SolarFlare where
       hasCards <- fieldMap InvestigatorHand notNull iid
       if hasCards
         then chooseOneM iid $ withI18n do
-          countVar 1 $ labeled' "discardCardsFromHand" $ chooseAndDiscardCard iid attrs
+          countVar 1 $ labeled "discardCardsFromHand" $ chooseAndDiscardCard iid attrs
           chooseTakeHorrorAndDamage iid attrs 1 1
         else assignDamageAndHorror iid attrs 1 1
       doStep (n - 1) msg'

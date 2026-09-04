@@ -27,7 +27,7 @@ instance RunMessage WallsClosingIn where
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       monsters <- getScenarioDeck MonstersDeck
       chooseOneM iid do
-        withI18n $ countVar n $ labeled' "takeHorror" $ assignHorror iid attrs n
+        withI18n $ countVar n $ labeled "takeHorror" $ assignHorror iid attrs n
         scenarioI18n $ labeledValidate' (notNull monsters) "wallsClosingIn.chooseEnemy" do
           push $ ChooseFrom iid $ chooseRandom attrs MonstersDeck 1
       pure t

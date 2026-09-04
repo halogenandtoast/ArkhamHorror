@@ -16,7 +16,8 @@
     "averyClaypoolAntarcticGuideResolute": {
       "revealANewChaosToken": "Reveal a new chaos token",
       "spend1Supply": "Spend 1 Supply"
-    }
+    },
+    "chooseAgenda": "The investigators may choose which agenda to use (the higher the agenda number, the less time the investigators will have)."
   },
   "intro1": {
     "title": "Scenario ???: Fatal Mirage",

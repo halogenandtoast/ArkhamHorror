@@ -116,6 +116,10 @@
       "healHorror": "Heal 3 horror",
       "gainResources": "Gain 5 resources",
       "drawCards": "Draw 3 cards"
+    },
+    "replicatingAberration": {
+      "spendCountermeasure": "Spend 1 countermeasure to prevent the replication",
+      "allowSpawn": "Allow the Replicating Aberration to spawn"
     }
   },
   "realityAcid": {

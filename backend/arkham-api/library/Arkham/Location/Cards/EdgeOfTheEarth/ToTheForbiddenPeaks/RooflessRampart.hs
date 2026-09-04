@@ -34,13 +34,13 @@ instance RunMessage RooflessRampart where
       treacheries <- select InPlayTreachery
       chooseOrRunOneM iid $ scenarioI18n $ scope "rooflessRampart" do
         when (doom > 0) do
-          labeled' "removeDoom" $ removeDoom (attrs.ability 1) aid 1
+          labeled "removeDoom" $ removeDoom (attrs.ability 1) aid 1
         unless (null enemies) do
-          labeled' "discardEnemy" do
+          labeled "discardEnemy" do
             chooseTargetM iid enemies $ toDiscardBy iid (attrs.ability 1)
 
         unless (null treacheries) do
-          labeled' "discardTreachery" do
+          labeled "discardTreachery" do
             chooseTargetM iid treacheries $ toDiscardBy iid (attrs.ability 1)
       record TheTeamDiscoveredAnAncientVault
       pure l

@@ -40,8 +40,8 @@ instance RunMessage AncientHallRelicsOfThePast where
       if null investigators
         then shuffleTopCard
         else leadChooseOneM $ scenarioI18n do
-          questionLabeled' "ancientHall.question"
-          labeled' "ancientHall.doNotCancel" shuffleTopCard
+          questionLabeled "ancientHall.question"
+          labeled "ancientHall.doNotCancel" shuffleTopCard
           targets investigators $ spendResourcesOf 3
       pure l
     _ -> AncientHallRelicsOfThePast <$> liftRunMessage msg attrs

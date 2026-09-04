@@ -22,7 +22,7 @@ instance RunMessage BlackStarsRise where
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       hasAgenda <- selectAny AnyAgenda
       chooseOrRunOneM iid $ withI18n do
-        when hasAgenda $ labeled' "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+        when hasAgenda $ labeled "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
         chooseTakeHorror iid attrs n
       pure t
     _ -> BlackStarsRise <$> liftRunMessage msg attrs

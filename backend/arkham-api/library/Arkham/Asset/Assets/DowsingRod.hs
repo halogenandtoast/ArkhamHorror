@@ -36,9 +36,9 @@ instance RunMessage DowsingRod where
       accessibleLocations <- getAccessibleLocations iid attrs
       chooseOneM iid do
         when (attrs.ready && notNull accessibleLocations) $ forcedWhen isForced do
-          (cardI18n $ labeled' "dowsingRod.exhaustForBoost")
+          (cardI18n $ labeled "dowsingRod.exhaustForBoost")
             $ doStep 2 msg
-        (cardI18n $ labeled' "dowsingRod.onLastClue")
+        (cardI18n $ labeled "dowsingRod.onLastClue")
           $ doStep 3 msg
       doStep 1 msg
       pure $ overAttrs (unsetMetaKey "option2") a
@@ -47,8 +47,8 @@ instance RunMessage DowsingRod where
       investigate' <- mkInvestigate sid iid (attrs.ability 1)
 
       chooseOneM iid do
-        (withI18n $ skillVar #willpower $ labeled' "useSkill") $ push $ withSkillType #willpower investigate'
-        (withI18n $ countVar 1 $ skillVar #intellect $ labeled' "getPlus") do
+        (withI18n $ skillVar #willpower $ labeled "useSkill") $ push $ withSkillType #willpower investigate'
+        (withI18n $ countVar 1 $ skillVar #intellect $ labeled "getPlus") do
           skillTestModifier sid (attrs.ability 1) iid $ SkillModifier #intellect 1
           push investigate'
       pure a

@@ -79,7 +79,7 @@ chooseAction :: ReverseQueue m => InvestigatorId -> AssetAttrs -> Message -> [Ac
 chooseAction iid attrs msg canDoActions = do
   actions' <- getAvailableActionTypes iid attrs canDoActions
   chooseOrRunOneM iid do
-    when (#move `elem` actions') $ (cardI18n $ labeled' "eonChart4.move") $ forAction #move msg
+    when (#move `elem` actions') $ (cardI18n $ labeled "eonChart4.move") $ forAction #move msg
     when (#evade `elem` actions') $ labeledI "evade" $ forAction #evade msg
     when (#investigate `elem` actions') $ labeledI "investigate" $ forAction #investigate msg
 

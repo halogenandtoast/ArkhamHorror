@@ -37,7 +37,7 @@ instance RunMessage TrustyBullwhipAdvanced where
           for_ mEnemy \eid -> do
             canEvade <- eid <=~> EnemyCanBeEvadedBy (attrs.ability 1)
             chooseOneM iid $ cardI18n $ scope "trustyBullwhipAdvanced" do
-              labeled' "dealDamageAndEvade" do
+              labeled "dealDamageAndEvade" do
                 exhaustThis attrs
                 skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
                 pushWhen canEvade $ EnemyEvaded iid eid

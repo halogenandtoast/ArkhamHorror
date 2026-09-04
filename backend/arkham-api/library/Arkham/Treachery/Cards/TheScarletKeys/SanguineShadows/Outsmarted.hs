@@ -24,7 +24,7 @@ instance RunMessage Outsmarted where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       coterie <- select $ NearestEnemyToFallback iid $ EnemyWithTrait Coterie
       chooseOneM iid do
-        withI18n $ countVar 1 $ labeled' "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+        withI18n $ countVar 1 $ labeled "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
         scenarioI18n $ labeledValidate' (notNull coterie) "coterieAttack" do
           chooseTargetM iid coterie \enemy -> initiateEnemyAttack enemy attrs iid
       pure t

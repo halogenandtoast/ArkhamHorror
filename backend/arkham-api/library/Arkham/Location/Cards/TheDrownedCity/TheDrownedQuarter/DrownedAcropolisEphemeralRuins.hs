@@ -40,7 +40,7 @@ instance RunMessage DrownedAcropolisEphemeralRuins where
       canFlood <- matches attrs.id CanHaveFloodLevelIncreased
       chooseOrRunOneM iid $ withI18n do
         labeledValidate' canFlood "increaseFloodLevelOfYourLocation" $ increaseThisFloodLevel attrs
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 2) 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 2) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       increaseThisFloodLevel attrs

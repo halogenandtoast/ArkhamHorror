@@ -33,8 +33,8 @@ instance RunMessage NotreDame where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       mAgenda <- selectOne AgendaWithAnyDoom
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
+        countVar 1 $ labeled "placeAgendaDoom" $ placeDoomOnAgenda 1
         for_ mAgenda \agenda -> do
-          countVar 1 $ labeled' "removeAgendaDoom" $ removeDoom (attrs.ability 1) agenda 1
+          countVar 1 $ labeled "removeAgendaDoom" $ removeDoom (attrs.ability 1) agenda 1
       pure l
     _ -> NotreDame <$> liftRunMessage msg attrs

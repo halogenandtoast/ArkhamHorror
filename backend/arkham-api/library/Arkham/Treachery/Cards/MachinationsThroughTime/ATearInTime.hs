@@ -29,8 +29,8 @@ instance RunMessage ATearInTime where
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       hasRemainingActions <- fieldP InvestigatorRemainingActions (> 0) iid
       chooseOrRunOneM iid $ withI18n do
-        when hasRemainingActions $ countVar 1 $ labeled' "loseActions" $ loseActions iid attrs 1
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+        when hasRemainingActions $ countVar 1 $ labeled "loseActions" $ loseActions iid attrs 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
       doStep (n - 1) msg'
       pure t
     _ -> ATearInTime <$> liftRunMessage msg attrs

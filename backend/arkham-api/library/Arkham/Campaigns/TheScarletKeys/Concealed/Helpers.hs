@@ -87,7 +87,7 @@ chooseExposeConcealedAt iid source lmatcher = do
   when (notNull concealed) do
     chooseOneM iid do
       targets concealed (exposeConcealed iid source . (.id))
-      campaignI18n $ labeled' "doNotExposeConcealed" nothing
+      campaignI18n $ labeled "doNotExposeConcealed" nothing
 
 chooseRevealConcealedAt
   :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> LocationMatcher -> m ()
@@ -95,7 +95,7 @@ chooseRevealConcealedAt iid source lmatcher = do
   concealed <- getConcealedChoicesAt NotForExpose lmatcher
   chooseOneM iid do
     targets concealed (revealConcealed iid source . (.id))
-    campaignI18n $ labeled' "doNotRevealConcealed" nothing
+    campaignI18n $ labeled "doNotRevealConcealed" nothing
 
 gatherConcealedCards
   :: (MonadRandom m, HasGame m) => EnemyId -> m (Maybe (ConcealedCardKind, [ConcealedCard]))

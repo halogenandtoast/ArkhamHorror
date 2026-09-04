@@ -36,7 +36,7 @@ instance RunMessage DreamersChronicle where
         withSkillTest \sid ->
           skillTestCardOptionEdit attrs preOriginalOption do
             chooseOneM iid do
-              (cardI18n $ labeled' "dreamersChronicle.takeHorror") do
+              (cardI18n $ labeled "dreamersChronicle.takeHorror") do
                 assignHorror iid (attrs.ability 1) 1
                 skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
               labeledI "skip" nothing

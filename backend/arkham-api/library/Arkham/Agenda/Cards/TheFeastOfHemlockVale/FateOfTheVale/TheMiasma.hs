@@ -52,11 +52,11 @@ instance RunMessage TheMiasma where
     DoStep n inner@(FailedThisSkillTestBy iid (isSource attrs -> True) _) | n > 0 -> do
       hasCards <- fieldMap InvestigatorDeck (notNull . unDeck) iid
       chooseOneM iid $ scenarioI18n do
-        unscoped $ countVar 1 $ labeled' "takeDamage" do
+        unscoped $ countVar 1 $ labeled "takeDamage" do
           assignDamage iid attrs 1
           doStep (n - 1) inner
         when hasCards do
-          labeled' "theMiasma.shuffleTopCardIntoAbyss" do
+          labeled "theMiasma.shuffleTopCardIntoAbyss" do
             (map toCard -> cards, _) <- fieldMap InvestigatorDeck (draw 1) iid
             for_ (take 1 cards) \card -> do
               obtainCard card

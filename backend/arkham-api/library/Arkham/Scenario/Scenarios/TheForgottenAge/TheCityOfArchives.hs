@@ -179,11 +179,11 @@ instance RunMessage TheCityOfArchives where
     PreScenarioSetup -> scope "intro" do
       eachInvestigator $ push . BecomeYithian
 
-      storyWithChooseOneM' (h "title" >> p "intro1") do
-        labeled' "cooperate" do
+      storyWithChooseOneM (h "title" >> p "intro1") do
+        labeled "cooperate" do
           flavor $ h "title" >> p "intro2"
           record TheInvestigatorsCooperatedWithTheYithians
-        labeled' "resist" do
+        labeled "resist" do
           flavor $ h "title" >> p "intro3"
           record TheInvestigatorsResistedCaptivity
       pure s

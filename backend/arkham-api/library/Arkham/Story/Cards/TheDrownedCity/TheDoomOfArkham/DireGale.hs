@@ -44,7 +44,7 @@ instance RunMessage DireGale where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       nonStory <- selectAny $ assetControlledBy iid <> AssetNonStory <> DiscardableAsset
       chooseOneM iid $ sharedI18n $ countVar 1 do
-        labeled' "takeHorror" $ assignHorror iid attrs 1
+        labeled "takeHorror" $ assignHorror iid attrs 1
         labeledValidate' nonStory "discardAssets"
           $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
       pure s

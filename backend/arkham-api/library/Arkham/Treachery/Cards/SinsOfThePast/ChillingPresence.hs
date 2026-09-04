@@ -33,7 +33,7 @@ instance RunMessage ChillingPresence where
       geists <- select $ enemyAtLocationWith iid <> EnemyWithTrait Geist
       when (notNull geists) $ do
         chooseOneM iid do
-          withI18n $ countVar 1 $ labeled' "dealDamageToGeistAtLocation" do
+          withI18n $ countVar 1 $ labeled "dealDamageToGeistAtLocation" do
             chooseTargetM iid geists \enemy -> do
               nonAttackEnemyDamage (Just iid) (toSource attrs) 1 enemy
               doStep (n - 1) msg'
@@ -55,7 +55,7 @@ instance RunMessage ChillingPresenceEffect where
         geists <- select $ EnemyWithTrait Geist
         unless (null geists) $ do
           chooseOneM iid do
-            withI18n $ countVar 2 $ labeled' "dealDamageToGeistAtAnyLocation" do
+            withI18n $ countVar 2 $ labeled "dealDamageToGeistAtAnyLocation" do
               chooseTargetM iid geists $ nonAttackEnemyDamage (Just iid) attrs.source 2
             labeledI "skip" nothing
       pure e

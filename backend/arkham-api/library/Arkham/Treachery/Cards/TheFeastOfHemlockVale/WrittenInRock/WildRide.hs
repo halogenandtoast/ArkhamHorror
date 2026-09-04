@@ -36,10 +36,10 @@ instance RunMessage WildRide where
       -- keeps them from re-triggering this forced ability.
       toDiscardBy iid (attrs.ability 1) attrs
       chooseOneM iid $ scenarioI18n do
-        labeled' "wildRide.moveAgain" do
+        labeled "wildRide.moveAgain" do
           scenarioSpecific_ "moveMineCart"
           scenarioSpecific_ "moveMineCart"
-        labeled' "wildRide.damage" do
+        labeled "wildRide.damage" do
           eachInvestigator \iid' -> do
             directDamageAndHorror iid' (attrs.ability 1) 1 1
             selectEach (assetControlledBy iid' <> hasAnyTrait [Resident, Ally]) \a ->

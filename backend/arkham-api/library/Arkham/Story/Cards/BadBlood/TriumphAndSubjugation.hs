@@ -22,7 +22,7 @@ instance RunMessage TriumphAndSubjugation where
         n <- (.elspethMemories) <$> getBadBloodMeta
         clues <- perPlayer 2
         scenarioI18n $ chooseOrRunOneM agnes do
-          when (n > 0) $ labeled' "collectMemoryFromElspeth" agnesStealsMemory
-          countVar clues $ labeled' "gainCluesFromTokenBank" $ gainClues agnes (attrs.ability 1) clues
+          when (n > 0) $ labeled "collectMemoryFromElspeth" agnesStealsMemory
+          countVar clues $ labeled "gainCluesFromTokenBank" $ gainClues agnes (attrs.ability 1) clues
       pure s
     _ -> TriumphAndSubjugation <$> liftRunMessage msg attrs

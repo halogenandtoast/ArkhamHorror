@@ -43,10 +43,10 @@ instance RunMessage InfiniteDoorway where
             assets <- select $ AssetWithTitle card.title <> assetInPlayAreaOf iid <> DiscardableAsset
             chooseOneAtATimeM iid do
               targets handCards \card' -> chooseOneM iid do
-                labeled' "discardFromHand" $ discardCard iid attrs card'
-                countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+                labeled "discardFromHand" $ discardCard iid attrs card'
+                countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
               targets assets \asset -> chooseOneM iid do
-                labeled' "discardFromPlay" $ toDiscardBy iid attrs asset
-                countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+                labeled "discardFromPlay" $ toDiscardBy iid attrs asset
+                countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
       pure t
     _ -> InfiniteDoorway <$> liftRunMessage msg attrs

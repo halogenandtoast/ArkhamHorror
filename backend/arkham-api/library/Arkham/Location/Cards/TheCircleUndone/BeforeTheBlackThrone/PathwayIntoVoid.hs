@@ -55,8 +55,8 @@ instance RunMessage PathwayIntoVoid where
       canDiscard <- iid <=~> InvestigatorWithDiscardableCard
       chooseOrRunOneM iid $ withI18n do
         when canDiscard do
-          countVar 1 $ labeled' "discardCards" $ chooseAndDiscardCard iid (attrs.ability 2)
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 2) 1
+          countVar 1 $ labeled "discardCards" $ chooseAndDiscardCard iid (attrs.ability 2)
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 2) 1
 
       pure l
     UseCardAbility iid (isSource attrs -> True) 3 _ _ -> do
@@ -81,7 +81,7 @@ instance RunMessage PathwayIntoVoid where
               (emptySpace', placeEmptySpace) <- Msg.placeLocationCard Locations.emptySpace
               chooseOrRunOneM iid $ scenarioI18n do
                 for_ validDirections \dir ->
-                  labeled' (toGridLabel dir) do
+                  labeled (toGridLabel dir) do
                     obtainCard card.id
                     push placeEmptySpace
                     push $ PlaceCosmos iid emptySpace' (EmptySpace pos card)

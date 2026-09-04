@@ -31,13 +31,13 @@ instance RunMessage SearchForTheTruthAdvanced where
             withI18n (countVar 1 $ labeledI "drawCards") do
               drawCardsIfCan iid attrs 1
               doStep (x - 1) msg'
-          labeled' "placeClueAndReturnCard" do
+          labeled "placeClueAndReturnCard" do
             push $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1
             chooseOneM iid do
               for_ discardPile \card ->
                 targeting card $ addToHand iid [toCard card]
             doStep (x - 1) msg'
-          labeled' "doNothingFinish" nothing
+          labeled "doNothingFinish" nothing
 
       pure e
     _ -> SearchForTheTruthAdvanced <$> liftRunMessage msg attrs

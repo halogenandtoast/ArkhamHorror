@@ -77,7 +77,7 @@ instance RunMessage RescueTheChemist where
         solvent <- getSetAsideCard Assets.universalSolvent
         investigators <- allInvestigators
         leadChooseOrRunOneM $ withI18n do
-          nameVar Assets.universalSolvent $ questionLabeled' "takeControlOf"
+          nameVar Assets.universalSolvent $ questionLabeled "takeControlOf"
           questionLabeledCard Assets.universalSolvent
           portraits investigators (`takeControlOfSetAsideAsset` solvent)
         selectEach (enemyIs Enemies.miGoAbductor) (addToVictory iid)

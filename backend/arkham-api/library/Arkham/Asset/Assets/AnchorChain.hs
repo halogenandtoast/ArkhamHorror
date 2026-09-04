@@ -38,8 +38,8 @@ instance RunMessage AnchorChain where
         liftGuardM $ not <$> isMatch enemy EliteEnemy
         guard $ notNull hand
         lift $ chooseOneM iid $ cardI18n do
-          questionLabeled' "anchorChain.discardPrompt"
-          unscoped $ labeled' "doNotDiscardCard" nothing
+          questionLabeled "anchorChain.discardPrompt"
+          unscoped $ labeled "doNotDiscardCard" nothing
           targets hand \card -> do
             discardCard iid (attrs.ability 1) card
             nextPhaseModifier #upkeep (attrs.ability 1) enemy DoesNotReadyDuringUpkeep

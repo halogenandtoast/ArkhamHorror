@@ -120,7 +120,7 @@ instance RunMessage TheForgottenAge where
           ul $ li.validate (notNull expeditionLeaders) "expeditionLeader"
         when (notNull expeditionLeaders) do
           leadChooseOneM do
-            questionLabeled' "expeditionLeader"
+            questionLabeled "expeditionLeader"
             cardsLabeled expeditionLeaders \target -> do
               push $ SetCampaignMeta $ toJSON (metadata' {expeditionLeader = Just target})
         eachInvestigator (`forInvestigator` msg)
@@ -156,10 +156,10 @@ instance RunMessage TheForgottenAge where
               p.valid "tossingAndTurning"
 
           chooseOneM iid $ unscoped do
-            questionLabeled' "chooseTrauma"
+            questionLabeled "chooseTrauma"
             questionLabeledCard iid
-            countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
-            countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+            countVar 1 $ labeled "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+            countVar 1 $ labeled "sufferMentalTrauma" $ sufferMentalTrauma iid 1
 
         let useProvisions = take (length investigators) provisions
         for_ useProvisions (uncurry useSupply)
@@ -170,7 +170,7 @@ instance RunMessage TheForgottenAge where
             storyOnlyBuild [iid] $ setTitle "title" >> p.green "lowOnRations"
             handleTarget iid CampaignSource iid
 
-        storyWithChooseOneM' (setTitle "title" >> p.green "lookout") do
+        storyWithChooseOneM (setTitle "title" >> p.green "lookout") do
           for_ investigatorsWithBinocularsPairs \(iid, hasBinoculars) -> do
             cardLabeled (unInvestigatorId iid) do
               if hasBinoculars
@@ -190,8 +190,8 @@ instance RunMessage TheForgottenAge where
       ForInvestigators withPoisoned msg'@(CampaignStep (InterludeStep 1 _mkey)) -> scope "interlude1" do
         withMedicine <- getInvestigatorsWithSupply Medicine
         for_ (nonEmpty withMedicine) \(doctor :| _) -> do
-          storyWithChooseOneM' (setTitle "title" >> p.green "medicine") do
-            labeled' "doNotUseMedicine" nothing
+          storyWithChooseOneM (setTitle "title" >> p.green "medicine") do
+            labeled "doNotUseMedicine" nothing
             for_ (eachWithRest withPoisoned) \(poisoned, rest) -> do
               cardLabeled (unInvestigatorId poisoned) do
                 removeCampaignCardFromDeck poisoned Treacheries.poisoned
@@ -216,9 +216,9 @@ instance RunMessage TheForgottenAge where
         interludeStepPart 2 mkey $ if recoveredTheRelicOfAges then 1 else 5
         pure c
       CampaignStep (InterludeStepPart 2 mkey 1) -> scope "interlude2" do
-        storyWithChooseOneM' (setTitle "title" >> p "expeditionsEnd1") do
-          labeled' "pickExpeditionsEnd2" $ interludeStepPart 2 mkey 2
-          labeled' "pickExpeditionsEnd3" $ interludeStepPart 2 mkey 3
+        storyWithChooseOneM (setTitle "title" >> p "expeditionsEnd1") do
+          labeled "pickExpeditionsEnd2" $ interludeStepPart 2 mkey 2
+          labeled "pickExpeditionsEnd3" $ interludeStepPart 2 mkey 3
         pure c
       CampaignStep (InterludeStepPart 2 mkey 2) -> scope "interlude2" do
         flavor $ setTitle "title" >> p "expeditionsEnd2"
@@ -273,7 +273,7 @@ instance RunMessage TheForgottenAge where
         xp <- field InvestigatorXp iid
         when (xp + extraXp >= 2) do
           countVar extraXp
-            $ chooseAmount'
+            $ chooseAmount
               iid
               (if extraXp > 0 then "supplyPointsToGainWithExtra" else "supplyPointsToGain")
               "$supplyPoints"
@@ -314,17 +314,17 @@ instance RunMessage TheForgottenAge where
 
         when (isPoisoned && hasXp) do
           chooseOneM iid do
-            questionLabeled' "visitStMarys"
+            questionLabeled "visitStMarys"
             questionLabeledCard iid
 
             when (extraXp > 0) do
               info' $ countVar extraXp $ p "extraXp"
 
-            labeled' "removePoisoned" do
+            labeled "removePoisoned" do
               doStep 0 (DoStep 3 msg') -- spend extra first
               push $ SpendXP iid toSpend
               removeCampaignCardFromDeck iid Treacheries.poisoned
-            labeled' "doNotRemovePoisoned" nothing
+            labeled "doNotRemovePoisoned" nothing
         pure c
       DoStep 3 msg'@(ForInvestigator iid (CampaignStep ResupplyPoint)) -> scope "resupplyPoint" do
         let extraXp = Map.findWithDefault 0 iid (bonusXp metadata)
@@ -339,25 +339,25 @@ instance RunMessage TheForgottenAge where
 
         when canHealTrauma do
           chooseOneM iid do
-            questionLabeled' "visitStMarys"
+            questionLabeled "visitStMarys"
             questionLabeledCard iid
 
             when (extraXp > 0) do
               info' $ countVar extraXp $ p "extraXp"
 
             when hasPhysicalTrauma do
-              labeled' "removePhysicalTrauma" do
+              labeled "removePhysicalTrauma" do
                 doStep 0 (DoStep 5 msg') -- spend extra first
                 when (toSpend > 0) $ push $ SpendXP iid toSpend
                 push $ HealTrauma iid 1 0
                 when (isReturnTo && xp + extraXp - 5 >= 5) $ doStep 3 msg'
             when hasMentalTrauma do
-              labeled' "removeMentalTrauma" do
+              labeled "removeMentalTrauma" do
                 doStep 0 (DoStep 5 msg') -- spend extra first
                 when (toSpend > 0) $ push $ SpendXP iid toSpend
                 push $ HealTrauma iid 0 1
                 when (isReturnTo && xp + extraXp - 5 >= 5) $ doStep 3 msg'
-            labeled' "doNotRemoveTrauma" nothing
+            labeled "doNotRemoveTrauma" nothing
 
         pure c
       DoStep 0 (DoStep n (ForInvestigator iid (CampaignStep ResupplyPoint))) -> do
@@ -460,8 +460,8 @@ instance RunMessage TheForgottenAge where
       ForInvestigators withPoisoned msg'@(CampaignStep (InterludeStep 3 _mkey)) -> scope "interlude3" do
         withMedicine <- getInvestigatorsWithSupply Medicine
         for_ (nonEmpty withMedicine) \(doctor :| _) -> do
-          storyWithChooseOneM' (setTitle "title" >> p.green "medicine") do
-            labeled' "doNotUseMedicine" nothing
+          storyWithChooseOneM (setTitle "title" >> p.green "medicine") do
+            labeled "doNotUseMedicine" nothing
             for_ (eachWithRest withPoisoned) \(poisoned, rest) -> do
               cardLabeled (unInvestigatorId poisoned) do
                 removeCampaignCardFromDeck poisoned Treacheries.poisoned
@@ -602,8 +602,8 @@ instance RunMessage TheForgottenAge where
       ForInvestigators withPoisoned msg'@(CampaignStep (InterludeStepPart 4 _mkey 5)) -> scope "interlude4" do
         withMedicine <- getInvestigatorsWithSupply Medicine
         for_ (nonEmpty withMedicine) \(doctor :| _) -> do
-          storyWithChooseOneM' (setTitle "title" >> p.green "medicine") do
-            labeled' "doNotUseMedicine" nothing
+          storyWithChooseOneM (setTitle "title" >> p.green "medicine") do
+            labeled "doNotUseMedicine" nothing
             for_ (eachWithRest withPoisoned) \(poisoned, rest) -> do
               cardLabeled (unInvestigatorId poisoned) do
                 removeCampaignCardFromDeck poisoned Treacheries.poisoned
@@ -629,10 +629,10 @@ instance RunMessage TheForgottenAge where
         for_ withoutBlanket \iid -> do
           storyOnlyBuild [iid] $ setTitle "title" >> p.green "tossingAndTurning"
           chooseOneM iid $ unscoped do
-            questionLabeled' "chooseTrauma"
+            questionLabeled "chooseTrauma"
             questionLabeledCard iid
-            countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
-            countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+            countVar 1 $ labeled "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+            countVar 1 $ labeled "sufferMentalTrauma" $ sufferMentalTrauma iid 1
         pure c
       CampaignStep (InterludeStep 5 mkey) -> scope "interlude5" do
         fellIntoTheDepths <- getHasRecord TheInvestigatorsFellIntoTheDepths

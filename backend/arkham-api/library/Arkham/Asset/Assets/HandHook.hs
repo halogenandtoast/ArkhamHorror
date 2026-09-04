@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -36,7 +37,7 @@ instance RunMessage HandHook where
         guard $ notNull hand
         lift $ withSkillTest \sid -> do
           chooseOneM iid do
-            questionLabeled "$label.cards.handHook.discardForDamage"
+            cardI18n $ questionLabeled "handHook.discardForDamage"
             labeledI "doNotDiscardCard" nothing
             targets hand \card -> do
               discardCard iid (attrs.ability 1) card

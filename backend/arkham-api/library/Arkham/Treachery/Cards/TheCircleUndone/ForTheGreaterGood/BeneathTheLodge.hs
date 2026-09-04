@@ -41,8 +41,8 @@ instance RunMessage BeneathTheLodge where
       if hasClues
         then do
           chooseOneM iid $ withI18n do
-            countVar 1 $ labeled' "loseClues" $ removeClues attrs iid 1
-            countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+            countVar 1 $ labeled "loseClues" $ removeClues attrs iid 1
+            countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
           push $ HandlePointOfFailure iid (toTarget attrs) (n - 1)
         else do
           assignHorror iid attrs 1

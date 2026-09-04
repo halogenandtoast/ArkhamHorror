@@ -28,7 +28,7 @@ instance RunMessage BloodAndRust where
         Just lid -> do
           helpers <- select $ InvestigatorAt (LocationWithId lid) <> InvestigatorWithClues (atLeast 1)
           chooseOrRunOneM iid $ scope "bloodAndRust" do
-            unscoped $ labeled' "skip" nothing
+            unscoped $ labeled "skip" nothing
             targets helpers \helper -> do
               moveTokens attrs helper lid #clue 1
               skillTestModifier sid attrs sid (Difficulty (-2))

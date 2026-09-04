@@ -47,7 +47,7 @@ instance RunMessage TheHourOfJudgment where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       lead <- getLead
       campaignI18n $ chooseOneM lead do
-        labeled' "theHourOfJudgment.destroyNeith" $ push R1
-        labeled' "theHourOfJudgment.spareNeith" $ push R2
+        labeled "theHourOfJudgment.destroyNeith" $ push R1
+        labeled "theHourOfJudgment.spareNeith" $ push R2
       pure a
     _ -> TheHourOfJudgment <$> liftRunMessage msg attrs

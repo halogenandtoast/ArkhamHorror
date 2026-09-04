@@ -202,8 +202,8 @@ instance RunMessage Starfall where
         current agenda, or take 1 horror for each point you fail by." Mandatory,
         so both options are always offered. -}
         ElderThing -> chooseOneM iid $ unscoped do
-          countVar 1 $ labeled' "placeDoomOnAgenda" $ placeDoomOnAgenda 1
-          countVar n $ labeled' "takeHorror" $ assignHorror iid ElderThing n
+          countVar 1 $ labeled "placeDoomOnAgenda" $ placeDoomOnAgenda 1
+          countVar n $ labeled "takeHorror" $ assignHorror iid ElderThing n
         _ -> pure ()
       pure s
     Resign iid -> do
@@ -288,8 +288,8 @@ resolution2 attrs = do
     mental <- field InvestigatorMentalTrauma iid
     when (mental > 0) $ chooseOneM iid do
       for_ (reverse [1 .. min 2 mental]) \n ->
-        unscoped $ countVar n $ labeled' "healMentalTrauma" $ push $ HealTrauma iid 0 n
-      unscoped $ labeled' "doNotHeal" nothing
+        unscoped $ countVar n $ labeled "healMentalTrauma" $ push $ HealTrauma iid 0 n
+      unscoped $ labeled "doNotHeal" nothing
   record HopeWasShieldedFromTheBlast
   record TheUCCEscapedToAnotherGalaxy
   record MiGoSafelyReturnedToTheirHomeWorld

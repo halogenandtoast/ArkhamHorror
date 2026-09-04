@@ -41,7 +41,7 @@ instance RunMessage RodOfCarnamagosScepterOfTheMadSeer2 where
         when (curses > 0) do
           rots <- searchBondedFor iid (CardWithTrait Rot)
           focusCards rots do
-            cardI18n $ scope "rodOfCarnamagosScepterOfTheMadSeer2" $ chooseUpToNM' iid curses "doneAttachingRots" do
+            cardI18n $ scope "rodOfCarnamagosScepterOfTheMadSeer2" $ chooseUpToNM iid curses "doneAttachingRots" do
               targets rots \rot -> do
                 obtainCard rot
                 push $ CreateEventAt iid rot (AttachedToEnemy eid)

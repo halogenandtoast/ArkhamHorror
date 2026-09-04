@@ -81,7 +81,7 @@ instance RunMessage BackToTheVale where
         lookAtRevealed iid (attrs.ability 1) loc
         whenM (getCanMoveTo iid (attrs.ability 1) loc) do
           chooseOneM iid $ withI18n do
-            labeled' "move" $ moveTo (attrs.ability 1) iid loc
+            labeled "move" $ moveTo (attrs.ability 1) iid loc
             skip_
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

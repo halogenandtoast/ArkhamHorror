@@ -80,19 +80,19 @@ instance RunMessage Grizzled where
             when (any (`elem` traits) enemyTraits) do
               skillTestCardOption attrs do
                 chooseOneM iid $ cardI18n $ scope "grizzled" do
-                  labeled' "attachToEnemy" do
+                  labeled "attachToEnemy" do
                     place attrs $ AttachedToEnemy eid
-                  labeled' "doNotAttachToEnemy" nothing
+                  labeled "doNotAttachToEnemy" nothing
         TreacheryTarget tid -> do
           when (attrs `hasCustomization` MythosHardened) do
             treacheryTraits <- field TreacheryTraits tid
             when (any (`elem` traits) treacheryTraits) do
               skillTestCardOption attrs do
                 chooseOneM iid $ cardI18n $ scope "grizzled" do
-                  labeled' "addToVictory" do
+                  labeled "addToVictory" do
                     addToVictory iid attrs
                     addToVictory iid tid
-                  labeled' "doNotAddToVictory" nothing
+                  labeled "doNotAddToVictory" nothing
         _ -> pure ()
       pure s
     InDiscard _ (UseThisAbility iid (isSource attrs -> True) 1) -> do

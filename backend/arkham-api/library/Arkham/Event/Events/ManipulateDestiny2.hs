@@ -38,10 +38,10 @@ instance RunMessage ManipulateDestiny2 where
 
           chooseOrRunOneAtATimeM iid $ cardI18n $ scope "manipulateDestiny2" do
             when canDamage do
-              labeled' "dealDamageToEnemy" do
+              labeled "dealDamageToEnemy" do
                 chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 2
             when canHeal do
-              labeled' "healDamageFromInvestigatorOrAlly" do
+              labeled "healDamageFromInvestigatorOrAlly" do
                 chooseOneM iid do
                   for_ damageInvestigators \i -> damageLabeled i $ healDamage i attrs 2
                   for_ damageAssets \a -> assetDamageLabeled a $ healDamage a attrs 2

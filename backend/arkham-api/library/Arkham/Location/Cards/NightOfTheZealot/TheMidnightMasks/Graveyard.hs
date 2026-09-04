@@ -10,7 +10,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Name
+import Arkham.Name hiding (labeled)
 
 newtype Graveyard = Graveyard LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -36,8 +36,8 @@ instance RunMessage Graveyard where
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       rivertown <- getJustLocationByName "Rivertown"
       chooseOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 2
+        countVar 2 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 2
         whenM (getCanMoveTo iid attrs rivertown) do
-          nameVar (mkName "Rivertown") $ labeled' "moveTo" $ moveTo (attrs.ability 1) iid rivertown
+          nameVar (mkName "Rivertown") $ labeled "moveTo" $ moveTo (attrs.ability 1) iid rivertown
       pure l
     _ -> Graveyard <$> liftRunMessage msg attrs

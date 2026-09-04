@@ -90,9 +90,9 @@ instance HasChaosTokenValue HarmsWay where
 instance RunMessage HarmsWay where
   runMessage msg s@(HarmsWay attrs) = runQueueT $ scenarioI18n "harmsWay" $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "title" >> p "body") do
-        labeled' "faster" $ addChaosToken Cultist
-        labeled' "caution" $ addChaosToken Tablet
+      storyWithChooseOneM (setTitle "title" >> p "body") do
+        labeled "faster" $ addChaosToken Cultist
+        labeled "caution" $ addChaosToken Tablet
       pure s
     Setup -> runScenarioSetup HarmsWay attrs do
       gather Set.HarmsWay
@@ -168,8 +168,8 @@ instance RunMessage HarmsWay where
       pure s
     DoStep 1 (ResolveChaosToken _ _ iid) -> do
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "discardCards" $ chooseAndDiscardCard iid ScenarioSource
-        countVar 1 $ labeled' "loseResources" $ loseResources iid ScenarioSource 1
+        countVar 1 $ labeled "discardCards" $ chooseAndDiscardCard iid ScenarioSource
+        countVar 1 $ labeled "loseResources" $ loseResources iid ScenarioSource 1
       pure s
     FailedSkillTestWithToken _ ElderThing -> do
       revealFuryToken ScenarioSource

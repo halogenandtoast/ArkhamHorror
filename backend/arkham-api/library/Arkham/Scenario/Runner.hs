@@ -300,9 +300,9 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
         physicalTrauma <- field InvestigatorPhysicalTrauma iid
         chooseOrRunOneM iid $ withI18n $ countVar 1 do
           when (physicalTrauma > 0) do
-            labeled' "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
+            labeled "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
           when (mentalTrauma > 0) do
-            labeled' "healMentalTrauma" $ push $ HealTrauma iid 0 1
+            labeled "healMentalTrauma" $ push $ HealTrauma iid 0 1
     pure a
   EndSetup -> do
     -- Preludes are the same game as the scenario that follows them, so the

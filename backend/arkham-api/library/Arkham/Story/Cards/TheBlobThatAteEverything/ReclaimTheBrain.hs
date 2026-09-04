@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Enemy.CardDefs.TheBlobThatAteEverything qualified as Enemies
 import Arkham.Helpers.Query
+import Arkham.I18n
 import Arkham.Location.CardDefs.TheBlobThatAteEverything qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -66,7 +67,8 @@ instance RunMessage ReclaimTheBrain where
           addToVictory iid attrs
           locations <- select $ RevealedLocation <> LocationWithClues AnyValue
           leadChooseOrRunOneM $ portraits investigators \iid' ->
-            chooseUpToNM iid' 2 "Done discovering clues"
+            withI18n
+              $ chooseUpToNM iid' 2 "doneDiscoveringClues"
               $ targets locations
               $ discoverAt NotInvestigate iid' (toSource attrs) 1
           push $ PlaceTokens (attrs.ability 1) ScenarioTarget #resource 1

@@ -51,7 +51,7 @@ instance RunMessage YourOtherSelf where
       selectForMaybeM (InvestigatorEngagedWith (be attrs)) \other ->
         chooseOrRunOneM iid $ withI18n do
           whenM (getCanSpendNClues iid 1) do
-            countVar 1 $ labeled' "spendClues" $ spendClues iid 1
-          countVar n $ labeled' "takeDamage" $ assignDamage other (attrs.ability 1) n
+            countVar 1 $ labeled "spendClues" $ spendClues iid 1
+          countVar n $ labeled "takeDamage" $ assignDamage other (attrs.ability 1) n
       pure e
     _ -> YourOtherSelf <$> liftRunMessage msg attrs

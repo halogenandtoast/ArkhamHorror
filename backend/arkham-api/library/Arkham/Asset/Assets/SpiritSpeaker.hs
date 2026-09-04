@@ -33,7 +33,7 @@ instance RunMessage SpiritSpeaker where
             chooseOneM iid do
               labeledI "returnToHandSimple" $ returnToHand iid aid
               when (aid `elem` discardableAssetIds) do
-                cardI18n $ scope "spiritSpeaker" $ labeled' "moveChargesToResources" do
+                cardI18n $ scope "spiritSpeaker" $ labeled "moveChargesToResources" do
                   spendUses (attrs.ability 1) aid Charge n
                   gainResources iid (attrs.ability 1) n
                   toDiscardBy iid (attrs.ability 1) aid

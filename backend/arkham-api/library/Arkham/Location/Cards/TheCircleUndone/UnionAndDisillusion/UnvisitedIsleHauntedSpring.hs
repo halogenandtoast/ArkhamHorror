@@ -49,8 +49,8 @@ instance RunMessage UnvisitedIsleHauntedSpring where
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
       chooseOrRunOneM iid $ withI18n do
         when hasAssets do
-          countVar 1 $ labeled' "discardAssets" $ chooseAndDiscardAsset iid (attrs.ability 2)
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 2) 1
+          countVar 1 $ labeled "discardAssets" $ chooseAndDiscardAsset iid (attrs.ability 2)
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 2) 1
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs

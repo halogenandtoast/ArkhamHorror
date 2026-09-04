@@ -29,7 +29,7 @@ instance RunMessage JungleRiver where
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       assets <- select (assetControlledBy iid <> hasAnyTrait [Weapon, Clothing] <> DiscardableAsset)
       chooseOneM iid do
-        withI18n $ countVar 1 $ labeled' "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
+        withI18n $ countVar 1 $ labeled "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
         scenarioI18n $ labeledValidate' (notNull assets) "jungleRiver.option" do
           chooseTargetM iid assets (toDiscardBy iid (attrs.ability 1))
       pure l

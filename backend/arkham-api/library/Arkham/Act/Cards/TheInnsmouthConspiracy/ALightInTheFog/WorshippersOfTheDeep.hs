@@ -41,7 +41,7 @@ instance RunMessage WorshippersOfTheDeep where
             pos <- MaybeT $ field LocationPosition lid
             below <- MaybeT $ selectOne $ LocationInPosition (Pos pos.column (pos.row - 1))
             lift
-              $ labeled' "moveBelow"
+              $ labeled "moveBelow"
               $ moveTo (attrs.ability 1) iid below
       pure a
     UseThisAbility _iid (isSource attrs -> True) 2 -> do

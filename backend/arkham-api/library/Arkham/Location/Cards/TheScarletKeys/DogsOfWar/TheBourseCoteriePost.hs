@@ -42,12 +42,12 @@ instance RunMessage TheBourseCoteriePost where
       whenM (getCanAffordCost iid (attrs.ability 1) [] [] cost) do
         lightOfPharos <- selectJust $ scarletKeyIs Keys.theLightOfPharos
         chooseOneM iid $ scenarioI18n do
-          labeled' "theBourse.pay" do
+          labeled "theBourse.pay" do
             payEffectCost iid attrs cost
             placeTokens (attrs.ability 1) lightOfPharos #resource 1
             doStep 1 msg
 
-          labeled' "theBourse.doNotPay" nothing
+          labeled "theBourse.doNotPay" nothing
       pure l
     DoStep 1 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
       investigators <- select $ investigatorAt attrs

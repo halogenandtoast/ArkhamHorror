@@ -155,9 +155,9 @@ instance RunMessage TheInnsmouthConspiracy where
         withOwner Assets.elinaHarperKnowsTooMuch \iid -> do
           removeCampaignCard Assets.elinaHarperKnowsTooMuch
           chooseOneM iid do
-            labeled' "addElinaHarper" do
+            labeled "addElinaHarper" do
               addCampaignCardToDeck iid DoNotShuffleIn Assets.elinaHarperKnowsTooMuch
-            labeled' "doNotAddElinaHarper" nothing
+            labeled "doNotAddElinaHarper" nothing
 
         nextCampaignStep
         pure c

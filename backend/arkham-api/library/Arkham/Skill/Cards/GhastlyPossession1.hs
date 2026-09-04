@@ -37,11 +37,11 @@ instance RunMessage GhastlyPossession1 where
 
           withSkillTest \stId -> do
             chooseOneM iid $ cardI18n $ scope "ghastlyPossession1" do
-              labeled' "placeDoomGainIcons" do
+              labeled "placeDoomGainIcons" do
                 placeDoom attrs (toTarget aid) 1
                 skillTestModifier stId attrs attrs.cardId $ AddSkillIcons [#wild, #wild]
               when (hasDoom || isJust mAddAmount) do
-                labeled' "removeDoomOrReplenish"
+                labeled "removeDoomOrReplenish"
                   $ doStep 1 msg
       GhastlyPossession1 <$> liftRunMessage msg attrs
     DoStep 1 (InvestigatorCommittedSkill _iid sid) | sid == toId attrs -> do
@@ -80,10 +80,10 @@ instance RunMessage GhastlyPossession1 where
           when (hasDoom || isJust mAddAmount) do
             chooseOneM iid $ cardI18n $ scope "ghastlyPossession1" do
               when hasDoom do
-                labeled' "removeDoomFromAsset" do
+                labeled "removeDoomFromAsset" do
                   removeDoom attrs (toTarget aid) 1
               for_ mAddAmount \(uType, n) ->
-                labeled' "replenishUses" do
+                labeled "replenishUses" do
                   placeTokens attrs (toTarget aid) uType n
       pure s
     _ -> GhastlyPossession1 <$> liftRunMessage msg attrs

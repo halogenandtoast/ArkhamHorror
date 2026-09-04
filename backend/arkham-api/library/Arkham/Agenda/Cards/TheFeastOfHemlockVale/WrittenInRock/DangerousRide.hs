@@ -58,8 +58,8 @@ instance RunMessage DangerousRide where
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> do
         chooseOneM iid $ withI18n $ countVar 1 do
-          labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
-          labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+          labeled "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+          labeled "sufferMentalTrauma" $ sufferMentalTrauma iid 1
         investigatorDefeated attrs iid
       pure a
     _ -> DangerousRide <$> liftRunMessage msg attrs

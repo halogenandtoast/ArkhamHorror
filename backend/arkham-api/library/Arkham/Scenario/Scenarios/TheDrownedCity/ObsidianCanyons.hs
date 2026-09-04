@@ -63,7 +63,7 @@ instance RunMessage ObsidianCanyons where
   runMessage msg s@(ObsidianCanyons attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      storyWithContinue' do
+      storyWithContinue do
         setTitle "title"
         p.basic "checkCampaignLog"
         ul do
@@ -88,7 +88,7 @@ instance RunMessage ObsidianCanyons where
 
       for_ withDreamsOfDestruction \iid -> do
         canErase <- canEraseProgress iid Key.DreamsOfDestruction
-        storyWithChooseOneM'
+        storyWithChooseOneM
           ( compose.green do
               h3 "dreamsOfDestruction.title"
               p "dreamsOfDestruction.instructions"
@@ -106,7 +106,7 @@ instance RunMessage ObsidianCanyons where
               sufferMentalTrauma iid 1
               -- "You (and only you) gain 2 bonus experience."
               gainXp iid attrs (ikey "xp.dreamsOfDestruction") 2
-            labeled' "dreamsOfDestruction.letItIn" do
+            labeled "dreamsOfDestruction.letItIn" do
               incrementRecordCountForInvestigator iid Key.DreamsOfDestruction 2
               -- "In the Obsidian Canyons scenario" is this scenario, not the next
               -- one; the turn window expires on its own after each investigator's
@@ -114,7 +114,7 @@ instance RunMessage ObsidianCanyons where
               for_ investigators \iid' -> turnModifier iid' attrs iid' dreamsOfDestruction
 
       for_ withProveYourWorth \iid ->
-        storyWithChooseOneM'
+        storyWithChooseOneM
           ( compose.green do
               h3 "proveYourWorth.title"
               p "proveYourWorth.instructions"
@@ -125,12 +125,12 @@ instance RunMessage ObsidianCanyons where
                 li "proveYourWorth.trustTheirHandiwork"
           )
           do
-            labeled' "proveYourWorth.ropesAreWrong" do
+            labeled "proveYourWorth.ropesAreWrong" do
               -- "Choose an investigator to help (not yourself, if able)" — solo is
               -- the only case where you are still a legal choice.
               let others = filter (/= iid) investigators
               chooseOrRunOneM iid do
-                questionLabeled' "proveYourWorth.chooseInvestigator"
+                questionLabeled "proveYourWorth.chooseInvestigator"
                 targets (if null others then [iid] else others) \chosen -> do
                   recordSetInsert Key.HelpedWithTheRopes [unInvestigatorId iid]
                   recordSetInsert Key.WasHelpedWithTheRopes [unInvestigatorId chosen]
@@ -139,7 +139,7 @@ instance RunMessage ObsidianCanyons where
               -- set up. nextSetupModifier is inert while its own scenario is
               -- current and would silently do nothing here.
               for_ investigators \iid' -> setupModifier attrs iid' (StartingResources (-2))
-            labeled' "proveYourWorth.trustTheirHandiwork" do
+            labeled "proveYourWorth.trustTheirHandiwork" do
               for_ investigators \iid' -> setupModifier attrs iid' (StartingResources 1)
       pure s
     StandaloneSetup -> do
@@ -296,8 +296,8 @@ instance RunMessage ObsidianCanyons where
       headedWest <- getHasRecord TheExpeditionHeadedWest
       artifacts <- if headedWest then getAvailableArtifacts else pure []
       chooseOneM iid do
-        questionLabeled' "chooseExpeditionAssetQuestion"
-        labeled' "noExpeditionAsset" nothing
+        questionLabeled "chooseExpeditionAssetQuestion"
+        labeled "noExpeditionAsset" nothing
         for_ (artifacts <> expeditionItems) \asset ->
           cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s

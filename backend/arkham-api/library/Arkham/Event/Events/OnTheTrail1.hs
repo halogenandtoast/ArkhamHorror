@@ -38,11 +38,11 @@ instance RunMessage OnTheTrail1 where
 
         chooseOrRunOneM iid $ cardI18n $ scope "onTheTrail1" do
           when canMoveTowards do
-            labeled' "moveTwiceTowardsEnemy" do
+            labeled "moveTwiceTowardsEnemy" do
               moveToEdit attrs iid lid \m -> m {moveMeans = TowardsN 2}
 
           when (notNull canDiscoverClues) do
-            labeled' "discoverClueBetween" do
+            labeled "discoverClueBetween" do
               chooseTargetM iid canDiscoverClues $ discoverAt NotInvestigate iid attrs 1
       pure e
     _ -> OnTheTrail1 <$> liftRunMessage msg attrs

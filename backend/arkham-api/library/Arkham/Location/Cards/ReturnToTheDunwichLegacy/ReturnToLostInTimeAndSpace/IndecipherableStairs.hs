@@ -26,7 +26,7 @@ instance RunMessage IndecipherableStairs where
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
-        withI18n $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 2
-        scenarioI18n $ labeled' "indecipherableStairs.discard" $ toDiscardBy iid (attrs.ability 1) attrs
+        withI18n $ countVar 2 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 2
+        scenarioI18n $ labeled "indecipherableStairs.discard" $ toDiscardBy iid (attrs.ability 1) attrs
       pure l
     _ -> IndecipherableStairs <$> liftRunMessage msg attrs

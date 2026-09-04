@@ -100,9 +100,9 @@ instance RunMessage OneNightOnly where
 
       eachInvestigator \iid -> do
         chooseOneM iid $ scope "seats" do
-          labeled' "firstRing" $ moveTo_ attrs iid firstRing
-          labeled' "secondRing" $ moveTo_ attrs iid secondRing
-          labeled' "thirdRing" $ moveTo_ attrs iid thirdRing
+          labeled "firstRing" $ moveTo_ attrs iid firstRing
+          labeled "secondRing" $ moveTo_ attrs iid secondRing
+          labeled "thirdRing" $ moveTo_ attrs iid thirdRing
         whenMatch iid behindTheCurtainMatcher $ gainClues iid attrs 1
     FailedSkillTestWithToken iid Cultist -> do
       moveTowardsMatching attrs iid $ NearestLocationToYou "The Big Top"

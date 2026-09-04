@@ -44,7 +44,7 @@ instance RunMessage MinhThiPhan where
       withSkillTest \sid -> do
         skills <- selectWithField Field.SkillCard AnySkill
         chooseOrRunOneM iid do
-          cardI18n $ scope "minhThiPhan" $ labeled' "doNotReturnSkill" nothing
+          cardI18n $ scope "minhThiPhan" $ labeled "doNotReturnSkill" nothing
           for_ skills \(s, c) ->
             targeting c $ skillTestModifier sid (toSource ElderSign) s ReturnToHandAfterTest
       pure i

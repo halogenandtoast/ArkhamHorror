@@ -24,7 +24,7 @@ instance RunMessage ReturnToRivertown where
   runMessage msg l@(ReturnToRivertown attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       scenarioI18n
-        $ chooseAmount' iid "breachesToRemove" "$breaches" 0 (countLocationBreaches attrs) attrs
+        $ chooseAmount iid "breachesToRemove" "$breaches" 0 (countLocationBreaches attrs) attrs
       pure l
     ResolveAmounts iid (getChoiceAmount "$breaches" -> breaches) (isTarget attrs -> True) -> do
       sid <- getRandom
@@ -35,7 +35,7 @@ instance RunMessage ReturnToRivertown where
       pure l
     FailedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       repeated n $ chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
       pure l
     _ -> ReturnToRivertown <$> liftRunMessage msg attrs

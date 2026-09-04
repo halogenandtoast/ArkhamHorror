@@ -35,12 +35,12 @@ instance RunMessage Destabilization where
         canCancel <- card <=~> CanCancelRevelationEffect (InvestigatorWithId iid) #any
         when (clues > 0 && canCancel) do
           chooseOneM iid $ withI18n do
-            labeled' "cancelRevelationEffect" do
+            labeled "cancelRevelationEffect" do
               spendClues iid 1
               cardResolutionModifier card (attrs.ability 1) (CardIdTarget card.id) IgnoreRevelation
               checkAfter
                 $ Window.CancelledOrIgnoredCardOrGameEffect (toSource $ attrs.ability 1) (Just card.id)
-            countVar 1 $ labeled' "doNotSpendClues" nothing
+            countVar 1 $ labeled "doNotSpendClues" nothing
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceVia #other attrs attrs

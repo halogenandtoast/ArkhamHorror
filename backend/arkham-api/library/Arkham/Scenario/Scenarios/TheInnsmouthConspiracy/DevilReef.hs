@@ -71,7 +71,7 @@ instance RunMessage DevilReef where
         investigators <- allInvestigators
         thomasDawson <- genCard Assets.thomasDawsonSoldierInANewWar
         chooseOneM lead do
-          questionLabeled' "shuffleThomasDawsonInto"
+          questionLabeled "shuffleThomasDawsonInto"
           targets investigators (`shuffleCardsIntoDeck` only thomasDawson)
 
       pure s
@@ -96,7 +96,7 @@ instance RunMessage DevilReef where
         investigators <- allInvestigators
         thomasDawson <- genCard Assets.thomasDawsonSoldierInANewWar
         leadChooseOneM do
-          questionLabeled' "addThomasDawsonToHand"
+          questionLabeled "addThomasDawsonToHand"
           targets investigators (`addToHand` only thomasDawson)
 
       aBattle <- hasMemory ABattleWithAHorrifyingDevil

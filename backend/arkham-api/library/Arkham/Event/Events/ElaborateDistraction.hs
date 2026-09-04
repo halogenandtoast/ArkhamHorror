@@ -25,10 +25,10 @@ instance RunMessage ElaborateDistraction where
       canBeDamaged <- eid <=~> EnemyCanBeDamagedBySource (toSource attrs)
       chooseOrRunOneM iid $ cardI18n $ scope "elaborateDistraction" do
         when canBeEvaded
-          $ labeled' "evadeNonElite"
+          $ labeled "evadeNonElite"
           $ automaticallyEvadeEnemy iid eid
         when canBeDamaged
-          $ labeled' "dealDamage"
+          $ labeled "dealDamage"
           $ nonAttackEnemyDamage (Just iid) attrs 1 eid
       pure e
     _ -> ElaborateDistraction <$> liftRunMessage msg attrs

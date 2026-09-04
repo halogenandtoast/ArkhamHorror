@@ -71,7 +71,7 @@ instance RunMessage NewHorizons where
     PreScenarioSetup -> do
       addChaosToken #cultist
       storyWithChooseOneM
-        ( buildFlavor $ scope "intro" do
+        ( scope "intro" do
             setTitle "title"
             p "body"
             ul do
@@ -81,8 +81,8 @@ instance RunMessage NewHorizons where
                 li "searchAfterDark"
         )
         do
-          labeled' "searchDuringTheDay" $ setScenarioMeta $ object ["searchAfterDark" .= False]
-          labeled' "searchAfterDark" $ setScenarioMeta $ object ["searchAfterDark" .= True]
+          labeled "searchDuringTheDay" $ setScenarioMeta $ object ["searchAfterDark" .= False]
+          labeled "searchAfterDark" $ setScenarioMeta $ object ["searchAfterDark" .= True]
       pure s
     ResolveChaosToken _ Cultist iid -> do
       whenM (hasSealedBlood iid) $ drawAnotherChaosToken iid
@@ -325,7 +325,7 @@ spendExperienceToRemoveBlood attrs msg key = do
     $ popScope do
       labeledValidate' (hasBlood && available >= cost) "spendExperienceToRemoveBlood"
         $ doStep cost msg
-      labeled' "doNotSpendExperience" nothing
+      labeled "doNotSpendExperience" nothing
 
 {- | One amount row per investigator, capped at the experience they actually
 hold, so the group can split the cost unevenly.

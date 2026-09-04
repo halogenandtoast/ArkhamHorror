@@ -28,9 +28,9 @@ instance RunMessage SpectralRaven where
       hasHauntedAbilities <- selectAny $ locationWithInvestigator iid <> HauntedLocation
       chooseOrRunOneM iid $ scenarioI18n do
         when hasHauntedAbilities do
-          labeled' "spectralRaven.haunted" do
+          labeled "spectralRaven.haunted" do
             handleTarget iid attrs attrs
-          labeled' "spectralRaven.modify" do
+          labeled "spectralRaven.modify" do
             nextPhaseModifiers InvestigationPhase attrs attrs [Mod.EnemyFight 2, Mod.EnemyEvade 2]
       pure e
     HandleTargetChoice iid (isSource attrs -> True) _ -> do

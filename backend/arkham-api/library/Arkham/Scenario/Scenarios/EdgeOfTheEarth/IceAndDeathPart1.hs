@@ -10,6 +10,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Enemies
 import Arkham.FlavorText
+import Arkham.Helpers.FlavorText (addEntry, withTitle)
 import Arkham.Helpers.Investigator (getJustLocation, getMaybeLocation)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Shuffle (getCanShuffleIn)
@@ -58,7 +59,7 @@ instance HasChaosTokenValue IceAndDeathPart1 where
 instance RunMessage IceAndDeathPart1 where
   runMessage msg s@(IceAndDeathPart1 attrs) = runQueueT $ scenarioI18n 1 $ case msg of
     PreScenarioSetup -> do
-      storyWithContinue (i18nWithTitle "intro") "Proceed to _Ice and Death, Part 1._"
+      storyWithChooseOneM (withTitle "intro") $ labeled "proceedToIceAndDeathPart1" nothing
       doStep 1 PreScenarioSetup
       story $ i18nWithTitle "investigatorSetup"
       eachInvestigator (`forInvestigator` PreScenarioSetup)
@@ -66,28 +67,23 @@ instance RunMessage IceAndDeathPart1 where
     DoStep 1 PreScenarioSetup -> do
       winifredPresent <- selectAny (investigatorIs Investigators.winifredHabbamock)
 
-      let
-        rest =
+      storyWithChooseOneM
+        do
+          withTitle "intro1"
           scope "setup"
-            $ FlavorText
-              Nothing
-              [ rightAlign
-                  (validateEntry winifredPresent "winifredPresent")
-                  <> rightAlign (validateEntry (not winifredPresent) "winifredNotPresent")
-              ]
-
-      storyWithContinue
-        (i18nWithTitle "intro1" <> rest)
-        (if winifredPresent then "Proceed to _Intro 2_" else "Skip to _Intro 3_")
+            $ addEntry
+            $ rightAlign (validateEntry winifredPresent "winifredPresent")
+            <> rightAlign (validateEntry (not winifredPresent) "winifredNotPresent")
+        do labeled (if winifredPresent then "proceedToIntro2" else "skipToIntro3") nothing
 
       doStep (if winifredPresent then 2 else 3) PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> do
-      storyWithContinue (i18nWithTitle "intro2") "Skip to _Intro 4_"
+      storyWithChooseOneM (withTitle "intro2") $ labeled "skipToIntro4" nothing
       doStep 4 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> do
-      storyWithContinue (i18nWithTitle "intro3") "Proceed to _Intro 4_"
+      storyWithChooseOneM (withTitle "intro3") $ labeled "proceedToIntro4" nothing
       doStep 4 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> do

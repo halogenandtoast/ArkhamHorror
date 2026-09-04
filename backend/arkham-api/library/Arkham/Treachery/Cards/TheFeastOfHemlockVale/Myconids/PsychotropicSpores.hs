@@ -45,7 +45,7 @@ instance RunMessage PsychotropicSpores where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
       chooseOneM iid $ campaignI18n do
-        labeled' "psychotropicSpores.pay" do
+        labeled "psychotropicSpores.pay" do
           payEffectCost iid attrs $ DirectHorrorCost (attrs.ability 2) (InvestigatorWithId iid) 1
           skillTestModifier sid (attrs.ability 2) sid SkillTestAutomaticallySucceeds
         unscoped skip_

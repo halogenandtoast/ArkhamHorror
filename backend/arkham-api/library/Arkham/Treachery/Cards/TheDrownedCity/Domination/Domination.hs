@@ -18,11 +18,11 @@ instance RunMessage Domination where
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ withI18n do
         countVar 1
-          $ labeled' "placeAgendaDoomCanAdvance"
+          $ labeled "placeAgendaDoomCanAdvance"
           $ placeDoomOnAgendaAndCheckAdvance 1
-        countVar 2 $ labeled' "eachInvestigatorDiscardsCardsFromHand" do
+        countVar 2 $ labeled "eachInvestigatorDiscardsCardsFromHand" do
           eachInvestigator \iid' -> chooseAndDiscardCards iid' attrs 2
-        countVar 1 $ labeled' "eachInvestigatorLosesActions" do
+        countVar 1 $ labeled "eachInvestigatorLosesActions" do
           eachInvestigator \iid' -> loseActions iid' attrs 1
       pure t
     _ -> Domination <$> liftRunMessage msg attrs

@@ -27,7 +27,7 @@ instance RunMessage SanguineCultist where
       case mBlood of
         Just blood | notNull investigators -> leadChooseOneM $ withI18n do
           targets investigators \iid -> sealChaosToken iid iid blood
-          labeled' "doNothing" $ placeDoom (attrs.ability 1) attrs 1
+          labeled "doNothing" $ placeDoom (attrs.ability 1) attrs 1
         _ -> placeDoom (attrs.ability 1) attrs 1
       pure e
     _ -> SanguineCultist <$> liftRunMessage msg attrs

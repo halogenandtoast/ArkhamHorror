@@ -46,8 +46,8 @@ instance RunMessage UnfinishedBusiness_B where
         & (removeAfterResolutionL .~ False)
     UseCardAbility iid (isSource attrs -> True) 1 _ _ -> do
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
-        labeled' "flipThisBackOver" $ flipOverBy iid (attrs.ability 1) attrs
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
+        labeled "flipThisBackOver" $ flipOverBy iid (attrs.ability 1) attrs
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

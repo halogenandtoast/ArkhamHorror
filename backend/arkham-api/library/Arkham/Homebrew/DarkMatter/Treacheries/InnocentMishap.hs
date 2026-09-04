@@ -25,10 +25,10 @@ instance RunMessage InnocentMishap where
       brains <- select $ nearestBrain iid
       scientist <- select $ enemyIs Enemies.miGoScientist
       chooseOneM iid $ campaignI18n do
-        unless (null brains) $ labeled' "innocentMishap.damageNearestBrain" do
+        unless (null brains) $ labeled "innocentMishap.damageNearestBrain" do
           chooseTargetM iid brains \brain -> dealAssetDamage brain attrs 1
-        unless (null scientist) $ labeled' "innocentMishap.damageMiGoScientist" do
+        unless (null scientist) $ labeled "innocentMishap.damageMiGoScientist" do
           for_ scientist $ nonAttackEnemyDamage Nothing attrs 2
-        labeled' "innocentMishap.take2DirectDamage" $ directDamage iid attrs 2
+        labeled "innocentMishap.take2DirectDamage" $ directDamage iid attrs 2
       pure t
     _ -> InnocentMishap <$> liftRunMessage msg attrs

@@ -33,9 +33,9 @@ instance RunMessage CrackingIce where
       pure t
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       chooseOneM iid $ withI18n $ countVar 1 $ do
-        labeled' "takeDamage" $ assignDamage iid attrs 1
-        labeled' "takeHorror" $ assignHorror iid attrs 1
-        labeled' "loseActions" $ loseActions iid attrs 1
+        labeled "takeDamage" $ assignDamage iid attrs 1
+        labeled "takeHorror" $ assignHorror iid attrs 1
+        labeled "loseActions" $ loseActions iid attrs 1
       doStep (n - 1) msg'
       pure t
     _ -> CrackingIce <$> liftRunMessage msg attrs

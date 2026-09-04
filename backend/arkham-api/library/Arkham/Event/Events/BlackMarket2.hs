@@ -83,7 +83,7 @@ instance RunMessage BlackMarket2Effect where
               lead <- getLead
               focusCard card do
                 chooseOrRunOneM lead do
-                  cardI18n $ scope "blackMarket" $ questionLabeled' "missingOwner"
+                  cardI18n $ scope "blackMarket" $ questionLabeled "missingOwner"
                   targets investigators \iid -> do
                     push $ ForTarget (toTarget attrs) (ForInvestigator iid (ForTarget (toTarget cardId) (Begin phase)))
             Just owner -> do

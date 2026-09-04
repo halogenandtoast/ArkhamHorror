@@ -15,6 +15,7 @@ import Arkham.Enemy.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as En
 import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.FlavorText (addEntry)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
@@ -132,9 +133,9 @@ instance RunMessage CityOfTheElderThings where
             else do
               lead <- getLead
               chooseOneM lead do
-                labeled' "v1" $ doStep 1 PreScenarioSetup
-                labeled' "v2" $ doStep 2 PreScenarioSetup
-                labeled' "v3" $ doStep 3 PreScenarioSetup
+                labeled "v1" $ doStep 1 PreScenarioSetup
+                labeled "v2" $ doStep 2 PreScenarioSetup
+                labeled "v3" $ doStep 3 PreScenarioSetup
           if attrs.hasOption IncludePartners
             then do
               eachInvestigator (`forInvestigator` PreScenarioSetup)
@@ -203,7 +204,7 @@ instance RunMessage CityOfTheElderThings where
       let tied = not (group1 || group2 || group3)
 
       storyWithChooseOneM
-        ( toFlavor
+        ( addEntry
             $ p "votes"
             <> cols
               [ p "group1" <> ul do
@@ -391,7 +392,8 @@ instance RunMessage CityOfTheElderThings where
           unless (null ks) do
             withLocationOf iid \lid -> do
               chooseOrRunOneM iid do
-                for_ ks \k -> labeled ("Place " <> keyName k) $ placeKey lid k
+                for_ ks \k ->
+                  (withI18n $ keyVar "key" (keyName k) $ labeled "placeKey") $ placeKey lid k
         ElderThing -> do
           xs <- selectOrElse (enemyAtLocationWith iid) (NearestEnemyTo iid AnyEnemy)
           chooseTargetM iid xs \x -> do
@@ -407,7 +409,8 @@ instance RunMessage CityOfTheElderThings where
       unless (null ks) do
         withLocationOf iid \lid -> do
           chooseOrRunOneM iid do
-            for_ ks \k -> labeled ("Place " <> keyName k) $ placeKey lid k
+            for_ ks \k ->
+              (withI18n $ keyVar "key" (keyName k) $ labeled "placeKey") $ placeKey lid k
       pure s
     ResolveChaosToken _ Tablet iid -> do
       tokens <- map (.face) <$> getSkillTestRevealedChaosTokens

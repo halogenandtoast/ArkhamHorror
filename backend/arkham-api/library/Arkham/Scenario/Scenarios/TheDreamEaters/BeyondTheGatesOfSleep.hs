@@ -254,8 +254,8 @@ instance RunMessage BeyondTheGatesOfSleep where
       newWeakness <- genCard =<< sampleRandomBasicWeakness ctx
       focusCards cards do
         chooseOneM iid do
-          questionLabeled' "replaceWeaknessQuestion"
-          labeled' "doNotReplace" unfocusCards
+          questionLabeled "replaceWeaknessQuestion"
+          labeled "doNotReplace" unfocusCards
           targets cards \card -> do
             unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)
@@ -263,8 +263,8 @@ instance RunMessage BeyondTheGatesOfSleep where
             removeCardFromDeckForCampaign iid card
             shuffleCardsIntoDeck iid [newWeakness]
             chooseOneM iid $ withI18n $ countVar 1 do
-              labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
-              labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+              labeled "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+              labeled "sufferMentalTrauma" $ sufferMentalTrauma iid 1
       pure s
     SearchFound _ (LabeledTarget "Veteran" ScenarioTarget) _ _ -> do
       doStep 2 msg
@@ -272,8 +272,8 @@ instance RunMessage BeyondTheGatesOfSleep where
     DoStep n (SearchFound iid (LabeledTarget "Veteran" ScenarioTarget) deck cards) | notNull cards -> do
       focusCards cards do
         chooseOneM iid do
-          countVar n $ questionLabeled' "chooseUpToTacticSupply"
-          labeled' "doNotTakeAny" unfocusCards
+          countVar n $ questionLabeled "chooseUpToTacticSupply"
+          labeled "doNotTakeAny" unfocusCards
           targets cards \card -> do
             unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)

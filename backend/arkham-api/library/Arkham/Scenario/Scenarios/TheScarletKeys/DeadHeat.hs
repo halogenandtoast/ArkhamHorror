@@ -274,8 +274,8 @@ instance RunMessage DeadHeat where
       pure s
     ResolveChaosToken _ Tablet iid | isEasyStandard attrs -> do
       chooseOneM iid do
-        unscoped $ countVar 1 $ labeled' "takeDamage" $ assignDamage iid Tablet 1
-        labeled' "tablet.doNotTakeDamage" $ withLocationOf iid slayCivilian
+        unscoped $ countVar 1 $ labeled "takeDamage" $ assignDamage iid Tablet 1
+        labeled "tablet.doNotTakeDamage" $ withLocationOf iid slayCivilian
       pure s
     ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
       assignDamage iid Tablet 1

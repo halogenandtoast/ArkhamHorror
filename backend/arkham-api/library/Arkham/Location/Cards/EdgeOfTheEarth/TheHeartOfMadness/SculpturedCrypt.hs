@@ -42,10 +42,10 @@ instance RunMessage SculpturedCrypt where
         x <- perPlayer 1
         when (n >= x) do
           chooseOneM iid $ withI18n $ countVar x do
-            labeled' "spendCluesToTakeControl" do
+            labeled "spendCluesToTakeControl" do
               spendCluesAsAGroup investigators x
               placeSeal iid k
-            labeled' "doNotSpendClues" nothing
+            labeled "doNotSpendClues" nothing
 
       pure l
     _ -> SculpturedCrypt <$> liftRunMessage msg attrs

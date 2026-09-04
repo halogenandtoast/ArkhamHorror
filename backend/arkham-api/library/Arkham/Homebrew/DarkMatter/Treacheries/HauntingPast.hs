@@ -7,6 +7,7 @@ import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Scenario (getEncounterDeck)
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (getMemories)
+import Arkham.I18n
 import Arkham.Keyword (Keyword (Hidden))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -35,7 +36,7 @@ instance RunMessage HauntingPast where
         -- shuffles for us on the other branch).
         (_, []) -> do
           push $ FoundCards $ singletonMap Zone.FromDeck (map toCard deck)
-          chooseOneM iid $ labeled "$label.noMatchesFound" do
+          chooseOneM iid $ withI18n $ labeled "noMatchesFound" do
             push $ ClearFound Zone.FromDeck
             shuffleDeck Deck.EncounterDeck
         (seen, card : _) -> do

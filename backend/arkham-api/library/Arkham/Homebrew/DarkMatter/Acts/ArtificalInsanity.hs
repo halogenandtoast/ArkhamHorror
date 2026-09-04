@@ -26,8 +26,8 @@ instance RunMessage ArtificalInsanity where
       card <- fetchCard Assets.virtualAccessKey
       createAssetAt_ card (InPlayArea iid)
       chooseOneM iid $ campaignI18n do
-        labeled' "virtualAccessKey.addToDeck"
+        labeled "virtualAccessKey.addToDeck"
           $ addCampaignCardToDeck iid DoNotShuffleIn Assets.virtualAccessKey
-        labeled' "virtualAccessKey.doNotAddToDeck" nothing
+        labeled "virtualAccessKey.doNotAddToDeck" nothing
       pure a
     _ -> ArtificalInsanity <$> liftRunMessage msg attrs

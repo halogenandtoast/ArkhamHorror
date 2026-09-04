@@ -134,10 +134,10 @@ instance RunMessage ByTheBook where
             conspirators <- traverse (setFacedown True) =<< shuffle pool
             zipWithM_ (\lid c -> placeUnderneath lid [c]) conspiratorLocations conspirators
       scenarioI18n $ leadChooseOneM do
-        labeled' "returnTo.include" do
+        labeled "returnTo.include" do
           returnEnemies <- map toCard <$> gatherEncounterSet Set.ReturnCultOfUmordhoth
           placeConspirators (cultistEnemies <> returnEnemies)
-        labeled' "returnTo.exclude" $ placeConspirators cultistEnemies
+        labeled "returnTo.exclude" $ placeConspirators cultistEnemies
 
       selectOne rolandBanks >>= traverse_ \roland -> gainClues roland ScenarioSource 1
     ResolveChaosToken _ Cultist iid -> do
@@ -175,7 +175,7 @@ instance RunMessage ByTheBook where
             faces <- sort . nub . filter isNumberChaosToken . map (.face) <$> getBagChaosTokens
             for_ mRoland \roland ->
               chooseOneM roland do
-                questionLabeled' "removeChaosToken"
+                questionLabeled "removeChaosToken"
                 for_ faces \face -> chaosTokenLabeled face $ push $ RemoveChaosToken face
           mrGreyCaptured <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Enemies.mrGrey
           when mrGreyCaptured $ for_ mRoland \roland -> do
@@ -183,13 +183,13 @@ instance RunMessage ByTheBook where
             hasAdvancedCoverUp <- hasDeckCard roland Treacheries.coverUpAdvanced
             when (hasRolands38Special || hasAdvancedCoverUp) do
               chooseOneM roland do
-                questionLabeled' "advancedReward"
-                labeled' "doNotSwap" nothing
+                questionLabeled "advancedReward"
+                labeled "doNotSwap" nothing
                 when hasRolands38Special do
-                  labeled' "upgradeRolands38Special"
+                  labeled "upgradeRolands38Special"
                     $ swapCampaignCard roland Assets.rolands38Special Assets.rolands38SpecialAdvanced
                 when hasAdvancedCoverUp do
-                  labeled' "downgradeCoverUp"
+                  labeled "downgradeCoverUp"
                     $ swapCampaignCard roland Treacheries.coverUpAdvanced Treacheries.coverUp
           endOfScenario
         Resolution 2 -> do
@@ -201,10 +201,10 @@ instance RunMessage ByTheBook where
             hasAdvancedRolands38Special <- hasDeckCard roland Assets.rolands38SpecialAdvanced
             case (hasCoverUp, hasAdvancedRolands38Special) of
               (True, True) -> chooseOneM roland do
-                questionLabeled' "advancedPenalty"
-                labeled' "upgradeCoverUp"
+                questionLabeled "advancedPenalty"
+                labeled "upgradeCoverUp"
                   $ swapCampaignCard roland Treacheries.coverUp Treacheries.coverUpAdvanced
-                labeled' "downgradeRolands38Special"
+                labeled "downgradeRolands38Special"
                   $ swapCampaignCard roland Assets.rolands38SpecialAdvanced Assets.rolands38Special
               (True, False) -> swapCampaignCard roland Treacheries.coverUp Treacheries.coverUpAdvanced
               (False, True) ->

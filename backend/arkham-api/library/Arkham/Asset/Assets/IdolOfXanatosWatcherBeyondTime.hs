@@ -34,10 +34,10 @@ instance RunMessage IdolOfXanatosWatcherBeyondTime where
       when (n > 0 && damage + horror > 0) do
         if damage > 0 && horror > 0
           then chooseOneM iid do
-            (cardI18n $ labeled' "idolOfXanatosWatcherBeyondTime.cancel1Damage") do
+            (cardI18n $ labeled "idolOfXanatosWatcherBeyondTime.cancel1Damage") do
               cancelInvestigatorDamage iid 1
               doStep (n - 1) (DoStep (damage - 1) (DoStep horror msg'))
-            (cardI18n $ labeled' "idolOfXanatosWatcherBeyondTime.cancel1Horror") do
+            (cardI18n $ labeled "idolOfXanatosWatcherBeyondTime.cancel1Horror") do
               cancelInvestigatorHorror iid 1
               doStep (n - 1) (DoStep damage (DoStep (horror - 1) msg'))
           else do

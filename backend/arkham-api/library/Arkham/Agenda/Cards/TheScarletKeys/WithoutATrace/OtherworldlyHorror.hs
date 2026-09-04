@@ -53,7 +53,7 @@ instance RunMessage OtherworldlyHorror where
       anyConcealed <- selectAny ConcealedCardAny
 
       chooseNM lead 2 $ scenarioI18n do
-        labeled' "otherworldlyHorror.takeDamageAndHorror" do
+        labeled "otherworldlyHorror.takeDamageAndHorror" do
           eachInvestigator \iid -> assignDamageAndHorror iid attrs 1 1
         labeledValidate' canHollow "otherworldlyHorror.hollows" do
           eachInvestigator \iid -> do

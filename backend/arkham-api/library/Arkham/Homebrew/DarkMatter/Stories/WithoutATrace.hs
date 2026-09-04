@@ -25,11 +25,11 @@ instance RunMessage WithoutATrace where
       clueless <- maybe (pure False) (fieldMap LocationClues (== 0)) derelict
       chooseOneM iid $ campaignI18n do
         when clueless $ for_ derelict \lid ->
-          labeled' "withoutATrace.assumeCommandOfTheShip" do
+          labeled "withoutATrace.assumeCommandOfTheShip" do
             cassilda <- getSetAsideCard Locations.theCassilda
             push $ ReplaceLocation lid cassilda Swap
             addToVictory iid attrs
-        labeled' "withoutATrace.scavengeTheShipForParts" do
+        labeled "withoutATrace.scavengeTheShipForParts" do
           drawCards iid attrs 1
           gainResources iid attrs 1
           returnToScanningDeck attrs

@@ -57,9 +57,9 @@ instance RunMessage ErwinSimmonsQuantumPhysicist where
       canFight <- selectAny $ CanFightEnemy (toSource $ attrs.ability 1)
       canEvade <- selectAny $ enemyCanBeEvadedBy (attrs.ability 1)
       chooseOneM iid $ withI18n do
-        when canFight $ labeled' "fight" $ chooseFightEnemy sid iid (attrs.ability 1)
-        when canEvade $ labeled' "evade" $ chooseEvadeEnemy sid iid (attrs.ability 1)
-        labeled' "investigate" $ investigate sid iid (attrs.ability 1)
+        when canFight $ labeled "fight" $ chooseFightEnemy sid iid (attrs.ability 1)
+        when canEvade $ labeled "evade" $ chooseEvadeEnemy sid iid (attrs.ability 1)
+        labeled "investigate" $ investigate sid iid (attrs.ability 1)
       pure a
     FailedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do
       dealAssetDamage attrs.id (attrs.ability 1) 1

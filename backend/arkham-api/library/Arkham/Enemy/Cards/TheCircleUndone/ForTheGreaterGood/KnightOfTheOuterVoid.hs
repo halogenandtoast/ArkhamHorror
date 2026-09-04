@@ -29,8 +29,8 @@ instance RunMessage KnightOfTheOuterVoid where
       canPlaceDoom <- toId attrs <=~> NotEnemy (EnemyWithModifier CannotPlaceDoomOnThis)
       when canPlaceDoom $ do
         leadChooseOneM $ withI18n $ nameVar attrs do
-          countVar 1 $ labeled' "placeDoomOn" $ placeDoom attrs attrs 1
-          countVar 2 $ labeled' "placeDoomOn" $ placeDoom attrs attrs 2
+          countVar 1 $ labeled "placeDoomOn" $ placeDoom attrs attrs 1
+          countVar 2 $ labeled "placeDoomOn" $ placeDoom attrs attrs 2
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom

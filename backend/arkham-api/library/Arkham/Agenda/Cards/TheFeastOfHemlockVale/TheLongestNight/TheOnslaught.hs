@@ -59,10 +59,10 @@ instance RunMessage TheOnslaught where
       lead <- getLead
       residents <- select $ AssetWithTrait Resident <> AssetControlledBy Anyone
       chooseOneM lead $ campaignI18n do
-        labeled' "theOnslaught.eachUndefeatedInvestigatorSuffersMentalTrauma" do
+        labeled "theOnslaught.eachUndefeatedInvestigatorSuffersMentalTrauma" do
           eachInvestigator (`sufferMentalTrauma` 1)
         when (notNull residents) do
-          labeled' "theOnslaught.chooseResidentToSacrifice" do
+          labeled "theOnslaught.chooseResidentToSacrifice" do
             chooseTargetM lead residents \aid -> do
               cardDef <- field AssetCardDef aid
               for_ (residentFromCardDef cardDef) \resident -> do

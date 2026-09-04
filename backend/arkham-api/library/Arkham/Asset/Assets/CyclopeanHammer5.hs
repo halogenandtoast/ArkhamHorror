@@ -33,7 +33,7 @@ instance RunMessage CyclopeanHammer5 where
           withSkillTestTargetedEnemy \enemy -> do
             chooseOrRunOneM iid do
               when (n >= 3) do
-                (cardI18n $ labeled' "cyclopeanHammer5.exhaustForExtraDamage")
+                (cardI18n $ labeled "cyclopeanHammer5.exhaustForExtraDamage")
                   do
                     exhaustThis attrs
                     doStep 1 msg
@@ -45,10 +45,10 @@ instance RunMessage CyclopeanHammer5 where
                       <> LocationCanBeEnteredBy enemy
                   when (notNull choices) do
                     chooseOneM iid do
-                      (cardI18n $ labeled' "cyclopeanHammer5.doNotMoveEnemy") nothing
-                      (cardI18n $ labeled' "cyclopeanHammer5.moveEnemy") do
+                      (cardI18n $ labeled "cyclopeanHammer5.doNotMoveEnemy") nothing
+                      (cardI18n $ labeled "cyclopeanHammer5.moveEnemy") do
                         chooseOneM iid do
-                          questionLabeled "$label.cards.cyclopeanHammer5.moveEnemyAway"
+                          cardI18n $ questionLabeled "cyclopeanHammer5.moveEnemyAway"
                           targets choices (push . EnemyMove enemy)
         else doStep 1 msg
       pure a
@@ -65,10 +65,10 @@ instance RunMessage CyclopeanHammer5 where
                   (LocationCanBeEnteredBy enemy <> not_ (locationWithInvestigator iid))
             when (notNull choices) do
               chooseOneM iid do
-                (cardI18n $ labeled' "cyclopeanHammer5.doNotMoveEnemy") nothing
-                (cardI18n $ labeled' "cyclopeanHammer5.moveEnemy") do
+                (cardI18n $ labeled "cyclopeanHammer5.doNotMoveEnemy") nothing
+                (cardI18n $ labeled "cyclopeanHammer5.moveEnemy") do
                   chooseOneM iid do
-                    questionLabeled "$label.cards.cyclopeanHammer5.moveEnemyAway"
+                    cardI18n $ questionLabeled "cyclopeanHammer5.moveEnemyAway"
                     targets choices (push . EnemyMove enemy)
       pure a
     _ -> CyclopeanHammer5 <$> liftRunMessage msg attrs

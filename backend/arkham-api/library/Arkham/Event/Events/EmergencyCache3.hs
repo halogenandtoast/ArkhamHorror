@@ -25,7 +25,7 @@ instance RunMessage EmergencyCache3 where
         then pushAll [TakeResources iid 4 (toSource attrs) False]
         else replicateM_ 4 do
           chooseOneM iid do
-            withI18n $ countVar 1 $ labeled' "takeResources" $ gainResourcesIfCan iid attrs 1
+            withI18n $ countVar 1 $ labeled "takeResources" $ gainResourcesIfCan iid attrs 1
             labeledI "addSupply" do
               chooseTargetM iid supplyAssets \asset ->
                 push $ AddUses (toSource attrs) asset Supply 1

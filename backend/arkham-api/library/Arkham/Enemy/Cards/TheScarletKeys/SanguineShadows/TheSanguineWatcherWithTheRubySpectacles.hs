@@ -25,7 +25,7 @@ instance RunMessage TheSanguineWatcherWithTheRubySpectacles where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       eachInvestigator \iid -> do
         chooseOneM iid $ withI18n $ countVar 2 do
-          labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 2
-          labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 2
+          labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 2
+          labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 2
       pure e
     _ -> TheSanguineWatcherWithTheRubySpectacles <$> liftRunMessage msg attrs

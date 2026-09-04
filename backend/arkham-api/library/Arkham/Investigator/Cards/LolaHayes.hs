@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.LolaHayes (lolaHayes) where
 import Arkham.Ability
 import Arkham.ClassSymbol
 import Arkham.Helpers.Modifiers
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Matcher
@@ -41,7 +42,9 @@ instance HasAbilities LolaHayes where
 switchRole :: ReverseQueue m => InvestigatorAttrs -> m ()
 switchRole attrs = do
   let roles = filter (/= Mythos) [minBound .. maxBound]
-  chooseOneM attrs.id $ for_ roles \role -> labeled (tshow role) $ investigatorSpecific attrs.id "setRole" role
+  chooseOneM attrs.id $ for_ roles \role ->
+    (withI18n $ keyVar "name" (tshow role) $ labeled "name")
+      $ investigatorSpecific attrs.id "setRole" role
 
 instance RunMessage LolaHayes where
   runMessage msg i@(LolaHayes attrs) = runQueueT $ case msg of

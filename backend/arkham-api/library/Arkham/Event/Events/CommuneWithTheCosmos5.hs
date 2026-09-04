@@ -2,6 +2,7 @@ module Arkham.Event.Events.CommuneWithTheCosmos5 (communeWithTheCosmos5) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Modifier
 import Arkham.Projection
@@ -16,9 +17,9 @@ communeWithTheCosmos5 = event CommuneWithTheCosmos5 Cards.communeWithTheCosmos5
 instance RunMessage CommuneWithTheCosmos5 where
   runMessage msg e@(CommuneWithTheCosmos5 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      chooseAmount iid "Horror" "Horror" 0 3 attrs
+      withI18n $ chooseAmount iid "horror" "$horror" 0 3 attrs
       pure e
-    ResolveAmounts iid (getChoiceAmount "Horror" -> n) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "$horror" -> n) (isTarget attrs -> True) -> do
       when (n > 0) $ assignHorror iid attrs n
       sid <- getRandom
       skillTestModifier sid attrs iid (SkillModifier #intellect 2)

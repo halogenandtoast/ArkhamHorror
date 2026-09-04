@@ -160,17 +160,17 @@ instance RunMessage TheDrownedCity where
               scope "task" $ scope lbl $ flavor $ setTitle "title" >> p "body"
         pure c
       DoStep 2 (CampaignStep (InterludeStep 1 _)) -> scope "anOfferYouCantRefuse" do
-        storyWithChooseOneM' (setTitle "title" >> p "interlude2") do
-          labeled' "refuse" do
+        storyWithChooseOneM (setTitle "title" >> p "interlude2") do
+          labeled "refuse" do
             flavor $ setTitle "title" >> p "interlude3"
             gameOver
-          labeled' "accept" do
+          labeled "accept" do
             flavor $ setTitle "title" >> p "interlude4"
             nextCampaignStep
         pure c
       CampaignStep (InterludeStep 2 _) -> scope "expeditionToRlyeh" do
-        storyWithChooseOneM' (setTitle "title" >> p "body") do
-          labeled' "west" do
+        storyWithChooseOneM (setTitle "title" >> p "body") do
+          labeled "west" do
             record TheExpeditionHeadedWest
             flavor do
               setTitle "title"
@@ -182,7 +182,7 @@ instance RunMessage TheDrownedCity where
                 li "proceedToTheWesternWall"
             addCampaignCardToDeckChoice_ =<< genPlayerCard Assets.andyVanNortwick
             setNextCampaignStep TheWesternWall
-          labeled' "east" do
+          labeled "east" do
             record TheExpeditionHeadedEast
             flavor do
               setTitle "title"
@@ -243,7 +243,7 @@ instance RunMessage TheDrownedCity where
         pure c
       DoStep 3 (CampaignStep step) | step == SepulchreOfTheSleeper -> scope "sepulchreOfTheSleeper" do
         scope "intro" do
-          storyWithChooseOneM'
+          storyWithChooseOneM
             ( do
                 setTitle "title"
                 p "sepulchreOfTheSleeper3"
@@ -253,14 +253,14 @@ instance RunMessage TheDrownedCity where
                   li "layItToRest"
             )
             do
-              labeled' "knowBetter" do
+              labeled "knowBetter" do
                 -- "Each investigator marks 1 progress under their Task."
                 eachInvestigator \iid -> do
                   taskKeys <- getInvestigatorTasks iid
                   for_ taskKeys \(key, _, _) -> incrementRecordCountForInvestigator iid key 1
                 record TheInvestigatorsDidNotConfrontTheNightmare
                 setNextCampaignStep TheAwakening
-              labeled' "layItToRest" $ campaignSpecific_ "beginSepulchreOfTheSleeper"
+              labeled "layItToRest" $ campaignSpecific_ "beginSepulchreOfTheSleeper"
         pure c
       CampaignSpecific "beginSepulchreOfTheSleeper" _ ->
         lift $ defaultCampaignRunner (CampaignStep SepulchreOfTheSleeper) c
@@ -337,9 +337,9 @@ instance RunMessage TheDrownedCity where
             -- still above them when the decision is made.
             if completed || task /= NoPlaceLikeHome
               then flavor $ taskStory completed
-              else storyWithChooseOneM' (taskStory completed) do
-                unscoped $ countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
-                unscoped $ countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+              else storyWithChooseOneM (taskStory completed) do
+                unscoped $ countVar 1 $ labeled "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+                unscoped $ countVar 1 $ labeled "sufferMentalTrauma" $ sufferMentalTrauma iid 1
           if completed
             then do
               for_ (completedTask task) \completedCard -> do

@@ -31,7 +31,7 @@ instance RunMessage TheBloodBlight where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       blood <- select $ SealedOnInvestigator (InvestigatorWithId iid) #blood
       chooseOneM iid $ withI18n do
-        for_ [1 .. min 3 (length blood)] \n -> countVar n $ labeled' "dealDamage" $ doStep n msg
+        for_ [1 .. min 3 (length blood)] \n -> countVar n $ labeled "dealDamage" $ doStep n msg
       pure t
     DoStep n (UseThisAbility iid (isSource attrs -> True) 2) -> do
       blood <- select $ SealedOnInvestigator (InvestigatorWithId iid) #blood

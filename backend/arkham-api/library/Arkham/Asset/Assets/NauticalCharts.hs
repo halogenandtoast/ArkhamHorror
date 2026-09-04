@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -40,7 +41,7 @@ instance RunMessage NauticalCharts where
       unless (null hand) do
         withSkillTest \sid -> do
           chooseOneM iid do
-            questionLabeled "$label.cards.nauticalCharts.discard1CardFrom"
+            cardI18n $ questionLabeled "nauticalCharts.discard1CardFrom"
             labeledI "doNotDiscardCard" nothing
             targets hand \card -> do
               discardCard iid (attrs.ability 1) card

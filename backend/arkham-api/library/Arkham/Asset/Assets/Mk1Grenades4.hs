@@ -51,7 +51,7 @@ instance RunMessage Mk1Grenades4 where
       if null concealed
         then handleOptions (pure ())
         else chooseOneM iid do
-          cardI18n $ scope "mk1Grenades4" $ labeled' "applyToConcealed" $ handleOptions do
+          cardI18n $ scope "mk1Grenades4" $ labeled "applyToConcealed" $ handleOptions do
             targets concealed $ exposeConcealed iid source
           labeledI "doNotApplyDamageToConcealed" $ handleOptions (pure ())
       pure a

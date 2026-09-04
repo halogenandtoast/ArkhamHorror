@@ -20,12 +20,12 @@ instance RunMessage DeathAndDecay where
       assets <- select $ assetControlledBy iid <> AssetCanBeDamagedBySource (toSource attrs)
       items <- select $ assetControlledBy iid <> AssetWithTrait Item
       scenarioI18n $ blueDecide iid do
-        labeled' "placeDoomOnTheBlueAgenda" $ placeDoomOnFactionAgenda attrs BlueFaction 1
-        labeled' "youAndYourAssetsTakeDamage" do
+        labeled "placeDoomOnTheBlueAgenda" $ placeDoomOnFactionAgenda attrs BlueFaction 1
+        labeled "youAndYourAssetsTakeDamage" do
           directDamage iid attrs 1
           for_ assets \asset -> dealAssetDamage asset attrs 1
         when (notNull items) do
-          labeled' "removeItemFromGame" do
+          labeled "removeItemFromGame" do
             chooseTargetM iid items \item -> push $ RemoveFromGame (toTarget item)
       pure t
     _ -> DeathAndDecay <$> liftRunMessage msg attrs

@@ -36,11 +36,11 @@ instance RunMessage TheCabildo where
           if n >= 2
             then focusCards drewCards.cards do
               chooseOneM iid $ withI18n do
-                countVar 2 $ labeled' "spendClues" do
+                countVar 2 $ labeled "spendClues" do
                   spendClues iid 2
                   cancelCardEffects (attrs.ability 1) card
                   drawCard iid card
-                labeled' "doNotSpendClues" $ drawCard iid card
+                labeled "doNotSpendClues" $ drawCard iid card
             else drawCard iid card
           for_ rest (drawCard iid)
         _ -> error "expected exactly one card to be drawn"

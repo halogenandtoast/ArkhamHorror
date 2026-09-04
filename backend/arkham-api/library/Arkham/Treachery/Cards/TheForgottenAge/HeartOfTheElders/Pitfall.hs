@@ -19,10 +19,10 @@ instance RunMessage Pitfall where
     Revelation iid (isSource attrs -> True) -> do
       sid <- getRandom
       chooseOrRunOneM iid $ scenarioI18n do
-        labeled' "pitfall.jumpTheGap" $ revelationSkillTest sid iid attrs #agility (Fixed 3)
+        labeled "pitfall.jumpTheGap" $ revelationSkillTest sid iid attrs #agility (Fixed 3)
 
         when (attrs.drawnFrom /= Just (ScenarioDeckByKey ExplorationDeck)) do
-          labeled' "pitfall.shuffle" $ shuffleIntoDeck ExplorationDeck attrs
+          labeled "pitfall.shuffle" $ shuffleIntoDeck ExplorationDeck attrs
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       assignDamage iid attrs n

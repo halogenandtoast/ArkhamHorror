@@ -21,11 +21,11 @@ instance RunMessage AtACrossroads1 where
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (InvestigatorTarget iid') -> do
       chooseOneM iid $ cardI18n $ scope "atACrossroads" do
-        labeled' "act"
+        labeled "act"
           do
             takeActionAsIfTurn iid' attrs
             shouldMoveWithSkillTest_ $ randomDiscard iid' attrs
-        labeled' "draw" do
+        labeled "draw" do
           createCardEffect Cards.atACrossroads1 Nothing attrs iid'
           drawCards iid' attrs 3
       pure e

@@ -40,8 +40,8 @@ instance RunMessage Flamethrower5 where
       engaged <- select $ enemyEngagedWith iid
       let toMsg eid' = DealDamage (EnemyTarget eid') $ delayDamage $ isDirect $ attack attrs 1
       chooseOneM iid $ cardI18n $ scope "flamethrower5" do
-        labeled' "standardDamage" $ push $ DealDamage (EnemyTarget eid) $ attack attrs 1
-        labeled' "assignAmongEngaged" do
+        labeled "standardDamage" $ push $ DealDamage (EnemyTarget eid) $ attack attrs 1
+        labeled "assignAmongEngaged" do
           replicateM_ damage $ chooseTargetM iid engaged $ push . toMsg
           for_ engaged $ checkDefeated attrs
       pure a

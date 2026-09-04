@@ -48,7 +48,7 @@ instance RunMessage HuntressOfTheEztli where
           alejandroVela <- fetchCard $ SetAsideCardMatch "Alejandro Vela"
           remember YouFoughtWithIchtaca
           leadChooseOneM $ withI18n do
-            nameVar Assets.alejandroVela $ questionLabeled' "takeControlOf"
+            nameVar Assets.alejandroVela $ questionLabeled "takeControlOf"
             questionLabeledCard Assets.alejandroVela
             portraits investigators (`takeControlOfSetAsideAsset` alejandroVela)
           addChaosToken Tablet

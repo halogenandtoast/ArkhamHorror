@@ -37,7 +37,7 @@ instance RunMessage Calcification where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
       chooseOneM iid $ campaignI18n do
-        labeled' "calcification.pay" do
+        labeled "calcification.pay" do
           payEffectCost iid attrs $ DirectDamageCost (attrs.ability 2) (InvestigatorWithId iid) 1
           skillTestModifier sid (attrs.ability 1) sid SkillTestAutomaticallySucceeds
         unscoped skip_

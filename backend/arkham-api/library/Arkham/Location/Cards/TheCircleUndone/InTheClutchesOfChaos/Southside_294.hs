@@ -36,7 +36,7 @@ instance RunMessage Southside_294 where
 
       focusCards cards do
         chooseOneM iid do
-          when (null powerTreacheries) $ withI18n $ labeled' "continue" nothing
+          when (null powerTreacheries) $ withI18n $ labeled "continue" nothing
           targets powerTreacheries (drawCard iid)
       pure l
     _ -> Southside_294 <$> liftRunMessage msg attrs

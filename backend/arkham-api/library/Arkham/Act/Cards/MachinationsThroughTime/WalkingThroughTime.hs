@@ -5,6 +5,7 @@ import Arkham.Act.CardDefs.MachinationsThroughTime qualified as Cards
 import Arkham.Act.Helpers (advancedWithOther)
 import Arkham.Act.Import.Lifted hiding (advancedWithOther)
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.I18n
 import Arkham.Location.CardDefs.MachinationsThroughTime qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -59,7 +60,7 @@ instance RunMessage WalkingThroughTime where
       scientists <- select $ AssetWithTrait Scientist <> AssetAt (LocationWithId from)
       movable <- filterM (`assetCanEnter` destination) scientists
       when (notNull movable) do
-        chooseSomeM iid "Done moving scientists" do
+        withI18n $ chooseSomeM iid "doneMovingScientists" do
           targets movable \scientist -> place scientist (AtLocation destination)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

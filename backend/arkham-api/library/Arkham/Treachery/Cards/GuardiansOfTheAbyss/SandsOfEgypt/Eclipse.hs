@@ -34,7 +34,7 @@ instance RunMessage Eclipse where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       allies <- select $ #ally <> assetAtLocationWith iid
       chooseOrRunOneM iid do
-        withI18n $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        withI18n $ countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
         campaignI18n $ targets allies \ally -> do
           push $ Msg.AssetDefeated (toSource attrs) ally
           assetTakenByTheAbyss ally

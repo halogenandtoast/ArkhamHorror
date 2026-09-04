@@ -69,9 +69,9 @@ instance HasChaosTokenValue WithoutATrace where
 instance RunMessage WithoutATrace where
   runMessage msg s@(WithoutATrace attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "title" >> p "intro1") do
-        labeled' "blowTheWhistle" $ doStep 2 PreScenarioSetup
-        labeled' "discardTheWhistle" $ doStep 3 PreScenarioSetup
+      storyWithChooseOneM (setTitle "title" >> p "intro1") do
+        labeled "blowTheWhistle" $ doStep 2 PreScenarioSetup
+        labeled "discardTheWhistle" $ doStep 3 PreScenarioSetup
       setupKeys
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
@@ -128,7 +128,7 @@ instance RunMessage WithoutATrace where
         leadChooseOneM do
           unscoped
             $ nameVar Assets.alikiZoniUperetriaTheMaidWithTheScarletSash
-            $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+            $ questionLabeled "chooseInvestigatorToTakeControlOf"
           questionLabeledCard Assets.alikiZoniUperetriaTheMaidWithTheScarletSash
           portraits investigators (`takeControlOfAsset` alikiZoniUperetria)
 
@@ -338,9 +338,9 @@ instance RunMessage WithoutATrace where
           record AlikiIsOnYourSide
           resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 1
           leadChooseOneM do
-            labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
-            labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
-            labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+            labeled "bermuda" $ campaignSpecific "setCurrent" Bermuda
+            labeled "yborCity" $ campaignSpecific "setCurrent" YborCity
+            labeled "sanJuan" $ campaignSpecific "setCurrent" SanJuan
           markTime 3
           endOfScenario
         Resolution 2 -> do
@@ -348,27 +348,27 @@ instance RunMessage WithoutATrace where
           record YouHaventSeenTheLastOfAlikiZoniUperetria
           resolutionWithXp "resolution2" $ allGainXpWithBonus' attrs $ toBonus "bonus" 1
           leadChooseOneM do
-            labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
-            labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
-            labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+            labeled "bermuda" $ campaignSpecific "setCurrent" Bermuda
+            labeled "yborCity" $ campaignSpecific "setCurrent" YborCity
+            labeled "sanJuan" $ campaignSpecific "setCurrent" SanJuan
           markTime 2
           endOfScenario
         Resolution 3 -> do
           record AlikiIsOnYourSide
           resolutionWithXp "resolution3" $ allGainXp' attrs
           leadChooseOneM do
-            labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
-            labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
-            labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+            labeled "bermuda" $ campaignSpecific "setCurrent" Bermuda
+            labeled "yborCity" $ campaignSpecific "setCurrent" YborCity
+            labeled "sanJuan" $ campaignSpecific "setCurrent" SanJuan
           markTime 2
           endOfScenario
         Resolution 4 -> do
           record YouHaventSeenTheLastOfAlikiZoniUperetria
           resolutionWithXp "resolution4" $ allGainXp' attrs
           leadChooseOneM do
-            labeled' "bermuda" $ campaignSpecific "setCurrent" Bermuda
-            labeled' "yborCity" $ campaignSpecific "setCurrent" YborCity
-            labeled' "sanJuan" $ campaignSpecific "setCurrent" SanJuan
+            labeled "bermuda" $ campaignSpecific "setCurrent" Bermuda
+            labeled "yborCity" $ campaignSpecific "setCurrent" YborCity
+            labeled "sanJuan" $ campaignSpecific "setCurrent" SanJuan
           markTime 1
           endOfScenario
         _ -> error "Unknown resolution for Dead Heat"

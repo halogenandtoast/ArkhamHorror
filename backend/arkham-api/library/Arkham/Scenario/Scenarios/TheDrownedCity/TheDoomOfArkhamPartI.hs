@@ -176,7 +176,7 @@ instance RunMessage TheDoomOfArkhamPartI where
       investigators <- select Anyone
       legrasse <- genPlayerCard Assets.johnRaymondLegrasse
       chooseOrRunOneM lead do
-        questionLabeled' "chooseLegrasseInvestigator"
+        questionLabeled "chooseLegrasseInvestigator"
         targets investigators \iid ->
           createAssetAt_ (PlayerCard $ setPlayerCardOwner iid legrasse) (InPlayArea iid)
     -- {cultist}: "If this test fails, place 1 doom on the nearest enemy with no doom
@@ -236,5 +236,5 @@ resolution1 attrs = do
   unless (null flooded) $ recordSetInsert FloodedNeighborhoods flooded
 
   resolutionWithXpAndChooseOne "resolution1" (allGainXp' attrs) do
-    labeled' "readyToFight" $ resolution "resolution2" >> endOfScenarioThen TheDoomOfArkhamPartII
-    labeled' "needMoreTime" $ resolution "resolution3" >> endOfScenarioThen TheDoomOfArkhamPartII
+    labeled "readyToFight" $ resolution "resolution2" >> endOfScenarioThen TheDoomOfArkhamPartII
+    labeled "needMoreTime" $ resolution "resolution3" >> endOfScenarioThen TheDoomOfArkhamPartII

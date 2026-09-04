@@ -134,8 +134,8 @@ instance RunMessage EnthrallingEncore where
       hasClues <- fieldMap InvestigatorClues (> 0) iid
       if isEasyStandard attrs
         then chooseOrRunOneM iid do
-          when hasClues $ labeled' "cultist.spendClue" $ spendClues iid 1
-          labeled' "cultist.takeDamage" $ assignDamage iid Cultist 1
+          when hasClues $ labeled "cultist.spendClue" $ spendClues iid 1
+          labeled "cultist.takeDamage" $ assignDamage iid Cultist 1
         else do
           when hasClues $ spendClues iid 1
           assignDamage iid Cultist 1
@@ -176,13 +176,13 @@ resolveSignatureSwap iid isOptional = do
     then case (upgradeSignature, downgradeWeakness) of
       (Nothing, Nothing) -> gainXp iid ScenarioSource (ikey "xp.unableToSwap") 2
       (mUpgrade, mDowngrade) -> chooseOneM iid do
-        questionLabeled' "swapSignature"
-        for_ mUpgrade \pair -> labeled' "upgradeSignature" $ swapCard pair
-        for_ mDowngrade \pair -> labeled' "downgradeWeakness" $ swapCard pair
-        labeled' "doNotSwap" nothing
+        questionLabeled "swapSignature"
+        for_ mUpgrade \pair -> labeled "upgradeSignature" $ swapCard pair
+        for_ mDowngrade \pair -> labeled "downgradeWeakness" $ swapCard pair
+        labeled "doNotSwap" nothing
     else case (upgradeWeakness, downgradeSignature) of
       (Nothing, Nothing) -> sufferMentalTrauma iid 1
       (mUpgrade, mDowngrade) -> chooseOrRunOneM iid do
-        questionLabeled' "swapSignature"
-        for_ mUpgrade \pair -> labeled' "upgradeWeakness" $ swapCard pair
-        for_ mDowngrade \pair -> labeled' "downgradeSignature" $ swapCard pair
+        questionLabeled "swapSignature"
+        for_ mUpgrade \pair -> labeled "upgradeWeakness" $ swapCard pair
+        for_ mDowngrade \pair -> labeled "downgradeSignature" $ swapCard pair

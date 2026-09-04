@@ -5,6 +5,7 @@ import Arkham.Act.CardDefs.TheDrownedCity.TheApiary qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheApiary qualified as Enemies
 import Arkham.Helpers.Investigator (getSpendableClueCount)
+import Arkham.I18n
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 
@@ -29,9 +30,9 @@ instance RunMessage TheHiveMind where
   runMessage msg a@(TheHiveMind attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- getSpendableClueCount iid
-      when (n > 0) $ chooseAmount iid "Clues" "Clues" 0 n attrs
+      when (n > 0) $ withI18n $ chooseAmount iid "clues" "$clues" 0 n attrs
       pure a
-    ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       enemies <- select $ EnemyAt (locationWithInvestigator iid) <> NonEliteEnemy
       chooseTargetM iid enemies \enemy -> do
         placeCluesOnLocation iid (attrs.ability 1) n

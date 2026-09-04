@@ -91,9 +91,9 @@ instance HasChaosTokenValue UndimensionedAndUnseen where
 instance RunMessage UndimensionedAndUnseen where
   runMessage msg s@(UndimensionedAndUnseen attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (h "title" >> p "body") do
-        labeled' "calm" $ doStep 1 msg
-        labeled' "warn" $ doStep 2 msg
+      storyWithChooseOneM (h "title" >> p "body") do
+        labeled "calm" $ doStep 1 msg
+        labeled "warn" $ doStep 2 msg
       pure s
     DoStep 1 PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "part1"
@@ -179,8 +179,8 @@ instance RunMessage UndimensionedAndUnseen where
       mcard <- findCardMatch Assets.powderOfIbnGhazi <$> field InvestigatorDeck iid
       for_ mcard $ \card -> do
         chooseOneM iid $ withI18n $ cardNameVar card do
-          labeled' "playName" $ putCardIntoPlay iid card
-          labeled' "doNotPlayName" nothing
+          labeled "playName" $ putCardIntoPlay iid card
+          labeled "doNotPlayName" nothing
       pure s
     ResolveChaosToken _ Cultist iid -> do
       drawAnotherChaosToken iid
@@ -190,9 +190,9 @@ instance RunMessage UndimensionedAndUnseen where
       chooseOrRunOneM iid do
         if isHardExpert attrs
           then do
-            labeled' "doNotRemoveCluesFail" failSkillTest
+            labeled "doNotRemoveCluesFail" failSkillTest
           else do
-            labeled' "doNotRemoveCluesTreatAsMinusFour" do
+            labeled "doNotRemoveCluesTreatAsMinusFour" do
               withSkillTest \sid -> skillTestModifier sid Tablet drawnToken (ChangeChaosTokenModifier $ NegativeModifier 4)
 
         targets broodOfYogSothoth (removeAllClues Tablet)

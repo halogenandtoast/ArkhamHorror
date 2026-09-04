@@ -23,7 +23,7 @@ instance HasAbilities SecurityOffice where
 instance RunMessage SecurityOffice where
   runMessage msg l@(SecurityOffice attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      scenarioI18n $ chooseAmount' iid "cardsToDiscard" "$cards" 1 3 attrs
+      scenarioI18n $ chooseAmount iid "cardsToDiscard" "$cards" 1 3 attrs
       pure l
     ResolveAmounts iid (getChoiceAmount "$cards" -> cardAmount) (isTarget attrs -> True) -> do
       checkGameIcons attrs iid NoMulligan cardAmount

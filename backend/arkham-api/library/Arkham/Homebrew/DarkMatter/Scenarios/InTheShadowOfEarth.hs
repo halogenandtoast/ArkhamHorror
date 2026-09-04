@@ -169,8 +169,8 @@ instance RunMessage InTheShadowOfEarth where
     ResolveChaosToken _ ElderThing iid -> do
       let damage = byDifficulty attrs 2 3
       chooseOneM iid $ unscoped do
-        countVar damage $ labeled' "takeDamage" $ assignDamage iid ElderThing damage
-        labeled' "automaticallyFailTest" failSkillTest
+        countVar damage $ labeled "takeDamage" $ assignDamage iid ElderThing damage
+        labeled "automaticallyFailTest" failSkillTest
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
@@ -181,8 +181,8 @@ instance RunMessage InTheShadowOfEarth where
           allies <- select $ AssetWithTrait Ally <> assetControlledBy iid
           unless (null allies) do
             chooseTargetM iid allies \ally -> chooseOneM iid $ unscoped do
-              countVar 1 $ labeled' "dealDamage" $ dealAssetDamage ally Cultist 1
-              countVar 1 $ labeled' "dealHorror" $ dealAssetHorror ally Cultist 1
+              countVar 1 $ labeled "dealDamage" $ dealAssetDamage ally Cultist 1
+              countVar 1 $ labeled "dealHorror" $ dealAssetHorror ally Cultist 1
         -- [tablet]: "If you fail, take 1 damage and 1 horror."
         Tablet -> assignDamageAndHorror iid Tablet 1 1
         _ -> pure ()

@@ -48,13 +48,13 @@ instance RunMessage LibraryTheMidwinterGala where
       chooseOrRunOneM iid $ withI18n do
         countVar 1
           $ nameVar Assets.jewelOfSarnath
-          $ labeled' "placeDamageOn"
+          $ labeled "placeDamageOn"
           $ placeTokens (attrs.ability 1) jewelOfSarnath #damage 1
         for_ (keys tokens) \token -> do
           countVar 1
             $ withVar "token" (String $ tshow token)
             $ nameVar Assets.jewelOfSarnath
-            $ labeled' "removeTokensFrom"
+            $ labeled "removeTokensFrom"
             $ removeTokens (attrs.ability 1) jewelOfSarnath token 1
 
       pure l

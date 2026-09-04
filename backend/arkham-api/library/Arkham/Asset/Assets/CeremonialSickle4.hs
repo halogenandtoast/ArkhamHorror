@@ -25,14 +25,14 @@ instance RunMessage CeremonialSickle4 where
       sid <- getRandom
       chooseOneM iid do
         when attrs.ready do
-          (cardI18n $ labeled' "ceremonialSickle4.exhaustForBoost")
+          (cardI18n $ labeled "ceremonialSickle4.exhaustForBoost")
             $ doStep 1 msg
-        (cardI18n $ labeled' "ceremonialSickle4.onDefeatEnemy")
+        (cardI18n $ labeled "ceremonialSickle4.onDefeatEnemy")
           $ doStep 2 msg
       fight <- mkChooseFight sid iid (attrs.ability 1)
       chooseOneM iid do
-        (withI18n $ skillVar #willpower $ labeled' "useSkill") $ push $ withSkillType #willpower fight
-        (withI18n $ countVar 1 $ skillVar #combat $ labeled' "getPlus") do
+        (withI18n $ skillVar #willpower $ labeled "useSkill") $ push $ withSkillType #willpower fight
+        (withI18n $ countVar 1 $ skillVar #combat $ labeled "getPlus") do
           skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
           push fight
       pure $ overAttrs (unsetMetaKey "option2") a

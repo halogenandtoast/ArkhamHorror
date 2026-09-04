@@ -2,6 +2,7 @@ module Arkham.Investigator.Cards.RolandBanksParallel (rolandBanksParallel) where
 
 import Arkham.Ability
 import Arkham.Asset.Types (Field (..))
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted hiding (choose)
 import Arkham.Matcher hiding (PlayCard)
@@ -43,7 +44,7 @@ instance RunMessage RolandBanksParallel where
 
       chooseOneM attrs.id do
         for_ activeDirectives \(directive, name) ->
-          labeled (fromMaybe "Unknown" $ nameSubtitle name) do
+          (withI18n $ keyVar "name" (fromMaybe "Unknown" $ nameSubtitle name) $ labeled "name") do
             setGlobal directive "ignore_regulation" True
 
       pure i

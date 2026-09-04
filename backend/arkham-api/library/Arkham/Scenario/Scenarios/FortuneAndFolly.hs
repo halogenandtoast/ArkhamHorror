@@ -212,9 +212,9 @@ instance RunMessage FortuneAndFolly where
       doStep 4 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "title" >> p "intro4") do
-        labeled' "skip" $ doStep (-1) PreScenarioSetup
-        labeled' "doNotSkip" $ doStep 5 PreScenarioSetup
+      storyWithChooseOneM (setTitle "title" >> p "intro4") do
+        labeled "skip" $ doStep (-1) PreScenarioSetup
+        labeled "doNotSkip" $ doStep 5 PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro5"
@@ -365,7 +365,7 @@ instance RunMessage FortuneAndFolly where
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       chooseOneM iid do
-        labeled' "elderThing.alarm" do
+        labeled "elderThing.alarm" do
           raiseAlarmLevel ElderThing [iid]
           passSkillTest
         unscoped skip_
@@ -385,7 +385,7 @@ instance RunMessage FortuneAndFolly where
         then scenarioSpecific "checkGameIcons" params
         else focusCards params.cards do
           chooseOneM params.investigator do
-            labeled' "keepHand" $ scenarioSpecific "checkGameIcons" params
+            labeled "keepHand" $ scenarioSpecific "checkGameIcons" params
             for_ (eachWithRest params.cards) \(card, rest) ->
               targeting card
                 $ scenarioSpecific "mulligan" params {cards = rest, setAside = card : params.setAside}
@@ -505,12 +505,12 @@ instance RunMessage FortuneAndFolly where
       roles <- selectWithField AssetCard (AssetWithTrait Role <> AssetWithTrait Unpracticed)
       when (alarm || notNull roles) do
         lead <- getLead
-        storyWithChooseOneM' (p "choices") do
+        storyWithChooseOneM (p "choices") do
           labeledValidate' alarm "alarm" do
             eachInvestigator $ reduceAlarmLevel attrs
             doStep (n - 1) msg'
           labeledValidate' (notNull roles) "flipRole" do
-            storyWithChooseOneM' (p.basic "chooseRoleToFlip") do
+            storyWithChooseOneM (p.basic "chooseRoleToFlip") do
               for_ roles \(roleAsset, roleCard) -> do
                 flippableCardLabeled roleCard $ flipOver lead roleAsset
             doStep (n - 1) msg'
@@ -567,7 +567,7 @@ handleFortunesChosen = unlessM getIsStandalone do
   tokens <- campaignField CampaignChaosBag
   let tokenPairs = mapMaybe (\face -> (face,) <$> fortunesChosenToken face) tokens
   leadChooseOneM do
-    questionLabeled' "fortunesChosen"
+    questionLabeled "fortunesChosen"
     for_ tokenPairs \(original, replacement) -> do
       chaosTokenLabeled original $ push $ SwapChaosToken original replacement
 

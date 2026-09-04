@@ -112,9 +112,9 @@ instance RunMessage ToTheForbiddenPeaks where
       unless claypoolIsAlive do
         chooseOneM lead do
           whenM hasRemainingFrostTokens do
-            labeled' "addFrostToken" $ addChaosToken #frost
+            labeled "addFrostToken" $ addChaosToken #frost
           countVar 1
-            $ labeled' "eachInvestigatorSuffersPhysicalTrauma"
+            $ labeled "eachInvestigatorSuffersPhysicalTrauma"
             $ eachInvestigator (`sufferPhysicalTrauma` 1)
       doStep 2 PreScenarioSetup
       pure s
@@ -129,9 +129,9 @@ instance RunMessage ToTheForbiddenPeaks where
       unless takadaIsAlive do
         chooseOneM lead do
           whenM hasRemainingFrostTokens do
-            labeled' "addFrostToken" $ addChaosToken #frost
+            labeled "addFrostToken" $ addChaosToken #frost
           countVar 1
-            $ labeled' "eachInvestigatorSuffersMentalTrauma"
+            $ labeled "eachInvestigatorSuffersMentalTrauma"
             $ eachInvestigator (`sufferMentalTrauma` 1)
       doStep 3 PreScenarioSetup
       pure s

@@ -117,8 +117,8 @@ instance RunMessage SepulchreOfTheSleeper where
       doStep 1 Setup
     ForInvestigator iid Setup -> do
       chooseOneM iid do
-        questionLabeled' "chooseExpeditionItem"
-        labeled' "noExpeditionItem" nothing
+        questionLabeled "chooseExpeditionItem"
+        labeled "noExpeditionItem" nothing
         for_ expeditionItems \item ->
           cardLabeled item.cardCode $ handleTarget iid attrs (CardCodeTarget item.cardCode)
       pure s
@@ -148,7 +148,7 @@ instance RunMessage SepulchreOfTheSleeper where
           card <- EncounterCard <$> genEncounterCard def
           lead <- getLead
           chooseOrRunOneM lead do
-            questionLabeled' "chooseArtifactInvestigator"
+            questionLabeled "chooseArtifactInvestigator"
             targets [iid | (iid, n) <- counts, n == fewest] (createAssetAt_ card . InPlayArea)
       pure s
     ScenarioSpecific "increaseDisturbance" _ -> do
@@ -173,10 +173,10 @@ instance RunMessage SepulchreOfTheSleeper where
     ForInvestigator iid (ScenarioSpecific "tabletPenalty" _) -> do
       hasCards <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid Tablet 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid Tablet 1
         when hasCards
           $ countVar 1
-          $ labeled' "discardCardsFromHand"
+          $ labeled "discardCardsFromHand"
           $ chooseAndDiscardCard iid Tablet
       pure s
     DrewCards iid drewCards | Just (ChaosTokenTarget (chaosTokenFace -> Cultist)) <- drewCards.target -> do

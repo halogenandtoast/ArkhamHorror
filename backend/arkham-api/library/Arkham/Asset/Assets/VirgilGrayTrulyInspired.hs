@@ -34,11 +34,11 @@ instance RunMessage VirgilGrayTrulyInspired where
       others <- select $ not_ (InvestigatorWithId iid)
       chooseOneM iid do
         whenM (can.draw.cards iid) do
-          (withI18n $ countVar 1 $ labeled' "drawCards") $ drawCards iid (attrs.ability 1) 1
+          (withI18n $ countVar 1 $ labeled "drawCards") $ drawCards iid (attrs.ability 1) 1
         whenM (can.gain.resources iid) do
-          (withI18n $ countVar 1 $ labeled' "gainResources") $ gainResources iid (attrs.ability 1) 1
+          (withI18n $ countVar 1 $ labeled "gainResources") $ gainResources iid (attrs.ability 1) 1
         whenM (selectAny $ HealableAsset (attrs.ability 1) #horror (be attrs)) do
-          (scenarioI18n $ labeled' "virgilGrayTrulyInspired.heal1HorrorFromVirgilGray")
+          (scenarioI18n $ labeled "virgilGrayTrulyInspired.heal1HorrorFromVirgilGray")
             $ healHorror attrs (attrs.ability 1) 1
       when (notNull others) $ chooseOrRunOneM iid $ targets others (`takeControlOfAsset` attrs)
       pure a

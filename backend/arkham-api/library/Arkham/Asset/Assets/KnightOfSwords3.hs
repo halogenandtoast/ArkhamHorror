@@ -27,7 +27,7 @@ instance RunMessage KnightOfSwords3 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
         chooseOneM iid do
-          (cardI18n $ labeled' "knightOfSwords3.discardKnightOfSwordsToGet3Instead") do
+          (cardI18n $ labeled "knightOfSwords3.discardKnightOfSwordsToGet3Instead") do
             skillTestModifier sid attrs iid (AnySkillValue 3)
             push RecalculateSkillTestResults
           labeledI "doNotDiscardCard" do

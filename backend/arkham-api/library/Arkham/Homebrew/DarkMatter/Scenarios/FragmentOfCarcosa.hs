@@ -155,9 +155,9 @@ instance RunMessage FragmentOfCarcosa where
     ResolveChaosToken _ Tablet iid -> do
       memories <- getMemories iid
       chooseOneM iid do
-        labeled' "tablet.revealAnotherToken" $ drawAnotherChaosToken iid
+        labeled "tablet.revealAnotherToken" $ drawAnotherChaosToken iid
         when (memories > 0)
-          $ labeled' "tablet.crossOffMemory"
+          $ labeled "tablet.crossOffMemory"
           $ crossOffMemories iid 1
       pure s
     {- [elder thing]: "If you are at a [[Carcosa]] location: Add 1 doom to the
@@ -165,8 +165,8 @@ instance RunMessage FragmentOfCarcosa where
     ResolveChaosToken _ ElderThing iid -> do
       whenM (iid <=~> InvestigatorAt (LocationWithTrait Carcosa)) do
         chooseOneM iid $ unscoped do
-          countVar 1 $ labeled' "placeDoomOnAgenda" $ placeDoomOnAgenda 1
-          labeled' "automaticallyFailTest" failSkillTest
+          countVar 1 $ labeled "placeDoomOnAgenda" $ placeDoomOnAgenda 1
+          labeled "automaticallyFailTest" failSkillTest
       pure s
     {- [skull] \/ [cultist] on easy\/standard: "If you fail while you are at a
     [[Cave]] \/ [[Carcosa]] location, take 1 damage \/ horror." -}

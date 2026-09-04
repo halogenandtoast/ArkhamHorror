@@ -22,7 +22,7 @@ instance RunMessage TwinSuns where
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       agenda <- selectJust AnyAgenda
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "removeAgendaDoom" $ removeDoom attrs agenda 1
-        countVar 1 $ labeled' "takeHorrorForEachPointOfFailure" $ assignHorror iid attrs n
+        countVar 1 $ labeled "removeAgendaDoom" $ removeDoom attrs agenda 1
+        countVar 1 $ labeled "takeHorrorForEachPointOfFailure" $ assignHorror iid attrs n
       pure t
     _ -> TwinSuns <$> liftRunMessage msg attrs

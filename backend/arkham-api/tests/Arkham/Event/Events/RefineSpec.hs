@@ -20,5 +20,7 @@ spec = describe "Refine" do
       chooseOptionMatching "pick Hyperphysical Shotcaster as Refine target" \case
         TargetLabel {} -> True
         _ -> False
-      clickLabel "Railshooter"
+      chooseOptionMatching "pick the Railshooter customization" \case
+        Label lbl _ -> "name=s:\"Railshooter\"" `isInfixOf` lbl
+        _ -> False
       asDefs self.playableCards `shouldReturn` []

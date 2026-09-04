@@ -90,7 +90,7 @@ instance RunMessage AllOrNothing where
         p "body"
       storyWithChooseOneM
         do
-          buildFlavor $ scope "setup" $ ul do
+          scope "setup" $ ul do
             li.nested "returnTo" do
               li "returnToSetupCard"
               li "returnToVersions"
@@ -98,8 +98,8 @@ instance RunMessage AllOrNothing where
               li "returnToTreacheries"
               li "cheated"
         do
-          labeled' "returnTo.include" $ setScenarioMeta $ object ["includeReturnTo" .= True]
-          labeled' "returnTo.exclude" $ setScenarioMeta $ object ["includeReturnTo" .= False]
+          labeled "returnTo.include" $ setScenarioMeta $ object ["includeReturnTo" .= True]
+          labeled "returnTo.exclude" $ setScenarioMeta $ object ["includeReturnTo" .= False]
       pure s
     StandaloneSetup -> do
       setChaosTokens $ case attrs.difficulty of
@@ -217,14 +217,14 @@ instance RunMessage AllOrNothing where
             hasOnTheLam <- hasCardInDeck skids Events.onTheLam
             hasAdvancedHospitalDebts <- hasCardInDeck skids Treacheries.hospitalDebtsAdvanced
             chooseOneM skids do
-              questionLabeled' "skidsMaySwap"
-              when hasOnTheLam $ labeled' "upgradeOnTheLam" do
+              questionLabeled "skidsMaySwap"
+              when hasOnTheLam $ labeled "upgradeOnTheLam" do
                 removeCampaignCardFromDeck skids Events.onTheLam
                 addCampaignCardToDeck skids DoNotShuffleIn Events.onTheLamAdvanced
-              when hasAdvancedHospitalDebts $ labeled' "downgradeHospitalDebts" do
+              when hasAdvancedHospitalDebts $ labeled "downgradeHospitalDebts" do
                 removeCampaignCardFromDeck skids Treacheries.hospitalDebtsAdvanced
                 addCampaignCardToDeck skids DoNotShuffleIn Treacheries.hospitalDebts
-              labeled' "doNotSwap" nothing
+              labeled "doNotSwap" nothing
           endOfScenario
         Resolution 2 -> do
           resolutionWithXp "resolution2" $ allGainXp' attrs
@@ -233,11 +233,11 @@ instance RunMessage AllOrNothing where
             hasAdvancedOnTheLam <- hasCardInDeck skids Events.onTheLamAdvanced
             when (hasHospitalDebts || hasAdvancedOnTheLam) do
               chooseOrRunOneM skids do
-                questionLabeled' "skidsMustSwap"
-                when hasHospitalDebts $ labeled' "upgradeHospitalDebts" do
+                questionLabeled "skidsMustSwap"
+                when hasHospitalDebts $ labeled "upgradeHospitalDebts" do
                   removeCampaignCardFromDeck skids Treacheries.hospitalDebts
                   addCampaignCardToDeck skids DoNotShuffleIn Treacheries.hospitalDebtsAdvanced
-                when hasAdvancedOnTheLam $ labeled' "downgradeOnTheLam" do
+                when hasAdvancedOnTheLam $ labeled "downgradeOnTheLam" do
                   removeCampaignCardFromDeck skids Events.onTheLamAdvanced
                   addCampaignCardToDeck skids DoNotShuffleIn Events.onTheLam
           endOfScenario

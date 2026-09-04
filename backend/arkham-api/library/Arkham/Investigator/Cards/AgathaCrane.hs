@@ -49,13 +49,13 @@ agathaRunner f msg attrs = runQueueT $ case msg of
     pure $ f attrs
   ResolveChaosToken token ElderSign iid | iid == attrs.id -> do
     chooseOneM iid $ cardI18n $ scope "agathaCrane" do
-      labeled' "cancel" do
+      labeled "cancel" do
         cancelChaosToken ElderSign iid token
         returnChaosTokens [token]
         unfocusChaosTokens
         drawAnotherChaosToken iid
         drawCards iid ElderSign 1
-      labeled' "skip" nothing
+      labeled "skip" nothing
     pure $ f attrs
   ChaosTokenIgnored iid _ _ | iid == attrs.id -> do
     result <- liftRunMessage msg attrs

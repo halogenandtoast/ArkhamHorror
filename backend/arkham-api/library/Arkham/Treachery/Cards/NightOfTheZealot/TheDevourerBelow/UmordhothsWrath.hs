@@ -28,10 +28,10 @@ instance RunMessage UmordhothsWrath where
       hasCards <- fieldMap InvestigatorHand notNull iid
       if hasCards
         then chooseOneM iid $ withI18n do
-          countVar 1 $ labeled' "discardCardsFromHand" $ chooseAndDiscardCard iid attrs
+          countVar 1 $ labeled "discardCardsFromHand" $ chooseAndDiscardCard iid attrs
           numberVar "damage" 1
             $ numberVar "horror" 1
-            $ labeled' "takeDamageAndHorror"
+            $ labeled "takeDamageAndHorror"
             $ assignDamageAndHorror iid attrs 1 1
         else assignDamageAndHorror iid attrs 1 1
 

@@ -50,8 +50,8 @@ instance RunMessage UnfinishedBusiness_F where
       hasEnoughResources <- fieldMap InvestigatorResources (>= 2) iid
       chooseOneM iid $ withI18n do
         when hasEnoughResources do
-          countVar 2 $ labeled' "loseResources" $ loseResources iid attrs 2
-        labeled' "flipThisBackOver" $ flipOverBy iid (attrs.ability 1) attrs
+          countVar 2 $ labeled "loseResources" $ loseResources iid attrs 2
+        labeled "flipThisBackOver" $ flipOverBy iid (attrs.ability 1) attrs
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

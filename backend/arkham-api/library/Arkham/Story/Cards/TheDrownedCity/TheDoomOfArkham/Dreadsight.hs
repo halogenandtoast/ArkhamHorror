@@ -32,8 +32,8 @@ instance RunMessage Dreadsight where
       pure s
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid $ sharedI18n $ countVar 1 do
-        labeled' "takeDamage" $ assignDamage iid attrs 1
-        labeled' "takeHorror" $ assignHorror iid attrs 1
+        labeled "takeDamage" $ assignDamage iid attrs 1
+        labeled "takeHorror" $ assignHorror iid attrs 1
       pure s
     DoStep 2 (ResolveThisStory _ (is attrs -> True)) -> do
       whenCthulhuHas FierceVisage $ eachInvestigatorWithCthulhu \iid -> loseResources iid attrs 2
@@ -42,12 +42,12 @@ instance RunMessage Dreadsight where
       whenCthulhuHas WickedClaw do
         attacked <- getInvestigatorsWithCthulhu
         leadChooseOneM do
-          scenarioI18n $ questionLabeled' "dreadsightGroupChoice"
-          sharedI18n $ countVar 1 $ labeled' "loseActions" do
+          scenarioI18n $ questionLabeled "dreadsightGroupChoice"
+          sharedI18n $ countVar 1 $ labeled "loseActions" do
             eachInvestigator \iid -> nextTurnModifier iid attrs iid (FewerActions 1)
           scenarioI18n $ labeledValidate' (notNull attacked) "cthulhuAttacks" do
             for_ attacked $ void . cthulhuFacetAttacks attrs WickedClaw
-          sharedI18n $ countVar 1 $ labeled' "takeDirectHorror" do
+          sharedI18n $ countVar 1 $ labeled "takeDirectHorror" do
             eachInvestigator \iid -> directHorror iid attrs 1
       pure s
     _ -> Dreadsight <$> liftRunMessage msg attrs

@@ -152,7 +152,7 @@ instance RunMessage MurderAtTheExcelsiorHotel where
           let n = if isEasyStandard attrs then 1 else 2
           withSkillTest \sid ->
             chooseOneM iid $ countVar n do
-              labeled' "placeClueToTreatAsNegative" do
+              labeled "placeClueToTreatAsNegative" do
                 placeCluesOnLocation iid Tablet 1
                 skillTestModifier sid Tablet token (ChangeChaosTokenModifier (NegativeModifier n))
               labeledI "skip" nothing
@@ -200,8 +200,8 @@ instance RunMessage MurderAtTheExcelsiorHotel where
           if scenarioTimesPlayed attrs == 0
             then do
               resolutionWithChooseOne "resolution2" do
-                labeled' "playAgain" $ push $ ScenarioResolutionStep 10 (Resolution 2)
-                labeled' "leaveThingsAlone" $ push $ ScenarioResolutionStep 2 (Resolution 2)
+                labeled "playAgain" $ push $ ScenarioResolutionStep 10 (Resolution 2)
+                labeled "leaveThingsAlone" $ push $ ScenarioResolutionStep 2 (Resolution 2)
             else do
               resolution "resolution2"
               push $ ScenarioResolutionStep 2 (Resolution 2)
@@ -209,8 +209,8 @@ instance RunMessage MurderAtTheExcelsiorHotel where
           if scenarioTimesPlayed attrs == 0
             then do
               resolutionWithChooseOne "resolution3" do
-                labeled' "playAgain" $ push $ ScenarioResolutionStep 10 (Resolution 3)
-                labeled' "leaveThingsAlone" $ push $ ScenarioResolutionStep 2 (Resolution 3)
+                labeled "playAgain" $ push $ ScenarioResolutionStep 10 (Resolution 3)
+                labeled "leaveThingsAlone" $ push $ ScenarioResolutionStep 2 (Resolution 3)
             else do
               resolution "resolution3"
               push $ ScenarioResolutionStep 2 (Resolution 3)

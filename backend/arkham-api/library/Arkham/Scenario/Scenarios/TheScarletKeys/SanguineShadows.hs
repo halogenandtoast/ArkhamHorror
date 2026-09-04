@@ -82,10 +82,10 @@ instance HasChaosTokenValue SanguineShadows where
 instance RunMessage SanguineShadows where
   runMessage msg s@(SanguineShadows attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "title" >> p "intro1") do
-        labeled' "everything" $ doStep 2 PreScenarioSetup
-        labeled' "breadcrumbs" $ doStep 3 PreScenarioSetup
-        labeled' "insist" $ doStep 4 PreScenarioSetup
+      storyWithChooseOneM (setTitle "title" >> p "intro1") do
+        labeled "everything" $ doStep 2 PreScenarioSetup
+        labeled "breadcrumbs" $ doStep 3 PreScenarioSetup
+        labeled "insist" $ doStep 4 PreScenarioSetup
       setupKeys
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
@@ -167,7 +167,7 @@ instance RunMessage SanguineShadows where
         ElderThing -> do
           coteries <- select $ NearestEnemyToFallback iid (EnemyWithTrait Coterie)
           chooseOneM iid do
-            withI18n $ countVar 1 $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
+            withI18n $ countVar 1 $ labeled "placeAgendaDoom" $ placeDoomOnAgenda 1
             scenarioI18n $ labeledValidate' (notNull coteries) "coterieAttack" do
               chooseTargetM iid coteries \targetCoterie -> initiateEnemyAttack targetCoterie ElderThing iid
         _ -> pure ()

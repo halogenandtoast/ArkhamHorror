@@ -85,8 +85,8 @@ instance RunMessage BanishHim where
       allies <- getSetAsideCardsMatching (#asset <> CardWithTrait Ally)
       unless (null allies) do
         chooseOneM iid $ scenarioI18n do
-          questionLabeled' "chooseAlly"
-          labeled' "noAlly" nothing
+          questionLabeled "chooseAlly"
+          labeled "noAlly" nothing
           for_ allies \ally -> cardLabeled ally $ createAssetAt_ ally (InPlayArea iid)
       pure a
     RevertAct aid | aid == attrs.id && onSide B attrs -> do

@@ -30,10 +30,10 @@ instance RunMessage ArkhamAsylum where
       sid <- getRandom
       leadChooseOneM do
         for_ (setToList skills) \sk -> do
-          withI18n $ skillVar sk $ countVar 4 $ labeled' "anyInvestigatorTests" do
+          withI18n $ skillVar sk $ countVar 4 $ labeled "anyInvestigatorTests" do
             leadChooseOrRunOneM do
               targets investigators \iid -> beginSkillTest sid iid attrs attrs sk (Fixed 4)
-        scenarioI18n $ labeled' "arkhamAsylum.youKnockHerOverAndGrabTheKeys" do
+        scenarioI18n $ labeled "arkhamAsylum.youKnockHerOverAndGrabTheKeys" do
           remember YouTookTheKeysByForce
           advanceActDeck attrs
       pure a

@@ -16,7 +16,7 @@ instance RunMessage ResurgentEvils where
   runMessage msg t@(ResurgentEvils attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> withI18n do
       chooseOneM iid do
-        countVar 2 $ labeled' "drawTopCardOfEncounterDeck" $ drawEncounterCards iid attrs 2
-        countVar 1 $ labeled' "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+        countVar 2 $ labeled "drawTopCardOfEncounterDeck" $ drawEncounterCards iid attrs 2
+        countVar 1 $ labeled "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
       pure t
     _ -> ResurgentEvils <$> liftRunMessage msg attrs

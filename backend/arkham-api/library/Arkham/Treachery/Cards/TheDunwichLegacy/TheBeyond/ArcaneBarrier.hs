@@ -34,8 +34,8 @@ instance RunMessage ArcaneBarrier where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> withI18n do
       chooseOneM iid do
-        labeled' "cancelMove" $ cancelMovement attrs iid
-        countVar 5 $ labeled' "discardTopOfYourDeck" $ discardTopOfDeck iid attrs 5
+        labeled "cancelMove" $ cancelMovement attrs iid
+        countVar 5 $ labeled "discardTopOfYourDeck" $ discardTopOfDeck iid attrs 5
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       toDiscardBy iid attrs attrs

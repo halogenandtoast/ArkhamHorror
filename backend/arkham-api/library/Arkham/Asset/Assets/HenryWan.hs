@@ -51,7 +51,7 @@ instance RunMessage HenryWan where
       resourceOk <- can.gain.resources iid
       when (drawOk || resourceOk) do
         chooseOrRunOneM iid $ withI18n $ countVar 1 do
-          when drawOk $ labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
-          when resourceOk $ labeled' "gainResources" $ gainResources iid (attrs.ability 1) 1
+          when drawOk $ labeled "drawCards" $ drawCards iid (attrs.ability 1) 1
+          when resourceOk $ labeled "gainResources" $ gainResources iid (attrs.ability 1) 1
       pure a
     _ -> HenryWan . (`with` meta) <$> liftRunMessage msg attrs

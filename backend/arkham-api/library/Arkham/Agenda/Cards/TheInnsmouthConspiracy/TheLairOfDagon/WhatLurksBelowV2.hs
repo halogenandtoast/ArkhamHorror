@@ -37,8 +37,8 @@ instance RunMessage WhatLurksBelowV2 where
         ks <- scenarioField ScenarioKeys
         unless (null ks) do
           chooseOneM iid $ scenarioI18n $ scope "whatLurksBelow" do
-            labeled' "doNotTakeKey" nothing
-            for_ ks \k -> keyVar "key" (keyName k) $ labeled' "takeKey" (placeKey iid k)
+            labeled "doNotTakeKey" nothing
+            for_ ks \k -> keyVar "key" (keyName k) $ labeled "takeKey" (placeKey iid k)
       advanceAgendaDeck attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do

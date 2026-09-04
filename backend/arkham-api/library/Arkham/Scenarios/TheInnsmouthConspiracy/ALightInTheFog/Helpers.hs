@@ -60,7 +60,7 @@ flashback iid f = case f of
         <$> select @ChaosTokenMatcher (oneOf [#cultist, #tablet, #elderthing])
     focusChaosTokens tokens \unfocus -> do
       chooseOneM iid do
-        withI18n $ questionLabeled' "removeTokenForRemainderOfCampaign"
+        withI18n $ questionLabeled "removeTokenForRemainderOfCampaign"
         targets tokens $ removeChaosToken . (.face)
       push unfocus
     lead <- getLead
@@ -74,6 +74,6 @@ flashback iid f = case f of
         <$> select @ChaosTokenMatcher (oneOf [#cultist, #tablet, #elderthing])
     focusChaosTokens tokens \unfocus -> do
       chooseOneM iid do
-        withI18n $ questionLabeled' "removeTokenForRemainderOfCampaign"
+        withI18n $ questionLabeled "removeTokenForRemainderOfCampaign"
         targets tokens $ removeChaosToken . (.face)
       push unfocus

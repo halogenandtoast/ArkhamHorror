@@ -25,10 +25,10 @@ instance RunMessage StrangeMutations where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       handSize <- length <$> field InvestigatorHand iid
       chooseOrRunOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
         when (handSize >= 2)
           $ countVar 2
-          $ labeled' "discardRandomCardsFromHand"
+          $ labeled "discardRandomCardsFromHand"
           $ randomDiscardN iid attrs 2
       pure t
     _ -> StrangeMutations <$> liftRunMessage msg attrs

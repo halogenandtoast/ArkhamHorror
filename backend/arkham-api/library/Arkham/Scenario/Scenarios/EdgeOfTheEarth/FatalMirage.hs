@@ -80,8 +80,7 @@ instance RunMessage FatalMirage where
         then do
           lead <- getLead
           chooseOneM lead do
-            questionLabeled
-              "The investigators may choose which agenda to use (the higher the agenda number, the less time the investigators will have)."
+            questionLabeled "chooseAgenda"
             cardLabeled Agendas.etherealTangleV1 (doStep 1 msg)
             cardLabeled Agendas.etherealTangleV2 (doStep 2 msg)
             cardLabeled Agendas.etherealTangleV3 (doStep 3 msg)
@@ -236,9 +235,9 @@ instance RunMessage FatalMirage where
             else do
               chooseOneM iid do
                 unless atPrison do
-                  labeled' "moveToPrisonOfMemories" $ moveTo_ Tablet iid Locations.prisonOfMemories
+                  labeled "moveToPrisonOfMemories" $ moveTo_ Tablet iid Locations.prisonOfMemories
                 whenCanShuffleIn iid tekelili do
-                  labeled' "shuffleTekeliliIntoYourDeck"
+                  labeled "shuffleTekeliliIntoYourDeck"
                     $ addTekelili iid tekelili
         ElderThing ->
           chooseSelectM iid (EnemyWithTrait Eidolon) \enemy -> placeDoom ElderThing enemy 1

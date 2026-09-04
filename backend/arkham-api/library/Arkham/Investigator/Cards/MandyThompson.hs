@@ -50,7 +50,7 @@ instance RunMessage MandyThompson where
     UseCardAbility iid (isSource attrs -> True) 1 (getInvestigator -> iid') _ -> do
       let source = toAbilitySource attrs 1
       chooseOneM iid do
-        withI18n $ countVar 3 $ labeled' "searchAdditionalCards" $ searchModifier source iid' $ SearchDepth 3
+        withI18n $ countVar 3 $ labeled "searchAdditionalCards" $ searchModifier source iid' $ SearchDepth 3
         labeledI "resolveAdditionalTarget" do
           searchModifier source iid' $ AdditionalTargets 1
       pure i

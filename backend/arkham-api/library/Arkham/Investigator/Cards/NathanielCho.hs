@@ -80,7 +80,7 @@ instance RunMessage NathanielChoEffect where
         then disable attrs
         else focusCards (map toCard events) do
           chooseOneM iid do
-            cardI18n $ scope "nathanielCho" $ questionLabeled' "elderSign"
+            cardI18n $ scope "nathanielCho" $ questionLabeled "elderSign"
             targets events (returnToHand iid)
           disable attrs
       pure e

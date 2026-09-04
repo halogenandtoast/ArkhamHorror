@@ -23,7 +23,7 @@ instance RunMessage RecklessStunt where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
-        countVar 3 $ labeled' "loseResources" $ loseResources iid attrs 3
+        countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
+        countVar 3 $ labeled "loseResources" $ loseResources iid attrs 3
       pure t
     _ -> RecklessStunt <$> liftRunMessage msg attrs

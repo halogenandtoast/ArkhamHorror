@@ -60,7 +60,7 @@ instance RunMessage RiddlesAndRain where
       flavor $ setTitle "title" >> p "intro1"
       flavor $ setTitle "title" >> p "letter"
       n <- getPlayerCount
-      storyWithChooseOneM' (setTitle "title" >> p "intro1Part2") do
+      storyWithChooseOneM (setTitle "title" >> p "intro1Part2") do
         labeledValidate' (n == 1) "onlyOne" $ doStep 2 msg
         labeledValidate' (n > 1) "goAlone" $ doStep 3 msg
         labeledValidate' (n > 1) "goWithBackup" $ doStep 4 msg
@@ -80,9 +80,9 @@ instance RunMessage RiddlesAndRain where
       doStep 5 PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "title" >> p "intro5") do
-        labeled' "takeHisOffer" $ doStep 6 PreScenarioSetup
-        labeled' "goToLondonOnYourOwnTerms" $ doStep 7 PreScenarioSetup
+      storyWithChooseOneM (setTitle "title" >> p "intro5") do
+        labeled "takeHisOffer" $ doStep 6 PreScenarioSetup
+        labeled "goToLondonOnYourOwnTerms" $ doStep 7 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro6"

@@ -77,7 +77,7 @@ instance RunMessage ShroudOfShadowsEffect where
               when (stillInPlay || notNull locations) do
                 chooseOrRunOneM iid do
                   when stillInPlay do
-                    cardI18n $ scope "shroudOfShadows" $ labeled' "placeCharge" do
+                    cardI18n $ scope "shroudOfShadows" $ labeled "placeCharge" do
                       push $ AddUses attrs.source assetId Charge 1
                   labeledI "moveToConnecting" do
                     chooseTargetM iid locations $ moveTo attrs.source iid

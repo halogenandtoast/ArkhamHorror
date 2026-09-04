@@ -44,12 +44,12 @@ instance RunMessage TitanicRamp_185 where
   runMessage msg l@(TitanicRamp_185 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
-        scenarioI18n' $ scope "titanicRamp" $ labeled' "spendClueToAutoSucceed" do
+        scenarioI18n' $ scope "titanicRamp" $ labeled "spendClueToAutoSucceed" do
           withCost
             iid
             (GroupClueCost (Static 1) (orConnected NotForMovement $ locationWithInvestigator iid))
             $ withSkillTest \sid -> skillTestAutomaticallySucceeds (attrs.ability 1) sid
-        withI18n $ countVar 1 $ labeled' "doNotSpendClues" nothing
+        withI18n $ countVar 1 $ labeled "doNotSpendClues" nothing
       pure l
     FailedThisSkillTest iid (isIndexedSource 1 attrs -> True) -> do
       cancelMovement attrs iid

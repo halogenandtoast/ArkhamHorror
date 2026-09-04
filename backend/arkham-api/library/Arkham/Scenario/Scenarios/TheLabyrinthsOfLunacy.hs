@@ -202,8 +202,8 @@ instance RunMessage TheLabyrinthsOfLunacy where
             when (canAdvance == CanAdvance) $ forTarget agendaId AdvanceAgendaIfThresholdSatisfied
       if mythosStep == Just PlaceDoomOnAgendaStep
         then chooseOneM lead do
-          withI18n $ countVar n $ labeled' "placeAgendaDoom" $ placeAgendaDoom n
-          labeled' "satisfyDoomThreshold"
+          withI18n $ countVar n $ labeled "placeAgendaDoom" $ placeAgendaDoom n
+          labeled "satisfyDoomThreshold"
             $ placeAgendaDoom
             $ maybe n (\value -> max 0 $ value - doom) threshold
         else placeAgendaDoom n
@@ -275,8 +275,8 @@ instance RunMessage TheLabyrinthsOfLunacy where
       case token.face of
         Skull | isHardExpert attrs -> scope "skull" do
           chooseOneM iid $ unscoped $ countVar 1 do
-            labeled' "takeDamage" $ assignDamage iid Skull 1
-            labeled' "takeHorror" $ assignHorror iid Skull 1
+            labeled "takeDamage" $ assignDamage iid Skull 1
+            labeled "takeHorror" $ assignHorror iid Skull 1
         Cultist | isEasyStandard attrs -> do
           whenM (fieldMap InvestigatorClues (> 0) iid) $ placeCluesOnLocation iid Cultist 1
         Tablet | isEasyStandard attrs -> loseResources iid Tablet 2
@@ -313,10 +313,10 @@ resolveGroup attrs outcome = do
   unless survived $ selectEach UneliminatedInvestigator $ push . InvestigatorKilled (toSource attrs)
   if miniCampaign meta' && not (miniCampaignComplete meta')
     then resolutionWithChooseOne (resolutionKey meta') do
-      labeled' "endScenario" do
+      labeled "endScenario" do
         when (null meta'.survivedGroups) $ push GameOver
         endOfScenario
-      labeled' "playAnotherGroup" $ push $ ScenarioResolutionStep 10 (Resolution 1)
+      labeled "playAnotherGroup" $ push $ ScenarioResolutionStep 10 (Resolution 1)
     else do
       resolution $ resolutionKey meta'
       when (null meta'.survivedGroups) $ push GameOver
@@ -332,9 +332,9 @@ chooseGroup :: (HasI18n, ReverseQueue m) => Meta -> m ()
 chooseGroup meta = do
   let remaining = remainingGroups meta
   let chooseGroupTxt = if miniCampaign meta then "chooseGroup" else "chooseGroupSingle"
-  storyWithChooseOneM' (h "title" >> p chooseGroupTxt) do
+  storyWithChooseOneM (h "title" >> p chooseGroupTxt) do
     for_ remaining \g -> do
-      popScope $ labeled' (groupLabel g) do
+      popScope $ labeled (groupLabel g) do
         push $ SetScenarioMeta $ toJSON meta {currentGroup = g}
         scope "intro" $ flavor do
           h "title"

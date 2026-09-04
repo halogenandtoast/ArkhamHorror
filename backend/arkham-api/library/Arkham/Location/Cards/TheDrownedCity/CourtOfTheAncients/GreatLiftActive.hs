@@ -76,7 +76,7 @@ instance RunMessage GreatLiftActive where
       dirs <- slideDirections attrs
       chooseOneM iid $ scenarioI18n do
         for_ dirs \dir ->
-          labeled' (slideLabel dir) $ slideGreatLift attrs dir >> doStep (additionalStep dir) s
+          labeled (slideLabel dir) $ slideGreatLift attrs dir >> doStep (additionalStep dir) s
       pure l
     DoStep n (Successful (Action.Investigate, _) iid _ _ _) | Just dir <- stepDirection n -> do
       -- "You may spend 1 [per_investigator] clues to slide up or down one
@@ -85,10 +85,10 @@ instance RunMessage GreatLiftActive where
       dirs <- slideDirections attrs
       when (dir `elem` dirs) do
         chooseOneM iid $ scenarioI18n do
-          labeled' (slideAdditionalLabel dir)
+          labeled (slideAdditionalLabel dir)
             $ withCost iid (GroupClueCost (PerPlayer 1) (be attrs))
             $ slideGreatLift attrs dir
-          labeled' "greatLift.doNotSlide" nothing
+          labeled "greatLift.doNotSlide" nothing
       pure l
     _ -> GreatLiftActive <$> liftRunMessage msg attrs
 

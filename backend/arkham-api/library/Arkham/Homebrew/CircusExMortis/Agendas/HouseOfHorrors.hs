@@ -28,7 +28,7 @@ instance RunMessage HouseOfHorrors where
       hand <- fieldLength InvestigatorHand iid
       moonInBag <- selectAny moonToken
       chooseOneM iid do
-        labeled' "discardHalfHand" $ repeated ((hand + 1) `div` 2) $ chooseAndDiscardCard iid attrs
+        labeled "discardHalfHand" $ repeated ((hand + 1) `div` 2) $ chooseAndDiscardCard iid attrs
         labeledValidate' moonInBag "sealMoonToken" $ sealMoonTokenOn iid
       pure a
     _ -> HouseOfHorrors <$> liftRunMessage msg attrs

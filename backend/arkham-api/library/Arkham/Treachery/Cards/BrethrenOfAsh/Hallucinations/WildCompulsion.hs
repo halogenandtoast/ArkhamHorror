@@ -28,8 +28,8 @@ instance RunMessage WildCompulsion where
       hasCards <- notNull <$> field InvestigatorHand iid
       resources <- field InvestigatorResources iid
       chooseOrRunOneM iid $ withI18n do
-        when hasCards $ countVar 1 $ labeled' "discardRandomCardsFromHand" $ randomDiscard iid attrs
-        when (resources > 0) $ countVar 1 $ labeled' "loseResources" $ loseResources iid attrs 1
+        when hasCards $ countVar 1 $ labeled "discardRandomCardsFromHand" $ randomDiscard iid attrs
+        when (resources > 0) $ countVar 1 $ labeled "loseResources" $ loseResources iid attrs 1
       doStep (n - 1) msg'
       pure t
     _ -> WildCompulsion <$> liftRunMessage msg attrs

@@ -36,7 +36,7 @@ instance RunMessage FurtiveLocals where
         withI18n $ countVar 1 $ labeledI "takeDamage" $ assignDamage iid (attrs.ability 1) 1
         campaignI18n
           $ scope "furtiveLocals"
-          $ labeled' "putIntoPlay"
+          $ labeled "putIntoPlay"
           $ placeTreachery attrs NextToAgenda
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

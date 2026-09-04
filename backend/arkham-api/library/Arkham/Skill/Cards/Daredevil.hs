@@ -27,7 +27,7 @@ instance RunMessage Daredevil where
       focusCards (maybeToList mcard <> discards) do
         chooseOneM iid do
           case mcard of
-            Nothing -> withI18n $ labeled' "continue" nothing
+            Nothing -> withI18n $ labeled "continue" nothing
             Just c -> targeting c $ commitCard iid c
 
       let weaknesses = filter (`cardMatch` WeaknessCard) discards

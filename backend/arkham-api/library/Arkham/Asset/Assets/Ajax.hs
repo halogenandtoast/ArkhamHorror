@@ -40,9 +40,9 @@ instance RunMessage Ajax where
       fieldLocations <-
         select $ withTrait Field <> canEnterLocation iid <> not_ (locationWithInvestigator iid)
       chooseOneM iid $ cardI18n $ scope "ajax" do
-        labeled' "moveTwice" $ doStep 2 msg
+        labeled "moveTwice" $ doStep 2 msg
         when (notNull fieldLocations) do
-          labeled' "moveToField" do
+          labeled "moveToField" do
             chooseTargetM iid fieldLocations $ moveTo (attrs.ability 1) iid
       pure a
     DoStep 2 msg'@(UseThisAbility iid (isSource attrs -> True) 1) -> do

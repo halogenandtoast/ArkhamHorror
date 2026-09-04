@@ -40,7 +40,7 @@ instance RunMessage SunkenStairway where
                   (fromJustNote "No available grid position" $ find (`notElem` usedColumns) [0 ..])
                   targetRow
         scenarioI18n $ scope "sunkenStairway" $ chooseOneM iid do
-          labeled' "above" $ placeLocationInGrid_ (availablePosition $ row + 1) card
-          labeled' "below" $ placeLocationInGrid_ (availablePosition $ row - 1) card
+          labeled "above" $ placeLocationInGrid_ (availablePosition $ row + 1) card
+          labeled "below" $ placeLocationInGrid_ (availablePosition $ row - 1) card
       pure l
     _ -> SunkenStairway <$> liftRunMessage msg attrs

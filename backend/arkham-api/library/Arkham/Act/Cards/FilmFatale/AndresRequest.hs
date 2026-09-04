@@ -52,7 +52,7 @@ instance RunMessage AndresRequest where
       for_ cards setCardAside
       investigators <- select UneliminatedInvestigator
       leadChooseOneM do
-        questionLabeled' "andresRequest.takeAndre"
+        questionLabeled "andresRequest.takeAndre"
         questionLabeledCard Assets.andrePatelMadeForTheSpotlight
         targets investigators \iid -> do
           andres <- createAsset =<< getSetAsideCard Assets.andrePatelMadeForTheSpotlight
@@ -68,7 +68,7 @@ instance RunMessage AndresRequest where
         lift do
           addChaosToken #"0"
           leadChooseOneM do
-            questionLabeled' "andresRequest.setAside"
+            questionLabeled "andresRequest.setAside"
             cardLabeled telescope $ setCardAside telescope
             cardLabeled staff $ setCardAside staff
             cardLabeled cape $ setCardAside cape
@@ -83,7 +83,7 @@ instance RunMessage AndresRequest where
         selectOne $ VictoryDisplayCardMatch (basic $ cardIs Assets.staffOfTheSerpentRelicOfThePast)
       mcape <- selectOne $ VictoryDisplayCardMatch (basic $ cardIs Assets.accursedCapeShroudOfChaos)
 
-      storyWithContinue' do
+      storyWithContinue do
         p "instructions"
         ul do
           li.validate (isNothing mtelescope) "heliosTelescope"
@@ -93,7 +93,7 @@ instance RunMessage AndresRequest where
       discardEach attrs AnyEnemy
 
       when (isNothing mtelescope) do
-        storyWithContinue' $ scope "aCosmicJourney" do
+        storyWithContinue $ scope "aCosmicJourney" do
           p "body"
           ul do
             li "gatherSets"
@@ -140,7 +140,7 @@ instance RunMessage AndresRequest where
         twice $ addChaosToken #tablet
 
       when (isNothing mstaff) do
-        storyWithContinue' $ scope "theForgottenIsland" do
+        storyWithContinue $ scope "theForgottenIsland" do
           p "body"
           ul do
             li "gatherSets"
@@ -185,7 +185,7 @@ instance RunMessage AndresRequest where
         twice $ addChaosToken #elderthing
 
       when (isNothing mcape) do
-        storyWithContinue' $ scope "theAbominableContessa" do
+        storyWithContinue $ scope "theAbominableContessa" do
           p "body"
           ul do
             li "gatherSets"

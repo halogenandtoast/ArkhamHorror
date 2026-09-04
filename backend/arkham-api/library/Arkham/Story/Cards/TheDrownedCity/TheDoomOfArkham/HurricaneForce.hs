@@ -43,7 +43,7 @@ instance RunMessage HurricaneForce where
         investigators <- getInvestigatorsWithCthulhu
         sid <- getRandom
         leadChooseOrRunOneM $ scenarioI18n do
-          questionLabeled' "chooseInvestigatorToTest"
+          questionLabeled "chooseInvestigatorToTest"
           targets investigators \iid ->
             beginSkillTest sid iid (indexed 3 attrs) iid #agility (ScenarioCount CthulhuRage)
       pure s
@@ -52,7 +52,7 @@ instance RunMessage HurricaneForce where
       canFlood <- maybe (pure False) (`matches` CanHaveFloodLevelIncreased) mlid
       chooseOneM iid do
         scenarioI18n $ labeledValidate' canFlood "increaseFloodLevel" $ for_ mlid increaseFloodLevel
-        sharedI18n $ countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
-        sharedI18n $ countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+        sharedI18n $ countVar 1 $ labeled "takeDamage" $ assignDamage iid attrs 1
+        sharedI18n $ countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
       pure s
     _ -> HurricaneForce <$> liftRunMessage msg attrs

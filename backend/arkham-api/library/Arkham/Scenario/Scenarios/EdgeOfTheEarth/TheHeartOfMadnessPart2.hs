@@ -93,11 +93,11 @@ instance RunMessage TheHeartOfMadnessPart2 where
       setChaosTokens (#elderthing : #elderthing : chaosBagContents attrs.difficulty)
       lead <- getLead
       chooseOneM lead do
-        questionLabeled' "chooseSealCount"
-        labeled' "easierExperienceSeals" (doStep 1 msg)
-        labeled' "averageExperienceSeals" (doStep 2 msg)
-        labeled' "harderExperienceSeals" (doStep 3 msg)
-        labeled' "nightmarishExperienceSeals" nothing
+        questionLabeled "chooseSealCount"
+        labeled "easierExperienceSeals" (doStep 1 msg)
+        labeled "averageExperienceSeals" (doStep 2 msg)
+        labeled "harderExperienceSeals" (doStep 3 msg)
+        labeled "nightmarishExperienceSeals" nothing
       pure s
     DoStep n StandaloneSetup -> do
       (placed, recovered) <- case n of
@@ -208,7 +208,9 @@ instance RunMessage TheHeartOfMadnessPart2 where
 
       for_ seals \seal -> do
         chooseOrRunOneM lead do
-          questionLabeled $ "Choose Investigator to take the " <> format seal <> " seal"
+          unscoped
+            $ keyVar "seal" (toScope $ tshow seal.kind)
+            $ questionLabeled "chooseInvestigatorToTakeSeal"
           targets investigators (`placeSeal` seal)
 
       addTekeliliDeck

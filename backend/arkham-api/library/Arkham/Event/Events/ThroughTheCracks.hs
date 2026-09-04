@@ -37,14 +37,13 @@ instance RunMessage ThroughTheCracks where
 
       let label =
             if
-              | null locations -> "Disengage from each enemy engaged with you."
-              | null enemies -> "Move to a revealed connecting location."
-              | otherwise ->
-                  "Disengage from each enemy engaged with you and move to a revealed connecting location."
+              | null locations -> "throughTheCracks.disengage"
+              | null enemies -> "throughTheCracks.move"
+              | otherwise -> "throughTheCracks.disengageAndMove"
 
       unless (null enemies && null locations) do
         chooseOneM iid do
-          labeled label do
+          (cardI18n $ labeled label) do
             for_ enemies (disengageEnemy iid)
             chooseTargetM iid locations (moveTo attrs iid)
           withI18n skip_

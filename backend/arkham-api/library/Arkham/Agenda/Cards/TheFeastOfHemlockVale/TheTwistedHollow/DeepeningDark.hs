@@ -104,7 +104,7 @@ instance RunMessage DeepeningDark where
     ForInvestigator iid (UseThisAbility _ (isSource attrs -> True) 2) -> do
       enemies <- pursuitEnemiesWithHighestEvade
       chooseOneM iid $ scenarioI18n do
-        unscoped $ countVar 1 $ labeled' "takeHorror" (assignHorror iid (attrs.ability 1) 1)
+        unscoped $ countVar 1 $ labeled "takeHorror" (assignHorror iid (attrs.ability 1) 1)
         labeledValidate' (notNull enemies) "deepiningDark.pursuitEnemy" do
           chooseOrRunOneM iid $ targets enemies (drawEnemyFromPursuit iid)
       pure a

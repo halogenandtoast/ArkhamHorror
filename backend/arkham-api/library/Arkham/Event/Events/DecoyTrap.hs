@@ -55,7 +55,7 @@ instance RunMessage DecoyTrap where
         when (iidLocation /= lid) do
           whenM (getCanMoveTo iid (toSource attrs) lid) do
             chooseOneM iid do
-              cardI18n (scope "decoyTrap" $ labeled' "discardMove") do
+              cardI18n (scope "decoyTrap" $ labeled "discardMove") do
                 toDiscardBy iid (toSource attrs) attrs
                 moveTo attrs iid lid
               labeledI "doNotMove" nothing

@@ -79,11 +79,11 @@ instance RunMessage UnderworldMarket2 where
         focusCards xs do
           spendableResources <- getSpendableResources iid
           chooseOneM iid do
-            (cardI18n $ labeled' "underworldMarket2.placeTheRestOnTheBottomInAnyOrder") do
+            (cardI18n $ labeled "underworldMarket2.placeTheRestOnTheBottomInAnyOrder") do
               chooseOneAtATimeM iid $ targets xs $ handleTarget iid (attrs.ability 2)
               unfocusCards
             when (spendableResources > 0) do
-              (cardI18n $ labeled' "underworldMarket2.spend1ResourceToDraw1OfThem") do
+              (cardI18n $ labeled "underworldMarket2.spend1ResourceToDraw1OfThem") do
                 push $ SpendResources iid 1
                 chooseOneM iid do
                   for_ (eachWithRest xs) \(card, cs) -> do

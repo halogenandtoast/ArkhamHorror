@@ -128,7 +128,7 @@ instance RunMessage ShadesOfSuffering where
         withOwner Assets.inspectorFlintWithPrideAndCare \iid -> do
           flint <- fetchCard Assets.inspectorFlintWithPrideAndCare
           chooseOneM iid $ unscoped do
-            nameVar flint $ labeled' "putIntoPlay" $ putCardIntoPlay iid flint
+            nameVar flint $ labeled "putIntoPlay" $ putCardIntoPlay iid flint
             skip_
 
       uncannyShadow <-
@@ -164,9 +164,9 @@ instance RunMessage ShadesOfSuffering where
       pure s
     ResolveChaosToken drawnToken ElderThing iid -> do
       chooseOneM iid do
-        when (isEasyStandard attrs) $ labeled' "elderThing.easyStandard" do
+        when (isEasyStandard attrs) $ labeled "elderThing.easyStandard" do
           chaosTokenEffect ElderThing drawnToken $ ChaosTokenFaceModifier [Zero]
-        when (isHardExpert attrs) $ labeled' "elderThing.hardExpert" do
+        when (isHardExpert attrs) $ labeled "elderThing.hardExpert" do
           chaosTokenEffect ElderThing drawnToken $ ChaosTokenFaceModifier [MinusThree]
         unscoped skip_
       pure s

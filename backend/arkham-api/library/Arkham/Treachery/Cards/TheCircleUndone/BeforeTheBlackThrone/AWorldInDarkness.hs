@@ -32,11 +32,11 @@ instance RunMessage AWorldInDarkness where
       canDiscard <- iid <=~> InvestigatorWithDiscardableCard
       chooseOneM iid $ withI18n do
         when hasResources do
-          countVar 1 $ labeled' "loseResources" $ loseResources iid attrs 1
+          countVar 1 $ labeled "loseResources" $ loseResources iid attrs 1
         when canDiscard do
-          countVar 1 $ labeled' "discardCards" $ chooseAndDiscardCard iid attrs
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
+          countVar 1 $ labeled "discardCards" $ chooseAndDiscardCard iid attrs
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid attrs 1
       doStep (n - 1) msg'
       pure t
     _ -> AWorldInDarkness <$> liftRunMessage msg attrs

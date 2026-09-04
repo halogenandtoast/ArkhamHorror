@@ -73,7 +73,7 @@ instance RunMessage DexterDrake where
       assets <- select $ AssetWithPlacement (InPlayArea iid) <> AssetCanLeavePlayByNormalMeans
       when (notNull assets) do
         chooseOneM iid do
-          cardI18n (scope "dexterDrake" $ labeled' "skip") nothing
+          cardI18n (scope "dexterDrake" $ labeled "skip") nothing
           targets assets \asset -> do
             push $ ReturnToHand iid (toTarget asset)
             drawCardsIfCan iid attrs 1

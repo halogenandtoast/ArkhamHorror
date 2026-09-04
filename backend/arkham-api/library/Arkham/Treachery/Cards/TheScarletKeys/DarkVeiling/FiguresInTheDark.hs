@@ -21,10 +21,10 @@ instance RunMessage FiguresInTheDark where
       if null inShadow
         then gainSurge attrs
         else chooseOneM iid $ campaignI18n do
-          labeled' "figuresInTheDark.attack" do
+          labeled "figuresInTheDark.attack" do
             chooseOneAtATimeM iid do
               targets inShadow \enemy -> initiateEnemyAttack enemy attrs iid
-          labeled' "figuresInTheDark.loseAction" do
+          labeled "figuresInTheDark.loseAction" do
             eachInvestigator \iid' -> loseActions iid' attrs 1
       pure t
     _ -> FiguresInTheDark <$> liftRunMessage msg attrs

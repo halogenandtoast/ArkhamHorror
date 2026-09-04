@@ -24,6 +24,6 @@ instance RunMessage LooseCannon where
           labeledI "discardEachFirearmAsset" do
             chooseOneAtATimeM iid $ targets firearms $ toDiscardBy iid attrs
         when (resources >= 1) do
-          withI18n $ countVar 5 $ labeled' "loseResources" $ loseResources iid attrs 5
+          withI18n $ countVar 5 $ labeled "loseResources" $ loseResources iid attrs 5
       pure t
     _ -> LooseCannon <$> liftRunMessage msg attrs

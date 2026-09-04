@@ -32,8 +32,8 @@ instance RunMessage BerettaM19184 where
           modifySkillTest (attrs.ability 1) iid [DamageDealt 1]
         else do
           chooseOneM iid $ cardI18n do
-            labeled' "berettaM19184.readyBerettaM1918" $ readyThis attrs
-            labeled' "berettaM19184.dealAnAdditional1Damage" do
+            labeled "berettaM19184.readyBerettaM1918" $ readyThis attrs
+            labeled "berettaM19184.dealAnAdditional1Damage" do
               modifySkillTest (attrs.ability 1) iid [DamageDealt 1]
       pure a
     _ -> BerettaM19184 <$> liftRunMessage msg attrs

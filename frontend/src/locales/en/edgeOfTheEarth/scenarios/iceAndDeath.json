@@ -61,6 +61,13 @@
       "xp": {
         "bonus": "Camp's shelter value (minimum of 3)"
       }
+    },
+    "label": {
+      "proceedToIceAndDeathPart1": "Proceed to _Ice and Death, Part 1._",
+      "proceedToIntro2": "Proceed to _Intro 2_",
+      "skipToIntro3": "Skip to _Intro 3_",
+      "skipToIntro4": "Skip to _Intro 4_",
+      "proceedToIntro4": "Proceed to _Intro 4_"
     }
   },
   "part2": {

@@ -108,14 +108,14 @@ instance RunMessage TheMachineInYellow where
       stored on the scenario's meta and read back below. -}
       lead <- getLead
       chooseOneM lead $ scope "maddeningDelusions" do
-        labeled' "useMaddeningDelusions" do
+        labeled "useMaddeningDelusions" do
           push $ SetScenarioMeta $ toJSON True
           -- "If you do so, each investigator may add 1 tally mark next to their
           -- 'Memories'."
           eachInvestigator \iid -> chooseOneM iid do
-            labeled' "addMemory" $ addMemories iid 1
-            labeled' "doNotAddMemory" nothing
-        labeled' "useDelusions" nothing
+            labeled "addMemory" $ addMemories iid 1
+            labeled "doNotAddMemory" nothing
+        labeled "useDelusions" nothing
       pure s
     Setup -> runScenarioSetup TheMachineInYellow attrs do
       let maddeningDelusions = toResultDefault False attrs.meta
@@ -165,8 +165,8 @@ instance RunMessage TheMachineInYellow where
       memories <- getMemories iid
       when (memories > 0) do
         chooseOneM iid $ unscoped do
-          labeled' "resolveNormally" nothing
-          labeled' "automaticallySucceed" do
+          labeled "resolveNormally" nothing
+          labeled "automaticallySucceed" do
             crossOffMemories iid 1
             passSkillTest
       pure s

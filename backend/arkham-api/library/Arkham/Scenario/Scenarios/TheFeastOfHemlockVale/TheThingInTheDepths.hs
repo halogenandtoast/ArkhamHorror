@@ -102,9 +102,9 @@ instance RunMessage TheThingInTheDepths where
       record JudithSharedAGrudge
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "title" >> p "intro4") do
-        labeled' "push" $ doStep 5 PreScenarioSetup
-        labeled' "rev" $ doStep 6 PreScenarioSetup
+      storyWithChooseOneM (setTitle "title" >> p "intro4") do
+        labeled "push" $ doStep 5 PreScenarioSetup
+        labeled "rev" $ doStep 6 PreScenarioSetup
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro5"
@@ -210,7 +210,7 @@ instance RunMessage TheThingInTheDepths where
           leadChooseOneM do
             unscoped
               $ nameVar Assets.drRosaMarquezBestInHerField
-              $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+              $ questionLabeled "chooseInvestigatorToTakeControlOf"
             questionLabeledCard Assets.drRosaMarquezBestInHerField
             portraits investigators (`takeControlOfAsset` drMarquez)
 
@@ -355,9 +355,9 @@ mayRemoveSinkhole iid = do
     select (NearestLocationTo iid (LocationWithTrait Bog))
       >>= filterM (fieldMap LocationTokens (\ts -> countTokens #damage ts > 0))
   when (notNull bogs) $ scenarioI18n $ chooseOneM iid do
-    labeled' "removeSinkhole" $ chooseOrRunOneM iid do
+    labeled "removeSinkhole" $ chooseOrRunOneM iid do
       targets bogs \lid -> removeTokens Cultist lid #damage 1
-    labeled' "doNotRemoveSinkhole" nothing
+    labeled "doNotRemoveSinkhole" nothing
 
 placeSinkhole :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> m ()
 placeSinkhole iid source = do

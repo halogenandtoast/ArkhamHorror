@@ -35,10 +35,10 @@ instance RunMessage SethBishopThrallOfYogSothoth where
   runMessage msg e@(SethBishopThrallOfYogSothoth attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> scenarioI18n do
       chooseOneM iid do
-        labeled' "sethBishop.move" do
+        labeled "sethBishop.move" do
           afterEnemyAttack attrs do
             moveTo (attrs.ability 1) iid =<< selectJust (locationIs Locations.anotherDimension)
-        labeled' "sethBishop.damage" $ enemyAttackModifier (attrs.ability 1) attrs (DamageDealt 2)
+        labeled "sethBishop.damage" $ enemyAttackModifier (attrs.ability 1) attrs (DamageDealt 2)
       pure e
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       removeFromGame attrs

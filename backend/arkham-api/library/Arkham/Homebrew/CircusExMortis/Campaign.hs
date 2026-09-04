@@ -128,8 +128,8 @@ instance RunMessage CircusExMortis where
       replicateM_ 3 $ addChaosToken MoonToken
       whenM (gamePerformTarotReadings <$> getGame) $ scope "campaignReading" do
         leadPlayer <- getLeadPlayer
-        storyWithChooseOneM' (setTitle "title" >> p "body") do
-          labeled' "performCampaignReading" do
+        storyWithChooseOneM (setTitle "title" >> p "body") do
+          labeled "performCampaignReading" do
             push $ SetPerformTarotReadings False
             push
               $ Ask leadPlayer
@@ -156,7 +156,7 @@ instance RunMessage CircusExMortis where
                 , TheSunXIX
                 , TheMoonXVIII
                 ]
-          labeled' "performIndividualReadings" nothing
+          labeled "performIndividualReadings" nothing
       nextCampaignStep
       pure c
     -- Interlude: The Future and the Past (guide pp9-10)
@@ -208,10 +208,10 @@ instance RunMessage CircusExMortis where
       eachInvestigator \iid -> do
         chooseOneM iid do
           questionLabeledCard iid
-          questionLabeled' "addInvocationOfDianaQuestion"
-          labeled' "addInvocationOfDiana"
+          questionLabeled "addInvocationOfDianaQuestion"
+          labeled "addInvocationOfDiana"
             $ addCampaignCardToDeck iid DoNotShuffleIn Skills.invocationOfDiana
-          labeled' "doNotAddInvocationOfDiana" nothing
+          labeled "doNotAddInvocationOfDiana" nothing
       flavor $ setTitle "title" >> p "destinyIntro"
       investigators <- getInvestigators
       let
@@ -221,20 +221,20 @@ instance RunMessage CircusExMortis where
         chooseDestiny remaining (iid : rest) =
           chooseOneM iid do
             questionLabeledCard iid
-            questionLabeled' "destinyQuestion"
+            questionLabeled "destinyQuestion"
             for_ remaining \word ->
-              labeled' word do
+              labeled word do
                 name <- toTitle <$> field InvestigatorName iid
                 recordSetInsert Destinies [String $ name <> ": " <> word]
                 chooseDestiny (filter (/= word) remaining) rest
       chooseDestiny destinyWords investigators
-      storyWithChooseOneM' (setTitle "title" >> p "role") do
-        labeled' "determination" do
+      storyWithChooseOneM (setTitle "title" >> p "role") do
+        labeled "determination" do
           flavor $ setTitle "title" >> p "determination"
           swapCampaignCard
             HBAssets.amaltheaWeaverCircusFortuneTeller
             HBAssets.amaltheaWeaverAspirantOfCourage
-        labeled' "guidance" do
+        labeled "guidance" do
           flavor $ setTitle "title" >> p "guidance"
           swapCampaignCard
             HBAssets.amaltheaWeaverCircusFortuneTeller
@@ -249,17 +249,17 @@ instance RunMessage CircusExMortis where
           when (hasPhysical || hasMental) do
             chooseOneM iid do
               questionLabeledCard iid
-              questionLabeled' "healTraumaQuestion"
-              when hasPhysical $ labeled' "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
-              when hasMental $ labeled' "healMentalTrauma" $ push $ HealTrauma iid 0 1
-              labeled' "doNotHealTrauma" nothing
-      storyWithChooseOneM' (setTitle "title" >> p "motive") do
-        labeled' "fanaticism" do
+              questionLabeled "healTraumaQuestion"
+              when hasPhysical $ labeled "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
+              when hasMental $ labeled "healMentalTrauma" $ push $ HealTrauma iid 0 1
+              labeled "doNotHealTrauma" nothing
+      storyWithChooseOneM (setTitle "title" >> p "motive") do
+        labeled "fanaticism" do
           flavor $ setTitle "title" >> p "fanaticism"
           swapCampaignCard
             HBAssets.deCultusBestiaeForgottenWorkOfApuleius
             HBAssets.deCultusBestiaeInterpretationOfConviction
-        labeled' "nemesis" do
+        labeled "nemesis" do
           flavor $ setTitle "title" >> p "nemesis"
           swapCampaignCard
             HBAssets.deCultusBestiaeForgottenWorkOfApuleius
@@ -279,20 +279,20 @@ instance RunMessage CircusExMortis where
       case snd <$> mAmalthea of
         Just v
           | v == HBAssets.amaltheaWeaverAspirantOfCourage ->
-              storyWithChooseOneM' (setTitle "title" >> p "moreToDo") do
-                labeled' "priorWarning" do
+              storyWithChooseOneM (setTitle "title" >> p "moreToDo") do
+                labeled "priorWarning" do
                   flavor $ setTitle "title" >> p "priorWarning"
                   swapCampaignCard v HBAssets.amaltheaWeaverOracleOfPurity
-                labeled' "sawItComing" do
+                labeled "sawItComing" do
                   flavor $ setTitle "title" >> p "sawItComing"
                   swapCampaignCard v HBAssets.amaltheaWeaverOracleOfResolve
         Just v
           | v == HBAssets.amaltheaWeaverAspirantOfWisdom ->
-              storyWithChooseOneM' (setTitle "title" >> p "moreToSee") do
-                labeled' "writtenInInk" do
+              storyWithChooseOneM (setTitle "title" >> p "moreToSee") do
+                labeled "writtenInInk" do
                   flavor $ setTitle "title" >> p "writtenInInk"
                   swapCampaignCard v HBAssets.amaltheaWeaverOracleOfEnlightenment
-                labeled' "writtenInSmoke" do
+                labeled "writtenInSmoke" do
                   flavor $ setTitle "title" >> p "writtenInSmoke"
                   swapCampaignCard v HBAssets.amaltheaWeaverOracleOfMystery
         _ -> pure ()
@@ -301,20 +301,20 @@ instance RunMessage CircusExMortis where
       case snd <$> mDeCultus of
         Just v
           | v == HBAssets.deCultusBestiaeInterpretationOfConviction ->
-              storyWithChooseOneM' (setTitle "title" >> p "theInfinite") do
-                labeled' "powersAbove" do
+              storyWithChooseOneM (setTitle "title" >> p "theInfinite") do
+                labeled "powersAbove" do
                   flavor $ setTitle "title" >> p "powersAbove"
                   swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheBeyond
-                labeled' "powersBelow" do
+                labeled "powersBelow" do
                   flavor $ setTitle "title" >> p "powersBelow"
                   swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheEternal
         Just v
           | v == HBAssets.deCultusBestiaeInterpretationOfObsession ->
-              storyWithChooseOneM' (setTitle "title" >> p "theEndless") do
-                labeled' "againstTheFlood" do
+              storyWithChooseOneM (setTitle "title" >> p "theEndless") do
+                labeled "againstTheFlood" do
                   flavor $ setTitle "title" >> p "againstTheFlood"
                   swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheHorde
-                labeled' "againstTheStorm" do
+                labeled "againstTheStorm" do
                   flavor $ setTitle "title" >> p "againstTheStorm"
                   swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheBehemoth
         _ -> pure ()
@@ -378,12 +378,12 @@ instance RunMessage CircusExMortis where
         for_ tokens \token -> do
           chooseOneM iid do
             questionLabeledCard iid
-            questionLabeled' "endOfRoundQuestion"
-            labeled' "keepSealed" nothing
-            labeled' "takeDamageAndRelease" do
+            questionLabeled "endOfRoundQuestion"
+            labeled "keepSealed" nothing
+            labeled "takeDamageAndRelease" do
               assignDamage iid CampaignSource 1
               releaseMoonToken token
-            labeled' "takeHorrorAndRelease" do
+            labeled "takeHorrorAndRelease" do
               assignHorror iid CampaignSource 1
               releaseMoonToken token
       pure c

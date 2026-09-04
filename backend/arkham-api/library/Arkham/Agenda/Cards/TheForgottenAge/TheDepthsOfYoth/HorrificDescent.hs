@@ -23,9 +23,9 @@ instance RunMessage HorrificDescent where
       canteenInvestigators <- getInvestigatorsWithSupply Canteen
       for_ (nonEmpty canteenInvestigators) \(iid :| _) -> do
         chooseOneM iid $ scenarioI18n do
-          questionLabeled' "horrificDescent.description"
-          labeled' "horrificDescent.collect" $ remember CollectedAStrangeLiquid
-          labeled' "horrificDescent.doNotCollect" nothing
+          questionLabeled "horrificDescent.description"
+          labeled "horrificDescent.collect" $ remember CollectedAStrangeLiquid
+          labeled "horrificDescent.doNotCollect" nothing
       advanceAgendaDeck attrs
       pure a
     _ -> HorrificDescent <$> liftRunMessage msg attrs

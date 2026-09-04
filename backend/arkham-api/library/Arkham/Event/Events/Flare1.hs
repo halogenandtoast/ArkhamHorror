@@ -29,7 +29,7 @@ instance RunMessage Flare1 where
       chooseOrRunOneM iid do
         when (notNull fightableEnemies) do
           labeledI "fight" $ doStep 1 msg
-        cardI18n $ scope "flare1" $ labeled' "searchForAlly" $ doStep 2 msg
+        cardI18n $ scope "flare1" $ labeled "searchForAlly" $ doStep 2 msg
       pure e
     DoStep n (CardEnteredPlay _iid (isCard attrs -> True)) -> do
       pure $ Flare1 $ setMeta n attrs

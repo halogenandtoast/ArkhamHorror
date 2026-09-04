@@ -27,7 +27,7 @@ instance RunMessage AshenRebirth where
         GT -> directHorror iid attrs 2
         LT -> directDamage iid attrs 2
         EQ -> chooseOneM iid $ withI18n do
-          countVar 2 $ labeled' "takeDirectDamage" $ directDamage iid attrs 2
-          countVar 2 $ labeled' "takeDirectHorror" $ directHorror iid attrs 2
+          countVar 2 $ labeled "takeDirectDamage" $ directDamage iid attrs 2
+          countVar 2 $ labeled "takeDirectHorror" $ directHorror iid attrs 2
       pure t
     _ -> AshenRebirth <$> liftRunMessage msg attrs

@@ -57,8 +57,8 @@ instance RunMessage ArkhamGazette where
         chooseOneAtATimeM iid do
           for_ cards \card -> cardLabeled card do
             chooseOneM iid $ withI18n do
-              labeled' "putOnTopOfEncounterDeck" $ putCardOnTopOfDeck iid Deck.EncounterDeck card
-              labeled' "putOnBottomOfEncounterDeck" $ putCardOnBottomOfDeck iid Deck.EncounterDeck card
+              labeled "putOnTopOfEncounterDeck" $ putCardOnTopOfDeck iid Deck.EncounterDeck card
+              labeled "putOnBottomOfEncounterDeck" $ putCardOnBottomOfDeck iid Deck.EncounterDeck card
         unfocusCards
       pure l
     _ -> ArkhamGazette <$> liftRunMessage msg attrs

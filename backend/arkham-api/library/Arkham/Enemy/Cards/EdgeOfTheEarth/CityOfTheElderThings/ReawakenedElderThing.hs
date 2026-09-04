@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Enemy.Types (Field (EnemyLocation), keysL)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Matcher
@@ -31,7 +32,7 @@ instance RunMessage ReawakenedElderThing where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       ks <- field InvestigatorKeys iid
       chooseOrRunOneM iid do
-        for_ ks \k -> labeled ("Place " <> keyName k) (placeKey attrs k)
+        for_ ks \k -> (withI18n $ keyVar "key" (keyName k) $ labeled "placeKey") (placeKey attrs k)
       pure e
     Defeated (EnemyTarget eid) _ _ _ | eid == attrs.id -> do
       mloc <- field EnemyLocation attrs.id

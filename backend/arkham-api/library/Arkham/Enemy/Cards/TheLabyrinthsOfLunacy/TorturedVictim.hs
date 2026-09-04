@@ -18,7 +18,7 @@ instance RunMessage TorturedVictim where
   runMessage msg e@(TorturedVictim attrs) = runQueueT $ scenarioI18n $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ scope "torturedVictim" do
-        labeled' "discardRandomCard" $ randomDiscard iid attrs
-        labeled' "takeAttack" $ initiateEnemyAttack attrs attrs iid
+        labeled "discardRandomCard" $ randomDiscard iid attrs
+        labeled "takeAttack" $ initiateEnemyAttack attrs attrs iid
       pure e
     _ -> TorturedVictim <$> liftRunMessage msg attrs

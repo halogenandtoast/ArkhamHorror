@@ -27,7 +27,7 @@ instance RunMessage ReinforcedCar where
   runMessage msg l@(ReinforcedCar attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getEnemy -> enemy) _ -> do
       chooseOneM iid $ scenarioI18n "allPointsWest" $ scope "reinforcedCar" do
-        labeled' "reduceDamage" $ enemyAttackModifier (attrs.ability 1) enemy (DamageDealt (-1))
-        labeled' "reduceHorror" $ enemyAttackModifier (attrs.ability 1) enemy (HorrorDealt (-1))
+        labeled "reduceDamage" $ enemyAttackModifier (attrs.ability 1) enemy (DamageDealt (-1))
+        labeled "reduceHorror" $ enemyAttackModifier (attrs.ability 1) enemy (HorrorDealt (-1))
       pure l
     _ -> ReinforcedCar <$> liftRunMessage msg attrs

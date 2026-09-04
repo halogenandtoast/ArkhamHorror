@@ -63,7 +63,7 @@ instance RunMessage RelicRoomSanctumOfFortune where
       x <- perPlayer 4
       when (n >= x) do
         chooseOneM iid $ scenarioI18n do
-          labeled' "relicRoom.reveal" do
+          labeled "relicRoom.reveal" do
             spendCluesAsAGroup investigators x
             reveal attrs
           unscoped skip_

@@ -47,6 +47,7 @@ import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Helpers.Playable
 import Arkham.Helpers.Use (asStartingUses)
+import Arkham.I18n
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types qualified as Field
 import Arkham.Keyword qualified as Keyword
@@ -522,7 +523,7 @@ chooseSkill :: HasCallStack => SkillType -> TestAppT ()
 chooseSkill sType =
   chooseOptionMatching "choose self" \case
     SkillLabel sType' _ -> sType == sType'
-    Label lbl _ -> lookup lbl labeledSkills == Just sType
+    Label lbl _ -> lbl == withI18n (skillVar sType $ "$" <> labelKey "chooseSkill")
     _ -> False
 
 evadedBy :: Enemy -> Investigator -> TestAppT Bool

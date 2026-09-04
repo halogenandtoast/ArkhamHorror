@@ -5,6 +5,8 @@ import Arkham.Classes.HasGame (HasGame)
 import Arkham.Helpers.Location (getConnectedLocations)
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, modified_)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Helpers
+import Arkham.I18n
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -69,8 +71,12 @@ instance RunMessage BrokenCouplings where
         for_ (zip [0 :: Int ..] candidates) \(idx, (locA, locB)) -> do
           nameA <- fieldMap LocationName toTitle locA
           nameB <- fieldMap LocationName toTitle locB
-          labeled ("Place between " <> nameA <> " and " <> nameB) do
-            push $ DoStep idx (Revelation iid (toSource attrs))
+          ( campaignI18n
+              $ withVars ["locationA" .= nameA, "locationB" .= nameB]
+              $ labeled "brokenCouplings.placeBetween"
+            )
+            do
+              push $ DoStep idx (Revelation iid (toSource attrs))
       pure t
     DoStep idx (Revelation _ (isSource attrs -> True)) -> do
       mPair <- (!!? idx) <$> unblockedTrainPairs

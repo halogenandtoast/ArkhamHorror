@@ -25,8 +25,8 @@ instance RunMessage AugustLindquist where
     UseCardAbility iid (isSource attrs -> True) 1 _ (totalCluePaymentPerInvestigator -> spentClues) -> do
       for_ (Map.assocs spentClues) \(iid', _) -> do
         chooseOneM iid' $ withI18n do
-          countVar 1 $ labeled' "takeDamage" $ assignDamage iid' (attrs.ability 1) 1
-          countVar 1 $ labeled' "takeHorror" $ assignHorror iid' (attrs.ability 1) 1
+          countVar 1 $ labeled "takeDamage" $ assignDamage iid' (attrs.ability 1) 1
+          countVar 1 $ labeled "takeHorror" $ assignHorror iid' (attrs.ability 1) 1
       removeFromGame attrs
       for_ (toList (assetKeys attrs)) (placeKey iid)
 

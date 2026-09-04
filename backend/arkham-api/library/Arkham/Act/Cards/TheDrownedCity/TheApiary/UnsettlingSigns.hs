@@ -55,7 +55,7 @@ instance RunMessage UnsettlingSigns where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- getInvestigators
       total <- getSpendableClueCount investigators
-      scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 1 total attrs
+      scenarioI18n $ chooseAmount iid "cluesToSpend" "$clues" 1 total attrs
       pure a
     ResolveAmounts _iid (getChoiceAmount "$clues" -> cluesSpent) (isTarget attrs -> True) | cluesSpent > 0 -> do
       investigators <- getInvestigators

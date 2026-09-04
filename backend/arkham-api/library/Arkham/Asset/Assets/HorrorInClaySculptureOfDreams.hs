@@ -46,9 +46,9 @@ instance RunMessage HorrorInClaySculptureOfDreams where
       campaignI18n $ chooseOneM iid do
         -- Blanking the sculpture also takes the hunter/prey grant above with it,
         -- which is the whole point of turning it off for a round.
-        labeled' "horrorInClay.blankPrintedText" $ roundModifier (attrs.ability 1) attrs Blank
+        labeled "horrorInClay.blankPrintedText" $ roundModifier (attrs.ability 1) attrs Blank
         when (notNull starSpawn) do
-          labeled' "horrorInClay.moveStarSpawn" $ chooseTargetM iid starSpawn \eid -> do
+          labeled "horrorInClay.moveStarSpawn" $ chooseTargetM iid starSpawn \eid -> do
             connecting <- select $ connectedFrom (locationWithEnemy eid) <> LocationCanBeEnteredBy eid
             chooseTargetM iid connecting $ enemyMoveTo (attrs.ability 1) eid
       pure a

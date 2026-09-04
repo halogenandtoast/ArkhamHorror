@@ -27,7 +27,7 @@ instance RunMessage FlurryOfBlows5 where
         <> AssetWithPerformableAbility #fight [IgnoreActionCost]
       when (n - 1 > 0) do
         chooseOneM iid $ cardI18n $ scope "flurryOfBlows5" do
-          labeled' "repeatEffect" $ doStep (n - 1) msg'
+          labeled "repeatEffect" $ doStep (n - 1) msg'
           labeledI "done" nothing
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do

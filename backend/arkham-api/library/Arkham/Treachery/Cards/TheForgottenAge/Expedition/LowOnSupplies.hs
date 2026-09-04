@@ -22,9 +22,9 @@ instance RunMessage LowOnSupplies where
       investigators <- getInvestigators
       chooseOrRunOneM iid $ campaignI18n do
         when anyWithResources do
-          labeled' "lowOnSupplies.resources" $ for_ investigators (loseResourcesOf attrs 2)
-        labeled' "lowOnSupplies.damage" $ for_ investigators (assignDamageTo attrs 1)
+          labeled "lowOnSupplies.resources" $ for_ investigators (loseResourcesOf attrs 2)
+        labeled "lowOnSupplies.damage" $ for_ investigators (assignDamageTo attrs 1)
         when hasAssets do
-          labeled' "lowOnSupplies.discardAsset" $ for_ investigators (`chooseAndDiscardAsset` attrs)
+          labeled "lowOnSupplies.discardAsset" $ for_ investigators (`chooseAndDiscardAsset` attrs)
       pure t
     _ -> LowOnSupplies <$> liftRunMessage msg attrs

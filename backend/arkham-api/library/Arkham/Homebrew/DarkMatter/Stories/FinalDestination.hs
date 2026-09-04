@@ -17,7 +17,7 @@ instance RunMessage FinalDestination where
   runMessage msg s@(FinalDestination attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
       selectEach (colocatedWith iid) (`addMemories` 1)
-      withI18n $ chooseAmount' iid "resources" "$resources" 0 3 attrs
+      withI18n $ chooseAmount iid "resources" "$resources" 0 3 attrs
       addToVictory iid attrs
       pure s
     ResolveAmounts iid (getChoiceAmount "$resources" -> n) (isTarget attrs -> True) -> do

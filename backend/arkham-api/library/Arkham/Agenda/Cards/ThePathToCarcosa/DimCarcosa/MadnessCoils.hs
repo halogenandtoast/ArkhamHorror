@@ -4,8 +4,10 @@ import Arkham.Ability
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.DimCarcosa qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Helpers.Query (getInvestigators, getLead)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.ThePathToCarcosa.DimCarcosa.Helpers
 import Arkham.SkillTest.Type
 import Arkham.SkillType
 
@@ -37,21 +39,17 @@ instance RunMessage MadnessCoils where
       lead <- getLead
       investigators <- getInvestigators
       sid <- getRandom
-      chooseOneM lead do
+      chooseOneM lead $ scenarioI18n do
         for_ (setToList skills) \sk -> do
-          labeled ("Any investigator tests " <> format sk <> " (4)") do
+          (unscoped $ countVar 4 $ skillVar sk $ labeled "anyInvestigatorTests") do
             chooseOrRunOneM lead do
               targets investigators \iid -> beginSkillTest sid iid attrs attrs sk (Fixed 4)
-        labeled
-          "This can't be real. This can't be real. This can't be real. Each investigator takes 2 horror. Advance to agenda 2a."
-          do
-            for_ investigators \iid -> assignHorror iid attrs 2
-            advanceAgendaDeck attrs
-        labeled
-          "The investigators faint and awaken some time later. Advance to agenda 2a and place 1 doom on it."
-          do
-            advanceAgendaDeck attrs
-            placeDoomOnAgenda 1
+        labeled "madnessCoils.takeHorror" do
+          for_ investigators \iid -> assignHorror iid attrs 2
+          advanceAgendaDeck attrs
+        labeled "madnessCoils.faint" do
+          advanceAgendaDeck attrs
+          placeDoomOnAgenda 1
       pure a
     FailedSkillTest _ _ source SkillTestInitiatorTarget {} (SkillSkillTest st) _ | isSource attrs source -> do
       afterSkillTestQuiet $ advanceAgenda attrs

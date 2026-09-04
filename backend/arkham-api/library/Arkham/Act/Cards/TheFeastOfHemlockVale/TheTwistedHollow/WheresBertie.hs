@@ -42,7 +42,7 @@ instance RunMessage WheresBertie where
       leadChooseOneM do
         withI18n
           $ nameVar def
-          $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+          $ questionLabeled "chooseInvestigatorToTakeControlOf"
         questionLabeledCard def
         portraits investigators (`takeControlOfSetAsideAsset` bertie)
 

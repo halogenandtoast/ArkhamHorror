@@ -69,7 +69,13 @@
     "theNewMoonCircusMaySomedayReturn": "The New Moon Circus may someday return."
   },
   "label": {
-    "sealMoonToken": "Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card"
+    "sealMoonToken": "Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card",
+    "brokenCouplings": {
+      "placeBetween": "Place between {locationA} and {locationB}"
+    },
+    "circusEncampment": {
+      "doneReleasingMoonTokens": "Done releasing moon tokens"
+    }
   },
   "theBigTopThirdRing": {
     "label": {

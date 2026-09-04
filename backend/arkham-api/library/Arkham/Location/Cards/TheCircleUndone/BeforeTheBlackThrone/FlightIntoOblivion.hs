@@ -56,7 +56,7 @@ instance RunMessage FlightIntoOblivion where
               chooseOneM iid $ scenarioI18n do
                 questionLabeledCard attrs
                 when (notNull aboveChoice) do
-                  labeled' "connectAbove" do
+                  labeled "connectAbove" do
                     chooseOrRunOneM iid do
                       for_ aboveChoice \pos'@(Pos x y) -> do
                         gridLabeled (cosmicLabel pos')
@@ -64,7 +64,7 @@ instance RunMessage FlightIntoOblivion where
                           $ PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid)
                           : msgs
                 when (notNull emptyPositions) do
-                  labeled' "flightIntoOblivion.choice" do
+                  labeled "flightIntoOblivion.choice" do
                     assignHorror iid (toAbilitySource attrs 1) 2
                     chooseOrRunOneM iid do
                       for_ emptyPositions \pos'@(Pos x y) -> do

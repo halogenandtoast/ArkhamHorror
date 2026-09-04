@@ -52,12 +52,12 @@ instance RunMessage TheManInThePallidMask where
       for_ (zip investigators copies) \(iid, copy) -> createEnemy_ copy iid
       whenM (getHasRecord YouHaveUncoveredTheCultistsInhumanMethods) do
         eachInvestigator \iid -> chooseOneM iid $ scope "theManInThePallidMask" do
-          labeled' "gainClueAndHeal" do
+          labeled "gainClueAndHeal" do
             gainClues iid attrs 1
             healDamage iid attrs 2
             healHorror iid attrs 2
-          labeled' "addMemory" $ addMemories iid 1
-          unscoped $ labeled' "doNothing" nothing
+          labeled "addMemory" $ addMemories iid 1
+          unscoped $ labeled "doNothing" nothing
       advanceActDeck attrs
       pure a
     _ -> TheManInThePallidMask <$> liftRunMessage msg attrs

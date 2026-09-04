@@ -73,20 +73,20 @@ instance RunMessage DogsOfWar where
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       miskatonicOrScholar <- selectAny $ mapOneOf InvestigatorWithTrait [Miskatonic, Scholar]
-      storyWithChooseOneM'
+      storyWithChooseOneM
         do
           setTitle "title"
           p "intro2Part1"
           p.validate miskatonicOrScholar "miskatonicOrScholar"
           p "intro2Part2"
         do
-          labeled' "weAccept" $ doStep 4 PreScenarioSetup
-          labeled' "refuse" $ doStep 5 PreScenarioSetup
+          labeled "weAccept" $ doStep 4 PreScenarioSetup
+          labeled "refuse" $ doStep 5 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "title" >> p "intro3") do
-        labeled' "weAccept" $ doStep 6 PreScenarioSetup
-        labeled' "refuse" $ doStep 7 PreScenarioSetup
+      storyWithChooseOneM (setTitle "title" >> p "intro3") do
+        labeled "weAccept" $ doStep 6 PreScenarioSetup
+        labeled "refuse" $ doStep 7 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
       record TheCellMadeADealWithTheClaretKnight
@@ -260,7 +260,7 @@ instance RunMessage DogsOfWar where
           chooseOneM iid $ withI18n do
             numberVar "damage" 1
               $ numberVar "horror" 1
-              $ labeled' "takeDamageAndHorror"
+              $ labeled "takeDamageAndHorror"
               $ assignDamageAndHorror iid Cultist 1 1
             targets ls $ placeDoomOn Cultist 1
             targets ts $ placeDoomOn Cultist 1

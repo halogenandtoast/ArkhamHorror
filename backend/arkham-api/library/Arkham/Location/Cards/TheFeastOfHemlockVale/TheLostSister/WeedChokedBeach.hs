@@ -37,8 +37,8 @@ instance RunMessage WeedChokedBeach where
         hasItems <- selectAny $ DiscardableAsset <> #item <> assetControlledBy iid
         if hasItems
           then chooseOneM iid $ withI18n do
-            labeled' "cancelMove" $ cancelMovement (attrs.ability 2) iid
-            labeled' "discardAssets" $ chooseAndDiscardAssetMatching iid (attrs.ability 2) #item
+            labeled "cancelMove" $ cancelMovement (attrs.ability 2) iid
+            labeled "discardAssets" $ chooseAndDiscardAssetMatching iid (attrs.ability 2) #item
           else cancelMovement (attrs.ability 2) iid
       resetChaosTokens (attrs.ability 2)
       pure l

@@ -36,7 +36,7 @@ instance RunMessage FogOverInnsmouth where
         withI18n $ countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
         campaignI18n
           $ scope "fogOverInnsmouth"
-          $ labeled' "putIntoPlay"
+          $ labeled "putIntoPlay"
           $ placeTreachery attrs NextToAgenda
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

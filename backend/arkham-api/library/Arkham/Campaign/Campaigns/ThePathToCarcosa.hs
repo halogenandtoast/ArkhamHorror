@@ -88,19 +88,19 @@ instance RunMessage ThePathToCarcosa where
 
         let interlude k = storyBuild $ setTitle "title" >> p k
 
-        storyWithChooseOneM' (setTitle "title" >> p "body") do
-          labeled' "chooseLunacysReward1" do
+        storyWithChooseOneM (setTitle "title" >> p "body") do
+          labeled "chooseLunacysReward1" do
             interlude "lunacysReward1"
             record YouIntrudedOnASecretMeeting
             markDoubt
             addChaosToken ElderThing
             addChaosToken ElderThing
-          labeled' "chooseLunacysReward2" do
+          labeled "chooseLunacysReward2" do
             interlude "lunacysReward2"
             record YouFledTheDinnerParty
             addChaosToken Tablet
             addChaosToken Tablet
-          labeled' "chooseLunacysReward3" do
+          labeled "chooseLunacysReward3" do
             interlude "lunacysReward3"
             record YouSlayedTheMonstersAtTheDinnerParty
             unless (null unslain) $ recordSetInsert VIPsSlain unslain
@@ -114,11 +114,11 @@ instance RunMessage ThePathToCarcosa where
         let interlude k = storyBuild $ setTitle "title" >> p k
         let
           handleWarning = do
-            labeled' "ignoreTheWarning" do
+            labeled "ignoreTheWarning" do
               interlude "ignoreTheWarning"
               record YouIgnoredDanielsWarning
               markDoubtN 2
-            labeled' "heedTheWarning" do
+            labeled "heedTheWarning" do
               interlude "heedTheWarning"
               record YouHeadedDanielsWarning
               markConvictionN 2
@@ -126,12 +126,12 @@ instance RunMessage ThePathToCarcosa where
         case mInterludeKey of
           Nothing -> error "Missing key from The Unspeakable Oath"
           Just DanielSurvived -> do
-            storyWithChooseOneM' (setTitle "title" >> p "danielSurvived") handleWarning
+            storyWithChooseOneM (setTitle "title" >> p "danielSurvived") handleWarning
             interludeXpAll (toBonus "bonus" 2)
           Just DanielDidNotSurvive ->
-            storyWithChooseOneM' (setTitle "title" >> p "danielDidNotSurvive") handleWarning
+            storyWithChooseOneM (setTitle "title" >> p "danielDidNotSurvive") handleWarning
           Just DanielWasPossessed ->
-            storyWithChooseOneM' (setTitle "title" >> p "danielWasPossessed") handleWarning
+            storyWithChooseOneM (setTitle "title" >> p "danielWasPossessed") handleWarning
           Just _ -> error "Invalid key for The Unspeakable Oath"
 
         nextCampaignStep

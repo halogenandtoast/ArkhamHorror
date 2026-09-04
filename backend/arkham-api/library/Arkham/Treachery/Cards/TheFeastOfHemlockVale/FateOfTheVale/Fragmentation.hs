@@ -38,8 +38,8 @@ instance RunMessage Fragmentation where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assets <- select $ assetControlledBy iid <> AssetWithHighestPrintedCost AnyAsset
       chooseOneM iid $ scenarioI18n do
-        when (notNull assets) $ labeled' "fragmentation.placeAssetOnAbyss" do
+        when (notNull assets) $ labeled "fragmentation.placeAssetOnAbyss" do
           chooseOrRunOneM iid $ targets assets $ placeAssetOnAbyss iid
-        labeled' "fragmentation.nearestEmissaryAttacks" $ nearestEmissaryAttacks attrs iid
+        labeled "fragmentation.nearestEmissaryAttacks" $ nearestEmissaryAttacks attrs iid
       pure t
     _ -> Fragmentation <$> liftRunMessage msg attrs

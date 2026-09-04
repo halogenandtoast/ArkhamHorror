@@ -49,12 +49,12 @@ instance RunMessage CatacombsOfKomElShoqafaDenOfTheBeast where
       whenM (getCanAffordCost iid (attrs.ability 1) [] [] cost) do
         lightOfPharos <- selectJust $ scarletKeyIs Keys.theLightOfPharos
         chooseOneM iid $ scenarioI18n do
-          labeled' "catacombsOfKomElShoqafa.pay" do
+          labeled "catacombsOfKomElShoqafa.pay" do
             payEffectCost iid attrs cost
             placeTokens (attrs.ability 1) lightOfPharos #resource 1
             doStep 1 msg
 
-          labeled' "catacombsOfKomElShoqafa.doNotPay" nothing
+          labeled "catacombsOfKomElShoqafa.doNotPay" nothing
       pure l
     DoStep 1 (PassedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> do
       investigators <- select $ investigatorAt attrs

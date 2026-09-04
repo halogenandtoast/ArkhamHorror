@@ -44,14 +44,14 @@ instance RunMessage QuestForTheSableGlass where
       advanceActDeck attrs
       pure a
     DoStep 1 msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> scope "rawDeal" do
-      storyWithChooseOneM' (p "rawDeal1") do
-        labeled' "option3" $ doStep 3 msg'
-        labeled' "option4" $ doStep 4 msg'
+      storyWithChooseOneM (p "rawDeal1") do
+        labeled "option3" $ doStep 3 msg'
+        labeled "option4" $ doStep 4 msg'
       pure a
     DoStep 2 msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> scope "rawDeal" do
-      storyWithChooseOneM' (p "rawDeal2") do
-        labeled' "option3" $ doStep 3 msg'
-        labeled' "option5" $ doStep 5 msg'
+      storyWithChooseOneM (p "rawDeal2") do
+        labeled "option3" $ doStep 3 msg'
+        labeled "option5" $ doStep 5 msg'
       pure a
     DoStep 3 (AdvanceAct (isSide B attrs -> True) _ _) -> scope "rawDeal" do
       record TheCellMadeADealWithThorne

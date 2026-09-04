@@ -110,5 +110,9 @@
       "continuePlaying": "Continue playing",
       "proceedToR1": "Proceed immediately to (→R1)"
     }
+  },
+  "label": {
+    "helpAgentHarper": "Help Agent Harper complete her mission. Put the set-aside City of the Deep (v. II) into play next to the current act. It provides a new alternate objective.",
+    "defyAgentHarper": "Defy Agent Harper. Search each player’s hand, deck, discard pile, and all play areas for Elina Harper and remove her from the game. Put the set-aside City of the Deep (v. III) into play next to the current act. It provides a new alternate objective."
   }
 }

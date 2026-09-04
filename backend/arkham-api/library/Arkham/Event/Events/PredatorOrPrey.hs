@@ -56,13 +56,13 @@ instance RunMessage PredatorOrPrey where
                   Just loc -> notNull <$> fleeOptions attrs i loc
           chooseOneM iid $ cardI18n $ scope "predatorOrPrey" do
             when (notNull unengagedEnemies) do
-              labeled' "enemiesMove" do
+              labeled "enemiesMove" do
                 chooseOneAtATimeM iid do
                   for_ unengagedEnemies \(enemy, loc) ->
                     targeting enemy do
                       moveTowardsMatching attrs enemy $ NearestLocationToLocation loc $ LocationWithInvestigator Anyone
             when (notNull eligibleInvestigators) do
-              labeled' "investigatorsMove"
+              labeled "investigatorsMove"
                 $ handleOneAtATime iid attrs eligibleInvestigators
 
       pure e

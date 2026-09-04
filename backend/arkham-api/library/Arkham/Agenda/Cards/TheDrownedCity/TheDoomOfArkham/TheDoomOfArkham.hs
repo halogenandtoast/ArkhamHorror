@@ -75,7 +75,7 @@ instance RunMessage TheDoomOfArkham where
         else do
           lead <- getLead
           chooseOrRunOneM lead $ scenarioI18n do
-            questionLabeled' "chooseLocationToRuin"
+            questionLabeled "chooseLocationToRuin"
             targets candidates \lid -> push $ ForTarget (toTarget lid) msg
       pure a
     ForTarget (LocationTarget lid) advance@(AdvanceAgenda (isSide B attrs -> True)) -> do

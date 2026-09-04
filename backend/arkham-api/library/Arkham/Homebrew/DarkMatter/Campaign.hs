@@ -78,9 +78,9 @@ instance RunMessage DarkMatter where
         setTitle "title"
         p $ if transportedByMaja then "missionBriefing1" else "missionBriefing2"
       flavor $ setTitle "title" >> p "missionBriefing3"
-      storyWithChooseOneM' (setTitle "title" >> p "simulatedPerformance") do
-        labeled' "watchThePerformance" $ doStep 1 msg
-        labeled' "declineToWatch" nothing
+      storyWithChooseOneM (setTitle "title" >> p "simulatedPerformance") do
+        labeled "watchThePerformance" $ doStep 1 msg
+        labeled "declineToWatch" nothing
       doStep 2 msg
       pure c
     -- Heir to Carcosa (read at your own risk)
@@ -92,8 +92,8 @@ instance RunMessage DarkMatter where
       for_ (mapToList storyCards) \(iid, cards) ->
         when (any ((== Assets.heirToCarcosa) . toCardDef) cards) do
           chooseOneM iid do
-            labeled' "addTwoMemories" $ addMemories iid 2
-            labeled' "doNotAddMemories" nothing
+            labeled "addTwoMemories" $ addMemories iid 2
+            labeled "doNotAddMemories" nothing
       pure c
     DoStep 2 (CampaignStep (InterludeStep 1 _)) -> theSearchForFragment c
     -- The Search for Fragment, revisited after each Scenario III
@@ -101,11 +101,11 @@ instance RunMessage DarkMatter where
     -- Interlude II: Introspection
     CampaignStep (InterludeStep 3 _) -> scope "introspection" do
       flavor $ setTitle "title" >> p "body"
-      storyWithChooseOneM' (setTitle "title" >> p "searchTheTatterdemalion") do
-        labeled' "searchTheShip" do
+      storyWithChooseOneM (setTitle "title" >> p "searchTheTatterdemalion") do
+        labeled "searchTheShip" do
           addImpendingDoom 1
           eachInvestigator (`addMemories` 1)
-        labeled' "doNotSearchTheShip" nothing
+        labeled "doNotSearchTheShip" nothing
       -- The side-story option (crossing out Memories instead of paying
       -- experience) is resolved manually; surface the guide text so players
       -- know it exists.
@@ -162,7 +162,7 @@ theSearchForFragment c = scope "theSearchForFragment" do
   let remaining = filter (`notElem` completed) [LostQuantum, InTheShadowOfEarth, StrangeMoons]
   if null remaining
     then setNextCampaignStep Introspection
-    else storyWithChooseOneM'
+    else storyWithChooseOneM
       ( do
           setTitle "title"
           p "body"

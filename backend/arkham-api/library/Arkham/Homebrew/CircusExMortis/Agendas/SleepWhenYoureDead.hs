@@ -32,8 +32,8 @@ instance RunMessage SleepWhenYoureDead where
       campaignI18n $ scope "harmsWay" $ scope "sleepWhenYoureDead" do
         eachInvestigator \iid -> do
           chooseOneM iid do
-            labeled' "physicalTrauma" $ sufferPhysicalTrauma iid 1
-            labeled' "mentalTrauma" $ sufferMentalTrauma iid 1
+            labeled "physicalTrauma" $ sufferPhysicalTrauma iid 1
+            labeled "mentalTrauma" $ sufferMentalTrauma iid 1
           investigatorDefeated attrs iid
         pure a
     _ -> SleepWhenYoureDead <$> liftRunMessage msg attrs

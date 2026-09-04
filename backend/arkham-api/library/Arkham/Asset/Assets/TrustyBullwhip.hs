@@ -40,9 +40,9 @@ instance RunMessage TrustyBullwhip where
               cardNameVar card $ labeledValidate' canEvade "automaticallyEvade" do
                 exhaustThis attrs
                 automaticallyEvadeEnemy iid eid
-          countVar 1 $ labeled' "dealAdditionalDamage" do
+          countVar 1 $ labeled "dealAdditionalDamage" do
             exhaustThis attrs
             skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-          labeled' "skip" nothing
+          labeled "skip" nothing
       pure a
     _ -> TrustyBullwhip <$> liftRunMessage msg attrs

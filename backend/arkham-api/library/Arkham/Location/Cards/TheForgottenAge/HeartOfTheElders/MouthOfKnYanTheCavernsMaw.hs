@@ -35,13 +35,13 @@ instance RunMessage MouthOfKnYanTheCavernsMaw where
       focusCards viewing do
         setExplorationDeck rest
         chooseOneM iid $ campaignI18n do
-          questionLabeled' "explorationDeck.placeOnBottom"
+          questionLabeled "explorationDeck.placeOnBottom"
           for_ cardPairs \(c, remaining) -> targeting c do
             putCardOnBottomOfDeck iid ExplorationDeck c
             unfocusCards
             focusCards remaining do
               chooseOneAtATimeM iid do
-                questionLabeled' "explorationDeck.placeOnTop"
+                questionLabeled "explorationDeck.placeOnTop"
                 targets remaining $ putCardOnTopOfDeck iid ExplorationDeck
       pure l
     _ -> MouthOfKnYanTheCavernsMaw <$> liftRunMessage msg attrs

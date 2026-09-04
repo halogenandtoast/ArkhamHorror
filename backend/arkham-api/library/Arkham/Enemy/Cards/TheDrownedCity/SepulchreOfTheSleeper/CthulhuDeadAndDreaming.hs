@@ -25,8 +25,8 @@ instance RunMessage CthulhuDeadAndDreaming where
       -- "Either ready him, or each investigator at Cthulhu's location takes 1
       -- direct damage." The investigator who evaded him makes the call.
       chooseOneM iid do
-        labeled' "readyCthulhu" $ ready attrs
-        labeled' "eachInvestigatorHereTakesDirectDamage" do
+        labeled "readyCthulhu" $ ready attrs
+        labeled "eachInvestigatorHereTakesDirectDamage" do
           selectEach (investigatorAt $ locationWithEnemy attrs) \iid' ->
             directDamage iid' (attrs.ability 1) 1
       pure e

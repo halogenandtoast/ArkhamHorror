@@ -53,7 +53,7 @@ instance RunMessage WitchHauntedWoodsAbandonedMine where
           $ checkResources
           $ InvestigatorAt (not_ $ locationWithInvestigator iid)
 
-      let handleAmount = chooseAmount' iid "witchHauntedWoodsAbandonedMine.resourcesToMove" "$resources" 0
+      let handleAmount = chooseAmount iid "witchHauntedWoodsAbandonedMine.resourcesToMove" "$resources" 0
       let makeTarget from to = ProxyTarget (toTarget attrs) (ProxyTarget (toTarget from) (toTarget to))
 
       chooseOneM iid do
@@ -61,10 +61,10 @@ instance RunMessage WitchHauntedWoodsAbandonedMine where
           targeting iid' do
             chooseOrRunOneM iid do
               when (resources > 0) do
-                labeled' "witchHauntedWoodsAbandonedMine.moveToTheirPool" do
+                labeled "witchHauntedWoodsAbandonedMine.moveToTheirPool" do
                   handleAmount (min 3 resources) (makeTarget iid iid')
               when (otherResources > 0) do
-                labeled' "witchHauntedWoodsAbandonedMine.moveToYourPool" do
+                labeled "witchHauntedWoodsAbandonedMine.moveToYourPool" do
                   handleAmount (min 3 otherResources) (makeTarget iid' iid)
 
       pure l

@@ -26,10 +26,10 @@ instance RunMessage ColdVacuum where
       chooseOneM iid $ withI18n do
         when hasAssets
           $ countVar 1
-          $ labeled' "discardAssets"
+          $ labeled "discardAssets"
           $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
         countVar 3
-          $ labeled' "discardCardsFromHand"
+          $ labeled "discardCardsFromHand"
           $ discardFromHand iid attrs DiscardChoose 3
       pure t
     _ -> ColdVacuum <$> liftRunMessage msg attrs

@@ -32,8 +32,8 @@ instance RunMessage DevilFriendOrFoe2 where
       for_ enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 2) 2
       getConcealed (ForExpose $ toSource iid) iid >>= traverse_ \concealed -> do
         chooseOneM iid $ cardI18n $ scope "devilFriendOrFoe2" do
-          labeled' "damageConcealed" $ doFlip iid (attrs.ability 2) concealed
-          labeled' "doNotDamageConcealed" nothing
+          labeled "damageConcealed" $ doFlip iid (attrs.ability 2) concealed
+          labeled "doNotDamageConcealed" nothing
 
       investigators <- select $ colocatedWith iid
       for_ investigators \iid' -> do

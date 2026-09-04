@@ -59,8 +59,8 @@ instance RunMessage CentralChamber where
       mMother <- selectOne $ enemyIs Enemies.mother
       chooseOneM iid do
         unless (null connecting) do
-          labeled' "moveToConnecting" $ chooseTargetM iid connecting $ moveTo (attrs.ability 1) iid
+          labeled "moveToConnecting" $ chooseTargetM iid connecting $ moveTo (attrs.ability 1) iid
         for_ mMother \mother ->
-          labeled' "motherAttacks" $ initiateEnemyAttack mother (attrs.ability 1) iid
+          labeled "motherAttacks" $ initiateEnemyAttack mother (attrs.ability 1) iid
       pure l
     _ -> CentralChamber <$> liftRunMessage msg attrs

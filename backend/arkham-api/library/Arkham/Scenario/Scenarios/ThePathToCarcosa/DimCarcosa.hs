@@ -135,8 +135,8 @@ setupDimCarcosa attrs = do
       GT -> doStep 2 Setup
       LT -> doStep 3 Setup
       EQ -> leadChooseOneM do
-        labeled' "useV2" $ doStep 2 Setup
-        labeled' "useV3" $ doStep 3 Setup
+        labeled "useV2" $ doStep 2 Setup
+        labeled "useV3" $ doStep 3 Setup
 
   shoresOfHali <- place Locations.shoresOfHali
   darkSpires <- place Locations.darkSpires
@@ -222,9 +222,9 @@ instance RunMessage DimCarcosa where
       setChaosTokens standaloneChaosTokens
 
       leadChooseOneM do
-        popScope $ labeled' "conviction" $ markConvictionN 8
-        popScope $ labeled' "doubt" $ markDoubtN 8
-        unscoped $ labeled' "neither" nothing
+        popScope $ labeled "conviction" $ markConvictionN 8
+        popScope $ labeled "doubt" $ markDoubtN 8
+        unscoped $ labeled "neither" nothing
 
       pathOpened <- sample2 YouOpenedThePathBelow YouOpenedThePathAbove
       record pathOpened

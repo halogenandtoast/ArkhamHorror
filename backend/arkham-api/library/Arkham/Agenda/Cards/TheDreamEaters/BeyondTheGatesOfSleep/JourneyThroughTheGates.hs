@@ -47,9 +47,9 @@ instance RunMessage JourneyThroughTheGates where
           eachInvestigator \iid -> do
             sid <- getRandom
             chooseOneM iid $ scenarioI18n $ scope "journeyThroughTheGates" do
-              labeled' "testWillpower"
+              labeled "testWillpower"
                 $ beginSkillTest sid iid attrs iid #willpower (Fixed 3)
-              labeled' "doNotTest" do
+              labeled "doNotTest" do
                 sufferPhysicalTrauma iid 1
                 investigatorDefeated attrs iid
       pure a

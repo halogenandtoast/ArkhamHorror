@@ -186,11 +186,11 @@ instance RunMessage BeforeTheBlackThrone where
       pathWindsBeforeYouCount <- getRecordCount ThePathWindsBeforeYou
       when (isReturnTo && pathWindsBeforeYouCount >= 2) do
         leadChooseOneM do
-          scenarioI18n $ questionLabeled' "nightgauntSteed"
-          withI18n $ labeled' "yes" do
+          scenarioI18n $ questionLabeled "nightgauntSteed"
+          withI18n $ labeled "yes" do
             removeTokens ScenarioSource ScenarioTarget #resource 2
             eachInvestigator $ (`forInvestigator` DoStep 1 EndSetup)
-          withI18n $ labeled' "no" nothing
+          withI18n $ labeled "no" nothing
         doStep 1 EndSetup
       BeforeTheBlackThrone <$> liftRunMessage msg attrs
     ForInvestigator iid (DoStep 1 EndSetup) -> do
@@ -247,10 +247,10 @@ instance RunMessage BeforeTheBlackThrone where
           endOfScenario
         Resolution 4 -> do
           readInvestigatorDefeat
-          storyWithChooseOneM' (compose.resolution $ scope "resolution4" $ setTitle "title" >> p "body")
+          storyWithChooseOneM (compose.resolution $ scope "resolution4" $ setTitle "title" >> p "body")
             $ scenarioI18n do
-              labeled' "itMustBeDone" $ push R5
-              labeled' "iRefuse" $ push $ ScenarioResolution (Resolution 11) -- actually 1
+              labeled "itMustBeDone" $ push R5
+              labeled "iRefuse" $ push $ ScenarioResolution (Resolution 11) -- actually 1
         Resolution 5 -> do
           readInvestigatorDefeat
           resolutionWithXp "resolution5" $ allGainXpWithBonus' attrs $ toBonus "resolution5" 10

@@ -33,7 +33,7 @@ instance RunMessage PsychicRebuke where
           lead <- getLead
           investigators <- select UneliminatedInvestigator
           chooseOrRunOneM lead $ scenarioI18n do
-            questionLabeled' "chooseInvestigatorToTest"
+            questionLabeled "chooseInvestigatorToTest"
             targets investigators \iid' -> do
               sid <- getRandom
               onFailedByEffect sid AnyValue attrs iid' $ doStep 1 msg
@@ -48,7 +48,7 @@ instance RunMessage PsychicRebuke where
       getCthulhuLocation >>= traverse_ \lid -> do
         lead <- getLead
         chooseOrRunOneM lead $ scenarioI18n do
-          questionLabeled' "chooseCthulhuEnemyToReturn"
+          questionLabeled "chooseCthulhuEnemyToReturn"
           for_ banished \card ->
             for_
               (find (\(front, enraged) -> card `cardMatch` mapOneOf cardIs [front, enraged]) cthulhuFacets)

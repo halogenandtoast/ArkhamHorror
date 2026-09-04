@@ -34,8 +34,8 @@ instance RunMessage TowerOfLondon where
   runMessage msg l@(TowerOfLondon attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOrRunOneM iid do
-        withI18n $ countVar 2 $ labeled' "loseResources" $ loseResources iid (attrs.ability 1) 2
-        scenarioI18n $ labeled' "towerOfLondon.attack" $ doStep 1 msg
+        withI18n $ countVar 2 $ labeled "loseResources" $ loseResources iid (attrs.ability 1) 2
+        scenarioI18n $ labeled "towerOfLondon.attack" $ doStep 1 msg
       pure l
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       inShadows <- select $ EnemyWithPlacement InTheShadows

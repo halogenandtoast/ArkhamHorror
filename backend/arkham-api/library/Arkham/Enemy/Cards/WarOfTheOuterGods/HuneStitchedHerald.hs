@@ -23,9 +23,9 @@ instance RunMessage HuneStitchedHerald where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       around <- getCluesAroundHubDimension
       scenarioI18n $ blueDecide iid do
-        labeled' "placeDoomOnTheBlueAgenda" $ placeDoomOnFactionAgenda (attrs.ability 1) BlueFaction 1
+        labeled "placeDoomOnTheBlueAgenda" $ placeDoomOnFactionAgenda (attrs.ability 1) BlueFaction 1
         when (around > 0) do
-          labeled' "removeCluesFromAroundHubDimension" $ removeCluesFromAroundHubDimension 2
-        labeled' "huneStitchedHeraldAttacksYou" $ initiateEnemyAttack attrs (attrs.ability 1) iid
+          labeled "removeCluesFromAroundHubDimension" $ removeCluesFromAroundHubDimension 2
+        labeled "huneStitchedHeraldAttacksYou" $ initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     _ -> HuneStitchedHerald <$> liftRunMessage msg attrs

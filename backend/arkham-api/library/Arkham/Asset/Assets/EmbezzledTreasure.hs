@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.EmbezzledTreasure (embezzledTreasure) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (InvestigatorEliminated)
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorName, InvestigatorResources))
 import Arkham.Matcher
 import Arkham.Modifier
@@ -34,15 +35,16 @@ instance RunMessage EmbezzledTreasure where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       resources <- field InvestigatorResources iid
       if resources > 1 || attrs.use Resource == 9
-        then chooseAmount iid "Resources" "Resources" 1 2 attrs
+        then withI18n $ chooseAmount iid "resources" "$resources" 1 2 attrs
         else moveTokens (attrs.ability 1) (ResourceSource iid) attrs #resource 1
       pure a
-    ResolveAmounts iid (getChoiceAmount "Resources" -> n) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "$resources" -> n) (isTarget attrs -> True) -> do
       moveTokens (attrs.ability 1) (ResourceSource iid) attrs #resource n
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let total = attrs.use Resource `div` 2
-      investigators <- select $ affectsOthersKnown iid $ IncludeEliminated Anyone <> not_ KilledInvestigator
+      investigators <-
+        select $ affectsOthersKnown iid $ IncludeEliminated Anyone <> not_ KilledInvestigator
       named <- forToSnd investigators \i -> toTitle <$> field InvestigatorName i
       chooseAmounts
         iid

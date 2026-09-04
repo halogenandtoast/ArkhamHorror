@@ -42,8 +42,8 @@ instance RunMessage LodgeJailor where
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       chooseOrRunOneM iid $ withI18n do
         when (attrs.token #doom > 0) do
-          countVar 1 $ labeled' "removeDoom" $ removeDoom (attrs.ability 2) attrs 1
+          countVar 1 $ labeled "removeDoom" $ removeDoom (attrs.ability 2) attrs 1
         for_ (setToList $ enemyKeys attrs) \k ->
-          withVar "name" (String $ keyName k) $ labeled' "takeControlOfSpecificKey" $ placeKey iid k
+          withVar "name" (String $ keyName k) $ labeled "takeControlOfSpecificKey" $ placeKey iid k
       pure e
     _ -> LodgeJailor <$> liftRunMessage msg attrs

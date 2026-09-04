@@ -157,7 +157,7 @@ instance RunMessage TheLairOfDagon where
           investigators <- getInvestigators
           thomasDawson <- createAsset =<< genCard Assets.thomasDawsonSoldierInANewWar
           leadChooseOneM do
-            questionLabeled' "takeControlOfThomasDawson"
+            questionLabeled "takeControlOfThomasDawson"
             questionLabeledCard Assets.thomasDawsonSoldierInANewWar
             portraits investigators (`takeControlOfAsset` thomasDawson)
         else setAside [Assets.thomasDawsonSoldierInANewWar]

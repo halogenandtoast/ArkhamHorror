@@ -31,8 +31,8 @@ instance RunMessage CrystalRemainsTheChild where
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 ws _ -> do
       cancelWindowBatch ws

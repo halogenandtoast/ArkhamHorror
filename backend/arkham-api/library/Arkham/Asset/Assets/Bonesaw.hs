@@ -39,10 +39,10 @@ instance RunMessage Bonesaw where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       withSkillTest \sid ->
         chooseOneM iid do
-          (cardI18n $ labeled' "bonesaw.take1DamageToDo1Damage") do
+          (cardI18n $ labeled "bonesaw.take1DamageToDo1Damage") do
             assignDamage iid (attrs.ability 1) 1
             skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
-          (cardI18n $ labeled' "bonesaw.doNotTakeDamage") nothing
+          (cardI18n $ labeled "bonesaw.doNotTakeDamage") nothing
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       investigators <- select $ HealableInvestigator (attrs.ability 2) #damage $ colocatedWith iid

@@ -28,10 +28,10 @@ instance RunMessage TheSilverMoth where
   runMessage msg t@(TheSilverMoth attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOrRunOneM iid do
-        (cardI18n $ labeled' "theSilverMoth.putTheSilverMothIntoPlayInYourThreatArea") do
+        (cardI18n $ labeled "theSilverMoth.putTheSilverMothIntoPlayInYourThreatArea") do
           place attrs (InThreatArea iid)
         whenM (lift $ can.shuffle.deck iid) do
-          (cardI18n $ labeled' "theSilverMoth.take1HorrorAndShuffleItIntoYourDeck") do
+          (cardI18n $ labeled "theSilverMoth.take1HorrorAndShuffleItIntoYourDeck") do
             assignHorror iid attrs 1
             shuffleIntoDeck iid attrs
       pure t

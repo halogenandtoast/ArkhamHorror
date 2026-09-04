@@ -482,8 +482,8 @@ instance RunMessage HemlockHouse where
         Sigma -> do
           entry "argument1"
           chooseOneM iid do
-            labeled' "judithRight" $ scenarioSpecific "codex" (iid, source, SigmaJudithRight)
-            labeled' "williamRight" $ scenarioSpecific "codex" (iid, source, SigmaWilliamRight)
+            labeled "judithRight" $ scenarioSpecific "codex" (iid, source, SigmaJudithRight)
+            labeled "williamRight" $ scenarioSpecific "codex" (iid, source, SigmaWilliamRight)
         SigmaJudithRight -> do
           entry "argument2"
           william <- selectJust $ assetIs Assets.williamHemlockAspiringPoet

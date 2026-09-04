@@ -26,12 +26,12 @@ instance RunMessage UnstableVortex where
       tearThroughSpace <- select $ locationIs Cards.tearThroughSpace
       unless (null tearThroughSpace) do
         chooseOneM iid do
-          scenarioI18n $ questionLabeled' "unstableVortex.chooseTearThroughSpace"
+          scenarioI18n $ questionLabeled "unstableVortex.chooseTearThroughSpace"
           targets tearThroughSpace $ toDiscardBy iid attrs
       pure l
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
-        withI18n $ labeled' "drawTopCardOfEncounterDeck" $ drawEncounterCard iid (attrs.ability 1)
-        scenarioI18n $ labeled' "unstableVortex.shuffle" $ shuffleBackIntoEncounterDeck attrs
+        withI18n $ labeled "drawTopCardOfEncounterDeck" $ drawEncounterCard iid (attrs.ability 1)
+        scenarioI18n $ labeled "unstableVortex.shuffle" $ shuffleBackIntoEncounterDeck attrs
       pure l
     _ -> UnstableVortex <$> liftRunMessage msg attrs

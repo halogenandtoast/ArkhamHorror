@@ -30,7 +30,7 @@ instance RunMessage LabyrinthineHallsCorpseFilledPath where
         investigators <- select $ affectsOthersKnown iid $ NotInvestigator (InvestigatorWithId iid)
         for_ (nonEmpty investigators) \others ->
           chooseOrRunOneM iid $ scope "labyrinthineHalls" do
-            questionLabeled' "chooseGainResources"
+            questionLabeled "chooseGainResources"
             targets (toList others) \iid' -> gainResources iid' (attrs.ability 1) 4
       pure l
     _ -> LabyrinthineHallsCorpseFilledPath <$> liftRunMessage msg attrs

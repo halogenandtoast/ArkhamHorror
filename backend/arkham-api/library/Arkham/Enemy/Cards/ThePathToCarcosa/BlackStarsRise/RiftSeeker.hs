@@ -30,9 +30,9 @@ instance RunMessage RiftSeeker where
     UseThisAbility iid (isSource attrs -> True) 1 -> scenarioI18n do
       agendas <- selectMap AgendaTarget AnyAgenda
       chooseOneM iid do
-        labeled' "riftSeeker.takeDamageAndHorror" do
+        labeled "riftSeeker.takeDamageAndHorror" do
           assignDamageAndHorror iid (attrs.ability 1) 1 1
-        labeled' "riftSeeker.doom" do
+        labeled "riftSeeker.doom" do
           for_ agendas (placeDoomOn (attrs.ability 1) 1)
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do

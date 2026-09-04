@@ -195,9 +195,9 @@ setupUnionAndDisillusion _attrs = do
 instance RunMessage UnionAndDisillusion where
   runMessage msg s@(UnionAndDisillusion attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "title" >> p "body") do
-        labeled' "complete" $ record TheInvestigatorsSidedWithTheLodge
-        labeled' "stop" $ record TheInvestigatorsSidedWithTheCoven
+      storyWithChooseOneM (setTitle "title" >> p "body") do
+        labeled "complete" $ record TheInvestigatorsSidedWithTheLodge
+        labeled "stop" $ record TheInvestigatorsSidedWithTheCoven
 
       doStep 2 msg
       pure s
@@ -239,9 +239,9 @@ instance RunMessage UnionAndDisillusion where
           inductedIntoTheInnerCircle <- getHasRecord TheInvestigatorsWereInductedIntoTheInnerCircle
           deceivingTheLodge <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
 
-          storyWithChooseOneM' (compose.resolution $ setTitle "resolution1.title" >> p "resolution1.body") $ unscoped do
+          storyWithChooseOneM (compose.resolution $ setTitle "resolution1.title" >> p "resolution1.body") $ unscoped do
             labeledValidate' (inductedIntoTheInnerCircle && not deceivingTheLodge) "yes" $ push R2
-            labeled' "no" $ push R3
+            labeled "no" $ push R3
         Resolution 2 -> do
           resolution "resolution2"
           record TheTrueWorkOfTheSilverTwilightLodgeHasBegun
@@ -256,11 +256,11 @@ instance RunMessage UnionAndDisillusion where
             then do
               erynnJoinedTheInvestigators <- getHasRecord ErynnJoinedTheInvestigators
               hasBlackBook <- isJust <$> getOwner Assets.theBlackBook
-              storyWithChooseOneM'
+              storyWithChooseOneM
                 (compose.resolution $ setTitle "returnToResolution4.title" >> p "returnToResolution4.body")
                 do
                   labeledValidate' (erynnJoinedTheInvestigators && hasBlackBook) "accept" $ push R9
-                  labeled' "flee" $ push R10
+                  labeled "flee" $ push R10
             else do
               resolution "resolution4"
               record AnetteMasonIsPossessedByEvil

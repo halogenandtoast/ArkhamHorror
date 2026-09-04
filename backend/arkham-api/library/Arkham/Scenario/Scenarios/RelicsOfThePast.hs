@@ -128,10 +128,10 @@ instance RunMessage RelicsOfThePast where
       let pickedSupplies = toResultDefault @(Map InvestigatorId [Supply]) mempty attrs.meta
       let available = filter (`notElem` concat (toList pickedSupplies)) scenarioSupplies
       chooseOneM iid $ scenarioI18n do
-        questionLabeled' "supplies.question"
-        unscoped $ labeled' "skip" nothing
+        questionLabeled "supplies.question"
+        unscoped $ labeled "skip" nothing
         for_ available \supply ->
-          labeled' (supplyKey supply)
+          labeled (supplyKey supply)
             $ push
             $ ForInvestigator iid (ScenarioSpecific "pickedSupply" (toJSON supply))
       pure s
@@ -306,16 +306,16 @@ instance RunMessage RelicsOfThePast where
             hasOriginalBullwhip <- hasCampaignCard monterey Assets.trustyBullwhip
             hasAdvancedSecrets <- hasCampaignCard monterey Treacheries.buriedSecretsAdvanced
             chooseOneM monterey $ scenarioI18n do
-              questionLabeled' "swap.question"
+              questionLabeled "swap.question"
               when hasOriginalBullwhip do
-                labeled' "swap.upgradeTrustyBullwhip" do
+                labeled "swap.upgradeTrustyBullwhip" do
                   removeCampaignCardFromDeck monterey Assets.trustyBullwhip
                   addCampaignCardToDeck monterey DoNotShuffleIn Assets.trustyBullwhipAdvanced
               when hasAdvancedSecrets do
-                labeled' "swap.downgradeBuriedSecrets" do
+                labeled "swap.downgradeBuriedSecrets" do
                   removeCampaignCardFromDeck monterey Treacheries.buriedSecretsAdvanced
                   addCampaignCardToDeck monterey DoNotShuffleIn Treacheries.buriedSecrets
-              labeled' "swap.doNotSwap" nothing
+              labeled "swap.doNotSwap" nothing
 
           returnSupplies
           endOfScenario
@@ -327,13 +327,13 @@ instance RunMessage RelicsOfThePast where
             hasAdvancedBullwhip <- hasCampaignCard monterey Assets.trustyBullwhipAdvanced
             when (hasOriginalSecrets || hasAdvancedBullwhip) do
               chooseOrRunOneM monterey $ scenarioI18n do
-                questionLabeled' "swap.questionMust"
+                questionLabeled "swap.questionMust"
                 when hasOriginalSecrets do
-                  labeled' "swap.upgradeBuriedSecrets" do
+                  labeled "swap.upgradeBuriedSecrets" do
                     removeCampaignCardFromDeck monterey Treacheries.buriedSecrets
                     addCampaignCardToDeck monterey DoNotShuffleIn Treacheries.buriedSecretsAdvanced
                 when hasAdvancedBullwhip do
-                  labeled' "swap.downgradeTrustyBullwhip" do
+                  labeled "swap.downgradeTrustyBullwhip" do
                     removeCampaignCardFromDeck monterey Assets.trustyBullwhipAdvanced
                     addCampaignCardToDeck monterey DoNotShuffleIn Assets.trustyBullwhip
 

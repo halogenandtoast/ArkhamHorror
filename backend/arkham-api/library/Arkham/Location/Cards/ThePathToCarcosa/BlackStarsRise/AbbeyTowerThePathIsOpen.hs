@@ -33,7 +33,7 @@ instance RunMessage AbbeyTowerThePathIsOpen where
   runMessage msg l@(AbbeyTowerThePathIsOpen attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> withI18n do
       maxDiscardAmount <- selectCount $ inHandOf NotForPlay iid <> basic NonWeakness
-      countVar 3 $ chooseAmount' iid "discardCardsFromHandUpTo" "$cards" 0 (min 3 maxDiscardAmount) attrs
+      countVar 3 $ chooseAmount iid "discardCardsFromHandUpTo" "$cards" 0 (min 3 maxDiscardAmount) attrs
       pure l
     ResolveAmounts iid (getChoiceAmount "$cards" -> discardAmount) (isTarget attrs -> True) -> do
       repeated discardAmount $ chooseAndDiscardCard iid (attrs.ability 1)

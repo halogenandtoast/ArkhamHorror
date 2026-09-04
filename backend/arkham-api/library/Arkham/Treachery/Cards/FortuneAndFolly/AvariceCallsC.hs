@@ -18,8 +18,8 @@ instance RunMessage AvariceCallsC where
     Revelation iid (isSource attrs -> True) -> do
       n <- getAlarmLevel iid
       chooseOneM iid $ scenarioI18n do
-        unscoped $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
-        labeled' "avariceCalls.test" do
+        unscoped $ countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
+        labeled "avariceCalls.test" do
           sid <- getRandom
           revelationSkillTest sid iid attrs #willpower (Fixed $ (n + 1) `div` 2)
       pure t

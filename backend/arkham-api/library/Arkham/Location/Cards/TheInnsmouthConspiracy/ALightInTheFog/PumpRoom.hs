@@ -29,12 +29,12 @@ instance RunMessage PumpRoom where
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n -> do
       floodedLocations <- select FloodedLocation
       chooseOneM iid $ scenarioI18n $ scope "pumpRoom" do
-        questionLabeled' "decreaseFlood"
+        questionLabeled "decreaseFlood"
         targets floodedLocations \lid -> do
           decreaseThisFloodLevel lid
           floodable <- select $ CanHaveFloodLevelIncreased <> not_ (be lid)
           chooseOneM iid $ scenarioI18n $ scope "pumpRoom" do
-            questionLabeled' "increaseFlood"
+            questionLabeled "increaseFlood"
             when (n >= 2) $ withI18n skip_
             targets (deleteFirst lid floodable) increaseThisFloodLevel
       pure l

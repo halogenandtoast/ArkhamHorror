@@ -170,12 +170,12 @@ instance RunMessage TheSecretName where
       let read k = setTitle "title" >> p k
       anyMystic <- selectAny $ InvestigatorWithClass Mystic
       when membersOfTheLodge do
-        storyWithChooseOneM' (read "intro1") do
-          labeled' "tellTheLodgeOfTheWitches" do
+        storyWithChooseOneM (read "intro1") do
+          labeled "tellTheLodgeOfTheWitches" do
             flavor $ read "intro2"
             record TheInvestigatorsToldTheLodgeAboutTheCoven
             addChaosToken Cultist
-          labeled' "lie" do
+          labeled "lie" do
             flavor do
               setTitle "title"
               p "intro3"
@@ -238,7 +238,7 @@ instance RunMessage TheSecretName where
         nahabDefeated = getMetaKeyDefault "nahabDefeated" False attrs
         nahabBonus = if nahabDefeated then toBonus "nahabDefeated" 1 else NoBonus
         addTheBlackBook = chooseOneM lead do
-          labeled' "doNotAddTheBlackBook" nothing
+          labeled "doNotAddTheBlackBook" nothing
           targets iids \iid -> do
             addCampaignCardToDeck iid DoNotShuffleIn Assets.theBlackBook
             addChaosToken Skull

@@ -10,7 +10,7 @@ import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheDreamEaters.WakingNightmare qualified as Enemies
 import Arkham.Helpers.Agenda
-import Arkham.Helpers.FlavorText (buildFlavor, flavor, li, setup, ul)
+import Arkham.Helpers.FlavorText (flavor, li, setup, ul)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.CardDefs.TheDreamEaters.WakingNightmare qualified as Locations
@@ -62,11 +62,11 @@ instance RunMessage WakingNightmare where
       setChaosTokens $ initChaosBag TheWebOfDreams attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      storyWithChooseOneM (buildFlavor $ scenarioFlavorText "intro1") do
-        labeled' "intro.bringDoctor" do
+      storyWithChooseOneM (scenarioFlavorText "intro1") do
+        labeled "intro.bringDoctor" do
           flavor $ scenarioFlavorText "intro2"
           record DrMaheswaranJoinedTheInvestigation
-        labeled' "intro.leaveDoctor" do
+        labeled "intro.leaveDoctor" do
           flavor $ scenarioFlavorText "intro3"
           record DrMaheswaranStayedWithHerPatients
       pure s

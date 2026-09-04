@@ -114,9 +114,9 @@ instance RunMessage TheTwistedHollow where
       if standalone
         then setupStandaloneDayAndTime (Just (Day1, Night))
         else scope "intro" do
-          storyWithChooseOneM' (setTitle "title" >> p "intro1") do
-            labeled' "tellTheTruth" $ doStep 2 PreScenarioSetup
-            labeled' "lie" $ doStep 3 PreScenarioSetup
+          storyWithChooseOneM (setTitle "title" >> p "intro1") do
+            labeled "tellTheTruth" $ doStep 2 PreScenarioSetup
+            labeled "lie" $ doStep 3 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       record MotherRachelShowedTheWay
@@ -177,7 +177,7 @@ instance RunMessage TheTwistedHollow where
       leadChooseOneM do
         unscoped
           $ nameVar lanternVersion
-          $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+          $ questionLabeled "chooseInvestigatorToTakeControlOf"
         questionLabeledCard lanternVersion
         portraits investigators (`takeControlOfAsset` lantern)
 
@@ -244,7 +244,7 @@ instance RunMessage TheTwistedHollow where
       leadChooseOneM do
         unscoped
           $ nameVar Assets.drRosaMarquezBestInHerField
-          $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+          $ questionLabeled "chooseInvestigatorToTakeControlOf"
         questionLabeledCard Assets.drRosaMarquezBestInHerField
         portraits investigators (`takeControlOfAsset` drRosaMarquez)
 
@@ -292,7 +292,7 @@ instance RunMessage TheTwistedHollow where
           flavor $ setTitle "title" >> p.green "body"
           locations <- select UnrevealedLocation
           chooseOneM iid do
-            labeled' "doNotRevealLocation" nothing
+            labeled "doNotRevealLocation" nothing
             targets locations $ handleTarget iid ScenarioSource
         Omega -> scope "bertieMusgrave" do
           codexFinished Omega
@@ -325,10 +325,10 @@ instance RunMessage TheTwistedHollow where
             (Nothing, Nothing) -> do
               record MotherRachelIntervened
               investigatorStoryWithChooseOneM' iid (setTitle "title" >> p.green "theBear2") do
-                labeled' "physical" do
+                labeled "physical" do
                   sufferPhysicalTrauma iid 1
                   directDamage iid ScenarioSource 1
-                labeled' "mental" do
+                labeled "mental" do
                   sufferMentalTrauma iid 1
                   directHorror iid ScenarioSource 1
           flavor $ setTitle "title" >> p.green "theBear3"
@@ -343,7 +343,7 @@ instance RunMessage TheTwistedHollow where
             chooseOneM iid do
               unscoped
                 $ nameVar def
-                $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+                $ questionLabeled "chooseInvestigatorToTakeControlOf"
               questionLabeledCard def
               portraits investigators (`takeControlOfAsset` lantern)
 

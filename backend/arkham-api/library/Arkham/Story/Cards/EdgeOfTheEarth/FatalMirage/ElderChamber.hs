@@ -23,7 +23,7 @@ instance RunMessage ElderChamber where
         for_ mClutteredDormitory \loc ->
           withI18n
             $ keyVar "name" "Cluttered Dormitory"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
       pure s
     _ -> ElderChamber <$> liftRunMessage msg attrs

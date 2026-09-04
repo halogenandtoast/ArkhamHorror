@@ -41,7 +41,7 @@ instance RunMessage DevilsHopYard_252 where
       pure l
     HandleTargetChoice _ (isAbilitySource attrs 1 -> True) (InvestigatorTarget iid) -> do
       total <- iid.clues
-      scenarioI18n $ chooseAmount' iid "cluesToSpend" "$clues" 0 (min 2 total) attrs
+      scenarioI18n $ chooseAmount iid "cluesToSpend" "$clues" 0 (min 2 total) attrs
       pure l
     ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       abominations <- locationEnemiesWithTrait attrs Abomination

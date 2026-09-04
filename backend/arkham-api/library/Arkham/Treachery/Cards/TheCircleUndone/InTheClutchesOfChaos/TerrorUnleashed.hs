@@ -26,7 +26,7 @@ instance RunMessage TerrorUnleashed where
         let x = doom + max 1 breaches
         when (breaches == 0) $ placeBreaches location 1
         repeated x $ chooseOneM iid $ withI18n do
-          countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
-          countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+          countVar 1 $ labeled "takeDamage" $ assignDamage iid attrs 1
+          countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
       pure t
     _ -> TerrorUnleashed <$> liftRunMessage msg attrs

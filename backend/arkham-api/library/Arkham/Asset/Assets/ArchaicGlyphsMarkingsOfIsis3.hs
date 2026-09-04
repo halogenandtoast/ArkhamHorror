@@ -34,7 +34,7 @@ instance RunMessage ArchaicGlyphsMarkingsOfIsis3 where
           $ filterBy [(`cardMatch` AssetType), isJust . cdCost . toCardDef, (<= n) . getCost]
 
       unless (null assets) do
-        cardI18n $ scope "archaicGlyphsMarkingsOfIsis3" $ chooseUpToNM' iid 1 "doNotPlayAsset" do
+        cardI18n $ scope "archaicGlyphsMarkingsOfIsis3" $ chooseUpToNM iid 1 "doNotPlayAsset" do
           targets assets \card -> putCardIntoPlay iid card
       push $ Successful (#investigate, toTarget lid) iid source (toTarget lid) n
       pure a

@@ -51,6 +51,6 @@ instance RunMessage HallOfLoyalty where
         n <- min 4 <$> getRemainingBlessTokens
         when (n > 0) do
           let key = if n == 4 then "addBlessTokens" else "addBlessTokensPartial"
-          numberVar "actual" n $ labeled' key $ repeated n $ addChaosToken #bless
+          numberVar "actual" n $ labeled key $ repeated n $ addChaosToken #bless
       pure l
     _ -> HallOfLoyalty <$> liftRunMessage msg attrs

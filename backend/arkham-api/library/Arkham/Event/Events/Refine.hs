@@ -1,17 +1,17 @@
 module Arkham.Event.Events.Refine (refine) where
 
 import Arkham.Card
-import Arkham.Message.Lifted.Choose
 import Arkham.Card.PlayerCard
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Customization
 import Arkham.Homebrew.Defs (allTraits)
+import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Trait (displayTrait)
 import Arkham.Name hiding (labeled)
 import Arkham.PlayerCard
+import Arkham.Trait (displayTrait)
 import Data.Function (on)
 import Data.List (nubBy)
 
@@ -40,7 +40,7 @@ instance RunMessage Refine where
                   (keys customizations)
           chooseOneM iid do
             for_ availableCustomizations \customization -> do
-              labeled (tshow customization) do
+              (withI18n $ keyVar "name" (tshow customization) $ labeled "name") do
                 forTarget attrs $ IncreaseCustomization iid card.cardCode customization []
         _ -> pure ()
       pure e

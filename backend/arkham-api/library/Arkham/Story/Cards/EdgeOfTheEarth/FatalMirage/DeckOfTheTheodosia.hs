@@ -25,14 +25,14 @@ instance RunMessage DeckOfTheTheodosia where
         for_ mCoastalWaters \loc ->
           withI18n
             $ keyVar "name" "Coastal Waters"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
         for_ mHedgeMaze \loc ->
-          withI18n $ keyVar "name" "Hedge Maze" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+          withI18n $ keyVar "name" "Hedge Maze" $ labeled "putSetAsideLocationIntoPlay" $ placeLocation_ loc
         for_ mStandingStones \loc ->
           withI18n
             $ keyVar "name" "Standing Stones"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
       pure s
     _ -> DeckOfTheTheodosia <$> liftRunMessage msg attrs

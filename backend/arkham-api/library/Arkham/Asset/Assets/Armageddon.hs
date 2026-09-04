@@ -66,10 +66,10 @@ instance RunMessage ArmageddonEffect where
                 then do
                   chooseOrRunOneM iid $ cardI18n $ scope "armageddon" do
                     when stillInPlay do
-                      labeled' "placeCharge" do
+                      labeled "placeCharge" do
                         push $ AddUses attrs.source assetId Charge 1
                     when (notNull enemies || notNull concealed) do
-                      labeled' "dealDamageToEnemy" do
+                      labeled "dealDamageToEnemy" do
                         chooseDamageEnemy iid attrs.source (locationWithInvestigator iid) AnyEnemy 1
                   pure True
                 else pure False

@@ -53,9 +53,9 @@ instance RunMessage Doppelganger1 where
               canMove <- matches iid $ InvestigatorCanMoveTo (attrs.ability 1) (LocationWithId lid)
               chooseOneM iid $ cardI18n $ scope "doppelganger1" do
                 when canMove do
-                  labeled' "moveToLocationOfDoppelganger" $ moveTo (attrs.ability 1) iid lid
+                  labeled "moveToLocationOfDoppelganger" $ moveTo (attrs.ability 1) iid lid
                 when canEvade do
-                  labeled' "evadeEnemy" do
+                  labeled "evadeEnemy" do
                     sid <- getRandom
                     chooseEvadeEnemyEdit sid iid (attrs.ability 1) \c ->
                       c {chooseEvadeEnemyMatcher = EnemyWithId eid, chooseEvadeOverride = True}

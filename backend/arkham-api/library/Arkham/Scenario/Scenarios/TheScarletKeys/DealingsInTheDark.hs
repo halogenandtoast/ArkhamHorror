@@ -69,12 +69,12 @@ instance RunMessage DealingsInTheDark where
     PreScenarioSetup -> scope "intro" do
       skeys <- getCampaignStoryCards
       let anyKeys = toList skeys & any (any \card -> card.kind == KeyType)
-      storyWithChooseOneM'
+      storyWithChooseOneM
         (setTitle "title" >> p "intro1Part1" >> p.validate anyKeys "key" >> p "intro1Part2")
         do
-          labeled' "giveToEce" $ doStep 2 PreScenarioSetup
-          labeled' "giveToEceLying" $ doStep 3 PreScenarioSetup
-          labeled' "takeForOurselves" $ doStep 4 PreScenarioSetup
+          labeled "giveToEce" $ doStep 2 PreScenarioSetup
+          labeled "giveToEceLying" $ doStep 3 PreScenarioSetup
+          labeled "takeForOurselves" $ doStep 4 PreScenarioSetup
       setupKeys
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do

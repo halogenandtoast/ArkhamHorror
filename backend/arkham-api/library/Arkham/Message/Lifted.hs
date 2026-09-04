@@ -1067,43 +1067,6 @@ chooseAmountsLabeled iid title label total choiceMap target = do
   player <- getPlayer iid
   Msg.pushM $ Msg.chooseAmountsLabeled player title label total choiceMap target
 
-chooseAmount
-  :: (Targetable target, ReverseQueue m)
-  => InvestigatorId
-  -> Text
-  -> Text
-  -> Int
-  -> Int
-  -> target
-  -> m ()
-chooseAmount iid label choiceLabel minVal maxVal target = do
-  unless (maxVal == 0) do
-    player <- getPlayer iid
-    Msg.pushM
-      $ Msg.chooseAmounts player label (MaxAmountTarget maxVal) [(choiceLabel, (minVal, maxVal))] target
-
--- Don't use this yet
-chooseAmountLabeled
-  :: (Targetable target, ReverseQueue m)
-  => InvestigatorId
-  -> Text
-  -> Text
-  -> Text
-  -> Int
-  -> Int
-  -> target
-  -> m ()
-chooseAmountLabeled iid title label choiceLabel minVal maxVal target = do
-  player <- getPlayer iid
-  Msg.pushM
-    $ Msg.chooseAmountsLabeled
-      player
-      title
-      label
-      (MaxAmountTarget maxVal)
-      [(choiceLabel, (minVal, maxVal))]
-      target
-
 chooseAmountI18n
   :: (Targetable target, ReverseQueue m)
   => InvestigatorId
@@ -1113,9 +1076,9 @@ chooseAmountI18n
   -> Int
   -> target
   -> m ()
-chooseAmountI18n iid label choiceLabel minVal maxVal target = withI18n $ chooseAmount' iid label choiceLabel minVal maxVal target
+chooseAmountI18n iid label choiceLabel minVal maxVal target = withI18n $ chooseAmount iid label choiceLabel minVal maxVal target
 
-chooseAmount'
+chooseAmount
   :: (Targetable target, ReverseQueue m, HasI18n)
   => InvestigatorId
   -> Text
@@ -1124,7 +1087,7 @@ chooseAmount'
   -> Int
   -> target
   -> m ()
-chooseAmount' iid label choiceLabel minVal maxVal target = do
+chooseAmount iid label choiceLabel minVal maxVal target = do
   player <- getPlayer iid
   Msg.pushM
     $ Msg.chooseAmounts
@@ -1135,7 +1098,7 @@ chooseAmount' iid label choiceLabel minVal maxVal target = do
       target
 
 -- Don't use this yet
-chooseAmountLabeled'
+chooseAmountLabeled
   :: (Targetable target, ReverseQueue m, HasI18n)
   => InvestigatorId
   -> Text
@@ -1145,7 +1108,7 @@ chooseAmountLabeled'
   -> Int
   -> target
   -> m ()
-chooseAmountLabeled' iid title label choiceLabel minVal maxVal target = do
+chooseAmountLabeled iid title label choiceLabel minVal maxVal target = do
   player <- getPlayer iid
   Msg.pushM
     $ Msg.chooseAmountsLabeled

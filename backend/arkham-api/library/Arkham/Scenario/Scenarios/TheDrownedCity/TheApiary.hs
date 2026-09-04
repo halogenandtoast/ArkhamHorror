@@ -60,7 +60,7 @@ instance RunMessage TheApiary where
   runMessage msg s@(TheApiary attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      storyWithContinue' do
+      storyWithContinue do
         setTitle "title"
         p.basic "checkCampaignLog"
         ul do
@@ -99,7 +99,7 @@ instance RunMessage TheApiary where
 
       for_ withWalkInFaith \iid -> do
         canErase <- canEraseProgress iid Key.WalkInFaith
-        storyWithChooseOneM'
+        storyWithChooseOneM
           ( compose.green do
               h3 "walkInFaith.title"
               p "walkInFaith.instructions"
@@ -116,7 +116,7 @@ instance RunMessage TheApiary where
             labeledValidate' canErase "walkInFaith.doubts" do
               decrementRecordCountForInvestigator iid Key.WalkInFaith 1
               for_ investigators (walkInFaithDoubts attrs)
-            labeled' "walkInFaith.resolve" do
+            labeled "walkInFaith.resolve" do
               incrementRecordCountForInvestigator iid Key.WalkInFaith 2
               sufferMentalTrauma iid 1
               for_ investigators (walkInFaithResolve attrs)
@@ -212,8 +212,8 @@ instance RunMessage TheApiary where
     ForInvestigator iid Setup -> do
       artifacts <- getAvailableArtifacts
       chooseOneM iid do
-        questionLabeled' "chooseExpeditionAssetQuestion"
-        labeled' "noExpeditionAsset" nothing
+        questionLabeled "chooseExpeditionAssetQuestion"
+        labeled "noExpeditionAsset" nothing
         for_ (artifacts <> expeditionItems) \asset ->
           cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s
@@ -255,8 +255,8 @@ instance RunMessage TheApiary where
               else select $ enemyAtLocationWith iid
           unless (null enemies) $ chooseTargetM iid enemies \eid -> placeDoom Tablet eid 1
         ElderThing -> chooseOneM iid $ unscoped $ countVar 1 do
-          labeled' "takeDamage" $ assignDamage iid ElderThing 1
-          labeled' "takeHorror" $ assignHorror iid ElderThing 1
+          labeled "takeDamage" $ assignDamage iid ElderThing 1
+          labeled "takeHorror" $ assignHorror iid ElderThing 1
         _ -> pure ()
       pure s
     -- The Hive Mind act flips a coin each round end and rotates the Central
@@ -270,11 +270,11 @@ instance RunMessage TheApiary where
     -- Resolution 4 is only ever reached from resolution 3 or from no resolution, so
     -- it must not re-run the shared bookkeeping (or the defeat story) below.
     ScenarioResolution (Resolution 4) -> scope "resolutions" do
-      storyWithChooseOneM'
+      storyWithChooseOneM
         (compose.resolution $ scope "resolution4" $ setTitle "title" >> p "body")
         do
-          labeled' "resolution4.drownedQuarter" $ endOfScenarioThen TheDrownedQuarter
-          labeled' "resolution4.westernWall" $ endOfScenarioThen TheWesternWall
+          labeled "resolution4.drownedQuarter" $ endOfScenarioThen TheDrownedQuarter
+          labeled "resolution4.westernWall" $ endOfScenarioThen TheWesternWall
       pure s
     ScenarioResolution res -> scope "resolutions" do
       headedWest <- getHasRecord TheExpeditionHeadedWest

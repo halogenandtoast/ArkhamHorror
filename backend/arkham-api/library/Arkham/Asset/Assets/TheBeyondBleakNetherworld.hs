@@ -133,34 +133,34 @@ instance RunMessage TheBeyondBleakNetherworld where
           ElderSign -> do
             canHeal <- canHaveHorrorHealed attrs iid
             chooseOneM iid $ cardI18n $ scope "theBeyondBleakNetherworld" do
-              when canHeal $ labeled' "elderSignHealHorror" $ healHorror iid attrs 1
+              when canHeal $ labeled "elderSignHealHorror" $ healHorror iid attrs 1
               when (notNull $ spiritDeck meta)
-                $ labeled' "elderSignAttachSpirit"
+                $ labeled "elderSignAttachSpirit"
                 $ doStep 1 msg
-              labeled' "elderSignDoNothing" nothing
+              labeled "elderSignDoNothing" nothing
           AutoFail -> do
             chooseOneM iid $ cardI18n $ scope "theBeyondBleakNetherworld" do
-              labeled' "autoFailTakeDirectDamage" do
+              labeled "autoFailTakeDirectDamage" do
                 pushAll discardSpiritMsgs
                 directDamage iid attrs 1
-              labeled' "autoFailTakeDirectHorror" do
+              labeled "autoFailTakeDirectHorror" do
                 pushAll discardSpiritMsgs
                 directHorror iid attrs 1
           Skull -> do
             canHeal <- canHaveHorrorHealed attrs iid
             chooseOneM iid $ cardI18n $ scope "theBeyondBleakNetherworld" do
               if canHeal
-                then labeled' "skullDiscardSpiritHealHorror" do
+                then labeled "skullDiscardSpiritHealHorror" do
                   pushAll discardSpiritMsgs
                   healHorror iid attrs 1
-                else labeled' "skullDiscardSpirit" $ pushAll discardSpiritMsgs
+                else labeled "skullDiscardSpirit" $ pushAll discardSpiritMsgs
           other | other `elem` [Cultist, ElderThing, Tablet, CurseToken] -> do
             chooseOneM iid $ cardI18n $ scope "theBeyondBleakNetherworld" do
-              labeled' "symbolDiscardSpirit" $ pushAll discardSpiritMsgs
-              labeled' "symbolTakeDirectDamage" $ directDamage iid attrs 1
+              labeled "symbolDiscardSpirit" $ pushAll discardSpiritMsgs
+              labeled "symbolTakeDirectDamage" $ directDamage iid attrs 1
           _ -> do
             chooseOneM iid $ cardI18n $ scope "theBeyondBleakNetherworld" do
-              labeled' "otherDiscardSpirit" $ pushAll discardSpiritMsgs
+              labeled "otherDiscardSpirit" $ pushAll discardSpiritMsgs
       pure
         . TheBeyondBleakNetherworld
         $ attrs

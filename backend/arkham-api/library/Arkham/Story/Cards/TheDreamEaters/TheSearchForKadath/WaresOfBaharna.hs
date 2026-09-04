@@ -34,7 +34,7 @@ instance RunMessage WaresOfBaharna where
 
       lead <- getLead
       chooseOrRunOneAtATimeM lead $ scenarioI18n $ scope "waresOfBaharna" do
-        questionLabeled' "chooseInvestigator"
+        questionLabeled "chooseInvestigator"
         targets investigators (handleTarget lead attrs)
 
       remember ObtainedSuppliesFromBaharna

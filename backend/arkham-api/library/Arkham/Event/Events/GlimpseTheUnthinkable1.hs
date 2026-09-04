@@ -2,6 +2,7 @@ module Arkham.Event.Events.GlimpseTheUnthinkable1 (glimpseTheUnthinkable1) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher
 
 newtype GlimpseTheUnthinkable1 = GlimpseTheUnthinkable1 EventAttrs
@@ -19,7 +20,7 @@ instance RunMessage GlimpseTheUnthinkable1 where
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       cards <- select $ inHandOf NotForPlay iid <> basic NonWeakness
-      chooseAmount iid "Choose number of cards to discard" "$cards" 0 (length cards) attrs
+      withI18n $ chooseAmount iid "chooseNumberOfCardsToDiscard" "$cards" 0 (length cards) attrs
       pure e
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
       let n = getChoiceAmount "$cards" choices

@@ -25,9 +25,9 @@ instance RunMessage GrandGuignol where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       nonWeaknessCards <- select $ basic NonWeakness <> inHandOf NotForPlay iid
       chooseOrRunOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 2
+        countVar 2 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 2
         unless (null nonWeaknessCards) do
-          scenarioI18n $ labeled' "grandGuignol.shuffle" do
+          scenarioI18n $ labeled "grandGuignol.shuffle" do
             shuffleCardsIntoDeck iid nonWeaknessCards
             drawCards iid (attrs.ability 1) (length nonWeaknessCards)
       pure a

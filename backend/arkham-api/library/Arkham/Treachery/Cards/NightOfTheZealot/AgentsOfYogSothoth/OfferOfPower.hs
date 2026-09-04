@@ -17,9 +17,9 @@ instance RunMessage OfferOfPower where
   runMessage msg t@(OfferOfPower attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid do
-        campaignI18n $ labeled' "offerOfPower.drawAndPlaceDoom" do
+        campaignI18n $ labeled "offerOfPower.drawAndPlaceDoom" do
           drawCards iid attrs 2
           placeDoomOnAgendaAndCheckAdvance 2
-        withI18n $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        withI18n $ countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
       pure t
     _ -> OfferOfPower <$> liftRunMessage msg attrs

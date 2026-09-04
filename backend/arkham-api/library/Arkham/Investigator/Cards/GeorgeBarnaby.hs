@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.GeorgeBarnaby (georgeBarnaby) where
 import Arkham.Ability
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Window (cardDiscarded)
+import Arkham.I18n
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Projection ()
@@ -49,7 +50,7 @@ instance RunMessage GeorgeBarnaby where
       pure i
     After (InvestigatorMulligan iid) | iid == attrs.id -> do
       hand <- iid.hand
-      chooseSomeM iid "Done placing cards underneath George Barnaby" do
+      cardI18n $ chooseSomeM iid "georgeBarnaby.donePlacingCards" do
         targets hand \card -> placeUnderneath iid [card]
       pure i
     _ -> GeorgeBarnaby <$> liftRunMessage msg attrs

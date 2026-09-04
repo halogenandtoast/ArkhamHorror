@@ -36,7 +36,7 @@ instance RunMessage ExtraRations1 where
       canHealSelf <- iid <=~> HealableInvestigator source #damage Anyone
       chooseOrRunOneM iid do
         when canHealSelf do
-          (cardI18n $ labeled' "extraRations1.heal1DamageFromYourself") $ healDamage iid source 1
+          (cardI18n $ labeled "extraRations1.heal1DamageFromYourself") $ healDamage iid source 1
         targets allies $ healDamageOn source 1
       pure a
     _ -> ExtraRations1 <$> liftRunMessage msg attrs

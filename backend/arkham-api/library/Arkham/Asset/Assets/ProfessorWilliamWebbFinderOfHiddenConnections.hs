@@ -53,9 +53,9 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections where
 
       chooseOneM iid do
         when (hasItems && canGetItem) do
-          (cardI18n $ labeled' "professorWilliamWebbFinderOfHiddenConnections.returnItemToYourHand") $ doStep 1 msg
+          (cardI18n $ labeled "professorWilliamWebbFinderOfHiddenConnections.returnItemToYourHand") $ doStep 1 msg
         when hasLocations do
-          (cardI18n $ labeled' "professorWilliamWebbFinderOfHiddenConnections.discoverAClueAtAConnectingLocation") $ doStep 2 msg
+          (cardI18n $ labeled "professorWilliamWebbFinderOfHiddenConnections.discoverAClueAtAConnectingLocation") $ doStep 2 msg
 
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do

@@ -36,14 +36,14 @@ instance RunMessage TheLongestNight where
       canHaveTraps <- lid <=~> LocationWithoutModifier CannotHaveTraps
       chooseOneM iid do
         when (notNull connected) do
-          labeled' "placeBarrier" do
+          labeled "placeBarrier" do
             chooseTargetM iid connected \toLid ->
               push $ ScenarioCountIncrementBy (Barriers lid toLid) 1
         when (canHaveDecoys && not hasDecoy) do
-          labeled' "placeDecoy" do
+          labeled "placeDecoy" do
             placeDecoy attrs lid
         when (canHaveTraps && not hasTrap) do
-          labeled' "placeTrap" do
+          labeled "placeTrap" do
             placeTrap attrs lid
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do

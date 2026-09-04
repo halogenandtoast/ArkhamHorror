@@ -187,7 +187,7 @@ leahCodex2Found attrs iid cards = do
   if null cards && null eligibleDecks
     then scenarioSpecific "leahCodex2Done" ()
     else chooseOrRunOneM iid do
-      questionLabeled' "drawItem"
+      questionLabeled "drawItem"
       -- targeting (CardIdTarget), not cardLabeled: card-id targets render inside
       -- the searched-cards modal groups; a CardLabel would float separately.
       for_ cards \card -> targeting card do
@@ -200,7 +200,7 @@ leahCodex2Found attrs iid cards = do
       for_ eligibleDecks \deckOwner ->
         targeting (LabeledTarget "extendSearchDeck" (toTarget deckOwner))
           $ scenarioSpecific "leahCodex2Extend" (iid, deckOwner)
-      when (null cards) $ labeled' "doNotExtend" $ scenarioSpecific "leahCodex2Done" ()
+      when (null cards) $ labeled "doNotExtend" $ scenarioSpecific "leahCodex2Done" ()
 
 openCaveLabelFor :: ReverseQueue m => LocationId -> m (Maybe Text)
 openCaveLabelFor nest = do
@@ -405,10 +405,10 @@ instance RunMessage FateOfTheVale where
       pure s
     ResolveChaosToken drawnToken Tablet iid -> do
       chooseOneM iid do
-        when (isEasyStandard attrs) $ labeled' "tablet.easyStandard" do
+        when (isEasyStandard attrs) $ labeled "tablet.easyStandard" do
           placeDoom Tablet iid 1
           chaosTokenEffect Tablet drawnToken $ ChaosTokenFaceModifier [Zero]
-        when (isHardExpert attrs) $ labeled' "tablet.hardExpert" do
+        when (isHardExpert attrs) $ labeled "tablet.hardExpert" do
           placeDoom Tablet iid 1
           chaosTokenEffect Tablet drawnToken $ ChaosTokenFaceModifier [MinusThree]
         unscoped skip_
@@ -571,8 +571,8 @@ instance RunMessage FateOfTheVale where
           when isAct3 do
             codexFinished 2
             eachInvestigator \iid' -> chooseOneM iid' do
-              labeled' "drawTwo" $ drawCards iid' source 2
-              labeled' "healHorror" $ healHorror iid' source 1
+              labeled "drawTwo" $ drawCards iid' source 2
+              labeled "healHorror" $ healHorror iid' source 1
         3 -> scope "simeonAtwood" do
           let isFateOfTheValeV3 = isAct3 && isVersion Acts.fateOfTheValeV3
               isOtherwise = not isAct2 && not isFateOfTheValeV3
@@ -596,8 +596,8 @@ instance RunMessage FateOfTheVale where
                   chooseTargetM iid locs \lid -> placeTokens source lid Resource 3
                 else do
                   eachInvestigator \iid' -> chooseOneM iid' do
-                    labeled' "drawOne" $ drawCards iid' source 1
-                    labeled' "gainResources" $ gainResources iid' source 2
+                    labeled "drawOne" $ drawCards iid' source 1
+                    labeled "gainResources" $ gainResources iid' source 2
         4 -> scope "williamHemlock" do
           let isFateOfTheValeV2 = isAct3 && isVersion Acts.fateOfTheValeV2
               isOtherwise = not isAct2 && not isFateOfTheValeV2
@@ -619,9 +619,9 @@ instance RunMessage FateOfTheVale where
                 then drawResidentUnderneath iid source
                 else do
                   eachInvestigator \iid' -> chooseOneM iid' do
-                    labeled' "drawNone" nothing
-                    labeled' "drawOne" $ drawCards iid' source 1
-                    labeled' "drawTwo" $ drawCards iid' source 2
+                    labeled "drawNone" nothing
+                    labeled "drawOne" $ drawCards iid' source 1
+                    labeled "drawTwo" $ drawCards iid' source 2
         5 -> scope "riverHawthorne" do
           let isFateOfTheValeV2 = isAct3 && isVersion Acts.fateOfTheValeV2
               isOtherwise = not isAct2 && not isFateOfTheValeV2
@@ -703,7 +703,7 @@ instance RunMessage FateOfTheVale where
               let locationCards = filter ((== LocationType) . toCardType) abyss
               unless (null locationCards) $ focusCards locationCards do
                 chooseOneM iid do
-                  unscoped $ labeled' "skip" unfocusCards
+                  unscoped $ labeled "skip" unfocusCards
                   targets locationCards \card -> do
                     unfocusCards
                     lid <- placeLocation card
@@ -733,7 +733,7 @@ instance RunMessage FateOfTheVale where
               let abyss = findWithDefault [] AbyssDeck attrs.decks
               let bottom6 = drop (max 0 (length abyss - 6)) abyss
               unless (null bottom6) $ focusCards bottom6 do
-                chooseSomeM' iid "doneDrawing"
+                chooseSomeM iid "doneDrawing"
                   $ targets bottom6
                   $ drawCardFromAbyss iid source
             else do
@@ -771,7 +771,7 @@ instance RunMessage FateOfTheVale where
           remainingEncounter = encounter >>= \card -> card <$ guard (stillInAbyss card)
           remaining = remainingNonEncounter <> maybeToList remainingEncounter
       chooseOneM iid do
-        withI18n $ labeled' "continue" do
+        withI18n $ labeled "continue" do
           for_ remaining $ scenarioSpecific "removeFromAbyss" . toCardId
           for_ (reverse remainingNonEncounter)
             $ putCardOnTopOfDeck iid (Deck.ScenarioDeckByKey AbyssDeck)

@@ -129,10 +129,10 @@ setupTheWitchingHour attrs = do
         ]
 
     leadChooseOneM do
-      questionLabeled' "gatherTheDevourerBelow"
+      questionLabeled "gatherTheDevourerBelow"
       questionLabeledCard (CardCode "54017b")
-      unscoped $ labeled' "yes" $ push $ SetAsideCards returnToArkhamWoods
-      unscoped $ labeled' "no" nothing
+      unscoped $ labeled "yes" $ push $ SetAsideCards returnToArkhamWoods
+      unscoped $ labeled "no" nothing
     removeOneOf Locations.arkhamWoodsQuietGlade
 
   iids <- getInvestigators
@@ -164,9 +164,9 @@ instance RunMessage TheWitchingHour where
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (setTitle "title" >> p "intro1") do
-        labeled' "avoidFate" $ doStep 2 PreScenarioSetup
-        labeled' "bullshit" $ doStep 3 PreScenarioSetup
+      storyWithChooseOneM (setTitle "title" >> p "intro1") do
+        labeled "avoidFate" $ doStep 2 PreScenarioSetup
+        labeled "bullshit" $ doStep 3 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro2"
@@ -191,8 +191,8 @@ instance RunMessage TheWitchingHour where
       if isReturnTo
         then do
           leadPlayer <- getLeadPlayer
-          storyWithChooseOneM' (setTitle "title" >> p "choose") do
-            labeled' "performTarotReading" do
+          storyWithChooseOneM (setTitle "title" >> p "choose") do
+            labeled "performTarotReading" do
               push $ SetPerformTarotReadings False
               push
                 $ Ask leadPlayer
@@ -219,7 +219,7 @@ instance RunMessage TheWitchingHour where
                   , TheChariotVII
                   , WheelOfFortuneX
                   ]
-            labeled' "takeCards" takeCards
+            labeled "takeCards" takeCards
         else takeCards
 
       pure s

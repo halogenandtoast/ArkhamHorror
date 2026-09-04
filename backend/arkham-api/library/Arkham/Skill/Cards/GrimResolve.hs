@@ -47,17 +47,17 @@ instance RunMessage GrimResolveEffect where
         when (notNull under && notNull hand) do
           sendShowUnder iid
           chooseOneM iid $ cardI18n $ scope "grimResolve" do
-            labeled' "doneSwapping" nothing
+            labeled "doneSwapping" nothing
             targets under \card -> do
               chooseOneM iid do
-                questionLabeled' "chooseHandToSwap"
+                questionLabeled "chooseHandToSwap"
                 targets hand \handCard -> do
                   addToHand iid (only card)
                   placeUnderneath iid [handCard]
                   push msg
             targets hand \handCard -> do
               chooseOneM iid do
-                questionLabeled' "chooseUnderneathToSwap"
+                questionLabeled "chooseUnderneathToSwap"
                 targets under \card -> do
                   addToHand iid (only card)
                   placeUnderneath iid [handCard]

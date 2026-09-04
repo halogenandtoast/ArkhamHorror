@@ -45,7 +45,7 @@ instance RunMessage FatherMateo where
       canGainResources <- can.gain.resources iid
       chooseOrRunOneM iid do
         when (canDraw || canGainResources) do
-          cardI18n $ scope "fatherMateo" $ labeled' "drawAndGain" do
+          cardI18n $ scope "fatherMateo" $ labeled "drawAndGain" do
             drawCardsIfCan iid ElderSign 1
             gainResourcesIfCan iid ElderSign 1
         when isTurn do

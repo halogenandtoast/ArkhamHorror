@@ -25,8 +25,8 @@ instance RunMessage TurquoiseEagle where
     Revelation iid (isSource attrs -> True) -> do
       putCardIntoPlay iid attrs
       chooseOneM iid $ scenarioI18n do
-        labeled' "placeDoomOnYourLocation" $ withLocationOf iid \lid -> placeDoom attrs lid 1
-        unscoped $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        labeled "placeDoomOnYourLocation" $ withLocationOf iid \lid -> placeDoom attrs lid 1
+        unscoped $ countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       addToVictory iid attrs

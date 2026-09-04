@@ -65,9 +65,9 @@ instance RunMessage MiguelsKnapsack where
         if not playableHere && notNull validConnectingLids
           then playAtConnectingLocation
           else chooseOneM iid do
-            (withI18n $ countVar 1 $ labeled' "drawCards") do
+            (withI18n $ countVar 1 $ labeled "drawCards") do
               drawCards iid (attrs.ability 1) 1
             when (notNull validConnectingLids) do
-              (cardI18n $ labeled' "miguelsKnapsack.playThatEventAtAConnectingLocation") playAtConnectingLocation
+              (cardI18n $ labeled "miguelsKnapsack.playThatEventAtAConnectingLocation") playAtConnectingLocation
       pure a
     _ -> MiguelsKnapsack <$> liftRunMessage msg attrs

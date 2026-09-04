@@ -45,7 +45,7 @@ instance RunMessage StalkPrey where
       for_ menemy \eid -> do
         unlessM (eid <=~> EnemyAt (locationWithInvestigator iid)) do
           chooseOneM iid do
-            cardI18n $ scope "stalkPrey" $ labeled' "moveToward" $ moveToward iid (locationWithEnemy eid)
+            cardI18n $ scope "stalkPrey" $ labeled "moveToward" $ moveToward iid (locationWithEnemy eid)
             labeledI "doNotMove" nothing
       pure e
     _ -> StalkPrey <$> liftRunMessage msg attrs

@@ -359,33 +359,33 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
     setChaosTokens standaloneChaosTokens
 
     chooseOneM lead do
-      questionLabeled' "paths"
+      questionLabeled "paths"
       for_ [0 .. 5] \n -> do
-        labeled (tshow n) $ recordCount PathsAreKnownToYou n
+        (unscoped $ countVar n $ labeled "number") $ recordCount PathsAreKnownToYou n
     pure s
   PreScenarioSetup -> scope "intro" do
-    storyWithChooseOneM' (h "title" >> p "intro1") do
+    storyWithChooseOneM (h "title" >> p "intro1") do
       getOwner Assets.ichtacaTheForgottenGuardian >>= \case
         Nothing -> invalidLabeled' "ichtaca"
         Just _ ->
-          labeled' "ichtaca" do
+          labeled "ichtaca" do
             flavor $ h "title" >> p "intro2"
             push $ ScenarioSpecific "part1StartingCard" (toJSON $ toCardCode Assets.ichtacaTheForgottenGuardian)
 
       getOwner Assets.alejandroVela >>= \case
         Nothing -> invalidLabeled' "alejandro"
         Just _ ->
-          labeled' "alejandro" do
+          labeled "alejandro" do
             flavor $ h "title" >> p "intro3"
             push $ ScenarioSpecific "part1StartingCard" (toJSON $ toCardCode Assets.alejandroVela)
 
       getOwner Assets.expeditionJournal >>= \case
         Nothing -> invalidLabeled' "expeditionJournal"
         Just _ ->
-          labeled' "expeditionJournal" do
+          labeled "expeditionJournal" do
             flavor $ h "title" >> p "intro4"
             push $ ScenarioSpecific "part1StartingCard" (toJSON $ toCardCode Assets.expeditionJournal)
-      labeled' "else" nothing
+      labeled "else" nothing
     pure s
   ScenarioSpecific "part1StartingCard" v -> do
     let cardCode = toResult @CardCode v
@@ -396,8 +396,8 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
         isReturnTo <- Scenario.getIsReturnTo
         if isReturnTo
           then resolutionWithChooseOne "noResolution" $ scope "noResolution" do
-            labeled' "replay" $ do_ msg
-            labeled' "resolution2" $ push R2
+            labeled "replay" $ do_ msg
+            labeled "resolution2" $ push R2
           else do
             resolution "noResolution"
             do_ msg

@@ -38,7 +38,7 @@ instance RunMessage Bloodbath where
       cost <- ClueCost . Static <$> perPlayer 1
       whenM (getCanAffordCost iid (attrs.ability 1) [] [] cost) do
         chooseOneM iid $ withI18n do
-          labeled' "spendCluesToSucceed" do
+          labeled "spendCluesToSucceed" do
             payEffectCost iid attrs cost
             skillTestModifier sid (attrs.ability 1) sid SkillTestAutomaticallySucceeds
           unscoped skip_

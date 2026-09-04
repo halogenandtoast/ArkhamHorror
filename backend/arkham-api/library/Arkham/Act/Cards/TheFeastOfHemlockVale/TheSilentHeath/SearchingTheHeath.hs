@@ -58,13 +58,13 @@ instance RunMessage SearchingTheHeath where
         revealed <- traverse (setFacedown False) cards
         focusCards revealed do
           chooseOneM iid $ withI18n do
-            labeled' "placeOnBottom" do
+            labeled "placeOnBottom" do
               unfocusCards
               for_ cards \card -> do
                 forTarget' card $ doStep 1 msg
                 obtainCard card
                 placeUnderneath loc [card]
-            labeled' "leaveOnTop" do
+            labeled "leaveOnTop" do
               unfocusCards
               for_ cards \card ->
                 forTarget' card $ doStep 1 msg

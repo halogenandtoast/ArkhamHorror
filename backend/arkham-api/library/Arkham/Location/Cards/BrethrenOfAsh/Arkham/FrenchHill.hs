@@ -39,8 +39,8 @@ instance RunMessage FrenchHill where
         if
           | canHaveCharge && canHaveSecret ->
               chooseOneM iid $ withI18n do
-                tokenVar Charge $ labeled' "placeToken" $ addUses (attrs.ability 1) asset Charge 1
-                tokenVar Secret $ labeled' "placeToken" $ addUses (attrs.ability 1) asset Secret 1
+                tokenVar Charge $ labeled "placeToken" $ addUses (attrs.ability 1) asset Charge 1
+                tokenVar Secret $ labeled "placeToken" $ addUses (attrs.ability 1) asset Secret 1
           | canHaveCharge -> addUses (attrs.ability 1) asset Charge 1
           | canHaveSecret -> addUses (attrs.ability 1) asset Secret 1
           | otherwise -> pure ()

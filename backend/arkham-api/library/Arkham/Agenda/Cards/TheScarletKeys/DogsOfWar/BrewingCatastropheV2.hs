@@ -29,11 +29,11 @@ instance RunMessage BrewingCatastropheV2 where
   runMessage msg a@(BrewingCatastropheV2 attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       leadChooseOneM $ scenarioI18n do
-        labeled' "brewingCatastrophe.trauma" do
+        labeled "brewingCatastrophe.trauma" do
           eachInvestigator \iid -> do
             directDamage iid attrs 1
             sufferPhysicalTrauma iid 1
-        labeled' "brewingCatastrophe.resign" do
+        labeled "brewingCatastrophe.resign" do
           eachInvestigator resign
       revertAgenda attrs
       placeDoomOnAgenda 10

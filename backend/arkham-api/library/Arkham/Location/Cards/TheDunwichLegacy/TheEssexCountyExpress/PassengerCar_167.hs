@@ -39,8 +39,8 @@ instance RunMessage PassengerCar_167 where
 
       if hasSkills
         then chooseOneM iid $ withI18n do
-          countVar 2 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 2
-          countVar 2 $ skillIconVar #agility $ labeled' "discardCardsWithMatchingIcons" do
+          countVar 2 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 2
+          countVar 2 $ skillIconVar #agility $ labeled "discardCardsWithMatchingIcons" do
             push $ PayForAbility (abilityEffect attrs [] cost) []
         else assignDamage iid (attrs.ability 1) 2
       pure l

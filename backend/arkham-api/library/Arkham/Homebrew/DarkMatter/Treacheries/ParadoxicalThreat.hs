@@ -29,9 +29,9 @@ instance RunMessage ParadoxicalThreat where
       canPlace <- getCanPlaceFacedownInThreatArea
       chooseOneM iid $ campaignI18n do
         when canPlace
-          $ labeled' "paradoxicalThreat.placeFacedown"
+          $ labeled "paradoxicalThreat.placeFacedown"
           $ placeFacedownInThreatArea iid 3
-        labeled' "paradoxicalThreat.doomAndDraw" do
+        labeled "paradoxicalThreat.doomAndDraw" do
           placeDoomOnAgendaAndCheckAdvanceBy attrs 1
           drawFacedownCards iid 3
       pure t

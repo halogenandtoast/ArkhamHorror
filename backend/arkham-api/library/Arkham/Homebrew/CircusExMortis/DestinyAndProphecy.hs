@@ -93,10 +93,10 @@ chooseHealTwo
   :: (ReverseQueue m, Sourceable source, Targetable target)
   => source -> InvestigatorId -> target -> Bool -> Bool -> m ()
 chooseHealTwo source you target canDamage canHorror = chooseOneM you $ withI18n do
-  when canDamage $ countVar 2 $ labeled' "healDamage" $ healDamage target source 2
-  when canHorror $ countVar 2 $ labeled' "healHorror" $ healHorror target source 2
+  when canDamage $ countVar 2 $ labeled "healDamage" $ healDamage target source 2
+  when canHorror $ countVar 2 $ labeled "healHorror" $ healHorror target source 2
   when (canDamage && canHorror)
     $ withVars ["damage" .= (1 :: Int), "horror" .= (1 :: Int)]
-    $ labeled' "healDamageAndHorror" do
+    $ labeled "healDamageAndHorror" do
       healDamage target source 1
       healHorror target source 1

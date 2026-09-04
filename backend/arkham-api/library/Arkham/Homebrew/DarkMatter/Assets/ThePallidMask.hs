@@ -3,6 +3,7 @@ module Arkham.Homebrew.DarkMatter.Assets.ThePallidMask (thePallidMask) where
 import Arkham.Ability
 import Arkham.Asset.Import.Lifted
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
@@ -36,7 +37,7 @@ instance RunMessage ThePallidMask where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       locations <- select RevealedLocation
       chooseOneM iid do
-        labeled "$label.doNotMove" nothing
+        withI18n $ labeled "doNotMove" nothing
         targets locations $ moveTo (attrs.ability 1) iid
       pure a
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

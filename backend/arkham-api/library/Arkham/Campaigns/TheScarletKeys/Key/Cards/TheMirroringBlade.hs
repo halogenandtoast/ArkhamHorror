@@ -44,9 +44,9 @@ instance RunMessage TheMirroringBlade where
             enemies <-
               select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource (attrs.ability 1)
             chooseOneM iid $ campaignI18n do
-              labeled' "theMirroringBlade.single" do
+              labeled "theMirroringBlade.single" do
                 chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2
-              labeled' "theMirroringBlade.all" do
+              labeled "theMirroringBlade.all" do
                 chooseOneAtATimeM iid do
                   targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
             handleUnstableFlip iid attrs

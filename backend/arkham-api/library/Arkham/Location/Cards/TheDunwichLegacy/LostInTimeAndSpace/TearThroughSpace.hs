@@ -28,8 +28,8 @@ instance RunMessage TearThroughSpace where
   runMessage msg l@(TearThroughSpace attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> scenarioI18n do
       chooseOneM iid do
-        labeled' "tearThroughSpace.placeDoom" $ placeDoom (attrs.ability 1) attrs 1
-        labeled' "tearThroughSpace.discard" $ toDiscard (attrs.ability 1) attrs
+        labeled "tearThroughSpace.placeDoom" $ placeDoom (attrs.ability 1) attrs 1
+        labeled "tearThroughSpace.discard" $ toDiscard (attrs.ability 1) attrs
       pure l
     Revelation _ (isSource attrs -> True) -> do
       let labels = [nameToLabel (toName attrs) <> tshow @Int n | n <- [1 .. 4]]

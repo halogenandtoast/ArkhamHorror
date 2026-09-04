@@ -29,8 +29,8 @@ instance RunMessage ForensicKit where
       investigate' <- mkInvestigate sid iid (attrs.ability 1)
       skillTestModifier sid (attrs.ability 1) iid (AnySkillValue 1)
       chooseOneM iid do
-        (withI18n $ skillVar #agility $ labeled' "useSkill") $ push $ withSkillType #agility investigate'
-        (withI18n $ skillVar #intellect $ labeled' "useSkill") $ push investigate'
+        (withI18n $ skillVar #agility $ labeled "useSkill") $ push $ withSkillType #agility investigate'
+        (withI18n $ skillVar #intellect $ labeled "useSkill") $ push investigate'
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       whenAny (ExhaustedEnemy <> at_ (locationWithInvestigator iid)) do

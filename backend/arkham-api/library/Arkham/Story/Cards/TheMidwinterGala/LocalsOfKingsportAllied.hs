@@ -62,8 +62,8 @@ instance RunMessage LocalsOfKingsportAllied where
       when (countTokens Doom tokens > 0 && countTokens Damage tokens == 0) do
         removeDoom (attrs.ability 2) aid 1
       chooseOneM iid $ withI18n do
-        nameVar Assets.jewelOfSarnath $ labeled' "takeControlOf" $ takeControlOfAsset iid aid
-        labeled' "skip" nothing
+        nameVar Assets.jewelOfSarnath $ labeled "takeControlOf" $ takeControlOfAsset iid aid
+        labeled "skip" nothing
       pure s
     UseThisAbility _ (isSource attrs -> True) 3 -> do
       advanceCurrentAct (attrs.ability 3)

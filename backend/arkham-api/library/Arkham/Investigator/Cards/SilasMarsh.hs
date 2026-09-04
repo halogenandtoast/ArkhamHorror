@@ -51,7 +51,7 @@ instance RunMessage SilasMarsh where
 
       focusCards skills do
         chooseOneM attrs.id do
-          cardI18n (scope "silasMarsh" $ labeled' "doNotCommit") nothing
+          cardI18n (scope "silasMarsh" $ labeled "doNotCommit") nothing
           targets skills \card -> do
             commitCard attrs.id card
             withSkillTest \sid -> skillTestModifier sid ElderSign card ReturnToHandAfterTest

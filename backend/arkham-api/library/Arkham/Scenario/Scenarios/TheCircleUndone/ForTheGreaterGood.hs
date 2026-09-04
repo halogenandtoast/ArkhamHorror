@@ -206,8 +206,8 @@ instance RunMessage ForTheGreaterGood where
       setChaosTokens standaloneChaosTokens
 
       leadChooseOneM do
-        labeled' "members" $ record TheInvestigatorsAreMembersOfTheLodge
-        labeled' "notMembers" nothing
+        labeled "members" $ record TheInvestigatorsAreMembersOfTheLodge
+        labeled "notMembers" nothing
       pure s
     Setup -> runScenarioSetup ForTheGreaterGood attrs $ setupForTheGreaterGood attrs
     ResolveChaosToken _ Cultist iid -> do

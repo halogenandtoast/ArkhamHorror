@@ -75,7 +75,7 @@ instance RunMessage Subject5U21 where
 
       focusCards allDevoured do
         chooseOneM iid do
-          cardI18n (scope "subject5U21" $ labeled' "doNotReturnDevoured") nothing
+          cardI18n (scope "subject5U21" $ labeled "doNotReturnDevoured") nothing
           for_ allDevoured \case
             card@(PlayerCard pc) -> for_ (pcOwner pc) \owner ->
               targeting card $ addToHand owner [card]
@@ -131,7 +131,7 @@ instance RunMessage Subject5U21 where
       let allDevoured = devouredRavenous <> devoured meta
 
       focusCards allDevoured do
-        cardI18n $ scope "subject5U21" $ chooseUpToNM' attrs.id 3 "doNotRegurgitateAnyMoreCards" do
+        cardI18n $ scope "subject5U21" $ chooseUpToNM attrs.id 3 "doNotRegurgitateAnyMoreCards" do
           for_ allDevoured \case
             card@(PlayerCard pc) -> for_ (pcOwner pc) \owner ->
               targeting card do

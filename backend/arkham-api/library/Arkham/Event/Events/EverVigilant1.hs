@@ -27,7 +27,7 @@ instance RunMessage EverVigilant1 where
         filterM (getIsPlayable iid GameSource (UnpaidCost NoAction) windows'')
           =<< select (InHandOf ForPlay (be iid) <> #asset)
       when (notNull cards) do
-        cardI18n $ scope "everVigilant1" $ chooseUpToNM' iid 1 "doNotPlayAsset" do
+        cardI18n $ scope "everVigilant1" $ chooseUpToNM iid 1 "doNotPlayAsset" do
           targets cards \c -> do
             reduceCostOf attrs c 1
             playCardPayingCostWithWindows iid c windows''

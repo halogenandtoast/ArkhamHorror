@@ -22,9 +22,9 @@ instance RunMessage ImpendingEvils where
         withI18n
           $ numberVar "damage" 1
           $ numberVar "horror" 1
-          $ labeled' "takeDamageAndHorror"
+          $ labeled "takeDamageAndHorror"
           $ assignDamageAndHorror iid (attrs.ability 1) 1 1
-        campaignI18n $ labeled' "impendingEvils.place" do
+        campaignI18n $ labeled "impendingEvils.place" do
           gainSurge attrs
           placeTreachery attrs NextToAgenda
       pure t

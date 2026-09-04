@@ -39,7 +39,7 @@ instance RunMessage AlyssaGraham where
       focusCards cards do
         chooseOrRunOneM iid do
           when canAffectOtherPlayers do
-            cardI18n $ scope "alyssaGraham" $ labeled' "addDoom" do
+            cardI18n $ scope "alyssaGraham" $ labeled "addDoom" do
               placeDoom (attrs.ability 1) attrs 1
               for_ cards $ putCardOnBottomOfDeck iid deck
           labeledI "leaveCardOnTop" nothing

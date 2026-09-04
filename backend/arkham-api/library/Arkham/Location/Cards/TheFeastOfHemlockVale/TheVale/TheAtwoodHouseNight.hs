@@ -45,9 +45,9 @@ instance RunMessage TheAtwoodHouseNight where
     FailedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       clues <- getPlayerCountValue (PerPlayer 2)
       chooseOneM iid $ scenarioI18n do
-        labeled' "spendCluesToAutomaticallySucceed" do
+        labeled "spendCluesToAutomaticallySucceed" do
           withCost iid (GroupClueCost (PerPlayer 2) Anywhere) $ doStep 1 msg
-        unscoped $ countVar clues $ labeled' "doNotSpendClues" nothing
+        unscoped $ countVar clues $ labeled "doNotSpendClues" nothing
       pure l
     DoStep 1 (FailedThisSkillTest iid (isAbilitySource attrs 2 -> True)) -> atwoodReward l iid
     _ -> TheAtwoodHouseNight <$> liftRunMessage msg attrs

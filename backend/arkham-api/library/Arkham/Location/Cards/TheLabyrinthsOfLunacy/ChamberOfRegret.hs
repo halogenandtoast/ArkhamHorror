@@ -10,9 +10,9 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.CardDefs.TheLabyrinthsOfLunacy qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose hiding (labeled)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Name
+import Arkham.Name qualified as Name
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
 import Arkham.ScenarioLogKey
@@ -55,9 +55,9 @@ instance RunMessage ChamberOfRegret where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       name <- field InvestigatorName iid
       chooseOneM iid $ scope "chamberOfRegret" do
-        questionLabeled' "whichLever"
-        labeled' "left" $ remember $ PulledTheLeftLever $ labeled name iid
-        labeled' "middle" $ remember $ PulledTheMiddleLever $ labeled name iid
-        labeled' "right" $ remember $ PulledTheRightLever $ labeled name iid
+        questionLabeled "whichLever"
+        labeled "left" $ remember $ PulledTheLeftLever $ Name.labeled name iid
+        labeled "middle" $ remember $ PulledTheMiddleLever $ Name.labeled name iid
+        labeled "right" $ remember $ PulledTheRightLever $ Name.labeled name iid
       pure l
     _ -> ChamberOfRegret <$> liftRunMessage msg attrs

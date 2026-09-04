@@ -53,7 +53,7 @@ instance RunMessage PartyWithoutAHost where
       inPlay <- select $ EnemyWithTrait Civilian
       chooseOneM lead $ withI18n do
         targets inPlay $ addToVictory lead
-        labeled' "searchEncounterDeckAndDiscard" $ findEncounterCard lead attrs civilianEnemy
+        labeled "searchEncounterDeckAndDiscard" $ findEncounterCard lead attrs civilianEnemy
       pure a
     FoundEncounterCard iid (isTarget attrs -> True) (toCard -> card) -> do
       addToVictory iid card

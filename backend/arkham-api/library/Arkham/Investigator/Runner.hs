@@ -138,7 +138,6 @@ import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
 import Arkham.PlayerCard qualified as PlayerCard
-import Arkham.Plural
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.ScenarioLogKey
@@ -1411,7 +1410,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                  ]
               <> wrapWindows [locationWindowsAfter]
               <> d.discoverThen
-            send $ format a <> " discovered " <> pluralize clueCount "clue"
+            -- send $ format a <> " discovered " <> pluralize clueCount "clue"
+            send $ format a <> " discovered clue(s)"
 
         -- Investigating and automatically discovering a clue are two separate exposure triggers.
         -- The investigation one is offered up front at ST.7 (see 'withExposeInsteadOfInvestigating'
@@ -1712,11 +1712,11 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           | damage' == 0 && horror' > 0 ->
               push $ DoStep 1 $ Msg.InvestigatorDamage iid source damage' (horror' - 1)
           | otherwise -> Choose.chooseOneM iid $ withI18n $ countVar 1 do
-              Choose.labeled' "cancelDamage"
+              Choose.labeled "cancelDamage"
                 $ push
                 $ DoStep 1
                 $ Msg.InvestigatorDamage iid source (damage' - 1) horror'
-              Choose.labeled' "cancelHorror"
+              Choose.labeled "cancelHorror"
                 $ push
                 $ DoStep 1
                 $ Msg.InvestigatorDamage iid source damage' (horror' - 1)

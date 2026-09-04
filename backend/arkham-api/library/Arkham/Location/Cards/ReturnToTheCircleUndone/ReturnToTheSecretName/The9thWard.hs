@@ -44,7 +44,7 @@ instance RunMessage The9thWard where
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
       others <- select $ LocationWithTrait Extradimensional <> not_ (be attrs)
       chooseOrRunOneM iid do
-        withI18n $ labeled' "doNotMove" nothing
+        withI18n $ labeled "doNotMove" nothing
         targets others (moveTo attrs iid)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do

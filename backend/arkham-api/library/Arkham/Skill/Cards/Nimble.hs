@@ -39,7 +39,7 @@ instance RunMessage NimbleEffect where
       for_ attrs.target.investigator \iid -> do
         connectingLocations <- getAccessibleLocations iid attrs
         chooseOrRunOneM iid $ withI18n do
-          labeled' "doNotMove" nothing
+          labeled "doNotMove" nothing
           targets connectingLocations \loc -> do
             moveTo attrs iid loc
             doStep (n - 1) msg'

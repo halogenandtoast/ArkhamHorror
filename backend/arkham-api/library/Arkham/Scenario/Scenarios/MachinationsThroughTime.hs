@@ -264,8 +264,8 @@ instance RunMessage MachinationsThroughTime where
         when (notNull allies) do
           chooseTargetM iid allies \ally -> do
             chooseOneM iid $ withI18n do
-              countVar 1 $ labeled' "dealDamage" $ dealAssetDamage ally ElderThing 1
-              countVar 1 $ labeled' "dealHorror" $ dealAssetHorror ally ElderThing 1
+              countVar 1 $ labeled "dealDamage" $ dealAssetDamage ally ElderThing 1
+              countVar 1 $ labeled "dealHorror" $ dealAssetHorror ally ElderThing 1
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
@@ -306,7 +306,7 @@ rewardAssets (MachinationsThroughTime _attrs) = do
     for_ minPlay \aid -> do
       card <- field Field.AssetCard aid
       chooseOneM lead $ withI18n do
-        labeled' "skip" nothing
+        labeled "skip" nothing
         questionLabeledCard def
         portraits investigators \iid -> do
           removeFromGame aid

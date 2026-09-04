@@ -33,9 +33,9 @@ instance RunMessage Kukri where
         actionRemainingCount <- field InvestigatorRemainingActions iid
         when (actionRemainingCount > 0) do
           chooseOneM iid do
-            cardI18n $ scope "kukri" $ labeled' "spendActionForDamage" do
+            cardI18n $ scope "kukri" $ labeled "spendActionForDamage" do
               loseActions iid (attrs.ability 1) 1
               skillTestModifier sid attrs iid (DamageDealt 1)
-            withI18n $ cardNameVar attrs $ labeled' "skipAdditionalDamageName" nothing
+            withI18n $ cardNameVar attrs $ labeled "skipAdditionalDamageName" nothing
       pure a
     _ -> Kukri <$> liftRunMessage msg attrs

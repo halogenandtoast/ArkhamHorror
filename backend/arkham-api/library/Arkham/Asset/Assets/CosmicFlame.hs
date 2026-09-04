@@ -38,7 +38,7 @@ instance RunMessage CosmicFlame where
       when (attrs.use #charge > 0) do
         withSkillTest \sid ->
           chooseOneM iid $ cardI18n $ scope "cosmicFlame" do
-            labeled' "spendChargeForDamage" do
+            labeled "spendChargeForDamage" do
               removeTokens (attrs.ability 1) attrs Charge 1
               skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
             withI18n skip_

@@ -158,7 +158,9 @@
     "resources": "Resources",
     "secret": "Secret",
     "supply": "Supply",
-    "supplyPoints": "Supply Points to Gain"
+    "supplyPoints": "Supply Points to Gain",
+    "curseTokens": "{'{'}curse{'}'} Tokens",
+    "evidence": "Evidence"
   },
   "proceedToSetup": "Proceed to _Setup_",
   "slot": {

@@ -26,9 +26,9 @@ instance RunMessage RightUnderTheirNoses where
           if null hasConnected
             then discoverAtYourLocation NotInvestigate iid attrs 1
             else chooseOneM iid $ cardI18n $ scope "rightUnderTheirNoses" do
-              labeled' "discover" do
+              labeled "discover" do
                 chooseTargetM iid hasConnected $ discoverAt NotInvestigate iid attrs 1
-              labeled' "skip" do
+              labeled "skip" do
                 discoverAtYourLocation NotInvestigate iid attrs 1
         _ -> discoverAtYourLocation NotInvestigate iid attrs 1
       pure e

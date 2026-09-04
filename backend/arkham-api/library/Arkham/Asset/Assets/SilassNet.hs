@@ -31,7 +31,7 @@ instance RunMessage SilassNet where
       skills <- select $ skillOwnedBy iid
       when (Just iid == miid && notNull skills) do
         chooseOneM iid do
-          cardI18n $ scope "silassNet" $ labeled' "returnNetWithSkills" do
+          cardI18n $ scope "silassNet" $ labeled "returnNetWithSkills" do
             returnToHand iid attrs
             for_ skills (returnToHand iid)
           labeledI "doNothing" nothing

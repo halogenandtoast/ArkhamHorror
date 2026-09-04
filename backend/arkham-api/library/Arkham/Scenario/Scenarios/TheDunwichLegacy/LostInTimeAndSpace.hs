@@ -82,7 +82,7 @@ readInvestigatorDefeat :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> m ()
 readInvestigatorDefeat a = do
   defeated <- select DefeatedInvestigator
   unless (null defeated) do
-    storyOnly' defeated "defeated"
+    storyOnly defeated "defeated"
     for_ defeated (kill a)
 
 instance RunMessage LostInTimeAndSpace where

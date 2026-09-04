@@ -31,17 +31,17 @@ instance RunMessage ToolBelt where
       inPlay <- select $ assetInPlayAreaOf iid <> #tool
       underneath <- selectWithField AssetCard $ AssetAttachedToAsset (be attrs)
       chooseOneM iid do
-        (cardI18n $ labeled' "toolBelt.attachAToolAssetInYourPlayAreaToToolBelt") do
+        (cardI18n $ labeled "toolBelt.attachAToolAssetInYourPlayAreaToToolBelt") do
           when (notNull inPlay) do
             chooseTargetM iid inPlay (`place` AttachedToAsset attrs.id (Just $ InPlayArea iid))
         when (notNull inPlay && notNull underneath) do
-          (cardI18n $ labeled' "toolBelt.switchATool") do
+          (cardI18n $ labeled "toolBelt.switchATool") do
             chooseTargetM iid inPlay (`place` AttachedToAsset attrs.id (Just $ InPlayArea iid))
             focusCards (map snd underneath) do
               chooseOneM iid do
                 for_ underneath \(x, _) -> targeting x $ place x (InPlayArea iid)
         when (notNull underneath) do
-          (cardI18n $ labeled' "toolBelt.detachAnAttachedAsset") do
+          (cardI18n $ labeled "toolBelt.detachAnAttachedAsset") do
             focusCards (map snd underneath) do
               chooseOneM iid do
                 for_ underneath \(x, _) -> targeting x $ place x (InPlayArea iid)

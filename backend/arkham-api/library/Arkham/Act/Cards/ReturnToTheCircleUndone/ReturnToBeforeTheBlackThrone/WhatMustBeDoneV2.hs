@@ -76,11 +76,11 @@ instance RunMessage WhatMustBeDoneV2 where
 
       leadChooseOrRunOneM $ scenarioI18n do
         when (count id [youAcceptedYourFate, haveMesmerizingFlute, haveRitualComponents] >= 2) do
-          labeled' "whatMustBeDone.R2" $ push R2
+          labeled "whatMustBeDone.R2" $ push R2
         when (count id [youRejectedYourFate, haveScrapOfTornShadow, haveWispOfSpectralMist] >= 2) do
-          labeled' "whatMustBeDone.R3" $ push R3
+          labeled "whatMustBeDone.R3" $ push R3
         when (haveStrangeIncantation && haveBloodyTreeCarvings) do
-          labeled' "whatMustBeDone.R6" $ push R6
-        labeled' "whatMustBeDone.R4" $ push R4
+          labeled "whatMustBeDone.R6" $ push R6
+        labeled "whatMustBeDone.R4" $ push R4
       pure a
     _ -> WhatMustBeDoneV2 <$> liftRunMessage msg attrs

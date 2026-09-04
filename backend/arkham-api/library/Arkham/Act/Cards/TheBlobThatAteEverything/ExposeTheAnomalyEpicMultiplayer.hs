@@ -14,6 +14,7 @@ import Arkham.Epic.Types (
 import Arkham.Helpers.Investigator (getSpendableClueCount)
 import Arkham.Helpers.Log (scenarioCount, scenarioCountIncrement)
 import Arkham.Helpers.Query (getInvestigators)
+import Arkham.I18n
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.ScenarioLogKey (ScenarioCountKey (EpicActAdvances, EpicShared))
@@ -127,9 +128,9 @@ instance RunMessage ExposeTheAnomalyEpicMultiplayer where
   runMessage msg a@(ExposeTheAnomalyEpicMultiplayer attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- min 3 <$> getSpendableClueCount iid
-      when (n > 0) $ chooseAmount iid "Clues" "Clues" 1 n attrs
+      when (n > 0) $ withI18n $ chooseAmount iid "clues" "$clues" 1 n attrs
       pure a
-    ResolveAmounts iid (getChoiceAmount "Clues" -> amount) (isTarget attrs -> True) | amount > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> amount) (isTarget attrs -> True) | amount > 0 -> do
       -- Spend the chosen clues into the shared pool AND record this group's own
       -- contribution (so the organizer can cap each group's spend). No local tokens.
       ordinal <- scenarioCount (EpicShared groupOrdinalKey)
@@ -143,7 +144,7 @@ instance RunMessage ExposeTheAnomalyEpicMultiplayer where
       -- chooseOne (NOT chooseOrRun*); the Continue defers via NextAdvanceActStep so the
       -- settle helper reads the freshly-mirrored ActSpend at answer time.
       push $ RaiseShared (AdvanceRequested actStage) 1
-      leadChooseOneM $ labeled "$continue" $ push $ NextAdvanceActStep attrs.id 1
+      leadChooseOneM $ withI18n $ labeled "continue" $ push $ NextAdvanceActStep attrs.id 1
       pure $ ExposeTheAnomalyEpicMultiplayer $ attrs & metaL .~ toJSON True
     NextAdvanceActStep aid 1 | aid == attrs.id -> do
       -- The parked Continue, answered after the organizer allocated ActSpend.

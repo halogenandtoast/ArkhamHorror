@@ -42,9 +42,9 @@ instance RunMessage WendyAdamsParallel where
 
       chooseOneM iid $ cardI18n $ scope "wendyAdamsParallel" do
         when (notNull inBag) do
-          labeled' "sealOne" $ doStep 1 msg
+          labeled "sealOne" $ doStep 1 msg
         when (notNull revealedTokens) do
-          labeled' "sealAny" do
+          labeled "sealAny" do
             doStep 2 msg
       pure i
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
@@ -57,7 +57,7 @@ instance RunMessage WendyAdamsParallel where
       withSkillTestEnemyTarget \eid -> do
         revealedTokens <- filter ((`elem` [#curse, #bless]) . (.face)) <$> getSkillTestRevealedChaosTokens
         focusChaosTokens_ revealedTokens do
-          cardI18n $ scope "wendyAdamsParallel" $ chooseUpToNM' iid (length revealedTokens) "doneSealingTokens" do
+          cardI18n $ scope "wendyAdamsParallel" $ chooseUpToNM iid (length revealedTokens) "doneSealingTokens" do
             targets revealedTokens $ sealChaosToken iid eid
       pure i
     ElderSignEffect (is attrs -> True) -> do
@@ -65,7 +65,7 @@ instance RunMessage WendyAdamsParallel where
         tokens <- select $ oneOf [ChaosTokenFaceIs #bless, ChaosTokenFaceIs #curse]
         when (notNull tokens) do
           focusChaosTokens_ tokens do
-            cardI18n $ scope "wendyAdamsParallel" $ chooseUpToNM' attrs.id 2 "doNotChooseAnyMoreTokens" do
+            cardI18n $ scope "wendyAdamsParallel" $ chooseUpToNM attrs.id 2 "doNotChooseAnyMoreTokens" do
               targets tokens \token -> do
                 skillTestModifiers
                   sid

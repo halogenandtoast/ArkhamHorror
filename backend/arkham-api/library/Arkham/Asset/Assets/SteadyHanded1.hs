@@ -31,10 +31,10 @@ instance RunMessage SteadyHanded1 where
         let modify = skillTestModifier sid (attrs.ability 1) sid . SkillTestResultValueModifier
         createCardEffect Cards.steadyHanded1 (effectMetaTarget sid) (attrs.ability 1) iid
         chooseOrRunOneM iid do
-          (cardI18n $ labeled' "steadyHanded1.succeedBy1Less") do
+          (cardI18n $ labeled "steadyHanded1.succeedBy1Less") do
             modify (-1)
             push RecalculateSkillTestResults
-          (cardI18n $ labeled' "steadyHanded1.succeedBy1More") do
+          (cardI18n $ labeled "steadyHanded1.succeedBy1More") do
             modify 1
             push RecalculateSkillTestResults
       pure a

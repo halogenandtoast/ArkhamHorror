@@ -34,7 +34,7 @@ instance RunMessage HowardWilkesFirstChildOfZburamoarte where
       if attrs.exhausted
         then ready attrs
         else selectEach (investigatorAt (locationWithEnemy attrs.id)) \iid -> chooseOneM iid $ withI18n do
-          countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
-          countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+          countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+          countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
       pure e
     _ -> HowardWilkesFirstChildOfZburamoarte <$> liftRunMessage msg attrs

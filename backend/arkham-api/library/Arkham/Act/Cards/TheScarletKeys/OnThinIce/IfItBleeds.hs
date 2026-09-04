@@ -59,7 +59,7 @@ instance RunMessage IfItBleeds where
           <> ConcealedCardAt (LocationWithToken ScoutingReport)
 
       lead <- getLead
-      withI18n $ chooseSomeM' lead "done" do
+      withI18n $ chooseSomeM lead "done" do
         for_ chimeraMiniCards \card ->
           withLocationOf card.id \loc -> targeting loc $ revealConcealed lead attrs card.id
       pure a

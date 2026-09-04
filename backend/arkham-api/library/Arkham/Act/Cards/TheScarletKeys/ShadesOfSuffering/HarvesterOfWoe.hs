@@ -40,8 +40,8 @@ instance RunMessage HarvesterOfWoe where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       leadChooseOneM $ scenarioI18n do
-        labeled' "harvesterOfWoe.useTheParasol" $ push R1
-        labeled' "harvesterOfWoe.letHerGo" $ push R2
+        labeled "harvesterOfWoe.useTheParasol" $ push R1
+        labeled "harvesterOfWoe.letHerGo" $ push R2
       pure a
     UseCardAbility _iid (isSource attrs -> True) 1 ws (totalCluePayment -> n) -> do
       let (damage, horror) = (dealtDamage ws, dealtHorror ws)
@@ -51,10 +51,10 @@ instance RunMessage HarvesterOfWoe where
       when (n > 0 && damage + horror > 0) do
         if damage > 0 && horror > 0
           then chooseOneM iid $ scenarioI18n do
-            labeled' "harvesterOfWoe.cancelDamage" do
+            labeled "harvesterOfWoe.cancelDamage" do
               cancelInvestigatorDamage iid 1
               doStep (n - 1) (DoStep (damage - 1) (DoStep horror msg'))
-            labeled' "harvesterOfWoe.cancelHorror" do
+            labeled "harvesterOfWoe.cancelHorror" do
               cancelInvestigatorHorror iid 1
               doStep (n - 1) (DoStep damage (DoStep (horror - 1) msg'))
           else do

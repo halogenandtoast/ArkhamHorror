@@ -47,7 +47,7 @@ loadArtifact source attrs iid def label =
   selectOne (artifactInPlay def) >>= traverse_ \artifact -> do
     placeDoom source artifact 1
     chooseOneM iid do
-      labeled' label
+      labeled label
         $ withCost iid (GroupClueCost (PerPlayer 1) (be attrs))
         $ placeDoom source artifact 1
-      labeled' "doNotPlaceAdditionalDoom" nothing
+      labeled "doNotPlaceAdditionalDoom" nothing

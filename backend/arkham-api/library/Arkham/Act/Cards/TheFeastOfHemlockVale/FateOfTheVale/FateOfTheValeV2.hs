@@ -53,15 +53,15 @@ instance RunMessage FateOfTheValeV2 where
         for_ [card | card <- beneath, cardMatch card (CardWithTrait Trait.Resident)] \card -> do
           focusCards [card] do
             chooseOneM iid $ withI18n do
-              labeled' "continue" $ unfocusCards >> obtainCard card
+              labeled "continue" $ unfocusCards >> obtainCard card
             cluesNeeded <- getPlayerCountValue (PerPlayer 1)
             spendable <- getSpendableClueCount [iid]
             chooseOrRunOneM iid $ withI18n do
               when (spendable >= cluesNeeded) do
-                countVar cluesNeeded $ labeled' "spendClues" do
+                countVar cluesNeeded $ labeled "spendClues" do
                   spendClues iid cluesNeeded
                   createEnemyAtEdit_ card lid createExhausted
-              labeled' "skip" $ createEnemyAt_ card lid
+              labeled "skip" $ createEnemyAt_ card lid
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceVia #other attrs (attrs.ability 2)

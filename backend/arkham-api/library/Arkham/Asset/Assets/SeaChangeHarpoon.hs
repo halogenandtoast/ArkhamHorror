@@ -32,10 +32,10 @@ instance RunMessage SeaChangeHarpoon where
     SkillTestEnds sid iid (isAbilitySource attrs 1 -> True) -> do
       skills <- select $ skillOwnedBy iid
       chooseOneM iid do
-        (cardI18n $ labeled' "seaChangeHarpoon.returnToHand")
+        (cardI18n $ labeled "seaChangeHarpoon.returnToHand")
           do
             returnToHand iid attrs
             for_ skills \s -> skillTestModifier sid (attrs.ability 1) s ReturnToHandAfterTest
-        skip "Do nothing"
+        withI18n $ skip "doNothing"
       pure a
     _ -> SeaChangeHarpoon <$> liftRunMessage msg attrs

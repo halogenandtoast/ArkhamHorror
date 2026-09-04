@@ -58,13 +58,13 @@ instance RunMessage ChuckFergus5 where
         when (n' > 0) $ do
           chooseNM iid n' do
             when canAffordActionCost do
-              (cardI18n $ labeled' "chuckFergus5.thatEventGainsFast") $ eventModifier attrs card $ BecomesFast FastPlayerWindow
+              (cardI18n $ labeled "chuckFergus5.thatEventGainsFast") $ eventModifier attrs card $ BecomesFast FastPlayerWindow
 
             when canAffordCost do
-              (cardI18n $ labeled' "chuckFergus5.thatEventCosts2FewerResourcesToPlay") do
+              (cardI18n $ labeled "chuckFergus5.thatEventCosts2FewerResourcesToPlay") do
                 eventModifier attrs iid $ ReduceCostOf (CardWithId card.id) 2
 
-            (cardI18n $ labeled' "chuckFergus5.gain2SkillValue") do
+            (cardI18n $ labeled "chuckFergus5.gain2SkillValue") do
               eventModifier attrs iid $ AnySkillValue 2
 
       pure a

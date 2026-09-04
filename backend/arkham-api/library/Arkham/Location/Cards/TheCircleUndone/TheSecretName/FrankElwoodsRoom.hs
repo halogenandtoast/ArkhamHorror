@@ -29,6 +29,6 @@ instance RunMessage FrankElwoodsRoom where
         labeledValidate' hasClues "frankElwoodsRoom.place" do
           removeTokens (attrs.ability 1) iid #clue 1
           placeClues (attrs.ability 1) attrs 1
-        unscoped $ labeled' "placeAgendaDoom" $ placeDoomOnAgenda 1
+        unscoped $ labeled "placeAgendaDoom" $ placeDoomOnAgenda 1
       pure l
     _ -> FrankElwoodsRoom <$> liftRunMessage msg attrs

@@ -16,7 +16,7 @@ instance RunMessage FateOfTheDreamers where
   runMessage msg s@(FateOfTheDreamers attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
       campaignI18n $ chooseOneM iid do
-        labeled' "fateOfTheDreamers.removeStrength" $ removeStrengthOfTheAbyss 2
-        labeled' "fateOfTheDreamers.addStrength" $ addStrengthOfTheAbyss 2
+        labeled "fateOfTheDreamers.removeStrength" $ removeStrengthOfTheAbyss 2
+        labeled "fateOfTheDreamers.addStrength" $ addStrengthOfTheAbyss 2
       pure s
     _ -> FateOfTheDreamers <$> liftRunMessage msg attrs

@@ -40,7 +40,7 @@ instance RunMessage Sublimation where
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       chooseOneM iid $ scenarioI18n do
-        labeled' "sublimation.placeHandOnAbyss" $ placeHandCardsOnAbyss iid n
-        labeled' "sublimation.nearestEmissaryAttacks" $ nearestEmissaryAttacks attrs iid
+        labeled "sublimation.placeHandOnAbyss" $ placeHandCardsOnAbyss iid n
+        labeled "sublimation.nearestEmissaryAttacks" $ nearestEmissaryAttacks attrs iid
       pure t
     _ -> Sublimation <$> liftRunMessage msg attrs

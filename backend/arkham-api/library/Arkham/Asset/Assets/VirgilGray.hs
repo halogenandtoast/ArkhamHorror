@@ -41,11 +41,11 @@ instance RunMessage VirgilGray where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
         whenM (can.draw.cards iid) do
-          (withI18n $ countVar 1 $ labeled' "drawCards") $ drawCards iid (attrs.ability 1) 1
+          (withI18n $ countVar 1 $ labeled "drawCards") $ drawCards iid (attrs.ability 1) 1
         whenM (can.gain.resources iid) do
-          (withI18n $ countVar 1 $ labeled' "gainResources") $ gainResources iid (attrs.ability 1) 1
+          (withI18n $ countVar 1 $ labeled "gainResources") $ gainResources iid (attrs.ability 1) 1
         whenM (selectAny $ HealableAsset (attrs.ability 1) #horror (be attrs)) do
-          (scenarioI18n $ labeled' "virgilGray.heal1HorrorFromVirgilGray")
+          (scenarioI18n $ labeled "virgilGray.heal1HorrorFromVirgilGray")
             $ healHorror attrs (attrs.ability 1) 1
       others <- select $ not_ (InvestigatorWithId iid)
       when (notNull others) do

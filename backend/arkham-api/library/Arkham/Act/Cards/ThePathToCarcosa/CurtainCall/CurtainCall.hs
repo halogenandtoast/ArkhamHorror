@@ -45,7 +45,7 @@ instance RunMessage CurtainCall where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> scenarioI18n do
       leadChooseOneM do
-        labeled' "curtainCall.r1" $ push R1
-        labeled' "curtainCall.r2" $ push R2
+        labeled "curtainCall.r1" $ push R1
+        labeled "curtainCall.r2" $ push R2
       pure a
     _ -> CurtainCall <$> liftRunMessage msg attrs

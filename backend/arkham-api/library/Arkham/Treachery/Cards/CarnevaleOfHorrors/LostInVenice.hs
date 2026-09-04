@@ -26,7 +26,7 @@ instance RunMessage LostInVenice where
             Nothing -> assignDamage iid attrs 2
             Just acrossLocationId -> do
               chooseOneM iid do
-                withI18n $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
-                scenarioI18n $ scope "lostInVenice" $ labeled' "moveAcross" $ moveTo attrs iid acrossLocationId
+                withI18n $ countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
+                scenarioI18n $ scope "lostInVenice" $ labeled "moveAcross" $ moveTo attrs iid acrossLocationId
       pure t
     _ -> LostInVenice <$> liftRunMessage msg attrs

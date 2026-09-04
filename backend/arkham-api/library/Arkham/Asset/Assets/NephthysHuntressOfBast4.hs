@@ -44,9 +44,9 @@ instance RunMessage NephthysHuntressOfBast4 where
       blessTokens <-
         take 3 <$> filterM (<=~> IncludeSealed (ChaosTokenFaceIs #bless)) attrs.sealedChaosTokens
       chooseOrRunOneM iid $ cardI18n $ scope "nephthysHuntressOfBast4" do
-        labeled' "releaseBlessTokens" $ for_ blessTokens unsealChaosToken
+        labeled "releaseBlessTokens" $ for_ blessTokens unsealChaosToken
         when (notNull enemies || notNull concealed) do
-          labeled' "returnBlessForDamage" do
+          labeled "returnBlessForDamage" do
             push $ ReturnChaosTokensToPool blessTokens
             chooseDamageEnemy iid (attrs.ability 2) (locationWithInvestigator iid) AnyEnemy 2
       pure a

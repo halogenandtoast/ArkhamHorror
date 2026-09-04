@@ -38,7 +38,7 @@ instance RunMessage GreatHallOfCeleano where
       pure l
     SearchFound iid (isTarget attrs -> True) _ cards -> do
       chooseOneM iid $ withI18n do
-        labeled' "discard" $ for_ cards (discardCard iid (attrs.ability 1))
-        labeled' "continue" nothing
+        labeled "discard" $ for_ cards (discardCard iid (attrs.ability 1))
+        labeled "continue" nothing
       pure l
     _ -> GreatHallOfCeleano <$> liftRunMessage msg attrs

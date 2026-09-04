@@ -66,7 +66,7 @@ instance RunMessage RecoverTheSample where
         pet <- getSetAsideCard Assets.petOozeling
         investigators <- allInvestigators
         leadChooseOrRunOneM $ withI18n do
-          nameVar Assets.petOozeling $ questionLabeled' "takeControlOf"
+          nameVar Assets.petOozeling $ questionLabeled "takeControlOf"
           questionLabeledCard Assets.petOozeling
           portraits investigators (`takeControlOfSetAsideAsset` pet)
         selectEach (assetIs Assets.meteoriteSample) removeFromGame

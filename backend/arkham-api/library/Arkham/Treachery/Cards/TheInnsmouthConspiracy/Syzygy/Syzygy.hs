@@ -19,10 +19,10 @@ instance RunMessage Syzygy where
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ campaignI18n $ scope "syzygy" do
         whenAny InvestigatorWithAnyResources do
-          labeled' "loseResources" do
+          labeled "loseResources" do
             eachInvestigator \iid' -> push $ LoseResources iid' (toSource attrs) 3
-        labeled' "takeHorror" do
+        labeled "takeHorror" do
           eachInvestigator \iid' -> assignHorror iid' attrs 2
-        labeled' "placeDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+        labeled "placeDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
       pure t
     _ -> Syzygy <$> liftRunMessage msg attrs

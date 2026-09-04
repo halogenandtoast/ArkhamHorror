@@ -25,9 +25,9 @@ instance RunMessage ObsidianJaguar where
       putCardIntoPlay iid attrs
       enemies <- select $ NearestEnemyTo iid AnyEnemy
       chooseOneM iid $ scenarioI18n do
-        labeled' "placeDoomOnYourLocation" $ withLocationOf iid \lid -> placeDoom attrs lid 1
+        labeled "placeDoomOnYourLocation" $ withLocationOf iid \lid -> placeDoom attrs lid 1
         when (notNull enemies) do
-          labeled' "nearestEnemyAttacksYou" do
+          labeled "nearestEnemyAttacksYou" do
             chooseOrRunOneM iid $ targets enemies \enemy -> initiateEnemyAttack enemy attrs iid
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do

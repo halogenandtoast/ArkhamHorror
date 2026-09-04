@@ -39,7 +39,7 @@ instance RunMessage BloodRite where
           targetsM iid.discardable \card -> do
             discardCard iid attrs card
             push $ PayForCardAbility iid (toSource attrs) windows 1 (DiscardCardPayment $ card : discards)
-          withI18n (countVar (length discards) $ labeled' "continueHavingDiscarded" $ doStep (length discards) msg)
+          withI18n (countVar (length discards) $ labeled "continueHavingDiscarded" $ doStep (length discards) msg)
       pure e
     DoStep n msg'@(PayForCardAbility iid (isSource attrs -> True) _ 1 _) | n > 0 -> do
       resources <- getSpendableResources iid
@@ -47,9 +47,9 @@ instance RunMessage BloodRite where
       concealed <- getConcealed (ForExpose $ toSource iid) iid
       chooseOneM iid $ cardI18n $ scope "bloodRite" do
         whenM (can.gain.resources FromPlayerCardEffect iid) do
-          labeled' "gainResource" $ gainResources iid attrs 1 >> doStep (n - 1) msg'
+          labeled "gainResource" $ gainResources iid attrs 1 >> doStep (n - 1) msg'
         when ((notNull enemies || notNull concealed) && resources > 0) do
-          labeled' "spendDealDamage" do
+          labeled "spendDealDamage" do
             spendResources iid 1
             chooseDamageEnemy iid attrs (locationWithInvestigator iid) AnyEnemy 1
             doStep (n - 1) msg'

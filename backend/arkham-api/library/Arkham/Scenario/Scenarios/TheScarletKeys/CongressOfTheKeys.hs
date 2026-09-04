@@ -433,9 +433,9 @@ instance RunMessage CongressOfTheKeys where
                 hr
                 p.validate (not tuwileMasaiIsOnYourSide) "tuwileMasaiIsNotOnYourSide"
 
-            storyWithChooseOneM' (setTitle "title" >> p "trialResult") do
+            storyWithChooseOneM (setTitle "title" >> p "trialResult") do
               if finalYea >= finalNay
-                then labeled' "deemedALiability" $ doStep 2 PreScenarioSetup
+                then labeled "deemedALiability" $ doStep 2 PreScenarioSetup
                 else do
                   let claretKnightVotedNay =
                         theCellAidedTheKnight
@@ -449,7 +449,7 @@ instance RunMessage CongressOfTheKeys where
                   let canJoin = claretKnightVotedNay && tuwileMasaiIsOnYourSide && theCellMadeADealWithThorne
                   labeledValidate' canOverthrow "overthrow" $ doStep 3 PreScenarioSetup
                   labeledValidate' canJoin "join" $ doStep 4 PreScenarioSetup
-                  labeled' "deemedAnAsset" $ doStep 5 PreScenarioSetup
+                  labeled "deemedAnAsset" $ doStep 5 PreScenarioSetup
 
       let
         finishedEarly = theCellKnowsTheTrueNatureOfTheCoterie || eerilySilent
@@ -759,10 +759,10 @@ instance RunMessage CongressOfTheKeys where
       controlledKeys <- select $ StableScarletKey <> ScarletKeyWithBearer (InvestigatorWithId iid)
       unless (null controlledKeys) do
         chooseOneM iid do
-          when (isEasyStandard attrs) $ labeled' "cultist.easyStandard" do
+          when (isEasyStandard attrs) $ labeled "cultist.easyStandard" do
             chooseTargetM iid controlledKeys (flipOverBy iid Cultist)
             chaosTokenEffect ElderThing drawnToken $ ChaosTokenFaceModifier [MinusTwo]
-          when (isHardExpert attrs) $ labeled' "cultist.hardExpert" do
+          when (isHardExpert attrs) $ labeled "cultist.hardExpert" do
             chooseTargetM iid controlledKeys (flipOverBy iid Cultist)
             chaosTokenEffect ElderThing drawnToken $ ChaosTokenFaceModifier [MinusFour]
           unscoped skip_

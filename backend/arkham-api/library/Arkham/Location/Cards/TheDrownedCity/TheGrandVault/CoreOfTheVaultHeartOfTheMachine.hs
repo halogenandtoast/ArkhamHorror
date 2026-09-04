@@ -67,7 +67,7 @@ instance RunMessage CoreOfTheVaultHeartOfTheMachine where
       -- "Proceed to Scenario Interlude: The Vault Core." The clue spend is paid as
       -- the ability's cost above; play continues either way, so neither branch ends
       -- the scenario.
-      storyWithChooseOneM'
+      storyWithChooseOneM
         do
           h "title"
           p "body"
@@ -77,8 +77,8 @@ instance RunMessage CoreOfTheVaultHeartOfTheMachine where
             li "pushTheButton"
             li "leaveItAlone"
         do
-          labeled' "pushTheButton" $ record TheInnerSanctumWasUnsealed
-          labeled' "leaveItAlone" $ interludeXpAll $ toBonus "leaveItAlone" 1
+          labeled "pushTheButton" $ record TheInnerSanctumWasUnsealed
+          labeled "leaveItAlone" $ interludeXpAll $ toBonus "leaveItAlone" 1
       pure l
     UseThisAbility _iid (isSource attrs -> True) 3 -> do
       activated <- getActivatedCount

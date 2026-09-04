@@ -28,9 +28,9 @@ instance RunMessage WatchersGaze where
         selectAny $ LocationWithEnemy (enemyIs Enemies.theSpectralWatcher) <> HauntedLocation
       chooseOrRunOneM iid $ scenarioI18n do
         when yourLocationIsHaunted do
-          labeled' "watchersGaze.yourLocation" $ handleTarget iid attrs iid
+          labeled "watchersGaze.yourLocation" $ handleTarget iid attrs iid
         when watchersLocationIsHaunted do
-          labeled' "watchersGaze.watchersLocation" $ handleTarget iid attrs attrs
+          labeled "watchersGaze.watchersLocation" $ handleTarget iid attrs attrs
       pure t
     HandleTargetChoice iid (isSource attrs -> True) (InvestigatorTarget _) -> do
       runHauntedAbilities iid

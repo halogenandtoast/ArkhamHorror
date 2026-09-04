@@ -124,7 +124,7 @@ instance RunMessage ShatteredMemories where
         pure $ guard (level >= 4) *> fmap (\card -> (resident, card)) mSetAside
       when (notNull choices) do
         chooseOneM iid do
-          scenarioI18n $ labeled' "shatteredMemories.doNotTakeControl" nothing
+          scenarioI18n $ labeled "shatteredMemories.doNotTakeControl" nothing
           for_ choices \(_resident, card) -> cardLabeled card $ takeControlOfSetAsideAsset iid card
       pure a
     _ -> ShatteredMemories <$> liftRunMessage msg attrs

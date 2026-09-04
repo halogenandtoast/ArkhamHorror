@@ -36,7 +36,7 @@ instance RunMessage DrownedAcropolisCollapsedRuins where
       adjacent <- select $ connectedTo (be attrs) <> CanHaveFloodLevelIncreased
       chooseOrRunOneM iid $ withI18n do
         targets adjacent increaseThisFloodLevel
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       increaseThisFloodLevel attrs

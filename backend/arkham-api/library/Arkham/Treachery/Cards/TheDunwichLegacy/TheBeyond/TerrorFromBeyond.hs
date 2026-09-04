@@ -24,7 +24,7 @@ instance RunMessage TerrorFromBeyond where
       firstCopy <- isFirstCopyThisPhase attrs
       chooseNM iid (if firstCopy then 1 else 2) do
         for_ [("assets", AssetCard), ("events", EventCard), ("skills", SkillCard)] \(label, cardType) -> do
-          labeled' label do
+          labeled label do
             for_ withHand \(iid', hand) -> do
               for_ (filterCards cardType hand) $ discardCard iid' attrs
       pure t

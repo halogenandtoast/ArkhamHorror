@@ -37,11 +37,11 @@ instance RunMessage CreepingDarkness where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOrRunOneM iid do
-        withI18n $ skillVar #willpower $ countVar 3 $ labeled' "test" do
+        withI18n $ skillVar #willpower $ countVar 3 $ labeled "test" do
           sid <- getRandom
           beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed 3)
         whenM (getHasSupply iid Torches) do
-          scenarioI18n $ labeled' "checkSupplies" $ toDiscardBy iid (attrs.ability 1) attrs
+          scenarioI18n $ labeled "checkSupplies" $ toDiscardBy iid (attrs.ability 1) attrs
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       toDiscardBy iid (attrs.ability 1) attrs

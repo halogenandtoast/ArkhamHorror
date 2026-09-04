@@ -28,10 +28,10 @@ instance RunMessage VowOfDrzytelech where
   runMessage msg t@(VowOfDrzytelech attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOrRunOneM iid do
-        (cardI18n $ labeled' "vowOfDrzytelech.putIntoPlay") do
+        (cardI18n $ labeled "vowOfDrzytelech.putIntoPlay") do
           place attrs (InThreatArea iid)
         whenM (lift $ can.shuffle.deck iid) do
-          (cardI18n $ labeled' "vowOfDrzytelech.take1HorrorAndShuffleItIntoYourDeck") do
+          (cardI18n $ labeled "vowOfDrzytelech.take1HorrorAndShuffleItIntoYourDeck") do
             assignHorror iid attrs 1
             shuffleIntoDeck iid attrs
       pure t

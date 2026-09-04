@@ -30,9 +30,9 @@ instance RunMessage NeedForKnowledge where
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> withI18n do
       canPlaceClues <- canPlaceCluesOnYourLocation iid
       chooseOrRunOneM iid do
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
         when canPlaceClues do
-          countVar 1 $ labeled' "placeCluesOnYourLocation" $ placeCluesOnLocation iid attrs 1
+          countVar 1 $ labeled "placeCluesOnYourLocation" $ placeCluesOnLocation iid attrs 1
       doStep (n - 1) msg'
       pure t
     _ -> NeedForKnowledge <$> liftRunMessage msg attrs

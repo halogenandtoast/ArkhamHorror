@@ -67,7 +67,7 @@ instance RunMessage OldBookOfLore3 where
             pure $ guard playable $> card
           when (notNull choices) do
             chooseOneM iid do
-              cardI18n $ scope "oldBookOfLore3" $ labeled' "doNotSpendSecrets" nothing
+              cardI18n $ scope "oldBookOfLore3" $ labeled "doNotSpendSecrets" nothing
               targets choices \card -> do
                 push $ SpendUses source (toTarget attrs) Secret 1
                 reduceCostOf attrs card 2

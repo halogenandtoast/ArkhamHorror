@@ -69,7 +69,7 @@ instance RunMessage DriveOffTheMiGo where
         weapon <- getSetAsideCard Assets.miGoWeapon
         investigators <- allInvestigators
         leadChooseOrRunOneM $ withI18n do
-          nameVar Assets.miGoWeapon $ questionLabeled' "takeControlOf"
+          nameVar Assets.miGoWeapon $ questionLabeled "takeControlOf"
           questionLabeledCard Assets.miGoWeapon
           portraits investigators (`takeControlOfSetAsideAsset` weapon)
         selectEach (enemyIs Enemies.miGoGeneral) (addToVictory iid)

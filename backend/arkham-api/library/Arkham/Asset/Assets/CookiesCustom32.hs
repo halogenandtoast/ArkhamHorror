@@ -23,9 +23,9 @@ instance RunMessage CookiesCustom32 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       chooseOneM iid do
-        (cardI18n $ labeled' "cookiesCustom32.fightWithABaseCombatSkillOf5")
+        (cardI18n $ labeled "cookiesCustom32.fightWithABaseCombatSkillOf5")
           $ skillTestModifier sid (attrs.ability 1) iid (BaseSkillOf #combat 5)
-        (cardI18n $ labeled' "cookiesCustom32.get2CombatForThisAttack")
+        (cardI18n $ labeled "cookiesCustom32.get2CombatForThisAttack")
           $ skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 2)
       skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
       chooseFightEnemy sid iid (attrs.ability 1)

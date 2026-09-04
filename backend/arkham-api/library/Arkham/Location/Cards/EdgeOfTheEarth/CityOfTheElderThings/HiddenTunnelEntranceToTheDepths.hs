@@ -42,10 +42,10 @@ instance RunMessage HiddenTunnelEntranceToTheDepths where
       case nonEmpty skullKeys of
         Just (k :| _) -> do
           chooseOneM iid $ scenarioI18n $ scope "hiddenTunnelEntranceToTheDepths" do
-            labeled' "spendSkullKey" do
+            labeled "spendSkullKey" do
               placeKey ScenarioTarget k
               doStep 2 msg
-            labeled' "doNotSpendSkullKey" $ doStep 1 msg
+            labeled "doNotSpendSkullKey" $ doStep 1 msg
         Nothing -> doStep 1 msg
       pure l
     DoStep n (UseThisAbility iid (isSource attrs -> True) 1) -> do

@@ -31,9 +31,9 @@ instance RunMessage CorrosiveSlime where
       chooseOrRunOneM iid $ withI18n do
         cardI18n $ scope "corrosiveSlime" do
           when (resources > 0) do
-            labeled' "devourResource" $ loseResources iid attrs 1
+            labeled "devourResource" $ loseResources iid attrs 1
           for_ mRandomCard \card -> do
-            labeled' "devourRandomCardFromHand" $ devour [card]
+            labeled "devourRandomCardFromHand" $ devour [card]
       doStep (n - 1) msg'
       pure t
     _ -> CorrosiveSlime <$> liftRunMessage msg attrs

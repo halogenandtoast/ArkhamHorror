@@ -36,15 +36,15 @@ instance RunMessage TeachingsOfTheOrder where
       chooseOneM iid $ scenarioI18n do
         unlessHasRecord Teachings1 do
           whenAny (ChaosTokenFaceIs #curse) do
-            labeled' "teachingsOfTheOrder.removeAllCurseTokensFromTheChaosBag" $ doStep 1 msg
+            labeled "teachingsOfTheOrder.removeAllCurseTokensFromTheChaosBag" $ doStep 1 msg
 
         unlessHasRecord Teachings2 do
           whenAny (not_ (withTrait Sanctum) <> FloodedLocation) do
-            labeled' "teachingsOfTheOrder.removeAFlood" $ doStep 2 msg
+            labeled "teachingsOfTheOrder.removeAFlood" $ doStep 2 msg
 
         unlessHasRecord Teachings3 do
           whenAny (enemyAtLocationWith iid <> NonEliteEnemy <> EnemyCanBeDefeatedBy (attrs.ability 1)) do
-            labeled' "teachingsOfTheOrder.defeatANon_elite_EnemyAtYourLocation" $ doStep 3 msg
+            labeled "teachingsOfTheOrder.defeatANon_elite_EnemyAtYourLocation" $ doStep 3 msg
 
       pure a
     DoStep 1 (UseThisAbility _iid (isSource attrs -> True) 1) -> do

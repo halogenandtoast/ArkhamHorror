@@ -34,10 +34,10 @@ instance RunMessage DiscipleOfTheDevourer where
       step <- fieldMap AgendaSequence agendaStep agendaId
       if step == AgendaStep 1
         then chooseOrRunOneM iid $ campaignI18n do
-          labeled' "discipleOfTheDevourer.doom" $ placeDoom (attrs.ability 1) attrs 1
+          labeled "discipleOfTheDevourer.doom" $ placeDoom (attrs.ability 1) attrs 1
           when hasClues do
             for_ mLocationId \lid ->
-              labeled' "discipleOfTheDevourer.clue" $ moveTokens (attrs.ability 1) iid lid #clue 1
+              labeled "discipleOfTheDevourer.clue" $ moveTokens (attrs.ability 1) iid lid #clue 1
         else do
           placeDoom (attrs.ability 1) attrs 1
           when hasClues do

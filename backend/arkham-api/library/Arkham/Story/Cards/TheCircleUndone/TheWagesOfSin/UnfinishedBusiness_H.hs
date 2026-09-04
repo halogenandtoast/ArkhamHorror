@@ -58,9 +58,9 @@ instance RunMessage UnfinishedBusiness_H where
           iid
       chooseOneM iid $ withI18n do
         when hasCards do
-          countVar 2 $ labeled' "discardCardsFromHand" do
+          countVar 2 $ labeled "discardCardsFromHand" do
             discardFromHand iid attrs DiscardChoose 2
-        labeled' "flipThisBackOver" $ flipOverBy iid (attrs.ability 1) attrs
+        labeled "flipThisBackOver" $ flipOverBy iid (attrs.ability 1) attrs
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

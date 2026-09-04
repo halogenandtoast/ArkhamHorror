@@ -29,8 +29,8 @@ instance RunMessage SeismicStomp where
       pure s
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid $ sharedI18n $ countVar 1 do
-        labeled' "takeDamage" $ assignDamage iid attrs 1
-        labeled' "takeHorror" $ assignHorror iid attrs 1
-        labeled' "discardRandomCardsFromHand" $ randomDiscard iid attrs
+        labeled "takeDamage" $ assignDamage iid attrs 1
+        labeled "takeHorror" $ assignHorror iid attrs 1
+        labeled "discardRandomCardsFromHand" $ randomDiscard iid attrs
       pure s
     _ -> SeismicStomp <$> liftRunMessage msg attrs

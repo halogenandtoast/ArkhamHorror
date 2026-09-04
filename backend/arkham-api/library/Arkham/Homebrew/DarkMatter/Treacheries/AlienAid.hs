@@ -34,11 +34,11 @@ instance RunMessage AlienAid where
       selectOne (enemyIs Enemies.miGoScientist) >>= traverse_ \scientist -> do
         locations <- select Anywhere
         chooseOneM iid $ campaignI18n do
-          labeled' "alienAid.readyAndMoveMiGoScientist" do
+          labeled "alienAid.readyAndMoveMiGoScientist" do
             chooseTargetM iid locations \lid -> do
               readyThis scientist
               enemyMoveTo (attrs.ability 1) scientist lid
-          unscoped $ labeled' "doNotMoveEnemy" nothing
+          unscoped $ labeled "doNotMoveEnemy" nothing
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     _ -> AlienAid <$> liftRunMessage msg attrs

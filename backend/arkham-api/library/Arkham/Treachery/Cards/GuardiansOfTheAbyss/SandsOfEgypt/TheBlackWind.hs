@@ -17,10 +17,10 @@ instance RunMessage TheBlackWind where
   runMessage msg t@(TheBlackWind attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       campaignI18n $ chooseOneM iid do
-        labeled' "theBlackWind.addStrength" do
+        labeled "theBlackWind.addStrength" do
           addStrengthOfTheAbyss 1
           addToVictory iid attrs
-        labeled' "theBlackWind.discard" do
+        labeled "theBlackWind.discard" do
           toDiscardBy iid attrs attrs
           roundModifiers attrs iid [SkillModifier sk (-1) | sk <- [minBound ..]]
           drawEncounterCard iid attrs

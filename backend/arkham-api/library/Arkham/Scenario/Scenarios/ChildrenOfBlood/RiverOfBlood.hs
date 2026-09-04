@@ -233,7 +233,7 @@ instance RunMessage RiverOfBlood where
             $ popScope do
               labeledValidate' (hasBlood && available >= cost) "spendExperienceToRemoveBlood"
                 $ doStep cost msg
-              labeled' "doNotSpendExperience" nothing
+              labeled "doNotSpendExperience" nothing
           push R4
         Resolution 2 -> do
           record InvestigatorsKilledJuliaStern

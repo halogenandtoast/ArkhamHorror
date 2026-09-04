@@ -38,7 +38,7 @@ instance RunMessage MobTroubles where
       inPlay <- select $ enemyIs Enemies.sheldonGang
       chooseOrRunOneM iid $ scenarioI18n do
         targets inPlay $ addToVictory iid
-        labeled' "mobTroubles.search" do
+        labeled "mobTroubles.search" do
           findEncounterCardIn iid attrs (cardIs Enemies.sheldonGang) [#deck, #discard]
       pure s
     FoundEncounterCardFrom iid (isTarget attrs -> True) _ card -> do

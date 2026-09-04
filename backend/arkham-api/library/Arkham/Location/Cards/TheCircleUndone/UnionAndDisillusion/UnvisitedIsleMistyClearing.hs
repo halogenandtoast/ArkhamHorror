@@ -44,11 +44,11 @@ instance RunMessage UnvisitedIsleMistyClearing where
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       chooseOneM iid do
-        scenarioI18n $ labeled' "unvisitedIsleMistyClearing.doom" $ placeDoom attrs attrs 1
+        scenarioI18n $ labeled "unvisitedIsleMistyClearing.doom" $ placeDoom attrs attrs 1
         withI18n
           $ numberVar "damage" 1
           $ numberVar "horror" 1
-          $ labeled' "takeDamageAndHorror"
+          $ labeled "takeDamageAndHorror"
           $ assignDamageAndHorror iid (attrs.ability 2) 1 1
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

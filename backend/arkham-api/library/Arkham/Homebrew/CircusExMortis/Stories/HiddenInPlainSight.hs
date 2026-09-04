@@ -53,11 +53,11 @@ instance RunMessage HiddenInPlainSight where
     UseThisAbility iid (isSource attrs -> True) 3 -> do
       n <- perPlayer 1
       chooseOneM iid $ campaignI18n $ scope "hiddenInPlainSight" do
-        labeled' "spendCluesToAutoSucceed" do
+        labeled "spendCluesToAutoSucceed" do
           withLocationOf attrs.placement \loc ->
             withCost iid (GroupClueCost (PerPlayer 1) (LocationWithId loc))
               $ withSkillTest (skillTestAutomaticallySucceeds (attrs.ability 2))
-        countVar n $ labeled' "doNotSpendClues" nothing
+        countVar n $ labeled "doNotSpendClues" nothing
       pure s
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       addToVictory iid attrs

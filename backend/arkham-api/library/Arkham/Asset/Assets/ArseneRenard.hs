@@ -40,8 +40,8 @@ instance RunMessage ArseneRenard where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       withLocationOf iid \lid -> removeTokens (attrs.ability 2) lid Token.Antiquity 1
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled' "drawCards" $ drawCards iid (attrs.ability 2) 1
-        countVar 2 $ labeled' "gainResources" $ gainResources iid (attrs.ability 2) 2
+        countVar 1 $ labeled "drawCards" $ drawCards iid (attrs.ability 2) 1
+        countVar 2 $ labeled "gainResources" $ gainResources iid (attrs.ability 2) 2
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do
       pure $ ArseneRenard $ attrs & flippedL .~ True & visibleL .~ False & setMeta True

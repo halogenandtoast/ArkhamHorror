@@ -2,7 +2,6 @@
 
 module Arkham.Message.Lifted.Scenario where
 
-
 import Arkham.Helpers.FetchCard as X
 import Arkham.Message.Lifted.Card
 
@@ -92,8 +91,8 @@ import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
-import Arkham.Message.Lifted.Queue as X
 import Arkham.Message.Lifted.Base
+import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -147,15 +146,9 @@ storyWithCards cardDefs flavor = do
   players <- allPlayers
   push $ Msg.storyWithCards cardDefs players flavor
 
-storyOnly :: ReverseQueue m => [InvestigatorId] -> FlavorText -> m ()
+storyOnly :: (HasI18n, ReverseQueue m) => [InvestigatorId] -> Scope -> m ()
 storyOnly [] _ = pure ()
-storyOnly iids flavor = do
-  players <- traverse getPlayer iids
-  push $ Msg.story players flavor
-
-storyOnly' :: (HasI18n, ReverseQueue m) => [InvestigatorId] -> Scope -> m ()
-storyOnly' [] _ = pure ()
-storyOnly' iids lbl = do
+storyOnly iids lbl = do
   players <- traverse getPlayer iids
   push $ Msg.story players (i18n lbl)
 
@@ -294,10 +287,11 @@ scenarioSpecific key value = push $ ScenarioSpecific key (toJSON value)
 scenarioSpecific_ :: ReverseQueue m => Text -> m ()
 scenarioSpecific_ key = push $ ScenarioSpecific key Null
 
--- | Ask the given investigator's player a scenario-specific question. The
--- frontend renders the @key@ and @value@ payload; the client answers with a
--- @ScenarioSpecificAnswer key value@ which resolves to a @ScenarioSpecific key
--- value@ message (mirrors how 'PickCampaignSpecific' is asked).
+{- | Ask the given investigator's player a scenario-specific question. The
+frontend renders the @key@ and @value@ payload; the client answers with a
+@ScenarioSpecificAnswer key value@ which resolves to a @ScenarioSpecific key
+value@ message (mirrors how 'PickCampaignSpecific' is asked).
+-}
 pickScenarioSpecific
   :: (ToJSON a, ReverseQueue m) => InvestigatorId -> Text -> a -> m ()
 pickScenarioSpecific iid key value = do

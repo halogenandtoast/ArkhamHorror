@@ -44,7 +44,7 @@ instance RunMessage ElleRubashPurifyingPurpose2 where
       let placeAsset = PlaceAsset aid (AttachedToAsset attrs.id (Just $ InPlayArea iid))
       chooseOrRunOneM iid do
         unless mustSwap do
-          (cardI18n $ labeled' "elleRubashPurifyingPurpose2.attachWithoutSwapping") $ push placeAsset
+          (cardI18n $ labeled "elleRubashPurifyingPurpose2.attachWithoutSwapping") $ push placeAsset
         targets attached \otherAsset -> do
           push placeAsset
           push $ PlaceAsset otherAsset (InPlayArea iid)

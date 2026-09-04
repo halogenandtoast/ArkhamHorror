@@ -5,13 +5,15 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Effect.Import
+import Arkham.Queue (QueueT)
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
 import Arkham.Helpers.Card
+import Arkham.Helpers.Ref
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window (getCommittedCard)
-import Arkham.Helpers.Ref
-import Arkham.Message (GroupKey(..))
+import Arkham.I18n
 import Arkham.Matcher
+import Arkham.Message (GroupKey (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
 import Arkham.SkillType
@@ -27,14 +29,9 @@ instance HasAbilities GrislyTotemSurvivor3 where
   getAbilities (GrislyTotemSurvivor3 a) =
     [controlled_ a 1 $ triggered (CommittedCard #after You #any) (exhaust a)]
 
-toSkillLabel :: SkillIcon -> Text
-toSkillLabel WildMinusIcon = "Choose Minus {wild}"
-toSkillLabel WildIcon = "Choose {wild}"
-toSkillLabel (SkillIcon sType) = case sType of
-  SkillWillpower -> "Choose {willpower}"
-  SkillIntellect -> "Choose {intellect}"
-  SkillCombat -> "Choose {combat}"
-  SkillAgility -> "Choose {agility}"
+skillIconLabeled :: ReverseQueue m => SkillIcon -> QueueT Message m () -> ChooseT m ()
+skillIconLabeled WildMinusIcon body = withI18n $ labeled "chooseMinusWild" body
+skillIconLabeled icon body = withI18n $ skillIconVar icon $ labeled "chooseSkillIcon" body
 
 instance RunMessage GrislyTotemSurvivor3 where
   runMessage msg a@(GrislyTotemSurvivor3 attrs) = runQueueT $ case msg of
@@ -43,7 +40,7 @@ instance RunMessage GrislyTotemSurvivor3 where
         icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
         chooseOrRunOneM iid do
           for_ (setToList icons) \icon -> do
-            labeled (toSkillLabel icon) do
+            skillIconLabeled icon do
               skillTestModifier sid attrs (toCardId card) (AddSkillIcons [icon])
         createCardEffect Cards.grislyTotemSurvivor3 (effectMetaTarget sid) attrs (CardIdTarget card.id)
       pure a

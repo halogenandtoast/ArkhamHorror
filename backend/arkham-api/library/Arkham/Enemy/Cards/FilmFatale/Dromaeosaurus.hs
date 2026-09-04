@@ -26,6 +26,6 @@ instance RunMessage Dromaeosaurus where
         countVar 1
           $ labeledValidate' hasDiscards "discardCards"
           $ chooseAndDiscardCard iid (attrs.ability 1)
-        nameVar attrs $ labeled' "attacksYou" $ initiateEnemyAttack attrs (attrs.ability 1) iid
+        nameVar attrs $ labeled "attacksYou" $ initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     _ -> Dromaeosaurus <$> liftRunMessage msg attrs

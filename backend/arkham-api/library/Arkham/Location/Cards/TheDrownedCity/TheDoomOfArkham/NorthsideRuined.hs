@@ -44,7 +44,7 @@ instance RunMessage NorthsideRuined where
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       focusCards cards do
         chooseOneM iid $ sharedI18n do
-          labeled' "doNotDiscard" nothing
+          labeled "doNotDiscard" nothing
           targets cards \card -> do
             obtainCard card
             push $ ScenarioSpecific "discardCthulhuCard" (toJSON card)

@@ -29,13 +29,13 @@ instance RunMessage UsurpTheNight where
           ]
       if requirementsMet
         then campaignI18n $ chooseOneM iid do
-          labeled' "usurpTheNight.proceed" $ push R3
-          labeled' "usurpTheNight.flipBack" nothing
+          labeled "usurpTheNight.proceed" $ push R3
+          labeled "usurpTheNight.flipBack" nothing
         else do
           investigators <- allInvestigators
           for_ investigators \iid' -> do
             campaignI18n $ chooseOneM iid' do
-              labeled' "usurpTheNight.acceptMercy" $ resign iid'
-              labeled' "usurpTheNight.refuse" nothing
+              labeled "usurpTheNight.acceptMercy" $ resign iid'
+              labeled "usurpTheNight.refuse" nothing
       pure s
     _ -> UsurpTheNight <$> liftRunMessage msg attrs

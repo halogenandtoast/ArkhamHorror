@@ -64,9 +64,9 @@ instance RunMessage TheDunwichLegacy where
   runMessage msg c =
     runQueueT $ campaignI18n $ lift (runDunwichAchievements msg) *> case msg of
       CampaignStep PrologueStep -> scope "prologue" do
-        storyWithChooseOneM' (setTitle "title" >> p "body") do
-          labeled' "extracurricularActivity" $ setNextCampaignStep ExtracurricularActivity
-          labeled' "theHouseAlwaysWins" $ setNextCampaignStep TheHouseAlwaysWins
+        storyWithChooseOneM (setTitle "title" >> p "body") do
+          labeled "extracurricularActivity" $ setNextCampaignStep ExtracurricularActivity
+          labeled "theHouseAlwaysWins" $ setNextCampaignStep TheHouseAlwaysWins
         pure c
       CampaignStep (InterludeStep 1 _) -> scope "interlude1" do
         unconsciousForSeveralHours <- getHasRecord InvestigatorsWereUnconsciousForSeveralHours
@@ -171,7 +171,7 @@ instance RunMessage TheDunwichLegacy where
           AddAcrossSpaceAndTime -> scope "options" do
             acrossSpaceAndTimes <- replicateM 4 (genCard Treacheries.acrossSpaceAndTime)
             lead <- getActiveInvestigatorId
-            chooseSome1M' lead "acrossSpaceAndTime" do
+            chooseSome1M lead "acrossSpaceAndTime" do
               for_ (zip investigators acrossSpaceAndTimes) \(iid, acrossSpaceAndTime) ->
                 portraitLabeled iid $ addCampaignCardToDeck iid ShuffleIn acrossSpaceAndTime
           Cheated -> addChaosToken #elderthing

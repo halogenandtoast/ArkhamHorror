@@ -226,9 +226,9 @@ instance RunMessage TheUnspeakableOath where
         (x : xs) -> do
           monster <- setFacedown True =<< sample (x :| xs)
           chooseOneM iid do
-            labeled' "placeMonsterUnderActDeck"
+            labeled "placeMonsterUnderActDeck"
               $ placeUnderneath ActDeckTarget [monster]
-            labeled' "thisTestAutomaticallyFails" failSkillTest
+            labeled "thisTestAutomaticallyFails" failSkillTest
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of

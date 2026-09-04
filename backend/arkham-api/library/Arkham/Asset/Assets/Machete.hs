@@ -48,8 +48,8 @@ instance RunMessage Machete where
         when isOnly do
           skillTestCardOptionEdit attrs preOriginalOption do
             chooseOneM iid $ withI18n $ cardNameVar attrs do
-              labeled' "doNotExhaustName" nothing
-              labeled' "exhaustName" do
+              skip "doNotExhaustName"
+              labeled "exhaustName" do
                 exhaustThis attrs
                 withSkillTest \sid ->
                   skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)

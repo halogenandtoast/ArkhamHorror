@@ -44,11 +44,11 @@ instance RunMessage PrivateRoom where
         investigators <- select $ investigatorAt (toId attrs)
         randolph <- getSetAsideCard Assets.randolphCarterChainedToTheWakingWorld
         chooseOneM iid $ scenarioI18n $ scope "privateRoom" do
-          labeled' "payClues" do
+          labeled "payClues" do
             payEffectCost iid attrs cost
             chooseOrRunOneM iid do
               targets investigators (`takeControlOfSetAsideAsset` randolph)
 
-          labeled' "doNotPay" nothing
+          labeled "doNotPay" nothing
       pure l
     _ -> PrivateRoom <$> liftRunMessage msg attrs

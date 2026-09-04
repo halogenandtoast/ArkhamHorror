@@ -30,7 +30,7 @@ instance RunMessage SearchingForTheTome where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       leadChooseOneM do
-        labeled' "r1" $ push R1
-        labeled' "r2" $ push R2
+        labeled "r1" $ push R1
+        labeled "r2" $ push R2
       pure a
     _ -> SearchingForTheTome <$> liftRunMessage msg attrs

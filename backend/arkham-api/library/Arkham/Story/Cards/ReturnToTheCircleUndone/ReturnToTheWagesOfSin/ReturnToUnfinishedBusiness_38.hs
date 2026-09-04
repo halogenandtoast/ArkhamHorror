@@ -41,8 +41,8 @@ instance RunMessage ReturnToUnfinishedBusiness_38 where
         & (removeAfterResolutionL .~ False)
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "discardAssets" $ chooseAndDiscardAsset iid (attrs.ability 1)
-        labeled' "flipThisBackOver" $ flipOverBy iid (attrs.ability 1) attrs
+        countVar 1 $ labeled "discardAssets" $ chooseAndDiscardAsset iid (attrs.ability 1)
+        labeled "flipThisBackOver" $ flipOverBy iid (attrs.ability 1) attrs
       pure s
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

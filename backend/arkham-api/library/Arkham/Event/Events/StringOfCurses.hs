@@ -3,6 +3,7 @@ module Arkham.Event.Events.StringOfCurses (stringOfCurses) where
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier
 import Arkham.Projection
@@ -32,19 +33,15 @@ instance RunMessage StringOfCurses where
       doom <- field EnemyDoom eid
       chooseOneM iid do
         when option1 do
-          labeled
-            "Automatically evade that enemy and place 1 doom on it. It cannot take damage for the remainder of the round. Discover 1 clue at your location."
-            do
-              automaticallyEvadeEnemy iid eid
-              placeDoom attrs eid 1
-              roundModifier attrs eid CannotBeDamaged
-              discoverAtYourLocation NotInvestigate iid attrs 1
+          (cardI18n $ labeled "stringOfCurses.evadeAndPlaceDoom") do
+            automaticallyEvadeEnemy iid eid
+            placeDoom attrs eid 1
+            roundModifier attrs eid CannotBeDamaged
+            discoverAtYourLocation NotInvestigate iid attrs 1
         when option2 do
-          labeled
-            "If that enemy has 1 or more doom on it, defeat it. Gain 1 resource for each doom that was on it."
-            do
-              defeatEnemy eid iid attrs
-              gainResourcesIfCan iid attrs doom
+          (cardI18n $ labeled "stringOfCurses.defeatForResources") do
+            defeatEnemy eid iid attrs
+            gainResourcesIfCan iid attrs doom
 
       pure e
     _ -> StringOfCurses <$> liftRunMessage msg attrs

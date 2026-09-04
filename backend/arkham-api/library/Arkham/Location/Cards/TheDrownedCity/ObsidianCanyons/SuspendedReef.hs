@@ -53,9 +53,9 @@ instance RunMessage SuspendedReef where
       chooseOrRunOneM iid $ withI18n do
         when hasCardsInHand
           $ countVar 1
-          $ labeled' "discardRandomCardsFromHand"
+          $ labeled "discardRandomCardsFromHand"
           $ randomDiscardN iid (attrs.ability 1) 1
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       -- "Choose an enemy at a Summit location up to 3 connections away. Swap

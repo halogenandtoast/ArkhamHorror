@@ -52,13 +52,13 @@ instance RunMessage TheShapeOfChaos where
               card <- field EnemyCard nyarlathotep
               focusCard card do
                 chooseOneM iid $ scenarioI18n $ scope "theShapeOfChaos" do
-                  questionLabeled' "choose"
+                  questionLabeled "choose"
                   questionLabeledCard card
-                  labeled' "shuffled" do
+                  labeled "shuffled" do
                     unfocusCards
                     initiateEnemyAttack nyarlathotep attrs iid
                     shuffleBackIntoEncounterDeck nyarlathotep
-                  labeled'
+                  labeled
                     "returned"
                     do
                       unfocusCards

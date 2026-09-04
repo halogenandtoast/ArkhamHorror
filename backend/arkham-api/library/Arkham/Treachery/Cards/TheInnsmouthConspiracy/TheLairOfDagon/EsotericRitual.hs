@@ -28,11 +28,11 @@ instance RunMessage EsotericRitual where
       hasDiscardableCard <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
       chooseNM iid (if tokens > 0 then 2 else 1) $ scenarioI18n do
         when hasDiscardableCard
-          $ labeled' "discardTwoCards"
+          $ labeled "discardTwoCards"
           $ discardFromHand iid attrs DiscardChoose 2
 
         when hasDiscardableAssets
-          $ labeled' "discardAsset"
+          $ labeled "discardAsset"
           $ chooseAndDiscardAsset iid attrs
       pure t
     _ -> EsotericRitual <$> liftRunMessage msg attrs

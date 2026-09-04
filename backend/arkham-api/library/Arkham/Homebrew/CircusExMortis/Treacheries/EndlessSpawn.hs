@@ -46,7 +46,7 @@ instance RunMessage EndlessSpawn where
         -- ponytail: "automatically succeed" modeled as a direct discard on the
         -- seal branch; outcome is identical to passing the test (discard Endless
         -- Spawn), and there is no clean primitive to force a specific test to pass.
-        when hasMoon $ campaignI18n $ scope "endlessSpawn" $ labeled' "autoSucceed" do
+        when hasMoon $ campaignI18n $ scope "endlessSpawn" $ labeled "autoSucceed" do
           selectOne (chaosToken_ (ChaosTokenFaceIs MoonToken)) >>= traverse_ (sealChaosToken iid iid)
           toDiscardBy iid (attrs.ability 2) attrs
       pure t

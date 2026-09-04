@@ -12,6 +12,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Enemies
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
+import Arkham.Helpers.FlavorText (withTitle)
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Query (allInvestigators, getPlayerCount, getSetAsideCard)
 import Arkham.Helpers.Shuffle (getCanShuffleIn)
@@ -291,8 +292,8 @@ instance RunMessage IceAndDeathPart2 where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          storyWithChooseOneM (i18nWithTitle "noResolution") do
-            labeled' "proceedToResolution1" $ push R1
+          storyWithChooseOneM (withTitle "noResolution") do
+            labeled "proceedToResolution1" $ push R1
         Resolution 1 -> do
           baseVictory <- allGainXp' attrs
           story

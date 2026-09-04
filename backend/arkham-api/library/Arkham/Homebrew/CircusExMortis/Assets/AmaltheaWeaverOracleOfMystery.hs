@@ -36,7 +36,7 @@ instance RunMessage AmaltheaWeaverOracleOfMystery where
       pure a
     ForInvestigator iid (DoStep 1 (UseThisAbility _ (isSource attrs -> True) 1)) -> do
       chooseOneM iid $ campaignI18n $ scope "amaltheaWeaverOracleOfMystery" do
-        labeled' "drawTopCard" $ drawCards iid (attrs.ability 1) 1
-        labeled' "drawBottomCard" $ drawCardFromBottom iid (attrs.ability 1)
+        labeled "drawTopCard" $ drawCards iid (attrs.ability 1) 1
+        labeled "drawBottomCard" $ drawCardFromBottom iid (attrs.ability 1)
       pure a
     _ -> AmaltheaWeaverOracleOfMystery <$> liftRunMessage msg attrs

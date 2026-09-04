@@ -40,7 +40,7 @@ instance RunMessage TheParisianConspiracyV1 where
           eachInvestigator \iid -> assignHorror iid attrs 2
           locations <- select $ FarthestLocationFromAll Anywhere
           leadChooseOneM do
-            scenarioI18n $ questionLabeled' "theParisianConspiracy.spawn"
+            scenarioI18n $ questionLabeled "theParisianConspiracy.spawn"
             targets locations (createEnemyAt_ theOrganist)
 
       whenM getIsReturnTo do

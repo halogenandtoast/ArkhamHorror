@@ -22,7 +22,7 @@ instance RunMessage Micrometeoroid where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
-        campaignI18n $ labeled' "micrometeoroid.discardEachEvent" $ discardAll iid attrs #event
+        countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
+        campaignI18n $ labeled "micrometeoroid.discardEachEvent" $ discardAll iid attrs #event
       pure t
     _ -> Micrometeoroid <$> liftRunMessage msg attrs

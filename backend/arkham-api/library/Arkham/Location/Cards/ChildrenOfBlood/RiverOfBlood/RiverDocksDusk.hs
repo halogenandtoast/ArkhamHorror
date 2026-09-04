@@ -28,7 +28,7 @@ instance RunMessage RiverDocksDusk where
       selectOne (locationIs Cards.unvisitedIsleDusk) >>= traverse_ \isle -> do
         addDirectConnection attrs isle
         selectEach (investigatorAt attrs) \iid -> chooseOneM iid $ withI18n do
-          labeled' "moveTo" $ moveTo (attrs.ability 1) iid isle
-          labeled' "doNotMove" nothing
+          labeled "moveTo" $ moveTo (attrs.ability 1) iid isle
+          labeled "doNotMove" nothing
       pure l
     _ -> RiverDocksDusk <$> liftRunMessage msg attrs

@@ -38,8 +38,8 @@ instance RunMessage Contamination where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       for_ attrs.attached \case
         AssetTarget aid -> chooseOneM iid $ campaignI18n do
-          labeled' "contamination.discardAlly" $ toDiscardBy iid (attrs.ability 1) aid
-          labeled' "contamination.placeDoom" $ placeDoom (attrs.ability 1) aid 1
+          labeled "contamination.discardAlly" $ toDiscardBy iid (attrs.ability 1) aid
+          labeled "contamination.placeDoom" $ placeDoom (attrs.ability 1) aid 1
         _ -> pure ()
       pure t
     _ -> Contamination <$> liftRunMessage msg attrs

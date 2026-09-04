@@ -36,8 +36,8 @@ instance RunMessage SnakePit where
 
       when hasBinoculars do
         chooseOneM iid $ scenarioI18n do
-          labeled' "snakePit.doNotMove" $ doStep 1 msg
-          labeled' "snakePit.move" nothing
+          labeled "snakePit.doNotMove" $ doStep 1 msg
+          labeled "snakePit.move" nothing
 
       pure l
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do

@@ -28,11 +28,11 @@ instance RunMessage GroundDisturbance where
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       bogs <- select $ NearestLocationTo iid (LocationWithTrait Bog)
       chooseOneM iid $ scenarioI18n do
-        unscoped $ countVar 1 $ labeled' "takeDamage" do
+        unscoped $ countVar 1 $ labeled "takeDamage" do
           assignDamage iid attrs 1
           doStep (n - 1) msg'
         when (notNull bogs) do
-          labeled' "groundDisturbance.placeSinkhole" do
+          labeled "groundDisturbance.placeSinkhole" do
             chooseOrRunOneM iid do
               targets bogs \lid -> placeTokens attrs lid #damage 1
             doStep (n - 1) msg'

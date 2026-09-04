@@ -97,11 +97,11 @@ instance RunMessage ThePrimrosePath where
       bag <- getChaosBag
       let tabletInBag = any ((== Tablet) . (.face)) bag.chaosBagChaosTokens
           cultistInBag = any ((== Cultist) . (.face)) bag.chaosBagChaosTokens
-      storyWithChooseOneM' (setTitle "title" >> p "body") do
-        labeled' "useMoonlight" $ when tabletInBag do
+      storyWithChooseOneM (setTitle "title" >> p "body") do
+        labeled "useMoonlight" $ when tabletInBag do
           removeChaosToken Tablet
           addChaosToken Cultist
-        labeled' "shadows" $ when cultistInBag do
+        labeled "shadows" $ when cultistInBag do
           removeChaosToken Cultist
           addChaosToken Tablet
       pure s

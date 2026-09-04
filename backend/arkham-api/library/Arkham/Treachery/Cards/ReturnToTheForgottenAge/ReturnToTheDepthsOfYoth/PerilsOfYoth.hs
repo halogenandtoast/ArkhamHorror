@@ -25,12 +25,12 @@ instance RunMessage PerilsOfYoth where
       depth <- getCurrentDepth
       mlid <- getLocationOf iid
       chooseOneM iid $ scenarioI18n do
-        labeled' "perilsOfYoth.fail" do
+        labeled "perilsOfYoth.fail" do
           checkAfter $ Window.Explored iid mlid (Failure $ toCard attrs)
-        labeled' "perilsOfYoth.continue" do
+        labeled "perilsOfYoth.continue" do
           chooseOneM iid $ unscoped do
-            countVar depth $ labeled' "takeDamage" $ assignDamage iid attrs depth
-            countVar depth $ labeled' "takeHorror" $ assignHorror iid attrs depth
+            countVar depth $ labeled "takeDamage" $ assignDamage iid attrs depth
+            countVar depth $ labeled "takeHorror" $ assignHorror iid attrs depth
 
           matcher <- case mlid of
             Just lid -> mapOneOf CardWithPrintedLocationSymbol <$> toConnections lid

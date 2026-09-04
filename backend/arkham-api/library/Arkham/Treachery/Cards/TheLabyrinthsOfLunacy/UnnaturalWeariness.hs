@@ -21,8 +21,8 @@ instance RunMessage UnnaturalWeariness where
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n | n > 0 -> do
       chooseNM iid (min n 3) $ withI18n do
-        countVar 3 $ labeled' "loseResources" $ loseResources iid attrs 3
-        countVar 1 $ labeled' "loseActions" $ loseActions iid attrs 1
-        labeled' "discardRandomCard" $ randomDiscard iid attrs
+        countVar 3 $ labeled "loseResources" $ loseResources iid attrs 3
+        countVar 1 $ labeled "loseActions" $ loseActions iid attrs 1
+        labeled "discardRandomCard" $ randomDiscard iid attrs
       pure t
     _ -> UnnaturalWeariness <$> liftRunMessage msg attrs

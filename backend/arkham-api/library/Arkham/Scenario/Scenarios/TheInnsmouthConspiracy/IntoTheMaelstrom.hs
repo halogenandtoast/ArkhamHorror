@@ -87,22 +87,22 @@ instance RunMessage IntoTheMaelstrom where
       investigators <- allInvestigators
       when possessTheKey do
         chooseOneM lead do
-          withI18n $ keyVar "color" "blue" $ questionLabeled' "chooseInvestigatorForKey"
+          withI18n $ keyVar "color" "blue" $ questionLabeled "chooseInvestigatorForKey"
           targets investigators (`placeKey` BlueKey)
 
       when possessAMap do
         chooseOneM lead do
-          withI18n $ keyVar "color" "red" $ questionLabeled' "chooseInvestigatorForKey"
+          withI18n $ keyVar "color" "red" $ questionLabeled "chooseInvestigatorForKey"
           targets investigators (`placeKey` RedKey)
 
       when guardianDispatched do
         chooseOneM lead do
-          withI18n $ keyVar "color" "green" $ questionLabeled' "chooseInvestigatorForKey"
+          withI18n $ keyVar "color" "green" $ questionLabeled "chooseInvestigatorForKey"
           targets investigators (`placeKey` GreenKey)
 
       when recognized do
         chooseOneM lead do
-          withI18n $ keyVar "color" "yellow" $ questionLabeled' "chooseInvestigatorForKey"
+          withI18n $ keyVar "color" "yellow" $ questionLabeled "chooseInvestigatorForKey"
           targets investigators (`placeKey` YellowKey)
 
       let

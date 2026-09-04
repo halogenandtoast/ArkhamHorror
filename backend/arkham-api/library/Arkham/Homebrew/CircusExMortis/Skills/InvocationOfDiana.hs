@@ -36,9 +36,9 @@ instance RunMessage InvocationOfDiana where
       getSkillTestInvestigator >>= traverse_ \iid -> do
         tokens <- getSealedMoonTokensControlledBy iid
         chooseOneM iid $ campaignI18n $ scope "invocationOfDiana" do
-          unscoped $ countVar 2 $ labeled' "drawCards" $ drawCards iid attrs 2
-          when (notNull tokens) $ labeled' "releaseTokens" $ doStep 2 msg
-          unscoped $ labeled' "doNothing" nothing
+          unscoped $ countVar 2 $ labeled "drawCards" $ drawCards iid attrs 2
+          when (notNull tokens) $ labeled "releaseTokens" $ doStep 2 msg
+          unscoped $ labeled "doNothing" nothing
       pure s
     DoStep 2 (DoStep 1 (PassedSkillTest _ _ _ (isTarget attrs -> True) _ _)) -> do
       getSkillTestInvestigator >>= traverse_ \iid ->

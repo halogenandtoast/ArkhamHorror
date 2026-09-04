@@ -28,10 +28,10 @@ instance RunMessage MaimedHand where
   runMessage msg t@(MaimedHand attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOrRunOneM iid do
-        (cardI18n $ labeled' "maimedHand.putMaimedHandIntoPlayInYourThreatArea") do
+        (cardI18n $ labeled "maimedHand.putMaimedHandIntoPlayInYourThreatArea") do
           place attrs (InThreatArea iid)
         whenM (lift $ can.shuffle.deck iid) do
-          (cardI18n $ labeled' "maimedHand.take1DamageAndShuffleItIntoYourDeck") do
+          (cardI18n $ labeled "maimedHand.take1DamageAndShuffleItIntoYourDeck") do
             assignDamage iid attrs 1
             shuffleIntoDeck iid attrs
       pure t

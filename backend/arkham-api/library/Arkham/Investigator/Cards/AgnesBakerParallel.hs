@@ -65,7 +65,7 @@ instance RunMessage AgnesBakerParallel where
           go (c : rest) = case c.target of
             ForCard _ card -> do
               chooseOneM iid do
-                cardI18n (scope "agnesBakerParallel" $ labeled' "shuffle") do
+                cardI18n (scope "agnesBakerParallel" $ labeled "shuffle") do
                   cardResolutionModifier card attrs card (SetAfterPlay ShuffleThisBackIntoDeck)
                 labeledI "resolveNormally" nothing
             _ -> go rest

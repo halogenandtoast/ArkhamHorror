@@ -6291,7 +6291,6 @@ library
       Arkham.Phase
       Arkham.Placement
       Arkham.PlayerCard
-      Arkham.Plural
       Arkham.Prelude
       Arkham.Projection
       Arkham.Query

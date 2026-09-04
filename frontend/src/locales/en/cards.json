@@ -1,5 +1,9 @@
 {
   "label": {
+    "abyssalTome2": {
+      "placeDoom": "Place 1 doom on Abyssal Tome",
+      "doNotPlaceDoom": "Do not place doom on Abyssal Tome"
+    },
     "acridMiasma": {
       "hunter": "Resolve the hunter keyword on each enemy in play"
     },
@@ -322,6 +326,9 @@
       "moveToLocationOfDoppelganger": "Move to location of doppelganger",
       "evadeEnemy": "Evade enemy"
     },
+    "doubleDown2": {
+      "spendResources": "Spend resources on Double Down"
+    },
     "dowsingRod": {
       "exhaustForBoost": "Exhaust Dowsing Rod and place 1 doom on it to move to a connecting location.",
       "onLastClue": "If this investigation discovers the last clue at a location, remove 1 doom from Dowsing Rod."
@@ -366,6 +373,14 @@
     "emergencyCache": {
       "takeResource": "Take Resource",
       "addSupply": "Add Supply"
+    },
+    "empiricalHypothesis": {
+      "failBy2": "You fail a test by 2 or more.",
+      "succeedBy3": "You succeed at a test by 3 or more.",
+      "runOutOfCards": "You run out of cards in your hand.",
+      "dealtDamageOrHorror": "You are dealt damage or horror.",
+      "discardTreacheryOrEnemy": "You discard a treachery or enemy from play.",
+      "enterLocationWithShroud3": "You enter a location with 3 or more shroud."
     },
     "encephalonSignal": {
       "damage": "Deal 2 damage to an investigator or Humanoid enemy at your location"
@@ -471,6 +486,9 @@
       "move1ClueFrom2": "Move 1 clue from your location to a connecting location",
       "moveAnEnemy": "Move an enemy from a connecting location to your location",
       "moveAnEnemy2": "Move an enemy from your location to a connecting location"
+    },
+    "georgeBarnaby": {
+      "donePlacingCards": "Done placing cards underneath George Barnaby"
     },
     "ghastlyPossession": {
       "placeDoom": "Place 1 doom on that asset. Ghastly Posession gains {'{'}wild{'}'}{'{'}wild{'}'}",
@@ -682,6 +700,13 @@
     "logicalReasoning": {
       "discardTerror": "Discard a Terror"
     },
+    "ltWilsonStewart": {
+      "healDamage": "Heal 1 damage from Lt. Wilson Stewart",
+      "healHorror": "Heal 1 horror from Lt. Wilson Stewart",
+      "plus1SkillValue": "You get +1 skill value for your next skill test",
+      "drawCard": "Draw 1 card",
+      "gainResource": "Gain 1 resource"
+    },
     "luckyCharm": {
       "move1Damage": "Move 1 damage",
       "move1Horror": "Move 1 horror"
@@ -837,6 +862,9 @@
     },
     "outerFieldsDesolateHills": {
       "doneDiscarding": "Done discarding"
+    },
+    "parlorHemlockHouse": {
+      "testForAdditionalDamage": "Test {'{'}intellect{'}'} (4) for 1 additional damage"
     },
     "patriceHathaway": {
       "shuffleDiscardKeepOne": "Shuffle all but 1 card from your discard pile into your deck",
@@ -1067,6 +1095,10 @@
       "deck": "Search deck",
       "discard": "Search discard"
     },
+    "songOfTheMagahBird": {
+      "resistTheCall": "Resist the call",
+      "driveAwayTheBirds": "Drive away the birds"
+    },
     "spiritSpeaker": {
       "moveChargesToResources": "Move all charges to your resource pool",
       "moveAllChargesToYourResourcePool": "Move all charges to your resource pool",
@@ -1092,6 +1124,10 @@
     "stouthearted": {
       "done": "Done moving damage/horror",
       "doneMovingDamageHorror": "Done moving damage/horror"
+    },
+    "stringOfCurses": {
+      "evadeAndPlaceDoom": "Automatically evade that enemy and place 1 doom on it. It cannot take damage for the remainder of the round. Discover 1 clue at your location.",
+      "defeatForResources": "If that enemy has 1 or more doom on it, defeat it. Gain 1 resource for each doom that was on it."
     },
     "strokeOfLuck": {
       "exile": "Exile Stroke of Luck to automatically succeed",
@@ -1191,6 +1227,16 @@
     "thievesKit3": {
       "useAgility": "Use {'{'}agility{'}'}",
       "useIntellect": "Use {'{'}intellect{'}'}"
+    },
+    "throughTheCracks": {
+      "disengage": "Disengage from each enemy engaged with you.",
+      "move": "Move to a revealed connecting location.",
+      "disengageAndMove": "Disengage from each enemy engaged with you and move to a revealed connecting location."
+    },
+    "throughTheCracks2": {
+      "disengage": "Disengage from each enemy engaged with you.",
+      "move": "Move to a revealed connecting location.",
+      "disengageAndMove": "Disengage from each enemy engaged with you and move to a revealed connecting location."
     },
     "throwTheBookAtThem": {
       "automaticallyEvade": "Automatically evade the attacked enemy",

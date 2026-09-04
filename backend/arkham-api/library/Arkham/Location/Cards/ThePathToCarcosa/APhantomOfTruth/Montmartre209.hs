@@ -35,7 +35,7 @@ instance RunMessage Montmartre209 where
       temporaryModifiersMany attrs (map (,[TopCardOfDeckIsRevealed]) iids) do
         focusCards cards do
           chooseOneM iid do
-            withI18n $ labeled' "playNoCards" nothing
+            withI18n $ labeled "playNoCards" nothing
             targets playable $ playCardPayingCost iid
       eachInvestigator shuffleDeck
       pure a

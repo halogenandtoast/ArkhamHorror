@@ -23,7 +23,7 @@ instance RunMessage DesertedStation where
         for_ mAlaskanWilds \loc ->
           withI18n
             $ keyVar "name" "Alaskan Wilds"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
       pure s
     _ -> DesertedStation <$> liftRunMessage msg attrs

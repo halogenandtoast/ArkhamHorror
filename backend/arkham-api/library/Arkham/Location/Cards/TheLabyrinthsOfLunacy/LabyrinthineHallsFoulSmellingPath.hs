@@ -32,7 +32,7 @@ instance RunMessage LabyrinthineHallsFoulSmellingPath where
       investigators <- select $ affectsOthersKnown iid $ not_ (InvestigatorWithId iid)
       for_ (nonEmpty investigators) \others ->
         chooseOrRunOneM iid $ scope "labyrinthineHalls" do
-          questionLabeled' "chooseDrawCards"
+          questionLabeled "chooseDrawCards"
           targets (toList others) \iid' -> drawCards iid' (attrs.ability 1) 2
       pure l
     _ -> LabyrinthineHallsFoulSmellingPath <$> liftRunMessage msg attrs

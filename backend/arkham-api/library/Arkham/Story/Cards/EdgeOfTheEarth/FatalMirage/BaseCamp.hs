@@ -25,17 +25,17 @@ instance RunMessage BaseCamp where
         for_ mCoastalWaters \loc ->
           withI18n
             $ keyVar "name" "Coastal Waters"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
         for_ mDesertedStation \loc ->
           withI18n
             $ keyVar "name" "Deserted Station"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
         for_ mRiverviewTheatre \loc ->
           withI18n
             $ keyVar "name" "Riverview Theatre"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
 
       pure s

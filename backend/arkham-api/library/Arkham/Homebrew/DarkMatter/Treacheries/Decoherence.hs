@@ -25,7 +25,7 @@ instance RunMessage Decoherence where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       ok <- fieldSome InvestigatorResources iid
       chooseOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
         countVar 2 $ labeledValidate' ok "loseResources" $ loseResources iid attrs 2
       pure t
     _ -> Decoherence <$> liftRunMessage msg attrs

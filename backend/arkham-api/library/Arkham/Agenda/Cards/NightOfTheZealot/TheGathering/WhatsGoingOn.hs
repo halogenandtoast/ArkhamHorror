@@ -21,10 +21,10 @@ instance RunMessage WhatsGoingOn where
     AdvanceAgenda (isSide B attrs -> True) -> scenarioI18n do
       lead <- getLead
       chooseOneM lead do
-        labeled' "whatsGoingOn.horror" $ assignHorror lead attrs 2
+        labeled "whatsGoingOn.horror" $ assignHorror lead attrs 2
 
         whenAny InvestigatorWithNonEmptyHand do
-          labeled' "whatsGoingOn.discard" $ push $ AllRandomDiscard (toSource attrs) AnyCard
+          labeled "whatsGoingOn.discard" $ push $ AllRandomDiscard (toSource attrs) AnyCard
       advanceAgendaDeck attrs
       pure a
     _ -> WhatsGoingOn <$> liftRunMessage msg attrs

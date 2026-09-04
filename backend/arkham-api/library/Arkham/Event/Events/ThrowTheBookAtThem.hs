@@ -38,8 +38,8 @@ instance RunMessage ThrowTheBookAtThem where
           canEvade <- eid <=~> EnemyCanBeEvadedBy (toSource attrs)
           chooseOrRunOneM iid $ cardI18n $ scope "throwTheBookAtThem" do
             when canEvade do
-              labeled' "automaticallyEvade" $ automaticallyEvadeEnemy iid eid
-            labeled' "resolveAbilityOnTome"
+              labeled "automaticallyEvade" $ automaticallyEvadeEnemy iid eid
+            labeled "resolveAbilityOnTome"
               $ doStep 1 msg
         _ -> pure ()
       pure e

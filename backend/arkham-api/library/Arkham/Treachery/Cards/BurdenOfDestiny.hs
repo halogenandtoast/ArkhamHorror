@@ -29,7 +29,7 @@ instance RunMessage BurdenOfDestiny where
         withI18n
           $ numberVar "damage" 1
           $ numberVar "horror" 1
-          $ labeled' "takeDamageAndHorror"
+          $ labeled "takeDamageAndHorror"
           $ assignDamageAndHorror iid attrs 1 1
       pure t
     _ -> BurdenOfDestiny <$> liftRunMessage msg attrs

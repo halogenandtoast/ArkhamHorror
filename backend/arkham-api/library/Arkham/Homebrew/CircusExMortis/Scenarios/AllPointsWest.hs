@@ -243,9 +243,9 @@ instance RunMessage AllPointsWest where
         doom <- getDoomCount
         let interlude = interludeFor arrival (doom <= 6)
         scope "interludes" $ scope interlude.interludeKey do
-          storyWithChooseOneM' (setTitle "title" >> p "body") do
-            labeled' (optionLabel interlude.interludeOption) $ doStep 1 msg
-            labeled' interlude.interludeSkipLabel $ daysBehind interlude.interludeSkipResources
+          storyWithChooseOneM (setTitle "title" >> p "body") do
+            labeled (optionLabel interlude.interludeOption) $ doStep 1 msg
+            labeled interlude.interludeSkipLabel $ daysBehind interlude.interludeSkipResources
       pure s
     DoStep 1 (ScenarioSpecific key v) | key == nowArrivingKey -> do
       for_ (maybeResult v) \arrival -> do

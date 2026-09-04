@@ -21,8 +21,7 @@ stepsOfGiants = act (1, A) StepsOfGiants Cards.stepsOfGiants Nothing
 
 instance HasAbilities StepsOfGiants where
   getAbilities = actAbilities \a ->
-    [ restricted a 1 (exists $ InvestigatorWithClues $ atLeast 1)
-        $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
+    [ mkAbility a 1 $ actionAbilityWithCost $ ClueCost (PerPlayer 1)
     , restricted a 2 (exists $ locationIs Locations.greatLiftActive)
         $ Objective
         $ forced AnyWindow

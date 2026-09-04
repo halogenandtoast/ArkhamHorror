@@ -28,12 +28,15 @@ instance HasModifiersFor AncientAltar where
     -- by someone already here never gates the move in.
     glyphs <- getVictoryGlyphCount
     when (glyphs < 3) $ modifySelect a Anyone [CannotEnter (toId a)]
-    -- East Antechamber is the Altar's only connection, so the toll is scoped to
-    -- the investigators standing there.
+    -- The toll is scoped to East Antechamber twice over: only investigators
+    -- standing there carry the modifier, and only their clues can pay it.
     modifySelect
       a
       (investigator_ $ at_ (locationIs Cards.eastAntechamber))
-      [AdditionalCostToEnterMatching (be a) (GroupClueCost (PerPlayer 4) Anywhere)]
+      [ AdditionalCostToEnterMatching
+          (be a)
+          (GroupClueCost (PerPlayer 4) (locationIs Cards.eastAntechamber))
+      ]
 
 instance HasAbilities AncientAltar where
   getAbilities (AncientAltar a) =

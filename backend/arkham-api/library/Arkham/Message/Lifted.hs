@@ -150,6 +150,18 @@ gainXp iid (toSource -> source) from xp = do
     push $ ReportXp report
     push $ GainXP iid source xp
 
+{- | Report a non-XP campaign counter (Yig's Fury, ...) into the current step's
+breakdown so the campaign log can show where it came from. @tally@ is the
+i18n key naming the counter, @from@ the i18n key or title naming the source.
+-}
+reportTally :: ReverseQueue m => Text -> Text -> Int -> m ()
+reportTally tally from n =
+  push $ ReportXp $ XpBreakdown [TallyGained tally $ XpDetail XpFromCardEffect from n]
+
+reportTallyLost :: ReverseQueue m => Text -> Text -> Int -> m ()
+reportTallyLost tally from n =
+  push $ ReportXp $ XpBreakdown [TallyLost tally $ XpDetail XpFromCardEffect from n]
+
 allGainXpEdit'
   :: (ReverseQueue m, Sourceable source)
   => source
@@ -3419,7 +3431,8 @@ requestChaosTokens iid source n = do
   requestChaosTokens_ iid source n
   resetChaosTokens source
 
-requestChaosTokens_ :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+requestChaosTokens_
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 requestChaosTokens_ iid source n = do
   push $ RequestChaosTokens (toSource source) (Just iid) (Reveal n) SetAside
 

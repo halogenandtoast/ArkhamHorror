@@ -1,4 +1,9 @@
 {
+  "vengeance": {
+    "investigatorsDefeated": "One or more investigators were defeated",
+    "ruinsDestroyed": "The ruins of Eztli were destroyed",
+    "pillarsOfKnYan": "Pillar of K'n-yan"
+  },
   "specialRules": [
     {
       "title": "Seal",

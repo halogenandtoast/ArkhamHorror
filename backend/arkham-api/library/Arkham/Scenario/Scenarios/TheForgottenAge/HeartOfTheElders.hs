@@ -405,9 +405,9 @@ runAMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
         resolution "resolution2"
         mouthOfKnYanTheCavernsMaw <- selectJust $ locationIs Locations.mouthOfKnYanTheCavernsMaw
         pillarTokens <- countTokensOf Pillar mouthOfKnYanTheCavernsMaw
-        repeated (6 - pillarTokens) do
-          placeTokens attrs mouthOfKnYanTheCavernsMaw Pillar 1
-          incrementRecordCount YigsFury 2
+        let missingPillars = 6 - pillarTokens
+        repeated missingPillars $ placeTokens attrs mouthOfKnYanTheCavernsMaw Pillar 1
+        addVengeance (vengeanceLabel "pillarsOfKnYan") (2 * missingPillars)
         eachPoisoned (`sufferMentalTrauma` 1)
         eachUnpoisoned \iid -> addCampaignCardToDeck iid DoNotShuffleIn Treacheries.poisoned
         do_ R1
@@ -452,9 +452,7 @@ runBMessage msg s@(HeartOfTheElders (attrs `With` metadata)) = scenarioI18n $ sc
 
         resolutionWithXp resolutionBody (allGainXp' attrs)
 
-        vengeance <- getTotalVengeanceInVictoryDisplay
-        yigsFury <- getRecordCount YigsFury
-        recordCount YigsFury (yigsFury + vengeance)
+        recordVengeance
 
         whenHarbingerHasEnteredPlay attrs do
           inVictory <-

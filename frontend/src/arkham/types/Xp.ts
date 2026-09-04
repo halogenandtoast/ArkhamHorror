@@ -13,6 +13,8 @@ export type XpEntry
   = { tag: 'AllGainXp', details: XpDetail }
   | { tag: 'InvestigatorGainXp', investigator: string, details: XpDetail }
   | { tag: 'InvestigatorLoseXp', investigator: string, details: XpDetail }
+  | { tag: 'TallyGained', tally: string, details: XpDetail }
+  | { tag: 'TallyLost', tally: string, details: XpDetail }
 
 export type XpBreakdownStep = {
   step: CampaignStep
@@ -69,6 +71,22 @@ export const xpEntryDecoder = JsonDecoder.oneOf<XpEntry>(
         details: xpDetailDecoder
       },
       'InvestigatorLoseXp'
+    ),
+    JsonDecoder.object<XpEntry>(
+      {
+        tag: JsonDecoder.literal('TallyGained'),
+        tally: JsonDecoder.string(),
+        details: xpDetailDecoder
+      },
+      'TallyGained'
+    ),
+    JsonDecoder.object<XpEntry>(
+      {
+        tag: JsonDecoder.literal('TallyLost'),
+        tally: JsonDecoder.string(),
+        details: xpDetailDecoder
+      },
+      'TallyLost'
     ),
   ],
   'XpEntry'

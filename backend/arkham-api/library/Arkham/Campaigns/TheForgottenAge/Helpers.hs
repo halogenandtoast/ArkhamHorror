@@ -2,6 +2,7 @@ module Arkham.Campaigns.TheForgottenAge.Helpers where
 
 import Arkham.Ability
 import Arkham.Calculation
+import Arkham.Campaigns.TheForgottenAge.Key
 import Arkham.Campaigns.TheForgottenAge.Meta
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
@@ -35,9 +36,11 @@ import Arkham.Message (
  )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log (incrementRecordCount)
 import Arkham.Message.Lifted.Move
 import Arkham.Message.Type
 import Arkham.Modifier (ModifierType (..))
+import Arkham.Name (toTitle)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Question (Question (..), UI (..))
@@ -75,32 +78,83 @@ getInvestigatorsWithSupply s = getInvestigators >>= filterM (`getHasSupply` s)
 getInvestigatorsWithoutSupply :: HasGame m => Supply -> m [InvestigatorId]
 getInvestigatorsWithoutSupply s = getInvestigators >>= filterM (fmap not . (`getHasSupply` s))
 
-getTotalVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m) => m Int
-getTotalVengeanceInVictoryDisplay = do
-  n <- getVengeanceInVictoryDisplay
-  locationVengeance <- fmap getSum . toVengeance =<< select (RevealedLocation <> LocationWithoutClues)
-  pure $ n + locationVengeance
- where
-  toVengeance :: ConvertToCard c => [c] -> m (Sum Int)
-  toVengeance = fmap (mconcat . map Sum . catMaybes) . traverse getVengeancePoints
+-- | The i18n key naming the vengeance tally in the campaign log breakdown.
+vengeanceTally :: Text
+vengeanceTally = "$upgrade.tally.vengeance"
 
-getVengeanceInVictoryDisplay :: forall m. (HasCallStack, HasGame m) => m Int
-getVengeanceInVictoryDisplay = do
+{- | Label for a vengeance source that isn't a card, under the campaign scope so
+it resolves the same from any scenario.
+-}
+vengeanceLabel :: Text -> Text
+vengeanceLabel k = campaignI18n $ scope "vengeance" $ ikey' k
+
+cardTallyLabel :: (ConvertToCard c, HasGame m) => c -> m Text
+cardTallyLabel c = toTitle . RevealedCard <$> convertToCard c
+
+{- | Collapse repeated labels into one row. A location can be counted both by
+'InVictoryDisplayForCountingVengeance' and by the revealed/clue-free rule, and
+the same card can be in the victory display twice; the total is unchanged.
+-}
+mergeTallyEntries :: [(Text, Int)] -> [(Text, Int)]
+mergeTallyEntries entries =
+  [(k, sum [n | (k', n) <- entries, k' == k]) | k <- nub (map fst entries)]
+
+{- | Per-source attribution for the vengeance currently in the victory display.
+'getVengeanceInVictoryDisplay' is the sum of these, so the campaign log can
+never disagree with the recorded tally.
+-}
+getVengeanceEntries :: forall m. (HasCallStack, HasGame m) => m [(Text, Int)]
+getVengeanceEntries = do
   victoryDisplay <- getVictoryDisplay
-  let
-    isVengeanceCard = \case
-      VengeanceCard _ -> True
-      _ -> False
-    inVictoryDisplay' =
-      sum $ map (fromMaybe 0 . cdVengeancePoints . toCardDef) victoryDisplay
-    vengeanceCards = count isVengeanceCard victoryDisplay
-  locationsWithModifier <-
-    getSum
-      <$> selectAgg
-        (Sum . fromMaybe 0)
-        LocationVengeance
-        (LocationWithModifier InVictoryDisplayForCountingVengeance)
-  pure $ inVictoryDisplay' + locationsWithModifier + vengeanceCards
+  cardEntries <- for victoryDisplay \card -> do
+    let printed = fromMaybe 0 $ cdVengeancePoints $ toCardDef card
+    let bonus = case card of
+          VengeanceCard _ -> 1
+          _ -> 0
+    (,printed + bonus) <$> cardTallyLabel card
+  locationEntries <-
+    traverse toLocationEntry
+      =<< select (LocationWithModifier InVictoryDisplayForCountingVengeance)
+  pure $ mergeTallyEntries $ filter ((> 0) . snd) (cardEntries <> locationEntries)
+ where
+  toLocationEntry lid = do
+    n <- fieldMap LocationVengeance (fromMaybe 0) lid
+    (,n) <$> cardTallyLabel lid
+
+{- | 'getVengeanceEntries' plus the revealed, clue-free locations that count at
+the end of the scenario.
+-}
+getTotalVengeanceEntries :: forall m. (HasCallStack, HasGame m) => m [(Text, Int)]
+getTotalVengeanceEntries = do
+  entries <- getVengeanceEntries
+  locations <- select (RevealedLocation <> LocationWithoutClues)
+  locationEntries <- for locations \lid -> do
+    n <- fromMaybe 0 <$> getVengeancePoints lid
+    (,n) <$> cardTallyLabel lid
+  pure $ mergeTallyEntries $ entries <> filter ((> 0) . snd) locationEntries
+
+getTotalVengeanceInVictoryDisplay :: (HasCallStack, HasGame m) => m Int
+getTotalVengeanceInVictoryDisplay = sum . map snd <$> getTotalVengeanceEntries
+
+getVengeanceInVictoryDisplay :: (HasCallStack, HasGame m) => m Int
+getVengeanceInVictoryDisplay = sum . map snd <$> getVengeanceEntries
+
+{- | Add Yig's Fury from a source that isn't a card in the victory display, and
+report it so the campaign log shows where it came from.
+-}
+addVengeance :: ReverseQueue m => Text -> Int -> m ()
+addVengeance from n = when (n /= 0) do
+  incrementRecordCount YigsFury n
+  reportTally vengeanceTally from n
+
+{- | Add the vengeance in the victory display to Yig's Fury, reporting each
+contributing card so the campaign log can attribute the tally.
+-}
+recordVengeance :: ReverseQueue m => m ()
+recordVengeance = do
+  entries <- getTotalVengeanceEntries
+  incrementRecordCount YigsFury (sum $ map snd entries)
+  for_ entries \(from, n) -> reportTally vengeanceTally from n
 
 getExplorationDeck :: HasGame m => m [Card]
 getExplorationDeck = scenarioFieldMap ScenarioDecks (findWithDefault [] ExplorationDeck)

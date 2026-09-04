@@ -308,9 +308,7 @@ instance RunMessage TheBoundaryBeyond where
         for_ locations addToVictory_
       doStep 1 msg
 
-      vengeance <- getTotalVengeanceInVictoryDisplay
-      yigsFury <- getRecordCount YigsFury
-      recordCount YigsFury (yigsFury + vengeance)
+      recordVengeance
 
       whenHarbingerHasEnteredPlay attrs do
         inVictory <-

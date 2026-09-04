@@ -53,6 +53,26 @@ const totalVictoryDisplay = computed(() => {
   return allVictoryDisplay.value.reduce((acc, entry) => acc + entry.details.amount, 0)
 })
 
+type TallyEntry = Extract<XpEntry, { tag: 'TallyGained' | 'TallyLost' }>
+
+interface TallyGroup {
+  tally: string
+  entries: TallyEntry[]
+  total: number
+}
+
+// Non-XP campaign counters (Yig's Fury, ...) reported alongside the experience.
+// Kept out of every XP total below — those all filter by tag.
+const tallies = computed<TallyGroup[]>(() => {
+  const relevant = props.entries.filter((e): e is TallyEntry => e.tag === 'TallyGained' || e.tag === 'TallyLost')
+  const keys = [...new Set(relevant.map(e => e.tally))]
+  return keys.map(tally => {
+    const entries = relevant.filter(e => e.tally === tally)
+    const total = entries.reduce((acc, e) => acc + (e.tag === 'TallyLost' ? -e.details.amount : e.details.amount), 0)
+    return { tally, entries, total }
+  })
+})
+
 interface PerInvestigator {
   entries: XpEntry[]
   total: number
@@ -88,9 +108,12 @@ const headerInvestigators = computed<[Investigator, number][]>(() => {
     .filter(([_i, t]) => t !== 0)
 })
 
+function plain(s: string) {
+  return s.startsWith("$") ? handleI18n(s, t) : getCardName(s)
+}
+
 function format(s: string) {
-  const body = s.startsWith("$") ? handleI18n(s, t) : getCardName(s)
-  return replaceIcons(body).replace(/_([^_]*)_/g, '<b>$1</b>')
+  return replaceIcons(plain(s)).replace(/_([^_]*)_/g, '<b>$1</b>')
 }
 
 function getCardName(s: string) {
@@ -133,6 +156,12 @@ const scenarioIcon = computed<string | null>(() => {
             <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
           </div>
           <span class="amount" :class="{ 'amount--negative': total < 0 }">{{ $t('upgrade.xp', {total : total }) }}</span>
+          <span
+            v-for="group in tallies"
+            :key="group.tally"
+            class="amount tally"
+            :title="plain(group.tally)"
+          >{{ group.total }}</span>
         </div>
       </section>
       <svg class="chevron" :class="{ collapsed }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -147,6 +176,15 @@ const scenarioIcon = computed<string | null>(() => {
           <div v-for="(entry, idx) in allVictoryDisplay" :key="idx" class="entry">
             <span>{{format(entry.details.sourceName)}}</span>
             <span class="amount">+{{entry.details.amount}}</span>
+          </div>
+        </div>
+      </section>
+      <section class="group" v-for="group in tallies" :key="group.tally">
+        <header class="entry-header"><h3>{{format(group.tally)}}</h3><span class="amount tally">{{group.total}}</span></header>
+        <div class="entries">
+          <div v-for="(entry, idx) in group.entries" :key="idx" class="entry">
+            <span v-html="format(entry.details.sourceName)"></span>
+            <span class="amount tally">{{entry.tag === 'TallyLost' ? '-' : '+'}}{{entry.details.amount}}</span>
           </div>
         </div>
       </section>
@@ -236,12 +274,31 @@ h2.title {
   isolation: isolate;
   align-items: flex-end;
 
+  /* Opaque, so it clips whatever sits behind it along its rounded right edge
+     the way the portrait clips this pill. The tint is a gradient layer so the
+     rendered colour is unchanged. */
   .amount {
     padding: 2px 8px;
     margin-left: -5px;
     margin-bottom: 5px;
     z-index: var(--z-index-neg-1);
     border-radius: 0 4px 4px 0;
+    background-color: var(--box-background);
+    background-image: linear-gradient(rgba(74, 196, 86, 0.15), rgba(74, 196, 86, 0.15));
+  }
+
+  .amount--negative {
+    background-image: linear-gradient(rgba(180, 30, 30, 0.2), rgba(180, 30, 30, 0.2));
+  }
+
+  /* A tag emerging from behind the XP pill; its left edge is cut by that
+     pill's rounded border rather than by a straight line. */
+  .amount.tally {
+    min-width: 0;
+    margin-left: -10px;
+    padding: 2px 6px 2px 12px;
+    z-index: var(--z-index-neg-2);
+    background-image: linear-gradient(rgba(214, 178, 92, 0.15), rgba(214, 178, 92, 0.15));
   }
 }
 
@@ -274,6 +331,13 @@ h2.title {
   background: rgba(0,128,128,0.2);
   color: #4fc0c0;
   border-color: rgba(0,128,128,0.35);
+}
+
+/* Campaign counters are not experience — give them their own tone. */
+.tally {
+  background: rgba(214,178,92,0.15);
+  color: #d6b25c;
+  border-color: rgba(214,178,92,0.3);
 }
 
 /* ── Sections ────────────────────────────────────────────── */

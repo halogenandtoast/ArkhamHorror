@@ -89,7 +89,7 @@ import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Criteria
-import Arkham.Helpers.Customization (hasCustomization)
+import Arkham.Helpers.Customization (customizedSlots, hasCustomization)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.Enemy (enemyEngagedInvestigators, getModifiedKeywords)
 import Arkham.Helpers.Game
@@ -5926,7 +5926,7 @@ instance Query ExtendedCardMatcher where
           let slots =
                 (\\ slotsToRemove)
                   . filter ((`notElem` mods) . DoNotTakeUpSlot)
-                  $ cdSlots (toCardDef c)
+                  $ customizedSlots c
                   <> [t | AdditionalSlot t <- mods]
           pure $ s `elem` slots
       CardIsBeneathInvestigator who -> do

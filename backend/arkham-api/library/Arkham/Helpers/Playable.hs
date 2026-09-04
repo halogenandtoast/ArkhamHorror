@@ -19,6 +19,7 @@ import Arkham.Helpers.Card (
  )
 import Arkham.Helpers.Cost (getCanAffordCost, getCanAffordCost_, getSpendableResources)
 import Arkham.Helpers.Criteria (passesCriteria)
+import Arkham.Helpers.Customization (customizedSlots)
 import Arkham.Helpers.Game (withDepthGuard)
 import Arkham.Helpers.Investigator (getAsIfInHandCards)
 import Arkham.Helpers.Location (getLocationOf)
@@ -553,13 +554,14 @@ getPlayabilityChecksWithResources
         let limitsDetail = if limitsOk then Nothing else Just "Per-round or per-game limit has been reached"
 
         -- Slots check
+        let effectiveSlots = customizedSlots c
         slotsOk <-
-          if cheapFail || null (cdSlots pcDef)
+          if cheapFail || null effectiveSlots
             then pure True
             else do
               possibleSlots <- getPotentialSlots c iid
-              pure $ null $ cdSlots pcDef \\ possibleSlots
-        let slotsDetail = if slotsOk then Nothing else Just $ "No available slot of type: " <> tshow (cdSlots pcDef)
+              pure $ null $ effectiveSlots \\ possibleSlots
+        let slotsDetail = if slotsOk then Nothing else Just $ "No available slot of type: " <> tshow effectiveSlots
 
         -- Evade/Fight actions check
         let cardHasOrActions = isOrActions (cdActions pcDef)
@@ -741,7 +743,7 @@ getPlayabilityChecksWithResources
             , ("Play window", playWindowDetail)
             , ("Limits", limitsDetail)
             ]
-              <> [("Slots", slotsDetail) | not (null (cdSlots pcDef))]
+              <> [("Slots", slotsDetail) | not (null effectiveSlots)]
               <> if cardHasOrActions && hasEvade && hasFight
                 then
                   [

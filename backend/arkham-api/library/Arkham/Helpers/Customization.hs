@@ -9,6 +9,7 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.SlotType
 import Data.List (elemIndex)
 import GHC.Records
 
@@ -54,6 +55,28 @@ cardRemainingCheckMarks card c = case card of
   _ -> Nothing
  where
   cardCustomizations = cdCustomizations $ toCardDef card
+
+{- | Slots the card will occupy once in play, adjusted for customizations that move or
+remove a slot. The in-play asset applies the same change through its own HasModifiersFor,
+but playability is checked while the card is still in hand, where no asset entity exists
+to supply modifiers.
+-}
+customizedSlots :: Card -> [SlotType]
+customizedSlots card =
+  foldl' apply (cdSlots def) (getCustomizations_ (cdCustomizations def) customizations)
+ where
+  def = toCardDef card
+  customizations = case card of
+    PlayerCard pc -> pcCustomizations pc
+    _ -> mempty
+  indexes = [i | ChosenIndex i <- concatMap snd (toList customizations)]
+  insteadOf added removed slots = added : filter (/= removed) slots
+  apply slots = \case
+    Enchanted -> insteadOf #arcane #body slots -- Hunter's Armor
+    ImbuedInk -> insteadOf #arcane #body slots -- Living Ink
+    Dominance -> filter (/= if 0 `elem` indexes then #arcane else #ally) slots -- Summoned Servitor
+    _ -> slots
+
 customizationIndex :: HasCardDef a => a -> Customization -> Maybe Int
 customizationIndex a c = elemIndex c $ keys $ cdCustomizations (toCardDef a)
 choicesRequired :: Customization -> [CustomizationChoiceType]

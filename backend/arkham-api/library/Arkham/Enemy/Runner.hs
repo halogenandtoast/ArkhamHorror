@@ -1498,17 +1498,26 @@ instance RunMessage EnemyAttrs where
       whenM (attackIsValid details a) do
         case details.investigator of
           Just iid -> do
-            mods <- getModifiers iid
+            fullMods <- getFullModifiers iid
+            let mods = map (\m -> m.kind) fullMods
             let ignoreMatchers = [m | MayIgnoreAttacksOfOpportunityOf m <- mods]
             ignoreMatches <- if null ignoreMatchers then pure False else matches enemyId (concat ignoreMatchers)
             let canIgnore = MayIgnoreAttacksOfOpportunity `elem` mods || ignoreMatches
             let willIgnore = IgnoreAttacksOfOpportunity `elem` mods
             if (canIgnore || willIgnore) && details.kind == AttackOfOpportunity
-              then do
-                player <- getPlayer iid
-                when canIgnore do
-                  push
-                    $ chooseOne player [Label "$label.ignoreAttackOfOpportunity" [], Label "$label.doNotIgnore" [Do msg]]
+              then
+                if canIgnore
+                  then do
+                    player <- getPlayer iid
+                    push
+                      $ chooseOne player [Label "$label.ignoreAttackOfOpportunity" [], Label "$label.doNotIgnore" [Do msg]]
+                  else do
+                    -- A forced ignore drops the attack silently, but it was still made
+                    let ignoredBy = mapMaybe (\m -> m.card) $ filter (\m -> m.kind == IgnoreAttacksOfOpportunity) fullMods
+                    withI18n $ cardNameVar a $ case ignoredBy of
+                      (card : _) -> withVar "source" (String $ format card) $ sendI18n "log.attackOfOpportunityIgnoredBy"
+                      [] -> sendI18n "log.attackOfOpportunityIgnored"
+                    push $ UpdateHistory iid (HistoryItem HistoryAttacksOfOpportunity 1)
               else push $ Do msg
           _ -> push $ Do msg
       pure $ a & wantsToAttackL .~ False

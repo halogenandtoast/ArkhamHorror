@@ -1,3 +1,5 @@
 {
+  "attackOfOpportunityIgnored": "{name}'s attack of opportunity is ignored",
+  "attackOfOpportunityIgnoredBy": "{name}'s attack of opportunity is ignored by {source}",
   "retaliate": "{name} retaliates"
 }

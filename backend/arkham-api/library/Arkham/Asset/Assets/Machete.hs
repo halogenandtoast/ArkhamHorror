@@ -38,7 +38,7 @@ instance RunMessage Machete where
   runMessage msg a@(Machete attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      skillTestModifier sid (attrs.ability 1) iid (SkillModifier #combat 1)
+      modifySkill sid (attrs.ability 1) iid #combat 1
       chooseFightEnemy sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

@@ -2798,6 +2798,40 @@ runGameMessage msg g = case msg of
     let card = lookupCard cardCode cardId
     replaceCard cardId card
     pure g
+  DebugRegisterCustomCard customCard -> do
+    let def = (customCardDef customCard) {cdCardCode = cardCode, cdArt = unCardCode cardCode}
+        cardCode = sanitizeCustomCardCode (toCardCode $ customCardDef customCard)
+        customCard' = customCard {customCardDef = def}
+    registerCustomCards (singletonMap cardCode customCard')
+    pure $ g & customCardsL %~ insertMap cardCode customCard'
+  DebugRemoveCustomCard cardCode -> pure $ g & customCardsL %~ deleteMap cardCode
+  DebugPlaceCard iid cardId -> do
+    card <- getCard cardId
+    case cdCardType (toCardDef card) of
+      LocationType -> push =<< placeLocation_ card
+      EnemyLocationCardType -> push =<< placeLocation_ card
+      -- Drawn rather than placed: this is the path that spawns an enemy and
+      -- resolves a revelation, so surge and peril behave as they would at the
+      -- table.
+      cardType | cardType `elem` [EnemyType, TreacheryType] -> case card of
+        EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
+        _ -> push $ putCardIntoPlay iid card
+      PlayerEnemyType -> push $ DrewPlayerEnemy iid card
+      -- A skill has no in-play state, so a hand is the only place to put it.
+      SkillType -> push $ DebugAddToHand iid cardId
+      StoryType -> push $ StoryMessage (ReadStory iid card ResolveIt Nothing)
+      -- Assets, events and weaknesses: into play for free, no cost paid.
+      _ -> push $ putCardIntoPlay iid card
+    pure g
+  DebugAddToCampaignDeck iid cardId -> do
+    card <- getCard cardId
+    when (cdCardType (toCardDef card) `elem` playerCardTypes) do
+      card' <- setOwner iid card
+      pushAll
+        [ AddCampaignCardToDeck iid ShuffleIn card'
+        , ShuffleCardsIntoDeck (Deck.InvestigatorDeck iid) [card']
+        ]
+    pure g
   DebugAddToEncounterDeck deck cardId -> do
     card <- getCard cardId
     push $ ShuffleCardsIntoDeck deck [card]

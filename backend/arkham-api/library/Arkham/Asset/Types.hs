@@ -442,7 +442,7 @@ instance HasCardCode (With AssetAttrs meta) where
   toCardCode (With x _) = assetCardCode x
 
 instance HasCardDef AssetAttrs where
-  toCardDef a = case lookup (assetCardCode a) allAssetCards of
+  toCardDef a = case lookup (assetCardCode a) allAssetCards <|> lookupCustomCardDef (assetCardCode a) of
     Just def -> def
     Nothing -> error $ "missing card def for asset " <> show (assetCardCode a)
 

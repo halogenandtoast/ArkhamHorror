@@ -1224,6 +1224,18 @@ data Message
   | SetScenarioDifficulty Difficulty
   | SetCampaignStep CampaignStep
   | CreateCard CardId CardCode
+  | -- Debug: register a runtime-authored card (see "Arkham.Card.CustomCard") on
+    -- the game, so its def resolves for every player and survives a reload.
+    DebugRegisterCustomCard CustomCard
+  | DebugRemoveCustomCard CardCode
+  | -- Debug: resolve an already-created card the way drawing it would --
+    -- spawn an enemy, reveal a treachery, put a location on the board, deal a
+    -- player card to a hand. Dispatches on the card's type.
+    DebugPlaceCard InvestigatorId CardId
+  | -- Debug: earn a card for the rest of the campaign -- into the deck now, and
+    -- into the campaign's story cards so it comes back in later scenarios.
+    -- Player cards only; nothing else survives deck loading.
+    DebugAddToCampaignDeck InvestigatorId CardId
   | -- Epic Multiplayer: mutate a shared counter on the owning event. These are
     -- captured (not dispatched to a game entity) by the run loop when the game
     -- belongs to an event; otherwise they are inert no-ops. See "Arkham.Epic".

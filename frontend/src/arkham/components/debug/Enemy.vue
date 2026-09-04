@@ -61,7 +61,7 @@ const id = computed(() => props.enemy.id)
 
 const cardCode = computed(() => props.enemy.cardCode)
 const image = computed(() => {
-  return cardImg(cardCode.value.replace('c', ''))
+  return cardImg(cardCode.value.replace(/^c/, ''))
 })
 
 const debug = useDebug()

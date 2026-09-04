@@ -1,4 +1,4 @@
-module Arkham.Trait (displayTrait, Trait (..), EnemyTrait (..), HasTraits (..), coreTraits) where
+module Arkham.Trait (displayTrait, traitName, Trait (..), EnemyTrait (..), HasTraits (..), coreTraits) where
 
 import Arkham.Prelude
 import Data.Data (dataTypeConstrs, dataTypeOf, fromConstr, showConstr)
@@ -375,18 +375,20 @@ data Trait
   | Yoth
   | Yuggoth
   | Zoog
-  | -- | Open extension point for homebrew content. Do not use directly; each
-    -- homebrew campaign owns and exposes named, bidirectional pattern synonyms
-    -- over this (see its @Traits.hs@, e.g. @Arkham.Homebrew.DarkMatter.Traits@)
-    -- so card code stays typo-checked. The 'Text' tag equals the trait's name,
-    -- so serialization matches a plain enum constructor and needs no migration.
+  | {- | Open extension point for homebrew content. Do not use directly; each
+    homebrew campaign owns and exposes named, bidirectional pattern synonyms
+    over this (see its @Traits.hs@, e.g. @Arkham.Homebrew.DarkMatter.Traits@)
+    so card code stays typo-checked. The 'Text' tag equals the trait's name,
+    so serialization matches a plain enum constructor and needs no migration.
+    -}
     HomebrewTrait Text
   deriving stock (Show, Eq, Generic, Ord, Read, Data)
-  deriving anyclass (Hashable)
+  deriving anyclass Hashable
 
--- | Core traits serialize as their bare constructor name (as the derived
--- all-nullary encoding did); a 'HomebrewTrait' serializes as its tag, which by
--- construction equals the old constructor name, so existing saves round-trip.
+{- | Core traits serialize as their bare constructor name (as the derived
+all-nullary encoding did); a 'HomebrewTrait' serializes as its tag, which by
+construction equals the old constructor name, so existing saves round-trip.
+-}
 instance ToJSON Trait where
   toJSON = \case
     HomebrewTrait t -> toJSON t
@@ -396,9 +398,10 @@ instance FromJSON Trait where
   parseJSON = withText "Trait" $ \t ->
     pure $ Map.findWithDefault (HomebrewTrait t) t coreTraitsByName
 
--- | Every non-homebrew trait. Replaces @[minBound .. maxBound]@ now that 'Trait'
--- carries the open 'HomebrewTrait' constructor and can no longer derive 'Enum'.
--- For the full set including homebrew, use @Arkham.Homebrew.Defs.allTraits@.
+{- | Every non-homebrew trait. Replaces @[minBound .. maxBound]@ now that 'Trait'
+carries the open 'HomebrewTrait' constructor and can no longer derive 'Enum'.
+For the full set including homebrew, use @Arkham.Homebrew.Defs.allTraits@.
+-}
 coreTraits :: [Trait]
 coreTraits =
   [ fromConstr con
@@ -411,6 +414,13 @@ coreTraitsByName = Map.fromList [(tshow t, t) | t <- coreTraits]
 
 class HasTraits a where
   toTraits :: a -> Set Trait
+
+{- | The name a trait serializes under -- the constructor name, or the tag a
+homebrew trait was declared with. Mirrors 'ToJSON Trait'.
+-}
+traitName :: Trait -> Text
+traitName (HomebrewTrait t) = t
+traitName t = tshow t
 
 displayTrait :: Trait -> Text
 displayTrait (HomebrewTrait t) = pack $ splitCamelCase $ unpack t

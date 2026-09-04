@@ -8,6 +8,7 @@ import {-# SOURCE #-} Arkham.Ability.Types
 import Arkham.ActiveCost.Base
 import Arkham.Campaign.Types (Campaign)
 import {-# SOURCE #-} Arkham.Card (Card, CardCode, CardId)
+import Arkham.Card.CustomCard (CustomCard)
 import Arkham.ChaosToken.Types
 import {-# SOURCE #-} Arkham.Entities
 import Arkham.Game.Settings
@@ -144,6 +145,13 @@ data Game = Game
     gameActionSnapshot :: Transient Game
   , gameInAction :: Bool
   , gameCards :: Map CardId Card
+  , gameCustomCards :: Map CardCode CustomCard
+  {- ^ Cards invented at runtime from the debug menu. The engine's def and
+  builder maps are compile-time, so these are the authority for any card code
+  carrying the custom prefix; deserializing a game re-registers them into
+  "Arkham.Card.CustomCard"'s process-global registry before its entities are
+  parsed.
+  -}
   , gameCardUses :: Map CardCode [InvestigatorId]
   , -- handling costs
     gameActiveCost :: Map ActiveCostId ActiveCost

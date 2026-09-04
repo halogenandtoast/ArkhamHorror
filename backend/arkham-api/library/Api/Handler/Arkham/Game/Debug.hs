@@ -8,12 +8,14 @@ module Api.Handler.Arkham.Game.Debug (
   getApiV1ArkhamGameReloadR,
   getApiV1ArkhamGameOpenSeatsR,
   postApiV1ArkhamGameClaimSeatR,
+  getApiV1ArkhamGameCustomCardsR,
 ) where
 
 import Api.Arkham.Export
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
+import Arkham.Card.CustomCard
 import Arkham.Game
 import Arkham.Id
 import Codec.Compression.GZip qualified as GZip
@@ -311,3 +313,15 @@ postApiV1ArkhamGameClaimSeatR gameId = do
       lift $ permissionDenied "You already have a seat in this game"
     newPlayerId <- insert $ ArkhamPlayer userId gameId investigatorId
     remapInvestigatorUUID gameId investigatorId newPlayerId
+
+{- | The debug-authored cards defined in this game.
+
+Served on its own rather than folded into the game payload: a custom card
+carries its art inline (a data URI for a dropped image), which has no business
+riding every websocket update.
+-}
+getApiV1ArkhamGameCustomCardsR :: ArkhamGameId -> Handler [CustomCard]
+getApiV1ArkhamGameCustomCardsR gameId = do
+  _ <- getRequestUserId
+  ge <- runDB $ get404 gameId
+  pure $ toList $ gameCustomCards ge.currentData

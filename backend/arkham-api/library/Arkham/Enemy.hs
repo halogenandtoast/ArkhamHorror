@@ -3,6 +3,7 @@
 module Arkham.Enemy where
 
 import Arkham.Card
+import Arkham.Custom.Enemy (customEnemy)
 import Arkham.Classes
 import Arkham.Enemy.DefeatedProxy (toDefeatedEnemyProxy)
 import Arkham.Enemy.Enemies
@@ -39,8 +40,10 @@ instance RunMessage Enemy where
 
 lookupEnemy :: HasCallStack => CardCode -> EnemyId -> CardId -> Enemy
 lookupEnemy cardCode = case lookup cardCode allEnemies of
-  Nothing -> error $ "Unknown enemy (lookupEnemy): " <> show cardCode <> "\n\n" <> prettyCallStack callStack
   Just (SomeEnemyCard a) -> \e c -> Enemy $ cbCardBuilder a c e
+  Nothing -> case lookupCustomCardDef cardCode of
+    Just def -> \e c -> Enemy $ cbCardBuilder (customEnemy def) c e
+    Nothing -> error $ "Unknown enemy (lookupEnemy): " <> show cardCode <> "\n\n" <> prettyCallStack callStack
 
 {- | Rebuild an 'Enemy' from the attrs recorded when it was defeated.
 
@@ -63,9 +66,11 @@ instance FromJSON Enemy where
 withEnemyCardCode
   :: CardCode -> (forall a. IsEnemy a => EnemyCard a -> r) -> r
 withEnemyCardCode cCode f = case lookup cCode allEnemies of
-  Nothing ->
-    error $ "Unknown enemy (withEnemyCardCode): " <> show cCode <> "\n\n" <> prettyCallStack callStack
   Just (SomeEnemyCard a) -> f a
+  Nothing -> case lookupCustomCardDef cCode of
+    Just def -> f (customEnemy def)
+    Nothing ->
+      error $ "Unknown enemy (withEnemyCardCode): " <> show cCode <> "\n\n" <> prettyCallStack callStack
 
 allEnemies :: Map CardCode SomeEnemyCard
 allEnemies =

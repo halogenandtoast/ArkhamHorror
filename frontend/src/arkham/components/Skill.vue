@@ -26,7 +26,7 @@ const id = computed(() => props.skill.id)
 const cardCode = computed(() => props.skill.cardCode)
 const image = computed(() => {
   const mutated = props.skill.mutated ? `_${props.skill.mutated}` : ''
-  return cardImg(`${cardCode.value.replace('c', '')}${mutated}`)
+  return cardImg(`${cardCode.value.replace(/^c/, '')}${mutated}`)
 })
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 

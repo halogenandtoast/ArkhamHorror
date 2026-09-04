@@ -3,6 +3,7 @@
 module Arkham.Treachery where
 
 import Arkham.Card
+import Arkham.Custom.Treachery (customTreachery)
 import Arkham.Card.PlayerCard
 import Arkham.Classes
 import Arkham.Homebrew.Registry qualified as Registry
@@ -35,8 +36,10 @@ instance RunMessage Treachery where
 
 lookupTreachery :: CardCode -> InvestigatorId -> TreacheryId -> CardId -> Treachery
 lookupTreachery cardCode = case lookup cardCode allTreacheries of
-  Nothing -> error $ "Unknown treachery: " <> show cardCode
   Just (SomeTreacheryCard a) -> \i t c -> Treachery $ cbCardBuilder a c (i, t)
+  Nothing -> case lookupCustomCardDef cardCode of
+    Just def -> \i t c -> Treachery $ cbCardBuilder (customTreachery def) c (i, t)
+    Nothing -> error $ "Unknown treachery: " <> show cardCode
 
 instance FromJSON Treachery where
   parseJSON = withObject "Treachery" $ \o -> do
@@ -47,8 +50,10 @@ instance FromJSON Treachery where
 withTreacheryCardCode
   :: CardCode -> (forall a. IsTreachery a => TreacheryCard a -> r) -> r
 withTreacheryCardCode cCode f = case lookup cCode allTreacheries of
-  Nothing -> error $ "Unknown treachery: " <> show cCode
   Just (SomeTreacheryCard a) -> f a
+  Nothing -> case lookupCustomCardDef cCode of
+    Just def -> f (customTreachery def)
+    Nothing -> error $ "Unknown treachery: " <> show cCode
 
 allTreacheries :: Map CardCode SomeTreacheryCard
 allTreacheries =

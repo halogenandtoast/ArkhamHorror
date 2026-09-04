@@ -13,6 +13,7 @@ import Arkham.Card.CardDef as X
 import Arkham.Card.CardType as X
 import Arkham.Card.Class as X
 import Arkham.Card.Cost as X
+import Arkham.Card.CustomCard as X
 import Arkham.Card.EncounterCard as X (EncounterCard (..))
 import Arkham.Card.Id as X
 import Arkham.Card.PlayerCard as X (PlayerCard (..))
@@ -46,16 +47,23 @@ import GHC.Records
 lookupCard
   :: (HasCallStack, HasCardCode cardCode) => cardCode -> CardId -> Card
 lookupCard (toCardCode -> cardCode) cardId =
-  case (lookup cardCode allEncounterCards, lookup cardCode (allPlayerCards <> allSpecialEnemyCards)) of
-    (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
-    (Just def, _) -> EncounterCard $ lookupEncounterCard def cardId
-    -- we prefer encounter cards over player cards to handle cases like straitjacket
-    (Nothing, Just def) -> PlayerCard $ lookupPlayerCard def cardId
+  case lookupCustomCardDef cardCode of
+    Just def
+      | cdCardType def `elem` playerCardTypes -> PlayerCard $ lookupPlayerCard def cardId
+      | otherwise -> EncounterCard $ lookupEncounterCard def cardId
+    Nothing ->
+      case (lookup cardCode allEncounterCards, lookup cardCode (allPlayerCards <> allSpecialEnemyCards)) of
+        (Nothing, Nothing) -> error $ "Missing card " <> show cardCode
+        (Just def, _) -> EncounterCard $ lookupEncounterCard def cardId
+        -- we prefer encounter cards over player cards to handle cases like straitjacket
+        (Nothing, Just def) -> PlayerCard $ lookupPlayerCard def cardId
 
 -- we prefer encounter cards over player cards to handle cases like straitjacket
 lookupCardDef :: HasCardCode cardCode => cardCode -> Maybe CardDef
 lookupCardDef (toCardCode -> cardCode) =
-  lookup cardCode allEncounterCards <|> lookup cardCode allPlayerCards
+  lookup cardCode allEncounterCards
+    <|> lookup cardCode allPlayerCards
+    <|> lookupCustomCardDef cardCode
 
 instance HasField "flip" CardDef (Maybe CardDef) where
   getField def = def.otherSide >>= lookupCardDef
@@ -342,7 +350,9 @@ setTaboo mtaboo card = do
   pure result
  where
   go = \case
-    PlayerCard pc -> PlayerCard (pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo pc, pcChained = tabooChained mtaboo pc})
+    PlayerCard pc ->
+      PlayerCard
+        (pc {pcTabooList = mtaboo, pcMutated = tabooMutated mtaboo pc, pcChained = tabooChained mtaboo pc})
     other -> other
 
 setFacedown :: CardGen m => Bool -> Card -> m Card

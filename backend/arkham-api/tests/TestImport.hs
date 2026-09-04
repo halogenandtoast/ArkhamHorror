@@ -925,6 +925,7 @@ newGame scenario' investigator = do
         , gameActionSnapshot = Transient Nothing
         , gameInAction = False
         , gameCards = mempty
+        , gameCustomCards = mempty
         , gameActiveCost = mempty
         , gameActiveAbilities = mempty
         , gameInSetup = False

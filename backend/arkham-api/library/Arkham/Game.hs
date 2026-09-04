@@ -277,6 +277,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
   let state = IsPending []
    in Game
         { gameCards = mempty
+        , gameCustomCards = mempty
         , gameWindowDepth = 0
         , gameWindowStack = Nothing
         , gameWindowTick = 0

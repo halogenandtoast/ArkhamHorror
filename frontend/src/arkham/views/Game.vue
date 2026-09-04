@@ -71,7 +71,8 @@ import {
   choicesTooltipByPlayerKey,
 } from '@/arkham/composables/useGameChoices'
 import { buildGameIndexes, gameIndexesKey } from '@/arkham/composables/useGameIndexes'
-import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
+import { Card, asCardCode, cardDecoder, toCardContents } from '@/arkham/types/Card'
+import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import * as Message from '@/arkham/types/Message'
 import { type Question } from '@/arkham/types/Question'
 import type { Source } from '@/arkham/types/Source'
@@ -250,6 +251,7 @@ const focusLightX = ref(-1000)
 const focusLightY = ref(-1000)
 
 store.fetchCards()
+store.fetchCustomCards(props.gameId)
 
 interface PlayabilityInfo {
   cardId: string
@@ -258,6 +260,18 @@ interface PlayabilityInfo {
 }
 
 const game = shallowRef<Arkham.Game | null>(null)
+
+/* A custom card someone else created shows up in the game payload before this
+ * client has its def; refetch the game's custom cards when an unknown one
+ * appears. */
+watch(game, (g) => {
+  if (!g) return
+  const unknown = Object.values(g.cards).some((c) => {
+    const code = asCardCode(c)
+    return isCustomCardCode(code) && !customCardDef(code)
+  })
+  if (unknown) store.fetchCustomCards(props.gameId)
+})
 
 // "Ready to play": the group has reached the first investigation phase of an
 // active, started scenario. Cleanest signal we have off the existing game state.

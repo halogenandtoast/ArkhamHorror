@@ -3,6 +3,7 @@
 module Arkham.Skill where
 
 import Arkham.Card
+import Arkham.Custom.Skill (customSkill)
 import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Classes
 import Arkham.Homebrew.Registry qualified as Registry
@@ -55,8 +56,10 @@ instance RunMessage Skill where
 
 lookupSkill :: CardCode -> InvestigatorId -> SkillId -> CardId -> Skill
 lookupSkill cardCode = case lookup cardCode allSkills of
-  Nothing -> error $ "Unknown skill: " <> show cardCode
   Just (SomeSkillCard a) -> \i s c -> Skill $ cbCardBuilder a c (i, s)
+  Nothing -> case lookupCustomCardDef cardCode of
+    Just def -> \i s c -> Skill $ cbCardBuilder (customSkill def) c (i, s)
+    Nothing -> error $ "Unknown skill: " <> show cardCode
 
 instance FromJSON Skill where
   parseJSON = withObject "Skill" $ \o -> do
@@ -67,8 +70,10 @@ instance FromJSON Skill where
 withSkillCardCode
   :: CardCode -> (forall a. IsSkill a => SkillCard a -> r) -> r
 withSkillCardCode cCode f = case lookup cCode allSkills of
-  Nothing -> error $ "Unknown skill: " <> show cCode
   Just (SomeSkillCard a) -> f a
+  Nothing -> case lookupCustomCardDef cCode of
+    Just def -> f (customSkill def)
+    Nothing -> error $ "Unknown skill: " <> show cCode
 
 allSkills :: Map CardCode SomeSkillCard
 allSkills =

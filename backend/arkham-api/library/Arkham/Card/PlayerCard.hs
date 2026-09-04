@@ -6,6 +6,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Card.Class
 import Arkham.Card.Cost
+import Arkham.Card.CustomCard
 import Arkham.Card.Id
 import Arkham.Customization
 import Arkham.Enemy.Cards (allSpecialEnemyCards)
@@ -85,12 +86,14 @@ instance HasCardDef PlayerCard where
       Just def -> def
       Nothing -> case lookup (pcCardCode c) InvestigatorCards.allInvestigatorCards of
         Just def -> def
-        Nothing ->
-          error
-            $ "missing card def for player card "
-            <> show (pcCardCode c)
-            <> "\n"
-            <> prettyCallStack callStack
+        Nothing -> case lookupCustomCardDef (pcCardCode c) of
+          Just def -> def
+          Nothing ->
+            error
+              $ "missing card def for player card "
+              <> show (pcCardCode c)
+              <> "\n"
+              <> prettyCallStack callStack
 
 instance Named PlayerCard where
   toName = toName . toCardDef

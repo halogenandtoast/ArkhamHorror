@@ -184,7 +184,7 @@ instance HasCardCode EventAttrs where
   toCardCode = eventCardCode
 
 instance HasCardDef EventAttrs where
-  toCardDef a = case lookup (eventCardCode a) allEventCards of
+  toCardDef a = case lookup (eventCardCode a) allEventCards <|> lookupCustomCardDef (eventCardCode a) of
     Just def -> def
     Nothing -> error $ "missing card def for asset " <> show (eventCardCode a)
 

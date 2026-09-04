@@ -3,6 +3,7 @@
 module Arkham.Event where
 
 import Arkham.Card
+import Arkham.Custom.Event (customEvent)
 import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Classes
 import Arkham.Event.Events
@@ -44,8 +45,10 @@ instance RunMessage Event where
 
 lookupEvent :: CardCode -> InvestigatorId -> EventId -> CardId -> Event
 lookupEvent cardCode = case lookup cardCode allEvents of
-  Nothing -> error $ "Unknown event: " <> show cardCode
   Just (SomeEventCard a) -> \i e c -> Event $ cbCardBuilder a c (i, e)
+  Nothing -> case lookupCustomCardDef cardCode of
+    Just def -> \i e c -> Event $ cbCardBuilder (customEvent def) c (i, e)
+    Nothing -> error $ "Unknown event: " <> show cardCode
 
 instance FromJSON Event where
   parseJSON = withObject "Event" $ \o -> do
@@ -56,8 +59,10 @@ instance FromJSON Event where
 withEventCardCode
   :: CardCode -> (forall a. IsEvent a => EventCard a -> r) -> r
 withEventCardCode cCode f = case lookup cCode allEvents of
-  Nothing -> error $ "Unknown event: " <> show cCode
   Just (SomeEventCard a) -> f a
+  Nothing -> case lookupCustomCardDef cCode of
+    Just def -> f (customEvent def)
+    Nothing -> error $ "Unknown event: " <> show cCode
 
 allEvents :: Map CardCode SomeEventCard
 allEvents =

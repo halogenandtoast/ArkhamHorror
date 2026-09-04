@@ -5,6 +5,7 @@ module Arkham.Asset where
 import Arkham.Asset.Assets
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Custom.Asset (customAsset)
 import Arkham.Card.PlayerCard (tabooChained, tabooMutated)
 import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Prelude
@@ -35,8 +36,10 @@ createAsset a aId =
 
 lookupAsset :: HasCallStack => CardCode -> AssetId -> Maybe InvestigatorId -> CardId -> Asset
 lookupAsset cardCode = case lookup cardCode allAssets of
-  Nothing -> error $ "Unknown asset: " <> show cardCode
   Just (SomeAssetCard a) -> \aid mId cId -> Asset $ cbCardBuilder a cId (aid, mId)
+  Nothing -> case lookupCustomCardDef cardCode of
+    Just def -> \aid mId cId -> Asset $ cbCardBuilder (customAsset def) cId (aid, mId)
+    Nothing -> error $ "Unknown asset: " <> show cardCode
 
 instance FromJSON Asset where
   parseJSON = withObject "Asset" $ \o -> do
@@ -47,8 +50,10 @@ instance FromJSON Asset where
 withAssetCardCode
   :: CardCode -> (forall a. IsAsset a => AssetCard a -> r) -> r
 withAssetCardCode cCode f = case lookup cCode allAssets of
-  Nothing -> error "invalid assets"
   Just (SomeAssetCard a) -> f a
+  Nothing -> case lookupCustomCardDef cCode of
+    Just def -> f (customAsset def)
+    Nothing -> error "invalid assets"
 
 allAssets :: Map CardCode SomeAssetCard
 allAssets =

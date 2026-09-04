@@ -6,6 +6,7 @@ module Arkham.Location (
 ) where
 
 import Arkham.Card
+import Arkham.Custom.Location (customLocation)
 import Arkham.Classes
 import Arkham.Helpers.Modifiers
 import Arkham.Homebrew.Registry qualified as Registry
@@ -20,8 +21,10 @@ createLocation a lid = lookupLocation (toCardCode a) lid (toCardId a)
 
 lookupLocation :: HasCallStack => CardCode -> LocationId -> CardId -> Location
 lookupLocation cCode = case lookup cCode allLocations of
-  Nothing -> error $ "Unknown location: " <> show cCode <> "\n" <> prettyCallStack callStack
   Just (SomeLocationCard a) -> \lid cid -> Location $ cbCardBuilder a cid lid
+  Nothing -> case lookupCustomCardDef cCode of
+    Just def -> \lid cid -> Location $ cbCardBuilder (customLocation def) cid lid
+    Nothing -> error $ "Unknown location: " <> show cCode <> "\n" <> prettyCallStack callStack
 
 instance RunMessage Location where
   runMessage (Reset target) x | isTarget (toAttrs x) target = do
@@ -44,8 +47,10 @@ instance FromJSON Location where
 withLocationCardCode
   :: CardCode -> (forall a. IsLocation a => LocationCard a -> r) -> r
 withLocationCardCode cCode f = case lookup cCode allLocations of
-  Nothing -> error "invalid locations"
   Just (SomeLocationCard a) -> f a
+  Nothing -> case lookupCustomCardDef cCode of
+    Just def -> f (customLocation def)
+    Nothing -> error "invalid locations"
 
 allLocations :: Map CardCode SomeLocationCard
 allLocations =

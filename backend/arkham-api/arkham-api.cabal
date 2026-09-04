@@ -2411,6 +2411,7 @@ library
       Arkham.Card.CardType
       Arkham.Card.Class
       Arkham.Card.Cost
+      Arkham.Card.CustomCard
       Arkham.Card.EncounterCard
       Arkham.Card.Id
       Arkham.Card.PlayerCard
@@ -2445,6 +2446,13 @@ library
       Arkham.Cost.Status
       Arkham.Criteria
       Arkham.Criteria.Override
+      Arkham.Custom.Asset
+      Arkham.Custom.Enemy
+      Arkham.Custom.Event
+      Arkham.Custom.Location
+      Arkham.Custom.Skill
+      Arkham.Custom.Story
+      Arkham.Custom.Treachery
       Arkham.Customization
       Arkham.Damage
       Arkham.DamageEffect

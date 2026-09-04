@@ -172,7 +172,10 @@ instance IsCard EnemyAttrs where
 
 instance HasCardDef EnemyAttrs where
   toCardDef e =
-    case lookup (enemyCardCode e) allEnemyCards <|> lookup (enemyCardCode e) allEnemyLocationCards of
+    case
+      lookup (enemyCardCode e) allEnemyCards
+        <|> lookup (enemyCardCode e) allEnemyLocationCards
+        <|> lookupCustomCardDef (enemyCardCode e) of
       Just def -> def
       Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
 

@@ -271,7 +271,7 @@ instance HasCardCode LocationAttrs where
   toCardCode = locationCardCode
 
 instance HasCardDef LocationAttrs where
-  toCardDef a = case lookup (locationCardCode a) (allLocationCards <> allSpecialLocationCards <> allEnemyLocationCards) of
+  toCardDef a = case lookup (locationCardCode a) (allLocationCards <> allSpecialLocationCards <> allEnemyLocationCards) <|> lookupCustomCardDef (locationCardCode a) of
     Just def -> def
     Nothing ->
       error $ "missing card def for location " <> show (locationCardCode a)

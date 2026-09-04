@@ -19,6 +19,7 @@ import Skill from '@/arkham/components/Skill.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
+import CustomCardCreator from '@/arkham/components/debug/CustomCardCreator.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
@@ -523,6 +524,7 @@ const asIfInHandPhantomCards = computed<CardT.Card[]>(() => {
 })
 
 const showDebugAddCard = ref(false)
+const showCustomCardCreator = ref(false)
 const debugPlayerCards = ref<CardDef[]>([])
 const debugCardSearch = ref('')
 const debugAddCardError = ref<string | null>(null)
@@ -1148,6 +1150,13 @@ function closeHand() {
       </div>
     </div>
 
+    <CustomCardCreator
+      v-if="debug.active && showCustomCardCreator"
+      :game="game"
+      :investigatorId="investigator.id"
+      @close="showCustomCardCreator = false"
+    />
+
     <div class="player">
       <div v-if="hunchDeck" class="hunch-deck">
         <div class="top-of-deck">
@@ -1261,6 +1270,7 @@ function closeHand() {
         </transition-group>
         <div class="hand-debug-actions" v-if="debug.active">
           <button type="button" @click="openDebugAddCard">+ Card to hand</button>
+          <button type="button" @click="showCustomCardCreator = true">+ Custom card</button>
         </div>
         <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">{{ t('handSize') }}: {{totalHandSize}}/{{investigator.handSize}}</div>
       </div>

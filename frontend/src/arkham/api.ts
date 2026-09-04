@@ -2,6 +2,7 @@ import api from '@/api';
 import { Game, GameDetailsEntry, gameDecoder, gameDetailsEntryDecoder } from '@/arkham/types/Game';
 import { ArkhamDbDecklist, Deck, deckDecoder } from '@/arkham/types/Deck';
 import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
+import { CustomCard, customCardDecoder } from '@/arkham/customCards';
 import { Difficulty } from '@/arkham/types/Difficulty';
 import { Source } from '@/arkham/types/Source';
 import { Token } from '@/arkham/types/Token';
@@ -108,6 +109,16 @@ export const fetchCards = async (cardPool: CardPoolMode | boolean = 'player'): P
 export const fetchHomebrewCards = async (): Promise<CardDef[]> => {
   const { data } = await api.get('arkham/homebrew/cards')
   return JsonDecoder.array(cardDefDecoder, 'ArkhamHomebrewCardDef[]').decodePromise(data)
+}
+
+export const fetchTraits = async (): Promise<[string, string][]> => {
+  const { data } = await api.get('arkham/traits')
+  return data
+}
+
+export const fetchCustomCards = async (gameId: string): Promise<CustomCard[]> => {
+  const { data } = await api.get(`arkham/games/${gameId}/custom-cards`)
+  return JsonDecoder.array(customCardDecoder, 'ArkhamCustomCard[]').decodePromise(data)
 }
 
 export const fetchCard = async (cardCode: string): Promise<CardDef> => {

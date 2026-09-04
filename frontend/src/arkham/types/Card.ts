@@ -67,7 +67,7 @@ export function cardImage(card: Card | CardContents) {
   }
   const side = cardIsFlipped(card) ? 'b' : ''
   // TODO, send art with cards next to
-  const art = cardArt(card) || asCardCode(card).replace('c', '')
+  const art = cardArt(card) || asCardCode(card).replace(/^c/, '')
   return cardImgPath(`${art}${side}`)
 }
 

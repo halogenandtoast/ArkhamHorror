@@ -138,7 +138,7 @@ const image = computed(() => {
 const dataImage = computed(() => {
   const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
   if (props.asset.flipped && hasBackArt.value) return `${cardArt(cardCode.value)}b`
-  return cardCode.value.replace('c', '') + mutated
+  return cardCode.value.replace(/^c/, '') + mutated
 })
 const choices = useGameChoices(() => props.game, () => props.playerId)
 

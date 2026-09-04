@@ -154,7 +154,7 @@ instance HasCardCode SkillAttrs where
   toCardCode = skillCardCode
 
 instance HasCardDef SkillAttrs where
-  toCardDef a = case lookup (skillCardCode a) allSkillCards of
+  toCardDef a = case lookup (skillCardCode a) allSkillCards <|> lookupCustomCardDef (skillCardCode a) of
     Just def -> def
     Nothing -> error $ "missing card def for skill " <> show (skillCardCode a)
 

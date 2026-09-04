@@ -182,7 +182,7 @@ instance HasCardCode TreacheryAttrs where
   toCardCode = treacheryCardCode
 
 instance HasCardDef TreacheryAttrs where
-  toCardDef a = case lookup (treacheryCardCode a) allTreacheryCards of
+  toCardDef a = case lookup (treacheryCardCode a) allTreacheryCards <|> lookupCustomCardDef (treacheryCardCode a) of
     Just def -> def
     Nothing ->
       error $ "missing card def for treachery " <> show (treacheryCardCode a)

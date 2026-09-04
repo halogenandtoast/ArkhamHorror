@@ -2,6 +2,7 @@ import { useSiteSettingsStore } from '@/stores/site_settings'
 import { replaceHomebrewIcons } from '@/arkham/homebrewAssets'
 import { iconClasses, runePlaceholder } from '@/arkham/icons'
 import { ref, type Ref } from 'vue';
+import { customCardArt, customCardPlaceholder, isCustomCardCode } from '@/arkham/customCards'
 
 interface ImageHelper {
   root: string
@@ -98,6 +99,10 @@ export function isLocalized(src: string) {
 }
 
 export function imgsrc(src: string) {
+  // A debug-authored card carries its art with it (a URL, or a data URI for a
+  // dropped image) rather than living under the asset host.
+  if (isCustomCardCode(src)) return customCardArt(src) ?? customCardPlaceholder(src)
+
   const store = useSiteSettingsStore()
   const language = localStorage.getItem('language') || 'en'
   const path = src.replace(/^\//, '')
@@ -121,6 +126,9 @@ export function imgsrc(src: string) {
 // Homebrew card art (prefixed codes) lives under its campaign folder.
 // `art` is a c-stripped card code, optionally with suffixes (e.g. "circus-ex-mortis:001b", "dark-matter:063aa").
 export function cardImgPath(art: string): string {
+  // Custom card art is resolved by `imgsrc`, not by path.
+  if (isCustomCardCode(art)) return art
+
   const homebrewMatch = art.match(/^:(.+):(\d+[a-z]*)$/)
 
   if (homebrewMatch) {

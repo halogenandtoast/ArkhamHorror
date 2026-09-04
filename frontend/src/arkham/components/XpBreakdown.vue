@@ -63,15 +63,31 @@ interface TallyGroup {
 
 // Non-XP campaign counters (Yig's Fury, ...) reported alongside the experience.
 // Kept out of every XP total below — those all filter by tag.
-const tallies = computed<TallyGroup[]>(() => {
-  const relevant = props.entries.filter((e): e is TallyEntry => e.tag === 'TallyGained' || e.tag === 'TallyLost')
-  const keys = [...new Set(relevant.map(e => e.tally))]
-  return keys.map(tally => {
-    const entries = relevant.filter(e => e.tally === tally)
-    const total = entries.reduce((acc, e) => acc + (e.tag === 'TallyLost' ? -e.details.amount : e.details.amount), 0)
-    return { tally, entries, total }
+const tallyEntries = computed<TallyEntry[]>(() =>
+  props.entries.filter((e): e is TallyEntry => e.tag === 'TallyGained' || e.tag === 'TallyLost')
+)
+
+function groupTallies(entries: TallyEntry[]): TallyGroup[] {
+  return [...new Set(entries.map(e => e.tally))].map(tally => {
+    const inGroup = entries.filter(e => e.tally === tally)
+    const total = inGroup.reduce((acc, e) => acc + (e.tag === 'TallyLost' ? -e.details.amount : e.details.amount), 0)
+    return { tally, entries: inGroup, total }
   })
+}
+
+// A counter with no owner is scenario-wide and gets its own free-floating pill;
+// an owned one rides along with that investigator's XP.
+const globalTallies = computed(() => groupTallies(tallyEntries.value.filter(e => !e.tallyOwner)))
+
+const investigatorTallies = computed<Record<string, TallyGroup[]>>(() => {
+  const owned = tallyEntries.value.filter(e => e.tallyOwner)
+  return [...new Set(owned.map(e => e.tallyOwner as string))].reduce((acc, iid) => {
+    acc[iid] = groupTallies(owned.filter(e => e.tallyOwner === iid))
+    return acc
+  }, {} as Record<string, TallyGroup[]>)
 })
+
+const tallies = computed<TallyGroup[]>(() => groupTallies(tallyEntries.value))
 
 interface PerInvestigator {
   entries: XpEntry[]
@@ -105,7 +121,7 @@ const headerInvestigators = computed<[Investigator, number][]>(() => {
   }
   return props.investigators
     .map((i): [Investigator, number] => ([i, (perInvestigator.value[i.id]?.total || 0) + totalVictoryDisplay.value]))
-    .filter(([_i, t]) => t !== 0)
+    .filter(([i, t]) => t !== 0 || (investigatorTallies.value[i.id]?.length ?? 0) > 0)
 })
 
 function plain(s: string) {
@@ -149,7 +165,15 @@ const scenarioIcon = computed<string | null>(() => {
   <div class="breakdown">
     <header class="breakdown-header" @click="collapsed = !collapsed">
       <img v-if="scenarioIcon" :src="scenarioIcon" class="scenario-icon" />
-      <h2 class="title">{{name}}</h2>
+      <div class="title-row">
+        <h2 class="title">{{name}}</h2>
+        <span
+          v-for="group in globalTallies"
+          :key="group.tally"
+          class="amount tally global-tally"
+          v-html="`${format(group.tally)} ${group.total}`"
+        ></span>
+      </div>
       <section class="amounts">
         <div class="investigator-amount" v-for="[investigator, total] in headerInvestigators" :key="investigator.id">
           <div :class="`investigator-portrait-container ${toCssName(investigator.class)}`">
@@ -157,7 +181,7 @@ const scenarioIcon = computed<string | null>(() => {
           </div>
           <span class="amount" :class="{ 'amount--negative': total < 0 }">{{ $t('upgrade.xp', {total : total }) }}</span>
           <span
-            v-for="group in tallies"
+            v-for="group in investigatorTallies[investigator.id] ?? []"
             :key="group.tally"
             class="amount tally"
             :title="plain(group.tally)"
@@ -170,21 +194,21 @@ const scenarioIcon = computed<string | null>(() => {
       <section class="group" v-if="unspendableXp">
         <header class="entry-header"><h3>{{ $t('upgrade.unspendableXp') }}</h3><span class="amount unspendable">{{ unspendableXp }}</span></header>
       </section>
-      <section class="group" v-if="totalVictoryDisplay > 0">
-        <header class="entry-header"><h3>{{ $t('upgrade.victoryDisplay') }}</h3><span class="amount" :class="{ 'amount--negative': totalVictoryDisplay < 0 }">{{ $t('upgrade.xp', {total: totalVictoryDisplay}) }}</span></header>
-        <div class="entries">
-          <div v-for="(entry, idx) in allVictoryDisplay" :key="idx" class="entry">
-            <span>{{format(entry.details.sourceName)}}</span>
-            <span class="amount">+{{entry.details.amount}}</span>
-          </div>
-        </div>
-      </section>
       <section class="group" v-for="group in tallies" :key="group.tally">
         <header class="entry-header"><h3>{{format(group.tally)}}</h3><span class="amount tally">{{group.total}}</span></header>
         <div class="entries">
           <div v-for="(entry, idx) in group.entries" :key="idx" class="entry">
             <span v-html="format(entry.details.sourceName)"></span>
             <span class="amount tally">{{entry.tag === 'TallyLost' ? '-' : '+'}}{{entry.details.amount}}</span>
+          </div>
+        </div>
+      </section>
+      <section class="group" v-if="totalVictoryDisplay > 0">
+        <header class="entry-header"><h3>{{ $t('upgrade.victoryDisplay') }}</h3><span class="amount" :class="{ 'amount--negative': totalVictoryDisplay < 0 }">{{ $t('upgrade.xp', {total: totalVictoryDisplay}) }}</span></header>
+        <div class="entries">
+          <div v-for="(entry, idx) in allVictoryDisplay" :key="idx" class="entry">
+            <span>{{format(entry.details.sourceName)}}</span>
+            <span class="amount">+{{entry.details.amount}}</span>
           </div>
         </div>
       </section>
@@ -241,8 +265,15 @@ const scenarioIcon = computed<string | null>(() => {
   filter: brightness(0) invert(1) opacity(0.75);
 }
 
-h2.title {
+.title-row {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+h2.title {
   font-family: teutonic, sans-serif;
   font-size: 1.1em;
   font-weight: normal;
@@ -338,6 +369,15 @@ h2.title {
   background: rgba(214,178,92,0.15);
   color: #d6b25c;
   border-color: rgba(214,178,92,0.3);
+}
+
+/* A scenario-wide counter belongs to nobody, so it sits with the scenario name
+   rather than hanging off an investigator's pill — which also keeps the
+   portraits anchored to the same spot whether or not one is tracked. There is
+   room for its name here, unlike the tag attached to an investigator. */
+.global-tally {
+  flex-shrink: 0;
+  font-weight: 600;
 }
 
 /* ── Sections ────────────────────────────────────────────── */

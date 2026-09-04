@@ -153,14 +153,31 @@ gainXp iid (toSource -> source) from xp = do
 {- | Report a non-XP campaign counter (Yig's Fury, ...) into the current step's
 breakdown so the campaign log can show where it came from. @tally@ is the
 i18n key naming the counter, @from@ the i18n key or title naming the source.
+The plain forms are scenario-wide; the @...For@ forms attribute the counter to
+a single investigator.
 -}
 reportTally :: ReverseQueue m => Text -> Text -> Int -> m ()
-reportTally tally from n =
-  push $ ReportXp $ XpBreakdown [TallyGained tally $ XpDetail XpFromCardEffect from n]
+reportTally = tallyReport TallyGained Nothing
+
+reportTallyFor :: ReverseQueue m => InvestigatorId -> Text -> Text -> Int -> m ()
+reportTallyFor iid = tallyReport TallyGained (Just iid)
 
 reportTallyLost :: ReverseQueue m => Text -> Text -> Int -> m ()
-reportTallyLost tally from n =
-  push $ ReportXp $ XpBreakdown [TallyLost tally $ XpDetail XpFromCardEffect from n]
+reportTallyLost = tallyReport TallyLost Nothing
+
+reportTallyLostFor :: ReverseQueue m => InvestigatorId -> Text -> Text -> Int -> m ()
+reportTallyLostFor iid = tallyReport TallyLost (Just iid)
+
+tallyReport
+  :: ReverseQueue m
+  => (Text -> Maybe InvestigatorId -> XpDetail -> XpEntry)
+  -> Maybe InvestigatorId
+  -> Text
+  -> Text
+  -> Int
+  -> m ()
+tallyReport entry mOwner tally from n =
+  push $ ReportXp $ XpBreakdown [entry tally mOwner $ XpDetail XpFromCardEffect from n]
 
 allGainXpEdit'
   :: (ReverseQueue m, Sourceable source)

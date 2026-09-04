@@ -74,6 +74,7 @@ import Arkham.Helpers.Playable (
   getOtherPlayersPlayableCards,
   getPlayableDiscards,
  )
+import Arkham.Helpers.Ref (sourceToMaybeCard)
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Slot (
   canPutIntoSlot,
@@ -378,11 +379,28 @@ getWindowSkippable attrs ws (windowType -> Window.WouldPayCardCost iid _ _ card@
     ]
 getWindowSkippable _ _ _ = pure True
 
+{- | Abilities the investigator has silenced from the hidden-cards stack. Only
+non-forced triggers are dropped -- a forced ability on a silenced card still
+fires, since the game would be wrong without it.
+-}
+dropSilencedAbilities :: HasGame m => InvestigatorAttrs -> [Ability] -> m [Ability]
+dropSilencedAbilities attrs abilities
+  | null silenced = pure abilities
+  | otherwise = flip filterM abilities \ability ->
+      isForcedAbility attrs.id ability >>= \case
+        True -> pure True
+        False ->
+          maybe True ((`notMember` silenced) . toCardCode)
+            <$> sourceToMaybeCard ability.source
+ where
+  silenced = silencedCardCodes attrs.settings
+
 runWindow
   :: (HasGame m, HasQueue Message m)
   => InvestigatorAttrs -> [Window] -> [Ability] -> [Card] -> m ()
-runWindow attrs windows actions playableCards = do
+runWindow attrs windows allActions playableCards = do
   let iid = toId attrs
+  actions <- dropSilencedAbilities attrs allActions
   unless (null playableCards && null actions) $ do
     anyForced <- anyM (isForcedAbility iid) actions
     player <- getPlayer iid
@@ -491,6 +509,14 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure $ a & settingsL %~ updateCardSetting cCode s
   SetCardOption iid cCode k v | iid == a.id -> do
     pure $ a & settingsL %~ setCardOption cCode k v
+  SetCardSilenced iid cCode v | iid == a.id -> do
+    let attrs' = a & settingsL %~ setCardSilenced cCode v
+    -- Same reasoning as UpdateGlobalSetting: silencing a card while its window
+    -- is the open question should drop the prompt now, not next window.
+    currentWindows <- concat <$> getWindowStack
+    when (any (\w -> Window.windowType w == Window.FastPlayerWindow) currentWindows) do
+      push $ Do (CheckWindows currentWindows)
+    pure attrs'
   EndOfGame _ -> do
     -- Transfiguration (and Hank Samson's resolute flip) last "until the end
     -- of the game", so the form must revert before interludes check traits

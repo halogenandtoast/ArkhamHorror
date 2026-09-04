@@ -447,7 +447,9 @@
     "grouped": "Grouped"
   },
   "player": {
-    "viewDeck": "View Deck"
+    "viewDeck": "View Deck",
+    "silenceCard": "Silence — skip this card's free triggers and reactions while it is hidden",
+    "unsilenceCard": "Unsilence — offer this card's triggers again"
   },
   "enemy": {
     "debug": "Debug"

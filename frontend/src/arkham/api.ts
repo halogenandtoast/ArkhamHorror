@@ -226,6 +226,14 @@ export const setCardOption = (
 ): Promise<void> =>
   updateGameRaw(gameId, { tag: 'SetCardOption', contents: [investigatorId, cardCode, key, value] })
 
+export const setCardSilenced = (
+  gameId: string,
+  investigatorId: string,
+  cardCode: string,
+  silenced: boolean,
+): Promise<void> =>
+  updateGameRaw(gameId, { tag: 'SetCardSilenced', contents: [investigatorId, cardCode, silenced] })
+
 export interface PlayabilityResponse {
   cardId: string
   cardCode: string

@@ -215,6 +215,7 @@ onBeforeUnmount(() => finishDrag())
               :src="imgsrc(cardImage(card))"
               class="card cards-under-popover__card"
             />
+            <slot name="cardOverlay" :card="card" :index="i" />
           </div>
         </div>
       </div>

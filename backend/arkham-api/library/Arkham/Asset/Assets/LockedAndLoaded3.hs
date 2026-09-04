@@ -7,7 +7,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 
 newtype LockedAndLoaded3 = LockedAndLoaded3 AssetAttrs
-  deriving anyclass (IsAsset, HasAbilities)
+  deriving anyclass (IsAsset, HasAbilities, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 lockedAndLoaded3 :: AssetCard LockedAndLoaded3
@@ -19,6 +19,3 @@ instance HasModifiersFor LockedAndLoaded3 where
       a
       (assetControlledBy iid <> AssetWithUseType Ammo <> #firearm)
       [AdditionalStartingUses 1]
-
-instance RunMessage LockedAndLoaded3 where
-  runMessage msg (LockedAndLoaded3 attrs) = LockedAndLoaded3 <$> runMessage msg attrs

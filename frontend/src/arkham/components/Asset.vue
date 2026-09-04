@@ -28,6 +28,7 @@ import Story from '@/arkham/components/Story.vue';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
 import Token from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
+import { useSettings } from '@/stores/settings';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
 import { useDbCardStore } from '@/stores/dbCards'
 
@@ -218,6 +219,7 @@ const cardsUnderneath = computed(() => props.asset.cardsUnderneath)
 const keys = computed(() => props.asset.keys)
 
 const debug = useDebug()
+const settings = useSettings()
 const dragging = ref(false)
 
 const assetTokens = computed(() => {
@@ -315,10 +317,14 @@ const storyImage = computed(() => {
 const faceImage = computed(() => storyImage.value ?? image.value)
 const { displayedImage, flipping } = useCardFlip(faceImage)
 
+// Permanents can be dragged into (and back out of) the hidden stack whenever
+// that setting is on, not just in debug.
+const canTuck = computed(() => settings.hideInertCards && props.asset.permanent)
+
 function startDrag(event: DragEvent) {
   dragging.value = true
   if (event.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.effectAllowed = 'copyMove'
     event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "AssetTarget", "contents": props.asset.id }))
   }
 }
@@ -398,7 +404,7 @@ function startDrag(event: DragEvent) {
             :class="{ exhausted, 'ability-target': isHighlighted || isAttackTarget, 'card--flipping': flipping }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
             :data-rotation="uiRotation || undefined"
-            :draggable="debug.active"
+            :draggable="debug.active || canTuck"
             @dragstart="startDrag"
             @click="clicked"
             :data-customizations="JSON.stringify(asset.customizations)"

@@ -193,11 +193,19 @@ trauma/XP). The engine never does anything with it during play.
 noGameplayEffectTag :: Text
 noGameplayEffectTag = "no-gameplay-effect"
 
-{- | 'cdTags' marker for a card whose entire text resolves during scenario setup
-and is driven from the setup code rather than the card's own module.
+{- | 'cdTags' marker for a card whose entire text resolves once, at or before
+setup, and then never acts again: a slot grant applied on entering play, or a
+draw driven from the setup code. The card stays in play but nothing consults it.
 -}
 setupOnlyTag :: Text
 setupOnlyTag = "setup-only"
+
+{- | 'cdTags' marker for a card that is spent once its once-per-game ability has
+been used, rather than at a fixed point like setup. Clients decide it is spent by
+looking for the card in the controller's used abilities.
+-}
+hideWhenUsedTag :: Text
+hideWhenUsedTag = "hide-when-used"
 
 data IsRevelation
   = NoRevelation

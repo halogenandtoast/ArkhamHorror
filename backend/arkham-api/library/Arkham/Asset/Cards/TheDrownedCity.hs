@@ -91,6 +91,7 @@ lockedAndLoaded3 =
       { cdCardTraits = setFromList [Condition]
       , cdLevel = Just 3
       , cdDeckRestrictions = [PerDeckLimit 1]
+      , cdTags = [noGameplayEffectTag]
       }
 
 remingtonModel18584 :: CardDef
@@ -397,6 +398,7 @@ eldritchBrand5 =
       { cdCardTraits = setFromList [Pact]
       , cdExceptional = True
       , cdLevel = Just 5
+      , cdTags = [setupOnlyTag]
       }
 
 anchorChain :: CardDef
@@ -470,6 +472,7 @@ ascetic =
       { cdCardTraits = setFromList [Condition]
       , cdDeckRestrictions = [PurchaseAtDeckCreation, PerDeckLimit 1]
       , cdGrantedXp = Just 10
+      , cdTags = [noGameplayEffectTag]
       }
 
 spiritualHealing4 :: CardDef

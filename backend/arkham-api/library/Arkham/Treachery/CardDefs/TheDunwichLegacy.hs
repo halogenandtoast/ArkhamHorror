@@ -29,6 +29,7 @@ indebted =
   (basicWeakness "02037" "Indebted")
     { cdCardTraits = singleton Flaw
     , cdPermanent = True
+    , cdTags = [setupOnlyTag]
     }
 
 internalInjury :: CardDef

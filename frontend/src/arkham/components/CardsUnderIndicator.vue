@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { Dropdown } from 'floating-vue'
 import { type Card as ArkhamCard, type CardContents, cardImage, toCardContents } from '@/arkham/types/Card'
 import { imgsrc } from '@/arkham/helpers'
@@ -20,6 +20,8 @@ const props = withDefaults(defineProps<{
   shown?: boolean
   fullWidth?: boolean
   vertical?: boolean
+  droppable?: boolean
+  draggableCards?: boolean
 }>(), {
   label: 'Cards underneath',
   placement: 'bottom',
@@ -28,6 +30,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   choose: [value: number]
   'update:shown': [value: boolean]
+  cardsDrop: [event: DragEvent]
+  cardDragStart: [event: DragEvent, index: number]
 }>()
 
 const debug = useDebug()
@@ -41,7 +45,22 @@ const shown = computed({
   },
 })
 
+// floating-vue positions the popper once and pins that transform, so a popover
+// that loses a card keeps its old left edge and drifts away from the trigger.
+// Ask it to recompute whenever the contents change underneath it.
+const dropdown = ref<{ onResize?: () => void } | null>(null)
+
+async function reposition() {
+  await nextTick()
+  dropdown.value?.onResize?.()
+  // onResize is a no-op until floating-vue's own isShown catches up, which it
+  // does asynchronously, so take a second pass once it has settled.
+  window.setTimeout(() => dropdown.value?.onResize?.(), 60)
+}
+
 const count = computed(() => props.cards.length)
+
+watch(count, () => reposition())
 const tooltip = computed(() => `${props.label} (${count.value}) — click to view`)
 const choices = computed(() => props.game && props.playerId ? ArkhamGame.choices(props.game, props.playerId) : [])
 const interactive = computed(() => props.game !== undefined && props.playerId !== undefined)
@@ -67,18 +86,63 @@ const isHighlighted = computed(() => props.highlighted || hasCardChoice.value)
 function finishDrag() {
   window.removeEventListener('dragend', finishDrag)
   window.removeEventListener('drop', finishDrag)
-  if (restoreAfterDrag.value) {
-    restoreAfterDrag.value = false
+  if (!restoreAfterDrag.value) return
+  restoreAfterDrag.value = false
+  // The card that just left is still in `cards` at this point; reopening now
+  // would size and place the popover against content it is about to lose,
+  // leaving a gap where the card was. Wait for the list to settle first.
+  nextTick(() => {
+    if (count.value === 0) return
     shown.value = true
-  }
+    reposition()
+  })
 }
 
-function hideDiscardPopoverWhileDragging() {
-  if (!debug.active || !props.isDiscards || !shown.value) return
+// Dragging a card out of the popover means dropping it somewhere the popover is
+// currently covering, so get it out of the way and put it back afterwards.
+function hidePopoverWhileDragging() {
+  const dragsOut = props.draggableCards || (debug.active && props.isDiscards)
+  if (!dragsOut || !shown.value) return
   restoreAfterDrag.value = true
   shown.value = false
   window.addEventListener('dragend', finishDrag, { once: true })
   window.addEventListener('drop', finishDrag, { once: true })
+}
+
+function onCardDragStart(event: DragEvent, index: number) {
+  if (!props.draggableCards) return
+  emit('cardDragStart', event, index)
+  hidePopoverWhileDragging()
+}
+
+// The drag sources here declare effectAllowed 'copyMove'; answering with a
+// dropEffect outside that set makes the browser refuse the drop outright.
+function onDragOver(event: DragEvent) {
+  if (!props.droppable) return
+  event.preventDefault()
+  if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
+}
+
+// dragenter/dragleave fire again for every child element, so count depth rather
+// than clearing the highlight the first time the pointer crosses one.
+const dragDepth = ref(0)
+const draggedOver = computed(() => dragDepth.value > 0)
+
+function onDragEnter(event: DragEvent) {
+  if (!props.droppable) return
+  event.preventDefault()
+  dragDepth.value++
+}
+
+function onDragLeave() {
+  if (props.droppable) dragDepth.value = Math.max(0, dragDepth.value - 1)
+}
+
+function onDrop(event: DragEvent) {
+  if (!props.droppable) return
+  event.preventDefault()
+  dragDepth.value = 0
+  emit('cardsDrop', event)
 }
 
 onBeforeUnmount(() => finishDrag())
@@ -86,6 +150,7 @@ onBeforeUnmount(() => finishDrag())
 
 <template>
   <Dropdown
+    ref="dropdown"
     :placement="placement"
     :distance="8"
     v-model:shown="shown"
@@ -97,9 +162,13 @@ onBeforeUnmount(() => finishDrag())
     <button
       type="button"
       class="cards-under-indicator"
-      :class="{ 'cards-under-indicator--highlighted': isHighlighted, 'cards-under-indicator--with-label': showLabel, 'cards-under-indicator--full-width': fullWidth, 'cards-under-indicator--vertical': vertical }"
+      :class="{ 'cards-under-indicator--highlighted': isHighlighted, 'cards-under-indicator--with-label': showLabel, 'cards-under-indicator--full-width': fullWidth, 'cards-under-indicator--vertical': vertical, 'cards-under-indicator--dragged-over': draggedOver }"
       :aria-label="tooltip"
       v-tooltip="tooltip"
+      @dragover="onDragOver"
+      @dragenter="onDragEnter"
+      @dragleave="onDragLeave"
+      @drop="onDrop"
     >
       <span
         class="cards-under-indicator__icon"
@@ -116,14 +185,23 @@ onBeforeUnmount(() => finishDrag())
     </button>
 
     <template #popper>
-      <div class="cards-under-popover">
+      <div
+        class="cards-under-popover"
+        :class="{ 'cards-under-popover--dragged-over': draggedOver }"
+        @dragover="onDragOver"
+        @dragenter="onDragEnter"
+        @dragleave="onDragLeave"
+        @drop="onDrop"
+      >
         <div class="cards-under-popover__header">{{ label }} ({{ count }})</div>
-        <div class="cards-under-popover__cards" @dragstart="hideDiscardPopoverWhileDragging">
+        <div class="cards-under-popover__cards" @dragstart="hidePopoverWhileDragging">
           <div
             v-for="(card, i) in cards"
             :key="i"
             class="cards-under-popover__card-wrap"
-            :class="{ discard: isDiscards && !isCardInChoices(card) }"
+            :class="{ discard: isDiscards && !isCardInChoices(card), 'cards-under-popover__card-wrap--draggable': draggableCards }"
+            :draggable="draggableCards || undefined"
+            @dragstart="onCardDragStart($event, i)"
           >
             <CardView
               v-if="interactive && game && playerId"
@@ -179,6 +257,15 @@ onBeforeUnmount(() => finishDrag())
 .cards-under-indicator--highlighted:hover {
   background: color-mix(in srgb, var(--select) 65%, black);
   border-color: color-mix(in srgb, var(--select) 75%, black);
+}
+
+/* Pending drop target — the receiver of the drag, so cyan, matching
+   `ability-target` rather than the magenta reserved for awaited choices. */
+.cards-under-indicator.cards-under-indicator--dragged-over {
+  border-color: var(--highlight);
+  background: color-mix(in srgb, var(--highlight) 40%, black);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--highlight) 70%, transparent),
+    0 0 6px 1px color-mix(in srgb, var(--highlight) 45%, transparent);
 }
 
 .cards-under-indicator--with-label {
@@ -308,6 +395,12 @@ onBeforeUnmount(() => finishDrag())
   padding: 10px;
 }
 
+.cards-under-popover--dragged-over {
+  outline: 2px dashed color-mix(in srgb, var(--highlight) 70%, transparent);
+  outline-offset: -4px;
+  border-radius: 8px;
+}
+
 .cards-under-popover__header {
   margin: 0 0 8px;
   color: rgba(255, 255, 255, 0.82);
@@ -330,6 +423,10 @@ onBeforeUnmount(() => finishDrag())
 .cards-under-popover__card-wrap {
   position: relative;
   flex: 0 0 auto;
+}
+
+.cards-under-popover__card-wrap--draggable {
+  cursor: grab;
 }
 
 .cards-under-popover__card-wrap.discard {

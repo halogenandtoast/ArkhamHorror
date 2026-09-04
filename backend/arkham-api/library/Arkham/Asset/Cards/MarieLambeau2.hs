@@ -90,6 +90,7 @@ arcaneExperience4 =
       { cdCardTraits = setFromList [Condition]
       , cdDeckRestrictions = [PerDeckLimit 1]
       , cdLevel = Just 4
+      , cdTags = [setupOnlyTag]
       }
 
 jimCulver4 :: CardDef

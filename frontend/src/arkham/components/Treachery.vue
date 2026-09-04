@@ -20,11 +20,22 @@ export interface Props {
   overlayDelay?: number
   isInHand?: boolean
   mobileHandOpen?: boolean
+  /* Can be dragged into the hidden-cards stack beside the play area. */
+  tuckable?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), { attached: false })
 
 const emits = defineEmits<{ choose: [value: number] }>()
+
+function startDrag(event: DragEvent) {
+  if (!props.tuckable || !event.dataTransfer) return
+  event.dataTransfer.effectAllowed = 'copyMove'
+  event.dataTransfer.setData(
+    'text/plain',
+    JSON.stringify({ tag: 'TreacheryTarget', contents: props.treachery.id }),
+  )
+}
 
 const choose = (idx: number) => emits('choose', idx)
 
@@ -109,6 +120,8 @@ function handleCardClick() {
       :src="image"
       class="card"
       :class="{ 'treachery--can-interact': canHighlight, attached, 'in-hand': isInHand }"
+      :draggable="tuckable || undefined"
+      @dragstart="startDrag"
       @click="handleCardClick"
       :data-delay="overlayDelay"
     />

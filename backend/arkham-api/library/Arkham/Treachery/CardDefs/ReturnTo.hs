@@ -50,4 +50,5 @@ damned =
   (basicWeakness "54014" "Damned")
     { cdCardTraits = setFromList [Curse, Omen]
     , cdPermanent = True
+    , cdTags = [setupOnlyTag]
     }

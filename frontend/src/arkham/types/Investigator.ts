@@ -1,5 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
-import { v2Optional } from '@/arkham/parser';
+import { v2Optional, withDefault } from '@/arkham/parser';
 import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Name, nameDecoder } from '@/arkham/types/Name';
@@ -155,6 +155,9 @@ export type Investigator = {
   assets: string[];
   events: string[];
   skills: string[];
+  /* Card codes of abilities this investigator has already used. Only the
+   * identity is decoded; the engine's full bookkeeping stays server-side. */
+  usedAbilityCardCodes: string[];
   discard: CardContents[];
   hand: Card[];
   bondedCards: Card[];
@@ -262,6 +265,13 @@ export const investigatorDecoder = JsonDecoder.object({
   assets: JsonDecoder.array<string>(JsonDecoder.string(), 'AssetId[]'),
   events: JsonDecoder.array<string>(JsonDecoder.string(), 'EventId[]'),
   skills: JsonDecoder.array<string>(JsonDecoder.string(), 'SkillId[]'),
+  usedAbilities: withDefault<string[]>([], JsonDecoder.array(
+    JsonDecoder.object(
+      { usedAbility: JsonDecoder.object({ cardCode: JsonDecoder.string() }, 'Ability') },
+      'UsedAbility',
+    ).map(u => u.usedAbility.cardCode),
+    'UsedAbility[]',
+  )),
   // deck: Deck PlayerCard,
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]'),
   hand: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
@@ -299,8 +309,9 @@ export const investigatorDecoder = JsonDecoder.object({
   meta: JsonDecoder.succeed(),
   settings: cardSettingsDecoder,
   handSize: v2Optional(JsonDecoder.number()),
-}, 'Investigator').map(({search, placement, ...rest}) => ({
+}, 'Investigator').map(({search, placement, usedAbilities, ...rest}) => ({
   foundCards: search,
+  usedAbilityCardCodes: usedAbilities,
   location: placement.tag === "AtLocation" ? placement.contents : "00000000-0000-0000-0000-000000000000",
   eliminated: rest.defeated || rest.resigned,
   placement,

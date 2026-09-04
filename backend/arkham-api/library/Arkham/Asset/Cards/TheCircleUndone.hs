@@ -500,6 +500,7 @@ studious3 =
       { cdCardTraits = singleton Talent
       , cdLevel = Just 3
       , cdAlternateCardCodes = ["12042"]
+      , cdTags = [setupOnlyTag]
       }
 
 anotherDayAnotherDollar3 :: CardDef
@@ -509,6 +510,7 @@ anotherDayAnotherDollar3 =
       { cdCardTraits = singleton Talent
       , cdLevel = Just 3
       , cdAlternateCardCodes = ["12056"]
+      , cdTags = [setupOnlyTag]
       }
 
 dayanaEsperence3 :: CardDef

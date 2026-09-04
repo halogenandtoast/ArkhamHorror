@@ -36,6 +36,7 @@ import { fullName } from '@/arkham/types/Name';
 import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard'
 import { useSettings } from '@/stores/settings';
 import { useCardStore } from '@/stores/cards';
+import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage';
 const { t } = useI18n();
 
 interface RefWrapper<T> {
@@ -90,22 +91,129 @@ const inertCardCodes = computed(() =>
   )
 )
 
+// Cards that only go quiet once their once-per-game ability has been spent, so
+// the tag alone is not enough — Short Supply is live until its forced ability
+// fires on your first turn.
+const hideWhenUsedCardCodes = computed(() =>
+  new Set(
+    cardStore.cards
+      .filter(c => c.tags?.includes('hide-when-used'))
+      .map(c => c.cardCode)
+  )
+)
+
+const spentCardCodes = computed(() => new Set(props.investigator.usedAbilityCardCodes))
+
 const tuckInertCards = computed(() => settings.hideInertCards && !props.game.inSetup)
 
-const visibleAssets = computed(() =>
-  tuckInertCards.value
-    ? assets.value.filter(a => !inertCardCodes.value.has(a.cardCode))
-    : assets.value
+// Per-player overrides on top of the tags, dragged in and out of the stack and
+// remembered for this game only. `shown` exists so a tagged card can be dragged
+// back out and stay out.
+const hiddenKey = computed(() => `hiddenCards:${investigatorId.value}`)
+const shownKey = computed(() => `shownCards:${investigatorId.value}`)
+
+function loadIds(key: string): string[] {
+  try {
+    const raw = getGameLocalStorageItem(props.game.id, key)
+    const parsed = raw ? JSON.parse(raw) : []
+    return Array.isArray(parsed) ? parsed.filter(x => typeof x === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+const manuallyHidden = ref<string[]>(loadIds(hiddenKey.value))
+const manuallyShown = ref<string[]>(loadIds(shownKey.value))
+
+watch(manuallyHidden, v => setGameLocalStorageItem(props.game.id, hiddenKey.value, JSON.stringify(v)))
+watch(manuallyShown, v => setGameLocalStorageItem(props.game.id, shownKey.value, JSON.stringify(v)))
+
+function isCardHidden(entity: { id: string, cardCode: string }) {
+  if (manuallyShown.value.includes(entity.id)) return false
+  if (manuallyHidden.value.includes(entity.id)) return true
+  if (inertCardCodes.value.has(entity.cardCode)) return true
+  return hideWhenUsedCardCodes.value.has(entity.cardCode) && spentCardCodes.value.has(entity.cardCode)
+}
+
+// Permanent weaknesses in the threat area (Indebted, Damned) are tucked away by
+// the same tags, so they are draggable in and out of the stack like the assets.
+const tuckableCardCodes = computed(
+  () => new Set([...inertCardCodes.value, ...hideWhenUsedCardCodes.value])
 )
 
-const inertCards = computed(() =>
-  tuckInertCards.value
-    ? assets.value
-        .filter(a => inertCardCodes.value.has(a.cardCode))
-        .map(a => props.game.cards[a.cardId])
-        .filter(Boolean)
-    : []
+const threatTreacheries = computed(() =>
+  props.investigator.treacheries.map(id => props.game.treacheries[id]).filter(Boolean)
 )
+
+const visibleAssets = computed(() =>
+  tuckInertCards.value ? assets.value.filter(a => !isCardHidden(a)) : assets.value
+)
+
+const visibleTreacheries = computed(() =>
+  tuckInertCards.value ? threatTreacheries.value.filter(t => !isCardHidden(t)) : threatTreacheries.value
+)
+
+// One list so the popover order and the drag-out index line up across both
+// entity kinds.
+const hiddenEntries = computed(() => {
+  if (!tuckInertCards.value) return []
+  return [
+    ...assets.value.filter(isCardHidden).map(a => ({ tag: 'AssetTarget', id: a.id, cardId: a.cardId })),
+    ...threatTreacheries.value.filter(isCardHidden).map(t => ({ tag: 'TreacheryTarget', id: t.id, cardId: t.cardId })),
+  ].filter(e => props.game.cards[e.cardId])
+})
+
+const inertCards = computed(() => hiddenEntries.value.map(e => props.game.cards[e.cardId]))
+
+function tuckableFromDrag(event: DragEvent) {
+  const data = event.dataTransfer?.getData('text/plain')
+  if (!data) return null
+  try {
+    const json = JSON.parse(data)
+    if (json.tag === 'AssetTarget') {
+      const asset = props.game.assets[json.contents]
+      return asset?.permanent ? asset : null
+    }
+    if (json.tag === 'TreacheryTarget') {
+      const treachery = props.game.treacheries[json.contents]
+      return treachery && tuckableCardCodes.value.has(treachery.cardCode) ? treachery : null
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+function ownsCard(id: string) {
+  return props.investigator.assets.includes(id) || props.investigator.treacheries.includes(id)
+}
+
+// Dropped onto the pill or into its open popover.
+function hideDraggedAsset(event: DragEvent) {
+  const card = tuckableFromDrag(event)
+  if (!card || !ownsCard(card.id)) return
+  manuallyShown.value = manuallyShown.value.filter(id => id !== card.id)
+  if (!isCardHidden(card) && !manuallyHidden.value.includes(card.id)) {
+    manuallyHidden.value = [...manuallyHidden.value, card.id]
+  }
+}
+
+// Dragged out of the popover and dropped back on the play area.
+function startHiddenCardDrag(event: DragEvent, index: number) {
+  const entry = hiddenEntries.value[index]
+  if (!entry || !event.dataTransfer) return
+  event.dataTransfer.effectAllowed = 'copyMove'
+  event.dataTransfer.setData('text/plain', JSON.stringify({ tag: entry.tag, contents: entry.id }))
+}
+
+function showDraggedAsset(event: DragEvent) {
+  const card = tuckableFromDrag(event)
+  if (!card || !ownsCard(card.id)) return
+  manuallyHidden.value = manuallyHidden.value.filter(id => id !== card.id)
+  if (isCardHidden(card) && !manuallyShown.value.includes(card.id)) {
+    manuallyShown.value = [...manuallyShown.value, card.id]
+  }
+}
 
 const currentTreacheries = computed(() => {
   return Object.
@@ -719,6 +827,8 @@ function onDrop(event: DragEvent) {
       const json = JSON.parse(data)
       if (json.tag === "CardTarget") {
         debug.send(props.game.id, {tag: 'PutCardIntoPlayById', contents: [props.investigator.id, json.contents, null, { tag: 'NoPayment' }, []]})
+      } else if (json.tag === "AssetTarget" || json.tag === "TreacheryTarget") {
+        showDraggedAsset(event)
       }
     }
   }
@@ -836,12 +946,13 @@ function closeHand() {
             />
 
             <Treachery
-              v-for="treacheryId in investigator.treacheries"
-              :key="treacheryId"
-              :treachery="game.treacheries[treacheryId]"
+              v-for="treachery in visibleTreacheries"
+              :key="treachery.id"
+              :treachery="treachery"
               :game="game"
-              :data-index="game.treacheries[treacheryId].cardId"
+              :data-index="treachery.cardId"
               :playerId="playerId"
+              :tuckable="tuckInertCards && tuckableCardCodes.has(treachery.cardCode)"
               @choose="$emit('choose', $event)"
             />
 
@@ -951,15 +1062,19 @@ function closeHand() {
         </section>
       </transition>
       <CardsUnderIndicator
-        v-if="inertCards.length > 0 && !playAreaCollapsed"
+        v-if="tuckInertCards && !playAreaCollapsed"
         class="inert-stack"
         vertical
+        droppable
+        draggableCards
         label="Hidden"
         placement="left"
         :cards="inertCards"
         :game="game"
         :playerId="playerId"
         @choose="$emit('choose', $event)"
+        @cardsDrop="hideDraggedAsset"
+        @cardDragStart="startHiddenCardDrag"
       >
         <template #icon><EyeSlashIcon /></template>
       </CardsUnderIndicator>

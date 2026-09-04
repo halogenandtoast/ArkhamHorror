@@ -336,6 +336,7 @@ relicHunter3 =
       { cdCardTraits = singleton Talent
       , cdLevel = Just 3
       , cdAlternateCardCodes = ["01695", "12096"]
+      , cdTags = [setupOnlyTag]
       }
 
 charisma3 :: CardDef
@@ -345,6 +346,7 @@ charisma3 =
       { cdCardTraits = singleton Talent
       , cdLevel = Just 3
       , cdAlternateCardCodes = ["01694", "12095"]
+      , cdTags = [setupOnlyTag]
       }
 
 helplessPassenger :: CardDef

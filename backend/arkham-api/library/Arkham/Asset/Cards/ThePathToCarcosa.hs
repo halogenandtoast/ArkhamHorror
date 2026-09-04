@@ -501,6 +501,7 @@ charonsObol1 =
       , cdLevel = Just 1
       , cdKeywords = setFromList [Keyword.Permanent, Keyword.Exceptional]
       , cdUnique = True
+      , cdTags = [noGameplayEffectTag]
       }
 
 lupara3 :: CardDef

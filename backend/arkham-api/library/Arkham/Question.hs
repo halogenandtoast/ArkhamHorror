@@ -217,6 +217,9 @@ data Question msg
       }
   | ChooseUpgradeDeck
   | ChooseDeck
+  | -- Deck selection for a seat joining a campaign already in progress. Carries the
+    -- investigators already used this campaign, which the new player may not pick.
+    ChooseJoinDeck {usedInvestigators :: [InvestigatorId]}
   | QuestionLabel {label :: Text, card :: Maybe CardCode, question :: Question msg}
   | {- | Wraps any Question with a header that the frontend renders as
     "Pay <cost>", using its own Cost rendering.

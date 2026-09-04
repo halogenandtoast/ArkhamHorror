@@ -15,6 +15,7 @@ import Arkham.Game.State
 import Arkham.Git (GitSha)
 import Arkham.History
 import Arkham.Id
+import {-# SOURCE #-} Arkham.Investigator.Types (Investigator)
 import Arkham.Message
 import Arkham.Modifier
 import Arkham.Phase
@@ -82,6 +83,9 @@ data Game = Game
   while a leave-play window is open. See 'inLeavePlayWindow'.
   -}
   , gamePlayers :: [PlayerId]
+  , -- Investigators set aside when their player left the campaign, kept whole so a
+    -- returning player resumes with the xp and trauma the campaign log recorded
+    gameRetiredInvestigators :: Map InvestigatorId Investigator
   , gameModifiers :: Map Target [Modifier]
   , gameEncounterDiscardEntities :: Entities
   , gameInHandEntities :: Map InvestigatorId Entities

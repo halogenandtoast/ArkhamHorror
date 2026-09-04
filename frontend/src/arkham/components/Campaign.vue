@@ -43,8 +43,9 @@ const chooseDeck = computed(() => {
   // rendering by state would mask that question behind an inert deck screen.
   return Object.values(props.game.question).some((q) => {
     if (!q) return false
-    if (q.tag === 'ChooseDeck') return true
-    return q.tag === 'QuestionLabel' && q.question.tag === 'ChooseDeck'
+    if (q.tag === 'ChooseDeck' || q.tag === 'ChooseJoinDeck') return true
+    return q.tag === 'QuestionLabel'
+      && (q.question.tag === 'ChooseDeck' || q.question.tag === 'ChooseJoinDeck')
   })
 })
 

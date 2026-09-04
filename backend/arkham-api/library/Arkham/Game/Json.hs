@@ -40,6 +40,7 @@ instance ToJSON Game where
       , "gameActionRemovedEntities" .= gameActionRemovedEntities g
       , "gameTombstones" .= gameTombstones g
       , "gamePlayers" .= gamePlayers g
+      , "gameRetiredInvestigators" .= gameRetiredInvestigators g
       , "gameModifiers" .= gameModifiers g
       , "gameEncounterDiscardEntities" .= gameEncounterDiscardEntities g
       , "gameInHandEntities" .= gameInHandEntities g
@@ -110,6 +111,7 @@ instance ToJSON Game where
       <> ("gameActionRemovedEntities" .= gameActionRemovedEntities g)
       <> ("gameTombstones" .= gameTombstones g)
       <> ("gamePlayers" .= gamePlayers g)
+      <> ("gameRetiredInvestigators" .= gameRetiredInvestigators g)
       <> ("gameModifiers" .= gameModifiers g)
       <> ("gameEncounterDiscardEntities" .= gameEncounterDiscardEntities g)
       <> ("gameInHandEntities" .= gameInHandEntities g)
@@ -180,6 +182,8 @@ instance FromJSON Game where
     gameActionRemovedEntities <- o .: "gameActionRemovedEntities"
     gameTombstones <- o .:? "gameTombstones" .!= mempty
     gamePlayers <- o .: "gamePlayers"
+    -- Games persisted before retiring existed have nobody set aside.
+    gameRetiredInvestigators <- o .:? "gameRetiredInvestigators" .!= mempty
     gameModifiers <- o .: "gameModifiers"
     gameEncounterDiscardEntities <- o .: "gameEncounterDiscardEntities"
     gameInHandEntities <- o .: "gameInHandEntities"

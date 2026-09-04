@@ -299,6 +299,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameInDiscardEntities = mempty
         , gameInSearchEntities = defaultEntities
         , gamePlayers = mempty
+        , gameRetiredInvestigators = mempty
         , gameActionRemovedEntities = mempty
         , gameTombstones = mempty
         , gameActivePlayerId = PlayerId nil
@@ -810,6 +811,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("investigators" .= investigators)
       <> ("otherInvestigators" .= otherInvestigators)
       <> ("killedInvestigators" .= killedInvestigators)
+      <> ("retiredInvestigators" .= retiredInvestigators)
       <> ("enemies" .= enemies)
       <> ("assets" .= assets)
       <> ("acts" .= acts)
@@ -856,6 +858,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
       <> ("enemyAttackTargets" .= gameEnemyAttackTargets g)
    where
     otherInvestigators = publicOtherInvestigators gameMode
+    retiredInvestigators = Map.map asPublicInvestigator gameRetiredInvestigators
     killedInvestigators = case gameMode of
       This c -> killedInvestigatorsFrom (attr campaignLog c)
       That _ -> mempty
@@ -912,6 +915,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         , "investigators" .= toJSON investigators
         , "otherInvestigators" .= toJSON otherInvestigators
         , "killedInvestigators" .= toJSON killedInvestigators
+        , "retiredInvestigators" .= toJSON retiredInvestigators
         , "enemies" .= toJSON enemies
         , "assets" .= toJSON assets
         , "acts" .= toJSON acts
@@ -959,6 +963,7 @@ instance ToJSON gid => ToJSON (PublicGame gid) where
         ]
    where
     otherInvestigators = publicOtherInvestigators gameMode
+    retiredInvestigators = Map.map asPublicInvestigator gameRetiredInvestigators
     killedInvestigators = case gameMode of
       This c -> killedInvestigatorsFrom (attr campaignLog c)
       That _ -> mempty
@@ -6544,6 +6549,7 @@ interleaveSimultaneously seqs
 isDeckQuestion :: Question Message -> Bool
 isDeckQuestion = \case
   ChooseDeck -> True
+  ChooseJoinDeck {} -> True
   ChooseUpgradeDeck -> True
   QuestionLabel _ _ q -> isDeckQuestion q
   QuestionWithSource _ _ q -> isDeckQuestion q

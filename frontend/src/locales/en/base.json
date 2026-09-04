@@ -466,7 +466,21 @@
   "chooseDeck": {
     "search": "Search…",
     "useThisDeck": "Use this deck",
+    "alreadyPlayedThisCampaign": "This investigator has already played in this campaign",
     "randomBasicWeaknessPoolTooltip": "Adjust which products are used when randomly assigning this deck's basic weakness."
+  },
+  "campaign": {
+    "roster": {
+      "leave": "Leave",
+      "leaveTooltip": "Leave the campaign. Their experience and trauma are kept so they can rejoin between scenarios.",
+      "confirmLeave": "Confirm leave",
+      "rejoin": "Rejoin",
+      "add": "Add investigator",
+      "addSolo": "Play a second investigator",
+      "addSoloHint": "You will control both investigators — the game switches to multihanded solo, with a tab per investigator.",
+      "inviteHint": "Or share this link with another player:",
+      "failed": "Could not update the roster"
+    }
   },
   "deckRestrictions": {
     "scarletKeys": {

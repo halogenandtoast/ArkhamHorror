@@ -588,6 +588,7 @@ const isActualScenarioView = computed(() => {
   const activeQuestionTag = questionTag(question.value)
   return activeQuestionTag !== 'ChooseUpgradeDeck'
     && activeQuestionTag !== 'ChooseDeck'
+    && activeQuestionTag !== 'ChooseJoinDeck'
     && activeQuestionTag !== 'PickScenarioSettings'
     && activeQuestionTag !== 'PickCampaignSettings'
     && activeQuestionTag !== 'ContinueCampaign'

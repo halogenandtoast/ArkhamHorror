@@ -857,6 +857,18 @@ data Message
   | InitDeck InitDeckAttrs -- used to initialize the deck for the campaign
   | LoadSideDeck InvestigatorId [PlayerCard] -- used to initialize the side deck for the campaign
   | LoadDecklist PlayerId ArkhamDBDecklist
+  | -- Between-scenarios roster changes. LeaveCampaign is the ask's message: the
+    -- campaign decides whether this investigator has anything worth keeping and
+    -- resolves it as one of the two below.
+    LeaveCampaign InvestigatorId
+  | -- Set the investigator aside whole (see gameRetiredInvestigators) so
+    -- UnretireInvestigator can restore their xp and trauma.
+    RetireInvestigator InvestigatorId
+  | -- Drop an investigator who never played, campaign decks and all, so nothing
+    -- remembers them and their investigator is free to be chosen again.
+    RemoveInvestigatorFromCampaign InvestigatorId
+  | UnretireInvestigator InvestigatorId
+  | JoinCampaign PlayerId
   | ReplaceInvestigator InvestigatorId ArkhamDBDecklist
   | UpgradeDeck InvestigatorId (Maybe Text) (Deck PlayerCard) -- used to upgrade deck during campaign
   | UpgradeDecklist InvestigatorId ArkhamDBDecklist
@@ -2879,6 +2891,25 @@ deck setup -- the tail that used to sit in the queue behind the ask, after
 continuation, so the state flip is likewise driven by the barrier releasing rather
 than by the queue draining to the right position.
 -}
+
+{- | Open deck selection for a single seat joining a campaign already in progress.
+
+Unlike 'chooseDecks' this must not emit 'ChoosingDecks': that clears every
+investigator, which is right for setup and would wipe the table mid-campaign.
+@used@ is the investigators already played this campaign, which the new player
+may not choose.
+-}
+chooseJoinDeck :: BatchId -> PlayerId -> [InvestigatorId] -> [Message] -> Message
+chooseJoinDeck batchId pid used continuation =
+  Run
+    [ SetGameState (IsChooseDecks [pid])
+    , BeginSimultaneousAsk
+        batchId
+        JoinAll
+        (singletonMap pid (ChooseJoinDeck used))
+        (DoneChoosingDecks : continuation)
+    ]
+
 chooseDecks :: BatchId -> [PlayerId] -> [Message] -> Message
 chooseDecks batchId pids continuation =
   Run

@@ -182,6 +182,15 @@ export const updateCampaignSettings = (gameId: string, campaignLog: CampaignLogS
 export const exchangeTokens = (gameId: string, source: Source, fromInvestigator: string, toInvestigator: string, token: Token, amount: number): Promise<void> =>
   api.put(`arkham/games/${gameId}`, { tag: 'ExchangeAmountsAnswer', source, fromInvestigator, toInvestigator, token, amount })
 
+export const retireInvestigator = (gameId: string, investigatorId: string): Promise<void> =>
+  api.put(`arkham/games/${gameId}`, { tag: 'RetireInvestigatorAnswer', investigatorId })
+
+export const rejoinInvestigator = (gameId: string, investigatorId: string): Promise<void> =>
+  api.put(`arkham/games/${gameId}`, { tag: 'RejoinInvestigatorAnswer', investigatorId })
+
+export const joinCampaign = (gameId: string): Promise<void> =>
+  api.put(`arkham/games/${gameId}`, { tag: 'JoinCampaignAnswer' })
+
 export const setDestiny = (gameId: string, drawings: DestinyDrawing[]): Promise<void> =>
   api.put(`arkham/games/${gameId}`, { tag: 'PickDestinyAnswer', contents: drawings })
 

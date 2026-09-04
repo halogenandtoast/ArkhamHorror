@@ -22,6 +22,7 @@ export type Question = QuestionCommon & (
   | ChooseOneAtATime 
   | ChooseOneAtATimeWithAuto 
   | ChooseDeck 
+  | ChooseJoinDeck
   | ChooseUpgradeDeck 
   | ChoosePaymentAmounts 
   | ChooseAmounts 
@@ -57,6 +58,7 @@ export enum QuestionType {
   CHOOSE_ONE_AT_A_TIME_WITH_AUTO = 'ChooseOneAtATimeWithAuto',
   CHOOSE_UPGRADE_DECK = 'ChooseUpgradeDeck',
   CHOOSE_DECK = 'ChooseDeck',
+  CHOOSE_JOIN_DECK = 'ChooseJoinDeck',
   CHOOSE_PAYMENT_AMOUNTS = 'ChoosePaymentAmounts',
   CHOOSE_AMOUNTS = 'ChooseAmounts',
   QUESTION_LABEL = 'QuestionLabel',
@@ -302,6 +304,13 @@ export type ChooseDeck = {
   tag: QuestionType.CHOOSE_DECK
 }
 
+// Deck selection for a seat joining a campaign already underway. usedInvestigators
+// are the ones already played this campaign, which this player may not choose.
+export type ChooseJoinDeck = {
+  tag: QuestionType.CHOOSE_JOIN_DECK
+  usedInvestigators: string[]
+}
+
 export type AmountChoice = {
   choiceId: string
   label: string
@@ -383,6 +392,14 @@ export const chooseDeckDecoder = JsonDecoder.object<ChooseDeck>(
     tag: JsonDecoder.literal(QuestionType.CHOOSE_DECK),
   },
   'ChooseDeck',
+);
+
+export const chooseJoinDeckDecoder = JsonDecoder.object<ChooseJoinDeck>(
+  {
+    tag: JsonDecoder.literal(QuestionType.CHOOSE_JOIN_DECK),
+    usedInvestigators: JsonDecoder.array(JsonDecoder.string(), 'string[]'),
+  },
+  'ChooseJoinDeck',
 );
 
 export const pickScenarioSettingsDecoder = JsonDecoder.object<PickScenarioSettings>(
@@ -623,6 +640,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseOneAtATimeWithAutoDecoder,
     chooseUpgradeDeckDecoder,
     chooseDeckDecoder,
+    chooseJoinDeckDecoder,
     chooseAmountsDecoder,
     choosePaymentAmountsDecoder,
     chooseExchangeAmountsDecoder,

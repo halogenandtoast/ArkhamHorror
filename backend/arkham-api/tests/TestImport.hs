@@ -892,6 +892,7 @@ newGame scenario' investigator = do
         , gameLeadInvestigatorId = investigatorId
         , gameActivePlayerId = attr investigatorPlayerId investigator
         , gamePlayers = [attr investigatorPlayerId investigator]
+        , gameRetiredInvestigators = mempty
         , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?
         , gamePhaseStep = Nothing
         , gameSkillTest = Nothing

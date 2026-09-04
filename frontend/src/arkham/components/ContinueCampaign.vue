@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, computed, ref, onMounted, watch } from 'vue'
+import { inject, computed, ref, onMounted, watch, type Ref } from 'vue'
 import { toCamelCase } from '@/arkham/helpers'
 import { imgsrc } from '@/arkham/helpers'
 import { Game } from '@/arkham/types/Game'
@@ -12,7 +12,10 @@ import { useI18n } from 'vue-i18n'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import sideStories from '@/arkham/data/side-stories.json'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useClipboard } from '@vueuse/core'
+import { buildShareableUrl } from '@/arkham/helpers'
+import { joinCampaign, rejoinInvestigator, retireInvestigator } from '@/arkham/api'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
@@ -22,6 +25,7 @@ const props = defineProps<{
   game: Game
   campaign?: Campaign
   scenario?: Scenario
+  playerId?: string
   canUpgradeDecks: boolean
   chooseSideStory: boolean
   canChooseSideStory: boolean
@@ -30,6 +34,7 @@ const props = defineProps<{
 
 const { t, te } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
 const send = inject<(msg: string) => void>('send', () => {})
@@ -295,6 +300,80 @@ const expeditionLeader = computed(() => {
   return props.campaign.meta?.expeditionLeader
 })
 
+// --- Joining and leaving a campaign (between scenarios) -------------------
+// Only the seat holding the continuation ask can change the roster; the server
+// rejects everyone else, so the controls are hidden rather than left to fail.
+const solo = inject<Ref<boolean>>('solo', ref(false))
+const rosterBusy = ref(false)
+const rosterError = ref<string | null>(null)
+const confirmingRetire = ref<string | null>(null)
+
+const holdsContinuation = computed(() => {
+  if (!props.playerId) return false
+  const question = props.game.question[props.playerId]
+  if (!question) return false
+  const inner = question.tag === 'QuestionLabel' ? question.question : question
+  return inner.tag === 'ContinueCampaign'
+})
+
+const canManageRoster = computed(() => !!props.campaign && holdsContinuation.value)
+const retired = computed(() => Object.values(props.game.retiredInvestigators ?? {}))
+const canRetire = computed(() => investigators.value.length > 1)
+// A scenario is played by one to four investigators.
+const canAdd = computed(() => investigators.value.length < 4)
+
+// A one-player game is created WithFriends, so `solo` is false even though its
+// single seat belongs to one user. Adding a second hand there turns it into
+// multihanded solo, which the server does when it seats the new investigator.
+const isSingleSeat = computed(() => props.game.playerCount === 1 && retired.value.length === 0)
+const canAddOwnInvestigator = computed(() => solo.value || isSingleSeat.value)
+const becomesMultihandedSolo = computed(() => !solo.value && isSingleSeat.value)
+
+// The add control starts as one button. It only opens a panel when there is a
+// choice to make: taking a second hand yourself versus inviting someone.
+const addOpen = ref(false)
+const addOptionCount = computed(() => (canAddOwnInvestigator.value ? 1 : 0) + (solo.value ? 0 : 1))
+
+function startAdd() {
+  if (addOptionCount.value === 1 && canAddOwnInvestigator.value) {
+    addInvestigator()
+    return
+  }
+  addOpen.value = true
+}
+
+const joinUrl = computed(() =>
+  buildShareableUrl(router.resolve({ name: 'JoinGame', params: { gameId: props.game.id } }).href)
+)
+const { copy: copyInvite, copied: inviteCopied } = useClipboard({ source: joinUrl })
+
+async function withRoster(action: () => Promise<void>) {
+  if (rosterBusy.value) return
+  rosterBusy.value = true
+  rosterError.value = null
+  try {
+    await action()
+  } catch (e) {
+    rosterError.value = (e as { response?: { data?: string } }).response?.data ?? t('campaign.roster.failed')
+  } finally {
+    rosterBusy.value = false
+  }
+}
+
+function retire(investigatorId: string) {
+  confirmingRetire.value = null
+  withRoster(() => retireInvestigator(props.game.id, investigatorId))
+}
+
+function rejoin(investigatorId: string) {
+  withRoster(() => rejoinInvestigator(props.game.id, investigatorId))
+}
+
+function addInvestigator() {
+  addOpen.value = false
+  withRoster(() => joinCampaign(props.game.id))
+}
+
 const setIcon = computed(() => {
   if (!scenario.value) return null
   if (scenario.value.startsWith(":")) {
@@ -349,6 +428,19 @@ const setIcon = computed(() => {
       <div v-if="investigators.length > 0" id="investigators">
         <section v-if="isScenario" id="investigators-header"><i class="secret"></i> {{t('lead')}}</section>
         <InvestigatorRow v-for="investigator in investigators" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]">
+          <template v-if="canManageRoster && canRetire" #actions="{ investigator }">
+            <template v-if="confirmingRetire === investigator.id">
+              <button class="roster-btn roster-btn--danger" :disabled="rosterBusy" @click="retire(investigator.id)">{{ t('campaign.roster.confirmLeave') }}</button>
+              <button class="roster-btn" @click="confirmingRetire = null">{{ t('cancel') }}</button>
+            </template>
+            <button
+              v-else
+              class="roster-btn"
+              :disabled="rosterBusy"
+              v-tooltip="t('campaign.roster.leaveTooltip')"
+              @click="confirmingRetire = investigator.id"
+            >{{ t('campaign.roster.leave') }}</button>
+          </template>
           <template v-if="isScenario" #back="{ investigator }">
             <label class="secret-radio">
               <input
@@ -367,7 +459,48 @@ const setIcon = computed(() => {
             </label>
           </template>
         </InvestigatorRow>
+
+        <template v-if="canManageRoster">
+          <InvestigatorRow
+            v-for="investigator in retired"
+            :key="investigator.id"
+            :investigator="investigator"
+            :game="game"
+            dimmed
+          >
+            <template #actions>
+              <button class="roster-btn" :disabled="rosterBusy || !canAdd" @click="rejoin(investigator.id)">
+                {{ t('campaign.roster.rejoin') }}
+              </button>
+            </template>
+          </InvestigatorRow>
+
+          <button
+            v-if="!addOpen"
+            class="roster-btn roster-add"
+            :disabled="rosterBusy || !canAdd"
+            @click="startAdd"
+          >+ {{ t('campaign.roster.add') }}</button>
+
+          <div v-else class="roster-add-panel">
+            <button v-if="canAddOwnInvestigator" class="roster-btn" :disabled="rosterBusy" @click="addInvestigator">
+              {{ becomesMultihandedSolo ? t('campaign.roster.addSolo') : t('campaign.roster.add') }}
+            </button>
+            <p v-if="becomesMultihandedSolo" class="roster-hint">{{ t('campaign.roster.addSoloHint') }}</p>
+            <template v-if="!solo">
+              <p class="roster-hint">{{ t('campaign.roster.inviteHint') }}</p>
+              <div class="roster-invite">
+                <input type="text" :value="joinUrl" readonly />
+                <button class="roster-btn" type="button" @click="copyInvite()">{{ inviteCopied ? t('lobby.copied') : t('lobby.copy') }}</button>
+              </div>
+            </template>
+            <button class="roster-btn" @click="addOpen = false">{{ t('cancel') }}</button>
+          </div>
+
+          <p v-if="rosterError" class="roster-error">{{ rosterError }}</p>
+        </template>
       </div>
+
     </template>
   </div>
 </template>
@@ -603,6 +736,64 @@ button {
   border-radius: 8px;
 }
 
+
+.roster-add {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+}
+
+.roster-add-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.roster-hint {
+  margin: 0;
+  color: #bebebe;
+  font-size: 0.85em;
+}
+
+.roster-invite {
+  display: flex;
+  gap: 8px;
+  input {
+    flex: 1;
+    min-width: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: #e0e0e0;
+    padding: 8px;
+  }
+}
+
+.roster-error {
+  margin: 0;
+  color: var(--survivor);
+}
+
+.roster-btn {
+  font-size: 0.85em;
+  padding: 6px 12px;
+  white-space: nowrap;
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.roster-btn--danger {
+  background: oklch(from var(--survivor) calc(l - 0.35) c h);
+  &:hover {
+    background: oklch(from var(--survivor) calc(l - 0.25) c h);
+  }
+}
 
 #investigators-header {
   color: var(--title);

@@ -244,7 +244,23 @@ async function addUnsavedDeck(dl: ArkhamDbDecklist) {
   deckType.value = "UnsavedDeck"
 }
 
+// A seat joining a campaign already in progress may only take an investigator
+// nobody has played this campaign; the ask carries the list.
+const usedInvestigators = computed<string[]>(() => {
+  const q = props.game.question[props.playerId]
+  const inner = q?.tag === 'QuestionLabel' ? q.question : q
+  return inner?.tag === 'ChooseJoinDeck' ? inner.usedInvestigators : []
+})
+
+function deckUsedThisCampaign(deckList: SelectableDeckList): boolean {
+  return usedInvestigators.value.includes(deckInvestigatorCode(deckList))
+}
+
 function deckError(deckList: SelectableDeckList): string | null {
+  if (deckUsedThisCampaign(deckList)) {
+    return t('chooseDeck.alreadyPlayedThisCampaign')
+  }
+
   const chosenInvestigatorCodes = Object.values(props.game.investigators).map((i) => i.cardCode)
   const restrictionError = deckRestrictionError(props.game.scenario?.id, deckList, chosenInvestigatorCodes, {
     campaignId: props.game.campaign?.id,
@@ -326,14 +342,18 @@ const tabooList = function (investigator: Investigator) {
 }
 
 const players = computed<Player[]>(() => {
-  if (props.game.gameState.tag === 'IsChooseDecks') {
-    return props.game.gameState.contents.map((p) => {
-      const maybeInvestigator = Object.values(investigators.value).find((i) => i.playerId === p)
-      return maybeInvestigator ? { tag: "Chosen", contents: maybeInvestigator, id: p } : { tag: "EmptyPlayer", id: p }
-    })
-  }
+  if (props.game.gameState.tag !== 'IsChooseDecks') return []
 
-  return []
+  const seated = Object.values(investigators.value)
+  // A seat joining mid-campaign is the only pending one, so show the investigators
+  // already at the table alongside it rather than an otherwise empty screen.
+  const pending = props.game.gameState.contents
+  const ids = [...pending, ...seated.map((i) => i.playerId).filter((p) => !pending.includes(p))]
+
+  return ids.map((p) => {
+    const maybeInvestigator = seated.find((i) => i.playerId === p)
+    return maybeInvestigator ? { tag: "Chosen", contents: maybeInvestigator, id: p } : { tag: "EmptyPlayer", id: p }
+  })
 })
 
 // A challenge scenario only needs one player to use the required deck. The
@@ -353,7 +373,8 @@ const needsReply = computed(() => {
     return false
   }
 
-  return question.tag === 'ChooseDeck' || (question.tag === 'QuestionLabel' && question.question.tag === 'ChooseDeck')
+  const inner = question.tag === 'QuestionLabel' ? question.question : question
+  return inner.tag === 'ChooseDeck' || inner.tag === 'ChooseJoinDeck'
 })
 
 
@@ -427,7 +448,8 @@ const needsReply = computed(() => {
                   <template v-for="deck in filteredDecks" :key="deck.id">
                     <div
                       class="deck-item"
-                      :class="[deckClass(deck), { selected: deckId === deck.id, 'has-error': deckId === deck.id && error }]"
+                      :class="[deckClass(deck), { selected: deckId === deck.id, 'has-error': deckId === deck.id && error, 'deck-item--used': deckUsedThisCampaign(deck.list) }]"
+                      v-tooltip="deckUsedThisCampaign(deck.list) ? $t('chooseDeck.alreadyPlayedThisCampaign') : undefined"
                       @click.prevent="deckId = deck.id"
                     >
                       <img class="deck-item-portrait" :src="cardImg(deckPortraitCode(deck))" />
@@ -448,7 +470,7 @@ const needsReply = computed(() => {
                       >
                         <font-awesome-icon icon="shuffle" />
                       </button>
-                      <button class="deck-item-use" @click.stop.prevent="selectAndChoose(deck)" :title="$t('chooseDeck.useThisDeck')">
+                      <button class="deck-item-use" :disabled="deckUsedThisCampaign(deck.list)" @click.stop.prevent="selectAndChoose(deck)" :title="$t('chooseDeck.useThisDeck')">
                         <font-awesome-icon icon="chevron-right" />
                       </button>
                       <div v-if="deckId === deck.id && weaknessPoolOpen" class="weakness-pool-panel deck-item-weakness-pool" @click.stop>
@@ -782,6 +804,14 @@ const needsReply = computed(() => {
   &.mystic   { border-left-color: var(--mystic-dark);   &:hover { background: var(--mystic-extra-dark); } }
   &.survivor { border-left-color: var(--survivor-dark); &:hover { background: var(--survivor-extra-dark); } }
   &.neutral  { border-left-color: var(--neutral-dark);  &:hover { background: var(--neutral-extra-dark); } }
+
+  /* Dim the row's own colors rather than filtering the subtree, which would
+     also wash out the selection border and any nested panel. */
+  &.deck-item--used {
+    color: rgba(224, 224, 224, 0.45);
+    .deck-item-portrait { opacity: 0.35; }
+    .deck-item-use { opacity: 0.35; cursor: not-allowed; }
+  }
 
   &.selected {
     border-color: rgba(110, 134, 64, 0.4);

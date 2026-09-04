@@ -214,6 +214,10 @@ getCurrentBatchId = gameCurrentBatchId <$> getGame
 getAllPlayers :: HasGame m => m [PlayerId]
 getAllPlayers = gamePlayers <$> getGame
 
+-- | Investigators set aside because their player left the campaign.
+getRetiredInvestigators :: HasGame m => m [InvestigatorId]
+getRetiredInvestigators = keys . gameRetiredInvestigators <$> getGame
+
 getActivePlayer :: HasGame m => m PlayerId
 getActivePlayer = gameActivePlayerId <$> getGame
 

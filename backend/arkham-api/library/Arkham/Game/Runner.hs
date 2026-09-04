@@ -182,6 +182,50 @@ resolveRevelations :: [ModifierType] -> Message -> [Message]
 resolveRevelations modifiers' revelation =
   replicate (1 + max 0 (sum [n | AdditionalRevelations n <- modifiers'])) revelation
 
+-- | Whether a departing investigator is kept for a possible return.
+data Departure = SetAside | ForgetSeat
+  deriving stock Eq
+
+{- | Take an investigator out of the game between scenarios.
+
+'SetAside' keeps the whole entity in 'gameRetiredInvestigators', so rejoining
+restores the xp and trauma the campaign log recorded for them. 'ForgetSeat' is for
+an investigator who never played: nothing remembers them afterwards.
+-}
+removeSeat :: Departure -> InvestigatorId -> Game -> Game
+removeSeat departure iid g = case Map.lookup iid (g ^. entitiesL . investigatorsL) of
+  Nothing -> g
+  Just investigator ->
+    g
+      & (retiredInvestigatorsL %~ if departure == SetAside then Map.insert iid investigator else id)
+      & (entitiesL . investigatorsL .~ remaining)
+      & (playersL .~ remainingPlayers)
+      & (playerOrderL .~ order)
+      & (playerCountL %~ max 1 . subtract 1)
+      & (inHandEntitiesL %~ Map.delete iid)
+      & (inDiscardEntitiesL %~ Map.delete iid)
+      & (phaseHistoryL %~ Map.delete iid)
+      & (turnHistoryL %~ Map.delete iid)
+      & (roundHistoryL %~ Map.delete iid)
+      & (questionL %~ Map.delete pid)
+      & (modifiersL %~ Map.delete (InvestigatorTarget iid))
+      & (cardUsesL %~ Map.map (filter (/= iid)))
+      & (activeInvestigatorIdL %~ replaceIid)
+      & (leadInvestigatorIdL %~ replaceIid)
+      & (turnPlayerInvestigatorIdL %~ fmap replaceIid)
+      & (activePlayerIdL %~ replacePid)
+   where
+    pid = attr investigatorPlayerId investigator
+    remaining = Map.delete iid (g ^. entitiesL . investigatorsL)
+    order = filter (/= iid) (gamePlayerOrder g)
+    remainingPlayers = filter (/= pid) (gamePlayers g)
+    -- The departing seat can be the lead or the active one; hand those to whoever
+    -- is left rather than leaving the game pointing at an absent investigator.
+    heir = fromMaybe iid (headMay order <|> headMay (Map.keys remaining))
+    heirPid = fromMaybe pid (headMay remainingPlayers)
+    replaceIid x = if x == iid then heir else x
+    replacePid x = if x == pid then heirPid else x
+
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
   -- ClearUI is pushed exactly once per accepted answer (Api Games.Shared), so
@@ -511,6 +555,24 @@ runGameMessage msg g = case msg of
       %~ map replaceF
       & leadInvestigatorIdL
       %~ replaceF
+  RetireInvestigator iid -> pure $ removeSeat SetAside iid g
+  RemoveInvestigatorFromCampaign iid -> pure $ removeSeat ForgetSeat iid g
+  UnretireInvestigator iid -> case Map.lookup iid (gameRetiredInvestigators g) of
+    Nothing -> pure g
+    Just investigator -> do
+      let pid = attr investigatorPlayerId investigator
+      pure
+        $ g
+        & (retiredInvestigatorsL %~ Map.delete iid)
+        & (entitiesL . investigatorsL %~ insertEntity investigator)
+        & (playersL %~ \ps -> if pid `elem` ps then ps else ps <> [pid])
+        & (playerOrderL %~ \po -> if iid `elem` po then po else po <> [iid])
+        & (playerCountL %~ (+ 1))
+  JoinCampaign pid ->
+    pure
+      $ g
+      & (playersL %~ \ps -> if pid `elem` ps then ps else ps <> [pid])
+      & (playerCountL %~ (+ 1))
   Run msgs -> g <$ pushAll msgs
   If wType _ -> do
     window <- checkWindows [mkWindow Timing.AtIf wType]

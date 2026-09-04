@@ -4,6 +4,7 @@ module Entity.Answer where
 
 import Import.NoFoundation hiding (get)
 
+import Api.Arkham.Types.MultiplayerVariant (MultiplayerVariant (Solo))
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
@@ -31,6 +32,7 @@ import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.These
 import Data.UUID (UUID)
+import Database.Persist qualified as P
 import Foundation
 import Json
 
@@ -54,6 +56,10 @@ data Answer
       , amount :: Int
       }
   | CampaignStepAnswer CS.CampaignStep
+  | -- Between-scenario roster changes, all answered from the continuation screen.
+    RetireInvestigatorAnswer {investigatorId :: InvestigatorId}
+  | RejoinInvestigatorAnswer {investigatorId :: InvestigatorId}
+  | JoinCampaignAnswer
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
@@ -301,6 +307,9 @@ answerPlayer = \case
   PickDestinyAnswer _ -> Nothing
   ExchangeAmountsAnswer {} -> Nothing
   CampaignStepAnswer _ -> Nothing
+  RetireInvestigatorAnswer _ -> Nothing
+  RejoinInvestigatorAnswer _ -> Nothing
+  JoinCampaignAnswer -> Nothing
 
 playerInvestigator :: Entities -> PlayerId -> InvestigatorId
 playerInvestigator Entities {..} pid = case find ((== pid) . attr investigatorPlayerId) (toList entitiesInvestigators) of
@@ -314,6 +323,52 @@ handled = pure . Handled
 
 unhandled :: Applicative m => Text -> m Reply
 unhandled = pure . Unhandled
+
+-- | A scenario is played by one to four investigators.
+maxInvestigators :: Int
+maxInvestigators = 4
+
+unwrapQuestion :: Question Message -> Question Message
+unwrapQuestion = \case
+  QuestionLabel _ _ q -> unwrapQuestion q
+  PayCostQuestion _ q -> unwrapQuestion q
+  QuestionWithSource _ _ q -> unwrapQuestion q
+  q -> q
+
+{- | Is the table sitting on the /campaign's/ continuation screen?
+
+A scenario can raise a continuation of its own mid-scenario (Fortune and Folly's
+checkpoint), which looks identical from the question alone. Players only join or
+leave between scenarios, so those answers must not be accepted there.
+-}
+atCampaignContinuation :: Game -> Bool
+atCampaignContinuation g = case gameMode g of
+  That _ -> False
+  This c -> isContinuation c.step
+  These c s -> case s.step of
+    Just (CS.ContinueCampaignStep {}) -> False
+    Just (CS.ScenarioStepWithOptions {}) -> False
+    _ -> isContinuation c.step
+ where
+  isContinuation = \case
+    CS.ContinueCampaignStep {} -> True
+    CS.StandaloneScenarioStep _ (CS.ContinueCampaignStep {}) -> True
+    _ -> False
+
+isContinueCampaignAsk :: Game -> PlayerId -> Bool
+isContinueCampaignAsk g pid = case unwrapQuestion <$> Map.lookup pid (gameQuestion g) of
+  Just ContinueCampaign -> True
+  _ -> False
+
+{- | Why this seat may not play @iid@, if it may not.
+
+Only a seat joining mid-campaign is restricted: the rules let a new player pick
+only an investigator nobody has used during this campaign.
+-}
+joinDeckRejection :: Game -> PlayerId -> InvestigatorId -> Maybe Text
+joinDeckRejection g pid iid = case unwrapQuestion <$> Map.lookup pid (gameQuestion g) of
+  Just (ChooseJoinDeck used) | iid `elem` used -> Just "That investigator has already played in this campaign"
+  _ -> Nothing
 
 {- | The messages that start this seat's deck-setup sub-flow.
 
@@ -353,14 +408,39 @@ handleAnswer :: Game -> PlayerId -> Answer -> DB Reply
 handleAnswer game playerId = \case
   DeckAnswer deckId _ -> do
     deck <- get404 deckId
-    let investigatorId = investigator_code $ arkhamDeckList deck
-    update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
-    handled $ deckChosen game playerId (arkhamDeckList deck)
-  DeckListAnswer dl _ -> do
-    let investigatorId = investigator_code dl
-    update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce investigatorId]
-    handled $ deckChosen game playerId dl
+    loadChosenDeck game playerId (arkhamDeckList deck)
+  DeckListAnswer dl _ -> loadChosenDeck game playerId dl
+  JoinCampaignAnswer
+    | not (isContinueCampaignAsk game playerId) -> unhandled "Wrong question type"
+    | not (atCampaignContinuation game) -> unhandled "Players can only join between scenarios"
+    | Map.size (entitiesInvestigators (gameEntities game)) >= maxInvestigators ->
+        unhandled "A campaign is played by at most four investigators"
+    | otherwise ->
+        P.get (coerce playerId) >>= \case
+          Nothing -> unhandled "Unknown player"
+          Just seat -> do
+            let gameId = arkhamPlayerArkhamGameId seat
+            variant <- fmap arkhamGameMultiplayerVariant <$> P.get gameId
+            seats <- P.count [ArkhamPlayerArkhamGameId P.==. gameId]
+            -- Solo runs every seat off one user, so it can always take another. A
+            -- one-seat WithFriends game becomes multihanded solo when its player
+            -- adds a second hand ('updateGame' persists the switch); with more seats
+            -- each belongs to its own user (UniquePlayer userId gameId), so only the
+            -- invite link can add one.
+            if variant == Just Solo || seats == 1
+              then do
+                pid <- insert $ ArkhamPlayer (arkhamPlayerUserId seat) gameId "00000"
+                handled [JoinCampaign (PlayerId $ coerce pid)]
+              else unhandled "A new player joins this game with its invite link"
   other -> liftIO $ handleAnswerPure game playerId other
+
+-- | Seat @playerId@'s chosen deck, unless a mid-campaign join may not play it.
+loadChosenDeck :: Game -> PlayerId -> ArkhamDBDecklist -> DB Reply
+loadChosenDeck game playerId dl = case joinDeckRejection game playerId dl.investigator of
+  Just reason -> unhandled reason
+  Nothing -> do
+    update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce (investigator_code dl)]
+    handled $ deckChosen game playerId dl
 
 {- | Like 'handleAnswer' but with no DB access. Returns 'Unhandled' for
 'DeckAnswer' / 'DeckListAnswer', which require updating an 'ArkhamPlayer'
@@ -370,6 +450,22 @@ handleAnswerPure :: Game -> PlayerId -> Answer -> IO Reply
 handleAnswerPure game@Game {..} playerId = \case
   DeckAnswer {} -> unhandled "DeckAnswer requires database access"
   DeckListAnswer {} -> unhandled "DeckListAnswer requires database access"
+  JoinCampaignAnswer -> unhandled "JoinCampaignAnswer requires database access"
+  RetireInvestigatorAnswer iid
+    | not (isContinueCampaignAsk game playerId) -> unhandled "Wrong question type"
+    | not (atCampaignContinuation game) -> unhandled "Investigators can only leave between scenarios"
+    | iid `Map.notMember` entitiesInvestigators gameEntities -> unhandled "Unknown investigator"
+    | Map.size (entitiesInvestigators gameEntities) <= 1 ->
+        unhandled "The last investigator cannot leave"
+    | otherwise -> handled [LeaveCampaign iid]
+  RejoinInvestigatorAnswer iid
+    | not (isContinueCampaignAsk game playerId) -> unhandled "Wrong question type"
+    | not (atCampaignContinuation game) -> unhandled "Investigators can only rejoin between scenarios"
+    | Map.size (entitiesInvestigators gameEntities) >= maxInvestigators ->
+        unhandled "A campaign is played by at most four investigators"
+    | iid `Map.notMember` gameRetiredInvestigators ->
+        unhandled "That investigator has not left the campaign"
+    | otherwise -> handled [UnretireInvestigator iid]
   StandaloneSettingsAnswer settings' -> do
     let standaloneCampaignLog = makeStandaloneCampaignLog settings'
     handled [SetCampaignLog standaloneCampaignLog]

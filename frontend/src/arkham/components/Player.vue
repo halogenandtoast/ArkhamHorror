@@ -565,6 +565,18 @@ const asIfInHandPhantomCards = computed<CardT.Card[]>(() => {
 
 const showDebugAddCard = ref(false)
 const showCustomCardCreator = ref(false)
+
+/* An edit can be asked for from anywhere that shows a custom card (an asset's
+ * debug menu). Only the seat that owns this Player answers, so the editor opens
+ * once rather than once per investigator on the table. */
+const pendingCustomCardEdit = computed(() =>
+  props.playerId === props.investigator.playerId ? debug.customCardEditRequest : null,
+)
+
+function closeCustomCardCreator() {
+  showCustomCardCreator.value = false
+  debug.clearCustomCardEditRequest()
+}
 const debugPlayerCards = ref<CardDef[]>([])
 const debugCardSearch = ref('')
 const debugAddCardError = ref<string | null>(null)
@@ -1205,10 +1217,11 @@ function closeHand() {
     </div>
 
     <CustomCardCreator
-      v-if="debug.active && showCustomCardCreator"
+      v-if="debug.active && (showCustomCardCreator || pendingCustomCardEdit)"
       :game="game"
       :investigatorId="investigator.id"
-      @close="showCustomCardCreator = false"
+      :editCode="pendingCustomCardEdit"
+      @close="closeCustomCardCreator"
     />
 
     <div class="player">
@@ -1978,7 +1991,7 @@ function closeHand() {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-index-1000);
+  z-index: var(--z-index-max);
 }
 
 .debug-add-card-modal {

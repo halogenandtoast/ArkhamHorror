@@ -2,14 +2,27 @@
 module Arkham.Custom.Skill (CustomSkill (..), customSkill) where
 
 import Arkham.Card.CardDef (CardDef)
+import Arkham.Custom.Ability (customAbilities, customModifiers, runCustomAbility, runCustomHandlers)
 import Arkham.Skill.Import.Lifted
 
 newtype CustomSkill = CustomSkill SkillAttrs
-  deriving anyclass (IsSkill, HasModifiersFor, HasAbilities)
+  deriving anyclass IsSkill
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 customSkill :: CardDef -> SkillCard CustomSkill
 customSkill = skill CustomSkill
 
+instance HasModifiersFor CustomSkill where
+  getModifiersFor (CustomSkill a) = customModifiers a
+
+instance HasAbilities CustomSkill where
+  getAbilities (CustomSkill a) = customAbilities a
+
 instance RunMessage CustomSkill where
-  runMessage msg (CustomSkill attrs) = CustomSkill <$> runMessage msg attrs
+  runMessage msg x@(CustomSkill attrs) = runQueueT $ case msg of
+    UseThisAbility iid (isSource attrs -> True) idx -> do
+      runCustomAbility attrs iid idx
+      pure x
+    _ -> do
+      runCustomHandlers attrs msg
+      CustomSkill <$> liftRunMessage msg attrs

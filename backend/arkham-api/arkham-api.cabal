@@ -2446,10 +2446,14 @@ library
       Arkham.Cost.Status
       Arkham.Criteria
       Arkham.Criteria.Override
+      Arkham.Custom.Ability
       Arkham.Custom.Asset
       Arkham.Custom.Enemy
       Arkham.Custom.Event
       Arkham.Custom.Location
+      Arkham.Custom.Schema
+      Arkham.Custom.Schema.TH
+      Arkham.Custom.Schema.Types
       Arkham.Custom.Skill
       Arkham.Custom.Story
       Arkham.Custom.Treachery

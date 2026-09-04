@@ -37,7 +37,19 @@ const debug = reactive({
   toggle: () => {
     debug.active = !debug.active
   },
-  send: async (gameId: string, message: any) => updateGameRaw(gameId, message)
+  send: async (gameId: string, message: any) => updateGameRaw(gameId, message),
+
+  /* A request to open the custom card editor on a particular card. The editor
+   * is mounted by the local player's Player component, so anywhere that can see
+   * a custom card (an asset's debug menu, say) can ask for it to be opened
+   * without owning the modal itself. */
+  customCardEditRequest: null as string | null,
+  editCustomCard: (cardCode: string) => {
+    debug.customCardEditRequest = cardCode
+  },
+  clearCustomCardEditRequest: () => {
+    debug.customCardEditRequest = null
+  }
 })
 
 export function useDebug() {

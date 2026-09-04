@@ -14,6 +14,7 @@ import * as Arkham from '@/arkham/types/Asset';
 import {isUse} from '@/arkham/types/Token';
 import { useDbCardStore } from '@/stores/dbCards'
 import { useCardStore } from '@/stores/cards'
+import { isCustomCardCode } from '@/arkham/customCards'
 
 const props = defineProps<{
   game: Game
@@ -175,6 +176,9 @@ const hasPool = computed(() => {
         <button v-if="canFlip" @click="debug.send(game.id, {tag: 'Flip', contents: [flipInvestigator, { tag: 'GameSource' }, { tag: 'AssetTarget', contents: id}]})">{{ $t('debug.asset.flip') }}</button>
         <button v-if="asset.spiritDeck" @click="inspectSpiritDeck = true">Inspect spirit deck</button>
         <button v-if="slots.length > 0" @click="showSlots = true">{{ $t('debug.asset.showSlots') }}</button>
+        <button v-if="isCustomCardCode(cardCode)" @click="debug.editCustomCard(cardCode); emit('close')">
+          Edit custom card
+        </button>
         <button @click="setModifiers = true">{{ $t('debug.common.modifiers') }}</button>
         <button @click="emit('close')">{{ $t('debug.common.close') }}</button>
       </div>

@@ -6,22 +6,24 @@
  * run by a generic runner for its type. There is no card text: whatever the def
  * says (stats, keywords, traits, icons, slots, uses) is exactly what the card
  * does. */
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import * as Api from '@/arkham/api'
 import { useDebug } from '@/arkham/debug'
 import { useCardStore } from '@/stores/cards'
 import {
   customCards,
   mintCustomCardCode,
+  stripCardCodePrefix,
   registerCustomCards,
   renderCardPlaceholder,
   unregisterCustomCard,
   type CustomCard,
 } from '@/arkham/customCards'
 import { libraryCards, removeFromLibrary, saveToLibrary } from '@/arkham/customCardLibrary'
+import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
 import type { Game } from '@/arkham/types/Game'
 
-const props = defineProps<{ game: Game; investigatorId: string }>()
+const props = defineProps<{ game: Game; investigatorId: string; editCode?: string | null }>()
 const emit = defineEmits<{ close: [] }>()
 
 const debug = useDebug()
@@ -59,7 +61,7 @@ const KEYWORDS = [
 
 const PLAYER_TYPES = ['AssetType', 'EventType', 'SkillType', 'PlayerTreacheryType', 'PlayerEnemyType']
 
-const form = reactive({
+const blankForm = () => ({
   title: '',
   subtitle: '',
   cardType: 'EnemyType' as string,
@@ -88,12 +90,25 @@ const form = reactive({
   assetSanity: '',
   useType: '',
   useCount: '',
+  // abilities
+  abilities: [] as any[],
+  handlers: [] as any[],
+  modifiers: [] as any[],
   // escape hatch
   rawJson: '',
 })
 
+const form = reactive(blankForm())
+
 const tab = ref<'new' | 'library'>('new')
 const selected = ref<string | null>(null)
+
+/* Editing a library card rewrites the def under its existing card code. The
+ * engine looks a custom def up by code every time it needs one, so a save is
+ * picked up by cards already in play -- name, traits, art and abilities take
+ * effect at once. Stats an entity copies when it is built (an enemy's fight,
+ * health and evade) stay as they were until a fresh copy is put into play. */
+const editingCode = ref<string | null>(null)
 const artUrl = ref('')
 const artData = ref<string | null>(null)
 const dragging = ref(false)
@@ -115,6 +130,7 @@ const art = computed(() => artData.value || artUrl.value.trim() || null)
  * anything if it is the same value the matchers use. Anything unrecognised
  * becomes a custom trait rather than being dropped. */
 const traitIndex = ref(new Map<string, string>())
+const traitDisplay = ref(new Map<string, string>())
 
 const normalizeTrait = (trait: string) => trait.toLowerCase().replace(/[^a-z0-9]/g, '')
 
@@ -136,18 +152,41 @@ const parsedTraits = computed(() =>
     }),
 )
 
-onMounted(async () => {
+/* Opened straight onto a card (from an asset's debug menu). Traits are written
+ * back using their printed names, so wait for the trait list before filling the
+ * form. */
+async function openForEditing(cardCode: string) {
+  await loadTraits()
+  const card = library.value.find((e) => e.card.def.cardCode === stripCardCodePrefix(cardCode))?.card
+  if (card) startEditing(card)
+}
+
+watch(
+  () => props.editCode,
+  (code) => {
+    if (code) openForEditing(code)
+  },
+  { immediate: true },
+)
+
+async function loadTraits() {
+  if (traitIndex.value.size) return
   try {
     const index = new Map<string, string>()
-    for (const [name, display] of await Api.fetchTraits()) {
+    const display = new Map<string, string>()
+    for (const [name, printed] of await Api.fetchTraits()) {
       index.set(normalizeTrait(name), name)
-      index.set(normalizeTrait(display), name)
+      index.set(normalizeTrait(printed), name)
+      display.set(name, printed)
     }
     traitIndex.value = index
+    traitDisplay.value = display
   } catch (e) {
     console.error(e)
   }
-})
+}
+
+onMounted(loadTraits)
 
 // ------------------------------------------------------------ skill icons ---
 
@@ -229,6 +268,10 @@ const buildDef = (cardCode: string): Record<string, any> => {
       def.uses = { type: form.useType, amount: num(form.useCount) }
     }
   }
+
+  if (form.abilities.length) def.meta._abilities = form.abilities
+  if (form.handlers.length) def.meta._handlers = form.handlers
+  if (form.modifiers.length) def.meta._modifiers = form.modifiers
 
   return def
 }
@@ -354,7 +397,119 @@ const canAddToCampaignDeck = computed(
   () => !!activeCardType.value && PLAYER_TYPES.includes(activeCardType.value),
 )
 
+// A player-back card has no business in the encounter deck.
+const canShuffleIntoEncounterDeck = computed(
+  () => !!activeCardType.value && !PLAYER_TYPES.includes(activeCardType.value),
+)
+
 const canSubmit = computed(() => tab.value === 'new' || !!selectedCard.value)
+
+/* Fields the form owns. Anything else on the def is put back into the raw block
+ * so editing a card cannot quietly drop what the form cannot express. */
+const FORM_KEYS = [
+  'cardCode', 'art', 'cardType', 'name', 'classSymbols', 'cardTraits', 'skills', 'keywords',
+  'unique', 'doubleSided', 'meta', 'cardSubType', 'cost', 'level', 'victoryPoints',
+  'fight', 'health', 'evade', 'healthDamage', 'sanityDamage', 'slots', 'uses',
+]
+const FORM_META_KEYS = ['shroud', 'revealClues', 'health', 'sanity', '_abilities', '_handlers', '_modifiers']
+
+const gameValueNumber = (v: any) => (v && typeof v.contents === 'number' ? String(v.contents) : '')
+const isPerPlayer = (v: any) => v?.tag === 'PerPlayer'
+
+function startEditing(card: CustomCard) {
+  const def: Record<string, any> = card.def as any
+  const meta = def.meta ?? {}
+
+  form.title = def.name?.title ?? ''
+  form.subtitle = def.name?.subtitle ?? ''
+  form.cardType = def.cardType
+  form.classSymbol = def.classSymbols?.[0] ?? 'Neutral'
+  form.cost = def.cost?.tag === 'StaticCost' ? String(def.cost.contents) : ''
+  form.level = def.level === null || def.level === undefined ? '' : String(def.level)
+  form.victory = def.victoryPoints === null || def.victoryPoints === undefined ? '' : String(def.victoryPoints)
+  form.unique = !!def.unique
+  form.traits = (def.cardTraits ?? []).map((t: string) => traitDisplay.value.get(t) ?? t).join('. ')
+  form.icons = (def.skills ?? []).map((s: any) => (s.tag === 'SkillIcon' ? s.contents : 'Wild'))
+  form.keywords = (def.keywords ?? []).map((k: any) => k.tag).filter((k: string) => KEYWORDS.includes(k))
+
+  form.fight = gameValueNumber(def.fight)
+  form.health = gameValueNumber(def.health)
+  form.healthPerPlayer = isPerPlayer(def.health)
+  form.evade = gameValueNumber(def.evade)
+  form.damage = gameValueNumber(def.healthDamage)
+  form.horror = gameValueNumber(def.sanityDamage)
+
+  form.shroud = meta.shroud === undefined ? '' : String(meta.shroud)
+  form.clues = gameValueNumber(meta.revealClues)
+  form.cluesPerPlayer = isPerPlayer(meta.revealClues)
+
+  form.slots = def.slots ?? []
+  form.assetHealth = meta.health === undefined ? '' : String(meta.health)
+  form.assetSanity = meta.sanity === undefined ? '' : String(meta.sanity)
+  form.useType = def.uses?.type ?? ''
+  form.useCount = def.uses?.amount === undefined ? '' : String(def.uses.amount)
+
+  form.abilities = meta._abilities ?? []
+  form.handlers = meta._handlers ?? []
+  form.modifiers = meta._modifiers ?? []
+
+  const leftover: Record<string, any> = {}
+  for (const [key, value] of Object.entries(def)) {
+    if (!FORM_KEYS.includes(key)) leftover[key] = value
+  }
+  const leftoverMeta: Record<string, any> = {}
+  for (const [key, value] of Object.entries(meta)) {
+    if (!FORM_META_KEYS.includes(key)) leftoverMeta[key] = value
+  }
+  if (Object.keys(leftoverMeta).length) leftover.meta = leftoverMeta
+  form.rawJson = Object.keys(leftover).length ? JSON.stringify(leftover, null, 2) : ''
+
+  artData.value = card.art?.startsWith('data:') ? card.art : null
+  artUrl.value = card.art && !card.art.startsWith('data:') ? card.art : ''
+
+  editingCode.value = def.cardCode
+  tab.value = 'new'
+  error.value = null
+}
+
+/* Leaving edit mode has to clear the form as well as the code. Otherwise the
+ * builder is left holding the edited card's values, and the next action creates
+ * a new card that looks like a second copy of the one just saved. */
+function resetForm() {
+  Object.assign(form, blankForm())
+  clearArt()
+}
+
+function cancelEditing() {
+  editingCode.value = null
+  error.value = null
+  resetForm()
+  // Opened straight onto a card (from an asset's debug menu) there is no
+  // library to fall back to, so cancelling closes.
+  if (props.editCode) emit('close')
+  else tab.value = 'library'
+}
+
+async function saveEdit() {
+  error.value = null
+  busy.value = true
+
+  try {
+    const def = mergeRaw(buildDef(editingCode.value!))
+    const customCard: CustomCard = { def: def as any, art: art.value }
+    await debug.send(props.game.id, { tag: 'DebugRegisterCustomCard', contents: customCard })
+    registerCustomCards([customCard])
+    cardStore.cards = [...cardStore.cards.filter((c) => c.cardCode !== def.cardCode), def as any]
+    saveToLibrary(customCard)
+    editingCode.value = null
+    emit('close')
+  } catch (e) {
+    console.error(e)
+    error.value = 'Could not save the card.'
+  } finally {
+    busy.value = false
+  }
+}
 
 /* Registration is by card code and idempotent, so re-adding a card the campaign
  * already has just mints another copy of it rather than a lookalike. */
@@ -422,13 +577,13 @@ function toggle(list: string[], value: string) {
   <div class="custom-card-overlay" @click.self="emit('close')">
     <div class="custom-card-modal">
       <div class="custom-card-tabs">
-        <button type="button" :class="{ on: tab === 'new' }" @click="tab = 'new'">New card</button>
-        <button type="button" :class="{ on: tab === 'library' }" @click="tab = 'library'">
+        <button type="button" :class="{ on: tab === 'new' && !editingCode }" @click="tab = 'new'; cancelEditing()">New card</button>
+        <button type="button" :class="{ on: tab === 'library' && !editingCode }" @click="tab = 'library'; cancelEditing()">
           Library <span v-if="library.length" class="count">{{ library.length }}</span>
         </button>
       </div>
 
-      <div v-if="tab === 'library'" class="custom-card-library">
+      <div v-if="tab === 'library' && !editingCode" class="custom-card-library">
         <p v-if="!library.length" class="custom-card-status">
           No custom cards yet. Make one on the New card tab and it will be waiting here.
         </p>
@@ -445,6 +600,14 @@ function toggle(list: string[], value: string) {
             <small>{{ entry.card.def.cardType.replace(/Type$/, '') }}</small>
             <button
               type="button"
+              class="library-edit"
+              title="Edit this card's def"
+              @click.stop="startEditing(entry.card)"
+            >
+              ✎
+            </button>
+            <button
+              type="button"
               class="library-forget"
               :title="entry.inCampaign ? 'Remove from this campaign' : 'Remove from your card library'"
               @click.stop="forget(entry.card.def.cardCode, entry.inCampaign)"
@@ -455,7 +618,13 @@ function toggle(list: string[], value: string) {
         </div>
       </div>
 
-      <div v-show="tab === 'new'" class="custom-card-body">
+      <p v-if="editingCode" class="editing-banner">
+        Editing this card in place. Saving updates every copy — name, traits, art and abilities apply
+        at once; an enemy's printed fight, health and evade only apply to copies put into play after
+        the save.
+      </p>
+
+      <div v-show="tab === 'new' || editingCode" class="custom-card-body">
         <div class="custom-card-preview">
           <div
             class="art-dropzone"
@@ -629,6 +798,15 @@ function toggle(list: string[], value: string) {
           </fieldset>
 
           <details>
+            <summary>Abilities</summary>
+            <AbilityEditor
+              v-model:abilities="form.abilities"
+              v-model:handlers="form.handlers"
+              v-model:modifiers="form.modifiers"
+            />
+          </details>
+
+          <details>
             <summary>Raw CardDef JSON (merged over the form)</summary>
             <textarea
               v-model="form.rawJson"
@@ -643,7 +821,12 @@ function toggle(list: string[], value: string) {
 
       <p v-if="error" class="custom-card-error">{{ error }}</p>
 
-      <div class="custom-card-actions">
+      <div v-if="editingCode" class="custom-card-actions">
+        <button type="button" :disabled="busy" @click="saveEdit">Save changes</button>
+        <button type="button" class="secondary" @click="cancelEditing">Cancel</button>
+      </div>
+
+      <div v-else class="custom-card-actions">
         <button type="button" :disabled="busy || !canSubmit" @click="submit('play')">Put into play</button>
         <button type="button" :disabled="busy || !canSubmit" @click="submit('hand')">Add to hand</button>
         <button
@@ -655,7 +838,12 @@ function toggle(list: string[], value: string) {
         >
           Add to deck for campaign
         </button>
-        <button type="button" :disabled="busy || !canSubmit" @click="submit('encounterDeck')">
+        <button
+          v-if="canShuffleIntoEncounterDeck"
+          type="button"
+          :disabled="busy || !canSubmit"
+          @click="submit('encounterDeck')"
+        >
           Shuffle into encounter deck
         </button>
         <button type="button" class="secondary" @click="emit('close')">{{ $t('close') }}</button>
@@ -672,7 +860,7 @@ function toggle(list: string[], value: string) {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-index-1000);
+  z-index: var(--z-index-max);
 }
 
 .custom-card-modal {
@@ -960,6 +1148,26 @@ fieldset {
   }
 }
 
+.library-edit {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.35rem;
+  background: rgba(0, 0, 0, 0.65);
+  border: none;
+  border-radius: 50%;
+  color: #eee;
+  cursor: pointer;
+  font-size: 0.8rem;
+  height: 1.4rem;
+  line-height: 1;
+  opacity: 0;
+  width: 1.4rem;
+
+  .library-card:hover & {
+    opacity: 1;
+  }
+}
+
 .library-forget {
   position: absolute;
   top: 0.35rem;
@@ -1024,6 +1232,14 @@ details summary {
 
 .custom-card-status {
   opacity: 0.8;
+}
+
+.editing-banner {
+  background: rgba(170, 221, 255, 0.1);
+  border-left: 3px solid #adf;
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.7rem;
 }
 
 .custom-card-error {

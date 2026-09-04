@@ -3,6 +3,7 @@ module Api.Handler.Arkham.Cards (
   getApiV1ArkhamCardsR,
   getApiV1ArkhamHomebrewCardsR,
   getApiV1ArkhamTraitsR,
+  getApiV1ArkhamSchemaR,
 ) where
 
 import Import
@@ -10,6 +11,7 @@ import Import
 import Arkham.Asset.Cards
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Custom.Schema (customSchema)
 import Arkham.EncounterCard
 import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Investigator.Cards
@@ -114,3 +116,9 @@ sent through as a homebrew trait.
 -}
 getApiV1ArkhamTraitsR :: Handler Value
 getApiV1ArkhamTraitsR = pure $ toJSON [(traitName t, displayTrait t) | t <- Homebrew.allTraits]
+
+{- | The constructor schema the custom-card ability editor builds against.
+See "Arkham.Custom.Schema".
+-}
+getApiV1ArkhamSchemaR :: Handler Value
+getApiV1ArkhamSchemaR = pure $ toJSON customSchema

@@ -15,6 +15,7 @@
     /arkham ApiV1ArkhamP:
       /cards ApiV1ArkhamCardsR GET
       /traits ApiV1ArkhamTraitsR GET
+      /schema ApiV1ArkhamSchemaR GET
       /homebrew/cards ApiV1ArkhamHomebrewCardsR GET
       /card/#CardCode ApiV1ArkhamCardR GET
       /investigators ApiV1ArkhamInvestigatorsR GET

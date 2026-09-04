@@ -1,67 +1,129 @@
-// Cards you have made before, kept in this browser so they can be added to any
-// game again. Distinct from `customCards.ts`, which is the registry of cards
-// live in the *current* game (those come from the server, and include cards
-// other players made).
+// Cards you have built, kept against your account so they outlive any one game
+// and follow you between browsers.
 //
-// A library entry owns its card code: adding it to a game re-registers that same
-// code, so two copies really are two copies of one card rather than two
-// unrelated cards that happen to share a name.
-import { reactive } from 'vue'
+// Distinct from `customCards.ts`, which is the registry of cards live in the
+// *current* game — those come from that game and include cards other players
+// made. A library card is added to a game by registering it there; the two stay
+// separate on purpose.
+import { reactive, ref } from 'vue'
+import * as Api from '@/arkham/api'
 import type { CustomCard } from '@/arkham/customCards'
 
-const STORAGE_KEY = 'arkham:custom-card-library'
+export type LibraryCard = CustomCard & { id: string; updatedAt: string }
 
-export type LibraryCard = CustomCard & { createdAt: number }
+const LEGACY_STORAGE_KEY = 'arkham:custom-card-library'
 
 const entries = reactive<LibraryCard[]>([])
+export const libraryLoaded = ref(false)
+let loading: Promise<void> | null = null
 
-function persist() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries))
+const toLibraryCard = (row: Api.StoredCustomCard): LibraryCard => ({
+  id: row.id,
+  def: row.def,
+  art: row.art,
+  updatedAt: row.updatedAt,
+})
+
+function replaceAll(rows: Api.StoredCustomCard[]) {
+  entries.splice(0, entries.length, ...rows.map(toLibraryCard))
 }
 
-function load() {
+/* Cards made before the library moved server-side live in this browser only.
+ * Push them up once, then drop the local copy so there is a single source of
+ * truth. */
+async function migrateLegacyCards() {
+  let legacy: { def: any; art: string | null }[] = []
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(LEGACY_STORAGE_KEY)
     if (!raw) return
     const parsed = JSON.parse(raw)
-    if (Array.isArray(parsed)) entries.push(...parsed)
+    if (Array.isArray(parsed)) legacy = parsed
   } catch {
-    // A corrupt or unreadable library is not worth failing the game over.
+    return
+  }
+
+  if (!legacy.length) {
+    localStorage.removeItem(LEGACY_STORAGE_KEY)
+    return
+  }
+
+  try {
+    await Api.importCustomCards(legacy.map((c) => ({ def: c.def, art: c.art ?? null })))
+    localStorage.removeItem(LEGACY_STORAGE_KEY)
+  } catch (error) {
+    console.error(error)
   }
 }
 
-load()
+export async function loadLibrary(force = false) {
+  if (libraryLoaded.value && !force) return
+  loading ??= (async () => {
+    await migrateLegacyCards()
+    replaceAll(await Api.fetchCustomCardLibrary())
+    libraryLoaded.value = true
+  })()
+
+  try {
+    await loading
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading = null
+  }
+}
 
 export function libraryCards(): LibraryCard[] {
-  return [...entries].sort((a, b) => b.createdAt - a.createdAt)
+  return [...entries].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 }
 
-/* Saving can fail: art is inlined as a data URI, so a few dozen cards can fill
- * the storage quota. The caller surfaces that rather than losing the card
- * silently -- it is still added to the game either way. */
-export function saveToLibrary(card: CustomCard): { saved: boolean; reason?: string } {
-  const existing = entries.findIndex((e) => e.def.cardCode === card.def.cardCode)
-  const entry: LibraryCard = { ...card, createdAt: Date.now() }
-  if (existing === -1) entries.push(entry)
-  else entries.splice(existing, 1, entry)
-
-  try {
-    persist()
-    return { saved: true }
-  } catch (error) {
-    if (existing === -1) entries.pop()
-    console.error(error)
-    return { saved: false, reason: 'The card library is full. Delete a card to make room.' }
-  }
+export function libraryCard(cardCode: string): LibraryCard | undefined {
+  return entries.find((e) => e.def.cardCode === cardCode)
 }
 
-export function removeFromLibrary(cardCode: string) {
+export async function saveToLibrary(card: CustomCard): Promise<LibraryCard> {
+  const saved = toLibraryCard(await Api.saveCustomCard({ def: card.def, art: card.art }))
+  const index = entries.findIndex((e) => e.def.cardCode === saved.def.cardCode)
+  if (index === -1) entries.push(saved)
+  else entries.splice(index, 1, saved)
+  return saved
+}
+
+export async function removeFromLibrary(cardCode: string) {
   const index = entries.findIndex((e) => e.def.cardCode === cardCode)
   if (index === -1) return
-  entries.splice(index, 1)
+  const [removed] = entries.splice(index, 1)
   try {
-    persist()
+    await Api.deleteCustomCard(removed.id)
   } catch (error) {
     console.error(error)
+    entries.splice(index, 0, removed)
   }
+}
+
+export async function importLibraryCards(cards: CustomCard[]): Promise<LibraryCard[]> {
+  const saved = (await Api.importCustomCards(cards.map((c) => ({ def: c.def, art: c.art })))).map(toLibraryCard)
+  for (const card of saved) {
+    const index = entries.findIndex((e) => e.def.cardCode === card.def.cardCode)
+    if (index === -1) entries.push(card)
+    else entries.splice(index, 1, card)
+  }
+  return saved
+}
+
+export const EXPORT_VERSION = 1
+
+export type CardExport = { version: number; cards: { def: any; art: string | null }[] }
+
+export function exportCards(cards: CustomCard[]): CardExport {
+  return { version: EXPORT_VERSION, cards: cards.map((c) => ({ def: c.def, art: c.art })) }
+}
+
+/* Accepts a whole export file or a single card, so a card pasted on its own
+ * imports as readily as a file of many. */
+export function parseCardExport(raw: string): CustomCard[] {
+  const parsed = JSON.parse(raw)
+  const cards = Array.isArray(parsed) ? parsed : (parsed.cards ?? [parsed])
+  return cards
+    .filter((c: any) => c?.def?.cardCode)
+    .map((c: any) => ({ def: c.def, art: c.art ?? null }))
 }

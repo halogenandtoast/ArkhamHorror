@@ -2,6 +2,13 @@ import { RouteLocationNormalized } from 'vue-router';
 
 export default [
   {
+    path: '/card-builder',
+    name: 'CardBuilder',
+    component: () => import('@/arkham/views/CardBuilder.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: Card Builder" },
+    props: true,
+  },
+  {
     path: '/cards',
     name: 'Cards',
     component: () => import('@/arkham/views/Cards.vue'),

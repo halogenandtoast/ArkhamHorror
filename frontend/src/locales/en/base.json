@@ -8,7 +8,8 @@
     "admin": "Admin",
     "cards": "Cards",
     "myDecks": "Decks",
-    "support": "Patreon"
+    "support": "Patreon",
+    "cardBuilder": "Card Builder"
   },
   "activeGames": "Active Games",
   "checkCampaignLog": "Check your Campaign Log.",
@@ -538,7 +539,11 @@
     "cannotBeUndone": "This cannot be undone.",
     "deleteAccount": "Delete Account",
     "deleteConfirm": "Are you sure? All your games, decks, and account data will be permanently lost and cannot be recovered.",
-    "confirmPermanentDelete": "Yes, permanently delete my account"
+    "confirmPermanentDelete": "Yes, permanently delete my account",
+    "customCards": "Custom cards",
+    "customCardsWarning": "Experimental. Custom cards are only ever as correct as the definition behind them, and the builder can express things the engine will happily run but no printed card would ever do.",
+    "customCardsHelp": "Adds a Card Builder to the menu, where you can make your own cards and add them to a game from the debug menu.",
+    "openCardBuilder": "Open the card builder"
   },
   "campaignLogTooltip": {
     "rememberedTitle": "Remembered",

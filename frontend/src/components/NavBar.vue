@@ -4,12 +4,15 @@ import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import type { User } from '@/types'
 import { OnClickOutside } from '@vueuse/components'
+import { storeToRefs } from 'pinia'
+import { useSettings } from '@/stores/settings'
 
 const expanded = ref(false);
 const mobileOpen = ref(false);
 const router = useRouter()
 const store = useUserStore()
 const currentUser = computed<User | null>(() => store.currentUser)
+const { customCardsEnabled } = storeToRefs(useSettings())
 
 async function logout() {
   await store.logout()
@@ -28,6 +31,7 @@ async function logout() {
       <router-link v-if="currentUser" to="/decks" class="nav-link">{{$t('nav.myDecks')}}</router-link>
       <router-link v-if="currentUser" to="/cards" class="nav-link">{{$t('nav.cards')}}</router-link>
       <router-link v-if="currentUser" to="/achievements" class="nav-link">{{$t('nav.achievements')}}</router-link>
+      <router-link v-if="currentUser && customCardsEnabled" to="/card-builder" class="nav-link">{{$t('nav.cardBuilder')}}</router-link>
       <router-link v-if="currentUser" to="/about" class="nav-link">{{$t('nav.about')}}</router-link>
       <router-link v-if="currentUser" to="/about?support" class="nav-link">{{$t('nav.support')}}</router-link>
       <router-link v-if="currentUser && currentUser.admin" to="/admin" class="nav-link">{{$t('nav.admin')}}</router-link>
@@ -56,6 +60,7 @@ async function logout() {
       <router-link to="/decks">{{$t('nav.myDecks')}}</router-link>
       <router-link to="/cards">{{$t('nav.cards')}}</router-link>
       <router-link to="/achievements">{{$t('nav.achievements')}}</router-link>
+      <router-link v-if="customCardsEnabled" to="/card-builder">{{$t('nav.cardBuilder')}}</router-link>
       <router-link to="/about">{{$t('nav.about')}}</router-link>
       <router-link to="/about?support">{{$t('nav.support')}}</router-link>
       <router-link v-if="currentUser && currentUser.admin" to="/admin">{{$t('nav.admin')}}</router-link>

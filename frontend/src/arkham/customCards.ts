@@ -22,6 +22,16 @@ export const customCardDecoder = JsonDecoder.object<CustomCard>(
   'CustomCard',
 )
 
+/* Card types that go in a deck or a hand. Only these can be earned for a
+ * campaign or added to a hand; the rest are encounter-side. */
+export const PLAYER_CARD_TYPES = [
+  'AssetType',
+  'EventType',
+  'SkillType',
+  'PlayerTreacheryType',
+  'PlayerEnemyType',
+]
+
 export const CUSTOM_CARD_PREFIX = '*'
 
 /* `ToJSON CardCode` prepends a 'c' so codes never serialize as bare numbers, but

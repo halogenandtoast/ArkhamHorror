@@ -19,7 +19,7 @@ import Skill from '@/arkham/components/Skill.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
-import CustomCardCreator from '@/arkham/components/debug/CustomCardCreator.vue';
+import CustomCardPicker from '@/arkham/components/debug/CustomCardPicker.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
@@ -35,6 +35,7 @@ import * as Api from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef';
 import { fullName } from '@/arkham/types/Name';
 import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard'
+import { storeToRefs } from 'pinia';
 import { useSettings } from '@/stores/settings';
 import { useCardStore } from '@/stores/cards';
 import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage';
@@ -564,19 +565,8 @@ const asIfInHandPhantomCards = computed<CardT.Card[]>(() => {
 })
 
 const showDebugAddCard = ref(false)
-const showCustomCardCreator = ref(false)
-
-/* An edit can be asked for from anywhere that shows a custom card (an asset's
- * debug menu). Only the seat that owns this Player answers, so the editor opens
- * once rather than once per investigator on the table. */
-const pendingCustomCardEdit = computed(() =>
-  props.playerId === props.investigator.playerId ? debug.customCardEditRequest : null,
-)
-
-function closeCustomCardCreator() {
-  showCustomCardCreator.value = false
-  debug.clearCustomCardEditRequest()
-}
+const showCustomCardPicker = ref(false)
+const { customCardsEnabled } = storeToRefs(settings)
 const debugPlayerCards = ref<CardDef[]>([])
 const debugCardSearch = ref('')
 const debugAddCardError = ref<string | null>(null)
@@ -1216,12 +1206,11 @@ function closeHand() {
       </div>
     </div>
 
-    <CustomCardCreator
-      v-if="debug.active && (showCustomCardCreator || pendingCustomCardEdit)"
+    <CustomCardPicker
+      v-if="debug.active && customCardsEnabled && showCustomCardPicker"
       :game="game"
       :investigatorId="investigator.id"
-      :editCode="pendingCustomCardEdit"
-      @close="closeCustomCardCreator"
+      @close="showCustomCardPicker = false"
     />
 
     <div class="player">
@@ -1337,7 +1326,7 @@ function closeHand() {
         </transition-group>
         <div class="hand-debug-actions" v-if="debug.active">
           <button type="button" @click="openDebugAddCard">+ Card to hand</button>
-          <button type="button" @click="showCustomCardCreator = true">+ Custom card</button>
+          <button v-if="customCardsEnabled" type="button" @click="showCustomCardPicker = true">+ Custom card</button>
         </div>
         <div v-if="investigator.handSize" class="hand-size" :class="handSizeClasses" :current-length="totalHandSize">{{ t('handSize') }}: {{totalHandSize}}/{{investigator.handSize}}</div>
       </div>

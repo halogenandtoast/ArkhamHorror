@@ -29,6 +29,7 @@ library
       Api.Handler.Arkham.Achievements
       Api.Handler.Arkham.Admin.Metrics
       Api.Handler.Arkham.Cards
+      Api.Handler.Arkham.CustomCards
       Api.Handler.Arkham.Decks
       Api.Handler.Arkham.Events
       Api.Handler.Arkham.Game.Bug
@@ -8129,6 +8130,7 @@ library
       Entity.Answer
       Entity.Arkham.Achievement
       Entity.Arkham.ArkhamDBDecklist
+      Entity.Arkham.CustomCard
       Entity.Arkham.Deck
       Entity.Arkham.Epic
       Entity.Arkham.Game

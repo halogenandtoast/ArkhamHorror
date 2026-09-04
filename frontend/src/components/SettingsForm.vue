@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const store = useDbCardStore()
 const settings = useSettings()
-const { epicMultiplayerStored } = storeToRefs(settings)
+const { epicMultiplayerStored, customCardsEnabled } = storeToRefs(settings)
 const dev = isDevBuild()
 const { availableLocales, locale, setLocaleMessage } = useI18n({ useScope: 'global' })
 const language = ref(localStorage.getItem('language') || locale.value)
@@ -30,6 +30,11 @@ const betaUpdate = async () => props.updateBeta(beta.value == "On")
 const epicMultiplayer = computed({
   get: () => (epicMultiplayerStored.value ? 'On' : 'Off'),
   set: (value: string) => settings.setEpicMultiplayerEnabled(value === 'On'),
+})
+
+const customCards = computed({
+  get: () => (customCardsEnabled.value ? 'On' : 'Off'),
+  set: (value: string) => settings.setCustomCardsEnabled(value === 'On'),
 })
 
 const updateLanguage = async (a: Event) => {
@@ -87,6 +92,25 @@ const updateLanguage = async (a: Event) => {
             {{ $t('Off') }}
           </label>
         </div>
+      </section>
+
+      <section class="box column">
+        <h3>{{ $t('settingsForm.customCards') }}</h3>
+        <p class="warning">{{ $t('settingsForm.customCardsWarning') }}</p>
+        <p>{{ $t('settingsForm.customCardsHelp') }}</p>
+        <div class="row">
+          <label class="radio-label">
+            <input type="radio" name="customCards" value="On" v-model="customCards" />
+            {{ $t('On') }}
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="customCards" value="Off" v-model="customCards" />
+            {{ $t('Off') }}
+          </label>
+        </div>
+        <router-link v-if="customCardsEnabled" to="/card-builder" class="builder-link">
+          {{ $t('settingsForm.openCardBuilder') }}
+        </router-link>
       </section>
 
       <section class="box column danger-zone">
@@ -187,6 +211,11 @@ input[type="radio"] {
 .warning {
   color: var(--delete);
   font-weight: bold;
+}
+
+.builder-link {
+  color: var(--spooky-green);
+  width: fit-content;
 }
 
 .dev-flag {

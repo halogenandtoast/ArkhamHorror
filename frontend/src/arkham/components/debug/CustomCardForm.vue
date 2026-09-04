@@ -1,35 +1,13 @@
 <script lang="ts" setup>
-/* Debug tool: invent a card mid-game.
+/* The card builder's form: everything that makes up a custom card's def.
  *
- * The def built here is a real CardDef -- the backend stores it on the game and
- * registers it so every def and builder lookup resolves it, and the card is then
- * run by a generic runner for its type. There is no card text: whatever the def
- * says (stats, keywords, traits, icons, slots, uses) is exactly what the card
- * does. */
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+ * It owns its own state and exposes `loadCard`, `reset` and `buildCustomCard`,
+ * so the page can drive it for both new cards and edits without threading the
+ * whole form through props. */
+import { computed, onMounted, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
-import { useDebug } from '@/arkham/debug'
-import { useCardStore } from '@/stores/cards'
-import {
-  customCards,
-  mintCustomCardCode,
-  stripCardCodePrefix,
-  registerCustomCards,
-  renderCardPlaceholder,
-  unregisterCustomCard,
-  type CustomCard,
-} from '@/arkham/customCards'
-import { libraryCards, removeFromLibrary, saveToLibrary } from '@/arkham/customCardLibrary'
+import { PLAYER_CARD_TYPES, renderCardPlaceholder, type CustomCard } from '@/arkham/customCards'
 import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
-import type { Game } from '@/arkham/types/Game'
-
-const props = defineProps<{ game: Game; investigatorId: string; editCode?: string | null }>()
-const emit = defineEmits<{ close: [] }>()
-
-const debug = useDebug()
-const cardStore = useCardStore()
-
-type Placement = 'play' | 'hand' | 'campaignDeck' | 'encounterDeck'
 
 const CARD_TYPES = [
   { value: 'AssetType', label: 'Asset (player back)' },
@@ -59,7 +37,6 @@ const KEYWORDS = [
   'Peril', 'Relentless', 'Retaliate', 'Surge', 'Doomed', 'Permanent', 'Predator',
 ]
 
-const PLAYER_TYPES = ['AssetType', 'EventType', 'SkillType', 'PlayerTreacheryType', 'PlayerEnemyType']
 
 const blankForm = () => ({
   title: '',
@@ -99,29 +76,19 @@ const blankForm = () => ({
 })
 
 const form = reactive(blankForm())
-
-const tab = ref<'new' | 'library'>('new')
-const selected = ref<string | null>(null)
-
-/* Editing a library card rewrites the def under its existing card code. The
- * engine looks a custom def up by code every time it needs one, so a save is
- * picked up by cards already in play -- name, traits, art and abilities take
- * effect at once. Stats an entity copies when it is built (an enemy's fight,
- * health and evade) stay as they were until a fresh copy is put into play. */
-const editingCode = ref<string | null>(null)
 const artUrl = ref('')
-const artData = ref<string | null>(null)
+const artUploaded = ref<string | null>(null)
 const dragging = ref(false)
+const uploading = ref(false)
 const error = ref<string | null>(null)
-const busy = ref(false)
 
 const isEnemy = computed(() => form.cardType === 'EnemyType' || form.cardType === 'PlayerEnemyType')
 const isLocation = computed(() => form.cardType === 'LocationType')
 const isAsset = computed(() => form.cardType === 'AssetType' || form.cardType === 'EncounterAssetType')
-const isPlayerCard = computed(() => PLAYER_TYPES.includes(form.cardType))
+const isPlayerCard = computed(() => PLAYER_CARD_TYPES.includes(form.cardType))
 const hasCost = computed(() => ['AssetType', 'EventType'].includes(form.cardType))
 
-const art = computed(() => artData.value || artUrl.value.trim() || null)
+const art = computed(() => artUploaded.value || artUrl.value.trim() || null)
 
 // ---------------------------------------------------------------- traits ---
 
@@ -135,11 +102,7 @@ const traitDisplay = ref(new Map<string, string>())
 const normalizeTrait = (trait: string) => trait.toLowerCase().replace(/[^a-z0-9]/g, '')
 
 const pascalCase = (trait: string) =>
-  trait
-    .trim()
-    .split(/\s+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join('')
+  trait.trim().split(/\s+/).map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join('')
 
 const parsedTraits = computed(() =>
   form.traits
@@ -150,23 +113,6 @@ const parsedTraits = computed(() =>
       const known = traitIndex.value.get(normalizeTrait(raw))
       return { raw, name: known ?? pascalCase(raw), custom: !known }
     }),
-)
-
-/* Opened straight onto a card (from an asset's debug menu). Traits are written
- * back using their printed names, so wait for the trait list before filling the
- * form. */
-async function openForEditing(cardCode: string) {
-  await loadTraits()
-  const card = library.value.find((e) => e.card.def.cardCode === stripCardCodePrefix(cardCode))?.card
-  if (card) startEditing(card)
-}
-
-watch(
-  () => props.editCode,
-  (code) => {
-    if (code) openForEditing(code)
-  },
-  { immediate: true },
 )
 
 async function loadTraits() {
@@ -188,20 +134,17 @@ async function loadTraits() {
 
 onMounted(loadTraits)
 
-// ------------------------------------------------------------ skill icons ---
+// ----------------------------------------------------------- skill icons ---
 
 const iconCount = (icon: string) => form.icons.filter((i) => i === icon).length
-
-function addIcon(icon: string) {
-  form.icons.push(icon)
-}
+const addIcon = (icon: string) => form.icons.push(icon)
 
 function removeIcon(icon: string) {
   const index = form.icons.lastIndexOf(icon)
   if (index !== -1) form.icons.splice(index, 1)
 }
 
-// -------------------------------------------------------------------- def ---
+// ------------------------------------------------------------------- def ---
 
 const num = (v: string): number | null => {
   const n = parseInt(v, 10)
@@ -221,10 +164,10 @@ const setIf = (def: Record<string, any>, key: string, value: unknown) => {
 const iconJson = (icon: string) =>
   icon === 'Wild' ? { tag: 'WildIcon', contents: [] } : { tag: 'SkillIcon', contents: icon }
 
-/* The def the engine will run. Only meaningful keys are emitted -- CardDef's
- * parser defaults everything else, so an absent key is the printed blank, which
- * is how an enemy ends up with a dash for fight, health or evade. */
-const buildDef = (cardCode: string): Record<string, any> => {
+/* Only meaningful keys are emitted -- CardDef's parser defaults everything else,
+ * so an absent key is the printed blank, which is how an enemy ends up with a
+ * dash for fight, health or evade. */
+function buildDef(cardCode: string): Record<string, any> {
   const def: Record<string, any> = {
     cardCode,
     art: cardCode,
@@ -278,7 +221,7 @@ const buildDef = (cardCode: string): Record<string, any> => {
 
 /* The raw block wins over the form, so a field the form does not offer can
  * still be set (and one it does can be overridden). */
-const mergeRaw = (def: Record<string, any>): Record<string, any> => {
+function mergeRaw(def: Record<string, any>): Record<string, any> {
   const raw = form.rawJson.trim()
   if (!raw) return def
   const parsed = JSON.parse(raw)
@@ -297,9 +240,9 @@ const previewArt = computed(() => art.value ?? renderCardPlaceholder(previewDef.
 
 // ------------------------------------------------------------------- art ---
 
-/* Keep the stored image small: it lives in the game state and is served to
- * every player, so a full-resolution scan has no business going in. */
-async function readImage(file: File) {
+/* Downscaled before upload: the art is served to every player who sees the
+ * card, and a full-resolution scan has no business going up. */
+async function readImage(file: File): Promise<Blob> {
   const dataUrl: string = await new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result as string)
@@ -320,18 +263,24 @@ async function readImage(file: File) {
   canvas.width = Math.round(image.width * scale)
   canvas.height = Math.round(image.height * scale)
   canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height)
-  artData.value = canvas.toDataURL('image/webp', 0.85)
-  artUrl.value = ''
+
+  return new Promise((resolve, reject) =>
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Could not encode image'))), 'image/webp', 0.85),
+  )
 }
 
 async function takeImage(file: File | undefined) {
   if (!file || !file.type.startsWith('image/')) return
   error.value = null
+  uploading.value = true
   try {
-    await readImage(file)
+    artUploaded.value = await Api.uploadCustomCardArt(await readImage(file))
+    artUrl.value = ''
   } catch (e) {
     console.error(e)
-    error.value = 'Could not read that image.'
+    error.value = 'Could not upload that image.'
+  } finally {
+    uploading.value = false
   }
 }
 
@@ -345,64 +294,11 @@ async function onFile(event: Event) {
 }
 
 function clearArt() {
-  artData.value = null
+  artUploaded.value = null
   artUrl.value = ''
 }
 
-// --------------------------------------------------------------- library ---
-
-/* One list from two sources: the cards this campaign already knows about (the
- * game holds them, so they outlive each scenario and every player sees them)
- * and the ones made in this browser, which carry over into new campaigns. */
-const library = computed(() => {
-  const inCampaign = customCards()
-  const campaignCodes = new Set(inCampaign.map((c) => c.def.cardCode))
-  const local = libraryCards().filter((c) => !campaignCodes.has(c.def.cardCode))
-  return [...inCampaign, ...local].map((card) => ({
-    card,
-    inCampaign: campaignCodes.has(card.def.cardCode),
-  }))
-})
-
-const selectedCard = computed(() => library.value.find((e) => e.card.def.cardCode === selected.value)?.card)
-
-const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def)
-
-/* Forgetting a card the campaign owns takes it off the game too, so it stops
- * coming back. Copies already in play keep working for this server run but lose
- * their def on the next reload, which is the trade for being able to clear out
- * a mistake. */
-async function forget(cardCode: string, inCampaign: boolean) {
-  if (inCampaign) {
-    if (!confirm('Remove this card from the campaign? Copies already in play will break on reload.')) return
-    await debug.send(props.game.id, { tag: 'DebugRemoveCustomCard', contents: cardCode })
-    unregisterCustomCard(cardCode)
-    cardStore.cards = cardStore.cards.filter((c) => c.cardCode !== cardCode)
-  }
-
-  removeFromLibrary(cardCode)
-  if (selected.value === cardCode) selected.value = null
-}
-
-// ---------------------------------------------------------------- submit ---
-
-/* Whichever card the action bar would act on: the one being built, or the one
- * picked out of the library. */
-const activeCardType = computed(() =>
-  tab.value === 'library' ? selectedCard.value?.def.cardType : form.cardType,
-)
-
-// Only player cards survive deck loading, so only they can be earned.
-const canAddToCampaignDeck = computed(
-  () => !!activeCardType.value && PLAYER_TYPES.includes(activeCardType.value),
-)
-
-// A player-back card has no business in the encounter deck.
-const canShuffleIntoEncounterDeck = computed(
-  () => !!activeCardType.value && !PLAYER_TYPES.includes(activeCardType.value),
-)
-
-const canSubmit = computed(() => tab.value === 'new' || !!selectedCard.value)
+// ------------------------------------------------------------- load/save ---
 
 /* Fields the form owns. Anything else on the def is put back into the raw block
  * so editing a card cannot quietly drop what the form cannot express. */
@@ -416,10 +312,12 @@ const FORM_META_KEYS = ['shroud', 'revealClues', 'health', 'sanity', '_abilities
 const gameValueNumber = (v: any) => (v && typeof v.contents === 'number' ? String(v.contents) : '')
 const isPerPlayer = (v: any) => v?.tag === 'PerPlayer'
 
-function startEditing(card: CustomCard) {
+async function loadCard(card: CustomCard) {
+  await loadTraits()
   const def: Record<string, any> = card.def as any
   const meta = def.meta ?? {}
 
+  Object.assign(form, blankForm())
   form.title = def.name?.title ?? ''
   form.subtitle = def.name?.subtitle ?? ''
   form.cardType = def.cardType
@@ -464,106 +362,18 @@ function startEditing(card: CustomCard) {
   if (Object.keys(leftoverMeta).length) leftover.meta = leftoverMeta
   form.rawJson = Object.keys(leftover).length ? JSON.stringify(leftover, null, 2) : ''
 
-  artData.value = card.art?.startsWith('data:') ? card.art : null
-  artUrl.value = card.art && !card.art.startsWith('data:') ? card.art : ''
-
-  editingCode.value = def.cardCode
-  tab.value = 'new'
-  error.value = null
+  artUploaded.value = card.art
+  artUrl.value = ''
 }
 
-/* Leaving edit mode has to clear the form as well as the code. Otherwise the
- * builder is left holding the edited card's values, and the next action creates
- * a new card that looks like a second copy of the one just saved. */
-function resetForm() {
+function reset() {
   Object.assign(form, blankForm())
   clearArt()
-}
-
-function cancelEditing() {
-  editingCode.value = null
   error.value = null
-  resetForm()
-  // Opened straight onto a card (from an asset's debug menu) there is no
-  // library to fall back to, so cancelling closes.
-  if (props.editCode) emit('close')
-  else tab.value = 'library'
 }
 
-async function saveEdit() {
-  error.value = null
-  busy.value = true
-
-  try {
-    const def = mergeRaw(buildDef(editingCode.value!))
-    const customCard: CustomCard = { def: def as any, art: art.value }
-    await debug.send(props.game.id, { tag: 'DebugRegisterCustomCard', contents: customCard })
-    registerCustomCards([customCard])
-    cardStore.cards = [...cardStore.cards.filter((c) => c.cardCode !== def.cardCode), def as any]
-    saveToLibrary(customCard)
-    editingCode.value = null
-    emit('close')
-  } catch (e) {
-    console.error(e)
-    error.value = 'Could not save the card.'
-  } finally {
-    busy.value = false
-  }
-}
-
-/* Registration is by card code and idempotent, so re-adding a card the campaign
- * already has just mints another copy of it rather than a lookalike. */
-async function addCard(customCard: CustomCard, placement: Placement) {
-  const cardCode = customCard.def.cardCode
-
-  await debug.send(props.game.id, { tag: 'DebugRegisterCustomCard', contents: customCard })
-  registerCustomCards([customCard])
-  if (!cardStore.cards.some((c) => c.cardCode === cardCode)) {
-    cardStore.cards = [...cardStore.cards, customCard.def]
-  }
-
-  const cardId = crypto.randomUUID()
-  await debug.send(props.game.id, { tag: 'CreateCard', contents: [cardId, cardCode] })
-
-  const message = {
-    play: { tag: 'DebugPlaceCard', contents: [props.investigatorId, cardId] },
-    hand: { tag: 'DebugAddToHand', contents: [props.investigatorId, cardId] },
-    campaignDeck: { tag: 'DebugAddToCampaignDeck', contents: [props.investigatorId, cardId] },
-    encounterDeck: { tag: 'DebugAddToEncounterDeck', contents: [{ tag: 'EncounterDeck' }, cardId] },
-  }[placement]
-
-  await debug.send(props.game.id, message)
-}
-
-async function submit(placement: Placement) {
-  error.value = null
-  busy.value = true
-
-  try {
-    if (tab.value === 'library') {
-      const card = selectedCard.value
-      if (!card) return
-      await addCard(card, placement)
-    } else {
-      const customCard: CustomCard = {
-        def: mergeRaw(buildDef(mintCustomCardCode())) as any,
-        art: art.value,
-      }
-      await addCard(customCard, placement)
-      const { saved, reason } = saveToLibrary(customCard)
-      if (!saved && reason) {
-        error.value = `${reason} The card was still added to the game.`
-        return
-      }
-    }
-
-    emit('close')
-  } catch (e) {
-    console.error(e)
-    error.value = 'Could not create the card. Check the raw JSON, if you used any.'
-  } finally {
-    busy.value = false
-  }
+function buildCustomCard(cardCode: string): CustomCard {
+  return { def: mergeRaw(buildDef(cardCode)) as any, art: art.value }
 }
 
 function toggle(list: string[], value: string) {
@@ -571,81 +381,33 @@ function toggle(list: string[], value: string) {
   if (index === -1) list.push(value)
   else list.splice(index, 1)
 }
+
+defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.cardType) })
 </script>
-
 <template>
-  <div class="custom-card-overlay" @click.self="emit('close')">
-    <div class="custom-card-modal">
-      <div class="custom-card-tabs">
-        <button type="button" :class="{ on: tab === 'new' && !editingCode }" @click="tab = 'new'; cancelEditing()">New card</button>
-        <button type="button" :class="{ on: tab === 'library' && !editingCode }" @click="tab = 'library'; cancelEditing()">
-          Library <span v-if="library.length" class="count">{{ library.length }}</span>
-        </button>
+  <div class="custom-card-body">
+    <div class="custom-card-preview">
+      <div
+        class="art-dropzone"
+        :class="{ dragging, uploading }"
+        @dragover.prevent="dragging = true"
+        @dragleave="dragging = false"
+        @drop.prevent="onDrop"
+      >
+        <img :src="previewArt" alt="" />
+        <span class="art-hint">{{ uploading ? 'Uploading…' : 'Drop an image' }}</span>
       </div>
-
-      <div v-if="tab === 'library' && !editingCode" class="custom-card-library">
-        <p v-if="!library.length" class="custom-card-status">
-          No custom cards yet. Make one on the New card tab and it will be waiting here.
-        </p>
-        <div v-else class="library-grid">
-          <div
-            v-for="entry in library"
-            :key="entry.card.def.cardCode"
-            class="library-card"
-            :class="{ on: selected === entry.card.def.cardCode }"
-            @click="selected = entry.card.def.cardCode"
-          >
-            <img :src="cardArt(entry.card)" :data-image-id="entry.card.def.cardCode" alt="" />
-            <span class="library-name">{{ entry.card.def.name.title }}</span>
-            <small>{{ entry.card.def.cardType.replace(/Type$/, '') }}</small>
-            <button
-              type="button"
-              class="library-edit"
-              title="Edit this card's def"
-              @click.stop="startEditing(entry.card)"
-            >
-              ✎
-            </button>
-            <button
-              type="button"
-              class="library-forget"
-              :title="entry.inCampaign ? 'Remove from this campaign' : 'Remove from your card library'"
-              @click.stop="forget(entry.card.def.cardCode, entry.inCampaign)"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <p v-if="editingCode" class="editing-banner">
-        Editing this card in place. Saving updates every copy — name, traits, art and abilities apply
-        at once; an enemy's printed fight, health and evade only apply to copies put into play after
-        the save.
-      </p>
-
-      <div v-show="tab === 'new' || editingCode" class="custom-card-body">
-        <div class="custom-card-preview">
-          <div
-            class="art-dropzone"
-            :class="{ dragging }"
-            @dragover.prevent="dragging = true"
-            @dragleave="dragging = false"
-            @drop.prevent="onDrop"
-          >
-            <img :src="previewArt" alt="" />
-            <span class="art-hint">Drop an image</span>
-          </div>
-          <label class="file-pick">
-            Choose an image
-            <input type="file" accept="image/*" @change="onFile" />
-          </label>
-          <label>
-            …or an image URL
-            <input v-model="artUrl" type="url" placeholder="https://…" @keydown.stop />
-          </label>
-          <button v-if="art" type="button" class="link" @click="clearArt">Clear art</button>
-        </div>
+      <label class="file-pick">
+        Choose an image
+        <input type="file" accept="image/*" @change="onFile" />
+      </label>
+      <label>
+        …or an image URL
+        <input v-model="artUrl" type="url" placeholder="https://…" @keydown.stop />
+      </label>
+      <button v-if="art" type="button" class="link" @click="clearArt">Clear art</button>
+      <p v-if="error" class="custom-card-error">{{ error }}</p>
+    </div>
 
         <div class="custom-card-form">
           <div class="row">
@@ -817,38 +579,6 @@ function toggle(list: string[], value: string) {
             />
           </details>
         </div>
-      </div>
-
-      <p v-if="error" class="custom-card-error">{{ error }}</p>
-
-      <div v-if="editingCode" class="custom-card-actions">
-        <button type="button" :disabled="busy" @click="saveEdit">Save changes</button>
-        <button type="button" class="secondary" @click="cancelEditing">Cancel</button>
-      </div>
-
-      <div v-else class="custom-card-actions">
-        <button type="button" :disabled="busy || !canSubmit" @click="submit('play')">Put into play</button>
-        <button type="button" :disabled="busy || !canSubmit" @click="submit('hand')">Add to hand</button>
-        <button
-          v-if="canAddToCampaignDeck"
-          type="button"
-          :disabled="busy || !canSubmit"
-          title="Shuffles into the deck now and records it in the campaign's story cards, so it comes back in later scenarios"
-          @click="submit('campaignDeck')"
-        >
-          Add to deck for campaign
-        </button>
-        <button
-          v-if="canShuffleIntoEncounterDeck"
-          type="button"
-          :disabled="busy || !canSubmit"
-          @click="submit('encounterDeck')"
-        >
-          Shuffle into encounter deck
-        </button>
-        <button type="button" class="secondary" @click="emit('close')">{{ $t('close') }}</button>
-      </div>
-    </div>
   </div>
 </template>
 

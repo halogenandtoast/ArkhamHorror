@@ -23,6 +23,11 @@ const EXTRA_ANIMATIONS_SETTING = 'extraAnimations'
 // Off by default: they are still real cards, and some players want to see them.
 const HIDE_INERT_CARDS_KEY = 'arkhamHideInertCards'
 
+// Cards you build yourself. Experimental: a custom card is only ever as correct
+// as the def behind it, and the builder can express things the engine will
+// happily run but no printed card would ever do.
+const CUSTOM_CARDS_KEY = 'arkhamCustomCardsEnabled'
+
 export const useSettings = defineStore("settings", () => {
   const gameId = ref<string | null>(null)
   const splitView = ref(false)
@@ -32,6 +37,13 @@ export const useSettings = defineStore("settings", () => {
   // production builds.
   const epicMultiplayerStored = ref(localStorage.getItem(EPIC_MULTIPLAYER_KEY) === 'true')
   const epicMultiplayerEnabled = computed(() => isDevBuild() && epicMultiplayerStored.value)
+
+  const customCardsEnabled = ref(localStorage.getItem(CUSTOM_CARDS_KEY) === 'true')
+
+  function setCustomCardsEnabled(enabled: boolean) {
+    customCardsEnabled.value = enabled
+    localStorage.setItem(CUSTOM_CARDS_KEY, String(enabled))
+  }
 
   function setEpicMultiplayerEnabled(enabled: boolean) {
     epicMultiplayerStored.value = enabled
@@ -128,5 +140,7 @@ export const useSettings = defineStore("settings", () => {
     setExtraAnimationsOverride,
     hideInertCards,
     setHideInertCards,
+    customCardsEnabled,
+    setCustomCardsEnabled,
   }
 })

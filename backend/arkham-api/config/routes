@@ -16,6 +16,11 @@
       /cards ApiV1ArkhamCardsR GET
       /traits ApiV1ArkhamTraitsR GET
       /schema ApiV1ArkhamSchemaR GET
+      /custom-cards ApiV1ArkhamCustomCardsP:
+        / ApiV1ArkhamCustomCardsR GET POST
+        !/import ApiV1ArkhamCustomCardsImportR POST
+        !/art ApiV1ArkhamCustomCardsArtR POST
+        /#ArkhamCustomCardId ApiV1ArkhamCustomCardR DELETE
       /homebrew/cards ApiV1ArkhamHomebrewCardsR GET
       /card/#CardCode ApiV1ArkhamCardR GET
       /investigators ApiV1ArkhamInvestigatorsR GET

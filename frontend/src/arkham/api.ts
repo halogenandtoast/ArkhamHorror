@@ -116,6 +116,36 @@ export const fetchTraits = async (): Promise<[string, string][]> => {
   return data
 }
 
+export type StoredCustomCard = { id: string; cardCode: string; def: any; art: string | null; updatedAt: string }
+
+export const fetchCustomCardLibrary = async (): Promise<StoredCustomCard[]> => {
+  const { data } = await api.get('arkham/custom-cards')
+  return data.map((row: any) => ({ id: row.id, ...row }))
+}
+
+export const saveCustomCard = async (card: { def: any; art: string | null }): Promise<StoredCustomCard> => {
+  const { data } = await api.post('arkham/custom-cards', card)
+  return { id: data.id, ...data }
+}
+
+export const importCustomCards = async (cards: { def: any; art: string | null }[]): Promise<StoredCustomCard[]> => {
+  const { data } = await api.post('arkham/custom-cards/import', { cards })
+  return data.map((row: any) => ({ id: row.id, ...row }))
+}
+
+export const deleteCustomCard = async (id: string): Promise<void> => {
+  await api.delete(`arkham/custom-cards/${id}`)
+}
+
+/* Art is uploaded rather than inlined: a data URI would ride in the def, and
+ * from there into every game that uses the card. */
+export const uploadCustomCardArt = async (file: File | Blob, filename = 'art.webp'): Promise<string> => {
+  const body = new FormData()
+  body.append('file', file, filename)
+  const { data } = await api.post('arkham/custom-cards/art', body)
+  return data
+}
+
 export const fetchCustomCards = async (gameId: string): Promise<CustomCard[]> => {
   const { data } = await api.get(`arkham/games/${gameId}/custom-cards`)
   return JsonDecoder.array(customCardDecoder, 'ArkhamCustomCard[]').decodePromise(data)

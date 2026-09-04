@@ -2798,6 +2798,10 @@ runGameMessage msg g = case msg of
     let card = lookupCard cardCode cardId
     replaceCard cardId card
     pure g
+  DebugAddToEncounterDeck deck cardId -> do
+    card <- getCard cardId
+    push $ ShuffleCardsIntoDeck deck [card]
+    pure g
   After EndPhase -> do
     clearQueue
     case g ^. phaseL of

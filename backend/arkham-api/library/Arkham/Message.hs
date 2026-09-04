@@ -1218,6 +1218,7 @@ data Message
     ClearQueue
   | SetCardOwner CardId InvestigatorId
   | DebugAddToHand InvestigatorId CardId
+  | DebugAddToEncounterDeck DeckSignifier CardId
   | DebugCustomize InvestigatorId CardId
   | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | SetScenarioDifficulty Difficulty

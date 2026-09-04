@@ -1252,6 +1252,14 @@ allAssets =
         --- River of Blood [cob]
         SomeAssetCard detectiveReynoldsInOverHisHead
       , SomeAssetCard fangOfZburamoarte
+      , --- New Horizons [cob]
+        SomeAssetCard sanguineSong
+      , SomeAssetCard forgedPermit
+      , --- Blood Money [cob]
+        SomeAssetCard chosenOfZburamoarteFightingTheHunger
+      , SomeAssetCard chosenOfZburamoarteCompelledToFeed
+      , --- Friends in Low Places [cob]
+        SomeAssetCard charlieKaneKnowsAGuy
       , -- Return to Night of the Zealot
         --- guardian [rtnotz]
         SomeAssetCard physicalTraining2

@@ -19,7 +19,7 @@ import Arkham.Homebrew.CircusExMortis.Key
 import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Id (AgendaId (..))
 import Arkham.Investigator.Types (Field (InvestigatorDeck))
-import Arkham.Location.Grid (Pos (..))
+import Arkham.Location.Grid (Pos (..), gridLabel)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -91,8 +91,8 @@ instance RunMessage HarmsWay where
   runMessage msg s@(HarmsWay attrs) = runQueueT $ scenarioI18n "harmsWay" $ case msg of
     PreScenarioSetup -> scope "intro" do
       storyWithChooseOneM' (setTitle "title" >> p "body") do
-        labeled' "faster" $ addChaosToken Skull
-        labeled' "caution" $ addChaosToken Cultist
+        labeled' "faster" $ addChaosToken Cultist
+        labeled' "caution" $ addChaosToken Tablet
       pure s
     Setup -> runScenarioSetup HarmsWay attrs do
       gather Set.HarmsWay
@@ -112,12 +112,14 @@ instance RunMessage HarmsWay where
 
       (removedYoung, keptYoung) <- splitAt 1 <$> shuffle toweringDarkYoungs
       removeEvery removedYoung
-      -- Keep their mechanical Global placement while rendering the four enemies
-      -- in the otherwise-empty corners around the camp.
-      let cornerLabels = ["posn0101", "pos0101", "posn01n01", "pos01n01"]
-      for_ (zip keptYoung cornerLabels) \(def, label) -> do
-        eid <- placeEnemyCapture def Global
-        push $ UpdateEnemy eid $ Update EnemyAsSelfLocation (Just label)
+      -- They are at no location, so InPosition and not Global: Global means "on
+      -- the same location as everyone", which would make all four fightable
+      -- from anywhere. The four corners are the otherwise-empty diagonals
+      -- around Ringmaster's Trailer at (0, 0).
+      let corners = [Pos (-1) 1, Pos 1 1, Pos (-1) (-1), Pos 1 (-1)]
+      for_ (zip keptYoung corners) \(def, pos) -> do
+        eid <- placeEnemyCapture def (InPosition pos)
+        push $ UpdateEnemy eid $ Update EnemyAsSelfLocation (Just $ gridLabel pos)
 
       initFuryBag
       placeStory Stories.theDarkYoungStir

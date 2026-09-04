@@ -30,7 +30,8 @@ instance HasAbilities ToweringDarkYoung_068 where
 instance RunMessage ToweringDarkYoung_068 where
   runMessage msg e@(ToweringDarkYoung_068 attrs) = runQueueT $ case msg of
     -- The attack is made "as if it were at your location": the fight override
-    -- skips the co-location requirement this Global enemy could never meet.
+    -- skips the co-location requirement, which this enemy is at no location to
+    -- meet.
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       skillTestModifier sid (attrs.ability 1) attrs

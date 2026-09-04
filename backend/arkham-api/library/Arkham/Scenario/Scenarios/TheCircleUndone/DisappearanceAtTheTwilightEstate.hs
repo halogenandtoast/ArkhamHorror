@@ -297,9 +297,9 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           "05048" -> "valentinoIntro"
           "05049" -> "pennyIntro"
           _ -> error "Invalid prologue investigator"
-        readings = map readingFor taken
       crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
-      traverse_ (\r -> flavor $ setTitle "title" >> p r) readings
+      for_ taken \cardCode ->
+        flavor $ setTitle "title" >> p (readingFor cardCode) >> smallImg cardCode.flipped
       pure $ DisappearanceAtTheTwilightEstate $ attrs & startedL .~ True
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty

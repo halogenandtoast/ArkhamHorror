@@ -65,7 +65,7 @@ data FlavorTextEntry
   | EntrySplit
   deriving stock (Show, Eq, Ord, Data)
 
-data ImageModifier = RemoveImage | SelectImage
+data ImageModifier = RemoveImage | SelectImage | SmallImage
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup FlavorTextEntry where
@@ -119,6 +119,7 @@ mconcat
         parseJSON (String s) = pure $ case s of
           "RemoveImage" -> RemoveImage
           "SelectImage" -> SelectImage
+          "SmallImage" -> SmallImage
           _ -> error $ "Unknown image modifier: " <> show s
         parseJSON _ = pure RemoveImage
       |]

@@ -102,6 +102,9 @@ hr = addEntry FT.hr
 img :: HasCardCode a => a -> FlavorTextBuilder ()
 img = addEntry . FT.img . toCardCode
 
+smallImg :: HasCardCode a => a -> FlavorTextBuilder ()
+smallImg = addEntry . FT.smallImg . toCardCode
+
 chaosTokenImg :: ChaosTokenFace -> FlavorTextBuilder ()
 chaosTokenImg = addEntry . FT.chaosTokenImg
 

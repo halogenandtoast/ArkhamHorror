@@ -15,6 +15,7 @@ module Arkham.Campaign.Campaigns.NightOfTheZealot.Achievements (
 
 import Arkham.Achievement
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types qualified as Asset
 import Arkham.Campaign.Types (campaignDifficulty)
 import Arkham.CampaignLogKey
 import Arkham.Campaigns.NightOfTheZealot.Key
@@ -118,7 +119,10 @@ runNotzAchievements msg = whenEligibleCampaign $ case msg of
           let kills' = insertWith (+) (tshow aid) 1 kills
           setStore baseballBatKillsKey kills'
           when (findWithDefault 0 (tshow aid) kills' >= 3) do
-            earnAchievement $ NightOfTheZealotAchievement PinchHitter
+            -- Credited to the wielder, not the table: the bat's controller is
+            -- the investigator who did the defeating.
+            field Asset.AssetController aid >>= traverse_ \iid ->
+              earnAchievementBy iid $ NightOfTheZealotAchievement PinchHitter
 
     when (Cultist `elem` traits && cdUnique cardDef) do
       bumpCounter uniqueCultistsDefeatedKey

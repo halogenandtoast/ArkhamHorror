@@ -42,7 +42,8 @@ isGzipped bs = BS.take 2 bs == BS.pack [0x1f, 0x8b]
 decodeExportBytes :: BS.ByteString -> Handler (Either String ArkhamExport)
 decodeExportBytes bytes
   | isGzipped bytes = do
-      eDecompressed <- liftIO $ try @_ @SomeException $ evaluate $ BSL.toStrict $ GZip.decompress $ BSL.fromStrict bytes
+      eDecompressed <-
+        liftIO $ try @_ @SomeException $ evaluate $ BSL.toStrict $ GZip.decompress $ BSL.fromStrict bytes
       pure $ case eDecompressed of
         Left err -> Left $ displayException err
         Right decompressed -> eitherDecodeStrict' decompressed
@@ -76,7 +77,9 @@ generateFullExportSource gameId = do
   yieldBS ",\"steps\":["
   isFirstRef <- liftIO $ newIORef True
   stepsAcquire <-
-    lift $ runDB $ Persist.selectSourceRes [ArkhamStepArkhamGameId Persist.==. gameId] [Desc ArkhamStepStep]
+    lift
+      $ runDB
+      $ Persist.selectSourceRes [ArkhamStepArkhamGameId Persist.==. gameId] [Desc ArkhamStepStep]
   (_, stepSource) <- allocateAcquire stepsAcquire
   stepSource .| awaitForever \(Entity _ s) -> do
     isFirst <- liftIO $ readIORef isFirstRef
@@ -127,13 +130,22 @@ getApiV1ArkhamGameFullExportR gameId = do
   gzip <- (== Just "true") <$> lookupGetParam "gzip"
   if gzip
     then do
-      addHeader "Content-Disposition" $ "attachment; filename=arkham-full-export-" <> toPathPiece gameId <> ".json.gz"
-      respondSource "application/gzip" $
-        generateFullExportSource gameId .| gzipConduit .| awaitForever \chunk -> sendChunkBS chunk >> sendFlush
+      addHeader "Content-Disposition"
+        $ "attachment; filename=arkham-full-export-"
+        <> toPathPiece gameId
+        <> ".json.gz"
+      respondSource "application/gzip"
+        $ generateFullExportSource gameId
+        .| gzipConduit
+        .| awaitForever \chunk -> sendChunkBS chunk >> sendFlush
     else do
-      addHeader "Content-Disposition" $ "attachment; filename=arkham-full-export-" <> toPathPiece gameId <> ".json"
-      respondSource "application/json" $
-        generateFullExportSource gameId .| awaitForever \chunk -> sendChunkBS chunk >> sendFlush
+      addHeader "Content-Disposition"
+        $ "attachment; filename=arkham-full-export-"
+        <> toPathPiece gameId
+        <> ".json"
+      respondSource "application/json"
+        $ generateFullExportSource gameId
+        .| awaitForever \chunk -> sendChunkBS chunk >> sendFlush
 
 postApiV1ArkhamGamesFixR :: Handler ()
 postApiV1ArkhamGamesFixR = do
@@ -199,11 +211,13 @@ postApiV1ArkhamGamesImportR = do
       key <- runDB $ do
         gameId <- insert $ ArkhamGame agedName agedCurrentData agedStep variant now now
         case variant of
-          Solo -> do
-            iid <- case headMay allInvestigatorIds of
-              Nothing -> lift $ invalidArgs ["No investigators found in game data"]
-              Just iid -> pure iid
-            insert_ $ ArkhamPlayer userId gameId iid
+          -- A seat per investigator, as game creation does: the importing user
+          -- holds them all, and a one-row solo import leaves every other
+          -- investigator with no player row, so anything resolved through a seat
+          -- (EarnAchievementBy) silently credits nobody.
+          Solo -> case allInvestigatorIds of
+            [] -> lift $ invalidArgs ["No investigators found in game data"]
+            iids -> for_ iids $ insert_ . ArkhamPlayer userId gameId
           WithFriends -> do
             let mChosen = mInvestigatorId <|> headMay campaignInvestigatorIds
             chosenInvestigator <- case mChosen of

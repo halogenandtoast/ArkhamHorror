@@ -239,7 +239,7 @@ spec = describe "Return to the Night of the Zealot achievements" $ do
       asReturnToNightOfTheZealot
       bat <- testAssetWithDef Assets.baseballBat id self
       location <- testLocation
-      earned <- didEarn PinchHitter
+      earned <- didEarnBy (toId self) PinchHitter
       let killWithBat = do
             enemy <- testEnemy
             enemy `spawnAt` location
@@ -254,7 +254,7 @@ spec = describe "Return to the Night of the Zealot achievements" $ do
       asReturnToNightOfTheZealot
       bat <- testAssetWithDef revisedCoreBaseballBat id self
       location <- testLocation
-      earned <- didEarn PinchHitter
+      earned <- didEarnBy (toId self) PinchHitter
       let killWithBat = do
             enemy <- testEnemy
             enemy `spawnAt` location
@@ -270,7 +270,7 @@ spec = describe "Return to the Night of the Zealot achievements" $ do
       bat1 <- testAssetWithDef Assets.baseballBat id self
       bat2 <- testAssetWithDef Assets.baseballBat id self
       location <- testLocation
-      earned <- didEarn PinchHitter
+      earned <- didEarnBy (toId self) PinchHitter
       let killWith bat = do
             enemy <- testEnemy
             enemy `spawnAt` location

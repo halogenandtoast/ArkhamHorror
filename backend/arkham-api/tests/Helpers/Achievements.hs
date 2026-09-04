@@ -40,6 +40,7 @@ module Helpers.Achievements (
   asTheFeastOfHemlockValeWith,
   asTheFeastOfHemlockValeScenario,
   didEarn,
+  didEarnBy,
   didEarnDunwich,
   didEarnCarcosa,
   didEarnForgottenAge,
@@ -219,6 +220,11 @@ asTheFeastOfHemlockValeScenario = asAchievementCampaignScenario "10"
 didEarn :: NightOfTheZealotAchievement -> TestAppT (IORef Bool)
 didEarn achievement =
   createMessageMatcher $ EarnAchievement $ NightOfTheZealotAchievement achievement
+
+-- | Achievements credited to one investigator's player rather than the table.
+didEarnBy :: InvestigatorId -> NightOfTheZealotAchievement -> TestAppT (IORef Bool)
+didEarnBy iid achievement =
+  createMessageMatcher $ EarnAchievementBy iid $ NightOfTheZealotAchievement achievement
 
 didEarnDunwich :: TheDunwichLegacyAchievement -> TestAppT (IORef Bool)
 didEarnDunwich achievement =

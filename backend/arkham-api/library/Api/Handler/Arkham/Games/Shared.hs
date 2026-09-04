@@ -541,11 +541,17 @@ updateGame response gameId mRoom = do
               players <- P.selectList [ArkhamPlayerArkhamGameId P.==. gameId] []
               let userIds = ordNub $ map (arkhamPlayerUserId . entityVal) players
               let
+                -- Seat rows are written in two formats: the deck-selection path
+                -- stores the bare ArkhamDB code ("03004"), while the debug import
+                -- and claim-seat paths store the JSON-shaped, 'c'-prefixed one
+                -- ("c03004"). Compare both ends stripped, the way CardCode's
+                -- FromJSON does, or an earn silently credits nobody.
+                normalizeSeat = T.dropWhile (== 'c')
                 usersFor iid =
                   ordNub
                     [ arkhamPlayerUserId p
                     | p <- map entityVal players
-                    , arkhamPlayerInvestigatorId p == coerce iid
+                    , normalizeSeat (arkhamPlayerInvestigatorId p) == normalizeSeat (coerce iid)
                     ]
               directEarns <- fmap concat $ for earned \achievement -> do
                 inserted <- for userIds \uid ->

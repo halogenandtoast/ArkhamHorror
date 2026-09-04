@@ -1372,6 +1372,11 @@ const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === ' ' || event.code === 'Space') {
     event.preventDefault()
 
+    if (gameCard.value || tarotCards.value.length > 0) {
+      continueUI()
+      return
+    }
+
     const skipTriggers = choices.value.findIndex(
       (c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON,
     )

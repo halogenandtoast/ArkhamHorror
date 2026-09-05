@@ -142,7 +142,11 @@ export const deleteCustomCard = async (id: string): Promise<void> => {
 export const uploadCustomCardArt = async (file: File | Blob, filename = 'art.webp'): Promise<string> => {
   const body = new FormData()
   body.append('file', file, filename)
-  const { data } = await api.post('arkham/custom-cards/art', body)
+  /* The client defaults to application/json; a multipart body has to carry its
+   * own boundary, which the browser only adds when the header is left unset. */
+  const { data } = await api.post('arkham/custom-cards/art', body, {
+    headers: { 'Content-Type': undefined },
+  })
   return data
 }
 

@@ -20,6 +20,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Custom.Schema.TH (schemaForWith)
 import Arkham.Custom.Schema.Types
+import Arkham.Effect.Window (EffectWindow)
 import Arkham.Matcher
 import Arkham.Message (Message)
 import Arkham.Modifier (ModifierType)
@@ -53,6 +54,12 @@ customSchema =
        , ''Source
        , ''Target
        , ''ModifierType
+       , -- Scoped modifiers are pushed as CreateWindowModifierEffect, so the
+         -- editor needs the window that scopes them and who they apply to.
+         ''EffectWindow
+       , ''PreyMatcher
+       , ''SkillTestMatcher
+       , ''SkillTestResultMatcher
        ]
        [''Message]
    )

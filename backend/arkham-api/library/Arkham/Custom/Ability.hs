@@ -12,10 +12,18 @@ the card def's meta:
   rather than an entity targets the card itself, so the modifier is already
   there when the engine reads it at draw or spawn time.
 
-Both run the same tiny step language, which does exactly two things:
+Both run the same small step language:
 
 * @query@ -- run a matcher and bind the result to a name.
 * @push@ -- push a message.
+* @if@ -- branch on a criterion, or on whether a matcher found anything.
+* @case@ -- the first branch whose condition holds, with an optional fallback.
+* @forEach@ -- run steps once per thing a matcher finds.
+* @choose@ -- offer the player named options, each running steps of its own.
+* @chooseFrom@ -- offer one option per thing a matcher finds, binding it.
+
+Scoped modifiers need no step of their own: @CreateWindowModifierEffect@ is an
+ordinary message, so a @push@ covers "for this attack" and friends.
 
 The JSON is written before the card exists, so it cannot name the entity it
 belongs to. Instead it refers to values by @$name@: the entity's own serialized
@@ -30,6 +38,7 @@ module Arkham.Custom.Ability (
   customModifiers,
   runCustomAbility,
   runCustomHandlers,
+  runCustomSteps,
   abilitiesMetaKey,
   handlersMetaKey,
   modifiersMetaKey,
@@ -46,11 +55,14 @@ import Arkham.Classes.Query
 -- this module taking its own hs-boot edge on Arkham.Game (which pulls other
 -- modules into the cycle and onto their boot interfaces).
 
+import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Modifiers (modifySelect)
-import Arkham.Helpers.Query ()
+import Arkham.Helpers.Query (getLead)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Message.Lifted.Base (capture)
+import Arkham.Message.Lifted.Prompt qualified as Prompt
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Modifier (ModifierType)
 import Arkham.Prelude
@@ -105,11 +117,16 @@ data ModifierSpec = ModifierSpec
   { modKind :: Text
   , modMatcher :: Value
   , modTypes :: [Value]
+  , modCondition :: Maybe Value
+  {- ^ Gate on the situation. Modifiers are gathered while reading the game, not
+  while changing it, so a condition here can ask questions but cannot do
+  anything.
+  -}
   }
 
 instance FromJSON ModifierSpec where
   parseJSON = withObject "ModifierSpec" \o ->
-    ModifierSpec <$> o .: "kind" <*> o .: "matcher" <*> o .:? "modifiers" .!= []
+    ModifierSpec <$> o .: "kind" <*> o .: "matcher" <*> o .:? "modifiers" .!= [] <*> o .:? "if"
 
 data HandlerSpec = HandlerSpec
   { handlerOn :: Text
@@ -177,11 +194,23 @@ customAbilities a =
 {- | Run ability @idx@. @$iid@ is bound here rather than in 'customAbilities'
 because it is only known once someone uses the ability.
 -}
-runCustomAbility :: (CustomEntity a, ReverseQueue m) => a -> InvestigatorId -> Int -> m ()
+runCustomAbility
+  :: (CustomEntity a, ReverseQueue m) => a -> InvestigatorId -> Int -> m ()
 runCustomAbility a iid idx =
   case drop (idx - 1) (metaSpecs @AbilitySpec abilitiesMetaKey (toCardDef a)) of
     spec : _ -> runSteps (KeyMap.insert "iid" (toJSON iid) (bindings a)) (specSteps spec)
     [] -> pure ()
+
+{- | Run the steps stored under a named meta key.
+
+Used for the odd hook that is not an ability or a message handler -- an
+investigator's elder sign, which resolves as part of the token rather than as
+something anyone activates.
+-}
+runCustomSteps :: (CustomEntity a, ReverseQueue m) => a -> InvestigatorId -> Text -> m ()
+runCustomSteps a iid key =
+  runSteps (KeyMap.insert "iid" (toJSON iid) (bindings a))
+    $ fromMaybe [] (Map.lookup key (cdMeta (toCardDef a)) >>= parseMaybe parseJSON)
 
 -- * Handlers
 
@@ -223,8 +252,11 @@ isSubValue needle haystack = go haystack
 
 -- * Steps
 
-{- | Steps run in order, each seeing what the ones before it bound. A step is
-either a query that binds its result or a message to push.
+{- | Steps run in order, each seeing what the ones before it bound.
+
+Only a @query@ adds to the environment; everything else acts on it. A branch or
+a choice runs its own steps against the same environment, so a binding made
+before the branch is still there inside it.
 -}
 runSteps :: ReverseQueue m => Env -> [Value] -> m ()
 runSteps env0 = void . foldM step env0
@@ -239,7 +271,127 @@ runSteps env0 = void . foldM step env0
       | Just m <- KeyMap.lookup "push" o -> do
           for_ (decodeWith env m) push
           pure env
+      | Just condition <- KeyMap.lookup "if" o -> do
+          taken <- runReadCondition env condition
+          runSteps env $ branch o taken
+          pure env
+      | Just branches <- KeyMap.lookup "case" o -> do
+          runCase env (subSteps branches) (fromMaybe [] (subSteps <$> KeyMap.lookup "else" o))
+          pure env
+      | Just spec <- KeyMap.lookup "forEach" o -> do
+          runForEach env spec
+          pure env
+      | Just spec <- KeyMap.lookup "choose" o -> do
+          runChoose env spec
+          pure env
+      | Just spec <- KeyMap.lookup "chooseFrom" o -> do
+          runChooseFrom env spec
+          pure env
     _ -> pure env
+
+  branch o taken = fromMaybe [] do
+    steps <- KeyMap.lookup (if taken then "then" else "else") o
+    parseMaybe parseJSON steps
+
+{- | A condition is either a criterion or a matcher.
+
+A criterion covers what a card says about the situation ("if you succeeded by 2
+or more"); a matcher covers what is on the table. Both read as @if@ in the
+editor.
+-}
+runReadCondition :: HasGame m => Env -> Value -> m Bool
+runReadCondition env condition = case condition of
+  Object o | Just criteria <- KeyMap.lookup "criteria" o -> case decodeWith env criteria of
+    Nothing -> pure False
+    Just criterion -> do
+      iid <- stepInvestigator env
+      let source = fromMaybe (GameSource) (KeyMap.lookup "source" env >>= parseMaybe parseJSON)
+      passesCriteria iid Nothing source source [] criterion
+  _ -> notNull . fromMaybe [] <$> runQuery env condition
+
+subSteps :: Value -> [Value]
+subSteps v = fromMaybe [] (parseMaybe parseJSON v)
+
+{- | Who to prompt. An ability knows (@$iid@ is bound when it resolves); a
+handler may not, and the lead investigator answers for the table.
+-}
+stepInvestigator :: HasGame m => Env -> m InvestigatorId
+stepInvestigator env = case KeyMap.lookup "iid" env >>= parseMaybe parseJSON of
+  Just iid -> pure iid
+  Nothing -> getLead
+
+textField :: Env -> KeyMap.KeyMap Value -> Key.Key -> Text -> Text
+textField env o key fallback = case substitute env <$> KeyMap.lookup key o of
+  Just (String t) -> t
+  _ -> fallback
+
+{- | The first branch whose condition holds. Nothing runs if none do, unless a
+fallback is given.
+-}
+runCase :: ReverseQueue m => Env -> [Value] -> [Value] -> m ()
+runCase env branches fallback = go branches
+ where
+  go [] = runSteps env fallback
+  go (b : rest) = case b of
+    Object o -> do
+      taken <- maybe (pure True) (runReadCondition env) (KeyMap.lookup "if" o)
+      if taken
+        then runSteps env (maybe [] subSteps (KeyMap.lookup "steps" o))
+        else go rest
+    _ -> go rest
+
+{- | Steps once per thing the matcher finds, with it bound each time. The loop
+is over what the query saw when it ran, so steps that change the board do not
+change what is still to come.
+-}
+runForEach :: ReverseQueue m => Env -> Value -> m ()
+runForEach env spec = case spec of
+  Object o -> do
+    found <- maybe (pure Nothing) (runQuery env) (KeyMap.lookup "query" o)
+    let
+      name = case KeyMap.lookup "bind" o of
+        Just (String n) -> Key.fromText n
+        _ -> "each"
+      steps = maybe [] subSteps (KeyMap.lookup "steps" o)
+    for_ (fromMaybe [] found) \value -> runSteps (KeyMap.insert name value env) steps
+  _ -> pure ()
+
+-- | Named options, each running its own steps.
+runChoose :: ReverseQueue m => Env -> Value -> m ()
+runChoose env spec = case spec of
+  Object o -> do
+    iid <- stepInvestigator env
+    let options = maybe [] subSteps (KeyMap.lookup "options" o)
+    labels <- for options \option -> case option of
+      Object opt -> do
+        msgs <- capture $ runSteps env (maybe [] subSteps (KeyMap.lookup "steps" opt))
+        pure [Label (textField env opt "label" "Choose") msgs]
+      _ -> pure []
+    unless (null (concat labels)) $ Prompt.chooseOne iid (concat labels)
+  _ -> pure ()
+
+{- | One option per thing the matcher finds, with the found thing bound so the
+steps can act on it. @optional@ adds a way to decline.
+-}
+runChooseFrom :: ReverseQueue m => Env -> Value -> m ()
+runChooseFrom env spec = case spec of
+  Object o -> do
+    iid <- stepInvestigator env
+    found <- maybe (pure Nothing) (runQuery env) (KeyMap.lookup "query" o)
+    let
+      name = case KeyMap.lookup "bind" o of
+        Just (String n) -> Key.fromText n
+        _ -> "chosen"
+      steps = maybe [] subSteps (KeyMap.lookup "steps" o)
+    labels <- for (fromMaybe [] found) \value -> do
+      msgs <- capture $ runSteps (KeyMap.insert name value env) steps
+      pure $ Label (textField env o "label" "Choose") msgs
+    let
+      declined =
+        [ Label (textField env o "declineLabel" "Do not") [] | KeyMap.lookup "optional" o == Just (Bool True)
+        ]
+    unless (null labels && null declined) $ Prompt.chooseOne iid (labels <> declined)
+  _ -> pure ()
 
 {- | @mode@ decides what a query binds: the whole list (the default), just the
 first element, or how many there were.
@@ -288,8 +440,9 @@ selects. This is how a custom card reaches other cards -- giving an enemy a
 keyword, say -- rather than only acting on itself.
 -}
 customModifiers :: (CustomEntity a, HasModifiersM m) => a -> m ()
-customModifiers a = for_ (metaSpecs @ModifierSpec modifiersMetaKey (toCardDef a)) \spec ->
-  case modKind spec of
+customModifiers a = for_ (metaSpecs @ModifierSpec modifiersMetaKey (toCardDef a)) \spec -> do
+  applies <- maybe (pure True) (runReadCondition env) (modCondition spec)
+  when applies $ case modKind spec of
     "enemy" -> apply @EnemyMatcher spec
     "location" -> apply @LocationMatcher spec
     "investigator" -> apply @InvestigatorMatcher spec

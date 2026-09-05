@@ -9,7 +9,13 @@ module Arkham.Custom.Investigator (CustomInvestigator (..), customInvestigator) 
 
 import Arkham.Card.CardDef (CardDef, toCardDef)
 import Arkham.Card.CustomCard (customMeta, customMetaMaybe)
-import Arkham.Custom.Ability (customAbilities, customModifiers, runCustomAbility, runCustomHandlers)
+import Arkham.Custom.Ability (
+  customAbilities,
+  customModifiers,
+  runCustomAbility,
+  runCustomHandlers,
+  runCustomSteps,
+ )
 import Arkham.Investigator.Import.Lifted (elderSignValue)
 import Arkham.Investigator.Runner
 import Arkham.Prelude
@@ -55,6 +61,10 @@ instance RunMessage CustomInvestigator where
   runMessage msg x@(CustomInvestigator attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) idx -> do
       runCustomAbility attrs iid idx
+      pure x
+    -- What the elder sign does, beyond its modifier.
+    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+      runCustomSteps attrs iid "_elderSignSteps"
       pure x
     _ -> do
       runCustomHandlers attrs msg

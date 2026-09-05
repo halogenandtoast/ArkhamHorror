@@ -28,6 +28,7 @@ const form = ref<InstanceType<typeof CustomCardForm> | null>(null)
 const editingCode = ref<string | null>(null)
 const selected = ref<string[]>([])
 const busy = ref(false)
+const libraryCollapsed = ref(false)
 const status = ref<string | null>(null)
 const error = ref<string | null>(null)
 
@@ -44,6 +45,21 @@ onMounted(async () => {
 })
 
 const cards = computed(() => libraryCards())
+
+/* Cards are grouped by the set they name, so a batch built together stays
+ * together the way the card browser groups an expansion. */
+const grouped = computed(() => {
+  const groups = new Map<string, typeof cards.value>()
+  for (const card of cards.value) {
+    const set = card.def.meta?.set?.trim() || 'Ungrouped'
+    if (!groups.has(set)) groups.set(set, [])
+    groups.get(set)!.push(card)
+  }
+  for (const list of groups.values()) {
+    list.sort((a, b) => (a.def.meta?.number ?? '').localeCompare(b.def.meta?.number ?? '', undefined, { numeric: true }))
+  }
+  return [...groups.entries()].sort(([a], [b]) => (a === 'Ungrouped' ? 1 : b === 'Ungrouped' ? -1 : a.localeCompare(b)))
+})
 const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def)
 const isSelected = (code: string) => selected.value.includes(code)
 
@@ -152,8 +168,17 @@ async function onImport(event: Event) {
 <template>
   <div class="page-container">
     <div class="card-builder">
-    <aside class="library">
+    <aside class="library" :class="{ collapsed: libraryCollapsed }">
+      <div class="library-content">
       <div class="library-head">
+        <button
+          type="button"
+          class="library-collapse"
+          title="Hide library"
+          @click="libraryCollapsed = true"
+        >
+          «
+        </button>
         <h2>Library</h2>
         <button type="button" @click="startNew">+ New card</button>
       </div>
@@ -175,28 +200,43 @@ async function onImport(event: Event) {
         No cards yet. Build one and it will be waiting here next time.
       </p>
 
-      <ul v-else class="library-list">
-        <li
-          v-for="card in cards"
-          :key="card.def.cardCode"
-          :class="{ editing: editingCode === card.def.cardCode }"
-        >
-          <input type="checkbox" :checked="isSelected(card.def.cardCode)" @change="toggleSelected(card.def.cardCode)" />
-          <button type="button" class="library-card" @click="edit(card)">
-            <img :src="cardArt(card)" :data-image-id="card.def.cardCode" alt="" />
-            <span class="name">{{ card.def.name.title }}</span>
-            <small>{{ card.def.cardType.replace(/Type$/, '') }}</small>
-          </button>
-          <div class="row-actions">
-            <button type="button" title="Export this card" @click="exportOne(card)">⭳</button>
-            <button type="button" title="Delete this card" @click="remove(card)">×</button>
-          </div>
-        </li>
-      </ul>
+      <template v-else>
+        <div v-for="[set, setCards] in grouped" :key="set" class="library-group">
+          <h3>{{ set }}</h3>
+          <ul class="library-list">
+            <li
+              v-for="card in setCards"
+              :key="card.def.cardCode"
+              :class="{ editing: editingCode === card.def.cardCode }"
+            >
+              <input type="checkbox" :checked="isSelected(card.def.cardCode)" @change="toggleSelected(card.def.cardCode)" />
+              <button type="button" class="library-card" @click="edit(card)">
+                <img :src="cardArt(card)" :data-image-id="card.def.cardCode" alt="" />
+                <span class="name">{{ card.def.name.title }}</span>
+                <small>{{ card.def.cardType.replace(/Type$/, '') }}</small>
+              </button>
+              <div class="row-actions">
+                <button type="button" title="Export this card" @click="exportOne(card)">⭳</button>
+                <button type="button" title="Delete this card" @click="remove(card)">×</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </template>
+      </div>
     </aside>
 
     <main class="builder">
       <header class="builder-head">
+        <button
+          v-if="libraryCollapsed"
+          type="button"
+          class="library-expand"
+          title="Show library"
+          @click="libraryCollapsed = false"
+        >
+          » Library
+        </button>
         <h2>{{ editingCode ? 'Editing card' : 'New card' }}</h2>
         <div class="builder-actions">
           <span v-if="status" class="status">{{ status }}</span>
@@ -241,7 +281,20 @@ async function onImport(event: Event) {
 }
 
 .library {
+  position: relative;
   flex: 0 0 280px;
+  transition: flex-basis 0.18s ease, padding 0.18s ease;
+
+  &.collapsed {
+    border: none;
+    flex-basis: 0;
+    overflow: visible;
+    padding: 0;
+
+    .library-content {
+      display: none;
+    }
+  }
   background: var(--background-dark);
   border: 1px solid var(--box-border);
   border-radius: 8px;
@@ -259,9 +312,21 @@ async function onImport(event: Event) {
   }
 }
 
+.library-collapse,
+.library-expand {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  color: var(--title);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.15rem 0.4rem;
+}
+
 .library-head {
   align-items: center;
   display: flex;
+  gap: 0.4rem;
   justify-content: space-between;
   margin-bottom: 0.5rem;
 
@@ -286,6 +351,14 @@ async function onImport(event: Event) {
   input {
     display: none;
   }
+}
+
+.library-group h3 {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  margin: 0.75rem 0 0.25rem;
+  opacity: 0.6;
+  text-transform: uppercase;
 }
 
 .library-list {

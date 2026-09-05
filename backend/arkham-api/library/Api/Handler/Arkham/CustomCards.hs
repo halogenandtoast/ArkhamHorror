@@ -21,6 +21,7 @@ import Data.Text qualified as T
 import Data.Time.Clock
 import Import hiding ((==.))
 import Import qualified as P
+import System.Directory (createDirectoryIfMissing)
 import UnliftIO.Exception (catch)
 
 {- | The requesting user's card library.
@@ -150,17 +151,25 @@ postApiV1ArkhamCustomCardsArtR = do
       decodeUtf8 (B16.encode $ SHA256.hashlazy bytes) <> "." <> extensionFor (Just contentType)
     key = ObjectKey $ artPrefix <> filename
 
-  liftIO do
-    env <- newEnv discover
-    runResourceT do
-      mExisting <-
-        catch @_ @Error (Just <$> send env (newHeadObject artBucket key)) (\_ -> pure Nothing)
-      whenNothing_ mExisting do
-        void
-          . send env
-          $ newPutObject artBucket key (toBody bytes)
-          & (putObject_acl ?~ ObjectCannedACL_Public_read)
-          & (putObject_contentType ?~ contentType)
+  getsApp (appCustomCardArtDir . appSettings) >>= \case
+    -- Development: keep art on disk in the frontend's public directory, so
+    -- testing never writes to the bucket everyone's images are served from.
+    Just dir -> liftIO do
+      createDirectoryIfMissing True dir
+      BSL.writeFile (dir <> "/" <> T.unpack filename) bytes
+      pure $ "/" <> artPrefix <> filename
+    Nothing -> do
+      liftIO do
+        env <- newEnv discover
+        runResourceT do
+          mExisting <-
+            catch @_ @Error (Just <$> send env (newHeadObject artBucket key)) (\_ -> pure Nothing)
+          whenNothing_ mExisting do
+            void
+              . send env
+              $ newPutObject artBucket key (toBody bytes)
+              & (putObject_acl ?~ ObjectCannedACL_Public_read)
+              & (putObject_contentType ?~ contentType)
 
-  assetHost <- getsApp (appAssetHost . appSettings)
-  pure $ fromMaybe "https://assets.arkhamhorror.app" assetHost <> "/" <> artPrefix <> filename
+      assetHost <- getsApp (appAssetHost . appSettings)
+      pure $ fromMaybe "https://assets.arkhamhorror.app" assetHost <> "/" <> artPrefix <> filename

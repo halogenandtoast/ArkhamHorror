@@ -9,6 +9,22 @@ import * as Api from '@/arkham/api'
 import { PLAYER_CARD_TYPES, renderCardPlaceholder, type CustomCard } from '@/arkham/customCards'
 import { libraryCards } from '@/arkham/customCardLibrary'
 import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
+import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
+
+/* The matcher kinds a step can query, shared with the ability editor. */
+const QUERY_KINDS: Record<string, string> = {
+  enemy: 'EnemyMatcher',
+  location: 'LocationMatcher',
+  investigator: 'InvestigatorMatcher',
+  asset: 'AssetMatcher',
+  treachery: 'TreacheryMatcher',
+  event: 'EventMatcher',
+  skill: 'SkillMatcher',
+  story: 'StoryMatcher',
+  act: 'ActMatcher',
+  agenda: 'AgendaMatcher',
+  card: 'ExtendedCardMatcher',
+}
 
 const CARD_TYPES = [
   { value: 'AssetType', label: 'Asset (player back)' },
@@ -24,9 +40,20 @@ const CARD_TYPES = [
   { value: 'InvestigatorType', label: 'Investigator' },
 ] as const
 
-const CLASSES = ['Guardian', 'Seeker', 'Rogue', 'Mystic', 'Survivor', 'Neutral', 'Mythos']
+/* Mythos belongs to encounter cards, which do not choose a class at all: they
+ * take the default, overridable through the raw block. */
+const CLASSES = ['Guardian', 'Seeker', 'Rogue', 'Mystic', 'Survivor', 'Neutral']
 const SLOTS = ['HandSlot', 'BodySlot', 'AllySlot', 'AccessorySlot', 'ArcaneSlot', 'TarotSlot', 'HeadSlot']
 const USE_TYPES = ['Ammo', 'Charge', 'Secret', 'Supply', 'Offering', 'Resource', 'Key', 'Evidence']
+/* An investigator records stats rather than icons: the same control, without
+ * wild, since there is no such stat. */
+const STATS = [
+  { key: 'willpower', label: 'Willpower', icon: 'willpower-icon' },
+  { key: 'intellect', label: 'Intellect', icon: 'intellect-icon' },
+  { key: 'combat', label: 'Combat', icon: 'combat-icon' },
+  { key: 'agility', label: 'Agility', icon: 'agility-icon' },
+] as const
+
 const ICONS = [
   { value: 'SkillWillpower', label: 'Willpower', icon: 'willpower-icon' },
   { value: 'SkillIntellect', label: 'Intellect', icon: 'intellect-icon' },
@@ -73,7 +100,13 @@ const blankForm = () => ({
   abilities: [] as any[],
   handlers: [] as any[],
   modifiers: [] as any[],
+  weaknessKind: 'Weakness',
+  // grouping, so a set of cards made together can be found together
+  cardNumber: '',
+  setName: '',
   // investigator
+  elderSign: '1',
+  elderSignSteps: [] as any[],
   willpower: '3',
   intellect: '3',
   combat: '3',
@@ -97,18 +130,25 @@ const error = ref<string | null>(null)
  * ones ride in meta so the card model stays one def plus one piece of art. */
 const MAX_ART_BYTES = 1024 * 1024
 
-type ArtSlot = { key: string; label: string }
+type ArtSlot = { key: string; label: string; shape: 'card' | 'sideways' | 'portrait' }
 
 const ART_SLOTS = computed<ArtSlot[]>(() =>
   form.cardType === 'InvestigatorType'
     ? [
-        { key: 'art', label: 'Card front' },
-        { key: 'backArt', label: 'Card back' },
-        { key: 'portrait', label: 'Portrait' },
-        { key: 'portraitBack', label: 'Portrait back' },
+        { key: 'art', label: 'Card front', shape: 'sideways' },
+        { key: 'backArt', label: 'Card back', shape: 'sideways' },
+        { key: 'portrait', label: 'Portrait', shape: 'portrait' },
+        { key: 'portraitBack', label: 'Portrait back', shape: 'portrait' },
       ]
-    : [{ key: 'art', label: 'Card art' }],
+    : [{ key: 'art', label: 'Card art', shape: 'card' }],
 )
+
+/* An investigator is unique, so start it that way rather than making everyone
+ * remember to tick it. */
+function chooseType(cardType: string) {
+  form.cardType = cardType
+  form.unique = cardType === 'InvestigatorType'
+}
 
 const artFor = (slot: string) => form.artUploaded[slot] || form.artUrls[slot]?.trim() || null
 
@@ -120,6 +160,15 @@ const hasCost = computed(() => ['AssetType', 'EventType'].includes(form.cardType
 
 const art = computed(() => artFor('art'))
 const isInvestigator = computed(() => form.cardType === 'InvestigatorType')
+
+const isWeakness = computed(() =>
+  ['PlayerTreacheryType', 'PlayerEnemyType'].includes(form.cardType),
+)
+
+// A class is a player-card idea, and a weakness has no class of its own.
+const hasClass = computed(
+  () => (isPlayerCard.value || isInvestigator.value) && !isWeakness.value,
+)
 
 /* Signature cards are other cards in your library. Held on the investigator by
  * card code, which is what the deck overlay needs to bring them along. */
@@ -179,6 +228,12 @@ onMounted(loadTraits)
 
 // ----------------------------------------------------------- skill icons ---
 
+const statValue = (key: string) => parseInt((form as any)[key], 10) || 0
+
+function stepStat(key: string, delta: number) {
+  ;(form as any)[key] = String(Math.max(0, statValue(key) + delta))
+}
+
 const iconCount = (icon: string) => form.icons.filter((i) => i === icon).length
 const addIcon = (icon: string) => form.icons.push(icon)
 
@@ -216,7 +271,6 @@ function buildDef(cardCode: string): Record<string, any> {
     art: cardCode,
     cardType: form.cardType,
     name: { title: form.title.trim() || 'Custom Card', subtitle: form.subtitle.trim() || null },
-    classSymbols: [form.classSymbol],
     cardTraits: parsedTraits.value.map((t) => t.name),
     skills: form.icons.map(iconJson),
     keywords: form.keywords.map((k) => ({ tag: k, contents: [] })),
@@ -225,9 +279,9 @@ function buildDef(cardCode: string): Record<string, any> {
     meta: {} as Record<string, any>,
   }
 
-  if (form.cardType === 'PlayerTreacheryType' || form.cardType === 'PlayerEnemyType') {
-    def.cardSubType = { tag: 'Weakness', contents: [] }
-  }
+  if (hasClass.value) def.classSymbols = [form.classSymbol]
+
+  if (isWeakness.value) def.cardSubType = form.weaknessKind
 
   if (hasCost.value) setIf(def, 'cost', num(form.cost) === null ? null : { tag: 'StaticCost', contents: num(form.cost) })
   setIf(def, 'level', num(form.level))
@@ -255,7 +309,12 @@ function buildDef(cardCode: string): Record<string, any> {
     }
   }
 
+  if (form.cardNumber.trim()) def.meta.number = form.cardNumber.trim()
+  if (form.setName.trim()) def.meta.set = form.setName.trim()
+
   if (isInvestigator.value) {
+    if (num(form.elderSign) !== null) def.meta._elderSign = num(form.elderSign)
+    if (form.elderSignSteps.length) def.meta._elderSignSteps = form.elderSignSteps
     def.meta.health = num(form.investigatorHealth) ?? 0
     def.meta.sanity = num(form.investigatorSanity) ?? 0
     def.meta.willpower = num(form.willpower) ?? 0
@@ -341,9 +400,9 @@ async function takeImage(slot: string, file: File | undefined) {
   try {
     form.artUploaded[slot] = await Api.uploadCustomCardArt(await readImage(file))
     form.artUrls[slot] = ''
-  } catch (e) {
+  } catch (e: any) {
     console.error(e)
-    error.value = 'Could not upload that image. Images must be under 1MB once scaled.'
+    error.value = e?.response?.data?.message ?? e?.message ?? 'Could not upload that image.'
   } finally {
     uploading.value = null
   }
@@ -379,8 +438,8 @@ const FORM_KEYS = [
 ]
 const FORM_META_KEYS = [
   'shroud', 'revealClues', 'health', 'sanity', 'willpower', 'intellect', 'combat', 'agility',
-  'backArt', 'portrait', 'portraitBack',
-  '_abilities', '_handlers', '_modifiers', '_signatures',
+  'backArt', 'portrait', 'portraitBack', 'number', 'set',
+  '_abilities', '_handlers', '_modifiers', '_signatures', '_elderSign', '_elderSignSteps',
 ]
 
 const gameValueNumber = (v: any) => (v && typeof v.contents === 'number' ? String(v.contents) : '')
@@ -400,6 +459,7 @@ async function loadCard(card: CustomCard) {
   form.level = def.level === null || def.level === undefined ? '' : String(def.level)
   form.victory = def.victoryPoints === null || def.victoryPoints === undefined ? '' : String(def.victoryPoints)
   form.unique = !!def.unique
+  form.weaknessKind = typeof def.cardSubType === 'string' ? def.cardSubType : 'Weakness'
   form.traits = (def.cardTraits ?? []).map((t: string) => traitDisplay.value.get(t) ?? t).join('. ')
   form.icons = (def.skills ?? []).map((s: any) => (s.tag === 'SkillIcon' ? s.contents : 'Wild'))
   form.keywords = (def.keywords ?? []).map((k: any) => k.tag).filter((k: string) => KEYWORDS.includes(k))
@@ -428,6 +488,10 @@ async function loadCard(card: CustomCard) {
   form.investigatorHealth = meta.health === undefined ? '7' : String(meta.health)
   form.investigatorSanity = meta.sanity === undefined ? '7' : String(meta.sanity)
   form.signatures = meta._signatures ?? []
+  form.cardNumber = meta.number ?? ''
+  form.setName = meta.set ?? ''
+  form.elderSign = meta._elderSign === undefined ? '1' : String(meta._elderSign)
+  form.elderSignSteps = meta._elderSignSteps ?? []
 
   form.artUploaded = { art: card.art }
   form.artUrls = {}
@@ -476,7 +540,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
         <span v-if="ART_SLOTS.length > 1" class="slot-label">{{ slot.label }}</span>
         <div
           class="art-dropzone"
-          :class="{ dragging: dragging === slot.key, uploading: uploading === slot.key }"
+          :class="[slot.shape, { dragging: dragging === slot.key, uploading: uploading === slot.key }]"
           @dragover.prevent="dragging = slot.key"
           @dragleave="dragging = null"
           @drop.prevent="onDrop(slot.key, $event)"
@@ -506,7 +570,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
                 v-for="t in CARD_TYPES"
                 :key="t.value"
                 type="button"
-                @click="form.cardType = t.value"
+                @click="chooseType(t.value)"
               >
                 {{ t.label }}
               </button>
@@ -531,7 +595,14 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
           </div>
 
           <div class="row">
-            <label>
+            <label v-if="isWeakness">
+              Weakness
+              <select v-model="form.weaknessKind">
+                <option value="Weakness">Weakness</option>
+                <option value="BasicWeakness">Basic weakness</option>
+              </select>
+            </label>
+            <label v-if="hasClass">
               Class
               <select v-model="form.classSymbol">
                 <option v-for="c in CLASSES" :key="c" :value="c">{{ c }}</option>
@@ -558,6 +629,17 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             </label>
           </div>
 
+          <div class="row">
+            <label>
+              Card number
+              <input v-model="form.cardNumber" type="text" placeholder="1" @keydown.stop />
+            </label>
+            <label>
+              Set
+              <input v-model="form.setName" type="text" placeholder="My Expansion" @keydown.stop />
+            </label>
+          </div>
+
           <label>
             Traits
             <input v-model="form.traits" type="text" placeholder="Monster. Elite. Ancient One." @keydown.stop />
@@ -572,7 +654,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             >{{ trait.raw }}.</span>
           </p>
 
-          <fieldset>
+          <fieldset v-if="!isInvestigator">
             <legend>Skill icons</legend>
             <div class="icon-steppers">
               <div v-for="icon in ICONS" :key="icon.value" class="icon-stepper" :title="icon.label">
@@ -584,7 +666,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             </div>
           </fieldset>
 
-          <fieldset>
+          <fieldset v-if="!isInvestigator">
             <legend>Keywords</legend>
             <div class="chips">
               <button
@@ -602,16 +684,32 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
 
           <fieldset v-if="isInvestigator">
             <legend>Investigator</legend>
-            <div class="row">
-              <label>Willpower<input v-model="form.willpower" type="number" @keydown.stop /></label>
-              <label>Intellect<input v-model="form.intellect" type="number" @keydown.stop /></label>
-              <label>Combat<input v-model="form.combat" type="number" @keydown.stop /></label>
-              <label>Agility<input v-model="form.agility" type="number" @keydown.stop /></label>
+            <div class="icon-steppers">
+              <div v-for="stat in STATS" :key="stat.key" class="icon-stepper" :title="stat.label">
+                <button type="button" :disabled="statValue(stat.key) <= 0" @click="stepStat(stat.key, -1)">−</button>
+                <span :class="stat.icon" />
+                <span class="icon-count">{{ statValue(stat.key) }}</span>
+                <button type="button" @click="stepStat(stat.key, 1)">+</button>
+              </div>
             </div>
             <div class="row">
               <label>Health<input v-model="form.investigatorHealth" type="number" @keydown.stop /></label>
               <label>Sanity<input v-model="form.investigatorSanity" type="number" @keydown.stop /></label>
             </div>
+          </fieldset>
+
+          <fieldset v-if="isInvestigator">
+            <legend>Elder sign</legend>
+            <label>
+              Modifier
+              <input v-model="form.elderSign" type="number" @keydown.stop />
+            </label>
+            <p class="hint">What it does when it is revealed, beyond the modifier:</p>
+            <StepsEditor
+              :queryKinds="QUERY_KINDS"
+              :modelValue="form.elderSignSteps"
+              @update:modelValue="form.elderSignSteps = $event"
+            />
           </fieldset>
 
           <fieldset v-if="isInvestigator">
@@ -788,13 +886,31 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
   flex: 0 0 200px;
 }
 
+/* An investigator card lies sideways, and its portrait is squarer than a card. */
 .art-dropzone {
   position: relative;
   border-radius: 8px;
   cursor: copy;
+  width: 200px;
+
+  img,
+  .art-empty {
+    aspect-ratio: 5 / 7;
+    object-fit: cover;
+  }
+
+  &.sideways img,
+  &.sideways .art-empty {
+    aspect-ratio: 7 / 5;
+  }
+
+  &.portrait img,
+  &.portrait .art-empty {
+    aspect-ratio: 2 / 3;
+  }
 
   img {
-    width: 200px;
+    width: 100%;
     border-radius: 8px;
     background: #111827;
     display: block;
@@ -927,10 +1043,9 @@ input[type='checkbox'] {
 }
 
 .art-empty {
-  aspect-ratio: 5 / 7;
   background: #111827;
   border-radius: 8px;
-  width: 200px;
+  width: 100%;
 }
 
 .hint {

@@ -7,6 +7,7 @@
  * later steps as $name, alongside $id, $source, $target and $iid. */
 import { computed, onMounted } from 'vue'
 import { loadSchema, schemaLoaded } from '@/arkham/schema'
+import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 
 const props = defineProps<{ abilities: any[]; handlers: any[]; modifiers: any[] }>()
@@ -84,29 +85,8 @@ const addModifier = () =>
 const removeModifier = (i: number) =>
   emit('update:modifiers', modifiers.value.filter((_, j) => j !== i))
 
-// --- steps, shared by both ---
-
-function setSteps(owner: 'ability' | 'handler', index: number, steps: any[]) {
-  if (owner === 'ability') setAbility(index, { steps })
-  else setHandler(index, { steps })
-}
-
 const stepsOf = (item: any): any[] => item.steps ?? []
 
-const stepKind = (step: any) => ('query' in (step ?? {}) ? 'query' : 'push')
-
-function addStep(owner: 'ability' | 'handler', index: number, item: any, kind: 'query' | 'push') {
-  const step = kind === 'query' ? { query: { kind: 'enemy', matcher: null }, bind: '', mode: 'all' } : { push: null }
-  setSteps(owner, index, [...stepsOf(item), step])
-}
-
-function setStep(owner: 'ability' | 'handler', index: number, item: any, stepIndex: number, step: any) {
-  setSteps(owner, index, stepsOf(item).map((s, i) => (i === stepIndex ? step : s)))
-}
-
-function removeStep(owner: 'ability' | 'handler', index: number, item: any, stepIndex: number) {
-  setSteps(owner, index, stepsOf(item).filter((_, i) => i !== stepIndex))
-}
 </script>
 
 <template>
@@ -139,67 +119,11 @@ function removeStep(owner: 'ability' | 'handler', index: number, item: any, step
           @update:modelValue="setAbility(index, { limit: $event })"
         />
 
-        <div class="steps">
-          <div v-for="(step, si) in stepsOf(ability)" :key="si" class="step">
-            <div class="step-head">
-              <span>{{ stepKind(step) === 'query' ? 'Query' : 'Push' }}</span>
-              <button type="button" @click="removeStep('ability', index, ability, si)">×</button>
-            </div>
-
-            <template v-if="stepKind(step) === 'query'">
-              <div class="row">
-                <label>
-                  Kind
-                  <select
-                    :value="step.query?.kind"
-                    @change="setStep('ability', index, ability, si, { ...step, query: { ...step.query, kind: ($event.target as HTMLSelectElement).value, matcher: null } })"
-                  >
-                    <option v-for="(_, kind) in QUERY_KINDS" :key="kind" :value="kind">{{ kind }}</option>
-                  </select>
-                </label>
-                <label>
-                  Bind to
-                  <input
-                    :value="step.bind"
-                    placeholder="enemies"
-                    @input="setStep('ability', index, ability, si, { ...step, bind: ($event.target as HTMLInputElement).value })"
-                    @keydown.stop
-                  />
-                </label>
-                <label>
-                  Mode
-                  <select
-                    :value="step.mode ?? 'all'"
-                    @change="setStep('ability', index, ability, si, { ...step, mode: ($event.target as HTMLSelectElement).value })"
-                  >
-                    <option value="all">all</option>
-                    <option value="first">first</option>
-                    <option value="count">count</option>
-                  </select>
-                </label>
-              </div>
-              <ValueEditor
-                :type="QUERY_KINDS[step.query?.kind] ?? 'EnemyMatcher'"
-                label="Matcher"
-                :modelValue="step.query?.matcher"
-                @update:modelValue="setStep('ability', index, ability, si, { ...step, query: { ...step.query, matcher: $event } })"
-              />
-            </template>
-
-            <ValueEditor
-              v-else
-              type="Message"
-              label="Message"
-              :modelValue="step.push"
-              @update:modelValue="setStep('ability', index, ability, si, { ...step, push: $event })"
-            />
-          </div>
-
-          <div class="step-actions">
-            <button type="button" @click="addStep('ability', index, ability, 'query')">+ Query</button>
-            <button type="button" @click="addStep('ability', index, ability, 'push')">+ Push</button>
-          </div>
-        </div>
+        <StepsEditor
+          :queryKinds="QUERY_KINDS"
+          :modelValue="stepsOf(ability)"
+          @update:modelValue="setAbility(index, { steps: $event })"
+        />
       </div>
 
       <button type="button" class="add" @click="addAbility">+ Ability</button>
@@ -223,52 +147,11 @@ function removeStep(owner: 'ability' | 'handler', index: number, item: any, step
           <code>$0</code>, <code>$1</code>, … and the whole message as <code>$message</code>.
         </p>
 
-        <div class="steps">
-          <div v-for="(step, si) in stepsOf(handler)" :key="si" class="step">
-            <div class="step-head">
-              <span>{{ stepKind(step) === 'query' ? 'Query' : 'Push' }}</span>
-              <button type="button" @click="removeStep('handler', index, handler, si)">×</button>
-            </div>
-            <template v-if="stepKind(step) === 'query'">
-              <div class="row">
-                <label>
-                  Kind
-                  <select
-                    :value="step.query?.kind"
-                    @change="setStep('handler', index, handler, si, { ...step, query: { ...step.query, kind: ($event.target as HTMLSelectElement).value, matcher: null } })"
-                  >
-                    <option v-for="(_, kind) in QUERY_KINDS" :key="kind" :value="kind">{{ kind }}</option>
-                  </select>
-                </label>
-                <label>
-                  Bind to
-                  <input
-                    :value="step.bind"
-                    @input="setStep('handler', index, handler, si, { ...step, bind: ($event.target as HTMLInputElement).value })"
-                    @keydown.stop
-                  />
-                </label>
-              </div>
-              <ValueEditor
-                :type="QUERY_KINDS[step.query?.kind] ?? 'EnemyMatcher'"
-                label="Matcher"
-                :modelValue="step.query?.matcher"
-                @update:modelValue="setStep('handler', index, handler, si, { ...step, query: { ...step.query, matcher: $event } })"
-              />
-            </template>
-            <ValueEditor
-              v-else
-              type="Message"
-              label="Message"
-              :modelValue="step.push"
-              @update:modelValue="setStep('handler', index, handler, si, { ...step, push: $event })"
-            />
-          </div>
-          <div class="step-actions">
-            <button type="button" @click="addStep('handler', index, handler, 'query')">+ Query</button>
-            <button type="button" @click="addStep('handler', index, handler, 'push')">+ Push</button>
-          </div>
-        </div>
+        <StepsEditor
+          :queryKinds="QUERY_KINDS"
+          :modelValue="stepsOf(handler)"
+          @update:modelValue="setHandler(index, { steps: $event })"
+        />
       </div>
 
       <button type="button" class="add" @click="addHandler">+ Listener</button>
@@ -388,6 +271,16 @@ label {
   font-size: 0.75rem;
   gap: 0.2rem;
   opacity: 0.9;
+
+  &.inline {
+    align-items: center;
+    flex-direction: row;
+    gap: 0.3rem;
+  }
+}
+
+input[type='checkbox'] {
+  width: auto;
 }
 
 input,

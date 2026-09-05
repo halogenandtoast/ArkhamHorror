@@ -6,7 +6,7 @@ import { fetchDecks } from '@/arkham/api'
 import { cardImg, imgsrc, type InvestigatorClass } from '@/arkham/helpers'
 import { stripCardCodePrefix } from '@/arkham/customCards'
 import { overlayIsEmpty } from '@/arkham/deckOverlay'
-import { loadLibrary } from '@/arkham/customCardLibrary'
+import { hasLibraryCards, loadLibrary } from '@/arkham/customCardLibrary'
 import { portraitImage as portraitImageHelper } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Deck'
 import {deckClass} from '@/arkham/types/Deck'
@@ -506,7 +506,7 @@ const needsReply = computed(() => {
                         <span v-if="deckId === deck.id && error" class="deck-item-error">{{ error }}</span>
                       </div>
                       <button
-                        v-if="customCardsEnabled"
+                        v-if="customCardsEnabled && hasLibraryCards"
                         type="button"
                         class="deck-item-overlay"
                         :title="`Overlay: ${overlaySummary}`"

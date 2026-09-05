@@ -5,7 +5,7 @@
 // *current* game — those come from that game and include cards other players
 // made. A library card is added to a game by registering it there; the two stay
 // separate on purpose.
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
 import { normalizeCardDef, registerCustomCards, type CustomCard } from '@/arkham/customCards'
 
@@ -74,6 +74,10 @@ export async function loadLibrary(force = false) {
     loading = null
   }
 }
+
+/* Whether there is anything to lay over a deck with. The overlay controls are
+ * pointless without a card, so they stay hidden until you have built one. */
+export const hasLibraryCards = computed(() => entries.length > 0)
 
 export function libraryCards(): LibraryCard[] {
   return [...entries].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))

@@ -11,7 +11,7 @@ import {
   slotKey,
   type DeckOverlay,
 } from '@/arkham/deckOverlay'
-import { libraryCards } from '@/arkham/customCardLibrary'
+import { hasLibraryCards, libraryCards } from '@/arkham/customCardLibrary'
 import OverlayEditor from '@/arkham/components/debug/OverlayEditor.vue'
 import { customCardDef, isCustomCardCode, stripCardCodePrefix } from '@/arkham/customCards'
 import { loadLibrary } from '@/arkham/customCardLibrary'
@@ -497,7 +497,7 @@ watch(deckRef, (el) => {
               <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" :title="$t('deck.viewOnArkhamDb')"><font-awesome-icon icon="external-link" /></a>
               <a v-if="deck.url" class="action-btn" href="#" :title="$t('deck.syncDeck')" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
               <a
-                v-if="customCardsEnabled"
+                v-if="customCardsEnabled && hasLibraryCards"
                 class="action-btn"
                 :class="{ 'action-btn--on': overlayEditing || hasOverlay }"
                 href="#"

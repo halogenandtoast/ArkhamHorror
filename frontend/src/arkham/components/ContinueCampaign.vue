@@ -17,7 +17,7 @@ import { useClipboard } from '@vueuse/core'
 import { buildShareableUrl } from '@/arkham/helpers'
 import { applyInvestigatorOverlay, joinCampaign, rejoinInvestigator, retireInvestigator } from '@/arkham/api'
 import { useSettings } from '@/stores/settings'
-import { loadLibrary } from '@/arkham/customCardLibrary'
+import { hasLibraryCards, loadLibrary } from '@/arkham/customCardLibrary'
 import { emptyOverlay, overlayIsEmpty, type DeckOverlay } from '@/arkham/deckOverlay'
 import OverlayEditor from '@/arkham/components/debug/OverlayEditor.vue'
 import { useUserStore } from '@/stores/user'
@@ -316,6 +316,8 @@ const confirmingRetire = ref<string | null>(null)
  * campaign. Its own action rather than part of upgrading: you may want to add a
  * card without buying anything, and the two should not have to happen together. */
 const { customCardsEnabled } = storeToRefs(useSettings())
+// Loaded up front: whether the control appears at all depends on what is in it.
+if (customCardsEnabled.value) loadLibrary()
 const overlayFor = ref<string | null>(null)
 const overlay = ref<DeckOverlay>(emptyOverlay())
 const overlayBusy = ref(false)
@@ -482,7 +484,7 @@ const setIcon = computed(() => {
             </template>
             <template v-else>
               <button
-                v-if="customCardsEnabled"
+                v-if="customCardsEnabled && hasLibraryCards"
                 class="roster-btn"
                 :class="{ 'roster-btn--on': overlayFor === investigator.id }"
                 :disabled="overlayBusy"

@@ -46,7 +46,8 @@ instance HasModifiersFor AgentsOfTheDark where
           [AddKeyword $ Concealed concealedKind (Static 1)]
 
 instance HasAbilities AgentsOfTheDark where
-  getAbilities (AgentsOfTheDark a) = [mkAbility a 1 $ forced $ EnemyEvaded #after You #cultist]
+  getAbilities (AgentsOfTheDark a) =
+    [mkAbility a 1 $ forced $ EnemyEvaded #after You (InPlayEnemy #cultist)]
 
 instance RunMessage AgentsOfTheDark where
   runMessage msg a@(AgentsOfTheDark attrs) = runQueueT $ case msg of

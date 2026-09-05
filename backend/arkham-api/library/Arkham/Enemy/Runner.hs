@@ -2369,6 +2369,14 @@ instance RunMessage EnemyAttrs where
       pure $ a & tokensL .~ mempty
     PlaceReferenceCard (isTarget a -> True) cardCode -> do
       pure $ a & referenceCardsL %~ (cardCode :)
+    -- evade/defeat windows deliberately still name a removed enemy, so a reaction
+    -- resolving in one must not put it back on the table (#5610)
+    PlaceEnemy eid placement
+      | eid == enemyId
+      , enemyDefeated
+      , isInPlayPlacement placement
+      , not (isInPlayPlacement a.placement) ->
+          pure a
     PlaceEnemy eid placement | eid == enemyId -> do
       mods <- getModifiers a
       let cannotEngage = [x | CannotEngage x <- mods]

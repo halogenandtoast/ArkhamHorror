@@ -24,6 +24,8 @@ type StepKind =
   | 'fight'
   | 'attack'
   | 'ready'
+  | 'gather'
+  | 'customize'
 
 const KIND_LABELS: Record<StepKind, string> = {
   query: 'Query',
@@ -37,6 +39,8 @@ const KIND_LABELS: Record<StepKind, string> = {
   fight: 'Fight',
   attack: 'Attack',
   ready: 'Ready',
+  gather: 'Gather',
+  customize: 'Customize',
 }
 
 function kindOf(step: any): StepKind {
@@ -52,6 +56,8 @@ function kindOf(step: any): StepKind {
     'fight',
     'attack',
     'ready',
+    'gather',
+    'customize',
   ] as StepKind[]
   for (const kind of kinds) {
     if (kind in (step ?? {})) return kind
@@ -72,6 +78,8 @@ const blankStep = (kind: StepKind) =>
     fight: { fight: { matcher: null, modifiers: [] } },
     attack: { attack: {} },
     ready: { ready: {} },
+    gather: { gather: { cardCode: '' } },
+    customize: { customize: { optional: true } },
   })[kind]
 
 const set = (index: number, step: any) =>
@@ -388,6 +396,48 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.ready?.target"
           @update:modelValue="set(index, { ...step, ready: { ...step.ready, target: $event } })"
         />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'gather'">
+        <p class="hint">
+          Shuffles a card into the encounter deck. "Gather during setup" is over by the time a card
+          in play can act, so this is the nearest a card can get to it.
+        </p>
+        <label>
+          Card code
+          <input
+            :value="step.gather?.cardCode"
+            placeholder="09752"
+            @input="set(index, { ...step, gather: { ...step.gather, cardCode: ($event.target as HTMLInputElement).value } })"
+            @keydown.stop
+          />
+        </label>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'customize'">
+        <p class="hint">
+          Mark a checkbox on an upgrade sheet for a customizable card you own — pick the card and
+          which customization, and answer whatever that customization asks for.
+        </p>
+        <div class="row">
+          <label>
+            Who (optional)
+            <input
+              :value="step.customize?.iid"
+              placeholder="$iid"
+              @input="set(index, { ...step, customize: { ...step.customize, iid: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+          <label class="inline">
+            <input
+              type="checkbox"
+              :checked="step.customize?.optional !== false"
+              @change="set(index, { ...step, customize: { ...step.customize, optional: ($event.target as HTMLInputElement).checked } })"
+            />
+            may decline
+          </label>
+        </div>
       </template>
 
       <template v-else-if="kindOf(step) === 'chooseFrom'">

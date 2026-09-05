@@ -21,6 +21,7 @@ import Arkham.Card.CustomCard (
   sanitizeCustomCardCode,
  )
 import Crypto.Hash.SHA256 qualified as SHA256
+import Data.ByteString.Base64 qualified as B64
 import Data.Aeson.Types (parseMaybe)
 import Data.Map.Strict qualified as Map
 import Data.ByteString.Base16 qualified as B16
@@ -55,14 +56,16 @@ normalizeCard card = do
   pure (cardCode, card {customCardDef = def})
 
 saveCard :: UserId -> UTCTime -> CustomCard -> Handler (Entity ArkhamCustomCard)
-saveCard userId now card = do
-  (cardCode, card') <- normalizeCard card
+saveCard userId now card0 = do
+  (cardCode, card') <- normalizeCard card0
+  art <- traverse (hostArt userId) (customCardArt card')
+  let card = card' {customCardArt = art}
   let row =
         ArkhamCustomCard
           userId
           (unCardCode cardCode)
-          (toJSON (customCardDef card'))
-          (customCardArt card')
+          (toJSON (customCardDef card))
+          (customCardArt card)
           now
           now
   runDB do
@@ -70,16 +73,16 @@ saveCard userId now card = do
       Just (Entity rowId existing) -> do
         P.update
           rowId
-          [ ArkhamCustomCardDef P.=. toJSON (customCardDef card')
-          , ArkhamCustomCardArt P.=. customCardArt card'
+          [ ArkhamCustomCardDef P.=. toJSON (customCardDef card)
+          , ArkhamCustomCardArt P.=. customCardArt card
           , ArkhamCustomCardUpdatedAt P.=. now
           ]
         -- Built from the existing row so createdAt survives an edit.
         pure
           $ Entity rowId
           $ existing
-            { arkhamCustomCardDef = toJSON (customCardDef card')
-            , arkhamCustomCardArt = customCardArt card'
+            { arkhamCustomCardDef = toJSON (customCardDef card)
+            , arkhamCustomCardArt = customCardArt card
             , arkhamCustomCardUpdatedAt = now
             }
       Nothing -> do
@@ -140,32 +143,36 @@ extensionFor = \case
   Just "image/avif" -> "avif"
   _ -> "webp"
 
-postApiV1ArkhamCustomCardsArtR :: Handler Text
-postApiV1ArkhamCustomCardsArtR = do
-  _ <- getRequestUserId
-  (_, files) <- runRequestBody
-  file <- case files of
-    (_, f) : _ -> pure f
-    [] -> invalidArgs ["No image uploaded"]
+{- | Where a user's art lives.
 
-  bytes <- BSL.fromStrict <$> fileSourceByteString file
-  let contentType = fileContentType file
+Scoped by user: the object name is a content hash, so without a per-user prefix
+two people who upload the same bytes share an object, and anyone able to produce
+those bytes could write over it. The prefix keeps each library's images its own.
+-}
+artPrefixFor :: UserId -> Text
+artPrefixFor userId = artPrefix <> toPathPiece userId <> "/"
+
+-- | Put image bytes where they are served from, and say where that is.
+storeArt :: UserId -> Text -> BSL.ByteString -> Handler Text
+storeArt userId contentType bytes = do
   unless ("image/" `T.isPrefixOf` contentType) $ invalidArgs ["Not an image"]
   -- The browser downscales before uploading; this is the backstop.
   when (BSL.length bytes > maxArtBytes) $ invalidArgs ["Image is larger than 1MB"]
 
   let
+    prefix = artPrefixFor userId
     filename =
       decodeUtf8 (B16.encode $ SHA256.hashlazy bytes) <> "." <> extensionFor (Just contentType)
-    key = ObjectKey $ artPrefix <> filename
+    key = ObjectKey $ prefix <> filename
 
   getsApp (appCustomCardArtDir . appSettings) >>= \case
     -- Development: keep art on disk in the frontend's public directory, so
     -- testing never writes to the bucket everyone's images are served from.
     Just dir -> liftIO do
-      createDirectoryIfMissing True dir
-      BSL.writeFile (dir <> "/" <> T.unpack filename) bytes
-      pure $ "/" <> artPrefix <> filename
+      let userDir = dir <> "/" <> T.unpack (toPathPiece userId)
+      createDirectoryIfMissing True userDir
+      BSL.writeFile (userDir <> "/" <> T.unpack filename) bytes
+      pure $ "/" <> prefix <> filename
     Nothing -> do
       liftIO do
         env <- newEnv discover
@@ -180,7 +187,37 @@ postApiV1ArkhamCustomCardsArtR = do
               & (putObject_contentType ?~ contentType)
 
       assetHost <- getsApp (appAssetHost . appSettings)
-      pure $ fromMaybe "https://assets.arkhamhorror.app" assetHost <> "/" <> artPrefix <> filename
+      pure $ fromMaybe "https://assets.arkhamhorror.app" assetHost <> "/" <> prefix <> filename
+
+postApiV1ArkhamCustomCardsArtR :: Handler Text
+postApiV1ArkhamCustomCardsArtR = do
+  userId <- getRequestUserId
+  (_, files) <- runRequestBody
+  file <- case files of
+    (_, f) : _ -> pure f
+    [] -> invalidArgs ["No image uploaded"]
+  bytes <- BSL.fromStrict <$> fileSourceByteString file
+  storeArt userId (fileContentType file) bytes
+
+{- | An exported card carries its image inline, so an import has something to
+store rather than a link into the exporter's library.
+
+Art that is already a URL is left alone; a @data:@ URI is decoded and stored
+under the importing user, and the card keeps the hosted address.
+-}
+hostArt :: UserId -> Text -> Handler Text
+hostArt userId art = case parseDataUri art of
+  Nothing -> pure art
+  Just (contentType, bytes) -> storeArt userId contentType bytes
+
+parseDataUri :: Text -> Maybe (Text, BSL.ByteString)
+parseDataUri t = do
+  rest <- T.stripPrefix "data:" t
+  let (meta, payload) = T.breakOn "," rest
+  body <- T.stripPrefix "," payload
+  contentType <- T.stripSuffix ";base64" meta
+  bytes <- either (const Nothing) Just $ B64.decode (encodeUtf8 body)
+  pure (contentType, BSL.fromStrict bytes)
 
 {- | Make a user's library resolvable.
 

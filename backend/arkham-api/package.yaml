@@ -63,6 +63,7 @@ library:
     - annotated-exception
     - async
     - base16-bytestring
+    - base64-bytestring
     - bugsnag
     - bugsnag-hs
     - bugsnag-yesod

@@ -159,8 +159,11 @@ async function remove(card: CustomCard) {
 
 // ---------------------------------------------------------------- export ---
 
-function download(cards: CustomCard[], filename: string) {
-  const blob = new Blob([JSON.stringify(exportCards(cards), null, 2)], { type: 'application/json' })
+async function download(cards: CustomCard[], filename: string) {
+  // The art is fetched and inlined, so this waits on the network.
+  const blob = new Blob([JSON.stringify(await exportCards(cards), null, 2)], {
+    type: 'application/json',
+  })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
@@ -176,10 +179,10 @@ const exportOne = (card: CustomCard) => download([card], `${slug(card.def.name.t
 const exportSet = (set: string, setCards: CustomCard[]) =>
   download(setCards, `${slug(set)}.arkhamcard.json`)
 
-function exportSelected() {
+async function exportSelected() {
   const chosen = cards.value.filter((c) => isSelected(c.def.cardCode))
   if (!chosen.length) return
-  download(
+  await download(
     chosen,
     chosen.length === 1 ? `${slug(chosen[0].def.name.title)}.arkhamcard.json` : `custom-cards-${chosen.length}.json`,
   )

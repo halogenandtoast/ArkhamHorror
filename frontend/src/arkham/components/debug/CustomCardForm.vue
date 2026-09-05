@@ -85,6 +85,7 @@ const blankForm = () => ({
   cost: '' as string,
   level: '' as string,
   unique: false,
+  permanent: false,
   victory: '' as string,
   traits: '',
   icons: [] as string[],
@@ -333,6 +334,7 @@ function buildDef(cardCode: string): Record<string, any> {
     skills: hasSkillIcons.value ? form.icons.map(iconJson) : [],
     keywords: form.keywords.map((k) => ({ tag: k, contents: [] })),
     unique: form.unique,
+    permanent: form.permanent,
     doubleSided: false,
     meta: {} as Record<string, any>,
   }
@@ -498,7 +500,7 @@ const slotPreview = (slot: string) =>
  * so editing a card cannot quietly drop what the form cannot express. */
 const FORM_KEYS = [
   'cardCode', 'art', 'cardType', 'name', 'classSymbols', 'cardTraits', 'skills', 'keywords',
-  'unique', 'doubleSided', 'meta', 'cardSubType', 'cost', 'level', 'victoryPoints', 'actions',
+  'unique', 'permanent', 'doubleSided', 'meta', 'cardSubType', 'cost', 'level', 'victoryPoints', 'actions',
   'fight', 'health', 'evade', 'healthDamage', 'sanityDamage', 'slots', 'uses',
 ]
 const FORM_META_KEYS = [
@@ -526,6 +528,7 @@ async function loadCard(card: CustomCard) {
   form.level = def.level === null || def.level === undefined ? '' : String(def.level)
   form.victory = def.victoryPoints === null || def.victoryPoints === undefined ? '' : String(def.victoryPoints)
   form.unique = !!def.unique
+  form.permanent = !!def.permanent
   form.weaknessKind = typeof def.cardSubType === 'string' ? def.cardSubType : 'Weakness'
   form.actions = Array.isArray(def.actions) ? def.actions : []
   form.traits = (def.cardTraits ?? []).map((t: string) => traitDisplay.value.get(t) ?? t).join('. ')
@@ -699,6 +702,10 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             <label class="checkbox">
               <input v-model="form.unique" type="checkbox" />
               Unique
+            </label>
+            <label v-if="isPlayerCard" class="checkbox">
+              <input v-model="form.permanent" type="checkbox" />
+              Permanent
             </label>
           </div>
 

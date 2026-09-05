@@ -27,6 +27,8 @@ Both run the same small step language:
 * @fight@ -- fight an enemy, with modifiers for that attack.
 * @attack@ -- an enemy attacks an investigator.
 * @ready@ -- ready a card.
+* @gather@ -- shuffle a card from an encounter set into a deck.
+* @customize@ -- mark a checkbox on a customizable card you own.
 
 Scoped modifiers need no step of their own: @CreateWindowModifierEffect@ is an
 ordinary message, so a @push@ covers "for this attack" and friends.
@@ -57,14 +59,23 @@ import Arkham.Classes.HasGame (HasGame)
 import Arkham.Classes.HasModifiersFor (HasModifiersM)
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
+import Arkham.Deck qualified as Deck
 
 -- Brings the Query instances into scope the way card modules get them, without
 -- this module taking its own hs-boot edge on Arkham.Game (which pulls other
 -- modules into the cycle and onto their boot interfaces).
 
+import Arkham.Card.PlayerCard (lookupPlayerCard)
+import Arkham.Customization (CustomizationChoice (..))
 import Arkham.Fight (ChooseFight (..))
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Criteria (passesCriteria)
+import Arkham.Helpers.Customization (
+  CustomizationChoiceType (..),
+  cardRemainingCheckMarks,
+  choicesRequired,
+  hasCustomization_,
+ )
 import Arkham.Helpers.Modifiers (
   ModifierType (ReduceCostOf),
   modifySelect,
@@ -73,6 +84,7 @@ import Arkham.Helpers.Modifiers (
  )
 import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
@@ -86,14 +98,19 @@ import Arkham.Message.Lifted.Base (capture)
 import Arkham.Message.Lifted.Card (playCardPayingCost)
 import Arkham.Message.Lifted.Prompt qualified as Prompt
 import Arkham.Message.Lifted.Queue (ReverseQueue)
+import Arkham.Name (toTitle)
+import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
 import Arkham.Query (QueryElement)
 import Arkham.Source
 import Arkham.Target
+import Arkham.Trait (displayTrait)
 import Arkham.Window (defaultWindows)
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
+import Data.Function (on)
+import Data.List (nubBy)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 
@@ -154,7 +171,13 @@ data HandlerSpec = HandlerSpec
   { handlerOn :: Text
   , handlerRequires :: [(Value, Value)]
   {- ^ Pairs that must be equal once substituted, so a handler can say which
-  field of the message has to be this card ("$2" is "$source").
+  field of the message has to be this card.
+  -}
+  , handlerGlobal :: Bool
+  {- ^ Listen even though the message does not name this card. The mention
+  check keeps a handler from firing for messages aimed elsewhere, but a
+  message about the game itself -- setup ending, the game ending -- names
+  nobody, so it can only ever be heard by asking for it.
   -}
   , handlerSteps :: [Value]
   }
@@ -165,6 +188,9 @@ instance FromJSON HandlerSpec where
       <$> o
       .: "on"
       <*> (map toPair <$> o .:? "requires" .!= [])
+      <*> o
+      .:? "global"
+      .!= False
       <*> o
       .:? "steps"
       .!= []
@@ -279,8 +305,8 @@ runCustomHandlers :: (CustomEntity a, ReverseQueue m) => a -> Message -> m ()
 runCustomHandlers a msg = case toJSON msg of
   Object o -> do
     let mentioned = any (`isSubValue` Object o) [toJSON (toTarget a), toJSON (toSource a)]
-    when mentioned $ for_ (metaSpecs @HandlerSpec handlersMetaKey (toCardDef a)) \handler ->
-      for_ (matched (handlerOn handler) o) \fields -> do
+    for_ (metaSpecs @HandlerSpec handlersMetaKey (toCardDef a)) \handler ->
+      when (mentioned || handlerGlobal handler) $ for_ (matched (handlerOn handler) o) \fields -> do
         let env = messageBindings o fields <> bindings a
             holds (l, r) = substitute env l == substitute env r
         when (all holds (handlerRequires handler)) $ runSteps env (handlerSteps handler)
@@ -361,6 +387,80 @@ runBasicFight source iid matcher = do
   fightable <- filterM (getCanPerformAbility iid ws) abilities
   unless (null fightable)
     $ Prompt.chooseOne iid [AbilityLabel iid ab ws [] [] | ab <- fightable]
+
+{- | Mark a checkbox on an upgrade sheet for a customizable card you own.
+
+The flow the printed cards use, written here rather than shared with them: pick
+one of your customizable cards that still has a box free, and pick which
+customization to mark. A customization whose last box asks for something (a
+trait, a card, a skill) asks for it in the same breath -- a step has nowhere to
+defer to, so it cannot re-enter itself the way a card with its own handlers can.
+-}
+runCustomize :: ReverseQueue m => Env -> Value -> m ()
+runCustomize env spec = do
+  let
+    o = case spec of
+      Object o' -> o'
+      _ -> mempty
+  -- Named explicitly when a loop is doing this once per investigator; the
+  -- loop binds its own name, not @iid@.
+  iid <- maybe (stepInvestigator env) pure (KeyMap.lookup "iid" o >>= decodeWith env)
+  cards <- select $ OwnedBy (InvestigatorWithId iid) <> basic CardWithAvailableCustomization
+  options <- for (available cards) \(card, customization) -> do
+    msgs <- capture $ mark iid card customization
+    pure $ Label (toTitle card <> ": " <> tshow customization) msgs
+  let declined =
+        [ Label (textField env o "declineLabel" "Do not") [] | KeyMap.lookup "optional" o /= Just (Bool False)
+        ]
+  unless (null options) $ Prompt.chooseOne iid (options <> declined)
+ where
+  -- One entry per box still free, so both choices are made at once.
+  available cards = do
+    card <- nubBy ((==) `on` toCardCode) cards
+    let cardCustomizations = cdCustomizations (toCardDef card)
+    case card of
+      PlayerCard pc -> do
+        customization <- keys cardCustomizations
+        guard $ not (hasCustomization_ cardCustomizations (pcCustomizations pc) customization)
+        pure (card, customization)
+      _ -> []
+
+  mark iid card customization = do
+    let increase = IncreaseCustomization iid (toCardCode card) customization
+    case (cardRemainingCheckMarks card customization, choicesRequired customization) of
+      (Just 1, choice : _) -> Prompt.chooseOneDropDown iid (map (second (increase . pure)) (offers choice))
+      _ -> push (increase [])
+
+  offers = \case
+    CustomizationTraitChoice -> [(displayTrait t, ChosenTrait t) | t <- allTraits]
+    CustomizationSkillChoice -> [(tshow st, ChosenSkill st) | st <- [minBound ..]]
+    CustomizationIndexChoice zs -> [(tshow z, ChosenIndex n) | (n, z) <- withIndex zs]
+    CustomizationCardChoice matcher ->
+      [ (title, ChosenCard title)
+      | title <-
+          sort
+            $ nub
+            $ map toTitle
+            $ filter ((`cardMatch` matcher) . (`lookupPlayerCard` nullCardId)) (toList allPlayerCards)
+      ]
+
+{- | Gather a card from an encounter set into a deck.
+
+"Gather X from the Y encounter set" is a setup instruction, and setup is over
+by the time a card in play can act, so the nearest honest equivalent is to
+shuffle the card in where it would have ended up.
+-}
+runGather :: ReverseQueue m => Env -> Value -> m ()
+runGather env spec = do
+  let
+    o = case spec of
+      Object o' -> o'
+      _ -> mempty
+    into = fromMaybe Deck.EncounterDeck (KeyMap.lookup "into" o >>= decodeWith env)
+  for_ (KeyMap.lookup "cardCode" o >>= decodeWith env) \cardCode ->
+    for_ (lookupCardDef (cardCode :: CardCode)) \def -> do
+      card <- genEncounterCard def
+      push $ ShuffleCardsIntoDeck into [toCard card]
 
 {- | Ready a card.
 
@@ -497,6 +597,12 @@ runSteps env0 = void . foldM step env0
           pure env
       | Just spec <- KeyMap.lookup "ready" o -> do
           runReady env spec
+          pure env
+      | Just spec <- KeyMap.lookup "gather" o -> do
+          runGather env spec
+          pure env
+      | Just spec <- KeyMap.lookup "customize" o -> do
+          runCustomize env spec
           pure env
     _ -> pure env
 

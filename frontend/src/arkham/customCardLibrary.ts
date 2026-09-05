@@ -119,8 +119,38 @@ export const EXPORT_VERSION = 1
 
 export type CardExport = { version: number; cards: { def: any; art: string | null }[] }
 
-export function exportCards(cards: CustomCard[]): CardExport {
-  return { version: EXPORT_VERSION, cards: cards.map((c) => ({ def: c.def, art: c.art })) }
+/* An export carries the image itself, not a link to it.
+ *
+ * Art lives under the library it was uploaded to -- a different host in
+ * development and production, and a different prefix per user -- so a bare URL
+ * is worth nothing to whoever imports the file. Inlined as a data URI, the
+ * import has bytes to store under its own account.
+ *
+ * Falls back to the URL when the image cannot be read: a production asset host
+ * that sends no CORS headers refuses the fetch, and half an export beats none. */
+export async function exportCards(cards: CustomCard[]): Promise<CardExport> {
+  const inlined = await Promise.all(
+    cards.map(async (c) => ({ def: c.def, art: (await inlineArt(c.art)) ?? c.art })),
+  )
+  return { version: EXPORT_VERSION, cards: inlined }
+}
+
+async function inlineArt(art: string | null): Promise<string | null> {
+  if (!art || art.startsWith('data:')) return art
+  try {
+    const response = await fetch(art)
+    if (!response.ok) return null
+    const blob = await response.blob()
+    if (!blob.type.startsWith('image/')) return null
+    return await new Promise<string | null>((resolve) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null)
+      reader.onerror = () => resolve(null)
+      reader.readAsDataURL(blob)
+    })
+  } catch {
+    return null
+  }
 }
 
 /* Accepts a whole export file or a single card, so a card pasted on its own

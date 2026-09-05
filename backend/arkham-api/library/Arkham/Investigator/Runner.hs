@@ -596,10 +596,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     -- card that would otherwise start in play in the deck instead.
     setupModifiers <- getModifiers a
     let cannotPutIntoPlay c = any (\case CannotPutIntoPlay m -> cardMatch c m; _ -> False) setupModifiers
+    -- The defs are a snapshot persisted with the save, so they go stale as soon as the
+    -- card's definition changes; re-look them up and match on card code (#5611).
+    let startsWithDefs = map (\def -> fromMaybe def (lookupCardDef def)) investigatorStartsWith
     (startsWithMsgs, deck') <-
       foldM
         ( \(msgs, currentDeck) cardDef -> do
-            let (before, after) = break ((== cardDef) . toCardDef) (unDeck currentDeck)
+            let (before, after) = break ((== toCardCode cardDef) . toCardCode) (unDeck currentDeck)
             case after of
               (card : rest)
                 | cannotPutIntoPlay (toCard card) -> pure (msgs, currentDeck)
@@ -637,7 +640,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
               _ -> pure (msgs, currentDeck)
         )
         ([], Deck shuffled)
-        investigatorStartsWith
+        startsWithDefs
     let (permanentCards, deck'') =
           partition (\c -> cdPermanent (toCardDef c) && not (cannotPutIntoPlay (toCard c))) (unDeck deck')
 

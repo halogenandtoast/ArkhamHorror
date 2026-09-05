@@ -12,6 +12,7 @@ import {
   type DeckOverlay,
 } from '@/arkham/deckOverlay'
 import { libraryCards } from '@/arkham/customCardLibrary'
+import OverlayEditor from '@/arkham/components/debug/OverlayEditor.vue'
 import { customCardDef, isCustomCardCode, stripCardCodePrefix } from '@/arkham/customCards'
 import { loadLibrary } from '@/arkham/customCardLibrary'
 import { cardImg, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
@@ -67,13 +68,6 @@ async function startOverlay() {
   // predecessor's signatures as taken out, the way choosing one does.
   if (overlay.value.investigator) setOverlayInvestigator(overlay.value.investigator)
 }
-
-const libraryInvestigators = computed(() =>
-  libraryCards().filter((c) => c.def.cardType === 'InvestigatorType'),
-)
-const libraryPlayerCards = computed(() =>
-  libraryCards().filter((c) => c.def.cardType !== 'InvestigatorType'),
-)
 
 /* ArkhamDB records what an investigator's deck requires, which is the only
  * place signature weaknesses are written down -- the engine marks signature
@@ -135,11 +129,6 @@ function restoreOne(card: Arkham.CardDef) {
   overlay.value = { ...overlay.value, remove }
 }
 
-function addFromLibrary(cardCode: string) {
-  if (!cardCode) return
-  const add = { ...overlay.value.add, [cardCode]: (overlay.value.add[cardCode] ?? 0) + 1 }
-  overlay.value = { ...overlay.value, add }
-}
 
 /* An overlay is easy to forget you applied -- the deck simply looks different --
  * so the deck says so, and says what it does, without being opened. */
@@ -520,41 +509,17 @@ watch(deckRef, (el) => {
           </div>
           <div v-if="overlayEditing" class="overlay-bar">
             <p class="overlay-help">
-              Your cards, laid over this deck. Take cards out with the − on each card below, put
-              them back with +. The deck's own list is kept, so removing the overlay puts it back
-              exactly as it was.
+              Custom cards, laid over this deck. Pick what to add below; take cards out with the −
+              on each card in the list. The deck's own list is kept, so removing the overlay puts
+              it back exactly as it was.
             </p>
-            <div class="overlay-row">
-              <label>
-                Investigator
-                <select
-                  :value="overlay.investigator ?? ''"
-                  @change="setOverlayInvestigator(($event.target as HTMLSelectElement).value || null)"
-                >
-                  <option value="">Unchanged</option>
-                  <option v-for="c in libraryInvestigators" :key="c.def.cardCode" :value="c.def.cardCode">
-                    {{ c.def.name.title }}
-                  </option>
-                </select>
-              </label>
-              <label>
-                Add a card
-                <select
-                  value=""
-                  @change="addFromLibrary(($event.target as HTMLSelectElement).value); ($event.target as HTMLSelectElement).value = ''"
-                >
-                  <option value="">Choose…</option>
-                  <option v-for="c in libraryPlayerCards" :key="c.def.cardCode" :value="c.def.cardCode">
-                    {{ c.def.name.title }}
-                  </option>
-                </select>
-              </label>
-              <div class="overlay-actions">
-                <button type="button" :disabled="savingOverlay" @click="saveOverlay">
-                  {{ overlayIsEmpty(overlay) ? 'Remove overlay' : 'Apply overlay' }}
-                </button>
-                <button type="button" @click="overlayEditing = false">Cancel</button>
-              </div>
+            <!-- Cards come out on the list below, so the picker only puts them in. -->
+            <OverlayEditor v-model="overlay" :slots="{}" :investigator="deck.list.investigator_code" />
+            <div class="overlay-actions">
+              <button type="button" :disabled="savingOverlay" @click="saveOverlay">
+                {{ overlayIsEmpty(overlay) ? 'Remove overlay' : 'Apply overlay' }}
+              </button>
+              <button type="button" @click="overlayEditing = false">Cancel</button>
             </div>
           </div>
         </template>
@@ -811,6 +776,12 @@ watch(deckRef, (el) => {
     &:hover { color: #ccc; }
     &.pressed { background: rgba(255,255,255,0.12); color: #eee; }
   }
+}
+
+/* The bar spans the header, but the controls in it should not: a name a hand's
+ * width from the button that changes it is hard to aim at. */
+.overlay-bar :deep(.overlay-editor) {
+  max-width: 34rem;
 }
 
 /* The last row of the header rather than a card of its own -- flush with the

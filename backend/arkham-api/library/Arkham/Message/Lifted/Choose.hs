@@ -224,6 +224,17 @@ connectionLabeled' sym action = unterminated do
 info' :: ReverseQueue m => FlavorTextBuilder () -> ChooseT m ()
 info' flavor = unterminated $ tell [Info $ buildFlavor flavor]
 
+{- | A label whose text is already a complete i18n key.
+
+'labeled' builds a key under the current scope's @label@ section; this is for
+names that live somewhere else in the locale, like a customization's printed
+name under @customizations@.
+-}
+i18nKeyLabeled :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
+i18nKeyLabeled key action = unterminated do
+  msgs <- lift $ capture action
+  tell [Label key msgs]
+
 labeledI :: ReverseQueue m => Text -> QueueT Message m () -> ChooseT m ()
 labeledI label action = unterminated do
   msgs <- lift $ capture action

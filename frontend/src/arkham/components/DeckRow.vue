@@ -54,7 +54,7 @@ const tabooList = computed(() => {
           <span
             v-if="hasOverlay"
             class="overlay-badge"
-            title="Overlay — this deck is laid over with your own cards"
+            title="Overlay — this deck is laid over with custom cards"
             aria-label="Overlay"
           >
             <font-awesome-icon icon="layer-group" />

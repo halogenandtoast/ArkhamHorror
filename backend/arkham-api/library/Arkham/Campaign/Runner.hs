@@ -18,6 +18,7 @@ import Arkham.Classes.Entity
 import Arkham.Classes.GameLogger
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
+import Arkham.Custom.Overlay (DeckOverlay (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.GameT
 import Arkham.Helpers
@@ -306,6 +307,36 @@ defaultCampaignRunner msg a = case msg of
     let mental = getChoiceAmount "$mental" choiceMap
     push $ SufferTrauma iid physical mental
     pure a
+  {- Laying custom cards over a campaign deck between scenarios.
+
+  Deliberately not routed through 'UpgradeDeck': that is the /purchase/ path,
+  which charges trauma for what it adds and initialises xp on the new cards.
+  Nothing here is bought, so the deck is simply edited in place.
+  -}
+  ApplyDeckOverlay iid overlay -> do
+    let deck = maybe [] unDeck $ lookup iid (campaignDecks $ toAttrs a)
+    let taken = Map.toList (overlaySwaps overlay)
+    -- A swap is a removal and an addition of however many actually came out.
+    let (afterSwaps, swappedIn) = foldl' swapOut (deck, []) taken
+    let afterRemovals = foldl' removeCopies afterSwaps (Map.toList (overlayRemove overlay))
+    added <-
+      concat <$> for (swappedIn <> Map.toList (overlayAdd overlay)) \(cardCode, n) ->
+        case lookupCardDef cardCode of
+          Nothing -> pure []
+          Just def -> replicateM n (genPlayerCard def)
+    -- Answering took the continuation ask with it, so re-run the step to hand
+    -- the lead a fresh one -- the same thing the roster changes below do.
+    push (CampaignStep $ campaignStep $ toAttrs a)
+    pure $ updateAttrs a $ decksL %~ insertMap iid (Deck (afterRemovals <> added))
+   where
+    matching cardCode = (== cardCode) . toCardCode
+    removeCopies cards (cardCode, n) =
+      foldr (\_ cs -> deleteFirstMatch (matching cardCode) cs) cards [1 .. n]
+    swapOut (cards, adds) (replaced, replacement) =
+      let n = length (filter (matching replaced) cards)
+       in ( filter (not . matching replaced) cards
+          , if n > 0 then (replacement, n) : adds else adds
+          )
   UpgradeDeck iid mUrl deck -> do
     let
       oldDeck = fromJustNote "No deck? (UpgradeDeck)" $ lookup iid (campaignDecks $ toAttrs a)

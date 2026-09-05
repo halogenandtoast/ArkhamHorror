@@ -130,9 +130,27 @@ export type CardExport = { version: number; cards: { def: any; art: string | nul
  * that sends no CORS headers refuses the fetch, and half an export beats none. */
 export async function exportCards(cards: CustomCard[]): Promise<CardExport> {
   const inlined = await Promise.all(
-    cards.map(async (c) => ({ def: c.def, art: (await inlineArt(c.art)) ?? c.art })),
+    cards.map(async (c) => ({
+      def: await inlineDefArt(c.def),
+      art: (await inlineArt(c.art)) ?? c.art,
+    })),
   )
   return { version: EXPORT_VERSION, cards: inlined }
+}
+
+/* An investigator has more images than its face — a card back and two portraits
+ * — and they live in meta rather than on the card. */
+const ART_META_KEYS = ['backArt', 'portrait', 'portraitBack']
+
+async function inlineDefArt(def: any): Promise<any> {
+  const meta = def?.meta
+  if (!meta) return def
+  const keys = ART_META_KEYS.filter((k) => typeof meta[k] === 'string')
+  if (!keys.length) return def
+  const entries = await Promise.all(
+    keys.map(async (k) => [k, (await inlineArt(meta[k])) ?? meta[k]] as const),
+  )
+  return { ...def, meta: { ...meta, ...Object.fromEntries(entries) } }
 }
 
 async function inlineArt(art: string | null): Promise<string | null> {

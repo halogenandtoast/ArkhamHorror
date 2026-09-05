@@ -61,6 +61,11 @@ data Answer
   | -- Between-scenario roster changes, all answered from the continuation screen.
     RetireInvestigatorAnswer {investigatorId :: InvestigatorId}
   | RejoinInvestigatorAnswer {investigatorId :: InvestigatorId}
+  | {- | Lay your own cards over an investigator's deck for the rest of the
+    campaign. Answered from the same screen, and like the roster changes it
+    leaves the continuation question standing to be answered after.
+    -}
+    ApplyOverlayAnswer {investigatorId :: InvestigatorId, overlay :: Maybe DeckOverlay}
   | JoinCampaignAnswer
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -309,6 +314,7 @@ answerPlayer = \case
   PickDestinyAnswer _ -> Nothing
   ExchangeAmountsAnswer {} -> Nothing
   CampaignStepAnswer _ -> Nothing
+  ApplyOverlayAnswer {} -> Nothing
   RetireInvestigatorAnswer _ -> Nothing
   RejoinInvestigatorAnswer _ -> Nothing
   JoinCampaignAnswer -> Nothing
@@ -428,6 +434,19 @@ handleAnswer game playerId = \case
     -- the one that sticks.
     loadChosenDeck game playerId
       $ maybe id applyOverlay mOverlay (arkhamDeckPlayList deck)
+  ApplyOverlayAnswer iid mOverlay
+    | not (isContinueCampaignAsk game playerId) -> unhandled "Wrong question type"
+    | not (atCampaignContinuation game) ->
+        unhandled "A deck can only be laid over between scenarios"
+    | iid `Map.notMember` entitiesInvestigators (gameEntities game) -> unhandled "Unknown investigator"
+    | otherwise -> case mOverlay of
+        Nothing -> handled []
+        Just o -> do
+          -- The overlay names cards only its owner has built.
+          P.get (coerce playerId) >>= \case
+            Just seat -> registerDeckOwnerCustomCards (arkhamPlayerUserId seat)
+            Nothing -> pure ()
+          handled [ApplyDeckOverlay iid o]
   DeckListAnswer dl _ -> do
     -- 'DB' is rank-1 polymorphic, so the registration has to be applied here
     -- rather than passed as a function.
@@ -486,6 +505,7 @@ handleAnswerPure game@Game {..} playerId = \case
     | Map.size (entitiesInvestigators gameEntities) <= 1 ->
         unhandled "The last investigator cannot leave"
     | otherwise -> handled [LeaveCampaign iid]
+  ApplyOverlayAnswer {} -> unhandled "ApplyOverlayAnswer requires database access"
   RejoinInvestigatorAnswer iid
     | not (isContinueCampaignAsk game playerId) -> unhandled "Wrong question type"
     | not (atCampaignContinuation game) -> unhandled "Investigators can only rejoin between scenarios"

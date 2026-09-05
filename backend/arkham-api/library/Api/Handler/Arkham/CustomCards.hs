@@ -13,7 +13,7 @@ import Amazonka.S3.PutObject (putObject_acl, putObject_contentType)
 import Control.Lens ((?~))
 
 import Arkham.Card.CardCode (CardCode (..))
-import Arkham.Card.CardDef (cdArt, cdCardCode)
+import Arkham.Card.CardDef (CardDef, cdArt, cdCardCode, cdMeta)
 import Arkham.Card.CustomCard (
   CustomCard (..),
   isCustomCardCode,
@@ -21,11 +21,11 @@ import Arkham.Card.CustomCard (
   sanitizeCustomCardCode,
  )
 import Crypto.Hash.SHA256 qualified as SHA256
-import Data.ByteString.Base64 qualified as B64
 import Data.Aeson.Types (parseMaybe)
-import Data.Map.Strict qualified as Map
 import Data.ByteString.Base16 qualified as B16
+import Data.ByteString.Base64 qualified as B64
 import Data.ByteString.Lazy qualified as BSL
+import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
 import Import hiding ((==.))
@@ -59,7 +59,8 @@ saveCard :: UserId -> UTCTime -> CustomCard -> Handler (Entity ArkhamCustomCard)
 saveCard userId now card0 = do
   (cardCode, card') <- normalizeCard card0
   art <- traverse (hostArt userId) (customCardArt card')
-  let card = card' {customCardArt = art}
+  def <- hostDefArt userId (customCardDef card')
+  let card = card' {customCardArt = art, customCardDef = def}
   let row =
         ArkhamCustomCard
           userId
@@ -209,6 +210,26 @@ hostArt :: UserId -> Text -> Handler Text
 hostArt userId art = case parseDataUri art of
   Nothing -> pure art
   Just (contentType, bytes) -> storeArt userId contentType bytes
+
+{- | The images a def carries besides its face.
+
+An investigator has a card back and two portraits, and they live in meta rather
+than on the card, so an export that only inlined the face would import with the
+portraits still pointing at the exporter's library.
+-}
+artMetaKeys :: [Text]
+artMetaKeys = ["backArt", "portrait", "portraitBack"]
+
+hostDefArt :: UserId -> CardDef -> Handler CardDef
+hostDefArt userId def = do
+  meta <- foldlM host (cdMeta def) artMetaKeys
+  pure def {cdMeta = meta}
+ where
+  host m k = case Map.lookup k m of
+    Just (String v) -> do
+      hosted <- hostArt userId v
+      pure $ Map.insert k (String hosted) m
+    _ -> pure m
 
 parseDataUri :: Text -> Maybe (Text, BSL.ByteString)
 parseDataUri t = do

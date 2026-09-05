@@ -499,7 +499,7 @@ const needsReply = computed(() => {
                         <span
                           v-if="deckHasOverlay(deck)"
                           class="deck-item-overlaid"
-                          title="This deck is laid over with your own cards"
+                          title="This deck is laid over with custom cards"
                         >
                           <font-awesome-icon icon="layer-group" /> Overlay
                         </span>
@@ -533,7 +533,7 @@ const needsReply = computed(() => {
                           <span class="weakness-pool-summary">{{ overlaySummary }}</span>
                         </div>
                         <p class="weakness-pool-help">
-                          Your own cards, laid over this deck for this game only. The deck itself is
+                          Custom cards, laid over this deck for this game only. The deck itself is
                           not changed.
                         </p>
                         <OverlayEditor v-model="overlay" :slots="deck.list.slots" :investigator="deck.list.investigator_code" />

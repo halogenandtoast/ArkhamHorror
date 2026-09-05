@@ -29,7 +29,8 @@ data DeckOverlay = DeckOverlay
   , overlayAdd :: Map CardCode Int
   , overlayRemove :: Map CardCode Int
   }
-  deriving stock (Show, Eq)
+  -- 'Ord' and 'Data' because 'Message' carries one and derives both.
+  deriving stock (Show, Eq, Ord, Data)
 
 instance FromJSON DeckOverlay where
   parseJSON = withObject "DeckOverlay" \o ->

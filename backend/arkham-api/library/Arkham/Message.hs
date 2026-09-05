@@ -57,6 +57,7 @@ import Arkham.Choose
 import Arkham.ClassSymbol
 import Arkham.Classes.HasQueue (QueueWrapper (..))
 import Arkham.Cost
+import Arkham.Custom.Overlay (DeckOverlay)
 import Arkham.Customization
 import Arkham.DamageEffect
 import Arkham.Deck
@@ -876,6 +877,11 @@ data Message
   | ReplaceInvestigator InvestigatorId ArkhamDBDecklist
   | UpgradeDeck InvestigatorId (Maybe Text) (Deck PlayerCard) -- used to upgrade deck during campaign
   | UpgradeDecklist InvestigatorId ArkhamDBDecklist
+  | {- | Lay custom cards over an investigator's campaign deck between scenarios.
+    Not an upgrade: nothing is purchased, so no trauma is charged and no xp
+    is initialised for what it adds.
+    -}
+    ApplyDeckOverlay InvestigatorId DeckOverlay
   | FinishedUpgradingDecks
   | Flip InvestigatorId Source Target
   | Flipped Source Card

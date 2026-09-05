@@ -1033,4 +1033,12 @@ button.skip {
 .breakdowns {
   width: min(1100px, 92vw);
 }
+
+
+
+
+
+
+
+
 </style>

@@ -74,6 +74,7 @@ import Arkham.Helpers.Customization (
   CustomizationChoiceType (..),
   cardRemainingCheckMarks,
   choicesRequired,
+  customizationKey,
   hasCustomization_,
  )
 import Arkham.Helpers.Modifiers (
@@ -406,24 +407,31 @@ runCustomize env spec = do
   -- loop binds its own name, not @iid@.
   iid <- maybe (stepInvestigator env) pure (KeyMap.lookup "iid" o >>= decodeWith env)
   cards <- select $ OwnedBy (InvestigatorWithId iid) <> basic CardWithAvailableCustomization
-  options <- for (available cards) \(card, customization) -> do
-    msgs <- capture $ mark iid card customization
-    pure $ Label (toTitle card <> ": " <> tshow customization) msgs
+  let choosable = filter (notNull . available) (nubBy ((==) `on` toCardCode) cards)
+  options <- for choosable \card -> do
+    msgs <- capture $ chooseCustomization iid card
+    pure $ Label (toTitle card) msgs
   let declined =
-        [ Label (textField env o "declineLabel" "Do not") [] | KeyMap.lookup "optional" o /= Just (Bool False)
+        [ Label (textField env o "declineLabel" "Skip") [] | KeyMap.lookup "optional" o /= Just (Bool False)
         ]
   unless (null options) $ Prompt.chooseOne iid (options <> declined)
  where
-  -- One entry per box still free, so both choices are made at once.
-  available cards = do
-    card <- nubBy ((==) `on` toCardCode) cards
+  -- The card first, then which of its boxes -- so the second prompt's labels can
+  -- be the customization's own name key rather than text built around it.
+  chooseCustomization iid card = do
+    options <- for (available card) \customization -> do
+      msgs <- capture $ mark iid card customization
+      pure $ Label (customizationKey customization) msgs
+    unless (null options) $ Prompt.chooseOne iid options
+
+  available card =
     let cardCustomizations = cdCustomizations (toCardDef card)
-    case card of
-      PlayerCard pc -> do
-        customization <- keys cardCustomizations
-        guard $ not (hasCustomization_ cardCustomizations (pcCustomizations pc) customization)
-        pure (card, customization)
-      _ -> []
+     in case card of
+          PlayerCard pc ->
+            filter
+              (not . hasCustomization_ cardCustomizations (pcCustomizations pc))
+              (keys cardCustomizations)
+          _ -> []
 
   mark iid card customization = do
     let increase = IncreaseCustomization iid (toCardCode card) customization

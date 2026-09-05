@@ -79,6 +79,16 @@ customizedSlots card =
 
 customizationIndex :: HasCardDef a => a -> Customization -> Maybe Int
 customizationIndex a c = elemIndex c $ keys $ cdCustomizations (toCardDef a)
+
+{- | The i18n key for a customization's printed name.
+
+The locale keeps them under @customizations@, keyed by constructor. Without
+this a prompt shows the constructor itself -- "EldritchInk" rather than
+"Eldritch Ink".
+-}
+customizationKey :: Customization -> Text
+customizationKey c = "$customizations." <> tshow c
+
 choicesRequired :: Customization -> [CustomizationChoiceType]
 choicesRequired = \case
   Versatile -> [CustomizationTraitChoice]

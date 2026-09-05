@@ -1,4 +1,4 @@
-// Laying your own cards over a deck, on the client side.
+// Laying custom cards over a deck, on the client side.
 //
 // The server owns the real transformation (Arkham.Custom.Overlay); this is the
 // same edit applied locally so the deck page can show what an overlay will do

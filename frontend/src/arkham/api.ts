@@ -241,6 +241,14 @@ export const retireInvestigator = (gameId: string, investigatorId: string): Prom
 export const rejoinInvestigator = (gameId: string, investigatorId: string): Promise<void> =>
   api.put(`arkham/games/${gameId}`, { tag: 'RejoinInvestigatorAnswer', investigatorId })
 
+// Lays custom cards over an investigator's campaign deck between scenarios.
+export const applyInvestigatorOverlay = (
+  gameId: string,
+  investigatorId: string,
+  overlay: unknown,
+): Promise<void> =>
+  api.put(`arkham/games/${gameId}`, { tag: 'ApplyOverlayAnswer', investigatorId, overlay })
+
 export const joinCampaign = (gameId: string): Promise<void> =>
   api.put(`arkham/games/${gameId}`, { tag: 'JoinCampaignAnswer' })
 

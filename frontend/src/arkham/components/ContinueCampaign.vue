@@ -15,7 +15,11 @@ import sideStories from '@/arkham/data/side-stories.json'
 import { useRoute, useRouter } from 'vue-router'
 import { useClipboard } from '@vueuse/core'
 import { buildShareableUrl } from '@/arkham/helpers'
-import { joinCampaign, rejoinInvestigator, retireInvestigator } from '@/arkham/api'
+import { applyInvestigatorOverlay, joinCampaign, rejoinInvestigator, retireInvestigator } from '@/arkham/api'
+import { useSettings } from '@/stores/settings'
+import { loadLibrary } from '@/arkham/customCardLibrary'
+import { emptyOverlay, overlayIsEmpty, type DeckOverlay } from '@/arkham/deckOverlay'
+import OverlayEditor from '@/arkham/components/debug/OverlayEditor.vue'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
@@ -308,6 +312,48 @@ const rosterBusy = ref(false)
 const rosterError = ref<string | null>(null)
 const confirmingRetire = ref<string | null>(null)
 
+/* Laying custom cards over an investigator's deck for the rest of the
+ * campaign. Its own action rather than part of upgrading: you may want to add a
+ * card without buying anything, and the two should not have to happen together. */
+const { customCardsEnabled } = storeToRefs(useSettings())
+const overlayFor = ref<string | null>(null)
+const overlay = ref<DeckOverlay>(emptyOverlay())
+const overlayBusy = ref(false)
+
+/* What is in the deck right now, so cards can be taken back out as well as
+ * added. Counted by card code, the shape an overlay speaks in. */
+function deckSlotsFor(investigator: { deck?: { cardCode: string }[] }): Record<string, number> {
+  const slots: Record<string, number> = {}
+  for (const card of investigator.deck ?? []) {
+    slots[card.cardCode] = (slots[card.cardCode] ?? 0) + 1
+  }
+  return slots
+}
+
+function openOverlay(investigatorId: string) {
+  overlayFor.value = overlayFor.value === investigatorId ? null : investigatorId
+  overlay.value = emptyOverlay()
+  if (overlayFor.value) loadLibrary()
+}
+
+async function applyOverlay(investigatorId: string) {
+  if (overlayIsEmpty(overlay.value)) {
+    overlayFor.value = null
+    return
+  }
+  overlayBusy.value = true
+  rosterError.value = null
+  try {
+    await applyInvestigatorOverlay(props.game.id, investigatorId, overlay.value)
+    overlayFor.value = null
+  } catch (e) {
+    console.error(e)
+    rosterError.value = 'Could not apply the overlay'
+  } finally {
+    overlayBusy.value = false
+  }
+}
+
 const holdsContinuation = computed(() => {
   if (!props.playerId) return false
   const question = props.game.question[props.playerId]
@@ -427,19 +473,30 @@ const setIcon = computed(() => {
     <template v-if="!addSideStory && !chooseSideStory">
       <div v-if="investigators.length > 0" id="investigators">
         <section v-if="isScenario" id="investigators-header"><i class="secret"></i> {{t('lead')}}</section>
-        <InvestigatorRow v-for="investigator in investigators" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]">
-          <template v-if="canManageRoster && canRetire" #actions="{ investigator }">
-            <template v-if="confirmingRetire === investigator.id">
+        <template v-for="investigator in investigators" :key="investigator.id">
+        <InvestigatorRow :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]">
+          <template v-if="canManageRoster" #actions="{ investigator }">
+            <template v-if="canRetire && confirmingRetire === investigator.id">
               <button class="roster-btn roster-btn--danger" :disabled="rosterBusy" @click="retire(investigator.id)">{{ t('campaign.roster.confirmLeave') }}</button>
               <button class="roster-btn" @click="confirmingRetire = null">{{ t('cancel') }}</button>
             </template>
-            <button
-              v-else
-              class="roster-btn"
-              :disabled="rosterBusy"
-              v-tooltip="t('campaign.roster.leaveTooltip')"
-              @click="confirmingRetire = investigator.id"
-            >{{ t('campaign.roster.leave') }}</button>
+            <template v-else>
+              <button
+                v-if="customCardsEnabled"
+                class="roster-btn"
+                :class="{ 'roster-btn--on': overlayFor === investigator.id }"
+                :disabled="overlayBusy"
+                v-tooltip="'Lay custom cards over this deck'"
+                @click="openOverlay(investigator.id)"
+              ><font-awesome-icon icon="layer-group" /></button>
+              <button
+                v-if="canRetire"
+                class="roster-btn"
+                :disabled="rosterBusy"
+                v-tooltip="t('campaign.roster.leaveTooltip')"
+                @click="confirmingRetire = investigator.id"
+              >{{ t('campaign.roster.leave') }}</button>
+            </template>
           </template>
           <template v-if="isScenario" #back="{ investigator }">
             <label class="secret-radio">
@@ -459,6 +516,24 @@ const setIcon = computed(() => {
             </label>
           </template>
         </InvestigatorRow>
+        <div v-if="overlayFor === investigator.id" class="overlay-panel">
+          <p class="overlay-help">
+            Custom cards, laid over this deck for the rest of the campaign. Nothing is bought,
+            so no xp is spent and no trauma is taken for what it adds.
+          </p>
+          <OverlayEditor
+            v-model="overlay"
+            :slots="deckSlotsFor(investigator)"
+            :investigator="investigator.cardCode"
+          />
+          <div class="overlay-actions">
+            <button class="roster-btn" :disabled="overlayBusy" @click="applyOverlay(investigator.id)">
+              Apply overlay
+            </button>
+            <button class="roster-btn" @click="overlayFor = null">{{ t('cancel') }}</button>
+          </div>
+        </div>
+        </template>
 
         <template v-if="canManageRoster">
           <InvestigatorRow
@@ -808,5 +883,32 @@ button {
 
     font-size: 1.5em;
   }
+}
+
+.roster-btn--on {
+  border-color: var(--spooky-green);
+  color: var(--spooky-green);
+}
+
+.overlay-panel {
+  background: color-mix(in srgb, var(--spooky-green-dark) 45%, #12161c);
+  border: 1px solid color-mix(in srgb, var(--spooky-green) 35%, transparent);
+  border-radius: 6px;
+  color: #e6ece4;
+  margin: 0 0 10px;
+  padding: 10px;
+}
+
+.overlay-help {
+  color: #e6ece4;
+  font-size: 0.85em;
+  margin: 0 0 8px;
+  opacity: 0.85;
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
 }
 </style>

@@ -102,7 +102,10 @@ export function decodeConstructor(schema: TypeSchema, value: any): { con: ConSch
   if (con.fields.every((f) => f.name)) {
     for (const field of con.fields) values[field.name!] = value[field.name!]
   } else if (con.fields.length === 1) {
-    values['0'] = Array.isArray(value.contents) ? value.contents[0] : value.contents
+    /* A one-field constructor holds its value in `contents` unwrapped -- and
+     * that value may itself be a list (EnemyMatchAll [EnemyMatcher]), so taking
+     * the first element here would quietly drop everything after it. */
+    values['0'] = value.contents
   } else {
     const contents = Array.isArray(value.contents) ? value.contents : []
     con.fields.forEach((_, i) => (values[String(i)] = contents[i]))

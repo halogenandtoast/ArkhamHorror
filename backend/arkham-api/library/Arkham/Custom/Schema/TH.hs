@@ -8,6 +8,13 @@ import Data.Text qualified as T
 import Language.Haskell.TH
 import Language.Haskell.TH.Syntax qualified as TH
 
+{- | Types with a hand-written instance that serializes as a bare constructor
+name, the way an all-nullary type would. The editor has to be told, or it sends
+a tagged object that will not decode.
+-}
+stringEncodedTypes :: Set Text
+stringEncodedTypes = Set.fromList ["Action"]
+
 {- | Types the editor renders itself. Expanding them would add nothing and, in
 the case of the id newtypes, would only expose the UUID inside.
 -}
@@ -158,9 +165,15 @@ closure shallow (n : queue) seen
         schema =
           TypeSchema
             { typeName = T.pack (nameBase n)
-            , typeConstructors = map fst entries
+            , typeConstructors =
+                if T.pack (nameBase n) `Set.member` stringEncodedTypes
+                  then filter (null . conFields) (map fst entries)
+                  else map fst entries
             , typeIsRecord = any isRecordCon constructors
-            , typeIsEnum = all (null . conFields) (map fst entries)
+            , typeIsEnum =
+                T.pack (nameBase n)
+                  `Set.member` stringEncodedTypes
+                  || all (null . conFields) (map fst entries)
             , typeAlias = Nothing
             }
         next

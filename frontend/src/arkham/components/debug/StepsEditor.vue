@@ -4,7 +4,7 @@
  * Branches and choices carry their own steps, so this renders itself for those
  * — which is what lets an ability say "if it is ready, attack; otherwise ready
  * it" or "choose an event, then play it". */
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 
 const props = defineProps<{ modelValue: any[]; queryKinds: Record<string, string> }>()
@@ -53,6 +53,13 @@ const remove = (index: number) => emit('update:modelValue', steps.value.filter((
 const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enemy'] ?? 'EnemyMatcher'
 
 // --- choose options ---
+
+const addingStep = ref(false)
+
+function addAndClose(kind: StepKind) {
+  add(kind)
+  addingStep.value = false
+}
 
 const optionsOf = (step: any): any[] => step.choose?.options ?? []
 
@@ -334,9 +341,13 @@ const removeOption = (step: any, index: number, at: number) =>
     </div>
 
     <div class="step-actions">
-      <button v-for="(label, kind) in KIND_LABELS" :key="kind" type="button" @click="add(kind as StepKind)">
-        + {{ label }}
-      </button>
+      <button v-if="!addingStep" type="button" @click="addingStep = true">+ Step</button>
+      <template v-else>
+        <button v-for="(label, kind) in KIND_LABELS" :key="kind" type="button" @click="addAndClose(kind as StepKind)">
+          {{ label }}
+        </button>
+        <button type="button" class="cancel-add" @click="addingStep = false">×</button>
+      </template>
     </div>
   </div>
 </template>
@@ -429,6 +440,10 @@ input[type='checkbox'] {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
+}
+
+.cancel-add {
+  opacity: 0.7;
 }
 
 .step-actions button,

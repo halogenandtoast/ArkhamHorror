@@ -16,8 +16,11 @@ import Arkham.Custom.Ability (
   runCustomHandlers,
   runCustomSteps,
  )
+import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Matcher (ValueMatcher (AnyValue))
 import Arkham.Investigator.Import.Lifted (elderSignValue)
 import Arkham.Investigator.Runner
+import Arkham.Message.Lifted (onSucceedByEffect, tokenSkillTestOption)
 import Arkham.Prelude
 
 newtype CustomInvestigator = CustomInvestigator InvestigatorAttrs
@@ -62,14 +65,17 @@ instance RunMessage CustomInvestigator where
     UseThisAbility iid (isSource attrs -> True) idx -> do
       runCustomAbility attrs iid idx
       pure x
-    -- What the elder sign does when it is revealed, beyond its modifier.
-    ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
+    ElderSignEffect iid | attrs `is` iid -> do
+      -- What it does on being revealed, beyond its modifier.
       runCustomSteps attrs iid "_elderSignSteps"
-      pure x
-    -- ... and what it does only if the test is then passed, which is not known
-    -- when the token resolves.
-    PassedSkillTestWithToken iid ElderSign | attrs `is` iid -> do
-      runCustomSteps attrs iid "_elderSignSuccessSteps"
+      -- And what it offers if the test is then passed. Registered as an option
+      -- on the skill test, labelled with the token, rather than resolved as a
+      -- prompt of its own -- which is both how the game presents it and how a
+      -- player expects to meet it.
+      withSkillTest \sid ->
+        onSucceedByEffect sid AnyValue (ElderSignEffectSource iid) sid do
+          tokenSkillTestOption ElderSign do
+            runCustomSteps attrs iid "_elderSignSuccessSteps"
       pure x
     _ -> do
       runCustomHandlers attrs msg

@@ -42,6 +42,22 @@ function closePicker() {
 // Every optional value can be taken back out.
 const hasValue = computed(() => props.modelValue !== null && props.modelValue !== undefined)
 
+/* A field can hold a binding instead of a value -- $iid, $source, or anything a
+ * query step bound. It is substituted for the real thing before the card is
+ * decoded, so the editor shows it as itself rather than trying and failing to
+ * read it as a constructor. */
+const binding = computed(() =>
+  typeof props.modelValue === 'string' && props.modelValue.startsWith('$') ? props.modelValue : null,
+)
+
+const bindingInput = ref(false)
+
+function setBinding(name: string) {
+  const trimmed = name.trim()
+  emit('update:modelValue', trimmed ? (trimmed.startsWith('$') ? trimmed : `$${trimmed}`) : null)
+  bindingInput.value = false
+}
+
 function clear() {
   emit('update:modelValue', null)
   closePicker()
@@ -134,6 +150,24 @@ function setRaw(text: string) {
 <template>
   <div class="value-editor">
     <label v-if="label" class="value-label">{{ label }}</label>
+
+    <div v-if="binding" class="picked-row">
+      <span class="binding">{{ binding }}</span>
+      <button type="button" class="clear-value" title="Clear" @click="clear">×</button>
+    </div>
+
+    <div v-else-if="bindingInput" class="picked-row">
+      <input
+        type="text"
+        placeholder="iid, source, chosen…"
+        autofocus
+        @keydown.enter.prevent="setBinding(($event.target as HTMLInputElement).value)"
+        @blur="setBinding(($event.target as HTMLInputElement).value)"
+        @keydown.stop
+      />
+    </div>
+
+    <template v-else>
 
     <template v-if="shape.kind === 'sum'">
       <div ref="pickerEl" class="picker">
@@ -248,6 +282,11 @@ function setRaw(text: string) {
       />
       <button v-if="hasValue" type="button" class="clear-value" title="Clear" @click="rawText = null; clear()">×</button>
     </div>
+    </template>
+
+    <button v-if="!binding && !bindingInput" type="button" class="use-binding" @click="bindingInput = true">
+      use a binding
+    </button>
   </div>
 </template>
 
@@ -272,6 +311,30 @@ function setRaw(text: string) {
   align-items: stretch;
   display: flex;
   gap: 0.25rem;
+}
+
+.binding {
+  background: rgba(170, 221, 255, 0.12);
+  border: 1px solid #adf;
+  border-radius: 4px;
+  color: #adf;
+  flex: 1 1 auto;
+  font-family: monospace;
+  padding: 0.35rem 0.5rem;
+}
+
+.use-binding {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0;
+
+  &:hover {
+    color: #adf;
+  }
 }
 
 .clear-value {

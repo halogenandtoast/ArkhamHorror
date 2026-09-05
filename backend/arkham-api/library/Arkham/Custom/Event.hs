@@ -2,7 +2,13 @@
 module Arkham.Custom.Event (CustomEvent (..), customEvent) where
 
 import Arkham.Card.CardDef (CardDef)
-import Arkham.Custom.Ability (customAbilities, customModifiers, runCustomAbility, runCustomHandlers)
+import Arkham.Custom.Ability (
+  customAbilities,
+  customModifiers,
+  runCustomAbility,
+  runCustomHandlers,
+  runCustomSteps,
+ )
 import Arkham.Event.Import.Lifted
 
 newtype CustomEvent = CustomEvent EventAttrs
@@ -22,6 +28,11 @@ instance RunMessage CustomEvent where
   runMessage msg x@(CustomEvent attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) idx -> do
       runCustomAbility attrs iid idx
+      pure x
+    -- What the event does when it is played: the common case, so it gets a
+    -- place of its own rather than being written as a listener.
+    PlayThisEvent iid (is attrs -> True) -> do
+      runCustomSteps attrs iid "_onPlay"
       pure x
     _ -> do
       runCustomHandlers attrs msg

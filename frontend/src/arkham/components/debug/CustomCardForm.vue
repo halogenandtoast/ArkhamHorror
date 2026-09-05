@@ -42,6 +42,9 @@ const CARD_TYPES = [
 
 /* Mythos belongs to encounter cards, which do not choose a class at all: they
  * take the default, overridable through the raw block. */
+// The actions a card can be played as; an event is the usual case.
+const ACTIONS = ['Fight', 'Evade', 'Investigate', 'Move', 'Parley', 'Resign', 'Draw', 'Play', 'Activate']
+
 const CLASSES = ['Guardian', 'Seeker', 'Rogue', 'Mystic', 'Survivor', 'Neutral']
 const SLOTS = ['HandSlot', 'BodySlot', 'AllySlot', 'AccessorySlot', 'ArcaneSlot', 'TarotSlot', 'HeadSlot']
 const USE_TYPES = ['Ammo', 'Charge', 'Secret', 'Supply', 'Offering', 'Resource', 'Key', 'Evidence']
@@ -101,12 +104,15 @@ const blankForm = () => ({
   handlers: [] as any[],
   modifiers: [] as any[],
   weaknessKind: 'Weakness',
+  actions: [] as string[],
   // grouping, so a set of cards made together can be found together
   cardNumber: '',
   setName: '',
   // investigator
   elderSign: '1',
   elderSignSteps: [] as any[],
+  elderSignSuccessSteps: [] as any[],
+  onPlaySteps: [] as any[],
   willpower: '3',
   intellect: '3',
   combat: '3',
@@ -176,11 +182,18 @@ const signatureChoices = computed(() =>
   libraryCards().filter((c) => c.def.cardType !== 'InvestigatorType'),
 )
 
-function toggleSignature(cardCode: string) {
-  const index = form.signatures.indexOf(cardCode)
-  if (index === -1) form.signatures.push(cardCode)
-  else form.signatures.splice(index, 1)
+const addingSignature = ref(false)
+
+const signatureCard = (cardCode: string) =>
+  signatureChoices.value.find((c) => c.def.cardCode === cardCode)
+
+function addSignature(cardCode: string) {
+  if (!form.signatures.includes(cardCode)) form.signatures.push(cardCode)
+  addingSignature.value = false
 }
+
+const removeSignature = (cardCode: string) =>
+  form.signatures.splice(form.signatures.indexOf(cardCode), 1)
 
 // ---------------------------------------------------------------- traits ---
 
@@ -280,6 +293,8 @@ function buildDef(cardCode: string): Record<string, any> {
   }
 
   if (hasClass.value) def.classSymbols = [form.classSymbol]
+  // Actions decode from a bare array; each entry is a bare string.
+  if (form.actions.length) def.actions = form.actions
 
   if (isWeakness.value) def.cardSubType = form.weaknessKind
 
@@ -315,6 +330,7 @@ function buildDef(cardCode: string): Record<string, any> {
   if (isInvestigator.value) {
     if (num(form.elderSign) !== null) def.meta._elderSign = num(form.elderSign)
     if (form.elderSignSteps.length) def.meta._elderSignSteps = form.elderSignSteps
+    if (form.elderSignSuccessSteps.length) def.meta._elderSignSuccessSteps = form.elderSignSuccessSteps
     def.meta.health = num(form.investigatorHealth) ?? 0
     def.meta.sanity = num(form.investigatorSanity) ?? 0
     def.meta.willpower = num(form.willpower) ?? 0
@@ -332,6 +348,7 @@ function buildDef(cardCode: string): Record<string, any> {
     if (value) def.meta[slot.key] = value
   }
 
+  if (form.onPlaySteps.length) def.meta._onPlay = form.onPlaySteps
   if (form.abilities.length) def.meta._abilities = form.abilities
   if (form.handlers.length) def.meta._handlers = form.handlers
   if (form.modifiers.length) def.meta._modifiers = form.modifiers
@@ -433,13 +450,14 @@ const slotPreview = (slot: string) =>
  * so editing a card cannot quietly drop what the form cannot express. */
 const FORM_KEYS = [
   'cardCode', 'art', 'cardType', 'name', 'classSymbols', 'cardTraits', 'skills', 'keywords',
-  'unique', 'doubleSided', 'meta', 'cardSubType', 'cost', 'level', 'victoryPoints',
+  'unique', 'doubleSided', 'meta', 'cardSubType', 'cost', 'level', 'victoryPoints', 'actions',
   'fight', 'health', 'evade', 'healthDamage', 'sanityDamage', 'slots', 'uses',
 ]
 const FORM_META_KEYS = [
   'shroud', 'revealClues', 'health', 'sanity', 'willpower', 'intellect', 'combat', 'agility',
   'backArt', 'portrait', 'portraitBack', 'number', 'set',
-  '_abilities', '_handlers', '_modifiers', '_signatures', '_elderSign', '_elderSignSteps',
+  '_abilities', '_handlers', '_modifiers', '_signatures',
+  '_elderSign', '_elderSignSteps', '_elderSignSuccessSteps', '_onPlay',
 ]
 
 const gameValueNumber = (v: any) => (v && typeof v.contents === 'number' ? String(v.contents) : '')
@@ -460,6 +478,7 @@ async function loadCard(card: CustomCard) {
   form.victory = def.victoryPoints === null || def.victoryPoints === undefined ? '' : String(def.victoryPoints)
   form.unique = !!def.unique
   form.weaknessKind = typeof def.cardSubType === 'string' ? def.cardSubType : 'Weakness'
+  form.actions = Array.isArray(def.actions) ? def.actions : []
   form.traits = (def.cardTraits ?? []).map((t: string) => traitDisplay.value.get(t) ?? t).join('. ')
   form.icons = (def.skills ?? []).map((s: any) => (s.tag === 'SkillIcon' ? s.contents : 'Wild'))
   form.keywords = (def.keywords ?? []).map((k: any) => k.tag).filter((k: string) => KEYWORDS.includes(k))
@@ -492,6 +511,7 @@ async function loadCard(card: CustomCard) {
   form.setName = meta.set ?? ''
   form.elderSign = meta._elderSign === undefined ? '1' : String(meta._elderSign)
   form.elderSignSteps = meta._elderSignSteps ?? []
+  form.elderSignSuccessSteps = meta._elderSignSuccessSteps ?? []
 
   form.artUploaded = { art: card.art }
   form.artUrls = {}
@@ -499,6 +519,7 @@ async function loadCard(card: CustomCard) {
     if (meta[slot]) form.artUploaded[slot] = meta[slot]
   }
 
+  form.onPlaySteps = meta._onPlay ?? []
   form.abilities = meta._abilities ?? []
   form.handlers = meta._handlers ?? []
   form.modifiers = meta._modifiers ?? []
@@ -698,6 +719,28 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             </div>
           </fieldset>
 
+          <fieldset v-if="form.cardType === 'EventType' || form.cardType === 'EncounterEventType'">
+            <legend>Actions</legend>
+            <div class="chips">
+              <button
+                v-for="action in ACTIONS"
+                :key="action"
+                type="button"
+                class="chip"
+                :class="{ on: form.actions.includes(action) }"
+                @click="toggle(form.actions, action)"
+              >
+                {{ action }}
+              </button>
+            </div>
+            <p class="hint">What happens when it is played:</p>
+            <StepsEditor
+              :queryKinds="QUERY_KINDS"
+              :modelValue="form.onPlaySteps"
+              @update:modelValue="form.onPlaySteps = $event"
+            />
+          </fieldset>
+
           <fieldset v-if="isInvestigator">
             <legend>Elder sign</legend>
             <label>
@@ -710,6 +753,15 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
               :modelValue="form.elderSignSteps"
               @update:modelValue="form.elderSignSteps = $event"
             />
+            <p class="hint">
+              And what it does only if you then succeed — success is not known when the token
+              resolves, so these run when the test is passed:
+            </p>
+            <StepsEditor
+              :queryKinds="QUERY_KINDS"
+              :modelValue="form.elderSignSuccessSteps"
+              @update:modelValue="form.elderSignSuccessSteps = $event"
+            />
           </fieldset>
 
           <fieldset v-if="isInvestigator">
@@ -717,18 +769,28 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             <p v-if="!signatureChoices.length" class="hint">
               Build the cards first and they will be listed here to pick from.
             </p>
-            <div v-else class="chips">
-              <button
-                v-for="card in signatureChoices"
-                :key="card.def.cardCode"
-                type="button"
-                class="chip"
-                :class="{ on: form.signatures.includes(card.def.cardCode) }"
-                @click="toggleSignature(card.def.cardCode)"
+            <template v-else>
+              <div class="chips">
+                <span v-for="code in form.signatures" :key="code" class="chip on">
+                  {{ signatureCard(code)?.def.name.title ?? code }}
+                  <button type="button" class="chip-remove" @click="removeSignature(code)">×</button>
+                </span>
+                <button type="button" class="chip" @click="addingSignature = !addingSignature">+</button>
+              </div>
+              <select
+                v-if="addingSignature"
+                @change="addSignature(($event.target as HTMLSelectElement).value)"
               >
-                {{ card.def.name.title }}
-              </button>
-            </div>
+                <option value="">Choose a card…</option>
+                <option
+                  v-for="card in signatureChoices.filter((c) => !form.signatures.includes(c.def.cardCode))"
+                  :key="card.def.cardCode"
+                  :value="card.def.cardCode"
+                >
+                  {{ card.def.name.title }}
+                </option>
+              </select>
+            </template>
           </fieldset>
 
           <fieldset v-if="isEnemy">
@@ -1090,7 +1152,25 @@ fieldset {
   gap: 0.5rem;
 }
 
+/* The skill colours the rest of the app uses, so an icon here reads the same as
+ * it does on a card. */
 .icon-stepper {
+  .willpower-icon {
+    color: var(--willpower);
+  }
+
+  .intellect-icon {
+    color: var(--intellect);
+  }
+
+  .combat-icon {
+    color: var(--combat);
+  }
+
+  .agility-icon {
+    color: var(--agility);
+  }
+
   align-items: center;
   background: rgba(255, 255, 255, 0.06);
   border-radius: 6px;
@@ -1124,6 +1204,15 @@ fieldset {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
+}
+
+.chip-remove {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  margin-left: 0.2rem;
+  padding: 0;
 }
 
 .chip {

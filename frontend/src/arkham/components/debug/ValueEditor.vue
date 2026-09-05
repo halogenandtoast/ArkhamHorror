@@ -10,7 +10,7 @@
  * generic encoding (Actions, Trait, CardCode). Those come through as raw fields;
  * the encoding here is the generic one. */
 import { computed, ref } from 'vue'
-import { onClickOutside } from '@vueuse/core'
+import { onClickOutside, useEventListener } from '@vueuse/core'
 import { decodeConstructor, encodeConstructor, shapeOf, type ConSchema } from '@/arkham/schema'
 
 const props = defineProps<{ type: string; modelValue: any; label?: string }>()
@@ -21,8 +21,18 @@ const search = ref('')
 const open = ref(false)
 const pickerEl = ref<HTMLElement | null>(null)
 
-// A dropdown should close when you look away from it, or press escape.
+// A dropdown should close when you look away from it, or press escape. The key
+// is watched on the document rather than the search box, so it works wherever
+// focus happens to be -- and because two @keydown bindings on one element would
+// silently drop one of them.
 onClickOutside(pickerEl, () => closePicker())
+
+useEventListener(document, 'keydown', (event: KeyboardEvent) => {
+  if (event.key !== 'Escape' || !open.value) return
+  event.stopPropagation()
+  event.preventDefault()
+  closePicker()
+})
 
 function closePicker() {
   open.value = false
@@ -139,7 +149,6 @@ function setRaw(text: string) {
             type="search"
             :placeholder="`Search ${shape.schema.constructors.length} options`"
             autofocus
-            @keydown.escape.stop.prevent="closePicker"
             @keydown.stop
           />
           <ul>

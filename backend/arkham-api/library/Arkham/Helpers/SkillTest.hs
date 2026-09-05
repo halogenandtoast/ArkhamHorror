@@ -789,6 +789,15 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
   Matcher.NotSkillTest matcher ->
     not <$> skillTestMatches iid source st matcher
   Matcher.AnySkillTest -> pure True
+  Matcher.SkillTestWithResult resultMatcher -> do
+    result <- fromMaybe (skillTestResult st) <$> getSkillTestResultWithResultModifiers
+    case (result, resultMatcher) of
+      (SucceededBy _ n, Matcher.SuccessResult vm) -> gameValueMatches n vm
+      (FailedBy _ n, Matcher.FailureResult vm) -> gameValueMatches n vm
+      (_, Matcher.AnyResult) -> pure True
+      (_, Matcher.ResultOneOf ms) ->
+        anyM (skillTestMatches iid source st . Matcher.SkillTestWithResult) ms
+      _ -> pure False
   Matcher.SkillTestWasFailed -> pure $ case skillTestResult st of
     FailedBy _ _ -> True
     _ -> False

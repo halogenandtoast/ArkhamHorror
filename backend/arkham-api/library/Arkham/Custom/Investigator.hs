@@ -62,9 +62,14 @@ instance RunMessage CustomInvestigator where
     UseThisAbility iid (isSource attrs -> True) idx -> do
       runCustomAbility attrs iid idx
       pure x
-    -- What the elder sign does, beyond its modifier.
+    -- What the elder sign does when it is revealed, beyond its modifier.
     ResolveChaosToken _ ElderSign iid | attrs `is` iid -> do
       runCustomSteps attrs iid "_elderSignSteps"
+      pure x
+    -- ... and what it does only if the test is then passed, which is not known
+    -- when the token resolves.
+    PassedSkillTestWithToken iid ElderSign | attrs `is` iid -> do
+      runCustomSteps attrs iid "_elderSignSuccessSteps"
       pure x
     _ -> do
       runCustomHandlers attrs msg

@@ -35,6 +35,12 @@ data SkillTestMatcher
   | SkillTestWants SkillType
   | AnySkillTest
   | SkillTestWasFailed
+  | {- | The result of the test, with result modifiers applied -- "if you
+    succeeded by 2 or more". The margin is on the skill test, but nothing
+    could ask about it, so a card reacting to how *well* a test went had no
+    way to say so.
+    -}
+    SkillTestWithResult SkillTestResultMatcher
   | YourSkillTest SkillTestMatcher
   | SkillTestAtYourLocation
   | SkillTestAt LocationMatcher

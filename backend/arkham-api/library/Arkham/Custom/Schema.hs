@@ -20,7 +20,9 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Custom.Schema.TH (schemaForWith)
 import Arkham.Custom.Schema.Types
+import Arkham.Effect.Types (EffectBuilder)
 import Arkham.Effect.Window (EffectWindow)
+import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Matcher
 import Arkham.Message (Message)
 import Arkham.Modifier (ModifierType)
@@ -57,6 +59,10 @@ customSchema =
        , -- Scoped modifiers are pushed as CreateWindowModifierEffect, so the
          -- editor needs the window that scopes them and who they apply to.
          ''EffectWindow
+       , -- CreateEffect is how a card leaves something behind that acts later:
+         -- messages to run when its window ends.
+         ''EffectBuilder
+       , ''EffectMetadata
        , ''PreyMatcher
        , ''SkillTestMatcher
        , ''SkillTestResultMatcher

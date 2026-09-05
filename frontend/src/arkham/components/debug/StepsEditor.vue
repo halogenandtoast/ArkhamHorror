@@ -12,7 +12,7 @@ const emit = defineEmits<{ 'update:modelValue': [v: any[]] }>()
 
 const steps = computed(() => props.modelValue ?? [])
 
-type StepKind = 'query' | 'push' | 'if' | 'case' | 'forEach' | 'choose' | 'chooseFrom'
+type StepKind = 'query' | 'push' | 'if' | 'case' | 'forEach' | 'choose' | 'chooseFrom' | 'playCard'
 
 const KIND_LABELS: Record<StepKind, string> = {
   query: 'Query',
@@ -22,10 +22,11 @@ const KIND_LABELS: Record<StepKind, string> = {
   forEach: 'For each',
   choose: 'Choose',
   chooseFrom: 'Choose from',
+  playCard: 'Play a card',
 }
 
 function kindOf(step: any): StepKind {
-  for (const kind of ['query', 'push', 'if', 'case', 'forEach', 'choose', 'chooseFrom'] as StepKind[]) {
+  for (const kind of ['query', 'push', 'if', 'case', 'forEach', 'choose', 'chooseFrom', 'playCard'] as StepKind[]) {
     if (kind in (step ?? {})) return kind
   }
   return 'push'
@@ -40,6 +41,7 @@ const blankStep = (kind: StepKind) =>
     forEach: { forEach: { query: { kind: 'enemy', matcher: null }, bind: 'each', steps: [] } },
     choose: { choose: { options: [{ label: '', steps: [] }] } },
     chooseFrom: { chooseFrom: { query: { kind: 'enemy', matcher: null }, bind: 'chosen', steps: [] } },
+    playCard: { playCard: { label: 'Play', optional: true, matcher: null } },
   })[kind]
 
 const set = (index: number, step: any) =>
@@ -240,6 +242,52 @@ const removeOption = (step: any, index: number, at: number) =>
           />
         </div>
         <button type="button" class="add" @click="addOption(step, index)">+ Option</button>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'playCard'">
+        <p class="hint">
+          Offers the cards you could play, paying the cost. A discount is worked out before the
+          choice, since a card is only playable if you can afford it.
+        </p>
+        <div class="row">
+          <label>
+            Prompt
+            <input
+              :value="step.playCard?.label"
+              @input="set(index, { ...step, playCard: { ...step.playCard, label: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+          <label>
+            Discount
+            <input
+              type="number"
+              :value="step.playCard?.discount ?? 0"
+              @input="set(index, { ...step, playCard: { ...step.playCard, discount: Number(($event.target as HTMLInputElement).value) } })"
+              @keydown.stop
+            />
+          </label>
+          <label class="inline">
+            <input
+              type="checkbox"
+              :checked="!!step.playCard?.optional"
+              @change="set(index, { ...step, playCard: { ...step.playCard, optional: ($event.target as HTMLInputElement).checked } })"
+            />
+            may decline
+          </label>
+        </div>
+        <ValueEditor
+          type="CardMatcher"
+          label="Which cards"
+          :modelValue="step.playCard?.matcher"
+          @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, matcher: $event } })"
+        />
+        <ValueEditor
+          type="Criterion"
+          label="Discount only when (optional)"
+          :modelValue="step.playCard?.discountIf?.criteria"
+          @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, discountIf: $event ? { criteria: $event } : undefined } })"
+        />
       </template>
 
       <template v-else-if="kindOf(step) === 'chooseFrom'">

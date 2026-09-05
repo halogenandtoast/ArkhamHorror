@@ -21,6 +21,7 @@ Both run the same small step language:
 * @forEach@ -- run steps once per thing a matcher finds.
 * @choose@ -- offer the player named options, each running steps of its own.
 * @chooseFrom@ -- offer one option per thing a matcher finds, binding it.
+* @playCard@ -- play a card from hand, paying its cost, optionally discounted.
 
 Scoped modifiers need no step of their own: @CreateWindowModifierEffect@ is an
 ordinary message, so a @push@ covers "for this attack" and friends.
@@ -56,19 +57,22 @@ import Arkham.Classes.Query
 -- modules into the cycle and onto their boot interfaces).
 
 import Arkham.Helpers.Criteria (passesCriteria)
-import Arkham.Helpers.Modifiers (modifySelect)
+import Arkham.Helpers.Modifiers (ModifierType (ReduceCostOf), modifySelect, toModifiers, withModifiers)
+import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Message.Lifted (reduceCostOf)
 import Arkham.Message.Lifted.Base (capture)
+import Arkham.Message.Lifted.Card (playCardPayingCost)
 import Arkham.Message.Lifted.Prompt qualified as Prompt
 import Arkham.Message.Lifted.Queue (ReverseQueue)
-import Arkham.Modifier (ModifierType)
 import Arkham.Prelude
 import Arkham.Query (QueryElement)
 import Arkham.Source
 import Arkham.Target
+import Arkham.Window (defaultWindows)
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
@@ -239,6 +243,44 @@ runCustomHandlers a msg = case toJSON msg of
         Just v -> [("0", v)]
         Nothing -> []
 
+{- | Play a card from hand, paying its cost.
+
+A discount has to be decided before the choice is offered, not after: a card is
+only playable if you can afford it, so the cost reduction must be in effect while
+playability is worked out. 'withModifiers' does that as a question -- what would
+be playable if this discount applied -- and the reduction is then really applied
+on the branch the player takes.
+-}
+runPlayCard :: ReverseQueue m => Env -> Value -> m ()
+runPlayCard env spec = case spec of
+  Object o -> do
+    iid <- stepInvestigator env
+    -- The card this ability belongs to, which is what pays for and plays it.
+    let source = fromMaybe GameSource (KeyMap.lookup "source" env >>= parseMaybe parseJSON)
+    discount <- do
+      let amount = fromMaybe 0 (KeyMap.lookup "discount" o >>= parseMaybe parseJSON)
+      case KeyMap.lookup "discountIf" o of
+        Nothing -> pure amount
+        Just condition -> bool 0 amount <$> runReadCondition env condition
+
+    let matcher = KeyMap.lookup "matcher" o >>= decodeWith @CardMatcher env
+    cards <-
+      withModifiers iid (toModifiers source [ReduceCostOf AnyCard discount]) do
+        playable <- getPlayableCards source iid (UnpaidCost NoAction) (defaultWindows iid)
+        pure $ maybe playable (\m -> filter (`cardMatch` m) playable) matcher
+
+    labels <- for cards \card -> do
+      msgs <- capture do
+        when (discount > 0) $ reduceCostOf source card discount
+        playCardPayingCost iid card
+      pure $ Label (textField env o "label" "Play") msgs
+
+    let declined =
+          [ Label (textField env o "declineLabel" "Do not") [] | KeyMap.lookup "optional" o == Just (Bool True)
+          ]
+    unless (null labels && null declined) $ Prompt.chooseOne iid (labels <> declined)
+  _ -> pure ()
+
 -- | Does this value appear anywhere inside that one?
 isSubValue :: Value -> Value -> Bool
 isSubValue needle haystack = go haystack
@@ -286,6 +328,9 @@ runSteps env0 = void . foldM step env0
           pure env
       | Just spec <- KeyMap.lookup "chooseFrom" o -> do
           runChooseFrom env spec
+          pure env
+      | Just spec <- KeyMap.lookup "playCard" o -> do
+          runPlayCard env spec
           pure env
     _ -> pure env
 

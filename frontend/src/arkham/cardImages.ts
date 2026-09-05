@@ -83,7 +83,7 @@ export function investigatorPortrait(
   investigatorId: string,
   suffix: string = ''
 ): string {
-  const player = game.investigators[investigatorId]
+  const player = game.investigators?.[investigatorId]
   const code = (player?.form.tag === 'YithianForm' || player?.form.tag === 'HomunculusForm' || player?.form.tag === 'ShatteredForm')
     ? investigatorId
     : (player?.cardCode ?? investigatorId)

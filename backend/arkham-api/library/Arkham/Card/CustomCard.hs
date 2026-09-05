@@ -14,6 +14,8 @@ module Arkham.Card.CustomCard where
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Card.CardType
+import Arkham.Id (InvestigatorId (..))
 import Arkham.Prelude
 import Data.Aeson.Types (parseMaybe)
 import Data.Map.Strict qualified as Map
@@ -70,8 +72,23 @@ lookupCustomCard (toCardCode -> cardCode)
   | not (isCustomCardCode cardCode) = Nothing
   | otherwise = unsafePerformIO $ Map.lookup cardCode <$> readIORef customCardRegistry
 
+{- | The def as the engine should see it, with the signature restriction the
+investigator implies.
+
+Being a signature is recorded on the investigator, which lists what it brings.
+Deriving the restriction here rather than storing it on the card means a card
+added to an investigator's signatures is theirs at once, instead of only after
+it is next saved.
+-}
 lookupCustomCardDef :: HasCardCode a => a -> Maybe CardDef
-lookupCustomCardDef = fmap customCardDef . lookupCustomCard
+lookupCustomCardDef = fmap (withSignatureRestriction . customCardDef) . lookupCustomCard
+
+withSignatureRestriction :: CardDef -> CardDef
+withSignatureRestriction def
+  | isSignature def = def
+  | otherwise = case customSignatureOwner def of
+      Nothing -> def
+      Just owner -> def {cdDeckRestrictions = Signature (coerce owner) : cdDeckRestrictions def}
 
 {- | Stats that live on the entity rather than the card def -- a location's
 shroud and clue value, an asset's health and sanity -- are carried in
@@ -86,3 +103,24 @@ customMetaMaybe :: FromJSON a => Text -> CardDef -> Maybe a
 customMetaMaybe k def = do
   v <- Map.lookup k (cdMeta def)
   parseMaybe parseJSON v
+
+{- | The custom investigator that lists this card among its signatures.
+
+The investigator names its signatures, not the other way round, so a card only
+learns whose it is by asking. Used to bind @$investigator@ for a signature
+card's own abilities.
+-}
+customSignatureOwner :: HasCardCode a => a -> Maybe CardCode
+customSignatureOwner (toCardCode -> cardCode) = unsafePerformIO do
+  registry <- readIORef customCardRegistry
+  pure
+    $ listToMaybe
+      [ ownerCode
+      | (ownerCode, card) <- Map.toList registry
+      , let def = customCardDef card
+      , cdCardType def == InvestigatorType
+      , cardCode `elem` signatureCodes def
+      ]
+ where
+  signatureCodes def =
+    map sanitizeCustomCardCode $ fromMaybe [] $ customMetaMaybe "_signatures" def

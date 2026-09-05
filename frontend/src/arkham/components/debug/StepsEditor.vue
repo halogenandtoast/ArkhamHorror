@@ -12,7 +12,18 @@ const emit = defineEmits<{ 'update:modelValue': [v: any[]] }>()
 
 const steps = computed(() => props.modelValue ?? [])
 
-type StepKind = 'query' | 'push' | 'if' | 'case' | 'forEach' | 'choose' | 'chooseFrom' | 'playCard'
+type StepKind =
+  | 'query'
+  | 'push'
+  | 'if'
+  | 'case'
+  | 'forEach'
+  | 'choose'
+  | 'chooseFrom'
+  | 'playCard'
+  | 'fight'
+  | 'attack'
+  | 'ready'
 
 const KIND_LABELS: Record<StepKind, string> = {
   query: 'Query',
@@ -23,10 +34,26 @@ const KIND_LABELS: Record<StepKind, string> = {
   choose: 'Choose',
   chooseFrom: 'Choose from',
   playCard: 'Play a card',
+  fight: 'Fight',
+  attack: 'Attack',
+  ready: 'Ready',
 }
 
 function kindOf(step: any): StepKind {
-  for (const kind of ['query', 'push', 'if', 'case', 'forEach', 'choose', 'chooseFrom', 'playCard'] as StepKind[]) {
+  const kinds = [
+    'query',
+    'push',
+    'if',
+    'case',
+    'forEach',
+    'choose',
+    'chooseFrom',
+    'playCard',
+    'fight',
+    'attack',
+    'ready',
+  ] as StepKind[]
+  for (const kind of kinds) {
     if (kind in (step ?? {})) return kind
   }
   return 'push'
@@ -41,7 +68,10 @@ const blankStep = (kind: StepKind) =>
     forEach: { forEach: { query: { kind: 'enemy', matcher: null }, bind: 'each', steps: [] } },
     choose: { choose: { options: [{ label: '', steps: [] }] } },
     chooseFrom: { chooseFrom: { query: { kind: 'enemy', matcher: null }, bind: 'chosen', steps: [] } },
-    playCard: { playCard: { label: 'Play', optional: true, matcher: null } },
+    playCard: { playCard: { optional: true, matcher: null } },
+    fight: { fight: { matcher: null, modifiers: [] } },
+    attack: { attack: {} },
+    ready: { ready: {} },
   })[kind]
 
 const set = (index: number, step: any) =>
@@ -253,15 +283,17 @@ const removeOption = (step: any, index: number, at: number) =>
 
       <template v-else-if="kindOf(step) === 'playCard'">
         <p class="hint">
-          Offers the cards you could play, paying the cost. A discount is worked out before the
-          choice, since a card is only playable if you can afford it.
+          Offers the cards you could play, paying the cost, each shown as the card itself. A
+          discount is worked out before the choice, since a card is only playable if you can
+          afford it.
         </p>
         <div class="row">
-          <label>
-            Prompt
+          <label v-if="step.playCard?.optional">
+            Decline label
             <input
-              :value="step.playCard?.label"
-              @input="set(index, { ...step, playCard: { ...step.playCard, label: ($event.target as HTMLInputElement).value } })"
+              :value="step.playCard?.declineLabel"
+              placeholder="Do not"
+              @input="set(index, { ...step, playCard: { ...step.playCard, declineLabel: ($event.target as HTMLInputElement).value } })"
               @keydown.stop
             />
           </label>
@@ -294,6 +326,67 @@ const removeOption = (step: any, index: number, at: number) =>
           label="Discount only when (optional)"
           :modelValue="step.playCard?.discountIf?.criteria"
           @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, discountIf: $event ? { criteria: $event } : undefined } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'fight'">
+        <p class="hint">
+          Fight an enemy. Whether the card itself is a fight action comes from its Actions, not
+          from here — this is the attack it makes.
+        </p>
+        <label class="inline">
+          <input
+            type="checkbox"
+            :checked="!!step.fight?.basic"
+            @change="set(index, { ...step, fight: { ...step.fight, basic: ($event.target as HTMLInputElement).checked } })"
+          />
+          a basic fight action instead
+        </label>
+        <p v-if="step.fight?.basic" class="hint">
+          The enemy's own attack ability, granted so it costs no action. No card can be a basic
+          fight action, so modifiers "for this attack" have nowhere to go here.
+        </p>
+        <ValueEditor
+          type="EnemyMatcher"
+          label="Which enemies (optional)"
+          :modelValue="step.fight?.matcher"
+          @update:modelValue="set(index, { ...step, fight: { ...step.fight, matcher: $event } })"
+        />
+        <ValueEditor
+          v-if="!step.fight?.basic"
+          type="[ModifierType]"
+          label="For this attack"
+          :modelValue="step.fight?.modifiers"
+          @update:modelValue="set(index, { ...step, fight: { ...step.fight, modifiers: $event } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'attack'">
+        <p class="summary">
+          <template v-if="step.attack?.target">This card attacks the chosen target.</template>
+          <template v-else>
+            This card attacks whoever triggered the ability — "it makes an immediate attack
+            against you".
+          </template>
+        </p>
+        <ValueEditor
+          type="Target"
+          label="Attack someone else instead (optional)"
+          :modelValue="step.attack?.target"
+          @update:modelValue="set(index, { ...step, attack: { ...step.attack, target: $event } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'ready'">
+        <p class="summary">
+          <template v-if="step.ready?.target">Readies the chosen card.</template>
+          <template v-else>Readies this card.</template>
+        </p>
+        <ValueEditor
+          type="Target"
+          label="Ready something else instead (optional)"
+          :modelValue="step.ready?.target"
+          @update:modelValue="set(index, { ...step, ready: { ...step.ready, target: $event } })"
         />
       </template>
 
@@ -456,6 +549,11 @@ input[type='checkbox'] {
   cursor: pointer;
   font-size: 0.8rem;
   padding: 0.25rem 0.6rem;
+}
+
+.summary {
+  font-size: 0.8rem;
+  margin: 0;
 }
 
 .hint {

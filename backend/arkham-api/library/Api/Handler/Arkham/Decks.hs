@@ -7,15 +7,21 @@ module Api.Handler.Arkham.Decks (
   deleteApiV1ArkhamDeckR,
   putApiV1ArkhamGameDecksR,
   postApiV1ArkhamSyncDeckR,
+  putApiV1ArkhamDeckOverlayR,
+  deleteApiV1ArkhamDeckOverlayR,
 ) where
 
 import Import hiding (delete, on, update, (=.), (==.))
+import Import qualified as P
 
 import Api.Arkham.Helpers
+import Api.Handler.Arkham.CustomCards (registerUserCustomCards)
 import Api.Handler.Arkham.Games.Shared (publishToRoom)
 import Arkham.Card.CardCode
+import Arkham.Card.CustomCard (lookupCustomCardDef)
 import Arkham.Classes.Entity (attr)
 import Arkham.Classes.HasQueue
+import Arkham.Custom.Overlay (DeckOverlay)
 import Arkham.Decklist
 import Arkham.Game
 import Arkham.Game.Diff
@@ -54,6 +60,9 @@ import UnliftIO.Exception (try)
 getApiV1ArkhamDecksR :: Handler [Entity ArkhamDeck]
 getApiV1ArkhamDecksR = do
   userId <- getRequestUserId
+  -- A deck's play list is computed as it is served, and an overlay's custom
+  -- investigator has to be resolvable for its signatures to come with it.
+  registerUserCustomCards userId
   runDB $ select do
     decks <- from $ table @ArkhamDeck
     where_ $ decks.userId ==. val userId
@@ -64,6 +73,7 @@ data CreateDeckPost = CreateDeckPost
   , deckName :: Text
   , deckUrl :: Maybe Text
   , deckList :: ArkhamDBDecklist
+  , deckOverlay :: Maybe DeckOverlay
   }
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
@@ -100,10 +110,9 @@ instance ToJSON DeckError where
 
 toDeckErrors :: ArkhamDBDecklist -> [DeckError]
 toDeckErrors decklist = flip mapMaybe cardCodes \cardCode ->
-  maybe
-    (Just $ UnimplementedCard cardCode)
-    (const Nothing)
-    (Map.lookup cardCode allPlayerCards)
+  if isJust (Map.lookup cardCode allPlayerCards) || isJust (lookupCustomCardDef cardCode)
+    then Nothing
+    else Just $ UnimplementedCard cardCode
  where
   cardCodes = Map.keys $ slots decklist
 
@@ -111,8 +120,11 @@ postApiV1ArkhamDecksR :: Handler (Entity ArkhamDeck)
 postApiV1ArkhamDecksR = do
   userId <- getRequestUserId
   postData <- requireCheckJsonBody
-  let deck = fromPostData userId postData
-  case toDeckErrors (arkhamDeckList deck) of
+  -- The overlay may name cards only this user has, so the library has to be
+  -- resolvable before the list is checked or stored.
+  registerUserCustomCards userId
+  let deck = (fromPostData userId postData) {arkhamDeckOverlay = deckOverlay postData}
+  case toDeckErrors (arkhamDeckPlayList deck) of
     [] -> runDB $ insertEntity deck
     err -> sendStatusJSON status400 err
 
@@ -292,6 +304,7 @@ fromPostData userId CreateDeckPost {..} = do
     , arkhamDeckInvestigatorName = tshow $ investigator_name deckList
     , arkhamDeckName = deckName
     , arkhamDeckList = deckList
+    , arkhamDeckOverlay = Nothing
     }
 
 arkhamBuildDecklistUrl :: Text -> Maybe Text
@@ -328,6 +341,7 @@ getDeckList url = liftIO case arkhamBuildDecklistUrl url of
 getApiV1ArkhamDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 getApiV1ArkhamDeckR deckId = do
   userId <- getRequestUserId
+  registerUserCustomCards userId
   mDeck <- runDB $ selectOne do
     decks <- from $ table @ArkhamDeck
     where_ $ decks.id ==. val deckId
@@ -363,3 +377,34 @@ postApiV1ArkhamSyncDeckR deckId = do
         where_ $ d.id ==. val deckId
       pure $ Entity deckId $ deck {arkhamDeckList = decklist}
     Left _ -> sendStatusJSON Status.status400 (JSONError "Could not sync deck")
+
+ownedDeck :: ArkhamDeckId -> Handler ArkhamDeck
+ownedDeck deckId = do
+  userId <- getRequestUserId
+  deck <- runDB $ get404 deckId
+  unless (arkhamDeckUserId deck == userId)
+    $ sendStatusJSON Status.status400 (JSONError "Deck does not belong to this user")
+  pure deck
+
+{- | Lay an overlay over a deck, or take it off again.
+
+The deck's own list is untouched either way, so removing the overlay leaves the
+deck exactly as it was and a later sync from ArkhamDB keeps the overlay.
+-}
+putApiV1ArkhamDeckOverlayR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
+putApiV1ArkhamDeckOverlayR deckId = do
+  deck <- ownedDeck deckId
+  overlay <- requireCheckJsonBody
+  registerUserCustomCards (arkhamDeckUserId deck)
+  let overlaid = deck {arkhamDeckOverlay = Just overlay}
+  case toDeckErrors (arkhamDeckPlayList overlaid) of
+    [] -> do
+      runDB $ P.update deckId [ArkhamDeckOverlay P.=. Just overlay]
+      pure $ Entity deckId overlaid
+    err -> sendStatusJSON Status.status400 err
+
+deleteApiV1ArkhamDeckOverlayR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
+deleteApiV1ArkhamDeckOverlayR deckId = do
+  deck <- ownedDeck deckId
+  runDB $ P.update deckId [ArkhamDeckOverlay P.=. Nothing]
+  pure $ Entity deckId $ deck {arkhamDeckOverlay = Nothing}

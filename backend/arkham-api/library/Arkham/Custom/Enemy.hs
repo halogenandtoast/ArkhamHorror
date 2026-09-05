@@ -8,7 +8,7 @@ describe.
 module Arkham.Custom.Enemy (CustomEnemy (..), customEnemy) where
 
 import Arkham.Card.CardDef (CardDef)
-import Arkham.Card.CustomCard (customMeta)
+import Arkham.Card.CustomCard (customMeta, customMetaMaybe)
 import Arkham.Custom.Ability (customAbilities, customModifiers, runCustomAbility, runCustomHandlers)
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher (InvestigatorMatcher (Anyone), PreyMatcher (Prey))
@@ -17,12 +17,16 @@ newtype CustomEnemy = CustomEnemy EnemyAttrs
   deriving anyclass IsEnemy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
-{- | Prey is an attrs field rather than a keyword, so it comes from the def's
-meta the way an asset's health does.
+{- | Prey and spawn instructions are attrs fields rather than keywords, so they
+come from the def's meta the way an asset's health does.
 -}
 customEnemy :: CardDef -> EnemyCard CustomEnemy
 customEnemy def =
-  enemyWith CustomEnemy def \a -> a {enemyPrey = customMeta "prey" (Prey Anyone) def}
+  enemyWith CustomEnemy def \a ->
+    a
+      { enemyPrey = customMeta "prey" (Prey Anyone) def
+      , enemySpawnAt = customMetaMaybe @SpawnAt "spawnAt" def
+      }
 
 instance HasModifiersFor CustomEnemy where
   getModifiersFor (CustomEnemy a) = customModifiers a

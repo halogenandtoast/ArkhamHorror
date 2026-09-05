@@ -4,8 +4,8 @@
  *
  * In a game you only pick from this library; building and editing happen here,
  * where there is room for it. */
-import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import CustomCardForm from '@/arkham/components/debug/CustomCardForm.vue'
 import { stripCardCodePrefix } from '@/arkham/customCards'
 import {
@@ -33,16 +33,26 @@ const status = ref<string | null>(null)
 const error = ref<string | null>(null)
 
 const route = useRoute()
+const router = useRouter()
 
-/* Deep link from a card in a game ("Edit custom card" on an asset), so the page
- * opens on the card you were looking at. */
-onMounted(async () => {
+/* ?card=<code> opens the builder on that card: a deep link from a game ("Edit
+ * custom card" on an asset), and the way one card links to another — a
+ * signature to the investigator whose it is. Watched rather than read once, so
+ * a link followed while already here still lands. */
+async function openFromRoute() {
   await loadLibrary()
   const wanted = route.query.card
   if (typeof wanted !== 'string') return
-  const card = cards.value.find((c) => c.def.cardCode === stripCardCodePrefix(wanted))
+  // A code travels with the 'c' the engine prepends or without it, and the
+  // library holds whichever form was saved, so match on the bare form.
+  const code = stripCardCodePrefix(wanted)
+  if (editingCode.value && stripCardCodePrefix(editingCode.value) === code) return
+  const card = cards.value.find((c) => stripCardCodePrefix(c.def.cardCode) === code)
   if (card) await edit(card)
-})
+}
+
+onMounted(openFromRoute)
+watch(() => route.query.card, openFromRoute)
 
 const cards = computed(() => libraryCards())
 
@@ -72,11 +82,26 @@ function toggleSelected(code: string) {
 const selectAll = () => (selected.value = cards.value.map((c) => c.def.cardCode))
 const clearSelection = () => (selected.value = [])
 
+/* A set is how a batch built together is kept together, so it is also the unit
+ * you hand to someone else — and the unit you select. */
+const setFullySelected = (setCards: CustomCard[]) =>
+  setCards.length > 0 && setCards.every((c) => isSelected(c.def.cardCode))
+
+function toggleSet(setCards: CustomCard[]) {
+  const codes = setCards.map((c) => c.def.cardCode)
+  if (setFullySelected(setCards)) {
+    selected.value = selected.value.filter((code) => !codes.includes(code))
+  } else {
+    selected.value = [...new Set([...selected.value, ...codes])]
+  }
+}
+
 async function edit(card: CustomCard) {
   editingCode.value = card.def.cardCode
   status.value = null
   error.value = null
   await form.value?.loadCard(card)
+  syncRoute(card.def.cardCode)
 }
 
 function startNew() {
@@ -84,6 +109,23 @@ function startNew() {
   status.value = null
   error.value = null
   form.value?.reset()
+  syncRoute(null)
+}
+
+/* The url names the card being edited, so a refresh comes back to it and the
+ * link is worth sharing. Replaced rather than pushed: opening one card after
+ * another should not fill up the back button. */
+function syncRoute(cardCode: string | null) {
+  const current = route.query.card
+  if (cardCode === null) {
+    if (current === undefined) return
+    router.replace({ name: 'CardBuilder', query: {} })
+    return
+  }
+  if (typeof current === 'string' && stripCardCodePrefix(current) === stripCardCodePrefix(cardCode)) {
+    return
+  }
+  router.replace({ name: 'CardBuilder', query: { card: cardCode } })
 }
 
 async function save() {
@@ -130,6 +172,9 @@ function download(cards: CustomCard[], filename: string) {
 const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'card'
 
 const exportOne = (card: CustomCard) => download([card], `${slug(card.def.name.title)}.arkhamcard.json`)
+
+const exportSet = (set: string, setCards: CustomCard[]) =>
+  download(setCards, `${slug(set)}.arkhamcard.json`)
 
 function exportSelected() {
   const chosen = cards.value.filter((c) => isSelected(c.def.cardCode))
@@ -180,19 +225,23 @@ async function onImport(event: Event) {
           «
         </button>
         <h2>Library</h2>
-        <button type="button" @click="startNew">+ New card</button>
+        <button type="button" class="new-card" @click="startNew">+ New</button>
       </div>
 
       <div class="library-tools">
-        <label class="import">
-          Import
+        <label class="tool import">
+          <span>Import</span>
           <input type="file" accept="application/json,.json" @change="onImport" />
         </label>
-        <button type="button" :disabled="!selected.length" @click="exportSelected">
+        <button type="button" class="tool" :disabled="!selected.length" @click="exportSelected">
           Export{{ selected.length ? ` (${selected.length})` : '' }}
         </button>
-        <button type="button" :disabled="!cards.length" @click="selectAll">All</button>
-        <button type="button" :disabled="!selected.length" @click="clearSelection">None</button>
+        <button type="button" class="tool" :disabled="!cards.length" @click="selectAll">
+          Select all
+        </button>
+        <button type="button" class="tool" :disabled="!selected.length" @click="clearSelection">
+          Clear
+        </button>
       </div>
 
       <p v-if="!libraryLoaded" class="muted">Loading…</p>
@@ -202,7 +251,23 @@ async function onImport(event: Event) {
 
       <template v-else>
         <div v-for="[set, setCards] in grouped" :key="set" class="library-group">
-          <h3>{{ set }}</h3>
+          <div class="group-head">
+            <h3>{{ set }}</h3>
+            <span class="group-count">{{ setCards.length }}</span>
+            <div class="row-actions">
+              <button
+                type="button"
+                :class="{ on: setFullySelected(setCards) }"
+                :title="setFullySelected(setCards) ? `Deselect ${set}` : `Select every card in ${set}`"
+                @click="toggleSet(setCards)"
+              >
+                <font-awesome-icon icon="check-double" />
+              </button>
+              <button type="button" :title="`Export ${set}`" @click="exportSet(set, setCards)">
+                <font-awesome-icon icon="download" />
+              </button>
+            </div>
+          </div>
           <ul class="library-list">
             <li
               v-for="card in setCards"
@@ -212,12 +277,18 @@ async function onImport(event: Event) {
               <input type="checkbox" :checked="isSelected(card.def.cardCode)" @change="toggleSelected(card.def.cardCode)" />
               <button type="button" class="library-card" @click="edit(card)">
                 <img :src="cardArt(card)" :data-image-id="card.def.cardCode" alt="" />
-                <span class="name">{{ card.def.name.title }}</span>
-                <small>{{ card.def.cardType.replace(/Type$/, '') }}</small>
+                <span class="text">
+                  <span class="name">{{ card.def.name.title }}</span>
+                  <small>{{ card.def.cardType.replace(/Type$/, '') }}</small>
+                </span>
               </button>
               <div class="row-actions">
-                <button type="button" title="Export this card" @click="exportOne(card)">⭳</button>
-                <button type="button" title="Delete this card" @click="remove(card)">×</button>
+                <button type="button" title="Export this card" @click="exportOne(card)">
+                  <font-awesome-icon icon="download" />
+                </button>
+                <button type="button" class="delete" title="Delete this card" @click="remove(card)">
+                  <font-awesome-icon icon="trash" />
+                </button>
               </div>
             </li>
           </ul>
@@ -282,7 +353,7 @@ async function onImport(event: Event) {
 
 .library {
   position: relative;
-  flex: 0 0 280px;
+  flex: 0 0 300px;
   transition: flex-basis 0.18s ease, padding 0.18s ease;
 
   &.collapsed {
@@ -323,12 +394,14 @@ async function onImport(event: Event) {
   padding: 0.15rem 0.4rem;
 }
 
+/* Title on the left with the collapse tucked against it, one action on the
+ * right — nothing competes for the same corner. */
 .library-head {
   align-items: center;
-  display: flex;
-  gap: 0.4rem;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
 
   h2 {
     font-family: teutonic, sans-serif;
@@ -337,28 +410,87 @@ async function onImport(event: Event) {
   }
 }
 
+.new-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  color: var(--title);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.55rem;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+}
+
+/* Four evenly sized controls in a fixed 2x2 grid: the panel is narrow, and a
+ * wrapping flex row left "Import" stranded on a line of its own. */
 .library-tools {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 0.3rem;
-  margin-bottom: 0.75rem;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 0.9rem;
+}
+
+.tool {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  color: var(--title);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.4rem;
+  text-align: center;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.4;
+  }
 }
 
 .import {
-  cursor: pointer;
-  font-size: 0.8rem;
-
   input {
     display: none;
   }
 }
 
+.group-head {
+  align-items: center;
+  border-bottom: 1px solid var(--box-border);
+  display: flex;
+  gap: 0.4rem;
+  margin: 1rem 0 0.4rem;
+  padding-bottom: 0.25rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.group-head .row-actions {
+  margin-left: auto;
+}
+
+.group-count {
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
 .library-group h3 {
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
-  margin: 0.75rem 0 0.25rem;
-  opacity: 0.6;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  margin: 0;
+  opacity: 0.7;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .library-list {
@@ -369,17 +501,29 @@ async function onImport(event: Event) {
   margin: 0;
   padding: 0;
 
+  /* Checkbox, art, text, actions: a fixed grid so the type never collides with
+   * the buttons and the row never wraps to two lines. */
   li {
     align-items: center;
     border: 1px solid transparent;
     border-radius: 6px;
-    display: flex;
-    gap: 0.4rem;
-    padding: 0.25rem;
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding: 0.3rem 0.35rem;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
 
     &.editing {
+      background: rgba(255, 255, 255, 0.06);
       border-color: var(--spooky-green);
     }
+  }
+
+  input[type='checkbox'] {
+    margin: 0;
   }
 }
 
@@ -389,18 +533,26 @@ async function onImport(event: Event) {
   border: none;
   color: inherit;
   cursor: pointer;
-  display: flex;
-  flex: 1 1 auto;
-  gap: 0.5rem;
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: 34px minmax(0, 1fr);
   min-width: 0;
   padding: 0;
   text-align: left;
 
   img {
-    border-radius: 4px;
+    border-radius: 3px;
     height: 46px;
     object-fit: cover;
     width: 34px;
+  }
+
+  /* Name over type rather than beside it: the name gets the whole width to
+   * ellipsize into. */
+  .text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
   }
 
   .name {
@@ -410,20 +562,38 @@ async function onImport(event: Event) {
   }
 
   small {
-    margin-left: auto;
-    opacity: 0.6;
+    font-size: 0.7rem;
+    opacity: 0.55;
   }
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.1rem;
 }
 
 .row-actions button {
   background: none;
   border: none;
+  border-radius: 3px;
   color: inherit;
   cursor: pointer;
-  opacity: 0.6;
-  padding: 0 0.15rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  opacity: 0.5;
+  padding: 0.25rem 0.35rem;
 
   &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+  }
+
+  &.delete:hover {
+    color: var(--delete);
+  }
+
+  &.on {
+    color: var(--spooky-green);
     opacity: 1;
   }
 }

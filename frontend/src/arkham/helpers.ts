@@ -2,7 +2,7 @@ import { useSiteSettingsStore } from '@/stores/site_settings'
 import { replaceHomebrewIcons } from '@/arkham/homebrewAssets'
 import { iconClasses, runePlaceholder } from '@/arkham/icons'
 import { ref, type Ref } from 'vue';
-import { customCardArt, customCardPlaceholder, isCustomCardCode } from '@/arkham/customCards'
+import { customCardArt, customCardDef, customCardPlaceholder, isCustomCardCode } from '@/arkham/customCards'
 
 interface ImageHelper {
   root: string
@@ -214,6 +214,13 @@ const CLASS_TO_CODES: Record<InvestigatorClass, Set<string>> = {
 }
 
 export function investigatorClass(code: string): CssClassFlags {
+  // An investigator you built is in no printed set, so its class comes off its
+  // own def rather than the table above.
+  if (isCustomCardCode(code)) {
+    const symbol = customCardDef(code)?.classSymbols?.[0]?.toLowerCase()
+    return symbol && symbol in CLASS_TO_CODES ? { [symbol as InvestigatorClass]: true } : {}
+  }
+
   const flags: CssClassFlags = {}
   for (const cls of Object.keys(CLASS_TO_CODES) as InvestigatorClass[]) {
     if (CLASS_TO_CODES[cls].has(code)) {

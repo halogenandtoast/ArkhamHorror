@@ -6,10 +6,17 @@
  * whole form through props. */
 import { computed, onMounted, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
-import { PLAYER_CARD_TYPES, renderCardPlaceholder, type CustomCard } from '@/arkham/customCards'
+import {
+  PLAYER_CARD_TYPES,
+  renderCardPlaceholder,
+  stripCardCodePrefix,
+  type CustomCard,
+} from '@/arkham/customCards'
 import { libraryCards } from '@/arkham/customCardLibrary'
 import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
+import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
+import { loadSchema } from '@/arkham/schema'
 
 /* The matcher kinds a step can query, shared with the ability editor. */
 const QUERY_KINDS: Record<string, string> = {
@@ -112,6 +119,8 @@ const blankForm = () => ({
   elderSign: '1',
   elderSignSteps: [] as any[],
   elderSignSuccessSteps: [] as any[],
+  prey: null as any,
+  spawnAt: null as any,
   onPlaySteps: [] as any[],
   willpower: '3',
   intellect: '3',
@@ -159,6 +168,14 @@ function chooseType(cardType: string) {
 const artFor = (slot: string) => form.artUploaded[slot] || form.artUrls[slot]?.trim() || null
 
 const isEnemy = computed(() => form.cardType === 'EnemyType' || form.cardType === 'PlayerEnemyType')
+const isTreachery = computed(
+  () => form.cardType === 'TreacheryType' || form.cardType === 'PlayerTreacheryType',
+)
+/* Only cards you can commit to a test print skill icons; an investigator has
+ * stats instead, and enemies and treacheries have none at all. */
+const hasSkillIcons = computed(
+  () => !isInvestigator.value && !isEnemy.value && !isTreachery.value,
+)
 const isLocation = computed(() => form.cardType === 'LocationType')
 const isAsset = computed(() => form.cardType === 'AssetType' || form.cardType === 'EncounterAssetType')
 const isPlayerCard = computed(() => PLAYER_CARD_TYPES.includes(form.cardType))
@@ -171,6 +188,12 @@ const isWeakness = computed(() =>
   ['PlayerTreacheryType', 'PlayerEnemyType'].includes(form.cardType),
 )
 
+/* Level is what you pay xp for, so it belongs to cards you buy: never an
+ * enemy, a treachery, or a weakness of either. */
+const hasLevel = computed(
+  () => isPlayerCard.value && !isEnemy.value && !isTreachery.value && !isWeakness.value,
+)
+
 // A class is a player-card idea, and a weakness has no class of its own.
 const hasClass = computed(
   () => (isPlayerCard.value || isInvestigator.value) && !isWeakness.value,
@@ -181,6 +204,24 @@ const hasClass = computed(
 const signatureChoices = computed(() =>
   libraryCards().filter((c) => c.def.cardType !== 'InvestigatorType'),
 )
+
+/* The other direction, read only: an investigator names its signatures, so a
+ * card learns whose it is by being listed there. Shown here because it is a
+ * real deck restriction — only they can take it — and because it binds their id
+ * as $investigator for this card's own abilities. */
+const loadedCode = ref<string | null>(null)
+
+const signatureOwner = computed(() => {
+  const mine = loadedCode.value
+  if (!mine) return undefined
+  return libraryCards().find(
+    (c) =>
+      c.def.cardType === 'InvestigatorType' &&
+      ((c.def.meta?._signatures ?? []) as string[]).some(
+        (code) => stripCardCodePrefix(code) === stripCardCodePrefix(mine),
+      ),
+  )
+})
 
 const addingSignature = ref(false)
 
@@ -237,7 +278,11 @@ async function loadTraits() {
   }
 }
 
-onMounted(loadTraits)
+onMounted(() => {
+  loadTraits()
+  // Prey and spawn are built against the schema, same as an ability's fields.
+  loadSchema()
+})
 
 // ----------------------------------------------------------- skill icons ---
 
@@ -285,7 +330,7 @@ function buildDef(cardCode: string): Record<string, any> {
     cardType: form.cardType,
     name: { title: form.title.trim() || 'Custom Card', subtitle: form.subtitle.trim() || null },
     cardTraits: parsedTraits.value.map((t) => t.name),
-    skills: form.icons.map(iconJson),
+    skills: hasSkillIcons.value ? form.icons.map(iconJson) : [],
     keywords: form.keywords.map((k) => ({ tag: k, contents: [] })),
     unique: form.unique,
     doubleSided: false,
@@ -299,7 +344,7 @@ function buildDef(cardCode: string): Record<string, any> {
   if (isWeakness.value) def.cardSubType = form.weaknessKind
 
   if (hasCost.value) setIf(def, 'cost', num(form.cost) === null ? null : { tag: 'StaticCost', contents: num(form.cost) })
-  setIf(def, 'level', num(form.level))
+  if (hasLevel.value) setIf(def, 'level', num(form.level))
   setIf(def, 'victoryPoints', num(form.victory))
 
   if (isEnemy.value) {
@@ -308,6 +353,9 @@ function buildDef(cardCode: string): Record<string, any> {
     setIf(def, 'evade', gameValue(form.evade, false))
     setIf(def, 'healthDamage', gameValue(form.damage, false))
     setIf(def, 'sanityDamage', gameValue(form.horror, false))
+    // Prey and spawn are attrs the runner reads back out of meta.
+    if (form.prey) def.meta.prey = form.prey
+    if (form.spawnAt) def.meta.spawnAt = form.spawnAt
   }
 
   if (isLocation.value) {
@@ -455,7 +503,7 @@ const FORM_KEYS = [
 ]
 const FORM_META_KEYS = [
   'shroud', 'revealClues', 'health', 'sanity', 'willpower', 'intellect', 'combat', 'agility',
-  'backArt', 'portrait', 'portraitBack', 'number', 'set',
+  'backArt', 'portrait', 'portraitBack', 'number', 'set', 'prey', 'spawnAt',
   '_abilities', '_handlers', '_modifiers', '_signatures',
   '_elderSign', '_elderSignSteps', '_elderSignSuccessSteps', '_onPlay',
 ]
@@ -469,6 +517,7 @@ async function loadCard(card: CustomCard) {
   const meta = def.meta ?? {}
 
   Object.assign(form, blankForm())
+  loadedCode.value = def.cardCode ?? null
   form.title = def.name?.title ?? ''
   form.subtitle = def.name?.subtitle ?? ''
   form.cardType = def.cardType
@@ -519,6 +568,8 @@ async function loadCard(card: CustomCard) {
     if (meta[slot]) form.artUploaded[slot] = meta[slot]
   }
 
+  form.prey = meta.prey ?? null
+  form.spawnAt = meta.spawnAt ?? null
   form.onPlaySteps = meta._onPlay ?? []
   form.abilities = meta._abilities ?? []
   form.handlers = meta._handlers ?? []
@@ -539,6 +590,7 @@ async function loadCard(card: CustomCard) {
 
 function reset() {
   Object.assign(form, blankForm())
+  loadedCode.value = null
   error.value = null
 }
 
@@ -636,7 +688,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
               Cost
               <input v-model="form.cost" type="number" @keydown.stop />
             </label>
-            <label v-if="isPlayerCard">
+            <label v-if="hasLevel">
               Level
               <input v-model="form.level" type="number" @keydown.stop />
             </label>
@@ -649,6 +701,22 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
               Unique
             </label>
           </div>
+
+          <div v-if="!isInvestigator && signatureOwner" class="row">
+            <label>
+              Signature of
+              <router-link
+                class="owner-pill"
+                :to="{ name: 'CardBuilder', query: { card: signatureOwner.def.cardCode } }"
+              >
+                {{ signatureOwner.def.name.title }}
+              </router-link>
+            </label>
+          </div>
+          <p v-if="!isInvestigator && signatureOwner" class="hint">
+            Only they can take it, and their id is bound as <code>$investigator</code> for this
+            card's abilities. The link lives on their signatures, so add or remove it there.
+          </p>
 
           <div class="row">
             <label>
@@ -675,7 +743,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             >{{ trait.raw }}.</span>
           </p>
 
-          <fieldset v-if="!isInvestigator">
+          <fieldset v-if="hasSkillIcons">
             <legend>Skill icons</legend>
             <div class="icon-steppers">
               <div v-for="icon in ICONS" :key="icon.value" class="icon-stepper" :title="icon.label">
@@ -808,6 +876,22 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
                 Health per investigator
               </label>
             </div>
+            <ValueEditor
+              type="PreyMatcher"
+              label="Prey (defaults to anyone)"
+              :modelValue="form.prey"
+              @update:modelValue="form.prey = $event"
+            />
+            <ValueEditor
+              type="SpawnAt"
+              label="Spawn (defaults to the usual rules)"
+              :modelValue="form.spawnAt"
+              @update:modelValue="form.spawnAt = $event"
+            />
+            <p v-if="signatureOwner" class="hint">
+              <code>$investigator</code> is their id, so "Prey — them only" is
+              <code>OnlyPrey</code> of <code>InvestigatorWithId</code> <code>$investigator</code>.
+            </p>
           </fieldset>
 
           <fieldset v-if="isLocation">
@@ -1108,6 +1192,21 @@ input[type='checkbox'] {
   background: #111827;
   border-radius: 8px;
   width: 100%;
+}
+
+.owner-pill {
+  align-self: flex-start;
+  background: rgba(170, 221, 255, 0.12);
+  border: 1px solid #adf;
+  border-radius: 999px;
+  color: #adf;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.7rem;
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(170, 221, 255, 0.22);
+  }
 }
 
 .hint {

@@ -1,8 +1,13 @@
 <script lang="ts" setup>
 import { watch, shallowRef, ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
-import { fetchDeck, deleteDeck, fetchCards, syncDeck } from '@/arkham/api';
-import { imgsrc, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
+import { fetchDeck, deleteDeck, fetchCards, syncDeck, setDeckOverlay, removeDeckOverlay } from '@/arkham/api';
+import { storeToRefs } from 'pinia'
+import { useSettings } from '@/stores/settings'
+import OverlayEditor, { type DeckOverlay } from '@/arkham/components/debug/OverlayEditor.vue'
+import { customCardDef, isCustomCardCode, stripCardCodePrefix } from '@/arkham/customCards'
+import { loadLibrary } from '@/arkham/customCardLibrary'
+import { cardImg, localizeArkhamDBBaseUrl } from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/CardDef';
 import type {Deck} from '@/arkham/types/Deck';
 import * as DeckHelpers from '@/arkham/types/Deck';
@@ -28,6 +33,35 @@ const ready = ref(false)
 const deleting = ref(false)
 const deck = shallowRef<Deck | null>(null)
 const deckRef = ref(null)
+
+/* An overlay saved here sticks to the deck: it is applied whenever the deck is
+ * played, and removing it leaves the deck exactly as it was. */
+const { customCardsEnabled } = storeToRefs(useSettings())
+const overlayOpen = ref(false)
+const overlay = ref<DeckOverlay | null>(null)
+const savingOverlay = ref(false)
+
+function openOverlay() {
+  overlay.value = ((deck.value as any)?.overlay ?? null) as DeckOverlay | null
+  overlayOpen.value = !overlayOpen.value
+}
+
+async function saveOverlay() {
+  if (!deck.value) return
+  savingOverlay.value = true
+  try {
+    if (overlay.value) await setDeckOverlay(deck.value.id, overlay.value)
+    else await removeDeckOverlay(deck.value.id)
+    deck.value = await fetchDeck(deck.value.id)
+    overlayOpen.value = false
+    toast.success(overlay.value ? 'Overlay applied' : 'Overlay removed')
+  } catch (e) {
+    console.error(e)
+    toast.error('Could not save the overlay')
+  } finally {
+    savingOverlay.value = false
+  }
+}
 const store = useDbCardStore()
 
 onMounted(() => {
@@ -46,6 +80,9 @@ const enum View {
   Image = "IMAGE",
   List = "LIST",
 }
+
+// Custom cards resolve out of your library, which the deck may name.
+if (customCardsEnabled.value) loadLibrary()
 
 fetchCards(true).then((response) => {
   allCards.value = response.sort((a, b) => {
@@ -98,6 +135,10 @@ function findCardByDeckCode(code: string): Arkham.CardDef | undefined {
     return { cardCode: code, doubleSided: false, classSymbols: [], cardType: "Treachery", art: "01000", level: 0, name: { title: "Random Basic Weakness", subtitle: null }, cardTraits: [], skills: [], cost: null, otherSide: null, meta: {}, errata: null }
   }
 
+  // A card you built has no entry in the server's card list; it resolves
+  // through your library instead.
+  if (isCustomCardCode(code)) return customCardDef(stripCardCodePrefix(code))
+
   const normalized = code.replace(/^c/, '')
   return localizeCard(allCards.value.find((c) => c.art === normalized))
 }
@@ -119,16 +160,20 @@ const cardsFromList = (codes: string): Arkham.CardDef[] => {
     .filter((card): card is Arkham.CardDef => !!card)
 }
 
+/* Everything shown is the deck as it will be played, so an overlay is visible
+ * here rather than only taking effect at the table. */
+const playList = computed(() => (deck.value ? DeckHelpers.deckPlayList(deck.value) : null))
+
 const deckMeta = computed<Record<string, unknown>>(() => {
   try {
-    return deck.value?.list.meta ? JSON.parse(deck.value.list.meta) as Record<string, unknown> : {}
+    return playList.value?.meta ? JSON.parse(playList.value.meta) as Record<string, unknown> : {}
   } catch (_e) {
     return {}
   }
 })
 
 const hasFromTheBeyond = computed(() => {
-  return !!deck.value?.list.slots['90052'] || !!deck.value?.list.slots['c90052']
+  return !!playList.value?.slots['90052'] || !!playList.value?.slots['c90052']
 })
 
 const withoutCards = (source: Arkham.CardDef[], cardsToRemove: Arkham.CardDef[]) => {
@@ -143,11 +188,11 @@ const withoutCards = (source: Arkham.CardDef[], cardsToRemove: Arkham.CardDef[])
   })
 }
 
-const cards = computed(() => withoutCards(cardsFromSlots(deck.value?.list.slots), hunchDeckCards.value))
+const cards = computed(() => withoutCards(cardsFromSlots(playList.value?.slots), hunchDeckCards.value))
 
 const hunchDeckCards = computed(() => {
   if (!deck.value) return []
-  const investigatorCode = deck.value.list.investigator_code.replace(/^c/, '')
+  const investigatorCode = (playList.value?.investigator_code ?? '').replace(/^c/, '')
   if (investigatorCode !== '05002') return []
   const hunchCards = deckMeta.value[`attachments_${investigatorCode}`]
   return typeof hunchCards === 'string' ? cardsFromList(hunchCards) : []
@@ -168,11 +213,11 @@ const attachmentLimits: Record<string, number> = {
 }
 
 const hasCardInDeck = (code: string) => {
-  const slots = deck.value?.list.slots ?? {}
+  const slots = playList.value?.slots ?? {}
   return !!slots[code] || !!slots[`c${code}`]
 }
 
-const sideSlotCards = computed(() => cardsFromSlots(deck.value?.list.sideSlots))
+const sideSlotCards = computed(() => cardsFromSlots(playList.value?.sideSlots))
 const explicitAttachmentCards = computed(() => {
   return Object.entries(attachmentLimits).flatMap(([code, limit]) => {
     if (!hasCardInDeck(code)) return []
@@ -242,21 +287,11 @@ const deckUrlToPage = (url: string): string => {
   return url.replace("https://arkhamdb.com", localizeArkhamDBBaseUrl()).replace("/api/public/decklist", "/decklist/view").replace("/api/public/deck", "/deck/view")
 }
 
-const deckInvestigator = computed(() => {
-  if (deck.value) {
-    if (deck.value.list.meta) {
-      try {
-        const result = JSON.parse(deck.value.list.meta)
-        if (result && result.alternate_front) {
-          return result.alternate_front
-        }
-      } catch (e) { console.log("No parse") }
-    }
-    return deck.value.list.investigator_code.replace('c', '')
-  }
-
-  return null
-})
+// An overlay that swaps the investigator swaps the face of the deck with it,
+// which the play list already reflects.
+const deckInvestigator = computed(() =>
+  deck.value ? DeckHelpers.deckInvestigator(deck.value) : null
+)
 
 const deckClass = computed(() => {
   if (deck.value) return DeckHelpers.deckClass(deck.value)
@@ -285,7 +320,7 @@ watch(deckRef, (el) => {
     <div class="results">
       <header class="deck" v-show="deck" ref="deckRef" :class="deckClass">
         <template v-if="deck">
-          <img v-if="deckInvestigator" class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.avif`)" />
+          <img v-if="deckInvestigator" class="portrait--decklist" :src="cardImg(deckInvestigator)" />
           <div class="deck--details">
             <div class="deck-main">
               <h1 class="deck-title">{{deck.name}}</h1>
@@ -304,7 +339,22 @@ watch(deckRef, (el) => {
             <div class="deck-actions">
               <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" :title="$t('deck.viewOnArkhamDb')"><font-awesome-icon icon="external-link" /></a>
               <a v-if="deck.url" class="action-btn" href="#" :title="$t('deck.syncDeck')" @click.prevent="sync"><font-awesome-icon icon="refresh" /></a>
+              <a v-if="customCardsEnabled" class="action-btn" href="#" title="Overlay" @click.prevent="openOverlay"><font-awesome-icon icon="layer-group" /></a>
               <a class="action-btn action-btn--delete" href="#" :title="$t('deck.deleteDeck')" @click.prevent="deleting = true"><font-awesome-icon icon="trash" /></a>
+            </div>
+            <div v-if="overlayOpen" class="overlay-panel">
+              <h3>Overlay</h3>
+              <p class="overlay-help">
+                Your own cards, laid over this deck. The deck's own list is kept, so removing the
+                overlay puts it back exactly as it was.
+              </p>
+              <OverlayEditor v-model="overlay" :slots="deck.list.slots" :investigator="deck.list.investigator_code" />
+              <div class="overlay-actions">
+                <button type="button" :disabled="savingOverlay" @click="saveOverlay">
+                  {{ overlay ? 'Apply overlay' : 'Remove overlay' }}
+                </button>
+                <button type="button" @click="overlayOpen = false">Cancel</button>
+              </div>
             </div>
           </div>
         </template>
@@ -539,6 +589,42 @@ watch(deckRef, (el) => {
 
     &:hover { color: #ccc; }
     &.pressed { background: rgba(255,255,255,0.12); color: #eee; }
+  }
+}
+
+.overlay-panel {
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  border-radius: 8px;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  width: 100%;
+
+  h3 {
+    font-family: teutonic, sans-serif;
+    font-size: 1.1em;
+    margin: 0 0 0.25rem;
+  }
+}
+
+.overlay-help {
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem;
+  opacity: 0.75;
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+
+  button {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
+    color: var(--title);
+    cursor: pointer;
+    padding: 0.35rem 0.7rem;
   }
 }
 

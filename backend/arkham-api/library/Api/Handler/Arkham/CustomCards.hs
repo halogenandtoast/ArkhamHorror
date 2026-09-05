@@ -4,6 +4,7 @@ module Api.Handler.Arkham.CustomCards (
   postApiV1ArkhamCustomCardsImportR,
   postApiV1ArkhamCustomCardsArtR,
   deleteApiV1ArkhamCustomCardR,
+  registerUserCustomCards,
 ) where
 
 import Amazonka
@@ -13,8 +14,15 @@ import Control.Lens ((?~))
 
 import Arkham.Card.CardCode (CardCode (..))
 import Arkham.Card.CardDef (cdArt, cdCardCode)
-import Arkham.Card.CustomCard (CustomCard (..), isCustomCardCode, sanitizeCustomCardCode)
+import Arkham.Card.CustomCard (
+  CustomCard (..),
+  isCustomCardCode,
+  registerCustomCards,
+  sanitizeCustomCardCode,
+ )
 import Crypto.Hash.SHA256 qualified as SHA256
+import Data.Aeson.Types (parseMaybe)
+import Data.Map.Strict qualified as Map
 import Data.ByteString.Base16 qualified as B16
 import Data.ByteString.Lazy qualified as BSL
 import Data.Text qualified as T
@@ -173,3 +181,18 @@ postApiV1ArkhamCustomCardsArtR = do
 
       assetHost <- getsApp (appAssetHost . appSettings)
       pure $ fromMaybe "https://assets.arkhamhorror.app" assetHost <> "/" <> artPrefix <> filename
+
+{- | Make a user's library resolvable.
+
+Custom defs normally reach the engine through the game that uses them. A deck is
+built before any of that, so anything that has to read a custom card outside a
+game -- validating a decklist, loading one -- has to put the user's library into
+the registry first.
+-}
+registerUserCustomCards :: UserId -> Handler ()
+registerUserCustomCards userId = do
+  rows <- runDB $ P.selectList [ArkhamCustomCardUserId P.==. userId] []
+  registerCustomCards $ Map.fromList do
+    Entity _ row <- rows
+    def <- maybeToList $ parseMaybe parseJSON (arkhamCustomCardDef row)
+    pure (cdCardCode def, CustomCard def (arkhamCustomCardArt row))

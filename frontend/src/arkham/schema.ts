@@ -36,6 +36,26 @@ export function typeSchema(name: string): TypeSchema | undefined {
   return types.get(name)
 }
 
+/* Every message the engine can send, by the name a handler listens for.
+ *
+ * Most messages sit inside a grouping constructor — `Defeated` is really
+ * `DefeatMessage (Defeated_ …)` — and the constructor inside carries a trailing
+ * underscore. Handlers name them the way the engine's own pattern synonyms do,
+ * so the schema is flattened to match. */
+export function messageConstructors(): Map<string, FieldSchema[]> {
+  const found = new Map<string, FieldSchema[]>()
+  for (const [name, type] of types) {
+    if (name !== 'Message' && !name.endsWith('Message')) continue
+    for (const con of type.constructors) {
+      // A grouping constructor is just the wrapper; its own contents are listed
+      // separately under the type it wraps.
+      if (con.fields.length === 1 && con.fields[0].type === con.name) continue
+      found.set(con.name.replace(/_$/, ''), con.fields)
+    }
+  }
+  return found
+}
+
 /* A rendered type is one of: a list, an optional, a known sum type, or a leaf
  * the editor renders with a plain input. */
 export type Shape =

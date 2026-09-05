@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
+import { portraitImage } from '@/arkham/cardImages'
 import type { GameDetails } from '@/arkham/types/Game'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { CampaignDetails } from '@/arkham/types/Campaign'
@@ -136,7 +137,7 @@ const scenarioIcon = computed(() => {
                 :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`"
               >
                 <img
-                  :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)"
+                  :src="portraitImage(investigator.id)"
                   class="investigator-portrait"
                 />
               </div>
@@ -155,7 +156,7 @@ const scenarioIcon = computed(() => {
                 :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`"
               >
                 <img
-                  :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)"
+                  :src="portraitImage(investigator.id)"
                   class="investigator-portrait"
                 />
               </div>

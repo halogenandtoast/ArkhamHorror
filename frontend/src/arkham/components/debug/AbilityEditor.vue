@@ -6,7 +6,7 @@
  * the two operations the runner supports. Anything a step binds is available to
  * later steps as $name, alongside $id, $source, $target and $iid. */
 import { computed, onMounted } from 'vue'
-import { loadSchema, schemaLoaded } from '@/arkham/schema'
+import { loadSchema, messageConstructors, schemaLoaded, type FieldSchema } from '@/arkham/schema'
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 
@@ -45,6 +45,37 @@ const QUERY_KINDS: Record<string, string> = {
   card: 'ExtendedCardMatcher',
 }
 
+/* Naming a message tag also names its fields, which is what a handler binds
+ * $0, $1, … to. Showing them with their types is the difference between
+ * guessing at a position and knowing it. */
+const messages = computed(() =>
+  schemaLoaded.value ? messageConstructors() : new Map<string, FieldSchema[]>(),
+)
+const messageTags = computed(() => [...messages.value.keys()].sort())
+const messageFields = (tag: string) => messages.value.get(tag) ?? []
+const knownMessage = (tag: string) => messages.value.has(tag)
+
+/* What a handler's steps can name. The card's own bindings are always there;
+ * the numbered ones come from the message it listens for. */
+const CARD_BINDINGS = [
+  '$message',
+  '$source',
+  '$target',
+  '$id',
+  '$iid',
+  '$controller',
+  '$owner',
+  '$investigator',
+]
+
+const bindingsFor = (tag: string) => [
+  ...CARD_BINDINGS,
+  ...messageFields(tag).map((_, at) => `$${at}`),
+]
+
+const isBinding = (value: string) => value.trim().startsWith('$')
+const isKnownBinding = (tag: string, value: string) => bindingsFor(tag).includes(value.trim())
+
 const abilities = computed(() => props.abilities ?? [])
 const handlers = computed(() => props.handlers ?? [])
 const modifiers = computed(() => props.modifiers ?? [])
@@ -69,7 +100,26 @@ const removeAbility = (i: number) =>
 const setHandler = (i: number, changes: Record<string, any>) =>
   emit('update:handlers', patch(handlers.value, i, changes))
 
-const addHandler = () => emit('update:handlers', [...handlers.value, { on: '', steps: [] }])
+const addHandler = () =>
+  emit('update:handlers', [...handlers.value, { on: '', requires: [], steps: [] }])
+
+/* A message that merely mentions this card is not necessarily about it: an
+ * enemy defeated by someone else still names this card if it was the target.
+ * A requirement pins the field that has to be this card down. */
+const requiresOf = (handler: any): [string, string][] => handler.requires ?? []
+
+const setRequirement = (index: number, at: number, side: 0 | 1, value: string) => {
+  const requires = requiresOf(handlers.value[index]).map((pair, i) =>
+    i === at ? (side === 0 ? [value, pair[1]] : [pair[0], value]) : pair,
+  )
+  setHandler(index, { requires })
+}
+
+const addRequirement = (index: number) =>
+  setHandler(index, { requires: [...requiresOf(handlers.value[index]), ['$2', '$source']] })
+
+const removeRequirement = (index: number, at: number) =>
+  setHandler(index, { requires: requiresOf(handlers.value[index]).filter((_, i) => i !== at) })
 
 const removeHandler = (i: number) =>
   emit('update:handlers', handlers.value.filter((_, j) => j !== i))
@@ -94,6 +144,10 @@ const stepsOf = (item: any): any[] => item.steps ?? []
     <p v-if="!schemaLoaded" class="loading">Loading type schema…</p>
 
     <template v-else>
+      <datalist id="custom-message-tags">
+        <option v-for="tag in messageTags" :key="tag" :value="tag" />
+      </datalist>
+
       <div v-for="(ability, index) in abilities" :key="index" class="block">
         <div class="block-head">
           <strong>Ability {{ index + 1 }}</strong>
@@ -137,14 +191,63 @@ const stepsOf = (item: any): any[] => item.steps ?? []
           Message tag
           <input
             :value="handler.on"
+            list="custom-message-tags"
             placeholder="EnemyDamaged"
             @input="setHandler(index, { on: ($event.target as HTMLInputElement).value })"
             @keydown.stop
           />
         </label>
         <p class="hint">
-          Fires when a message with this tag mentions this card. Its fields are available as
-          <code>$0</code>, <code>$1</code>, … and the whole message as <code>$message</code>.
+          Fires when a message with this tag mentions this card. The whole message is
+          <code>$message</code>.
+        </p>
+        <ul v-if="knownMessage(handler.on)" class="bindings">
+          <li v-for="(field, at) in messageFields(handler.on)" :key="at">
+            <code>${{ at }}</code> {{ field.name ? `${field.name} ::` : '::' }} {{ field.type }}
+          </li>
+          <li v-if="!messageFields(handler.on).length" class="muted">no fields</li>
+        </ul>
+        <p v-else-if="handler.on" class="hint muted">Not a message the engine sends.</p>
+
+        <div v-for="(pair, at) in requiresOf(handler)" :key="at" class="row">
+          <label>
+            Only when
+            <input
+              :value="pair[0]"
+              :class="{
+                binding: isKnownBinding(handler.on, pair[0]),
+                unknown: isBinding(pair[0]) && !isKnownBinding(handler.on, pair[0]),
+              }"
+              list="custom-handler-bindings"
+              placeholder="$2"
+              @input="setRequirement(index, at, 0, ($event.target as HTMLInputElement).value)"
+              @keydown.stop
+            />
+          </label>
+          <label>
+            is
+            <input
+              :value="pair[1]"
+              :class="{
+                binding: isKnownBinding(handler.on, pair[1]),
+                unknown: isBinding(pair[1]) && !isKnownBinding(handler.on, pair[1]),
+              }"
+              list="custom-handler-bindings"
+              placeholder="$source"
+              @input="setRequirement(index, at, 1, ($event.target as HTMLInputElement).value)"
+              @keydown.stop
+            />
+          </label>
+          <button type="button" @click="removeRequirement(index, at)">×</button>
+        </div>
+        <datalist id="custom-handler-bindings">
+          <option v-for="name in bindingsFor(handler.on)" :key="name" :value="name" />
+        </datalist>
+        <button type="button" class="add" @click="addRequirement(index)">+ Requirement</button>
+        <p class="hint">
+          Mentioning this card is not the same as being about it — an enemy someone else defeated
+          still names this card if it was the target. A requirement pins down which field has to be
+          this card, the way a hand-written card matches on its source.
         </p>
 
         <StepsEditor
@@ -309,6 +412,39 @@ button.add,
   font-size: 0.75rem;
   margin: 0;
   opacity: 0.7;
+}
+
+.bindings {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  gap: 0.15rem 0.8rem;
+  list-style: none;
+  margin: 0;
+  opacity: 0.85;
+  padding: 0;
+}
+
+.bindings code {
+  color: #adf;
+}
+
+/* Same blue a binding wears everywhere else in the editor. */
+input.binding {
+  background: rgba(170, 221, 255, 0.12);
+  border-color: #adf;
+  color: #adf;
+  font-family: monospace;
+}
+
+input.unknown {
+  border-color: #f88;
+  color: #f88;
+  font-family: monospace;
+}
+
+.muted {
+  opacity: 0.6;
 }
 
 .loading {

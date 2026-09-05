@@ -16,6 +16,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Memory
 import Arkham.Card
 import Arkham.Classes.Entity
 import Arkham.Cost
+import Arkham.Custom.Overlay (DeckOverlay, applyOverlay, decklistCustomCards)
 import Arkham.Decklist
 import Arkham.Entities
 import Arkham.Game
@@ -28,6 +29,7 @@ import Arkham.Token
 import Arkham.Window qualified as Window
 import Control.Exception (evaluate, try)
 import Data.Aeson
+import Data.Aeson.Types qualified as Aeson
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.These
@@ -43,7 +45,7 @@ data Answer
   | AmountsAnswer AmountsResponse
   | StandaloneSettingsAnswer [StandaloneSetting]
   | CampaignSettingsAnswer CampaignSettings
-  | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId}
+  | DeckAnswer {deckId :: ArkhamDeckId, playerId :: PlayerId, overlay :: Maybe DeckOverlay}
   | DeckListAnswer {deckList :: ArkhamDBDecklist, playerId :: PlayerId}
   | PickDestinyAnswer [DestinyDrawing]
   | CampaignSpecificAnswer Text Value
@@ -302,7 +304,7 @@ answerPlayer = \case
   CampaignSettingsAnswer _ -> Nothing
   CampaignSpecificAnswer {} -> Nothing
   ScenarioSpecificAnswer {} -> Nothing
-  DeckAnswer _ pid -> Just pid
+  DeckAnswer _ pid _ -> Just pid
   DeckListAnswer _ pid -> Just pid
   PickDestinyAnswer _ -> Nothing
   ExchangeAmountsAnswer {} -> Nothing
@@ -404,12 +406,35 @@ reAskOthers game playerId
           retain = if gameRetainedQuestion game then Retain else id
        in [retain (AskMap question') | not (Map.null question')]
 
+{- | Put a user's built cards into the registry so a decklist naming them
+resolves. See "Api.Handler.Arkham.CustomCards".
+-}
+registerDeckOwnerCustomCards :: UserId -> DB ()
+registerDeckOwnerCustomCards userId = do
+  rows <- selectList [ArkhamCustomCardUserId ==. userId] []
+  registerCustomCards $ Map.fromList do
+    Entity _ row <- rows
+    def <- maybeToList $ Aeson.parseMaybe parseJSON (arkhamCustomCardDef row)
+    pure (cdCardCode def, CustomCard def (arkhamCustomCardArt row))
+
 handleAnswer :: Game -> PlayerId -> Answer -> DB Reply
 handleAnswer game playerId = \case
-  DeckAnswer deckId _ -> do
+  DeckAnswer deckId _ mOverlay -> do
     deck <- get404 deckId
-    loadChosenDeck game playerId (arkhamDeckList deck)
-  DeckListAnswer dl _ -> loadChosenDeck game playerId dl
+    -- The deck may be laid over with cards only its owner has, so their library
+    -- has to be resolvable before the list is read.
+    registerDeckOwnerCustomCards (arkhamDeckUserId deck)
+    -- An overlay chosen here is for this game only; the deck's own overlay is
+    -- the one that sticks.
+    loadChosenDeck game playerId
+      $ maybe id applyOverlay mOverlay (arkhamDeckPlayList deck)
+  DeckListAnswer dl _ -> do
+    -- 'DB' is rank-1 polymorphic, so the registration has to be applied here
+    -- rather than passed as a function.
+    P.get (coerce playerId) >>= \case
+      Just seat -> registerDeckOwnerCustomCards (arkhamPlayerUserId seat)
+      Nothing -> pure ()
+    loadChosenDeck game playerId dl
   JoinCampaignAnswer
     | not (isContinueCampaignAsk game playerId) -> unhandled "Wrong question type"
     | not (atCampaignContinuation game) -> unhandled "Players can only join between scenarios"
@@ -440,7 +465,10 @@ loadChosenDeck game playerId dl = case joinDeckRejection game playerId dl.invest
   Just reason -> unhandled reason
   Nothing -> do
     update (coerce playerId) [ArkhamPlayerInvestigatorId =. coerce (investigator_code dl)]
-    handled $ deckChosen game playerId dl
+    -- Record the deck's custom cards on the game itself; the process registry
+    -- they resolved against is rebuilt from the game, and other clients read
+    -- their art and defs from there.
+    handled $ map DebugRegisterCustomCard (decklistCustomCards dl) <> deckChosen game playerId dl
 
 {- | Like 'handleAnswer' but with no DB access. Returns 'Unhandled' for
 'DeckAnswer' / 'DeckListAnswer', which require updating an 'ArkhamPlayer'

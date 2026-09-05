@@ -31,6 +31,7 @@
         /#ArkhamDeckId ApiV1ArkhamDeckP:
           / ApiV1ArkhamDeckR GET DELETE
           /sync ApiV1ArkhamSyncDeckR POST
+          /overlay ApiV1ArkhamDeckOverlayR PUT DELETE
       /achievements ApiV1ArkhamAchievementsR GET DELETE
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR GET POST

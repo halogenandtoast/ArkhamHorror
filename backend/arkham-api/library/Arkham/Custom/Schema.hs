@@ -25,8 +25,28 @@ import Arkham.Effect.Window (EffectWindow)
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Matcher
 import Arkham.Message (Message)
+import Arkham.Message.ChaosBag (ChaosBagMessage)
+import Arkham.Message.Clue (ClueMessage)
+import Arkham.Message.Damage (DamageMessage)
+import Arkham.Message.Defeat (DefeatMessage)
+import Arkham.Message.Doom (DoomMessage)
+import Arkham.Message.EnemyAttack (EnemyAttackMessage)
+import Arkham.Message.Engage (EngageMessage)
+import Arkham.Message.Evade (EvadeMessage)
+import Arkham.Message.Exhaust (ExhaustMessage)
+import Arkham.Message.Fight (FightMessage)
+import Arkham.Message.Horror (HorrorMessage)
+import Arkham.Message.Hunt (HuntMessage)
+import Arkham.Message.Investigator (InvestigatorMessage)
+import Arkham.Message.Seal (SealMessage)
+import Arkham.Message.Search (SearchMessage)
+import Arkham.Message.SkillTest (SkillTestMessage)
+import Arkham.Message.Spawn (SpawnMessage)
+import Arkham.Message.Story (StoryMessage)
+import Arkham.Message.Token (TokenMessage)
 import Arkham.Modifier (ModifierType)
 import Arkham.Source (Source)
+import Arkham.Spawn (SpawnAt)
 import Arkham.Target (Target)
 
 {- | Rooted at the types an ability is made of. 'Message' is listed but not
@@ -64,8 +84,32 @@ customSchema =
          ''EffectBuilder
        , ''EffectMetadata
        , ''PreyMatcher
+       , ''SpawnAt
        , ''SkillTestMatcher
        , ''SkillTestResultMatcher
        ]
-       [''Message]
+       ( ''Message
+           -- Most messages sit inside a grouping constructor, and the editor has
+           -- to see through it to name a message and its fields.
+           : [ ''ChaosBagMessage
+             , ''ClueMessage
+             , ''DamageMessage
+             , ''DefeatMessage
+             , ''DoomMessage
+             , ''EngageMessage
+             , ''EnemyAttackMessage
+             , ''EvadeMessage
+             , ''ExhaustMessage
+             , ''FightMessage
+             , ''HorrorMessage
+             , ''HuntMessage
+             , ''InvestigatorMessage
+             , ''SearchMessage
+             , ''SealMessage
+             , ''SkillTestMessage
+             , ''SpawnMessage
+             , ''StoryMessage
+             , ''TokenMessage
+             ]
+       )
    )

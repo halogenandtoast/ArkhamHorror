@@ -15,18 +15,22 @@ import Api.Arkham.Export
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
+import Arkham.Card.CardDef (cdCardCode)
 import Arkham.Card.CustomCard
 import Arkham.Game
 import Arkham.Id
 import Codec.Compression.GZip qualified as GZip
 import Conduit
 import Control.Exception (evaluate)
+import Data.Aeson.Types (parseMaybe)
 import Data.ByteString qualified as BS
 import Data.ByteString.Lazy qualified as BSL
+import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update)
 import Database.Persist qualified as Persist
+import Entity.Arkham.CustomCard
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
@@ -322,6 +326,13 @@ riding every websocket update.
 -}
 getApiV1ArkhamGameCustomCardsR :: ArkhamGameId -> Handler [CustomCard]
 getApiV1ArkhamGameCustomCardsR gameId = do
-  _ <- getRequestUserId
+  userId <- getRequestUserId
   ge <- runDB $ get404 gameId
-  pure $ toList $ gameCustomCards ge.currentData
+  rows <- runDB $ Persist.selectList [ArkhamCustomCardUserId Persist.==. userId] []
+  -- Your own library wins over the copy recorded on the game, so editing a card
+  -- shows through at the table without having to re-add it.
+  let library = Map.fromList do
+        Entity _ row <- rows
+        def <- maybeToList $ parseMaybe parseJSON (arkhamCustomCardDef row)
+        pure (cdCardCode def, CustomCard def (arkhamCustomCardArt row))
+  pure $ toList $ library <> gameCustomCards ge.currentData

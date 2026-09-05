@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { displayTabooList } from '@/arkham/taboo';
+import { portraitImage } from '@/arkham/cardImages'
 import { ref, computed, inject, onUnmounted } from 'vue';
 import { fetchGame, fetchGameStep, upgradeDeck } from '@/arkham/api';
-import { imgsrc, localizeArkhamDBBaseUrl, processArkhamBuildDeck } from '@/arkham/helpers';
+import { localizeArkhamDBBaseUrl, processArkhamBuildDeck } from '@/arkham/helpers';
 import { ArkhamDbDecklist } from '@/arkham/types/Deck';
 import { Game } from '@/arkham/types/Game';
 import { Investigator } from '@/arkham/types/Investigator';
@@ -527,7 +528,7 @@ const tabooList = function (investigator: Investigator) {
 
     <div v-if="!waiting" class="panel">
       <template v-if="question && investigator && question.tag !== 'ChooseUpgradeDeck'">
-        <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+        <img v-if="investigatorId" class="portrait" :src="portraitImage(investigatorId)" />
         <div v-if="question && playerId == investigator.playerId" class="content question-pane">
           <h3 v-if="questionLabel" class="question-label">{{ questionLabel }}</h3>
           <Question :game="game" :playerId="playerId" @choose="choose" />
@@ -540,7 +541,7 @@ const tabooList = function (investigator: Investigator) {
       </template>
       <template v-else>
         <template v-if="investigatorId && killedInvestigators.includes(investigatorId)">
-          <img class="portrait killed" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+          <img class="portrait killed" :src="portraitImage(investigatorId)" />
           <div class="content">
             <p class="killed-prompt">{{ $t('upgrade.killed') }}</p>
             <p v-if="error" class="error">{{ error }}</p>
@@ -562,7 +563,7 @@ const tabooList = function (investigator: Investigator) {
           </div>
         </template>
         <template v-else>
-          <img v-if="investigatorId" class="portrait" :src="imgsrc(`portraits/${investigatorId.replace('c', '')}.jpg`)" />
+          <img v-if="investigatorId" class="portrait" :src="portraitImage(investigatorId)" />
           <div class="content">
             <p v-if="error" class="error">{{ error }}</p>
             <p v-if="submitError" class="error">{{ submitError }}</p>

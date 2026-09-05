@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-import { replaceIcons, imgsrc } from '@/arkham/helpers';
+import { replaceIcons } from '@/arkham/helpers';
+import { portraitImage } from '@/arkham/cardImages'
 import { handleI18n } from '@/arkham/i18n';
 import { computed, ref } from 'vue'
 import { XpEntry } from '@/arkham/types/Xp'
@@ -158,7 +159,7 @@ const scenarioIcon = computed<string | null>(() => campaignStepIcon(props.step))
       <section class="amounts">
         <div class="investigator-amount" v-for="[investigator, total] in headerInvestigators" :key="investigator.id">
           <div :class="`investigator-portrait-container ${toCssName(investigator.class)}`">
-            <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+            <img :src="portraitImage(investigator.id)" class="investigator-portrait"/>
           </div>
           <span class="amount" :class="{ 'amount--negative': total < 0 }">{{ $t('upgrade.xp', {total : total }) }}</span>
           <span

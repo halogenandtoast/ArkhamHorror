@@ -27,16 +27,24 @@ export interface ArkhamDbDecklist {
 }
 
 
+/* The deck as it will be played -- the stored list with any overlay applied.
+ * The backend computes it so the two never disagree; `list` stays the deck the
+ * user actually built, which is what the overlay editor edits against. */
+export function deckPlayList(deck: Deck): DeckList {
+  return deck.playList ?? deck.list
+}
+
 export function deckInvestigator(deck: Deck) {
-  if (deck.list.meta) {
+  const list = deckPlayList(deck)
+  if (list.meta) {
     try {
-      const result = JSON.parse(deck.list.meta)
+      const result = JSON.parse(list.meta)
       if (result && result.alternate_front) {
         return result.alternate_front
       }
     } catch (_e) { console.log("No parse") }
   }
-  return deck.list.investigator_code.replace('c', '')
+  return list.investigator_code.replace(/^c/, '')
 }
 
 export function deckClass(deck: Deck) {
@@ -56,12 +64,31 @@ export type DeckList = {
   taboo_id?: number
 }
 
+export type DeckOverlay = {
+  investigator: string | null;
+  swaps: Record<string, string>;
+  add: Record<string, number>;
+  remove: Record<string, number>;
+}
+
 export type Deck = {
   id: string;
   name: string;
   url : string | null;
   list: DeckList;
+  playList?: DeckList;
+  overlay?: DeckOverlay | null;
 }
+
+export const deckOverlayDecoder = JsonDecoder.object<DeckOverlay>(
+  {
+    investigator: JsonDecoder.nullable(JsonDecoder.string()),
+    swaps: JsonDecoder.record<string>(JsonDecoder.string(), 'Dict<cardcode, cardcode>'),
+    add: JsonDecoder.record<number>(JsonDecoder.number(), 'Dict<cardcode, number>'),
+    remove: JsonDecoder.record<number>(JsonDecoder.number(), 'Dict<cardcode, number>'),
+  },
+  'DeckOverlay',
+);
 
 export const deckListDecoder = JsonDecoder.object<DeckList>(
   {
@@ -80,6 +107,8 @@ export const deckDecoder = JsonDecoder.object<Deck>(
     name: JsonDecoder.string(),
     url: JsonDecoder.nullable(JsonDecoder.string()),
     list: deckListDecoder,
+    playList: v2Optional(deckListDecoder),
+    overlay: v2Optional(JsonDecoder.nullable(deckOverlayDecoder)),
   },
   'Deck',
 );

@@ -111,6 +111,14 @@ export const fetchHomebrewCards = async (): Promise<CardDef[]> => {
   return JsonDecoder.array(cardDefDecoder, 'ArkhamHomebrewCardDef[]').decodePromise(data)
 }
 
+export const setDeckOverlay = async (deckId: string, overlay: any): Promise<void> => {
+  await api.put(`arkham/decks/${deckId}/overlay`, overlay)
+}
+
+export const removeDeckOverlay = async (deckId: string): Promise<void> => {
+  await api.delete(`arkham/decks/${deckId}/overlay`)
+}
+
 export const fetchTraits = async (): Promise<[string, string][]> => {
   const { data } = await api.get('arkham/traits')
   return data

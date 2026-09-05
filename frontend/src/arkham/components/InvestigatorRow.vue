@@ -4,7 +4,7 @@ import { ref, computed } from 'vue';
 import { Investigator } from '@/arkham/types/Investigator';
 import Card from '@/arkham/components/Card.vue'
 import DeckList from '@/arkham/components/DeckList.vue'
-import {imgsrc} from '@/arkham/helpers'
+import { investigatorPortrait } from '@/arkham/cardImages'
 import { useDbCardStore } from '@/stores/dbCards'
 import { asCardCode } from '@/arkham/types/Card';
 import type { CardContents } from '@/arkham/types/Card';
@@ -26,6 +26,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const expanded = ref(false)
+
+// An investigator you built carries its own portrait; there is nothing for it
+// under the portrait directory.
+const portrait = computed(() => investigatorPortrait(props.game, props.investigator.id))
 
 const storyCards = computed(() => {
   const fromMeta = props.game.campaign?.meta?.otherCampaignAttrs?.storyCards[props.investigator.id]
@@ -98,7 +102,7 @@ const deck = computed(() => {
     <div class="basic">
       <div class="basic-top">
         <div class="portrait-wrap" :class="investigator.class.toLowerCase()">
-          <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+          <img :src="portrait" class="investigator-portrait"/>
         </div>
         <span class="name">{{ getInvestigatorName(investigator.name.title) }}</span>
         <slot name="actions" :investigator="props.investigator" />

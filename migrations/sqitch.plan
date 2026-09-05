@@ -20,3 +20,4 @@ arkham_epic [arkham_games users] 2026-06-26T00:00:00Z Matthew Mongeau <halogenan
 arkham_game_undo_floors [arkham_games] 2026-06-29T12:00:00Z Matthew Mongeau <halogenandtoast@Mac-Studio.local> # Per-game undo floor (lowest undoable step)
 arkham_achievements [arkham_games users] 2026-07-09T00:00:00Z Matthew Mongeau <halogenandtoast@Mac-Studio.local> # Above-the-table achievements per user
 arkham_custom_cards [users] 2026-09-05T00:00:00Z Matthew Mongeau <halogenandtoast@Mac-Studio.local> # Cards built in the card builder, kept per user
+arkham_deck_overlay [arkham_decks] 2026-09-05T12:00:00Z Matthew Mongeau <halogenandtoast@Mac-Studio.local> # Custom card overlay laid over a deck

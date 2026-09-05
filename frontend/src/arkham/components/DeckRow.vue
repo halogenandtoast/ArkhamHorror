@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { displayTabooId } from '@/arkham/taboo';
-import {imgsrc, localizeArkhamDBBaseUrl, investigatorClass} from '@/arkham/helpers';
+import {cardImg, localizeArkhamDBBaseUrl, investigatorClass} from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/Deck'
 
 interface Props {
@@ -25,17 +25,8 @@ const deckUrlToPage = (url: string): string => {
     .replace("/api/public/deck", "/deck/view")
 }
 
-const deckInvestigator = computed(() => {
-  if (props.deck.list.meta) {
-    try {
-      const result = JSON.parse(props.deck.list.meta)
-      if (result && result.alternate_front) {
-        return result.alternate_front
-      }
-    } catch (e) { console.log("No parse") }
-  }
-  return props.deck.list.investigator_code.replace('c', '')
-})
+// An overlay can replace the investigator, so the row follows the play list.
+const deckInvestigator = computed(() => Arkham.deckInvestigator(props.deck))
 
 const deckClass = computed(() => {
   if (deckInvestigator.value) {
@@ -45,13 +36,14 @@ const deckClass = computed(() => {
 })
 
 const tabooList = computed(() => {
-  return props.deck.list.taboo_id ? displayTabooId(props.deck.list.taboo_id) : null
+  const list = Arkham.deckPlayList(props.deck)
+  return list.taboo_id ? displayTabooId(list.taboo_id) : null
 })
 </script>
 
 <template>
   <div class="decklist box" :class="deckClass" @click="navigateToDeck">
-    <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.avif`)" />
+    <img class="portrait--decklist" :src="cardImg(deckInvestigator)" />
     <div class="deck-details">
       <div class="deck-main">
         <span class="deck-name">{{ deck.name }}</span>

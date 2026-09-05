@@ -266,10 +266,11 @@ const game = shallowRef<Arkham.Game | null>(null)
  * appears. */
 watch(game, (g) => {
   if (!g) return
-  const unknown = Object.values(g.cards).some((c) => {
-    const code = asCardCode(c)
-    return isCustomCardCode(code) && !customCardDef(code)
-  })
+  const missing = (code: string) => isCustomCardCode(code) && !customCardDef(code)
+  // A custom investigator never appears in `cards`; it is only a seat.
+  const unknown =
+    Object.values(g.cards).some((c) => missing(asCardCode(c)))
+    || Object.values(g.investigators).some((i) => missing(i.cardCode))
   if (unknown) store.fetchCustomCards(props.gameId)
 })
 
@@ -1740,11 +1741,13 @@ async function choose(idx: number) {
   }
 }
 
-async function chooseDeck(deckId: string): Promise<void> {
+/* An overlay chosen at deck selection applies to this game only -- it is sent
+ * with the answer rather than saved to the deck. */
+async function chooseDeck(deckId: string, overlay: any = null): Promise<void> {
   if (game.value && !props.spectate) {
     oldQuestion.value = game.value.question
     setGameQuestion({})
-    sendAnswer(JSON.stringify({ tag: 'DeckAnswer', deckId, playerId: playerId.value }))
+    sendAnswer(JSON.stringify({ tag: 'DeckAnswer', deckId, playerId: playerId.value, overlay }))
   }
 }
 

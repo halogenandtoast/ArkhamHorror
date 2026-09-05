@@ -10,8 +10,15 @@ import PrimaryButton from '@/components/PrimaryButton.vue';
 import { useToast } from "vue-toastification";
 import { useI18n } from 'vue-i18n'
 import type { InvestigatorClass } from '@/arkham/helpers'
+import { storeToRefs } from 'pinia'
+import { useSettings } from '@/stores/settings'
+import { loadLibrary } from '@/arkham/customCardLibrary'
 
 const { t } = useI18n()
+
+// A deck laid over with your own investigator draws its row from your library.
+const { customCardsEnabled } = storeToRefs(useSettings())
+if (customCardsEnabled.value) loadLibrary()
 
 const allDecks = ref<Arkham.Deck[]>([])
 const deleteId = ref<string | null>(null)

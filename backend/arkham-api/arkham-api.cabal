@@ -2453,6 +2453,7 @@ library
       Arkham.Custom.Event
       Arkham.Custom.Investigator
       Arkham.Custom.Location
+      Arkham.Custom.Overlay
       Arkham.Custom.Schema
       Arkham.Custom.Schema.TH
       Arkham.Custom.Schema.Types
@@ -8133,6 +8134,7 @@ library
       Entity.Arkham.ArkhamDBDecklist
       Entity.Arkham.CustomCard
       Entity.Arkham.Deck
+      Entity.Arkham.DeckOverlay
       Entity.Arkham.Epic
       Entity.Arkham.Game
       Entity.Arkham.GameRaw

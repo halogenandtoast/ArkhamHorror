@@ -6,7 +6,9 @@ the card def's meta:
 * @_abilities@ -- abilities the card offers. Each declares itself (its
   'AbilityType', criteria, limit) and the steps to run when it resolves.
 * @_handlers@ -- messages the card listens for. Each names a message tag and
-  runs steps when a message with that tag is addressed to this card.
+  runs steps when a message with that tag is addressed to this card. A handler
+  may also require fields of the message to match ("the source has to be me"),
+  which a card written by hand would do by pattern matching.
 * @_modifiers@ -- modifiers the card hands out while it is in play. Each names
   what to match and the modifiers to give whatever it matches. Matching @card@
   rather than an entity targets the card itself, so the modifier is already
@@ -22,6 +24,9 @@ Both run the same small step language:
 * @choose@ -- offer the player named options, each running steps of its own.
 * @chooseFrom@ -- offer one option per thing a matcher finds, binding it.
 * @playCard@ -- play a card from hand, paying its cost, optionally discounted.
+* @fight@ -- fight an enemy, with modifiers for that attack.
+* @attack@ -- an enemy attacks an investigator.
+* @ready@ -- ready a card.
 
 Scoped modifiers need no step of their own: @CreateWindowModifierEffect@ is an
 ordinary message, so a @push@ covers "for this attack" and friends.
@@ -56,14 +61,27 @@ import Arkham.Classes.Query
 -- this module taking its own hs-boot edge on Arkham.Game (which pulls other
 -- modules into the cycle and onto their boot interfaces).
 
+import Arkham.Fight (ChooseFight (..))
+import Arkham.Helpers.Ability (getCanPerformAbility)
+import Arkham.Helpers.Action (getActionsWith)
 import Arkham.Helpers.Criteria (passesCriteria)
-import Arkham.Helpers.Modifiers (ModifierType (ReduceCostOf), modifySelect, toModifiers, withModifiers)
+import Arkham.Helpers.Modifiers (
+  ModifierType (ActionCostModifier, ReduceCostOf),
+  modifySelect,
+  toModifiers,
+  withModifiers,
+ )
 import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
-import Arkham.Message.Lifted (reduceCostOf)
+import Arkham.Message.Lifted (
+  chooseFightEnemyEdit,
+  initiateEnemyAttack,
+  reduceCostOf,
+  skillTestModifiers,
+ )
 import Arkham.Message.Lifted.Base (capture)
 import Arkham.Message.Lifted.Card (playCardPayingCost)
 import Arkham.Message.Lifted.Prompt qualified as Prompt
@@ -134,12 +152,26 @@ instance FromJSON ModifierSpec where
 
 data HandlerSpec = HandlerSpec
   { handlerOn :: Text
+  , handlerRequires :: [(Value, Value)]
+  {- ^ Pairs that must be equal once substituted, so a handler can say which
+  field of the message has to be this card ("$2" is "$source").
+  -}
   , handlerSteps :: [Value]
   }
 
 instance FromJSON HandlerSpec where
   parseJSON = withObject "HandlerSpec" \o ->
-    HandlerSpec <$> o .: "on" <*> o .:? "steps" .!= []
+    HandlerSpec
+      <$> o
+      .: "on"
+      <*> (map toPair <$> o .:? "requires" .!= [])
+      <*> o
+      .:? "steps"
+      .!= []
+   where
+    toPair = \case
+      [a, b] -> (a, b)
+      xs -> (toJSON xs, toJSON xs)
 
 metaSpecs :: FromJSON a => Text -> CardDef -> [a]
 metaSpecs key def = fromMaybe [] do
@@ -167,12 +199,19 @@ decodeWith env = parseMaybe parseJSON . substitute env
 type CustomEntity a = (HasCardDef a, Sourceable a, Targetable a, HasCardCode a, ToJSON a)
 
 {- | The entity's own serialized fields, so @$id@ and friends resolve, plus the
-source and target it is addressed by (which are not fields of the attrs).
+source and target it is addressed by (which are not fields of the attrs) and, for
+a signature card, the investigator it belongs to as @$investigator@.
 -}
 bindings :: CustomEntity a => a -> Env
-bindings a =
-  KeyMap.fromList [("source", toJSON (toSource a)), ("target", toJSON (toTarget a))] <> fields
+bindings a = KeyMap.fromList (own <> signatureOf) <> fields
  where
+  own = [("source", toJSON (toSource a)), ("target", toJSON (toTarget a))]
+  -- The card may carry the restriction, or the investigator may simply list it.
+  signatureOf = case declared <> listed of
+    iid : _ -> [("investigator", toJSON iid)]
+    [] -> []
+  declared = [iid | Signature iid <- cdDeckRestrictions (toCardDef a)]
+  listed = coerce (maybeToList (customSignatureOwner a))
   fields = case toJSON a of
     Object o -> o
     _ -> mempty
@@ -228,20 +267,123 @@ entirely.
 runCustomHandlers :: (CustomEntity a, ReverseQueue m) => a -> Message -> m ()
 runCustomHandlers a msg = case toJSON msg of
   Object o -> do
-    let tag = KeyMap.lookup "tag" o
-        mentioned = any (`isSubValue` Object o) [toJSON (toTarget a), toJSON (toSource a)]
+    let mentioned = any (`isSubValue` Object o) [toJSON (toTarget a), toJSON (toSource a)]
     when mentioned $ for_ (metaSpecs @HandlerSpec handlersMetaKey (toCardDef a)) \handler ->
-      when (tag == Just (String (handlerOn handler)))
-        $ runSteps (messageBindings o <> bindings a) (handlerSteps handler)
+      for_ (matched (handlerOn handler) o) \fields -> do
+        let env = messageBindings o fields <> bindings a
+            holds (l, r) = substitute env l == substitute env r
+        when (all holds (handlerRequires handler)) $ runSteps env (handlerSteps handler)
   _ -> pure ()
  where
-  messageBindings o =
+  {- Many messages sit inside a grouping constructor -- @Defeated@ is really
+  @DefeatMessage (Defeated_ ...)@ -- and the constructor inside carries a
+  trailing underscore. A handler names the message the way the engine does, and
+  the fields it binds come from whichever object actually holds them. -}
+  matched name o = case KeyMap.lookup "tag" o of
+    Just (String t) | t == name -> Just o
+    _ -> case KeyMap.lookup "contents" o of
+      Just (Object inner) | tagged name inner -> Just inner
+      _ -> Nothing
+
+  tagged name inner = case KeyMap.lookup "tag" inner of
+    Just (String t) -> t == name || T.dropWhileEnd (== '_') t == name
+    _ -> False
+
+  messageBindings o fields =
     KeyMap.fromList
       $ ("message", Object o)
-      : case KeyMap.lookup "contents" o of
+      : case KeyMap.lookup "contents" fields of
         Just (Array xs) -> [(Key.fromText (tshow i), x) | (i :: Int, x) <- zip [0 ..] (toList xs)]
         Just v -> [("0", v)]
         Nothing -> []
+
+{- | Fight an enemy.
+
+Two different things wear the word "fight". A card with the Fight action on it
+/is/ a fight action when you play it, and the attack it then makes is just an
+attack -- that is this step, and its source is the card. A /basic/ fight action
+is the enemy's own attack ability, which no card can ever be; @basic@ offers
+that instead, granted so that "immediately" does not cost an action.
+
+Modifiers given here go on the attack's skill test, which is what "for this
+attack" means. They have no home on a basic fight action, which makes its own
+test.
+-}
+runFight :: ReverseQueue m => Env -> Value -> m ()
+runFight env spec = do
+  iid <- stepInvestigator env
+  let
+    o = case spec of
+      Object o' -> o'
+      _ -> mempty
+    source = fromMaybe GameSource (KeyMap.lookup "source" env >>= parseMaybe parseJSON)
+    matcher = KeyMap.lookup "matcher" o >>= decodeWith env
+    isBasic = KeyMap.lookup "basic" o == Just (Bool True)
+  if isBasic
+    then runBasicFight iid matcher
+    else do
+      let mods = fromMaybe [] (KeyMap.lookup "modifiers" o >>= decodeWith env)
+      sid <- getRandom
+      unless (null mods) $ skillTestModifiers sid source iid mods
+      chooseFightEnemyEdit sid iid source \cf ->
+        cf {chooseFightEnemyMatcher = fromMaybe (chooseFightEnemyMatcher cf) matcher}
+
+{- | The enemy's own attack ability, at no action cost.
+
+Collected the way the action bar collects it and then filtered to the basic one,
+so a Fight ability on a card is never offered in its place.
+-}
+runBasicFight :: ReverseQueue m => InvestigatorId -> Maybe EnemyMatcher -> m ()
+runBasicFight iid matcher = do
+  let ws = defaultWindows iid
+  let granted = flip applyAbilityModifiers [ActionCostModifier (-1)]
+  abilities <-
+    filterM (getCanPerformAbility iid ws)
+      . filter (\ab -> ab.basic && abilityIs ab #fight)
+      =<< getActionsWith iid ws granted
+  fightable <- case matcher of
+    Nothing -> pure abilities
+    Just m -> flip filterM abilities \ab -> case abilitySource ab of
+      EnemySource eid -> eid <=~> m
+      _ -> pure False
+  unless (null fightable)
+    $ Prompt.chooseOne iid [AbilityLabel iid ab ws [] [] | ab <- fightable]
+
+{- | Ready a card.
+
+@Ready@ is a pattern synonym, so it is not a constructor the editor's schema
+knows and a raw push of it shows up blank. As a step it reads as what it is, and
+defaults to this card.
+-}
+runReady :: ReverseQueue m => Env -> Value -> m ()
+runReady env spec = do
+  let
+    o = case spec of
+      Object o' -> o'
+      _ -> mempty
+    target =
+      (KeyMap.lookup "target" o >>= decodeWith env)
+        <|> (KeyMap.lookup "target" env >>= parseMaybe parseJSON)
+  for_ target $ push . Ready
+
+{- | An enemy attacks.
+
+Defaults to this card attacking whoever triggered the ability, which is what
+"it makes an immediate attack against you" means on an enemy.
+-}
+runAttack :: ReverseQueue m => Env -> Value -> m ()
+runAttack env spec = do
+  iid <- stepInvestigator env
+  let
+    o = case spec of
+      Object o' -> o'
+      _ -> mempty
+    source = fromMaybe GameSource (KeyMap.lookup "source" env >>= parseMaybe parseJSON)
+    target = fromMaybe (toTarget iid) (KeyMap.lookup "target" o >>= decodeWith env)
+    enemy =
+      (KeyMap.lookup "enemy" o >>= decodeWith env)
+        <|> (KeyMap.lookup "id" env >>= parseMaybe parseJSON)
+  for_ enemy \eid -> initiateEnemyAttack (eid :: EnemyId) source target
 
 {- | Play a card from hand, paying its cost.
 
@@ -269,11 +411,13 @@ runPlayCard env spec = case spec of
         playable <- getPlayableCards source iid (UnpaidCost NoAction) (defaultWindows iid)
         pure $ maybe playable (\m -> filter (`cardMatch` m) playable) matcher
 
+    -- One option per card, shown as the card itself: two different events both
+    -- reading "Play an event" is no choice at all.
     labels <- for cards \card -> do
       msgs <- capture do
         when (discount > 0) $ reduceCostOf source card discount
         playCardPayingCost iid card
-      pure $ Label (textField env o "label" "Play") msgs
+      pure $ targetLabel card msgs
 
     let declined =
           [ Label (textField env o "declineLabel" "Do not") [] | KeyMap.lookup "optional" o == Just (Bool True)
@@ -332,6 +476,15 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "playCard" o -> do
           runPlayCard env spec
           pure env
+      | Just spec <- KeyMap.lookup "fight" o -> do
+          runFight env spec
+          pure env
+      | Just spec <- KeyMap.lookup "attack" o -> do
+          runAttack env spec
+          pure env
+      | Just spec <- KeyMap.lookup "ready" o -> do
+          runReady env spec
+          pure env
     _ -> pure env
 
   branch o taken = fromMaybe [] do
@@ -358,12 +511,14 @@ subSteps :: Value -> [Value]
 subSteps v = fromMaybe [] (parseMaybe parseJSON v)
 
 {- | Who to prompt. An ability knows (@$iid@ is bound when it resolves); a
-handler may not, and the lead investigator answers for the table.
+handler does not, so it falls back to whoever the card belongs to, and only then
+to the lead investigator answering for the table.
 -}
 stepInvestigator :: HasGame m => Env -> m InvestigatorId
-stepInvestigator env = case KeyMap.lookup "iid" env >>= parseMaybe parseJSON of
-  Just iid -> pure iid
-  Nothing -> getLead
+stepInvestigator env =
+  case asum [KeyMap.lookup k env >>= parseMaybe parseJSON | k <- ["iid", "controller", "owner"]] of
+    Just iid -> pure iid
+    Nothing -> getLead
 
 textField :: Env -> KeyMap.KeyMap Value -> Key.Key -> Text -> Text
 textField env o key fallback = case substitute env <$> KeyMap.lookup key o of

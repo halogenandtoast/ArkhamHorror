@@ -7,7 +7,7 @@
 // separate on purpose.
 import { reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
-import type { CustomCard } from '@/arkham/customCards'
+import { registerCustomCards, type CustomCard } from '@/arkham/customCards'
 
 export type LibraryCard = CustomCard & { id: string; updatedAt: string }
 
@@ -26,6 +26,9 @@ const toLibraryCard = (row: Api.StoredCustomCard): LibraryCard => ({
 
 function replaceAll(rows: Api.StoredCustomCard[]) {
   entries.splice(0, entries.length, ...rows.map(toLibraryCard))
+  // Outside a game there is no game registry to resolve art and defs against,
+  // so the deck page and the builder read your library through the same one.
+  registerCustomCards(entries)
 }
 
 /* Cards made before the library moved server-side live in this browser only.
@@ -85,6 +88,7 @@ export async function saveToLibrary(card: CustomCard): Promise<LibraryCard> {
   const index = entries.findIndex((e) => e.def.cardCode === saved.def.cardCode)
   if (index === -1) entries.push(saved)
   else entries.splice(index, 1, saved)
+  registerCustomCards([saved])
   return saved
 }
 
@@ -107,6 +111,7 @@ export async function importLibraryCards(cards: CustomCard[]): Promise<LibraryCa
     if (index === -1) entries.push(card)
     else entries.splice(index, 1, card)
   }
+  registerCustomCards(saved)
   return saved
 }
 

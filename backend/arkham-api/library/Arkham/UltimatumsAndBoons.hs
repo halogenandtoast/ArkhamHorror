@@ -27,7 +27,7 @@ import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasQueue
-import Arkham.Classes.Query ((<=~>))
+import Arkham.Classes.Query (select, (<=~>))
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist.RandomBasicWeakness (
   RandomBasicWeaknessContext (..),
@@ -86,8 +86,10 @@ isUltimatumOrBoonSource = \case
   UltimatumOrBoonSource _ -> True
   _ -> False
 
-{- | Marks an investigator who already used Boon of the Child this round.
-Carried by a round-scoped window-modifier effect so it expires on its own.
+{- | Marks that Boon of the Child has been used this round. The card reads "an
+investigator may play", not "each investigator", so the limit is group-wide:
+the marker sits on GameTarget, not on whoever used it. Carried by a
+round-scoped window-modifier effect so it expires on its own.
 -}
 boonOfTheChildUsedMarker :: ModifierType
 boonOfTheChildUsedMarker = MetaModifier "usedBoonOfTheChild"
@@ -153,10 +155,16 @@ instance HasModifiersFor Boon where
         liftGuardM $ not <$> getIsStandalone
         pure [XPModifier "Boon of Persephone" 3]
       BoonOfTheChild -> do
-        modifySelectMaybe source Matcher.Anyone \iid -> do
-          mods <- lift $ getModifiers iid
-          guard $ boonOfTheChildUsedMarker `notElem` mods
-          pure [CanPlayTopmostOfDiscard (Just EventType, [])]
+        used <- (boonOfTheChildUsedMarker `elem`) <$> getModifiers GameTarget
+        -- The marker is pushed from the scenario's PlayCard dispatch, and scenario
+        -- pushes land beneath the entity pushes for the same message, so it only
+        -- exists once the whole play chain has drained. An event still resolving
+        -- out of the discard stands in for it until then; without this the discard
+        -- event's own skill test (Unearth the Ancients) is a window where the boon
+        -- reads as unused and the next event down can be played too.
+        resolving <- anyM (fmap (.playedFromDiscard) . getAttrs @Event) =<< select Matcher.AnyEvent
+        unless (used || resolving) do
+          modifySelect source Matcher.Anyone [CanPlayTopmostOfDiscard (Just EventType, [])]
         -- Bottom-deck instead of discard, computed from the event's own
         -- played-from zone: message-based effect creation would race the play
         -- chain (the scenario dispatches before entities, so pushed effects
@@ -341,9 +349,12 @@ runUltimatumsAndBoonsMessage msg = case msg of
             (UltimatumOrBoonSource (Boon BoonOfAthena))
             (InvestigatorTarget iid)
             boonOfAthenaExpiredMarker
-  PlayCard iid card _ _ _ _ -> do
+  -- Only the post-cost dispatch: PlayCard also fires with asAction=True before
+  -- payment, and marking there both created the effect twice and burned the boon
+  -- on a play cancelled during cost payment.
+  PlayCard iid card _ _ _ False -> do
     whenM (hasBoon BoonOfTheChild) do
-      mods <- getModifiers iid
+      mods <- getModifiers GameTarget
       unless (boonOfTheChildUsedMarker `elem` mods) do
         discard' <- field InvestigatorDiscard iid
         -- "topmost event": the first event from the top, whatever sits above
@@ -358,7 +369,7 @@ runUltimatumsAndBoonsMessage msg = case msg of
             marker <-
               roundModifier
                 (UltimatumOrBoonSource (Boon BoonOfTheChild))
-                (InvestigatorTarget iid)
+                GameTarget
                 boonOfTheChildUsedMarker
             push marker
           _ -> pure ()

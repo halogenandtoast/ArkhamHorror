@@ -5,7 +5,13 @@ import api from '@/api'
 
 export type FieldSchema = { name: string | null; type: string }
 export type ConSchema = { name: string; fields: FieldSchema[] }
-export type TypeSchema = { name: string; constructors: ConSchema[]; record: boolean; enum: boolean }
+export type TypeSchema = {
+  name: string
+  constructors: ConSchema[]
+  record: boolean
+  enum: boolean
+  alias: string | null
+}
 
 const types = reactive(new Map<string, TypeSchema>())
 export const schemaLoaded = ref(false)
@@ -41,13 +47,16 @@ export type Shape =
   | { kind: 'bool' }
   | { kind: 'raw'; type: string }
 
-export function shapeOf(type: string): Shape {
+export function shapeOf(type: string, depth = 0): Shape {
   const t = type.trim()
 
   if (t.startsWith('[') && t.endsWith(']')) return { kind: 'list', inner: t.slice(1, -1) }
   if (t.startsWith('Maybe ')) return { kind: 'maybe', inner: t.slice(6).trim() }
 
   const known = types.get(t)
+  // A synonym stands for another type: Who is an InvestigatorMatcher. Follow it,
+  // with a depth guard in case the schema ever describes a cycle.
+  if (known?.alias && depth < 8) return shapeOf(known.alias, depth + 1)
   if (known) return { kind: 'sum', schema: known }
 
   if (t === 'Text' || t === 'String') return { kind: 'text' }

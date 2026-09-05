@@ -107,6 +107,11 @@ data WindowMatcher
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher DamageTypeMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
   | EnemyWouldTakeDamage Timing SourceMatcher EnemyMatcher
+  | {- | As 'EnemyWouldTakeDamage', but only for a particular amount. The window
+    always carried the number; this is the way to ask about it, for cards that
+    react to "2 or more damage" rather than to any damage at all.
+    -}
+    EnemyWouldTakeDamageWithAmount Timing SourceMatcher EnemyMatcher ValueMatcher
   | WouldSearchDeck Timing Who DeckMatcher
   | WouldLookAtDeck Timing Who DeckMatcher
   | LookedAtDeck Timing Who DeckMatcher

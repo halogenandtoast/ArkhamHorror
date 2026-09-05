@@ -25,6 +25,11 @@ data TypeSchema = TypeSchema
   {- ^ Records encode their fields inline next to the tag; positional
   constructors put theirs in @contents@.
   -}
+  , typeAlias :: Maybe Text
+  {- ^ A type synonym stands for another type -- @Who@ is an
+  'InvestigatorMatcher', @Where@ a 'LocationMatcher'. Without this the editor
+  sees a name it has no constructors for and falls back to a raw field.
+  -}
   , typeIsEnum :: Bool
   {- ^ Every constructor is nullary, which aeson encodes as a bare string rather
   than a tagged object (@allNullaryToStringTag@). The editor has to match that or
@@ -46,4 +51,5 @@ instance ToJSON TypeSchema where
       , "constructors" .= typeConstructors t
       , "record" .= typeIsRecord t
       , "enum" .= typeIsEnum t
+      , "alias" .= typeAlias t
       ]

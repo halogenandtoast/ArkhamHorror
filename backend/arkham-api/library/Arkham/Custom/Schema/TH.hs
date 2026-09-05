@@ -139,7 +139,17 @@ closure shallow (n : queue) seen
         TyConI dec -> case dec of
           DataD _ _ _ _ constructors _ -> emit seen' constructors
           NewtypeD _ _ _ _ constructor _ -> emit seen' [constructor]
-          TySynD {} -> closure shallow queue seen'
+          TySynD _ _ rhs -> do
+            let schema =
+                  TypeSchema
+                    { typeName = T.pack (nameBase n)
+                    , typeConstructors = []
+                    , typeIsRecord = False
+                    , typeIsEnum = False
+                    , typeAlias = Just (renderType rhs)
+                    }
+            rest <- closure shallow (queue <> filter expandable (referenced rhs)) seen'
+            pure (schema : rest)
           _ -> closure shallow queue seen'
         _ -> closure shallow queue seen'
  where
@@ -151,6 +161,7 @@ closure shallow (n : queue) seen
             , typeConstructors = map fst entries
             , typeIsRecord = any isRecordCon constructors
             , typeIsEnum = all (null . conFields) (map fst entries)
+            , typeAlias = Nothing
             }
         next
           | T.pack (nameBase n) `Set.member` shallow = []

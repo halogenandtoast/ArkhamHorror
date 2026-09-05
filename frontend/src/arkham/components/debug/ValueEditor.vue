@@ -10,6 +10,7 @@
  * generic encoding (Actions, Trait, CardCode). Those come through as raw fields;
  * the encoding here is the generic one. */
 import { computed, ref } from 'vue'
+import { onClickOutside } from '@vueuse/core'
 import { decodeConstructor, encodeConstructor, shapeOf, type ConSchema } from '@/arkham/schema'
 
 const props = defineProps<{ type: string; modelValue: any; label?: string }>()
@@ -18,6 +19,23 @@ const emit = defineEmits<{ 'update:modelValue': [value: any] }>()
 const shape = computed(() => shapeOf(props.type))
 const search = ref('')
 const open = ref(false)
+const pickerEl = ref<HTMLElement | null>(null)
+
+// A dropdown should close when you look away from it, or press escape.
+onClickOutside(pickerEl, () => closePicker())
+
+function closePicker() {
+  open.value = false
+  search.value = ''
+}
+
+// Every optional value can be taken back out.
+const hasValue = computed(() => props.modelValue !== null && props.modelValue !== undefined)
+
+function clear() {
+  emit('update:modelValue', null)
+  closePicker()
+}
 
 const current = computed(() =>
   shape.value.kind === 'sum' ? decodeConstructor(shape.value.schema, props.modelValue) : null,
@@ -51,8 +69,7 @@ function pick(con: ConSchema) {
     values[key] = previous[key] ?? null
   })
   emit('update:modelValue', encodeConstructor(shape.value.schema, con, values))
-  open.value = false
-  search.value = ''
+  closePicker()
 }
 
 function setField(key: string, value: any) {
@@ -109,16 +126,20 @@ function setRaw(text: string) {
     <label v-if="label" class="value-label">{{ label }}</label>
 
     <template v-if="shape.kind === 'sum'">
-      <div class="picker">
-        <button type="button" class="picked" @click="open = !open">
-          {{ current ? humanize(current.con.name) : `Choose ${shape.schema.name}…` }}
-        </button>
+      <div ref="pickerEl" class="picker">
+        <div class="picked-row">
+          <button type="button" class="picked" @click="open ? closePicker() : (open = true)">
+            {{ current ? humanize(current.con.name) : `Choose ${shape.schema.name}…` }}
+          </button>
+          <button v-if="hasValue" type="button" class="clear-value" title="Clear" @click="clear">×</button>
+        </div>
         <div v-if="open" class="picker-menu">
           <input
             v-model="search"
             type="search"
             :placeholder="`Search ${shape.schema.constructors.length} options`"
             autofocus
+            @keydown.escape.stop.prevent="closePicker"
             @keydown.stop
           />
           <ul>
@@ -177,21 +198,25 @@ function setRaw(text: string) {
       </div>
     </template>
 
-    <input
-      v-else-if="shape.kind === 'text'"
-      type="text"
-      :value="modelValue ?? ''"
-      @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-      @keydown.stop
-    />
+    <div v-else-if="shape.kind === 'text'" class="picked-row">
+      <input
+        type="text"
+        :value="modelValue ?? ''"
+        @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+        @keydown.stop
+      />
+      <button v-if="hasValue" type="button" class="clear-value" title="Clear" @click="clear">×</button>
+    </div>
 
-    <input
-      v-else-if="shape.kind === 'number'"
-      type="number"
-      :value="modelValue ?? ''"
-      @input="emit('update:modelValue', Number(($event.target as HTMLInputElement).value))"
-      @keydown.stop
-    />
+    <div v-else-if="shape.kind === 'number'" class="picked-row">
+      <input
+        type="number"
+        :value="modelValue ?? ''"
+        @input="emit('update:modelValue', Number(($event.target as HTMLInputElement).value))"
+        @keydown.stop
+      />
+      <button v-if="hasValue" type="button" class="clear-value" title="Clear" @click="clear">×</button>
+    </div>
 
     <label v-else-if="shape.kind === 'bool'" class="inline">
       <input
@@ -202,7 +227,7 @@ function setRaw(text: string) {
       {{ modelValue ? 'true' : 'false' }}
     </label>
 
-    <template v-else>
+    <div v-else class="picked-row">
       <input
         type="text"
         class="raw"
@@ -212,7 +237,8 @@ function setRaw(text: string) {
         @input="setRaw(($event.target as HTMLInputElement).value)"
         @keydown.stop
       />
-    </template>
+      <button v-if="hasValue" type="button" class="clear-value" title="Clear" @click="rawText = null; clear()">×</button>
+    </div>
   </div>
 </template>
 
@@ -233,7 +259,24 @@ function setRaw(text: string) {
   position: relative;
 }
 
+.picked-row {
+  align-items: stretch;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.clear-value {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  color: #eee;
+  cursor: pointer;
+  flex: 0 0 auto;
+  padding: 0 0.5rem;
+}
+
 .picked {
+  flex: 1 1 auto;
   background: #111827;
   border: 1px solid #4b5563;
   border-radius: 4px;

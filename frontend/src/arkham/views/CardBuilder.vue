@@ -319,6 +319,12 @@ async function onImport(event: Event) {
         </div>
       </header>
 
+      <p class="experimental">
+        <font-awesome-icon icon="flask" />
+        Experimental. This feature can stop working, break a game in progress, or be removed at any
+        time.
+      </p>
+
       <p v-if="editingCode" class="muted">
         Saving updates every copy of this card — name, traits, art and abilities apply at once. An
         enemy's printed fight, health and evade are copied when it is built, so those only apply to
@@ -605,6 +611,19 @@ async function onImport(event: Event) {
   flex: 1 1 auto;
   min-width: 0;
   padding: 1rem;
+}
+
+.experimental {
+  align-items: center;
+  background: rgba(200, 60, 60, 0.1);
+  border: 1px solid var(--delete);
+  border-radius: 6px;
+  color: var(--delete);
+  display: flex;
+  font-size: 0.8rem;
+  gap: 0.5rem;
+  margin: 0 0 0.9rem;
+  padding: 0.45rem 0.65rem;
 }
 
 .builder-head {

@@ -7,7 +7,13 @@ module Arkham.Custom.Location (CustomLocation (..), customLocation) where
 
 import Arkham.Card.CardDef (CardDef)
 import Arkham.Card.CustomCard (customMeta)
-import Arkham.Custom.Ability (customAbilities, customModifiers, runCustomAbility, runCustomHandlers)
+import Arkham.Custom.Ability (
+  customAbilities,
+  customModifiers,
+  isCustomAbility,
+  runCustomAbility,
+  runCustomHandlers,
+ )
 import Arkham.GameValue
 import Arkham.Location.Import.Lifted
 
@@ -27,7 +33,7 @@ instance HasAbilities CustomLocation where
 
 instance RunMessage CustomLocation where
   runMessage msg x@(CustomLocation attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx -> do
+    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
       runCustomAbility attrs iid idx
       pure x
     _ -> do

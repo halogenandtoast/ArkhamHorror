@@ -5,6 +5,7 @@ import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
 import { cardImg, imgsrc, type InvestigatorClass } from '@/arkham/helpers'
 import { stripCardCodePrefix } from '@/arkham/customCards'
+import { overlayIsEmpty } from '@/arkham/deckOverlay'
 import { loadLibrary } from '@/arkham/customCardLibrary'
 import { portraitImage as portraitImageHelper } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Deck'
@@ -51,6 +52,9 @@ function deckPortraitCode(deck: Arkham.Deck): string {
   }
   return deckInvestigatorCode(Arkham.deckPlayList(deck))
 }
+
+// A laid-over deck plays differently from the one it was built as, so say so.
+const deckHasOverlay = (deck: Arkham.Deck) => !overlayIsEmpty(deck.overlay ?? null)
 
 function deckTaboo(deck: Arkham.Deck): string | null {
   const list = Arkham.deckPlayList(deck)
@@ -492,6 +496,13 @@ const needsReply = computed(() => {
                         <span v-if="deckTaboo(deck)" class="deck-item-taboo">
                           <font-awesome-icon icon="book" /> {{ deckTaboo(deck) }}
                         </span>
+                        <span
+                          v-if="deckHasOverlay(deck)"
+                          class="deck-item-overlaid"
+                          title="This deck is laid over with your own cards"
+                        >
+                          <font-awesome-icon icon="layer-group" /> Overlay
+                        </span>
                         <span v-if="deckId === deck.id && error" class="deck-item-error">{{ error }}</span>
                       </div>
                       <button
@@ -909,6 +920,14 @@ const needsReply = computed(() => {
   color: #c8a96e;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.deck-item-overlaid {
+  color: var(--spooky-green);
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .deck-item-error {

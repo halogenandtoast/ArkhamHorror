@@ -7,7 +7,7 @@
 // separate on purpose.
 import { reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
-import { registerCustomCards, type CustomCard } from '@/arkham/customCards'
+import { normalizeCardDef, registerCustomCards, type CustomCard } from '@/arkham/customCards'
 
 export type LibraryCard = CustomCard & { id: string; updatedAt: string }
 
@@ -19,7 +19,7 @@ let loading: Promise<void> | null = null
 
 const toLibraryCard = (row: Api.StoredCustomCard): LibraryCard => ({
   id: row.id,
-  def: row.def,
+  def: normalizeCardDef(row.def),
   art: row.art,
   updatedAt: row.updatedAt,
 })

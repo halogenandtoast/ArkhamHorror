@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { displayTabooId } from '@/arkham/taboo';
 import {cardImg, localizeArkhamDBBaseUrl, investigatorClass} from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/Deck'
+import { overlayIsEmpty } from '@/arkham/deckOverlay'
 
 interface Props {
   deck: Arkham.Deck
@@ -35,6 +36,9 @@ const deckClass = computed(() => {
   return {};
 })
 
+// A laid-over deck plays differently from the one it was built as, so the row says so.
+const hasOverlay = computed(() => !overlayIsEmpty(props.deck.overlay ?? null))
+
 const tabooList = computed(() => {
   const list = Arkham.deckPlayList(props.deck)
   return list.taboo_id ? displayTabooId(list.taboo_id) : null
@@ -46,7 +50,17 @@ const tabooList = computed(() => {
     <img class="portrait--decklist" :src="cardImg(deckInvestigator)" />
     <div class="deck-details">
       <div class="deck-main">
-        <span class="deck-name">{{ deck.name }}</span>
+        <div class="deck-name-row">
+          <span
+            v-if="hasOverlay"
+            class="overlay-badge"
+            title="Overlay — this deck is laid over with your own cards"
+            aria-label="Overlay"
+          >
+            <font-awesome-icon icon="layer-group" />
+          </span>
+          <span class="deck-name">{{ deck.name }}</span>
+        </div>
         <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
       </div>
       <div class="deck-actions" @click.stop>
@@ -148,5 +162,28 @@ const tabooList = computed(() => {
 
   &:hover { color: #fff; }
   &.action-btn--delete { &:hover { color: #ff6666; } }
+}
+
+/* Sits before the name so a laid-over deck reads as such at a glance. The row
+ * is a stretching column, so the pill has to be sized to its own text. */
+.deck-name-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.overlay-badge {
+  align-items: center;
+  background: color-mix(in srgb, var(--spooky-green) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--spooky-green) 55%, transparent);
+  border-radius: 999px;
+  color: var(--spooky-green);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.75em;
+  padding: 0.25em 0.45em;
+  white-space: nowrap;
+  width: fit-content;
 }
 </style>

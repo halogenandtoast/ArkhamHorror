@@ -43,6 +43,7 @@ module Arkham.Custom.Ability (
   customAbilities,
   customModifiers,
   runCustomAbility,
+  isCustomAbility,
   runCustomHandlers,
   runCustomSteps,
   abilitiesMetaKey,
@@ -63,10 +64,9 @@ import Arkham.Classes.Query
 
 import Arkham.Fight (ChooseFight (..))
 import Arkham.Helpers.Ability (getCanPerformAbility)
-import Arkham.Helpers.Action (getActionsWith)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Modifiers (
-  ModifierType (ActionCostModifier, ReduceCostOf),
+  ModifierType (ReduceCostOf),
   modifySelect,
   toModifiers,
   withModifiers,
@@ -234,6 +234,17 @@ customAbilities a =
       , abilityTooltip = specTooltip spec <|> abilityTooltip ab
       }
 
+{- | Whether an ability index is one of this card's own @_abilities@.
+
+A custom card's abilities are extended onto the ones its attrs already provide,
+and those keep their own indices -- an enemy's basic fight is 'AbilityAttack'.
+Only the card's own are ours to run; the rest must fall through to the attrs
+runner that resolves them, or using one spends the action and does nothing.
+-}
+isCustomAbility :: HasCardDef a => a -> Int -> Bool
+isCustomAbility a idx =
+  idx >= 1 && idx <= length (metaSpecs @AbilitySpec abilitiesMetaKey (toCardDef a))
+
 {- | Run ability @idx@. @$iid@ is bound here rather than in 'customAbilities'
 because it is only known once someone uses the ability.
 -}
@@ -320,7 +331,7 @@ runFight env spec = do
     matcher = KeyMap.lookup "matcher" o >>= decodeWith env
     isBasic = KeyMap.lookup "basic" o == Just (Bool True)
   if isBasic
-    then runBasicFight iid matcher
+    then runBasicFight source iid matcher
     else do
       let mods = fromMaybe [] (KeyMap.lookup "modifiers" o >>= decodeWith env)
       sid <- getRandom
@@ -330,22 +341,24 @@ runFight env spec = do
 
 {- | The enemy's own attack ability, at no action cost.
 
-Collected the way the action bar collects it and then filtered to the basic one,
-so a Fight ability on a card is never offered in its place.
+Asked for the way the engine asks -- @select@ over the ability list -- rather
+than by sweeping the action bar. The two disagree for an enemy-location: its
+basic actions are folded into the game ability list separately, and they are
+sourced from the /location/, so an enemy matcher has to be asked both ways or
+the option is silently missing (#5603).
 -}
-runBasicFight :: ReverseQueue m => InvestigatorId -> Maybe EnemyMatcher -> m ()
-runBasicFight iid matcher = do
-  let ws = defaultWindows iid
-  let granted = flip applyAbilityModifiers [ActionCostModifier (-1)]
+runBasicFight :: ReverseQueue m => Source -> InvestigatorId -> Maybe EnemyMatcher -> m ()
+runBasicFight source iid matcher = do
+  let
+    ws = defaultWindows iid
+    onTarget = case matcher of
+      Nothing -> AnyAbility
+      Just m -> AbilityOneOf [AbilityOnEnemy m, AbilityOnLocation (LocationWithEnemy m)]
+  -- Granted, so "immediately take a basic fight action" does not cost one.
   abilities <-
-    filterM (getCanPerformAbility iid ws)
-      . filter (\ab -> ab.basic && abilityIs ab #fight)
-      =<< getActionsWith iid ws granted
-  fightable <- case matcher of
-    Nothing -> pure abilities
-    Just m -> flip filterM abilities \ab -> case abilitySource ab of
-      EnemySource eid -> eid <=~> m
-      _ -> pure False
+    map (`decreaseAbilityActionCost` 1)
+      <$> selectMap (setRequestor source) (BasicAbility <> #fight <> onTarget)
+  fightable <- filterM (getCanPerformAbility iid ws) abilities
   unless (null fightable)
     $ Prompt.chooseOne iid [AbilityLabel iid ab ws [] [] | ab <- fightable]
 

@@ -12,14 +12,15 @@ import Arkham.Card.CustomCard (customMeta, customMetaMaybe)
 import Arkham.Custom.Ability (
   customAbilities,
   customModifiers,
+  isCustomAbility,
   runCustomAbility,
   runCustomHandlers,
   runCustomSteps,
  )
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.Matcher (ValueMatcher (AnyValue))
 import Arkham.Investigator.Import.Lifted (elderSignValue)
 import Arkham.Investigator.Runner
+import Arkham.Matcher (ValueMatcher (AnyValue))
 import Arkham.Message.Lifted (onSucceedByEffect, tokenSkillTestOption)
 import Arkham.Prelude
 
@@ -62,7 +63,7 @@ instance HasAbilities CustomInvestigator where
 
 instance RunMessage CustomInvestigator where
   runMessage msg x@(CustomInvestigator attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx -> do
+    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
       runCustomAbility attrs iid idx
       pure x
     ElderSignEffect iid | attrs `is` iid -> do

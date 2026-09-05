@@ -5,6 +5,7 @@ import Arkham.Card.CardDef (CardDef)
 import Arkham.Custom.Ability (
   customAbilities,
   customModifiers,
+  isCustomAbility,
   runCustomAbility,
   runCustomHandlers,
   runCustomSteps,
@@ -26,7 +27,7 @@ instance HasAbilities CustomEvent where
 
 instance RunMessage CustomEvent where
   runMessage msg x@(CustomEvent attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx -> do
+    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
       runCustomAbility attrs iid idx
       pure x
     -- What the event does when it is played: the common case, so it gets a

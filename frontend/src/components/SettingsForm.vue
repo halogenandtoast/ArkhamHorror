@@ -96,8 +96,15 @@ const updateLanguage = async (a: Event) => {
 
       <section class="box column">
         <h3>{{ $t('settingsForm.customCards') }}</h3>
-        <p class="warning">{{ $t('settingsForm.customCardsWarning') }}</p>
-        <p>{{ $t('settingsForm.customCardsHelp') }}</p>
+        <p class="warning">
+          <font-awesome-icon icon="flask" />
+          {{ $t('settingsForm.customCardsWarning') }}
+        </p>
+        <i18n-t keypath="settingsForm.customCardsHelp" tag="p" scope="global">
+          <template #icon>
+            <font-awesome-icon icon="layer-group" class="inline-icon" />
+          </template>
+        </i18n-t>
         <div class="row">
           <label class="radio-label">
             <input type="radio" name="customCards" value="On" v-model="customCards" />
@@ -211,6 +218,12 @@ input[type="radio"] {
 .warning {
   color: var(--delete);
   font-weight: bold;
+}
+
+/* The overlay button wears this icon, so the help can point straight at it. */
+.inline-icon {
+  color: var(--title);
+  margin: 0 0.15em;
 }
 
 .builder-link {

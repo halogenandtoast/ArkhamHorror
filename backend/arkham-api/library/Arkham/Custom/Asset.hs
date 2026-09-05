@@ -8,7 +8,13 @@ module Arkham.Custom.Asset (CustomAsset (..), customAsset) where
 import Arkham.Asset.Import.Lifted
 import Arkham.Card.CardDef (CardDef)
 import Arkham.Card.CustomCard (customMeta)
-import Arkham.Custom.Ability (customAbilities, customModifiers, runCustomAbility, runCustomHandlers)
+import Arkham.Custom.Ability (
+  customAbilities,
+  customModifiers,
+  isCustomAbility,
+  runCustomAbility,
+  runCustomHandlers,
+ )
 
 newtype CustomAsset = CustomAsset AssetAttrs
   deriving anyclass IsAsset
@@ -26,7 +32,7 @@ instance HasAbilities CustomAsset where
 
 instance RunMessage CustomAsset where
   runMessage msg x@(CustomAsset attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx -> do
+    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
       runCustomAbility attrs iid idx
       pure x
     _ -> do

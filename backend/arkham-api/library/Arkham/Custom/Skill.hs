@@ -2,7 +2,13 @@
 module Arkham.Custom.Skill (CustomSkill (..), customSkill) where
 
 import Arkham.Card.CardDef (CardDef)
-import Arkham.Custom.Ability (customAbilities, customModifiers, runCustomAbility, runCustomHandlers)
+import Arkham.Custom.Ability (
+  customAbilities,
+  customModifiers,
+  isCustomAbility,
+  runCustomAbility,
+  runCustomHandlers,
+ )
 import Arkham.Skill.Import.Lifted
 
 newtype CustomSkill = CustomSkill SkillAttrs
@@ -20,7 +26,7 @@ instance HasAbilities CustomSkill where
 
 instance RunMessage CustomSkill where
   runMessage msg x@(CustomSkill attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx -> do
+    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
       runCustomAbility attrs iid idx
       pure x
     _ -> do

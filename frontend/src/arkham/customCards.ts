@@ -53,6 +53,29 @@ export function mintCustomCardCode(): string {
   return `${CUSTOM_CARD_PREFIX}${crypto.randomUUID().replace(/-/g, '')}0`
 }
 
+/* A def written by the builder only carries the fields that card needed, and a
+ * def that came off the wire went through `cardDefDecoder`, which fills in the
+ * rest. Anything that reads a custom def as a `CardDef` -- the deck page, the
+ * card views -- expects those fields to be there, so fill them in once here
+ * rather than guarding at every use. */
+export function normalizeCardDef(def: any): CardDef {
+  return {
+    ...def,
+    classSymbols: def.classSymbols ?? [],
+    cardTraits: def.cardTraits ?? [],
+    skills: def.skills ?? [],
+    customizations: def.customizations ?? [],
+    options: def.options ?? [],
+    tags: def.tags ?? [],
+    meta: def.meta ?? {},
+    level: def.level ?? null,
+    cost: def.cost ?? null,
+    otherSide: def.otherSide ?? null,
+    errata: def.errata ?? null,
+    doubleSided: def.doubleSided ?? false,
+  } as CardDef
+}
+
 const registry = reactive(new Map<string, CustomCard>())
 
 export function registerCustomCards(cards: CustomCard[]) {
@@ -60,7 +83,7 @@ export function registerCustomCards(cards: CustomCard[]) {
     const cardCode = stripCardCodePrefix(card.def.cardCode)
     const existing = registry.get(cardCode)
     registry.set(cardCode, {
-      def: { ...card.def, cardCode, art: stripCardCodePrefix(card.def.art) },
+      def: normalizeCardDef({ ...card.def, cardCode, art: stripCardCodePrefix(card.def.art) }),
       // A def can come back from the server without its art (an older card, a
       // partial payload); never drop art already known for that card.
       art: card.art ?? existing?.art ?? null,

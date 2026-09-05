@@ -9,7 +9,13 @@ module Arkham.Custom.Enemy (CustomEnemy (..), customEnemy) where
 
 import Arkham.Card.CardDef (CardDef)
 import Arkham.Card.CustomCard (customMeta, customMetaMaybe)
-import Arkham.Custom.Ability (customAbilities, customModifiers, runCustomAbility, runCustomHandlers)
+import Arkham.Custom.Ability (
+  customAbilities,
+  customModifiers,
+  isCustomAbility,
+  runCustomAbility,
+  runCustomHandlers,
+ )
 import Arkham.Enemy.Import.Lifted
 import Arkham.Matcher (InvestigatorMatcher (Anyone), PreyMatcher (Prey))
 
@@ -36,7 +42,7 @@ instance HasAbilities CustomEnemy where
 
 instance RunMessage CustomEnemy where
   runMessage msg x@(CustomEnemy attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx -> do
+    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
       runCustomAbility attrs iid idx
       pure x
     _ -> do

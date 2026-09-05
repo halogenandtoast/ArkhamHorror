@@ -2,7 +2,13 @@
 module Arkham.Custom.Story (CustomStory (..), customStory) where
 
 import Arkham.Card.CardDef (CardDef)
-import Arkham.Custom.Ability (customAbilities, customModifiers, runCustomAbility, runCustomHandlers)
+import Arkham.Custom.Ability (
+  customAbilities,
+  customModifiers,
+  isCustomAbility,
+  runCustomAbility,
+  runCustomHandlers,
+ )
 import Arkham.Story.Import.Lifted
 
 newtype CustomStory = CustomStory StoryAttrs
@@ -20,7 +26,7 @@ instance HasAbilities CustomStory where
 
 instance RunMessage CustomStory where
   runMessage msg x@(CustomStory attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx -> do
+    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
       runCustomAbility attrs iid idx
       pure x
     _ -> do

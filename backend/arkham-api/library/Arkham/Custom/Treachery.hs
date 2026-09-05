@@ -2,7 +2,13 @@
 module Arkham.Custom.Treachery (CustomTreachery (..), customTreachery) where
 
 import Arkham.Card.CardDef (CardDef)
-import Arkham.Custom.Ability (customAbilities, customModifiers, runCustomAbility, runCustomHandlers)
+import Arkham.Custom.Ability (
+  customAbilities,
+  customModifiers,
+  isCustomAbility,
+  runCustomAbility,
+  runCustomHandlers,
+ )
 import Arkham.Treachery.Import.Lifted
 
 newtype CustomTreachery = CustomTreachery TreacheryAttrs
@@ -20,7 +26,7 @@ instance HasAbilities CustomTreachery where
 
 instance RunMessage CustomTreachery where
   runMessage msg x@(CustomTreachery attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx -> do
+    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
       runCustomAbility attrs iid idx
       pure x
     _ -> do

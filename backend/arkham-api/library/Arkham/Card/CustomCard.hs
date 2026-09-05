@@ -102,7 +102,34 @@ customMeta k fallback = fromMaybe fallback . customMetaMaybe k
 customMetaMaybe :: FromJSON a => Text -> CardDef -> Maybe a
 customMetaMaybe k def = do
   v <- Map.lookup k (cdMeta def)
-  parseMaybe parseJSON v
+  parseMaybe parseJSON (substituteDefBindings def v)
+
+-- | As 'customMetaMaybe', without substituting; for keys the bindings read.
+rawMetaMaybe :: FromJSON a => Text -> CardDef -> Maybe a
+rawMetaMaybe k def = Map.lookup k (cdMeta def) >>= parseMaybe parseJSON
+
+{- | The @$name@ bindings a def knows about itself.
+
+An entity's own bindings (@$id@, @$source@, whatever a query bound) are put in
+by "Arkham.Custom.Ability" when an ability runs. Meta the card is /built/ from
+-- an enemy's prey, where it spawns -- is read before any entity exists, so the
+only binding it can have is the one the def alone knows: whose signature it is.
+-}
+defBindings :: CardDef -> [(Text, Value)]
+defBindings def = [("investigator", toJSON iid) | iid <- take 1 (declared <> listed)]
+ where
+  declared = [iid | Signature iid <- cdDeckRestrictions def]
+  listed = coerce (maybeToList (customSignatureOwner def))
+
+substituteDefBindings :: CardDef -> Value -> Value
+substituteDefBindings def = go
+ where
+  env = defBindings def
+  go = \case
+    String t | Just name <- T.stripPrefix "$" t, Just v <- lookup name env -> v
+    Object o -> Object (fmap go o)
+    Array xs -> Array (fmap go xs)
+    v -> v
 
 {- | The custom investigator that lists this card among its signatures.
 
@@ -122,5 +149,6 @@ customSignatureOwner (toCardCode -> cardCode) = unsafePerformIO do
       , cardCode `elem` signatureCodes def
       ]
  where
+  -- Raw: substitution asks who the owner is, which is what this answers.
   signatureCodes def =
-    map sanitizeCustomCardCode $ fromMaybe [] $ customMetaMaybe "_signatures" def
+    maybe [] (map sanitizeCustomCardCode) (rawMetaMaybe "_signatures" def)

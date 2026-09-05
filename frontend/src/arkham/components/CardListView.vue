@@ -6,10 +6,29 @@ import * as Arkham from '@/arkham/types/CardDef'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import { cardCost, cardGroupKey as groupKey, cardIcons, cardName, cardSetText, cardTraits, cardType, groupCards, levelText } from '@/arkham/cardDetails'
 
-const props = withDefaults(defineProps<{ cards: Arkham.CardDef[], attachments?: Record<string, Arkham.CardDef[]>, showCounts?: boolean }>(), {
+const props = withDefaults(defineProps<{
+  cards: Arkham.CardDef[],
+  attachments?: Record<string, Arkham.CardDef[]>,
+  showCounts?: boolean,
+  /* Editing an overlay: each card gets take-one/put-one-back controls right
+   * where it is listed, rather than in a separate pane. */
+  overlayEditing?: boolean,
+  overlayRemoved?: (card: Arkham.CardDef) => number,
+  /* What the overlay leaves of a card, when that differs from the copies
+   * listed. Zero means it is out but still shown, so it can be put back. */
+  overlayCount?: (card: Arkham.CardDef) => number | null,
+}>(), {
   attachments: () => ({}),
   showCounts: true,
+  overlayEditing: false,
+  overlayRemoved: () => () => 0,
+  overlayCount: () => () => null,
 })
+
+const shownCount = (card: Arkham.CardDef, count: number) => props.overlayCount(card) ?? count
+const isOut = (card: Arkham.CardDef) => props.overlayCount(card) === 0
+
+const emit = defineEmits<{ 'overlay-take': [card: Arkham.CardDef]; 'overlay-restore': [card: Arkham.CardDef] }>()
 
 const store = useDbCardStore()
 
@@ -93,10 +112,19 @@ const attachmentHeading = (card: Arkham.CardDef) => {
       </thead>
       <tbody>
         <template v-for="{ card, count } in groupedCards" :key="groupKey(card)">
-          <tr>
+          <tr :class="{ 'card-row--out': isOut(card) }">
             <td>
               <div class="card-name-cell">
-                <span v-if="showCounts" class="deck-card-count">x {{ count }}</span>
+                <span v-if="overlayEditing" class="overlay-controls">
+                  <button type="button" title="Take one out" @click="emit('overlay-take', card)">−</button>
+                  <button
+                    type="button"
+                    title="Put one back"
+                    :disabled="overlayRemoved(card) === 0"
+                    @click="emit('overlay-restore', card)"
+                  >+</button>
+                </span>
+                <span v-if="showCounts" class="deck-card-count">x {{ shownCount(card, count) }}</span>
                 <a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a>
                 <span v-if="isUnderworldMarketCard(card)" class="market-badge" v-tooltip="marketTooltip(card)" :aria-label="marketTooltip(card)">
                   <font-awesome-icon icon="store" />
@@ -397,5 +425,40 @@ a {
 @media (max-width: 768px) {
   .class-text { display: none; }
   .class-icons { display: inline-flex; }
+}
+
+.overlay-controls {
+  display: inline-flex;
+  gap: 0.15rem;
+  margin-right: 0.35rem;
+}
+
+.overlay-controls button {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--box-border);
+  border-radius: 3px;
+  color: var(--title);
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 0.1rem 0.3rem;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.3;
+  }
+}
+
+/* Taken out by the overlay, but still listed so it can be put back. */
+.card-row--out > td {
+  opacity: 0.4;
+}
+
+.card-row--out .overlay-controls {
+  opacity: 1;
 }
 </style>

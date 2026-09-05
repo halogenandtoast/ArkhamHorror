@@ -30,7 +30,7 @@ import Arkham.Helpers.Modifiers (
   withModifiers,
   withModifiersOf,
  )
-import Arkham.Helpers.Query (getInvestigators)
+import Arkham.Helpers.Query (getActiveInvestigatorId, getInvestigators)
 import Arkham.Helpers.Slot
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..), Investigator, InvestigatorAttrs (..))
@@ -209,19 +209,39 @@ getIsPlayableWithResources'
   costStatus
   windows'
   c@(PlayerCard _) = do
-    if c.kind `elem` [PlayerTreacheryType, PlayerEnemyType]
-      then pure False
-      else do
-        ignoreContexts <- hasModifier iid IgnorePlayableModifierContexts
-        contexts :: [(CardMatcher, [ModifierType])] <-
-          concat . mapMaybe (preview _PlayableModifierContexts) <$> getModifiers iid
-        base <- go
-        others <-
-          traverse
-            (\(matcher, ctx) -> (cardMatch c matcher &&) <$> withModifiers iid (toModifiers iid ctx) go)
-            (if ignoreContexts then [] else contexts)
-        pure $ or (base : others)
+    -- This asks "can iid play c", but the matcher language answers relative to
+    -- the game's active investigator: You/NotYou (Game.hs) and the
+    -- {Asset,Card,}PerformableAbility arms all read activeInvestigatorIdL rather
+    -- than the investigator we were handed. Evaluating another seat's hand while
+    -- they are not active therefore answers about the wrong investigator, and
+    -- their cards silently vanish from their own player window (#5612: Knowledge
+    -- is Power dropped because its criteria were checked against the other
+    -- investigator, who controls neither Tome). Establish the scope here, once
+    -- per card, so every caller of getIsPlayable/filterPlayable/getPlayableCards
+    -- is covered.
+    --
+    -- Skip re-entry when iid is already active (the overwhelming common case:
+    -- solo, and your own turn): asActive adds a ReaderT layer whose HasGame cache
+    -- is a no-op, and cache keys are not namespaced by active investigator, so
+    -- delegating the live cache across the swap would be unsound. Same trade-off
+    -- as getCanPerformAbility (Helpers/Ability.hs).
+    active <- getActiveInvestigatorId
+    if active == iid then run else asActive iid run
    where
+    run :: forall n. HasGame n => n Bool
+    run =
+      if c.kind `elem` [PlayerTreacheryType, PlayerEnemyType]
+        then pure False
+        else do
+          ignoreContexts <- hasModifier iid IgnorePlayableModifierContexts
+          contexts :: [(CardMatcher, [ModifierType])] <-
+            concat . mapMaybe (preview _PlayableModifierContexts) <$> getModifiers iid
+          base <- go
+          others <-
+            traverse
+              (\(matcher, ctx) -> (cardMatch c matcher &&) <$> withModifiers iid (toModifiers iid ctx) go)
+              (if ignoreContexts then [] else contexts)
+          pure $ or (base : others)
     go :: forall n. HasGame n => n Bool
     go =
       all (isNothing . snd)

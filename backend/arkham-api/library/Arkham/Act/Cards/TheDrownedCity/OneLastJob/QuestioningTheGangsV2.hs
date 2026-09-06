@@ -25,9 +25,10 @@ instance HasAbilities QuestioningTheGangsV2 where
     [ restricted
         a
         1
-        ( youExist
-            $ InvestigatorEngagedWith
-            $ EnemyWithTrait Criminal
+        ( exists
+            $ EnemyAt YourLocation
+            <> EnemyIsEngagedWith Anyone
+            <> EnemyWithTrait Criminal
             <> EnemyWithRemainingHealthLessThan
               (SumCalculation [Fixed 1, InvestigatorsFieldCalculation You InvestigatorClues])
         )
@@ -44,7 +45,8 @@ instance RunMessage QuestioningTheGangsV2 where
       clues <- field InvestigatorClues iid
       criminals <-
         select
-          $ enemyEngagedWith iid
+          $ enemyAtLocationWith iid
+          <> EnemyIsEngagedWith Anyone
           <> EnemyWithTrait Criminal
           <> EnemyWithRemainingHealthLessThan (Fixed $ 1 + clues)
       chooseHandleTargetM iid (attrs.ability 1) criminals

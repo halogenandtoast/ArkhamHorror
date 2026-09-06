@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
+import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
 import { useDebug } from '@/arkham/debug';
 import { cardImage } from '@/arkham/cardImages';
 import type { Game } from '@/arkham/types/Game';
@@ -106,6 +107,7 @@ function handleCardClick() {
 </script>
 <template>
   <div class="treachery" :class="{ attached, exhausted: isExhausted }">
+    <MissingCardBadge :card-code="treachery.cardCode" />
     <AbilityButton
       v-if="isInHand && !canUseMobileAbilityMenu"
       v-for="ability in abilities"

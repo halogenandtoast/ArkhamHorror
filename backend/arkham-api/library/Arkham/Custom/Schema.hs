@@ -24,6 +24,7 @@ import Arkham.DamageEffect (DamageAssignment)
 import Arkham.Effect.Types (EffectBuilder)
 import Arkham.Effect.Window (EffectWindow)
 import Arkham.EffectMetadata (EffectMetadata)
+import Arkham.Exhaust (Exhaustion)
 import Arkham.Matcher
 import Arkham.Message (Message)
 import Arkham.Message.ChaosBag (ChaosBagMessage)
@@ -86,6 +87,8 @@ customSchema =
          -- damage is direct. A single-constructor record, so it is written
          -- without a tag.
          ''DamageAssignment
+       , -- What an Exhaust carries: who exhausts what, and what follows it.
+         ''Exhaustion
        , ''ModifierType
        , -- Scoped modifiers are pushed as CreateWindowModifierEffect, so the
          -- editor needs the window that scopes them, and the wrapper that

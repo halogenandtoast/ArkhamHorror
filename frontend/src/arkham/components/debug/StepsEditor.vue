@@ -146,6 +146,19 @@ const announced = computed(() => props.announce ?? base.value)
 const addedInside = (index: number) =>
   stepBindings(steps.value[index], anchorFor(index)).inside
 
+/* "If such a chaos token is revealed during this test, …" — a rider on the step
+ * that starts the test, so it can name that test. Its steps see $sid, which the
+ * step binds. */
+const onReveal = (step: any, kind: string) => step[kind]?.onReveal ?? null
+
+const setOnReveal = (index: number, kind: string, value: any) =>
+  set(index, { ...steps.value[index], [kind]: { ...steps.value[index][kind], onReveal: value } })
+
+const revealScope = (index: number) => [
+  ...scopeFor(index),
+  ...stepBindings(steps.value[index], anchorFor(index)).after,
+]
+
 const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enemy'] ?? 'EnemyMatcher'
 
 /* The names a step introduces, shown on the step that introduces them.
@@ -559,6 +572,37 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.fight?.modifiers"
           @update:modelValue="set(index, { ...step, fight: { ...step.fight, modifiers: $event } })"
         />
+
+        <fieldset class="on-reveal">
+          <legend>If a chaos token is revealed during this test</legend>
+          <label v-if="!onReveal(step, 'fight')" class="inline">
+            <input
+              type="checkbox"
+              @change="setOnReveal(index, 'fight', { tokens: null, steps: [] })"
+            />
+            it does something
+          </label>
+          <template v-else>
+            <ValueEditor
+              type="ChaosTokenMatcher"
+              label="Which tokens"
+              :bindings="scopeFor(index)"
+              :modelValue="onReveal(step, 'fight').tokens"
+              @update:modelValue="setOnReveal(index, 'fight', { ...onReveal(step, 'fight'), tokens: $event })"
+            />
+            <StepsEditor
+              :queryKinds="queryKinds"
+              :bindings="revealScope(index)"
+              :path="innerPath(index, 'fightreveal')"
+              :announce="[]"
+              :modelValue="onReveal(step, 'fight').steps ?? []"
+              @update:modelValue="setOnReveal(index, 'fight', { ...onReveal(step, 'fight'), steps: $event })"
+            />
+            <button type="button" class="link" @click="setOnReveal(index, 'fight', undefined)">
+              Remove
+            </button>
+          </template>
+        </fieldset>
       </template>
 
       <template v-else-if="kindOf(step) === 'investigate'">
@@ -601,6 +645,37 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.investigate?.modifiers"
           @update:modelValue="set(index, { ...step, investigate: { ...step.investigate, modifiers: $event } })"
         />
+
+        <fieldset class="on-reveal">
+          <legend>If a chaos token is revealed during this test</legend>
+          <label v-if="!onReveal(step, 'investigate')" class="inline">
+            <input
+              type="checkbox"
+              @change="setOnReveal(index, 'investigate', { tokens: null, steps: [] })"
+            />
+            it does something
+          </label>
+          <template v-else>
+            <ValueEditor
+              type="ChaosTokenMatcher"
+              label="Which tokens"
+              :bindings="scopeFor(index)"
+              :modelValue="onReveal(step, 'investigate').tokens"
+              @update:modelValue="setOnReveal(index, 'investigate', { ...onReveal(step, 'investigate'), tokens: $event })"
+            />
+            <StepsEditor
+              :queryKinds="queryKinds"
+              :bindings="revealScope(index)"
+              :path="innerPath(index, 'investigatereveal')"
+              :announce="[]"
+              :modelValue="onReveal(step, 'investigate').steps ?? []"
+              @update:modelValue="setOnReveal(index, 'investigate', { ...onReveal(step, 'investigate'), steps: $event })"
+            />
+            <button type="button" class="link" @click="setOnReveal(index, 'investigate', undefined)">
+              Remove
+            </button>
+          </template>
+        </fieldset>
       </template>
 
       <template v-else-if="kindOf(step) === 'evade'">
@@ -642,6 +717,37 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.evade?.modifiers"
           @update:modelValue="set(index, { ...step, evade: { ...step.evade, modifiers: $event } })"
         />
+
+        <fieldset class="on-reveal">
+          <legend>If a chaos token is revealed during this test</legend>
+          <label v-if="!onReveal(step, 'evade')" class="inline">
+            <input
+              type="checkbox"
+              @change="setOnReveal(index, 'evade', { tokens: null, steps: [] })"
+            />
+            it does something
+          </label>
+          <template v-else>
+            <ValueEditor
+              type="ChaosTokenMatcher"
+              label="Which tokens"
+              :bindings="scopeFor(index)"
+              :modelValue="onReveal(step, 'evade').tokens"
+              @update:modelValue="setOnReveal(index, 'evade', { ...onReveal(step, 'evade'), tokens: $event })"
+            />
+            <StepsEditor
+              :queryKinds="queryKinds"
+              :bindings="revealScope(index)"
+              :path="innerPath(index, 'evadereveal')"
+              :announce="[]"
+              :modelValue="onReveal(step, 'evade').steps ?? []"
+              @update:modelValue="setOnReveal(index, 'evade', { ...onReveal(step, 'evade'), steps: $event })"
+            />
+            <button type="button" class="link" @click="setOnReveal(index, 'evade', undefined)">
+              Remove
+            </button>
+          </template>
+        </fieldset>
       </template>
 
       <template v-else-if="kindOf(step) === 'parley'">
@@ -679,6 +785,37 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.parley?.modifiers"
           @update:modelValue="set(index, { ...step, parley: { ...step.parley, modifiers: $event } })"
         />
+
+        <fieldset class="on-reveal">
+          <legend>If a chaos token is revealed during this test</legend>
+          <label v-if="!onReveal(step, 'parley')" class="inline">
+            <input
+              type="checkbox"
+              @change="setOnReveal(index, 'parley', { tokens: null, steps: [] })"
+            />
+            it does something
+          </label>
+          <template v-else>
+            <ValueEditor
+              type="ChaosTokenMatcher"
+              label="Which tokens"
+              :bindings="scopeFor(index)"
+              :modelValue="onReveal(step, 'parley').tokens"
+              @update:modelValue="setOnReveal(index, 'parley', { ...onReveal(step, 'parley'), tokens: $event })"
+            />
+            <StepsEditor
+              :queryKinds="queryKinds"
+              :bindings="revealScope(index)"
+              :path="innerPath(index, 'parleyreveal')"
+              :announce="[]"
+              :modelValue="onReveal(step, 'parley').steps ?? []"
+              @update:modelValue="setOnReveal(index, 'parley', { ...onReveal(step, 'parley'), steps: $event })"
+            />
+            <button type="button" class="link" @click="setOnReveal(index, 'parley', undefined)">
+              Remove
+            </button>
+          </template>
+        </fieldset>
       </template>
 
       <template v-else-if="kindOf(step) === 'attack'">
@@ -863,6 +1000,21 @@ const removeOption = (step: any, index: number, at: number) =>
 /* Flashed when a field jumps here to show where a binding came from. The class
  * is set from outside this component, which scoped styles still match: the rule
  * keys off the element's own attribute, not on who added the class. */
+.on-reveal {
+  border: 1px solid #374151;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+
+  legend {
+    color: #9ca3af;
+    font-size: 0.72rem;
+    padding: 0 0.3rem;
+  }
+}
+
 .scope-bar {
   align-items: center;
   display: flex;

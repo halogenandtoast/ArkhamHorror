@@ -14,7 +14,14 @@ name, the way an all-nullary type would. The editor has to be told, or it sends
 a tagged object that will not decode.
 -}
 stringEncodedTypes :: Set Text
-stringEncodedTypes = Set.fromList ["Action"]
+stringEncodedTypes =
+  Set.fromList
+    [ "Action"
+    , -- Nearly all nullary, but the open constructor for homebrew tokens carries
+      -- a slug, so the all-nullary rule below cannot spot it. It still writes
+      -- itself as a bare string.
+      "ChaosTokenFace"
+    ]
 
 {- | Types the editor renders itself. Expanding them would add nothing and, in
 the case of the id newtypes, would only expose the UUID inside.
@@ -239,3 +246,4 @@ schemaForWith :: [Name] -> [Name] -> Q Exp
 schemaForWith roots shallowRoots =
   closure (Set.fromList (map (T.pack . nameBase) shallowRoots)) (roots <> shallowRoots) mempty
     >>= TH.lift
+

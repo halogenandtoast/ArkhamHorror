@@ -3,8 +3,8 @@
 module Arkham.Enemy where
 
 import Arkham.Card
-import Arkham.Custom.Enemy (customEnemy)
 import Arkham.Classes
+import Arkham.Custom.Enemy (customEnemy)
 import Arkham.Enemy.DefeatedProxy (toDefeatedEnemyProxy)
 import Arkham.Enemy.Enemies
 import Arkham.Enemy.Runner
@@ -41,7 +41,7 @@ instance RunMessage Enemy where
 lookupEnemy :: HasCallStack => CardCode -> EnemyId -> CardId -> Enemy
 lookupEnemy cardCode = case lookup cardCode allEnemies of
   Just (SomeEnemyCard a) -> \e c -> Enemy $ cbCardBuilder a c e
-  Nothing -> case lookupCustomCardDef cardCode of
+  Nothing -> case lookupCustomCardDefOrMissing EnemyType cardCode of
     Just def -> \e c -> Enemy $ cbCardBuilder (customEnemy def) c e
     Nothing -> error $ "Unknown enemy (lookupEnemy): " <> show cardCode <> "\n\n" <> prettyCallStack callStack
 
@@ -67,7 +67,7 @@ withEnemyCardCode
   :: CardCode -> (forall a. IsEnemy a => EnemyCard a -> r) -> r
 withEnemyCardCode cCode f = case lookup cCode allEnemies of
   Just (SomeEnemyCard a) -> f a
-  Nothing -> case lookupCustomCardDef cCode of
+  Nothing -> case lookupCustomCardDefOrMissing EnemyType cCode of
     Just def -> f (customEnemy def)
     Nothing ->
       error $ "Unknown enemy (withEnemyCardCode): " <> show cCode <> "\n\n" <> prettyCallStack callStack

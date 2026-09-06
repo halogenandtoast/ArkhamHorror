@@ -185,5 +185,43 @@ export function renderCardPlaceholder(def: CardDef | undefined): string {
 
 export function customCardPlaceholder(art: string): string {
   const code = stripCardCodePrefix(art)
-  return renderCardPlaceholder(customCardDef(code) ?? customCardDef(code.replace(/[ab]$/, '')))
+  const def = customCardDef(code) ?? customCardDef(code.replace(/[ab]$/, ''))
+  return def ? renderCardPlaceholder(def) : renderMissingCard(code)
+}
+
+/* Whether a card code names a custom card nothing here can describe.
+ *
+ * A custom def lives on the game and in the server's registry, so it can go
+ * missing: deleted from the library it was built in, or never recorded on a
+ * game that then outlived the process. The engine now builds an inert card
+ * rather than failing, and this is how the table says so. */
+export function isMissingCustomCard(code: string): boolean {
+  const bare = stripCardCodePrefix(code)
+  if (!isCustomCardCode(bare)) return false
+  return !customCardDef(bare) && !customCardDef(bare.replace(/[ab]$/, ''))
+}
+
+/* Drawn in place of a card whose definition is gone: legible as broken at a
+ * glance, and carrying the code so it can be looked up or rebuilt. */
+export function renderMissingCard(code: string): string {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 419">
+    <style>
+      text { font-family: Georgia, 'Times New Roman', serif; text-anchor: middle; fill: #fca5a5 }
+      .t { font-size: 20px; font-weight: bold }
+      .s { font-size: 11px; fill: #9c8a6b }
+      .c { font-size: 9px; font-family: monospace; fill: #6b7280 }
+    </style>
+    <rect width="300" height="419" rx="14" fill="#1a1210"/>
+    <rect x="10" y="10" width="280" height="399" rx="9" fill="none" stroke="#7f1d1d"
+          stroke-width="2" stroke-dasharray="8 6"/>
+    <g stroke="#7f1d1d" stroke-width="3" fill="none">
+      <circle cx="150" cy="150" r="42"/>
+      <path d="M150 130 v26 M150 168 v3"/>
+    </g>
+    <text x="150" y="240" class="t">Card definition</text>
+    <text x="150" y="266" class="t">missing</text>
+    <text x="150" y="300" class="s">This card does nothing until it is restored</text>
+    <text x="150" y="376" class="c">${escapeXml(code)}</text>
+  </svg>`
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
 }

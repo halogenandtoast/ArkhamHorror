@@ -21,7 +21,7 @@ import Data.Typeable
 lookupInvestigator :: InvestigatorId -> PlayerId -> Investigator
 lookupInvestigator iid pid = case lookup (toCardCode iid) allInvestigators of
   Just c -> overAttrs (artL .~ CardCodeExact (toCardCode iid)) $ toInvestigator c pid
-  Nothing -> case lookupCustomCardDef (toCardCode iid) of
+  Nothing -> case lookupCustomCardDefOrMissing InvestigatorType (toCardCode iid) of
     Just def ->
       overAttrs (artL .~ CardCodeExact (toCardCode iid))
         $ toInvestigator (SomeInvestigatorCard (customInvestigator def)) pid

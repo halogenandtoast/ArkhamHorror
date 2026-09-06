@@ -3,9 +3,9 @@
 module Arkham.Skill where
 
 import Arkham.Card
-import Arkham.Custom.Skill (customSkill)
 import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Classes
+import Arkham.Custom.Skill (customSkill)
 import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Id
 import Arkham.Placement
@@ -57,7 +57,7 @@ instance RunMessage Skill where
 lookupSkill :: CardCode -> InvestigatorId -> SkillId -> CardId -> Skill
 lookupSkill cardCode = case lookup cardCode allSkills of
   Just (SomeSkillCard a) -> \i s c -> Skill $ cbCardBuilder a c (i, s)
-  Nothing -> case lookupCustomCardDef cardCode of
+  Nothing -> case lookupCustomCardDefOrMissing SkillType cardCode of
     Just def -> \i s c -> Skill $ cbCardBuilder (customSkill def) c (i, s)
     Nothing -> error $ "Unknown skill: " <> show cardCode
 
@@ -71,7 +71,7 @@ withSkillCardCode
   :: CardCode -> (forall a. IsSkill a => SkillCard a -> r) -> r
 withSkillCardCode cCode f = case lookup cCode allSkills of
   Just (SomeSkillCard a) -> f a
-  Nothing -> case lookupCustomCardDef cCode of
+  Nothing -> case lookupCustomCardDefOrMissing SkillType cCode of
     Just def -> f (customSkill def)
     Nothing -> error $ "Unknown skill: " <> show cCode
 

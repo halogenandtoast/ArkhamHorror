@@ -30,7 +30,10 @@ Both run the same small step language:
 * @playCard@ -- play a card from hand, paying its cost, optionally discounted.
 * @fight@ -- fight an enemy, with modifiers for that attack.
 * @investigate@, @evade@, @parley@ -- start the matching skill test. Each binds
-  the test it started as @$sid@, so a later step can scope a modifier to it.
+  the test it started as @$sid@, so a later step can scope a modifier to it, and
+  each takes an @onReveal@ saying what happens if a named chaos token turns up
+  during it, immediately or -- with @whenPassed@ -- once the test is known to
+  have succeeded.
 * @attack@ -- an enemy attacks an investigator.
 * @ready@ -- ready a card.
 * @draw@ -- draw cards, however many an expression works out to.
@@ -547,9 +550,37 @@ beginTest env spec f = do
     source = stepSource env
     mods = fromMaybe [] (KeyMap.lookup "modifiers" o >>= decodeWith env)
   sid <- getRandom
+  let env' = KeyMap.insert "sid" (toJSON sid) env
   unless (null mods) $ skillTestModifiers sid source iid mods
+  -- Registered before the test starts, the way a printed card does it: the
+  -- effect has to be watching by the time tokens are revealed.
+  for_ (KeyMap.lookup "onReveal" o) (runOnReveal env' sid source)
   f sid iid source
-  pure $ KeyMap.insert "sid" (toJSON sid) env
+  pure env'
+
+{- | "If such a chaos token is revealed during this test, …".
+
+Part of the step that starts the test rather than an ability of its own, because
+that is what the card says: one ability, with a rider on the test it just began.
+It also could not be an ability of its own -- a separate ability never saw the
+@$sid@ this one minted, and so has no way to say /this/ test.
+-}
+runOnReveal :: ReverseQueue m => Env -> SkillTestId -> Source -> Value -> m ()
+runOnReveal env sid source spec = do
+  let
+    o = specObject spec
+    matcher = fromMaybe AnyChaosToken (KeyMap.lookup "tokens" o >>= decodeWith env)
+    target = fromMaybe (toTarget sid) (KeyMap.lookup "target" env >>= parseMaybe parseJSON)
+    -- A choice that only matters on a success should be offered once the result
+    -- is known, not the moment the token turns up: otherwise you are asked to
+    -- spend something before you know whether it buys anything.
+    deferred = KeyMap.lookup "whenPassed" o == Just (Bool True)
+  msgs <- capture $ runSteps env (maybe [] subSteps (KeyMap.lookup "steps" o))
+  let
+    queued
+      | deferred = [SkillTest.onSucceedByEffect sid AnyValue source target msgs]
+      | otherwise = msgs
+  unless (null msgs) $ push $ CreateOnRevealChaosTokenEffect sid matcher source target queued
 
 {- | Which skill a test uses.
 

@@ -3,9 +3,9 @@
 module Arkham.Event where
 
 import Arkham.Card
-import Arkham.Custom.Event (customEvent)
 import Arkham.Card.PlayerCard (tabooMutated)
 import Arkham.Classes
+import Arkham.Custom.Event (customEvent)
 import Arkham.Event.Events
 import Arkham.Event.Runner
 import Arkham.Prelude hiding (catch)
@@ -46,7 +46,7 @@ instance RunMessage Event where
 lookupEvent :: CardCode -> InvestigatorId -> EventId -> CardId -> Event
 lookupEvent cardCode = case lookup cardCode allEvents of
   Just (SomeEventCard a) -> \i e c -> Event $ cbCardBuilder a c (i, e)
-  Nothing -> case lookupCustomCardDef cardCode of
+  Nothing -> case lookupCustomCardDefOrMissing EventType cardCode of
     Just def -> \i e c -> Event $ cbCardBuilder (customEvent def) c (i, e)
     Nothing -> error $ "Unknown event: " <> show cardCode
 
@@ -60,7 +60,7 @@ withEventCardCode
   :: CardCode -> (forall a. IsEvent a => EventCard a -> r) -> r
 withEventCardCode cCode f = case lookup cCode allEvents of
   Just (SomeEventCard a) -> f a
-  Nothing -> case lookupCustomCardDef cCode of
+  Nothing -> case lookupCustomCardDefOrMissing EventType cCode of
     Just def -> f (customEvent def)
     Nothing -> error $ "Unknown event: " <> show cCode
 

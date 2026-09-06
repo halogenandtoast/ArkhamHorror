@@ -24,6 +24,7 @@ import TokenPool, { type TokenPoolItem } from '@/arkham/components/TokenPool.vue
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import CardConfig from '@/arkham/components/CardConfig.vue'
+import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
 import Story from '@/arkham/components/Story.vue';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
 import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue';
@@ -396,6 +397,7 @@ function startDrag(event: DragEvent) {
           <span class="deck-size">{{asset.spiritDeck.length}}</span>
         </div>
         <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, 'asset--pending': pending }">
+          <MissingCardBadge :card-code="cardCode" />
           <font-awesome-icon v-if="isSpirit" :icon="['fas', 'ghost']" class="spirit-icon" />
           <span v-if="jammed" class="status-icon" v-tooltip="'Jammed'">
             <font-awesome-icon :icon="['fas', 'wrench']" />

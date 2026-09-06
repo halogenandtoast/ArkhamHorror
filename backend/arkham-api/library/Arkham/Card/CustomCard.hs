@@ -16,6 +16,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Id (InvestigatorId (..))
+import Arkham.Name (Name)
 import Arkham.Prelude
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
@@ -38,6 +39,47 @@ instance ToJSON CustomCard where
 
 instance FromJSON CustomCard where
   parseJSON = withObject "CustomCard" \o -> CustomCard <$> o .: "def" <*> o .:? "art"
+
+{- | A stand-in for a custom card whose definition is not to hand.
+
+A custom def lives on the game and in a process-global registry, so a game can
+outlive the thing that describes its cards: the card is deleted from its
+author's library, or the process restarts holding a game that never recorded its
+own copy. The def is then simply gone, and the entity cannot be built.
+
+Crashing there takes the whole game down -- @error "invalid assets"@ turned into
+a 500 on every load, with nothing saying which card. A card that exists and does
+nothing loses only that card, and can be pointed at the builder to be restored.
+
+The card keeps its code, so the client can look it up and offer to open or
+recreate it, and carries 'missingCustomCardTag' to say plainly that this is not
+what the author wrote.
+-}
+missingCustomCardTag :: Text
+missingCustomCardTag = "missing-custom-card"
+
+missingCustomCardDef :: CardType -> CardCode -> CardDef
+missingCustomCardDef cardType cardCode =
+  (emptyCardDef cardCode ("Missing card" :: Name) cardType)
+    { cdCardTraits = mempty
+    , cdTags = [missingCustomCardTag]
+    }
+
+{- | The def for a custom code, or a stand-in when it is not to hand.
+
+Used where an entity has to be built: a missing def costs that one card rather
+than the game. A code that is not a custom card at all still yields 'Nothing',
+so a missing *printed* card keeps failing loudly -- that is a bug in the engine,
+not a card someone deleted.
+-}
+lookupCustomCardDefOrMissing :: HasCardCode a => CardType -> a -> Maybe CardDef
+lookupCustomCardDefOrMissing cardType (toCardCode -> cardCode) =
+  lookupCustomCardDef cardCode
+    <|> (missingCustomCardDef cardType cardCode <$ guard (isCustomCardCode cardCode))
+
+-- | Whether a def is one of those stand-ins rather than a real card.
+isMissingCustomCard :: HasCardDef a => a -> Bool
+isMissingCustomCard = elem missingCustomCardTag . cdTags . toCardDef
 
 customCardPrefix :: Text
 customCardPrefix = "*"
@@ -172,3 +214,4 @@ customSignatureOwner (toCardCode -> cardCode) = unsafePerformIO do
   -- Raw: substitution asks who the owner is, which is what this answers.
   signatureCodes def =
     maybe [] (map sanitizeCustomCardCode) (rawMetaMaybe "_signatures" def)
+

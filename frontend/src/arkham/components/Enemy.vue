@@ -14,6 +14,7 @@ import { useGameChoices, useStickyChoicesSource, useGameChoicesTooltip } from '@
 import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
+import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
 import DebugEnemy from '@/arkham/components/debug/Enemy.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import TokenPool from '@/arkham/components/TokenPool.vue'
@@ -370,6 +371,7 @@ function onDrop(event: DragEvent) {
             :class="{ exhausted: isExhausted, 'enemy--objective': hasObjective, 'objective-ring': hasObjective }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
           >
+            <MissingCardBadge :card-code="enemy.cardCode" />
             <font-awesome-icon v-if="hasSpiritAura" :icon="['fas', 'ghost']" class="spirit-icon" />
             <span class="important" v-if="important">
               <font-awesome-icon :icon="['fa', 'circle-exclamation']" />

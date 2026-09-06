@@ -1,15 +1,13 @@
 module Arkham.Event.Events.UnearthTheAncients2 (unearthTheAncients2, UnearthTheAncients2 (..)) where
 
-import Arkham.Action qualified as Action
 import Arkham.Card
-import Arkham.Classes
 import Arkham.Event.Cards qualified as Cards
-import Arkham.Event.Runner
+import Arkham.Event.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (getCard)
-import Arkham.Helpers.Modifiers
-import Arkham.Investigate
+import Arkham.Helpers.Message qualified as Msg
+import Arkham.Helpers.SkillTest.Lifted (investigate_)
 import Arkham.Matcher
-import Arkham.Prelude
+import Arkham.Modifier
 import Arkham.Trait
 
 newtype Metadata = Metadata {chosenCards :: [CardId]}
@@ -28,32 +26,29 @@ unearthTheAncients2 = event (UnearthTheAncients2 . (`with` Metadata [])) Cards.u
 -- a future FAQ (not 2.0, which is about to be released).
 
 instance RunMessage UnearthTheAncients2 where
-  runMessage msg e@(UnearthTheAncients2 (attrs `With` metadata)) = case msg of
-    InvestigatorPlayEvent iid eid _ windows' _ | eid == toId attrs -> do
+  runMessage msg e@(UnearthTheAncients2 (attrs `With` metadata)) = runQueueT $ case msg of
+    InvestigatorPlayEvent iid eid _ _ _ | eid == toId attrs -> do
       assets <- select $ inHandOf NotForPlay iid <> basic (#seeker <> #asset)
-      player <- getPlayer iid
-      pushAll
-        [ chooseUpToN player 2 "Do not choose any more assets"
-            $ [ targetLabel asset [HandleTargetChoice iid (toSource attrs) (toTarget asset)]
-              | asset <- assets
-              ]
-        , ResolveEvent iid eid Nothing windows'
-        ]
+      chooseUpToN iid 2 "Do not choose any more assets"
+        $ [ targetLabel asset [HandleTargetChoice iid (toSource attrs) (toTarget asset)]
+          | asset <- assets
+          ]
+      doStep 1 msg
       pure e
     HandleTargetChoice _ (isSource attrs -> True) (CardIdTarget cid) -> do
       pure $ UnearthTheAncients2 $ attrs `with` Metadata (cid : chosenCards metadata)
-    ResolveEvent iid eid _ _ | eid == toId attrs -> do
+    DoStep 1 (InvestigatorPlayEvent iid eid _ _ _) | eid == toId attrs -> do
       sid <- getRandom
-      investigation <- mkInvestigate sid iid attrs
       cards <- traverse getCard (chosenCards metadata)
-      enabled <- skillTestModifier sid attrs sid (SetDifficulty $ sum $ map getCost cards)
-      pushAll [enabled, toMessage investigation]
+      skillTestModifier sid attrs sid (SetDifficulty $ sum $ map getCost cards)
+      investigate_ sid iid attrs
       pure e
-    Successful (Action.Investigate, _) iid (isSource attrs -> True) _ _ -> do
+    -- Unlike the level 0 printing this is not a replacement effect, so the location keeps
+    -- its own clue discovery and putting the assets into play is its own ST.7 option.
+    PassedThisSkillTest iid (isSource attrs -> True) -> do
       cards <- traverse getCard (chosenCards metadata)
-      let chosen = map (\card -> (card, drawCards iid attrs 1)) cards
-      pushAll
-        $ [putCardIntoPlay iid card | card <- cards]
-        <> [drawing | (card, drawing) <- chosen, Relic `member` toTraits card]
+      skillTestCardOption attrs $ for_ cards \card -> do
+        push $ Msg.putCardIntoPlay iid card
+        when (Relic `member` toTraits card) $ drawCards iid attrs 1
       pure e
-    _ -> UnearthTheAncients2 . (`with` metadata) <$> runMessage msg attrs
+    _ -> UnearthTheAncients2 . (`with` metadata) <$> liftRunMessage msg attrs

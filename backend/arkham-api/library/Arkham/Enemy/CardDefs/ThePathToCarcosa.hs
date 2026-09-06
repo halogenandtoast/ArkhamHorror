@@ -5,15 +5,16 @@ import Arkham.Keyword qualified as Keyword
 
 graveyardGhouls :: CardDef
 graveyardGhouls =
-  (weakness "03017" "Graveyard Ghouls")
-    { cdHealthDamage = healthDamage 1
-    , cdSanityDamage = sanityDamage 1
-    , cdFight = fight 3
-    , cdEvade = evade 2
-    , cdHealth = health 3
-    , cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
-    , cdKeywords = setFromList [Keyword.Hunter]
-    }
+  signature "03005"
+    $ (weakness "03017" "Graveyard Ghouls")
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 3
+      , cdEvade = evade 2
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Monster, Ghoul]
+      , cdKeywords = setFromList [Keyword.Hunter]
+      }
 
 theThingThatFollows :: CardDef
 theThingThatFollows =

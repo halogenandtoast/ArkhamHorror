@@ -33,11 +33,12 @@ analyticalMind =
 
 theKingInYellow :: CardDef
 theKingInYellow =
-  (weakness "03011" ("The King in Yellow" <:> "Act 1"))
-    { cdCardTraits = singleton Tome
-    , cdUnique = True
-    , cdSlots = [#hand]
-    }
+  signature "03002"
+    $ (weakness "03011" ("The King in Yellow" <:> "Act 1"))
+      { cdCardTraits = singleton Tome
+      , cdUnique = True
+      , cdSlots = [#hand]
+      }
 
 spiritSpeaker :: CardDef
 spiritSpeaker =

@@ -18,9 +18,10 @@ bonesaw =
 
 woundedBystanderOnDeathsDoorstep :: CardDef
 woundedBystanderOnDeathsDoorstep =
-  (weakness "09007" ("Wounded Bystander" <:> "On Death's Doorstep"))
-    { cdCardTraits = setFromList [Ally, Bystander]
-    }
+  signature "09004"
+    $ (weakness "09007" ("Wounded Bystander" <:> "On Death's Doorstep"))
+      { cdCardTraits = setFromList [Ally, Bystander]
+      }
 
 grapplingHook :: CardDef
 grapplingHook =

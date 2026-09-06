@@ -5,22 +5,25 @@ import Arkham.Treachery.CardDefs.Import
 
 rookieMistake :: CardDef
 rookieMistake =
-  (weakness "06007" "Rookie Mistake")
-    { cdCardTraits = setFromList [Blunder, Flaw]
-    }
+  signature "06001"
+    $ (weakness "06007" "Rookie Mistake")
+      { cdCardTraits = setFromList [Blunder, Flaw]
+      }
 
 shockingDiscovery :: CardDef
 shockingDiscovery =
-  (weakness "06009" "Shocking Discovery")
-    { cdCardTraits = setFromList [Blunder, Mystery]
-    , cdOutOfPlayEffects = [InSearchEffect]
-    }
+  signature "06002"
+    $ (weakness "06009" "Shocking Discovery")
+      { cdCardTraits = setFromList [Blunder, Mystery]
+      , cdOutOfPlayEffects = [InSearchEffect]
+      }
 
 detachedFromReality :: CardDef
 detachedFromReality =
-  (weakness "06014" "Detached from Reality")
-    { cdCardTraits = setFromList [Madness]
-    }
+  signature "06004"
+    $ (weakness "06014" "Detached from Reality")
+      { cdCardTraits = setFromList [Madness]
+      }
 
 bloodlust :: CardDef
 bloodlust =

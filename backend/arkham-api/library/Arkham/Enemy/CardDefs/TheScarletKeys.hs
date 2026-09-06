@@ -5,15 +5,16 @@ import Arkham.Keyword qualified as Keyword
 
 agentFletcher :: CardDef
 agentFletcher =
-  (weakness "09010" "Agent Fletcher")
-    { cdHealthDamage = healthDamage 1
-    , cdSanityDamage = sanityDamage 1
-    , cdFight = fight 2
-    , cdEvade = evade 3
-    , cdHealth = health 3
-    , cdCardTraits = setFromList [Humanoid, Coterie, Detective]
-    , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
-    }
+  signature "09008"
+    $ (weakness "09010" "Agent Fletcher")
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 2
+      , cdEvade = evade 3
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Coterie, Detective]
+      , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter]
+      }
 
 lurkerInTheDark :: CardDef
 lurkerInTheDark =

@@ -16,13 +16,13 @@ onTheLamAdvanced =
 
 darkMemoryAdvanced :: CardDef
 darkMemoryAdvanced =
-  (event "90019" "Dark Memory" 4 Neutral)
-    { cdCardTraits = setFromList [Spell]
-    , cdCardSubType = Just Weakness
-    , cdLevel = Nothing
-    , cdOutOfPlayEffects = [InHandEffect]
-    , cdKeywords = singleton Keyword.Advanced
-    }
+  signature "90017"
+    $ (event "90019" "Dark Memory" 4 Neutral)
+      { cdCardTraits = setFromList [Spell]
+      , cdCardSubType = Just Weakness
+      , cdOutOfPlayEffects = [InHandEffect]
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 searchForTheTruthAdvanced :: CardDef
 searchForTheTruthAdvanced =
@@ -50,7 +50,10 @@ leadingLadyHeroine =
       , cdCardTraits = setFromList [Tactic, Improvised]
       , cdKeywords = singleton Keyword.Replacement
       , cdFastWindow = Just $ DuringTurn You
-      , cdCriteria = Just $ Criteria.PlayableCardExistsIgnoreModifiersFromSelf (UnpaidCost NoAction) $ InHandOf ForPlay You
+      , cdCriteria =
+          Just
+            $ Criteria.PlayableCardExistsIgnoreModifiersFromSelf (UnpaidCost NoAction)
+            $ InHandOf ForPlay You
       }
 
 leadingLadyMentor :: CardDef
@@ -61,7 +64,10 @@ leadingLadyMentor =
       , cdCardTraits = setFromList [Insight, Improvised]
       , cdKeywords = singleton Keyword.Replacement
       , cdFastWindow = Just $ DuringTurn You
-      , cdCriteria = Just $ Criteria.PlayableCardExistsIgnoreModifiersFromSelf (UnpaidCost NoAction) $ InHandOf ForPlay You
+      , cdCriteria =
+          Just
+            $ Criteria.PlayableCardExistsIgnoreModifiersFromSelf (UnpaidCost NoAction)
+            $ InHandOf ForPlay You
       }
 
 leadingLadyFemmeFatale :: CardDef
@@ -72,7 +78,10 @@ leadingLadyFemmeFatale =
       , cdCardTraits = setFromList [Trick, Improvised]
       , cdKeywords = singleton Keyword.Replacement
       , cdFastWindow = Just $ DuringTurn You
-      , cdCriteria = Just $ Criteria.PlayableCardExistsIgnoreModifiersFromSelf (UnpaidCost NoAction) $ InHandOf ForPlay You
+      , cdCriteria =
+          Just
+            $ Criteria.PlayableCardExistsIgnoreModifiersFromSelf (UnpaidCost NoAction)
+            $ InHandOf ForPlay You
       }
 
 leadingLadyEnchantress :: CardDef
@@ -83,7 +92,10 @@ leadingLadyEnchantress =
       , cdCardTraits = setFromList [Ritual, Improvised]
       , cdKeywords = singleton Keyword.Replacement
       , cdFastWindow = Just $ DuringTurn You
-      , cdCriteria = Just $ Criteria.PlayableCardExistsIgnoreModifiersFromSelf (UnpaidCost NoAction) $ InHandOf ForPlay You
+      , cdCriteria =
+          Just
+            $ Criteria.PlayableCardExistsIgnoreModifiersFromSelf (UnpaidCost NoAction)
+            $ InHandOf ForPlay You
       }
 
 leadingLadyFinalGirl :: CardDef
@@ -94,5 +106,8 @@ leadingLadyFinalGirl =
       , cdCardTraits = setFromList [Spirit, Improvised]
       , cdKeywords = singleton Keyword.Replacement
       , cdFastWindow = Just $ DuringTurn You
-      , cdCriteria = Just $ Criteria.PlayableCardExistsIgnoreModifiersFromSelf (UnpaidCost NoAction) $ InHandOf ForPlay You
+      , cdCriteria =
+          Just
+            $ Criteria.PlayableCardExistsIgnoreModifiersFromSelf (UnpaidCost NoAction)
+            $ InHandOf ForPlay You
       }

@@ -54,12 +54,12 @@ knowTheScene =
 
 arrogance :: CardDef
 arrogance =
-  (skill "60303" "Arrogance" [#wildMinus] Neutral)
-    { cdCardTraits = singleton Flaw
-    , cdCardSubType = Just Weakness
-    , cdLevel = Nothing
-    , cdCommitRestrictions = [MustBeCommittedToYourTest]
-    }
+  signature "60301"
+    $ (skill "60303" "Arrogance" [#wildMinus] Neutral)
+      { cdCardTraits = singleton Flaw
+      , cdCardSubType = Just Weakness
+      , cdCommitRestrictions = [MustBeCommittedToYourTest]
+      }
 
 reckless :: CardDef
 reckless =

@@ -23,10 +23,11 @@ covertOpsInTheShadows =
 
 theNecronomiconDrakeTranslation :: CardDef
 theNecronomiconDrakeTranslation =
-  (weakness "12012" ("The Necronomicon" <:> "Drake Translation"))
-    { cdCardTraits = setFromList [Item, Tome, Cursed]
-    , cdSlots = [#arcane]
-    }
+  signature "12010"
+    $ (weakness "12012" ("The Necronomicon" <:> "Drake Translation"))
+      { cdCardTraits = setFromList [Item, Tome, Cursed]
+      , cdSlots = [#arcane]
+      }
 
 isabellesTwin45sLoadedWithVengeance :: CardDef
 isabellesTwin45sLoadedWithVengeance =
@@ -276,7 +277,8 @@ huntersInstinct =
     , cdLimits = [LimitPerInvestigator 1]
     , cdUses = uses Supply 3
     , cdErrata =
-        Just "This card’s keyword line should read “If there are no supplies on Hunter’s Instinct, discard it.”"
+        Just
+          "This card’s keyword line should read “If there are no supplies on Hunter’s Instinct, discard it.”"
     }
 
 jumpsuit :: CardDef

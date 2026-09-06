@@ -4,15 +4,17 @@ import Arkham.Treachery.CardDefs.Import
 
 crisisOfFaith :: CardDef
 crisisOfFaith =
-  (weakness "07007" "Crisis of Faith")
-    { cdCardTraits = singleton Madness
-    }
+  signature "07001"
+    $ (weakness "07007" "Crisis of Faith")
+      { cdCardTraits = singleton Madness
+      }
 
 sirenCall :: CardDef
 sirenCall =
-  (weakness "07016" "Siren Call")
-    { cdCardTraits = singleton Curse
-    }
+  signature "07005"
+    $ (weakness "07016" "Siren Call")
+      { cdCardTraits = singleton Curse
+      }
 
 dreadCurse :: CardDef
 dreadCurse =

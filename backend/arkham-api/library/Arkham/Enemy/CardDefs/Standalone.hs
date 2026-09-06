@@ -6,7 +6,8 @@ import Arkham.Keyword qualified as Keyword
 
 tommyMalloy :: CardDef
 tommyMalloy =
-  unique
+  signature "60101"
+    $ unique
     $ (weakness "60103" "Tommy Malloy")
       { cdHealthDamage = healthDamage 2
       , cdFight = fight 2
@@ -18,31 +19,34 @@ tommyMalloy =
 
 vengefulShade :: CardDef
 vengefulShade =
-  (weakness "90053" "Vengeful Shade")
-    { cdSanityDamage = sanityDamage 2
-    , cdFight = fight 5
-    , cdEvade = evade 5
-    , cdHealth = health 2
-    , cdCardTraits = setFromList [Monster, Geist]
-    , cdKeywords = singleton Keyword.Hunter
-    }
+  signature "02004"
+    $ (weakness "90053" "Vengeful Shade")
+      { cdSanityDamage = sanityDamage 2
+      , cdFight = fight 5
+      , cdEvade = evade 5
+      , cdHealth = health 2
+      , cdCardTraits = setFromList [Monster, Geist]
+      , cdKeywords = singleton Keyword.Hunter
+      }
 
 serpentsOfYigAdvanced :: CardDef
 serpentsOfYigAdvanced =
-  (weakness "90083" "Serpents of Yig")
-    { cdHealthDamage = healthDamage 1
-    , cdSanityDamage = sanityDamage 1
-    , cdFight = fight 3
-    , cdEvade = evade 3
-    , cdHealth = health 4
-    , cdCardTraits = setFromList [Humanoid, Monster, Serpent]
-    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Advanced]
-    , cdRevelation = IsRevelation
-    }
+  signature "04004"
+    $ (weakness "90083" "Serpents of Yig")
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 3
+      , cdEvade = evade 3
+      , cdHealth = health 4
+      , cdCardTraits = setFromList [Humanoid, Monster, Serpent]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Advanced]
+      , cdRevelation = IsRevelation
+      }
 
 felineHybrid :: CardDef
 felineHybrid =
-  unique
+  signature "60551"
+    $ unique
     $ (weakness "60553" "Feline Hybrid")
       { cdHealthDamage = healthDamage 1
       , cdSanityDamage = sanityDamage 1

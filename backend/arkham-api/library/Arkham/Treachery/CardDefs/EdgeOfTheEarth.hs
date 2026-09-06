@@ -5,28 +5,32 @@ import Arkham.Treachery.CardDefs.Import
 
 theHarbinger :: CardDef
 theHarbinger =
-  (weakness "08006" "The Harbinger")
-    { cdCardTraits = setFromList [Omen, Endtimes]
-    , cdOutOfPlayEffects = [OnTopOfDeckEffect]
-    }
+  signature "08004"
+    $ (weakness "08006" "The Harbinger")
+      { cdCardTraits = setFromList [Omen, Endtimes]
+      , cdOutOfPlayEffects = [OnTopOfDeckEffect]
+      }
 
 buriedSecrets :: CardDef
 buriedSecrets =
-  (weakness "08009" "Buried Secrets")
-    { cdCardTraits = setFromList [Mystery]
-    }
+  signature "08007"
+    $ (weakness "08009" "Buried Secrets")
+      { cdCardTraits = setFromList [Mystery]
+      }
 
 burdenOfDestiny :: CardDef
 burdenOfDestiny =
-  (weakness "08015" "Burden of Destiny")
-    { cdCardTraits = setFromList [Flaw]
-    }
+  signature "08010"
+    $ (weakness "08015" "Burden of Destiny")
+      { cdCardTraits = setFromList [Flaw]
+      }
 
 greed :: CardDef
 greed =
-  (weakness "08018" "Greed")
-    { cdCardTraits = setFromList [Flaw]
-    }
+  signature "08016"
+    $ (weakness "08018" "Greed")
+      { cdCardTraits = setFromList [Flaw]
+      }
 
 armInjury :: CardDef
 armInjury =

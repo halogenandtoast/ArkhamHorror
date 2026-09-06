@@ -4,18 +4,21 @@ import Arkham.Treachery.CardDefs.Import
 
 hastyRepairs :: CardDef
 hastyRepairs =
-  (weakness "10003" "Hasty Repairs")
-    { cdCardTraits = setFromList [Blunder]
-    }
+  signature "10001"
+    $ (weakness "10003" "Hasty Repairs")
+      { cdCardTraits = setFromList [Blunder]
+      }
 
 failedExperiment :: CardDef
 failedExperiment =
-  (weakness "10008" "Failed Experiment")
-    { cdCardTraits = setFromList [Blunder]
-    }
+  signature "10004"
+    $ (weakness "10008" "Failed Experiment")
+      { cdCardTraits = setFromList [Blunder]
+      }
 
 wheresPa :: CardDef
 wheresPa =
-  (weakness "10018" "\"Where's Pa?\"")
-    { cdCardTraits = setFromList [Flaw]
-    }
+  signature "10015"
+    $ (weakness "10018" "\"Where's Pa?\"")
+      { cdCardTraits = setFromList [Flaw]
+      }

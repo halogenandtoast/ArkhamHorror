@@ -4,25 +4,30 @@ import Arkham.Treachery.CardDefs.Import
 
 smiteTheWicked :: CardDef
 smiteTheWicked =
-  (weakness "02007" "Smite the Wicked") {cdCardTraits = setFromList [Task]}
+  signature "02001"
+    $ (weakness "02007" "Smite the Wicked") {cdCardTraits = setFromList [Task]}
 
 rexsCurse :: CardDef
 rexsCurse =
-  (weakness "02009" "Rex's Curse") {cdCardTraits = setFromList [Curse]}
+  signature "02002"
+    $ (weakness "02009" "Rex's Curse") {cdCardTraits = setFromList [Curse]}
 
 searchingForIzzie :: CardDef
 searchingForIzzie =
-  (weakness "02011" "Searching for Izzie") {cdCardTraits = setFromList [Task]}
+  signature "02003"
+    $ (weakness "02011" "Searching for Izzie") {cdCardTraits = setFromList [Task]}
 
 finalRhapsody :: CardDef
 finalRhapsody =
-  (weakness "02013" "Final Rhapsody") {cdCardTraits = setFromList [Endtimes]}
+  signature "02004"
+    $ (weakness "02013" "Final Rhapsody") {cdCardTraits = setFromList [Endtimes]}
 
 wrackedByNightmares :: CardDef
 wrackedByNightmares =
-  (weakness "02015" "Wracked by Nightmares")
-    { cdCardTraits = setFromList [Madness]
-    }
+  signature "02005"
+    $ (weakness "02015" "Wracked by Nightmares")
+      { cdCardTraits = setFromList [Madness]
+      }
 
 indebted :: CardDef
 indebted =

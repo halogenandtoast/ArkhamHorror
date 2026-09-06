@@ -16,13 +16,13 @@ onTheLam =
 
 darkMemory :: CardDef
 darkMemory =
-  (event "01013" "Dark Memory" 2 Neutral)
-    { cdCardTraits = setFromList [Spell]
-    , cdCardSubType = Just Weakness
-    , cdLevel = Nothing
-    , cdOutOfPlayEffects = [InHandEffect]
-    , cdAlternateCardCodes = ["01513"]
-    }
+  signature "01004"
+    $ (event "01013" "Dark Memory" 2 Neutral)
+      { cdCardTraits = setFromList [Spell]
+      , cdCardSubType = Just Weakness
+      , cdOutOfPlayEffects = [InHandEffect]
+      , cdAlternateCardCodes = ["01513"]
+      }
 
 evidence :: CardDef
 evidence =

@@ -5,6 +5,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.EncounterSet hiding (Byakhee, Dunwich, Poison)
+import Arkham.Id (InvestigatorId)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Name
 import Arkham.Prelude
@@ -24,6 +25,20 @@ baseTreachery cardCode name mEncounterSet isWeakness =
     , cdRevelation = IsRevelation
     , cdLevel = Nothing
     }
+
+{- | A card only legal in one investigator's deck.
+
+Also what 'isSignature' answers, so it is what tells the deck overlay whose
+signatures to take out when it swaps an investigator, and what
+@SignatureTreachery@ / @SignatureEnemy@ match on. A signature weakness needs it
+as much as a signature asset does.
+-}
+signature :: InvestigatorId -> CardDef -> CardDef
+signature iid cd = cd {cdDeckRestrictions = [Signature iid], cdLevel = Nothing}
+
+-- | For the few cards two different investigators both bring.
+signatureOf :: [InvestigatorId] -> CardDef -> CardDef
+signatureOf iids cd = cd {cdDeckRestrictions = map Signature iids, cdLevel = Nothing}
 
 surge :: CardDef -> CardDef
 surge def = def {cdKeywords = insertSet Keyword.Surge (cdKeywords def)}

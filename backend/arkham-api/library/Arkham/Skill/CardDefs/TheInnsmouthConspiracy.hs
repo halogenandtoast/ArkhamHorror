@@ -4,12 +4,12 @@ import Arkham.Skill.CardDefs.Import
 
 whispersFromTheDeep :: CardDef
 whispersFromTheDeep =
-  (skill "07009" "Whispers from the Deep" [#wildMinus] Neutral)
-    { cdCardTraits = singleton Curse
-    , cdCardSubType = Just Weakness
-    , cdLevel = Nothing
-    , cdOutOfPlayEffects = [InHandEffect]
-    }
+  signature "07002"
+    $ (skill "07009" "Whispers from the Deep" [#wildMinus] Neutral)
+      { cdCardTraits = singleton Curse
+      , cdCardSubType = Just Weakness
+      , cdOutOfPlayEffects = [InHandEffect]
+      }
 
 planOfAction :: CardDef
 planOfAction =

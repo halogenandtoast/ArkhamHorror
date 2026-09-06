@@ -41,12 +41,13 @@ twilightBlade =
 
 baronSamedi :: CardDef
 baronSamedi =
-  (weakness "05019" ("Baron Samedi" <:> "Lord of the Cemetery"))
-    { cdCardTraits = singleton Avatar
-    , cdSlots = [#ally]
-    , cdAlternateCardCodes = ["99003"]
-    , cdUnique = True
-    }
+  signature "05006"
+    $ (weakness "05019" ("Baron Samedi" <:> "Lord of the Cemetery"))
+      { cdCardTraits = singleton Avatar
+      , cdSlots = [#ally]
+      , cdAlternateCardCodes = ["99003"]
+      , cdUnique = True
+      }
 
 aceOfSwords1 :: CardDef
 aceOfSwords1 =

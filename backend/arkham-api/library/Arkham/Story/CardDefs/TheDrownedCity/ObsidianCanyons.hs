@@ -6,7 +6,8 @@ easternWinds :: CardDef
 easternWinds = story "11640b" "Eastern Winds" ObsidianCanyons & otherSideIs "11640"
 
 erodedFriezeStory :: CardDef
-erodedFriezeStory = doubleSided $ story "11664b" "Eroded Frieze" ObsidianCanyons
+erodedFriezeStory =
+  (doubleSided $ story "11664b" "Eroded Frieze" ObsidianCanyons) {cdVictoryPoints = Just 1}
 
 glyphOrreryStory :: CardDef
 glyphOrreryStory = doubleSided $ story "11662b" "Glyph Orrery" ObsidianCanyons

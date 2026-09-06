@@ -11,6 +11,11 @@
       "onlyWhenEngaged": {
         "label": "Only offer when engaged"
       }
+    },
+    "c11764": {
+      "treatAsPartiallyFlooded": {
+        "label": "Treat fully flooded as partially flooded"
+      }
     }
   }
 }

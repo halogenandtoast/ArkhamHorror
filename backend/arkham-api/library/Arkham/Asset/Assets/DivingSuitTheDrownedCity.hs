@@ -3,7 +3,8 @@ module Arkham.Asset.Assets.DivingSuitTheDrownedCity (divingSuitTheDrownedCity) w
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
+import Arkham.Helpers.CardOption (getCardOptionSet)
+import Arkham.Helpers.Modifiers (ModifierType (..), controllerGetsMaybe)
 import Arkham.Matcher
 
 newtype DivingSuitTheDrownedCity = DivingSuitTheDrownedCity AssetAttrs
@@ -13,8 +14,13 @@ newtype DivingSuitTheDrownedCity = DivingSuitTheDrownedCity AssetAttrs
 divingSuitTheDrownedCity :: AssetCard DivingSuitTheDrownedCity
 divingSuitTheDrownedCity = assetWith DivingSuitTheDrownedCity Cards.divingSuitTheDrownedCity (healthL ?~ 3)
 
+-- The suit's "you *may* treat it as if it were partially flooded" is a card
+-- option, not an unconditional modifier: sometimes you want to stay fully
+-- flooded (Undersea Hunt's +2 difficulty, #5625).
 instance HasModifiersFor DivingSuitTheDrownedCity where
-  getModifiersFor (DivingSuitTheDrownedCity a) = controllerGets a [TreatFullyFloodedAsPartiallyFlooded]
+  getModifiersFor (DivingSuitTheDrownedCity a) = controllerGetsMaybe a \iid -> do
+    liftGuardM $ getCardOptionSet iid a "treatAsPartiallyFlooded"
+    pure [TreatFullyFloodedAsPartiallyFlooded]
 
 instance HasAbilities DivingSuitTheDrownedCity where
   getAbilities (DivingSuitTheDrownedCity a) =

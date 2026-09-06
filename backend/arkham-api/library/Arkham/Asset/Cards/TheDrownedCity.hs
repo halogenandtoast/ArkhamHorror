@@ -782,6 +782,7 @@ divingSuitTheDrownedCity =
   (storyAsset "11764" "Diving Suit" 3 TheDrownedCityExpedition)
     { cdCardTraits = setFromList [Item, Armor]
     , cdSkills = [#combat]
+    , cdOptions = [cardToggle "treatAsPartiallyFlooded" True]
     }
 
 rubyStandish :: CardDef

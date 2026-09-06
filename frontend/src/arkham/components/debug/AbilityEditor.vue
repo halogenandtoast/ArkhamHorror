@@ -11,6 +11,7 @@ import {
   messageConstructors,
   schemaLoaded,
   typeSchema,
+  windowsForMatcher,
   type FieldSchema,
 } from '@/arkham/schema'
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
@@ -94,47 +95,30 @@ const bindingsFor = (tag: string) => [
 const isBinding = (value: string) => value.trim().startsWith('$')
 const isKnownBinding = (tag: string, value: string) => bindingsFor(tag).includes(value.trim())
 
-/* An ability that triggers on a window can read that window's fields as $w0,
- * $w1, … the way a handler reads a message's — that is how "heal that many" gets
- * its number.
+/* An ability that triggers on a window reads that window's fields as $w0, $w1,
+ * … the way a handler reads a message's — that is how "heal that many" gets its
+ * number.
  *
- * Which window a matcher fires on is not derivable from the two types: a third
- * of the matcher names differ from their window's (InvestigatorHealed fires on
- * Healed, PlacedCounter on PlacedToken) and some match several. The mapping
- * lives in Helpers.Window as case arms and is not reified, so rather than guess
- * and be quietly wrong, this defaults only to an exact name match and otherwise
- * asks. Getting the index wrong fails silently, which is the whole reason to
- * show the fields at all. */
+ * Which window a matcher fires on is not derivable from the two types (a third
+ * of the names differ: InvestigatorHealed fires on Healed, PlacedCounter on
+ * PlacedToken), so it is recorded in Arkham.Custom.Schema.Windows and served
+ * with the schema. */
 const windows = computed(() => typeSchema('WindowType')?.constructors ?? [])
 const windowNames = computed(() => windows.value.map((c) => c.name).sort())
 const windowFields = (name: string) => windows.value.find((c) => c.name === name)?.fields ?? []
 const knownWindow = (name: string) => windows.value.some((c) => c.name === name)
 
-/* Windows ordered by how likely they are to be the one this matcher fires on.
+/* The windows a matcher fires on, and everything else after them.
  *
- * The real mapping is case arms in Helpers.Window and is not reified, so this
- * only *ranks* -- it never selects. A matcher's window is usually its name with
- * a prefix or suffix trimmed (InvestigatorHealed fires on Healed, EnemyReadies
- * on Readies, AgendaAdvances on AgendaAdvance), which a shared-affix score puts
- * at the top without ever committing to it. */
-function affinity(matcher: string, window: string): number {
-  if (matcher === window) return 1000
-  const shared = (a: string, b: string) => {
-    let n = 0
-    while (n < a.length && n < b.length && a[n] === b[n]) n++
-    return n
-  }
-  const prefix = shared(matcher, window)
-  const suffix = shared([...matcher].reverse().join(''), [...window].reverse().join(''))
-  const contains = matcher.includes(window) || window.includes(matcher) ? window.length : 0
-  return Math.max(prefix, suffix, contains)
-}
+ * The mapping is served with the schema (Arkham.Custom.Schema.Windows), so this
+ * no longer guesses -- but a matcher that fires on several still needs a choice,
+ * and one the table has nothing for still needs the full list. */
+const windowsFor = (matcher: string | null) => (matcher ? windowsForMatcher(matcher) : [])
 
 const windowCandidates = (matcher: string | null) => {
-  if (!matcher) return windowNames.value
-  return [...windowNames.value].sort(
-    (a, b) => affinity(matcher, b) - affinity(matcher, a) || a.localeCompare(b),
-  )
+  const known = windowsFor(matcher)
+  if (!known.length) return windowNames.value
+  return [...known, ...windowNames.value.filter((n) => !known.includes(n))]
 }
 
 /* The matcher an ability triggers on, if its AbilityType carries one. The
@@ -144,14 +128,16 @@ function abilityWindowMatcher(ability: any): string | null {
   return typeof tag === 'string' ? tag : null
 }
 
-/* What the editor shows fields for: the author's choice, else an exact match.
- * The choice is kept on the ability so it survives reopening the card. It is a
- * note to the next author rather than anything the engine reads — `AbilitySpec`
- * names the keys it wants and ignores the rest. */
+/* Which window's fields to show. The table answers it outright when a matcher
+ * fires on exactly one; a matcher that fires on several is the only case left
+ * that needs asking. An explicit choice still wins, and is kept on the ability
+ * so it survives reopening the card -- a note to the next author rather than
+ * anything the engine reads, since `AbilitySpec` ignores keys it does not name.
+ */
 function abilityWindow(ability: any): string {
-  if (typeof ability.windowHint === 'string') return ability.windowHint
-  const matcher = abilityWindowMatcher(ability)
-  return matcher && knownWindow(matcher) ? matcher : ''
+  if (typeof ability.windowHint === 'string' && ability.windowHint) return ability.windowHint
+  const known = windowsFor(abilityWindowMatcher(ability))
+  return known.length === 1 && knownWindow(known[0]) ? known[0] : ''
 }
 
 const abilities = computed(() => props.abilities ?? [])
@@ -351,17 +337,14 @@ function handlerScope(handler: any, index: number): Binding[] {
             <li v-if="!windowFields(abilityWindow(ability)).length" class="muted">no fields</li>
           </ul>
           <p v-if="!abilityWindow(ability)" class="hint needed">
-            <code>{{ abilityWindowMatcher(ability) }}</code> does not share a name with any window,
-            so the editor cannot tell which one it fires on. The closest matches are listed first —
-            <code>{{ windowCandidates(abilityWindowMatcher(ability))[0] }}</code> is the likeliest.
-            Until you pick, <code>$w0</code>… still work but cannot be described.
-          </p>
-          <p class="hint muted">
-            Which window <code>{{ abilityWindowMatcher(ability) }}</code> fires on is not recorded
-            anywhere the editor can read, and a third of the matcher names differ from their
-            window's — <code>InvestigatorHealed</code> fires on <code>Healed</code>,
-            <code>PlacedCounter</code> on <code>PlacedToken</code>. Check the one you pick; a wrong
-            index binds the wrong field and fails silently.
+            <code>{{ abilityWindowMatcher(ability) }}</code>
+            <template v-if="windowsFor(abilityWindowMatcher(ability)).length > 1">
+              fires on more than one window, so which fields <code>$w0</code>… are depends on
+              which. Its own are listed first.
+            </template>
+            <template v-else>
+              fires on no window of its own, so there are no <code>$wN</code> to describe.
+            </template>
           </p>
         </template>
 

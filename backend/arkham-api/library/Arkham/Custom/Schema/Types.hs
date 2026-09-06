@@ -15,6 +15,11 @@ data FieldSchema = FieldSchema
 data ConSchema = ConSchema
   { conName :: Text
   , conFields :: [FieldSchema]
+  , conWindows :: [Text]
+  {- ^ For a 'WindowMatcher' only: the windows it fires on, so the editor can
+  name an ability's @$w0@, @$w1@, … without asking. Empty for every other type,
+  and for the matchers that fire on no window of their own.
+  -}
   }
   deriving stock (Show, Eq, Lift)
 
@@ -42,7 +47,7 @@ instance ToJSON FieldSchema where
   toJSON f = object ["name" .= fieldName f, "type" .= fieldType f]
 
 instance ToJSON ConSchema where
-  toJSON c = object ["name" .= conName c, "fields" .= conFields c]
+  toJSON c = object ["name" .= conName c, "fields" .= conFields c, "windows" .= conWindows c]
 
 instance ToJSON TypeSchema where
   toJSON t =

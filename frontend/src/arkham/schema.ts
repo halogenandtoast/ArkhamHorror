@@ -4,7 +4,13 @@ import { reactive, ref } from 'vue'
 import api from '@/api'
 
 export type FieldSchema = { name: string | null; type: string }
-export type ConSchema = { name: string; fields: FieldSchema[] }
+export type ConSchema = {
+  name: string
+  fields: FieldSchema[]
+  /* For a WindowMatcher: the windows it fires on, from
+   * Arkham.Custom.Schema.Windows. Empty everywhere else. */
+  windows?: string[]
+}
 export type TypeSchema = {
   name: string
   constructors: ConSchema[]
@@ -197,4 +203,16 @@ export function decodeConstructor(schema: TypeSchema, value: any): { con: ConSch
     con.fields.forEach((_, i) => (values[String(i)] = contents[i]))
   }
   return { con, values }
+}
+
+/* The windows a WindowMatcher fires on.
+ *
+ * The engine's answer is case arms in Helpers.Window, which cannot be reified,
+ * so it is written down as a table and served with the schema. Empty means the
+ * matcher fires on no window of its own -- a combinator, or a question about
+ * state rather than an event.
+ */
+export function windowsForMatcher(matcher: string): string[] {
+  const schema = types.get('WindowMatcher')
+  return schema?.constructors.find((c) => c.name === matcher)?.windows ?? []
 }

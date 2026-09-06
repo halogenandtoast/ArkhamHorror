@@ -2,6 +2,7 @@
 module Arkham.Custom.Schema.TH (schemaFor, schemaForWith) where
 
 import Arkham.Custom.Schema.Types
+import Arkham.Custom.Schema.Windows (matcherWindows)
 import Arkham.Prelude hiding (Type)
 import Data.Set qualified as Set
 import Data.Text qualified as T
@@ -109,11 +110,25 @@ jsonFieldName tyName fieldName
     Just (c, rest) -> T.toLower (T.singleton c) <> rest
     Nothing -> t
 
+{- | The windows a matcher fires on, for 'WindowMatcher' and nothing else.
+
+Carried on the constructor so the editor can name an ability's @$wN@ without
+having to ask which window its matcher means -- the two types' names agree only
+two thirds of the time. See "Arkham.Custom.Schema.Windows".
+-}
+windowsOf :: Name -> Name -> [Text]
+windowsOf tyName conName'
+  | nameBase tyName /= "WindowMatcher" = []
+  | otherwise = fromMaybe [] (lookup (T.pack (nameBase conName')) matcherWindows)
+
 conSchemas :: Name -> Con -> [(ConSchema, [Name])]
 conSchemas tyName = \case
   NormalC n bts ->
     [
-      ( ConSchema (T.pack (nameBase n)) [FieldSchema Nothing (renderType t) | (_, t) <- bts]
+      ( ConSchema
+          (T.pack (nameBase n))
+          [FieldSchema Nothing (renderType t) | (_, t) <- bts]
+          (windowsOf tyName n)
       , concatMap (referenced . snd) bts
       )
     ]
@@ -122,6 +137,7 @@ conSchemas tyName = \case
       ( ConSchema
           (T.pack (nameBase n))
           [FieldSchema (Just (jsonFieldName tyName f)) (renderType t) | (f, _, t) <- vbts]
+          (windowsOf tyName n)
       , concatMap (\(_, _, t) -> referenced t) vbts
       )
     ]
@@ -130,12 +146,16 @@ conSchemas tyName = \case
       ( ConSchema
           (T.pack (nameBase n))
           [FieldSchema Nothing (renderType (snd a)), FieldSchema Nothing (renderType (snd b))]
+          (windowsOf tyName n)
       , referenced (snd a) <> referenced (snd b)
       )
     ]
   ForallC _ _ c -> conSchemas tyName c
   GadtC ns bts _ ->
-    [ ( ConSchema (T.pack (nameBase n)) [FieldSchema Nothing (renderType t) | (_, t) <- bts]
+    [ ( ConSchema
+          (T.pack (nameBase n))
+          [FieldSchema Nothing (renderType t) | (_, t) <- bts]
+          (windowsOf tyName n)
       , concatMap (referenced . snd) bts
       )
     | n <- ns
@@ -144,6 +164,7 @@ conSchemas tyName = \case
     [ ( ConSchema
           (T.pack (nameBase n))
           [FieldSchema (Just (jsonFieldName tyName f)) (renderType t) | (f, _, t) <- vbts]
+          (windowsOf tyName n)
       , concatMap (\(_, _, t) -> referenced t) vbts
       )
     | n <- ns

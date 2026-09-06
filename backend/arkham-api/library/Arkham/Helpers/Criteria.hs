@@ -342,7 +342,7 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
               then pure False
               else do
                 -- todo we should make a cleaner method for this
-                fieldMap InDiscardAssetCardId (`elem` discard) aid
+                maybe False (`elem` discard) <$> fieldMay InDiscardAssetCardId aid
           SkillSource aid -> do
             inPlay <- selectAny $ Matcher.SkillWithId aid
             if inPlay

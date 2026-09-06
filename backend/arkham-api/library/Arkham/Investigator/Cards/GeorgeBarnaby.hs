@@ -29,7 +29,7 @@ instance HasAbilities GeorgeBarnaby where
   getAbilities (GeorgeBarnaby x) =
     [ playerLimit PerPhase
         $ restricted x 1 (Self <> NotSetup <> criteria)
-        $ freeReaction (DiscardedFromHand #after You AnySource #any)
+        $ freeReaction (DiscardedFromHand #after You AnySource $ InDiscardOf (be x))
     ]
    where
     criteria = if length (investigatorCardsUnderneath x) < 5 then NoRestriction else Never

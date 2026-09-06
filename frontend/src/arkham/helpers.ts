@@ -2,7 +2,13 @@ import { useSiteSettingsStore } from '@/stores/site_settings'
 import { replaceHomebrewIcons } from '@/arkham/homebrewAssets'
 import { iconClasses, runePlaceholder } from '@/arkham/icons'
 import { ref, type Ref } from 'vue';
-import { customCardArt, customCardDef, customCardPlaceholder, isCustomCardCode } from '@/arkham/customCards'
+import {
+  cardArtReference,
+  customCardArt,
+  customCardDef,
+  customCardPlaceholder,
+  isCustomCardCode,
+} from '@/arkham/customCards'
 
 interface ImageHelper {
   root: string
@@ -98,11 +104,16 @@ export function isLocalized(src: string) {
   return false
 }
 
-export function imgsrc(src: string) {
+export function imgsrc(src: string): string {
   // A debug-authored card carries its art with it (a URL, or a data URI for a
-  // dropped image) rather than living under the asset host.
-  if (isCustomCardCode(src)) return customCardArt(src) ?? customCardPlaceholder(src)
-
+  // dropped image) rather than living under the asset host -- unless it names a
+  // printed card's art instead, which resolves down the ordinary path below.
+  if (isCustomCardCode(src)) {
+    const art = customCardArt(src)
+    if (!art) return customCardPlaceholder(src)
+    const reference = cardArtReference(art)
+    return reference ? imgsrc(cardImgPath(reference)) : art
+  }
 
   const store = useSiteSettingsStore()
   const language = localStorage.getItem('language') || 'en'

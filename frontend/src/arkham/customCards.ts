@@ -107,6 +107,17 @@ export function customCardDef(code: string): CardDef | undefined {
   return registry.get(stripCardCodePrefix(code))?.def
 }
 
+/* An art field may name a printed card instead of carrying an image of its own,
+ * so a custom investigator can reuse an existing face, back, or portrait rather
+ * than re-uploading one. It is stored as the bare card code, never as a URL: the
+ * asset host differs between development and production, so only the code
+ * survives an export. Whoever resolves it decides which image of that card it
+ * means -- a portrait slot reads a portrait, an art slot reads the card. */
+export function cardArtReference(art: string | null | undefined): string | null {
+  const code = art?.trim() ?? ''
+  return /^\d{5}[a-z]?$/.test(code) ? code : null
+}
+
 // `art` arrives with a card-side suffix appended by the art helpers (`…b` for a
 // back). Custom cards are single-sided, so fall back to the bare code.
 export function customCardArt(art: string): string | null {

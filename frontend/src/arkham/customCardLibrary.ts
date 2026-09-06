@@ -7,7 +7,12 @@
 // separate on purpose.
 import { computed, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
-import { normalizeCardDef, registerCustomCards, type CustomCard } from '@/arkham/customCards'
+import {
+  cardArtReference,
+  normalizeCardDef,
+  registerCustomCards,
+  type CustomCard,
+} from '@/arkham/customCards'
 
 export type LibraryCard = CustomCard & { id: string; updatedAt: string }
 
@@ -159,6 +164,9 @@ async function inlineDefArt(def: any): Promise<any> {
 
 async function inlineArt(art: string | null): Promise<string | null> {
   if (!art || art.startsWith('data:')) return art
+  // A reference to a printed card's art is already portable, and means the same
+  // card wherever it is imported; inlining it would only make the export bigger.
+  if (cardArtReference(art)) return art
   try {
     const response = await fetch(art)
     if (!response.ok) return null

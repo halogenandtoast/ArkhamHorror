@@ -1,5 +1,5 @@
 import { cardImg, imgsrc } from '@/arkham/helpers'
-import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
+import { cardArtReference, customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Game } from '@/arkham/types/Game'
 import type { Source } from '@/arkham/types/Source'
@@ -68,6 +68,10 @@ export function portraitImage(cardCode: string, suffix: string = ''): string {
   if (isCustomCardCode(cardCode)) {
     const def = customCardDef(cardCode)
     const portrait = suffix === 'b' ? def?.meta?.portraitBack : def?.meta?.portrait
+    // A slot may name a printed investigator rather than carry its own image,
+    // which here means that investigator's portrait, not their card.
+    const reference = cardArtReference(portrait)
+    if (reference) return imgsrc(`portraits/${reference}.jpg`)
     if (portrait) return portrait
     return cardImg(cardArt(cardCode, suffix))
   }

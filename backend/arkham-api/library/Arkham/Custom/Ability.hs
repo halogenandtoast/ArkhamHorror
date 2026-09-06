@@ -9,6 +9,9 @@ the card def's meta:
   runs steps when a message with that tag is addressed to this card. A handler
   may also require fields of the message to match ("the source has to be me"),
   which a card written by hand would do by pattern matching.
+* @_onRevelation@ -- what the card does when it is revealed, plus where it puts
+  itself (@_revelationPlacement@). A revelation is not an ability anyone
+  activates, so it gets a key rather than an entry in @_abilities@.
 * @_modifiers@ -- modifiers the card hands out while it is in play. Each names
   what to match and the modifiers to give whatever it matches. Matching @card@
   rather than an entity targets the card itself, so the modifier is already
@@ -17,6 +20,7 @@ the card def's meta:
 Both run the same small step language:
 
 * @query@ -- run a matcher and bind the result to a name.
+* @let@ -- bind an expression over what is already bound (see "Arkham.Custom.Expr").
 * @push@ -- push a message.
 * @if@ -- branch on a criterion, or on whether a matcher found anything.
 * @case@ -- the first branch whose condition holds, with an optional fallback.
@@ -27,6 +31,7 @@ Both run the same small step language:
 * @fight@ -- fight an enemy, with modifiers for that attack.
 * @attack@ -- an enemy attacks an investigator.
 * @ready@ -- ready a card.
+* @draw@ -- draw cards, however many an expression works out to.
 * @gather@ -- shuffle a card from an encounter set into a deck.
 * @customize@ -- mark a checkbox on a customizable card you own.
 
@@ -36,18 +41,22 @@ ordinary message, so a @push@ covers "for this attack" and friends.
 The JSON is written before the card exists, so it cannot name the entity it
 belongs to. Instead it refers to values by @$name@: the entity's own serialized
 fields (@$id@, @$placement@, …), @$source@ and @$target@, @$iid@ for whoever
-used an ability, @$message@ and @$0@, @$1@, … for the fields of a handled
-message, and anything a @query@ step has bound. Those are substituted into the
-JSON before it is decoded, so the decoder only ever sees ordinary, fully
-applied JSON.
+used an ability, @$window@ and @$w0@, @$w1@, … for the window that ability
+triggered on, @$message@ and @$0@, @$1@, … for the fields of a handled message,
+and anything a @query@ step has bound. Those are substituted into the JSON
+before it is decoded, so the decoder only ever sees ordinary, fully applied
+JSON.
 -}
 module Arkham.Custom.Ability (
   customAbilities,
   customModifiers,
   runCustomAbility,
   isCustomAbility,
+  pattern ZonedUseThisAbility,
   runCustomHandlers,
   runCustomSteps,
+  customSteps,
+  runCustomRevelation,
   abilitiesMetaKey,
   handlersMetaKey,
   modifiersMetaKey,
@@ -66,6 +75,7 @@ import Arkham.Deck qualified as Deck
 -- modules into the cycle and onto their boot interfaces).
 
 import Arkham.Card.PlayerCard (lookupPlayerCard)
+import Arkham.Custom.Expr (evalExpr, exprInt)
 import Arkham.Customization (CustomizationChoice (..))
 import Arkham.Fight (ChooseFight (..))
 import Arkham.Helpers.Ability (getCanPerformAbility)
@@ -77,6 +87,7 @@ import Arkham.Helpers.Customization (
   customizationKey,
   hasCustomization_,
  )
+import Arkham.Helpers.Message (drawCards)
 import Arkham.Helpers.Modifiers (
   ModifierType (ReduceCostOf),
   modifySelect,
@@ -85,6 +96,7 @@ import Arkham.Helpers.Modifiers (
  )
 import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.Window (windowMatches)
 import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Id
 import Arkham.Matcher
@@ -97,6 +109,7 @@ import Arkham.Message.Lifted (
  )
 import Arkham.Message.Lifted.Base (capture)
 import Arkham.Message.Lifted.Card (playCardPayingCost)
+import Arkham.Message.Lifted.Placement (Placeable, Placement (InPlayArea, InThreatArea), place)
 import Arkham.Message.Lifted.Prompt qualified as Prompt
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Name (toTitle)
@@ -106,7 +119,8 @@ import Arkham.Query (QueryElement)
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (displayTrait)
-import Arkham.Window (defaultWindows)
+import Arkham.Window (Window, defaultWindows, windowType)
+import Control.Monad.Extra (findM)
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
@@ -124,6 +138,12 @@ handlersMetaKey = "_handlers"
 modifiersMetaKey :: Text
 modifiersMetaKey = "_modifiers"
 
+revelationMetaKey :: Text
+revelationMetaKey = "_onRevelation"
+
+revelationPlacementMetaKey :: Text
+revelationPlacementMetaKey = "_revelationPlacement"
+
 type Env = KeyMap.KeyMap Value
 
 -- * Specs
@@ -133,6 +153,12 @@ data AbilitySpec = AbilitySpec
   , specCriteria :: Maybe Value
   , specLimit :: Maybe Value
   , specTooltip :: Maybe Text
+  , specZone :: Maybe Text
+  {- ^ Where the card has to be for the ability to be live: @hand@, @discard@,
+  @search@, @topOfDeck@, or in play when absent. A card only exists as an
+  entity out of play if its def says so, which is why the def's zone list is
+  derived from this rather than set beside it.
+  -}
   , specSteps :: [Value]
   }
 
@@ -147,6 +173,8 @@ instance FromJSON AbilitySpec where
       .:? "limit"
       <*> o
       .:? "tooltip"
+      <*> o
+      .:? "zone"
       -- "effect" is the older name for a bare list of messages to push.
       <*> (o .:? "steps" >>= maybe (map pushStep <$> o .:? "effect" .!= []) pure)
 
@@ -162,11 +190,30 @@ data ModifierSpec = ModifierSpec
   while changing it, so a condition here can ask questions but cannot do
   anything.
   -}
+  , modRequires :: [(Value, Value)]
+  {- ^ Pairs that must be equal once substituted, as a handler's @requires@ is.
+  Unlike @if@ this asks nothing of the game, so it is the way to gate on where
+  the card is -- a card with an in-hand ability is an entity in hand /and/ once
+  committed, and a query to tell those apart would ask for modifiers while
+  modifiers are being collected.
+  -}
   }
 
 instance FromJSON ModifierSpec where
   parseJSON = withObject "ModifierSpec" \o ->
-    ModifierSpec <$> o .: "kind" <*> o .: "matcher" <*> o .:? "modifiers" .!= [] <*> o .:? "if"
+    ModifierSpec
+      <$> o
+      .: "kind"
+      <*> o
+      .: "matcher"
+      <*> o
+      .:? "modifiers"
+      .!= []
+      <*> o
+      .:? "if"
+      <*> o
+      .:? "requires"
+      .!= []
 
 data HandlerSpec = HandlerSpec
   { handlerOn :: Text
@@ -220,6 +267,27 @@ substitute env = go
     Array xs -> Array (fmap go xs)
     v -> v
 
+{- | Equality for a @requires@ pair, with the two spellings of a nullary
+constructor treated as one.
+
+Aeson's tagged encoding leaves @contents@ off a constructor that has no fields,
+so a placement comes back as @{"tag": "Limbo"}@, while the editor and anyone
+writing the JSON by hand reach for @{"tag": "Limbo", "contents": []}@. Compared
+raw, a requirement that looks exactly right never holds.
+-}
+sameValue :: Value -> Value -> Bool
+sameValue a b = normalize a == normalize b
+ where
+  normalize = \case
+    Object o
+      | Just (Array xs) <- KeyMap.lookup "contents" o
+      , null xs
+      , KeyMap.member "tag" o ->
+          Object (fmap normalize (KeyMap.delete "contents" o))
+    Object o -> Object (fmap normalize o)
+    Array xs -> Array (fmap normalize xs)
+    v -> v
+
 decodeWith :: FromJSON a => Env -> Value -> Maybe a
 decodeWith env = parseMaybe parseJSON . substitute env
 
@@ -256,10 +324,41 @@ customAbilities a =
   env = bindings a
   applySpec spec ab =
     ab
-      { abilityCriteria = fromMaybe (abilityCriteria ab) (decodeWith env =<< specCriteria spec)
+      { abilityCriteria =
+          zoneCriterion (specZone spec)
+            <> fromMaybe (abilityCriteria ab) (decodeWith env =<< specCriteria spec)
       , abilityLimit = fromMaybe (abilityLimit ab) (decodeWith env =<< specLimit spec)
       , abilityTooltip = specTooltip spec <|> abilityTooltip ab
       }
+
+{- | Where the card must be. Search and the top of the deck are zones the card
+is /put/ into rather than states it can be asked about, so they add nothing.
+-}
+zoneCriterion :: Maybe Text -> Criterion
+zoneCriterion = \case
+  Just "hand" -> InYourHand
+  Just "discard" -> InYourDiscard
+  _ -> NoRestriction
+
+{- | An ability use, however it arrived.
+
+A card that is not in play is handed its messages wrapped in where it lives, so
+an ability with a @zone@ never sees a bare 'UseThisAbility'. Matching through
+the wrapper keeps the runners from having to know which zones exist.
+
+The windows come along because an ability that says "that many" is talking about
+the one it triggered on, and only the message still knows them.
+-}
+pattern ZonedUseThisAbility :: InvestigatorId -> Source -> Int -> [Window] -> Message
+pattern ZonedUseThisAbility iid source idx ws <- (zonedAbilityUse -> Just (iid, source, idx, ws))
+
+zonedAbilityUse :: Message -> Maybe (InvestigatorId, Source, Int, [Window])
+zonedAbilityUse = \case
+  InHand _ m -> zonedAbilityUse m
+  InDiscard _ m -> zonedAbilityUse m
+  InSearch m -> zonedAbilityUse m
+  UseCardAbility iid source idx ws _ -> Just (iid, source, idx, ws)
+  _ -> Nothing
 
 {- | Whether an ability index is one of this card's own @_abilities@.
 
@@ -272,15 +371,45 @@ isCustomAbility :: HasCardDef a => a -> Int -> Bool
 isCustomAbility a idx =
   idx >= 1 && idx <= length (metaSpecs @AbilitySpec abilitiesMetaKey (toCardDef a))
 
-{- | Run ability @idx@. @$iid@ is bound here rather than in 'customAbilities'
-because it is only known once someone uses the ability.
+{- | Run ability @idx@. @$iid@ and the window are bound here rather than in
+'customAbilities' because neither is known until someone uses the ability.
 -}
 runCustomAbility
-  :: (CustomEntity a, ReverseQueue m) => a -> InvestigatorId -> Int -> m ()
-runCustomAbility a iid idx =
+  :: (CustomEntity a, ReverseQueue m) => a -> InvestigatorId -> Int -> [Window] -> m ()
+runCustomAbility a iid idx ws =
   case drop (idx - 1) (metaSpecs @AbilitySpec abilitiesMetaKey (toCardDef a)) of
-    spec : _ -> runSteps (KeyMap.insert "iid" (toJSON iid) (bindings a)) (specSteps spec)
+    spec : _ -> do
+      windowEnv <- triggeringWindow a iid ws (specType spec)
+      runSteps (windowEnv <> KeyMap.insert "iid" (toJSON iid) (bindings a)) (specSteps spec)
     [] -> pure ()
+
+{- | The window the ability triggered on, as @$window@, with its fields as
+@$w0@, @$w1@, … the way a handler binds a message's.
+
+Several windows are open whenever an ability is offered, so the one meant is
+found by asking the ability's own matcher which of them it accepts -- the same
+question the engine asked in order to offer the ability at all. An ability with
+no window of its own (an action, a fast ability) matches none and binds nothing.
+-}
+triggeringWindow
+  :: (CustomEntity a, HasGame m) => a -> InvestigatorId -> [Window] -> Value -> m Env
+triggeringWindow a iid ws specType' = case decodeWith (bindings a) specType' of
+  Nothing -> pure mempty
+  Just abilityType -> do
+    let matcher = defaultAbilityWindow abilityType
+    mwindow <- findM (\w -> windowMatches iid (toSource a) w matcher) ws
+    pure $ case mwindow of
+      Nothing -> mempty
+      Just w -> KeyMap.fromList $ ("window", toJSON w) : windowFields w
+
+-- | A window's own fields, positionally, as its serialized form carries them.
+windowFields :: Window -> [(Key.Key, Value)]
+windowFields w = case toJSON (windowType w) of
+  Object o -> case KeyMap.lookup "contents" o of
+    Just (Array xs) -> [(Key.fromText ("w" <> tshow i), x) | (i :: Int, x) <- zip [0 ..] (toList xs)]
+    Just v -> [("w0", v)]
+    Nothing -> []
+  _ -> []
 
 {- | Run the steps stored under a named meta key.
 
@@ -289,9 +418,32 @@ investigator's elder sign, which resolves as part of the token rather than as
 something anyone activates.
 -}
 runCustomSteps :: (CustomEntity a, ReverseQueue m) => a -> InvestigatorId -> Text -> m ()
-runCustomSteps a iid key =
-  runSteps (KeyMap.insert "iid" (toJSON iid) (bindings a))
-    $ fromMaybe [] (Map.lookup key (cdMeta (toCardDef a)) >>= parseMaybe parseJSON)
+runCustomSteps a iid key = runSteps (KeyMap.insert "iid" (toJSON iid) (bindings a)) (customSteps a key)
+
+-- | The steps under a meta key, so a caller can tell "does nothing" from "does something".
+customSteps :: HasCardDef a => a -> Text -> [Value]
+customSteps a key = fromMaybe [] (Map.lookup key (cdMeta (toCardDef a)) >>= parseMaybe parseJSON)
+
+{- | What a card does when its revelation resolves.
+
+Placement comes first, and is its own key rather than a step, because a card
+that stays on the table has to put itself there before anything else runs: the
+engine discards a treachery still in limbo once its revelation is over, and an
+asset that placed itself nowhere is left in play with no home. "Put this into
+play in your threat area" is most of what weaknesses say, so it should need
+nothing written.
+-}
+runCustomRevelation
+  :: (CustomEntity a, Placeable a, ReverseQueue m) => a -> InvestigatorId -> m ()
+runCustomRevelation a iid = do
+  for_ (customRevelationPlacement (toCardDef a) iid) (place a)
+  runCustomSteps a iid revelationMetaKey
+
+customRevelationPlacement :: CardDef -> InvestigatorId -> Maybe Placement
+customRevelationPlacement def iid = case customMetaMaybe revelationPlacementMetaKey def of
+  Just ("threatArea" :: Text) -> Just (InThreatArea iid)
+  Just "playArea" -> Just (InPlayArea iid)
+  _ -> Nothing
 
 -- * Handlers
 
@@ -309,7 +461,7 @@ runCustomHandlers a msg = case toJSON msg of
     for_ (metaSpecs @HandlerSpec handlersMetaKey (toCardDef a)) \handler ->
       when (mentioned || handlerGlobal handler) $ for_ (matched (handlerOn handler) o) \fields -> do
         let env = messageBindings o fields <> bindings a
-            holds (l, r) = substitute env l == substitute env r
+            holds (l, r) = sameValue (substitute env l) (substitute env r)
         when (all holds (handlerRequires handler)) $ runSteps env (handlerSteps handler)
   _ -> pure ()
  where
@@ -561,7 +713,7 @@ isSubValue needle haystack = go haystack
 
 {- | Steps run in order, each seeing what the ones before it bound.
 
-Only a @query@ adds to the environment; everything else acts on it. A branch or
+A @query@ and a @let@ add to the environment; everything else acts on it. A branch or
 a choice runs its own steps against the same environment, so a binding made
 before the branch is still there inside it.
 -}
@@ -575,6 +727,9 @@ runSteps env0 = void . foldM step env0
           pure $ case (KeyMap.lookup "bind" o, result) of
             (Just (String name), Just value) -> KeyMap.insert (Key.fromText name) value env
             _ -> env
+      | Just (String name) <- KeyMap.lookup "let" o -> do
+          value <- evalExpr env (fromMaybe Null (KeyMap.lookup "be" o))
+          pure $ KeyMap.insert (Key.fromText name) value env
       | Just m <- KeyMap.lookup "push" o -> do
           for_ (decodeWith env m) push
           pure env
@@ -605,6 +760,9 @@ runSteps env0 = void . foldM step env0
           pure env
       | Just spec <- KeyMap.lookup "ready" o -> do
           runReady env spec
+          pure env
+      | Just spec <- KeyMap.lookup "draw" o -> do
+          runDraw env spec
           pure env
       | Just spec <- KeyMap.lookup "gather" o -> do
           runGather env spec
@@ -697,6 +855,20 @@ runChoose env spec = case spec of
     unless (null (concat labels)) $ Prompt.chooseOne iid (concat labels)
   _ -> pure ()
 
+{- | Draw cards.
+
+@amount@ is an expression, so "one card for each unique icon committed" is the
+count that expression works out to rather than a number written in advance.
+-}
+runDraw :: ReverseQueue m => Env -> Value -> m ()
+runDraw env spec = case spec of
+  Object o -> do
+    iid <- maybe (stepInvestigator env) pure (KeyMap.lookup "iid" o >>= decodeWith env)
+    let source = fromMaybe GameSource (KeyMap.lookup "source" env >>= parseMaybe parseJSON)
+    n <- maybe (pure 1) (exprInt env) (KeyMap.lookup "amount" o)
+    when (n > 0) $ push $ drawCards iid source n
+  _ -> pure ()
+
 {- | One option per thing the matcher finds, with the found thing bound so the
 steps can act on it. @optional@ adds a way to decline.
 -}
@@ -710,15 +882,44 @@ runChooseFrom env spec = case spec of
         Just (String n) -> Key.fromText n
         _ -> "chosen"
       steps = maybe [] subSteps (KeyMap.lookup "steps" o)
+      kind = case KeyMap.lookup "query" o of
+        Just (Object q) | Just (String k) <- KeyMap.lookup "kind" q -> k
+        _ -> ""
+    -- Shown as the thing itself. Three cards all labelled "Choose" is no
+    -- choice at all, the same way two events both reading "Play an event"
+    -- were not.
     labels <- for (fromMaybe [] found) \value -> do
       msgs <- capture $ runSteps (KeyMap.insert name value env) steps
-      pure $ Label (textField env o "label" "Choose") msgs
+      pure $ case chosenTarget kind value of
+        Just t -> targetLabel t msgs
+        Nothing -> Label (textField env o "label" "Choose") msgs
     let
       declined =
         [ Label (textField env o "declineLabel" "Do not") [] | KeyMap.lookup "optional" o == Just (Bool True)
         ]
     unless (null labels && null declined) $ Prompt.chooseOne iid (labels <> declined)
   _ -> pure ()
+
+{- | What an option stands for, from the kind its query named. A card is bound
+as the whole card, everything else as the id the matcher selected.
+-}
+chosenTarget :: Text -> Value -> Maybe Target
+chosenTarget kind value = case kind of
+  "enemy" -> EnemyTarget <$> decoded
+  "location" -> LocationTarget <$> decoded
+  "investigator" -> InvestigatorTarget <$> decoded
+  "asset" -> AssetTarget <$> decoded
+  "treachery" -> TreacheryTarget <$> decoded
+  "event" -> EventTarget <$> decoded
+  "skill" -> SkillTarget <$> decoded
+  "story" -> StoryTarget <$> decoded
+  "act" -> ActTarget <$> decoded
+  "agenda" -> AgendaTarget <$> decoded
+  "card" -> CardIdTarget . toCardId <$> (decoded :: Maybe Card)
+  _ -> Nothing
+ where
+  decoded :: FromJSON a => Maybe a
+  decoded = parseMaybe parseJSON value
 
 {- | @mode@ decides what a query binds: the whole list (the default), just the
 first element, or how many there were.
@@ -768,7 +969,11 @@ keyword, say -- rather than only acting on itself.
 -}
 customModifiers :: (CustomEntity a, HasModifiersM m) => a -> m ()
 customModifiers a = for_ (metaSpecs @ModifierSpec modifiersMetaKey (toCardDef a)) \spec -> do
-  applies <- maybe (pure True) (runReadCondition env) (modCondition spec)
+  let holds (l, r) = sameValue (substitute env l) (substitute env r)
+  applies <-
+    if all holds (modRequires spec)
+      then maybe (pure True) (runReadCondition env) (modCondition spec)
+      else pure False
   when applies $ case modKind spec of
     "enemy" -> apply @EnemyMatcher spec
     "location" -> apply @LocationMatcher spec

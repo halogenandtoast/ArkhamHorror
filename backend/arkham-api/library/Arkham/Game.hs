@@ -2119,6 +2119,12 @@ getGameAbilities = do
   inHandAssetAbilities <-
     concatMap (filter inHandAbility . getAbilities)
       <$> filterM unblanked (toList $ g ^. inHandEntitiesL . each . assetsL)
+  -- A skill is preloaded in hand the same way, and a skill that acts from hand
+  -- is the whole point of the InHandEffect zone, so it needs the same guard
+  -- rather than being reachable only through the pure sweep.
+  inHandSkillAbilities <-
+    concatMap (filter inHandAbility . getAbilities)
+      <$> filterM unblanked (toList $ g ^. inHandEntitiesL . each . skillsL)
   -- True Magick (5) re-sources its controller's in-hand [Spell] asset [action]
   -- abilities onto itself. These cannot come from the path above (the spells
   -- carry no InHandEffect, so they are not preloaded, and getAbilities is pure)
@@ -2144,6 +2150,7 @@ getGameAbilities = do
     <> eventAbilities
     <> inHandEventAbilities
     <> inHandAssetAbilities
+    <> inHandSkillAbilities
     <> trueMagickInHandAbilities
     <> campaignAbilities'
     <> inDiscardAssetAbilities

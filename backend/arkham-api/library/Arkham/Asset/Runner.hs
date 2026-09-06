@@ -633,7 +633,11 @@ instance RunMessage AssetAttrs where
       pushAll [RemoveFromPlay $ toSource a, ObtainCard a.cardId]
       pure a
     Discard mInvestigator source target | a `isTarget` target -> do
-      cannotLeavePlay <- a `hasModifier` CannotLeavePlay
+      -- A card that cannot leave play and then prints its own way out --
+      -- "it cannot leave play except using the ability below" -- is the one
+      -- thing allowed to discard it, so a discard it sources itself is let
+      -- through. Everything else is still stopped.
+      cannotLeavePlay <- if isSource a source then pure False else a `hasModifier` CannotLeavePlay
       if cannotLeavePlay
         then pure a
         else do

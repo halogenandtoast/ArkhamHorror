@@ -13,6 +13,7 @@ import Arkham.Custom.Ability (
   isCustomAbility,
   runCustomAbility,
   runCustomHandlers,
+  pattern ZonedUseThisAbility,
  )
 import Arkham.GameValue
 import Arkham.Location.Import.Lifted
@@ -33,8 +34,8 @@ instance HasAbilities CustomLocation where
 
 instance RunMessage CustomLocation where
   runMessage msg x@(CustomLocation attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
-      runCustomAbility attrs iid idx
+    ZonedUseThisAbility iid (isSource attrs -> True) idx ws | isCustomAbility attrs idx -> do
+      runCustomAbility attrs iid idx ws
       pure x
     _ -> do
       runCustomHandlers attrs msg

@@ -135,6 +135,17 @@ const addModifier = () =>
 const removeModifier = (i: number) =>
   emit('update:modifiers', modifiers.value.filter((_, j) => j !== i))
 
+/* Where the card has to be for the ability to be usable. A card out of play is
+ * only built as an entity when its def asks for it, so naming a zone here also
+ * puts the card in that zone's entity list. */
+const ZONES: Record<string, string> = {
+  '': 'In play',
+  hand: 'In your hand',
+  discard: 'In your discard',
+  search: 'While searching',
+  topOfDeck: 'On top of your deck',
+}
+
 const stepsOf = (item: any): any[] => item.steps ?? []
 
 </script>
@@ -172,6 +183,15 @@ const stepsOf = (item: any): any[] => item.steps ?? []
           :modelValue="ability.limit"
           @update:modelValue="setAbility(index, { limit: $event })"
         />
+        <label class="zone">
+          Active
+          <select
+            :value="ability.zone ?? ''"
+            @change="setAbility(index, { zone: ($event.target as HTMLSelectElement).value || undefined })"
+          >
+            <option v-for="(text, zone) in ZONES" :key="zone" :value="zone">{{ text }}</option>
+          </select>
+        </label>
 
         <StepsEditor
           :queryKinds="QUERY_KINDS"

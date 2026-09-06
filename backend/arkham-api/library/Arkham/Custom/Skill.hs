@@ -8,6 +8,7 @@ import Arkham.Custom.Ability (
   isCustomAbility,
   runCustomAbility,
   runCustomHandlers,
+  pattern ZonedUseThisAbility,
  )
 import Arkham.Skill.Import.Lifted
 
@@ -26,8 +27,8 @@ instance HasAbilities CustomSkill where
 
 instance RunMessage CustomSkill where
   runMessage msg x@(CustomSkill attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
-      runCustomAbility attrs iid idx
+    ZonedUseThisAbility iid (isSource attrs -> True) idx ws | isCustomAbility attrs idx -> do
+      runCustomAbility attrs iid idx ws
       pure x
     _ -> do
       runCustomHandlers attrs msg

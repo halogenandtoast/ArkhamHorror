@@ -12,10 +12,12 @@ import Arkham.Card.CustomCard (customMeta, customMetaMaybe)
 import Arkham.Custom.Ability (
   customAbilities,
   customModifiers,
+  customSteps,
   isCustomAbility,
   runCustomAbility,
   runCustomHandlers,
   runCustomSteps,
+  pattern ZonedUseThisAbility,
  )
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Investigator.Import.Lifted (elderSignValue)
@@ -63,20 +65,32 @@ instance HasAbilities CustomInvestigator where
 
 instance RunMessage CustomInvestigator where
   runMessage msg x@(CustomInvestigator attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
-      runCustomAbility attrs iid idx
+    ZonedUseThisAbility iid (isSource attrs -> True) idx ws | isCustomAbility attrs idx -> do
+      runCustomAbility attrs iid idx ws
       pure x
+    RevealChaosToken _ iid token
+      | attrs `is` iid
+      , token.face == ElderSign -> do
+          -- Resolution is too late for anything an after-reveal reaction has to
+          -- see: by then the reaction has already been offered. Steps that have to
+          -- land first -- setting a flag the card's own abilities read -- go here.
+          runCustomSteps attrs iid "_elderSignRevealSteps"
+          runCustomHandlers attrs msg
+          CustomInvestigator <$> liftRunMessage msg attrs
     ElderSignEffect iid | attrs `is` iid -> do
       -- What it does on being revealed, beyond its modifier.
       runCustomSteps attrs iid "_elderSignSteps"
       -- And what it offers if the test is then passed. Registered as an option
       -- on the skill test, labelled with the token, rather than resolved as a
       -- prompt of its own -- which is both how the game presents it and how a
-      -- player expects to meet it.
-      withSkillTest \sid ->
-        onSucceedByEffect sid AnyValue (ElderSignEffectSource iid) sid do
-          tokenSkillTestOption ElderSign do
-            runCustomSteps attrs iid "_elderSignSuccessSteps"
+      -- player expects to meet it. Only when there is something to offer: an
+      -- elder sign that is a plain modifier would otherwise put up an option
+      -- that does nothing and still has to be clicked.
+      unless (null $ customSteps attrs "_elderSignSuccessSteps") do
+        withSkillTest \sid ->
+          onSucceedByEffect sid AnyValue (ElderSignEffectSource iid) sid do
+            tokenSkillTestOption ElderSign do
+              runCustomSteps attrs iid "_elderSignSuccessSteps"
       pure x
     _ -> do
       runCustomHandlers attrs msg

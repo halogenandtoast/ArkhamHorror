@@ -38,7 +38,7 @@ instance RunMessage ChosenOfZburamoarteFightingTheHunger where
       withSkillTestSource \_ -> do
         faces <- getModifiedChaosTokenFace token
         when (BloodToken `elem` faces) $ afterSkillTestQuiet do
-          push $ Flip iid (toSource attrs) (toTarget attrs)
+          flipOver iid attrs
           sealChaosToken iid attrs token
       pure a
     Flip _ _ (isTarget attrs -> True) -> do

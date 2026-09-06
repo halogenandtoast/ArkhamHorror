@@ -8,8 +8,10 @@ import { useDebug } from '@/arkham/debug'
 import { useCardStore } from '@/stores/cards'
 import {
   PLAYER_CARD_TYPES,
+  customCards,
   registerCustomCards,
   renderCardPlaceholder,
+  stripCardCodePrefix,
   type CustomCard,
 } from '@/arkham/customCards'
 import { libraryCards, libraryLoaded, loadLibrary } from '@/arkham/customCardLibrary'
@@ -26,6 +28,7 @@ type Placement = 'play' | 'hand' | 'campaignDeck' | 'encounterDeck'
 const selected = ref<string | null>(null)
 const busy = ref(false)
 const error = ref<string | null>(null)
+const refreshed = ref<number | null>(null)
 
 onMounted(() => loadLibrary())
 
@@ -36,6 +39,29 @@ const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def
 const isPlayerCard = computed(
   () => !!selectedCard.value && PLAYER_CARD_TYPES.includes(selectedCard.value.def.cardType),
 )
+
+/* A game keeps the def a card had when it was added, so editing that card in
+ * the builder leaves the game playing the old version. This pushes the current
+ * library def onto the cards the game already knows, without adding anything. */
+async function refresh() {
+  const known = new Set(customCards().map((c) => stripCardCodePrefix(c.def.cardCode)))
+  const stale = cards.value.filter((c) => known.has(stripCardCodePrefix(c.def.cardCode)))
+
+  busy.value = true
+  error.value = null
+  try {
+    for (const card of stale) {
+      await debug.send(props.game.id, { tag: 'DebugRegisterCustomCard', contents: card })
+    }
+    registerCustomCards(stale)
+    refreshed.value = stale.length
+  } catch (e) {
+    console.error(e)
+    error.value = 'Could not refresh those cards.'
+  } finally {
+    busy.value = false
+  }
+}
 
 /* Registration is by card code and idempotent, so adding a card the game
  * already knows makes another copy of it rather than a lookalike. */
@@ -104,6 +130,9 @@ async function add(placement: Placement) {
       </div>
 
       <p v-if="error" class="error">{{ error }}</p>
+      <p v-else-if="refreshed !== null" class="muted">
+        Reloaded {{ refreshed }} card{{ refreshed === 1 ? '' : 's' }} from your library.
+      </p>
 
       <div class="actions">
         <button type="button" :disabled="busy || !selectedCard" @click="add('play')">Put into play</button>
@@ -113,6 +142,9 @@ async function add(placement: Placement) {
         </button>
         <button v-if="selectedCard && !isPlayerCard" type="button" :disabled="busy" @click="add('encounterDeck')">
           Shuffle into encounter deck
+        </button>
+        <button type="button" class="secondary" :disabled="busy" @click="refresh">
+          Reload edited cards
         </button>
         <button type="button" class="secondary" @click="emit('close')">{{ $t('close') }}</button>
       </div>

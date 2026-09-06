@@ -14,6 +14,7 @@ const steps = computed(() => props.modelValue ?? [])
 
 type StepKind =
   | 'query'
+  | 'let'
   | 'push'
   | 'if'
   | 'case'
@@ -24,11 +25,13 @@ type StepKind =
   | 'fight'
   | 'attack'
   | 'ready'
+  | 'draw'
   | 'gather'
   | 'customize'
 
 const KIND_LABELS: Record<StepKind, string> = {
   query: 'Query',
+  let: 'Let',
   push: 'Push',
   if: 'If',
   case: 'Case',
@@ -39,6 +42,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   fight: 'Fight',
   attack: 'Attack',
   ready: 'Ready',
+  draw: 'Draw cards',
   gather: 'Gather',
   customize: 'Customize',
 }
@@ -46,6 +50,7 @@ const KIND_LABELS: Record<StepKind, string> = {
 function kindOf(step: any): StepKind {
   const kinds = [
     'query',
+    'let',
     'push',
     'if',
     'case',
@@ -56,6 +61,7 @@ function kindOf(step: any): StepKind {
     'fight',
     'attack',
     'ready',
+    'draw',
     'gather',
     'customize',
   ] as StepKind[]
@@ -68,6 +74,7 @@ function kindOf(step: any): StepKind {
 const blankStep = (kind: StepKind) =>
   ({
     query: { query: { kind: 'enemy', matcher: null }, bind: '', mode: 'all' },
+    let: { let: '', be: null },
     push: { push: null },
     if: { if: { kind: 'enemy', matcher: null }, then: [], else: [] },
     case: { case: [{ if: { kind: 'enemy', matcher: null }, steps: [] }], else: [] },
@@ -78,6 +85,7 @@ const blankStep = (kind: StepKind) =>
     fight: { fight: { matcher: null, modifiers: [] } },
     attack: { attack: {} },
     ready: { ready: {} },
+    draw: { draw: { amount: 1 } },
     gather: { gather: { cardCode: '' } },
     customize: { customize: { optional: true } },
   })[kind]
@@ -97,6 +105,46 @@ const addingStep = ref(false)
 function addAndClose(kind: StepKind) {
   add(kind)
   addingStep.value = false
+}
+
+/* An expression is structural JSON rather than a value with a schema, so it is
+ * edited as text. Bad JSON is kept as typed instead of thrown away, otherwise
+ * the field fights you halfway through a brace. */
+const drafts = ref<Record<number, string>>({})
+
+const exprText = (step: any, index: number) =>
+  drafts.value[index] ?? JSON.stringify(step.be ?? null, null, 2)
+
+function setExpr(step: any, index: number, text: string) {
+  drafts.value = { ...drafts.value, [index]: text }
+  try {
+    set(index, { ...step, be: JSON.parse(text) })
+  } catch {
+    /* left in the draft until it parses */
+  }
+}
+
+const exprValid = (index: number) => {
+  const text = drafts.value[index]
+  if (text === undefined) return true
+  try {
+    JSON.parse(text)
+    return true
+  } catch {
+    return false
+  }
+}
+
+const drawText = (step: any, index: number) =>
+  drafts.value[index] ?? JSON.stringify(step.draw?.amount ?? 1, null, 2)
+
+function setDraw(step: any, index: number, text: string) {
+  drafts.value = { ...drafts.value, [index]: text }
+  try {
+    set(index, { ...step, draw: { ...step.draw, amount: JSON.parse(text) } })
+  } catch {
+    /* left in the draft until it parses */
+  }
 }
 
 const optionsOf = (step: any): any[] => step.choose?.options ?? []
@@ -154,6 +202,37 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.query?.matcher"
           @update:modelValue="set(index, { ...step, query: { ...step.query, matcher: $event } })"
         />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'let'">
+        <label>
+          Name
+          <input
+            :value="step.let"
+            placeholder="icons"
+            @input="set(index, { ...step, let: ($event.target as HTMLInputElement).value })"
+            @keydown.stop
+          />
+        </label>
+        <label>
+          Expression
+          <textarea
+            :class="{ invalid: !exprValid(index) }"
+            :value="exprText(step, index)"
+            rows="5"
+            spellcheck="false"
+            @input="setExpr(step, index, ($event.target as HTMLTextAreaElement).value)"
+            @keydown.stop
+          />
+        </label>
+        <p class="hint">
+          A literal, or one of <code>get</code>/<code>map</code> (with <code>kind</code> and
+          <code>of</code>), <code>filter</code>, <code>unique</code>, <code>concat</code>,
+          <code>count</code>, <code>sum</code>, <code>max</code>, <code>min</code>,
+          <code>first</code>, <code>reverse</code>, <code>add</code>, <code>subtract</code>,
+          <code>multiply</code>, <code>divide</code>. Anything <code>of</code> takes a list is
+          applied to each of its elements.
+        </p>
       </template>
 
       <ValueEditor
@@ -398,6 +477,21 @@ const removeOption = (step: any, index: number, at: number) =>
         />
       </template>
 
+      <template v-else-if="kindOf(step) === 'draw'">
+        <label>
+          How many
+          <textarea
+            :class="{ invalid: !exprValid(index) }"
+            :value="drawText(step, index)"
+            rows="2"
+            spellcheck="false"
+            @input="setDraw(step, index, ($event.target as HTMLTextAreaElement).value)"
+            @keydown.stop
+          />
+        </label>
+        <p class="hint">A number, or an expression — the same forms a Let takes.</p>
+      </template>
+
       <template v-else-if="kindOf(step) === 'gather'">
         <p class="hint">
           Shuffles a card into the encounter deck. "Gather during setup" is over by the time a card
@@ -523,6 +617,22 @@ const removeOption = (step: any, index: number, at: number) =>
     border: none;
     color: #eee;
     cursor: pointer;
+  }
+}
+
+textarea {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid #374151;
+  border-radius: 4px;
+  color: inherit;
+  font-family: monospace;
+  font-size: 0.75rem;
+  padding: 0.3rem;
+  resize: vertical;
+  width: 100%;
+
+  &.invalid {
+    border-color: #b45309;
   }
 }
 

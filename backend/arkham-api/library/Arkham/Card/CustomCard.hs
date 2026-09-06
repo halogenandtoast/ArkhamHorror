@@ -17,6 +17,7 @@ import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Id (InvestigatorId (..))
 import Arkham.Prelude
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -81,7 +82,7 @@ added to an investigator's signatures is theirs at once, instead of only after
 it is next saved.
 -}
 lookupCustomCardDef :: HasCardCode a => a -> Maybe CardDef
-lookupCustomCardDef = fmap (withSignatureRestriction . customCardDef) . lookupCustomCard
+lookupCustomCardDef = fmap (withAbilityZones . withSignatureRestriction . customCardDef) . lookupCustomCard
 
 withSignatureRestriction :: CardDef -> CardDef
 withSignatureRestriction def
@@ -89,6 +90,25 @@ withSignatureRestriction def
   | otherwise = case customSignatureOwner def of
       Nothing -> def
       Just owner -> def {cdDeckRestrictions = Signature (coerce owner) : cdDeckRestrictions def}
+
+{- | The zones a card's own abilities need it to exist in.
+
+A card out of play is only built as an entity when its def asks for it, so an
+ability that says it works from your hand has to reach the def too. Derived from
+the abilities rather than set beside them, so the two cannot drift apart.
+-}
+withAbilityZones :: CardDef -> CardDef
+withAbilityZones def = def {cdOutOfPlayEffects = nub (cdOutOfPlayEffects def <> derived)}
+ where
+  derived = mapMaybe zoneOf $ fromMaybe [] $ rawMetaMaybe "_abilities" def
+  zoneOf = \case
+    Object o -> case KeyMap.lookup "zone" o of
+      Just (String "hand") -> Just InHandEffect
+      Just (String "discard") -> Just InDiscardEffect
+      Just (String "search") -> Just InSearchEffect
+      Just (String "topOfDeck") -> Just OnTopOfDeckEffect
+      _ -> Nothing
+    _ -> Nothing
 
 {- | Stats that live on the entity rather than the card def -- a location's
 shroud and clue value, an asset's health and sanity -- are carried in

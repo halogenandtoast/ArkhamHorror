@@ -82,8 +82,35 @@ referenced = \case
   ParensT t -> referenced t
   _ -> []
 
-conSchemas :: Con -> [(ConSchema, [Name])]
-conSchemas = \case
+{- | Types encoded with @aesonOptions (Just <type>)@, which drops the lowercased
+type name from the front of every field.
+
+There is no way to read a type's aeson options back out in Template Haskell, and
+the two conventions live side by side -- 'Modifier' strips, 'ChaosToken' and
+'CardDraw' do not -- so which is which has to be written down. Reporting the
+wrong one has the editor write @modifierType@ where the parser wants @type@, a
+field that silently fails to decode. Add a type here only after checking its
+'deriveJSON' call.
+-}
+prefixStrippedTypes :: Set Text
+prefixStrippedTypes = Set.fromList ["Modifier", "Name", "Ability", "EffectBuilder", "CardOption"]
+
+-- | A record field's JSON key.
+jsonFieldName :: Name -> Name -> Text
+jsonFieldName tyName fieldName
+  | not (T.pack (nameBase tyName) `Set.member` prefixStrippedTypes) = field
+  | otherwise = case T.stripPrefix prefix field of
+      Just rest | not (T.null rest) -> uncapitalize rest
+      _ -> field
+ where
+  field = T.pack (nameBase fieldName)
+  prefix = uncapitalize (T.pack (nameBase tyName))
+  uncapitalize t = case T.uncons t of
+    Just (c, rest) -> T.toLower (T.singleton c) <> rest
+    Nothing -> t
+
+conSchemas :: Name -> Con -> [(ConSchema, [Name])]
+conSchemas tyName = \case
   NormalC n bts ->
     [
       ( ConSchema (T.pack (nameBase n)) [FieldSchema Nothing (renderType t) | (_, t) <- bts]
@@ -94,7 +121,7 @@ conSchemas = \case
     [
       ( ConSchema
           (T.pack (nameBase n))
-          [FieldSchema (Just (T.pack (nameBase f))) (renderType t) | (f, _, t) <- vbts]
+          [FieldSchema (Just (jsonFieldName tyName f)) (renderType t) | (f, _, t) <- vbts]
       , concatMap (\(_, _, t) -> referenced t) vbts
       )
     ]
@@ -106,7 +133,7 @@ conSchemas = \case
       , referenced (snd a) <> referenced (snd b)
       )
     ]
-  ForallC _ _ c -> conSchemas c
+  ForallC _ _ c -> conSchemas tyName c
   GadtC ns bts _ ->
     [ ( ConSchema (T.pack (nameBase n)) [FieldSchema Nothing (renderType t) | (_, t) <- bts]
       , concatMap (referenced . snd) bts
@@ -116,7 +143,7 @@ conSchemas = \case
   RecGadtC ns vbts _ ->
     [ ( ConSchema
           (T.pack (nameBase n))
-          [FieldSchema (Just (T.pack (nameBase f))) (renderType t) | (f, _, t) <- vbts]
+          [FieldSchema (Just (jsonFieldName tyName f)) (renderType t) | (f, _, t) <- vbts]
       , concatMap (\(_, _, t) -> referenced t) vbts
       )
     | n <- ns
@@ -161,7 +188,7 @@ closure shallow (n : queue) seen
         _ -> closure shallow queue seen'
  where
   emit seen' constructors = do
-    let entries = concatMap conSchemas constructors
+    let entries = concatMap (conSchemas n) constructors
         schema =
           TypeSchema
             { typeName = T.pack (nameBase n)

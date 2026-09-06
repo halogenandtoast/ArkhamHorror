@@ -310,6 +310,10 @@ data ModifierType
   | DoubleDifficulty
   | DoubleNegativeModifiersOnChaosTokens
   | DoubleModifiersOnChaosTokens
+  | {- | Notify the card this many extra times when a chaos token it is waiting
+    on is revealed, so its "when/if/after you reveal" effect resolves again.
+    -}
+    ResolveEffectsAdditionalTimes Int
   | DoubleSkillIcons
   | {- | Double only the listed icons on a committed card, leaving the rest
     (notably @WildIcon@) counted once.

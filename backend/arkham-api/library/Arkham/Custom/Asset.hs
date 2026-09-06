@@ -14,6 +14,8 @@ import Arkham.Custom.Ability (
   isCustomAbility,
   runCustomAbility,
   runCustomHandlers,
+  runCustomRevelation,
+  pattern ZonedUseThisAbility,
  )
 
 newtype CustomAsset = CustomAsset AssetAttrs
@@ -32,9 +34,15 @@ instance HasAbilities CustomAsset where
 
 instance RunMessage CustomAsset where
   runMessage msg x@(CustomAsset attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) idx | isCustomAbility attrs idx -> do
-      runCustomAbility attrs iid idx
+    ZonedUseThisAbility iid (isSource attrs -> True) idx ws | isCustomAbility attrs idx -> do
+      runCustomAbility attrs iid idx ws
       pure x
+    -- What it does when it is revealed. Not an ability: no one activates it, and
+    -- the card may have to place itself before the engine tidies it away.
+    Revelation iid (isSource attrs -> True) -> do
+      runCustomRevelation attrs iid
+      runCustomHandlers attrs msg
+      CustomAsset <$> liftRunMessage msg attrs
     _ -> do
       runCustomHandlers attrs msg
       CustomAsset <$> liftRunMessage msg attrs

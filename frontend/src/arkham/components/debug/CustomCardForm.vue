@@ -8,10 +8,12 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
 import {
   PLAYER_CARD_TYPES,
+  cardArtReference,
   renderCardPlaceholder,
   stripCardCodePrefix,
   type CustomCard,
 } from '@/arkham/customCards'
+import { cardImg, imgsrc } from '@/arkham/helpers'
 import { libraryCards } from '@/arkham/customCardLibrary'
 import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
@@ -46,6 +48,9 @@ const CARD_TYPES = [
   { value: 'StoryType', label: 'Story' },
   { value: 'InvestigatorType', label: 'Investigator' },
 ] as const
+
+// The types that are a weakness by their nature, rather than by choice.
+const ALWAYS_WEAKNESS = ['PlayerTreacheryType', 'PlayerEnemyType']
 
 /* Mythos belongs to encounter cards, which do not choose a class at all: they
  * take the default, overridable through the raw block. */
@@ -111,13 +116,18 @@ const blankForm = () => ({
   abilities: [] as any[],
   handlers: [] as any[],
   modifiers: [] as any[],
-  weaknessKind: 'Weakness',
+  weaknessKind: '',
+  // revelation
+  revelation: false,
+  revelationPlacement: '',
+  revelationSteps: [] as any[],
   actions: [] as string[],
   // grouping, so a set of cards made together can be found together
   cardNumber: '',
   setName: '',
   // investigator
   elderSign: '1',
+  elderSignRevealSteps: [] as any[],
   elderSignSteps: [] as any[],
   elderSignSuccessSteps: [] as any[],
   prey: null as any,
@@ -160,10 +170,12 @@ const ART_SLOTS = computed<ArtSlot[]>(() =>
 )
 
 /* An investigator is unique, so start it that way rather than making everyone
- * remember to tick it. */
+ * remember to tick it. A player treachery or enemy is only ever a weakness, so
+ * it starts as one; an asset or event has to be told. */
 function chooseType(cardType: string) {
   form.cardType = cardType
   form.unique = cardType === 'InvestigatorType'
+  form.weaknessKind = ALWAYS_WEAKNESS.includes(cardType) ? 'Weakness' : ''
 }
 
 const artFor = (slot: string) => form.artUploaded[slot] || form.artUrls[slot]?.trim() || null
@@ -179,18 +191,73 @@ const hasSkillIcons = computed(
 )
 const isLocation = computed(() => form.cardType === 'LocationType')
 const isAsset = computed(() => form.cardType === 'AssetType' || form.cardType === 'EncounterAssetType')
+const isEvent = computed(() => form.cardType === 'EventType')
 const isPlayerCard = computed(() => PLAYER_CARD_TYPES.includes(form.cardType))
-const hasCost = computed(() => ['AssetType', 'EventType'].includes(form.cardType))
+// A weakness is never bought and never paid for.
+const hasCost = computed(() => ['AssetType', 'EventType'].includes(form.cardType) && !isWeakness.value)
 
 const art = computed(() => artFor('art'))
 const isInvestigator = computed(() => form.cardType === 'InvestigatorType')
 
-const isWeakness = computed(() =>
-  ['PlayerTreacheryType', 'PlayerEnemyType'].includes(form.cardType),
+const isWeakness = computed(() => !!form.weaknessKind)
+/* An asset or an event is a weakness only if it says so; a player treachery or
+ * enemy has no other reason to exist. */
+const canBeWeakness = computed(() =>
+  ['AssetType', 'EventType', ...ALWAYS_WEAKNESS].includes(form.cardType),
+)
+const weaknessOptional = computed(() => !ALWAYS_WEAKNESS.includes(form.cardType))
+
+// ------------------------------------------------------------ revelation ---
+
+/* The cards that can resolve as they are drawn. A skill or a location never
+ * does, and an investigator is not drawn at all. */
+const canHaveRevelation = computed(
+  () => isAsset.value || isEvent.value || isTreachery.value || isEnemy.value,
 )
 
+/* A treachery always resolves when it is drawn, and so does a weakness asset or
+ * event — without a revelation it would simply sit in your hand. A weakness
+ * enemy is spawned by being drawn and needs no revelation to do it, so that one
+ * is asked for. */
+const revelationImplied = computed(
+  () => isTreachery.value || (isWeakness.value && (isAsset.value || isEvent.value)),
+)
+
+const hasRevelation = computed(() => revelationImplied.value || form.revelation)
+
+// Only what stays on the table has anywhere to be put.
+const hasRevelationPlacement = computed(() => isAsset.value || isTreachery.value)
+
+const REVELATION_PLACEMENTS = computed(() =>
+  isTreachery.value
+    ? [
+        { value: 'none', label: 'Discarded once it resolves' },
+        { value: 'threatArea', label: 'Your threat area' },
+      ]
+    : [
+        { value: 'none', label: 'Nowhere — the steps place it' },
+        { value: 'threatArea', label: 'Your threat area' },
+        { value: 'playArea', label: 'Your play area' },
+      ],
+)
+
+/* Where a revelation card ends up if you never say. A weakness asset has to go
+ * somewhere — one that placed itself nowhere is stranded in play — and the
+ * printed wording is almost always the threat area. A treachery left alone is
+ * discarded once it resolves, which is what the engine does anyway. */
+const defaultPlacement = computed(() =>
+  isAsset.value && isWeakness.value ? 'threatArea' : 'none',
+)
+
+const revelationPlacement = computed({
+  get: () => form.revelationPlacement || defaultPlacement.value,
+  set: (value: string) => {
+    form.revelationPlacement = value
+  },
+})
+
 /* Level is what you pay xp for, so it belongs to cards you buy: never an
- * enemy, a treachery, or a weakness of either. */
+ * enemy, a treachery, or a weakness. */
 const hasLevel = computed(
   () => isPlayerCard.value && !isEnemy.value && !isTreachery.value && !isWeakness.value,
 )
@@ -379,6 +446,8 @@ function buildDef(cardCode: string): Record<string, any> {
 
   if (isInvestigator.value) {
     if (num(form.elderSign) !== null) def.meta._elderSign = num(form.elderSign)
+    if (form.elderSignRevealSteps.length)
+      def.meta._elderSignRevealSteps = form.elderSignRevealSteps
     if (form.elderSignSteps.length) def.meta._elderSignSteps = form.elderSignSteps
     if (form.elderSignSuccessSteps.length) def.meta._elderSignSuccessSteps = form.elderSignSuccessSteps
     def.meta.health = num(form.investigatorHealth) ?? 0
@@ -396,6 +465,12 @@ function buildDef(cardCode: string): Record<string, any> {
     if (slot.key === 'art') continue
     const value = artFor(slot.key)
     if (value) def.meta[slot.key] = value
+  }
+
+  if (hasRevelation.value) {
+    def.revelation = 'IsRevelation'
+    if (hasRevelationPlacement.value) def.meta._revelationPlacement = revelationPlacement.value
+    if (form.revelationSteps.length) def.meta._onRevelation = form.revelationSteps
   }
 
   if (form.onPlaySteps.length) def.meta._onPlay = form.onPlaySteps
@@ -490,9 +565,15 @@ function clearArt(slot: string) {
 }
 
 /* The face is the card; the other slots fall back to the placeholder drawn from
- * the def so an empty slot still reads as what it is. */
-const slotPreview = (slot: string) =>
-  artFor(slot) ?? (slot === 'art' ? renderCardPlaceholder(previewDef.value as any) : null)
+ * the def so an empty slot still reads as what it is. A slot that names a
+ * printed card is shown as that card's image, so what you get is what you see. */
+const slotPreview = (slot: string) => {
+  const value = artFor(slot)
+  if (!value) return slot === 'art' ? renderCardPlaceholder(previewDef.value as any) : null
+  const reference = cardArtReference(value)
+  if (!reference) return value
+  return slot.startsWith('portrait') ? imgsrc(`portraits/${reference}.jpg`) : cardImg(reference)
+}
 
 // ------------------------------------------------------------- load/save ---
 
@@ -501,13 +582,14 @@ const slotPreview = (slot: string) =>
 const FORM_KEYS = [
   'cardCode', 'art', 'cardType', 'name', 'classSymbols', 'cardTraits', 'skills', 'keywords',
   'unique', 'permanent', 'doubleSided', 'meta', 'cardSubType', 'cost', 'level', 'victoryPoints', 'actions',
+  'revelation',
   'fight', 'health', 'evade', 'healthDamage', 'sanityDamage', 'slots', 'uses',
 ]
 const FORM_META_KEYS = [
   'shroud', 'revealClues', 'health', 'sanity', 'willpower', 'intellect', 'combat', 'agility',
   'backArt', 'portrait', 'portraitBack', 'number', 'set', 'prey', 'spawnAt',
-  '_abilities', '_handlers', '_modifiers', '_signatures',
-  '_elderSign', '_elderSignSteps', '_elderSignSuccessSteps', '_onPlay',
+  '_abilities', '_handlers', '_modifiers', '_signatures', '_onRevelation', '_revelationPlacement',
+  '_elderSign', '_elderSignRevealSteps', '_elderSignSteps', '_elderSignSuccessSteps', '_onPlay',
 ]
 
 const gameValueNumber = (v: any) => (v && typeof v.contents === 'number' ? String(v.contents) : '')
@@ -529,7 +611,10 @@ async function loadCard(card: CustomCard) {
   form.victory = def.victoryPoints === null || def.victoryPoints === undefined ? '' : String(def.victoryPoints)
   form.unique = !!def.unique
   form.permanent = !!def.permanent
-  form.weaknessKind = typeof def.cardSubType === 'string' ? def.cardSubType : 'Weakness'
+  form.weaknessKind = typeof def.cardSubType === 'string' ? def.cardSubType : ''
+  form.revelation = !!def.revelation && def.revelation !== 'NoRevelation'
+  form.revelationPlacement = meta._revelationPlacement ?? ''
+  form.revelationSteps = meta._onRevelation ?? []
   form.actions = Array.isArray(def.actions) ? def.actions : []
   form.traits = (def.cardTraits ?? []).map((t: string) => traitDisplay.value.get(t) ?? t).join('. ')
   form.icons = (def.skills ?? []).map((s: any) => (s.tag === 'SkillIcon' ? s.contents : 'Wild'))
@@ -562,6 +647,7 @@ async function loadCard(card: CustomCard) {
   form.cardNumber = meta.number ?? ''
   form.setName = meta.set ?? ''
   form.elderSign = meta._elderSign === undefined ? '1' : String(meta._elderSign)
+  form.elderSignRevealSteps = meta._elderSignRevealSteps ?? []
   form.elderSignSteps = meta._elderSignSteps ?? []
   form.elderSignSuccessSteps = meta._elderSignSuccessSteps ?? []
 
@@ -630,8 +716,13 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
           <input type="file" accept="image/*" @change="onFile(slot.key, $event)" />
         </label>
         <label>
-          …or a URL
-          <input v-model="form.artUrls[slot.key]" type="url" placeholder="https://…" @keydown.stop />
+          …or a URL, or a card code to reuse that card's art
+          <input
+            v-model="form.artUrls[slot.key]"
+            type="text"
+            placeholder="https://… or 01004"
+            @keydown.stop
+          />
         </label>
         <button v-if="artFor(slot.key)" type="button" class="link" @click="clearArt(slot.key)">Clear</button>
       </div>
@@ -671,9 +762,10 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
           </div>
 
           <div class="row">
-            <label v-if="isWeakness">
+            <label v-if="canBeWeakness">
               Weakness
               <select v-model="form.weaknessKind">
+                <option v-if="weaknessOptional" value="">Not a weakness</option>
                 <option value="Weakness">Weakness</option>
                 <option value="BasicWeakness">Basic weakness</option>
               </select>
@@ -822,7 +914,16 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
               Modifier
               <input v-model="form.elderSign" type="number" @keydown.stop />
             </label>
-            <p class="hint">What it does when it is revealed, beyond the modifier:</p>
+            <p class="hint">
+              What happens the moment it is drawn, before anything can react to the reveal — where
+              a flag this card's own abilities read has to be set:
+            </p>
+            <StepsEditor
+              :queryKinds="QUERY_KINDS"
+              :modelValue="form.elderSignRevealSteps"
+              @update:modelValue="form.elderSignRevealSteps = $event"
+            />
+            <p class="hint">What it does when it resolves, beyond the modifier:</p>
             <StepsEditor
               :queryKinds="QUERY_KINDS"
               :modelValue="form.elderSignSteps"
@@ -944,6 +1045,34 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
                 <input v-model="form.useCount" type="number" @keydown.stop />
               </label>
             </div>
+          </fieldset>
+
+          <fieldset v-if="canHaveRevelation">
+            <legend>Revelation</legend>
+            <label v-if="!revelationImplied" class="checkbox">
+              <input v-model="form.revelation" type="checkbox" />
+              Resolves as it is drawn
+            </label>
+            <p v-else class="hint">
+              {{ isTreachery ? 'A treachery' : 'A weakness asset or event' }} resolves as soon as
+              it is drawn, so it always has a revelation.
+            </p>
+            <template v-if="hasRevelation">
+              <label v-if="hasRevelationPlacement">
+                Where it ends up
+                <select v-model="revelationPlacement">
+                  <option v-for="p in REVELATION_PLACEMENTS" :key="p.value" :value="p.value">
+                    {{ p.label }}
+                  </option>
+                </select>
+              </label>
+              <p class="hint">What it does when it is revealed:</p>
+              <StepsEditor
+                :queryKinds="QUERY_KINDS"
+                :modelValue="form.revelationSteps"
+                @update:modelValue="form.revelationSteps = $event"
+              />
+            </template>
           </fieldset>
 
           <details>

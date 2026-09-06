@@ -44,7 +44,7 @@ import Arkham.Message.SkillTest (SkillTestMessage)
 import Arkham.Message.Spawn (SpawnMessage)
 import Arkham.Message.Story (StoryMessage)
 import Arkham.Message.Token (TokenMessage)
-import Arkham.Modifier (ModifierType)
+import Arkham.Modifier (Modifier, ModifierType)
 import Arkham.Source (Source)
 import Arkham.Spawn (SpawnAt)
 import Arkham.Target (Target)
@@ -77,8 +77,10 @@ customSchema =
        , ''Target
        , ''ModifierType
        , -- Scoped modifiers are pushed as CreateWindowModifierEffect, so the
-         -- editor needs the window that scopes them and who they apply to.
-         ''EffectWindow
+         -- editor needs the window that scopes them, and the wrapper that
+         -- carries one (a bare ModifierType is not what the message takes).
+         ''Modifier
+       , ''EffectWindow
        , -- CreateEffect is how a card leaves something behind that acts later:
          -- messages to run when its window ends.
          ''EffectBuilder

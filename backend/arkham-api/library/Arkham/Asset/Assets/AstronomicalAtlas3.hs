@@ -5,24 +5,34 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Capability
 import Arkham.Card
-import Arkham.Helpers.Modifiers (ModifierType (..), ignoreCommitOneRestriction)
+import Arkham.Helpers.Modifiers (ModifierType (..), ignoreCommitOneRestriction, modified_)
 import Arkham.Helpers.SkillTest (getIsCommittable, withSkillTest)
 import Arkham.Matcher hiding (PlaceUnderneath)
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
 
 newtype AstronomicalAtlas3 = AstronomicalAtlas3 AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 astronomicalAtlas3 :: AssetCard AstronomicalAtlas3
 astronomicalAtlas3 = asset AstronomicalAtlas3 Cards.astronomicalAtlas3
 
+-- The attached cards are only committable through ability 2, so they get their
+-- out-of-play effects (e.g. Long Shot's connecting-location permission) without
+-- otherwise counting as being in hand.
+instance HasModifiersFor AstronomicalAtlas3 where
+  getModifiersFor (AstronomicalAtlas3 a) = for_ a.controller \iid ->
+    modified_ a iid $ map (AsIfInHandForEffects . toCardId) a.cardsUnderneath
+
 instance HasAbilities AstronomicalAtlas3 where
   getAbilities (AstronomicalAtlas3 a) =
     [ controlledAbility a 1 (can.manipulate.deck You) $ FastAbility (exhaust a)
-    , let criteria = during SkillTestAtYourLocation <> exists (#eligible <> CardIsBeneathAsset (be a))
-       in perTestOrAbility $ wantsSkillTest AnySkillTest $ controlled a 2 criteria (FastAbility Free)
+    , let
+        criteria = flip (maybe Never) a.controller \iid ->
+          during AnySkillTest <> exists (CommittableCard (InvestigatorWithId iid) (CardIsBeneathAsset (be a)))
+       in
+        perTestOrAbility $ wantsSkillTest AnySkillTest $ controlled a 2 criteria (FastAbility Free)
     ]
 
 instance RunMessage AstronomicalAtlas3 where
@@ -32,9 +42,10 @@ instance RunMessage AstronomicalAtlas3 where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       hasKingInYellow <- selectAny $ assetControlledBy iid <> assetIs Cards.theKingInYellow
-      committable <- if hasKingInYellow
-        then pure []
-        else ignoreCommitOneRestriction iid $ filterM (getIsCommittable iid) attrs.cardsUnderneath
+      committable <-
+        if hasKingInYellow
+          then pure []
+          else ignoreCommitOneRestriction iid $ filterM (getIsCommittable iid) attrs.cardsUnderneath
       withSkillTest \sid ->
         focusCards attrs.cardsUnderneath do
           chooseOrRunOneM iid do

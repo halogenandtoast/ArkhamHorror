@@ -112,6 +112,8 @@ data ModifierType
   | AsIfNotEngagedWith EnemyId
   | AsIfInHand Card
   | AsIfInHandFor ForPlay CardId
+  | -- out-of-play effects only, never treated as in hand
+    AsIfInHandForEffects CardId
   | AsIfResourcePool AssetId
   | AsIfUnderControlOf InvestigatorId
   | AsIfTurn InvestigatorId

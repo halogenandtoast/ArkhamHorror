@@ -809,6 +809,7 @@ getAsIfInHandEffectCards iid = do
   modifiers & mapMaybeM \case
     AsIfInHand c -> pure $ Just c
     AsIfInHandFor _ c -> Just <$> getCard c
+    AsIfInHandForEffects c -> Just <$> getCard c
     CanCommitToSkillTestsAsIfInHand c | isSkillTest -> pure $ Just c
     _ -> pure Nothing
 

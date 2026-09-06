@@ -3987,7 +3987,11 @@ preloadEntities g = do
         forPlayHosts =
           mapFromList
             [ (cid, aid)
-            | Modifier {modifierType = AsIfInHandFor ForPlay cid, modifierSource = AssetSource aid} <- forPlayMods
+            | Modifier {modifierType = mType, modifierSource = AssetSource aid} <- forPlayMods
+            , cid <- case mType of
+                AsIfInHandFor ForPlay cid' -> [cid']
+                AsIfInHandForEffects cid' -> [cid']
+                _ -> []
             ]
         placementFor c = maybe (StillInHand iid) (`AttachedToAsset` Nothing) (lookup c.id forPlayHosts)
         handEffectCards =

@@ -31,21 +31,54 @@ const showAbilities = defineModel()
 const abilitiesPosition = ref<Position>({ bottom: '0px', top: '0px', left: '0px' });
 const positionClass = computed(() => props.position || 'top');
 
-const supportsAnchor = typeof CSS !== 'undefined' && CSS.supports?.('anchor-name: --a');
+// Every property the anchored path relies on has to be tested: anchor-name
+// shipped ahead of position-area (Chromium 125-128 spelled it inset-area), and a
+// browser in that gap would pass an anchor-name-only check, lose position-area,
+// and render the menu at its static position -- far below the viewport, since it
+// is teleported to the end of <body> (#5626).
+const supportsAnchor =
+  typeof CSS !== 'undefined'
+  && !!CSS.supports
+  && CSS.supports('anchor-name: --a')
+  && CSS.supports('position-anchor: --a')
+  && CSS.supports('position-area: right span-bottom')
+  && CSS.supports('position-try-fallbacks: flip-block');
+const anchorFailed = ref(false);
+const useAnchor = computed(() => supportsAnchor && !anchorFailed.value);
 const anchorName = `--ability-anchor-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
-const anchorStyle = computed(() => supportsAnchor ? { 'position-anchor': anchorName } : abilitiesPosition.value);
+const anchorStyle = computed(() => useAnchor.value ? { 'position-anchor': anchorName } : abilitiesPosition.value);
 
 // Anchor positioning keeps the menu pinned when the card moves; browsers without
 // it fall back to the measured fixed position below.
 watch([() => props.frame, showAbilities], ([frame], old) => {
-  if (!supportsAnchor) return;
+  if (!useAnchor.value) return;
   old?.[0]?.style.removeProperty('anchor-name');
   if (frame && showAbilities.value) frame.style.setProperty('anchor-name', anchorName);
   else frame?.style.removeProperty('anchor-name');
 }, { immediate: true });
 
+// The anchor can still fail to resolve at runtime (the frame ref is only assigned
+// after the parent mounts, and a forced ability opens the menu during setup). An
+// unresolved anchor leaves the menu fixed at its static position, off screen and
+// unreachable, so measure once after opening and fall back for good if it landed
+// outside the viewport.
+function verifyAnchorPlacement() {
+  if (!useAnchor.value || !abilitiesRef.value) return;
+  const rect = abilitiesRef.value.getBoundingClientRect();
+  const onScreen =
+    rect.bottom > 0 && rect.right > 0
+    && rect.top < window.innerHeight && rect.left < window.innerWidth;
+  if (onScreen) return;
+
+  anchorFailed.value = true;
+  props.frame?.style.removeProperty('anchor-name');
+  window.addEventListener('resize', updatePosition);
+  window.addEventListener('scroll', updatePosition, true);
+  nextTick(() => calculatePosition());
+}
+
 function calculatePosition() {
-  if (supportsAnchor) return;
+  if (useAnchor.value) return;
   if (props.frame) {
     const rect = props.frame.getBoundingClientRect();
     const menuRect = abilitiesRef.value?.getBoundingClientRect();
@@ -96,7 +129,7 @@ watch(
   (newAbilities) => {
     if (newAbilities.some(a => 'ability' in a.contents && a.contents.ability.type.tag === 'ForcedAbility')) {
       showAbilities.value = true;
-      nextTick(() => calculatePosition());
+      nextTick(() => { calculatePosition(); verifyAnchorPlacement(); });
     } else if (newAbilities.length === 0) {
       showAbilities.value = false;
     }
@@ -106,7 +139,7 @@ watch(
 
 watch(showAbilities, (newValue) => {
   if (newValue) {
-    nextTick(() => calculatePosition());
+    nextTick(() => { calculatePosition(); verifyAnchorPlacement(); });
   }
 });
 

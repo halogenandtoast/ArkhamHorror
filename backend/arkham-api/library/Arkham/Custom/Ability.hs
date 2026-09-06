@@ -29,6 +29,8 @@ Both run the same small step language:
 * @chooseFrom@ -- offer one option per thing a matcher finds, binding it.
 * @playCard@ -- play a card from hand, paying its cost, optionally discounted.
 * @fight@ -- fight an enemy, with modifiers for that attack.
+* @investigate@, @evade@, @parley@ -- start the matching skill test. Each binds
+  the test it started as @$sid@, so a later step can scope a modifier to it.
 * @attack@ -- an enemy attacks an investigator.
 * @ready@ -- ready a card.
 * @draw@ -- draw cards, however many an expression works out to.
@@ -36,7 +38,9 @@ Both run the same small step language:
 * @customize@ -- mark a checkbox on a customizable card you own.
 
 Scoped modifiers need no step of their own: @CreateWindowModifierEffect@ is an
-ordinary message, so a @push@ covers "for this attack" and friends.
+ordinary message, so a @push@ covers "for this attack" and friends. A modifier
+on a test the card itself starts is better said with that step's @modifiers@, or
+against the @$sid@ it binds.
 
 The JSON is written before the card exists, so it cannot name the entity it
 belongs to. Instead it refers to values by @$name@: the entity's own serialized
@@ -74,9 +78,13 @@ import Arkham.Deck qualified as Deck
 -- this module taking its own hs-boot edge on Arkham.Game (which pulls other
 -- modules into the cycle and onto their boot interfaces).
 
+import Arkham.Aspect (InsteadOf (..), IsAspect)
+import Arkham.Calculation (GameCalculation (Fixed))
 import Arkham.Card.PlayerCard (lookupPlayerCard)
 import Arkham.Custom.Expr (evalExpr, exprInt)
 import Arkham.Customization (CustomizationChoice (..))
+import Arkham.Evade (mkChooseEvade, mkChooseEvadeMatch)
+import Arkham.Evade qualified as Evade
 import Arkham.Fight (ChooseFight (..))
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Criteria (passesCriteria)
@@ -96,12 +104,16 @@ import Arkham.Helpers.Modifiers (
  )
 import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Helpers.Query (getLead)
+import Arkham.Helpers.SkillTest qualified as SkillTest
 import Arkham.Helpers.Window (windowMatches)
 import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Id
+import Arkham.Investigate (mkInvestigate, mkInvestigateLocation)
+import Arkham.Investigate qualified as Investigate
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted (
+  aspect,
   chooseFightEnemyEdit,
   initiateEnemyAttack,
   reduceCostOf,
@@ -116,6 +128,7 @@ import Arkham.Name (toTitle)
 import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
 import Arkham.Query (QueryElement)
+import Arkham.SkillType (SkillType (SkillWillpower))
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (displayTrait)
@@ -499,24 +512,114 @@ Modifiers given here go on the attack's skill test, which is what "for this
 attack" means. They have no home on a basic fight action, which makes its own
 test.
 -}
-runFight :: ReverseQueue m => Env -> Value -> m ()
+runFight :: ReverseQueue m => Env -> Value -> m Env
 runFight env spec = do
   iid <- stepInvestigator env
   let
-    o = case spec of
-      Object o' -> o'
-      _ -> mempty
-    source = fromMaybe GameSource (KeyMap.lookup "source" env >>= parseMaybe parseJSON)
+    o = specObject spec
+    source = stepSource env
     matcher = KeyMap.lookup "matcher" o >>= decodeWith env
     isBasic = KeyMap.lookup "basic" o == Just (Bool True)
   if isBasic
-    then runBasicFight source iid matcher
-    else do
-      let mods = fromMaybe [] (KeyMap.lookup "modifiers" o >>= decodeWith env)
-      sid <- getRandom
-      unless (null mods) $ skillTestModifiers sid source iid mods
+    then env <$ runBasicFight source iid matcher
+    else beginTest env spec \sid _ _ ->
       chooseFightEnemyEdit sid iid source \cf ->
         cf {chooseFightEnemyMatcher = fromMaybe (chooseFightEnemyMatcher cf) matcher}
+
+{- | The scaffolding every step that starts a skill test shares.
+
+The test's id is minted here and bound as @$sid@, which is the point: "for this
+investigation" is a modifier scoped to a test that did not exist when the card
+was written, so the only way to say it is for the step that starts the test to
+hand the id to the steps after it. @modifiers@ is the common case and is applied
+here; anything richer is a @push@ against @$sid@.
+-}
+beginTest
+  :: ReverseQueue m
+  => Env
+  -> Value
+  -> (SkillTestId -> InvestigatorId -> Source -> m ())
+  -> m Env
+beginTest env spec f = do
+  iid <- stepInvestigator env
+  let
+    o = specObject spec
+    source = stepSource env
+    mods = fromMaybe [] (KeyMap.lookup "modifiers" o >>= decodeWith env)
+  sid <- getRandom
+  unless (null mods) $ skillTestModifiers sid source iid mods
+  f sid iid source
+  pure $ KeyMap.insert "sid" (toJSON sid) env
+
+{- | Which skill a test uses.
+
+@skill@ alone sets it outright. Paired with @insteadOf@ it goes through the
+aspect instead, which substitutes only when the test would have used the skill
+being replaced and honours @CanIgnoreAspect@ -- the difference between "uses
+willpower" and "uses willpower instead of intellect".
+-}
+withTestSkill
+  :: (ReverseQueue m, IsAspect InsteadOf a, IsMessage a)
+  => Env
+  -> KeyMap.KeyMap Value
+  -> InvestigatorId
+  -> Source
+  -> (SkillType -> a -> a)
+  -> a
+  -> m ()
+withTestSkill env o iid source setSkill action =
+  case (field "skill", field "insteadOf") of
+    (Just using, Just replaced) -> aspect iid source (using `InsteadOf` replaced) (pure action)
+    (Just using, Nothing) -> push $ toMessage (setSkill using action)
+    _ -> push $ toMessage action
+ where
+  field k = KeyMap.lookup k o >>= decodeWith @SkillType env
+
+{- | Investigate.
+
+Defaults to where you are; @location@ names somewhere else, which is what a card
+that investigates a connecting location needs.
+-}
+runInvestigate :: ReverseQueue m => Env -> Value -> m Env
+runInvestigate env spec = beginTest env spec \sid iid source -> do
+  let o = specObject spec
+  investigation <- case KeyMap.lookup "location" o >>= decodeWith env of
+    Just lid -> mkInvestigateLocation sid iid source (lid :: LocationId)
+    Nothing -> mkInvestigate sid iid source
+  withTestSkill env o iid source Investigate.withSkillType investigation
+
+-- | Evade an enemy, by default any you could evade.
+runEvade :: ReverseQueue m => Env -> Value -> m Env
+runEvade env spec = beginTest env spec \sid iid source -> do
+  let o = specObject spec
+  evasion <- case KeyMap.lookup "matcher" o >>= decodeWith env of
+    Just matcher -> mkChooseEvadeMatch sid iid source (matcher :: EnemyMatcher)
+    Nothing -> mkChooseEvade sid iid source
+  withTestSkill env o iid source Evade.withSkillType evasion
+
+{- | Parley against something.
+
+Unlike the others this has nothing to derive its test from -- there is no
+"parley action" the engine builds for you -- so the target, the skill and the
+difficulty are all the card's to name.
+-}
+runParley :: ReverseQueue m => Env -> Value -> m Env
+runParley env spec = beginTest env spec \sid iid source -> do
+  let o = specObject spec
+  for_ (KeyMap.lookup "target" o >>= decodeWith env) \target -> do
+    let
+      sType = fromMaybe SkillWillpower (KeyMap.lookup "skill" o >>= decodeWith env)
+      difficulty = fromMaybe (Fixed 0) (KeyMap.lookup "difficulty" o >>= decodeWith env)
+    push $ SkillTest.parley sid iid source (target :: Target) sType difficulty
+
+specObject :: Value -> KeyMap.KeyMap Value
+specObject = \case
+  Object o -> o
+  _ -> mempty
+
+-- | The card the step belongs to, which is what the test is sourced from.
+stepSource :: Env -> Source
+stepSource env = fromMaybe GameSource (KeyMap.lookup "source" env >>= parseMaybe parseJSON)
 
 {- | The enemy's own attack ability, at no action cost.
 
@@ -752,9 +855,10 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "playCard" o -> do
           runPlayCard env spec
           pure env
-      | Just spec <- KeyMap.lookup "fight" o -> do
-          runFight env spec
-          pure env
+      | Just spec <- KeyMap.lookup "fight" o -> runFight env spec
+      | Just spec <- KeyMap.lookup "investigate" o -> runInvestigate env spec
+      | Just spec <- KeyMap.lookup "evade" o -> runEvade env spec
+      | Just spec <- KeyMap.lookup "parley" o -> runParley env spec
       | Just spec <- KeyMap.lookup "attack" o -> do
           runAttack env spec
           pure env

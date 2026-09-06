@@ -2458,6 +2458,9 @@ library
       Arkham.Custom.Schema
       Arkham.Custom.Schema.TH
       Arkham.Custom.Schema.Types
+      Arkham.Custom.Schema.Windows
+      Arkham.Custom.Schema.Windows.Check
+      Arkham.Custom.Schema.Windows.Table
       Arkham.Custom.Skill
       Arkham.Custom.Story
       Arkham.Custom.Treachery

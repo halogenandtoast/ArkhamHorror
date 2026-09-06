@@ -6,11 +6,29 @@
  * the two operations the runner supports. Anything a step binds is available to
  * later steps as $name, alongside $id, $source, $target and $iid. */
 import { computed, onMounted } from 'vue'
-import { loadSchema, messageConstructors, schemaLoaded, type FieldSchema } from '@/arkham/schema'
+import {
+  loadSchema,
+  messageConstructors,
+  schemaLoaded,
+  typeSchema,
+  type FieldSchema,
+} from '@/arkham/schema'
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
+import {
+  cardBindings,
+  messageBindings,
+  windowBindings,
+  type Binding,
+} from '@/arkham/customCardBindings'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 
-const props = defineProps<{ abilities: any[]; handlers: any[]; modifiers: any[] }>()
+const props = defineProps<{
+  abilities: any[]
+  handlers: any[]
+  modifiers: any[]
+  /** So `$id` knows what kind of id it is. */
+  cardType?: string
+}>()
 const emit = defineEmits<{
   'update:abilities': [v: any[]]
   'update:handlers': [v: any[]]
@@ -76,6 +94,66 @@ const bindingsFor = (tag: string) => [
 const isBinding = (value: string) => value.trim().startsWith('$')
 const isKnownBinding = (tag: string, value: string) => bindingsFor(tag).includes(value.trim())
 
+/* An ability that triggers on a window can read that window's fields as $w0,
+ * $w1, … the way a handler reads a message's — that is how "heal that many" gets
+ * its number.
+ *
+ * Which window a matcher fires on is not derivable from the two types: a third
+ * of the matcher names differ from their window's (InvestigatorHealed fires on
+ * Healed, PlacedCounter on PlacedToken) and some match several. The mapping
+ * lives in Helpers.Window as case arms and is not reified, so rather than guess
+ * and be quietly wrong, this defaults only to an exact name match and otherwise
+ * asks. Getting the index wrong fails silently, which is the whole reason to
+ * show the fields at all. */
+const windows = computed(() => typeSchema('WindowType')?.constructors ?? [])
+const windowNames = computed(() => windows.value.map((c) => c.name).sort())
+const windowFields = (name: string) => windows.value.find((c) => c.name === name)?.fields ?? []
+const knownWindow = (name: string) => windows.value.some((c) => c.name === name)
+
+/* Windows ordered by how likely they are to be the one this matcher fires on.
+ *
+ * The real mapping is case arms in Helpers.Window and is not reified, so this
+ * only *ranks* -- it never selects. A matcher's window is usually its name with
+ * a prefix or suffix trimmed (InvestigatorHealed fires on Healed, EnemyReadies
+ * on Readies, AgendaAdvances on AgendaAdvance), which a shared-affix score puts
+ * at the top without ever committing to it. */
+function affinity(matcher: string, window: string): number {
+  if (matcher === window) return 1000
+  const shared = (a: string, b: string) => {
+    let n = 0
+    while (n < a.length && n < b.length && a[n] === b[n]) n++
+    return n
+  }
+  const prefix = shared(matcher, window)
+  const suffix = shared([...matcher].reverse().join(''), [...window].reverse().join(''))
+  const contains = matcher.includes(window) || window.includes(matcher) ? window.length : 0
+  return Math.max(prefix, suffix, contains)
+}
+
+const windowCandidates = (matcher: string | null) => {
+  if (!matcher) return windowNames.value
+  return [...windowNames.value].sort(
+    (a, b) => affinity(matcher, b) - affinity(matcher, a) || a.localeCompare(b),
+  )
+}
+
+/* The matcher an ability triggers on, if its AbilityType carries one. The
+ * constructors that do name the field `window`. */
+function abilityWindowMatcher(ability: any): string | null {
+  const tag = ability?.type?.window?.tag
+  return typeof tag === 'string' ? tag : null
+}
+
+/* What the editor shows fields for: the author's choice, else an exact match.
+ * The choice is kept on the ability so it survives reopening the card. It is a
+ * note to the next author rather than anything the engine reads — `AbilitySpec`
+ * names the keys it wants and ignores the rest. */
+function abilityWindow(ability: any): string {
+  if (typeof ability.windowHint === 'string') return ability.windowHint
+  const matcher = abilityWindowMatcher(ability)
+  return matcher && knownWindow(matcher) ? matcher : ''
+}
+
 const abilities = computed(() => props.abilities ?? [])
 const handlers = computed(() => props.handlers ?? [])
 const modifiers = computed(() => props.modifiers ?? [])
@@ -135,6 +213,27 @@ const addModifier = () =>
 const removeModifier = (i: number) =>
   emit('update:modifiers', modifiers.value.filter((_, j) => j !== i))
 
+/* A modifier can be gated two ways. `if` asks the game a question; `requires`
+ * only compares bindings, which is what you need when the question itself would
+ * ask for modifiers while modifiers are being collected -- telling a card in
+ * hand from the same card committed, say. */
+const modifierRequires = (modifier: any): [string, string][] => modifier.requires ?? []
+
+const setModifierRequirement = (index: number, at: number, side: 0 | 1, value: string) => {
+  const requires = modifierRequires(modifiers.value[index]).map((pair, i) =>
+    i === at ? (side === 0 ? [value, pair[1]] : [pair[0], value]) : pair,
+  )
+  setModifier(index, { requires })
+}
+
+const addModifierRequirement = (index: number) =>
+  setModifier(index, { requires: [...modifierRequires(modifiers.value[index]), ['$placement', '']] })
+
+const removeModifierRequirement = (index: number, at: number) =>
+  setModifier(index, {
+    requires: modifierRequires(modifiers.value[index]).filter((_, i) => i !== at),
+  })
+
 /* Where the card has to be for the ability to be usable. A card out of play is
  * only built as an entity when its def asks for it, so naming a zone here also
  * puts the card in that zone's entity list. */
@@ -147,6 +246,28 @@ const ZONES: Record<string, string> = {
 }
 
 const stepsOf = (item: any): any[] => item.steps ?? []
+
+/* What an ability's or a handler's steps start with in scope. The card's own
+ * bindings are always there; the rest come from whatever the ability triggers
+ * on or the handler listens for, anchored so a field can jump back to it. */
+const abilityAnchor = (index: number) => `ccb-ability-${index}-window`
+const handlerAnchor = (index: number) => `ccb-handler-${index}-message`
+
+/* Until a window is chosen there is nothing truthful to say about `$w0`… —
+ * not even how many there are — so nothing is contributed. The field will then
+ * report an unresolved `$w3` as unbound, which is the right prompt: pick the
+ * window. */
+function abilityScope(ability: any, index: number): Binding[] {
+  const name = abilityWindow(ability)
+  if (!name) return cardBindings(props.cardType)
+  return [...cardBindings(props.cardType), ...windowBindings(windowFields(name), name, abilityAnchor(index))]
+}
+
+function handlerScope(handler: any, index: number): Binding[] {
+  const tag = handler.on
+  if (!knownMessage(tag)) return cardBindings(props.cardType)
+  return [...cardBindings(props.cardType), ...messageBindings(messageFields(tag), tag, handlerAnchor(index))]
+}
 
 </script>
 
@@ -172,12 +293,14 @@ const stepsOf = (item: any): any[] => item.steps ?? []
           @update:modelValue="setAbility(index, { type: $event })"
         />
         <ValueEditor
+          optional
           type="Criterion"
           label="Criteria (optional) — gates whether the ability is available"
           :modelValue="ability.criteria"
           @update:modelValue="setAbility(index, { criteria: $event })"
         />
         <ValueEditor
+          optional
           type="AbilityLimit"
           label="Limit (optional)"
           :modelValue="ability.limit"
@@ -192,9 +315,60 @@ const stepsOf = (item: any): any[] => item.steps ?? []
             <option v-for="(text, zone) in ZONES" :key="zone" :value="zone">{{ text }}</option>
           </select>
         </label>
+        <label>
+          Tooltip (optional)
+          <input
+            :value="ability.tooltip ?? ''"
+            placeholder="Forced - When you suffer any number of horror…"
+            @input="setAbility(index, { tooltip: ($event.target as HTMLInputElement).value || undefined })"
+            @keydown.stop
+          />
+        </label>
+
+        <template v-if="abilityWindowMatcher(ability)">
+          <label :id="abilityAnchor(index)" :class="{ needed: !abilityWindow(ability) }">
+            Triggers on window
+            <select
+              :value="abilityWindow(ability)"
+              :class="{ needed: !abilityWindow(ability) }"
+              @change="setAbility(index, { windowHint: ($event.target as HTMLSelectElement).value })"
+            >
+              <option value="">— pick one: $w bindings stay unnamed until you do —</option>
+              <option
+                v-for="name in windowCandidates(abilityWindowMatcher(ability))"
+                :key="name"
+                :value="name"
+              >
+                {{ name }}
+              </option>
+            </select>
+          </label>
+          <ul v-if="abilityWindow(ability)" class="bindings">
+            <li><code>$window</code> the whole window</li>
+            <li v-for="(field, at) in windowFields(abilityWindow(ability))" :key="at">
+              <code>$w{{ at }}</code> {{ field.name ? `${field.name} ::` : '::' }} {{ field.type }}
+            </li>
+            <li v-if="!windowFields(abilityWindow(ability)).length" class="muted">no fields</li>
+          </ul>
+          <p v-if="!abilityWindow(ability)" class="hint needed">
+            <code>{{ abilityWindowMatcher(ability) }}</code> does not share a name with any window,
+            so the editor cannot tell which one it fires on. The closest matches are listed first —
+            <code>{{ windowCandidates(abilityWindowMatcher(ability))[0] }}</code> is the likeliest.
+            Until you pick, <code>$w0</code>… still work but cannot be described.
+          </p>
+          <p class="hint muted">
+            Which window <code>{{ abilityWindowMatcher(ability) }}</code> fires on is not recorded
+            anywhere the editor can read, and a third of the matcher names differ from their
+            window's — <code>InvestigatorHealed</code> fires on <code>Healed</code>,
+            <code>PlacedCounter</code> on <code>PlacedToken</code>. Check the one you pick; a wrong
+            index binds the wrong field and fails silently.
+          </p>
+        </template>
 
         <StepsEditor
           :queryKinds="QUERY_KINDS"
+          :bindings="abilityScope(ability, index)"
+          :path="`ability${index}`"
           :modelValue="stepsOf(ability)"
           @update:modelValue="setAbility(index, { steps: $event })"
         />
@@ -207,7 +381,7 @@ const stepsOf = (item: any): any[] => item.steps ?? []
           <strong>Listens for</strong>
           <button type="button" @click="removeHandler(index)">Remove</button>
         </div>
-        <label>
+        <label :id="handlerAnchor(index)">
           Message tag
           <input
             :value="handler.on"
@@ -272,6 +446,8 @@ const stepsOf = (item: any): any[] => item.steps ?? []
 
         <StepsEditor
           :queryKinds="QUERY_KINDS"
+          :bindings="handlerScope(handler, index)"
+          :path="`handler${index}`"
           :modelValue="stepsOf(handler)"
           @update:modelValue="setHandler(index, { steps: $event })"
         />
@@ -295,6 +471,7 @@ const stepsOf = (item: any): any[] => item.steps ?? []
         </label>
         <ValueEditor
           :type="MODIFIER_KINDS[modifier.kind] ?? 'EnemyMatcher'"
+          :bindings="cardBindings(props.cardType)"
           label="Matcher"
           :modelValue="modifier.matcher"
           @update:modelValue="setModifier(index, { matcher: $event })"
@@ -305,10 +482,50 @@ const stepsOf = (item: any): any[] => item.steps ?? []
           :modelValue="modifier.modifiers"
           @update:modelValue="setModifier(index, { modifiers: $event })"
         />
+        <ValueEditor
+          optional
+          type="Criterion"
+          label="Only if (optional) — a question asked of the game"
+          :modelValue="modifier.if"
+          @update:modelValue="setModifier(index, { if: $event })"
+        />
+
+        <div v-for="(pair, at) in modifierRequires(modifier)" :key="at" class="row">
+          <label>
+            Only when
+            <input
+              :value="pair[0]"
+              :class="{ binding: isBinding(pair[0]) }"
+              placeholder="$placement"
+              @input="setModifierRequirement(index, at, 0, ($event.target as HTMLInputElement).value)"
+              @keydown.stop
+            />
+          </label>
+          <label>
+            is
+            <input
+              :value="pair[1]"
+              :class="{ binding: isBinding(pair[1]) }"
+              placeholder="$source"
+              @input="setModifierRequirement(index, at, 1, ($event.target as HTMLInputElement).value)"
+              @keydown.stop
+            />
+          </label>
+          <button type="button" @click="removeModifierRequirement(index, at)">×</button>
+        </div>
+        <button type="button" class="add" @click="addModifierRequirement(index)">
+          + Requirement
+        </button>
+
         <p class="hint">
           Applies while this card is in play, to everything the matcher selects. Match
           <strong>card</strong> rather than an entity to reach a card before it is in play — that is
           what a keyword needs when the engine reads it at draw or spawn time.
+        </p>
+        <p class="hint muted">
+          A requirement only compares bindings, so it can gate on where the card is. Use it rather
+          than <em>Only if</em> when the question would ask for modifiers while modifiers are being
+          collected.
         </p>
       </div>
 
@@ -322,6 +539,32 @@ const stepsOf = (item: any): any[] => item.steps ?? []
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+}
+
+/* Flashed when a field jumps here to show where a binding came from. The class
+ * is set from outside this component, which scoped styles still match: the rule
+ * keys off the element's own attribute, not on who added the class. */
+.binding-flash {
+  animation: binding-flash 1.4s ease-out;
+  border-radius: 4px;
+}
+
+@keyframes binding-flash {
+  0%,
+  55% {
+    box-shadow: 0 0 0 2px #14b8a6;
+  }
+  100% {
+    box-shadow: 0 0 0 2px transparent;
+  }
+}
+
+.needed {
+  color: #fbbf24;
+
+  select {
+    border-color: #b45309;
+  }
 }
 
 .block {

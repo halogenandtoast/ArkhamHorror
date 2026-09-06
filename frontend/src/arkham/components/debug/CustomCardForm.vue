@@ -17,6 +17,7 @@ import { cardImg, imgsrc } from '@/arkham/helpers'
 import { libraryCards } from '@/arkham/customCardLibrary'
 import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
+import { cardBindings } from '@/arkham/customCardBindings'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import { loadSchema } from '@/arkham/schema'
 
@@ -293,16 +294,31 @@ const signatureOwner = computed(() => {
 
 const addingSignature = ref(false)
 
+/* A library card carries the code the server sent, which `ToJSON CardCode`
+ * prefixes with a `c`; `_signatures` holds the bare code. Comparing the two
+ * as-is never matches, which showed the chips as raw ids instead of names, so
+ * every comparison here goes through the bare form -- as `signatureOwner`
+ * above already did. */
+const sameCard = (a: string, b: string) =>
+  stripCardCodePrefix(a) === stripCardCodePrefix(b)
+
 const signatureCard = (cardCode: string) =>
-  signatureChoices.value.find((c) => c.def.cardCode === cardCode)
+  signatureChoices.value.find((c) => sameCard(c.def.cardCode, cardCode))
+
+const isSignature = (cardCode: string) =>
+  form.signatures.some((code) => sameCard(code, cardCode))
 
 function addSignature(cardCode: string) {
-  if (!form.signatures.includes(cardCode)) form.signatures.push(cardCode)
+  // Stored bare, which is the form the engine reads out of meta.
+  if (cardCode && !isSignature(cardCode)) form.signatures.push(stripCardCodePrefix(cardCode))
   addingSignature.value = false
 }
 
 const removeSignature = (cardCode: string) =>
-  form.signatures.splice(form.signatures.indexOf(cardCode), 1)
+  form.signatures.splice(
+    form.signatures.findIndex((code) => sameCard(code, cardCode)),
+    1,
+  )
 
 // ---------------------------------------------------------------- traits ---
 
@@ -643,7 +659,7 @@ async function loadCard(card: CustomCard) {
   form.agility = meta.agility === undefined ? '3' : String(meta.agility)
   form.investigatorHealth = meta.health === undefined ? '7' : String(meta.health)
   form.investigatorSanity = meta.sanity === undefined ? '7' : String(meta.sanity)
-  form.signatures = meta._signatures ?? []
+  form.signatures = (meta._signatures ?? []).map(stripCardCodePrefix)
   form.cardNumber = meta.number ?? ''
   form.setName = meta.set ?? ''
   form.elderSign = meta._elderSign === undefined ? '1' : String(meta._elderSign)
@@ -903,6 +919,8 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             <p class="hint">What happens when it is played:</p>
             <StepsEditor
               :queryKinds="QUERY_KINDS"
+              :bindings="cardBindings(form.cardType)"
+              :path="'onPlay'"
               :modelValue="form.onPlaySteps"
               @update:modelValue="form.onPlaySteps = $event"
             />
@@ -920,12 +938,16 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             </p>
             <StepsEditor
               :queryKinds="QUERY_KINDS"
+              :bindings="cardBindings(form.cardType)"
+              :path="'elderSignReveal'"
               :modelValue="form.elderSignRevealSteps"
               @update:modelValue="form.elderSignRevealSteps = $event"
             />
             <p class="hint">What it does when it resolves, beyond the modifier:</p>
             <StepsEditor
               :queryKinds="QUERY_KINDS"
+              :bindings="cardBindings(form.cardType)"
+              :path="'elderSign'"
               :modelValue="form.elderSignSteps"
               @update:modelValue="form.elderSignSteps = $event"
             />
@@ -935,6 +957,8 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             </p>
             <StepsEditor
               :queryKinds="QUERY_KINDS"
+              :bindings="cardBindings(form.cardType)"
+              :path="'elderSignSuccess'"
               :modelValue="form.elderSignSuccessSteps"
               @update:modelValue="form.elderSignSuccessSteps = $event"
             />
@@ -959,7 +983,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
               >
                 <option value="">Choose a card…</option>
                 <option
-                  v-for="card in signatureChoices.filter((c) => !form.signatures.includes(c.def.cardCode))"
+                  v-for="card in signatureChoices.filter((c) => !isSignature(c.def.cardCode))"
                   :key="card.def.cardCode"
                   :value="card.def.cardCode"
                 >
@@ -1069,7 +1093,9 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
               <p class="hint">What it does when it is revealed:</p>
               <StepsEditor
                 :queryKinds="QUERY_KINDS"
-                :modelValue="form.revelationSteps"
+                :bindings="cardBindings(form.cardType)"
+              :path="'revelation'"
+              :modelValue="form.revelationSteps"
                 @update:modelValue="form.revelationSteps = $event"
               />
             </template>
@@ -1078,6 +1104,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
           <details>
             <summary>Abilities</summary>
             <AbilityEditor
+            :cardType="form.cardType"
               v-model:abilities="form.abilities"
               v-model:handlers="form.handlers"
               v-model:modifiers="form.modifiers"

@@ -20,6 +20,7 @@ import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Custom.Schema.TH (schemaForWith)
 import Arkham.Custom.Schema.Types
+import Arkham.DamageEffect (DamageAssignment)
 import Arkham.Effect.Types (EffectBuilder)
 import Arkham.Effect.Window (EffectWindow)
 import Arkham.EffectMetadata (EffectMetadata)
@@ -48,6 +49,7 @@ import Arkham.Modifier (Modifier, ModifierType)
 import Arkham.Source (Source)
 import Arkham.Spawn (SpawnAt)
 import Arkham.Target (Target)
+import Arkham.Window (WindowType)
 
 {- | Rooted at the types an ability is made of. 'Message' is listed but not
 expanded through: it reaches most of the codebase, so the editor gets a picker
@@ -62,6 +64,11 @@ customSchema =
        , ''Criterion
        , ''Cost
        , ''WindowMatcher
+       , {- The window an ability triggered on, whose positional fields its steps
+            read as $w0, $w1, .... Listed so the editor can show what those are;
+            which window a given matcher fires on is not derivable from either
+            type (a third of the names differ), so the editor asks. -}
+         ''WindowType
        , ''EnemyMatcher
        , ''LocationMatcher
        , ''InvestigatorMatcher
@@ -75,6 +82,10 @@ customSchema =
        , ''ExtendedCardMatcher
        , ''Source
        , ''Target
+       , -- What a DealDamage carries: how much, from what, and whether the
+         -- damage is direct. A single-constructor record, so it is written
+         -- without a tag.
+         ''DamageAssignment
        , ''ModifierType
        , -- Scoped modifiers are pushed as CreateWindowModifierEffect, so the
          -- editor needs the window that scopes them, and the wrapper that

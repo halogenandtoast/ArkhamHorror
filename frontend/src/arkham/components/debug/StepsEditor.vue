@@ -6,8 +6,27 @@
  * it" or "choose an event, then play it". */
 import { computed, ref } from 'vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
+import {
+  jumpToBinding,
+  scopeAt,
+  scopeInside,
+  stepAnchor,
+  stepBindings,
+  type Binding,
+} from '@/arkham/customCardBindings'
 
-const props = defineProps<{ modelValue: any[]; queryKinds: Record<string, string> }>()
+const props = defineProps<{
+  modelValue: any[]
+  queryKinds: Record<string, string>
+  /** What is already in scope where this list of steps sits. */
+  bindings?: Binding[]
+  /** Identifies this list so each step gets a stable anchor to jump to. */
+  path?: string
+  /* What to announce at the top. Defaults to everything in scope, which is what
+   * a top-level list wants; a nested list passes only what its enclosing step
+   * adds, since the rest was already announced further up. */
+  announce?: Binding[]
+}>()
 const emit = defineEmits<{ 'update:modelValue': [v: any[]] }>()
 
 const steps = computed(() => props.modelValue ?? [])
@@ -23,6 +42,9 @@ type StepKind =
   | 'chooseFrom'
   | 'playCard'
   | 'fight'
+  | 'investigate'
+  | 'evade'
+  | 'parley'
   | 'attack'
   | 'ready'
   | 'draw'
@@ -40,6 +62,9 @@ const KIND_LABELS: Record<StepKind, string> = {
   chooseFrom: 'Choose from',
   playCard: 'Play a card',
   fight: 'Fight',
+  investigate: 'Investigate',
+  evade: 'Evade',
+  parley: 'Parley',
   attack: 'Attack',
   ready: 'Ready',
   draw: 'Draw cards',
@@ -59,6 +84,9 @@ function kindOf(step: any): StepKind {
     'chooseFrom',
     'playCard',
     'fight',
+    'investigate',
+    'evade',
+    'parley',
     'attack',
     'ready',
     'draw',
@@ -83,6 +111,9 @@ const blankStep = (kind: StepKind) =>
     chooseFrom: { chooseFrom: { query: { kind: 'enemy', matcher: null }, bind: 'chosen', steps: [] } },
     playCard: { playCard: { optional: true, matcher: null } },
     fight: { fight: { matcher: null, modifiers: [] } },
+    investigate: { investigate: { modifiers: [] } },
+    evade: { evade: { matcher: null, modifiers: [] } },
+    parley: { parley: { target: null, modifiers: [] } },
     attack: { attack: {} },
     ready: { ready: {} },
     draw: { draw: { amount: 1 } },
@@ -96,7 +127,43 @@ const set = (index: number, step: any) =>
 const add = (kind: StepKind) => emit('update:modelValue', [...steps.value, blankStep(kind)])
 const remove = (index: number) => emit('update:modelValue', steps.value.filter((_, i) => i !== index))
 
+const SKILLS = ['SkillWillpower', 'SkillIntellect', 'SkillCombat', 'SkillAgility']
+
+/* A step's own fields see what the steps before it bound; the steps nested
+ * inside it also see whatever it binds for them. */
+const base = computed(() => props.bindings ?? [])
+const path = computed(() => props.path ?? 'steps')
+const anchorFor = (index: number) => stepAnchor(path.value, index)
+const scopeFor = (index: number) => scopeAt(base.value, steps.value, index, path.value)
+const innerScope = (index: number) => scopeInside(base.value, steps.value, index, path.value)
+const innerPath = (index: number, branch = '') =>
+  `${path.value}-${index}${branch ? `-${branch}` : ''}`
+
+const announced = computed(() => props.announce ?? base.value)
+
+// What an enclosing step adds for the steps nested in it, so the nested list
+// announces `$chosen` without repeating everything it inherited.
+const addedInside = (index: number) =>
+  stepBindings(steps.value[index], anchorFor(index)).inside
+
 const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enemy'] ?? 'EnemyMatcher'
+
+/* The names a step introduces, shown on the step that introduces them.
+ *
+ * A binding is just a string somewhere in a later step, so nothing about the
+ * JSON says where one came from -- and a name that is never bound fails
+ * silently rather than complaining. Naming them at the point they are created
+ * is the only thing that makes them discoverable.
+ *
+ * `forEach` and `chooseFrom` bind inside their own steps rather than after
+ * themselves, which is why they say so. */
+function bindsOf(step: any): { name: string; scope: string }[] {
+  const { after, inside } = stepBindings(step, '')
+  return [
+    ...after.map((b) => ({ name: b.name, scope: 'later steps' })),
+    ...inside.map((b) => ({ name: b.name, scope: 'the steps inside' })),
+  ]
+}
 
 // --- choose options ---
 
@@ -161,9 +228,26 @@ const removeOption = (step: any, index: number, at: number) =>
 
 <template>
   <div class="steps">
-    <div v-for="(step, index) in steps" :key="index" class="step">
+    <p v-if="announced.length" class="scope-bar">
+      <span class="scope-label">In scope here:</span>
+      <button
+        v-for="bound in announced"
+        :key="bound.name"
+        type="button"
+        class="scope-chip"
+        :class="{ jumpable: !!bound.anchor }"
+        :title="`${bound.detail ? bound.detail + ' · ' : ''}${bound.origin}${bound.anchor ? ' — click to show' : ''}`"
+        @click="jumpToBinding(bound.anchor)"
+      >
+        ${{ bound.name }}
+      </button>
+    </p>
+    <div v-for="(step, index) in steps" :key="index" :id="anchorFor(index)" class="step">
       <div class="step-head">
         <span>{{ KIND_LABELS[kindOf(step)] }}</span>
+        <span v-for="bound in bindsOf(step)" :key="bound.name" class="binds">
+          binds <code>${{ bound.name }}</code> for {{ bound.scope }}
+        </span>
         <button type="button" @click="remove(index)">×</button>
       </div>
 
@@ -197,6 +281,7 @@ const removeOption = (step: any, index: number, at: number) =>
           </label>
         </div>
         <ValueEditor
+          :bindings="scopeFor(index)"
           :type="matcherType(step.query?.kind)"
           label="Matcher"
           :modelValue="step.query?.matcher"
@@ -236,6 +321,7 @@ const removeOption = (step: any, index: number, at: number) =>
       </template>
 
       <ValueEditor
+          :bindings="scopeFor(index)"
         v-else-if="kindOf(step) === 'push'"
         type="Message"
         label="Message"
@@ -255,6 +341,7 @@ const removeOption = (step: any, index: number, at: number) =>
           </select>
         </label>
         <ValueEditor
+          :bindings="scopeFor(index)"
           :type="matcherType(step.if?.kind)"
           label="Matcher"
           :modelValue="step.if?.matcher"
@@ -262,12 +349,18 @@ const removeOption = (step: any, index: number, at: number) =>
         />
         <span class="branch-label">Then</span>
         <StepsEditor
+          :bindings="innerScope(index)"
+          :path="innerPath(index, 'then')"
+          :announce="[]"
           :queryKinds="queryKinds"
           :modelValue="step.then ?? []"
           @update:modelValue="set(index, { ...step, then: $event })"
         />
         <span class="branch-label">Otherwise</span>
         <StepsEditor
+          :bindings="innerScope(index)"
+          :path="innerPath(index, 'else')"
+          :announce="[]"
           :queryKinds="queryKinds"
           :modelValue="step.else ?? []"
           @update:modelValue="set(index, { ...step, else: $event })"
@@ -290,12 +383,16 @@ const removeOption = (step: any, index: number, at: number) =>
             <button type="button" @click="set(index, { ...step, case: step.case.filter((_: any, i: number) => i !== bi) })">×</button>
           </div>
           <ValueEditor
+          :bindings="scopeFor(index)"
             :type="matcherType(b.if?.kind)"
             label="Matcher"
             :modelValue="b.if?.matcher"
             @update:modelValue="set(index, { ...step, case: step.case.map((x: any, i: number) => i === bi ? { ...x, if: { ...x.if, matcher: $event } } : x) })"
           />
           <StepsEditor
+          :bindings="innerScope(index)"
+          :path="innerPath(index, `case${bi}`)"
+          :announce="[]"
             :queryKinds="queryKinds"
             :modelValue="b.steps ?? []"
             @update:modelValue="set(index, { ...step, case: step.case.map((x: any, i: number) => i === bi ? { ...x, steps: $event } : x) })"
@@ -306,6 +403,9 @@ const removeOption = (step: any, index: number, at: number) =>
         </button>
         <span class="branch-label">Otherwise</span>
         <StepsEditor
+          :bindings="innerScope(index)"
+          :path="innerPath(index, 'else')"
+          :announce="[]"
           :queryKinds="queryKinds"
           :modelValue="step.else ?? []"
           @update:modelValue="set(index, { ...step, else: $event })"
@@ -334,12 +434,16 @@ const removeOption = (step: any, index: number, at: number) =>
           </label>
         </div>
         <ValueEditor
+          :bindings="scopeFor(index)"
           :type="matcherType(step.forEach?.query?.kind)"
           label="Matcher"
           :modelValue="step.forEach?.query?.matcher"
           @update:modelValue="set(index, { ...step, forEach: { ...step.forEach, query: { ...step.forEach.query, matcher: $event } } })"
         />
         <StepsEditor
+          :bindings="innerScope(index)"
+          :path="innerPath(index, 'forEach')"
+          :announce="addedInside(index)"
           :queryKinds="queryKinds"
           :modelValue="step.forEach?.steps ?? []"
           @update:modelValue="set(index, { ...step, forEach: { ...step.forEach, steps: $event } })"
@@ -360,6 +464,9 @@ const removeOption = (step: any, index: number, at: number) =>
             <button type="button" @click="removeOption(step, oi, index)">×</button>
           </div>
           <StepsEditor
+          :bindings="innerScope(index)"
+          :path="innerPath(index, `option${oi}`)"
+          :announce="[]"
             :queryKinds="queryKinds"
             :modelValue="option.steps ?? []"
             @update:modelValue="setOption(step, oi, { ...option, steps: $event }, index)"
@@ -403,12 +510,15 @@ const removeOption = (step: any, index: number, at: number) =>
           </label>
         </div>
         <ValueEditor
+          :bindings="scopeFor(index)"
           type="CardMatcher"
           label="Which cards"
           :modelValue="step.playCard?.matcher"
           @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, matcher: $event } })"
         />
         <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
           type="Criterion"
           label="Discount only when (optional)"
           :modelValue="step.playCard?.discountIf?.criteria"
@@ -434,17 +544,140 @@ const removeOption = (step: any, index: number, at: number) =>
           fight action, so modifiers "for this attack" have nowhere to go here.
         </p>
         <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
           type="EnemyMatcher"
           label="Which enemies (optional)"
           :modelValue="step.fight?.matcher"
           @update:modelValue="set(index, { ...step, fight: { ...step.fight, matcher: $event } })"
         />
         <ValueEditor
+          :bindings="scopeFor(index)"
           v-if="!step.fight?.basic"
           type="[ModifierType]"
           label="For this attack"
           :modelValue="step.fight?.modifiers"
           @update:modelValue="set(index, { ...step, fight: { ...step.fight, modifiers: $event } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'investigate'">
+        <p class="summary">
+          Investigate, the way the action does. The test it starts is
+          <code>$sid</code>, so a modifier "for this investigation" goes in the box below or is
+          pushed against that.
+        </p>
+        <div class="row">
+          <label>
+            Using
+            <select
+              :value="step.investigate?.skill ?? ''"
+              @change="set(index, { ...step, investigate: { ...step.investigate, skill: ($event.target as HTMLSelectElement).value || undefined } })"
+            >
+              <option value="">the location's own skill</option>
+              <option v-for="sk in SKILLS" :key="sk" :value="sk">{{ sk.replace('Skill', '') }}</option>
+            </select>
+          </label>
+          <label v-if="step.investigate?.skill">
+            instead of
+            <select
+              :value="step.investigate?.insteadOf ?? ''"
+              @change="set(index, { ...step, investigate: { ...step.investigate, insteadOf: ($event.target as HTMLSelectElement).value || undefined } })"
+            >
+              <option value="">— always use it —</option>
+              <option v-for="sk in SKILLS" :key="sk" :value="sk">{{ sk.replace('Skill', '') }}</option>
+            </select>
+          </label>
+        </div>
+        <p v-if="step.investigate?.skill && step.investigate?.insteadOf" class="hint">
+          Swaps only when the test would have used that skill, and can be declined by anything
+          that ignores the substitution — the difference between "uses willpower" and "uses
+          willpower instead of intellect".
+        </p>
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          type="[ModifierType]"
+          label="For this investigation"
+          :modelValue="step.investigate?.modifiers"
+          @update:modelValue="set(index, { ...step, investigate: { ...step.investigate, modifiers: $event } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'evade'">
+        <p class="summary">Evade an enemy. The test it starts is <code>$sid</code>.</p>
+        <div class="row">
+          <label>
+            Using
+            <select
+              :value="step.evade?.skill ?? ''"
+              @change="set(index, { ...step, evade: { ...step.evade, skill: ($event.target as HTMLSelectElement).value || undefined } })"
+            >
+              <option value="">the enemy's own skill</option>
+              <option v-for="sk in SKILLS" :key="sk" :value="sk">{{ sk.replace('Skill', '') }}</option>
+            </select>
+          </label>
+          <label v-if="step.evade?.skill">
+            instead of
+            <select
+              :value="step.evade?.insteadOf ?? ''"
+              @change="set(index, { ...step, evade: { ...step.evade, insteadOf: ($event.target as HTMLSelectElement).value || undefined } })"
+            >
+              <option value="">— always use it —</option>
+              <option v-for="sk in SKILLS" :key="sk" :value="sk">{{ sk.replace('Skill', '') }}</option>
+            </select>
+          </label>
+        </div>
+        <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
+          type="EnemyMatcher"
+          label="Which enemies (optional)"
+          :modelValue="step.evade?.matcher"
+          @update:modelValue="set(index, { ...step, evade: { ...step.evade, matcher: $event } })"
+        />
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          type="[ModifierType]"
+          label="For this evasion"
+          :modelValue="step.evade?.modifiers"
+          @update:modelValue="set(index, { ...step, evade: { ...step.evade, modifiers: $event } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'parley'">
+        <p class="summary">
+          Parley against something. Unlike the others there is no action to derive the test from,
+          so the target, skill and difficulty are all named here. The test is <code>$sid</code>.
+        </p>
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          type="Target"
+          label="Against"
+          :modelValue="step.parley?.target"
+          @update:modelValue="set(index, { ...step, parley: { ...step.parley, target: $event } })"
+        />
+        <label>
+          Using
+          <select
+            :value="step.parley?.skill ?? 'SkillWillpower'"
+            @change="set(index, { ...step, parley: { ...step.parley, skill: ($event.target as HTMLSelectElement).value } })"
+          >
+            <option v-for="sk in SKILLS" :key="sk" :value="sk">{{ sk.replace('Skill', '') }}</option>
+          </select>
+        </label>
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          type="GameCalculation"
+          label="Difficulty"
+          :modelValue="step.parley?.difficulty"
+          @update:modelValue="set(index, { ...step, parley: { ...step.parley, difficulty: $event } })"
+        />
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          type="[ModifierType]"
+          label="For this parley"
+          :modelValue="step.parley?.modifiers"
+          @update:modelValue="set(index, { ...step, parley: { ...step.parley, modifiers: $event } })"
         />
       </template>
 
@@ -457,6 +690,8 @@ const removeOption = (step: any, index: number, at: number) =>
           </template>
         </p>
         <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
           type="Target"
           label="Attack someone else instead (optional)"
           :modelValue="step.attack?.target"
@@ -470,6 +705,8 @@ const removeOption = (step: any, index: number, at: number) =>
           <template v-else>Readies this card.</template>
         </p>
         <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
           type="Target"
           label="Ready something else instead (optional)"
           :modelValue="step.ready?.target"
@@ -564,12 +801,16 @@ const removeOption = (step: any, index: number, at: number) =>
           </label>
         </div>
         <ValueEditor
+          :bindings="scopeFor(index)"
           :type="matcherType(step.chooseFrom?.query?.kind)"
           label="Matcher"
           :modelValue="step.chooseFrom?.query?.matcher"
           @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, query: { ...step.chooseFrom.query, matcher: $event } } })"
         />
         <StepsEditor
+          :bindings="innerScope(index)"
+          :path="innerPath(index, 'chooseFrom')"
+          :announce="addedInside(index)"
           :queryKinds="queryKinds"
           :modelValue="step.chooseFrom?.steps ?? []"
           @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, steps: $event } })"
@@ -603,6 +844,70 @@ const removeOption = (step: any, index: number, at: number) =>
   flex-direction: column;
   gap: 0.35rem;
   padding: 0.5rem;
+}
+
+.binds {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 999px;
+  color: #9ca3af;
+  font-size: 0.72rem;
+  margin-left: auto;
+  padding: 0.05rem 0.5rem;
+
+  code {
+    color: #d1d5db;
+  }
+}
+
+/* Flashed when a field jumps here to show where a binding came from. The class
+ * is set from outside this component, which scoped styles still match: the rule
+ * keys off the element's own attribute, not on who added the class. */
+.scope-bar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0 0 0.2rem;
+}
+
+.scope-label {
+  color: #9ca3af;
+  font-size: 0.72rem;
+}
+
+.scope-chip {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 999px;
+  color: #5eead4;
+  cursor: default;
+  font-family: inherit;
+  font-size: 0.72rem;
+  padding: 0.05rem 0.45rem;
+
+  &.jumpable {
+    cursor: pointer;
+
+    &:hover {
+      border-color: #14b8a6;
+    }
+  }
+}
+
+.binding-flash {
+  animation: binding-flash 1.4s ease-out;
+  border-radius: 4px;
+}
+
+@keyframes binding-flash {
+  0%,
+  55% {
+    box-shadow: 0 0 0 2px #14b8a6;
+  }
+  100% {
+    box-shadow: 0 0 0 2px transparent;
+  }
 }
 
 .step-head {

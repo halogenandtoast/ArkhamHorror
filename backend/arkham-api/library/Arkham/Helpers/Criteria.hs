@@ -408,35 +408,35 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
   Criteria.HasSupply s -> fieldP InvestigatorSupplies (elem s) iid
   Criteria.ControlsThis ->
     let
+      -- The investigator is already named, so the elimination filter only ever
+      -- hides abilities the engine routed here on purpose -- a defeated
+      -- investigator is unselectable by the time their own #when
+      -- InvestigatorEliminated window opens (#5619). Matches the wrap
+      -- Helpers.Window already applies to the who-matcher.
+      you = (Matcher.InvestigatorWithId iid).includeEliminated
       go = \case
         ProxySource (CardIdSource _) s -> go s
         ProxySource (CardCodeSource _) s -> go s
         IndexedSource _ s -> go s
         ProxySource s _ -> go s
-        AssetSource aid ->
-          elem aid <$> select (Matcher.AssetControlledBy $ Matcher.InvestigatorWithId iid)
-        EventSource eid ->
-          elem eid <$> select (Matcher.EventControlledBy $ Matcher.InvestigatorWithId iid)
+        AssetSource aid -> elem aid <$> select (Matcher.AssetControlledBy you)
+        EventSource eid -> elem eid <$> select (Matcher.EventControlledBy you)
         SkillSource sid ->
-          elem sid
-            <$> select (Matcher.SkillOwnedBy (Matcher.InvestigatorWithId iid) <> Matcher.SkillNotRemoved)
+          elem sid <$> select (Matcher.SkillOwnedBy you <> Matcher.SkillNotRemoved)
         _ -> pure False
      in
       go source
   Criteria.OwnsThis ->
     let
+      you = (Matcher.InvestigatorWithId iid).includeEliminated
       go = \case
         ProxySource (CardIdSource _) s -> go s
         IndexedSource _ s -> go s
         ProxySource s _ -> go s
-        AssetSource aid ->
-          elem aid <$> select (Matcher.AssetOwnedBy $ Matcher.InvestigatorWithId iid)
-        EventSource eid ->
-          elem eid <$> select (Matcher.EventOwnedBy $ Matcher.InvestigatorWithId iid)
-        SkillSource sid ->
-          elem sid <$> select (Matcher.SkillOwnedBy $ Matcher.InvestigatorWithId iid)
-        EnemySource eid ->
-          elem eid <$> select (Matcher.EnemyOwnedBy $ Matcher.InvestigatorWithId iid)
+        AssetSource aid -> elem aid <$> select (Matcher.AssetOwnedBy you)
+        EventSource eid -> elem eid <$> select (Matcher.EventOwnedBy you)
+        SkillSource sid -> elem sid <$> select (Matcher.SkillOwnedBy you)
+        EnemySource eid -> elem eid <$> select (Matcher.EnemyOwnedBy you)
         _ -> pure False
      in
       go source

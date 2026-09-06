@@ -28,7 +28,7 @@ instance HasAbilities DreamsOfDestruction where
         ( HasCalculation
             ( SubtractCalculation
                 (AssetTokenCountCalculation a.id #horror)
-                (InvestigatorsFieldCalculation You InvestigatorSanity)
+                (InvestigatorsFieldCalculation (IncludeEliminated You) InvestigatorSanity)
             )
             (atLeast 0)
         )

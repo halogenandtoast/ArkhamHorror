@@ -28,7 +28,7 @@ instance HasAbilities ToeTheLine where
         ( HasCalculation
             ( SubtractCalculation
                 (AssetTokenCountCalculation a.id #damage)
-                (InvestigatorsFieldCalculation You InvestigatorHealth)
+                (InvestigatorsFieldCalculation (IncludeEliminated You) InvestigatorHealth)
             )
             (atLeast 0)
         )

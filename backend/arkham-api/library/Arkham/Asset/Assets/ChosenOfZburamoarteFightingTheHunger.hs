@@ -6,6 +6,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards.ChildrenOfBlood qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.ChaosToken
+import Arkham.Helpers.ChaosBag (getRemainingBloodTokens)
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFace)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (withSkillTestSource)
@@ -19,10 +20,6 @@ chosenOfZburamoarteFightingTheHunger :: AssetCard ChosenOfZburamoarteFightingThe
 chosenOfZburamoarteFightingTheHunger =
   asset ChosenOfZburamoarteFightingTheHunger Cards.chosenOfZburamoarteFightingTheHunger
 
-{- | "Each investigator treats each {blood} token revealed during a skill test as
-\"-1. Reveal another token. ...\"" The -1 is the campaign-wide printed value (see
-'Arkham.Scenario'); this adds the extra reveal, as Mu does for its faces.
--}
 instance HasModifiersFor ChosenOfZburamoarteFightingTheHunger where
   getModifiersFor (ChosenOfZburamoarteFightingTheHunger a) =
     modifyEach a [toTarget BloodToken] [RevealAnotherChaosToken]
@@ -34,7 +31,8 @@ instance HasAbilities ChosenOfZburamoarteFightingTheHunger where
 instance RunMessage ChosenOfZburamoarteFightingTheHunger where
   runMessage msg a@(ChosenOfZburamoarteFightingTheHunger attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      replicateM_ 5 $ addChaosToken #blood
+      n <- min 5 <$> getRemainingBloodTokens
+      repeated n $ addChaosTokenForGame #blood
       pure a
     RevealChaosToken _ iid token -> do
       withSkillTestSource \_ -> do

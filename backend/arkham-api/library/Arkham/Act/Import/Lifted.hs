@@ -63,6 +63,8 @@ import Arkham.Message as X (
   pattern BeforeRevealChaosTokens,
   pattern BeforeSkillTest,
   pattern BeginSkillTestAfterFast,
+  pattern AddChaosToken,
+  pattern AddChaosTokenForGame,
   pattern BeginSkillTestWithPreMessages,
   pattern BeginSkillTestWithPreMessages',
   pattern CancelAssetHorror,

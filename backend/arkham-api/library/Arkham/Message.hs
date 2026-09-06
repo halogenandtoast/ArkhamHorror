@@ -135,6 +135,7 @@ import Data.Aeson.Types
 import Data.UUID (fromWords64, nil)
 import Data.UUID qualified as UUID
 import GHC.OverloadedLabels
+import GHC.Records
 
 messageType :: Message -> Maybe MessageType
 messageType (PerformEnemyAttack _) = Just AttackMessage
@@ -451,6 +452,34 @@ data ShuffleIn = ShuffleIn | DoNotShuffleIn
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+data AddChaosTokenDetails = AddChaosTokenDetails
+  { addChaosTokenFace :: ChaosTokenFace
+  , addChaosTokenToCampaign :: Bool
+  {- ^ Tokens added to the campaign stay in 'campaignChaosBag' for the rest of
+  the campaign; the rest are gone when the scenario ends.
+  -}
+  }
+  deriving stock (Show, Ord, Eq, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
+
+instance HasField "face" AddChaosTokenDetails ChaosTokenFace where
+  getField = addChaosTokenFace
+
+instance HasField "toCampaign" AddChaosTokenDetails Bool where
+  getField = addChaosTokenToCampaign
+
+{- | Add a token to the chaos bag for the remainder of the campaign. Matches an
+add of either lifetime, so anything that cares must match 'AddChaosTokenWith'.
+-}
+pattern AddChaosToken :: ChaosTokenFace -> Message
+pattern AddChaosToken face <- AddChaosTokenWith (AddChaosTokenDetails face _)
+  where
+    AddChaosToken face = AddChaosTokenWith (AddChaosTokenDetails face True)
+
+-- | Add a token for this game only, leaving the campaign's bag alone.
+pattern AddChaosTokenForGame :: ChaosTokenFace -> Message
+pattern AddChaosTokenForGame face = AddChaosTokenWith (AddChaosTokenDetails face False)
+
 data InitDeckAttrs = InitDeckAttrs
   { initDeckInvestigator :: InvestigatorId
   , initDeckUrl :: Maybe Text
@@ -619,7 +648,7 @@ data Message
   | -- Victory
     AddToVictory (Maybe InvestigatorId) Target
   | -- Tokens
-    AddChaosToken ChaosTokenFace
+    AddChaosTokenWith AddChaosTokenDetails
   | -- Asset Uses
     AddUses Source AssetId UseType Int
   | -- Asks
@@ -2409,6 +2438,8 @@ mconcat
               pure $ case contents of
                 Right (a, b, c, d, s) -> FindEncounterCard a b c d s
                 Left (a, b, c, d) -> FindEncounterCard a b c d LeadChooses
+            -- Legacy: saves written before the details object stored the bare face
+            "AddChaosToken" -> AddChaosToken <$> o .: "contents"
             -- Legacy: pre-Message-refactor saves tagged entity-specific removals
             -- with these names; they are now pattern synonyms over `Remove Target`.
             "RemoveAsset" -> Remove . AssetTarget <$> o .: "contents"

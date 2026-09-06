@@ -680,6 +680,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           cs <- replicateM n (genCard def)
           traverse (Arkham.Card.setTaboo investigatorTaboo <=< setOwner iid) cs
 
+    -- A card that always starts the game on its front side can have been
+    -- persisted flipped (the flip is synced to the campaign's story cards), so
+    -- put its other side into play instead.
+    startingInPlayCards <- for (map PlayerCard permanentCards <> encounterPermanentCards) \card -> do
+      let def = toCardDef card
+      case cdOtherSide def of
+        Just otherSide | startsOnOtherSideTag `elem` cdTags def -> do
+          let card' = lookupCard otherSide (toCardId card)
+          push $ ReplaceCard (toCardId card') card'
+          pure card'
+        _ -> pure card
+
     pushAll
       $ startsWithMsgs
       <> [ PutCardIntoPlay
@@ -688,7 +700,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
              Nothing
              NoPayment
              (Window.defaultWindows investigatorId)
-         | card <- map PlayerCard permanentCards <> encounterPermanentCards
+         | card <- startingInPlayCards
          ]
       <> [TakeStartingResources investigatorId]
     pure $ a & (deckL .~ Deck deck''') & bondedCardsL .~ bondedCards

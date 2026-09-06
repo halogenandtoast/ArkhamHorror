@@ -637,6 +637,9 @@ spawnEnemyAt_ card location = do
 addChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
 addChaosToken = push . AddChaosToken
 
+addChaosTokenForGame :: ReverseQueue m => ChaosTokenFace -> m ()
+addChaosTokenForGame = push . AddChaosTokenForGame
+
 removeChaosToken :: ReverseQueue m => ChaosTokenFace -> m ()
 removeChaosToken = push . RemoveChaosToken
 

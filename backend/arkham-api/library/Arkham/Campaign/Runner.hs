@@ -198,9 +198,9 @@ defaultCampaignRunner msg a = case msg of
     -- Keep campaign story cards in sync when a card's identity changes (e.g. a
     -- story asset moved from the encounter pool to the player pool).
     pure $ updateAttrs a (storyCardsL %~ Map.map (map (\c -> if toCardId c == cardId then card else c)))
-  AddChaosToken token -> do
-    if token `notElem` [CurseToken, BlessToken]
-      then pure $ updateAttrs a (overCampaignChaosBag (token :))
+  AddChaosTokenWith details -> do
+    if details.toCampaign && details.face `notElem` [CurseToken, BlessToken]
+      then pure $ updateAttrs a (overCampaignChaosBag (details.face :))
       else pure a
   RemoveChaosToken token -> pure $ updateAttrs a (overCampaignChaosBag (deleteFirstMatch (== token)))
   RemoveAllChaosTokens token -> pure $ updateAttrs a (overCampaignChaosBag (filter (/= token)))

@@ -207,6 +207,14 @@ looking for the card in the controller's used abilities.
 hideWhenUsedTag :: Text
 hideWhenUsedTag = "hide-when-used"
 
+{- | 'cdTags' marker for the back of a double-sided card that always starts a game
+on its other side. A flip is persisted with the campaign's story cards, so without
+this the card would come back flipped in the next scenario; setup swaps it for
+'cdOtherSide' instead.
+-}
+startsOnOtherSideTag :: Text
+startsOnOtherSideTag = "starts-on-other-side"
+
 data IsRevelation
   = NoRevelation
   | IsRevelation

@@ -8,7 +8,7 @@ abyssalTrench =
 
 ancientGallery :: CardDef
 ancientGallery =
-  victory 1 $ seaFloor "11548" "Ancient Gallery"
+  seaFloor "11548" "Ancient Gallery"
 
 barrierCoreActive :: CardDef
 barrierCoreActive =

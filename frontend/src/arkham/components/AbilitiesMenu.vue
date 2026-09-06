@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Game } from '@/arkham/types/Game';
 import { OnClickOutside } from '@vueuse/components'
-import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue';
+import { ref, watch, computed, nextTick, onMounted, onUnmounted, useId } from 'vue';
 import type { AbilityMessage } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 
@@ -31,7 +31,21 @@ const showAbilities = defineModel()
 const abilitiesPosition = ref<Position>({ bottom: '0px', top: '0px', left: '0px' });
 const positionClass = computed(() => props.position || 'top');
 
+const supportsAnchor = typeof CSS !== 'undefined' && CSS.supports?.('anchor-name: --a');
+const anchorName = `--ability-anchor-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
+const anchorStyle = computed(() => supportsAnchor ? { 'position-anchor': anchorName } : abilitiesPosition.value);
+
+// Anchor positioning keeps the menu pinned when the card moves; browsers without
+// it fall back to the measured fixed position below.
+watch([() => props.frame, showAbilities], ([frame], old) => {
+  if (!supportsAnchor) return;
+  old?.[0]?.style.removeProperty('anchor-name');
+  if (frame && showAbilities.value) frame.style.setProperty('anchor-name', anchorName);
+  else frame?.style.removeProperty('anchor-name');
+}, { immediate: true });
+
 function calculatePosition() {
+  if (supportsAnchor) return;
   if (props.frame) {
     const rect = props.frame.getBoundingClientRect();
     const menuRect = abilitiesRef.value?.getBoundingClientRect();
@@ -101,11 +115,13 @@ function updatePosition() {
 }
 
 onMounted(() => {
+  if (supportsAnchor) return;
   window.addEventListener('resize', updatePosition);
   window.addEventListener('scroll', updatePosition, true);
 });
 
 onUnmounted(() => {
+  props.frame?.style.removeProperty('anchor-name');
   window.removeEventListener('resize', updatePosition);
   window.removeEventListener('scroll', updatePosition, true);
 });
@@ -114,7 +130,7 @@ onUnmounted(() => {
 <template>
   <Teleport to="body">
     <OnClickOutside @trigger="showAbilities = false" v-if="showAbilities" :options="{ ignore: [frame] }">
-      <div class="abilities" :class="positionClass" :style="abilitiesPosition" ref="abilitiesRef" >
+      <div class="abilities" :class="[positionClass, { anchored: supportsAnchor }]" :style="anchorStyle" ref="abilitiesRef" >
         <button
           v-if="playAction !== undefined"
           class="play-card-button"
@@ -178,6 +194,16 @@ onUnmounted(() => {
     }
   }
 }
+
+.abilities.anchored {
+  position: fixed;
+  position-try-fallbacks: flip-block, flip-inline;
+}
+
+.abilities.anchored.top { position-area: top span-right; }
+.abilities.anchored.bottom { position-area: bottom span-right; }
+.abilities.anchored.left { position-area: left span-bottom; margin-right: 8px; }
+.abilities.anchored.right { position-area: right span-bottom; margin-left: 8px; }
 
 .play-card-button {
   border: 0;

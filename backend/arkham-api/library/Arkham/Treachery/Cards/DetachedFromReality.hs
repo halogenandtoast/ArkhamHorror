@@ -4,12 +4,11 @@ import Arkham.Card
 import Arkham.Helpers.Location
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.CardDefs.TheDreamEaters qualified as Locations
-import Arkham.Matcher hiding (PutLocationIntoPlay)
+import Arkham.Matcher
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 import Arkham.Treachery.CardDefs.TheDreamEaters qualified as Cards
 import Arkham.Treachery.Import.Lifted
-import Arkham.Window
 
 newtype DetachedFromReality = DetachedFromReality TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor, HasAbilities)
@@ -34,7 +33,6 @@ instance RunMessage DetachedFromReality where
         Nothing -> do
           for_ enemies (disengageEnemy iid)
           dreamGate <- placeLocationCard Locations.dreamGatePointlessReality
-          checkAfter $ PutLocationIntoPlay iid dreamGate
           whenM (getCanLeaveCurrentLocation iid attrs)
             $ moveTo (attrs.ability 1) iid dreamGate
       pure t

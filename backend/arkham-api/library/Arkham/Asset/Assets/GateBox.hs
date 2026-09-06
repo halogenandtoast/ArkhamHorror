@@ -5,9 +5,8 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Location.CardDefs.TheDreamEaters qualified as Locations
-import Arkham.Matcher hiding (PutLocationIntoPlay)
+import Arkham.Matcher
 import Arkham.Message.Lifted.Move
-import Arkham.Window (WindowType (..))
 
 newtype GateBox = GateBox AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -30,7 +29,6 @@ instance RunMessage GateBox where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       selectEach (enemyEngagedWith iid) (disengageEnemy iid)
       dreamGate <- placeLocationCard Locations.dreamGateWondrousJourney
-      checkAfter $ PutLocationIntoPlay iid dreamGate
       moveTo (attrs.ability 1) iid dreamGate
       pure a
     _ -> GateBox <$> liftRunMessage msg attrs

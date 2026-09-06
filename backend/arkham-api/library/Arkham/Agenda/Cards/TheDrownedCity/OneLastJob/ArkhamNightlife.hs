@@ -21,7 +21,10 @@ arkhamNightlife = agenda (1, A) ArkhamNightlife Cards.arkhamNightlife (Static 7)
 
 instance HasAbilities ArkhamNightlife where
   getAbilities (ArkhamNightlife a) =
-    [ mkAbility a 1 $ triggered_ $ DiscoveringLastClue #after Anyone (LocationWithTrait Arkham)
+    [ groupLimit PerWindow
+        $ mkAbility a 1
+        $ triggered_
+        $ DiscoveringLastClue #after Anyone (LocationWithTrait Arkham)
     | onSide A a
     ]
 

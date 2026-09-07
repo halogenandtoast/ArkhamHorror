@@ -32,7 +32,8 @@ instance RunMessage UntimelyTransaction1 where
       pure e
     HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
       card <- getCard cid
-      otherInvestigators <- select $ affectsOthersKnown iid $ colocatedWith iid <> not_ (InvestigatorWithId iid)
+      otherInvestigators <-
+        select $ affectsOthersKnown iid $ colocatedWith iid <> not_ (InvestigatorWithId iid)
       canAfford <- flip filterM otherInvestigators $ \other -> getIsPlayable other attrs (UnpaidCost NoAction) (defaultWindows other) card
       unless (null canAfford) do
         for_ canAfford \otherInvestigator -> do
@@ -42,20 +43,23 @@ instance RunMessage UntimelyTransaction1 where
         played <- capture do
           drawCardsIfCan iid attrs 1
           gainResourcesIfCan iid attrs (printedCardCost card)
+        -- a bare PayCardCost never opens the PlayCard windows, so "when you play"
+        -- reactions (Shrewd Dealings) would not see this play
+        choices <- for otherPlayers \(otherInvestigator, otherPlayer) -> do
+          playMsgs <-
+            capture
+              $ playCardPayingCostWithWindows otherInvestigator card (defaultWindows otherInvestigator)
+          pure
+            ( otherPlayer
+            , ChooseOne
+                [Label "$cards.label.untimelyTransaction1.playCard" $ UnfocusCards : playMsgs <> played]
+            )
         focusCard card do
           put Unfocused
           push
             $ AskMap
             $ mapFromList
             $ (player, ChooseOne [Label "$cards.label.untimelyTransaction1.noOnePays" [UnfocusCards]])
-            : [ ( otherPlayer
-                , ChooseOne
-                    [ Label "$cards.label.untimelyTransaction1.playCard" $ UnfocusCards
-                        : PayCardCost otherInvestigator card (defaultWindows otherInvestigator)
-                        : played
-                    ]
-                )
-              | (otherInvestigator, otherPlayer) <- otherPlayers
-              ]
+            : choices
       pure e
     _ -> UntimelyTransaction1 <$> liftRunMessage msg attrs

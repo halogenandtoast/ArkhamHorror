@@ -30,7 +30,11 @@ instance HasModifiersFor ChamberOfTheTabletUnsealed where
 
 instance HasAbilities ChamberOfTheTabletUnsealed where
   getAbilities (ChamberOfTheTabletUnsealed a) =
-    extendRevealed1 a $ mkAbility a 1 $ freeReaction $ DiscoveringLastClue #after Anyone (be a)
+    extendRevealed1 a
+      $ groupLimit PerWindow
+      $ restricted a 1 (exists $ SetAsideCardMatch $ cardIs Assets.tidalTablet)
+      $ freeReaction
+      $ DiscoveringLastClue #after Anyone (be a)
 
 instance RunMessage ChamberOfTheTabletUnsealed where
   runMessage msg l@(ChamberOfTheTabletUnsealed attrs) = runQueueT $ case msg of

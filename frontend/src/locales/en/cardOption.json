@@ -12,6 +12,14 @@
         "label": "Only offer when engaged"
       }
     },
+    "c11756a": {
+      "abilities": {
+        "1": "{'{'}reaction{'}'} When you gain 1 or more resources: Place 1 of those resources on Good Money."
+      },
+      "stopAtFiveResources": {
+        "label": "Stop offering at 5 resources"
+      }
+    },
     "c11764": {
       "treatAsPartiallyFlooded": {
         "label": "Treat fully flooded as partially flooded"

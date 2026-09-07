@@ -714,6 +714,7 @@ goodMoney =
     $ (storyAsset_ "11756a" ("Good Money" <:> "The \"Quid\" Part") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
       , cdCardSubType = Just Weakness
+      , cdOptions = [forAbility 1 $ cardToggle "stopAtFiveResources" False]
       }
 
 doNoHarm :: CardDef

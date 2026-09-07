@@ -32,6 +32,7 @@ import * as Arkham from '@/arkham/types/Asset';
 import { useSettings } from '@/stores/settings';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
 import { useDbCardStore } from '@/stores/dbCards'
+import { useCardStore } from '@/stores/cards'
 
 const props = withDefaults(defineProps<{
   game: Game
@@ -73,6 +74,13 @@ const uiRotation = computed<number>(() => {
 })
 
 const cardCode = computed(() => props.asset.cardCode)
+
+// The card-options gear also lives top-left, so the jammed wrench has to know
+// whether it is sharing the corner.
+const cardStore = useCardStore()
+const hasCardOptions = computed(
+  () => (cardStore.cards.find((def) => def.cardCode === cardCode.value)?.options?.length ?? 0) > 0
+)
 const isTheBeyond = computed(() => cardCode.value === 'c90052')
 const investigators = computed(() => Object.values(props.game.investigators).filter((i) => {
   if (i.placement.tag === 'InVehicle') return i.placement.contents === id.value
@@ -399,7 +407,12 @@ function startDrag(event: DragEvent) {
         <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, 'asset--pending': pending }">
           <MissingCardBadge :card-code="cardCode" />
           <font-awesome-icon v-if="isSpirit" :icon="['fas', 'ghost']" class="spirit-icon" />
-          <span v-if="jammed" class="status-icon" v-tooltip="'Jammed'">
+          <span
+            v-if="jammed"
+            class="status-icon"
+            :class="{ 'status-icon--beside-gear': hasCardOptions }"
+            v-tooltip="'Jammed'"
+          >
             <font-awesome-icon :icon="['fas', 'wrench']" />
           </span>
           <img
@@ -867,6 +880,12 @@ img.card.ability-target {
   align-items: center;
   justify-content: center;
   pointer-events: auto;
+}
+
+/* Shares the top-left corner with the card-options gear (CardConfig.vue), so it
+   steps right when the card declares options. */
+.status-icon--beside-gear {
+  left: 21px;
 }
 
 .in-vehicle {

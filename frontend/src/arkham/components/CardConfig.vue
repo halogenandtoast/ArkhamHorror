@@ -104,25 +104,28 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Bottom-left of the card frame is the one corner nothing else uses. The glyph
-   is bare — no pill, no border — with drop-shadows so it survives light art. The
-   button itself is padded out well past the glyph for a usable touch target. */
+/* Top-left is the only corner the token pool cannot reach: `.pool` is anchored
+   at `top: 50%` and only ever grows downward, spilling past the card's bottom
+   edge once it wraps. Asset art is ~60px wide, so the glyph stays small and
+   bare — no pill, no border — with drop-shadows to survive light art. The one
+   other tenant of this corner is the jammed wrench, which steps aside in
+   Asset.vue when a card declares options. */
 .card-config-gear {
   position: absolute;
-  left: 0;
-  bottom: 0;
+  left: 1px;
+  top: 1px;
   z-index: var(--z-index-3);
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 18px;
+  height: 18px;
   padding: 0;
   margin: 0;
   border: 0;
   background: none;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.62);
-  font-size: 15px;
+  font-size: 12px;
   filter:
     drop-shadow(0 0 1px rgba(0, 0, 0, 0.95))
     drop-shadow(0 1px 2px rgba(0, 0, 0, 0.85));
@@ -149,14 +152,14 @@ onUnmounted(() => {
 }
 
 .card-config-gear--compact {
-  width: 24px;
-  height: 24px;
-  font-size: 13px;
+  width: 16px;
+  height: 16px;
+  font-size: 11px;
 }
 
 @media (max-width: 800px) and (orientation: portrait) {
   .card-config-gear {
-    font-size: 13px;
+    font-size: 11px;
   }
 }
 </style>

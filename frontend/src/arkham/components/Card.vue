@@ -3,14 +3,14 @@ import { computed, onMounted } from 'vue';
 import { imgsrc } from '@/arkham/helpers';
 import { cardImage } from '@/arkham/cardImages';
 import type { Modifier } from '@/arkham/types/Modifier';
-import { TokenType } from '@/arkham/types/Token';
+import { type Tokens } from '@/arkham/types/Token';
 import { cardFacedown, type Card, type CardContents } from '@/arkham/types/Card';
 import type { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
-import PoolItem from '@/arkham/components/PoolItem.vue'
+import TokenPool from '@/arkham/components/TokenPool.vue'
 import { useDebug } from '@/arkham/debug'
 import { useCardStore } from '@/stores/cards'
 
@@ -172,21 +172,25 @@ const abilities = computed<AbilityMessage[]>(() => {
     }, []);
 })
 
-const tokens = computed(() => {
-  return cardContents.value.tokens || {}
+/*
+ * A card carries no tokens of its own -- `CardContents.tokens` decodes as a
+ * constant {} -- so this pool only ever had something to show for a card that
+ * is really an entity in play. Normally that entity draws its own pool and this
+ * component is never asked to; the Hidden stack is the exception, since it
+ * tucks in-play cards out of the play area. Read the pool off the entity so a
+ * tucked card still shows its resources, damage and clues.
+ */
+const tokens = computed<Tokens>(() => {
+  const own = cardContents.value.tokens
+  if (own && Object.keys(own).length > 0) return own
+
+  const cardId = id.value
+  const entity = Object.values(props.game.assets).find((a) => a.cardId === cardId)
+    ?? Object.values(props.game.treacheries).find((t) => t.cardId === cardId)
+  return entity?.tokens ?? {}
 })
 
-const doom = computed(() => tokens.value[TokenType.Doom])
-const clues = computed(() => tokens.value[TokenType.Clue])
-const resources = computed(() => tokens.value[TokenType.Resource])
-const damage = computed(() => tokens.value[TokenType.Damage])
-const horror = computed(() => tokens.value[TokenType.Horror])
-const lostSouls = computed(() => tokens.value[TokenType.LostSoul])
-const leylines = computed(() => tokens.value[TokenType.Leyline])
-
-const hasPool = computed(() => {
-  return doom.value || clues.value || resources.value || damage.value || horror.value || lostSouls.value
-})
+const hasPool = computed(() => Object.values(tokens.value).some((n) => n))
 
 const forceSideways = computed(() => {
   const { cardCode, isFlipped } = cardContents.value
@@ -259,13 +263,7 @@ function startDrag(event: DragEvent) {
     />
     <span class="vengeance" v-if="card.tag === 'VengeanceCard'">{{$t('card.vengeance', {value: 1})}}</span>
     <div class="pool" v-if="hasPool">
-      <PoolItem v-if="damage" type="doom" :amount="damage" />
-      <PoolItem v-if="horror" type="horror" :amount="horror" />
-      <PoolItem v-if="doom" type="doom" :amount="doom" />
-      <PoolItem v-if="clues" type="clue" :amount="clues" />
-      <PoolItem v-if="resources" type="resource" :amount="resources" />
-      <PoolItem v-if="lostSouls" type="resource" :amount="lostSouls" />
-      <PoolItem v-if="leylines" type="resource" :amount="leylines" />
+      <TokenPool :tokens="tokens" />
     </div>
     <button
       v-if="canDebugCustomize"

@@ -15,6 +15,12 @@
 
   --important: rgba(212, 165, 10, 0.9);
 
+  /* The dropdown marker. Drawn here rather than left to the browser so that a
+     native select and a custom picker button show the same shape: the browser's
+     own is a chevron on some platforms and a triangle on others. */
+  --select-caret: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0h10L5 6z' fill='%239ca3af'/%3E%3C/svg%3E");
+  --select-caret-size: 9px 6px;
+
   --wild: #8a7d5a;
   --guardian: #5cb4fd;
   --mystic: #ba81f2;

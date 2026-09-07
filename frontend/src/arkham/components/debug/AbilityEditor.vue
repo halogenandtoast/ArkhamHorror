@@ -17,6 +17,7 @@ import {
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
 import {
   cardBindings,
+  paymentBindings,
   messageBindings,
   windowBindings,
   type Binding,
@@ -134,7 +135,21 @@ function abilityWindowMatcher(ability: any): string | null {
  * so it survives reopening the card -- a note to the next author rather than
  * anything the engine reads, since `AbilitySpec` ignores keys it does not name.
  */
+/* Chosen deliberately to mean "this never fires on a window". Kept on the
+ * ability like any other hint, so the answer survives reopening the card. */
+const NO_WINDOW = '—none—'
+
+/* Whether the window question has been answered, one way or the other. A
+ * matcher that cannot fire answers it by itself: `NotAnyWindow` is how an
+ * ability says it is reached some other way -- an elder sign, another card's
+ * useAbility -- and asking which window it triggers on has no answer to give. */
+function windowSettled(ability: any): boolean {
+  if (abilityWindowMatcher(ability) === 'NotAnyWindow') return true
+  return !!abilityWindow(ability) || ability?.windowHint === NO_WINDOW
+}
+
 function abilityWindow(ability: any): string {
+  if (ability?.windowHint === NO_WINDOW) return ''
   if (typeof ability.windowHint === 'string' && ability.windowHint) return ability.windowHint
   const known = windowsFor(abilityWindowMatcher(ability))
   return known.length === 1 && knownWindow(known[0]) ? known[0] : ''
@@ -245,8 +260,9 @@ const handlerAnchor = (index: number) => `ccb-handler-${index}-message`
  * window. */
 function abilityScope(ability: any, index: number): Binding[] {
   const name = abilityWindow(ability)
-  if (!name) return cardBindings(props.cardType)
-  return [...cardBindings(props.cardType), ...windowBindings(windowFields(name), name, abilityAnchor(index))]
+  const base = [...cardBindings(props.cardType), ...paymentBindings()]
+  if (!name) return base
+  return [...base, ...windowBindings(windowFields(name), name, abilityAnchor(index))]
 }
 
 function handlerScope(handler: any, index: number): Binding[] {
@@ -312,14 +328,17 @@ function handlerScope(handler: any, index: number): Binding[] {
         </label>
 
         <template v-if="abilityWindowMatcher(ability)">
-          <label :id="abilityAnchor(index)" :class="{ needed: !abilityWindow(ability) }">
+          <label :id="abilityAnchor(index)" :class="{ needed: !windowSettled(ability) }">
             Triggers on window
             <select
-              :value="abilityWindow(ability)"
-              :class="{ needed: !abilityWindow(ability) }"
+              :value="ability.windowHint === NO_WINDOW ? NO_WINDOW : abilityWindow(ability)"
+              :class="{ needed: !windowSettled(ability) }"
               @change="setAbility(index, { windowHint: ($event.target as HTMLSelectElement).value })"
             >
-              <option value="">— pick one: $w bindings stay unnamed until you do —</option>
+              <option v-if="!windowSettled(ability)" value="">
+                — pick one: $w bindings stay unnamed until you do —
+              </option>
+              <option :value="NO_WINDOW">— never fires on a window —</option>
               <option
                 v-for="name in windowCandidates(abilityWindowMatcher(ability))"
                 :key="name"
@@ -336,7 +355,12 @@ function handlerScope(handler: any, index: number): Binding[] {
             </li>
             <li v-if="!windowFields(abilityWindow(ability)).length" class="muted">no fields</li>
           </ul>
-          <p v-if="!abilityWindow(ability)" class="hint needed">
+          <p v-if="windowSettled(ability) && !abilityWindow(ability)" class="hint muted">
+            <code>{{ abilityWindowMatcher(ability) }}</code> never fires on its own, so there are
+            no <code>$w</code> bindings. The ability is reached another way — an elder sign, or
+            another card's Use an ability step.
+          </p>
+          <p v-else-if="!abilityWindow(ability)" class="hint needed">
             <code>{{ abilityWindowMatcher(ability) }}</code>
             <template v-if="windowsFor(abilityWindowMatcher(ability)).length > 1">
               fires on more than one window, so which fields <code>$w0</code>… are depends on
@@ -375,8 +399,21 @@ function handlerScope(handler: any, index: number): Binding[] {
           />
         </label>
         <p class="hint">
-          Fires when a message with this tag mentions this card. The whole message is
-          <code>$message</code>.
+          Fires when a message with this tag mentions this card &mdash; by its target, its source
+          or its id. The whole message is <code>$message</code>.
+        </p>
+        <label class="inline">
+          <input
+            type="checkbox"
+            :checked="!!handler.global"
+            @change="setHandler(index, { global: ($event.target as HTMLInputElement).checked || undefined })"
+          />
+          fires for messages that do not mention this card
+        </label>
+        <p v-if="handler.global" class="hint muted">
+          Now runs for every message with this tag, so gate it with a requirement below (an id
+          from the message compared against one of this card's, say) or it will fire for
+          everyone.
         </p>
         <ul v-if="knownMessage(handler.on)" class="bindings">
           <li v-for="(field, at) in messageFields(handler.on)" :key="at">
@@ -640,6 +677,17 @@ select {
   color: #eee;
   padding: 0.3rem;
   width: 100%;
+}
+
+/* The marker is drawn rather than left to the browser, so it matches the one the
+ * custom pickers show and sits in from the edge instead of flush against it.
+ * Selects only -- `appearance: none` on an input takes a checkbox's box away. */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #111827 var(--select-caret) no-repeat right 0.6rem center;
+  background-size: var(--select-caret-size);
+  padding: 0.3rem 1.6rem 0.3rem 0.4rem;
 }
 
 button.add,

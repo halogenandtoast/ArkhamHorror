@@ -276,12 +276,15 @@ defineExpose({ isEmpty })
   gap: 0.5rem;
 
   select {
-    background: rgba(0, 0, 0, 0.3);
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(0, 0, 0, 0.3) var(--select-caret) no-repeat right 0.5rem center;
+    background-size: var(--select-caret-size);
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 4px;
     color: inherit;
     font-size: 0.85rem;
-    padding: 0.25rem 0.4rem;
+    padding: 0.25rem 1.4rem 0.25rem 0.4rem;
   }
 }
 

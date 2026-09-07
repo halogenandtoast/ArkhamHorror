@@ -8,6 +8,8 @@
  * and lets the author jump back to whatever bound one.
  */
 
+import { expressionType } from '@/arkham/customCardExpressions'
+
 export type Binding = {
   /** Without the `$`. */
   name: string
@@ -71,6 +73,22 @@ export const cardBindings = (cardType?: string): Binding[] => [
     detail: 'InvestigatorId, on a signature card',
     type: 'InvestigatorId',
     origin: "whoever's signature this is",
+  },
+]
+
+/* What paying for an ability gave up. Only an ability has this: a handler is a
+ * reaction to a message and a modifier is read rather than used, so neither pays
+ * for anything.
+ *
+ * Just the payment itself -- what was actually taken out of it (the cards, the
+ * targets exhausted, the resources) is read with a transform in a `let`, since
+ * which of those a payment holds depends on the cost. */
+export const paymentBindings = (): Binding[] => [
+  {
+    name: 'payment',
+    detail: 'Payment',
+    type: 'Payment',
+    origin: "this ability's cost",
   },
 ]
 
@@ -165,6 +183,9 @@ const queryType = (query: any): string | undefined => QUERY_TYPES[query?.kind]
 export function stepBindings(
   step: any,
   anchor: string,
+  /* What is already in scope where this step sits. Only a `let` needs it, to
+   * read the type of a binding its expression refers to. */
+  scope: Binding[] = [],
 ): { after: Binding[]; inside: Binding[] } {
   const kind = stepKind(step)
   const none = { after: [], inside: [] }
@@ -190,7 +211,14 @@ export function stepBindings(
     }
     case 'let': {
       const name = named(step.let, '')
-      return name ? { after: [at(name, 'an expression', 'a Let step')], inside: [] } : none
+      if (!name) return none
+      // What the expression works out to, so the steps after this one can be
+      // filtered by it the same way any other binding is.
+      const type = expressionType(step.be, scope)
+      return {
+        after: [at(name, type ? `an expression :: ${type}` : 'an expression', 'a Let step', type)],
+        inside: [],
+      }
     }
     case 'forEach':
       return {
@@ -239,7 +267,9 @@ export const stepAnchor = (path: string, index: number) => `ccb-${path}-${index}
 export function scopeAt(base: Binding[], steps: any[], index: number, path: string): Binding[] {
   const found = [...base]
   for (let i = 0; i < index; i++) {
-    found.push(...stepBindings(steps[i], stepAnchor(path, i)).after)
+    // Handed what is in scope so far, so a `let` can type itself from a binding
+    // an earlier step made.
+    found.push(...stepBindings(steps[i], stepAnchor(path, i), dedupe(found)).after)
   }
   return dedupe(found)
 }
@@ -247,7 +277,7 @@ export function scopeAt(base: Binding[], steps: any[], index: number, path: stri
 /** Everything in scope inside the step at `index` — its own bindings included. */
 export function scopeInside(base: Binding[], steps: any[], index: number, path: string): Binding[] {
   const anchor = stepAnchor(path, index)
-  const own = stepBindings(steps[index], anchor)
+  const own = stepBindings(steps[index], anchor, scopeAt(base, steps, index, path))
   return dedupe([...scopeAt(base, steps, index, path), ...own.after, ...own.inside])
 }
 

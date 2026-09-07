@@ -64,6 +64,11 @@ customSchema =
        , ''AbilityLimit
        , ''Criterion
        , ''Cost
+       , {- What a cost becomes once it is paid. Only ever a field of a message,
+            and 'Message' is shallow, so nothing would reach it on its own and
+            the editor would fall back to a raw JSON field for every payment a
+            card writes. Everything it references is already here. -}
+         ''Payment
        , ''WindowMatcher
        , {- The window an ability triggered on, whose positional fields its steps
             read as $w0, $w1, .... Listed so the editor can show what those are;

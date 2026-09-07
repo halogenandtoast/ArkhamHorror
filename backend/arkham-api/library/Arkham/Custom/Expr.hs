@@ -17,6 +17,24 @@ import Arkham.Asset.Types (Asset)
 import Arkham.Card
 import Arkham.Classes.Entity (EntityId)
 import Arkham.Classes.HasGame
+import Arkham.Cost (
+  addedCurseTokenPayment,
+  chosenCardPayment,
+  chosenEnemyPayment,
+  discardPayment,
+  discardedCards,
+  exhaustedPayments,
+  horrorPaid,
+  paymentTargets,
+  removedPayments,
+  sealChaosTokenPayments,
+  totalActionPayment,
+  totalCluePayment,
+  totalDiscardCardPayments,
+  totalInvestigatorDamagePayment,
+  totalResourcePayment,
+  totalUsesPayment,
+ )
 import Arkham.Enemy.Types (Enemy)
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Card (getModifiedCardCost)
@@ -50,6 +68,8 @@ evalExpr env v0 = case substituteExpr env v0 of
         p' <- evalPredicate p
         listOp o (filter (matches p'))
     | Just prop <- str =<< KeyMap.lookup "skillTest" o -> skillTestProp prop
+    | Just name <- str =<< KeyMap.lookup "apply" o ->
+        applyFn name <$> evalExpr env (fromMaybe Null (KeyMap.lookup "to" o))
     | Just e <- KeyMap.lookup "iconValue" o -> do
         icons <- valueList <$> evalExpr env e
         values <- maybe mempty skillTestIconValues <$> getSkillTest
@@ -142,6 +162,37 @@ matches p v = case p of
     | Just x <- KeyMap.lookup "gte" o -> toInt v >= toInt x
     | Just x <- KeyMap.lookup "lte" o -> toInt v <= toInt x
   _ -> v == p
+
+{- | The named transformations a value can be put through.
+
+The engine already knows how to read a 'Payment' apart -- what it discarded,
+what it exhausted, how many resources it cost -- and those readings are what a
+card means when it says "the card you discarded". Exposing them by name beats
+binding one of them eagerly: a cost that took no cards should offer no cards,
+and a card that wants what was exhausted should not need a new binding invented
+for it.
+-}
+applyFn :: Text -> Value -> Value
+applyFn name v = case parseMaybe parseJSON v of
+  Nothing -> Null
+  Just payment -> case name of
+    "paidCards" -> toJSON (discardedCards payment)
+    "discardedCard" -> toJSON (discardPayment payment)
+    "chosenCard" -> toJSON (chosenCardPayment payment)
+    "chosenEnemy" -> toJSON (chosenEnemyPayment payment)
+    "exhausted" -> toJSON (exhaustedPayments payment)
+    "removed" -> toJSON (removedPayments payment)
+    "paymentTargets" -> toJSON (paymentTargets payment)
+    "sealedTokens" -> toJSON (sealChaosTokenPayments payment)
+    "actionsPaid" -> toJSON (totalActionPayment payment)
+    "resourcesPaid" -> toJSON (totalResourcePayment payment)
+    "cluesPaid" -> toJSON (totalCluePayment payment)
+    "usesPaid" -> toJSON (totalUsesPayment payment)
+    "damagePaid" -> toJSON (totalInvestigatorDamagePayment payment)
+    "horrorPaid" -> toJSON (horrorPaid payment)
+    "curseTokensPaid" -> toJSON (addedCurseTokenPayment payment)
+    "cardsDiscarded" -> toJSON (totalDiscardCardPayments payment)
+    _ -> Null
 
 {- | What a set of icons is worth to the test being resolved.
 

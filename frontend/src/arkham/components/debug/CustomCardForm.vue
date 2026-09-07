@@ -1101,15 +1101,15 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             </template>
           </fieldset>
 
-          <details>
-            <summary>Abilities</summary>
+          <fieldset>
+            <legend>Abilities</legend>
             <AbilityEditor
-            :cardType="form.cardType"
+              :cardType="form.cardType"
               v-model:abilities="form.abilities"
               v-model:handlers="form.handlers"
               v-model:modifiers="form.modifiers"
             />
-          </details>
+          </fieldset>
 
           <details>
             <summary>Raw CardDef JSON (merged over the form)</summary>
@@ -1296,6 +1296,16 @@ textarea {
   padding: 0.4rem;
   font-family: inherit;
   width: 100%;
+}
+
+/* The marker is drawn rather than left to the browser, so it matches the one the
+ * custom pickers show and sits in from the edge instead of flush against it. */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #111827 var(--select-caret) no-repeat right 0.6rem center;
+  background-size: var(--select-caret-size);
+  padding: 0.4rem 1.6rem 0.4rem 0.5rem;
 }
 
 input[type='checkbox'] {

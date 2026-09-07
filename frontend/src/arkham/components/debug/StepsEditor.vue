@@ -5,6 +5,7 @@
  * — which is what lets an ability say "if it is ready, attack; otherwise ready
  * it" or "choose an event, then play it". */
 import { computed, ref } from 'vue'
+import ExpressionEditor from '@/arkham/components/debug/ExpressionEditor.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import {
   jumpToBinding,
@@ -42,6 +43,7 @@ type StepKind =
   | 'chooseFrom'
   | 'playCard'
   | 'useAbility'
+  | 'cancelBatch'
   | 'fight'
   | 'investigate'
   | 'evade'
@@ -63,6 +65,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   chooseFrom: 'Choose from',
   playCard: 'Play a card',
   useAbility: 'Use an ability',
+  cancelBatch: 'Cancel what would happen',
   fight: 'Fight',
   investigate: 'Investigate',
   evade: 'Evade',
@@ -86,6 +89,7 @@ function kindOf(step: any): StepKind {
     'chooseFrom',
     'playCard',
     'useAbility',
+    'cancelBatch',
     'fight',
     'investigate',
     'evade',
@@ -114,6 +118,7 @@ const blankStep = (kind: StepKind) =>
     chooseFrom: { chooseFrom: { query: { kind: 'enemy', matcher: null }, bind: 'chosen', steps: [] } },
     playCard: { playCard: { optional: true, matcher: null } },
     useAbility: { useAbility: { index: 1, optional: true } },
+    cancelBatch: { cancelBatch: true },
     fight: { fight: { matcher: null, modifiers: [] } },
     investigate: { investigate: { modifiers: [] } },
     evade: { evade: { matcher: null, modifiers: [] } },
@@ -174,11 +179,16 @@ const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enem
  *
  * `forEach` and `chooseFrom` bind inside their own steps rather than after
  * themselves, which is why they say so. */
-function bindsOf(step: any): { name: string; scope: string }[] {
-  const { after, inside } = stepBindings(step, '')
+function bindsOf(
+  step: any,
+  index: number,
+): { name: string; scope: string; type?: string }[] {
+  // Given what is in scope here, so a `let` can say what its expression came
+  // out as rather than only that it bound something.
+  const { after, inside } = stepBindings(step, '', scopeFor(index))
   return [
-    ...after.map((b) => ({ name: b.name, scope: 'later steps' })),
-    ...inside.map((b) => ({ name: b.name, scope: 'the steps inside' })),
+    ...after.map((b) => ({ name: b.name, scope: 'later steps', type: b.type })),
+    ...inside.map((b) => ({ name: b.name, scope: 'the steps inside', type: b.type })),
   ]
 }
 
@@ -189,46 +199,6 @@ const addingStep = ref(false)
 function addAndClose(kind: StepKind) {
   add(kind)
   addingStep.value = false
-}
-
-/* An expression is structural JSON rather than a value with a schema, so it is
- * edited as text. Bad JSON is kept as typed instead of thrown away, otherwise
- * the field fights you halfway through a brace. */
-const drafts = ref<Record<number, string>>({})
-
-const exprText = (step: any, index: number) =>
-  drafts.value[index] ?? JSON.stringify(step.be ?? null, null, 2)
-
-function setExpr(step: any, index: number, text: string) {
-  drafts.value = { ...drafts.value, [index]: text }
-  try {
-    set(index, { ...step, be: JSON.parse(text) })
-  } catch {
-    /* left in the draft until it parses */
-  }
-}
-
-const exprValid = (index: number) => {
-  const text = drafts.value[index]
-  if (text === undefined) return true
-  try {
-    JSON.parse(text)
-    return true
-  } catch {
-    return false
-  }
-}
-
-const drawText = (step: any, index: number) =>
-  drafts.value[index] ?? JSON.stringify(step.draw?.amount ?? 1, null, 2)
-
-function setDraw(step: any, index: number, text: string) {
-  drafts.value = { ...drafts.value, [index]: text }
-  try {
-    set(index, { ...step, draw: { ...step.draw, amount: JSON.parse(text) } })
-  } catch {
-    /* left in the draft until it parses */
-  }
 }
 
 const optionsOf = (step: any): any[] => step.choose?.options ?? []
@@ -261,12 +231,13 @@ const removeOption = (step: any, index: number, at: number) =>
     </p>
     <div v-for="(step, index) in steps" :key="index" :id="anchorFor(index)" class="step">
       <div class="step-head">
-        <span>{{ KIND_LABELS[kindOf(step)] }}</span>
-        <span v-for="bound in bindsOf(step)" :key="bound.name" class="binds">
-          binds <code>${{ bound.name }}</code> for {{ bound.scope }}
-        </span>
-        <button type="button" @click="remove(index)">×</button>
+        <span class="step-kind">{{ KIND_LABELS[kindOf(step)] }}</span>
+        <button type="button" class="step-remove" title="Remove this step" @click="remove(index)">
+          ×
+        </button>
       </div>
+
+      <div class="step-body">
 
       <template v-if="kindOf(step) === 'query'">
         <div class="row">
@@ -316,25 +287,13 @@ const removeOption = (step: any, index: number, at: number) =>
             @keydown.stop
           />
         </label>
-        <label>
-          Expression
-          <textarea
-            :class="{ invalid: !exprValid(index) }"
-            :value="exprText(step, index)"
-            rows="5"
-            spellcheck="false"
-            @input="setExpr(step, index, ($event.target as HTMLTextAreaElement).value)"
-            @keydown.stop
-          />
-        </label>
-        <p class="hint">
-          A literal, or one of <code>get</code>/<code>map</code> (with <code>kind</code> and
-          <code>of</code>), <code>filter</code>, <code>unique</code>, <code>concat</code>,
-          <code>count</code>, <code>sum</code>, <code>max</code>, <code>min</code>,
-          <code>first</code>, <code>reverse</code>, <code>add</code>, <code>subtract</code>,
-          <code>multiply</code>, <code>divide</code>. Anything <code>of</code> takes a list is
-          applied to each of its elements.
-        </p>
+        <ExpressionEditor
+          label="Expression"
+          :bindings="scopeFor(index)"
+          :modelValue="step.be"
+          @update:modelValue="set(index, { ...step, be: $event })"
+        />
+
       </template>
 
       <ValueEditor
@@ -491,6 +450,12 @@ const removeOption = (step: any, index: number, at: number) =>
         </div>
         <button type="button" class="add" @click="addOption(step, index)">+ Option</button>
       </template>
+
+      <p v-else-if="kindOf(step) === 'cancelBatch'" class="hint">
+        Stops the thing this ability is reacting to, for effects that say "instead". Only works
+        in a <code>would</code> window, which is what carries the batch to cancel — and only
+        cancels what that batch holds, so anything else the card means to do it must push itself.
+      </p>
 
       <template v-else-if="kindOf(step) === 'useAbility'">
         <p class="hint">
@@ -920,18 +885,14 @@ const removeOption = (step: any, index: number, at: number) =>
       </template>
 
       <template v-else-if="kindOf(step) === 'draw'">
-        <label>
-          How many
-          <textarea
-            :class="{ invalid: !exprValid(index) }"
-            :value="drawText(step, index)"
-            rows="2"
-            spellcheck="false"
-            @input="setDraw(step, index, ($event.target as HTMLTextAreaElement).value)"
-            @keydown.stop
-          />
-        </label>
-        <p class="hint">A number, or an expression — the same forms a Let takes.</p>
+        <ExpressionEditor
+          label="How many"
+          expect="int"
+          :bindings="scopeFor(index)"
+          :modelValue="step.draw?.amount ?? 1"
+          @update:modelValue="set(index, { ...step, draw: { ...step.draw, amount: $event } })"
+        />
+        <p class="hint">Nothing is drawn when this works out to zero or less.</p>
       </template>
 
       <template v-else-if="kindOf(step) === 'gather'">
@@ -1021,6 +982,15 @@ const removeOption = (step: any, index: number, at: number) =>
           @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, steps: $event } })"
         />
       </template>
+      </div>
+
+      <div v-if="bindsOf(step, index).length" class="step-foot">
+        <span v-for="bound in bindsOf(step, index)" :key="bound.name" class="binds">
+          binds <code>${{ bound.name }}</code
+          ><template v-if="bound.type"> <code class="binds-type">{{ bound.type }}</code></template>
+          for {{ bound.scope }}
+        </span>
+      </div>
     </div>
 
     <div class="step-actions">
@@ -1029,7 +999,10 @@ const removeOption = (step: any, index: number, at: number) =>
         <button v-for="(label, kind) in KIND_LABELS" :key="kind" type="button" @click="addAndClose(kind as StepKind)">
           {{ label }}
         </button>
-        <button type="button" class="cancel-add" @click="addingStep = false">×</button>
+        <!-- Not an X: that says "remove this optional thing" everywhere else in
+             the builder, and this adds nothing to remove -- it backs out of the
+             choice. -->
+        <button type="button" class="cancel-add" @click="addingStep = false">Cancel</button>
       </template>
     </div>
   </div>
@@ -1042,23 +1015,45 @@ const removeOption = (step: any, index: number, at: number) =>
   gap: 0.4rem;
 }
 
+/* Three bands, so a step reads as what it is, then what it does, then what it
+ * leaves behind. Flat colour and rules only -- the separation should come from
+ * the edges, not from a wash. */
+/* The bands round their own outer corners rather than the step clipping them:
+ * `overflow: hidden` here would also cut off every dropdown a field opens, since
+ * those are laid over the step rather than inside its flow. */
 .step {
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #374151;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-body {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  padding: 0.5rem;
+  padding: 0.55rem 0.6rem;
+}
+
+.step-foot {
+  align-items: center;
+  background: #131a27;
+  border-radius: 0 0 4px 4px;
+  border-top: 1px solid #374151;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.6rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.binds-type {
+  color: #5eead4;
 }
 
 .binds {
-  background: #1f2937;
-  border: 1px solid #374151;
-  border-radius: 999px;
   color: #9ca3af;
   font-size: 0.72rem;
-  margin-left: auto;
-  padding: 0.05rem 0.5rem;
 
   code {
     color: #d1d5db;
@@ -1132,32 +1127,38 @@ const removeOption = (step: any, index: number, at: number) =>
 
 .step-head {
   align-items: center;
+  background: #1b2436;
+  border-bottom: 1px solid #374151;
+  border-radius: 4px 4px 0 0;
   display: flex;
-  font-size: 0.75rem;
+  gap: 0.5rem;
   justify-content: space-between;
-  opacity: 0.8;
-
-  button {
-    background: none;
-    border: none;
-    color: #eee;
-    cursor: pointer;
-  }
+  padding: 0.3rem 0.6rem;
 }
 
-textarea {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid #374151;
-  border-radius: 4px;
-  color: inherit;
-  font-family: monospace;
-  font-size: 0.75rem;
-  padding: 0.3rem;
-  resize: vertical;
-  width: 100%;
+/* What the step is. Set apart from the fields below it rather than sitting in
+ * the same voice as them. */
+.step-kind {
+  color: #d1d5db;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
-  &.invalid {
-    border-color: #b45309;
+.step-remove {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.1rem 0.35rem;
+
+  &:hover {
+    border-color: #f87171;
+    color: #fca5a5;
   }
 }
 
@@ -1208,6 +1209,17 @@ select {
   color: #eee;
   padding: 0.3rem;
   width: 100%;
+}
+
+/* The marker is drawn rather than left to the browser, so it matches the one the
+ * custom pickers show and sits in from the edge instead of flush against it.
+ * Selects only -- `appearance: none` on an input takes a checkbox's box away. */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #111827 var(--select-caret) no-repeat right 0.6rem center;
+  background-size: var(--select-caret-size);
+  padding: 0.3rem 1.6rem 0.3rem 0.4rem;
 }
 
 input[type='checkbox'] {

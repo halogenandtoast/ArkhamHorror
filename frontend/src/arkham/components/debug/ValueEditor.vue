@@ -20,6 +20,7 @@ import {
 } from '@/arkham/schema'
 import { bindingFits, jumpToBinding, type Binding } from '@/arkham/customCardBindings'
 import BindingToggle from '@/arkham/components/debug/BindingToggle.vue'
+import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
 
 const props = defineProps<{
   type: string
@@ -241,7 +242,16 @@ function setRaw(text: string) {
           :title="`${boundTo ? `${boundTo.detail ?? ''} · ${boundTo.origin} — ` : ''}click to choose another`"
           @click="bindingInput = true"
         >
-          {{ binding }}
+          <span class="binding-ident">{{ binding }}</span>
+          <span v-if="boundTo?.type" class="binding-type">:: {{ boundTo.type }}</span>
+        </button>
+        <button
+          type="button"
+          class="clear-segment"
+          title="Take the binding off and go back to a value"
+          @click="clear"
+        >
+          ×
         </button>
       </div>
       <span
@@ -251,7 +261,6 @@ function setRaw(text: string) {
       >
         not bound
       </span>
-      <button type="button" class="clear-value" title="Clear" @click="clear">×</button>
     </div>
 
     <div v-else ref="bindingEl" class="field-row">
@@ -299,7 +308,7 @@ function setRaw(text: string) {
             </span>
             <!-- It opens a menu, so it says so; the binding segment sits to the
                  right of this, past the field's divider. -->
-            <span class="caret" aria-hidden="true">▾</span>
+            <span class="caret" aria-hidden="true" />
           </button>
         <BindingToggle
           :open="bindingInput"
@@ -329,6 +338,12 @@ function setRaw(text: string) {
           </ul>
         </div>
       </div>
+
+      <!-- A constructor with nothing to fill in renders as empty space, which
+           reads as an unfinished field rather than a finished choice. -->
+      <p v-if="current && !current.con.fields.length" class="no-fields">
+        {{ humanize(current.con.name) }} takes no fields.
+      </p>
 
       <div v-if="current && current.con.fields.length" class="fields">
         <ValueEditor
@@ -427,6 +442,18 @@ function setRaw(text: string) {
       </label>
     </div>
 
+    <!-- A card code is a name nobody can recall -- a custom card's is a minted
+         uuid -- so it is chosen by name rather than typed.
+
+         It deals in the code itself, not in the raw JSON the fallback field
+         edits: a CardCode is a plain string, so `rawValue` would hand it one
+         wrapped in quotes, which matches no card and parses back as nothing. -->
+    <CardCodeField
+      v-else-if="shape.type === 'CardCode'"
+      :modelValue="typeof modelValue === 'string' ? modelValue : null"
+      @update:modelValue="emit('update:modelValue', $event)"
+    />
+
     <div v-else class="picked-row">
       <input
         type="text"
@@ -450,7 +477,7 @@ function setRaw(text: string) {
            segment falls back to the corner of the field. -->
       <BindingToggle
         v-if="!hasOwnRow"
-        class="floating"
+        floating
         :open="bindingInput"
         :count="applicable.length"
         :type="type"
@@ -484,17 +511,6 @@ function setRaw(text: string) {
 .field-body {
   flex: 1;
   min-width: 0;
-}
-
-// The fallback segment for shapes with no row of their own.
-.floating {
-  border: 1px solid #4b5563;
-  border-radius: 3px;
-  margin: 0;
-  padding: 0.25rem 0.5rem;
-  position: absolute;
-  right: 0;
-  top: 0;
 }
 
 /* The field's box is the row, not the control sitting in it: the border moves
@@ -587,6 +603,12 @@ function setRaw(text: string) {
     font-size: 0.75rem;
     padding: 0.45rem 0.5rem;
   }
+}
+
+.no-fields {
+  color: #9ca3af;
+  font-size: 0.75rem;
+  margin: 0.25rem 0 0;
 }
 
 /* Name, what it holds, where it came from — three columns, so a list of them
@@ -764,19 +786,32 @@ function setRaw(text: string) {
 }
 
 .binding-name {
+  align-items: baseline;
   background: none;
   border: none;
   color: inherit;
   cursor: pointer;
+  display: flex;
   flex: 1;
   font-family: inherit;
   font-size: inherit;
+  gap: 0.35rem;
   min-width: 0;
-  overflow: hidden;
   padding: 0.35rem 0.5rem;
   text-align: left;
+}
+
+// The name is what gets cut when there is no room; the type is short, and is the
+// half that says whether this binding belongs where it is standing.
+.binding-ident {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.binding-type {
+  flex: none;
+  opacity: 0.65;
 }
 
 // A segment at the head of the field, back to whatever bound it.
@@ -785,6 +820,26 @@ function setRaw(text: string) {
   border: none;
   border-right: 1px solid #adf;
   color: #dceeff;
+  cursor: pointer;
+  flex: none;
+  font-family: inherit;
+  padding: 0 0.5rem;
+
+  &:hover {
+    background: rgba(170, 221, 255, 0.4);
+    color: #fff;
+  }
+}
+
+/* The mirror of the jump segment, at the tail of the chip. It takes the binding
+ * off the field and hands the value editor back, which is something done to the
+ * chip rather than beside it. Coloured from the chip so it turns red with it
+ * when the name is one nothing in scope binds. */
+.clear-segment {
+  background: rgba(170, 221, 255, 0.22);
+  border: none;
+  border-left: 1px solid currentColor;
+  color: inherit;
   cursor: pointer;
   flex: none;
   font-family: inherit;
@@ -842,11 +897,14 @@ function setRaw(text: string) {
   white-space: nowrap;
 }
 
+/* The same marker the selects carry, so a picker that opens a menu and a select
+ * that opens a menu look like the same kind of control. */
 .caret {
-  color: #9ca3af;
+  background: var(--select-caret) no-repeat center;
+  background-size: var(--select-caret-size);
   flex: none;
-  font-size: 0.7rem;
-  line-height: 1;
+  height: 6px;
+  width: 10px;
 }
 
 .picker-menu {

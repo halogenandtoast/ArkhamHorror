@@ -50,7 +50,7 @@ against the @$sid@ it binds.
 The JSON is written before the card exists, so it cannot name the entity it
 belongs to. Instead it refers to values by @$name@: the entity's own serialized
 fields (@$id@, @$placement@, …), @$source@ and @$target@, @$iid@ for whoever
-used an ability, @$payment@ and @$paidCards@ for what its cost took, @$window@
+used an ability, @$payment@ for what its cost took, @$window@
 and @$w0@, @$w1@, … for the window that ability triggered on, @$message@ and
 @$0@, @$1@, … for the fields of a handled message, and anything a @query@ or
 @let@ step has bound. Those are substituted into the JSON
@@ -319,22 +319,15 @@ runCustomAbility a iid idx ws payment =
       runSteps env (specSteps spec)
     [] -> pure ()
 
-{- | What paying for the ability cost gave up, as @$payment@, with the cards
-among it as @$paidCards@.
+{- | What paying for the ability cost gave up, as @$payment@.
 
-"Discard an event from your hand: ... play the card you discarded" needs to name
-the very card the cost took, and the cost is the only place that knows it.
+What was actually /taken/ -- the cards, the targets exhausted, the resources --
+is read off it with an @apply@ expression, because which of those a cost yields
+depends on the cost. Binding one of them eagerly would offer every ability a
+list of discarded cards, empty for the ones that discarded nothing.
 -}
 paymentBindings :: Payment -> Env
-paymentBindings payment =
-  KeyMap.fromList [("payment", toJSON payment), ("paidCards", toJSON (paidCards payment))]
- where
-  paidCards = \case
-    CardPayment c -> [c]
-    DiscardCardPayment cs -> cs
-    DiscardPayment zcs -> map snd zcs
-    Payments ps -> concatMap paidCards ps
-    _ -> []
+paymentBindings payment = KeyMap.singleton "payment" (toJSON payment)
 
 {- | The window the ability triggered on, as @$window@, with its fields as
 @$w0@, @$w1@, … the way a handler binds a message's.

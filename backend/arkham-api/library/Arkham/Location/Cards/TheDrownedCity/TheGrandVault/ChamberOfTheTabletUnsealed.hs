@@ -21,12 +21,10 @@ instance HasModifiersFor ChamberOfTheTabletUnsealed where
   getModifiersFor (ChamberOfTheTabletUnsealed a) = do
     modifySelf a [CannotBeFlooded]
     -- Connected to the location to the left of it, and vice versa.
-    case locationPosition a of
-      Nothing -> pure ()
-      Just pos -> do
-        let leftPos = updatePosition pos GridLeft
-        modifySelf a [ConnectedToWhen (be a) (LocationInPosition leftPos)]
-        modifySelect a (LocationInPosition leftPos) [ConnectedToWhen (LocationInPosition leftPos) (be a)]
+    for_ (locationPosition a) \pos -> do
+      let leftPos = updatePosition pos GridLeft
+      modifySelf a [ConnectedToWhen (be a) (LocationInPosition leftPos)]
+      modifySelect a (LocationInPosition leftPos) [ConnectedToWhen (LocationInPosition leftPos) (be a)]
 
 instance HasAbilities ChamberOfTheTabletUnsealed where
   getAbilities (ChamberOfTheTabletUnsealed a) =
@@ -40,7 +38,7 @@ instance RunMessage ChamberOfTheTabletUnsealed where
   runMessage msg l@(ChamberOfTheTabletUnsealed attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- select $ investigatorAt attrs.id
-      tablet <- getSetAsideCard Assets.tidalTablet
-      chooseOrRunOneM iid $ targets investigators (`takeControlOfSetAsideAsset` tablet)
+      withSetAsideCard Assets.tidalTablet \tablet ->
+        chooseOrRunOneM iid $ targets investigators (`takeControlOfSetAsideAsset` tablet)
       pure l
     _ -> ChamberOfTheTabletUnsealed <$> liftRunMessage msg attrs

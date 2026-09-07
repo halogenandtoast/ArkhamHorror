@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Dropdown } from 'floating-vue'
 import { type Card as ArkhamCard, type CardContents, cardImage, toCardContents } from '@/arkham/types/Card'
+import type { Message } from '@/arkham/types/Message'
+import type { Source } from '@/arkham/types/Source'
 import { imgsrc } from '@/arkham/helpers'
 import type { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
@@ -22,9 +24,19 @@ const props = withDefaults(defineProps<{
   vertical?: boolean
   droppable?: boolean
   draggableCards?: boolean
+  // For stacks holding cards that are still in play (the Hidden stack): render
+  // their ability buttons here, since nothing else on screen does, and open the
+  // popover when they are the only thing the player can act on.
+  allowInPlayAbilities?: boolean
+  autoShowWhenOnlyChoice?: boolean
 }>(), {
   label: 'Cards underneath',
   placement: 'bottom',
+  // Boolean props are cast to `false` when absent, which would make the
+  // uncontrolled case indistinguishable from "the parent says stay closed" and
+  // pin `shown` to false forever -- every programmatic open silently dropped.
+  // An explicit undefined default keeps absent meaning absent.
+  shown: undefined,
 })
 
 const emit = defineEmits<{
@@ -65,23 +77,54 @@ const tooltip = computed(() => `${props.label} (${count.value}) — click to vie
 const choices = computed(() => props.game && props.playerId ? ArkhamGame.choices(props.game, props.playerId) : [])
 const interactive = computed(() => props.game !== undefined && props.playerId !== undefined)
 
-function isCardInChoices(card: ArkhamCard | CardContents): boolean {
+// An ability's source names the entity, not the card, so resolve it back to the
+// card id the stack holds. Assets and threat-area treacheries both land here.
+function sourceCardId(source: Source): string | undefined {
+  if (source.sourceTag !== 'OtherSource' || !source.contents) return undefined
+  const sourceId = source.contents
+  return props.game?.assets[sourceId]?.cardId
+    ?? props.game?.treacheries[sourceId]?.cardId
+    ?? sourceId
+}
+
+function cardMatchesChoice(card: ArkhamCard | CardContents, choice: Message): boolean {
   const cardId = toCardContents(card).id
-  return choices.value.some(choice => {
-    if (choice.tag === 'TargetLabel') return choice.target.tag === 'CardIdTarget' && cardId === choice.target.contents
-    if (choice.tag === 'AbilityLabel') {
-      const sourceId = choice.ability.source.sourceTag === 'OtherSource' ? choice.ability.source.contents : undefined
-      if (!sourceId) return false
-      if (cardId === sourceId) return true
-      const asset = props.game?.assets[sourceId]
-      return asset?.cardId === cardId
-    }
-    return false
-  })
+  if (choice.tag === 'TargetLabel') return choice.target.tag === 'CardIdTarget' && cardId === choice.target.contents
+  if (choice.tag === 'AbilityLabel') return sourceCardId(choice.ability.source) === cardId
+  return false
+}
+
+function isCardInChoices(card: ArkhamCard | CardContents): boolean {
+  return choices.value.some(choice => cardMatchesChoice(card, choice))
 }
 
 const hasCardChoice = computed(() => props.cards.some(isCardInChoices))
 const isHighlighted = computed(() => props.highlighted || hasCardChoice.value)
+
+/*
+ * Every choice the player has left is on a card tucked in here. The board then
+ * looks like it has nothing to click -- there is no other anchor for the
+ * ability -- so open the stack rather than leaving them hunting for it. A forced
+ * trigger on a tucked card is the case that matters: nothing else can happen
+ * until it is answered. Watched rather than bound, so dismissing it sticks.
+ */
+const onlyChoicesAreHere = computed(() => {
+  if (!props.autoShowWhenOnlyChoice || !interactive.value) return false
+  if (choices.value.length === 0 || props.cards.length === 0) return false
+  return choices.value.every(choice => props.cards.some(card => cardMatchesChoice(card, choice)))
+})
+
+function openIfOnlyChoice() {
+  if (!onlyChoicesAreHere.value || shown.value) return
+  shown.value = true
+  reposition()
+}
+
+// The first check waits for mount: floating-vue silently drops a `shown` set
+// while the Dropdown is still being set up, which is exactly when a stack that
+// already holds the only choice would have tried to open itself.
+onMounted(() => nextTick(openIfOnlyChoice))
+watch(onlyChoicesAreHere, openIfOnlyChoice, { flush: 'post' })
 
 function finishDrag() {
   window.removeEventListener('dragend', finishDrag)
@@ -208,6 +251,7 @@ onBeforeUnmount(() => finishDrag())
               :game="game"
               :playerId="playerId"
               :card="card"
+              :allowInPlayAbilities="allowInPlayAbilities"
               @choose="emit('choose', $event)"
             />
             <img

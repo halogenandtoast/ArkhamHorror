@@ -21,7 +21,13 @@ const props = withDefaults(defineProps<{
   playerId: string
   allowAbilityButtons?: boolean
   allowInteractions?: boolean
-}>(), { revealed: false, allowAbilityButtons: true, allowInteractions: true })
+  // An in-play asset/treachery's abilities normally belong to Asset.vue /
+  // Treachery.vue, so this card deliberately ignores them. The Hidden stack is
+  // the exception: it tucks cards that are still in play out of the play area,
+  // so those components never render and this card is the only anchor the
+  // ability has. Without it a forced trigger on a tucked card is unreachable.
+  allowInPlayAbilities?: boolean
+}>(), { revealed: false, allowAbilityButtons: true, allowInteractions: true, allowInPlayAbilities: false })
 
 const emit = defineEmits<{
   choose: [value: number]
@@ -138,8 +144,16 @@ function isAbility(v: Message): v is AbilityLabel {
   if (source.tag === 'AssetSource' && source.contents) {
     const asset = props.game.assets[source.contents]
     if (asset) {
-      return asset.cardId === id.value && (asset.placement.tag === 'StillInHand' || asset.placement.tag === 'StillInDiscard')
+      if (asset.cardId !== id.value) return false
+      return props.allowInPlayAbilities
+        || asset.placement.tag === 'StillInHand'
+        || asset.placement.tag === 'StillInDiscard'
     }
+  }
+
+  if (props.allowInPlayAbilities && source.tag === 'TreacherySource' && source.contents) {
+    const treachery = props.game.treacheries[source.contents]
+    if (treachery) return treachery.cardId === id.value
   }
 
   return 'contents' in source && source.contents === id.value

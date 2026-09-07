@@ -1140,6 +1140,8 @@ function closeHand() {
         draggableCards
         label="Hidden"
         placement="left"
+        allowInPlayAbilities
+        autoShowWhenOnlyChoice
         :cards="inertCards"
         :game="game"
         :playerId="playerId"

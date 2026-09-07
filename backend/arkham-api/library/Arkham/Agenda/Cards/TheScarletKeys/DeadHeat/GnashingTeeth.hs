@@ -2,6 +2,7 @@ module Arkham.Agenda.Cards.TheScarletKeys.DeadHeat.GnashingTeeth (gnashingTeeth)
 
 import Arkham.Agenda.CardDefs.TheScarletKeys.DeadHeat qualified as Cards
 import Arkham.Agenda.Import.Lifted
+import Arkham.Card
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location
 import Arkham.Helpers.Log (scenarioCount)
@@ -32,12 +33,16 @@ instance RunMessage GnashingTeeth where
       pc <- perPlayer 1
       let n = slain `div` pc
       lead <- getLead
-      repeated n $ findAndDrawEncounterCard lead $ #enemy <> mapOneOf CardWithTrait [Risen, Ghoul]
+      repeated n $ findEncounterCard lead attrs $ #enemy <> mapOneOf CardWithTrait [Risen, Ghoul]
       shuffleEncounterDiscardBackIn
       eachInvestigator \iid -> do
         chooseOneM iid $ scenarioI18n do
           labeled "gnashingTeeth.heal" $ selectEach EliteEnemy $ healDamageOn attrs 2
           labeled "gnashingTeeth.slain" $ withLocationOf iid slayCivilian
       advanceAgendaDeck attrs
+      pure a
+    FoundEncounterCard _ (isTarget attrs -> True) (toCard -> card) -> do
+      locations <- select Anywhere
+      for_ (nonEmpty locations) $ sample >=> createEnemyAt_ card
       pure a
     _ -> GnashingTeeth <$> liftRunMessage msg attrs

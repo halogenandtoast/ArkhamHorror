@@ -22,7 +22,10 @@ instance HasAbilities Thrall where
     extend
       a
       [ limited (MaxPer Cards.thrall PerRound 1)
-          $ mkAbility a 0
+          -- surge is on the *draw*, so only the card currently being resolved
+          -- qualifies; a Thrall put into play by a search-and-spawn effect
+          -- (Gnashing Teeth 1b) was never drawn.
+          $ restricted a 0 (exists $ ResolvingCard <> basic (CardWithId a.cardId))
           $ silent
           $ EnemyWouldSpawnAt (be a) Anywhere
       , playerLimit PerTurn

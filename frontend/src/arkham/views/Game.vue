@@ -1529,7 +1529,22 @@ const toggleSidebar = function () {
 
 // Undo
 const undoLock = ref(false)
-async function undo() {
+
+/*
+ * Every undo goes through here so the lock is taken BEFORE any UI state is
+ * touched and released in `finally`.
+ *
+ * Both halves matter. Guarding after the state wipe meant a press that lost the
+ * race still blanked the question and then returned without sending anything --
+ * the board went empty and stayed empty. And releasing only on the happy path
+ * meant a single request that never settled left `undoLock` true for the life of
+ * the page, after which every press was a silent no-op: no request, no error,
+ * nothing in the console, just a dead Undo button. The undo calls carry their own
+ * timeout (see api.ts) so the promise always settles and this `finally` can run.
+ */
+async function runUndo(call: (gameId: string) => Promise<void>) {
+  if (undoLock.value) return
+  undoLock.value = true
   processing.value = true
   const oldQuestion = game.value?.question
   if (game.value) setGameQuestion({})
@@ -1537,53 +1552,30 @@ async function undo() {
   gameCard.value = null
   tarotCards.value = []
   uiLock.value = false
-  if (undoLock.value) return
-  undoLock.value = true
-  try {
-    await undoChoice(props.gameId, debug.active)
-  } catch (e) {
-    processing.value = false
-    if (game.value && oldQuestion) setGameQuestion(oldQuestion)
-    console.log(e)
-  }
-  undoLock.value = false
-}
-
-async function undoScenario() {
-  confirmingUndoScenario.value = false
-  processing.value = true
-  if (game.value) setGameQuestion({})
-  resultQueue.value = []
-  gameCard.value = null
-  tarotCards.value = []
-  uiLock.value = false
-  undoScenarioChoice(props.gameId)
-}
-
-async function undoBoundary(call: (gameId: string) => Promise<void>) {
-  if (undoLock.value) return
-  processing.value = true
-  const oldQuestion = game.value?.question
-  if (game.value) setGameQuestion({})
-  resultQueue.value = []
-  gameCard.value = null
-  tarotCards.value = []
-  uiLock.value = false
-  undoLock.value = true
   try {
     await call(props.gameId)
   } catch (e) {
     processing.value = false
     if (game.value && oldQuestion) setGameQuestion(oldQuestion)
     console.log(e)
+  } finally {
+    undoLock.value = false
   }
-  undoLock.value = false
 }
 
-const undoActionStart = () => undoBoundary(undoAction)
-const undoTurnStart = () => undoBoundary(undoTurn)
-const undoPhaseStart = () => undoBoundary(undoPhase)
-const undoRoundStart = () => undoBoundary(undoRound)
+async function undo() {
+  await runUndo((gameId) => undoChoice(gameId, debug.active))
+}
+
+async function undoScenario() {
+  confirmingUndoScenario.value = false
+  await runUndo(undoScenarioChoice)
+}
+
+const undoActionStart = () => runUndo(undoAction)
+const undoTurnStart = () => runUndo(undoTurn)
+const undoPhaseStart = () => runUndo(undoPhase)
+const undoRoundStart = () => runUndo(undoRound)
 
 const filingBug = ref(false)
 const submittingBug = ref(false)

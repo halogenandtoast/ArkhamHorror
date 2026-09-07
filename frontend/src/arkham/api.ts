@@ -354,28 +354,34 @@ export const joinGame = async (gameId: string): Promise<Game> => {
   return gameDecoder.decodePromise(data)
 }
 
-export const undoChoice = (gameId: string, debug: boolean): Promise<void> => {
-  if (debug) {
-    return api.put(`arkham/games/${gameId}/undo?debug`);
-  } else {
-    return api.put(`arkham/games/${gameId}/undo`)
-  }
-}
+// The axios instance has no default timeout, so a request that never answers
+// never settles either. Undo holds a client-side lock for its round trip, and a
+// promise that never settles leaves that lock -- and the Undo button -- stuck for
+// the life of the page. Bound it: a rejected undo is recoverable, a hung one is
+// not. Multi-step undos fold N patches, so they get more room than a single step.
+const UNDO_TIMEOUT_MS = 30000
+const UNDO_MULTI_TIMEOUT_MS = 60000
+
+const undoRequest = (path: string, timeout: number): Promise<void> =>
+  api.put(path, null, { timeout })
+
+export const undoChoice = (gameId: string, debug: boolean): Promise<void> =>
+  undoRequest(`arkham/games/${gameId}/undo${debug ? '?debug' : ''}`, UNDO_TIMEOUT_MS)
 
 export const undoScenarioChoice = (gameId: string): Promise<void> =>
-  api.put(`arkham/games/${gameId}/undo/scenario`)
+  undoRequest(`arkham/games/${gameId}/undo/scenario`, UNDO_MULTI_TIMEOUT_MS)
 
 export const undoAction = (gameId: string): Promise<void> =>
-  api.put(`arkham/games/${gameId}/undo/action`)
+  undoRequest(`arkham/games/${gameId}/undo/action`, UNDO_MULTI_TIMEOUT_MS)
 
 export const undoTurn = (gameId: string): Promise<void> =>
-  api.put(`arkham/games/${gameId}/undo/turn`)
+  undoRequest(`arkham/games/${gameId}/undo/turn`, UNDO_MULTI_TIMEOUT_MS)
 
 export const undoPhase = (gameId: string): Promise<void> =>
-  api.put(`arkham/games/${gameId}/undo/phase`)
+  undoRequest(`arkham/games/${gameId}/undo/phase`, UNDO_MULTI_TIMEOUT_MS)
 
 export const undoRound = (gameId: string): Promise<void> =>
-  api.put(`arkham/games/${gameId}/undo/round`)
+  undoRequest(`arkham/games/${gameId}/undo/round`, UNDO_MULTI_TIMEOUT_MS)
 
 export const importGame = async (formData: FormData, multiplayerVariant: string): Promise<Game> => {
   const { data } = await api.post(`arkham/games/import?multiplayerVariant=${multiplayerVariant}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })

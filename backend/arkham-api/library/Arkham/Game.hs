@@ -2730,9 +2730,7 @@ getLocationsMatching lmatcher = do
       matches' <-
         if currentMatch
           then pure [start]
-          else do
-            matchingLocationIds <- map toId <$> getLocationsMatching matcher
-            getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
+          else getNearestLocations start . map toId =<< getLocationsMatching matcher
       pure $ filter ((`elem` matches') . toId) ls
     NearestLocationToMost matcher -> do
       -- "Nearest to the most investigators" is a vote count, not a single
@@ -2785,9 +2783,7 @@ getLocationsMatching lmatcher = do
           matches' <-
             if currentMatch
               then pure [start]
-              else do
-                matchingLocationIds <- map toId <$> getLocationsMatching matcher
-                getShortestPath start (pure . (`elem` matchingLocationIds)) mempty
+              else getNearestLocations start . map toId =<< getLocationsMatching matcher
           pure $ filter ((`elem` matches') . toId) ls
     ConnectedLocation forMovement -> guardYourLocation $ \yourLocation -> do
       go ls (ConnectedFrom forMovement $ LocationWithId yourLocation)
@@ -5989,6 +5985,13 @@ instance HasModifiersFor Entities where
     traverse_ getModifiersFor (e ^. treacheriesL)
     traverse_ getModifiersFor (e ^. investigatorsL)
     traverse_ getModifiersFor (e ^. storiesL)
+
+-- FAQ: an eligible location with no valid path counts as "nearest" only when no
+-- eligible location has one.
+getNearestLocations :: HasGame m => LocationId -> [LocationId] -> m [LocationId]
+getNearestLocations start candidates = do
+  nearest <- getShortestPath start (pure . (`elem` candidates)) mempty
+  pure $ if null nearest then candidates else nearest
 
 -- the results will have the initial location at 0, we need to drop
 -- this otherwise this will only ever return the current location

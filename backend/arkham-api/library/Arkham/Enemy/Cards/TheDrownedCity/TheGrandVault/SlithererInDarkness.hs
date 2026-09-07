@@ -63,10 +63,13 @@ instance RunMessage SlithererInDarkness where
             flooded <- select FloodedLocation
             withDist <- forMaybeM flooded \lid ->
               fmap ((,lid) . unDistance) <$> getDistance platform lid
-            for_ (minimumMay $ map fst withDist) \nearest -> do
+            -- FAQ: with nothing at a measurable distance, every flooded location is
+            -- equally near.
+            let nearest = case minimumMay (map fst withDist) of
+                  Just d -> [lid | (d', lid) <- withDist, d' == d]
+                  Nothing -> flooded
+            unless (null nearest) do
               lead <- getLead
-              chooseOrRunOneM lead
-                $ targets [lid | (d, lid) <- withDist, d == nearest]
-                $ enemyMoveTo (attrs.ability 1) attrs.id
+              chooseOrRunOneM lead $ targets nearest $ enemyMoveTo (attrs.ability 1) attrs.id
       pure e
     _ -> SlithererInDarkness <$> liftRunMessage msg attrs

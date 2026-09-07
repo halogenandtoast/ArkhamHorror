@@ -44,7 +44,7 @@ instance HasAbilities CoreOfTheVaultHeartOfTheMachine where
           , -- [action][action] Spend 3 [per_investigator] clues, as a group.
             restricted a 2 Here
               $ doubleActionAbilityWithCost
-              $ GroupClueCost (PerPlayer 3) (be a)
+              $ GroupClueCost (PerPlayer 3) Anywhere
           ]
         else
           [ restricted a 3 (not_ $ exists $ LocationWithTrait Vault <> LocationWithResources (atMost 0))

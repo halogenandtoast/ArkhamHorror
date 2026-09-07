@@ -22,7 +22,7 @@ instance HasAbilities GlyphOrrery where
   getAbilities (GlyphOrrery a) =
     extendRevealed
       a
-      [ onlyOnce $ restricted a 1 Here $ actionAbilityWithCost $ GroupClueCost (PerPlayer 1) (be a)
+      [ onlyOnce $ restricted a 1 Here $ actionAbilityWithCost $ GroupClueCost (PerPlayer 1) Anywhere
       , summitEntry a 9
       ]
 

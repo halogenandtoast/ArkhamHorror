@@ -19,11 +19,20 @@ import Arkham.Classes.Entity (EntityId)
 import Arkham.Classes.HasGame
 import Arkham.Enemy.Types (Enemy)
 import {-# SOURCE #-} Arkham.Game ()
+import Arkham.Helpers.Card (getModifiedCardCost)
+import Arkham.Helpers.SkillTest (
+  getSkillTest,
+  getSkillTestAction,
+  getSkillTestDifficulty,
+  getSkillTestInvestigator,
+  getSkillTestMatchingSkillIcons,
+ )
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Location.Types (Location)
 import Arkham.Name (toTitle)
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.SkillTest.Base (skillTestCommittedCards, skillTestIconValues, skillTestId)
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
@@ -37,7 +46,15 @@ evalExpr env v0 = case substituteExpr env v0 of
   Object o
     | Just prop <- str =<< KeyMap.lookup "get" o -> withOf o (getProp (kindOf o) prop)
     | Just prop <- str =<< KeyMap.lookup "map" o -> withOf o (getProp (kindOf o) prop)
-    | Just p <- KeyMap.lookup "filter" o -> listOp o (filter (matches p))
+    | Just p <- KeyMap.lookup "filter" o -> do
+        p' <- evalPredicate p
+        listOp o (filter (matches p'))
+    | Just prop <- str =<< KeyMap.lookup "skillTest" o -> skillTestProp prop
+    | Just e <- KeyMap.lookup "iconValue" o -> do
+        icons <- valueList <$> evalExpr env e
+        values <- maybe mempty skillTestIconValues <$> getSkillTest
+        let valueOf v = maybe 0 (\i -> findWithDefault 0 i values) (parseMaybe parseJSON v)
+        pure $ toJSON (sum (map valueOf icons))
     | Just e <- KeyMap.lookup "unique" o -> unary e (List.nub . valueList)
     | Just e <- KeyMap.lookup "concat" o -> unary e (concatMap valueList . valueList)
     | Just e <- KeyMap.lookup "reverse" o -> unary e (reverse . valueList)
@@ -52,6 +69,11 @@ evalExpr env v0 = case substituteExpr env v0 of
     | Just e <- KeyMap.lookup "divide" o -> number e (pairwise safeDiv)
   v -> pure v
  where
+  -- A predicate's operand is an expression too, so @{"in": {"skillTest": ...}}@
+  -- compares against what that works out to rather than against the literal.
+  evalPredicate = \case
+    Object po -> Object <$> traverse (evalExpr env) po
+    p -> evalExpr env p
   unary e f = unaryV e (toJSON . f)
   unaryV e f = f <$> evalExpr env e
   number e f = unaryV e (toJSON . f)
@@ -121,6 +143,29 @@ matches p v = case p of
     | Just x <- KeyMap.lookup "lte" o -> toInt v <= toInt x
   _ -> v == p
 
+{- | What a set of icons is worth to the test being resolved.
+
+Not a count: an icon the test does not want is worth nothing and a wild-minus is
+worth -1, which is exactly what "add its matching icons to your skill value"
+means and what counting them would get wrong.
+-}
+
+-- (implemented inline in 'evalExpr'; see the @iconValue@ case)
+
+{- | A property of the skill test being resolved, which is not a value anything
+binds -- there is only ever the one, and a card that talks about "matching"
+icons or "succeed by" is talking about it.
+-}
+skillTestProp :: HasGame m => Text -> m Value
+skillTestProp prop = case prop of
+  "matchingIcons" -> toJSON . toList <$> getSkillTestMatchingSkillIcons
+  "difficulty" -> toJSON <$> getSkillTestDifficulty
+  "action" -> toJSON <$> getSkillTestAction
+  "investigator" -> toJSON <$> getSkillTestInvestigator
+  "committedCards" -> maybe Null (toJSON . concat . toList . skillTestCommittedCards) <$> getSkillTest
+  "id" -> maybe Null (toJSON . skillTestId) <$> getSkillTest
+  _ -> pure Null
+
 {- | A property of one bound value. @kind@ says how to read it, the same way a
 query's @kind@ says what its matcher matches: entity kinds name a 'Field' (the
 names the engine already uses, @EnemyHealth@ and the like), and @card@ reads the
@@ -133,6 +178,11 @@ getProp kind prop v = case kind of
   "investigator" -> entityProp @Investigator prop v
   "asset" -> entityProp @Asset prop v
   "act" -> entityProp @Act prop v
+  -- The cost as it stands, discounts and all -- what a card means when it talks
+  -- about "this card's resource cost" rather than the number printed on it.
+  "card" | prop == "modifiedCost" -> case parseMaybe parseJSON v of
+    Just card | Just iid <- toCardOwner card -> maybe Null toJSON <$> getModifiedCardCost iid card
+    _ -> pure Null
   "card" -> pure $ cardProp prop v
   _ -> pure Null
 
@@ -161,5 +211,8 @@ cardProp prop v = case parseMaybe parseJSON v of
           "cardType" -> toJSON (cdCardType def)
           "level" -> toJSON (cdLevel def)
           "cost" -> toJSON (cdCost def)
+          -- The number on the card, for the readings that do arithmetic with it
+          -- ("X is the cost of the event you discarded").
+          "printedCost" -> toJSON (maybe 0 toPrintedCost (cdCost def))
           "id" -> toJSON (toCardId card)
           _ -> Null

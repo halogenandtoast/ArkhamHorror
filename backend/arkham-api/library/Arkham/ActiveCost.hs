@@ -1555,6 +1555,10 @@ payCost msg c iid skipAdditionalCosts cost = do
           | SkillIcon skill <- choices
           ]
       pure c
+    CalculatedDiscardCombinedCost calc -> do
+      n <- calculate calc
+      push $ PayCost acId iid True (DiscardCombinedCost n)
+      pure c
     DiscardCombinedCost x -> do
       handCards <-
         fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard) . filter (`cardMatch` NonWeakness)) iid

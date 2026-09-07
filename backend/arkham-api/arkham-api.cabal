@@ -2450,6 +2450,7 @@ library
       Arkham.Custom.Ability
       Arkham.Custom.Asset
       Arkham.Custom.Enemy
+      Arkham.Custom.Env
       Arkham.Custom.Event
       Arkham.Custom.Expr
       Arkham.Custom.Investigator
@@ -2462,6 +2463,7 @@ library
       Arkham.Custom.Schema.Windows.Check
       Arkham.Custom.Schema.Windows.Table
       Arkham.Custom.Skill
+      Arkham.Custom.Steps
       Arkham.Custom.Story
       Arkham.Custom.Treachery
       Arkham.Customization

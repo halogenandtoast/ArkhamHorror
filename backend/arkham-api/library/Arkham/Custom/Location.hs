@@ -34,8 +34,8 @@ instance HasAbilities CustomLocation where
 
 instance RunMessage CustomLocation where
   runMessage msg x@(CustomLocation attrs) = runQueueT $ case msg of
-    ZonedUseThisAbility iid (isSource attrs -> True) idx ws | isCustomAbility attrs idx -> do
-      runCustomAbility attrs iid idx ws
+    ZonedUseThisAbility iid (isSource attrs -> True) idx ws payment | isCustomAbility attrs idx -> do
+      runCustomAbility attrs iid idx ws payment
       pure x
     _ -> do
       runCustomHandlers attrs msg

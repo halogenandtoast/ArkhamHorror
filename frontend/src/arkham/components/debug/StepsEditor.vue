@@ -41,6 +41,7 @@ type StepKind =
   | 'choose'
   | 'chooseFrom'
   | 'playCard'
+  | 'useAbility'
   | 'fight'
   | 'investigate'
   | 'evade'
@@ -61,6 +62,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   choose: 'Choose',
   chooseFrom: 'Choose from',
   playCard: 'Play a card',
+  useAbility: 'Use an ability',
   fight: 'Fight',
   investigate: 'Investigate',
   evade: 'Evade',
@@ -83,6 +85,7 @@ function kindOf(step: any): StepKind {
     'choose',
     'chooseFrom',
     'playCard',
+    'useAbility',
     'fight',
     'investigate',
     'evade',
@@ -110,6 +113,7 @@ const blankStep = (kind: StepKind) =>
     choose: { choose: { options: [{ label: '', steps: [] }] } },
     chooseFrom: { chooseFrom: { query: { kind: 'enemy', matcher: null }, bind: 'chosen', steps: [] } },
     playCard: { playCard: { optional: true, matcher: null } },
+    useAbility: { useAbility: { index: 1, optional: true } },
     fight: { fight: { matcher: null, modifiers: [] } },
     investigate: { investigate: { modifiers: [] } },
     evade: { evade: { matcher: null, modifiers: [] } },
@@ -488,12 +492,76 @@ const removeOption = (step: any, index: number, at: number) =>
         <button type="button" class="add" @click="addOption(step, index)">+ Option</button>
       </template>
 
+      <template v-else-if="kindOf(step) === 'useAbility'">
+        <p class="hint">
+          Resolves one of this card's own abilities, offered the way using it normally would be
+          so its cost is paid. Abilities are numbered from 1, in the order they are written.
+        </p>
+        <div class="row">
+          <label>
+            Ability
+            <input
+              type="number"
+              min="1"
+              :value="step.useAbility?.index ?? 1"
+              @input="set(index, { ...step, useAbility: { ...step.useAbility, index: Number(($event.target as HTMLInputElement).value) } })"
+              @keydown.stop
+            />
+          </label>
+          <label v-if="step.useAbility?.optional">
+            Decline label
+            <input
+              :value="step.useAbility?.declineLabel"
+              placeholder="Do not"
+              @input="set(index, { ...step, useAbility: { ...step.useAbility, declineLabel: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+          <label class="inline">
+            <input
+              type="checkbox"
+              :checked="!!step.useAbility?.optional"
+              @change="set(index, { ...step, useAbility: { ...step.useAbility, optional: ($event.target as HTMLInputElement).checked } })"
+            />
+            may decline
+          </label>
+          <label class="inline">
+            <input
+              type="checkbox"
+              :checked="!!step.useAbility?.ignoreLimit"
+              @change="set(index, { ...step, useAbility: { ...step.useAbility, ignoreLimit: ($event.target as HTMLInputElement).checked } })"
+            />
+            ignore its limit
+          </label>
+        </div>
+      </template>
+
       <template v-else-if="kindOf(step) === 'playCard'">
         <p class="hint">
           Offers the cards you could play, paying the cost, each shown as the card itself. A
           discount is worked out before the choice, since a card is only playable if you can
-          afford it.
+          afford it. Naming a card plays that one instead of offering a choice; free skips
+          payment entirely, for "without paying its cost".
         </p>
+        <div class="row">
+          <label>
+            This card (optional)
+            <input
+              :value="step.playCard?.card"
+              placeholder="$paidCards"
+              @input="set(index, { ...step, playCard: { ...step.playCard, card: ($event.target as HTMLInputElement).value || undefined } })"
+              @keydown.stop
+            />
+          </label>
+          <label class="inline">
+            <input
+              type="checkbox"
+              :checked="!!step.playCard?.free"
+              @change="set(index, { ...step, playCard: { ...step.playCard, free: ($event.target as HTMLInputElement).checked } })"
+            />
+            without paying its cost
+          </label>
+        </div>
         <div class="row">
           <label v-if="step.playCard?.optional">
             Decline label

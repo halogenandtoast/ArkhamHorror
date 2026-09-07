@@ -618,6 +618,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         let total = unionsWith (+) $ map (frequencies . cdSkills . toCardDef) cards
         let wildCount = total ^. at #wild . non 0
         pure $ foldr (\x y -> y || x + wildCount >= n) False $ toList $ deleteMap #wild total
+      CalculatedDiscardCombinedCost calc -> do
+        n <- calculate (Matcher.replaceYouMatcher iid calc)
+        getCanAffordCost_ iid source actions windows' canModify (DiscardCombinedCost n)
       DiscardCombinedCost n -> do
         handCards <-
           mapMaybe (preview _PlayerCard)

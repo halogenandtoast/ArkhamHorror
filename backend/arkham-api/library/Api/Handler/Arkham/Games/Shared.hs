@@ -718,6 +718,7 @@ handleMessageLog logRef broadcast msg = liftIO $ do
     ClientShowDiscard v -> GameShowDiscard v
     ClientShowUnder v -> GameShowUnder v
     ClientPlayabilityReport cid cc chks -> GamePlayabilityInfo cid cc chks
+    ClientCustomCardIssue cc detail payload -> GameCustomCardIssue cc detail payload
   toClientText = \case
     ClientText txt -> Just txt
     ClientError {} -> Nothing
@@ -729,6 +730,7 @@ handleMessageLog logRef broadcast msg = liftIO $ do
     ClientShowDiscard {} -> Nothing
     ClientShowUnder {} -> Nothing
     ClientPlayabilityReport {} -> Nothing
+    ClientCustomCardIssue {} -> Nothing
 
 publishToRoom :: (MonadIO m, ToJSON a, HasApp m) => ArkhamGameId -> a -> m ()
 publishToRoom gameId a = do

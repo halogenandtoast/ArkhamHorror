@@ -167,6 +167,11 @@ data Cost
   | SameSkillIconCost Int
   | SameSkillIconCostMatching Int ExtendedCardMatcher
   | DiscardCombinedCost Int
+  | {- | 'DiscardCombinedCost' where the total is worked out when the cost is
+    paid rather than written in advance -- "cards with a combined value equal to
+    or greater than your resources".
+    -}
+    CalculatedDiscardCombinedCost GameCalculation
   | ShuffleDiscardCost Int CardMatcher
   | Free
   | ScenarioResourceCost Int

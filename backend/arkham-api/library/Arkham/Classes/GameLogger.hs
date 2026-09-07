@@ -1,7 +1,7 @@
 module Arkham.Classes.GameLogger where
 
-import Arkham.Id
 import Arkham.Card.Id
+import Arkham.Id
 import Arkham.Prelude
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
@@ -47,6 +47,11 @@ data ClientMessage
   | ClientUI Text
   | ClientAudio Text
   | ClientPlayabilityReport CardId Text [(Text, Maybe Text)]
+  | {- | A custom card's JSON did not do what it said. Carries enough to fix it:
+    which card, what went wrong, and the offending fragment. Never thrown --
+    the card simply did nothing -- so without this the author sees silence.
+    -}
+    ClientCustomCardIssue Text Text Value
 
 send :: HasGameLogger m => Text -> m ()
 send msg = do
@@ -62,6 +67,15 @@ sendAudio :: HasGameLogger m => Text -> m ()
 sendAudio fileName = do
   f <- getLogger
   liftIO $ f (ClientAudio fileName)
+
+{- | Report a custom card whose JSON could not be used, to whoever is looking at
+the game. Silent failure is the wrong default for something a person is in the
+middle of authoring.
+-}
+sendCustomCardIssue :: HasGameLogger m => Text -> Text -> Value -> m ()
+sendCustomCardIssue cardCode detail payload = do
+  f <- getLogger
+  liftIO $ f (ClientCustomCardIssue cardCode detail payload)
 
 sendError :: HasGameLogger m => Text -> m ()
 sendError msg = do

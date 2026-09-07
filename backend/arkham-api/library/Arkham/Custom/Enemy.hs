@@ -44,8 +44,8 @@ instance HasAbilities CustomEnemy where
 
 instance RunMessage CustomEnemy where
   runMessage msg x@(CustomEnemy attrs) = runQueueT $ case msg of
-    ZonedUseThisAbility iid (isSource attrs -> True) idx ws | isCustomAbility attrs idx -> do
-      runCustomAbility attrs iid idx ws
+    ZonedUseThisAbility iid (isSource attrs -> True) idx ws payment | isCustomAbility attrs idx -> do
+      runCustomAbility attrs iid idx ws payment
       pure x
     -- What it does when it is revealed. Not an ability: no one activates it, and
     -- the card may have to place itself before the engine tidies it away.

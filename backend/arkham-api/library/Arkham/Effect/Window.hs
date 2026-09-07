@@ -47,6 +47,12 @@ data EffectWindow
   | EffectEndOfNextTurnWindow InvestigatorId
   | EffectNextTurnWindow InvestigatorId
   | EffectCardResolutionWindow CardId
+  | {- | Lasts until that card reaches a discard pile. A card that accumulates
+    something about itself while it is stuck in hand -- a cost reduction that
+    grows each turn -- needs a scope tied to the card's fate rather than to a
+    phase or a round.
+    -}
+    EffectUntilCardDiscarded CardId
   | EffectGameWindow
   | EffectResolutionWindow
   | EffectAttackWindow

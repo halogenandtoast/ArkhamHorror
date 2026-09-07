@@ -124,6 +124,8 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     ResolvedCard _ card | isEndOfWindow a (EffectCardResolutionWindow $ toCardId card) -> do
       a <$ push (Priority $ DisableEffect effectId)
+    Discarded _ _ card | isEndOfWindow a (EffectUntilCardDiscarded $ toCardId card) -> do
+      a <$ push (DisableEffect effectId)
     ResolvedAbility ab | isEndOfWindow a (EffectAbilityWindow ab.ref) -> do
       a <$ push (DisableEffect effectId)
     Do (TakeResources iid _ _ _) | isEndOfWindow a (EffectGainResourcesWindow iid) -> do

@@ -111,12 +111,14 @@ triggeredAction action wm cost = ReactionAbility wm cost (SingleAction action)
 triggered_ :: WindowMatcher -> AbilityType
 triggered_ wm = ReactionAbility wm Free mempty
 
+-- | Only for a card that prints __Forced__. See 'ForcedAbility'.
 forced :: WindowMatcher -> AbilityType
 forced = ForcedAbility
 
 delayed :: AbilityType -> AbilityType
 delayed = DelayedAbility
 
+-- | Forced in behaviour, unprinted on the card. See 'SilentForcedAbility'.
 silent :: WindowMatcher -> AbilityType
 silent = SilentForcedAbility
 
@@ -171,8 +173,21 @@ data AbilityType
   | CustomizationReaction {label :: Text, window :: WindowMatcher, cost :: Cost}
   | ActionAbility {actions :: Actions, skillTypes :: Maybe AbilitySkills, cost :: Cost}
   | ServitorAbility {action :: Action}
-  | SilentForcedAbility {window :: WindowMatcher}
-  | ForcedAbility {window :: WindowMatcher}
+  | {- | An effect that just happens, with no "Forced" on the card. Use this
+    for anything the card states as a fact of play -- "when you commit this card
+    to a skill test, ..." -- so the player is not shown a Forced prompt the card
+    never had.
+    -}
+    SilentForcedAbility {window :: WindowMatcher}
+  | {- | A printed __Forced__ ability, and only that.
+
+    The word is part of the card's text and the UI shows it, so using this for an
+    effect whose card does not say "Forced" tells the player something untrue
+    about their own card. If the card has no "Forced", reach for
+    'SilentForcedAbility', or handle the message directly where the effect has no
+    ability at all.
+    -}
+    ForcedAbility {window :: WindowMatcher}
   | DelayedAbility {abilityType :: AbilityType}
   | ForcedAbilityWithCost {window :: WindowMatcher, cost :: Cost}
   | AbilityEffect {actions :: Actions, cost :: Cost}

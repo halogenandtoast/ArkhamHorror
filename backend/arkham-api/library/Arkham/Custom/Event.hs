@@ -29,8 +29,8 @@ instance HasAbilities CustomEvent where
 
 instance RunMessage CustomEvent where
   runMessage msg x@(CustomEvent attrs) = runQueueT $ case msg of
-    ZonedUseThisAbility iid (isSource attrs -> True) idx ws | isCustomAbility attrs idx -> do
-      runCustomAbility attrs iid idx ws
+    ZonedUseThisAbility iid (isSource attrs -> True) idx ws payment | isCustomAbility attrs idx -> do
+      runCustomAbility attrs iid idx ws payment
       pure x
     -- What the event does when it is played: the common case, so it gets a
     -- place of its own rather than being written as a listener.

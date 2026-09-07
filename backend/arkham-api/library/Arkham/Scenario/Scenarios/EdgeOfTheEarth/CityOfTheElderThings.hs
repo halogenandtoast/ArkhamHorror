@@ -21,11 +21,13 @@ import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Text
 import Arkham.Helpers.Xp
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as Locations
 import Arkham.Location.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
@@ -81,6 +83,27 @@ cityLandscapes =
   , Locations.templeOfTheElderThings
   , Locations.templeOfTheElderThings
   ]
+
+{- | "During setup, after you reveal the starting location, the lead investigator
+discovers clues from that location equal to half its clue value (rounded up)."
+
+Deferred through 'handleTarget' so the count is read after the queued reveal has
+stocked the location; done inline the clues aren't there yet.
+-}
+scoutedTheCityOutskirtsBonus :: ReverseQueue m => InvestigatorId -> LocationId -> m ()
+scoutedTheCityOutskirtsBonus lead lid =
+  whenM (getHasRecord TheInvestigatorsScoutedTheCityOutskirts)
+    $ handleTarget lead ScenarioSource lid
+
+-- 'startAt' with the scouted-outskirts discovery attached
+startAtScouted :: ReverseQueue m => LocationId -> ScenarioBuilderT m ()
+startAtScouted lid = do
+  lead <- getLead
+  lift $ chooseOneM lead do
+    targeting lid do
+      reveal lid
+      placeAllAt lid
+      scoutedTheCityOutskirtsBonus lead lid
 
 allKeys :: MonadRandom m => m [ArkhamKey]
 allKeys = do
@@ -279,6 +302,10 @@ instance RunMessage CityOfTheElderThings where
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
 
       pure s
+    HandleTargetChoice lead (isSource attrs -> True) (LocationTarget lid) -> do
+      n <- field LocationClues lid
+      discoverAt NotInvestigate lead ScenarioSource ((n + 1) `div` 2) lid
+      pure s
     Setup -> do
       doStep (toResult @Int attrs.meta) msg
       pure $ CityOfTheElderThings $ attrs & metaL .~ toJSON (0 :: Int)
@@ -309,6 +336,7 @@ instance RunMessage CityOfTheElderThings where
         \lid -> do
           reveal lid
           placeAllAt lid
+          scoutedTheCityOutskirtsBonus lead lid
       tokens <- allKeys
       for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
       addChaosToken #elderthing
@@ -337,7 +365,7 @@ instance RunMessage CityOfTheElderThings where
       locationMap <-
         Map.fromList <$> for (zip setup2Positions locations) \(pos, loc) ->
           (pos,) <$> placeInGrid pos loc
-      for_ (Map.lookup (Pos 4 (-4)) locationMap) startAt
+      for_ (Map.lookup (Pos 4 (-4)) locationMap) startAtScouted
       tokens <- allKeys
       for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
       addChaosToken #elderthing
@@ -370,7 +398,7 @@ instance RunMessage CityOfTheElderThings where
       locationMap <-
         Map.fromList <$> for (zip setup3Positions locations) \(pos, loc) ->
           (pos,) <$> placeInGrid pos loc
-      for_ (Map.lookup (Pos (-7) 4) locationMap) startAt
+      for_ (Map.lookup (Pos (-7) 4) locationMap) startAtScouted
       tokens <- allKeys
       for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
       removeEvery

@@ -794,16 +794,26 @@ select {
 }
 
 .add,
+/* Beside the item it removes, and the same height as it: a bare glyph in a row
+ * of fields shrinks to the size of the character. */
 .remove {
+  align-items: center;
+  align-self: flex-start;
   background: none;
-  border: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
   color: #9ca3af;
   cursor: pointer;
-  font-size: 0.75rem;
-  padding: 0.2rem 0.3rem;
+  display: flex;
+  flex: none;
+  font-size: 0.85rem;
+  line-height: 1;
+  height: 1.9rem;
+  padding: 0 0.4rem;
 
   &:hover {
-    color: #eee;
+    border-color: #f87171;
+    color: #fca5a5;
   }
 }
 

@@ -11,7 +11,7 @@ below is a literal (with @$bindings@ substituted), so numbers and @"$cards"@
 mean themselves. An operator that takes @of@ broadcasts over a list, so @get@ is
 both "the property of this one" and "map over these".
 -}
-module Arkham.Custom.Expr (evalExpr, exprInt, runQuery, runQueryStep) where
+module Arkham.Custom.Expr (evalExpr, exprInt, runQuery, runQueryStep, valueList) where
 
 import Arkham.Act.Types (Act)
 import Arkham.Asset.Types (Asset)

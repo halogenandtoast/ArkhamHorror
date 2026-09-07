@@ -357,7 +357,6 @@ function handlerScope(handler: any, index: number): Binding[] {
             <li v-for="(field, at) in windowFields(abilityWindow(ability))" :key="at">
               <code>$w{{ at }}</code> {{ field.name ? `${field.name} ::` : '::' }} {{ field.type }}
             </li>
-            <li v-if="!windowFields(abilityWindow(ability)).length" class="muted">no fields</li>
           </ul>
           <p v-if="windowSettled(ability) && !abilityWindow(ability)" class="hint muted">
             <code>{{ abilityWindowMatcher(ability) }}</code> never fires on its own, so there are
@@ -416,13 +415,16 @@ function handlerScope(handler: any, index: number): Binding[] {
           from the message compared against one of this card's, say) or it will fire for
           everyone.
         </p>
-        <ul v-if="knownMessage(handler.on)" class="bindings">
+        <!-- A message with no fields simply lists nothing. The warning below is
+             about the message not being known, which is a different thing. -->
+        <ul v-if="messageFields(handler.on).length" class="bindings">
           <li v-for="(field, at) in messageFields(handler.on)" :key="at">
             <code>${{ at }}</code> {{ field.name ? `${field.name} ::` : '::' }} {{ field.type }}
           </li>
-          <li v-if="!messageFields(handler.on).length" class="muted">no fields</li>
         </ul>
-        <p v-else-if="handler.on" class="hint muted">Not a message the engine sends.</p>
+        <p v-if="handler.on && !knownMessage(handler.on)" class="hint muted">
+          Not a message the engine sends.
+        </p>
 
         <div v-for="(pair, at) in requiresOf(handler)" :key="at" class="row">
           <label>

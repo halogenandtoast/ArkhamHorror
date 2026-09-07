@@ -21,10 +21,17 @@ import Arkham.Criteria
 import Arkham.Custom.Schema.TH (schemaForWith)
 import Arkham.Custom.Schema.Types
 import Arkham.DamageEffect (DamageAssignment)
+import Arkham.Discard (HandDiscard)
+import Arkham.Discover (Discover)
+import Arkham.Draw.Types (CardDraw)
 import Arkham.Effect.Types (EffectBuilder)
 import Arkham.Effect.Window (EffectWindow)
 import Arkham.EffectMetadata (EffectMetadata)
+import Arkham.Enemy.Creation (EnemyCreation)
+import Arkham.Evade.Types (ChooseEvade)
 import Arkham.Exhaust (Exhaustion)
+import Arkham.Fight.Types (ChooseFight)
+import Arkham.Investigate.Types (Investigate)
 import Arkham.Matcher
 import Arkham.Message (Message)
 import Arkham.Message.ChaosBag (ChaosBagMessage)
@@ -47,8 +54,13 @@ import Arkham.Message.Spawn (SpawnMessage)
 import Arkham.Message.Story (StoryMessage)
 import Arkham.Message.Token (TokenMessage)
 import Arkham.Modifier (Modifier, ModifierType)
+import Arkham.Movement (Movement)
+import Arkham.Search (Search)
+import Arkham.SkillTest.Option (SkillTestOption)
+import Arkham.Slot (Slot)
 import Arkham.Source (Source)
-import Arkham.Spawn (SpawnAt)
+import Arkham.Spawn (SpawnAt, SpawnDetails)
+import Arkham.Strategy (ChosenCardStrategy, FindEncounterCardStrategy, ZoneReturnStrategy)
 import Arkham.Target (Target)
 import Arkham.Window (WindowType)
 
@@ -108,6 +120,27 @@ customSchema =
        , ''SpawnAt
        , ''SkillTestMatcher
        , ''SkillTestResultMatcher
+       , {- The payloads of the messages a card pushes. Each of these is a record
+            or a small enum sitting in a 'Message' field, and 'Message' is a
+            shallow root -- so without naming them here nothing reaches them and
+            the editor offers a raw JSON box for the whole payload. Writing
+            @discardStrategy@ and @discardAmount@ by hand is exactly what the
+            editor exists to avoid. -}
+         ''HandDiscard
+       , ''Investigate
+       , ''ChooseFight
+       , ''ChooseEvade
+       , ''Discover
+       , ''Movement
+       , ''CardDraw
+       , ''Search
+       , ''SpawnDetails
+       , ''EnemyCreation
+       , ''Slot
+       , ''SkillTestOption
+       , ''ChosenCardStrategy
+       , ''ZoneReturnStrategy
+       , ''FindEncounterCardStrategy
        ]
        ( ''Message
            -- Most messages sit inside a grouping constructor, and the editor has

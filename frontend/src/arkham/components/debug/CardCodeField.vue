@@ -7,6 +7,7 @@
  * lists do not have.
  */
 import { computed, onMounted, ref } from 'vue'
+import { vFocus } from '@/arkham/components/debug/vFocus'
 import { onClickOutside } from '@vueuse/core'
 import { useCardStore } from '@/stores/cards'
 import { libraryCards, loadLibrary } from '@/arkham/customCardLibrary'
@@ -76,7 +77,7 @@ function choose(code: string) {
         v-model="search"
         type="search"
         placeholder="Search your cards and the card pool by name or code"
-        autofocus
+        v-focus
         @keydown.enter.prevent="choose(search.trim())"
         @keydown.esc="open = false"
         @keydown.stop
@@ -337,13 +338,20 @@ function choose(code: string) {
   }
 }
 
+/* The row aligns to the top so a field with a note under it does not drag its
+ * neighbours down; the button still has to match the field it clears, which is
+ * what it opts back into here. */
 .clear-value {
+  align-items: center;
+  align-self: flex-start;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid #4b5563;
   border-radius: 4px;
   color: #eee;
   cursor: pointer;
+  display: flex;
   flex: 0 0 auto;
+  height: 1.9rem;
   padding: 0 0.5rem;
 }
 </style>

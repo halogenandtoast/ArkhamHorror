@@ -7,6 +7,7 @@
  * like a select in one place and a text box in another.
  */
 import { computed, ref } from 'vue'
+import { vFocus } from '@/arkham/components/debug/vFocus'
 import { onClickOutside } from '@vueuse/core'
 import BindingToggle from '@/arkham/components/debug/BindingToggle.vue'
 import { jumpToBinding, type Binding } from '@/arkham/customCardBindings'
@@ -61,7 +62,7 @@ function choose(name: string) {
         v-model="search"
         type="search"
         :placeholder="`Search the ${applicable.length} bindings that fit ${type}`"
-        autofocus
+        v-focus
         @keydown.enter.prevent="choose(search)"
         @keydown.esc="open = false"
         @keydown.stop

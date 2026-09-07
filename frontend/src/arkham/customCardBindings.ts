@@ -183,6 +183,7 @@ const stepKinds = [
   'if',
   'case',
   'forEach',
+  'modify',
   'withSkillTest',
   'withLocationOf',
   'choose',

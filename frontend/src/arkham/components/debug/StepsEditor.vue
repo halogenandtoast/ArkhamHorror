@@ -5,6 +5,7 @@
  * — which is what lets an ability say "if it is ready, attack; otherwise ready
  * it" or "choose an event, then play it". */
 import { computed, ref } from 'vue'
+import { vFocus } from '@/arkham/components/debug/vFocus'
 import { onClickOutside } from '@vueuse/core'
 import ExpressionEditor from '@/arkham/components/debug/ExpressionEditor.vue'
 import BoolField from '@/arkham/components/debug/BoolField.vue'
@@ -41,6 +42,7 @@ type StepKind =
   | 'if'
   | 'case'
   | 'forEach'
+  | 'modify'
   | 'withSkillTest'
   | 'withLocationOf'
   | 'choose'
@@ -65,6 +67,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   if: 'If',
   case: 'Case',
   forEach: 'For each',
+  modify: 'Modify',
   withSkillTest: 'With skill test',
   withLocationOf: 'With location of',
   choose: 'Choose',
@@ -91,6 +94,7 @@ function kindOf(step: any): StepKind {
     'if',
     'case',
     'forEach',
+    'modify',
     'withSkillTest',
     'withLocationOf',
     'choose',
@@ -122,6 +126,7 @@ const blankStep = (kind: StepKind) =>
     if: { if: { kind: 'enemy', matcher: null }, then: [], else: [] },
     case: { case: [{ if: { kind: 'enemy', matcher: null }, steps: [] }], else: [] },
     forEach: { forEach: { query: { kind: 'enemy', matcher: null }, bind: 'each', steps: [] } },
+    modify: { modify: { target: null, modifiers: [] } },
     withSkillTest: { withSkillTest: { bind: 'skillTestId', steps: [] } },
     withLocationOf: { withLocationOf: { kind: 'investigator', of: '$iid', bind: 'location', steps: [] } },
     choose: { choose: { options: [{ label: '', steps: [] }] } },
@@ -151,6 +156,7 @@ const KIND_HELP: Record<StepKind, string> = {
   if: 'Runs a matcher and takes the first branch when it finds anything.',
   case: 'Takes the first branch whose condition holds.',
   forEach: 'Runs its steps once per thing found, with that thing bound inside.',
+  modify: 'Gives something modifiers for as long as a window lasts.',
   withSkillTest: 'Runs its steps during a skill test, with that test bound inside.',
   withLocationOf: 'Runs its steps where something is, with that location bound inside.',
   choose: 'Offers the player named options, each with steps of its own.',
@@ -173,7 +179,10 @@ const KIND_HELP: Record<StepKind, string> = {
  * step adds nothing a Let cannot say. The kind stays known -- cards already
  * written hold Query steps, and those keep running and keep their editor -- it
  * is simply not offered for anything new. */
-const ADDABLE = (Object.keys(KIND_LABELS) as StepKind[]).filter((k) => k !== 'query')
+const ADDABLE = (Object.keys(KIND_LABELS) as StepKind[])
+  .filter((k) => k !== 'query')
+  // By what the menu shows, not by the key behind it, since that is what is read.
+  .sort((a, b) => KIND_LABELS[a].localeCompare(KIND_LABELS[b]))
 
 const set = (index: number, step: any) =>
   emit('update:modelValue', steps.value.map((s, i) => (i === index ? step : s)))
@@ -251,6 +260,31 @@ onClickOutside(addEl, () => (addingStep.value = false))
 function addAndClose(kind: StepKind) {
   add(kind)
   addingStep.value = false
+  addSearch.value = ''
+}
+
+/* Typed against both the name and what it does, so "during a test" finds
+ * With skill test without knowing it is called that. */
+const addSearch = ref('')
+
+const matchingKinds = computed(() => {
+  const needle = addSearch.value.trim().toLowerCase()
+  if (!needle) return ADDABLE
+  return ADDABLE.filter(
+    (k) =>
+      KIND_LABELS[k].toLowerCase().includes(needle) || KIND_HELP[k].toLowerCase().includes(needle),
+  )
+})
+
+function toggleAdd() {
+  addSearch.value = ''
+  addingStep.value = !addingStep.value
+}
+
+// Enter takes the first match, which is the one the list marks.
+const addFirstMatch = () => {
+  const [first] = matchingKinds.value
+  if (first) addAndClose(first)
 }
 
 const optionsOf = (step: any): any[] => step.choose?.options ?? []
@@ -548,6 +582,36 @@ const removeOption = (step: any, index: number, at: number) =>
           :queryKinds="queryKinds"
           :modelValue="step.withLocationOf?.steps ?? []"
           @update:modelValue="set(index, { ...step, withLocationOf: { ...step.withLocationOf, steps: $event } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'modify'">
+        <p class="hint">
+          The source is this card and the modifiers carry no card of their own, so only what is
+          modified, for how long, and with what are asked for. Left alone, the window is the
+          skill test being resolved — what "+2 for this test" means.
+        </p>
+        <ValueEditor
+          type="Target"
+          label="What is modified"
+          :bindings="scopeFor(index)"
+          :modelValue="step.modify?.target"
+          @update:modelValue="set(index, { ...step, modify: { ...step.modify, target: $event } })"
+        />
+        <ValueEditor
+          optional
+          type="EffectWindow"
+          label="For how long (defaults to this skill test)"
+          :bindings="scopeFor(index)"
+          :modelValue="step.modify?.window"
+          @update:modelValue="set(index, { ...step, modify: { ...step.modify, window: $event } })"
+        />
+        <ValueEditor
+          type="[ModifierType]"
+          label="Modifiers"
+          :bindings="scopeFor(index)"
+          :modelValue="step.modify?.modifiers"
+          @update:modelValue="set(index, { ...step, modify: { ...step.modify, modifiers: $event } })"
         />
       </template>
 
@@ -1101,15 +1165,28 @@ const removeOption = (step: any, index: number, at: number) =>
     <!-- A menu rather than a row of buttons: twenty names side by side is a wall
          to read, and the name alone does not say what the step does. -->
     <div ref="addEl" class="step-actions">
-      <button type="button" @click="addingStep = !addingStep">+ Step</button>
-      <ul v-if="addingStep" class="kind-menu">
-        <li v-for="kind in ADDABLE" :key="kind">
-          <button type="button" class="kind-option" @click="addAndClose(kind)">
-            <span class="kind-name">{{ KIND_LABELS[kind] }}</span>
-            <span class="kind-help">{{ KIND_HELP[kind] }}</span>
-          </button>
-        </li>
-      </ul>
+      <button type="button" @click="toggleAdd">+ Step</button>
+      <div v-if="addingStep" class="kind-menu">
+        <input
+          v-model="addSearch"
+          type="search"
+          class="kind-search"
+          placeholder="Type to filter, enter to pick"
+          v-focus
+          @keydown.enter.prevent="addFirstMatch"
+          @keydown.esc="addingStep = false"
+          @keydown.stop
+        />
+        <ul>
+          <li v-for="(kind, at) in matchingKinds" :key="kind" :class="{ first: at === 0 }">
+            <button type="button" class="kind-option" @click="addAndClose(kind)">
+              <span class="kind-name">{{ KIND_LABELS[kind] }}</span>
+              <span class="kind-help">{{ KIND_HELP[kind] }}</span>
+            </button>
+          </li>
+          <li v-if="!matchingKinds.length" class="muted">Nothing matches.</li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -1345,19 +1422,53 @@ select {
   border-radius: 5px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
   left: 0;
-  list-style: none;
   margin: 0.3rem 0 0;
-  max-height: 20rem;
   min-width: 26rem;
-  overflow-y: auto;
   padding: 0.2rem;
   position: absolute;
   top: 100%;
   z-index: 30;
 
+  // The search stays put while the list under it scrolls.
+  ul {
+    list-style: none;
+    margin: 0;
+    max-height: 18rem;
+    overflow-y: auto;
+    padding: 0;
+  }
+
   li:hover {
     background: rgba(20, 184, 166, 0.1);
     border-radius: 4px;
+  }
+
+  /* What enter would take. Marked so the key does something visible rather than
+   * something you have to guess at. */
+  li.first {
+    background: rgba(20, 184, 166, 0.08);
+    border-radius: 4px;
+    box-shadow: inset 2px 0 0 #14b8a6;
+  }
+
+  .muted {
+    color: #9ca3af;
+    font-size: 0.75rem;
+    padding: 0.45rem 0.5rem;
+  }
+}
+
+.kind-search {
+  background: #0b1220;
+  border: 1px solid #14b8a6;
+  border-radius: 4px;
+  color: #eee;
+  margin-bottom: 0.3rem;
+  padding: 0.35rem 0.5rem;
+  width: 100%;
+
+  &::placeholder {
+    color: #6b7280;
   }
 }
 

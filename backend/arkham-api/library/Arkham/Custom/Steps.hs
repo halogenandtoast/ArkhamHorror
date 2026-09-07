@@ -22,8 +22,9 @@ import Arkham.Aspect (InsteadOf (..), IsAspect)
 import Arkham.Calculation (GameCalculation (Fixed))
 import Arkham.Card.PlayerCard (lookupPlayerCard)
 import Arkham.Custom.Env
-import Arkham.Custom.Expr (evalExpr, exprInt, runQuery, runQueryStep)
+import Arkham.Custom.Expr (evalExpr, exprInt, runQuery, runQueryStep, valueList)
 import Arkham.Customization (CustomizationChoice (..))
+import Arkham.EffectMetadata (EffectMetadata (EffectModifiers))
 import Arkham.Evade (mkChooseEvade, mkChooseEvadeMatch)
 import Arkham.Evade qualified as Evade
 import Arkham.Fight (ChooseFight (..))
@@ -66,6 +67,7 @@ import Arkham.Message.Lifted.Base (capture)
 import Arkham.Message.Lifted.Card (playCardPayingCost)
 import Arkham.Message.Lifted.Prompt qualified as Prompt
 import Arkham.Message.Lifted.Queue (ReverseQueue)
+import Arkham.Modifier (Modifier (Modifier))
 import Arkham.Name (toTitle)
 import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
@@ -453,6 +455,9 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "forEach" o -> do
           runForEach env spec
           pure env
+      | Just spec <- KeyMap.lookup "modify" o -> do
+          runModify env spec
+          pure env
       | Just spec <- KeyMap.lookup "withSkillTest" o -> do
           runWithSkillTest env spec
           pure env
@@ -554,6 +559,43 @@ runForEach env spec = case spec of
       steps = maybe [] subSteps (KeyMap.lookup "steps" o)
     for_ (fromMaybe [] found) \value -> runSteps (KeyMap.insert name value env) steps
   _ -> pure ()
+
+{- | Give something modifiers for as long as a window lasts.
+
+The message underneath is @CreateWindowModifierEffect@, whose payload is four
+levels of wrapping around what a card actually says: a window, an effect holding
+a list of modifiers, the source, and the target. Three of those never vary --
+the source is this card, the modifier carries no card of its own, and nothing a
+card does is active during setup -- so the step asks for the three that do.
+
+The window defaults to the test being resolved, which is what almost every
+"+2 for this test" is.
+-}
+runModify :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runModify env spec = case spec of
+  Object o -> do
+    let types = maybe [] valueList (KeyMap.lookup "modifiers" o)
+    let mWindow = decodeWith env (fromMaybe thisSkillTest (KeyMap.lookup "window" o))
+    let mTarget = decodeWith env =<< KeyMap.lookup "target" o
+    case (mWindow, mTarget, traverse (decodeWith @ModifierType env) types) of
+      (Just window, Just target, Just modifiers)
+        | notNull modifiers ->
+            push
+              $ CreateWindowModifierEffect
+                window
+                (EffectModifiers [Modifier source modifier False Nothing | modifier <- modifiers])
+                source
+                target
+      _ -> reportBadPayload env "modify" spec
+  _ -> reportBadPayload env "modify" spec
+ where
+  source = stepSource env
+  -- What "for this test" means, which is the window nearly every modifier wants.
+  thisSkillTest =
+    object
+      [ "tag" .= ("EffectSkillTestMatchingWindow" :: Text)
+      , "contents" .= object ["tag" .= ("AnySkillTest" :: Text), "contents" .= ([] :: [Value])]
+      ]
 
 {- | The steps inside, with the skill test being resolved bound for them.
 

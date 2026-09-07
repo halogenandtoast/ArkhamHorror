@@ -10,6 +10,7 @@
  * generic encoding (Actions, Trait, CardCode). Those come through as raw fields;
  * the encoding here is the generic one. */
 import { computed, ref } from 'vue'
+import { vFocus } from '@/arkham/components/debug/vFocus'
 import { onClickOutside, useEventListener } from '@vueuse/core'
 import {
   decodeConstructor,
@@ -20,6 +21,7 @@ import {
 } from '@/arkham/schema'
 import { bindingFits, jumpToBinding, type Binding } from '@/arkham/customCardBindings'
 import BindingToggle from '@/arkham/components/debug/BindingToggle.vue'
+import ValueMatcherField from '@/arkham/components/debug/ValueMatcherField.vue'
 import BoolField from '@/arkham/components/debug/BoolField.vue'
 import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
 
@@ -143,9 +145,69 @@ const current = computed(() =>
 const humanize = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/_/g, ' ')
 const squash = (text: string) => text.toLowerCase().replace(/[^a-z0-9]/g, '')
 
+/* A type that another type can always be lifted into through one constructor.
+ *
+ * Everything an ExtendedCardMatcher can say about a card plainly, it says by
+ * wrapping a CardMatcher in BasicCardMatch -- so making the author pick the
+ * wrapper first is a step that carries no information and is the commonest piece
+ * of ceremony in the definitions. Offering the inner constructors alongside, and
+ * wrapping whichever is chosen, removes it without changing what is stored. */
+const BRIDGES: Record<string, { from: string; wrap: string }> = {
+  ExtendedCardMatcher: { from: 'CardMatcher', wrap: 'BasicCardMatch' },
+}
+
+/* Whole values a card asks for over and over, offered at the head of the picker.
+ *
+ * "An enemy at your location" is three constructors deep and turned up five
+ * times across sixteen cards; "your location" six times. Nothing about those is
+ * hard, they are just tedious, and typing them out again is where a wrong
+ * matcher creeps in. Chosen from a measurement of what the definitions actually
+ * repeat rather than from taste. */
+const PRESETS: Record<string, { label: string; value: any }[]> = {
+  InvestigatorMatcher: [{ label: 'you', value: { tag: 'You', contents: [] } }],
+  LocationMatcher: [
+    {
+      label: 'your location',
+      value: { tag: 'LocationWithInvestigator', contents: { tag: 'You', contents: [] } },
+    },
+  ],
+  EnemyMatcher: [
+    {
+      label: 'an enemy at your location',
+      value: {
+        tag: 'EnemyAt',
+        contents: { tag: 'LocationWithInvestigator', contents: { tag: 'You', contents: [] } },
+      },
+    },
+  ],
+  Target: [
+    { label: 'you', value: { tag: 'InvestigatorTarget', contents: '$iid' } },
+    { label: 'this card', value: { tag: 'CardIdTarget', contents: '$cardId' } },
+  ],
+}
+
+const presets = computed(() =>
+  shape.value.kind === 'sum' ? (PRESETS[shape.value.schema.name] ?? []) : [],
+)
+
+function usePreset(value: any) {
+  emit('update:modelValue', JSON.parse(JSON.stringify(value)))
+  closePicker()
+}
+
+const bridge = computed(() =>
+  shape.value.kind === 'sum' ? BRIDGES[shape.value.schema.name] : undefined,
+)
+
+const bridged = computed<ConSchema[]>(() => {
+  if (!bridge.value) return []
+  const inner = shapeOf(bridge.value.from)
+  return inner.kind === 'sum' ? inner.schema.constructors : []
+})
+
 const constructors = computed(() => {
   if (shape.value.kind !== 'sum') return []
-  const all = shape.value.schema.constructors
+  const all = [...shape.value.schema.constructors, ...bridged.value]
   const words = search.value.trim().split(/\s+/).map(squash).filter(Boolean)
   if (!words.length) return all
   return all.filter((c) => {
@@ -154,8 +216,24 @@ const constructors = computed(() => {
   })
 })
 
+const isBridged = (con: ConSchema) => bridged.value.includes(con)
+
 function pick(con: ConSchema) {
   if (shape.value.kind !== 'sum') return
+  // An inner constructor is stored wrapped, so what is saved is unchanged.
+  if (bridge.value && isBridged(con)) {
+    const inner = shapeOf(bridge.value.from)
+    if (inner.kind === 'sum') {
+      const values: Record<string, any> = {}
+      con.fields.forEach((field, index) => (values[field.name ?? String(index)] = null))
+      emit('update:modelValue', {
+        tag: bridge.value.wrap,
+        contents: encodeConstructor(inner.schema, con, values),
+      })
+      closePicker()
+      return
+    }
+  }
   // Keep any field values that carry over to the new constructor by name.
   const previous = current.value?.values ?? {}
   const values: Record<string, any> = {}
@@ -214,6 +292,39 @@ function setRaw(text: string) {
     rawError.value = true
   }
 }
+
+/* A GameValue is nearly always a plain number, written `Static n`. Making that
+ * the field, with the other forms one click away, spares the author a picker
+ * whose answer is the same every time -- and the type is common enough that the
+ * saving turns up wherever a card counts anything. */
+const gameValueAdvanced = ref(false)
+
+const isGameValue = computed(
+  () => shape.value.kind === 'sum' && shape.value.schema.name === 'GameValue',
+)
+
+const staticValue = computed(() => {
+  const v = props.modelValue
+  return v && typeof v === 'object' && v.tag === 'Static' ? v.contents : null
+})
+
+// Anything that is not a plain number has to be edited as what it is.
+const asPlainNumber = computed(
+  () =>
+    isGameValue.value &&
+    !gameValueAdvanced.value &&
+    (!hasValue.value || staticValue.value !== null),
+)
+
+const setStatic = (text: string) =>
+  emit('update:modelValue', text.trim() === '' ? null : { tag: 'Static', contents: Number(text) })
+
+/* ValueMatcherField covers every shape a ValueMatcher has, so a value of this
+ * type never needs the constructor picker. */
+const asComparison = computed(
+  () => shape.value.kind === 'sum' && shape.value.schema.name === 'ValueMatcher',
+)
+
 </script>
 
 <template>
@@ -269,7 +380,7 @@ function setRaw(text: string) {
           v-model="bindingSearch"
           type="search"
           :placeholder="`Search the ${applicable.length} bindings that fit ${type}`"
-          autofocus
+          v-focus
           @keydown.enter.prevent="setBinding(bindingSearch)"
           @keydown.esc="bindingInput = false"
           @keydown.stop
@@ -299,7 +410,40 @@ function setRaw(text: string) {
 
       <div v-else class="field-body" :class="{ 'with-toggle': applicable.length }">
 
-    <template v-if="shape.kind === 'sum'">
+    <!-- "at least 2", rather than a comparison wrapping a Static wrapping a 2. -->
+    <ValueMatcherField
+      v-if="asComparison"
+      :modelValue="modelValue"
+      :bindings="inScope"
+      @update:modelValue="emit('update:modelValue', $event)"
+    />
+
+    <!-- The shape a GameValue almost always has, said as itself. -->
+    <div v-else-if="asPlainNumber" class="picked-row compact">
+      <input
+        type="number"
+        :value="staticValue ?? ''"
+        placeholder="a number"
+        @input="setStatic(($event.target as HTMLInputElement).value)"
+        @keydown.stop
+      />
+      <button
+        type="button"
+        class="link"
+        title="Per player, by player count, X, or star"
+        @click="gameValueAdvanced = true"
+      >
+        per player…
+      </button>
+      <BindingToggle
+        :open="bindingInput"
+        :count="applicable.length"
+        :type="type"
+        @toggle="bindingInput = !bindingInput"
+      />
+    </div>
+
+    <template v-else-if="shape.kind === 'sum'">
       <div ref="pickerEl" class="picker">
         <div class="picked-row">
           <button type="button" class="picked" @click="open ? closePicker() : (open = true)">
@@ -322,28 +466,31 @@ function setRaw(text: string) {
             v-model="search"
             type="search"
             :placeholder="`Search ${shape.schema.constructors.length} options`"
-            autofocus
+            v-focus
             @keydown.stop
           />
           <ul>
+            <li v-for="preset in search.trim() ? [] : presets" :key="preset.label" class="preset">
+              <button type="button" @click="usePreset(preset.value)">
+                {{ preset.label }}
+                <small>a whole value, ready made</small>
+              </button>
+            </li>
             <li v-for="con in constructors" :key="con.name">
               <button type="button" @click="pick(con)">
                 {{ humanize(con.name) }}
                 <small>
                   {{ con.name }}<template v-if="con.fields.length">
                     · {{ con.fields.map((f) => f.type).join(', ') }}</template>
+                  <!-- Says where it came from, so the wrapping it gets is not a
+                       surprise when the field is read back. -->
+                  <template v-if="isBridged(con)"> · via {{ bridge?.wrap }}</template>
                 </small>
               </button>
             </li>
           </ul>
         </div>
       </div>
-
-      <!-- A constructor with nothing to fill in renders as empty space, which
-           reads as an unfinished field rather than a finished choice. -->
-      <p v-if="current && !current.con.fields.length" class="no-fields">
-        {{ humanize(current.con.name) }} takes no fields.
-      </p>
 
       <div v-if="current && current.con.fields.length" class="fields">
         <ValueEditor
@@ -494,6 +641,20 @@ function setRaw(text: string) {
   min-width: 0;
 }
 
+.compact {
+  align-items: center;
+
+  > input {
+    flex: 1 1 auto;
+    min-width: 3rem;
+  }
+}
+
+// Set apart from the constructors below them: these are answers, not choices.
+.preset button {
+  color: #5eead4;
+}
+
 /* The field's box is the row, not the control sitting in it: the border moves
  * out to the row and the control goes transparent inside, so the binding toggle
  * lands within the same outline rather than alongside it. Anything else in the
@@ -509,7 +670,8 @@ function setRaw(text: string) {
 
   > input,
   > .picked,
-  > .raw {
+  > .raw,
+  > select {
     background: transparent;
     border-color: transparent;
     padding: 0;
@@ -584,12 +746,6 @@ function setRaw(text: string) {
     font-size: 0.75rem;
     padding: 0.45rem 0.5rem;
   }
-}
-
-.no-fields {
-  color: #9ca3af;
-  font-size: 0.75rem;
-  margin: 0.25rem 0 0;
 }
 
 /* Name, what it holds, where it came from — three columns, so a list of them
@@ -695,6 +851,22 @@ function setRaw(text: string) {
   gap: 0.25rem;
 }
 
+// The way out of the plain-number field to the forms it cannot say.
+.link {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  flex: none;
+  font-size: 0.72rem;
+  padding: 0 0.35rem;
+  text-decoration: underline;
+
+  &:hover {
+    color: #5eead4;
+  }
+}
+
 .binding {
   align-items: stretch;
   background: rgba(170, 221, 255, 0.12);
@@ -793,13 +965,20 @@ function setRaw(text: string) {
   }
 }
 
+/* The row aligns to the top so a field with a note under it does not drag its
+ * neighbours down; the button still has to match the field it clears, which is
+ * what it opts back into here. */
 .clear-value {
+  align-items: center;
+  align-self: flex-start;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid #4b5563;
   border-radius: 4px;
   color: #eee;
   cursor: pointer;
+  display: flex;
   flex: 0 0 auto;
+  height: 1.9rem;
   padding: 0 0.5rem;
 }
 

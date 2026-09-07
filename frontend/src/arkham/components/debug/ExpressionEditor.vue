@@ -8,6 +8,7 @@
  * that point in the chain. */
 import { computed } from 'vue'
 import BindingField from '@/arkham/components/debug/BindingField.vue'
+import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import PropertyField from '@/arkham/components/debug/PropertyField.vue'
 import type { Binding } from '@/arkham/customCardBindings'
 import {
@@ -18,6 +19,10 @@ import {
   stageResult,
   stagesFor,
   typeFits,
+  QUERY_MODES,
+  QUERY_NOUNS,
+  stageProp,
+  queryType,
   unwindPipeline,
   windPipeline,
 } from '@/arkham/customCardExpressions'
@@ -30,6 +35,9 @@ const props = withDefaults(
     expect?: string
     bindings?: Binding[]
     label?: string
+    /* The matcher type behind each query kind, threaded down from the form the
+     * same way the steps editor gets it. Without it a query cannot be built. */
+    queryKinds?: Record<string, string>
   }>(),
   { expect: undefined },
 )
@@ -44,18 +52,22 @@ const KINDS = ['card', 'enemy', 'location', 'investigator', 'asset', 'act']
 type Source = {
   key: string
   label: string
-  shape: 'literal' | 'prop' | 'skillTest' | 'filter' | 'nary'
+  shape: 'literal' | 'prop' | 'skillTest' | 'filter' | 'nary' | 'query'
 }
 
+/* Named the way the step kinds are: the short word for the thing, with the
+ * controls underneath saying what it does. A sentence in the dropdown says it
+ * twice and makes the list slower to scan. */
 const SOURCES: Source[] = [
-  { key: '', label: 'A value', shape: 'literal' },
-  { key: 'get', label: 'A property of something', shape: 'prop' },
-  { key: 'skillTest', label: 'Something about this skill test', shape: 'skillTest' },
-  { key: 'filter', label: 'Only the ones that…', shape: 'filter' },
-  { key: 'add', label: 'Several values added together', shape: 'nary' },
-  { key: 'subtract', label: 'Several values subtracted', shape: 'nary' },
-  { key: 'multiply', label: 'Several values multiplied', shape: 'nary' },
-  { key: 'divide', label: 'Several values divided', shape: 'nary' },
+  { key: '', label: 'Value', shape: 'literal' },
+  { key: 'get', label: 'Property', shape: 'prop' },
+  { key: 'skillTest', label: 'Skill test', shape: 'skillTest' },
+  { key: 'query', label: 'Query', shape: 'query' },
+  { key: 'filter', label: 'Filter', shape: 'filter' },
+  { key: 'add', label: 'Add', shape: 'nary' },
+  { key: 'subtract', label: 'Subtract', shape: 'nary' },
+  { key: 'multiply', label: 'Multiply', shape: 'nary' },
+  { key: 'divide', label: 'Divide', shape: 'nary' },
 ]
 
 const PREDICATES = [
@@ -98,6 +110,8 @@ function pickSource(key: string) {
   if (chosen.shape === 'literal') return rebuild(kept ?? null, stages)
   if (chosen.shape === 'prop') return rebuild({ get: 'id', kind: 'card', of: kept ?? null }, stages)
   if (chosen.shape === 'skillTest') return rebuild({ skillTest: 'difficulty' }, stages)
+  if (chosen.shape === 'query')
+    return rebuild({ query: { kind: 'enemy', matcher: null }, mode: 'all' }, stages)
   if (chosen.shape === 'filter') return rebuild({ filter: { eq: null }, of: kept ?? null }, stages)
   return rebuild({ [key]: [kept ?? null, null] }, stages)
 }
@@ -143,6 +157,21 @@ const pipelineTypes = computed(() => {
 const stageAt = (at: number) => pipeline.value.stages[at]
 const keyAt = (at: number) => stageKey(stageAt(at))
 
+/* Whether a stage can take what the one before it hands over.
+ *
+ * An unknown incoming type fits everything, so this only fires where the editor
+ * is sure -- reading `modifiedCost` off an Int, say, after a query was switched
+ * from `first` to `count`. The stage is left in place rather than dropped: the
+ * fix is the author's to make, and quietly rewriting it would move the surprise
+ * from here to the game. */
+const stageFits = (at: number) => {
+  const key = keyAt(at)
+  return !!key && stagesFor(pipelineTypes.value[at]).some((st) => st.name === key)
+}
+
+const stageLabel = (at: number) =>
+  stageOptions(at).find((st) => st.name === keyAt(at))?.label ?? keyAt(at)
+
 const stageOptions = (at: number) => {
   const all = stagesFor(pipelineTypes.value[at])
   const offered =
@@ -176,6 +205,10 @@ const patchStage = (at: number, changes: Record<string, any>) =>
     source.value,
     pipeline.value.stages.map((st, i) => (i === at ? { ...st, ...changes } : st)),
   )
+
+// Which property a `get` stage reads, chosen in a field of its own beside it.
+const setStageProp = (at: number, prop: string) =>
+  patchStage(at, { get: prop, kind: stageAt(at)?.kind ?? 'card' })
 
 const stagePredicateKey = (at: number) => {
   const f = stageAt(at)?.filter
@@ -230,28 +263,29 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
     <span v-if="label" class="expr-label">{{ label }}</span>
 
     <div class="row">
-      <label>
-        What
-        <select :value="currentSource.key" @change="pickSource(($event.target as HTMLSelectElement).value)">
-          <option v-for="o in SOURCES" :key="o.key" :value="o.key">{{ o.label }}</option>
-        </select>
-      </label>
+      <select
+        class="source-kind"
+        :value="currentSource.key"
+        @change="pickSource(($event.target as HTMLSelectElement).value)"
+      >
+        <option v-for="o in SOURCES" :key="o.key" :value="o.key">{{ o.label }}</option>
+      </select>
 
       <template v-if="currentSource.shape === 'literal'">
-        <label v-if="!isBindingText">
-          Value
-          <input
-            :value="literalText"
-            :placeholder="expect === 'Int' ? 'a number' : 'a value'"
-            @input="setLiteral(($event.target as HTMLInputElement).value)"
-            @keydown.stop
-          />
-        </label>
+        <input
+          v-if="!isBindingText"
+          class="grow"
+          :value="literalText"
+          :placeholder="expect === 'Int' ? 'a number' : 'a value'"
+          @input="setLiteral(($event.target as HTMLInputElement).value)"
+          @keydown.stop
+        />
         <BindingField
           v-if="isBindingText || applicableBindings.length"
           class="grow"
           :modelValue="isBindingText ? literalText.trim() : null"
           :applicable="applicableBindings"
+          :inScope="bindings"
           :type="expect ?? 'anything'"
           @update:modelValue="setLiteral($event ?? '')"
         />
@@ -296,6 +330,7 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
         />
       </template>
 
+
       <template v-else-if="currentSource.shape === 'filter'">
         <label>
           Which
@@ -304,6 +339,40 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
           </select>
         </label>
       </template>
+    </div>
+
+    <!-- "search: cards  get: first / that match ...", read left to right and then
+         down. A block of its own because a query is a small thing entire, not two
+         controls sharing a row with the field above. -->
+    <div v-if="currentSource.shape === 'query'" class="query-block">
+      <div class="phrase">
+        <span class="phrase-label">search</span>
+        <select
+          :value="source?.query?.kind ?? 'enemy'"
+          @change="patch({ query: { kind: ($event.target as HTMLSelectElement).value, matcher: null } })"
+        >
+          <option v-for="(_, kind) in queryKinds ?? {}" :key="kind" :value="kind">
+            {{ QUERY_NOUNS[kind] ?? kind }}
+          </option>
+        </select>
+        <span class="phrase-label">get</span>
+        <select
+          :value="source?.mode ?? 'all'"
+          @change="patch({ mode: ($event.target as HTMLSelectElement).value })"
+        >
+          <option v-for="m in QUERY_MODES" :key="m.key" :value="m.key">{{ m.label }}</option>
+        </select>
+        <code class="stage-type" :class="{ unsure: !pipelineTypes[0] }">
+          {{ pipelineTypes[0] ?? '?' }}
+        </code>
+      </div>
+      <ValueEditor
+        :type="(queryKinds ?? {})[source?.query?.kind ?? 'enemy'] ?? 'EnemyMatcher'"
+        label="that match"
+        :bindings="bindings"
+        :modelValue="source?.query?.matcher"
+        @update:modelValue="patch({ query: { ...(source?.query ?? { kind: 'enemy' }), matcher: $event } })"
+      />
     </div>
 
     <div v-if="currentSource.shape === 'filter'" class="nested">
@@ -347,7 +416,7 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
     <!-- What can be done to whatever the source is, in the order it happens. -->
     <div class="pipeline">
       <div v-for="(stage, at) in pipeline.stages" :key="at" class="pipe-stage">
-        <div class="pipe-step">
+        <div class="pipe-step" :class="{ invalid: !stageFits(at) }">
           <span class="pipe-arrow" aria-hidden="true">
             <svg viewBox="0 0 14 16" width="14" height="16">
               <!-- Down out of the step above, then right into the step this is:
@@ -378,6 +447,14 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
               {{ option.label }}
             </option>
           </select>
+          <PropertyField
+            v-if="keyAt(at) === 'get'"
+            class="fit"
+            :modelValue="stageProp(stageAt(at))"
+            :options="stageAt(at)?.kind === 'skillTest' ? SKILL_TEST_PROPS : CARD_PROPS"
+            :of="stageAt(at)?.kind === 'skillTest' ? 'the skill test' : 'a card'"
+            @update:modelValue="setStageProp(at, $event)"
+          />
           <select
             v-if="keyAt(at) === 'filter'"
             :value="stagePredicateKey(at)"
@@ -401,6 +478,11 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
             ×
           </button>
         </div>
+        <p v-if="!stageFits(at)" class="pipe-error">
+          <code>{{ pipelineTypes[at] }}</code> is not something “{{ stageLabel(at) }}” can be
+          asked for.
+        </p>
+
         <div v-if="keyAt(at) === 'filter'" class="pipe-operand">
           <ExpressionEditor
             :modelValue="stagePredicateOperand(at)"
@@ -436,6 +518,13 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
 
 .row > .grow {
   flex: 1 1 180px;
+}
+
+// Sized to its own words rather than sharing the row equally: it names the kind
+// of expression, and the controls it brings with it are the point.
+.source-kind {
+  flex: 0 1 auto;
+  width: auto;
 }
 
 .row {
@@ -506,6 +595,44 @@ select {
   padding: 0.3rem 1.6rem 0.3rem 0.4rem;
 }
 
+/* A query set apart from the row above it: its own edge, its own ground, and the
+ * phrase and the matcher inside it rather than split across the boundary. */
+.query-block {
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid #374151;
+  border-left: 2px solid #64748b;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.5rem 0.6rem;
+}
+
+/* Sized to their words, so the pair reads as one line rather than as two fields
+ * that happen to sit side by side. */
+.phrase {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+
+  > select {
+    flex: 0 1 auto;
+    width: auto;
+  }
+}
+
+/* Beside its control rather than above it: these are two words in a line, not
+ * captioned fields like the rest of the form. */
+.phrase-label {
+  color: #9ca3af;
+  font-size: 0.72rem;
+
+  &:not(:first-child) {
+    margin-left: 0.35rem;
+  }
+}
+
 /* The operand of an operator, indented so the shape of a nested expression is
  * visible without reading it. */
 .nested {
@@ -549,6 +676,20 @@ select {
   }
 }
 
+/* A property step reads as two things in sequence -- "a property of it", then
+ * the property -- so each takes the width of its own words. Left to stretch, the
+ * select shoves the property to the far edge of the step and the pair stops
+ * reading as one phrase. */
+.pipe-step:has(> .fit) > select {
+  flex: 0 1 auto;
+  width: auto;
+}
+
+.pipe-step > .fit {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
 /* Drawn rather than set in type: a glyph can only get taller, and what this
  * wants is a thicker stroke. Present enough to read as the spine of the chain,
  * quiet enough not to compete with the steps hanging off it. */
@@ -577,6 +718,24 @@ select {
   &.unsure {
     background: rgba(148, 163, 184, 0.1);
     color: #9ca3af;
+  }
+}
+
+/* A stage handed something it cannot take. Marked rather than corrected, and
+ * marked on the control that is wrong, not on the whole expression. */
+.pipe-step.invalid > select {
+  border-color: #f87171;
+}
+
+.pipe-error {
+  color: #fca5a5;
+  font-size: 0.72rem;
+  margin: 0;
+  // Clears the arrow column, so the note lines up under the stage it is about.
+  padding-left: 1.6rem;
+
+  code {
+    font-family: monospace;
   }
 }
 

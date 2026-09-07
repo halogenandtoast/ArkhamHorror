@@ -16,6 +16,11 @@ const props = defineProps<{
   modelValue: string | null
   /** The bindings that could stand here, already filtered by the caller. */
   applicable: Binding[]
+  /* Everything in scope, which is not the same list: what the field is already
+   * holding may be a binding that does not fit, and a name resolved against the
+   * filtered list would come back unknown -- losing its type, its origin and the
+   * way back to what bound it, exactly where saying so matters most. */
+  inScope?: Binding[]
   /** What this position wants, for the toggle's own description. */
   type: string
 }>()
@@ -37,7 +42,9 @@ const matching = computed(() => {
   )
 })
 
-const boundTo = computed(() => props.applicable.find((b) => `$${b.name}` === props.modelValue))
+const boundTo = computed(() =>
+  (props.inScope ?? props.applicable).find((b) => `$${b.name}` === props.modelValue),
+)
 
 function choose(name: string) {
   const trimmed = name.trim()

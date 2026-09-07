@@ -1,6 +1,7 @@
 -- | Reifies the schema served by "Arkham.Custom.Schema".
 module Arkham.Custom.Schema.TH (schemaFor, schemaForWith) where
 
+import Arkham.Custom.Schema.Fields (conFieldNames)
 import Arkham.Custom.Schema.Types
 import Arkham.Custom.Schema.Windows (matcherWindows)
 import Arkham.Prelude hiding (Type)
@@ -117,6 +118,18 @@ jsonFieldName tyName fieldName
     Just (c, rest) -> T.toLower (T.singleton c) <> rest
     Nothing -> t
 
+{- | The name written down for a positional field, if there is one.
+
+See "Arkham.Custom.Schema.Fields". An empty name there means "leave it to the
+type", which is the same as having no entry at all.
+-}
+positionalName :: Name -> Name -> Int -> Maybe Text
+positionalName tyName conName' position = do
+  names <- lookup (T.pack (nameBase tyName), T.pack (nameBase conName')) conFieldNames
+  name <- names !!? position
+  guard (not (T.null name))
+  pure name
+
 {- | The windows a matcher fires on, for 'WindowMatcher' and nothing else.
 
 Carried on the constructor so the editor can name an ability's @$wN@ without
@@ -134,7 +147,7 @@ conSchemas tyName = \case
     [
       ( ConSchema
           (T.pack (nameBase n))
-          [FieldSchema Nothing (renderType t) | (_, t) <- bts]
+          [FieldSchema (positionalName tyName n i) (renderType t) | (i, (_, t)) <- zip [0 ..] bts]
           (windowsOf tyName n)
       , concatMap (referenced . snd) bts
       )
@@ -152,7 +165,9 @@ conSchemas tyName = \case
     [
       ( ConSchema
           (T.pack (nameBase n))
-          [FieldSchema Nothing (renderType (snd a)), FieldSchema Nothing (renderType (snd b))]
+          [ FieldSchema (positionalName tyName n 0) (renderType (snd a))
+          , FieldSchema (positionalName tyName n 1) (renderType (snd b))
+          ]
           (windowsOf tyName n)
       , referenced (snd a) <> referenced (snd b)
       )
@@ -161,7 +176,7 @@ conSchemas tyName = \case
   GadtC ns bts _ ->
     [ ( ConSchema
           (T.pack (nameBase n))
-          [FieldSchema Nothing (renderType t) | (_, t) <- bts]
+          [FieldSchema (positionalName tyName n i) (renderType t) | (i, (_, t)) <- zip [0 ..] bts]
           (windowsOf tyName n)
       , concatMap (referenced . snd) bts
       )
@@ -246,4 +261,3 @@ schemaForWith :: [Name] -> [Name] -> Q Exp
 schemaForWith roots shallowRoots =
   closure (Set.fromList (map (T.pack . nameBase) shallowRoots)) (roots <> shallowRoots) mempty
     >>= TH.lift
-

@@ -22,7 +22,7 @@ import Arkham.Aspect (InsteadOf (..), IsAspect)
 import Arkham.Calculation (GameCalculation (Fixed))
 import Arkham.Card.PlayerCard (lookupPlayerCard)
 import Arkham.Custom.Env
-import Arkham.Custom.Expr (evalExpr, exprInt)
+import Arkham.Custom.Expr (evalExpr, exprInt, runQuery, runQueryStep)
 import Arkham.Customization (CustomizationChoice (..))
 import Arkham.Evade (mkChooseEvade, mkChooseEvadeMatch)
 import Arkham.Evade qualified as Evade
@@ -36,6 +36,7 @@ import Arkham.Helpers.Customization (
   customizationKey,
   hasCustomization_,
  )
+import Arkham.Helpers.Location (Locateable, getLocationOf)
 import Arkham.Helpers.Message (drawCards)
 import Arkham.Helpers.Modifiers (
   ModifierType (ReduceCostOf),
@@ -68,7 +69,6 @@ import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Name (toTitle)
 import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
-import Arkham.Query (QueryElement)
 import Arkham.SkillType (SkillType (SkillWillpower))
 import Arkham.Source
 import Arkham.Target
@@ -453,6 +453,12 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "forEach" o -> do
           runForEach env spec
           pure env
+      | Just spec <- KeyMap.lookup "withSkillTest" o -> do
+          runWithSkillTest env spec
+          pure env
+      | Just spec <- KeyMap.lookup "withLocationOf" o -> do
+          runWithLocationOf env spec
+          pure env
       | Just spec <- KeyMap.lookup "choose" o -> do
           runChoose env spec
           pure env
@@ -548,6 +554,53 @@ runForEach env spec = case spec of
       steps = maybe [] subSteps (KeyMap.lookup "steps" o)
     for_ (fromMaybe [] found) \value -> runSteps (KeyMap.insert name value env) steps
   _ -> pure ()
+
+{- | The steps inside, with the skill test being resolved bound for them.
+
+A block rather than a binding on every step: there may be no test, and a step
+that reads @$skillTestId@ when there is none has nothing sensible to do. Running
+the inner steps only when there is one says that once, where a card would say it
+once -- "during a skill test".
+-}
+runWithSkillTest :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runWithSkillTest env spec = case spec of
+  Object o -> do
+    SkillTest.getSkillTestId >>= traverse_ \sid ->
+      runSteps (KeyMap.insert (bindingName o "skillTestId") (toJSON sid) env) (subStepsOf o)
+  _ -> pure ()
+
+{- | The steps inside, with the location of something bound for them.
+
+Which kind of thing is being located has to be said: every id is a bare uuid, so
+an @EnemyId@ and an @AssetId@ are the same JSON and the 'Locateable' instance
+cannot be chosen from the value. Nothing runs when it is nowhere, which is what
+@withLocationOf@ in "Arkham.Helpers.Location" already does.
+-}
+runWithLocationOf :: forall m. (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runWithLocationOf env spec = case spec of
+  Object o -> do
+    subject <- evalExpr env (fromMaybe Null (KeyMap.lookup "of" o))
+    let run :: forall a. (FromJSON a, Locateable a) => m ()
+        run = case parseMaybe parseJSON subject of
+          Nothing -> pure ()
+          Just x ->
+            getLocationOf (x :: a) >>= traverse_ \lid ->
+              runSteps (KeyMap.insert (bindingName o "location") (toJSON lid) env) (subStepsOf o)
+    case KeyMap.lookup "kind" o of
+      Just (String "enemy") -> run @EnemyId
+      Just (String "asset") -> run @AssetId
+      Just (String "treachery") -> run @TreacheryId
+      _ -> run @InvestigatorId
+  _ -> pure ()
+
+-- | The name a block binds under, which the author may rename.
+bindingName :: KeyMap.KeyMap Value -> Text -> Key.Key
+bindingName o fallback = case KeyMap.lookup "bind" o of
+  Just (String n) | not (null n) -> Key.fromText n
+  _ -> Key.fromText fallback
+
+subStepsOf :: KeyMap.KeyMap Value -> [Value]
+subStepsOf o = maybe [] subSteps (KeyMap.lookup "steps" o)
 
 -- | Named options, each running its own steps.
 runChoose :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
@@ -685,45 +738,5 @@ chosenTarget kind value = case kind of
  where
   decoded :: FromJSON a => Maybe a
   decoded = parseMaybe parseJSON value
-
-{- | @mode@ decides what a query binds: the whole list (the default), just the
-first element, or how many there were.
--}
-runQueryStep :: HasGame m => Env -> Value -> Maybe Value -> m (Maybe Value)
-runQueryStep env q mode = fmap (fmap shape) (runQuery env q)
- where
-  shape results = case mode of
-    Just (String "first") -> fromMaybe Null (headMay results)
-    Just (String "count") -> toJSON (length results)
-    _ -> toJSON results
-
--- | Dispatch a @{"kind": …, "matcher": …}@ query onto the matcher it names.
-runQuery :: HasGame m => Env -> Value -> m (Maybe [Value])
-runQuery env v = case v of
-  Object o -> case (KeyMap.lookup "kind" o, KeyMap.lookup "matcher" o) of
-    (Just (String kind), Just matcher) -> case kind of
-      "enemy" -> run @EnemyMatcher matcher
-      "location" -> run @LocationMatcher matcher
-      "investigator" -> run @InvestigatorMatcher matcher
-      "asset" -> run @AssetMatcher matcher
-      "treachery" -> run @TreacheryMatcher matcher
-      "event" -> run @EventMatcher matcher
-      "skill" -> run @SkillMatcher matcher
-      "story" -> run @StoryMatcher matcher
-      "act" -> run @ActMatcher matcher
-      "agenda" -> run @AgendaMatcher matcher
-      "card" -> run @ExtendedCardMatcher matcher
-      _ -> pure Nothing
-    _ -> pure Nothing
-  _ -> pure Nothing
- where
-  run
-    :: forall a m'
-     . (HasGame m', FromJSON a, Query a, ToJSON (QueryElement a))
-    => Value
-    -> m' (Maybe [Value])
-  run matcher = case decodeWith env matcher of
-    Nothing -> pure Nothing
-    Just m -> Just . map toJSON <$> select (m :: a)
 
 -- * Modifiers

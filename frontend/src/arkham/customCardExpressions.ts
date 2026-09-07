@@ -39,6 +39,30 @@ export const TRANSFORMS: Transform[] = [
   { name: 'cardsDiscarded', label: 'how many cards it discarded', from: 'Payment', to: 'Int' },
 ]
 
+/* `fetchCard` in the engine: anything with a FetchCard instance can name the
+ * card behind it.
+ *
+ * Which kind of id it is travels with the stage, because it cannot be read back
+ * off the value -- every id serializes as a bare uuid, so the editor writes down
+ * the type it was transforming at the time. */
+export const FETCHABLE: Record<string, string> = {
+  CardId: 'card',
+  AssetId: 'asset',
+  EventId: 'event',
+  TreacheryId: 'treachery',
+  EnemyId: 'enemy',
+  LocationId: 'location',
+  StoryId: 'story',
+}
+
+/* The kinds of thing a `get property` stage can read, and where the property
+ * names for each come from. A card reads its def; a skill test reads the test
+ * being resolved. */
+export const PROP_KINDS: Record<string, string> = {
+  card: 'Card',
+  skillTest: 'SkillTestId',
+}
+
 export const CARD_PROPS: Record<string, string> = {
   icons: '[SkillIcon]',
   skills: '[SkillIcon]',
@@ -61,6 +85,52 @@ export const SKILL_TEST_PROPS: Record<string, string> = {
   investigator: 'InvestigatorId',
   committedCards: '[Card]',
   id: 'SkillTestId',
+}
+
+/* What a query of each kind finds. A card query yields whole cards; everything
+ * else yields the entity's id, which is what `select` gives back. */
+export const QUERY_TYPES: Record<string, string> = {
+  enemy: 'EnemyId',
+  location: 'LocationId',
+  investigator: 'InvestigatorId',
+  asset: 'AssetId',
+  treachery: 'TreacheryId',
+  event: 'EventId',
+  skill: 'SkillId',
+  story: 'StoryId',
+  act: 'ActId',
+  agenda: 'AgendaId',
+  card: 'Card',
+}
+
+/* A query reads as "search: cards  get: first", so the kind names what is being
+ * searched and the mode names what is taken from what it found. */
+export const QUERY_NOUNS: Record<string, string> = {
+  enemy: 'enemies',
+  location: 'locations',
+  investigator: 'investigators',
+  asset: 'assets',
+  treachery: 'treacheries',
+  event: 'events',
+  skill: 'skills',
+  story: 'stories',
+  act: 'acts',
+  agenda: 'agendas',
+  card: 'cards',
+}
+
+export const QUERY_MODES = [
+  { key: 'all', label: 'all' },
+  { key: 'first', label: 'first' },
+  { key: 'count', label: 'count' },
+]
+
+/** What a `{query, mode}` works out to, by kind and by how it is read. */
+export function queryType(query: any, mode?: string): string | undefined {
+  if (mode === 'count') return 'Int'
+  const found = QUERY_TYPES[query?.kind]
+  if (!found) return undefined
+  return mode === 'first' ? found : listOf(found)
 }
 
 export const listOf = (type?: string) => (type ? `[${type}]` : undefined)
@@ -92,14 +162,24 @@ export function expressionType(expr: any, bindings: Binding[] = []): string | un
   if (typeof expr !== 'object') return undefined
 
   if (typeof expr.apply === 'string') {
+    // Polymorphic in its input, so these have no single row in the table above.
+    if (expr.apply === 'fetchCard') return 'Card'
+    if (expr.apply === 'getSkillTest') return 'SkillTest'
     return TRANSFORMS.find((t) => t.name === expr.apply)?.to
   }
   if (typeof expr.skillTest === 'string') return SKILL_TEST_PROPS[expr.skillTest]
+  // A query is an expression, so a `let` bound to one is typed like any other.
+  if (expr.query) return queryType(expr.query, expr.mode)
   if (typeof expr.get === 'string' || typeof expr.map === 'string') {
     const prop = expr.get ?? expr.map
     // Broadcasting over a list gives a list of the property.
     const inner = expressionType(expr.of, bindings)
-    const result = expr.kind === 'card' ? CARD_PROPS[prop] : undefined
+    const result =
+      expr.kind === 'card'
+        ? CARD_PROPS[prop]
+        : expr.kind === 'skillTest'
+          ? SKILL_TEST_PROPS[prop]
+          : undefined
     return inner?.startsWith('[') ? listOf(result) : result
   }
   for (const key of ['count', 'sum', 'max', 'min', 'iconValue', 'add', 'subtract', 'multiply', 'divide']) {
@@ -161,17 +241,47 @@ export function stagesFor(from: string | undefined): Stage[] {
   }))
 
   /* Reading a property works on one card or on many: applied to a list it is
-   * applied to each, which is why the result is a list of the property. */
+   * applied to each, which is why the result is a list of the property.
+   *
+   * One stage rather than one per property. Twelve near-identical entries buried
+   * the handful of stages that are actually different, and which property is
+   * wanted is a second question, asked in a field of its own. What it yields
+   * therefore depends on the answer, so `stageResult` works it out rather than
+   * the stage declaring it -- and whether a list came back is read off the type
+   * it reports rather than from the wording of the label. */
+  const fetchKind = from ? FETCHABLE[from] : undefined
+  if (unknown || fetchKind) {
+    stages.push({
+      name: 'fetchCard',
+      label: 'get card',
+      to: 'Card',
+      template: { apply: 'fetchCard', kind: fetchKind ?? 'card' },
+    })
+  }
+
+  if (unknown || typeFits(from, 'SkillTestId')) {
+    stages.push({
+      name: 'getSkillTest',
+      label: 'get skill test',
+      to: 'SkillTest',
+      template: { apply: 'getSkillTest' },
+    })
+    stages.push({
+      name: 'get',
+      label: 'get property',
+      to: undefined,
+      template: { get: 'difficulty', kind: 'skillTest' },
+    })
+  }
+
   const propSubject = list ? element : from
   if (unknown || typeFits(propSubject, 'Card')) {
-    for (const [prop, type] of Object.entries(CARD_PROPS)) {
-      stages.push({
-        name: `get:${prop}`,
-        label: `their ${prop}`,
-        to: list ? listOf(type) : type,
-        template: { get: prop, kind: 'card' },
-      })
-    }
+    stages.push({
+      name: 'get',
+      label: 'get property',
+      to: undefined,
+      template: { get: 'name', kind: 'card' },
+    })
   }
 
   if (list || unknown) {
@@ -213,11 +323,14 @@ export function stagesFor(from: string | undefined): Stage[] {
 export function stageKey(stage: any): string | undefined {
   if (!stage || typeof stage !== 'object') return undefined
   if (typeof stage.apply === 'string') return stage.apply
-  if (typeof stage.get === 'string') return `get:${stage.get}`
-  if (typeof stage.map === 'string') return `get:${stage.map}`
+  // Which property is a parameter of the stage, not a stage of its own.
+  if (typeof stage.get === 'string' || typeof stage.map === 'string') return 'get'
   const key = Object.keys(stage).find((k) => STAGE_NAMES.includes(k))
   return key
 }
+
+/** The property a `get` stage reads, however the stage spells it. */
+export const stageProp = (stage: any): string | undefined => stage?.get ?? stage?.map
 
 const isStage = (expr: any) =>
   !!expr && typeof expr === 'object' && !Array.isArray(expr) && !!stageKey(expr)
@@ -245,5 +358,13 @@ export const windPipeline = (source: any, stages: any[]): any =>
   }, source)
 
 /** What a stage gives back, given what it was handed. */
-export const stageResult = (stage: any, incoming: string | undefined) =>
-  stagesFor(incoming).find((st) => st.name === stageKey(stage))?.to
+export const stageResult = (stage: any, incoming: string | undefined) => {
+  const key = stageKey(stage)
+  // A property stage yields whatever that property is, broadcast over a list.
+  if (key === 'get') {
+    const props = stage?.kind === 'skillTest' ? SKILL_TEST_PROPS : CARD_PROPS
+    const type = props[stageProp(stage) ?? '']
+    return incoming?.startsWith('[') ? listOf(type) : type
+  }
+  return stagesFor(incoming).find((st) => st.name === key)?.to
+}

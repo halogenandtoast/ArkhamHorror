@@ -2457,6 +2457,7 @@ library
       Arkham.Custom.Location
       Arkham.Custom.Overlay
       Arkham.Custom.Schema
+      Arkham.Custom.Schema.Fields
       Arkham.Custom.Schema.TH
       Arkham.Custom.Schema.Types
       Arkham.Custom.Schema.Windows

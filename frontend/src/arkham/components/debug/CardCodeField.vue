@@ -97,7 +97,7 @@ function choose(code: string) {
 
     <div v-else class="field-body">
       <div class="picked-row">
-        <div class="binding" :class="{ unknown: !!modelValue && !chosen }">
+        <div class="binding" :class="{ valid: !!chosen, unknown: !!modelValue && !chosen }">
           <button
             type="button"
             class="binding-name"
@@ -165,7 +165,7 @@ function choose(code: string) {
 
   input {
     background: #0b1220;
-    border: 1px solid #d97706;
+    border: 1px solid #84cc16;
     border-radius: 4px;
     color: #eee;
     padding: 0.35rem 0.5rem;
@@ -200,7 +200,7 @@ function choose(code: string) {
     gap: 0.15rem;
 
     &:hover {
-      background: rgba(252, 211, 77, 0.12);
+      background: rgba(190, 242, 100, 0.12);
     }
   }
 
@@ -226,7 +226,7 @@ function choose(code: string) {
 }
 
 .option-name {
-  color: #fcd34d;
+  color: #bef264;
   flex: none;
   font-family: monospace;
   font-size: 0.82rem;
@@ -257,7 +257,7 @@ function choose(code: string) {
   padding: 0 0.4rem;
 
   &:hover {
-    color: #fcd34d;
+    color: #bef264;
   }
 }
 
@@ -282,15 +282,22 @@ function choose(code: string) {
 
 .binding {
   align-items: stretch;
-  background: rgba(252, 211, 77, 0.12);
-  border: 1px solid #fcd34d;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid #4b5563;
   border-radius: 4px;
-  color: #fcd34d;
+  color: #9ca3af;
   display: flex;
   flex: 1 1 auto;
   font-family: monospace;
   min-width: 0;
   overflow: hidden;
+
+  // The code names a card that is actually there, in your library or the pool.
+  &.valid {
+    background: rgba(190, 242, 100, 0.12);
+    border-color: #bef264;
+    color: #bef264;
+  }
 
   &.unknown {
     border-color: #fca5a5;
@@ -315,17 +322,17 @@ function choose(code: string) {
 }
 
 .jump-segment {
-  background: rgba(252, 211, 77, 0.22);
+  background: rgba(190, 242, 100, 0.22);
   border: none;
-  border-right: 1px solid #fcd34d;
-  color: #fff7e0;
+  border-right: 1px solid #bef264;
+  color: #f7ffe0;
   cursor: pointer;
   flex: none;
   font-family: inherit;
   padding: 0 0.5rem;
 
   &:hover {
-    background: rgba(252, 211, 77, 0.4);
+    background: rgba(190, 242, 100, 0.4);
     color: #fff;
   }
 }

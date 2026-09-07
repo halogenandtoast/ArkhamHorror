@@ -17,7 +17,8 @@ import { cardImg, imgsrc } from '@/arkham/helpers'
 import { libraryCards } from '@/arkham/customCardLibrary'
 import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
-import { cardBindings } from '@/arkham/customCardBindings'
+import { cardBindings, defBindings } from '@/arkham/customCardBindings'
+import BoolField from '@/arkham/components/debug/BoolField.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import { loadSchema } from '@/arkham/schema'
 
@@ -807,14 +808,15 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
               Victory
               <input v-model="form.victory" type="number" @keydown.stop />
             </label>
-            <label class="checkbox">
-              <input v-model="form.unique" type="checkbox" />
-              Unique
-            </label>
-            <label v-if="isPlayerCard" class="checkbox">
-              <input v-model="form.permanent" type="checkbox" />
-              Permanent
-            </label>
+            <BoolField
+              label="Unique"
+              v-model="form.unique"
+            />
+            <BoolField
+              v-if="isPlayerCard"
+              label="Permanent"
+              v-model="form.permanent"
+            />
           </div>
 
           <div v-if="!isInvestigator && signatureOwner" class="row">
@@ -1003,19 +1005,21 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             <div class="row">
               <label>Damage<input v-model="form.damage" type="number" placeholder="—" @keydown.stop /></label>
               <label>Horror<input v-model="form.horror" type="number" placeholder="—" @keydown.stop /></label>
-              <label class="checkbox">
-                <input v-model="form.healthPerPlayer" type="checkbox" />
-                Health per investigator
-              </label>
+              <BoolField
+                label="Health per investigator"
+                v-model="form.healthPerPlayer"
+              />
             </div>
             <ValueEditor
               type="PreyMatcher"
+              :bindings="defBindings()"
               label="Prey (defaults to anyone)"
               :modelValue="form.prey"
               @update:modelValue="form.prey = $event"
             />
             <ValueEditor
               type="SpawnAt"
+              :bindings="defBindings()"
               label="Spawn (defaults to the usual rules)"
               :modelValue="form.spawnAt"
               @update:modelValue="form.spawnAt = $event"
@@ -1031,10 +1035,10 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             <div class="row">
               <label>Shroud<input v-model="form.shroud" type="number" @keydown.stop /></label>
               <label>Clues<input v-model="form.clues" type="number" @keydown.stop /></label>
-              <label class="checkbox">
-                <input v-model="form.cluesPerPlayer" type="checkbox" />
-                Clues per investigator
-              </label>
+              <BoolField
+                label="Clues per investigator"
+                v-model="form.cluesPerPlayer"
+              />
             </div>
           </fieldset>
 
@@ -1073,10 +1077,11 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
 
           <fieldset v-if="canHaveRevelation">
             <legend>Revelation</legend>
-            <label v-if="!revelationImplied" class="checkbox">
-              <input v-model="form.revelation" type="checkbox" />
-              Resolves as it is drawn
-            </label>
+            <BoolField
+              v-if="!revelationImplied"
+              label="Resolves as it is drawn"
+              v-model="form.revelation"
+            />
             <p v-else class="hint">
               {{ isTreachery ? 'A treachery' : 'A weakness asset or event' }} resolves as soon as
               it is drawn, so it always has a revelation.
@@ -1276,14 +1281,6 @@ label {
   flex-direction: column;
   gap: 0.25rem;
   font-size: 0.85rem;
-
-  &.checkbox {
-    flex-direction: row;
-    align-items: center;
-    gap: 0.35rem;
-    align-self: flex-end;
-    padding-bottom: 0.5rem;
-  }
 }
 
 input,
@@ -1308,9 +1305,6 @@ select {
   padding: 0.4rem 1.6rem 0.4rem 0.5rem;
 }
 
-input[type='checkbox'] {
-  width: auto;
-}
 
 .type-picker {
   display: flex;

@@ -5,7 +5,9 @@
  * — which is what lets an ability say "if it is ready, attack; otherwise ready
  * it" or "choose an event, then play it". */
 import { computed, ref } from 'vue'
+import { onClickOutside } from '@vueuse/core'
 import ExpressionEditor from '@/arkham/components/debug/ExpressionEditor.vue'
+import BoolField from '@/arkham/components/debug/BoolField.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import {
   jumpToBinding,
@@ -39,6 +41,8 @@ type StepKind =
   | 'if'
   | 'case'
   | 'forEach'
+  | 'withSkillTest'
+  | 'withLocationOf'
   | 'choose'
   | 'chooseFrom'
   | 'playCard'
@@ -61,6 +65,8 @@ const KIND_LABELS: Record<StepKind, string> = {
   if: 'If',
   case: 'Case',
   forEach: 'For each',
+  withSkillTest: 'With skill test',
+  withLocationOf: 'With location of',
   choose: 'Choose',
   chooseFrom: 'Choose from',
   playCard: 'Play a card',
@@ -85,6 +91,8 @@ function kindOf(step: any): StepKind {
     'if',
     'case',
     'forEach',
+    'withSkillTest',
+    'withLocationOf',
     'choose',
     'chooseFrom',
     'playCard',
@@ -114,6 +122,8 @@ const blankStep = (kind: StepKind) =>
     if: { if: { kind: 'enemy', matcher: null }, then: [], else: [] },
     case: { case: [{ if: { kind: 'enemy', matcher: null }, steps: [] }], else: [] },
     forEach: { forEach: { query: { kind: 'enemy', matcher: null }, bind: 'each', steps: [] } },
+    withSkillTest: { withSkillTest: { bind: 'skillTestId', steps: [] } },
+    withLocationOf: { withLocationOf: { kind: 'investigator', of: '$iid', bind: 'location', steps: [] } },
     choose: { choose: { options: [{ label: '', steps: [] }] } },
     chooseFrom: { chooseFrom: { query: { kind: 'enemy', matcher: null }, bind: 'chosen', steps: [] } },
     playCard: { playCard: { optional: true, matcher: null } },
@@ -129,6 +139,41 @@ const blankStep = (kind: StepKind) =>
     gather: { gather: { cardCode: '' } },
     customize: { customize: { optional: true } },
   })[kind]
+
+/* One line each, taken from what the step's own editor says once it is there.
+ * Picking a step means knowing what it does before you have one, which a list of
+ * bare names cannot tell you -- Gather and Draw are both about cards, Choose and
+ * Choose from are a word apart and are not the same thing at all. */
+const KIND_HELP: Record<StepKind, string> = {
+  query: 'Superseded — a Let can bind a query directly.',
+  let: 'Works something out and binds it to a name for the steps after this one.',
+  push: 'Puts a message on the queue, written as the engine spells it.',
+  if: 'Runs a matcher and takes the first branch when it finds anything.',
+  case: 'Takes the first branch whose condition holds.',
+  forEach: 'Runs its steps once per thing found, with that thing bound inside.',
+  withSkillTest: 'Runs its steps during a skill test, with that test bound inside.',
+  withLocationOf: 'Runs its steps where something is, with that location bound inside.',
+  choose: 'Offers the player named options, each with steps of its own.',
+  chooseFrom: 'One option per thing a matcher finds, with it bound for the steps below.',
+  playCard: 'Offers the cards that could be played and pays for the one chosen.',
+  useAbility: "Resolves one of this card's own abilities, paying its cost.",
+  cancelBatch: 'Stops what the ability is reacting to. Needs a "would" window.',
+  fight: 'Fights an enemy. The test it starts is $sid.',
+  investigate: 'Investigates, the way the action does. The test it starts is $sid.',
+  evade: 'Evades an enemy. The test it starts is $sid.',
+  parley: 'Parleys against something, naming the target, skill and difficulty itself.',
+  attack: 'This card attacks — an enemy making an immediate attack.',
+  ready: 'Readies this card, or the one chosen.',
+  draw: 'Draws cards. Nothing is drawn when the amount works out to zero or less.',
+  gather: 'Shuffles a card into the encounter deck.',
+  customize: 'Marks a checkbox on the upgrade sheet of a customizable card.',
+}
+
+/* A query is an expression now, so binding one is what a Let does and a Query
+ * step adds nothing a Let cannot say. The kind stays known -- cards already
+ * written hold Query steps, and those keep running and keep their editor -- it
+ * is simply not offered for anything new. */
+const ADDABLE = (Object.keys(KIND_LABELS) as StepKind[]).filter((k) => k !== 'query')
 
 const set = (index: number, step: any) =>
   emit('update:modelValue', steps.value.map((s, i) => (i === index ? step : s)))
@@ -168,6 +213,10 @@ const revealScope = (index: number) => [
   ...stepBindings(steps.value[index], anchorFor(index)).after,
 ]
 
+/* The Locateable instances the runner dispatches on. Which one it is has to be
+ * said, because an id is a bare uuid and the instance cannot be chosen from it. */
+const LOCATEABLE = ['investigator', 'enemy', 'asset', 'treachery']
+
 const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enemy'] ?? 'EnemyMatcher'
 
 /* The names a step introduces, shown on the step that introduces them.
@@ -195,6 +244,9 @@ function bindsOf(
 // --- choose options ---
 
 const addingStep = ref(false)
+// Clicking away closes it, the way every other menu in the builder behaves.
+const addEl = ref<HTMLElement | null>(null)
+onClickOutside(addEl, () => (addingStep.value = false))
 
 function addAndClose(kind: StepKind) {
   add(kind)
@@ -240,6 +292,10 @@ const removeOption = (step: any, index: number, at: number) =>
       <div class="step-body">
 
       <template v-if="kindOf(step) === 'query'">
+        <p class="hint">
+          A Let step can bind a query directly, which is how new ones are written.
+          This still works; there is nothing to fix here.
+        </p>
         <div class="row">
           <label>
             Kind
@@ -288,6 +344,7 @@ const removeOption = (step: any, index: number, at: number) =>
           />
         </label>
         <ExpressionEditor
+          :queryKinds="queryKinds"
           label="Expression"
           :bindings="scopeFor(index)"
           :modelValue="step.be"
@@ -426,6 +483,74 @@ const removeOption = (step: any, index: number, at: number) =>
         />
       </template>
 
+      <!-- Blocks: what they bind is in scope only for the steps inside them,
+           because outside the block there may be no such thing to name. -->
+      <template v-else-if="kindOf(step) === 'withSkillTest'">
+        <p class="hint">
+          Runs the steps below only while a skill test is being resolved, with that test bound
+          for them. Nothing happens when there is no test.
+        </p>
+        <label>
+          Bind to
+          <input
+            :value="step.withSkillTest?.bind"
+            placeholder="skillTestId"
+            @input="set(index, { ...step, withSkillTest: { ...step.withSkillTest, bind: ($event.target as HTMLInputElement).value } })"
+            @keydown.stop
+          />
+        </label>
+        <StepsEditor
+          :bindings="innerScope(index)"
+          :path="innerPath(index, 'withSkillTest')"
+          :announce="addedInside(index)"
+          :queryKinds="queryKinds"
+          :modelValue="step.withSkillTest?.steps ?? []"
+          @update:modelValue="set(index, { ...step, withSkillTest: { ...step.withSkillTest, steps: $event } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'withLocationOf'">
+        <p class="hint">
+          Runs the steps below where something is, with that location bound for them. Nothing
+          happens when it is nowhere.
+        </p>
+        <div class="row">
+          <label>
+            Of what
+            <select
+              :value="step.withLocationOf?.kind ?? 'investigator'"
+              @change="set(index, { ...step, withLocationOf: { ...step.withLocationOf, kind: ($event.target as HTMLSelectElement).value } })"
+            >
+              <option v-for="k in LOCATEABLE" :key="k" :value="k">{{ k }}</option>
+            </select>
+          </label>
+          <label>
+            Bind to
+            <input
+              :value="step.withLocationOf?.bind"
+              placeholder="location"
+              @input="set(index, { ...step, withLocationOf: { ...step.withLocationOf, bind: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+        </div>
+        <ExpressionEditor
+          :queryKinds="queryKinds"
+          label="Which one"
+          :bindings="scopeFor(index)"
+          :modelValue="step.withLocationOf?.of"
+          @update:modelValue="set(index, { ...step, withLocationOf: { ...step.withLocationOf, of: $event } })"
+        />
+        <StepsEditor
+          :bindings="innerScope(index)"
+          :path="innerPath(index, 'withLocationOf')"
+          :announce="addedInside(index)"
+          :queryKinds="queryKinds"
+          :modelValue="step.withLocationOf?.steps ?? []"
+          @update:modelValue="set(index, { ...step, withLocationOf: { ...step.withLocationOf, steps: $event } })"
+        />
+      </template>
+
       <template v-else-if="kindOf(step) === 'choose'">
         <div v-for="(option, oi) in optionsOf(step)" :key="oi" class="option">
           <div class="row">
@@ -473,6 +598,15 @@ const removeOption = (step: any, index: number, at: number) =>
               @keydown.stop
             />
           </label>
+        </div>
+        <!-- The label only exists while declining is allowed, so it shares the
+             line with the toggle that decides that. -->
+        <div class="row">
+          <BoolField
+            label="may decline"
+            :modelValue="!!step.useAbility?.optional"
+            @update:modelValue="set(index, { ...step, useAbility: { ...step.useAbility, optional: $event } })"
+          />
           <label v-if="step.useAbility?.optional">
             Decline label
             <input
@@ -482,22 +616,13 @@ const removeOption = (step: any, index: number, at: number) =>
               @keydown.stop
             />
           </label>
-          <label class="inline">
-            <input
-              type="checkbox"
-              :checked="!!step.useAbility?.optional"
-              @change="set(index, { ...step, useAbility: { ...step.useAbility, optional: ($event.target as HTMLInputElement).checked } })"
-            />
-            may decline
-          </label>
-          <label class="inline">
-            <input
-              type="checkbox"
-              :checked="!!step.useAbility?.ignoreLimit"
-              @change="set(index, { ...step, useAbility: { ...step.useAbility, ignoreLimit: ($event.target as HTMLInputElement).checked } })"
-            />
-            ignore its limit
-          </label>
+        </div>
+        <div class="row">
+          <BoolField
+            label="ignore its limit"
+            :modelValue="!!step.useAbility?.ignoreLimit"
+            @update:modelValue="set(index, { ...step, useAbility: { ...step.useAbility, ignoreLimit: $event } })"
+          />
         </div>
       </template>
 
@@ -513,30 +638,18 @@ const removeOption = (step: any, index: number, at: number) =>
             This card (optional)
             <input
               :value="step.playCard?.card"
-              placeholder="$paidCards"
+              placeholder="$card"
               @input="set(index, { ...step, playCard: { ...step.playCard, card: ($event.target as HTMLInputElement).value || undefined } })"
               @keydown.stop
             />
           </label>
-          <label class="inline">
-            <input
-              type="checkbox"
-              :checked="!!step.playCard?.free"
-              @change="set(index, { ...step, playCard: { ...step.playCard, free: ($event.target as HTMLInputElement).checked } })"
-            />
-            without paying its cost
-          </label>
+          <BoolField
+            label="without paying its cost"
+            :modelValue="!!step.playCard?.free"
+            @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, free: $event } })"
+          />
         </div>
         <div class="row">
-          <label v-if="step.playCard?.optional">
-            Decline label
-            <input
-              :value="step.playCard?.declineLabel"
-              placeholder="Do not"
-              @input="set(index, { ...step, playCard: { ...step.playCard, declineLabel: ($event.target as HTMLInputElement).value } })"
-              @keydown.stop
-            />
-          </label>
           <label>
             Discount
             <input
@@ -546,13 +659,19 @@ const removeOption = (step: any, index: number, at: number) =>
               @keydown.stop
             />
           </label>
-          <label class="inline">
+          <BoolField
+            label="may decline"
+            :modelValue="!!step.playCard?.optional"
+            @update:modelValue="set(index, { ...step, playCard: { ...step.playCard, optional: $event } })"
+          />
+          <label v-if="step.playCard?.optional">
+            Decline label
             <input
-              type="checkbox"
-              :checked="!!step.playCard?.optional"
-              @change="set(index, { ...step, playCard: { ...step.playCard, optional: ($event.target as HTMLInputElement).checked } })"
+              :value="step.playCard?.declineLabel"
+              placeholder="Do not"
+              @input="set(index, { ...step, playCard: { ...step.playCard, declineLabel: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
             />
-            may decline
           </label>
         </div>
         <ValueEditor
@@ -577,14 +696,11 @@ const removeOption = (step: any, index: number, at: number) =>
           Fight an enemy. Whether the card itself is a fight action comes from its Actions, not
           from here — this is the attack it makes.
         </p>
-        <label class="inline">
-          <input
-            type="checkbox"
-            :checked="!!step.fight?.basic"
-            @change="set(index, { ...step, fight: { ...step.fight, basic: ($event.target as HTMLInputElement).checked } })"
-          />
-          a basic fight action instead
-        </label>
+        <BoolField
+          label="a basic fight action instead"
+          :modelValue="!!step.fight?.basic"
+          @update:modelValue="set(index, { ...step, fight: { ...step.fight, basic: $event } })"
+        />
         <p v-if="step.fight?.basic" class="hint">
           The enemy's own attack ability, granted so it costs no action. No card can be a basic
           fight action, so modifiers "for this attack" have nowhere to go here.
@@ -608,14 +724,12 @@ const removeOption = (step: any, index: number, at: number) =>
 
         <fieldset class="on-reveal">
           <legend>If a chaos token is revealed during this test</legend>
-          <label v-if="!onReveal(step, 'fight')" class="inline">
-            <input
-              type="checkbox"
-              @change="setOnReveal(index, 'fight', { tokens: null, steps: [] })"
-            />
-            it does something
-          </label>
-          <template v-else>
+          <BoolField
+            label="it does something"
+            :modelValue="!!onReveal(step, 'fight')"
+            @update:modelValue="setOnReveal(index, 'fight', $event ? { tokens: null, steps: [] } : undefined)"
+          />
+          <template v-if="onReveal(step, 'fight')">
             <ValueEditor
               type="ChaosTokenMatcher"
               label="Which tokens"
@@ -631,9 +745,6 @@ const removeOption = (step: any, index: number, at: number) =>
               :modelValue="onReveal(step, 'fight').steps ?? []"
               @update:modelValue="setOnReveal(index, 'fight', { ...onReveal(step, 'fight'), steps: $event })"
             />
-            <button type="button" class="link" @click="setOnReveal(index, 'fight', undefined)">
-              Remove
-            </button>
           </template>
         </fieldset>
       </template>
@@ -681,14 +792,12 @@ const removeOption = (step: any, index: number, at: number) =>
 
         <fieldset class="on-reveal">
           <legend>If a chaos token is revealed during this test</legend>
-          <label v-if="!onReveal(step, 'investigate')" class="inline">
-            <input
-              type="checkbox"
-              @change="setOnReveal(index, 'investigate', { tokens: null, steps: [] })"
-            />
-            it does something
-          </label>
-          <template v-else>
+          <BoolField
+            label="it does something"
+            :modelValue="!!onReveal(step, 'investigate')"
+            @update:modelValue="setOnReveal(index, 'investigate', $event ? { tokens: null, steps: [] } : undefined)"
+          />
+          <template v-if="onReveal(step, 'investigate')">
             <ValueEditor
               type="ChaosTokenMatcher"
               label="Which tokens"
@@ -704,9 +813,6 @@ const removeOption = (step: any, index: number, at: number) =>
               :modelValue="onReveal(step, 'investigate').steps ?? []"
               @update:modelValue="setOnReveal(index, 'investigate', { ...onReveal(step, 'investigate'), steps: $event })"
             />
-            <button type="button" class="link" @click="setOnReveal(index, 'investigate', undefined)">
-              Remove
-            </button>
           </template>
         </fieldset>
       </template>
@@ -753,14 +859,12 @@ const removeOption = (step: any, index: number, at: number) =>
 
         <fieldset class="on-reveal">
           <legend>If a chaos token is revealed during this test</legend>
-          <label v-if="!onReveal(step, 'evade')" class="inline">
-            <input
-              type="checkbox"
-              @change="setOnReveal(index, 'evade', { tokens: null, steps: [] })"
-            />
-            it does something
-          </label>
-          <template v-else>
+          <BoolField
+            label="it does something"
+            :modelValue="!!onReveal(step, 'evade')"
+            @update:modelValue="setOnReveal(index, 'evade', $event ? { tokens: null, steps: [] } : undefined)"
+          />
+          <template v-if="onReveal(step, 'evade')">
             <ValueEditor
               type="ChaosTokenMatcher"
               label="Which tokens"
@@ -776,9 +880,6 @@ const removeOption = (step: any, index: number, at: number) =>
               :modelValue="onReveal(step, 'evade').steps ?? []"
               @update:modelValue="setOnReveal(index, 'evade', { ...onReveal(step, 'evade'), steps: $event })"
             />
-            <button type="button" class="link" @click="setOnReveal(index, 'evade', undefined)">
-              Remove
-            </button>
           </template>
         </fieldset>
       </template>
@@ -821,14 +922,12 @@ const removeOption = (step: any, index: number, at: number) =>
 
         <fieldset class="on-reveal">
           <legend>If a chaos token is revealed during this test</legend>
-          <label v-if="!onReveal(step, 'parley')" class="inline">
-            <input
-              type="checkbox"
-              @change="setOnReveal(index, 'parley', { tokens: null, steps: [] })"
-            />
-            it does something
-          </label>
-          <template v-else>
+          <BoolField
+            label="it does something"
+            :modelValue="!!onReveal(step, 'parley')"
+            @update:modelValue="setOnReveal(index, 'parley', $event ? { tokens: null, steps: [] } : undefined)"
+          />
+          <template v-if="onReveal(step, 'parley')">
             <ValueEditor
               type="ChaosTokenMatcher"
               label="Which tokens"
@@ -844,9 +943,6 @@ const removeOption = (step: any, index: number, at: number) =>
               :modelValue="onReveal(step, 'parley').steps ?? []"
               @update:modelValue="setOnReveal(index, 'parley', { ...onReveal(step, 'parley'), steps: $event })"
             />
-            <button type="button" class="link" @click="setOnReveal(index, 'parley', undefined)">
-              Remove
-            </button>
           </template>
         </fieldset>
       </template>
@@ -886,6 +982,7 @@ const removeOption = (step: any, index: number, at: number) =>
 
       <template v-else-if="kindOf(step) === 'draw'">
         <ExpressionEditor
+          :queryKinds="queryKinds"
           label="How many"
           expect="int"
           :bindings="scopeFor(index)"
@@ -926,14 +1023,11 @@ const removeOption = (step: any, index: number, at: number) =>
               @keydown.stop
             />
           </label>
-          <label class="inline">
-            <input
-              type="checkbox"
-              :checked="step.customize?.optional !== false"
-              @change="set(index, { ...step, customize: { ...step.customize, optional: ($event.target as HTMLInputElement).checked } })"
-            />
-            may decline
-          </label>
+          <BoolField
+            label="may decline"
+            :modelValue="step.customize?.optional !== false"
+            @update:modelValue="set(index, { ...step, customize: { ...step.customize, optional: $event } })"
+          />
         </div>
       </template>
 
@@ -957,13 +1051,19 @@ const removeOption = (step: any, index: number, at: number) =>
               @keydown.stop
             />
           </label>
-          <label class="inline">
+          <BoolField
+            label="may decline"
+            :modelValue="!!step.chooseFrom?.optional"
+            @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, optional: $event } })"
+          />
+          <label v-if="step.chooseFrom?.optional">
+            Decline label
             <input
-              type="checkbox"
-              :checked="!!step.chooseFrom?.optional"
-              @change="set(index, { ...step, chooseFrom: { ...step.chooseFrom, optional: ($event.target as HTMLInputElement).checked } })"
+              :value="step.chooseFrom?.declineLabel"
+              placeholder="Do not"
+              @input="set(index, { ...step, chooseFrom: { ...step.chooseFrom, declineLabel: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
             />
-            may decline
           </label>
         </div>
         <ValueEditor
@@ -985,25 +1085,31 @@ const removeOption = (step: any, index: number, at: number) =>
       </div>
 
       <div v-if="bindsOf(step, index).length" class="step-foot">
+        <!-- Read as a declaration, the way a binding is written everywhere else
+             in the builder, rather than as a sentence with code spans dropped
+             into it -- with a type that made two of them run together. -->
         <span v-for="bound in bindsOf(step, index)" :key="bound.name" class="binds">
-          binds <code>${{ bound.name }}</code
-          ><template v-if="bound.type"> <code class="binds-type">{{ bound.type }}</code></template>
-          for {{ bound.scope }}
+          <span class="binds-label">binds</span>
+          <code class="binds-name"
+            >${{ bound.name }}<span v-if="bound.type" class="binds-type"> :: {{ bound.type }}</span></code
+          >
+          <span class="binds-scope">for {{ bound.scope }}</span>
         </span>
       </div>
     </div>
 
-    <div class="step-actions">
-      <button v-if="!addingStep" type="button" @click="addingStep = true">+ Step</button>
-      <template v-else>
-        <button v-for="(label, kind) in KIND_LABELS" :key="kind" type="button" @click="addAndClose(kind as StepKind)">
-          {{ label }}
-        </button>
-        <!-- Not an X: that says "remove this optional thing" everywhere else in
-             the builder, and this adds nothing to remove -- it backs out of the
-             choice. -->
-        <button type="button" class="cancel-add" @click="addingStep = false">Cancel</button>
-      </template>
+    <!-- A menu rather than a row of buttons: twenty names side by side is a wall
+         to read, and the name alone does not say what the step does. -->
+    <div ref="addEl" class="step-actions">
+      <button type="button" @click="addingStep = !addingStep">+ Step</button>
+      <ul v-if="addingStep" class="kind-menu">
+        <li v-for="kind in ADDABLE" :key="kind">
+          <button type="button" class="kind-option" @click="addAndClose(kind)">
+            <span class="kind-name">{{ KIND_LABELS[kind] }}</span>
+            <span class="kind-help">{{ KIND_HELP[kind] }}</span>
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -1047,17 +1153,25 @@ const removeOption = (step: any, index: number, at: number) =>
   padding: 0.3rem 0.6rem;
 }
 
-.binds-type {
-  color: #5eead4;
+.binds {
+  align-items: baseline;
+  display: inline-flex;
+  font-size: 0.72rem;
+  gap: 0.3rem;
 }
 
-.binds {
-  color: #9ca3af;
-  font-size: 0.72rem;
+.binds-label,
+.binds-scope {
+  color: #6b7280;
+}
 
-  code {
-    color: #d1d5db;
-  }
+.binds-name {
+  color: #5eead4;
+  font-family: monospace;
+}
+
+.binds-type {
+  opacity: 0.65;
 }
 
 /* Flashed when a field jumps here to show where a binding came from. The class
@@ -1192,13 +1306,6 @@ label {
   font-size: 0.75rem;
   gap: 0.2rem;
   opacity: 0.9;
-
-  &.inline {
-    align-items: center;
-    flex: 0 0 auto;
-    flex-direction: row;
-    gap: 0.3rem;
-  }
 }
 
 input,
@@ -1222,14 +1329,61 @@ select {
   padding: 0.3rem 1.6rem 0.3rem 0.4rem;
 }
 
-input[type='checkbox'] {
-  width: auto;
-}
 
 .step-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
+  position: relative;
+}
+
+/* The same menu the binding and property fields open: a name, and beside it the
+ * one line that says what picking it would do. */
+.kind-menu {
+  background: #0b1220;
+  border: 1px solid #374151;
+  border-radius: 5px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  left: 0;
+  list-style: none;
+  margin: 0.3rem 0 0;
+  max-height: 20rem;
+  min-width: 26rem;
+  overflow-y: auto;
+  padding: 0.2rem;
+  position: absolute;
+  top: 100%;
+  z-index: 30;
+
+  li:hover {
+    background: rgba(20, 184, 166, 0.1);
+    border-radius: 4px;
+  }
+}
+
+.kind-option {
+  align-items: baseline;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.35rem 0.45rem;
+  text-align: left;
+  width: 100%;
+}
+
+.kind-name {
+  color: #5eead4;
+  flex: none;
+  font-size: 0.78rem;
+  min-width: 7rem;
+}
+
+.kind-help {
+  color: #9ca3af;
+  font-size: 0.72rem;
 }
 
 .cancel-add {

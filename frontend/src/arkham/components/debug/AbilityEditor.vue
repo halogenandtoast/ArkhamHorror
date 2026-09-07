@@ -22,6 +22,7 @@ import {
   windowBindings,
   type Binding,
 } from '@/arkham/customCardBindings'
+import BoolField from '@/arkham/components/debug/BoolField.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 
 const props = defineProps<{
@@ -291,6 +292,7 @@ function handlerScope(handler: any, index: number): Binding[] {
         <ValueEditor
           type="AbilityType"
           label="When / how it is used"
+          :bindings="cardBindings(props.cardType)"
           :modelValue="ability.type"
           @update:modelValue="setAbility(index, { type: $event })"
         />
@@ -298,6 +300,7 @@ function handlerScope(handler: any, index: number): Binding[] {
           optional
           type="Criterion"
           label="Criteria (optional) — gates whether the ability is available"
+          :bindings="cardBindings(props.cardType)"
           :modelValue="ability.criteria"
           @update:modelValue="setAbility(index, { criteria: $event })"
         />
@@ -305,6 +308,7 @@ function handlerScope(handler: any, index: number): Binding[] {
           optional
           type="AbilityLimit"
           label="Limit (optional)"
+          :bindings="cardBindings(props.cardType)"
           :modelValue="ability.limit"
           @update:modelValue="setAbility(index, { limit: $event })"
         />
@@ -402,14 +406,11 @@ function handlerScope(handler: any, index: number): Binding[] {
           Fires when a message with this tag mentions this card &mdash; by its target, its source
           or its id. The whole message is <code>$message</code>.
         </p>
-        <label class="inline">
-          <input
-            type="checkbox"
-            :checked="!!handler.global"
-            @change="setHandler(index, { global: ($event.target as HTMLInputElement).checked || undefined })"
-          />
-          fires for messages that do not mention this card
-        </label>
+        <BoolField
+          label="fires for messages that do not mention this card"
+          :modelValue="!!handler.global"
+          @update:modelValue="setHandler(index, { global: $event || undefined })"
+        />
         <p v-if="handler.global" class="hint muted">
           Now runs for every message with this tag, so gate it with a requirement below (an id
           from the message compared against one of this card's, say) or it will fire for
@@ -499,6 +500,7 @@ function handlerScope(handler: any, index: number): Binding[] {
         <ValueEditor
           type="[ModifierType]"
           label="Modifiers"
+          :bindings="cardBindings(props.cardType)"
           :modelValue="modifier.modifiers"
           @update:modelValue="setModifier(index, { modifiers: $event })"
         />
@@ -506,6 +508,7 @@ function handlerScope(handler: any, index: number): Binding[] {
           optional
           type="Criterion"
           label="Only if (optional) — a question asked of the game"
+          :bindings="cardBindings(props.cardType)"
           :modelValue="modifier.if"
           @update:modelValue="setModifier(index, { if: $event })"
         />
@@ -657,17 +660,8 @@ label {
   font-size: 0.75rem;
   gap: 0.2rem;
   opacity: 0.9;
-
-  &.inline {
-    align-items: center;
-    flex-direction: row;
-    gap: 0.3rem;
-  }
 }
 
-input[type='checkbox'] {
-  width: auto;
-}
 
 input,
 select {

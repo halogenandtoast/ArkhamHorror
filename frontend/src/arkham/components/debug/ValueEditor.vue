@@ -20,6 +20,7 @@ import {
 } from '@/arkham/schema'
 import { bindingFits, jumpToBinding, type Binding } from '@/arkham/customCardBindings'
 import BindingToggle from '@/arkham/components/debug/BindingToggle.vue'
+import BoolField from '@/arkham/components/debug/BoolField.vue'
 import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
 
 const props = defineProps<{
@@ -87,7 +88,6 @@ const showClear = computed(() => !!props.optional && hasValue.value)
 
 // Radios only behave as a group when they share a name, and every bool field on
 // the page is its own group.
-const boolGroup = `bool-${Math.random().toString(36).slice(2, 9)}`
 
 function clearAll() {
   rawText.value = null
@@ -417,30 +417,11 @@ function setRaw(text: string) {
       />
     </div>
 
-    <!-- Two named choices rather than a checkbox: a bare box leaves you reading
-         the label to work out which way is on, and an unset field looks the
-         same as a false one. -->
-    <div v-else-if="shape.kind === 'bool'" class="bool-toggle">
-      <span class="bool-thumb" :class="{ on: !!modelValue }" aria-hidden="true"></span>
-      <label class="bool-option" :class="{ active: !modelValue }">
-        <input
-          type="radio"
-          :name="boolGroup"
-          :checked="!modelValue"
-          @change="emit('update:modelValue', false)"
-        />
-        false
-      </label>
-      <label class="bool-option" :class="{ active: !!modelValue }">
-        <input
-          type="radio"
-          :name="boolGroup"
-          :checked="!!modelValue"
-          @change="emit('update:modelValue', true)"
-        />
-        true
-      </label>
-    </div>
+    <BoolField
+      v-else-if="shape.kind === 'bool'"
+      :modelValue="!!modelValue"
+      @update:modelValue="emit('update:modelValue', $event)"
+    />
 
     <!-- A card code is a name nobody can recall -- a custom card's is a minted
          uuid -- so it is chosen by name rather than typed.
@@ -692,59 +673,6 @@ function setRaw(text: string) {
 
 /* A slider between the two values: the thumb moves, so which one is chosen is
  * legible at a glance rather than read off a label. */
-.bool-toggle {
-  align-self: flex-start;
-  background: #111827;
-  border: 1px solid #4b5563;
-  border-radius: 999px;
-  display: inline-flex;
-  padding: 2px;
-  position: relative;
-}
-
-.bool-thumb {
-  background: #374151;
-  border-radius: 999px;
-  bottom: 2px;
-  left: 2px;
-  position: absolute;
-  top: 2px;
-  transition: transform 0.15s ease, background 0.15s ease;
-  width: calc(50% - 2px);
-
-  &.on {
-    background: #134e4a;
-    transform: translateX(100%);
-  }
-}
-
-.bool-option {
-  border-radius: 999px;
-  color: #9ca3af;
-  cursor: pointer;
-  font-size: 0.75rem;
-  min-width: 3.2rem;
-  padding: 0.2rem 0.6rem;
-  position: relative;
-  text-align: center;
-  user-select: none;
-  z-index: 1;
-
-  &.active {
-    color: #eee;
-  }
-
-  &:last-child.active {
-    color: #5eead4;
-  }
-
-  input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-}
-
 .value-editor {
   display: flex;
   flex-direction: column;

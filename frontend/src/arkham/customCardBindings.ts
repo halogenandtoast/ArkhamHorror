@@ -8,7 +8,7 @@
  * and lets the author jump back to whatever bound one.
  */
 
-import { expressionType } from '@/arkham/customCardExpressions'
+import { QUERY_TYPES, expressionType } from '@/arkham/customCardExpressions'
 
 export type Binding = {
   /** Without the `$`. */
@@ -44,6 +44,29 @@ const ID_TYPES: Record<string, string> = {
   InvestigatorType: 'InvestigatorId',
 }
 
+/* Which entities serialize the fields the steps read by name. `bindings` in
+ * "Arkham.Custom.Ability" hands the attrs' own JSON over wholesale, so a field
+ * is in scope exactly when that card's attrs carry it -- an enemy has no cardId,
+ * only a treachery is drawn by anyone. Listing one that is not there would offer
+ * a name that resolves to nothing; leaving one out reports a name that works as
+ * out of scope, which is what sent authors looking for a bug that was not there. */
+const HAS_CARD_ID = [
+  'EventType',
+  'AssetType',
+  'EncounterAssetType',
+  'TreacheryType',
+  'PlayerTreacheryType',
+  'SkillType',
+  'StoryType',
+  'ActType',
+  'AgendaType',
+]
+
+const HAS_DRAWN_BY = ['TreacheryType', 'PlayerTreacheryType']
+
+const on = (types: string[], cardType: string | undefined, binding: Binding): Binding[] =>
+  !cardType || types.includes(cardType) ? [binding] : []
+
 export const cardBindings = (cardType?: string): Binding[] => [
   {
     name: 'id',
@@ -68,6 +91,31 @@ export const cardBindings = (cardType?: string): Binding[] => [
     type: 'InvestigatorId',
     origin: 'the card',
   },
+  {
+    name: 'investigator',
+    detail: 'InvestigatorId, on a signature card',
+    type: 'InvestigatorId',
+    origin: "whoever's signature this is",
+  },
+  ...on(HAS_CARD_ID, cardType, {
+    name: 'cardId',
+    detail: 'CardId',
+    type: 'CardId',
+    origin: 'the card',
+  }),
+  ...on(HAS_DRAWN_BY, cardType, {
+    name: 'drawnBy',
+    detail: 'InvestigatorId',
+    type: 'InvestigatorId',
+    origin: 'whoever drew it',
+  }),
+]
+
+/* Meta the card is *built* from -- an enemy's prey, where it spawns -- is read
+ * before any entity exists, so it cannot see the entity's own fields. Mirrors
+ * `defBindings` in "Arkham.Card.CustomCard": the only name a def alone knows is
+ * whose signature it is. */
+export const defBindings = (): Binding[] => [
   {
     name: 'investigator',
     detail: 'InvestigatorId, on a signature card',
@@ -135,6 +183,8 @@ const stepKinds = [
   'if',
   'case',
   'forEach',
+  'withSkillTest',
+  'withLocationOf',
   'choose',
   'chooseFrom',
   'playCard',
@@ -158,20 +208,6 @@ const named = (value: any, fallback: string) =>
 /* What a query of each kind binds. `card` is the whole card; everything else is
  * the id the matcher selected, which is what a Target or a field of that id
  * type wants. */
-const QUERY_TYPES: Record<string, string> = {
-  enemy: 'EnemyId',
-  location: 'LocationId',
-  investigator: 'InvestigatorId',
-  asset: 'AssetId',
-  treachery: 'TreacheryId',
-  event: 'EventId',
-  skill: 'SkillId',
-  story: 'StoryId',
-  act: 'ActId',
-  agenda: 'AgendaId',
-  card: 'Card',
-}
-
 const queryType = (query: any): string | undefined => QUERY_TYPES[query?.kind]
 
 /* What a step introduces, split by where it is visible.
@@ -220,6 +256,33 @@ export function stepBindings(
         inside: [],
       }
     }
+    /* A block, so what it binds is in scope only inside it -- there may be no
+     * skill test, and nowhere to be, and a name that means nothing outside the
+     * block should not be offered outside it. */
+    case 'withSkillTest':
+      return {
+        after: [],
+        inside: [
+          at(
+            named(step.withSkillTest?.bind, 'skillTestId'),
+            'the test being resolved',
+            'a With skill test step',
+            'SkillTestId',
+          ),
+        ],
+      }
+    case 'withLocationOf':
+      return {
+        after: [],
+        inside: [
+          at(
+            named(step.withLocationOf?.bind, 'location'),
+            'where it is',
+            'a With location of step',
+            'LocationId',
+          ),
+        ],
+      }
     case 'forEach':
       return {
         after: [],

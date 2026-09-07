@@ -9,6 +9,7 @@ import { vFocus } from '@/arkham/components/debug/vFocus'
 import { onClickOutside } from '@vueuse/core'
 import ExpressionEditor from '@/arkham/components/debug/ExpressionEditor.vue'
 import BoolField from '@/arkham/components/debug/BoolField.vue'
+import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import {
   jumpToBinding,
@@ -40,6 +41,7 @@ type StepKind =
   | 'let'
   | 'push'
   | 'if'
+  | 'when'
   | 'case'
   | 'forEach'
   | 'modify'
@@ -65,6 +67,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   let: 'Let',
   push: 'Push',
   if: 'If',
+  when: 'When',
   case: 'Case',
   forEach: 'For each',
   modify: 'Modify',
@@ -91,6 +94,7 @@ function kindOf(step: any): StepKind {
     'query',
     'let',
     'push',
+    'when',
     'if',
     'case',
     'forEach',
@@ -124,6 +128,7 @@ const blankStep = (kind: StepKind) =>
     let: { let: '', be: null },
     push: { push: null },
     if: { if: { kind: 'enemy', matcher: null }, then: [], else: [] },
+    when: { when: { kind: 'enemy', matcher: null }, then: [] },
     case: { case: [{ if: { kind: 'enemy', matcher: null }, steps: [] }], else: [] },
     forEach: { forEach: { query: { kind: 'enemy', matcher: null }, bind: 'each', steps: [] } },
     modify: { modify: { target: null, modifiers: [] } },
@@ -154,6 +159,7 @@ const KIND_HELP: Record<StepKind, string> = {
   let: 'Works something out and binds it to a name for the steps after this one.',
   push: 'Puts a message on the queue, written as the engine spells it.',
   if: 'Runs a matcher and takes the first branch when it finds anything.',
+  when: 'Runs its steps only when a matcher finds something. An If with no else.',
   case: 'Takes the first branch whose condition holds.',
   forEach: 'Runs its steps once per thing found, with that thing bound inside.',
   modify: 'Gives something modifiers for as long as a window lasts.',
@@ -188,6 +194,25 @@ const set = (index: number, step: any) =>
   emit('update:modelValue', steps.value.map((s, i) => (i === index ? step : s)))
 
 const add = (kind: StepKind) => emit('update:modelValue', [...steps.value, blankStep(kind)])
+
+/* Swapping between the two is only ever moving the condition between keys, and
+ * dropping an else that was empty anyway. Offered rather than done automatically
+ * because an empty else is a legitimate thing to be part way through writing. */
+const toWhen = (index: number, step: any) =>
+  set(index, { when: step.if, then: step.then ?? [] })
+
+const toIf = (index: number, step: any) =>
+  set(index, { if: step.when, then: step.then ?? [], else: [] })
+
+const elseIsEmpty = (step: any) => !step.else || step.else.length === 0
+
+/* Lift a body out of its condition, leaving the steps where the block was. For
+ * when the check has moved somewhere else -- an ability's criteria, say -- and
+ * the block is now a wrapper around nothing. */
+const promote = (index: number, step: any) => {
+  const body = step.then ?? []
+  emit('update:modelValue', [...steps.value.slice(0, index), ...body, ...steps.value.slice(index + 1)])
+}
 const remove = (index: number) => emit('update:modelValue', steps.value.filter((_, i) => i !== index))
 
 const SKILLS = ['SkillWillpower', 'SkillIntellect', 'SkillCombat', 'SkillAgility']
@@ -414,24 +439,89 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.if?.matcher"
           @update:modelValue="set(index, { ...step, if: { ...step.if, matcher: $event } })"
         />
-        <span class="branch-label">Then</span>
-        <StepsEditor
-          :bindings="innerScope(index)"
-          :path="innerPath(index, 'then')"
-          :announce="[]"
-          :queryKinds="queryKinds"
-          :modelValue="step.then ?? []"
-          @update:modelValue="set(index, { ...step, then: $event })"
+        <!-- Both branches belong to the If above them, so they are bounded and
+             indented under it rather than left as two labelled step lists that
+             read as siblings of the matcher. -->
+        <div class="branch">
+          <span class="branch-label">Then</span>
+          <StepsEditor
+            :bindings="innerScope(index)"
+            :path="innerPath(index, 'then')"
+            :announce="[]"
+            :queryKinds="queryKinds"
+            :modelValue="step.then ?? []"
+            @update:modelValue="set(index, { ...step, then: $event })"
+          />
+        </div>
+        <div class="branch">
+          <span class="branch-label">Else</span>
+          <StepsEditor
+            :bindings="innerScope(index)"
+            :path="innerPath(index, 'else')"
+            :announce="[]"
+            :queryKinds="queryKinds"
+            :modelValue="step.else ?? []"
+            @update:modelValue="set(index, { ...step, else: $event })"
+          />
+        </div>
+        <button
+          v-if="elseIsEmpty(step)"
+          type="button"
+          class="convert"
+          title="Nothing happens otherwise, so the else has nothing to say"
+          @click="toWhen(index, step)"
+        >
+          Make this a When
+        </button>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'when'">
+        <p class="hint">Runs the steps below only when the matcher finds something.</p>
+        <label>
+          Kind
+          <select
+            :value="step.when?.kind"
+            @change="set(index, { ...step, when: { kind: ($event.target as HTMLSelectElement).value, matcher: null } })"
+          >
+            <option v-for="(_, kind) in queryKinds" :key="kind" :value="kind">{{ kind }}</option>
+          </select>
+        </label>
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          :type="matcherType(step.when?.kind)"
+          label="Matcher"
+          :modelValue="step.when?.matcher"
+          @update:modelValue="set(index, { ...step, when: { ...step.when, matcher: $event } })"
         />
-        <span class="branch-label">Otherwise</span>
-        <StepsEditor
-          :bindings="innerScope(index)"
-          :path="innerPath(index, 'else')"
-          :announce="[]"
-          :queryKinds="queryKinds"
-          :modelValue="step.else ?? []"
-          @update:modelValue="set(index, { ...step, else: $event })"
-        />
+        <div class="branch">
+          <span class="branch-label">Then</span>
+          <StepsEditor
+            :bindings="innerScope(index)"
+            :path="innerPath(index, 'then')"
+            :announce="[]"
+            :queryKinds="queryKinds"
+            :modelValue="step.then ?? []"
+            @update:modelValue="set(index, { ...step, then: $event })"
+          />
+        </div>
+        <div class="step-actions">
+          <button
+            type="button"
+            class="convert"
+            title="Say what happens when it finds nothing"
+            @click="toIf(index, step)"
+          >
+            Make this an If
+          </button>
+          <button
+            type="button"
+            class="convert"
+            title="Drop the condition and leave the steps where this block was"
+            @click="promote(index, step)"
+          >
+            Drop the condition
+          </button>
+        </div>
       </template>
 
       <template v-else-if="kindOf(step) === 'case'">
@@ -468,15 +558,17 @@ const removeOption = (step: any, index: number, at: number) =>
         <button type="button" class="add" @click="set(index, { ...step, case: [...(step.case ?? []), { if: { kind: 'enemy', matcher: null }, steps: [] }] })">
           + Branch
         </button>
-        <span class="branch-label">Otherwise</span>
-        <StepsEditor
-          :bindings="innerScope(index)"
-          :path="innerPath(index, 'else')"
-          :announce="[]"
-          :queryKinds="queryKinds"
-          :modelValue="step.else ?? []"
-          @update:modelValue="set(index, { ...step, else: $event })"
-        />
+        <div class="branch">
+          <span class="branch-label">Else</span>
+          <StepsEditor
+            :bindings="innerScope(index)"
+            :path="innerPath(index, 'else')"
+            :announce="[]"
+            :queryKinds="queryKinds"
+            :modelValue="step.else ?? []"
+            @update:modelValue="set(index, { ...step, else: $event })"
+          />
+        </div>
       </template>
 
       <template v-else-if="kindOf(step) === 'forEach'">
@@ -1061,15 +1153,11 @@ const removeOption = (step: any, index: number, at: number) =>
           Shuffles a card into the encounter deck. "Gather during setup" is over by the time a card
           in play can act, so this is the nearest a card can get to it.
         </p>
-        <label>
-          Card code
-          <input
-            :value="step.gather?.cardCode"
-            placeholder="09752"
-            @input="set(index, { ...step, gather: { ...step.gather, cardCode: ($event.target as HTMLInputElement).value } })"
-            @keydown.stop
-          />
-        </label>
+        <label class="cap">Which card</label>
+        <CardCodeField
+          :modelValue="step.gather?.cardCode"
+          @update:modelValue="set(index, { ...step, gather: { ...step.gather, cardCode: $event } })"
+        />
       </template>
 
       <template v-else-if="kindOf(step) === 'customize'">
@@ -1361,9 +1449,41 @@ const removeOption = (step: any, index: number, at: number) =>
   padding-left: 0.5rem;
 }
 
+/* A branch of an If: its own edge and indent, so what belongs to which is read
+ * off the shape rather than off the word above it. */
+.branch {
+  border-left: 2px solid #374151;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-left: 0.2rem;
+  padding: 0.15rem 0 0.15rem 0.6rem;
+}
+
+/* Changes the shape of the step rather than its contents, so it sits apart from
+ * the fields and reads as something done to the block. */
+.convert {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  color: #9ca3af;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.5rem;
+
+  &:hover {
+    border-color: #6b7280;
+    color: #5eead4;
+  }
+}
+
 .branch-label {
-  font-size: 0.75rem;
-  opacity: 0.7;
+  color: #9ca3af;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .row {

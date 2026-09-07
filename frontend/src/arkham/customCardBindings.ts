@@ -180,6 +180,7 @@ const stepKinds = [
   'query',
   'let',
   'push',
+  'when',
   'if',
   'case',
   'forEach',

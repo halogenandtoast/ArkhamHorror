@@ -27,22 +27,61 @@ onMounted(() => {
   cardStore.fetchCards()
 })
 
-type Choice = { code: string; name: string; kind: string; custom: boolean }
+type Choice = {
+  code: string
+  name: string
+  title: string
+  subtitle: string
+  kind: string
+  custom: boolean
+  /** Class symbols for a player card; empty for encounter cards. */
+  classes: string[]
+  /** The encounter set an encounter card belongs to, which is its campaign. */
+  set?: string
+}
+
+/* Named the way the icon font names them, so a class shows as its symbol.
+ * There are no encounter-set icons in the app, so a set says its own name. */
+const CLASS_ICONS: Record<string, string> = {
+  Guardian: 'guardian',
+  Seeker: 'seeker',
+  Rogue: 'rogue',
+  Mystic: 'mystic',
+  Survivor: 'survivor',
+  Neutral: 'neutral',
+}
+
+/* "Title: Subtitle" is how a card is named -- two investigators can share a
+ * title, and the subtitle is the half that tells them apart. Kept as two parts
+ * so the subtitle can be shown as the quieter half it is, and joined only where
+ * one string is wanted, as in a search. */
+const titleOf = (name: any) => name?.title ?? ''
+const subtitleOf = (name: any) => name?.subtitle ?? ''
+const fullName = (name: any) =>
+  subtitleOf(name) ? `${titleOf(name)}: ${subtitleOf(name)}` : titleOf(name)
 
 /* Yours first: a custom card is the one whose code cannot be guessed, and the
  * one most likely meant in a card being written right now. */
 const choices = computed<Choice[]>(() => {
   const mine = libraryCards().map((c) => ({
     code: c.def.cardCode,
-    name: c.def.name.title + (c.def.name.subtitle ? `: ${c.def.name.subtitle}` : ''),
+    name: fullName(c.def.name),
+    title: titleOf(c.def.name),
+    subtitle: subtitleOf(c.def.name),
     kind: String(c.def.cardType).replace(/Type$/, ''),
     custom: true,
+    classes: c.def.classSymbols ?? [],
+    set: c.def.meta?.set,
   }))
   const rest = (cardStore.cards ?? []).map((d: any) => ({
     code: d.cardCode,
-    name: d.name?.title ?? String(d.cardCode),
+    name: fullName(d.name) || String(d.cardCode),
+    title: titleOf(d.name) || String(d.cardCode),
+    subtitle: subtitleOf(d.name),
     kind: String(d.cardType ?? '').replace(/Type$/, ''),
     custom: false,
+    classes: d.classSymbols ?? [],
+    set: d.encounterSet ?? undefined,
   }))
   return [...mine, ...rest]
 })
@@ -85,8 +124,14 @@ function choose(code: string) {
       <ul class="binding-menu">
         <li v-for="card in matching" :key="card.code">
           <button type="button" class="binding-option" @click="choose(card.code)">
-            <code class="option-name">{{ card.name }}</code>
-            <span class="option-detail">{{ card.kind }}</span>
+            <span class="marks" aria-hidden="true">
+              <i v-for="c in card.classes" :key="c" :class="`${CLASS_ICONS[c] ?? 'neutral'}-icon`" />
+            </span>
+            <code class="option-name"
+              >{{ card.title
+              }}<span v-if="card.subtitle" class="option-subtitle">{{ card.subtitle }}</span></code
+            >
+            <span class="option-detail">{{ card.set ?? card.kind }}</span>
             <span class="option-origin">{{ card.custom ? 'yours' : card.code }}</span>
           </button>
         </li>
@@ -98,14 +143,18 @@ function choose(code: string) {
 
     <div v-else class="field-body">
       <div class="picked-row">
-        <div class="binding" :class="{ valid: !!chosen, unknown: !!modelValue && !chosen }">
+        <div class="binding" :class="{ known: !!chosen, unknown: !!modelValue && !chosen }">
           <button
             type="button"
             class="binding-name"
             :title="modelValue ? `${modelValue} — click to choose another` : 'Choose a card'"
             @click="open = true"
           >
-            {{ chosen ? chosen.name : (modelValue || placeholder || 'Choose a card…') }}
+            <template v-if="chosen"
+              >{{ chosen.title
+              }}<span v-if="chosen.subtitle" class="chip-subtitle">{{ chosen.subtitle }}</span>
+            </template>
+            <template v-else>{{ modelValue || placeholder || 'Choose a card…' }}</template>
           </button>
         </div>
       </div>
@@ -226,6 +275,29 @@ function choose(code: string) {
   text-align: left;
 }
 
+/* Where a campaign icon would go if the app had any: the class symbols a player
+ * card carries, which is the nearest at-a-glance mark of where a card is from. */
+.marks {
+  display: inline-flex;
+  flex: none;
+  gap: 0.15rem;
+  min-width: 1rem;
+
+  i {
+    font-size: 0.8rem;
+    font-style: normal;
+  }
+}
+
+/* The quieter half of a name. Set apart rather than run together with a colon,
+ * so the title is what the eye lands on when scanning a list of them. */
+.option-subtitle,
+.chip-subtitle {
+  font-size: 0.72em;
+  margin-left: 0.4em;
+  opacity: 0.6;
+}
+
 .option-name {
   color: #bef264;
   flex: none;
@@ -294,7 +366,7 @@ function choose(code: string) {
   overflow: hidden;
 
   // The code names a card that is actually there, in your library or the pool.
-  &.valid {
+  &.known {
     background: rgba(190, 242, 100, 0.12);
     border-color: #bef264;
     color: #bef264;

@@ -449,6 +449,12 @@ runSteps env0 = void . foldM step env0
           taken <- runReadCondition env condition
           runSteps env $ branch o taken
           pure env
+      {- An @if@ with nothing on the other side. The same thing, said without an
+         empty branch to read past -- most conditions in a card have no else. -}
+      | Just condition <- KeyMap.lookup "when" o -> do
+          taken <- runReadCondition env condition
+          when taken $ runSteps env (maybe [] subSteps (KeyMap.lookup "then" o))
+          pure env
       | Just branches <- KeyMap.lookup "case" o -> do
           runCase env (subSteps branches) (maybe [] subSteps $ KeyMap.lookup "else" o)
           pure env

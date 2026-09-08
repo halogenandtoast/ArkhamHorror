@@ -136,6 +136,7 @@ instance RunMessage RunicAxe where
             , not
                 <$> selectAny
                   (ConcealedCardWithId (coerce eid) <> ConcealedCardAt (locationWithInvestigator iid))
+            , not <$> selectAny (AssetWithId (coerce eid) <> at_ (locationWithInvestigator iid))
             ]
         let imbueAgain = if attrs `hasCustomization` Scriptweaver then [Do msg, msg] else [msg]
         if needsHunt && attrs `hasCustomization` InscriptionOfTheHunt
@@ -178,6 +179,7 @@ instance RunMessage RunicAxe where
           mLoc <- getLocationOf iid
           isLocation <- coerce eid <=~> Anywhere
           mConcealed <- selectOne (ConcealedCardWithId (coerce eid))
+          mAsset <- selectOne (AssetWithId (coerce eid))
           let
             huntToward loc = for_ mLoc \loc' -> do
               accessibleLocations <- getAccessibleLocations iid (attrs.ability 1)
@@ -186,10 +188,12 @@ instance RunMessage RunicAxe where
               chooseOneM iid $ targets locations (moveTo (attrs.ability 1) iid)
           if isLocation
             then moveTo (attrs.ability 1) iid (coerce @_ @LocationId eid)
-            else case mConcealed of
-              -- concealed cards can't be engaged, so Hunt can only close the distance
-              Just c -> getLocationOf c.id >>= traverse_ \loc -> when (Just loc /= mLoc) (huntToward loc)
-              Nothing ->
+            else case (mConcealed, mAsset) of
+              -- concealed cards and as-if-enemy assets (Key Loci) can't be engaged, so
+              -- Hunt can only close the distance
+              (Just c, _) -> getLocationOf c.id >>= traverse_ \loc -> when (Just loc /= mLoc) (huntToward loc)
+              (_, Just aid) -> getLocationOf aid >>= traverse_ \loc -> when (Just loc /= mLoc) (huntToward loc)
+              (Nothing, Nothing) ->
                 getLocationOf eid >>= traverse_ \loc -> do
                   if Just loc /= mLoc
                     then huntToward loc

@@ -28,7 +28,8 @@ instance HasAbilities SuspendedReef where
           , restricted
               a
               2
-              ( DuringTurn You
+              ( Here
+                  <> DuringTurn You
                   <> exists
                     ( EnemyAt
                         $ not_ YourLocation

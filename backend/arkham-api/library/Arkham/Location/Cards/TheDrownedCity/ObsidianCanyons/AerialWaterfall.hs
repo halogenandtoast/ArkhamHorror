@@ -28,7 +28,7 @@ instance HasAbilities AerialWaterfall where
           [ -- [fast] During your turn, spend 1 clue: choose any revealed Summit
             -- location and move to it. Limit once per round.
             playerLimit PerRound
-              $ restricted a 1 (DuringTurn You)
+              $ restricted a 1 (Here <> DuringTurn You)
               $ FastAbility (ClueCost $ Static 1)
           , -- [action] Spend 1 clue (per investigator): put the set-aside Obsidian
             -- Claw into play under any investigator's control (Speed side faceup).

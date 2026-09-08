@@ -63,7 +63,7 @@ sourceTraits = \case
   ScenarioSource -> pure mempty
   SkillSource sid -> fromMaybe mempty <$> fieldMay SkillTraits sid
   SkillTestSource {} -> pure mempty
-  StorySource _ -> pure mempty
+  StorySource sid -> maybe mempty toTraits <$> fieldMay StoryCard sid
   TarotSource _ -> pure mempty
   TestSource traits -> pure traits
   ThisCard -> error "can not get traits"
@@ -357,13 +357,22 @@ sourceMatches s = \case
       AbilitySource s' _ -> sourceMatches s' Matcher.SourceIsPlayerCard
       UseAbilitySource _ s' _ -> sourceMatches s' Matcher.SourceIsPlayerCard
       _ -> pure False
-  Matcher.SourceWithCard cardMatcher -> do
-    mCard <- sourceCard s
-    pure $ case mCard of
-      Just c -> c `cardMatch` cardMatcher
-      Nothing -> False
+  Matcher.SourceWithCard cardMatcher -> sourceCardMatches s cardMatcher
   Matcher.SourceWithExtendedCard cardMatcher ->
     sourceCard s >>= maybe (pure False) (<=~> cardMatcher)
+
+-- Trait checks go through sourceTraits: a card def only carries the unrevealed
+-- side's traits, so a revealed Glyph location looks Glyph-less to cardMatch.
+sourceCardMatches :: HasGame m => Source -> Matcher.CardMatcher -> m Bool
+sourceCardMatches ThisCard _ = pure False
+sourceCardMatches s matcher = go matcher
+ where
+  go = \case
+    Matcher.CardWithTrait t -> member t <$> sourceTraits s
+    Matcher.CardMatches ms -> allM go ms
+    Matcher.CardWithOneOf ms -> anyM go ms
+    Matcher.NotCard m -> not <$> go m
+    m -> maybe False (`cardMatch` m) <$> sourceCard s
 
 sourceCard :: HasGame m => Source -> m (Maybe Card)
 sourceCard = \case

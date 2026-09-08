@@ -24,14 +24,18 @@ instance HasAbilities TheWeepingLady where
             [ restricted
                 a
                 1
-                (exists (orConnected NotForMovement YourLocation <> locationWithDiscoverableCluesBy iid))
+                ( youExist (InvestigatorWithId iid)
+                    <> exists (orConnected NotForMovement YourLocation <> locationWithDiscoverableCluesBy iid)
+                )
                 $ FastAbility Free
             ]
           else
             [ restricted
                 a
                 1
-                (exists (AssetControlledBy Anyone <> DiscardableAsset))
+                ( youExist (InvestigatorWithId iid)
+                    <> exists (AssetControlledBy Anyone <> DiscardableAsset)
+                )
                 $ FastAbility Free
             ]
     | Just aid <- keyHolderAsset a =

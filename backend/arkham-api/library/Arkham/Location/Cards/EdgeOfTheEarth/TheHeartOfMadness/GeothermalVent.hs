@@ -22,7 +22,7 @@ instance HasAbilities GeothermalVent where
   getAbilities (GeothermalVent a) =
     extendRevealed1 a
       $ skillTestAbility
-      $ restricted a 1 (youExist (InvestigatorWithDormantSeal SealD)) actionAbility
+      $ restricted a 1 (Here <> youExist (InvestigatorWithDormantSeal SealD)) actionAbility
 
 instance RunMessage GeothermalVent where
   runMessage msg l@(GeothermalVent attrs) = runQueueT $ case msg of

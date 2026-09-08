@@ -463,6 +463,9 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "forEach" o -> do
           runForEach env spec
           pure env
+      | Just spec <- KeyMap.lookup "request" o -> do
+          runRequest env spec
+          pure env
       | Just spec <- KeyMap.lookup "distribute" o -> do
           runDistribute env spec
           pure env
@@ -573,6 +576,41 @@ runForEach env spec = case spec of
       steps = maybe [] subSteps (KeyMap.lookup "steps" o)
     for_ (fromMaybe [] found) \value -> runSteps (KeyMap.insert name value env) steps
   _ -> pure ()
+
+{- | Ask the game something, and say here what to do with the answer.
+
+The engine has a dozen or so of these pairs -- @RequestChaosTokens_@ answered by
+@RequestedChaosTokens_@, @FindEncounterCard@ by @FoundEncounterCard@, and so on.
+They are two messages with the game's turn between them, and every one of them
+sends its answer back by source or by target, which for a custom card is the
+card itself.
+
+So the listening is not the hard part; a handler could already do it. What a
+handler cannot do is sit next to the question. This holds both, and the answer's
+fields are bound the way a handler binds them: @$message@, and @$0@, @$1@, ...
+for what it carries.
+
+The steps run on the answer, which is a later message -- so they see the card's
+own bindings and the answer's, not what earlier steps in this run bound.
+-}
+runRequest :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runRequest env spec = case KeyMap.lookup "push" (specObject spec) of
+  Just m -> case decodeWith env m of
+    Just msg -> push (msg :: Message)
+    Nothing -> reportBadPayload env "request" (substitute env m)
+  Nothing -> reportBadPayload env "request" spec
+
+{- | Every @request@ block written anywhere in a card. Walked from the def
+because the answer arrives long after the step that asked has finished.
+-}
+requestBlocks :: Value -> [Value]
+requestBlocks = go
+ where
+  go = \case
+    Object o ->
+      maybeToList (KeyMap.lookup "request" o) <> concatMap go (KeyMap.elems o)
+    Array xs -> concatMap go (toList xs)
+    _ -> []
 
 {- | Split a total between investigators, and say here what each one's share
 does.

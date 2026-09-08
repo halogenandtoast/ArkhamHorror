@@ -186,6 +186,7 @@ const stepKinds = [
   'forEach',
   'repeat',
   'distribute',
+  'request',
   'modify',
   'withSkillTest',
   'withLocationOf',
@@ -285,6 +286,17 @@ export function stepBindings(
             'a With location of step',
             'LocationId',
           ),
+        ],
+      }
+    /* What the answer carried, in scope only for the steps that read it. Named
+     * the way a handler names a message's fields, because it is one. */
+    case 'request':
+      return {
+        after: [],
+        inside: [
+          at('message', 'the whole answer', 'an Ask the game step', 'Message'),
+          at('0', 'the first thing it carries', 'an Ask the game step'),
+          at('1', 'the second thing it carries', 'an Ask the game step'),
         ],
       }
     /* Who got a share and how much, in scope only for the steps that spend it.

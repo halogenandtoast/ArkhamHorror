@@ -46,6 +46,7 @@ type StepKind =
   | 'forEach'
   | 'repeat'
   | 'distribute'
+  | 'request'
   | 'modify'
   | 'withSkillTest'
   | 'withLocationOf'
@@ -74,6 +75,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   forEach: 'For each',
   repeat: 'Repeat',
   distribute: 'Distribute',
+  request: 'Ask the game',
   modify: 'Modify',
   withSkillTest: 'With skill test',
   withLocationOf: 'With location of',
@@ -104,6 +106,7 @@ function kindOf(step: any): StepKind {
     'forEach',
     'repeat',
     'distribute',
+    'request',
     'modify',
     'withSkillTest',
     'withLocationOf',
@@ -140,6 +143,7 @@ const blankStep = (kind: StepKind) =>
     modify: { modify: { target: null, modifiers: [] } },
     repeat: { repeat: { times: 1, bind: 'i', steps: [] } },
     distribute: { distribute: { total: 1, among: { kind: 'investigator', matcher: null }, label: '', bind: 'who', amount: 'amount', steps: [] } },
+    request: { request: { push: null, on: '', steps: [] } },
     withSkillTest: { withSkillTest: { bind: 'skillTestId', steps: [] } },
     withLocationOf: { withLocationOf: { kind: 'investigator', of: '$iid', bind: 'location', steps: [] } },
     choose: { choose: { options: [{ label: '', steps: [] }] } },
@@ -172,6 +176,7 @@ const KIND_HELP: Record<StepKind, string> = {
   forEach: 'Runs its steps once per thing found, with that thing bound inside.',
   repeat: 'Runs its steps a number of times, with the pass number bound inside.',
   distribute: 'Splits a total between investigators, then runs its steps on each share.',
+  request: 'Pushes a message that is answered later, with the answer handled here.',
   modify: 'Gives something modifiers for as long as a window lasts.',
   withSkillTest: 'Runs its steps during a skill test, with that test bound inside.',
   withLocationOf: 'Runs its steps where something is, with that location bound inside.',
@@ -260,6 +265,23 @@ const revealScope = (index: number) => [
 /* The Locateable instances the runner dispatches on. Which one it is has to be
  * said, because an id is a bare uuid and the instance cannot be chosen from it. */
 const LOCATEABLE = ['investigator', 'enemy', 'asset', 'treachery']
+
+/* The answers the engine sends back. Each is the second half of a pair whose
+ * first half is an ordinary message, and each routes by source or target -- so
+ * a card only ever sees the answers to its own questions. */
+const ANSWERS = [
+  'RequestedChaosTokens_',
+  'RequestedPlayerCard',
+  'RequestedSetAsideCard',
+  'RequestedEncounterCard',
+  'RequestedEncounterCards',
+  'FoundEncounterCard',
+  'FoundAndDrewEncounterCard',
+  'FoundCards_',
+  'ChosenRandomLocation',
+  'ChoseCards',
+  'ResolveAmounts',
+]
 
 const matcherType = (kind: string | undefined) => props.queryKinds[kind ?? 'enemy'] ?? 'EnemyMatcher'
 
@@ -685,6 +707,49 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.withLocationOf?.steps ?? []"
           @update:modelValue="set(index, { ...step, withLocationOf: { ...step.withLocationOf, steps: $event } })"
         />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'request'">
+        <p class="hint">
+          Some messages are answered by another message a turn of the game later —
+          <code>RequestChaosTokens_</code> by <code>RequestedChaosTokens_</code>,
+          <code>FindEncounterCard</code> by <code>FoundEncounterCard</code>. Every one of them
+          sends the answer back by source or target, which is this card, so the answer is handled
+          here beside the question rather than in a handler of its own.
+        </p>
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          type="Message"
+          label="Ask"
+          :modelValue="step.request?.push"
+          @update:modelValue="set(index, { ...step, request: { ...step.request, push: $event } })"
+        />
+        <label>
+          Answered by
+          <select
+            :value="step.request?.on"
+            @change="set(index, { ...step, request: { ...step.request, on: ($event.target as HTMLSelectElement).value } })"
+          >
+            <option value="">—choose—</option>
+            <option v-for="m in ANSWERS" :key="m" :value="m">{{ m }}</option>
+          </select>
+        </label>
+        <p v-if="step.request?.on" class="hint">
+          Bound for the steps below: <code>$message</code>, and <code>$0</code>,
+          <code>$1</code>… for what the answer carries. Not what earlier steps in this run
+          bound — the answer is its own message.
+        </p>
+        <div class="branch">
+          <span class="branch-label">With the answer</span>
+          <StepsEditor
+            :bindings="innerScope(index)"
+            :path="innerPath(index, 'request')"
+            :announce="[]"
+            :queryKinds="queryKinds"
+            :modelValue="step.request?.steps ?? []"
+            @update:modelValue="set(index, { ...step, request: { ...step.request, steps: $event } })"
+          />
+        </div>
       </template>
 
       <template v-else-if="kindOf(step) === 'distribute'">

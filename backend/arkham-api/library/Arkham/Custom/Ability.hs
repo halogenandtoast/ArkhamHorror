@@ -449,6 +449,18 @@ runCustomHandlers a msg = do
             holds (l, r) = sameValue (substitute env l) (substitute env r)
         when (all holds (handlerRequires handler)) $ runSteps env (handlerSteps handler)
 
+    {- A `request` step listens the same way, but its steps were written beside
+       the message that asked rather than in a section of their own. Every pair
+       in the engine routes its answer by source or by target -- both of which
+       are this card -- so the mention check is the whole of the matching. -}
+    when mentioned $ for_ (requestBlocks (toJSON (cdMeta (toCardDef a)))) \block -> do
+      let b = specObject block
+      for_ (KeyMap.lookup "on" b >>= parseMaybe parseJSON) \(name :: Text) ->
+        for_ (matched name o) \fields ->
+          runSteps
+            (messageBindings o fields <> bindings a)
+            (maybe [] subSteps (KeyMap.lookup "steps" b))
+
   {- Many messages sit inside a grouping constructor -- @Defeated@ is really
   @DefeatMessage (Defeated_ ...)@ -- and the constructor inside carries a
   trailing underscore. A handler names the message the way the engine does, and

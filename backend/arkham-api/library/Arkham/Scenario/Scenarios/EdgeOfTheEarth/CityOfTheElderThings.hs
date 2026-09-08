@@ -225,6 +225,7 @@ instance RunMessage CityOfTheElderThings where
       let group2 = group2Count > group1Count && group2Count > group3Count
       let group3 = group3Count > group1Count && group3Count > group2Count
       let tied = not (group1 || group2 || group3)
+      let mostVotes = maximumEx [group1Count, group2Count, group3Count]
 
       storyWithChooseOneM
         ( addEntry
@@ -250,12 +251,9 @@ instance RunMessage CityOfTheElderThings where
               li.validate tied "vote.tied"
         )
         do
-          labeledValidate' (group1 || group1Count `elem` [group2Count, group3Count]) "v1"
-            $ doStep 1 PreScenarioSetup
-          labeledValidate' (group2 || group2Count `elem` [group1Count, group3Count]) "v2"
-            $ doStep 2 PreScenarioSetup
-          labeledValidate' (group3 || group3Count `elem` [group1Count, group2Count]) "v3"
-            $ doStep 3 PreScenarioSetup
+          labeledValidate' (group1Count == mostVotes) "v1" $ doStep 1 PreScenarioSetup
+          labeledValidate' (group2Count == mostVotes) "v2" $ doStep 2 PreScenarioSetup
+          labeledValidate' (group3Count == mostVotes) "v3" $ doStep 3 PreScenarioSetup
 
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s

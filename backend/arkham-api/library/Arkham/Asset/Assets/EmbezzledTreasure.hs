@@ -22,13 +22,27 @@ instance HasAbilities EmbezzledTreasure where
   getAbilities (EmbezzledTreasure a) =
     [ controlled a 1 (youExist InvestigatorWithAnyResources <> resourceRestriction)
         $ FastAbility (exhaust a)
-    , controlled a 2 requiredResources
+    , -- Resigning and then ending the scenario opens both windows, and a forced
+      -- ability's default per-window limit does not dedupe across them.
+      onlyOnce
+        $ controlled a 2 requiredResources
         $ forced
         $ oneOf [GameEnds #when, InvestigatorEliminated #when You]
     ]
    where
     resourceRestriction = if a.use #resource >= 10 then Never else NoRestriction
     requiredResources = if a.use #resource >= 2 then NoRestriction else Never
+
+{- | Who can be handed starting resources.
+
+The outer 'IncludeEliminated' is load bearing: 'affectsOthersKnown' wraps the matcher
+in 'InvestigatorIfThenKnown', which the select's eliminated check does not look
+inside, so the inner hint alone leaves the candidate list pre-filtered to
+uneliminated investigators — empty once the game has ended.
+-}
+startingResourceTargets :: InvestigatorId -> InvestigatorMatcher
+startingResourceTargets iid =
+  IncludeEliminated $ affectsOthersKnown iid $ IncludeEliminated Anyone <> not_ KilledInvestigator
 
 instance RunMessage EmbezzledTreasure where
   runMessage msg a@(EmbezzledTreasure attrs) = runQueueT $ case msg of
@@ -43,8 +57,7 @@ instance RunMessage EmbezzledTreasure where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       let total = attrs.use Resource `div` 2
-      investigators <-
-        select $ affectsOthersKnown iid $ IncludeEliminated Anyone <> not_ KilledInvestigator
+      investigators <- select $ startingResourceTargets iid
       named <- forToSnd investigators \i -> toTitle <$> field InvestigatorName i
       chooseAmounts
         iid
@@ -53,8 +66,8 @@ instance RunMessage EmbezzledTreasure where
         [(name, (0, total)) | (_, name) <- named]
         (ProxyTarget (toTarget attrs) (toTarget attrs))
       pure a
-    ResolveAmounts _ choices (ProxyTarget (isTarget attrs -> True) _) -> do
-      investigators <- select $ affectsOthers Anyone
+    ResolveAmounts iid choices (ProxyTarget (isTarget attrs -> True) _) -> do
+      investigators <- select $ startingResourceTargets iid
       named <- forToSnd investigators \i -> toTitle <$> field InvestigatorName i
       for_ named \(iid', name) -> do
         let n = getChoiceAmount name choices

@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.ToeTheLine (toeTheLine) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Campaigns.TheDrownedCity.Helpers (taskEnds)
+import Arkham.Campaigns.TheDrownedCity.Helpers (taskEndsAbility)
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Investigator.Types (Field (InvestigatorHealth))
 import Arkham.Matcher
@@ -22,17 +22,13 @@ instance HasAbilities ToeTheLine where
     , -- "if the amount of damage on this card equals or exceeds your maximum
       -- health" — maximum health is modifiable, so compare the two as a
       -- calculation instead of a fixed threshold.
-      controlled
-        a
-        2
-        ( HasCalculation
-            ( SubtractCalculation
-                (AssetTokenCountCalculation a.id #damage)
-                (InvestigatorsFieldCalculation (IncludeEliminated You) InvestigatorHealth)
-            )
-            (atLeast 0)
-        )
-        $ forced taskEnds
+      taskEndsAbility a
+        $ HasCalculation
+          ( SubtractCalculation
+              (AssetTokenCountCalculation a.id #damage)
+              (InvestigatorsFieldCalculation (IncludeEliminated You) InvestigatorHealth)
+          )
+          (atLeast 0)
     ]
 
 instance RunMessage ToeTheLine where

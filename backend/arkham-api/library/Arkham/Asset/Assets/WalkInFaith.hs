@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.WalkInFaith (walkInFaith) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
-import Arkham.Campaigns.TheDrownedCity.Helpers (taskEnds)
+import Arkham.Campaigns.TheDrownedCity.Helpers (taskEndsAbility)
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.GameValue
 import Arkham.Matcher
@@ -22,11 +22,9 @@ instance HasAbilities WalkInFaith where
         $ freeReaction (RevealChaosToken #after Anyone #eldersign)
     , -- "more than 1 [per_investigator] signs" scales with the player count, so
       -- the threshold has to be a calculation rather than a pure token check.
-      controlled
+      taskEndsAbility
         a
-        2
         (HasCalculation (AssetTokenCountCalculation a.id #sign) (GreaterThan $ PerPlayer 1))
-        $ forced taskEnds
     ]
 
 instance RunMessage WalkInFaith where

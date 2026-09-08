@@ -80,6 +80,15 @@ the two windows.
 taskEnds :: WindowMatcher
 taskEnds = oneOf [GameEnds #when, InvestigatorEliminated #when You]
 
+{- | A Task's progress check, capped at once per game.
+
+An investigator who resigns and then ends the scenario opens both of 'taskEnds'
+windows, and a forced ability's default 'GroupLimit PerWindow' only dedupes within
+one window, so the progress would be marked twice.
+-}
+taskEndsAbility :: (HasCardCode a, Sourceable a) => a -> Criterion -> Ability
+taskEndsAbility a crit = onlyOnce $ controlled a 2 crit $ forced taskEnds
+
 investigatorHasTask
   :: (HasGame m, HasCardDef card) => InvestigatorId -> card -> m Bool
 investigatorHasTask iid (toCardDef -> cardDef) = do

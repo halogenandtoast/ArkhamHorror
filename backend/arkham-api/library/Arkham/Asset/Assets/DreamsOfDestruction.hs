@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.DreamsOfDestruction (dreamsOfDestruction) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Campaigns.TheDrownedCity.Helpers (taskEnds)
+import Arkham.Campaigns.TheDrownedCity.Helpers (taskEndsAbility)
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Investigator.Types (Field (InvestigatorSanity))
 import Arkham.Matcher
@@ -22,17 +22,13 @@ instance HasAbilities DreamsOfDestruction where
     , -- "if the amount of horror on this card equals or exceeds your maximum
       -- sanity" — maximum sanity is modifiable, so compare the two as a
       -- calculation instead of a fixed threshold.
-      controlled
-        a
-        2
-        ( HasCalculation
-            ( SubtractCalculation
-                (AssetTokenCountCalculation a.id #horror)
-                (InvestigatorsFieldCalculation (IncludeEliminated You) InvestigatorSanity)
-            )
-            (atLeast 0)
-        )
-        $ forced taskEnds
+      taskEndsAbility a
+        $ HasCalculation
+          ( SubtractCalculation
+              (AssetTokenCountCalculation a.id #horror)
+              (InvestigatorsFieldCalculation (IncludeEliminated You) InvestigatorSanity)
+          )
+          (atLeast 0)
     ]
 
 instance RunMessage DreamsOfDestruction where

@@ -1,7 +1,9 @@
 module Arkham.Event.Events.RefineSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Customization (Customization (Railshooter))
 import Arkham.Event.Cards qualified as Events
+import Arkham.Helpers.Customization (customizationKey)
 import TestImport.New
 
 spec :: Spec
@@ -21,6 +23,6 @@ spec = describe "Refine" do
         TargetLabel {} -> True
         _ -> False
       chooseOptionMatching "pick the Railshooter customization" \case
-        Label lbl _ -> "name=s:\"Railshooter\"" `isInfixOf` lbl
+        Label lbl _ -> lbl == customizationKey Railshooter
         _ -> False
       asDefs self.playableCards `shouldReturn` []

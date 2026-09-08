@@ -84,12 +84,14 @@ import Arkham.Classes.Query
 -- modules into the cycle and onto their boot interfaces).
 
 import Arkham.Custom.Env
+import Arkham.Custom.Expr (runQuery)
 import Arkham.Custom.Steps
 import Arkham.Helpers.Modifiers (ModifierType, modifySelect)
 import Arkham.Helpers.Window (windowMatches)
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
+import Arkham.Message.Lifted (withInvestigatorAmounts)
 import Arkham.Message.Lifted.Placement (Placeable, Placement (InPlayArea, InThreatArea), place)
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
@@ -161,6 +163,14 @@ data ModifierSpec = ModifierSpec
   while changing it, so a condition here can ask questions but cannot do
   anything.
   -}
+  , modEach :: Maybe Value
+  {- ^ A query whose results the modifier list is repeated over, each bound under
+  @bind@. "Every card underneath this asset may be committed as if it were in
+  your hand" is one modifier per card, and the cards are only known by asking.
+  Without this the list is whatever was written down, which cannot depend on the
+  state of the game.
+  -}
+  , modEachBind :: Text
   , modRequires :: [(Value, Value)]
   {- ^ Pairs that must be equal once substituted, as a handler's @requires@ is.
   Unlike @if@ this asks nothing of the game, so it is the way to gate on where
@@ -182,6 +192,8 @@ instance FromJSON ModifierSpec where
       .!= []
       <*> o
       .:? "if"
+      <*> (o .:? "each")
+      <*> (o .:? "eachBind" .!= "each")
       <*> o
       .:? "requires"
       .!= []
@@ -392,6 +404,27 @@ customRevelationPlacement def iid = case customMetaMaybe revelationPlacementMeta
   Just "playArea" -> Just (InPlayArea iid)
   _ -> Nothing
 
+{- | Pick up a @distribute@ block where its ask left off.
+
+The answer names the block on the question's target, so the steps that run are
+the ones written beside the ask -- not a handler the author had to remember to
+write, and not the wrong block when a card holds two.
+-}
+resumeDistribute :: (CustomEntity a, HasGameLogger m, ReverseQueue m) => a -> Message -> m ()
+resumeDistribute a = \case
+  ResolveAmounts _ choices (LabeledTarget key target) | target == toTarget a ->
+    for_ (lookup key (distributeBlocks (toJSON (cdMeta (toCardDef a))))) \spec -> do
+      let o = specObject spec
+          who = textField mempty o "bind" "who"
+          amount = textField mempty o "amount" "amount"
+      withInvestigatorAmounts choices \iid n ->
+        runSteps
+          ( KeyMap.insert (Key.fromText who) (toJSON iid)
+              $ KeyMap.insert (Key.fromText amount) (toJSON n) (bindings a)
+          )
+          (maybe [] subSteps (KeyMap.lookup "steps" o))
+  _ -> pure ()
+
 -- * Handlers
 
 {- | Run any handler listening for this message.
@@ -402,16 +435,20 @@ would fire for every copy of the card and for messages aimed at other entities
 entirely.
 -}
 runCustomHandlers :: (CustomEntity a, HasGameLogger m, ReverseQueue m) => a -> Message -> m ()
-runCustomHandlers a msg = case toJSON msg of
-  Object o -> do
+runCustomHandlers a msg = do
+  resumeDistribute a msg
+  case toJSON msg of
+    Object o -> handlers o
+    _ -> pure ()
+ where
+  handlers o = do
     let mentioned = any (`isSubValue` Object o) [toJSON (toTarget a), toJSON (toSource a)]
     for_ (metaSpecs @HandlerSpec handlersMetaKey (toCardDef a)) \handler ->
       when (mentioned || handlerGlobal handler) $ for_ (matched (handlerOn handler) o) \fields -> do
         let env = messageBindings o fields <> bindings a
             holds (l, r) = sameValue (substitute env l) (substitute env r)
         when (all holds (handlerRequires handler)) $ runSteps env (handlerSteps handler)
-  _ -> pure ()
- where
+
   {- Many messages sit inside a grouping constructor -- @Defeated@ is really
   @DefeatMessage (Defeated_ ...)@ -- and the constructor inside carries a
   trailing underscore. A handler names the message the way the engine does, and
@@ -469,6 +506,16 @@ customModifiers a = for_ (metaSpecs @ModifierSpec modifiersMetaKey (toCardDef a)
        )
     => ModifierSpec
     -> m' ()
-  apply spec = for_ (decodeWith env (modMatcher spec)) \matcher ->
-    for_ (traverse (decodeWith @ModifierType env) (modTypes spec))
-      $ modifySelect a (matcher :: q)
+  apply spec = for_ (decodeWith env (modMatcher spec)) \matcher -> do
+    envs <- eachEnv spec
+    let decoded = concat [mapMaybe (decodeWith @ModifierType e) (modTypes spec) | e <- envs]
+    unless (null decoded) $ modifySelect a (matcher :: q) decoded
+
+  -- One environment per thing found, or just the card's own when there is no
+  -- @each@ -- so the ordinary case stays exactly what it was.
+  eachEnv :: HasModifiersM m' => ModifierSpec -> m' [Env]
+  eachEnv spec = case modEach spec of
+    Nothing -> pure [env]
+    Just query -> do
+      found <- fromMaybe [] <$> runQuery env query
+      pure [KeyMap.insert (Key.fromText (modEachBind spec)) v env | v <- found]

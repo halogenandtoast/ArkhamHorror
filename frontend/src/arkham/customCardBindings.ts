@@ -184,6 +184,8 @@ const stepKinds = [
   'if',
   'case',
   'forEach',
+  'repeat',
+  'distribute',
   'modify',
   'withSkillTest',
   'withLocationOf',
@@ -283,6 +285,24 @@ export function stepBindings(
             'a With location of step',
             'LocationId',
           ),
+        ],
+      }
+    /* Who got a share and how much, in scope only for the steps that spend it.
+     * Nothing from earlier in this run is: the answer is its own message. */
+    case 'distribute':
+      return {
+        after: [],
+        inside: [
+          at(named(step.distribute?.bind, 'who'), 'who got a share', 'a Distribute step', 'InvestigatorId'),
+          at(named(step.distribute?.amount, 'amount'), 'how much they got', 'a Distribute step', 'Int'),
+        ],
+      }
+    // The pass number, in scope only for the steps it repeats.
+    case 'repeat':
+      return {
+        after: [],
+        inside: [
+          at(named(step.repeat?.bind, 'i'), 'which pass this is', 'a Repeat step', 'Int'),
         ],
       }
     case 'forEach':

@@ -44,6 +44,8 @@ type StepKind =
   | 'when'
   | 'case'
   | 'forEach'
+  | 'repeat'
+  | 'distribute'
   | 'modify'
   | 'withSkillTest'
   | 'withLocationOf'
@@ -70,6 +72,8 @@ const KIND_LABELS: Record<StepKind, string> = {
   when: 'When',
   case: 'Case',
   forEach: 'For each',
+  repeat: 'Repeat',
+  distribute: 'Distribute',
   modify: 'Modify',
   withSkillTest: 'With skill test',
   withLocationOf: 'With location of',
@@ -98,6 +102,8 @@ function kindOf(step: any): StepKind {
     'if',
     'case',
     'forEach',
+    'repeat',
+    'distribute',
     'modify',
     'withSkillTest',
     'withLocationOf',
@@ -132,6 +138,8 @@ const blankStep = (kind: StepKind) =>
     case: { case: [{ if: { kind: 'enemy', matcher: null }, steps: [] }], else: [] },
     forEach: { forEach: { query: { kind: 'enemy', matcher: null }, bind: 'each', steps: [] } },
     modify: { modify: { target: null, modifiers: [] } },
+    repeat: { repeat: { times: 1, bind: 'i', steps: [] } },
+    distribute: { distribute: { total: 1, among: { kind: 'investigator', matcher: null }, label: '', bind: 'who', amount: 'amount', steps: [] } },
     withSkillTest: { withSkillTest: { bind: 'skillTestId', steps: [] } },
     withLocationOf: { withLocationOf: { kind: 'investigator', of: '$iid', bind: 'location', steps: [] } },
     choose: { choose: { options: [{ label: '', steps: [] }] } },
@@ -162,6 +170,8 @@ const KIND_HELP: Record<StepKind, string> = {
   when: 'Runs its steps only when a matcher finds something. An If with no else.',
   case: 'Takes the first branch whose condition holds.',
   forEach: 'Runs its steps once per thing found, with that thing bound inside.',
+  repeat: 'Runs its steps a number of times, with the pass number bound inside.',
+  distribute: 'Splits a total between investigators, then runs its steps on each share.',
   modify: 'Gives something modifiers for as long as a window lasts.',
   withSkillTest: 'Runs its steps during a skill test, with that test bound inside.',
   withLocationOf: 'Runs its steps where something is, with that location bound inside.',
@@ -674,6 +684,101 @@ const removeOption = (step: any, index: number, at: number) =>
           :queryKinds="queryKinds"
           :modelValue="step.withLocationOf?.steps ?? []"
           @update:modelValue="set(index, { ...step, withLocationOf: { ...step.withLocationOf, steps: $event } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'distribute'">
+        <p class="hint">
+          Asks once, splitting a total between investigators, and runs the steps below on each
+          share. The answer comes back as its own message, so those steps see the card's own
+          bindings and the two this block makes — not what earlier steps in this run bound.
+        </p>
+        <ExpressionEditor
+          :queryKinds="queryKinds"
+          label="Total to split"
+          expect="Int"
+          :bindings="scopeFor(index)"
+          :modelValue="step.distribute?.total"
+          @update:modelValue="set(index, { ...step, distribute: { ...step.distribute, total: $event } })"
+        />
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          type="InvestigatorMatcher"
+          label="Among"
+          :modelValue="step.distribute?.among?.matcher"
+          @update:modelValue="set(index, { ...step, distribute: { ...step.distribute, among: { kind: 'investigator', matcher: $event } } })"
+        />
+        <div class="row">
+          <label>
+            Prompt
+            <input
+              :value="step.distribute?.label"
+              placeholder="How many each"
+              @input="set(index, { ...step, distribute: { ...step.distribute, label: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+          <label>
+            Bind the investigator to
+            <input
+              :value="step.distribute?.bind"
+              placeholder="who"
+              @input="set(index, { ...step, distribute: { ...step.distribute, bind: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+          <label>
+            Bind their share to
+            <input
+              :value="step.distribute?.amount"
+              placeholder="amount"
+              @input="set(index, { ...step, distribute: { ...step.distribute, amount: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+        </div>
+        <div class="branch">
+          <span class="branch-label">For each share</span>
+          <StepsEditor
+            :bindings="innerScope(index)"
+            :path="innerPath(index, 'distribute')"
+            :announce="addedInside(index)"
+            :queryKinds="queryKinds"
+            :modelValue="step.distribute?.steps ?? []"
+            @update:modelValue="set(index, { ...step, distribute: { ...step.distribute, steps: $event } })"
+          />
+        </div>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'repeat'">
+        <p class="hint">
+          Runs the steps below over and over. "A total of 8 resources, distributed as you wish"
+          is eight passes of choosing who gets one, which is how the engine plays it.
+        </p>
+        <ExpressionEditor
+          :queryKinds="queryKinds"
+          label="How many times"
+          expect="Int"
+          :bindings="scopeFor(index)"
+          :modelValue="step.repeat?.times"
+          @update:modelValue="set(index, { ...step, repeat: { ...step.repeat, times: $event } })"
+        />
+        <label>
+          Bind the pass number to
+          <input
+            :value="step.repeat?.bind"
+            placeholder="i"
+            @input="set(index, { ...step, repeat: { ...step.repeat, bind: ($event.target as HTMLInputElement).value } })"
+            @keydown.stop
+          />
+        </label>
+        <StepsEditor
+          :bindings="innerScope(index)"
+          :path="innerPath(index, 'repeat')"
+          :announce="addedInside(index)"
+          :queryKinds="queryKinds"
+          :modelValue="step.repeat?.steps ?? []"
+          @update:modelValue="set(index, { ...step, repeat: { ...step.repeat, steps: $event } })"
         />
       </template>
 

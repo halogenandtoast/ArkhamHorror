@@ -19,6 +19,7 @@ import AbilityEditor from '@/arkham/components/debug/AbilityEditor.vue'
 import StepsEditor from '@/arkham/components/debug/StepsEditor.vue'
 import { cardBindings, defBindings } from '@/arkham/customCardBindings'
 import BoolField from '@/arkham/components/debug/BoolField.vue'
+import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import { loadSchema } from '@/arkham/schema'
 
@@ -147,6 +148,15 @@ const blankForm = () => ({
   artUploaded: {} as Record<string, string | null>,
   // escape hatch
   rawJson: '',
+  /* `cdAdditionalCost`: what a card makes you do beyond paying its resource
+   * cost, checked and taken as part of playing it. */
+  additionalCost: null as any,
+  /* `cdBondedWith`: how many of which card come with this one, kept out of the
+   * deck until something searches the bonded cards for them. */
+  bonded: [] as { count: string; cardCode: string }[],
+  /* `cdDeckRestrictions`: what a deck must be for this card to go in it --
+   * "limit 1 per deck", a signature's owner, and so on. */
+  deckRestrictions: [] as any[],
 })
 
 const form = reactive(blankForm())
@@ -490,6 +500,14 @@ function buildDef(cardCode: string): Record<string, any> {
     if (form.revelationSteps.length) def.meta._onRevelation = form.revelationSteps
   }
 
+  if (form.additionalCost) def.additionalCost = form.additionalCost
+  if (form.deckRestrictions.length) def.deckRestrictions = form.deckRestrictions
+  // Stored as [count, cardCode] pairs, which is how cdBondedWith decodes.
+  const bonded = form.bonded
+    .filter((b) => b.cardCode.trim())
+    .map((b) => [num(b.count) ?? 1, stripCardCodePrefix(b.cardCode.trim())])
+  if (bonded.length) def.bondedWith = bonded
+
   if (form.onPlaySteps.length) def.meta._onPlay = form.onPlaySteps
   if (form.abilities.length) def.meta._abilities = form.abilities
   if (form.handlers.length) def.meta._handlers = form.handlers
@@ -601,6 +619,7 @@ const FORM_KEYS = [
   'unique', 'permanent', 'doubleSided', 'meta', 'cardSubType', 'cost', 'level', 'victoryPoints', 'actions',
   'revelation',
   'fight', 'health', 'evade', 'healthDamage', 'sanityDamage', 'slots', 'uses',
+  'additionalCost', 'bondedWith', 'deckRestrictions',
 ]
 const FORM_META_KEYS = [
   'shroud', 'revealClues', 'health', 'sanity', 'willpower', 'intellect', 'combat', 'agility',
@@ -680,6 +699,12 @@ async function loadCard(card: CustomCard) {
   form.abilities = meta._abilities ?? []
   form.handlers = meta._handlers ?? []
   form.modifiers = meta._modifiers ?? []
+  form.additionalCost = def.additionalCost ?? null
+  form.deckRestrictions = def.deckRestrictions ?? []
+  form.bonded = (def.bondedWith ?? []).map((b: any) => ({
+    count: String(b?.[0] ?? 1),
+    cardCode: b?.[1] ?? '',
+  }))
 
   const leftover: Record<string, any> = {}
   for (const [key, value] of Object.entries(def)) {
@@ -1107,6 +1132,52 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
           </fieldset>
 
           <fieldset>
+            <legend>Playing it</legend>
+            <p class="hint">
+              What the card makes you do beyond paying its cost, checked and taken as part of
+              playing it — spend an action, add curse tokens, shuffle bonded cards into your deck.
+            </p>
+            <ValueEditor
+              optional
+              type="Cost"
+              label="Additional cost (optional)"
+              :bindings="defBindings()"
+              :modelValue="form.additionalCost"
+              @update:modelValue="form.additionalCost = $event"
+            />
+
+            <ValueEditor
+              type="[DeckRestriction]"
+              label="Deck restrictions (optional)"
+              :bindings="defBindings()"
+              :modelValue="form.deckRestrictions"
+              @update:modelValue="form.deckRestrictions = $event ?? []"
+            />
+
+            <p class="hint">
+              Bonded cards start outside the deck and come with this one. A cost that searches
+              your bonded cards is what puts them in.
+            </p>
+            <div v-for="(b, at) in form.bonded" :key="at" class="row">
+              <label>
+                How many
+                <input v-model="b.count" type="number" min="1" @keydown.stop />
+              </label>
+              <div class="grow">
+                <CardCodeField v-model="b.cardCode" placeholder="Which card" />
+              </div>
+              <button type="button" class="chip-remove" @click="form.bonded.splice(at, 1)">×</button>
+            </div>
+            <button
+              type="button"
+              class="add"
+              @click="form.bonded.push({ count: '1', cardCode: '' })"
+            >
+              + Bonded card
+            </button>
+          </fieldset>
+
+          <fieldset>
             <legend>Abilities</legend>
             <AbilityEditor
               :cardType="form.cardType"
@@ -1281,6 +1352,12 @@ label {
   flex-direction: column;
   gap: 0.25rem;
   font-size: 0.85rem;
+}
+
+// A field component that should take the rest of a row.
+.grow {
+  flex: 1 1 12rem;
+  min-width: 0;
 }
 
 input,

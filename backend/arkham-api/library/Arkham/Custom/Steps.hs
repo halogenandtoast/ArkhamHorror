@@ -59,6 +59,7 @@ import Arkham.Message.Lifted (
   aspect,
   cancelBatch,
   chooseFightEnemyEdit,
+  chooseInvestigatorAmounts,
   initiateEnemyAttack,
   reduceCostOf,
   skillTestModifiers,
@@ -79,6 +80,7 @@ import Arkham.Window (defaultWindows, windowBatchId)
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseMaybe)
+import Data.ByteString.Lazy qualified as BSL
 import Data.Function (on)
 import Data.List (nubBy)
 
@@ -461,6 +463,12 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "forEach" o -> do
           runForEach env spec
           pure env
+      | Just spec <- KeyMap.lookup "distribute" o -> do
+          runDistribute env spec
+          pure env
+      | Just spec <- KeyMap.lookup "repeat" o -> do
+          runRepeat env spec
+          pure env
       | Just spec <- KeyMap.lookup "modify" o -> do
           runModify env spec
           pure env
@@ -564,6 +572,77 @@ runForEach env spec = case spec of
         _ -> "each"
       steps = maybe [] subSteps (KeyMap.lookup "steps" o)
     for_ (fromMaybe [] found) \value -> runSteps (KeyMap.insert name value env) steps
+  _ -> pure ()
+
+{- | Split a total between investigators, and say here what each one's share
+does.
+
+The ask and the answer are two messages with the game's turn in between, so the
+steps below cannot simply follow: they run when the answer arrives. Written as
+one block all the same, because "investigators at your location draw a combined
+total of 3 cards" is one thing a card does, and splitting it across a step and a
+handler would leave the author holding the join.
+
+The block is found again by its own JSON, carried on the question's target -- so
+what runs on the answer is exactly what was written next to the ask, and a card
+may hold as many of these as it likes.
+
+The steps see the card's own bindings plus the two this block makes. They do
+/not/ see what earlier steps in the same run bound: those belong to a message
+that has already finished.
+-}
+runDistribute :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runDistribute env spec = case spec of
+  Object o -> do
+    iid <- stepInvestigator env
+    total <- maybe (pure 0) (exprInt env) (KeyMap.lookup "total" o)
+    found <- maybe (pure Nothing) (runQuery env) (KeyMap.lookup "among" o)
+    let iids = mapMaybe (parseMaybe parseJSON) (fromMaybe [] found)
+    when (total > 0 && notNull iids) do
+      let label = textField env o "label" "How many each"
+      chooseInvestigatorAmounts iid label total iids (distributeTarget env spec)
+  _ -> reportBadPayload env "distribute" spec
+
+{- | Where the answer comes back to: this entity, labelled with the block that
+asked. 'LabeledTarget' is not a real target -- it wraps one -- so the message
+still reaches the card, and the label says which of its blocks to resume.
+-}
+distributeTarget :: Env -> Value -> Target
+distributeTarget env spec =
+  LabeledTarget
+    (distributeKey spec)
+    (fromMaybe GameTarget (KeyMap.lookup "target" env >>= parseMaybe parseJSON))
+
+distributeKey :: Value -> Text
+distributeKey = decodeUtf8 . BSL.toStrict . encode
+
+{- | Every @distribute@ block written anywhere in a card, by the key its ask
+carries. Walked from the def rather than remembered, because the answer arrives
+long after the step that asked has finished.
+-}
+distributeBlocks :: Value -> [(Text, Value)]
+distributeBlocks = go
+ where
+  go = \case
+    Object o ->
+      [(distributeKey spec, spec) | Just spec <- [KeyMap.lookup "distribute" o]]
+        <> concatMap go (KeyMap.elems o)
+    Array xs -> concatMap go (toList xs)
+    _ -> []
+
+{- | The steps inside, run a number of times worked out from the game.
+
+"Investigators at your location gain a total of 8 resources, distributed as you
+wish" is eight choices of who gets one, which is how the engine plays it. The
+count is an expression, so it can be counted rather than written down, and the
+turn number is bound for the steps in case they care which pass they are on.
+-}
+runRepeat :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runRepeat env spec = case spec of
+  Object o -> do
+    times <- maybe (pure 0) (exprInt env) (KeyMap.lookup "times" o)
+    let name = bindingName o "i"
+    for_ [1 .. times] \i -> runSteps (KeyMap.insert name (toJSON i) env) (subStepsOf o)
   _ -> pure ()
 
 {- | Give something modifiers for as long as a window lasts.

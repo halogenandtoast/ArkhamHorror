@@ -128,11 +128,11 @@ function choose(code: string) {
               <i v-for="c in card.classes" :key="c" :class="`${CLASS_ICONS[c] ?? 'neutral'}-icon`" />
             </span>
             <code class="option-name"
-              >{{ card.title
+              ><span class="code-note">{{ card.code }}</span>{{ card.title
               }}<span v-if="card.subtitle" class="option-subtitle">{{ card.subtitle }}</span></code
             >
             <span class="option-detail">{{ card.set ?? card.kind }}</span>
-            <span class="option-origin">{{ card.custom ? 'yours' : card.code }}</span>
+            <span class="option-origin">{{ card.custom ? 'yours' : '' }}</span>
           </button>
         </li>
         <li v-if="!matching.length" class="muted">
@@ -144,6 +144,7 @@ function choose(code: string) {
     <div v-else class="field-body">
       <div class="picked-row">
         <div class="binding" :class="{ known: !!chosen, unknown: !!modelValue && !chosen }">
+          <span v-if="chosen" class="code-segment" :title="chosen.code">{{ chosen.code }}</span>
           <button
             type="button"
             class="binding-name"
@@ -158,8 +159,7 @@ function choose(code: string) {
           </button>
         </div>
       </div>
-      <span v-if="chosen" class="from">{{ chosen.code }}</span>
-      <span v-else-if="modelValue" class="from unknown" title="No card in your library or the pool has this code">
+      <span v-if="modelValue && !chosen" class="from unknown" title="No card in your library or the pool has this code">
         not a card we know
       </span>
     </div>
@@ -291,6 +291,20 @@ function choose(code: string) {
 
 /* The quieter half of a name. Set apart rather than run together with a colon,
  * so the title is what the eye lands on when scanning a list of them. */
+/* Ahead of the name rather than under it: a minted uuid on its own line pushes
+ * the field about, and truncating it keeps the row one line however long it is.
+ * It gives up room before the title does, since the title is what is read. */
+.code-note {
+  flex: 0 1 auto;
+  font-size: 0.68em;
+  margin-right: 0.5em;
+  min-width: 0;
+  opacity: 0.45;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .option-subtitle,
 .chip-subtitle {
   font-size: 0.72em;
@@ -299,6 +313,10 @@ function choose(code: string) {
 }
 
 .option-name {
+  align-items: baseline;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
   color: #bef264;
   flex: none;
   font-family: monospace;
@@ -378,11 +396,15 @@ function choose(code: string) {
   }
 }
 
+/* A row of parts rather than one run of text, so the title takes the room and
+ * the code gives it up. */
 .binding-name {
+  align-items: baseline;
   background: none;
   border: none;
   color: inherit;
   cursor: pointer;
+  display: flex;
   flex: 1;
   font-family: inherit;
   font-size: inherit;
@@ -390,8 +412,30 @@ function choose(code: string) {
   overflow: hidden;
   padding: 0.35rem 0.5rem;
   text-align: left;
+  white-space: nowrap;
+}
+
+/* A segment of the field rather than words inside it: the code is a different
+ * kind of thing from the name, and dividing them says so without a label. It
+ * takes only the width it needs and gives it up before the name does. */
+.code-segment {
+  align-items: center;
+  align-self: stretch;
+  background: rgba(190, 242, 100, 0.16);
+  border-right: 1px solid currentColor;
+  display: flex;
+  flex: 0 1 auto;
+  font-size: 0.72em;
+  min-width: 0;
+  opacity: 0.75;
+  overflow: hidden;
+  padding: 0 0.45rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.binding.unknown .code-segment {
+  background: rgba(252, 165, 165, 0.16);
 }
 
 .jump-segment {

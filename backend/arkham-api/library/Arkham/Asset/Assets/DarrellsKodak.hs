@@ -45,15 +45,16 @@ instance HasAbilities DarrellsKodak where
         $ DiscoverClues #after You Anywhere AnyValue
     ]
 
-getKodakTarget :: HasCallStack => [Window] -> Target
-getKodakTarget [] = error "Invalid call"
-getKodakTarget ((windowType -> Window.EnemySpawns eid _) : _) = EnemyTarget eid
-getKodakTarget ((windowType -> Window.TreacheryEntersPlay tid) : _) = TreacheryTarget tid
-getKodakTarget (_ : ws) = getKodakTarget ws
+getKodakTarget :: [Window] -> Maybe Target
+getKodakTarget =
+  asum . map \case
+    (windowType -> Window.EnemySpawns eid _) -> Just (EnemyTarget eid)
+    (windowType -> Window.TreacheryEntersPlay tid) -> Just (TreacheryTarget tid)
+    _ -> Nothing
 
 instance RunMessage DarrellsKodak where
   runMessage msg a@(DarrellsKodak attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (getKodakTarget -> target) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (getKodakTarget -> Just target) _ -> do
       placeTokens (attrs.ability 1) target Evidence 1
       pure a
     UseCardAbility _iid (isSource attrs -> True) 2 (discoveredClues -> n) _ -> do

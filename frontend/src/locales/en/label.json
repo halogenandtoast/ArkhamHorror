@@ -571,6 +571,7 @@
   "chooseNewDriver": "Choose new driver for {name}",
   "setNamelessMadnessAside": "Set {count} the nameless madness aside",
   "chooseInvestigatorToTakeSeal": "Choose Investigator to take the {'{'}{seal}{'}'} seal",
+  "lookAtAncientFacility": "Look at the revealed side of up to two Ancient Facility locations",
   "addCurseTokensUpTo": "Add up to {count} {'{'}curse{'}'} tokens to the chaos bag",
   "sealCurseTokensUpTo": "Seal up to {count} {'{'}curse{'}'} tokens",
   "resourcesToRemove": "Resources to remove",

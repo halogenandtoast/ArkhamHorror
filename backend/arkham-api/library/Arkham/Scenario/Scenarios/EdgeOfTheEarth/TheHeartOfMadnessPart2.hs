@@ -14,7 +14,7 @@ import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemi
 import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.Log ()
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier, modifySelect)
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
@@ -223,7 +223,16 @@ instance RunMessage TheHeartOfMadnessPart2 where
           <> mapOneOf LocationWithLabel ["facility7", "facility8", "facility9", "facility10", "facility11"]
 
       chooseTargetM lead ls (\l -> reveal l >> placeAllAt l)
+      doStep 2 Setup
 
+      pure s
+    DoStep 2 Setup -> do
+      whenM (hasModifier ScenarioTarget (ScenarioModifier "scoutedTheForkedPass")) do
+        lead <- getLead
+        facilities <- select $ LocationWithUnrevealedTitle "Ancient Facility"
+        chooseUpToNM_ lead 2 do
+          unscoped $ questionLabeled "lookAtAncientFacility"
+          targets facilities (lookAtRevealed lead ScenarioSource)
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

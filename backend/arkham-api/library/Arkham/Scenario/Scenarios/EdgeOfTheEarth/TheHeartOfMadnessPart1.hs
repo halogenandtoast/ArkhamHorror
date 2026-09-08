@@ -11,8 +11,8 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
 import Arkham.FlavorText
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier, modifySelect)
+import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
@@ -139,6 +139,12 @@ instance RunMessage TheHeartOfMadnessPart1 where
       addTekeliliDeck
     DoStep 2 Setup -> do
       connectAllLocations
+      whenM (hasModifier ScenarioTarget (ScenarioModifier "scoutedTheForkedPass")) do
+        lead <- getLead
+        facilities <- select $ LocationWithUnrevealedTitle "Ancient Facility"
+        chooseUpToNM_ lead 2 do
+          unscoped $ questionLabeled "lookAtAncientFacility"
+          targets facilities (lookAtRevealed lead ScenarioSource)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of

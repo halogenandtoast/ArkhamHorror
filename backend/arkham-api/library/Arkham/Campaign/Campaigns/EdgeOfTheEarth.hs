@@ -1161,6 +1161,12 @@ instance RunMessage EdgeOfTheEarth where
             do
               for_ extraCardsIids \iid ->
                 scenarioSetupModifier "08648a" CampaignSource iid (StartingHand 2)
+              when scoutedTheForkedPass
+                $ scenarioSetupModifier
+                  "08648a"
+                  CampaignSource
+                  ScenarioTarget
+                  (ScenarioModifier "scoutedTheForkedPass")
               pushAll
                 [ ResetInvestigators
                 , ResetGame
@@ -1173,6 +1179,12 @@ instance RunMessage EdgeOfTheEarth where
             do
               for_ extraCardsIids \iid ->
                 scenarioSetupModifier "08648b" CampaignSource iid (StartingHand 2)
+              when scoutedTheForkedPass
+                $ scenarioSetupModifier
+                  "08648b"
+                  CampaignSource
+                  ScenarioTarget
+                  (ScenarioModifier "scoutedTheForkedPass")
               push $ NextCampaignStep $ continue TheHeartOfMadnessPart2
 
         pure c

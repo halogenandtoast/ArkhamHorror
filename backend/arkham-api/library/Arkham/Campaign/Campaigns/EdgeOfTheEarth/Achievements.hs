@@ -322,10 +322,12 @@ runEdgeOfTheEarthAchievements msg = whenEligibleCampaign $ case msg of
 
     {- "There and Back Again": the checklist of expedition members who came home,
     accumulated across playthroughs by the API layer. The final scenario records
-    every surviving partner (and investigator) in this set.
+    every surviving partner (and investigator) in this set, under their Resolute
+    printing's code if they confronted their demons.
     -}
     survivors <- getRecordSet TheSurvivorsOfTheExpeditionWere
-    let came (def, _) = recorded (toCardCode def) `elem` survivors
+    let came (def, _) =
+          any ((`elem` survivors) . recorded) [toCardCode def, toResolute (toCardCode def)]
     achievementProgress (EdgeOfTheEarthAchievement ThereAndBackAgain)
       $ map snd
       $ filter came survivorItems

@@ -26,10 +26,9 @@ instance HasAbilities ProtoplasmicMass where
       $ PhaseEnds #when #enemy
 
 instance RunMessage ProtoplasmicMass where
-  runMessage msg (ProtoplasmicMass attrs) = runQueueT $ case msg of
+  runMessage msg e@(ProtoplasmicMass attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      doStep 1 msg
-      ProtoplasmicMass <$> liftRunMessage HuntersMove attrs
-    DoStep 1 (UseThisAbility _iid (isSource attrs -> True) 1) -> do
-      ProtoplasmicMass <$> liftRunMessage (Do EnemiesAttack) attrs
+      readyThis attrs
+      resolveEnemyPhaseOf attrs
+      pure e
     _ -> ProtoplasmicMass <$> liftRunMessage msg attrs

@@ -44,8 +44,7 @@ instance RunMessage CatacombsStinksOfDeath where
       enemies <- select $ NearestEnemyTo iid EnemyCanMove
       chooseTargetM iid enemies \enemy -> do
         readyThis enemy
-        sendMessage enemy HuntersMove
-        sendMessage enemy (Do EnemiesAttack)
+        resolveEnemyPhaseOf enemy
       pure l
     UseCardAbility _iid (isSource attrs -> True) 3 (defeatedEnemy -> enemy) _ -> do
       cancelEnemyDefeat enemy

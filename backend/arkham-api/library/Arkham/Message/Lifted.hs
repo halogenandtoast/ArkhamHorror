@@ -3455,6 +3455,12 @@ cancelMovement source investigator = do
 sendMessage :: (ReverseQueue m, Targetable target) => target -> Message -> m ()
 sendMessage target msg = push $ SendMessage (toTarget target) msg
 
+-- | An enemy resolves the enemy phase again: its hunter keyword, then its attack.
+resolveEnemyPhaseOf :: (ReverseQueue m, Targetable target) => target -> m ()
+resolveEnemyPhaseOf enemy = do
+  sendMessage enemy HuntersMove
+  sendMessage enemy (Do EnemiesAttack)
+
 sendMessage' :: (ReverseQueue m, Targetable target) => target -> QueueT Message m () -> m ()
 sendMessage' target body = do
   msgs <- capture body

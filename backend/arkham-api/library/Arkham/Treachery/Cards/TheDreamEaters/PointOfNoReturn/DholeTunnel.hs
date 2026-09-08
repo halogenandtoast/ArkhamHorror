@@ -20,11 +20,8 @@ instance RunMessage DholeTunnel where
       mSlitheringDhole <- selectOne $ enemyIs Enemies.slitheringDhole
       case mSlitheringDhole of
         Just slitheringDhole -> do
-          pushAll
-            [ Ready (toTarget slitheringDhole)
-            , SendMessage (toTarget slitheringDhole) HuntersMove
-            , SendMessage (toTarget slitheringDhole) (Do EnemiesAttack)
-            ]
+          readyThis slitheringDhole
+          resolveEnemyPhaseOf slitheringDhole
         Nothing -> do
           nearestDholeTunnel <-
             select $ NearestLocationTo iid (LocationWithTreachery $ treacheryIs Cards.dholeTunnel)

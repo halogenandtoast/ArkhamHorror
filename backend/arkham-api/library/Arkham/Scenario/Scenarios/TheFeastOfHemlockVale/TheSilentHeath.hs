@@ -187,8 +187,7 @@ instance RunMessage TheSilentHeath where
       enemies <- select $ NearestEnemyTo iid (EnemyWithTrait Insect)
       chooseTargetM iid enemies \enemy -> do
         readyThis enemy
-        sendMessage enemy HuntersMove
-        sendMessage enemy (Do EnemiesAttack)
+        resolveEnemyPhaseOf enemy
       pure s
     ResolveChaosToken _ ElderThing iid | isEasyStandard attrs -> do
       atLair <- selectAny $ locationWithInvestigator iid <> LocationWithTrait Lair

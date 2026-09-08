@@ -28,7 +28,7 @@ instance HasAbilities LimulusHybridInTheLight where
       a
       [ restricted a 1 (isDark a <> youExist LeadInvestigator)
           $ SilentForcedAbility
-          $ oneOf [EnemyEnters #when Anywhere (be a), EnemySpawns #when Anywhere (be a)]
+          $ oneOf [EnemyEnters #when Anywhere (be a), EnemySpawns #when (PlacementAt Anywhere) (be a)]
       , mkAbility a 2 $ forced $ EnemyFlipped #after (be a)
       ]
 

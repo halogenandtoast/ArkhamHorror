@@ -28,7 +28,7 @@ instance HasAbilities HistoricalSocietyRecordOffice_138 where
   getAbilities (HistoricalSocietyRecordOffice_138 a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
+      [ mkAbility a 1 $ forced $ EnemySpawns #when (PlacementAt $ be a) AnyEnemy
       | a.unrevealed
       ]
 

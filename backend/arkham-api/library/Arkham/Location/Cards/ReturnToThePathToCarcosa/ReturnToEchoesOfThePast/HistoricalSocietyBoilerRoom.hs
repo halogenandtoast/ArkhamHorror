@@ -16,7 +16,7 @@ historicalSocietyBoilerRoom = location HistoricalSocietyBoilerRoom Cards.histori
 instance HasAbilities HistoricalSocietyBoilerRoom where
   getAbilities (HistoricalSocietyBoilerRoom a) =
     if a.unrevealed
-      then extendUnrevealed1 a $ mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
+      then extendUnrevealed1 a $ mkAbility a 1 $ forced $ EnemySpawns #when (PlacementAt $ be a) AnyEnemy
       else extendRevealed1 a $ mkAbility a 1 $ forced $ DiscoverClues #after You (be a) AnyValue
 
 instance RunMessage HistoricalSocietyBoilerRoom where

@@ -23,7 +23,7 @@ instance HasAbilities HistoricalSocietyMeetingRoom where
           playerLimit PerRound
             $ restricted a 1 (Here <> canDiscoverCluesAt (be a))
             $ actionAbilityWithCost (ExhaustAssetCost #ally)
-        else mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
+        else mkAbility a 1 $ forced $ EnemySpawns #when (PlacementAt $ be a) AnyEnemy
 
 instance RunMessage HistoricalSocietyMeetingRoom where
   runMessage msg l@(HistoricalSocietyMeetingRoom attrs) = runQueueT $ case msg of

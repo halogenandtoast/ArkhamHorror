@@ -6254,6 +6254,7 @@ library
       Arkham.Matcher.Location
       Arkham.Matcher.Patterns
       Arkham.Matcher.Phase
+      Arkham.Matcher.Placement
       Arkham.Matcher.Scenario
       Arkham.Matcher.Skill
       Arkham.Matcher.SkillTest

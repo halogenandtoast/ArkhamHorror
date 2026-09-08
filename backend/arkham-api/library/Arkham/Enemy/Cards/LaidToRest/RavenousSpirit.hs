@@ -28,7 +28,7 @@ instance HasAbilities RavenousSpirit where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ oneOf [EnemyEnters #after Anywhere (be a), EnemySpawns #after Anywhere (be a)]
+      $ oneOf [EnemyEnters #after Anywhere (be a), EnemySpawns #after (PlacementAt Anywhere) (be a)]
 
 instance RunMessage RavenousSpirit where
   runMessage msg e@(RavenousSpirit attrs) = runQueueT $ case msg of

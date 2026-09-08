@@ -286,7 +286,7 @@ fendOff3 =
   (event "08082" "Fend Off" 2 Survivor)
     { cdSkills = [#agility, #agility]
     , cdCardTraits = setFromList [Gambit, Trick]
-    , cdFastWindow = Just $ EnemySpawns #when YourLocation NonEliteEnemy
+    , cdFastWindow = Just $ EnemySpawns #when (PlacementAt YourLocation) NonEliteEnemy
     , cdLevel = Just 3
     }
 

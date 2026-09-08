@@ -27,7 +27,7 @@ instance HasAbilities HistoricalSocietyPeabodysOffice where
   getAbilities (HistoricalSocietyPeabodysOffice attrs) =
     extend
       attrs
-      [ mkAbility attrs 1 $ forced $ EnemySpawns #when (be attrs) AnyEnemy
+      [ mkAbility attrs 1 $ forced $ EnemySpawns #when (PlacementAt $ be attrs) AnyEnemy
       | attrs.unrevealed
       ]
 

@@ -32,7 +32,7 @@ import Arkham.Helpers.Defeat (defeatedByMatches)
 import {-# SOURCE #-} Arkham.Helpers.Enemy (enemyAttackMatches)
 import Arkham.Helpers.GameValue (gameValueMatches)
 import {-# SOURCE #-} Arkham.Helpers.Investigator (matchWho)
-import Arkham.Helpers.Location (locationMatches)
+import Arkham.Helpers.Location (locationMatches, placementLocation)
 import Arkham.Helpers.Phase (matchPhase)
 import {-# SOURCE #-} Arkham.Helpers.Playable (getIsPlayable)
 import Arkham.Helpers.Ref (sourceToMaybeCard)
@@ -49,6 +49,7 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
+import Arkham.Placement (Placement)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Search (searchSource)
@@ -394,6 +395,30 @@ matcherTiming :: Matcher.WindowMatcher -> Maybe Timing
 matcherTiming m = case gmapQ cast m of
   (mTiming : _) -> mTiming
   [] -> Nothing
+
+{- | Where a window says a card came to rest. 'PlacementAt' resolves the
+placement to a location (a threat area and an attachment resolve to their
+host's), so a placement that has none -- the shadows -- matches only
+'AnyPlacement', 'PlacementIs', or a negation.
+-}
+placementMatches
+  :: (HasGame m, HasCallStack)
+  => InvestigatorId
+  -> Source
+  -> Window
+  -> Placement
+  -> Matcher.PlacementMatcher
+  -> m Bool
+placementMatches iid source window' placement = \case
+  Matcher.AnyPlacement -> pure True
+  Matcher.PlacementIs p -> pure $ placement == p
+  Matcher.PlacementAt whereMatcher ->
+    placementLocation placement >>= \case
+      Nothing -> pure False
+      Just lid -> locationMatches iid source window' lid whereMatcher
+  Matcher.PlacementOneOf ms -> anyM (placementMatches iid source window' placement) ms
+  Matcher.PlacementMatchAll ms -> allM (placementMatches iid source window' placement) ms
+  Matcher.NotPlacement m -> not <$> placementMatches iid source window' placement m
 
 windowMatches
   :: (HasGame m, HasCallStack)
@@ -1594,12 +1619,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.TreacheryEntersPlay timing treacheryMatcher -> guardTiming timing $ \case
       Window.TreacheryEntersPlay treacheryId -> treacheryId <=~> treacheryMatcher
       _ -> noMatch
-    Matcher.EnemySpawns timing whereMatcher enemyMatcher ->
+    Matcher.EnemySpawns timing placementMatcher enemyMatcher ->
       guardTiming timing $ \case
-        Window.EnemySpawns enemyId locationId ->
+        Window.EnemySpawns enemyId placement ->
           andM
             [ matches enemyId enemyMatcher
-            , locationMatches iid source window' locationId whereMatcher
+            , placementMatches iid source window' placement placementMatcher
             ]
         _ -> noMatch
     Matcher.EnemyWouldAttack timing whoMatcher enemyAttackMatcher enemyMatcher ->

@@ -20,7 +20,7 @@ instance HasAbilities LodgeNeophyte where
   getAbilities (LodgeNeophyte a) =
     withBaseAbilities
       a
-      [ restricted a 1 CanPlaceDoomOnThis $ forced $ EnemySpawns #after Anywhere (be a)
+      [ restricted a 1 CanPlaceDoomOnThis $ forced $ EnemySpawns #after AnyPlacement (be a)
       , skillTestAbility $ restricted a 2 OnSameLocation parleyAction_
       ]
 

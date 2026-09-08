@@ -24,7 +24,10 @@ instance HasAbilities KhalidBelovedCompanion where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ EnemySpawns #after (oneOf [LocationWithEnemy NonEliteEnemy, LocationWithToken Civilian]) (be a)
+      $ EnemySpawns
+        #after
+        (PlacementAt $ oneOf [LocationWithEnemy NonEliteEnemy, LocationWithToken Civilian])
+        (be a)
 
 instance RunMessage KhalidBelovedCompanion where
   runMessage msg e@(KhalidBelovedCompanion attrs) = runQueueT $ case msg of

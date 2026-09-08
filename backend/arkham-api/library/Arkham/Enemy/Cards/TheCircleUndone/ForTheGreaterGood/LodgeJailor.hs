@@ -24,7 +24,7 @@ instance HasAbilities LodgeJailor where
   getAbilities (LodgeJailor a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ EnemySpawns #after Anywhere (be a)
+      [ mkAbility a 1 $ forced $ EnemySpawns #after AnyPlacement (be a)
       , skillTestAbility $ restricted a 2 OnSameLocation parleyAction_
       ]
 

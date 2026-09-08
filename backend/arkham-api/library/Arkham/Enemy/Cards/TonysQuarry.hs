@@ -29,7 +29,7 @@ instance HasAbilities TonysQuarry where
   getAbilities (TonysQuarry a) =
     withBaseAbilities
       a
-      [mkAbility a 1 $ ForcedAbility $ EnemySpawns #after Anywhere $ EnemyWithId (toId a)]
+      [mkAbility a 1 $ ForcedAbility $ EnemySpawns #after AnyPlacement $ EnemyWithId (toId a)]
 
 -- Bounty needs to be via a THEN, two things can affect a THEN:
 

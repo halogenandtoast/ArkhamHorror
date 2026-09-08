@@ -17,7 +17,10 @@ oldBurialHill = locationWith OldBurialHill Cards.oldBurialHill 4 (PerPlayer 1) c
 
 instance HasAbilities OldBurialHill where
   getAbilities (OldBurialHill a) =
-    extendRevealed1 a $ mkAbility a 1 $ forced $ EnemySpawns #after (be a) (EnemyWithTrait Manifold)
+    extendRevealed1 a
+      $ mkAbility a 1
+      $ forced
+      $ EnemySpawns #after (PlacementAt $ be a) (EnemyWithTrait Manifold)
 
 instance RunMessage OldBurialHill where
   runMessage msg l@(OldBurialHill attrs) = runQueueT $ case msg of

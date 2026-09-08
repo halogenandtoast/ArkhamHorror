@@ -22,7 +22,7 @@ instance HasAbilities ApocalypticPresage where
   getAbilities (ApocalypticPresage a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ EnemySpawns #when Anywhere (be a)
+      [ mkAbility a 1 $ forced $ EnemySpawns #when AnyPlacement (be a)
       , mkAbility a 2 $ freeReaction $ EnemyDefeated #when Anyone ByAny (be a)
       ]
 

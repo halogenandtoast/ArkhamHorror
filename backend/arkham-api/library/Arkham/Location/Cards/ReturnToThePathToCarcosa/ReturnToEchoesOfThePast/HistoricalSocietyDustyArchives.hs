@@ -19,7 +19,7 @@ instance HasModifiersFor HistoricalSocietyDustyArchives where
 
 instance HasAbilities HistoricalSocietyDustyArchives where
   getAbilities (HistoricalSocietyDustyArchives a) =
-    extendUnrevealed1 a $ mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
+    extendUnrevealed1 a $ mkAbility a 1 $ forced $ EnemySpawns #when (PlacementAt $ be a) AnyEnemy
 
 instance RunMessage HistoricalSocietyDustyArchives where
   runMessage msg l@(HistoricalSocietyDustyArchives attrs) = runQueueT $ case msg of

@@ -22,7 +22,7 @@ instance HasAbilities AdamTanner where
     [ groupLimit PerGame
         $ controlled a 1 ControlsThis
         $ freeReaction
-        $ EnemySpawns #when (locationWithAsset a.id) AnyEnemy
+        $ EnemySpawns #when (PlacementAt $ locationWithAsset a.id) AnyEnemy
     ]
 
 instance RunMessage AdamTanner where

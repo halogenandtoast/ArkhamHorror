@@ -22,7 +22,7 @@ instance HasAbilities DarrellsKodak where
   getAbilities (DarrellsKodak a) =
     [ controlled_ a 1
         $ triggered
-          (oneOf [EnemySpawns #after Anywhere AnyEnemy, TreacheryEntersPlay #after AnyTreachery])
+          (oneOf [EnemySpawns #after AnyPlacement AnyEnemy, TreacheryEntersPlay #after AnyTreachery])
           (exhaust a)
     , controlled_ a 2
         $ freeReaction
@@ -57,9 +57,9 @@ instance RunMessage DarrellsKodak where
       placeTokens (attrs.ability 1) target Evidence 1
       pure a
     UseCardAbility _iid (isSource attrs -> True) 2 (discoveredClues -> n) _ -> do
-      push $ DoStep n msg
+      doStep n msg
       pure a
-    DoStep n msg'@(UseCardAbility iid (isSource attrs -> True) 2 (discoveredLocation -> lid) _) | n > 0 -> do
+    DoStep n (UseCardAbility iid (isSource attrs -> True) 2 (discoveredLocation -> lid) _) | n > 0 -> do
       enemies <- selectTargets $ EnemyWithToken Evidence <> oneOf [enemyAt lid, not_ (EnemyAt Anywhere)]
       treacheries <-
         selectTargets $ TreacheryWithToken Evidence <> oneOf [treacheryAt lid, not_ (TreacheryAt Anywhere)]
@@ -67,6 +67,6 @@ instance RunMessage DarrellsKodak where
         chooseOrRunOneM iid do
           targets (enemies <> treacheries) \target -> do
             moveTokens (attrs.ability 2) (targetToSource target) attrs Evidence 1
-            doStep (n - 1) msg'
+            doNextStep msg
       pure a
     _ -> DarrellsKodak <$> liftRunMessage msg attrs

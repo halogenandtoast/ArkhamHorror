@@ -26,7 +26,11 @@ instance HasAbilities HistoricalSocietyReadingRoom where
               $ groupLimit PerRound
               $ investigateAbility attrs 1 mempty Here
           ]
-        else [mkAbility attrs 1 $ ForcedAbility $ EnemySpawns #when (LocationWithId $ toId attrs) AnyEnemy]
+        else
+          [ mkAbility attrs 1
+              $ ForcedAbility
+              $ EnemySpawns #when (PlacementAt $ LocationWithId $ toId attrs) AnyEnemy
+          ]
 
 instance RunMessage HistoricalSocietyReadingRoom where
   runMessage msg l@(HistoricalSocietyReadingRoom attrs) = runQueueT $ case msg of

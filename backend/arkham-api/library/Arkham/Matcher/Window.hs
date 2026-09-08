@@ -23,6 +23,7 @@ import Arkham.Matcher.Investigator
 import Arkham.Matcher.Key
 import Arkham.Matcher.Location
 import Arkham.Matcher.Phase
+import Arkham.Matcher.Placement
 import Arkham.Matcher.SkillTest
 import Arkham.Matcher.SkillType
 import Arkham.Matcher.Source
@@ -243,7 +244,7 @@ data WindowMatcher
   | SuccessfullyInvestigatedWithNoClues Timing Who Where
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemyWouldSpawnAt EnemyMatcher LocationMatcher
-  | EnemySpawns Timing Where EnemyMatcher
+  | EnemySpawns Timing PlacementMatcher EnemyMatcher
   | EnemyFlipped Timing EnemyMatcher
   | EnemyPlaced Timing Placement EnemyMatcher
   | EnemyEntersPlay Timing EnemyMatcher
@@ -417,6 +418,13 @@ instance FromJSON WindowMatcher where
         case econtents of
           Left (a, b, c) -> pure $ EnemyAttackedSuccessfully a b AnySource c
           Right (a, b, c, d) -> pure $ EnemyAttackedSuccessfully a b c d
+      -- The window used to carry a LocationMatcher; a spawn that lands
+      -- nowhere (the shadows) needs the whole placement (#5649).
+      "EnemySpawns" -> do
+        econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        case econtents of
+          Left (a, b, c) -> pure $ EnemySpawns a (PlacementAt b) c
+          Right (a, b, c) -> pure $ EnemySpawns a b c
       "WouldAddChaosTokensToChaosBag" -> do
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of

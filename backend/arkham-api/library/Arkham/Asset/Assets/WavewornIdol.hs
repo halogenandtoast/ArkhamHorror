@@ -17,7 +17,11 @@ instance HasAbilities WavewornIdol where
   getAbilities (WavewornIdol x) =
     [ controlled_ x 1
         $ triggered
-          (oneOf [FloodLevelChanged #after YourLocation, EnemySpawns #after YourLocation (withTrait DeepOne)])
+          ( oneOf
+              [ FloodLevelChanged #after YourLocation
+              , EnemySpawns #after (PlacementAt YourLocation) (withTrait DeepOne)
+              ]
+          )
           (exhaust x)
     ]
 

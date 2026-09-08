@@ -23,7 +23,7 @@ discipleOfTheDevourer =
 
 instance HasAbilities DiscipleOfTheDevourer where
   getAbilities (DiscipleOfTheDevourer x) =
-    extend1 x $ mkAbility x 1 $ forced $ EnemySpawns #after Anywhere (be x)
+    extend1 x $ mkAbility x 1 $ forced $ EnemySpawns #after AnyPlacement (be x)
 
 instance RunMessage DiscipleOfTheDevourer where
   runMessage msg e@(DiscipleOfTheDevourer attrs) = runQueueT $ case msg of

@@ -20,7 +20,7 @@ vaultOfEarthlyDemise = treachery VaultOfEarthlyDemise Cards.vaultOfEarthlyDemise
 
 instance HasAbilities VaultOfEarthlyDemise where
   getAbilities (VaultOfEarthlyDemise attrs) =
-    [mkAbility attrs 1 $ forced $ EnemySpawns #when Anywhere $ enemyIs Cards.umordhoth]
+    [mkAbility attrs 1 $ forced $ EnemySpawns #when AnyPlacement $ enemyIs Cards.umordhoth]
 
 instance HasModifiersFor VaultOfEarthlyDemise where
   getModifiersFor (VaultOfEarthlyDemise attrs) = do

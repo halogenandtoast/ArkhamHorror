@@ -34,7 +34,7 @@ instance HasAbilities HistoricalSocietyHistoricalLibrary_136 where
                 (HorrorCost (toSource attrs) YouTarget 2)
               $ SkillTestResult #after You (whileInvestigating attrs) #success
           ]
-        else [mkAbility attrs 1 $ forced $ EnemySpawns #when (be attrs) AnyEnemy]
+        else [mkAbility attrs 1 $ forced $ EnemySpawns #when (PlacementAt $ be attrs) AnyEnemy]
 
 instance RunMessage HistoricalSocietyHistoricalLibrary_136 where
   runMessage msg l@(HistoricalSocietyHistoricalLibrary_136 attrs) = runQueueT $ case msg of

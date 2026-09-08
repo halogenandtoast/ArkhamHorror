@@ -28,7 +28,7 @@ instance HasAbilities SaadiansTombs where
           a
           [ mkAbility a 1
               $ forced
-              $ oneOf [EnemySpawns #when (be a) NonEliteEnemy, EnemyEnters #when (be a) NonEliteEnemy]
+              $ oneOf [EnemySpawns #when (PlacementAt $ be a) NonEliteEnemy, EnemyEnters #when (be a) NonEliteEnemy]
           , becomeAbandonedAbility a 2
           ]
       else extendUnrevealed1 a $ becomeAbandonedAbility a 1

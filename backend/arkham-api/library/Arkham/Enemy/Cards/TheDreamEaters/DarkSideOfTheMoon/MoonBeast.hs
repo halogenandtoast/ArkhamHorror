@@ -20,7 +20,7 @@ instance HasAbilities MoonBeast where
   getAbilities (MoonBeast a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ EnemySpawns #after Anywhere $ be a
+      [ mkAbility a 1 $ forced $ EnemySpawns #after AnyPlacement $ be a
       , mkAbility a 2 $ forced $ EnemyDefeated #after You ByAny $ be a
       ]
 

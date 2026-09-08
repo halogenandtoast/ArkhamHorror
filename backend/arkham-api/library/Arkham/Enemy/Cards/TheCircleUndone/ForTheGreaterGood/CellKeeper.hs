@@ -23,7 +23,7 @@ instance HasAbilities CellKeeper where
   getAbilities (CellKeeper a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ EnemySpawns #after Anywhere (be a)
+      [ mkAbility a 1 $ forced $ EnemySpawns #after AnyPlacement (be a)
       , restricted a 2 keyCriteria
           $ forced
           $ SkillTestResult #after You (WhileEvadingAnEnemy $ be a) (SuccessResult $ atLeast 2)

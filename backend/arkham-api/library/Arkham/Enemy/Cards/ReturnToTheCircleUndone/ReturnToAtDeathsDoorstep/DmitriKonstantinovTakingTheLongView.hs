@@ -23,7 +23,7 @@ instance HasAbilities DmitriKonstantinovTakingTheLongView where
   getAbilities (DmitriKonstantinovTakingTheLongView a) =
     extend
       a
-      [ restricted a 1 CanPlaceDoomOnThis $ forced $ EnemySpawns #after Anywhere (be a)
+      [ restricted a 1 CanPlaceDoomOnThis $ forced $ EnemySpawns #after AnyPlacement (be a)
       , restricted a 2 (thisExists a EnemyWithAnyDoom)
           $ freeReaction
           $ SkillTestResult #after You (WhileEvadingAnEnemy $ be a) (SuccessResult $ atLeast 2)

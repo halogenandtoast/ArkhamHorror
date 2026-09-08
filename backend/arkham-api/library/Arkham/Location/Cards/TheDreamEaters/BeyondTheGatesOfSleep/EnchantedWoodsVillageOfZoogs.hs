@@ -20,7 +20,7 @@ instance HasAbilities EnchantedWoodsVillageOfZoogs where
     extend1 a
       $ mkAbility a 1
       $ forced
-      $ EnemySpawns #after (be a) (EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm)
+      $ EnemySpawns #after (PlacementAt $ be a) (EnemyWithTrait Zoog <> SwarmingEnemy <> NotEnemy IsSwarm)
 
 instance RunMessage EnchantedWoodsVillageOfZoogs where
   runMessage msg l@(EnchantedWoodsVillageOfZoogs attrs) = runQueueT $ case msg of

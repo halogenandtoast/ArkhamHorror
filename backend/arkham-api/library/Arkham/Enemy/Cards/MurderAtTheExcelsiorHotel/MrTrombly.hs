@@ -25,7 +25,7 @@ instance HasAbilities MrTrombly where
       a
       [ mkAbility a 1
           $ ForcedAbility
-          $ EnemySpawns #after Anywhere
+          $ EnemySpawns #after AnyPlacement
           $ EnemyWithId (toId a)
       ]
 

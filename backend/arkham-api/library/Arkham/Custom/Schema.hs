@@ -89,6 +89,7 @@ customSchema =
          ''WindowType
        , ''EnemyMatcher
        , ''LocationMatcher
+       , ''PlacementMatcher
        , ''InvestigatorMatcher
        , ''AssetMatcher
        , ''TreacheryMatcher

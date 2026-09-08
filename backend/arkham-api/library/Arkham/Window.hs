@@ -288,7 +288,7 @@ data WindowType
     EnemyWouldBeEvaded InvestigatorId EnemyId
   | EnemyLeaves EnemyId LocationId
   | EnemyWouldSpawnAt EnemyId LocationId
-  | EnemySpawns EnemyId LocationId
+  | EnemySpawns EnemyId Placement
   | EnemyFlipped EnemyId
   | EnemyPlaced EnemyId Placement
   | EnemyWouldAttack EnemyAttackDetails
@@ -531,6 +531,13 @@ mconcat
               case contents of
                 Left cs -> pure $ WouldAddChaosTokensToChaosBag Nothing cs
                 Right (i, cs) -> pure $ WouldAddChaosTokensToChaosBag i cs
+            -- Used to carry the LocationId spawned at; a spawn into the
+            -- shadows has no location, so it carries the placement (#5649).
+            "EnemySpawns" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              case contents of
+                Right (eid, placement) -> pure $ EnemySpawns eid placement
+                Left (eid, lid) -> pure $ EnemySpawns eid (AtLocation lid)
             "PerformedDifferentTypesOfActionsInARow" -> do
               -- New shape carries the per-action type groups ([[Action]]); old
               -- saves carry a single flattened SDR ([Action]). Treat each legacy

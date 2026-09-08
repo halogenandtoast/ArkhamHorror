@@ -156,10 +156,10 @@ instance RunMessage TheWesternWall where
           li "setCardsAside"
           li "setAsideCoralStarSpawn"
           scope version $ li "buildActDeck"
-          li "chooseExpeditionAsset"
+          scope version $ li "chooseExpeditionAsset"
           li.nested "addFloodTokens" do
-            li "floodLevelsTwoToFive"
-            li "fullyFloodLevelsFourAndFive"
+            scope version $ li "floodLevels"
+            scope version $ li "fullyFloodLevels"
           li "buildEncounterDeck"
           li "readyToBegin"
 
@@ -235,24 +235,33 @@ instance RunMessage TheWesternWall where
           $ uncurry placeInGrid
       bottomLocations <-
         for (zip [atLevel 0 5, atLevel 1 5, atLevel 2 5] bottomRow) $ uncurry placeInGrid
-      let levelFourAndFive = drop 3 upperLocations <> bottomLocations
+      -- V.I floods levels 2–5 and fully floods 4–5; V.II starts at the ocean
+      -- floor instead, so it floods levels 1–4 and fully floods 1–2.
+      let (flooded, fullyFlooded) =
+            if headedWest
+              then
+                ( upperLocations <> bottomLocations
+                , drop 3 upperLocations <> bottomLocations
+                )
+              else
+                ( startingLocation : upperLocations
+                , startingLocation : take 1 upperLocations
+                )
 
-      traverse_ (push . IncreaseFloodLevel) $ upperLocations <> bottomLocations
-      traverse_ (push . IncreaseFloodLevel) levelFourAndFive
+      traverse_ (push . IncreaseFloodLevel) flooded
+      traverse_ (push . IncreaseFloodLevel) fullyFlooded
       startAt startingLocation
       whenHasRecord TheExpeditionLeftThePilgrim $ removeAllClues attrs startingLocation
       eachInvestigator (`forInvestigator` Setup)
     ForInvestigator iid Setup -> do
+      -- v.II offers an earned Artifact or an Expedition Item; v.I only the Item.
+      headedWest <- getHasRecord TheExpeditionHeadedWest
+      artifacts <- if headedWest then pure [] else getAvailableArtifacts
       chooseOneM iid do
         questionLabeled "chooseExpeditionAssetQuestion"
         labeled "noExpeditionAsset" nothing
-        for_
-          [ Assets.expeditionGear
-          , Assets.laudanum
-          , Assets.alienTablet
-          , Assets.divingSuitTheDrownedCity
-          ]
-          \asset -> cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
+        for_ (artifacts <> expeditionItems) \asset ->
+          cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
       for_ (lookupCardDef cardCode) \def -> do

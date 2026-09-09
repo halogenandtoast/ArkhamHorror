@@ -34,6 +34,7 @@ instance HasModifiersFor CthulhuWickedClaw where
       , CannotBeDamaged
       , CannotBeDefeated
       , DoNotExhaust -- "cannot be exhausted"
+      , DoNotExhaustEvaded
       ]
 
 instance HasAbilities CthulhuWickedClaw where

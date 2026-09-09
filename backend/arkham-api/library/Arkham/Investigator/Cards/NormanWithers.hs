@@ -2,7 +2,6 @@ module Arkham.Investigator.Cards.NormanWithers (normanWithers) where
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Deck qualified as Deck
 import Arkham.Helpers
 import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Modifiers
@@ -82,20 +81,28 @@ instance RunMessage NormanWithers where
       pure $ NormanWithers $ a & setMeta (metadata {drawingForcedWeakness = True})
     When (RevealChaosToken _ iid token) | iid == toId a -> do
       faces <- getModifiedChaosTokenFace token
-      when (ElderSign `elem` faces && not (null (unDeck (investigatorDeck a)))) $ do
+      canManipulate <- withoutModifier a CannotManipulateDeck
+      when (ElderSign `elem` faces && canManipulate && not (null (unDeck (investigatorDeck a)))) $ do
         hand <- field InvestigatorHand iid
         player <- getPlayer iid
         push
           $ chooseOne player
           $ Label "$label.doNotSwap" []
-          : [ targetLabel
-                (toCardId c)
-                [ drawCards iid (ChaosTokenEffectSource ElderSign) 1
-                , PutCardOnTopOfDeck iid (Deck.InvestigatorDeck iid) (toCard c)
-                ]
+          : [ targetLabel (toCardId c) [handleTargetChoice iid (ChaosTokenEffectSource ElderSign) (toCardId c)]
             | c <- onlyPlayerCards hand
             ]
       pure i
+    -- This is a swap, not a draw: the top card and the chosen card change places in one step so
+    -- no draw window fires and the deck is never briefly missing its top card
+    HandleTargetChoice iid (ChaosTokenEffectSource ElderSign) (CardIdTarget cid) | iid == toId a -> do
+      case (unDeck (investigatorDeck a), find ((== cid) . toCardId) (onlyPlayerCards $ investigatorHand a)) of
+        (top : rest, Just handCard) ->
+          pure
+            $ NormanWithers
+            $ a
+            & (deckL .~ Deck (handCard : rest))
+            & (handL %~ map (\c -> if toCardId c == cid then toCard top else c))
+        _ -> pure i
     Do BeginRound -> do
       attrs' <- runMessage msg a
       pure $ NormanWithers $ attrs' & setMeta defaultMetadata

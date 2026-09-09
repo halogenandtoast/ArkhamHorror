@@ -28,9 +28,24 @@ const HIDE_INERT_CARDS_KEY = 'arkhamHideInertCards'
 // happily run but no printed card would ever do.
 const CUSTOM_CARDS_KEY = 'arkhamCustomCardsEnabled'
 
+function loadVariants(): string[] {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem('arkhamUseVariants') ?? '[]')
+    return Array.isArray(value) ? value.filter((v): v is string => typeof v === 'string') : []
+  } catch {
+    return []
+  }
+}
+
 export const useSettings = defineStore("settings", () => {
   const gameId = ref<string | null>(null)
   const splitView = ref(false)
+  const useVariants = ref<string[]>(loadVariants())
+
+  function setUseVariants(variants: string[]) {
+    useVariants.value = [...new Set(variants)]
+    localStorage.setItem('arkhamUseVariants', JSON.stringify(useVariants.value))
+  }
 
   // Dev-only feature flag for Epic Multiplayer. Stored in localStorage, but
   // exposed as `isDevBuild() && stored` so a stale value can never enable it in
@@ -123,6 +138,8 @@ export const useSettings = defineStore("settings", () => {
     showBonded.value = !showBonded.value
   }
   return {
+    useVariants,
+    setUseVariants,
     splitView,
     toggleSplitView,
     showBonded,

@@ -12,6 +12,7 @@ import {
 } from 'vue'
 import { cardImg, formatContent, imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { homebrewTokenMap } from '@/arkham/homebrewAssets'
+import { originalArt } from '@/arkham/artVariants'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useDebug } from '@/arkham/debug'
 import { fetchCard, fetchPlayability, type PlayabilityResponse } from '@/arkham/api'
@@ -392,8 +393,8 @@ const overlayCardCode = computed<string | null>(() => {
   // like an official card code to the fallback matcher below.
   if (!image || image.includes('/homebrew/')) return null
 
-  const match = image.match(/\/cards\/c?(\d+)b?\.(?:avif|jpg|jpeg|png|webp)(?:\?.*)?$/i)
-  return match?.[1] ?? null
+  const match = image.match(/\/cards\/c?(\d+b?)\.(?:avif|jpg|jpeg|png|webp)(?:\?.*)?$/i)
+  return match ? originalArt(match[1]).replace(/b$/, '') : null
 })
 /* Card-def errata covers a whole card, but some errata only applies to one face —
  * and the overlay resolves both faces to the same card def. A `data-errata`
@@ -1060,7 +1061,7 @@ watchEffect(() => {
   if (!src) return
   const m = src.match(/(\d+b?)(_.*)?\.avif$/)
   if (!m) return
-  const code = m[1]
+  const code = originalArt(m[1])
   const tabooSuffix = m[2]
   const language = localStorage.getItem('language') || 'en'
   if (imgsrc(`cards/${m[0]}`).includes(language)) return

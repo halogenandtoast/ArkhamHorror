@@ -4,17 +4,20 @@ import Arkham.Location.CardDefs.Import
 
 arkhamWoodsCliffside :: CardDef
 arkhamWoodsCliffside =
-  locationWithUnrevealed
-    "01153"
-    "Arkham Woods"
-    [Woods]
-    Square
-    [Squiggle]
-    ("Arkham Woods" <:> "Cliffside")
-    [Woods]
-    Hourglass
-    [Squiggle, Moon, Triangle]
-    TheDevourerBelow
+  ( locationWithUnrevealed
+      "01153"
+      "Arkham Woods"
+      [Woods]
+      Square
+      [Squiggle]
+      ("Arkham Woods" <:> "Cliffside")
+      [Woods]
+      Hourglass
+      [Squiggle, Moon, Triangle]
+      TheDevourerBelow
+  )
+    { cdArtVariants = mapFromList [("revised", "01653")]
+    }
 
 arkhamWoodsOldHouse :: CardDef
 arkhamWoodsOldHouse =
@@ -88,7 +91,10 @@ arkhamWoodsUnhallowedGround =
 
 mainPath :: CardDef
 mainPath =
-  location "01149" "Main Path" [Woods] Squiggle [Square, Plus] TheDevourerBelow
+  (location "01149" "Main Path" [Woods] Squiggle [Square, Plus] TheDevourerBelow)
+    { cdArtVariants = mapFromList [("revised", "01649")]
+    , cdBackArtVariants = mapFromList [("revised", "01649b")]
+    }
 
 ritualSite :: CardDef
 ritualSite =

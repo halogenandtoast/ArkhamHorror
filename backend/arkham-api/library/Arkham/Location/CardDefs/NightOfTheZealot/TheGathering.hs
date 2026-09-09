@@ -21,7 +21,10 @@ hallway =
     TheGathering
 
 parlor :: CardDef
-parlor = location "01115" "Parlor" mempty Diamond [Square] TheGathering
+parlor =
+  (location "01115" "Parlor" mempty Diamond [Square] TheGathering)
+    { cdBackArtVariants = mapFromList [("revised", "01615b")]
+    }
 
 study :: CardDef
 study = location "01111" "Study" mempty Circle [] TheGathering

@@ -37,6 +37,15 @@ const customCards = computed({
   set: (value: string) => settings.setCustomCardsEnabled(value === 'On'),
 })
 
+const revisedCoreArt = computed({
+  get: () => settings.useVariants.includes('revised'),
+  set: (enabled: boolean) => settings.setUseVariants(
+    enabled
+      ? [...settings.useVariants, 'revised']
+      : settings.useVariants.filter(variant => variant !== 'revised')
+  ),
+})
+
 const updateLanguage = async (a: Event) => {
   const target = a.target as HTMLSelectElement;
   const selectedLanguage = target.value
@@ -118,6 +127,14 @@ const updateLanguage = async (a: Event) => {
         <router-link v-if="customCardsEnabled" to="/card-builder" class="builder-link">
           {{ $t('settingsForm.openCardBuilder') }}
         </router-link>
+      </section>
+
+      <section class="box column">
+        <label class="radio-label">
+          <input type="checkbox" v-model="revisedCoreArt" aria-describedby="revised-core-art-description" />
+          {{ $t('settingsForm.usedRevisedCoreArt') }}
+        </label>
+        <p id="revised-core-art-description">{{ $t('settingsForm.revisedCoreArtDescription') }}</p>
       </section>
 
       <section class="box column danger-zone">

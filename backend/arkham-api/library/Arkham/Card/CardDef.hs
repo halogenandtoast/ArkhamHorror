@@ -291,6 +291,8 @@ data CardDef = CardDef
   , cdSlots :: [SlotType]
   , cdAlternateCardCodes :: [CardCode]
   , cdArt :: Text
+  , cdArtVariants :: Map Text CardCode
+  , cdBackArtVariants :: Map Text CardCode
   , cdLocationSymbol :: Maybe LocationSymbol
   , cdLocationRevealedSymbol :: Maybe LocationSymbol
   , cdLocationConnections :: [LocationSymbol]
@@ -446,6 +448,8 @@ emptyCardDef cCode name cType =
     , cdSlots = mempty
     , cdAlternateCardCodes = mempty
     , cdArt = unCardCode cCode
+    , cdArtVariants = mempty
+    , cdBackArtVariants = mempty
     , cdLocationSymbol = Nothing
     , cdLocationRevealedSymbol = Nothing
     , cdLocationConnections = mempty
@@ -582,6 +586,8 @@ cardDefKeyValues CardDef {..} =
     , pairWhen (not $ null cdSlots) "slots" cdSlots
     , pairWhen (not $ null cdAlternateCardCodes) "alternateCardCodes" cdAlternateCardCodes
     , ["art" .= cdArt]
+    , ["artVariants" .= cdArtVariants | notNull cdArtVariants]
+    , ["backArtVariants" .= cdBackArtVariants | notNull cdBackArtVariants]
     , pairJust "locationSymbol" cdLocationSymbol
     , pairJust "locationRevealedSymbol" cdLocationRevealedSymbol
     , pairWhen (not $ null cdLocationConnections) "locationConnections" cdLocationConnections
@@ -664,6 +670,8 @@ instance FromJSON CardDef where
     cdSlots <- o .:? "slots" .!= mempty
     cdAlternateCardCodes <- o .:? "alternateCardCodes" .!= mempty
     cdArt <- o .: "art"
+    cdArtVariants <- o .:? "artVariants" .!= mempty
+    cdBackArtVariants <- o .:? "backArtVariants" .!= mempty
     cdLocationSymbol <- o .:? "locationSymbol"
     cdLocationRevealedSymbol <- o .:? "locationRevealedSymbol"
     cdLocationConnections <- o .:? "locationConnections" .!= mempty

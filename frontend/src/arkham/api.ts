@@ -19,6 +19,7 @@ import {
 } from '@/arkham/types/EpicEvent'
 import * as NewGame from '@/arkham/types/NewGame'
 import * as JsonDecoder from 'ts.data.json';
+import { registerArtVariants } from '@/arkham/artVariants'
 
 interface FetchData {
   playerId: string
@@ -103,12 +104,16 @@ export const fetchCards = async (cardPool: CardPoolMode | boolean = 'player'): P
   const mode: CardPoolMode = cardPool === true ? 'both' : cardPool === false ? 'player' : cardPool
   const query = mode === 'player' ? "" : `?includeEncounter&cardPool=${mode}`
   const { data } = await api.get(`arkham/cards${query}`)
-  return JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodePromise(data)
+  const cards = await JsonDecoder.array(cardDefDecoder, 'ArkhamCardDef[]').decodePromise(data)
+  registerArtVariants(cards)
+  return cards
 }
 
 export const fetchHomebrewCards = async (): Promise<CardDef[]> => {
   const { data } = await api.get('arkham/homebrew/cards')
-  return JsonDecoder.array(cardDefDecoder, 'ArkhamHomebrewCardDef[]').decodePromise(data)
+  const cards = await JsonDecoder.array(cardDefDecoder, 'ArkhamHomebrewCardDef[]').decodePromise(data)
+  registerArtVariants(cards)
+  return cards
 }
 
 export const setDeckOverlay = async (deckId: string, overlay: any): Promise<void> => {

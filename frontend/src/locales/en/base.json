@@ -541,6 +541,8 @@
     "deleteConfirm": "Are you sure? All your games, decks, and account data will be permanently lost and cannot be recovered.",
     "confirmPermanentDelete": "Yes, permanently delete my account",
     "customCards": "Custom cards",
+    "usedRevisedCoreArt": "Use revised core art in Encounter sets",
+    "revisedCoreArtDescription": "Shows the Revised Core Set artwork for supported encounter cards, including enemies, treacheries, locations, and agendas. Only artwork changes—not card rules or player cards. This preference applies only to your view; other players keep their own art settings.",
     "customCardsWarning": "Experimental. This feature can stop working, break a game in progress, or be removed at any time. Custom cards are only ever as correct as the definition behind them, and the builder can express things the engine will happily run but no printed card would ever do.",
     "customCardsHelp": "Adds a Card Builder to the menu, where you can make your own cards and add them to a game from the debug menu. It also lets you lay an overlay over a deck, from the {icon} button on a deck or beside a deck when you pick one for a game: swap in a custom investigator (their signatures come with them, and the old ones go), and add or remove cards. An overlay applied on the deck page sticks to that deck until you remove it; one applied when you choose a deck for a game applies to that game only, leaving the deck and every other copy of it untouched.",
     "openCardBuilder": "Open the card builder"

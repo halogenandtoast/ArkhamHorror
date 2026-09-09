@@ -1,4 +1,6 @@
 import { useSiteSettingsStore } from '@/stores/site_settings'
+import { useSettings } from '@/stores/settings'
+import { variantArt } from '@/arkham/artVariants'
 import { replaceHomebrewIcons } from '@/arkham/homebrewAssets'
 import { iconClasses, runePlaceholder } from '@/arkham/icons'
 import { ref, type Ref } from 'vue';
@@ -117,7 +119,9 @@ export function imgsrc(src: string): string {
 
   const store = useSiteSettingsStore()
   const language = localStorage.getItem('language') || 'en'
-  const path = src.replace(/^\//, '')
+  const path = src.replace(/^\//, '').replace(/^cards\/(.+)\.avif$/, (_, art: string) =>
+    `cards/${variantArt(art, useSettings().useVariants)}.avif`
+  )
   const fullPath = `${store.assetHost}/img/arkham/${path}`
 
   if (isLocalized(src)) {

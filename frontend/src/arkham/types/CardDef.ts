@@ -37,6 +37,8 @@ export type CardDef = {
   classSymbols: string[];
   cardType: string;
   art: string;
+  artVariants?: Record<string, string>;
+  backArtVariants?: Record<string, string>;
   level: number | null;
   stage?: number | null;
   name: Name;
@@ -87,6 +89,8 @@ const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([
 export const cardDefDecoder = JsonDecoder.object<CardDef>(
   {
     art: JsonDecoder.string(),
+    artVariants: withDefault({}, JsonDecoder.record(JsonDecoder.string(), 'ArtVariants')),
+    backArtVariants: withDefault({}, JsonDecoder.record(JsonDecoder.string(), 'BackArtVariants')),
     level: withDefault(null, JsonDecoder.number()),
     stage: JsonDecoder.oneOf([
       JsonDecoder.number(),

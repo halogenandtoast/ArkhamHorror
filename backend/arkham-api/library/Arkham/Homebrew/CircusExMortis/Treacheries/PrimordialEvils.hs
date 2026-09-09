@@ -20,7 +20,7 @@ primordialEvils = treachery PrimordialEvils Cards.primordialEvils
 
 instance HasModifiersFor PrimordialEvils where
   getModifiersFor (PrimordialEvils a) = case a.placement of
-    NextToAgenda ->
+    NextToScenarioReference ->
       modifySelect
         a
         (mapOneOf ChaosTokenFaceIs [Skull, Cultist, Tablet, ElderThing, MoonToken])
@@ -31,7 +31,7 @@ instance RunMessage PrimordialEvils where
   runMessage msg t@(PrimordialEvils attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ campaignI18n $ scope "primordialEvils" do
-        labeled "reduceTokens" $ place attrs NextToAgenda
+        labeled "reduceTokens" $ place attrs NextToScenarioReference
         labeled "placeDoom" $ placeDoomOnAgendaAndCheckAdvanceBy attrs 1
       pure t
     _ -> PrimordialEvils <$> liftRunMessage msg attrs

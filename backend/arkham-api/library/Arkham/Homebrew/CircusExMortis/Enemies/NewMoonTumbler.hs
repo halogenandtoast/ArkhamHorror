@@ -5,7 +5,6 @@ import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.Enemy.Types.Attrs (enemyDoom)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype NewMoonTumbler = NewMoonTumbler EnemyAttrs
@@ -19,8 +18,7 @@ instance HasModifiersFor NewMoonTumbler where
   getModifiersFor (NewMoonTumbler a) = do
     let doom = enemyDoom a
     modifySelf a
-      $ [AddKeyword Keyword.Hunter, AddKeyword Keyword.Retaliate]
-      <> [HorrorDealt 1 | doom >= 1]
+      $ [HorrorDealt 1 | doom >= 1]
       <> [DamageDealt 1 | doom >= 2]
 
 instance HasAbilities NewMoonTumbler where

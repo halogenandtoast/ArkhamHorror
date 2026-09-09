@@ -120,10 +120,9 @@ instance RunMessage CircusExMortis where
     CampaignStep PrologueStep -> do
       scope "additionalRules" $ flavor $ setTitle "title" >> p "moonTokens"
       scope "prologue" do
-        flavor $ setTitle "title" >> p "body"
         flavor do
           setTitle "title"
-          p "minnie"
+          p "body"
           ul $ li "addMoonTokens"
       replicateM_ 3 $ addChaosToken MoonToken
       whenM (gamePerformTarotReadings <$> getGame) $ scope "campaignReading" do

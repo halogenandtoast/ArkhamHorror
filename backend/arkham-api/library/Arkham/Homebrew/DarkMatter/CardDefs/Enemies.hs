@@ -29,6 +29,7 @@ theFeasterFromAfar =
       , cdEvade = evade 3
       , cdHealth = healthPerInvestigator 3
       , cdCardTraits = setFromList [Avatar, AncientOne, Elite]
+      , cdKeywords = singleton Keyword.Massive
       , cdVictoryPoints = Just 1
       }
 
@@ -112,6 +113,7 @@ shadowOfThoughts =
     , cdEvade = evade 2
     , cdHealth = health 5
     , cdCardTraits = setFromList [Virtual, Abomination]
+    , cdKeywords = singleton Keyword.Retaliate
     , cdVictoryPoints = Just 1
     }
 
@@ -146,6 +148,7 @@ virtualByakhee =
     , cdEvade = evade 4
     , cdHealth = health 3
     , cdCardTraits = setFromList [Virtual, Monster, Byakhee]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 -- the_boogeyman
@@ -154,6 +157,7 @@ theBOOGEYMAN =
   (enemy ":dark-matter:085" ("THE BOOGEYMAN" <:> "Virtual Nightmare") Set.TheBoogeyman 1)
     { cdSanityDamage = sanityDamage 2
     , cdCardTraits = setFromList [Virtual, Monster, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Hunter]
     }
 
 -- lost_quantum
@@ -202,6 +206,7 @@ theEntity =
     , cdEvade = evade 3
     , cdHealth = health 3
     , cdCardTraits = setFromList [Abomination, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Hunter, Keyword.Alert]
     , cdVictoryPoints = Just 2
     }
 
@@ -234,6 +239,7 @@ rats =
     , cdEvade = evade 3
     , cdHealth = health 1
     , cdCardTraits = setFromList [Monster, Creature]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 -- strange_moons
@@ -301,6 +307,7 @@ stalkingByakhee =
     , cdEvade = evade 4
     , cdHealth = health 2
     , cdCardTraits = setFromList [Monster, Byakhee]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Alert]
     }
 
 viciousByakhee :: CardDef
@@ -311,6 +318,7 @@ viciousByakhee =
     , cdEvade = evade 2
     , cdHealth = health 4
     , cdCardTraits = setFromList [Monster, Byakhee]
+    , cdKeywords = setFromList [Keyword.Patrol (LocationWithAsset (AssetWithTrait Brain))]
     }
 
 -- the_machine_in_yellow
@@ -349,6 +357,7 @@ daemonOfNis =
     , cdEvade = evade 2
     , cdHealth = healthPerInvestigator 2
     , cdCardTraits = setFromList [Abomination, Monster]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Alert]
     , cdVictoryPoints = Just 1
     }
 
@@ -360,6 +369,7 @@ spiritOfThan =
     , cdEvade = evade 3
     , cdHealth = healthPerInvestigator 2
     , cdCardTraits = setFromList [Abomination, Geist]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     }
 
@@ -372,6 +382,7 @@ caveDweller =
     , cdEvade = evade 6
     , cdHealth = healthPerInvestigator 4
     , cdCardTraits = setFromList [Monster, Cultist, Humanoid]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate, Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
 
@@ -383,6 +394,7 @@ sophisticSpires =
     , cdEvade = evade 5
     , cdHealth = health 5
     , cdCardTraits = setFromList [Obstacle]
+    , cdKeywords = singleton Keyword.Massive
     }
 
 tatteredCurtains :: CardDef
@@ -405,6 +417,7 @@ yellowMists =
     , cdEvade = evade 1
     , cdHealth = healthPerInvestigator 3
     , cdCardTraits = setFromList [Obstacle]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
 
@@ -418,6 +431,7 @@ tassilda =
     , cdEvade = evade 3
     , cdHealth = healthPerInvestigator 4
     , cdCardTraits = setFromList [AncientOne, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate]
     }
 
 yithianGuard :: CardDef
@@ -441,6 +455,7 @@ miGoSentinel =
     , cdEvade = evade 3
     , cdHealth = healthPerInvestigator 2
     , cdCardTraits = setFromList [Monster, MiGo]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     , cdVictoryPoints = Just 1
     }
 
@@ -453,6 +468,7 @@ domaagTeel =
     , cdEvade = evade 5
     , cdHealth = healthPerInvestigator 3
     , cdCardTraits = setFromList [AncientOne, Abomination, Elite]
+    , cdKeywords = singleton Keyword.Massive
     , cdVictoryPoints = Just 1
     }
 
@@ -466,6 +482,7 @@ shamblerFromTheStars =
       , cdEvade = evade 3
       , cdHealth = healthPerInvestigator 2
       , cdCardTraits = setFromList [Monster, Elite]
+      , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
       , cdVictoryPoints = Just 1
       }
 
@@ -479,6 +496,7 @@ exoroid =
       , cdEvade = evade 4
       , cdHealth = healthPerInvestigator 2
       , cdCardTraits = setFromList [Monster]
+      , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
       }
 
 martianCrab :: CardDef
@@ -490,6 +508,7 @@ martianCrab =
       , cdEvade = evade 2
       , cdHealth = healthPerInvestigator 3
       , cdCardTraits = setFromList [Creature]
+      , cdKeywords = singleton Keyword.Massive
       , cdVictoryPoints = Just 1
       }
 
@@ -522,4 +541,5 @@ voidByakhee =
     , cdEvade = evade 4
     , cdHealth = health 3
     , cdCardTraits = setFromList [Monster, Byakhee]
+    , cdKeywords = singleton Keyword.Hunter
     }

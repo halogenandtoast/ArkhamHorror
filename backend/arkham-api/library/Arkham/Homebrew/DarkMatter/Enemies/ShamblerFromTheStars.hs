@@ -4,7 +4,6 @@ import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype ShamblerFromTheStars = ShamblerFromTheStars EnemyAttrs
@@ -19,7 +18,7 @@ ability below."
 -}
 instance HasModifiersFor ShamblerFromTheStars where
   getModifiersFor (ShamblerFromTheStars a) =
-    modifySelf a [AddKeyword Keyword.Aloof, AddKeyword Keyword.Hunter, CannotBeEngaged]
+    modifySelf a [CannotBeEngaged]
 
 {- | "Forced - After you trigger an [action] ability at its location: Shambler
 from the Stars engages and attacks you. (Limit once per round.)"

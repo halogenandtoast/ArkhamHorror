@@ -1,24 +1,20 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.CircusPredator (circusPredator) where
 
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Keyword qualified as Keyword
+import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
 import Arkham.Trait (Trait (Woods))
 
 newtype CircusPredator = CircusPredator EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 circusPredator :: EnemyCard CircusPredator
 circusPredator =
   enemy CircusPredator Cards.circusPredator
     & setSpawnAt (LocationWithTrait Woods)
-
-instance HasModifiersFor CircusPredator where
-  getModifiersFor (CircusPredator a) = modifySelf a [AddKeyword Keyword.Hunter]
 
 instance RunMessage CircusPredator where
   runMessage msg (CircusPredator attrs) = runQueueT $ case msg of

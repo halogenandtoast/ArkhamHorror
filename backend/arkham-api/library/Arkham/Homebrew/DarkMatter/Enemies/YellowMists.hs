@@ -1,10 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Enemies.YellowMists (yellowMists) where
 
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.DarkMatter.Traits (pattern Carcosa)
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype YellowMists = YellowMists EnemyAttrs
@@ -20,7 +19,6 @@ in play".
 -}
 instance HasModifiersFor YellowMists where
   getModifiersFor (YellowMists a) = do
-    modifySelf a [AddKeyword Keyword.Aloof, AddKeyword Keyword.Hunter]
     modifySelect a (locationWithEnemy a.id) [AddTrait Carcosa]
 
 instance RunMessage YellowMists where

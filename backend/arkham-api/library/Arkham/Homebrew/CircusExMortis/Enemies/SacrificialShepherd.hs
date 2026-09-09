@@ -8,17 +8,13 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Bystander))
 
 newtype SacrificialShepherd = SacrificialShepherd EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsEnemy, RunMessage)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 sacrificialShepherd :: EnemyCard SacrificialShepherd
 sacrificialShepherd =
-  enemyWith SacrificialShepherd Cards.sacrificialShepherd
-    $ spawnAtL
-    ?~ SpawnAtFirst
-      [ SpawnAt $ LocationWithAsset (AssetWithTrait Bystander)
-      , SpawnAt Anywhere
-      ]
+  enemy SacrificialShepherd Cards.sacrificialShepherd
+    & setSpawnAtFirst [LocationWithAsset (withTrait Bystander), Anywhere]
 
 instance HasModifiersFor SacrificialShepherd where
   getModifiersFor (SacrificialShepherd a) = do
@@ -31,7 +27,3 @@ instance HasModifiersFor SacrificialShepherd where
       [CannotTriggerAbilityMatching $ AbilityOnCard (CardWithTrait Bystander)]
     unless bystanderPresent
       $ modifySelf a [AddKeyword Keyword.Hunter, EnemyEvade 1, DamageDealt 1]
-
-instance RunMessage SacrificialShepherd where
-  runMessage msg (SacrificialShepherd attrs) =
-    SacrificialShepherd <$> runMessage msg attrs

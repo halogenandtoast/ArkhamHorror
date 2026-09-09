@@ -2,16 +2,14 @@ module Arkham.Homebrew.DarkMatter.Enemies.VirtualByakhee (virtualByakhee) where
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Movement (cancelEnemyMovement)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Window (Window, windowType)
 import Arkham.Window qualified as Window
 
 newtype VirtualByakhee = VirtualByakhee EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 -- | "Spawn - Furthest location from you. Hunter."
@@ -19,9 +17,6 @@ virtualByakhee :: EnemyCard VirtualByakhee
 virtualByakhee =
   enemy VirtualByakhee Cards.virtualByakhee
     & setSpawnAt (FarthestLocationFromYou Anywhere)
-
-instance HasModifiersFor VirtualByakhee where
-  getModifiersFor (VirtualByakhee a) = modifySelf a [AddKeyword Keyword.Hunter]
 
 {- | "Forced - When Virtual Byakhee would move between two locations without
 investigators: Switch those locations with each other instead."

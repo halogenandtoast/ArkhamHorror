@@ -3,20 +3,14 @@ module Arkham.Enemy.Cards.TheMidwinterGala.RookieCop (rookieCop) where
 import Arkham.Ability
 import Arkham.Enemy.CardDefs.TheMidwinterGala qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype RookieCop = RookieCop EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rookieCop :: EnemyCard RookieCop
 rookieCop = enemy RookieCop Cards.rookieCop
-
-instance HasModifiersFor RookieCop where
-  getModifiersFor (RookieCop a) =
-    modifySelf a [AddKeyword Keyword.Surge, AddKeyword Keyword.Aloof, AddKeyword Keyword.Hunter]
 
 instance HasAbilities RookieCop where
   getAbilities (RookieCop a) =

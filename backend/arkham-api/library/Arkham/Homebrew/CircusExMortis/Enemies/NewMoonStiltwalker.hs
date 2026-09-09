@@ -2,9 +2,8 @@ module Arkham.Homebrew.CircusExMortis.Enemies.NewMoonStiltwalker (newMoonStiltwa
 
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf, modifySelfMaybe)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfMaybe)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype NewMoonStiltwalker = NewMoonStiltwalker EnemyAttrs
@@ -18,7 +17,6 @@ newMoonStiltwalker =
 
 instance HasModifiersFor NewMoonStiltwalker where
   getModifiersFor (NewMoonStiltwalker a) = do
-    modifySelf a [AddKeyword Keyword.Hunter, AddKeyword Keyword.Alert]
     allLocations <- select Anywhere
     modifySelfMaybe a do
       loc <- MaybeT $ getLocationOf a

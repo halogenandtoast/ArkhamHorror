@@ -2,25 +2,19 @@ module Arkham.Homebrew.DarkMatter.Enemies.ViciousByakhee (viciousByakhee) where
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.DarkMatter.Traits (pattern Brain)
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Trait (Trait (MiGo))
 
 newtype ViciousByakhee = ViciousByakhee EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 viciousByakhee :: EnemyCard ViciousByakhee
 viciousByakhee =
   enemy ViciousByakhee Cards.viciousByakhee
     & setSpawnAt (LocationWithTitle "Entrance Tunnel")
-
-instance HasModifiersFor ViciousByakhee where
-  getModifiersFor (ViciousByakhee a) =
-    modifySelf a [AddKeyword $ Keyword.Patrol (LocationWithAsset (AssetWithTrait Brain))]
 
 instance HasAbilities ViciousByakhee where
   getAbilities (ViciousByakhee a) =

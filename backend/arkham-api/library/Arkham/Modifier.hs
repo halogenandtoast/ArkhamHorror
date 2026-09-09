@@ -592,6 +592,9 @@ instance IsLabel "alert" ModifierType where
 instance IsLabel "aloof" ModifierType where
   fromLabel = AddKeyword Aloof
 
+instance IsLabel "hunter" ModifierType where
+  fromLabel = AddKeyword Arkham.Keyword.Hunter
+
 data Modifier = Modifier
   { modifierSource :: Source
   , modifierType :: ModifierType

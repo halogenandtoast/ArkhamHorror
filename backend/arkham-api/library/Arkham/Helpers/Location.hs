@@ -103,6 +103,7 @@ placementLocation = \case
   OnTopOfDeck _ -> pure Nothing
   NextToAgenda -> pure Nothing
   NextToAct -> pure Nothing
+  NextToScenarioReference -> pure Nothing
   Near _ -> pure Nothing
   InTheShadows -> pure Nothing
   OutOfGame _ -> pure Nothing

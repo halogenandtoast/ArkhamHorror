@@ -4,20 +4,16 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Location (withLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype ToweringDarkYoung_069 = ToweringDarkYoung_069 EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 toweringDarkYoung_069 :: EnemyCard ToweringDarkYoung_069
 toweringDarkYoung_069 = enemy ToweringDarkYoung_069 Cards.toweringDarkYoung_069
-
-instance HasModifiersFor ToweringDarkYoung_069 where
-  getModifiersFor (ToweringDarkYoung_069 a) = modifySelf a [AddKeyword Keyword.Massive]
 
 instance HasAbilities ToweringDarkYoung_069 where
   getAbilities (ToweringDarkYoung_069 a) =

@@ -4,7 +4,6 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Strategy
 
@@ -34,9 +33,7 @@ instance HasModifiersFor TheEntity where
     game, or still in the scanning deck) is placed facedown underneath. -}
     attached <- selectCount $ EnemyAsset a.id
     bonus <- perPlayer (2 * (attached + length (enemyCardsUnderneath a)))
-    modifySelf a
-      $ [AddKeyword Keyword.Massive, AddKeyword Keyword.Hunter, AddKeyword Keyword.Alert]
-      <> [HealthModifier bonus | bonus > 0]
+    modifySelf a [HealthModifier bonus | bonus > 0]
 
 instance RunMessage TheEntity where
   runMessage msg (TheEntity attrs) = TheEntity <$> runMessage msg attrs

@@ -1967,7 +1967,7 @@ abilityMatches a@Ability {..} = \case
     andM
       [ pure
           $ abilityIndex
-          `notElem` [AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage, AbilityMove]
+          `notElem` [AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage, AbilityMove, ActAdvancement]
       , abilitySource `sourceMatches` M.EncounterCardSource
       ]
   AbilityOnCard _ | abilityBasic -> pure False
@@ -2065,7 +2065,9 @@ getAbilitiesMatching matcher = guardYourLocation $ \_ -> do
     AbilityOnEncounterCard ->
       as
         & filter
-          ( \a -> a.index `notElem` [AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage, AbilityMove]
+          ( \a ->
+              a.index
+                `notElem` [AbilityAttack, AbilityInvestigate, AbilityEvade, AbilityEngage, AbilityMove, ActAdvancement]
           )
         & filterM (\a -> a.source `sourceMatches` M.EncounterCardSource)
     AbilityOnCard cardMatcher ->
@@ -6707,7 +6709,7 @@ runMessages gameId mLogger = do
             CheckWindows {} -> False
             Do (CheckWindows {}) -> False
             ClearUI {} -> False
-            ExhaustMessage {} -> False
+            ExhaustMessage m | isSwarmExhaust g m -> False
             After {} -> False
             DoBatch {} -> False
             CreatedCost {} -> False
@@ -7120,6 +7122,28 @@ enemyReadyCardCodes =
 whole enemy-ready window is skipped. Every card-backed entity map has to be scanned: the
 ability can live on an enemy (Gug Sentinel) just as easily as on an asset or event.
 -}
+
+{- | Exhausting or readying flips any modifier gated on an entity's ready state
+(New Moon Drudge stops locking down encounter card abilities the moment it
+exhausts), so those messages must preload modifiers. Swarm cards are the
+exception they were skipped for: they exhaust and ready in bulk and nothing
+reads a swarm card's exhaust state.
+-}
+isSwarmExhaust :: Game -> ExhaustMessage -> Bool
+isSwarmExhaust g = \case
+  Exhaust_ e -> isSwarmTarget e.target
+  Ready_ t -> isSwarmTarget t
+  ReadyAlternative_ _ t -> isSwarmTarget t
+  ReadyExhausted_ -> False
+ where
+  isSwarmTarget = \case
+    EnemyTarget eid -> case preview (entitiesL . enemiesL . ix eid) g of
+      Just e -> case enemyPlacement (toAttrs e) of
+        AsSwarm {} -> True
+        _ -> False
+      Nothing -> False
+    _ -> False
+
 hasEnemyReadyAbilities :: Game -> Bool
 hasEnemyReadyAbilities g =
   hasCode (e ^. assetsL)

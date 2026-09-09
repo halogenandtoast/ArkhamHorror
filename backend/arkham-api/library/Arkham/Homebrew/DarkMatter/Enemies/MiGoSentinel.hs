@@ -3,22 +3,18 @@ module Arkham.Homebrew.DarkMatter.Enemies.MiGoSentinel (miGoSentinel) where
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted hiding (RevealChaosToken)
 import Arkham.Enemy.Types (Field (EnemyClues))
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Projection
 
 newtype MiGoSentinel = MiGoSentinel EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 miGoSentinel :: EnemyCard MiGoSentinel
 miGoSentinel = enemy MiGoSentinel Cards.miGoSentinel
 
 -- | "Aloof. Hunter."
-instance HasModifiersFor MiGoSentinel where
-  getModifiersFor (MiGoSentinel a) = modifySelf a [AddKeyword Keyword.Aloof, AddKeyword Keyword.Hunter]
 
 {- | "Forced - After you reveal a [skull], [cultist], [tablet] or [elder_thing]
 token at Mi-Go Sentinel's location: Move 1 of your clues onto Mi-Go Sentinel." /

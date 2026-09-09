@@ -14,6 +14,7 @@ import Arkham.Field
 import Arkham.GameValue
 import Arkham.Id
 import Arkham.Keyword (Keyword)
+import Arkham.Keyword qualified as Keyword
 import {-# SOURCE #-} Arkham.Matcher.Asset
 import Arkham.Matcher.Base
 import Arkham.Matcher.ChaosToken
@@ -212,6 +213,9 @@ instance IsLabel "criminal" EnemyMatcher where
 
 instance IsLabel "cultist" EnemyMatcher where
   fromLabel = EnemyWithTrait Cultist
+
+instance IsLabel "hunter" EnemyMatcher where
+  fromLabel = EnemyWithKeyword Keyword.Hunter
 
 instance Semigroup EnemyMatcher where
   AnyEnemy <> x = x

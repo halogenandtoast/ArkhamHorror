@@ -24,12 +24,15 @@ instance HasModifiersFor TheBigTopSecondRing where
 
 instance HasAbilities TheBigTopSecondRing where
   getAbilities (TheBigTopSecondRing a) =
-    extendRevealed1 a $ mkAbility a 1 $ forced $ DiscoverClues #after You (be a) (atLeast 1)
+    extendRevealed1 a
+      $ restricted a 1 (exists $ enemy_ $ withTrait Performer <> #hunter)
+      $ forced
+      $ DiscoverClues #after You (be a) (atLeast 1)
 
 instance RunMessage TheBigTopSecondRing where
   runMessage msg l@(TheBigTopSecondRing attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ NearestEnemyToLocation (toId attrs) (withTrait Performer)
+      enemies <- select $ NearestEnemyToLocation (toId attrs) (withTrait Performer <> #hunter)
       chooseOrRunOneM iid $ targets enemies \enemy -> do
         ready enemy
         resolveHunterKeyword enemy

@@ -11,8 +11,7 @@ newtype OutAndAway = OutAndAway ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outAndAway :: ActCard OutAndAway
-outAndAway =
-  act (3, A) OutAndAway Cards.outAndAway Nothing
+outAndAway = act (3, A) OutAndAway Cards.outAndAway Nothing
 
 instance HasAbilities OutAndAway where
   getAbilities (OutAndAway x) =

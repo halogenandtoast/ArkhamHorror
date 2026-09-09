@@ -110,6 +110,9 @@ instance RunMessage OneNightOnly where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
+          resolution "noResolution"
+          push R1
+        Resolution 1 -> do
           resolution "resolution1"
           record TheRingmasterDoesNotSuspectYou
           whenM (currentActStepIs 1) do

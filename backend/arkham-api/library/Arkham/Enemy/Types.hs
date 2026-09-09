@@ -172,10 +172,9 @@ instance IsCard EnemyAttrs where
 
 instance HasCardDef EnemyAttrs where
   toCardDef e =
-    case
-      lookup (enemyCardCode e) allEnemyCards
-        <|> lookup (enemyCardCode e) allEnemyLocationCards
-        <|> lookupCustomCardDef (enemyCardCode e) of
+    case lookup (enemyCardCode e) allEnemyCards
+      <|> lookup (enemyCardCode e) allEnemyLocationCards
+      <|> lookupCustomCardDef (enemyCardCode e) of
       Just def -> def
       Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
 
@@ -213,6 +212,11 @@ setSpawnAt
   :: (Entity a, EntityAttrs a ~ EnemyAttrs)
   => LocationMatcher -> CardBuilder EnemyId a -> CardBuilder EnemyId a
 setSpawnAt spawnAt = fmap (overAttrs (\a -> a {enemySpawnAt = Just (SpawnAt spawnAt)}))
+
+setSpawnAtFirst
+  :: (Entity a, EntityAttrs a ~ EnemyAttrs, IsSpawnAt spawn)
+  => [spawn] -> CardBuilder EnemyId a -> CardBuilder EnemyId a
+setSpawnAtFirst spawnAt = fmap (overAttrs (\a -> a {enemySpawnAt = Just (SpawnAtFirst $ map toSpawnAt spawnAt)}))
 
 setNoSpawn
   :: (Entity a, EntityAttrs a ~ EnemyAttrs)

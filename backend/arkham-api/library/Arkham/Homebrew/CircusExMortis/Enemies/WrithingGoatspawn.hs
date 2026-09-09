@@ -2,22 +2,16 @@ module Arkham.Homebrew.CircusExMortis.Enemies.WrithingGoatspawn (writhingGoatspa
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype WrithingGoatspawn = WrithingGoatspawn EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 writhingGoatspawn :: EnemyCard WrithingGoatspawn
 writhingGoatspawn = enemy WrithingGoatspawn Cards.writhingGoatspawn
-
-instance HasModifiersFor WrithingGoatspawn where
-  getModifiersFor (WrithingGoatspawn a) =
-    modifySelf a [AddKeyword Keyword.Massive, AddKeyword Keyword.Retaliate]
 
 instance HasAbilities WrithingGoatspawn where
   getAbilities (WrithingGoatspawn a) =

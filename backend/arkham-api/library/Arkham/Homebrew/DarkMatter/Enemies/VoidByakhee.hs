@@ -2,9 +2,8 @@ module Arkham.Homebrew.DarkMatter.Enemies.VoidByakhee (voidByakhee) where
 
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Location (getLocationOf)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf, modifySelfMaybe)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfMaybe)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype VoidByakhee = VoidByakhee EnemyAttrs
@@ -21,7 +20,6 @@ every other clueless location for this enemy's movement.
 -}
 instance HasModifiersFor VoidByakhee where
   getModifiersFor (VoidByakhee a) = do
-    modifySelf a [AddKeyword Keyword.Hunter]
     -- Hunter movement only: every clueless location counts as connected to the
     -- clueless location it currently occupies.
     clueless <- select LocationWithoutClues

@@ -1,21 +1,16 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.NewMoonAcrobat (newMoonAcrobat) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Keyword qualified as Keyword
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
 
 newtype NewMoonAcrobat = NewMoonAcrobat EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 newMoonAcrobat :: EnemyCard NewMoonAcrobat
 newMoonAcrobat = enemy NewMoonAcrobat Cards.newMoonAcrobat
-
-instance HasModifiersFor NewMoonAcrobat where
-  getModifiersFor (NewMoonAcrobat a) = modifySelf a [AddKeyword Keyword.Hunter]
 
 instance HasAbilities NewMoonAcrobat where
   getAbilities (NewMoonAcrobat a) =

@@ -1,8 +1,8 @@
 module Arkham.Homebrew.CircusExMortis.CardDefs.Enemies where
 
 import Arkham.Enemy.CardDefs.Import
-import Arkham.Keyword qualified as Keyword
 import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
+import Arkham.Keyword qualified as Keyword
 
 -- one_night_only
 disguisedMonstrosity :: CardDef
@@ -50,6 +50,7 @@ newMoonIllusionist =
     , cdEvade = evade 3
     , cdHealth = healthPerInvestigator 4
     , cdCardTraits = setFromList [Humanoid, Performer, Elite]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Aloof]
     , cdVictoryPoints = Just 1
     }
 
@@ -61,6 +62,7 @@ circusPredator =
     , cdEvade = evade 3
     , cdHealth = health 2
     , cdCardTraits = setFromList [Creature, Monster, Abomination]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 ursineBrute :: CardDef
@@ -71,6 +73,7 @@ ursineBrute =
     , cdEvade = evade 1
     , cdHealth = health 4
     , cdCardTraits = setFromList [Creature, Monster, Abomination]
+    , cdKeywords = singleton Keyword.Hunter
     , cdVictoryPoints = Just 1
     }
 
@@ -82,6 +85,7 @@ toweringDarkYoung_065 =
     , cdFight = fight 3
     , cdEvade = evade 3
     , cdCardTraits = setFromList [Monster, DarkYoung, Elite]
+    , cdKeywords = singleton Keyword.Massive
     }
 
 toweringDarkYoung_066 :: CardDef
@@ -91,6 +95,7 @@ toweringDarkYoung_066 =
     , cdFight = fight 3
     , cdEvade = evade 3
     , cdCardTraits = setFromList [Monster, DarkYoung, Elite]
+    , cdKeywords = singleton Keyword.Massive
     }
 
 toweringDarkYoung_067 :: CardDef
@@ -101,6 +106,7 @@ toweringDarkYoung_067 =
     , cdFight = fight 3
     , cdEvade = evade 3
     , cdCardTraits = setFromList [Monster, DarkYoung, Elite]
+    , cdKeywords = singleton Keyword.Massive
     }
 
 toweringDarkYoung_068 :: CardDef
@@ -111,6 +117,7 @@ toweringDarkYoung_068 =
     , cdFight = fight 3
     , cdEvade = evade 3
     , cdCardTraits = setFromList [Monster, DarkYoung, Elite]
+    , cdKeywords = singleton Keyword.Massive
     }
 
 toweringDarkYoung_069 :: CardDef
@@ -121,6 +128,7 @@ toweringDarkYoung_069 =
     , cdFight = fight 3
     , cdEvade = evade 3
     , cdCardTraits = setFromList [Monster, DarkYoung, Elite]
+    , cdKeywords = singleton Keyword.Massive
     }
 
 sacrificialShepherd :: CardDef
@@ -143,6 +151,7 @@ loomingGoatspawn =
     , cdEvade = evade 2
     , cdHealth = healthPerInvestigator 5
     , cdCardTraits = setFromList [Monster, DarkYoung, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Alert]
     , cdVictoryPoints = Just 1
     }
 
@@ -155,6 +164,7 @@ rampagingGoatspawn =
     , cdEvade = evade 3
     , cdHealth = healthPerInvestigator 5
     , cdCardTraits = setFromList [Monster, DarkYoung, Elite]
+    , cdKeywords = singleton Keyword.Massive
     , cdVictoryPoints = Just 1
     }
 
@@ -167,6 +177,7 @@ ravenousGoatspawn =
     , cdEvade = evade 3
     , cdHealth = healthPerInvestigator 4
     , cdCardTraits = setFromList [Monster, DarkYoung, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate, Keyword.Alert]
     , cdVictoryPoints = Just 1
     }
 
@@ -179,6 +190,7 @@ writhingGoatspawn =
     , cdEvade = evade 4
     , cdHealth = healthPerInvestigator 5
     , cdCardTraits = setFromList [Monster, DarkYoung, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate]
     , cdVictoryPoints = Just 1
     }
 
@@ -190,6 +202,7 @@ newMoonStiltwalker =
     , cdEvade = evade 3
     , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Performer]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Alert]
     }
 
 newMoonTumbler :: CardDef
@@ -200,6 +213,7 @@ newMoonTumbler =
     , cdEvade = evade 4
     , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Performer]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
 
 -- piper_at_the_gates_of_dawn
@@ -390,6 +404,7 @@ nascentDarkYoung =
     , cdEvade = evade 2
     , cdHealth = health 3
     , cdCardTraits = setFromList [Monster, DarkYoung]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 twistedSatyr :: CardDef
@@ -401,6 +416,7 @@ twistedSatyr =
     , cdEvade = evade 3
     , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Monster]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
 
 -- cult_of_shub-niggurath
@@ -424,6 +440,7 @@ mooncalf =
     , cdEvade = evade 2
     , cdHealth = health 3
     , cdCardTraits = setFromList [Creature, Monster, Abomination]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 -- new_moon_daredevils
@@ -435,6 +452,7 @@ newMoonAcrobat =
     , cdEvade = evade 3
     , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Performer]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 newMoonBeastTamer :: CardDef
@@ -445,6 +463,7 @@ newMoonBeastTamer =
     , cdEvade = evade 3
     , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Performer]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
 
 newMoonStrongman :: CardDef
@@ -455,6 +474,7 @@ newMoonStrongman =
     , cdEvade = evade 1
     , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Performer]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 -- new_moon_entertainers
@@ -467,6 +487,7 @@ newMoonCarny =
     , cdEvade = evade 2
     , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Performer]
+    , cdKeywords = singleton Keyword.Hunter
     }
 
 newMoonClown :: CardDef
@@ -478,6 +499,7 @@ newMoonClown =
     , cdEvade = evade 2
     , cdHealth = health 2
     , cdCardTraits = setFromList [Humanoid, Performer]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
     }
 
 newMoonMagician :: CardDef

@@ -15,7 +15,7 @@
     "houseOfHorrors": {
       "label": {
         "discardHalfHand": "Discard half the cards in your hand (rounded up)",
-        "sealMoonToken": "Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card"
+        "sealMoonToken": "<span>Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card</span>"
       }
     },
     "mesmericMagic": {
@@ -25,6 +25,10 @@
       }
     },
     "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p>_If no resolution was reached (each investigator was defeated):_ Read _Resolution 1_."
+      },
       "resolution1": {
         "title": "Resolution 1",
         "body": "<p><b>Resolution 1:</b> The rough scraping of the ground beneath your body and the sounds of woodland nightlife rouse you slowly but surely back to consciousness. You open one eye groggily to find one of the circus performers dragging you through the woods further south of Arkham. Though it came at the price of a welt on the back of your head, you&rsquo;re outside that accursed circus and free from the illusory influence.</p><p>You summon your strength and send a wild strike into one of your captor&rsquo;s kidneys, causing him to drop you with an outcry of pain. You push yourself quickly upright, ready to fight for your freedom if need be. The carnie sizes you up, ready for another fight, but looks up at the full moon above you both. With a grimace, he turns and runs deeper into the woods behind him at a breakneck pace, far more nimbly than you would have suspected at a glance. You doubt you could catch up to him in the treacherous Arkham woods, but you at least know that he has other priorities now.</p><ul><li>In your Campaign Log, record that <i>the ringmaster does not suspect you</i>.</li><li>If it was act 1 when the game ended, look at the back of the act 1 chosen for the scenario and add the listed token to the chaos bag for the remainder of the campaign.</li><li>Skip to <b>Resolution 3</b>.</li></ul>"

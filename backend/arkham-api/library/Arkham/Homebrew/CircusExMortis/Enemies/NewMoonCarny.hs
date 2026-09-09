@@ -1,8 +1,8 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.NewMoonCarny (newMoonCarny) where
 
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Keyword qualified as Keyword
 
 newtype NewMoonCarny = NewMoonCarny EnemyAttrs
@@ -15,8 +15,7 @@ newMoonCarny = enemy NewMoonCarny Cards.newMoonCarny
 instance HasModifiersFor NewMoonCarny where
   getModifiersFor (NewMoonCarny a) =
     modifySelf a
-      $ AddKeyword Keyword.Hunter
-      : case a.damage of
+      $ case a.damage of
         1 -> [AddKeyword Keyword.Retaliate, AddKeyword Keyword.Alert]
         2 -> [EnemyFight 1, EnemyEvade 1]
         _ -> []

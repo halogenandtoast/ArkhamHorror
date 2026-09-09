@@ -1,11 +1,16 @@
-/* Moon token (Circus Ex Mortis): no font glyph, use the token art. */
+/* Moon token (Circus Ex Mortis): no font glyph, use the token art.
+   The art is a solid-black alpha silhouette, so mask it and paint with
+   currentColor — that way it tracks the surrounding text color the way the
+   font-glyph icons do (white on dark buttons, dark on flavor text). */
 .moon-icon {
   &:before {
     content: "";
     display: inline-block;
     width: 1em;
     height: 1em;
-    background: url("/img/arkham/homebrew/circus-ex-mortis/icons/moon.png") center/contain no-repeat;
+    background-color: currentColor;
+    -webkit-mask: url("/img/arkham/homebrew/circus-ex-mortis/icons/moon.png") center/contain no-repeat;
+    mask: url("/img/arkham/homebrew/circus-ex-mortis/icons/moon.png") center/contain no-repeat;
     vertical-align: -0.15em;
   }
 }

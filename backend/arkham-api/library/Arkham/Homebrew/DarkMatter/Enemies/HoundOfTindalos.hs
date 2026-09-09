@@ -3,10 +3,9 @@ module Arkham.Homebrew.DarkMatter.Enemies.HoundOfTindalos (houndOfTindalos) wher
 import Arkham.Ability
 import Arkham.Constants (pattern AbilityAttack, pattern AbilityEvade)
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect, modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifySelect)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Investigator.Types (Field (InvestigatorHand))
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Placement
 import Arkham.Projection
@@ -38,7 +37,6 @@ all, so the replacements need not re-check engagement.
 -}
 instance HasModifiersFor HoundOfTindalos where
   getModifiersFor (HoundOfTindalos a) = do
-    modifySelf a [AddKeyword Keyword.Massive, AddKeyword Keyword.Alert, AddKeyword Keyword.Retaliate]
     -- Lost Quantum can leave a copy sitting face down in a threat area, where it
     -- is not in play and engages nobody.
     when (isInPlayPlacement a.placement) do

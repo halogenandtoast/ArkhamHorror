@@ -2,15 +2,14 @@ module Arkham.Homebrew.DarkMatter.Enemies.SpiritOfThan (spiritOfThan) where
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (getMemories)
 import Arkham.Homebrew.DarkMatter.Key
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype SpiritOfThan = SpiritOfThan EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 -- | "Prey - Least "Memories" only."
@@ -19,8 +18,6 @@ spiritOfThan =
   setOnlyPrey (investigatorWithLeastRecordCount Memories) $ enemy SpiritOfThan Cards.spiritOfThan
 
 -- | "Hunter. Retaliate."
-instance HasModifiersFor SpiritOfThan where
-  getModifiersFor (SpiritOfThan a) = modifySelf a [AddKeyword Keyword.Hunter, AddKeyword Keyword.Retaliate]
 
 {- | "Forced - When Spirit of Than attacks you, it deals +1 horror for every 2 of
 your "Memories"." The tally is the attacked investigator's, which retaliate can

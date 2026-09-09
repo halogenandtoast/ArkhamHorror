@@ -7,7 +7,6 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Window (getDoomAmount)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (getImpendingDoom)
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Token qualified as Token
 
@@ -22,9 +21,7 @@ instance HasModifiersFor Tassilda where
   getModifiersFor (Tassilda a) = do
     doom <- getImpendingDoom
     bonus <- perPlayer doom
-    modifySelf a
-      $ [AddKeyword Keyword.Massive, AddKeyword Keyword.Retaliate]
-      <> [HealthModifier bonus | bonus > 0]
+    modifySelf a [HealthModifier bonus | bonus > 0]
 
 instance HasAbilities Tassilda where
   getAbilities (Tassilda a) =

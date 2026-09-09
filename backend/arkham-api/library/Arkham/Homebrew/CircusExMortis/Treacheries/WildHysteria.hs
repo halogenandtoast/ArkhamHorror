@@ -1,7 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Treacheries.WildHysteria (wildHysteria) where
 
 import Arkham.Ability
-import Arkham.Helpers.Location (getLocationOf)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
@@ -38,12 +38,12 @@ instance HasAbilities WildHysteria where
 instance RunMessage WildHysteria where
   runMessage msg t@(WildHysteria attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      getLocationOf iid >>= traverse_ (attachTreachery attrs)
+      withLocationOf iid $ attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       here <- select $ InvestigatorAt (locationWithInvestigator iid)
-      moons <- sum <$> traverse (fmap length . getSealedMoonTokens) here
+      moons <- length <$> concatMapM getSealedMoonTokens here
       chooseOneM iid do
         for_ allSkills \sType ->
           skillLabeled sType $ parley sid iid (attrs.ability 1) attrs sType (Fixed $ 3 + moons)

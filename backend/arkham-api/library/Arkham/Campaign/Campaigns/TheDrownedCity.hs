@@ -26,7 +26,7 @@ newtype TheDrownedCity = TheDrownedCity CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 {- | Walk in Faith's failure: "For the remainder of the campaign, you must treat
-the {elderThing} token as if it were a {tablet} token, instead."
+the {elderThing} token as if it were an {autoFail} token, instead."
 
 The substitution has to land on the chaos tokens that investigator reveals, not on
 the investigator: skill test resolution reads 'ForcedChaosTokenChange' off
@@ -40,7 +40,7 @@ instance HasModifiersFor TheDrownedCity where
     modifySelect
       CampaignSource
       (ChaosTokenRevealedBy $ investigatorWithRecord LostTheirFaith)
-      [ForcedChaosTokenChange ElderThing [Tablet]]
+      [ForcedChaosTokenChange ElderThing [AutoFail]]
 
 theDrownedCity :: Difficulty -> TheDrownedCity
 theDrownedCity = campaign TheDrownedCity (CampaignId "11") "The Drowned City"
@@ -378,7 +378,7 @@ instance RunMessage TheDrownedCity where
                     $ addCampaignCardToDeck iid DoNotShuffleIn
                 DreamsOfDestruction -> do
                   sufferMentalTrauma iid 1
-                  removeChaosToken AutoFail
+                  removeChaosToken ElderSign
                 -- The trauma choice is part of this Task's story entry above.
                 NoPlaceLikeHome -> addChaosToken Cultist
                 DoNoHarm -> do

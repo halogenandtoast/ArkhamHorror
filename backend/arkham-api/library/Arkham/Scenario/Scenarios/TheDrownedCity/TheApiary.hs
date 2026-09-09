@@ -88,14 +88,14 @@ instance RunMessage TheApiary where
             p "apiary2Conclusion"
         ul do
           unscoped
-            $ withVars ["token" .= String (if headedWest then "tablet" else "cultist")]
+            $ withVars ["token" .= String (if headedWest then "cultist" else "tablet")]
             $ li "addToken"
           li.validate (notNull withWalkInFaith) "resolveWalkInFaith"
         p.basic $ if headedWest then "proceedToWesternSetup" else "proceedToEasternSetup"
 
       -- The campaign handles AddChaosToken by adding to its own bag, so this
       -- sticks for the remainder of the campaign and not just this scenario.
-      addChaosToken (if headedWest then Tablet else Cultist)
+      addChaosToken (if headedWest then Cultist else Tablet)
 
       for_ withWalkInFaith \iid -> do
         canErase <- canEraseProgress iid Key.WalkInFaith

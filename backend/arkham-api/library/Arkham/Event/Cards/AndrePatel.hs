@@ -1,6 +1,8 @@
 module Arkham.Event.Cards.AndrePatel where
 
+import Arkham.Criteria qualified as Criteria
 import Arkham.Event.Cards.Import
+import Arkham.ForMovement
 
 cleanSweep :: CardDef
 cleanSweep =
@@ -36,11 +38,21 @@ aSuddenFall =
     , cdActions = #fight
     }
 
+-- | Either half of the discovery must be able to happen for the card to do anything.
+rightUnderTheirNosesCriteria :: Criterion
+rightUnderTheirNosesCriteria =
+  Criteria.AnyCriterion
+    [ canDiscoverCluesAtYourLocation
+    , Criteria.DuringSkillTest (SkillTestWithResult $ SuccessResult $ atLeast 2)
+        <> Criteria.canDiscoverCluesAt (ConnectedLocation NotForMovement)
+    ]
+
 rightUnderTheirNoses :: CardDef
 rightUnderTheirNoses =
   (event "60368" "Right Under Their Noses" 2 Rogue)
     { cdCardTraits = setFromList [Trick, Illicit]
     , cdSkills = [#intellect, #willpower]
+    , cdCriteria = Just rightUnderTheirNosesCriteria
     , cdFastWindow = Just $ EnemyEvadedSuccessfully #after You AnySource AnyEnemy
     }
 
@@ -76,6 +88,7 @@ rightUnderTheirNoses3 =
   (event "60382" "Right Under Their Noses" 2 Rogue)
     { cdCardTraits = setFromList [Trick, Illicit]
     , cdSkills = [#intellect, #willpower, #wild]
+    , cdCriteria = Just rightUnderTheirNosesCriteria
     , cdFastWindow = Just $ EnemyEvadedSuccessfully #after You AnySource AnyEnemy
     , cdLevel = Just 3
     }

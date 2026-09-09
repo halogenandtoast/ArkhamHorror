@@ -5,6 +5,9 @@ import { type Card, type EncounterCard, type PlayerCard, toCardContents } from '
 import CardView from '@/arkham/components/Card.vue'
 import Enemy from '@/arkham/components/Enemy.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
+import DebugMenu from '@/arkham/components/debug/VictoryCardMenu.vue';
+import { useDebug } from '@/arkham/debug';
+import * as DebugMove from '@/arkham/debugCardMove';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
@@ -43,12 +46,23 @@ const topOfVictoryDisplay = computed(() => {
 })
 
 const viewVictoryDisplayLabel = computed(() => t('scenario.victoryDisplay'))
+
+const debug = useDebug()
+
+function startCardDrag(event: DragEvent, index: number) {
+  const card = displayVictoryDisplay.value[index]
+  if (!card || !event.dataTransfer) return
+  const cardId = toCardContents(card).id
+  event.dataTransfer.effectAllowed = 'copy'
+  event.dataTransfer.setData('text/plain', JSON.stringify({ tag: 'CardTarget', contents: cardId }))
+  DebugMove.beginCardDrag(cardId)
+}
 </script>
 <template>
   <div v-if="topOfVictoryDisplay || enemiesInVictoryDisplay.length > 0" class="victory-display" :aria-label="viewVictoryDisplayLabel" :title="viewVictoryDisplayLabel">
     <div v-if="topOfVictoryDisplay" class="victory-display-card">
       <CardView :game="game" :card="topOfVictoryDisplay" :playerId="playerId" />
-
+      <DebugMenu v-if="debug.active" :game="game" :card="topOfVictoryDisplay" />
     </div>
 
     <Enemy
@@ -68,9 +82,15 @@ const viewVictoryDisplayLabel = computed(() => t('scenario.victoryDisplay'))
       :playerId="playerId"
       :isDiscards="true"
       :fullWidth="true"
+      :draggableCards="debug.active"
       placement="right"
       @choose="choose"
-    />
+      @cardDragStart="startCardDrag"
+    >
+      <template v-if="debug.active" #cardOverlay="{ card }">
+        <DebugMenu :game="game" :card="card" />
+      </template>
+    </CardsUnderIndicator>
   </div>
 </template>
 

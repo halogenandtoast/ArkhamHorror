@@ -10,6 +10,8 @@ import * as Api from '@/arkham/api'
 import * as CardT from '@/arkham/types/Card'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { fullName } from '@/arkham/types/Name'
+import { useCardStore } from '@/stores/cards'
+import * as DebugMove from '@/arkham/debugCardMove'
 
 export interface Props {
   game: Game
@@ -80,24 +82,50 @@ const deckLabel = computed(() => {
   return null
 })
 
+const cardStore = useCardStore()
+
+// null while nothing is being dragged, false when the card in flight has the
+// wrong back (or two of them) for an encounter deck.
+const deckAccepts = computed(() => DebugMove.draggedCardAccepted(props.game, cardStore.cards, 'encounterDeck'))
+const draggedOver = ref(false)
+
 const dragover = (e: DragEvent) => {
   e.preventDefault()
+  draggedOver.value = true
   if (e.dataTransfer) {
-    e.dataTransfer.dropEffect = 'move'
+    // The drag sources declare effectAllowed 'copy'; answering with a dropEffect
+    // outside that set makes the browser refuse the drop outright.
+    e.dataTransfer.dropEffect = deckAccepts.value === false ? 'none' : 'copy'
   }
+}
+
+function onDragLeave(event: DragEvent) {
+  const target = event.currentTarget
+  const related = event.relatedTarget
+  if (target instanceof Node && related instanceof Node && target.contains(related)) return
+  draggedOver.value = false
 }
 
 function onDrop(event: DragEvent) {
   event.preventDefault()
-  if (event.dataTransfer) {
-    const data = event.dataTransfer.getData('text/plain')
-    if (data) {
-      const json = JSON.parse(data)
-      if (json.tag === "EnemyTarget") {
-        debug.send(props.game.id, {tag: 'ShuffleIntoDeck', contents: [deckSignifier.value, json]})
-      }
-    }
+  draggedOver.value = false
+  if (!event.dataTransfer) return
+  const data = event.dataTransfer.getData('text/plain')
+  if (!data) return
+  const json = JSON.parse(data)
+  if (json.tag === "EnemyTarget") {
+    debug.send(props.game.id, {tag: 'ShuffleIntoDeck', contents: [deckSignifier.value, json]})
+    return
   }
+  if (json.tag !== "CardTarget") return
+  const card = DebugMove.resolveCard(props.game, json.contents)
+  if (!card) return
+  if (!DebugMove.canMoveCardTo(DebugMove.cardDefFor(cardStore.cards, card), 'encounterDeck')) return
+  DebugMove.debugMoveCard(
+    props.game.id,
+    json.contents,
+    DebugMove.toDeck(deckSignifier.value as DebugMove.DeckSignifier, 'DebugDeckShuffle'),
+  )
 }
 
 const debug = useDebug()
@@ -306,10 +334,12 @@ async function debugAddCardToDeck(card: CardDef) {
         <img
           class="deck"
           :src="deckImage"
-          :class="{ 'can-interact': deckAction !== -1, 'revealed': revealTopCard, 'card': revealTopCard }"
+          :class="{ 'can-interact': deckAction !== -1, 'revealed': revealTopCard, 'card': revealTopCard, 'deck--drop-target': draggedOver && deckAccepts === true, 'deck--drop-refused': draggedOver && deckAccepts === false }"
           @click="$emit('choose', deckAction)"
           @drop="onDrop($event)"
           @dragover.prevent="dragover($event)"
+          @dragleave="onDragLeave($event)"
+          @dragend="draggedOver = false"
           @dragenter.prevent
         />
         <span class="deck-size">{{props.spectral === undefined ? game.encounterDeckSize : props.spectral}}</span>
@@ -325,6 +355,20 @@ async function debugAddCardToDeck(card: CardDef) {
 </template>
 
 <style scoped>
+/* Pending drop target — the receiver of the drag, so cyan, matching
+   `cards-under-indicator--dragged-over` rather than the magenta reserved for
+   choices the game is awaiting. Refused drops get a plain red: an error state,
+   not a role in the highlight language. */
+.deck--drop-target {
+  outline: 3px solid var(--highlight);
+  outline-offset: 3px;
+}
+
+.deck--drop-refused {
+  outline: 3px solid rgba(220, 70, 70, 0.9);
+  outline-offset: 3px;
+}
+
 .revealed {
   filter: brightness(50%);
 }

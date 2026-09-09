@@ -71,6 +71,8 @@ import TreacheryView from '@/arkham/components/Treachery.vue';
 import { useGameChoices } from '@/arkham/composables/useGameChoices';
 import { setLocationOffset, resetLocationOffsets, updateGameRaw } from '@/arkham/api';
 import { useDebug, scenarioHasDebugOptions } from '@/arkham/debug'
+import * as DebugMove from '@/arkham/debugCardMove'
+import { useCardStore } from '@/stores/cards'
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { IsMobile } from '@/arkham/isMobile';
@@ -1456,6 +1458,43 @@ const topOfEncounterDiscard = computed(() => {
   if (!props.scenario.discard[0]) return null
   return cardCodeImage(props.scenario.discard[0].cardCode)
 })
+
+const cardStore = useCardStore()
+const encounterDiscardDraggedOver = ref(false)
+// null while nothing is in flight, false when the dragged card has the wrong
+// back for an encounter discard.
+const encounterDiscardAccepts = computed(() =>
+  DebugMove.draggedCardAccepted(props.game, cardStore.cards, 'encounterDiscard')
+)
+
+function onDragOverEncounterDiscard(event: DragEvent) {
+  if (!debug.active) return
+  encounterDiscardDraggedOver.value = true
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = encounterDiscardAccepts.value === false ? 'none' : 'copy'
+  }
+}
+
+function onDragLeaveEncounterDiscard(event: DragEvent) {
+  const target = event.currentTarget
+  const related = event.relatedTarget
+  if (target instanceof Node && related instanceof Node && target.contains(related)) return
+  encounterDiscardDraggedOver.value = false
+}
+
+function onDropEncounterDiscard(event: DragEvent) {
+  event.preventDefault()
+  encounterDiscardDraggedOver.value = false
+  if (!debug.active || !event.dataTransfer) return
+  const data = event.dataTransfer.getData('text/plain')
+  if (!data) return
+  const json = JSON.parse(data)
+  if (json.tag !== 'CardTarget') return
+  const card = DebugMove.resolveCard(props.game, json.contents)
+  if (!card) return
+  if (!DebugMove.canMoveCardTo(DebugMove.cardDefFor(cardStore.cards, card), 'encounterDiscard')) return
+  DebugMove.debugMoveCard(props.game.id, json.contents, DebugMove.discarded)
+}
 const spectralEncounterDeck = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[0])
 const spectralDiscard = computed(() => props.scenario.encounterDecks['SpectralEncounterDeck']?.[1])
 const spectralDiscards = computed<Card[]>(() => (spectralDiscard.value ?? []).map(c => ({ tag: 'EncounterCard', contents: c })))
@@ -2333,7 +2372,17 @@ async function addChaosToken(face: any){
         />
         <VictoryDisplay :game="game" :victoryDisplay="victoryDisplay" @choose="choose" :playerId="playerId" />
         <div class="scenario-encounter-decks">
-          <div v-if="topOfEncounterDiscard" class="discard" style="grid-area: encounterDiscard">
+          <div
+            v-if="topOfEncounterDiscard"
+            class="discard"
+            :class="{ 'discard--drop-target': encounterDiscardDraggedOver && encounterDiscardAccepts === true, 'discard--drop-refused': encounterDiscardDraggedOver && encounterDiscardAccepts === false }"
+            style="grid-area: encounterDiscard"
+            @drop="onDropEncounterDiscard($event)"
+            @dragover.prevent="onDragOverEncounterDiscard($event)"
+            @dragleave="onDragLeaveEncounterDiscard($event)"
+            @dragend="encounterDiscardDraggedOver = false"
+            @dragenter.prevent
+          >
             <div class="discard-card">
               <img
                 :src="topOfEncounterDiscard"
@@ -2362,11 +2411,19 @@ async function addChaosToken(face: any){
               </template>
             </div>
           </div>
+          <!-- An empty discard still has to be a drop target, or there is nothing
+               to drop the first card onto. -->
           <div
             v-else-if="props.scenario.hasEncounterDeck && !hideEncounterDeck"
             class="encounter-discard-placeholder"
+            :class="{ 'discard--drop-target': encounterDiscardDraggedOver && encounterDiscardAccepts === true, 'discard--drop-refused': encounterDiscardDraggedOver && encounterDiscardAccepts === false }"
             style="grid-area: encounterDiscard"
             aria-hidden="true"
+            @drop="onDropEncounterDiscard($event)"
+            @dragover.prevent="onDragOverEncounterDiscard($event)"
+            @dragleave="onDragLeaveEncounterDiscard($event)"
+            @dragend="encounterDiscardDraggedOver = false"
+            @dragenter.prevent
           ></div>
 
           <EncounterDeck
@@ -3021,6 +3078,19 @@ async function addChaosToken(face: any){
 </template>
 
 <style scoped>
+/* Pending drop target — the receiver of the drag, so cyan; a refused drop (wrong
+   back for this pile) gets a plain red, which is an error state rather than a
+   role in the highlight language. */
+.discard--drop-target {
+  outline: 3px solid var(--highlight);
+  outline-offset: 3px;
+}
+
+.discard--drop-refused {
+  outline: 3px solid rgba(220, 70, 70, 0.9);
+  outline-offset: 3px;
+}
+
 .card {
   border-radius: 5px;
   width: var(--card-width);

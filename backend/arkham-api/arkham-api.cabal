@@ -2471,6 +2471,7 @@ library
       Arkham.Damage
       Arkham.DamageEffect
       Arkham.Debug
+      Arkham.Debug.CardDestination
       Arkham.Deck
       Arkham.DeckBuilding.Adjustment
       Arkham.Decklist

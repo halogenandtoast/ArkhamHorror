@@ -12,6 +12,7 @@ import { MessageType } from '@/arkham/types/Message';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import TokenPool from '@/arkham/components/TokenPool.vue'
 import { useDebug } from '@/arkham/debug'
+import * as DebugMove from '@/arkham/debugCardMove'
 import { useCardStore } from '@/stores/cards'
 
 const props = withDefaults(defineProps<{
@@ -238,6 +239,9 @@ function startDrag(event: DragEvent) {
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = 'copy'
     event.dataTransfer.setData('text/plain', JSON.stringify({ tag: 'CardTarget', contents: id.value }))
+    // Publish the id so drop zones can tell, mid-drag, whether they would take
+    // this card -- dataTransfer is unreadable until the drop itself.
+    DebugMove.beginCardDrag(id.value)
   }
 }
 
@@ -271,7 +275,7 @@ function startDrag(event: DragEvent) {
       type="button"
       title="Debug customize"
       @click.stop="debugCustomize"
-    ><font-awesome-icon icon="wrench" /></button>
+    ><font-awesome-icon icon="bug" /></button>
     <AbilityButton
       v-for="ability in abilities"
       :key="ability.index"

@@ -26,6 +26,7 @@ import Arkham.Classes.HasGame
 import Arkham.Cost qualified as Cost
 import Arkham.DamageEffect
 import Arkham.Debug
+import Arkham.Debug.CardDestination
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist
 import Arkham.Decklist.RandomBasicWeakness (
@@ -2835,6 +2836,39 @@ runGameMessage msg g = case msg of
   DebugAddToEncounterDeck deck cardId -> do
     card <- getCard cardId
     push $ ShuffleCardsIntoDeck deck [card]
+    pure g
+  DebugMoveCard cardId destination -> do
+    card <- getCard cardId
+    case destination of
+      -- RemoveCard, SetAsideCards and DebugAddToHand each obtain the card as
+      -- their first step, so they already pull it out of every other zone.
+      DebugCardRemovedFromGame -> push $ RemoveCard cardId
+      DebugCardSetAside -> push $ SetAsideCards [card]
+      DebugCardHand iid -> push $ DebugAddToHand iid cardId
+      DebugCardDiscard -> case card of
+        EncounterCard ec -> push $ AddToEncounterDiscard ec
+        PlayerCard pc -> do
+          -- AddToDiscard only answers for the investigator who owns the card, and
+          -- a card sitting in the victory display may have no owner at all.
+          iid <- maybe getLead pure pc.owner
+          pushAll [ObtainCard cardId, AddToDiscard iid (setPlayerCardOwner iid pc)]
+        VengeanceCard _ -> pure ()
+      DebugCardDeck deck position ->
+        when (cardDefCanEnterDeck (toCardDef card) deck) do
+          -- The investigator only names whose deck to touch; every other deck
+          -- ignores it, so fall back to the lead rather than inventing an id.
+          iid <- maybe getLead pure deck.investigator
+          -- Obtain first: PutCardOnTopOfDeck leaves the victory display alone, so
+          -- without this the card would exist in both places, #5662.
+          pushAll
+            $ ObtainCard cardId
+            : case position of
+              DebugDeckTop | deckSupportsEnds deck -> [PutCardOnTopOfDeck iid deck card]
+              DebugDeckBottom | deckSupportsEnds deck -> [PutCardOnBottomOfDeck iid deck card]
+              -- Only three deck signifiers implement top/bottom; for the rest the
+              -- message is a no-op, and since the card has already been obtained
+              -- that would destroy it. Shuffling in is handled for every deck.
+              _ -> [ShuffleCardsIntoDeck deck [card]]
     pure g
   After EndPhase -> do
     clearQueue

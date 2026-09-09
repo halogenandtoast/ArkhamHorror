@@ -60,6 +60,7 @@ import Arkham.Cost
 import Arkham.Custom.Overlay (DeckOverlay)
 import Arkham.Customization
 import Arkham.DamageEffect
+import Arkham.Debug.CardDestination
 import Arkham.Deck
 import Arkham.DeckBuilding.Adjustment
 import Arkham.Decklist.Type
@@ -1258,6 +1259,10 @@ data Message
   | SetCardOwner CardId InvestigatorId
   | DebugAddToHand InvestigatorId CardId
   | DebugAddToEncounterDeck DeckSignifier CardId
+  | -- Debug: move a card to another zone from wherever it currently sits. Always
+    -- obtains the card first, so it leaves the victory display, set-aside pile or
+    -- deck it came from rather than being duplicated into the destination.
+    DebugMoveCard CardId DebugCardDestination
   | DebugCustomize InvestigatorId CardId
   | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | SetScenarioDifficulty Difficulty

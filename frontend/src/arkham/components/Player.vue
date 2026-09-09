@@ -3,7 +3,8 @@ import type { CardContents } from '@/arkham/types/Card';
 import * as CardT from '@/arkham/types/Card';
 import gsap from 'gsap';
 import { computed, inject, Ref, ref, ComputedRef, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
-import { useDebug } from '@/arkham/debug';
+import { useDebug } from '@/arkham/debug'
+import * as DebugMove from '@/arkham/debugCardMove';
 import { Game } from '@/arkham/types/Game';
 import { toCardContents } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
@@ -857,7 +858,7 @@ function onDropHand(event: DragEvent) {
     if (data) {
       const json = JSON.parse(data)
       if (json.tag === "CardTarget") {
-        debug.send(props.game.id, {tag: 'DebugAddToHand', contents: [id.value, json.contents]})
+        DebugMove.debugMoveCard(props.game.id, json.contents, DebugMove.toHand(id.value))
       }
     }
   }
@@ -872,6 +873,7 @@ function startHandDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
     event.dataTransfer.effectAllowed = 'copy'
     const cardId = CardT.toCardContents(card).id
     event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "CardTarget", "contents": cardId }))
+    DebugMove.beginCardDrag(cardId)
   }
 }
 

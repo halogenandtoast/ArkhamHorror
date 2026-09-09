@@ -297,7 +297,7 @@ function oilPaintEffect(canvas, radius, intensity) {
       title="Debug customize"
       @click.stop="debugCustomize"
     >
-      <font-awesome-icon icon="wrench" />
+      <font-awesome-icon icon="bug" />
     </button>
 
     <AbilityButton

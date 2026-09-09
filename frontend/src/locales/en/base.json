@@ -650,6 +650,18 @@
       "removeAllTokens": "Remove All Tokens",
       "modifiers": "Modifiers",
       "close": "Close"
+    },
+    "victoryDisplay": {
+      "title": "Move card",
+      "removeFromGame": "Remove from game",
+      "setAside": "Set aside",
+      "discard": "Discard"
+    },
+    "cardMove": {
+      "onTop": "Place on top",
+      "onBottom": "Place on bottom",
+      "shuffleIn": "Shuffle in",
+      "wrongDeck": "Wrong back for this deck"
     }
   },
   "customizations": {

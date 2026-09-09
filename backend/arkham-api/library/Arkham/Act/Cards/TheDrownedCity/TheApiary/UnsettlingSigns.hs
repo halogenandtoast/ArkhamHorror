@@ -19,6 +19,7 @@ import Arkham.Helpers.Query (
   getPlayerCount,
   getSetAsideCardsMatching,
  )
+import Arkham.Helpers.Scenario (getVictoryDisplay)
 import Arkham.Location.CardDefs.TheDrownedCity.TheApiary qualified as Locations
 import Arkham.Location.Grid (GridLocation (..), Pos (..))
 import Arkham.Location.Types (Field (LocationCardId))
@@ -113,7 +114,7 @@ instance RunMessage UnsettlingSigns where
 
       advanceToAct attrs Acts.lostPilgrims A
       pure a
-    DoStep 2 (AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "theHiveMind" do
+    DoStep 2 inner@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "theHiveMind" do
       flavor do
         h "title"
         p "body"
@@ -126,15 +127,7 @@ instance RunMessage UnsettlingSigns where
           li "placeClues"
           li "continuePlaying"
 
-      -- The ring is Grasping Corridor above the Central Chamber and Acidic Coelom
-      -- below it (the edge it faces), with the Apiary Entrance and Starving Corridor
-      -- either side. Only the entrance has to move; the rest are already in place.
-      let ring =
-            [ Locations.apiaryEntranceBeckoningLight
-            , Locations.graspingCorridor
-            , Locations.starvingCorridor
-            , Locations.acidicCoelom
-            ]
+      -- Only the entrance has to move; the rest of the ring is already in place.
       selectOne (locationIs Locations.apiaryEntranceBeckoningLight)
         >>= traverse_ (push . PlaceGrid . GridLocation (Pos (-1) (-2)))
 
@@ -144,25 +137,53 @@ instance RunMessage UnsettlingSigns where
       -- 'removeLocation' already splits these the way the interlude asks: a victory
       -- location with no clues on it goes to the victory display, anything else is
       -- removed outright.
-      selectEach (not_ $ mapOneOf locationIs ring) removeLocation
-      strays <- findAllCards (`cardMatch` (#location <> not_ (mapOneOf cardIs ring)))
-      for_ strays removeCardFromGame
+      selectEach (not_ $ mapOneOf locationIs hiveMindRing) removeLocation
+
+      -- Every remaining bullet has to see the board this teardown leaves behind, and
+      -- the teardown is only queued here, so they run in their own steps.
+      doStep 3 inner
+      advanceToAct attrs Acts.theHiveMind A
+      pure a
+    DoStep 3 inner@(AdvanceAct (isSide B attrs -> True) _ _) -> do
+      -- "Search the encounter deck, encounter discard pile, and play area." The
+      -- in-play copies were just handled above, so anything already sitting in the
+      -- victory display is left alone -- 'removeCardFromGame' obtains the card
+      -- first, which would pull it straight back out again.
+      victory <- getVictoryDisplay
+      strays <-
+        findAllCards
+          (`cardMatch` (#location <> not_ (mapOneOf cardIs (Locations.centralChamber : hiveMindRing))))
+      for_ (filter (`notElem` victory) strays) removeCardFromGame
 
       -- Revealed on placement: the interlude puts it into the ring face up, and its
-      -- connection to the location it faces only exists while it is revealed.
+      -- connection to the location it faces only exists while it is revealed. The
+      -- placement is still queued, so the reveal cannot check the board first.
       centralChamber <- placeSetAsideLocation Locations.centralChamber
-      reveal centralChamber
+      unsafeReveal centralChamber
       createSetAsideEnemy_ Enemies.mother centralChamber
 
       -- The set is only aside if the creature was not already defeated; if it was,
       -- setup removed it from the game.
       whenM (notNull <$> getSetAsideCardsMatching (cardIs Enemies.theInescapable))
         $ spawnTheInescapable id
-      placeCluesOnRevealedLocations attrs
 
-      advanceToAct attrs Acts.theHiveMind A
+      doStep 4 inner
+      pure a
+    DoStep 4 (AdvanceAct (isSide B attrs -> True) _ _) -> do
+      placeCluesOnRevealedLocations attrs
       pure a
     _ -> UnsettlingSigns <$> liftRunMessage msg attrs
+
+{- | The ring is Grasping Corridor above the Central Chamber and Acidic Coelom below
+it (the edge it faces), with the Apiary Entrance and Starving Corridor either side.
+-}
+hiveMindRing :: [CardDef]
+hiveMindRing =
+  [ Locations.apiaryEntranceBeckoningLight
+  , Locations.graspingCorridor
+  , Locations.starvingCorridor
+  , Locations.acidicCoelom
+  ]
 
 -- | "Flip Apiary Entrance to its (Dangerous Exit) side."
 flipApiaryEntranceToDangerousExit :: ReverseQueue m => m ()
@@ -178,14 +199,14 @@ deck, along with the encounter discard pile."
 spawnTheInescapable
   :: ReverseQueue m => (EnemyCreation Message -> EnemyCreation Message) -> m ()
 spawnTheInescapable f = do
-  lead <- getLead
-  farthest <- select $ FarthestLocationFromAll Anywhere
-  chooseOrRunOneM lead $ targets farthest \lid ->
-    createSetAsideEnemyWith_ Enemies.theInescapable lid f
+  -- The matcher is resolved when the spawn runs rather than when it is queued: the
+  -- Hive Mind interlude tears the map down and rebuilds it around this call, so a
+  -- location picked now would be gone by the time the enemy arrived.
+  createSetAsideEnemyWith_ Enemies.theInescapable (FarthestLocationFromAll Anywhere) f
   shuffleEncounterDiscardBackIn
-  -- The *rest* of the set: the enemy itself is spawning, and the spawn is deferred
-  -- behind the choice above while the set-aside cards here are read immediately, so
-  -- leaving it in would shuffle a second copy of it into the deck.
+  -- The *rest* of the set: the enemy itself is spawning, and that spawn is deferred
+  -- while the set-aside cards here are read immediately, so leaving it in would
+  -- shuffle a second copy of it into the deck.
   shuffleSetAsideIntoDeck Deck.EncounterDeck
     $ CardFromEncounterSet Set.TheInescapable
     <> not_ (cardIs Enemies.theInescapable)

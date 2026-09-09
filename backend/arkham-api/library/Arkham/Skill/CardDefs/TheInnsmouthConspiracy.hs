@@ -1,5 +1,6 @@
 module Arkham.Skill.CardDefs.TheInnsmouthConspiracy where
 
+import Arkham.Cost
 import Arkham.Skill.CardDefs.Import
 
 whispersFromTheDeep :: CardDef
@@ -76,6 +77,7 @@ justifyTheMeans3 =
     { cdCardTraits = setFromList [Practiced, Cursed]
     , cdLevel = Just 3
     , cdCommitTrigger = True
+    , cdAdditionalCost = Just AddCurseTokensEqualToSkillTestDifficulty
     }
 
 nauticalProwess :: CardDef

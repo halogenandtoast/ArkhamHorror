@@ -703,7 +703,13 @@ getIsCommittable a c = runValidT do
           pure $ fold [cst | AdditionalCostToCommit iid' cst <- mods, iid' == a]
       cmods <- getModifiers (CardIdTarget $ toCardId c)
       let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == a]
-      liftGuardM $ getCanAffordCost a (toSource a) [] [] (costToCommit <> otherAdditionalCosts)
+      -- The card's own additional cost (e.g. Justify the Means (3)'s curse tokens) is
+      -- only reachable via the card def here; the skill entity that carries it isn't
+      -- created until CommitCard, by which point failing to pay is a hard error.
+      let ownAdditionalCost =
+            if NoAdditionalCosts `elem` cmods then mempty else fold (cdAdditionalCost $ toCardDef card)
+      liftGuardM
+        $ getCanAffordCost a (toSource a) [] [] (costToCommit <> otherAdditionalCosts <> ownAdditionalCost)
       liftGuardM $ allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
     EncounterCard card -> guard $ CommittableTreachery `elem` cdCommitRestrictions (toCardDef card)
     VengeanceCard _ -> error "vengeance card"

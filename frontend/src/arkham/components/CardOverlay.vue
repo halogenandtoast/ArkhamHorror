@@ -1067,7 +1067,10 @@ watchEffect(() => {
 
   const dbCard = store.getDbCard(code)
   if (!dbCard) return
-  const needBack = dbCard.code !== code
+  // ArkhamDB records a handful of cards the engine flips (Atlach-Nacha's spinner face,
+  // Hank Samson's transformed face) as single-sided, so their `b` face carries no back_*
+  // fields. Describe it with the front's rather than showing nothing.
+  const needBack = dbCard.code !== code && dbCard.double_sided
 
   const name = getCardName(dbCard, needBack)
   const type = getCardTypeName(dbCard)

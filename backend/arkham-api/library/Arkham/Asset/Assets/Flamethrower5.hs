@@ -38,11 +38,17 @@ instance RunMessage Flamethrower5 where
     Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       damage <- damageValueFor 4 iid DamageForEnemy
       engaged <- select $ enemyEngagedWith iid
-      let toMsg eid' = DealDamage (EnemyTarget eid') $ delayDamage $ isDirect $ attack attrs 1
       chooseOneM iid $ cardI18n $ scope "flamethrower5" do
         labeled "standardDamage" $ push $ DealDamage (EnemyTarget eid) $ attack attrs 1
-        labeled "assignAmongEngaged" do
-          replicateM_ damage $ chooseTargetM iid engaged $ push . toMsg
-          for_ engaged $ checkDefeated attrs
+        -- One message per enemy, not per point: each DealDamage raises its own
+        -- would-take-damage window, and cards like Mimetic Nemesis trigger off it.
+        labeled "assignAmongEngaged"
+          $ chooseEnemyAmounts iid ("$" <> labelKey "assignAmongEngaged") damage engaged attrs
+      pure a
+    ResolveAmounts _ choices (isTarget attrs -> True) -> do
+      let assignments = [(EnemyId nu.nuUUID, n) | (nu, n) <- choices, n > 0]
+      for_ assignments \(eid, n) ->
+        push $ DealDamage (EnemyTarget eid) $ delayDamage $ isDirect $ attack attrs n
+      for_ assignments \(eid, _) -> checkDefeated attrs eid
       pure a
     _ -> Flamethrower5 <$> liftRunMessage msg attrs

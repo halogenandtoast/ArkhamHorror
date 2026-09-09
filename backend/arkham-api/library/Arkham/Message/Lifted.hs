@@ -1147,6 +1147,20 @@ chooseAssetAmounts iid label maxAmount assets target = do
     pure $ AmountChoice (unAssetId aid) (toTitle name) 0 maxAmount
   push $ Ask player $ ChooseAmounts label (TotalAmountTarget maxAmount) choices (toTarget target)
 
+{- | Like 'chooseAssetAmounts', but for enemies, distributing *up to* @maxAmount@.
+Keyed by enemy id so the answer maps back to a specific enemy even when two
+copies share a name.
+-}
+chooseEnemyAmounts
+  :: (ReverseQueue m, Targetable target)
+  => InvestigatorId -> Text -> Int -> [EnemyId] -> target -> m ()
+chooseEnemyAmounts iid label maxAmount enemies target = do
+  player <- getPlayer iid
+  choices <- for enemies \eid -> do
+    name <- field EnemyName eid
+    pure $ AmountChoice (unEnemyId eid) (toTitle name) 0 maxAmount
+  push $ Ask player $ ChooseAmounts label (MaxAmountTarget maxAmount) choices (toTarget target)
+
 withInvestigatorAmounts
   :: ReverseQueue m => [(NamedUUID, Int)] -> (InvestigatorId -> Int -> m ()) -> m ()
 withInvestigatorAmounts choices f = do

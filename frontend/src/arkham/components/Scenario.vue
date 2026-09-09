@@ -258,10 +258,21 @@ const enableCosmicEmissaryAnimation = ref(
     : getGameLocalStorageItem(props.game.id, 'enableCosmicEmissaryAnimation') !== 'false'
 )
 const locationsZoom = ref(parseFloat(getGameLocalStorageItem(props.game.id, 'locationsZoom') ?? '1'))
-const doubleZoomActive = ref(false)
-const doubleZoomPrevValue = ref(1)
-const doubleZoomPrevScroll = { left: 0, top: 0 }
+// Persisted alongside locationsZoom: a remount with the zoom restored but the toggle reset
+// would make the next double-tap zoom "in" again instead of back out.
+const doubleZoomActive = ref(getGameLocalStorageItem(props.game.id, 'doubleZoomActive') === 'true')
+const doubleZoomPrevValue = ref(parseFloat(getGameLocalStorageItem(props.game.id, 'doubleZoomPrevValue') ?? '1'))
+const doubleZoomPrevScroll = {
+  left: parseFloat(getGameLocalStorageItem(props.game.id, 'doubleZoomPrevScrollLeft') ?? '0'),
+  top: parseFloat(getGameLocalStorageItem(props.game.id, 'doubleZoomPrevScrollTop') ?? '0'),
+}
 const DOUBLE_ZOOM_LEVEL = 3
+
+function setDoubleZoomActive(active: boolean) {
+  if (doubleZoomActive.value === active) return
+  doubleZoomActive.value = active
+  setGameLocalStorageItem(props.game.id, 'doubleZoomActive', String(active))
+}
 watch(locationsZoom, async (value) => {
   setGameLocalStorageItem(props.game.id, 'locationsZoom', String(value))
   await updateScrollMargins()
@@ -275,11 +286,14 @@ function zoomStep(value: number): number {
   return Math.max(min, max * Math.exp(-Math.pow(value - center, 2) / (2 * sigma * sigma)))
 }
 
+// Zooming by hand takes over from the double-tap toggle, whose saved level is now stale.
 function increaseZoom() {
+  setDoubleZoomActive(false)
   locationsZoom.value = parseFloat((locationsZoom.value + zoomStep(locationsZoom.value)).toFixed(3))
 }
 
 function decreaseZoom() {
+  setDoubleZoomActive(false)
   locationsZoom.value = parseFloat(Math.max(0.01, locationsZoom.value - zoomStep(locationsZoom.value)).toFixed(3))
 }
 
@@ -2024,11 +2038,19 @@ async function toggleZoom(e: MouseEvent) {
   if (!scroller || !gridEl) return
 
   if (doubleZoomActive.value) {
-    doubleZoomActive.value = false
+    setDoubleZoomActive(false)
     locationsZoom.value = doubleZoomPrevValue.value
     await updateScrollMargins()
     scroller.scrollLeft = doubleZoomPrevScroll.left
     scroller.scrollTop = doubleZoomPrevScroll.top
+    return
+  }
+
+  // Already at (or past) the double-zoom level with no toggle to undo. Zooming in again would
+  // only re-centre the scroller, leaving the map stuck zoomed in, so zoom out instead.
+  if (locationsZoom.value >= DOUBLE_ZOOM_LEVEL) {
+    locationsZoom.value = doubleZoomPrevValue.value < DOUBLE_ZOOM_LEVEL ? doubleZoomPrevValue.value : 1
+    await updateScrollMargins()
     return
   }
 
@@ -2070,9 +2092,12 @@ async function toggleZoom(e: MouseEvent) {
   doubleZoomPrevValue.value = currentZ
   doubleZoomPrevScroll.left = scroller.scrollLeft
   doubleZoomPrevScroll.top = scroller.scrollTop
+  setGameLocalStorageItem(props.game.id, 'doubleZoomPrevValue', String(currentZ))
+  setGameLocalStorageItem(props.game.id, 'doubleZoomPrevScrollLeft', String(doubleZoomPrevScroll.left))
+  setGameLocalStorageItem(props.game.id, 'doubleZoomPrevScrollTop', String(doubleZoomPrevScroll.top))
 
   // Apply new zoom and wait for margins to update
-  doubleZoomActive.value = true
+  setDoubleZoomActive(true)
   locationsZoom.value = DOUBLE_ZOOM_LEVEL
   await updateScrollMargins()
 

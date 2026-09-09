@@ -1904,9 +1904,17 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     push $ RefillSlots a.id []
     pure $ a & slotsL . ix slotType %~ deleteFirstMatch (isSource source . slotSource)
   RefillSlots iid xs | iid == investigatorId && not investigatorEliminated -> do
+    -- An asset can be controlled by an investigator while its card sits on a location
+    -- (Summoned Servitor). It still fills that investigator's slots, so it has to be part of
+    -- the requirements -- otherwise the refill empties every slot and never gives this one
+    -- back (#5660).
+    atLocation <-
+      select (AssetControlledBy (InvestigatorWithId iid))
+        >>= filterM (fieldMap AssetPlacement (isJust . preview _AtLocation))
     assetIds <-
-      select
-        $ oneOf [AssetInPlayAreaOf (InvestigatorWithId iid), AssetInThreatAreaOf (InvestigatorWithId iid)]
+      (<> atLocation)
+        <$> select
+          (oneOf [AssetInPlayAreaOf (InvestigatorWithId iid), AssetInThreatAreaOf (InvestigatorWithId iid)])
     mods <- getModifiers a
     requirements <- concatForM assetIds \assetId -> do
       assetCard <- field AssetCard assetId

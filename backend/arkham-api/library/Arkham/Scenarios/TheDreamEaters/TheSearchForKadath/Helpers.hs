@@ -2,7 +2,7 @@ module Arkham.Scenarios.TheDreamEaters.TheSearchForKadath.Helpers where
 
 import Arkham.Campaigns.TheDreamEaters.Helpers
 import Arkham.Classes.HasGame
-import Arkham.Helpers.FlavorText (FlavorTextBuilder, p, setTitle)
+import Arkham.Helpers.FlavorText (FlavorTextBuilder, h, p, setTitle)
 import Arkham.Helpers.Log
 import Arkham.I18n
 import Arkham.Prelude
@@ -15,6 +15,14 @@ scenarioFlavorText :: Scope -> FlavorTextBuilder ()
 scenarioFlavorText entry = scenarioI18n $ scope "flavorText" $ scope entry do
   setTitle "title"
   p "body"
+
+{- | The scenario's opening passage, headed by the scenario's own title the way
+every other scenario intro is.
+-}
+scenarioIntroText :: Scope -> FlavorTextBuilder ()
+scenarioIntroText entry = scenarioI18n do
+  scope "intro" $ h "title"
+  scope "flavorText" $ scope entry $ p "body"
 
 getSignsOfTheGods :: HasGame m => m Int
 getSignsOfTheGods = scenarioCount SignOfTheGods

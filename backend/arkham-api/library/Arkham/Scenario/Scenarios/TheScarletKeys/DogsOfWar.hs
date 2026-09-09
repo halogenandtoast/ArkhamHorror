@@ -63,7 +63,7 @@ instance RunMessage DogsOfWar where
     PreScenarioSetup -> scope "intro" do
       t <- getTime
       flavor do
-        setTitle "title"
+        h "title"
         p "intro1"
         ul do
           li.validate (t < 20) "fewerThanTwentyTime"

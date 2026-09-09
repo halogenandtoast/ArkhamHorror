@@ -204,11 +204,11 @@ instance RunMessage FortuneAndFolly where
         else doStep 3 PreScenarioSetup
       pure $ FortuneAndFolly $ attrs & campaignStepL .~ Nothing
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro2"
+      flavor $ h "title" >> p "intro2"
       doStep 4 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro3"
+      flavor $ h "title" >> p "intro3"
       doStep 4 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do

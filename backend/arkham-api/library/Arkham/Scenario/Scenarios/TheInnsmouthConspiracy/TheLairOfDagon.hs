@@ -61,7 +61,7 @@ instance HasChaosTokenValue TheLairOfDagon where
 instance RunMessage TheLairOfDagon where
   runMessage msg s@(TheLairOfDagon attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
+      story $ i18nWithHeading "intro1"
       missionWasSuccessful <- getHasRecord TheMissionWasSuccessful
       if missionWasSuccessful
         then doStep 2 PreScenarioSetup

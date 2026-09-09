@@ -73,7 +73,7 @@ instance RunMessage IceAndDeathPart3 where
     DoStep 0 PreScenarioSetup -> do
       isStandalone <- getIsStandalone
       when (not isStandalone || attrs.hasOption PerformIntro) do
-        story $ i18nWithTitle "intro"
+        story $ i18nWithHeading "intro"
         whenM hasRemainingFrostTokens $ addChaosToken #frost
         sv <- fromMaybe 0 <$> getCurrentShelterValue
         story $ withVars ["shelterValue" .= sv] $ i18nWithTitle "investigatorSetup"

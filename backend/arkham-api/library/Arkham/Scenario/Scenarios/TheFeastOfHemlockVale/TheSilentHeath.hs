@@ -64,7 +64,7 @@ instance RunMessage TheSilentHeath where
       time <- getCampaignTime
       let isNight = time == Night
       flavor do
-        setTitle "title"
+        h "title"
         p.basic "body"
         ul $ li.nested.validate isNight "nightSkip" do
           li.validate (not isNight && day == Day1) "day1"

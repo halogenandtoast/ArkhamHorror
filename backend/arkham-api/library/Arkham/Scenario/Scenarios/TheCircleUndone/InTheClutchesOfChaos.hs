@@ -139,7 +139,7 @@ setupInTheClutchesOfChaos attrs = do
 instance RunMessage InTheClutchesOfChaos where
   runMessage msg s@(InTheClutchesOfChaos attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro1"
+      flavor $ h "title" >> p "intro1"
       neverSeenOrHeardFromAgain <- getHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain
       doStep (if neverSeenOrHeardFromAgain then 2 else 3) PreScenarioSetup
       pure s

@@ -105,7 +105,7 @@ setBarriers a b n = do
 instance RunMessage InTooDeep where
   runMessage msg s@(InTooDeep attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      story $ i18nWithHeading "intro"
       pure s
     StandaloneSetup -> do
       {- FOURMOLU_DISABLE -}

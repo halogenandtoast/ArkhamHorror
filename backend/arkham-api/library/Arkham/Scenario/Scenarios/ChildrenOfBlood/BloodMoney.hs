@@ -74,7 +74,7 @@ instance HasChaosTokenValue BloodMoney where
 instance RunMessage BloodMoney where
   runMessage msg s@(BloodMoney attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      story $ i18nWithHeading "intro"
       pure s
     ResolveChaosToken _ Cultist _ | isHardExpert attrs -> do
       whenM isMonsterAttackOrEvade $ afterSkillTestQuiet $ addChaosToken #blood

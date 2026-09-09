@@ -62,7 +62,7 @@ instance RunMessage WakingNightmare where
       setChaosTokens $ initChaosBag TheWebOfDreams attrs.difficulty
       pure s
     PreScenarioSetup -> do
-      storyWithChooseOneM (scenarioFlavorText "intro1") do
+      storyWithChooseOneM (scenarioIntroText "intro1") do
         labeled "intro.bringDoctor" do
           flavor $ scenarioFlavorText "intro2"
           record DrMaheswaranJoinedTheInvestigation

@@ -64,7 +64,7 @@ instance HasChaosTokenValue OneNightOnly where
 instance RunMessage OneNightOnly where
   runMessage msg s@(OneNightOnly attrs) = runQueueT $ scenarioI18n "oneNightOnly" $ case msg of
     PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "body"
+      flavor $ h "title" >> p "body"
       behindTheCurtain <- select behindTheCurtainMatcher
       storyOnlyBuild behindTheCurtain $ setTitle "title" >> p "behindTheCurtain"
       pure s

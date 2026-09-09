@@ -114,7 +114,7 @@ instance RunMessage TheTwistedHollow where
       if standalone
         then setupStandaloneDayAndTime (Just (Day1, Night))
         else scope "intro" do
-          storyWithChooseOneM (setTitle "title" >> p "intro1") do
+          storyWithChooseOneM (h "title" >> p "intro1") do
             labeled "tellTheTruth" $ doStep 2 PreScenarioSetup
             labeled "lie" $ doStep 3 PreScenarioSetup
       pure s

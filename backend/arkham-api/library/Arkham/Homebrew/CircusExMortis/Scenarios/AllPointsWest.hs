@@ -186,7 +186,7 @@ instance RunMessage AllPointsWest where
       fromNewOrleans <- playedCurseOfTheRougarouEnRoute
       if fromNewOrleans
         then do
-          scope "backOnTrack" $ flavor $ setTitle "title" >> p "body"
+          flavor $ h "title" >> scope "backOnTrack" (h_ "title" >> p "body")
           -- The granted reactions themselves live on the campaign; this reads the flavor only.
           whenM (selectAny $ DeckWith $ HasCard $ cardIs Treacheries.curseOfTheRougarou)
             $ scope "whatAHorribleNight"
@@ -198,7 +198,7 @@ instance RunMessage AllPointsWest where
             $ flavor
             $ setTitle "title"
             >> p "body"
-        else scope "rightOnSchedule" $ flavor $ setTitle "title" >> p "body"
+        else flavor $ h "title" >> scope "rightOnSchedule" (h_ "title" >> p "body")
       pure s
     Setup -> runScenarioSetup AllPointsWest attrs do
       gather Set.AllPointsWest

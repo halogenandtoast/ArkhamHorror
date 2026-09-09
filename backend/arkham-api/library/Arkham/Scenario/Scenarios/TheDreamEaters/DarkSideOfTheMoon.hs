@@ -86,7 +86,7 @@ instance RunMessage DarkSideOfTheMoon where
       whenHasRecord RandolphWasCaptured do
         getCampaignStoryCard Assets.randolphCarterExpertDreamer >>= push . SetAsideCards . pure . toCard
 
-      story $ i18nWithTitle "theDreamEaters.darkSideOfTheMoon.intro"
+      story $ i18nWithHeading "theDreamEaters.darkSideOfTheMoon.intro"
       captured <- selectAny $ investigatorWithRecord WasCaptured
       story
         $ i18nWithTitle

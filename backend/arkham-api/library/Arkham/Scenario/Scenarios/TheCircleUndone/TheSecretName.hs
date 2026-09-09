@@ -159,7 +159,7 @@ instance RunMessage TheSecretName where
       neverSeenOrHeardFromAgain <- getHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain
 
       flavor do
-        setTitle "title"
+        h "title"
         p "checkCampaignLog"
         ul do
           li.validate membersOfTheLodge "membersOfTheLodge"

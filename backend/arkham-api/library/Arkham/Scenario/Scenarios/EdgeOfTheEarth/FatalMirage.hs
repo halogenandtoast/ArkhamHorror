@@ -99,7 +99,7 @@ instance RunMessage FatalMirage where
         completed <- elem Step.FatalMirage <$> getCompletedSteps
         if not completed && not (attrs.hasOption FatalMiragePart2) && not (attrs.hasOption FatalMiragePart3)
           then do
-            story $ i18nWithTitle "intro1"
+            story $ i18nWithHeading "intro1"
             killedInThePlaneCrash <- getRecordSet WasKilledInThePlaneCrash
             when (recorded Assets.professorWilliamDyerProfessorOfGeology.cardCode `elem` killedInThePlaneCrash) do
               blueStory $ i18nEntry "dyerWasKilledInThePlaneCrash"

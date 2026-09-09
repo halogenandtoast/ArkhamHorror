@@ -192,7 +192,7 @@ instance RunMessage ShatteredAeons where
     PreScenarioSetup -> scope "intro" do
       braziersLit <- getHasRecord TheBraziersAreLit
       flavor do
-        setTitle "title"
+        h "title"
         p.basic.validate braziersLit "theBraziersAreLit"
         p.basic.validate (not braziersLit) "theBraziersRemainUnlit"
       doStep (if braziersLit then 1 else 2) PreScenarioSetup

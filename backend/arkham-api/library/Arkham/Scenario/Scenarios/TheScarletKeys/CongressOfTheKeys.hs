@@ -147,7 +147,7 @@ instance RunMessage CongressOfTheKeys where
     PreScenarioSetup -> scope "intro" do
       t <- getTime
       flavor do
-        setTitle "title"
+        h "title"
         p "body"
         ul do
           li.validate (t >= 35) "option1"

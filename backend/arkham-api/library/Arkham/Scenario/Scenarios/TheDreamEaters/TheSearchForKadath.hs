@@ -109,7 +109,7 @@ instance RunMessage TheSearchForKadath where
       setChaosTokens standaloneChaosTokens
       pure . TheSearchForKadath $ attrs & standaloneCampaignLogL <>~ standaloneCampaignLog
     PreScenarioSetup -> do
-      flavor $ scenarioFlavorText "intro1"
+      flavor $ scenarioIntroText "intro1"
       blackCatAtYourSide <- getHasRecord TheBlackCatIsAtYourSide
       if blackCatAtYourSide
         then doStep 2 PreScenarioSetup

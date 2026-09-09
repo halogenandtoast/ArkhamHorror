@@ -10,7 +10,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Enemies
 import Arkham.FlavorText
-import Arkham.Helpers.FlavorText (addEntry, withTitle)
+import Arkham.Helpers.FlavorText (addEntry, withHeading, withTitle)
 import Arkham.Helpers.Investigator (getJustLocation, getMaybeLocation)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Shuffle (getCanShuffleIn)
@@ -59,7 +59,7 @@ instance HasChaosTokenValue IceAndDeathPart1 where
 instance RunMessage IceAndDeathPart1 where
   runMessage msg s@(IceAndDeathPart1 attrs) = runQueueT $ scenarioI18n 1 $ case msg of
     PreScenarioSetup -> do
-      storyWithChooseOneM (withTitle "intro") $ labeled "proceedToIceAndDeathPart1" nothing
+      storyWithChooseOneM (withHeading "intro") $ labeled "proceedToIceAndDeathPart1" nothing
       doStep 1 PreScenarioSetup
       story $ i18nWithTitle "investigatorSetup"
       eachInvestigator (`forInvestigator` PreScenarioSetup)

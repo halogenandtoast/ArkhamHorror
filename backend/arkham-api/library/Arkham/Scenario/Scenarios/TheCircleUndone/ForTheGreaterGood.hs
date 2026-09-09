@@ -171,7 +171,7 @@ instance RunMessage ForTheGreaterGood where
       neverSeenOrHeardFromAgain <- getHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain
 
       flavor do
-        setTitle "title"
+        h "title"
         p "intro1"
         ul do
           li.validate membersOfTheLodge "membersOfTheLodge"

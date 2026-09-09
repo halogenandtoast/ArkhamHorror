@@ -82,7 +82,7 @@ instance HasChaosTokenValue SanguineShadows where
 instance RunMessage SanguineShadows where
   runMessage msg s@(SanguineShadows attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (setTitle "title" >> p "intro1") do
+      storyWithChooseOneM (h "title" >> p "intro1") do
         labeled "everything" $ doStep 2 PreScenarioSetup
         labeled "breadcrumbs" $ doStep 3 PreScenarioSetup
         labeled "insist" $ doStep 4 PreScenarioSetup

@@ -87,7 +87,7 @@ instance RunMessage ToTheForbiddenPeaks where
           pure $ ToTheForbiddenPeaks $ foldl' (flip addPartner) attrs expeditionTeam
         else pure s
     DoStep 0 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
+      story $ i18nWithHeading "intro1"
 
       eliyahIsAlive <- getPartnerIsAlive Assets.eliyahAshevakDogHandler
       woodenSledgeRecovered <- hasSupply WoodenSledge

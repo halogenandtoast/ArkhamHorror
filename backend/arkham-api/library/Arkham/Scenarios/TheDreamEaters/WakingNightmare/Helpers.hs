@@ -7,7 +7,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.GameValue
-import Arkham.Helpers.FlavorText (FlavorTextBuilder, p, setTitle)
+import Arkham.Helpers.FlavorText (FlavorTextBuilder, h, p, setTitle)
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message
@@ -26,6 +26,14 @@ scenarioFlavorText :: Scope -> FlavorTextBuilder ()
 scenarioFlavorText entry = scenarioI18n $ scope "flavorText" $ scope entry do
   setTitle "title"
   p "body"
+
+{- | The scenario's opening passage, headed by the scenario's own title the way
+every other scenario intro is.
+-}
+scenarioIntroText :: Scope -> FlavorTextBuilder ()
+scenarioIntroText entry = scenarioI18n do
+  scope "intro" $ h "title"
+  scope "flavorText" $ scope entry $ p "body"
 
 pattern InfestedLocation :: LocationMatcher
 pattern InfestedLocation <- (LocationWithDamage (GreaterThan (Static 0)))

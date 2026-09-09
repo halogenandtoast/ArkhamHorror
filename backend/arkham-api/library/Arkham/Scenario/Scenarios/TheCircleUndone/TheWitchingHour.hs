@@ -164,7 +164,7 @@ instance RunMessage TheWitchingHour where
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (setTitle "title" >> p "intro1") do
+      storyWithChooseOneM (h "title" >> p "intro1") do
         labeled "avoidFate" $ doStep 2 PreScenarioSetup
         labeled "bullshit" $ doStep 3 PreScenarioSetup
       pure s

@@ -57,7 +57,7 @@ instance RunMessage RiddlesAndRain where
       setChaosTokens $ campaignChaosBag attrs.difficulty
       pure s
     PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro1"
+      flavor $ h "title" >> p "intro1"
       flavor $ setTitle "title" >> p "letter"
       n <- getPlayerCount
       storyWithChooseOneM (setTitle "title" >> p "intro1Part2") do

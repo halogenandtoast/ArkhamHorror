@@ -71,7 +71,7 @@ instance RunMessage TheDoomOfArkhamPartI where
   runMessage msg s@(TheDoomOfArkhamPartI attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       flavor do
-        setTitle "title"
+        h "title"
         p "intro1"
         p "intro2"
         p "intro3"

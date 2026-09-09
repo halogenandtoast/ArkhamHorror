@@ -55,7 +55,7 @@ instance RunMessage TheDrownedQuarter where
     PreScenarioSetup -> scope "intro" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
       storyWithContinue do
-        setTitle "title"
+        h "title"
         p "drownedQuarter1"
         p.basic "checkCampaignLog"
         ul do

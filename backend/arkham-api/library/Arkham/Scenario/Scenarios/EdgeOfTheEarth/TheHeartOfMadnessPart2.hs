@@ -114,7 +114,7 @@ instance RunMessage TheHeartOfMadnessPart2 where
       when (not isStandalone || attrs.hasOption PerformIntro) do
         kenslerAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology
         understandsTheTrueNature <- getHasRecord DrKenslerUnderstandsTheTrueNatureOfTheMiasma
-        story $ i18nWithTitle "intro1.main" `addFlavorEntry` ul do
+        story $ i18nWithHeading "intro1.main" `addFlavorEntry` ul do
           li.nested "intro1.check" do
             li.validate (kenslerAlive && understandsTheTrueNature) "intro1.intro2"
             li.validate (not $ kenslerAlive && understandsTheTrueNature) "intro1.intro3"

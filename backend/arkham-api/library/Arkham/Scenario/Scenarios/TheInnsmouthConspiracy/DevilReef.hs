@@ -62,7 +62,7 @@ standaloneTokens =
 instance RunMessage DevilReef where
   runMessage msg s@(DevilReef attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
+      story $ i18nWithHeading "intro1"
       missionWasSuccessful <- getHasRecord TheMissionWasSuccessful
       doStep (if missionWasSuccessful then 2 else 3) msg
       selectForMaybeM (InDeckOf Anyone <> basic (cardIs Assets.elinaHarperKnowsTooMuch)) obtainCard

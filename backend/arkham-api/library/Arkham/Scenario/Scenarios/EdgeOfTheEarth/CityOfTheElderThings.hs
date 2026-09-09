@@ -169,7 +169,7 @@ instance RunMessage CityOfTheElderThings where
           doStep 0 msg
           pure s
     DoStep 0 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      story $ i18nWithHeading "intro"
       sinhaIsAlive <- getPartnerIsAlive Assets.drMalaSinhaDaringPhysician
       blueStory
         $ validateEntry sinhaIsAlive "sinha.alive"

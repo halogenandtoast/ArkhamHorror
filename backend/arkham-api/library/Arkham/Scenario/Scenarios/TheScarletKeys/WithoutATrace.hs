@@ -69,7 +69,7 @@ instance HasChaosTokenValue WithoutATrace where
 instance RunMessage WithoutATrace where
   runMessage msg s@(WithoutATrace attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (setTitle "title" >> p "intro1") do
+      storyWithChooseOneM (h "title" >> p "intro1") do
         labeled "blowTheWhistle" $ doStep 2 PreScenarioSetup
         labeled "discardTheWhistle" $ doStep 3 PreScenarioSetup
       setupKeys

@@ -90,7 +90,7 @@ instance HasChaosTokenValue HarmsWay where
 instance RunMessage HarmsWay where
   runMessage msg s@(HarmsWay attrs) = runQueueT $ scenarioI18n "harmsWay" $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (setTitle "title" >> p "body") do
+      storyWithChooseOneM (h "title" >> p "body") do
         labeled "faster" $ addChaosToken Cultist
         labeled "caution" $ addChaosToken Tablet
       pure s

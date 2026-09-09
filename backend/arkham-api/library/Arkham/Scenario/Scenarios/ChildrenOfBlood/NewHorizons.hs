@@ -72,7 +72,7 @@ instance RunMessage NewHorizons where
       addChaosToken #cultist
       storyWithChooseOneM
         ( scope "intro" do
-            setTitle "title"
+            h "title"
             p "body"
             ul do
               li "addCultist"

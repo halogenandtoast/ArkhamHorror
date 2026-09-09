@@ -70,7 +70,7 @@ instance RunMessage ShadesOfSuffering where
     PreScenarioSetup -> scope "intro" do
       flintTraveledToKualaLumpur <- getHasRecord FlintTraveledToKualaLumpur
       flavor do
-        setTitle "title"
+        h "title"
         p "body"
         ul do
           li.validate flintTraveledToKualaLumpur "flintTraveledToKualaLumpur"

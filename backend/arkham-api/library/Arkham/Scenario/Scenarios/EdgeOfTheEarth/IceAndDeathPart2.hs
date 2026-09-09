@@ -109,7 +109,7 @@ instance RunMessage IceAndDeathPart2 where
                 $ IceAndDeathPart2
                 $ foldl' (flip (uncurry addPartner)) attrs ((killed, Eliminated) :| map (,Mia) mia)
         else do
-          story $ i18nWithTitle "intro"
+          story $ i18nWithHeading "intro"
           whenM hasRemainingFrostTokens $ addChaosToken #frost
 
           kensler <- getPartner Assets.drAmyKenslerProfessorOfBiology

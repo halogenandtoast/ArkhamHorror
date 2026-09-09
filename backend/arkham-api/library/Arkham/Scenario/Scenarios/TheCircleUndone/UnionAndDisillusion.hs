@@ -195,7 +195,7 @@ setupUnionAndDisillusion _attrs = do
 instance RunMessage UnionAndDisillusion where
   runMessage msg s@(UnionAndDisillusion attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM (setTitle "title" >> p "body") do
+      storyWithChooseOneM (h "title" >> p "body") do
         labeled "complete" $ record TheInvestigatorsSidedWithTheLodge
         labeled "stop" $ record TheInvestigatorsSidedWithTheCoven
 

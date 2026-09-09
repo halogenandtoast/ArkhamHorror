@@ -178,7 +178,7 @@ instance RunMessage BeforeTheBlackThrone where
       setChaosTokens standaloneChaosTokens
       pure s
     PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "body"
+      flavor $ h "title" >> p "body"
       pure s
     Setup -> runScenarioSetup BeforeTheBlackThrone attrs $ setupBeforeTheBlackThrone attrs
     EndSetup -> do

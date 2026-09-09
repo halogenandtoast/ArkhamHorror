@@ -68,7 +68,7 @@ instance RunMessage DancingMad where
       policeOrDective <- selectAny $ mapOneOf InvestigatorWithTrait [Police, Detective]
       n <- getTime
       flavor do
-        setTitle "title"
+        h "title"
         p "intro1Part1"
         p.validate policeOrDective "policeOrDetective"
         p "intro1Part2"

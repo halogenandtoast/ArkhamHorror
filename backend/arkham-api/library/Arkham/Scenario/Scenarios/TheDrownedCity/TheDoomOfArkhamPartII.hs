@@ -75,7 +75,7 @@ instance RunMessage TheDoomOfArkhamPartII where
       let canRitual = artifacts >= 5
       storyWithChooseOneM
         ( do
-            setTitle "title"
+            h "title"
             p "theDoomOfArkham1"
             p.basic "mustDecide"
             ul do

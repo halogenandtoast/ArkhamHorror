@@ -74,7 +74,7 @@ instance RunMessage DeadHeat where
     PreScenarioSetup -> scope "intro" do
       n <- getTime
       flavor do
-        setTitle "title"
+        h "title"
         p "intro1"
         ul do
           li.validate (n < 15) "lessThan15"

@@ -60,7 +60,7 @@ instance RunMessage TheHeartOfMadnessPart1 where
     PreScenarioSetup -> do
       isStandalone <- getIsStandalone
       when (not isStandalone || attrs.hasOption PerformIntro) do
-        story $ i18nWithTitle "part1Intro"
+        story $ i18nWithHeading "part1Intro"
 
       when (not isStandalone || attrs.hasOption IncludePartners) do
         eachInvestigator (`forInvestigator` PreScenarioSetup)

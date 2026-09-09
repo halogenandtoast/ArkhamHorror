@@ -255,7 +255,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           incrementRecordCount PiecesOfEvidenceWereLeftBehind 5
       pure $ DisappearanceAtTheTwilightEstate $ attrs & tarotDeckL %~ filter (/= arcana)
     PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "body"
+      flavor $ h "title" >> p "body"
       -- investigators have not been chosen yet so we have to send to players
       allPlayers >>= traverse_ (push . (`ForPlayer` msg))
       -- Now that investigators have been chosen we need to set the player order

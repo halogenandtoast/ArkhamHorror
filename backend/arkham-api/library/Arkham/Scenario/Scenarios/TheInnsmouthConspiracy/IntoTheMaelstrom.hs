@@ -54,7 +54,7 @@ instance HasChaosTokenValue IntoTheMaelstrom where
 instance RunMessage IntoTheMaelstrom where
   runMessage msg s@(IntoTheMaelstrom attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      story $ i18nWithHeading "intro"
       pure s
     StandaloneSetup -> do
       {- FOURMOLU_DISABLE -}

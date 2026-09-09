@@ -168,7 +168,7 @@ instance RunMessage TurnBackTime where
     PreScenarioSetup -> scope "intro" do
       forcedToWaitForSupplies <- getHasRecord TheInvestigatorsWereForcedToWaitForAdditionalSupplies
       flavor do
-        setTitle "title"
+        h "title"
         p.validate forcedToWaitForSupplies "forcedToWaitForSupplies"
         p.validate (not forcedToWaitForSupplies) "clearedAPathToTheEztliRuins"
       doStep (if forcedToWaitForSupplies then 1 else 2) PreScenarioSetup

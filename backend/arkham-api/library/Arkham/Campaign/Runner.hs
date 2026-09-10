@@ -8,6 +8,7 @@ import Arkham.Source as X
 import Arkham.Target as X
 
 import Arkham.Ability
+import Arkham.Campaign.Overlay (CampaignOverlay (..))
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
@@ -172,7 +173,7 @@ defaultCampaignRunner msg a = case msg of
       , ForInvestigators [] ResetGame
       , StartScenario sid Nothing
       ]
-    spendSideStoryXp sid
+    spendSideStoryXp (campaignOverlays a) sid
     pure a
   CampaignStep (StandaloneScenarioStepWithOptions sid _ opts) -> do
     pushAll
@@ -182,7 +183,7 @@ defaultCampaignRunner msg a = case msg of
       , ForInvestigators [] ResetGame
       , StartScenario sid (Just opts)
       ]
-    spendSideStoryXp sid
+    spendSideStoryXp (campaignOverlays a) sid
     pure a
   SetChaosTokensForScenario -> a <$ push (SetChaosTokens $ campaignChaosBag $ toAttrs a)
   SetCampaignChaosBag tokens' -> pure $ updateAttrs a (overCampaignChaosBag (const tokens'))
@@ -625,12 +626,14 @@ defaultCampaignRunner msg a = case msg of
     pure a
   _ -> pure a
 
-{- | Side-stories cost each investigator xp to play. Challenge scenarios only
+{- | Campaign overlays can replace a side-story's entry cost. Challenge scenarios
 charge their required investigator the full cost; everyone else pays 1.
 -}
-spendSideStoryXp :: ScenarioId -> GameT ()
-spendSideStoryXp sid = do
-  let baseCost = getSideStoryCost sid
+spendSideStoryXp :: [CampaignOverlay] -> ScenarioId -> GameT ()
+spendSideStoryXp overlays sid = do
+  let baseCost =
+        fromMaybe (getSideStoryCost sid)
+          $ listToMaybe [o.xpCost | o <- overlays, o.available, o.scenario == sid]
   investigators <- select Anyone
   case challengeScenarioInvestigator sid of
     Nothing -> for_ investigators \iid -> push $ SpendXP iid baseCost

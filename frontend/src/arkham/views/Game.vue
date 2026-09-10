@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { setCampaignOverlays } from '@/arkham/campaignOverlays'
 import {
   computed,
   markRaw,
@@ -259,6 +260,7 @@ interface PlayabilityInfo {
 }
 
 const game = shallowRef<Arkham.Game | null>(null)
+watch(() => game.value?.campaign?.overlays, overlays => setCampaignOverlays(overlays ?? []), { immediate: true, flush: 'sync' })
 
 /* A custom card someone else created shows up in the game payload before this
  * client has its def; refetch the game's custom cards when an unknown one
@@ -1907,6 +1909,7 @@ onMounted(() => {
 
 onBeforeRouteLeave(() => close())
 onUnmounted(() => {
+  setCampaignOverlays([])
   document.removeEventListener('keydown', handleKeyPress)
   document.removeEventListener('mousemove', onMove)
   focusLightObserver?.disconnect()

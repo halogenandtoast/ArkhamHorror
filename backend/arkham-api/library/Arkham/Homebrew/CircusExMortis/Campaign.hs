@@ -3,12 +3,13 @@ module Arkham.Homebrew.CircusExMortis.Campaign (circusExMortis) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
+import Arkham.Campaign.Overlay
 import Arkham.CampaignLogKey (recorded)
 import Arkham.Card
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Decklist.Type (investigator_name)
 import Arkham.Game.Base (gamePerformTarotReadings)
-import Arkham.Helpers.Campaign (getCompletedSteps, getOwner)
+import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith, setActiveDuringSetup)
 import Arkham.Helpers.Query (getInvestigators, getLeadPlayer)
@@ -29,10 +30,10 @@ import Arkham.Name (toTitle)
 import Arkham.Projection
 import Arkham.Question (DestinyDrawing (..), Question (PickDestiny))
 import Arkham.Source
-import Arkham.Target (Target (GameTarget))
 import Arkham.Tarot (TarotCard (..), TarotCardArcana (..), TarotCardFacing (Upright))
 import Arkham.Trait (Trait (Believer, Chosen, Clairvoyant, Miskatonic, Scholar))
 import Arkham.Treachery.CardDefs.CurseOfTheRougarou qualified as Treacheries
+import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 
 newtype CircusExMortis = CircusExMortis CampaignAttrs
@@ -62,8 +63,25 @@ circusExMortis = campaign CircusExMortis (CampaignId ":circus-ex-mortis") "Circu
 
 instance IsCampaign CircusExMortis where
   campaignTokens = chaosBagContents
-  campaignAbilities (CircusExMortis attrs)
-    | HarmsWay `notElem` attrs.completedSteps = []
+
+  -- Keep the printed reward variants after the one-time XP discount expires.
+  campaignOverlays (CircusExMortis attrs) =
+    [ CampaignOverlay
+        { id = "circus-ex-mortis:rougarou"
+        , name = "Circus Ex Mortis"
+        , scenario = curseOfTheRougarouId
+        , available = find (isJust . (.scenario)) attrs.completedSteps == Just HarmsWay
+        , active = HarmsWay `elem` attrs.completedSteps
+        , xpCost = 0
+        , cardReplacements =
+            Map.fromList
+              [ ("81019", ":circus-ex-mortis:019c")
+              , ("81029", ":circus-ex-mortis:029c")
+              ]
+        }
+    ]
+  campaignAbilities c
+    | not (any (\o -> o.id == "circus-ex-mortis:rougarou" && o.active) (campaignOverlays c)) = []
     | otherwise =
         [ restricted
             (grantedOn Treacheries.curseOfTheRougarou $ treacheryIs Treacheries.curseOfTheRougarou)
@@ -355,19 +373,6 @@ instance RunMessage CircusExMortis where
           record TheNewMoonCircusWasNeverSeenAgain
       push GameOver
       pure c
-    -- Curse of the Rougarou between Harm's Way and All Points West costs each
-    -- investigator 1 fewer experience (guide p13). Its base side-story cost is
-    -- 1, so it is free: mirror the default runner minus the XP spend.
-    CampaignStep (StandaloneScenarioStep sid _) | sid == curseOfTheRougarouId -> do
-      afterHarmsWay <- isAfterHarmsWay
-      if afterHarmsWay
-        then startRougarouWithoutXp sid Nothing
-        else lift $ defaultCampaignRunner msg c
-    CampaignStep (StandaloneScenarioStepWithOptions sid _ opts) | sid == curseOfTheRougarouId -> do
-      afterHarmsWay <- isAfterHarmsWay
-      if afterHarmsWay
-        then startRougarouWithoutXp sid (Just opts)
-        else lift $ defaultCampaignRunner msg c
     -- Moon tokens, end of round (guide p1): for each moon token sealed on
     -- your investigator card, you must choose to keep it sealed or take 1
     -- damage or 1 horror and release it.
@@ -401,18 +406,3 @@ instance RunMessage CircusExMortis where
           recordSetReplace Destinies (recorded $ String entry) (recorded $ String $ newName <> ": " <> word)
       lift $ defaultCampaignRunner msg c
     _ -> lift $ defaultCampaignRunner msg c
-   where
-    isAfterHarmsWay = do
-      completed <- getCompletedSteps
-      -- completed steps are most-recent-first; the head scenario must be
-      -- Harm's Way for the discount to apply
-      pure $ listToMaybe (filter (isJust . (.scenario)) completed) == Just HarmsWay
-    startRougarouWithoutXp sid opts = do
-      pushAll
-        [ ResetInvestigators
-        , ResetGame
-        , ForTarget GameTarget ResetGame
-        , ForInvestigators [] ResetGame
-        , StartScenario sid opts
-        ]
-      pure c

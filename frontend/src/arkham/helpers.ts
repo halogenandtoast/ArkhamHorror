@@ -1,6 +1,7 @@
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { useSettings } from '@/stores/settings'
 import { variantArt } from '@/arkham/artVariants'
+import { campaignCardReplacement } from '@/arkham/campaignOverlays'
 import { replaceHomebrewIcons } from '@/arkham/homebrewAssets'
 import { iconClasses, runePlaceholder } from '@/arkham/icons'
 import { ref, type Ref } from 'vue';
@@ -107,6 +108,10 @@ export function isLocalized(src: string) {
 }
 
 export function imgsrc(src: string): string {
+  const printedArt = src.replace(/^\//, '').match(/^cards\/(.+)\.avif$/)?.[1]
+  const replacement = printedArt && campaignCardReplacement(printedArt)
+  if (replacement) src = cardImgPath(replacement)
+
   // A debug-authored card carries its art with it (a URL, or a data URI for a
   // dropped image) rather than living under the asset host -- unless it names a
   // printed card's art instead, which resolves down the ordinary path below.

@@ -94,6 +94,9 @@ const scenario = computed(() => {
 })
 
 const name = computed(() => campaignStepName(props.game, props.step, props.scenario))
+const scenarioOverlay = computed(() => props.campaign?.overlays.find(o =>
+  o.active && o.scenario.replace(/^c/, '') === scenario.value?.replace(/^c/, '')
+))
 
 const numToRomanNumeral = (num: number): string => {
   const romanNumerals: { [key: number]: string } = {
@@ -216,6 +219,8 @@ const standalones = computed(() => {
 
   return filterDisplayable(sideStories, displayRuleOptions.value).flatMap((s: { xp: number, id: string, name: string, requiredInvestigator?: string, deckRequirements?: string[], scenarios?: { id: string, name: string, notAfter?: string[] }[] }) => {
     if (!s.xp) return []
+    const overlay = props.campaign?.overlays.find(o => o.available && o.scenario.replace(/^c/, '') === s.id)
+    const xp = overlay?.xpCost ?? s.xp
     if (s.id === '90094' && !investigators.value.some((i) => hasParallelContent(i.cardCode))) return []
     if (s.requiredInvestigator) {
       // challenge scenarios require their investigator; they pay the full
@@ -223,16 +228,16 @@ const standalones = computed(() => {
       const signature = investigators.value.find((i) => i.name.title === s.requiredInvestigator)
       if (!signature) return []
       if (usesTime.value) {
-        if (s.xp > minXp.value) return []
-      } else if (signature.xp < s.xp || investigators.value.some((i) => i.id !== signature.id && i.xp < 1)) {
+        if (xp > minXp.value) return []
+      } else if (signature.xp < xp || investigators.value.some((i) => i.id !== signature.id && i.xp < 1)) {
         return []
       }
-    } else if (s.xp > minXp.value) return []
+    } else if (xp > minXp.value) return []
     const parts = s.scenarios ?? [{ id: s.id, name: s.name }]
     return parts
       .filter((p) => !completed.includes(p.id))
       .filter((p) => !(p.notAfter ?? []).some((id) => completed.includes(id)))
-      .map((p) => ({ ...s, id: p.id, name: p.name }))
+      .map((p) => ({ ...s, id: p.id, name: p.name, xp, baseXp: s.xp, overlay: overlay?.name }))
   })
 })
 
@@ -440,15 +445,16 @@ const setIcon = computed(() => {
   <div class="continue-campaign scroll-container">
     <div v-if="chooseSideStory || (addSideStory && standalones.length > 0)" class="side-story-selection">
       <h2>{{ $t('sideStory.selectSideScenario') }}</h2>
-      <div v-for="sideStory in standalones" :key="sideStory.id" class="side-story-option">
+      <div v-for="sideStory in standalones" :key="sideStory.id" class="side-story-option" :class="{ 'side-story-option--overlay': sideStory.overlay }">
         <div class="scenario-icon">
           <img :src="imgsrc(`sets/${sideStory.id}.png`)" />
         </div>
         <div class="scenario-info">
           <h2>{{ sideStory.name }}</h2>
+          <p v-if="sideStory.overlay" class="campaign-overlay-label">{{ sideStory.overlay }} variant</p>
           <h3 v-if="sideStory.requiredInvestigator">{{ $t('sideStory.xpAsymmetric', { signatureXp: sideStory.xp, name: sideStory.requiredInvestigator, otherXp: 1 }) }}</h3>
           <template v-else>
-            <h3>({{ sideStory.xp }} XP)</h3>
+            <h3><del v-if="sideStory.overlay && sideStory.xp !== sideStory.baseXp" class="original-xp">{{ sideStory.baseXp }} XP</del> ({{ sideStory.xp }} XP)</h3>
             <h3 v-for="requirement in sideStory.deckRequirements" :key="requirement">{{ requirement }}</h3>
           </template>
         </div>
@@ -459,9 +465,10 @@ const setIcon = computed(() => {
     </div>
     <div v-else class="next-scenario">
       <div class="next-scenario-info">
-        <div class='scenario-info'>
+        <div class='scenario-info' :class="{ 'scenario-info--overlay': scenarioOverlay }">
           <h3>{{kind}}</h3>
           <h2>{{name}}</h2>
+          <p v-if="scenarioOverlay" class="campaign-overlay-label">{{ scenarioOverlay.name }} variant</p>
         </div>
         <div class="actions">
           <button @click="startStep" :disable="hasSent">{{t('continue')}}</button>
@@ -583,6 +590,25 @@ const setIcon = computed(() => {
 </template>
 
 <style scoped lang="scss">
+.campaign-overlay-label {
+  margin: 0.25rem 0;
+  color: #e1c3f1;
+  font-size: 0.85rem;
+}
+
+.scenario-info--overlay {
+  border-left: 3px solid #b98bd0;
+  padding-left: 12px;
+}
+
+.side-story-selection .side-story-option.side-story-option--overlay {
+  background: #392e48;
+  border-color: #b98bd0;
+
+  h2 { color: #f0e2f7; }
+  .original-xp { color: #c9bbd1; font-size: 0.8em; }
+}
+
 .next-scenario {
   display: flex;
   justify-content: space-between;

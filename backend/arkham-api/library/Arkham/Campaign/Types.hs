@@ -5,6 +5,7 @@ module Arkham.Campaign.Types where
 
 import Arkham.Ability.Types (Ability)
 import Arkham.Ability.Used
+import Arkham.Campaign.Overlay (CampaignOverlay)
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
 import Arkham.CampaignStep
@@ -32,6 +33,7 @@ import Arkham.Target
 import Arkham.Tarot
 import Arkham.Xp
 import Control.Monad.Writer
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
 import Data.Aeson.Types (Parser)
 import Data.Data
@@ -60,6 +62,8 @@ class
   campaignTokens :: Difficulty -> [ChaosTokenFace]
   campaignAbilities :: a -> [Ability]
   campaignAbilities _ = []
+  campaignOverlays :: a -> [CampaignOverlay]
+  campaignOverlays _ = []
 
 data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
@@ -409,7 +413,9 @@ instance Show Campaign where
   show (Campaign a) = show a
 
 instance ToJSON Campaign where
-  toJSON (Campaign a) = toJSON a
+  toJSON (Campaign a) = case toJSON a of
+    Object o -> Object $ KeyMap.insert "overlays" (toJSON $ campaignOverlays a) o
+    other -> other
 
 instance HasModifiersFor Campaign where
   getModifiersFor (Campaign a) = getModifiersFor a

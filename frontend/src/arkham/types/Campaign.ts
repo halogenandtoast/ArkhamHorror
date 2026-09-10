@@ -7,6 +7,7 @@ import { CampaignStep, campaignStepDecoder} from '@/arkham/types/CampaignStep';
 import { CardContents, Card, cardDecoder, cardContentsDecoder} from '@/arkham/types/Card';
 import { TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
 import { withDefault } from '@/arkham/parser';
+import { campaignOverlayDecoder, type CampaignOverlay } from '@/arkham/campaignOverlays';
 
 export type CampaignDetails = {
   id: string;
@@ -49,6 +50,7 @@ export const recordCountChangeDecoder = JsonDecoder.object<RecordCountChange>({
 }, 'RecordCountChange');
 
 export type Campaign = {
+  overlays: CampaignOverlay[];
   name: string;
   id: string;
   log: LogContents;
@@ -71,6 +73,7 @@ export const campaignDetailsDecoder = JsonDecoder.object<CampaignDetails>({
 }, 'CampaignDetails');
 
 export const campaignDecoder = JsonDecoder.object<Campaign>({
+  overlays: withDefault([], JsonDecoder.array(campaignOverlayDecoder, 'CampaignOverlay[]')),
   name: JsonDecoder.string(),
   id: JsonDecoder.string(),
   difficulty: difficultyDecoder,

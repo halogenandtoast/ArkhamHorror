@@ -2154,6 +2154,13 @@ const homebrewTotals = computed(() => {
     .filter((t) => t.count > 0)
 })
 
+// The totals plate separates scenario totals (doom, clues) from chaos bag
+// counts with a hairline; it is only drawn when the bag half is non-empty.
+const hasBagTotals = computed(() =>
+  blessTokens.value > 0 || curseTokens.value > 0 || frostTokens.value > 0
+    || bloodTokens.value > 0 || homebrewTotals.value.length > 0
+)
+
 async function removeChaosToken(face: any){
   debug.send(props.game.id, {tag: 'ChaosBagMessage', contents: {tag: 'RemoveChaosToken_', contents: face}})
 }
@@ -3050,6 +3057,7 @@ async function addChaosToken(face: any){
         <div id="totals">
           <PoolItem type="doom" :amount="game.totalDoom" tooltip="Total Doom" />
           <PoolItem type="clue" :amount="game.totalClues" tooltip="Total Spendable Clues" />
+          <hr v-if="hasBagTotals" class="totals-rule" />
           <PoolItem v-if="blessTokens > 0" type="chaos-tokens/ct-bless" :amount="blessTokens" />
           <PoolItem v-if="curseTokens > 0" type="chaos-tokens/ct-curse" :amount="curseTokens" />
           <PoolItem v-if="frostTokens > 0" type="chaos-tokens/ct-frost" :amount="frostTokens" />
@@ -4470,12 +4478,22 @@ async function addChaosToken(face: any){
 #totals {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 5px;
-  background: darkslategrey;
+  gap: 6px;
+  padding: 8px 7px;
+  background: linear-gradient(180deg, #333b4d 0%, #252b3a 100%);
   margin-top: 10px;
-  border-top-left-radius: 10px;
-  box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+  border-left: 1px solid rgba(255, 255, 255, 0.13);
+  border-top-left-radius: 12px;
+  box-shadow: -2px -1px 6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.totals-rule {
+  width: 100%;
+  height: 1px;
+  border: 0;
+  margin: 2px 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
 }
 
 .tri-button {

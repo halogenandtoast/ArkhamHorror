@@ -2,13 +2,9 @@ module Arkham.Homebrew.CircusExMortis.Treacheries.DenseTangle (denseTangle) wher
 
 import Arkham.Ability
 import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
-import Arkham.Location.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Placement
-import Arkham.Projection
 import Arkham.Treachery.Import.Lifted
-import Arkham.Window (Window)
-import Arkham.Window qualified as Window
 
 newtype DenseTangle = DenseTangle TreacheryAttrs
   deriving anyclass (IsTreachery, HasModifiersFor)
@@ -17,14 +13,13 @@ newtype DenseTangle = DenseTangle TreacheryAttrs
 denseTangle :: TreacheryCard DenseTangle
 denseTangle = treachery DenseTangle Cards.denseTangle
 
-getMoveLocations :: [Window] -> (LocationId, LocationId)
-getMoveLocations [] = error "getMoveLocations: not a Moves event"
-getMoveLocations ((Window.windowType -> Window.Moves _ _ (Just from) dest _) : _) = (from, dest)
-getMoveLocations (_ : rest) = getMoveLocations rest
-
 instance HasAbilities DenseTangle where
   getAbilities (DenseTangle a) =
-    [ mkAbility a 1 $ forced $ Moves #after You AnySource Anywhere Anywhere
+    -- Moving along the leftmost connection is the way through the tangle, so the ability
+    -- never triggers on that move; ThatLocation is the location you moved from.
+    [ restricted a 1 (youExist $ InvestigatorWithActionsRemaining (atLeast 1))
+        $ forced
+        $ Moves #after You AnySource Anywhere (not_ $ LeftmostConnectionOf ThatLocation)
     , limited (MaxPer Cards.denseTangle PerRound 1) $ mkAbility a 2 $ forced $ RoundEnds #when
     ]
 
@@ -33,13 +28,8 @@ instance RunMessage DenseTangle where
     Revelation _iid (isSource attrs -> True) -> do
       placeTreachery attrs NextToAgenda
       pure t
-    UseCardAbility iid (isSource attrs -> True) 1 (getMoveLocations -> (from, dest)) _ -> do
-      fromRevealed <- field LocationRevealed from
-      fromConnections <-
-        field (if fromRevealed then LocationRevealedConnectedMatchers else LocationConnectedMatchers) from
-      destSymbol <- field LocationPrintedSymbol dest
-      let leftmost = listToMaybe [sym | LocationWithSymbol sym <- fromConnections]
-      when (leftmost /= Just destSymbol) $ loseActions iid attrs 1
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      loseActions iid attrs 1
       pure t
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       toDiscard (attrs.ability 2) attrs

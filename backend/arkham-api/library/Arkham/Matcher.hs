@@ -24,7 +24,7 @@ import Arkham.Prelude
 import {-# SOURCE #-} Arkham.Source
 import {-# SOURCE #-} Arkham.Target
 import Arkham.Trait (Trait)
-import Control.Lens (over, transform)
+import Control.Lens (anyOf, over, transform)
 import Data.Data.Lens (biplate)
 import GHC.Records
 
@@ -504,6 +504,10 @@ replaceThisLocation lid = replaceLocationMatcher lid ThisLocation
 
 replaceThatLocation :: Data a => LocationId -> a -> a
 replaceThatLocation lid = replaceLocationMatcher lid ThatLocation
+
+-- | Whether a matcher still needs 'replaceThatLocation' run over it.
+mentionsThatLocation :: Data a => a -> Bool
+mentionsThatLocation = anyOf biplate (== ThatLocation)
 
 replaceEnemyMatcher :: Data a => EnemyId -> EnemyMatcher -> a -> a
 replaceEnemyMatcher lid m = over biplate (transform go)

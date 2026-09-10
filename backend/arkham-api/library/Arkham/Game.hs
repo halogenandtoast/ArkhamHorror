@@ -2335,6 +2335,20 @@ getLocationsMatching lmatcher = do
     LocationWithUnrevealedTitle title -> pure $ filter ((`hasTitle` title) . Unrevealed) ls
     LocationWithId locationId -> pure $ filter ((== locationId) . toId) ls
     LocationWithSymbol locationSymbol -> pure $ filter ((== locationSymbol) . toLocationSymbol) ls
+    LeftmostConnectionOf matcher -> do
+      -- A location's connections are stored in printed order, so the first LocationWithSymbol
+      -- among them is the leftmost icon on its card.
+      origins <- select matcher
+      leftmosts <- for origins \origin -> do
+        revealed <- field LocationRevealed origin
+        connections <-
+          field (if revealed then LocationRevealedConnectedMatchers else LocationConnectedMatchers) origin
+        pure $ listToMaybe [m | m@(LocationWithSymbol _) <- connections]
+      case catMaybes leftmosts of
+        [] -> pure []
+        ms -> do
+          matching <- select (oneOf ms)
+          pure $ filter ((`elem` matching) . toId) ls
     LocationNotInPlay -> pure [] -- TODO: Should this check out of play locations
     Anywhere -> pure ls
     LocationIs cardCode -> pure $ filter (isPrintingOf cardCode) ls

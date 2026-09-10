@@ -1386,6 +1386,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.Moves timing whoMatcher sourceMatcher fromMatcher toMatcher ->
       guardTiming timing $ \case
         Window.Moves iid' source' mFromLid toLid _ -> do
+          -- In a movement window "that location" is where the move started, so a destination
+          -- matcher can be written relative to the origin. A move with no origin can satisfy
+          -- no such matcher.
           andM
             [ matchWho iid iid' whoMatcher
             , sourceMatches source' sourceMatcher
@@ -1394,7 +1397,12 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
                 (_, Just fromLid) ->
                   locationMatches iid source window' fromLid fromMatcher
                 _ -> noMatch
-            , locationMatches iid source window' toLid toMatcher
+            , case mFromLid of
+                Just fromLid ->
+                  locationMatches iid source window' toLid (Matcher.replaceThatLocation fromLid toMatcher)
+                Nothing
+                  | Matcher.mentionsThatLocation toMatcher -> noMatch
+                  | otherwise -> locationMatches iid source window' toLid toMatcher
             ]
         _ -> noMatch
     Matcher.WouldMove timing whoMatcher sourceMatcher fromMatcher toMatcher ->

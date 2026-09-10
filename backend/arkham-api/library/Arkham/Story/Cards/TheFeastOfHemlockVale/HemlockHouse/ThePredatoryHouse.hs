@@ -44,33 +44,31 @@ instance RunMessage ThePredatoryHouse where
             tokenId2 <- getRandom
             pure
               $ bag
-                { predationTokens = PredationToken tokenId1 #cultist : PredationToken tokenId2 #cultist : bag.tokens
+                { bagTokens = BagToken tokenId1 #cultist : BagToken tokenId2 #cultist : bag.tokens
                 }
           Day2 -> do
             tokenId <- getRandom
-            pure $ bag {predationTokens = PredationToken tokenId #cultist : bag.tokens}
+            pure $ bag {bagTokens = BagToken tokenId #cultist : bag.tokens}
           Day3 -> pure bag
       -- Honor any cancel-next-predation requests from Codex 6 (Gideon) that
       -- fired while this story was still set aside. The scenario hands these
       -- off via a MetaModifier so we don't need a remember key.
       pendingCancel <- (== Just True) <$> getMeta attrs "cancelNextPredation"
-      let bag'' = bag' {predationCancelNext = predationCancelNext bag' || pendingCancel}
+      let bag'' = bag' {bagCancelNext = bagCancelNext bag' || pendingCancel}
       pure
         $ ThePredatoryHouse
         $ attrs {storyFlipped = False, storyMeta = toJSON bag'', storyRemoveAfterResolution = False}
     SendMessage (isTarget attrs -> True) (RequestChaosTokens _ _ (Reveal 1) _) | (predationBag attrs).cancelNext -> do
       -- Codex 6 (Gideon Mizrah): cancel the next predation that would take place.
       let bag = predationBag attrs
-      let bag' = bag {predationCancelNext = False}
+      let bag' = bag {bagCancelNext = False}
       send "Predation test canceled (Gideon Mizrah)"
       pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (RequestChaosTokens _ _ (Reveal 1) _) -> do
       let bag = predationBag attrs
       lead <- getLead
-      (tokens, rest) <- splitAt 1 <$> shuffleM (predationTokens bag)
-      let token = fromJustNote "invalid predation token" $ headMay tokens
-      let bag' = bag {predationTokens = rest, predationCurrentToken = Just token}
-      focusChaosTokens [asChaosToken token] \unfocus -> do
+      (drawn, bag') <- drawBagToken (.face) bag
+      for_ drawn \token -> focusChaosTokens [asChaosToken token] \unfocus -> do
         checkWhen $ Window.RevealChaosToken lead $ asChaosToken token
         checkWhen
           $ Window.ScenarioEvent
@@ -87,11 +85,7 @@ instance RunMessage ThePredatoryHouse where
       let tokenFace = token.face
       send $ format (asChaosToken token) <> " drawn during predation Test"
       mods <- getModifiers attrs
-      let bag =
-            attrs.predationBag
-              { predationCurrentToken = Nothing
-              , predationSetAside = attrs.predationBag.setAside <> [token]
-              }
+      let bag = setAsideBagToken attrs.predationBag
       let
         enabled = \case
           MetaModifier (Object o) -> o !? "treatTabletAsSkill" == Just (Bool True)
@@ -130,7 +124,7 @@ instance RunMessage ThePredatoryHouse where
             push $ EnemyAttack $ enemyAttack eid attrs iid
           when (null attackPairs)
             $ drawEncounterCard lead attrs
-          pure $ bag {predationTokens = predationTokens bag <> predationSetAside bag, predationSetAside = []}
+          pure $ returnSetAsideTokens bag
         ElderThing -> do
           locations <-
             select $ NearestLocationTo lead (LocationWithTrait Dormant <> LocationWithResources (atMost 0))
@@ -144,15 +138,11 @@ instance RunMessage ThePredatoryHouse where
     SendMessage (isTarget attrs -> True) (AddChaosToken face) -> do
       let bag = predationBag attrs
       tokenId <- getRandom
-      let bag' = bag {predationTokens = PredationToken tokenId face : bag.tokens}
+      let bag' = bag {bagTokens = BagToken tokenId face : bag.tokens}
       pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (ChaosTokenCanceled {}) -> do
       let bag = predationBag attrs
-      let bag' =
-            bag
-              { predationTokens = bag.tokens <> maybeToList bag.currentToken
-              , predationCurrentToken = Nothing
-              }
+      let bag' = returnBagToken bag
       pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag'}
     SendMessage (isTarget attrs -> True) (ScenarioSpecific "predationCleanup" _) -> do
       let bag = predationBag attrs
@@ -162,5 +152,5 @@ instance RunMessage ThePredatoryHouse where
       pure $ ThePredatoryHouse attrs
     SendMessage (isTarget attrs -> True) (ScenarioSpecific "cancelNextPredation" _) -> do
       let bag = predationBag attrs
-      pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag {predationCancelNext = True}}
+      pure $ ThePredatoryHouse $ attrs {storyMeta = toJSON bag {bagCancelNext = True}}
     _ -> ThePredatoryHouse <$> liftRunMessage msg attrs

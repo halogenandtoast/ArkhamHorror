@@ -2,61 +2,38 @@ import * as JsonDecoder from 'ts.data.json';
 import { v2Optional } from '@/arkham/parser';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { Target, targetDecoder } from '@/arkham/types/Target';
-import { ChaosToken, TokenFace, chaosTokenDecoder, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
+import { ChaosToken, chaosTokenDecoder, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
+import { type TokenBagMeta, bagTokenDecoder } from '@/arkham/types/TokenBag';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 
-export type InfestationToken = {
-  infestationTokenId: string
-  infestationTokenFace: TokenFace
-}
-
-export const infestationAsChaosToken = (infestationToken: InfestationToken): ChaosToken => {
-  return {
-    id: infestationToken.infestationTokenId,
-    face: infestationToken.infestationTokenFace
-  }
-}
-
-export type PredationToken = {
-  predationTokenId: string
-  predationTokenFace: TokenFace
-}
-
-export const predationAsChaosToken = (predationToken: PredationToken): ChaosToken => {
-  return {
-    id: predationToken.predationTokenId,
-    face: predationToken.predationTokenFace
-  }
-}
-
-type StoryMeta = {
-  infestationTokens?: InfestationToken[]
-  infestationSetAside?: InfestationToken[]
-  infestationCurrentToken?: InfestationToken | null
-  predationTokens?: PredationToken[]
-  predationSetAside?: PredationToken[]
-  predationCurrentToken?: PredationToken | null
+type StoryMeta = TokenBagMeta & {
+  infestationTokens?: ChaosToken[]
+  infestationSetAside?: ChaosToken[]
+  infestationCurrentToken?: ChaosToken | null
+  predationTokens?: ChaosToken[]
+  predationSetAside?: ChaosToken[]
+  predationCurrentToken?: ChaosToken | null
+  predationCancelNext?: boolean
   crossedOff?: string[]
 }
 
-export const infestationTokenDecoder = JsonDecoder.object<InfestationToken>({
-  infestationTokenFace: tokenFaceDecoder,
-  infestationTokenId: JsonDecoder.string()
-}, 'InfestationToken');
-
-export const predationTokenDecoder = JsonDecoder.object<PredationToken>({
-  predationTokenFace: tokenFaceDecoder,
-  predationTokenId: JsonDecoder.string()
-}, 'PredationToken');
+const bagTokensDecoder = v2Optional(JsonDecoder.array<ChaosToken>(bagTokenDecoder, 'BagToken[]'));
+const currentBagTokenDecoder = v2Optional(JsonDecoder.nullable(bagTokenDecoder));
 
 export const storyMetaDecoder = JsonDecoder.object<StoryMeta>({
-  infestationTokens: v2Optional(JsonDecoder.array<InfestationToken>(infestationTokenDecoder, 'InfestationToken[]')),
-  infestationSetAside: v2Optional(JsonDecoder.array<InfestationToken>(infestationTokenDecoder, 'InfestationToken[]')),
-  infestationCurrentToken: v2Optional(JsonDecoder.nullable(infestationTokenDecoder)),
-  predationTokens: v2Optional(JsonDecoder.array<PredationToken>(predationTokenDecoder, 'PredationToken[]')),
-  predationSetAside: v2Optional(JsonDecoder.array<PredationToken>(predationTokenDecoder, 'PredationToken[]')),
-  predationCurrentToken: v2Optional(JsonDecoder.nullable(predationTokenDecoder)),
+  bagTokens: bagTokensDecoder,
+  bagSetAside: bagTokensDecoder,
+  bagCurrentToken: currentBagTokenDecoder,
+  bagCancelNext: v2Optional(JsonDecoder.boolean()),
+  bagDebugNext: v2Optional(JsonDecoder.nullable(tokenFaceDecoder)),
+  infestationTokens: bagTokensDecoder,
+  infestationSetAside: bagTokensDecoder,
+  infestationCurrentToken: currentBagTokenDecoder,
+  predationTokens: bagTokensDecoder,
+  predationSetAside: bagTokensDecoder,
+  predationCurrentToken: currentBagTokenDecoder,
+  predationCancelNext: v2Optional(JsonDecoder.boolean()),
   crossedOff: v2Optional(JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'))
 }, 'StoryMeta');
 

@@ -125,6 +125,7 @@ import Arkham.Spawn
 import Arkham.Target
 import Arkham.Tarot
 import Arkham.Token qualified as Token
+import Arkham.TokenBag (CustomChaosBag)
 import Arkham.Trait
 import Arkham.Window (Window, WindowType)
 import Arkham.Xp
@@ -1165,6 +1166,8 @@ data Message
   | BecomeHomunculus InvestigatorId
   | BecomeShatteredSelf InvestigatorId
   | SetScenarioMeta Value
+  | SetCustomChaosBag Text CustomChaosBag
+  | RemoveCustomChaosBag Text
   | ScenarioSpecific Text Value
   | CampaignSpecific Text Value
   | SetCampaignMeta Value

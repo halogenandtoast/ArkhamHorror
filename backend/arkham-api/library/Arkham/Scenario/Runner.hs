@@ -99,6 +99,7 @@ import Arkham.Skill.Types qualified as Field
 import Arkham.Story.Types (Field (..))
 import Arkham.Tarot
 import Arkham.Token
+import Arkham.TokenBag (editTokenBag)
 import Arkham.Treachery.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as DarkSideOfTheMoon
 import Arkham.Treachery.CardDefs.TheDreamEaters.PointOfNoReturn qualified as PointOfNoReturn
 import Arkham.Treachery.Types (Field (..))
@@ -115,6 +116,7 @@ import Arkham.Window qualified as Window
 import Arkham.Zone (Zone)
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, non, over, _1, _2)
+import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Data.Lens (biplate)
 import Data.IntMap.Strict qualified as IntMap
 import Data.List.NonEmpty qualified as NE
@@ -1933,6 +1935,20 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       checkWhen (Window.DrawingStartingHand iid)
       push $ DrawStartingHand iid
     pure a
+  SetCustomChaosBag key bag ->
+    pure $ a {scenarioCustomChaosBags = Map.insert key bag scenarioCustomChaosBags}
+  RemoveCustomChaosBag key ->
+    pure $ a {scenarioCustomChaosBags = Map.delete key scenarioCustomChaosBags}
+  ScenarioSpecific "debugTokenBag" (Object payload)
+    | Just (String key) <- KeyMap.lookup "key" payload
+    , Just choice <- KeyMap.lookup "next" payload
+    , Just bag <- Map.lookup key scenarioCustomChaosBags -> do
+        updated <- editTokenBag choice (toJSON bag)
+        pure
+          $ maybe
+            a
+            (\b -> a {scenarioCustomChaosBags = Map.insert key (toResult b) scenarioCustomChaosBags})
+            updated
   SetScenarioMeta v -> do
     pure $ a & metaL .~ v
   LoadTarotDeck -> do

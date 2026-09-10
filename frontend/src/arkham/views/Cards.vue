@@ -7,6 +7,7 @@ import * as Arkham from '@/arkham/types/CardDef';
 import CardListView from '@/arkham/components/CardListView.vue';
 import CardImageView from '@/arkham/components/CardImageView.vue';
 import CardDetailsModal from '@/arkham/components/CardDetailsModal.vue';
+import SegmentedToggle from '@/components/SegmentedToggle.vue';
 import sets from '@/arkham/data/sets.json'
 import cycles from '@/arkham/data/cycles.json'
 import { shallowRef } from 'vue';
@@ -466,6 +467,12 @@ const cardPoolAvailable = (mode: CardPoolMode) => {
   return canShowBothCards.value
 }
 
+const cardPoolOptions = computed(() => ([
+  { value: 'player' as CardPoolMode, label: t('cardsView.playerCards'), disabled: !cardPoolAvailable('player') },
+  { value: 'campaign' as CardPoolMode, label: t('cardsView.campaignCards'), disabled: !cardPoolAvailable('campaign') },
+  { value: 'both' as CardPoolMode, label: t('cardsView.bothCards'), disabled: !cardPoolAvailable('both') },
+]))
+
 const cards = computed(() => filteredCardsIgnoringPool.value.filter((c) => cardInPool(c, cardPoolMode.value)))
 
 // A stand-in for a card the engine doesn't implement yet: enough of a CardDef
@@ -759,16 +766,7 @@ const stepCard = (delta: number) => {
       </button>
       <div class="sidebar-content">
       <button class="sidebar-close" @click="showSidebar = false"><font-awesome-icon icon="times" /></button>
-      <div class="sidebar-card-pool card-pool-toggle segmented segmented-3" role="radiogroup" :aria-label="$t('cardsView.cardPool')">
-        <input type="radio" :checked="cardPoolMode === 'player'" :disabled="!cardPoolAvailable('player')" id="card-pool-player-mobile" @change="setCardPoolMode('player')" />
-        <label for="card-pool-player-mobile">{{ $t('cardsView.playerCards') }}</label>
-
-        <input type="radio" :checked="cardPoolMode === 'campaign'" :disabled="!cardPoolAvailable('campaign')" id="card-pool-campaign-mobile" @change="setCardPoolMode('campaign')" />
-        <label for="card-pool-campaign-mobile">{{ $t('cardsView.campaignCards') }}</label>
-
-        <input type="radio" :checked="cardPoolMode === 'both'" :disabled="!cardPoolAvailable('both')" id="card-pool-both-mobile" @change="setCardPoolMode('both')" />
-        <label for="card-pool-both-mobile">{{ $t('cardsView.bothCards') }}</label>
-      </div>
+      <SegmentedToggle class="sidebar-card-pool card-pool-toggle" :model-value="cardPoolMode" :options="cardPoolOptions" :label="$t('cardsView.cardPool')" @update:model-value="setCardPoolMode" />
       <div :class="['chapter-tabs segmented', dev ? 'segmented-3' : 'segmented-2']" role="radiogroup" aria-label="Card chapter">
         <input type="radio" :checked="activeChapter === 1" id="chapter-1" @change="activeChapter = 1" />
         <label for="chapter-1">{{ t('cardsView.chapter1') }}</label>
@@ -852,16 +850,7 @@ const stepCard = (delta: number) => {
           <button @click.prevent="view = View.List" :class="{ active: view == View.List }" :title="$t('cardsView.listView')"><font-awesome-icon icon="list" /></button>
           <button @click.prevent="view = View.Image" :class="{ active: view == View.Image }" :title="$t('cardsView.imageView')"><font-awesome-icon icon="image" /></button>
         </div>
-        <div class="desktop-card-pool card-pool-toggle segmented segmented-3" role="radiogroup" :aria-label="$t('cardsView.cardPool')">
-          <input type="radio" :checked="cardPoolMode === 'player'" :disabled="!cardPoolAvailable('player')" id="card-pool-player" @change="setCardPoolMode('player')" />
-          <label for="card-pool-player">{{ $t('cardsView.playerCards') }}</label>
-
-          <input type="radio" :checked="cardPoolMode === 'campaign'" :disabled="!cardPoolAvailable('campaign')" id="card-pool-campaign" @change="setCardPoolMode('campaign')" />
-          <label for="card-pool-campaign">{{ $t('cardsView.campaignCards') }}</label>
-
-          <input type="radio" :checked="cardPoolMode === 'both'" :disabled="!cardPoolAvailable('both')" id="card-pool-both" @change="setCardPoolMode('both')" />
-          <label for="card-pool-both">{{ $t('cardsView.bothCards') }}</label>
-        </div>
+        <SegmentedToggle class="desktop-card-pool card-pool-toggle" :model-value="cardPoolMode" :options="cardPoolOptions" :label="$t('cardsView.cardPool')" @update:model-value="setCardPoolMode" />
       </header>
       <CardImageView
         v-if="view == View.Image"
@@ -1386,14 +1375,10 @@ header {
   z-index: 0;
 }
 
-.segmented:has(#card-pool-campaign:checked)::before,
-.segmented:has(#card-pool-campaign-mobile:checked)::before,
 .segmented:has(#chapter-2:checked)::before {
   transform: translateX(calc(100% + var(--segmented-gap)));
 }
 
-.segmented:has(#card-pool-both:checked)::before,
-.segmented:has(#card-pool-both-mobile:checked)::before,
 .segmented:has(#chapter-homebrew:checked)::before {
   transform: translateX(calc((100% + var(--segmented-gap)) * 2));
 }

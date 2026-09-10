@@ -9,6 +9,7 @@ import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue'
 import DebugStory from '@/arkham/components/debug/Story.vue'
+import { readTokenBag } from '@/arkham/types/TokenBag'
 import * as Arkham from '@/arkham/types/Story'
 import TokenPool from '@/arkham/components/TokenPool.vue';
 import { TokenType } from '@/arkham/types/Token';
@@ -47,23 +48,13 @@ const checkmarks = computed(() => {
 })
 
 
-const setAsideInfestationTokens = computed(() => props.story.meta?.infestationSetAside ?? [])
+const bag = computed(() => readTokenBag(props.story.meta))
+const setAsideTokens = computed(() => bag.value?.setAside ?? [])
 
 const debug = useDebug()
 const debugging = ref(false)
 
-const hasBag = computed(() => {
-  const meta = props.story.meta
-  if (!meta) return false
-  return (
-    (meta.predationTokens?.length ?? 0) > 0 ||
-    (meta.predationSetAside?.length ?? 0) > 0 ||
-    meta.predationCurrentToken != null ||
-    (meta.infestationTokens?.length ?? 0) > 0 ||
-    (meta.infestationSetAside?.length ?? 0) > 0 ||
-    meta.infestationCurrentToken != null
-  )
-})
+const hasBag = computed(() => bag.value !== null)
 
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
@@ -159,10 +150,10 @@ const sealedChaosTokens = computed(() => props.story.sealedChaosTokens ?? [])
         {{ $t('debug.story.inspectBag') }}
       </button>
     </div>
-    <div v-if="setAsideInfestationTokens.length > 0" class="infestation-tokens">
-      <Token v-for="token in setAsideInfestationTokens" :key="token.infestationTokenId" :token="Arkham.infestationAsChaosToken(token)" :playerId="playerId" :game="game" @choose="choose" />
+    <div v-if="setAsideTokens.length > 0" class="infestation-tokens">
+      <Token v-for="token in setAsideTokens" :key="token.id" :token="token" :playerId="playerId" :game="game" @choose="choose" />
     </div>
-    <DebugStory v-if="debugging" :story="story" @close="debugging = false" />
+    <DebugStory v-if="debugging" :game="game" :story="story" @close="debugging = false" />
   </div>
 </template>
 

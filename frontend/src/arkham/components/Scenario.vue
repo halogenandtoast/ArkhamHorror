@@ -41,6 +41,7 @@ import Act from '@/arkham/components/Act.vue';
 import CardView from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
+import ChaosBagWindow from '@/arkham/components/ChaosBagWindow.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import EnemyView from '@/arkham/components/Enemy.vue';
@@ -2185,8 +2186,7 @@ async function addChaosToken(face: any){
         </div>
         <button v-if="!forcedShowOutOfPlay" class="close button" @click="showOutOfPlay = false">{{$t('close')}}</button>
       </Draggable>
-      <Draggable v-if="showChaosBag">
-        <template #handle><header><h2>{{$t('gameBar.chaosBag')}} <span class="count-pill">{{ scenario.chaosBag.chaosTokens.length }}</span></h2></header></template>
+      <ChaosBagWindow v-if="showChaosBag" :game="game" @close="showChaosBag = false">
         <ChaosBag :game="game" :skillTest="null" :chaosBag="scenario.chaosBag" :playerId="playerId" @choose="choose" />
         <div v-if="debug.active" class="buttons buttons-row">
           <div class="tri-button blessed">
@@ -2290,8 +2290,7 @@ async function addChaosToken(face: any){
             <button class="button auto-fail-button" @click="addChaosToken('AutoFail')">+</button>
           </div>
         </div>
-        <button class="button close-button" @click="showChaosBag = false">{{$t('close')}}</button>
-      </Draggable>
+      </ChaosBagWindow>
       <CardRow
         v-if="showCards.ref.length > 0"
         :game="game"

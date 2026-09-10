@@ -5452,11 +5452,7 @@ instance Query ChaosTokenMatcher where
         Nothing -> pure []
         Just s -> do
           bag <- infestationBag <$> getAttrs @Story s
-          pure
-            $ map asChaosToken
-            $ infestationTokens bag
-            <> infestationSetAside bag
-            <> maybeToList (infestationCurrentToken bag)
+          pure $ map asChaosToken $ allBagTokens bag
     go :: HasGame m => ChaosTokenMatcher -> ChaosToken -> m Bool
     go = \case
       ChaosTokenIs cid -> pure . (== cid) . chaosTokenId
@@ -6364,6 +6360,7 @@ instance Projection Scenario where
       ScenarioResignedCardCodes -> pure scenarioResignedCardCodes
       ScenarioResolvedStories -> pure scenarioResolvedStories
       ScenarioChaosBag -> pure scenarioChaosBag
+      ScenarioCustomChaosBags -> pure scenarioCustomChaosBags
       ScenarioInResolution -> pure scenarioInResolution
       ScenarioIsPrelude -> pure scenarioIsPrelude
       ScenarioSetAsideCards -> do

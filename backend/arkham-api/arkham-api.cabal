@@ -4067,6 +4067,7 @@ library
       Arkham.Helpers.CombatTarget
       Arkham.Helpers.Cost
       Arkham.Helpers.Criteria
+      Arkham.Helpers.CustomChaosBag
       Arkham.Helpers.Customization
       Arkham.Helpers.Damage
       Arkham.Helpers.Deck
@@ -7078,6 +7079,7 @@ library
       Arkham.Text
       Arkham.Timing
       Arkham.Token
+      Arkham.TokenBag
       Arkham.TokenStrategy
       Arkham.Trait
       Arkham.Treachery
@@ -8696,6 +8698,7 @@ test-suite spec
       Arkham.Skill.Cards.WatchThisSpec
       Arkham.Story.Cards.UnfinishedBusinessSpec
       Arkham.Story.CardsSpec
+      Arkham.TokenBagSpec
       Arkham.TraitSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.AmnesiaSpec

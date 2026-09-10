@@ -70,6 +70,7 @@ export type Scenario = {
   setAsideKeys: ArkhamKey[];
   keys: ArkhamKey[];
   chaosBag: ChaosBag;
+  customChaosBags: Record<string, unknown>;
   discard: CardContents[];
   victoryDisplay: Card[];
   standaloneCampaignLog: LogContents | null;
@@ -198,6 +199,7 @@ export const scenarioDecoder = JsonDecoder.object<DecodedScenario>({
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
   setAsideCards: JsonDecoder.array<Card>(cardDecoder, 'SetAsideCards'),
   chaosBag: chaosBagDecoder,
+  customChaosBags: withDefault({}, JsonDecoder.record<unknown>(JsonDecoder.succeed(), 'CustomChaosBags')),
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'EncounterCardContents[]'),
   victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   standaloneCampaignLog: logContentsDecoder,

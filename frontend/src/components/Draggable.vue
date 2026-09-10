@@ -600,6 +600,11 @@ function moveUp() {
     }
   }
 
+  .content :deep(button:focus-visible) {
+    /* Keep the existing focus-ring color/style, clear of rounded corners. */
+    outline-offset: 3px;
+  }
+
   .content {
     height: 100%;
     overflow: auto;

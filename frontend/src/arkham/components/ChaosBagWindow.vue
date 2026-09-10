@@ -28,7 +28,8 @@ const bags = computed(() => [
     const instance = props.game.cards[story.cardId]
     const code = instance ? asCardCode(instance) : story.art
     const card = cards.cards.find(card => card.cardCode === code)
-    const label = code === '06078' || code === 'c06078' ? 'Infestation Bag' : card ? fullName(card.name) : code
+    const bagNames: Record<string, string> = { '06078': 'Infestation Bag', '10524': 'Predation Bag' }
+    const label = bagNames[code.replace(/^c(?=\d)/, '')] ?? (card ? fullName(card.name) : code)
     return [{ id: `story:${story.id}`, label, bag, bagKey: undefined, storyId: story.id }]
   }),
 ])

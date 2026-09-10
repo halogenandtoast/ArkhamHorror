@@ -1159,7 +1159,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
         <img :src="questionImage" class="card" />
       </div>
     </template>
-    <div v-if="doneLabel && doneIsFooter">
+    <div v-if="doneLabel && doneIsFooter" class="done-choice">
       <button class="done" @click="$emit('choose', doneLabel.index)" v-html="label(doneLabel.label)"></button>
     </div>
   </div>
@@ -1863,6 +1863,11 @@ h2 {
   border-color: rgba(214, 205, 174, 0.7);
 }
 
+/* Outside focus outlines need room inside the modal's clipping boundary. */
+.done-choice {
+  padding: 6px;
+}
+
 .done {
   width: 100%;
   border: 0;
@@ -2223,7 +2228,7 @@ h2 {
 
   :deep(.question-choices) {
     gap: 0;
-    padding: 0 !important;
+    padding: 6px !important;
   }
 
   :deep(.message-label) {

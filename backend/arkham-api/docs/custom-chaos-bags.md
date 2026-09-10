@@ -54,7 +54,8 @@ format fallback.
 
 ## Debugging
 
-- Story bags: open the story's bag inspector.
+- Story bags: open the chaos bag window, select the bag, and enable debug mode
+  for its contents controls.
 - Scenario bags: enable debug mode and open scenario debug options. All named bags
   appear automatically; adding a bag needs no frontend registration.
 - Inspect in-bag, current, and set-aside tokens. In debug mode, click an in-bag token

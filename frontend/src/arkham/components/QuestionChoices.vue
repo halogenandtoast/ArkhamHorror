@@ -391,6 +391,8 @@ i.iconSkillAgility:before {
   display: flex;
   gap: 10px;
   flex-direction: column;
+  /* Keep keyboard focus rings inside rounded/scrolling modal containers. */
+  padding: 6px;
 }
 
 .question-choices:has(> .connection-choice) {

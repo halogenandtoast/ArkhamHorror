@@ -646,9 +646,7 @@
       "reset": "Reset"
     },
     "story": {
-      "title": "Debug Story",
-      "inspectBag": "Inspect Bag",
-      "empty": "No bag contents to display."
+      "title": "Debug Story"
     },
     "common": {
       "place": "Place",

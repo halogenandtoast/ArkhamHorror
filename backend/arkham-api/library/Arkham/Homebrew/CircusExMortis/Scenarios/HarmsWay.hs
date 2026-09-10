@@ -205,8 +205,9 @@ instance RunMessage HarmsWay where
           resolution "resolution1"
           -- "Remove 2 copies of Kidnapped Citizen from the victory display, if
           -- possible", so they neither count for X nor pay out their Victory 1.
-          for_ (take 2 $ mapMaybe (preview _EncounterCard) citizens) (push . AddToEncounterDiscard)
-          recordCount GroupsOfCitizensWereSavedFromTheCircus $ max 0 (length citizens - 2)
+          let (freed, stillCaptive) = splitAt 2 citizens
+          for_ freed removeCardFromGame
+          recordCount GroupsOfCitizensWereSavedFromTheCircus (length stillCaptive)
           push R3
         Resolution 2 -> do
           resolution "resolution2"

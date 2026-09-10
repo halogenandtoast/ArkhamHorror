@@ -9,6 +9,7 @@
       }
     },
     "startingCards": {
+      "instructions": "The investigators with Amalthea Weaver and De Cultus Bestiae in their decks may begin the game with those cards in their opening hands as additional cards.",
       "label": {
         "take": "Begin with this card as an additional card in your opening hand",
         "leave": "Leave this card in your deck"

@@ -750,6 +750,7 @@ chooseOptionMatching _reason f = do
   notFound msgs =
     liftIO $ expectationFailure $ "could not find a matching message in: " <> show msgs
   go iid question = case stripQuestionWrappers question of
+    Read _ (BasicReadChoices msgs) _ -> go iid (ChooseOne msgs)
     ChooseOne msgs -> case find f msgs of
       Just msg -> push (uiToRun msg) <* runMessages
       Nothing -> notFound msgs

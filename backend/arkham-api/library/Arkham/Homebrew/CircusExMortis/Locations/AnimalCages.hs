@@ -17,8 +17,6 @@ animalCages = location AnimalCages Cards.animalCages 5 (PerPlayer 2)
 
 instance HasModifiersFor AnimalCages where
   getModifiersFor (AnimalCages a) = do
-    -- "moon tokens sealed on player cards at its location" = sealed MoonToken across
-    -- investigators AND assets here. No combined helper exists, so count locally.
     investigatorMoons <- selectSumWith countMoons InvestigatorSealedChaosTokens $ investigatorAt a.id
     assetMoons <- selectSumWith countMoons AssetSealedChaosTokens $ assetAt (toId a)
     let n = investigatorMoons + assetMoons

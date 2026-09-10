@@ -102,7 +102,7 @@ instance RunMessage HarmsWay where
           deck <- field InvestigatorDeck iid
           for_ (find ((== def) . toCardDef) (unDeck deck)) \card -> do
             focusCards [card] do
-              chooseOneM iid do
+              investigatorStoryWithChooseOneM' iid (ul $ li "instructions") do
                 labeled "take" do
                   push $ ObtainCard (toCardId card)
                   setupModifier ScenarioSource iid (AdditionalStartingCards [toCard card])

@@ -6,7 +6,8 @@ import { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
 import { cardArt, cardImage } from '@/arkham/cardImages'
 import { keyToId } from '@/arkham/types/Key'
-import { useGameChoices } from '@/arkham/composables/useGameChoices'
+import { useGameChoices, useStickyChoicesSource } from '@/arkham/composables/useGameChoices'
+import { proxyOriginId } from '@/arkham/types/Source'
 import { useGameIndexes } from '@/arkham/composables/useGameIndexes'
 import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import DebugLocation from '@/arkham/components/debug/Location.vue'
@@ -539,6 +540,20 @@ const showCardsUnderneath = () => emits('show', cardsUnderneathToShow, 'Cards Un
 const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.location.id))
 const highlighted = computed(() => highlighter.highlighted.value === props.location.id || isAttackTarget.value)
 
+// Yellow marks the actor/source of what is happening. Two cases put this location there:
+// a pending question wrapped in QuestionWithSource (e.g. the location charging an
+// additional cost to leave it), and an offered proxied ability this location granted to
+// the card it now sits on.
+const choicesSource = useStickyChoicesSource(() => props.game, () => props.playerId)
+const sourceHighlighted = computed(() => {
+  const source = choicesSource.value
+  if (source !== null && 'contents' in source && source.contents === props.location.id) return true
+
+  return choices.value.some(
+    (c) => c.tag === MessageType.ABILITY_LABEL && proxyOriginId(c.ability.source) === props.location.id
+  )
+})
+
 function isVehicleAsset(assetId: string): boolean {
   const asset = props.game.assets[assetId]
   if (!asset) return false
@@ -637,7 +652,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
                 :data-id="id"
                 class="card card--locations"
                 :src="displayedImage"
-                :class="{ 'location--can-interact': canInteract && !hasObjective && !blocked, 'location--can-interact-cursor': canInteract }"
+                :class="{ 'location--can-interact': canInteract && !hasObjective && !blocked, 'location--can-interact-cursor': canInteract, 'source-highlight': sourceHighlighted }"
                 draggable="false"
                 @drop="onDrop"
                 @dragover.prevent="dragover"
@@ -837,6 +852,10 @@ const hasAnyLocationVehicleAssets = computed(() =>
 .location--can-interact {
   border: 2px solid var(--select);
   cursor: pointer;
+}
+
+img.card.source-highlight {
+  box-shadow: 0 0 0 2px var(--important), 0 0 6px 1px var(--important), var(--card-shadow);
 }
 
 .location--can-interact-cursor {

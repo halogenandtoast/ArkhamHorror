@@ -28,6 +28,15 @@ export function sourceKey (source: Source): string | undefined {
   }
 }
 
+// A proxied ability lives on one card but was granted by another (its originalSource) --
+// e.g. a location that grants a forced ability to each adjacent location. Returns the
+// granting entity's id so the UI can highlight it as the source of the ability.
+export function proxyOriginId(source: Source): string | null {
+  if (source.sourceTag !== 'ProxySource') return null
+  const origin = source.originalSource
+  return 'contents' in origin && typeof origin.contents === 'string' ? origin.contents : null
+}
+
 export type ProxySource = {
   sourceTag: "ProxySource"
   tag: "ProxySource"

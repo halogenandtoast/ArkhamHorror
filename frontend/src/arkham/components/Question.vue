@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useDbCardStore } from '@/stores/dbCards'
-import { chaosTokenImage } from '@/arkham/types/ChaosToken';
+import { chaosTokenImage, type ChaosToken } from '@/arkham/types/ChaosToken';
 import { useI18n } from 'vue-i18n';
 import { useDebouncedRef } from '@/composable/debouncedRef';
 import { handleEmbeddedI18n, parseInput } from '@/arkham/i18n';
@@ -505,6 +505,24 @@ function abilitySourceHandledElsewhere(source: any) {
   }
 }
 
+// Chaos tokens that already have a clickable representation on the board: everything
+// SealedChaosTokens mounts (investigators, assets, enemies, locations). Token.vue turns
+// those into active tokens for a matching TargetLabel, so the modal needs no button.
+const boardChaosTokenIds = computed(() => {
+  const ids = new Set<string>()
+  const add = (tokens: ChaosToken[] | undefined) => tokens?.forEach((token) => ids.add(token.id))
+
+  Object.values(props.game.investigators).forEach((i) => add(i.sealedChaosTokens))
+  Object.values(props.game.assets).forEach((a) => add(a.sealedChaosTokens))
+  Object.values(props.game.enemies).forEach((e) => add(e.sealedChaosTokens))
+  Object.values(props.game.locations).forEach((l) => {
+    add(l.sealedChaosTokens)
+    add(l.placedChaosTokens)
+  })
+
+  return ids
+})
+
 function targetLabelHandledElsewhere(choice: TargetLabel) {
   const target = choice.target
   const contents = target.contents
@@ -534,7 +552,8 @@ function targetLabelHandledElsewhere(choice: TargetLabel) {
   }
 
   if (target.tag === 'ChaosTokenTarget' && typeof contents === 'object' && contents !== null && 'id' in contents) {
-    return props.game.focusedChaosTokens.some((token) => token.id === contents.id)
+    const id = contents.id as string
+    return props.game.focusedChaosTokens.some((token) => token.id === id) || boardChaosTokenIds.value.has(id)
   }
 
   return false

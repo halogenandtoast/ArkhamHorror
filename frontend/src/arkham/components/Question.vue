@@ -1863,9 +1863,11 @@ h2 {
   border-color: rgba(214, 205, 174, 0.7);
 }
 
-/* Outside focus outlines need room inside the modal's clipping boundary. */
-.done-choice {
-  padding: 6px;
+/* Keep focus rings inside clipped panels without changing button spacing. */
+.done:focus-visible,
+:deep(.question-choices button:focus-visible),
+:deep(.question-choices a.button:focus-visible) {
+  outline-offset: -4px;
 }
 
 .done {
@@ -2223,12 +2225,17 @@ h2 {
   gap: 10px;
 }
 
-.question-wrapper:has(.haunted) {
+.question-wrapper:has(.haunted, .token-reveal) {
   gap: 0;
+
+  :deep(button:active:not(:disabled)),
+  :deep(a.button:active) {
+    transform: none !important;
+  }
 
   :deep(.question-choices) {
     gap: 0;
-    padding: 6px !important;
+    padding: 0 !important;
   }
 
   :deep(.message-label) {
@@ -2236,6 +2243,9 @@ h2 {
     padding: 0;
   }
 
+}
+
+.question-wrapper:has(.haunted) {
   .done,
   :deep(.question-choices button),
   :deep(.question-choices a.button) {

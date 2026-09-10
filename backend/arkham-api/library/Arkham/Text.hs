@@ -11,8 +11,8 @@ import Arkham.I18n
 import Arkham.Json
 import Arkham.Prelude
 import Arkham.Tarot
-import Data.Aeson.TH
 import Data.Aeson.KeyMap qualified
+import Data.Aeson.TH
 
 newtype Tooltip = Tooltip Text
   deriving stock Data
@@ -35,6 +35,7 @@ data FlavorTextModifier
   | NoUnderline
   | CodexEntry
   | HauntedEntry
+  | TokenRevealEntry
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry
@@ -140,7 +141,6 @@ mconcat
   , [d|
       instance FromJSON FlavorTextEntry where
         parseJSON (String s) = pure $ BasicEntry s
-
         parseJSON v@(Object obj) = do
           let addDefaultLevel c =
                 case Data.Aeson.KeyMap.lookup "level" c of
@@ -151,13 +151,11 @@ mconcat
               case Data.Aeson.KeyMap.lookup "contents" obj of
                 Just (Object c) ->
                   let obj' = Data.Aeson.KeyMap.insert "contents" (Object $ addDefaultLevel c) obj
-                  in $(mkParseJSON defaultOptions ''FlavorTextEntry) (Object obj')
+                   in $(mkParseJSON defaultOptions ''FlavorTextEntry) (Object obj')
                 _ ->
                   $(mkParseJSON defaultOptions ''FlavorTextEntry) (Object $ addDefaultLevel obj)
-
             _ ->
               $(mkParseJSON defaultOptions ''FlavorTextEntry) v
-
         parseJSON v =
           $(mkParseJSON defaultOptions ''FlavorTextEntry) v
       |]

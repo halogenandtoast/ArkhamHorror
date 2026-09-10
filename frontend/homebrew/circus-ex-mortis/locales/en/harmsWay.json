@@ -14,6 +14,14 @@
         "elderThing": "-4. If this test is failed, reveal a fury token."
       }
     },
+    "furyReveal": {
+      "title": "Fury Token Revealed",
+      "moon": "Immediately reveal two additional fury tokens.",
+      "north": "<div><span>Each Towering Dark Young makes an immediate attack against each investigator at the location...</span><br><br><span>...directly above them.</span></div>",
+      "south": "<div><span>Each Towering Dark Young makes an immediate attack against each investigator at the location...</span><br><br><span>...directly below them.</span></div>",
+      "west": "<div><span>Each Towering Dark Young makes an immediate attack against each investigator at the location...</span><br><br><span>...directly to the left of them.</span></div>",
+      "east": "<div><span>Each Towering Dark Young makes an immediate attack against each investigator at the location...</span><br><br><span>...directly to the right of them.</span></div>"
+    },
     "intro": {
       "title": "Scenario III: Harm's Way",
       "body": "<p>When you slip back out of the ringmaster's trailer, ghastly growls and other less identifiable sounds rumble through the camp. You nearly flinch as a shadow sweeps across the moon, which leads your view to a worse spectacle. Four massive figures tower above the camp, large enough to be oak trees &mdash; and indeed resembling them in silhouette &mdash; but far more horrible. Like the smaller abominations you encountered in the woods, these things are a horrid jumble of tentacles, mouths, hooves, and horns. They writhe and roar dully with sluggish movements. Perhaps these monsters are rousing from sleep, which lends a little more urgency to the mission. Thea holds a hand over her mouth in shock, but soon lowers it with a shudder. Whether or not she's seen them in her visions before, this appears to be the first time in person. It goes without saying that you must plan how to proceed in finding and rescuing the captives.</p><ul><li>The investigators must decide (choose one):<ul><li>“The faster we get them out of here, the better.” Add a {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.</li><li>“Caution first. Saving them won’t help otherwise.” Add a {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</li></ul></li></ul>",

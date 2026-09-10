@@ -1,0 +1,443 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>#totals — round 2, ten placements</title>
+<style>
+@font-face { font-family: "Arkham"; src: url("fonts/arkham.ttf"); }
+@font-face { font-family: "ArkhamIcons"; src: url("fonts/arkhamicons.ttf"); }
+@font-face { font-family: "ArkhamSlim"; src: url("fonts/arkhamslim.ttf"); }
+@font-face { font-family: "Icons"; src: url("fonts/icon.woff2") format("woff2"); }
+@font-face { font-family: "Teutonic"; src: url("fonts/teutonic.ttf"); }
+@font-face { font-family: "Noto Sans"; src: url("fonts/NotoSans.ttf"); }
+
+:root {
+  --background: #2e3440;
+  --important: rgba(212, 165, 10, 0.9);
+  --box-border: #434c5e;
+  --select: #ff00ff;
+  --highlight: #2dd4bf;
+  --teal: #66C8D6;
+  --health: #ae4236;
+  --sanity: #2c7fc0;
+
+  /* the Flush Plate surface, promoted to a reusable token set */
+  --plate-bg: linear-gradient(180deg, #333b4d 0%, #252b3a 100%);
+  --plate-edge: rgba(255,255,255,.13);
+  --plate-shadow: -2px -1px 6px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
+  --plate-rule: linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent);
+
+  --shell-card: 46px;
+  --shell-token: 23px;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: #14171f; color: #c9d3e0;
+  font-family: "Noto Sans", system-ui, sans-serif; font-size: 13px; padding: 24px 28px 90px; }
+h1 { font-family: Teutonic, serif; font-weight: normal; color: var(--important); font-size: 26px; margin: 0 0 4px; }
+.sub { color: #7c8698; margin: 0 0 18px; max-width: 1000px; line-height: 1.55; }
+code { color: #9fb0c6; }
+
+.controls { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 24px;
+  padding: 10px 14px; background: #1b1f2b; border: 1px solid #2a3243; border-radius: 8px; position: sticky; top: 0; z-index: 50; }
+.controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #9aa5b8; }
+.controls b { font-weight: 600; color: #7c8698; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.controls .grp { display: flex; gap: 12px; align-items: center; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(690px, 1fr)); gap: 24px; }
+.grid.solo { grid-template-columns: 1fr; }
+.mock { background: #1b1f2b; border: 1px solid #2a3243; border-radius: 10px; overflow: hidden; }
+.mock > header { padding: 11px 14px; border-bottom: 1px solid #2a3243; }
+.mock > header .n { font-family: Teutonic, serif; color: var(--important); font-size: 18px; }
+.mock > header .cost { float: right; font-size: 10px; text-transform: uppercase; letter-spacing: .1em;
+  color: #6f7b90; border: 1px solid #2f394b; border-radius: 100vw; padding: 3px 9px; }
+.mock > header .d { display: block; color: #7c8698; font-size: 12px; line-height: 1.5; margin-top: 5px; }
+
+/* =========================================================
+   Mini game shell — a faithful reduction of Scenario.vue
+   ========================================================= */
+.shell { display: flex; height: 340px; background: var(--background); overflow: hidden; position: relative; }
+.shell .body { flex: 1; display: grid; grid-template-rows: auto 1fr auto; min-width: 0; position: relative; }
+
+/* .scenario-cards */
+.band { display: flex; align-items: flex-start; justify-content: center; gap: 10px; padding: 8px 10px;
+  background: rgba(0,0,0,.14); border-bottom: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 2px 4px rgba(0,0,0,.18); position: relative; }
+.band .grp { display: flex; gap: 5px; }
+.band .col { display: flex; flex-direction: column; gap: 5px; }
+.cardimg { width: var(--shell-card); aspect-ratio: .705; border-radius: 3px; object-fit: cover;
+  box-shadow: 1px 1px 6px rgba(0,0,0,.45); display: block; }
+.cardimg.wide { width: calc(var(--shell-card) * 1.72); aspect-ratio: 1.41844; }
+.band .spacer { flex: 1; }
+
+/* board */
+.board { position: relative; overflow: hidden;
+  background: radial-gradient(120% 100% at 50% 0%, #333a48 0%, #262b36 60%, #1f232d 100%); }
+.board .locs { position: absolute; inset: 0; display: grid; place-content: center;
+  grid-template-columns: repeat(3, auto); gap: 10px 14px; }
+.board .loc { width: calc(var(--shell-card) * 1.15); aspect-ratio: .705; border-radius: 3px;
+  box-shadow: 1px 1px 6px rgba(0,0,0,.5); object-fit: cover; }
+
+/* #player-zone */
+.pzone { display: flex; background: #181c2a; border-top: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 -2px 8px rgba(0,0,0,.4); min-height: 108px; position: relative; }
+.pzone .pinfo { flex: 1; padding: 6px 8px; min-width: 0; }
+.tabs { display: flex; gap: 5px; margin-bottom: 5px; }
+.tabs .tab { height: 15px; width: 58px; border-radius: 3px 3px 0 0; background: #232838; }
+.tabs .tab.on { background: #2e3444; box-shadow: inset 0 -2px 0 var(--important); }
+.tabs .grow { flex: 1; }
+.hand { display: flex; gap: 4px; }
+.hand .c { width: 34px; height: 48px; border-radius: 3px;
+  background: linear-gradient(160deg,#3a4257,#252b3a); box-shadow: 1px 1px 5px rgba(0,0,0,.45); }
+
+/* .phases rail */
+.rail { width: 46px; background: #b8c1c6; display: flex; flex-direction: column;
+  color: #2a2f33; font: 9px/1 Arial; text-transform: uppercase; position: relative; }
+.rail .ph { flex: 1; display: flex; }
+.rail .ph .steps { flex: 1; background: #484E51; display: flex; flex-direction: column; }
+.rail .ph .steps i { flex: 1; }
+.rail .ph .steps i:nth-child(2n) { background: #5a6062; }
+.rail .ph .nm { writing-mode: vertical-rl; display: flex; align-items: center; justify-content: center;
+  width: 15px; letter-spacing: .04em; }
+.rail .ph.on { background: #8e9ca4; font-weight: bold; }
+
+/* highlight ring around whatever the mock is proposing */
+.hl { outline: 1px dashed rgba(45,212,191,.55); outline-offset: 3px; border-radius: 4px; }
+
+/* =========================================================
+   Shared pieces
+   ========================================================= */
+.tok { width: var(--shell-token); display: block; filter: drop-shadow(1px 1px 2px rgb(0,0,0)); }
+.num { font-family: "Arkham"; color: #f0f0f0; line-height: 1; font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 2px rgba(0,0,0,.9); }
+.stamped { display: grid; place-items: center; width: var(--shell-token); }
+.stamped > * { grid-area: 1 / 1; }
+.stamped img { width: 100%; display: block; filter: drop-shadow(1px 1px 2px rgb(0,0,0)); }
+.stamped span { font-family: "Arkham"; font-size: calc(var(--shell-token) * .52); color: #F0F0F0;
+  text-shadow: 1px 0 0 rgba(0,0,0,.8), 0 -1px 0 rgba(0,0,0,.8), 0 1px 0 rgba(0,0,0,.8), -1px 0 0 rgba(0,0,0,.8); }
+
+.plate { background: var(--plate-bg); border: 1px solid var(--plate-edge); box-shadow: var(--plate-shadow); }
+.rule { height: 1px; background: var(--plate-rule); border: 0; margin: 0; }
+.vrule { width: 1px; align-self: stretch; background: linear-gradient(180deg, transparent, rgba(255,255,255,.16), transparent); }
+
+/* ---------- 1 · Anchored ---------- */
+.anchor-pip { position: absolute; display: flex; align-items: center; gap: 3px;
+  padding: 1px 5px 1px 1px; border-radius: 100vw; background: rgba(14,17,24,.9);
+  border: 1px solid var(--plate-edge); box-shadow: 0 2px 5px rgba(0,0,0,.7); }
+.anchor-pip img { width: 17px; filter: drop-shadow(0 1px 1px #000); }
+.anchor-pip .num { font-size: 13px; }
+.bagrow { display: flex; gap: 3px; align-items: center; padding: 2px 5px; border-radius: 100vw;
+  background: rgba(14,17,24,.75); border: 1px solid rgba(255,255,255,.09); }
+.bagrow .m { display: flex; align-items: center; gap: 2px; }
+.bagrow img { width: 14px; }
+.bagrow .num { font-size: 11px; }
+
+/* ---------- 2 · Threshold tracks ---------- */
+.track { position: absolute; left: 3px; right: 3px; bottom: 3px; height: 13px; border-radius: 3px;
+  background: rgba(6,8,12,.82); border: 1px solid rgba(255,255,255,.12); overflow: hidden;
+  display: flex; align-items: center; }
+.track .fill { position: absolute; inset: 0 auto 0 0; }
+.track.doom .fill { background: linear-gradient(90deg, #7a221c, #ae4236); }
+.track.clue .fill { background: linear-gradient(90deg, #1c4a6e, #2c7fc0); }
+.track .lbl { position: relative; display: flex; align-items: center; gap: 3px; padding-left: 3px; }
+.track .lbl img { width: 11px; }
+.track .lbl .num { font-size: 10px; }
+.track .pips { position: relative; margin-left: auto; padding-right: 4px; display: flex; gap: 2px; }
+.track .pips i { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,.3); }
+.track .pips i.f { background: #fff; }
+
+/* ---------- 3 · Rail cap ---------- */
+.railcap { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 3px 5px;
+  background: #20252f; border-bottom: 1px solid rgba(0,0,0,.5); }
+.railcap .p { display: flex; align-items: center; gap: 2px; }
+.railcap img { width: 15px; }
+.railcap .num { font-size: 12px; }
+.railcap .rule { width: 80%; }
+
+/* ---------- 4 · Edge peek ---------- */
+.peek { position: absolute; right: 0; top: 0; bottom: 0; width: 13px; overflow: visible; }
+.peek .inner { position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 4px; padding: 6px 4px;
+  border-radius: 8px 0 0 8px; background: var(--plate-bg); border: 1px solid var(--plate-edge);
+  border-right: 0; box-shadow: var(--plate-shadow);
+  clip-path: inset(0 0 0 calc(100% - 13px)); transition: clip-path .18s ease; }
+.peek:hover .inner { clip-path: inset(0 0 0 0); }
+.peek .p { display: flex; align-items: center; gap: 4px; }
+.peek img { width: 18px; }
+.peek .num { font-size: 12px; }
+
+/* ---------- 5 · Coin stack ---------- */
+.coins { display: flex; flex-direction: column; align-items: center; padding: 6px 7px 8px; }
+.coins .c { margin-top: -11px; position: relative; transition: margin-top .18s ease; }
+.coins .c:first-child { margin-top: 0; }
+.coins:hover .c { margin-top: 2px; }
+.coins:hover .c:first-child { margin-top: 0; }
+.coins .c img { width: 26px; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,.9)); }
+.coins .c b { position: absolute; right: -5px; bottom: -2px; min-width: 15px; height: 15px; padding: 0 3px;
+  display: flex; align-items: center; justify-content: center; border-radius: 100vw;
+  background: #10131b; border: 1px solid rgba(255,255,255,.22);
+  font-family: "Arkham"; font-weight: normal; font-size: 11px; color: #f0f0f0; }
+
+/* ---------- 6 · Glyph readout ---------- */
+.readout { display: flex; align-items: center; gap: 9px; padding: 3px 9px; border-radius: 100vw;
+  background: rgba(14,17,24,.7); border: 1px solid rgba(255,255,255,.09); }
+.readout .m { display: flex; align-items: baseline; gap: 3px; font-family: "Arkham"; font-size: 13px;
+  line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,.9); }
+.readout .m .g { font-size: 12px; line-height: 1; }
+.readout .g.doom { color: #d9584c; } .readout .g.clue { color: #5fa8e6; }
+.readout .g.bless { font-family: "ArkhamIcons"; color: #e2c25c; }
+.readout .g.curse { font-family: "ArkhamIcons"; color: #b085d6; }
+.readout .g.frost { font-family: "ArkhamSlim"; color: #9aa4c8; }
+.readout .g.blood { font-family: "Icons"; color: #d0524e; }
+.readout img.g { width: 12px; transform: translateY(1px); }
+
+/* ---------- 7 · Pouch ---------- */
+.pouch { position: relative; display: flex; align-items: center; gap: 5px; padding: 3px 8px 3px 4px;
+  border-radius: 100vw; background: var(--plate-bg); border: 1px solid var(--plate-edge);
+  box-shadow: var(--plate-shadow); cursor: pointer; }
+.pouch .fan { position: relative; width: 30px; height: 22px; }
+.pouch .fan img { position: absolute; width: 20px; top: 1px; filter: drop-shadow(0 1px 2px #000); }
+.pouch .fan img:nth-child(1) { left: 0; transform: rotate(-14deg); }
+.pouch .fan img:nth-child(2) { left: 5px; }
+.pouch .fan img:nth-child(3) { left: 10px; transform: rotate(14deg); }
+.pouch .tally { display: flex; align-items: center; gap: 5px; }
+.pouch .tally span { font-family: "Arkham"; font-size: 12px; line-height: 1; text-shadow: 0 1px 2px rgba(0,0,0,.9); }
+.pouch .tally .bless { color: #e2c25c; } .pouch .tally .curse { color: #b085d6; }
+.pouch .tally .frost { color: #9aa4c8; } .pouch .tally .blood { color: #d0524e; }
+.microplate { display: flex; gap: 4px; align-items: center; padding: 3px 6px; border-radius: 100vw;
+  background: var(--plate-bg); border: 1px solid var(--plate-edge); box-shadow: var(--plate-shadow); }
+.microplate .p { display: flex; align-items: center; gap: 3px; }
+.microplate img { width: 18px; } .microplate .num { font-size: 13px; }
+
+/* ---------- 8 · Idle ghost ---------- */
+.ghost { position: absolute; right: 8px; bottom: 8px; display: flex; align-items: center; gap: 7px;
+  padding: 3px 9px; border-radius: 100vw; background: rgba(14,17,24,.7);
+  border: 1px solid rgba(255,255,255,.08); opacity: .38; transition: opacity .2s ease; }
+.ghost:hover { opacity: 1; }
+.ghost .m { display: flex; align-items: center; gap: 3px; }
+.ghost img { width: 15px; } .ghost .num { font-size: 12px; }
+.ghost .m.pulse { animation: ghostpulse 2.4s ease-in-out infinite; }
+@keyframes ghostpulse { 0%,70%,100% { filter: none; } 82% { filter: drop-shadow(0 0 5px var(--teal)) brightness(1.3); } }
+
+/* ---------- 9 · Band inline ---------- */
+.bandinline { display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 8px;
+  background: var(--plate-bg); border: 1px solid var(--plate-edge); box-shadow: var(--plate-shadow);
+  align-self: center; }
+.bandinline .m { display: flex; align-items: center; gap: 4px; }
+.bandinline img { width: 20px; } .bandinline .num { font-size: 14px; }
+
+/* ---------- 10 · Hex comb ---------- */
+.comb { display: flex; flex-direction: column; padding: 6px 5px 7px; }
+.comb .r { display: flex; }
+.comb .r + .r { margin-top: -6px; }
+.comb .r.off { margin-left: 13px; }
+.comb .stamped { --shell-token: 26px; margin-left: -3px; }
+.comb .stamped:first-child { margin-left: 0; }
+</style>
+
+<h1>#totals — ten placements</h1>
+<p class="sub">All ten inherit the <b>Flush Plate</b> surface (slate gradient, hairline edge, hairline group rule) — now promoted to <code>--plate-bg / --plate-edge / --plate-shadow / --plate-rule</code>. Each is shown inside a reduced but faithful <code>Scenario.vue</code> shell: the <code>.scenario-cards</code> band with encounter decks + agenda/act + guide card, the board, <code>#player-zone</code>, and the <code>.phases</code> rail. The dashed teal ring marks the proposal. Badge on the right of each header is the footprint it costs the board.</p>
+
+<div class="controls">
+  <div class="grp"><b>Tokens</b>
+    <label><input type="radio" name="state" value="min"> doom + clues only</label>
+    <label><input type="radio" name="state" value="full" checked> full bag</label>
+  </div>
+  <div class="grp"><b>Layout</b>
+    <label><input type="checkbox" id="solo"> one per row</label>
+  </div>
+  <div class="grp"><b>Note</b> <span style="color:#6f7b90">hover 4, 5, 8 — they animate</span></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const IMG = {
+  doom:  'img/arkham/tokens/doom.png',
+  clue:  'img/arkham/tokens/clue.png',
+  bless: 'img/arkham/chaos-tokens/ct-bless.png',
+  curse: 'img/arkham/chaos-tokens/ct-curse.png',
+  frost: 'img/arkham/chaos-tokens/ct-frost.png',
+  blood: 'img/arkham/chaos-tokens/ct-blood.png',
+}
+const N = { doom: 4, clue: 7, bless: 3, curse: 2, frost: 1, blood: 2 }
+const LBL = { doom: 'Doom', clue: 'Clues', bless: 'Bless', curse: 'Curse', frost: 'Frost', blood: 'Blood' }
+const GLYPH = { doom: null, clue: null, bless: '', curse: '', frost: 'b', blood: '' }
+const SCEN = ['doom','clue'], BAG = ['bless','curse','frost','blood']
+
+const tok = k => `<img class="tok" src="${IMG[k]}" title="${LBL[k]}">`
+const stamped = k => `<div class="stamped" title="${LBL[k]}"><img src="${IMG[k]}"><span>${N[k]}</span></div>`
+const pair = (k, cls='') => `<span class="m ${cls}"><img src="${IMG[k]}" title="${LBL[k]}"><span class="num">${N[k]}</span></span>`
+
+/* ---- the shell ---- */
+function shell(s = {}) {
+  const loc = c => `<img class="loc" src="img/arkham/cards/${c}.avif">`
+  return `<div class="shell">
+    <div class="body">
+      <div class="band">
+        <div class="grp">
+          <div class="col">
+            <img class="cardimg" src="img/arkham/backs/back_encounter.jpg">
+          </div>
+          <div class="col">
+            <img class="cardimg" src="img/arkham/backs/back_player.jpg">
+          </div>
+        </div>
+        ${s.bandLeftExtra || ''}
+        <div class="col" style="position:relative">
+          <div style="position:relative"><img class="cardimg wide" src="img/arkham/cards/01105.avif">${s.agenda || ''}</div>
+          <div style="position:relative"><img class="cardimg wide" src="img/arkham/cards/01108.avif">${s.act || ''}</div>
+          ${s.underDecks || ''}
+        </div>
+        <div class="col"><img class="cardimg" src="img/arkham/cards/01111.avif"></div>
+        ${s.bandRight || ''}
+      </div>
+      <div class="board">
+        <div class="locs">
+          ${loc('01112')}${loc('01113')}${loc('01114')}${loc('01115')}${loc('01116')}${loc('01117')}
+        </div>
+        ${s.board || ''}
+      </div>
+      <div class="pzone">
+        <div class="pinfo">
+          <div class="tabs"><div class="tab on"></div><div class="tab"></div><div class="tab"></div><div class="grow"></div>${s.tabsRight || ''}</div>
+          <div class="hand">${'<div class="c"></div>'.repeat(9)}</div>
+        </div>
+        ${s.zone || ''}
+      </div>
+      ${s.bodyOverlay || ''}
+    </div>
+    <div class="rail">
+      ${s.railTop || ''}
+      ${['Mythos','Investigation','Enemy','Upkeep'].map((p,i) => `
+        <div class="ph ${i===1?'on':''}">
+          <div class="steps">${'<i></i>'.repeat(5)}</div>
+          <div class="nm">${p}</div>
+        </div>`).join('')}
+    </div>
+  </div>`
+}
+
+/* ---- the ten ---- */
+const MOCKS = [
+{
+  n: '1 · Anchored to the source', cost: '0 px added',
+  d: 'Doom rides the agenda it accumulates on; clues ride the act they are spent into. The bag counts tuck under the pair as one thin row. Nothing new is docked anywhere — the numbers move to the cards they already describe.',
+  build: keys => shell({
+    agenda: `<div class="anchor-pip hl" style="right:3px;bottom:3px">${tokpip('doom')}</div>`,
+    act:    `<div class="anchor-pip hl" style="right:3px;bottom:3px">${tokpip('clue')}</div>`,
+    underDecks: keys.some(k=>BAG.includes(k))
+      ? `<div class="bagrow hl" style="align-self:center;margin-top:1px">${BAG.filter(k=>keys.includes(k)).map(k=>`<span class="m"><img src="${IMG[k]}"><span class="num">${N[k]}</span></span>`).join('')}</div>` : ''
+  })
+},
+{
+  n: '2 · Threshold tracks', cost: '0 px added',
+  d: 'Same anchoring, but the number becomes progress. Doom fills toward the agenda\'s threshold, clues fill toward what the act needs — so a glance answers "how close are we?", which the raw count never did. Bag counts as pips on the act track.',
+  build: keys => shell({
+    agenda: `<div class="track doom hl"><div class="fill" style="width:57%"></div>
+       <div class="lbl"><img src="${IMG.doom}"><span class="num">4/7</span></div></div>`,
+    act: `<div class="track clue hl"><div class="fill" style="width:78%"></div>
+       <div class="lbl"><img src="${IMG.clue}"><span class="num">7/9</span></div>
+       ${keys.some(k=>BAG.includes(k)) ? `<div class="pips">${BAG.filter(k=>keys.includes(k)).map(k=>`<i class="f" style="background:${{bless:'#e2c25c',curse:'#b085d6',frost:'#9aa4c8',blood:'#d0524e'}[k]}"></i>`).join('')}</div>` : ''}
+     </div>`
+  })
+},
+{
+  n: '3 · Rail cap', cost: '0 px added',
+  d: 'Caps the <code>.phases</code> rail, which already owns that column full-height and never fills it. The board and the player zone are both untouched. Loses the token art to 15px, so it leans on colour and the count.',
+  build: keys => shell({
+    railTop: `<div class="railcap hl">
+      ${SCEN.filter(k=>keys.includes(k)).map(k=>`<div class="p"><img src="${IMG[k]}"><span class="num">${N[k]}</span></div>`).join('')}
+      ${keys.some(k=>BAG.includes(k)) ? '<hr class="rule">' : ''}
+      ${BAG.filter(k=>keys.includes(k)).map(k=>`<div class="p"><img src="${IMG[k]}"><span class="num">${N[k]}</span></div>`).join('')}
+    </div>`
+  })
+},
+{
+  n: '4 · Edge peek', cost: '13 px',
+  d: 'A 13px sliver welded to the screen edge — the tokens are clipped in half so only their coloured rims show. <b>Hover it</b> and the plate slides out whole. Costs a third of the current column and still shows every value at rest.',
+  build: keys => shell({
+    bodyOverlay: `<div class="peek hl">
+      <div class="inner">${keys.map(k=>`<div class="p"><span class="num">${N[k]}</span><img src="${IMG[k]}"></div>`).join('')}</div>
+    </div>`
+  })
+},
+{
+  n: '5 · Coin stack', cost: '~40% of current height',
+  d: 'The tokens are discs, so overlap them like a chip stack: six occupy the height of two and a half. Counts sit on the exposed lower-right crescent. <b>Hover</b> to fan the stack apart.',
+  build: keys => shell({
+    zone: `<div class="coins hl">${keys.map(k=>`<div class="c"><img src="${IMG[k]}" title="${LBL[k]}"><b>${N[k]}</b></div>`).join('')}</div>`
+  })
+},
+{
+  n: '6 · Glyph readout', cost: 'smallest of the ten',
+  d: 'Drops the art entirely for the game\'s own icon font (real <code>bless/curse/frost/blood</code> glyphs from <code>icons.css</code>) and tabular numerals, colour-coded. One 20px-tall line. Denser than anything else here, at the cost of the token art players recognise instantly.',
+  build: keys => shell({
+    bandRight: `<div class="bandinline hl" style="margin-left:auto"><div class="readout" style="border:0;background:none;padding:0">
+      ${keys.map(k => GLYPH[k]
+        ? `<span class="m" title="${LBL[k]}"><span class="g ${k}">${GLYPH[k]}</span>${N[k]}</span>`
+        : `<span class="m" title="${LBL[k]}"><img class="g" src="${IMG[k]}">${N[k]}</span>`).join('')}
+    </div></div>`
+  })
+},
+{
+  n: '7 · Split by ownership', cost: '~2 rows',
+  d: 'Bless/curse/frost/blood are not scenario totals — they are the contents of the chaos bag, which today has no persistent affordance at all (only a menu item). They collapse into a pouch button that opens the bag; doom and clues stay behind as a two-pip micro plate.',
+  build: keys => shell({
+    tabsRight: keys.some(k=>BAG.includes(k))
+      ? `<div class="pouch hl" title="Open the chaos bag">
+          <div class="fan"><img src="${IMG.bless}"><img src="${IMG.curse}"><img src="${IMG.frost}"></div>
+          <div class="tally">${BAG.filter(k=>keys.includes(k)).map(k=>`<span class="${k}" title="${LBL[k]}">${N[k]}</span>`).join('')}</div>
+        </div>` : '',
+    zone: `<div style="display:flex;align-items:flex-end;padding:0 7px 8px">
+        <div class="microplate hl">${SCEN.filter(k=>keys.includes(k)).map(k=>`<span class="p"><img src="${IMG[k]}"><span class="num">${N[k]}</span></span>`).join('')}</div>
+      </div>`
+  })
+},
+{
+  n: '8 · Idle ghost', cost: '0 px (overlay)',
+  d: 'Floats over the board at 38% opacity and costs no layout at all. It brightens on hover, and a value that just changed pulses (watch doom). Reference information you look at deliberately, not chrome you stare through.',
+  build: keys => shell({
+    board: `<div class="ghost hl">${keys.map((k,i)=>`<span class="m ${i===0?'pulse':''}" title="${LBL[k]}"><img src="${IMG[k]}"><span class="num">${N[k]}</span></span>`).join('')}</div>`
+  })
+},
+{
+  n: '9 · Band inline', cost: '0 px added',
+  d: 'Moves up into the <code>.scenario-cards</code> band, which is centred and has dead width on both flanks. Horizontal, so the bag can grow with homebrew tokens without ever getting taller. The bottom bar reclaims its full height.',
+  build: keys => shell({
+    bandLeftExtra: `<div class="bandinline hl">
+      ${SCEN.filter(k=>keys.includes(k)).map(k=>pair(k)).join('')}
+      ${keys.some(k=>BAG.includes(k)) ? '<span class="vrule"></span>' : ''}
+      ${BAG.filter(k=>keys.includes(k)).map(k=>pair(k)).join('')}
+    </div>`
+  })
+},
+{
+  n: '10 · Hex comb', cost: '~55% of current height',
+  d: 'Keeps the plate exactly where it is and just packs it better: circles tessellate, so offset rows nest six tokens into the height of about three and a half. Same art, same counts, no new interaction to learn.',
+  build: keys => {
+    const rows = []
+    for (let i = 0; i < keys.length; i += 2) rows.push(keys.slice(i, i + 2))
+    return shell({
+      zone: `<div class="comb plate hl" style="align-self:flex-end;border-radius:10px 0 0 0;border-right:0;border-bottom:0">
+        ${rows.map((r,i)=>`<div class="r ${i%2?'off':''}">${r.map(stamped).join('')}</div>`).join('')}
+      </div>`
+    })
+  }
+},
+]
+
+function tokpip(k) { return `<img src="${IMG[k]}" title="${LBL[k]}"><span class="num">${N[k]}</span>` }
+
+function draw() {
+  const full = document.querySelector('input[name=state]:checked').value === 'full'
+  const keys = full ? [...SCEN, ...BAG] : SCEN
+  document.getElementById('grid').innerHTML = MOCKS.map(m => `
+    <div class="mock">
+      <header><span class="cost">${m.cost}</span><span class="n">${m.n}</span><span class="d">${m.d}</span></header>
+      ${m.build(keys)}
+    </div>`).join('')
+}
+document.querySelectorAll('input[name=state]').forEach(el => el.addEventListener('change', draw))
+document.getElementById('solo').addEventListener('change', e =>
+  document.getElementById('grid').classList.toggle('solo', e.target.checked))
+draw()
+</script>

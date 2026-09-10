@@ -5,13 +5,16 @@ import Arkham.ChaosToken
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Direction (Direction (..))
+import Arkham.Enemy.Types (Field (EnemyPlacement))
 import Arkham.Helpers.Campaign (getCompletedSteps, getOwner)
 import Arkham.Helpers.CustomChaosBag
+import Arkham.Helpers.FlavorText (chaosTokenImg, cols, compose, img, p, setTitle, tokenReveal)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Scenario (scenarioField, setScenarioMeta)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.CircusExMortis.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.I18n
 import Arkham.Id
@@ -21,6 +24,7 @@ import Arkham.Matcher
 import Arkham.Message (ShuffleIn (..))
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement (Placement (InPosition))
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (ScenarioMeta))
@@ -274,6 +278,12 @@ furyDirectionPos = \case
   FuryWest -> Pos (-1) 0
   FuryEast -> Pos 1 0
 
+-- | Fury directions are relative to each Dark Young, not the map's center.
+furyAttackPosition :: Pos -> FuryDirection -> Pos
+furyAttackPosition (Pos x y) direction =
+  let Pos dx dy = furyDirectionPos direction
+   in Pos (x + dx) (y + dy)
+
 -- | Grid position one step further out, where Camp Outskirts is placed.
 furyDirectionOutwardPos :: FuryDirection -> Pos
 furyDirectionOutwardPos = \case
@@ -327,16 +337,41 @@ revealFuryToken source = do
   bag <- getFuryBag
   (faces, drawnBag) <- drawFuryBagTokens bag 1
   setFuryBag $ returnSetAsideTokens drawnBag
-  for_ (mapMaybe furyDirection faces) \direction -> do
-    darkYoung <- select $ EnemyWithTitle "Towering Dark Young"
-    locations <- furyDirectionLocations direction
-    for_ locations \lid -> do
-      investigators <- select $ InvestigatorAt (LocationWithId lid)
-      -- One real single-target attack per pair: the Towering Dark Young
-      -- reactions hang off EnemyWouldAttack and Cautious Jailers off
-      -- EnemyAttacksEvenIfCancelled, and both noMatch on massive multi-target
-      -- attacks.
-      for_ darkYoung \eid -> for_ investigators $ initiateEnemyAttack eid source
+  for_ faces \face -> scenarioI18n "harmsWay" $ scope "furyReveal" do
+    case furyDirection face of
+      Nothing -> storyWithContinue $ tokenReveal do
+        setTitle "title"
+        cols do
+          img Stories.theDarkYoungStir
+          compose do
+            chaosTokenImg face
+            p "moon"
+      Just direction -> do
+        darkYoung <- select $ EnemyWithTitle "Towering Dark Young"
+        storyWithContinue $ tokenReveal do
+          setTitle "title"
+          cols do
+            img Stories.theDarkYoungStir
+            compose do
+              chaosTokenImg face
+              p $ case direction of
+                FuryNorth -> "north"
+                FurySouth -> "south"
+                FuryWest -> "west"
+                FuryEast -> "east"
+        -- Preserve single-target attacks so enemy attack reactions still match.
+        for_ darkYoung \eid -> do
+          placement <- field EnemyPlacement eid
+          case placement of
+            InPosition pos -> do
+              let targetPos = furyAttackPosition pos direction
+              -- Outskirts also counts as the Camp location on its side of the map.
+              locations <- case find ((== targetPos) . furyDirectionPos) [FuryNorth, FurySouth, FuryWest, FuryEast] of
+                Just side -> furyDirectionLocations side
+                Nothing -> select $ LocationInPosition targetPos
+              investigators <- concatMapM (select . InvestigatorAt . LocationWithId) locations
+              for_ investigators $ initiateEnemyAttack eid source
+            _ -> pure ()
 
 {- | Act 1's back reads the same direction table for a different purpose: a ☾ is
 ignored and another token drawn (no recursion), and nothing attacks. Persist the

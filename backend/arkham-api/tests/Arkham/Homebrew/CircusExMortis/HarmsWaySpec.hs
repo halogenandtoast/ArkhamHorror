@@ -2,12 +2,21 @@ module Arkham.Homebrew.CircusExMortis.HarmsWaySpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Story
+import Arkham.Homebrew.CircusExMortis.Helpers (FuryDirection (..), furyAttackPosition)
+import Arkham.Location.Grid (Pos (..))
 import Arkham.Projection (field)
 import Data.Text qualified as T
 import TestImport
 
 spec :: Spec
-spec = describe "Harm's Way opening story cards" do
+spec = describe "Harm's Way" do
+  it "resolves fury directions relative to each Dark Young" do
+    furyAttackPosition (Pos 1 1) FuryWest `shouldBe` Pos 0 1
+    furyAttackPosition (Pos (-1) 1) FuryEast `shouldBe` Pos 0 1
+    furyAttackPosition (Pos 1 (-1)) FuryNorth `shouldBe` Pos 1 0
+    furyAttackPosition (Pos 1 1) FurySouth `shouldBe` Pos 1 0
+    furyAttackPosition (Pos (-1) 1) FuryWest `shouldBe` Pos (-2) 1
+
   it "reserves both earned cards before opening hands and adds them after the mulligan"
     . scenarioTest ":circus-ex-mortis:040"
     $ \self -> do

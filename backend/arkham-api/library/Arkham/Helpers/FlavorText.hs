@@ -52,6 +52,13 @@ resolutionFlavor builder = story do
         , flavorBody = [ModifyEntry [ResolutionEntry] $ CompositeEntry flavorBody]
         }
 
+-- | A token-result panel using the Predation layout without haunted effects.
+tokenReveal :: FlavorTextBuilder () -> FlavorTextBuilder ()
+tokenReveal builder = do
+  let FlavorText title body = buildFlavor builder
+  modify \s -> s {flavorTitle = title}
+  addEntry $ ModifyEntry [TokenRevealEntry] $ CompositeEntry body
+
 hauntedFlavor :: (HasI18n, ReverseQueue m) => (HasI18n => FlavorTextBuilder ()) -> m ()
 hauntedFlavor builder = story do
   case buildFlavor builder of

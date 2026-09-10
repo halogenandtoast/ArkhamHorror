@@ -5,6 +5,7 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
+import Arkham.Window qualified as Window
 
 newtype ToweringDarkYoung_066 = ToweringDarkYoung_066 EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -24,6 +25,16 @@ instance HasAbilities ToweringDarkYoung_066 where
 instance RunMessage ToweringDarkYoung_066 where
   runMessage msg e@(ToweringDarkYoung_066 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      -- Keep the attack behind this test, including when it interrupts another test.
+      let isAttackWindow = \case
+            Window.EnemyAttacksEvenIfCancelled details -> details.enemy == attrs.id
+            _ -> False
+      moveWithSkillTest \case
+        PerformEnemyAttack eid -> eid == attrs.id
+        After (PerformEnemyAttack eid) -> eid == attrs.id
+        CheckWindows ws -> any (isAttackWindow . Window.windowType) ws
+        Do (CheckWindows ws) -> any (isAttackWindow . Window.windowType) ws
+        _ -> False
       sid <- getRandom
       beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 0)
       pure e

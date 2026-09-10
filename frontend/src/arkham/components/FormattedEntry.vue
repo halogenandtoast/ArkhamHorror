@@ -53,6 +53,7 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
     case 'CheckpointEntry': return 'checkpoint'
     case 'InterludeEntry': return 'interlude'
     case 'HauntedEntry': return 'haunted'
+    case 'TokenRevealEntry': return 'token-reveal'
     case 'RightAligned': return 'right'
     case 'CenteredEntry': return 'center'
     case 'NoUnderline': return 'no-underline'
@@ -804,6 +805,23 @@ ul, :deep(ul) {
 
     .composite::after {
       border-left-color: rgba(131, 137, 56, 0.3) !important;
+    }
+  }
+}
+
+/* Share the token-result layout, not Predation's haunted color theme. */
+.token-reveal, :deep(.token-reveal) {
+  .columns, :deep(.columns) {
+    justify-content: space-evenly;
+    gap: 0;
+
+    > * {
+      flex: 0 1 auto;
+      padding: 10px 8px;
+    }
+
+    .composite:has(.chaos-token), :deep(.composite:has(.chaos-token)) {
+      gap: 56px;
     }
   }
 }

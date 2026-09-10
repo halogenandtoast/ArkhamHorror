@@ -279,7 +279,7 @@ const tokenEffects = computed(() => {
       // so far) get the key back from `t`; showing it would leak the raw path.
       const text = t(key)
       if (text === key) return []
-      return [`<img src='${chaosTokenImage(face)}' /><span>` + formatContent(text) + `</span>`]
+      return [{ face, image: chaosTokenImage(face), html: formatContent(text) }]
     })
 })
 
@@ -418,7 +418,10 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
         <Token v-for="focusedToken in focusedChaosTokens" :key="focusedToken.id" :token="focusedToken" :playerId="playerId" :game="game" @choose="choose" />
       </div>
       <div v-if="tokenEffects.length > 0" class="token-effects">
-        <div class="token-effect" v-for="effect in tokenEffects" :key="effect" v-html="effect"></div>
+        <div class="token-effect" v-for="effect in tokenEffects" :key="effect.face">
+          <div class="token-effect__token"><img :src="effect.image" /></div>
+          <div class="token-effect__text"><span v-html="effect.html"></span></div>
+        </div>
       </div>
       <div v-if="debug.active && skillTest.result?.tag == 'Unrun' && !['SkillTestFastWindow1', 'SkillTestFastWindow2'].includes(skillTest.step)">
         <button @click="debug.send(game.id, {tag: 'SkillTestMessage', contents: {tag: 'PassSkillTest_'}})">{{ $t('skillTestActions.passSkillTest') }}</button>
@@ -574,6 +577,7 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
 
   .question-choices, :deep(.question-choices) {
     gap: 0px;
+    padding: 0;
   }
 }
 
@@ -1032,17 +1036,44 @@ i.iconSkillAgility {
 }
 
 .token-effect {
-  background: transparent;
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  align-items: stretch;
+  background: rgba(10, 11, 15, 0.66);
+
+  & + .token-effect {
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+}
+
+.token-effect__token {
+  display: grid;
+  place-items: center;
+  padding: 8px 0;
+  background: rgba(0, 0, 0, 0.42);
+  border-right: 1px solid rgba(255, 255, 255, 0.09);
+
+  img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.token-effect__text {
   display: flex;
-  gap: 10px;
-  padding: 10px;
-  align-items: start;
-  color: var(--title);
-  justify-content: start;
+  align-items: center;
+  padding: 9px 14px;
   text-align: left;
+  color: #dbe0e7;
+  font-family: 'Noto Sans', Avenir, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+
   :deep(img) {
-    width: 25px;
-    flex-shrink: 0;
+    height: 1.1em;
+    vertical-align: -0.15em;
   }
 }
 

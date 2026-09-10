@@ -1,5 +1,19 @@
 {
   "harmsWay": {
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X, where X is half the number of Bystander cards in the victory display, rounded up.",
+        "cultist": "-3. If you have not moved this round, choose one: discard 1 card from your hand, or lose 1 resource.",
+        "tablet": "-3. If you have moved this round, choose one: discard 1 card from your hand, or lose 1 resource.",
+        "elderThing": "-2. If this test is failed, reveal a fury token."
+      },
+      "hardExpert": {
+        "skull": "-X, where X is 1 more than half the number of Bystander cards in the victory display, rounded up.",
+        "cultist": "-4. If you have not moved this round, choose one: discard 1 card from your hand, or lose 1 resource.",
+        "tablet": "-4. If you have moved this round, choose one: discard 1 card from your hand, or lose 1 resource.",
+        "elderThing": "-4. If this test is failed, reveal a fury token."
+      }
+    },
     "intro": {
       "title": "Scenario III: Harm's Way",
       "body": "<p>When you slip back out of the ringmaster's trailer, ghastly growls and other less identifiable sounds rumble through the camp. You nearly flinch as a shadow sweeps across the moon, which leads your view to a worse spectacle. Four massive figures tower above the camp, large enough to be oak trees &mdash; and indeed resembling them in silhouette &mdash; but far more horrible. Like the smaller abominations you encountered in the woods, these things are a horrid jumble of tentacles, mouths, hooves, and horns. They writhe and roar dully with sluggish movements. Perhaps these monsters are rousing from sleep, which lends a little more urgency to the mission. Thea holds a hand over her mouth in shock, but soon lowers it with a shudder. Whether or not she's seen them in her visions before, this appears to be the first time in person. It goes without saying that you must plan how to proceed in finding and rescuing the captives.</p><ul><li>The investigators must decide (choose one):<ul><li>“The faster we get them out of here, the better.” Add a {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.</li><li>“Caution first. Saving them won’t help otherwise.” Add a {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</li></ul></li></ul>",

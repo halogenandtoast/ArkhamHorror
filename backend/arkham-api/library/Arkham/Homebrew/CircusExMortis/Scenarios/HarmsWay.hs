@@ -109,6 +109,27 @@ instance RunMessage HarmsWay where
                 labeled "leave" nothing
       pure s
     Setup -> runScenarioSetup HarmsWay attrs do
+      bypassedIllusions <- getHasRecord TheInvestigatorsBypassedTheIllusions
+      eyeOnYou <- getHasRecord TheRingmasterHasHisEyeOnYou
+
+      setup $ ul do
+        li "gatherSets"
+        li.nested "placeLocations" do
+          li "startAt"
+        li "toweringDarkYoung"
+        li "furyBag"
+        li "darkYoungStir"
+        li "kidnappedCitizens"
+        li.nested "checkCampaignLogIllusions" do
+          li.validate bypassedIllusions "bypassedTheIllusions"
+          li.validate (not bypassedIllusions) "lostInTheArkhamWoods"
+        li.nested "checkCampaignLogAct" do
+          li.validate eyeOnYou "eyeOnYou"
+          li.validate (not eyeOnYou) "doesNotSuspectYou"
+        li "setAside"
+        li "startingCards"
+        unscoped $ li "shuffleRemainder"
+
       gather Set.HarmsWay
       gather Set.CultOfShubNiggurath
       gather Set.LunaticNight
@@ -146,14 +167,13 @@ instance RunMessage HarmsWay where
         push $ StoryMessage $ PlaceStory card (AtLocation lid)
 
       -- "Place 2 doom on agenda 1a. This doom ignores the forced effect."
-      whenM (getHasRecord TheInvestigatorsBypassedTheIllusions) do
+      when bypassedIllusions do
         scenarioSetupModifier
           attrs.id
           attrs
           (AgendaId $ toCardCode Agendas.theCircusSleeps)
           (EntersPlayWithDoom 2)
 
-      eyeOnYou <- getHasRecord TheRingmasterHasHisEyeOnYou
       let (act1, unusedAct1) =
             if eyeOnYou then (Acts.escapeActVI, Acts.escapeActVII) else (Acts.escapeActVII, Acts.escapeActVI)
       removeEvery [unusedAct1]

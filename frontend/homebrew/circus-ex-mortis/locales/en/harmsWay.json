@@ -8,6 +8,23 @@
         "caution": "“Caution first. Saving them won’t help otherwise.”"
       }
     },
+    "setup": {
+      "gatherSets": "Gather all cards from the <i>Harm's Way</i>, <i>Cult of Shub-Niggurath</i>, <i>Lunatic Night</i>, <i>New Moon Entertainers</i>, and <i>Panicked Masses</i> encounter sets. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/circus-ex-mortis/sets/040.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/cult-of-shub-niggurath.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/lunatic-night.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/new-moon-entertainers.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/panicked-masses.png' /></section>",
+      "placeLocations": "Randomly choose two of the four copies of Crowded Row and Secluded Tent and remove them from the game. Put the remaining copies into play along with the Ringmaster's Trailer location.",
+      "startAt": "Each investigator begins play at Ringmaster's Trailer.",
+      "toweringDarkYoung": "Randomly choose one of the five copies of Towering Dark Young and remove it from the game. Put the remaining four copies into play at each corner of the map, not at any location.",
+      "furyBag": "Create a separate bag consisting of a {cultist}, {tablet}, {skull}, and {elderThing} token. This is the fury bag, and these are fury tokens. They are not chaos tokens. This bag will be used during the scenario by other cards.",
+      "darkYoungStir": "Put the Dark Young Stir... story card into play next to the fury bag.",
+      "kidnappedCitizens": "Randomly choose two of the six copies of Kidnapped Citizen and remove them from the game. Put the remaining four copies into play at different copies of Crowded Row and Secluded Tent.",
+      "checkCampaignLogIllusions": "Check the Campaign Log:",
+      "bypassedTheIllusions": "If <i>the investigators bypassed the illusions</i>, the ringmaster will notice your earlier meddling and be back sooner. Place 2 doom on agenda 1a. This doom ignores the forced effect.",
+      "lostInTheArkhamWoods": "If <i>the investigators were lost in the Arkham woods</i>, the illusory wards are still in place. No changes are made.",
+      "checkCampaignLogAct": "Check the Campaign Log:",
+      "eyeOnYou": "If <i>the ringmaster has his eye on you</i>, for this scenario, use “Act 1 &ndash; Escape Act (v.I).” Remove the other copy of act 1 from the game.",
+      "doesNotSuspectYou": "If <i>the ringmaster does not suspect you</i>, for this scenario, use “Act 1 &ndash; Escape Act (v.II).” Remove the other copy of act 1 from the game.",
+      "setAside": "Set each copy of Camp Outskirts aside, out of play.",
+      "startingCards": "The investigators with Amalthea Weaver and De Cultus Bestiae in their decks may begin the game with those cards in their opening hands as additional cards."
+    },
     "startingCards": {
       "instructions": "The investigators with Amalthea Weaver and De Cultus Bestiae in their decks may begin the game with those cards in their opening hands as additional cards.",
       "label": {

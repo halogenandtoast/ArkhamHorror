@@ -1,13 +1,13 @@
 module Arkham.Homebrew.CircusExMortis.Treacheries.MoonlightIllusion (moonlightIllusion) where
 
+import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers (getSealedMoonTokens)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose (chooseTargetM, chooseRevelationSkillTest)
+import Arkham.Message.Lifted.Choose (chooseRevelationSkillTest, chooseTargetM)
 import Arkham.Message.Lifted.Move (moveTo)
 import Arkham.Projection
 import Arkham.Trait (Trait (Woods))
-import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype MoonlightIllusion = MoonlightIllusion TreacheryAttrs
@@ -29,7 +29,11 @@ instance RunMessage MoonlightIllusion where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       clues <- field InvestigatorClues iid
       when (clues > 0) $ placeCluesOnLocation iid attrs 1
-      woods <- select (connectedTo (locationWithInvestigator iid) <> LocationWithTrait Woods)
+      woods <-
+        select
+          $ connectedTo (locationWithInvestigator iid)
+          <> LocationWithTrait Woods
+          <> canEnterLocation iid
       when (notNull woods) $ chooseTargetM iid woods \lid -> moveTo attrs iid lid
       pure t
     _ -> MoonlightIllusion <$> liftRunMessage msg attrs

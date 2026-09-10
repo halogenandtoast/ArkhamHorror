@@ -4,7 +4,7 @@ module Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestShadowedPath (
 
 import Arkham.Ability
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
-import Arkham.Homebrew.CircusExMortis.Helpers (getSealedMoonTokens)
+import Arkham.Homebrew.CircusExMortis.Helpers (campaignI18n, hasSealedMoonToken)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -22,22 +22,26 @@ moonlitForestShadowedPath =
 
 instance HasAbilities MoonlitForestShadowedPath where
   getAbilities (MoonlitForestShadowedPath a) =
-    -- "This location and each adjacent copy of Moonlit Forest gain 'Forced - After you end
-    -- your turn at this location, if there are no moon tokens sealed on your investigator
-    -- card: Take 1 horror.'" Modeled as one forced ability whose window covers ending your
-    -- turn at Shadowed Path or an adjacent Moonlit Forest.
+    -- The ability is proxied onto the adjacent forests, where nothing else names its
+    -- origin, so the tooltip says which location granted it.
     extendRevealed1 a
+      $ campaignI18n
+      $ withI18nTooltip "moonlitForestShadowedPath"
       $ restricted
-        a
+        ( proxied
+            ( LocationMatcherSource
+                $ oneOf [be a, LocationWithTitle "Moonlit Forest" <> connectedTo (be a)]
+            )
+            a
+        )
         1
-        (youExist $ at_ (oneOf [be a, LocationWithTitle "Moonlit Forest" <> connectedTo (be a)]))
+        (Here <> youExist (not_ hasSealedMoonToken))
       $ forced
       $ TurnEnds #after You
 
 instance RunMessage MoonlitForestShadowedPath where
   runMessage msg l@(MoonlitForestShadowedPath attrs) = runQueueT $ case msg of
-    UseThisAbility iid (isSource attrs -> True) 1 -> do
-      moons <- getSealedMoonTokens iid
-      when (null moons) $ assignHorror iid (attrs.ability 1) 1
+    UseThisAbility iid (isProxySource attrs -> True) 1 -> do
+      assignHorror iid (attrs.ability 1) 1
       pure l
     _ -> MoonlitForestShadowedPath <$> liftRunMessage msg attrs

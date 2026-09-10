@@ -76,6 +76,9 @@
       "doneReleasingMoonTokens": "Done releasing moon tokens"
     }
   },
+  "tooltips": {
+    "moonlitForestShadowedPath": "Moonlit Forest (Shadowed Path): take 1 horror unless you have a {'{'}moon{'}'} token sealed on your investigator card."
+  },
   "theBigTopThirdRing": {
     "label": {
       "takeMove": "Immediately take a move action",

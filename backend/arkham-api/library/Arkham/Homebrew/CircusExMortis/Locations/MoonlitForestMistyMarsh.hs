@@ -1,6 +1,8 @@
 module Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestMistyMarsh (moonlitForestMistyMarsh) where
 
 import Arkham.Ability
+import Arkham.Act.Types (Field (..))
+import Arkham.Card
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelf)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
@@ -8,6 +10,7 @@ import Arkham.Homebrew.CircusExMortis.Helpers (moonToken)
 import Arkham.Location.Import.Lifted
 import Arkham.LocationSymbol (LocationSymbol (Moon))
 import Arkham.Matcher
+import Arkham.Projection
 
 newtype MoonlitForestMistyMarsh = MoonlitForestMistyMarsh LocationAttrs
   deriving anyclass IsLocation
@@ -30,10 +33,12 @@ instance HasModifiersFor MoonlitForestMistyMarsh where
 
     investigators <- select $ InvestigatorAt (be a)
     unless (null investigators) do
-      abilities <- select $ AbilityOnCard (cardIs Acts.forestOfIllusion) <> AbilityWithIndex 1
+      -- Acts have no card behind their Source, so AbilityOnCard cannot see them; build the
+      -- ability ref from the act id instead.
+      acts <- filterM (fieldMap ActCard (`cardMatch` cardIs Acts.forestOfIllusion)) =<< select AnyAct
       modifyEach
         a
-        [AbilityTarget iid ab.ref | iid <- investigators, ab <- abilities]
+        [AbilityTarget iid (AbilityRef (ActSource aid) 1) | iid <- investigators, aid <- acts]
         [AdditionalCost $ SealOnInvestigatorCost moonToken]
 
 instance RunMessage MoonlitForestMistyMarsh where

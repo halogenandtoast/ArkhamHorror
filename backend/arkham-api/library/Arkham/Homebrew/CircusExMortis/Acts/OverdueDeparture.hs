@@ -24,12 +24,7 @@ instance HasAbilities OverdueDeparture where
           , EnemyDefeated #after You ByAny (EnemyWasAt campOutskirts)
           ]
     , onlyOnce
-        $ restricted
-          a
-          2
-          ( EachUndefeatedInvestigator (at_ campOutskirts)
-              <> notExists (campOutskirts <> LocationWithAnyClues)
-          )
+        $ restricted a 2 (EachUndefeatedInvestigator $ at_ $ campOutskirts <> LocationWithoutClues)
         $ Objective
         $ forced AnyWindow
     ]

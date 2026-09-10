@@ -377,18 +377,20 @@ revealFuryToken source = do
 ignored and another token drawn (no recursion), and nothing attacks. Persist the
 consumed debug override here too, even though all drawn tokens return to the bag.
 -}
-drawFuryTokenForDirection :: ReverseQueue m => m (Maybe FuryDirection)
-drawFuryTokenForDirection = go =<< getFuryBag
+drawFuryTokenForDirection :: ReverseQueue m => (ChaosTokenFace -> m ()) -> m (Maybe FuryDirection)
+drawFuryTokenForDirection onReveal = go =<< getFuryBag
  where
   go bag = do
     (drawn, bag') <- drawBagToken (.face) bag
     case drawn of
       Nothing -> setFuryBag (returnSetAsideTokens bag') $> Nothing
-      Just token -> case furyDirection token.face of
-        Just direction -> do
-          setFuryBag $ returnSetAsideTokens $ returnBagToken bag'
-          pure $ Just direction
-        Nothing -> go $ setAsideBagToken bag'
+      Just token -> do
+        onReveal token.face
+        case furyDirection token.face of
+          Just direction -> do
+            setFuryBag $ returnSetAsideTokens $ returnBagToken bag'
+            pure $ Just direction
+          Nothing -> go $ setAsideBagToken bag'
 
 -- * The Primrose Path
 

@@ -14,6 +14,14 @@
         "elderThing": "-4. If this test is failed, reveal a fury token."
       }
     },
+    "escapeActFuryReveal": {
+      "title": "Fury Token Revealed",
+      "moon": "Ignore this token and reveal another fury token.",
+      "north": "Put Camp Outskirts into play above the top Camp location, instead of resolving the effects on The Dark Young Stir... Return each fury token to the fury bag.",
+      "south": "Put Camp Outskirts into play below the bottom Camp location, instead of resolving the effects on The Dark Young Stir... Return each fury token to the fury bag.",
+      "west": "Put Camp Outskirts into play to the left of the leftmost Camp location, instead of resolving the effects on The Dark Young Stir... Return each fury token to the fury bag.",
+      "east": "Put Camp Outskirts into play to the right of the rightmost Camp location, instead of resolving the effects on The Dark Young Stir... Return each fury token to the fury bag."
+    },
     "furyReveal": {
       "title": "Fury Token Revealed",
       "moon": "Immediately reveal two additional fury tokens.",

@@ -8,6 +8,12 @@
         "caution": "“Caution first. Saving them won’t help otherwise.”"
       }
     },
+    "startingCards": {
+      "label": {
+        "take": "Begin with this card as an additional card in your opening hand",
+        "leave": "Leave this card in your deck"
+      }
+    },
     "escapeActVI": {},
     "escapeActVII": {},
     "overdueDeparture": {},

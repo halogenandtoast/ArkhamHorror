@@ -8627,6 +8627,7 @@ test-suite spec
       Arkham.Helpers.EnemySpec
       Arkham.Helpers.InvestigatorSpec
       Arkham.Helpers.QuerySpec
+      Arkham.Homebrew.CircusExMortis.HarmsWaySpec
       Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstromSpec
       Arkham.Homebrew.DarkMatter.FacedownThreatAreaSpec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceCovenantSpec

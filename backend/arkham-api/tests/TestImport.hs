@@ -727,6 +727,7 @@ chooseFirstOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
     [(_, question)] -> case stripQuestionWrappers question of
+      Read _ (BasicReadChoices (msg : _)) _ -> push (uiToRun msg) >> runMessages
       ChooseOne (msg : _) -> push (uiToRun msg) >> runMessages
       PlayerWindowChooseOne (msg : _) -> push (uiToRun msg) >> runMessages
       ChooseOneAtATime (msg : _) -> push (uiToRun msg) >> runMessages

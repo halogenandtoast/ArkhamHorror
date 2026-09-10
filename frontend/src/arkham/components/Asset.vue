@@ -242,6 +242,30 @@ const assetTokens = computed(() => {
 })
 const damage = computed(() => (props.asset.tokens[TokenType.Damage] || 0) + props.asset.assignedHealthDamage - props.asset.assignedHealthHeal)
 const horror = computed(() => (props.asset.tokens[TokenType.Horror] || 0) + props.asset.assignedSanityDamage - props.asset.assignedSanityHeal)
+
+function modifierTotal(tag: 'HealthModifier' | 'SanityModifier'): number {
+  return (props.asset.modifiers ?? []).reduce((acc, m) => {
+    const t: any = m.type
+    return t?.tag === tag ? acc + t.contents : acc
+  }, 0)
+}
+
+const cannotBeDefeated = computed(() => (props.asset.modifiers ?? []).some((m) => {
+  const t: any = m.type
+  return t?.tag === 'OtherModifier' && t?.contents === 'CannotBeDefeated'
+}))
+
+// Damage and horror are assigned before they are applied, so a card can already
+// be dead while it is still sitting in play waiting for the rest of the
+// assignment. Say so, or the player soaks the remainder onto a corpse.
+const doomed = computed(() => {
+  if (isSpirit.value || cannotBeDefeated.value) return false
+  if (props.asset.assignedHealthDamage <= 0 && props.asset.assignedSanityDamage <= 0) return false
+  const { health, sanity } = props.asset
+  return (health !== null && damage.value >= health + modifierTotal('HealthModifier'))
+    || (sanity !== null && horror.value >= sanity + modifierTotal('SanityModifier'))
+})
+
 const forcedTokenItems = computed<TokenPoolItem[]>(() => [
   {
     key: 'health',
@@ -404,8 +428,13 @@ function startDrag(event: DragEvent) {
           />
           <span class="deck-size">{{asset.spiritDeck.length}}</span>
         </div>
-        <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, 'asset--pending': pending }">
+        <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, 'asset--pending': pending, 'asset--doomed': doomed }">
           <MissingCardBadge :card-code="cardCode" />
+          <span v-if="doomed && !showDiscardMark" class="doomed-mark" v-tooltip="'Will be defeated'">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C7 2 3.6 5.3 3.6 9.7c0 2.4 1 4.1 2.4 5.2.5.4.8.9.8 1.5v1.2c0 .8.7 1.5 1.5 1.5h.6v1.4c0 .3.2.5.5.5h1c.3 0 .5-.2.5-.5v-1.4h2v1.4c0 .3.2.5.5.5h1c.3 0 .5-.2.5-.5v-1.4h.6c.8 0 1.5-.7 1.5-1.5v-1.2c0-.6.3-1.1.8-1.5 1.4-1.1 2.4-2.8 2.4-5.2C20.4 5.3 17 2 12 2Zm-3.4 9.6a1.9 1.9 0 1 1 0-3.8 1.9 1.9 0 0 1 0 3.8Zm6.8 0a1.9 1.9 0 1 1 0-3.8 1.9 1.9 0 0 1 0 3.8ZM12 13.4l1.2 2.2h-2.4L12 13.4Z" />
+            </svg>
+          </span>
           <font-awesome-icon v-if="isSpirit" :icon="['fas', 'ghost']" class="spirit-icon" />
           <span
             v-if="jammed"
@@ -596,6 +625,47 @@ function startDrag(event: DragEvent) {
     border-radius: 5px;
     background: repeating-linear-gradient(135deg, rgba(239, 163, 69, 0.16) 0 6px, transparent 6px 12px);
     pointer-events: none;
+  }
+}
+
+/* Assigned lethal damage/horror, not yet applied. Survivor red rather than the
+   selection magenta: the card's own counter may still be a live choice. */
+.asset--doomed {
+  img.card {
+    box-shadow: 0 0 0 2px var(--survivor-dark), 0 0 10px rgba(238, 74, 83, 0.35);
+    filter: grayscale(0.7) brightness(0.6);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 5px;
+    background: repeating-linear-gradient(135deg, rgba(238, 74, 83, 0.2) 0 5px, transparent 5px 11px);
+    pointer-events: none;
+  }
+}
+
+.doomed-mark {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: var(--z-index-3);
+  display: grid;
+  place-items: center;
+  width: clamp(13px, calc(var(--card-width) * 0.3), 20px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--survivor-dark);
+  background: var(--background-dark);
+  color: #ffd9db;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  pointer-events: auto;
+
+  svg {
+    width: 66%;
+    height: 66%;
+    display: block;
   }
 }
 

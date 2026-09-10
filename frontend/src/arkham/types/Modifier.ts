@@ -49,6 +49,8 @@ export type ModifierType
   | CannotDiscoverCluesAt
   | CannotBeDamaged
   | DamageDealt
+  | HealthModifier
+  | SanityModifier
   | DiscoveredClues
   | SkillTestResultValueModifier
   | AutomaticallyFailIfSucceedByAtLeast
@@ -173,6 +175,16 @@ export type AutomaticallyFailIfSucceedByAtLeast = {
 
 export type DamageDealt = {
   tag: "DamageDealt"
+  contents: number
+}
+
+export type HealthModifier = {
+  tag: "HealthModifier"
+  contents: number
+}
+
+export type SanityModifier = {
+  tag: "SanityModifier"
   contents: number
 }
 
@@ -383,6 +395,16 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('DamageDealt'),
       contents: JsonDecoder.number()
     }, 'DamageDealt'),
+  JsonDecoder.object<HealthModifier>(
+    {
+      tag: JsonDecoder.literal('HealthModifier'),
+      contents: JsonDecoder.number()
+    }, 'HealthModifier'),
+  JsonDecoder.object<SanityModifier>(
+    {
+      tag: JsonDecoder.literal('SanityModifier'),
+      contents: JsonDecoder.number()
+    }, 'SanityModifier'),
   JsonDecoder.object<AddSkillValue>(
     {
       tag: JsonDecoder.literal('AddSkillValue'),

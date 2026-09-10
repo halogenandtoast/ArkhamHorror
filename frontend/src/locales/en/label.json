@@ -377,6 +377,7 @@
     "drawEncounterCards": "Draw {count} encounter cards",
     "dynamicUses": "Spend {useType}",
     "enemyAttack": "Take an attack of opportunity",
+    "assetDoom": "Place {count} doom on a card you control",
     "enemyDoom": "Place {count} doom on an enemy",
     "eventUses": "Spend {count} {useType}",
     "exhaust": "Exhaust",

@@ -153,6 +153,10 @@ data Cost
   | DiscardHandCost
   | DoomCost Source Target Int
   | EnemyDoomCost Int EnemyMatcher
+  | {- | "Place N doom on a card you control." Unlike 'DoomCost', which names its
+    target up front, the payer picks which matching asset takes the doom.
+    -}
+    AssetDoomCost Int AssetMatcher
   | EnemyAttackCost EnemyId
   | RemoveEnemyDamageCost GameValue EnemyMatcher
   | ExileCost Target
@@ -252,6 +256,12 @@ data Cost
   | GloriaCost -- lol, not going to attempt to make this generic
   | ArchiveOfConduitsUnidentifiedCost -- this either
   | LabeledCost Text Cost
+  | {- | Carries the card that contributed this cost. An active cost is sourced to the
+    card being paid for, so a rider handed to it from elsewhere -- a location charging
+    you to leave it -- would otherwise be attributed to the wrong card. Payment is
+    sourced to the contributor instead, and its questions highlight it on the board.
+    -}
+    SourcedCost Source Cost
   | FlipScarletKeyCost
   | -- We do the costs that can kill the investigator last so we don't trigger discards before the cost is paid
     DirectHorrorCost Source InvestigatorMatcher Int

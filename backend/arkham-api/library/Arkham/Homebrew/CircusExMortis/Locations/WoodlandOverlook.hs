@@ -1,11 +1,13 @@
 module Arkham.Homebrew.CircusExMortis.Locations.WoodlandOverlook (woodlandOverlook) where
 
+import Arkham.Cost
 import Arkham.Helpers.Modifiers
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers (neighbouringMoonlitForestColumn)
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Token (Token (..), countTokens)
+import Arkham.Trait (Trait (Woods))
 
 newtype WoodlandOverlook = WoodlandOverlook LocationAttrs
   deriving anyclass IsLocation
@@ -23,10 +25,16 @@ instance HasModifiersFor WoodlandOverlook where
     modifySelfWith a setActiveDuringSetup [ConnectedToWhen (be a) forests]
     modifySelectWith a forests setActiveDuringSetup [ConnectedToWhen forests (be a)]
 
--- TODO(homebrew): "As an additional cost to move from Woodland Overlook to a non-[[Woods]]
--- location, discard a non-weakness asset you control." No destination-filtered leave-cost
--- primitive exists, so it is not modeled; it bites on the move to Circus Encampment
--- ([[Clearing]]), which is reachable via the printed {moon} connection.
+    -- "As an additional cost to move from Woodland Overlook to a non-Woods location,
+    -- discard a non-weakness asset you control." Ridden on whoever is here, since the
+    -- enter-matching cost is filtered by the destination.
+    modifySelect
+      a
+      (InvestigatorAt $ be a)
+      [ AdditionalCostToEnterMatching (not_ $ LocationWithTrait Woods)
+          $ SourcedCost (toSource a)
+          $ DiscardAssetCost (AssetControlledBy You <> NonWeaknessAsset)
+      ]
 
 instance RunMessage WoodlandOverlook where
   runMessage msg (WoodlandOverlook attrs) = runQueueT $ case msg of

@@ -106,6 +106,7 @@ const withMultipliedCount = (cost: Cost, multiplier: number): Cost | undefined =
     case 'DiscardFromCost':
     case 'ShuffleDiscardCost':
     case 'EnemyDoomCost':
+    case 'AssetDoomCost':
     case 'SpendTokenKeyCost':
     case 'SealMultiCost':
     case 'ReleaseChaosTokensCost':
@@ -115,6 +116,13 @@ const withMultipliedCount = (cost: Cost, multiplier: number): Cost | undefined =
     case 'ReturnChaosTokensToPoolCost': {
       const parts = Array.isArray(contents) ? [...contents] : []
       parts[0] = multiply(parts[0])
+      return { ...cost, contents: parts }
+    }
+    case 'SourcedCost': {
+      const parts = Array.isArray(contents) ? [...contents] : []
+      const inner = withMultipliedCount(parts[1] as Cost, multiplier)
+      if (!inner) return undefined
+      parts[1] = inner
       return { ...cost, contents: parts }
     }
     case 'ClueCost':
@@ -203,6 +211,7 @@ export function formatCost(cost: Cost, t: Translate): string {
     case 'CostWhenEnemy':
     case 'CostWhenTreachery':
     case 'CostOnlyWhen':
+    case 'SourcedCost':
     case 'AsIfAtLocationCost': {
       const contents = get<unknown[]>(cost, 'contents')
       const inner = Array.isArray(contents) ? (contents[1] as Cost | undefined) : undefined
@@ -365,6 +374,8 @@ export function formatCost(cost: Cost, t: Translate): string {
       return t('label.cost.shuffleDiscard', { count: intAt(cost, 0) })
     case 'EnemyDoomCost':
       return t('label.cost.enemyDoom', { count: intAt(cost, 0) })
+    case 'AssetDoomCost':
+      return t('label.cost.assetDoom', { count: intAt(cost, 0) })
     case 'EnemyAttackCost':
       return t('label.cost.enemyAttack')
     case 'RemoveEnemyDamageCost':

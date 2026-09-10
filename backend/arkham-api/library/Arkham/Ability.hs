@@ -489,6 +489,7 @@ applyCostModifier (ActionCost n) (ActionCostModifier m) =
 applyCostModifier (ActionCost _) (ActionCostSetToModifier m) = ActionCost m
 applyCostModifier (Costs xs) modifier = Costs $ map (`applyCostModifier` modifier) xs
 applyCostModifier (NonBlankedCost x) modifier = NonBlankedCost $ x `applyCostModifier` modifier
+applyCostModifier (SourcedCost s x) modifier = SourcedCost s $ x `applyCostModifier` modifier
 applyCostModifier cost _ = cost
 
 defaultAbilityWindow :: AbilityType -> WindowMatcher

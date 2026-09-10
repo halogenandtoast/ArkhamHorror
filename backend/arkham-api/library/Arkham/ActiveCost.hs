@@ -198,14 +198,36 @@ payCost
   -> Bool
   -> Cost
   -> m ActiveCost
-payCost msg c iid skipAdditionalCosts cost = do
+payCost msg c iid skipAdditionalCosts = payCostFrom msg c iid skipAdditionalCosts Nothing
+
+{- | 'payCost', with the 'SourcedCost' contributor (if any) in hand so payment is
+attributed to it rather than to the card the active cost is being paid for.
+-}
+payCostFrom
+  :: forall m
+   . (HasGame m, HasQueue Message m, HasCallStack, CardGen m)
+  => Message
+  -> ActiveCost
+  -> InvestigatorId
+  -> Bool
+  -> Maybe Source
+  -> Cost
+  -> m ActiveCost
+payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
   let acId = c.id
   let withPayment payment = pure $ c & costPaymentsL <>~ payment
-  let source = PaymentSource c.source
+  let source = PaymentSource (fromMaybe c.source mCostSource)
   let actions = c.actions
-  let pay = PayCost acId iid skipAdditionalCosts
+  let pay = PayCost acId iid skipAdditionalCosts . maybe id SourcedCost mCostSource
   player <- getPlayer iid
+  -- Questions raised while paying a contributed cost highlight the contributor, so the
+  -- player can see which card is charging them.
+  let
+    chooseOneSourced options = case mCostSource of
+      Nothing -> chooseOne player options
+      Just costSource -> questionWithSource costSource player (ChooseOne options)
   case cost of
+    SourcedCost costSource inner -> payCostFrom msg c iid skipAdditionalCosts (Just costSource) inner
     FlipScarletKeyCost -> do
       ks <- select $ StableScarletKey <> ScarletKeyWithBearer (InvestigatorWithId iid)
       push $ chooseOne player $ targetLabels ks $ only . Flip iid source . toTarget
@@ -640,7 +662,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       withPayment $ DiscardPayment [(zone, card)]
     DiscardAssetCost matcher -> do
       assets <- select (matcher <> DiscardableAsset)
-      push $ chooseOne player $ targetLabels assets $ only . pay . discardCost
+      push $ chooseOneSourced $ targetLabels assets $ only . pay . discardCost
       pure c
     DiscardRandomCardCost -> do
       hand <- field InvestigatorHand iid
@@ -688,6 +710,10 @@ payCost msg c iid skipAdditionalCosts cost = do
     EnemyDoomCost x matcher -> do
       enemies <- select matcher
       push $ chooseOrRunOne player [targetLabel enemy [placeDoom source enemy x] | enemy <- enemies]
+      withPayment $ DoomPayment x
+    AssetDoomCost x matcher -> do
+      assets <- select matcher
+      push $ chooseOneSourced [targetLabel asset [placeDoom source asset x] | asset <- assets]
       withPayment $ DoomPayment x
     RemoveEnemyDamageCost x matcher -> do
       n <- getGameValue x

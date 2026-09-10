@@ -19,7 +19,6 @@ import { MenuItem } from '@headlessui/vue'
 import {
   AdjustmentsHorizontalIcon,
   ArrowPathIcon,
-  ArrowsRightLeftIcon,
   ArrowUturnLeftIcon,
   BackwardIcon,
   BeakerIcon,
@@ -2232,17 +2231,28 @@ onUnmounted(() => {
           <ExclamationTriangleIcon aria-hidden="true" /> {{ $t('fileBug') }}
         </button>
       </div>
-      <div v-for="item in menuItems" :key="item.id">
-        <template v-if="item.nested === null || item.nested === undefined">
+      <template v-for="item in menuItems" :key="item.id">
+        <div v-if="item.nested === null || item.nested === undefined">
           <button @click="item.action">
             <component v-if="item.icon" v-bind:is="item.icon"></component>
             {{ item.content }}
           </button>
-        </template>
-      </div>
-      <div class="right">
-        <button v-if="isActualScenarioView" @click="toggleSidebar">
-          <ArrowsRightLeftIcon aria-hidden="true" /> {{ $t('gameBar.toggleSidebar') }}
+        </div>
+      </template>
+      <div v-if="isActualScenarioView" class="right">
+        <button
+          class="drawer-toggle"
+          :aria-label="$t('gameBar.toggleSidebar')"
+          :title="$t('gameBar.toggleSidebar')"
+          :aria-expanded="showSidebar"
+          aria-controls="game-log-sidebar"
+          @click="toggleSidebar"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M15 4v16" />
+            <path :d="showSidebar ? 'm8 9 3 3-3 3' : 'm11 9-3 3 3 3'" />
+          </svg>
         </button>
       </div>
     </div>
@@ -2433,6 +2443,7 @@ onUnmounted(() => {
           @choose="choose"
         />
         <div
+          id="game-log-sidebar"
           class="sidebar"
           :class="{ 'sidebar--empty-log': gameLog.length === 0 }"
           v-if="
@@ -3485,6 +3496,22 @@ header {
     }
   }
   justify-content: flex-start;
+
+  .right .drawer-toggle {
+    justify-content: center;
+    min-width: 40px;
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+    &[aria-expanded='true'] {
+      background: rgba(0, 0, 0, 0.21);
+    }
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: -3px;
+    }
+  }
 }
 
 .game-bar-item.active,

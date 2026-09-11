@@ -26,13 +26,14 @@ instance HasAbilities DeepOneGrotto_175a where
       $ extendRevealed
         a
         [ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
-        , restricted
-            a
-            2
-            ( Here
-                <> exists (at_ (be a) <> InvestigatorWithKey RedKey)
-                <> exists (at_ (be a) <> InvestigatorWithKey BlueKey)
-            )
+        , onlyOnce
+            $ restricted
+              a
+              2
+              ( Here
+                  <> exists (at_ (be a) <> InvestigatorWithKey RedKey)
+                  <> exists (at_ (be a) <> InvestigatorWithKey BlueKey)
+              )
             $ FastAbility
             $ GroupClueCost (PerPlayer 2) (be a)
         ]

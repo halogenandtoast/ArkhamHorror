@@ -82,7 +82,7 @@ import Arkham.Helpers.Cost (getCanAffordCost, getSpendableResources, hasSkillTes
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
-import Arkham.Helpers.Game (withAlteredGame)
+import Arkham.Helpers.Game (getRemovedFromPlayCards, withAlteredGame)
 import Arkham.Helpers.Location (
   getCanMoveTo,
   getCanMoveToMatchingLocations,
@@ -1054,8 +1054,11 @@ handleDrawToHand a@InvestigatorAttrs {..} iid cards = do
     & (searchL . _Just . Search.drawnCardsL %~ (<> cards))
 
 handleAddToHand a@InvestigatorAttrs {..} iid cards msg = do
-  for_ cards obtainCard
-  push $ Do msg
+  -- a card removed from the game stays removed, even if a delayed effect returns it
+  removed <- map toCardId <$> getRemovedFromPlayCards
+  let cards' = filter ((`notElem` removed) . toCardId) cards
+  for_ cards' obtainCard
+  unless (null cards') $ push $ Do (AddToHand iid cards')
   pure a
 
 handleDoAddToHand a@InvestigatorAttrs {..} iid cards = do

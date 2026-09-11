@@ -76,7 +76,6 @@ persistence1 =
     { cdCardTraits = setFromList [Practiced]
     , cdLevel = Just 1
     , cdOutOfPlayEffects = [InDiscardEffect]
-    , cdCommitTrigger = True
     }
 
 providential2 :: CardDef

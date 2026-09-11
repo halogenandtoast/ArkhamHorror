@@ -580,6 +580,11 @@ instance RunMessage SkillTest where
           -- triggers run *after* the plain/additional-cost commits.
           case triggerCommits of
             [] -> pure ()
+            -- Copies of the same card have the same on-commit effect, so ordering
+            -- them is not a real choice; run them in commit order instead.
+            _
+              | length (nub $ map (toCardCode . snd) triggerCommits) <= 1 ->
+                  pushAll [CommitCard i c | (i, c) <- triggerCommits]
             _ -> do
               player <- getPlayer skillTestInvestigator
               push

@@ -322,9 +322,13 @@ data CardDef = CardDef
   , cdWhenDiscarded :: DiscardType
   , cdCanCommitWhenNoIcons :: Bool
   , cdCommitTrigger :: Bool
-  {- ^ True for cards whose RunMessage reacts to `Do (CommitCard …)` or
-  `InvestigatorCommittedSkill`; used in CheckAllAdditionalCommitCosts to
-  decide whether to prompt the active player for ordering.
+  {- ^ True for cards with an on-commit effect whose resolution order relative to
+  the other cards committed to the same test can matter; used in
+  CheckAllAdditionalCommitCosts to decide whether to prompt the active player for
+  ordering. Merely handling `Do (CommitCard …)` or `InvestigatorCommittedSkill` is
+  not enough — a handler that only reconfigures its own card (e.g. Persistence
+  setting its own afterPlay) is invisible to the rest of the test and must stay
+  False, or the player is asked to order a choice with no consequence.
   -}
   , cdMeta :: Map Text Value
   , cdOptions :: [CardOption]

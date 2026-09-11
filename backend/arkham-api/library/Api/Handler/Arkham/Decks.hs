@@ -18,7 +18,7 @@ import Api.Arkham.Helpers
 import Api.Handler.Arkham.CustomCards (registerUserCustomCards)
 import Api.Handler.Arkham.Games.Shared (publishToRoom)
 import Arkham.Card.CardCode
-import Arkham.Card.CustomCard (lookupCustomCardDef)
+import Arkham.Card.CustomCard (arkhamBuildCustomCardCode, isArkhamBuildCardId, lookupCustomCardDef)
 import Arkham.Classes.Entity (attr)
 import Arkham.Classes.HasQueue
 import Arkham.Custom.Overlay (DeckOverlay)
@@ -329,14 +329,58 @@ decodeDeckList bytes = case eitherDecode bytes of
     decklists <- eitherDecode bytes
     maybe (Left "No decklist found") Right (listToMaybe decklists)
 
+{- | Rewrite the arkham.build card ids in a decklist to the codes an import of
+that pack gave those cards.
+
+arkham.build names a custom card by its own bare id; nothing here will try a
+custom-card lookup unless the code carries the custom prefix, so a deck naming
+those cards reads as a deck of cards that do not exist -- 'UnimplementedCard' --
+even with the pack imported and sitting in the library.
+
+Applied where a decklist is read off the wire rather than only in the client,
+because the client is not the only thing that reads one: syncing a deck fetches
+it here and writes it straight to the row, which without this puts the untranslated
+ids back over the translated ones. A decklist of printed cards comes through
+untouched, and a translated one translates to itself.
+-}
+normalizeArkhamBuildDeckCodes :: ArkhamDBDecklist -> ArkhamDBDecklist
+normalizeArkhamBuildDeckCodes decklist =
+  decklist
+    { slots = Map.mapKeys translateCardCode (slots decklist)
+    , sideSlots = Map.mapKeys translateCardCode (sideSlots decklist)
+    , investigator_code =
+        InvestigatorId $ translateCardCode $ unInvestigatorId $ investigator_code decklist
+    , meta = translateMeta <$> meta decklist
+    }
+ where
+  translateCardCode cc@(CardCode t)
+    | isArkhamBuildCardId t = arkhamBuildCustomCardCode t
+    | otherwise = cc
+
+  -- The alternate front an investigator was built with is named inside `meta`,
+  -- which rides along as its own blob of json. Left exactly as it arrived unless
+  -- there is something in it to rewrite.
+  translateMeta raw = fromMaybe raw do
+    m <- decode @(Map Text Value) (BSL.fromStrict $ encodeUtf8 raw)
+    String front <- Map.lookup "alternate_front" m
+    guard $ isArkhamBuildCardId front
+    let code = String $ unCardCode $ arkhamBuildCustomCardCode front
+    pure $ decodeUtf8 $ BSL.toStrict $ encode $ Map.insert "alternate_front" code m
+
 getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)
 getDeckList url = liftIO case arkhamBuildDecklistUrl url of
   Just fetchUrl -> do
     request <- parseRequest $ T.unpack fetchUrl
     manager <- newManager tlsManagerSettings
     let request' = request {requestHeaders = ("X-Client-Id", "arkham-horror") : requestHeaders request}
-    second (\d -> d {url = Nothing}) . decodeDeckList . responseBody <$> httpLbs request' manager
-  Nothing -> second (\d -> d {url = Just url}) . decodeDeckList <$> simpleHttp (T.unpack url)
+    second (\d -> (normalizeArkhamBuildDeckCodes d) {url = Nothing})
+      . decodeDeckList
+      . responseBody
+      <$> httpLbs request' manager
+  Nothing ->
+    second (\d -> (normalizeArkhamBuildDeckCodes d) {url = Just url})
+      . decodeDeckList
+      <$> simpleHttp (T.unpack url)
 
 getApiV1ArkhamDeckR :: ArkhamDeckId -> Handler (Entity ArkhamDeck)
 getApiV1ArkhamDeckR deckId = do

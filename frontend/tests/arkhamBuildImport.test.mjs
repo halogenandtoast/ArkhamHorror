@@ -26,6 +26,17 @@ async function load(t) {
   return server.ssrLoadModule('/src/arkham/arkhamBuildImport.ts')
 }
 
+async function loadCustomCards(t) {
+  const server = await createServer({
+    root: fileURLToPath(new URL('..', import.meta.url)),
+    appType: 'custom',
+    logLevel: 'silent',
+    server: { middlewareMode: true, hmr: false },
+  })
+  t.after(() => server.close())
+  return server.ssrLoadModule('/src/arkham/customCards.ts')
+}
+
 const PACK = 'Return to the Zealot'
 
 const investigator = {
@@ -280,4 +291,42 @@ test('an undashed 32-character uuid is translated too', async (t) => {
   const deck = normalizeArkhamBuildDeckCodes({ investigator_code: '01001', slots: { [bare]: 1 } })
 
   assert.deepEqual(Object.keys(deck.slots), [card.def.cardCode])
+})
+
+/* The two derivations agree because there is only one of them: the deck side
+asks `isArkhamBuildCardId` what counts as an id, and the importer derives the
+code from whatever it is given. This pins them to each other -- if the deck side
+ever stops translating a shape the importer accepts, a whole pack of cards goes
+missing from every deck that names them. */
+test('the deck rewrite translates exactly the ids the importer recognises', async (t) => {
+  const { arkhamBuildCardToCustomCard, normalizeArkhamBuildDeckCodes } = await load(t)
+  const { isArkhamBuildCardId } = await loadCustomCards(t)
+
+  const codes = [
+    'd545b38e-f3cf-486a-a026-12ed94b33453', // dashed uuid
+    '43433775620b4e108583253eb3f3e6c2', // bare 32-hex
+    '1C8082CF', // short id, upper case
+    '01001', // ArkhamDB
+    '60101', // ArkhamDB, six digits
+    '*1c8082cf0', // already this app's own code
+    'not-an-id',
+    '',
+  ]
+
+  // One at a time: a slots object with several keys reorders numeric-looking
+  // ones, and it is which code came out that matters, not where.
+  for (const code of codes) {
+    const deck = normalizeArkhamBuildDeckCodes({ investigator_code: '01001', slots: { [code]: 1 } })
+    const [out] = Object.keys(deck.slots)
+
+    assert.equal(
+      out !== code,
+      isArkhamBuildCardId(code),
+      `${JSON.stringify(code)}: the deck rewrite and the id predicate disagree`,
+    )
+    // And when it is translated, it lands on the code an import would give it.
+    if (out !== code) {
+      assert.equal(out, arkhamBuildCardToCustomCard({ ...asset, code }, PACK).def.cardCode)
+    }
+  }
 })

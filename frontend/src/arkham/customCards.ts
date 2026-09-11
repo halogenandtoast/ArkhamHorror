@@ -53,10 +53,29 @@ export function mintCustomCardCode(): string {
   return `${CUSTOM_CARD_PREFIX}${crypto.randomUUID().replace(/-/g, '')}0`
 }
 
+/* The ids arkham.build names a custom card by, and not always a dashed UUID: a
+ * pack's cards come through with a bare 32-hex or short 8-hex id instead.
+ *
+ * Lives here, beside the derivation it gates, because the two have to be the
+ * same question asked once. The importer derives a code from whatever id it is
+ * handed; the deck side rewrites a code only when it recognises the id as one
+ * of these. If they ever disagree, a card imports under a code no deck will
+ * ever name, and the deck fails validation as UnimplementedCard with the card
+ * sitting right there in the library -- which is exactly what happened while
+ * the deck side gated on the dashed form alone.
+ *
+ * ArkhamDB codes are five or six digits and match none of these. */
+const ARKHAM_BUILD_ID_RE =
+  /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{32}|[0-9a-f]{8})$/i
+
+export function isArkhamBuildCardId(id: string): boolean {
+  return ARKHAM_BUILD_ID_RE.test(id)
+}
+
 /* Same shape as `mintCustomCardCode`, but derived from an arkham.build card's
- * own UUID rather than a fresh random one. Importing a card and later reading
- * a deck that names it by that UUID need to land on the same code, so this has
- * to be deterministic -- a random mint would never match up with itself. */
+ * own id rather than a fresh random one. Importing a card and later reading a
+ * deck that names it by that id need to land on the same code, so this has to
+ * be deterministic -- a random mint would never match up with itself. */
 export function arkhamBuildCustomCardCode(uuid: string): string {
   return `${CUSTOM_CARD_PREFIX}${uuid.replace(/-/g, '').toLowerCase()}0`
 }

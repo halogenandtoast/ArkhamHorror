@@ -57,8 +57,15 @@ function upsertSet(set: LibrarySet) {
 
 /* Cards made before the library moved server-side live in this browser only.
  * Push them up once, then drop the local copy so there is a single source of
- * truth. They predate sets, so they arrive as one, named after whatever set
- * name they were carrying. */
+ * truth. They predate sets, so they are filed under whatever set name they were
+ * carrying.
+ *
+ * Card by card, never as a set import. A browser that has not been opened since
+ * the library moved server-side is holding a snapshot of a library that has
+ * since moved on -- possibly migrated already from another browser, and added to
+ * there -- and an import replaces a set outright. Pushing each card as its own
+ * upsert adds what this browser still has and leaves everything else alone,
+ * which is what carrying old cards forward is supposed to mean. */
 async function migrateLegacyCards() {
   let legacy: { def: any; art: string | null }[] = []
   try {
@@ -77,11 +84,12 @@ async function migrateLegacyCards() {
 
   try {
     for (const [name, cards] of groupByDeclaredSet(legacy)) {
-      await Api.importCustomCardSet({
-        name,
-        sourceCode: null,
-        cards: cards.map((c) => ({ def: c.def, art: c.art ?? null })),
-      })
+      // Names an existing set rather than making a second one: the server hands
+      // back the set it already has under that name.
+      const set = await Api.createCustomCardSet(name)
+      for (const card of cards) {
+        await Api.saveCustomCard({ setId: set.id, def: card.def, art: card.art ?? null })
+      }
     }
     localStorage.removeItem(LEGACY_STORAGE_KEY)
   } catch (error) {
@@ -167,8 +175,8 @@ export async function renameSet(id: string, name: string): Promise<LibrarySet> {
   upsertSet(set)
   /* The name is stamped onto every card in the set so a card exported on its
    * own still says where it came from; the server rewrites them, and the copies
-   * held here have to follow or the library would show the old name until a
-   * reload. */
+   * held here have to follow or an export taken before the next reload would
+   * carry the old name. */
   for (const card of entries) {
     if (card.setId === id) card.def.meta = { ...card.def.meta, set: set.name }
   }

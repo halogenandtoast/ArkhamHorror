@@ -6,7 +6,12 @@ module Api.Handler.Arkham.CustomCardSets (
   deleteApiV1ArkhamCustomCardSetR,
 ) where
 
-import Api.Handler.Arkham.CustomCards (ownedCardSet, saveCardInSet, stampSetName)
+import Api.Handler.Arkham.CustomCards (
+  ownedCardSet,
+  persistCard,
+  prepareCardForSet,
+  stampSetName,
+ )
 import Arkham.Card.CustomCard (CustomCard (..))
 import Data.Aeson.Types (parseMaybe)
 import Data.Text qualified as T
@@ -105,9 +110,9 @@ postApiV1ArkhamCustomCardSetsR = do
 
 {- | Rename, and carry the new name into the cards.
 
-The copy each card holds is only a copy, but it is the one anything looking at a
-def alone will read -- the deck overlay, the card picker, a card exported on its
-own -- so leaving it behind would show the old name everywhere but here.
+The copy each card holds is only a copy, but it is the one that travels with a
+card out of here -- an export, and from there someone else's account -- so
+leaving it behind would hand out cards still naming the old set.
 -}
 putApiV1ArkhamCustomCardSetR :: ArkhamCustomCardSetId -> Handler CustomCardSetResponse
 putApiV1ArkhamCustomCardSetR setId = do
@@ -167,9 +172,27 @@ postApiV1ArkhamCustomCardSetsImportR = do
   now <- liftIO getCurrentTime
 
   existing <- findSet userId name importSetSourceCode
-  setId <- case existing of
-    Just (Entity foundId _) -> do
-      runDB do
+
+  {- A set matched by its pack id can be carrying a name some *other* set of
+  yours already holds -- the pack was renamed to something you had used. Renaming
+  it into that name breaks the unique index, so say what is wrong rather than
+  letting the constraint answer with a 500. -}
+  clash <- runDB $ P.getBy (UniqueUserCustomCardSetName userId name)
+  case (existing, clash) of
+    (Just (Entity foundId _), Just (Entity clashId _))
+      | clashId /= foundId ->
+          invalidArgs ["You already have a different set called \"" <> name <> "\""]
+    _ -> pure ()
+
+  {- Art is uploaded before anything is written. The write below empties the set
+  before refilling it, so a card that cannot be stored -- an image the art host
+  refuses, a code that is not a custom card's -- has to fail here, while the set
+  it is replacing is still whole. -}
+  prepared <- traverse (prepareCardForSet userId name) importSetCards
+
+  (setId, cards) <- runDB do
+    setId <- case existing of
+      Just (Entity foundId _) -> do
         P.update
           foundId
           [ ArkhamCustomCardSetName P.=. name
@@ -177,10 +200,12 @@ postApiV1ArkhamCustomCardSetsImportR = do
           , ArkhamCustomCardSetUpdatedAt P.=. now
           ]
         P.deleteWhere [ArkhamCustomCardCustomCardSetId P.==. foundId]
-      pure foundId
-    Nothing -> runDB $ P.insert $ ArkhamCustomCardSet userId name importSetSourceCode now now
+        pure foundId
+      Nothing -> P.insert $ ArkhamCustomCardSet userId name importSetSourceCode now now
+    -- Emptying and refilling in one transaction: an import that dies partway
+    -- leaves the set as it was rather than as half of what replaced it.
+    (setId,) <$> traverse (persistCard userId setId now) prepared
 
-  cards <- traverse (saveCardInSet userId setId name now) importSetCards
   row <- runDB $ get404 setId
   response <- setResponse (Entity setId row)
   pure $ CustomCardSetImportResponse response cards

@@ -9,7 +9,11 @@
 // all, abilities are authored structurally through the builder's own
 // AbilityEditor/StepsEditor -- so an imported card has no functional effect
 // until someone builds that by hand.
-import { arkhamBuildCustomCardCode, type CustomCard } from '@/arkham/customCards'
+import {
+  arkhamBuildCustomCardCode,
+  isArkhamBuildCardId,
+  type CustomCard,
+} from '@/arkham/customCards'
 
 const FACTION_TO_CLASS: Record<string, string> = {
   guardian: 'Guardian',
@@ -191,18 +195,10 @@ export function arkhamBuildCardToCustomCard(raw: any, packName: string | null): 
 
 // ---------------------------------------------------------- deck codes ---
 
-/* arkham.build identifies a custom card by a bare id, and not always a dashed
- * UUID: a pack's cards come through with a short hex id instead. The importer
- * derives a code from whatever it is handed (`arkhamBuildCustomCardCode` does
- * not check the shape), so the deck side has to accept the same set -- gating
- * on the dashed form alone left short-id cards untranslated, and a deck naming
- * them failed validation as UnimplementedCard even though those cards had been
- * imported and were sitting in the library. ArkhamDB codes are five or six
- * digits and match none of these. */
-const UUID_RE =
-  /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{32}|[0-9a-f]{8})$/i
-
-const translateCode = (code: string): string => (UUID_RE.test(code) ? arkhamBuildCustomCardCode(code) : code)
+/* Which ids get rewritten is `isArkhamBuildCardId`, which sits beside the
+ * derivation itself so the two cannot drift apart. */
+const translateCode = (code: string): string =>
+  isArkhamBuildCardId(code) ? arkhamBuildCustomCardCode(code) : code
 
 const translateSlots = (slots?: Record<string, number>): Record<string, number> | undefined =>
   slots
@@ -217,7 +213,7 @@ const translateSlots = (slots?: Record<string, number>): Record<string, number> 
  * validated or created -- otherwise it is silently dropped from view (or
  * rejected outright as UnimplementedCard) even after the matching cards have
  * been imported. A decklist built entirely from official cards is untouched:
- * ArkhamDB codes never match UUID_RE. */
+ * ArkhamDB codes are never arkham.build ids. */
 export function normalizeArkhamBuildDeckCodes<T extends Record<string, any>>(deck: T): T {
   const out: any = { ...deck }
   if (out.slots) out.slots = translateSlots(out.slots)

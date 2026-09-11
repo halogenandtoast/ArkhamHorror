@@ -5,6 +5,8 @@ module Api.Handler.Arkham.CustomCards (
   deleteApiV1ArkhamCustomCardR,
   registerUserCustomCards,
   ownedCardSet,
+  prepareCardForSet,
+  persistCard,
   saveCardInSet,
   stampSetName,
 ) where
@@ -71,20 +73,35 @@ ownedCardSet userId setId = do
 
 {- | The set's name, written into the card's own def.
 
-The set row is what a card belongs to; this is the copy that travels with the
-card, for everything that only ever sees a def -- the deck overlay, the card
-picker, a card exported on its own.
+The set row is what a card belongs to. This copy travels with the card, and is
+what names the set when a card arrives somewhere there are no set rows to read:
+a card exported on its own and imported into another account, and the pre-set
+libraries the backfill migration filed by this same field. Nothing in a running
+app reads it to display a set -- that comes off the row.
 -}
 stampSetName :: Text -> CardDef -> CardDef
 stampSetName name def = def {cdMeta = Map.insert "set" (String name) (cdMeta def)}
 
-saveCardInSet
-  :: UserId -> ArkhamCustomCardSetId -> Text -> UTCTime -> CustomCard -> Handler (Entity ArkhamCustomCard)
-saveCardInSet userId setId setName now card0 = do
+{- | Everything a card needs doing to it before it can be written: the code
+checked, the set name stamped on, and any inlined art uploaded.
+
+Split from the write because uploading is the part that can fail, and an import
+empties a set before it refills it. Preparing every card first means a card that
+cannot be stored fails while the set it is replacing is still whole.
+-}
+prepareCardForSet :: UserId -> Text -> CustomCard -> Handler (CardCode, CustomCard)
+prepareCardForSet userId setName card0 = do
   (cardCode, card') <- normalizeCard card0
   art <- traverse (hostArt userId) (customCardArt card')
   def <- hostDefArt userId (stampSetName setName (customCardDef card'))
-  let card = card' {customCardArt = art, customCardDef = def}
+  pure (cardCode, card' {customCardArt = art, customCardDef = def})
+
+{- | Write a prepared card into a set. Runs in the caller's transaction, so an
+import can empty a set and refill it as one thing.
+-}
+persistCard
+  :: UserId -> ArkhamCustomCardSetId -> UTCTime -> (CardCode, CustomCard) -> DB (Entity ArkhamCustomCard)
+persistCard userId setId now (cardCode, card) = do
   let row =
         ArkhamCustomCard
           userId
@@ -94,28 +111,38 @@ saveCardInSet userId setId setName now card0 = do
           (customCardArt card)
           now
           now
-  runDB do
-    P.getBy (UniqueUserCustomCard userId (unCardCode cardCode)) >>= \case
-      Just (Entity rowId existing) -> do
-        P.update
-          rowId
-          [ ArkhamCustomCardCustomCardSetId P.=. setId
-          , ArkhamCustomCardDef P.=. toJSON (customCardDef card)
-          , ArkhamCustomCardArt P.=. customCardArt card
-          , ArkhamCustomCardUpdatedAt P.=. now
-          ]
-        -- Built from the existing row so createdAt survives an edit.
-        pure
-          $ Entity rowId
-          $ existing
-            { arkhamCustomCardCustomCardSetId = setId
-            , arkhamCustomCardDef = toJSON (customCardDef card)
-            , arkhamCustomCardArt = customCardArt card
-            , arkhamCustomCardUpdatedAt = now
-            }
-      Nothing -> do
-        rowId <- P.insert row
-        pure $ Entity rowId row
+  P.getBy (UniqueUserCustomCard userId (unCardCode cardCode)) >>= \case
+    Just (Entity rowId existing) -> do
+      P.update
+        rowId
+        [ ArkhamCustomCardCustomCardSetId P.=. setId
+        , ArkhamCustomCardDef P.=. toJSON (customCardDef card)
+        , ArkhamCustomCardArt P.=. customCardArt card
+        , ArkhamCustomCardUpdatedAt P.=. now
+        ]
+      -- Built from the existing row so createdAt survives an edit.
+      pure
+        $ Entity rowId
+        $ existing
+          { arkhamCustomCardCustomCardSetId = setId
+          , arkhamCustomCardDef = toJSON (customCardDef card)
+          , arkhamCustomCardArt = customCardArt card
+          , arkhamCustomCardUpdatedAt = now
+          }
+    Nothing -> do
+      rowId <- P.insert row
+      pure $ Entity rowId row
+
+saveCardInSet
+  :: UserId
+  -> ArkhamCustomCardSetId
+  -> Text
+  -> UTCTime
+  -> CustomCard
+  -> Handler (Entity ArkhamCustomCard)
+saveCardInSet userId setId setName now card0 = do
+  prepared <- prepareCardForSet userId setName card0
+  runDB $ persistCard userId setId now prepared
 
 -- | A card is always saved into a set, so the set it goes in comes with it.
 data SaveCardPost = SaveCardPost
@@ -127,7 +154,7 @@ instance FromJSON SaveCardPost where
   parseJSON v =
     withObject
       "SaveCardPost"
-      (\o -> SaveCardPost <$> (ArkhamCustomCardSetKey <$> o .: "setId") <*> parseJSON v)
+      (\o -> SaveCardPost . ArkhamCustomCardSetKey <$> o .: "setId" <*> parseJSON v)
       v
 
 postApiV1ArkhamCustomCardsR :: Handler (Entity ArkhamCustomCard)

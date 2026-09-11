@@ -250,3 +250,34 @@ test('an alternate front is rewritten inside the meta string', async (t) => {
   // Everything else in meta survives the rewrite.
   assert.equal(meta.faction_selected, 'guardian')
 })
+
+/* A pack's cards arrive with a short hex id rather than a dashed UUID. Both the
+ * import and the deck have to derive the same code from it, or the deck names a
+ * card the library holds under a different code and validation rejects it as
+ * unimplemented -- reported as a bare `Unknown card: c1C8082CF`. */
+test('a short arkham.build id matches the code its card was imported under', async (t) => {
+  const { arkhamBuildCardToCustomCard, normalizeArkhamBuildDeckCodes } = await load(t)
+
+  const shortId = '1C8082CF'
+  const card = arkhamBuildCardToCustomCard({ ...asset, code: shortId }, PACK)
+
+  const deck = normalizeArkhamBuildDeckCodes({
+    investigator_code: '01001',
+    slots: { [shortId]: 2 },
+  })
+
+  // The deck now names the card by the same code the library stored it under,
+  // and case does not matter: the deck spells it upper, the code is lower.
+  assert.deepEqual(Object.keys(deck.slots), [card.def.cardCode])
+  assert.equal(card.def.cardCode, '*1c8082cf0')
+})
+
+test('an undashed 32-character uuid is translated too', async (t) => {
+  const { arkhamBuildCardToCustomCard, normalizeArkhamBuildDeckCodes } = await load(t)
+
+  const bare = '43433775620b4e108583253eb3f3e6c2'
+  const card = arkhamBuildCardToCustomCard({ ...asset, code: bare }, PACK)
+  const deck = normalizeArkhamBuildDeckCodes({ investigator_code: '01001', slots: { [bare]: 1 } })
+
+  assert.deepEqual(Object.keys(deck.slots), [card.def.cardCode])
+})

@@ -191,7 +191,16 @@ export function arkhamBuildCardToCustomCard(raw: any, packName: string | null): 
 
 // ---------------------------------------------------------- deck codes ---
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+/* arkham.build identifies a custom card by a bare id, and not always a dashed
+ * UUID: a pack's cards come through with a short hex id instead. The importer
+ * derives a code from whatever it is handed (`arkhamBuildCustomCardCode` does
+ * not check the shape), so the deck side has to accept the same set -- gating
+ * on the dashed form alone left short-id cards untranslated, and a deck naming
+ * them failed validation as UnimplementedCard even though those cards had been
+ * imported and were sitting in the library. ArkhamDB codes are five or six
+ * digits and match none of these. */
+const UUID_RE =
+  /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{32}|[0-9a-f]{8})$/i
 
 const translateCode = (code: string): string => (UUID_RE.test(code) ? arkhamBuildCustomCardCode(code) : code)
 

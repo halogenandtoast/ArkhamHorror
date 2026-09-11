@@ -306,6 +306,9 @@ _other_langs_pattern() {
 
 ALL_LANG_PATTERN="img/arkham/($(IFS='|'; printf '%s' "${ALL_LANGS[*]}")/)"
 
+# Never fetched: dev-server-written custom card art, local-only and never synced.
+CUSTOM_PATTERN='img/custom/'
+
 printf '\n%s=== %s ===%s\n\n' "$_BOLD" \
   "$(case "$1" in
     cards)             echo 'Fetching English card images' ;;
@@ -321,16 +324,16 @@ case "$1" in
     _sync_prefix "img/arkham/homebrew/" -E 'img/arkham/homebrew/[^/]+/cards/'
     ;;
   en)
-    _sync_prefix "img/" -vE "$ALL_LANG_PATTERN"
+    _sync_prefix "img/" -vE "$ALL_LANG_PATTERN|$CUSTOM_PATTERN"
     ;;
   en+fr|en+es|en+ita|en+ko|en+zh)
-    _sync_prefix "img/" -vE "$(_other_langs_pattern "${1#en+}")"
+    _sync_prefix "img/" -vE "$(_other_langs_pattern "${1#en+}")|$CUSTOM_PATTERN"
     ;;
   fr|es|ita|ko|zh)
     _sync_prefix "img/arkham/$1/"
     ;;
   all)
-    _sync_prefix "img/"
+    _sync_prefix "img/" -vE "$CUSTOM_PATTERN"
     ;;
   *)
     usage

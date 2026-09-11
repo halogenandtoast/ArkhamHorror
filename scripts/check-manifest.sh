@@ -26,8 +26,10 @@ GENERATE_SCRIPT="$ROOT_DIR/scripts/generate-manifest.cjs"
 
 # Check if any staged files are under the image directory (catches all
 # subdirectories automatically, including newly added ones)
+# img/custom is dev-server-written custom card art: local-only, never synced,
+# and never in the manifest.
 has_image_changes=false
-if git diff --cached --name-only -- "frontend/public/img/" 2>/dev/null | grep -q .; then
+if git diff --cached --name-only -- "frontend/public/img/" ":(exclude)frontend/public/img/custom/" 2>/dev/null | grep -q .; then
   has_image_changes=true
 fi
 

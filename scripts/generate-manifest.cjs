@@ -13,6 +13,10 @@ const publicDir = path.join(__dirname, '../frontend/public');
 const imgDir = path.join(publicDir, 'img');
 const outputFile = path.join(__dirname, '../frontend/image-manifest.json');
 
+// Directories under img/ that are never synced to the CDN. img/custom holds
+// custom card art written by the dev server; it is local-only and gitignored.
+const EXCLUDED_DIRS = new Set([path.join(imgDir, 'custom')]);
+
 function walkDir(dir) {
   const results = [];
   if (!fs.existsSync(dir)) return results;
@@ -21,6 +25,7 @@ function walkDir(dir) {
   for (const entry of entries) {
     if (entry.name === '.DS_Store') continue;
     const fullPath = path.join(dir, entry.name);
+    if (EXCLUDED_DIRS.has(fullPath)) continue;
     if (entry.isDirectory()) {
       results.push(...walkDir(fullPath));
     } else {

@@ -490,9 +490,7 @@ data EnemyCriterion
 
 canFightAtAnyLocation :: Criterion
 canFightAtAnyLocation =
-  EnemyCriteria
-    (ThisEnemy $ CanBeAttackedBy You <> EnemyOneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone])
-    <> CanAttack
+  EnemyCriteria (ThisEnemy $ CanBeAttackedBy You) <> CanAttack <> aloofFightRestriction
 
 canEvadeAtAnyLocation :: Criterion
 canEvadeAtAnyLocation = EnemyCriteria (ThisEnemy EnemyWithEvade)
@@ -532,6 +530,7 @@ fightOffersAsIfEnemyTargets = \case
   standardFightCriterion = \case
     NoRestriction -> True
     Criteria cs -> all standardFightCriterion cs
+    AnyCriterion cs -> any standardFightCriterion cs
     OnSameLocation -> True
     CanAttack -> True
     EnemyCriteria (ThisEnemy m) -> standardFightMatcher m
@@ -562,9 +561,18 @@ prohibit = require . not
 
 canFightCriteriaObeyAloof :: Bool -> Criterion
 canFightCriteriaObeyAloof obeyAloof =
-  OnSameLocation <> EnemyCriteria (ThisEnemy $ wrapAloof $ CanBeAttackedBy You) <> CanAttack
- where
-  wrapAloof = if obeyAloof then (<> EnemyOneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone]) else id
+  OnSameLocation
+    <> EnemyCriteria (ThisEnemy $ CanBeAttackedBy You)
+    <> CanAttack
+    <> (if obeyAloof then aloofFightRestriction else NoRestriction)
+
+-- an aloof enemy is only attackable while engaged, unless the attacker ignores the keyword
+aloofFightRestriction :: Criterion
+aloofFightRestriction =
+  oneOf
+    [ EnemyCriteria (ThisEnemy $ EnemyOneOf [not_ AloofEnemy, EnemyIsEngagedWith Anyone])
+    , InvestigatorExists (You <> InvestigatorWithModifier IgnoreAloof)
+    ]
 
 canDamageEnemyAt :: Sourceable source => source -> LocationMatcher -> Criterion
 canDamageEnemyAt source locationMatcher = canDamageEnemyAtMatch source locationMatcher AnyEnemy

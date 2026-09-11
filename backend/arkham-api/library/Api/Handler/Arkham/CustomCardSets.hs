@@ -13,6 +13,7 @@ import Data.Text qualified as T
 import Data.Time.Clock
 import Import hiding ((==.))
 import Import qualified as P
+import Json hiding (Success)
 
 {- | A set as the builder sees it: what it is called, where it came from, and how
 much is in it. The count is what makes the sidebar useful, and is cheaper to

@@ -284,6 +284,10 @@ async function exportSelected() {
   )
 }
 
+/* How many investigator minis the last import had to cut for itself. Set by the
+ * arkham.build path, cleared by every import, and only ever read to say so. */
+const portraitsCut = ref(0)
+
 /* Everything imported arrives as a set, replacing one of the same name rather
  * than merging into it. A file that names no set falls back to what the cards
  * claim, and failing that to the file's own name. */
@@ -294,6 +298,7 @@ async function importFile(file: File, parse: (text: string) => Promise<{
 }>) {
   error.value = null
   status.value = null
+  portraitsCut.value = 0
   try {
     const { name, sourceCode, cards: incoming } = await parse(await file.text())
     if (!incoming.length) {
@@ -313,7 +318,10 @@ async function importFile(file: File, parse: (text: string) => Promise<{
     const set = await importSet({ name, sourceCode, cards: incoming })
     chooseActiveSet(set.id)
     if (editing && !libraryCard(editing)) startNew()
-    status.value = `Imported ${incoming.length} card${incoming.length === 1 ? '' : 's'} into "${set.name}".`
+    const cut = portraitsCut.value
+    const minis = cut ? ` ${cut} investigator mini${cut === 1 ? '' : 's'} cut from the card art.` : ''
+    status.value =
+      `Imported ${incoming.length} card${incoming.length === 1 ? '' : 's'} into "${set.name}".${minis}`
   } catch (e) {
     console.error(e)
     error.value = 'Could not read that file.'
@@ -346,13 +354,15 @@ async function onImportArkhamBuild(event: Event) {
   input.value = ''
   if (!file) return
   await importFile(file, async (text) => {
-    const { parseArkhamBuildCards, arkhamBuildCardToCustomCard } = await import('@/arkham/arkhamBuildImport')
+    const { parseArkhamBuildCards, arkhamBuildCardToCustomCard, attachInvestigatorPortraits } =
+      await import('@/arkham/arkhamBuildImport')
     const { packName, packCode, cards: rawCards } = parseArkhamBuildCards(text)
-    return {
-      name: packName ?? fileBaseName(file),
-      sourceCode: packCode,
-      cards: rawCards.map((raw: any) => arkhamBuildCardToCustomCard(raw, packName)),
-    }
+    const cards = rawCards.map((raw: any) => arkhamBuildCardToCustomCard(raw, packName))
+    /* There is no mini in the export, so an investigator's is cut out of its own
+     * card face. Said out loud in the status line below, because it is a guess
+     * at where the art sits and the author may want to replace it. */
+    portraitsCut.value = await attachInvestigatorPortraits(cards)
+    return { name: packName ?? fileBaseName(file), sourceCode: packCode, cards }
   })
 }
 </script>

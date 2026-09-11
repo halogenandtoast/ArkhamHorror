@@ -193,6 +193,112 @@ export function arkhamBuildCardToCustomCard(raw: any, packName: string | null): 
   return { def: def as any, art: raw.image_url || null }
 }
 
+// ----------------------------------------------------------- portraits ---
+
+/* arkham.build's export has a card face and a card back and nothing else. An
+ * investigator also needs a mini -- the portrait the game shows for that
+ * investigator wherever there is no room for the card -- and there is no such
+ * image in the export to map, so an imported investigator arrived with an empty
+ * portrait and its whole landscape card squashed into a portrait-shaped hole
+ * wherever one was asked for.
+ *
+ * The art is on the card, though. An investigator card is laid out the same way
+ * every time: the illustration fills the left of the face, below the name plate,
+ * top to bottom -- which is the shape a portrait wants. So the mini is cut out
+ * of the face rather than left missing. It is an approximation: the official
+ * minis are cropped from the original illustration and show more of it than the
+ * card ever does. It is a recognisable one.
+ *
+ * The back mini is the same crop desaturated, which is what the official back
+ * minis are -- the card's own back is the deckbuilding text and has no art on it
+ * at all.
+ *
+ * Fractions rather than pixels: faces arrive at whatever size the pack was
+ * rendered at (600x423 and 1050x750 both turn up in the official data alone).
+ * The width is taken from the height so the result is 2:3 whatever aspect the
+ * face itself has. */
+const PORTRAIT_CROP = { left: 0.03, top: 0.15, height: 0.83, aspect: 2 / 3 }
+const PORTRAIT_MAX_HEIGHT = 450
+
+function desaturate(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  const image = ctx.getImageData(0, 0, width, height)
+  const px = image.data
+  for (let i = 0; i < px.length; i += 4) {
+    const grey = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2]
+    px[i] = Math.min(255, grey * 1.07)
+    px[i + 1] = grey * 0.97
+    px[i + 2] = grey * 0.8
+  }
+  ctx.putImageData(image, 0, 0)
+}
+
+/* Cuts the portrait out of a card face. Null whenever it cannot be done, which
+ * leaves the card exactly as it was: the image host may refuse the request, and
+ * this runs in a browser or not at all. */
+async function cropPortrait(url: string, grey = false): Promise<string | null> {
+  if (typeof document === 'undefined') return null
+  try {
+    /* Fetched as bytes and decoded from the blob rather than pointed at with an
+     * <img src>: a cross-origin image drawn onto a canvas taints it, and
+     * `toDataURL` then throws rather than returning anything. Bytes carry no
+     * origin, so the canvas stays clean -- and a host that will not serve the
+     * fetch at all simply leaves the portrait unset. */
+    const response = await fetch(url, { mode: 'cors' })
+    if (!response.ok) return null
+    const bitmap = await createImageBitmap(await response.blob())
+
+    const sh = Math.round(bitmap.height * PORTRAIT_CROP.height)
+    const sw = Math.round(sh * PORTRAIT_CROP.aspect)
+    // Clamped so a face narrower than the crop yields a smaller portrait rather
+    // than one padded out with transparent pixels.
+    const sx = Math.min(Math.round(bitmap.width * PORTRAIT_CROP.left), Math.max(0, bitmap.width - sw))
+    const sy = Math.round(bitmap.height * PORTRAIT_CROP.top)
+
+    const scale = Math.min(1, PORTRAIT_MAX_HEIGHT / sh)
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.max(1, Math.round(sw * scale))
+    canvas.height = Math.max(1, Math.round(sh * scale))
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+
+    ctx.drawImage(bitmap, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height)
+    bitmap.close()
+    if (grey) desaturate(ctx, canvas.width, canvas.height)
+    return canvas.toDataURL('image/jpeg', 0.85)
+  } catch {
+    return null
+  }
+}
+
+/* Gives every imported investigator the minis the export could not. Best effort
+ * and in place: an investigator whose face cannot be read is left with none,
+ * which is where it started.
+ *
+ * Returns how many were given one, so the import can say so -- a portrait cut
+ * from the card is a guess at the author's intent, not something to do silently.
+ */
+export async function attachInvestigatorPortraits(cards: CustomCard[]): Promise<number> {
+  const investigators = cards.filter((c) => {
+    const def = c.def as any
+    return def.cardType === 'InvestigatorType' && !def.meta?.portrait && !!c.art
+  })
+
+  const done = await Promise.all(
+    investigators.map(async (card) => {
+      const def = card.def as any
+      const [front, back] = await Promise.all([
+        cropPortrait(card.art!),
+        cropPortrait(card.art!, true),
+      ])
+      if (front) def.meta.portrait = front
+      if (back) def.meta.portraitBack = back
+      return front ? 1 : 0
+    }),
+  )
+
+  return done.reduce((a: number, b: number) => a + b, 0)
+}
+
 // ---------------------------------------------------------- deck codes ---
 
 /* Which ids get rewritten is `isArkhamBuildCardId`, which sits beside the

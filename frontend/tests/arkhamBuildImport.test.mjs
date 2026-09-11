@@ -330,3 +330,22 @@ test('the deck rewrite translates exactly the ids the importer recognises', asyn
     }
   }
 })
+
+/* The mini is cut from the card face in a browser, with a canvas. Outside one
+there is nothing to cut with, and the cards come back exactly as they went in
+rather than half-filled. */
+test('portrait cropping leaves cards alone when it cannot run', async (t) => {
+  const { arkhamBuildCardToCustomCard, attachInvestigatorPortraits } = await load(t)
+
+  const cards = [
+    arkhamBuildCardToCustomCard(investigator, PACK),
+    arkhamBuildCardToCustomCard(asset, PACK),
+  ]
+  const cut = await attachInvestigatorPortraits(cards)
+
+  assert.equal(cut, 0)
+  assert.equal(cards[0].def.meta.portrait, undefined)
+  assert.equal(cards[0].def.meta.portraitBack, undefined)
+  // The face it would have been cut from is untouched either way.
+  assert.equal(cards[0].art, investigator.image_url)
+})

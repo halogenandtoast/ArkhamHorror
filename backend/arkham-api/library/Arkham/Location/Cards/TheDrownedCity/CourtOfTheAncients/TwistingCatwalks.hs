@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheDrownedCity.CourtOfTheAncients.TwistingCatwalks (twistingCatwalks) where
 
 import Arkham.Ability
-import Arkham.Card (cardMatch)
+import Arkham.Card (filterCards)
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Enemy (getDefeatedEnemyHealth)
 import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCard)
@@ -9,6 +9,7 @@ import Arkham.Helpers.Window (defeatedEnemy)
 import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Glyph))
 
 newtype TwistingCatwalks = TwistingCatwalks LocationAttrs
@@ -39,11 +40,10 @@ instance RunMessage TwistingCatwalks where
         when (health > 0) $ discardTopOfEncounterDeckAndHandle iid (attrs.ability 2) health attrs
       pure l
     DiscardedTopOfEncounterDeck iid cards _ (isTarget attrs -> True) -> do
-      -- These cards are already in the encounter discard pile by the time this
-      -- fires, and every Glyph treachery branches on
-      -- @drawnFrom == Just EncounterDiscard@ to attach rather than surge, so the
-      -- draw has to name the deck it came from.
-      for_ cards \c ->
-        when (cardMatch c $ CardWithTrait Glyph) $ drawCardFrom iid Deck.EncounterDiscard c
+      -- Only 1 Glyph. Named deck, not plain 'drawCard': Glyph treacheries only
+      -- attach when @drawnFrom == Just EncounterDiscard@, otherwise they surge.
+      let glyphs = filterCards (CardWithTrait Glyph) cards
+      unless (null glyphs) $ focusCards glyphs do
+        chooseTargetM iid glyphs $ drawCardFrom iid Deck.EncounterDiscard
       pure l
     _ -> TwistingCatwalks <$> liftRunMessage msg attrs

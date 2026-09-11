@@ -11,6 +11,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
 import Arkham.FlavorText
+import Arkham.Helpers.FlavorText (addEntry, setup)
 import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier, modifySelect)
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.SkillTest
@@ -93,6 +94,22 @@ instance RunMessage TheHeartOfMadnessPart1 where
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart1 attrs do
+      setup $ addEntry $ ul do
+        li "gatherSets"
+        li.nested "gateOfYquaa" do
+          li "startAt"
+          li "unrevealedSideUnused"
+        li.nested "ancientFacility" do
+          li "spokesAndRings"
+        li "setSealsAside"
+        li.nested "checkDifficulty" do
+          li.validate (attrs.difficulty == Hard) "hard"
+          li.validate (attrs.difficulty == Expert) "expert"
+        li "tekelili"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.TheHeartOfMadness
       gather Set.TheGreatSeal
       gather Set.Miasma

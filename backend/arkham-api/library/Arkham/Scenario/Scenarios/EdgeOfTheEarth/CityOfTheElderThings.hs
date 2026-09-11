@@ -15,7 +15,7 @@ import Arkham.Enemy.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as En
 import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
-import Arkham.Helpers.FlavorText (addEntry)
+import Arkham.Helpers.FlavorText (addEntry, setup)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
@@ -104,6 +104,27 @@ startAtScouted lid = do
       reveal lid
       placeAllAt lid
       scoutedTheCityOutskirtsBonus lead lid
+
+cityOfTheElderThingsSetup :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> Scope -> Bool -> m ()
+cityOfTheElderThingsSetup attrs version addsElderThingToken = setup $ addEntry $ ul do
+  scope version do
+    li "gatherSets"
+    li "setAside"
+    li "createActDeck"
+    li.nested "placeLocations" do
+      li "startAt"
+      li "adjacency"
+    li "keys"
+    li.validate addsElderThingToken "addElderThingToken"
+    li "removals"
+  li "removeUnearnedWeaknesses"
+  li.nested "checkDifficulty" do
+    li.validate (attrs.difficulty == Hard) "hard"
+    li.validate (attrs.difficulty == Expert) "expert"
+  li "tekelili"
+  unscoped do
+    li "shuffleRemainder"
+    li "readyToBegin"
 
 allKeys :: MonadRandom m => m [ArkhamKey]
 allKeys = do
@@ -308,6 +329,8 @@ instance RunMessage CityOfTheElderThings where
       doStep (toResult @Int attrs.meta) msg
       pure $ CityOfTheElderThings $ attrs & metaL .~ toJSON (0 :: Int)
     DoStep 1 Setup -> runScenarioSetup CityOfTheElderThings attrs do
+      cityOfTheElderThingsSetup attrs "v1" True
+
       gather Set.CityOfTheElderThings
       gather Set.ElderThings
       gather Set.Miasma
@@ -347,6 +370,8 @@ instance RunMessage CityOfTheElderThings where
         _ -> pure ()
       addTekeliliDeck
     DoStep 2 Setup -> runScenarioSetup CityOfTheElderThings attrs do
+      cityOfTheElderThingsSetup attrs "v2" True
+
       gather Set.CityOfTheElderThings
       gather Set.ElderThings
       gather Set.NamelessHorrors
@@ -380,6 +405,8 @@ instance RunMessage CityOfTheElderThings where
         _ -> pure ()
       addTekeliliDeck
     DoStep 3 Setup -> runScenarioSetup CityOfTheElderThings attrs do
+      cityOfTheElderThingsSetup attrs "v3" False
+
       gather Set.CityOfTheElderThings
       gather Set.CreaturesInTheIce
       gather Set.Miasma

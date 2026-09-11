@@ -16,6 +16,7 @@ import Arkham.Exception
 import Arkham.Field
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.FlavorText (addEntry, setup)
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Text
@@ -168,6 +169,21 @@ instance RunMessage ToTheForbiddenPeaks where
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     Setup -> runScenarioSetup ToTheForbiddenPeaks attrs do
+      setup $ addEntry $ ul do
+        li "gatherSets"
+        li.nested "placeLocations" do
+          li "revealLevel0"
+        li "addElderThingToken"
+        li "suppliesRecovered"
+        li "setTerrorOfTheStarsAside"
+        li.nested "checkDifficulty" do
+          li.validate (attrs.difficulty == Hard) "hard"
+          li.validate (attrs.difficulty == Expert) "expert"
+        li "tekelili"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.ToTheForbiddenPeaks
       gather Set.DeadlyWeather
       gather Set.ElderThings

@@ -94,6 +94,45 @@
       "elderThing": "–5. If you fail, the nearest enemy moves once toward you. If it is engaged with you, it attacks."
     }
   },
+  "setup": {
+    "v1": {
+      "gatherSets": "Gather all cards from the following encounter sets: *City of the Elder Things*, *Elder Things*, *Miasma*, *Nameless Horrors*, *Penguins*, *Shoggoths*, *Tekeli-li*, and *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/city-of-the-elder-things.png' /><img src='{setImgPath}/elder-things.png' /><img src='{setImgPath}/miasma.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/penguins.png' /><img src='{setImgPath}/shoggoths.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+      "setAside": "Set aside the *Shoggoths* encounter set.",
+      "createActDeck": "Create the act deck using only Sprawling City (v. I) and Pursuit of the Unknown (v. I). Remove all other act cards from the game.",
+      "placeLocations": "Shuffle the sixteen City Landscape locations and put them into play, along with the Hidden Tunnel, according to the map.",
+      "startAt": "The lead investigator chooses one of the eight outermost locations. Each investigator begins play at the chosen location.",
+      "adjacency": "Locations in this scenario are connected to each adjacent location.",
+      "keys": "Gather two copies of each of the following tokens from the collection (*not from the chaos bag*): {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, 0, –1, –2, and –3. Randomly place one of these sixteen tokens on each City Landscape location. These are “keys.”",
+      "addElderThingToken": "Add 1 {'{'}elderThing{'}'} token to the chaos bag.",
+      "removals": "Remove all three copies of the Benign Elder Thing enemy from the game. Set the Terror of the Stars enemy aside, out of play."
+    },
+    "v2": {
+      "gatherSets": "Gather all cards from the following encounter sets: *City of the Elder Things*, *Creatures in the Ice*, *Elder Things*, *Nameless Horrors*, *Penguins*, *Silence and Mystery*, *Tekeli-li*, and *Chilling Cold*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/city-of-the-elder-things.png' /><img src='{setImgPath}/creatures-in-the-ice.png' /><img src='{setImgPath}/elder-things.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/penguins.png' /><img src='{setImgPath}/silence-and-mystery.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+      "setAside": "Set aside the *Creatures in the Ice* encounter set.",
+      "createActDeck": "Create the act deck using only Sprawling City (v. II) and Pursuit of the Unknown (v. II). Remove all other act cards from the game.",
+      "placeLocations": "Shuffle the sixteen City Landscape locations and put them into play, along with the Hidden Tunnel, according to the map.",
+      "startAt": "Each investigator begins play at the location on the bottom-right.",
+      "adjacency": "Locations in this scenario are connected to each adjacent location.",
+      "keys": "Gather two copies of each of the following tokens from the collection (*not from the chaos bag*): {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, 0, –1, –2, and –3. Randomly place one of these sixteen tokens on each City Landscape location. These are “keys.”",
+      "addElderThingToken": "Add 1 {'{'}elderThing{'}'} token to the chaos bag.",
+      "removals": "Remove the Terror of the Stars enemy and all three copies of the Benign Elder Thing enemy from the game."
+    },
+    "v3": {
+      "gatherSets": "Gather all cards from the following encounter sets: *City of the Elder Things*, *Creatures in the Ice*, *Miasma*, *Penguins*, *Shoggoths*, *Tekeli-li*, *Chilling Cold*, and *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/city-of-the-elder-things.png' /><img src='{setImgPath}/creatures-in-the-ice.png' /><img src='{setImgPath}/miasma.png' /><img src='{setImgPath}/penguins.png' /><img src='{setImgPath}/shoggoths.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+      "setAside": "Set aside the *Shoggoths* encounter set.",
+      "createActDeck": "Create the act deck using only Sprawling City (v. III) and Pursuit of the Unknown (v. III). Remove all other act cards from the game.",
+      "placeLocations": "Shuffle the sixteen City Landscape locations and put them into play, along with the Hidden Tunnel, according to the map.",
+      "startAt": "Each investigator begins play at the location on the top-left.",
+      "adjacency": "Locations in this scenario are connected to each adjacent location.",
+      "keys": "Gather two copies of each of the following tokens from the collection (*not from the chaos bag*): {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, 0, –1, –2, and –3. Randomly place one of these sixteen tokens on each City Landscape location. These are “keys.”",
+      "removals": "Remove the Terror of the Stars enemy and all three copies of the Reawakened Elder Thing enemy from the game."
+    },
+    "removeUnearnedWeaknesses": "Remove from the game each copy of the Frostbitten and Possessed weaknesses that was not earned during the introduction.",
+    "checkDifficulty": "Check the difficulty level.",
+    "hard": "If you are playing on Hard difficulty, add 1 doom to agenda 1a.",
+    "expert": "If you are playing on Expert difficulty, add 2 doom to agenda 1a.",
+    "tekelili": "Shuffle each Tekeli-li! weakness card that is not already part of an investigator’s deck together to form the Tekeli-li deck. Place this deck near the agenda deck."
+  },
   "hiddenTunnelEntranceToTheDepths": {
     "label": {
       "spendSkullKey": "Spend Skull Key",

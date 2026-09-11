@@ -10,13 +10,13 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Enemies
 import Arkham.Helpers.ChaosBag (hasRemainingFrostTokens)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Helpers.Shuffle (getCanShuffleIn)
 import Arkham.Helpers.Text
 import Arkham.Helpers.Xp (toBonus)
-import Arkham.I18n
 import Arkham.Location.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Locations
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
@@ -112,6 +112,20 @@ instance RunMessage IceAndDeathPart3 where
       eachInvestigator \iid -> gameModifier ScenarioSource iid (CannotPerformAction $ IsAction #resign)
       pure s
     Setup -> runScenarioSetup IceAndDeathPart3 attrs do
+      setup $ ul do
+        li "gatherSets"
+        li "buildAgendaDecks"
+        li.nested "placeLocations" do
+          li "unrevealed"
+        li.nested "beginAtCamp" do
+          li "removeClues"
+        li "seepingNightmares"
+        li "eidolons"
+        li "tekelili"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.IceAndDeath
       gather Set.SeepingNightmares
       gather Set.CreaturesInTheIce

@@ -118,6 +118,17 @@
       "title": "@:edgeOfTheEarth.iceAndDeath.part2.investigatorSetup.title",
       "body": "@:edgeOfTheEarth.iceAndDeath.part2.investigatorSetup.body"
     },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *Ice and Death*, *Seeping Nightmares*, *Creatures in the Ice*, *Deadly Weather*, *Hazards of Antarctica*, *Silence and Mystery*, *Tekeli-li*, and *Ancient Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/ice-and-death.png' /><img src='{setImgPath}/seeping-nightmares.png' /><img src='{setImgPath}/creatures-in-the-ice.png' /><img src='{setImgPath}/deadly-weather.png' /><img src='{setImgPath}/hazards-of-antarctica.png' /><img src='{setImgPath}/silence-and-mystery.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+      "buildAgendaDecks": "Build the agenda deck using agendas 7–8 and the act deck using act 3. (These can be found in the *Seeping Nightmares* encounter set.)",
+      "placeLocations": "In the “Ice and Death” section of the Campaign Log, find each location under Locations Revealed. Put each of those locations into play, revealed (*with clues equal to its clue value*).",
+      "unrevealed": "Put each other location into play, unrevealed.",
+      "beginAtCamp": "Each investigator begins play at the camp.",
+      "removeClues": "Remove all clues from the camp. It begins the game with no clues on it.",
+      "seepingNightmares": "Find 1 {'{'}perPlayer{'}'} Seeping Nightmare enemies. These enemies can be found in the *Seeping Nightmares* encounter set. Spawn each at a different location according to the “Seeping Nightmares” sidebar. Remove all remaining Seeping Nightmare enemies from the game.",
+      "eidolons": "Find the eight Eidolon enemies from the *Ice and Death* and *Creatures in the Ice* encounter sets. Shuffle them and place them facedown beneath each Seeping Nightmare enemy in play, divided as evenly as possible.",
+      "tekelili": "Shuffle each Tekeli-li! weakness card that is not already part of an investigator’s deck together to form the Tekeli-li deck. Place this deck near the agenda deck."
+    },
     "intro": {
       "title": "Ice and Death, Part III",
       "body": "<p>“There—see it?” one of the team members hands you their binoculars and points into the distance. You’ve ventured just outside camp to find a defensible position where you hope can see the creatures approaching…but what you find instead is even worse. Not only are they encroaching on the campsite as you expected, but more are emerging from the ice by the minute.</p><p>You watch the ice shelf split open, and a geyser of multicolored miasma seeps from the cracks. Your companion clutches your arm and points you in another direction, where you see another geyser spill forth. Then, another. “There has to be an end to them, right?”</p><p>You lower the binoculars and tell the rest of the team to prepare for a fight. You don’t know if you can hold off these strange creatures or not, but there’s only one way to find out.</p><p class='basic right'>Add 1 {'{'}frost{'}'} token to the chaos bag. Proceed to _Setup_.</p>"

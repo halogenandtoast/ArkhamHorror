@@ -69,6 +69,31 @@
       "elderthing": "–5. If you fail, place 1 doom on an _Eidolon_ enemy in play."
     }
   },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Fatal Mirage*, *Agents of the Unknown*, *Left Behind*, *Miasma*, *Nameless Horrors*, *Silence and Mystery*, *Tekeli-li*, and *Chilling Cold*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/fatal-mirage.png' /><img src='{setImgPath}/agents-of-the-unknown.png' /><img src='{setImgPath}/left-behind.png' /><img src='{setImgPath}/miasma.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/silence-and-mystery.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "firstTime": {
+      "buildAgendaDeck": "Build the agenda deck using only agenda 1. Remove the remaining agendas from the game.",
+      "buildActDeck": "Build the act deck using only act 1. Remove the remaining acts from the game.",
+      "placeLocations": "Put the Prison of Memories location into play, revealed side faceup.",
+      "startAt": "Each investigator begins play at the Prison of Memories.",
+      "setOtherLocationsAside": "Set each other location aside, out of play.",
+      "setOutOfPlay": "Set each of the following cards aside, out of play: the nine “Memory of…” enemies, and the nine _Resolute_ story assets."
+    },
+    "repeat": {
+      "buildAgendaDeck": "Build the agenda deck using only agenda 2 if this is the second time you are playing _Fatal Mirage_, or agenda 3 if this is the third time. Remove the remaining agendas from the game.",
+      "buildActDeck": "Build the act deck using only act 2 if this is the second time you are playing _Fatal Mirage_, or act 3 if this is the third time. Remove the remaining acts from the game.",
+      "memoriesBanished": "Find each story card listed under “Memories Banished” in your Campaign Log. Put each of these cards in the victory display.",
+      "setRemainingMemoriesAside": "Set each remaining “Memory of…” enemy aside, out of play.",
+      "memoriesDiscovered": "Find each location listed under “Memories Discovered” in your Campaign Log. Put each of those locations into play, revealed side faceup, along with the Prison of Memories (*remember to adjust each location’s clue value according to the mirage keyword*).",
+      "startAt": "Each investigator begins play at the Prison of Memories.",
+      "setOtherLocationsAside": "Set each other location aside, out of play.",
+      "setResoluteAside": "Set aside each of the nine _Resolute_ story assets that have not already been earned during a previous playthrough of _Fatal Mirage_."
+    },
+    "checkDifficulty": "Check the difficulty level.",
+    "hard": "If you are playing on Hard difficulty, add 1 doom to the agenda.",
+    "expert": "If you are playing on Expert difficulty, add 2 doom to the agenda.",
+    "tekelili": "Shuffle each Tekeli-li! weakness card that is not already part of an investigator’s deck together to form the Tekeli-li deck. Place this deck near the agenda deck."
+  },
   "deckOfTheTheodosia": {
     "label": {
       "addShroud": "Give it +2 shroud for this investigation",

@@ -13,6 +13,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemies
 import Arkham.Exception
 import Arkham.FlavorText
+import Arkham.Helpers.FlavorText (addEntry, setup)
 import Arkham.Helpers.Log ()
 import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier, modifySelect)
 import Arkham.Helpers.Query
@@ -173,6 +174,24 @@ instance RunMessage TheHeartOfMadnessPart2 where
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart2 attrs do
+      setup $ addEntry $ ul do
+        li.nested "gatherSets" do
+          li "strikingFear"
+        li "removeSets"
+        li "buildDecks"
+        li "flipGate"
+        li.nested "placeLocations" do
+          li "innermostRing"
+          li "startAt"
+        li "setAside"
+        li.nested "seals" do
+          li "activated"
+          li "dormant"
+          li "removeOthers"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.TheHeartOfMadness
       gather Set.AgentsOfTheUnknown
       gather Set.Miasma

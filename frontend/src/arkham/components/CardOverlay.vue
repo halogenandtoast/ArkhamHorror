@@ -646,13 +646,26 @@ const additionalCard = computed<string | null>(() => {
   return imgsrc(`cards/${cardCode.value}b.avif`)
 })
 
+// A later taboo can mutate a card without touching its customizable sheet -- Taboo 24
+// only changed Power Word's test difficulty, which lives on the front. Point those
+// variants at the sheet from the taboo that last changed it.
+const customizationSheetVariants: Record<string, string> = {
+  '09081_Mutated24': '_Mutated21',
+}
+
+const customizationSheetVariant = computed<string>(() => {
+  const variant = customizationVariant.value
+  if (!variant || !cardCode.value) return variant
+  return customizationSheetVariants[`${cardCode.value}${variant}`] ?? variant
+})
+
 const customizationsCard = computed<string | null>(() => {
   if (!cardCode.value) return null
   if (!allCustomizations.has(cardCode.value)) return null
   // Chained sheets (Runic Axe) ship as .avif; base and mutated sheets as .jpg.
   const chained = hoveredElement.value?.dataset?.chained
   if (chained) return imgsrc(`customizations/${cardCode.value}_${chained}.avif`)
-  return imgsrc(`customizations/${cardCode.value}${customizationVariant.value}.jpg`)
+  return imgsrc(`customizations/${cardCode.value}${customizationSheetVariant.value}.jpg`)
 })
 
 /* =============================================================================

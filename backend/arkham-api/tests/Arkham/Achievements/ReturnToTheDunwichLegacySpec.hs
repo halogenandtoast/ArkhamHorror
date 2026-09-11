@@ -285,6 +285,19 @@ spec = describe "Return to the Dunwich Legacy achievements" $ do
       killWhippoorwill
       earned `refShouldBe` True
 
+    -- The counter is bumped through the queue, and a Simultaneously block runs
+    -- every branch with a cleared queue -- so a read-modify-write read 0 three
+    -- times. Stir the Pot damaging every enemy at a location is this shape.
+    it "is earned when the three are defeated simultaneously" . gameTest $ \_ -> do
+      asReturnToTheDunwichLegacy
+      location <- testLocation
+      earned <- didEarnDunwich BirdHunting
+      birds <- replicateM 3 $ testEnemyWithDef Enemies.whippoorwill id
+      for_ birds (`spawnAt` location)
+      run
+        $ Simultaneously [Defeated (toTarget bird) (toCardId bird) (TestSource mempty) [] | bird <- birds]
+      earned `refShouldBe` True
+
     it "resets the count on a turn boundary" . gameTest $ \self -> do
       asReturnToTheDunwichLegacy
       location <- testLocation

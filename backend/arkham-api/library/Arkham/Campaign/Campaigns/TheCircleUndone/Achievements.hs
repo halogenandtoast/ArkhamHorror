@@ -154,17 +154,22 @@ runCircleAchievements msg = whenEligibleCampaign $ case msg of
   InvestigatorAssignDamage _ src _ _ horror | horror > 0 -> do
     for_ src.asset \aid -> do
       whenM (selectAny $ AssetWithId aid <> assetIs Assets.theBlackBook) do
-        c <- storedInt blackBookHorrorKey
-        setStore blackBookHorrorKey (c + horror)
-        when (c + horror >= 10) $ earn TenOutOfTenWouldReadAgain
+        bumpCounter blackBookHorrorKey horror
+
+  -- Deferred threshold checks: 'bumpCounter' does its arithmetic when the
+  -- message is processed, so the counter only reads its new value here.
+  CounterBumped k
+    | k == blackBookHorrorKey -> whenM ((>= 10) <$> storedInt k) $ earn TenOutOfTenWouldReadAgain
+    | k == geistDefeatsKey -> whenM ((>= 13) <$> storedInt k) $ earn WhoYouGonnaCall
   _ -> pure ()
 
 earn :: (HasGame m, HasQueue Message m) => TheCircleUndoneAchievement -> m ()
 earn = earnAchievement . TheCircleUndoneAchievement
 
--- | "Circle Expertise": earn when the current campaign win happens on Expert.
--- Called from every winning-campaign record (the Black Throne survivals and the
--- two loyal-faction gameOver endings in Union and Disillusion).
+{- | "Circle Expertise": earn when the current campaign win happens on Expert.
+Called from every winning-campaign record (the Black Throne survivals and the
+two loyal-faction gameOver endings in Union and Disillusion).
+-}
 checkCircleExpertise :: (HasGame m, HasQueue Message m) => m ()
 checkCircleExpertise = do
   g <- getGame
@@ -174,11 +179,8 @@ checkCircleExpertise = do
 progressCase :: (HasGame m, HasQueue Message m) => Text -> m ()
 progressCase item = achievementProgress (TheCircleUndoneAchievement CaseClosed) [item]
 
-bumpGeist :: (HasCallStack, HasGame m, HasQueue Message m) => m ()
-bumpGeist = do
-  n <- storedInt geistDefeatsKey
-  setStore geistDefeatsKey (n + 1)
-  when (n + 1 >= 13) $ earn WhoYouGonnaCall
+bumpGeist :: HasQueue Message m => m ()
+bumpGeist = bumpCounter geistDefeatsKey 1
 
 isGeistOrSpectral :: Set Trait -> Bool
 isGeistOrSpectral traits = Geist `member` traits || Spectral `member` traits

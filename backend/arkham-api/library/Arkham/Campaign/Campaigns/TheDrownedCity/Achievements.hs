@@ -77,11 +77,7 @@ runDrownedCityAchievements msg = whenEligibleCampaign $ case msg of
     -- act 3a (Face the Music) parley ability, whose damage is dealt by the act's
     -- ability 1 — so the killing source unwraps to that act.
     when (cardDef `elem` gangBosses) $ whenScenarioIs oneLastJobId do
-      when (isFaceTheMusicAbility source) do
-        defeated <- storedList coupBossesKey
-        let defeated' = nub (toCardCode cardDef : defeated)
-        setStore coupBossesKey defeated'
-        when (length defeated' >= length gangBosses) $ earn ThisIsACoup
+      when (isFaceTheMusicAbility source) $ insertGlobal coupBossesKey (toCardCode cardDef)
 
     -- "Kill the Adds": defeat Mother without ever dealing her damage directly.
     -- Her Forced ability moves damage tokens off the Stowaway adds onto her,
@@ -106,10 +102,7 @@ runDrownedCityAchievements msg = whenEligibleCampaign $ case msg of
   -- display again. Twenty of those in one campaign earns it.
   AddToVictory _ (EnemyTarget eid) -> do
     cardDef <- fieldMap EnemyCard toCardDef eid
-    when (cardDef == Enemies.theInescapable) do
-      n <- storedInt inescapableVictoriesKey
-      setStore inescapableVictoriesKey (n + 1)
-      when (n + 1 >= 20) $ earn WhyWontYouStayDead
+    when (cardDef == Enemies.theInescapable) $ bumpCounter inescapableVictoriesKey 1
 
   -- "Cliff Diver" bookkeeping: the Diving Suit only ever reaches play as an
   -- Expedition Item chosen during a scenario's setup, i.e. brought along.
@@ -127,10 +120,7 @@ runDrownedCityAchievements msg = whenEligibleCampaign $ case msg of
   -- projection for an act's underneath pile, so the rescues are tallied here.
   PlaceUnderneath (ActTarget _) cards -> whenScenarioIs theApiaryId do
     let rescued = count (`cardMatch` CardWithTrait Cultist) cards
-    when (rescued > 0) do
-      n <- storedInt rescuedCultistsKey
-      setStore rescuedCultistsKey (n + rescued)
-      when (n + rescued >= 5) $ earn NoAcolyteLeftBehind
+    when (rescued > 0) $ bumpCounter rescuedCultistsKey rescued
 
   -- "Sorry, Didn't See You There" bookkeeping: the Great Lift only ever changes
   -- level by being re-placed in the grid (both `slideGreatLift` and the
@@ -166,9 +156,7 @@ runDrownedCityAchievements msg = whenEligibleCampaign $ case msg of
   -- "Sky Rider": end five turns in open sky in a single game of Obsidian Canyons.
   EndTurn iid -> whenScenarioIs obsidianCanyonsId do
     whenM (selectAny $ locationIs Locations.openSky <> locationWithInvestigator iid) do
-      n <- storedInt openSkyTurnEndsKey
-      setStore openSkyTurnEndsKey (n + 1)
-      when (n + 1 >= 5) $ earn SkyRider
+      bumpCounter openSkyTurnEndsKey 1
 
   -- Per-game counters reset as their scenario is set up, so "during a single
   -- game" stays true even if a scenario is somehow revisited.
@@ -255,6 +243,19 @@ runDrownedCityAchievements msg = whenEligibleCampaign $ case msg of
 
     completed <- filterM (selectAny . IncludeEliminated . investigatorWithRecord . fst) taskItems
     achievementProgress (TheDrownedCityAchievement Obligations) (map snd completed)
+
+  {- Deferred threshold checks. 'bumpCounter'/'insertGlobal' do their arithmetic
+  when the message is processed, so the stored value only reads back correctly
+  here -- and a read-modify-write would lose entries when both gang bosses are
+  defeated by the same effect.
+  -}
+  CounterBumped k
+    | k == inescapableVictoriesKey -> whenM ((>= 20) <$> storedInt k) $ earn WhyWontYouStayDead
+    | k == rescuedCultistsKey -> whenM ((>= 5) <$> storedInt k) $ earn NoAcolyteLeftBehind
+    | k == openSkyTurnEndsKey -> whenM ((>= 5) <$> storedInt k) $ earn SkyRider
+  GlobalInserted k | k == coupBossesKey -> do
+    defeated <- storedList k
+    when (length defeated >= length gangBosses) $ earn ThisIsACoup
   _ -> pure ()
 
 earn :: (HasGame m, HasQueue Message m) => TheDrownedCityAchievement -> m ()

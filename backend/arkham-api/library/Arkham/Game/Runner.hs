@@ -575,6 +575,13 @@ runGameMessage msg g = case msg of
       & (playersL %~ \ps -> if pid `elem` ps then ps else ps <> [pid])
       & (playerCountL %~ (+ 1))
   Run msgs -> g <$ pushAll msgs
+  -- The main loop unwraps 'Priority' before 'runMessage' ever sees it, so this
+  -- only fires for a 'Priority' running inside a 'Simultaneously' branch (which
+  -- calls 'runMessage' directly). Without it the wrapped message -- every
+  -- 'Priority $ EarnAchievement' or 'Priority $ SetGlobal' pushed from a
+  -- simultaneous defeat -- was silently dropped. Jumping the queue is
+  -- meaningless inside a branch, so degrade to a plain push.
+  Priority msg' -> g <$ push msg'
   If wType _ -> do
     window <- checkWindows [mkWindow Timing.AtIf wType]
     g <$ pushAll [window, Do msg]

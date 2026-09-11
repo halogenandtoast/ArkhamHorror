@@ -151,10 +151,7 @@ runScarletKeysAchievements msg = whenEligibleCampaign $ case msg of
   Only the After window is counted; 'shiftKey' brackets the shift with a When one
   too. Keys are tallied by id so shifting the same key repeatedly is not five.
   -}
-  CheckWindows ws | Just kid <- firstShiftedKey ws -> do
-    shifted <- nub . (kid :) <$> storedTexts shiftedKeysKey
-    setStore shiftedKeysKey shifted
-    when (length shifted >= 5) $ earn ScarletWithYourPowersCombined
+  CheckWindows ws | Just kid <- firstShiftedKey ws -> insertGlobal shiftedKeysKey kid
   -- "in a single turn" — cleared at both ends, per the per-turn counter convention.
   BeginTurn _ -> setStore shiftedKeysKey ([] :: [CardCode])
   EndTurn _ -> setStore shiftedKeysKey ([] :: [CardCode])
@@ -165,9 +162,7 @@ runScarletKeysAchievements msg = whenEligibleCampaign $ case msg of
   says nothing of the kind.
   -}
   DoStep n (CampaignStep (InterludeStep 37 _)) | n `elem` [1, 3] -> do
-    talks <- storedInt taylorTalksKey
-    setStore taylorTalksKey (talks + 1)
-    when (talks + 1 >= 3) $ earn GiftOfGab
+    bumpCounter taylorTalksKey 1
     -- Tokyo's cuisine moment is Special Delivery 1, which IS the in-Tokyo branch
     -- (branch 3 is the same handover in Lagos).
     when (n == 1) $ sampled Tokyo
@@ -206,9 +201,7 @@ runScarletKeysAchievements msg = whenEligibleCampaign $ case msg of
   Defeated (EnemyTarget eid) _ _ _ -> do
     cardDef <- fieldMap Enemy.EnemyCard toCardDef eid
     whenScenarioIs onThinIceId $ when (cardDef `elem` voidChimeraForms) do
-      forms <- nub . (toCardCode cardDef :) <$> storedTexts' chimeraFormsKey
-      setStore chimeraFormsKey forms
-      when (length forms >= length voidChimeraForms) $ earn MoreLikeDestroyedChimera
+      insertGlobal chimeraFormsKey (toCardCode cardDef)
 
     {- "Porque No Los Dos?": both copies of Desi defeated by the same damage
     assignment. One effect killing both queues BOTH Defeated messages before either
@@ -285,11 +278,7 @@ runScarletKeysAchievements msg = whenEligibleCampaign $ case msg of
   -}
   CampaignSpecific "setBearer" v
     | Just (cCode, KeyWithInvestigator _) <- parseMaybe (parseJSON @(CardCode, KeyStatus)) v ->
-        for_ (lookup cCode keyChecklist) \item -> do
-          collected <- nub . (item :) <$> storedTexts collectedKeysKey
-          setStore collectedKeysKey collected
-          achievementProgress (TheScarletKeysAchievement KeyToMyHeart) collected
-
+        for_ (lookup cCode keyChecklist) (insertGlobal collectedKeysKey)
   -- "What's in a Name?": Dead Heat's Resolution 3, the only writer of this record,
   -- is telling Amaranth who she really is.
   Record key | key == toCampaignLogKey AmaranthHasLeftTheCoterie -> earn WhatsInAName
@@ -332,6 +321,26 @@ runScarletKeysAchievements msg = whenEligibleCampaign $ case msg of
 
     -- "Global Expertise": win on Expert.
     when (difficulty == Just Expert) $ earn GlobalExpertise
+
+  {- Deferred threshold checks. 'bumpCounter'/'insertGlobal' do their arithmetic
+  when the message is processed, so the stored value only reads back correctly
+  here; a read-modify-write would lose entries inside a 'Simultaneously' block
+  (all five Void Chimera forms defeated by one effect is exactly that shape).
+  -}
+  CounterBumped k | k == taylorTalksKey -> whenM ((>= 3) <$> storedInt k) $ earn GiftOfGab
+  GlobalInserted k
+    | k == shiftedKeysKey -> do
+        shifted <- storedTexts k
+        when (length shifted >= 5) $ earn ScarletWithYourPowersCombined
+    | k == chimeraFormsKey -> do
+        forms <- storedTexts' k
+        when (length forms >= length voidChimeraForms) $ earn MoreLikeDestroyedChimera
+    | k == collectedKeysKey -> do
+        collected <- storedTexts k
+        achievementProgress (TheScarletKeysAchievement KeyToMyHeart) collected
+    | k == cuisineKey -> do
+        cities <- storedTexts k
+        when (all ((`elem` cities) . tshow) cuisineCities) $ earn ImJustHereForTheLocalCuisine
   _ -> pure ()
 
 earn :: (HasGame m, HasQueue Message m) => TheScarletKeysAchievement -> m ()
@@ -444,11 +453,8 @@ cuisineCities = [Marrakesh, Havana, BuenosAires, Tokyo, KualaLumpur]
 {- | Record a city's cuisine moment, earning once all five are collected. Cities
 are stored by name so the set survives across scenarios and interludes.
 -}
-sampled :: (HasGame m, HasQueue Message m) => MapLocationId -> m ()
-sampled city = do
-  cities <- nub . (tshow city :) <$> storedTexts cuisineKey
-  setStore cuisineKey cities
-  when (all ((`elem` cities) . tshow) cuisineCities) $ earn ImJustHereForTheLocalCuisine
+sampled :: HasQueue Message m => MapLocationId -> m ()
+sampled city = insertGlobal cuisineKey (tshow city)
 
 {- | The id of the key being shifted, out of the After half of the window
 'Arkham.Campaigns.TheScarletKeys.Key.Import.Lifted.shiftKey' raises around every

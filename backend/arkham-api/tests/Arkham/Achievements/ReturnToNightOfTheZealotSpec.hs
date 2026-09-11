@@ -256,6 +256,22 @@ spec = describe "Return to the Night of the Zealot achievements" $ do
       killWithBat
       earned `refShouldBe` True
 
+    -- A Simultaneously block runs every branch with a cleared queue, so a
+    -- read-modify-write on the kill counter read the same value three times.
+    it "is earned when one Baseball Bat defeats three Ghouls at once" . gameTest $ \self -> do
+      asReturnToNightOfTheZealot
+      bat <- testAssetWithDef Assets.baseballBat (controlledBy self) self
+      location <- testLocation
+      earned <- didEarnBy (toId self) PinchHitter
+      ghouls <- replicateM 3 testEnemy
+      for_ ghouls (`spawnAt` location)
+      run
+        $ Simultaneously
+          [ Defeated (toTarget ghoul) (toCardId ghoul) (AbilitySource (toSource bat) 1) [Ghoul]
+          | ghoul <- ghouls
+          ]
+      earned `refShouldBe` True
+
     it "is earned with the Revised Core printing of Baseball Bat" . gameTest $ \self -> do
       asReturnToNightOfTheZealot
       bat <- testAssetWithDef revisedCoreBaseballBat (controlledBy self) self

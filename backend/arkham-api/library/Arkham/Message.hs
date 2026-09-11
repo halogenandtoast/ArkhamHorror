@@ -563,6 +563,15 @@ data Message
   | SetGameRunWindows Bool
   | SetGameState GameState
   | SetGlobal Target Aeson.Key Value
+  | {- | Add to a numeric global. The arithmetic happens when the message is
+    processed, not when it is pushed, so the bump survives a 'Simultaneously'
+    block (each branch runs with a cleared queue, but shares game state).
+    -}
+    IncrementGlobal Target Aeson.Key Int
+  | {- | Insert into a list global, most-recent first, nubbing. Same
+    processing-time rationale as 'IncrementGlobal'.
+    -}
+    InsertGlobal Target Aeson.Key Value
   | MoveWithSkillTest Message
   | MovedWithSkillTest SkillTestId Message
   | ClearInvestigators

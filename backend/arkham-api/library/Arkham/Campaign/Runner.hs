@@ -39,6 +39,7 @@ import Arkham.Tarot
 import Arkham.UltimatumsAndBoons
 import Arkham.Xp
 import Data.Aeson.Key qualified as Aeson
+import Data.Aeson.Types (parseMaybe)
 import Data.Map.Strict qualified as Map
 
 defaultCampaignRunner :: IsCampaign a => Runner a
@@ -55,6 +56,12 @@ defaultCampaignRunner msg a = case msg of
         )
   SetGlobal CampaignTarget k v -> do
     pure $ updateAttrs a (storeL . at (Aeson.toText k) ?~ v)
+  IncrementGlobal CampaignTarget k n -> do
+    let bump mv = toJSON $ n + fromMaybe 0 (mv >>= parseMaybe parseJSON)
+    pure $ updateAttrs a (storeL . at (Aeson.toText k) %~ Just . bump)
+  InsertGlobal CampaignTarget k v -> do
+    let prepend mvs = toJSON $ nub $ v : fromMaybe [] (mvs >>= parseMaybe parseJSON)
+    pure $ updateAttrs a (storeL . at (Aeson.toText k) %~ Just . prepend)
   SetCampaignMeta v -> do
     pure $ updateAttrs a (metaL .~ v)
   AddCampaignModifiersForAll modTypes -> do

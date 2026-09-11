@@ -79,17 +79,11 @@ runInnsmouthConspiracyAchievements msg = whenEligibleCampaign $ case msg of
     -- produces another Defeated.
     whenScenarioIs thePitOfDespairId do
       cardDef <- fieldMap Enemy.EnemyCard toCardDef eid
-      when (cardDef == Enemies.theAmalgam) do
-        n <- storedInt amalgamDefeatsKey
-        setStore amalgamDefeatsKey (n + 1)
-        when (n + 1 >= 5) $ earn WouldYouJustDieAlready
+      when (cardDef == Enemies.theAmalgam) $ bumpCounter amalgamDefeatsKey 1
 
     -- "Gone Fishing" (20 in a campaign) and, by its absence at the epilogue,
     -- "Bigger Fish to Fry". Both are campaign-wide tallies, so no scenario gate.
-    when (DeepOne `elem` traits) do
-      n <- storedInt deepOnesDefeatedKey
-      setStore deepOnesDefeatedKey (n + 1)
-      when (n + 1 >= 20) $ earn GoneFishing
+    when (DeepOne `elem` traits) $ bumpCounter deepOnesDefeatedKey 1
 
   {- "Elementary, Dear Dawson": The Search for Agent Harper asks the lead to name
   the suspect and then the hideout as it advances, and defers a DoStep 1 for each
@@ -100,11 +94,7 @@ runInnsmouthConspiracyAchievements msg = whenEligibleCampaign $ case msg of
   -}
   DoStep 1 (AdvanceAct aid _ _)
     | unActId aid == toCardCode Acts.theSearchForAgentHarper ->
-        whenScenarioIs theVanishingOfElinaHarperId do
-          n <- storedInt correctGuessesKey
-          setStore correctGuessesKey (n + 1)
-          when (n + 1 >= 2) $ earn ElementaryDearDawson
-
+        whenScenarioIs theVanishingOfElinaHarperId $ bumpCounter correctGuessesKey 1
   {- "Ain't Nothin Gonna Break My Stride": every barrier destroyed. The barrier
   counts live in In Too Deep's scenario meta, which the scenario updates when it
   processes this same message — i.e. after the campaign has already seen it — so
@@ -229,6 +219,15 @@ runInnsmouthConspiracyAchievements msg = whenEligibleCampaign $ case msg of
     achievementProgress (TheInnsmouthConspiracyAchievement YouWakeUpInARoom)
       $ found
       <> ["TheHorribleTruth" | length found == length memoryItems]
+
+  {- Deferred threshold checks: 'bumpCounter' does its arithmetic when the message
+  is processed, so the counter only reads its new value here -- a read-modify-write
+  would lose bumps when several Deep Ones are defeated simultaneously.
+  -}
+  CounterBumped k
+    | k == amalgamDefeatsKey -> whenM ((>= 5) <$> storedInt k) $ earn WouldYouJustDieAlready
+    | k == deepOnesDefeatedKey -> whenM ((>= 20) <$> storedInt k) $ earn GoneFishing
+    | k == correctGuessesKey -> whenM ((>= 2) <$> storedInt k) $ earn ElementaryDearDawson
   _ -> pure ()
 
 earn :: (HasGame m, HasQueue Message m) => TheInnsmouthConspiracyAchievement -> m ()

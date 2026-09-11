@@ -108,24 +108,17 @@ runNotzAchievements msg = whenEligibleCampaign $ case msg of
     cardDef <- fieldMap EnemyCard toCardDef eid
 
     when (Ghoul `elem` traits) do
-      bumpCounter ghoulsDefeatedKey
+      bumpCounter ghoulsDefeatedKey 1
       -- "Pinch Hitter": 3 Ghouls with one Baseball Bat, without it breaking.
-      -- Kills are counted per asset id; a broken (discarded) bat's id simply
-      -- never reaches 3, and a re-played copy enters with a fresh id.
+      -- Kills are counted per asset id (each bat gets its own store key, so the
+      -- bumps stay atomic); a broken (discarded) bat's key simply never reaches
+      -- 3, and a re-played copy enters with a fresh id.
       for_ source.asset \aid -> do
         isBat <- selectAny $ AssetWithId aid <> mapOneOf assetIs [Assets.baseballBat, Assets.baseballBat2]
-        when isBat do
-          kills <- fromMaybe mempty <$> stored @(Map Text Int) baseballBatKillsKey
-          let kills' = insertWith (+) (tshow aid) 1 kills
-          setStore baseballBatKillsKey kills'
-          when (findWithDefault 0 (tshow aid) kills' >= 3) do
-            -- Credited to the wielder, not the table: the bat's controller is
-            -- the investigator who did the defeating.
-            field Asset.AssetController aid >>= traverse_ \iid ->
-              earnAchievementBy iid $ NightOfTheZealotAchievement PinchHitter
+        when isBat $ bumpCounter (baseballBatKillsKey aid) 1
 
     when (Cultist `elem` traits && cdUnique cardDef) do
-      bumpCounter uniqueCultistsDefeatedKey
+      bumpCounter uniqueCultistsDefeatedKey 1
 
     when (cardDef == Enemies.ghoulPriest) do
       -- "The Zealot's Revenge": Lita Chantler's reaction (+1 damage while the
@@ -160,14 +153,7 @@ runNotzAchievements msg = whenEligibleCampaign $ case msg of
   -- ability 1 on their location.
   UseCardAbility _ source 1 _ _ -> whenMidnightMasks $ for_ source.location \lid -> do
     code <- field LocationCardCode lid
-    when (code `elem` oncePerGameLocationCodes) do
-      used <- fromMaybe [] <$> stored @[CardCode] tourOfArkhamKey
-      let used' = nub (code : used)
-      setStore tourOfArkhamKey used'
-      inPlay <- selectField LocationCardCode Anywhere
-      let required = filter (`elem` oncePerGameLocationCodes) (nub inPlay)
-      when (notNull required && all (`elem` used') required) do
-        earnAchievement $ NightOfTheZealotAchievement TourOfArkham
+    when (code `elem` oncePerGameLocationCodes) $ insertGlobal tourOfArkhamKey code
 
   -- "But Do I Have To?": leaving Your House mid-round during the first three
   -- rounds also breaks the achievement, not just being elsewhere at round end.
@@ -187,11 +173,27 @@ runNotzAchievements msg = whenEligibleCampaign $ case msg of
         selectAny $ UneliminatedInvestigator <> not_ (InvestigatorAt (locationIs Locations.yourHouse))
       leftHome <- fromMaybe False <$> stored @Bool leftHomeKey
       if houseInPlay && not violation && not leftHome
-        then do
-          setStore stayedHomeRoundsKey (rounds + 1)
-          when (rounds + 1 == 3) do
-            earnAchievement $ NightOfTheZealotAchievement ButDoIHaveTo
+        then bumpCounter stayedHomeRoundsKey 1
         else setStore leftHomeKey True
+
+  -- Deferred threshold checks. 'bumpCounter'/'insertGlobal' do their arithmetic
+  -- when the message is processed, so the value is only correct here.
+  CounterBumped k | k == stayedHomeRoundsKey -> do
+    whenM ((== 3) <$> storedInt k) do
+      earnAchievement $ NightOfTheZealotAchievement ButDoIHaveTo
+  CounterBumped k | baseballBatKillsPrefix `isPrefixOf` k -> do
+    -- Re-select rather than parsing the asset id back out of the key. Credited
+    -- to the wielder, not the table.
+    bats <- select $ mapOneOf assetIs [Assets.baseballBat, Assets.baseballBat2]
+    for_ bats \aid -> whenM ((>= 3) <$> storedInt (baseballBatKillsKey aid)) do
+      field Asset.AssetController aid >>= traverse_ \iid ->
+        earnAchievementBy iid $ NightOfTheZealotAchievement PinchHitter
+  GlobalInserted k | k == tourOfArkhamKey -> do
+    used <- fromMaybe [] <$> stored @[CardCode] k
+    inPlay <- selectField LocationCardCode Anywhere
+    let required = filter (`elem` oncePerGameLocationCodes) (nub inPlay)
+    when (notNull required && all (`elem` used) required) do
+      earnAchievement $ NightOfTheZealotAchievement TourOfArkham
   _ -> pure ()
 
 {- | Gate the whole module (including store writes) to campaigns that can earn
@@ -259,22 +261,21 @@ ghoulsDefeatedKey
   , stayedHomeRoundsKey
   , leftHomeKey
   , tourOfArkhamKey
-  , baseballBatKillsKey
+  , baseballBatKillsPrefix
     :: Text
 ghoulsDefeatedKey = "notzAchGhoulsDefeated"
 uniqueCultistsDefeatedKey = "notzAchUniqueCultistsDefeated"
 stayedHomeRoundsKey = "notzAchStayedHomeRounds"
 leftHomeKey = "notzAchLeftHome"
 tourOfArkhamKey = "notzAchTourOfArkham"
-baseballBatKillsKey = "notzAchBaseballBatKills"
+baseballBatKillsPrefix = "notzAchBaseballBatKills:"
+
+-- One key per bat: a map value cannot be bumped atomically.
+baseballBatKillsKey :: AssetId -> Text
+baseballBatKillsKey aid = baseballBatKillsPrefix <> tshow aid
 
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
 
 storedInt :: (HasCallStack, HasGame m) => Text -> m Int
 storedInt k = fromMaybe 0 <$> stored k
-
-bumpCounter :: (HasCallStack, HasGame m, HasQueue Message m) => Text -> m ()
-bumpCounter k = do
-  n <- storedInt k
-  setStore k (n + 1)

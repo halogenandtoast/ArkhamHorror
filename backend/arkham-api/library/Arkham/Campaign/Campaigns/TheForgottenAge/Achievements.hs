@@ -55,10 +55,7 @@ runForgottenAgeAchievements msg = whenEligibleCampaign $ case msg of
   Defeated (EnemyTarget eid) _ _ traits -> do
     -- "Why Did It Have to Be Snakes?": defeat twenty Serpent enemies across
     -- the campaign (Yig himself carries the Serpent trait, so he counts too).
-    when (Serpent `elem` traits) do
-      n <- storedInt serpentsDefeatedKey
-      setStore serpentsDefeatedKey (n + 1)
-      when (n + 1 >= 20) $ earn WhyDidItHaveToBeSnakes
+    when (Serpent `elem` traits) $ bumpCounter serpentsDefeatedKey 1
 
     -- "Patricide": defeat Yig in The Depths of Yoth.
     whenDepthsOfYoth do
@@ -164,6 +161,11 @@ runForgottenAgeAchievements msg = whenEligibleCampaign $ case msg of
     -- "Yoth Expertise": win on Expert.
     let mDifficulty = campaignDifficulty . toAttrs <$> currentCampaign (gameMode g)
     when (mDifficulty == Just Expert) $ earn YothExpertise
+
+  -- Deferred threshold check: 'bumpCounter' does its arithmetic when the
+  -- message is processed, so the counter only reads its new value here.
+  CounterBumped k | k == serpentsDefeatedKey -> do
+    whenM ((>= 20) <$> storedInt k) $ earn WhyDidItHaveToBeSnakes
   _ -> pure ()
 
 earn :: (HasGame m, HasQueue Message m) => TheForgottenAgeAchievement -> m ()

@@ -103,10 +103,7 @@ runTheDreamEatersAchievements msg = whenEligibleCampaign $ case msg of
     -- enemies across the campaign. Swarm cards explicitly do not count.
     when (Spider `elem` traits) do
       placement <- field EnemyPlacement eid
-      unless placement.isSwarm do
-        n <- storedInt spidersDefeatedKey
-        setStore spidersDefeatedKey (n + 1)
-        when (n + 1 >= 20) $ earnWeb EveryonesAFeministUntilThereIsASpiderAround
+      unless placement.isSwarm $ bumpCounter spidersDefeatedKey 1
 
     -- "Moon Lizards? I Don't Believe They Exist".
     when (cardDef == Enemies.moonLizard) $ whenScenarioIs darkSideOfTheMoonId do
@@ -128,10 +125,7 @@ runTheDreamEatersAchievements msg = whenEligibleCampaign $ case msg of
 
     -- "The Ishimura Flex": all four Legs of Atlach-Nacha in a single round.
     when (cardDef `elem` legsOfAtlachNacha) do
-      defeated <- storedList legsDefeatedThisRoundKey
-      let defeated' = nub (toCardCode cardDef : defeated)
-      setStore legsDefeatedThisRoundKey defeated'
-      when (length defeated' >= length legsOfAtlachNacha) $ earnWeb TheIshimuraFlex
+      insertGlobal legsDefeatedThisRoundKey (toCardCode cardDef)
 
   -- "Give Them Something To Talk About": every hidden form of Nyarlathotep added
   -- to the victory display in a single round. Beyond Dreams shuffles exactly
@@ -140,11 +134,7 @@ runTheDreamEatersAchievements msg = whenEligibleCampaign $ case msg of
   AddToVictory _ (EnemyTarget eid) -> whenScenarioIs whereTheGodsDwellId do
     cardDef <- fieldMap EnemyCard toCardDef eid
     when (cardDef `elem` nyarlathotepForms) do
-      forms <- storedList nyarlathotepsThisRoundKey
-      let forms' = nub (toCardCode cardDef : forms)
-      setStore nyarlathotepsThisRoundKey forms'
-      n <- getPlayerCount
-      when (length forms' >= n + 1) $ earnDreamQuest GiveThemSomethingToTalkAbout
+      insertGlobal nyarlathotepsThisRoundKey (toCardCode cardDef)
 
   -- Round-scoped tallies. Reset on both ends of the boundary so a tally can never
   -- straddle two rounds.
@@ -219,10 +209,7 @@ runTheDreamEatersAchievements msg = whenEligibleCampaign $ case msg of
   UseThisAbility _ source 1 | isJust source.asset -> do
     for_ source.asset \aid -> do
       assetDef <- fieldMap Asset.AssetCard toCardDef aid
-      when (assetDef == Assets.theSilverKey) do
-        n <- storedInt silverKeyHorrorKey
-        setStore silverKeyHorrorKey (n + 1)
-        when (n + 1 >= 10) $ earnWeb MasterOfUnlocking
+      when (assetDef == Assets.theSilverKey) $ bumpCounter silverKeyHorrorKey 1
 
   -- "Déjà Vu": every free triggered ability on every A Thousand Shapes of Horror
   -- location. Two pairs of those abilities normally lock each other out; with
@@ -230,10 +217,7 @@ runTheDreamEatersAchievements msg = whenEligibleCampaign $ case msg of
   UseThisAbility _ (sourceLocation -> Just lid) n -> whenScenarioIs aThousandShapesOfHorrorId do
     code <- fieldMap Location.LocationCard toCardCode lid
     when ((code, n) `elem` dejaVuAbilities) do
-      used <- storedTexts dejaVuAbilitiesKey
-      let used' = nub (dejaVuKey code n : used)
-      setStore dejaVuAbilitiesKey used'
-      when (length used' >= length dejaVuAbilities) $ earnWeb DejaVu
+      insertGlobal dejaVuAbilitiesKey (dejaVuKey code n)
 
   -- "Don't Tell Anyone, But...": The Great Hall (the revealed Onyx Castle) is the
   -- only way a hidden card moves from one investigator's hand to another's, so a
@@ -251,10 +235,7 @@ runTheDreamEatersAchievements msg = whenEligibleCampaign $ case msg of
   Flip _ _ (LocationTarget lid) -> whenScenarioIs pointOfNoReturnId do
     code <- fieldMap Location.LocationCard toCardCode lid
     when (code `elem` map toCardCode pointOfNoReturnLocations) do
-      flipped <- storedList flippedLocationsKey
-      let flipped' = nub (code : flipped)
-      setStore flippedLocationsKey flipped'
-      when (length flipped' >= length pointOfNoReturnLocations) $ earnWeb BadAdvice
+      insertGlobal flippedLocationsKey code
 
   -- "March of the Ghouls": Richard Upton Pickman's ability 1 attaches a Ghoul by
   -- placing its card underneath him. The asset has not processed this placement
@@ -277,11 +258,7 @@ runTheDreamEatersAchievements msg = whenEligibleCampaign $ case msg of
   -- point of a revealed token's negative modifier. A full turn is 8 of those.
   HandleAbilityOption _ (EnemySource eid) n | n > 0 -> do
     cardDef <- fieldMap EnemyCard toCardDef eid
-    when (cardDef == Enemies.atlachNacha) do
-      degrees <- storedInt atlachNachaSpinKey
-      let degrees' = degrees + 45 * n
-      setStore atlachNachaSpinKey degrees'
-      when (degrees' >= 360) $ earnWeb YouSpinMeRightRound
+    when (cardDef == Enemies.atlachNacha) $ bumpCounter atlachNachaSpinKey (45 * n)
 
   {- Act-advance detections. These want the scenario BEATEN, which cannot be read
   off surviving investigators: The Endless Stairs is beaten by every investigator
@@ -333,6 +310,32 @@ runTheDreamEatersAchievements msg = whenEligibleCampaign $ case msg of
             when (notNull iids && all (== 0) alarmLevels)
               $ earnDreamQuest TacticalEspionageAction
         | otherwise -> pure ()
+  -- Deferred threshold checks. 'bumpCounter'/'insertGlobal' do their arithmetic
+  -- when the message is processed, so the stored value only reads back correctly
+  -- here -- and a read-modify-write would lose bumps inside a 'Simultaneously'
+  -- block (e.g. all four Legs of Atlach-Nacha defeated by one effect).
+  CounterBumped k
+    | k == spidersDefeatedKey ->
+        whenM ((>= 20) <$> storedInt k) $ earnWeb EveryonesAFeministUntilThereIsASpiderAround
+    | k == silverKeyHorrorKey -> whenM ((>= 10) <$> storedInt k) $ earnWeb MasterOfUnlocking
+    | k == atlachNachaSpinKey -> whenM ((>= 360) <$> storedInt k) $ earnWeb YouSpinMeRightRound
+  GlobalInserted k
+    | k == legsDefeatedThisRoundKey -> do
+        defeated <- storedList k
+        when (length defeated >= length legsOfAtlachNacha) $ earnWeb TheIshimuraFlex
+    | k == nyarlathotepsThisRoundKey -> whenScenarioIs whereTheGodsDwellId do
+        forms <- storedList k
+        n <- getPlayerCount
+        when (length forms >= n + 1) $ earnDreamQuest GiveThemSomethingToTalkAbout
+    | k == dejaVuAbilitiesKey -> whenScenarioIs aThousandShapesOfHorrorId do
+        used <- storedTexts k
+        when (length used >= length dejaVuAbilities) $ earnWeb DejaVu
+    | k == flippedLocationsKey -> whenScenarioIs pointOfNoReturnId do
+        flipped <- storedList k
+        when (length flipped >= length pointOfNoReturnLocations) $ earnWeb BadAdvice
+    | k == hiddenCardsGivenKey -> whenScenarioIs whereTheGodsDwellId do
+        handedOver <- storedTexts k
+        when (length handedOver >= 6) $ earnDreamQuest DontTellAnyoneBut
   _ -> pure ()
  where
   resetRoundTallies = do
@@ -340,11 +343,7 @@ runTheDreamEatersAchievements msg = whenEligibleCampaign $ case msg of
     setStore nyarlathotepsThisRoundKey ([] :: [CardCode])
 
   recordHiddenTransfer placement target key = case placement of
-    HiddenInHand holder | holder /= target -> do
-      handedOver <- storedTexts hiddenCardsGivenKey
-      let handedOver' = nub (key : handedOver)
-      setStore hiddenCardsGivenKey handedOver'
-      when (length handedOver' >= 6) $ earnDreamQuest DontTellAnyoneBut
+    HiddenInHand holder | holder /= target -> insertGlobal hiddenCardsGivenKey key
     _ -> pure ()
 
 earnDreamQuest :: (HasGame m, HasQueue Message m) => TheDreamQuestAchievement -> m ()

@@ -88,13 +88,16 @@ runChildrenOfBloodAchievements msg = whenEligibleCampaign $ case msg of
   -- so this is hitting the cap without any of them carrying over from an earlier
   -- round. The per-round tally resets at BeginRound.
   SealedChaosToken token (Just iid) target | token.face == #blood -> do
-    when (target == InvestigatorTarget iid) do
-      sealedThisRound <- storedList sealedThisRoundKey
-      let sealedThisRound' = sealedThisRound <> [iid]
-      setStore sealedThisRoundKey sealedThisRound'
-      -- credited to that investigator's player only, as the card is worded
-      when (count (== iid) sealedThisRound' >= 3) $ earnFor iid YouGotRedOnYou
-  BeginRound -> setStore sealedThisRoundKey ([] :: [InvestigatorId])
+    when (target == InvestigatorTarget iid) $ bumpCounter (sealedThisRoundKey iid) 1
+  -- Deferred threshold check: the bump only lands when its message is processed.
+  CounterBumped k | sealedThisRoundPrefix `isPrefixOf` k -> do
+    iids <- select $ IncludeEliminated Anyone
+    -- credited to that investigator's player only, as the card is worded
+    for_ iids \iid -> when (k == sealedThisRoundKey iid) do
+      whenM ((>= 3) <$> storedInt k) $ earnFor iid YouGotRedOnYou
+  BeginRound -> do
+    iids <- select $ IncludeEliminated Anyone
+    for_ iids \iid -> setStore (sealedThisRoundKey iid) (0 :: Int)
   -- Per-scenario trackers start clean.
   CampaignStep (ScenarioStep _) -> setStore civilianDefeatedKey False
   EndOfGame _ -> do
@@ -198,10 +201,14 @@ backstoryItems =
   , (Investigators.miguelDeLaCruz, "MigueldelaCruz")
   ]
 
-agenda2AdvancedKey, civilianDefeatedKey, sealedThisRoundKey :: Text
+agenda2AdvancedKey, civilianDefeatedKey, sealedThisRoundPrefix :: Text
 agenda2AdvancedKey = "cob.agenda2Advanced"
 civilianDefeatedKey = "cob.civilianDefeated"
-sealedThisRoundKey = "cob.sealedThisRound"
+sealedThisRoundPrefix = "cob.sealedThisRound:"
+
+-- One key per investigator: a list value cannot be bumped atomically.
+sealedThisRoundKey :: InvestigatorId -> Text
+sealedThisRoundKey iid = sealedThisRoundPrefix <> tshow iid
 
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
@@ -209,5 +216,5 @@ setStore k v = push $ Priority $ SetGlobal CampaignTarget (Key.fromText k) (toJS
 storedFlag :: (HasCallStack, HasGame m) => Text -> m Bool
 storedFlag k = fromMaybe False <$> stored k
 
-storedList :: (HasCallStack, HasGame m) => Text -> m [InvestigatorId]
-storedList k = fromMaybe [] <$> stored k
+storedInt :: (HasCallStack, HasGame m) => Text -> m Int
+storedInt k = fromMaybe 0 <$> stored k

@@ -150,11 +150,11 @@ runDunwichAchievements msg = whenEligibleCampaign $ case msg of
 
     -- "Bird Hunting": 3 Whippoorwills defeated in a single turn (counter
     -- resets on the turn boundaries below).
-    when (cardDef == Enemies.whippoorwill) do
-      kills <- storedInt whippoorwillKillsKey
-      setStore whippoorwillKillsKey (kills + 1)
-      when (kills + 1 >= 3) do
-        earnAchievement $ TheDunwichLegacyAchievement BirdHunting
+    when (cardDef == Enemies.whippoorwill) $ bumpCounter whippoorwillKillsKey 1
+  CounterBumped k | k == whippoorwillKillsKey -> do
+    kills <- storedInt k
+    when (kills >= 3) do
+      earnAchievement $ TheDunwichLegacyAchievement BirdHunting
   BeginTurn _ -> setStore whippoorwillKillsKey (0 :: Int)
   EndTurn _ -> setStore whippoorwillKillsKey (0 :: Int)
   -- "All Aboard": no Helpless Passenger may leave play in The Essex County

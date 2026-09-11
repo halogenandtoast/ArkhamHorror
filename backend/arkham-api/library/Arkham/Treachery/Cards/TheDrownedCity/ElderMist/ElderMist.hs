@@ -26,7 +26,7 @@ instance HasAbilities ElderMist where
   getAbilities (ElderMist a) =
     [ mkAbility a 1
         $ forced
-        $ SkillTestResult #after (InvestigatorAt $ locationWithTreachery a) AnySkillTest
+        $ SkillTestResult #after (You <> investigatorAt (locationWithTreachery a)) AnySkillTest
         $ SuccessResult (atLeast 2)
     ]
 

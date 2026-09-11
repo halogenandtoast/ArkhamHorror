@@ -20,7 +20,7 @@ instance HasAbilities DreamersRest where
     extendRevealed1 a
       $ mkAbility a 1
       $ forced
-      $ SkillTestResult #after (InvestigatorAt $ be a) AnySkillTest #failure
+      $ SkillTestResult #after (You <> investigatorAt a) AnySkillTest #failure
 
 instance RunMessage DreamersRest where
   runMessage msg l@(DreamersRest attrs) = runQueueT $ case msg of

@@ -775,6 +775,7 @@ expeditedTicket =
   permanent
     (storyAsset "09765" "Expedited Ticket" 0 Globetrotting)
       { cdCardTraits = setFromList [Item]
+      , cdTags = [noGameplayEffectTag]
       }
 
 foundationIntel :: CardDef

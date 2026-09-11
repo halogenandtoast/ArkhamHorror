@@ -11,6 +11,7 @@ import {
   customCardPlaceholder,
   isCustomCardCode,
 } from '@/arkham/customCards'
+import { normalizeArkhamBuildDeckCodes } from '@/arkham/arkhamBuildImport'
 
 interface ImageHelper {
   root: string
@@ -312,7 +313,11 @@ export function processArkhamBuildDeck<T extends { slots?: Record<string, number
     [key: string]: unknown
   }
   const mergedSlots = { ...(data.slots ?? {}), ...(hiddenSlotCards ?? {}) }
-  return { ...data, ...hiddenRest, slots: mergedSlots, url }
+  // arkham.build names a custom card by its own bare UUID; this app only ever
+  // recognizes a custom card by a `*`-prefixed code, so any such code here has
+  // to be rewritten before this deck reaches validation or it will look like
+  // it references cards that don't exist.
+  return normalizeArkhamBuildDeckCodes({ ...data, ...hiddenRest, slots: mergedSlots, url })
 }
 
 export function isTypingTarget(target: EventTarget | null): boolean {

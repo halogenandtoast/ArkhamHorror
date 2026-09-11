@@ -96,6 +96,37 @@ sanitizeCustomCardCode (CardCode t) = case T.unsnoc t of
   Just (_, c) | c `elem` ("abcd" :: String) -> CardCode (t <> "0")
   _ -> CardCode t
 
+{- | The ids arkham.build names a custom card by: a dashed UUID, or the bare
+32-hex and short 8-hex forms a pack's cards come through with.
+
+Kept beside the derivation below because the two are one question asked twice --
+what counts as an arkham.build id, and what code does it become. The frontend
+asks the same pair in @customCards.ts@ (@isArkhamBuildCardId@ /
+@arkhamBuildCustomCardCode@) and the two sides have to agree exactly: a deck
+naming a card by an id one side translates and the other does not is a deck that
+fails validation as 'UnimplementedCard' with the card sitting in the library.
+
+Printed codes are five or six digits and are none of these.
+-}
+isArkhamBuildCardId :: Text -> Bool
+isArkhamBuildCardId t = bare || dashed
+ where
+  hexOfLength n s = T.length s == n && T.all (`elem` ("0123456789abcdefABCDEF" :: String)) s
+  bare = hexOfLength 32 t || hexOfLength 8 t
+  dashed = case T.splitOn "-" t of
+    [a, b, c, d, e] -> and $ zipWith hexOfLength [8, 4, 4, 4, 12] [a, b, c, d, e]
+    _ -> False
+
+{- | The code an import of an arkham.build pack gives the card with this id.
+
+Deterministic, because the card is imported once and named by a deck later; a
+minted code would never match up with itself. Ends in a digit for the reason
+'sanitizeCustomCardCode' gives.
+-}
+arkhamBuildCustomCardCode :: Text -> CardCode
+arkhamBuildCustomCardCode t =
+  CardCode $ customCardPrefix <> T.toLower (T.filter (/= '-') t) <> "0"
+
 {-# NOINLINE customCardRegistry #-}
 customCardRegistry :: IORef (Map CardCode CustomCard)
 customCardRegistry = unsafePerformIO (newIORef mempty)
@@ -214,4 +245,3 @@ customSignatureOwner (toCardCode -> cardCode) = unsafePerformIO do
   -- Raw: substitution asks who the owner is, which is what this answers.
   signatureCodes def =
     maybe [] (map sanitizeCustomCardCode) (rawMetaMaybe "_signatures" def)
-

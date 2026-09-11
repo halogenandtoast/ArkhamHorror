@@ -129,21 +129,83 @@ export const fetchTraits = async (): Promise<[string, string][]> => {
   return data
 }
 
-export type StoredCustomCard = { id: string; cardCode: string; def: any; art: string | null; updatedAt: string }
+export type StoredCustomCard = {
+  id: string
+  setId: string
+  cardCode: string
+  def: any
+  art: string | null
+  updatedAt: string
+}
+
+/* A set is what a card belongs to: the unit you build, export, and hand to
+ * someone else. Every card has one. */
+export type StoredCustomCardSet = {
+  id: string
+  name: string
+  // The pack id an imported set came from, so re-importing that pack replaces
+  // this set rather than making a second copy of it. Null for a set made here.
+  sourceCode: string | null
+  cardCount: number
+  updatedAt: string
+}
+
+export const fetchCustomCardSets = async (): Promise<StoredCustomCardSet[]> => {
+  const { data } = await api.get('arkham/custom-card-sets')
+  return data
+}
+
+export const createCustomCardSet = async (name: string): Promise<StoredCustomCardSet> => {
+  const { data } = await api.post('arkham/custom-card-sets', { name })
+  return data
+}
+
+export const renameCustomCardSet = async (id: string, name: string): Promise<StoredCustomCardSet> => {
+  const { data } = await api.put(`arkham/custom-card-sets/${id}`, { name })
+  return data
+}
+
+// Takes the set's cards with it.
+export const deleteCustomCardSet = async (id: string): Promise<void> => {
+  await api.delete(`arkham/custom-card-sets/${id}`)
+}
+
+/* One call, one set: whatever the set held before is replaced by exactly these
+ * cards, so importing a corrected pack cannot leave the cards it dropped
+ * behind. Matched to an existing set by `sourceCode` when there is one, by
+ * name otherwise. */
+export const importCustomCardSet = async (payload: {
+  name: string
+  sourceCode: string | null
+  cards: { def: any; art: string | null }[]
+}): Promise<{ set: StoredCustomCardSet; cards: StoredCustomCard[] }> => {
+  const { data } = await api.post('arkham/custom-card-sets/import', payload)
+  return { set: data.set, cards: data.cards.map(toStoredCustomCard) }
+}
+
+/* A card row names its set the way the entity spells the field; `setId` is what
+ * it is called here. */
+const toStoredCustomCard = (row: any): StoredCustomCard => ({
+  id: row.id,
+  setId: row.customCardSetId,
+  cardCode: row.cardCode,
+  def: row.def,
+  art: row.art,
+  updatedAt: row.updatedAt,
+})
 
 export const fetchCustomCardLibrary = async (): Promise<StoredCustomCard[]> => {
   const { data } = await api.get('arkham/custom-cards')
-  return data.map((row: any) => ({ id: row.id, ...row }))
+  return data.map(toStoredCustomCard)
 }
 
-export const saveCustomCard = async (card: { def: any; art: string | null }): Promise<StoredCustomCard> => {
+export const saveCustomCard = async (card: {
+  setId: string
+  def: any
+  art: string | null
+}): Promise<StoredCustomCard> => {
   const { data } = await api.post('arkham/custom-cards', card)
-  return { id: data.id, ...data }
-}
-
-export const importCustomCards = async (cards: { def: any; art: string | null }[]): Promise<StoredCustomCard[]> => {
-  const { data } = await api.post('arkham/custom-cards/import', { cards })
-  return data.map((row: any) => ({ id: row.id, ...row }))
+  return toStoredCustomCard(data)
 }
 
 export const deleteCustomCard = async (id: string): Promise<void> => {

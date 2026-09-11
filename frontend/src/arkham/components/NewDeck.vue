@@ -7,6 +7,7 @@ import { fetchInvestigators, newDeck, validateDeck } from '@/arkham/api'
 import ArkhamDbDeck from '@/arkham/components/ArkhamDbDeck.vue';
 import { ArkhamDbDecklist } from '@/arkham/types/Deck';
 import { useCardStore } from '@/stores/cards'
+import { normalizeArkhamBuildDeckCodes } from '@/arkham/arkhamBuildImport'
 
 const { t } = useI18n()
 
@@ -102,7 +103,11 @@ function loadDeckFromFile(e: Event) {
     const reader = new FileReader()
     reader.onloadend = (e1: ProgressEvent<FileReader>) => {
       if(!e1?.target?.result) return
-      let data = JSON.parse(e1.target.result.toString())
+      // A file downloaded straight from arkham.build has the same shape its
+      // share API returns, including bare-UUID custom card codes, which need
+      // the same rewrite `processArkhamBuildDeck` applies to a fetched deck --
+      // this path bypasses that function entirely, so it has to be done here.
+      let data = normalizeArkhamBuildDeckCodes(JSON.parse(e1.target.result.toString()))
       deckList.value = data
       investigator.value = null
       investigatorError.value = null

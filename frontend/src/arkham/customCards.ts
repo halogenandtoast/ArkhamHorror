@@ -53,6 +53,14 @@ export function mintCustomCardCode(): string {
   return `${CUSTOM_CARD_PREFIX}${crypto.randomUUID().replace(/-/g, '')}0`
 }
 
+/* Same shape as `mintCustomCardCode`, but derived from an arkham.build card's
+ * own UUID rather than a fresh random one. Importing a card and later reading
+ * a deck that names it by that UUID need to land on the same code, so this has
+ * to be deterministic -- a random mint would never match up with itself. */
+export function arkhamBuildCustomCardCode(uuid: string): string {
+  return `${CUSTOM_CARD_PREFIX}${uuid.replace(/-/g, '').toLowerCase()}0`
+}
+
 /* A def written by the builder only carries the fields that card needed, and a
  * def that came off the wire went through `cardDefDecoder`, which fills in the
  * rest. Anything that reads a custom def as a `CardDef` -- the deck page, the

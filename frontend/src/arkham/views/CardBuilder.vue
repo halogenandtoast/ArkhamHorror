@@ -211,6 +211,40 @@ async function onImport(event: Event) {
     error.value = 'Could not read that file.'
   }
 }
+
+/* A different source format from `onImport` above: an arkham.build ("Arkham
+ * Card Maker") card-pool export, not this app's own `.arkhamcard.json`. Only
+ * the simple fields come across -- name, type, class, cost, stats, traits,
+ * art -- never ability text, which this app has no field for at all. Cards
+ * are coded deterministically from their arkham.build id, so a deck built on
+ * arkham.build against these same cards resolves against these rows instead
+ * of going missing, and re-importing the same file updates them in place. */
+async function onImportArkhamBuild(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file) return
+
+  error.value = null
+  status.value = null
+  try {
+    const { parseArkhamBuildCards, arkhamBuildCardToCustomCard } = await import('@/arkham/arkhamBuildImport')
+    const { packName, cards: rawCards } = parseArkhamBuildCards(await file.text())
+    if (!rawCards.length) {
+      error.value = 'That file has no cards in it.'
+      return
+    }
+    if (!confirm(`Import ${rawCards.length} card${rawCards.length === 1 ? '' : 's'} from this file?`)) return
+
+    const built = rawCards.map((raw: any) => arkhamBuildCardToCustomCard(raw, packName))
+    const saved = await importLibraryCards(built)
+    registerCustomCards(saved)
+    status.value = `Imported ${saved.length} card${saved.length === 1 ? '' : 's'}.`
+  } catch (e) {
+    console.error(e)
+    error.value = 'Could not read that file as an arkham.build export.'
+  }
+}
 </script>
 
 <template>
@@ -245,6 +279,10 @@ async function onImport(event: Event) {
         <button type="button" class="tool" :disabled="!selected.length" @click="clearSelection">
           Clear
         </button>
+        <label class="tool import wide">
+          <span>Import arkham.build</span>
+          <input type="file" accept="application/json,.json" @change="onImportArkhamBuild" />
+        </label>
       </div>
 
       <p v-if="!libraryLoaded" class="muted">Loading…</p>
@@ -467,6 +505,10 @@ async function onImport(event: Event) {
   input {
     display: none;
   }
+}
+
+.import.wide {
+  grid-column: 1 / -1;
 }
 
 .group-head {

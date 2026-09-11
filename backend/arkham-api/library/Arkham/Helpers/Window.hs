@@ -2072,7 +2072,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.DealtDamage source' damageEffect (EnemyTarget eid) _ ->
           andM
             [ damageEffectMatches damageEffect damageEffectMatcher
-            , elem eid <$> select enemyMatcher
+            , -- the after-window opens once the damage has landed, so a lethal hit has
+              -- already discarded the enemy -- but it was still dealt damage, #5682
+              enemyMatches eid enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
@@ -2081,7 +2083,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.DealtExcessDamage source' damageEffect (EnemyTarget eid) _ ->
           andM
             [ damageEffectMatches damageEffect damageEffectMatcher
-            , elem eid <$> select enemyMatcher
+            , enemyMatches eid enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch

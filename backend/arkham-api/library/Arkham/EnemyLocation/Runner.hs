@@ -272,7 +272,9 @@ instance RunMessage EnemyLocationAttrs where
       when (modifiedAmount > 0) do
         Damage.fireDamageWindows source (toTarget (asEnemyId a)) damageEffect modifiedAmount do
           push $ Msg.Damaged (EnemyTarget eid) da {damageAssignmentAmount = modifiedAmount}
-        push $ CheckDefeated source (toTarget a)
+          -- inside the body so the defeat resolves before the after-windows, like the
+          -- enemy runner's Damaged handler does, #5682
+          push $ CheckDefeated source (toTarget a)
       pure $ a & baseL . tokensL %~ addTokens Damage modifiedAmount
     HealDamage (EnemyTarget eid) source n | eid == asEnemyId a -> do
       let healAmount = min n (enemyLocationDamage a)

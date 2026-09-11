@@ -24,7 +24,7 @@ instance HasAbilities InsatiableBloodlust where
   getAbilities (InsatiableBloodlust x) =
     [ mkAbility x 1
         $ forced
-        $ EnemyDealtDamage #after AnyDamageEffect (enemyIs Cards.theRougarou) AnySource
+        $ EnemyTakeDamage #after AnyDamageEffect (enemyIs Cards.theRougarou) (atLeast 1) AnySource
     ]
 
 instance RunMessage InsatiableBloodlust where

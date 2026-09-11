@@ -1319,9 +1319,17 @@ watchEffect(() => {
       <KeyToken v-for="k in spentKeys" :key="keyToId(k)" :keyToken="k" @choose="() => {}"/>
     </div>
 
-    <div class="card-data" v-if="dbCardCustomizationText">
-      <p v-if="dbCardName"><b>{{ dbCardName }}</b></p>
-      <p v-if="dbCardCustomizationText" v-html="dbCardCustomizationText" style="font-size: 0.85em;"></p>
+    <div
+      class="card-data card-data-customization"
+      v-if="dbCardCustomizationText"
+      :class="{ [`faction-${dbCardFactionCode || 'neutral'}`]: true }"
+    >
+      <div class="card-data-header">
+        <p v-if="dbCardName"><b>{{ dbCardName }}</b></p>
+      </div>
+      <div class="card-data-body">
+        <p v-html="dbCardCustomizationText"></p>
+      </div>
     </div>
 
     <div v-if="playabilityData && debug.active" class="playability-panel">
@@ -1479,7 +1487,7 @@ watchEffect(() => {
   font-family: serif;
   flex: 1;
   padding: 15px;
-  background-color: rgba(212, 212, 212, 0.85);
+  background-color: rgba(212, 212, 212, 0.96);
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
 }
@@ -1512,6 +1520,18 @@ watchEffect(() => {
 .card-data-body .card-flavor {
   font-size: 0.85em;
   font-style: italic;
+}
+
+/* Customization sheets run longer than card text, and the overlay is
+   pointer-events: none, so a scrollbar would be unusable -- grow instead. */
+.card-data-customization {
+  align-self: flex-start;
+  height: auto;
+  aspect-ratio: auto;
+}
+
+.card-data-customization .card-data-body {
+  font-size: 0.8em;
 }
 
 .card-overlay {

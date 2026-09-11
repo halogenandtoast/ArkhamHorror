@@ -33,7 +33,7 @@ instance RunMessage FurtiveLocals where
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid do
-        withI18n $ countVar 1 $ labeledI "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+        withI18n $ countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
         campaignI18n
           $ scope "furtiveLocals"
           $ labeled "putIntoPlay"

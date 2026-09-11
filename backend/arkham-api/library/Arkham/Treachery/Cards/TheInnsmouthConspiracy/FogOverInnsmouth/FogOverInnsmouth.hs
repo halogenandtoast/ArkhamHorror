@@ -33,7 +33,7 @@ instance RunMessage FogOverInnsmouth where
       pure t
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid do
-        withI18n $ countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        withI18n $ countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
         campaignI18n
           $ scope "fogOverInnsmouth"
           $ labeled "putIntoPlay"

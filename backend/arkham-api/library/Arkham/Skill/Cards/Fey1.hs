@@ -41,7 +41,7 @@ instance RunMessage Fey1Effect where
       disable attrs
       when shouldReturn do
         chooseOneM owner do
-          withI18n $ cardNameVar Cards.fey1 $ labeledI "returnNameToHand" $ returnToHand owner card
+          withI18n $ cardNameVar Cards.fey1 $ labeled "returnNameToHand" $ returnToHand owner card
           labeledI "doNotReturn" nothing
       pure e
     _ -> Fey1Effect <$> liftRunMessage msg attrs

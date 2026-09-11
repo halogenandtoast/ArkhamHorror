@@ -24,7 +24,7 @@ instance RunMessage PoisonedMarsh where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <- select $ assetControlledBy iid <> #ally
       chooseOrRunOneM iid $ scenarioI18n $ scope "poisonedMarsh" do
-        countVar 1 $ labeledI "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
+        unscoped $ countVar 1 $ labeled "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
         unless (null assets) do
           labeledI "assets" do
             for_ assets \asset -> dealAssetDamage asset (attrs.ability 1) 1

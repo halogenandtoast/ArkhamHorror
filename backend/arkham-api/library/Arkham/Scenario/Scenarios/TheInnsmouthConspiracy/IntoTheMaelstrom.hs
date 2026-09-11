@@ -157,7 +157,7 @@ instance RunMessage IntoTheMaelstrom where
               chooseOrRunOneM iid do
                 when canIncrease do
                   labeledI "increaseFloodLevelOfYourLocation" $ increaseThisFloodLevel lid
-                withI18n $ countVar 1 $ labeledI "takeDamage" $ assignDamage iid Tablet 1
+                withI18n $ countVar 1 $ labeled "takeDamage" $ assignDamage iid Tablet 1
         ElderThing -> do
           withLocationOf iid \lid -> do
             whenM (lid <=~> LocationWithAnyKeys) $ assignHorror iid ElderThing 1

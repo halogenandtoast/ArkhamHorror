@@ -49,9 +49,9 @@ instance RunMessage PetesGuitar where
       canGainResources <- can.gain.resources iid
       when (noEnemies && (canHeal || canGainResources)) do
         chooseOrRunOneM iid do
-          when canHeal $ withI18n $ countVar 1 $ labeledI "healHorror" do
+          when canHeal $ withI18n $ countVar 1 $ labeled "healHorror" do
             healHorror iid (attrs.ability 1) 1
-          when canGainResources $ withI18n $ countVar 1 $ labeledI "gainResources" do
+          when canGainResources $ withI18n $ countVar 1 $ labeled "gainResources" do
             gainResourcesIfCan iid (attrs.ability 1) 1
       pure a
     _ -> PetesGuitar <$> liftRunMessage msg attrs

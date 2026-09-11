@@ -35,7 +35,7 @@ instance RunMessage DreamlandsEclipse where
         Nothing -> error "invalid window"
         Just lid -> do
           withSkillTest \sid -> chooseOneM iid do
-            withI18n $ countVar 1 $ labeledI "takeHorror" $ assignHorror iid source 1
+            withI18n $ countVar 1 $ labeled "takeHorror" $ assignHorror iid source 1
             scenarioI18n $ scope "dreamlandsEclipse" $ labeled "shroudPlus2" do
               skillTestModifier sid source lid (ShroudModifier 2)
       pure t

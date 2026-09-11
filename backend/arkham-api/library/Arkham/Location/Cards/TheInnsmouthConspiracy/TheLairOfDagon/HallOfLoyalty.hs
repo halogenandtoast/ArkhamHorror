@@ -43,11 +43,11 @@ instance RunMessage HallOfLoyalty where
       chooseNM iid 3 $ scenarioI18n $ scope "hallOfLoyalty" do
         let healSource = UseAbilitySource iid (toSource attrs) 1
         whenM (canHaveHorrorHealed healSource iid) do
-          countVar 1 $ labeledI "healDamage" $ healDamage iid healSource 1
+          unscoped $ countVar 1 $ labeled "healDamage" $ healDamage iid healSource 1
         whenM (can.draw.cards iid) do
-          countVar 2 $ labeledI "drawCards" $ drawCardsIfCan iid (attrs.ability 1) 2
+          unscoped $ countVar 2 $ labeled "drawCards" $ drawCardsIfCan iid (attrs.ability 1) 2
         whenM (can.gain.resources iid) do
-          countVar 3 $ labeledI "gainResources" $ gainResourcesIfCan iid (attrs.ability 1) 3
+          unscoped $ countVar 3 $ labeled "gainResources" $ gainResourcesIfCan iid (attrs.ability 1) 3
         n <- min 4 <$> getRemainingBlessTokens
         when (n > 0) do
           let key = if n == 4 then "addBlessTokens" else "addBlessTokensPartial"

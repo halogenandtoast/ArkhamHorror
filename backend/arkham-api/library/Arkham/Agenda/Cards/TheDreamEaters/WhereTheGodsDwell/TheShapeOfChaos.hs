@@ -43,8 +43,8 @@ instance RunMessage TheShapeOfChaos where
         let investigatorsWithNyarlathotep = [iid | (_, HiddenInHand iid) <- nyarlathoteps]
         selectEach (not_ $ mapOneOf InvestigatorWithId investigatorsWithNyarlathotep) \iid -> do
           chooseOneM iid $ withI18n do
-            countVar 1 $ labeledI "takeDamage" $ assignDamage iid attrs 1
-            countVar 1 $ labeledI "takeHorror" $ assignHorror iid attrs 1
+            countVar 1 $ labeled "takeDamage" $ assignDamage iid attrs 1
+            countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
 
         for_ nyarlathoteps \(nyarlathotep, p) -> do
           case p of

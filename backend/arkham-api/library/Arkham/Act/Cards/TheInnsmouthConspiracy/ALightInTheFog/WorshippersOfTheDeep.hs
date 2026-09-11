@@ -36,7 +36,7 @@ instance RunMessage WorshippersOfTheDeep where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       selectEach (InvestigatorAt FullyFloodedLocation) \iid -> do
         chooseOrRunOneM iid $ scenarioI18n $ scope "worshippersOfTheDeep" do
-          countVar 3 $ labeledI "takeDamage" $ assignDamage iid (attrs.ability 1) 3
+          unscoped $ countVar 3 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 3
           withLocationOf iid \lid -> void $ runMaybeT do
             pos <- MaybeT $ field LocationPosition lid
             below <- MaybeT $ selectOne $ LocationInPosition (Pos pos.column (pos.row - 1))

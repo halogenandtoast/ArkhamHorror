@@ -28,8 +28,8 @@ instance RunMessage TreacherousPath where
       let n = count ((== #frost) . (.face)) tokens
       repeated n do
         chooseOneM iid $ withI18n do
-          countVar 1 $ labeledI "takeDamage" $ assignDamage iid (attrs.ability 1) 1
-          countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+          countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+          countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
 
       pure l
     _ -> TreacherousPath <$> liftRunMessage msg attrs

@@ -366,7 +366,7 @@ async function onImportArkhamBuild(event: Event) {
         <button
           type="button"
           class="library-collapse"
-          title="Hide library"
+          v-tooltip="'Hide library'" aria-label="Hide library"
           @click="libraryCollapsed = true"
         >
           «
@@ -407,16 +407,16 @@ async function onImportArkhamBuild(event: Event) {
               <span class="group-count">{{ set.cardCount }}</span>
             </button>
             <div class="row-actions">
-              <button type="button" title="Rename this set" @click="startRename(set)">
+              <button type="button" v-tooltip="'Rename this set'" aria-label="Rename this set" @click="startRename(set)">
                 <font-awesome-icon icon="pen" />
               </button>
-              <button type="button" :title="`Export ${set.name}`" @click="exportSet(set)">
+              <button type="button" v-tooltip="`Export ${set.name}`" :aria-label="`Export ${set.name}`" @click="exportSet(set)">
                 <font-awesome-icon icon="download" />
               </button>
               <button
                 type="button"
                 class="delete"
-                title="Delete this set and its cards"
+                v-tooltip="'Delete this set and its cards'" aria-label="Delete this set and its cards"
                 @click="dropSet(set)"
               >
                 <font-awesome-icon icon="trash" />
@@ -435,18 +435,18 @@ async function onImportArkhamBuild(event: Event) {
             <h3>{{ activeSet.name }}</h3>
             <span class="group-count">{{ activeCards.length }}</span>
             <div class="row-actions">
-              <button type="button" :disabled="!activeCards.length" title="Select every card" @click="selectAll">
+              <button type="button" :disabled="!activeCards.length" v-tooltip="'Select every card'" aria-label="Select every card" @click="selectAll">
                 <font-awesome-icon icon="check-double" />
               </button>
               <button
                 type="button"
                 :disabled="!selected.length"
-                :title="`Export ${selected.length} selected`"
+                v-tooltip="`Export ${selected.length} selected`" :aria-label="`Export ${selected.length} selected`"
                 @click="exportSelected"
               >
                 <font-awesome-icon icon="download" />
               </button>
-              <button type="button" :disabled="!selected.length" title="Clear selection" @click="clearSelection">
+              <button type="button" :disabled="!selected.length" v-tooltip="'Clear selection'" aria-label="Clear selection" @click="clearSelection">
                 <font-awesome-icon icon="times" />
               </button>
             </div>
@@ -470,10 +470,10 @@ async function onImportArkhamBuild(event: Event) {
                 </span>
               </button>
               <div class="row-actions">
-                <button type="button" title="Export this card" @click="exportOne(card)">
+                <button type="button" v-tooltip="'Export this card'" aria-label="Export this card" @click="exportOne(card)">
                   <font-awesome-icon icon="download" />
                 </button>
-                <button type="button" class="delete" title="Delete this card" @click="remove(card)">
+                <button type="button" class="delete" v-tooltip="'Delete this card'" aria-label="Delete this card" @click="remove(card)">
                   <font-awesome-icon icon="trash" />
                 </button>
               </div>
@@ -490,7 +490,7 @@ async function onImportArkhamBuild(event: Event) {
           v-if="libraryCollapsed"
           type="button"
           class="library-expand"
-          title="Show library"
+          v-tooltip="'Show library'" aria-label="Show library"
           @click="libraryCollapsed = false"
         >
           » Library
@@ -824,7 +824,17 @@ async function onImportArkhamBuild(event: Event) {
   gap: 0.35rem;
   list-style: none;
   margin: 0;
-  padding: 0;
+  /* Right padding keeps the scrollbar clear of the row buttons. */
+  padding: 0 0.25rem 0 0;
+
+  /* The card list is the one part of the library that grows without bound: a
+   * full imported set ran to a few thousand pixels and took the page with it.
+   * Cap it and give it its own scroller, so the head, tools and set list stay
+   * put while only the cards move. `contain` stops a scroll that reaches the
+   * end of the list from chaining on to the page behind it. */
+  max-height: 60vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 
   /* Checkbox, art, text, actions: a fixed grid so the type never collides with
    * the buttons and the row never wraps to two lines. */

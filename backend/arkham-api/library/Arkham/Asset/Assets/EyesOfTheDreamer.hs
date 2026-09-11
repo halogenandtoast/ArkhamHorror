@@ -24,7 +24,8 @@ eyesOfTheDreamer = asset EyesOfTheDreamer Cards.eyesOfTheDreamer
 instance HasAbilities EyesOfTheDreamer where
   getAbilities (EyesOfTheDreamer a) =
     [ controlled a 1 (exists $ YourLocation <> InvestigatableLocation) $ investigateActionWith_ #willpower
-    , controlled a 2 (DuringSkillTest $ SkillTestOnAsset (be a))
+    , perTest
+        $ controlled a 2 (DuringSkillTest $ SkillTestOnAsset (be a))
         $ ConstantReaction "Spend Charges" (WouldRevealChaosTokens #when You) (UseCostUpTo (be a) Charge 1 3)
     ]
 

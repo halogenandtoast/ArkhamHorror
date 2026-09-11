@@ -743,7 +743,12 @@ instance RunMessage AssetAttrs where
     ReplacedInvestigatorAsset iid aid | aid == assetId -> do
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     AddToVictory _ (AssetTarget aid) | aid == assetId -> do
-      pure $ a & placementL .~ OutOfPlay Zone.VictoryDisplayZone & controllerL .~ Nothing
+      -- leaving play removes every token, doom included (#5680)
+      pure
+        $ a
+        & (placementL .~ OutOfPlay Zone.VictoryDisplayZone)
+        & (controllerL .~ Nothing)
+        & (tokensL .~ mempty)
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
         [RemoveFromGame (toTarget a), AddCardToScenarioDeck key (toCard a)]

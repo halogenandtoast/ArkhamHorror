@@ -4,35 +4,40 @@ import Arkham.Card.CardDef
 import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Prelude
 import Arkham.Story.CardDefs.Base
+import Arkham.Trait (Trait (Bystander))
 
 -- Circus Ex Mortis (fan campaign by Tyler Gotch): harm_s_way
 theDarkYoungStir :: CardDef
 theDarkYoungStir =
   doubleSided $ story ":circus-ex-mortis:058" "The Dark Young Stir..." Set.HarmsWay
 
+-- The Kidnapped Citizen face is the Bystander side; the trait belongs to the
+-- card, so the story entity carries it on either face.
 hiddenInPlainSight :: CardDef
 hiddenInPlainSight =
-  doubleSided $ story ":circus-ex-mortis:059" "Hidden in Plain Sight" Set.HarmsWay
+  addTrait Bystander
+    $ doubleSided
+    $ story ":circus-ex-mortis:059" "Hidden in Plain Sight" Set.HarmsWay
 
 underLockAndKey :: CardDef
 underLockAndKey =
-  doubleSided $ story ":circus-ex-mortis:060" "Under Lock and Key" Set.HarmsWay
+  addTrait Bystander $ doubleSided $ story ":circus-ex-mortis:060" "Under Lock and Key" Set.HarmsWay
 
 cautiousJailers :: CardDef
 cautiousJailers =
-  doubleSided $ story ":circus-ex-mortis:061" "Cautious Jailers" Set.HarmsWay
+  addTrait Bystander $ doubleSided $ story ":circus-ex-mortis:061" "Cautious Jailers" Set.HarmsWay
 
 deepInTheDark :: CardDef
 deepInTheDark =
-  doubleSided $ story ":circus-ex-mortis:062" "Deep in the Dark" Set.HarmsWay
+  addTrait Bystander $ doubleSided $ story ":circus-ex-mortis:062" "Deep in the Dark" Set.HarmsWay
 
 clappedInIrons :: CardDef
 clappedInIrons =
-  doubleSided $ story ":circus-ex-mortis:063" "Clapped in Irons" Set.HarmsWay
+  addTrait Bystander $ doubleSided $ story ":circus-ex-mortis:063" "Clapped in Irons" Set.HarmsWay
 
 hypnoticState :: CardDef
 hypnoticState =
-  doubleSided $ story ":circus-ex-mortis:064" "Hypnotic State" Set.HarmsWay
+  addTrait Bystander $ doubleSided $ story ":circus-ex-mortis:064" "Hypnotic State" Set.HarmsWay
 
 -- Circus Ex Mortis (fan campaign by Tyler Gotch): red_sunrise
 pathForward_178 :: CardDef

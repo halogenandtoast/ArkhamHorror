@@ -25,6 +25,7 @@ import Arkham.Matcher.ChaosToken
 import Arkham.Matcher.Enemy
 import {-# SOURCE #-} Arkham.Matcher.Event
 import {-# SOURCE #-} Arkham.Matcher.Investigator
+import Arkham.Matcher.Story
 import Arkham.Matcher.Treachery
 import Arkham.Matcher.Value
 import {-# SOURCE #-} Arkham.Modifier
@@ -131,6 +132,7 @@ data LocationMatcher
   | LocationInDirection Direction LocationMatcher
   | LocationWithSpaceInDirection Direction LocationMatcher
   | LocationWithTreachery TreacheryMatcher
+  | LocationWithStory StoryMatcher
   | LocationWithoutTreachery TreacheryMatcher
   | LocationWithoutModifier ModifierType
   | LocationWithModifier ModifierType

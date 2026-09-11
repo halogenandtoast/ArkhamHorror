@@ -113,16 +113,22 @@
       "releaseTokens": "Release up to 2 {'{'}moon{'}'} tokens sealed on cards they control"
     }
   },
+  "closeWatch": {
+    "label": {
+      "spendAdditionalAction": "Spend 1 additional action",
+      "discardUntilEnemy": "After completing this action, discard cards from the top of the encounter deck until an enemy is discarded, and spawn it at your location"
+    }
+  },
   "hiddenInPlainSight": {
     "label": {
       "spendCluesToAutoSucceed": "Spend clues as a group to automatically succeed",
-      "doNotSpendClues": "Do not spend {'{'}count{'}'} clues"
+      "doNotSpendClues": "Do not spend {count} clues"
     }
   },
   "underLockAndKey": {
     "label": {
       "spendCluesToAutoSucceed": "Spend clues as a group to automatically succeed",
-      "doNotSpendClues": "Do not spend {'{'}count{'}'} clues"
+      "doNotSpendClues": "Do not spend {count} clues"
     }
   },
   "clappedInIrons": {

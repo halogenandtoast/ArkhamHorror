@@ -14,17 +14,22 @@ keepQuiet :: TreacheryCard KeepQuiet
 keepQuiet = treachery KeepQuiet Cards.keepQuiet
 
 instance HasAbilities KeepQuiet where
-  getAbilities (KeepQuiet a) =
-    [ restricted a 1 InYourThreatArea
-        $ forced
-        $ oneOf
-          [ EnemyDealtDamage #after AnyDamageEffect AnyEnemy (SourceUsedBy You)
-          , DiscoverClues #after You Anywhere (atLeast 1)
-          ]
-    , restricted a 2 InYourThreatArea
-        $ freeReaction
-        $ EnemyEvaded #after Anyone (EnemyAt YourLocation)
-    ]
+  getAbilities (KeepQuiet a) = case a.inThreatAreaOf of
+    Nothing -> []
+    Just iid ->
+      [ restricted
+          a
+          1
+          (InYourThreatArea <> exists (NearestEnemyToFallback iid $ NonEliteEnemy <> CanPlaceDoomOnEnemy))
+          $ forced
+          $ oneOf
+            [ EnemyDealtDamage #after AnyDamageEffect AnyEnemy (SourceUsedBy You)
+            , DiscoverClues #after You Anywhere (atLeast 1)
+            ]
+      , restricted a 2 InYourThreatArea
+          $ freeReaction
+          $ EnemyEvaded #after Anyone (EnemyAt YourLocation)
+      ]
 
 instance RunMessage KeepQuiet where
   runMessage msg t@(KeepQuiet attrs) = runQueueT $ case msg of
@@ -32,7 +37,7 @@ instance RunMessage KeepQuiet where
       placeInThreatArea attrs iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ NearestEnemyTo iid $ NonEliteEnemy <> CanPlaceDoomOnEnemy
+      enemies <- select $ NearestEnemyToFallback iid $ NonEliteEnemy <> CanPlaceDoomOnEnemy
       unless (null enemies) $ chooseTargetM iid enemies $ placeDoomOn attrs 1
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do

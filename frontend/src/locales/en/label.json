@@ -372,6 +372,7 @@
     "discardRandomCard": "Discard Random Card",
     "discardTopOfDeck": "Discard the top {count} cards of your deck",
     "discardUnderneath": "Discard a card from underneath",
+    "discardEncounterUntilFirst": "Discard from the top of the encounter deck until a matching card is discarded",
     "discoveredClues": "Spend discovered clues",
     "doom": "{count} Doom | {count} Doom",
     "drawEncounterCards": "Draw {count} encounter cards",

@@ -2373,6 +2373,10 @@ getLocationsMatching lmatcher = do
     LocationWithAsset assetMatcher -> do
       locations <- catMaybes <$> selectFields AssetLocation assetMatcher
       pure $ filter ((`elem` locations) . toId) ls
+    LocationWithStory storyMatcher -> do
+      placements <- selectFields StoryPlacement storyMatcher
+      locations <- catMaybes <$> traverse Helpers.placementLocation placements
+      pure $ filter ((`elem` locations) . toId) ls
     LocationWithAttachedEvent eventMatcher -> do
       events <- select eventMatcher
       flip filterM ls $ \l -> do
@@ -3734,6 +3738,7 @@ getStoriesMatching matcher = do
     StoryMatchAll ms -> foldM filterMatcher as ms
     StoryWithPlacement placement -> pure $ filter ((== placement) . attr storyPlacement) as
     StoryWithModifier modifier -> as & filterM \s -> elem modifier <$> getModifiers (toTarget s)
+    StoryWithTrait t -> pure $ filter (member t . toTraits . toAttrs) as
     StoryIs cardCode -> pure $ filter ((== cardCode) . toCardCode) as
     StoryWithCardId cardId -> pure $ filter ((== cardId) . attr storyCardId) as
     EnemyStory eid -> filterM (fieldP StoryPlacement (== AttachedToEnemy eid) . toId) as

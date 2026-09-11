@@ -1035,7 +1035,12 @@ runGameMessage msg g = case msg of
     push $ CreatedEffect effectId Nothing source GameTarget
     pure $ g & entitiesL . effectsL %~ insertMap effectId effect
   DisableEffect effectId -> do
-    mEffect <- maybeEffect effectId
+    -- Only the live effect counts. One duration can be ended by several
+    -- messages -- a move fires MoveAction, Move and ResolvedMovement -- and each
+    -- pushes its own DisableEffect. 'maybeEffect' falls back to the removed
+    -- entities, so the later ones used to find the finished copy and run its
+    -- onDisable body again (Close Watch spawned an enemy per trigger).
+    let mEffect = preview (entitiesL . effectsL . ix effectId) g
     for_ mEffect \effect ->
       for_ (attr effectOnDisable effect) pushAll
     pure

@@ -1,11 +1,11 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.SupplicantOfTheGoat (supplicantOfTheGoat) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
-import Arkham.Homebrew.CircusExMortis.Helpers
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.ForMovement
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Helpers
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -26,9 +26,12 @@ instance HasAbilities SupplicantOfTheGoat where
 instance RunMessage SupplicantOfTheGoat where
   runMessage msg e@(SupplicantOfTheGoat attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
+      moonInBag <- selectAny moonToken
       chooseOneM iid $ campaignI18n do
-        labeled "supplicantOfTheGoat.seal" do
-          selectOne (chaosToken_ (ChaosTokenFaceIs MoonToken)) >>= traverse_ (sealChaosToken iid iid)
-        labeled "supplicantOfTheGoat.attack" $ initiateEnemyAttack attrs (attrs.ability 1) iid
+        labeledValidate' moonInBag "sealMoonToken" $ sealMoonTokenOn iid
+        unscoped
+          $ nameVar attrs
+          $ labeled "attacksYou"
+          $ initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     _ -> SupplicantOfTheGoat <$> liftRunMessage msg attrs

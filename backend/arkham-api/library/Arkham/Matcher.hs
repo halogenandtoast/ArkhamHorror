@@ -180,6 +180,10 @@ instance WithTrait TreacheryMatcher where
   withTrait = TreacheryWithTrait
   {-# INLINE withTrait #-}
 
+instance WithTrait StoryMatcher where
+  withTrait = StoryWithTrait
+  {-# INLINE withTrait #-}
+
 instance WithTrait InvestigatorMatcher where
   withTrait = InvestigatorWithTrait
   {-# INLINE withTrait #-}

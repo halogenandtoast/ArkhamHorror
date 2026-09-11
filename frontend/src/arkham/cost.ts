@@ -294,6 +294,9 @@ export function formatCost(cost: Cost, t: Translate): string {
       return t('label.cost.clue', { count: gameValueCount(contents[2]) })
     }
     case 'GroupClueCostX':
+    // The amount is a backend GameCalculation, so the client can only say that
+    // it varies.
+    case 'CalculatedGroupClueCost':
       return t('label.cost.groupClueX')
     case 'GroupClueCost':
     case 'SameLocationGroupClueCost': {
@@ -472,6 +475,8 @@ export function formatCost(cost: Cost, t: Translate): string {
       return t('label.cost.shuffleAttachedIntoDeck')
     case 'DrawEncounterCardsCost':
       return t('label.cost.drawEncounterCards', { count: num(cost, 'contents') })
+    case 'DiscardEncounterUntilFirstCost':
+      return t('label.cost.discardEncounterUntilFirst')
     case 'GloriaCost':
     case 'ArchiveOfConduitsUnidentifiedCost':
       return t('label.cost.calculated')

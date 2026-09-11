@@ -11,15 +11,22 @@ newtype SacrificialShepherd = SacrificialShepherd EnemyAttrs
   deriving anyclass (IsEnemy, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
+{- | Kidnapped Citizen is a story entity here, so "Bystander asset or story card"
+has to look at both.
+-}
+locationWithBystander :: LocationMatcher
+locationWithBystander =
+  oneOf [LocationWithAsset (withTrait Bystander), LocationWithStory (withTrait Bystander)]
+
 sacrificialShepherd :: EnemyCard SacrificialShepherd
 sacrificialShepherd =
   enemy SacrificialShepherd Cards.sacrificialShepherd
-    & setSpawnAtFirst [LocationWithAsset (withTrait Bystander), Anywhere]
+    & setSpawnAtFirst [locationWithBystander, Anywhere]
 
 instance HasModifiersFor SacrificialShepherd where
   getModifiersFor (SacrificialShepherd a) = do
     let loc = locationWithEnemy a
-    bystanderPresent <- selectAny $ AssetAt loc <> AssetWithTrait Bystander
+    bystanderPresent <- selectAny $ loc <> locationWithBystander
     modifySelectWhen
       a
       a.ready

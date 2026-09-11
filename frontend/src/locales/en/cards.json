@@ -135,7 +135,7 @@
       "exhaust": "Exhaust Blessed Blade (4) to add 1 {'{'}bless{'}'} token | Exhaust Blessed Blade (4) to add {count} {'{'}bless{'}'} tokens"
     },
     "blessedBlade4": {
-      "exhaustForBless": "Exhaust Blessed Blade (4) to add 1 {'{'}bless{'}'} token | Exhaust Blessed Blade (4) to add {'{'}count{'}'} {'{'}bless{'}'} tokens"
+      "exhaustForBless": "Exhaust Blessed Blade (4) to add 1 {'{'}bless{'}'} token | Exhaust Blessed Blade (4) to add {count} {'{'}bless{'}'} tokens"
     },
     "bloodRite": {
       "gainResource": "Gain Resource",
@@ -1661,7 +1661,7 @@
     },
     "yaotl1": {
       "fastDiscardThe": "{'{'}fast{'}'}: Discard the top card of your deck. (Limit once per phase.)",
-      "fastExhaustYaotl": "{'{'}fast{'}'} Exhaust Yaotl: During this skill test, you get a bonus to each skill equal to the number of matching skill icons on the top card of your discard pile (not counting {'{'}skillWild{'}'} icons)."
+      "fastExhaustYaotl": "{'{'}fast{'}'} Exhaust Yaotl: During this skill test, you get a bonus to each skill equal to the number of matching skill icons on the top card of your discard pile (not counting {'{'}wild{'}'} icons)."
     }
   }
 }

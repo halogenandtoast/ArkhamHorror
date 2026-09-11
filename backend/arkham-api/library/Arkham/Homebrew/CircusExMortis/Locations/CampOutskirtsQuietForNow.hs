@@ -18,4 +18,4 @@ instance HasModifiersFor CampOutskirtsQuietForNow where
 
 campOutskirtsQuietForNow :: LocationCard CampOutskirtsQuietForNow
 campOutskirtsQuietForNow =
-  location CampOutskirtsQuietForNow Cards.campOutskirtsQuietForNow 3 (Static 3)
+  location CampOutskirtsQuietForNow Cards.campOutskirtsQuietForNow 3 (PerPlayer 3)

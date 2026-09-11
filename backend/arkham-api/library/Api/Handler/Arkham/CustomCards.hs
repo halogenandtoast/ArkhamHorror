@@ -1,10 +1,12 @@
 module Api.Handler.Arkham.CustomCards (
   getApiV1ArkhamCustomCardsR,
   postApiV1ArkhamCustomCardsR,
-  postApiV1ArkhamCustomCardsImportR,
   postApiV1ArkhamCustomCardsArtR,
   deleteApiV1ArkhamCustomCardR,
   registerUserCustomCards,
+  ownedCardSet,
+  saveCardInSet,
+  stampSetName,
 ) where
 
 import Amazonka
@@ -21,7 +23,7 @@ import Arkham.Card.CustomCard (
   sanitizeCustomCardCode,
  )
 import Crypto.Hash.SHA256 qualified as SHA256
-import Data.Aeson.Types (parseMaybe)
+import Data.Aeson.Types (parseMaybe, withObject, (.:))
 import Data.ByteString.Base16 qualified as B16
 import Data.ByteString.Base64 qualified as B64
 import Data.ByteString.Lazy qualified as BSL
@@ -55,15 +57,38 @@ normalizeCard card = do
   let def = (customCardDef card) {cdCardCode = cardCode, cdArt = unCardCode cardCode}
   pure (cardCode, card {customCardDef = def})
 
-saveCard :: UserId -> UTCTime -> CustomCard -> Handler (Entity ArkhamCustomCard)
-saveCard userId now card0 = do
+{- | The set at this id, if it is the requesting user's.
+
+Lives here rather than beside the set handlers because saving a card is what
+most needs it, and because the set handlers already depend on this module --
+the other direction would be a cycle.
+-}
+ownedCardSet :: UserId -> ArkhamCustomCardSetId -> Handler ArkhamCustomCardSet
+ownedCardSet userId setId = do
+  set <- runDB $ get404 setId
+  unless (arkhamCustomCardSetUserId set == userId) $ permissionDenied "Not your card set"
+  pure set
+
+{- | The set's name, written into the card's own def.
+
+The set row is what a card belongs to; this is the copy that travels with the
+card, for everything that only ever sees a def -- the deck overlay, the card
+picker, a card exported on its own.
+-}
+stampSetName :: Text -> CardDef -> CardDef
+stampSetName name def = def {cdMeta = Map.insert "set" (String name) (cdMeta def)}
+
+saveCardInSet
+  :: UserId -> ArkhamCustomCardSetId -> Text -> UTCTime -> CustomCard -> Handler (Entity ArkhamCustomCard)
+saveCardInSet userId setId setName now card0 = do
   (cardCode, card') <- normalizeCard card0
   art <- traverse (hostArt userId) (customCardArt card')
-  def <- hostDefArt userId (customCardDef card')
+  def <- hostDefArt userId (stampSetName setName (customCardDef card'))
   let card = card' {customCardArt = art, customCardDef = def}
   let row =
         ArkhamCustomCard
           userId
+          setId
           (unCardCode cardCode)
           (toJSON (customCardDef card))
           (customCardArt card)
@@ -74,7 +99,8 @@ saveCard userId now card0 = do
       Just (Entity rowId existing) -> do
         P.update
           rowId
-          [ ArkhamCustomCardDef P.=. toJSON (customCardDef card)
+          [ ArkhamCustomCardCustomCardSetId P.=. setId
+          , ArkhamCustomCardDef P.=. toJSON (customCardDef card)
           , ArkhamCustomCardArt P.=. customCardArt card
           , ArkhamCustomCardUpdatedAt P.=. now
           ]
@@ -82,7 +108,8 @@ saveCard userId now card0 = do
         pure
           $ Entity rowId
           $ existing
-            { arkhamCustomCardDef = toJSON (customCardDef card)
+            { arkhamCustomCardCustomCardSetId = setId
+            , arkhamCustomCardDef = toJSON (customCardDef card)
             , arkhamCustomCardArt = customCardArt card
             , arkhamCustomCardUpdatedAt = now
             }
@@ -90,27 +117,26 @@ saveCard userId now card0 = do
         rowId <- P.insert row
         pure $ Entity rowId row
 
+-- | A card is always saved into a set, so the set it goes in comes with it.
+data SaveCardPost = SaveCardPost
+  { saveCardPostSetId :: ArkhamCustomCardSetId
+  , saveCardPostCard :: CustomCard
+  }
+
+instance FromJSON SaveCardPost where
+  parseJSON v =
+    withObject
+      "SaveCardPost"
+      (\o -> SaveCardPost <$> (ArkhamCustomCardSetKey <$> o .: "setId") <*> parseJSON v)
+      v
+
 postApiV1ArkhamCustomCardsR :: Handler (Entity ArkhamCustomCard)
 postApiV1ArkhamCustomCardsR = do
   userId <- getRequestUserId
-  card <- requireCheckJsonBody
+  SaveCardPost {saveCardPostSetId, saveCardPostCard} <- requireCheckJsonBody
+  set <- ownedCardSet userId saveCardPostSetId
   now <- liftIO getCurrentTime
-  saveCard userId now card
-
-newtype CustomCardImport = CustomCardImport {cards :: [CustomCard]}
-  deriving stock Generic
-  deriving anyclass FromJSON
-
-{- | Bulk upsert, for importing an exported file. Cards keep the codes they were
-exported with, so re-importing your own export updates those cards rather than
-duplicating them.
--}
-postApiV1ArkhamCustomCardsImportR :: Handler [Entity ArkhamCustomCard]
-postApiV1ArkhamCustomCardsImportR = do
-  userId <- getRequestUserId
-  CustomCardImport {cards} <- requireCheckJsonBody
-  now <- liftIO getCurrentTime
-  traverse (saveCard userId now) cards
+  saveCardInSet userId saveCardPostSetId (arkhamCustomCardSetName set) now saveCardPostCard
 
 deleteApiV1ArkhamCustomCardR :: ArkhamCustomCardId -> Handler ()
 deleteApiV1ArkhamCustomCardR cardId = do

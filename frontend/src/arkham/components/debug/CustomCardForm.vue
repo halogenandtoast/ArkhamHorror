@@ -127,7 +127,6 @@ const blankForm = () => ({
   actions: [] as string[],
   // grouping, so a set of cards made together can be found together
   cardNumber: '',
-  setName: '',
   // investigator
   elderSign: '1',
   elderSignRevealSteps: [] as any[],
@@ -469,7 +468,6 @@ function buildDef(cardCode: string): Record<string, any> {
   }
 
   if (form.cardNumber.trim()) def.meta.number = form.cardNumber.trim()
-  if (form.setName.trim()) def.meta.set = form.setName.trim()
 
   if (isInvestigator.value) {
     if (num(form.elderSign) !== null) def.meta._elderSign = num(form.elderSign)
@@ -681,7 +679,6 @@ async function loadCard(card: CustomCard) {
   form.investigatorSanity = meta.sanity === undefined ? '7' : String(meta.sanity)
   form.signatures = (meta._signatures ?? []).map(stripCardCodePrefix)
   form.cardNumber = meta.number ?? ''
-  form.setName = meta.set ?? ''
   form.elderSign = meta._elderSign === undefined ? '1' : String(meta._elderSign)
   form.elderSignRevealSteps = meta._elderSignRevealSteps ?? []
   form.elderSignSteps = meta._elderSignSteps ?? []
@@ -864,10 +861,6 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             <label>
               Card number
               <input v-model="form.cardNumber" type="text" placeholder="1" @keydown.stop />
-            </label>
-            <label>
-              Set
-              <input v-model="form.setName" type="text" placeholder="My Expansion" @keydown.stop />
             </label>
           </div>
 

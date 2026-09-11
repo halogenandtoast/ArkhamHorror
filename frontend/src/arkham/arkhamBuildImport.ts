@@ -91,8 +91,16 @@ const setIf = (obj: Record<string, any>, key: string, value: unknown) => {
 }
 
 /* Accepts a full arkham.build card-pool export ({meta, data:{cards:[...]}}),
- * a bare {cards:[...]}, or a single card object on its own. */
-export function parseArkhamBuildCards(raw: string): { packName: string | null; cards: any[] } {
+ * a bare {cards:[...]}, or a single card object on its own.
+ *
+ * `packCode` is the pack's own id, kept so that importing a corrected version of
+ * the same pack later replaces the set it made rather than making a second one
+ * beside it -- which a rename of the pack would otherwise cause. */
+export function parseArkhamBuildCards(raw: string): {
+  packName: string | null
+  packCode: string | null
+  cards: any[]
+} {
   const parsed = JSON.parse(raw)
   const cards: any[] = Array.isArray(parsed?.data?.cards)
     ? parsed.data.cards
@@ -101,7 +109,11 @@ export function parseArkhamBuildCards(raw: string): { packName: string | null; c
       : parsed?.name && parsed?.type_code
         ? [parsed]
         : []
-  return { packName: parsed?.meta?.name ?? null, cards }
+  return {
+    packName: parsed?.meta?.name ?? null,
+    packCode: parsed?.meta?.code ?? null,
+    cards,
+  }
 }
 
 export function arkhamBuildCardToCustomCard(raw: any, packName: string | null): CustomCard {

@@ -4,24 +4,31 @@
  *
  * In a game you only pick from this library; building and editing happen here,
  * where there is room for it. */
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import CustomCardForm from '@/arkham/components/debug/CustomCardForm.vue'
 import { stripCardCodePrefix } from '@/arkham/customCards'
 import {
   mintCustomCardCode,
-  registerCustomCards,
   renderCardPlaceholder,
   type CustomCard,
 } from '@/arkham/customCards'
 import {
+  createSet,
   exportCards,
-  importLibraryCards,
+  importSet,
+  libraryCard,
   libraryCards,
   libraryLoaded,
+  librarySet,
+  librarySets,
   loadLibrary,
   removeFromLibrary,
+  removeSet,
+  renameSet,
   saveToLibrary,
+  setCards,
+  type LibrarySet,
 } from '@/arkham/customCardLibrary'
 
 const form = ref<InstanceType<typeof CustomCardForm> | null>(null)
@@ -32,6 +39,14 @@ const libraryCollapsed = ref(false)
 const status = ref<string | null>(null)
 const error = ref<string | null>(null)
 
+/* Which set new cards are written into. Remembered across visits because it is
+ * the thing you are working on, not a filter you re-pick every time. */
+const ACTIVE_SET_KEY = 'arkham:card-builder:active-set'
+const activeSetId = ref<string | null>(null)
+const newSetName = ref('')
+const renamingSetId = ref<string | null>(null)
+const renameDraft = ref('')
+
 const route = useRoute()
 const router = useRouter()
 
@@ -41,6 +56,7 @@ const router = useRouter()
  * a link followed while already here still lands. */
 async function openFromRoute() {
   await loadLibrary()
+  ensureActiveSet()
   const wanted = route.query.card
   if (typeof wanted !== 'string') return
   // A code travels with the 'c' the engine prepends or without it, and the
@@ -55,21 +71,44 @@ onMounted(openFromRoute)
 watch(() => route.query.card, openFromRoute)
 
 const cards = computed(() => libraryCards())
+const sets = computed(() => librarySets())
+const activeSet = computed(() => librarySet(activeSetId.value))
 
-/* Cards are grouped by the set they name, so a batch built together stays
- * together the way the card browser groups an expansion. */
-const grouped = computed(() => {
-  const groups = new Map<string, typeof cards.value>()
-  for (const card of cards.value) {
-    const set = card.def.meta?.set?.trim() || 'Ungrouped'
-    if (!groups.has(set)) groups.set(set, [])
-    groups.get(set)!.push(card)
-  }
-  for (const list of groups.values()) {
-    list.sort((a, b) => (a.def.meta?.number ?? '').localeCompare(b.def.meta?.number ?? '', undefined, { numeric: true }))
-  }
-  return [...groups.entries()].sort(([a], [b]) => (a === 'Ungrouped' ? 1 : b === 'Ungrouped' ? -1 : a.localeCompare(b)))
+/* The set being worked on, and the cards in it, in printed order. A card is
+ * built into a set, so the builder shows one at a time rather than the whole
+ * library at once. */
+const activeCards = computed(() => {
+  if (!activeSetId.value) return []
+  return setCards(activeSetId.value).sort((a, b) =>
+    (a.def.meta?.number ?? '').localeCompare(b.def.meta?.number ?? '', undefined, { numeric: true }),
+  )
 })
+
+/* Falls back to whatever set is first rather than leaving nothing selected: a
+ * builder with sets in it should always be pointed at one of them. */
+function chooseActiveSet(id: string | null) {
+  activeSetId.value = id
+  selected.value = []
+  try {
+    if (id) localStorage.setItem(ACTIVE_SET_KEY, id)
+    else localStorage.removeItem(ACTIVE_SET_KEY)
+  } catch {
+    // A browser refusing storage is not a reason to fail to switch sets.
+  }
+}
+
+function ensureActiveSet() {
+  if (activeSetId.value && sets.value.some((s) => s.id === activeSetId.value)) return
+  let remembered: string | null = null
+  try {
+    remembered = localStorage.getItem(ACTIVE_SET_KEY)
+  } catch {
+    remembered = null
+  }
+  const known = remembered && sets.value.some((s) => s.id === remembered) ? remembered : null
+  chooseActiveSet(known ?? sets.value[0]?.id ?? null)
+}
+
 const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def)
 const isSelected = (code: string) => selected.value.includes(code)
 
@@ -79,20 +118,60 @@ function toggleSelected(code: string) {
   else selected.value.splice(index, 1)
 }
 
-const selectAll = () => (selected.value = cards.value.map((c) => c.def.cardCode))
+const selectAll = () => (selected.value = activeCards.value.map((c) => c.def.cardCode))
 const clearSelection = () => (selected.value = [])
 
-/* A set is how a batch built together is kept together, so it is also the unit
- * you hand to someone else — and the unit you select. */
-const setFullySelected = (setCards: CustomCard[]) =>
-  setCards.length > 0 && setCards.every((c) => isSelected(c.def.cardCode))
+// -------------------------------------------------------------------- sets ---
 
-function toggleSet(setCards: CustomCard[]) {
-  const codes = setCards.map((c) => c.def.cardCode)
-  if (setFullySelected(setCards)) {
-    selected.value = selected.value.filter((code) => !codes.includes(code))
-  } else {
-    selected.value = [...new Set([...selected.value, ...codes])]
+async function addSet() {
+  const name = newSetName.value.trim()
+  if (!name) return
+  error.value = null
+  try {
+    const set = await createSet(name)
+    newSetName.value = ''
+    chooseActiveSet(set.id)
+    startNew()
+  } catch (e) {
+    console.error(e)
+    error.value = 'Could not create that set.'
+  }
+}
+
+function startRename(set: LibrarySet) {
+  renamingSetId.value = set.id
+  renameDraft.value = set.name
+}
+
+async function commitRename(set: LibrarySet) {
+  const name = renameDraft.value.trim()
+  renamingSetId.value = null
+  if (!name || name === set.name) return
+  error.value = null
+  try {
+    await renameSet(set.id, name)
+  } catch (e) {
+    console.error(e)
+    error.value = 'Could not rename that set.'
+  }
+}
+
+/* The whole point of a set: changing your mind about an import you just made is
+ * one decision, so the count is spelled out rather than left to be discovered. */
+async function dropSet(set: LibrarySet) {
+  const count = set.cardCount
+  const what = count === 1 ? 'its 1 card' : `its ${count} cards`
+  if (!confirm(`Delete "${set.name}" and ${count ? what : 'nothing else — it is empty'}?`)) return
+  error.value = null
+  try {
+    const editing = editingCode.value
+    await removeSet(set.id)
+    if (activeSetId.value === set.id) chooseActiveSet(sets.value[0]?.id ?? null)
+    if (editing && !libraryCard(editing)) startNew()
+    status.value = `Deleted "${set.name}".`
+  } catch (e) {
+    console.error(e)
+    error.value = 'Could not delete that set.'
   }
 }
 
@@ -100,6 +179,12 @@ async function edit(card: CustomCard) {
   editingCode.value = card.def.cardCode
   status.value = null
   error.value = null
+  /* Opening a card from elsewhere -- a game, or an investigator's signature --
+   * switches to the set it lives in, so the library beside it is showing the
+   * card that is open. */
+  const owned = libraryCard(card.def.cardCode)
+  if (owned && owned.setId !== activeSetId.value) chooseActiveSet(owned.setId)
+  await nextTick()
   await form.value?.loadCard(card)
   syncRoute(card.def.cardCode)
 }
@@ -129,6 +214,15 @@ function syncRoute(cardCode: string | null) {
 }
 
 async function save() {
+  /* A card is written into a set, so there has to be one. Editing a card keeps
+   * it in the set it is already in rather than moving it to whichever set
+   * happens to be active. */
+  const setId = (editingCode.value ? libraryCard(editingCode.value)?.setId : null) ?? activeSetId.value
+  if (!setId) {
+    error.value = 'Make a set first — a card has to go in one.'
+    return
+  }
+
   busy.value = true
   error.value = null
   status.value = null
@@ -138,9 +232,8 @@ async function save() {
     // than leaving a second copy behind.
     const card = form.value?.buildCustomCard(editingCode.value ?? mintCustomCardCode())
     if (!card) return
-    await saveToLibrary(card)
-    registerCustomCards([card])
-    editingCode.value = card.def.cardCode
+    const saved = await saveToLibrary(card, setId)
+    editingCode.value = saved.def.cardCode
     status.value = 'Saved.'
   } catch (e) {
     console.error(e)
@@ -159,9 +252,9 @@ async function remove(card: CustomCard) {
 
 // ---------------------------------------------------------------- export ---
 
-async function download(cards: CustomCard[], filename: string) {
+async function download(cards: CustomCard[], filename: string, set?: LibrarySet) {
   // The art is fetched and inlined, so this waits on the network.
-  const blob = new Blob([JSON.stringify(await exportCards(cards), null, 2)], {
+  const blob = new Blob([JSON.stringify(await exportCards(cards, set), null, 2)], {
     type: 'application/json',
   })
   const url = URL.createObjectURL(blob)
@@ -176,11 +269,14 @@ const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').re
 
 const exportOne = (card: CustomCard) => download([card], `${slug(card.def.name.title)}.arkhamcard.json`)
 
-const exportSet = (set: string, setCards: CustomCard[]) =>
-  download(setCards, `${slug(set)}.arkhamcard.json`)
+/* A set exports as a set, naming itself in the file, so importing it again --
+ * here or on someone else's account -- lands as that set rather than as loose
+ * cards needing somewhere to go. */
+const exportSet = (set: LibrarySet) =>
+  download(setCards(set.id), `${slug(set.name)}.arkhamcard.json`, set)
 
 async function exportSelected() {
-  const chosen = cards.value.filter((c) => isSelected(c.def.cardCode))
+  const chosen = activeCards.value.filter((c) => isSelected(c.def.cardCode))
   if (!chosen.length) return
   await download(
     chosen,
@@ -188,28 +284,53 @@ async function exportSelected() {
   )
 }
 
+/* Everything imported arrives as a set, replacing one of the same name rather
+ * than merging into it. A file that names no set falls back to what the cards
+ * claim, and failing that to the file's own name. */
+async function importFile(file: File, parse: (text: string) => Promise<{
+  name: string
+  sourceCode: string | null
+  cards: CustomCard[]
+}>) {
+  error.value = null
+  status.value = null
+  try {
+    const { name, sourceCode, cards: incoming } = await parse(await file.text())
+    if (!incoming.length) {
+      error.value = 'That file has no cards in it.'
+      return
+    }
+
+    const replacing = sets.value.find(
+      (s) => (sourceCode && s.sourceCode === sourceCode) || s.name === name,
+    )
+    const prompt = replacing
+      ? `Replace "${replacing.name}" (${replacing.cardCount} cards) with the ${incoming.length} in this file?`
+      : `Import ${incoming.length} card${incoming.length === 1 ? '' : 's'} as "${name}"?`
+    if (!confirm(prompt)) return
+
+    const editing = editingCode.value
+    const set = await importSet({ name, sourceCode, cards: incoming })
+    chooseActiveSet(set.id)
+    if (editing && !libraryCard(editing)) startNew()
+    status.value = `Imported ${incoming.length} card${incoming.length === 1 ? '' : 's'} into "${set.name}".`
+  } catch (e) {
+    console.error(e)
+    error.value = 'Could not read that file.'
+  }
+}
+
+const fileBaseName = (file: File) => file.name.replace(/\.[^.]+$/, '').replace(/\.arkhamcard$/, '')
+
 async function onImport(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   input.value = ''
   if (!file) return
-
-  error.value = null
-  status.value = null
-  try {
+  await importFile(file, async (text) => {
     const { parseCardExport } = await import('@/arkham/customCardLibrary')
-    const imported = parseCardExport(await file.text())
-    if (!imported.length) {
-      error.value = 'That file has no cards in it.'
-      return
-    }
-    const saved = await importLibraryCards(imported)
-    registerCustomCards(saved)
-    status.value = `Imported ${saved.length} card${saved.length === 1 ? '' : 's'}.`
-  } catch (e) {
-    console.error(e)
-    error.value = 'Could not read that file.'
-  }
+    return parseCardExport(text, fileBaseName(file))
+  })
 }
 
 /* A different source format from `onImport` above: an arkham.build ("Arkham
@@ -224,26 +345,15 @@ async function onImportArkhamBuild(event: Event) {
   const file = input.files?.[0]
   input.value = ''
   if (!file) return
-
-  error.value = null
-  status.value = null
-  try {
+  await importFile(file, async (text) => {
     const { parseArkhamBuildCards, arkhamBuildCardToCustomCard } = await import('@/arkham/arkhamBuildImport')
-    const { packName, cards: rawCards } = parseArkhamBuildCards(await file.text())
-    if (!rawCards.length) {
-      error.value = 'That file has no cards in it.'
-      return
+    const { packName, packCode, cards: rawCards } = parseArkhamBuildCards(text)
+    return {
+      name: packName ?? fileBaseName(file),
+      sourceCode: packCode,
+      cards: rawCards.map((raw: any) => arkhamBuildCardToCustomCard(raw, packName)),
     }
-    if (!confirm(`Import ${rawCards.length} card${rawCards.length === 1 ? '' : 's'} from this file?`)) return
-
-    const built = rawCards.map((raw: any) => arkhamBuildCardToCustomCard(raw, packName))
-    const saved = await importLibraryCards(built)
-    registerCustomCards(saved)
-    status.value = `Imported ${saved.length} card${saved.length === 1 ? '' : 's'}.`
-  } catch (e) {
-    console.error(e)
-    error.value = 'Could not read that file as an arkham.build export.'
-  }
+  })
 }
 </script>
 
@@ -261,8 +371,10 @@ async function onImportArkhamBuild(event: Event) {
         >
           «
         </button>
-        <h2>Library</h2>
-        <button type="button" class="new-card" @click="startNew">+ New</button>
+        <h2>Sets</h2>
+        <button type="button" class="new-card" :disabled="!activeSetId" @click="startNew">
+          + New card
+        </button>
       </div>
 
       <div class="library-tools">
@@ -270,48 +382,82 @@ async function onImportArkhamBuild(event: Event) {
           <span>Import</span>
           <input type="file" accept="application/json,.json" @change="onImport" />
         </label>
-        <button type="button" class="tool" :disabled="!selected.length" @click="exportSelected">
-          Export{{ selected.length ? ` (${selected.length})` : '' }}
-        </button>
-        <button type="button" class="tool" :disabled="!cards.length" @click="selectAll">
-          Select all
-        </button>
-        <button type="button" class="tool" :disabled="!selected.length" @click="clearSelection">
-          Clear
-        </button>
-        <label class="tool import wide">
+        <label class="tool import">
           <span>Import arkham.build</span>
           <input type="file" accept="application/json,.json" @change="onImportArkhamBuild" />
         </label>
       </div>
 
       <p v-if="!libraryLoaded" class="muted">Loading…</p>
-      <p v-else-if="!cards.length" class="muted">
-        No cards yet. Build one and it will be waiting here next time.
-      </p>
 
       <template v-else>
-        <div v-for="[set, setCards] in grouped" :key="set" class="library-group">
-          <div class="group-head">
-            <h3>{{ set }}</h3>
-            <span class="group-count">{{ setCards.length }}</span>
+        <ul class="set-list">
+          <li v-for="set in sets" :key="set.id" :class="{ active: set.id === activeSetId }">
+            <input
+              v-if="renamingSetId === set.id"
+              v-model="renameDraft"
+              class="rename"
+              type="text"
+              @keydown.enter="commitRename(set)"
+              @keydown.esc="renamingSetId = null"
+              @blur="commitRename(set)"
+            />
+            <button v-else type="button" class="set-name" @click="chooseActiveSet(set.id)">
+              <span class="name">{{ set.name }}</span>
+              <span class="group-count">{{ set.cardCount }}</span>
+            </button>
             <div class="row-actions">
+              <button type="button" title="Rename this set" @click="startRename(set)">
+                <font-awesome-icon icon="pen" />
+              </button>
+              <button type="button" :title="`Export ${set.name}`" @click="exportSet(set)">
+                <font-awesome-icon icon="download" />
+              </button>
               <button
                 type="button"
-                :class="{ on: setFullySelected(setCards) }"
-                :title="setFullySelected(setCards) ? `Deselect ${set}` : `Select every card in ${set}`"
-                @click="toggleSet(setCards)"
+                class="delete"
+                title="Delete this set and its cards"
+                @click="dropSet(set)"
               >
+                <font-awesome-icon icon="trash" />
+              </button>
+            </div>
+          </li>
+        </ul>
+
+        <form class="new-set" @submit.prevent="addSet">
+          <input v-model="newSetName" type="text" placeholder="New set name" @keydown.stop />
+          <button type="submit" :disabled="!newSetName.trim()">Add</button>
+        </form>
+
+        <template v-if="activeSet">
+          <div class="group-head">
+            <h3>{{ activeSet.name }}</h3>
+            <span class="group-count">{{ activeCards.length }}</span>
+            <div class="row-actions">
+              <button type="button" :disabled="!activeCards.length" title="Select every card" @click="selectAll">
                 <font-awesome-icon icon="check-double" />
               </button>
-              <button type="button" :title="`Export ${set}`" @click="exportSet(set, setCards)">
+              <button
+                type="button"
+                :disabled="!selected.length"
+                :title="`Export ${selected.length} selected`"
+                @click="exportSelected"
+              >
                 <font-awesome-icon icon="download" />
+              </button>
+              <button type="button" :disabled="!selected.length" title="Clear selection" @click="clearSelection">
+                <font-awesome-icon icon="times" />
               </button>
             </div>
           </div>
-          <ul class="library-list">
+
+          <p v-if="!activeCards.length" class="muted">
+            Nothing in this set yet. Build a card and it lands here.
+          </p>
+          <ul v-else class="library-list">
             <li
-              v-for="card in setCards"
+              v-for="card in activeCards"
               :key="card.def.cardCode"
               :class="{ editing: editingCode === card.def.cardCode }"
             >
@@ -333,7 +479,7 @@ async function onImportArkhamBuild(event: Event) {
               </div>
             </li>
           </ul>
-        </div>
+        </template>
       </template>
       </div>
     </aside>
@@ -349,11 +495,14 @@ async function onImportArkhamBuild(event: Event) {
         >
           » Library
         </button>
-        <h2>{{ editingCode ? 'Editing card' : 'New card' }}</h2>
+        <h2>
+          {{ editingCode ? 'Editing card' : 'New card' }}
+          <small v-if="activeSet" class="in-set">in {{ activeSet.name }}</small>
+        </h2>
         <div class="builder-actions">
           <span v-if="status" class="status">{{ status }}</span>
           <span v-if="error" class="error">{{ error }}</span>
-          <button type="button" :disabled="busy" @click="save">
+          <button type="button" :disabled="busy || !activeSetId" @click="save">
             {{ editingCode ? 'Save changes' : 'Create card' }}
           </button>
           <button v-if="editingCode" type="button" class="secondary" @click="startNew">New card</button>
@@ -372,7 +521,20 @@ async function onImportArkhamBuild(event: Event) {
         copies put into play after the save.
       </p>
 
-      <CustomCardForm ref="form" />
+      <!-- A card belongs to a set, so there is nothing to build until there is
+           one to build it into. -->
+      <form v-if="libraryLoaded && !activeSetId" class="first-set" @submit.prevent="addSet">
+        <h3>Make a set first</h3>
+        <p class="muted">
+          Cards are built into a set — the thing you name, export, and can throw away in one go.
+        </p>
+        <div class="first-set-row">
+          <input v-model="newSetName" type="text" placeholder="My Expansion" @keydown.stop />
+          <button type="submit" :disabled="!newSetName.trim()">Create set</button>
+        </div>
+      </form>
+
+      <CustomCardForm v-else ref="form" />
     </main>
     </div>
   </div>
@@ -507,8 +669,120 @@ async function onImportArkhamBuild(event: Event) {
   }
 }
 
-.import.wide {
-  grid-column: 1 / -1;
+/* The sets themselves, above the cards of whichever one is open. */
+.set-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+
+  li {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    display: grid;
+    gap: 0.35rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 0.25rem 0.35rem;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: var(--spooky-green);
+    }
+  }
+
+  .rename {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
+    color: var(--title);
+    font-size: 0.85rem;
+    min-width: 0;
+    padding: 0.15rem 0.3rem;
+    width: 100%;
+  }
+}
+
+.set-name {
+  align-items: baseline;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+
+  .name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.new-set {
+  display: grid;
+  gap: 0.3rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 0.9rem;
+
+  input {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
+    color: var(--title);
+    font-size: 0.8rem;
+    min-width: 0;
+    padding: 0.25rem 0.4rem;
+  }
+
+  button {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+.first-set {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--box-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+
+  h3 {
+    font-family: teutonic, sans-serif;
+    font-size: 1.15em;
+    margin: 0 0 0.4rem;
+  }
+}
+
+.first-set-row {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 28rem;
+
+  input {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
+    color: var(--title);
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.35rem 0.5rem;
+  }
+}
+
+.in-set {
+  font-family: sans-serif;
+  font-size: 0.6em;
+  opacity: 0.6;
 }
 
 .group-head {

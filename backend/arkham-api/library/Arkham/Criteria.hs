@@ -515,6 +515,36 @@ canFightCriteria = canFightCriteriaObeyAloof True
 canFightIgnoreAloof :: Criterion
 canFightIgnoreAloof = canFightCriteriaObeyAloof False
 
+{- | Whether a fight should also offer targets that are merely attackable /as if/
+they were enemies (Mist-Pylons, Key Loci). Those are not enemies, so they only
+fit a fight that is not narrowed to some enemy property.
+
+A @CanFightEnemyWithOverride@ matcher /replaces/ the standard fight criteria
+rather than narrowing the enemy set, so look through it: an override that only
+restates the standard restrictions is still an unrestricted fight. That is how
+Longbow (3) and British Bull Dog (2) spell "ignore Aloof".
+-}
+fightOffersAsIfEnemyTargets :: EnemyMatcher -> Bool
+fightOffersAsIfEnemyTargets = \case
+  CanFightEnemyWithOverride (CriteriaOverride c) -> standardFightCriterion c
+  m -> coveredByAnyInPlayEnemy m
+ where
+  standardFightCriterion = \case
+    NoRestriction -> True
+    Criteria cs -> all standardFightCriterion cs
+    OnSameLocation -> True
+    CanAttack -> True
+    EnemyCriteria (ThisEnemy m) -> standardFightMatcher m
+    _ -> False
+  -- the as-if-enemy selects already scope to your location, and "you may attack
+  -- it" is the default permission check, so neither clause narrows anything here
+  standardFightMatcher = \case
+    EnemyMatchAll ms -> all standardFightMatcher ms
+    EnemyOneOf ms -> any standardFightMatcher ms
+    EnemyAt YourLocation -> True
+    CanBeAttackedBy You -> True
+    m -> coveredByAnyInPlayEnemy m
+
 require :: Bool -> Criterion
 require True = NoRestriction
 require False = Never

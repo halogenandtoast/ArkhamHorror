@@ -2049,9 +2049,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
       Nothing -> pure a
       Just enemy -> do
         let eattrs = toAttrs enemy
+        -- Printed, not EnemyHealth: every reader of this record (Bounty,
+        -- Ancestral Token, Autopsy Report (3), Twisting Catwalks) says
+        -- "printed health". Turn history keeps the modified value.
         printedHealth <- calculatePrinted (enemyHealth eattrs)
-        enemyHealth <- fieldWithDefault printedHealth EnemyHealth eid
-        pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs enemyHealth)
+        pure $ a & defeatedEnemiesL %~ insertMap eid (DefeatedEnemyAttrs eattrs printedHealth)
   SetAsideCards cards -> do
     for_ cards obtainCard
     do_ msg

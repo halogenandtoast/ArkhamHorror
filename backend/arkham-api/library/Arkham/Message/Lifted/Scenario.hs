@@ -252,7 +252,7 @@ removeCampaignCard (toCardDef -> def) = do
       AssetType -> selectOne (assetIs def) >>= traverse_ removeFromGame
       _ -> pure ()
   for_ mOwner \owner -> do
-    findCard ((== def) . toCardDef) >>= traverse_ \card -> do
+    findCard (isPrintingOf def.cardCode) >>= traverse_ \card -> do
       deck <- field InvestigatorDeck owner
       obtainCard card
       when (any ((== card.id) . toCardId) deck.cards) $ shuffleDeck owner

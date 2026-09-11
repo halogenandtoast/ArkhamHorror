@@ -345,3 +345,18 @@ kidnappedCitizen_064b =
     , cdOtherSide = Just ":circus-ex-mortis:064"
     , cdDoubleSided = True
     }
+
+{- | curse_of_the_rougarou: the Circus printings of the side story's two signature
+cards (guide p14). The campaign's overlay swaps them in for 81019/81029; each
+adds a ☾ release reaction to the printed text. 'cdReplacementCardCode' is what
+keeps @assetIs Assets.ladyEsprit@ and friends pointed at the stand-in.
+-}
+ladyEsprit :: CardDef
+ladyEsprit =
+  (storyAsset ":circus-ex-mortis:019c" ("Lady Esprit" <:> "Dangerous Bokor") 4 Set.TheBayou)
+    { cdSkills = [#willpower, #intellect, #wild]
+    , cdCardTraits = setFromList [Ally, Sorcerer]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    , cdReplacementCardCode = Just "81019"
+    }

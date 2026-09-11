@@ -33,7 +33,6 @@ import Arkham.Target
 import Arkham.Tarot
 import Arkham.Xp
 import Control.Monad.Writer
-import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.TH
 import Data.Aeson.Types (Parser)
 import Data.Data
@@ -413,9 +412,7 @@ instance Show Campaign where
   show (Campaign a) = show a
 
 instance ToJSON Campaign where
-  toJSON (Campaign a) = case toJSON a of
-    Object o -> Object $ KeyMap.insert "overlays" (toJSON $ campaignOverlays a) o
-    other -> other
+  toJSON (Campaign a) = toJSON (With a $ Envelope @"overlays" $ campaignOverlays a)
 
 instance HasModifiersFor Campaign where
   getModifiersFor (Campaign a) = getModifiersFor a

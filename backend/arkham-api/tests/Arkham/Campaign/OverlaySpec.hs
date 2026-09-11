@@ -6,37 +6,34 @@ import Arkham.CampaignStep
 import Arkham.Difficulty
 import Arkham.Homebrew.CircusExMortis.Campaign (circusExMortis)
 import Data.Aeson.KeyMap qualified as KeyMap
-import Data.Map.Strict qualified as Map
 import TestImport
 
 spec :: Spec
 spec = describe "Campaign overlays" do
   let harmsWay = ScenarioStep ":circus-ex-mortis:040"
       allPointsWest = ScenarioStep ":circus-ex-mortis:074"
+      -- What the continue screen prepends on every answer; it carries no
+      -- scenario, so the discount window must look straight past it.
+      continuing = ContinueCampaignStep (Continuation harmsWay True False Nothing True)
       withSteps steps = overAttrs (\attrs -> attrs {campaignCompletedSteps = steps}) (circusExMortis Standard)
       overlay steps = case campaignOverlays $ withSteps steps of
         [o] -> o
         _ -> error "expected one Circus Ex Mortis overlay"
 
-  it "does not activate the Rougarou overlay before Harm's Way" do
-    (overlay []).active `shouldBe` False
+  it "does not discount the Rougarou side story before Harm's Way" do
     (overlay []).available `shouldBe` False
-    campaignAbilities (withSteps []) `shouldBe` []
+    (overlay []).xpCost `shouldBe` 1
 
   it "offers the free side story immediately after Harm's Way" do
-    let o = overlay [harmsWay]
-    o.active `shouldBe` True
+    let o = overlay [continuing, continuing, harmsWay]
     o.available `shouldBe` True
     o.xpCost `shouldBe` 0
     o.scenario `shouldBe` "81001"
-    length (campaignAbilities $ withSteps [harmsWay]) `shouldBe` 2
 
-  it "keeps card replacements after the discount window has closed" do
-    let o = overlay [allPointsWest, harmsWay]
-    o.active `shouldBe` True
+  it "closes the discount window once another scenario has been played" do
+    let o = overlay [continuing, allPointsWest, continuing, harmsWay]
     o.available `shouldBe` False
-    Map.lookup "81019" o.cardReplacements `shouldBe` Just ":circus-ex-mortis:019c"
-    Map.lookup "81029" o.cardReplacements `shouldBe` Just ":circus-ex-mortis:029c"
+    o.xpCost `shouldBe` 1
 
   it "exposes overlays for existing campaign saves without a migration" do
     let gameCampaign = withSteps [harmsWay]

@@ -246,3 +246,16 @@ lostTheTrail =
   (treachery ":circus-ex-mortis:261" "Lost the Trail" Set.SavageWoods 2)
     { cdCardTraits = setFromList [Blunder]
     }
+
+{- | curse_of_the_rougarou: the Circus printing of the side story's weakness
+(guide p14). The campaign's overlay swaps it in for 81029, adding a ☾ release
+reaction to the printed text.
+-}
+curseOfTheRougarou :: CardDef
+curseOfTheRougarou =
+  (weakness ":circus-ex-mortis:029c" "Curse of the Rougarou")
+    { cdCardTraits = setFromList [Curse]
+    , cdEncounterSet = Just Set.CurseOfTheRougarou
+    , cdEncounterSetQuantity = Just 1
+    , cdReplacementCardCode = Just "81029"
+    }

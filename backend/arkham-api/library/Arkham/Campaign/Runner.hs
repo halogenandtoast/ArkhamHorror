@@ -191,10 +191,14 @@ defaultCampaignRunner msg a = case msg of
     card' <- setOwner iid card
     pure $ updateAttrs a (storyCardsL %~ insertWith (<>) iid [card'])
   RemoveCampaignCardFromDeck iid cardDef ->
-    pure
-      $ updateAttrs a
-      $ (storyCardsL %~ adjustMap (filter ((/= cardDef) . toCardDef)) iid)
-      . (decksL %~ adjustMap (withDeck $ filter ((/= cardDef) . toCardDef)) iid)
+    -- Printing-aware: the copy in the deck may be a reprint or a campaign
+    -- overlay's stand-in, which a structural CardDef comparison would miss.
+    let notIt :: IsCard c => c -> Bool
+        notIt = not . isPrintingOf cardDef.cardCode
+     in pure
+          $ updateAttrs a
+          $ (storyCardsL %~ adjustMap (filter notIt) iid)
+          . (decksL %~ adjustMap (withDeck $ filter notIt) iid)
   ReplaceCard cardId card ->
     -- Keep campaign story cards in sync when a card's identity changes (e.g. a
     -- story asset moved from the encounter pool to the player pool).

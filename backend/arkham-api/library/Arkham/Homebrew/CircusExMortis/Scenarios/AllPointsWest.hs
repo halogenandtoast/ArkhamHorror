@@ -14,6 +14,7 @@ import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Homebrew.CircusExMortis.Key
 import Arkham.Homebrew.CircusExMortis.NowArriving
@@ -31,7 +32,7 @@ import Arkham.SkillType (SkillType)
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait)
 import Arkham.Trait qualified as Trait
-import Arkham.Treachery.CardDefs.CurseOfTheRougarou qualified as Treacheries
+import Arkham.Treachery.CardDefs.CurseOfTheRougarou qualified as TreacheryCards
 
 newtype AllPointsWest = AllPointsWest ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -187,17 +188,15 @@ instance RunMessage AllPointsWest where
       if fromNewOrleans
         then do
           flavor $ h "title" >> scope "backOnTrack" (h_ "title" >> p "body")
-          -- The granted reactions themselves live on the campaign; this reads the flavor only.
-          whenM (selectAny $ DeckWith $ HasCard $ cardIs Treacheries.curseOfTheRougarou)
-            $ scope "whatAHorribleNight"
-            $ flavor
-            $ setTitle "title"
-            >> p "body"
-          whenM (selectAny $ DeckWith $ HasCard $ cardIs AssetCards.ladyEsprit)
-            $ scope "goodJuju"
-            $ flavor
-            $ setTitle "title"
-            >> p "body"
+          -- Guide p14: each reward card the side story left behind gains a ☾
+          -- release reaction. The reaction is printed on the Circus version of
+          -- the card, so the gain is modelled by upgrading it in place.
+          whenM (selectAny $ DeckWith $ HasCard $ cardIs TreacheryCards.curseOfTheRougarou) do
+            scope "whatAHorribleNight" $ flavor $ setTitle "title" >> p "body"
+            upgradeCampaignCard TreacheryCards.curseOfTheRougarou Treacheries.curseOfTheRougarou
+          whenM (selectAny $ DeckWith $ HasCard $ cardIs AssetCards.ladyEsprit) do
+            scope "goodJuju" $ flavor $ setTitle "title" >> p "body"
+            upgradeCampaignCard AssetCards.ladyEsprit Assets.ladyEsprit
         else flavor $ h "title" >> scope "rightOnSchedule" (h_ "title" >> p "body")
       pure s
     Setup -> runScenarioSetup AllPointsWest attrs do

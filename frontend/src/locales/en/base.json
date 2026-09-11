@@ -362,6 +362,7 @@
   },
   "sideStory": {
     "selectSideScenario": "Select a side scenario to add",
+    "variant": "Some gameplay for this campaign may be altered",
     "requiresInvestigator": "Requires {name}",
     "xpAsymmetric": "({signatureXp} XP for {name}, {otherXp} XP each other investigator)"
   },

@@ -3,10 +3,11 @@ module Arkham.Homebrew.CircusExMortis.Helpers where
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
+import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.Direction (Direction (..))
 import Arkham.Enemy.Types (Field (EnemyPlacement))
-import Arkham.Helpers.Campaign (getCompletedSteps, getOwner)
+import Arkham.Helpers.Campaign (getCompletedSteps, getMaybeCampaignStoryCard, getOwner)
 import Arkham.Helpers.CustomChaosBag
 import Arkham.Helpers.FlavorText (chaosTokenImg, cols, compose, img, p, setTitle, tokenReveal)
 import Arkham.Helpers.Modifiers (ModifierType (..))
@@ -21,7 +22,7 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
-import Arkham.Message (ShuffleIn (..))
+import Arkham.Message (ShuffleIn (..), pattern ReplaceCard)
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement (Placement (InPosition))
@@ -187,6 +188,19 @@ swapCampaignCard old new =
   getOwner old >>= traverse_ \iid -> do
     removeCampaignCard old
     addCampaignCardToDeck iid DoNotShuffleIn new
+
+{- | Upgrade a campaign story card to a different printing in place. Unlike
+'swapCampaignCard' this keeps the card id, so the copy already dealt into the
+current scenario's deck becomes the new card too rather than only the campaign
+store (which would not take effect until the next scenario).
+-}
+upgradeCampaignCard :: ReverseQueue m => CardDef -> CardDef -> m ()
+upgradeCampaignCard old new = do
+  mOwner <- getOwner old
+  mCard <- getMaybeCampaignStoryCard old
+  for_ ((,) <$> mOwner <*> mCard) \(iid, card) -> do
+    new' <- setOwner iid (lookupCard new card.id)
+    push $ ReplaceCard card.id new'
 
 -- * Curse of the Rougarou side story
 

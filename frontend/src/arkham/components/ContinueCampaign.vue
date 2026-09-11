@@ -11,6 +11,7 @@ import { type CampaignStep, campaignStepName, extendWithOptions } from '@/arkham
 import { useI18n } from 'vue-i18n'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
+import SideStoryOption from '@/arkham/components/SideStoryOption.vue'
 import sideStories from '@/arkham/data/side-stories.json'
 import { useRoute, useRouter } from 'vue-router'
 import { useClipboard } from '@vueuse/core'
@@ -95,7 +96,7 @@ const scenario = computed(() => {
 
 const name = computed(() => campaignStepName(props.game, props.step, props.scenario))
 const scenarioOverlay = computed(() => props.campaign?.overlays.find(o =>
-  o.active && o.scenario.replace(/^c/, '') === scenario.value?.replace(/^c/, '')
+  o.available && o.scenario.replace(/^c/, '') === scenario.value?.replace(/^c/, '')
 ))
 
 const numToRomanNumeral = (num: number): string => {
@@ -240,6 +241,12 @@ const standalones = computed(() => {
       .map((p) => ({ ...s, id: p.id, name: p.name, xp, baseXp: s.xp, overlay: overlay?.name }))
   })
 })
+
+/* A side story a campaign overlay is currently offering (the Circus Ex Mortis
+ * discount on Curse of the Rougarou, say) is a one-shot window rather than
+ * something to go hunting for, so it gets its own button beside Continue
+ * instead of hiding behind Add Side Scenario. It stays in the full list too. */
+const promotedSideStories = computed(() => standalones.value.filter((s) => s.overlay))
 
 async function loadSideStory(sideStoryId: string) {
   addSideStory.value = false
@@ -445,22 +452,13 @@ const setIcon = computed(() => {
   <div class="continue-campaign scroll-container">
     <div v-if="chooseSideStory || (addSideStory && standalones.length > 0)" class="side-story-selection">
       <h2>{{ $t('sideStory.selectSideScenario') }}</h2>
-      <div v-for="sideStory in standalones" :key="sideStory.id" class="side-story-option" :class="{ 'side-story-option--overlay': sideStory.overlay }">
-        <div class="scenario-icon">
-          <img :src="imgsrc(`sets/${sideStory.id}.png`)" />
-        </div>
-        <div class="scenario-info">
-          <h2>{{ sideStory.name }}</h2>
-          <p v-if="sideStory.overlay" class="campaign-overlay-label">{{ sideStory.overlay }} variant</p>
-          <h3 v-if="sideStory.requiredInvestigator">{{ $t('sideStory.xpAsymmetric', { signatureXp: sideStory.xp, name: sideStory.requiredInvestigator, otherXp: 1 }) }}</h3>
-          <template v-else>
-            <h3><del v-if="sideStory.overlay && sideStory.xp !== sideStory.baseXp" class="original-xp">{{ sideStory.baseXp }} XP</del> ({{ sideStory.xp }} XP)</h3>
-            <h3 v-for="requirement in sideStory.deckRequirements" :key="requirement">{{ requirement }}</h3>
-          </template>
-        </div>
-
-        <button class="add" @click="loadSideStory(sideStory.id)" :disabled="hasSent">+</button>
-      </div>
+      <SideStoryOption
+        v-for="sideStory in standalones"
+        :key="sideStory.id"
+        :side-story="sideStory"
+        :disabled="hasSent"
+        @select="loadSideStory"
+      />
       <button v-if="!chooseSideStory" @click="addSideStory = false">{{t('cancel')}}</button>
     </div>
     <div v-else class="next-scenario">
@@ -468,12 +466,19 @@ const setIcon = computed(() => {
         <div class='scenario-info' :class="{ 'scenario-info--overlay': scenarioOverlay }">
           <h3>{{kind}}</h3>
           <h2>{{name}}</h2>
-          <p v-if="scenarioOverlay" class="campaign-overlay-label">{{ scenarioOverlay.name }} variant</p>
+          <p v-if="scenarioOverlay" class="campaign-overlay-label">{{ t('sideStory.variant') }}</p>
         </div>
         <div class="actions">
           <button @click="startStep" :disable="hasSent">{{t('continue')}}</button>
           <button v-if="canUpgrade" @click="upgradeDecks" :disable="hasSent">{{t('upgradeDecks')}}</button>
           <button v-if="canChooseSideStory && standalones.length > 0" @click="addSideStory = true" :disable="hasSent">+ {{t('addSideScenario')}}</button>
+          <SideStoryOption
+            v-for="sideStory in promotedSideStories"
+            :key="sideStory.id"
+            :side-story="sideStory"
+            :disabled="hasSent"
+            @select="loadSideStory"
+          />
         </div>
       </div>
       <div v-if="setIcon" class="next-step-icon"><img :src="setIcon" /></div>
@@ -601,14 +606,6 @@ const setIcon = computed(() => {
   padding-left: 12px;
 }
 
-.side-story-selection .side-story-option.side-story-option--overlay {
-  background: #392e48;
-  border-color: #b98bd0;
-
-  h2 { color: #f0e2f7; }
-  .original-xp { color: #c9bbd1; font-size: 0.8em; }
-}
-
 .next-scenario {
   display: flex;
   justify-content: space-between;
@@ -701,28 +698,6 @@ const setIcon = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  .side-story-option {
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    display: flex;
-    gap: 10px;
-    h3 {
-      margin: 0;
-      color: white;
-    }
-    img {
-      max-height: 60px;
-      filter: invert(100%) brightness(60%);
-    }
-    .scenario-icon {
-      margin-right: 10px;
-      width: 60px;
-      justify-content: center;
-      display: flex;
-    }
-  }
 }
 
 button {
@@ -736,17 +711,6 @@ button {
     background: rgba(0, 0, 0, 0.5);
     cursor: pointer;
   }
-}
-
-.add {
-  font-size: 1.5em;
-  width: 40px;
-  height: 40px;
-  align-self: center;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .investigators {

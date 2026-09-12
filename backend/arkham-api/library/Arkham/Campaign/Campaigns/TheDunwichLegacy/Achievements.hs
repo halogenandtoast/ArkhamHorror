@@ -9,9 +9,7 @@ messages, read back with 'stored'); the whole module is additionally gated to
 achievement-eligible campaigns so base Dunwich Legacy games don't accumulate
 tracker keys in their store.
 -}
-module Arkham.Campaign.Campaigns.TheDunwichLegacy.Achievements (
-  runDunwichAchievements,
-) where
+module Arkham.Campaign.Campaigns.TheDunwichLegacy.Achievements (runDunwichAchievements) where
 
 import Arkham.Achievement
 import Arkham.Asset.Cards qualified as Assets

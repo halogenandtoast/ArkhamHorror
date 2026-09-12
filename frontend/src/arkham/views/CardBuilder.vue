@@ -8,6 +8,8 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import CustomCardForm from '@/arkham/components/debug/CustomCardForm.vue'
+import CardOverlay from '@/arkham/components/CardOverlay.vue'
+import CardSetStrip from '@/arkham/components/CardSetStrip.vue'
 import SegmentedToggle from '@/components/SegmentedToggle.vue'
 import { stripCardCodePrefix } from '@/arkham/customCards'
 import {
@@ -15,9 +17,14 @@ import {
   renderCardPlaceholder,
   type CustomCard,
 } from '@/arkham/customCards'
+import { isDevBuild } from '@/arkham/displayRules'
 import {
   createSet,
   exportCards,
+  isSubscribed,
+  publishSet,
+  syncSet,
+  updateAvailable,
   importSet,
   libraryCard,
   libraryCards,
@@ -54,6 +61,50 @@ const renameDraft = ref('')
 
 const route = useRoute()
 const router = useRouter()
+
+/* Publishing is behind the dev flag while the marketplace settles. Everything it
+ * adds to this page is gated on it, so the page is unchanged without it. */
+const dev = isDevBuild()
+
+/* Which set a publish is being written for, and the note to publish it with.
+ * Held here rather than prompted for, because "what changed" wants a text field
+ * and a confirm dialog has none. */
+const publishingSetId = ref<string | null>(null)
+const publishNote = ref('')
+
+function startPublish(set: LibrarySet) {
+  publishingSetId.value = set.id
+  publishNote.value = ''
+  status.value = null
+  error.value = null
+}
+
+async function commitPublish(set: LibrarySet) {
+  const note = publishNote.value.trim()
+  publishingSetId.value = null
+  error.value = null
+  try {
+    const published = await publishSet(set.id, note || null)
+    status.value = t(`${K}published`, { name: set.name, version: published.latestVersion })
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}publishFailed`)
+  }
+}
+
+/* Pull the newest published version into a subscribed set. Its cards are
+ * replaced outright, which is what makes it the published set again. */
+async function update(set: LibrarySet) {
+  error.value = null
+  status.value = null
+  try {
+    const published = await syncSet(set.id)
+    status.value = t(`${K}updated`, { name: set.name, version: published.latestVersion })
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}updateFailed`)
+  }
+}
 
 /* ?card=<code> opens the builder on that card: a deep link from a game ("Edit
  * custom card" on an asset), and the way one card links to another — a
@@ -560,7 +611,33 @@ async function onImport(event: Event) {
             <span class="group-count">{{ t(`${K}cardCount`, set.cardCount) }}</span>
           </button>
 
+          <span
+            v-if="dev && isSubscribed(set)"
+            class="subscribed"
+            v-tooltip="t(`${K}editingUnsubscribes`)"
+          >
+            {{ t(`${K}subscribedBadge`, { version: set.subscribedVersion }) }}
+          </span>
+
+          <button
+            v-if="dev && updateAvailable(set)"
+            type="button"
+            class="update"
+            @click="update(set)"
+          >
+            {{ t(`${K}updateTo`, { version: set.latestVersion }) }}
+          </button>
+
           <div class="row-actions">
+            <button
+              v-if="dev"
+              type="button"
+              v-tooltip="t(`${K}publishTitle`, { name: set.name })"
+              :aria-label="t(`${K}publishTitle`, { name: set.name })"
+              @click="startPublish(set)"
+            >
+              <font-awesome-icon icon="store" />
+            </button>
             <button type="button" v-tooltip="t(`${K}renameSet`)" :aria-label="t(`${K}renameSet`)" @click="startRename(set)">
               <font-awesome-icon icon="pen" />
             </button>
@@ -583,25 +660,38 @@ async function onImport(event: Event) {
           </div>
         </div>
 
+        <form
+          v-if="publishingSetId === set.id"
+          class="publish"
+          @submit.prevent="commitPublish(set)"
+        >
+          <input
+            v-model="publishNote"
+            type="text"
+            :placeholder="t(`${K}publishNote`)"
+            @keydown.stop
+            @keydown.esc="publishingSetId = null"
+          />
+          <button type="submit">{{ t(`${K}publishConfirm`) }}</button>
+          <button type="button" class="cancel" @click="publishingSetId = null">
+            {{ t(`${K}publishCancel`) }}
+          </button>
+        </form>
+
         <!-- As many cards as fit on one row, and no more: the grid's auto-fill
              decides how many that is, and the row below it is clipped. -->
         <div class="set-preview">
           <p v-if="!matchingCards(set.id).length" class="muted">
             {{ setQuery.trim() ? t(`${K}noCardMatches`) : t(`${K}emptySet`) }}
           </p>
-          <div v-else class="set-gallery" :data-set-id="set.id">
-            <button
-              v-for="card in matchingCards(set.id)"
-              :key="card.def.cardCode"
-              type="button"
-              class="gallery-card"
-              v-tooltip="t(`${K}editCard`, { name: card.def.name.title })"
-              @click="edit(card)"
-            >
-              <img :src="cardArt(card)" :data-image-id="card.def.cardCode" alt="" />
-              <span class="name">{{ card.def.name.title }}</span>
-            </button>
-          </div>
+          <CardSetStrip
+            v-else
+            interactive
+            class="set-gallery"
+            :data-set-id="set.id"
+            :cards="matchingCards(set.id)"
+            @pick="edit"
+          />
 
           <button
             v-if="overflowingSets.includes(set.id)"
@@ -750,6 +840,9 @@ async function onImport(event: Event) {
       <CustomCardForm ref="form" />
     </main>
   </div>
+
+  <!-- Document-level: anything carrying `data-image` gets a hover preview. -->
+  <CardOverlay />
   </div>
 </template>
 
@@ -896,9 +989,9 @@ async function onImport(event: Event) {
 
 .set-row {
   align-items: center;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  grid-template-columns: minmax(0, 1fr) auto;
   padding: 0.5rem 0.75rem;
 
   .rename {
@@ -913,6 +1006,62 @@ async function onImport(event: Event) {
   }
 }
 
+/* Confirmed, like a card code that resolves: this really is the published set. */
+.subscribed {
+  border: 1px solid var(--spooky-green);
+  border-radius: 999px;
+  color: var(--spooky-green);
+  flex: none;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.5rem;
+  white-space: nowrap;
+}
+
+.update {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  color: var(--title);
+  cursor: pointer;
+  flex: none;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.55rem;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: var(--spooky-green);
+  }
+}
+
+.publish {
+  border-top: 1px solid var(--box-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 0.75rem;
+
+  input {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
+    color: var(--title);
+    flex: 1 1 18rem;
+    font-size: 0.85rem;
+    min-width: 0;
+    padding: 0.3rem 0.5rem;
+  }
+
+  button {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.7rem;
+  }
+
+  .cancel {
+    background: none;
+  }
+}
+
 .set-open {
   align-items: baseline;
   background: none;
@@ -920,6 +1069,7 @@ async function onImport(event: Event) {
   color: inherit;
   cursor: pointer;
   display: flex;
+  flex: 1 1 12rem;
   gap: 0.6rem;
   min-width: 0;
   padding: 0;
@@ -956,54 +1106,11 @@ async function onImport(event: Event) {
   }
 }
 
+/* Fills the row, with the "View all" pinned beside it. The strip itself is
+   CardSetStrip's business. */
 .set-gallery {
-  display: grid;
   flex: 1 1 auto;
-  gap: 0.75rem;
-  grid-auto-rows: var(--preview-card-height);
-  grid-template-columns: repeat(auto-fill, var(--preview-card));
-  max-height: var(--preview-card-height);
   min-width: 0;
-  overflow: hidden;
-}
-
-.gallery-card {
-  background: none;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  height: var(--preview-card-height);
-  padding: 0.3rem;
-  width: var(--preview-card);
-
-  img {
-    border-radius: 3px;
-    /* A fixed box so the row has one height whatever shape the card is --
-       locations and acts are landscape. `drop-shadow` rather than `box-shadow`
-       because the shadow has to follow the letterboxed picture, not the box. */
-    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.8));
-    height: 156px;
-    object-fit: contain;
-    width: 100%;
-  }
-
-  .name {
-    font-size: 0.72rem;
-    line-height: 1.2;
-    opacity: 0.8;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--spooky-green);
-  }
 }
 
 .view-all {

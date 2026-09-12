@@ -8,6 +8,7 @@ module Api.Handler.Arkham.CustomCardSets (
 
 import Api.Handler.Arkham.CustomCards (
   ownedCardSet,
+  unsubscribeSet,
   persistCard,
   prepareCardForSet,
   stampSetName,
@@ -16,6 +17,7 @@ import Arkham.Card.CustomCard (CustomCard (..))
 import Data.Aeson.Types (parseMaybe)
 import Data.Text qualified as T
 import Data.Time.Clock
+import Database.Persist qualified as DB
 import Import hiding ((==.))
 import Import qualified as P
 import Json hiding (Success)
@@ -30,6 +32,11 @@ data CustomCardSetResponse = CustomCardSetResponse
   , customCardSetResponseSourceCode :: Maybe Text
   , customCardSetResponseCardCount :: Int
   , customCardSetResponseUpdatedAt :: UTCTime
+  , -- | The marketplace listing this set follows, and where it stands with it.
+    -- Absent once the set has been edited, which is what stops it updating.
+    customCardSetResponsePublishedCardSetId :: Maybe ArkhamPublishedCardSetId
+  , customCardSetResponseSubscribedVersion :: Maybe Int
+  , customCardSetResponseLatestVersion :: Maybe Int
   }
   deriving stock Generic
 
@@ -73,6 +80,12 @@ requireName raw = do
 setResponse :: Entity ArkhamCustomCardSet -> Handler CustomCardSetResponse
 setResponse (Entity setId row) = do
   cardCount <- runDB $ P.count [ArkhamCustomCardCustomCardSetId P.==. setId]
+  subscription <- runDB $ P.getBy (UniqueCardSetSubscription setId)
+  latest <- case subscription of
+    Nothing -> pure Nothing
+    Just (Entity _ sub) ->
+      fmap arkhamPublishedCardSetLatestVersion
+        <$> runDB (DB.get (arkhamCardSetSubscriptionPublishedCardSetId sub))
   pure
     $ CustomCardSetResponse
       { customCardSetResponseId = setId
@@ -80,6 +93,11 @@ setResponse (Entity setId row) = do
       , customCardSetResponseSourceCode = arkhamCustomCardSetSourceCode row
       , customCardSetResponseCardCount = cardCount
       , customCardSetResponseUpdatedAt = arkhamCustomCardSetUpdatedAt row
+      , customCardSetResponsePublishedCardSetId =
+          arkhamCardSetSubscriptionPublishedCardSetId . entityVal <$> subscription
+      , customCardSetResponseSubscribedVersion =
+          arkhamCardSetSubscriptionVersion . entityVal <$> subscription
+      , customCardSetResponseLatestVersion = latest
       }
 
 getApiV1ArkhamCustomCardSetsR :: Handler [CustomCardSetResponse]
@@ -129,6 +147,7 @@ putApiV1ArkhamCustomCardSetR setId = do
 
   cards <- runDB $ P.selectList [ArkhamCustomCardCustomCardSetId P.==. setId] []
   runDB do
+    unsubscribeSet setId
     P.update setId [ArkhamCustomCardSetName P.=. name, ArkhamCustomCardSetUpdatedAt P.=. now]
     for_ cards \(Entity cardId card) ->
       for_ (parseMaybe parseJSON (arkhamCustomCardDef card)) \def ->

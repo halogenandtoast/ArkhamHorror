@@ -41,6 +41,7 @@ library
       Api.Handler.Arkham.Investigators
       Api.Handler.Arkham.Old
       Api.Handler.Arkham.PendingGames
+      Api.Handler.Arkham.PublishedCardSets
       Api.Handler.Arkham.Replay
       Api.Handler.Arkham.Undo
       Application
@@ -8156,6 +8157,7 @@ library
       Entity.Arkham.GameRaw
       Entity.Arkham.LogEntry
       Entity.Arkham.Player
+      Entity.Arkham.PublishedCardSet
       Entity.Arkham.Step
       Entity.Notification
       Entity.PasswordReset

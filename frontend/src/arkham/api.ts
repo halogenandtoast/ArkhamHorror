@@ -148,6 +148,11 @@ export type StoredCustomCardSet = {
   sourceCode: string | null
   cardCount: number
   updatedAt: string
+  /* The marketplace listing this set came from and still follows. All three go
+   * null the moment the set is edited, which is what stops it updating. */
+  publishedCardSetId: string | null
+  subscribedVersion: number | null
+  latestVersion: number | null
 }
 
 export const fetchCustomCardSets = async (): Promise<StoredCustomCardSet[]> => {
@@ -181,6 +186,100 @@ export const importCustomCardSet = async (payload: {
 }): Promise<{ set: StoredCustomCardSet; cards: StoredCustomCard[] }> => {
   const { data } = await api.post('arkham/custom-card-sets/import', payload)
   return { set: data.set, cards: data.cards.map(toStoredCustomCard) }
+}
+
+/* ------------------------------------------------------------ marketplace ---
+
+   Published sets: a set its author has put up, and other people's copies
+   following it. A copy stops following as soon as it is edited, so "subscribed"
+   is a fact about the server's records rather than a switch anyone sets. */
+
+export type PublishedCardSet = {
+  id: string
+  name: string
+  author: string
+  mine: boolean
+  latestVersion: number
+  cardCount: number
+  // What the author said about the newest version, if they said anything.
+  note: string | null
+  // The first few cards, so a listing can show what is in the set.
+  preview: { def: any; art: string | null }[]
+  likes: number
+  liked: boolean
+  updatedAt: string
+  // The version your own copy is on, if you have one that still follows this.
+  subscribedVersion: number | null
+}
+
+/* One set in full: its listing plus every card in the version. The listing comes
+ * along so a page showing one set needs one request. */
+export type PublishedCardSetVersion = {
+  listing: PublishedCardSet
+  version: number
+  name: string
+  note: string | null
+  cards: { def: any; art: string | null }[]
+  createdAt: string
+}
+
+export const fetchPublishedCardSets = async (): Promise<PublishedCardSet[]> => {
+  const { data } = await api.get('arkham/published-card-sets')
+  return data
+}
+
+export const fetchPublishedCardSet = async (
+  id: string,
+  version?: number,
+): Promise<PublishedCardSetVersion> => {
+  const query = version === undefined ? '' : `?version=${version}`
+  const { data } = await api.get(`arkham/published-card-sets/${id}${query}`)
+  return data
+}
+
+/* Publish the set as it stands. Each call is a new version, and the version is
+ * kept whole, so a copy of it can be taken again later however the set changes. */
+export const publishCustomCardSet = async (
+  id: string,
+  note: string | null,
+): Promise<PublishedCardSet> => {
+  const { data } = await api.post(`arkham/custom-card-sets/${id}/publish`, { note })
+  return data
+}
+
+export const unpublishCardSet = async (id: string): Promise<void> => {
+  await api.delete(`arkham/published-card-sets/${id}`)
+}
+
+/* Take a published set into your collection and follow it from then on. The
+ * import happens on the server, so the cards never round-trip through here. */
+export const subscribeToCardSet = async (
+  id: string,
+  version?: number,
+): Promise<PublishedCardSet> => {
+  const { data } = await api.post(`arkham/published-card-sets/${id}/subscribe`, {
+    version: version ?? null,
+  })
+  return data
+}
+
+/* Liking is a row existing, so these are idempotent: liking twice is liking, and
+ * unliking something you never liked is already true. Both hand back the listing
+ * with its new count. */
+export const likeCardSet = async (id: string): Promise<PublishedCardSet> => {
+  const { data } = await api.post(`arkham/published-card-sets/${id}/like`, {})
+  return data
+}
+
+export const unlikeCardSet = async (id: string): Promise<PublishedCardSet> => {
+  const { data } = await api.delete(`arkham/published-card-sets/${id}/like`)
+  return data
+}
+
+// Bring a subscribed set up to the newest published version.
+export const syncCustomCardSet = async (id: string): Promise<PublishedCardSet> => {
+  const { data } = await api.post(`arkham/custom-card-sets/${id}/sync`, {})
+  return data
 }
 
 /* A card row names its set the way the entity spells the field; `setId` is what

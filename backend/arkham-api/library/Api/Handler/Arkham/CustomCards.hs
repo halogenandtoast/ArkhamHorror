@@ -9,6 +9,7 @@ module Api.Handler.Arkham.CustomCards (
   persistCard,
   saveCardInSet,
   stampSetName,
+  unsubscribeSet,
 ) where
 
 import Amazonka
@@ -66,6 +67,18 @@ Lives here rather than beside the set handlers because saving a card is what
 most needs it, and because the set handlers already depend on this module --
 the other direction would be a cycle.
 -}
+{- | Stop a set following the published set it came from.
+
+Called wherever the set's contents change. A subscription says "this is what was
+published"; once a card in it has been touched that is no longer true, so the row
+goes. Taking the published version again is how you get back to it.
+
+It lives here rather than with the marketplace handlers because those import this
+module, and the card writes that have to call it are here.
+-}
+unsubscribeSet :: ArkhamCustomCardSetId -> SqlPersistT Handler ()
+unsubscribeSet setId = P.deleteWhere [ArkhamCardSetSubscriptionCustomCardSetId P.==. setId]
+
 ownedCardSet :: UserId -> ArkhamCustomCardSetId -> Handler ArkhamCustomCardSet
 ownedCardSet userId setId = do
   set <- runDB $ get404 setId
@@ -180,6 +193,7 @@ deleteApiV1ArkhamCustomCardR cardId = do
   runDB do
     row <- get404 cardId
     when (arkhamCustomCardUserId row /= userId) $ lift $ permissionDenied "Not your card"
+    unsubscribeSet (arkhamCustomCardCustomCardSetId row)
     P.delete cardId
 
 {- | Where a custom card's art lives.

@@ -228,6 +228,40 @@ export async function importSet(payload: {
 
 // ----------------------------------------------------------------- cards ---
 
+// ----------------------------------------------------------- marketplace ---
+
+/* Publishing and following both change what the server holds for a set -- its
+ * cards, on an update, and its subscription either way -- so the library is
+ * reloaded rather than patched from the response. */
+
+export async function publishSet(id: string, note: string | null) {
+  const published = await Api.publishCustomCardSet(id, note)
+  await loadLibrary(true)
+  return published
+}
+
+export async function subscribeToSet(id: string, version?: number) {
+  const published = await Api.subscribeToCardSet(id, version)
+  await loadLibrary(true)
+  return published
+}
+
+export async function syncSet(id: string) {
+  const published = await Api.syncCustomCardSet(id)
+  await loadLibrary(true)
+  return published
+}
+
+/* Whether a set is still following what it was published as, and whether there
+ * is a newer version than the one it is on. */
+export const isSubscribed = (set: LibrarySet) => set.publishedCardSetId !== null
+
+export const updateAvailable = (set: LibrarySet) =>
+  isSubscribed(set) &&
+  set.latestVersion !== null &&
+  set.subscribedVersion !== null &&
+  set.latestVersion > set.subscribedVersion
+
 export async function saveToLibrary(card: CustomCard, setId: string): Promise<LibraryCard> {
   const saved = toLibraryCard(await Api.saveCustomCard({ setId, def: card.def, art: card.art }))
   const index = entries.findIndex((e) => e.def.cardCode === saved.def.cardCode)

@@ -22,3 +22,5 @@ arkham_achievements [arkham_games users] 2026-07-09T00:00:00Z Matthew Mongeau <h
 arkham_custom_cards [users] 2026-09-05T00:00:00Z Matthew Mongeau <halogenandtoast@Mac-Studio.local> # Cards built in the card builder, kept per user
 arkham_deck_overlay [arkham_decks] 2026-09-05T12:00:00Z Matthew Mongeau <halogenandtoast@Mac-Studio.local> # Custom card overlay laid over a deck
 arkham_custom_card_sets [users arkham_custom_cards] 2026-09-11T00:00:00Z Claude <noreply@anthropic.com> # Named collections that own custom cards
+arkham_published_card_sets [users arkham_custom_card_sets] 2026-09-12T00:00:00Z Claude <noreply@anthropic.com> # Published card sets, their versions, and subscriptions to them
+arkham_published_card_set_likes [users arkham_published_card_sets] 2026-09-12T01:00:00Z Claude <noreply@anthropic.com> # Thumbs up on a published card set

@@ -23,7 +23,16 @@
       /custom-card-sets ApiV1ArkhamCustomCardSetsP:
         / ApiV1ArkhamCustomCardSetsR GET POST
         !/import ApiV1ArkhamCustomCardSetsImportR POST
-        /#ArkhamCustomCardSetId ApiV1ArkhamCustomCardSetR PUT DELETE
+        /#ArkhamCustomCardSetId ApiV1ArkhamCustomCardSetP:
+          / ApiV1ArkhamCustomCardSetR PUT DELETE
+          /publish ApiV1ArkhamCustomCardSetPublishR POST
+          /sync ApiV1ArkhamCustomCardSetSyncR POST
+      /published-card-sets ApiV1ArkhamPublishedCardSetsP:
+        / ApiV1ArkhamPublishedCardSetsR GET
+        /#ArkhamPublishedCardSetId ApiV1ArkhamPublishedCardSetP:
+          / ApiV1ArkhamPublishedCardSetR GET DELETE
+          /subscribe ApiV1ArkhamPublishedCardSetSubscribeR POST
+          /like ApiV1ArkhamPublishedCardSetLikeR POST DELETE
       /homebrew/cards ApiV1ArkhamHomebrewCardsR GET
       /card/#CardCode ApiV1ArkhamCardR GET
       /investigators ApiV1ArkhamInvestigatorsR GET

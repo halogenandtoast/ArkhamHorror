@@ -25,13 +25,14 @@ import Arkham.Card.CustomCard (
   sanitizeCustomCardCode,
  )
 import Crypto.Hash.SHA256 qualified as SHA256
-import Data.Aeson.Types (parseMaybe, withObject, (.:))
+import Data.Aeson.Types (parseMaybe, withObject)
 import Data.ByteString.Base16 qualified as B16
 import Data.ByteString.Base64 qualified as B64
 import Data.ByteString.Lazy qualified as BSL
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
+import Database.Persist.Sql (SqlPersistT)
 import Import hiding ((==.))
 import Import qualified as P
 import System.Directory (createDirectoryIfMissing)
@@ -98,9 +99,17 @@ prepareCardForSet userId setName card0 = do
 
 {- | Write a prepared card into a set. Runs in the caller's transaction, so an
 import can empty a set and refill it as one thing.
+
+Spelled out rather than written as @DB@: that alias hides a @forall m@, and a
+function whose result is still polymorphic cannot be handed to 'traverse', which
+is how an import writes a whole set of these.
 -}
 persistCard
-  :: UserId -> ArkhamCustomCardSetId -> UTCTime -> (CardCode, CustomCard) -> DB (Entity ArkhamCustomCard)
+  :: UserId
+  -> ArkhamCustomCardSetId
+  -> UTCTime
+  -> (CardCode, CustomCard)
+  -> SqlPersistT Handler (Entity ArkhamCustomCard)
 persistCard userId setId now (cardCode, card) = do
   let row =
         ArkhamCustomCard

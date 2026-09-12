@@ -361,10 +361,11 @@ normalizeArkhamBuildDeckCodes decklist =
   -- which rides along as its own blob of json. Left exactly as it arrived unless
   -- there is something in it to rewrite.
   translateMeta raw = fromMaybe raw do
-    m <- decode @(Map Text Value) (BSL.fromStrict $ encodeUtf8 raw)
-    String front <- Map.lookup "alternate_front" m
+    -- Qualified: esqueleto has a `Value` of its own, and this module imports both.
+    m <- decode @(Map Text Json.Value) (BSL.fromStrict $ encodeUtf8 raw)
+    Json.String front <- Map.lookup "alternate_front" m
     guard $ isArkhamBuildCardId front
-    let code = String $ unCardCode $ arkhamBuildCustomCardCode front
+    let code = Json.String $ unCardCode $ arkhamBuildCustomCardCode front
     pure $ decodeUtf8 $ BSL.toStrict $ encode $ Map.insert "alternate_front" code m
 
 getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)

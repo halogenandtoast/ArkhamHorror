@@ -10,6 +10,7 @@
  * generic encoding (Actions, Trait, CardCode). Those come through as raw fields;
  * the encoding here is the generic one. */
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { vFocus } from '@/arkham/components/debug/vFocus'
 import { onClickOutside, useEventListener } from '@vueuse/core'
 import {
@@ -37,6 +38,8 @@ const props = defineProps<{
   optional?: boolean
 }>()
 const emit = defineEmits<{ 'update:modelValue': [value: any] }>()
+const { t } = useI18n()
+const capabilityText = (key: string) => t(`customCardSets.builder.capabilities.${key}`)
 
 const shape = computed(() => shapeOf(props.type))
 const search = ref('')
@@ -100,6 +103,7 @@ function clearAll() {
  * use to an EnemyMatcher, and offering it there is how you get a card that
  * silently does nothing. */
 const resolveAlias = (type: string) => typeSchema(type)?.alias ?? type
+const isInvestigatorMatcher = computed(() => resolveAlias(props.type) === 'InvestigatorMatcher')
 
 const applicable = computed(() =>
   inScope.value.filter((b) => bindingFits(b, props.type, resolveAlias)),
@@ -163,8 +167,131 @@ const BRIDGES: Record<string, { from: string; wrap: string }> = {
  * hard, they are just tedious, and typing them out again is where a wrong
  * matcher creeps in. Chosen from a measurement of what the definitions actually
  * repeat rather than from taste. */
+const nullary = (tag: string) => ({ tag, contents: [] })
+const investigatorMatches = (...contents: any[]) => ({ tag: 'InvestigatorMatches', contents })
+/* Kept as a short builder name below: a capability itself has no `You` scope.
+ * That scope belongs to the Criterion helper, not InvestigatorMatcher. */
+const youCan = (...contents: any[]) =>
+  contents.length === 1 ? contents[0] : investigatorMatches(...contents)
+const without = (modifier: string) => ({
+  tag: 'InvestigatorWithoutModifier',
+  contents: nullary(modifier),
+})
+
+/* The specializations of `Arkham.Capability.can`. Healing uses this card as
+ * its source; the rest need no argument. They are stored as the ordinary
+ * matcher they expand to, so this is editor shorthand rather than a second JSON
+ * language the engine would have to understand. */
+const CAPABILITIES = [
+  { name: 'can.search.deck', value: youCan(nullary('InvestigatorCanSearchDeck')) },
+  { name: 'can.manipulate.deck', value: youCan(without('CannotManipulateDeck')) },
+  { name: 'can.shuffle.deck', value: youCan(without('CannotManipulateDeck')) },
+  {
+    name: 'can.draw.cards',
+    value: youCan(
+      without('CannotDrawCards'),
+      without('CannotDrawCardsFromPlayerCardEffects'),
+      without('CannotManipulateDeck'),
+    ),
+  },
+  {
+    name: 'can.gain.resources',
+    value: youCan(
+      without('CannotGainResources'),
+      without('CannotGainResourcesFromPlayerCardEffects'),
+    ),
+  },
+  { name: 'can.gain.xp', value: youCan(nullary('InvestigatorCanGainXp')) },
+  { name: 'can.gain.clues', value: youCan(nullary('Anyone')) },
+  {
+    name: 'can.spend.resources',
+    value: youCan({
+      tag: 'InvestigatorWithSpendableResources',
+      contents: { tag: 'GreaterThan', contents: { tag: 'Static', contents: 0 } },
+    }),
+  },
+  {
+    name: 'can.spend.clues',
+    value: youCan(
+      { tag: 'InvestigatorWithClues', contents: { tag: 'GreaterThanOrEqualTo', contents: { tag: 'Static', contents: 1 } } },
+      without('CannotSpendClues'),
+    ),
+  },
+  {
+    name: 'can.have.cards.leaveDiscard',
+    value: youCan(without('CardsCannotLeaveYourDiscardPile')),
+  },
+  { name: 'can.have.assets.ready', value: youCan(without('ControlledAssetsCannotReady')) },
+  {
+    name: 'can.affect.otherPlayers',
+    value: youCan(without('CannotAffectOtherPlayersWithPlayerEffectsExceptDamage')),
+  },
+  { name: 'can.move', value: youCan(without('CannotMove')) },
+  { name: 'can.deal.damage', value: youCan(without('CannotDealDamage')) },
+  {
+    name: 'can.target.encounterDeck',
+    value: youCan({ tag: 'InvestigatorCanTarget', contents: nullary('EncounterDeckTarget') }),
+  },
+  { name: 'can.reveal.cards', value: youCan(without('CannotRevealCards')) },
+  {
+    name: 'can.heal.damage',
+    value: youCan({ tag: 'HealableInvestigator', contents: ['$source', 'DamageType', nullary('Anyone')] }),
+  },
+  {
+    name: 'can.heal.horror',
+    value: youCan({ tag: 'HealableInvestigator', contents: ['$source', 'HorrorType', nullary('Anyone')] }),
+  },
+  {
+    name: 'can.heal.any',
+    value: youCan({
+      tag: 'AnyInvestigator',
+      contents: [
+        { tag: 'HealableInvestigator', contents: ['$source', 'HorrorType', nullary('Anyone')] },
+        { tag: 'HealableInvestigator', contents: ['$source', 'DamageType', nullary('Anyone')] },
+      ],
+    }),
+  },
+  {
+    name: 'can.heal.trauma',
+    value: youCan({
+      tag: 'AnyInvestigator',
+      contents: [nullary('InvestigatorWithPhysicalTrauma'), nullary('InvestigatorWithMentalTrauma')],
+    }),
+  },
+]
+
+/* Null means "infer the initial mode from the stored matcher". Once the user
+ * presses either side, keep that explicit choice; otherwise a recognized
+ * capability matcher would immediately force the control back to Capability
+ * when Matcher was pressed. */
+const capabilityInput = ref<boolean | null>(null)
+const canonical = (value: any): any => {
+  if (Array.isArray(value)) return value.map(canonical)
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonical(value[key])]))
+  }
+  return value
+}
+const sameValue = (a: any, b: any) => JSON.stringify(canonical(a)) === JSON.stringify(canonical(b))
+const selectedCapability = computed(() =>
+  CAPABILITIES.find((capability) => sameValue(capability.value, props.modelValue)),
+)
+const asCapability = computed(
+  () =>
+    isInvestigatorMatcher.value &&
+    (capabilityInput.value === null ? !!selectedCapability.value : capabilityInput.value),
+)
+
+function setCapability(name: string) {
+  const capability = CAPABILITIES.find((candidate) => candidate.name === name)
+  emit(
+    'update:modelValue',
+    capability ? JSON.parse(JSON.stringify(capability.value)) : null,
+  )
+}
+
 const PRESETS: Record<string, { label: string; value: any }[]> = {
-  InvestigatorMatcher: [{ label: 'you', value: { tag: 'You', contents: [] } }],
+  InvestigatorMatcher: [{ label: 'you', value: nullary('You') }],
   LocationMatcher: [
     {
       label: 'your location',
@@ -255,6 +382,56 @@ function setField(key: string, value: any) {
 }
 
 const fieldKey = (field: { name: string | null }, index: number) => field.name ?? String(index)
+
+/* `youExist` is a Criterion helper: it is InvestigatorExists with You added to
+ * that criterion's matcher. Keep the scope at this level while the nested
+ * InvestigatorMatcher editor works only on the matcher/capability itself. */
+const isInvestigatorExistsCriterion = computed(
+  () => shape.value.kind === 'sum' && current.value?.con.name === 'InvestigatorExists',
+)
+const investigatorCriterionKey = computed(() => {
+  const field = current.value?.con.fields[0]
+  return field ? fieldKey(field, 0) : '0'
+})
+const investigatorCriterionMatcher = computed(
+  () => current.value?.values[investigatorCriterionKey.value] ?? null,
+)
+
+function matcherWithoutYou(value: any) {
+  if (value?.tag === 'You') return null
+  if (value?.tag !== 'InvestigatorMatches' || !Array.isArray(value.contents)) return value
+  const rest = value.contents.filter((matcher: any) => matcher?.tag !== 'You')
+  if (rest.length === value.contents.length) return value
+  if (rest.length === 0) return null
+  return rest.length === 1 ? rest[0] : investigatorMatches(...rest)
+}
+
+const isYouExists = computed(
+  () => !sameValue(investigatorCriterionMatcher.value, matcherWithoutYou(investigatorCriterionMatcher.value)),
+)
+
+function withYou(value: any) {
+  if (!value) return nullary('You')
+  if (value.tag === 'You') return value
+  if (value.tag === 'InvestigatorMatches' && Array.isArray(value.contents)) {
+    return investigatorMatches(nullary('You'), ...value.contents)
+  }
+  return investigatorMatches(nullary('You'), value)
+}
+
+function setInvestigatorExistsScope(you: boolean) {
+  const matcher = matcherWithoutYou(investigatorCriterionMatcher.value)
+  setField(investigatorCriterionKey.value, you ? withYou(matcher) : matcher)
+}
+
+function editorFieldValue(field: { name: string | null }, index: number) {
+  const value = current.value?.values[fieldKey(field, index)]
+  return isInvestigatorExistsCriterion.value ? matcherWithoutYou(value) : value
+}
+
+function setEditorField(field: { name: string | null }, index: number, value: any) {
+  setField(fieldKey(field, index), isInvestigatorExistsCriterion.value && isYouExists.value ? withYou(value) : value)
+}
 
 // --- list ---
 
@@ -410,9 +587,31 @@ const asComparison = computed(
 
       <div v-else class="field-body" :class="{ 'with-toggle': applicable.length }">
 
+    <div v-if="isInvestigatorMatcher" class="capability-toggle">
+      <button type="button" :class="{ active: !asCapability }" @click="capabilityInput = false">
+        {{ t('customCardSets.builder.matcher') }}
+      </button>
+      <button type="button" :class="{ active: asCapability }" @click="capabilityInput = true">
+        {{ t('customCardSets.builder.capability') }}
+      </button>
+    </div>
+
+    <!-- Capability is an InvestigatorMatcher shorthand, with no implicit scope. -->
+    <div v-if="asCapability" class="picked-row capability-picker">
+      <select
+        :value="selectedCapability?.name ?? ''"
+        @change="setCapability(($event.target as HTMLSelectElement).value)"
+      >
+        <option value="" disabled>{{ t('customCardSets.builder.chooseCapability') }}</option>
+        <option v-for="capability in CAPABILITIES" :key="capability.name" :value="capability.name">
+          {{ capabilityText(capability.name) }}
+        </option>
+      </select>
+    </div>
+
     <!-- "at least 2", rather than a comparison wrapping a Static wrapping a 2. -->
     <ValueMatcherField
-      v-if="asComparison"
+      v-else-if="asComparison"
       :modelValue="modelValue"
       :bindings="inScope"
       @update:modelValue="emit('update:modelValue', $event)"
@@ -493,14 +692,22 @@ const asComparison = computed(
       </div>
 
       <div v-if="current && current.con.fields.length" class="fields">
+        <div v-if="isInvestigatorExistsCriterion" class="criterion-scope">
+          <button type="button" :class="{ active: !isYouExists }" @click="setInvestigatorExistsScope(false)">
+            {{ t('customCardSets.builder.investigatorExists') }}
+          </button>
+          <button type="button" :class="{ active: isYouExists }" @click="setInvestigatorExistsScope(true)">
+            {{ t('customCardSets.builder.youExist') }}
+          </button>
+        </div>
         <ValueEditor
           v-for="(field, index) in current.con.fields"
           :key="fieldKey(field, index)"
           :type="field.type"
           :label="field.name ?? field.type"
           :bindings="bindings"
-          :modelValue="current.values[fieldKey(field, index)]"
-          @update:modelValue="setField(fieldKey(field, index), $event)"
+          :modelValue="editorFieldValue(field, index)"
+          @update:modelValue="setEditorField(field, index, $event)"
         />
       </div>
     </template>
@@ -622,6 +829,58 @@ const asComparison = computed(
 </template>
 
 <style scoped lang="scss">
+.capability-toggle,
+.criterion-scope {
+  align-items: center;
+  display: inline-flex;
+  margin-bottom: 0.35rem;
+
+  button {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    line-height: 1.2;
+    min-height: 1.75rem;
+    background: #111827;
+    border: 1px solid #4b5563;
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.45rem;
+
+    &:first-child {
+      border-radius: 4px 0 0 4px;
+    }
+
+    &:last-child {
+      border-radius: 0 4px 4px 0;
+    }
+
+    &.active {
+      background: #0f766e;
+      color: white;
+    }
+  }
+}
+
+.criterion-scope {
+  margin-bottom: 0.55rem;
+}
+
+.capability-picker {
+  align-items: center;
+  display: flex;
+  min-height: 2rem;
+
+  select {
+    align-self: center;
+    color: #eee;
+    flex: 1;
+    min-height: 2rem;
+    min-width: 0;
+  }
+}
+
 /* The binding toggle sits inside the field's own box, at its right edge, rather
  * than beside or under it: it is part of the control, and turns the field into
  * the picker in place until something is chosen. The body reserves room for it

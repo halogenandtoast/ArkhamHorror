@@ -199,6 +199,7 @@ const stepKinds = [
   'parley',
   'attack',
   'ready',
+  'takeAction',
   'draw',
   'gather',
   'customize',

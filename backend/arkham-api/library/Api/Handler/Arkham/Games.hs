@@ -18,6 +18,7 @@ module Api.Handler.Arkham.Games (
 import Api.Arkham.Epic (lookupGameEvent)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Api.Handler.Arkham.CustomCards (userCustomCards)
 import Api.Handler.Arkham.Games.Shared
 import Arkham.Campaign.Option
 import Arkham.Card
@@ -240,9 +241,13 @@ putApiV1ArkhamGameR gameId = do
   Entity userId user <- getRequestUser
   unless user.admin do
     void $ runDB $ getBy404 (UniquePlayer userId gameId)
+  -- A game's saved copy lets it survive the author deleting a card, while the
+  -- owner's library is the live definition. `updateGame` registers these after
+  -- parsing the game, so a saved edit wins for this request too.
+  customCards <- userCustomCards userId
   response <- requireCheckJsonBody
   mRoom <- lookupRoom gameId
-  updateGame response gameId mRoom
+  updateGame customCards response gameId mRoom
 
 -- TODO: Make this a websocket message
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
@@ -250,9 +255,10 @@ putApiV1ArkhamGameRawR gameId = do
   Entity userId user <- getRequestUser
   unless user.admin do
     void $ runDB $ getBy404 (UniquePlayer userId gameId)
+  customCards <- userCustomCards userId
   response <- requireCheckJsonBody @_ @RawGameJsonPut
   mRoom <- lookupRoom gameId
-  updateGame (Raw response.gameMessage) gameId mRoom
+  updateGame customCards (Raw response.gameMessage) gameId mRoom
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = do

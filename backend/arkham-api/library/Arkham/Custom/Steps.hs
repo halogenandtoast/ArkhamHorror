@@ -63,6 +63,7 @@ import Arkham.Message.Lifted (
   initiateEnemyAttack,
   reduceCostOf,
   skillTestModifiers,
+  takeActionAsIfTurn,
  )
 import Arkham.Message.Lifted.Base (capture)
 import Arkham.Message.Lifted.Card (playCardPayingCost)
@@ -350,6 +351,12 @@ runReady env spec = do
         <|> (KeyMap.lookup "target" env >>= parseMaybe parseJSON)
   for_ target $ push . Ready
 
+-- | Open one immediate action with the same as-if-turn semantics as Quick Thinking.
+runTakeAction :: (HasGameLogger m, ReverseQueue m) => Env -> m ()
+runTakeAction env = do
+  iid <- stepInvestigator env
+  takeActionAsIfTurn iid (stepSource env)
+
 {- | An enemy attacks.
 
 Defaults to this card attacking whoever triggered the ability, which is what
@@ -499,6 +506,9 @@ runSteps env0 = void . foldM step env0
           pure env
       | Just spec <- KeyMap.lookup "ready" o -> do
           runReady env spec
+          pure env
+      | KeyMap.member "takeAction" o -> do
+          runTakeAction env
           pure env
       | Just (Bool True) <- KeyMap.lookup "cancelBatch" o -> do
           runCancelBatch env

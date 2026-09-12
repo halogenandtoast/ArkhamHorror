@@ -4,6 +4,7 @@ module Api.Handler.Arkham.CustomCards (
   postApiV1ArkhamCustomCardsArtR,
   deleteApiV1ArkhamCustomCardR,
   registerUserCustomCards,
+  userCustomCards,
   ownedCardSet,
   prepareCardForSet,
   persistCard,
@@ -67,6 +68,7 @@ Lives here rather than beside the set handlers because saving a card is what
 most needs it, and because the set handlers already depend on this module --
 the other direction would be a cycle.
 -}
+
 {- | Stop a set following the published set it came from.
 
 Called wherever the set's contents change. A subscription says "this is what was
@@ -323,10 +325,13 @@ built before any of that, so anything that has to read a custom card outside a
 game -- validating a decklist, loading one -- has to put the user's library into
 the registry first.
 -}
-registerUserCustomCards :: UserId -> Handler ()
-registerUserCustomCards userId = do
+userCustomCards :: UserId -> Handler (Map CardCode CustomCard)
+userCustomCards userId = do
   rows <- runDB $ P.selectList [ArkhamCustomCardUserId P.==. userId] []
-  registerCustomCards $ Map.fromList do
+  pure $ Map.fromList do
     Entity _ row <- rows
     def <- maybeToList $ parseMaybe parseJSON (arkhamCustomCardDef row)
     pure (cdCardCode def, CustomCard def (arkhamCustomCardArt row))
+
+registerUserCustomCards :: UserId -> Handler ()
+registerUserCustomCards userId = registerCustomCards =<< userCustomCards userId

@@ -62,6 +62,13 @@ export function cardFaceImages(card: CardDef): { front: string; back: string | n
   return { front, back }
 }
 
+export function customInvestigatorUsesCardPortrait(cardCode: string, suffix: string = ''): boolean {
+  if (!isCustomCardCode(cardCode)) return false
+  const def = customCardDef(cardCode)
+  if (!def) return false
+  return !(suffix === 'b' ? def.meta?.portraitBack : def.meta?.portrait)
+}
+
 export function portraitImage(cardCode: string, suffix: string = ''): string {
   // A custom investigator carries its own portraits; there is nothing for it
   // under the portrait directory.

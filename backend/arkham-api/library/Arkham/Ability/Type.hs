@@ -271,9 +271,13 @@ instance FromJSON AbilityType where
   parseJSON = withObject "AbilityType" $ \o -> do
     tag :: Text <- o .: "tag"
     case tag of
+      "FastAbility'" -> do
+        cost <- o .: "cost"
+        actions <- o .:? "actions" .!= mempty
+        pure $ FastAbility' {..}
       "ReactionAbility" -> do
         w <- o .: "window"
-        c <- o .: "cost"
+        c <- o .:? "cost" .!= Free
         a <- o .:? "actions" .!= mempty
         pure $ ReactionAbility {window = w, cost = c, actions = a}
       "ActionAbility" -> do

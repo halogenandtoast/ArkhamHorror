@@ -12,11 +12,13 @@ import Api.Arkham.Epic (
  )
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Api.Handler.Arkham.CustomCards (userCustomCards)
 import Arkham.Achievement.Types (Achievement, achievementChecklist, achievementName)
 import Arkham.Asset.Types (Asset, assetController, assetOwner, assetPlacement)
 import Arkham.Campaign.Types (CampaignAttrs)
 import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
 import Arkham.Card.CardCode (CardCode (..), HasCardCode (toCardCode))
+import Arkham.Card.CustomCard (CustomCard, registerCustomCards)
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity (attr, overAttrs, toAttrs)
 import Arkham.Classes.GameLogger
@@ -194,6 +196,8 @@ withKeepAlive inner = do
 
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
 gameStream gameId = catchingConnectionException $ withKeepAlive do
+  userId <- lift getRequestUserId
+  customCards <- lift $ userCustomCards userId
   let cleanup room subId = do
         unsubscribeFromRoom room subId
         lift $ decrRoomMember gameId
@@ -228,13 +232,13 @@ gameStream gameId = catchingConnectionException $ withKeepAlive do
 
     race_
       sender
-      (runConduit $ sourceWS .| mapM_C (handleData room broadcast))
+      (runConduit $ sourceWS .| mapM_C (handleData customCards room broadcast))
  where
-  handleData room broadcast dataPacket = lift do
+  handleData customCards room broadcast dataPacket = lift do
     case eitherDecodeStrict dataPacket of
       Left err -> $(logWarn) $ tshow err
       Right answer ->
-        updateGame answer gameId (Just room) `catch` \(e :: SomeException) -> do
+        updateGame customCards answer gameId (Just room) `catch` \(e :: SomeException) -> do
           liftIO $ broadcast $ encode $ GameError $ tshow e
 
 data SlowSubscriber = SlowSubscriber
@@ -368,8 +372,8 @@ data EpicOrganizerGateBlocked = EpicOrganizerGateBlocked
   deriving stock Show
   deriving anyclass Exception
 
-updateGame :: Answer -> ArkhamGameId -> Maybe Room -> Handler ()
-updateGame response gameId mRoom = do
+updateGame :: Map CardCode CustomCard -> Answer -> ArkhamGameId -> Maybe Room -> Handler ()
+updateGame customCards response gameId mRoom = do
   let broadcast :: Broadcast
       broadcast = case mRoom of
         Nothing -> \_ -> pure ()
@@ -391,6 +395,11 @@ updateGame response gameId mRoom = do
       gameJson@Game {..} = arkhamGameCurrentData
       currentQueue =
         maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+
+    -- Deserializing `arkhamGameCurrentData` registered its durable snapshot.
+    -- Overlay the owner's library after that point so card-builder saves are
+    -- live in games already using the card.
+    registerCustomCards customCards
 
     activePlayer <- runReaderT getActivePlayer gameJson
 

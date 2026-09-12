@@ -790,6 +790,45 @@
   },
   "customCardSets": {
     "title": "Custom Card Sets",
+    "builder": {
+      "matcher": "Matcher",
+      "capability": "Capability",
+      "youExist": "You exist",
+      "investigatorExists": "An investigator exists",
+      "chooseCapability": "Choose a capability…",
+      "capabilities": {
+        "can": {
+          "search": { "deck": "search your deck" },
+          "manipulate": { "deck": "manipulate your deck" },
+          "shuffle": { "deck": "shuffle your deck" },
+          "draw": { "cards": "draw cards" },
+          "gain": {
+            "resources": "gain resources",
+            "xp": "gain experience",
+            "clues": "gain clues"
+          },
+          "spend": {
+            "resources": "spend resources",
+            "clues": "spend clues"
+          },
+          "have": {
+            "cards": { "leaveDiscard": "move cards out of your discard pile" },
+            "assets": { "ready": "ready assets" }
+          },
+          "affect": { "otherPlayers": "affect other investigators" },
+          "move": "move",
+          "deal": { "damage": "deal damage" },
+          "target": { "encounterDeck": "target the encounter deck" },
+          "reveal": { "cards": "reveal cards" },
+          "heal": {
+            "damage": "heal damage",
+            "horror": "heal horror",
+            "any": "heal damage or horror",
+            "trauma": "heal trauma"
+          }
+        }
+      }
+    },
     "newSetName": "New set name",
     "addSet": "Add set",
     "import": "Import",

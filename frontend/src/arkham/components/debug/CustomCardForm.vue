@@ -4,7 +4,7 @@
  * It owns its own state and exposes `loadCard`, `reset` and `buildCustomCard`,
  * so the page can drive it for both new cards and edits without threading the
  * whole form through props. */
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
 import {
   PLAYER_CARD_TYPES,
@@ -162,6 +162,17 @@ const form = reactive(blankForm())
 const dragging = ref<string | null>(null)
 const uploading = ref<string | null>(null)
 const error = ref<string | null>(null)
+/* Display the processed local blob immediately after a drop. In development,
+ * Vite can briefly return/cache a 404 for a newly written public image; using
+ * the uploaded URL directly then leaves a broken image until a refresh. */
+const artPreviews = reactive<Record<string, string>>({})
+
+function clearArtPreviews() {
+  for (const url of Object.values(artPreviews)) URL.revokeObjectURL(url)
+  for (const slot of Object.keys(artPreviews)) delete artPreviews[slot]
+}
+
+onUnmounted(clearArtPreviews)
 
 /* An investigator carries four images; everything else just its face. The extra
  * ones ride in meta so the card model stays one def plus one piece of art. */
@@ -577,10 +588,19 @@ async function takeImage(slot: string, file: File | undefined) {
   if (!file || !file.type.startsWith('image/')) return
   error.value = null
   uploading.value = slot
+  let preview: string | null = null
+  const previousPreview = artPreviews[slot]
   try {
-    form.artUploaded[slot] = await Api.uploadCustomCardArt(await readImage(file))
+    const image = await readImage(file)
+    preview = URL.createObjectURL(image)
+    artPreviews[slot] = preview
+    form.artUploaded[slot] = await Api.uploadCustomCardArt(image)
     form.artUrls[slot] = ''
+    if (previousPreview) URL.revokeObjectURL(previousPreview)
   } catch (e: any) {
+    if (preview) URL.revokeObjectURL(preview)
+    if (previousPreview) artPreviews[slot] = previousPreview
+    else delete artPreviews[slot]
     console.error(e)
     error.value = e?.response?.data?.message ?? e?.message ?? 'Could not upload that image.'
   } finally {
@@ -598,6 +618,8 @@ async function onFile(slot: string, event: Event) {
 }
 
 function clearArt(slot: string) {
+  if (artPreviews[slot]) URL.revokeObjectURL(artPreviews[slot])
+  delete artPreviews[slot]
   form.artUploaded[slot] = null
   form.artUrls[slot] = ''
 }
@@ -606,7 +628,7 @@ function clearArt(slot: string) {
  * the def so an empty slot still reads as what it is. A slot that names a
  * printed card is shown as that card's image, so what you get is what you see. */
 const slotPreview = (slot: string) => {
-  const value = artFor(slot)
+  const value = artPreviews[slot] || artFor(slot)
   if (!value) return slot === 'art' ? renderCardPlaceholder(previewDef.value as any) : null
   const reference = cardArtReference(value)
   if (!reference) return value
@@ -636,6 +658,7 @@ const isPerPlayer = (v: any) => v?.tag === 'PerPlayer'
 
 async function loadCard(card: CustomCard) {
   await loadTraits()
+  clearArtPreviews()
   const def: Record<string, any> = card.def as any
   const meta = def.meta ?? {}
 
@@ -723,6 +746,7 @@ async function loadCard(card: CustomCard) {
 }
 
 function reset() {
+  clearArtPreviews()
   Object.assign(form, blankForm())
   loadedCode.value = null
   error.value = null

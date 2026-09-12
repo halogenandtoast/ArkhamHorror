@@ -36,6 +36,7 @@ Both run the same small step language:
   have succeeded.
 * @attack@ -- an enemy attacks an investigator.
 * @ready@ -- ready a card.
+* @takeAction@ -- take an immediate action as if it were your turn.
 * @draw@ -- draw cards, however many an expression works out to.
 * @gather@ -- shuffle a card from an encounter set into a deck.
 * @customize@ -- mark a checkbox on a customizable card you own.

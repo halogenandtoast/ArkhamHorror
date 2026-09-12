@@ -61,6 +61,7 @@ type StepKind =
   | 'parley'
   | 'attack'
   | 'ready'
+  | 'takeAction'
   | 'draw'
   | 'gather'
   | 'customize'
@@ -90,6 +91,7 @@ const KIND_LABELS: Record<StepKind, string> = {
   parley: 'Parley',
   attack: 'Attack',
   ready: 'Ready',
+  takeAction: 'Take an action',
   draw: 'Draw cards',
   gather: 'Gather',
   customize: 'Customize',
@@ -121,6 +123,7 @@ function kindOf(step: any): StepKind {
     'parley',
     'attack',
     'ready',
+    'takeAction',
     'draw',
     'gather',
     'customize',
@@ -157,6 +160,7 @@ const blankStep = (kind: StepKind) =>
     parley: { parley: { target: null, modifiers: [] } },
     attack: { attack: {} },
     ready: { ready: {} },
+    takeAction: { takeAction: true },
     draw: { draw: { amount: 1 } },
     gather: { gather: { cardCode: '' } },
     customize: { customize: { optional: true } },
@@ -191,6 +195,7 @@ const KIND_HELP: Record<StepKind, string> = {
   parley: 'Parleys against something, naming the target, skill and difficulty itself.',
   attack: 'This card attacks — an enemy making an immediate attack.',
   ready: 'Readies this card, or the one chosen.',
+  takeAction: 'Takes one immediate action as if it were your turn.',
   draw: 'Draws cards. Nothing is drawn when the amount works out to zero or less.',
   gather: 'Shuffles a card into the encounter deck.',
   customize: 'Marks a checkbox on the upgrade sheet of a customizable card.',
@@ -1304,6 +1309,10 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.ready?.target"
           @update:modelValue="set(index, { ...step, ready: { ...step.ready, target: $event } })"
         />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'takeAction'">
+        <p class="summary">Take one immediate action as if it were your turn.</p>
       </template>
 
       <template v-else-if="kindOf(step) === 'draw'">

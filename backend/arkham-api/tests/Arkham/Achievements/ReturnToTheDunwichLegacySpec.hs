@@ -285,9 +285,9 @@ spec = describe "Return to the Dunwich Legacy achievements" $ do
       killWhippoorwill
       earned `refShouldBe` True
 
-    -- The counter is bumped through the queue, and a Simultaneously block runs
-    -- every branch with a cleared queue -- so a read-modify-write read 0 three
-    -- times. Stir the Pot damaging every enemy at a location is this shape.
+    -- Stir the Pot damaging every enemy at a location has this shape: the
+    -- defeats resolve as branches of one Simultaneously, which used to lose
+    -- all but the first queued counter bump (#5694).
     it "is earned when the three are defeated simultaneously" . gameTest $ \_ -> do
       asReturnToTheDunwichLegacy
       location <- testLocation
@@ -308,6 +308,10 @@ spec = describe "Return to the Dunwich Legacy achievements" $ do
             run $ Defeated (toTarget bird) (toCardId bird) (TestSource mempty) []
       killWhippoorwill
       killWhippoorwill
+      -- A real turn boundary: the turn history (which the count is read off)
+      -- is cleared on `After (EndTurn _)`, not on EndTurn itself.
+      run $ EndTurn (toId self)
+      run $ After $ EndTurn (toId self)
       run $ BeginTurn (toId self)
       killWhippoorwill
       earned `refShouldBe` False

@@ -21,7 +21,7 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheDunwichLegacy.Key
 import Arkham.Card (CardDef, toCardCode, toCardDef)
 import Arkham.ChaosToken (ChaosTokenFace (..))
-import Arkham.Classes.Entity (toAttrs)
+import Arkham.Classes.Entity (toAttrs, toId)
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
@@ -36,6 +36,7 @@ import Arkham.Game.Base
 import Arkham.Game.Settings (activeUltimatumsAndBoons)
 import Arkham.Helpers.Campaign (stored)
 import Arkham.Helpers.ChaosBag (getAllChaosTokens)
+import Arkham.Helpers.History (HistoryField (..), getAllHistoryField)
 import Arkham.Helpers.Log (getHasRecord, getRecordSet)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
@@ -148,15 +149,18 @@ runDunwichAchievements msg = whenEligibleCampaign $ case msg of
       whenM (selectAny $ assetIs Assets.naomiOBannionRuthlessTactician <> AssetControlledBy Anyone) do
         earnAchievement $ TheDunwichLegacyAchievement RemindMeNotToPissHerOff
 
-    -- "Bird Hunting": 3 Whippoorwills defeated in a single turn (counter
-    -- resets on the turn boundaries below).
-    when (cardDef == Enemies.whippoorwill) $ bumpCounter whippoorwillKillsKey 1
-  CounterBumped k | k == whippoorwillKillsKey -> do
-    kills <- storedInt k
-    when (kills >= 3) do
-      earnAchievement $ TheDunwichLegacyAchievement BirdHunting
-  BeginTurn _ -> setStore whippoorwillKillsKey (0 :: Int)
-  EndTurn _ -> setStore whippoorwillKillsKey (0 :: Int)
+    -- "Bird Hunting": 3 Whippoorwills defeated in a single turn. Counted off
+    -- the turn history instead of a campaign-store counter: a store write rides
+    -- the queue, and a batch of simultaneous defeats (Stir the Pot damaging
+    -- every enemy at once) loses all but the first bump. 'runGameMessage'
+    -- records this defeat after the campaign sees 'Defeated', so add it in.
+    when (cardDef == Enemies.whippoorwill) do
+      defeated <- getAllHistoryField #turn HistoryEnemiesDefeated
+      let
+        isBird = (== Enemies.whippoorwill) . toCardDef . toAttrs
+        birds = length (filter isBird defeated) + (if any ((== eid) . toId) defeated then 0 else 1)
+      when (birds >= 3) do
+        earnAchievement $ TheDunwichLegacyAchievement BirdHunting
   -- "All Aboard": no Helpless Passenger may leave play in The Essex County
   -- Express. Every leave-play path (defeat, or its train car being removed)
   -- routes through a Discard of the asset; rescuing (taking control) does
@@ -247,13 +251,9 @@ professors = [Assets.drHenryArmitage, Assets.professorWarrenRice, Assets.drFranc
 -- Campaign store plumbing. Writes go through the queue ('SetGlobal' is
 -- handled by the campaign runner); reads see all previously processed writes.
 
-huntingHorrorDefeatedKey, passengerLeftPlayKey, whippoorwillKillsKey :: Text
+huntingHorrorDefeatedKey, passengerLeftPlayKey :: Text
 huntingHorrorDefeatedKey = "dunwichAchHuntingHorrorDefeated"
 passengerLeftPlayKey = "dunwichAchPassengerLeftPlay"
-whippoorwillKillsKey = "dunwichAchWhippoorwillKills"
 
 setStore :: (HasQueue Message m, ToJSON a) => Text -> a -> m ()
 setStore k v = push $ SetGlobal CampaignTarget (Key.fromText k) (toJSON v)
-
-storedInt :: (HasCallStack, HasGame m) => Text -> m Int
-storedInt k = fromMaybe 0 <$> stored k

@@ -582,6 +582,11 @@ runGameMessage msg g = case msg of
   -- simultaneous defeat -- was silently dropped. Jumping the queue is
   -- meaningless inside a branch, so degrade to a plain push.
   Priority msg' -> g <$ push msg'
+  -- Only the main loop can run a 'Simultaneously' (it needs to capture each
+  -- branch's queue), so one that itself ends up as a branch -- the interleave
+  -- splices branch output verbatim -- reached 'runMessage' and was dropped
+  -- along with everything inside it. Push it back so the loop picks it up.
+  Simultaneously {} -> g <$ push msg
   If wType _ -> do
     window <- checkWindows [mkWindow Timing.AtIf wType]
     g <$ pushAll [window, Do msg]

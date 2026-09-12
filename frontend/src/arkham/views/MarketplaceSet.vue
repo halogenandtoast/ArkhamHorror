@@ -124,8 +124,9 @@ async function take() {
 <template>
   <div class="page-container">
     <section class="set-page">
-      <router-link class="back" :to="{ name: 'CardMarketplace' }">
-        ← {{ t(`${K}backToMarketplace`) }}
+      <router-link class="back-button" :to="{ name: 'CardMarketplace' }">
+        <font-awesome-icon icon="arrow-left" class="back-icon" />
+        <span>{{ t(`${K}backToMarketplace`) }}</span>
       </router-link>
 
       <p v-if="status" class="status">{{ status }}</p>
@@ -234,16 +235,38 @@ async function take() {
   padding: 1.5rem;
 }
 
-.back {
-  color: var(--title);
-  display: inline-block;
-  font-size: 0.8rem;
+/* The campaign log's back button, unchanged, so leaving a page looks the same
+   wherever you are. */
+.back-button {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  display: inline-flex;
+  font-family: teutonic, sans-serif;
+  font-size: 0.95em;
+  gap: 8px;
+  letter-spacing: 0.06em;
   margin-bottom: 0.9rem;
-  opacity: 0.6;
+  padding: 8px 16px;
   text-decoration: none;
+  text-transform: uppercase;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  .back-icon {
+    font-size: 0.85em;
+    transition: transform 0.15s;
+  }
 
   &:hover {
-    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #f0f0f0;
+
+    .back-icon {
+      transform: translateX(-3px);
+    }
   }
 }
 

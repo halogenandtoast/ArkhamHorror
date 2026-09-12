@@ -37,12 +37,8 @@ const deckType = ref<DeckType>("UseExistingDeck")
 
 const searchText = ref('')
 const filterClasses = ref<InvestigatorClass[]>([])
-const sortBy = ref<'name' | 'class'>('name')
+const sortBy = ref<Arkham.DeckSort>('name')
 const validOnly = ref(false)
-const CLASS_ORDER: Record<string, number> = {
-  guardian: 0, seeker: 1, rogue: 2, mystic: 3, survivor: 4, neutral: 5
-}
-const allClasses: InvestigatorClass[] = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"]
 
 function deckPortraitCode(deck: Arkham.Deck): string {
   // The overlay edited here applies to this game only, but the row should still
@@ -62,7 +58,7 @@ function deckTaboo(deck: Arkham.Deck): string | null {
 }
 
 const filteredDecks = computed(() => {
-  let result = decks.value.filter((deck) => {
+  const result = decks.value.filter((deck) => {
     const cls = deckClass(deck)
     const matchesClass = filterClasses.value.length === 0 ||
       filterClasses.value.some((k) => cls[k])
@@ -72,17 +68,7 @@ const filteredDecks = computed(() => {
     return matchesClass && matchesSearch && matchesValidity
   })
 
-  if (sortBy.value === 'name') {
-    result = [...result].sort((a, b) => a.name.localeCompare(b.name))
-  } else if (sortBy.value === 'class') {
-    result = [...result].sort((a, b) => {
-      const ca = allClasses.find(k => deckClass(a)[k]) ?? 'neutral'
-      const cb = allClasses.find(k => deckClass(b)[k]) ?? 'neutral'
-      return (CLASS_ORDER[ca] ?? 5) - (CLASS_ORDER[cb] ?? 5)
-    })
-  }
-
-  return result
+  return Arkham.sortDecks(result, sortBy.value)
 })
 
 const props = defineProps<{

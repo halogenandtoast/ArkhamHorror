@@ -24,3 +24,4 @@ arkham_deck_overlay [arkham_decks] 2026-09-05T12:00:00Z Matthew Mongeau <halogen
 arkham_custom_card_sets [users arkham_custom_cards] 2026-09-11T00:00:00Z Claude <noreply@anthropic.com> # Named collections that own custom cards
 arkham_published_card_sets [users arkham_custom_card_sets] 2026-09-12T00:00:00Z Claude <noreply@anthropic.com> # Published card sets, their versions, and subscriptions to them
 arkham_published_card_set_likes [users arkham_published_card_sets] 2026-09-12T01:00:00Z Claude <noreply@anthropic.com> # Thumbs up on a published card set
+add_last_used_at_to_decks [arkham_decks arkham_players] 2026-09-12T02:00:00Z Claude <noreply@anthropic.com> # Track when a deck was last taken into a game

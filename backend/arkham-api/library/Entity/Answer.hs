@@ -33,6 +33,7 @@ import Data.Aeson.Types qualified as Aeson
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.These
+import Data.Time.Clock (getCurrentTime)
 import Data.UUID (UUID)
 import Database.Persist qualified as P
 import Foundation
@@ -432,8 +433,15 @@ handleAnswer game playerId = \case
     registerDeckOwnerCustomCards (arkhamDeckUserId deck)
     -- An overlay chosen here is for this game only; the deck's own overlay is
     -- the one that sticks.
-    loadChosenDeck game playerId
-      $ maybe id applyOverlay mOverlay (arkhamDeckPlayList deck)
+    reply <-
+      loadChosenDeck game playerId
+        $ maybe id applyOverlay mOverlay (arkhamDeckPlayList deck)
+    -- Only a deck that was actually seated counts as used; a rejected mid-campaign
+    -- join must not reorder the decks page.
+    case reply of
+      Handled _ -> touchDeck deckId
+      Unhandled _ -> pure ()
+    pure reply
   ApplyOverlayAnswer iid mOverlay
     | not (isContinueCampaignAsk game playerId) -> unhandled "Wrong question type"
     | not (atCampaignContinuation game) ->
@@ -477,6 +485,15 @@ handleAnswer game playerId = \case
                 handled [JoinCampaign (PlayerId $ coerce pid)]
               else unhandled "A new player joins this game with its invite link"
   other -> liftIO $ handleAnswerPure game playerId other
+
+{- | Mark a deck as just taken into a game. This is the only record of a deck
+being used -- nothing else links a game back to the 'ArkhamDeck' row it was
+seated from -- and it is what the decks page orders by.
+-}
+touchDeck :: ArkhamDeckId -> DB ()
+touchDeck deckId = do
+  now <- liftIO getCurrentTime
+  update deckId [ArkhamDeckLastUsedAt =. Just now]
 
 -- | Seat @playerId@'s chosen deck, unless a mid-campaign join may not play it.
 loadChosenDeck :: Game -> PlayerId -> ArkhamDBDecklist -> DB Reply

@@ -274,7 +274,9 @@
   "deck": {
     "viewOnArkhamDb": "View on ArkhamDB",
     "syncDeck": "Sync deck",
-    "deleteDeck": "Delete deck"
+    "deleteDeck": "Delete deck",
+    "lastPlayed": "Last played {date}",
+    "neverPlayed": "Never played"
   },
   "deckList": {
     "newDeck": "New Deck",
@@ -507,7 +509,8 @@
   "deckToolbar": {
     "searchDecks": "Search decks…",
     "sortName": "Sort: Name",
-    "sortClass": "Sort: Class"
+    "sortClass": "Sort: Class",
+    "sortRecent": "Sort: Recently Used"
   },
   "claimSeat": {
     "unableToLoad": "Unable to load game details.",

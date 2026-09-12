@@ -56,6 +56,37 @@ export function deckClass(deck: Deck) {
   return {}
 }
 
+export type DeckSort = 'name' | 'class' | 'recent'
+
+const CLASS_ORDER = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"] as const
+
+/* Shared by the decks page and the in-game picker so the two agree.
+ * `recent` puts never-played decks after every played one rather than mixing
+ * them in at the bottom of an arbitrary order, and falls back to name so the
+ * tail stays stable. */
+export function sortDecks(decks: Deck[], sortBy: DeckSort): Deck[] {
+  const byName = (a: Deck, b: Deck) => a.name.localeCompare(b.name)
+
+  switch (sortBy) {
+    case 'class':
+      return [...decks].sort((a, b) => {
+        const rank = (d: Deck) => {
+          const cls = deckClass(d)
+          const idx = CLASS_ORDER.findIndex(k => cls[k])
+          return idx === -1 ? CLASS_ORDER.length - 1 : idx
+        }
+        return rank(a) - rank(b) || byName(a, b)
+      })
+    case 'recent':
+      return [...decks].sort((a, b) => {
+        const used = (d: Deck) => d.lastUsedAt ?? ''
+        return used(b).localeCompare(used(a)) || byName(a, b)
+      })
+    default:
+      return [...decks].sort(byName)
+  }
+}
+
 export type DeckList = {
   investigator_code: string;
   slots: Record<string, number>;
@@ -78,6 +109,8 @@ export type Deck = {
   list: DeckList;
   playList?: DeckList;
   overlay?: DeckOverlay | null;
+  /* When the deck was last taken into a game. Null for a deck never played. */
+  lastUsedAt?: string | null;
 }
 
 export const deckOverlayDecoder = JsonDecoder.object<DeckOverlay>(
@@ -109,6 +142,7 @@ export const deckDecoder = JsonDecoder.object<Deck>(
     list: deckListDecoder,
     playList: v2Optional(deckListDecoder),
     overlay: v2Optional(JsonDecoder.nullable(deckOverlayDecoder)),
+    lastUsedAt: v2Optional(JsonDecoder.nullable(JsonDecoder.string())),
   },
   'Deck',
 );

@@ -9,6 +9,7 @@ module Entity.Arkham.Deck (
 import Arkham.Custom.Overlay (DeckOverlay, applyOverlay)
 import Arkham.Decklist
 import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Time.Clock (UTCTime)
 import Data.UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.TH
@@ -22,6 +23,9 @@ import Relude
 {- | @overlay@ holds the custom cards laid over the deck. It sits beside the
 list rather than being folded into it, so the original deck stays intact and
 the overlay can be lifted again.
+
+@lastUsedAt@ is when the deck was last taken into a game -- see
+'Entity.Answer.touchDeck'. Null for a deck that has never been played.
 -}
 share
   [mkPersist sqlSettings]
@@ -34,6 +38,7 @@ ArkhamDeck sql=arkham_decks
   investigatorName Text
   list ArkhamDBDecklist
   overlay DeckOverlay Maybe
+  lastUsedAt UTCTime Maybe
   deriving Generic Show
 |]
 

@@ -2,6 +2,7 @@
 import { capitalize } from '@/arkham/helpers'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
+import type { DeckSort } from '@/arkham/types/Deck'
 
 const { t } = useI18n()
 
@@ -17,7 +18,7 @@ const allClasses = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutra
 
 const search = defineModel<string>('search', { default: '' })
 const filterClasses = defineModel<string[]>('filterClasses', { default: () => [] })
-const sortBy = defineModel<'name' | 'class'>('sortBy', { default: 'name' })
+const sortBy = defineModel<DeckSort>('sortBy', { default: 'name' })
 const validOnly = defineModel<boolean>('validOnly', { default: false })
 
 function toggleClass(c: string) {
@@ -62,6 +63,7 @@ function toggleClass(c: string) {
       <select v-model="sortBy" class="sort-select">
         <option value="name">{{ t('deckToolbar.sortName') }}</option>
         <option value="class">{{ t('deckToolbar.sortClass') }}</option>
+        <option value="recent">{{ t('deckToolbar.sortRecent') }}</option>
       </select>
     </div>
   </div>

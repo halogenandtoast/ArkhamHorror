@@ -249,7 +249,7 @@ putApiV1ArkhamGameDecksR gameId = do
                       for_ (attr investigatorDeckUrl investigatorEntity) \oldDeckUrl ->
                         update \d -> do
                           set d
-                            $ [ArkhamDeckList =. val decklist]
+                            $ [ArkhamDeckList =. val decklist, ArkhamDeckLastUsedAt =. val (Just now)]
                             <> [ArkhamDeckUrl =. val decklist.url | isJust decklist.url]
                           where_ $ d.userId ==. val userId
                           where_ $ d.url ==. val (Just oldDeckUrl)
@@ -305,6 +305,7 @@ fromPostData userId CreateDeckPost {..} = do
     , arkhamDeckName = deckName
     , arkhamDeckList = deckList
     , arkhamDeckOverlay = Nothing
+    , arkhamDeckLastUsedAt = Nothing
     }
 
 arkhamBuildDecklistUrl :: Text -> Maybe Text

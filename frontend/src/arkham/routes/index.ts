@@ -5,7 +5,7 @@ export default [
     path: '/card-builder',
     name: 'CardBuilder',
     component: () => import('@/arkham/views/CardBuilder.vue'),
-    meta: { requiresAuth: true, title: "Arkham Horror: Card Builder" },
+    meta: { requiresAuth: true, title: "Arkham Horror: Custom Card Sets" },
     props: true,
   },
   {

@@ -5,8 +5,9 @@
  * steps. A step either runs a query and binds the result, or pushes a message —
  * the two operations the runner supports. Anything a step binds is available to
  * later steps as $name, alongside $id, $source, $target and $iid. */
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import {
+  encodeConstructor,
   loadSchema,
   messageConstructors,
   schemaLoaded,
@@ -31,12 +32,34 @@ const props = defineProps<{
   modifiers: any[]
   /** So `$id` knows what kind of id it is. */
   cardType?: string
+  /* Which half to render. A listener is not an ability, so it belongs in a box of
+   * its own -- but it shares this component's bindings, steps and block styling,
+   * so it stays the same component rather than a copy of all of that. */
+  section: 'abilities' | 'listeners'
+  
+  /* Revelation and the elder sign are two more things a card does, so they are
+   * listed with the abilities rather than kept in fieldsets of their own. What
+   * they are allowed to be is the form's business, which is why it is passed in
+   * rather than worked out again here. */
+  canRevelation?: boolean
+  revelationImplied?: boolean
+  hasRevelationPlacement?: boolean
+  revelationPlacements?: { value: string; label: string }[]
+  isInvestigator?: boolean
 }>()
 const emit = defineEmits<{
   'update:abilities': [v: any[]]
   'update:handlers': [v: any[]]
   'update:modifiers': [v: any[]]
 }>()
+
+const revelation = defineModel<boolean>('revelation', { default: false })
+const revelationPlacement = defineModel<string>('revelationPlacement', { default: '' })
+const revelationSteps = defineModel<any[]>('revelationSteps', { default: () => [] })
+const elderSign = defineModel<string>('elderSign', { default: '' })
+const elderSignRevealSteps = defineModel<any[]>('elderSignRevealSteps', { default: () => [] })
+const elderSignSteps = defineModel<any[]>('elderSignSteps', { default: () => [] })
+const elderSignSuccessSteps = defineModel<any[]>('elderSignSuccessSteps', { default: () => [] })
 
 onMounted(loadSchema)
 
@@ -156,6 +179,39 @@ function abilityWindow(ability: any): string {
   return known.length === 1 && knownWindow(known[0]) ? known[0] : ''
 }
 
+// -------------------------------------------------------------- the kinds ---
+
+/* The four an ability almost always is. Picking one pre-fills the AbilityType
+ * with that constructor; the editor below is still there, so it can be changed
+ * to any of the others afterwards. `Other…` starts with nothing chosen, which is
+ * how every ability used to start. */
+const ABILITY_KINDS: { label: string; tags: string[]; icon?: string }[] = [
+  // Forced is a word printed on the card, not a symbol, so it has no glyph.
+  { label: 'Forced', tags: ['ForcedAbility'] },
+  { label: 'Reaction', tags: ['ReactionAbility'], icon: 'reaction-icon' },
+  { label: 'Free trigger', tags: ["FastAbility'", 'FastAbility'], icon: 'fast-icon' },
+  { label: 'Action', tags: ['ActionAbility'], icon: 'action-icon' },
+]
+
+function blankAbilityType(tags: string[]) {
+  const schema = typeSchema('AbilityType')
+  const con = schema?.constructors.find((c) => tags.includes(c.name))
+  if (!schema || !con) return null
+  const values: Record<string, any> = {}
+  con.fields.forEach((field, at) => (values[field.name ?? String(at)] = null))
+  return encodeConstructor(schema, con, values)
+}
+
+const abilityKind = (ability: any) =>
+  ABILITY_KINDS.find((k) => k.tags.includes(ability?.type?.tag))
+
+function abilityLabel(ability: any) {
+  const named = abilityKind(ability)
+  if (named) return named.label
+  const tag = ability?.type?.tag
+  return typeof tag === 'string' && tag ? tag : 'Ability'
+}
+
 const abilities = computed(() => props.abilities ?? [])
 const handlers = computed(() => props.handlers ?? [])
 const modifiers = computed(() => props.modifiers ?? [])
@@ -164,13 +220,202 @@ function patch(list: any[], index: number, changes: Record<string, any>) {
   return list.map((item, i) => (i === index ? { ...item, ...changes } : item))
 }
 
+/* An elder sign or a revelation is present or it is not; there is no flag for
+ * it in the saved card, so its own contents are what say so. */
+const hasElderSign = computed(
+  () =>
+    !!props.isInvestigator &&
+    (elderSign.value !== '' ||
+      elderSignRevealSteps.value.length > 0 ||
+      elderSignSteps.value.length > 0 ||
+      elderSignSuccessSteps.value.length > 0),
+)
+
+const hasRevelation = computed(
+  () => !!props.canRevelation && (!!props.revelationImplied || revelation.value),
+)
+
+type EntryKind = 'ability' | 'constant' | 'revelation' | 'elderSign'
+type Entry = {
+  key: string
+  label: string
+  kind: EntryKind
+  index: number
+  fixed: boolean
+  /** The card symbol for this kind, where it has one. */
+  icon?: string
+}
+
+/* Everything this card does, in one list. Repeated labels are numbered, because
+ * two abilities both called Forced are otherwise two identical tabs. */
+const entries = computed<Entry[]>(() => {
+  const out: Entry[] = []
+  abilities.value.forEach((ability, index) =>
+    out.push({
+      key: `ability:${index}`,
+      label: abilityLabel(ability),
+      kind: 'ability',
+      index,
+      fixed: false,
+      icon: abilityKind(ability)?.icon,
+    }),
+  )
+  modifiers.value.forEach((_, index) =>
+    out.push({ key: `constant:${index}`, label: 'Constant', kind: 'constant', index, fixed: false }),
+  )
+  if (hasRevelation.value) {
+    out.push({
+      key: 'revelation',
+      label: 'Revelation',
+      kind: 'revelation',
+      index: 0,
+      fixed: !!props.revelationImplied,
+    })
+  }
+  if (hasElderSign.value) {
+    out.push({
+      key: 'elderSign',
+      label: 'Elder sign',
+      kind: 'elderSign',
+      index: 0,
+      fixed: false,
+      icon: 'elder-sign',
+    })
+  }
+
+  const seen = new Map<string, number>()
+  const totals = new Map<string, number>()
+  for (const entry of out) totals.set(entry.label, (totals.get(entry.label) ?? 0) + 1)
+  return out.map((entry) => {
+    if ((totals.get(entry.label) ?? 0) < 2) return entry
+    const at = (seen.get(entry.label) ?? 0) + 1
+    seen.set(entry.label, at)
+    return { ...entry, label: `${entry.label} ${at}` }
+  })
+})
+
+/* Which tab is open. Held as the entry's key rather than a position so removing
+ * one does not silently open a different one; an unknown key falls back to the
+ * first, which is what happens after a removal. */
+const openKey = ref('')
+const open = computed(() => entries.value.find((e) => e.key === openKey.value) ?? entries.value[0])
+const isOpen = (kind: EntryKind, index = 0) =>
+  open.value?.kind === kind && open.value.index === index
+
+// --- reordering ---
+
+/* Tabs drag to reorder, within their own kind: an ability's position is its
+ * number on the card, and a constant's is the order its modifiers are collected
+ * in. Revelation and the elder sign are one each, so there is nothing to order
+ * and they do not drag. */
+const canOrder = (entry: Entry) => entry.kind === 'ability' || entry.kind === 'constant'
+
+const dragKey = ref('')
+const dropKey = ref('')
+const dragged = computed(() => entries.value.find((e) => e.key === dragKey.value))
+
+const dropAllowed = (target: Entry) => {
+  const from = dragged.value
+  return !!from && from.key !== target.key && from.kind === target.kind && canOrder(target)
+}
+
+function onDragStart(event: DragEvent, entry: Entry) {
+  if (!canOrder(entry)) return event.preventDefault()
+  dragKey.value = entry.key
+  if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move'
+}
+
+function onDragOver(entry: Entry) {
+  dropKey.value = dropAllowed(entry) ? entry.key : ''
+}
+
+function endDrag() {
+  dragKey.value = ''
+  dropKey.value = ''
+}
+
+function onDrop(target: Entry) {
+  const from = dragged.value
+  if (!from || !dropAllowed(target)) return endDrag()
+
+  const list = from.kind === 'ability' ? abilities.value : modifiers.value
+  const next = [...list]
+  const [item] = next.splice(from.index, 1)
+  // The target's index shifts left by one when the dragged item came before it.
+  const at = target.index > from.index ? target.index - 1 : target.index
+  next.splice(at, 0, item)
+
+  if (from.kind === 'ability') emit('update:abilities', next)
+  else emit('update:modifiers', next)
+  openKey.value = `${from.kind}:${at}`
+  endDrag()
+}
+
+// --- adding ---
+
+const adding = ref(false)
+
+const addable = computed(() => {
+  const out = ABILITY_KINDS.map((k) => ({ key: `type:${k.label}`, label: k.label }))
+  out.push({ key: 'type:other', label: 'Other…' })
+  if (props.canRevelation && !hasRevelation.value) out.push({ key: 'revelation', label: 'Revelation' })
+  if (props.isInvestigator && !hasElderSign.value) out.push({ key: 'elderSign', label: 'Elder sign' })
+  out.push({ key: 'constant', label: 'Constant' })
+  return out
+})
+
+function add(key: string) {
+  adding.value = false
+  if (key === 'revelation') {
+    revelation.value = true
+    openKey.value = 'revelation'
+    return
+  }
+  if (key === 'elderSign') {
+    elderSign.value = '1'
+    openKey.value = 'elderSign'
+    return
+  }
+  if (key === 'constant') {
+    // The list this reads is still the old one, so its length is the new index.
+    openKey.value = `constant:${modifiers.value.length}`
+    emit('update:modifiers', [...modifiers.value, { kind: 'enemy', matcher: null, modifiers: [] }])
+    return
+  }
+  const kind = ABILITY_KINDS.find((k) => `type:${k.label}` === key)
+  openKey.value = `ability:${abilities.value.length}`
+  emit('update:abilities', [
+    ...abilities.value,
+    { type: kind ? blankAbilityType(kind.tags) : null, steps: [] },
+  ])
+}
+
+/* The panel's own Remove button: only the open entry has one on screen. */
+const removeOpen = () => {
+  if (open.value) removeEntry(open.value)
+}
+
+function removeEntry(entry: Entry) {
+  // Falls back to the first entry: whatever was open has just gone.
+  openKey.value = ''
+  if (entry.kind === 'ability') return removeAbility(entry.index)
+  if (entry.kind === 'constant') return removeModifier(entry.index)
+  if (entry.kind === 'revelation') {
+    revelation.value = false
+    revelationPlacement.value = ''
+    revelationSteps.value = []
+    return
+  }
+  elderSign.value = ''
+  elderSignRevealSteps.value = []
+  elderSignSteps.value = []
+  elderSignSuccessSteps.value = []
+}
+
 // --- abilities ---
 
 const setAbility = (i: number, changes: Record<string, any>) =>
   emit('update:abilities', patch(abilities.value, i, changes))
-
-const addAbility = () =>
-  emit('update:abilities', [...abilities.value, { type: null, steps: [] }])
 
 const removeAbility = (i: number) =>
   emit('update:abilities', abilities.value.filter((_, j) => j !== i))
@@ -208,9 +453,6 @@ const removeHandler = (i: number) =>
 
 const setModifier = (i: number, changes: Record<string, any>) =>
   emit('update:modifiers', patch(modifiers.value, i, changes))
-
-const addModifier = () =>
-  emit('update:modifiers', [...modifiers.value, { kind: 'enemy', matcher: null, modifiers: [] }])
 
 const removeModifier = (i: number) =>
   emit('update:modifiers', modifiers.value.filter((_, j) => j !== i))
@@ -279,13 +521,65 @@ function handlerScope(handler: any, index: number): Binding[] {
     <p v-if="!schemaLoaded" class="loading">Loading type schema…</p>
 
     <template v-else>
-      <datalist id="custom-message-tags">
-        <option v-for="tag in messageTags" :key="tag" :value="tag" />
-      </datalist>
+      <template v-if="props.section === 'abilities'">
+      <!-- Sits on top of the open panel, joined to it: the active tab has no
+           bottom edge, so the two read as one box with a tab row. -->
+      <div class="entry-tabs" role="tablist" aria-label="What this card does">
+        <button
+          v-for="entry in entries"
+          :key="entry.key"
+          type="button"
+          role="tab"
+          :class="{
+            on: open?.key === entry.key,
+            orderable: canOrder(entry),
+            dragging: dragKey === entry.key,
+            'drop-into': dropKey === entry.key,
+          }"
+          :aria-selected="open?.key === entry.key"
+          :draggable="canOrder(entry)"
+          @click="openKey = entry.key"
+          @dragstart="onDragStart($event, entry)"
+          @dragover.prevent="onDragOver(entry)"
+          @dragleave="dropKey = ''"
+          @drop.prevent="onDrop(entry)"
+          @dragend="endDrag"
+        >
+          <i v-if="entry.icon" :class="entry.icon" aria-hidden="true" />{{ entry.label }}
+        </button>
+        <button
+          type="button"
+          class="entry-add"
+          :aria-expanded="adding"
+          @click="adding = !adding"
+        >
+          + Add
+        </button>
+      </div>
 
-      <div v-for="(ability, index) in abilities" :key="index" class="block">
+      <select v-if="adding" class="entry-menu" @change="add(($event.target as HTMLSelectElement).value)">
+        <option value="">Ability type</option>
+        <option v-for="choice in addable" :key="choice.key" :value="choice.key">
+          {{ choice.label }}
+        </option>
+      </select>
+
+      <p v-if="!entries.length" class="hint muted">
+        Nothing yet. A card with no abilities, no modifiers and no revelation just sits there.
+      </p>
+
+      <div
+        v-for="(ability, index) in abilities"
+        :key="index"
+        v-show="isOpen('ability', index)"
+        class="block"
+      >
         <div class="block-head">
-          <strong>Ability {{ index + 1 }}</strong>
+          <strong
+            ><i v-if="abilityKind(ability)?.icon" :class="abilityKind(ability)?.icon" aria-hidden="true" />{{
+              abilityLabel(ability)
+            }}</strong
+          >
           <button type="button" @click="removeAbility(index)">Remove</button>
         </div>
 
@@ -384,11 +678,166 @@ function handlerScope(handler: any, index: number): Binding[] {
         />
       </div>
 
-      <button type="button" class="add" @click="addAbility">+ Ability</button>
 
+      <div
+        v-for="(modifier, index) in modifiers"
+        :key="`m${index}`"
+        v-show="isOpen('constant', index)"
+        class="block"
+      >
+        <div class="block-head">
+          <strong>Constant — gives modifiers to</strong>
+          <button type="button" @click="removeModifier(index)">Remove</button>
+        </div>
+        <label>
+          What to match
+          <select
+            :value="modifier.kind"
+            @change="setModifier(index, { kind: ($event.target as HTMLSelectElement).value, matcher: null })"
+          >
+            <option v-for="(_, kind) in MODIFIER_KINDS" :key="kind" :value="kind">{{ kind }}</option>
+          </select>
+        </label>
+        <ValueEditor
+          :type="MODIFIER_KINDS[modifier.kind] ?? 'EnemyMatcher'"
+          :bindings="cardBindings(props.cardType)"
+          label="Matcher"
+          :modelValue="modifier.matcher"
+          @update:modelValue="setModifier(index, { matcher: $event })"
+        />
+        <ValueEditor
+          type="[ModifierType]"
+          label="Modifiers"
+          :bindings="cardBindings(props.cardType)"
+          :modelValue="modifier.modifiers"
+          @update:modelValue="setModifier(index, { modifiers: $event })"
+        />
+        <ValueEditor
+          optional
+          type="Criterion"
+          label="Only if (optional) — a question asked of the game"
+          :bindings="cardBindings(props.cardType)"
+          :modelValue="modifier.if"
+          @update:modelValue="setModifier(index, { if: $event })"
+        />
+
+        <div v-for="(pair, at) in modifierRequires(modifier)" :key="at" class="row">
+          <label>
+            Only when
+            <input
+              :value="pair[0]"
+              :class="{ binding: isBinding(pair[0]) }"
+              placeholder="$placement"
+              @input="setModifierRequirement(index, at, 0, ($event.target as HTMLInputElement).value)"
+              @keydown.stop
+            />
+          </label>
+          <label>
+            is
+            <input
+              :value="pair[1]"
+              :class="{ binding: isBinding(pair[1]) }"
+              placeholder="$source"
+              @input="setModifierRequirement(index, at, 1, ($event.target as HTMLInputElement).value)"
+              @keydown.stop
+            />
+          </label>
+          <button type="button" @click="removeModifierRequirement(index, at)">×</button>
+        </div>
+        <button type="button" class="add" @click="addModifierRequirement(index)">
+          + Requirement
+        </button>
+
+        <p class="hint">
+          Applies while this card is in play, to everything the matcher selects. Match
+          <strong>card</strong> rather than an entity to reach a card before it is in play — that is
+          what a keyword needs when the engine reads it at draw or spawn time.
+        </p>
+        <p class="hint muted">
+          A requirement only compares bindings, so it can gate on where the card is. Use it rather
+          than <em>Only if</em> when the question would ask for modifiers while modifiers are being
+          collected.
+        </p>
+      </div>
+
+      <!-- Revelation: what the card does as it is drawn. Only here at all once
+           it has one, which is also how the saved card records it. -->
+      <div v-if="hasRevelation" v-show="isOpen('revelation')" class="block">
+        <div class="block-head">
+          <strong>Revelation</strong>
+          <button v-if="!revelationImplied" type="button" @click="removeOpen">Remove</button>
+        </div>
+        <p v-if="revelationImplied" class="hint">
+          This card always resolves as it is drawn, so it always has a revelation.
+        </p>
+        <label v-if="hasRevelationPlacement">
+          Where it ends up
+          <select v-model="revelationPlacement">
+            <option v-for="place in revelationPlacements ?? []" :key="place.value" :value="place.value">
+              {{ place.label }}
+            </option>
+          </select>
+        </label>
+        <p class="hint">What it does when it is revealed:</p>
+        <StepsEditor
+          :queryKinds="QUERY_KINDS"
+          :bindings="cardBindings(props.cardType)"
+          :path="'revelation'"
+          :modelValue="revelationSteps"
+          @update:modelValue="revelationSteps = $event"
+        />
+      </div>
+
+      <div v-if="hasElderSign" v-show="isOpen('elderSign')" class="block">
+        <div class="block-head">
+          <strong><i class="elder-sign" aria-hidden="true" />Elder sign</strong>
+          <button type="button" @click="removeOpen">Remove</button>
+        </div>
+        <label>
+          Modifier
+          <input v-model="elderSign" type="number" @keydown.stop />
+        </label>
+        <p class="hint">
+          What happens the moment it is drawn, before anything can react to the reveal — where a
+          flag this card's own abilities read has to be set:
+        </p>
+        <StepsEditor
+          :queryKinds="QUERY_KINDS"
+          :bindings="cardBindings(props.cardType)"
+          :path="'elderSignReveal'"
+          :modelValue="elderSignRevealSteps"
+          @update:modelValue="elderSignRevealSteps = $event"
+        />
+        <p class="hint">What it does when it resolves, beyond the modifier:</p>
+        <StepsEditor
+          :queryKinds="QUERY_KINDS"
+          :bindings="cardBindings(props.cardType)"
+          :path="'elderSign'"
+          :modelValue="elderSignSteps"
+          @update:modelValue="elderSignSteps = $event"
+        />
+        <p class="hint">
+          And what it does only if you then succeed — success is not known when the token resolves,
+          so these run when the test is passed:
+        </p>
+        <StepsEditor
+          :queryKinds="QUERY_KINDS"
+          :bindings="cardBindings(props.cardType)"
+          :path="'elderSignSuccess'"
+          :modelValue="elderSignSuccessSteps"
+          @update:modelValue="elderSignSuccessSteps = $event"
+        />
+      </div>
+
+      </template>
+
+      <div v-else class="listeners">
+        <datalist id="custom-message-tags">
+          <option v-for="tag in messageTags" :key="tag" :value="tag" />
+        </datalist>
       <div v-for="(handler, index) in handlers" :key="`h${index}`" class="block">
         <div class="block-head">
-          <strong>Listens for</strong>
+          <strong>Listener {{ index + 1 }}</strong>
           <button type="button" @click="removeHandler(index)">Remove</button>
         </div>
         <label :id="handlerAnchor(index)">
@@ -477,90 +926,128 @@ function handlerScope(handler: any, index: number): Binding[] {
       </div>
 
       <button type="button" class="add" @click="addHandler">+ Listener</button>
-
-      <div v-for="(modifier, index) in modifiers" :key="`m${index}`" class="block">
-        <div class="block-head">
-          <strong>Gives modifiers to</strong>
-          <button type="button" @click="removeModifier(index)">Remove</button>
-        </div>
-        <label>
-          What to match
-          <select
-            :value="modifier.kind"
-            @change="setModifier(index, { kind: ($event.target as HTMLSelectElement).value, matcher: null })"
-          >
-            <option v-for="(_, kind) in MODIFIER_KINDS" :key="kind" :value="kind">{{ kind }}</option>
-          </select>
-        </label>
-        <ValueEditor
-          :type="MODIFIER_KINDS[modifier.kind] ?? 'EnemyMatcher'"
-          :bindings="cardBindings(props.cardType)"
-          label="Matcher"
-          :modelValue="modifier.matcher"
-          @update:modelValue="setModifier(index, { matcher: $event })"
-        />
-        <ValueEditor
-          type="[ModifierType]"
-          label="Modifiers"
-          :bindings="cardBindings(props.cardType)"
-          :modelValue="modifier.modifiers"
-          @update:modelValue="setModifier(index, { modifiers: $event })"
-        />
-        <ValueEditor
-          optional
-          type="Criterion"
-          label="Only if (optional) — a question asked of the game"
-          :bindings="cardBindings(props.cardType)"
-          :modelValue="modifier.if"
-          @update:modelValue="setModifier(index, { if: $event })"
-        />
-
-        <div v-for="(pair, at) in modifierRequires(modifier)" :key="at" class="row">
-          <label>
-            Only when
-            <input
-              :value="pair[0]"
-              :class="{ binding: isBinding(pair[0]) }"
-              placeholder="$placement"
-              @input="setModifierRequirement(index, at, 0, ($event.target as HTMLInputElement).value)"
-              @keydown.stop
-            />
-          </label>
-          <label>
-            is
-            <input
-              :value="pair[1]"
-              :class="{ binding: isBinding(pair[1]) }"
-              placeholder="$source"
-              @input="setModifierRequirement(index, at, 1, ($event.target as HTMLInputElement).value)"
-              @keydown.stop
-            />
-          </label>
-          <button type="button" @click="removeModifierRequirement(index, at)">×</button>
-        </div>
-        <button type="button" class="add" @click="addModifierRequirement(index)">
-          + Requirement
-        </button>
-
-        <p class="hint">
-          Applies while this card is in play, to everything the matcher selects. Match
-          <strong>card</strong> rather than an entity to reach a card before it is in play — that is
-          what a keyword needs when the engine reads it at draw or spawn time.
-        </p>
-        <p class="hint muted">
-          A requirement only compares bindings, so it can gate on where the card is. Use it rather
-          than <em>Only if</em> when the question would ask for modifiers while modifiers are being
-          collected.
-        </p>
       </div>
-
-      <button type="button" class="add" @click="addModifier">+ Modifier</button>
     </template>
   </div>
 </template>
 
 <style scoped lang="scss">
 .ability-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* The same quiet tabs the form uses one level out, so a nested strip does not
+   read as a second, louder control. */
+/* The card symbols come from the icon font, which renders them through `i` --
+   reset the italics it would otherwise inherit. */
+.entry-tabs i,
+.block-head i {
+  font-style: normal;
+  margin-right: 0.3em;
+}
+
+/* The elder sign draws at 1.3em (icons.css), so it overruns the `i`'s own advance
+   and swallows a margin set in the `i`'s smaller em. The gap goes on the glyph
+   itself, where the em is the one it is drawn at. */
+.entry-tabs i.elder-sign::before,
+.block-head i.elder-sign::before {
+  padding-right: 0.3em;
+}
+
+/* Violet: the one hue this form was not already using. Light blue means a live
+   binding, lime means a card code that resolves, red means something wrong --
+   the open tab needed a colour of its own rather than borrowing one of those. */
+/* Attached to the panel below it, so no rule of its own and no gap: the strip
+   cancels the column gap it would otherwise inherit, and the open tab drops its
+   bottom edge to join the box. */
+.entry-tabs {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem;
+  margin-bottom: -0.6rem;
+  padding: 0 0.35rem;
+  position: relative;
+  z-index: 1;
+
+  button {
+    background: none;
+    border: none;
+    border-radius: 4px 4px 0 0;
+    color: #9ca3af;
+    cursor: pointer;
+    font-size: 0.78rem;
+    padding: 0.2rem 0.55rem 0.5rem;
+    transition: background 0.12s ease, color 0.12s ease;
+
+    &:hover {
+      color: #cbd2dd;
+    }
+
+    /* Same edges as the panel, minus the one they share. */
+    &.on {
+      background: rgba(196, 181, 253, 0.12);
+      border: 1px solid #374151;
+      border-bottom: none;
+      color: #c4b5fd;
+      margin-bottom: -1px;
+      padding-bottom: calc(0.5rem + 1px);
+    }
+
+    &:focus-visible {
+      outline: 1px solid #c4b5fd;
+      outline-offset: -1px;
+    }
+
+    &.orderable {
+      cursor: grab;
+    }
+
+    &.dragging {
+      cursor: grabbing;
+      opacity: 0.4;
+    }
+
+    /* Where it would land: the dragged tab takes this one's place. */
+    &.drop-into {
+      box-shadow: inset 2px 0 0 #c4b5fd;
+    }
+  }
+}
+
+/* Not a tab: this one does something, so it is shaped like a button rather than
+   borrowing the strip's flat treatment. */
+.entry-tabs .entry-add {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  color: #d1d5db;
+  font-weight: 600;
+  /* Lifted off the panel's edge: the tabs join the box, this does not. The strip
+     grows to fit, which is where the clearance comes from. */
+  margin-bottom: 0.3rem;
+  margin-left: 0.4rem;
+  padding: 0.2rem 0.7rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: #6b7280;
+    color: #eee;
+  }
+
+  &:focus-visible {
+    outline: 1px solid #6b7280;
+    outline-offset: 1px;
+  }
+}
+
+.entry-menu {
+  align-self: flex-start;
+}
+
+.listeners {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;

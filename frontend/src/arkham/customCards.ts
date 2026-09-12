@@ -42,6 +42,59 @@ export function stripCardCodePrefix(code: string): string {
   return code.replace(/^c(?=\*)/, '')
 }
 
+/* The engine's own convention, mirrored from `FromJSON CardCode`: a code on the
+ * wire carries a leading `c` that is not part of the code. Both sides of a
+ * comparison have to go through this, because a code minted locally is bare and
+ * one that came back from the server is prefixed. */
+export const bareCardCode = (code: string) => code.replace(/^c+/, '')
+
+export type SignatureSummary = {
+  /* One entry per investigator that has signatures, for display. */
+  owners: { name: string; count: number }[]
+  /* Distinct signature cards spoken for by an investigator in this same group. */
+  linked: number
+  /* Cards restricted to an investigator that is not in this group. The
+   * restriction still stands -- only they can take it -- but nothing here
+   * brings it along, because the investigator that would is somewhere else. */
+  orphans: number
+}
+
+/* Who brings what. Read off the investigators' `_signatures` -- the direction
+ * this app treats as the link, and the one a deck follows to pick the cards up
+ * -- and off the signatures' own `deckRestrictions` for the ones whose
+ * investigator is not here to do it.
+ *
+ * Read-only: `linkSignatures` is what writes `_signatures` for an arkham.build
+ * import, which records the link the other way round. */
+export function summarizeSignatures(cards: CustomCard[]): SignatureSummary {
+  const present = new Set(cards.map((c) => bareCardCode(c.def.cardCode)))
+  const linked = new Set<string>()
+  const owners: { name: string; count: number }[] = []
+
+  for (const card of cards) {
+    const def = card.def as any
+    if (def.cardType !== 'InvestigatorType') continue
+    const mine = ((def.meta?._signatures ?? []) as string[])
+      .map(bareCardCode)
+      .filter((code) => present.has(code))
+    if (!mine.length) continue
+    for (const code of mine) linked.add(code)
+    owners.push({ name: def.name.title, count: mine.length })
+  }
+
+  const orphans = cards.filter((card) => {
+    const def = card.def as any
+    if (def.cardType === 'InvestigatorType') return false
+    if (linked.has(bareCardCode(def.cardCode))) return false
+    return ((def.deckRestrictions ?? []) as any[]).some(
+      (r) => r?.tag === 'Signature' && typeof r.contents === 'string',
+    )
+  }).length
+
+  owners.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+  return { owners, linked: linked.size, orphans }
+}
+
 export function isCustomCardCode(code: string): boolean {
   return stripCardCodePrefix(code).startsWith(CUSTOM_CARD_PREFIX)
 }

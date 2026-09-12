@@ -11,11 +11,14 @@ import CustomCardForm from '@/arkham/components/debug/CustomCardForm.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardSetStrip from '@/arkham/components/CardSetStrip.vue'
 import SegmentedToggle from '@/components/SegmentedToggle.vue'
+import Prompt from '@/components/Prompt.vue'
 import { stripCardCodePrefix } from '@/arkham/customCards'
 import {
   mintCustomCardCode,
   renderCardPlaceholder,
+  summarizeSignatures,
   type CustomCard,
+  type SignatureSummary,
 } from '@/arkham/customCards'
 import { isDevBuild } from '@/arkham/displayRules'
 import {
@@ -40,7 +43,7 @@ import {
   type LibrarySet,
 } from '@/arkham/customCardLibrary'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 const K = 'customCardSets.'
 
 const form = ref<InstanceType<typeof CustomCardForm> | null>(null)
@@ -301,10 +304,21 @@ async function commitRename(set: LibrarySet) {
 
 /* The whole point of a set: changing your mind about an import you just made is
  * one decision, so the count is spelled out rather than left to be discovered. */
+/* Deleting takes the same modal a game does, rather than the browser's own
+ * confirm: it is the one destructive thing on this page, and a set is a lot of
+ * work to lose to a dialog you have already learned to click through. */
+const deletingSet = ref<LibrarySet | null>(null)
+const deletingCard = ref<CustomCard | null>(null)
+
+const deleteSetPrompt = computed(() => {
+  const set = deletingSet.value
+  if (!set) return ''
+  const what = set.cardCount ? t(`${K}deleteSetCards`, set.cardCount) : t(`${K}deleteSetEmpty`)
+  return t(`${K}confirmDeleteSet`, { name: set.name, what })
+})
+
 async function dropSet(set: LibrarySet) {
-  const count = set.cardCount
-  const what = count ? t(`${K}deleteSetCards`, count) : t(`${K}deleteSetEmpty`)
-  if (!confirm(t(`${K}confirmDeleteSet`, { name: set.name, what }))) return
+  deletingSet.value = null
   error.value = null
   try {
     const editing = editingCode.value
@@ -388,7 +402,7 @@ async function save() {
 }
 
 async function remove(card: CustomCard) {
-  if (!confirm(t(`${K}confirmDeleteCard`, { name: card.def.name.title }))) return
+  deletingCard.value = null
   await removeFromLibrary(card.def.cardCode)
   selected.value = selected.value.filter((c) => c !== card.def.cardCode)
   if (editingCode.value === card.def.cardCode) startNew()
@@ -432,49 +446,143 @@ async function exportSelected() {
  * arkham.build path, cleared by every import, and only ever read to say so. */
 const portraitsCut = ref(0)
 
-/* Everything imported arrives as a set, replacing one of the same name rather
- * than merging into it. A file that names no set falls back to what the cards
- * claim, and failing that to the file's own name. */
-async function importFile(file: File, parse: (text: string) => Promise<{
+/* A parsed file waiting on a yes. Held here rather than asked through the
+ * browser's own confirm, which had room for one sentence: what matters about an
+ * import is what is in the file, which set it lands on, and what that costs the
+ * set already there. */
+type PendingImport = {
+  fileName: string
   name: string
   sourceCode: string | null
   cards: CustomCard[]
-}>) {
+  replacing: LibrarySet | null
+  minisCut: number
+  signatures: SignatureSummary | null
+}
+
+const pendingImport = ref<PendingImport | null>(null)
+const importPanel = ref<HTMLElement | null>(null)
+const importPreview = ref<HTMLElement | null>(null)
+const importExpanded = ref(false)
+/* Whether the clipped strip is hiding anything. Measured rather than counted:
+ * how many cards fit one row is the column's business, not ours. */
+const importOverflows = ref(false)
+
+const cancelImport = () => {
+  pendingImport.value = null
+  importExpanded.value = false
+  importOverflows.value = false
+}
+
+watch([pendingImport, importExpanded], async () => {
+  if (!pendingImport.value || importExpanded.value) return
+  await nextTick()
+  const strip = importPreview.value?.querySelector('.card-strip')
+  importOverflows.value = !!strip && strip.scrollHeight > strip.clientHeight + 4
+})
+
+/* Types in descending order of how much of the file they are, so the first line
+ * of the breakdown is what the set mostly is. */
+const importBreakdown = computed(() => {
+  const counts = new Map<string, number>()
+  for (const card of pendingImport.value?.cards ?? []) {
+    counts.set(card.def.cardType, (counts.get(card.def.cardType) ?? 0) + 1)
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([cardType, count]) => ({
+      cardType,
+      count,
+      label: te(`${K}types.${cardType}`) ? t(`${K}types.${cardType}`) : cardType,
+    }))
+})
+
+/* A replace swaps the set's cards outright, so anything the set holds that the
+ * file does not is going away. That is the part worth knowing before the yes,
+ * and the part a one-line confirm could never say. */
+const importDiff = computed(() => {
+  const incoming = pendingImport.value
+  if (!incoming?.replacing) return null
+  const existing = setCards(incoming.replacing.id)
+  const had = new Set(existing.map((c) => c.def.cardCode))
+  const bringing = new Set(incoming.cards.map((c) => c.def.cardCode))
+  return {
+    added: incoming.cards.filter((c) => !had.has(c.def.cardCode)).length,
+    updated: incoming.cards.filter((c) => had.has(c.def.cardCode)).length,
+    removed: existing.filter((c) => !bringing.has(c.def.cardCode)).length,
+  }
+})
+
+/* Everything imported arrives as a set, replacing one of the same name rather
+ * than merging into it. A file that names no set falls back to what the cards
+ * claim, and failing that to the file's own name. */
+async function reviewImport(
+  file: File,
+  parse: (text: string) => Promise<{
+    name: string
+    sourceCode: string | null
+    cards: CustomCard[]
+  }>,
+) {
   error.value = null
   status.value = null
+  pendingImport.value = null
+  importExpanded.value = false
   portraitsCut.value = 0
   try {
-    const { name, sourceCode, cards: incoming } = await parse(await file.text())
-    if (!incoming.length) {
+    const { name, sourceCode, cards } = await parse(await file.text())
+    if (!cards.length) {
       error.value = t(`${K}fileHasNoCards`)
       return
     }
+    pendingImport.value = {
+      fileName: file.name,
+      name,
+      sourceCode,
+      cards,
+      replacing:
+        sets.value.find((s) => (sourceCode && s.sourceCode === sourceCode) || s.name === name) ??
+        null,
+      minisCut: portraitsCut.value,
+      signatures: (() => {
+        const summary = summarizeSignatures(cards)
+        return summary.linked || summary.orphans ? summary : null
+      })(),
+    }
+    // The panel takes focus so Escape backs out of it without a click first.
+    await nextTick()
+    importPanel.value?.focus()
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}importFailed`)
+  }
+}
 
-    const replacing = sets.value.find(
-      (s) => (sourceCode && s.sourceCode === sourceCode) || s.name === name,
-    )
-    const prompt = replacing
-      ? t(`${K}confirmReplace`, {
-          name: replacing.name,
-          existing: t(`${K}cardCount`, replacing.cardCount),
-          incoming: incoming.length,
-        })
-      : t(`${K}confirmImport`, { count: t(`${K}cardCount`, incoming.length), name })
-    if (!confirm(prompt)) return
-
-    const editing = editingCode.value
-    const set = await importSet({ name, sourceCode, cards: incoming })
-    chooseActiveSet(set.id)
-    if (editing && !libraryCard(editing)) startNew()
-    const cut = portraitsCut.value
+async function commitImport() {
+  const incoming = pendingImport.value
+  if (!incoming) return
+  cancelImport()
+  busy.value = true
+  try {
+    const set = await importSet({
+      name: incoming.name,
+      sourceCode: incoming.sourceCode,
+      cards: incoming.cards,
+    })
+    /* Straight into the set, which is where you were going anyway: an import is
+     * only ever the first half of "now let me look at what I just brought in".
+     * The status line has its own slot in the editor's head, so it comes too. */
+    openSet(set.id)
     status.value = t(`${K}imported`, {
-      count: t(`${K}cardCount`, incoming.length),
+      count: t(`${K}cardCount`, incoming.cards.length),
       name: set.name,
-      minis: cut ? ` ${t(`${K}minisCut`, cut)}` : '',
+      minis: incoming.minisCut ? ` ${t(`${K}minisCut`, incoming.minisCut)}` : '',
     })
   } catch (e) {
     console.error(e)
     error.value = t(`${K}importFailed`)
+  } finally {
+    busy.value = false
   }
 }
 
@@ -504,20 +612,32 @@ async function onImport(event: Event) {
   const file = input.files?.[0]
   input.value = ''
   if (!file) return
-  await importFile(file, async (text) => {
+  await reviewImport(file, async (text) => {
     if (!isArkhamBuildExport(JSON.parse(text))) {
       const { parseCardExport } = await import('@/arkham/customCardLibrary')
       return parseCardExport(text, fileBaseName(file))
     }
-    const { parseArkhamBuildCards, arkhamBuildCardToCustomCard, attachInvestigatorPortraits } =
-      await import('@/arkham/arkhamBuildImport')
+    const {
+      parseArkhamBuildCards,
+      arkhamBuildCardToCustomCard,
+      attachInvestigatorPortraits,
+      linkSignatures,
+    } = await import('@/arkham/arkhamBuildImport')
     const { packName, packCode, cards: rawCards } = parseArkhamBuildCards(text)
     const cards = rawCards.map((raw: any) => arkhamBuildCardToCustomCard(raw, packName))
+    /* arkham.build points a signature at its investigator; the investigator has
+     * to point back, or the deck never picks the cards up. Done before the
+     * review so it can say who was linked to whom. */
+    linkSignatures(cards)
     /* There is no mini in the export, so an investigator's is cut out of its own
-     * card face. Said out loud in the status line, because it is a guess at
-     * where the art sits and the author may want to replace it. */
+     * card face. Said out loud in the review, because it is a guess at where the
+     * art sits and the author may want to replace it. */
     portraitsCut.value = await attachInvestigatorPortraits(cards)
-    return { name: packName ?? fileBaseName(file), sourceCode: packCode, cards }
+    return {
+      name: packName ?? fileBaseName(file),
+      sourceCode: packCode,
+      cards,
+    }
   })
 }
 </script>
@@ -549,6 +669,81 @@ async function onImport(event: Event) {
       <font-awesome-icon icon="flask" />
       {{ t(`${K}experimental`) }}
     </p>
+
+    <!-- What is in the file, before it lands. A browser confirm had room for a
+         sentence, and an import is bigger than a sentence: it can replace a set
+         you have and drop cards out of it. -->
+    <section
+      v-if="pendingImport"
+      ref="importPanel"
+      class="import-review"
+      tabindex="-1"
+      @keydown.esc="cancelImport"
+    >
+      <header>
+        <h2>
+          {{ pendingImport.replacing
+            ? t(`${K}reviewReplaceTitle`, { name: pendingImport.replacing.name })
+            : t(`${K}reviewTitle`, { name: pendingImport.name }) }}
+        </h2>
+        <span class="from">{{ t(`${K}reviewFrom`, { file: pendingImport.fileName }) }}</span>
+      </header>
+
+      <p class="count">
+        {{ t(`${K}cardCount`, pendingImport.cards.length) }}
+        <span v-if="importDiff" class="split">
+          <span class="added">{{ t(`${K}reviewAdded`, { n: importDiff.added }) }}</span>
+          <span>{{ t(`${K}reviewUpdated`, { n: importDiff.updated }) }}</span>
+          <span :class="{ dropped: importDiff.removed > 0 }">
+            {{ t(`${K}reviewDropped`, { n: importDiff.removed }) }}
+          </span>
+        </span>
+      </p>
+
+      <ul class="types">
+        <li v-for="row in importBreakdown" :key="row.cardType">
+          <span class="n">{{ row.count }}</span>{{ row.label }}
+        </li>
+      </ul>
+
+      <p v-if="pendingImport.minisCut" class="note">{{ t(`${K}minisCut`, pendingImport.minisCut) }}</p>
+      <p v-if="pendingImport.signatures?.orphans" class="note">
+        {{ t(`${K}reviewSignatureOrphans`, pendingImport.signatures.orphans) }}
+      </p>
+      <p v-if="importDiff && importDiff.removed" class="warn">
+        <font-awesome-icon icon="triangle-exclamation" />
+        {{ t(`${K}reviewRemoves`, { name: pendingImport.replacing?.name }, importDiff.removed) }}
+      </p>
+      <p v-if="pendingImport.replacing && isSubscribed(pendingImport.replacing)" class="warn">
+        <font-awesome-icon icon="triangle-exclamation" />
+        {{ t(`${K}reviewSubscribed`, { name: pendingImport.replacing.name }) }}
+      </p>
+
+      <!-- Clipped to one row by default: a pool export can run to hundreds of
+           cards, and the whole wrapped grid is taller than the page. -->
+      <div ref="importPreview" class="review-preview" :class="{ expanded: importExpanded }">
+        <CardSetStrip :wrap="importExpanded" class="review-gallery" :cards="pendingImport.cards" />
+      </div>
+      <button
+        v-if="importExpanded || importOverflows"
+        type="button"
+        class="link"
+        @click="importExpanded = !importExpanded"
+      >
+        {{ importExpanded
+          ? t(`${K}reviewShowLess`)
+          : t(`${K}reviewShowAll`, { count: pendingImport.cards.length }) }}
+      </button>
+
+      <div class="review-actions">
+        <button type="button" class="confirm" :disabled="busy" @click="commitImport">
+          {{ pendingImport.replacing ? t(`${K}reviewConfirmReplace`) : t(`${K}reviewConfirm`) }}
+        </button>
+        <button type="button" class="cancel" @click="cancelImport">
+          {{ t(`${K}reviewCancel`) }}
+        </button>
+      </div>
+    </section>
 
     <p v-if="status" class="status">{{ status }}</p>
     <p v-if="error" class="error">{{ error }}</p>
@@ -653,7 +848,7 @@ async function onImport(event: Event) {
               type="button"
               class="delete"
               v-tooltip="t(`${K}deleteSet`)" :aria-label="t(`${K}deleteSet`)"
-              @click="dropSet(set)"
+              @click="deletingSet = set"
             >
               <font-awesome-icon icon="trash" />
             </button>
@@ -772,7 +967,7 @@ async function onImport(event: Event) {
             <button type="button" v-tooltip="t(`${K}exportCard`)" :aria-label="t(`${K}exportCard`)" @click="exportOne(card)">
               <font-awesome-icon icon="download" />
             </button>
-            <button type="button" class="delete" v-tooltip="t(`${K}deleteCard`)" :aria-label="t(`${K}deleteCard`)" @click="remove(card)">
+            <button type="button" class="delete" v-tooltip="t(`${K}deleteCard`)" :aria-label="t(`${K}deleteCard`)" @click="deletingCard = card">
               <font-awesome-icon icon="trash" />
             </button>
           </div>
@@ -843,6 +1038,20 @@ async function onImport(event: Event) {
 
   <!-- Document-level: anything carrying `data-image` gets a hover preview. -->
   <CardOverlay />
+
+  <Prompt
+    v-if="deletingSet"
+    :prompt="deleteSetPrompt"
+    :yes="() => dropSet(deletingSet!)"
+    :no="() => (deletingSet = null)"
+  />
+
+  <Prompt
+    v-if="deletingCard"
+    :prompt="t(`${K}confirmDeleteCard`, { name: deletingCard.def.name.title })"
+    :yes="() => remove(deletingCard!)"
+    :no="() => (deletingCard = null)"
+  />
   </div>
 </template>
 
@@ -1617,6 +1826,149 @@ async function onImport(event: Event) {
   flex: 1 1 auto;
   min-width: 0;
   padding: 1rem;
+}
+
+/* The import review. Sits between the page head and the sets it is about to
+   change, and reads top-down: what lands, what it costs, what it looks like. */
+.import-review {
+  background: var(--background-dark);
+  border: 1px solid var(--spooky-green);
+  border-radius: 8px;
+  margin-bottom: 0.9rem;
+  outline: none;
+  padding: 0.9rem 1rem;
+
+  > header {
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  h2 {
+    font-family: teutonic, sans-serif;
+    font-size: 1.25em;
+    margin: 0;
+  }
+
+  .from {
+    font-size: 0.8rem;
+    opacity: 0.65;
+  }
+
+  .note {
+    font-size: 0.8rem;
+    margin: 0.5rem 0 0;
+    max-width: 70ch;
+    opacity: 0.75;
+  }
+
+  .warn {
+    align-items: center;
+    color: var(--delete);
+    display: flex;
+    font-size: 0.8rem;
+    gap: 0.4rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .link {
+    background: none;
+    border: none;
+    color: var(--spooky-green);
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 0.35rem 0;
+  }
+}
+
+/* The count leads, with the replace split trailing it in muted text. */
+.count {
+  font-size: 0.9rem;
+  margin: 0 0 0.6rem;
+
+  .split {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    opacity: 0.75;
+    padding-left: 0.4rem;
+
+    .added {
+      color: var(--spooky-green);
+      opacity: 1;
+    }
+
+    .dropped {
+      color: var(--delete);
+      opacity: 1;
+    }
+  }
+}
+
+.types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--box-border);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    padding: 0.1rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  .n {
+    color: var(--spooky-green);
+    font-weight: bold;
+    padding-right: 0.3rem;
+  }
+}
+
+/* One clipped row until asked otherwise, and even then capped with its own
+   scroller: a pool export runs to hundreds of cards and would take the page. */
+.review-preview {
+  margin-top: 0.75rem;
+
+  &.expanded {
+    max-height: 45vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+.review-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+
+  button {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.9rem;
+  }
+
+  .confirm {
+    background: var(--spooky-green);
+    border: 1px solid var(--spooky-green);
+    color: var(--background-dark);
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
+  }
+
+  .cancel {
+    background: none;
+    border: 1px solid var(--box-border);
+    color: var(--title);
+  }
 }
 
 .experimental {

@@ -11,6 +11,7 @@
 // until someone builds that by hand.
 import {
   arkhamBuildCustomCardCode,
+  bareCardCode,
   isArkhamBuildCardId,
   type CustomCard,
 } from '@/arkham/customCards'
@@ -120,6 +121,92 @@ export function parseArkhamBuildCards(raw: string): {
   }
 }
 
+// --------------------------------------------------------- signatures ---
+
+/* Looks like a card id rather than a restriction keyword. arkham.build ids are
+ * UUIDs or bare hex; ArkhamDB codes are five or six digits. */
+const looksLikeCardId = (piece: string) =>
+  /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(piece) ||
+  /^[0-9a-f]{8}$/i.test(piece) ||
+  /^[0-9a-f]{32}$/i.test(piece) ||
+  /^\d{5,6}$/.test(piece)
+
+/* A signature is recorded on the card, naming its investigator. arkham.build
+ * writes that as a string -- `"restrictions": "investigator:<card id>"` -- and
+ * ArkhamDB as an object, so all the shapes are read here. A card can name more
+ * than one owner: the parallel versions of an investigator share signatures.
+ *
+ * Restrictions that are not about an investigator (`trait:`, `faction:`) are
+ * dropped rather than guessed at. */
+export function restrictedInvestigatorIds(restrictions: any): string[] {
+  if (!restrictions) return []
+
+  if (typeof restrictions === 'string') {
+    return restrictions
+      .split(/[,;]/)
+      .map((piece) => piece.trim())
+      .filter(Boolean)
+      .flatMap((piece) => {
+        const at = piece.indexOf(':')
+        if (at === -1) return looksLikeCardId(piece) ? [piece] : []
+        const key = piece.slice(0, at).trim().toLowerCase()
+        const value = piece.slice(at + 1).trim()
+        return key === 'investigator' && value ? [value] : []
+      })
+  }
+
+  const investigator = restrictions.investigator
+  if (!investigator) return []
+  if (typeof investigator === 'string') return [investigator]
+  if (Array.isArray(investigator)) return investigator.filter((x: any) => typeof x === 'string')
+  // ArkhamDB's shape is a code -> code map.
+  if (typeof investigator === 'object') return Object.keys(investigator)
+  return []
+}
+
+/* arkham.build records the link one way only: on the signature, pointing at its
+ * investigator. This app needs it the other way -- the investigator's
+ * `_signatures` is what brings those cards along when a deck picks them, and
+ * what binds `$investigator` for the signature's own abilities -- so the
+ * pointers are followed back and written onto the investigators here.
+ *
+ * Mutates in place, like `attachInvestigatorPortraits`: these are the same card
+ * objects the import is about to commit. Read the result back with
+ * `summarizeSignatures`, which every import path uses whether or not the file
+ * came from arkham.build. */
+export function linkSignatures(cards: CustomCard[]): void {
+  const investigators = new Map<string, CustomCard>()
+  for (const card of cards) {
+    if ((card.def as any).cardType === 'InvestigatorType') {
+      investigators.set(bareCardCode(card.def.cardCode), card)
+    }
+  }
+
+  const owned = new Map<string, string[]>()
+
+  for (const card of cards) {
+    const def = card.def as any
+    if (def.cardType === 'InvestigatorType') continue
+
+    const owners: string[] = (def.deckRestrictions ?? [])
+      .filter((r: any) => r?.tag === 'Signature' && typeof r.contents === 'string')
+      .map((r: any) => bareCardCode(r.contents))
+
+    for (const code of owners.filter((c) => investigators.has(c))) {
+      owned.set(code, [...(owned.get(code) ?? []), bareCardCode(def.cardCode)])
+    }
+  }
+
+  for (const [code, signatures] of owned) {
+    const def = investigators.get(code)!.def as any
+    def.meta = def.meta ?? {}
+    /* Replaced, not merged: the pack is the whole set, so it is the whole list
+     * too, and re-importing a corrected pack has to be able to take one away. */
+    def.meta._signatures = signatures
+  }
+}
+
+
 export function arkhamBuildCardToCustomCard(raw: any, packName: string | null): CustomCard {
   const cardCode = arkhamBuildCustomCardCode(raw.code)
   const cardType = mapCardType(raw)
@@ -179,6 +266,14 @@ export function arkhamBuildCardToCustomCard(raw: any, packName: string | null): 
 
   if (raw.position != null) def.meta.number = String(raw.position)
   if (packName) def.meta.set = packName
+
+  /* A signature's own half of the link. `linkSignatures` writes the other half
+   * onto the investigator; this half is what takes the card back out of a deck
+   * when the investigator is swapped away from. */
+  const owners = restrictedInvestigatorIds(raw.restrictions).map(translateCode)
+  if (owners.length) {
+    def.deckRestrictions = owners.map((contents) => ({ tag: 'Signature', contents }))
+  }
 
   if (isInvestigator) {
     def.meta.health = typeof raw.health === 'number' ? raw.health : 0

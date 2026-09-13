@@ -18,12 +18,16 @@ const props = defineProps<{ card: CardDef }>()
 // cards rendered later (a new filter) start on the side everything else is on.
 const flipAll = inject<Ref<boolean> | null>('cardFlipAll', null)
 
+// The card browser shows every printing as it was printed, rather than the art
+// the player's preferences would swap in during a game.
+const ignoreVariants = inject<boolean>('cardIgnoreArtVariants', false)
+
 const wantsFlip = ref(flipAll?.value ?? false)
 
 if (flipAll) watch(flipAll, (value) => { wantsFlip.value = value })
 
-const image = computed(() => cardFrontImage(props.card))
-const backImage = computed(() => cardBackImage(props.card))
+const image = computed(() => cardFrontImage(props.card, ignoreVariants))
+const backImage = computed(() => cardBackImage(props.card, ignoreVariants))
 
 // Every card can be turned over, generic backs included; only a back whose art
 // turns out not to exist (an unimplemented placeholder) loses the flip.

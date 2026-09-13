@@ -1,6 +1,6 @@
 import { useSiteSettingsStore } from '@/stores/site_settings'
 import { useSettings } from '@/stores/settings'
-import { variantArt } from '@/arkham/artVariants'
+import { reprintedArt, variantArt } from '@/arkham/artVariants'
 import { replaceHomebrewIcons } from '@/arkham/homebrewAssets'
 import { iconClasses, runePlaceholder } from '@/arkham/icons'
 import { ref, type Ref } from 'vue';
@@ -107,9 +107,10 @@ export function isLocalized(src: string) {
   return false
 }
 
-export function imgsrc(src: string): string {
-  const printedArt = src.replace(/^\//, '').match(/^cards\/(.+)\.avif$/)?.[1]
-
+/* `ignoreVariants` asks for the art the card itself names, rather than whatever
+ * the player's art preferences would swap in: the card browser shows each
+ * printing as it was printed, and the preference is about play. */
+export function imgsrc(src: string, ignoreVariants = false): string {
   // A debug-authored card carries its art with it (a URL, or a data URI for a
   // dropped image) rather than living under the asset host -- unless it names a
   // printed card's art instead, which resolves down the ordinary path below.
@@ -123,7 +124,7 @@ export function imgsrc(src: string): string {
   const store = useSiteSettingsStore()
   const language = localStorage.getItem('language') || 'en'
   const path = src.replace(/^\//, '').replace(/^cards\/(.+)\.avif$/, (_, art: string) =>
-    `cards/${variantArt(art, useSettings().useVariants)}.avif`
+    `cards/${reprintedArt(ignoreVariants ? art : variantArt(art, useSettings().useVariants))}.avif`
   )
   const fullPath = `${store.assetHost}/img/arkham/${path}`
 
@@ -158,8 +159,8 @@ export function cardImgPath(art: string): string {
   return `cards/${art}.avif`
 }
 
-export function cardImg(art: string): string {
-  return imgsrc(cardImgPath(art))
+export function cardImg(art: string, ignoreVariants = false): string {
+  return imgsrc(cardImgPath(art), ignoreVariants)
 }
 
 export function pluralize(w: string, n: number) {

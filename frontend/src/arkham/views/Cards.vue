@@ -135,6 +135,11 @@ const activeChapter = ref<number>(
 const flipAll = ref(false)
 provide('cardFlipAll', flipAll)
 
+/* Each printing as it was printed: the Core Set's own art under Core, the
+ * revised art under Revised Core. The art preference in settings is about what
+ * you play with, and says nothing about what a set contains. */
+provide('cardIgnoreArtVariants', true)
+
 const onKeydown = (event: KeyboardEvent) => {
   if (event.key !== 'f' && event.key !== 'F') return
   if (event.metaKey || event.ctrlKey || event.altKey) return
@@ -156,7 +161,7 @@ const cardPoolMode = computed<CardPoolMode>(() => {
 const store = useDbCardStore()
 
 const CACHE_KEY_PREFIX = 'arkham_cards_cache_'
-const CACHE_VERSION = 'v4'
+const CACHE_VERSION = 'v5'
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
 let cachedAllCards: Arkham.CardDef[] | null = null
@@ -172,6 +177,46 @@ const sortCards = (cards: Arkham.CardDef[]) => [...cards].sort((a, b) => {
 const setlessEncounterCards = new Set(['13119'])
 
 const isCampaignCard = (card: Arkham.CardDef) => card.encounterSet != null || setlessEncounterCards.has(card.art)
+
+/* The Revised Core Set reprints the original's encounter cards under numbers
+ * 500 higher. The engine defines each of them once, under the original number,
+ * so the browser makes the revised printing out of them -- otherwise the
+ * revised set's campaign half reads as 79 cards that were never implemented.
+ *
+ * Only the number moves. Which picture each one shows is settled where every
+ * other art is (`reprintedArt`): the few that were redrawn have art of their
+ * own, and the rest are the original's. */
+const REVISED_CORE_OFFSET = 500
+
+const revisedCoreArt = (art: string) =>
+  art.replace(/^\d+/, (digits) => String(parseInt(digits) + REVISED_CORE_OFFSET).padStart(5, '0'))
+
+const revisedCoreCode = (code: string) => `c${revisedCoreArt(code.replace(/^c/, ''))}`
+
+const coreSet = (sets as { code: string; min: number; max: number }[]).find((s) => s.code === 'core')
+
+const revisedCorePrintings = (cards: Arkham.CardDef[]): Arkham.CardDef[] => {
+  if (!coreSet) return []
+
+  return cards
+    .filter((card) => {
+      if (!isCampaignCard(card)) return false
+      const number = parseInt(card.art)
+      return number >= coreSet.min && number <= coreSet.max
+    })
+    .map((card) => ({
+      ...card,
+      cardCode: revisedCoreCode(card.cardCode),
+      art: revisedCoreArt(card.art),
+      otherSide: card.otherSide ? revisedCoreCode(card.otherSide) : card.otherSide,
+      meta: { ...card.meta, revisedFrom: card.art },
+    }))
+}
+
+/* ArkhamDB never numbered these reprints, so one looks itself up under the
+ * number it was made from -- otherwise it would carry no encounter set to
+ * filter by and no translated name. */
+const dbArt = (card: Arkham.CardDef): string => card.meta?.revisedFrom ?? card.art
 
 const cardInPool = (card: Arkham.CardDef, cardPool: CardPoolMode) => {
   if (cardPool === 'both') return true
@@ -212,7 +257,11 @@ const fetchData = async () => {
 
   const officialCards = await fetchCards('both')
   const homebrewCards = dev ? await fetchHomebrewCards() : []
-  const sorted = sortCards([...officialCards, ...homebrewCards])
+  const sorted = sortCards([
+    ...officialCards,
+    ...revisedCorePrintings(officialCards),
+    ...homebrewCards,
+  ])
   setCachedCards(sorted)
   allCards.value = sorted
 }
@@ -232,10 +281,8 @@ interface CardSet {
   name: string
   min: number
   max: number
-  playerCards: number
   code: string
   cycle: number
-  encounterDuplicates?: number
   // A homebrew campaign's cards, or a set from your own card library, rather
   // than a printed set.
   homebrew?: boolean
@@ -244,14 +291,9 @@ interface CardSet {
   // engine hasn't implemented yet. For sets still being built out.
   previewUnimplemented?: boolean
   // Unused code numbers within [min, max] that don't correspond to a real card,
-  // so they aren't counted toward the set total.
+  // so no placeholder is drawn for them.
   missing?: string[]
 }
-
-// Total card count for an encounter set: every code in [min, max], plus any
-// duplicate-back cards, minus the unused (missing) numbers in that range.
-const encounterSetTotal = (set: CardSet) =>
-  set.max - set.min + 1 + (set.encounterDuplicates ?? 0) - (set.missing?.length ?? 0)
 
 interface CardCycle {
   name: string
@@ -279,7 +321,6 @@ const homebrewSets: CardSet[] = dev
         name: campaign.name,
         min: 0,
         max: 0,
-        playerCards: 0,
         code: `${HOMEBREW_SET_PREFIX}${id}`,
         cycle: HOMEBREW_CYCLE,
         homebrew: true,
@@ -323,7 +364,6 @@ const customSets = computed<CardSet[]>(() => {
       name: set.name,
       min: 0,
       max: 0,
-      playerCards: 0,
       code: customSetCode(set.id),
       cycle: CUSTOM_CYCLE,
       custom: true,
@@ -400,7 +440,7 @@ watch(() => allCards.value, () => {
   if (!allCards.value) return
 
   for (const card of allCards.value) {
-    const match: ArkhamDBCard | null = store.getDbCard(card.art)
+    const match: ArkhamDBCard | null = store.getDbCard(dbArt(card))
     if (!match) continue
 
     // Name
@@ -438,7 +478,7 @@ const cardSearchIndex = computed(() => {
   for (const card of browsableCards.value) {
     const customCode = customSetCodeByCard.value.get(card.cardCode)
     const set = customCode ? undefined : findCardSetByArt(card.art)
-    const match: ArkhamDBCard | null = customCode ? null : store.getDbCard(card.art)
+    const match: ArkhamDBCard | null = customCode ? null : store.getDbCard(dbArt(card))
 
     index.set(card.cardCode, {
       set,
@@ -455,62 +495,6 @@ const cardSearchIndex = computed(() => {
 
   return index
 })
-
-const cardCounts = computed(() => {
-  const bySet = new Map<string, number>()
-  const byCycle = new Map<number, number>()
-  const index = cardSearchIndex.value
-
-  for (const card of browsableCards.value) {
-    if (!cardInPool(card, cardPoolMode.value)) continue
-    const meta = index.get(card.cardCode)
-    if (meta?.setCode) bySet.set(meta.setCode, (bySet.get(meta.setCode) ?? 0) + 1)
-    if (meta?.cycle) byCycle.set(meta.cycle, (byCycle.get(meta.cycle) ?? 0) + 1)
-  }
-
-  return { bySet, byCycle }
-})
-
-const cycleCount = (cycle: CardCycle) => cardCounts.value.byCycle.get(cycle.cycle) ?? 0
-
-// Counted the same way the sets under it are, so the pool toggle moves both.
-const extraGroupCount = (cycle: CardCycle) => cardCounts.value.byCycle.get(cycle.cycle) ?? 0
-
-const expectedCardCount = (set: CardSet) => {
-  if (set.homebrew || set.custom) return setCount(set)
-
-  const playerCards = set.playerCards
-  const encounterCards = Math.max(encounterSetTotal(set) - playerCards, 0)
-  if (cardPoolMode.value === 'player') return playerCards
-  if (cardPoolMode.value === 'campaign') return encounterCards
-  return playerCards + encounterCards
-}
-
-const cycleCountText = (cycle: CardCycle) => {
-  if (!allCards.value) return 0
-  const implementedCount = cycleCount(cycle)
-  const cycleSets = setsByCycle.get(cycle.cycle) ?? []
-  const total = cycleSets.reduce((acc, set) => acc + expectedCardCount(set), 0)
-
-  if (implementedCount == total) {
-    return ""
-  }
-
-  return ` (${implementedCount}/${total})`
-}
-
-const setCount = (set: CardSet) => cardCounts.value.bySet.get(set.code) ?? 0
-
-const setCountText = (set: CardSet) => {
-  const implementedCount = setCount(set)
-  const total = expectedCardCount(set)
-
-  if (implementedCount == total) {
-    return ""
-  }
-
-  return ` (${implementedCount}/${total})`
-}
 
 const filteredCardsIgnoringPool = computed(() => {
   if (!allCards.value) return []
@@ -889,7 +873,6 @@ const stepCard = (delta: number) => {
             <div :class="['nav-row', 'nav-row--cycle', { active: filter.set === group.cycle.code }]">
               <font-awesome-icon class="set-icon-glyph" :icon="group.cycle.code === 'custom' ? 'flask' : 'wrench'" />
               <a href="#" @click.prevent="setExtraGroup(group.cycle)">{{ group.cycle.name }}</a>
-              <span class="count">{{ extraGroupCount(group.cycle) }}</span>
             </div>
             <ol class="set-list">
               <li v-for="set in group.sets" :key="set.code">
@@ -902,7 +885,6 @@ const stepCard = (delta: number) => {
                     :aria-label="set.name"
                   ></span>
                   <a href="#" @click.prevent="setSet(set)">{{set.name}}</a>
-                  <span class="count">{{ setCount(set) }}</span>
                 </div>
               </li>
             </ol>
@@ -920,7 +902,6 @@ const stepCard = (delta: number) => {
                 :aria-label="cycle.name"
               ></span>
               <a href="#" @click.prevent="setCycle(cycle)">{{cycle.name}}</a>
-              <span class="count">{{cycleCountText(cycle)}}</span>
             </div>
             <ol class="set-list">
               <li v-for="set in cycleSets(cycle)" :key="set.code">
@@ -934,7 +915,6 @@ const stepCard = (delta: number) => {
                     :aria-label="set.name"
                   ></span>
                   <a href="#" @click.prevent="setSet(set)">{{set.name}}</a>
-                  <span class="count">{{setCountText(set)}}</span>
                 </div>
               </li>
             </ol>
@@ -1283,17 +1263,9 @@ const stepCard = (delta: number) => {
 
     a,
     .set-icon,
-    .set-icon-font,
-    .count {
+    .set-icon-font {
       color: var(--spooky-green);
     }
-  }
-
-  .count {
-    flex-shrink: 0;
-    font-size: 0.72rem;
-    color: var(--button);
-    white-space: nowrap;
   }
 }
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { isCustomCardCode } from '@/arkham/customCards'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import { altFrontImage, cardBackImage, cardFrontImage, hasCardBackArt } from '@/arkham/cardArt'
@@ -9,9 +9,13 @@ import type { CardDef } from '@/arkham/types/CardDef'
 const props = defineProps<{ card: CardDef, unimplemented?: boolean, hasPrev?: boolean, hasNext?: boolean }>()
 const emit = defineEmits<{ close: [], prev: [], next: [] }>()
 
-const backImage = computed(() => hasCardBackArt(props.card) ? cardBackImage(props.card) : null)
+const ignoreVariants = inject<boolean>('cardIgnoreArtVariants', false)
 
-const frontImage = computed(() => cardFrontImage(props.card))
+const backImage = computed(() =>
+  hasCardBackArt(props.card, ignoreVariants) ? cardBackImage(props.card, ignoreVariants) : null,
+)
+
+const frontImage = computed(() => cardFrontImage(props.card, ignoreVariants))
 const frontSrc = ref(frontImage.value)
 const backFailed = ref(false)
 

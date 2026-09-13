@@ -28,7 +28,7 @@ instance HasAbilities TheBeastInACowlOfCrimsonLeavingATrailOfDestruction where
     extend1 a
       $ restricted a 1 (thisExists a $ ReadyEnemy <> EnemyWithAnyScarletKey)
       $ forced
-      $ SkillTestResult #after You (SkillTestAt $ locationWithEnemy a) #failure
+      $ SkillTestResult #after (You <> at_ (locationWithEnemy a)) AnySkillTest #failure
 
 instance RunMessage TheBeastInACowlOfCrimsonLeavingATrailOfDestruction where
   runMessage msg e@(TheBeastInACowlOfCrimsonLeavingATrailOfDestruction attrs) = runQueueT $ case msg of

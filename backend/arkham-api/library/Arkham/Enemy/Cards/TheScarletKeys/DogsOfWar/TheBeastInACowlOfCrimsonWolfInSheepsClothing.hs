@@ -25,9 +25,9 @@ theBeastInACowlOfCrimsonWolfInSheepsClothing =
 instance HasAbilities TheBeastInACowlOfCrimsonWolfInSheepsClothing where
   getAbilities (TheBeastInACowlOfCrimsonWolfInSheepsClothing a) =
     extend1 a
-      $ restricted a 1 (thisExists a $ EnemyWithScarletKey ScarletKeyAny)
+      $ restricted a 1 (thisExists a $ ReadyEnemy <> EnemyWithScarletKey ScarletKeyAny)
       $ forced
-      $ SkillTestResult #after You (SkillTestAt $ locationWithEnemy a) #failure
+      $ SkillTestResult #after (You <> at_ (locationWithEnemy a)) AnySkillTest #failure
 
 instance RunMessage TheBeastInACowlOfCrimsonWolfInSheepsClothing where
   runMessage msg e@(TheBeastInACowlOfCrimsonWolfInSheepsClothing attrs) = runQueueT $ case msg of

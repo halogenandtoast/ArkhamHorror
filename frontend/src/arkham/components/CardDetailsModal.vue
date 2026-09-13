@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { isCustomCardCode } from '@/arkham/customCards'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import { altFrontImage, cardBackImage, cardFrontImage, hasCardBackArt } from '@/arkham/cardArt'
 import { cardCost, cardIcons, cardSetText, cardTraits, cardType, levelText } from '@/arkham/cardDetails'
@@ -29,6 +30,8 @@ const icons = computed(() => cardIcons(props.card))
 const traits = computed(() => cardTraits(props.card))
 const setText = computed(() => cardSetText(props.card))
 
+// Neither site knows a card you built yourself.
+const isCustom = computed(() => isCustomCardCode(props.card.art))
 const arkhamDbUrl = computed(() => `${localizeArkhamDBBaseUrl()}/card/${props.card.art}`)
 const arkhamBuildUrl = computed(() => `https://arkham.build/card/${props.card.art}`)
 
@@ -126,7 +129,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
             <dd>{{ card.art }}</dd>
           </dl>
 
-          <div class="links">
+          <div v-if="!isCustom" class="links">
             <a :href="arkhamDbUrl" target="_blank" rel="noopener">{{ $t('cardDetails.openInArkhamDB') }}</a>
             <a :href="arkhamBuildUrl" target="_blank" rel="noopener">{{ $t('cardDetails.openInArkhamBuild') }}</a>
           </div>

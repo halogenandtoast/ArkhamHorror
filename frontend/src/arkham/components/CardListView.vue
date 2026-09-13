@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useDbCardStore } from '@/stores/dbCards'
 import type { ArkhamDBCard } from '@/stores/dbCards'
 import * as Arkham from '@/arkham/types/CardDef'
+import { isCustomCardCode } from '@/arkham/customCards'
 import { localizeArkhamDBBaseUrl } from '@/arkham/helpers'
 import { cardCost, cardGroupKey as groupKey, cardIcons, cardName, cardSetText, cardTraits, cardType, groupCards, levelText } from '@/arkham/cardDetails'
 
@@ -125,7 +126,8 @@ const attachmentHeading = (card: Arkham.CardDef) => {
                   >+</button>
                 </span>
                 <span v-if="showCounts" class="deck-card-count">x {{ shownCount(card, count) }}</span>
-                <a target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a>
+                <span v-if="isCustomCardCode(card.art)" class="card-name">{{ cardName(card) }}{{ levelText(card) }}</span>
+                <a v-else target="_blank" :href="`${localizeArkhamDBBaseUrl()}/card/${card.art}`">{{ cardName(card) }}{{ levelText(card) }}</a>
                 <span v-if="isUnderworldMarketCard(card)" class="market-badge" v-tooltip="marketTooltip(card)" :aria-label="marketTooltip(card)">
                   <font-awesome-icon icon="store" />
                   <span>x {{ marketCardCount(card) }}</span>

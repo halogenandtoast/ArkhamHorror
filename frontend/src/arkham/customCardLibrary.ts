@@ -164,6 +164,12 @@ export const librarySet = (id: string | null): LibrarySet | undefined =>
 export const setCards = (setId: string): LibraryCard[] =>
   libraryCards().filter((c) => c.setId === setId)
 
+/* Printed order -- the card number, which is the order the set's author put
+ * them in. `libraryCards` and `setCards` hand cards back most-recently-edited
+ * first, which is the wrong order anywhere a whole set is on show. */
+export const byPrintedNumber = (a: LibraryCard, b: LibraryCard) =>
+  (a.def.meta?.number ?? '').localeCompare(b.def.meta?.number ?? '', undefined, { numeric: true })
+
 export async function createSet(name: string): Promise<LibrarySet> {
   const set = await Api.createCustomCardSet(name)
   upsertSet(set)

@@ -30,6 +30,7 @@ import {
   updateAvailable,
   importSet,
   libraryCard,
+  byPrintedNumber,
   libraryCards,
   libraryLoaded,
   librarySet,
@@ -133,13 +134,7 @@ const cards = computed(() => libraryCards())
 const sets = computed(() => librarySets())
 const activeSet = computed(() => librarySet(activeSetId.value))
 
-/* Printed order -- the card number, which is the order the set's author put
- * them in. `setCards` hands them back most-recently-edited first, which is the
- * wrong order anywhere a whole set is on show. */
-const inPrintedOrder = (setId: string) =>
-  setCards(setId).sort((a, b) =>
-    (a.def.meta?.number ?? '').localeCompare(b.def.meta?.number ?? '', undefined, { numeric: true }),
-  )
+const inPrintedOrder = (setId: string) => setCards(setId).sort(byPrintedNumber)
 
 /* The set being worked on, and the cards in it. A card is built into a set, so
  * the builder shows one at a time rather than the whole library at once. */

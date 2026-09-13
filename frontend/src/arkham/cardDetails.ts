@@ -1,6 +1,7 @@
 // Display formatting for the facts a CardDef carries. Shared by the card list
 // and the card details modal so both describe a card the same way.
 import type { CardDef } from '@/arkham/types/CardDef'
+import { isCustomCardCode } from '@/arkham/customCards'
 import sets from '@/arkham/data/sets.json'
 
 // Two defs with the same art are one physical card and render as a single
@@ -85,6 +86,13 @@ export const cardSet = (card: CardDef) => {
 // "The Dunwich Legacy 12" — the set name plus the card's collection number.
 // `packName` overrides the set name for localized card data.
 export const cardSetText = (card: CardDef, packName?: string) => {
+  // A card you built has no collection number; the set it names for itself is
+  // the library set it was built in.
+  if (isCustomCardCode(card.art)) {
+    const name = card.meta?.set
+    return typeof name === 'string' && name ? name : 'Custom'
+  }
+
   const setNumber = parseInt(card.art.slice(2))
   const setName = packName || cardSet(card)?.name
 

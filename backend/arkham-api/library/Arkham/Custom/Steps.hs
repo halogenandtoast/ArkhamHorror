@@ -13,6 +13,7 @@ import Arkham.Classes.HasGame (HasGame)
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.Deck qualified as Deck
+import Arkham.Discover (Discover (..), IsInvestigate (..), discoverAtYourLocation, discoverPure)
 
 -- Brings the Query instances into scope the way card modules get them, without
 -- this module taking its own hs-boot edge on Arkham.Game (which pulls other
@@ -23,6 +24,7 @@ import Arkham.Calculation (GameCalculation (Fixed))
 import Arkham.Card.PlayerCard (lookupPlayerCard)
 import Arkham.Custom.Env
 import Arkham.Custom.Expr (evalExpr, exprInt, runQuery, runQueryStep, valueList)
+import Arkham.Custom.Overlay (setAsideMetaKey)
 import Arkham.Customization (CustomizationChoice (..))
 import Arkham.EffectMetadata (EffectMetadata (EffectModifiers))
 import Arkham.Evade (mkChooseEvade, mkChooseEvadeMatch)
@@ -37,6 +39,7 @@ import Arkham.Helpers.Customization (
   customizationKey,
   hasCustomization_,
  )
+import Arkham.Helpers.Investigator (getCanDiscoverClues)
 import Arkham.Helpers.Location (Locateable, getLocationOf)
 import Arkham.Helpers.Message (drawCards)
 import Arkham.Helpers.Modifiers (
@@ -47,11 +50,13 @@ import Arkham.Helpers.Modifiers (
 import Arkham.Helpers.Playable (getPlayableCards)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.SkillTest qualified as SkillTest
+import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Helpers.Window (allWindows)
 import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Id
 import Arkham.Investigate (mkInvestigate, mkInvestigateLocation)
 import Arkham.Investigate qualified as Investigate
+import Arkham.Investigate.Types (Investigate (..))
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message qualified as Msg
@@ -67,6 +72,7 @@ import Arkham.Message.Lifted (
  )
 import Arkham.Message.Lifted.Base (capture)
 import Arkham.Message.Lifted.Card (playCardPayingCost)
+import Arkham.Message.Lifted.Placement (Placement, place)
 import Arkham.Message.Lifted.Prompt qualified as Prompt
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Modifier (Modifier (Modifier))
@@ -199,7 +205,16 @@ runInvestigate env spec = beginTest env spec \sid iid source -> do
   investigation <- case KeyMap.lookup "location" o >>= decodeWith env of
     Just lid -> mkInvestigateLocation sid iid source (lid :: LocationId)
     Nothing -> mkInvestigate sid iid source
-  withTestSkill env o iid source Investigate.withSkillType investigation
+  {- "Take an immediate investigate action" is an investigate action that costs
+  nothing: everything that cares whether you investigated this turn counts it,
+  and no action is spent. Without @asAction@ it is a bare investigation, which
+  is what a card that investigates outside your turn wants. -}
+  let asAction = KeyMap.lookup "asAction" o == Just (Bool True)
+      investigation' =
+        if asAction
+          then investigation {investigateIsAction = True, investigatePayCost = False}
+          else investigation
+  withTestSkill env o iid source Investigate.withSkillType investigation'
 
 -- | Evade an enemy, by default any you could evade.
 runEvade :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m Env
@@ -398,6 +413,10 @@ runPlayCard env spec = case spec of
 
     let
       matcher = KeyMap.lookup "matcher" o >>= decodeWith @CardMatcher env
+      {- What a card /is/ answers most of these, but not all: "an asset with an
+      arrow ability printed on it" is a question about the card's abilities,
+      which only an ExtendedCardMatcher can ask. -}
+      extended = KeyMap.lookup "extendedMatcher" o >>= decodeWith @ExtendedCardMatcher env
       -- "Play the card you discarded" names one card outright, so there is
       -- nothing to search for and nothing to choose between.
       named = KeyMap.lookup "card" o >>= decodeWith @Card env
@@ -407,7 +426,12 @@ runPlayCard env spec = case spec of
       Nothing ->
         withModifiers iid (toModifiers source [ReduceCostOf AnyCard discount]) do
           playable <- getPlayableCards source iid (UnpaidCost NoAction) (defaultWindows iid)
-          pure $ maybe playable (\m -> filter (`cardMatch` m) playable) matcher
+          let byCard = maybe playable (\m -> filter (`cardMatch` m) playable) matcher
+          case extended of
+            Nothing -> pure byCard
+            Just m -> do
+              found <- select m
+              pure $ filter (`elem` found) byCard
 
     -- One option per card, shown as the card itself: two different events both
     -- reading "Play an event" is no choice at all.
@@ -428,6 +452,139 @@ runPlayCard env spec = case spec of
     unless (null labels && null declined) $ Prompt.chooseOne iid (labels <> declined)
   _ -> pure ()
 
+{- | Use an ability that is not this card's own.
+
+@useAbility@ names one of the card's own abilities by index; this names a
+/shape/ of ability and offers every ability of that shape, which is what a card
+that reaches onto another card says: "take a fight action printed on each
+Firearm asset you control", "activate an ability on the attached card".
+
+@modifiers@ are applied to the abilities themselves rather than to anything on
+the table, so "without paying its cost" is @ActionCostSetToModifier 0@ and not a
+modifier anyone else can see. Only abilities that could actually be used are
+offered, the way the action bar decides.
+-}
+runActivateAbility :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runActivateAbility env spec = do
+  iid <- stepInvestigator env
+  let o = specObject spec
+  case KeyMap.lookup "matcher" o >>= decodeWith env of
+    Nothing -> reportBadPayload env "activateAbility" (substitute env spec)
+    Just matcher -> do
+      let
+        mods = fromMaybe [] (KeyMap.lookup "modifiers" o >>= decodeWith env)
+        unprovoking =
+          if KeyMap.lookup "noAttacksOfOpportunity" o == Just (Bool True)
+            then doesNotProvokeAttacksOfOpportunity
+            else id
+        ws = defaultWindows iid
+      abilities <-
+        selectMap (unprovoking . (`applyAbilityModifiers` mods)) (matcher :: AbilityMatcher)
+      usable <- filterM (getCanPerformAbility iid ws) abilities
+      let
+        declined =
+          [ Label (textField env o "declineLabel" "Do not") [] | KeyMap.lookup "optional" o == Just (Bool True)
+          ]
+      unless (null usable && null declined)
+        $ Prompt.chooseOne iid ([AbilityLabel iid ab ws [] [] | ab <- usable] <> declined)
+
+{- | Put a card somewhere.
+
+'Placement' is what "attach to your location" and "put into play in your threat
+area" both are, but the message that carries one is a different constructor per
+card type -- so a @push@ of it would make the author pick the constructor that
+matches whatever the target turned out to be. The target says which; this reads
+it off.
+
+Defaults to this card, which is what a card attaching /itself/ means.
+-}
+runPlace :: forall m. (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runPlace env spec = do
+  let
+    o = specObject spec
+    target =
+      (KeyMap.lookup "target" o >>= decodeWith env)
+        <|> (KeyMap.lookup "target" env >>= parseMaybe parseJSON)
+  case (target, KeyMap.lookup "placement" o >>= decodeWith @Placement env) of
+    (Just t, Just placement) -> placeTarget t placement
+    _ -> badPayload
+ where
+  badPayload = reportBadPayload env "place" (substitute env spec)
+
+  placeTarget :: Target -> Placement -> m ()
+  placeTarget t placement = case t of
+    EventTarget eid -> place eid placement
+    AssetTarget aid -> place aid placement
+    TreacheryTarget tid -> place tid placement
+    EnemyTarget eid -> place eid placement
+    InvestigatorTarget iid -> place iid placement
+    {- A card found by a @card@ query is named by its card id, which is not a
+    card type. Whichever entity is holding it is the thing to move: "a card
+    attached to your location" is an event or an asset or a treachery, and the
+    card that says so does not care which. -}
+    CardIdTarget cid -> do
+      mEvent <- selectOne (EventWithCardId cid)
+      mAsset <- selectOne (AssetWithCardId cid)
+      mTreachery <- selectOne (TreacheryWithCardId cid)
+      case asum [toTarget <$> mEvent, toTarget <$> mAsset, toTarget <$> mTreachery] of
+        Just t' -> placeTarget t' placement
+        Nothing -> badPayload
+    _ -> badPayload
+
+{- | Discover clues.
+
+Not a @push@: a discovery carries an id minted for it, which is what the
+@WouldDiscoverClues@ window and everything that reacts to it are keyed on, and a
+step written in advance has no way to invent one.
+
+Defaults to where you are. @via@ says whether this counts as investigating,
+which decides whether "discover 1 additional clue when you investigate" applies.
+-}
+runDiscover :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runDiscover env spec = do
+  let o = specObject spec
+  iid <- maybe (stepInvestigator env) pure (KeyMap.lookup "iid" o >>= decodeWith env)
+  n <- maybe (pure 1) (exprInt env) (KeyMap.lookup "amount" o)
+  let
+    source = stepSource env
+    isInvestigate =
+      if KeyMap.lookup "via" o == Just (String "investigate") then IsInvestigate else NotInvestigate
+    action = guard (isInvestigate == IsInvestigate) $> #investigate
+  when (n > 0) $ case KeyMap.lookup "location" o >>= decodeWith env of
+    Nothing -> do
+      discovery <- discoverAtYourLocation source n
+      push $ Msg.DiscoverClues iid discovery {discoverAction = action}
+    Just lid -> whenM (getCanDiscoverClues isInvestigate iid lid) do
+      did <- getRandom
+      push
+        $ Msg.DiscoverClues iid
+        $ (discoverPure did (lid :: LocationId) source n) {discoverAction = action}
+
+{- | Put copies of named cards into the set-aside zone, owned by an investigator.
+
+"You begin the game with each copy of X set aside, out of play" is not something
+a card can do to itself: the copies are not anywhere yet. They are made here,
+the way the engine makes an investigator's bonded cards, and land in the zone a
+@SetAsideCardMatch@ query can find them in.
+
+Which cards defaults to the def's own @_setAside@ list, which is also what gets
+those defs registered on the game -- nothing in a decklist names them, so a card
+set aside here and declared nowhere would be a code the game cannot look up.
+-}
+runSetAside :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runSetAside env spec = do
+  let
+    o = specObject spec
+    declared =
+      KeyMap.lookup "meta" env >>= KeyMap.lookup (Key.fromText setAsideMetaKey) . specObject
+    named = KeyMap.lookup "cards" o <|> declared
+  iid <- maybe (stepInvestigator env) pure (KeyMap.lookup "iid" o >>= decodeWith env)
+  let codes = mapMaybe (decodeWith @CardCode env) (maybe [] valueList named)
+  cards <- forMaybeM codes \cardCode -> for (lookupCardDef cardCode) \def -> do
+    card <- genCard def
+    setOwner iid card
+  unless (null cards) $ push $ SetAsideCards cards
+
 {- | Steps run in order, each seeing what the ones before it bound.
 
 A @query@ and a @let@ add to the environment; everything else acts on it. A branch or
@@ -441,7 +598,8 @@ runSteps env0 = void . foldM step env0
     Object o
       | Just q <- KeyMap.lookup "query" o -> do
           result <- runQueryStep env q (KeyMap.lookup "mode" o)
-          pure $ case (KeyMap.lookup "bind" o, result) of
+          result' <- pickRandomly (KeyMap.lookup "mode" o) result
+          pure $ case (KeyMap.lookup "bind" o, result') of
             (Just (String name), Just value) -> KeyMap.insert (Key.fromText name) value env
             _ -> env
       | Just (String name) <- KeyMap.lookup "let" o -> do
@@ -525,11 +683,36 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "customize" o -> do
           runCustomize env spec
           pure env
+      | Just spec <- KeyMap.lookup "activateAbility" o -> do
+          runActivateAbility env spec
+          pure env
+      | Just spec <- KeyMap.lookup "place" o -> do
+          runPlace env spec
+          pure env
+      | Just spec <- KeyMap.lookup "discover" o -> do
+          runDiscover env spec
+          pure env
+      | Just spec <- KeyMap.lookup "setAside" o -> do
+          runSetAside env spec
+          pure env
     _ -> pure env
 
   branch o taken = fromMaybe [] do
     steps <- KeyMap.lookup (if taken then "then" else "else") o
     parseMaybe parseJSON steps
+
+{- | @"mode": "random"@, which the query itself cannot answer.
+
+'Arkham.Custom.Expr' only reads the game, so every other mode is worked out
+there; picking at random needs a source of randomness, which only a step has.
+The query has already run by the time this sees it, so what it picks from is the
+whole list -- @mode@ having been unrecognised there, it came back whole.
+-}
+pickRandomly :: MonadRandom m => Maybe Value -> Maybe Value -> m (Maybe Value)
+pickRandomly (Just (String "random")) (Just v) = case valueList v of
+  [] -> pure (Just Null)
+  x : xs -> Just <$> sample (x :| xs)
+pickRandomly _ result = pure result
 
 {- | A condition is either a criterion or a matcher.
 
@@ -545,7 +728,27 @@ runReadCondition env condition = case condition of
       iid <- stepInvestigator env
       let source = fromMaybe GameSource (KeyMap.lookup "source" env >>= parseMaybe parseJSON)
       passesCriteria iid Nothing source source [] criterion
+  {- What a source is. A window carries the source of what it is reacting to --
+  "clues discovered via an event or an ability on an asset you control" is a
+  question about that source -- and no matcher kind selects sources, so there is
+  nothing for a query to ask. -}
+  Object o
+    | Just src <- KeyMap.lookup "source" o
+    , Just matcher <- KeyMap.lookup "matches" o ->
+        case (decodeWith env src, decodeWith env matcher) of
+          (Just source, Just m) -> sourceMatches (source :: Source) m
+          _ -> pure False
+  {- Two values being the same thing. A property read off a binding is not
+  something the game can be asked about, so comparing one is the only way to
+  branch on it. -}
+  Object o
+    | Just pair <- KeyMap.lookup "eq" o -> same pair
+    | Just pair <- KeyMap.lookup "ne" o -> not <$> same pair
   _ -> notNull . fromMaybe [] <$> runQuery env condition
+ where
+  same pair = case valueList pair of
+    [a, b] -> sameValue <$> evalExpr env a <*> evalExpr env b
+    _ -> pure False
 
 {- | Who to prompt. An ability knows (@$iid@ is bound when it resolves); a
 handler does not, so it falls back to whoever the card belongs to, and only then
@@ -578,11 +781,14 @@ change what is still to come.
 runForEach :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
 runForEach env spec = case spec of
   Object o -> do
-    found <- maybe (pure Nothing) (runQuery env) (KeyMap.lookup "query" o)
+    {- Over a list already in hand rather than one the game has to be asked
+    for: the cards a message handed back ("each weakness discarded by this
+    effect") are a binding, not anything a matcher can name. -}
+    found <- case KeyMap.lookup "over" o of
+      Just e -> Just . valueList <$> evalExpr env e
+      Nothing -> maybe (pure Nothing) (runQuery env) (KeyMap.lookup "query" o)
     let
-      name = case KeyMap.lookup "bind" o of
-        Just (String n) -> Key.fromText n
-        _ -> "each"
+      name = bindingName o "each"
       steps = maybe [] subSteps (KeyMap.lookup "steps" o)
     for_ (fromMaybe [] found) \value -> runSteps (KeyMap.insert name value env) steps
   _ -> pure ()
@@ -777,7 +983,14 @@ bindingName o fallback = case KeyMap.lookup "bind" o of
 subStepsOf :: KeyMap.KeyMap Value -> [Value]
 subStepsOf o = maybe [] subSteps (KeyMap.lookup "steps" o)
 
--- | Named options, each running its own steps.
+{- | Named options, each running its own steps.
+
+An option may instead carry a @query@, in which case it stands for one option
+per thing found, bound the way 'runChooseFrom' binds it. That is what lets a
+single prompt span several kinds of thing: "a card attached to your location"
+is an event or an asset or a treachery, which are three queries and three
+messages but one choice.
+-}
 runChoose :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
 runChoose env spec = case spec of
   Object o -> do
@@ -785,8 +998,25 @@ runChoose env spec = case spec of
     let options = maybe [] subSteps (KeyMap.lookup "options" o)
     labels <- for options \case
       Object opt -> do
-        msgs <- capture $ runSteps env (maybe [] subSteps (KeyMap.lookup "steps" opt))
-        pure [Label (textField env opt "label" "Choose") msgs]
+        let steps = maybe [] subSteps (KeyMap.lookup "steps" opt)
+        case KeyMap.lookup "query" opt of
+          Nothing -> do
+            msgs <- capture $ runSteps env steps
+            pure [Label (textField env opt "label" "Choose") msgs]
+          Just query -> do
+            found <- fromMaybe [] <$> runQuery env query
+            let
+              name = case KeyMap.lookup "bind" opt of
+                Just (String n) -> Key.fromText n
+                _ -> "chosen"
+              kind = case query of
+                Object q | Just (String k) <- KeyMap.lookup "kind" q -> k
+                _ -> ""
+            for found \value -> do
+              msgs <- capture $ runSteps (KeyMap.insert name value env) steps
+              pure $ case chosenTarget kind value of
+                Just t -> targetLabel t msgs
+                Nothing -> Label (textField env opt "label" "Choose") msgs
       _ -> pure []
     unless (all null labels) $ Prompt.chooseOne iid (concat labels)
   _ -> pure ()
@@ -909,6 +1139,7 @@ chosenTarget kind value = case kind of
   "act" -> ActTarget <$> decoded
   "agenda" -> AgendaTarget <$> decoded
   "card" -> CardIdTarget . toCardId <$> (decoded :: Maybe Card)
+  "chaosToken" -> ChaosTokenTarget <$> decoded
   _ -> Nothing
  where
   decoded :: FromJSON a => Maybe a

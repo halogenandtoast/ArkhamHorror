@@ -11,7 +11,7 @@ below is a literal (with @$bindings@ substituted), so numbers and @"$cards"@
 mean themselves. An operator that takes @of@ broadcasts over a list, so @get@ is
 both "the property of this one" and "map over these".
 -}
-module Arkham.Custom.Expr (evalExpr, exprInt, runQuery, runQueryStep, valueList) where
+module Arkham.Custom.Expr (evalExpr, exprInt, jsonField, runQuery, runQueryStep, valueList) where
 
 import Arkham.Act.Types (Act)
 import Arkham.Asset.Types (Asset)
@@ -77,6 +77,14 @@ evalExpr env v0 = case substituteExpr env v0 of
         p' <- evalPredicate p
         listOp o (filter (matches p'))
     | Just prop <- str =<< KeyMap.lookup "skillTest" o -> skillTestProp prop
+    {- A field of the JSON itself, rather than a property the game has to be
+       asked for. An entity's own serialized values are bound whole -- @$placement@
+       is @{"tag": "AttachedToLocation", "contents": <id>}@ -- so reaching what is
+       inside one is otherwise impossible. An index reads into a list, which is
+       what a constructor with more than one field serializes as. -}
+    | Just key <- str =<< KeyMap.lookup "field" o -> case KeyMap.lookup "of" o of
+        Nothing -> pure Null
+        Just e -> jsonField key <$> evalExpr env e
     {- A query is a value like any other, so it can be bound by @let@ and
        transformed in place rather than needing a step of its own. The matcher is
        decoded against the environment, so it can refer to bindings. -}
@@ -142,6 +150,15 @@ substituteExpr env = \case
 -- | An expression whose value is wanted as a count.
 exprInt :: HasGame m => Env -> Value -> m Int
 exprInt env = fmap toInt . evalExpr env
+
+{- | What @field@ reads: a key of an object, or -- when the key is a number --
+that position in a list.
+-}
+jsonField :: Text -> Value -> Value
+jsonField key = \case
+  Object o -> fromMaybe Null (KeyMap.lookup (Key.fromText key) o)
+  Array xs | Just i <- readMay (T.unpack key) -> fromMaybe Null (toList xs !!? i)
+  _ -> Null
 
 valueList :: Value -> [Value]
 valueList = \case
@@ -311,8 +328,14 @@ entityProp prop v = case (parseMaybe parseJSON (String prop) :: Maybe (SomeField
   (Just (SomeField fld), Just eid) -> toJSON <$> field fld (eid :: EntityId a)
   _ -> pure Null
 
+{- | A reading off a card.
+
+Takes a bare 'PlayerCard' as well as a 'Card': the messages that hand a card
+back -- what a discard took off the top of a deck, what a search found -- carry
+the unwrapped form, and a card is a card whichever way it arrived.
+-}
 cardProp :: Text -> Value -> Value
-cardProp prop v = case parseMaybe parseJSON v of
+cardProp prop v = case asCard v of
   Nothing -> Null
   Just card ->
     let def = toCardDef (card :: Card)
@@ -330,7 +353,17 @@ cardProp prop v = case parseMaybe parseJSON v of
           -- ("X is the cost of the event you discarded").
           "printedCost" -> toJSON (maybe 0 toPrintedCost (cdCost def))
           "id" -> toJSON (toCardId card)
+          "subType" -> toJSON (cdCardSubType def)
+          -- Whose card it is, which is not a property of the def: a card in a
+          -- discard pile has to be put back into *that* player's deck.
+          "owner" -> toJSON (toCardOwner card)
           _ -> Null
+
+asCard :: Value -> Maybe Card
+asCard v =
+  parseMaybe parseJSON v
+    <|> (PlayerCard <$> parseMaybe parseJSON v)
+    <|> (EncounterCard <$> parseMaybe parseJSON v)
 
 {- | @mode@ decides what a query binds: the whole list (the default), just the
 first element, or how many there were.
@@ -359,6 +392,9 @@ runQuery env v = case v of
       "act" -> run @ActMatcher matcher
       "agenda" -> run @AgendaMatcher matcher
       "card" -> run @ExtendedCardMatcher matcher
+      {- Chaos tokens are entities a card can reach -- sealed on it, revealed by
+         you -- and the only way to say "each token sealed on that card". -}
+      "chaosToken" -> run @ChaosTokenMatcher matcher
       _ -> pure Nothing
     _ -> pure Nothing
   _ -> pure Nothing

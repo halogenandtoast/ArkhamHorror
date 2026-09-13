@@ -203,6 +203,10 @@ const stepKinds = [
   'draw',
   'gather',
   'customize',
+  'activateAbility',
+  'place',
+  'discover',
+  'setAside',
 ]
 
 export const stepKind = (step: any): string =>

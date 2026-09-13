@@ -41,7 +41,19 @@ Both run the same small step language:
 * @gather@ -- shuffle a card from an encounter set into a deck.
 * @customize@ -- mark a checkbox on a customizable card you own.
 * @useAbility@ -- resolve one of this card's own abilities, cost and all.
+* @activateAbility@ -- offer an ability the matcher accepts, wherever it is
+  printed, with modifiers applied to the ability itself ("without paying its
+  cost").
+* @place@ -- put a card somewhere: attach it, move it into a threat area.
+* @discover@ -- discover clues, here or at a named location.
+* @setAside@ -- make copies of named cards and set them aside, out of play.
 * @cancelBatch@ -- stop what a @would@ window is about to do, for "instead".
+
+@forEach@ walks a @query@ or, with @over@, a list already bound. A @query@ step
+takes @"mode": "random"@ as well as @first@ and @count@. An @if@ or @when@ reads
+a matcher, a @criteria@, a @{"source", "matches"}@ pair, or an @eq@/@ne@ of two
+expressions. An option of a @choose@ may carry a @query@ of its own, so one
+prompt can span several kinds of thing.
 
 Scoped modifiers need no step of their own: @CreateWindowModifierEffect@ is an
 ordinary message, so a @push@ covers "for this attack" and friends. A modifier
@@ -245,7 +257,13 @@ a signature card, the investigator it belongs to as @$investigator@.
 bindings :: CustomEntity a => a -> Env
 bindings a = KeyMap.fromList (own <> signatureOf) <> fields
  where
-  own = [("source", toJSON (toSource a)), ("target", toJSON (toTarget a))]
+  own =
+    [ ("source", toJSON (toSource a))
+    , ("target", toJSON (toTarget a))
+    , -- What the card was written with, for the steps that read a declaration
+      -- rather than a field: the cards an investigator sets aside, say.
+      ("meta", toJSON (cdMeta (toCardDef a)))
+    ]
   -- The card may carry the restriction, or the investigator may simply list it.
   signatureOf = case declared <> listed of
     iid : _ -> [("investigator", toJSON iid)]
@@ -507,6 +525,8 @@ customModifiers a = for_ (metaSpecs @ModifierSpec modifiersMetaKey (toCardDef a)
     -- which is the only way to change something the engine reads at draw or
     -- spawn time (a keyword deciding how an enemy enters play, say).
     "card" -> apply @ExtendedCardMatcher spec
+    -- A chaos token, which is what "treat each X as 0" and its like reach.
+    "chaosToken" -> apply @ChaosTokenMatcher spec
     _ -> pure ()
  where
   env = bindings a

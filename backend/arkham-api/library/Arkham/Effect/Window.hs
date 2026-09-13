@@ -23,6 +23,10 @@ data EffectWindow
   | EffectSkillTestMatchingWindow SkillTestMatcher
   | EffectNextSkillTestWindow InvestigatorId
   | EffectRoundWindow
+  | {- | Lasts through the rest of this round and all of the next; at the end of
+    this round it becomes an ordinary 'EffectRoundWindow'.
+    -}
+    EffectUntilEndOfNextRoundWindow
   | EffectNextActionWindow
   | EffectActionWindow
   | EffectActWindow

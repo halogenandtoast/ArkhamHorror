@@ -16,6 +16,7 @@ module Arkham.Custom.Schema (customSchema, TypeSchema (..), ConSchema (..), Fiel
 
 import Arkham.Ability.Limit
 import Arkham.Ability.Type
+import Arkham.Action.Additional (ActionRestriction, AdditionalAction, AdditionalActionType)
 import Arkham.Cost
 import Arkham.Criteria
 import Arkham.Custom.Schema.TH (schemaForWith)
@@ -32,6 +33,7 @@ import Arkham.Evade.Types (ChooseEvade)
 import Arkham.Exhaust (Exhaustion)
 import Arkham.Fight.Types (ChooseFight)
 import Arkham.Investigate.Types (Investigate)
+import Arkham.Keyword (Keyword, Sealing)
 import Arkham.Matcher
 import Arkham.Message (Message)
 import Arkham.Message.ChaosBag (ChaosBagMessage)
@@ -55,6 +57,7 @@ import Arkham.Message.Story (StoryMessage)
 import Arkham.Message.Token (TokenMessage)
 import Arkham.Modifier (Modifier, ModifierType)
 import Arkham.Movement (Movement)
+import Arkham.Placement (Placement)
 import Arkham.Search (Search)
 import Arkham.SkillTest.Option (SkillTestOption)
 import Arkham.Slot (Slot)
@@ -118,6 +121,21 @@ customSchema =
          ''EffectBuilder
        , ''EffectMetadata
        , ''PreyMatcher
+       , {- Where a card is put. Every "attach to", "put into play in your threat
+            area" and "place beneath" is one of these, and the message that carries
+            one differs by card type -- so without it the editor offers a raw JSON
+            box for the part of a placement that actually says anything. -}
+         ''Placement
+       , {- Keywords a card can be given or have taken away, and what a Seal
+            keyword seals. -}
+         ''Keyword
+       , ''Sealing
+       , {- Which abilities a step reaches for, and what an extra action may be
+            spent on. -}
+         ''AbilityMatcher
+       , ''AdditionalAction
+       , ''AdditionalActionType
+       , ''ActionRestriction
        , ''SpawnAt
        , ''SkillTestMatcher
        , ''SkillTestResultMatcher

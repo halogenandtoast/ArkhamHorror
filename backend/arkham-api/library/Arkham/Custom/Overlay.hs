@@ -11,6 +11,8 @@ module Arkham.Custom.Overlay (
   DeckOverlay (..),
   applyOverlay,
   overlaySignatures,
+  overlaySetAside,
+  setAsideMetaKey,
   decklistCustomCards,
 ) where
 
@@ -58,11 +60,27 @@ instance ToJSON DeckOverlay where
 
 -- | The cards a custom investigator brings with them, from its @_signatures@ meta.
 overlaySignatures :: CardDef -> [CardCode]
-overlaySignatures def =
+overlaySignatures = metaCardCodes "_signatures"
+
+{- | Cards a custom card names that never go into a deck.
+
+An investigator whose setup sets copies of something aside needs those defs
+registered on the game -- they are made out of nothing when the game starts, and
+nothing else in the decklist mentions them -- but they must not be added to the
+deck the way a signature is. Hence a key of its own rather than more signatures.
+-}
+overlaySetAside :: CardDef -> [CardCode]
+overlaySetAside = metaCardCodes setAsideMetaKey
+
+setAsideMetaKey :: Text
+setAsideMetaKey = "_setAside"
+
+metaCardCodes :: Text -> CardDef -> [CardCode]
+metaCardCodes key def =
   map sanitizeCustomCardCode
     $ fromMaybe []
     $ parseMaybe parseJSON
-    =<< Map.lookup "_signatures" (cdMeta def)
+    =<< Map.lookup key (cdMeta def)
 
 {- | The signature cards of whoever the deck belonged to.
 
@@ -126,9 +144,13 @@ decklistCustomCards decklist = mapMaybe lookupCustomCard $ toList codes
       : Map.keys (slots decklist)
         <> Map.keys (sideSlots decklist)
 
-  -- A custom investigator brings signatures the decklist itself never names.
+  -- A custom investigator brings signatures, and cards its setup sets aside,
+  -- that the decklist itself never names.
   go :: Set CardCode -> [CardCode] -> Set CardCode
   go seen [] = seen
   go seen (cardCode : rest) =
-    let new = filter (`notMember` seen) $ maybe [] overlaySignatures (lookupCustomCardDef cardCode)
-     in go (seen <> setFromList new) (new <> rest)
+    let
+      brought def = overlaySignatures def <> overlaySetAside def
+      new = filter (`notMember` seen) $ maybe [] brought (lookupCustomCardDef cardCode)
+     in
+      go (seen <> setFromList new) (new <> rest)

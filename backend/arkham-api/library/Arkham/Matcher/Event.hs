@@ -57,6 +57,7 @@ data EventMatcher
   | OutOfPlayEvent EventMatcher
   | EventTargetsInvestigator
   | EventTargetsEnemy
+  | EventTargetsAsset AssetMatcher
   deriving stock (Show, Eq, Ord, Data)
 
 instance IsLabel "upgrade" EventMatcher where

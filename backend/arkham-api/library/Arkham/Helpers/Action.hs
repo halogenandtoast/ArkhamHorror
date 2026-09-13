@@ -117,6 +117,12 @@ additionalActionCovers source actions (AdditionalAction _ _ aType) = case aType 
       UseAbilitySource {} -> member t <$> sourceTraits source
       _ -> pure False
   AbilityRestrictedAdditionalAction s idx -> pure $ isAbilitySource s idx source
+  {- The ability being paid for is only known here as its source, so the matcher
+  is asked for the abilities it accepts and the source is looked for among
+  them. -}
+  AbilityMatchingAdditionalAction matcher -> do
+    abilities <- select matcher
+    pure $ any (\ab -> isAbilitySource ab.source ab.index source) abilities
   ActionRestrictedAdditionalAction a -> pure $ a `elem` actions
   EffectAction _ _ -> pure False
   AnyAdditionalAction -> pure True

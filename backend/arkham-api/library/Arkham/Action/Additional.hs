@@ -22,6 +22,12 @@ data AdditionalActionType
   | ActionRestrictedAdditionalAction Action
   | AbilityRestrictedAdditionalAction Source Int
   | PlayCardRestrictedAdditionalAction ExtendedCardMatcher
+  | {- | Spendable only on an ability the matcher accepts, whoever it belongs to.
+    'AbilityRestrictedAdditionalAction' names one ability of one card; this
+    names a shape of ability, which is what an investigator who may take an
+    extra action "to activate an ability on an asset you control" is granted.
+    -}
+    AbilityMatchingAdditionalAction AbilityMatcher
   | EffectAction Text EffectId
   | AnyAdditionalAction
   | BountyAction -- Tony Morgan

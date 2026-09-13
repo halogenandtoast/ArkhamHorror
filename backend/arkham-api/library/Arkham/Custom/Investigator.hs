@@ -68,6 +68,15 @@ instance RunMessage CustomInvestigator where
     ZonedUseThisAbility iid (isSource attrs -> True) idx ws payment | isCustomAbility attrs idx -> do
       runCustomAbility attrs iid idx ws payment
       pure x
+    {- "Additional Setup" -- what the investigator card says to do before the game
+    starts. Listens for the investigator's own setup rather than the scenario's
+    'Setup', which is over before there is a deck to read: what these steps push
+    runs once this message has been handled, by which point the deck is in
+    place and the opening hand has not been drawn. -}
+    SetupInvestigator iid | attrs `is` iid -> do
+      runCustomSteps attrs iid "_onSetup"
+      runCustomHandlers attrs msg
+      CustomInvestigator <$> liftRunMessage msg attrs
     RevealChaosToken _ iid token
       | attrs `is` iid
       , token.face == ElderSign -> do

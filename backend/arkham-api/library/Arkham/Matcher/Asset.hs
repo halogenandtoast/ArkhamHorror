@@ -53,6 +53,7 @@ data AssetMatcher
   | AssetWithKeyword Keyword
   | AssetAttachedToAsset AssetMatcher
   | AssetWithAttachedEvent EventMatcher
+  | AssetWithAttachedAsset AssetMatcher
   | AssetWithAttachedTreachery TreacheryMatcher
   | AssetAttachedTo TargetMatcher
   | AssetControlledBy InvestigatorMatcher
@@ -111,6 +112,10 @@ data AssetMatcher
   | AssetWithAnyRemainingSanity
   | AssetWithFewestClues AssetMatcher
   | AssetWithMostClues AssetMatcher
+  | {- | The most counters of any kind, once the named kinds are set aside --
+    "the most non-damage non-horror tokens on it" and anything shaped like it.
+    -}
+    AssetWithMostTokensExcluding [Token] AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeDamagedBySource Source
   | AssetCanBeAssignedHorrorBy InvestigatorId

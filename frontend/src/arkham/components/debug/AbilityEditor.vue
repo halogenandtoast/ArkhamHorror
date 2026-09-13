@@ -117,8 +117,29 @@ const bindingsFor = (tag: string) => [
   ...messageFields(tag).map((_, at) => `$${at}`),
 ]
 
-const isBinding = (value: string) => value.trim().startsWith('$')
-const isKnownBinding = (tag: string, value: string) => bindingsFor(tag).includes(value.trim())
+/* A requirement compares two substituted values, and what a binding stands for
+ * is rarely a string -- a placement comes back as `{"tag": "Limbo"}`. So both
+ * sides are any JSON, and asking whether one is a binding has to survive being
+ * handed an object. */
+const isBinding = (value: unknown) => typeof value === 'string' && value.trim().startsWith('$')
+const isKnownBinding = (tag: string, value: unknown) =>
+  typeof value === 'string' && bindingsFor(tag).includes(value.trim())
+
+/* The text box shows the JSON for anything that is not a string, and reads it
+ * back, so editing a requirement that names a placement does not flatten it
+ * into the literal text `[object Object]`. */
+const requirementText = (value: unknown) =>
+  typeof value === 'string' ? value : value === undefined || value === null ? '' : JSON.stringify(value)
+
+const parseRequirement = (text: string): any => {
+  const trimmed = text.trim()
+  if (!/^[[{]/.test(trimmed)) return text
+  try {
+    return JSON.parse(trimmed)
+  } catch {
+    return text
+  }
+}
 
 /* An ability that triggers on a window reads that window's fields as $w0, $w1,
  * … the way a handler reads a message's — that is how "heal that many" gets its
@@ -431,9 +452,10 @@ const addHandler = () =>
 /* A message that merely mentions this card is not necessarily about it: an
  * enemy defeated by someone else still names this card if it was the target.
  * A requirement pins the field that has to be this card down. */
-const requiresOf = (handler: any): [string, string][] => handler.requires ?? []
+const requiresOf = (handler: any): [any, any][] => handler.requires ?? []
 
-const setRequirement = (index: number, at: number, side: 0 | 1, value: string) => {
+const setRequirement = (index: number, at: number, side: 0 | 1, text: string) => {
+  const value = parseRequirement(text)
   const requires = requiresOf(handlers.value[index]).map((pair, i) =>
     i === at ? (side === 0 ? [value, pair[1]] : [pair[0], value]) : pair,
   )
@@ -461,9 +483,10 @@ const removeModifier = (i: number) =>
  * only compares bindings, which is what you need when the question itself would
  * ask for modifiers while modifiers are being collected -- telling a card in
  * hand from the same card committed, say. */
-const modifierRequires = (modifier: any): [string, string][] => modifier.requires ?? []
+const modifierRequires = (modifier: any): [any, any][] => modifier.requires ?? []
 
-const setModifierRequirement = (index: number, at: number, side: 0 | 1, value: string) => {
+const setModifierRequirement = (index: number, at: number, side: 0 | 1, text: string) => {
+  const value = parseRequirement(text)
   const requires = modifierRequires(modifiers.value[index]).map((pair, i) =>
     i === at ? (side === 0 ? [value, pair[1]] : [pair[0], value]) : pair,
   )
@@ -725,7 +748,7 @@ function handlerScope(handler: any, index: number): Binding[] {
           <label>
             Only when
             <input
-              :value="pair[0]"
+              :value="requirementText(pair[0])"
               :class="{ binding: isBinding(pair[0]) }"
               placeholder="$placement"
               @input="setModifierRequirement(index, at, 0, ($event.target as HTMLInputElement).value)"
@@ -735,7 +758,7 @@ function handlerScope(handler: any, index: number): Binding[] {
           <label>
             is
             <input
-              :value="pair[1]"
+              :value="requirementText(pair[1])"
               :class="{ binding: isBinding(pair[1]) }"
               placeholder="$source"
               @input="setModifierRequirement(index, at, 1, ($event.target as HTMLInputElement).value)"
@@ -879,7 +902,7 @@ function handlerScope(handler: any, index: number): Binding[] {
           <label>
             Only when
             <input
-              :value="pair[0]"
+              :value="requirementText(pair[0])"
               :class="{
                 binding: isKnownBinding(handler.on, pair[0]),
                 unknown: isBinding(pair[0]) && !isKnownBinding(handler.on, pair[0]),
@@ -893,7 +916,7 @@ function handlerScope(handler: any, index: number): Binding[] {
           <label>
             is
             <input
-              :value="pair[1]"
+              :value="requirementText(pair[1])"
               :class="{
                 binding: isKnownBinding(handler.on, pair[1]),
                 unknown: isBinding(pair[1]) && !isKnownBinding(handler.on, pair[1]),

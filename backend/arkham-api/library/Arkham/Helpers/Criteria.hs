@@ -419,7 +419,13 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
         ProxySource (CardCodeSource _) s -> go s
         IndexedSource _ s -> go s
         ProxySource s _ -> go s
-        AssetSource aid -> elem aid <$> select (Matcher.AssetControlledBy you)
+        -- `AssetControlledBy` skips cards still in hand (#5695); their own in-hand
+        -- abilities still need to pass this check.
+        AssetSource aid ->
+          orM
+            [ elem aid <$> select (Matcher.AssetControlledBy you)
+            , elem aid <$> select (Matcher.AssetWithPlacement $ StillInHand iid)
+            ]
         EventSource eid -> elem eid <$> select (Matcher.EventControlledBy you)
         SkillSource sid ->
           elem sid <$> select (Matcher.SkillOwnedBy you <> Matcher.SkillNotRemoved)

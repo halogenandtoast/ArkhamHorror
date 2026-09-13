@@ -211,10 +211,11 @@ instance RunMessage TheApiary where
       pure s
     ForInvestigator iid Setup -> do
       artifacts <- getAvailableArtifacts
+      items <- getAvailableExpeditionItems
       chooseOneM iid do
         questionLabeled "chooseExpeditionAssetQuestion"
         labeled "noExpeditionAsset" nothing
-        for_ (artifacts <> expeditionItems) \asset ->
+        for_ (artifacts <> items) \asset ->
           cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do

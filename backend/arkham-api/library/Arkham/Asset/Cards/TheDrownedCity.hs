@@ -780,7 +780,8 @@ alienTablet =
 
 divingSuitTheDrownedCity :: CardDef
 divingSuitTheDrownedCity =
-  (storyAsset "11764" "Diving Suit" 3 TheDrownedCityExpedition)
+  -- The one Expedition Item the set holds more than one copy of.
+  (storyAssetWithMany "11764" "Diving Suit" 3 TheDrownedCityExpedition 4)
     { cdCardTraits = setFromList [Item, Armor]
     , cdSkills = [#combat]
     , cdOptions = [cardToggle "treatAsPartiallyFlooded" True]

@@ -295,10 +295,11 @@ instance RunMessage ObsidianCanyons where
       -- v.I offers an earned Artifact or an Expedition Item; v.II only the Item.
       headedWest <- getHasRecord TheExpeditionHeadedWest
       artifacts <- if headedWest then getAvailableArtifacts else pure []
+      items <- getAvailableExpeditionItems
       chooseOneM iid do
         questionLabeled "chooseExpeditionAssetQuestion"
         labeled "noExpeditionAsset" nothing
-        for_ (artifacts <> expeditionItems) \asset ->
+        for_ (artifacts <> items) \asset ->
           cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do

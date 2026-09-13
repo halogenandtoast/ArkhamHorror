@@ -163,6 +163,19 @@ expeditionItems =
   , Assets.divingSuitTheDrownedCity
   ]
 
+{- | The Expedition Items an investigator may still choose to begin play with.
+
+The set holds four Diving Suits but only one each of the rest, so availability is a
+count of the copies already in play against @cdEncounterSetQuantity@ rather than a
+uniqueness check.
+-}
+getAvailableExpeditionItems :: HasGame m => m [CardDef]
+getAvailableExpeditionItems = filterM available expeditionItems
+ where
+  available def = do
+    inPlay <- selectCount (assetIs def)
+    pure $ inPlay < fromMaybe 1 (cdEncounterSetQuantity def)
+
 -- | Each Task: campaign-log key, the story-asset card, and its i18n label.
 tasks :: [(TheDrownedCityKey, CardDef, Text)]
 tasks =

@@ -3,7 +3,6 @@ module Arkham.Act.Cards.TheFeastOfHemlockVale.FateOfTheVale.ShatteredMemories (s
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Cards
 import Arkham.Act.Import.Lifted
-import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Card
 import Arkham.Deck qualified as Deck
@@ -11,16 +10,15 @@ import Arkham.Helpers.GameValue
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Cards qualified as Investigators
-import Arkham.Investigator.Types (Field (InvestigatorDoom))
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier
-import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers (
+  resolveTrueSelf,
   revealCardsFromAbyss,
   scenarioI18n,
  )
@@ -48,22 +46,6 @@ instance HasAbilities ShatteredMemories where
           $ Objective
           $ forced AnyWindow
       ]
-
-resolveTrueSelf :: ReverseQueue m => Source -> InvestigatorId -> Card -> m ()
-resolveTrueSelf source fallback card = do
-  let owner = fromMaybe fallback $ toCardOwner card
-  void $ setOwner owner card
-  healAllDamageAndHorror source owner
-  -- Doom placed on the Shattered Self card remains on it as the card flips to
-  -- its Old Memory side (per FFG ruling, issue #5184). returnFromShatteredSelf
-  -- carries the doom back onto the true self, so move it onto Old Memory here.
-  doom <- field InvestigatorDoom owner
-  oldMemory <- setOwner owner =<< genCard Assets.oldMemory
-  oldMemoryId <- createAssetAt oldMemory (InPlayArea owner)
-  scenarioSpecific "returnFromShatteredSelf" owner
-  when (doom > 0) do
-    removeAllDoom source owner
-    placeDoom source oldMemoryId doom
 
 revealFromBottomOfAbyss :: ReverseQueue m => Source -> InvestigatorId -> Int -> m ()
 revealFromBottomOfAbyss _source iid n = do

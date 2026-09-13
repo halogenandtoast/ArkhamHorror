@@ -223,45 +223,46 @@ drawCardFromAbyss iid source card = do
 
 {- | Resolve a card drawn from The Abyss. Resident cards have special text on
 The Abyss: flip them to their enemy side, they attack without engaging, then
-are discarded instead of going to hand.
+are discarded instead of going to hand. A "true" investigator card shuffled in
+during setup returns its owner to their true self instead of going to a hand.
 -}
 resolveAbyssDraw :: ReverseQueue m => InvestigatorId -> Source -> Card -> m ()
-resolveAbyssDraw iid source card = do
-  if toCardType card == LocationType
-    then do
-      let mirrorNest = LocationWithTitle "Mirror Nest"
-      preferred <-
-        select
-          $ NearestLocationTo iid
-          $ mirrorNest
-          <> not_ (ConnectedTo NotForMovement (LocationWithTrait Cave))
-      fallback <- select $ NearestLocationTo iid mirrorNest
-      let choices = if null preferred then fallback else preferred
-      let
-        placeAndConnect :: ReverseQueue m => LocationId -> m ()
-        placeAndConnect nest = do
-          lid <- placeLocation card
-          openCaveLabelFor nest >>= traverse_ (setLocationLabel lid)
-          connectBothWays nest lid
-      case choices of
-        [] -> void $ placeLocation card
-        [nest] -> placeAndConnect nest
-        nests -> chooseTargetM iid nests placeAndConnect
-    else case residentFromCardDef (toCardDef card) of
-      Just resident -> do
-        enemyCard <- fetchCard (residentEnemyDef resident)
-        focusCards [enemyCard] do
-          chooseOneM iid do
-            labeledI "continue" do
-              unfocusCards
-              obtainCard card
-              withLocationOf iid \lid -> do
-                eid <- createEnemyAt enemyCard lid
-                initiateEnemyAttack eid source iid
-                toDiscard source eid
-      Nothing -> case card of
-        PlayerCard pc -> addToHand (fromMaybe iid pc.owner) [card]
-        _ -> drawCard iid card
+resolveAbyssDraw iid source card = case toCardType card of
+  InvestigatorType -> resolveTrueSelf source iid card
+  LocationType -> do
+    let mirrorNest = LocationWithTitle "Mirror Nest"
+    preferred <-
+      select
+        $ NearestLocationTo iid
+        $ mirrorNest
+        <> not_ (ConnectedTo NotForMovement (LocationWithTrait Cave))
+    fallback <- select $ NearestLocationTo iid mirrorNest
+    let choices = if null preferred then fallback else preferred
+    let
+      placeAndConnect :: ReverseQueue m => LocationId -> m ()
+      placeAndConnect nest = do
+        lid <- placeLocation card
+        openCaveLabelFor nest >>= traverse_ (setLocationLabel lid)
+        connectBothWays nest lid
+    case choices of
+      [] -> void $ placeLocation card
+      [nest] -> placeAndConnect nest
+      nests -> chooseTargetM iid nests placeAndConnect
+  _ -> case residentFromCardDef (toCardDef card) of
+    Just resident -> do
+      enemyCard <- fetchCard (residentEnemyDef resident)
+      focusCards [enemyCard] do
+        chooseOneM iid do
+          labeledI "continue" do
+            unfocusCards
+            obtainCard card
+            withLocationOf iid \lid -> do
+              eid <- createEnemyAt enemyCard lid
+              initiateEnemyAttack eid source iid
+              toDiscard source eid
+    Nothing -> case card of
+      PlayerCard pc -> addToHand (fromMaybe iid pc.owner) [card]
+      _ -> drawCard iid card
 
 instance HasModifiersFor FateOfTheVale where
   getModifiersFor (FateOfTheVale attrs) = do

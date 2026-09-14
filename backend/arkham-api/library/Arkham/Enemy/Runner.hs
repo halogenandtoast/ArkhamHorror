@@ -791,8 +791,14 @@ instance RunMessage EnemyAttrs where
             for_ enemyLocation \loc -> when (lid /= loc) do
               lead <- getLeadPlayer
               adjacentLocationIds <- select $ AccessibleFrom NotForMovement $ LocationWithId loc
-              closestLocationIds <- select $ ClosestPathLocation loc lid
-              if lid `elem` adjacentLocationIds
+              -- Only step somewhere this enemy is actually allowed to go. A Gug
+              -- cannot enter Plain of the Ghouls, which is the only way out of
+              -- City of Gugs; without this filter MoveUntil kept proposing that
+              -- step, EnemyMove refused it, and MoveUntil re-pushed itself
+              -- forever. (Issue #5702)
+              closestLocationIds <- select $ LocationCanBeEnteredBy enemyId <> ClosestPathLocation loc lid
+              canEnterDestination <- lid <=~> LocationCanBeEnteredBy enemyId
+              if lid `elem` adjacentLocationIds && canEnterDestination
                 then push $ chooseOne lead [targetLabel lid [EnemyMove enemyId lid]]
                 else when (notNull closestLocationIds) do
                   pushAll

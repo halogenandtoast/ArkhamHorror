@@ -39,11 +39,13 @@ instance RunMessage Venturer where
       supplyAssets <-
         select
           $ AssetWithUseType Supply
+          <> AssetNotAtUseLimit
           <> AssetControlledBy (affectsOthersKnown iid $ colocatedWith iid)
           <> NotAsset (AssetWithId $ toId attrs)
       ammoAssets <-
         select
           $ AssetWithUseType Ammo
+          <> AssetNotAtUseLimit
           <> AssetControlledBy
             (affectsOthersKnown iid $ colocatedWith iid)
       player <- getPlayer iid

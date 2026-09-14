@@ -27,7 +27,7 @@ import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasQueue
-import Arkham.Classes.Query (select, (<=~>))
+import Arkham.Classes.Query ((<=~>))
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist.RandomBasicWeakness (
   RandomBasicWeaknessContext (..),
@@ -156,14 +156,7 @@ instance HasModifiersFor Boon where
         pure [XPModifier "Boon of Persephone" 3]
       BoonOfTheChild -> do
         used <- (boonOfTheChildUsedMarker `elem`) <$> getModifiers GameTarget
-        -- The marker is pushed from the scenario's PlayCard dispatch, and scenario
-        -- pushes land beneath the entity pushes for the same message, so it only
-        -- exists once the whole play chain has drained. An event still resolving
-        -- out of the discard stands in for it until then; without this the discard
-        -- event's own skill test (Unearth the Ancients) is a window where the boon
-        -- reads as unused and the next event down can be played too.
-        resolving <- anyM (fmap (.playedFromDiscard) . getAttrs @Event) =<< select Matcher.AnyEvent
-        unless (used || resolving) do
+        unless used do
           modifySelect source Matcher.Anyone [CanPlayTopmostOfDiscard (Just EventType, [])]
         -- Bottom-deck instead of discard, computed from the event's own
         -- played-from zone: message-based effect creation would race the play
@@ -349,10 +342,15 @@ runUltimatumsAndBoonsMessage msg = case msg of
             (UltimatumOrBoonSource (Boon BoonOfAthena))
             (InvestigatorTarget iid)
             boonOfAthenaExpiredMarker
-  -- Only the post-cost dispatch: PlayCard also fires with asAction=True before
-  -- payment, and marking there both created the effect twice and burned the boon
-  -- on a play cancelled during cost payment.
-  PlayCard iid card _ _ _ False -> do
+  -- Marked on CardEnteredPlay, not PlayCard. The scenario dispatches before the
+  -- entities and the game runner, and `push` prepends, so a marker pushed while
+  -- handling PlayCard sits beneath the whole play chain and only lands once every
+  -- window that play opened has drained -- long enough for Easy Mark (1) to reach
+  -- back into the discard again and again. CardEnteredPlay is the first message of
+  -- that chain, it only fires once costs are paid (so a play cancelled during
+  -- payment never burns the boon), and the card is still in the discard here: the
+  -- investigator clears its zones on this same message, after the scenario.
+  CardEnteredPlay iid card -> do
     whenM (hasBoon BoonOfTheChild) do
       mods <- getModifiers GameTarget
       unless (boonOfTheChildUsedMarker `elem` mods) do

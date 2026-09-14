@@ -22,7 +22,7 @@ instance HasAbilities ThroughTheLabyrinth where
       a
       [ restrictedAbility a 1 (exists $ YourLocation <> LocationWithAdjacentBarrier)
           $ FastAbility (GroupClueCost (StaticWithPerPlayer 1 1) Anywhere)
-      , restrictedAbility a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
+      , onlyOnce $ restrictedAbility a 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
       ]
 
 instance RunMessage ThroughTheLabyrinth where

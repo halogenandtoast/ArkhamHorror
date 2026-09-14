@@ -27,7 +27,7 @@ instance HasAbilities CityOfTheDeepV1 where
             [ RemoveEnemyDamageCost (PerPlayer 1) (EnemyAt YourLocation <> withTrait AncientOne)
             , GroupClueCost (PerPlayer 1) (withTrait Lair)
             ]
-      , restricted a 2 (Negate $ exists FloodedLocation) $ Objective $ forced AnyWindow
+      , onlyOnce $ restricted a 2 (Negate $ exists FloodedLocation) $ Objective $ forced AnyWindow
       ]
 
 instance RunMessage CityOfTheDeepV1 where

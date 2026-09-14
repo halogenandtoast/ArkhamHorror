@@ -18,9 +18,11 @@ falconPointApproach =
 
 instance HasAbilities FalconPointApproach where
   getAbilities (FalconPointApproach a) =
-    extendRevealed
-      a
-      [restricted a 1 (EachUndefeatedInvestigator $ InvestigatorAt (be a)) $ Objective $ forced AnyWindow]
+    extendRevealed1 a
+      $ onlyOnce
+      $ restricted a 1 (EachUndefeatedInvestigator $ InvestigatorAt (be a))
+      $ Objective
+      $ forced AnyWindow
 
 instance RunMessage FalconPointApproach where
   runMessage msg a@(FalconPointApproach attrs) = runQueueT $ case msg of

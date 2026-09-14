@@ -20,13 +20,14 @@ instance HasAbilities CityOfTheDeepV3 where
   getAbilities (CityOfTheDeepV3 a) =
     extend
       a
-      [ restricted
-          a
-          1
-          ( exists (EnemyWithDamage (AtLeast $ PerPlayer 4) <> enemyIs Enemies.hydraAwakenedAndEnraged)
-              <> exists
-                (EnemyWithDamage (AtLeast $ PerPlayer 4) <> enemyIs Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom)
-          )
+      [ onlyOnce
+          $ restricted
+            a
+            1
+            ( exists (EnemyWithDamage (AtLeast $ PerPlayer 4) <> enemyIs Enemies.hydraAwakenedAndEnraged)
+                <> exists
+                  (EnemyWithDamage (AtLeast $ PerPlayer 4) <> enemyIs Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom)
+            )
           $ Objective
           $ forced AnyWindow
       ]

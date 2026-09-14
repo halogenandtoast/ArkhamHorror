@@ -26,7 +26,8 @@ instance HasAbilities WorshippersOfTheDeep where
     [ restrictedAbility a 1 (exists $ InvestigatorAt FullyFloodedLocation)
         $ forced
         $ PhaseEnds #when #investigation
-    , restrictedAbility a 2 AllUndefeatedInvestigatorsResigned
+    , onlyOnce
+        $ restrictedAbility a 2 AllUndefeatedInvestigatorsResigned
         $ Objective
         $ forced AnyWindow
     ]

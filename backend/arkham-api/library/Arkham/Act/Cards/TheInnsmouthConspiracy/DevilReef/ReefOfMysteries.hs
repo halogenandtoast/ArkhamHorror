@@ -16,6 +16,7 @@ reefOfMysteries = act (1, A) ReefOfMysteries Cards.reefOfMysteries Nothing
 instance HasAbilities ReefOfMysteries where
   getAbilities (ReefOfMysteries x) =
     extend1 x
+      $ onlyOnce
       $ restricted x 1 (foldMap (exists . InvestigatorWithKey) [PurpleKey, WhiteKey, BlackKey])
       $ Objective
       $ forced AnyWindow

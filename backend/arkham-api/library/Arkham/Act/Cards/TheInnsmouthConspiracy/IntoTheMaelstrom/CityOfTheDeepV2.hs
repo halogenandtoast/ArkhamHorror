@@ -21,13 +21,14 @@ instance HasAbilities CityOfTheDeepV2 where
   getAbilities (CityOfTheDeepV2 a) =
     extend
       a
-      [ restricted
-          a
-          1
-          ( exists (LocationWithoutClues <> locationIs Locations.lairOfDagon)
-              <> exists (LocationWithoutClues <> locationIs Locations.lairOfHydra)
-              <> exists (LocationWithoutClues <> locationIs Locations.vaultOfRiches <> LocationWithKey PurpleKey)
-          )
+      [ onlyOnce
+          $ restricted
+            a
+            1
+            ( exists (LocationWithoutClues <> locationIs Locations.lairOfDagon)
+                <> exists (LocationWithoutClues <> locationIs Locations.lairOfHydra)
+                <> exists (LocationWithoutClues <> locationIs Locations.vaultOfRiches <> LocationWithKey PurpleKey)
+            )
           $ Objective
           $ forced AnyWindow
       ]

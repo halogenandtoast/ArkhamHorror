@@ -12,12 +12,12 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Enemies
 import Arkham.Exception
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf, getLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Modifiers (modifySelectMaybe, modifySelectMaybeWith)
 import Arkham.Modifier
 import Arkham.Helpers.Query (allInvestigators)
-import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
 import Arkham.Keyword (Keyword(Aloof))
@@ -99,6 +99,33 @@ instance RunMessage ALightInTheFog where
       {- FOURMOLU_ENABLE -}
       pure s
     Setup -> runScenarioSetup ALightInTheFog attrs do
+      idolBrought <- getHasRecord TheIdolWasBroughtToTheLighthouse
+      mantleBrought <- getHasRecord TheMantleWasBroughtToTheLighthouse
+      headdressBrought <- getHasRecord TheHeaddressWasBroughtToTheLighthouse
+      afterSunrise <- getHasRecord TheInvestigatorsReachedFalconPointAfterSunrise
+      tideGrownStronger <- getHasRecord TheTideHasGrownStronger
+
+      setup $ ul do
+        li "gatherSets"
+        li.nested "placeLocations" do
+          li "startAt"
+          li "removeUndergroundRivers"
+          li "setAsideOtherLocations"
+        li.nested "placeKeys" do
+          li "faceupKeys"
+          li "facedownKeys"
+        li "captured"
+        li "setAsideCards"
+        li.nested "checkCampaignLog" do
+          li.validate idolBrought "wavewornIdol"
+          li.validate mantleBrought "awakenedMantle"
+          li.validate headdressBrought "headdressOfYhaNthlei"
+        li.nested "checkCampaignLogDoom" do
+          li.validate afterSunrise "afterSunrise"
+          li.validate tideGrownStronger "tideHasGrownStronger"
+        li "floodTokens"
+        unscoped $ li "shuffleRemainder"
+
       gather Set.ALightInTheFog
       gather Set.CreaturesOfTheDeep
       gather Set.FloodedCaverns

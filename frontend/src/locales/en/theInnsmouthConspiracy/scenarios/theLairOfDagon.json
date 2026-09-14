@@ -1,5 +1,27 @@
 {
   "heading": "Scenario VII",
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Lair of Dagon*, *Agents of Dagon*, *Flooded Caverns*, *Syzygy*, *Dark Cult*, and *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/lair-of-dagon.png' /><img src='{setImgPath}/agents-of-dagon.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/syzygy.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "placeKeys": "Place each key as follows:",
+    "faceupKeys": "Set the black, blue, green, purple, and red keys aside, faceup.",
+    "facedownKeys": "Set the white and yellow keys aside, facedown. Shuffle them so you do not know which is which.",
+    "placeLocations": "Put the following locations into play: Grand Entryway, Foul Corridors, both copies of First Floor Hall, both copies of Second Floor Hall, and Third Floor Hall.",
+    "startAt": "Each investigator begins play at the Grand Entryway.",
+    "setAsideOtherLocations": "Set each other location aside, out of play.",
+    "setAsideCards": "Set the following cards aside, out of play: both copies of the Syzygy treachery, both copies of the Tidal Alignment treachery, the double-sided Y’ha-nthlei Statue story asset, the Apostle of Dagon enemy, and the double-sided Dagon enemy.",
+    "checkMemories": "Check the “Memories Recovered” section of the Campaign Log. If there are…",
+    "fourOrFewer": "…4 or fewer memories recorded, add 5 {'{'}bless{'}'} tokens to the chaos bag.",
+    "fiveToSeven": "…5–7 memories recorded, add 2 {'{'}curse{'}'} tokens to the chaos bag.",
+    "eightOrMore": "…8 or more memories recorded, add 5 {'{'}curse{'}'} tokens to the chaos bag.",
+    "jailbreak": "Check the “Memories Recovered” section of the Campaign Log. If _a jailbreak_ is listed under “Memories Recovered,” search the collection for the _Suspect_ enemy circled under “Possible Suspects” and set it aside, out of play.",
+    "checkSecretCult": "Check the “Memories Recovered” section of the Campaign Log.",
+    "theInitiationV1": "If _an encounter with a secret cult_ is listed under “Memories Recovered,” when constructing the agenda deck, use Agenda 1a—“The Initiation (v. I)” and remove Agenda 1a—“The Initiation (v. II)” from the game.",
+    "theInitiationV2": "Otherwise, when constructing the agenda deck, use Agenda 1a—“The Initiation (v. II)” and remove Agenda 1a—“The Initiation (v. I)” from the game.",
+    "checkStickTogether": "Check the “Memories Recovered” section of the Campaign Log.",
+    "whatLurksBelowV1": "If _a decision to stick together_ is listed under “Memories Recovered,” search the collection for Thomas Dawson and put him into play under any investigator’s control. When constructing the agenda deck, use Agenda 2a—“What Lurks Below (v. I)” and remove Agenda 2a—“What Lurks Below (v. II)” from the game.",
+    "whatLurksBelowV2": "Otherwise, set Thomas Dawson aside, out of play. When constructing the agenda deck, use Agenda 2a—“What Lurks Below (v. II)” and remove Agenda 2a—“What Lurks Below (v. I)” from the game.",
+    "floodTokens": "Add the flood tokens to the token pool."
+  },
   "specialRules": [
     {
       "title": "Spending Keys",

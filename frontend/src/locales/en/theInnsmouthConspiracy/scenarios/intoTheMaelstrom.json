@@ -1,5 +1,24 @@
 {
   "heading": "Scenario VIII",
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Into the Maelstrom*, *Agents of Hydra*, *Creatures of the Deep*, *Flooded Caverns*, *Shattered Memories*, *Syzygy*, and *Ancient Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/into-the-maelstrom.png' /><img src='{setImgPath}/agents-of-hydra.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/shattered-memories.png' /><img src='{setImgPath}/syzygy.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+    "placeKeys": "Check Campaign Log. Place each of the following keys (blue, red, green, and yellow) as follows:",
+    "blueKey": "If _the investigators possess the key to Y’ha-nthlei_, choose an investigator to take control of the blue key. Otherwise, set it aside, facedown.",
+    "redKey": "If _the investigators possess a map of Y’ha-nthlei_, choose an investigator to take control of the red key. Otherwise, set it aside, facedown.",
+    "greenKey": "If _the guardian of Y’ha-nthlei is dispatched_, choose an investigator to take control of the green key. Otherwise, set it aside, facedown.",
+    "yellowKey": "If _the gateway to Y’ha-nthlei recognizes you as its rightful keeper_, choose an investigator to take control of the yellow key. Otherwise, set it aside, facedown.",
+    "fewerThanFour": "If there are fewer than 4 set-aside keys, shuffle the purple, white, and black keys facedown. Then, one at a time, set each of these keys aside until there are no more than 4 set-aside keys. Remove each remaining key in excess of the set-aside keys from the game. The removed keys will not be used in this scenario.",
+    "shuffleKeys": "Shuffle each set-aside key so you do not know which is which.",
+    "placeLocations": "Put Gateway to Y’ha-nthlei into play. (It enters play partially flooded.) Put each of the 8 Tidal Tunnel locations into play surrounding it.",
+    "startAt": "Each investigator begins play at the Gateway to Y’ha-nthlei.",
+    "setAsideOtherLocations": "Set each other location aside, out of play.",
+    "checkCampaignLog": "Check Campaign Log.",
+    "divingSuits": "Each investigator who _possesses a diving suit_ begins play with a Diving Suit story asset in their play area.",
+    "removeUnusedDivingSuits": "Remove each unused Diving Suit from the game.",
+    "actDeck": "When constructing the act deck, use only the City of the Deep (v. I) version of act 2a. Set City of the Deep (v. II) and City of the Deep (v. III) aside, out of play.",
+    "setAsideCards": "Set the Lloigor enemy, the Aquatic Abomination enemy, the double-sided Hydra enemy, and the double-sided Dagon enemy aside, out of play.",
+    "floodTokens": "Add the flood tokens to the token pool."
+  },
   "specialRules": [
     {
       "title": "Keys",

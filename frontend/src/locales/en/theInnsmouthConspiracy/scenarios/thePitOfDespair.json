@@ -1,5 +1,19 @@
 {
   "heading": "Scenario I",
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Pit of Despair*, *Creatures of the Deep*, *Flooded Caverns*, *Rising Tide*, *Shattered Memories*, *Agents of Cthulhu*, and *Rats*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/grotto-of-despair.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/rising-tide.png' /><img src='{setImgPath}/shattered-memories.png' /><img src='{setImgPath}/agents-of-cthulhu.png' /><img src='{setImgPath}/rats.png' /></section>Note: The encounter set icon for each Tidal Tunnel location appears only on the location’s revealed side.",
+    "placeKeys": "Place each key as follows:",
+    "faceupKeys": "Set the blue and green key aside, faceup.",
+    "facedownKeys": "Set the red, yellow, and purple keys aside, facedown. Shuffle them so you do not know which is which.",
+    "removeKeys": "Remove the black and white keys from the game. They are not used in this scenario.",
+    "placeLocations": "Put the Unfamiliar Chamber location into play.",
+    "startAt": "Each investigator begins play at the Unfamiliar Chamber.",
+    "setAsideLocations": "Find each of the following locations and set them aside, out of play: Idol Chamber, Altar to Dagon, and Sealed Exit (each of these locations is on the reverse side of a Tidal Tunnel location).",
+    "tidalTunnels": "Shuffle the remainder of the Tidal Tunnel locations and randomly put three of them into play below, to the left, and to the right of the Unfamiliar Chamber, unrevealed side faceup.",
+    "setAsideTidalTunnels": "Set the rest of the Tidal Tunnel locations aside, out of play.",
+    "setAsideCards": "Set each of the following cards aside, out of play: The Amalgam enemy, both copies of the Blindsense treachery, and all 3 copies of the From the Depths treachery.",
+    "floodTokens": "Add the flood tokens to the token pool."
+  },
   "specialRules": [
     {
       "title": "Tidal Tunnels",

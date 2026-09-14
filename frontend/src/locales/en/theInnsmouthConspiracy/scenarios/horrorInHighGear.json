@@ -1,5 +1,28 @@
 {
   "heading": "Scenario V",
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Horror in High Gear*, *Fog over Innsmouth*, *Malfunction*, *Shattered Memories*, and *Ancient Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/horror-in-high-gear.png' /><img src='{setImgPath}/fog-over-innsmouth.png' /><img src='{setImgPath}/malfunction.png' /><img src='{setImgPath}/shattered-memories.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+    "roadDeck": "Create the Road deck. This is done by performing the following steps:",
+    "findRoadLocations": "Find Falcon Point Approach and all 6 copies of Long Way Around. Each one is the revealed side of an Old Innsmouth Road location. Set each of them aside, out of play.",
+    "bottomThree": "Shuffle the set-aside Falcon Point Approach and two Old Innsmouth Road locations together to form the bottom three cards of the Road deck.",
+    "remainingOnTop": "Place all of the remaining Old Innsmouth Road locations on top in a random order.",
+    "unrevealedSide": "All of the cards in the Road deck should be showing only the Old Innsmouth Road side, so that the players do not know which is which.",
+    "putRoadIntoPlay": "Put the top 3 cards of the Road deck into play in a straight line from left to right, where left is the “rear” and right is the “front.”",
+    "chooseVehicles": "Choose vehicles. There are two vehicles the investigators can use in this scenario—Thomas Dawson’s Car and Elina Harper’s Car. Each investigator must choose a vehicle to board. No more than two investigators can board the same vehicle.",
+    "vehiclesBeginAtFront": "Each vehicle that is boarded by at least one investigator begins play at the front Old Innsmouth Road location. Remove each other vehicle from the game.",
+    "runningSide": "Each vehicle begins play with its Running side faceup.",
+    "beginInVehicle": "Each investigator begins play in the vehicle they chose to board.",
+    "triggerRoad": "Trigger that location’s Road X keyword when it is revealed.",
+    "chooseDrivers": "Choose drivers. One investigator in each vehicle must be designated as the driver of that vehicle.",
+    "driverNote": "There must always be a driver for each vehicle with at least one investigator in it. If the driver leaves the vehicle or is eliminated, choose another investigator in that vehicle to become the new driver.",
+    "playerCount": "Based on the number of players in the game:",
+    "onePlayer": "If there is exactly 1 player in the game, no changes are made.",
+    "twoOrThreePlayers": "If there are 2–3 players in the game, search the gathered encounter sets for 1 random _Vehicle_ enemy. Spawn that enemy at the rearmost location.",
+    "fourPlayers": "If there are exactly 4 players in the game, search the gathered encounter sets for 2 random _Vehicle_ enemies. Spawn each of those enemies at the rearmost location.",
+    "checkCampaignLog": "Check the Campaign Log. Depending on the following circumstances, a different version of agenda 1 should be used in this scenario. Remove the other version of agenda 1 from the game.",
+    "theChaseIsOnV2": "If _the Terror of Devil Reef is dead_, use Agenda 1a—The Chase is On! (v. II).",
+    "theChaseIsOnV1": "Otherwise, use Agenda 1a—The Chase is On! (v. I)."
+  },
   "specialRules": [
     {
       "title": "Vehicles",

@@ -1,5 +1,19 @@
 {
   "heading": "Scenario III",
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *In Too Deep*, *Creatures of the Deep*, *Rising Tide*, *Syzygy*, *The Locals*, and *Agents of Cthulhu*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/in-too-deep.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/rising-tide.png' /><img src='{setImgPath}/syzygy.png' /><img src='{setImgPath}/locals.png' /><img src='{setImgPath}/agents-of-cthulhu.png' /></section>",
+    "placeLocations": "Put all 15 locations into play.",
+    "barriers": "Place 24 barriers (using resource tokens) between these locations, as shown.",
+    "startAt": "Each investigator begins play at the Desolate Coastline.",
+    "placeKeys": "Place each key as follows:",
+    "blackKey": "Check the “Possible Hideouts” section of the Campaign Log for the location that is circled. Place the black key on that location. (If no location is circled, skip this step.)",
+    "otherKeys": "Set each other key aside, facedown. Shuffle them so you don’t know which is which.",
+    "outForBlood": "Check the Campaign Log for each _Suspect_ enemy that is out for blood and trigger each of their revelation abilities without placing clues on them.",
+    "setAsideCards": "Set the following cards aside, out of play: 2 copies of the Ravager from the Deep enemy, 2 copies of the Young Deep One enemy, the Joe Sargent story asset, the Teachings of the Order story asset, and the Innsmouth Shoggoth enemy.",
+    "angryMob": "Search the collection for Angry Mob (The Innsmouth Conspiracy card #62b) and set it aside, out of play. (This card is on the reverse side of the “Finding Agent Harper” story card.)",
+    "floodTokens": "Add the flood tokens to the token pool.",
+    "increaseFloodLevel": "Increase the flood level of each of the following locations: The House on Water Street, Innsmouth Harbour, and Desolate Coastline."
+  },
   "specialRules": [
     {
       "title": "Barriers",

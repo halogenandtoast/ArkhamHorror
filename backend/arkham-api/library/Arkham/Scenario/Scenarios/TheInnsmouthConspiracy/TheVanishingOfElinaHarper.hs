@@ -12,8 +12,8 @@ import Arkham.Enemy.CardDefs.NightOfTheZealot.Nightgaunts qualified as Enemies
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.FogOverInnsmouth qualified as Enemies
 import Arkham.Exception
 import Arkham.Helpers.Agenda (getCurrentAgendaStep)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Scenario
-import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Locations
 import Arkham.Matcher
@@ -78,6 +78,19 @@ instance RunMessage TheVanishingOfElinaHarper where
       {- FOURMOLU_ENABLE -}
       pure s
     Setup -> runScenarioSetup TheVanishingOfElinaHarper attrs do
+      setup $ ul do
+        li "gatherSets"
+        li.nested "placeLocations" do
+          li "startAt"
+        li.nested "leadsDeck" do
+          li "findingAgentHarper"
+          li "splitPiles"
+          li "chooseRandomly"
+          li "shuffleRemaining"
+        li "setAsideAgendaAndAct"
+        li "setAsideCards"
+        unscoped $ li "shuffleRemainder"
+
       gather Set.TheVanishingOfElinaHarper
       gather Set.AgentsOfDagon
       gather Set.FogOverInnsmouth

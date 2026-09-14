@@ -1,5 +1,27 @@
 {
   "heading": "Scenario IV",
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *Devil Reef*, *Agents of Hydra*, *Creatures of the Deep*, *Flooded Caverns*, *Malfunction*, and *Rising Tide*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/devil-reef.png' /><img src='{setImgPath}/agents-of-hydra.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/malfunction.png' /><img src='{setImgPath}/rising-tide.png' /></section>",
+    "placeKeys": "Set each key aside, as follows:",
+    "faceupKeys": "Set the purple, white, and black keys aside, faceup.",
+    "facedownKeys": "Set the yellow, green, red, and blue keys aside, facedown. Shuffle them so you do not know which is which.",
+    "churningWaters": "Put the Churning Waters location into play. (It enters play fully flooded.)",
+    "fishingVessel": "Put the Fishing Vessel story asset into play at Churning Waters.",
+    "startInVessel": "Each investigator begins play in the Fishing Vessel.",
+    "setAsideRelics": "Set the following story assets aside, out of play: Awakened Mantle, Headdress of Y’ha-nthlei, and Waveworn Idol.",
+    "devilReefLocations": "Shuffle the 5 Devil Reef locations and put each of them into play, unrevealed side faceup.",
+    "notAdjacent": "Do not place them adjacent to Churning Waters—these locations are connected not via adjacency, but via their connection symbols.",
+    "unfathomableDepths": "Prepare the Unfathomable Depths by performing the following steps:",
+    "removeThree": "First, remove 1 of each of the following locations from the game without looking at them: Cyclopean Ruins, Deep One Grotto, and Temple of the Union. Each of these locations is the revealed side of an Unfathomable Depths location.",
+    "setAsideThree": "Set the remaining 3 Unfathomable Depths locations aside, out of play.",
+    "tidalTunnelsDeck": "Shuffle the 8 Tidal Tunnel locations to form the Tidal Tunnels deck.",
+    "unrevealedSide": "Each of the cards in the Tidal Tunnels deck should have its unrevealed side faceup so that only the “Tidal Tunnel” side is showing.",
+    "placeNearEncounterDeck": "Place this deck near the encounter deck.",
+    "checkCampaignLog": "Check the “Memories Recovered” section of the Campaign Log. Depending on the following circumstances, a different version of agenda 1 should be used in this scenario. Remove the other version of agenda 1 from the game.",
+    "secretsOfTheSeaV1": "If _a battle with a horrifying devil_ is listed under Memories Recovered, use Agenda 1a—Secrets of the Sea (v. I).",
+    "secretsOfTheSeaV2": "Otherwise, use Agenda 1a—Secrets of the Sea (v. II).",
+    "floodTokens": "Add the flood tokens to the token pool."
+  },
   "specialRules": [
     {
       "title": "Vehicles",

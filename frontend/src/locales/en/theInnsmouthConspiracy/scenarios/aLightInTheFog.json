@@ -1,5 +1,25 @@
 {
   "heading": "Scenario VI",
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *A Light in the Fog*, *Creatures of the Deep*, *Flooded Caverns*, *Rising Tide*, *Syzygy*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/a-light-in-the-fog.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img src='{setImgPath}/rising-tide.png' /><img src='{setImgPath}/syzygy.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "Put Falcon Point Gatehouse, Falcon Point Cliffside, Lighthouse Stairwell, and Lighthouse Keeper’s Cottage into play on the same row. Put Lantern Room into play directly above Lighthouse Stairwell.",
+    "startAt": "Each investigator begins play at Falcon Point Gatehouse.",
+    "removeUndergroundRivers": "From among the Tidal Tunnel locations, remove the 2 Underground River locations from the game.",
+    "setAsideOtherLocations": "Set each other location aside, out of play.",
+    "placeKeys": "Set each key aside, as follows:",
+    "faceupKeys": "Set the white, black, blue, yellow, and red keys aside, faceup.",
+    "facedownKeys": "Set the purple and green keys aside, facedown. Shuffle them so you do not know which is which.",
+    "captured": "Put the double-sided “Captured!” story card into play next to the scenario reference card, with its story side faceup. (This card is on the reverse side of the Holding Cells location.) Its text is active.",
+    "setAsideCards": "Set the following cards aside, out of play: the Oceiros Marsh enemy, both copies of the Worth His Salt treachery, and both copies of the Taken Captive treachery.",
+    "checkCampaignLog": "Check Campaign Log.",
+    "wavewornIdol": "If _the idol was brought to the lighthouse_, search the collection for the Waveworn Idol and set it aside, out of play.",
+    "awakenedMantle": "If _the mantle was brought to the lighthouse_, search the collection for the Awakened Mantle and set it aside, out of play.",
+    "headdressOfYhaNthlei": "If _the headdress was brought to the lighthouse_, search the collection for the Headdress of Y’ha-nthlei and set it aside, out of play.",
+    "checkCampaignLogDoom": "Check Campaign Log.",
+    "afterSunrise": "If _the investigators reached Falcon Point after sunrise_, place 1 doom on agenda 1.",
+    "tideHasGrownStronger": "If _the tide has grown stronger_, place 1 doom on agenda 1.",
+    "floodTokens": "Add the flood tokens to the token pool."
+  },
   "specialRules": [
     {
       "title": "Keys",

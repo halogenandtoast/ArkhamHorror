@@ -1,5 +1,17 @@
 {
   "heading": "Scenario II",
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *The Vanishing of Elina Harper*, *Agents of Dagon*, *Fog over Innsmouth*, *The Locals*, *Chilling Cold*, *Locked Doors*, *Nightgaunts*, and *The Midnight Masks*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/disappearance-of-elina-harper.png' /><img src='{setImgPath}/agents-of-dagon.png' /><img src='{setImgPath}/fog-over-innsmouth.png' /><img src='{setImgPath}/locals.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/midnight-masks.png' /></section>When gathering The Midnight Masks encounter set, only gather the five treachery cards (2x False Lead and 3x Hunting Shadow). Do not gather any of the other cards from that encounter set.",
+    "placeLocations": "Put the following locations into play: Innsmouth Square, Marsh Refinery, Innsmouth Harbour, Fish Street Bridge, First National Grocery, Gilman House, and The Little Bookshop.",
+    "startAt": "Each investigator begins play at the Innsmouth Square.",
+    "leadsDeck": "Prepare the Leads deck. This is done by performing the following steps:",
+    "findingAgentHarper": "Put the double-sided Finding Agent Harper reference card into play, next to the scenario reference card.",
+    "splitPiles": "Find the six unique enemies with the _Suspect_ trait and the six single-sided locations with the _Hideout_ trait. Split them into two piles: one pile for the _Suspect_ enemies and one pile for the _Hideout_ locations.",
+    "chooseRandomly": "Randomly choose one card from each pile (one _Suspect_ enemy and one _Hideout_ location) and place them facedown beneath the Finding Agent Harper card without looking at them.",
+    "shuffleRemaining": "Shuffle the ten remaining cards from the two piles together to form a deck. This deck is called the Leads deck. Place it near the scenario reference card.",
+    "setAsideAgendaAndAct": "Set agenda 3 and act 2 aside, out of play. (Do not use them when building the agenda deck and act deck.)",
+    "setAsideCards": "Set each of the following cards aside, out of play: the Thomas Dawson and Elina Harper story assets, both copies of the Hunting Nightgaunt enemy, and the Winged One enemy."
+  },
   "specialRules": [
     {
       "title": "Finding Agent Harper",

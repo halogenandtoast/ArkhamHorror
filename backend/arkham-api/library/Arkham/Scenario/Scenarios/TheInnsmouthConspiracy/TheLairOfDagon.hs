@@ -13,11 +13,11 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Enemies
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (withSkillTest)
-import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Key
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Locations
@@ -98,6 +98,34 @@ instance RunMessage TheLairOfDagon where
       {- FOURMOLU_ENABLE -}
       pure s
     Setup -> runScenarioSetup TheLairOfDagon attrs do
+      encounterWithASecretCult <- hasMemory AnEncounterWithASecretCult
+      aDecisionToStickTogether <- hasMemory ADecisionToStickTogether
+      aJailbreak <- hasMemory AJailbreak
+      memories <- getRecordSet MemoriesRecovered
+
+      setup $ ul do
+        li "gatherSets"
+        li.nested "placeKeys" do
+          li "faceupKeys"
+          li "facedownKeys"
+        li.nested "placeLocations" do
+          li "startAt"
+          li "setAsideOtherLocations"
+        li "setAsideCards"
+        li.nested "checkMemories" do
+          li.validate (length memories <= 4) "fourOrFewer"
+          li.validate (length memories >= 5 && length memories <= 7) "fiveToSeven"
+          li.validate (length memories >= 8) "eightOrMore"
+        li.validate aJailbreak "jailbreak"
+        li.nested "checkSecretCult" do
+          li.validate encounterWithASecretCult "theInitiationV1"
+          li.validate (not encounterWithASecretCult) "theInitiationV2"
+        li.nested "checkStickTogether" do
+          li.validate aDecisionToStickTogether "whatLurksBelowV1"
+          li.validate (not aDecisionToStickTogether) "whatLurksBelowV2"
+        li "floodTokens"
+        unscoped $ li "shuffleRemainder"
+
       gather Set.TheLairOfDagon
       gather Set.AgentsOfDagon
       gather Set.FloodedCaverns
@@ -108,8 +136,6 @@ instance RunMessage TheLairOfDagon where
       randomizedKeys <- shuffle $ map UnrevealedKey [WhiteKey, YellowKey]
       setAsideKeys $ [BlackKey, BlueKey, GreenKey, PurpleKey, RedKey] <> randomizedKeys
 
-      encounterWithASecretCult <- hasMemory AnEncounterWithASecretCult
-      aDecisionToStickTogether <- hasMemory ADecisionToStickTogether
       setAgendaDeck
         [ if encounterWithASecretCult then Agendas.theInitiationV1 else Agendas.theInitiationV2
         , if aDecisionToStickTogether then Agendas.whatLurksBelowV1 else Agendas.whatLurksBelowV2
@@ -134,8 +160,6 @@ instance RunMessage TheLairOfDagon where
         , Enemies.apostleOfDagon
         , Enemies.dagonDeepInSlumber
         ]
-
-      memories <- getRecordSet MemoriesRecovered
 
       case length memories of
         n | n <= 4 -> replicateM_ 5 $ addChaosToken #bless

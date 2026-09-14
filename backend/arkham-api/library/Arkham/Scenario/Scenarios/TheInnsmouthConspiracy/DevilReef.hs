@@ -12,10 +12,10 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
 import Arkham.Helpers.Agenda
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy, isEvadeWith, isFightWith)
-import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Locations
@@ -85,6 +85,31 @@ instance RunMessage DevilReef where
       setChaosTokens standaloneTokens
       pure s
     Setup -> runScenarioSetup DevilReef attrs do
+      aBattle <- hasMemory ABattleWithAHorrifyingDevil
+
+      setup $ ul do
+        li "gatherSets"
+        li.nested "placeKeys" do
+          li "faceupKeys"
+          li "facedownKeys"
+        li.nested "churningWaters" do
+          li "fishingVessel"
+          li "startInVessel"
+        li "setAsideRelics"
+        li.nested "devilReefLocations" do
+          li "notAdjacent"
+        li.nested "unfathomableDepths" do
+          li "removeThree"
+          li "setAsideThree"
+        li.nested "tidalTunnelsDeck" do
+          li "unrevealedSide"
+          li "placeNearEncounterDeck"
+        li.nested "checkCampaignLog" do
+          li.validate aBattle "secretsOfTheSeaV1"
+          li.validate (not aBattle) "secretsOfTheSeaV2"
+        li "floodTokens"
+        unscoped $ li "shuffleRemainder"
+
       gather Set.DevilReef
       gather Set.AgentsOfHydra
       gather Set.CreaturesOfTheDeep
@@ -98,8 +123,6 @@ instance RunMessage DevilReef where
         leadChooseOneM do
           questionLabeled "addThomasDawsonToHand"
           targets investigators (`addToHand` only thomasDawson)
-
-      aBattle <- hasMemory ABattleWithAHorrifyingDevil
 
       let agenda1 = if aBattle then Agendas.secretsOfTheSeaV1 else Agendas.secretsOfTheSeaV2
 

@@ -12,10 +12,10 @@ import Arkham.Enemy.CardDefs.NightOfTheZealot.AgentsOfCthulhu qualified as Enemi
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Enemies
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
 import Arkham.Exception
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getConnectedLocations, getLocationOf, withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelectMaybe )
 import Arkham.Helpers.Xp
-import Arkham.I18n
 import Arkham.Id
 import Arkham.Key
 import Arkham.Location.CardDefs.TheDreamEaters qualified as Locations
@@ -133,6 +133,21 @@ instance RunMessage InTooDeep where
       pure s
     Setup -> runScenarioSetup InTooDeep attrs do
       setUsesGrid
+
+      setup $ ul do
+        li "gatherSets"
+        li.nested "placeLocations" do
+          li "barriers"
+          li "startAt"
+        li.nested "placeKeys" do
+          li "blackKey"
+          li "otherKeys"
+        li "outForBlood"
+        li "setAsideCards"
+        li "angryMob"
+        li.nested "floodTokens" do
+          li "increaseFloodLevel"
+        unscoped $ li "shuffleRemainder"
 
       gather Set.InTooDeep
       gather Set.CreaturesOfTheDeep

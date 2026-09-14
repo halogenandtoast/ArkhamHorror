@@ -16,7 +16,8 @@ firstAid3 :: AssetCard FirstAid3
 firstAid3 = assetWith FirstAid3 Cards.firstAid3 (whenNoUsesL ?~ DiscardWhenNoUses)
 
 healableAsset :: Sourceable source => source -> DamageType -> LocationMatcher -> AssetMatcher
-healableAsset (toSource -> source) hType loc = HealableAsset source hType $ at_ loc <> AssetControlledBy (affectsOthers Anyone)
+healableAsset (toSource -> source) hType loc =
+  HealableAsset source hType $ #ally <> at_ loc <> AssetControlledBy (affectsOthers Anyone)
 
 instance HasAbilities FirstAid3 where
   getAbilities (FirstAid3 x) = [controlled x 1 criteria $ actionAbilityWithCost (assetUseCost x Supply 1)]

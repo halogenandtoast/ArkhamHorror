@@ -11,8 +11,8 @@ import Arkham.I18n
 import Arkham.Json
 import Arkham.Prelude
 import Arkham.Tarot
-import Data.Aeson.TH
 import Data.Aeson.KeyMap qualified
+import Data.Aeson.TH
 
 newtype Tooltip = Tooltip Text
   deriving stock Data
@@ -35,6 +35,7 @@ data FlavorTextModifier
   | NoUnderline
   | CodexEntry
   | HauntedEntry
+  | TokenRevealEntry
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry
@@ -65,7 +66,7 @@ data FlavorTextEntry
   | EntrySplit
   deriving stock (Show, Eq, Ord, Data)
 
-data ImageModifier = RemoveImage | SelectImage
+data ImageModifier = RemoveImage | SelectImage | SmallImage
   deriving stock (Show, Eq, Ord, Data)
 
 instance Semigroup FlavorTextEntry where
@@ -99,8 +100,20 @@ i18n = FlavorText Nothing . pure . i18nEntry
 i18nEntry :: HasI18n => Scope -> FlavorTextEntry
 i18nEntry t = I18nEntry (intercalate "." (?scope <> [t])) ?scopeVars
 
+headerEntry :: HasI18n => Scope -> FlavorTextEntry
+headerEntry t = HeaderEntry 1 (intercalate "." (?scope <> [t]))
+
 i18nWithTitle :: HasI18n => Text -> FlavorText
 i18nWithTitle t = FlavorText (Just $ toI18n $ t <> ".title") [i18nEntry $ t <> ".body"]
+
+{- | 'i18nWithTitle' with the title also shown as a heading in the body, the way
+a scenario intro is presented.
+-}
+i18nWithHeading :: HasI18n => Text -> FlavorText
+i18nWithHeading t =
+  FlavorText
+    (Just $ toI18n $ t <> ".title")
+    [headerEntry $ t <> ".title", i18nEntry $ t <> ".body"]
 
 toI18n :: HasI18n => Text -> Text
 toI18n = ("$" <>) . ikey
@@ -119,6 +132,7 @@ mconcat
         parseJSON (String s) = pure $ case s of
           "RemoveImage" -> RemoveImage
           "SelectImage" -> SelectImage
+          "SmallImage" -> SmallImage
           _ -> error $ "Unknown image modifier: " <> show s
         parseJSON _ = pure RemoveImage
       |]
@@ -127,7 +141,6 @@ mconcat
   , [d|
       instance FromJSON FlavorTextEntry where
         parseJSON (String s) = pure $ BasicEntry s
-
         parseJSON v@(Object obj) = do
           let addDefaultLevel c =
                 case Data.Aeson.KeyMap.lookup "level" c of
@@ -138,13 +151,11 @@ mconcat
               case Data.Aeson.KeyMap.lookup "contents" obj of
                 Just (Object c) ->
                   let obj' = Data.Aeson.KeyMap.insert "contents" (Object $ addDefaultLevel c) obj
-                  in $(mkParseJSON defaultOptions ''FlavorTextEntry) (Object obj')
+                   in $(mkParseJSON defaultOptions ''FlavorTextEntry) (Object obj')
                 _ ->
                   $(mkParseJSON defaultOptions ''FlavorTextEntry) (Object $ addDefaultLevel obj)
-
             _ ->
               $(mkParseJSON defaultOptions ''FlavorTextEntry) v
-
         parseJSON v =
           $(mkParseJSON defaultOptions ''FlavorTextEntry) v
       |]

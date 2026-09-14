@@ -1,6 +1,5 @@
 module Arkham.Homebrew.DarkMatter.Scenarios.TheTatterdemalion (theTatterdemalion) where
 
-import Arkham.Card (toCardDef)
 import Arkham.ChaosToken
 import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
@@ -8,8 +7,12 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
-import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
-import Arkham.Homebrew.DarkMatter.Helpers (addScanningDeck, earnXp, scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (
+  addReminiscenceToken,
+  addScanningDeck,
+  earnXp,
+  scenarioI18n,
+ )
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Homebrew.DarkMatter.Traits (pattern AI)
@@ -117,20 +120,7 @@ instance RunMessage TheTatterdemalion where
             <> EnemyHiddenInHand (InvestigatorWithId iid)
         when infected $ recordForInvestigator iid HasBeenInfectedByTheCybervirus
 
-      {- "If at least 1 copy of the Reminiscence treachery is in the victory
-      display, add 1 [elder thing] token to the chaos bag for the remainder of
-      the campaign." -}
-      reminiscences <-
-        selectAny
-          $ VictoryDisplayCardMatch
-          $ basic
-          $ mapOneOf
-            (cardIs . toCardDef)
-            [ Treacheries.reminiscencePledge
-            , Treacheries.reminiscenceSecrets
-            , Treacheries.reminiscenceCovenant
-            ]
-      when reminiscences $ addChaosToken ElderThing
+      addReminiscenceToken
 
       earnXp attrs resolutionKey
       endOfScenario

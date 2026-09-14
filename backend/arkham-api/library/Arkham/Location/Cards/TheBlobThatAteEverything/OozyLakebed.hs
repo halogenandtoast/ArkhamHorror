@@ -21,7 +21,7 @@ instance HasAbilities OozyLakebed where
     extendRevealed1 a
       $ mkAbility a 1
       $ forced
-      $ EnemySpawns #after (be a) (EnemyWithTrait Manifold)
+      $ EnemySpawns #after (PlacementAt $ be a) (EnemyWithTrait Manifold)
 
 instance RunMessage OozyLakebed where
   runMessage msg l@(OozyLakebed attrs) = runQueueT $ case msg of

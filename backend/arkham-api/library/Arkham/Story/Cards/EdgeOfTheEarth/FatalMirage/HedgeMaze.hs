@@ -23,7 +23,7 @@ instance RunMessage HedgeMaze where
         for_ mMoaiStatues \loc ->
           withI18n
             $ keyVar "name" "Mo'ai Statues"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
       pure s
     _ -> HedgeMaze <$> liftRunMessage msg attrs

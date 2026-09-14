@@ -73,9 +73,9 @@ instance RunMessage EnchantedBow2 where
         <> (guard (n > 0) *> [IgnoreAloof, IgnoreRetaliate])
 
       chooseOneM iid do
-        (withI18n $ skillVar #willpower $ labeled' "useSkill") do
+        (withI18n $ skillVar #willpower $ labeled "useSkill") do
           aspect iid source (#willpower `InsteadOf` #combat) fight
-        (withI18n $ skillVar #agility $ labeled' "useSkill") do
+        (withI18n $ skillVar #agility $ labeled "useSkill") do
           aspect iid source (#agility `InsteadOf` #combat) fight
       pure . EnchantedBow2 $ setMeta (n > 0) attrs
     ResolvedAbility ab | isSource attrs ab.source -> do

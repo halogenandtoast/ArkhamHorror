@@ -31,7 +31,7 @@ instance RunMessage PhysicalTraining4 where
       withSkillTest \sid -> do
         let source = attrs.ability 1
         chooseOneM iid do
-          (withI18n $ skillVar #willpower $ labeled' "chooseSkill") $ skillTestModifier sid source iid (SkillModifier #willpower 1)
-          (withI18n $ skillVar #combat $ labeled' "chooseSkill") $ skillTestModifier sid source iid (SkillModifier #combat 1)
+          (withI18n $ skillVar #willpower $ labeled "chooseSkill") $ skillTestModifier sid source iid (SkillModifier #willpower 1)
+          (withI18n $ skillVar #combat $ labeled "chooseSkill") $ skillTestModifier sid source iid (SkillModifier #combat 1)
       pure a
     _ -> PhysicalTraining4 <$> liftRunMessage msg attrs

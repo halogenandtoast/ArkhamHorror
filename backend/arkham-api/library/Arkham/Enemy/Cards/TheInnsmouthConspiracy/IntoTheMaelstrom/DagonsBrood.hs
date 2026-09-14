@@ -46,7 +46,7 @@ instance RunMessage DagonsBrood where
         Nothing -> do
           dagon <- selectJust $ IncludeOmnipotent $ enemyIs Cards.dagonAwakenedAndEnragedIntoTheMaelstrom
           chooseOneM iid $ scenarioI18n $ scope "dagonsBrood" do
-            labeled' "placeDoomOnDagon" $ placeDoom (attrs.ability 1) dagon 1
-            labeled' "dagonAttacksYou" $ initiateEnemyAttack dagon (attrs.ability 1) iid
+            labeled "placeDoomOnDagon" $ placeDoom (attrs.ability 1) dagon 1
+            labeled "dagonAttacksYou" $ initiateEnemyAttack dagon (attrs.ability 1) iid
       pure e
     _ -> DagonsBrood <$> liftRunMessage msg attrs

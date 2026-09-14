@@ -14,26 +14,27 @@ newtype GrandBallroom = GrandBallroom LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | The [[Carcosa]] face of Cyclopean Caverns.
 grandBallroom :: LocationCard GrandBallroom
-grandBallroom = locationWith GrandBallroom Cards.grandBallroom 4 (PerPlayer 2) (canBeFlippedL .~ True)
+grandBallroom =
+  symbolLabel
+    $ locationWith GrandBallroom Cards.grandBallroom 4 (PerPlayer 2) (canBeFlippedL .~ True)
 
-{- | "{fast} If this location is the only [[Carcosa]] location in play: Read the
-set aside \"Arrival of the King\" story card. (Max once per game.)"
--}
 instance HasAbilities GrandBallroom where
   getAbilities (GrandBallroom a) =
     extendRevealed1 a
-      $ playerLimit PerGame
-      $ restricted a 1 (Here <> not_ (exists $ LocationWithTrait Carcosa <> not_ (be a)))
-      $ freeReaction AnyWindow
+      $ groupLimit PerGame
+      $ restricted
+        a
+        1
+        (Here <> not_ (exists $ LocationWithTrait Carcosa <> not_ (be a)))
+        freeTrigger_
 
 instance RunMessage GrandBallroom where
   runMessage msg l@(GrandBallroom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       readStory iid attrs.id Stories.arrivalOfTheKing
       pure l
-    Flip _ _ (isTarget attrs -> True) -> do
-      flipToOtherSide attrs
+    Flip iid _ (isTarget attrs -> True) -> do
+      flipToOtherSide iid attrs
       pure l
     _ -> GrandBallroom <$> liftRunMessage msg attrs

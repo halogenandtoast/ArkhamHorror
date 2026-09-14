@@ -79,7 +79,7 @@ standaloneChaosTokens =
 instance RunMessage PointOfNoReturn where
   runMessage msg s@(PointOfNoReturn attrs) = runQueueT $ withI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.intro"
+      story $ i18nWithHeading "theDreamEaters.pointOfNoReturn.intro"
       randolphDidNotSurvive <- getHasRecord RandolphDidNotSurviveTheDescent
       if randolphDidNotSurvive
         then story $ i18nWithTitle "theDreamEaters.pointOfNoReturn.intro1"

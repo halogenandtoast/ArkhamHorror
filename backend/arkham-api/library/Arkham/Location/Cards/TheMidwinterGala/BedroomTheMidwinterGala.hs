@@ -44,9 +44,9 @@ instance RunMessage BedroomTheMidwinterGala where
       clues <- getSpendableClueCount [iid]
       when (clues > 0) do
         chooseOrRunOneM iid $ withI18n do
-          countVar 1 $ labeled' "spendClues" do
+          countVar 1 $ labeled "spendClues" do
             spendClues iid 1
             getSkillTestTargetedEnemy >>= traverse_ (attackEnemyDamage (attrs.ability 1) 2)
-          labeled' "skip" nothing
+          labeled "skip" nothing
       pure l
     _ -> BedroomTheMidwinterGala <$> liftRunMessage msg attrs

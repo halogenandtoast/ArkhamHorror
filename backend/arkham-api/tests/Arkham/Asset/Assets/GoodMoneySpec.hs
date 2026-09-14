@@ -48,6 +48,17 @@ spec = describe "Good Money" do
       useForcedAbility
       getRecordCountForInvestigator (toId self) Key.GoodMoney `shouldReturn` 1
 
+    -- Resigning and then ending the scenario opens both windows the Task listens
+    -- on, which used to mark the progress twice (#5650).
+    it "marks 1 progress only once when you resign and then the game ends" . gameTest $ \self -> do
+      goodMoney <- self `putAssetIntoPlay` Assets.goodMoney
+      run $ PlaceTokens GameSource (toTarget goodMoney) #resource 5
+      run $ Resign (toId self)
+      useForcedAbility
+      endGame
+      assertHasNoReaction
+      getRecordCountForInvestigator (toId self) Key.GoodMoney `shouldReturn` 1
+
     it "marks no progress when the game ends with fewer than 5 resources on it" . gameTest $ \self -> do
       goodMoney <- self `putAssetIntoPlay` Assets.goodMoney
       run $ PlaceTokens GameSource (toTarget goodMoney) #resource 4

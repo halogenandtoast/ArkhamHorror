@@ -112,6 +112,9 @@ getSetAsideCardMaybe def = do
   (\card -> if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id)
     <$$> selectOne (SetAsideCardMatch $ cardIs def)
 
+withSetAsideCard :: (HasCallStack, HasGame m) => CardDef -> (Card -> m ()) -> m ()
+withSetAsideCard def body = getSetAsideCardMaybe def >>= traverse_ body
+
 getSetAsideEncounterSet :: HasGame m => EncounterSet -> m [Card]
 getSetAsideEncounterSet encounterSet =
   scenarioFieldMap ScenarioSetAsideCards (filter ((== Just encounterSet) . getEncounterSet))

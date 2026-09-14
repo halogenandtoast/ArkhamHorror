@@ -119,6 +119,7 @@ gearedUp =
     $ (asset "08019" "Geared Up" 0 Guardian)
       { cdCardTraits = setFromList [Talent]
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      , cdTags = [hideWhenUsedTag]
       }
 
 butterflySwords2 :: CardDef
@@ -156,6 +157,7 @@ forcedLearning =
     $ (asset "08031" "Forced Learning" 0 Seeker)
       { cdCardTraits = setFromList [Talent, Ritual]
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      , cdTags = [noGameplayEffectTag]
       }
 
 jeremiahKirbyArcticArchaeologist :: CardDef
@@ -269,6 +271,7 @@ underworldSupport =
     $ (asset "08046" "Underworld Support" 0 Rogue)
       { cdCardTraits = setFromList [Favor, Illicit]
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      , cdTags = [noGameplayEffectTag]
       }
 
 theRedClockBrokenButReliable2 :: CardDef
@@ -324,6 +327,7 @@ downTheRabbitHole =
     $ (asset "08059" "Down the Rabbit Hole" 0 Mystic)
       { cdCardTraits = setFromList [Talent]
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      , cdTags = [noGameplayEffectTag]
       }
 
 dragonPole :: CardDef
@@ -390,6 +394,7 @@ shortSupply =
     $ (asset "08071" "Short Supply" 0 Survivor)
       { cdCardTraits = setFromList [Talent]
       , cdDeckRestrictions = [PerDeckLimit 1, PurchaseAtDeckCreation]
+      , cdTags = [hideWhenUsedTag]
       }
 
 schoffnersCatalogue :: CardDef
@@ -792,6 +797,7 @@ inTheThickOfIt =
       { cdCardTraits = singleton Curse
       , cdPurchaseTrauma = PurchaseAnyTrauma 2
       , cdGrantedXp = Just 3
+      , cdTags = [noGameplayEffectTag]
       }
 
 heavyFurs :: CardDef

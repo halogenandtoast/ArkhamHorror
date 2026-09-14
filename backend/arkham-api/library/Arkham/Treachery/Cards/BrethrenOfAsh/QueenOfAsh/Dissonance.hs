@@ -22,8 +22,8 @@ instance RunMessage Dissonance where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       loseActions iid attrs 1
       chooseOneM iid $ withI18n do
-        labeled' "assets" $ discardAll iid attrs $ #asset <> not_ #weakness
-        labeled' "events" $ discardAll iid attrs $ #event <> not_ #weakness
-        labeled' "skills" $ discardAll iid attrs $ #skill <> not_ #weakness
+        labeled "assets" $ discardAll iid attrs $ #asset <> not_ #weakness
+        labeled "events" $ discardAll iid attrs $ #event <> not_ #weakness
+        labeled "skills" $ discardAll iid attrs $ #skill <> not_ #weakness
       pure t
     _ -> Dissonance <$> liftRunMessage msg attrs

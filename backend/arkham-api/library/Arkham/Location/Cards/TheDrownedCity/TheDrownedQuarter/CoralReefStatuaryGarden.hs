@@ -13,7 +13,7 @@ newtype CoralReefStatuaryGarden = CoralReefStatuaryGarden LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coralReefStatuaryGarden :: LocationCard CoralReefStatuaryGarden
-coralReefStatuaryGarden = location CoralReefStatuaryGarden Cards.coralReefStatuaryGarden 4 (Static 3)
+coralReefStatuaryGarden = location CoralReefStatuaryGarden Cards.coralReefStatuaryGarden 4 (PerPlayer 3)
 
 instance HasAbilities CoralReefStatuaryGarden where
   getAbilities (CoralReefStatuaryGarden a) =
@@ -29,7 +29,7 @@ instance RunMessage CoralReefStatuaryGarden where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       drawCards iid (attrs.ability 1) 2
       gainResources iid (attrs.ability 1) 2
-      createEnemyAt_ Enemies.underseaParasite attrs
+      whenJustM (getSetAsideCardMaybe Enemies.underseaParasite) (`spawnEnemyAt_` attrs)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       increaseThisFloodLevel attrs

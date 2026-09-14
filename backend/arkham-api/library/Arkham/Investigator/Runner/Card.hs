@@ -82,7 +82,7 @@ import Arkham.Helpers.Cost (getCanAffordCost, getSpendableResources, hasSkillTes
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Deck qualified as Deck
 import Arkham.Helpers.Discover
-import Arkham.Helpers.Game (withAlteredGame)
+import Arkham.Helpers.Game (getRemovedFromPlayCards, withAlteredGame)
 import Arkham.Helpers.Location (
   getCanMoveTo,
   getCanMoveToMatchingLocations,
@@ -160,7 +160,6 @@ import Arkham.Modifier qualified as Modifier
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
-import Arkham.Plural
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.ScenarioLogKey
@@ -324,9 +323,18 @@ handleDiscardCard a@InvestigatorAttrs {..} iid source cardId msg = do
       afterWindowMsg <- checkWindows [mkAfter (Window.Discarded (Just iid) source card)]
       beforeHandWindowMsg <- checkWindows [mkWhen (Window.DiscardedFromHand iid source card)]
       afterHandWindowMsg <- checkWindows [mkAfter (Window.DiscardedFromHand iid source card)]
+      -- A bare DiscardCard outside a DiscardFromHand batch never reaches
+      -- DoneDiscarding, so it opens its own single-card batch window here.
+      batchWindowMsgs <-
+        if isJust investigatorDiscarding
+          then pure []
+          else pure <$> checkWindows [mkAfter (Window.DiscardedFromHandBatch iid source [card])]
       if inMulligan
         then push (Do msg)
-        else pushAll [beforeWindowMsg, beforeHandWindowMsg, Do msg, afterWindowMsg, afterHandWindowMsg]
+        else
+          pushAll
+            $ [beforeWindowMsg, beforeHandWindowMsg, Do msg, afterWindowMsg, afterHandWindowMsg]
+            <> batchWindowMsgs
     Nothing -> do
       card <- getCard cardId
       beforeWindowMsg <- checkWindows [mkWhen (Window.Discarded (Just iid) source card)]
@@ -342,6 +350,7 @@ handleDoDiscardCard a@InvestigatorAttrs {..} iid cardId = do
           updateHandDiscard handDiscard =
             handDiscard
               { discardAmount = max 0 (discardAmount handDiscard - 1)
+              , discardBatchCards = discardBatchCards handDiscard <> [card]
               }
         push $ AddToDiscard iid pc
         pure $ a & handL %~ filter (/= card) & discardingL %~ fmap updateHandDiscard
@@ -354,6 +363,13 @@ handleDoDiscardCard a@InvestigatorAttrs {..} iid cardId = do
 handleDoneDiscarding a@InvestigatorAttrs {..} iid = case investigatorDiscarding of
   Nothing -> pure a
   Just handDiscard -> do
+    -- One window for the whole discard: "discard 1 or more cards from hand" is a
+    -- single event, so responders must not fire once per card.
+    unless (null $ discardBatchCards handDiscard) do
+      batchWindowMsg <-
+        checkWindows
+          [mkAfter (Window.DiscardedFromHandBatch iid handDiscard.source (discardBatchCards handDiscard))]
+      push batchWindowMsg
     when (discardAmount handDiscard == 0)
       $ for_ (discardThen handDiscard) push
     pure $ a & discardingL .~ Nothing
@@ -554,6 +570,15 @@ handlePutCardIntoPlay a@InvestigatorAttrs {..} card = do
     & (handL %~ filter (/= card))
     & (bondedCardsL %~ filter (/= card))
 
+removeCardFromZones :: Card -> InvestigatorAttrs -> InvestigatorAttrs
+removeCardFromZones card a =
+  a
+    & (handL %~ filter (/= card))
+    & (discardL %~ filter ((/= card) . PlayerCard))
+    & (deckL %~ Deck . filter ((/= card) . PlayerCard) . unDeck)
+    & (cardsUnderneathL %~ filter ((/= card) . toCard))
+    & (foundCardsL . each %~ filter (/= card))
+
 handleDiscardTopOfDeck a@InvestigatorAttrs {..} iid n source mTarget = do
   ok <- can.manipulate.deck iid
   if ok
@@ -706,11 +731,16 @@ handleDoDrawCardsV2 a@InvestigatorAttrs {..} iid cardDraw = do
                 (\mtch -> partition (`cardMatch` mtch) allBeforeFilter)
                 cardDraw.discard
             doShuffleBackInEachWeakness = ShuffleBackInEachWeakness `elem` cardDrawRules cardDraw
+            -- Only the weaknesses go back unresolved, the rest of the draw is a normal draw
+            (unresolved, resolved) =
+              if doShuffleBackInEachWeakness
+                then partition (`cardMatch` WeaknessCard) allDrawn
+                else ([], allDrawn)
             handleCard c = pure $ drawThisCardFrom iid c (Just cardDraw.deck)
-          msgs <- if not doShuffleBackInEachWeakness then concatMapM handleCard allDrawn else pure []
+          msgs <- concatMapM handleCard resolved
           player <- getPlayer iid
           let
-            weaknesses = map PlayerCard $ filter (`cardMatch` WeaknessCard) allDrawn
+            weaknesses = map PlayerCard unresolved
             msgs' =
               (<> msgs)
                 $ guard (doShuffleBackInEachWeakness && notNull weaknesses)
@@ -807,7 +837,11 @@ handleDoDrawCardsV2 a@InvestigatorAttrs {..} iid cardDraw = do
               push $ continueDraw (n - length deck)
               pure $ a & deckL .~ mempty & drawnCardsL %~ (<> deck)
             else do
-              let (drawn, deck') = splitAt n deck
+              -- A bottom draw comes off the other end, bottom-most card first.
+              let (drawn, deck') = case cardDraw.position of
+                    DrawFromTop -> splitAt n deck
+                    DrawFromBottom ->
+                      let (kept, bottom) = splitAt (length deck - n) deck in (reverse bottom, kept)
               finalizedDraw (investigatorDrawnCards <> drawn) deck'
 
 handleInvestigatorDrewPlayerCardFrom a@InvestigatorAttrs {..} iid card mDeck msg = do
@@ -1020,8 +1054,11 @@ handleDrawToHand a@InvestigatorAttrs {..} iid cards = do
     & (searchL . _Just . Search.drawnCardsL %~ (<> cards))
 
 handleAddToHand a@InvestigatorAttrs {..} iid cards msg = do
-  for_ cards obtainCard
-  push $ Do msg
+  -- a card removed from the game stays removed, even if a delayed effect returns it
+  removed <- map toCardId <$> getRemovedFromPlayCards
+  let cards' = filter ((`notElem` removed) . toCardId) cards
+  for_ cards' obtainCard
+  unless (null cards') $ push $ Do (AddToHand iid cards')
   pure a
 
 handleDoAddToHand a@InvestigatorAttrs {..} iid cards = do
@@ -1069,50 +1106,51 @@ handleShuffleCardsIntoDeckV2 a@InvestigatorAttrs {..} iid cards = do
     & (foundCardsL . each %~ filter (`notElem` cards))
 
 handleAddFocusedToHand a@InvestigatorAttrs {..} iid' cardSource cardId = do
-  let
-    card =
-      fromJustNote "missing card"
-        $ find ((== cardId) . toCardId) (findWithDefault [] cardSource $ a ^. foundCardsL)
-    foundCards' = Map.map (filter ((/= cardId) . toCardId)) (a ^. foundCardsL)
-  push $ addToHand iid' card
-  pure $ a & foundCardsL .~ foundCards' & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
+  case findFocusedCard a cardSource cardId of
+    Nothing -> pure a
+    Just card -> do
+      let foundCards' = Map.map (filter ((/= cardId) . toCardId)) (a ^. foundCardsL)
+      push $ addToHand iid' card
+      pure $ a & foundCardsL .~ foundCards' & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
 
 handleDrawFocusedToHand a@InvestigatorAttrs {..} iid' cardSource cardId = do
-  let
-    card =
-      fromJustNote "missing card"
-        $ find ((== cardId) . toCardId) (findWithDefault [] cardSource $ a ^. foundCardsL)
-    foundCards' = Map.map (filter ((/= cardId) . toCardId)) (a ^. foundCardsL)
-    -- SearchAllInvestigators can surface cards from another investigator's zone or
-    -- a scenario deck (FromCollection). Those aren't in the drawer's own deck, so
-    -- the normal draw-from-deck removal would leave a duplicate. Route them through
-    -- the global obtain path (addToHand -> obtainCard), which clears the card from
-    -- any owner's hand/deck/discard and scenario decks while preserving pcOwner.
-    -- The own-zone case is left byte-for-byte identical (same draw-trigger windows).
-    inOwnZone = case cardSource of
-      Zone.FromDeck -> card `elem` map toCard (unDeck investigatorDeck)
-      Zone.FromTopOfDeck _ -> card `elem` map toCard (unDeck investigatorDeck)
-      Zone.FromBottomOfDeck _ -> card `elem` map toCard (unDeck investigatorDeck)
-      Zone.FromHand -> card `elem` investigatorHand
-      Zone.FromDiscard -> card `elem` map toCard investigatorDiscard
-      _ -> False
-  push
-    $ if inOwnZone
-      then case zoneToDeck a.id cardSource of
-        Nothing -> drawToHand iid' card
-        Just deck -> drawToHandFrom iid' deck card
-      else addToHand iid' card
-  pure $ a & foundCardsL .~ foundCards' & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
+  case findFocusedCard a cardSource cardId of
+    Nothing -> pure a
+    Just card -> do
+      let
+        foundCards' = Map.map (filter ((/= cardId) . toCardId)) (a ^. foundCardsL)
+        -- SearchAllInvestigators can surface cards from another investigator's zone or
+        -- a scenario deck (FromCollection). Those aren't in the drawer's own deck, so
+        -- the normal draw-from-deck removal would leave a duplicate. Route them through
+        -- the global obtain path (addToHand -> obtainCard), which clears the card from
+        -- any owner's hand/deck/discard and scenario decks while preserving pcOwner.
+        -- The own-zone case is left byte-for-byte identical (same draw-trigger windows).
+        inOwnZone = case cardSource of
+          Zone.FromDeck -> card `elem` map toCard (unDeck investigatorDeck)
+          Zone.FromTopOfDeck _ -> card `elem` map toCard (unDeck investigatorDeck)
+          Zone.FromBottomOfDeck _ -> card `elem` map toCard (unDeck investigatorDeck)
+          Zone.FromHand -> card `elem` investigatorHand
+          Zone.FromDiscard -> card `elem` map toCard investigatorDiscard
+          _ -> False
+      push
+        $ if inOwnZone
+          then case zoneToDeck a.id cardSource of
+            Nothing -> drawToHand iid' card
+            Just deck -> drawToHandFrom iid' deck card
+          else addToHand iid' card
+      pure $ a & foundCardsL .~ foundCards' & (deckL %~ Deck . filter ((/= card) . toCard) . unDeck)
 
 handleAddFocusedToTopOfDeck a@InvestigatorAttrs {..} iid' cardId = do
   let
-    card =
-      fromJustNote "missing card"
-        $ find ((== cardId) . toCardId) (concat $ toList $ a ^. foundCardsL)
+    mcard =
+      find ((== cardId) . toCardId) (concat (toList $ a ^. foundCardsL) <> zoneCards a Zone.FromDeck)
         >>= toPlayerCard
-    foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
-  push $ PutCardOnTopOfDeck iid' (Deck.InvestigatorDeck iid') (toCard card)
-  pure $ a & foundCardsL .~ foundCards
+  case mcard of
+    Nothing -> pure a
+    Just card -> do
+      let foundCards = Map.map (filter ((/= cardId) . toCardId)) $ a ^. foundCardsL
+      push $ PutCardOnTopOfDeck iid' (Deck.InvestigatorDeck iid') (toCard card)
+      pure $ a & foundCardsL .~ foundCards
 
 handleShuffleAllFocusedIntoDeck a@InvestigatorAttrs {..} iid' = do
   let cards = findWithDefault [] Zone.FromDeck $ a ^. foundCardsL
@@ -1149,6 +1187,26 @@ handleRemovePlayerCardFromGame a@InvestigatorAttrs {..} card = do
     Nothing ->
       -- encounter cards can only be in hand
       pure $ a & (handL %~ filter (/= card))
+
+-- A focused-card question can outlive its search: a raw message re-parks the open
+-- question behind itself (Entity.Answer), so a second search's EndSearch clears
+-- foundCards before the first one is answered (#5615). Fall back to the zone the
+-- message names, and let the caller no-op when the card is gone for good.
+findFocusedCard :: InvestigatorAttrs -> Zone.Zone -> CardId -> Maybe Card
+findFocusedCard a zone cardId =
+  find ((== cardId) . toCardId) (findWithDefault [] zone $ a ^. foundCardsL)
+    <|> find ((== cardId) . toCardId) (zoneCards a zone)
+
+zoneCards :: InvestigatorAttrs -> Zone.Zone -> [Card]
+zoneCards a = \case
+  Zone.FromDeck -> map toCard (unDeck a.deck)
+  Zone.FromTopOfDeck {} -> map toCard (unDeck a.deck)
+  Zone.FromBottomOfDeck {} -> map toCard (unDeck a.deck)
+  Zone.FromHand -> investigatorHand a
+  Zone.FromDiscard -> map toCard a.discard
+  Zone.FromPlay -> []
+  Zone.FromOutOfPlay {} -> []
+  Zone.FromCollection -> []
 
 zoneToDeck :: InvestigatorId -> Zone.Zone -> Maybe Deck.DeckSignifier
 zoneToDeck iid = \case

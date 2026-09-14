@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (AssetDefeated)
+import Arkham.Behavior.Damage qualified as Damage
 import Arkham.Constants
 import Arkham.DamageEffect
 import Arkham.Fight
@@ -15,7 +16,6 @@ import Arkham.History
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Scenarios.TheScarletKeys.DogsOfWar.Helpers (pattern IsKeyLocus)
-import Arkham.Window qualified as Window
 
 newtype KeyLocusDefensiveBarrier = KeyLocusDefensiveBarrier AssetAttrs
   deriving anyclass IsAsset
@@ -87,11 +87,8 @@ instance RunMessage KeyLocusDefensiveBarrier where
           source = damageAssignmentSource damageAssignment
           damageEffect = damageAssignmentDamageEffect damageAssignment
           damageAmount = damageAssignmentAmount damageAssignment
-        checkWhen $ Window.DealtDamage source damageEffect (toTarget attrs) damageAmount
-        checkAfter $ Window.DealtDamage source damageEffect (toTarget attrs) damageAmount
-        checkWhen $ Window.TakeDamage source damageEffect (toTarget attrs) damageAmount
-        push $ Damaged (EnemyTarget eid) damageAssignment
-        checkAfter $ Window.TakeDamage source damageEffect (toTarget attrs) damageAmount
+        Damage.fireDamageWindows source (toTarget attrs) damageEffect damageAmount do
+          push $ Damaged (EnemyTarget eid) damageAssignment
       pure a
     Damaged (EnemyTarget eid) damageAssignment | coerce eid == attrs.id -> do
       mods <- getModifiers attrs

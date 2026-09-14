@@ -1,24 +1,19 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.UrsineBrute (ursineBrute) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Keyword qualified as Keyword
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
 import Arkham.Trait (Trait (Woods))
 
 newtype UrsineBrute = UrsineBrute EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ursineBrute :: EnemyCard UrsineBrute
 ursineBrute =
   enemy UrsineBrute Cards.ursineBrute
     & setSpawnAt (LocationWithTrait Woods)
-
-instance HasModifiersFor UrsineBrute where
-  getModifiersFor (UrsineBrute a) = modifySelf a [AddKeyword Keyword.Hunter]
 
 instance HasAbilities UrsineBrute where
   getAbilities (UrsineBrute a) =

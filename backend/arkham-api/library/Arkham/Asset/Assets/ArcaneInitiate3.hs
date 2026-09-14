@@ -17,7 +17,7 @@ arcaneInitiate3 = ally ArcaneInitiate3 Cards.arcaneInitiate3 (1, 3)
 
 instance HasAbilities ArcaneInitiate3 where
   getAbilities (ArcaneInitiate3 a) =
-    [ restrictedAbility a 1 ControlsThis $ forced $ AssetEntersPlay #when (be a)
+    [ restrictedAbility a 1 ControlsThis $ forced $ AssetEntersPlay #after (be a)
     , restrictedAbility a 2 ControlsThis $ FastAbility (exhaust a)
     ]
 

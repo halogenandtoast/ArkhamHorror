@@ -24,7 +24,7 @@ bedroomHemlockHouse34 =
 instance HasModifiersFor BedroomHemlockHouse34 where
   getModifiersFor (BedroomHemlockHouse34 a) = do
     floorN <- getFloorNumber a.id
-    modifySelf a [SetShroud (floorN + 1)]
+    modifySelf a [BaseShroud (floorN + 1)]
 
 instance HasAbilities BedroomHemlockHouse34 where
   getAbilities (BedroomHemlockHouse34 a) =
@@ -36,7 +36,7 @@ instance RunMessage BedroomHemlockHouse34 where
   runMessage msg l@(BedroomHemlockHouse34 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
-        countVar 2 $ labeled' "gainResources" $ gainResources iid (attrs.ability 1) 2
+        countVar 1 $ labeled "drawCards" $ drawCards iid (attrs.ability 1) 1
+        countVar 2 $ labeled "gainResources" $ gainResources iid (attrs.ability 1) 2
       pure l
     _ -> BedroomHemlockHouse34 <$> liftRunMessage msg attrs

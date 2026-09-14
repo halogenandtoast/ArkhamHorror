@@ -12,11 +12,13 @@ import Api.Arkham.Epic (
  )
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
+import Api.Handler.Arkham.CustomCards (userCustomCards)
 import Arkham.Achievement.Types (Achievement, achievementChecklist, achievementName)
 import Arkham.Asset.Types (Asset, assetController, assetOwner, assetPlacement)
 import Arkham.Campaign.Types (CampaignAttrs)
 import Arkham.Campaigns.TheDreamEaters.Meta qualified as TheDreamEaters
 import Arkham.Card.CardCode (CardCode (..), HasCardCode (toCardCode))
+import Arkham.Card.CustomCard (CustomCard, registerCustomCards)
 import Arkham.ClassSymbol
 import Arkham.Classes.Entity (attr, overAttrs, toAttrs)
 import Arkham.Classes.GameLogger
@@ -194,6 +196,8 @@ withKeepAlive inner = do
 
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
 gameStream gameId = catchingConnectionException $ withKeepAlive do
+  userId <- lift getRequestUserId
+  customCards <- lift $ userCustomCards userId
   let cleanup room subId = do
         unsubscribeFromRoom room subId
         lift $ decrRoomMember gameId
@@ -228,13 +232,13 @@ gameStream gameId = catchingConnectionException $ withKeepAlive do
 
     race_
       sender
-      (runConduit $ sourceWS .| mapM_C (handleData room broadcast))
+      (runConduit $ sourceWS .| mapM_C (handleData customCards room broadcast))
  where
-  handleData room broadcast dataPacket = lift do
+  handleData customCards room broadcast dataPacket = lift do
     case eitherDecodeStrict dataPacket of
       Left err -> $(logWarn) $ tshow err
       Right answer ->
-        updateGame answer gameId (Just room) `catch` \(e :: SomeException) -> do
+        updateGame customCards answer gameId (Just room) `catch` \(e :: SomeException) -> do
           liftIO $ broadcast $ encode $ GameError $ tshow e
 
 data SlowSubscriber = SlowSubscriber
@@ -368,8 +372,8 @@ data EpicOrganizerGateBlocked = EpicOrganizerGateBlocked
   deriving stock Show
   deriving anyclass Exception
 
-updateGame :: Answer -> ArkhamGameId -> Maybe Room -> Handler ()
-updateGame response gameId mRoom = do
+updateGame :: Map CardCode CustomCard -> Answer -> ArkhamGameId -> Maybe Room -> Handler ()
+updateGame customCards response gameId mRoom = do
   let broadcast :: Broadcast
       broadcast = case mRoom of
         Nothing -> \_ -> pure ()
@@ -391,6 +395,11 @@ updateGame response gameId mRoom = do
       gameJson@Game {..} = arkhamGameCurrentData
       currentQueue =
         maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+
+    -- Deserializing `arkhamGameCurrentData` registered its durable snapshot.
+    -- Overlay the owner's library after that point so card-builder saves are
+    -- live in games already using the card.
+    registerCustomCards customCards
 
     activePlayer <- runReaderT getActivePlayer gameJson
 
@@ -475,13 +484,21 @@ updateGame response gameId mRoom = do
         updatedLog <- reverse <$> readIORef logRef
 
         now <- liftIO getCurrentTime
+        -- A one-player game is created WithFriends, but its player adding a second
+        -- hand makes it multihanded solo: both seats now belong to the same user.
+        -- The row was inserted by handleAnswer above, in this transaction.
+        variant' <- case response of
+          JoinCampaignAnswer | arkhamGameMultiplayerVariant /= Solo -> do
+            seats <- P.count [ArkhamPlayerArkhamGameId P.==. gameId]
+            pure $ if seats > 1 then Solo else arkhamGameMultiplayerVariant
+          _ -> pure arkhamGameMultiplayerVariant
         deleteWhere [ArkhamStepArkhamGameId P.==. gameId, ArkhamStepStep P.>. arkhamGameStep]
         let g' =
               ArkhamGame
                 arkhamGameName
                 ge
                 (arkhamGameStep + 1)
-                arkhamGameMultiplayerVariant
+                variant'
                 arkhamGameCreatedAt
                 now
         replace gameId g'
@@ -541,11 +558,17 @@ updateGame response gameId mRoom = do
               players <- P.selectList [ArkhamPlayerArkhamGameId P.==. gameId] []
               let userIds = ordNub $ map (arkhamPlayerUserId . entityVal) players
               let
+                -- Seat rows are written in two formats: the deck-selection path
+                -- stores the bare ArkhamDB code ("03004"), while the debug import
+                -- and claim-seat paths store the JSON-shaped, 'c'-prefixed one
+                -- ("c03004"). Compare both ends stripped, the way CardCode's
+                -- FromJSON does, or an earn silently credits nobody.
+                normalizeSeat = T.dropWhile (== 'c')
                 usersFor iid =
                   ordNub
                     [ arkhamPlayerUserId p
                     | p <- map entityVal players
-                    , arkhamPlayerInvestigatorId p == coerce iid
+                    , normalizeSeat (arkhamPlayerInvestigatorId p) == normalizeSeat (coerce iid)
                     ]
               directEarns <- fmap concat $ for earned \achievement -> do
                 inserted <- for userIds \uid ->
@@ -704,6 +727,7 @@ handleMessageLog logRef broadcast msg = liftIO $ do
     ClientShowDiscard v -> GameShowDiscard v
     ClientShowUnder v -> GameShowUnder v
     ClientPlayabilityReport cid cc chks -> GamePlayabilityInfo cid cc chks
+    ClientCustomCardIssue cc detail payload -> GameCustomCardIssue cc detail payload
   toClientText = \case
     ClientText txt -> Just txt
     ClientError {} -> Nothing
@@ -715,6 +739,7 @@ handleMessageLog logRef broadcast msg = liftIO $ do
     ClientShowDiscard {} -> Nothing
     ClientShowUnder {} -> Nothing
     ClientPlayabilityReport {} -> Nothing
+    ClientCustomCardIssue {} -> Nothing
 
 publishToRoom :: (MonadIO m, ToJSON a, HasApp m) => ArkhamGameId -> a -> m ()
 publishToRoom gameId a = do

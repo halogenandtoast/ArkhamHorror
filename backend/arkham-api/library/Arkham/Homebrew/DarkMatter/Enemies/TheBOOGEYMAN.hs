@@ -3,7 +3,6 @@ module Arkham.Homebrew.DarkMatter.Enemies.TheBOOGEYMAN (theBOOGEYMAN) where
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
-import Arkham.Keyword qualified as Keyword
 
 newtype TheBOOGEYMAN = TheBOOGEYMAN EnemyAttrs
   deriving anyclass IsEnemy
@@ -14,14 +13,7 @@ theBOOGEYMAN = enemy TheBOOGEYMAN Cards.theBOOGEYMAN
 
 instance HasModifiersFor TheBOOGEYMAN where
   getModifiersFor (TheBOOGEYMAN a) =
-    modifySelf
-      a
-      [ AddKeyword Keyword.Massive
-      , AddKeyword Keyword.Hunter
-      , CannotBeAttacked
-      , CannotBeDamaged
-      , CannotBeEvaded
-      ]
+    modifySelf a [CannotBeAttacked, CannotBeDamaged, CannotBeEvaded]
 
 instance RunMessage TheBOOGEYMAN where
   runMessage msg (TheBOOGEYMAN attrs) =

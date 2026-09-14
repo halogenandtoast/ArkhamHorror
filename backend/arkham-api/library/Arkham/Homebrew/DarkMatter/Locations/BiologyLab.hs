@@ -24,7 +24,7 @@ instance RunMessage BiologyLab where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       here <- select $ investigatorAt attrs.id
       chooseOneM iid $ campaignI18n do
-        labeled' "biologyLab.healDamage" $ for_ here \iid' -> healDamage iid' (attrs.ability 1) 1
-        labeled' "biologyLab.healHorror" $ for_ here \iid' -> healHorror iid' (attrs.ability 1) 1
+        labeled "biologyLab.healDamage" $ for_ here \iid' -> healDamage iid' (attrs.ability 1) 1
+        labeled "biologyLab.healHorror" $ for_ here \iid' -> healHorror iid' (attrs.ability 1) 1
       pure l
     _ -> BiologyLab <$> liftRunMessage msg attrs

@@ -68,6 +68,10 @@ youCanTriggerCodex entry =
 codexDone :: Codex -> ModifierType
 codexDone entry = ScenarioModifierValue "codex:done" (toJSON entry)
 
+-- | This scenario's codex has no section for the entry.
+noCodexEntry :: Codex -> ModifierType
+noCodexEntry = codexDone
+
 codexFinished :: ReverseQueue m => Codex -> m ()
 codexFinished entry = eachInvestigator (codexFinishedFor entry)
 
@@ -89,7 +93,7 @@ makePreparationsForNextSurvey iid = do
 
   for_ persistAssets \(asset, _) -> setupModifier ScenarioSource asset Persist
   unless (null otherAssets) $ campaignI18n $ chooseOrRunOneM iid do
-    questionLabeled' "chooseAssetToKeepForNextSurvey"
+    questionLabeled "chooseAssetToKeepForNextSurvey"
     for_ (eachWithRest (map fst otherAssets)) \(asset, rest) ->
       targeting asset do
         setupModifier ScenarioSource asset Persist

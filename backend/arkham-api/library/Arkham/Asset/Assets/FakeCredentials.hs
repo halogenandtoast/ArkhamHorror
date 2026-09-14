@@ -41,10 +41,10 @@ instance RunMessage FakeCredentials where
       pure a
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       chooseOneM iid do
-        (cardI18n $ labeled' "fakeCredentials.discardFakeCredentials") $ toDiscardBy iid (attrs.ability 1) attrs
+        (cardI18n $ labeled "fakeCredentials.discardFakeCredentials") $ toDiscardBy iid (attrs.ability 1) attrs
         for_ (chosenEnemy meta) $ \eid -> do
           whenM (lift $ eid <=~> EnemyCanAttack (InvestigatorWithId iid)) do
-            (cardI18n $ labeled' "fakeCredentials.theChosenEnemyAttacksYou") do
+            (cardI18n $ labeled "fakeCredentials.theChosenEnemyAttacksYou") do
               push $ EnemyAttack $ enemyAttack eid (attrs.ability 1) iid
       pure a
     _ -> FakeCredentials . (`with` meta) <$> liftRunMessage msg attrs

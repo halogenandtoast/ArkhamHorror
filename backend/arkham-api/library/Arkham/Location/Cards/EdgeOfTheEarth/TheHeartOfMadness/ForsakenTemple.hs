@@ -40,7 +40,7 @@ instance RunMessage ForsakenTemple where
           push $ SpendClues targetAmount iids
           activateSeal SealC
           chooseOneAtATimeM iid $ targets sameSpoke $ lookAtRevealed iid (attrs.ability 1)
-        labeled' "doNotSpendClues" nothing
+        labeled "doNotSpendClues" nothing
 
       pure l
     _ -> ForsakenTemple <$> liftRunMessage msg attrs

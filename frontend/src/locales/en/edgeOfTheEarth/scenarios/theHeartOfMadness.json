@@ -29,6 +29,19 @@
     }
   },
   "part1": {
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *The Heart of Madness*, *The Great Seal*, *Miasma*, *Nameless Horrors*, *Penguins*, *Shoggoths*, *Tekeli-li*, *Ancient Evils*, and *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-heart-of-madness.png' /><img src='{setImgPath}/the-great-seal.png' /><img src='{setImgPath}/miasma.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/penguins.png' /><img src='{setImgPath}/shoggoths.png' /><img src='{setImgPath}/tekeli-li.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+      "gateOfYquaa": "Put The Gate of Y’quaa into play, revealed side faceup.",
+      "startAt": "Each investigator begins play at The Gate of Y’quaa.",
+      "unrevealedSideUnused": "*Note: The unrevealed side of The Gate of Y’quaa is not used in this part of the scenario.*",
+      "ancientFacility": "Shuffle all fifteen Ancient Facility locations (*five from The Great Seal encounter set and ten from The Heart of Madness encounter set*). Put locations into play in a pattern matching the map. Each location is placed randomly in one of the spaces indicated by the map.",
+      "spokesAndRings": "The Ancient Facility locations in this scenario are organized into five spokes that branch out from The Gate of Y’quaa, and three rings that surround The Gate of Y’quaa.",
+      "setSealsAside": "Set the five seal tokens aside, out of play.",
+      "checkDifficulty": "Check the difficulty level.",
+      "hard": "If you are playing on Hard difficulty, add 1 doom to agenda 1a.",
+      "expert": "If you are playing on Expert difficulty, add 2 doom to agenda 1a.",
+      "tekelili": "Shuffle each Tekeli-li! weakness card that is not already part of an investigator’s deck together to form the Tekeli-li deck. Place this deck near the agenda deck."
+    },
     "part1Intro": {
       "title": "The Heart of Madness, Part I",
       "body": "<p>You decide to study the doorway and the many paths that diverge from this vast tunnel in the hope that you can discover a way to stop the entity on the other side from escaping. You believe that the technology used to seal this door is somehow related to these five glyphs. Perhaps if you explore the surrounding area, you can find the missing pieces.</p><p class='basic right'>Proceed to Setup.</p>"
@@ -132,6 +145,21 @@
     }
   },
   "part2": {
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *Stirring in the Deep*, *Agents of the Unknown*, *Chilling Cold*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/stirring-in-the-deep.png' /><img src='{setImgPath}/agents-of-the-unknown.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+      "strikingFear": "When gathering the *Striking Fear* encounter set, only gather 2x Dissonant Voices and 2x Frozen in Fear (*do not gather 3x Rotting Remains*).",
+      "removeSets": "Search the encounter deck and all out-of-play areas for all cards from *The Great Seal*, *Shoggoths*, and *Locked Doors* encounter sets (*including the five “Ancient Facility” locations from The Great Seal encounter set*). Remove each card from those encounter sets from the game.",
+      "buildDecks": "Build the agenda deck using agendas 4–5 and the act deck using act 3. (These can be found in the *Stirring in the Deep* encounter set.)",
+      "flipGate": "Flip The Gate of Y’quaa to its unrevealed side.",
+      "placeLocations": "Take the five Mist-Pylon locations and the ten remaining Ancient Facility locations (*from The Heart of Madness encounter set*), shuffle them together, and put them into play at random using the same map as in Part I, except that five of the randomly placed Ancient Facility locations will instead be Mist-Pylon locations.",
+      "innermostRing": "*Note: If all five locations in the innermost ring are Mist‑Pylons, start this process over.*",
+      "startAt": "The lead investigator chooses an Ancient Facility location nearest to The Gate of Y’quaa. Each investigator begins play at the chosen location.",
+      "setAside": "Set the following cards aside, out of play: All fifteen copies of The Nameless Madness enemy, The Final Mirage act, the four Titanic Ramp locations, and the Hidden Tunnel location.",
+      "seals": "Place the seal tokens, as follows:",
+      "activated": "For each activated seal on The Gate of Y’quaa, choose an investigator to take control of it.",
+      "dormant": "Each investigator with a dormant seal begins the game with it under their control.",
+      "removeOthers": "Remove each other seal from the game."
+    },
     "label": {
       "chooseSealCount": "The investigators may choose how many seals they have:",
       "easierExperienceSeals": "For an easier experience, three random seals are “Placed” and the other two are “Recovered.”",

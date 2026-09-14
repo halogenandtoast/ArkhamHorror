@@ -11,7 +11,8 @@ newtype Hope = Hope LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 hope :: LocationCard Hope
-hope = location Hope Cards.hope 2 (Static 1)
+hope =
+  symbolLabel $ location Hope Cards.hope 2 (Static 1)
 
 -- | "[reaction] At the end of your turn: Heal 1 horror." / "[action]: Resign."
 instance HasAbilities Hope where

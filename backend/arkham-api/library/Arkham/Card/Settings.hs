@@ -7,6 +7,7 @@
 module Arkham.Card.Settings where
 
 import Arkham.Card.CardCode
+import Arkham.Card.CardOption
 import Arkham.Prelude
 import Control.Lens (non)
 import Control.Monad.Fail (fail)
@@ -46,19 +47,30 @@ data PerCardSettings = PerCardSettings
   { cardIgnoreUnrelatedSkillTestTriggers :: Bool
   , cardIgnoreDuringSkillTests :: Bool
   , cardAttachments :: [CardCode]
+  , cardOptions :: Map Text OptionValue
+  {- ^ Values the controller has chosen for the options this card declares in
+  @cdOptions@. Absent keys fall back to the option's declared default.
+  -}
+  , cardSilenced :: Bool
+  {- ^ Set from the hidden-cards stack: drop this card's non-forced window
+  triggers (fast abilities and reactions) instead of prompting for them. Forced
+  abilities still fire.
+  -}
   }
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
 
 instance Semigroup PerCardSettings where
-  PerCardSettings i1 d1 a1 <> PerCardSettings i2 d2 a2 =
-    PerCardSettings (i1 || i2) (d1 || d2) (a1 <> a2)
+  PerCardSettings i1 d1 a1 o1 s1 <> PerCardSettings i2 d2 a2 o2 s2 =
+    PerCardSettings (i1 || i2) (d1 || d2) (a1 <> a2) (o1 <> o2) (s1 || s2)
 
 instance FromJSON PerCardSettings where
   parseJSON = withObject "PerCardSettings" \o -> do
     cardIgnoreUnrelatedSkillTestTriggers <- o .: "cardIgnoreUnrelatedSkillTestTriggers"
     cardIgnoreDuringSkillTests <- o .: "cardIgnoreDuringSkillTests"
     cardAttachments <- o .:? "cardAttachments" .!= []
+    cardOptions <- o .:? "cardOptions" .!= mempty
+    cardSilenced <- o .:? "cardSilenced" .!= False
     pure PerCardSettings {..}
 
 data PerCardSetting a where
@@ -216,6 +228,8 @@ defaultPerCardSettings =
     { cardIgnoreUnrelatedSkillTestTriggers = False
     , cardIgnoreDuringSkillTests = False
     , cardAttachments = []
+    , cardOptions = mempty
+    , cardSilenced = False
     }
 
 globalSettingsL :: Lens' CardSettings GlobalSettings
@@ -243,6 +257,36 @@ cardIgnoreDuringSkillTestsL =
 
 cardAttachmentsL :: Lens' PerCardSettings [CardCode]
 cardAttachmentsL = lens cardAttachments \m x -> m {cardAttachments = x}
+
+cardOptionsL :: Lens' PerCardSettings (Map Text OptionValue)
+cardOptionsL = lens cardOptions \m x -> m {cardOptions = x}
+
+cardSilencedL :: Lens' PerCardSettings Bool
+cardSilencedL = lens cardSilenced \m x -> m {cardSilenced = x}
+
+{- | Set one declared option for one card. Kept off the 'PerCardSetting' GADT on
+purpose: that exists for heterogeneous typed settings, and a keyed option map
+doesn't need its hand-rolled 'Data' instances.
+-}
+setCardOption :: CardCode -> Text -> OptionValue -> CardSettings -> CardSettings
+setCardOption cCode k v =
+  perCardSettingsL . at cCode . non defaultPerCardSettings . cardOptionsL . at k ?~ v
+
+-- | The value chosen for an option, or 'Nothing' to fall back to its default.
+lookupCardOption :: CardCode -> Text -> CardSettings -> Maybe OptionValue
+lookupCardOption cCode k settings =
+  lookup k . cardOptions =<< lookup cCode (perCardSettings settings)
+
+{- | Silence a card: its non-forced window triggers stop being offered. Kept off
+the 'PerCardSetting' GADT for the same reason as 'setCardOption'.
+-}
+setCardSilenced :: CardCode -> Bool -> CardSettings -> CardSettings
+setCardSilenced cCode v =
+  perCardSettingsL . at cCode . non defaultPerCardSettings . cardSilencedL .~ v
+
+-- | The card codes whose non-forced window triggers should be skipped.
+silencedCardCodes :: CardSettings -> Set CardCode
+silencedCardCodes = Map.keysSet . Map.filter cardSilenced . perCardSettings
 
 updateCardSetting :: CardCode -> SetCardSetting -> CardSettings -> CardSettings
 updateCardSetting cCode = \case

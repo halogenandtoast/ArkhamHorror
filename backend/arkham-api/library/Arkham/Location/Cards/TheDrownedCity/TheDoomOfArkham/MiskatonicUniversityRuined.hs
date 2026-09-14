@@ -14,7 +14,7 @@ newtype MiskatonicUniversityRuined = MiskatonicUniversityRuined LocationAttrs
 
 miskatonicUniversityRuined :: LocationCard MiskatonicUniversityRuined
 miskatonicUniversityRuined =
-  location MiskatonicUniversityRuined Cards.miskatonicUniversityRuined 5 (Static 1)
+  location MiskatonicUniversityRuined Cards.miskatonicUniversityRuined 5 (PerPlayer 1)
 
 instance HasModifiersFor MiskatonicUniversityRuined where
   getModifiersFor (MiskatonicUniversityRuined a) = modifySelf a [CannotBeFullyFlooded]

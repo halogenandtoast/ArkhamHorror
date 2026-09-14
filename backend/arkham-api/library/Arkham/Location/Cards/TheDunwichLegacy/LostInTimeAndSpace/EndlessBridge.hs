@@ -9,7 +9,7 @@ import Arkham.Location.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Name
+import Arkham.Name hiding (labeled)
 import Arkham.Scenarios.TheDunwichLegacy.LostInTimeAndSpace.Helpers
 import Control.Monad.Extra (findM)
 
@@ -40,7 +40,7 @@ instance RunMessage EndlessBridge where
         Nothing -> error "could not find label"
     UseThisAbility iid (isSource attrs -> True) 1 -> scenarioI18n do
       chooseOneM iid do
-        labeled' "endlessBridge.placeDoom" $ placeDoom (attrs.ability 1) attrs 1
-        labeled' "endlessBridge.discard" $ toDiscardBy iid (attrs.ability 1) attrs
+        labeled "endlessBridge.placeDoom" $ placeDoom (attrs.ability 1) attrs 1
+        labeled "endlessBridge.discard" $ toDiscardBy iid (attrs.ability 1) attrs
       pure l
     _ -> EndlessBridge <$> liftRunMessage msg attrs

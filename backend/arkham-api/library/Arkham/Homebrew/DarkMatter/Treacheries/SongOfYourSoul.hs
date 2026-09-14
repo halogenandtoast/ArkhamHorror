@@ -31,8 +31,8 @@ instance RunMessage SongOfYourSoul where
       events <- select $ inHandOf NotForPlay iid <> basic #event
       for_ events \event -> do
         chooseOneM iid $ withI18n do
-          countVar 1 $ labeled' "discardCardsFromHand" $ discardCard iid (attrs.ability 1) event
-          countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+          countVar 1 $ labeled "discardCardsFromHand" $ discardCard iid (attrs.ability 1) event
+          countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     _ -> SongOfYourSoul <$> liftRunMessage msg attrs

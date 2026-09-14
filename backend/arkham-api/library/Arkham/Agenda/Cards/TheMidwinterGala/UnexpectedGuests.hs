@@ -59,7 +59,7 @@ instance RunMessage UnexpectedGuests where
           <> AssetAt (locationWithInvestigator iid)
 
       chooseOrRunOneM iid do
-        withI18n $ labeled' "skip" nothing
+        withI18n $ labeled "skip" nothing
         targets healableInvestigators $ healHorrorOn attrs 1
         targets healableAssets $ healHorrorOn attrs 1
       pure a

@@ -67,7 +67,7 @@ instance RunMessage FateOfTheValeV3 where
           chooseOneM iid $ scenarioI18n do
             labeledI "done" nothing
             when (resources >= 5) do
-              labeled' "fateOfTheValeV3.spendResourcesForKindling" do
+              labeled "fateOfTheValeV3.spendResourcesForKindling" do
                 spendResources iid 5
                 placeTokens (attrs.ability 1) lid Kindling 1
             targets items \item -> do

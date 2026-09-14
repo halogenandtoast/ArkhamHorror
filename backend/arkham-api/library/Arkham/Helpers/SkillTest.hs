@@ -415,27 +415,33 @@ getIsPerilous skillTest = case skillTestSource skillTest of
     pure $ Peril `elem` keywords
   _ -> pure False
 
+-- | Net contribution of committed icons, negated under @SkillIconsSubtract@.
+signedSkillIconCount :: HasGame m => SkillTest -> m Int
+signedSkillIconCount st = do
+  modifiers' <- getModifiers (SkillTestTarget st.id)
+  if any (`elem` modifiers') [CancelSkills, CancelEachCommittedCard]
+    then pure 0
+    else do
+      iconCount <- skillIconCount st
+      subtractIconCount <- subtractSkillIconCount st
+      let sign = if SkillIconsSubtract `elem` modifiers' then negate . abs else id
+      pure $ sign iconCount - subtractIconCount
+
 -- should likely only be used by `calculateSkillTestResultsData`
 getSkillTestModifiedSkillValue :: HasGame m => m Int
 getSkillTestModifiedSkillValue = do
   st <- getJustSkillTest
-  modifiers' <- getModifiers (SkillTestTarget st.id)
-  let cancelSkills = any (`elem` modifiers') [CancelSkills, CancelEachCommittedCard]
   currentSkillValue <- getCurrentSkillValue st
-  iconCount <- if cancelSkills then pure 0 else skillIconCount st
-  subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount st
-  pure $ max 0 (currentSkillValue + iconCount - subtractIconCount)
+  iconValue <- signedSkillIconCount st
+  pure $ max 0 (currentSkillValue + iconValue)
 
 getModifiedSkillValue :: HasGame m => m Int
 getModifiedSkillValue = do
   st <- getJustSkillTest
-  modifiers' <- getModifiers (SkillTestTarget st.id)
-  let cancelSkills = any (`elem` modifiers') [CancelSkills, CancelEachCommittedCard]
   currentSkillValue <- getCurrentSkillValue st
-  iconCount <- if cancelSkills then pure 0 else skillIconCount st
-  subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount st
+  iconValue <- signedSkillIconCount st
   chaosTokenValues <- totalChaosTokenValues st
-  pure $ max 0 (currentSkillValue + iconCount - subtractIconCount + chaosTokenValues)
+  pure $ max 0 (currentSkillValue + iconValue + chaosTokenValues)
 
 getSkillTestDifficulty :: (HasCallStack, HasGame m) => m (Maybe Int)
 getSkillTestDifficulty = do
@@ -465,9 +471,7 @@ calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsDat
 calculateSkillTestResultsData s = do
   modifiers' <- getModifiers (SkillTestTarget s.id)
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
-  let cancelSkills = any (`elem` modifiers') [CancelSkills, CancelEachCommittedCard]
-  iconCount <- if cancelSkills then pure 0 else skillIconCount s
-  subtractIconCount <- if cancelSkills then pure 0 else subtractSkillIconCount s
+  iconValue <- signedSkillIconCount s
   currentSkillValue <- getCurrentSkillValue s
   chaosTokenValues <- totalChaosTokenValues s
   let
@@ -475,7 +479,7 @@ calculateSkillTestResultsData s = do
     addResultModifier n _ = n
     resultValueModifiers = foldl' addResultModifier 0 modifiers'
     modifiedSkillValue' =
-      max 0 (currentSkillValue + chaosTokenValues + iconCount - subtractIconCount)
+      max 0 (currentSkillValue + chaosTokenValues + iconValue)
     op = if FailTies `elem` modifiers' then (>) else (>=)
     baseSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
     succeedByAmount = modifiedSkillValue' - modifiedSkillTestDifficulty
@@ -486,7 +490,7 @@ calculateSkillTestResultsData s = do
       pure
         $ SkillTestResultsData
           currentSkillValue
-          ((if SkillIconsSubtract `elem` modifiers' then negate . abs else id) iconCount - subtractIconCount)
+          iconValue
           chaosTokenValues
           modifiedSkillTestDifficulty
           (resultValueModifiers <$ guard (resultValueModifiers /= 0))
@@ -699,7 +703,16 @@ getIsCommittable a c = runValidT do
           pure $ fold [cst | AdditionalCostToCommit iid' cst <- mods, iid' == a]
       cmods <- getModifiers (CardIdTarget $ toCardId c)
       let costToCommit = fold [cst | AdditionalCostToCommit iid' cst <- cmods, iid' == a]
-      liftGuardM $ getCanAffordCost a (toSource a) [] [] (costToCommit <> otherAdditionalCosts)
+      -- The card's own additional cost (e.g. Justify the Means (3)'s curse tokens) is
+      -- only reachable via the card def here; the skill entity that carries it isn't
+      -- created until CommitCard, by which point failing to pay is a hard error. Only a
+      -- skill pays it on commit, for an asset or event it is a cost of playing the card.
+      let ownAdditionalCost =
+            if NoAdditionalCosts `elem` cmods || toCardType card /= SkillType
+              then mempty
+              else fold (cdAdditionalCost $ toCardDef card)
+      liftGuardM
+        $ getCanAffordCost a (toSource a) [] [] (costToCommit <> otherAdditionalCosts <> ownAdditionalCost)
       liftGuardM $ allM passesCommitRestriction (cdCommitRestrictions $ toCardDef card)
     EncounterCard card -> guard $ CommittableTreachery `elem` cdCommitRestrictions (toCardDef card)
     VengeanceCard _ -> error "vengeance card"
@@ -785,6 +798,15 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
   Matcher.NotSkillTest matcher ->
     not <$> skillTestMatches iid source st matcher
   Matcher.AnySkillTest -> pure True
+  Matcher.SkillTestWithResult resultMatcher -> do
+    result <- fromMaybe (skillTestResult st) <$> getSkillTestResultWithResultModifiers
+    case (result, resultMatcher) of
+      (SucceededBy _ n, Matcher.SuccessResult vm) -> gameValueMatches n vm
+      (FailedBy _ n, Matcher.FailureResult vm) -> gameValueMatches n vm
+      (_, Matcher.AnyResult) -> pure True
+      (_, Matcher.ResultOneOf ms) ->
+        anyM (skillTestMatches iid source st . Matcher.SkillTestWithResult) ms
+      _ -> pure False
   Matcher.SkillTestWasFailed -> pure $ case skillTestResult st of
     FailedBy _ _ -> True
     _ -> False
@@ -817,8 +839,20 @@ skillTestMatches iid source st mtchr = case Matcher.replaceYouMatcher iid mtchr 
       <$> countM
         (`Query.matches` Matcher.IncludeSealed matcher)
         (skillTestRevealedChaosTokens st <> skillTestAdditionalRevealedChaosTokens st)
-  Matcher.SkillTestOnCardWithTrait t -> elem t <$> sourceTraits (skillTestSource st)
-  Matcher.SkillTestOnCard match -> (`cardMatch` match) <$> sourceToCard (skillTestSource st)
+  -- The source may leave play mid-test (an event that shuffles itself back, for
+  -- example), so fall back to the card id captured when the test began.
+  Matcher.SkillTestOnCardWithTrait t
+    | isBasicAbilitySource (skillTestSource st) -> pure False
+    | otherwise -> do
+        traits <- sourceTraits (skillTestSource st)
+        if t `elem` traits
+          then pure True
+          else case st.sourceCard of
+            Nothing -> pure False
+            Just cid -> maybe False (`cardMatch` Matcher.CardWithTrait t) <$> getCardMaybe cid
+  Matcher.SkillTestOnCard match
+    | isBasicAbilitySource (skillTestSource st) -> pure False
+    | otherwise -> (`cardMatch` match) <$> sourceToCard (skillTestSource st)
   Matcher.SkillTestOnLocation match -> case skillTestSource st of
     AbilitySource s n | n < 100 -> case s.location of
       Just lid -> lid <=~> match

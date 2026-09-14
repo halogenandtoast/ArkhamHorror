@@ -2,6 +2,7 @@ module Arkham.Scenarios.TheHeartOfMadness.Pylon where
 
 import Arkham.Ability
 import Arkham.Action qualified as Action
+import Arkham.Behavior.Damage qualified as Damage
 import Arkham.Calculation
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
 import Arkham.Classes.Entity
@@ -23,7 +24,6 @@ import Arkham.Message qualified as Msg
 import Arkham.Projection
 import Arkham.Scenarios.TheHeartOfMadness.Helpers
 import Arkham.Token
-import Arkham.Window qualified as Window
 
 pylonAbilities
   :: (Entity pylon, EntityAttrs pylon ~ LocationAttrs) => SealKind -> pylon -> [Ability]
@@ -79,11 +79,8 @@ pylonRunner skind msg pylon = runQueueT $ case msg of
         source = damageAssignmentSource damageAssignment
         damageEffect = damageAssignmentDamageEffect damageAssignment
         damageAmount = damageAssignmentAmount damageAssignment
-      checkWhen $ Window.DealtDamage source damageEffect (toTarget pylon) damageAmount
-      checkAfter $ Window.DealtDamage source damageEffect (toTarget pylon) damageAmount
-      checkWhen $ Window.TakeDamage source damageEffect (toTarget pylon) damageAmount
-      push $ Damaged (EnemyTarget eid) damageAssignment
-      checkAfter $ Window.TakeDamage source damageEffect (toTarget pylon) damageAmount
+      Damage.fireDamageWindows source (toTarget pylon) damageEffect damageAmount do
+        push $ Damaged (EnemyTarget eid) damageAssignment
     pure pylon
   Damaged (EnemyTarget eid) damageAssignment | coerce eid == (toAttrs pylon).id -> do
     mods <- getModifiers pylon

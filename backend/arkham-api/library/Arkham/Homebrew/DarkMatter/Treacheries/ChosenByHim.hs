@@ -22,11 +22,14 @@ asset you control that can leave play.
 Forced - At the end of your turn: Take 2 direct damage and shuffle the attached
 asset back into your deck.
 [action]: Remove attached asset from the game."
+
+It attaches to an *asset*, not to a threat area, so 'InThreatAreaOf' never holds
+for it; "you" is the investigator who drew it and controls the attached asset.
 -}
 instance HasAbilities ChosenByHim where
   getAbilities (ChosenByHim a) =
-    [ restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You
-    , restricted a 2 (InThreatAreaOf You) actionAbility
+    [ restricted a 1 (youExist $ InvestigatorWithId a.drawnBy) $ forced $ TurnEnds #when You
+    , restricted a 2 (youExist $ InvestigatorWithId a.drawnBy) actionAbility
     ]
 
 eligibleAssets :: InvestigatorId -> AssetMatcher

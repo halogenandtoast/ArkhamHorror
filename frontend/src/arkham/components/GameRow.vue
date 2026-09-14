@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { customInvestigatorUsesCardPortrait, portraitImage } from '@/arkham/cardImages'
+import { fetchCustomCards } from '@/arkham/api'
+import { isCustomCardCode, registerCustomCards } from '@/arkham/customCards'
 import type { GameDetails } from '@/arkham/types/Game'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { CampaignDetails } from '@/arkham/types/Campaign'
@@ -52,6 +55,34 @@ const otherHeading = computed(() => {
 })
 
 const toCssName = (s: string): string => s.charAt(0).toLowerCase() + s.substring(1)
+
+const usesCardPortrait = (cardCode: string) => customInvestigatorUsesCardPortrait(cardCode)
+const cardPortraitStyle = (cardCode: string) => ({
+  backgroundImage: `url(${JSON.stringify(portraitImage(cardCode))})`,
+})
+const customCardsLoaded = ref(false)
+const portraitReady = (cardCode: string) => !isCustomCardCode(cardCode) || customCardsLoaded.value
+
+onMounted(async () => {
+  const investigatorIds = [
+    ...props.game.investigators.map((investigator) => investigator.id),
+    ...Object.values(props.game.otherInvestigators).map((investigator) => investigator.id),
+  ]
+  if (!investigatorIds.some(isCustomCardCode)) {
+    customCardsLoaded.value = true
+    return
+  }
+
+  try {
+    registerCustomCards(await fetchCustomCards(props.game.id))
+  } catch (error) {
+    console.error('Could not load custom card portraits', error)
+  } finally {
+    // Do not render a temporary "Card Definition Missing" image while the
+    // game-specific definitions are still in flight.
+    customCardsLoaded.value = true
+  }
+})
 
 const campaignIcon = computed(() => {
   if (!campaign.value) return null
@@ -133,10 +164,16 @@ const scenarioIcon = computed(() => {
               class="investigator"
             >
               <div
-                :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`"
+                :class="[
+                  'investigator-portrait-container',
+                  toCssName(investigator.classSymbol),
+                  { 'investigator-portrait-container--card-art': usesCardPortrait(investigator.id) },
+                ]"
+                :style="usesCardPortrait(investigator.id) ? cardPortraitStyle(investigator.id) : undefined"
               >
                 <img
-                  :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)"
+                  v-if="portraitReady(investigator.id) && !usesCardPortrait(investigator.id)"
+                  :src="portraitImage(investigator.id)"
                   class="investigator-portrait"
                 />
               </div>
@@ -152,10 +189,16 @@ const scenarioIcon = computed(() => {
               class="investigator"
             >
               <div
-                :class="`investigator-portrait-container ${toCssName(investigator.classSymbol)}`"
+                :class="[
+                  'investigator-portrait-container',
+                  toCssName(investigator.classSymbol),
+                  { 'investigator-portrait-container--card-art': usesCardPortrait(investigator.id) },
+                ]"
+                :style="usesCardPortrait(investigator.id) ? cardPortraitStyle(investigator.id) : undefined"
               >
                 <img
-                  :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)"
+                  v-if="portraitReady(investigator.id) && !usesCardPortrait(investigator.id)"
+                  :src="portraitImage(investigator.id)"
                   class="investigator-portrait"
                 />
               </div>
@@ -307,6 +350,12 @@ h2 {
   &.neutral {
     border: 3px solid var(--neutral);
   }
+}
+
+.investigator-portrait-container--card-art {
+  background-position: left 50%;
+  background-repeat: no-repeat;
+  background-size: auto 150%;
 }
 
 .investigator-portrait {

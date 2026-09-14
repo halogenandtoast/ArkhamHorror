@@ -15,7 +15,8 @@ grimFuture = treachery GrimFuture Cards.grimFuture
 
 instance HasAbilities GrimFuture where
   getAbilities (GrimFuture a) =
-    [ restricted a 1 (InThreatAreaOf You)
+    [ skillTestAbility
+        $ restricted a 1 (InThreatAreaOf You)
         $ forced
         $ OrWindowMatcher [AgendaAdvances #when AnyAgenda, ActAdvances #when AnyAct]
     ]

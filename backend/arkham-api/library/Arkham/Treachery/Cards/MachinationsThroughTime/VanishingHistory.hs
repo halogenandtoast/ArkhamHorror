@@ -23,10 +23,10 @@ instance RunMessage VanishingHistory where
       nonWeaknessCount <- selectCount $ inHandOf NotForPlay iid <> basic NonWeakness
       chooseOrRunOneM iid $ scenarioI18n do
         when (notNull items) do
-          labeled' "vanishingHistory.discardItem" do
+          labeled "vanishingHistory.discardItem" do
             chooseTargetM iid items \item -> toDiscardBy iid attrs item
         when (nonWeaknessCount > 0) do
-          labeled' "vanishingHistory.discardCards" do
+          labeled "vanishingHistory.discardCards" do
             chooseAndDiscardCardEdit iid attrs \handDiscard ->
               handDiscard
                 { discardAmount = min 3 nonWeaknessCount

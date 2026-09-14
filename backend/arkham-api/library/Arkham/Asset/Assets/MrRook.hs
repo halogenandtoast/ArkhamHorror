@@ -37,7 +37,7 @@ instance RunMessage MrRook where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ cardI18n do
         for_ [3, 6, 9] \x ->
-          countVar x $ labeled' "mrRook.top" do
+          countVar x $ labeled "mrRook.top" do
             search iid (attrs.ability 1) iid [fromTopOfDeck x] #any (defer attrs IsDraw)
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do

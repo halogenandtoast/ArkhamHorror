@@ -123,7 +123,7 @@
       "exhaust": "横置蒙福之刃以在混乱袋中加入1个{'{'}bless{'}'}标记 | 横置蒙福之刃以在混乱袋中加入{count}个{'{'}bless{'}'}标记"
     },
     "blessedBlade4": {
-      "exhaustForBless": "横置蒙福之刃以在混乱袋中加入1个{'{'}bless{'}'}标记 | 横置蒙福之刃以在混乱袋中加入{'{'}count{'}'}个{'{'}bless{'}'}标记"
+      "exhaustForBless": "横置蒙福之刃以在混乱袋中加入1个{'{'}bless{'}'}标记 | 横置蒙福之刃以在混乱袋中加入{count}个{'{'}bless{'}'}标记"
     },
     "bloodRite": {
       "gainResource": "获得1资源",
@@ -1210,6 +1210,10 @@
     "unrelenting1": {
       "doneSealingTokens": "结束封印标记"
     },
+    "untimelyTransaction1": {
+      "noOnePays": "没有人打出",
+      "playCard": "打出该支援"
+    },
     "virgilGray": {
       "heal1HorrorFromVirgilGray": "治愈维吉尔·格雷的1点恐惧"
     },
@@ -1557,17 +1561,13 @@
     "trueMagickReworkingReality5": {
       "useTrueMagick": "使用真法魔典"
     },
-    "untimelyTransaction1": {
-      "noOnePays": "没有人打出",
-      "playCard": "打出该支援"
-    },
     "winchesterModel522": {
       "actionDiscardWinchester": "{'{'}action{'}'}: 弃掉温彻斯特52式步枪: _攻击({'{'}combat{'}'})_。你本次攻击得到+3{'{'}combat{'}'}。如果你检定成功，自动躲避对象敌人。",
       "actionSpend1Ammo": "{'{'}action{'}'}: 花费1子弹：_攻击({'{'}combat{'}'})_。你本次攻击得到+3{'{'}combat{'}'}并且造成伤害+1。"
     },
     "yaotl1": {
       "fastDiscardThe": "{'{'}fast{'}'}: 弃掉你牌库顶的一张卡牌。(每阶段仅限一次。)",
-      "fastExhaustYaotl": "{'{'}fast{'}'}横置雅沃托：在本次技能检定期间，你每项技能得到加成，加成的点数等于你弃牌堆顶上的一张卡牌的对应技能图标数({'{'}skillWild{'}'}图标不计算在内)."
+      "fastExhaustYaotl": "{'{'}fast{'}'}横置雅沃托：在本次技能检定期间，你每项技能得到加成，加成的点数等于你弃牌堆顶上的一张卡牌的对应技能图标数({'{'}wild{'}'}图标不计算在内)."
     }
   }
 }

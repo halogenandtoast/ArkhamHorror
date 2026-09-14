@@ -22,7 +22,7 @@ instance HasAbilities DarrellsKodak where
   getAbilities (DarrellsKodak a) =
     [ controlled_ a 1
         $ triggered
-          (oneOf [EnemySpawns #after Anywhere AnyEnemy, TreacheryEntersPlay #after AnyTreachery])
+          (oneOf [EnemySpawns #after AnyPlacement AnyEnemy, TreacheryEntersPlay #after AnyTreachery])
           (exhaust a)
     , controlled_ a 2
         $ freeReaction
@@ -45,21 +45,22 @@ instance HasAbilities DarrellsKodak where
         $ DiscoverClues #after You Anywhere AnyValue
     ]
 
-getKodakTarget :: HasCallStack => [Window] -> Target
-getKodakTarget [] = error "Invalid call"
-getKodakTarget ((windowType -> Window.EnemySpawns eid _) : _) = EnemyTarget eid
-getKodakTarget ((windowType -> Window.TreacheryEntersPlay tid) : _) = TreacheryTarget tid
-getKodakTarget (_ : ws) = getKodakTarget ws
+getKodakTarget :: [Window] -> Maybe Target
+getKodakTarget =
+  asum . map \case
+    (windowType -> Window.EnemySpawns eid _) -> Just (EnemyTarget eid)
+    (windowType -> Window.TreacheryEntersPlay tid) -> Just (TreacheryTarget tid)
+    _ -> Nothing
 
 instance RunMessage DarrellsKodak where
   runMessage msg a@(DarrellsKodak attrs) = runQueueT $ case msg of
-    UseCardAbility _iid (isSource attrs -> True) 1 (getKodakTarget -> target) _ -> do
+    UseCardAbility _iid (isSource attrs -> True) 1 (getKodakTarget -> Just target) _ -> do
       placeTokens (attrs.ability 1) target Evidence 1
       pure a
     UseCardAbility _iid (isSource attrs -> True) 2 (discoveredClues -> n) _ -> do
-      push $ DoStep n msg
+      doStep n msg
       pure a
-    DoStep n msg'@(UseCardAbility iid (isSource attrs -> True) 2 (discoveredLocation -> lid) _) | n > 0 -> do
+    DoStep n (UseCardAbility iid (isSource attrs -> True) 2 (discoveredLocation -> lid) _) | n > 0 -> do
       enemies <- selectTargets $ EnemyWithToken Evidence <> oneOf [enemyAt lid, not_ (EnemyAt Anywhere)]
       treacheries <-
         selectTargets $ TreacheryWithToken Evidence <> oneOf [treacheryAt lid, not_ (TreacheryAt Anywhere)]
@@ -67,6 +68,6 @@ instance RunMessage DarrellsKodak where
         chooseOrRunOneM iid do
           targets (enemies <> treacheries) \target -> do
             moveTokens (attrs.ability 2) (targetToSource target) attrs Evidence 1
-            doStep (n - 1) msg'
+            doNextStep msg
       pure a
     _ -> DarrellsKodak <$> liftRunMessage msg attrs

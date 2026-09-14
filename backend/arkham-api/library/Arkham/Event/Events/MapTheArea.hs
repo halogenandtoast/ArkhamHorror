@@ -30,8 +30,8 @@ instance RunMessage MapTheArea where
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       chooseOneM iid $ cardI18n $ scope "mapTheArea" do
-        labeled' "willpower" $ skillTestModifier sid attrs iid (AddSkillValue #willpower)
-        labeled' "agility" $ skillTestModifier sid attrs iid (AddSkillValue #agility)
+        labeled "willpower" $ skillTestModifier sid attrs iid (AddSkillValue #willpower)
+        labeled "agility" $ skillTestModifier sid attrs iid (AddSkillValue #agility)
       investigateEdit_ sid iid attrs (setTarget attrs)
       pure e
     Successful (Action.Investigate, LocationTarget lid) _iid _ (isTarget attrs -> True) _ -> do

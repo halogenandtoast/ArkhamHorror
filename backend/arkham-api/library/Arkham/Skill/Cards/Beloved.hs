@@ -23,7 +23,7 @@ instance RunMessage Beloved where
           if toResult attrs.meta
             then do
               chooseOneM attrs.owner do
-                cardI18n $ scope "beloved" $ labeled' "removeForAutoSuccess" do
+                cardI18n $ scope "beloved" $ labeled "removeForAutoSuccess" do
                   removeFromGame attrs
                   skillTestModifier sid attrs (ChaosTokenTarget token) ReturnBlessedToChaosBag
                   passSkillTest

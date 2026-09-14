@@ -633,7 +633,11 @@ instance RunMessage AssetAttrs where
       pushAll [RemoveFromPlay $ toSource a, ObtainCard a.cardId]
       pure a
     Discard mInvestigator source target | a `isTarget` target -> do
-      cannotLeavePlay <- a `hasModifier` CannotLeavePlay
+      -- A card that cannot leave play and then prints its own way out --
+      -- "it cannot leave play except using the ability below" -- is the one
+      -- thing allowed to discard it, so a discard it sources itself is let
+      -- through. Everything else is still stopped.
+      cannotLeavePlay <- if isSource a source then pure False else a `hasModifier` CannotLeavePlay
       if cannotLeavePlay
         then pure a
         else do
@@ -739,7 +743,12 @@ instance RunMessage AssetAttrs where
     ReplacedInvestigatorAsset iid aid | aid == assetId -> do
       pure $ a & placementL .~ InPlayArea iid & controllerL ?~ iid
     AddToVictory _ (AssetTarget aid) | aid == assetId -> do
-      pure $ a & placementL .~ OutOfPlay Zone.VictoryDisplayZone & controllerL .~ Nothing
+      -- leaving play removes every token, doom included (#5680)
+      pure
+        $ a
+        & (placementL .~ OutOfPlay Zone.VictoryDisplayZone)
+        & (controllerL .~ Nothing)
+        & (tokensL .~ mempty)
     AddToScenarioDeck key target | isTarget a target -> do
       pushAll
         [RemoveFromGame (toTarget a), AddCardToScenarioDeck key (toCard a)]
@@ -754,6 +763,8 @@ instance RunMessage AssetAttrs where
         _ -> False
 
       pure a
+    CardIsEnteringPlay _ card ->
+      pure $ a & cardsUnderneathL %~ filter (/= card)
     CardEnteredPlay _ card ->
       pure $ a & cardsUnderneathL %~ filter (/= card)
     Exhaust ea | a `isTarget` ea.target -> do

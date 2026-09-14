@@ -7,8 +7,9 @@ import Arkham.Skill.CardDefs.Import
 invocationOfDiana :: CardDef
 invocationOfDiana =
   (skill ":circus-ex-mortis:242" "Invocation of Diana" [#wild] Neutral)
-      { cdCardTraits = setFromList [Spirit]
-      , cdLevel = Nothing
-      , cdEncounterSet = Just Set.DestinyAndProphecy
-      , cdEncounterSetQuantity = Just 1
-      }
+    { cdCardTraits = setFromList [Spirit]
+    , cdCommitRestrictions = [MaxOnePerTest]
+    , cdLevel = Nothing
+    , cdEncounterSet = Just Set.DestinyAndProphecy
+    , cdEncounterSetQuantity = Just 1
+    }

@@ -27,8 +27,8 @@ instance RunMessage Hellfire where
           assignDamage iid attrs 2
           push $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) 2
         else scenarioI18n $ chooseOrRunOneM iid do
-          labeled' "take2Damage" $ assignDamage iid attrs 2
+          labeled "take2Damage" $ assignDamage iid attrs 2
           when (clues > 0) do
-            labeled' "placeCluesOnYourLocation" $ push $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) 2
+            labeled "placeCluesOnYourLocation" $ push $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) 2
       pure t
     _ -> Hellfire <$> liftRunMessage msg attrs

@@ -35,7 +35,7 @@ instance RunMessage JoeMazurewiczsRoom where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       hasAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 2) 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 2) 1
         labeledValidate' hasAssets "discardAssets" $ chooseAndDiscardAsset iid (attrs.ability 2)
       pure l
     _ -> JoeMazurewiczsRoom <$> liftRunMessage msg attrs

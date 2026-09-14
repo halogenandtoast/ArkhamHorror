@@ -91,6 +91,7 @@ lockedAndLoaded3 =
       { cdCardTraits = setFromList [Condition]
       , cdLevel = Just 3
       , cdDeckRestrictions = [PerDeckLimit 1]
+      , cdTags = [noGameplayEffectTag]
       }
 
 remingtonModel18584 :: CardDef
@@ -397,6 +398,7 @@ eldritchBrand5 =
       { cdCardTraits = setFromList [Pact]
       , cdExceptional = True
       , cdLevel = Just 5
+      , cdTags = [setupOnlyTag]
       }
 
 anchorChain :: CardDef
@@ -470,6 +472,7 @@ ascetic =
       { cdCardTraits = setFromList [Condition]
       , cdDeckRestrictions = [PurchaseAtDeckCreation, PerDeckLimit 1]
       , cdGrantedXp = Just 10
+      , cdTags = [noGameplayEffectTag]
       }
 
 spiritualHealing4 :: CardDef
@@ -479,6 +482,7 @@ spiritualHealing4 =
       { cdCardTraits = setFromList [Condition, Blessed]
       , cdLevel = Just 4
       , cdDeckRestrictions = [PerDeckLimit 1]
+      , cdTags = [noGameplayEffectTag]
       }
 
 libraryPass1 :: CardDef
@@ -710,6 +714,7 @@ goodMoney =
     $ (storyAsset_ "11756a" ("Good Money" <:> "The \"Quid\" Part") Tasks)
       { cdCardTraits = setFromList [Task, Incomplete]
       , cdCardSubType = Just Weakness
+      , cdOptions = [forAbility 1 $ cardToggle "stopAtFiveResources" False]
       }
 
 doNoHarm :: CardDef
@@ -775,9 +780,11 @@ alienTablet =
 
 divingSuitTheDrownedCity :: CardDef
 divingSuitTheDrownedCity =
-  (storyAsset "11764" "Diving Suit" 3 TheDrownedCityExpedition)
+  -- The one Expedition Item the set holds more than one copy of.
+  (storyAssetWithMany "11764" "Diving Suit" 3 TheDrownedCityExpedition 4)
     { cdCardTraits = setFromList [Item, Armor]
     , cdSkills = [#combat]
+    , cdOptions = [cardToggle "treatAsPartiallyFlooded" True]
     }
 
 rubyStandish :: CardDef
@@ -889,7 +896,6 @@ mariaRivera :: CardDef
 mariaRivera =
   (storyAsset "11568" ("Maria Rivera" <:> "Lost Pilgrim") 3 TheApiary)
     { cdCardTraits = setFromList [Ally, Cultist]
-    , cdSlots = [#ally]
     , cdUnique = True
     , cdVictoryPoints = Just 0
     }
@@ -908,6 +914,7 @@ grislyMask =
     { cdCardTraits = setFromList [Item, Artifact, Rlyeh]
     , cdMeta = artifactBack
     , cdUnique = True
+    , cdOptions = [forAbility 1 $ cardToggle "onlyWhenEngaged" False]
     }
 
 tidalTablet :: CardDef

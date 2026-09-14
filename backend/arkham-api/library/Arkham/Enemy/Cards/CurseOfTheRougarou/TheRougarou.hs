@@ -28,7 +28,7 @@ instance HasAbilities TheRougarou where
           noLimit
             $ restricted a 1 (ValueIs (damagePerPhase meta) (AtLeast $ PerPlayer 1))
             $ forced
-            $ EnemyDealtDamage #after AnyDamageEffect (be a) AnySource
+            $ EnemyTakeDamage #after AnyDamageEffect (be a) (atLeast 1) AnySource
     if any (`abilityIs` #engage) actions'
       then do
         let

@@ -28,8 +28,8 @@ instance RunMessage CornerTheSuspect where
       inVictory <- selectAny $ VictoryDisplayCardMatch $ basic "Julia Stern"
       if inVictory
         then leadChooseOneM do
-          labeled' "r1" $ push R1
-          labeled' "r2" $ push R2
+          labeled "r1" $ push R1
+          labeled "r2" $ push R2
         else push $ ResetActDeckToStage 1
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do

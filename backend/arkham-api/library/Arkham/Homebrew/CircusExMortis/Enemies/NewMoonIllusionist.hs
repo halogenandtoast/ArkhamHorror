@@ -1,11 +1,11 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.NewMoonIllusionist (newMoonIllusionist) where
 
 import Arkham.Card
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import {-# SOURCE #-} Arkham.GameEnv (findAllCards, getHistory)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelf, modifySelfWhen)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelfWhen)
 import Arkham.History
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 import Arkham.Trait (Trait (Hex, Woods))
@@ -20,7 +20,6 @@ newMoonIllusionist =
 
 instance HasModifiersFor NewMoonIllusionist where
   getModifiersFor (NewMoonIllusionist a) = do
-    modifySelf a [AddKeyword Keyword.Hunter, AddKeyword Keyword.Aloof]
     modifySelfWhen a (enemyExhausted a) [RemoveKeyword Keyword.Aloof]
     -- The first Hex treachery drawn each round by each investigator at this
     -- location and each connecting Woods location gains surge. Mirrors

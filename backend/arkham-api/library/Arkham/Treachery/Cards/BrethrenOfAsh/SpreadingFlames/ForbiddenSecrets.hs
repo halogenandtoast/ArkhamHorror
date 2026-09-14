@@ -34,8 +34,8 @@ instance RunMessage ForbiddenSecrets where
       if canPlaceClues
         then chooseOneM iid $ withI18n do
           withLocationOf iid \_ -> do
-            countVar 1 $ labeled' "placeCluesOnYourLocation" $ placeCluesOnLocation iid attrs 1
-          countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+            countVar 1 $ labeled "placeCluesOnYourLocation" $ placeCluesOnLocation iid attrs 1
+          countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
         else assignHorror iid attrs 1
       doStep (n - 1) msg'
       pure t

@@ -295,14 +295,14 @@ instance RunMessage LostSelf where
       -- requirements", since there is no campaign log to have earned them.
       standalone <- getIsStandalone
       chooseOneM lead do
-        when (standalone || canEndThis) $ labeled' "letsEndThis" $ doStep 1 msg
-        when (standalone || canSaveTheVale) $ labeled' "saveTheVale" $ doStep 2 msg
-        when (standalone || canBurnItAll) $ labeled' "burnItAll" $ doStep 3 msg
-        labeled' "escape" $ doStep 4 msg
+        when (standalone || canEndThis) $ labeled "letsEndThis" $ doStep 1 msg
+        when (standalone || canSaveTheVale) $ labeled "saveTheVale" $ doStep 2 msg
+        when (standalone || canBurnItAll) $ labeled "burnItAll" $ doStep 3 msg
+        labeled "escape" $ doStep 4 msg
       pure a
     -- Fate of the Vale 1: "Let's end this."
     DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      storyWithContinue' $ setTitle "title" >> p "fateOfTheVale1"
+      storyWithContinue $ setTitle "title" >> p "fateOfTheVale1"
 
       -- If Dr. Marquez is not already in play, search each investigator's deck
       -- and all out-of-play areas for her and put her into play.
@@ -335,7 +335,7 @@ instance RunMessage LostSelf where
       thePetersFamilyWereReunited <- getHasRecord ThePetersFamilyWereReunited
       theHemlocksMadeATruce <- getHasRecord TheHemlocksMadeATruce
 
-      storyWithContinue' do
+      storyWithContinue do
         setTitle "title"
         p "fateOfTheVale2"
         ul do
@@ -372,7 +372,7 @@ instance RunMessage LostSelf where
       pure a
     -- Fate of the Vale 3: "Burn it all."
     DoStep 3 adv@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      storyWithContinue' $ setTitle "title" >> p "fateOfTheVale3"
+      storyWithContinue $ setTitle "title" >> p "fateOfTheVale3"
       -- Skip to Fate of the Vale 5; advance the act after that shared step has
       -- been queued so this act is still in play to handle it.
       doStep 5 adv
@@ -380,13 +380,13 @@ instance RunMessage LostSelf where
       pure a
     -- Fate of the Vale 4: "Escape with our lives."
     DoStep 4 adv@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      storyWithContinue' $ setTitle "title" >> p "fateOfTheVale4"
+      storyWithContinue $ setTitle "title" >> p "fateOfTheVale4"
       doStep 5 adv
       advanceToAct attrs Cards.fateOfTheValeV4 A
       pure a
     -- Fate of the Vale 5: shared resolution for v.III and v.IV.
     DoStep 5 adv@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      storyWithContinue' $ setTitle "title" >> p "fateOfTheVale5"
+      storyWithContinue $ setTitle "title" >> p "fateOfTheVale5"
       setupNightVale attrs
       doStep 105 adv
       pure a

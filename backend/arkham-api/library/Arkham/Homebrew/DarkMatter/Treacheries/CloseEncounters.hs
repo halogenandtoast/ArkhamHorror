@@ -1,8 +1,6 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.CloseEncounters (closeEncounters) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Matcher
 import Arkham.Treachery.Import.Lifted hiding (RevealChaosToken)
@@ -22,9 +20,9 @@ instance HasAbilities CloseEncounters where
     [ restricted
         a
         1
-        ( DuringSkillTest
-            $ YourSkillTest
-            $ oneOf [WhileAttackingAnEnemy AnyEnemy, WhileEvadingAnEnemy AnyEnemy]
+        ( InThreatAreaOf You
+            <> DuringSkillTest
+              (YourSkillTest $ oneOf [WhileAttackingAnEnemy AnyEnemy, WhileEvadingAnEnemy AnyEnemy])
         )
         $ forced
         $ RevealChaosToken #when You AnyChaosToken
@@ -35,8 +33,10 @@ instance RunMessage CloseEncounters where
     Revelation iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
       pure t
+    {- The test is already past its reveal step here, so the reveal-strategy
+    modifier would never be read; draw the extra token directly instead. -}
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withSkillTest \sid -> skillTestModifier sid attrs sid RevealAnotherChaosToken
       toDiscardBy iid attrs attrs
+      drawAnotherChaosToken iid
       pure t
     _ -> CloseEncounters <$> liftRunMessage msg attrs

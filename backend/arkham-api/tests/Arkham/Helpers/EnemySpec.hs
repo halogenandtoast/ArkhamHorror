@@ -1,6 +1,6 @@
 module Arkham.Helpers.EnemySpec (spec) where
 
-import Arkham.Enemy.Types (Field (EnemyHealthActual))
+import Arkham.Enemy.Types (Field (EnemyHealth, EnemyHealthActual))
 import Arkham.Helpers.Enemy (getDefeatedEnemyHealth)
 import Arkham.Helpers.Enemy qualified as Helpers
 import TestImport.New
@@ -30,3 +30,22 @@ spec = describe "getDefeatedEnemyHealth" do
     run $ QuietlyRemoveFromGame (toTarget enemy)
     Helpers.getEnemyField EnemyHealthActual (toId enemy) `shouldReturn` Nothing
     getDefeatedEnemyHealth (toId enemy) `shouldReturn` Just 1
+
+  -- Bounty, Ancestral Token, Autopsy Report (3) and Twisting Catwalks all read
+  -- this as the enemy's *printed* health, so a HealthModifier must not change
+  -- what gets recorded. Printed 3 with -2 so one hit still defeats it.
+  it "records printed health, not modified health" . gameTest $ \self -> do
+    withProp @"combat" 1 self
+    enemy <- testEnemy & prop @"health" 3 & prop @"fight" 1
+    location <- testLocation
+    setChaosTokens [Zero]
+    enemy `spawnAt` location
+    self `moveTo` location
+    run =<< gameModifier (TestSource mempty) enemy (HealthModifier (-2))
+    Helpers.getEnemyField EnemyHealth (toId enemy) `shouldReturn` Just 1
+    void $ self `fightEnemy` enemy
+    startSkillTest
+    click "Apply results"
+    run $ QuietlyRemoveFromGame (toTarget enemy)
+    Helpers.getEnemyField EnemyHealthActual (toId enemy) `shouldReturn` Nothing
+    getDefeatedEnemyHealth (toId enemy) `shouldReturn` Just 3

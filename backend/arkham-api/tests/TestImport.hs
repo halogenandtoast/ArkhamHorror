@@ -148,13 +148,13 @@ ref `refShouldBe` y = do
   liftIO $ result `shouldBe` y
 
 nonFast :: Window
-nonFast = Window Timing.When NonFast Nothing
+nonFast = Window Timing.When NonFast Nothing Nothing
 
 fastPlayerWindow :: Window
-fastPlayerWindow = Window Timing.When FastPlayerWindow Nothing
+fastPlayerWindow = Window Timing.When FastPlayerWindow Nothing Nothing
 
 duringTurn :: InvestigatorId -> Window
-duringTurn iid = Window Timing.When (DuringTurn iid) Nothing
+duringTurn iid = Window Timing.When (DuringTurn iid) Nothing Nothing
 
 data TestApp = TestApp
   { game :: IORef Game
@@ -727,6 +727,7 @@ chooseFirstOption _reason = do
   questionMap <- gameQuestion <$> getGame
   case mapToList questionMap of
     [(_, question)] -> case stripQuestionWrappers question of
+      Read _ (BasicReadChoices (msg : _)) _ -> push (uiToRun msg) >> runMessages
       ChooseOne (msg : _) -> push (uiToRun msg) >> runMessages
       PlayerWindowChooseOne (msg : _) -> push (uiToRun msg) >> runMessages
       ChooseOneAtATime (msg : _) -> push (uiToRun msg) >> runMessages
@@ -749,6 +750,7 @@ chooseOptionMatching _reason f = do
   notFound msgs =
     liftIO $ expectationFailure $ "could not find a matching message in: " <> show msgs
   go iid question = case stripQuestionWrappers question of
+    Read _ (BasicReadChoices msgs) _ -> go iid (ChooseOne msgs)
     ChooseOne msgs -> case find f msgs of
       Just msg -> push (uiToRun msg) <* runMessages
       Nothing -> notFound msgs
@@ -892,6 +894,7 @@ newGame scenario' investigator = do
         , gameLeadInvestigatorId = investigatorId
         , gameActivePlayerId = attr investigatorPlayerId investigator
         , gamePlayers = [attr investigatorPlayerId investigator]
+        , gameRetiredInvestigators = mempty
         , gamePhase = CampaignPhase -- TODO: maybe this should be a TestPhase or something?
         , gamePhaseStep = Nothing
         , gameSkillTest = Nothing
@@ -905,6 +908,7 @@ newGame scenario' investigator = do
         , gameInHandEntities = mempty
         , gameInDiscardEntities = mempty
         , gameActionRemovedEntities = mempty
+        , gameTombstones = mempty
         , gameInSearchEntities = defaultEntities
         , gameGameState = IsActive
         , gameFoundCards = mempty
@@ -923,6 +927,7 @@ newGame scenario' investigator = do
         , gameActionSnapshot = Transient Nothing
         , gameInAction = False
         , gameCards = mempty
+        , gameCustomCards = mempty
         , gameActiveCost = mempty
         , gameActiveAbilities = mempty
         , gameInSetup = False

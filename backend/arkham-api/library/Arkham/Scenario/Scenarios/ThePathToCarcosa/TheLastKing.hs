@@ -247,7 +247,7 @@ instance RunMessage TheLastKing where
             chooseNM lead remainingXp do
               for_ investigators \iid -> do
                 name <- field InvestigatorName iid
-                withVar "name" (String $ display name) $ labeled' "gainAdditionalXp" $ assignXp 1 iid
+                withVar "name" (String $ display name) $ labeled "gainAdditionalXp" $ assignXp 1 iid
 
           -- Assign XP now that the modifiers exist
           doStep 1 msg'

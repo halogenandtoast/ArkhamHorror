@@ -32,6 +32,7 @@ import Arkham.Source
 import Arkham.Target
 import Arkham.Tarot
 import Arkham.Token
+import Arkham.TokenBag (CustomChaosBag)
 import Arkham.Xp
 import Arkham.Zone
 import Control.Lens (_Just)
@@ -91,6 +92,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioResignedCardCodes :: Field Scenario [CardCode]
   ScenarioResolvedStories :: Field Scenario [StoryId]
   ScenarioChaosBag :: Field Scenario ChaosBag
+  ScenarioCustomChaosBags :: Field Scenario (Map Text CustomChaosBag)
   ScenarioInResolution :: Field Scenario Bool
   ScenarioIsPrelude :: Field Scenario Bool
   ScenarioSetAsideCards :: Field Scenario [Card]
@@ -140,6 +142,7 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioNoRemainingInvestigatorsHandler :: Target
   , scenarioVictoryDisplay :: [Card]
   , scenarioChaosBag :: ChaosBag
+  , scenarioCustomChaosBags :: Map Text CustomChaosBag
   , scenarioEncounterDeck :: Deck EncounterCard
   , scenarioHasEncounterDeck :: Bool
   , scenarioDiscard :: [EncounterCard]
@@ -342,6 +345,7 @@ scenario f cardCode name difficulty layout =
       , scenarioNoRemainingInvestigatorsHandler = ScenarioTarget
       , scenarioVictoryDisplay = mempty
       , scenarioChaosBag = emptyChaosBag
+      , scenarioCustomChaosBags = mempty
       , scenarioEncounterDeck = mempty
       , scenarioEncounterDecks = mempty
       , scenarioHasEncounterDeck = True
@@ -468,6 +472,7 @@ instance FromJSON ScenarioAttrs where
     scenarioNoRemainingInvestigatorsHandler <- o .: "noRemainingInvestigatorsHandler"
     scenarioVictoryDisplay <- o .: "victoryDisplay"
     scenarioChaosBag <- o .: "chaosBag"
+    scenarioCustomChaosBags <- o .:? "customChaosBags" .!= mempty
     scenarioEncounterDeck <- o .: "encounterDeck"
     scenarioHasEncounterDeck <- o .: "hasEncounterDeck"
     scenarioDiscard <- o .: "discard"

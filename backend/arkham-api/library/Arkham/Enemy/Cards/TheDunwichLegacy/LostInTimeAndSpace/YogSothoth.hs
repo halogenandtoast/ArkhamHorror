@@ -32,7 +32,7 @@ instance RunMessage YogSothoth where
   runMessage msg e@(YogSothoth attrs) = runQueueT $ scenarioI18n $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ for_ [0 .. attrs.sanityDamage] \n -> do
-        numberVar "cards" n $ numberVar "horror" (attrs.sanityDamage - n) $ labeled' "yogSothoth" do
+        numberVar "cards" n $ numberVar "horror" (attrs.sanityDamage - n) $ labeled "yogSothoth" do
           enemyAttackModifier (attrs.ability 1) attrs $ HorrorDealt (-n)
           eid <- createCardEffectCapture Cards.yogSothoth (effectInt n) (attrs.ability 1) iid
           push $ DiscardTopOfDeck iid n (attrs.ability 1) Nothing

@@ -22,7 +22,12 @@ darkProphecy = event DarkProphecy Cards.darkProphecy
 
 instance RunMessage DarkProphecy where
   runMessage msg e@(DarkProphecy attrs) = case msg of
-    InvestigatorPlayEvent iid eid _ [Window Timing.When (Window.WouldRevealChaosToken drawSource _) _] _
+    InvestigatorPlayEvent
+      iid
+      eid
+      _
+      [Window Timing.When (Window.WouldRevealChaosToken drawSource _) _ _]
+      _
       | eid == toId attrs -> do
           ignoreWindow <-
             checkWindows

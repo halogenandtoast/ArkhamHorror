@@ -22,7 +22,7 @@ instance RunMessage Cornered where
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       chooseOneM iid do
-        scenarioI18n $ labeled' "cornered.slain" $ withLocationOf iid slayCivilian
-        withI18n $ countVar n $ labeled' "takeDamage" $ assignDamage iid attrs n
+        scenarioI18n $ labeled "cornered.slain" $ withLocationOf iid slayCivilian
+        withI18n $ countVar n $ labeled "takeDamage" $ assignDamage iid attrs n
       pure t
     _ -> Cornered <$> liftRunMessage msg attrs

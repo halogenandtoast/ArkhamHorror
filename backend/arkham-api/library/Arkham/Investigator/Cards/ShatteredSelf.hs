@@ -52,7 +52,7 @@ instance RunMessage ShatteredSelf where
   runMessage msg i@(ShatteredSelf (attrs `With` meta)) = runQueueT $ case msg of
     ResolveChaosToken _ ElderSign iid | iid == toId attrs -> do
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "drawCards" $ drawCards iid ElderSign 1
+        countVar 1 $ labeled "drawCards" $ drawCards iid ElderSign 1
         skip_
       pure i
     UseCardAbility _iid (isSource attrs -> True) 1 (getCommittedCard -> card) _ -> do

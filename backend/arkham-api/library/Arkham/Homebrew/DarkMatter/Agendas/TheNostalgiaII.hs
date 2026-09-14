@@ -2,12 +2,10 @@ module Arkham.Homebrew.DarkMatter.Agendas.TheNostalgiaII (theNostalgiaII) where
 
 import Arkham.Agenda.Import.Lifted
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead)
-import Arkham.Helpers.Window (assetLeavingPlay)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
-import Arkham.Homebrew.DarkMatter.Helpers (scanTopOfScanningDeck, scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (scanTopOfScanningDeck)
 import Arkham.Homebrew.DarkMatter.MotionScanning
 import Arkham.Matcher
 
@@ -34,8 +32,9 @@ instance RunMessage TheNostalgiaII where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       scanTopOfScanningDeck iid (attrs.ability 1)
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 (assetLeavingPlay -> aid) _ -> do
-      push $ RemoveFromGame (AssetTarget aid)
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      let aid = crewLeavingPlay ws
+      insteadOfLosingCrew ws aid $ RemoveFromGame (AssetTarget aid)
       pure a
     {- Agenda 1b, "In the Open":
 
@@ -43,8 +42,6 @@ instance RunMessage TheNostalgiaII where
     Discard cards from the top of the encounter deck until an enemy is
     discarded. Spawn that enemy at the Ship Mainframe." -}
     AdvanceAgenda (isSide B attrs -> True) -> do
-      scenarioI18n "inTheShadowOfEarth" $ scope "agenda1b" do
-        flavor $ setTitle "title" >> p "body"
       shuffleEncounterDiscardBackIn
       lead <- getLead
       discardUntilFirst lead attrs Deck.EncounterDeck #enemy

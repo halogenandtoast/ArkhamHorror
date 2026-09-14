@@ -232,6 +232,32 @@ canSpawnInLocation eid lid = do
     Modifier.CannotSpawnIn matcher -> lid <=~> matcher
     _ -> pure False
 
+{- | The members a composite enemy stands for, if it is one. See
+'Modifier.InteractAsOneOf'.
+-}
+getInteractAsOneOf :: HasGame m => EnemyId -> m (Maybe EnemyMatcher)
+getInteractAsOneOf eid = do
+  mods <- getModifiers eid
+  pure $ listToMaybe [m | Modifier.InteractAsOneOf m <- mods]
+
+{- | Rewrite a fight/evade matcher so that a composite enemy it picks out is replaced
+by the enemy cards it is made of — "when interacting with Cthulhu, choose one of the
+cards on the Cthulhu Board". The composite is subtracted rather than left to its own
+@CannotBe*@ modifiers because the fight override path ('withFightOverride') matches on
+'EnemyCanBeAttackedBy', which does not read them.
+
+The identity function unless some enemy the matcher already picks out is composite.
+-}
+expandCompositeEnemies :: HasGame m => EnemyMatcher -> m EnemyMatcher
+expandCompositeEnemies matcher = do
+  composites <-
+    select matcher >>= \eids -> forMaybeM eids \eid -> fmap (eid,) <$> getInteractAsOneOf eid
+  pure $ case composites of
+    [] -> matcher
+    _ ->
+      oneOf (matcher : map snd composites)
+        <> not_ (mapOneOf EnemyWithId (map fst composites))
+
 getFightableEnemyIds
   :: (HasGame m, Sourceable source) => InvestigatorId -> source -> m [EnemyId]
 getFightableEnemyIds iid (toSource -> source) = do

@@ -4,11 +4,15 @@ module Arkham.Effect.Effects.OnRevealChaosTokenEffect (
   onRevealChaosTokenEffect',
 ) where
 
+import Arkham.Card (toCardId)
 import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes
 import Arkham.Effect.Runner
+import Arkham.Helpers.Modifiers (getModifiers)
+import Arkham.Helpers.Ref (sourceToMaybeCard, sourceToTarget)
 import Arkham.Matcher hiding (RevealChaosToken, SkillTestEnded)
 import Arkham.Message.Lifted.Queue
+import Arkham.Modifier (ModifierType (ResolveEffectsAdditionalTimes))
 import Arkham.Prelude
 import Arkham.Window qualified as Window
 
@@ -57,21 +61,35 @@ handleToken attrs iid token = void $ runMaybeT do
   case attrs.metadata of
     Just (EffectMessages msgs) -> lift do
       push $ DisableEffect attrs.id
+      -- "Resolve that card's effects an additional time" is the card being told
+      -- about the same token more than once, so the count is decided here where
+      -- the telling happens. Read off the card as well as the entity: the
+      -- choice is made against a committed card, which is all the chooser has
+      -- to point at.
+      mods <- getModifiers (sourceToTarget attrs.source)
+      cardMods <- maybe (pure []) (getModifiers . toCardId) =<< sourceToMaybeCard attrs.source
+      let extra = sum $ map extraTimes (mods <> cardMods)
+          times = 1 + max 0 extra
+          repeat_ m = pushAll (replicate times m)
       case attrs.source of
-        EventSource eid -> push $ If (Window.RevealChaosTokenEventEffect iid [token] eid) msgs
+        EventSource eid -> repeat_ $ If (Window.RevealChaosTokenEventEffect iid [token] eid) msgs
         AbilitySource inner _n -> case inner of
-          AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
+          AssetSource aid -> repeat_ $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
           other -> error $ "Unhandled ability source for token effect: " <> show other
         UseAbilitySource _ inner _n -> case inner of
-          AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
+          AssetSource aid -> repeat_ $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
           other -> error $ "Unhandled ability source for token effect: " <> show other
-        AssetSource aid -> push $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
-        SkillSource skid -> push $ If (Window.RevealChaosTokenSkillEffect iid [token] skid) msgs
-        TreacherySource tid -> push $ If (Window.RevealChaosTokenTreacheryEffect iid [token] tid) msgs
-        ChaosTokenEffectSource _ -> pushAll msgs
-        LocationSource _ -> pushAll msgs
+        AssetSource aid -> repeat_ $ If (Window.RevealChaosTokenAssetAbilityEffect iid [token] aid) msgs
+        SkillSource skid -> repeat_ $ If (Window.RevealChaosTokenSkillEffect iid [token] skid) msgs
+        TreacherySource tid -> repeat_ $ If (Window.RevealChaosTokenTreacheryEffect iid [token] tid) msgs
+        ChaosTokenEffectSource _ -> pushAll (mconcat (replicate times msgs))
+        LocationSource _ -> pushAll (mconcat (replicate times msgs))
         other -> error $ "Unhandled source for token effect: " <> show other
     _ -> pure ()
+ where
+  extraTimes = \case
+    ResolveEffectsAdditionalTimes n -> n
+    _ -> 0
 
 instance RunMessage OnRevealChaosTokenEffect where
   runMessage msg e@(OnRevealChaosTokenEffect attrs) = runQueueT $ case msg of

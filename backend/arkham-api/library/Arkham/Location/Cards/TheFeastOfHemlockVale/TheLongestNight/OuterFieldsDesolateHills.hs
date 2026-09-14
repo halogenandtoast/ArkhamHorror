@@ -45,7 +45,7 @@ instance RunMessage OuterFieldsDesolateHills where
       let (top, rest) = splitAt n allCards
       push $ SetScenarioDeck EnemyDeck rest
       focusCards top do
-        cardI18n $ scope "outerFieldsDesolateHills" $ chooseUpToNM' iid (length top) "doneDiscarding" do
+        cardI18n $ scope "outerFieldsDesolateHills" $ chooseUpToNM iid (length top) "doneDiscarding" do
           targets top $ handleTarget iid (attrs.ability 1)
         doStep 1 msg
         unfocusCards

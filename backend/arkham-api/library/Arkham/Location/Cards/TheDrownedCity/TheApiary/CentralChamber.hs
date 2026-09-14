@@ -20,7 +20,7 @@ newtype CentralChamber = CentralChamber LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 centralChamber :: LocationCard CentralChamber
-centralChamber = location CentralChamber Cards.centralChamber 4 (Static 3)
+centralChamber = location CentralChamber Cards.centralChamber 4 (PerPlayer 3)
 
 {- | The Central Chamber sits in the centre of a 4-location ring and is only
 connected to the ring location it currently "faces" (the location beneath its
@@ -59,8 +59,8 @@ instance RunMessage CentralChamber where
       mMother <- selectOne $ enemyIs Enemies.mother
       chooseOneM iid do
         unless (null connecting) do
-          labeled' "moveToConnecting" $ chooseTargetM iid connecting $ moveTo (attrs.ability 1) iid
+          labeled "moveToConnecting" $ chooseTargetM iid connecting $ moveTo (attrs.ability 1) iid
         for_ mMother \mother ->
-          labeled' "motherAttacks" $ initiateEnemyAttack mother (attrs.ability 1) iid
+          labeled "motherAttacks" $ initiateEnemyAttack mother (attrs.ability 1) iid
       pure l
     _ -> CentralChamber <$> liftRunMessage msg attrs

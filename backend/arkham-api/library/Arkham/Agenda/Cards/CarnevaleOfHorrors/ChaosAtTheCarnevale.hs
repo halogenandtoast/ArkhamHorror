@@ -19,7 +19,7 @@ chaosAtTheCarnevale = agenda (3, A) ChaosAtTheCarnevale Cards.chaosAtTheCarneval
 
 instance HasAbilities ChaosAtTheCarnevale where
   getAbilities (ChaosAtTheCarnevale x) =
-    [ mkAbility x 1 $ forced $ EnemySpawns #after Anywhere $ enemyIs Enemies.writhingAppendage
+    [ mkAbility x 1 $ forced $ EnemySpawns #after AnyPlacement $ enemyIs Enemies.writhingAppendage
     | onSide A x
     ]
 

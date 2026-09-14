@@ -23,9 +23,9 @@ instance RunMessage VoiceOfTrunembra where
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       chooseNM iid (min 3 n) $ withI18n do
-        countVar 2 $ labeled' "loseResources" $ loseResources iid attrs 2
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
-        countVar 2 $ labeled' "minusToYourNextSkillTestThisRound" $ doStep 3 msg
+        countVar 2 $ labeled "loseResources" $ loseResources iid attrs 2
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
+        countVar 2 $ labeled "minusToYourNextSkillTestThisRound" $ doStep 3 msg
       pure t
     DoStep 3 (FailedThisSkillTestBy iid (isSource attrs -> True) _) -> do
       -- we have to delay calling this until outside of the question in order

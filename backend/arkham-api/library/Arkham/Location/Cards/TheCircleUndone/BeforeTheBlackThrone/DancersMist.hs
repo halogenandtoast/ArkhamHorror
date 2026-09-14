@@ -53,7 +53,7 @@ instance RunMessage DancersMist where
               chooseOneM iid $ scenarioI18n do
                 questionLabeledCard attrs
                 when (notNull rightChoice) do
-                  labeled' "connectToTheRight" do
+                  labeled "connectToTheRight" do
                     chooseOrRunOneM iid do
                       for_ rightChoice \pos'@(Pos x y) -> do
                         gridLabeled (cosmicLabel pos')
@@ -62,7 +62,7 @@ instance RunMessage DancersMist where
                           : msgs
 
                 when (notNull emptyPositions) do
-                  labeled' "dancersMist.choice" do
+                  labeled "dancersMist.choice" do
                     push $ LoseResources iid (toAbilitySource attrs 1) 2
                     chooseOrRunOneM iid do
                       for_ emptyPositions \pos'@(Pos x y) -> do

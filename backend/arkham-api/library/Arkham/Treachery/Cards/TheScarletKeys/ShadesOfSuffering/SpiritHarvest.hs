@@ -20,9 +20,9 @@ instance RunMessage SpiritHarvest where
     Revelation iid (isSource attrs -> True) -> do
       theShadeReaper <- selectJust $ scarletKeyIs Keys.theShadeReaper
       chooseOneM iid $ scenarioI18n do
-        labeled' "spiritHarvest.damage" do
+        labeled "spiritHarvest.damage" do
           eachInvestigator \iid' -> assignDamageAndHorror iid' attrs 1 1
-        labeled' "spiritHarvest.tzuSanNiang" do
+        labeled "spiritHarvest.tzuSanNiang" do
           shift theShadeReaper
           placeTokens attrs theShadeReaper #charge 3
       pure t

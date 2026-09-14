@@ -26,8 +26,8 @@ darkReflectionsZealot = treachery DarkReflectionsZealot Cards.darkReflectionsZea
 
 instance HasAbilities DarkReflectionsZealot where
   getAbilities (DarkReflectionsZealot a) =
-    [ mkAbility a 1 $ forced $ DeckHasNoCards #after You
-    , restricted a 2 (exists $ InvestigatorAt YourLocation) actionAbility
+    [ restricted a 1 InYourHand $ forced $ DeckHasNoCards #after You
+    , restricted a 2 (InYourHand <> exists (InvestigatorAt YourLocation)) actionAbility
     ]
 
 instance RunMessage DarkReflectionsZealot where

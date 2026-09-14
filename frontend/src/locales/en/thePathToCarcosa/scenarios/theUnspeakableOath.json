@@ -58,6 +58,15 @@
     }
   },
   "label": {
+    "remembered": {
+      "setAFireInTheKitchen": "Set a fire in the kitchen",
+      "incitedAFightAmongstThePatients": "Incited a fight amongst the patients",
+      "distractedTheGuards": "Distracted the guards",
+      "releasedADangerousPatient": "Released a dangerous patient",
+      "knowTheGuardsPatrols": "Know the guards' patrols",
+      "recalledTheWayOut": "Recalled the way out",
+      "youTookTheKeysByForce": "You took the keys by force"
+    },
     "cloudedMemory": {
       "forget": "Forget something an investigator has \"remembered\" from an ability on a location. (It is no longer true.)",
       "chooseForget": "Forget something an investigator has \"remembered\" from an ability on a location. (It is no longer true.)",

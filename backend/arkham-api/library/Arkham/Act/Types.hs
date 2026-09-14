@@ -50,6 +50,7 @@ data instance Field Act :: Type -> Type where
   ActDeckId :: Field Act Int
   ActAbilities :: Field Act [Ability]
   ActCard :: Field Act Card
+  ActCardsUnderneath :: Field Act [Card]
   ActUsedWheelOfFortuneX :: Field Act Bool
   ActKeys :: Field Act (Set ArkhamKey)
 
@@ -82,6 +83,7 @@ instance FromJSON (SomeField Act) where
     "ActDeckId" -> pure $ SomeField ActDeckId
     "ActAbilities" -> pure $ SomeField ActAbilities
     "ActCard" -> pure $ SomeField ActCard
+    "ActCardsUnderneath" -> pure $ SomeField ActCardsUnderneath
     "ActUsedWheelOfFortuneX" -> pure $ SomeField ActUsedWheelOfFortuneX
     "ActKeys" -> pure $ SomeField ActKeys
     _ -> fail "unknown field"

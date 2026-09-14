@@ -8,11 +8,11 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted
 
 newtype ColdWastes = ColdWastes LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 coldWastes :: LocationCard ColdWastes
-coldWastes = symbolLabel $ location ColdWastes Cards.coldWastes 3 (PerPlayer 1)
+coldWastes = symbolLabel $ location ColdWastes Cards.coldWastes 3 (Static 1)
 
 {- | "As an additional cost to scan at Cold Wastes, you must either (choose one):
 Spend 2 resources, or choose and discard 2 cards from your hand."

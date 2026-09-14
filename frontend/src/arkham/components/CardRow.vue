@@ -5,7 +5,8 @@ import type { Source } from '@/arkham/types/Source';
 import * as CardT from '@/arkham/types/Card';
 import Card from '@/arkham/components/Card.vue';
 import Draggable from '@/components/Draggable.vue';
-import { useDebug } from '@/arkham/debug';
+import { useDebug } from '@/arkham/debug'
+import * as DebugMove from '@/arkham/debugCardMove';
 import { computed } from 'vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 
@@ -65,6 +66,7 @@ function startDrag(event: DragEvent, card: (CardContents | CardT.Card)) {
     event.dataTransfer.effectAllowed = 'copy'
     const cardId = CardT.toCardContents(card).id
     event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "CardTarget", "contents": cardId }))
+    DebugMove.beginCardDrag(cardId)
   }
 }
 </script>

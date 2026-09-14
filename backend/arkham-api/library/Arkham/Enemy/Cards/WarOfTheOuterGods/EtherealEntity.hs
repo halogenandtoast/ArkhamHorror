@@ -35,9 +35,9 @@ instance RunMessage EtherealEntity where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
       scenarioI18n $ blueDecide iid do
-        labeled' "placeDoomOnTheBlueAgenda" $ placeDoomOnFactionAgenda (attrs.ability 1) BlueFaction 1
+        labeled "placeDoomOnTheBlueAgenda" $ placeDoomOnFactionAgenda (attrs.ability 1) BlueFaction 1
         when hasClues do
-          labeled' "placeClueOnYourLocation" $ push $ InvestigatorPlaceCluesOnLocation iid (attrs.ability 1) 1
-        labeled' "take2Horror" $ assignHorror iid (attrs.ability 1) 2
+          labeled "placeClueOnYourLocation" $ push $ InvestigatorPlaceCluesOnLocation iid (attrs.ability 1) 1
+        labeled "take2Horror" $ assignHorror iid (attrs.ability 1) 2
       pure e
     _ -> EtherealEntity <$> liftRunMessage msg attrs

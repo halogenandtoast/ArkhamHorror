@@ -37,8 +37,8 @@ instance RunMessage DescentToYoth where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       eachInvestigator \iid -> do
         chooseOneM iid $ scenarioI18n do
-          labeled' "descentToYoth.placeDoom" $ placeDoom (attrs.ability 1) attrs 1
-          labeled' "descentToYoth.draw" $ drawEncounterCards iid attrs 2
+          labeled "descentToYoth.placeDoom" $ placeDoom (attrs.ability 1) attrs 1
+          labeled "descentToYoth.draw" $ drawEncounterCards iid attrs 2
       pure l
     UseCardAbility _iid (isSource attrs -> True) 2 _ _ ->
       pure $ DescentToYoth $ attrs `with` Metadata True

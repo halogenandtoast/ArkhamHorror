@@ -8,7 +8,8 @@
     "admin": "Admin",
     "cards": "Cards",
     "myDecks": "Decks",
-    "support": "Patreon"
+    "support": "Patreon",
+    "cardBuilder": "Custom Cards"
   },
   "activeGames": "Active Games",
   "checkCampaignLog": "Check your Campaign Log.",
@@ -19,6 +20,22 @@
   },
   "hunter": {
     "move": "Hunter: choose a location for this enemy to move toward."
+  },
+  "cardPool": {
+    "remaining": "1 more to add | {count} more to add",
+    "complete": "Complete",
+    "joeDiamond": {
+      "title": "Hunch Deck",
+      "candidates": "Your _Insight_ events"
+    },
+    "underworldMarket2": {
+      "title": "Market Deck",
+      "candidates": "Your _Illicit_ cards"
+    },
+    "stickToThePlan3": {
+      "title": "Stick to the Plan",
+      "candidates": "Your _Tactic_ and _Supply_ events"
+    }
   },
   "patrol": {
     "move": "Patrol: choose a location for this enemy to move toward."
@@ -72,6 +89,7 @@
   "Fight": "Fight",
   "Engage": "Engage",
   "Forced": "Forced",
+  "Use": "Use",
   "Reaction": "Reaction",
   "Delayed": "Delayed",
   "Objective": "Objective",
@@ -151,7 +169,9 @@
     "resources": "Resources",
     "secret": "Secret",
     "supply": "Supply",
-    "supplyPoints": "Supply Points to Gain"
+    "supplyPoints": "Supply Points to Gain",
+    "curseTokens": "{'{'}curse{'}'} Tokens",
+    "evidence": "Evidence"
   },
   "proceedToSetup": "Proceed to _Setup_",
   "slot": {
@@ -165,7 +185,7 @@
   },
   "destiny": {
     "theWitchingHour": "The Witching Hour",
-    "atDeathsDoorStep": "At Death's Door Step",
+    "atDeath'sDoorstep": "At Death's Doorstep",
     "theSecretName": "The Secret Name",
     "theWagesOfSin": "The Wages of Sin",
     "forTheGreaterGood": "For the Greater Good",
@@ -220,6 +240,7 @@
   "Done With Mulligan": "Done With Mulligan",
   "skip": "Skip",
   "handSize": "Hand Size",
+  "needsSlots": "Needs slot(s)",
   "yes": "Yes",
   "no": "No",
   "succeededBy": "Succeeded by {amount}",
@@ -253,7 +274,9 @@
   "deck": {
     "viewOnArkhamDb": "View on ArkhamDB",
     "syncDeck": "Sync deck",
-    "deleteDeck": "Delete deck"
+    "deleteDeck": "Delete deck",
+    "lastPlayed": "Last played {date}",
+    "neverPlayed": "Never played"
   },
   "deckList": {
     "newDeck": "New Deck",
@@ -341,6 +364,7 @@
   },
   "sideStory": {
     "selectSideScenario": "Select a side scenario to add",
+    "variant": "Some gameplay for this campaign may be altered",
     "requiresInvestigator": "Requires {name}",
     "xpAsymmetric": "({signatureXp} XP for {name}, {otherXp} XP each other investigator)"
   },
@@ -359,8 +383,6 @@
     "chaosBag": "Chaos Bag",
     "viewHistory": "View History",
     "hideHistory": "Hide History",
-    "bagBefore": "Before",
-    "bagAfter": "After",
     "remembered": "Remembered",
     "specialRules": "Special Rules",
     "campaignRules": "Campaign Rules",
@@ -429,7 +451,9 @@
     "grouped": "Grouped"
   },
   "player": {
-    "viewDeck": "View Deck"
+    "viewDeck": "View Deck",
+    "silenceCard": "Silence — skip this card's free triggers and reactions while it is hidden",
+    "unsilenceCard": "Unsilence — offer this card's triggers again"
   },
   "enemy": {
     "debug": "Debug"
@@ -458,7 +482,21 @@
   "chooseDeck": {
     "search": "Search…",
     "useThisDeck": "Use this deck",
+    "alreadyPlayedThisCampaign": "This investigator has already played in this campaign",
     "randomBasicWeaknessPoolTooltip": "Adjust which products are used when randomly assigning this deck's basic weakness."
+  },
+  "campaign": {
+    "roster": {
+      "leave": "Leave",
+      "leaveTooltip": "Leave the campaign. Their experience and trauma are kept so they can rejoin between scenarios.",
+      "confirmLeave": "Confirm leave",
+      "rejoin": "Rejoin",
+      "add": "Add investigator",
+      "addSolo": "Play a second investigator",
+      "addSoloHint": "You will control both investigators — the game switches to multihanded solo, with a tab per investigator.",
+      "inviteHint": "Or share this link with another player:",
+      "failed": "Could not update the roster"
+    }
   },
   "deckRestrictions": {
     "scarletKeys": {
@@ -471,7 +509,8 @@
   "deckToolbar": {
     "searchDecks": "Search decks…",
     "sortName": "Sort: Name",
-    "sortClass": "Sort: Class"
+    "sortClass": "Sort: Class",
+    "sortRecent": "Sort: Recently Used"
   },
   "claimSeat": {
     "unableToLoad": "Unable to load game details.",
@@ -504,7 +543,18 @@
     "cannotBeUndone": "This cannot be undone.",
     "deleteAccount": "Delete Account",
     "deleteConfirm": "Are you sure? All your games, decks, and account data will be permanently lost and cannot be recovered.",
-    "confirmPermanentDelete": "Yes, permanently delete my account"
+    "confirmPermanentDelete": "Yes, permanently delete my account",
+    "customCards": "Custom cards",
+    "account": "Account settings",
+    "features": "Features",
+    "experiments": "Experiments",
+    "betaHelp": "Try upcoming features before they are released to everyone.",
+    "experimentsWarning": "Experimental features may change, stop working, or be removed at any time. They can break games in progress or leave them unrecoverable. Enable them only if you are comfortable with these risks and willing to provide feedback.",
+    "usedRevisedCoreArt": "Use revised core art in Encounter sets",
+    "revisedCoreArtDescription": "Shows the Revised Core Set artwork for supported encounter cards, including enemies, treacheries, locations, and agendas. Only artwork changes—not card rules or player cards. This preference applies only to your view; other players keep their own art settings.",
+    "customCardsWarning": "Experimental. This feature can stop working, break a game in progress, or be removed at any time. Custom cards are only ever as correct as the definition behind them, and the builder can express things the engine will happily run but no printed card would ever do.",
+    "customCardsHelp": "Adds a Card Builder to the menu, where you can make your own cards and add them to a game from the debug menu. It also lets you lay an overlay over a deck, from the {icon} button on a deck or beside a deck when you pick one for a game: swap in a custom investigator (their signatures come with them, and the old ones go), and add or remove cards. An overlay applied on the deck page sticks to that deck until you remove it; one applied when you choose a deck for a game applies to that game only, leaving the deck and every other copy of it untouched.",
+    "openCardBuilder": "Open the card builder"
   },
   "campaignLogTooltip": {
     "rememberedTitle": "Remembered",
@@ -600,9 +650,7 @@
       "reset": "Reset"
     },
     "story": {
-      "title": "Debug Story",
-      "inspectBag": "Inspect Bag",
-      "empty": "No bag contents to display."
+      "title": "Debug Story"
     },
     "common": {
       "place": "Place",
@@ -611,6 +659,18 @@
       "removeAllTokens": "Remove All Tokens",
       "modifiers": "Modifiers",
       "close": "Close"
+    },
+    "victoryDisplay": {
+      "title": "Move card",
+      "removeFromGame": "Remove from game",
+      "setAside": "Set aside",
+      "discard": "Discard"
+    },
+    "cardMove": {
+      "onTop": "Place on top",
+      "onBottom": "Place on bottom",
+      "shuffleIn": "Shuffle in",
+      "wrongDeck": "Wrong back for this deck"
     }
   },
   "customizations": {
@@ -727,5 +787,171 @@
     "Matterweaver": "Matterweaver",
     "AethericLink": "Aetheric Link",
     "EmpoweredConfiguration": "Empowered Configuration"
+  },
+  "customCardSets": {
+    "title": "Custom Card Sets",
+    "builder": {
+      "matcher": "Matcher",
+      "capability": "Capability",
+      "youExist": "You exist",
+      "investigatorExists": "An investigator exists",
+      "chooseCapability": "Choose a capability…",
+      "capabilities": {
+        "can": {
+          "search": { "deck": "search your deck" },
+          "manipulate": { "deck": "manipulate your deck" },
+          "shuffle": { "deck": "shuffle your deck" },
+          "draw": { "cards": "draw cards" },
+          "gain": {
+            "resources": "gain resources",
+            "xp": "gain experience",
+            "clues": "gain clues"
+          },
+          "spend": {
+            "resources": "spend resources",
+            "clues": "spend clues"
+          },
+          "have": {
+            "cards": { "leaveDiscard": "move cards out of your discard pile" },
+            "assets": { "ready": "ready assets" }
+          },
+          "affect": { "otherPlayers": "affect other investigators" },
+          "move": "move",
+          "deal": { "damage": "deal damage" },
+          "target": { "encounterDeck": "target the encounter deck" },
+          "reveal": { "cards": "reveal cards" },
+          "heal": {
+            "damage": "heal damage",
+            "horror": "heal horror",
+            "any": "heal damage or horror",
+            "trauma": "heal trauma"
+          }
+        }
+      }
+    },
+    "newSetName": "New set name",
+    "addSet": "Add set",
+    "import": "Import",
+    "importTooltip": "Import a set exported from here or a card pool from arkham.build",
+    "experimental": "Experimental. This feature can stop working, break a game in progress, or be removed at any time.",
+    "loading": "Loading…",
+    "emptyTitle": "No custom card sets yet",
+    "emptyLede": "Custom card sets are a way for you to introduce cards not currently in the engine. You can begin by importing an existing custom card set or by creating your own.",
+    "filterPlaceholder": "Filter by set or card name…",
+    "filterLabel": "Filter sets and cards",
+    "clearFilter": "Clear the filter",
+    "orderLabel": "Order sets",
+    "orderAlphabetical": "A–Z",
+    "orderRecent": "Recent",
+    "noMatches": "No set or card matches “{query}”.",
+    "cardCount": "{n} card | {n} cards",
+    "renameSet": "Rename this set",
+    "exportSet": "Export {name}",
+    "deleteSet": "Delete this set and its cards",
+    "noCardMatches": "No card here matches the filter.",
+    "emptySet": "Nothing in this set yet. Open it and build a card.",
+    "backToSets": "All sets",
+    "selectAll": "Select every card",
+    "exportSelected": "Export {count} selected",
+    "clearSelection": "Clear selection",
+    "newCard": "New card",
+    "emptySetPanel": "Nothing in this set yet. Build a card and it lands here.",
+    "exportCard": "Export this card",
+    "deleteCard": "Delete this card",
+    "hideLibrary": "Hide library",
+    "showLibrary": "Show library",
+    "editingCard": "Editing card",
+    "inSet": "in {name}",
+    "saveChanges": "Save changes",
+    "createCard": "Create card",
+    "saveNote": "Saving updates every copy of this card — name, traits, art and abilities apply at once. An enemy's printed fight, health and evade are copied when it is built, so those only apply to copies put into play after the save.",
+    "setCreateFailed": "Could not create that set.",
+    "setRenameFailed": "Could not rename that set.",
+    "confirmDeleteSet": "Delete \"{name}\" and {what}?",
+    "deleteSetCards": "its {n} card | its {n} cards",
+    "deleteSetEmpty": "nothing else — it is empty",
+    "setDeleted": "Deleted \"{name}\".",
+    "setDeleteFailed": "Could not delete that set.",
+    "needASet": "Make a set first — a card has to go in one.",
+    "saved": "Saved.",
+    "saveFailed": "Could not save the card. Check the raw JSON, if you used any.",
+    "confirmDeleteCard": "Delete \"{name}\" from your library?",
+    "fileHasNoCards": "That file has no cards in it.",
+    "reviewTitle": "Import \"{name}\"",
+    "reviewReplaceTitle": "Replace \"{name}\"",
+    "reviewFrom": "from {file}",
+    "reviewAdded": "{n} new",
+    "reviewUpdated": "{n} updated",
+    "reviewDropped": "{n} dropped",
+    "reviewSignatureOrphans": "{n} signature card names an investigator this file does not contain — it keeps the restriction, but that investigator will not bring it along. | {n} signature cards name an investigator this file does not contain — they keep the restriction, but those investigators will not bring them along.",
+    "reviewRemoves": "{n} card in \"{name}\" is not in this file and will be deleted. | {n} cards in \"{name}\" are not in this file and will be deleted.",
+    "reviewSubscribed": "\"{name}\" follows a published set. Importing over it stops those updates.",
+    "reviewShowAll": "Show all {count}",
+    "reviewShowLess": "Show fewer",
+    "reviewConfirm": "Import",
+    "reviewConfirmReplace": "Replace",
+    "reviewCancel": "Cancel",
+    "types": {
+      "AssetType": "Asset",
+      "EventType": "Event",
+      "SkillType": "Skill",
+      "PlayerTreacheryType": "Weakness (treachery)",
+      "PlayerEnemyType": "Weakness (enemy)",
+      "EnemyType": "Enemy",
+      "TreacheryType": "Treachery",
+      "EncounterAssetType": "Asset (encounter)",
+      "LocationType": "Location",
+      "StoryType": "Story",
+      "InvestigatorType": "Investigator",
+      "ActType": "Act",
+      "AgendaType": "Agenda",
+      "ScenarioType": "Scenario"
+    },
+    "imported": "Imported {count} into \"{name}\".{minis}",
+    "minisCut": "{n} investigator mini cut from the card art. | {n} investigator minis cut from the card art.",
+    "importFailed": "Could not read that file.",
+    "marketplace": "Marketplace",
+    "marketplaceLede": "Sets other people have published. Importing one keeps it subscribed, so you get their updates until you edit it yourself.",
+    "marketplaceEmpty": "Nothing published yet. Publish one of your own sets and it shows up here.",
+    "publishTitle": "Publish \"{name}\"",
+    "publishNote": "What changed (optional)",
+    "publishConfirm": "Publish",
+    "publishCancel": "Cancel",
+    "published": "Published \"{name}\" as v{version}.",
+    "publishFailed": "Could not publish that set.",
+    "unpublish": "Unlist",
+    "confirmUnpublish": "Unlist \"{name}\"? Nobody will be able to import it, and copies stop updating.",
+    "unpublished": "Unlisted \"{name}\".",
+    "unpublishFailed": "Could not unlist that set.",
+    "subscribedBadge": "Subscribed · v{version}",
+    "editingUnsubscribes": "Editing this set stops it updating. You can import it again to get the published version back.",
+    "updateTo": "Update to v{version}",
+    "updated": "Updated \"{name}\" to v{version}.",
+    "updateFailed": "Could not update that set.",
+    "importToCollection": "Import",
+    "reimport": "Import again",
+    "imported_": "Imported \"{name}\" into your sets.",
+    "subscribeFailed": "Could not import that set.",
+    "byAuthor": "by {author}",
+    "versionCount": "v{version} · {count}",
+    "yours": "yours",
+    "marketplaceLoadFailed": "Could not load the marketplace.",
+    "mySets": "My sets",
+    "marketplaceFilterPlaceholder": "Search sets, cards and authors…",
+    "marketplaceOrderLabel": "Order listings",
+    "orderNewest": "Newest",
+    "orderLiked": "Liked",
+    "byThisAuthor": "Only {author}",
+    "clearAuthor": "Show everyone",
+    "like": "Thumbs up",
+    "unlike": "Take back your thumbs up",
+    "likeFailed": "Could not record that.",
+    "marketplaceNoMatches": "No listing matches “{query}”.",
+    "viewSet": "View all {count} →",
+    "backToMarketplace": "Marketplace",
+    "publishedAt": "Published {date}",
+    "setNotFound": "That set is not in the marketplace any more.",
+    "viewAll": "View all {count}",
+    "setFilterPlaceholder": "Filter by name, type or trait…"
   }
 }

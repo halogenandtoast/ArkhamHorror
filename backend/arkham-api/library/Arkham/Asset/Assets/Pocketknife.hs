@@ -30,7 +30,7 @@ instance RunMessage Pocketknife where
     Defeated (EnemyTarget _) _ (isAbilitySource attrs 1 -> True) _ -> do
       for_ attrs.controller \iid -> do
         chooseOneM iid do
-          (cardI18n $ labeled' "pocketknife.exhaustPocketknifeGain1Resource") do
+          (cardI18n $ labeled "pocketknife.exhaustPocketknifeGain1Resource") do
             exhaustThis attrs
             gainResources iid (attrs.ability 1) 1
           labeledI "doNotExhaust" (pure ())

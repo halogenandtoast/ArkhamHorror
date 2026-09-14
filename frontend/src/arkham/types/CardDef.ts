@@ -17,12 +17,28 @@ type SkillIcon
 
 export type CustomizationDef = [string, number]
 
+export type CardOptionType
+  = { tag: "toggle", default: boolean }
+  | { tag: "choice", values: string[], default: string }
+
+export type CardOption = {
+  key: string;
+  type: CardOptionType;
+  /* Which of the card's abilities this option scopes to; absent means the
+   * option applies to the card as a whole. */
+  ability?: number;
+}
+
+export type OptionValue = boolean | string
+
 export type CardDef = {
   cardCode: string;
   doubleSided: boolean;
   classSymbols: string[];
   cardType: string;
   art: string;
+  artVariants?: Record<string, string>;
+  backArtVariants?: Record<string, string>;
   level: number | null;
   stage?: number | null;
   name: Name;
@@ -34,6 +50,9 @@ export type CardDef = {
   errata: string | null;
   encounterSet?: any;
   customizations?: CustomizationDef[];
+  options?: CardOption[];
+  /* Behavioural markers from the card def's `cdTags`, e.g. "no-gameplay-effect". */
+  tags?: string[];
 }
 
 const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
@@ -46,6 +65,21 @@ const cardCostDecoder = JsonDecoder.oneOf<CardCost>([
   JsonDecoder.object({ tag: JsonDecoder.literal("MatchingEnemyFieldCost") }, 'MatchingEnemyFieldCost')
 ], 'CardCost')
 
+const cardOptionTypeDecoder = JsonDecoder.oneOf<CardOptionType>([
+  JsonDecoder.object({ tag: JsonDecoder.literal("toggle"), default: JsonDecoder.boolean() }, 'OptionToggle'),
+  JsonDecoder.object({
+    tag: JsonDecoder.literal("choice"),
+    values: JsonDecoder.array<string>(JsonDecoder.string(), 'string[]'),
+    default: JsonDecoder.string(),
+  }, 'OptionChoice'),
+], 'CardOptionType')
+
+export const cardOptionDecoder = JsonDecoder.object<CardOption>({
+  key: JsonDecoder.string(),
+  type: cardOptionTypeDecoder,
+  ability: v2Optional(JsonDecoder.number()),
+}, 'CardOption')
+
 const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([
   JsonDecoder.object({ contents: JsonDecoder.string(), tag: JsonDecoder.literal("SkillIcon") }, 'SkillIcon'),
   JsonDecoder.object({ tag: JsonDecoder.literal("WildIcon") }, 'WildIcon'),
@@ -55,6 +89,8 @@ const skillIconDecoder = JsonDecoder.oneOf<SkillIcon>([
 export const cardDefDecoder = JsonDecoder.object<CardDef>(
   {
     art: JsonDecoder.string(),
+    artVariants: withDefault({}, JsonDecoder.record(JsonDecoder.string(), 'ArtVariants')),
+    backArtVariants: withDefault({}, JsonDecoder.record(JsonDecoder.string(), 'BackArtVariants')),
     level: withDefault(null, JsonDecoder.number()),
     stage: JsonDecoder.oneOf([
       JsonDecoder.number(),
@@ -74,6 +110,8 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
     errata: withDefault(null, JsonDecoder.string()),
     encounterSet: v2Optional(JsonDecoder.succeed()),
     customizations: withDefault<CustomizationDef[]>([], JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.number()], 'CustomizationDef'), 'CustomizationDef[]')),
+    options: withDefault<CardOption[]>([], JsonDecoder.array<CardOption>(cardOptionDecoder, 'CardOption[]')),
+    tags: withDefault<string[]>([], JsonDecoder.array<string>(JsonDecoder.string(), 'string[]')),
   },
   'CardDef',
 );

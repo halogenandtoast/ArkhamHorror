@@ -43,8 +43,8 @@ instance RunMessage BritishBullDog2 where
           $ CanFightEnemyWithOverride
           $ CriteriaOverride canFightIgnoreAloof
       chooseOneM iid do
-        (withI18n $ skillVar #agility $ labeled' "useSkill") $ push $ withSkillType #agility fight
-        (withI18n $ skillVar #combat $ labeled' "useSkill") $ push fight
+        (withI18n $ skillVar #agility $ labeled "useSkill") $ push $ withSkillType #agility fight
+        (withI18n $ skillVar #combat $ labeled "useSkill") $ push fight
       pure a
     InHand iid (UseThisAbility iid' (isSource attrs -> True) 2) | iid == iid' -> do
       putCardIntoPlay iid attrs

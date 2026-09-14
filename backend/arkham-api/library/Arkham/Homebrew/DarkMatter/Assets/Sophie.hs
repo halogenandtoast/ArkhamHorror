@@ -12,7 +12,7 @@ newtype Sophie = Sophie AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sophie :: AssetCard Sophie
-sophie = asset Sophie Cards.sophie
+sophie = ally Sophie Cards.sophie (2, 1)
 
 {- | "[action] Spend 1[per_investigator] clues: Scan. Draw the top card of the
 scanning deck as if you were at any location. (Group limit once per game.)"

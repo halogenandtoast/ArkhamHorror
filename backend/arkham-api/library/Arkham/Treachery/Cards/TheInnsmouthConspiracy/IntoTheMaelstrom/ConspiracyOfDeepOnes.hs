@@ -30,10 +30,10 @@ instance RunMessage ConspiracyOfDeepOnes where
           $ withTrait AncientOne
           <> mapOneOf enemyIs [Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom, Enemies.hydraAwakenedAndEnraged]
       chooseOneM iid $ scenarioI18n $ scope "conspiracyOfDeepOnes" do
-        labeled' "placeDoomCanAdvance"
+        labeled "placeDoomCanAdvance"
           $ placeDoomOnAgendaAndCheckAdvance 1
         when (notNull nearest) do
-          labeled' "ancientOneAttacks" do
+          labeled "ancientOneAttacks" do
             chooseTargetM iid nearest \enemy -> initiateEnemyAttack enemy attrs iid
 
       pure t

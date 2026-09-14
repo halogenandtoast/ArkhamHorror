@@ -18,9 +18,10 @@ bonesaw =
 
 woundedBystanderOnDeathsDoorstep :: CardDef
 woundedBystanderOnDeathsDoorstep =
-  (weakness "09007" ("Wounded Bystander" <:> "On Death's Doorstep"))
-    { cdCardTraits = setFromList [Ally, Bystander]
-    }
+  signature "09004"
+    $ (weakness "09007" ("Wounded Bystander" <:> "On Death's Doorstep"))
+      { cdCardTraits = setFromList [Ally, Bystander]
+      }
 
 grapplingHook :: CardDef
 grapplingHook =
@@ -774,6 +775,7 @@ expeditedTicket =
   permanent
     (storyAsset "09765" "Expedited Ticket" 0 Globetrotting)
       { cdCardTraits = setFromList [Item]
+      , cdTags = [noGameplayEffectTag]
       }
 
 foundationIntel :: CardDef

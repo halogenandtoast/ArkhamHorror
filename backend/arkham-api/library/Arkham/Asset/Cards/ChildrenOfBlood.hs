@@ -54,6 +54,7 @@ chosenOfZburamoarteCompelledToFeed =
       { cdCardTraits = setFromList [Condition, Trait.Blight, Trait.Reward]
       , cdUnique = True
       , cdOtherSide = Just "13093a"
+      , cdTags = [startsOnOtherSideTag]
       }
 
 charlieKaneKnowsAGuy :: CardDef

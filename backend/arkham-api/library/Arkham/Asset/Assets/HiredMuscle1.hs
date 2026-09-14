@@ -25,7 +25,7 @@ instance RunMessage HiredMuscle1 where
   runMessage msg a@(HiredMuscle1 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ withI18n $ cardNameVar attrs do
-        labeled' "payResourceToName" $ spendResources iid 1
-        labeled' "discardName" $ toDiscardBy iid (attrs.ability 1) attrs
+        labeled "payResourceToName" $ spendResources iid 1
+        labeled "discardName" $ toDiscardBy iid (attrs.ability 1) attrs
       pure a
     _ -> HiredMuscle1 <$> liftRunMessage msg attrs

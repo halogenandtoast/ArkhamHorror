@@ -4,21 +4,25 @@ import Arkham.Treachery.CardDefs.Import
 
 boughtInBlood :: CardDef
 boughtInBlood =
-  (weakness "04007" "Bought in Blood") {cdCardTraits = singleton Flaw}
+  signature "04001"
+    $ (weakness "04007" "Bought in Blood") {cdCardTraits = singleton Flaw}
 
 callOfTheUnknown :: CardDef
 callOfTheUnknown =
-  (weakness "04009" "Call of the Unknown") {cdCardTraits = singleton Task}
+  signature "04002"
+    $ (weakness "04009" "Call of the Unknown") {cdCardTraits = singleton Task}
 
 caughtRedHanded :: CardDef
 caughtRedHanded =
-  (weakness "04012" "Caught Red-Handed") {cdCardTraits = singleton Blunder}
+  signature "04003"
+    $ (weakness "04012" "Caught Red-Handed") {cdCardTraits = singleton Blunder}
 
 voiceOfTheMessenger :: CardDef
 voiceOfTheMessenger =
-  (weakness "04016" "Voice of the Messenger")
-    { cdCardTraits = setFromList [Curse, Pact]
-    }
+  signature "04005"
+    $ (weakness "04016" "Voice of the Messenger")
+      { cdCardTraits = setFromList [Curse, Pact]
+      }
 
 thePriceOfFailure :: CardDef
 thePriceOfFailure =

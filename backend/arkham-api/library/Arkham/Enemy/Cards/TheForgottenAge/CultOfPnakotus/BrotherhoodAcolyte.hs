@@ -29,7 +29,7 @@ instance HasAbilities BrotherhoodAcolyte where
             <> not_ (EnemyWithModifier CannotPlaceDoomOnThis)
         )
       $ forced
-      $ EnemySpawns #after Anywhere (be a)
+      $ EnemySpawns #after AnyPlacement (be a)
 
 instance RunMessage BrotherhoodAcolyte where
   runMessage msg e@(BrotherhoodAcolyte attrs) = runQueueT $ case msg of

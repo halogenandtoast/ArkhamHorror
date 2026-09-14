@@ -1,5 +1,6 @@
 module Arkham.Homebrew.DarkMatter.Locations.SpiralStaircase (spiralStaircase) where
 
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (flipToOtherSide)
@@ -9,24 +10,30 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 
 newtype SpiralStaircase = SpiralStaircase LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor, HasAbilities)
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
--- | The [[Carcosa]] face of Bottomless Pit.
 spiralStaircase :: LocationCard SpiralStaircase
-spiralStaircase = locationWith SpiralStaircase Cards.spiralStaircase 3 (PerPlayer 1) (canBeFlippedL .~ True)
+spiralStaircase =
+  symbolLabel
+    $ locationWith SpiralStaircase Cards.spiralStaircase 3 (PerPlayer 1) (canBeFlippedL .~ True)
 
-{- | "Forced - When Spiral Staircase flips: Move each investigator at Spiral
-Staircase to a connecting location." Resolved as part of the flip, before the
-staircase becomes Bottomless Pit underneath them.
--}
+instance HasAbilities SpiralStaircase where
+  getAbilities (SpiralStaircase a) =
+    extend1 a
+      $ mkAbility a 1
+      $ forced
+      $ FlipLocation #when Anyone (be a <> LocationWithInvestigator Anyone)
+
 instance RunMessage SpiralStaircase where
   runMessage msg l@(SpiralStaircase attrs) = runQueueT $ case msg of
-    Flip _ _ (isTarget attrs -> True) -> do
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
       here <- select $ investigatorAt attrs.id
       for_ here \iid -> do
         connected <- select $ connectedTo (be attrs)
         chooseTargetM iid connected $ moveTo attrs iid
-      flipToOtherSide attrs
+      pure l
+    Flip flipper _ (isTarget attrs -> True) -> do
+      flipToOtherSide flipper attrs
       pure l
     _ -> SpiralStaircase <$> liftRunMessage msg attrs

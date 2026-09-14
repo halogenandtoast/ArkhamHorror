@@ -56,8 +56,8 @@ instance RunMessage OtherworldlySlaughter where
       case mresigned of
         Nothing -> push CheckForRemainingInvestigators
         Just iid -> chooseOneM iid $ scenarioI18n do
-          labeled' "otherworldlySlaughter.advanceToAct3b" do
+          labeled "otherworldlySlaughter.advanceToAct3b" do
             advanceToAct' attrs 1 Acts.escapingTheOtherworld Act.B
-          unscoped $ labeled' "skip" $ push CheckForRemainingInvestigators
+          unscoped $ labeled "skip" $ push CheckForRemainingInvestigators
       pure a
     _ -> OtherworldlySlaughter <$> liftRunMessage msg attrs

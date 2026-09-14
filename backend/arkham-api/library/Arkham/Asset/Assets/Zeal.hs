@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Fight
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
@@ -22,7 +23,7 @@ instance HasAbilities Zeal where
   getAbilities (Zeal a) =
     [ controlledAbility a 1 (exists $ mapOneOf assetIs [Cards.hope, Cards.augur])
         $ forced
-        $ AssetEntersPlay #when (be a)
+        $ AssetEntersPlay #after (be a)
     , controlledAbility a 2 (exists $ be a <> AssetReady)
         $ fightAction
         $ OrCost [exhaust a, discardCost a]
@@ -46,7 +47,7 @@ instance RunMessage Zeal where
       pushM $ mkChooseFight sid iid source
       when discarded do
         chooseOrRunOneM iid do
-          questionLabeled "$label.cards.zeal.putIntoPlayFromDiscard"
+          cardI18n $ questionLabeled "zeal.putIntoPlayFromDiscard"
           for_ catsInDiscard \card -> cardLabeled card do
             shuffleCardsIntoDeck iid (only zealCard)
             putCardIntoPlay iid card

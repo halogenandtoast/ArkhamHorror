@@ -346,7 +346,7 @@ instance RunMessage WarOfTheOuterGods where
             [f] -> push $ ScenarioResolution (resolutionFor f)
             fs -> do
               leadChooseOneM $ for_ fs \f ->
-                labeled' (factionKey f) $ push $ ScenarioResolution (resolutionFor f)
+                labeled (factionKey f) $ push $ ScenarioResolution (resolutionFor f)
         Resolution 1 -> do
           resolutionWithXp "resolution1" $ allGainXpWithBonus' attrs $ toBonus "bonus" 2
           addStoryAssetChoice Assets.cloakOfTheOuterRealm

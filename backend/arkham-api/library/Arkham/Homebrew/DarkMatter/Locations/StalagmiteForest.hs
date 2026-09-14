@@ -12,7 +12,9 @@ newtype StalagmiteForest = StalagmiteForest LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 stalagmiteForest :: LocationCard StalagmiteForest
-stalagmiteForest = locationWith StalagmiteForest Cards.stalagmiteForest 2 (PerPlayer 1) (canBeFlippedL .~ True)
+stalagmiteForest =
+  symbolLabel
+    $ locationWith StalagmiteForest Cards.stalagmiteForest 2 (PerPlayer 1) (canBeFlippedL .~ True)
 
 -- | "Forced - At the end of your turn, if you are at this location: Take 1 damage."
 instance HasAbilities StalagmiteForest where
@@ -24,7 +26,7 @@ instance RunMessage StalagmiteForest where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assignDamage iid (attrs.ability 1) 1
       pure l
-    Flip _ _ (isTarget attrs -> True) -> do
-      flipToOtherSide attrs
+    Flip iid _ (isTarget attrs -> True) -> do
+      flipToOtherSide iid attrs
       pure l
     _ -> StalagmiteForest <$> liftRunMessage msg attrs

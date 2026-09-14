@@ -7,11 +7,11 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype AHidingPlace = AHidingPlace LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 aHidingPlace :: LocationCard AHidingPlace
-aHidingPlace = location AHidingPlace Cards.aHidingPlace 4 (PerPlayer 1)
+aHidingPlace = symbolLabel $ location AHidingPlace Cards.aHidingPlace 4 (PerPlayer 1)
 
 {- | "While the investigator controlling K2-PS187 is at this location, reduce its
 shroud by 2."

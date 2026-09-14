@@ -29,10 +29,11 @@ data Placement
   | AttachedToLocation LocationId
   | InPlayArea InvestigatorId
   | InThreatArea InvestigatorId
-  | -- | An encounter card sitting *face down* in an investigator's threat area
-    -- (Dark Matter, "Lost Quantum"). The entity exists but its revelation has
-    -- not resolved; it resolves when the card is later "drawn" from the threat
-    -- area. Face down, so it is not in play.
+  | {- | An encounter card sitting *face down* in an investigator's threat area
+    (Dark Matter, "Lost Quantum"). The entity exists but its revelation has
+    not resolved; it resolves when the card is later "drawn" from the threat
+    area. Face down, so it is not in play.
+    -}
     FacedownInThreatArea InvestigatorId
   | StillInHand InvestigatorId
   | HiddenInHand InvestigatorId
@@ -46,6 +47,7 @@ data Placement
   | AttachedToAgenda AgendaId
   | NextToAgenda
   | NextToAct
+  | NextToScenarioReference
   | InVehicle AssetId
   | AttachedToInvestigator InvestigatorId
   | AsSwarm {swarmHost :: EnemyId, swarmCard :: Card}
@@ -104,6 +106,7 @@ placementToAttached = \case
   AttachedToAgenda aid -> Just $ AgendaTarget aid
   NextToAgenda -> Nothing
   NextToAct -> Nothing
+  NextToScenarioReference -> Nothing
   AttachedToInvestigator iid -> Just $ InvestigatorTarget iid
   Unplaced -> Nothing
   Global -> Nothing
@@ -140,6 +143,7 @@ isInPlayPlacement = \case
   AttachedToAgenda {} -> True
   NextToAgenda {} -> True -- is it in play, idk
   NextToAct {} -> True -- is it in play, idk
+  NextToScenarioReference {} -> True
   AttachedToInvestigator {} -> True
   AsSwarm {} -> True
   Unplaced {} -> False
@@ -159,10 +163,11 @@ isHiddenPlacement = \case
   FacedownInThreatArea _ -> True
   _ -> False
 
--- | Whether this placement sits *directly* on the given location, as opposed to
--- reaching it transitively through an enemy, asset, treachery, vehicle or
--- investigator standing there. Those attachments are their host's
--- responsibility when the host leaves play, see #5426.
+{- | Whether this placement sits *directly* on the given location, as opposed to
+reaching it transitively through an enemy, asset, treachery, vehicle or
+investigator standing there. Those attachments are their host's
+responsibility when the host leaves play, see #5426.
+-}
 isDirectlyAtLocation :: LocationId -> Placement -> Bool
 isDirectlyAtLocation lid = \case
   AtLocation lid' -> lid' == lid

@@ -25,10 +25,10 @@ instance RunMessage Witchweed where
           runHauntedAbilities iid
           removeTreachery attrs
           chooseOneM iid $ scenarioI18n do
-            labeled' "witchweed.surge" do
+            labeled "witchweed.surge" do
               gainSurge attrs
               addToSpecificEncounterDiscard RegularEncounterDeck (only $ toCard attrs)
-            labeled' "witchweed.otherwise" do
+            labeled "witchweed.otherwise" do
               addToSpecificEncounterDiscard SpectralEncounterDeck (only $ toCard attrs)
         _ -> do
           removeTreachery attrs

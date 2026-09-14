@@ -32,7 +32,7 @@ instance RunMessage TheOath where
   runMessage msg a@(TheOath attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> scenarioI18n do
       leadChooseOneM do
-        labeled' "theOath.r1" $ push R1
-        labeled' "theOath.r2" $ push R2
+        labeled "theOath.r1" $ push R1
+        labeled "theOath.r2" $ push R2
       pure a
     _ -> TheOath <$> liftRunMessage msg attrs

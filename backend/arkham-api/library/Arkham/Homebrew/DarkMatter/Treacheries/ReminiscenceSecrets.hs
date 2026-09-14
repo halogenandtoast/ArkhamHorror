@@ -20,12 +20,12 @@ reminiscenceSecrets = treachery ReminiscenceSecrets Cards.reminiscenceSecrets
 instance HasAbilities ReminiscenceSecrets where
   getAbilities (ReminiscenceSecrets a) = case a.placement of
     HiddenInHand iid ->
-      [ mkAbility a 1 $ forced $ oneOf [GameEnds #when, InvestigatorEliminated #when You]
+      [ restricted a 1 InYourHand $ forced $ oneOf [GameEnds #when, InvestigatorEliminated #when You]
       , -- Placing the clue is the cost of the replacement: this card's holder is
         -- the initiator, but the clue comes from the investigator in the window
         -- (ThatInvestigator), so an investigator with no clue to place cannot
         -- trigger it, and skipping costs skips the placement.
-        mkAbility a 2
+        restricted a 2 InYourHand
           $ triggered
             (WouldDiscoverClues #when Anyone (locationWithInvestigator iid) AnyValue)
             (InvestigatorPlaceClueOnLocationCost ThatInvestigator (Static 1))
@@ -43,7 +43,7 @@ instance RunMessage ReminiscenceSecrets where
     UseCardAbility iid (isSource attrs -> True) 2 ws _ -> do
       -- The clue was placed as the cost; all that is left is to replace the
       -- discovery itself, which would otherwise still resolve.
-      for_ [who | Window _ (Window.WouldDiscoverClues who _ _ _ _) _ <- ws] \who ->
+      for_ [who | Window _ (Window.WouldDiscoverClues who _ _ _ _) _ _ <- ws] \who ->
         insteadOfDiscoveringClues who \_ -> pure ()
       toDiscardBy iid (attrs.ability 2) attrs
       pure t

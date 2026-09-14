@@ -17,7 +17,7 @@ instance RunMessage StrokeOfLuck2 where
   runMessage msg s@(StrokeOfLuck2 attrs) = runQueueT $ case msg of
     RevealChaosToken _ iid token | chaosTokenFace token /= AutoFail -> do
       chooseOneM iid do
-        withI18n $ cardNameVar attrs $ labeled' "exileNameToAutoSucceed" do
+        withI18n $ cardNameVar attrs $ labeled "exileNameToAutoSucceed" do
           exile attrs
           passSkillTest
         labeledI "doNotExile" nothing

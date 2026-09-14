@@ -34,7 +34,7 @@ instance RunMessage MedicalFoam where
       investigators <- select Anyone
       chooseOneM iid $ campaignI18n do
         targets investigators (`putCardIntoPlay` attrs)
-        labeled' "medicalFoam.doNotPutIntoPlay" $ shuffleIntoScanningDeck [attrs]
+        labeled "medicalFoam.doNotPutIntoPlay" $ shuffleIntoScanningDeck [attrs]
       pure a
     UseCardAbility _ (isSource attrs -> True) 1 (getDamaged -> damaged) _ -> do
       for_ (take 1 damaged) \(target, n) -> healDamage target (attrs.ability 1) n

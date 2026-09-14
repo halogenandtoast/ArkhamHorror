@@ -28,56 +28,56 @@ bloodMoon =
 -- harm_s_way
 theCircusSleeps :: CardDef
 theCircusSleeps =
-  agenda ":circus-ex-mortis:043" "The Circus Sleeps" 1 Set.HarmsWay
+  agenda ":circus-ex-mortis:041" "The Circus Sleeps" 1 Set.HarmsWay
 
 treadingOnEggshells :: CardDef
 treadingOnEggshells =
-  agenda ":circus-ex-mortis:044" "Treading on Eggshells" 2 Set.HarmsWay
+  agenda ":circus-ex-mortis:042" "Treading on Eggshells" 2 Set.HarmsWay
 
 sleepWhenYoureDead :: CardDef
 sleepWhenYoureDead =
-  agenda ":circus-ex-mortis:045" "Sleep When You're Dead" 3 Set.HarmsWay
+  agenda ":circus-ex-mortis:043" "Sleep When You're Dead" 3 Set.HarmsWay
 
 -- all_points_west
 scheduleToKeep :: CardDef
 scheduleToKeep =
-  agenda ":circus-ex-mortis:077" "Schedule to Keep" 1 Set.AllPointsWest
+  agenda ":circus-ex-mortis:075" "Schedule to Keep" 1 Set.AllPointsWest
 
 -- piper_at_the_gates_of_dawn
 repeatShowing :: CardDef
 repeatShowing =
-  agenda ":circus-ex-mortis:111" "Repeat Showing" 1 Set.PiperAtTheGatesOfDawn
+  agenda ":circus-ex-mortis:109" "Repeat Showing" 1 Set.PiperAtTheGatesOfDawn
 
 doomAndGloom :: CardDef
 doomAndGloom =
-  agenda ":circus-ex-mortis:112" "Doom and Gloom" 2 Set.PiperAtTheGatesOfDawn
+  agenda ":circus-ex-mortis:110" "Doom and Gloom" 2 Set.PiperAtTheGatesOfDawn
 
 whirlingSpectacle :: CardDef
 whirlingSpectacle =
-  agenda ":circus-ex-mortis:113" "Whirling Spectacle" 3 Set.PiperAtTheGatesOfDawn
+  agenda ":circus-ex-mortis:111" "Whirling Spectacle" 3 Set.PiperAtTheGatesOfDawn
 
 -- bacchanalia
 intoTheLionsDen :: CardDef
 intoTheLionsDen =
-  agenda ":circus-ex-mortis:125" "Into the Lion's Den" 1 Set.Bacchanalia
+  agenda ":circus-ex-mortis:123" "Into the Lion's Den" 1 Set.Bacchanalia
 
 lackOfRestraint :: CardDef
 lackOfRestraint =
-  agenda ":circus-ex-mortis:126" "Lack of Restraint" 2 Set.Bacchanalia
+  agenda ":circus-ex-mortis:124" "Lack of Restraint" 2 Set.Bacchanalia
 
 feverPitch :: CardDef
-feverPitch = agenda ":circus-ex-mortis:127" "Fever Pitch" 3 Set.Bacchanalia
+feverPitch = agenda ":circus-ex-mortis:125" "Fever Pitch" 3 Set.Bacchanalia
 
 -- red_sunrise
 fadingSunlightVI :: CardDef
 fadingSunlightVI =
-  agenda ":circus-ex-mortis:156" "Fading Sunlight (v.I)" 1 Set.RedSunrise
+  agenda ":circus-ex-mortis:154" "Fading Sunlight (v.I)" 1 Set.RedSunrise
 
 fadingSunlightVII :: CardDef
 fadingSunlightVII =
-  agenda ":circus-ex-mortis:157" "Fading Sunlight (v.II)" 1 Set.RedSunrise
+  agenda ":circus-ex-mortis:155" "Fading Sunlight (v.II)" 1 Set.RedSunrise
 
 -- thousand_to_one
 underMoonlessSkies :: CardDef
 underMoonlessSkies =
-  agenda ":circus-ex-mortis:193" "Under Moonless Skies" 1 Set.ThousandToOne
+  agenda ":circus-ex-mortis:191" "Under Moonless Skies" 1 Set.ThousandToOne

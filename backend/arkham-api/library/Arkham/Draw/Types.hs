@@ -30,6 +30,12 @@ data CardDrawState
 data CardDrawKind = StandardCardDraw | StartingHandCardDraw
   deriving stock (Show, Eq, Ord, Data)
 
+{- | Which end of the deck a draw comes off. A bottom draw is still a draw: it
+does not shuffle, does not search, and draw-triggered effects see it.
+-}
+data CardDrawPosition = DrawFromTop | DrawFromBottom
+  deriving stock (Show, Eq, Ord, Data)
+
 data CardDraw msg = CardDraw
   { cardDrawSource :: Source
   , cardDrawDeck :: DeckSignifier
@@ -38,6 +44,7 @@ data CardDraw msg = CardDraw
   , cardDrawTarget :: Maybe Target
   , cardDrawAction :: Bool
   , cardDrawKind :: CardDrawKind
+  , cardDrawPosition :: CardDrawPosition
   , cardDrawRules :: Set CardDrawRules
   , cardDrawAndThen :: Maybe msg
   , cardDrawAlreadyDrawn :: [Card]
@@ -53,6 +60,9 @@ instance HasField "alreadyDrawn" (CardDraw msg) [Card] where
 
 instance HasField "kind" (CardDraw msg) CardDrawKind where
   getField = cardDrawKind
+
+instance HasField "position" (CardDraw msg) CardDrawPosition where
+  getField = cardDrawPosition
 
 instance HasField "deck" (CardDraw msg) DeckSignifier where
   getField = cardDrawDeck
@@ -127,6 +137,7 @@ newCardDraw source deck n = do
     , cardDrawRules = mempty
     , cardDrawTarget = Nothing
     , cardDrawKind = StandardCardDraw
+    , cardDrawPosition = DrawFromTop
     , cardDrawAndThen = Nothing
     , cardDrawAlreadyDrawn = []
     , cardDrawDiscard = Nothing
@@ -160,7 +171,12 @@ withCardDrawRule r c = c {cardDrawRules = insertSet r (cardDrawRules c)}
 shuffleBackInEachWeakness :: CardDraw msg -> CardDraw msg
 shuffleBackInEachWeakness = withCardDrawRule ShuffleBackInEachWeakness
 
+-- | Take this draw off the bottom of the deck instead of the top.
+drawFromBottom :: CardDraw msg -> CardDraw msg
+drawFromBottom c = c {cardDrawPosition = DrawFromBottom}
+
 $(deriveJSON defaultOptions ''CardDrawKind)
+$(deriveJSON defaultOptions ''CardDrawPosition)
 $(deriveJSON defaultOptions ''CardDrawRules)
 $(deriveJSON defaultOptions ''CardDrawState)
 $(deriveToJSON defaultOptions ''CardDraw)
@@ -174,6 +190,7 @@ instance FromJSON msg => FromJSON (CardDraw msg) where
     cardDrawTarget <- o .: "cardDrawTarget"
     cardDrawAction <- o .: "cardDrawAction"
     cardDrawKind <- o .: "cardDrawKind"
+    cardDrawPosition <- o .:? "cardDrawPosition" .!= DrawFromTop
     cardDrawRules <- o .: "cardDrawRules"
     cardDrawAndThen <- o .: "cardDrawAndThen"
     cardDrawAlreadyDrawn <- o .:? "cardDrawAlreadyDrawn" .!= []

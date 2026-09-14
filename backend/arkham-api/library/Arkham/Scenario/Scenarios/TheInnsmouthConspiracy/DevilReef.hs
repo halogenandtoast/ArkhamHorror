@@ -62,7 +62,7 @@ standaloneTokens =
 instance RunMessage DevilReef where
   runMessage msg s@(DevilReef attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
+      story $ i18nWithHeading "intro1"
       missionWasSuccessful <- getHasRecord TheMissionWasSuccessful
       doStep (if missionWasSuccessful then 2 else 3) msg
       selectForMaybeM (InDeckOf Anyone <> basic (cardIs Assets.elinaHarperKnowsTooMuch)) obtainCard
@@ -71,7 +71,7 @@ instance RunMessage DevilReef where
         investigators <- allInvestigators
         thomasDawson <- genCard Assets.thomasDawsonSoldierInANewWar
         chooseOneM lead do
-          questionLabeled' "shuffleThomasDawsonInto"
+          questionLabeled "shuffleThomasDawsonInto"
           targets investigators (`shuffleCardsIntoDeck` only thomasDawson)
 
       pure s
@@ -96,7 +96,7 @@ instance RunMessage DevilReef where
         investigators <- allInvestigators
         thomasDawson <- genCard Assets.thomasDawsonSoldierInANewWar
         leadChooseOneM do
-          questionLabeled' "addThomasDawsonToHand"
+          questionLabeled "addThomasDawsonToHand"
           targets investigators (`addToHand` only thomasDawson)
 
       aBattle <- hasMemory ABattleWithAHorrifyingDevil

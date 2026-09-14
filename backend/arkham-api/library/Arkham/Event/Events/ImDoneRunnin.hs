@@ -49,8 +49,8 @@ instance RunMessage ImDoneRunninEffect where
       if canDamage
         then do
           chooseOneM iid $ withI18n do
-            labeled' "doNotDamageEnemy" normalEvade
-            labeled' "damageEnemy" $ nonAttackEnemyDamage (Just iid) attrs.source 1 enemy
+            labeled "doNotDamageEnemy" normalEvade
+            labeled "damageEnemy" $ nonAttackEnemyDamage (Just iid) attrs.source 1 enemy
         else normalEvade
       pure e
     EndTurn _ -> disableReturn e

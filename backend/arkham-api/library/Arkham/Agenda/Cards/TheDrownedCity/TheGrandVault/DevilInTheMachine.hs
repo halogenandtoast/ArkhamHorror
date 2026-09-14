@@ -2,8 +2,7 @@ module Arkham.Agenda.Cards.TheDrownedCity.TheGrandVault.DevilInTheMachine (devil
 
 import Arkham.Agenda.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Campaigns.TheDrownedCity.Helpers (struggleForAir)
-import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (needsAir)
+import Arkham.Campaigns.TheDrownedCity.Helpers (struggleForAir, strugglesForAir)
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.CardDefs.TheDrownedCity.AlienMachinery qualified as Enemies
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheInescapable qualified as Enemies
@@ -50,7 +49,7 @@ instance HasModifiersFor DevilInTheMachine where
             ]
 
 instance HasAbilities DevilInTheMachine where
-  getAbilities (DevilInTheMachine a) = [needsAir a 1]
+  getAbilities (DevilInTheMachine a) = [strugglesForAir a 1]
 
 instance RunMessage DevilInTheMachine where
   runMessage msg a@(DevilInTheMachine attrs) = runQueueT $ case msg of

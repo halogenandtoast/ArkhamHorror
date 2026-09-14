@@ -14,7 +14,7 @@ newtype TreacherousPathErodedShelf = TreacherousPathErodedShelf LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 treacherousPathErodedShelf :: LocationCard TreacherousPathErodedShelf
-treacherousPathErodedShelf = withXShroud $ location TreacherousPathErodedShelf Cards.treacherousPathErodedShelf 0 (Static 1)
+treacherousPathErodedShelf = withXShroud $ location TreacherousPathErodedShelf Cards.treacherousPathErodedShelf 0 (PerPlayer 1)
 
 instance HasModifiersFor TreacherousPathErodedShelf where
   getModifiersFor (TreacherousPathErodedShelf a) = treacherousPathModifiers a

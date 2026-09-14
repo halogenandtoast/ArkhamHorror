@@ -269,9 +269,9 @@ instance RunMessage WrittenInRock where
       mineCart <- createAssetAt Assets.mineCartReliableButBroken (AtLocation controlStation)
       eachInvestigator (`Place.place` InVehicle mineCart)
       leadChooseOneM do
-        questionLabeled' "mineCart.facing"
-        labeled' "mineCart.faceNorth" $ scenarioSpecific "rotate" North
-        labeled' "mineCart.faceEast" $ scenarioSpecific "rotate" East
+        questionLabeled "mineCart.facing"
+        labeled "mineCart.faceNorth" $ scenarioSpecific "rotate" North
+        labeled "mineCart.faceEast" $ scenarioSpecific "rotate" East
 
       doStep 3 msg -- ensure set aside cards are updated
       pure
@@ -307,7 +307,7 @@ instance RunMessage WrittenInRock where
               iids <- allInvestigators
               leah <- selectJust $ assetIs Assets.leahAtwoodTheValeCook
               leadChooseOneM do
-                unscoped $ nameVar Assets.leahAtwoodTheValeCook $ questionLabeled' "takeControlOf"
+                unscoped $ nameVar Assets.leahAtwoodTheValeCook $ questionLabeled "takeControlOf"
                 questionLabeledCard Assets.leahAtwoodTheValeCook
                 portraits iids (`takeControlOfAsset` leah)
         3 -> do
@@ -322,7 +322,7 @@ instance RunMessage WrittenInRock where
               iids <- allInvestigators
               simeon <- selectJust $ assetIs Assets.simeonAtwoodDedicatedTroublemaker
               leadChooseOneM do
-                unscoped $ nameVar Assets.simeonAtwoodDedicatedTroublemaker $ questionLabeled' "takeControlOf"
+                unscoped $ nameVar Assets.simeonAtwoodDedicatedTroublemaker $ questionLabeled "takeControlOf"
                 questionLabeledCard Assets.simeonAtwoodDedicatedTroublemaker
                 portraits iids (`takeControlOfAsset` simeon)
         5 -> do
@@ -331,7 +331,7 @@ instance RunMessage WrittenInRock where
           iids <- allInvestigators
           river <- selectJust $ assetIs Assets.riverHawthorneBigInNewYork
           leadChooseOneM do
-            unscoped $ nameVar Assets.riverHawthorneBigInNewYork $ questionLabeled' "takeControlOf"
+            unscoped $ nameVar Assets.riverHawthorneBigInNewYork $ questionLabeled "takeControlOf"
             questionLabeledCard Assets.riverHawthorneBigInNewYork
             portraits iids (`takeControlOfAsset` river)
         Theta -> do

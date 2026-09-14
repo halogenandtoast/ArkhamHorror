@@ -30,11 +30,11 @@ instance RunMessage Ants where
     DoStep n msg'@(FailedThisSkillTestBy iid (isSource attrs -> True) _) | n > 0 -> do
       hasDiscardableAssets <- selectAny $ DiscardableAsset <> assetControlledBy iid
       chooseOrRunOneM iid $ withI18n do
-        labeled' "discardFromHand" do
+        labeled "discardFromHand" do
           randomDiscard iid attrs
           doStep (n - 1) msg'
         when hasDiscardableAssets do
-          labeled' "discardFromPlay" do
+          labeled "discardFromPlay" do
             chooseAndDiscardAsset iid attrs
             doStep (n - 1) msg'
       pure t

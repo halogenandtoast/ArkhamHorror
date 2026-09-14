@@ -30,8 +30,8 @@ instance RunMessage AncientHall where
       if null investigators
         then flipCluesToDoom attrs 1
         else leadChooseOneM $ scenarioI18n do
-          questionLabeled' "ancientHall.instructions"
-          labeled' "ancientHall.doNotSpendResources" $ flipCluesToDoom attrs 1
+          questionLabeled "ancientHall.instructions"
+          labeled "ancientHall.doNotSpendResources" $ flipCluesToDoom attrs 1
           targets investigators $ spendResourcesOf 3
       pure l
     _ -> AncientHall <$> liftRunMessage msg attrs

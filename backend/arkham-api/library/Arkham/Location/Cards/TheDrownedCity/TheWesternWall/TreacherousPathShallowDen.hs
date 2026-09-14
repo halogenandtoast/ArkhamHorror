@@ -15,7 +15,7 @@ newtype TreacherousPathShallowDen = TreacherousPathShallowDen LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 treacherousPathShallowDen :: LocationCard TreacherousPathShallowDen
-treacherousPathShallowDen = withXShroud $ location TreacherousPathShallowDen Cards.treacherousPathShallowDen 0 (Static 1)
+treacherousPathShallowDen = withXShroud $ location TreacherousPathShallowDen Cards.treacherousPathShallowDen 0 (PerPlayer 1)
 
 instance HasModifiersFor TreacherousPathShallowDen where
   getModifiersFor (TreacherousPathShallowDen a) = treacherousPathModifiers a

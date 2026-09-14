@@ -18,10 +18,10 @@ mariaRivera = ally MariaRiveraLostPilgrim Cards.mariaRivera (5, 0)
 
 instance HasAbilities MariaRiveraLostPilgrim where
   getAbilities (MariaRiveraLostPilgrim a) =
-    [ mkAbility a 1
+    [ controlled_ a 1
         $ SilentForcedAbility
         $ EnemyWouldTakeDamage #when AnySource (EnemyAt (locationWithAsset a) <> EnemyWithTrait Cultist)
-    , mkAbility a 2
+    , controlled_ a 2
         $ triggered
           (WouldPlaceDoomCounter #when AnySource (EnemyTargetMatches (EnemyWithTrait Cultist)))
           (exhaust a)
@@ -37,14 +37,16 @@ getWouldPlaceDoomAmount = \case
 instance RunMessage MariaRiveraLostPilgrim where
   runMessage msg a@(MariaRiveraLostPilgrim attrs) = runQueueT $ case msg of
     UseCardAbility _iid (isSource attrs -> True) 1 (damagedEnemy &&& damagedEnemyAmount -> (eid, n)) _ -> do
-      -- Cancel the damage that would be placed on the Cultist enemy and place it on Maria instead
+      -- The damage is placed, not dealt, so nothing is dealt to her controller
       reduceDamageTaken (attrs.ability 1) eid n
-      dealAssetDamage attrs.id (attrs.ability 1) n
+      placeTokens (attrs.ability 1) attrs #damage n
+      checkDefeated (attrs.ability 1) attrs
       pure a
     UseCardAbility _iid (isSource attrs -> True) 2 ws@(getThatEnemy -> Just _eid) _ -> do
       -- Cancel the doom that would be placed on the Cultist enemy and place it on Maria as damage instead
       push $ CancelBatch (getBatchId ws)
-      dealAssetDamage attrs.id (attrs.ability 2) (getWouldPlaceDoomAmount ws)
+      placeTokens (attrs.ability 2) attrs #damage (getWouldPlaceDoomAmount ws)
+      checkDefeated (attrs.ability 2) attrs
       pure a
     UseThisAbility _iid (isSource attrs -> True) 3 -> do
       addToVictory_ attrs

@@ -222,7 +222,7 @@ instance RunMessage QueenOfAsh where
                 if
                   | code == Enemies.davidRenfieldDisillusionedEschatologist.cardCode -> do
                       chooseOneM iid' do
-                        labeled' "davidRenfield.search" do
+                        labeled "davidRenfield.search" do
                           search iid' source iid' [fromDeck] (basic $ oneOf [#tome, #spell]) (PlayFoundNoCost iid' 1)
                         unscoped skip_
                   | code == Enemies.corneliaAkelyExhaustedSupervisor.cardCode -> do
@@ -231,14 +231,14 @@ instance RunMessage QueenOfAsh where
                       gainResources iid' source 5
                   | code == Enemies.sgtEarlMonroeDirtyCop.cardCode -> do
                       chooseOneM iid' do
-                        labeled' "sgtEarlMonroe.search"
+                        labeled "sgtEarlMonroe.search"
                           $ search iid' source iid' [fromDeck] (basic $ #asset <> #weapon) (PlayFoundNoCost iid' 1)
                         unscoped skip_
                   | code == Enemies.abigailForemanWaryLibrarian.cardCode -> do
                       chooseOneM iid' $ unscoped do
                         for_ [1 .. 3] \x -> do
-                          countVar x $ labeled' "drawCards" $ drawCards iid' source x
-                        countVar 0 $ labeled' "drawCards" nothing
+                          countVar x $ labeled "drawCards" $ drawCards iid' source x
+                        countVar 0 $ labeled "drawCards" nothing
                   | otherwise -> healHorror iid' source 3
         _ -> error "invalid codex entry"
       pure s

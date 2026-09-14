@@ -22,7 +22,7 @@ instance RunMessage ReturnToFrenchHill where
   runMessage msg l@(ReturnToFrenchHill attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       scenarioI18n
-        $ chooseAmount' iid "breachesToRemove" "$breaches" 0 (countLocationBreaches attrs) attrs
+        $ chooseAmount iid "breachesToRemove" "$breaches" 0 (countLocationBreaches attrs) attrs
       pure l
     ResolveAmounts iid (getChoiceAmount "$breaches" -> breaches) (isTarget attrs -> True) -> do
       sid <- getRandom

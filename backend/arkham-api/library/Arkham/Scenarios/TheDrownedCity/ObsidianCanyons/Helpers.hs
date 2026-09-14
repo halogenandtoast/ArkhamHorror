@@ -18,6 +18,7 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario (countScenarioTokens, getScenarioDeck)
 import Arkham.I18n
 import Arkham.Id (BatchId, EnemyId, InvestigatorId, LocationId, getPlayer)
+import Arkham.Location.CardDefs.TheDrownedCity.ObsidianCanyons qualified as CanyonLocations
 import Arkham.Location.Cards qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), LocationAttrs)
@@ -152,12 +153,20 @@ summitDeckCard lid = do
   revealed <- field LocationRevealed lid
   pure $ if revealed && not card.singleSided then flipCard card else card
 
+{- | The cards that actually rejoin the Summit deck. Glyph Orrery's own text places it when it
+leaves play ("set it aside … or in the victory display"), so its card must never be returned with
+the rest.
+-}
+summitDeckCards :: HasGame m => [LocationId] -> m [Card]
+summitDeckCards lids =
+  traverse summitDeckCard =<< filterM (<=~> not_ (locationIs CanyonLocations.glyphOrrery)) lids
+
 returnToSummitDeckWith
   :: ReverseQueue m => ([Card] -> m [Card]) -> [LocationId] -> m ()
 returnToSummitDeckWith arrange lids = do
   (toVictory, toDeck) <- partitionM canBeClaimedForVictory lids
   for_ toVictory addToVictory_
-  returning <- arrange =<< traverse summitDeckCard toDeck
+  returning <- arrange =<< summitDeckCards toDeck
   for_ toDeck removeLocation
   deck <- getScenarioDeck SummitDeck
   setScenarioDeck SummitDeck (returning <> deck)
@@ -230,7 +239,7 @@ blowWinds diagramRows dir = do
   let removed = mapMaybe (.removed) plans
   (toVictory, toDeck) <- partitionM canBeClaimedForVictory removed
   for_ toVictory addToVictory_
-  returning <- shuffleM =<< traverse summitDeckCard toDeck
+  returning <- shuffleM =<< summitDeckCards toDeck
   for_ toDeck removeLocation
 
   deck <- getScenarioDeck SummitDeck
@@ -379,8 +388,10 @@ rebuildSkyline anchor layout = do
   -- revealed faces).
   sweeping <- select $ oneOf [isOpenSky, LocationWithTrait Summit]
   let leaving = filter (/= anchor) sweeping
-  cards <- traverse summitDeckCard leaving
-  for_ leaving removeLocation
+  -- Unlike the winds, the act carries no "or place them in the victory display instead" clause,
+  -- so this must not go through 'removeLocation' and its victory diversion, #5662.
+  cards <- summitDeckCards leaving
+  for_ leaving removeLocationWithoutVictory
 
   -- Build and draw from the new deck in one step. setScenarioDeck is queued, so
   -- calling shuffleIntoSummitDeck followed by drawFromSummitBottom here would
@@ -480,7 +491,7 @@ searchTheSpires source iid x = when (x > 0) do
   let placeable = filter (not . (`cardMatch` cardIs Locations.openSky)) revealed
   focusCards revealed $ scenarioI18n do
     chooseOrRunOneM iid do
-      questionLabeled' "searchTheSpires.chooseLocation"
+      questionLabeled "searchTheSpires.chooseLocation"
       when (notNull openSkies) $ targets placeable \card -> do
         chooseTargetM iid openSkies \sky -> do
           skyCard <- summitDeckCard sky
@@ -496,7 +507,7 @@ searchTheSpires source iid x = when (x > 0) do
           -- outside both play and the Summit deck.
           chooseSummitTopOrder (skyCard : filter (/= card) revealed)
           moveTo source iid lid
-      labeled' "searchTheSpires.placeNone" $ chooseSummitTopOrder revealed
+      labeled "searchTheSpires.placeNone" $ chooseSummitTopOrder revealed
 
 {- | The Forced printed on every Summit location's unrevealed back (and on Glyph
 Orrery's front):
@@ -525,8 +536,8 @@ summitEntryToll :: ReverseQueue m => LocationAttrs -> Int -> InvestigatorId -> B
 summitEntryToll a n iid batchId = do
   canSpendClue <- (> 0) <$> getSpendableClueCount [iid]
   chooseOrRunOneM iid $ scenarioI18n do
-    when canSpendClue $ labeled' "summitEntry.spendClue" $ spendClues iid 1
-    labeled' "summitEntry.test" do
+    when canSpendClue $ labeled "summitEntry.spendClue" $ spendClues iid 1
+    labeled "summitEntry.test" do
       sid <- getRandom
       beginSkillTest sid iid (a.ability n) (BatchTarget batchId) #agility (Fixed 2)
 
@@ -550,10 +561,10 @@ chooseSummitPlacement iid remaining = do
   chooseOneM iid $ targets remaining \card -> do
     highlightCards [card]
     chooseOneM iid $ scenarioI18n do
-      labeled' "summitDeck.toTop" do
+      labeled "summitDeck.toTop" do
         putCardOnTopOfDeck iid (Deck.ScenarioDeckByKey SummitDeck) card
         chooseSummitPlacement iid $ filter (/= card) remaining
-      labeled' "summitDeck.toBottom" do
+      labeled "summitDeck.toBottom" do
         putCardOnBottomOfDeck iid (Deck.ScenarioDeckByKey SummitDeck) card
         chooseSummitPlacement iid $ filter (/= card) remaining
 

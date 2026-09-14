@@ -54,7 +54,7 @@ instance HasChaosTokenValue IntoTheMaelstrom where
 instance RunMessage IntoTheMaelstrom where
   runMessage msg s@(IntoTheMaelstrom attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      story $ i18nWithHeading "intro"
       pure s
     StandaloneSetup -> do
       {- FOURMOLU_DISABLE -}
@@ -87,22 +87,22 @@ instance RunMessage IntoTheMaelstrom where
       investigators <- allInvestigators
       when possessTheKey do
         chooseOneM lead do
-          withI18n $ keyVar "color" "blue" $ questionLabeled' "chooseInvestigatorForKey"
+          withI18n $ keyVar "color" "blue" $ questionLabeled "chooseInvestigatorForKey"
           targets investigators (`placeKey` BlueKey)
 
       when possessAMap do
         chooseOneM lead do
-          withI18n $ keyVar "color" "red" $ questionLabeled' "chooseInvestigatorForKey"
+          withI18n $ keyVar "color" "red" $ questionLabeled "chooseInvestigatorForKey"
           targets investigators (`placeKey` RedKey)
 
       when guardianDispatched do
         chooseOneM lead do
-          withI18n $ keyVar "color" "green" $ questionLabeled' "chooseInvestigatorForKey"
+          withI18n $ keyVar "color" "green" $ questionLabeled "chooseInvestigatorForKey"
           targets investigators (`placeKey` GreenKey)
 
       when recognized do
         chooseOneM lead do
-          withI18n $ keyVar "color" "yellow" $ questionLabeled' "chooseInvestigatorForKey"
+          withI18n $ keyVar "color" "yellow" $ questionLabeled "chooseInvestigatorForKey"
           targets investigators (`placeKey` YellowKey)
 
       let
@@ -157,7 +157,7 @@ instance RunMessage IntoTheMaelstrom where
               chooseOrRunOneM iid do
                 when canIncrease do
                   labeledI "increaseFloodLevelOfYourLocation" $ increaseThisFloodLevel lid
-                withI18n $ countVar 1 $ labeledI "takeDamage" $ assignDamage iid Tablet 1
+                withI18n $ countVar 1 $ labeled "takeDamage" $ assignDamage iid Tablet 1
         ElderThing -> do
           withLocationOf iid \lid -> do
             whenM (lid <=~> LocationWithAnyKeys) $ assignHorror iid ElderThing 1

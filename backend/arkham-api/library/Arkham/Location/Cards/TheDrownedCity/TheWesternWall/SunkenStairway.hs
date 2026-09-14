@@ -9,8 +9,8 @@ import Arkham.Location.Types (Field (LocationPosition))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (
-  cannotEnterFromCluedLocation,
   scenarioI18n,
+  treacherousPathModifiers,
  )
 
 newtype SunkenStairway = SunkenStairway LocationAttrs
@@ -18,10 +18,10 @@ newtype SunkenStairway = SunkenStairway LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sunkenStairway :: LocationCard SunkenStairway
-sunkenStairway = withXShroud $ location SunkenStairway Cards.sunkenStairway 0 (Static 2)
+sunkenStairway = withXShroud $ location SunkenStairway Cards.sunkenStairway 0 (PerPlayer 2)
 
 instance HasModifiersFor SunkenStairway where
-  getModifiersFor (SunkenStairway a) = cannotEnterFromCluedLocation a
+  getModifiersFor (SunkenStairway a) = treacherousPathModifiers a
 
 instance HasAbilities SunkenStairway where
   getAbilities (SunkenStairway a) =
@@ -40,7 +40,7 @@ instance RunMessage SunkenStairway where
                   (fromJustNote "No available grid position" $ find (`notElem` usedColumns) [0 ..])
                   targetRow
         scenarioI18n $ scope "sunkenStairway" $ chooseOneM iid do
-          labeled' "above" $ placeLocationInGrid_ (availablePosition $ row + 1) card
-          labeled' "below" $ placeLocationInGrid_ (availablePosition $ row - 1) card
+          labeled "above" $ placeLocationInGrid_ (availablePosition $ row + 1) card
+          labeled "below" $ placeLocationInGrid_ (availablePosition $ row - 1) card
       pure l
     _ -> SunkenStairway <$> liftRunMessage msg attrs

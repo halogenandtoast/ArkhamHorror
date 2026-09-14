@@ -74,7 +74,7 @@ standaloneChaosTokens =
 instance RunMessage WhereTheGodsDwell where
   runMessage msg s@(WhereTheGodsDwell attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      story $ i18nWithHeading "intro"
       carried <- getHasRecord TheInvestigatorsWereCarriedToTheColdWastes
       story $ i18nWithTitle $ if carried then "intro1" else "intro2"
       pure s

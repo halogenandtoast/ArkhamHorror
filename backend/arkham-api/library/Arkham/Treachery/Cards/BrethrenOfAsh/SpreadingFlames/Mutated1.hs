@@ -24,7 +24,7 @@ instance RunMessage Mutated1 where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       investigators <- select $ InvestigatorAt (locationWithInvestigator iid)
       chooseOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
+        countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
         labeledValidate' (notNull investigators) "core2.mutated.option " do
           for_ investigators \i -> assignHorror i attrs 1
       pure t

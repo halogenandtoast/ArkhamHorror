@@ -30,8 +30,8 @@ instance RunMessage SlimyStreets where
       replicateM_ triggering
         $ withI18n
         $ chooseOrRunOneM iid do
-          countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
-          countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+          countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+          countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
       resetChaosTokens (attrs.ability 1)
       pure l
     _ -> SlimyStreets <$> liftRunMessage msg attrs

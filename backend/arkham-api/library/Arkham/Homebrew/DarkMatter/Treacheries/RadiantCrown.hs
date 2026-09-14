@@ -31,7 +31,6 @@ instance RunMessage RadiantCrown where
   runMessage msg t@(RadiantCrown attrs) = runQueueT $ case msg of
     Revelation _iid (isSource attrs -> True) -> do
       placeTreachery attrs NextToAgenda
-      gainSurge attrs
       pure t
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       toDiscard (attrs.ability 1) attrs

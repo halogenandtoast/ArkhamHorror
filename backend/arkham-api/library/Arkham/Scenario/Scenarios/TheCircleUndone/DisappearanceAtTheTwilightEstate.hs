@@ -140,8 +140,8 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
             [] -> error "no players"
             (player : _) -> do
               playerStoryWithChooseOneM' player (setTitle "title" >> p "returnToChoice") do
-                labeled' "returnToSkip" $ doStep 3 msg
-                labeled' "playNormally" $ doStep 1 msg
+                labeled "returnToSkip" $ doStep 3 msg
+                labeled "playNormally" $ doStep 1 msg
         else doStep 1 msg
       pure s
     DoStep 1 (LoadScenario opts) -> do
@@ -188,7 +188,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
         player
         (setTitle "title" >> tarot arcana >> img card >> p (tshow arcana))
         do
-          unscoped $ labeled' "continue" nothing
+          unscoped $ labeled "continue" nothing
 
       case arcana of
         TheFool0 -> do
@@ -255,7 +255,7 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           incrementRecordCount PiecesOfEvidenceWereLeftBehind 5
       pure $ DisappearanceAtTheTwilightEstate $ attrs & tarotDeckL %~ filter (/= arcana)
     PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "body"
+      flavor $ h "title" >> p "body"
       -- investigators have not been chosen yet so we have to send to players
       allPlayers >>= traverse_ (push . (`ForPlayer` msg))
       -- Now that investigators have been chosen we need to set the player order
@@ -297,9 +297,9 @@ instance RunMessage DisappearanceAtTheTwilightEstate where
           "05048" -> "valentinoIntro"
           "05049" -> "pennyIntro"
           _ -> error "Invalid prologue investigator"
-        readings = map readingFor taken
       crossOutRecordSetEntries MissingPersons prologueInvestigatorsNotTaken
-      traverse_ (\r -> flavor $ setTitle "title" >> p r) readings
+      for_ taken \cardCode ->
+        flavor $ setTitle "title" >> p (readingFor cardCode) >> smallImg cardCode.flipped
       pure $ DisappearanceAtTheTwilightEstate $ attrs & startedL .~ True
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty

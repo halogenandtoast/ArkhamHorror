@@ -24,9 +24,9 @@ instance RunMessage CthulhuFhtagn where
       -- location" — you are at your own location, so you are a legal target too.
       investigators <- select $ investigatorAt iid
       chooseOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
         countVar 1
-          $ labeled' "dealDirectDamage"
+          $ labeled "dealDirectDamage"
           $ chooseTargetM iid investigators \iid' -> directDamage iid' attrs 1
       pure t
     _ -> CthulhuFhtagn <$> liftRunMessage msg attrs

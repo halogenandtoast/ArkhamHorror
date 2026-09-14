@@ -18,7 +18,7 @@ newtype StMarysHospitalRuined = StMarysHospitalRuined LocationAttrs
 
 stMarysHospitalRuined :: LocationCard StMarysHospitalRuined
 stMarysHospitalRuined =
-  location StMarysHospitalRuined Cards.stMarysHospitalRuined 3 (Static 1)
+  location StMarysHospitalRuined Cards.stMarysHospitalRuined 3 (PerPlayer 1)
 
 instance HasModifiersFor StMarysHospitalRuined where
   getModifiersFor (StMarysHospitalRuined a) = modifySelf a [CannotBeFullyFlooded]
@@ -40,7 +40,7 @@ instance RunMessage StMarysHospitalRuined where
   runMessage msg l@(StMarysHospitalRuined attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       clues <- field InvestigatorClues iid
-      scenarioI18n $ chooseAmount' iid "cluesToPlace" "$clues" 1 (min 3 clues) attrs
+      scenarioI18n $ chooseAmount iid "cluesToPlace" "$clues" 1 (min 3 clues) attrs
       pure l
     ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       moveTokens (attrs.ability 1) iid attrs Clue n

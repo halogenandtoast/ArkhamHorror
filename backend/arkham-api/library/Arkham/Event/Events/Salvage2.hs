@@ -32,11 +32,11 @@ instance RunMessage Salvage2 where
             let cost = maybe 0 toPrintedCost card.cost
             chooseOneM iid $ cardI18n $ scope "salvage" do
               when (cost > 0) do
-                labeled' "remove" do
+                labeled "remove" do
                   obtainCard card
                   gainResourcesIfCan iid attrs cost
               when playable do
-                labeled' "play" $ playCardPayingCost iid card
+                labeled "play" $ playCardPayingCost iid card
 
       pure e
     _ -> Salvage2 <$> liftRunMessage msg attrs

@@ -32,7 +32,7 @@ instance RunMessage LoadingDockNight where
         labeledValidate' canDoom "placeAgendaDoom" do
           placeDoomOnAgendaBy (attrs.ability 1) 1
           skillTestModifier sid (attrs.ability 1) sid (Difficulty (-2))
-        labeled' "doNotPlaceDoom" nothing
+        labeled "doNotPlaceDoom" nothing
       beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 3)
       pure l
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

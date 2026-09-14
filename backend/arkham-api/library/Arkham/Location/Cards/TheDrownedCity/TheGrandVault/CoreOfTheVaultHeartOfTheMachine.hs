@@ -23,7 +23,7 @@ newtype CoreOfTheVaultHeartOfTheMachine = CoreOfTheVaultHeartOfTheMachine Locati
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coreOfTheVaultHeartOfTheMachine :: LocationCard CoreOfTheVaultHeartOfTheMachine
-coreOfTheVaultHeartOfTheMachine = location CoreOfTheVaultHeartOfTheMachine Cards.coreOfTheVaultHeartOfTheMachine 3 (Static 3)
+coreOfTheVaultHeartOfTheMachine = location CoreOfTheVaultHeartOfTheMachine Cards.coreOfTheVaultHeartOfTheMachine 3 (PerPlayer 3)
 
 instance HasModifiersFor CoreOfTheVaultHeartOfTheMachine where
   getModifiersFor (CoreOfTheVaultHeartOfTheMachine a) = do
@@ -44,7 +44,7 @@ instance HasAbilities CoreOfTheVaultHeartOfTheMachine where
           , -- [action][action] Spend 3 [per_investigator] clues, as a group.
             restricted a 2 Here
               $ doubleActionAbilityWithCost
-              $ GroupClueCost (PerPlayer 3) (be a)
+              $ GroupClueCost (PerPlayer 3) Anywhere
           ]
         else
           [ restricted a 3 (not_ $ exists $ LocationWithTrait Vault <> LocationWithResources (atMost 0))
@@ -67,7 +67,7 @@ instance RunMessage CoreOfTheVaultHeartOfTheMachine where
       -- "Proceed to Scenario Interlude: The Vault Core." The clue spend is paid as
       -- the ability's cost above; play continues either way, so neither branch ends
       -- the scenario.
-      storyWithChooseOneM'
+      storyWithChooseOneM
         do
           h "title"
           p "body"
@@ -77,8 +77,8 @@ instance RunMessage CoreOfTheVaultHeartOfTheMachine where
             li "pushTheButton"
             li "leaveItAlone"
         do
-          labeled' "pushTheButton" $ record TheInnerSanctumWasUnsealed
-          labeled' "leaveItAlone" $ interludeXpAll $ toBonus "leaveItAlone" 1
+          labeled "pushTheButton" $ record TheInnerSanctumWasUnsealed
+          labeled "leaveItAlone" $ interludeXpAll $ toBonus "leaveItAlone" 1
       pure l
     UseThisAbility _iid (isSource attrs -> True) 3 -> do
       activated <- getActivatedCount

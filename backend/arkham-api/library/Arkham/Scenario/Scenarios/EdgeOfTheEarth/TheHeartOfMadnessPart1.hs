@@ -11,8 +11,9 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Exception
 import Arkham.FlavorText
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
-import Arkham.Helpers.Query (allInvestigators)
+import Arkham.Helpers.FlavorText (addEntry, setup)
+import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier, modifySelect)
+import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
 import Arkham.Investigator.Types (Field (..))
@@ -60,7 +61,7 @@ instance RunMessage TheHeartOfMadnessPart1 where
     PreScenarioSetup -> do
       isStandalone <- getIsStandalone
       when (not isStandalone || attrs.hasOption PerformIntro) do
-        story $ i18nWithTitle "part1Intro"
+        story $ i18nWithHeading "part1Intro"
 
       when (not isStandalone || attrs.hasOption IncludePartners) do
         eachInvestigator (`forInvestigator` PreScenarioSetup)
@@ -93,6 +94,22 @@ instance RunMessage TheHeartOfMadnessPart1 where
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart1 attrs do
+      setup $ addEntry $ ul do
+        li "gatherSets"
+        li.nested "gateOfYquaa" do
+          li "startAt"
+          li "unrevealedSideUnused"
+        li.nested "ancientFacility" do
+          li "spokesAndRings"
+        li "setSealsAside"
+        li.nested "checkDifficulty" do
+          li.validate (attrs.difficulty == Hard) "hard"
+          li.validate (attrs.difficulty == Expert) "expert"
+        li "tekelili"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.TheHeartOfMadness
       gather Set.TheGreatSeal
       gather Set.Miasma
@@ -139,6 +156,12 @@ instance RunMessage TheHeartOfMadnessPart1 where
       addTekeliliDeck
     DoStep 2 Setup -> do
       connectAllLocations
+      whenM (hasModifier ScenarioTarget (ScenarioModifier "scoutedTheForkedPass")) do
+        lead <- getLead
+        facilities <- select $ LocationWithUnrevealedTitle "Ancient Facility"
+        chooseUpToNM_ lead 2 do
+          unscoped $ questionLabeled "lookAtAncientFacility"
+          targets facilities (lookAtRevealed lead ScenarioSource)
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       case token.face of

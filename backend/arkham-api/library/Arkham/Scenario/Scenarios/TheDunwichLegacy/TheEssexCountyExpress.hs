@@ -181,7 +181,7 @@ instance RunMessage TheEssexCountyExpress where
       pure s
     ScenarioResolution r -> scope "resolutions" do
       defeated <- select DefeatedInvestigator
-      storyOnly' defeated "defeat"
+      storyOnly defeated "defeat"
       withOwner Assets.theNecronomiconOlausWormiusTranslation \owner ->
         when (owner `elem` defeated) do
           record TheNecronomiconWasStolen

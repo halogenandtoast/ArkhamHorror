@@ -26,10 +26,10 @@ instance RunMessage TeatroColon where
       sid <- getRandom
       n <- getSpendableClueCount [iid]
       when (n > 0) $ chooseOneM iid $ withI18n $ countVar 1 do
-        labeled' "spendClues" do
+        labeled "spendClues" do
           spendClues iid 1
           skillTestModifier sid (attrs.ability 1) sid (Difficulty (-2))
-        labeled' "doNotSpendClues" nothing
+        labeled "doNotSpendClues" nothing
       beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 4)
       pure l
     PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) succeededBy -> do

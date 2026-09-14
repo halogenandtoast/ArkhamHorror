@@ -266,7 +266,7 @@ instance RunMessage SmokeAndMirrors where
           deck <- scenarioField ScenarioEncounterDeck
           for_ (headMay $ unDeck deck) \card -> do
             focusCards [card] $ chooseOneM iid do
-              unscoped $ labeled' "discard" $ discardTopOfEncounterDeck iid source 1
+              unscoped $ labeled "discard" $ discardTopOfEncounterDeck iid source 1
               unscoped skip_
           eid <- selectJust $ enemyIs Enemies.margaretLiuBeguilingLoungeSinger
           placeTokens source eid Resource 1
@@ -282,12 +282,12 @@ instance RunMessage SmokeAndMirrors where
             iid
             (scope "servantOfFlame" $ setTitle "title" >> compose.codex (h "title" >> p "body"))
             do
-              labeled' "addToVictory" do
+              labeled "addToVictory" do
                 let inVictory = any ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay
                 unless inVictory do
                   selectEach (enemyIs Enemies.servantOfFlameOnTheRun) (addToVictory iid)
                 eachInvestigator \iid' -> drawCards iid' source 3
-              labeled' "placeUnderAct" do
+              labeled "placeUnderAct" do
                 mcard <- case find ((== toCardCode Enemies.servantOfFlameOnTheRun) . toCardCode) victoryDisplay of
                   Just c -> pure (Just c)
                   Nothing -> runMaybeT do

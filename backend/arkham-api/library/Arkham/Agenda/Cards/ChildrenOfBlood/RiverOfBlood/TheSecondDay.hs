@@ -25,7 +25,13 @@ theSecondDay = agenda (3, A) TheSecondDay Cards.theSecondDay (Static 4)
 
 instance HasAbilities TheSecondDay where
   getAbilities (TheSecondDay a) =
-    [restricted a 1 (exists $ EnemyWithTitle "Julia Stern") $ forced $ PhaseEnds #when #enemy]
+    [ restricted
+        a
+        1
+        (exists $ EnemyWithTitle "Julia Stern" <> oneOf [ReadyEnemy, EnemyAt (LocationWithTrait Lair)])
+        $ forced
+        $ PhaseEnds #when #enemy
+    ]
 
 instance RunMessage TheSecondDay where
   runMessage msg a@(TheSecondDay attrs) = runQueueT $ case msg of
@@ -74,7 +80,7 @@ instance RunMessage TheSecondDay where
               juliaCard <- flippedOverCapture julia
               traverse_ obtainCard (juliaCard : topOfEncounterDeck)
               placeUnderneath lid =<< shuffleM (juliaCard : topOfEncounterDeck)
-            else do
+            else whenMatch julia ReadyEnemy do
               moveTowardsMatching (attrs.ability 1) julia $ NearestLocationToLocation lid $ LocationWithTrait Lair
       pure a
     _ -> TheSecondDay <$> liftRunMessage msg attrs

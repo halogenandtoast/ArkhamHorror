@@ -28,7 +28,7 @@ instance HasModifiersFor DrElliHorowitz where
 
 instance HasAbilities DrElliHorowitz where
   getAbilities (DrElliHorowitz a) =
-    [controlled a 1 CanManipulateDeck $ triggered_ (AssetEntersPlay #when $ be a)]
+    [controlled a 1 CanManipulateDeck $ triggered_ (AssetEntersPlay #after $ be a)]
 
 instance RunMessage DrElliHorowitz where
   runMessage msg a@(DrElliHorowitz attrs) = runQueueT $ case msg of

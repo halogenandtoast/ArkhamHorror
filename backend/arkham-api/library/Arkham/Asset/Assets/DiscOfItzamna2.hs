@@ -16,7 +16,9 @@ discOfItzamna2 = asset DiscOfItzamna2 Cards.discOfItzamna2
 instance HasAbilities DiscOfItzamna2 where
   getAbilities (DiscOfItzamna2 a) =
     [ restricted a 1 ControlsThis
-        $ triggered (EnemySpawns #when YourLocation NonEliteEnemy) (DiscardCost FromPlay (toTarget a))
+        $ triggered
+          (EnemySpawns #when (PlacementAt YourLocation) NonEliteEnemy)
+          (DiscardCost FromPlay (toTarget a))
     ]
 
 instance RunMessage DiscOfItzamna2 where

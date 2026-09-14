@@ -75,18 +75,22 @@ instance RunMessage EmpiricalHypothesis where
     BeginRoundWindow -> do
       pure $ EmpiricalHypothesis $ attrs & metaL .~ toJSON @[Int] []
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      let option n txt = labeled txt $ push $ HandleAbilityOption iid (toSource attrs) n
+      let
+        option n txt =
+          (cardI18n $ scope "empiricalHypothesis" $ labeled txt)
+            $ push
+            $ HandleAbilityOption iid (toSource attrs) n
       chooseOneM iid do
-        option 1 "You fail a test by 2 or more."
-        option 2 "You succeed at a test by 3 or more."
+        option 1 "failBy2"
+        option 2 "succeedBy3"
         when (attrs `hasCustomization` PessimisticOutlook) do
-          option 3 "You run out of cards in your hand."
+          option 3 "runOutOfCards"
         when (attrs `hasCustomization` TrialAndError) do
-          option 4 "You are dealt damage or horror."
+          option 4 "dealtDamageOrHorror"
         when (attrs `hasCustomization` IndepedentVariable) do
-          option 5 "You discard a treachery or enemy from play."
+          option 5 "discardTreacheryOrEnemy"
         when (attrs `hasCustomization` FieldResearch) do
-          option 6 "You enter a location with 3 or more shroud."
+          option 6 "enterLocationWithShroud3"
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       drawCardsIfCan iid (attrs.ability 2) 1
@@ -102,22 +106,24 @@ instance RunMessage EmpiricalHypothesis where
       let
         option n txt =
           unless (n `elem` meta) do
-            labeled txt $ push $ HandleAbilityOption iid (toSource attrs) n
+            (cardI18n $ scope "empiricalHypothesis" $ labeled txt)
+              $ push
+              $ HandleAbilityOption iid (toSource attrs) n
       chooseOneM iid do
-        option 1 "You fail a test by 2 or more."
-        option 2 "You succeed at a test by 3 or more."
+        option 1 "failBy2"
+        option 2 "succeedBy3"
 
         when (attrs `hasCustomization` PessimisticOutlook) do
-          option 3 "You run out of cards in your hand."
+          option 3 "runOutOfCards"
 
         when (attrs `hasCustomization` TrialAndError) do
-          option 4 "You are dealt damage or horror."
+          option 4 "dealtDamageOrHorror"
 
         when (attrs `hasCustomization` IndepedentVariable) do
-          option 5 "You discard a treachery or enemy from play."
+          option 5 "discardTreacheryOrEnemy"
 
         when (attrs `hasCustomization` FieldResearch) do
-          option 6 "You enter a location with 3 or more shroud."
+          option 6 "enterLocationWithShroud3"
 
       readyThis attrs
       pure a

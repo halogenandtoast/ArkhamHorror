@@ -19,7 +19,7 @@ historicalSocietyMuseumStorage = location HistoricalSocietyMuseumStorage Cards.h
 instance HasAbilities HistoricalSocietyMuseumStorage where
   getAbilities (HistoricalSocietyMuseumStorage a) =
     if a.unrevealed
-      then extendUnrevealed1 a $ mkAbility a 1 $ forced $ EnemySpawns #when (be a) AnyEnemy
+      then extendUnrevealed1 a $ mkAbility a 1 $ forced $ EnemySpawns #when (PlacementAt $ be a) AnyEnemy
       else
         extendRevealed1 a
           $ restricted a 1 (exists $ EnemyWithTrait Cultist)

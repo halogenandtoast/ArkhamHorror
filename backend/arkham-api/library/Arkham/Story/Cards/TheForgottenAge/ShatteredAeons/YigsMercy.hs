@@ -27,14 +27,14 @@ instance RunMessage YigsMercy where
       yigsFury <- getRecordCount YigsFury
       chooseOneM iid $ scenarioI18n do
         if yigsFury >= 16
-          then labeled' "yigsMercy.refuses" nothing
+          then labeled "yigsMercy.refuses" nothing
           else do
-            labeled' "yigsMercy.reject" do
+            labeled "yigsMercy.reject" do
               exhaustWith attrs ichtaca
               disengageFromAll ichtaca
               eachInvestigator \iid' ->
                 gameModifier attrs iid' $ CannotParleyWith $ enemyIs Enemies.ichtacaScionOfYig
-            labeled' "yigsMercy.accept" do
+            labeled "yigsMercy.accept" do
               removeEnemy ichtaca
               advanceToAct' attrs 1 Acts.paradiseLost A
               eachInvestigator \iid' ->

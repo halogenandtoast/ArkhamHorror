@@ -15,11 +15,12 @@ daisysToteBagAdvanced =
 
 theNecronomiconAdvanced :: CardDef
 theNecronomiconAdvanced =
-  (weakness "90003" ("The Necronomicon" <:> "John Dee Translation"))
-    { cdCardTraits = setFromList [Item, Tome]
-    , cdSlots = [#hand]
-    , cdKeywords = setFromList [Keyword.Advanced]
-    }
+  signature "01002"
+    $ (weakness "90003" ("The Necronomicon" <:> "John Dee Translation"))
+      { cdCardTraits = setFromList [Item, Tome]
+      , cdSlots = [#hand]
+      , cdKeywords = setFromList [Keyword.Advanced]
+      }
 
 heirloomOfHyperboreaAdvanced :: CardDef
 heirloomOfHyperboreaAdvanced =
@@ -175,11 +176,12 @@ jennysTwin45sAdvanced =
 
 samuelBlakeObsessiveProducer :: CardDef
 samuelBlakeObsessiveProducer =
-  (weakness "90093" ("Samuel Blake" <:> "Obsessive Producer"))
-    { cdCardTraits = setFromList [Humanoid, Cultist]
-    , cdUnique = True
-    , cdSlots = [#ally]
-    , cdCost = Just (StaticCost 3)
-    , cdKeywords = setFromList [Keyword.Replacement, Keyword.Peril]
-    , cdRevelation = NoRevelation
-    }
+  signature "03006"
+    $ (weakness "90093" ("Samuel Blake" <:> "Obsessive Producer"))
+      { cdCardTraits = setFromList [Humanoid, Cultist]
+      , cdUnique = True
+      , cdSlots = [#ally]
+      , cdCost = Just (StaticCost 3)
+      , cdKeywords = setFromList [Keyword.Replacement, Keyword.Peril]
+      , cdRevelation = NoRevelation
+      }

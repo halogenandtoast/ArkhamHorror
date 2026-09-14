@@ -32,10 +32,10 @@ instance RunMessage CatacombsOfKomElShoqafaAncientTomb where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       chooseOneM iid $ scenarioI18n do
-        labeled' "catacombsOfKomElShoqafa.reduceDifficulty" do
+        labeled "catacombsOfKomElShoqafa.reduceDifficulty" do
           skillTestModifier sid (attrs.ability 1) sid (Difficulty (-2))
           doStep 1 msg
-        labeled' "catacombsOfKomElShoqafa.doNotReduce" nothing
+        labeled "catacombsOfKomElShoqafa.doNotReduce" nothing
       investigate_ sid iid (attrs.ability 1)
       pure $ CatacombsOfKomElShoqafaAncientTomb $ attrs & setMeta False
     DoStep 1 (UseThisAbility _iid (isSource attrs -> True) 1) -> do

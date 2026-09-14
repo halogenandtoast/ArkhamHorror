@@ -32,7 +32,7 @@ instance RunMessage Sandstorm where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assets <- select $ DiscardableAsset <> AssetControlledBy (InvestigatorWithId iid)
       chooseOrRunOneM iid do
-        withI18n $ countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
+        withI18n $ countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
         targets assets (toDiscardBy iid attrs)
       pure t
     _ -> Sandstorm <$> liftRunMessage msg attrs

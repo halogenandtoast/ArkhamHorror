@@ -1,26 +1,35 @@
 module Arkham.Homebrew.CircusExMortis.Campaign (circusExMortis) where
 
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
-import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as HBAssets
 import Arkham.Campaign.Import.Lifted
+import Arkham.Campaign.Overlay
+import Arkham.CampaignLogKey (recorded)
+import Arkham.Classes.HasGame (getGame)
+import Arkham.Decklist.Type (investigator_name)
+import Arkham.Game.Base (gamePerformTarotReadings)
+import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith, setActiveDuringSetup)
+import Arkham.Helpers.Query (getInvestigators, getLeadPlayer)
+import Arkham.Helpers.Xp (toBonus)
 import Arkham.Homebrew.CircusExMortis.CampaignSteps
+import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as HBAssets
+import Arkham.Homebrew.CircusExMortis.CardDefs.Skills qualified as Skills
 import Arkham.Homebrew.CircusExMortis.ChaosBag
 import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Homebrew.CircusExMortis.Key
-import Arkham.Helpers.Campaign (getCompletedSteps, getOwner)
-import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith, setActiveDuringSetup)
-import Arkham.Helpers.Xp (toBonus)
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Name (toTitle)
 import Arkham.Projection
-import Arkham.Homebrew.CircusExMortis.CardDefs.Skills qualified as Skills
+import Arkham.Question (DestinyDrawing (..), Question (PickDestiny))
 import Arkham.Source
-import Arkham.Target (Target (GameTarget))
+import Arkham.Tarot (TarotCard (..), TarotCardArcana (..), TarotCardFacing (Upright))
 import Arkham.Trait (Trait (Believer, Chosen, Clairvoyant, Miskatonic, Scholar))
+import Data.Text qualified as T
 
 newtype CircusExMortis = CircusExMortis CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
@@ -30,6 +39,29 @@ circusExMortis = campaign CircusExMortis (CampaignId ":circus-ex-mortis") "Circu
 
 instance IsCampaign CircusExMortis where
   campaignTokens = chaosBagContents
+
+  {- | Guide p14: Curse of the Rougarou is offered free immediately after Harm's
+  Way. The side story itself is played with its own printed cards; All Points
+  West is where its two reward cards are upgraded to their Circus printings.
+  -}
+  campaignOverlays (CircusExMortis attrs) =
+    [ CampaignOverlay
+        { id = "circus-ex-mortis:rougarou"
+        , name = "Circus Ex Mortis"
+        , scenario = curseOfTheRougarouId
+        , available = discounted
+        , xpCost = if discounted then 0 else 1
+        }
+    ]
+   where
+    {- Completed steps are most-recent-first, but they also accumulate the
+    bookkeeping steps the continue screen pushes (a ContinueCampaignStep is
+    prepended on every answer), so the head is not the last scenario played.
+    Read the scenarios only -- the same way 'playedCurseOfTheRougarouEnRoute'
+    does -- or the discount is gone by the time the cost is charged. -}
+    discounted = case mapMaybe (.scenario) attrs.completedSteps of
+      (sid : _) -> ScenarioStep sid == HarmsWay
+      _ -> False
   nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> continue OneNightOnly
     OneNightOnly -> continue ThePrimrosePath
@@ -63,12 +95,42 @@ instance RunMessage CircusExMortis where
     CampaignStep PrologueStep -> do
       scope "additionalRules" $ flavor $ setTitle "title" >> p "moonTokens"
       scope "prologue" do
-        flavor $ setTitle "title" >> p "body"
         flavor do
           setTitle "title"
-          p "minnie"
+          p "body"
           ul $ li "addMoonTokens"
       replicateM_ 3 $ addChaosToken MoonToken
+      whenM (gamePerformTarotReadings <$> getGame) $ scope "campaignReading" do
+        leadPlayer <- getLeadPlayer
+        storyWithChooseOneM (setTitle "title" >> p "body") do
+          labeled "performCampaignReading" do
+            push $ SetPerformTarotReadings False
+            push
+              $ Ask leadPlayer
+              $ PickDestiny
+              $ zipWith
+                DestinyDrawing
+                [ "oneNightOnly"
+                , "thePrimrosePath"
+                , "harm'sWay"
+                , "allPointsWest"
+                , "piperAtTheGatesOfDawn"
+                , "bacchanalia"
+                , "redSunrise"
+                , "thousandToOne"
+                ]
+              $ map
+                (TarotCard Upright)
+                [ TheMagicianI
+                , TheHermitIX
+                , StrengthVIII
+                , TheChariotVII
+                , TheDevilXV
+                , TemperanceXIV
+                , TheSunXIX
+                , TheMoonXVIII
+                ]
+          labeled "performIndividualReadings" nothing
       nextCampaignStep
       pure c
     -- Interlude: The Future and the Past (guide pp9-10)
@@ -120,17 +182,33 @@ instance RunMessage CircusExMortis where
       eachInvestigator \iid -> do
         chooseOneM iid do
           questionLabeledCard iid
-          questionLabeled' "addInvocationOfDianaQuestion"
-          labeled' "addInvocationOfDiana"
+          questionLabeled "addInvocationOfDianaQuestion"
+          labeled "addInvocationOfDiana"
             $ addCampaignCardToDeck iid DoNotShuffleIn Skills.invocationOfDiana
-          labeled' "doNotAddInvocationOfDiana" nothing
-      storyWithChooseOneM' (setTitle "title" >> p "role") do
-        labeled' "determination" do
+          labeled "doNotAddInvocationOfDiana" nothing
+      flavor $ setTitle "title" >> p "destinyIntro"
+      investigators <- getInvestigators
+      let
+        destinyWords = ["heart", "pipes", "torch", "rock", "sigil", "stain", "prayer", "burden"]
+        chooseDestiny :: (HasI18n, ReverseQueue m) => [Text] -> [InvestigatorId] -> m ()
+        chooseDestiny _ [] = pure ()
+        chooseDestiny remaining (iid : rest) =
+          chooseOneM iid do
+            questionLabeledCard iid
+            questionLabeled "destinyQuestion"
+            for_ remaining \word ->
+              labeled word do
+                name <- toTitle <$> field InvestigatorName iid
+                recordSetInsert Destinies [String $ name <> ": " <> word]
+                chooseDestiny (filter (/= word) remaining) rest
+      chooseDestiny destinyWords investigators
+      storyWithChooseOneM (setTitle "title" >> p "role") do
+        labeled "determination" do
           flavor $ setTitle "title" >> p "determination"
           swapCampaignCard
             HBAssets.amaltheaWeaverCircusFortuneTeller
             HBAssets.amaltheaWeaverAspirantOfCourage
-        labeled' "guidance" do
+        labeled "guidance" do
           flavor $ setTitle "title" >> p "guidance"
           swapCampaignCard
             HBAssets.amaltheaWeaverCircusFortuneTeller
@@ -145,17 +223,17 @@ instance RunMessage CircusExMortis where
           when (hasPhysical || hasMental) do
             chooseOneM iid do
               questionLabeledCard iid
-              questionLabeled' "healTraumaQuestion"
-              when hasPhysical $ labeled' "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
-              when hasMental $ labeled' "healMentalTrauma" $ push $ HealTrauma iid 0 1
-              labeled' "doNotHealTrauma" nothing
-      storyWithChooseOneM' (setTitle "title" >> p "motive") do
-        labeled' "fanaticism" do
+              questionLabeled "healTraumaQuestion"
+              when hasPhysical $ labeled "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
+              when hasMental $ labeled "healMentalTrauma" $ push $ HealTrauma iid 0 1
+              labeled "doNotHealTrauma" nothing
+      storyWithChooseOneM (setTitle "title" >> p "motive") do
+        labeled "fanaticism" do
           flavor $ setTitle "title" >> p "fanaticism"
           swapCampaignCard
             HBAssets.deCultusBestiaeForgottenWorkOfApuleius
             HBAssets.deCultusBestiaeInterpretationOfConviction
-        labeled' "nemesis" do
+        labeled "nemesis" do
           flavor $ setTitle "title" >> p "nemesis"
           swapCampaignCard
             HBAssets.deCultusBestiaeForgottenWorkOfApuleius
@@ -169,25 +247,26 @@ instance RunMessage CircusExMortis where
       pure c
     -- Interlude: Good Omens (guide pp27-28)
     CampaignStep (InterludeStep 3 _) -> scope "goodOmens" do
+      flavor $ setTitle "title" >> p "destinyReminder"
       flavor $ setTitle "title" >> p "intro"
       mAmalthea <- getAmaltheaWeaverOwner
       case snd <$> mAmalthea of
         Just v
           | v == HBAssets.amaltheaWeaverAspirantOfCourage ->
-              storyWithChooseOneM' (setTitle "title" >> p "moreToDo") do
-                labeled' "priorWarning" do
+              storyWithChooseOneM (setTitle "title" >> p "moreToDo") do
+                labeled "priorWarning" do
                   flavor $ setTitle "title" >> p "priorWarning"
                   swapCampaignCard v HBAssets.amaltheaWeaverOracleOfPurity
-                labeled' "sawItComing" do
+                labeled "sawItComing" do
                   flavor $ setTitle "title" >> p "sawItComing"
                   swapCampaignCard v HBAssets.amaltheaWeaverOracleOfResolve
         Just v
           | v == HBAssets.amaltheaWeaverAspirantOfWisdom ->
-              storyWithChooseOneM' (setTitle "title" >> p "moreToSee") do
-                labeled' "writtenInInk" do
+              storyWithChooseOneM (setTitle "title" >> p "moreToSee") do
+                labeled "writtenInInk" do
                   flavor $ setTitle "title" >> p "writtenInInk"
                   swapCampaignCard v HBAssets.amaltheaWeaverOracleOfEnlightenment
-                labeled' "writtenInSmoke" do
+                labeled "writtenInSmoke" do
                   flavor $ setTitle "title" >> p "writtenInSmoke"
                   swapCampaignCard v HBAssets.amaltheaWeaverOracleOfMystery
         _ -> pure ()
@@ -196,20 +275,20 @@ instance RunMessage CircusExMortis where
       case snd <$> mDeCultus of
         Just v
           | v == HBAssets.deCultusBestiaeInterpretationOfConviction ->
-              storyWithChooseOneM' (setTitle "title" >> p "theInfinite") do
-                labeled' "powersAbove" do
+              storyWithChooseOneM (setTitle "title" >> p "theInfinite") do
+                labeled "powersAbove" do
                   flavor $ setTitle "title" >> p "powersAbove"
                   swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheBeyond
-                labeled' "powersBelow" do
+                labeled "powersBelow" do
                   flavor $ setTitle "title" >> p "powersBelow"
                   swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheEternal
         Just v
           | v == HBAssets.deCultusBestiaeInterpretationOfObsession ->
-              storyWithChooseOneM' (setTitle "title" >> p "theEndless") do
-                labeled' "againstTheFlood" do
+              storyWithChooseOneM (setTitle "title" >> p "theEndless") do
+                labeled "againstTheFlood" do
                   flavor $ setTitle "title" >> p "againstTheFlood"
                   swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheHorde
-                labeled' "againstTheStorm" do
+                labeled "againstTheStorm" do
                   flavor $ setTitle "title" >> p "againstTheStorm"
                   swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheBehemoth
         _ -> pure ()
@@ -251,19 +330,6 @@ instance RunMessage CircusExMortis where
           record TheNewMoonCircusWasNeverSeenAgain
       push GameOver
       pure c
-    -- Curse of the Rougarou between Harm's Way and All Points West costs each
-    -- investigator 1 fewer experience (guide p13). Its base side-story cost is
-    -- 1, so it is free: mirror the default runner minus the XP spend.
-    CampaignStep (StandaloneScenarioStep sid _) | sid == curseOfTheRougarouId -> do
-      afterHarmsWay <- isAfterHarmsWay
-      if afterHarmsWay
-        then startRougarouWithoutXp sid Nothing
-        else lift $ defaultCampaignRunner msg c
-    CampaignStep (StandaloneScenarioStepWithOptions sid _ opts) | sid == curseOfTheRougarouId -> do
-      afterHarmsWay <- isAfterHarmsWay
-      if afterHarmsWay
-        then startRougarouWithoutXp sid (Just opts)
-        else lift $ defaultCampaignRunner msg c
     -- Moon tokens, end of round (guide p1): for each moon token sealed on
     -- your investigator card, you must choose to keep it sealed or take 1
     -- damage or 1 horror and release it.
@@ -273,28 +339,27 @@ instance RunMessage CircusExMortis where
         for_ tokens \token -> do
           chooseOneM iid do
             questionLabeledCard iid
-            questionLabeled' "endOfRoundQuestion"
-            labeled' "keepSealed" nothing
-            labeled' "takeDamageAndRelease" do
+            questionLabeled "endOfRoundQuestion"
+            labeled "keepSealed" nothing
+            labeled "takeDamageAndRelease" do
               assignDamage iid CampaignSource 1
               releaseMoonToken token
-            labeled' "takeHorrorAndRelease" do
+            labeled "takeHorrorAndRelease" do
               assignHorror iid CampaignSource 1
               releaseMoonToken token
       pure c
+    -- Written in Stone's Destinies (guide p19): "If an investigator is killed
+    -- or driven insane, their destiny is transferred to the investigator
+    -- chosen to replace them." Rewrite any "<old name>: <word>" entry to the
+    -- replacement's name; the decklist already carries their display name, so
+    -- no query against the (already-departed, by the time a deferred lookup
+    -- would run) old investigator is needed beyond this synchronous point.
+    ReplaceInvestigator oldIid decklist -> do
+      oldName <- toTitle <$> field InvestigatorName oldIid
+      let newName = investigator_name decklist
+      entries <- getSomeRecordSetJSON @Text Destinies
+      for_ entries \entry ->
+        for_ (T.stripPrefix (oldName <> ": ") entry) \word ->
+          recordSetReplace Destinies (recorded $ String entry) (recorded $ String $ newName <> ": " <> word)
+      lift $ defaultCampaignRunner msg c
     _ -> lift $ defaultCampaignRunner msg c
-   where
-    isAfterHarmsWay = do
-      completed <- getCompletedSteps
-      -- completed steps are most-recent-first; the head scenario must be
-      -- Harm's Way for the discount to apply
-      pure $ listToMaybe (filter (isJust . (.scenario)) completed) == Just HarmsWay
-    startRougarouWithoutXp sid opts = do
-      pushAll
-        [ ResetInvestigators
-        , ResetGame
-        , ForTarget GameTarget ResetGame
-        , ForInvestigators [] ResetGame
-        , StartScenario sid opts
-        ]
-      pure c

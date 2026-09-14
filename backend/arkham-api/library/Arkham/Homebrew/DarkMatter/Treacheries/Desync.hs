@@ -20,12 +20,12 @@ instance RunMessage Desync where
     Revelation iid (isSource attrs -> True) -> do
       deckSize <- fieldMap InvestigatorDeck length iid
       chooseOneM iid $ campaignI18n do
-        labeled' "desync.traumaAndExile" do
+        labeled "desync.traumaAndExile" do
           sufferMentalTrauma iid 1
           addMemories iid 1
           exile attrs
           removeCardFromDeckForCampaign iid (toCard attrs)
-        labeled' "desync.returnToDeck"
+        labeled "desync.returnToDeck"
           $ if deckSize >= 5
             then shuffleIntoDeck iid attrs
             else toDiscard attrs attrs

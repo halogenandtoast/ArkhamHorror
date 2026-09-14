@@ -4,12 +4,11 @@ import Arkham.Ability
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card (toCard)
 import Arkham.Deck qualified as Deck
-import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Window (getDefeatedAsset)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
-import Arkham.Homebrew.DarkMatter.Helpers (addImpendingDoom, scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (addImpendingDoom)
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Homebrew.DarkMatter.Traits (pattern Brain)
 import Arkham.Matcher hiding (AssetDefeated)
@@ -46,8 +45,6 @@ instance RunMessage SignsFromAldebaran where
     The set is shuffled in before the discard-until, so a Byakhee from it can be
     the one that is found. -}
     AdvanceAgenda (isSide B attrs -> True) -> do
-      scenarioI18n "strangeMoons" $ scope "agenda2b" do
-        flavor $ setTitle "title" >> p "body"
       shuffleSetAsideEncounterSetIntoEncounterDeck Set.InterstellarPredators
       shuffleEncounterDiscardBackIn
       lead <- getLead

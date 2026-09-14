@@ -29,7 +29,7 @@ instance RunMessage CallOfMadness where
       chooseOneM iid $ cardI18n $ scope "callOfMadness" do
         countVar 1 $ labeledI "sufferMentalTrauma" $ sufferMentalTrauma iid 1
         when (length cards == 3) do
-          labeled' "shuffleTekelili" $ addTekelili iid cards
+          labeled "shuffleTekelili" $ addTekelili iid cards
       investigatorDefeated attrs iid
       pure a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

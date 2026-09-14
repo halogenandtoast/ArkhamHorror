@@ -6,7 +6,6 @@ import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (switchedWindowFor)
-import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types (Field (LocationShroud))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
@@ -26,7 +25,7 @@ instance HasModifiersFor ShadowOfThoughts where
     shroud <- runDefaultMaybeT 0 do
       lid <- MaybeT $ getLocationOf a
       MaybeT $ field LocationShroud lid
-    modifySelf a [AddKeyword Keyword.Retaliate, EnemyFight shroud]
+    modifySelf a [EnemyFight shroud]
 
 instance HasAbilities ShadowOfThoughts where
   getAbilities (ShadowOfThoughts a) =

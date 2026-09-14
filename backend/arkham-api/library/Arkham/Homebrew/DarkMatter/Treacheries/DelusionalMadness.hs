@@ -24,7 +24,6 @@ instance RunMessage DelusionalMadness where
       others <- select $ NotInvestigator (InvestigatorWithId iid) <> UneliminatedInvestigator
       unless (null hidden || null others) do
         chooseTargetM iid hidden \tid ->
-          chooseTargetM iid others \other ->
-            push $ PlaceTreachery tid (HiddenInHand other)
+          chooseTargetM iid others $ push . PlaceTreachery tid . HiddenInHand
       pure t
     _ -> DelusionalMadness <$> liftRunMessage msg attrs

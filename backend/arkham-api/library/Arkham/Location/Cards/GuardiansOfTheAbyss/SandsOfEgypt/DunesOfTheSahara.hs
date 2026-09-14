@@ -22,7 +22,7 @@ instance RunMessage DunesOfTheSahara where
   runMessage msg l@(DunesOfTheSahara attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withI18n $ chooseOneM iid do
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
-        countVar 1 $ labeled' "loseActions" $ loseActions iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+        countVar 1 $ labeled "loseActions" $ loseActions iid (attrs.ability 1) 1
       pure l
     _ -> DunesOfTheSahara <$> liftRunMessage msg attrs

@@ -23,12 +23,15 @@ import Arkham.Epic.Types (
  )
 import Arkham.Game
 import Arkham.Game.State
+import Arkham.Game.Utils (gameInvestigators)
 import Arkham.Id
+import Arkham.Message (Message (JoinCampaign))
 import Arkham.Queue
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Data.Time.Clock
 import Database.Persist ((==.))
+import Entity.Answer (atCampaignContinuation, maxInvestigators)
 import Entity.Arkham.Step
 
 getApiV1ArkhamPendingGameR :: ArkhamGameId -> Handler (PublicGame ArkhamGameId)
@@ -59,6 +62,51 @@ putApiV1ArkhamPendingGameR gameId = do
         $ permissionDenied "You already occupy a seat in another group in this event"
   (game@ArkhamGame {..}, mShared) <- runDB $ atomicallyWithGame gameId \original@ArkhamGame {..} -> do
     case gameGameState arkhamGameCurrentData of
+      -- Between scenarios a campaign is open to new players (Rules Reference,
+      -- "Joining or Leaving a Campaign"). The seat is added to the live game and
+      -- picks a deck from the investigators nobody has used yet.
+      IsActive
+        | atCampaignContinuation arkhamGameCurrentData
+        , length (gameInvestigators arkhamGameCurrentData) < maxInvestigators -> do
+            alreadyExists <- exists [ArkhamPlayerArkhamGameId ==. gameId, ArkhamPlayerUserId ==. userId]
+            if alreadyExists
+              then pure (original, Nothing)
+              else do
+                mLastStep <- getBy (UniqueStep gameId arkhamGameStep)
+                let currentQueue = maybe [] (choiceMessages . arkhamStepChoice . entityVal) mLastStep
+
+                gameRef <- liftIO $ newIORef arkhamGameCurrentData
+                queueRef <- liftIO $ newQueue currentQueue
+                genRef <- liftIO $ newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
+
+                pid <- insert $ ArkhamPlayer userId gameId "00000"
+
+                runGameApp (GameApp gameRef queueRef genRef (pure . const ()) Nothing) do
+                  pushEnd $ JoinCampaign (PlayerId $ coerce pid)
+                  runMessages (gameIdToText gameId) Nothing
+
+                updatedGame <- liftIO $ readIORef gameRef
+                updatedQueue <- liftIO $ readIORef (queueToRef queueRef)
+
+                let
+                  game' =
+                    ArkhamGame
+                      arkhamGameName
+                      updatedGame
+                      (arkhamGameStep + 1)
+                      arkhamGameMultiplayerVariant
+                      arkhamGameCreatedAt
+                      now
+
+                replace gameId game'
+                insert_
+                  $ ArkhamStep
+                    gameId
+                    (Choice mempty updatedQueue)
+                    (arkhamGameStep + 1)
+                    (ActionDiff $ view actionDiffL updatedGame)
+
+                pure (game', Nothing)
       IsPending _ -> do
         alreadyExists <- exists [ArkhamPlayerArkhamGameId ==. gameId, ArkhamPlayerUserId ==. userId]
 

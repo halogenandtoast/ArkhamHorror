@@ -17,7 +17,7 @@ newtype AbandonedLander = AbandonedLander LocationAttrs
 flip it and 'caveOrCarcosaLocation' never offers it.
 -}
 abandonedLander :: LocationCard AbandonedLander
-abandonedLander = location AbandonedLander Cards.abandonedLander 4 (PerPlayer 1)
+abandonedLander = symbolLabel $ location AbandonedLander Cards.abandonedLander 4 (PerPlayer 1)
 
 {- | "While investigating this location, reduce the shroud by 1 for each tally
 mark next to your 'Memories'."

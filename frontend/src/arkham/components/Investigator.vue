@@ -11,7 +11,7 @@ import { useDebug } from '@/arkham/debug'
 import { ForwardIcon, PaperClipIcon } from '@heroicons/vue/20/solid'
 import type { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
-import { cardArt, cardImage, portraitImage, sourceCardCode } from '@/arkham/cardImages'
+import { cardArt, cardImage, customInvestigatorUsesCardPortrait, portraitImage, sourceCardCode } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Investigator'
 import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Message'
 import { MessageType } from '@/arkham/types/Message'
@@ -198,6 +198,18 @@ const investigatorPortraitImage = computed(() => {
 
   return portraitImage(props.investigator.cardCode, suffix)
 })
+
+const investigatorPortraitUsesCardArt = computed(() => {
+  if (props.investigator.form.tag !== 'RegularForm') return false
+  const suffix = props.investigator.endedTurn ? 'b' : ''
+  return customInvestigatorUsesCardPortrait(props.investigator.cardCode, suffix)
+})
+
+const investigatorCardPortraitStyle = computed(() => ({
+  // A CSS crop cannot flip like an image element. Keep the recognisable face;
+  // the ended-turn class supplies the visual back-side cue instead.
+  backgroundImage: `url(${JSON.stringify(portraitImage(props.investigator.cardCode))})`,
+}))
 
 const miniCardDevoured = computed(() => {
   const devouredMiniCards = props.game.scenario?.meta?.devouredMiniCards
@@ -467,6 +479,19 @@ const spadeInjury = computed(() => {
       {{ replacementMiniCardInitials }}
       <img class="portrait--blob-overlay" :src="imgsrc('extra/the-blob-that-ate-everything/blob-overlay.png')" alt="" aria-hidden="true" />
     </div>
+    <div
+      v-else-if="investigatorPortraitUsesCardArt"
+      class="portrait portrait--card-art"
+      :class="[portraitClasses, { 'portrait--ended-turn': investigator.endedTurn }]"
+      :style="investigatorCardPortraitStyle"
+      :draggable="debug.active"
+      @click="clicked"
+      @dragstart="startDrag($event)"
+      @dragstop="endDrag"
+      @drop="onDrop($event)"
+      @dragover.prevent="dragover($event)"
+      @dragenter.prevent
+    ></div>
     <img
       v-else
       :src="investigatorPortraitImage"
@@ -817,6 +842,21 @@ i.action {
 .portrait {
   border-radius: 3px;
   width: calc(var(--card-width) * 0.6);
+}
+
+/* A portrait-less custom investigator uses its landscape card without
+ * distorting it: keep the mini's portrait proportions and crop from the left. */
+.portrait--card-art {
+  aspect-ratio: 121 / 186;
+  background-position: 15% bottom;
+  background-repeat: no-repeat;
+  /* Oversize and bottom-align the card so the mini cuts off the title area at
+   * the top rather than squeezing the whole landscape face into view. */
+  background-size: auto 125%;
+}
+
+.portrait--ended-turn {
+  filter: grayscale(1);
 }
 
 .portrait--replacement-marker {

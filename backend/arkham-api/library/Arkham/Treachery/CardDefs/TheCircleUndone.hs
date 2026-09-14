@@ -4,16 +4,18 @@ import Arkham.Treachery.CardDefs.Import
 
 rationalThought :: CardDef
 rationalThought =
-  (weakness "05008" "Rational Thought")
-    { cdCardTraits = singleton Flaw
-    }
+  signature "05001"
+    $ (weakness "05008" "Rational Thought")
+      { cdCardTraits = singleton Flaw
+      }
 
 terribleSecret :: CardDef
 terribleSecret =
-  (weakness "05015" "Terrible Secret")
-    { cdCardTraits = singleton Madness
-    , cdRevelation = CannotBeCanceledRevelation
-    }
+  signature "05004"
+    $ (weakness "05015" "Terrible Secret")
+      { cdCardTraits = singleton Madness
+      , cdRevelation = CannotBeCanceledRevelation
+      }
 
 the13thVision :: CardDef
 the13thVision =

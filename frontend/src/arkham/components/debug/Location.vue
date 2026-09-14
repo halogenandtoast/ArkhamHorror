@@ -45,7 +45,7 @@ const debug = useDebug()
 const id = computed(() => props.location.id)
 const cardCode = computed(() => props.location.cardCode)
 const image = computed(() => {
-  return cardImg(cardCode.value.replace('c', ''))
+  return cardImg(cardCode.value.replace(/^c/, ''))
 })
 
 const clues = computed(() => props.location.tokens[TokenType.Clue])

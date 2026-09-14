@@ -55,7 +55,7 @@ instance RunMessage NoTurningBack where
         withI18n $ chooseTest #combat 3 $ beginSkillTest sid iid (attrs.ability 1) attrs #combat (Fixed 3)
         when hasPickaxe
           $ campaignI18n
-          $ labeled' "checkYourSupplies"
+          $ labeled "checkYourSupplies"
           $ toDiscardBy iid (attrs.ability 1) attrs
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

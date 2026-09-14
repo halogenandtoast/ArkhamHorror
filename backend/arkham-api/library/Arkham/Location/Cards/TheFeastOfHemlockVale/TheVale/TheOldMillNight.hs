@@ -38,9 +38,9 @@ instance RunMessage TheOldMillNight where
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       clues <- getPlayerCountValue (PerPlayer 2)
       chooseOneM iid $ scenarioI18n do
-        labeled' "spendCluesToAutomaticallySucceed" do
+        labeled "spendCluesToAutomaticallySucceed" do
           withCost iid (GroupClueCost (PerPlayer 2) Anywhere) $ doStep 1 msg
-        unscoped $ countVar clues $ labeled' "doNotSpendClues" nothing
+        unscoped $ countVar clues $ labeled "doNotSpendClues" nothing
       pure l
     DoStep 1 (FailedThisSkillTest iid (isAbilitySource attrs 1 -> True)) -> oldMillReward l iid
     _ -> TheOldMillNight <$> liftRunMessage msg attrs

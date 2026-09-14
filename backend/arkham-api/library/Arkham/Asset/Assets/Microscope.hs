@@ -24,8 +24,8 @@ instance HasAbilities Microscope where
     [ restrictedAbility x 1 ControlsThis
         $ triggered
           ( oneOf
-              [ IfEnemyDefeated #after Anyone ByAny $ EnemyAt YourLocation
-              , EnemyEvaded #after Anyone $ EnemyAt YourLocation
+              [ IfEnemyDefeated #after Anyone ByAny $ EnemyWasAt YourLocation
+              , EnemyEvaded #after Anyone $ EnemyWasAt YourLocation
               ]
           )
           (exhaust x)

@@ -36,8 +36,8 @@ instance RunMessage StirThePot where
       locations <- getAccessibleLocations iid attrs
       when (notNull locations) do
         chooseOrRunOneM iid $ withI18n do
-          labeled' "doNotMove" nothing
-          whenMatch iid InvestigatorCanDisengage $ labeled' "disengageAndMove" do
+          labeled "doNotMove" nothing
+          whenMatch iid InvestigatorCanDisengage $ labeled "disengageAndMove" do
             for_ engaged (disengageEnemy iid)
             chooseTargetM iid locations (moveTo attrs iid)
             for_ engaged enemyCheckEngagement

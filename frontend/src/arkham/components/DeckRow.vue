@@ -2,8 +2,9 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { displayTabooId } from '@/arkham/taboo';
-import {imgsrc, localizeArkhamDBBaseUrl, investigatorClass} from '@/arkham/helpers';
+import {cardImg, localizeArkhamDBBaseUrl, investigatorClass} from '@/arkham/helpers';
 import * as Arkham from '@/arkham/types/Deck'
+import { overlayIsEmpty } from '@/arkham/deckOverlay'
 
 interface Props {
   deck: Arkham.Deck
@@ -25,17 +26,8 @@ const deckUrlToPage = (url: string): string => {
     .replace("/api/public/deck", "/deck/view")
 }
 
-const deckInvestigator = computed(() => {
-  if (props.deck.list.meta) {
-    try {
-      const result = JSON.parse(props.deck.list.meta)
-      if (result && result.alternate_front) {
-        return result.alternate_front
-      }
-    } catch (e) { console.log("No parse") }
-  }
-  return props.deck.list.investigator_code.replace('c', '')
-})
+// An overlay can replace the investigator, so the row follows the play list.
+const deckInvestigator = computed(() => Arkham.deckInvestigator(props.deck))
 
 const deckClass = computed(() => {
   if (deckInvestigator.value) {
@@ -44,18 +36,44 @@ const deckClass = computed(() => {
   return {};
 })
 
+// A laid-over deck plays differently from the one it was built as, so the row says so.
+const hasOverlay = computed(() => !overlayIsEmpty(props.deck.overlay ?? null))
+
 const tabooList = computed(() => {
-  return props.deck.list.taboo_id ? displayTabooId(props.deck.list.taboo_id) : null
+  const list = Arkham.deckPlayList(props.deck)
+  return list.taboo_id ? displayTabooId(list.taboo_id) : null
+})
+
+// Makes the "recently used" sort legible: the row says what it is being ordered by.
+const lastPlayed = computed(() => {
+  if (!props.deck.lastUsedAt) return null
+  const d = new Date(props.deck.lastUsedAt)
+  return isNaN(d.getTime()) ? null : d.toLocaleDateString()
 })
 </script>
 
 <template>
   <div class="decklist box" :class="deckClass" @click="navigateToDeck">
-    <img class="portrait--decklist" :src="imgsrc(`cards/${deckInvestigator}.avif`)" />
+    <img class="portrait--decklist" :src="cardImg(deckInvestigator)" />
     <div class="deck-details">
       <div class="deck-main">
-        <span class="deck-name">{{ deck.name }}</span>
-        <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
+        <div class="deck-name-row">
+          <span
+            v-if="hasOverlay"
+            class="overlay-badge"
+            title="Overlay — this deck is laid over with custom cards"
+            aria-label="Overlay"
+          >
+            <font-awesome-icon icon="layer-group" />
+          </span>
+          <span class="deck-name">{{ deck.name }}</span>
+        </div>
+        <div class="deck-badges">
+          <span v-if="tabooList" class="taboo-badge"><font-awesome-icon icon="book" /> Taboo: {{ tabooList }}</span>
+          <span class="last-played">
+            {{ lastPlayed ? $t('deck.lastPlayed', { date: lastPlayed }) : $t('deck.neverPlayed') }}
+          </span>
+        </div>
       </div>
       <div class="deck-actions" @click.stop>
         <a v-if="deck.url" class="action-btn" :href="deckUrlToPage(deck.url)" target="_blank" rel="noreferrer noopener" :title="$t('deck.viewOnArkhamDb')">
@@ -142,6 +160,21 @@ const tabooList = computed(() => {
   letter-spacing: 0.02em;
 }
 
+.deck-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.last-played {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #8a93a8;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
 .deck-actions {
   display: flex;
   align-items: center;
@@ -156,5 +189,28 @@ const tabooList = computed(() => {
 
   &:hover { color: #fff; }
   &.action-btn--delete { &:hover { color: #ff6666; } }
+}
+
+/* Sits before the name so a laid-over deck reads as such at a glance. The row
+ * is a stretching column, so the pill has to be sized to its own text. */
+.deck-name-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.overlay-badge {
+  align-items: center;
+  background: color-mix(in srgb, var(--spooky-green) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--spooky-green) 55%, transparent);
+  border-radius: 999px;
+  color: var(--spooky-green);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.75em;
+  padding: 0.25em 0.45em;
+  white-space: nowrap;
+  width: fit-content;
 }
 </style>

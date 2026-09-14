@@ -34,7 +34,7 @@ instance RunMessage TheGrifterUnpracticed where
     UseCardAbility iid (isSource attrs -> True) 1 (getCheckGameIcons -> check) _ -> do
       alarmLevel <- getAlarmLevel iid
       chooseOrRunOneM iid $ scenarioI18n do
-        labeled' "theGrifter.change.unpracticed" do
+        labeled "theGrifter.change.unpracticed" do
           raiseAlarmLevelOf (attrs.ability 1) iid
           focusCards check.cards do
             chooseTargetM iid check.cards \card -> do
@@ -50,7 +50,7 @@ instance RunMessage TheGrifterUnpracticed where
                       $ ScenarioModifierValue "setPlayingCard"
                       $ toJSON npc
                 chooseOneM iid do
-                  labeled' "theGrifter.rank" do
+                  labeled "theGrifter.rank" do
                     toFour <- capture $ setPlayingCard $ PlayingCard Four pc.suit
                     toFive <- capture $ setPlayingCard $ PlayingCard Five pc.suit
                     toSix <- capture $ setPlayingCard $ PlayingCard Six pc.suit
@@ -76,7 +76,7 @@ instance RunMessage TheGrifterUnpracticed where
                       , (ikey' "label.rank.King", Run toKing)
                       , (ikey' "label.rank.Ace", Run toAce)
                       ]
-                  labeled' "theGrifter.suit" do
+                  labeled "theGrifter.suit" do
                     toHearts <- capture $ setPlayingCard $ PlayingCard pc.rank Hearts
                     toDiamonds <- capture $ setPlayingCard $ PlayingCard pc.rank Diamonds
                     toClubs <- capture $ setPlayingCard $ PlayingCard pc.rank Clubs
@@ -88,7 +88,7 @@ instance RunMessage TheGrifterUnpracticed where
                       , (ikey' "label.suit.Clubs", Run toClubs)
                       , (ikey' "label.suit.Spades", Run toSpades)
                       ]
-                  labeled' "theGrifter.color" do
+                  labeled "theGrifter.color" do
                     setPlayingCard
                       $ PlayingCard pc.rank
                       $ case pc.suit of
@@ -97,7 +97,7 @@ instance RunMessage TheGrifterUnpracticed where
                         Clubs -> Hearts
                         Spades -> Hearts
         when (alarmLevel > 0) do
-          labeled' "theGrifter.alarmLevel" $ reduceAlarmLevel (attrs.ability 1) iid
+          labeled "theGrifter.alarmLevel" $ reduceAlarmLevel (attrs.ability 1) iid
       pure a
     InvestigatorEliminated _ -> pure a
     Flip _ _ (isTarget attrs -> True) -> do

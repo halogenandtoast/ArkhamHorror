@@ -70,6 +70,6 @@ instance RunMessage DaisyWalkerParallel where
     ElderSignEffect iid | attrs `is` iid -> do
       chooseOneM iid do
         targeting iid $ search iid attrs attrs [fromDiscard] (basic $ #asset <> #tome) $ DrawFound iid 1
-        cardI18n (scope "daisyWalkerParallel" $ labeled' "skip") nothing
+        cardI18n (scope "daisyWalkerParallel" $ labeled "skip") nothing
       pure i
     _ -> DaisyWalkerParallel <$> liftRunMessage msg attrs

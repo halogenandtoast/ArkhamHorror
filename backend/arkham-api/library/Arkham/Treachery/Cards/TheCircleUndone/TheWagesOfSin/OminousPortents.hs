@@ -22,11 +22,11 @@ instance RunMessage OminousPortents where
       mTopSpectralCard <- headMay . unDeck <$> getSpectralDeck
       sid <- getRandom
       chooseOrRunOneM iid $ scenarioI18n do
-        labeled' "ominousPortents.spectral" do
+        labeled "ominousPortents.spectral" do
           for_ mTopSpectralCard \card -> do
             cardResolutionModifiers card attrs card [AddKeyword Peril, EffectsCannotBeCanceled]
             drawCard iid (card {ecAddedPeril = True})
-        labeled' "ominousPortents.test" do
+        labeled "ominousPortents.test" do
           revelationSkillTest sid iid attrs #willpower (Fixed 3)
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

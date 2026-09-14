@@ -6,6 +6,7 @@ import Arkham.Card.CardType
 import Arkham.ClassSymbol
 import Arkham.EncounterSet hiding (Blight, Byakhee, Dreamlands)
 import Arkham.GameValue
+import Arkham.Id (InvestigatorId)
 import Arkham.Name
 import Arkham.Prelude
 
@@ -23,6 +24,20 @@ baseEnemy cardCode name mEncounterSet isWeakness =
     , cdEncounterSetQuantity = snd <$> mEncounterSet
     , cdLevel = Nothing
     }
+
+{- | A card only legal in one investigator's deck.
+
+Also what 'isSignature' answers, so it is what tells the deck overlay whose
+signatures to take out when it swaps an investigator, and what
+@SignatureTreachery@ / @SignatureEnemy@ match on. A signature weakness needs it
+as much as a signature asset does.
+-}
+signature :: InvestigatorId -> CardDef -> CardDef
+signature iid cd = cd {cdDeckRestrictions = [Signature iid], cdLevel = Nothing}
+
+-- | For the few cards two different investigators both bring.
+signatureOf :: [InvestigatorId] -> CardDef -> CardDef
+signatureOf iids cd = cd {cdDeckRestrictions = map Signature iids, cdLevel = Nothing}
 
 unique :: CardDef -> CardDef
 unique def = def {cdUnique = True}

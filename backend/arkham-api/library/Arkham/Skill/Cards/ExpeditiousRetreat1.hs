@@ -36,7 +36,7 @@ instance RunMessage ExpeditiousRetreat1 where
         unless (null enemies && null concealed) do
           lift $ skillTestCardOption attrs do
             chooseOneM iid $ withI18n do
-              labeled' "skip" nothing
+              labeled "skip" nothing
               targets enemies $ automaticallyEvadeEnemy iid
               targets concealed $ exposeConcealed iid attrs
       pure s

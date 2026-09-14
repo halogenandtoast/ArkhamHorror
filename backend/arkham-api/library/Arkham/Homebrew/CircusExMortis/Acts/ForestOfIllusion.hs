@@ -1,12 +1,11 @@
 module Arkham.Homebrew.CircusExMortis.Acts.ForestOfIllusion (forestOfIllusion) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Helpers.Investigator (getJustLocation)
-import Arkham.Helpers.Location (connectBothWays)
+import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Modifier
 import Arkham.Token
 import Arkham.Trait (Trait (Woods))
@@ -31,9 +30,12 @@ instance HasAbilities ForestOfIllusion where
     [ restricted a 1 (youExist $ at_ validWoodsLocation)
         $ FastAbility
         $ GroupClueCost (PerPlayer 1) Anywhere
-    , restricted a 2 (EachUndefeatedInvestigator $ at_ $ locationIs Locations.circusEncampment)
+    , restricted
+        a
+        2
+        (EachUndefeatedInvestigator (at_ $ locationIs Locations.circusEncampment) <> DuringTurn Anyone)
         $ Objective
-        $ forced (RoundEnds #when)
+        $ FastAbility Free
     ]
 
 instance RunMessage ForestOfIllusion where
@@ -44,11 +46,6 @@ instance RunMessage ForestOfIllusion where
       -- Victory) for the remainder of the game; a horror marks the reminder.
       gameModifier (attrs.ability 1) loc Blank
       placeTokens (attrs.ability 1) loc Horror 1
-      -- Gradually unworking the illusions opens a route toward the camp.
-      camp <- selectJust $ locationIs Locations.circusEncampment
-      connectBothWays camp loc
-      -- TODO(homebrew): Misty Marsh's "additional cost to activate this ability
-      -- here: seal a moon token" is not modeled as a pre-cost.
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

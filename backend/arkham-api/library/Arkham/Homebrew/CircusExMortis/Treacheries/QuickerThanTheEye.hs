@@ -25,6 +25,6 @@ instance RunMessage QuickerThanTheEye where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid $ withI18n do
         chooseTakeHorror iid attrs 2
-        countVar 2 $ labeled' "discardCards" $ chooseAndDiscardCards iid attrs 2
+        countVar 2 $ labeled "discardCards" $ chooseAndDiscardCards iid attrs 2
       pure t
     _ -> QuickerThanTheEye <$> liftRunMessage msg attrs

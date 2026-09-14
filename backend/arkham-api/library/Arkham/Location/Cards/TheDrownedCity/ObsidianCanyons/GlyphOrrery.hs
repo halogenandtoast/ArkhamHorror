@@ -16,13 +16,13 @@ newtype GlyphOrrery = GlyphOrrery LocationAttrs
 
 glyphOrrery :: LocationCard GlyphOrrery
 glyphOrrery =
-  locationWith GlyphOrrery Cards.glyphOrrery 4 (Static 1) (canBeFlippedL .~ True)
+  locationWith GlyphOrrery Cards.glyphOrrery 4 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities GlyphOrrery where
   getAbilities (GlyphOrrery a) =
     extendRevealed
       a
-      [ onlyOnce $ restricted a 1 Here $ actionAbilityWithCost $ GroupClueCost (PerPlayer 1) (be a)
+      [ onlyOnce $ restricted a 1 Here $ actionAbilityWithCost $ GroupClueCost (PerPlayer 1) Anywhere
       , summitEntry a 9
       ]
 

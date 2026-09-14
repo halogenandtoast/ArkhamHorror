@@ -50,8 +50,8 @@ instance RunMessage LieInWait where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       skillTestCardOptionEdit attrs preOriginalOption do
         chooseOneM iid $ cardI18n $ scope "lieInWait" do
-          labeled' "skip" nothing
-          labeled' "discard" do
+          labeled "skip" nothing
+          labeled "discard" do
             toDiscardBy iid (attrs.ability 1) attrs
             withSkillTest \sid ->
               skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)

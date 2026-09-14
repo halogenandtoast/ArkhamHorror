@@ -1,28 +1,20 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.GrotesqueLion (grotesqueLion) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Keyword qualified as Keyword
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
+import Arkham.Modifier
 
 newtype GrotesqueLion = GrotesqueLion EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 grotesqueLion :: EnemyCard GrotesqueLion
 grotesqueLion = enemy GrotesqueLion Cards.grotesqueLion
 
-instance HasModifiersFor GrotesqueLion where
-  getModifiersFor (GrotesqueLion a) = modifySelf a [AddKeyword Keyword.Hunter]
-
 instance HasAbilities GrotesqueLion where
-  getAbilities (GrotesqueLion a) =
-    extend1 a
-      $ mkAbility a 1
-      $ SilentForcedAbility
-      $ EnemyEntersPlay #after (be a)
+  getAbilities (GrotesqueLion a) = extend1 a $ mkAbility a 1 $ silent $ EnemyEntersPlay #after (be a)
 
 instance RunMessage GrotesqueLion where
   runMessage msg e@(GrotesqueLion attrs) = runQueueT $ case msg of

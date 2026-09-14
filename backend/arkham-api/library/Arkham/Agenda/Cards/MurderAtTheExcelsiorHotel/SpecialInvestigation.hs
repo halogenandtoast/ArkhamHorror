@@ -36,19 +36,17 @@ instance HasAbilities SpecialInvestigation where
                   <> LocationWithInvestigator You
               )
               (atLeast 1)
-          , EnemyDealtDamage
+          , -- the ready Police enemy qualifies the investigator, not the Humanoid that was
+            -- damaged -- so killing the only Officer stops the trigger, while a second
+            -- Officer still standing keeps it, #5682
+            EnemyDealtDamage
               #after
               AnyDamageEffect
-              ( EnemyWithTrait Humanoid
-                  <> EnemyAt
-                    ( LocationWithEnemy
-                        ( EnemyWithTrait Police
-                            <> ReadyEnemy
-                        )
-                        <> LocationWithInvestigator You
-                    )
+              (EnemyWithTrait Humanoid)
+              ( SourceUsedBy
+                  $ You
+                  <> at_ (LocationWithEnemy (EnemyWithTrait Police <> ReadyEnemy))
               )
-              (SourceUsedBy You)
           ]
     ]
 

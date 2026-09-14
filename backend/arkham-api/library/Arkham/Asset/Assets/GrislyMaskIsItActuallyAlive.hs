@@ -20,7 +20,8 @@ instance HasModifiersFor GrislyMaskIsItActuallyAlive where
 
 instance HasAbilities GrislyMaskIsItActuallyAlive where
   getAbilities (GrislyMaskIsItActuallyAlive x) =
-    [ controlled_ x 1 $ FastAbility (exhaust x)
+    [ controlled x 1 (whenOption "onlyWhenEngaged" $ exists (EnemyIsEngagedWith You))
+        $ FastAbility (exhaust x)
     , -- Only usable once the glyphs naming this ability have been translated.
       controlled
         x

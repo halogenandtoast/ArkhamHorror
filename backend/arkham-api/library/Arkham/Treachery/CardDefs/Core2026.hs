@@ -5,15 +5,17 @@ import Arkham.Treachery.CardDefs.Import
 
 inHarmsWay :: CardDef
 inHarmsWay =
-  (weakness "12003" "In Harm's Way")
-    { cdCardTraits = setFromList [Flaw]
-    }
+  signature "12001"
+    $ (weakness "12003" "In Harm's Way")
+      { cdCardTraits = setFromList [Flaw]
+      }
 
 breakingPoint :: CardDef
 breakingPoint =
-  (weakness "12015" "Breaking Point")
-    { cdCardTraits = setFromList [Hardship]
-    }
+  signature "12013"
+    $ (weakness "12015" "Breaking Point")
+      { cdCardTraits = setFromList [Hardship]
+      }
 
 pursued :: CardDef
 pursued =

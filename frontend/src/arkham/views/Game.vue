@@ -19,7 +19,6 @@ import { MenuItem } from '@headlessui/vue'
 import {
   AdjustmentsHorizontalIcon,
   ArrowPathIcon,
-  ArrowsRightLeftIcon,
   ArrowUturnLeftIcon,
   BackwardIcon,
   BeakerIcon,
@@ -71,7 +70,8 @@ import {
   choicesTooltipByPlayerKey,
 } from '@/arkham/composables/useGameChoices'
 import { buildGameIndexes, gameIndexesKey } from '@/arkham/composables/useGameIndexes'
-import { Card, cardDecoder, toCardContents } from '@/arkham/types/Card'
+import { Card, asCardCode, cardDecoder, toCardContents } from '@/arkham/types/Card'
+import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import * as Message from '@/arkham/types/Message'
 import { type Question } from '@/arkham/types/Question'
 import type { Source } from '@/arkham/types/Source'
@@ -250,6 +250,7 @@ const focusLightX = ref(-1000)
 const focusLightY = ref(-1000)
 
 store.fetchCards()
+store.fetchCustomCards(props.gameId)
 
 interface PlayabilityInfo {
   cardId: string
@@ -258,6 +259,19 @@ interface PlayabilityInfo {
 }
 
 const game = shallowRef<Arkham.Game | null>(null)
+
+/* A custom card someone else created shows up in the game payload before this
+ * client has its def; refetch the game's custom cards when an unknown one
+ * appears. */
+watch(game, (g) => {
+  if (!g) return
+  const missing = (code: string) => isCustomCardCode(code) && !customCardDef(code)
+  // A custom investigator never appears in `cards`; it is only a seat.
+  const unknown =
+    Object.values(g.cards).some((c) => missing(asCardCode(c)))
+    || Object.values(g.investigators).some((i) => missing(i.cardCode))
+  if (unknown) store.fetchCustomCards(props.gameId)
+})
 
 // "Ready to play": the group has reached the first investigation phase of an
 // active, started scenario. Cleanest signal we have off the existing game state.
@@ -378,6 +392,28 @@ const uiLock = ref<boolean>(false)
 const showSettings = ref(false)
 const showHistory = ref(false)
 const processing = ref(false)
+// The spinner is only worth showing for a wait a player would otherwise wonder
+// about. Most answers round-trip in well under this, so gating it behind a delay
+// keeps a plain "continue" click from flickering an animation on every press.
+const showProcessing = ref(false)
+let processingTimer: ReturnType<typeof setTimeout> | null = null
+watch(processing, (busy) => {
+  if (processingTimer) {
+    clearTimeout(processingTimer)
+    processingTimer = null
+  }
+  if (!busy) {
+    showProcessing.value = false
+    return
+  }
+  processingTimer = setTimeout(() => {
+    showProcessing.value = true
+  }, 400)
+})
+// Set while a story/interlude answer is in flight. Those screens keep their text
+// on display for the round-trip instead of blanking their question, so this is
+// what stops the passage from being answered a second time meanwhile.
+const storyAnswerPending = ref(false)
 const oldQuestion = ref<Record<string, Question> | null>(null)
 const skipAllPending = ref<Set<string>>(new Set())
 const { t } = useI18n()
@@ -566,6 +602,7 @@ const isActualScenarioView = computed(() => {
   const activeQuestionTag = questionTag(question.value)
   return activeQuestionTag !== 'ChooseUpgradeDeck'
     && activeQuestionTag !== 'ChooseDeck'
+    && activeQuestionTag !== 'ChooseJoinDeck'
     && activeQuestionTag !== 'PickScenarioSettings'
     && activeQuestionTag !== 'PickCampaignSettings'
     && activeQuestionTag !== 'ContinueCampaign'
@@ -746,6 +783,7 @@ const gameCardOnlyDecoder = JsonDecoder.object<GameCardOnly>(
 // Socket Handling
 const onError = () => {
   processing.value = false
+  storyAnswerPending.value = false
   if (game.value && oldQuestion.value) {
     setGameQuestion(oldQuestion.value)
   }
@@ -803,6 +841,7 @@ function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
   const previousGame = game.value
   const apply = async () => {
     game.value = nextGame
+    storyAnswerPending.value = false
     await nextTick()
   }
   const transitionDocument = document as Document & {
@@ -998,6 +1037,7 @@ async function resyncGame() {
     applyGameUpdate(refetched, uiLock.value)
     updateGameLog(refetched.log)
     processing.value = false
+    storyAnswerPending.value = false
   } catch (e) {
     console.error('Resync after reconnect failed', e)
   } finally {
@@ -1017,13 +1057,15 @@ const handleResult = (result: ServerResult) => {
   switch (result.tag) {
     case 'GameError':
       if (props.spectate) return
+      storyAnswerPending.value = false
       error.value = result.contents
       if (game.value && oldQuestion.value) {
         setGameQuestion(oldQuestion.value)
       }
       return
     case 'GameMessage':
-      gameLog.value = Object.freeze([...gameLog.value, localize(result.contents)])
+      // Raw, like the game payload's entries: GameMessage.vue localizes at render
+      gameLog.value = Object.freeze([...gameLog.value, result.contents])
       return
     case 'GameShowDiscard':
       emitter.emit('showDiscards', result.contents)
@@ -1371,6 +1413,11 @@ const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === ' ' || event.code === 'Space') {
     event.preventDefault()
 
+    if (gameCard.value || tarotCards.value.length > 0) {
+      continueUI()
+      return
+    }
+
     const skipTriggers = choices.value.findIndex(
       (c) => c.tag === Message.MessageType.SKIP_TRIGGERS_BUTTON,
     )
@@ -1481,7 +1528,22 @@ const toggleSidebar = function () {
 
 // Undo
 const undoLock = ref(false)
-async function undo() {
+
+/*
+ * Every undo goes through here so the lock is taken BEFORE any UI state is
+ * touched and released in `finally`.
+ *
+ * Both halves matter. Guarding after the state wipe meant a press that lost the
+ * race still blanked the question and then returned without sending anything --
+ * the board went empty and stayed empty. And releasing only on the happy path
+ * meant a single request that never settled left `undoLock` true for the life of
+ * the page, after which every press was a silent no-op: no request, no error,
+ * nothing in the console, just a dead Undo button. The undo calls carry their own
+ * timeout (see api.ts) so the promise always settles and this `finally` can run.
+ */
+async function runUndo(call: (gameId: string) => Promise<void>) {
+  if (undoLock.value) return
+  undoLock.value = true
   processing.value = true
   const oldQuestion = game.value?.question
   if (game.value) setGameQuestion({})
@@ -1489,53 +1551,30 @@ async function undo() {
   gameCard.value = null
   tarotCards.value = []
   uiLock.value = false
-  if (undoLock.value) return
-  undoLock.value = true
-  try {
-    await undoChoice(props.gameId, debug.active)
-  } catch (e) {
-    processing.value = false
-    if (game.value && oldQuestion) setGameQuestion(oldQuestion)
-    console.log(e)
-  }
-  undoLock.value = false
-}
-
-async function undoScenario() {
-  confirmingUndoScenario.value = false
-  processing.value = true
-  if (game.value) setGameQuestion({})
-  resultQueue.value = []
-  gameCard.value = null
-  tarotCards.value = []
-  uiLock.value = false
-  undoScenarioChoice(props.gameId)
-}
-
-async function undoBoundary(call: (gameId: string) => Promise<void>) {
-  if (undoLock.value) return
-  processing.value = true
-  const oldQuestion = game.value?.question
-  if (game.value) setGameQuestion({})
-  resultQueue.value = []
-  gameCard.value = null
-  tarotCards.value = []
-  uiLock.value = false
-  undoLock.value = true
   try {
     await call(props.gameId)
   } catch (e) {
     processing.value = false
     if (game.value && oldQuestion) setGameQuestion(oldQuestion)
     console.log(e)
+  } finally {
+    undoLock.value = false
   }
-  undoLock.value = false
 }
 
-const undoActionStart = () => undoBoundary(undoAction)
-const undoTurnStart = () => undoBoundary(undoTurn)
-const undoPhaseStart = () => undoBoundary(undoPhase)
-const undoRoundStart = () => undoBoundary(undoRound)
+async function undo() {
+  await runUndo((gameId) => undoChoice(gameId, debug.active))
+}
+
+async function undoScenario() {
+  confirmingUndoScenario.value = false
+  await runUndo(undoScenarioChoice)
+}
+
+const undoActionStart = () => runUndo(undoAction)
+const undoTurnStart = () => runUndo(undoTurn)
+const undoPhaseStart = () => runUndo(undoPhase)
+const undoRoundStart = () => runUndo(undoRound)
 
 const filingBug = ref(false)
 const submittingBug = ref(false)
@@ -1660,6 +1699,14 @@ function shouldPreserveFocusedCardChoice() {
   return Boolean(game.value.question[playerId.value])
 }
 
+// Read questions (story passages, interludes, resolutions) render as a full-page
+// spread rather than a widget over the board.
+function isStoryQuestion(question: Question | null | undefined): boolean {
+  if (!question) return false
+  const inner = question.tag === 'QuestionLabel' ? question.question : question
+  return inner?.tag === 'Read'
+}
+
 // Callbacks
 async function choose(idx: number) {
   if (processing.value) return
@@ -1667,7 +1714,14 @@ async function choose(idx: number) {
     oldQuestion.value = game.value.question
     const questionVersion = game.value.scenarioSteps
     if (!shouldPreserveFocusedChaosWindow() && !shouldPreserveFocusedCardChoice()) {
-      setGameQuestion({})
+      // A story screen is the whole page. Blanking its question empties the view
+      // for the round-trip and the next passage pops in from nothing, so hold the
+      // text and mark its choices spent instead.
+      if (isStoryQuestion(game.value.question[playerId.value ?? ''])) {
+        storyAnswerPending.value = true
+      } else {
+        setGameQuestion({})
+      }
     }
     sendAnswer(
       JSON.stringify({
@@ -1678,11 +1732,13 @@ async function choose(idx: number) {
   }
 }
 
-async function chooseDeck(deckId: string): Promise<void> {
+/* An overlay chosen at deck selection applies to this game only -- it is sent
+ * with the answer rather than saved to the deck. */
+async function chooseDeck(deckId: string, overlay: any = null): Promise<void> {
   if (game.value && !props.spectate) {
     oldQuestion.value = game.value.question
     setGameQuestion({})
-    sendAnswer(JSON.stringify({ tag: 'DeckAnswer', deckId, playerId: playerId.value }))
+    sendAnswer(JSON.stringify({ tag: 'DeckAnswer', deckId, playerId: playerId.value, overlay }))
   }
 }
 
@@ -1728,13 +1784,6 @@ async function chooseAmounts(amounts: Record<string, number>): Promise<void> {
       }),
     )
   }
-}
-
-function localize(str: string): string {
-  if (str.startsWith('$')) {
-    return t(str.slice(1))
-  }
-  return str
 }
 
 async function update(state: Arkham.Game) {
@@ -1785,6 +1834,7 @@ provide('switchInvestigator', switchInvestigator)
 provide('solo', solo)
 provide('spectate', computed(() => props.spectate))
 provide('processing', processing)
+provide('storyAnswerPending', storyAnswerPending)
 provide('uiLock', uiLock)
 provide('skipAllTriggers', skipAllTriggers)
 provide('skipAllAvailable', skipAllAvailable)
@@ -1864,6 +1914,7 @@ onUnmounted(() => {
   if (focusLightAnimationFrame !== null) cancelAnimationFrame(focusLightAnimationFrame)
   window.removeEventListener('arkham-setting-change', handleSettingChange)
   if (chooseDecksPoll !== null) clearTimeout(chooseDecksPoll)
+  if (processingTimer !== null) clearTimeout(processingTimer)
   delete (window as any).sendDebug
   delete (window as any).undo
   delete (window as any).debugChoose
@@ -1893,7 +1944,7 @@ onUnmounted(() => {
         <button @click="error = null">{{ $t('close') }}</button>
       </div>
     </dialog>
-    <div v-if="processing" class="processing">
+    <div v-if="showProcessing" class="processing">
       <LottieAnimation
         :animation-data="processingJSON"
         :auto-play="true"
@@ -2180,17 +2231,28 @@ onUnmounted(() => {
           <ExclamationTriangleIcon aria-hidden="true" /> {{ $t('fileBug') }}
         </button>
       </div>
-      <div v-for="item in menuItems" :key="item.id">
-        <template v-if="item.nested === null || item.nested === undefined">
+      <template v-for="item in menuItems" :key="item.id">
+        <div v-if="item.nested === null || item.nested === undefined">
           <button @click="item.action">
             <component v-if="item.icon" v-bind:is="item.icon"></component>
             {{ item.content }}
           </button>
-        </template>
-      </div>
-      <div class="right">
-        <button v-if="isActualScenarioView" @click="toggleSidebar">
-          <ArrowsRightLeftIcon aria-hidden="true" /> {{ $t('gameBar.toggleSidebar') }}
+        </div>
+      </template>
+      <div v-if="isActualScenarioView" class="right">
+        <button
+          class="drawer-toggle"
+          :aria-label="$t('gameBar.toggleSidebar')"
+          :title="$t('gameBar.toggleSidebar')"
+          :aria-expanded="showSidebar"
+          aria-controls="game-log-sidebar"
+          @click="toggleSidebar"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M15 4v16" />
+            <path :d="showSidebar ? 'm8 9 3 3-3 3' : 'm11 9-3 3 3 3'" />
+          </svg>
         </button>
       </div>
     </div>
@@ -2381,6 +2443,7 @@ onUnmounted(() => {
           @choose="choose"
         />
         <div
+          id="game-log-sidebar"
           class="sidebar"
           :class="{ 'sidebar--empty-log': gameLog.length === 0 }"
           v-if="
@@ -3433,6 +3496,22 @@ header {
     }
   }
   justify-content: flex-start;
+
+  .right .drawer-toggle {
+    justify-content: center;
+    min-width: 40px;
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+    &[aria-expanded='true'] {
+      background: rgba(0, 0, 0, 0.21);
+    }
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: -3px;
+    }
+  }
 }
 
 .game-bar-item.active,

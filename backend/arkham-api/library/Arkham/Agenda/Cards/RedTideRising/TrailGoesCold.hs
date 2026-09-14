@@ -30,7 +30,7 @@ instance HasAbilities TrailGoesCold where
   getAbilities (TrailGoesCold a) =
     guard (onSide A a)
       *> [ mkAbility a 1 $ freeReaction $ EnemyEvaded #after (You <> wendyAdams) (enemyIs Enemies.angryMob)
-         , mkAbility a 2 $ forced $ EnemySpawns #after Anywhere (EnemyWithTrait Suspect)
+         , mkAbility a 2 $ forced $ EnemySpawns #after AnyPlacement (EnemyWithTrait Suspect)
          , mkAbility a 3 $ forced $ LocationEntersPlay #after (LocationWithTrait Hideout)
          ]
 

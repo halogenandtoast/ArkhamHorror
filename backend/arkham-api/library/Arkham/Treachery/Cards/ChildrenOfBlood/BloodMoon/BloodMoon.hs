@@ -18,7 +18,7 @@ instance RunMessage BloodMoon where
     Revelation iid (isSource attrs -> True) -> do
       hasBlood <- (> 0) <$> getRemainingBloodTokens
       chooseOneM iid $ withI18n do
-        when hasBlood $ labeled' "addBloodToken" $ addChaosToken #blood
-        countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        when hasBlood $ labeled "addBloodToken" $ addChaosToken #blood
+        countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
       pure t
     _ -> BloodMoon <$> liftRunMessage msg attrs

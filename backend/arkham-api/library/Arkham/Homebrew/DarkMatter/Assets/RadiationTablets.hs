@@ -26,7 +26,7 @@ instance RunMessage RadiationTablets where
       investigators <- select Anyone
       chooseOneM iid $ campaignI18n do
         targets investigators (`putCardIntoPlay` attrs)
-        labeled' "radiationTablets.doNotPutIntoPlay" $ shuffleIntoScanningDeck [attrs]
+        labeled "radiationTablets.doNotPutIntoPlay" $ shuffleIntoScanningDeck [attrs]
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       roundModifiers (attrs.ability 1) iid [SkillModifier #combat 1, SkillModifier #agility 1]

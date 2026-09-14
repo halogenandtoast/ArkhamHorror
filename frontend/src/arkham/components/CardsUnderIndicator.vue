@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Dropdown } from 'floating-vue'
 import { type Card as ArkhamCard, type CardContents, cardImage, toCardContents } from '@/arkham/types/Card'
+import type { Message } from '@/arkham/types/Message'
+import type { Source } from '@/arkham/types/Source'
 import { imgsrc } from '@/arkham/helpers'
 import type { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
@@ -19,14 +21,29 @@ const props = withDefaults(defineProps<{
   showLabel?: boolean
   shown?: boolean
   fullWidth?: boolean
+  vertical?: boolean
+  droppable?: boolean
+  draggableCards?: boolean
+  // For stacks holding cards that are still in play (the Hidden stack): render
+  // their ability buttons here, since nothing else on screen does, and open the
+  // popover when they are the only thing the player can act on.
+  allowInPlayAbilities?: boolean
+  autoShowWhenOnlyChoice?: boolean
 }>(), {
   label: 'Cards underneath',
   placement: 'bottom',
+  // Boolean props are cast to `false` when absent, which would make the
+  // uncontrolled case indistinguishable from "the parent says stay closed" and
+  // pin `shown` to false forever -- every programmatic open silently dropped.
+  // An explicit undefined default keeps absent meaning absent.
+  shown: undefined,
 })
 
 const emit = defineEmits<{
   choose: [value: number]
   'update:shown': [value: boolean]
+  cardsDrop: [event: DragEvent]
+  cardDragStart: [event: DragEvent, index: number]
 }>()
 
 const debug = useDebug()
@@ -40,44 +57,135 @@ const shown = computed({
   },
 })
 
+// floating-vue positions the popper once and pins that transform, so a popover
+// that loses a card keeps its old left edge and drifts away from the trigger.
+// Ask it to recompute whenever the contents change underneath it.
+const dropdown = ref<{ onResize?: () => void } | null>(null)
+
+async function reposition() {
+  await nextTick()
+  dropdown.value?.onResize?.()
+  // onResize is a no-op until floating-vue's own isShown catches up, which it
+  // does asynchronously, so take a second pass once it has settled.
+  window.setTimeout(() => dropdown.value?.onResize?.(), 60)
+}
+
 const count = computed(() => props.cards.length)
+
+watch(count, () => reposition())
 const tooltip = computed(() => `${props.label} (${count.value}) — click to view`)
 const choices = computed(() => props.game && props.playerId ? ArkhamGame.choices(props.game, props.playerId) : [])
 const interactive = computed(() => props.game !== undefined && props.playerId !== undefined)
 
-function isCardInChoices(card: ArkhamCard | CardContents): boolean {
+// An ability's source names the entity, not the card, so resolve it back to the
+// card id the stack holds. Assets and threat-area treacheries both land here.
+function sourceCardId(source: Source): string | undefined {
+  if (source.sourceTag !== 'OtherSource' || !source.contents) return undefined
+  const sourceId = source.contents
+  return props.game?.assets[sourceId]?.cardId
+    ?? props.game?.treacheries[sourceId]?.cardId
+    ?? sourceId
+}
+
+function cardMatchesChoice(card: ArkhamCard | CardContents, choice: Message): boolean {
   const cardId = toCardContents(card).id
-  return choices.value.some(choice => {
-    if (choice.tag === 'TargetLabel') return choice.target.tag === 'CardIdTarget' && cardId === choice.target.contents
-    if (choice.tag === 'AbilityLabel') {
-      const sourceId = choice.ability.source.sourceTag === 'OtherSource' ? choice.ability.source.contents : undefined
-      if (!sourceId) return false
-      if (cardId === sourceId) return true
-      const asset = props.game?.assets[sourceId]
-      return asset?.cardId === cardId
-    }
-    return false
-  })
+  if (choice.tag === 'TargetLabel') return choice.target.tag === 'CardIdTarget' && cardId === choice.target.contents
+  if (choice.tag === 'AbilityLabel') return sourceCardId(choice.ability.source) === cardId
+  return false
+}
+
+function isCardInChoices(card: ArkhamCard | CardContents): boolean {
+  return choices.value.some(choice => cardMatchesChoice(card, choice))
 }
 
 const hasCardChoice = computed(() => props.cards.some(isCardInChoices))
 const isHighlighted = computed(() => props.highlighted || hasCardChoice.value)
 
+/*
+ * Every choice the player has left is on a card tucked in here. The board then
+ * looks like it has nothing to click -- there is no other anchor for the
+ * ability -- so open the stack rather than leaving them hunting for it. A forced
+ * trigger on a tucked card is the case that matters: nothing else can happen
+ * until it is answered. Watched rather than bound, so dismissing it sticks.
+ */
+const onlyChoicesAreHere = computed(() => {
+  if (!props.autoShowWhenOnlyChoice || !interactive.value) return false
+  if (choices.value.length === 0 || props.cards.length === 0) return false
+  return choices.value.every(choice => props.cards.some(card => cardMatchesChoice(card, choice)))
+})
+
+function openIfOnlyChoice() {
+  if (!onlyChoicesAreHere.value || shown.value) return
+  shown.value = true
+  reposition()
+}
+
+// The first check waits for mount: floating-vue silently drops a `shown` set
+// while the Dropdown is still being set up, which is exactly when a stack that
+// already holds the only choice would have tried to open itself.
+onMounted(() => nextTick(openIfOnlyChoice))
+watch(onlyChoicesAreHere, openIfOnlyChoice, { flush: 'post' })
+
 function finishDrag() {
   window.removeEventListener('dragend', finishDrag)
   window.removeEventListener('drop', finishDrag)
-  if (restoreAfterDrag.value) {
-    restoreAfterDrag.value = false
+  if (!restoreAfterDrag.value) return
+  restoreAfterDrag.value = false
+  // The card that just left is still in `cards` at this point; reopening now
+  // would size and place the popover against content it is about to lose,
+  // leaving a gap where the card was. Wait for the list to settle first.
+  nextTick(() => {
+    if (count.value === 0) return
     shown.value = true
-  }
+    reposition()
+  })
 }
 
-function hideDiscardPopoverWhileDragging() {
-  if (!debug.active || !props.isDiscards || !shown.value) return
+// Dragging a card out of the popover means dropping it somewhere the popover is
+// currently covering, so get it out of the way and put it back afterwards.
+function hidePopoverWhileDragging() {
+  const dragsOut = props.draggableCards || (debug.active && props.isDiscards)
+  if (!dragsOut || !shown.value) return
   restoreAfterDrag.value = true
   shown.value = false
   window.addEventListener('dragend', finishDrag, { once: true })
   window.addEventListener('drop', finishDrag, { once: true })
+}
+
+function onCardDragStart(event: DragEvent, index: number) {
+  if (!props.draggableCards) return
+  emit('cardDragStart', event, index)
+  hidePopoverWhileDragging()
+}
+
+// The drag sources here declare effectAllowed 'copyMove'; answering with a
+// dropEffect outside that set makes the browser refuse the drop outright.
+function onDragOver(event: DragEvent) {
+  if (!props.droppable) return
+  event.preventDefault()
+  if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
+}
+
+// dragenter/dragleave fire again for every child element, so count depth rather
+// than clearing the highlight the first time the pointer crosses one.
+const dragDepth = ref(0)
+const draggedOver = computed(() => dragDepth.value > 0)
+
+function onDragEnter(event: DragEvent) {
+  if (!props.droppable) return
+  event.preventDefault()
+  dragDepth.value++
+}
+
+function onDragLeave() {
+  if (props.droppable) dragDepth.value = Math.max(0, dragDepth.value - 1)
+}
+
+function onDrop(event: DragEvent) {
+  if (!props.droppable) return
+  event.preventDefault()
+  dragDepth.value = 0
+  emit('cardsDrop', event)
 }
 
 onBeforeUnmount(() => finishDrag())
@@ -85,6 +193,7 @@ onBeforeUnmount(() => finishDrag())
 
 <template>
   <Dropdown
+    ref="dropdown"
     :placement="placement"
     :distance="8"
     v-model:shown="shown"
@@ -96,33 +205,53 @@ onBeforeUnmount(() => finishDrag())
     <button
       type="button"
       class="cards-under-indicator"
-      :class="{ 'cards-under-indicator--highlighted': isHighlighted, 'cards-under-indicator--with-label': showLabel, 'cards-under-indicator--full-width': fullWidth }"
+      :class="{ 'cards-under-indicator--highlighted': isHighlighted, 'cards-under-indicator--with-label': showLabel, 'cards-under-indicator--full-width': fullWidth, 'cards-under-indicator--vertical': vertical, 'cards-under-indicator--dragged-over': draggedOver }"
       :aria-label="tooltip"
       v-tooltip="tooltip"
+      @dragover="onDragOver"
+      @dragenter="onDragEnter"
+      @dragleave="onDragLeave"
+      @drop="onDrop"
     >
-      <span class="cards-under-indicator__icon" aria-hidden="true">
-        <span class="cards-under-indicator__card cards-under-indicator__card--back" />
-        <span class="cards-under-indicator__card cards-under-indicator__card--front" />
+      <span
+        class="cards-under-indicator__icon"
+        :class="{ 'cards-under-indicator__icon--custom': !!$slots.icon }"
+        aria-hidden="true"
+      >
+        <slot name="icon">
+          <span class="cards-under-indicator__card cards-under-indicator__card--back" />
+          <span class="cards-under-indicator__card cards-under-indicator__card--front" />
+        </slot>
       </span>
       <span v-if="showLabel" class="cards-under-indicator__label">{{ label }}</span>
       <span class="cards-under-indicator__count">{{ count }}</span>
     </button>
 
     <template #popper>
-      <div class="cards-under-popover">
+      <div
+        class="cards-under-popover"
+        :class="{ 'cards-under-popover--dragged-over': draggedOver }"
+        @dragover="onDragOver"
+        @dragenter="onDragEnter"
+        @dragleave="onDragLeave"
+        @drop="onDrop"
+      >
         <div class="cards-under-popover__header">{{ label }} ({{ count }})</div>
-        <div class="cards-under-popover__cards" @dragstart="hideDiscardPopoverWhileDragging">
+        <div class="cards-under-popover__cards" @dragstart="hidePopoverWhileDragging">
           <div
             v-for="(card, i) in cards"
             :key="i"
             class="cards-under-popover__card-wrap"
-            :class="{ discard: isDiscards && !isCardInChoices(card) }"
+            :class="{ discard: isDiscards && !isCardInChoices(card), 'cards-under-popover__card-wrap--draggable': draggableCards }"
+            :draggable="draggableCards || undefined"
+            @dragstart="onCardDragStart($event, i)"
           >
             <CardView
               v-if="interactive && game && playerId"
               :game="game"
               :playerId="playerId"
               :card="card"
+              :allowInPlayAbilities="allowInPlayAbilities"
               @choose="emit('choose', $event)"
             />
             <img
@@ -130,6 +259,7 @@ onBeforeUnmount(() => finishDrag())
               :src="imgsrc(cardImage(card))"
               class="card cards-under-popover__card"
             />
+            <slot name="cardOverlay" :card="card" :index="i" />
           </div>
         </div>
       </div>
@@ -174,6 +304,15 @@ onBeforeUnmount(() => finishDrag())
   border-color: color-mix(in srgb, var(--select) 75%, black);
 }
 
+/* Pending drop target — the receiver of the drag, so cyan, matching
+   `ability-target` rather than the magenta reserved for awaited choices. */
+.cards-under-indicator.cards-under-indicator--dragged-over {
+  border-color: var(--highlight);
+  background: color-mix(in srgb, var(--highlight) 40%, black);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--highlight) 70%, transparent),
+    0 0 6px 1px color-mix(in srgb, var(--highlight) 45%, transparent);
+}
+
 .cards-under-indicator--with-label {
   width: 100%;
   justify-content: center;
@@ -194,6 +333,13 @@ onBeforeUnmount(() => finishDrag())
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+
+/* A supplied icon fills the slot the stacked-cards glyph would have used, but
+   keeps its upright reading direction even when the pill is turned on its side. */
+.cards-under-indicator__icon--custom :deep(svg) {
+  width: 14px;
+  height: 14px;
 }
 
 .cards-under-indicator__card {
@@ -253,10 +399,51 @@ onBeforeUnmount(() => finishDrag())
   }
 }
 
+/* Vertical variant: the same pill turned on its side, for pinning down the
+   edge of a play area rather than sitting in a row of controls. */
+.cards-under-indicator--vertical {
+  flex-direction: column;
+  width: 22px;
+  height: auto;
+  min-height: 60px;
+  padding: 7px 0;
+}
+
+.cards-under-indicator--vertical:hover {
+  transform: translateX(-1px);
+}
+
+.cards-under-indicator--vertical .cards-under-indicator__icon {
+  transform: rotate(90deg);
+}
+
+/* ...but a supplied icon reads as an icon, not as a turned-on-its-side glyph,
+   so it stays upright. */
+.cards-under-indicator--vertical .cards-under-indicator__icon--custom {
+  transform: none;
+}
+
+.cards-under-indicator--vertical .cards-under-indicator__label {
+  writing-mode: vertical-rl;
+  max-height: 14em;
+}
+
+@media (max-width: 800px) {
+  .cards-under-indicator--vertical {
+    padding: 5px 0;
+  }
+}
+
 .cards-under-popover {
   min-width: 0;
   max-width: max(50vw, 300px);
   padding: 10px;
+}
+
+.cards-under-popover--dragged-over {
+  outline: 2px dashed color-mix(in srgb, var(--highlight) 70%, transparent);
+  outline-offset: -4px;
+  border-radius: 8px;
 }
 
 .cards-under-popover__header {
@@ -281,6 +468,10 @@ onBeforeUnmount(() => finishDrag())
 .cards-under-popover__card-wrap {
   position: relative;
   flex: 0 0 auto;
+}
+
+.cards-under-popover__card-wrap--draggable {
+  cursor: grab;
 }
 
 .cards-under-popover__card-wrap.discard {

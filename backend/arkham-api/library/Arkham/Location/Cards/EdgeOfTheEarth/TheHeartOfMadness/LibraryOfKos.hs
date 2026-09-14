@@ -40,7 +40,7 @@ instance RunMessage LibraryOfKos where
           push $ SpendClues targetAmount iids
           activateSeal SealE
           chooseOneAtATimeM iid $ targets sameRing $ lookAtRevealed iid (attrs.ability 1)
-        labeled' "doNotSpendClues" nothing
+        labeled "doNotSpendClues" nothing
 
       pure l
     _ -> LibraryOfKos <$> liftRunMessage msg attrs

@@ -1,6 +1,17 @@
 import { useSiteSettingsStore } from '@/stores/site_settings'
+import { useSettings } from '@/stores/settings'
+import { reprintedArt, variantArt } from '@/arkham/artVariants'
 import { replaceHomebrewIcons } from '@/arkham/homebrewAssets'
+import { iconClasses, runePlaceholder } from '@/arkham/icons'
 import { ref, type Ref } from 'vue';
+import {
+  cardArtReference,
+  customCardArt,
+  customCardDef,
+  customCardPlaceholder,
+  isCustomCardCode,
+} from '@/arkham/customCards'
+import { normalizeArkhamBuildDeckCodes } from '@/arkham/arkhamBuildImport'
 
 interface ImageHelper {
   root: string
@@ -96,10 +107,25 @@ export function isLocalized(src: string) {
   return false
 }
 
-export function imgsrc(src: string) {
+/* `ignoreVariants` asks for the art the card itself names, rather than whatever
+ * the player's art preferences would swap in: the card browser shows each
+ * printing as it was printed, and the preference is about play. */
+export function imgsrc(src: string, ignoreVariants = false): string {
+  // A debug-authored card carries its art with it (a URL, or a data URI for a
+  // dropped image) rather than living under the asset host -- unless it names a
+  // printed card's art instead, which resolves down the ordinary path below.
+  if (isCustomCardCode(src)) {
+    const art = customCardArt(src)
+    if (!art) return customCardPlaceholder(src)
+    const reference = cardArtReference(art)
+    return reference ? imgsrc(cardImgPath(reference)) : art
+  }
+
   const store = useSiteSettingsStore()
   const language = localStorage.getItem('language') || 'en'
-  const path = src.replace(/^\//, '')
+  const path = src.replace(/^\//, '').replace(/^cards\/(.+)\.avif$/, (_, art: string) =>
+    `cards/${reprintedArt(ignoreVariants ? art : variantArt(art, useSettings().useVariants))}.avif`
+  )
   const fullPath = `${store.assetHost}/img/arkham/${path}`
 
   if (isLocalized(src)) {
@@ -120,6 +146,9 @@ export function imgsrc(src: string) {
 // Homebrew card art (prefixed codes) lives under its campaign folder.
 // `art` is a c-stripped card code, optionally with suffixes (e.g. "circus-ex-mortis:001b", "dark-matter:063aa").
 export function cardImgPath(art: string): string {
+  // Custom card art is resolved by `imgsrc`, not by path.
+  if (isCustomCardCode(art)) return art
+
   const homebrewMatch = art.match(/^:(.+):(\d+[a-z]*)$/)
 
   if (homebrewMatch) {
@@ -130,8 +159,8 @@ export function cardImgPath(art: string): string {
   return `cards/${art}.avif`
 }
 
-export function cardImg(art: string): string {
-  return imgsrc(cardImgPath(art))
+export function cardImg(art: string, ignoreVariants = false): string {
+  return imgsrc(cardImgPath(art), ignoreVariants)
 }
 
 export function pluralize(w: string, n: number) {
@@ -157,40 +186,10 @@ export function formatContent(body: string) {
 }
 
 export function replaceIcons(body: string) {
-  return replaceHomebrewIcons(body).
-    replace(/{action}/g, '<span class="action-icon"></span>').
-    replace(/{fast}/g, '<span class="fast-icon"></span>').
-    replace(/{reaction}/g, '<span class="reaction-icon"></span>').
-    replace(/{willpower}/g, '<span class="willpower-icon"></span>').
-    replace(/{intellect}/g, '<span class="intellect-icon"></span>').
-    replace(/{combat}/g, '<span class="combat-icon"></span>').
-    replace(/{agility}/g, '<span class="agility-icon"></span>').
-    replace(/{wild}/g, '<span class="wild-icon"></span>').
-    replace(/{guardian}/g, '<span class="guardian-icon"></span>').
-    replace(/{seeker}/g, '<span class="seeker-icon"></span>').
-    replace(/{rogue}/g, '<span class="rogue-icon"></span>').
-    replace(/{mystic}/g, '<span class="mystic-icon"></span>').
-    replace(/{survivor}/g, '<span class="survivor-icon"></span>').
-    replace(/{elderSign}/g, '<span class="elder-sign"></span>').
-    replace(/{autoFail}/g, '<span class="auto-fail"></span>').
-    replace(/{skull}/g, '<span class="skull-icon"></span>').
-    replace(/{cultist}/g, '<span class="cultist-icon"></span>').
-    replace(/{tablet}/g, '<span class="tablet-icon"></span>').
-    replace(/{elderThing}/g, '<span class="elder-thing-icon"></span>').
-    replace(/{bless}/g, '<span class="bless-icon"></span>').
-    replace(/{curse}/g, '<span class="curse-icon"></span>').
-    replace(/{frost}/g, '<span class="frost-icon"></span>').
-    replace(/{blood}/g, '<span class="blood-icon"></span>').
-    replace(/{sealA}/g, '<span class="seal-a-icon"></span>').
-    replace(/{sealB}/g, '<span class="seal-b-icon"></span>').
-    replace(/{sealC}/g, '<span class="seal-c-icon"></span>').
-    replace(/{sealD}/g, '<span class="seal-d-icon"></span>').
-    replace(/{sealE}/g, '<span class="seal-e-icon"></span>').
-    replace(/{codex}/g, '<span class="codex-icon"></span>').
-    replace(/{day}/g, '<span class="day-icon"></span>').
-    replace(/{night}/g, '<span class="night-icon"></span>').
-    replace(/{perPlayer}/g, '<span class="per-player"></span>').
-    replace(/{rune([A-Z])}/g, `<span class="rune-$1"></span>`)
+  return Object.entries(iconClasses).reduce(
+    (acc, [key, cls]) => acc.replaceAll(`{${key}}`, `<span class="${cls}"></span>`),
+    replaceHomebrewIcons(body),
+  ).replace(runePlaceholder, '<span class="rune-$1"></span>')
 }
 
 export type InvestigatorClass =
@@ -234,6 +233,13 @@ const CLASS_TO_CODES: Record<InvestigatorClass, Set<string>> = {
 }
 
 export function investigatorClass(code: string): CssClassFlags {
+  // An investigator you built is in no printed set, so its class comes off its
+  // own def rather than the table above.
+  if (isCustomCardCode(code)) {
+    const symbol = customCardDef(code)?.classSymbols?.[0]?.toLowerCase()
+    return symbol && symbol in CLASS_TO_CODES ? { [symbol as InvestigatorClass]: true } : {}
+  }
+
   const flags: CssClassFlags = {}
   for (const cls of Object.keys(CLASS_TO_CODES) as InvestigatorClass[]) {
     if (CLASS_TO_CODES[cls].has(code)) {
@@ -308,7 +314,11 @@ export function processArkhamBuildDeck<T extends { slots?: Record<string, number
     [key: string]: unknown
   }
   const mergedSlots = { ...(data.slots ?? {}), ...(hiddenSlotCards ?? {}) }
-  return { ...data, ...hiddenRest, slots: mergedSlots, url }
+  // arkham.build names a custom card by its own bare UUID; this app only ever
+  // recognizes a custom card by a `*`-prefixed code, so any such code here has
+  // to be rewritten before this deck reaches validation or it will look like
+  // it references cards that don't exist.
+  return normalizeArkhamBuildDeckCodes({ ...data, ...hiddenRest, slots: mergedSlots, url })
 }
 
 export function isTypingTarget(target: EventTarget | null): boolean {

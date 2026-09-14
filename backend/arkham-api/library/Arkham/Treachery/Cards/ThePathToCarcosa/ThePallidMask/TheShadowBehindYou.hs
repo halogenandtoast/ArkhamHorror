@@ -58,12 +58,12 @@ instance RunMessage TheShadowBehindYou where
 
       chooseOrRunOneM iid $ withI18n do
         when hasNonHiddenCards do
-          labeled' "discardAllCardsFromHand" do
+          labeled "discardAllCardsFromHand" do
             push $ DiscardHand iid (toSource attrs)
             unless hasHiddenCards $ toDiscardBy iid (attrs.ability 2) attrs
 
         when hasResources do
-          labeled' "loseAllResources" do
+          labeled "loseAllResources" do
             loseAllResources iid (attrs.ability 1)
             toDiscardBy iid (attrs.ability 2) attrs
       pure t

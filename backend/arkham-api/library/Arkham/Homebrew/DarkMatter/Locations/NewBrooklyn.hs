@@ -11,7 +11,8 @@ newtype NewBrooklyn = NewBrooklyn LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 newBrooklyn :: LocationCard NewBrooklyn
-newBrooklyn = location NewBrooklyn Cards.newBrooklyn 2 (Static 1)
+newBrooklyn =
+  symbolLabel $ location NewBrooklyn Cards.newBrooklyn 2 (Static 1)
 
 -- | "[reaction] At the end of your turn: Heal 1 damage." / "[action]: Resign."
 instance HasAbilities NewBrooklyn where

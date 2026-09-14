@@ -36,7 +36,7 @@ instance RunMessage DunwichVillage_242 where
       investigators <- locationInvestigatorsWithClues attrs
       abominations <- select $ EnemyWithTrait Abomination
       chooseOneM iid $ scenarioI18n do
-        countVar 1 $ questionLabeled' "chooseInvestigatorToPlaceClue"
+        countVar 1 $ questionLabeled "chooseInvestigatorToPlaceClue"
         targets investigators \iid' -> do
           chooseOrRunOneM iid' do
             targets abominations \eid -> moveTokens (attrs.ability 1) iid eid #clue 1

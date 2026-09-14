@@ -4,6 +4,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Search
+import Arkham.I18n
 import Arkham.Strategy
 
 newtype CaptivatingDiscovery = CaptivatingDiscovery EventAttrs
@@ -20,9 +21,9 @@ instance RunMessage CaptivatingDiscovery where
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       n <- min 3 <$> getCanPlaceCluesOnLocationCount iid
-      when (n > 0) $ focusCards cards $ chooseAmount iid "Clues" "Clues" 0 n attrs
+      when (n > 0) $ focusCards cards $ withI18n $ chooseAmount iid "clues" "$clues" 0 n attrs
       pure e
-    ResolveAmounts iid (getChoiceAmount "Clues" -> n) (isTarget attrs -> True) | n > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       pushAll [InvestigatorPlaceCluesOnLocation iid (attrs.ability 1) n, DoStep n msg]
       pure e
     DoStep n msg'@(ResolveAmounts iid _ (isTarget attrs -> True)) | n > 0 -> do

@@ -24,10 +24,12 @@ getHasRecordOrStandalone
 getHasRecordOrStandalone key def = do
   standalone <- selectNone TheCampaign
   if standalone then pure def else getHasRecord key
+
 buildEncounterDeckExcluding
   :: CardGen m => [CardDef] -> [EncounterSet] -> m (Deck EncounterCard)
 buildEncounterDeckExcluding defs =
   buildEncounterDeckWith (filter ((`notElem` defs) . toCardDef))
+
 excludeDoubleSided :: [EncounterCard] -> [EncounterCard]
 excludeDoubleSided = filter (not . isDoubleSided)
 
@@ -41,11 +43,12 @@ hasBSide = and . sequence [isDoubleSided, isSuffixOf "b" . unCardCode . toCardCo
 -- gather cards we want to include them even when the suffix is a "b", in these
 -- cases we just look to ensure it's not the other side of a card.
 isDoubleSided :: EncounterCard -> Bool
-isDoubleSided ec = if cdCardType def == LocationType
-  then cdDoubleSided def
-  else isJust (cdOtherSide def)
+isDoubleSided ec =
+  if cdCardType def == LocationType
+    then cdDoubleSided def
+    else isJust (cdOtherSide def)
  where
-   def = toCardDef ec
+  def = toCardDef ec
 
 buildEncounterDeckWith
   :: CardGen m

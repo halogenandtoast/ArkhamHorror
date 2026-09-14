@@ -48,6 +48,7 @@ import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Campaigns.TheScarletKeys.Concealed.Types
 import Arkham.Campaigns.TheScarletKeys.Key.Id
 import Arkham.Card
+import Arkham.Card.CardOption
 import Arkham.Card.Settings
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosBagStepState
@@ -56,8 +57,10 @@ import Arkham.Choose
 import Arkham.ClassSymbol
 import Arkham.Classes.HasQueue (QueueWrapper (..))
 import Arkham.Cost
+import Arkham.Custom.Overlay (DeckOverlay)
 import Arkham.Customization
 import Arkham.DamageEffect
+import Arkham.Debug.CardDestination
 import Arkham.Deck
 import Arkham.DeckBuilding.Adjustment
 import Arkham.Decklist.Type
@@ -122,6 +125,7 @@ import Arkham.Spawn
 import Arkham.Target
 import Arkham.Tarot
 import Arkham.Token qualified as Token
+import Arkham.TokenBag (CustomChaosBag)
 import Arkham.Trait
 import Arkham.Window (Window, WindowType)
 import Arkham.Xp
@@ -133,6 +137,7 @@ import Data.Aeson.Types
 import Data.UUID (fromWords64, nil)
 import Data.UUID qualified as UUID
 import GHC.OverloadedLabels
+import GHC.Records
 
 messageType :: Message -> Maybe MessageType
 messageType (PerformEnemyAttack _) = Just AttackMessage
@@ -449,6 +454,34 @@ data ShuffleIn = ShuffleIn | DoNotShuffleIn
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
+data AddChaosTokenDetails = AddChaosTokenDetails
+  { addChaosTokenFace :: ChaosTokenFace
+  , addChaosTokenToCampaign :: Bool
+  {- ^ Tokens added to the campaign stay in 'campaignChaosBag' for the rest of
+  the campaign; the rest are gone when the scenario ends.
+  -}
+  }
+  deriving stock (Show, Ord, Eq, Generic, Data)
+  deriving anyclass (ToJSON, FromJSON)
+
+instance HasField "face" AddChaosTokenDetails ChaosTokenFace where
+  getField = addChaosTokenFace
+
+instance HasField "toCampaign" AddChaosTokenDetails Bool where
+  getField = addChaosTokenToCampaign
+
+{- | Add a token to the chaos bag for the remainder of the campaign. Matches an
+add of either lifetime, so anything that cares must match 'AddChaosTokenWith'.
+-}
+pattern AddChaosToken :: ChaosTokenFace -> Message
+pattern AddChaosToken face <- AddChaosTokenWith (AddChaosTokenDetails face _)
+  where
+    AddChaosToken face = AddChaosTokenWith (AddChaosTokenDetails face True)
+
+-- | Add a token for this game only, leaving the campaign's bag alone.
+pattern AddChaosTokenForGame :: ChaosTokenFace -> Message
+pattern AddChaosTokenForGame face = AddChaosTokenWith (AddChaosTokenDetails face False)
+
 data InitDeckAttrs = InitDeckAttrs
   { initDeckInvestigator :: InvestigatorId
   , initDeckUrl :: Maybe Text
@@ -496,6 +529,12 @@ data Message
   | ClearAbilityUse AbilityRef
   | UpdateGlobalSetting InvestigatorId SetGlobalSetting
   | UpdateCardSetting InvestigatorId CardCode SetCardSetting
+  | -- | Set one option a card declares in @cdOptions@ for this investigator
+    SetCardOption InvestigatorId CardCode Text OptionValue
+  | {- | Silence a card for this investigator: stop offering its non-forced
+    window triggers. Set from the hidden-cards stack.
+    -}
+    SetCardSilenced InvestigatorId CardCode Bool
   | SetAsIfRuling AsIfRuling
   | SetUltimatumsAndBoonsEnabled Bool
   | -- | Ultimatum of The Scream: ban this ally for the rest of the campaign
@@ -524,6 +563,15 @@ data Message
   | SetGameRunWindows Bool
   | SetGameState GameState
   | SetGlobal Target Aeson.Key Value
+  | {- | Add to a numeric global. The arithmetic happens when the message is
+    processed, not when it is pushed, so the bump survives a 'Simultaneously'
+    block (each branch runs with a cleared queue, but shares game state).
+    -}
+    IncrementGlobal Target Aeson.Key Int
+  | {- | Insert into a list global, most-recent first, nubbing. Same
+    processing-time rationale as 'IncrementGlobal'.
+    -}
+    InsertGlobal Target Aeson.Key Value
   | MoveWithSkillTest Message
   | MovedWithSkillTest SkillTestId Message
   | ClearInvestigators
@@ -611,7 +659,7 @@ data Message
   | -- Victory
     AddToVictory (Maybe InvestigatorId) Target
   | -- Tokens
-    AddChaosToken ChaosTokenFace
+    AddChaosTokenWith AddChaosTokenDetails
   | -- Asset Uses
     AddUses Source AssetId UseType Int
   | -- Asks
@@ -722,6 +770,7 @@ data Message
     PayForAbility Ability [Window]
   | CreatedCost ActiveCostId
   | CancelCost ActiveCostId
+  | CancelCostPayment ActiveCostId
   | SetCost ActiveCostId Cost
   | SetActiveCostChosenAction ActiveCostId Action
   | PaySealCost InvestigatorId CardId Cost
@@ -853,9 +902,26 @@ data Message
   | InitDeck InitDeckAttrs -- used to initialize the deck for the campaign
   | LoadSideDeck InvestigatorId [PlayerCard] -- used to initialize the side deck for the campaign
   | LoadDecklist PlayerId ArkhamDBDecklist
+  | -- Between-scenarios roster changes. LeaveCampaign is the ask's message: the
+    -- campaign decides whether this investigator has anything worth keeping and
+    -- resolves it as one of the two below.
+    LeaveCampaign InvestigatorId
+  | -- Set the investigator aside whole (see gameRetiredInvestigators) so
+    -- UnretireInvestigator can restore their xp and trauma.
+    RetireInvestigator InvestigatorId
+  | -- Drop an investigator who never played, campaign decks and all, so nothing
+    -- remembers them and their investigator is free to be chosen again.
+    RemoveInvestigatorFromCampaign InvestigatorId
+  | UnretireInvestigator InvestigatorId
+  | JoinCampaign PlayerId
   | ReplaceInvestigator InvestigatorId ArkhamDBDecklist
   | UpgradeDeck InvestigatorId (Maybe Text) (Deck PlayerCard) -- used to upgrade deck during campaign
   | UpgradeDecklist InvestigatorId ArkhamDBDecklist
+  | {- | Lay custom cards over an investigator's campaign deck between scenarios.
+    Not an upgrade: nothing is purchased, so no trauma is charged and no xp
+    is initialised for what it adds.
+    -}
+    ApplyDeckOverlay InvestigatorId DeckOverlay
   | FinishedUpgradingDecks
   | Flip InvestigatorId Source Target
   | Flipped Source Card
@@ -879,6 +945,7 @@ data Message
   | -- Maybe Target is handler for success
     Investigate Investigate
   | UpdateEventMeta EventId Value
+  | UpdateEventTarget EventId (Maybe Target)
   | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
   | LookAtRevealed InvestigatorId Source Target
   | LookAtTopOfDeck InvestigatorId Target Int
@@ -929,6 +996,7 @@ data Message
   | RemoveEnemyLocation LocationId
   | PlaceUnderneath Target [Card]
   | PlacedUnderneath Target Card
+  | RemoveFromUnderneath Target [Card]
   | PlaceNextTo Target [Card]
   | PlacedLocation Name CardCode LocationId
   | PlacedLocationDirection LocationId Direction LocationId
@@ -1107,6 +1175,8 @@ data Message
   | BecomeHomunculus InvestigatorId
   | BecomeShatteredSelf InvestigatorId
   | SetScenarioMeta Value
+  | SetCustomChaosBag Text CustomChaosBag
+  | RemoveCustomChaosBag Text
   | ScenarioSpecific Text Value
   | CampaignSpecific Text Value
   | SetCampaignMeta Value
@@ -1200,11 +1270,28 @@ data Message
     ClearQueue
   | SetCardOwner CardId InvestigatorId
   | DebugAddToHand InvestigatorId CardId
+  | DebugAddToEncounterDeck DeckSignifier CardId
+  | -- Debug: move a card to another zone from wherever it currently sits. Always
+    -- obtains the card first, so it leaves the victory display, set-aside pile or
+    -- deck it came from rather than being duplicated into the destination.
+    DebugMoveCard CardId DebugCardDestination
   | DebugCustomize InvestigatorId CardId
   | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | SetScenarioDifficulty Difficulty
   | SetCampaignStep CampaignStep
   | CreateCard CardId CardCode
+  | -- Debug: register a runtime-authored card (see "Arkham.Card.CustomCard") on
+    -- the game, so its def resolves for every player and survives a reload.
+    DebugRegisterCustomCard CustomCard
+  | DebugRemoveCustomCard CardCode
+  | -- Debug: resolve an already-created card the way drawing it would --
+    -- spawn an enemy, reveal a treachery, put a location on the board, deal a
+    -- player card to a hand. Dispatches on the card's type.
+    DebugPlaceCard InvestigatorId CardId
+  | -- Debug: earn a card for the rest of the campaign -- into the deck now, and
+    -- into the campaign's story cards so it comes back in later scenarios.
+    -- Player cards only; nothing else survives deck loading.
+    DebugAddToCampaignDeck InvestigatorId CardId
   | -- Epic Multiplayer: mutate a shared counter on the owning event. These are
     -- captured (not dispatched to a game entity) by the run loop when the game
     -- belongs to an event; otherwise they are inert no-ops. See "Arkham.Epic".
@@ -1383,6 +1470,9 @@ pattern RecalculateSkillTestResults = SkillTestMessage RecalculateSkillTestResul
 pattern RecalculateSkillTestResultsCanChangeAutomatic :: Bool -> Message
 pattern RecalculateSkillTestResultsCanChangeAutomatic b =
   SkillTestMessage (RecalculateSkillTestResultsCanChangeAutomatic_ b)
+
+pattern ResolveHauntedAbilities :: InvestigatorId -> LocationId -> Message
+pattern ResolveHauntedAbilities iid lid = SkillTestMessage (ResolveHauntedAbilities_ iid lid)
 
 pattern SkillTestApplyResults :: Message
 pattern SkillTestApplyResults = SkillTestMessage SkillTestApplyResults_
@@ -1592,6 +1682,13 @@ pattern InvestigatorDefeated src iid = InvestigatorMessage (InvestigatorDefeated
 pattern InvestigatorIsDefeated :: Source -> InvestigatorId -> Message
 pattern InvestigatorIsDefeated src iid = InvestigatorMessage (InvestigatorIsDefeated_ src iid)
 
+{- | Clear an investigator's defeated state without undoing the defeat itself:
+they keep the trauma they suffered, but resume playing. Circus Ex Mortis' Blood
+on the Line revives investigators frozen beneath it when the act advances.
+-}
+pattern InvestigatorNoLongerDefeated :: InvestigatorId -> Message
+pattern InvestigatorNoLongerDefeated iid = InvestigatorMessage (InvestigatorNoLongerDefeated_ iid)
+
 pattern InvestigatorDirectDamage :: InvestigatorId -> Source -> Int -> Int -> Message
 pattern InvestigatorDirectDamage iid src d h = InvestigatorMessage (InvestigatorDirectDamage_ iid src d h)
 
@@ -1731,6 +1828,10 @@ pattern RemoveLocation lid = Remove (LocationTarget lid)
 -- Bidirectional pattern synonyms preserving the public API for EnemyAttackMessage.
 pattern EnemiesAttack :: Message
 pattern EnemiesAttack = EnemyAttackMessage EnemiesAttack_
+
+-- | Enemy phase, after 3.3: relentless enemies ready and attack again.
+pattern RelentlessEnemiesAttack :: Message
+pattern RelentlessEnemiesAttack = EnemyAttackMessage RelentlessEnemiesAttack_
 
 pattern EnemyWillAttack :: EnemyAttackDetails -> Message
 pattern EnemyWillAttack d = EnemyAttackMessage (EnemyWillAttack_ d)
@@ -2354,6 +2455,8 @@ mconcat
               pure $ case contents of
                 Right (a, b, c, d, s) -> FindEncounterCard a b c d s
                 Left (a, b, c, d) -> FindEncounterCard a b c d LeadChooses
+            -- Legacy: saves written before the details object stored the bare face
+            "AddChaosToken" -> AddChaosToken <$> o .: "contents"
             -- Legacy: pre-Message-refactor saves tagged entity-specific removals
             -- with these names; they are now pattern synonyms over `Remove Target`.
             "RemoveAsset" -> Remove . AssetTarget <$> o .: "contents"
@@ -2859,6 +2962,25 @@ deck setup -- the tail that used to sit in the queue behind the ask, after
 continuation, so the state flip is likewise driven by the barrier releasing rather
 than by the queue draining to the right position.
 -}
+
+{- | Open deck selection for a single seat joining a campaign already in progress.
+
+Unlike 'chooseDecks' this must not emit 'ChoosingDecks': that clears every
+investigator, which is right for setup and would wipe the table mid-campaign.
+@used@ is the investigators already played this campaign, which the new player
+may not choose.
+-}
+chooseJoinDeck :: BatchId -> PlayerId -> [InvestigatorId] -> [Message] -> Message
+chooseJoinDeck batchId pid used continuation =
+  Run
+    [ SetGameState (IsChooseDecks [pid])
+    , BeginSimultaneousAsk
+        batchId
+        JoinAll
+        (singletonMap pid (ChooseJoinDeck used))
+        (DoneChoosingDecks : continuation)
+    ]
+
 chooseDecks :: BatchId -> [PlayerId] -> [Message] -> Message
 chooseDecks batchId pids continuation =
   Run

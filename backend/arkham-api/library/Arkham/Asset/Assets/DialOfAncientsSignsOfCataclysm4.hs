@@ -40,8 +40,9 @@ instance RunMessage DialOfAncientsSignsOfCataclysm4 where
         then do
           focusChaosTokens [token] \unfocus -> do
             chooseOneM iid do
-              questionLabeled "$label.cards.dialOfAncientsSignsOfCataclysm4.spend1ChargeOrReleaseThisToken"
-              (cardI18n $ labeled' "dialOfAncientsSignsOfCataclysm4.spend1Charge") $ spendUses (attrs.ability 2) attrs Charge 1
+              cardI18n $ questionLabeled "dialOfAncientsSignsOfCataclysm4.spend1ChargeOrReleaseThisToken"
+              (cardI18n $ labeled "dialOfAncientsSignsOfCataclysm4.spend1Charge")
+                $ spendUses (attrs.ability 2) attrs Charge 1
               targeting token $ push $ UnsealChaosToken token
 
             push unfocus

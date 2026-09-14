@@ -27,7 +27,7 @@ instance HasAbilities MiasmaticShadow where
     extend1 a
       $ restricted a 1 (thisExists a ReadyEnemy)
       $ forced
-      $ DiscardedFromHand #after (You <> InvestigatorAt (locationWithEnemy a)) #any #any
+      $ DiscardedFromHandBatch #after (You <> InvestigatorAt (locationWithEnemy a)) #any
 
 instance RunMessage MiasmaticShadow where
   runMessage msg e@(MiasmaticShadow attrs) = runQueueT $ case msg of

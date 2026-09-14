@@ -1,5 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
-import { v2Optional } from '@/arkham/parser';
+import { v2Optional, withDefault } from '@/arkham/parser';
 import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Name, nameDecoder } from '@/arkham/types/Name';
@@ -10,6 +10,7 @@ import { Seal, sealDecoder } from '@/arkham/types/Seal';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { Placement, placementDecoder } from '@/arkham/types/Placement';
 import { TabooList, tabooListDecoder } from '@/arkham/types/TabooList';
+import type { OptionValue } from '@/arkham/types/CardDef';
 import { searchDecoder } from '@/arkham/types/Search';
 import {
   Card,
@@ -105,6 +106,8 @@ type CardSettings = {
     cardIgnoreUnrelatedSkillTestTriggers: boolean;
     cardIgnoreDuringSkillTests?: boolean;
     cardAttachments?: string[];
+    cardOptions?: Record<string, OptionValue>;
+    cardSilenced?: boolean;
   }>;
 }
 
@@ -116,6 +119,11 @@ export const cardSettingsDecoder = JsonDecoder.object<CardSettings>({
     cardIgnoreUnrelatedSkillTestTriggers: JsonDecoder.boolean(),
     cardIgnoreDuringSkillTests: v2Optional(JsonDecoder.boolean()),
     cardAttachments: v2Optional(JsonDecoder.array<string>(JsonDecoder.string(), 'string[]')),
+    cardOptions: v2Optional(JsonDecoder.record<OptionValue>(
+      JsonDecoder.oneOf<OptionValue>([JsonDecoder.boolean(), JsonDecoder.string()], 'OptionValue'),
+      'Dict<string, OptionValue>',
+    )),
+    cardSilenced: v2Optional(JsonDecoder.boolean()),
   }, 'PerCardSettings'), 'Dict<string, PerCardSettings>'),
 }, 'CardSettings');
 
@@ -149,6 +157,9 @@ export type Investigator = {
   assets: string[];
   events: string[];
   skills: string[];
+  /* Card codes of abilities this investigator has already used. Only the
+   * identity is decoded; the engine's full bookkeeping stays server-side. */
+  usedAbilityCardCodes: string[];
   discard: CardContents[];
   hand: Card[];
   bondedCards: Card[];
@@ -256,6 +267,13 @@ export const investigatorDecoder = JsonDecoder.object({
   assets: JsonDecoder.array<string>(JsonDecoder.string(), 'AssetId[]'),
   events: JsonDecoder.array<string>(JsonDecoder.string(), 'EventId[]'),
   skills: JsonDecoder.array<string>(JsonDecoder.string(), 'SkillId[]'),
+  usedAbilities: withDefault<string[]>([], JsonDecoder.array(
+    JsonDecoder.object(
+      { usedAbility: JsonDecoder.object({ cardCode: JsonDecoder.string() }, 'Ability') },
+      'UsedAbility',
+    ).map(u => u.usedAbility.cardCode),
+    'UsedAbility[]',
+  )),
   // deck: Deck PlayerCard,
   discard: JsonDecoder.array<CardContents>(cardContentsDecoder, 'PlayerCardContents[]'),
   hand: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
@@ -293,8 +311,9 @@ export const investigatorDecoder = JsonDecoder.object({
   meta: JsonDecoder.succeed(),
   settings: cardSettingsDecoder,
   handSize: v2Optional(JsonDecoder.number()),
-}, 'Investigator').map(({search, placement, ...rest}) => ({
+}, 'Investigator').map(({search, placement, usedAbilities, ...rest}) => ({
   foundCards: search,
+  usedAbilityCardCodes: usedAbilities,
   location: placement.tag === "AtLocation" ? placement.contents : "00000000-0000-0000-0000-000000000000",
   eliminated: rest.defeated || rest.resigned,
   placement,

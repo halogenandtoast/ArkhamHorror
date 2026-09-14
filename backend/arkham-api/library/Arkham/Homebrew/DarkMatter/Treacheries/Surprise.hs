@@ -30,9 +30,9 @@ instance RunMessage Surprise where
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       selectOne (enemyIs Enemies.theBOOGEYMAN) >>= traverse_ \boogeyman -> do
         chooseOneM iid $ campaignI18n do
-          labeled' "surprise.moveBoogeyman"
+          labeled "surprise.moveBoogeyman"
             $ withLocationOf iid
             $ enemyMoveTo attrs boogeyman
-          labeled' "surprise.boogeymanAttacks" $ initiateEnemyAttack boogeyman attrs iid
+          labeled "surprise.boogeymanAttacks" $ initiateEnemyAttack boogeyman attrs iid
       pure t
     _ -> Surprise <$> liftRunMessage msg attrs

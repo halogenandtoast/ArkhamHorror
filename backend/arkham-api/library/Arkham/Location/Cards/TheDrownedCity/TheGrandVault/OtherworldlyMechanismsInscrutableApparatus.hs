@@ -22,7 +22,7 @@ otherworldlyMechanismsInscrutableApparatus =
     OtherworldlyMechanismsInscrutableApparatus
     Cards.otherworldlyMechanismsInscrutableApparatus
     4
-    (Static 1)
+    (PerPlayer 1)
 
 instance HasAbilities OtherworldlyMechanismsInscrutableApparatus where
   getAbilities (OtherworldlyMechanismsInscrutableApparatus a) =

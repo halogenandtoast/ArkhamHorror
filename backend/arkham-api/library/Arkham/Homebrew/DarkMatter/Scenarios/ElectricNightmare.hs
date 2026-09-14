@@ -3,7 +3,6 @@ module Arkham.Homebrew.DarkMatter.Scenarios.ElectricNightmare (electricNightmare
 import Arkham.Card
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (allInvestigators)
-import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens)
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
@@ -17,7 +16,6 @@ import Arkham.Id
 import Arkham.Location.Grid
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
-import Arkham.Modifier (ModifierType (DoubleModifiersOnChaosTokens))
 import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
@@ -120,27 +118,12 @@ instance RunMessage ElectricNightmare where
         when (recorded (unInvestigatorId iid) `elem` infected) do
           card <- genCard Enemies.cybervirus
           addToHand iid (only card)
+    -- [tablet]: "Reveal another token. Double that token's modifier."
     ResolveChaosToken _ Tablet iid -> do
-      -- [tablet]: "Reveal another token. Double that token's modifier."
-      --
-      -- The freshly drawn token does not exist yet, so we snapshot the tokens
-      -- already revealed for this test and hand them to a follow-up message.
-      -- Everything 'DrawAnotherChaosToken' queues (RequestAnotherChaosToken ->
-      -- RevealChaosToken -> RevealSkillTestChaosTokens -> ResolveChaosToken) is
-      -- pushed to the front of the queue, so the follow-up runs once the new
-      -- token is on the table but still well before ST.6 computes the result.
-      before <- map (.id) <$> getSkillTestRevealedChaosTokens
-      pushAll [DrawAnotherChaosToken iid, ScenarioSpecific "doubleRevealedToken" (toJSON before)]
+      revealAnotherChaosTokenAndDouble iid
       pure s
-    ScenarioSpecific "doubleRevealedToken" v -> do
-      -- Follow-up for the [tablet] effect above. The token the [tablet] caused
-      -- to be revealed is the first revealed token that was not in the
-      -- snapshot; if that token itself reveals more (bless/curse/frost, or
-      -- another [tablet]), those are later in the list and are left alone.
-      let before = toResult v :: [ChaosTokenId]
-      revealed <- getSkillTestRevealedChaosTokens
-      for_ (find ((`notElem` before) . (.id)) revealed) \token ->
-        chaosTokenEffect Tablet token DoubleModifiersOnChaosTokens
+    ScenarioSpecific ((== doubleRevealedTokenKey) -> True) v -> do
+      doubleRevealedToken v
       pure s
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       case token.face of
@@ -168,18 +151,6 @@ instance RunMessage ElectricNightmare where
     ScenarioResolution res -> scope "resolutions" do
       reintegratedCount <-
         selectCount $ VictoryDisplayCardMatch $ basic $ CardWithTitle "Reintegrated"
-      reminiscenceInVictory <-
-        selectAny
-          $ VictoryDisplayCardMatch
-          $ basic
-          $ mapOneOf
-            cardIs
-            [ Treacheries.reminiscencePledge
-            , Treacheries.reminiscenceSecrets
-            , Treacheries.reminiscenceCovenant
-            ]
-      let addReminiscenceToken = when reminiscenceInVictory $ addChaosToken ElderThing
-
       -- NoResolution routes to the loss (R1) with no Reintegrated cards, or the
       -- partial ending (R2) if at least one child was reintegrated.
       let resolved = case res of

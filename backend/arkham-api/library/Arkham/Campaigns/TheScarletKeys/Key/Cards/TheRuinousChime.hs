@@ -22,7 +22,9 @@ instance HasAbilities TheRuinousChime where
             [ restricted
                 a
                 1
-                (exists $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeEvadedBy (a.ability 1))
+                ( youExist (InvestigatorWithId iid)
+                    <> exists (EnemyAt (locationWithInvestigator iid) <> EnemyCanBeEvadedBy (a.ability 1))
+                )
                 $ FastAbility Free
             ]
           Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]

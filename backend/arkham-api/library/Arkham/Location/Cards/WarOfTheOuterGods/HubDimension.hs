@@ -47,11 +47,11 @@ instance RunMessage HubDimension where
       unless (null ancientOnes) do
         scenarioI18n $ chooseOrRunOneM iid do
           when (clues >= 3) do
-            labeled' "spendClues" do
+            labeled "spendClues" do
               spendClues iid 3
               chooseTargetM iid ancientOnes $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) damage
           when (around >= 2) do
-            labeled' "removeCluesFromAroundHubDimension" do
+            labeled "removeCluesFromAroundHubDimension" do
               removeCluesFromAroundHubDimension 2
               chooseTargetM iid ancientOnes $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) damage
       pure l

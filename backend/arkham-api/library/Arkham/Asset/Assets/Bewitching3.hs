@@ -65,7 +65,7 @@ instance RunMessage Bewitching3 where
       let underTitles = map toTitle attrs.cardsUnderneath
       let tricks = cards & filterCards (CardWithTrait Trait.Trick) & filter ((`notElem` underTitles) . toTitle)
       unless (null tricks) do
-        cardI18n $ scope "bewitching3" $ chooseUpToNM' iid 1 "chooseNoMoreTrickCards" do
+        cardI18n $ scope "bewitching3" $ chooseUpToNM iid 1 "chooseNoMoreTrickCards" do
           targets tricks \card -> do
             push $ RemoveCardFromSearch iid card.id
             push $ PlaceUnderneath (toTarget attrs) [card]
@@ -74,10 +74,10 @@ instance RunMessage Bewitching3 where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       canSearch <- can.search.deck iid
       chooseOrRunOneM iid do
-        (cardI18n $ labeled' "bewitching3.draw1AttachedCard") do
+        (cardI18n $ labeled "bewitching3.draw1AttachedCard") do
           focusCards attrs.cardsUnderneath $ chooseTargetM iid attrs.cardsUnderneath $ drawCard iid
         when canSearch do
-          (cardI18n $ labeled' "bewitching3.searchTopOfDeck")
+          (cardI18n $ labeled "bewitching3.searchTopOfDeck")
             do
               let cardMatcher = mapOneOf (CardWithTitle . toTitle) attrs.cardsUnderneath
               search iid attrs iid [fromTopOfDeck 9] (basic cardMatcher) (DrawFound iid 1)

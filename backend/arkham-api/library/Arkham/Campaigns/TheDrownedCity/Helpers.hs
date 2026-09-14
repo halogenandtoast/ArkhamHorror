@@ -80,6 +80,15 @@ the two windows.
 taskEnds :: WindowMatcher
 taskEnds = oneOf [GameEnds #when, InvestigatorEliminated #when You]
 
+{- | A Task's progress check, capped at once per game.
+
+An investigator who resigns and then ends the scenario opens both of 'taskEnds'
+windows, and a forced ability's default 'GroupLimit PerWindow' only dedupes within
+one window, so the progress would be marked twice.
+-}
+taskEndsAbility :: (HasCardCode a, Sourceable a) => a -> Criterion -> Ability
+taskEndsAbility a crit = onlyOnce $ controlled a 2 crit $ forced taskEnds
+
 investigatorHasTask
   :: (HasGame m, HasCardDef card) => InvestigatorId -> card -> m Bool
 investigatorHasTask iid (toCardDef -> cardDef) = do
@@ -154,6 +163,19 @@ expeditionItems =
   , Assets.divingSuitTheDrownedCity
   ]
 
+{- | The Expedition Items an investigator may still choose to begin play with.
+
+The set holds four Diving Suits but only one each of the rest, so availability is a
+count of the copies already in play against @cdEncounterSetQuantity@ rather than a
+uniqueness check.
+-}
+getAvailableExpeditionItems :: HasGame m => m [CardDef]
+getAvailableExpeditionItems = filterM available expeditionItems
+ where
+  available def = do
+    inPlay <- selectCount (assetIs def)
+    pure $ inPlay < fromMaybe 1 (cdEncounterSetQuantity def)
+
 -- | Each Task: campaign-log key, the story-asset card, and its i18n label.
 tasks :: [(TheDrownedCityKey, CardDef, Text)]
 tasks =
@@ -193,6 +215,23 @@ vanishing, keeping the buttons lined up with the printed choices.
 -}
 canEraseProgress :: (HasGame m, IsCampaignLogKey k) => InvestigatorId -> k -> m Bool
 canEraseProgress iid k = (> 0) <$> getRecordCountForInvestigator iid k
+
+{- | "When your turn begins, if you are at a fully flooded location, you struggle for
+air." Diving Suit lets its controller treat a fully flooded location as partially
+flooded, so they never begin the struggle. Checked on the modifier rather than on the
+asset so it keeps holding if the suit is blanked.
+-}
+strugglesForAir :: (HasCardCode a, Sourceable a) => a -> Int -> Ability
+strugglesForAir a n =
+  restricted
+    a
+    n
+    ( youExist
+        $ at_ FullyFloodedLocation
+        <> InvestigatorWithoutModifier TreatFullyFloodedAsPartiallyFlooded
+    )
+    $ forced
+    $ TurnBegins #when You
 
 struggleForAir
   :: (Sourceable a, HasGame m, HasQueue Message m) => a -> InvestigatorId -> m ()

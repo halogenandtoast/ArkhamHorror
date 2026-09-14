@@ -23,8 +23,8 @@ instance RunMessage BestLaidPlans where
       n <- iid.remainingActions
       chooseOneM iid do
         when (n > 0) do
-          withI18n $ countVar 2 $ labeled' "loseActions" $ loseActions iid attrs 2
-        campaignI18n $ labeled' "bestLaidPlans.shuffle" $ doStep 1 msg
+          withI18n $ countVar 2 $ labeled "loseActions" $ loseActions iid attrs 2
+        campaignI18n $ labeled "bestLaidPlans.shuffle" $ doStep 1 msg
       pure t
     DoStep 1 (Revelation _iid (isSource attrs -> True)) -> do
       getEncounterDeck >>= \case

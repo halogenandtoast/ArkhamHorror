@@ -1,8 +1,12 @@
-module Arkham.Decklist.RandomBasicWeakness where
+module Arkham.Decklist.RandomBasicWeakness (
+  module Arkham.Decklist.RandomBasicWeakness,
+  module Arkham.Decklist.CardPool,
+) where
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.ClassSymbol
+import Arkham.Decklist.CardPool
 import Arkham.Decklist.Type
 import Arkham.PlayerCard
 import Arkham.Prelude
@@ -10,16 +14,28 @@ import Arkham.Taboo
 import Data.List.Extra (groupSortOn)
 import Data.Text qualified as T
 
-newtype ArkhamBuildCardPool = ArkhamBuildCardPool [Text]
-  deriving stock (Show, Eq, Ord)
-
 data RandomBasicWeaknessContext = RandomBasicWeaknessContext
   { rbwInvestigatorClass :: ClassSymbol
   , rbwPlayerCount :: Int
-  , rbwDecklist :: Maybe ArkhamDBDecklist
+  , rbwTaboo :: Maybe TabooList
+  , rbwCardPool :: Maybe ArkhamBuildCardPool
   , rbwStandalone :: Bool
   }
   deriving stock (Show, Eq, Ord)
+
+{- | The context deck building uses. Taboo and card pool are the only things the decklist
+contributes, so anything drawing a weakness mid-game supplies them directly instead.
+-}
+decklistWeaknessContext
+  :: ClassSymbol -> Int -> Bool -> Maybe ArkhamDBDecklist -> RandomBasicWeaknessContext
+decklistWeaknessContext investigatorClass playerCount standalone mDecklist =
+  RandomBasicWeaknessContext
+    { rbwInvestigatorClass = investigatorClass
+    , rbwPlayerCount = playerCount
+    , rbwTaboo = mDecklist >>= fromTabooId . taboo_id
+    , rbwCardPool = mDecklist >>= parseArkhamBuildCardPool
+    , rbwStandalone = standalone
+    }
 
 newtype ArkhamBuildDecklistMeta = ArkhamBuildDecklistMeta
   { card_pool :: Maybe Text
@@ -41,20 +57,37 @@ parseArkhamBuildCardPool decklist = do
   pure $ ArkhamBuildCardPool tokens
 
 randomBasicWeaknessCandidates :: RandomBasicWeaknessContext -> [CardDef]
-randomBasicWeaknessCandidates ctx =
-  filter (weaknessFilter ctx) $ tabooMutate ctx <$> allBasicWeaknesses
+randomBasicWeaknessCandidates = randomBasicWeaknessCandidatesMatching (const True)
+
+{- | As 'randomBasicWeaknessCandidates', but with an extra filter layered on top of the
+built-in ones -- the caller's 'Arkham.Matcher.CardMatcher' for an in-game search, say.
+-}
+randomBasicWeaknessCandidatesMatching
+  :: (CardDef -> Bool) -> RandomBasicWeaknessContext -> [CardDef]
+randomBasicWeaknessCandidatesMatching f ctx =
+  filter (\cardDef -> weaknessFilter ctx cardDef && f cardDef)
+    $ tabooMutate ctx
+    <$> allBasicWeaknesses
 
 randomBasicWeaknessSamplingCandidates :: RandomBasicWeaknessContext -> [CardDef]
-randomBasicWeaknessSamplingCandidates ctx =
-  let candidates = randomBasicWeaknessCandidates ctx
-   in if null candidates then randomBasicWeaknessCandidatesIgnoringCardPool ctx else candidates
+randomBasicWeaknessSamplingCandidates = randomBasicWeaknessSamplingCandidatesMatching (const True)
+
+randomBasicWeaknessSamplingCandidatesMatching
+  :: (CardDef -> Bool) -> RandomBasicWeaknessContext -> [CardDef]
+randomBasicWeaknessSamplingCandidatesMatching f ctx =
+  let candidates = randomBasicWeaknessCandidatesMatching f ctx
+   in if null candidates then randomBasicWeaknessCandidatesIgnoringCardPool f ctx else candidates
 
 {- | The legal candidates grouped by the card they print, so a weakness reprinted in
 Revised Core or Chapter 2 forms one group rather than two or three entries.
 -}
 randomBasicWeaknessSamplingGroups :: RandomBasicWeaknessContext -> [NonEmpty CardDef]
-randomBasicWeaknessSamplingGroups =
-  mapMaybe nonEmpty . groupSortOn canonicalCardCode . randomBasicWeaknessSamplingCandidates
+randomBasicWeaknessSamplingGroups = randomBasicWeaknessSamplingGroupsMatching (const True)
+
+randomBasicWeaknessSamplingGroupsMatching
+  :: (CardDef -> Bool) -> RandomBasicWeaknessContext -> [NonEmpty CardDef]
+randomBasicWeaknessSamplingGroupsMatching f =
+  mapMaybe nonEmpty . groupSortOn canonicalCardCode . randomBasicWeaknessSamplingCandidatesMatching f
 
 {- | Sample the weakness first, then the printing. Sampling the flat candidate list
 instead would weight a reprinted weakness two or three times as heavily as one that was
@@ -78,22 +111,34 @@ repeat is far better than failing to build a deck at all.
 -}
 sampleRandomBasicWeaknessExcluding
   :: MonadRandom m => [CardCode] -> RandomBasicWeaknessContext -> m CardDef
-sampleRandomBasicWeaknessExcluding excluded ctx = do
-  let groups =
-        fromJustNote "No random basic weakness candidates"
-          $ nonEmpty
-          $ randomBasicWeaknessSamplingGroups ctx
-      allowed = filter (\(cardDef :| _) -> canonicalCardCode cardDef `notElem` excluded) (toList groups)
-  printings <- sample $ fromMaybe groups (nonEmpty allowed)
-  sample printings
+sampleRandomBasicWeaknessExcluding excluded ctx =
+  fromJustNote "No random basic weakness candidates"
+    <$> sampleRandomBasicWeaknessMatching (const True) excluded ctx
+
+{- | As 'sampleRandomBasicWeaknessExcluding', with an extra filter applied alongside the
+built-in ones. Returns 'Nothing' when nothing at all matches -- an in-game search for a
+weakness with a given trait has to be able to come back empty-handed.
+-}
+sampleRandomBasicWeaknessMatching
+  :: MonadRandom m
+  => (CardDef -> Bool) -> [CardCode] -> RandomBasicWeaknessContext -> m (Maybe CardDef)
+sampleRandomBasicWeaknessMatching f excluded ctx =
+  case nonEmpty (randomBasicWeaknessSamplingGroupsMatching f ctx) of
+    Nothing -> pure Nothing
+    Just groups -> do
+      let allowed = filter (\(cardDef :| _) -> canonicalCardCode cardDef `notElem` excluded) (toList groups)
+      printings <- sample $ fromMaybe groups (nonEmpty allowed)
+      Just <$> sample printings
 
 tabooMutate :: RandomBasicWeaknessContext -> CardDef -> CardDef
-tabooMutate RandomBasicWeaknessContext {rbwDecklist} cardDef =
-  maybe id tabooListModify (rbwDecklist >>= fromTabooId . taboo_id) cardDef
+tabooMutate RandomBasicWeaknessContext {rbwTaboo} cardDef = maybe id tabooListModify rbwTaboo cardDef
 
-randomBasicWeaknessCandidatesIgnoringCardPool :: RandomBasicWeaknessContext -> [CardDef]
-randomBasicWeaknessCandidatesIgnoringCardPool ctx =
-  filter (weaknessFilterIgnoringCardPool ctx) $ tabooMutate ctx <$> allBasicWeaknesses
+randomBasicWeaknessCandidatesIgnoringCardPool
+  :: (CardDef -> Bool) -> RandomBasicWeaknessContext -> [CardDef]
+randomBasicWeaknessCandidatesIgnoringCardPool f ctx =
+  filter (\cardDef -> weaknessFilterIgnoringCardPool ctx cardDef && f cardDef)
+    $ tabooMutate ctx
+    <$> allBasicWeaknesses
 
 weaknessFilter :: RandomBasicWeaknessContext -> CardDef -> Bool
 weaknessFilter ctx cardDef =
@@ -129,74 +174,4 @@ standaloneAllowed RandomBasicWeaknessContext {rbwStandalone} cardDef =
   not rbwStandalone || CampaignModeOnly `notElem` cdDeckRestrictions cardDef
 
 cardPoolAllowed :: RandomBasicWeaknessContext -> CardDef -> Bool
-cardPoolAllowed RandomBasicWeaknessContext {rbwDecklist} cardDef =
-  case rbwDecklist >>= parseArkhamBuildCardPool of
-    Nothing -> True
-    Just (ArkhamBuildCardPool []) -> True
-    Just (ArkhamBuildCardPool tokens) ->
-      let predicates = mapMaybe tokenPredicate tokens
-       in null predicates || any ($ toCardCode cardDef) predicates
-
-tokenPredicate :: Text -> Maybe (CardCode -> Bool)
-tokenPredicate token
-  | token == "cycle:investigator_decks_ch2" =
-      Just \cardCode -> cardCode.isChapterTwo && cardCodeStartsWith "60" cardCode
-  | "pack:" `T.isPrefixOf` token =
-      let packToken = T.drop 5 token
-       in Just
-            if T.null packToken
-              then const False
-              else cardCodeStartsWithAny $ fromMaybe [packToken] $ tokenPrefixes packToken
-  | otherwise = cardCodeStartsWithAny <$> tokenPrefixes token
-
-cardCodeStartsWith :: Text -> CardCode -> Bool
-cardCodeStartsWith prefix = T.isPrefixOf prefix . unCardCode
-
-cardCodeStartsWithAny :: [Text] -> CardCode -> Bool
-cardCodeStartsWithAny prefixes cardCode = any (`cardCodeStartsWith` cardCode) prefixes
-
-tokenPrefixes :: Text -> Maybe [Text]
-tokenPrefixes token = case fromMaybe token $ T.stripPrefix "cycle:" token of
-  "core" -> Just ["010", "011"]
-  "rcore" -> Just ["015", "016"]
-  "dwl" -> Just ["02"]
-  "dwlp" -> Just ["02"]
-  "ptc" -> Just ["03"]
-  "ptcp" -> Just ["03"]
-  "tfa" -> Just ["04"]
-  "tfap" -> Just ["04"]
-  "tcu" -> Just ["05"]
-  "tcup" -> Just ["05"]
-  "tde" -> Just ["06"]
-  "tdep" -> Just ["06"]
-  "tic" -> Just ["07"]
-  "ticp" -> Just ["07"]
-  "eote" -> Just ["08"]
-  "eoep" -> Just ["08"]
-  "tsk" -> Just ["09"]
-  "tskp" -> Just ["09"]
-  "fhv" -> Just ["10"]
-  "fhvp" -> Just ["10"]
-  "tdc" -> Just ["11"]
-  "tdcp" -> Just ["11"]
-  "core_ch2" -> Just ["12"]
-  "core2026" -> Just ["12"]
-  "core_2026" -> Just ["12"]
-  "return" -> Just ["5"]
-  "rtnotz" -> Just ["50"]
-  "rtdwl" -> Just ["51"]
-  "rtptc" -> Just ["52"]
-  "rttfa" -> Just ["53"]
-  "rttcu" -> Just ["54"]
-  "investigator_decks" -> Just ["60"]
-  "nat" -> Just ["6010"]
-  "tom" -> Just ["6015"]
-  "har" -> Just ["6020"]
-  "car" -> Just ["6025"]
-  "win" -> Just ["6030"]
-  "and" -> Just ["6035"]
-  "jac" -> Just ["6040"]
-  "mar" -> Just ["6045"]
-  "ste" -> Just ["6050"]
-  "mig" -> Just ["6055"]
-  _ -> Nothing
+cardPoolAllowed RandomBasicWeaknessContext {rbwCardPool} = cardPoolAllows rbwCardPool . toCardCode

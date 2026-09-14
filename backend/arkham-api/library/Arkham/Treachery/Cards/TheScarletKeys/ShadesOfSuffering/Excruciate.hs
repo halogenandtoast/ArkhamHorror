@@ -36,6 +36,6 @@ instance RunMessage Excruciate where
       hasDiscard <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
       chooseOneM iid $ withI18n do
         countVar n $ labeledValidate' hasDiscard "discardCardsFromHand" $ chooseAndDiscardCards iid attrs n
-        countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
+        countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
       pure t
     _ -> Excruciate <$> liftRunMessage msg attrs

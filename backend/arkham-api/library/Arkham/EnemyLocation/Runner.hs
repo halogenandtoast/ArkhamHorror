@@ -182,7 +182,13 @@ instance RunMessage EnemyLocationAttrs where
         $ EnemyAttack
         $ (enemyAttack (asEnemyId a) a iid) {attackType = RetaliateAttack}
       pure a
-    EnemyEvaded _ eid | eid == asEnemyId a -> pure $ a & exhaustedL .~ True
+    -- Mirror the enemy runner: without the would-batch and the when/after
+    -- EnemyEvaded windows, "after you evade an enemy" reactions (Rita Young,
+    -- Dirty Fighting) never see an enemy-location.
+    EnemyEvaded iid eid | eid == asEnemyId a -> do
+      Evade.pushEvadedWindows iid eid msg
+      pure a
+    Do (EnemyEvaded _ eid) | eid == asEnemyId a -> pure $ a & exhaustedL .~ True
     Exhaust ea | isEnemyTarget a ea.target -> pure $ a & exhaustedL .~ True
     ReadyExhausted | not a.defeated -> do
       when a.exhausted $ push $ Ready (toTarget a)
@@ -266,7 +272,9 @@ instance RunMessage EnemyLocationAttrs where
       when (modifiedAmount > 0) do
         Damage.fireDamageWindows source (toTarget (asEnemyId a)) damageEffect modifiedAmount do
           push $ Msg.Damaged (EnemyTarget eid) da {damageAssignmentAmount = modifiedAmount}
-        push $ CheckDefeated source (toTarget a)
+          -- inside the body so the defeat resolves before the after-windows, like the
+          -- enemy runner's Damaged handler does, #5682
+          push $ CheckDefeated source (toTarget a)
       pure $ a & baseL . tokensL %~ addTokens Damage modifiedAmount
     HealDamage (EnemyTarget eid) source n | eid == asEnemyId a -> do
       let healAmount = min n (enemyLocationDamage a)

@@ -50,7 +50,7 @@ instance HasChaosTokenValue ThePitOfDespair where
 instance RunMessage ThePitOfDespair where
   runMessage msg s@(ThePitOfDespair attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      story $ i18nWithHeading "intro"
       pure s
     StandaloneSetup -> do
       {- FOURMOLU_DISABLE -}

@@ -2,20 +2,15 @@ module Arkham.Homebrew.DarkMatter.Enemies.Rats (rats) where
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype Rats = Rats EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rats :: EnemyCard Rats
 rats = enemy Rats Cards.rats
-
-instance HasModifiersFor Rats where
-  getModifiersFor (Rats a) = modifySelf a [AddKeyword Keyword.Hunter]
 
 -- "Forced - After you defeat Rats?: Draw the top card of the encounter deck."
 instance HasAbilities Rats where

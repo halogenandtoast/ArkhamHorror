@@ -71,7 +71,7 @@ instance RunMessage TheDoomOfArkhamPartI where
   runMessage msg s@(TheDoomOfArkhamPartI attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       flavor do
-        setTitle "title"
+        h "title"
         p "intro1"
         p "intro2"
         p "intro3"
@@ -176,7 +176,7 @@ instance RunMessage TheDoomOfArkhamPartI where
       investigators <- select Anyone
       legrasse <- genPlayerCard Assets.johnRaymondLegrasse
       chooseOrRunOneM lead do
-        questionLabeled' "chooseLegrasseInvestigator"
+        questionLabeled "chooseLegrasseInvestigator"
         targets investigators \iid ->
           createAssetAt_ (PlayerCard $ setPlayerCardOwner iid legrasse) (InPlayArea iid)
     -- {cultist}: "If this test fails, place 1 doom on the nearest enemy with no doom
@@ -211,6 +211,9 @@ instance RunMessage TheDoomOfArkhamPartI where
           resolution1 attrs
         _ -> error $ "Unknown resolution: " <> show res
       pure s
+    RequestedPlayerCard iid (isSource attrs -> True) mcard _ -> do
+      for_ mcard (addCampaignCardToDeck iid ShuffleIn)
+      pure s
     _ -> TheDoomOfArkhamPartI <$> liftRunMessage msg attrs
 
 {- | "Proceed to Resolution 1." Reached both by The Phantom Shop's 5-artifact branch
@@ -233,5 +236,5 @@ resolution1 attrs = do
   unless (null flooded) $ recordSetInsert FloodedNeighborhoods flooded
 
   resolutionWithXpAndChooseOne "resolution1" (allGainXp' attrs) do
-    labeled' "readyToFight" $ resolution "resolution2" >> endOfScenarioThen TheDoomOfArkhamPartII
-    labeled' "needMoreTime" $ resolution "resolution3" >> endOfScenarioThen TheDoomOfArkhamPartII
+    labeled "readyToFight" $ resolution "resolution2" >> endOfScenarioThen TheDoomOfArkhamPartII
+    labeled "needMoreTime" $ resolution "resolution3" >> endOfScenarioThen TheDoomOfArkhamPartII

@@ -71,7 +71,7 @@ instance RunMessage WealdOfEffigiesA where
                   scenarioSpecific "swapMiniCards" (card.id, other.id)
                   do_ $ PlaceConcealedCard iid card.id other.placement
                   do_ $ PlaceConcealedCard iid other.id card.placement
-        labeled' "wealdOfEffigies.locations" do
+        labeled "wealdOfEffigies.locations" do
           chooseOneM iid do
             for_ (eachWithRest locations) \(x, rest) -> do
               targeting x do

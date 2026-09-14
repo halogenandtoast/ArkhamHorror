@@ -2,18 +2,29 @@ module Arkham.Homebrew.DarkMatter.MotionScanning (
   motionScannable,
   motionScanModifiers,
   motionScanAbilities,
+  crewLeavingPlay,
+  insteadOfLosingCrew,
 ) where
 
 import Arkham.Ability
 import Arkham.Card.CardCode (HasCardCode)
 import Arkham.Classes.HasModifiersFor (HasModifiersM)
+import Arkham.Classes.HasQueue
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers (ModifierType (ScenarioModifier), modifySelect)
 import Arkham.Homebrew.DarkMatter.Helpers (getScanningDeck, scanAction, scanIcons)
+import Arkham.Id
 import Arkham.Matcher
+import Arkham.Message (Message (..))
+import Arkham.Message qualified as Msg
+import Arkham.Message.Lifted (insteadOfMatching)
 import Arkham.Prelude
 import Arkham.Source
+import Arkham.Target
 import Arkham.Trait (Trait (Crew))
+import Arkham.Window (Window, getMaybeBatchId, windowType)
+import Arkham.Window qualified as Window
+import Control.Monad.Trans.Class (MonadTrans)
 
 {- | The front side shared by all four "In the Shadow of Earth" agendas:
 
@@ -65,5 +76,40 @@ motionScanAbilities :: (HasCardCode a, Sourceable a) => a -> [Ability]
 motionScanAbilities a =
   [ restricted a 1 (exists $ YourLocation <> LocationWithModifier motionScannable)
       $ scanAction (GroupClueCost (PerPlayer 1) Anywhere)
-  , mkAbility a 2 $ forced $ AssetLeavesPlay #when (AssetWithTrait Crew)
+  , mkAbility a 2
+      $ forced
+      $ oneOf [AssetDefeated #when ByAny crewAsset, AssetWouldBeDiscarded #when crewAsset]
   ]
+ where
+  crewAsset = AssetWithTrait Crew
+
+{- | The [[Crew]] story asset the Forced clause is reacting to.
+
+"Defeated or discarded" is two different seams. Every crew member is Victory 1,
+so a defeated one never reaches a discard at all — the defeat resolution routes
+it straight to the victory display — while Contamination and Perfect Imitation
+discard one that is still healthy.
+-}
+crewLeavingPlay :: HasCallStack => [Window] -> AssetId
+crewLeavingPlay =
+  fromMaybe (error "missing crew asset") . asum . map \case
+    (windowType -> Window.AssetDefeated aid _) -> Just aid
+    (windowType -> Window.WouldBeDiscarded (AssetTarget aid)) -> Just aid
+    _ -> Nothing
+
+{- | "Remove it from the game" and "Attach it facedown to the Entity instead"
+both /replace/ what would have happened to the crew asset, so whichever half of
+'crewLeavingPlay' fired has to be called off first. A discard is a batch, and
+cancelling it drops the whole thing; a defeat is a plain frame, so only its @Do@
+half — the one that would move the card to the victory display — is swapped out.
+-}
+insteadOfLosingCrew
+  :: (MonadTrans t, HasQueue Message m, HasQueue Message (t m))
+  => [Window] -> AssetId -> Message -> t m ()
+insteadOfLosingCrew ws aid msg = case getMaybeBatchId ws of
+  Just batchId -> pushAll [CancelBatch batchId, msg]
+  Nothing -> insteadOfMatching isDefeated (push msg)
+ where
+  isDefeated = \case
+    Do (Msg.AssetDefeated _ aid') -> aid == aid'
+    _ -> False

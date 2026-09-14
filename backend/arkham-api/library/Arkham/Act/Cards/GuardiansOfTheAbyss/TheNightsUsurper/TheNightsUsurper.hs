@@ -62,8 +62,8 @@ instance RunMessage TheNightsUsurper where
       lead <- getLead
       if requirementsMet >= 3
         then campaignI18n $ chooseOneM lead do
-          labeled' "defeatingXzharah.proceed" $ push R2
-          labeled' "defeatingXzharah.flipBack" $ push $ RevertAct attrs.id
+          labeled "defeatingXzharah.proceed" $ push R2
+          labeled "defeatingXzharah.flipBack" $ push $ RevertAct attrs.id
         else push $ RevertAct attrs.id
       pure a
     RevertAct aid | aid == attrs.id && onSide B attrs -> do

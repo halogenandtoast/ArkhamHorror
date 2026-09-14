@@ -49,7 +49,7 @@ instance RunMessage DesperateSearch where
       leadPlayer <- getLeadPlayer
       investigators <- getInvestigators
       sendRevelation leadPlayer (toJSON $ flipCard $ toCard attrs)
-      scenarioI18n $ scope "codex.sigma" $ storyWithChooseOneM' (setTitle "title" >> p.green "body") do
+      scenarioI18n $ scope "codex.sigma" $ storyWithChooseOneM (setTitle "title" >> p.green "body") do
         portraits investigators \iid -> codex iid attrs Sigma
       advanceActDeck attrs
       pure a

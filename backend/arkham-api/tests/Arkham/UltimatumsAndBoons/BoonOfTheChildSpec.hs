@@ -21,11 +21,12 @@ spec = describe "Boon of the Child" $ do
       -- it goes to the bottom of the deck instead of the discard pile
       asDefs self.discard `shouldReturn` [Events.emergencyCache]
       asDefs self.deck `shouldReturn` [Assets.flashlight, Events.emergencyCache]
-      -- and the permission is spent for the rest of the round
-      getModifiers self `shouldContainM` [MetaModifier "usedBoonOfTheChild"]
+      -- and the permission is spent for the rest of the round. "An investigator
+      -- may play" is group-wide, so the marker sits on GameTarget, not on self
+      getModifiers GameTarget `shouldContainM` [MetaModifier "usedBoonOfTheChild"]
       asDefs self.playableCards `shouldReturn` []
 
     duringRound do
       -- the permission returns next round
-      getModifiers self `shouldNotContainM` [MetaModifier "usedBoonOfTheChild"]
+      getModifiers GameTarget `shouldNotContainM` [MetaModifier "usedBoonOfTheChild"]
       asDefs self.playableCards `shouldReturn` [Events.emergencyCache]

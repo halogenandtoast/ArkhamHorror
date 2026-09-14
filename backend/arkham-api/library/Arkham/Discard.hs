@@ -1,5 +1,6 @@
 module Arkham.Discard where
 
+import Arkham.Card
 import Arkham.Id
 import Arkham.Matcher
 import Arkham.Prelude
@@ -24,6 +25,11 @@ data HandDiscard msg = HandDiscard
   , discardAmount :: Int
   , discardThen :: Maybe msg
   , discardDestination :: DiscardDestination
+  , discardBatchCards :: [Card]
+  {- ^ Cards actually discarded so far by this batch, accumulated as each
+  'DiscardCard' resolves. Read at 'DoneDiscarding' to open a single
+  'DiscardedFromHandBatch' window for the whole discard.
+  -}
   }
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass ToJSON
@@ -38,6 +44,7 @@ instance FromJSON msg => FromJSON (HandDiscard msg) where
     discardAmount <- o .: "discardAmount"
     discardThen <- o .: "discardThen"
     discardDestination <- o .:? "discardDestination" .!= ToDiscardPile
+    discardBatchCards <- o .:? "discardBatchCards" .!= []
     pure HandDiscard {..}
 
 instance HasField "strategy" (HandDiscard msg) DiscardStrategy where

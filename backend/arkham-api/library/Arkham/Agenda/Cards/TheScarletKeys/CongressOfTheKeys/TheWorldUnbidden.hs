@@ -52,8 +52,8 @@ instance RunMessage TheWorldUnbidden where
         targets stableKeys \k -> do
           flipOver iid k
           chooseOneM iid do
-            labeled' "theWorldUnbidden.damage" $ push $ CancelDamage iid 1
-            labeled' "theWorldUnbidden.horror" $ push $ CancelHorror iid 1
+            labeled "theWorldUnbidden.damage" $ push $ CancelDamage iid 1
+            labeled "theWorldUnbidden.horror" $ push $ CancelHorror iid 1
         unscoped skip_
       pure a
     _ -> TheWorldUnbidden <$> liftRunMessage msg attrs

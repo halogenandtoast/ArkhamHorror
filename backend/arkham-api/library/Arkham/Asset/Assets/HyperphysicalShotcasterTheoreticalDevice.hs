@@ -225,7 +225,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
           -- If we have a valid target we can move any enemy to us, otherwise we have to move an evadeable enemy
           lid <- getJustLocation iid -- TODO: can we do this?
           chooseOneM iid do
-            when (notNull canEvade) $ (cardI18n $ labeled' "hyperphysicalShotcasterTheoreticalDevice.moveNothingBefore") $ doStep 1 msg
+            when (notNull canEvade) $ (cardI18n $ labeled "hyperphysicalShotcasterTheoreticalDevice.moveNothingBefore") $ doStep 1 msg
             targets canMoveEnemyToUs \enemy -> do
               if notNull canEvade
                 then enemyMoveTo attrs enemy lid
@@ -307,7 +307,7 @@ instance RunMessage HyperphysicalShotcasterTheoreticalDevice where
           <> InvestigatorCanMoveTo (toSource attrs) (locationWithInvestigator iid)
       lid <- getJustLocation iid -- TODO: can we do this?
       chooseOneM iid do
-        (cardI18n $ labeled' "hyperphysicalShotcasterTheoreticalDevice.moveNothingAfter") nothing
+        (cardI18n $ labeled "hyperphysicalShotcasterTheoreticalDevice.moveNothingAfter") nothing
         targets canMoveEnemyToUs \e -> enemyMoveTo attrs e lid
         targets canMoveEnemyAway \e -> enemyMoveToMatch attrs e (connectedFrom $ LocationWithId lid)
         targets canMoveOtherInvestigatorsAway \i -> moveToMatch attrs i (ConnectedFrom ForMovement $ LocationWithId lid)

@@ -22,8 +22,8 @@ instance RunMessage MemoriesOfAnotherLife5 where
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
       skillTestCardOption attrs do
         chooseOneM attrs.owner $ cardI18n $ scope "memoriesOfAnotherLife5" do
-          labeled' "removeFromGame" (doStep 1 msg)
-          labeled' "doNotRemove" nothing
+          labeled "removeFromGame" (doStep 1 msg)
+          labeled "doNotRemove" nothing
       pure s
     DoStep 1 (PassedSkillTest _ _ _ (isTarget attrs -> True) _ _) -> do
       let iid = attrs.owner

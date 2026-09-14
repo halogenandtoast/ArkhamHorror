@@ -2,7 +2,13 @@ module Arkham.Homebrew.DarkMatter.Stories.ArrivalOfTheKing (arrivalOfTheKing) wh
 
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Homebrew.DarkMatter.CardDefs.Stories qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (addImpendingDoom, crossOffMemories, getMemories)
+import Arkham.Homebrew.DarkMatter.Helpers (
+  campaignI18n,
+  crossOffImpendingDoom,
+  crossOffMemories,
+  getMemories,
+ )
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorName))
 import Arkham.Matcher
 import Arkham.Name (toTitle)
@@ -32,7 +38,14 @@ instance RunMessage ArrivalOfTheKing where
       let choices = [(name, (0, n)) | (name, n) <- entries, n > 0]
       if null choices
         then addToVictory iid attrs
-        else chooseAmounts iid "$count.memoriesToCrossOut" (MinAmountTarget 0) choices attrs
+        else
+          campaignI18n
+            $ chooseAmounts
+              iid
+              ("$" <> labelKey "arrivalOfTheKing.memoriesToCrossOut")
+              (MinAmountTarget 0)
+              choices
+              attrs
       pure s
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
       named <- selectWithField InvestigatorName UneliminatedInvestigator
@@ -41,7 +54,7 @@ instance RunMessage ArrivalOfTheKing where
         when (n > 0) $ crossOffMemories iid' n
         pure n
       per2 <- perPlayer 2
-      when (per2 > 0) $ addImpendingDoom (negate $ sum crossed `div` per2)
+      when (per2 > 0) $ crossOffImpendingDoom (sum crossed `div` per2)
       addToVictory iid attrs
       pure s
     _ -> ArrivalOfTheKing <$> liftRunMessage msg attrs

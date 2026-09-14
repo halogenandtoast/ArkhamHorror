@@ -12,9 +12,11 @@ import Arkham.Effect.Types (finishedL)
 import Arkham.Helpers.Card
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Helpers.Window (getCommittedCard)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
+import Arkham.Queue (QueueT)
 import Arkham.SkillType
 
 newtype GrislyTotemSeeker3 = GrislyTotemSeeker3 AssetAttrs
@@ -30,14 +32,9 @@ instance HasAbilities GrislyTotemSeeker3 where
         $ triggered (CommittedCard #after You #any) (exhaust a)
     ]
 
-toSkillLabel :: SkillIcon -> Text
-toSkillLabel WildMinusIcon = "Choose Minus {wild}"
-toSkillLabel WildIcon = "Choose {wild}"
-toSkillLabel (SkillIcon sType) = case sType of
-  SkillWillpower -> "Choose {willpower}"
-  SkillIntellect -> "Choose {intellect}"
-  SkillCombat -> "Choose {combat}"
-  SkillAgility -> "Choose {agility}"
+skillIconLabeled :: ReverseQueue m => SkillIcon -> QueueT Message m () -> ChooseT m ()
+skillIconLabeled WildMinusIcon body = withI18n $ labeled "chooseMinusWild" body
+skillIconLabeled icon body = withI18n $ skillIconVar icon $ labeled "chooseSkillIcon" body
 
 instance RunMessage GrislyTotemSeeker3 where
   runMessage msg a@(GrislyTotemSeeker3 attrs) = runQueueT $ case msg of
@@ -46,7 +43,7 @@ instance RunMessage GrislyTotemSeeker3 where
         icons <- setFromList @(Set SkillIcon) <$> iconsForCard card
         chooseOrRunOneM iid do
           for_ (setToList icons) \icon -> do
-            labeled (toSkillLabel icon)
+            skillIconLabeled icon
               $ skillTestModifier sid (attrs.ability 1) card (AddSkillIcons [icon])
         createCardEffect Cards.grislyTotemSeeker3 Nothing (attrs.ability 1) sid
       pure a

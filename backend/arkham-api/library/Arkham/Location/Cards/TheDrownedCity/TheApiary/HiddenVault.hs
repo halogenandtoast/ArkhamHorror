@@ -14,13 +14,13 @@ newtype HiddenVault = HiddenVault LocationAttrs
 
 hiddenVault :: LocationCard HiddenVault
 hiddenVault =
-  locationWith HiddenVault Cards.hiddenVault 3 (Static 1) (canBeFlippedL .~ True)
+  locationWith HiddenVault Cards.hiddenVault 3 (PerPlayer 1) (canBeFlippedL .~ True)
 
 instance HasAbilities HiddenVault where
   getAbilities (HiddenVault a) =
     extendRevealed
       a
-      [ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
+      [ mkAbility a 1 $ forced $ LocationEntersPlay #after (be a)
       , restricted a 2 Here
           $ freeReaction
           $ SkillTestResult #after You (WhileEvadingAnEnemy $ enemyAt a) (SuccessResult $ atLeast 2)

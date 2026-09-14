@@ -33,7 +33,7 @@ instance RunMessage OldCompass where
         withSkillTest \stid -> do
           sid <- getRandom
           chooseOneM iid $ cardI18n $ scope "oldCompass" do
-            labeled' "exhaustToRepeat" do
+            labeled "exhaustToRepeat" do
               exhaustThis attrs
               push $ RepeatSkillTest sid stid
             withI18n skip_

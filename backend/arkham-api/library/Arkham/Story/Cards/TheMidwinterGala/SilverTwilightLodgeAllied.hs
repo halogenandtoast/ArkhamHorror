@@ -32,8 +32,8 @@ instance RunMessage SilverTwilightLodgeAllied where
     DiscardedTopOfEncounterDeck iid [card] _ (isTarget attrs -> True) -> do
       focusCards [card] do
         chooseOneM iid $ withI18n do
-          labeled' "drawTheCard" $ drawCard iid card
-          labeled' "doNotDraw" nothing
+          labeled "drawTheCard" $ drawCard iid card
+          labeled "doNotDraw" nothing
       pure s
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advanceCurrentAct (attrs.ability 2)

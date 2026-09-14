@@ -33,7 +33,7 @@ instance RunMessage InexplicableCold where
           chooseOneM iid do
             targets assets $ toDiscardBy iid attrs
             targets hand $ discardCard iid attrs
-            withI18n $ countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
+            withI18n $ countVar 1 $ labeled "takeDamage" $ assignDamage iid attrs 1
           doStep (n - 1) msg'
 
       pure t

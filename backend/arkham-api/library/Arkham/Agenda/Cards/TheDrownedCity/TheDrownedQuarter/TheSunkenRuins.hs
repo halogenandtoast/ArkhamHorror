@@ -1,12 +1,10 @@
 module Arkham.Agenda.Cards.TheDrownedCity.TheDrownedQuarter.TheSunkenRuins (theSunkenRuins) where
 
-import Arkham.Ability
 import Arkham.Agenda.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.TheDrownedCity.Helpers
 import Arkham.Card
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Enemies
-import Arkham.Matcher
 
 newtype TheSunkenRuins = TheSunkenRuins AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -16,11 +14,7 @@ theSunkenRuins :: AgendaCard TheSunkenRuins
 theSunkenRuins = agenda (1, A) TheSunkenRuins Cards.theSunkenRuins (Static 7)
 
 instance HasAbilities TheSunkenRuins where
-  getAbilities (TheSunkenRuins a) =
-    [ restricted a 1 (youExist $ at_ FullyFloodedLocation)
-        $ forced
-        $ TurnBegins #when You
-    ]
+  getAbilities (TheSunkenRuins a) = [strugglesForAir a 1]
 
 instance RunMessage TheSunkenRuins where
   runMessage msg a@(TheSunkenRuins attrs) = runQueueT $ case msg of

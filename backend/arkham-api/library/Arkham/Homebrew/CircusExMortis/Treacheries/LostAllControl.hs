@@ -65,11 +65,11 @@ instance RunMessage LostAllControl where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ campaignI18n $ scope "lostAllControl" $ case attrs.placement of
         AttachedToAsset aid _ -> do
-          labeled' "directDamage" $ dealAssetDirectDamage aid attrs 1
-          labeled' "directHorror" $ dealAssetDirectDamageAndHorror aid attrs 0 1
+          labeled "directDamage" $ dealAssetDirectDamage aid attrs 1
+          labeled "directHorror" $ dealAssetDirectDamageAndHorror aid attrs 0 1
         AttachedToInvestigator bearer -> do
-          labeled' "directDamage" $ directDamageAndHorror bearer attrs 1 0
-          labeled' "directHorror" $ directDamageAndHorror bearer attrs 0 1
+          labeled "directDamage" $ directDamageAndHorror bearer attrs 1 0
+          labeled "directHorror" $ directDamageAndHorror bearer attrs 0 1
         _ -> pure ()
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do

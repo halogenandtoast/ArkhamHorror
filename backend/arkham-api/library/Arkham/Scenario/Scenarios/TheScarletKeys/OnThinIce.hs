@@ -81,7 +81,7 @@ instance RunMessage OnThinIce where
     PreScenarioSetup -> scope "intro" do
       wayfarer <- selectAny $ InvestigatorWithTrait Wayfarer
       flavor do
-        setTitle "title"
+        h "title"
         p "introPart1"
         p.validate wayfarer "wayfarer"
         p "introPart2"

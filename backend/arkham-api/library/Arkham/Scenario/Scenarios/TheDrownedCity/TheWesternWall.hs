@@ -103,8 +103,8 @@ instance RunMessage TheWesternWall where
   runMessage msg s@(TheWesternWall attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      storyWithContinue' do
-        setTitle "title"
+      storyWithContinue do
+        h "title"
         p.basic "checkCampaignLog"
         ul do
           li.validate headedWest "headedWest"
@@ -120,7 +120,7 @@ instance RunMessage TheWesternWall where
         p.basic $ if headedWest then "proceedToWesternSetup" else "proceedToEasternSetup"
 
       when hasDoNoHarm do
-        storyWithChooseOneM'
+        storyWithChooseOneM
           ( compose.green do
               h3 "doNoHarm.title"
               p "doNoHarm.instructions"
@@ -131,8 +131,8 @@ instance RunMessage TheWesternWall where
                 li "doNoHarm.leaveBehind"
           )
           do
-            labeled' "doNoHarm.bringAlong" $ record TheExpeditionHelpedThePilgrim
-            labeled' "doNoHarm.leaveBehind" $ record TheExpeditionLeftThePilgrim
+            labeled "doNoHarm.bringAlong" $ record TheExpeditionHelpedThePilgrim
+            labeled "doNoHarm.leaveBehind" $ record TheExpeditionLeftThePilgrim
       pure s
     StandaloneSetup -> do
       setChaosTokens (chaosBagContents attrs.difficulty)
@@ -156,10 +156,10 @@ instance RunMessage TheWesternWall where
           li "setCardsAside"
           li "setAsideCoralStarSpawn"
           scope version $ li "buildActDeck"
-          li "chooseExpeditionAsset"
+          scope version $ li "chooseExpeditionAsset"
           li.nested "addFloodTokens" do
-            li "floodLevelsTwoToFive"
-            li "fullyFloodLevelsFourAndFive"
+            scope version $ li "floodLevels"
+            scope version $ li "fullyFloodLevels"
           li "buildEncounterDeck"
           li "readyToBegin"
 
@@ -235,24 +235,34 @@ instance RunMessage TheWesternWall where
           $ uncurry placeInGrid
       bottomLocations <-
         for (zip [atLevel 0 5, atLevel 1 5, atLevel 2 5] bottomRow) $ uncurry placeInGrid
-      let levelFourAndFive = drop 3 upperLocations <> bottomLocations
+      -- V.I floods levels 2–5 and fully floods 4–5; V.II starts at the ocean
+      -- floor instead, so it floods levels 1–4 and fully floods 1–2.
+      let (flooded, fullyFlooded) =
+            if headedWest
+              then
+                ( upperLocations <> bottomLocations
+                , drop 3 upperLocations <> bottomLocations
+                )
+              else
+                ( startingLocation : upperLocations
+                , startingLocation : take 1 upperLocations
+                )
 
-      traverse_ (push . IncreaseFloodLevel) $ upperLocations <> bottomLocations
-      traverse_ (push . IncreaseFloodLevel) levelFourAndFive
+      traverse_ (push . IncreaseFloodLevel) flooded
+      traverse_ (push . IncreaseFloodLevel) fullyFlooded
       startAt startingLocation
       whenHasRecord TheExpeditionLeftThePilgrim $ removeAllClues attrs startingLocation
       eachInvestigator (`forInvestigator` Setup)
     ForInvestigator iid Setup -> do
+      -- v.II offers an earned Artifact or an Expedition Item; v.I only the Item.
+      headedWest <- getHasRecord TheExpeditionHeadedWest
+      artifacts <- if headedWest then pure [] else getAvailableArtifacts
+      items <- getAvailableExpeditionItems
       chooseOneM iid do
-        questionLabeled' "chooseExpeditionAssetQuestion"
-        labeled' "noExpeditionAsset" nothing
-        for_
-          [ Assets.expeditionGear
-          , Assets.laudanum
-          , Assets.alienTablet
-          , Assets.divingSuitTheDrownedCity
-          ]
-          \asset -> cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
+        questionLabeled "chooseExpeditionAssetQuestion"
+        labeled "noExpeditionAsset" nothing
+        for_ (artifacts <> items) \asset ->
+          cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
       for_ (lookupCardDef cardCode) \def -> do
@@ -303,11 +313,11 @@ instance RunMessage TheWesternWall where
                   sufferMentalTrauma iid 1
                   decrementRecordCountForInvestigator iid Key.DoNoHarm 1
           chooseResolution3 =
-            storyWithChooseOneM'
+            storyWithChooseOneM
               (compose.resolution $ scope "resolution3" $ setTitle "title" >> p "body")
               do
-                labeled' "resolution3.drownedQuarter" $ endOfScenarioThen TheDrownedQuarter
-                labeled' "resolution3.apiary" $ endOfScenarioThen TheApiary
+                labeled "resolution3.drownedQuarter" $ endOfScenarioThen TheDrownedQuarter
+                labeled "resolution3.apiary" $ endOfScenarioThen TheApiary
       case res of
         Resolution 1 -> do
           resolutionWithXp "resolution1" $ allGainXp' attrs

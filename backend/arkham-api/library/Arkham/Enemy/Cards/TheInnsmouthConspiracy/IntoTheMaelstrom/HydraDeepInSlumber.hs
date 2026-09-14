@@ -53,9 +53,9 @@ instance RunMessage HydraDeepInSlumber where
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       chooseOrRunOneM iid $ scenarioI18n $ scope "hydraDeepInSlumber" do
         when attrs.ready do
-          labeled' "exhaustHydra" $ exhaustThis attrs
+          labeled "exhaustHydra" $ exhaustThis attrs
         when (attrs.doom > 0) do
-          labeled' "removeDoomFromHydra" $ removeDoom (attrs.ability 2) attrs 1
+          labeled "removeDoomFromHydra" $ removeDoom (attrs.ability 2) attrs 1
       pure e
     FailedThisSkillTestBy _iid (isAbilitySource attrs 2 -> True) n | n >= 3 -> do
       placeDoom (attrs.ability 2) attrs 1

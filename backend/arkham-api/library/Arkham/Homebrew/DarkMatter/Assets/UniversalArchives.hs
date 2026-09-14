@@ -3,7 +3,7 @@ module Arkham.Homebrew.DarkMatter.Assets.UniversalArchives (universalArchives) w
 import Arkham.Ability
 import Arkham.Asset.Import.Lifted
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (getScanningDeck, scan, scanAction, scanIcons)
+import Arkham.Homebrew.DarkMatter.Helpers (getScanningDeck, scanAction, scanAt, scanIcons)
 import Arkham.Location.Types (Field (LocationPrintedSymbol))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -22,7 +22,7 @@ location. Shuffle the scanning deck."
 -}
 instance HasAbilities UniversalArchives where
   getAbilities (UniversalArchives a) =
-    [controlled a 1 ControlsThis $ scanAction (exhaust a)]
+    [controlled_ a 1 $ scanAction (exhaust a)]
 
 instance RunMessage UniversalArchives where
   runMessage msg a@(UniversalArchives attrs) = runQueueT $ case msg of
@@ -36,6 +36,6 @@ instance RunMessage UniversalArchives where
       matching <- filterM (fmap (`elem` topIcons) . field LocationPrintedSymbol) revealed
       chooseTargetM iid matching \lid -> do
         symbol <- field LocationPrintedSymbol lid
-        scan iid (attrs.ability 1) [symbol]
+        scanAt iid (attrs.ability 1) lid [symbol]
       pure a
     _ -> UniversalArchives <$> liftRunMessage msg attrs

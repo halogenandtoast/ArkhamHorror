@@ -186,6 +186,14 @@ cthulhuPatrolledThisRound :: HasGame m => m Bool
 cthulhuPatrolledThisRound =
   selectAny $ enemyIs Enemies.cthulhuAncientEvil <> EnemyWithModifier cthulhuPatrolledMarker
 
+{- | "(Max one draw per round.)" — the elder thing token's Cthulhu deck draw.
+
+The cap is on the token effect rather than on any one investigator, so the marker is
+a round modifier on the scenario itself.
+-}
+cthulhuDeckDrawnMarker :: ModifierType
+cthulhuDeckDrawnMarker = ScenarioModifier "cthulhuDeckDrawn"
+
 {- | Cancel the automatic trip to the Cthulhu discard pile that the scenario queues
 for every drawn action card.
 

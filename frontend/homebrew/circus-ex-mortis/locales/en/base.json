@@ -1,15 +1,38 @@
 {
   "name": "Circus Ex Mortis",
   "intro": "<h1>In the Shadow of the New Moon</h1><p>The New Moon Circus has come to Arkham for one night only &mdash; and missing person cases and mysterious deaths have followed it up the coast. <i>Circus Ex Mortis</i> is an eight-part fan-made campaign for <i>Arkham Horror: The Card Game</i>, designed by Tyler Gotch.</p>",
+  "specialRules": [
+    {
+      "title": "Moon Tokens",
+      "body": "@:circusExMortis.additionalRules.moonTokens"
+    }
+  ],
   "additionalRules": {
     "title": "Additional Rules: Moon Tokens",
     "moonTokens": "<p class='basic'>This campaign introduces a new kind of chaos token: the moon ({'{'}moon{'}'}) token. During the <i>Circus Ex Mortis</i> campaign, the moon plays a significant role, and the moon token represents both the strength and severity of its strange influence.</p><ul><li>{'{'}moon{'}'} tokens revealed during a skill test have the following effect: “0. Seal this token on your investigator card and reveal another token.”</li><li>{'{'}moon{'}'} tokens sealed on your investigator card have no effect on their own, but some card effects may reference whether or not there is a {'{'}moon{'}'} token sealed on your investigator card, or the number of {'{'}moon{'}'} tokens sealed on your investigator card.</li><li>At the end of the round, for each {'{'}moon{'}'} token sealed on your investigator card, you must (choose one):<ul><li>That token stays sealed on your investigator card.</li><li>Take 1 damage or 1 horror. Then, release that token.</li></ul></li><li>A {'{'}moon{'}'} token revealed outside of a skill test has no effect on its own unless otherwise specified by a card effect.</li></ul>"
   },
   "prologue": {
     "title": "Prologue",
-    "body": "<p class='center'><b>****** COMING SOON – THE NEW MOON CIRCUS! ******</b></p><p class='center'><b>Come and see the greatest show in the world!</b></p><p class='center'><b>Death-defying acrobatics! Feats of supreme strength and skill!</b></p><p class='center'><b>A menagerie of the most incredible creatures alive!</b></p><p class='center'><b>Coming to your town this Sunday! One night only!</b></p><p class='center'><b>** DON'T MISS THIS ONCE-IN-A-LIFETIME CHANCE! **</b></p><p><i>Sunday, August 26th, 1923. Arkham, Massachusetts.</i></p><p>The New Moon Circus had been the talk of the town for the better part of the week. Traveling circuses tended to visit bigger cities for potential profit alone, and few people in Arkham could find time or money to visit Boston, New York, or Philadelphia on a whim. While the circus typically didn't draw the attention of high society, even the French Hill elite began to joke about seeing the circus for a lark. You confess, you had some interest in the circus as well, but not for the popular reasons.</p>",
-    "minnie": "<p>Minnie Klein of the Arkham Advertiser was the first one to bring the coincidences to your attention. You found Minnie waiting for you at Velma's Diner with her notepad in hand and a hungry look in her eyes – and it wasn't for the lunch specials. “Take a look at this,” she says, using her pencil like a teacher's pointer, “The New Moon Circus used to work the usual circuit in the south, hitting all the big cities like Atlanta and Jacksonville, and never going further north than Memphis. Then a month ago, the circus suddenly took off up the coast, and started working a bunch of podunk towns on the way north. Arkham's the biggest one they've hit since Savannah.”</p><p>You concede that there's probably something odd behind the circus's decision but you fail to see what about it has excited Minnie. She quickly elaborates. “Missing person cases <b>and</b> mysterious deaths in each town the New Moon Circus has visited at the time the circus was in town. And here's the kicker.” Minnie smiles proudly as she taps at the bottom of her pad. “The people who went to see the circus? Nobody can remember anything concrete about it. Two people who live three states away gave their local papers the exact same quote about their experience. How's that for fishy?”</p><p>Fishy enough to warrant your investigation at the very least. And so with tickets in hand and preparations made for any possible contingency, you set out for the circus. The evening is still bright owing to the time of year, but the full moon is already rising.</p>",
+    "body": "<p class='center basic'><b>_{asterisk}{asterisk}{asterisk}{asterisk}{asterisk} COMING SOON – THE NEW MOON CIRCUS! {asterisk}{asterisk}{asterisk}{asterisk}{asterisk}{asterisk}_</b></p><p class='center basic'>Come and see the <b>greatest show</b> in the <b>world!</b></p><p class='center basic'><b>Death-defying</b> acrobatics! Feats of <b>supreme strength and skill!</b></p><p class='center basic'><b>A <b>menagerie</b> of the most <b>incredible</b> creatures alive!</b></p><p class='center basic'>Coming to your town <b>this Sunday! One night only!</b></p><p class='center basic'><b>_{asterisk}{asterisk} DON'T MISS THIS ONCE-IN-A-LIFETIME CHANCE! {asterisk}{asterisk}_</b></p><p><i>Sunday, August 26th, 1923. Arkham, Massachusetts.</i></p><p>The New Moon Circus had been the talk of the town for the better part of the week. Traveling circuses tended to visit bigger cities for potential profit alone, and few people in Arkham could find time or money to visit Boston, New York, or Philadelphia on a whim. While the circus typically didn't draw the attention of high society, even the French Hill elite began to joke about seeing the circus for a lark. You confess, you had some interest in the circus as well, but not for the popular reasons.</p><p>Minnie Klein of the Arkham Advertiser was the first one to bring the coincidences to your attention. You found Minnie waiting for you at Velma's Diner with her notepad in hand and a hungry look in her eyes – and it wasn't for the lunch specials. “Take a look at this,” she says, using her pencil like a teacher's pointer, “The New Moon Circus used to work the usual circuit in the south, hitting all the big cities like Atlanta and Jacksonville, and never going further north than Memphis. Then a month ago, the circus suddenly took off up the coast, and started working a bunch of podunk towns on the way north. Arkham's the biggest one they've hit since Savannah.”</p><p>You concede that there's probably something odd behind the circus's decision but you fail to see what about it has excited Minnie. She quickly elaborates. “Missing person cases <b>and</b> mysterious deaths in each town the New Moon Circus has visited at the time the circus was in town. And here's the kicker.” Minnie smiles proudly as she taps at the bottom of her pad. “The people who went to see the circus? Nobody can remember anything concrete about it. Two people who live three states away gave their local papers the exact same quote about their experience. How's that for fishy?”</p><p>Fishy enough to warrant your investigation at the very least. And so with tickets in hand and preparations made for any possible contingency, you set out for the circus. The evening is still bright owing to the time of year, but the full moon is already rising.</p>",
     "addMoonTokens": "Add 3 {'{'}moon{'}'} tokens to the chaos bag for the remainder of the campaign."
+  },
+  "campaignReading": {
+    "title": "The Tarot Deck",
+    "body": "<p class='basic'>If investigators choose to use the Tarot Deck from the Return to the Circle Undone expansion, there is some thematic connection to the Circus Ex Mortis campaign. Investigators may choose to perform an 8-card Campaign Reading with these specific 8 cards, in this order: Magician, Hermit, Strength, Chariot, Devil, Temperance, Sun, Moon</p>",
+    "label": {
+      "performCampaignReading": "Perform Campaign Reading",
+      "performIndividualReadings": "Perform a tarot reading before each scenario instead"
+    }
+  },
+  "destiny": {
+    "oneNightOnly": "One Night Only",
+    "thePrimrosePath": "The Primrose Path",
+    "harm'sWay": "Harm's Way",
+    "allPointsWest": "All Points West",
+    "piperAtTheGatesOfDawn": "Piper at the Gates of Dawn",
+    "bacchanalia": "Bacchanalia",
+    "redSunrise": "Red Sunrise",
+    "thousandToOne": "Thousand to One"
   },
   "moonToken": {
     "label": {
@@ -45,7 +68,16 @@
     "theNewMoonCircusMaySomedayReturn": "The New Moon Circus may someday return."
   },
   "label": {
-    "sealMoonToken": "Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card"
+    "sealMoonToken": "<span>Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card</span>",
+    "brokenCouplings": {
+      "placeBetween": "Place between {locationA} and {locationB}"
+    },
+    "circusEncampment": {
+      "doneReleasingMoonTokens": "Done releasing moon tokens"
+    }
+  },
+  "tooltips": {
+    "moonlitForestShadowedPath": "Moonlit Forest (Shadowed Path): take 1 horror unless you have a {'{'}moon{'}'} token sealed on your investigator card."
   },
   "theBigTopThirdRing": {
     "label": {
@@ -55,7 +87,7 @@
   },
   "endlessSpawn": {
     "label": {
-      "autoSucceed": "Release a {'{'}moon{'}'} token sealed on your investigator card to automatically succeed"
+      "autoSucceed": "<span>Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card to automatically succeed</span>"
     }
   },
   "lostAllControl": {
@@ -66,8 +98,47 @@
   },
   "primordialEvils": {
     "label": {
-      "reduceTokens": "Attach Primordial Evils to the scenario reference card. Reduce the modifier of each {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, and {'{'}moon{'}'} token by 1",
+      "reduceTokens": "<span>Attach Primordial Evils to the scenario reference card. Reduce the modifier of each {'{'}skull{'}'}, {'{'}cultist{'}'}, {'{'}tablet{'}'}, {'{'}elderThing{'}'}, and {'{'}moon{'}'} token by 1</span>",
       "placeDoom": "Place 1 doom on the current agenda. This effect can cause the current agenda to advance"
+    }
+  },
+  "amaltheaWeaverOracleOfMystery": {
+    "label": {
+      "drawTopCard": "Draw the top card of their deck",
+      "drawBottomCard": "Draw the bottom card of their deck"
+    }
+  },
+  "invocationOfDiana": {
+    "label": {
+      "releaseTokens": "Release up to 2 {'{'}moon{'}'} tokens sealed on cards they control"
+    }
+  },
+  "closeWatch": {
+    "label": {
+      "spendAdditionalAction": "Spend 1 additional action",
+      "discardUntilEnemy": "After completing this action, discard cards from the top of the encounter deck until an enemy is discarded, and spawn it at your location"
+    }
+  },
+  "hiddenInPlainSight": {
+    "label": {
+      "spendCluesToAutoSucceed": "Spend clues as a group to automatically succeed",
+      "doNotSpendClues": "Do not spend {count} clues"
+    }
+  },
+  "underLockAndKey": {
+    "label": {
+      "spendCluesToAutoSucceed": "Spend clues as a group to automatically succeed",
+      "doNotSpendClues": "Do not spend {count} clues"
+    }
+  },
+  "clappedInIrons": {
+    "label": {
+      "chooseDamage": "How much damage will the group take to reduce the clue cost?"
+    }
+  },
+  "hypnoticState": {
+    "label": {
+      "chooseHorror": "How much horror will the group take to reduce the clue cost?"
     }
   }
 }

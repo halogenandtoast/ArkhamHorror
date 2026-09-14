@@ -44,7 +44,7 @@ instance RunMessage SwordCaneDesignedByTheCouncilOfPolls2 where
       enemies <- select $ enemyEngagedWith iid <> EnemyCanBeDamagedBySource (attrs.ability 2)
 
       chooseOneM iid do
-        (cardI18n $ labeled' "swordCaneDesignedByTheCouncilOfPolls2.doNotDealDamage") nothing
+        (cardI18n $ labeled "swordCaneDesignedByTheCouncilOfPolls2.doNotDealDamage") nothing
         targets enemies (nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1)
 
       push $ UseCardAbility iid (toSource attrs) 2 windows' payments

@@ -13,8 +13,9 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemies
 import Arkham.Exception
 import Arkham.FlavorText
+import Arkham.Helpers.FlavorText (addEntry, setup)
 import Arkham.Helpers.Log ()
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier, modifySelect)
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Xp
@@ -93,11 +94,11 @@ instance RunMessage TheHeartOfMadnessPart2 where
       setChaosTokens (#elderthing : #elderthing : chaosBagContents attrs.difficulty)
       lead <- getLead
       chooseOneM lead do
-        questionLabeled' "chooseSealCount"
-        labeled' "easierExperienceSeals" (doStep 1 msg)
-        labeled' "averageExperienceSeals" (doStep 2 msg)
-        labeled' "harderExperienceSeals" (doStep 3 msg)
-        labeled' "nightmarishExperienceSeals" nothing
+        questionLabeled "chooseSealCount"
+        labeled "easierExperienceSeals" (doStep 1 msg)
+        labeled "averageExperienceSeals" (doStep 2 msg)
+        labeled "harderExperienceSeals" (doStep 3 msg)
+        labeled "nightmarishExperienceSeals" nothing
       pure s
     DoStep n StandaloneSetup -> do
       (placed, recovered) <- case n of
@@ -114,7 +115,7 @@ instance RunMessage TheHeartOfMadnessPart2 where
       when (not isStandalone || attrs.hasOption PerformIntro) do
         kenslerAlive <- getPartnerIsAlive Assets.drAmyKenslerProfessorOfBiology
         understandsTheTrueNature <- getHasRecord DrKenslerUnderstandsTheTrueNatureOfTheMiasma
-        story $ i18nWithTitle "intro1.main" `addFlavorEntry` ul do
+        story $ i18nWithHeading "intro1.main" `addFlavorEntry` ul do
           li.nested "intro1.check" do
             li.validate (kenslerAlive && understandsTheTrueNature) "intro1.intro2"
             li.validate (not $ kenslerAlive && understandsTheTrueNature) "intro1.intro3"
@@ -173,6 +174,24 @@ instance RunMessage TheHeartOfMadnessPart2 where
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup TheHeartOfMadnessPart2 attrs do
+      setup $ addEntry $ ul do
+        li.nested "gatherSets" do
+          li "strikingFear"
+        li "removeSets"
+        li "buildDecks"
+        li "flipGate"
+        li.nested "placeLocations" do
+          li "innermostRing"
+          li "startAt"
+        li "setAside"
+        li.nested "seals" do
+          li "activated"
+          li "dormant"
+          li "removeOthers"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.TheHeartOfMadness
       gather Set.AgentsOfTheUnknown
       gather Set.Miasma
@@ -208,7 +227,9 @@ instance RunMessage TheHeartOfMadnessPart2 where
 
       for_ seals \seal -> do
         chooseOrRunOneM lead do
-          questionLabeled $ "Choose Investigator to take the " <> format seal <> " seal"
+          unscoped
+            $ keyVar "seal" (toScope $ tshow seal.kind)
+            $ questionLabeled "chooseInvestigatorToTakeSeal"
           targets investigators (`placeSeal` seal)
 
       addTekeliliDeck
@@ -221,7 +242,16 @@ instance RunMessage TheHeartOfMadnessPart2 where
           <> mapOneOf LocationWithLabel ["facility7", "facility8", "facility9", "facility10", "facility11"]
 
       chooseTargetM lead ls (\l -> reveal l >> placeAllAt l)
+      doStep 2 Setup
 
+      pure s
+    DoStep 2 Setup -> do
+      whenM (hasModifier ScenarioTarget (ScenarioModifier "scoutedTheForkedPass")) do
+        lead <- getLead
+        facilities <- select $ LocationWithUnrevealedTitle "Ancient Facility"
+        chooseUpToNM_ lead 2 do
+          unscoped $ questionLabeled "lookAtAncientFacility"
+          targets facilities (lookAtRevealed lead ScenarioSource)
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

@@ -41,16 +41,16 @@ instance RunMessage ReturnToCloverClubLounge where
         [card] ->
           if card `cardMatch` card_ (#ally <> #asset)
             then chooseOneM iid $ scenarioI18n $ scope "returnToCloverClubLounge" do
-              labeled' "putIntoPlay" $ putCardIntoPlay iid card
-              labeled' "doNotPutIntoPlay" nothing
+              labeled "putIntoPlay" $ putCardIntoPlay iid card
+              labeled "doNotPutIntoPlay" nothing
             else whenM (can.draw.cards iid) $ drawCard iid card
         xs ->
           chooseOneAtATimeM iid do
             targets xs \card ->
               if card `cardMatch` card_ (#ally <> #asset)
                 then chooseOneM iid $ scenarioI18n $ scope "returnToCloverClubLounge" do
-                  labeled' "putIntoPlay" $ putCardIntoPlay iid card
-                  labeled' "doNotPutIntoPlay" nothing
+                  labeled "putIntoPlay" $ putCardIntoPlay iid card
+                  labeled "doNotPutIntoPlay" nothing
                 else whenM (can.draw.cards iid) $ drawCard iid card
       pure l
     _ -> ReturnToCloverClubLounge <$> liftRunMessage msg attrs

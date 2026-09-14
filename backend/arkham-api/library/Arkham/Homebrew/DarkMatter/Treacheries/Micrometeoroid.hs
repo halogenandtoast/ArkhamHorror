@@ -1,11 +1,9 @@
 module Arkham.Homebrew.DarkMatter.Treacheries.Micrometeoroid (micrometeoroid) where
 
-import Arkham.Card.CardType
-import Arkham.Helpers.Message.Discard (discardAll)
+import Arkham.Helpers.Message.Discard.Lifted (discardAll)
 import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (campaignI18n)
 import Arkham.I18n
-import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Import.Lifted
 
@@ -24,11 +22,7 @@ instance RunMessage Micrometeoroid where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
-        campaignI18n
-          $ labeled' "micrometeoroid.discardEachEvent"
-          $ push
-          $ toMessage
-          $ discardAll iid attrs (CardWithType EventType)
+        countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
+        campaignI18n $ labeled "micrometeoroid.discardEachEvent" $ discardAll iid attrs #event
       pure t
     _ -> Micrometeoroid <$> liftRunMessage msg attrs

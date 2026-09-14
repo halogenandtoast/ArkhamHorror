@@ -43,8 +43,8 @@ instance RunMessage JudgementXX where
       let damage = if n >= 5 then 2 else 1
       eachInvestigator \iid -> do
         chooseOneM iid $ withI18n do
-          countVar damage $ labeled' "takeDamage" $ assignDamage iid attrs damage
-          countVar damage $ labeled' "takeHorror" $ assignHorror iid attrs damage
+          countVar damage $ labeled "takeDamage" $ assignDamage iid attrs damage
+          countVar damage $ labeled "takeHorror" $ assignHorror iid attrs damage
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (toDefeatedInfo -> source) _ -> do
       advanceAgenda attrs

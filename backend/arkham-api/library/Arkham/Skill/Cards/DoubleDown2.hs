@@ -2,6 +2,7 @@ module Arkham.Skill.Cards.DoubleDown2 (doubleDown2) where
 
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Modifier
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
@@ -18,9 +19,9 @@ instance RunMessage DoubleDown2 where
     InvestigatorCommittedSkill iid sid | sid == attrs.id -> do
       n <- getSpendableResources iid
       when (n > 0) do
-        chooseAmount iid "Spend resources on Double Down" "Resources" 0 (min 3 n) attrs
+        cardI18n $ chooseAmount iid "doubleDown2.spendResources" "$resources" 0 (min 3 n) attrs
       pure s
-    ResolveAmounts iid (getChoiceAmount "Resources" -> n) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "$resources" -> n) (isTarget attrs -> True) -> do
       when (n > 0) do
         withSkillTest \sid -> do
           spendResources iid n

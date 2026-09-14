@@ -33,7 +33,7 @@ instance RunMessage Katana where
       when attrs.ready do
         withSkillTest \sid -> do
           chooseOneM iid do
-            (cardI18n $ labeled' "katana.exhaustKatanaToDeal2DamageForThisAttack") do
+            (cardI18n $ labeled "katana.exhaustKatanaToDeal2DamageForThisAttack") do
               skillTestModifier sid (attrs.ability 1) iid (DamageDealt 2)
               exhaustThis attrs
             labeledI "doNotExhaust" nothing

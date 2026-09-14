@@ -1,6 +1,7 @@
 import { reactive } from 'vue'
 import { updateGameRaw } from '@/arkham/api'
 import type { Scenario } from '@/arkham/types/Scenario'
+import { readTokenBag } from '@/arkham/types/TokenBag'
 
 // Scenario count keys that can be edited from the Scenario Debug modal. `key` is
 // the ScenarioCountKey tag (see Arkham.ScenarioLogKey); the current value is read
@@ -27,9 +28,17 @@ const scenariosWithCustomDebugOptions = [
   'c11688a', // The Doom of Arkham Pt II
 ]
 
+export function scenarioTokenBagsFor(scenario: Scenario) {
+  return Object.entries(scenario.customChaosBags ?? {}).flatMap(([key, value]) => {
+    const bag = readTokenBag(value)
+    return bag ? [{ key, bag, label: `${key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase())} bag` }] : []
+  })
+}
+
 export function scenarioHasDebugOptions(scenario: Scenario): boolean {
   return scenariosWithCustomDebugOptions.includes(scenario.id)
     || scenarioDebugCountsFor(scenario).length > 0
+    || scenarioTokenBagsFor(scenario).length > 0
 }
 
 const debug = reactive({

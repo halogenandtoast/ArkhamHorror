@@ -28,11 +28,7 @@ instance RunMessage MyriadForms where
       for_ inHand $ \(nyarlathotep, _) -> push $ EnemyWillAttack $ enemyAttack nyarlathotep (toSource attrs) iid
       for_ inHand $ \(nyarlathotep, _) -> push $ ShuffleBackIntoEncounterDeck GameSource (toTarget nyarlathotep)
 
-      for_ mInPlay $ \nyarlathotep -> do
-        pushAll
-          [ SendMessage (toTarget nyarlathotep) HuntersMove
-          , SendMessage (toTarget nyarlathotep) (Do EnemiesAttack)
-          ]
+      for_ mInPlay resolveEnemyPhaseOf
 
       push $ DoStep 1 msg
 

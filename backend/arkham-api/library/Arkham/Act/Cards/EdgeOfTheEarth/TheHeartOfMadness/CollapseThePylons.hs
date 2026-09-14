@@ -6,6 +6,7 @@ import Arkham.Act.Import.Lifted hiding (DiscoverClues)
 import Arkham.Enemy.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Enemies
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Window (discoveredCluesAt)
+import Arkham.I18n
 import Arkham.Location.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -49,7 +50,7 @@ instance RunMessage CollapseThePylons where
       let x = max 0 (length nameless - 3)
       when (x > 3) do
         chooseNM lead x do
-          questionLabeled $ "Set " <> tshow x <> " the nameless madness aside"
+          withI18n $ countVar x $ questionLabeled "setNamelessMadnessAside"
           targets nameless (`place` SetAsideZone)
       doStep 1 msg
       eachInvestigator (discardAllClues attrs)

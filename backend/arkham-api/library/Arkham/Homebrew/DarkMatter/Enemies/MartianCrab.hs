@@ -2,14 +2,12 @@ module Arkham.Homebrew.DarkMatter.Enemies.MartianCrab (martianCrab) where
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted hiding (EnemyEvaded)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.DarkMatter.Traits (pattern Mars)
-import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype MartianCrab = MartianCrab EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 -- | "Spawn - Any [[Mars]] location."
@@ -17,8 +15,6 @@ martianCrab :: EnemyCard MartianCrab
 martianCrab = enemy MartianCrab Cards.martianCrab & setSpawnAt (LocationWithTrait Mars)
 
 -- | "Massive."
-instance HasModifiersFor MartianCrab where
-  getModifiersFor (MartianCrab a) = modifySelf a [AddKeyword Keyword.Massive]
 
 {- | "[reaction] After you successfully evade Martian Crab, spend 1 clue: Deal 2
 damage to it instead of exhausting it."

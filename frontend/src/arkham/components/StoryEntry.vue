@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
+import { computed, inject, ref, watch, type Ref } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { cardArt, cardImage } from '@/arkham/cardImages';
 import { Game } from '@/arkham/types/Game';
@@ -23,7 +23,13 @@ const resolution_fleur = `url(${imgsrc('fleurs/resolution_fleur.png')})`
 const black_fleur = `url(${imgsrc('fleurs/black_fleur.png')})`
 const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
-const choose = (idx: number) => emit('choose', idx)
+// The passage stays on screen while its answer is in flight so the page does not
+// blank between bodies of text; ignore any further clicks until it is replaced.
+const answerPending = inject<Ref<boolean>>('storyAnswerPending', ref(false))
+const choose = (idx: number) => {
+  if (answerPending.value) return
+  emit('choose', idx)
+}
 const { t } = useI18n()
 
 const maybeFormat = function(body: string) {
@@ -80,6 +86,7 @@ const drownedCityTaskRecommendation = (body: string) => {
 const selectedTaskChoice = ref<{ index: number; label: string; cardCode: string; canConfirm: boolean } | null>(null)
 
 const selectDrownedCityTask = (choice: ReadChoice) => {
+  if (answerPending.value) return false
   if (!('label' in choice)) return false
   const cardCode = drownedCityTaskCardCode(choice.label)
   if (!cardCode) return false
@@ -177,7 +184,7 @@ const flippableCard = (cardCode: string) => {
 }
 </script>
 <template>
-  <div class="intro-text">
+  <div class="intro-text" :class="{ 'answer-pending': answerPending }">
     <div class="entry-row" :class="{ 'task-layout': readChoices.some((choice) => 'label' in choice && !!drownedCityTaskCardCode(choice.label)) }">
       <div class="entry">
         <h1
@@ -261,6 +268,12 @@ const flippableCard = (cardCode: string) => {
 </template>
 
 <style scoped>
+/* Choices stay in place (and keep the page from reflowing) but stop responding
+   once answered, until the next passage replaces them. */
+.intro-text.answer-pending :is(.options, .pick-cards, .confirm-task-button) {
+  pointer-events: none;
+}
+
 .entry {
   border-radius: 5px;
   background: #DCD6D0;

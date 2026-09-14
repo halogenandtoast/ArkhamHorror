@@ -12,6 +12,7 @@ import Arkham.Asset.Cards (allPlayerAssetCards, allSpecialPlayerAssetCards)
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
+import Arkham.Card.CustomCard (lookupCustomCardDef)
 import Arkham.ClassSymbol
 import Arkham.Enemy.Cards (allPlayerEnemyCards)
 import Arkham.Event.Cards (allPlayerEventCards)
@@ -23,6 +24,7 @@ lookupPlayerCardDef :: CardCode -> CardDef
 lookupPlayerCardDef cardCode =
   fromJustNote ("Unknown card: " <> show cardCode)
     $ lookup cardCode allPlayerCards
+    <|> lookupCustomCardDef cardCode
 
 allBasicWeaknesses :: [CardDef]
 allBasicWeaknesses =

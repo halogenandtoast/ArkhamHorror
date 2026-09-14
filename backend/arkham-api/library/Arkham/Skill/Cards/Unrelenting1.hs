@@ -19,7 +19,7 @@ instance RunMessage Unrelenting1 where
     InvestigatorCommittedSkill iid sid | sid == attrs.id -> do
       tokens <- getOnlyChaosTokensInBag
       focusChaosTokens tokens \unfocus -> do
-        cardI18n $ scope "unrelenting1" $ chooseUpToNM' iid 3 "doneSealingTokens" do
+        cardI18n $ scope "unrelenting1" $ chooseUpToNM iid 3 "doneSealingTokens" do
           for_ (filter ((/= #autofail) . (.face)) tokens) \token -> do
             targeting (ChaosTokenFaceTarget token.face) $ sealChaosToken iid attrs token
         push unfocus

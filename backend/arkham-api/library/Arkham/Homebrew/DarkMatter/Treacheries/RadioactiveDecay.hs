@@ -17,11 +17,15 @@ radioactiveDecay = treachery RadioactiveDecay Cards.radioactiveDecay
 Forced - At the end of your turn: Draw a face-down card in your threat area. If
 you cannot, take 1 damage and 1 horror instead.
 [action][action]: Discard Radioactive Decay."
+
+"You" in the [action] ability is whoever performs it, so an investigator at the
+same location may spend the actions too. 'InThreatAreaOf Anyone' keeps
+'OnSameLocation' from also offering it while this copy sits face down.
 -}
 instance HasAbilities RadioactiveDecay where
   getAbilities (RadioactiveDecay a) =
     [ restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You
-    , restricted a 2 (InThreatAreaOf You) $ doubleActionAbilityWithCost mempty
+    , restricted a 2 (OnSameLocation <> InThreatAreaOf Anyone) doubleActionAbility
     ]
 
 instance RunMessage RadioactiveDecay where

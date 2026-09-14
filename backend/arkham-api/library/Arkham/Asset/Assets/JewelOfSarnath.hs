@@ -44,8 +44,8 @@ instance RunMessage JewelOfSarnath where
           targets enemies \enemy -> do
             chooseOrRunOneM iid $ withI18n do
               when (attrs.damage > 0) do
-                countVar 1 $ labeled' "moveDamage" $ moveTokens (attrs.ability 2) attrs enemy #damage 1
+                countVar 1 $ labeled "moveDamage" $ moveTokens (attrs.ability 2) attrs enemy #damage 1
               when (attrs.doom > 0) do
-                countVar 1 $ labeled' "moveDoom" $ moveTokens (attrs.ability 2) attrs enemy #doom 1
+                countVar 1 $ labeled "moveDoom" $ moveTokens (attrs.ability 2) attrs enemy #doom 1
       pure a
     _ -> JewelOfSarnath <$> liftRunMessage msg attrs

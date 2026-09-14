@@ -20,6 +20,7 @@ import Arkham.Game.Base
 import {-# SOURCE #-} Arkham.Game.Utils
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Campaign
+import Arkham.Helpers.FlavorText (addEntry, setup)
 import Arkham.Helpers.Game (withAlteredGame)
 import Arkham.Helpers.Log hiding (crossOutRecordSetEntries, recordSetInsert)
 import Arkham.Helpers.Query
@@ -80,8 +81,7 @@ instance RunMessage FatalMirage where
         then do
           lead <- getLead
           chooseOneM lead do
-            questionLabeled
-              "The investigators may choose which agenda to use (the higher the agenda number, the less time the investigators will have)."
+            questionLabeled "chooseAgenda"
             cardLabeled Agendas.etherealTangleV1 (doStep 1 msg)
             cardLabeled Agendas.etherealTangleV2 (doStep 2 msg)
             cardLabeled Agendas.etherealTangleV3 (doStep 3 msg)
@@ -100,7 +100,7 @@ instance RunMessage FatalMirage where
         completed <- elem Step.FatalMirage <$> getCompletedSteps
         if not completed && not (attrs.hasOption FatalMiragePart2) && not (attrs.hasOption FatalMiragePart3)
           then do
-            story $ i18nWithTitle "intro1"
+            story $ i18nWithHeading "intro1"
             killedInThePlaneCrash <- getRecordSet WasKilledInThePlaneCrash
             when (recorded Assets.professorWilliamDyerProfessorOfGeology.cardCode `elem` killedInThePlaneCrash) do
               blueStory $ i18nEntry "dyerWasKilledInThePlaneCrash"
@@ -153,6 +153,41 @@ instance RunMessage FatalMirage where
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
       pure s
     Setup -> runScenarioSetup FatalMirage attrs do
+      completedSteps <- getCompletedSteps
+      let fatalMirageTimes = count (== Step.FatalMirage) completedSteps + 1
+      let version :: Int
+          version
+            | fatalMirageTimes == 3 || attrs.hasOption FatalMiragePart3 = 3
+            | fatalMirageTimes == 2 || attrs.hasOption FatalMiragePart2 = 2
+            | otherwise = 1
+      let isFirstTime = version == 1
+
+      setup $ addEntry $ ul do
+        li "gatherSets"
+        scope (if isFirstTime then "firstTime" else "repeat") do
+          li "buildAgendaDeck"
+          li "buildActDeck"
+          if isFirstTime
+            then do
+              li.nested "placeLocations" do
+                li "startAt"
+                li "setOtherLocationsAside"
+              li "setOutOfPlay"
+            else do
+              li.nested "memoriesBanished" do
+                li "setRemainingMemoriesAside"
+              li.nested "memoriesDiscovered" do
+                li "startAt"
+                li "setOtherLocationsAside"
+              li "setResoluteAside"
+        li.nested "checkDifficulty" do
+          li.validate (attrs.difficulty == Hard) "hard"
+          li.validate (attrs.difficulty == Expert) "expert"
+        li "tekelili"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.FatalMirage
       gather Set.AgentsOfTheUnknown
       gather Set.LeftBehind
@@ -162,19 +197,16 @@ instance RunMessage FatalMirage where
       gather Set.Tekelili
       gather Set.ChillingCold
 
-      completedSteps <- getCompletedSteps
-      let fatalMirageTimes = count (== Step.FatalMirage) completedSteps + 1
-
-      if
-        | fatalMirageTimes == 3 || attrs.hasOption FatalMiragePart3 -> do
-            setAgendaDeck [Agendas.etherealTangleV3]
-            setActDeck [Acts.shadowOfThePastV3]
-        | fatalMirageTimes == 2 || attrs.hasOption FatalMiragePart2 -> do
-            setAgendaDeck [Agendas.etherealTangleV2]
-            setActDeck [Acts.shadowOfThePastV2]
-        | otherwise -> do
-            setAgendaDeck [Agendas.etherealTangleV1]
-            setActDeck [Acts.shadowOfThePastV1]
+      case version of
+        3 -> do
+          setAgendaDeck [Agendas.etherealTangleV3]
+          setActDeck [Acts.shadowOfThePastV3]
+        2 -> do
+          setAgendaDeck [Agendas.etherealTangleV2]
+          setActDeck [Acts.shadowOfThePastV2]
+        _ -> do
+          setAgendaDeck [Agendas.etherealTangleV1]
+          setActDeck [Acts.shadowOfThePastV1]
 
       memoriesBanished <- getRecordSet MemoriesBanished
       memoriesDiscovered <- getRecordSet MemoriesDiscovered
@@ -236,9 +268,9 @@ instance RunMessage FatalMirage where
             else do
               chooseOneM iid do
                 unless atPrison do
-                  labeled' "moveToPrisonOfMemories" $ moveTo_ Tablet iid Locations.prisonOfMemories
+                  labeled "moveToPrisonOfMemories" $ moveTo_ Tablet iid Locations.prisonOfMemories
                 whenCanShuffleIn iid tekelili do
-                  labeled' "shuffleTekeliliIntoYourDeck"
+                  labeled "shuffleTekeliliIntoYourDeck"
                     $ addTekelili iid tekelili
         ElderThing ->
           chooseSelectM iid (EnemyWithTrait Eidolon) \enemy -> placeDoom ElderThing enemy 1

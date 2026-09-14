@@ -40,9 +40,9 @@ instance RunMessage Glassing where
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       priority $ chooseOneM iid $ cardI18n $ scope "glassing" do
-        labeled' "discard" do
+        labeled "discard" do
           toDiscardBy iid attrs attrs
           withSkillTest \sid -> skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
-        labeled' "doNotDiscard" nothing
+        labeled "doNotDiscard" nothing
       pure e
     _ -> Glassing <$> liftRunMessage msg attrs

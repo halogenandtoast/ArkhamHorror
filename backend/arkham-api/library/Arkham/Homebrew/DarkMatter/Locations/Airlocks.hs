@@ -14,7 +14,7 @@ newtype Airlocks = Airlocks LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 airlocks :: LocationCard Airlocks
-airlocks = location Airlocks Cards.airlocks 1 (PerPlayer 2)
+airlocks = location Airlocks Cards.airlocks 1 (Static 2)
 
 {- | "[free] 'Get to the Tatterdemalion!': Add a [[Crew]] story asset you control
 to the victory display.
@@ -39,7 +39,6 @@ instance RunMessage Airlocks where
     -- "Resign. You should never have come. Remove all [[Crew]] story assets you
     -- control from the game."
     UseResign iid (isSource attrs -> True) -> do
-      crew <- select $ AssetWithTrait Crew <> assetControlledBy iid
-      for_ crew \aid -> push $ RemoveFromGame (AssetTarget aid)
+      selectEach (AssetWithTrait Crew <> assetControlledBy iid) removeFromGame
       Airlocks <$> liftRunMessage msg attrs
     _ -> Airlocks <$> liftRunMessage msg attrs

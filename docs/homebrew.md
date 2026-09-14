@@ -247,6 +247,16 @@ Then your campaign code records and reads keys by name, like `record Memories` o
 `getRecordCount ImpendingDoom`. (Keep the `Read` in the deriving list; the plug
 uses it.)
 
+Each key needs display text under `key.<camelCaseName>` in your `locales/en/base.json`
+— `TheRingmasterHasHisEyeOnYou` reads `key.theRingmasterHasHisEyeOnYou`. Miss one and
+the log shows the raw path instead of a sentence.
+
+You may optionally namespace keys as `HomebrewCampaignLogKey . ("yourCampaign." <>) . tshow`
+(Dark Matter does), which lets the frontend read the i18n scope straight off the key.
+It is not required — the log falls back to the scope of the campaign it is rendering.
+Do not add or remove that prefix mid-campaign: `hasRecord` compares the serialized key,
+so anything already recorded in a save stops matching.
+
 ### Custom chaos tokens
 
 Add a token in `Tokens.hs` — a slug and what happens when it's revealed:
@@ -285,7 +295,7 @@ leading colon), discovered the same hands-off way — no registration anywhere:
 |------|---------------|
 | `campaign.json` | your campaign's new-game entry — name, `designer`, `chapter`, difficulty chaos bags. Appears in a dedicated **Homebrew** section of the new-game screen with a "designed by …" credit. |
 | `scenarios.json` | the scenario list; each entry's `i18n` key names its locale scope |
-| `icons.json` | custom icon names, e.g. `{"moon": "moon-icon"}` — hooks `{moon}` into flavor text and `[moon]` into card text |
+| `icons.json` | custom icon names, e.g. `{"moon": "moon-icon"}` — hooks `{moon}` into flavor text and `[moon]` into card text. Style the class in `style.css`; if the icon is art rather than a font glyph, `mask` the image and paint it with `background-color: currentColor` so it follows the surrounding text color (button labels are light-on-dark) |
 | `tokens.json` | custom tokens to show in the scenario **totals bar**, e.g. `[{ "face": ":your-campaign:moon", "tooltip": "Moon Tokens" }]` (counted across the chaos bag and players' sealed tokens) |
 | `style.css` | your campaign's styling (use absolute `/img/arkham/homebrew/<campaign>/…` urls inside) |
 | `locales/en/*.json` | your text — `base.json`, `interludes.json`, one file per scenario; merged under the campaign's message scope, with English fallback for other languages |

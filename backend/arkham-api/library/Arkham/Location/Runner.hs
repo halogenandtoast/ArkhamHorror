@@ -214,6 +214,9 @@ instance RunMessage LocationAttrs where
       pure a
     PlaceUnderneath (isTarget a -> True) cards -> do
       pure $ a & cardsUnderneathL %~ (nubBy ((==) `on` toCardId) . (<> cards))
+    RemoveFromUnderneath (isTarget a -> True) cards -> do
+      let removedIds = map toCardId cards
+      pure $ a & cardsUnderneathL %~ filter ((`notElem` removedIds) . toCardId)
     SetLocationLabel lid label' | lid == locationId -> do
       pure $ a & labelL .~ label'
     PlacedLocationDirection lid direction lid2 | lid2 == locationId -> do
@@ -404,10 +407,13 @@ instance RunMessage LocationAttrs where
                   then locationClueCount' `div` 2
                   else locationClueCount'
           let currentClues = countTokens Clue locationTokens
+          -- A location re-entering play keeps the clues already on it and is topped up
+          -- to its clue value, not stocked afresh (FAQ 1.39), #5560
+          let cluesToPlace = max 0 (locationClueCount - currentClues)
 
           pushAll
-            $ [ PlaceClues (toSource a) (toTarget a) locationClueCount
-              | locationClueCount > 0
+            $ [ PlaceClues (toSource a) (toTarget a) cluesToPlace
+              | cluesToPlace > 0
               ]
           doPlace
           pure $ a & withoutCluesL .~ (locationClueCount + currentClues == 0)
@@ -617,12 +623,17 @@ getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
   base <- getGameValue (fromJustNote "Missing shroud" $ locationShroud attrs)
   let modifiedBase = foldr applyBaseModifier base modifiers'
-  pure $ max 0 $ foldr applyModifier modifiedBase modifiers'
+  -- SetShroud is the "set the shroud value to X" effect, which overrides every
+  -- other modifier, so it has to be applied last. BaseShroud only replaces the
+  -- printed value and can still be modified afterwards.
+  pure $ max 0 $ foldr applySetModifier (foldr applyModifier modifiedBase modifiers') modifiers'
  where
-  applyBaseModifier (SetShroud m) _ = m
+  applyBaseModifier (BaseShroud m) _ = m
   applyBaseModifier _ n = n
   applyModifier (ShroudModifier m) n = n + m
   applyModifier _ n = n
+  applySetModifier (SetShroud m) _ = m
+  applySetModifier _ n = n
 
 getInvestigateAllowed :: HasGame m => InvestigatorId -> LocationAttrs -> m Bool
 getInvestigateAllowed iid attrs = do

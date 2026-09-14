@@ -21,7 +21,9 @@ instance HasAbilities Ambush1 where
   getAbilities (Ambush1 attrs) = case attrs.attachedTo of
     Just (LocationTarget lid) ->
       [ restricted attrs 1 (exists $ LocationWithId lid <> LocationWithoutInvestigators) Anytime
-      , restricted attrs 2 ControlsThis $ forced $ EnemySpawns #after (LocationWithId lid) AnyEnemy
+      , restricted attrs 2 ControlsThis
+          $ forced
+          $ EnemySpawns #after (PlacementAt $ LocationWithId lid) AnyEnemy
       ]
     _ -> []
 

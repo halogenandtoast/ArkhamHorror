@@ -29,8 +29,8 @@ instance RunMessage PassageIntoTheVeil where
       assets <- select $ assetControlledBy iid <> #ally
       chooseOneM iid do
         whenM (can.manipulate.deck iid) do
-          unscoped $ countVar 5 $ labeled' "discardTopOfYourDeck" $ discardTopOfDeck iid attrs 5
-        labeled' "passageIntoTheVeil.damage" do
+          unscoped $ countVar 5 $ labeled "discardTopOfYourDeck" $ discardTopOfDeck iid attrs 5
+        labeled "passageIntoTheVeil.damage" do
           directDamage iid attrs 1
           for_ assets \aid -> dealAssetDamage aid attrs 1
       pure t

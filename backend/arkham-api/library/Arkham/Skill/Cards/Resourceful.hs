@@ -15,18 +15,26 @@ newtype Resourceful = Resourceful SkillAttrs
 resourceful :: SkillCard Resourceful
 resourceful = skill Resourceful Cards.resourceful
 
+-- Gated on the owner still being able to move cards out of their discard so
+-- that a blocker like Graveyard Ghouls can be cleared earlier in ST.7 and this
+-- option becomes available again.
+returnableCards :: SkillAttrs -> ExtendedCardMatcher
+returnableCards attrs =
+  InDiscardOf (InvestigatorWithId attrs.owner <> can.have.cards.leaveDiscard)
+    <> basic (#survivor <> not_ (CardWithTitle "Resourceful"))
+
 instance RunMessage Resourceful where
   runMessage msg s@(Resourceful attrs) = runQueueT $ case msg of
-    PassedSkillTest _ _ _ target _ _ | isTarget attrs target -> do
-      whenM (can.have.cards.leaveDiscard attrs.owner) do
-        cards <- select $ inDiscardOf attrs.owner <> basic (#survivor <> not_ (CardWithTitle "Resourceful"))
-        unless (null cards) do
-          discards <- map toCard <$> attrs.owner.discard
-          skillTestCardOption attrs do
-            focusCards discards do
-              chooseTargetM attrs.owner cards \card -> do
-                unfocusCards
-                obtainCard card
-                addToHand attrs.owner (only card)
+    PassedSkillTest _ _ _ (isTarget attrs -> True) _ _ -> do
+      skillTestCardOptionEdit attrs (optionWhenExists $ returnableCards attrs) $ doStep 1 msg
+      pure s
+    DoStep 1 (PassedSkillTest _ _ _ (isTarget attrs -> True) _ _) -> do
+      cards <- select $ returnableCards attrs
+      discards <- map toCard <$> attrs.owner.discard
+      focusCards discards do
+        chooseTargetM attrs.owner cards \card -> do
+          unfocusCards
+          obtainCard card
+          addToHand attrs.owner (only card)
       pure s
     _ -> Resourceful <$> liftRunMessage msg attrs

@@ -21,11 +21,11 @@ instance RunMessage TheConnection where
     AdvanceAgenda (isSide B attrs -> True) -> do
       lead <- getLead
       leadChooseOneM $ scenarioI18n do
-        labeled' "theConnection.coterieAgent" do
+        labeled "theConnection.coterieAgent" do
           findAndDrawEncounterCard lead
             $ mapOneOf cardIs [Enemies.coterieAgentA, Enemies.coterieAgentB, Enemies.coterieAgentC]
           shuffleDeck Deck.EncounterDeck
-        labeled' "theConnection.damageAndHorror" do
+        labeled "theConnection.damageAndHorror" do
           eachInvestigator \iid -> assignDamageAndHorror iid attrs 1 1
       advanceAgendaDeck attrs
       pure a

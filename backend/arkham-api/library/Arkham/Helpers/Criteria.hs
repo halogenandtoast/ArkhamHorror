@@ -35,6 +35,7 @@ import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Card (cardListMatches, getModifiedCardCost)
+import Arkham.Helpers.CardOption (getCardOptionSet)
 import Arkham.Helpers.ChaosBag (
   getRemainingBlessTokens,
   getRemainingCurseTokens,
@@ -53,6 +54,7 @@ import Arkham.Helpers.Phase (matchPhase)
 import Arkham.Helpers.Placement (onSameLocation)
 import {-# SOURCE #-} Arkham.Helpers.Playable (getIsPlayable, getIsPlayableWithResources)
 import Arkham.Helpers.Query (getPlayerCount)
+import {-# SOURCE #-} Arkham.Helpers.Ref (sourceToMaybeCard)
 import Arkham.Helpers.Scenario (
   getScenarioDeck,
   getVictoryDisplay,
@@ -112,6 +114,10 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
   Criteria.IfCriteria p a b -> do
     pv <- passesCriteria iid mcard source' requestor windows' p
     passesCriteria iid mcard source' requestor windows' $ if pv then a else b
+  Criteria.CardOptionSet k ->
+    sourceToMaybeCard source' >>= \case
+      Nothing -> pure False
+      Just c -> getCardOptionSet iid (toCardCode c) k
   Criteria.CanEnterThisVehicle -> do
     case source.asset of
       Just aid -> do
@@ -336,7 +342,7 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
               then pure False
               else do
                 -- todo we should make a cleaner method for this
-                fieldMap InDiscardAssetCardId (`elem` discard) aid
+                maybe False (`elem` discard) <$> fieldMay InDiscardAssetCardId aid
           SkillSource aid -> do
             inPlay <- selectAny $ Matcher.SkillWithId aid
             if inPlay
@@ -402,35 +408,41 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
   Criteria.HasSupply s -> fieldP InvestigatorSupplies (elem s) iid
   Criteria.ControlsThis ->
     let
+      -- The investigator is already named, so the elimination filter only ever
+      -- hides abilities the engine routed here on purpose -- a defeated
+      -- investigator is unselectable by the time their own #when
+      -- InvestigatorEliminated window opens (#5619). Matches the wrap
+      -- Helpers.Window already applies to the who-matcher.
+      you = (Matcher.InvestigatorWithId iid).includeEliminated
       go = \case
         ProxySource (CardIdSource _) s -> go s
         ProxySource (CardCodeSource _) s -> go s
         IndexedSource _ s -> go s
         ProxySource s _ -> go s
+        -- `AssetControlledBy` skips cards still in hand (#5695); their own in-hand
+        -- abilities still need to pass this check.
         AssetSource aid ->
-          elem aid <$> select (Matcher.AssetControlledBy $ Matcher.InvestigatorWithId iid)
-        EventSource eid ->
-          elem eid <$> select (Matcher.EventControlledBy $ Matcher.InvestigatorWithId iid)
+          orM
+            [ elem aid <$> select (Matcher.AssetControlledBy you)
+            , elem aid <$> select (Matcher.AssetWithPlacement $ StillInHand iid)
+            ]
+        EventSource eid -> elem eid <$> select (Matcher.EventControlledBy you)
         SkillSource sid ->
-          elem sid
-            <$> select (Matcher.SkillOwnedBy (Matcher.InvestigatorWithId iid) <> Matcher.SkillNotRemoved)
+          elem sid <$> select (Matcher.SkillOwnedBy you <> Matcher.SkillNotRemoved)
         _ -> pure False
      in
       go source
   Criteria.OwnsThis ->
     let
+      you = (Matcher.InvestigatorWithId iid).includeEliminated
       go = \case
         ProxySource (CardIdSource _) s -> go s
         IndexedSource _ s -> go s
         ProxySource s _ -> go s
-        AssetSource aid ->
-          elem aid <$> select (Matcher.AssetOwnedBy $ Matcher.InvestigatorWithId iid)
-        EventSource eid ->
-          elem eid <$> select (Matcher.EventOwnedBy $ Matcher.InvestigatorWithId iid)
-        SkillSource sid ->
-          elem sid <$> select (Matcher.SkillOwnedBy $ Matcher.InvestigatorWithId iid)
-        EnemySource eid ->
-          elem eid <$> select (Matcher.EnemyOwnedBy $ Matcher.InvestigatorWithId iid)
+        AssetSource aid -> elem aid <$> select (Matcher.AssetOwnedBy you)
+        EventSource eid -> elem eid <$> select (Matcher.EventOwnedBy you)
+        SkillSource sid -> elem sid <$> select (Matcher.SkillOwnedBy you)
+        EnemySource eid -> elem eid <$> select (Matcher.EnemyOwnedBy you)
         _ -> pure False
      in
       go source
@@ -863,7 +875,7 @@ passesEnemyCriteria iid source windows' criterion = do
       -- TODO: should not be multiple enemies, but if so need to OR not AND matcher
       let
         getAttackingEnemy = \case
-          Window _ (Window.EnemyAttacks details) _ -> Just $ attackEnemy details
+          Window _ (Window.EnemyAttacks details) _ _ -> Just $ attackEnemy details
           _ -> Nothing
        in
         case mapMaybe getAttackingEnemy windows' of

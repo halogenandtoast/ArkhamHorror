@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Card.CustomCard
 import Arkham.Card.Id
 import Arkham.EncounterCard
 import Arkham.Id
@@ -61,6 +62,8 @@ instance HasCardDef EncounterCard where
       $ lookup (ecCardCode c) allEncounterCards
       <|> lookup (ecOriginalCardCode c) allEncounterCards
       <|> lookup (flippedCardCode $ ecCardCode c) allEncounterCards
+      <|> lookupCustomCardDef (ecCardCode c)
+      <|> lookupCustomCardDef (ecOriginalCardCode c)
 
 instance Named EncounterCard where
   toName = toName . toCardDef

@@ -47,6 +47,7 @@ import Arkham.Helpers.Investigator qualified as Helpers
 import Arkham.Helpers.Message qualified as Helpers
 import Arkham.Helpers.Playable
 import Arkham.Helpers.Use (asStartingUses)
+import Arkham.I18n
 import Arkham.Investigate.Types
 import Arkham.Investigator.Types qualified as Field
 import Arkham.Keyword qualified as Keyword
@@ -109,7 +110,8 @@ useAbility i a = run $ UseAbility (toId i) a []
 
 clickLabel :: Text -> TestAppT ()
 clickLabel txt = chooseOptionMatching (T.unpack txt) \case
-  Label label _ -> label == txt
+  -- i18n vars ride along as "$key var=...", compare the key
+  Label label _ -> T.takeWhile (/= ' ') label == T.takeWhile (/= ' ') txt
   _ -> False
 
 useReaction :: HasCallStack => TestAppT ()
@@ -522,7 +524,7 @@ chooseSkill :: HasCallStack => SkillType -> TestAppT ()
 chooseSkill sType =
   chooseOptionMatching "choose self" \case
     SkillLabel sType' _ -> sType == sType'
-    Label lbl _ -> lookup lbl labeledSkills == Just sType
+    Label lbl _ -> lbl == withI18n (skillVar sType $ "$" <> labelKey "chooseSkill")
     _ -> False
 
 evadedBy :: Enemy -> Investigator -> TestAppT Bool
@@ -723,10 +725,11 @@ commitFor i (toCardId -> cid) = do
     TargetLabel (CardIdTarget c) _ -> c == cid
     _ -> False
 
--- | Like 'assertNoReaction', but scoped to a single source and scanning every
--- pending question rather than requiring exactly one. Use this when another
--- investigator may hold the window open, so the absence being asserted is real
--- rather than an artifact of there being no question at all.
+{- | Like 'assertNoReaction', but scoped to a single source and scanning every
+pending question rather than requiring exactly one. Use this when another
+investigator may hold the window open, so the absence being asserted is real
+rather than an artifact of there being no question at all.
+-}
 assertNoReactionOf :: (HasCallStack, Sourceable source) => source -> TestAppT ()
 assertNoReactionOf (toSource -> source) = do
   questionMap <- gameQuestion <$> getGame
@@ -743,7 +746,33 @@ assertNoReactionOf (toSource -> source) = do
       _ -> False
   case find isReaction (concatMap (choicesOf . snd) (mapToList questionMap)) of
     Nothing -> pure ()
-    Just choice -> expectationFailure $ "expected no reaction from " <> show source <> ", but found:\n\n" <> show choice
+    Just choice ->
+      expectationFailure
+        $ "expected no reaction from "
+        <> show source
+        <> ", but found:\n\n"
+        <> show choice
+
+{- | Like 'assertNoReactionOf', but matches any ability from the source, forced
+abilities included. A forced trigger that fires for the wrong investigator shows
+up as an 'AbilityLabel' in someone's pending question, not as a reaction.
+-}
+assertNoAbilityOf :: (HasCallStack, Sourceable source) => source -> TestAppT ()
+assertNoAbilityOf (toSource -> source) = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choicesOf question = case stripQuestionWrappers question of
+      ChooseOne msgs -> msgs
+      PlayerWindowChooseOne msgs -> msgs
+      WindowChooseOne msgs -> msgs
+      _ -> []
+    isAbility = \case
+      AbilityLabel {ability} -> abilitySource ability == source
+      _ -> False
+  case find isAbility (concatMap (choicesOf . snd) (mapToList questionMap)) of
+    Nothing -> pure ()
+    Just choice ->
+      expectationFailure $ "expected no ability from " <> show source <> ", but found:\n\n" <> show choice
 
 assertNoReaction :: TestAppT ()
 assertNoReaction = do

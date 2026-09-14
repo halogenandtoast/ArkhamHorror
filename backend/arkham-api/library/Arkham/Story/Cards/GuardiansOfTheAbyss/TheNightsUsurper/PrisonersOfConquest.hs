@@ -21,9 +21,9 @@ instance RunMessage PrisonersOfConquest where
     ResolveThisStory iid (is attrs -> True) -> do
       sid <- getRandom
       campaignI18n $ chooseOneM iid do
-        labeled' "prisonersOfConquest.freeTheCreatures"
+        labeled "prisonersOfConquest.freeTheCreatures"
           $ beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
-        labeled' "prisonersOfConquest.slayTheCreatures"
+        labeled "prisonersOfConquest.slayTheCreatures"
           $ beginSkillTest sid iid (attrs.ability 2) iid #combat (Fixed 4)
       pure s
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

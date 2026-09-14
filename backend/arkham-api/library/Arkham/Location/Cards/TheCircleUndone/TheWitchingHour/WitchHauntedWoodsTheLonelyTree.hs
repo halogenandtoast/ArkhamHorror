@@ -55,13 +55,13 @@ instance RunMessage WitchHauntedWoodsTheLonelyTree where
 
       chooseOrRunOneM iid $ scenarioI18n do
         when (handLength > 0) do
-          labeled' "witchHauntedWoodsTheLonelyTree.youDiscardTheyDraw"
+          labeled "witchHauntedWoodsTheLonelyTree.youDiscardTheyDraw"
             $ do
               inner <- capture $ chooseTargetM iid forDraw \other -> drawCards other attrs 1
               chooseAndDiscardCardEdit iid attrs \d -> d {discardThen = guard (notNull inner) $> Run inner}
 
         when (notNull forDiscard && canDraw) do
-          labeled' "witchHauntedWoodsTheLonelyTree.viceVersa" do
+          labeled "witchHauntedWoodsTheLonelyTree.viceVersa" do
             chooseOrRunOneM iid do
               inner <- capture $ drawCards iid attrs 1
               targets forDiscard \other ->

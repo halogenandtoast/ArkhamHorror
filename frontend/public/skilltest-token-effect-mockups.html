@@ -1,0 +1,268 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Skill test — token effect rows</title>
+<style>
+@font-face { font-family: "Arkham"; src: url("/fonts/arkham.ttf"); }
+@font-face { font-family: "Teutonic"; src: url("/fonts/teutonic.ttf"); }
+@font-face { font-family: "Noto Sans"; src: url("/fonts/NotoSans.ttf"); }
+@font-face { font-family: "ArnoPro"; src: url("/fonts/ArnoPro-Regular.otf"); }
+
+:root {
+  --important: rgba(212, 165, 10, 0.9);
+  --title: #cecece;
+  --button-2: #532e61;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #14171f; color: #c9d3e0;
+  font-family: "Noto Sans", system-ui, sans-serif; font-size: 13px; padding: 24px 28px 90px; }
+h1 { font-family: Teutonic, serif; font-weight: normal; color: var(--important); font-size: 26px; margin: 0 0 4px; }
+.sub { color: #7c8698; margin: 0 0 18px; max-width: 1080px; line-height: 1.6; }
+code { color: #9fb0c6; }
+
+.controls { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-bottom: 24px;
+  padding: 10px 14px; background: #1b1f2b; border: 1px solid #2a3243; border-radius: 8px;
+  position: sticky; top: 0; z-index: 50; }
+.controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #9aa5b8; }
+.controls b { font-weight: 600; color: #7c8698; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+.controls .grp { display: flex; gap: 11px; align-items: center; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(700px, 1fr)); gap: 24px; }
+.mock { background: #1b1f2b; border: 1px solid #2a3243; border-radius: 10px; overflow: hidden;
+  display: flex; flex-direction: column; }
+.mock > header { padding: 12px 14px; border-bottom: 1px solid #2a3243; }
+.mock .n { font-family: Teutonic, serif; color: var(--important); font-size: 18px; }
+.swatches { float: right; display: flex; gap: 4px; }
+.swatches i { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(255,255,255,.15); display: block; }
+.qa { margin-top: 8px; color: #8e99ab; font-size: 12px; line-height: 1.55; }
+.stage { padding: 22px; display: flex; justify-content: center;
+  background: #2e3440 url("/skilltest-mockup-board.jpg") center/cover; }
+
+/* ============================================================
+   The live window (measured off the running game)
+   ============================================================ */
+.win { width: var(--w, 715px); max-width: 100%; font-family: Times, serif; text-align: center;
+  background: rgba(94, 123, 115, .5); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+  border-radius: 16px; box-shadow: 0 4px 30px rgba(0,0,0,.1); overflow: hidden; color: #fff; }
+.win > header { display: flex; align-items: center; gap: 6px; padding: 5px 10px; background: rgba(0,0,0,.5); }
+.win > header .header-title { flex: 1; text-align: center; }
+.win > header h2 { margin: 0; font: 19.2px Teutonic, serif; color: #fff; text-transform: uppercase; font-weight: normal; }
+.win > header .minimize-btn { width: 24px; height: 24px; border: 0; border-radius: 50%; background: #3c4f5a;
+  color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.win > .content { border-radius: 0 0 16px 16px; overflow: hidden; }
+
+.steps { display: flex; }
+.steps .step { flex: 1; color: #fff; font-size: 16px; padding: 1px 0; }
+.steps .step:nth-child(odd) { background: rgba(0,0,0,.4); }
+.steps .step:nth-child(even) { background: rgba(0,0,0,.2); }
+.steps .step.active { background: rgba(255,0,255,.5); }
+.steps .step i.fasticon { font-family: Arkham; font-style: normal; }
+
+.contents { padding: 10px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  justify-items: center; gap: 5px; color: #fff; background: rgba(0,0,0,.6);
+  backdrop-filter: blur(80px); -webkit-backdrop-filter: blur(80px); }
+.contents .target img { width: 60px; border-radius: 6px; box-shadow: 0 3px 6px rgba(0,0,0,.53); display: block; }
+.status { display: flex; justify-content: center; align-items: center; gap: 30px; padding: 0 30px; text-transform: uppercase; }
+.pip { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center;
+  justify-content: center; font-weight: bold; color: #fff; }
+.pip.diff { background: darkred; } .pip.skill { background: darkgreen; }
+.vs { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.sk { font-size: 1.5em; width: 1.2em; height: 1.2em; line-height: 1.2em; border-radius: 50%;
+  font-family: Arkham; font-style: normal; color: #7c3c85; background: #EAD5EC; }
+.portrait { width: 36px; border-radius: 3px; box-shadow: 1px 1px 6px rgba(0,0,0,.45); display: block; }
+
+.bag { background: rgba(0,0,0,.5); padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+.bag .revealed { display: flex; justify-content: center; }
+.bag .revealed img { width: 100px; filter: drop-shadow(1px 1px 6px #222); }
+.preview { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; }
+.slot { width: 30px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.slot img { width: 30px; border-radius: 30px; border: 1px solid rgba(255,255,255,.4); box-shadow: 0 4px 4px rgba(0,0,0,.5); }
+.slot .pill { background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.12); border-radius: 999px;
+  color: rgba(255,255,255,.6); font-family: sans-serif; font-size: 8px; padding: 2px 5px; line-height: 8px; }
+.statsbar { display: flex; align-items: center; gap: 8px; justify-content: center; background: rgba(0,0,0,.35);
+  color: rgba(255,255,255,.7); font-family: sans-serif; font-size: 11px; padding: 5px 10px; }
+.statsbar .odds { border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 2px 10px; }
+.result { background: #8b0000; color: #fff; text-transform: uppercase; padding: 10px; }
+.apply { background: var(--button-2); color: #eee; text-transform: uppercase; padding: 10px;
+  font-family: Arial, sans-serif; font-size: 12px; }
+
+/* ============================================================
+   The one design: segmented rows — token cell | rules cell
+   Every theme sets the same six variables and nothing else.
+   ============================================================ */
+.fx-band { display: grid; gap: var(--row-gap, 0); padding: var(--band-pad, 0);
+  background: var(--band-bg); }
+.fx-row { display: grid; grid-template-columns: var(--cell-w, 58px) 1fr; align-items: stretch;
+  background: var(--row-bg); border-radius: var(--row-radius, 0); overflow: hidden;
+  border: var(--row-border, 0 none); }
+.fx-row + .fx-row { border-top: var(--row-gap-border, 1px solid var(--divider)); }
+.fx-cell { display: grid; place-items: center; align-content: center; gap: 3px; padding: 8px 0;
+  background: var(--cell-bg); border-right: 1px solid var(--divider); }
+.fx-cell img { width: var(--token-w, 34px); height: var(--token-w, 34px); border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,.35); }
+.fx-cell .val { font-family: "Noto Sans", sans-serif; font-weight: 700; font-size: 11px; line-height: 1;
+  letter-spacing: .02em; color: var(--val); }
+.fx-text { display: flex; align-items: center; padding: 9px 14px; text-align: left; color: var(--text);
+  font-family: var(--font, "Noto Sans"), sans-serif; font-size: var(--fsize, 13px); line-height: 1.5; }
+.fx-text .face { display: block; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--face); margin-bottom: 3px; font-family: "Noto Sans", sans-serif; }
+
+/* --- themes: each sets the same variables --- */
+.t-slate {
+  --band-bg: rgba(0,0,0,.35); --row-bg: linear-gradient(180deg, #333b4d 0%, #252b3a 100%);
+  --cell-bg: rgba(0,0,0,.28); --divider: rgba(255,255,255,.11); --text: #d7dee8;
+  --val: #e7c46a; --face: #8fa0b8; }
+.t-ink {
+  --band-bg: rgba(0,0,0,.5); --row-bg: rgba(10,11,15,.66); --cell-bg: rgba(0,0,0,.42);
+  --divider: rgba(255,255,255,.09); --text: #dbe0e7; --val: #cfd6df; --face: #7f8b9c; }
+.t-parchment {
+  --band-bg: #1b1811; --row-bg: linear-gradient(180deg, #efe4ca 0%, #e3d4b3 100%);
+  --cell-bg: rgba(122,96,52,.16); --divider: rgba(92,72,42,.38); --text: #2a2117;
+  --val: #7a1c17; --face: #6d5836; }
+.t-violet {
+  --band-bg: rgba(20,10,26,.6); --row-bg: rgba(45,25,55,.82); --cell-bg: rgba(24,12,32,.85);
+  --divider: rgba(255,255,255,.13); --text: #eadff3; --val: #d8aef2; --face: #a98fbb; }
+.t-oxblood {
+  --band-bg: rgba(14,6,6,.55); --row-bg: linear-gradient(180deg, #3b1917 0%, #2a1110 100%);
+  --cell-bg: rgba(0,0,0,.35); --divider: rgba(255,255,255,.1); --text: #f1ddd9;
+  --val: #ff9d97; --face: #c08e88; }
+.t-verdigris {
+  --band-bg: rgba(0,0,0,.35); --row-bg: rgba(56,78,72,.8); --cell-bg: rgba(22,36,33,.85);
+  --divider: rgba(255,255,255,.12); --text: #e3ece8; --val: #9fdcc0; --face: #93b3a8; }
+</style>
+
+<h1>Skill test — token effect rows</h1>
+<p class="sub">
+  One design, six palettes. Each row is segmented: a fixed <b>58px token cell</b> on the left, divided by a
+  hairline from the rules text on the right. Both cells centre on their own axis, so a one-line effect and a
+  three-line effect both sit level with their token. Text is <b>Noto Sans 13px/1.5</b> instead of the
+  window's Times 16 — the toggles let you compare against Arno Pro and against what ships today. Every theme
+  sets the same six variables (<code>--band-bg</code>, <code>--row-bg</code>, <code>--cell-bg</code>,
+  <code>--divider</code>, <code>--text</code>, <code>--val</code>) and nothing else, so whichever you pick is
+  a six-line change.
+</p>
+
+<div class="controls">
+  <div class="grp"><b>Effects</b>
+    <label><input type="radio" name="count" value="1"> 1</label>
+    <label><input type="radio" name="count" value="3" checked> 3 (incl. a wrapping one)</label>
+  </div>
+  <div class="grp"><b>Font</b>
+    <label><input type="radio" name="font" value="Noto Sans" checked> Noto Sans</label>
+    <label><input type="radio" name="font" value="ArnoPro"> Arno Pro</label>
+    <label><input type="radio" name="font" value="Times"> Times (today)</label>
+  </div>
+  <div class="grp"><b>Width</b>
+    <label><input type="radio" name="w" value="715" checked> 715px</label>
+    <label><input type="radio" name="w" value="430"> 430px (wraps)</label>
+  </div>
+  <div class="grp"><b>Rows</b>
+    <label><input type="radio" name="rows" value="flush" checked> flush</label>
+    <label><input type="radio" name="rows" value="gapped"> gapped cards</label>
+  </div>
+  <div class="grp"><b>Extras</b>
+    <label><input type="checkbox" id="showval" checked> value under token</label>
+    <label><input type="checkbox" id="showface"> face name</label>
+    <label><input type="checkbox" id="showchrome" checked> full window</label>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const EFFECTS = [
+  { face: 'Skull', img: '/img/arkham/chaos-tokens/ct-skull.png', val: '-1',
+    text: '-X, where X is half the number of Bystander cards in the victory display, rounded up.' },
+  { face: 'Cultist', img: '/img/arkham/chaos-tokens/ct-cultist.png', val: '-3',
+    text: 'If you have not moved this round, choose one: discard 1 card from your hand, or lose 1 resource.' },
+  { face: 'Elder Thing', img: '/img/arkham/chaos-tokens/ct-elderthing.png', val: '-2',
+    text: 'If this test is failed, reveal a fury token.' },
+]
+
+const THEMES = [
+  { id: 't-slate', n: 'Slate', sw: ['#333b4d', '#252b3a', '#e7c46a'],
+    why: 'The gradient, edge and hairline of the scenario totals plate. Reads as a component the app already owns, and stays legible against the blurred board behind the window.' },
+  { id: 't-ink', n: 'Ink', sw: ['#0a0b0f', '#000000', '#dbe0e7'],
+    why: 'Closest to today — near-black, no hue — but with the segmentation, the centring and the sans face doing the work instead of the colour. The safe pick if you want nothing to shout.' },
+  { id: 't-parchment', n: 'Parchment', sw: ['#efe4ca', '#e3d4b3', '#7a1c17'],
+    why: 'Light stock, dark text, oxblood value. Highest contrast of the six and the only one that reads as quoted rules rather than UI chrome. Also the only light panel in a dark window.' },
+  { id: 't-violet', n: 'Violet', sw: ['#2d1937', '#180c20', '#d8aef2'],
+    why: 'Picks up the skip-triggers notice and the Apply Results button, so the window ends up with one accent hue top to bottom instead of three.' },
+  { id: 't-oxblood', n: 'Oxblood', sw: ['#3b1917', '#2a1110', '#ff9d97'],
+    why: 'Tied to the result banner directly below it. Warmest of the six; risks reading as "you failed" even when the effect is neutral.' },
+  { id: 't-verdigris', n: 'Verdigris', sw: ['#384e48', '#162421', '#9fdcc0'],
+    why: 'Derived from the window frame\'s own rgba(94,123,115,.5) wash, so the band looks native to the panel rather than dropped into it.' },
+]
+
+const TOKENS = [['plus1',null],['plus1',null],['0',null],['0',null],['0',null],['minus1',null],['minus1',null],
+  ['minus1',null],['minus2',null],['minus2',null],['skull','-1'],['cultist','-3'],['cultist','-3'],
+  ['elderthing','-2'],['autofail',null],['eldersign','+2']]
+const preview = () => TOKENS.map(([t, v]) =>
+  `<div class="slot">${v ? `<span class="pill">${v}</span>` : ''}<img src="/img/arkham/chaos-tokens/ct-${t}.png"></div>`).join('')
+
+const STEPS = ['ST.1','fast','ST.2','fast','ST.3','ST.4','ST.5','ST.6','ST.7','ST.8']
+
+function band(theme, fx, o) {
+  const style = [
+    `--font:${o.font}`,
+    o.font === 'Times' ? '--fsize:15px' : '',
+    o.rows === 'gapped' ? '--row-gap:8px;--band-pad:8px;--row-radius:6px;--row-gap-border:0 none' : '',
+  ].filter(Boolean).join(';')
+  return `<div class="fx-band ${theme}" style="${style}">${fx.map(e => `
+    <div class="fx-row">
+      <div class="fx-cell">
+        <img src="${e.img}">
+        ${o.val ? `<span class="val">${e.val}</span>` : ''}
+      </div>
+      <div class="fx-text"><div>${o.face ? `<span class="face">${e.face}</span>` : ''}${e.text}</div></div>
+    </div>`).join('')}</div>`
+}
+
+function windowHtml(theme, fx, o) {
+  return `
+  <div class="win" style="--w:${o.w}px">
+    <header><span class="header-title"><h2>Skill Test</h2></span><button class="minimize-btn"><svg width="12" height="12" viewBox="0 0 24 24"><rect y="11" width="24" height="2" fill="currentColor"></rect></svg></button></header>
+    <div class="content">
+    ${o.chrome ? `<div class="steps">${STEPS.map(s => `<div class="step${s === 'ST.6' ? ' active' : ''}">${s === 'fast' ? '<i class="fasticon">&#x0075;</i>' : s}</div>`).join('')}</div>` : ''}
+    <div class="contents">
+      <div class="target"><img src="/img/arkham/homebrew/circus-ex-mortis/cards/047.avif"></div>
+      <div class="status">
+        <span class="pip diff">3</span>
+        <span class="vs"><span class="sk">&#x0046;</span><span>VS</span></span>
+        <span class="pip skill">2</span>
+      </div>
+      <div><img class="portrait" src="/img/arkham/portraits/02005.jpg"></div>
+    </div>
+    ${o.chrome ? `<div class="bag">
+      <div class="revealed"><img src="/img/arkham/chaos-tokens/ct-skull.png"></div>
+      <div class="preview">${preview()}</div>
+    </div>
+    <div class="statsbar"><span>20 tokens</span><span class="odds">Show odds</span></div>` : ''}
+    ${band(theme, fx, o)}
+    ${o.chrome ? `<div class="result">Failed by -1</div><div class="apply">Apply Results</div>` : ''}
+    </div>
+  </div>`
+}
+
+function render() {
+  const o = {
+    font: document.querySelector('input[name=font]:checked').value,
+    rows: document.querySelector('input[name=rows]:checked').value,
+    val: document.getElementById('showval').checked,
+    face: document.getElementById('showface').checked,
+    chrome: document.getElementById('showchrome').checked,
+    w: document.querySelector('input[name=w]:checked').value,
+  }
+  const fx = EFFECTS.slice(0, +document.querySelector('input[name=count]:checked').value)
+  document.getElementById('grid').innerHTML = THEMES.map(t => `
+    <div class="mock">
+      <header>
+        <span class="swatches">${t.sw.map(c => `<i style="background:${c}"></i>`).join('')}</span>
+        <span class="n">${t.n}</span>
+        <div class="qa">${t.why}</div>
+      </header>
+      <div class="stage">${windowHtml(t.id, fx, o)}</div>
+    </div>`).join('')
+}
+document.querySelectorAll('.controls input').forEach(i => i.addEventListener('change', render))
+render()
+</script>

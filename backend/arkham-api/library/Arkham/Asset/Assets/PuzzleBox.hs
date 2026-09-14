@@ -48,11 +48,11 @@ instance RunMessage PuzzleBox where
       canDealDamage <- withoutModifier iid CannotDealDamage
       chooseOrRunOneM iid $ scenarioI18n do
         for_ locationLit \location ->
-          labeled' "puzzleBox.unlight" $ updateLocation location LocationBrazier (Just Unlit)
-        for_ readySpectralWatcher $ labeled' "puzzleBox.exhaust" . exhaustWith attrs
+          labeled "puzzleBox.unlight" $ updateLocation location LocationBrazier (Just Unlit)
+        for_ readySpectralWatcher $ labeled "puzzleBox.exhaust" . exhaustWith attrs
         when canDealDamage do
           for_ exhaustedSpectralWatcher
-            $ labeled' "puzzleBox.damage"
+            $ labeled "puzzleBox.damage"
             . nonAttackEnemyDamage (Just iid) (attrs.ability 2) 5
       pure a
     _ -> PuzzleBox <$> liftRunMessage msg attrs

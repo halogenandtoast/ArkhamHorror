@@ -32,8 +32,8 @@ instance RunMessage ThePath where
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       leadChooseOneM $ scenarioI18n $ scope "thePath" do
-        labeled' "stepBack" $ push R1
-        labeled' "interrupt" $ push R2
+        labeled "stepBack" $ push R1
+        labeled "interrupt" $ push R2
 
       pure a
     _ -> ThePath <$> liftRunMessage msg attrs

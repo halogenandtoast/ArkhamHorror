@@ -1,6 +1,7 @@
 module Arkham.Treachery.Cards.FinalRhapsodyAdvanced (finalRhapsodyAdvanced) where
 
 import Arkham.ChaosToken
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.CardDefs.Standalone qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -21,7 +22,10 @@ instance RunMessage FinalRhapsodyAdvanced where
       let damageCount = count (`notElem` [#eldersign, #bless]) $ filter isSymbolChaosToken $ map (.face) tokens
       when (damageCount > 0) do
         chooseOneM iid do
-          labeled ("Take " <> tshow damageCount <> " damage and horror")
+          ( withI18n
+              $ withVars ["damage" .= damageCount, "horror" .= damageCount]
+              $ labeled "takeDamageAndHorror"
+            )
             $ assignDamageAndHorror iid attrs damageCount damageCount
       resetChaosTokens attrs
       pure t

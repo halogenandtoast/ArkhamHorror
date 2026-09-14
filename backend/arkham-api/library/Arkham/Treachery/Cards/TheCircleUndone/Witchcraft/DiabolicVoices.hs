@@ -30,8 +30,8 @@ instance RunMessage DiabolicVoices where
       pure t
     DoStep n msg'@(FailedThisSkillTest iid (isSource attrs -> True)) | n > 0 -> do
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid attrs 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
 
       doStep (n - 1) msg'
       pure t

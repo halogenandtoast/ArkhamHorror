@@ -79,13 +79,13 @@ instance RunMessage EldritchInspiration1 where
         _ -> False
 
       matchingDon't \case
-        CheckWindows [Window AtIf wType _] -> case wType of
+        CheckWindows [Window AtIf wType _ _] -> case wType of
           Window.RevealChaosTokenEffect {} -> True
           Window.RevealChaosTokenEventEffect {} -> True
           Window.RevealChaosTokenSkillEffect {} -> True
           Window.RevealChaosTokenAssetAbilityEffect {} -> True
           _ -> False
-        Do (CheckWindows [Window AtIf wType _]) -> case wType of
+        Do (CheckWindows [Window AtIf wType _ _]) -> case wType of
           Window.RevealChaosTokenEffect {} -> True
           Window.RevealChaosTokenEventEffect {} -> True
           Window.RevealChaosTokenSkillEffect {} -> True

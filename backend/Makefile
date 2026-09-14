@@ -176,6 +176,40 @@ api.watch.test:
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api || true; DEVELOPMENT=true stack exec arkham-api & stack build --test --pedantic --fast arkham-api --ghc-options '-DDEVELOPMENT $(GHC_OPTIONS)' --interleaved-output $(EXTRA_STACK_FLAGS) || echo 'Tests failed; server left running.'\"" \
 
+## api.watch.test + the rolling build log (see api.watch.log). Failing examples
+## land in .claude/build.log alongside the compile errors, so an agent can read
+## the spec output instead of asking for it.
+.PHONY: api.watch.test.log
+api.watch.test.log:
+	$(MAKE) api.watch.test 2>&1 | scripts/rolling-log.sh ../.claude/build.log
+
+## api.rebuild plus the suite -- the unit api.watch.test.entr loops over. Builds,
+## restarts the server, then runs the tests; a failing suite leaves the server up.
+.PHONY: api.rebuild.test
+api.rebuild.test:
+	cd arkham-api && \
+	stack build --test --no-run-tests --pedantic --fast arkham-api \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+		$(EXTRA_STACK_FLAGS) \
+	  --exec "bash -c \"pkill arkham-api || true; DEVELOPMENT=true $(API_ENV) stack exec arkham-api & stack build --test --pedantic --fast arkham-api --ghc-options '-DDEVELOPMENT $(GHC_OPTIONS)' --interleaved-output $(EXTRA_STACK_FLAGS) || echo 'Tests failed; server left running.'\"" \
+
+## api.watch.test with entr driving the loop instead of stack's --file-watch,
+## which no longer sees edits under library/ on this tree (see FILE_WATCH above).
+.PHONY: api.watch.test.entr
+api.watch.test.entr:
+	@command -v entr >/dev/null || { echo "api.watch.test.entr needs entr: brew install entr"; exit 1; }
+	@while :; do \
+	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
+	    | entr -dn $(MAKE) --no-print-directory api.rebuild.test; \
+	done
+
+## The full loop: entr-driven, rebuilds, restarts the server, runs the suite, and
+## puts compile errors and failing examples in .claude/build.log for agents.
+.PHONY: api.watch.test.entr.log
+api.watch.test.entr.log:
+	$(MAKE) api.watch.test.entr 2>&1 | scripts/rolling-log.sh ../.claude/build.log
+
 .PHONY: test
 test:
 	cd arkham-api && \
@@ -245,6 +279,39 @@ test.watch:
 	  --interleaved-output \
 	  $(FILE_WATCH) \
 		$(EXTRA_STACK_FLAGS)
+
+## test.watch + the rolling build log (see api.watch.log). Same log file as the
+## api.watch.* targets, so run one watcher at a time or they will interleave.
+.PHONY: test.watch.log
+test.watch.log:
+	$(MAKE) test.watch 2>&1 | scripts/rolling-log.sh ../.claude/build.log
+
+## One build-and-test pass -- the unit test.watch.entr loops over.
+.PHONY: test.rebuild
+test.rebuild:
+	cd arkham-api && \
+	stack build --test --pedantic --fast arkham-api \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+		$(EXTRA_STACK_FLAGS)
+
+## test.watch with entr driving the loop instead of stack's --file-watch, which
+## no longer sees edits under library/ on this tree (see FILE_WATCH above). No
+## API server: this only builds and runs the suite.
+.PHONY: test.watch.entr
+test.watch.entr:
+	@command -v entr >/dev/null || { echo "test.watch.entr needs entr: brew install entr"; exit 1; }
+	@while :; do \
+	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
+	    | entr -dn $(MAKE) --no-print-directory test.rebuild; \
+	done
+
+## test.watch.entr + the rolling build log (see api.watch.log): entr-driven,
+## runs the suite, and puts compile errors and failing examples in
+## .claude/build.log where an agent can read them.
+.PHONY: test.watch.entr.log
+test.watch.entr.log:
+	$(MAKE) test.watch.entr 2>&1 | scripts/rolling-log.sh ../.claude/build.log
 
 .PHONY: data
 data:

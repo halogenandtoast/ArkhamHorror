@@ -35,7 +35,7 @@ instance RunMessage DeepShadows where
         (lantern,) <$> MaybeT (field AssetController lantern)
 
       chooseOrRunOneM iid $ scenarioI18n do
-        unscoped $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        unscoped $ countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
         labeledValidate' (isJust mDetails) "deepShadows.lantern" do
           for_ mDetails \(lantern, owner) -> do
             flipOverBy owner attrs lantern

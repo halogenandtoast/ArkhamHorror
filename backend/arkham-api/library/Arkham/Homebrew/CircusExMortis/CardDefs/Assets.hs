@@ -15,7 +15,7 @@ illusoryLocus =
 carrieDykstra :: CardDef
 carrieDykstra =
   ( encounterAsset_
-      ":circus-ex-mortis:098"
+      ":circus-ex-mortis:096"
       ("Carrie Dykstra" <:> "Takes After Her Old Man")
       Set.AllPointsWest
   )
@@ -25,7 +25,7 @@ carrieDykstra =
 ralphDykstra :: CardDef
 ralphDykstra =
   ( encounterAsset_
-      ":circus-ex-mortis:099"
+      ":circus-ex-mortis:097"
       ("Ralph Dykstra" <:> "In For the Long Haul")
       Set.AllPointsWest
   )
@@ -35,7 +35,7 @@ ralphDykstra =
 -- bacchanalia
 cecilSharpe :: CardDef
 cecilSharpe =
-  (encounterAsset_ ":circus-ex-mortis:140" ("Cecil Sharpe" <:> "Keeps His Hands Clean") Set.Bacchanalia)
+  (encounterAsset_ ":circus-ex-mortis:138" ("Cecil Sharpe" <:> "Keeps His Hands Clean") Set.Bacchanalia)
     { cdCardTraits = setFromList [Socialite, LiberPater]
     , cdUnique = True
     }
@@ -43,7 +43,7 @@ cecilSharpe =
 estherMeredith :: CardDef
 estherMeredith =
   ( encounterAsset_
-      ":circus-ex-mortis:141"
+      ":circus-ex-mortis:139"
       ("Esther Meredith" <:> "Deals in Gold, Exclusively")
       Set.Bacchanalia
   )
@@ -54,7 +54,7 @@ estherMeredith =
 phillipHutchins :: CardDef
 phillipHutchins =
   ( encounterAsset_
-      ":circus-ex-mortis:142"
+      ":circus-ex-mortis:140"
       ("Phillip Hutchins" <:> "Woefully Out of Place")
       Set.Bacchanalia
   )
@@ -65,7 +65,7 @@ phillipHutchins =
 richardStratton :: CardDef
 richardStratton =
   ( encounterAsset_
-      ":circus-ex-mortis:143"
+      ":circus-ex-mortis:141"
       ("Richard Stratton" <:> "\"Connoisseur\" of Fine Wines")
       Set.Bacchanalia
   )
@@ -76,7 +76,7 @@ richardStratton =
 veraAshcroft :: CardDef
 veraAshcroft =
   ( encounterAsset_
-      ":circus-ex-mortis:144"
+      ":circus-ex-mortis:142"
       ("Vera Ashcroft" <:> "Recently Widowed, Again")
       Set.Bacchanalia
   )
@@ -289,4 +289,74 @@ terrifiedCaptives =
     , cdEncounterSetQuantity = Just 2
     , cdVictoryPoints = Just 1
     , cdRevelation = IsRevelation
+    }
+
+-- harm_s_way: the six identical Kidnapped Citizen story backs
+kidnappedCitizen_059b :: CardDef
+kidnappedCitizen_059b =
+  (encounterAsset_ ":circus-ex-mortis:059b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:059"
+    , cdDoubleSided = True
+    }
+
+kidnappedCitizen_060b :: CardDef
+kidnappedCitizen_060b =
+  (encounterAsset_ ":circus-ex-mortis:060b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:060"
+    , cdDoubleSided = True
+    }
+
+kidnappedCitizen_061b :: CardDef
+kidnappedCitizen_061b =
+  (encounterAsset_ ":circus-ex-mortis:061b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:061"
+    , cdDoubleSided = True
+    }
+
+kidnappedCitizen_062b :: CardDef
+kidnappedCitizen_062b =
+  (encounterAsset_ ":circus-ex-mortis:062b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:062"
+    , cdDoubleSided = True
+    }
+
+kidnappedCitizen_063b :: CardDef
+kidnappedCitizen_063b =
+  (encounterAsset_ ":circus-ex-mortis:063b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:063"
+    , cdDoubleSided = True
+    }
+
+kidnappedCitizen_064b :: CardDef
+kidnappedCitizen_064b =
+  (encounterAsset_ ":circus-ex-mortis:064b" "Kidnapped Citizen" Set.HarmsWay)
+    { cdCardTraits = singleton Bystander
+    , cdVictoryPoints = Just 1
+    , cdOtherSide = Just ":circus-ex-mortis:064"
+    , cdDoubleSided = True
+    }
+
+{- | curse_of_the_rougarou: the Circus printings of the side story's two signature
+cards (guide p14). The campaign's overlay swaps them in for 81019/81029; each
+adds a ☾ release reaction to the printed text. 'cdReplacementCardCode' is what
+keeps @assetIs Assets.ladyEsprit@ and friends pointed at the stand-in.
+-}
+ladyEsprit :: CardDef
+ladyEsprit =
+  (storyAsset ":circus-ex-mortis:019c" ("Lady Esprit" <:> "Dangerous Bokor") 4 Set.TheBayou)
+    { cdSkills = [#willpower, #intellect, #wild]
+    , cdCardTraits = setFromList [Ally, Sorcerer]
+    , cdUnique = True
+    , cdSlots = [#ally]
+    , cdReplacementCardCode = Just "81019"
     }

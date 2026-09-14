@@ -52,9 +52,9 @@ instance RunMessage DrKenslersOffice where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       assets <- select $ assetControlledBy iid <> AssetWithUses Secret
       chooseOneM iid $ scenarioI18n $ scope "drKenslersOffice" do
-        countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        unscoped $ countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
         unless (null assets) do
-          labeled' "removeSecret" do
+          labeled "removeSecret" do
             chooseTargetM iid assets \asset -> removeTokens (attrs.ability 1) asset Secret 1
       pure l
     _ -> DrKenslersOffice <$> mirageRunner Stories.drKenslersOffice mirageCards 2 msg attrs

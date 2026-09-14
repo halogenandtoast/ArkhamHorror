@@ -1,6 +1,7 @@
 module Arkham.Homebrew.DarkMatter.Locations.CyclopeanCaverns (cyclopeanCaverns) where
 
 import Arkham.Ability
+import Arkham.CampaignLogKey (toCampaignLogKey)
 import Arkham.GameValue
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Cards
@@ -10,6 +11,7 @@ import Arkham.Homebrew.DarkMatter.Helpers (
   flipToOtherSide,
   getMemories,
  )
+import Arkham.Homebrew.DarkMatter.Key (DarkMatterKey (Memories))
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -20,19 +22,20 @@ newtype CyclopeanCaverns = CyclopeanCaverns LocationAttrs
 
 cyclopeanCaverns :: LocationCard CyclopeanCaverns
 cyclopeanCaverns =
-  locationWith CyclopeanCaverns Cards.cyclopeanCaverns 4 (PerPlayer 2) (canBeFlippedL .~ True)
+  symbolLabel
+    $ locationWith CyclopeanCaverns Cards.cyclopeanCaverns 4 (PerPlayer 2) (canBeFlippedL .~ True)
 
-{- | "[free] Investigators at this location cross out 1[per_investigator] tally
-marks next to their 'Memories', as a group: Choose any [[Cave]] or [[Carcosa]]
-location and flip it to its other side."
-
-The Memories cost is a group payment with no 'Cost' equivalent, so it is paid
-one tally at a time by whoever is here and still has one; the flip happens once
-the last tally is crossed out.
--}
 instance HasAbilities CyclopeanCaverns where
   getAbilities (CyclopeanCaverns a) =
-    extendRevealed1 a $ restricted a 1 Here $ freeReaction AnyWindow
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        ( Here
+            <> exists
+              (investigatorAt a <> InvestigatorWithRecordCount (toCampaignLogKey Memories) (atLeast 1))
+        )
+        freeTrigger_
 
 instance RunMessage CyclopeanCaverns where
   runMessage msg l@(CyclopeanCaverns attrs) = runQueueT $ case msg of
@@ -50,9 +53,9 @@ instance RunMessage CyclopeanCaverns where
       pure l
     DoStep 0 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       locations <- select caveOrCarcosaLocation
-      chooseTargetM iid locations \lid -> push $ Flip iid (toSource $ attrs.ability 1) (toTarget lid)
+      chooseTargetM iid locations $ flipOverBy iid (attrs.ability 1)
       pure l
-    Flip _ _ (isTarget attrs -> True) -> do
-      flipToOtherSide attrs
+    Flip iid _ (isTarget attrs -> True) -> do
+      flipToOtherSide iid attrs
       pure l
     _ -> CyclopeanCaverns <$> liftRunMessage msg attrs

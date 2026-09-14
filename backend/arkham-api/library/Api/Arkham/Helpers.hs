@@ -93,6 +93,10 @@ data ApiResponse
     -}
     GameAchievement Text
   | GamePlayabilityInfo {cardId :: CardId, cardCode :: Text, checks :: [(Text, Maybe Text)]}
+  | {- | A custom card's JSON could not be used. Sent to the table rather than
+    swallowed, with the fragment at fault, so its author can go and fix it.
+    -}
+    GameCustomCardIssue {cardCode :: Text, detail :: Text, payload :: Aeson.Value}
   | -- Epic Multiplayer: the event's shared state, pushed to a group's own stream
     -- so the shared panel renders from a single source (the group websocket).
     SharedStateUpdate SharedEventState

@@ -47,14 +47,14 @@ instance RunMessage PatriceHathaway where
       canHaveCardsLeaveDiscard <- can.have.cards.leaveDiscard attrs.id
       when (canModifyDeck && canHaveCardsLeaveDiscard && length attrs.discard > 1) do
         chooseOrRunOneM attrs.id do
-          cardI18n $ scope "patriceHathaway" $ labeled' "shuffleDiscardKeepOne" $ doStep 2 msg'
+          cardI18n $ scope "patriceHathaway" $ labeled "shuffleDiscardKeepOne" $ doStep 2 msg'
           labeledI "skip" nothing
       pure i
     DoStep 2 (ElderSignEffect (is attrs -> True)) -> do
       let discards = map toCard attrs.discard
       focusCards discards do
         chooseOneM attrs.id do
-          questionLabeled "$cards.label.patriceHathaway.chooseOneCardToLeave"
+          cardI18n $ questionLabeled "patriceHathaway.chooseOneCardToLeave"
           for_ (eachWithRest discards) \(card, rest) -> do
             targeting card do
               unfocusCards

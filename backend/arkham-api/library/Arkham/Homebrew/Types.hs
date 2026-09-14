@@ -16,6 +16,7 @@ import Arkham.Id (CampaignId)
 import Arkham.Location.Types (SomeLocationCard)
 import Arkham.Prelude
 import Arkham.Scenario.Types (IsScenario)
+import Arkham.Skill.Types (SomeSkillCard)
 import Arkham.Story.Types (SomeStoryCard)
 import Arkham.Treachery.Types (SomeTreacheryCard)
 
@@ -36,6 +37,7 @@ data HomebrewContent = HomebrewContent
   , assets :: [SomeAssetCard]
   , enemies :: [SomeEnemyCard]
   , locations :: [SomeLocationCard]
+  , skills :: [SomeSkillCard]
   , stories :: [SomeStoryCard]
   , treacheries :: [SomeTreacheryCard]
   , scenarios :: HomebrewScenarios
@@ -50,6 +52,7 @@ instance Semigroup HomebrewContent where
       , assets = a.assets <> b.assets
       , enemies = a.enemies <> b.enemies
       , locations = a.locations <> b.locations
+      , skills = a.skills <> b.skills
       , stories = a.stories <> b.stories
       , treacheries = a.treacheries <> b.treacheries
       , scenarios = a.scenarios <> b.scenarios
@@ -57,7 +60,7 @@ instance Semigroup HomebrewContent where
       }
 
 instance Monoid HomebrewContent where
-  mempty = HomebrewContent [] [] [] [] [] [] [] [] []
+  mempty = HomebrewContent [] [] [] [] [] [] [] [] [] []
 
 {- | Implement in your campaign's @Content.hs@ on a campaign-local tag type;
 the instance is discovered automatically (see 'Arkham.Homebrew.Registry').

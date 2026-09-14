@@ -10,9 +10,10 @@ selfDestructive =
 
 thriceDamnedCuriosity :: CardDef
 thriceDamnedCuriosity =
-  (weakness "60203" "Thrice-Damned Curiosity")
-    { cdCardTraits = singleton Flaw
-    }
+  signature "60201"
+    $ (weakness "60203" "Thrice-Damned Curiosity")
+      { cdCardTraits = singleton Flaw
+      }
 
 lethalCuriosity :: CardDef
 lethalCuriosity =
@@ -28,9 +29,10 @@ obsessive =
 
 darkFuture :: CardDef
 darkFuture =
-  (weakness "60403" "Dark Future")
-    { cdCardTraits = setFromList [Omen, Endtimes]
-    }
+  signature "60401"
+    $ (weakness "60403" "Dark Future")
+      { cdCardTraits = setFromList [Omen, Endtimes]
+      }
 
 nihilism :: CardDef
 nihilism =
@@ -40,9 +42,10 @@ nihilism =
 
 calledByTheMists :: CardDef
 calledByTheMists =
-  (weakness "60503" "Called by the Mists")
-    { cdCardTraits = setFromList [Curse]
-    }
+  signature "60501"
+    $ (weakness "60503" "Called by the Mists")
+      { cdCardTraits = setFromList [Curse]
+      }
 
 atychiphobia :: CardDef
 atychiphobia =
@@ -52,78 +55,89 @@ atychiphobia =
 
 weightOfTheWorld :: CardDef
 weightOfTheWorld =
-  (weakness "60355" "Weight of the World")
-    { cdCardTraits = singleton Terror
-    }
+  signature "60351"
+    $ (weakness "60355" "Weight of the World")
+      { cdCardTraits = singleton Terror
+      }
 
 realityAcid5U21 :: CardDef
 realityAcid5U21 =
-  (weakness "89004" "Reality Acid")
-    { cdCardTraits = setFromList [Power]
-    }
+  signature "89001"
+    $ (weakness "89004" "Reality Acid")
+      { cdCardTraits = setFromList [Power]
+      }
 
 hospitalDebtsAdvanced :: CardDef
 hospitalDebtsAdvanced =
-  (weakness "90010" "Hospital Debts")
-    { cdCardTraits = setFromList [Task]
-    , cdKeywords = singleton Keyword.Advanced
-    }
+  signature "01003"
+    $ (weakness "90010" "Hospital Debts")
+      { cdCardTraits = setFromList [Task]
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 coverUpAdvanced :: CardDef
 coverUpAdvanced =
-  (weakness "90031" "Cover Up")
-    { cdCardTraits = setFromList [Task]
-    , cdKeywords = singleton Keyword.Advanced
-    }
+  signature "01001"
+    $ (weakness "90031" "Cover Up")
+      { cdCardTraits = setFromList [Task]
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 abandonedAndAloneAdvanced :: CardDef
 abandonedAndAloneAdvanced =
-  (weakness "90040" "Abandoned and Alone")
-    { cdCardTraits = setFromList [Madness]
-    , cdKeywords = singleton Keyword.Advanced
-    }
+  signature "01005"
+    $ (weakness "90040" "Abandoned and Alone")
+      { cdCardTraits = setFromList [Madness]
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 hardTimes :: CardDef
 hardTimes =
-  (weakness "90048" "Hard Times")
-    { cdCardTraits = setFromList [Hardship]
-    , cdKeywords = singleton Keyword.Replacement
-    }
+  signature "02005"
+    $ (weakness "90048" "Hard Times")
+      { cdCardTraits = setFromList [Hardship]
+      , cdKeywords = singleton Keyword.Replacement
+      }
 
 finalRhapsodyAdvanced :: CardDef
 finalRhapsodyAdvanced =
-  (weakness "90051" "Final Rhapsody")
-    { cdCardTraits = setFromList [Endtimes]
-    , cdKeywords = singleton Keyword.Advanced
-    }
+  signature "02004"
+    $ (weakness "90051" "Final Rhapsody")
+      { cdCardTraits = setFromList [Endtimes]
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 smiteTheWickedAdvanced :: CardDef
 smiteTheWickedAdvanced =
-  (weakness "90061" "Smite the Wicked")
-    { cdCardTraits = setFromList [Task]
-    , cdKeywords = singleton Keyword.Advanced
-    }
+  signature "02001"
+    $ (weakness "90061" "Smite the Wicked")
+      { cdCardTraits = setFromList [Task]
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 buriedSecretsAdvanced :: CardDef
 buriedSecretsAdvanced =
-  (weakness "90064" "Buried Secrets")
-    { cdCardTraits = setFromList [Mystery]
-    , cdKeywords = singleton Keyword.Advanced
-    }
+  signature "08007"
+    $ (weakness "90064" "Buried Secrets")
+      { cdCardTraits = setFromList [Mystery]
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 rexsCurseAdvanced :: CardDef
 rexsCurseAdvanced =
-  (weakness "90080" "Rex's Curse")
-    { cdCardTraits = setFromList [Curse]
-    , cdKeywords = singleton Keyword.Advanced
-    }
+  signature "02002"
+    $ (weakness "90080" "Rex's Curse")
+      { cdCardTraits = setFromList [Curse]
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 searchingForIzzieAdvanced :: CardDef
 searchingForIzzieAdvanced =
-  (weakness "90086" "Searching for Izzie")
-    { cdCardTraits = setFromList [Task]
-    , cdKeywords = singleton Keyword.Advanced
-    }
+  signature "02003"
+    $ (weakness "90086" "Searching for Izzie")
+      { cdCardTraits = setFromList [Task]
+      , cdKeywords = singleton Keyword.Advanced
+      }
 
 unaware :: CardDef
 unaware =

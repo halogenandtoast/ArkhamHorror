@@ -136,7 +136,7 @@ story
 story f cardDef = storyWith f cardDef id
 
 instance HasCardDef StoryAttrs where
-  toCardDef e = case lookup (unStoryId $ storyId e) allStoryCards of
+  toCardDef e = case lookup (unStoryId $ storyId e) allStoryCards <|> lookupCustomCardDef (unStoryId $ storyId e) of
     Just def -> def
     Nothing -> error $ "missing card def for story " <> show (unStoryId $ storyId e)
 

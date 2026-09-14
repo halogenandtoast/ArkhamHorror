@@ -49,7 +49,7 @@ instance RunMessage TheClaretKnightHerSwornChampion where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       resources <- field InvestigatorResources iid
       scenarioI18n
-        $ chooseAmount'
+        $ chooseAmount
           iid
           "theClaretKnight.resources"
           "$resources"
@@ -62,7 +62,7 @@ instance RunMessage TheClaretKnightHerSwornChampion where
       pure a
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       scenarioI18n
-        $ chooseAmount'
+        $ chooseAmount
           iid
           "theClaretKnight.resources"
           "$resources"
@@ -88,9 +88,9 @@ instance RunMessage TheClaretKnightHerSwornChampion where
     HandleTargetChoice iid (isSource attrs -> True) (AssetTarget aid) -> do
       let whenCanHoldToken tkn = whenM (matches aid (AssetCanHaveUses tkn))
       chooseOrRunOneM iid $ withI18n do
-        whenCanHoldToken Charge $ labeled' "charge" $ addUses attrs aid Charge 1
-        whenCanHoldToken Ammo $ labeled' "ammo" $ addUses attrs aid Ammo 1
-        whenCanHoldToken Supply $ labeled' "supply" $ addUses attrs aid Supply 1
-        whenCanHoldToken Secret $ labeled' "secret" $ addUses attrs aid Secret 1
+        whenCanHoldToken Charge $ labeled "charge" $ addUses attrs aid Charge 1
+        whenCanHoldToken Ammo $ labeled "ammo" $ addUses attrs aid Ammo 1
+        whenCanHoldToken Supply $ labeled "supply" $ addUses attrs aid Supply 1
+        whenCanHoldToken Secret $ labeled "secret" $ addUses attrs aid Secret 1
       pure a
     _ -> TheClaretKnightHerSwornChampion <$> liftRunMessage msg attrs

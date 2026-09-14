@@ -15,16 +15,19 @@ import Arkham.Enemy.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as En
 import Arkham.Exception
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.FlavorText (addEntry, setup)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Query
 import Arkham.Helpers.SkillTest
 import Arkham.Helpers.Text
 import Arkham.Helpers.Xp
+import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
 import Arkham.Location.CardDefs.EdgeOfTheEarth.CityOfTheElderThings qualified as Locations
 import Arkham.Location.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Locations
 import Arkham.Location.Grid
+import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
@@ -81,6 +84,48 @@ cityLandscapes =
   , Locations.templeOfTheElderThings
   ]
 
+{- | "During setup, after you reveal the starting location, the lead investigator
+discovers clues from that location equal to half its clue value (rounded up)."
+
+Deferred through 'handleTarget' so the count is read after the queued reveal has
+stocked the location; done inline the clues aren't there yet.
+-}
+scoutedTheCityOutskirtsBonus :: ReverseQueue m => InvestigatorId -> LocationId -> m ()
+scoutedTheCityOutskirtsBonus lead lid =
+  whenM (getHasRecord TheInvestigatorsScoutedTheCityOutskirts)
+    $ handleTarget lead ScenarioSource lid
+
+-- 'startAt' with the scouted-outskirts discovery attached
+startAtScouted :: ReverseQueue m => LocationId -> ScenarioBuilderT m ()
+startAtScouted lid = do
+  lead <- getLead
+  lift $ chooseOneM lead do
+    targeting lid do
+      reveal lid
+      placeAllAt lid
+      scoutedTheCityOutskirtsBonus lead lid
+
+cityOfTheElderThingsSetup :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> Scope -> Bool -> m ()
+cityOfTheElderThingsSetup attrs version addsElderThingToken = setup $ addEntry $ ul do
+  scope version do
+    li "gatherSets"
+    li "setAside"
+    li "createActDeck"
+    li.nested "placeLocations" do
+      li "startAt"
+      li "adjacency"
+    li "keys"
+    li.validate addsElderThingToken "addElderThingToken"
+    li "removals"
+  li "removeUnearnedWeaknesses"
+  li.nested "checkDifficulty" do
+    li.validate (attrs.difficulty == Hard) "hard"
+    li.validate (attrs.difficulty == Expert) "expert"
+  li "tekelili"
+  unscoped do
+    li "shuffleRemainder"
+    li "readyToBegin"
+
 allKeys :: MonadRandom m => m [ArkhamKey]
 allKeys = do
   skull1 <- toKey <$> createChaosToken #skull
@@ -132,9 +177,9 @@ instance RunMessage CityOfTheElderThings where
             else do
               lead <- getLead
               chooseOneM lead do
-                labeled' "v1" $ doStep 1 PreScenarioSetup
-                labeled' "v2" $ doStep 2 PreScenarioSetup
-                labeled' "v3" $ doStep 3 PreScenarioSetup
+                labeled "v1" $ doStep 1 PreScenarioSetup
+                labeled "v2" $ doStep 2 PreScenarioSetup
+                labeled "v3" $ doStep 3 PreScenarioSetup
           if attrs.hasOption IncludePartners
             then do
               eachInvestigator (`forInvestigator` PreScenarioSetup)
@@ -145,7 +190,7 @@ instance RunMessage CityOfTheElderThings where
           doStep 0 msg
           pure s
     DoStep 0 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      story $ i18nWithHeading "intro"
       sinhaIsAlive <- getPartnerIsAlive Assets.drMalaSinhaDaringPhysician
       blueStory
         $ validateEntry sinhaIsAlive "sinha.alive"
@@ -201,9 +246,10 @@ instance RunMessage CityOfTheElderThings where
       let group2 = group2Count > group1Count && group2Count > group3Count
       let group3 = group3Count > group1Count && group3Count > group2Count
       let tied = not (group1 || group2 || group3)
+      let mostVotes = maximumEx [group1Count, group2Count, group3Count]
 
       storyWithChooseOneM
-        ( toFlavor
+        ( addEntry
             $ p "votes"
             <> cols
               [ p "group1" <> ul do
@@ -226,12 +272,9 @@ instance RunMessage CityOfTheElderThings where
               li.validate tied "vote.tied"
         )
         do
-          labeledValidate' (group1 || group1Count `elem` [group2Count, group3Count]) "v1"
-            $ doStep 1 PreScenarioSetup
-          labeledValidate' (group2 || group2Count `elem` [group1Count, group3Count]) "v2"
-            $ doStep 2 PreScenarioSetup
-          labeledValidate' (group3 || group3Count `elem` [group1Count, group2Count]) "v3"
-            $ doStep 3 PreScenarioSetup
+          labeledValidate' (group1Count == mostVotes) "v1" $ doStep 1 PreScenarioSetup
+          labeledValidate' (group2Count == mostVotes) "v2" $ doStep 2 PreScenarioSetup
+          labeledValidate' (group3Count == mostVotes) "v3" $ doStep 3 PreScenarioSetup
 
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s
@@ -278,10 +321,16 @@ instance RunMessage CityOfTheElderThings where
         pushWhen (partner.horror > 0) $ Msg.PlaceHorror CampaignSource (toTarget assetId) partner.horror
 
       pure s
+    HandleTargetChoice lead (isSource attrs -> True) (LocationTarget lid) -> do
+      n <- field LocationClues lid
+      discoverAt NotInvestigate lead ScenarioSource ((n + 1) `div` 2) lid
+      pure s
     Setup -> do
       doStep (toResult @Int attrs.meta) msg
       pure $ CityOfTheElderThings $ attrs & metaL .~ toJSON (0 :: Int)
     DoStep 1 Setup -> runScenarioSetup CityOfTheElderThings attrs do
+      cityOfTheElderThingsSetup attrs "v1" True
+
       gather Set.CityOfTheElderThings
       gather Set.ElderThings
       gather Set.Miasma
@@ -308,6 +357,7 @@ instance RunMessage CityOfTheElderThings where
         \lid -> do
           reveal lid
           placeAllAt lid
+          scoutedTheCityOutskirtsBonus lead lid
       tokens <- allKeys
       for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
       addChaosToken #elderthing
@@ -320,6 +370,8 @@ instance RunMessage CityOfTheElderThings where
         _ -> pure ()
       addTekeliliDeck
     DoStep 2 Setup -> runScenarioSetup CityOfTheElderThings attrs do
+      cityOfTheElderThingsSetup attrs "v2" True
+
       gather Set.CityOfTheElderThings
       gather Set.ElderThings
       gather Set.NamelessHorrors
@@ -336,7 +388,7 @@ instance RunMessage CityOfTheElderThings where
       locationMap <-
         Map.fromList <$> for (zip setup2Positions locations) \(pos, loc) ->
           (pos,) <$> placeInGrid pos loc
-      for_ (Map.lookup (Pos 4 (-4)) locationMap) startAt
+      for_ (Map.lookup (Pos 4 (-4)) locationMap) startAtScouted
       tokens <- allKeys
       for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
       addChaosToken #elderthing
@@ -353,6 +405,8 @@ instance RunMessage CityOfTheElderThings where
         _ -> pure ()
       addTekeliliDeck
     DoStep 3 Setup -> runScenarioSetup CityOfTheElderThings attrs do
+      cityOfTheElderThingsSetup attrs "v3" False
+
       gather Set.CityOfTheElderThings
       gather Set.CreaturesInTheIce
       gather Set.Miasma
@@ -369,7 +423,7 @@ instance RunMessage CityOfTheElderThings where
       locationMap <-
         Map.fromList <$> for (zip setup3Positions locations) \(pos, loc) ->
           (pos,) <$> placeInGrid pos loc
-      for_ (Map.lookup (Pos (-7) 4) locationMap) startAt
+      for_ (Map.lookup (Pos (-7) 4) locationMap) startAtScouted
       tokens <- allKeys
       for_ (zip (Map.elems locationMap) tokens) (uncurry placeKey)
       removeEvery
@@ -391,7 +445,8 @@ instance RunMessage CityOfTheElderThings where
           unless (null ks) do
             withLocationOf iid \lid -> do
               chooseOrRunOneM iid do
-                for_ ks \k -> labeled ("Place " <> keyName k) $ placeKey lid k
+                for_ ks \k ->
+                  (withI18n $ keyVar "key" (keyName k) $ labeled "placeKey") $ placeKey lid k
         ElderThing -> do
           xs <- selectOrElse (enemyAtLocationWith iid) (NearestEnemyTo iid AnyEnemy)
           chooseTargetM iid xs \x -> do
@@ -407,7 +462,8 @@ instance RunMessage CityOfTheElderThings where
       unless (null ks) do
         withLocationOf iid \lid -> do
           chooseOrRunOneM iid do
-            for_ ks \k -> labeled ("Place " <> keyName k) $ placeKey lid k
+            for_ ks \k ->
+              (withI18n $ keyVar "key" (keyName k) $ labeled "placeKey") $ placeKey lid k
       pure s
     ResolveChaosToken _ Tablet iid -> do
       tokens <- map (.face) <$> getSkillTestRevealedChaosTokens

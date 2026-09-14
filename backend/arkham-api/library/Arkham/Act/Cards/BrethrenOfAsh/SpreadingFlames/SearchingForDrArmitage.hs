@@ -59,10 +59,10 @@ instance RunMessage SearchingForDrArmitage where
 
       chooseOrRunOneM lead $ scenarioI18n do
         when (length inDiscard >= n) do
-          labeled' "searchingForDrArmitage.drawFromDiscard"
+          labeled "searchingForDrArmitage.drawFromDiscard"
             $ for_ (take n inDiscard)
             $ drawCardFrom lead Deck.EncounterDiscard
-        labeled' "searchingForDrArmitage.drawFromBoth"
+        labeled "searchingForDrArmitage.drawFromBoth"
           $ repeated n
           $ findAndDrawEncounterCard lead (cardIs Treacheries.fire1)
 

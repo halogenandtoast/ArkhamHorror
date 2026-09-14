@@ -18,6 +18,7 @@ import Arkham.Homebrew.TH
 import Arkham.Homebrew.Types as X
 import Arkham.Location.Types (SomeLocationCard)
 import Arkham.Prelude ()
+import Arkham.Skill.Types (SomeSkillCard)
 import Arkham.Story.Types (SomeStoryCard)
 import Arkham.Treachery.Types (SomeTreacheryCard)
 
@@ -38,6 +39,9 @@ enemies = allHomebrewContent.enemies
 
 locations :: [SomeLocationCard]
 locations = allHomebrewContent.locations
+
+skills :: [SomeSkillCard]
+skills = allHomebrewContent.skills
 
 stories :: [SomeStoryCard]
 stories = allHomebrewContent.stories

@@ -53,11 +53,17 @@ data AssetMatcher
   | AssetWithKeyword Keyword
   | AssetAttachedToAsset AssetMatcher
   | AssetWithAttachedEvent EventMatcher
+  | AssetWithAttachedAsset AssetMatcher
   | AssetWithAttachedTreachery TreacheryMatcher
   | AssetAttachedTo TargetMatcher
   | AssetControlledBy InvestigatorMatcher
   | AssetInPlayAreaOf InvestigatorMatcher
   | AssetInThreatAreaOf InvestigatorMatcher
+  | {- | Face *down* in a threat area (Dark Matter, "Lost Quantum"), the asset
+    sibling of 'TreacheryFacedownInThreatAreaOf'. A face-down card is not in
+    play, so ordinary threat-area effects must not see it.
+    -}
+    AssetFacedownInThreatAreaOf InvestigatorMatcher
   | InPlayAsset AssetMatcher
   | AssetOwnedBy InvestigatorMatcher
   | AssetWithMetaKeyValue Key Value
@@ -106,6 +112,10 @@ data AssetMatcher
   | AssetWithAnyRemainingSanity
   | AssetWithFewestClues AssetMatcher
   | AssetWithMostClues AssetMatcher
+  | {- | The most counters of any kind, once the named kinds are set aside --
+    "the most non-damage non-horror tokens on it" and anything shaped like it.
+    -}
+    AssetWithMostTokensExcluding [Token] AssetMatcher
   | AssetCanBeAssignedDamageBy InvestigatorId
   | AssetCanBeDamagedBySource Source
   | AssetCanBeAssignedHorrorBy InvestigatorId

@@ -14,6 +14,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getCanMoveToLocations)
+import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getJustLocationByName, getPlayerCount)
 import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheVale qualified as Locations
@@ -29,8 +30,11 @@ import Arkham.Strategy
 import Arkham.Window (defaultWindows)
 
 newtype PreludeWelcomeToHemlockVale = PreludeWelcomeToHemlockVale ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor PreludeWelcomeToHemlockVale where
+  getModifiersFor (PreludeWelcomeToHemlockVale a) = modifySelect a Anyone [noCodexEntry Theta]
 
 preludeWelcomeToHemlockVale :: Difficulty -> PreludeWelcomeToHemlockVale
 preludeWelcomeToHemlockVale difficulty =
@@ -55,9 +59,9 @@ instance HasChaosTokenValue PreludeWelcomeToHemlockVale where
 instance RunMessage PreludeWelcomeToHemlockVale where
   runMessage msg s@(PreludeWelcomeToHemlockVale attrs) = runQueueT $ campaignI18n $ scope "prelude1" $ case msg of
     PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (h "title" >> p "intro1") do
-        labeled' "survey" $ doStep 2 PreScenarioSetup
-        labeled' "feast" $ doStep 3 PreScenarioSetup
+      storyWithChooseOneM (h "title" >> p "intro1") do
+        labeled "survey" $ doStep 2 PreScenarioSetup
+        labeled "feast" $ doStep 3 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor $ h "title" >> p "intro2"
@@ -183,7 +187,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           increaseRelationshipLevel TheoPeters 1
           entry "theoPeters"
           chooseOneM iid $ unscoped do
-            labeled' "move" do
+            labeled "move" do
               locations <- getCanMoveToLocations iid source
               chooseTargetM iid locations $ moveTo source iid
             skip_
@@ -253,7 +257,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resources <- getSpendableResources iid
           when (resources > 0) do
             chooseOneM iid do
-              labeled' "tadsGeneralStore.item" do
+              labeled "tadsGeneralStore.item" do
                 codexFinishedFor 14 iid
                 spendResources iid 1
                 search iid source iid [fromDeck] (basic #item) (PlayFoundNoCost iid 1)
@@ -301,7 +305,7 @@ instance RunMessage PreludeWelcomeToHemlockVale where
         then push GameOver
         else do
           leadChooseOneM do
-            questionLabeled' "survey"
+            questionLabeled "survey"
             scenarioLabeled' "writtenInRock" "10501-day1" $ afterPrelude WrittenInRock
             scenarioLabeled' "hemlockHouse" "10523-day1" $ afterPrelude HemlockHouse
             scenarioLabeled' "theSilentHeath" "10549-day1" $ afterPrelude TheSilentHeath

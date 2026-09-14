@@ -1,10 +1,9 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.DisguisedMonstrosity (disguisedMonstrosity) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Keyword qualified as Keyword
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
 
 newtype DisguisedMonstrosity = DisguisedMonstrosity EnemyAttrs
@@ -16,16 +15,12 @@ disguisedMonstrosity = enemy DisguisedMonstrosity Cards.disguisedMonstrosity
 
 instance HasModifiersFor DisguisedMonstrosity where
   getModifiersFor (DisguisedMonstrosity a) = do
-    modifySelf a [AddKeyword Keyword.Hunter, AddKeyword Keyword.Massive]
-    exposed <- selectAny $ locationWithEnemy a <> RevealedLocation <> LocationWithoutClues
-    when exposed $ modifySelf a [EnemyFight (-1), DamageTakenFrom AttackDamageEffect 1]
+    whenAny (locationWithEnemy a <> #revealed <> LocationWithoutClues) do
+      modifySelf a [EnemyFight (-1), DamageTakenFrom AttackDamageEffect 1]
 
 instance HasAbilities DisguisedMonstrosity where
   getAbilities (DisguisedMonstrosity a) =
-    extend1 a
-      $ mkAbility a 1
-      $ forced
-      $ EnemyMoves #after (RevealedLocation <> LocationWithoutClues) (be a)
+    extend1 a $ mkAbility a 1 $ forced $ EnemyMoves #after (#revealed <> LocationWithoutClues) (be a)
 
 instance RunMessage DisguisedMonstrosity where
   runMessage msg e@(DisguisedMonstrosity attrs) = runQueueT $ case msg of

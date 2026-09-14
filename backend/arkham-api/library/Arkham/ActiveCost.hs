@@ -24,6 +24,7 @@ import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
 import Arkham.Campaigns.TheScarletKeys.Key.Matcher
 import Arkham.Card
 import Arkham.ChaosBag.Base
+import Arkham.ChaosBag.RevealStrategy (RevealStrategy (Reveal))
 import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasGame
@@ -34,7 +35,7 @@ import Arkham.Distance
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens, EnemyTokens))
-import Arkham.Event.Types (Field (EventCard, EventController))
+import Arkham.Event.Types (Field (EventCard, EventController, EventPlayTarget))
 import Arkham.Exception
 import Arkham.Exhaust (mkExhaustion)
 import Arkham.GameValue
@@ -45,6 +46,7 @@ import Arkham.Helpers.Card
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Cost
+import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Effect (createCardEffect)
 import Arkham.Helpers.Game
@@ -76,6 +78,7 @@ import Arkham.Message.Lifted qualified as Lifted
 import Arkham.Name
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.RequestedChaosTokenStrategy (RequestedChaosTokenStrategy (SetAside))
 import Arkham.Scenario.Deck (ScenarioDeckKey (TekeliliDeck))
 import Arkham.Scenario.Types (Field (..))
 import Arkham.SkillType
@@ -103,15 +106,6 @@ activeCostActions ac = case ac.target of
 
 instance HasField "actions" ActiveCost [Action] where
   getField = activeCostActions
-activeCostSource :: ActiveCost -> Source
-activeCostSource ac = case activeCostTarget ac of
-  ForAbility a -> toSource a
-  ForCard _ c -> CardIdSource c.id
-  ForCost c -> CardIdSource c.id
-  ForAdditionalCost c -> BatchSource c
-
-instance HasField "source" ActiveCost Source where
-  getField = activeCostSource
 
 instance HasField "canModify" ActiveCost Bool where
   getField c = case c.target of
@@ -180,17 +174,17 @@ startAbilityPayment activeCost@ActiveCost {activeCostId} iid window abilityType 
  where
   checkAttackOfOpportunity mods actions =
     (noAooFrom /= Just AnyEnemy)
-      && ( all (`notElem` nonAttackOfOpportunityActions) actions
-             || any (\action -> ActionDoesNotCauseAttacksOfOpportunity action `elem` mods) actions
-         )
+      && all (`notElem` nonAttackOfOpportunityActions) actions
+      && not (any (\action -> ActionDoesNotCauseAttacksOfOpportunity action `elem` mods) actions)
   handleActions actions = do
     mods <- getModifiers iid
+    let provokes = checkAttackOfOpportunity mods actions
     beforeWindowMsg <- checkWindows [mkWhen $ Window.PerformAction iid action | action <- actions]
     pushAll
       $ [BeginAction, beforeWindowMsg]
-      <> [Will (CheckAttackOfOpportunity iid False noAooFrom) | checkAttackOfOpportunity mods actions]
+      <> [Will (CheckAttackOfOpportunity iid False noAooFrom) | provokes]
       <> [PayCosts activeCostId]
-      <> [CheckAttackOfOpportunity iid False noAooFrom | checkAttackOfOpportunity mods actions]
+      <> [CheckAttackOfOpportunity iid False noAooFrom | provokes]
 
 nonAttackOfOpportunityActions :: [Action]
 nonAttackOfOpportunityActions = [#fight, #evade, #resign, #parley]
@@ -204,14 +198,36 @@ payCost
   -> Bool
   -> Cost
   -> m ActiveCost
-payCost msg c iid skipAdditionalCosts cost = do
+payCost msg c iid skipAdditionalCosts = payCostFrom msg c iid skipAdditionalCosts Nothing
+
+{- | 'payCost', with the 'SourcedCost' contributor (if any) in hand so payment is
+attributed to it rather than to the card the active cost is being paid for.
+-}
+payCostFrom
+  :: forall m
+   . (HasGame m, HasQueue Message m, HasCallStack, CardGen m)
+  => Message
+  -> ActiveCost
+  -> InvestigatorId
+  -> Bool
+  -> Maybe Source
+  -> Cost
+  -> m ActiveCost
+payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
   let acId = c.id
   let withPayment payment = pure $ c & costPaymentsL <>~ payment
-  let source = PaymentSource c.source
+  let source = PaymentSource (fromMaybe c.source mCostSource)
   let actions = c.actions
-  let pay = PayCost acId iid skipAdditionalCosts
+  let pay = PayCost acId iid skipAdditionalCosts . maybe id SourcedCost mCostSource
   player <- getPlayer iid
+  -- Questions raised while paying a contributed cost highlight the contributor, so the
+  -- player can see which card is charging them.
+  let
+    chooseOneSourced options = case mCostSource of
+      Nothing -> chooseOne player options
+      Just costSource -> questionWithSource costSource player (ChooseOne options)
   case cost of
+    SourcedCost costSource inner -> payCostFrom msg c iid skipAdditionalCosts (Just costSource) inner
     FlipScarletKeyCost -> do
       ks <- select $ StableScarletKey <> ScarletKeyWithBearer (InvestigatorWithId iid)
       push $ chooseOne player $ targetLabels ks $ only . Flip iid source . toTarget
@@ -362,7 +378,9 @@ payCost msg c iid skipAdditionalCosts cost = do
       if hasEnemy
         then payCost msg c iid skipAdditionalCosts cost'
         else pure c
-    CostOnlyWhen _ cost' -> payCost msg c iid skipAdditionalCosts cost'
+    CostOnlyWhen cr cost' -> do
+      ok <- passesCriteria iid Nothing c.source c.source c.windows cr
+      if ok then payCost msg c iid skipAdditionalCosts cost' else pure c
     CostWhenTreachery mtchr cost' -> do
       hasTreachery <- selectAny mtchr
       if hasTreachery
@@ -561,6 +579,26 @@ payCost msg c iid skipAdditionalCosts cost = do
     SealChaosTokenCost token -> do
       push $ SealChaosToken token
       pure $ c & costPaymentsL <>~ SealChaosTokenPayment token & costSealedChaosTokensL %~ (token :)
+    SealOnInvestigatorCost matcher -> do
+      ts <-
+        filterM (\t -> matchChaosToken iid t matcher)
+          =<< scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+      pushAll
+        [ FocusChaosTokens ts
+        , chooseOne player $ targetLabels ts $ only . pay . SealChaosTokenOnInvestigatorCost
+        , UnfocusChaosTokens
+        ]
+      pure c
+    SealChaosTokenOnInvestigatorCost token -> do
+      pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (InvestigatorTarget iid)]
+      pure $ c & costPaymentsL <>~ SealChaosTokenPayment token
+    RevealChaosTokensCost requester n -> do
+      push $ RequestChaosTokens requester (Just iid) (Reveal n) SetAside
+      push $ ResetChaosTokens requester
+      pure c
+    FindEncounterCardCost target zones matcher -> do
+      push $ FindEncounterCard iid target zones matcher LeadChooses
+      pure c
     ReleaseChaosTokensCost n matcher -> do
       case matcher of
         SealedOnAsset assetMatcher tokenMatcher' -> do
@@ -624,7 +662,7 @@ payCost msg c iid skipAdditionalCosts cost = do
       withPayment $ DiscardPayment [(zone, card)]
     DiscardAssetCost matcher -> do
       assets <- select (matcher <> DiscardableAsset)
-      push $ chooseOne player $ targetLabels assets $ only . pay . discardCost
+      push $ chooseOneSourced $ targetLabels assets $ only . pay . discardCost
       pure c
     DiscardRandomCardCost -> do
       hand <- field InvestigatorHand iid
@@ -672,6 +710,10 @@ payCost msg c iid skipAdditionalCosts cost = do
     EnemyDoomCost x matcher -> do
       enemies <- select matcher
       push $ chooseOrRunOne player [targetLabel enemy [placeDoom source enemy x] | enemy <- enemies]
+      withPayment $ DoomPayment x
+    AssetDoomCost x matcher -> do
+      assets <- select matcher
+      push $ chooseOneSourced [targetLabel asset [placeDoom source asset x] | asset <- assets]
       withPayment $ DoomPayment x
     RemoveEnemyDamageCost x matcher -> do
       n <- getGameValue x
@@ -836,7 +878,8 @@ payCost msg c iid skipAdditionalCosts cost = do
       would <-
         checkWindows
           [ (mkWhen $ Window.WouldAddChaosTokensToChaosBag (Just iid) $ replicate n face)
-              {windowBatchId = Just batchId}
+              { windowBatchId = Just batchId
+              }
           ]
       push $ Would batchId $ would : replicate n (AddChaosToken face)
       withPayment $ AddTokenPayment n face
@@ -864,7 +907,12 @@ payCost msg c iid skipAdditionalCosts cost = do
                   [ AbilityLabel
                       iid
                       (mkAbility (SourceableWithCardCode @CardCode "90078" iid) 1 $ freeReaction NotAnyWindow)
-                      [Window #when (Window.WouldAddChaosTokensToChaosBag (Just iid) $ replicate n #curse) (Just batchId)]
+                      [ Window
+                          #when
+                          (Window.WouldAddChaosTokensToChaosBag (Just iid) $ replicate n #curse)
+                          (Just batchId)
+                          Nothing
+                      ]
                       []
                       []
                   ]
@@ -1533,6 +1581,10 @@ payCost msg c iid skipAdditionalCosts cost = do
           | SkillIcon skill <- choices
           ]
       pure c
+    CalculatedDiscardCombinedCost calc -> do
+      n <- calculate calc
+      push $ PayCost acId iid True (DiscardCombinedCost n)
+      pure c
     DiscardCombinedCost x -> do
       handCards <-
         fieldMap InvestigatorHand (mapMaybe (preview _PlayerCard) . filter (`cardMatch` NonWeakness)) iid
@@ -1590,10 +1642,15 @@ instance RunMessage ActiveCost where
           pure c
         ForCard _isPlayAction card -> do
           let cardDef = toCardDef card
-          -- For OrActions with no prior BeforePlayEvent, create a pending event
-          -- so the event itself can ask the player before costs begin
-          case (cardDef.cardActions, c.pendingEventId) of
-            (OrActions _, Nothing) -> do
+          -- Create a pending event so the card can ask the player before costs begin:
+          -- which action an OrActions card is taking, or where a move card is going.
+          -- The answer is settled before costs and attacks of opportunity are worked out.
+          let
+            asksBeforeCosts = case cardDef.cardActions of
+              OrActions _ -> True
+              _ -> cdCardType cardDef == EventType && #move `elem` cardDef.actions
+          case (asksBeforeCosts, c.pendingEventId) of
+            (True, Nothing) -> do
               eid <- getRandom
               pushAll [CreatePendingEvent card iid eid, BeforePlayEvent iid eid acId]
               pure $ c {activeCostPendingEventId = Just eid}
@@ -1609,11 +1666,25 @@ instance RunMessage ActiveCost where
               let
                 modifiersPreventAttackOfOpportunity = ActionDoesNotCauseAttacksOfOpportunity #play `elem` modifiers'
                 actions = c.actions
+                moveExemptions =
+                  [m | #move `elem` actions, MovingToDoesNotProvokeAttacksOfOpportunity m <- modifiers']
+                provokesAttackOfOpportunity =
+                  not modifiersPreventAttackOfOpportunity
+                    && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
+                    && isNothing cardDef.fastWindow
+                    && all (`notElem` nonAttackOfOpportunityActions) actions
+                    && (totalActionCost c.costs > 0)
                 mEffect =
                   guard cardDef.beforeEffect
                     *> [ enabled
                        , CheckAdditionalCosts acId
                        ]
+              -- where the move card is headed, chosen before costs. No destination
+              -- means nothing was moved between exempt locations, so it provokes
+              mDestination <- join <$> traverse (field EventPlayTarget) c.pendingEventId
+              moveIsExempt <- case (moveExemptions, mDestination) of
+                (ms@(_ : _), Just (LocationTarget lid)) -> anyM (lid <=~>) ms
+                _ -> pure False
               batchId <- getRandom
               beforeWindowMsg <- checkWindows $ map (mkWhen . Window.PerformAction iid) actions
               wouldPayWindowMsg <- checkWindows [mkWhen $ Window.WouldPayCardCost iid acId batchId card]
@@ -1627,19 +1698,11 @@ instance RunMessage ActiveCost where
                    , Would
                        batchId
                        $ [ Will (CheckAttackOfOpportunity iid False Nothing)
-                         | not modifiersPreventAttackOfOpportunity
-                             && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
-                             && isNothing cardDef.fastWindow
-                             && all (`notElem` nonAttackOfOpportunityActions) actions
-                             && (totalActionCost c.costs > 0)
+                         | provokesAttackOfOpportunity && not moveIsExempt
                          ]
                        <> [PayCosts acId]
                        <> [ CheckAttackOfOpportunity iid False Nothing
-                          | not modifiersPreventAttackOfOpportunity
-                              && (DoesNotProvokeAttacksOfOpportunity `notElem` cardDef.attackOfOpportunityModifiers)
-                              && isNothing cardDef.fastWindow
-                              && all (`notElem` nonAttackOfOpportunityActions) actions
-                              && (totalActionCost c.costs > 0)
+                          | provokesAttackOfOpportunity && not moveIsExempt
                           ]
                        <> [PayCostFinished acId]
                    ]
@@ -1649,9 +1712,22 @@ instance RunMessage ActiveCost where
           let
             modifiersPreventAttackOfOpportunity =
               any ((`elem` modifiers') . ActionDoesNotCauseAttacksOfOpportunity) a.actions
+            moveExemptions = case abilityType of
+              ActionAbility {}
+                | not modifiersPreventAttackOfOpportunity
+                , isNothing abilityDoesNotProvokeAttacksOfOpportunity
+                , #move `elem` a.actions ->
+                    [m | MovingToDoesNotProvokeAttacksOfOpportunity m <- modifiers']
+              _ -> []
+          -- the basic move ability belongs to the destination location, so its
+          -- source is the location a "moving to" exemption matches; an ability
+          -- with any other source only knows its destination once it resolves
+          movePreventsAttackOfOpportunity <- case abilitySource of
+            LocationSource lid | notNull moveExemptions -> anyM (lid <=~>) moveExemptions
+            _ -> pure False
           pushAll [PaidInitialCostForAbility acId iid (abilityToRef a) c.payments, PayCostFinished acId]
           let aoo =
-                if modifiersPreventAttackOfOpportunity
+                if modifiersPreventAttackOfOpportunity || movePreventsAttackOfOpportunity
                   then Just AnyEnemy
                   else abilityDoesNotProvokeAttacksOfOpportunity
           startAbilityPayment c iid (mkWhen Window.NonFast) abilityType abilitySource aoo
@@ -1724,6 +1800,12 @@ instance RunMessage ActiveCost where
                     then payCost msg c iid skipAdditionalCosts cost'
                     else throw $ InvalidState $ "Can't afford cost (a): " <> tshow cost'
                 else throw $ InvalidState $ "Can't afford cost (b): " <> tshow cost
+    -- An aspect of a cost that gets cancelled or ignored (Deny Existence on the
+    -- damage half of "take 2 damage and discard this: ...") means the cost was
+    -- not paid in full, so the ability's effect never resolves. What was already
+    -- paid stays paid.
+    CancelCostPayment acId | acId == c.id -> do
+      pure $ c {activeCostCancelled = True}
     SetCost acId cost | acId == c.id -> do
       pure $ c {activeCostCosts = cost}
     SetActiveCostChosenAction acId action | acId == c.id -> do
@@ -1734,7 +1816,9 @@ instance RunMessage ActiveCost where
       case c.target of
         ForAbility ability -> do
           if ability.index == NonActivateAbility
-            then push $ UseCardAbility c.investigator ability.source ability.index c.windows c.payments
+            then
+              pushWhen (not c.cancelled)
+                $ UseCardAbility c.investigator ability.source ability.index c.windows c.payments
             else do
               let
                 isAction = isActionAbility ability && ability.index > 0 && not (isFastAbility ability)
@@ -1777,7 +1861,7 @@ instance RunMessage ActiveCost where
               pushAll
                 $ [whenActivateAbilityWindow | not isForced]
                 <> [SealedChaosToken token (Just c.investigator) (toTarget card) | token <- c.sealedChaosTokens]
-                <> [UseCardAbility iid ability.source ability.index c.windows c.payments]
+                <> [UseCardAbility iid ability.source ability.index c.windows c.payments | not c.cancelled]
                 <> afterMsgs
                 <> [afterActivateAbilityWindow | not isForced]
         ForCard isPlayAction card -> do

@@ -29,9 +29,9 @@ instance RunMessage HonedInstinct where
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       when (attrs `hasCustomization` ForceOfHabit) do
         chooseOneM iid $ cardI18n $ scope "honedInstinct" do
-          labeled' "another" do
+          labeled "another" do
             removeFromGame attrs
             takeActionAsIfTurn iid attrs
-          labeled' "skip" nothing
+          labeled "skip" nothing
       pure e
     _ -> HonedInstinct <$> liftRunMessage msg attrs

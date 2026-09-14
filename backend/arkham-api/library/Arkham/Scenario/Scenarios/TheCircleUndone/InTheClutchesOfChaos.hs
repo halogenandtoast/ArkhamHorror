@@ -139,7 +139,7 @@ setupInTheClutchesOfChaos attrs = do
 instance RunMessage InTheClutchesOfChaos where
   runMessage msg s@(InTheClutchesOfChaos attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
-      flavor $ setTitle "title" >> p "intro1"
+      flavor $ h "title" >> p "intro1"
       neverSeenOrHeardFromAgain <- getHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain
       doStep (if neverSeenOrHeardFromAgain then 2 else 3) PreScenarioSetup
       pure s
@@ -157,8 +157,8 @@ instance RunMessage InTheClutchesOfChaos where
     StandaloneSetup -> scope "standalone" do
       setChaosTokens standaloneChaosTokens
       leadChooseOneM do
-        labeled' "anetteMasonIsPossessedByEvil" $ record AnetteMasonIsPossessedByEvil
-        labeled' "carlSanfordPossessesTheSecretsOfTheUniverse"
+        labeled "anetteMasonIsPossessedByEvil" $ record AnetteMasonIsPossessedByEvil
+        labeled "carlSanfordPossessesTheSecretsOfTheUniverse"
           $ record CarlSanfordPossessesTheSecretsOfTheUniverse
       pure s
     Setup -> runScenarioSetup InTheClutchesOfChaos attrs $ setupInTheClutchesOfChaos attrs
@@ -199,14 +199,14 @@ instance RunMessage InTheClutchesOfChaos where
               $ AnyInvestigator
               $ map InvestigatorWithTrait [Trait.Sorcerer, Trait.Miskatonic, Trait.Scholar]
           resolutionWithXpAndChooseOne "resolution1" (allGainXp' attrs) do
-            labeled' "continuedAlone" $ record TheInvestigatorsContinuedAlone
-            labeled' "askedForAssistance" $ record TheInvestigatorsAskedAnetteForAssistance
+            labeled "continuedAlone" $ record TheInvestigatorsContinuedAlone
+            labeled "askedForAssistance" $ record TheInvestigatorsAskedAnetteForAssistance
 
             when anyDetectivePoliceOrAgency do
-              labeled' "underArrest" $ record TheInvestigatorsArrestedAnette
+              labeled "underArrest" $ record TheInvestigatorsArrestedAnette
 
             when anySorcererMiskatonicOrScholar do
-              labeled' "spellsOfOld" $ record AnetteTaughtYouTheSpellsOfOld
+              labeled "spellsOfOld" $ record AnetteTaughtYouTheSpellsOfOld
 
           endOfScenario
         Resolution 2 -> do
@@ -214,12 +214,12 @@ instance RunMessage InTheClutchesOfChaos where
             selectAny $ mapOneOf InvestigatorWithTrait [Trait.Sorcerer, Trait.SilverTwilight, Trait.Cultist]
           resolutionWithXp "resolution2" $ allGainXp' attrs
           leadChooseOneM do
-            labeled' "continuedAlone" $ record TheInvestigatorsContinuedAlone
-            labeled' "askedForAssistance" $ record TheInvestigatorsAskedSanfordForAssistance
+            labeled "continuedAlone" $ record TheInvestigatorsContinuedAlone
+            labeled "askedForAssistance" $ record TheInvestigatorsAskedSanfordForAssistance
             when anyDetectivePoliceOrAgency do
-              labeled' "underArrest" $ record TheInvestigatorsArrestedSanford
+              labeled "underArrest" $ record TheInvestigatorsArrestedSanford
             when anySorcererSilverTwilightOrCultist do
-              labeled' "assumedControl" $ record TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
+              labeled "assumedControl" $ record TheInvestigatorsAssumedControlOfTheSilverTwilightLodge
           endOfScenario
         Resolution 3 -> do
           resolutionWithXp "resolution3" $ allGainXp' attrs

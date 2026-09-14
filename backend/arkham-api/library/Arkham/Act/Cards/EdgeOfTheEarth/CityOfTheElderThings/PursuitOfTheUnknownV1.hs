@@ -39,8 +39,8 @@ instance RunMessage PursuitOfTheUnknownV1 where
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       eachInvestigator \iid -> do
         chooseOneM iid $ scenarioI18n $ scope "pursuitOfTheUnknown" do
-          labeled' "doNotTakeHealing" nothing
-          labeled' "healAll" do
+          labeled "doNotTakeHealing" nothing
+          labeled "healAll" do
             whenM (canHaveDamageHealed (attrs.ability 1) iid) do
               healDamage iid (attrs.ability 1) 1
 
@@ -53,8 +53,8 @@ instance RunMessage PursuitOfTheUnknownV1 where
             if
               | hasPhysicalTrauma && hasMentalTrauma -> do
                   chooseOneM iid $ scenarioI18n $ scope "pursuitOfTheUnknown" do
-                    labeled' "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
-                    labeled' "healMentalTrauma" $ push $ HealTrauma iid 0 1
+                    labeled "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
+                    labeled "healMentalTrauma" $ push $ HealTrauma iid 0 1
               | hasPhysicalTrauma -> push $ HealTrauma iid 1 0
               | hasMentalTrauma -> push $ HealTrauma iid 0 1
               | otherwise -> pure ()

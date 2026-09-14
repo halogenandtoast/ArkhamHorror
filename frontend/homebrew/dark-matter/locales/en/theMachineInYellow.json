@@ -1,13 +1,56 @@
 {
   "theMachineInYellow": {
+    "theManInThePallidMask": {
+      "label": {
+        "gainClueAndHeal": "Gain 1 clue from the token bank and heal up to 2 damage and 2 horror",
+        "addMemory": "Add 1 tally mark next to your “Memories”"
+      }
+    },
+    "intro": {
+      "title": "Scenario IV: The Machine in Yellow",
+      "body": "<p>You awaken with a start, as though shaken by an unseen force. There are only a few other patrons in the audience, and no performers on stage. The lights are dimmed, and the stage curtains are tattered and ripped. A foul but unrecognizable smell permeates the air. You are back in the Ward theatre — where it all began. Is this an artifact of your memory? Or have you been dreaming this entire time? Shaking off your drowsiness, you call out into the air for K2-PS187. To your relief, and slight disappointment, the digitalized voices respond in confirmation that the procedure behaved as planned. You have arrived inside of your own mind…</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: <i>Curtain Call</i>, <i>The Machine in Yellow</i>, <i>Dark Past</i>, <i>Delusions</i> and <i>Rats</i>. <i>(Curtain Call and Delusions are from The Path to Carcosa.)</i> These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/curtain-call.png' /><img src='{imgPath}/homebrew/dark-matter/sets/the-machine-in-yellow.png' /><img src='{imgPath}/homebrew/dark-matter/sets/dark-past.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/rats.png' /></section>When gathering the <i>Curtain Call</i> encounter set, only gather the locations.",
+      "maddeningDelusions": "The investigators may choose to use the <i>Maddening Delusions</i> encounter set (from Return to The Path to Carcosa) instead of the <i>Delusions</i> encounter set. If you do so, each investigator may add 1 tally mark next to their “Memories”. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/maddening-delusions.png' /></section>",
+      "placeLocations": "Put the Theatre, Lobby, Balcony, and Backstage locations into play.",
+      "startAt": "Each investigator begins play at the Theatre.",
+      "setAsideDoorways": "Set aside each copy of the Backstage Doorway and Lobby Doorway locations, out of play.",
+      "setAsideYourOtherSelf": "Set aside each copy of the Your Other Self enemy, out of play."
+    },
+    "maddeningDelusions": {
+      "label": {
+        "useMaddeningDelusions": "Use the <i>Maddening Delusions</i> encounter set",
+        "useDelusions": "Use the <i>Delusions</i> encounter set",
+        "addMemory": "Add 1 tally mark next to your “Memories”",
+        "doNotAddMemory": "Do not add a tally mark"
+      }
+    },
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is half of your “Memories” (rounded down).",
+        "cultist": "-X. X is the number of hidden cards in your hand.",
+        "tablet": "Reveal another token. Double that token's modifier.",
+        "elderThing": "-4. You may choose to cross out a tally mark next to your investigator's “Memories” to automatically succeed."
+      },
+      "hardExpert": {
+        "skull": "-X. X is your “Memories”.",
+        "cultist": "-X. X is the number of hidden cards in your hand.",
+        "tablet": "Reveal another token. Double that token's modifier.",
+        "elderThing": "-6. You may choose to cross out a tally mark next to your investigator's “Memories” to automatically succeed."
+      }
+    },
     "resolutions": {
+      "xp": {
+        "resolution1": "Reliving their past memories"
+      },
       "noResolution": {
         "title": "No Resolution Was Reached",
         "body": "<p><b>If no resolution was reached (each investigator resigned or was defeated):</b> Proceed to <b>Resolution 1</b>.</p>"
       },
       "resolution1": {
         "title": "Resolution 1",
-        "body": "<p><b>Resolution 1:</b> You had a dream. A vivid, lucid and all-too-real dream. You escaped the Ward Theatre into the rainy streets of Arkham. You would visit the after-party of the dreadful <i>King in Yellow</i>, and embark along a grand and mind-bending adventure across Arkham which eventually leads to France and into Carcosa itself. When you finally wake up in a cold sweat back in the cryo-chamber, you almost forgot the new reality you had found yourself in. Although the ordeal has been difficult and took much longer than you anticipated, you have finally unlocked that part of your memories that has been kept concealed by your other self—the ritual to locate the Fragment of Carcosa.</p><ul><li>If at least 1 copy of the Reminiscence treachery is in the victory display, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 additional experience for reliving their past memories.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Add 2 tally marks under “Impending Doom” in your Campaign Log.</li><li>Proceed to <b>Scenario V: Fragment of Carcosa</b>.</li></ul>"
+        "body": "<p><b>Resolution 1:</b> You had a dream. A vivid, lucid and all-too real dream. You escaped the Ward theatre into the rainy streets of Arkham. You would visit the after-party of the dreadful <i>King in Yellow</i>, and embark along a grand and mind-bending adventure across Arkham which eventually leads to France and into Carcosa itself. When you finally wake up in cold sweat back in the cryo-chamber, you almost forgot the new reality you had found yourself in. Although the ordeal has been difficult and took much longer than you anticipated, you have finally unlocked that part of your memories that has been kept concealed by your other self—the ritual to locate the Fragment of Carcosa.</p><ul><li>If at least 1 copy of the Reminiscence treachery is in the victory display, add 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 2 additional experience for reliving their past memories.<ul><li><i>Experience</i>: {xp}</li></ul></li><li>Add 2 tally marks under “Impending Doom” in your Campaign Log.</li><li>Proceed to <b>Scenario V: Fragment of Carcosa</b>.</li></ul>"
       },
       "resolution2": {
         "title": "Resolution 2",

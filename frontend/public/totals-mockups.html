@@ -1,0 +1,405 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>#totals — design mockups</title>
+<style>
+@font-face { font-family: "Arkham"; src: url("fonts/arkham.ttf"); }
+@font-face { font-family: "Teutonic"; src: url("fonts/teutonic.ttf"); }
+@font-face { font-family: "Noto Sans"; src: url("fonts/NotoSans.ttf"); }
+
+:root {
+  /* copied verbatim from src/styles/tokens.css */
+  --health: #ae4236;
+  --sanity: #2c7fc0;
+  --blessed: #6a5720;
+  --cursed: #270F31;
+  --blood: #2d2d2d;
+  --blood-red: #B53330;
+  --frost: #39394C;
+  --important: rgba(212, 165, 10, 0.9);
+  --background: #2e3440;
+  --background-dark: #242831;
+  --background-mid: #515a68;
+  --box-background: #353b49;
+  --box-border: #434c5e;
+  --title: #cecece;
+  --text: white;
+  --select: #ff00ff;
+  --highlight: #2dd4bf;
+  --teal: #66C8D6;
+  --pool-token-width: 30px;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #14171f;
+  color: #c9d3e0;
+  font-family: "Noto Sans", system-ui, sans-serif;
+  font-size: 13px;
+  padding: 24px 28px 80px;
+}
+h1 { font-family: Teutonic, serif; font-weight: normal; color: var(--important); font-size: 26px; margin: 0 0 4px; letter-spacing: .02em; }
+.sub { color: #7c8698; margin: 0 0 20px; max-width: 900px; line-height: 1.5; }
+
+.controls { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-bottom: 26px; padding: 10px 14px; background: #1b1f2b; border: 1px solid #2a3243; border-radius: 8px; }
+.controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #9aa5b8; }
+.controls .grp { display: flex; gap: 12px; align-items: center; }
+
+.controls b { font-weight: 600; color: #7c8698; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(520px, 1fr)); gap: 26px; }
+.mock { background: #1b1f2b; border: 1px solid #2a3243; border-radius: 10px; overflow: hidden; }
+.mock > header { padding: 10px 14px; border-bottom: 1px solid #2a3243; display: flex; align-items: baseline; gap: 10px; }
+.mock > header .n { font-family: Teutonic, serif; color: var(--important); font-size: 17px; }
+.mock > header .d { color: #7c8698; font-size: 12px; line-height: 1.4; }
+.mock > .stage { padding: 26px 0 0; background:
+  repeating-linear-gradient(45deg, #12151d 0 8px, #151924 8px 16px); }
+
+/* ---- faithful reproduction of the surrounding #player-zone ---- */
+.player-zone {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background: #181c2a;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.4);
+  min-height: 190px;
+}
+.player-zone .player-info { flex: 1; padding: 8px 10px; display: flex; gap: 8px; align-items: flex-start; }
+.fake-tabs { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.fake-tabs .row { display: flex; gap: 6px; }
+.fake-tabs .tab { height: 20px; border-radius: 4px 4px 0 0; background: #232838; width: 74px; }
+.fake-tabs .tab.on { background: #2e3444; box-shadow: inset 0 -2px 0 var(--important); }
+.fake-card { width: 44px; height: 62px; border-radius: 4px; background: linear-gradient(160deg,#3a4257,#252b3a); box-shadow: 1px 1px 6px rgba(0,0,0,.45); }
+.fake-cards { display: flex; gap: 5px; margin-top: 4px; }
+
+/* ---- shared PoolItem reproduction (from PoolItem.vue) ---- */
+.poolItem {
+  --width: var(--pool-token-width);
+  width: var(--width);
+  display: grid;
+  place-items: center;
+  color: black;
+  font-weight: 900;
+  font-size: 1.7em;
+}
+.poolItem > * { grid-column: 1 / -1; grid-row: 1 / -1; }
+.poolItem img { width: 100%; filter: drop-shadow(1px 1px 2px rgb(0,0,0)); }
+.poolItem span {
+  font-family: "Arkham";
+  display: flex;
+  position: relative;
+  color: #F0F0F0;
+  text-shadow: 1px 0 0 rgba(0,0,0,.8), 0 -1px 0 rgba(0,0,0,.8), 0 1px 0 rgba(0,0,0,.8), -1px 0 0 rgba(0,0,0,.8);
+  font-size: 0.8em;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  width: 1.2em;
+  height: auto;
+}
+
+/* number rendered beside the token instead of on it */
+.count {
+  font-family: "Arkham";
+  color: #f0f0f0;
+  font-size: 19px;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0,0,0,.9);
+  font-variant-numeric: tabular-nums;
+}
+.bare img { width: var(--pool-token-width); display: block; filter: drop-shadow(1px 1px 2px rgb(0,0,0)); }
+.lbl { font-size: 8px; text-transform: uppercase; letter-spacing: .1em; color: #8c97ab; line-height: 1; }
+
+/* ======================================================= */
+/* 0 — CURRENT (for comparison)                            */
+/* ======================================================= */
+#current {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px;
+  background: darkslategrey;
+  margin-top: 10px;
+  border-top-left-radius: 10px;
+  box-shadow: -1px 1px 3px rgba(0,0,0,.8);
+  align-self: flex-end;
+}
+
+/* ======================================================= */
+/* A — FLUSH PLATE                                         */
+/* ======================================================= */
+.totals-a {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 7px;
+  margin-top: 10px;
+  background: linear-gradient(180deg, #333b4d 0%, #252b3a 100%);
+  border-top: 1px solid rgba(255,255,255,.13);
+  border-left: 1px solid rgba(255,255,255,.13);
+  border-top-left-radius: 12px;
+  box-shadow: -2px -1px 6px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.totals-a hr {
+  border: 0; height: 1px; width: 100%; margin: 2px 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent);
+}
+
+/* ======================================================= */
+/* B — LABELED RAIL                                        */
+/* ======================================================= */
+.totals-b {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px 8px 8px;
+  background: #20263380;
+  border-left: 1px solid var(--box-border);
+}
+.totals-b .r {
+  display: grid;
+  grid-template-columns: var(--pool-token-width) 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 4px;
+  border-radius: 6px;
+}
+.totals-b .r:hover { background: rgba(255,255,255,.05); }
+.totals-b .meta { display: flex; flex-direction: column; gap: 2px; }
+.totals-b .sect {
+  font-size: 8px; text-transform: uppercase; letter-spacing: .14em;
+  color: #5f6a7d; padding: 6px 4px 2px; border-top: 1px solid rgba(255,255,255,.07); margin-top: 4px;
+}
+.totals-b .sect:first-child { border-top: 0; margin-top: 0; padding-top: 0; }
+
+/* ======================================================= */
+/* C — HORIZONTAL TRAY                                     */
+/* ======================================================= */
+.totals-c {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 8px 8px 0 0;
+  padding: 4px 6px;
+  background: rgba(20,24,34,.85);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 100vw;
+  box-shadow: 0 2px 8px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.totals-c .c {
+  display: flex; align-items: center; gap: 5px;
+  padding: 2px 8px 2px 2px; border-radius: 100vw;
+}
+.totals-c .c:hover { background: rgba(255,255,255,.06); }
+.totals-c .div { width: 1px; align-self: stretch; margin: 3px 3px; background: rgba(255,255,255,.12); }
+
+/* ======================================================= */
+/* D — TINTED CHIPS                                        */
+/* ======================================================= */
+.totals-d {
+  align-self: flex-end;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 5px;
+  padding: 7px;
+  margin-top: 10px;
+  background: #1d2230;
+  border-top-left-radius: 10px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  border-left: 1px solid rgba(255,255,255,.07);
+}
+.totals-d .chip {
+  display: flex; align-items: center; gap: 5px;
+  padding: 3px 8px 3px 3px;
+  border-radius: 100vw;
+  background: var(--tint, #2a3040);
+  border: 1px solid var(--edge, rgba(255,255,255,.1));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+}
+.totals-d .chip .count { font-size: 17px; }
+.chip--doom  { --tint: #3a1f22; --edge: rgba(174,66,54,.55); }
+.chip--clue  { --tint: #1c3346; --edge: rgba(44,127,192,.5); }
+.chip--bless { --tint: #3a3116; --edge: rgba(212,165,10,.45); }
+.chip--curse { --tint: #2b1633; --edge: rgba(150,90,190,.4); }
+.chip--frost { --tint: #23233a; --edge: rgba(120,130,190,.4); }
+.chip--blood { --tint: #331a19; --edge: rgba(181,51,48,.45); }
+
+/* ======================================================= */
+/* E — BARE TOKENS (no plate)                              */
+/* ======================================================= */
+.totals-e {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 16px 14px;
+}
+.totals-e .t { position: relative; line-height: 0; }
+.totals-e .t img { filter: drop-shadow(0 2px 3px rgba(0,0,0,.85)); }
+.totals-e .badge {
+  position: absolute; right: -6px; bottom: -4px;
+  min-width: 19px; height: 19px; padding: 0 4px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 100vw;
+  background: #10131b; border: 1px solid rgba(255,255,255,.22);
+  font-family: "Arkham"; font-size: 14px; color: #f0f0f0; line-height: 1;
+  box-shadow: 0 1px 3px rgba(0,0,0,.8);
+}
+.totals-e .rule { width: 22px; height: 1px; background: rgba(255,255,255,.14); }
+
+/* ======================================================= */
+/* F — SEGMENTED CAPSULE                                   */
+/* ======================================================= */
+.totals-f {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 10px;
+  padding: 6px;
+  background: #171b26;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,.6);
+}
+.totals-f .seg {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 6px 5px;
+  border-radius: 11px;
+  background: rgba(255,255,255,.045);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+}
+.totals-f .seg--bag { background: rgba(0,0,0,.35); box-shadow: inset 0 1px 3px rgba(0,0,0,.6); }
+.totals-f .seg .cap {
+  font-size: 7px; letter-spacing: .12em; text-transform: uppercase; color: #66718a;
+}
+
+.hidden { display: none !important; }
+</style>
+
+<h1>#totals — six directions</h1>
+<p class="sub">Real palette (<code>src/styles/tokens.css</code>), real Arkham font, real token PNGs, and a faithful stand-in for the surrounding <code>#player-zone</code>. Each mock is shown docked exactly where the live one sits.</p>
+
+<div class="controls">
+  <div class="grp">
+    <b>Tokens</b>
+    <label><input type="radio" name="state" value="min"> doom + clues only</label>
+    <label><input type="radio" name="state" value="full" checked> full bag (bless/curse/frost/blood)</label>
+  </div>
+  <div class="grp">
+    <b>Zone</b>
+    <label><input type="checkbox" id="wide"> wide (desktop) player zone</label>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const T = {
+  doom:  { img: 'img/arkham/tokens/doom.png',            n: 4, label: 'Doom',  tip: 'Total Doom' },
+  clue:  { img: 'img/arkham/tokens/clue.png',            n: 7, label: 'Clues', tip: 'Total Spendable Clues' },
+  bless: { img: 'img/arkham/chaos-tokens/ct-bless.png',  n: 3, label: 'Bless', bag: true },
+  curse: { img: 'img/arkham/chaos-tokens/ct-curse.png',  n: 2, label: 'Curse', bag: true },
+  frost: { img: 'img/arkham/chaos-tokens/ct-frost.png',  n: 1, label: 'Frost', bag: true },
+  blood: { img: 'img/arkham/chaos-tokens/ct-blood.png',  n: 2, label: 'Blood', bag: true },
+}
+const SCEN = ['doom','clue']
+const BAG  = ['bless','curse','frost','blood']
+
+function pool(k) {
+  const t = T[k]
+  return `<div class="poolItem" title="${t.tip || t.label}"><img src="${t.img}"><span>${t.n}</span></div>`
+}
+
+const MOCKS = [
+  {
+    id: 'current', name: '0 · Current', d: 'What ships today — <code>darkslategrey</code>, no grouping, counts stamped on the art.',
+    render: keys => `<div id="current">${keys.map(pool).join('')}</div>`
+  },
+  {
+    id: 'a', name: 'A · Flush Plate', d: 'Same footprint and same PoolItem, but the plate joins the palette and a hairline splits scenario totals from the chaos bag.',
+    render: keys => {
+      const s = keys.filter(k => !T[k].bag), b = keys.filter(k => T[k].bag)
+      return `<div class="totals-a">${s.map(pool).join('')}${b.length ? '<hr>' : ''}${b.map(pool).join('')}</div>`
+    }
+  },
+  {
+    id: 'b', name: 'B · Labeled Rail', d: 'Full-height rail. Count moves off the art so it is readable at a glance, with a micro-label and section headings — nothing needs a tooltip.',
+    render: keys => {
+      const s = keys.filter(k => !T[k].bag), b = keys.filter(k => T[k].bag)
+      const row = k => `<div class="r"><div class="bare"><img src="${T[k].img}"></div><div class="meta"><span class="count">${T[k].n}</span><span class="lbl">${T[k].label}</span></div></div>`
+      return `<div class="totals-b">
+        <div class="sect">Scenario</div>${s.map(row).join('')}
+        ${b.length ? '<div class="sect">Chaos bag</div>' + b.map(row).join('') : ''}
+      </div>`
+    }
+  },
+  {
+    id: 'c', name: 'C · Horizontal Tray', d: 'Floating pill along the top edge of the zone. Frees the full height for the player area and reads left-to-right like the rest of the HUD.',
+    render: keys => {
+      const s = keys.filter(k => !T[k].bag), b = keys.filter(k => T[k].bag)
+      const c = k => `<div class="c" title="${T[k].tip || T[k].label}"><div class="bare"><img src="${T[k].img}"></div><span class="count">${T[k].n}</span></div>`
+      return `<div class="totals-c">${s.map(c).join('')}${b.length ? '<div class="div"></div>' : ''}${b.map(c).join('')}</div>`
+    }
+  },
+  {
+    id: 'd', name: 'D · Tinted Chips', d: 'Two-column chip grid, each chip tinted to its token so doom/clue/bless separate by colour before you read the number. Stays compact as the bag grows.',
+    render: keys => {
+      const chip = k => `<div class="chip chip--${k}" title="${T[k].tip || T[k].label}"><div class="bare"><img src="${T[k].img}"></div><span class="count">${T[k].n}</span></div>`
+      return `<div class="totals-d">${keys.map(chip).join('')}</div>`
+    }
+  },
+  {
+    id: 'e', name: 'E · Bare Tokens', d: 'No plate at all — the tokens sit straight on the zone with a corner count badge, so the art is never obscured. A hairline is the only grouping.',
+    render: keys => {
+      const s = keys.filter(k => !T[k].bag), b = keys.filter(k => T[k].bag)
+      const t = k => `<div class="t" title="${T[k].tip || T[k].label}"><div class="bare"><img src="${T[k].img}"></div><span class="badge">${T[k].n}</span></div>`
+      return `<div class="totals-e">${s.map(t).join('')}${b.length ? '<div class="rule"></div>' : ''}${b.map(t).join('')}</div>`
+    }
+  },
+  {
+    id: 'f', name: 'F · Segmented Capsule', d: 'One floating capsule, vertically centred. Scenario totals sit raised, the chaos bag sits recessed — the two groups read as different kinds of number.',
+    render: keys => {
+      const s = keys.filter(k => !T[k].bag), b = keys.filter(k => T[k].bag)
+      return `<div class="totals-f">
+        <div class="seg">${s.map(pool).join('')}<span class="cap">total</span></div>
+        ${b.length ? `<div class="seg seg--bag">${b.map(pool).join('')}<span class="cap">bag</span></div>` : ''}
+      </div>`
+    }
+  },
+]
+
+const zone = inner => `
+  <div class="player-zone">
+    <div class="player-info">
+      <div class="fake-tabs">
+        <div class="row"><div class="tab on"></div><div class="tab"></div><div class="tab"></div></div>
+        <div class="fake-cards">${'<div class="fake-card"></div>'.repeat(6)}</div>
+        <div class="fake-cards">${'<div class="fake-card"></div>'.repeat(4)}</div>
+      </div>
+    </div>
+    ${inner}
+  </div>`
+
+function draw() {
+  const full = document.querySelector('input[name=state]:checked').value === 'full'
+  const keys = full ? [...SCEN, ...BAG] : SCEN
+  document.getElementById('grid').innerHTML = MOCKS.map(m => `
+    <div class="mock">
+      <header><span class="n">${m.name}</span><span class="d">${m.d}</span></header>
+      <div class="stage">${zone(m.render(keys))}</div>
+    </div>`).join('')
+}
+
+document.querySelectorAll('input[name=state]').forEach(el => el.addEventListener('change', draw))
+document.getElementById('wide').addEventListener('change', e => {
+  document.getElementById('grid').style.gridTemplateColumns = e.target.checked ? '1fr' : ''
+})
+draw()
+</script>

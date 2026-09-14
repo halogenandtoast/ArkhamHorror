@@ -17,7 +17,8 @@ newtype LabyrinthsOfTasylock = LabyrinthsOfTasylock LocationAttrs
 -- | The [[Carcosa]] face of Stalagmite Forest.
 labyrinthsOfTasylock :: LocationCard LabyrinthsOfTasylock
 labyrinthsOfTasylock =
-  locationWith LabyrinthsOfTasylock Cards.labyrinthsOfTasylock 2 (PerPlayer 1) (canBeFlippedL .~ True)
+  symbolLabel
+    $ locationWith LabyrinthsOfTasylock Cards.labyrinthsOfTasylock 2 (PerPlayer 1) (canBeFlippedL .~ True)
 
 {- | "Forced - At the end of your turn, if you are at this location: Take 1
 horror." / "{fast} If this location is the only [[Carcosa]] location in play:
@@ -28,9 +29,12 @@ instance HasAbilities LabyrinthsOfTasylock where
     extendRevealed
       a
       [ restricted a 1 Here $ forced $ TurnEnds #when You
-      , playerLimit PerGame
-          $ restricted a 2 (Here <> not_ (exists $ LocationWithTrait Carcosa <> not_ (be a)))
-          $ freeReaction AnyWindow
+      , groupLimit PerGame
+          $ restricted
+            a
+            2
+            (Here <> not_ (exists $ LocationWithTrait Carcosa <> not_ (be a)))
+            freeTrigger_
       ]
 
 instance RunMessage LabyrinthsOfTasylock where
@@ -41,7 +45,7 @@ instance RunMessage LabyrinthsOfTasylock where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       readStory iid attrs.id Stories.forYouAlone
       pure l
-    Flip _ _ (isTarget attrs -> True) -> do
-      flipToOtherSide attrs
+    Flip iid _ (isTarget attrs -> True) -> do
+      flipToOtherSide iid attrs
       pure l
     _ -> LabyrinthsOfTasylock <$> liftRunMessage msg attrs

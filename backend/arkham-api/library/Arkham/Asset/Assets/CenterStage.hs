@@ -26,6 +26,6 @@ instance RunMessage CenterStage where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid -> do
         spent <- getHistoryField RoundHistory iid HistoryActionsSpent
-        skillTestModifier sid attrs iid (AnySkillValue (min 3 spent))
+        skillTestModifier sid attrs iid (AnySkillValue spent)
       pure a
     _ -> CenterStage <$> liftRunMessage msg attrs

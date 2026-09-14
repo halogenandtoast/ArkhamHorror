@@ -8,23 +8,29 @@ module Api.Handler.Arkham.Game.Debug (
   getApiV1ArkhamGameReloadR,
   getApiV1ArkhamGameOpenSeatsR,
   postApiV1ArkhamGameClaimSeatR,
+  getApiV1ArkhamGameCustomCardsR,
 ) where
 
 import Api.Arkham.Export
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Arkham.Card.CardCode
+import Arkham.Card.CardDef (cdCardCode)
+import Arkham.Card.CustomCard
 import Arkham.Game
 import Arkham.Id
 import Codec.Compression.GZip qualified as GZip
 import Conduit
 import Control.Exception (evaluate)
+import Data.Aeson.Types (parseMaybe)
 import Data.ByteString qualified as BS
 import Data.ByteString.Lazy qualified as BSL
+import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update)
 import Database.Persist qualified as Persist
+import Entity.Arkham.CustomCard
 import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
@@ -42,7 +48,8 @@ isGzipped bs = BS.take 2 bs == BS.pack [0x1f, 0x8b]
 decodeExportBytes :: BS.ByteString -> Handler (Either String ArkhamExport)
 decodeExportBytes bytes
   | isGzipped bytes = do
-      eDecompressed <- liftIO $ try @_ @SomeException $ evaluate $ BSL.toStrict $ GZip.decompress $ BSL.fromStrict bytes
+      eDecompressed <-
+        liftIO $ try @_ @SomeException $ evaluate $ BSL.toStrict $ GZip.decompress $ BSL.fromStrict bytes
       pure $ case eDecompressed of
         Left err -> Left $ displayException err
         Right decompressed -> eitherDecodeStrict' decompressed
@@ -76,7 +83,9 @@ generateFullExportSource gameId = do
   yieldBS ",\"steps\":["
   isFirstRef <- liftIO $ newIORef True
   stepsAcquire <-
-    lift $ runDB $ Persist.selectSourceRes [ArkhamStepArkhamGameId Persist.==. gameId] [Desc ArkhamStepStep]
+    lift
+      $ runDB
+      $ Persist.selectSourceRes [ArkhamStepArkhamGameId Persist.==. gameId] [Desc ArkhamStepStep]
   (_, stepSource) <- allocateAcquire stepsAcquire
   stepSource .| awaitForever \(Entity _ s) -> do
     isFirst <- liftIO $ readIORef isFirstRef
@@ -127,13 +136,22 @@ getApiV1ArkhamGameFullExportR gameId = do
   gzip <- (== Just "true") <$> lookupGetParam "gzip"
   if gzip
     then do
-      addHeader "Content-Disposition" $ "attachment; filename=arkham-full-export-" <> toPathPiece gameId <> ".json.gz"
-      respondSource "application/gzip" $
-        generateFullExportSource gameId .| gzipConduit .| awaitForever \chunk -> sendChunkBS chunk >> sendFlush
+      addHeader "Content-Disposition"
+        $ "attachment; filename=arkham-full-export-"
+        <> toPathPiece gameId
+        <> ".json.gz"
+      respondSource "application/gzip"
+        $ generateFullExportSource gameId
+        .| gzipConduit
+        .| awaitForever \chunk -> sendChunkBS chunk >> sendFlush
     else do
-      addHeader "Content-Disposition" $ "attachment; filename=arkham-full-export-" <> toPathPiece gameId <> ".json"
-      respondSource "application/json" $
-        generateFullExportSource gameId .| awaitForever \chunk -> sendChunkBS chunk >> sendFlush
+      addHeader "Content-Disposition"
+        $ "attachment; filename=arkham-full-export-"
+        <> toPathPiece gameId
+        <> ".json"
+      respondSource "application/json"
+        $ generateFullExportSource gameId
+        .| awaitForever \chunk -> sendChunkBS chunk >> sendFlush
 
 postApiV1ArkhamGamesFixR :: Handler ()
 postApiV1ArkhamGamesFixR = do
@@ -199,11 +217,13 @@ postApiV1ArkhamGamesImportR = do
       key <- runDB $ do
         gameId <- insert $ ArkhamGame agedName agedCurrentData agedStep variant now now
         case variant of
-          Solo -> do
-            iid <- case headMay allInvestigatorIds of
-              Nothing -> lift $ invalidArgs ["No investigators found in game data"]
-              Just iid -> pure iid
-            insert_ $ ArkhamPlayer userId gameId iid
+          -- A seat per investigator, as game creation does: the importing user
+          -- holds them all, and a one-row solo import leaves every other
+          -- investigator with no player row, so anything resolved through a seat
+          -- (EarnAchievementBy) silently credits nobody.
+          Solo -> case allInvestigatorIds of
+            [] -> lift $ invalidArgs ["No investigators found in game data"]
+            iids -> for_ iids $ insert_ . ArkhamPlayer userId gameId
           WithFriends -> do
             let mChosen = mInvestigatorId <|> headMay campaignInvestigatorIds
             chosenInvestigator <- case mChosen of
@@ -297,3 +317,22 @@ postApiV1ArkhamGameClaimSeatR gameId = do
       lift $ permissionDenied "You already have a seat in this game"
     newPlayerId <- insert $ ArkhamPlayer userId gameId investigatorId
     remapInvestigatorUUID gameId investigatorId newPlayerId
+
+{- | The debug-authored cards defined in this game.
+
+Served on its own rather than folded into the game payload: a custom card
+carries its art inline (a data URI for a dropped image), which has no business
+riding every websocket update.
+-}
+getApiV1ArkhamGameCustomCardsR :: ArkhamGameId -> Handler [CustomCard]
+getApiV1ArkhamGameCustomCardsR gameId = do
+  userId <- getRequestUserId
+  ge <- runDB $ get404 gameId
+  rows <- runDB $ Persist.selectList [ArkhamCustomCardUserId Persist.==. userId] []
+  -- Your own library wins over the copy recorded on the game, so editing a card
+  -- shows through at the table without having to re-add it.
+  let library = Map.fromList do
+        Entity _ row <- rows
+        def <- maybeToList $ parseMaybe parseJSON (arkhamCustomCardDef row)
+        pure (cdCardCode def, CustomCard def (arkhamCustomCardArt row))
+  pure $ toList $ library <> gameCustomCards ge.currentData

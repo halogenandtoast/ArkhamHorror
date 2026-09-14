@@ -224,7 +224,7 @@ instance RunMessage BadBlood where
       pure s
     ResolveChaosToken _ ElderThing _ -> do
       whenJustM (selectOne agnesBaker) \agnes ->
-        chooseAmount' agnes "elderThingDamage" "$damage" 0 3 attrs
+        chooseAmount agnes "elderThingDamage" "$damage" 0 3 attrs
       pure s
     ResolveAmounts _ (getChoiceAmount "$damage" -> n) (isTarget attrs -> True) | n > 0 -> do
       whenJustM (selectOne agnesBaker) \agnes -> assignDamage agnes ElderThing n
@@ -250,14 +250,14 @@ instance RunMessage BadBlood where
             hasAdvancedDarkMemory <- isJust <$> findCard (`cardMatch` cardIs Events.darkMemoryAdvanced)
             when (hasHeirloom || hasAdvancedDarkMemory) do
               chooseOneM agnes do
-                questionLabeled' "chooseSwap"
-                when hasHeirloom $ labeled' "upgradeHeirloomOfHyperborea" do
+                questionLabeled "chooseSwap"
+                when hasHeirloom $ labeled "upgradeHeirloomOfHyperborea" do
                   removeCampaignCardFromDeck agnes Assets.heirloomOfHyperborea
                   addCampaignCardToDeck agnes DoNotShuffleIn Assets.heirloomOfHyperboreaAdvanced
-                when hasAdvancedDarkMemory $ labeled' "downgradeDarkMemory" do
+                when hasAdvancedDarkMemory $ labeled "downgradeDarkMemory" do
                   removeCampaignCardFromDeck agnes Events.darkMemoryAdvanced
                   addCampaignCardToDeck agnes DoNotShuffleIn Events.darkMemory
-                labeled' "doNotSwap" nothing
+                labeled "doNotSwap" nothing
           endOfScenario
         Resolution 2 -> do
           resolutionWithXp "resolution2" $ gainXpWithMemories attrs
@@ -267,11 +267,11 @@ instance RunMessage BadBlood where
               isJust <$> findCard (`cardMatch` cardIs Assets.heirloomOfHyperboreaAdvanced)
             when (hasDarkMemory || hasAdvancedHeirloom) do
               chooseOrRunOneM agnes do
-                questionLabeled' "mustSwap"
-                when hasDarkMemory $ labeled' "upgradeDarkMemory" do
+                questionLabeled "mustSwap"
+                when hasDarkMemory $ labeled "upgradeDarkMemory" do
                   removeCampaignCardFromDeck agnes Events.darkMemory
                   addCampaignCardToDeck agnes DoNotShuffleIn Events.darkMemoryAdvanced
-                when hasAdvancedHeirloom $ labeled' "downgradeHeirloomOfHyperborea" do
+                when hasAdvancedHeirloom $ labeled "downgradeHeirloomOfHyperborea" do
                   removeCampaignCardFromDeck agnes Assets.heirloomOfHyperboreaAdvanced
                   addCampaignCardToDeck agnes DoNotShuffleIn Assets.heirloomOfHyperborea
           endOfScenario

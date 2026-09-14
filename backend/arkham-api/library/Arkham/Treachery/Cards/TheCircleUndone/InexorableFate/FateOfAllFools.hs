@@ -21,9 +21,9 @@ instance RunMessage FateOfAllFools where
         iids -> do
           fates <- select $ TreacheryWithTitle "Fate of All Fools" <> TreacheryInThreatAreaOf Anyone
           chooseOneM iid $ campaignI18n do
-            labeled' "fateOfAllFools.otherInvestigator" do
+            labeled "fateOfAllFools.otherInvestigator" do
               chooseTargetM iid iids \iid' -> directDamage iid' attrs 2
-            labeled' "fateOfAllFools.otherCopy" do
+            labeled "fateOfAllFools.otherCopy" do
               chooseTargetM iid fates $ placeDoomOn attrs 1
       pure t
     _ -> FateOfAllFools <$> liftRunMessage msg attrs

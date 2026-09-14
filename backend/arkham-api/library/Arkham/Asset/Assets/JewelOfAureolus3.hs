@@ -38,8 +38,8 @@ instance RunMessage JewelOfAureolus3 where
     Do (UseThisAbility iid (isSource attrs -> True) 1) -> do
       chooseOneM iid do
         whenM (can.draw.cards iid) do
-          withI18n $ countVar 1 $ labeled' "drawCards" $ drawCards iid (attrs.ability 1) 1
+          withI18n $ countVar 1 $ labeled "drawCards" $ drawCards iid (attrs.ability 1) 1
         whenM (can.gain.resources iid) do
-          withI18n $ countVar 2 $ labeled' "takeResources" $ gainResources iid (attrs.ability 1) 2
+          withI18n $ countVar 2 $ labeled "takeResources" $ gainResources iid (attrs.ability 1) 2
       pure a
     _ -> JewelOfAureolus3 <$> liftRunMessage msg attrs

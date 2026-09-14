@@ -55,8 +55,8 @@ instance RunMessage MineCartReliableButBroken where
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 ws _ -> do
       chooseOneM iid $ scenarioI18n do
-        labeled' "mineCart.cancelMove" $ cancelWindowBatch ws
-        labeled' "mineCart.moveAgain" $ scenarioSpecific_ "moveMineCart"
+        labeled "mineCart.cancelMove" $ cancelWindowBatch ws
+        labeled "mineCart.moveAgain" $ scenarioSpecific_ "moveMineCart"
       pure a
     ScenarioSpecific "moveMineCart" _ -> do
       batched \_ -> do
@@ -115,16 +115,16 @@ faceMineCart attrs newLoc = do
 
   lead <- getLead
   chooseOrRunOneM lead $ scenarioI18n do
-    questionLabeled' "mineCart.facing"
+    questionLabeled "mineCart.facing"
     when (North `elem` turns)
-      $ labeled' "mineCart.faceNorth" do
+      $ labeled "mineCart.faceNorth" do
         when (dir /= North) $ scenarioSpecific "rotate" North
     when (East `elem` turns)
-      $ labeled' "mineCart.faceEast" do
+      $ labeled "mineCart.faceEast" do
         when (dir /= East) $ scenarioSpecific "rotate" East
     when (South `elem` turns)
-      $ labeled' "mineCart.faceSouth" do
+      $ labeled "mineCart.faceSouth" do
         when (dir /= South) $ scenarioSpecific "rotate" South
     when (West `elem` turns)
-      $ labeled' "mineCart.faceWest" do
+      $ labeled "mineCart.faceWest" do
         when (dir /= West) $ scenarioSpecific "rotate" West

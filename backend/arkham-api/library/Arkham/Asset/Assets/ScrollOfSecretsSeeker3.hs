@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -42,7 +43,7 @@ instance RunMessage ScrollOfSecretsSeeker3 where
     DoStep 1 msg'@(SearchFound iid (isTarget attrs -> True) deck cards) | notNull cards -> do
       focusCards cards do
         chooseOneM iid do
-          questionLabeled "$label.discardCardQuestion"
+          withI18n $ questionLabeled "discardCardQuestion"
           labeledI "doNotDiscard" $ unfocusCards >> doStep 2 msg'
           targets cards \card -> do
             unfocusCards
@@ -58,7 +59,7 @@ instance RunMessage ScrollOfSecretsSeeker3 where
         then doStep 3 msg'
         else focusCards cards do
           chooseOneM iid do
-            questionLabeled "$label.addCardToHandQuestion"
+            withI18n $ questionLabeled "addCardToHandQuestion"
             labeledI "doNotAddToHand" $ unfocusCards >> doStep 3 msg'
             targets playerCards \card -> do
               unfocusCards

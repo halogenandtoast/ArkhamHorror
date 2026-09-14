@@ -3,17 +3,19 @@ module Arkham.Behavior.Evade where
 import Arkham.Calculation
 import Arkham.Classes.HasGame (HasGame)
 import Arkham.Classes.HasQueue (HasQueue)
+import {-# SOURCE #-} Arkham.GameEnv (getWindowTick)
 import Arkham.Helpers.Message (push, pushAll)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.SkillTest.Lifted (evade)
-import Arkham.Helpers.Window (checkAfter, checkWhen)
+import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows, checkWindowsAt, wouldWindows)
 import Arkham.Id
-import Arkham.Message (Message, pattern EnemyEvaded, pattern EvadeEnemy)
+import Arkham.Message (Message (Do, Would), pattern EnemyEvaded, pattern EvadeEnemy)
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
 import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
+import Arkham.Window (mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 
 {- | The 'Evadable' behavior. Used by 'Arkham.Enemy.Runner' (real enemies) and
@@ -89,3 +91,19 @@ pushSuccessfulEvade iid source eid n = do
   whenMsg <- checkWhen $ Window.SuccessfulEvadeEnemy iid source eid n
   afterMsg <- checkAfter $ Window.SuccessfulEvadeEnemy iid source eid n
   pushAll [whenMsg, EnemyEvaded iid eid, afterMsg]
+
+{- | Push the mechanical half of an evasion (@Do msg@) wrapped in the standard
+cascade: the @EnemyWouldBeEvaded@ would-batch fronting the when/after
+@EnemyEvaded@ windows. Cancelling the batch drops the @Do msg@ along with both
+windows, so a reaction that replaces the evasion (Reminiscence (Covenant))
+leaves the enemy engaged and ready.
+-}
+pushEvadedWindows
+  :: (HasGame m, HasQueue Message m, MonadRandom m)
+  => InvestigatorId -> EnemyId -> Message -> m ()
+pushEvadedWindows iid eid msg = do
+  (batchId, wouldMsgs) <- wouldWindows $ Window.EnemyWouldBeEvaded iid eid
+  conditionTick <- getWindowTick
+  whenWindow <- checkWindows [mkWhen $ Window.EnemyEvaded iid eid]
+  afterWindow <- checkWindowsAt conditionTick [mkAfter $ Window.EnemyEvaded iid eid]
+  push $ Would batchId $ wouldMsgs <> [whenWindow, Do msg, afterWindow]

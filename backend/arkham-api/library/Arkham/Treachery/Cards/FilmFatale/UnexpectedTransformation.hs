@@ -32,10 +32,10 @@ instance RunMessage UnexpectedTransformation where
         let horror = count (`elem` [#willpower, #intellect]) card.icons
         let damage = count (`elem` [#combat, #agility]) card.icons
         chooseOneM iid $ withI18n do
-          labeled' "discardThatAsset" $ toDiscardBy iid attrs asset
+          labeled "discardThatAsset" $ toDiscardBy iid attrs asset
           numberVar "horror" horror
             $ numberVar "damage" damage
-            $ labeled' "takeHorrorAndDamage"
+            $ labeled "takeHorrorAndDamage"
             $ assignDamageAndHorror iid (attrs.ability 1) damage horror
 
       pure t

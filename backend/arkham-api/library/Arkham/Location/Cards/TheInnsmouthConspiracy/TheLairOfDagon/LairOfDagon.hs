@@ -52,9 +52,9 @@ instance RunMessage LairOfDagon where
         ks <- iid.keys
         when (notNull ks && clues > 1) do
           chooseOneM iid $ scenarioI18n $ scope "lairOfDagon" do
-            labeled' "doNotSpendKey" nothing
+            labeled "doNotSpendKey" nothing
             for_ ks \k -> do
-              keyVar "key" (keyName k) $ labeled' "spendKey" do
+              keyVar "key" (keyName k) $ labeled "spendKey" do
                 placeKey ScenarioTarget k
                 moveTokens (attrs.ability 2) iid act #clue 1
       pure l

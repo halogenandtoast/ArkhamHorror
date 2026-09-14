@@ -57,9 +57,9 @@ circleTest sid iid source target skillTypes n =
 passedCircleTest :: ReverseQueue m => InvestigatorId -> LocationAttrs -> m ()
 passedCircleTest iid attrs = chooseOneM iid $ scenarioI18n do
   case locationBrazier attrs of
-    Just Lit -> labeled' "unlightTheBrazier" $ unlightBrazier attrs.id
-    _unlit -> labeled' "lightTheBrazier" $ lightBrazier attrs.id
-  labeled' "leaveBrazierAlone" nothing
+    Just Lit -> labeled "unlightTheBrazier" $ unlightBrazier attrs.id
+    _unlit -> labeled "lightTheBrazier" $ lightBrazier attrs.id
+  labeled "leaveBrazierAlone" nothing
 
 pattern DuringCircleAction :: Criterion
 pattern DuringCircleAction <- DuringSkillTest (SkillTestWithAction (ActionIs Circle))

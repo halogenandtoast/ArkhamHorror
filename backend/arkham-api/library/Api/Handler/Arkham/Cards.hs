@@ -2,6 +2,8 @@ module Api.Handler.Arkham.Cards (
   getApiV1ArkhamCardR,
   getApiV1ArkhamCardsR,
   getApiV1ArkhamHomebrewCardsR,
+  getApiV1ArkhamTraitsR,
+  getApiV1ArkhamSchemaR,
 ) where
 
 import Import
@@ -9,11 +11,13 @@ import Import
 import Arkham.Asset.Cards
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
+import Arkham.Custom.Schema (customSchema)
 import Arkham.EncounterCard
 import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Investigator.Cards
 import Arkham.PlayerCard
 import Arkham.Scenario
+import Arkham.Trait
 import Data.Map.Strict qualified as Map
 import Data.Set qualified as Set
 
@@ -43,8 +47,9 @@ browsableCardDefs defs = filter (\def -> exactCardCode def `Set.notMember` backS
       , exactCardCode otherSide `Set.member` codes
       ]
 
--- | Blood Token is an encounter card that belongs to no encounter set, so the
--- usual test would file it with the player cards.
+{- | Blood Token is an encounter card that belongs to no encounter set, so the
+usual test would file it with the player cards.
+-}
 setlessEncounterCards :: Set CardCode
 setlessEncounterCards = Set.fromList ["13119"]
 
@@ -101,3 +106,19 @@ getApiV1ArkhamCardR cCode = do
           <> allScenarioCards
           <> allEncounterInvestigatorCards
   maybe notFound pure $ Map.lookup cCode allCards
+
+{- | Every trait the engine knows, as the name it serializes under paired with
+how it reads on a card ("AncientOne" / "Ancient One").
+
+The custom card editor takes traits as a printed trait line, so it needs the
+display form to recognise what the player typed; anything it cannot match is
+sent through as a homebrew trait.
+-}
+getApiV1ArkhamTraitsR :: Handler Value
+getApiV1ArkhamTraitsR = pure $ toJSON [(traitName t, displayTrait t) | t <- Homebrew.allTraits]
+
+{- | The constructor schema the custom-card ability editor builds against.
+See "Arkham.Custom.Schema".
+-}
+getApiV1ArkhamSchemaR :: Handler Value
+getApiV1ArkhamSchemaR = pure $ toJSON customSchema

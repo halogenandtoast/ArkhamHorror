@@ -50,6 +50,7 @@ calculate = go
     SubtractCalculation d1 d2 -> (-) <$> go d1 <*> go d2
     MultiplyCalculation d1 d2 -> (*) <$> go d1 <*> go d2
     RecordedCount key -> getRecordCount key
+    HasRecordCalculation key -> bool 0 1 <$> getHasRecord key
     ScenarioCount key -> scenarioCount key
     CountActs m -> selectCount m
     CountAgendas m -> selectCount m

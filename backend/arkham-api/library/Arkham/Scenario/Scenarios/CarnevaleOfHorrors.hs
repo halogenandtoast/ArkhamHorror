@@ -253,7 +253,7 @@ instance RunMessage CarnevaleOfHorrors where
       pure s
     ChooseOneRewardByEachPlayer rewards@(_ : _) (currentInvestigatorId : rest) -> do
       chooseOneM currentInvestigatorId do
-        labeled' "doNotAddMask" $ push $ ChooseOneRewardByEachPlayer rewards rest
+        labeled "doNotAddMask" $ push $ ChooseOneRewardByEachPlayer rewards rest
         for_ rewards \reward -> do
           cardLabeled reward do
             addCampaignCardToDeck currentInvestigatorId DoNotShuffleIn reward

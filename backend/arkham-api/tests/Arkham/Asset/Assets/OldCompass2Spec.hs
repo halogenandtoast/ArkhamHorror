@@ -17,7 +17,7 @@ spec = describe "Old Compass (2)" do
     [investigateAction] <- self `getActionsFrom` oldCompass
     self `useAbility` investigateAction
     skillTest <- getJustSkillTest
-    run =<< skillTestModifier skillTest.id (TestSource mempty) location (SetShroud 2)
+    run =<< skillTestModifier skillTest.id (TestSource mempty) location (BaseShroud 2)
     startSkillTest
 
     assertPassedSkillTest

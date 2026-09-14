@@ -22,11 +22,11 @@ instance RunMessage CoastalWaters where
 
       chooseOneM iid do
         for_ mAirfield \loc ->
-          withI18n $ keyVar "name" "Airfield" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+          withI18n $ keyVar "name" "Airfield" $ labeled "putSetAsideLocationIntoPlay" $ placeLocation_ loc
         for_ mOttomanFront \loc ->
           withI18n
             $ keyVar "name" "Ottoman Front"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
       pure s
     _ -> CoastalWaters <$> liftRunMessage msg attrs

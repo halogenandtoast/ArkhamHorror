@@ -13,8 +13,7 @@ newtype Carousel = Carousel LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 carousel :: LocationCard Carousel
-carousel =
-  location Carousel Cards.carousel 3 (PerPlayer 1)
+carousel = location Carousel Cards.carousel 3 (PerPlayer 1)
 
 instance HasAbilities Carousel where
   getAbilities (Carousel a) =

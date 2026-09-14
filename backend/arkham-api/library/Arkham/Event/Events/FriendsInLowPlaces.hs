@@ -59,7 +59,7 @@ instance RunMessage FriendsInLowPlaces where
       if attrs `hasCustomization` Versatile && notNull hasBothTraits && n > 0
         then do
           chooseOneM iid do
-            cardI18n $ scope "friendsInLowPlaces" $ labeled' "versatileSkip" $ doStep 0 msg
+            cardI18n $ scope "friendsInLowPlaces" $ labeled "versatileSkip" $ doStep 0 msg
             for_ hasBothTraits \card -> do
               targeting card do
                 when (attrs `hasCustomization` Bolstering) $ phaseModifier attrs card (AddSkillIcons [#wild])
@@ -79,7 +79,7 @@ instance RunMessage FriendsInLowPlaces where
       n <- getSpendableResources iid
       when (n > 0) do
         chooseOneM iid do
-          cardI18n $ scope "friendsInLowPlaces" $ labeled' "doNotSpend" nothing
+          cardI18n $ scope "friendsInLowPlaces" $ labeled "doNotSpend" nothing
           for_ (eachWithRest cards) \(card, cards') -> do
             targeting card do
               push $ SpendResources iid 1
@@ -96,7 +96,7 @@ instance RunMessage FriendsInLowPlaces where
         playable <- filterM (getIsPlayable iid attrs (UnpaidCost NoAction) (defaultWindows iid)) cards
         when (notNull playable) do
           chooseOneM iid do
-            cardI18n $ scope "friendsInLowPlaces" $ labeled' "swiftSkip" nothing
+            cardI18n $ scope "friendsInLowPlaces" $ labeled "swiftSkip" nothing
             targets playable (playCardPayingCost iid)
       pure e
     _ -> FriendsInLowPlaces . (`with` meta) <$> liftRunMessage msg attrs

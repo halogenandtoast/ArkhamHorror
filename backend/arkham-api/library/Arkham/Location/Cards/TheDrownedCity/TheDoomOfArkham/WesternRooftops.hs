@@ -14,7 +14,7 @@ newtype WesternRooftops = WesternRooftops LocationAttrs
 
 westernRooftops :: LocationCard WesternRooftops
 westernRooftops =
-  location WesternRooftops Cards.westernRooftops 3 (Static 1)
+  location WesternRooftops Cards.westernRooftops 3 (PerPlayer 1)
     & setCostToEnterUnrevealed (GroupClueCost (PerPlayer 1) Anywhere)
 
 neighbors :: LocationMatcher

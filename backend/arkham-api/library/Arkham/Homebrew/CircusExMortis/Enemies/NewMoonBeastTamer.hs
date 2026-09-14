@@ -1,30 +1,35 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.NewMoonBeastTamer (newMoonBeastTamer) where
 
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
-import Arkham.Enemy.Import.Lifted
+import Arkham.Ability
+import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
 import Arkham.ForMovement
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelf)
-import Arkham.Keyword qualified as Keyword
+import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Window (getAttackDetails)
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
 import Arkham.Trait (Trait (Creature, Monster))
 
 newtype NewMoonBeastTamer = NewMoonBeastTamer EnemyAttrs
-  deriving anyclass IsEnemy
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
+  deriving anyclass (IsEnemy, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 newMoonBeastTamer :: EnemyCard NewMoonBeastTamer
 newMoonBeastTamer = enemy NewMoonBeastTamer Cards.newMoonBeastTamer
 
-instance HasModifiersFor NewMoonBeastTamer where
-  getModifiersFor (NewMoonBeastTamer a) = do
-    modifySelf a [AddKeyword Keyword.Aloof, AddKeyword Keyword.Hunter]
-    -- "if ready and unengaged" is a continuous condition; the +damage/+horror only
-    -- manifests when an in-range enemy attacks (DamageDealt/HorrorDealt idiom, cf. Barn/UntouchedVault).
-    whenM (a.id <=~> (ReadyEnemy <> UnengagedEnemy)) do
-      let inRange = not_ (be a) <> at_ (orConnected NotForMovement $ locationWithEnemy a.id)
-      modifySelect a inRange [DamageDealt 1]
-      modifySelect a (inRange <> oneOf [EnemyWithTrait Creature, EnemyWithTrait Monster]) [HorrorDealt 1]
+instance HasAbilities NewMoonBeastTamer where
+  getAbilities (NewMoonBeastTamer a) =
+    extend1 a
+      $ restricted a 1 (thisExists a $ ReadyEnemy <> UnengagedEnemy)
+      $ forced
+      $ EnemyAttacks #when Anyone AnyEnemyAttack
+      $ at_ (orConnected NotForMovement $ locationWithEnemy a.id)
 
 instance RunMessage NewMoonBeastTamer where
-  runMessage msg (NewMoonBeastTamer attrs) =
-    NewMoonBeastTamer <$> runMessage msg attrs
+  runMessage msg e@(NewMoonBeastTamer attrs) = runQueueT $ case msg of
+    UseCardAbility _ (isSource attrs -> True) 1 (getAttackDetails -> details) _ -> do
+      beast <- details.enemy <=~> oneOf [EnemyWithTrait Creature, EnemyWithTrait Monster]
+      enemyAttackModifiers (attrs.ability 1) details.enemy
+        $ DamageDealt 1
+        : [HorrorDealt 1 | beast]
+      pure e
+    _ -> NewMoonBeastTamer <$> liftRunMessage msg attrs

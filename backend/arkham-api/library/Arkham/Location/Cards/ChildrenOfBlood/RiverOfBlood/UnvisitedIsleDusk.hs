@@ -28,6 +28,7 @@ instance HasModifiersFor UnvisitedIsleDusk where
 instance HasAbilities UnvisitedIsleDusk where
   getAbilities (UnvisitedIsleDusk a) =
     extendRevealed1 a
+      $ onlyOnce
       $ restricted a 1 (Here <> NoCluesOnThis)
       $ FastAbility (AddTokenCost 2 #blood)
 

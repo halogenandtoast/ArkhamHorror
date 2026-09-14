@@ -33,7 +33,7 @@ instance HasAbilities HistoricalSocietyHistoricalMuseum_132 where
   getAbilities (HistoricalSocietyHistoricalMuseum_132 attrs) =
     withBaseAbilities
       attrs
-      [ mkAbility attrs 1 $ forced $ EnemySpawns #when (be attrs) AnyEnemy
+      [ mkAbility attrs 1 $ forced $ EnemySpawns #when (PlacementAt $ be attrs) AnyEnemy
       | attrs.unrevealed
       ]
 

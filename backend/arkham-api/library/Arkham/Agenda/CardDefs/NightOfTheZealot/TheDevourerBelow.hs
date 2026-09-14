@@ -9,4 +9,7 @@ theRitualBegins :: CardDef
 theRitualBegins = agenda "01144" "The Ritual Begins" 2 TheDevourerBelow
 
 vengeanceAwaits :: CardDef
-vengeanceAwaits = agenda "01145" "Vengeance Awaits" 3 TheDevourerBelow
+vengeanceAwaits =
+  (agenda "01145" "Vengeance Awaits" 3 TheDevourerBelow)
+    { cdBackArtVariants = mapFromList [("revised", "01645b")]
+    }

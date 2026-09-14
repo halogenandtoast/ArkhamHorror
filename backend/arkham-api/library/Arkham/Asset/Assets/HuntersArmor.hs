@@ -63,10 +63,10 @@ instance RunMessage HuntersArmor where
   runMessage msg a@(HuntersArmor attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid do
-        (cardI18n $ labeled' "huntersArmor.exhaustHuntersArmorToDraw1Card") do
+        (cardI18n $ labeled "huntersArmor.exhaustHuntersArmorToDraw1Card") do
           exhaustThis attrs
           drawCardsIfCan iid (attrs.ability 1) 1
-        (cardI18n $ labeled' "huntersArmor.doNoExhaust") nothing
+        (cardI18n $ labeled "huntersArmor.doNoExhaust") nothing
       pure a
     UseCardAbility iid (isSource attrs -> True) 2 (getDamageOrHorrorSource -> EnemyAttackSource enemy) _ -> do
       nonAttackEnemyDamage (Just iid) (attrs.ability 2) 1 enemy

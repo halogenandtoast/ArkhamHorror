@@ -64,7 +64,9 @@ instance RunMessage UnderworldMarket2 where
           deck' <- shuffle (selected <> marketDeck meta)
           pure . UnderworldMarket2 . (`with` Meta deck' []) $ attrs
         _ -> do
-          focusCards xs $ chooseOrRunNM iid 10 $ targets xs $ handleTarget iid (attrs.ability 1)
+          focusCards xs $ cardI18n $ scope "underworldMarket2" $ chooseOrRunNM iid 10 do
+            questionLabeled "chooseMarketDeck"
+            targets xs $ handleTarget iid (attrs.ability 1)
           pure a
     HandleTargetChoice _iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
@@ -79,11 +81,11 @@ instance RunMessage UnderworldMarket2 where
         focusCards xs do
           spendableResources <- getSpendableResources iid
           chooseOneM iid do
-            (cardI18n $ labeled' "underworldMarket2.placeTheRestOnTheBottomInAnyOrder") do
+            (cardI18n $ labeled "underworldMarket2.placeTheRestOnTheBottomInAnyOrder") do
               chooseOneAtATimeM iid $ targets xs $ handleTarget iid (attrs.ability 2)
               unfocusCards
             when (spendableResources > 0) do
-              (cardI18n $ labeled' "underworldMarket2.spend1ResourceToDraw1OfThem") do
+              (cardI18n $ labeled "underworldMarket2.spend1ResourceToDraw1OfThem") do
                 push $ SpendResources iid 1
                 chooseOneM iid do
                   for_ (eachWithRest xs) \(card, cs) -> do
@@ -97,5 +99,8 @@ instance RunMessage UnderworldMarket2 where
       pure . UnderworldMarket2 . (`with` Meta rest knownRest) $ attrs
     HandleTargetChoice _iid (isAbilitySource attrs 2 -> True) (CardIdTarget cid) -> do
       card <- getCard cid
-      pure . UnderworldMarket2 . (`with` Meta (marketDeck meta ++ [card]) (knownMarketDeck meta ++ [card])) $ attrs
+      pure
+        . UnderworldMarket2
+        . (`with` Meta (marketDeck meta ++ [card]) (knownMarketDeck meta ++ [card]))
+        $ attrs
     _ -> UnderworldMarket2 . (`with` meta) <$> liftRunMessage msg attrs

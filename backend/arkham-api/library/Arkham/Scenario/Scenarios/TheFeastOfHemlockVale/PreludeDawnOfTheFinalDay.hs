@@ -15,6 +15,7 @@ import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log (getRecordCount)
 import Arkham.Helpers.Message.Discard.Lifted (randomDiscard)
+import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName, getLead, getPlayerCount)
 import Arkham.I18n
 import Arkham.Id (InvestigatorId, PlayerId, getPlayer)
@@ -35,8 +36,11 @@ import Arkham.Story.CardDefs.TheFeastOfHemlockVale.TheFinalDay qualified as Stor
 import Arkham.Strategy
 
 newtype PreludeDawnOfTheFinalDay = PreludeDawnOfTheFinalDay ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor PreludeDawnOfTheFinalDay where
+  getModifiersFor (PreludeDawnOfTheFinalDay a) = modifySelect a Anyone [noCodexEntry Theta]
 
 preludeDawnOfTheFinalDay :: Difficulty -> PreludeDawnOfTheFinalDay
 preludeDawnOfTheFinalDay difficulty =
@@ -174,7 +178,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           william <- selectAny $ SetAsideCardMatch $ cardIs Assets.williamHemlockAspiringPoet
           theo <- selectAny $ SetAsideCardMatch $ cardIs Assets.theoPetersJackOfAllTrades
           river <- selectAny $ SetAsideCardMatch $ cardIs Assets.riverHawthorneBigInNewYork
-          storyWithChooseOneM' (setTitle "title" >> p.green "body") do
+          storyWithChooseOneM (setTitle "title" >> p.green "body") do
             labeledValidate' william "william" do
               createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation theOldMill)
             labeledValidate' theo "theo" do
@@ -193,8 +197,8 @@ instance RunMessage PreludeDawnOfTheFinalDay where
             sid <- getRandom
             chooseBeginSkillTest sid iid (IndexedSource idx $ toSource attrs) attrs skills (Fixed x)
       let drawOrResource = chooseOneM iid do
-            labeled' "draw" $ drawCards iid source 1
-            labeled' "gainResource" $ gainResources iid source 1
+            labeled "draw" $ drawCards iid source 1
+            labeled "gainResource" $ gainResources iid source 1
       case n of
         1 -> scope "motherRachel" do
           codexFinished 1
@@ -207,13 +211,13 @@ instance RunMessage PreludeDawnOfTheFinalDay where
                 li.validate southernFields "proceedTo2"
                 li.validate (not southernFields) "cannotReach"
           when southernFields do
-            storyWithChooseOneM' (setTitle "title" >> p.green "motherRachel2") do
-              labeled' "thankYou" do
+            storyWithChooseOneM (setTitle "title" >> p.green "motherRachel2") do
+              labeled "thankYou" do
                 flavor $ setTitle "title" >> p.green "motherRachel3"
                 record TheInvestigatorsLearnedTheirPlace
                 increaseRelationshipLevel MotherRachel 1
                 popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.motherRachel") 1
-              labeled' "iSeeYou" do
+              labeled "iSeeYou" do
                 flavor $ setTitle "title" >> p.green "motherRachel4"
                 decreaseRelationshipLevel MotherRachel 1
                 popScope $ eachInvestigator \i -> gainXp i attrs (ikey "xp.motherRachel") 1
@@ -335,7 +339,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           if maxAdditional > 0
             then do
               scope "boardingHouse" $ flavor $ setTitle "title" >> p.green "body"
-              chooseAmount' iid "additionalActions" "$actions" 0 maxAdditional attrs
+              chooseAmount iid "additionalActions" "$actions" 0 maxAdditional attrs
             else doStep 1 (ScenarioSpecific "codex" v)
         10 -> scope "theCrossroads" do
           planUnderway <- getHasRecord ThePlanIsUnderway
@@ -388,7 +392,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
               resources <- getSpendableResources iid
               when (resources >= 5) do
                 chooseOneM iid do
-                  labeled' "item" do
+                  labeled "item" do
                     spendResources iid 5
                     search iid source iid [fromDeck] (basic #item) (PlayFoundNoCost iid 1)
                   unscoped skip_
@@ -483,7 +487,7 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           areas <- getAreasSurveyed
           let survey k = unless (k `elem` areas)
           leadChooseOneM do
-            questionLabeled' "survey"
+            questionLabeled "survey"
             survey NorthPointMine do
               scenarioLabeled' "writtenInRock" "10501-day3" $ afterPrelude WrittenInRock
             survey HemlockHarbor do

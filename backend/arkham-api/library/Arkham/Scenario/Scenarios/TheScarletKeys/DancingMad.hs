@@ -68,7 +68,7 @@ instance RunMessage DancingMad where
       policeOrDective <- selectAny $ mapOneOf InvestigatorWithTrait [Police, Detective]
       n <- getTime
       flavor do
-        setTitle "title"
+        h "title"
         p "intro1Part1"
         p.validate policeOrDective "policeOrDetective"
         p "intro1Part2"
@@ -213,8 +213,8 @@ instance RunMessage DancingMad where
           let dmg = if isEasyStandard attrs then 1 else 2
           let tkn = if isEasyStandard attrs then 3 else 5
           chooseOrRunOneM iid do
-            unscoped $ countVar dmg $ labeled' "takeDamage" $ assignDamage iid ElderThing dmg
-            countVar tkn $ labeled' "elderThing" do
+            unscoped $ countVar dmg $ labeled "takeDamage" $ assignDamage iid ElderThing dmg
+            countVar tkn $ labeled "elderThing" do
               withSkillTest \sid ->
                 skillTestModifier sid Cultist token
                   $ ChangeChaosTokenModifier (NegativeModifier tkn)

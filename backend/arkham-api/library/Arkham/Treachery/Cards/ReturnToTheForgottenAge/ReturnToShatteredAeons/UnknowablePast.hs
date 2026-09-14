@@ -20,7 +20,7 @@ instance RunMessage UnknowablePast where
   runMessage msg t@(UnknowablePast attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ scenarioI18n do
-        labeled' "unknowablePast.reveal" $ requestChaosTokens iid attrs 4
+        labeled "unknowablePast.reveal" $ requestChaosTokens iid attrs 4
         labeledValidate'
           (attrs.drawnFrom /= Just (ScenarioDeckByKey ExplorationDeck))
           "unknowablePast.discard"

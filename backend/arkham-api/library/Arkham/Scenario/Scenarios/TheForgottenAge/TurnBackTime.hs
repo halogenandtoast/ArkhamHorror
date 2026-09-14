@@ -158,7 +158,7 @@ setupTurnBackTime _attrs = do
 
 instance RunMessage TurnBackTime where
   runMessage msg s@(TurnBackTime attrs) = runQueueT $ scenarioI18n $ case msg of
-    Do (CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _]) -> do
+    Do (CheckWindows [Window Timing.When (Window.DrawingStartingHand iid) _ _]) -> do
       mRepossessThePast <- selectOne $ inDeckOf iid <> basic (cardIs Assets.relicOfAgesRepossessThePast)
       pushAll
         [ RemovePlayerCardFromGame True repossessThePast
@@ -168,7 +168,7 @@ instance RunMessage TurnBackTime where
     PreScenarioSetup -> scope "intro" do
       forcedToWaitForSupplies <- getHasRecord TheInvestigatorsWereForcedToWaitForAdditionalSupplies
       flavor do
-        setTitle "title"
+        h "title"
         p.validate forcedToWaitForSupplies "forcedToWaitForSupplies"
         p.validate (not forcedToWaitForSupplies) "clearedAPathToTheEztliRuins"
       doStep (if forcedToWaitForSupplies then 1 else 2) PreScenarioSetup

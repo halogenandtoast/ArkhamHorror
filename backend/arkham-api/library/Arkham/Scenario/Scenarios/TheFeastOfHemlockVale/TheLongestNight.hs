@@ -99,9 +99,9 @@ instance RunMessage TheLongestNight where
       if standalone
         then setupStandaloneDayAndTime (Just (Day2, Night))
         else scope "intro" do
-          storyWithChooseOneM' (h "title" >> p "intro1") do
-            labeled' "confront" $ doStep 2 PreScenarioSetup
-            labeled' "keepHidden" $ doStep 3 PreScenarioSetup
+          storyWithChooseOneM (h "title" >> p "intro1") do
+            labeled "confront" $ doStep 2 PreScenarioSetup
+            labeled "keepHidden" $ doStep 3 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor $ setTitle "title" >> p "intro2"
@@ -270,7 +270,7 @@ instance RunMessage TheLongestNight where
       leadChooseOneM do
         unscoped
           $ nameVar Assets.drRosaMarquezBestInHerField
-          $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+          $ questionLabeled "chooseInvestigatorToTakeControlOf"
         questionLabeledCard Assets.drRosaMarquezBestInHerField
         portraits investigators (`takeControlOfAsset` drMarquez)
 
@@ -293,7 +293,7 @@ instance RunMessage TheLongestNight where
         leadChooseOneM do
           unscoped
             $ nameVar (toCardDef resident)
-            $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+            $ questionLabeled "chooseInvestigatorToTakeControlOf"
           questionLabeledCard (toCardDef resident)
           portraits investigators (`takeControlOfAsset` residentAsset)
 
@@ -302,7 +302,7 @@ instance RunMessage TheLongestNight where
         leadChooseOneM do
           unscoped
             $ nameVar Assets.helenPetersTheEldestSister
-            $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+            $ questionLabeled "chooseInvestigatorToTakeControlOf"
           questionLabeledCard Assets.helenPetersTheEldestSister
           portraits investigators (`takeControlOfAsset` helenPeters)
 
@@ -313,16 +313,16 @@ instance RunMessage TheLongestNight where
       allLocations <- select Anywhere
       decoyLocations <- filterM (\lid -> lid <=~> LocationWithoutModifier CannotHaveDecoys) allLocations
       chooseOneM lead do
-        questionLabeled' "placeDecoy"
+        questionLabeled "placeDecoy"
         unterminated $ for_ decoyLocations \lid -> targeting lid $ placeDecoy ScenarioSource lid
       trapLocations <- filterM (\lid -> lid <=~> LocationWithoutModifier CannotHaveTraps) allLocations
       chooseOneM lead do
-        questionLabeled' "placeTrap"
+        questionLabeled "placeTrap"
         unterminated $ for_ trapLocations \lid -> targeting lid $ placeTrap ScenarioSource lid
       playerCount <- getPlayerCount
       for_ [1 .. playerCount] \_ ->
         chooseOneM lead do
-          questionLabeled' "placeBarrier"
+          questionLabeled "placeBarrier"
           unterminated $ for_ allLocations \lid -> targeting lid $ forTarget lid Setup
       pure s
     ForTarget (LocationTarget lid) Setup -> do
@@ -387,11 +387,11 @@ instance RunMessage TheLongestNight where
       when (hasDecoy || hasTrap || notNull barrierPairs) do
         chooseOneM iid do
           when hasDecoy do
-            labeled' "removeDecoy" $ removeTokens ScenarioSource lid Horror 1
+            labeled "removeDecoy" $ removeTokens ScenarioSource lid Horror 1
           when hasTrap do
-            labeled' "removeTrap" $ removeTokens ScenarioSource lid Damage 1
+            labeled "removeTrap" $ removeTokens ScenarioSource lid Damage 1
           when (notNull barrierPairs) do
-            labeled' "removeBarrier" do
+            labeled "removeBarrier" do
               chooseTargetM iid barrierPairs \lid2 ->
                 push $ ScenarioCountDecrementBy (Barriers lid lid2) 1
       pure s
@@ -483,21 +483,21 @@ instance RunMessage TheLongestNight where
       when hasOptions do
         chooseOneM iid do
           when canMoveDecoy do
-            labeled' "moveDecoy" do
+            labeled "moveDecoy" do
               chooseTargetM iid decoyDestinations \toLid -> do
                 removeTokens source lid Horror 1
                 placeTokens source toLid Horror 1
                 selectEach (enemyEngagedWith iid) $ disengageEnemy iid
                 moveTo_ source iid toLid
           when canMoveTrap do
-            labeled' "moveTrap" do
+            labeled "moveTrap" do
               chooseTargetM iid trapDestinations \toLid -> do
                 removeTokens source lid Damage 1
                 placeTokens source toLid Damage 1
                 selectEach (enemyEngagedWith iid) $ disengageEnemy iid
                 moveTo_ source iid toLid
           when (notNull barrierPairs) do
-            labeled' "moveBarrier" do
+            labeled "moveBarrier" do
               chooseTargetM iid barrierPairs \fromLid -> do
                 push $ ScenarioCountDecrementBy (Barriers lid fromLid) 1
                 chooseTargetM iid allLocations \toLid -> do

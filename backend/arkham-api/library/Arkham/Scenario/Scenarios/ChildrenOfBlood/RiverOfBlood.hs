@@ -67,7 +67,7 @@ instance HasChaosTokenValue RiverOfBlood where
 instance RunMessage RiverOfBlood where
   runMessage msg s@(RiverOfBlood attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro"
+      story $ i18nWithHeading "intro"
       pure s
     Setup -> runScenarioSetup RiverOfBlood attrs do
       setup $ ul do
@@ -233,7 +233,7 @@ instance RunMessage RiverOfBlood where
             $ popScope do
               labeledValidate' (hasBlood && available >= cost) "spendExperienceToRemoveBlood"
                 $ doStep cost msg
-              labeled' "doNotSpendExperience" nothing
+              labeled "doNotSpendExperience" nothing
           push R4
         Resolution 2 -> do
           record InvestigatorsKilledJuliaStern

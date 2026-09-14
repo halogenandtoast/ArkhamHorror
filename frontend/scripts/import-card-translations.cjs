@@ -120,8 +120,16 @@ function jsonFilesUnder(root) {
   return files.sort()
 }
 
-function loadTranslations(localeRoot) {
+// Upstream duplicates a pack file into a second cycle directory often enough that an
+// all-or-nothing conflict check leaves whole locales unimportable (fr has been wedged on 06168
+// since 2021). Merge field by field instead: a value identical to the English one is an
+// untranslated placeholder and loses to a real translation. What survives that is a genuine
+// upstream data bug, and only an override -- which wins anyway -- may silence it.
+function loadTranslations(localeRoot, englishCards = [], overrides = new Map()) {
+  const english = new Map(englishCards.map((card) => [card.code, card]))
   const translations = new Map()
+  const sources = new Map()
+
   for (const file of jsonFilesUnder(path.join(localeRoot, 'pack'))) {
     const cards = JSON.parse(fs.readFileSync(file, 'utf8'))
     if (!Array.isArray(cards)) throw new Error(`${file} must contain a JSON array`)
@@ -129,10 +137,34 @@ function loadTranslations(localeRoot) {
     for (const card of cards) {
       if (!card.code) throw new Error(`${file} contains a card without a code`)
       const existing = translations.get(card.code)
-      if (existing && !isDeepStrictEqual(existing, card)) {
-        throw new Error(`Conflicting translations for card ${card.code}`)
+      if (!existing) {
+        translations.set(card.code, { ...card })
+        sources.set(card.code, file)
+        continue
       }
-      translations.set(card.code, card)
+      if (isDeepStrictEqual(existing, card)) continue
+
+      const englishCard = english.get(card.code) ?? {}
+      for (const field of TRANSLATED_FIELDS) {
+        const incoming = card[field]
+        if (incoming === undefined || incoming === existing[field]) continue
+        if (existing[field] === undefined) {
+          existing[field] = incoming
+          continue
+        }
+
+        const incomingIsEnglish = incoming === englishCard[field]
+        const existingIsEnglish = existing[field] === englishCard[field]
+        if (existingIsEnglish && !incomingIsEnglish) existing[field] = incoming
+        else if (incomingIsEnglish && !existingIsEnglish) continue
+        else if (!overrides.has(card.code)) {
+          throw new Error(
+            `Conflicting translations for card ${card.code} field "${field}": ` +
+              `${sources.get(card.code)} and ${file}. Fix it upstream, or add ${card.code} to ` +
+              `translation-overrides/<locale>.json to pick a winner.`,
+          )
+        }
+      }
     }
   }
   return translations
@@ -216,9 +248,9 @@ function main() {
   const englishFile = path.join(root, 'public', 'cards_en.json')
   const outputFile = path.join(root, 'public', `cards_${options.outputLang}.json`)
   const englishCards = JSON.parse(fs.readFileSync(englishFile, 'utf8'))
-  const translations = loadTranslations(localeRoot)
   const metadata = loadMetadata(localeRoot)
   const overrides = loadOverrides(root, options.sourceLocale)
+  const translations = loadTranslations(localeRoot, englishCards, overrides)
   const { cards, stats } = buildLocalizedCards(englishCards, translations, metadata, overrides)
 
   fs.writeFileSync(outputFile, `${JSON.stringify(cards, null, 2)}\n`)

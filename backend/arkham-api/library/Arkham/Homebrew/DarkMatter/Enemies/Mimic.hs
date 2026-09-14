@@ -13,8 +13,8 @@ import Arkham.Trait (Trait (Ally))
 import Data.UUID qualified as UUID
 
 newtype Mimic = Mimic EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 mimic :: EnemyCard Mimic
 mimic = enemy Mimic Cards.mimic

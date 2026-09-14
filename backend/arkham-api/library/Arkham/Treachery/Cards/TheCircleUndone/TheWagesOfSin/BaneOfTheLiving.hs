@@ -24,8 +24,8 @@ instance RunMessage BaneOfTheLiving where
       hasUnfinishedBusiness <- selectAny $ StoryWithTitle "Unfinished Business"
       chooseOrRunOneM iid $ scenarioI18n do
         when hasUnfinishedBusiness do
-          labeled' "baneOfTheLiving.unfinishedBusiness" $ doStep 1 msg
-        labeled' "baneOfTheLiving.geist" $ doStep 2 msg
+          labeled "baneOfTheLiving.unfinishedBusiness" $ doStep 1 msg
+        labeled "baneOfTheLiving.geist" $ doStep 2 msg
       pure t
     DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
       stories <- selectWithField StoryCard $ StoryWithTitle "Unfinished Business"

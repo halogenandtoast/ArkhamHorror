@@ -1,5 +1,8 @@
 {
   "heading": "Scenario II-A",
+  "intro": {
+    "title": "Scenario II–A: The Search for Kadath"
+  },
   "setup": {
     "gatherSets": "Gather all cards from the following encounter sets: *The Search for Kadath*, *Agents of Nyarlathotep*, *Corsairs*, *Dreamlands*, *Whispers of Hypnos*, and *Zoogs*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/the-search-for-kadath.png' /><img src='{setImgPath}/agents-of-nyarlathotep.png' /><img src='{setImgPath}/corsairs.png' /><img src='{setImgPath}/dreamlands.png' /><img src='{setImgPath}/whispers-of-hypnos.png' /><img src='{setImgPath}/zoogs.png' /></section>",
     "putLocations": "Put Ulthar, Skai River, and Dylath-Leen into play.",

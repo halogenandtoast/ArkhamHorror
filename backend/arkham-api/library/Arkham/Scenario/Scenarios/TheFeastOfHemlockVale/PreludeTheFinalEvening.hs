@@ -108,9 +108,9 @@ instance RunMessage PreludeTheFinalEvening where
               li "sentencedToDeath"
           leadChooseOneM do
             when (motherRachelRel >= 3) do
-              labeled' "doneNothingWrongTruth" intro3
-              labeled' "doneNothingWrongLie" intro4
-            labeled' "sentencedToDeath" intro5
+              labeled "doneNothingWrongTruth" intro3
+              labeled "doneNothingWrongLie" intro4
+            labeled "sentencedToDeath" intro5
         else intro5
       pure s
     ResolveChaosToken token face iid | face `elem` [Cultist, ElderThing] -> do
@@ -201,7 +201,7 @@ instance RunMessage PreludeTheFinalEvening where
           leadChooseOneM do
             unscoped
               $ nameVar Assets.drRosaMarquezBestInHerField
-              $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+              $ questionLabeled "chooseInvestigatorToTakeControlOf"
             questionLabeledCard Assets.drRosaMarquezBestInHerField
             portraits investigators (`putCardIntoPlay` drMarquez)
 
@@ -229,10 +229,10 @@ instance RunMessage PreludeTheFinalEvening where
           push R3
         Resolution 3 -> do
           resolutionWithChooseOne "resolution3" do
-            labeled' "replay" do
+            labeled "replay" do
               crossOut TheInvestigatorsBelieved
               endOfScenarioThen Steps.PreludeTheFinalEvening
-            labeled' "loseTheCampaign" do
+            labeled "loseTheCampaign" do
               eachInvestigator (kill attrs)
               gameOver
         Resolution 4 -> do
@@ -243,8 +243,8 @@ instance RunMessage PreludeTheFinalEvening where
     ScenarioSpecific "codex" v -> scope "codex" do
       let (iid :: InvestigatorId, source :: Source, n :: Int) = toResult v
       let drawOrResource cnt = chooseOneM iid do
-            labeled' ("draw" <> tshow cnt) $ drawCards iid source cnt
-            labeled' ("gainResource" <> tshow cnt) $ gainResources iid source cnt
+            labeled ("draw" <> tshow cnt) $ drawCards iid source cnt
+            labeled ("gainResource" <> tshow cnt) $ gainResources iid source cnt
       let takeControlOfResident :: ReverseQueue m => Resident -> m ()
           takeControlOfResident resident =
             selectOne (assetIs (toCardDef resident)) >>= traverse_ (takeControlOfAsset iid)
@@ -292,11 +292,11 @@ instance RunMessage PreludeTheFinalEvening where
           codexFinished 2
           sawMine <- getHasRecord LeahSawSomethingInTheMine
           if sawMine
-            then storyWithChooseOneM' (setTitle "title" >> p.green "leah1") do
-              labeled' "askMine" do
+            then storyWithChooseOneM (setTitle "title" >> p.green "leah1") do
+              labeled "askMine" do
                 flavor $ setTitle "title" >> p.green "leah2"
                 setRelationshipLevel LeahAtwood 0
-              labeled' "sayNothing" do
+              labeled "sayNothing" do
                 flavor $ setTitle "title" >> p.green "leah3"
                 recruitResident LeahAtwood "leahAtwood" 1 1
             else do
@@ -431,14 +431,14 @@ instance RunMessage PreludeTheFinalEvening where
             then do
               codexFinished 13
               flavor body
-            else storyWithChooseOneM' body do
+            else storyWithChooseOneM body do
               labeledValidate' (isJust river && riverLegacy) "sideRiver" do
                 codexFinished 13
                 createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation theAtwoodHouse)
               labeledValidate' (isJust william && williamResolved) "sideWilliam" do
                 codexFinished 13
                 createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation theAtwoodHouse)
-              labeled' "letFight" do
+              labeled "letFight" do
                 when (williamResolved || riverLegacy) $ remember TheHemlocksAreHashingItOut
 
           when hashingItOut do
@@ -447,8 +447,8 @@ instance RunMessage PreludeTheFinalEvening where
             increaseRelationshipLevel RiverHawthorne 1
             awardXp "theAtwoodHouse" 2
             chooseOneM iid do
-              for_ william $ labeled' "william" . takeControlOfSetAsideAsset iid
-              for_ river $ labeled' "river" . takeControlOfSetAsideAsset iid
+              for_ william $ labeled "william" . takeControlOfSetAsideAsset iid
+              for_ river $ labeled "river" . takeControlOfSetAsideAsset iid
         14 -> scope "tadsGeneralStore" do
           codexFinished 14
           flavor $ setTitle "title" >> p.green "body"

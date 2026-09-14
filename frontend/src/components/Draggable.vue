@@ -6,11 +6,21 @@ const props = withDefaults(defineProps<{
   avoidSelector?: string
   avoidPadding?: number
   clickThroughChrome?: boolean
+  preserveWidth?: boolean
+  preservePosition?: boolean
 }>(), { avoidPadding: 8, clickThroughChrome: false })
 
 const id = useId()
 const draggable = ref<HTMLElement | null>(null)
 const isMinimized = ref(false)
+const widestWidth = ref(0)
+
+// Opt-in for tabbed windows: retain the widest rendered tab until closed,
+// while still fitting smaller viewports and allowing the minimized title bar.
+function rememberWidth() {
+  if (!props.preserveWidth || isMinimized.value || !draggable.value) return
+  widestWidth.value = Math.max(widestWidth.value, draggable.value.getBoundingClientRect().width)
+}
 const initialMouseX = ref(0)
 const initialMouseY = ref(0)
 const initialLeft = ref(0)
@@ -18,6 +28,7 @@ const initialTop = ref(0)
 const viewportMargin = 16
 const anchorX = ref(0)
 const anchorY = ref(0)
+let hasInitialPosition = false
 
 // Variables to store the modal's position and size before minimizing
 const originalLeft = ref(0)
@@ -135,6 +146,18 @@ function placeModal({ resetAnchor = false } = {}) {
 
   const { maxLeft, maxTop, modalWidth, modalHeight } = viewportBounds(el)
 
+  if (props.preservePosition && hasInitialPosition && !resetAnchor) {
+    // Keep the title bar stationary as tabs change height. Limit the available
+    // height instead of pushing a taller tab upwards to fit the viewport.
+    const headerHeight = el.querySelector(':scope > header')?.getBoundingClientRect().height ?? 40
+    const left = clamp(parseFloat(el.style.left), viewportMargin, maxLeft)
+    const top = clamp(parseFloat(el.style.top), viewportMargin, Math.max(viewportMargin, window.innerHeight - headerHeight - viewportMargin))
+    el.style.left = `${left}px`
+    el.style.top = `${top}px`
+    el.style.maxHeight = `${Math.max(headerHeight, window.innerHeight - top - viewportMargin)}px`
+    return
+  }
+
   if (resetAnchor || !hasBeenDragged.value) {
     setAnchorToViewportCenter()
   }
@@ -158,6 +181,10 @@ function placeModal({ resetAnchor = false } = {}) {
   el.style.top = `${nextTop}px`
   el.style.position = 'absolute'
   el.style.transform = 'none'
+  hasInitialPosition = true
+  if (props.preservePosition) {
+    el.style.maxHeight = `${window.innerHeight - nextTop - viewportMargin}px`
+  }
 }
 
 function drag(e: PointerEvent) {
@@ -229,6 +256,7 @@ function stopDrag() {
     raf = 0
   }
   document.body.style.userSelect = ''
+  if (props.preservePosition) placeModal()
 }
 
 function minimize() {
@@ -292,10 +320,12 @@ onMounted(async () => {
   const el = draggable.value
   if (el) {
     await nextTick()
+    rememberWidth()
     placeModal({ resetAnchor: true })
     moveUp()
 
     resizeObserver = new ResizeObserver(() => {
+      rememberWidth()
       requestAnimationFrame(() => placeModal())
     })
     resizeObserver.observe(el)
@@ -337,10 +367,14 @@ function moveUp() {
   <div
     @pointerdown="moveUp"
     class="draggable"
-    :class="{ 'click-through-chrome': props.clickThroughChrome }"
+    :class="{ 'click-through-chrome': props.clickThroughChrome, 'position-stable': props.preservePosition }"
     ref="draggable"
     :id="id"
-    :style="{ 'view-transition-name': id }"
+    :style="{
+      'view-transition-name': id,
+      boxSizing: props.preserveWidth ? 'border-box' : undefined,
+      minWidth: props.preserveWidth && !isMinimized && widestWidth > 0 ? `min(${widestWidth}px, calc(100vw - 32px))` : undefined,
+    }"
   >
     <header @pointerdown="drag" @click.stop="isMinimized && minimize()">
         <span class="header-title">
@@ -381,6 +415,11 @@ function moveUp() {
 
   @media (max-width: 768px) {
     max-width: 100%;
+  }
+
+  &.position-stable {
+    > header { flex-shrink: 0; }
+    > .content { min-height: 0; }
   }
 
   &.click-through-chrome {
@@ -561,6 +600,11 @@ function moveUp() {
     }
   }
 
+  .content :deep(button:focus-visible) {
+    /* Keep the existing focus-ring color/style, clear of rounded corners. */
+    outline-offset: 3px;
+  }
+
   .content {
     height: 100%;
     overflow: auto;
@@ -568,7 +612,8 @@ function moveUp() {
     display: flex;
     flex-direction: column;
     margin: 10px;
-    &:has(button.close) {
+    &:has(button.close),
+    &:has(> .bag-window) {
       margin: 0;
     }
     &:has(> .skill-test) {
@@ -615,6 +660,46 @@ function moveUp() {
           0 1px 2px rgba(0, 0, 0, 0.9);
       }
     }
+  }
+
+  /* A card-pool pick (hunch deck, market deck, Stick to the Plan) takes the
+     class color of the card that asked for it. */
+  &:has(.card-pool-picker) {
+    --pool-accent: var(--seeker);
+    --pool-accent-rgb: 239, 163, 69;
+
+    background: rgba(28, 22, 16, 0.82);
+    border: 1px solid rgba(var(--pool-accent-rgb), 0.28);
+
+    > header {
+      background: rgba(28, 22, 16, 0.95);
+      border-bottom: 1px solid rgba(var(--pool-accent-rgb), 0.35);
+
+      :deep(h1) {
+        color: var(--pool-accent);
+        letter-spacing: 0.06em;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      }
+
+      .minimize-btn {
+        background: rgba(var(--pool-accent-rgb), 0.18);
+        color: var(--pool-accent);
+
+        &:hover {
+          background: rgba(var(--pool-accent-rgb), 0.34);
+        }
+      }
+    }
+  }
+
+  &:has(.card-pool-picker.pool--rogue) {
+    --pool-accent: var(--rogue);
+    --pool-accent-rgb: 72, 177, 79;
+  }
+
+  &:has(.card-pool-picker.pool--guardian) {
+    --pool-accent: var(--guardian);
+    --pool-accent-rgb: 92, 180, 253;
   }
 }
 

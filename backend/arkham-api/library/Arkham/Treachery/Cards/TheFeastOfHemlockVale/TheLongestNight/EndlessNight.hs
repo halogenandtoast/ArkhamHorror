@@ -21,10 +21,10 @@ instance RunMessage EndlessNight where
       agenda <- selectJust AnyAgenda
       mCaptives <- selectOne $ assetIs Assets.theCaptives
       chooseOneM iid $ scenarioI18n do
-        unscoped $ countVar 1 $ labeled' "removeAgendaDoom" $ removeDoom attrs agenda 1
+        unscoped $ countVar 1 $ labeled "removeAgendaDoom" $ removeDoom attrs agenda 1
         for_ mCaptives \captives ->
-          labeled' "endlessNight.damageCaptives" $ dealAssetDamage captives attrs 2
-        unscoped $ numberVar "damage" 3 $ numberVar "horror" 3 $ labeled' "takeDirectDamageAndHorror" do
+          labeled "endlessNight.damageCaptives" $ dealAssetDamage captives attrs 2
+        unscoped $ numberVar "damage" 3 $ numberVar "horror" 3 $ labeled "takeDirectDamageAndHorror" do
           directDamageAndHorror iid attrs 3 3
       pure t
     _ -> EndlessNight <$> liftRunMessage msg attrs

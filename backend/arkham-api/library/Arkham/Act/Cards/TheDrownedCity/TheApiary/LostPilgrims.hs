@@ -8,7 +8,6 @@ import Arkham.ForMovement
 import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Scenario (getVictoryDisplay)
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
@@ -38,7 +37,18 @@ instance HasAbilities LostPilgrims where
       , restricted a 2 (exists $ #cultist <> EnemyAt (LocationWithEnemy $ EnemyWithTrait Stowaway))
           $ forced
           $ PhaseEnds #when #enemy
-      , mkAbility a 3 $ Objective $ forced $ RoundEnds #when
+      , restricted
+          a
+          3
+          ( ExtendedCardCount (atLeast 5)
+              $ oneOf
+                [ VictoryDisplayCardMatch $ basic #cultist
+                , ExtendedCardMatches [CardIsBeneathAct, basic #cultist]
+                ]
+          )
+          $ Objective
+          $ forced
+          $ RoundEnds #when
       ]
 
 instance RunMessage LostPilgrims where
@@ -61,15 +71,12 @@ instance RunMessage LostPilgrims where
         doNextStep msg
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      cultists <- select $ EnemyWithTrait Cultist
-      for_ cultists \cultist -> do
+      selectEach (EnemyWithTrait Cultist) \cultist -> do
         stowaways <- selectCount $ EnemyWithTrait Stowaway <> EnemyAt (locationWithEnemy cultist)
         when (stowaways > 0) $ nonAttackEnemyDamage Nothing (attrs.ability 2) stowaways cultist
       pure a
     UseThisAbility _ (isSource attrs -> True) 3 -> do
-      inVictory <- count (`cardMatch` CardWithTrait Cultist) <$> getVictoryDisplay
-      let underAct = count (`cardMatch` CardWithTrait Cultist) attrs.underneath
-      when (inVictory + underAct >= 5) $ advancedWithOther attrs
+      advancedWithOther attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       let underAct = count (`cardMatch` CardWithTrait Cultist) attrs.underneath

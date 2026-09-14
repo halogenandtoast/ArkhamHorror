@@ -26,7 +26,7 @@ instance RunMessage TowersOfPnakotus where
   runMessage msg l@(TowersOfPnakotus attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       discardableCount <- fieldMap InvestigatorHand (count (`cardMatch` NonWeakness)) iid
-      scenarioI18n $ chooseAmount' iid "cardsToDiscard" "$cards" 0 discardableCount attrs
+      scenarioI18n $ chooseAmount iid "cardsToDiscard" "$cards" 0 discardableCount attrs
       pure l
     ResolveAmounts iid (getChoiceAmount "$cards" -> cardAmount) (isTarget attrs -> True) -> do
       repeated cardAmount $ chooseAndDiscardCard iid (attrs.ability 1)

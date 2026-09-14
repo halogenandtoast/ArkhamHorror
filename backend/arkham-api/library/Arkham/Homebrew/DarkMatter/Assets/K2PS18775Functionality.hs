@@ -41,7 +41,7 @@ instance RunMessage K2PS18775Functionality where
     UseCardAbility _ (isSource attrs -> True) 2 (getScanResult -> Just r) _ -> do
       let iid' = scannedBy r
       chooseOneM iid' do
-        (withI18n $ countVar 1 $ labeled' "drawCards") $ drawCards iid' (attrs.ability 2) 1
-        (withI18n $ countVar 1 $ labeled' "gainResources") $ gainResources iid' (attrs.ability 2) 1
+        (withI18n $ countVar 1 $ labeled "drawCards") $ drawCards iid' (attrs.ability 2) 1
+        (withI18n $ countVar 1 $ labeled "gainResources") $ gainResources iid' (attrs.ability 2) 1
       pure a
     _ -> K2PS18775Functionality <$> liftRunMessage msg attrs

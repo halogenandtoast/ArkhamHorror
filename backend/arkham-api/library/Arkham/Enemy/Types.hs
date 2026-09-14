@@ -82,6 +82,7 @@ data instance Field Enemy :: Type -> Type where
   EnemyCardCode :: Field Enemy CardCode
   EnemyCardId :: Field Enemy CardId
   EnemyLocation :: Field Enemy (Maybe LocationId)
+  EnemyAsSelfLocation :: Field Enemy (Maybe Text)
   EnemyPlacement :: Field Enemy Placement
   EnemyMeta :: Field Enemy Value
   EnemySealedChaosTokens :: Field Enemy [ChaosToken]
@@ -139,6 +140,7 @@ instance FromJSON (SomeField Enemy) where
     "EnemyCardCode" -> pure $ SomeField EnemyCardCode
     "EnemyCardId" -> pure $ SomeField EnemyCardId
     "EnemyLocation" -> pure $ SomeField EnemyLocation
+    "EnemyAsSelfLocation" -> pure $ SomeField EnemyAsSelfLocation
     "EnemyPlacement" -> pure $ SomeField EnemyPlacement
     "EnemyMeta" -> pure $ SomeField EnemyMeta
     "EnemySealedChaosTokens" -> pure $ SomeField EnemySealedChaosTokens
@@ -170,7 +172,9 @@ instance IsCard EnemyAttrs where
 
 instance HasCardDef EnemyAttrs where
   toCardDef e =
-    case lookup (enemyCardCode e) allEnemyCards <|> lookup (enemyCardCode e) allEnemyLocationCards of
+    case lookup (enemyCardCode e) allEnemyCards
+      <|> lookup (enemyCardCode e) allEnemyLocationCards
+      <|> lookupCustomCardDef (enemyCardCode e) of
       Just def -> def
       Nothing -> error $ "missing card def for enemy " <> show (enemyCardCode e)
 
@@ -208,6 +212,11 @@ setSpawnAt
   :: (Entity a, EntityAttrs a ~ EnemyAttrs)
   => LocationMatcher -> CardBuilder EnemyId a -> CardBuilder EnemyId a
 setSpawnAt spawnAt = fmap (overAttrs (\a -> a {enemySpawnAt = Just (SpawnAt spawnAt)}))
+
+setSpawnAtFirst
+  :: (Entity a, EntityAttrs a ~ EnemyAttrs, IsSpawnAt spawn)
+  => [spawn] -> CardBuilder EnemyId a -> CardBuilder EnemyId a
+setSpawnAtFirst spawnAt = fmap (overAttrs (\a -> a {enemySpawnAt = Just (SpawnAtFirst $ map toSpawnAt spawnAt)}))
 
 setNoSpawn
   :: (Entity a, EntityAttrs a ~ EnemyAttrs)
@@ -503,6 +512,7 @@ fieldLens = \case
   EnemyCardCode -> cardCodeL
   EnemyCardId -> cardIdL
   EnemyLocation -> virtual
+  EnemyAsSelfLocation -> asSelfLocationL
   EnemyPlacement -> placementL
   EnemyMeta -> metaL
   EnemySealedChaosTokens -> sealedChaosTokensL

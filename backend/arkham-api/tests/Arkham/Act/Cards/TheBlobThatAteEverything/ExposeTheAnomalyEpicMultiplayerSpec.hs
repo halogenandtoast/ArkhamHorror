@@ -80,7 +80,7 @@ contribute self act amount = do
   case abilities of
     (ability : _) -> do
       run $ UseAbility (toId self) ability ws
-      resolveAmount self "Clues" amount
+      resolveAmount self "$clues" amount
     [] ->
       liftIO
         $ expectationFailure
@@ -191,7 +191,7 @@ spec = describe "Expose the Anomaly (Epic Multiplayer)" do
       -- choice is genuinely pending, the act stays on side A, and the local advance
       -- count is NOT incremented (the server settles it later via the parked step).
       requested `refShouldBe` True
-      pendingLabels `shouldReturn` ["$continue"]
+      pendingLabels `shouldReturn` ["$label.continue"]
       assertAny $ ActWithSide A
       assertNone $ ActWithSide B
       scenarioCount (EpicActAdvances 1) `shouldReturn` 0

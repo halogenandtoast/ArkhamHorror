@@ -26,8 +26,8 @@ instance RunMessage Torment where
             eachInvestigator \iid' -> do
               chooseAndDiscardCardEdit iid' attrs \d -> d {discardFilter = CardWithType kind}
       chooseOneM iid $ withI18n do
-        labeled' "assets" $ choice AssetType
-        labeled' "events" $ choice EventType
-        labeled' "skills" $ choice SkillType
+        labeled "assets" $ choice AssetType
+        labeled "events" $ choice EventType
+        labeled "skills" $ choice SkillType
       pure t
     _ -> Torment <$> liftRunMessage msg attrs

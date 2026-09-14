@@ -27,7 +27,7 @@ instance RunMessage MindMachineInterface where
       investigators <- select Anyone
       chooseOneM iid $ campaignI18n do
         targets investigators (`putCardIntoPlay` attrs)
-        labeled' "mindMachineInterface.doNotPutIntoPlay" $ shuffleIntoScanningDeck [attrs]
+        labeled "mindMachineInterface.doNotPutIntoPlay" $ shuffleIntoScanningDeck [attrs]
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       scan iid (attrs.ability 1) [LS.Trefoil]

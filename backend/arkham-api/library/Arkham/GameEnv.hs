@@ -214,6 +214,10 @@ getCurrentBatchId = gameCurrentBatchId <$> getGame
 getAllPlayers :: HasGame m => m [PlayerId]
 getAllPlayers = gamePlayers <$> getGame
 
+-- | Investigators set aside because their player left the campaign.
+getRetiredInvestigators :: HasGame m => m [InvestigatorId]
+getRetiredInvestigators = keys . gameRetiredInvestigators <$> getGame
+
 getActivePlayer :: HasGame m => m PlayerId
 getActivePlayer = gameActivePlayerId <$> getGame
 
@@ -294,6 +298,12 @@ getWindowStack = fromMaybe [] . gameWindowStack <$> getGame
 
 getCurrentWindowTick :: HasGame m => m (Maybe Int)
 getCurrentWindowTick = listToMaybe . gameWindowTickStack <$> getGame
+
+{- | The monotonic window clock. Read it to pin a triggering condition's
+initiation tick onto a window built ahead of when it is checked.
+-}
+getWindowTick :: HasGame m => m Int
+getWindowTick = gameWindowTick <$> getGame
 
 getEntryTicks :: HasGame m => m (Map CardId Int)
 getEntryTicks = gameEntryTicks <$> getGame

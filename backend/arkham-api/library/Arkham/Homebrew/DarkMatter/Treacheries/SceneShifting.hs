@@ -24,12 +24,17 @@ instance RunMessage SceneShifting where
   runMessage msg t@(SceneShifting attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ campaignI18n do
-        labeled' "sceneShifting.placeDoom" $ placeDoomOnAgendaBy attrs 1
-        labeled' "sceneShifting.moveEnemies" do
+        labeled "sceneShifting.placeDoom" $ placeDoomOnAgendaBy attrs 1
+        labeled "sceneShifting.moveEnemies" do
           withLocationOf iid \lid -> do
             enemies <- select $ UnengagedEnemy <> not_ (EnemyAt $ LocationWithId lid)
             for_ enemies \enemy -> moveTowardsMatching attrs enemy (LocationWithId lid)
-          here <- select $ enemyAtLocationWith iid
-          for_ here \enemy -> initiateEnemyAttack enemy attrs iid
+          -- the moves resolve from the queue, so the enemies that arrive can
+          -- only be seen once they have happened
+          doStep 1 msg
+      pure t
+    DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
+      here <- select $ enemyAtLocationWith iid
+      for_ here \enemy -> initiateEnemyAttack enemy attrs iid
       pure t
     _ -> SceneShifting <$> liftRunMessage msg attrs

@@ -7,7 +7,8 @@ umordhoth :: CardDef
 umordhoth =
   unique
     $ (enemy "01157" ("Umôrdhoth" <:> "The Devourer Below") TheDevourerBelow 1)
-      { cdHealthDamage = healthDamage 3
+      { cdArtVariants = mapFromList [("revised", "01657")]
+      , cdHealthDamage = healthDamage 3
       , cdSanityDamage = sanityDamage 3
       , cdFight = fight 5
       , cdEvade = evade 6

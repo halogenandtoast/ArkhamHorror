@@ -10,6 +10,7 @@ import Arkham.Enemy.Types (EnemyCard, IsEnemy, SomeEnemyCard (..))
 import Arkham.Homebrew.Types
 import Arkham.Location.Types (IsLocation, LocationCard, SomeLocationCard (..))
 import Arkham.Prelude
+import Arkham.Skill.Types (IsSkill, SkillCard, SomeSkillCard (..))
 import Arkham.Story.Types (IsStory, SomeStoryCard (..), StoryCard)
 import Arkham.Treachery.Types (IsTreachery, SomeTreacheryCard (..), TreacheryCard)
 
@@ -30,6 +31,9 @@ enemyContent card = mempty {enemies = [SomeEnemyCard card]}
 
 locationContent :: IsLocation a => LocationCard a -> HomebrewContent
 locationContent card = mempty {locations = [SomeLocationCard card]}
+
+skillContent :: IsSkill a => SkillCard a -> HomebrewContent
+skillContent card = mempty {skills = [SomeSkillCard card]}
 
 storyContent :: IsStory a => StoryCard a -> HomebrewContent
 storyContent card = mempty {stories = [SomeStoryCard card]}

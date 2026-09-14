@@ -32,8 +32,8 @@ instance RunMessage Run where
       chooseOrRunOneM lead do
         targets investigators \iid -> do
           chooseOneM iid do
-            labeled' "dodge" $ runTest iid #agility
-            labeled' "endure" $ runTest iid #combat
+            labeled "dodge" $ runTest iid #agility
+            labeled "endure" $ runTest iid #combat
       advanceActDeck attrs
       pure a
     FailedSkillTest iid _ (isSource attrs -> True) Initiator {} (SkillSkillTest kind) _ | onSide B attrs -> do

@@ -89,7 +89,7 @@ mayAdvance source = do
   lead <- getLead
   chooseOneM lead $ scenarioI18n do
     labeledI "advanceCurrentAct" $ advanceCurrentAct source
-    labeled' "keepPlaying" nothing
+    labeled "keepPlaying" nothing
 
 handleMemory
   :: (ReverseQueue m, Sourceable source, AsId source, IdOf source ~ StoryId)

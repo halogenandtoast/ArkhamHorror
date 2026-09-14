@@ -41,8 +41,8 @@ instance RunMessage Euphoria where
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       hasAsset <- selectAny $ euphoriaAsset iid
       chooseOneM iid $ scenarioI18n do
-        unscoped $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
-        when hasAsset $ labeled' "euphoria.placeAssetOnAbyss" $ chooseAssetOnAbyss iid
+        unscoped $ countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
+        when hasAsset $ labeled "euphoria.placeAssetOnAbyss" $ chooseAssetOnAbyss iid
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       assignHorror iid attrs 2

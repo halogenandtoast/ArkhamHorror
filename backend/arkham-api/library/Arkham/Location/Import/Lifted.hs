@@ -9,6 +9,8 @@ import Arkham.Id as X
 import Arkham.Location.Helpers as X (adjacentLocations, connectsToAdjacent)
 import Arkham.Message as X (
   pattern AbilityIsSkillTest,
+  pattern AddChaosToken,
+  pattern AddChaosTokenForGame,
   pattern AfterEnemyAttack,
   pattern AfterEvadeEnemy,
   pattern AfterRevealChaosTokens,
@@ -269,6 +271,7 @@ import Arkham.Location.Runner as X (
   veiled1,
   withDrawCardUnderneathAction,
   withResignAction,
+  withSetAsideCard,
   withXShroud,
   pattern FailedThisSkillTest,
   pattern FailedThisSkillTestBy,

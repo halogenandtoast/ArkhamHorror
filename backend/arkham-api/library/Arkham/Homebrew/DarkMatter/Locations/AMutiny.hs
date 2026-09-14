@@ -13,7 +13,7 @@ newtype AMutiny = AMutiny LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 aMutiny :: LocationCard AMutiny
-aMutiny = location AMutiny Cards.aMutiny 3 (PerPlayer 1)
+aMutiny = symbolLabel $ location AMutiny Cards.aMutiny 3 (PerPlayer 1)
 
 {- | "[action] Deal 1 damage to Brain Cylinder 367: Each investigator at this
 location adds 1 tally mark next to their 'Memories'. (Group limit once per

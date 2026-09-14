@@ -33,8 +33,8 @@ instance RunMessage Xzharah where
       sid <- getRandom
       n <- getStrengthOfTheAbyss
       withI18n $ chooseOneM iid do
-        labeled' "chooseWillpower" $ beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed n)
-        labeled' "chooseIntellect" $ beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed n)
+        labeled "chooseWillpower" $ beginSkillTest sid iid (attrs.ability 1) attrs #willpower (Fixed n)
+        labeled "chooseIntellect" $ beginSkillTest sid iid (attrs.ability 1) attrs #intellect (Fixed n)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       flipOverBy iid (attrs.ability 1) attrs

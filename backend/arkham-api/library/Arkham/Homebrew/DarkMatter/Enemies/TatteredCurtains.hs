@@ -20,7 +20,7 @@ tatteredCurtains =
 
 -- | "Does not attack during the enemy phase."
 instance HasModifiersFor TatteredCurtains where
-  getModifiersFor (TatteredCurtains a) = modifySelf a [CannotAttack]
+  getModifiersFor (TatteredCurtains a) = modifySelf a [CannotAttackDuringEnemyPhase]
 
 {- | "Forced - After you flip Tattered Curtains's location: Move it one location
 towards you."

@@ -2,8 +2,8 @@ module Arkham.Homebrew.CircusExMortis.Scenarios.PiperAtTheGatesOfDawn (piperAtTh
 
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
-import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Scenario.Import.Lifted
 
 -- Skeleton scenario for Circus Ex Mortis (homebrew). Chaos-token values, full
@@ -13,7 +13,7 @@ newtype PiperAtTheGatesOfDawn = PiperAtTheGatesOfDawn ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 piperAtTheGatesOfDawn :: Difficulty -> PiperAtTheGatesOfDawn
-piperAtTheGatesOfDawn difficulty = scenario PiperAtTheGatesOfDawn ":circus-ex-mortis:110" "Piper at the Gates of Dawn" difficulty []
+piperAtTheGatesOfDawn difficulty = scenario PiperAtTheGatesOfDawn ":circus-ex-mortis:108" "Piper at the Gates of Dawn" difficulty []
 
 instance HasChaosTokenValue PiperAtTheGatesOfDawn where
   getChaosTokenValue iid tokenFace (PiperAtTheGatesOfDawn attrs) = case tokenFace of

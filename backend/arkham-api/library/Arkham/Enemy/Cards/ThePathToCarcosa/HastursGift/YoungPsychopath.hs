@@ -23,7 +23,7 @@ instance RunMessage YoungPsychopath where
     UseThisAbility iid (isSource attrs -> True) 1 -> campaignI18n do
       chooseOneM iid do
         chooseTakeHorror iid (attrs.ability 1) 1
-        labeled' "youngPsychopath.fight" do
+        labeled "youngPsychopath.fight" do
           endOfPhaseModifier #investigation (attrs.ability 1) attrs (Modifier.EnemyFight 3)
       pure e
     _ -> YoungPsychopath <$> liftRunMessage msg attrs

@@ -27,9 +27,9 @@ instance RunMessage Hypothermia where
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       chooseOneM iid $ scenarioI18n $ scope "hypothermia" do
         whenM hasRemainingFrostTokens do
-          labeled' "addFrost" $ addChaosToken #frost
+          labeled "addFrost" $ addChaosToken #frost
         countVar n
-          $ labeled' "takeHorror"
+          $ labeled "takeHorror"
           $ assignHorror iid attrs n
       pure t
     _ -> Hypothermia <$> liftRunMessage msg attrs

@@ -34,7 +34,11 @@ button {
   i { display: contents; font-style: italic; }
 }
 
-button:active:not(:disabled):not(.new-campaign-content button) {
+/* The press shrinks the button under the pointer, so a click aimed at its outer
+ * few pixels -- a dropdown caret sitting at the right edge -- lands outside the
+ * button by mouseup and never becomes a click. Fine on the big game buttons,
+ * wrong in the dense editors, which are exempt. */
+button:active:not(:disabled):not(.new-campaign-content button):not(.card-builder button):not(.overlay-editor button) {
   transform: scale(0.97);
 }
 

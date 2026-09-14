@@ -2,6 +2,7 @@ module Arkham.Scenarios.TheFeastOfHemlockVale.FateOfTheVale.Helpers where
 
 import Arkham.Act.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Acts
 import Arkham.Act.Types (Field (ActCard))
+import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Card
 import Arkham.Classes.HasQueue (push)
@@ -11,8 +12,10 @@ import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.Helpers.Window (wouldDo)
 import Arkham.I18n
 import Arkham.Id (InvestigatorId)
+import Arkham.Investigator.Types (Field (InvestigatorDoom))
 import Arkham.Message (Message (Run, ScenarioSpecific))
 import Arkham.Message.Lifted
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Deck
@@ -38,6 +41,25 @@ whenFateOfTheValeV4 body = do
   act <- getCurrentAct
   actCard <- field ActCard act
   when (toCardCode actCard == toCardCode Acts.fateOfTheValeV4) body
+
+{- | Resolve a "true" investigator card leaving The Abyss: its owner returns to
+their true self, healed, with Old Memory in their play area.
+-}
+resolveTrueSelf :: ReverseQueue m => Source -> InvestigatorId -> Card -> m ()
+resolveTrueSelf source fallback card = do
+  let owner = fromMaybe fallback $ toCardOwner card
+  void $ setOwner owner card
+  healAllDamageAndHorror source owner
+  -- Doom placed on the Shattered Self card remains on it as the card flips to
+  -- its Old Memory side (per FFG ruling, issue #5184). returnFromShatteredSelf
+  -- carries the doom back onto the true self, so move it onto Old Memory here.
+  doom <- field InvestigatorDoom owner
+  oldMemory <- setOwner owner =<< genCard Assets.oldMemory
+  oldMemoryId <- createAssetAt oldMemory (InPlayArea owner)
+  scenarioSpecific "returnFromShatteredSelf" owner
+  when (doom > 0) do
+    removeAllDoom source owner
+    placeDoom source oldMemoryId doom
 
 {- | Route a card being drawn or revealed from The Abyss through a cancellable
 window so cards such as Old Memory can react before it resolves. @resolveMsg@ is

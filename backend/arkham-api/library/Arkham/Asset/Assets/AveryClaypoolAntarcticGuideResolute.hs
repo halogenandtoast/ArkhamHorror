@@ -39,9 +39,9 @@ instance RunMessage AveryClaypoolAntarcticGuideResolute where
       cancelChaosToken (attrs.ability 1) iid token
       cancelledOrIgnoredCardOrGameEffect (attrs.ability 1)
       chooseOneM iid $ scenarioI18n do
-        labeled' "averyClaypoolAntarcticGuideResolute.revealANewChaosToken" do
+        labeled "averyClaypoolAntarcticGuideResolute.revealANewChaosToken" do
           getSkillTestInvestigator >>= traverse_ drawAnotherChaosToken
-        labeled' "averyClaypoolAntarcticGuideResolute.spend1Supply"
+        labeled "averyClaypoolAntarcticGuideResolute.spend1Supply"
           $ spendUses (attrs.ability 1) attrs Supply 1
       pure a
     _ -> AveryClaypoolAntarcticGuideResolute <$> liftRunMessage msg attrs

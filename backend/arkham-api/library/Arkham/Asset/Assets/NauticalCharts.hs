@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.I18n
 import Arkham.Investigator.Projection ()
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -23,7 +24,6 @@ instance HasAbilities NauticalCharts where
     , investigateAbility x 1 (exhaust x) (ControlsThis <> not_ InYourHand)
     ]
 
--- TODO: We need a way to know if additional clues can be discovered
 instance RunMessage NauticalCharts where
   runMessage msg a@(NauticalCharts attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
@@ -32,12 +32,16 @@ instance RunMessage NauticalCharts where
       investigate sid iid (attrs.ability 1)
       pure a
     PassedThisSkillTest iid (isSource attrs -> True) -> do
-      void $ runMaybeT do
-        hand <- lift $ select $ InHandOf NotForPlay (be iid) <> basic DiscardableCard
-        guard $ notNull hand
-        lift $ withSkillTest \sid -> do
+      let discardable = InHandOf NotForPlay (be iid) <> basic DiscardableCard
+      skillTestCardOptionEdit attrs (preOriginalOption . optionWhenExists discardable) do
+        doStep 1 msg
+      pure a
+    DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
+      hand <- select $ InHandOf NotForPlay (be iid) <> basic DiscardableCard
+      unless (null hand) do
+        withSkillTest \sid -> do
           chooseOneM iid do
-            questionLabeled "$label.cards.nauticalCharts.discard1CardFrom"
+            cardI18n $ questionLabeled "nauticalCharts.discard1CardFrom"
             labeledI "doNotDiscardCard" nothing
             targets hand \card -> do
               discardCard iid (attrs.ability 1) card

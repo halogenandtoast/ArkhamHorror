@@ -18,7 +18,7 @@ instance RunMessage OutOfSight3 where
   runMessage msg s@(OutOfSight3 attrs) = runQueueT $ case msg of
     PassedSkillTest iid _ _ (isTarget attrs -> True) _ n | n >= 1 -> do
       skillTestCardOption attrs $ chooseOneM iid do
-        cardI18n $ scope "outOfSight3" $ labeled' "disengageAndMove2" $ doStep 1 msg
+        cardI18n $ scope "outOfSight3" $ labeled "disengageAndMove2" $ doStep 1 msg
         withI18n skip_
       pure s
     DoStep 1 (PassedSkillTest iid _ _ (isTarget attrs -> True) _ _) -> do

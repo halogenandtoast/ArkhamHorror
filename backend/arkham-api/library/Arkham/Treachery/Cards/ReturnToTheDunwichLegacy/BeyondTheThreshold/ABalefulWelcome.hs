@@ -18,15 +18,15 @@ instance RunMessage ABalefulWelcome where
     Revelation iid (isSource attrs -> True) -> withI18n $ do
       isFirst <- isFirstCopyThisPhase attrs
       chooseNM iid (if isFirst then 2 else 3) do
-        labeled' "investigate" do
+        labeled "investigate" do
           eachInvestigator \iid' -> roundModifier attrs iid' (CannotPerformAction #investigate)
-        labeled' "fight" do
+        labeled "fight" do
           eachInvestigator \iid' -> roundModifier attrs iid' (CannotPerformAction #fight)
-        labeled' "evade" do
+        labeled "evade" do
           eachInvestigator \iid' -> roundModifier attrs iid' (CannotPerformAction #evade)
-        labeled' "move" do
+        labeled "move" do
           eachInvestigator \iid' -> roundModifier attrs iid' (CannotPerformAction #move)
-        labeled' "play" do
+        labeled "play" do
           eachInvestigator \iid' -> roundModifier attrs iid' (CannotPerformAction #play)
       pure t
     _ -> ABalefulWelcome <$> liftRunMessage msg attrs

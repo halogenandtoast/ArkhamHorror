@@ -27,7 +27,7 @@ instance RunMessage RisingTides where
         withInvestigators <- select $ elsewhere <> LocationWithInvestigator Anyone
         candidates <- if null withInvestigators then select elsewhere else pure withInvestigators
         chooseOrRunOneM lead $ scenarioI18n do
-          questionLabeled' "chooseLocationToFlood"
+          questionLabeled "chooseLocationToFlood"
           targets candidates increaseFloodLevel
       do_ msg
       pure s
@@ -42,7 +42,7 @@ instance RunMessage RisingTides where
     ForInvestigator iid (Do (ResolveThisStory _ (is attrs -> True))) -> do
       nonStory <- selectAny $ assetControlledBy iid <> AssetNonStory <> DiscardableAsset
       chooseOneM iid $ sharedI18n $ countVar 1 do
-        labeled' "takeDamage" $ assignDamage iid attrs 1
+        labeled "takeDamage" $ assignDamage iid attrs 1
         labeledValidate' nonStory "discardAssets" $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
       pure s
     _ -> RisingTides <$> liftRunMessage msg attrs

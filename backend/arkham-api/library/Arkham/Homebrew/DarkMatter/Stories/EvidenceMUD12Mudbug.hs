@@ -24,7 +24,7 @@ newtype EvidenceMUD12Mudbug = EvidenceMUD12Mudbug StoryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 evidenceMUD12Mudbug :: StoryCard EvidenceMUD12Mudbug
-evidenceMUD12Mudbug = story EvidenceMUD12Mudbug Cards.evidenceMUD12Mudbug
+evidenceMUD12Mudbug = persistStory $ story EvidenceMUD12Mudbug Cards.evidenceMUD12Mudbug
 
 instance HasAbilities EvidenceMUD12Mudbug where
   getAbilities (EvidenceMUD12Mudbug a) =

@@ -36,7 +36,7 @@ instance RunMessage Sledgehammer3 where
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) | attrs.ready -> do
       withSkillTest \sid -> do
         chooseOneM iid $ cardI18n $ scope "sledgehammer3" do
-          labeled' "exhaustForDamage" do
+          labeled "exhaustForDamage" do
             exhaustThis attrs
             skillTestModifier sid (attrs.ability 2) iid (DamageDealt 2)
           withI18n skip_

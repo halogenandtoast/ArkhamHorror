@@ -8,6 +8,7 @@ import Arkham.Id
 import {-# SOURCE #-} Arkham.Modifier
 import {-# SOURCE #-} Arkham.Placement
 import Arkham.Prelude
+import Arkham.Trait (Trait)
 import Data.Aeson.TH
 
 data StoryMatcher
@@ -17,6 +18,7 @@ data StoryMatcher
   | StoryIs CardCode
   | StoryWithCardId CardId
   | StoryWithModifier ModifierType
+  | StoryWithTrait Trait
   | EnemyStory EnemyId
   deriving stock (Show, Eq, Ord, Data)
 

@@ -51,10 +51,10 @@ instance RunMessage InTheSearchlight where
       sid <- getRandom
       n <- getSpendableClueCount [iid]
       when (n > 0) $ chooseOneM iid $ withI18n $ countVar 1 do
-        labeled' "spendClues" do
+        labeled "spendClues" do
           spendClues iid 1
           skillTestModifier sid source sid (Difficulty (-2))
-        labeled' "doNotSpendClues" nothing
+        labeled "doNotSpendClues" nothing
       chooseBeginSkillTest sid iid (AbilitySource source 1) iid [#intellect, #agility] (Fixed 6)
       pure a
     PassedThisSkillTest iid (isProxyAbilitySource attrs 1 -> True) -> do
@@ -111,9 +111,9 @@ instance RunMessage InTheSearchlight where
       resolveConcealed lead laChicaRoja
       pure a
     DoStep 2 msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
-      storyWithChooseOneM' (setTitle "title" >> p "castALight2") do
-        labeled' "believe" $ doStep 3 msg'
-        labeled' "doNotBelieve" $ doStep 4 msg'
+      storyWithChooseOneM (setTitle "title" >> p "castALight2") do
+        labeled "believe" $ doStep 3 msg'
+        labeled "doNotBelieve" $ doStep 4 msg'
       pure a
     DoStep 3 msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
       trust <- remembered MatiasBolivarTrustsYou

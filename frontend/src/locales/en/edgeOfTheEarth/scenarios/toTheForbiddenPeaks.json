@@ -14,6 +14,18 @@
       "elderThing": "-5. If you fail, the nearest _Elder Thing_ enemy moves once towards you. If it is engaged with you, it attacks."
     }
   },
+  "setup": {
+    "gatherSets": "Gather all cards from the following encounter sets: *To the Forbidden Peaks*, *Deadly Weather*, *Elder Things*, *Hazards of Antarctica*, *Nameless Horrors*, and *Tekeli-li*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/to-the-forbidden-peaks.png' /><img src='{setImgPath}/deadly-weather.png' /><img src='{setImgPath}/elder-things.png' /><img src='{setImgPath}/hazards-of-antarctica.png' /><img src='{setImgPath}/nameless-horrors.png' /><img src='{setImgPath}/tekeli-li.png' /></section>",
+    "placeLocations": "Shuffle the seven Mountainside locations and put five of them into play in a diagonal line. Set the remaining two locations aside, out of play. Put The Summit location into play at the top of the diagonal line. The position of each location has its own level from 0–5, beginning at the bottommost location at level 0 and ascending to The Summit at level 5.",
+    "revealLevel0": "Reveal the level-0 location. Each investigator begins play at that location.",
+    "addElderThingToken": "Add 1 {'{'}elderThing{'}'} token to the chaos bag.",
+    "suppliesRecovered": "Check the “Supplies Recovered” section of the Campaign Log and put each Expedition story asset listed there into play at the level-0 location. Remove each other Expedition story asset from the game.",
+    "setTerrorOfTheStarsAside": "Set the Terror of the Stars enemy aside, out of play.",
+    "checkDifficulty": "Check the difficulty level.",
+    "hard": "If you are playing on Hard difficulty, add 1 doom to agenda 1a.",
+    "expert": "If you are playing on Expert difficulty, add 2 doom to agenda 1a.",
+    "tekelili": "Shuffle each Tekeli-li! weakness card that is not already part of an investigator’s deck together to form the Tekeli-li deck. Place this deck near the agenda deck."
+  },
   "intro1": {
     "title": "Scenario II: To The Forbidden Peaks",
     "body": "<p>_Intro 1_: The wind howls as your party prepares for the long journey ahead. There is very little conversation. Even if you could hear each other’s muffled voices through your earmuffs and scarves, what would you say? The silence of your shared terror is loud enough.</p><p>Your destination is many miles ahead of you. The jagged peaks loom far on the horizon, taunting you. You run a mental checklist of your situation…</p>"

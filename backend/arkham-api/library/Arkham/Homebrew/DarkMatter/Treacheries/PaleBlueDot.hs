@@ -31,8 +31,8 @@ instance RunMessage PaleBlueDot where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ campaignI18n do
-        labeled' "paleBlueDot.takeHorror" $ assignHorror iid (attrs.ability 1) 1
-        labeled' "paleBlueDot.placeDoom" do
+        labeled "paleBlueDot.takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        labeled "paleBlueDot.placeDoom" do
           placeDoomOnAgendaAndCheckAdvanceBy (attrs.ability 1) 1
           toDiscardBy iid (attrs.ability 1) attrs
       pure t

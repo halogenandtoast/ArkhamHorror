@@ -40,8 +40,8 @@ instance RunMessage OneTwoPunch where
           sid <- getRandom
           enabled <- capture $ skillTestModifiers sid attrs iid [SkillModifier #combat 2, DamageDealt 1]
           chooseOrRunOneM iid $ cardI18n do
-            labeled' "oneTwoPunch.again" do
+            labeled "oneTwoPunch.again" do
               push $ BeginSkillTestWithPreMessages' enabled (resetSkillTest sid skillTest)
-            labeled' "oneTwoPunch.skip" nothing
+            labeled "oneTwoPunch.skip" nothing
       pure e
     _ -> OneTwoPunch <$> liftRunMessage msg attrs

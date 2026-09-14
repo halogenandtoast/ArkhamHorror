@@ -39,8 +39,8 @@ instance RunMessage TickTockClubPresent where
         tickTockClub <- selectOne $ locationIs Cards.tickTockClubFuture
         for_ tickTockClub \club -> do
           chooseOneM iid $ withI18n do
-            labeled' "skip" nothing
-            scenarioI18n $ labeled' "tickTockClub.placeTime" do
+            labeled "skip" nothing
+            scenarioI18n $ labeled "tickTockClub.placeTime" do
               exhaustThis thomas'
               placeTokens (attrs.ability 1) club Token.Time 1
       pure l

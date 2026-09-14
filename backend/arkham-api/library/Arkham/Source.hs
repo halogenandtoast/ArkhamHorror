@@ -9,6 +9,7 @@ import {-# SOURCE #-} Arkham.Card
 import Arkham.Card.CardType (playerCardTypes)
 import {-# SOURCE #-} Arkham.Card.PlayerCard
 import Arkham.ChaosToken.Types
+import Arkham.Constants
 import Arkham.Id
 import Arkham.Matcher.Types (
   AbilityMatcher (..),
@@ -18,6 +19,7 @@ import Arkham.Matcher.Types (
   EnemyMatcher,
   LocationMatcher,
   SourceMatcher (..),
+  TreacheryMatcher,
  )
 import Arkham.Prelude
 import Arkham.Tarot
@@ -56,6 +58,7 @@ data Source
   | InvestigatorSource InvestigatorId
   | LocationMatcherSource LocationMatcher
   | EnemyMatcherSource EnemyMatcher
+  | TreacheryMatcherSource TreacheryMatcher
   | LocationSource LocationId
   | ProxySource {source :: Source, originalSource :: Source}
   | ResourceSource InvestigatorId
@@ -306,11 +309,21 @@ instance Sourceable LocationMatcher where
 instance Sourceable EnemyMatcher where
   toSource = EnemyMatcherSource
 
+instance Sourceable TreacheryMatcher where
+  toSource = TreacheryMatcherSource
+
 toAbilitySource :: Sourceable a => a -> Int -> Source
 toAbilitySource a n = case toSource a of
   AbilitySource b n' -> AbilitySource b n'
   UseAbilitySource _ b n' -> AbilitySource b n'
   b -> AbilitySource b n
+
+{- | Drop the investigator credited on 'UseAbilitySource' so an ability source
+compares equal regardless of who used it.
+-}
+asAbilitySource :: Source -> Source
+asAbilitySource (UseAbilitySource _ s n) = AbilitySource s n
+asAbilitySource s = s
 
 isAbilitySource :: Sourceable a => a -> Int -> Source -> Bool
 isAbilitySource a idx (AbilitySource b idx') | idx == idx' = isSource a b
@@ -356,3 +369,13 @@ proxied b a = SourceableWithCardCode a (proxy b a)
 
 source_ :: Source -> Source
 source_ = id
+
+-- Basic actions are hosted by a card but aren't abilities *on* it.
+isBasicAbilitySource :: Source -> Bool
+isBasicAbilitySource = \case
+  PaymentSource s -> isBasicAbilitySource s
+  AbilitySource _ n -> isBasic n
+  UseAbilitySource _ _ n -> isBasic n
+  _ -> False
+ where
+  isBasic n = n `elem` [AbilityAttack, AbilityEvade, AbilityEngage, AbilityInvestigate, AbilityMove]

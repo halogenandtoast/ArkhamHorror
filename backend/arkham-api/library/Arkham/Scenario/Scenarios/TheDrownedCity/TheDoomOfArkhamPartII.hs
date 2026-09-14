@@ -5,18 +5,20 @@ import Arkham.Agenda.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Agenda
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.CampaignStep (CampaignStep (EpilogueStep))
 import Arkham.Campaigns.TheDrownedCity.Import
+import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (getFloodLevelFor)
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Deck qualified as Deck
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Enemies
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith)
+import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier, modifySelectWith)
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Helpers.Xp
 import Arkham.Id
 import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
 import Arkham.Location.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Locations
+import Arkham.Location.FloodLevel (FloodLevel (Unflooded))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
@@ -71,9 +73,9 @@ instance RunMessage TheDoomOfArkhamPartII where
     PreScenarioSetup -> scope "intro" do
       artifacts <- length <$> getUncrossedArtifacts
       let canRitual = artifacts >= 5
-      storyWithChooseOneM'
+      storyWithChooseOneM
         ( do
-            setTitle "title"
+            h "title"
             p "theDoomOfArkham1"
             p.basic "mustDecide"
             ul do
@@ -81,7 +83,7 @@ instance RunMessage TheDoomOfArkhamPartII where
               li.validate canRitual "anotherWay"
         )
         do
-          labeled' "lastStand" $ doStep 2 msg
+          labeled "lastStand" $ doStep 2 msg
           labeledValidate' canRitual "anotherWay" $ doStep 3 msg
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
@@ -215,7 +217,7 @@ instance RunMessage TheDoomOfArkhamPartII where
         if stoodTogether
           then do
             leadChooseOrRunOneM do
-              questionLabeled' "chooseAllyInvestigator"
+              questionLabeled "chooseAllyInvestigator"
               targets investigators $ createAssetAt_ (toCard card) . InPlayArea
           else push $ SetAsideCards [toCard card]
       -- "Gather all earned artifacts that are not crossed out ... Put each of them
@@ -234,7 +236,7 @@ instance RunMessage TheDoomOfArkhamPartII where
           card <- fetchCard def
           lead <- getLead
           chooseOrRunOneM lead do
-            questionLabeled' "chooseArtifactInvestigator"
+            questionLabeled "chooseArtifactInvestigator"
             targets [iid | (iid, n) <- counts, n == fewest] (createAssetAt_ card . InPlayArea)
       pure s
     {- "When drawing cards from the Cthulhu deck, resolve each effect, one at a time,
@@ -267,6 +269,29 @@ instance RunMessage TheDoomOfArkhamPartII where
         $ attrs
         & (decksL %~ insertMap CthulhuDeck deck)
         & (deckDiscardsL %~ deleteMap CthulhuDeck)
+    -- {elderThing}: "Reveal another token."
+    ResolveChaosToken _ ElderThing iid -> do
+      drawAnotherChaosToken iid
+      pure s
+    -- {cultist}: on hard/expert the damage does not wait on failing the test.
+    ResolveChaosToken _ Cultist iid | isHardExpert attrs -> do
+      whenM ((/= Unflooded) <$> getFloodLevelFor iid) $ assignDamage iid Cultist 1
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        -- {cultist}: "If you fail and your location is flooded, take 1 damage."
+        Cultist
+          | isEasyStandard attrs ->
+              whenM ((/= Unflooded) <$> getFloodLevelFor iid) $ assignDamage iid Cultist 1
+        -- {tablet}: "If you fail, place 1 of your clues on your location."
+        Tablet -> placeCluesOnLocation iid Tablet 1
+        -- {elderThing}: "If you fail, after this test resolves, draw the top card of
+        -- the Cthulhu deck. (Max one draw per round.)"
+        ElderThing -> unlessM (hasModifier ScenarioTarget cthulhuDeckDrawnMarker) do
+          roundModifier attrs ScenarioTarget cthulhuDeckDrawnMarker
+          afterSkillTestQuiet $ drawCthulhuDeckCard iid attrs
+        _ -> pure ()
+      pure s
     ScenarioResolution res -> scope "resolutions" do
       case res of
         Resolution 1 -> do
@@ -309,5 +334,5 @@ removeRandomBasicWeakness iid = do
   weaknesses <- select $ basic BasicWeaknessCard <> InDeckOf (InvestigatorWithId iid)
   unless (null weaknesses) do
     chooseOneM iid do
-      labeled' "removeNoWeakness" nothing
+      labeled "removeNoWeakness" nothing
       cardsLabeled weaknesses $ removeCardFromDeckForCampaign iid

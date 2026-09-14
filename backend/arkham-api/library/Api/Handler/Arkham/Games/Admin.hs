@@ -136,14 +136,14 @@ putApiV1AdminGameR :: ArkhamGameId -> Handler ()
 putApiV1AdminGameR gameId = do
   response <- requireCheckJsonBody
   mRoom <- lookupRoom gameId
-  updateGame response gameId mRoom
+  updateGame mempty response gameId mRoom
 
 -- TODO: Make this a websocket message
 putApiV1AdminGameRawR :: ArkhamGameId -> Handler ()
 putApiV1AdminGameRawR gameId = do
   response <- requireCheckJsonBody @_ @RawGameJsonPut
   mRoom <- lookupRoom gameId
-  updateGame (Raw response.gameMessage) gameId mRoom
+  updateGame mempty (Raw response.gameMessage) gameId mRoom
 
 getApiV1AdminRoomsR :: Handler [RoomData]
 getApiV1AdminRoomsR = getRoomData

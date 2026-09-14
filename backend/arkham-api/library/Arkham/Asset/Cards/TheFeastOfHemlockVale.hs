@@ -531,6 +531,7 @@ occultReliquary3 =
       { cdCardTraits = setFromList [Boon, Pact]
       , cdDeckRestrictions = [PerDeckLimit 1]
       , cdLevel = Just 3
+      , cdTags = [setupOnlyTag]
       }
 
 brokenDiademCrownOfDyingLight5 :: CardDef

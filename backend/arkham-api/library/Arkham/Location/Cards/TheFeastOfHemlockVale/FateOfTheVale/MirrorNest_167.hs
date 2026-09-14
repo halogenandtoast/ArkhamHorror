@@ -32,11 +32,11 @@ instance RunMessage MirrorNest_167 where
       chooseOrRunOneM iid $ withI18n do
         when (clueCount > 0)
           $ countVar 1
-          $ labeled' "placeCluesOnYourLocation"
+          $ labeled "placeCluesOnYourLocation"
           $ placeCluesOnLocation iid (attrs.ability 1) 1
         when hasCards
           $ countVar 1
-          $ labeled' "discardRandomCardsFromHand"
+          $ labeled "discardRandomCardsFromHand"
           $ randomDiscardN iid (attrs.ability 1) 1
       pure l
     _ -> MirrorNest_167 <$> liftRunMessage msg attrs

@@ -87,6 +87,9 @@ import Text.Regex.Posix ((=~))
 import Api.Handler.Arkham.Achievements
 import Api.Handler.Arkham.Admin.Metrics
 import Api.Handler.Arkham.Cards
+import Api.Handler.Arkham.CustomCards
+import Api.Handler.Arkham.CustomCardSets
+import Api.Handler.Arkham.PublishedCardSets
 import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Events
 import Api.Handler.Arkham.Game.Bug

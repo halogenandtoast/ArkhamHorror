@@ -22,7 +22,7 @@ instance RunMessage IntoTheArchives where
       selectEach (colocatedWith iid) (`addMemories` 1)
       whenM (canHaveHorrorHealed attrs iid) do
         hrr <- field InvestigatorHorror iid
-        withI18n $ chooseAmount' iid "horror" "$horror" 0 hrr attrs
+        withI18n $ chooseAmount iid "horror" "$horror" 0 hrr attrs
       addToVictory iid attrs
       pure s
     ResolveAmounts iid (getChoiceAmount "$horror" -> n) (isTarget attrs -> True) -> do

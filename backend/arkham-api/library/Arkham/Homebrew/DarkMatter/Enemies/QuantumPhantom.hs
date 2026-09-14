@@ -34,10 +34,12 @@ instance HasAbilities QuantumPhantom where
         (be a)
 
 instance RunMessage QuantumPhantom where
-  runMessage msg e@(QuantumPhantom attrs) = runQueueT $ case msg of
+  runMessage msg (QuantumPhantom attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       cancelEnemyDefeat attrs
-      push $ HealAllDamage (EnemyTarget attrs.id) (attrs.ability 1)
+      -- Face-down is out of play, so it rejoins the zone clean: leftover damage
+      -- would re-defeat it the instant it is drawn again.
+      healAllDamage (attrs.ability 1) attrs
       place attrs (FacedownInThreatArea iid)
-      pure e
+      pure $ QuantumPhantom $ attrs & exhaustedL .~ False
     _ -> QuantumPhantom <$> liftRunMessage msg attrs

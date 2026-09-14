@@ -37,7 +37,7 @@ instance RunMessage IcePick3 where
         when (action == #fight) do
           skillTestCardOptionEdit attrs (preOriginalOption . optionWhenExists (AssetWithId attrs.id)) do
             chooseOneM iid do
-              (cardI18n $ labeled' "icePick3.discardIcePick3ToDo1Damage") do
+              (cardI18n $ labeled "icePick3.discardIcePick3ToDo1Damage") do
                 toDiscardBy iid (attrs.ability 1) attrs
                 skillTestModifier sid (attrs.ability 1) iid (DamageDealt 1)
               labeledI "doNotDiscardCard" nothing
@@ -46,7 +46,7 @@ instance RunMessage IcePick3 where
             mTargetLoc <- getSkillTestTargetedLocation
             skillTestCardOptionEdit attrs (preOriginalOption . optionWhenExists (AssetWithId attrs.id)) do
               chooseOneM iid do
-                (cardI18n $ labeled' "icePick3.discardIcePick3") do
+                (cardI18n $ labeled "icePick3.discardIcePick3") do
                   toDiscardBy iid (attrs.ability 1) attrs
                   if mTargetLoc == Just loc
                     then skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)

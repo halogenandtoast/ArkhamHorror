@@ -1,4 +1,5 @@
 import { cardImg, imgsrc } from '@/arkham/helpers'
+import { cardArtReference, customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import type { CardDef } from '@/arkham/types/CardDef'
 import type { Game } from '@/arkham/types/Game'
 import type { Source } from '@/arkham/types/Source'
@@ -61,7 +62,27 @@ export function cardFaceImages(card: CardDef): { front: string; back: string | n
   return { front, back }
 }
 
+export function customInvestigatorUsesCardPortrait(cardCode: string, suffix: string = ''): boolean {
+  if (!isCustomCardCode(cardCode)) return false
+  const def = customCardDef(cardCode)
+  if (!def) return false
+  return !(suffix === 'b' ? def.meta?.portraitBack : def.meta?.portrait)
+}
+
 export function portraitImage(cardCode: string, suffix: string = ''): string {
+  // A custom investigator carries its own portraits; there is nothing for it
+  // under the portrait directory.
+  if (isCustomCardCode(cardCode)) {
+    const def = customCardDef(cardCode)
+    const portrait = suffix === 'b' ? def?.meta?.portraitBack : def?.meta?.portrait
+    // A slot may name a printed investigator rather than carry its own image,
+    // which here means that investigator's portrait, not their card.
+    const reference = cardArtReference(portrait)
+    if (reference) return imgsrc(`portraits/${reference}.jpg`)
+    if (portrait) return portrait
+    return cardImg(cardArt(cardCode, suffix))
+  }
+
   return imgsrc(`portraits/${cardArt(cardCode, suffix)}.jpg`)
 }
 
@@ -73,7 +94,7 @@ export function investigatorPortrait(
   investigatorId: string,
   suffix: string = ''
 ): string {
-  const player = game.investigators[investigatorId]
+  const player = game.investigators?.[investigatorId]
   const code = (player?.form.tag === 'YithianForm' || player?.form.tag === 'HomunculusForm' || player?.form.tag === 'ShatteredForm')
     ? investigatorId
     : (player?.cardCode ?? investigatorId)

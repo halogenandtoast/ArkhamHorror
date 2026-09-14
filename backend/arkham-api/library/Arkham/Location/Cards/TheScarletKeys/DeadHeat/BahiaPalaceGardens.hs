@@ -40,8 +40,8 @@ instance RunMessage BahiaPalaceGardens where
       damageOk <- canHaveDamageHealed source iid
       horrorOk <- canHaveHorrorHealed source iid
       chooseOrRunOneM iid $ withI18n do
-        when damageOk $ countVar 1 $ labeled' "healDamage" $ healDamage iid source 1
-        when horrorOk $ countVar 1 $ labeled' "healHorror" $ healHorror iid source 1
+        when damageOk $ countVar 1 $ labeled "healDamage" $ healDamage iid source 1
+        when horrorOk $ countVar 1 $ labeled "healHorror" $ healHorror iid source 1
       pure l
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       swapLocation attrs =<< fetchCard Cards.bahiaPalaceGardensAbandoned

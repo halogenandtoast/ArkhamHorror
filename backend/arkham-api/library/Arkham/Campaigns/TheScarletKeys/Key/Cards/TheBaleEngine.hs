@@ -64,10 +64,10 @@ instance RunMessage TheBaleEngine where
       canEvidence <- matches aid (AssetCanHaveUses Evidence)
 
       chooseOrRunOneM iid $ withI18n do
-        when canAmmo $ labeled' "ammo" $ addUses attrs aid Ammo 1
-        when canCharge $ labeled' "charge" $ addUses attrs aid Charge 1
-        when canSecret $ labeled' "secret" $ addUses attrs aid Secret 1
-        when canSupply $ labeled' "supply" $ addUses attrs aid Supply 1
-        when canEvidence $ labeled' "evidence" $ addUses attrs aid Evidence 1
+        when canAmmo $ labeled "ammo" $ addUses attrs aid Ammo 1
+        when canCharge $ labeled "charge" $ addUses attrs aid Charge 1
+        when canSecret $ labeled "secret" $ addUses attrs aid Secret 1
+        when canSupply $ labeled "supply" $ addUses attrs aid Supply 1
+        when canEvidence $ labeled "evidence" $ addUses attrs aid Evidence 1
       pure k
     _ -> TheBaleEngine <$> liftRunMessage msg attrs

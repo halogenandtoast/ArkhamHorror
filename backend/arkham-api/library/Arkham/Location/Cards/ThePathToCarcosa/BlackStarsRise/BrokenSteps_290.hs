@@ -32,8 +32,8 @@ instance RunMessage BrokenSteps_290 where
           <$> scenarioField ScenarioDiscard
       chooseOneM iid do
         when hasAssets do
-          withI18n $ countVar 1 $ labeled' "discardAssets" $ chooseAndDiscardAsset iid (attrs.ability 1)
+          withI18n $ countVar 1 $ labeled "discardAssets" $ chooseAndDiscardAsset iid (attrs.ability 1)
         for_ mCultistCard \c ->
-          scenarioI18n $ labeled' "brokenSteps.cultist" $ findAndDrawEncounterCard iid (CardWithId c.id)
+          scenarioI18n $ labeled "brokenSteps.cultist" $ findAndDrawEncounterCard iid (CardWithId c.id)
       pure l
     _ -> BrokenSteps_290 <$> liftRunMessage msg attrs

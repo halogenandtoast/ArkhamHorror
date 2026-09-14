@@ -44,8 +44,8 @@ instance RunMessage MoldyHallsEarlierTonight where
         name <- field InvestigatorName iid
         discards <- fieldMap InvestigatorDiscard (map toCard) iid
         chooseOneM iid $ scenarioI18n do
-          labeled' "moldyHallsEarlierTonight.doNotRequest" nothing
-          labeled' "moldyHallsEarlierTonight.request" do
+          labeled "moldyHallsEarlierTonight.doNotRequest" nothing
+          labeled "moldyHallsEarlierTonight.request" do
             focusCards discards do
               chooseTargetM iid discards (returnToHand iid)
             remember $ MeddledWithThePast $ Name.labeled name iid

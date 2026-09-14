@@ -139,7 +139,7 @@ instance RunMessage TheEternalSlumber where
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       chooseOneM iid do
-        labeled' "elderThing.addStrength" do
+        labeled "elderThing.addStrength" do
           addStrengthOfTheAbyss 1
           passSkillTest
         unscoped skip_

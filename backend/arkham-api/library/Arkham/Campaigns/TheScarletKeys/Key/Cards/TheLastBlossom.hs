@@ -22,14 +22,20 @@ instance HasAbilities TheLastBlossom where
             [ restricted
                 a
                 1
-                ( exists
-                    ( oneOf
-                        [HealableInvestigator (a.ability 1) k (affectsOthersKnown iid $ colocatedWith iid) | k <- [#damage, #horror]]
-                    )
+                ( youExist (InvestigatorWithId iid)
+                    <> exists
+                      ( oneOf
+                          [ HealableInvestigator (a.ability 1) k (affectsOthersKnown iid $ colocatedWith iid)
+                          | k <- [#damage, #horror]
+                          ]
+                      )
                 )
                 $ FastAbility Free
             ]
-          else [restricted a 1 (exists EnemyWithAnyDamage) $ FastAbility Free]
+          else
+            [ restricted a 1 (youExist (InvestigatorWithId iid) <> exists EnemyWithAnyDamage)
+                $ FastAbility Free
+            ]
     | Just aid <- keyHolderAsset a =
         [restricted a 1 (youExist (HasMatchingAsset (AssetWithId aid))) $ FastAbility Free]
     | otherwise = []
@@ -40,7 +46,7 @@ instance RunMessage TheLastBlossom where
     CampaignSpecific "shift[09544]" _ -> do
       shiftKey attrs do
         when attrs.unstable do
-          enemies <- select $ EnemyWithAnyDamage
+          enemies <- select EnemyWithAnyDamage
           for_ enemies $ healDamageOn attrs 1
           unless (null enemies) $ withInvestigatorBearer attrs (`flipOver` attrs)
         when attrs.stable do

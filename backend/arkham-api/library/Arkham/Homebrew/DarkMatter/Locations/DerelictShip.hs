@@ -9,11 +9,11 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype DerelictShip = DerelictShip LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 derelictShip :: LocationCard DerelictShip
-derelictShip = location DerelictShip Cards.derelictShip 3 (PerPlayer 1)
+derelictShip = symbolLabel $ location DerelictShip Cards.derelictShip 3 (PerPlayer 1)
 
 {- | "As an additional cost to scan at Derelict Ship, you must draw the top card
 of the encounter deck."

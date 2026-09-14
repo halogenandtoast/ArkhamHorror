@@ -29,7 +29,7 @@ instance RunMessage DreadedEnd where
       scenarioI18n $ chooseOrRunOneM iid do
         labeledValidate' (notNull enemies) "placeEnemyOnTopOfEncounterDeck" do
           chooseTargetM iid enemies $ putOnTopOfDeck iid Deck.EncounterDeck
-        labeled' "lookAtTopOfEncounterDeck" do
+        labeled "lookAtTopOfEncounterDeck" do
           lookAt iid (attrs.ability 1) EncounterDeckTarget [(FromTopOfDeck 5, PutBackInAnyOrder)] #any
             $ defer attrs IsNotDraw
       pure a

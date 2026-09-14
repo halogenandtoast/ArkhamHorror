@@ -37,9 +37,9 @@ instance RunMessage FailedExperiment where
       mLocation <- field InvestigatorLocation iid
       if canPlaceClues && isJust mLocation
         then chooseOneM iid $ withI18n do
-          countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+          countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
           countVar 1
-            $ labeled' "placeCluesOnYourLocation"
+            $ labeled "placeCluesOnYourLocation"
             $ push
             $ InvestigatorPlaceCluesOnLocation iid (toSource attrs) 1
         else assignHorror iid attrs 1

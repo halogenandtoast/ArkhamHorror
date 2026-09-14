@@ -14,6 +14,25 @@
     /notifications ApiV1NotificationsR GET
     /arkham ApiV1ArkhamP:
       /cards ApiV1ArkhamCardsR GET
+      /traits ApiV1ArkhamTraitsR GET
+      /schema ApiV1ArkhamSchemaR GET
+      /custom-cards ApiV1ArkhamCustomCardsP:
+        / ApiV1ArkhamCustomCardsR GET POST
+        !/art ApiV1ArkhamCustomCardsArtR POST
+        /#ArkhamCustomCardId ApiV1ArkhamCustomCardR DELETE
+      /custom-card-sets ApiV1ArkhamCustomCardSetsP:
+        / ApiV1ArkhamCustomCardSetsR GET POST
+        !/import ApiV1ArkhamCustomCardSetsImportR POST
+        /#ArkhamCustomCardSetId ApiV1ArkhamCustomCardSetP:
+          / ApiV1ArkhamCustomCardSetR PUT DELETE
+          /publish ApiV1ArkhamCustomCardSetPublishR POST
+          /sync ApiV1ArkhamCustomCardSetSyncR POST
+      /published-card-sets ApiV1ArkhamPublishedCardSetsP:
+        / ApiV1ArkhamPublishedCardSetsR GET
+        /#ArkhamPublishedCardSetId ApiV1ArkhamPublishedCardSetP:
+          / ApiV1ArkhamPublishedCardSetR GET DELETE
+          /subscribe ApiV1ArkhamPublishedCardSetSubscribeR POST
+          /like ApiV1ArkhamPublishedCardSetLikeR POST DELETE
       /homebrew/cards ApiV1ArkhamHomebrewCardsR GET
       /card/#CardCode ApiV1ArkhamCardR GET
       /investigators ApiV1ArkhamInvestigatorsR GET
@@ -24,6 +43,7 @@
         /#ArkhamDeckId ApiV1ArkhamDeckP:
           / ApiV1ArkhamDeckR GET DELETE
           /sync ApiV1ArkhamSyncDeckR POST
+          /overlay ApiV1ArkhamDeckOverlayR PUT DELETE
       /achievements ApiV1ArkhamAchievementsR GET DELETE
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR GET POST
@@ -53,6 +73,7 @@
           /open-seats ApiV1ArkhamGameOpenSeatsR GET
           /claim-seat ApiV1ArkhamGameClaimSeatR POST
           /achievements ApiV1ArkhamGameAchievementsR GET
+          /custom-cards ApiV1ArkhamGameCustomCardsR GET
           /step ApiV1ArkhamGameStepR GET
       /events ApiV1ArkhamEventsP:
         / ApiV1ArkhamEventsR GET POST

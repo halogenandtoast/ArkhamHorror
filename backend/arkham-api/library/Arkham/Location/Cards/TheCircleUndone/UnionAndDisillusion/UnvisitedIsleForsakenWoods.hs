@@ -47,10 +47,10 @@ instance RunMessage UnvisitedIsleForsakenWoods where
       whippoorwills <-
         select $ NearestEnemyToFallback iid $ enemyIs Enemies.whippoorwill
       chooseOrRunOneM iid $ scenarioI18n do
-        labeled' "unvisitedIsleForsakenWoods.search" do
+        labeled "unvisitedIsleForsakenWoods.search" do
           findEncounterCard iid attrs $ cardIs Enemies.whippoorwill
         unless (null whippoorwills) do
-          labeled' "unvisitedIsleForsakenWoods.attack"
+          labeled "unvisitedIsleForsakenWoods.attack"
             $ chooseTargetM iid whippoorwills \whippoorwill -> initiateEnemyAttack whippoorwill attrs iid
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

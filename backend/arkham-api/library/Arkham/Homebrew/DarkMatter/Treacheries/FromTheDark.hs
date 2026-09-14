@@ -29,7 +29,7 @@ instance RunMessage FromTheDark where
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       chooseOneM iid $ campaignI18n do
-        countVar n $ labeled' "fromTheDark.takeDamage" $ assignDamage iid attrs n
-        labeled' "fromTheDark.drawAMimic" $ findAndDrawEncounterCard iid (cardIs Enemies.mimic)
+        countVar n $ labeled "fromTheDark.takeDamage" $ assignDamage iid attrs n
+        labeled "fromTheDark.drawAMimic" $ findAndDrawEncounterCard iid (cardIs Enemies.mimic)
       pure t
     _ -> FromTheDark <$> liftRunMessage msg attrs

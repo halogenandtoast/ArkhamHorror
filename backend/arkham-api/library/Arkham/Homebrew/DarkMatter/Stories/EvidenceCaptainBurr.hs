@@ -24,7 +24,7 @@ newtype EvidenceCaptainBurr = EvidenceCaptainBurr StoryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 evidenceCaptainBurr :: StoryCard EvidenceCaptainBurr
-evidenceCaptainBurr = story EvidenceCaptainBurr Cards.evidenceCaptainBurr
+evidenceCaptainBurr = persistStory $ story EvidenceCaptainBurr Cards.evidenceCaptainBurr
 
 instance HasAbilities EvidenceCaptainBurr where
   getAbilities (EvidenceCaptainBurr a) =

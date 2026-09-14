@@ -13,7 +13,7 @@ newtype EasttownRuined = EasttownRuined LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 easttownRuined :: LocationCard EasttownRuined
-easttownRuined = location EasttownRuined Cards.easttownRuined 3 (Static 1)
+easttownRuined = location EasttownRuined Cards.easttownRuined 3 (PerPlayer 1)
 
 instance HasModifiersFor EasttownRuined where
   getModifiersFor (EasttownRuined a) = modifySelf a [CannotBeFullyFlooded]

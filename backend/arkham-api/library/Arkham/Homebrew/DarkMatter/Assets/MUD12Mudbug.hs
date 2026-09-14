@@ -12,7 +12,8 @@ newtype MUD12Mudbug = MUD12Mudbug AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 muD12Mudbug :: AssetCard MUD12Mudbug
-muD12Mudbug = asset MUD12Mudbug Cards.muD12Mudbug
+-- No printed sanity: a robot takes damage only.
+muD12Mudbug = ally MUD12Mudbug Cards.muD12Mudbug (3, 0)
 
 {- | "[action]: Move 2 damage between investigators, [[Ally]] assets, and enemies
 at your location. (Group limit once per game.)"

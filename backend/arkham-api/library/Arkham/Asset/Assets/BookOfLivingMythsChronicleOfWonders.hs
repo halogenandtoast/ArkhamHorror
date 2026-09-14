@@ -31,8 +31,8 @@ instance RunMessage BookOfLivingMythsChronicleOfWonders where
       let cIn = filter ((== #curse) . (.face)) tokens
 
       chooseOrRunOneM iid do
-        when (length bIn >= length cIn) $ (cardI18n $ labeled' "bookOfLivingMythsChronicleOfWonders.resolveBlessToken") $ doStep 1 msg
-        when (length cIn >= length bIn) $ (cardI18n $ labeled' "bookOfLivingMythsChronicleOfWonders.resolveCurseToken") $ doStep 2 msg
+        when (length bIn >= length cIn) $ (cardI18n $ labeled "bookOfLivingMythsChronicleOfWonders.resolveBlessToken") $ doStep 1 msg
+        when (length cIn >= length bIn) $ (cardI18n $ labeled "bookOfLivingMythsChronicleOfWonders.resolveCurseToken") $ doStep 2 msg
       pure a
     DoStep n (UseThisAbility _iid (isSource attrs -> True) 1) -> do
       tokens <- getOnlyChaosTokensInBag

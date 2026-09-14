@@ -43,9 +43,9 @@ instance RunMessage ChamberOfSorrows where
             getLocationOf iid >>= maybe (pure []) (select . (<> LocationWithClues (atLeast 1)) . LocationWithId)
           else pure []
       chooseOneM iid $ scope "chamberOfSorrows" do
-        questionLabeled' "takeClue"
+        questionLabeled "takeClue"
         when (notNull investigators || notNull locations) do
-          unscoped $ labeled' "skip" nothing
+          unscoped $ labeled "skip" nothing
         targets investigators \iid' -> moveTokens (attrs.ability 1) iid' iid #clue 1
         targets locations \lid -> moveTokens (attrs.ability 1) lid iid #clue 1
       pure l

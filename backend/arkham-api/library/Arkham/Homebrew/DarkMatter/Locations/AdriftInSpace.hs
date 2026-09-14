@@ -14,7 +14,7 @@ newtype AdriftInSpace = AdriftInSpace LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 adriftInSpace :: LocationCard AdriftInSpace
-adriftInSpace = location AdriftInSpace Cards.adriftInSpace 2 (PerPlayer 1)
+adriftInSpace = symbolLabel $ location AdriftInSpace Cards.adriftInSpace 2 (PerPlayer 1)
 
 {- | "Forced - After you reveal a +1, 0 or [elder_sign] token while investigating
 this location: Reveal and resolve an additional chaos token for this skill test."

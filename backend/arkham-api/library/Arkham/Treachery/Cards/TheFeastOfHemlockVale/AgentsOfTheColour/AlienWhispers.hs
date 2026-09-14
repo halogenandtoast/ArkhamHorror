@@ -37,10 +37,10 @@ instance RunMessage AlienWhispers where
       chooseOrRunOneM iid $ withI18n do
         cardI18n $ scope "alienWhispers" do
           when (notNull damageAssets) do
-            labeled' "damageAsset" $ chooseTargetM iid damageAssets \aid -> dealAssetDamage aid attrs 1
+            labeled "damageAsset" $ chooseTargetM iid damageAssets \aid -> dealAssetDamage aid attrs 1
           when (notNull horrorAssets) do
-            labeled' "horrorAsset" $ chooseTargetM iid horrorAssets \aid -> dealAssetHorror aid attrs 1
-        when hasCards $ countVar 1 $ labeled' "discardRandomCardsFromHand" $ randomDiscard iid attrs
+            labeled "horrorAsset" $ chooseTargetM iid horrorAssets \aid -> dealAssetHorror aid attrs 1
+        when hasCards $ countVar 1 $ labeled "discardRandomCardsFromHand" $ randomDiscard iid attrs
       doStep (n - 1) msg'
       pure t
     _ -> AlienWhispers <$> liftRunMessage msg attrs

@@ -42,9 +42,9 @@ instance RunMessage WellOfSouls where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasCardsInHand <- selectAny $ inHandOf NotForPlay iid
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeDirectHorror" $ directHorror iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeDirectHorror" $ directHorror iid (attrs.ability 1) 1
         when hasCardsInHand do
-          countVar 2 $ labeled' "discardRandomCardsFromHand" $ randomDiscardN iid (attrs.ability 1) 2
+          countVar 2 $ labeled "discardRandomCardsFromHand" $ randomDiscardN iid (attrs.ability 1) 2
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck 1
@@ -56,9 +56,9 @@ instance RunMessage WellOfSouls where
           belowEmpty <- directionEmpty attrs Below
           rightEmpty <- directionEmpty attrs RightOf
           chooseOrRunOneM iid $ scenarioI18n do
-            when aboveEmpty $ labeled' "above" $ placeAtDirection_ Above attrs card
-            when belowEmpty $ labeled' "below" $ placeAtDirection_ Below attrs card
-            when rightEmpty $ labeled' "right" $ placeAtDirection_ RightOf attrs card
+            when aboveEmpty $ labeled "above" $ placeAtDirection_ Above attrs card
+            when belowEmpty $ labeled "below" $ placeAtDirection_ Below attrs card
+            when rightEmpty $ labeled "right" $ placeAtDirection_ RightOf attrs card
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

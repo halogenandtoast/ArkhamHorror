@@ -31,6 +31,7 @@ instance RunMessage EllsworthsBoots where
       revealed <-
         select
           $ not_ (AccessibleFrom ForMovement $ locationWithInvestigator iid)
+          <> not_ (locationWithInvestigator iid)
           <> RevealedLocation
           <> CanEnterLocation (InvestigatorWithId iid)
       chooseOneM iid do

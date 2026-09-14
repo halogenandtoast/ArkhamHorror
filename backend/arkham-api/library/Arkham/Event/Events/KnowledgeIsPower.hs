@@ -46,7 +46,7 @@ instance RunMessage KnowledgeIsPower where
       inHand <- selectMap toCardId $ InHandOf NotForPlay (InvestigatorWithId iid)
       when (cid `elem` inHand) do
         chooseOneM iid do
-          cardI18n $ scope "knowledgeIsPower" $ labeled' "discardToDraw" do
+          cardI18n $ scope "knowledgeIsPower" $ labeled "discardToDraw" do
             push $ DiscardCard iid (toSource attrs) cid
             drawCards iid attrs 1
           labeledI "doNotDiscard" nothing

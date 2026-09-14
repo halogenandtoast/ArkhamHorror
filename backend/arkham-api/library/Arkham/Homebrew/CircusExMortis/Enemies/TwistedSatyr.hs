@@ -1,23 +1,17 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.TwistedSatyr (twistedSatyr) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Keyword qualified as Keyword
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.Matcher
 
 newtype TwistedSatyr = TwistedSatyr EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 twistedSatyr :: EnemyCard TwistedSatyr
 twistedSatyr = enemy TwistedSatyr Cards.twistedSatyr
-
-instance HasModifiersFor TwistedSatyr where
-  getModifiersFor (TwistedSatyr a) =
-    modifySelf a [AddKeyword Keyword.Hunter, AddKeyword Keyword.Retaliate]
 
 instance HasAbilities TwistedSatyr where
   getAbilities (TwistedSatyr a) =

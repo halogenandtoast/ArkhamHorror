@@ -36,9 +36,9 @@ instance RunMessage ForbiddingShore where
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       hasResources <- fieldMap InvestigatorResources (> 0) iid
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled' "loseActions" $ loseActions iid (attrs.ability 2) 1
+        countVar 1 $ labeled "loseActions" $ loseActions iid (attrs.ability 2) 1
         when hasResources do
-          countVar 2 $ labeled' "loseResources" $ loseResources iid (attrs.ability 2) 2
+          countVar 2 $ labeled "loseResources" $ loseResources iid (attrs.ability 2) 2
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       passedCircleTest iid attrs

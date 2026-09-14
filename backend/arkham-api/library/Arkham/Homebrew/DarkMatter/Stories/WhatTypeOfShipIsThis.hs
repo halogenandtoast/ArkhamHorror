@@ -19,9 +19,9 @@ instance RunMessage WhatTypeOfShipIsThis where
       colocated <- select $ colocatedWith iid
       for_ colocated (`addMemories` 1)
       chooseOneM iid $ campaignI18n do
-        labeled' "whatTypeOfShipIsThis.placeDoom" do
+        labeled "whatTypeOfShipIsThis.placeDoom" do
           placeDoomOnAgendaAndCheckAdvance 1
           addToVictory iid attrs
-        labeled' "whatTypeOfShipIsThis.removeFromGame" $ push $ RemoveFromGame (toTarget attrs)
+        labeled "whatTypeOfShipIsThis.removeFromGame" $ push $ RemoveFromGame (toTarget attrs)
       pure s
     _ -> WhatTypeOfShipIsThis <$> liftRunMessage msg attrs

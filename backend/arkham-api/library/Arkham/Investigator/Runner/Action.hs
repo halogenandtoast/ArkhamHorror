@@ -162,7 +162,6 @@ import Arkham.Modifier.Builder (runCachedQueryT)
 import Arkham.Movement
 import Arkham.Phase
 import Arkham.Placement
-import Arkham.Plural
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.ScenarioLogKey

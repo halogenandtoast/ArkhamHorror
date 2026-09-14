@@ -648,8 +648,8 @@ cancelDoom target n = do
       Window.PlacedDoom source' target' _ -> Window.PlacedDoom source' target' m
       _ -> error "mismatched"
 
-    replaceWindowDoomAmount m Window {..} =
-      Window {windowTiming, windowBatchId, windowType = replaceWindowTypeDoomAmount m windowType}
+    replaceWindowDoomAmount m w =
+      w {windowType = replaceWindowTypeDoomAmount m (windowType w)}
 
     replaceDoomAmount m = \case
       CheckWindows ws -> CheckWindows (map (replaceWindowDoomAmount m) ws)

@@ -29,6 +29,8 @@ library
       Api.Handler.Arkham.Achievements
       Api.Handler.Arkham.Admin.Metrics
       Api.Handler.Arkham.Cards
+      Api.Handler.Arkham.CustomCards
+      Api.Handler.Arkham.CustomCardSets
       Api.Handler.Arkham.Decks
       Api.Handler.Arkham.Events
       Api.Handler.Arkham.Game.Bug
@@ -39,6 +41,7 @@ library
       Api.Handler.Arkham.Investigators
       Api.Handler.Arkham.Old
       Api.Handler.Arkham.PendingGames
+      Api.Handler.Arkham.PublishedCardSets
       Api.Handler.Arkham.Replay
       Api.Handler.Arkham.Undo
       Application
@@ -2294,6 +2297,7 @@ library
       Arkham.Campaign.Campaigns.TheScarletKeys.Achievements
       Arkham.Campaign.Import.Lifted
       Arkham.Campaign.Option
+      Arkham.Campaign.Overlay
       Arkham.Campaign.Runner
       Arkham.Campaign.Types
       Arkham.CampaignLog
@@ -2407,9 +2411,11 @@ library
       Arkham.Card
       Arkham.Card.CardCode
       Arkham.Card.CardDef
+      Arkham.Card.CardOption
       Arkham.Card.CardType
       Arkham.Card.Class
       Arkham.Card.Cost
+      Arkham.Card.CustomCard
       Arkham.Card.EncounterCard
       Arkham.Card.Id
       Arkham.Card.PlayerCard
@@ -2444,13 +2450,35 @@ library
       Arkham.Cost.Status
       Arkham.Criteria
       Arkham.Criteria.Override
+      Arkham.Custom.Ability
+      Arkham.Custom.Asset
+      Arkham.Custom.Enemy
+      Arkham.Custom.Env
+      Arkham.Custom.Event
+      Arkham.Custom.Expr
+      Arkham.Custom.Investigator
+      Arkham.Custom.Location
+      Arkham.Custom.Overlay
+      Arkham.Custom.Schema
+      Arkham.Custom.Schema.Fields
+      Arkham.Custom.Schema.TH
+      Arkham.Custom.Schema.Types
+      Arkham.Custom.Schema.Windows
+      Arkham.Custom.Schema.Windows.Check
+      Arkham.Custom.Schema.Windows.Table
+      Arkham.Custom.Skill
+      Arkham.Custom.Steps
+      Arkham.Custom.Story
+      Arkham.Custom.Treachery
       Arkham.Customization
       Arkham.Damage
       Arkham.DamageEffect
       Arkham.Debug
+      Arkham.Debug.CardDestination
       Arkham.Deck
       Arkham.DeckBuilding.Adjustment
       Arkham.Decklist
+      Arkham.Decklist.CardPool
       Arkham.Decklist.RandomBasicWeakness
       Arkham.Decklist.Type
       Arkham.Decks
@@ -4033,6 +4061,7 @@ library
       Arkham.Helpers.Calculation
       Arkham.Helpers.Campaign
       Arkham.Helpers.Card
+      Arkham.Helpers.CardOption
       Arkham.Helpers.ChaosBag
       Arkham.Helpers.ChaosBag.Lifted
       Arkham.Helpers.ChaosToken
@@ -4041,6 +4070,7 @@ library
       Arkham.Helpers.CombatTarget
       Arkham.Helpers.Cost
       Arkham.Helpers.Criteria
+      Arkham.Helpers.CustomChaosBag
       Arkham.Helpers.Customization
       Arkham.Helpers.Damage
       Arkham.Helpers.Deck
@@ -4100,19 +4130,50 @@ library
       Arkham.History
       Arkham.History.Types
       Arkham.Homebrew.CardRegistry
+      Arkham.Homebrew.CircusExMortis.Acts.ArrivingAt
+      Arkham.Homebrew.CircusExMortis.Acts.EngineTrouble
+      Arkham.Homebrew.CircusExMortis.Acts.EscapeAct
+      Arkham.Homebrew.CircusExMortis.Acts.EscapeActVI
+      Arkham.Homebrew.CircusExMortis.Acts.EscapeActVII
       Arkham.Homebrew.CircusExMortis.Acts.ForestOfIllusion
+      Arkham.Homebrew.CircusExMortis.Acts.NoFreeRides
       Arkham.Homebrew.CircusExMortis.Acts.OutAndAway
+      Arkham.Homebrew.CircusExMortis.Acts.OverdueDeparture
       Arkham.Homebrew.CircusExMortis.Acts.RatsInACageInTheHorsesEye
       Arkham.Homebrew.CircusExMortis.Acts.RatsInACageInTheLionsDen
       Arkham.Homebrew.CircusExMortis.Acts.RatsInACageInTheMakeupCase
       Arkham.Homebrew.CircusExMortis.Acts.RatsInACageInThePrizeDisplay
       Arkham.Homebrew.CircusExMortis.Acts.SmokeAndMirrors
+      Arkham.Homebrew.CircusExMortis.Acts.TheGreatTrainHorror
+      Arkham.Homebrew.CircusExMortis.Acts.ThroughTheForestsVI
+      Arkham.Homebrew.CircusExMortis.Acts.ThroughTheForestsVII
       Arkham.Homebrew.CircusExMortis.Agendas.BloodMoon
       Arkham.Homebrew.CircusExMortis.Agendas.HouseOfHorrors
       Arkham.Homebrew.CircusExMortis.Agendas.MesmericMagic
       Arkham.Homebrew.CircusExMortis.Agendas.SavageNature
+      Arkham.Homebrew.CircusExMortis.Agendas.ScheduleToKeep
+      Arkham.Homebrew.CircusExMortis.Agendas.SleepWhenYoureDead
+      Arkham.Homebrew.CircusExMortis.Agendas.TheCircusSleeps
       Arkham.Homebrew.CircusExMortis.Agendas.TheTrueFace
+      Arkham.Homebrew.CircusExMortis.Agendas.TreadingOnEggshells
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverAspirantOfCourage
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverAspirantOfWisdom
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverCircusFortuneTeller
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverOracleOfEnlightenment
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverOracleOfMystery
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverOracleOfPurity
+      Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverOracleOfResolve
+      Arkham.Homebrew.CircusExMortis.Assets.CarrieDykstra
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeForgottenWorkOfApuleius
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeInterpretationOfConviction
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeInterpretationOfObsession
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeProphecyOfTheBehemoth
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeProphecyOfTheBeyond
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeProphecyOfTheEternal
+      Arkham.Homebrew.CircusExMortis.Assets.DeCultusBestiaeProphecyOfTheHorde
       Arkham.Homebrew.CircusExMortis.Assets.IllusoryLocus
+      Arkham.Homebrew.CircusExMortis.Assets.LadyEsprit
+      Arkham.Homebrew.CircusExMortis.Assets.RalphDykstra
       Arkham.Homebrew.CircusExMortis.Assets.TerrifiedCaptives
       Arkham.Homebrew.CircusExMortis.Campaign
       Arkham.Homebrew.CircusExMortis.CampaignSteps
@@ -4129,9 +4190,11 @@ library
       Arkham.Homebrew.CircusExMortis.ChaosBag
       Arkham.Homebrew.CircusExMortis.Content
       Arkham.Homebrew.CircusExMortis.Defs
+      Arkham.Homebrew.CircusExMortis.DestinyAndProphecy
       Arkham.Homebrew.CircusExMortis.Enemies.CircusPredator
       Arkham.Homebrew.CircusExMortis.Enemies.DisguisedMonstrosity
       Arkham.Homebrew.CircusExMortis.Enemies.GrotesqueLion
+      Arkham.Homebrew.CircusExMortis.Enemies.LoomingGoatspawn
       Arkham.Homebrew.CircusExMortis.Enemies.Mooncalf
       Arkham.Homebrew.CircusExMortis.Enemies.NascentDarkYoung
       Arkham.Homebrew.CircusExMortis.Enemies.NewMoonAcrobat
@@ -4141,18 +4204,45 @@ library
       Arkham.Homebrew.CircusExMortis.Enemies.NewMoonDrudge
       Arkham.Homebrew.CircusExMortis.Enemies.NewMoonIllusionist
       Arkham.Homebrew.CircusExMortis.Enemies.NewMoonMagician
+      Arkham.Homebrew.CircusExMortis.Enemies.NewMoonStiltwalker
       Arkham.Homebrew.CircusExMortis.Enemies.NewMoonStrongman
+      Arkham.Homebrew.CircusExMortis.Enemies.NewMoonTumbler
+      Arkham.Homebrew.CircusExMortis.Enemies.RampagingGoatspawn
+      Arkham.Homebrew.CircusExMortis.Enemies.RavenousGoatspawn
+      Arkham.Homebrew.CircusExMortis.Enemies.SacrificialShepherd
       Arkham.Homebrew.CircusExMortis.Enemies.SupplicantOfTheGoat
+      Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_065
+      Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_066
+      Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_067
+      Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_068
+      Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_069
       Arkham.Homebrew.CircusExMortis.Enemies.TwistedSatyr
       Arkham.Homebrew.CircusExMortis.Enemies.UrsineBrute
+      Arkham.Homebrew.CircusExMortis.Enemies.WrithingGoatspawn
       Arkham.Homebrew.CircusExMortis.Helpers
       Arkham.Homebrew.CircusExMortis.Key
       Arkham.Homebrew.CircusExMortis.Locations.AnimalCages
+      Arkham.Homebrew.CircusExMortis.Locations.Boxcar
+      Arkham.Homebrew.CircusExMortis.Locations.Caboose
+      Arkham.Homebrew.CircusExMortis.Locations.CampOutskirtsGuardedClosely
+      Arkham.Homebrew.CircusExMortis.Locations.CampOutskirtsQuietForNow
       Arkham.Homebrew.CircusExMortis.Locations.Carousel
       Arkham.Homebrew.CircusExMortis.Locations.CircusEncampment
+      Arkham.Homebrew.CircusExMortis.Locations.CircusEngine
       Arkham.Homebrew.CircusExMortis.Locations.CircusGatesPathToFreedom
+      Arkham.Homebrew.CircusExMortis.Locations.CoalHopperCar
+      Arkham.Homebrew.CircusExMortis.Locations.CraneCar
+      Arkham.Homebrew.CircusExMortis.Locations.CrowdedRow_048
+      Arkham.Homebrew.CircusExMortis.Locations.CrowdedRow_049
+      Arkham.Homebrew.CircusExMortis.Locations.CrowdedRow_050
+      Arkham.Homebrew.CircusExMortis.Locations.CrowdedRow_051
+      Arkham.Homebrew.CircusExMortis.Locations.ExoticAnimalCar
+      Arkham.Homebrew.CircusExMortis.Locations.Flatcar
       Arkham.Homebrew.CircusExMortis.Locations.ForestPassage
       Arkham.Homebrew.CircusExMortis.Locations.GamesGallery
+      Arkham.Homebrew.CircusExMortis.Locations.GondolaCar
+      Arkham.Homebrew.CircusExMortis.Locations.LocomotiveEngine
+      Arkham.Homebrew.CircusExMortis.Locations.MailCar
       Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestCircularGrove
       Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestDeadGrove
       Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestFogBank
@@ -4163,12 +4253,23 @@ library
       Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestShadowedPath
       Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestShallowRiver
       Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestSmolderingCampfire
+      Arkham.Homebrew.CircusExMortis.Locations.PerformersCar
       Arkham.Homebrew.CircusExMortis.Locations.PerformerTrailers
+      Arkham.Homebrew.CircusExMortis.Locations.RefrigeratorCar
+      Arkham.Homebrew.CircusExMortis.Locations.ReinforcedCar
       Arkham.Homebrew.CircusExMortis.Locations.RemoteCabin
+      Arkham.Homebrew.CircusExMortis.Locations.RingmastersTrailer
+      Arkham.Homebrew.CircusExMortis.Locations.SecludedTent_052
+      Arkham.Homebrew.CircusExMortis.Locations.SecludedTent_053
+      Arkham.Homebrew.CircusExMortis.Locations.SecludedTent_054
+      Arkham.Homebrew.CircusExMortis.Locations.SecludedTent_055
+      Arkham.Homebrew.CircusExMortis.Locations.StockCar
+      Arkham.Homebrew.CircusExMortis.Locations.TankCar
       Arkham.Homebrew.CircusExMortis.Locations.TheBigTopFirstRing
       Arkham.Homebrew.CircusExMortis.Locations.TheBigTopSecondRing
       Arkham.Homebrew.CircusExMortis.Locations.TheBigTopThirdRing
       Arkham.Homebrew.CircusExMortis.Locations.WoodlandOverlook
+      Arkham.Homebrew.CircusExMortis.NowArriving
       Arkham.Homebrew.CircusExMortis.Scenarios.AllPointsWest
       Arkham.Homebrew.CircusExMortis.Scenarios.Bacchanalia
       Arkham.Homebrew.CircusExMortis.Scenarios.HarmsWay
@@ -4178,21 +4279,39 @@ library
       Arkham.Homebrew.CircusExMortis.Scenarios.ThePrimrosePath
       Arkham.Homebrew.CircusExMortis.Scenarios.ThousandToOne
       Arkham.Homebrew.CircusExMortis.Sets
+      Arkham.Homebrew.CircusExMortis.Skills.InvocationOfDiana
+      Arkham.Homebrew.CircusExMortis.Stories.CautiousJailers
+      Arkham.Homebrew.CircusExMortis.Stories.ClappedInIrons
+      Arkham.Homebrew.CircusExMortis.Stories.DeepInTheDark
+      Arkham.Homebrew.CircusExMortis.Stories.HiddenInPlainSight
+      Arkham.Homebrew.CircusExMortis.Stories.HypnoticState
+      Arkham.Homebrew.CircusExMortis.Stories.TheDarkYoungStir
+      Arkham.Homebrew.CircusExMortis.Stories.UnderLockAndKey
       Arkham.Homebrew.CircusExMortis.Tokens
       Arkham.Homebrew.CircusExMortis.Traits
+      Arkham.Homebrew.CircusExMortis.Treacheries.BrokenCouplings
+      Arkham.Homebrew.CircusExMortis.Treacheries.CloseWatch
+      Arkham.Homebrew.CircusExMortis.Treacheries.CurseOfTheRougarou
+      Arkham.Homebrew.CircusExMortis.Treacheries.DenseTangle
       Arkham.Homebrew.CircusExMortis.Treacheries.EndlessSpawn
       Arkham.Homebrew.CircusExMortis.Treacheries.FeralImpulses
+      Arkham.Homebrew.CircusExMortis.Treacheries.FocusedSabotage
       Arkham.Homebrew.CircusExMortis.Treacheries.HypnoticGlamour
+      Arkham.Homebrew.CircusExMortis.Treacheries.KeepQuiet
       Arkham.Homebrew.CircusExMortis.Treacheries.LostAllControl
+      Arkham.Homebrew.CircusExMortis.Treacheries.LostTheTrail
       Arkham.Homebrew.CircusExMortis.Treacheries.LunarInfluence
       Arkham.Homebrew.CircusExMortis.Treacheries.MaddeningSpectacle
       Arkham.Homebrew.CircusExMortis.Treacheries.MilkOfShubNiggurath
       Arkham.Homebrew.CircusExMortis.Treacheries.MoonlightIllusion
       Arkham.Homebrew.CircusExMortis.Treacheries.OminousMoonlight
+      Arkham.Homebrew.CircusExMortis.Treacheries.OverloadedEngine
       Arkham.Homebrew.CircusExMortis.Treacheries.PhantasmalDeception
       Arkham.Homebrew.CircusExMortis.Treacheries.PrimordialEvils
       Arkham.Homebrew.CircusExMortis.Treacheries.QuickerThanTheEye
       Arkham.Homebrew.CircusExMortis.Treacheries.RecklessStunt
+      Arkham.Homebrew.CircusExMortis.Treacheries.RicketyRide
+      Arkham.Homebrew.CircusExMortis.Treacheries.ViolentThrashing
       Arkham.Homebrew.CircusExMortis.Treacheries.WildHysteria
       Arkham.Homebrew.ContentEntries
       Arkham.Homebrew.DarkMatter.Actions
@@ -4413,6 +4532,7 @@ library
       Arkham.Homebrew.DarkMatter.Locations.ThresholdOfYuggoth
       Arkham.Homebrew.DarkMatter.Locations.VentilationShaft
       Arkham.Homebrew.DarkMatter.Locations.Yuggoth
+      Arkham.Homebrew.DarkMatter.MachineInYellow
       Arkham.Homebrew.DarkMatter.MotionScanning
       Arkham.Homebrew.DarkMatter.ScenarioDeckKeys
       Arkham.Homebrew.DarkMatter.Scenarios.ElectricNightmare
@@ -6141,6 +6261,7 @@ library
       Arkham.Matcher.Location
       Arkham.Matcher.Patterns
       Arkham.Matcher.Phase
+      Arkham.Matcher.Placement
       Arkham.Matcher.Scenario
       Arkham.Matcher.Skill
       Arkham.Matcher.SkillTest
@@ -6200,7 +6321,6 @@ library
       Arkham.Phase
       Arkham.Placement
       Arkham.PlayerCard
-      Arkham.Plural
       Arkham.Prelude
       Arkham.Projection
       Arkham.Query
@@ -6964,6 +7084,7 @@ library
       Arkham.Text
       Arkham.Timing
       Arkham.Token
+      Arkham.TokenBag
       Arkham.TokenStrategy
       Arkham.Trait
       Arkham.Treachery
@@ -8027,12 +8148,16 @@ library
       Entity.Answer
       Entity.Arkham.Achievement
       Entity.Arkham.ArkhamDBDecklist
+      Entity.Arkham.CustomCard
+      Entity.Arkham.CustomCardSet
       Entity.Arkham.Deck
+      Entity.Arkham.DeckOverlay
       Entity.Arkham.Epic
       Entity.Arkham.Game
       Entity.Arkham.GameRaw
       Entity.Arkham.LogEntry
       Entity.Arkham.Player
+      Entity.Arkham.PublishedCardSet
       Entity.Arkham.Step
       Entity.Notification
       Entity.PasswordReset
@@ -8089,6 +8214,7 @@ library
     , async
     , base
     , base16-bytestring
+    , base64-bytestring
     , bcrypt
     , bugsnag
     , bugsnag-hs
@@ -8304,9 +8430,11 @@ test-suite spec
       Arkham.Asset.Assets.CatBurglar1Spec
       Arkham.Asset.Assets.CrystallizerOfDreamsSpec
       Arkham.Asset.Assets.DaisysToteBagSpec
+      Arkham.Asset.Assets.DecoratedSkullSpec
       Arkham.Asset.Assets.DendromorphosisSpec
       Arkham.Asset.Assets.DigDeep2Spec
       Arkham.Asset.Assets.DigDeepSpec
+      Arkham.Asset.Assets.DirtyFighting2Spec
       Arkham.Asset.Assets.DiscOfItzamna2Spec
       Arkham.Asset.Assets.DreamersChronicleSpec
       Arkham.Asset.Assets.DreamsOfDestructionSpec
@@ -8333,6 +8461,7 @@ test-suite spec
       Arkham.Asset.Assets.HardKnocks2Spec
       Arkham.Asset.Assets.HardKnocksSpec
       Arkham.Asset.Assets.HeirloomOfHyperboreaSpec
+      Arkham.Asset.Assets.HelplessPassengerSpec
       Arkham.Asset.Assets.HolyRosarySpec
       Arkham.Asset.Assets.Hyperawareness2Spec
       Arkham.Asset.Assets.HyperawarenessSpec
@@ -8347,6 +8476,7 @@ test-suite spec
       Arkham.Asset.Assets.MacheteSpec
       Arkham.Asset.Assets.MagnifyingGlass1Spec
       Arkham.Asset.Assets.MagnifyingGlassSpec
+      Arkham.Asset.Assets.MeatCleaverSpec
       Arkham.Asset.Assets.MedicalTextsSpec
       Arkham.Asset.Assets.MiguelsKnapsackSpec
       Arkham.Asset.Assets.MitchBrownSpec
@@ -8386,6 +8516,7 @@ test-suite spec
       Arkham.Asset.Assets.SwitchbladeSpec
       Arkham.Asset.Assets.TheBlackCat5Spec
       Arkham.Asset.Assets.TheBlackFan3Spec
+      Arkham.Asset.Assets.TheBookOfWarSunTzusLegacySpec
       Arkham.Asset.Assets.TheGrapevineSpec
       Arkham.Asset.Assets.TheHierophantV3Spec
       Arkham.Asset.Assets.TheHungeringBlade1Spec
@@ -8402,6 +8533,7 @@ test-suite spec
       Arkham.Asset.Assets.ZoeysCrossSpec
       Arkham.Asset.RunnerSpec
       Arkham.Campaign.NightOfTheZealot.ScenariosSpec
+      Arkham.Campaign.OverlaySpec
       Arkham.Campaign.RelicOfAgesSpec
       Arkham.Campaign.ReloadDecksSpec
       Arkham.Campaign.TheCircleUndone.ScenariosSpec
@@ -8426,6 +8558,7 @@ test-suite spec
       Arkham.Enemy.Cards.TheDreamEaters.DarkSideOfTheMoon.MoonBeastSpec
       Arkham.Enemy.Cards.TheDreamEaters.TheSearchForKadath.HordeOfNightSpec
       Arkham.Enemy.Cards.TheDrownedCity.DeepOnes.ElderDeepOneSpec
+      Arkham.Enemy.Cards.TheDrownedCity.StarSpawn.CoralStarSpawnSpec
       Arkham.Enemy.Cards.TheFeastOfHemlockVale.TheTwistedHollow.StalkingHybridSpec
       Arkham.Enemy.Cards.TheInnsmouthConspiracy.IntoTheMaelstrom.DagonsBroodSpec
       Arkham.Enemy.Cards.ThePathToCarcosa.Hauntings.PoltergeistSpec
@@ -8466,6 +8599,7 @@ test-suite spec
       Arkham.Event.Events.HiddenPocketSpec
       Arkham.Event.Events.HotStreak4Spec
       Arkham.Event.Events.IllTakeThatSpec
+      Arkham.Event.Events.JoinTheCaravan1Spec
       Arkham.Event.Events.LieInWaitSpec
       Arkham.Event.Events.LiveAndLearnSpec
       Arkham.Event.Events.LookWhatIFoundSpec
@@ -8500,10 +8634,12 @@ test-suite spec
       Arkham.Game.ChooseDecksSpec
       Arkham.Game.DiffSpec
       Arkham.Game.PendingGameOptionsSpec
+      Arkham.Game.ResetGameSpec
       Arkham.GameSpec
       Arkham.Helpers.EnemySpec
       Arkham.Helpers.InvestigatorSpec
       Arkham.Helpers.QuerySpec
+      Arkham.Homebrew.CircusExMortis.HarmsWaySpec
       Arkham.Homebrew.DarkMatter.Agendas.TheQuantumMaelstromSpec
       Arkham.Homebrew.DarkMatter.FacedownThreatAreaSpec
       Arkham.Homebrew.DarkMatter.Treacheries.ReminiscenceCovenantSpec
@@ -8539,6 +8675,7 @@ test-suite spec
       Arkham.Location.Cards.TheDreamEaters.BeyondTheGatesOfSleep.EnchantedWoodsVillageOfZoogsSpec
       Arkham.Location.Cards.TheInnsmouthConspiracy.FloodedCaverns.UndergroundRiverSpec
       Arkham.Location.TypesSpec
+      Arkham.Matcher.AlternatePrintingSpec
       Arkham.Matcher.CoveredByAnyInPlayEnemySpec
       Arkham.Matcher.LegacyJSONSpec
       Arkham.Matcher.NearestLocationToMostSpec
@@ -8571,6 +8708,7 @@ test-suite spec
       Arkham.Skill.Cards.WatchThisSpec
       Arkham.Story.Cards.UnfinishedBusinessSpec
       Arkham.Story.CardsSpec
+      Arkham.TokenBagSpec
       Arkham.TraitSpec
       Arkham.Treachery.Cards.AbandonedAndAloneSpec
       Arkham.Treachery.Cards.AmnesiaSpec
@@ -8592,6 +8730,7 @@ test-suite spec
       Arkham.Treachery.Cards.RexsCurseSpec
       Arkham.Treachery.Cards.RookieMistakeSpec
       Arkham.Treachery.Cards.SearchingForIzzieSpec
+      Arkham.Treachery.Cards.SelfDestructiveSpec
       Arkham.Treachery.Cards.ShockingDiscoverySpec
       Arkham.Treachery.Cards.SmiteTheWickedAdvancedSpec
       Arkham.Treachery.Cards.SmiteTheWickedSpec

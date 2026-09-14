@@ -23,16 +23,16 @@ instance RunMessage PrisonOfMemories where
 
       chooseOneM iid do
         for_ mBaseCamp \loc ->
-          withI18n $ keyVar "name" "Base Camp" $ labeled' "putSetAsideLocationIntoPlay" $ placeLocation_ loc
+          withI18n $ keyVar "name" "Base Camp" $ labeled "putSetAsideLocationIntoPlay" $ placeLocation_ loc
         for_ mDeckOfTheTheodosia \loc ->
           withI18n
             $ keyVar "name" "Deck of the Theodosia"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
         for_ mUniversityOfHalls \loc ->
           withI18n
             $ keyVar "name" "University Halls"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
 
       pure s

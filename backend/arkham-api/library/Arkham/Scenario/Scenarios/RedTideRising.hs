@@ -223,16 +223,16 @@ instance RunMessage RedTideRising where
 
       photo <- fromGathered1 Assets.mysteriousPhoto
       lift $ chooseOneM wendy $ scenarioI18n do
-        labeled' "mysteriousPhotoSuspects" $ push $ TakeControlOfSetAsideAsset wendy photo
-        labeled' "mysteriousPhotoHideouts" $ push $ TakeControlOfSetAsideAsset wendy (flipCard photo)
+        labeled "mysteriousPhotoSuspects" $ push $ TakeControlOfSetAsideAsset wendy photo
+        labeled "mysteriousPhotoHideouts" $ push $ TakeControlOfSetAsideAsset wendy (flipCard photo)
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       when (token.face == Tablet) do
         cards <- take 1 <$> getLeadsDeck
         unless (null cards) do
           focusCards cards do
             chooseOneM iid $ scenarioI18n do
-              labeled' "shuffleLeadsDeck" shuffleLeadsDeck
-              labeled' "doNotShuffleLeadsDeck" nothing
+              labeled "shuffleLeadsDeck" shuffleLeadsDeck
+              labeled "doNotShuffleLeadsDeck" nothing
       pure s
     FailedSkillTest _ _ _ (ChaosTokenTarget token) _ _ -> do
       when (token.face == ElderThing) do
@@ -301,10 +301,10 @@ mustSwapReward = do
     when (canUpgradeWeakness || canDowngradeAmulet) do
       chooseOrRunOneM wendy do
         when canUpgradeWeakness do
-          labeled' "upgradeAbandonedAndAlone"
+          labeled "upgradeAbandonedAndAlone"
             $ swapCards wendy Treacheries.abandonedAndAlone Treacheries.abandonedAndAloneAdvanced
         when canDowngradeAmulet do
-          labeled' "downgradeWendysAmulet"
+          labeled "downgradeWendysAmulet"
             $ swapCards wendy Assets.wendysAmuletAdvanced Assets.wendysAmulet
 
 maySwapReward :: (HasI18n, ReverseQueue m) => m ()
@@ -316,12 +316,12 @@ maySwapReward = do
     when (canUpgradeAmulet || canDowngradeWeakness) do
       chooseOneM wendy do
         when canUpgradeAmulet do
-          labeled' "upgradeWendysAmulet"
+          labeled "upgradeWendysAmulet"
             $ swapCards wendy Assets.wendysAmulet Assets.wendysAmuletAdvanced
         when canDowngradeWeakness do
-          labeled' "downgradeAbandonedAndAlone"
+          labeled "downgradeAbandonedAndAlone"
             $ swapCards wendy Treacheries.abandonedAndAloneAdvanced Treacheries.abandonedAndAlone
-        labeled' "doNotSwap" nothing
+        labeled "doNotSwap" nothing
 
 ownsCard :: ReverseQueue m => InvestigatorId -> CardDef -> m Bool
 ownsCard iid def = selectAny $ OwnedBy (InvestigatorWithId iid) <> basic (cardIs def)

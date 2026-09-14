@@ -16,7 +16,7 @@ import Arkham.Classes.HasGame
 import Arkham.Difficulty
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
-import Arkham.Helpers.FlavorText (compose, buildFlavor, flavor, h3, p, setTitle)
+import Arkham.Helpers.FlavorText (buildFlavor, compose, flavor, h3, p, setTitle)
 import Arkham.Helpers.Log hiding (getHasRecord, whenHasRecord)
 import Arkham.Helpers.Log qualified as Lift
 import Arkham.Helpers.Query
@@ -383,7 +383,7 @@ instance RunMessage TheDreamEaters where
           | otherwise -> do
               do_ msg
               pure c
-      CampaignStep s@(ScenarioStep _) -> do
+      CampaignStep step | s@(ScenarioStep _) <- step.unwrapScenario -> do
         when (s == BeyondTheGatesOfSleep && WakingNightmare `elem` campaignCompletedSteps attrs) do
           players <- allPlayers
           pushAll
@@ -492,7 +492,7 @@ instance RunMessage TheDreamEaters where
         randolphDidNotSurvive <- getHasRecord TheWebOfDreams RandolphDidNotSurviveTheDescent
 
         when (hasAHunch && randolphDidNotSurvive) do
-          flavor $ campaignTitledGreenFlavorText "where'sBlondie"
+          flavor $ campaignTitledGreenFlavorText "wheresBlondie"
           pushAll
             [ InTheDreamQuest (CrossOutRecord $ toCampaignLogKey TheBlackCatHasAHunch)
             , InTheWebOfDreams (CrossOutRecord $ toCampaignLogKey TheBlackCatHasAHunch)

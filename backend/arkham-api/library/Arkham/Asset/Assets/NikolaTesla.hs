@@ -34,12 +34,12 @@ instance RunMessage NikolaTesla where
       options <- unusedOptions
       chooseOrRunOneM iid $ withI18n do
         when ("clue" `elem` options) do
-          countVar 1 $ labeled' "gainClues" $ handleTarget iid attrs (LabeledTarget "clue" $ toTarget attrs)
+          countVar 1 $ labeled "gainClues" $ handleTarget iid attrs (LabeledTarget "clue" $ toTarget attrs)
         when ("cards" `elem` options) do
-          countVar 2 $ labeled' "drawCards" $ handleTarget iid attrs (LabeledTarget "cards" $ toTarget attrs)
+          countVar 2 $ labeled "drawCards" $ handleTarget iid attrs (LabeledTarget "cards" $ toTarget attrs)
         when ("resources" `elem` options) do
           countVar 3
-            $ labeled' "gainResources"
+            $ labeled "gainResources"
             $ handleTarget iid attrs (LabeledTarget "resources" $ toTarget attrs)
       pure a
     HandleTargetChoice iid (isSource attrs -> True) (LabeledTarget label _) -> do

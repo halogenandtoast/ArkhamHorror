@@ -28,10 +28,10 @@ instance RunMessage Apeirophobia where
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       canPlaceClues <- canPlaceCluesOnYourLocation iid
       chooseOneM iid $ withI18n do
-        countVar n $ labeled' "takeHorrorForEachPointOfFailure" $ assignHorror iid attrs n
+        countVar n $ labeled "takeHorrorForEachPointOfFailure" $ assignHorror iid attrs n
         when canPlaceClues do
-          countVar 2 $ labeled' "placeCluesOnYourLocation" $ placeCluesOnLocation iid attrs 2
+          countVar 2 $ labeled "placeCluesOnYourLocation" $ placeCluesOnLocation iid attrs 2
         whenM hasRemainingFrostTokens do
-          campaignI18n $ scope "apeirophobia" $ labeled' "addFrostToken" $ addChaosToken #frost
+          campaignI18n $ scope "apeirophobia" $ labeled "addFrostToken" $ addChaosToken #frost
       pure t
     _ -> Apeirophobia <$> liftRunMessage msg attrs

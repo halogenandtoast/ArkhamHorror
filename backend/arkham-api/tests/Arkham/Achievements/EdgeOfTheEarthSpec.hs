@@ -268,6 +268,13 @@ spec = describe "Edge of the Earth achievements" $ do
       finishTheCampaign
       progressed `refShouldBe` True
 
+    it "counts a Resolute partner, recorded under their Resolute printing" . gameTest $ \_ -> do
+      asEdgeOfTheEarth
+      survive [Assets.eliyahAshevakDogHandlerResolute]
+      progressed <- didProgressEdgeOfTheEarth ThereAndBackAgain ["EliyahAshevak"]
+      finishTheCampaign
+      progressed `refShouldBe` True
+
     it "reports nothing when nobody survived" . gameTest $ \_ -> do
       asEdgeOfTheEarth
       progressed <- didProgressEdgeOfTheEarth ThereAndBackAgain ["DrAmyKensler"]

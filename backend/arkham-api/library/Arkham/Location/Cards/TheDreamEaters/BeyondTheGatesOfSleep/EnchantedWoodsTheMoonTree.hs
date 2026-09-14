@@ -33,9 +33,9 @@ instance RunMessage EnchantedWoodsTheMoonTree where
       remainingActions <- field InvestigatorRemainingActions iid
       chooseOrRunOneM iid do
         withI18n $ countVar 2 do
-          labeled' "takeHorror" $ push $ assignHorror iid (toAbilitySource attrs 1) 2
+          labeled "takeHorror" $ push $ assignHorror iid (toAbilitySource attrs 1) 2
         when (remainingActions > 0) do
           scenarioI18n $ scope "enchantedWoodsTheMoonTree" do
-            labeled' "loseAllActions" $ push $ SetActions iid (toAbilitySource attrs 1) 0
+            labeled "loseAllActions" $ push $ SetActions iid (toAbilitySource attrs 1) 0
       pure l
     _ -> EnchantedWoodsTheMoonTree <$> liftRunMessage msg attrs

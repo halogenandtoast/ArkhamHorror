@@ -181,8 +181,8 @@ instance RunMessage APhantomOfTruth where
       randomToken <- sample (Cultist :| [Tablet, ElderThing])
       setChaosTokens $ standaloneChaosTokens <> [randomToken, randomToken]
       chooseOneM lead $ popScope do
-        labeled' "conviction" markConviction
-        labeled' "doubt" markDoubt
+        labeled "conviction" markConviction
+        labeled "doubt" markDoubt
       addCampaignCardToDeck lead ShuffleIn theManInThePallidMask
       pure s
     PreScenarioSetup -> scope "intro" do
@@ -255,9 +255,9 @@ instance RunMessage APhantomOfTruth where
         doStep 13 PreScenarioSetup
 
       when (chasingTheStranger > 3) do
-        storyWithChooseOneM' (h "title" >> p "dream10") do
-          labeled' "dream10.dream11" $ doStep 11 PreScenarioSetup
-          labeled' "dream10.dream12" $ doStep 12 PreScenarioSetup
+        storyWithChooseOneM (h "title" >> p "dream10") do
+          labeled "dream10.dream11" $ doStep 11 PreScenarioSetup
+          labeled "dream10.dream12" $ doStep 12 PreScenarioSetup
 
       pure s
     DoStep 1 PreScenarioSetup -> scope "intro" do

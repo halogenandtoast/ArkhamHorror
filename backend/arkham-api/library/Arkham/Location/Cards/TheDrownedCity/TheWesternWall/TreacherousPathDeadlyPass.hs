@@ -15,7 +15,7 @@ newtype TreacherousPathDeadlyPass = TreacherousPathDeadlyPass LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 treacherousPathDeadlyPass :: LocationCard TreacherousPathDeadlyPass
-treacherousPathDeadlyPass = withXShroud $ location TreacherousPathDeadlyPass Cards.treacherousPathDeadlyPass 0 (Static 1)
+treacherousPathDeadlyPass = withXShroud $ location TreacherousPathDeadlyPass Cards.treacherousPathDeadlyPass 0 (PerPlayer 1)
 
 instance HasModifiersFor TreacherousPathDeadlyPass where
   getModifiersFor (TreacherousPathDeadlyPass a) = treacherousPathModifiers a

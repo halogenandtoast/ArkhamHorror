@@ -65,8 +65,8 @@ instance RunMessage ManifestationsOfEvil where
       lead <- getLead
       chooseOneM lead $ cardI18n $ scope "manifestationsOfEvil" do
         whenM hasRemainingFrostTokens do
-          labeled' "addFrost" $ addChaosToken #frost
-        labeled' "shuffleTekelili"
+          labeled "addFrost" $ addChaosToken #frost
+        labeled "shuffleTekelili"
           $ eachInvestigator (`forInvestigator` msg)
       advanceAgendaDeck attrs
       pure a

@@ -16,14 +16,7 @@ joinTheCaravan1 = event JoinTheCaravan1 Cards.joinTheCaravan1
 
 instance HasModifiersFor JoinTheCaravan1 where
   getModifiersFor (JoinTheCaravan1 a) = do
-    n <-
-      calculate
-        ( DifferentClassAmong (HandWith $ HasCard $ CardWithId a.cardId)
-            $ ControlledBy
-            $ HandWith
-            $ HasCard
-            $ CardWithId a.cardId
-        )
+    n <- calculate (DifferentClassAmong (InvestigatorWithId a.owner) $ cardControlledBy a.owner)
     modified_ a a.cardId [ReduceCostOf (CardWithId a.cardId) n]
 
 instance RunMessage JoinTheCaravan1 where

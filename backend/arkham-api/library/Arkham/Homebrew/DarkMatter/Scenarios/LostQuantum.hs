@@ -82,7 +82,7 @@ instance RunMessage LostQuantum where
       setActDeck [Acts.elbrusStation, Acts.quantumZeno]
     DrewCards iid drew | drew.deck == EncounterDeck && null drew.cards -> do
       drewFacedown <- drawRandomFacedownCard iid
-      unless drewFacedown $ push $ InvestigatorDefeated (toSource attrs) iid
+      unless drewFacedown $ investigatorDefeated attrs iid
       pure s
     ResolveChaosToken _ Tablet iid -> do
       drawAnotherChaosToken iid
@@ -107,10 +107,12 @@ instance RunMessage LostQuantum where
                 any
                   ((`elem` attrs.resignedCardCodes) . toCardCode)
                   [Assets.erwinSimmonsQuantumPhysicist, Assets.erwinSimmonsFading]
-          push $ ScenarioResolution $ Resolution $ if erwinResigned then 3 else 1
+          push $ if erwinResigned then R3 else R1
         Resolution 1 -> do
           record TheElbrusStationHasBeenLostInTheQuantumRealm
-          record YouHaveWitnessedThePrimordialChaos
+          -- "If it is not already written" — Crystal Peak can have recorded it.
+          unlessHasRecord YouHaveWitnessedThePrimordialChaos
+            $ record YouHaveWitnessedThePrimordialChaos
           addImpendingDoom 4
           earnXp attrs "resolution1"
         Resolution 2 -> do

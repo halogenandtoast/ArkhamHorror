@@ -37,8 +37,8 @@ instance RunMessage EyesInTheTrees where
 
       chooseOneM iid do
         when cards do
-          withI18n $ countVar n $ labeledI "discardCardsFromHand" $ chooseAndDiscardCards iid attrs n
+          withI18n $ countVar n $ labeled "discardCardsFromHand" $ chooseAndDiscardCards iid attrs n
         when (notNull assets) do
-          scenarioI18n $ labeled' "discardAsset" $ chooseTargetM iid assets $ toDiscardBy iid attrs
+          scenarioI18n $ labeled "discardAsset" $ chooseTargetM iid assets $ toDiscardBy iid attrs
       pure t
     _ -> EyesInTheTrees <$> liftRunMessage msg attrs

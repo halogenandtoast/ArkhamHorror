@@ -34,12 +34,12 @@ instance RunMessage ExpeditionCamp where
       focusCards viewing do
         setScenarioDeck ExplorationDeck rest
         chooseOneM iid $ scenarioI18n do
-          questionLabeled' "expeditionCamp.bottom"
+          questionLabeled "expeditionCamp.bottom"
           for_ cardPairs \(c, remaining) -> targeting c do
             putCardOnBottomOfDeck iid ExplorationDeck c
             focusCards remaining do
               chooseOneAtATimeM iid do
-                questionLabeled' "expeditionCamp.top"
+                questionLabeled "expeditionCamp.top"
                 targets remaining (putCardOnTopOfDeck iid ExplorationDeck)
       pure l
     _ -> ExpeditionCamp <$> liftRunMessage msg attrs

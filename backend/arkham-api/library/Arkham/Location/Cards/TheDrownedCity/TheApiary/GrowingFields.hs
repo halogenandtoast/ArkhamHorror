@@ -12,7 +12,7 @@ newtype GrowingFields = GrowingFields LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 growingFields :: LocationCard GrowingFields
-growingFields = location GrowingFields Cards.growingFields 3 (Static 1)
+growingFields = location GrowingFields Cards.growingFields 3 (PerPlayer 1)
 
 instance HasModifiersFor GrowingFields where
   getModifiersFor (GrowingFields a) =

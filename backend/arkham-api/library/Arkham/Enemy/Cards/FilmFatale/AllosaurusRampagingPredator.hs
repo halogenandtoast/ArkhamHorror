@@ -33,7 +33,7 @@ instance RunMessage AllosaurusRampagingPredator where
         withI18n
           $ numberVar "damage" 1
           $ numberVar "horror" 1
-          $ labeled' "takeDirectDamageAndHorror"
+          $ labeled "takeDirectDamageAndHorror"
           $ directDamageAndHorror iid (attrs.ability 1) 1 1
         scenarioI18n $ labeledValidate' (notNull assets) "allosaurus.option" do
           chooseTargetM iid assets $ assetDefeated (attrs.ability 1)

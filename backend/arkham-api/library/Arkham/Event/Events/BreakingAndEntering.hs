@@ -21,7 +21,12 @@ instance RunMessage BreakingAndEntering where
       skillTestModifier sid attrs iid (AddSkillValue #agility)
       investigate_ sid iid attrs
       pure e
-    PassedThisSkillTestBy iid (isSource attrs -> True) n | n >= 2 -> do
+    PassedThisSkillTestBy _ (isSource attrs -> True) n | n >= 2 -> do
+      skillTestCardOption attrs $ doStep 1 msg
+      pure e
+    -- See CleanSweep2: the enemies are gathered when the option resolves, so the
+    -- investigation's own clue discovery has already had its say.
+    DoStep 1 (PassedThisSkillTest iid (isSource attrs -> True)) -> do
       enemies <- select $ enemyAtLocationWith iid <> EnemyCanBeEvadedBy (toSource attrs)
       concealed <- getConcealedIds (ForExpose $ toSource attrs) iid
       chooseOrRunOneM iid do

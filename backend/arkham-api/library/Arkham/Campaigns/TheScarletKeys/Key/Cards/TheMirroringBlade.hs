@@ -23,7 +23,9 @@ instance HasAbilities TheMirroringBlade where
             [ restricted
                 a
                 1
-                (exists $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource (a.ability 1))
+                ( youExist (InvestigatorWithId iid)
+                    <> exists (EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource (a.ability 1))
+                )
                 $ FastAbility Free
             ]
           Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
@@ -44,9 +46,9 @@ instance RunMessage TheMirroringBlade where
             enemies <-
               select $ EnemyAt (locationWithInvestigator iid) <> EnemyCanBeDamagedBySource (attrs.ability 1)
             chooseOneM iid $ campaignI18n do
-              labeled' "theMirroringBlade.single" do
+              labeled "theMirroringBlade.single" do
                 chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2
-              labeled' "theMirroringBlade.all" do
+              labeled "theMirroringBlade.all" do
                 chooseOneAtATimeM iid do
                   targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
             handleUnstableFlip iid attrs

@@ -53,9 +53,9 @@ instance RunMessage ChildrenOfBlood where
         then do
           flavor $ setTitle "title" >> p "friendsInLowPlaces1"
           doStep 4 msg
-        else storyWithChooseOneM' (setTitle "title" >> p "friendsInLowPlaces1") do
-          labeled' "thankCharlie" $ doStep 2 msg
-          labeled' "inviteCharlie" $ doStep 3 msg
+        else storyWithChooseOneM (setTitle "title" >> p "friendsInLowPlaces1") do
+          labeled "thankCharlie" $ doStep 2 msg
+          labeled "inviteCharlie" $ doStep 3 msg
       nextCampaignStep
       pure c
     DoStep 2 (CampaignStep (InterludeStep 1 _)) -> scope "friendsInLowPlaces" do

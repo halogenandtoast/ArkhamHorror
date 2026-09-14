@@ -14,7 +14,7 @@ newtype ObsidianCliffs = ObsidianCliffs LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 obsidianCliffs :: LocationCard ObsidianCliffs
-obsidianCliffs = location ObsidianCliffs Cards.obsidianCliffs 4 (Static 1)
+obsidianCliffs = location ObsidianCliffs Cards.obsidianCliffs 4 (PerPlayer 1)
 
 instance HasAbilities ObsidianCliffs where
   getAbilities (ObsidianCliffs a) =

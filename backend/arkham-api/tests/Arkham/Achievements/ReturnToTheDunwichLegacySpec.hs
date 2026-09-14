@@ -285,6 +285,19 @@ spec = describe "Return to the Dunwich Legacy achievements" $ do
       killWhippoorwill
       earned `refShouldBe` True
 
+    -- Stir the Pot damaging every enemy at a location has this shape: the
+    -- defeats resolve as branches of one Simultaneously, which used to lose
+    -- all but the first queued counter bump (#5694).
+    it "is earned when the three are defeated simultaneously" . gameTest $ \_ -> do
+      asReturnToTheDunwichLegacy
+      location <- testLocation
+      earned <- didEarnDunwich BirdHunting
+      birds <- replicateM 3 $ testEnemyWithDef Enemies.whippoorwill id
+      for_ birds (`spawnAt` location)
+      run
+        $ Simultaneously [Defeated (toTarget bird) (toCardId bird) (TestSource mempty) [] | bird <- birds]
+      earned `refShouldBe` True
+
     it "resets the count on a turn boundary" . gameTest $ \self -> do
       asReturnToTheDunwichLegacy
       location <- testLocation
@@ -295,6 +308,10 @@ spec = describe "Return to the Dunwich Legacy achievements" $ do
             run $ Defeated (toTarget bird) (toCardId bird) (TestSource mempty) []
       killWhippoorwill
       killWhippoorwill
+      -- A real turn boundary: the turn history (which the count is read off)
+      -- is cleared on `After (EndTurn _)`, not on EndTurn itself.
+      run $ EndTurn (toId self)
+      run $ After $ EndTurn (toId self)
       run $ BeginTurn (toId self)
       killWhippoorwill
       earned `refShouldBe` False

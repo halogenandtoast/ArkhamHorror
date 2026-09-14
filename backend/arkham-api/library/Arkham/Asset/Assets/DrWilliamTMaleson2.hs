@@ -8,6 +8,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Draw.Types
 import Arkham.GameValue
 import Arkham.Helpers.Window (cardDrawnBy)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 
@@ -40,7 +41,7 @@ instance RunMessage DrWilliamTMaleson2 where
       case (drawnCard meta, drewCards.cards) of
         (Just e1, [c2@(EncounterCard e2)]) -> focusCards [EncounterCard e1, c2] do
           chooseOneM iid do
-            questionLabeled "$label.cards.drWilliamTMaleson2.chooseCardToResolve"
+            cardI18n $ questionLabeled "drWilliamTMaleson2.chooseCardToResolve"
             targeting e1 do
               unfocusCards
               push $ AddToEncounterDiscard e2

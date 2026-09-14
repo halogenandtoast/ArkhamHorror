@@ -2,7 +2,7 @@ import * as JsonDecoder from 'ts.data.json'
 import scenarios from '@/arkham/data/scenarios'
 import type { Game } from '@/arkham/types/Game'
 import type { Scenario } from '@/arkham/types/Scenario'
-import { toCamelCase } from '@/arkham/helpers'
+import { imgsrc, toCamelCase } from '@/arkham/helpers'
 import { useI18n } from 'vue-i18n';
 import { scenarioIdToI18n } from '@/arkham/types/Scenario'
 import { ScenarioOptions, defaultScenarioOptions, scenarioOptionsDecoder } from '@/arkham/types/ScenarioOptions';
@@ -374,4 +374,25 @@ export function campaignStepName(game: Game, step: CampaignStep, scenario?: Scen
   }
 
   return "Unknown step: " + step.tag
+}
+
+/** The encounter-set icon for a step that names a scenario, if it names one. */
+export function campaignStepIcon(step: CampaignStep): string | null {
+  const scenarioId = step.tag === 'ScenarioStep'
+    ? step.contents
+    : step.tag === 'ScenarioStepWithOptions'
+      || step.tag === 'StandaloneScenarioStep'
+      || step.tag === 'StandaloneScenarioStepWithOptions'
+      ? step.contents[0]
+      : null
+
+  if (!scenarioId) return null
+
+  const homebrewMatch = scenarioId.match(/^c?:([^:]+):(.+)$/)
+  if (homebrewMatch) {
+    const [, campaignId, setId] = homebrewMatch
+    return imgsrc(`homebrew/${campaignId}/sets/${setId}.png`)
+  }
+
+  return imgsrc(`sets/${scenarioId.replace(/^c/, '')}.png`)
 }

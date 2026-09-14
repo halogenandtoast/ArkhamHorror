@@ -22,9 +22,9 @@ instance RunMessage Prescient where
   runMessage msg (Prescient attrs) = runQueueT $ case msg of
     InvestigatorCommittedSkill iid sid | sid == attrs.id -> do
       chooseOneM iid $ cardI18n $ scope "prescient" do
-        labeled' "even" $ createCardEffect Cards.prescient (Just $ EffectInt 1) attrs iid
-        labeled' "odd" $ createCardEffect Cards.prescient (Just $ EffectInt 2) attrs iid
-        labeled' "symbol" $ createCardEffect Cards.prescient (Just $ EffectInt 3) attrs iid
+        labeled "even" $ createCardEffect Cards.prescient (Just $ EffectInt 1) attrs iid
+        labeled "odd" $ createCardEffect Cards.prescient (Just $ EffectInt 2) attrs iid
+        labeled "symbol" $ createCardEffect Cards.prescient (Just $ EffectInt 3) attrs iid
       Prescient <$> liftRunMessage msg attrs
     _ -> Prescient <$> liftRunMessage msg attrs
 

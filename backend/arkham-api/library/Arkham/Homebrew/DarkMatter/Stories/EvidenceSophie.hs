@@ -24,7 +24,7 @@ newtype EvidenceSophie = EvidenceSophie StoryAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 evidenceSophie :: StoryCard EvidenceSophie
-evidenceSophie = story EvidenceSophie Cards.evidenceSophie
+evidenceSophie = persistStory $ story EvidenceSophie Cards.evidenceSophie
 
 instance HasAbilities EvidenceSophie where
   getAbilities (EvidenceSophie a) =

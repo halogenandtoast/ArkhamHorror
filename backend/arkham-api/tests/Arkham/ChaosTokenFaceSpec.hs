@@ -1,6 +1,7 @@
 module Arkham.ChaosTokenFaceSpec (spec) where
 
 import Arkham.ChaosToken.Types
+import Arkham.Classes.GameLogger (format)
 import Data.Aeson (decode, encode, toJSON)
 import Data.Aeson.Types (Value (String))
 import Test.Hspec
@@ -28,5 +29,7 @@ spec = describe "ChaosTokenFace JSON" do
     decode "\"MoonToken\"" `shouldBe` Just (CustomToken ":circus-ex-mortis:moon")
 
   it "derives display key, format tag, and label from the slug" do
+    let moon = CustomToken ":circus-ex-mortis:moon"
     customTokenKey ":circus-ex-mortis:moon" `shouldBe` "moon"
-    chaosTokenLabel (CustomToken ":circus-ex-mortis:moon") `shouldBe` "Moon"
+    format moon `shouldBe` "{token:\":circus-ex-mortis:moon\"}"
+    chaosTokenLabel moon `shouldBe` "Moon"

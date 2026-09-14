@@ -231,6 +231,9 @@ const achievementsEnabled = defineModel<boolean>('achievementsEnabled', { requir
 
 const effectiveCampaignId = computed<string | null>(() => {
   if (props.gameMode !== 'Campaign') return null
+  // A standalone scenario creates a game with no campaign, and achievement
+  // detection is gated on the campaign, so nothing can be earned.
+  if (fullCampaign.value === 'Standalone') return null
   if (returnTo.value && props.selectedCampaignReturnTo?.id) return props.selectedCampaignReturnTo.id
   return props.chosenCampaignId
 })

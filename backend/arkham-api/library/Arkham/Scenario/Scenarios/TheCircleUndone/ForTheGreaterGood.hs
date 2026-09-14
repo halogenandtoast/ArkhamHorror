@@ -171,7 +171,7 @@ instance RunMessage ForTheGreaterGood where
       neverSeenOrHeardFromAgain <- getHasRecord TheInvestigatorsAreNeverSeenOrHeardFromAgain
 
       flavor do
-        setTitle "title"
+        h "title"
         p "intro1"
         ul do
           li.validate membersOfTheLodge "membersOfTheLodge"
@@ -206,8 +206,8 @@ instance RunMessage ForTheGreaterGood where
       setChaosTokens standaloneChaosTokens
 
       leadChooseOneM do
-        labeled' "members" $ record TheInvestigatorsAreMembersOfTheLodge
-        labeled' "notMembers" nothing
+        labeled "members" $ record TheInvestigatorsAreMembersOfTheLodge
+        labeled "notMembers" nothing
       pure s
     Setup -> runScenarioSetup ForTheGreaterGood attrs $ setupForTheGreaterGood attrs
     ResolveChaosToken _ Cultist iid -> do

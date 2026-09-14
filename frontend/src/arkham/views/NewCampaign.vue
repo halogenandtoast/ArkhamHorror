@@ -300,9 +300,13 @@ fetchDecks().then((result) => {
 })
 
 // The toggle is only rendered for supported campaigns; a stale "off" from a
-// supported selection must not leak into an unsupported one.
+// supported selection must not leak into an unsupported one. A standalone
+// scenario has no campaign at all, and achievements are gated on the campaign,
+// so tracking is off rather than reported as on.
 const achievementsForCreate = (campaignId: string | null) =>
-  campaignId && ACHIEVEMENT_CAMPAIGN_IDS.includes(campaignId) ? achievementsEnabled.value : true
+  campaignId
+    ? ACHIEVEMENT_CAMPAIGN_IDS.includes(campaignId) ? achievementsEnabled.value : true
+    : false
 
 async function start() {
   const enabledRecommendedOptions = Object.entries(recommendedOptionState.value)

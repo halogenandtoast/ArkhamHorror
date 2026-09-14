@@ -13,7 +13,7 @@ newtype BlastedRuinsCrumblingEdifices = BlastedRuinsCrumblingEdifices LocationAt
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 blastedRuinsCrumblingEdifices :: LocationCard BlastedRuinsCrumblingEdifices
-blastedRuinsCrumblingEdifices = location BlastedRuinsCrumblingEdifices Cards.blastedRuinsCrumblingEdifices 2 (Static 1)
+blastedRuinsCrumblingEdifices = location BlastedRuinsCrumblingEdifices Cards.blastedRuinsCrumblingEdifices 2 (PerPlayer 1)
 
 instance HasAbilities BlastedRuinsCrumblingEdifices where
   getAbilities (BlastedRuinsCrumblingEdifices a) =

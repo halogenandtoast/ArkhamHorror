@@ -39,8 +39,8 @@ instance RunMessage ExpeditionCamp where
       explorationDeck <- getExplorationDeck
       campaignI18n $ chooseOrRunOneM iid do
         when (notNull explorationDeck) do
-          labeled' "lookAtExplorationDeck" $ doStep 1 msg
-        labeled' "lookAtEncounterDeck" $ doStep 2 msg
+          labeled "lookAtExplorationDeck" $ doStep 1 msg
+        labeled "lookAtEncounterDeck" $ doStep 2 msg
       pure l
     DoStep step (PassedThisSkillTestBy iid (isAbilitySource attrs 1 -> True) n) -> do
       (cards, deck) <-
@@ -49,7 +49,7 @@ instance RunMessage ExpeditionCamp where
           else (,Deck.EncounterDeck) . map toCard . take n . unDeck <$> getEncounterDeck
       focusCards cards do
         push $ ShuffleCardsIntoTopOfDeck deck (length cards) []
-        withI18n $ chooseUpToNM' iid 2 "done" do
+        withI18n $ chooseUpToNM iid 2 "done" do
           targets cards \card -> push $ PutCardOnBottomOfDeck iid deck card
       pure l
     _ -> ExpeditionCamp <$> liftRunMessage msg attrs

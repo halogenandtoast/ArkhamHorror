@@ -40,12 +40,12 @@ instance RunMessage DeadlyMechanisms where
 
       chooseNM iid numChoices $ scenarioI18n do
         unless (null nearestVault) do
-          labeled' "deadlyMechanisms.deactivate" do
+          labeled "deadlyMechanisms.deactivate" do
             chooseTargetM iid nearestVault $ deactivateLocation attrs
         unless (null attendants) do
-          labeled' "deadlyMechanisms.drawAttendant" $ for_ (take 1 attendants) (drawCard iid)
+          labeled "deadlyMechanisms.drawAttendant" $ for_ (take 1 attendants) (drawCard iid)
         unless (null adjacent) do
-          labeled' "deadlyMechanisms.move" do
+          labeled "deadlyMechanisms.move" do
             chooseTargetM iid adjacent $ moveTo attrs iid
       pure t
     _ -> DeadlyMechanisms <$> liftRunMessage msg attrs

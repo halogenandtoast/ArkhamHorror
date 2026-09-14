@@ -1,10 +1,8 @@
 module Arkham.Homebrew.DarkMatter.Agendas.TheThingFromEarth (theThingFromEarth) where
 
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Window (assetLeavingPlay)
 import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Cards
-import Arkham.Homebrew.DarkMatter.Helpers (scanTopOfScanningDeck, scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (scanTopOfScanningDeck)
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.MotionScanning
 import Arkham.Message.Lifted.Log
@@ -27,8 +25,9 @@ instance RunMessage TheThingFromEarth where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       scanTopOfScanningDeck iid (attrs.ability 1)
       pure a
-    UseCardAbility _ (isSource attrs -> True) 2 (assetLeavingPlay -> aid) _ -> do
-      push $ RemoveFromGame (AssetTarget aid)
+    UseCardAbility _ (isSource attrs -> True) 2 ws _ -> do
+      let aid = crewLeavingPlay ws
+      insteadOfLosingCrew ws aid $ RemoveFromGame (AssetTarget aid)
       pure a
     {- Agenda 2b, "The Lost":
 
@@ -40,8 +39,6 @@ instance RunMessage TheThingFromEarth where
     'advanceAgendaDeckAfterSkillTest' holds the advancement until the last test
     has resolved. -}
     AdvanceAgenda (isSide B attrs -> True) -> do
-      scenarioI18n "inTheShadowOfEarth" $ scope "agenda2b" do
-        flavor $ setTitle "title" >> p "body"
       eachInvestigator \iid -> do
         sid <- getRandom
         beginSkillTest sid iid attrs iid #willpower (Fixed 3)

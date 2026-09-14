@@ -35,8 +35,8 @@ instance RunMessage RiverDocksFuture where
   runMessage msg l@(RiverDocksFuture attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ withI18n do
-        countVar 4 $ labeled' "gainResources" $ gainResources iid (attrs.ability 1) 4
-        countVar 1 $ labeled' "gainClues" $ gainClues iid (attrs.ability 1) 1
+        countVar 4 $ labeled "gainResources" $ gainResources iid (attrs.ability 1) 4
+        countVar 1 $ labeled "gainClues" $ gainClues iid (attrs.ability 1) 1
       pure l
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       docks <- selectOne $ locationIs Cards.riverDocksPresent

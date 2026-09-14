@@ -145,6 +145,7 @@ iconsForCard c@(PlayerCard MkPlayerCard {..}) = do
   apply (RemoveSkillIcons xs) ys = ys \\ xs
   apply _ ys = ys
   applyAfter DoubleSkillIcons ys = ys <> ys
+  applyAfter (DoubleSkillIconsOf icons) ys = ys <> filter (`elem` icons) ys
   applyAfter _ ys = ys
 iconsForCard _ = pure []
 

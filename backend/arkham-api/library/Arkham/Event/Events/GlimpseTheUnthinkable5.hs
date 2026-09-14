@@ -2,6 +2,7 @@ module Arkham.Event.Events.GlimpseTheUnthinkable5 (glimpseTheUnthinkable5) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
 import Arkham.Projection
@@ -19,7 +20,7 @@ instance RunMessage GlimpseTheUnthinkable5 where
   runMessage msg e@(GlimpseTheUnthinkable5 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       cards <- select $ inHandOf NotForPlay iid <> basic NonWeakness
-      chooseAmount iid "Choose number of cards to discard" "$cards" 0 (length cards) attrs
+      withI18n $ chooseAmount iid "chooseNumberOfCardsToDiscard" "$cards" 0 (length cards) attrs
       doStep 1 msg
       pure e
     ResolveAmounts iid choices (isTarget attrs -> True) -> do

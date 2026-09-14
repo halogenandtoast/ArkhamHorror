@@ -41,8 +41,8 @@ instance RunMessage CityOfTheDeepV2 where
         then do
           lead <- getLead
           chooseOneM lead $ scenarioI18n $ scope "cityOfTheDeep" do
-            labeled' "continuePlaying" nothing
-            labeled' "proceedToR1" $ push R1
+            labeled "continuePlaying" nothing
+            labeled "proceedToR1" $ push R1
         else push R1
       pure a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

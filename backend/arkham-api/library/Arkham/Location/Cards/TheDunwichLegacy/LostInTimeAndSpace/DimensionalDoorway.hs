@@ -35,7 +35,7 @@ instance RunMessage DimensionalDoorway where
       resourceCount <- getSpendableResources iid
       chooseOrRunOneM iid do
         when (resourceCount >= 2) do
-          withI18n $ countVar 2 $ labeled' "spendResources" $ spendResources iid 2
-        scenarioI18n $ labeled' "dimensionalDoorway.shuffle" $ shuffleBackIntoEncounterDeck attrs
+          withI18n $ countVar 2 $ labeled "spendResources" $ spendResources iid 2
+        scenarioI18n $ labeled "dimensionalDoorway.shuffle" $ shuffleBackIntoEncounterDeck attrs
       pure l
     _ -> DimensionalDoorway <$> liftRunMessage msg attrs

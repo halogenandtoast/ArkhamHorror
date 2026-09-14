@@ -31,6 +31,8 @@ data DarkMatterKey
   | TheNostalgiaIIHasBeenSaved
   | YouCouldntSaveTheCrewOfTheNostalgiaII
   | AllInvestigatorsHaveBeenCorruptedByTheEarth
+  | -- | recorded by act 3b; Ritual of the Sun reads it back
+    YouHaveWitnessedTheManifestedMadness
   | -- | recorded per investigator, by agenda 2b
     HasBeenCorruptedByTheEarth
   | -- | Scenario IIIc: Strange Moons
@@ -38,8 +40,6 @@ data DarkMatterKey
   | YouAreAlliedWithTheMiGo
   | YouHaveUncoveredTheCultistsInhumanMethods
   | YouHaveWitnessedTheUnconsciousPandemonium
-  | -- | Scenario VI: The Machine in Yellow
-    YouHaveWitnessedTheManifestedMadness
   | -- | Scenario V: Fragment of Carcosa
     TheInvestigatorsAreTrappedWithinCarcosa
   | TheInvestigatorsKnowOfTheAbjurationOfTheThrone

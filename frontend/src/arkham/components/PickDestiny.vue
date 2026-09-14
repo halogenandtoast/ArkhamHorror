@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { PickDestiny, DestinyDrawing  } from '@/arkham/types/Question';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import { useI18n } from 'vue-i18n';
+import { campaignIdToI18n } from '@/arkham/types/Scenario';
 import { tarotCardImage } from '@/arkham/types/TarotCard';
 import { setDestiny } from '@/arkham/api';
 
@@ -12,9 +13,25 @@ const props = defineProps<{
   question: PickDestiny,
   playerId: string
 }>()
-const { t } = useI18n()
+const { t, te } = useI18n()
 const valid = ref(false)
 const drawings = ref(props.question.drawings)
+
+// Campaign-scoped scenario names (homebrew locales only merge under their
+// campaign scope) fall back to the global `destiny` block.
+const campaignScope = computed(() => {
+  const id = props.game.campaign?.id
+  return id ? campaignIdToI18n(id) : null
+})
+
+// Bracketed: a drawing's scenario is the backend's derived scenario scope, which
+// may contain an apostrophe (harm'sWay), and vue-i18n only parses those in
+// double-quoted bracket notation.
+const destinyLabel = (scenario: string) => {
+  const leaf = `destiny["${scenario}"]`
+  const scoped = campaignScope.value ? `${campaignScope.value}.${leaf}` : null
+  return scoped && te(scoped) ? t(scoped) : t(leaf)
+}
 
 const submit = async () => await setDestiny(props.game.id, drawings.value)
 
@@ -42,7 +59,7 @@ watch(drawings, () => {
 
       <div class="tarot-rows">
         <div v-for="drawing in drawings" :key="drawing.scenario" class="tarot-row">
-          <h2>{{t(`destiny.${drawing.scenario}`)}}</h2>
+          <h2>{{destinyLabel(drawing.scenario)}}</h2>
           {{t(`tarot.${drawing.tarot.arcana}`)}}
           <img :src="imgsrc(`tarot/${tarotCardImage(drawing.tarot)}`)" @click="rotate(drawing.scenario)" class="tarot-card" :class="{ [drawing.tarot.facing]: true}" />
         </div>

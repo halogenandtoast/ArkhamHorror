@@ -78,8 +78,8 @@ instance RunMessage Decoy where
             NonEliteEnemy
       if enemyCount == 2 && length enemies > 1
         then chooseOneM iid do
-          withI18n $ countVar 1 $ labeled' "evadeEnemies" handleOne
-          withI18n $ countVar 2 $ labeled' "evadeEnemies" do
+          withI18n $ countVar 1 $ labeled "evadeEnemies" handleOne
+          withI18n $ countVar 2 $ labeled "evadeEnemies" do
             chooseAutomaticallyEvadeNAt
               iid
               attrs

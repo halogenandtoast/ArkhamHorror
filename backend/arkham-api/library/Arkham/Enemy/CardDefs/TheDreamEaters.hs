@@ -6,19 +6,21 @@ import Arkham.Keyword qualified as Keyword
 
 tonysQuarry :: CardDef
 tonysQuarry =
-  (weakness "06012" "Tony's Quarry")
-    { cdHealthDamage = healthDamage 1
-    , cdSanityDamage = sanityDamage 2
-    , cdFight = fight 4
-    , cdEvade = evade 1
-    , cdHealth = health 3
-    , cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
-    , cdKeywords = setFromList [Keyword.Aloof]
-    }
+  signature "06003"
+    $ (weakness "06012" "Tony's Quarry")
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 2
+      , cdFight = fight 4
+      , cdEvade = evade 1
+      , cdHealth = health 3
+      , cdCardTraits = setFromList [Humanoid, Monster, DeepOne]
+      , cdKeywords = setFromList [Keyword.Aloof]
+      }
 
 watcherFromAnotherDimension :: CardDef
 watcherFromAnotherDimension =
-  unique
+  signature "06005"
+    $ unique
     $ (weakness "06017" "Watcher from Another Dimension")
       { cdHealthDamage = healthDamage 3
       , cdFight = fight 5

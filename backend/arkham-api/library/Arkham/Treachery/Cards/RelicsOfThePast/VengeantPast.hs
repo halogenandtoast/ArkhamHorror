@@ -28,10 +28,10 @@ instance RunMessage VengeantPast where
         for_ mController \controller -> do
           name <- field AssetName asset
           chooseOneM iid $ scenarioI18n $ nameVar name do
-            questionLabeled' "vengeantPast.question"
-            labeled' "vengeantPast.dealDamage" $ assignDamage controller attrs 1
-            labeled' "vengeantPast.dealHorror" $ assignHorror controller attrs 1
-            labeled' "vengeantPast.shuffleAsset"
+            questionLabeled "vengeantPast.question"
+            labeled "vengeantPast.dealDamage" $ assignDamage controller attrs 1
+            labeled "vengeantPast.dealHorror" $ assignHorror controller attrs 1
+            labeled "vengeantPast.shuffleAsset"
               $ shuffleIntoDeck (Deck.ScenarioDeckByKey ExplorationDeck) asset
       shuffleIntoDeck (Deck.ScenarioDeckByKey ExplorationDeck) attrs
       pure t

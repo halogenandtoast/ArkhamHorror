@@ -16,7 +16,7 @@ newtype TreacherousPathPrecariousClimb = TreacherousPathPrecariousClimb Location
 treacherousPathPrecariousClimb :: LocationCard TreacherousPathPrecariousClimb
 treacherousPathPrecariousClimb =
   withXShroud
-    $ location TreacherousPathPrecariousClimb Cards.treacherousPathPrecariousClimb 0 (Static 1)
+    $ location TreacherousPathPrecariousClimb Cards.treacherousPathPrecariousClimb 0 (PerPlayer 1)
 
 instance HasModifiersFor TreacherousPathPrecariousClimb where
   getModifiersFor (TreacherousPathPrecariousClimb a) = treacherousPathModifiers a

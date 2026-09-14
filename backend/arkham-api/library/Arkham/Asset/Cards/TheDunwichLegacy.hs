@@ -223,6 +223,7 @@ adaptable1 =
     $ (asset "02110" "Adaptable" 0 Rogue)
       { cdCardTraits = setFromList [Talent]
       , cdLevel = Just 1
+      , cdTags = [noGameplayEffectTag]
       }
 
 songOfTheDead2 :: CardDef
@@ -335,6 +336,7 @@ relicHunter3 =
       { cdCardTraits = singleton Talent
       , cdLevel = Just 3
       , cdAlternateCardCodes = ["01695", "12096"]
+      , cdTags = [setupOnlyTag]
       }
 
 charisma3 :: CardDef
@@ -344,6 +346,7 @@ charisma3 =
       { cdCardTraits = singleton Talent
       , cdLevel = Just 3
       , cdAlternateCardCodes = ["01694", "12095"]
+      , cdTags = [setupOnlyTag]
       }
 
 helplessPassenger :: CardDef

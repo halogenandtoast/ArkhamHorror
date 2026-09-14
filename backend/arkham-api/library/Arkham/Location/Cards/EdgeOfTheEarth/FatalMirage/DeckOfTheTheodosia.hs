@@ -43,10 +43,10 @@ instance RunMessage DeckOfTheTheodosia where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       actions <- field InvestigatorRemainingActions iid
       chooseOneM iid $ scenarioI18n $ scope "deckOfTheTheodosia" do
-        labeled' "addShroud" do
+        labeled "addShroud" do
           withSkillTest \sid ->
             skillTestModifier sid (attrs.ability 2) attrs (ShroudModifier 2)
         when (actions > 0) do
-          labeled' "spendAdditionalAction" $ loseActions iid (attrs.ability 2) 1
+          labeled "spendAdditionalAction" $ loseActions iid (attrs.ability 2) 1
       pure l
     _ -> DeckOfTheTheodosia <$> mirageRunner Stories.deckOfTheTheodosia mirageCards 1 msg attrs

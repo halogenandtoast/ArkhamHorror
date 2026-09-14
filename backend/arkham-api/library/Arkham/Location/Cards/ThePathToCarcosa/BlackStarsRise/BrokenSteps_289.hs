@@ -31,8 +31,8 @@ instance RunMessage BrokenSteps_289 where
       omens <- filterCards (CardWithTrait Omen <> #treachery) <$> scenarioField ScenarioDiscard
       chooseOneM iid do
         when canLoseActions do
-          withI18n $ countVar 1 $ labeled' "loseActions" $ loseActions iid (attrs.ability 1) 1
+          withI18n $ countVar 1 $ labeled "loseActions" $ loseActions iid (attrs.ability 1) 1
         for_ (take 1 omens) \c ->
-          scenarioI18n $ labeled' "brokenSteps.omen" $ findAndDrawEncounterCard iid (CardWithId c.id)
+          scenarioI18n $ labeled "brokenSteps.omen" $ findAndDrawEncounterCard iid (CardWithId c.id)
       pure l
     _ -> BrokenSteps_289 <$> liftRunMessage msg attrs

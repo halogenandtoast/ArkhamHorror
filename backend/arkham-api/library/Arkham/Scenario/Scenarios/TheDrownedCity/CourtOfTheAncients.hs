@@ -58,8 +58,8 @@ instance RunMessage CourtOfTheAncients where
   runMessage msg s@(CourtOfTheAncients attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      storyWithContinue' do
-        setTitle "title"
+      storyWithContinue do
+        h "title"
         p.basic "checkCampaignLog"
         ul do
           li.validate headedWest "headedWest"
@@ -88,7 +88,7 @@ instance RunMessage CourtOfTheAncients where
 
       for_ withPlumbTheDepths \iid -> do
         canErase <- canEraseProgress iid Key.PlumbTheDepths
-        storyWithChooseOneM'
+        storyWithChooseOneM
           ( compose.green do
               h3 "plumbTheDepths.title"
               p "plumbTheDepths.instructions"
@@ -110,7 +110,7 @@ instance RunMessage CourtOfTheAncients where
             labeledValidate' canErase "plumbTheDepths.lookAway" do
               decrementRecordCountForInvestigator iid Key.PlumbTheDepths 1
               for_ investigators \iid' -> setupModifier attrs iid' (StartingClues 1)
-            labeled' "plumbTheDepths.seekTheTruth" do
+            labeled "plumbTheDepths.seekTheTruth" do
               incrementRecordCountForInvestigator iid Key.PlumbTheDepths 2
               sufferMentalTrauma iid 1
               for_ investigators \iid' -> setupModifier attrs iid' (StartingHand (-1))
@@ -233,10 +233,11 @@ instance RunMessage CourtOfTheAncients where
       eachInvestigator (`forInvestigator` Setup)
     ForInvestigator iid Setup -> do
       artifacts <- getAvailableArtifacts
+      items <- getAvailableExpeditionItems
       chooseOneM iid do
-        questionLabeled' "chooseExpeditionAssetQuestion"
-        labeled' "noExpeditionAsset" nothing
-        for_ (artifacts <> expeditionItems) \asset ->
+        questionLabeled "chooseExpeditionAssetQuestion"
+        labeled "noExpeditionAsset" nothing
+        for_ (artifacts <> items) \asset ->
           cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do

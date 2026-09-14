@@ -4,7 +4,7 @@ import { ref, computed } from 'vue';
 import { Investigator } from '@/arkham/types/Investigator';
 import Card from '@/arkham/components/Card.vue'
 import DeckList from '@/arkham/components/DeckList.vue'
-import {imgsrc} from '@/arkham/helpers'
+import { investigatorPortrait } from '@/arkham/cardImages'
 import { useDbCardStore } from '@/stores/dbCards'
 import { asCardCode } from '@/arkham/types/Card';
 import type { CardContents } from '@/arkham/types/Card';
@@ -14,15 +14,22 @@ export interface Props {
   game: Arkham.Game
   bonusXp?: number | null;
   showExpand?: boolean;
+  /** Fade the portrait and stats: an investigator who is not in the campaign right now. */
+  dimmed?: boolean;
 }
 
 const store = useDbCardStore()
 const props = withDefaults(defineProps<Props>(), {
   bonusXp: null,
   showExpand: true,
+  dimmed: false,
 })
 
 const expanded = ref(false)
+
+// An investigator you built carries its own portrait; there is nothing for it
+// under the portrait directory.
+const portrait = computed(() => investigatorPortrait(props.game, props.investigator.id))
 
 const storyCards = computed(() => {
   const fromMeta = props.game.campaign?.meta?.otherCampaignAttrs?.storyCards[props.investigator.id]
@@ -91,13 +98,14 @@ const deck = computed(() => {
 </script>
 
 <template>
-  <div class="investigator" :class="investigator.class.toLowerCase()">
+  <div class="investigator" :class="[investigator.class.toLowerCase(), { dimmed }]">
     <div class="basic">
       <div class="basic-top">
         <div class="portrait-wrap" :class="investigator.class.toLowerCase()">
-          <img :src="imgsrc(`portraits/${investigator.id.replace('c', '')}.jpg`)" class="investigator-portrait"/>
+          <img :src="portrait" class="investigator-portrait"/>
         </div>
         <span class="name">{{ getInvestigatorName(investigator.name.title) }}</span>
+        <slot name="actions" :investigator="props.investigator" />
         <slot name="back" :investigator="props.investigator">
           <button v-if="showExpand" class="expand-btn" @click="expanded = !expanded" :aria-label="expanded ? $t('investigatorRow.collapse') : $t('investigatorRow.expand')">
             <svg class="icon icon-expand" :class="{ expanded }"><use xlink:href="#icon-right-arrow"></use></svg>
@@ -143,16 +151,43 @@ const deck = computed(() => {
 /* ── Container ───────────────────────────────────────────── */
 
 .investigator {
+  /* Routed through custom properties so `dimmed` can derive darker, duller
+     versions with oklch(from ...) instead of repeating a rule per class. */
+  --row-class-color: var(--neutral);
+  --row-bg: var(--neutral-extra-dark);
+  --row-accent: var(--row-class-color);
+  --row-text: #f0f0f0;
+
   min-width: 80%;
   border-radius: 10px;
   overflow: hidden;
+  background: var(--row-bg);
 
-  &.guardian { background: var(--guardian-extra-dark); }
-  &.seeker   { background: var(--seeker-extra-dark); }
-  &.rogue    { background: var(--rogue-extra-dark); }
-  &.mystic   { background: var(--mystic-extra-dark); }
-  &.survivor { background: var(--survivor-extra-dark); }
-  &.neutral  { background: var(--neutral-extra-dark); }
+  &.guardian { --row-class-color: var(--guardian); --row-bg: var(--guardian-extra-dark); }
+  &.seeker   { --row-class-color: var(--seeker);   --row-bg: var(--seeker-extra-dark); }
+  &.rogue    { --row-class-color: var(--rogue);    --row-bg: var(--rogue-extra-dark); }
+  &.mystic   { --row-class-color: var(--mystic);   --row-bg: var(--mystic-extra-dark); }
+  &.survivor { --row-class-color: var(--survivor); --row-bg: var(--survivor-extra-dark); }
+  &.neutral  { --row-class-color: var(--neutral);  --row-bg: var(--neutral-extra-dark); }
+}
+
+/* An investigator who is not in the campaign right now: darker and duller, but
+   still readable. Only the identity and stats fade -- an opacity on the whole
+   row would take the actions slot with it and nothing could restore it. */
+.investigator.dimmed {
+  --row-bg: oklch(from var(--row-class-color) calc(l - 0.3) calc(c * 0.25) h);
+  --row-accent: oklch(from var(--row-class-color) calc(l - 0.2) calc(c * 0.35) h);
+  --row-text: oklch(from #f0f0f0 calc(l - 0.3) c h);
+}
+
+.investigator.dimmed .name,
+.investigator.dimmed .basic-bottom {
+  color: var(--row-text);
+  opacity: 0.75;
+}
+
+.investigator.dimmed .investigator-portrait {
+  filter: brightness(0.55) saturate(0.45);
 }
 
 /* ── Basic row ───────────────────────────────────────────── */
@@ -190,12 +225,7 @@ const deck = computed(() => {
   box-shadow: 0 2px 8px rgba(0,0,0,0.5);
   border: 2px solid transparent;
 
-  &.guardian { border-color: var(--guardian); }
-  &.seeker   { border-color: var(--seeker); }
-  &.rogue    { border-color: var(--rogue); }
-  &.mystic   { border-color: var(--mystic); }
-  &.survivor { border-color: var(--survivor); }
-  &.neutral  { border-color: var(--neutral); }
+  border-color: var(--row-accent);
 }
 
 .investigator-portrait {

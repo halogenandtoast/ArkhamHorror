@@ -13,18 +13,15 @@ newtype SmokeAndMirrors = SmokeAndMirrors ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 smokeAndMirrors :: ActCard SmokeAndMirrors
-smokeAndMirrors =
-  act (2, A) SmokeAndMirrors Cards.smokeAndMirrors Nothing
+smokeAndMirrors = act (2, A) SmokeAndMirrors Cards.smokeAndMirrors Nothing
 
 instance HasAbilities SmokeAndMirrors where
   getAbilities (SmokeAndMirrors x) =
     [ playerLimit PerRound
         $ restricted x 1 (youExist hasSealedMoonToken)
         $ actionAbilityWithCost (HandDiscardCost 1 #any)
-    , restricted
-        x
-        2
-        (exists $ assetIs Assets.illusoryLocus <> AssetWithClues (AtLeast $ PerPlayer 2))
+    , onlyOnce
+        $ restricted x 2 (exists $ assetIs Assets.illusoryLocus <> AssetWithClues (AtLeast $ PerPlayer 2))
         $ Objective
         $ forced AnyWindow
     ]

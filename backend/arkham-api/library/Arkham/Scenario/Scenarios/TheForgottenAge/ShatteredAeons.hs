@@ -192,7 +192,7 @@ instance RunMessage ShatteredAeons where
     PreScenarioSetup -> scope "intro" do
       braziersLit <- getHasRecord TheBraziersAreLit
       flavor do
-        setTitle "title"
+        h "title"
         p.basic.validate braziersLit "theBraziersAreLit"
         p.basic.validate (not braziersLit) "theBraziersRemainUnlit"
       doStep (if braziersLit then 1 else 2) PreScenarioSetup
@@ -226,17 +226,17 @@ instance RunMessage ShatteredAeons where
       setChaosTokens standaloneChaosTokens
       lead <- getLead
       chooseOneM lead do
-        labeled' "standaloneIchtacaSetAgainst" do
+        labeled "standaloneIchtacaSetAgainst" do
           record IchtacaIsSetAgainstYou
           addChaosToken Tablet
           addChaosToken Tablet
           addChaosToken Tablet
-        labeled' "standaloneAlejandroSetAgainst" do
+        labeled "standaloneAlejandroSetAgainst" do
           record AlejandroIsSetAgainstYou
           addChaosToken Cultist
           addChaosToken Cultist
           addChaosToken Cultist
-        labeled' "standaloneBothSetAgainst" do
+        labeled "standaloneBothSetAgainst" do
           record IchtacaIsSetAgainstYou
           record AlejandroIsSetAgainstYou
           addChaosToken ElderThing

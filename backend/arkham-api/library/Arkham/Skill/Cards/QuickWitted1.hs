@@ -29,9 +29,9 @@ instance RunMessage QuickWitted1 where
             <> basic (cardIs Cards.quickWitted1 <> not_ (CardWithId attrs.cardId))
         unless (null others) do
           chooseOneM attrs.owner $ cardI18n $ scope "quickWitted1" do
-            labeled' "shuffleOthers"
+            labeled "shuffleOthers"
               $ shuffleCardsIntoDeck attrs.owner others
-            labeled' "doNotShuffleAny" nothing
+            labeled "doNotShuffleAny" nothing
         pure s
      in
       runQueueT $ case msg of

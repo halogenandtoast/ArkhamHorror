@@ -4,24 +4,27 @@ import Arkham.Treachery.CardDefs.Import
 
 coverUp :: CardDef
 coverUp =
-  (weakness "01007" "Cover Up")
-    { cdCardTraits = setFromList [Task]
-    , cdAlternateCardCodes = ["01507"]
-    }
+  signature "01001"
+    $ (weakness "01007" "Cover Up")
+      { cdCardTraits = setFromList [Task]
+      , cdAlternateCardCodes = ["01507"]
+      }
 
 hospitalDebts :: CardDef
 hospitalDebts =
-  (weakness "01011" "Hospital Debts")
-    { cdCardTraits = setFromList [Task]
-    , cdAlternateCardCodes = ["01511"]
-    }
+  signature "01003"
+    $ (weakness "01011" "Hospital Debts")
+      { cdCardTraits = setFromList [Task]
+      , cdAlternateCardCodes = ["01511"]
+      }
 
 abandonedAndAlone :: CardDef
 abandonedAndAlone =
-  (weakness "01015" "Abandoned and Alone")
-    { cdCardTraits = setFromList [Madness]
-    , cdAlternateCardCodes = ["01515"]
-    }
+  signature "01005"
+    $ (weakness "01015" "Abandoned and Alone")
+      { cdCardTraits = setFromList [Madness]
+      , cdAlternateCardCodes = ["01515"]
+      }
 
 amnesia :: CardDef
 amnesia =

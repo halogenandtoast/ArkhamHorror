@@ -43,8 +43,8 @@ instance RunMessage TheEyeOfChaos where
         let investigatorsWithNyarlathotep = [iid | (_, HiddenInHand iid) <- nyarlathoteps]
         selectEach (not_ $ mapOneOf InvestigatorWithId investigatorsWithNyarlathotep) \iid -> do
           chooseOneM iid $ withI18n $ countVar 1 do
-            labeled' "takeDamage" $ assignDamage iid attrs 1
-            labeled' "takeHorror" $ assignHorror iid attrs 1
+            labeled "takeDamage" $ assignDamage iid attrs 1
+            labeled "takeHorror" $ assignHorror iid attrs 1
 
         for_ nyarlathoteps \(nyarlathotep, p) -> do
           case p of
@@ -52,13 +52,13 @@ instance RunMessage TheEyeOfChaos where
               card <- field EnemyCard nyarlathotep
               focusCard card do
                 chooseOneM iid $ scenarioI18n $ scope "theEyeOfChaos" do
-                  questionLabeled' "choose"
+                  questionLabeled "choose"
                   questionLabeledCard card
-                  labeled' "nyarlathotepAttackOnce" do
+                  labeled "nyarlathotepAttackOnce" do
                     unfocusCards
                     initiateEnemyAttack nyarlathotep attrs iid
                     shuffleBackIntoEncounterDeck nyarlathotep
-                  labeled' "nyarlathotepAttackThrice" do
+                  labeled "nyarlathotepAttackThrice" do
                     unfocusCards
                     initiateEnemyAttack nyarlathotep attrs iid
                     initiateEnemyAttack nyarlathotep attrs iid

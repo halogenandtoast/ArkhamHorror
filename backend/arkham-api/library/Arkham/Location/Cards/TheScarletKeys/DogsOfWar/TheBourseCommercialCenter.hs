@@ -30,10 +30,10 @@ instance RunMessage TheBourseCommercialCenter where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
       chooseOneM iid $ scenarioI18n do
-        labeled' "theBourse.reduceDifficulty" do
+        labeled "theBourse.reduceDifficulty" do
           skillTestModifier sid (attrs.ability 1) sid (Difficulty (-2))
           doStep 1 msg
-        labeled' "theBourse.doNotReduce" nothing
+        labeled "theBourse.doNotReduce" nothing
       investigate_ sid iid (attrs.ability 1)
       pure $ TheBourseCommercialCenter $ attrs & setMeta False
     DoStep 1 (UseThisAbility _iid (isSource attrs -> True) 1) -> do

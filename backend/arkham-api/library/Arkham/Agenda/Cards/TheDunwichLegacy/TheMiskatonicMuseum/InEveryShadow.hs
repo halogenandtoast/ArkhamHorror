@@ -19,7 +19,7 @@ instance HasAbilities InEveryShadow where
     [ groupLimit PerTestOrAbility
         $ mkAbility x 1
         $ forced
-        $ EnemySpawns #when Anywhere
+        $ EnemySpawns #when AnyPlacement
         $ enemyIs Enemies.huntingHorror
     ]
 

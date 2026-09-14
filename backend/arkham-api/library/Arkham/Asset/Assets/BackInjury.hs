@@ -28,10 +28,10 @@ instance RunMessage BackInjury where
   runMessage msg t@(BackInjury attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOrRunOneM iid do
-        (cardI18n $ labeled' "backInjury.putBackInjuryIntoPlayInYourThreatArea") do
+        (cardI18n $ labeled "backInjury.putBackInjuryIntoPlayInYourThreatArea") do
           putCardIntoPlay iid attrs
         whenM (lift $ can.shuffle.deck iid) do
-          (cardI18n $ labeled' "backInjury.take1DamageAndShuffleItIntoYourDeck") do
+          (cardI18n $ labeled "backInjury.take1DamageAndShuffleItIntoYourDeck") do
             assignDamage iid attrs 1
             shuffleIntoDeck iid attrs
       pure t

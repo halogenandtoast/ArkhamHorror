@@ -18,7 +18,7 @@ nkosiMabatiEnigmaticWarlock3 = ally NkosiMabatiEnigmaticWarlock3 Cards.nkosiMaba
 
 instance HasAbilities NkosiMabatiEnigmaticWarlock3 where
   getAbilities (NkosiMabatiEnigmaticWarlock3 a) =
-    [ controlled_ a 1 (freeReaction $ AssetEntersPlay #when (be a))
+    [ controlled_ a 1 (freeReaction $ AssetEntersPlay #after (be a))
     , controlledAbility a 2 tokenFaceCriteria
         $ triggered
           ( RevealChaosToken

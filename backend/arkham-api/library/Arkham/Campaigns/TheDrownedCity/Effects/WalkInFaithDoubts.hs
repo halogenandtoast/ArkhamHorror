@@ -52,10 +52,10 @@ instance RunMessage WalkInFaithDoubtsEffect where
       cannotDraw <- hasModifier iid CannotDrawCards
       withI18n $ scope "theDrownedCity" $ chooseOneM iid do
         unless cannotDraw
-          $ labeled' "walkInFaith.drawFromDeck"
+          $ labeled "walkInFaith.drawFromDeck"
           $ push
           $ ReplaceCurrentCardDraw iid
           $ newCardDraw (toSource attrs) iid 1
-        labeled' "walkInFaith.drawEncounter" nothing
+        labeled "walkInFaith.drawEncounter" nothing
       disableReturn e
     _ -> WalkInFaithDoubtsEffect <$> liftRunMessage msg attrs

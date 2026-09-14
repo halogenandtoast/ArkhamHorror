@@ -2,10 +2,13 @@ module Arkham.Homebrew.DarkMatter.Acts.TheUnspeakableTruth (theUnspeakableTruth)
 
 import Arkham.Ability
 import Arkham.Act.Import.Lifted
+import Arkham.Act.Sequence
 import Arkham.Homebrew.DarkMatter.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.DarkMatter.Helpers (flipSurroundingLocations)
+import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.Traits (pattern Carcosa)
 import Arkham.Matcher
+import Arkham.Message.Lifted.Log
 import Arkham.Trait (Trait (Cave))
 
 newtype TheUnspeakableTruth = TheUnspeakableTruth ActAttrs
@@ -15,15 +18,13 @@ newtype TheUnspeakableTruth = TheUnspeakableTruth ActAttrs
 theUnspeakableTruth :: ActCard TheUnspeakableTruth
 theUnspeakableTruth = act (3, A) TheUnspeakableTruth Cards.theUnspeakableTruth Nothing
 
-{- | The same flip ability act 2 prints, plus
-"Objective - If each undefeated investigator has resigned, advance."
--}
 instance HasAbilities TheUnspeakableTruth where
-  getAbilities (TheUnspeakableTruth a) =
+  getAbilities = actAbilities \a ->
     [ restricted a 1 (OnLocation $ oneOf [LocationWithTrait Cave, LocationWithTrait Carcosa])
         $ FastAbility
         $ GroupClueCost (PerPlayer 1) Anywhere
-    , restricted a 2 (not_ $ exists $ UneliminatedInvestigator <> not_ ResignedInvestigator)
+    , onlyOnce
+        $ restricted a 2 (not_ $ exists $ UneliminatedInvestigator <> not_ ResignedInvestigator)
         $ Objective
         $ forced AnyWindow
     ]
@@ -37,6 +38,12 @@ instance RunMessage TheUnspeakableTruth where
       advanceVia #other attrs attrs
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> do
-      advanceActDeck attrs
+      allResigned <- selectNone $ UneliminatedInvestigator <> not_ ResignedInvestigator
+      if allResigned
+        then push R3
+        else do
+          record TheInvestigatorsKnowOfTheAbjurationOfTheThrone
+          push $ RevertAct attrs.id
       pure a
+    RevertAct (isSide B attrs -> True) -> pure $ TheUnspeakableTruth $ attrs & sequenceL .~ Sequence 3 A
     _ -> TheUnspeakableTruth <$> liftRunMessage msg attrs

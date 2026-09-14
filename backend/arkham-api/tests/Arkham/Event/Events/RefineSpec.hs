@@ -1,7 +1,9 @@
 module Arkham.Event.Events.RefineSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Customization (Customization (Railshooter))
 import Arkham.Event.Cards qualified as Events
+import Arkham.Helpers.Customization (customizationKey)
 import TestImport.New
 
 spec :: Spec
@@ -20,5 +22,7 @@ spec = describe "Refine" do
       chooseOptionMatching "pick Hyperphysical Shotcaster as Refine target" \case
         TargetLabel {} -> True
         _ -> False
-      clickLabel "Railshooter"
+      chooseOptionMatching "pick the Railshooter customization" \case
+        Label lbl _ -> lbl == customizationKey Railshooter
+        _ -> False
       asDefs self.playableCards `shouldReturn` []

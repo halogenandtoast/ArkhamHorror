@@ -44,8 +44,8 @@ instance RunMessage LucasTetlow where
         when (Relic `member` traits) $ gainResources iid (attrs.ability 1) 2
         when (Tome `member` traits) $ do
           chooseOneM iid $ withI18n do
-            labeled' "playIt" $ playCardPayingCost iid card
-            labeled' "doNotPlay" nothing
+            labeled "playIt" $ playCardPayingCost iid card
+            labeled "doNotPlay" nothing
         when (Tool `member` traits) $ do
           locations <- select $ connectedTo (locationWithInvestigator iid) <> LocationWithAnyClues
           chooseTargetM iid locations $ discoverAt NotInvestigate iid (attrs.ability 1) 1

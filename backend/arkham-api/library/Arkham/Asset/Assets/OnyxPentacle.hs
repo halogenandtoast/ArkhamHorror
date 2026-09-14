@@ -41,9 +41,9 @@ instance RunMessage OnyxPentacle where
       chooseOneM iid do
         when attrs.ready do
           forcedWhen isForced
-            $ (cardI18n $ labeled' "onyxPentacle.exhaustToTarget")
+            $ (cardI18n $ labeled "onyxPentacle.exhaustToTarget")
             $ doStep 1 msg
-        (cardI18n $ labeled' "onyxPentacle.succeedBy2") $ doStep 2 msg
+        (cardI18n $ labeled "onyxPentacle.succeedBy2") $ doStep 2 msg
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       exhaustThis attrs
@@ -59,8 +59,8 @@ instance RunMessage OnyxPentacle where
             , enemyAtLocationWith iid
             ]
       chooseOneM iid do
-        (withI18n $ skillVar #willpower $ labeled' "useSkill") $ push $ withSkillType #willpower evade
-        (withI18n $ countVar 1 $ skillVar #agility $ labeled' "getPlus") do
+        (withI18n $ skillVar #willpower $ labeled "useSkill") $ push $ withSkillType #willpower evade
+        (withI18n $ countVar 1 $ skillVar #agility $ labeled "getPlus") do
           skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 1)
           push evade
       pure a
@@ -68,8 +68,8 @@ instance RunMessage OnyxPentacle where
       sid <- getRandom
       evade <- mkChooseEvade sid iid (attrs.ability 1)
       chooseOneM iid do
-        (withI18n $ skillVar #willpower $ labeled' "useSkill") $ push $ withSkillType #willpower evade
-        (withI18n $ countVar 1 $ skillVar #agility $ labeled' "getPlus") do
+        (withI18n $ skillVar #willpower $ labeled "useSkill") $ push $ withSkillType #willpower evade
+        (withI18n $ countVar 1 $ skillVar #agility $ labeled "getPlus") do
           skillTestModifier sid (attrs.ability 1) iid (SkillModifier #agility 1)
           push evade
       pure $ overAttrs (setMetaKey "option2" True) a

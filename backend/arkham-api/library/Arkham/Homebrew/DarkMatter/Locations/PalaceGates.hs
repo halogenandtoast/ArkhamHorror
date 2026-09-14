@@ -8,12 +8,14 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype PalaceGates = PalaceGates LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 -- | The [[Carcosa]] face of Hidden Passage.
 palaceGates :: LocationCard PalaceGates
-palaceGates = locationWith PalaceGates Cards.palaceGates 2 (PerPlayer 1) (canBeFlippedL .~ True)
+palaceGates =
+  symbolLabel
+    $ locationWith PalaceGates Cards.palaceGates 2 (PerPlayer 1) (canBeFlippedL .~ True)
 
 -- | "You cannot resign while Palace Gates is in play."
 instance HasModifiersFor PalaceGates where
@@ -21,7 +23,7 @@ instance HasModifiersFor PalaceGates where
 
 instance RunMessage PalaceGates where
   runMessage msg l@(PalaceGates attrs) = runQueueT $ case msg of
-    Flip _ _ (isTarget attrs -> True) -> do
-      flipToOtherSide attrs
+    Flip iid _ (isTarget attrs -> True) -> do
+      flipToOtherSide iid attrs
       pure l
     _ -> PalaceGates <$> liftRunMessage msg attrs

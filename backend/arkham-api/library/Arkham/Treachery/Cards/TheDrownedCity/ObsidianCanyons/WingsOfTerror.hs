@@ -36,8 +36,8 @@ instance RunMessage WingsOfTerror where
           -- remove it. This technically means we have an enemy at no location.
           focusCard c do
             chooseOneM iid $ scenarioI18n do
-              labeled' "wingsOfTerror.drawEnemy" $ drawCard iid c
-              labeled' "wingsOfTerror.attack" do
+              labeled "wingsOfTerror.drawEnemy" $ drawCard iid c
+              labeled "wingsOfTerror.attack" do
                 addToEncounterDiscard (only c)
                 push $ EnemyAttackFromDiscard iid (toSource attrs) (EncounterCard c)
       toDiscardBy iid (attrs.ability 1) attrs

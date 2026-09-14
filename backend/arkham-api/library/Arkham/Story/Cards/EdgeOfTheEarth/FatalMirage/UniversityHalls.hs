@@ -25,17 +25,17 @@ instance RunMessage UniversityHalls where
         for_ mElderChamber \loc ->
           withI18n
             $ keyVar "name" "Elder Chamber"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
         for_ mRiverviewTheatre \loc ->
           withI18n
             $ keyVar "name" "Riverview Theatre"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
         for_ mStandingStones \loc ->
           withI18n
             $ keyVar "name" "Standing Stones"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
       pure s
     _ -> UniversityHalls <$> liftRunMessage msg attrs

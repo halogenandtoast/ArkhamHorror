@@ -40,7 +40,7 @@ instance RunMessage NaomiOBannion where
       pure e
     ForTargets (InvestigatorTarget iid : rest) msg'@(UseThisAbility _ (isSource attrs -> True) 1) -> do
       campaignI18n $ chooseOneM iid do
-        labeled' "naomiOBannion.preventReadying" $ assignDamage iid (attrs.ability 1) 1
-        labeled' "naomiOBannion.doNotTakeDamage" $ forTargets rest msg'
+        labeled "naomiOBannion.preventReadying" $ assignDamage iid (attrs.ability 1) 1
+        labeled "naomiOBannion.doNotTakeDamage" $ forTargets rest msg'
       pure e
     _ -> NaomiOBannion <$> liftRunMessage msg attrs

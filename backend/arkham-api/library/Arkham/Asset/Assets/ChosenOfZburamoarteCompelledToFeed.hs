@@ -40,9 +40,8 @@ instance RunMessage ChosenOfZburamoarteCompelledToFeed where
       enemies <- select $ enemyAtLocationWith iid
       chooseTargetM iid enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1
       healDamage iid (attrs.ability 1) 1
-      whenNone (SealedOnAsset (be attrs) (ChaosTokenFaceIs BloodToken))
-        $ push
-        $ Flip iid (toSource attrs) (toTarget attrs)
+      whenNone (SealedOnAsset (be attrs) (ChaosTokenFaceIs BloodToken)) do
+        flipOver iid attrs
       pure a
     RevealChaosToken _ iid token -> do
       withSkillTestSource \_ -> do

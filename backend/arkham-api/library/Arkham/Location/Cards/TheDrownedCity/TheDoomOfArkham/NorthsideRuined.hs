@@ -14,7 +14,7 @@ newtype NorthsideRuined = NorthsideRuined LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northsideRuined :: LocationCard NorthsideRuined
-northsideRuined = location NorthsideRuined Cards.northsideRuined 4 (Static 1)
+northsideRuined = location NorthsideRuined Cards.northsideRuined 4 (PerPlayer 1)
 
 instance HasModifiersFor NorthsideRuined where
   getModifiersFor (NorthsideRuined a) = modifySelf a [CannotBeFullyFlooded]
@@ -44,7 +44,7 @@ instance RunMessage NorthsideRuined where
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       focusCards cards do
         chooseOneM iid $ sharedI18n do
-          labeled' "doNotDiscard" nothing
+          labeled "doNotDiscard" nothing
           targets cards \card -> do
             obtainCard card
             push $ ScenarioSpecific "discardCthulhuCard" (toJSON card)

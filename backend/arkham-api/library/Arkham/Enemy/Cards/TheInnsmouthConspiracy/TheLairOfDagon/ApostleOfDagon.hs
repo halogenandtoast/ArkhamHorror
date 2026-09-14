@@ -24,7 +24,7 @@ instance HasAbilities ApostleOfDagon where
   getAbilities (ApostleOfDagon a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ EnemySpawns #after Anywhere $ be a
+      [ mkAbility a 1 $ forced $ EnemySpawns #after AnyPlacement $ be a
       , restricted a 2 HasRemainingCurseTokens
           $ forced
           $ EnemyDealtDamage #when AnyDamageEffect (be a) (SourceUsedBy Anyone)

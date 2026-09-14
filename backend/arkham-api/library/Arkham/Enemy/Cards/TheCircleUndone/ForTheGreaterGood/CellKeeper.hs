@@ -23,7 +23,7 @@ instance HasAbilities CellKeeper where
   getAbilities (CellKeeper a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ EnemySpawns #after Anywhere (be a)
+      [ mkAbility a 1 $ forced $ EnemySpawns #after AnyPlacement (be a)
       , restricted a 2 keyCriteria
           $ forced
           $ SkillTestResult #after You (WhileEvadingAnEnemy $ be a) (SuccessResult $ atLeast 2)
@@ -41,6 +41,6 @@ instance RunMessage CellKeeper where
     UseCardAbility iid (isSource attrs -> True) 2 _ _ -> do
       chooseOrRunOneM iid $ withI18n do
         for_ (setToList $ enemyKeys attrs) \k ->
-          withVar "name" (String $ keyName k) $ labeled' "takeControlOfSpecificKey" $ placeKey iid k
+          withVar "name" (String $ keyName k) $ labeled "takeControlOfSpecificKey" $ placeKey iid k
       pure e
     _ -> CellKeeper <$> liftRunMessage msg attrs

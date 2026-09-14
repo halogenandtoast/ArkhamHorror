@@ -56,7 +56,7 @@ instance RunMessage InfinityOfDarkness where
               chooseOneM iid $ scenarioI18n do
                 questionLabeledCard attrs
                 when (notNull belowChoice) do
-                  labeled' "connectBelow" do
+                  labeled "connectBelow" do
                     chooseOrRunOneM iid do
                       for_ belowChoice \pos'@(Pos x y) -> do
                         gridLabeled (cosmicLabel pos')
@@ -64,7 +64,7 @@ instance RunMessage InfinityOfDarkness where
                           $ PlaceCosmos iid (toId attrs) (CosmosLocation (Pos x y) lid)
                           : msgs
                 when (notNull emptyPositions) do
-                  labeled' "infinityOfDarkness.choice" do
+                  labeled "infinityOfDarkness.choice" do
                     assignDamage iid (attrs.ability 1) 2
                     chooseOrRunOneM iid do
                       for_ emptyPositions \pos'@(Pos x y) -> do

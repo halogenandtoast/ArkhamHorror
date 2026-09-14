@@ -31,8 +31,8 @@ instance RunMessage WindingGulf where
 
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
       msgs' <- capture $ chooseOneM iid $ scenarioI18n do
-        labeled' "windingGulf.move" $ pushAll msgs
-        labeled' "windingGulf.doNotMove" $ placeDoom attrs azathoth 1
+        labeled "windingGulf.move" $ pushAll msgs
+        labeled "windingGulf.doNotMove" $ placeDoom attrs azathoth 1
 
       chooseCosmos attrs iid allEmpty msgs'
       pure l

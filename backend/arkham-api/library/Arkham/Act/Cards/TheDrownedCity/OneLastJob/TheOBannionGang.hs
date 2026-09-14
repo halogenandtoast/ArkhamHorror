@@ -86,7 +86,7 @@ instance RunMessage TheOBannionGang where
 
           whenAny (EnemyAt "La Bella Luna" <> NonEliteEnemy) do
             lead <- getLead
-            withI18n $ chooseAmount' lead "cluesToMove" "$clues" 0 (min 2 clues) attrs
+            withI18n $ chooseAmount lead "cluesToMove" "$clues" 0 (min 2 clues) attrs
 
       pure a
     ResolveAmounts iid (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do

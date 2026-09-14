@@ -41,7 +41,7 @@ instance RunMessage TheTrueCulpritV10 where
       sid <- getRandom
       unless (null leadAssets) do
         chooseOneM iid $ scenarioI18n $ scope "theTrueCulprit" do
-          labeled'
+          labeled
             "removeClueLeadAsset"
             do
               chooseOrRunOneM iid do

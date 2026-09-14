@@ -8,6 +8,7 @@ import Arkham.Card
 import Arkham.ChaosToken.Types
 import Arkham.Cost
 import Arkham.Id
+import Arkham.Source
 import Arkham.Window (Window)
 import GHC.Records
 
@@ -39,6 +40,16 @@ instance FromJSON ActiveCost where
     activeCostChosenOrAction <- o .:? "activeCostChosenOrAction"
     activeCostPendingEventId <- o .:? "activeCostPendingEventId"
     pure ActiveCost {..}
+
+activeCostSource :: ActiveCost -> Source
+activeCostSource ac = case activeCostTarget ac of
+  ForAbility a -> toSource a
+  ForCard _ c -> CardIdSource c.id
+  ForCost c -> CardIdSource c.id
+  ForAdditionalCost c -> BatchSource c
+
+instance HasField "source" ActiveCost Source where
+  getField = activeCostSource
 
 instance HasField "id" ActiveCost ActiveCostId where
   getField = activeCostId

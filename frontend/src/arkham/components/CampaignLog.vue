@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
-import { LogContents, LogKey, formatKey, logContentsDecoder } from '@/arkham/types/Log'
+import { LogContents, LogKey, formatKey, homebrewScopeFromCampaignId, logContentsDecoder } from '@/arkham/types/Log'
 import { toCapitalizedWords, formatContent } from '@/arkham/helpers'
 import { cardArt } from '@/arkham/cardImages'
 import { computed, ref, onMounted, onUnmounted, watch, type Component } from 'vue'
@@ -17,7 +17,7 @@ import Supplies from '@/arkham/components/Supplies.vue'
 import XpBreakdown from '@/arkham/components/XpBreakdown.vue'
 import { type XpBreakdown as XpBreakdownType, type XpBreakdownStep, xpBreakdownDecoder } from '@/arkham/types/Xp'
 import { type TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken'
-import { type ChaosBagChange, chaosBagChangeDecoder } from '@/arkham/types/Campaign'
+import { type ChaosBagChange, type RecordCountChange, chaosBagChangeDecoder, recordCountChangeDecoder } from '@/arkham/types/Campaign'
 import * as JsonDecoder from 'ts.data.json'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import CampaignLogSection from '@/arkham/components/CampaignLogSection.vue'
@@ -110,6 +110,9 @@ const campaignDefinition = computed<CampaignDefinition | null>(() => {
   return (campaignJSON as CampaignDefinition[]).find((c) => c.id === campaignId) ?? null
 })
 
+// Scope for homebrew keys recorded before their campaign added a scope prefix.
+const homebrewScope = computed(() => homebrewScopeFromCampaignId(props.game.campaign?.id))
+
 const additionalLogSections = computed(() => campaignDefinition.value?.additional ?? [])
 const additionalTabId = (index: number): `additional:${number}` => `additional:${index}`
 const isAdditionalTab = (tab: LogTab): tab is `additional:${number}` => tab.startsWith('additional:')
@@ -189,6 +192,14 @@ if (otherCampaignAttrs.value?.chaosBagHistory) {
     .decodePromise(otherCampaignAttrs.value.chaosBagHistory)
     .then(res => { otherChaosBagHistory.value = res })
     .catch(() => { otherChaosBagHistory.value = null })
+}
+
+const otherRecordCountHistory = ref<RecordCountChange[] | null>(null)
+if (otherCampaignAttrs.value?.recordCountHistory) {
+  JsonDecoder.array(recordCountChangeDecoder, 'RecordCountChange[]')
+    .decodePromise(otherCampaignAttrs.value.recordCountHistory)
+    .then(res => { otherRecordCountHistory.value = res })
+    .catch(() => { otherRecordCountHistory.value = null })
 }
 
 // A mapping of title → LogContents. When there is no split, we expose just the main one.
@@ -385,7 +396,7 @@ const recorded = computed(() => {
     .filter((c) => !isSection(c))
     .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_ARTIFACT_KEYS.has(String((c as any).contents))))
     .filter((c) => !(c.tag === 'TheDrownedCityKey' && TDC_TASK_KEYS.has(String((c as any).contents))))
-    .map(formatKey)
+    .map((k: LogKey) => formatKey(k, homebrewScope.value))
 })
 
 type SectionModel = {
@@ -558,6 +569,10 @@ const chaosBag = computed(() =>
 const chaosBagHistory = computed<ChaosBagChange[]>(() =>
   showingMain.value ? (props.game.campaign?.chaosBagHistory ?? []) : (otherChaosBagHistory.value ?? [])
 )
+
+const recordCountHistory = computed<RecordCountChange[]>(() =>
+  showingMain.value ? (props.game.campaign?.recordCountHistory ?? []) : (otherRecordCountHistory.value ?? [])
+)
 const hasSupplies = computed(() => Object.values(investigators.value).some(i => i.supplies.length > 0))
 
 // --- Investigator log sections --------------------------------------------------
@@ -574,7 +589,7 @@ const investigatorRecorded = (log: LogContents) =>
   (log.recorded ?? [])
     .filter(r => !['Teachings1', 'Teachings2', 'Teachings3'].includes(r.tag))
     .filter(r => !isSection(r))
-    .map(formatKey)
+    .map((k: LogKey) => formatKey(k, homebrewScope.value))
 
 const investigatorRecordedCounts = (log: LogContents) =>
   (log.recordedCounts ?? []).filter(([k]) => !isSection(k))
@@ -1011,9 +1026,12 @@ onUnmounted(() => {
 
           <!-- Campaign recorded sets + counts -->
           <CampaignLogRecordedSets
+            :game="game"
             :entries="(Object.entries(recordedSets) as [string, any[]][]).filter(([k]) => !k.toLowerCase().includes('discoveredglyph'))"
             :counts="recordedCounts"
+            :countHistory="recordCountHistory"
             :displayRecordValue="displayRecordValue"
+            :homebrewScope="homebrewScope"
           />
 
           <CampaignLogPartners

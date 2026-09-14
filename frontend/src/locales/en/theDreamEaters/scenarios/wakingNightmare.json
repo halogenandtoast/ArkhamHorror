@@ -1,5 +1,8 @@
 {
   "heading": "Scenario I-B",
+  "intro": {
+    "title": "Scenario I–B: Waking Nightmare"
+  },
   "setup": {
     "gatherSets": "Gather all cards from the following encounter sets: *Waking Nightmare*, *Merging Realities*, *Whispers of Hypnos*, *Locked Doors*, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/waking-nightmare.png' /><img src='{setImgPath}/merging-realities.png' /><img src='{setImgPath}/whispers-of-hypnos.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
     "setEncounterSetsAside": "Set aside each of the following encounter sets: *Agents of Atlach-Nacha* and *Spiders*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/agents-of-atlach-nacha.png' /><img src='{setImgPath}/spiders.png' /></section>",

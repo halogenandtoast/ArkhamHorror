@@ -35,13 +35,13 @@ instance RunMessage SolarEclipse where
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ campaignI18n do
-        labeled' "solarEclipse.take1Horror" $ assignHorror iid (attrs.ability 1) 1
-        labeled' "solarEclipse.locationGets2Shroud" do
+        labeled "solarEclipse.take1Horror" $ assignHorror iid (attrs.ability 1) 1
+        labeled "solarEclipse.locationGets2Shroud" do
           here <- select $ locationWithInvestigator iid
           withSkillTest \sid ->
             for_ here \lid -> skillTestModifier sid (attrs.ability 1) lid (ShroudModifier 2)
       pure t
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
-      toDiscardBy iid (attrs.ability 2) attrs
+    UseThisAbility _ (isSource attrs -> True) 2 -> do
+      toDiscard (attrs.ability 2) attrs
       pure t
     _ -> SolarEclipse <$> liftRunMessage msg attrs

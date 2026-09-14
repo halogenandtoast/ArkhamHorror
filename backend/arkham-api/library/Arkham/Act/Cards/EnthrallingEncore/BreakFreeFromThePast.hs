@@ -38,7 +38,7 @@ instance RunMessage BreakFreeFromThePast where
       when (notNull props) do
         investigators <- select UneliminatedInvestigator
         chooseOrRunOneM iid $ scenarioI18n do
-          questionLabeled' "chooseInvestigator"
+          questionLabeled "chooseInvestigator"
           targets investigators $ handleTarget iid attrs
       pure a
     HandleTargetChoice _ (isSource attrs -> True) (InvestigatorTarget iid') -> do
@@ -49,7 +49,7 @@ instance RunMessage BreakFreeFromThePast where
         choices = nub $ props <> signatureProps
       focusCards choices do
         chooseOrRunOneM iid' $ scenarioI18n do
-          questionLabeled' "chooseProp"
+          questionLabeled "chooseProp"
           targets choices \card -> do
             unfocusCards
             push $ RemoveCardFromScenarioDeck PropsDeck card

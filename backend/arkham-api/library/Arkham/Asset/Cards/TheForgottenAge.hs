@@ -189,6 +189,7 @@ shrewdAnalysis =
   permanent
     $ (asset "04106" "Shrewd Analysis" 0 Seeker)
       { cdCardTraits = singleton Talent
+      , cdTags = [noGameplayEffectTag]
       }
 
 luckyCigaretteCase :: CardDef
@@ -214,6 +215,7 @@ arcaneResearch =
     $ (asset "04109" "Arcane Research" 0 Mystic)
       { cdCardTraits = singleton Talent
       , cdPurchaseTrauma = PurchaseMentalTrauma 1
+      , cdTags = [noGameplayEffectTag]
       }
 
 harlanEarnstone :: CardDef

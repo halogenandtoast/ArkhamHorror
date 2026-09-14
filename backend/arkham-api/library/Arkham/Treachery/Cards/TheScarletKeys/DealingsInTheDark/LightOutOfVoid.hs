@@ -30,7 +30,7 @@ instance RunMessage LightOutOfVoid where
         unscoped
           $ numberVar "damage" 1
           $ numberVar "horror" 1
-          $ labeled' "takeDamageAndHorror"
+          $ labeled "takeDamageAndHorror"
           $ assignDamageAndHorror iid (attrs.ability 1) 1 1
       when (n == 1) $ doStep 3 msg'
       pure t

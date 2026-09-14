@@ -60,7 +60,7 @@ instance HasChaosTokenValue TheVanishingOfElinaHarper where
 instance RunMessage TheVanishingOfElinaHarper where
   runMessage msg s@(TheVanishingOfElinaHarper attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
+      story $ i18nWithHeading "intro1"
       story $ i18n "townInfo"
       story $ i18nWithTitle "intro2"
       standalone <- getIsStandalone

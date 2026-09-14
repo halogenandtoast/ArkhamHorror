@@ -26,8 +26,8 @@ instance RunMessage BlackCave where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       cardsInHand <- fieldMap InvestigatorHand length iid
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
         when (cardsInHand >= 2) do
-          countVar 2 $ labeled' "discardCardsFromHand" $ chooseAndDiscardCards iid (attrs.ability 1) 2
+          countVar 2 $ labeled "discardCardsFromHand" $ chooseAndDiscardCards iid (attrs.ability 1) 2
       pure l
     _ -> BlackCave <$> liftRunMessage msg attrs

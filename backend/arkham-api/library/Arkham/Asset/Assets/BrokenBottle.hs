@@ -28,7 +28,7 @@ instance RunMessage BrokenBottle where
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       withSkillTest \sid -> do
         chooseOneM iid $ cardI18n $ scope "brokenBottle" do
-          labeled' "discardForDamage" do
+          labeled "discardForDamage" do
             toDiscardBy iid (attrs.ability 1) attrs
             skillTestModifier sid (attrs.ability 1) iid $ DamageDealt 1
           withI18n skip_

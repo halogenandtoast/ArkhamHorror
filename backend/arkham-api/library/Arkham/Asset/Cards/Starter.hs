@@ -603,4 +603,5 @@ dejaVu5 =
     $ (asset "60531" "Déjà Vu" 0 Survivor)
       { cdCardTraits = setFromList [Talent, Cursed]
       , cdLevel = Just 5
+      , cdTags = [noGameplayEffectTag]
       }

@@ -515,9 +515,9 @@ instance RunMessage Scenario where
           if not $ attr scenarioInResolution x
             then do
               addToVictoryMsgs <- Lifted.capture do
-                -- also clean up victory enemies
-                select (Matcher.OutOfPlayEnemy RemovedZone Matcher.EnemyWithVictory)
-                  >>= traverse_ Lifted.addToVictoryIfNeeded
+                Lifted.doNow \case
+                  Do (AddToVictory _ (EnemyTarget _)) -> True
+                  _ -> False
 
               -- We want to empty the queue for triggering a resolution
               clearQueue

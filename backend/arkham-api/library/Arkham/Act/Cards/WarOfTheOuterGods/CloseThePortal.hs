@@ -39,7 +39,7 @@ instance RunMessage CloseThePortal where
       placeCluesAroundHubDimension 1
       sid <- getRandom
       scenarioI18n $ chooseOneM iid do
-        labeled' "skipTest" nothing
+        labeled "skipTest" nothing
         skillLabeled #willpower $ beginSkillTest sid iid (attrs.ability 1) iid #willpower (Fixed 2)
         skillLabeled #intellect $ beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 2)
       pure a

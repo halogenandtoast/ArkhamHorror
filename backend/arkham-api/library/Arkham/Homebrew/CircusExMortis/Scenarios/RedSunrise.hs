@@ -2,8 +2,8 @@ module Arkham.Homebrew.CircusExMortis.Scenarios.RedSunrise (redSunrise) where
 
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
-import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
+import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Scenario.Import.Lifted
 
 -- Skeleton scenario for Circus Ex Mortis (homebrew). Chaos-token values, full
@@ -13,7 +13,7 @@ newtype RedSunrise = RedSunrise ScenarioAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 redSunrise :: Difficulty -> RedSunrise
-redSunrise difficulty = scenario RedSunrise ":circus-ex-mortis:155" "Red Sunrise" difficulty []
+redSunrise difficulty = scenario RedSunrise ":circus-ex-mortis:153" "Red Sunrise" difficulty []
 
 instance HasChaosTokenValue RedSunrise where
   getChaosTokenValue iid tokenFace (RedSunrise attrs) = case tokenFace of

@@ -31,6 +31,7 @@ instance HasAbilities LastHope where
         $ Objective
         $ FastAbility
         $ GroupClueCost (PerPlayer 2) Anywhere
+    | a.placement.isInPlay
     ]
 
 instance RunMessage LastHope where

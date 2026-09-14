@@ -42,11 +42,11 @@ instance RunMessage AethericCurrentYuggoth where
           when isNonElite do
             locations <- select $ oneOf [LocationCanBeEnteredBy eid, locationWithEnemy eid]
             chooseOneM iid $ cardI18n $ scope "aethericCurrentYuggoth" do
-              labeled' "exhaustEnemyAndMove" do
+              labeled "exhaustEnemyAndMove" do
                 exhaustWith attrs eid
                 chooseOneM iid do
                   for_ locations \lid -> targeting lid $ push $ EnemyMove eid lid
-              labeled' "doNotExhaustEnemy" nothing
+              labeled "doNotExhaustEnemy" nothing
         _ -> pure ()
       pure e
     _ -> AethericCurrentYuggoth <$> liftRunMessage msg attrs

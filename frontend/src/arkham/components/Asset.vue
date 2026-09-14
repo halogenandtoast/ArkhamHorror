@@ -23,19 +23,27 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import TokenPool, { type TokenPoolItem } from '@/arkham/components/TokenPool.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
+import CardConfig from '@/arkham/components/CardConfig.vue'
+import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
 import Story from '@/arkham/components/Story.vue';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
-import Token from '@/arkham/components/Token.vue';
+import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue';
 import * as Arkham from '@/arkham/types/Asset';
+import { useSettings } from '@/stores/settings';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
 import { useDbCardStore } from '@/stores/dbCards'
+import { useCardStore } from '@/stores/cards'
 
 const props = withDefaults(defineProps<{
   game: Game
   asset: Arkham.Asset
   playerId: string
   atLocation?: boolean
-}>(), { atLocation: false })
+  // Played, but held out of play until a slot frees up
+  pending?: boolean
+  // A target label on this asset means discarding it to free that slot
+  discardToMakeRoom?: boolean
+}>(), { atLocation: false, pending: false, discardToMakeRoom: false })
 
 const debugging = ref(false)
 const frame = ref(null)
@@ -66,6 +74,13 @@ const uiRotation = computed<number>(() => {
 })
 
 const cardCode = computed(() => props.asset.cardCode)
+
+// The card-options gear also lives top-left, so the jammed wrench has to know
+// whether it is sharing the corner.
+const cardStore = useCardStore()
+const hasCardOptions = computed(
+  () => (cardStore.cards.find((def) => def.cardCode === cardCode.value)?.options?.length ?? 0) > 0
+)
 const isTheBeyond = computed(() => cardCode.value === 'c90052')
 const investigators = computed(() => Object.values(props.game.investigators).filter((i) => {
   if (i.placement.tag === 'InVehicle') return i.placement.contents === id.value
@@ -132,7 +147,7 @@ const image = computed(() => {
 const dataImage = computed(() => {
   const mutated = props.asset.mutated ? `_${props.asset.mutated}` : ''
   if (props.asset.flipped && hasBackArt.value) return `${cardArt(cardCode.value)}b`
-  return cardCode.value.replace('c', '') + mutated
+  return cardCode.value.replace(/^c/, '') + mutated
 })
 const choices = useGameChoices(() => props.game, () => props.playerId)
 
@@ -162,6 +177,7 @@ function canAdjustSanity(c: Message): boolean {
 
 const cardAction = computed(() => choices.value.findIndex(isCardAction))
 const canInteract = computed(() => abilities.value.length > 0 || cardAction.value !== -1)
+const showDiscardMark = computed(() => props.discardToMakeRoom && cardAction.value !== -1)
 const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
 const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
@@ -217,6 +233,7 @@ const cardsUnderneath = computed(() => props.asset.cardsUnderneath)
 const keys = computed(() => props.asset.keys)
 
 const debug = useDebug()
+const settings = useSettings()
 const dragging = ref(false)
 
 const assetTokens = computed(() => {
@@ -225,6 +242,30 @@ const assetTokens = computed(() => {
 })
 const damage = computed(() => (props.asset.tokens[TokenType.Damage] || 0) + props.asset.assignedHealthDamage - props.asset.assignedHealthHeal)
 const horror = computed(() => (props.asset.tokens[TokenType.Horror] || 0) + props.asset.assignedSanityDamage - props.asset.assignedSanityHeal)
+
+function modifierTotal(tag: 'HealthModifier' | 'SanityModifier'): number {
+  return (props.asset.modifiers ?? []).reduce((acc, m) => {
+    const t: any = m.type
+    return t?.tag === tag ? acc + t.contents : acc
+  }, 0)
+}
+
+const cannotBeDefeated = computed(() => (props.asset.modifiers ?? []).some((m) => {
+  const t: any = m.type
+  return t?.tag === 'OtherModifier' && t?.contents === 'CannotBeDefeated'
+}))
+
+// Damage and horror are assigned before they are applied, so a card can already
+// be dead while it is still sitting in play waiting for the rest of the
+// assignment. Say so, or the player soaks the remainder onto a corpse.
+const doomed = computed(() => {
+  if (isSpirit.value || cannotBeDefeated.value) return false
+  if (props.asset.assignedHealthDamage <= 0 && props.asset.assignedSanityDamage <= 0) return false
+  const { health, sanity } = props.asset
+  return (health !== null && damage.value >= health + modifierTotal('HealthModifier'))
+    || (sanity !== null && horror.value >= sanity + modifierTotal('SanityModifier'))
+})
+
 const forcedTokenItems = computed<TokenPoolItem[]>(() => [
   {
     key: 'health',
@@ -314,10 +355,14 @@ const storyImage = computed(() => {
 const faceImage = computed(() => storyImage.value ?? image.value)
 const { displayedImage, flipping } = useCardFlip(faceImage)
 
+// Permanents can be dragged into (and back out of) the hidden stack whenever
+// that setting is on, not just in debug.
+const canTuck = computed(() => settings.hideInertCards && props.asset.permanent)
+
 function startDrag(event: DragEvent) {
   dragging.value = true
   if (event.dataTransfer) {
-    event.dataTransfer.effectAllowed = 'move'
+    event.dataTransfer.effectAllowed = 'copyMove'
     event.dataTransfer.setData('text/plain', JSON.stringify({ "tag": "AssetTarget", "contents": props.asset.id }))
   }
 }
@@ -383,9 +428,20 @@ function startDrag(event: DragEvent) {
           />
           <span class="deck-size">{{asset.spiritDeck.length}}</span>
         </div>
-        <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract}">
+        <div class="card-wrapper" :class="{ 'asset--can-interact': canInteract, 'asset--pending': pending, 'asset--doomed': doomed }">
+          <MissingCardBadge :card-code="cardCode" />
+          <span v-if="doomed && !showDiscardMark" class="doomed-mark" v-tooltip="'Will be defeated'">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C7 2 3.6 5.3 3.6 9.7c0 2.4 1 4.1 2.4 5.2.5.4.8.9.8 1.5v1.2c0 .8.7 1.5 1.5 1.5h.6v1.4c0 .3.2.5.5.5h1c.3 0 .5-.2.5-.5v-1.4h2v1.4c0 .3.2.5.5.5h1c.3 0 .5-.2.5-.5v-1.4h.6c.8 0 1.5-.7 1.5-1.5v-1.2c0-.6.3-1.1.8-1.5 1.4-1.1 2.4-2.8 2.4-5.2C20.4 5.3 17 2 12 2Zm-3.4 9.6a1.9 1.9 0 1 1 0-3.8 1.9 1.9 0 0 1 0 3.8Zm6.8 0a1.9 1.9 0 1 1 0-3.8 1.9 1.9 0 0 1 0 3.8ZM12 13.4l1.2 2.2h-2.4L12 13.4Z" />
+            </svg>
+          </span>
           <font-awesome-icon v-if="isSpirit" :icon="['fas', 'ghost']" class="spirit-icon" />
-          <span v-if="jammed" class="status-icon" v-tooltip="'Jammed'">
+          <span
+            v-if="jammed"
+            class="status-icon"
+            :class="{ 'status-icon--beside-gear': hasCardOptions }"
+            v-tooltip="'Jammed'"
+          >
             <font-awesome-icon :icon="['fas', 'wrench']" />
           </span>
           <img
@@ -397,12 +453,19 @@ function startDrag(event: DragEvent) {
             :class="{ exhausted, 'ability-target': isHighlighted || isAttackTarget, 'card--flipping': flipping }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
             :data-rotation="uiRotation || undefined"
-            :draggable="debug.active"
+            :draggable="debug.active || canTuck"
             @dragstart="startDrag"
             @click="clicked"
             :data-customizations="JSON.stringify(asset.customizations)"
             :data-chained="asset.chained || undefined"
           />
+          <span v-if="showDiscardMark" class="discard-mark" aria-hidden="true" @click="clicked">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3v10" />
+              <path d="M8 9.5 12 13.5 16 9.5" />
+              <path d="M3.5 15v3.5a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2V15" />
+            </svg>
+          </span>
           <div v-if="investigators.length > 0" class="in-vehicle">
             <div v-for="investigator in investigators" :key="investigator.id">
               <Investigator
@@ -421,7 +484,12 @@ function startDrag(event: DragEvent) {
             <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
           </div>
           <TokenPool :tokens="assetTokens" :extra-items="forcedTokenItems" @choose="chooseTokenPoolItem" />
-          <Token v-for="(sealedToken, index) in asset.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
+          <SealedChaosTokens
+            :tokens="asset.sealedChaosTokens"
+            :game="game"
+            :playerId="playerId"
+            @choose="choose"
+          />
         </div>
         <AbilitiesMenu
           v-model="showAbilities"
@@ -430,7 +498,9 @@ function startDrag(event: DragEvent) {
           :game="game"
           @choose="chooseAbility"
         />
+        <CardConfig :game="game" :playerId="playerId" :cardCode="cardCode" />
       </div>
+      <span v-if="pending" class="pending-label">{{ $t('needsSlots') }}</span>
       <CardsUnderIndicator
         v-if="cardsUnderneath.length > 0"
         class="asset-cards-under"
@@ -540,6 +610,109 @@ function startDrag(event: DragEvent) {
     border: 2px solid var(--select);
     cursor:pointer;
   }
+}
+
+.asset--pending {
+  img.card {
+    box-shadow: 0 0 0 2px var(--seeker), 0 0 10px rgba(239, 163, 69, 0.35);
+    filter: grayscale(0.55) brightness(0.72);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 5px;
+    background: repeating-linear-gradient(135deg, rgba(239, 163, 69, 0.16) 0 6px, transparent 6px 12px);
+    pointer-events: none;
+  }
+}
+
+/* Assigned lethal damage/horror, not yet applied. Survivor red rather than the
+   selection magenta: the card's own counter may still be a live choice. */
+.asset--doomed {
+  img.card {
+    box-shadow: 0 0 0 2px var(--survivor-dark), 0 0 10px rgba(238, 74, 83, 0.35);
+    filter: grayscale(0.7) brightness(0.6);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 5px;
+    background: repeating-linear-gradient(135deg, rgba(238, 74, 83, 0.2) 0 5px, transparent 5px 11px);
+    pointer-events: none;
+  }
+}
+
+.doomed-mark {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: var(--z-index-3);
+  display: grid;
+  place-items: center;
+  width: clamp(13px, calc(var(--card-width) * 0.3), 20px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--survivor-dark);
+  background: var(--background-dark);
+  color: #ffd9db;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  pointer-events: auto;
+
+  svg {
+    width: 66%;
+    height: 66%;
+    display: block;
+  }
+}
+
+.pending-label {
+  margin-top: 3px;
+  padding: 2px 3px;
+  border-radius: 2px;
+  background: var(--seeker);
+  color: var(--seeker-text);
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Says what clicking does. Red and an X are already spoken for by damage, so
+   this is the selection magenta rather than a warning. */
+.discard-mark {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: var(--z-index-3);
+  display: grid;
+  place-items: center;
+  width: clamp(13px, calc(var(--card-width) * 0.3), 20px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--select-dark);
+  background: var(--background-dark);
+  color: #f4dbf4;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+  transition: background 120ms ease, transform 120ms ease;
+
+  svg {
+    width: 62%;
+    height: 62%;
+    display: block;
+  }
+}
+
+.card-wrapper:hover .discard-mark {
+  background: var(--select-dark);
+  color: #fff;
+  transform: scale(1.08);
 }
 
 .pool {
@@ -777,6 +950,12 @@ img.card.ability-target {
   align-items: center;
   justify-content: center;
   pointer-events: auto;
+}
+
+/* Shares the top-left corner with the card-options gear (CardConfig.vue), so it
+   steps right when the card declares options. */
+.status-icon--beside-gear {
+  left: 21px;
 }
 
 .in-vehicle {

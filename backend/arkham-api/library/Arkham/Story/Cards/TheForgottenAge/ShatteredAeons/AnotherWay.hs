@@ -24,12 +24,12 @@ instance RunMessage AnotherWay where
       alejandro <- selectJust $ enemyIs Enemies.alejandroVela
       chooseOneM iid $ scenarioI18n do
         questionLabeledCard attrs
-        labeled' "anotherWay.reject" do
+        labeled "anotherWay.reject" do
           exhaustWith attrs alejandro
           disengageFromAll alejandro
           eachInvestigator \iid' ->
             gameModifier attrs iid' $ CannotParleyWith $ enemyIs Enemies.alejandroVela
-        labeled' "anotherWay.accept" do
+        labeled "anotherWay.accept" do
           removeEnemy alejandro
           advanceToAct' attrs 1 Acts.timelock A
           eachInvestigator \iid' ->

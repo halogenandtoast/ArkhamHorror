@@ -7,6 +7,7 @@ import Arkham.Card
 import Arkham.DamageEffect
 import Arkham.Enemy.Types qualified as Enemy
 import Arkham.ForMovement
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Projection
 
@@ -40,9 +41,9 @@ instance RunMessage FluteOfTheOuterGods4 where
     PaidForCardCost iid card payment | toCardId card == toCardId attrs -> do
       let x = totalResourcePayment payment
       curseTokens <- min x <$> selectCount (ChaosTokenFaceIs #curse)
-      chooseAmount iid ("Seal up to " <> tshow x <> " curse tokens") "{curse} tokens" 0 curseTokens attrs
+      withI18n $ countVar x $ chooseAmount iid "sealCurseTokensUpTo" "$curseTokens" 0 curseTokens attrs
       pure a
-    ResolveAmounts iid (getChoiceAmount "{curse} tokens" -> x) (isTarget attrs -> True) -> do
+    ResolveAmounts iid (getChoiceAmount "$curseTokens" -> x) (isTarget attrs -> True) -> do
       curseTokens <- take x <$> select (ChaosTokenFaceIs #curse)
       for_ curseTokens \token -> do
         pushAll [SealChaosToken token, SealedChaosToken token (Just iid) (toTarget attrs)]

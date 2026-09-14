@@ -5,6 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (isSkillTestSource)
+import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
@@ -32,9 +33,9 @@ instance RunMessage AbyssalTome2 where
   runMessage msg a@(AbyssalTome2 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       when (attrs.placement.isInPlay && attrs.doom < 3) do
-        chooseOneM iid do
-          labeled "Place 1 doom on Abyssal Tome" $ placeDoom (attrs.ability 1) attrs 1
-          labeled "Do not place doom on Abyssal Tome" nothing
+        chooseOneM iid $ cardI18n $ scope "abyssalTome2" do
+          labeled "placeDoom" $ placeDoom (attrs.ability 1) attrs 1
+          labeled "doNotPlaceDoom" nothing
       sid <- getRandom
       chooseFightEnemyWithSkillChoice sid iid (attrs.ability 1) [#combat, #intellect, #willpower]
       pure a

@@ -21,7 +21,7 @@ instance HasAbilities RingLibraryArchiveOfTheAncients where
       $ reaction
         a
         1
-        NoRestriction
+        Here
         (DirectHorrorCost (toSource a) You 1)
         (WouldDiscardTopOfEncounterDeck #when You AnySource)
 

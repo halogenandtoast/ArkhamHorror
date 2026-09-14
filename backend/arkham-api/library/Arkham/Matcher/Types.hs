@@ -20,6 +20,7 @@ import Arkham.Matcher.Investigator as X
 import Arkham.Matcher.Key as X
 import Arkham.Matcher.Location as X
 import Arkham.Matcher.Phase as X
+import Arkham.Matcher.Placement as X
 import Arkham.Matcher.Scenario as X
 import Arkham.Matcher.Skill as X
 import Arkham.Matcher.SkillTest as X

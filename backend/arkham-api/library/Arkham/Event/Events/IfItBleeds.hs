@@ -17,8 +17,8 @@ ifItBleeds = event IfItBleeds Cards.ifItBleeds
 
 getWindowEnemyIds :: InvestigatorId -> [Window] -> [EnemyId]
 getWindowEnemyIds iid = mapMaybe \case
-  Window Timing.After (EnemyDefeated (Just who) _ eid) _ | iid == who -> Just eid
-  Window Timing.After (IfEnemyDefeated mwho _ eid) _ | maybe True (== iid) mwho -> Just eid
+  Window Timing.After (EnemyDefeated (Just who) _ eid) _ _ | iid == who -> Just eid
+  Window Timing.After (IfEnemyDefeated mwho _ eid) _ _ | maybe True (== iid) mwho -> Just eid
   _ -> Nothing
 
 instance RunMessage IfItBleeds where

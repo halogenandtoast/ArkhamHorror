@@ -39,7 +39,7 @@ instance RunMessage DeepOneHatchling where
           labeledI "loseOneAction" $ push $ LoseActions iid (attrs.ability 1) 1
         scenarioI18n
           $ scope "deepOneHatchling"
-          $ labeled' "attacksYou"
+          $ labeled "attacksYou"
           $ initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do

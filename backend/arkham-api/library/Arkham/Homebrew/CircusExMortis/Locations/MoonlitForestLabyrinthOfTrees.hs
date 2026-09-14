@@ -14,12 +14,11 @@ newtype MoonlitForestLabyrinthOfTrees = MoonlitForestLabyrinthOfTrees LocationAt
 
 moonlitForestLabyrinthOfTrees :: LocationCard MoonlitForestLabyrinthOfTrees
 moonlitForestLabyrinthOfTrees =
-  locationWith
+  location
     MoonlitForestLabyrinthOfTrees
     Cards.moonlitForestLabyrinthOfTrees
     3
     (Static 2)
-    connectsToAdjacent
 
 instance HasAbilities MoonlitForestLabyrinthOfTrees where
   getAbilities (MoonlitForestLabyrinthOfTrees a) =

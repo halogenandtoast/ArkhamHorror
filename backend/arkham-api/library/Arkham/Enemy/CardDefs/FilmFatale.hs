@@ -23,6 +23,7 @@ allosaurusRampagingPredator =
       { cdHealthDamage = healthDamage 3
       , cdFight = fight 5
       , cdEvade = evade 5
+      , cdHealth = health 6
       , cdCardTraits = setFromList [Creature, Dinosaur, Elite]
       , cdKeywords = setFromList [Keyword.Alert, Keyword.Hunter, Keyword.Massive, Keyword.Retaliate]
       , cdVictoryPoints = Just 1

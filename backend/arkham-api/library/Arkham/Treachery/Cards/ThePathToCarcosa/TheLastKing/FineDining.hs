@@ -23,7 +23,7 @@ instance RunMessage FineDining where
       bystanders <- select $ AssetWithTrait Bystander
       chooseOrRunOneM iid do
         when (clueCount > 0 && notNull bystanders) do
-          labeled' "fineDining.place" $ chooseTargetM iid bystanders \x -> moveTokens attrs iid x #clue 1
+          labeled "fineDining.place" $ chooseTargetM iid bystanders \x -> moveTokens attrs iid x #clue 1
         chooseTakeHorrorAndDamage iid attrs 1 1
       pure t
     _ -> FineDining <$> liftRunMessage msg attrs

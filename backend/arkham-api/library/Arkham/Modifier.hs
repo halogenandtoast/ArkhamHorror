@@ -24,6 +24,7 @@ import Arkham.Field
 import Arkham.Id
 import Arkham.Json
 import Arkham.Keyword
+import Arkham.LocationSymbol (LocationSymbol)
 import Arkham.Matcher.Types
 import Arkham.Phase
 import {-# SOURCE #-} Arkham.Placement
@@ -111,6 +112,8 @@ data ModifierType
   | AsIfNotEngagedWith EnemyId
   | AsIfInHand Card
   | AsIfInHandFor ForPlay CardId
+  | -- out-of-play effects only, never treated as in hand
+    AsIfInHandForEffects CardId
   | AsIfResourcePool AssetId
   | AsIfUnderControlOf InvestigatorId
   | AsIfTurn InvestigatorId
@@ -118,6 +121,7 @@ data ModifierType
   | AttackDealsEitherDamageOrHorror
   | AttacksCannotBeCancelled
   | Barricades [LocationId]
+  | BaseShroud Int
   | BaseSkill Int
   | BaseSkillOf {skillType :: SkillType, value :: Int}
   | BaseSkillOfCalculated {skillType :: SkillType, calculation :: GameCalculation}
@@ -306,7 +310,15 @@ data ModifierType
   | DoubleDifficulty
   | DoubleNegativeModifiersOnChaosTokens
   | DoubleModifiersOnChaosTokens
+  | {- | Notify the card this many extra times when a chaos token it is waiting
+    on is revealed, so its "when/if/after you reveal" effect resolves again.
+    -}
+    ResolveEffectsAdditionalTimes Int
   | DoubleSkillIcons
+  | {- | Double only the listed icons on a committed card, leaving the rest
+    (notably @WildIcon@) counted once.
+    -}
+    DoubleSkillIconsOf [SkillIcon]
   | DoubleSuccess
   | DuringEnemyPhaseMustMoveToward Target
   | EffectsCannotBeCanceled
@@ -377,6 +389,13 @@ data ModifierType
   | IgnoreTextOnLocation LocationMatcher
   | InVictoryDisplayForCountingVengeance
   | IncreaseCostOf ExtendedCardMatcher Int
+  | {- | A composite enemy: several enemy cards that are a single enemy on the map
+    (Cthulhu and the facets on his Cthulhu Board). The card carrying this is never
+    itself fought or evaded; interacting with it means choosing one of the members.
+    Written with 'Arkham.Helpers.Modifiers.interactAsOneOf', which pairs it with the
+    @Cannot*@ modifiers that keep the card itself off every target list.
+    -}
+    InteractAsOneOf EnemyMatcher
   | InvestigateActionCriteria CriteriaOverride
   | IsEmptySpace
   | IsPointOfDamage
@@ -386,6 +405,7 @@ data ModifierType
   | LeaveCardWhereItIs
   | LookAtDepth Int
   | LosePatrol
+  | LosesConnectionSymbol LocationSymbol
   | ForcePatrol LocationMatcher
   | LoseVictory
   | MaxCluesDiscovered Int
@@ -397,6 +417,7 @@ data ModifierType
   | MayIgnoreLocationEffectsAndKeywords
   | MetaModifier Value
   | ModifierIfSucceededBy Int Modifier
+  | MovingToDoesNotProvokeAttacksOfOpportunity LocationMatcher
   | Mulligans Int
   | MustBeCommitted
   | MustChooseEnemy EnemyMatcher
@@ -570,6 +591,9 @@ instance IsLabel "alert" ModifierType where
 
 instance IsLabel "aloof" ModifierType where
   fromLabel = AddKeyword Aloof
+
+instance IsLabel "hunter" ModifierType where
+  fromLabel = AddKeyword Arkham.Keyword.Hunter
 
 data Modifier = Modifier
   { modifierSource :: Source

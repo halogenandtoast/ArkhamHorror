@@ -23,12 +23,13 @@ showmanship =
 
 occultScraps :: CardDef
 occultScraps =
-  (weakness "07013" "Occult Scraps")
-    { cdCardTraits = setFromList [Item]
-    , cdCriteria = Just Criteria.Never
-    , cdOutOfPlayEffects = [InHandEffect]
-    , cdCost = Just (StaticCost 0)
-    }
+  signature "07004"
+    $ (weakness "07013" "Occult Scraps")
+      { cdCardTraits = setFromList [Item]
+      , cdCriteria = Just Criteria.Never
+      , cdOutOfPlayEffects = [InHandEffect]
+      , cdCost = Just (StaticCost 0)
+      }
 
 seaChangeHarpoon :: CardDef
 seaChangeHarpoon =

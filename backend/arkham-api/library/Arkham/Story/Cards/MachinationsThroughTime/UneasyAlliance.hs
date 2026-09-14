@@ -57,9 +57,9 @@ instance RunMessage UneasyAlliance where
         when (clues > 0) $ moveTokens (attrs.ability 1) iid edwin' #clue 1
         sid <- getRandom
         chooseOneM iid $ withI18n do
-          labeled' "skip" nothing
+          labeled "skip" nothing
           scenarioI18n
-            $ labeled' "uneasyAlliance.test"
+            $ labeled "uneasyAlliance.test"
             $ parley sid iid (attrs.ability 1) edwin' #intellect (Fixed 4)
       pure s
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do

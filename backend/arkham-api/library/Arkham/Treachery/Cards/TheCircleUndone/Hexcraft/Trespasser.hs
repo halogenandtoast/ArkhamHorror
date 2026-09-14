@@ -26,7 +26,7 @@ instance RunMessage Trespasser where
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do
       chooseOneM iid $ withI18n do
-        countVar 2 $ labeled' "takeDamage" $ assignDamage iid attrs 2
-        countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
+        countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
       pure t
     _ -> Trespasser <$> liftRunMessage msg attrs

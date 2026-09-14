@@ -66,7 +66,7 @@ instance RunMessage RollingPits where
       -- need to remove the story now so we can place clues correctly
       push $ RemoveStory (toId attrs)
       chooseOneM iid $ scenarioI18n $ scope "rollingPits" do
-        questionLabeled' "distributeClues"
+        questionLabeled "distributeClues"
         targets seas \sea -> do
           placeClues attrs sea 1
           doStep 1 msg'

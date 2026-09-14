@@ -28,14 +28,14 @@ instance HasModifiersFor Infection where
 
 -- | "Forced - At the end of your turn: Discard Infection."
 instance HasAbilities Infection where
-  getAbilities (Infection a) = [mkAbility a 1 $ forced $ TurnEnds #when You]
+  getAbilities (Infection a) = [restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #when You]
 
 instance RunMessage Infection where
   runMessage msg t@(Infection attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       placeInThreatArea attrs iid
       pure t
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      for_ attrs.owner \iid -> toDiscardBy iid attrs attrs
+    UseThisAbility iid (isSource attrs -> True) 1 -> do
+      toDiscardBy iid (attrs.ability 1) attrs
       pure t
     _ -> Infection <$> liftRunMessage msg attrs

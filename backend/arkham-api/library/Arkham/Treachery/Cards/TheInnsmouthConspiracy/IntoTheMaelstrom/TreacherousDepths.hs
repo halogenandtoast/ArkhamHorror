@@ -24,9 +24,9 @@ instance RunMessage TreacherousDepths where
       chooseOneM iid $ scenarioI18n $ scope "treacherousDepths" do
         withLocationOf iid \lid -> do
           whenM (lid <=~> CanHaveFloodLevelIncreased) do
-            labeled' "increaseFloodLevel" $ increaseThisFloodLevel lid
+            labeled "increaseFloodLevel" $ increaseThisFloodLevel lid
           whenM (selectAny $ DiscardableAsset <> assetControlledBy iid) do
-            labeled'
+            labeled
               "discardAssetsToShroud"
               do
                 shroud <- lift $ fromMaybe 0 <$> lid.shroud

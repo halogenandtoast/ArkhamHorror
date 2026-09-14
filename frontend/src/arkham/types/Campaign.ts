@@ -1,12 +1,13 @@
 import * as JsonDecoder from 'ts.data.json';
 import { v2Optional } from '@/arkham/parser';
 import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
-import { LogContents, logContentsDecoder } from '@/arkham/types/Log';
+import { LogContents, LogKey, logContentsDecoder, logKeyDecoder } from '@/arkham/types/Log';
 import { XpBreakdown, xpBreakdownDecoder} from '@/arkham/types/Xp';
 import { CampaignStep, campaignStepDecoder} from '@/arkham/types/CampaignStep';
 import { CardContents, Card, cardDecoder, cardContentsDecoder} from '@/arkham/types/Card';
 import { TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
 import { withDefault } from '@/arkham/parser';
+import { campaignOverlayDecoder, type CampaignOverlay } from '@/arkham/campaignOverlays';
 
 export type CampaignDetails = {
   id: string;
@@ -30,7 +31,26 @@ export const chaosBagChangeDecoder = JsonDecoder.object<ChaosBagChange>({
   after: JsonDecoder.array(tokenFaceDecoder, 'TokenFace[]'),
 }, 'ChaosBagChange');
 
+/**
+ * A recorded change to one of the campaign log's counts (Yig's Fury, ...),
+ * grouped by the campaign step it happened during.
+ */
+export type RecordCountChange = {
+  step: CampaignStep;
+  key: LogKey;
+  before: number;
+  after: number;
+}
+
+export const recordCountChangeDecoder = JsonDecoder.object<RecordCountChange>({
+  step: campaignStepDecoder,
+  key: logKeyDecoder,
+  before: JsonDecoder.number(),
+  after: JsonDecoder.number(),
+}, 'RecordCountChange');
+
 export type Campaign = {
+  overlays: CampaignOverlay[];
   name: string;
   id: string;
   log: LogContents;
@@ -43,6 +63,7 @@ export type Campaign = {
   decks: { [key: string]: CardContents[]  };
   chaosBag: TokenFace[];
   chaosBagHistory: ChaosBagChange[];
+  recordCountHistory: RecordCountChange[];
 }
 
 export const campaignDetailsDecoder = JsonDecoder.object<CampaignDetails>({
@@ -52,6 +73,7 @@ export const campaignDetailsDecoder = JsonDecoder.object<CampaignDetails>({
 }, 'CampaignDetails');
 
 export const campaignDecoder = JsonDecoder.object<Campaign>({
+  overlays: withDefault([], JsonDecoder.array(campaignOverlayDecoder, 'CampaignOverlay[]')),
   name: JsonDecoder.string(),
   id: JsonDecoder.string(),
   difficulty: difficultyDecoder,
@@ -64,4 +86,5 @@ export const campaignDecoder = JsonDecoder.object<Campaign>({
   decks: JsonDecoder.record(JsonDecoder.array(cardContentsDecoder, 'CardDef[]'), 'CardDef[]'),
   chaosBag: JsonDecoder.array(tokenFaceDecoder, 'TokenFace[]'),
   chaosBagHistory: withDefault([], JsonDecoder.array(chaosBagChangeDecoder, 'ChaosBagChange[]')),
+  recordCountHistory: withDefault([], JsonDecoder.array(recordCountChangeDecoder, 'RecordCountChange[]')),
 }, 'Campaign');

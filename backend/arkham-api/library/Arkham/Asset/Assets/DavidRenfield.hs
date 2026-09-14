@@ -26,8 +26,8 @@ instance RunMessage DavidRenfield where
   runMessage msg a@(DavidRenfield attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOneM iid $ withI18n $ cardNameVar attrs $ countVar 1 do
-        labeled' "placeDoomOn" $ placeDoom (attrs.ability 1) attrs 1
-        labeled' "doNotPlaceDoomOn" nothing
+        labeled "placeDoomOn" $ placeDoom (attrs.ability 1) attrs 1
+        labeled "doNotPlaceDoomOn" nothing
 
       doStep 1 msg
       pure a

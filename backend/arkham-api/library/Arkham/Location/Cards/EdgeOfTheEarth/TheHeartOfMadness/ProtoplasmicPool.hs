@@ -40,7 +40,7 @@ instance RunMessage ProtoplasmicPool where
           push $ SpendClues targetAmount iids
           activateSeal SealB
           chooseOneAtATimeM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2
-        labeled' "doNotSpendClues" nothing
+        labeled "doNotSpendClues" nothing
 
       pure l
     _ -> ProtoplasmicPool <$> liftRunMessage msg attrs

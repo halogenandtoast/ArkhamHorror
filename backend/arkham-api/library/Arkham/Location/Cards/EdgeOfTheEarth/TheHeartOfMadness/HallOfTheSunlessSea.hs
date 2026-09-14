@@ -17,7 +17,7 @@ hallOfTheSunlessSea = location HallOfTheSunlessSea Cards.hallOfTheSunlessSea 3 (
 instance HasAbilities HallOfTheSunlessSea where
   getAbilities (HallOfTheSunlessSea a) =
     extendRevealed1 a
-      $ restricted a 1 (youExist (InvestigatorWithDormantSeal SealA))
+      $ restricted a 1 (Here <> youExist (InvestigatorWithDormantSeal SealA))
       $ actionAbilityWithCost
         (GroupClueCost (PerPlayer 1) (be a) <> GroupDiscardCost (PerPlayer 2) #any (be a))
 

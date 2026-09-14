@@ -41,11 +41,15 @@ instance RunMessage BrokenReality where
           <> not_ (LocationWithTreachery $ treacheryIs Cards.brokenReality)
       withClues <- for candidates \lid -> (lid,) <$> field LocationClues lid
       let fewest = [lid | (lid, n) <- withClues, n == minimumEx (map snd withClues)]
-      unless (null withClues) $ chooseTargetM iid fewest $ attachTreachery attrs
+      if null withClues
+        then toDiscard attrs attrs
+        else chooseTargetM iid fewest $ attachTreachery attrs
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      for_ attrs.attached.location \lid -> push $ Flip iid (toSource attrs) (toTarget lid)
+      -- discard first: the flip back opens another 'FlipLocation' window, which
+      -- this same forced ability would answer again if the card were still attached
       toDiscardBy iid attrs attrs
+      for_ attrs.attached.location $ push . Flip iid (toSource attrs) . toTarget
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs

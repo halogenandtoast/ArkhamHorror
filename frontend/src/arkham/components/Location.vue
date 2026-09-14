@@ -6,7 +6,8 @@ import { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
 import { cardArt, cardImage } from '@/arkham/cardImages'
 import { keyToId } from '@/arkham/types/Key'
-import { useGameChoices } from '@/arkham/composables/useGameChoices'
+import { useGameChoices, useStickyChoicesSource } from '@/arkham/composables/useGameChoices'
+import { proxyOriginId } from '@/arkham/types/Source'
 import { useGameIndexes } from '@/arkham/composables/useGameIndexes'
 import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import DebugLocation from '@/arkham/components/debug/Location.vue'
@@ -539,6 +540,20 @@ const showCardsUnderneath = () => emits('show', cardsUnderneathToShow, 'Cards Un
 const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.location.id))
 const highlighted = computed(() => highlighter.highlighted.value === props.location.id || isAttackTarget.value)
 
+// Yellow marks the actor/source of what is happening. Two cases put this location there:
+// a pending question wrapped in QuestionWithSource (e.g. the location charging an
+// additional cost to leave it), and an offered proxied ability this location granted to
+// the card it now sits on.
+const choicesSource = useStickyChoicesSource(() => props.game, () => props.playerId)
+const sourceHighlighted = computed(() => {
+  const source = choicesSource.value
+  if (source !== null && 'contents' in source && source.contents === props.location.id) return true
+
+  return choices.value.some(
+    (c) => c.tag === MessageType.ABILITY_LABEL && proxyOriginId(c.ability.source) === props.location.id
+  )
+})
+
 function isVehicleAsset(assetId: string): boolean {
   const asset = props.game.assets[assetId]
   if (!asset) return false
@@ -616,7 +631,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           <div
             ref="innerFrame"
             class="card-frame-inner"
-            :class="{ highlighted, blocked, exhausted: isExhausted, 'card--flipping': flipping && !locationStory }"
+            :class="{ highlighted, blocked, 'blocked--selectable': blocked && canInteract && !hasObjective, exhausted: isExhausted, 'card--flipping': flipping && !locationStory }"
             :style="{ '--ui-rotation': `${uiRotation}deg` }"
             :data-rotation="uiRotation || undefined"
           >
@@ -637,7 +652,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
                 :data-id="id"
                 class="card card--locations"
                 :src="displayedImage"
-                :class="{ 'location--can-interact': canInteract && !hasObjective, 'location--can-interact-cursor': canInteract }"
+                :class="{ 'location--can-interact': canInteract && !hasObjective && !blocked, 'location--can-interact-cursor': canInteract, 'source-highlight': sourceHighlighted }"
                 draggable="false"
                 @drop="onDrop"
                 @dragover.prevent="dragover"
@@ -837,6 +852,10 @@ const hasAnyLocationVehicleAssets = computed(() =>
 .location--can-interact {
   border: 2px solid var(--select);
   cursor: pointer;
+}
+
+img.card.source-highlight {
+  box-shadow: 0 0 0 2px var(--important), 0 0 6px 1px var(--important), var(--card-shadow);
 }
 
 .location--can-interact-cursor {
@@ -1149,8 +1168,24 @@ const hasAnyLocationVehicleAssets = computed(() =>
     &.exhausted {
       transform: rotate(calc(90deg + var(--ui-rotation))) translateX(-10px);
     }
-    &.blocked {
+    /* Dim the art, not the affordance. `filter` applies to the whole subtree, so
+       a blocked location that is also the pending choice used to render its
+       --select border in muted grey (#5592). */
+    &.blocked :deep(.card) {
       filter: grayscale(0.5) brightness(0.85);
+    }
+
+    /* A pseudo-element, not `outline`: an inset outline is swallowed by the
+       frame's `overflow: hidden`, and a non-inset one grows the tile. */
+    &.blocked--selectable::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      box-sizing: border-box;
+      border: 2px solid var(--select);
+      border-radius: 3px;
+      pointer-events: none;
+      z-index: var(--z-index-1);
     }
     --gradient-glow: #bde038, rebeccapurple, rebeccapurple, #bde038;
   }

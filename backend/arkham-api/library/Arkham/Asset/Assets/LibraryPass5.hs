@@ -56,7 +56,7 @@ instance RunMessage LibraryPass5 where
       selectOne (AssetAttachedToAsset $ be attrs) >>= \case
         Nothing -> spendResources iid 1
         Just aid -> chooseOrRunOneM iid do
-          when (resources > 0) $ (cardI18n $ labeled' "libraryPass5.pay1Resources") (spendResources iid 1)
-          (cardI18n $ labeled' "libraryPass5.putOnBottomOfDeck") $ putOnBottomOfDeck iid iid aid
+          when (resources > 0) $ (cardI18n $ labeled "libraryPass5.pay1Resources") (spendResources iid 1)
+          (cardI18n $ labeled "libraryPass5.putOnBottomOfDeck") $ putOnBottomOfDeck iid iid aid
       pure a
     _ -> LibraryPass5 <$> liftRunMessage msg attrs

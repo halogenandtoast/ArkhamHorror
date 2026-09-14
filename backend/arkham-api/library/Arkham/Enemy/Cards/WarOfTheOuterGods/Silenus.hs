@@ -38,8 +38,8 @@ instance RunMessage Silenus where
     ForTarget (InvestigatorTarget iid) (UseThisAbility _ (isSource attrs -> True) 1) -> do
       hand <- iid.hand
       scenarioI18n $ blueDecide iid do
-        labeled' "placeDoomOnTheBlueAgenda" $ placeDoomOnFactionAgenda (attrs.ability 1) BlueFaction 1
-        labeled' "removeHandFromGame" $ for_ hand removeCardFromGame
-        labeled' "take3Horror" $ assignHorror iid (attrs.ability 1) 3
+        labeled "placeDoomOnTheBlueAgenda" $ placeDoomOnFactionAgenda (attrs.ability 1) BlueFaction 1
+        labeled "removeHandFromGame" $ for_ hand removeCardFromGame
+        labeled "take3Horror" $ assignHorror iid (attrs.ability 1) 3
       pure e
     _ -> Silenus <$> liftRunMessage msg attrs

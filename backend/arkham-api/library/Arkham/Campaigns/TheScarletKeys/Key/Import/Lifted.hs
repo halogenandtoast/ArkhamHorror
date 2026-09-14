@@ -110,6 +110,8 @@ import Arkham.Message as X (
   pattern RepeatSkillTest,
   pattern SetSkillTestTarget,
   pattern SetSkillTestResolveFailureInvestigator,
+  pattern AddChaosToken,
+  pattern AddChaosTokenForGame,
   pattern BeginSkillTestWithPreMessages,
   pattern BeginSkillTestWithPreMessages',
   pattern BeginSkillTestAfterFast,
@@ -305,6 +307,6 @@ handleUnstableFlip :: ReverseQueue m => InvestigatorId -> ScarletKeyAttrs -> m (
 handleUnstableFlip iid attrs = do
   if attrs.token Empowerment > 0
     then chooseOneM iid $ campaignI18n do
-      labeled' "empowered" $ removeTokens attrs attrs Empowerment 1
-      unscoped $ labeled' "skip" $ flipOver iid attrs
+      labeled "empowered" $ removeTokens attrs attrs Empowerment 1
+      unscoped $ labeled "skip" $ flipOver iid attrs
     else flipOver iid attrs

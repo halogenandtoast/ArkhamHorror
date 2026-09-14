@@ -40,8 +40,8 @@ instance RunMessage ShiveringPools where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasResources <- fieldP InvestigatorResources (> 0) iid
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
-        when hasResources $ countVar 5 $ labeled' "loseResources" $ loseResources iid (attrs.ability 1) 5
+        countVar 1 $ labeled "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
+        when hasResources $ countVar 5 $ labeled "loseResources" $ loseResources iid (attrs.ability 1) 5
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck 1
@@ -52,8 +52,8 @@ instance RunMessage ShiveringPools where
           belowEmpty <- directionEmpty attrs Below
           rightEmpty <- directionEmpty attrs RightOf
           chooseOrRunOneM iid $ scenarioI18n do
-            when belowEmpty $ labeled' "below" $ placeAtDirection_ Below attrs card
-            when rightEmpty $ labeled' "right" $ placeAtDirection_ RightOf attrs card
+            when belowEmpty $ labeled "below" $ placeAtDirection_ Below attrs card
+            when rightEmpty $ labeled "right" $ placeAtDirection_ RightOf attrs card
         [] -> pure ()
         _ -> error "wrong number of cards drawn"
       pure l

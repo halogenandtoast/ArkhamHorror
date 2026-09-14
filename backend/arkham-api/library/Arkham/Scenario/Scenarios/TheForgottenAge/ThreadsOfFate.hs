@@ -118,9 +118,9 @@ setupThreadsOfFate _attrs = do
         sample2 Acts.friendsInHighPlacesHenrysInformation Acts.friendsInHighPlacesHenryDeveau
       genCards
         [Acts.searchForAlejandro, friendsInHighPlaces, Acts.alejandrosPrison, Acts.alejandrosPlight]
-    scope "adjustCD" $ storyWithChooseOneM' (ul $ li.nested "body" $ li "option1" >> li "option2") do
-      labeled' "goToThePolice" $ push $ SetActDeckCards 2 act2Deck1
-      labeled' "lookOnYourOwn" $ push $ SetActDeckCards 2 act2Deck2
+    scope "adjustCD" $ storyWithChooseOneM (ul $ li.nested "body" $ li "option1" >> li "option2") do
+      labeled "goToThePolice" $ push $ SetActDeckCards 2 act2Deck1
+      labeled "lookOnYourOwn" $ push $ SetActDeckCards 2 act2Deck2
 
     flavor $ scope "adjustEF" do
       ul do
@@ -197,10 +197,10 @@ setupThreadsOfFate _attrs = do
           , Acts.theBrotherhoodIsRevealed
           ]
   whenReturnTo $ leadChooseOneM $ scope "setup" do
-    questionLabeled' "chooseActDeck4"
+    questionLabeled "chooseActDeck4"
     questionLabeledCard (CardCode "53028b")
-    labeled' "findSource" $ doStep 1 Setup
-    labeled' "findRoot" $ doStep 2 Setup
+    labeled "findSource" $ doStep 1 Setup
+    labeled "findRoot" $ doStep 2 Setup
 
 instance RunMessage ThreadsOfFate where
   runMessage msg s@(ThreadsOfFate attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -208,7 +208,7 @@ instance RunMessage ThreadsOfFate where
       traverse_ obtainCard =<< findCard (`cardMatch` cardIs Assets.relicOfAgesADeviceOfSomeSort)
       traverse_ obtainCard =<< findCard (`cardMatch` cardIs Assets.alejandroVela)
       gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
-      storyWithContinue' do
+      storyWithContinue do
         h "title"
         p "intro1"
         p.basic.right.validate (not gaveCustodyToHarlan) "proceedToIntro2"
@@ -219,45 +219,45 @@ instance RunMessage ThreadsOfFate where
       when isReturnTo $ doStep 7 PreScenarioSetup
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (h "title" >> p "intro2") do
-        labeled' "skipToIntro4" $ doStep 4 PreScenarioSetup
-        labeled' "skipToIntro5" $ doStep 5 PreScenarioSetup
+      storyWithChooseOneM (h "title" >> p "intro2") do
+        labeled "skipToIntro4" $ doStep 4 PreScenarioSetup
+        labeled "skipToIntro5" $ doStep 5 PreScenarioSetup
       pure s
     DoStep 3 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (h "title" >> p "intro3") do
-        labeled' "proceedToIntro4" $ doStep 4 PreScenarioSetup
-        labeled' "skipToIntro5" $ doStep 5 PreScenarioSetup
+      storyWithChooseOneM (h "title" >> p "intro3") do
+        labeled "proceedToIntro4" $ doStep 4 PreScenarioSetup
+        labeled "skipToIntro5" $ doStep 5 PreScenarioSetup
       pure s
     DoStep 4 PreScenarioSetup -> scope "intro" do
-      storyWithContinue' (h "title" >> p "intro4")
+      storyWithContinue (h "title" >> p "intro4")
       remember YouListenedToIchtacasTale
       unlessStandalone $ addChaosToken Cultist
       pure s
     DoStep 5 PreScenarioSetup -> scope "intro" do
-      storyWithContinue' (h "title" >> p "intro5")
+      storyWithContinue (h "title" >> p "intro5")
       remember IchtacaLeftWithoutYou
       whenHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone $ doStep 6 PreScenarioSetup
       pure s
     DoStep 6 PreScenarioSetup -> scope "intro" do
-      storyWithChooseOneM' (h "title" >> p "intro6") do
-        labeled' "beWary" do
+      storyWithChooseOneM (h "title" >> p "intro6") do
+        labeled "beWary" do
           record YouAreForgingYourOwnWay
           unlessStandalone do
             removeCampaignCard Assets.alejandroVela
             removeAllChaosTokens Cultist
             removeAllChaosTokens Tablet
             addChaosToken ElderThing
-        labeled' "listen" nothing
+        labeled "listen" nothing
       pure s
     DoStep 7 PreScenarioSetup -> scope "intro" do
-      storyWithContinue' (h "title" >> p "intro7")
+      storyWithContinue (h "title" >> p "intro7")
       pure s
     StandaloneSetup -> scope "standalone" do
       lead <- getLead
       setChaosTokens standaloneChaosTokens
       chooseOneM lead do
-        labeled' "gaveCustodyToAlejandro" $ record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
-        labeled' "gaveCustodyToHarlan" $ record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
+        labeled "gaveCustodyToAlejandro" $ record TheInvestigatorsGaveCustodyOfTheRelicToAlejandro
+        labeled "gaveCustodyToHarlan" $ record TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone
       pure s
     Setup -> runScenarioSetup ThreadsOfFate attrs $ setupThreadsOfFate attrs
     DoStep 1 Setup -> do

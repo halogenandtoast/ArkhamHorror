@@ -153,6 +153,10 @@ data Cost
   | DiscardHandCost
   | DoomCost Source Target Int
   | EnemyDoomCost Int EnemyMatcher
+  | {- | "Place N doom on a card you control." Unlike 'DoomCost', which names its
+    target up front, the payer picks which matching asset takes the doom.
+    -}
+    AssetDoomCost Int AssetMatcher
   | EnemyAttackCost EnemyId
   | RemoveEnemyDamageCost GameValue EnemyMatcher
   | ExileCost Target
@@ -167,6 +171,11 @@ data Cost
   | SameSkillIconCost Int
   | SameSkillIconCostMatching Int ExtendedCardMatcher
   | DiscardCombinedCost Int
+  | {- | 'DiscardCombinedCost' where the total is worked out when the cost is
+    paid rather than written in advance -- "cards with a combined value equal to
+    or greater than your resources".
+    -}
+    CalculatedDiscardCombinedCost GameCalculation
   | ShuffleDiscardCost Int CardMatcher
   | Free
   | ScenarioResourceCost Int
@@ -193,11 +202,30 @@ data Cost
   | AtLeastOne GameCalculation Cost
   | SealCost ChaosTokenMatcher
   | SealMultiCost Int ChaosTokenMatcher
+  | {- | "Search the chaos bag for a matching token and seal it on your
+    investigator card." Unlike 'SealCost', which leaves the sealed token for the
+    played card to claim, this attaches it to the paying investigator, so it
+    works for costs paid outside of playing a card (movement, ability tolls).
+    -}
+    SealOnInvestigatorCost ChaosTokenMatcher
+  | SealChaosTokenOnInvestigatorCost ChaosToken -- internal to track sealed token
+  | {- | "Reveal N random chaos tokens." The revealed tokens are delivered to the
+    'Source' as 'RequestedChaosTokens', so the card that contributed the cost
+    decides what they mean; additional costs are contributed by a card other than
+    the one acting, so the active cost's own source would route them elsewhere.
+    -}
+    RevealChaosTokensCost Source Int
+  | {- | "Search the encounter deck (and discard pile) for a matching card." The
+    found card is delivered to the 'Target' as 'FoundEncounterCard', so the card
+    that contributed the cost decides what happens to it.
+    -}
+    FindEncounterCardCost Target [ScenarioZone] CardMatcher
   | AddFrostTokenCost Int
   | AddCurseTokenCost Int
-  | -- | Add N chaos tokens of this face to the chaos bag. Faces drawn from a
-    -- limited pool (bless\/curse\/frost\/blood, and any homebrew face with a
-    -- 'tokenPool') can only be paid while that pool still has enough tokens.
+  | {- | Add N chaos tokens of this face to the chaos bag. Faces drawn from a
+    limited pool (bless\/curse\/frost\/blood, and any homebrew face with a
+    'tokenPool') can only be paid while that pool still has enough tokens.
+    -}
     AddTokenCost Int ChaosTokenFace
   | AddCurseTokensCost Int Int
   | AddCurseTokensEqualToShroudCost
@@ -228,6 +256,12 @@ data Cost
   | GloriaCost -- lol, not going to attempt to make this generic
   | ArchiveOfConduitsUnidentifiedCost -- this either
   | LabeledCost Text Cost
+  | {- | Carries the card that contributed this cost. An active cost is sourced to the
+    card being paid for, so a rider handed to it from elsewhere -- a location charging
+    you to leave it -- would otherwise be attributed to the wrong card. Payment is
+    sourced to the contributor instead, and its questions highlight it on the board.
+    -}
+    SourcedCost Source Cost
   | FlipScarletKeyCost
   | -- We do the costs that can kill the investigator last so we don't trigger discards before the cost is paid
     DirectHorrorCost Source InvestigatorMatcher Int

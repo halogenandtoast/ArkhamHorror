@@ -24,9 +24,9 @@ instance RunMessage LanternClubMember where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       resources <- getSpendableResources iid
       chooseOrRunOneM iid do
-        withI18n $ labeled' "evade" $ automaticallyEvadeEnemy iid attrs
+        withI18n $ labeled "evade" $ automaticallyEvadeEnemy iid attrs
         when (resources >= 2) do
-          scenarioI18n $ labeled' "lanternClubMember.discard" do
+          scenarioI18n $ labeled "lanternClubMember.discard" do
             spendResources iid 2
             toDiscardBy iid (attrs.ability 1) attrs
       pure e

@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Prelude
 
 newtype AnotherDayAnotherDollar3 = AnotherDayAnotherDollar3 AssetAttrs
-  deriving anyclass (IsAsset, HasAbilities)
+  deriving anyclass (IsAsset, HasAbilities, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 anotherDayAnotherDollar3 :: AssetCard AnotherDayAnotherDollar3
@@ -15,6 +15,3 @@ anotherDayAnotherDollar3 = asset AnotherDayAnotherDollar3 Cards.anotherDayAnothe
 instance HasModifiersFor AnotherDayAnotherDollar3 where
   getModifiersFor (AnotherDayAnotherDollar3 a) = for_ a.controller \iid -> do
     modifiedWith_ a iid setActiveDuringSetup [StartingResources 2]
-
-instance RunMessage AnotherDayAnotherDollar3 where
-  runMessage msg (AnotherDayAnotherDollar3 attrs) = AnotherDayAnotherDollar3 <$> runMessage msg attrs

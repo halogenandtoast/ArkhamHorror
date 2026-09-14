@@ -2,8 +2,7 @@ module Arkham.Agenda.Cards.TheDrownedCity.TheGrandVault.BowelsOfTheCity (bowelsO
 
 import Arkham.Agenda.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Agenda.Import.Lifted
-import Arkham.Campaigns.TheDrownedCity.Helpers (struggleForAir)
-import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (needsAir)
+import Arkham.Campaigns.TheDrownedCity.Helpers (struggleForAir, strugglesForAir)
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheInescapable qualified as Enemies
 import Arkham.Helpers.Enemy (disengageEnemyFromAll)
@@ -22,7 +21,7 @@ bowelsOfTheCity :: AgendaCard BowelsOfTheCity
 bowelsOfTheCity = agenda (1, A) BowelsOfTheCity Cards.bowelsOfTheCity (Static 3)
 
 instance HasAbilities BowelsOfTheCity where
-  getAbilities (BowelsOfTheCity a) = [needsAir a 1]
+  getAbilities (BowelsOfTheCity a) = [strugglesForAir a 1]
 
 instance RunMessage BowelsOfTheCity where
   runMessage msg a@(BowelsOfTheCity attrs) = runQueueT $ case msg of

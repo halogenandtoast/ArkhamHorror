@@ -4,19 +4,23 @@ import Arkham.Treachery.CardDefs.Import
 
 shellShock :: CardDef
 shellShock =
-  (weakness "03008" "Shell Shock") {cdCardTraits = setFromList [Flaw]}
+  signature "03001"
+    $ (weakness "03008" "Shell Shock") {cdCardTraits = setFromList [Flaw]}
 
 starsOfHyades :: CardDef
 starsOfHyades =
-  (weakness "03013" "Stars of Hyades") {cdCardTraits = setFromList [Curse]}
+  signature "03003"
+    $ (weakness "03013" "Stars of Hyades") {cdCardTraits = setFromList [Curse]}
 
 angeredSpirits :: CardDef
 angeredSpirits =
-  (weakness "03015" "Angered Spirits") {cdCardTraits = singleton Task}
+  signature "03004"
+    $ (weakness "03015" "Angered Spirits") {cdCardTraits = singleton Task}
 
 crisisOfIdentity :: CardDef
 crisisOfIdentity =
-  (weakness "03019" "Crisis of Identity") {cdCardTraits = singleton Madness}
+  signature "03006"
+    $ (weakness "03019" "Crisis of Identity") {cdCardTraits = singleton Madness}
 
 overzealous :: CardDef
 overzealous =

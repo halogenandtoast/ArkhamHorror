@@ -128,10 +128,7 @@ runCarcosaAchievements msg = whenEligibleCampaign $ case msg of
     -- "Fair Warning": defeat the Royal Emissary three times during Curtain
     -- Call. The Third Act keeps respawning it, so the defeats accumulate.
     when (cardDef == Enemies.royalEmissary) $ whenCurtainCall do
-      n <- storedInt royalEmissaryDefeatsKey
-      setStore royalEmissaryDefeatsKey (n + 1)
-      when (n + 1 >= 3) do
-        earn FairWarning
+      bumpCounter royalEmissaryDefeatsKey 1
 
     -- "Crashing the Party": defeat the Lunatic version of Dianne Devine (the
     -- Return-to enemy that carries the Lunatic trait) in The Last King.
@@ -189,6 +186,13 @@ runCarcosaAchievements msg = whenEligibleCampaign $ case msg of
     whenEchoesOfThePast do
       whenM (selectAny $ locationIs Locations.hiddenLibrary <> RevealedLocation <> LocationWithoutClues) do
         earn ForPryingEyes
+
+  {- Deferred threshold checks: 'bumpCounter' does its arithmetic when the message
+  is processed, so the counter only reads its new value here.
+  -}
+  CounterBumped k
+    | k == royalEmissaryDefeatsKey -> whenM ((>= 3) <$> storedInt k) $ earn FairWarning
+    | k == spokenHasturKey -> whenM ((>= 7) <$> storedInt k) $ earn SayMyName
   _ -> pure ()
 
 earn :: (HasGame m, HasQueue Message m) => ThePathToCarcosaAchievement -> m ()
@@ -247,10 +251,8 @@ possessionTreacheries =
   ]
 
 countSpokenHastur :: (HasGame m, HasQueue Message m) => Int -> m ()
-countSpokenHastur n = whenM (getHasRecord YouHeadedDanielsWarning) do
-  c <- storedInt spokenHasturKey
-  setStore spokenHasturKey (c + n)
-  when (c + n >= 7) $ earn SayMyName
+countSpokenHastur n =
+  whenM (getHasRecord YouHeadedDanielsWarning) $ bumpCounter spokenHasturKey n
 
 -- Campaign store plumbing. Writes go through the queue ('SetGlobal' is handled
 -- by the campaign runner); reads see all previously processed writes.

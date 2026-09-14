@@ -27,7 +27,7 @@ instance HasAbilities YourHouse where
   getAbilities (YourHouse x) =
     extendRevealed
       x
-      [ forcedAbility x 1 $ EnemySpawns #when Anywhere $ enemyIs Cards.ghoulPriest
+      [ forcedAbility x 1 $ EnemySpawns #when (PlacementAt Anywhere) $ enemyIs Cards.ghoulPriest
       , playerLimit PerTurn
           $ restrictedAbility x 2 (Here <> youExist (oneOf [can.draw.cards, can.gain.resources])) actionAbility
       ]

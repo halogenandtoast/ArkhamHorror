@@ -26,8 +26,8 @@ instance RunMessage UltimateChaos where
         azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
         for_ instances (toDiscard attrs)
         chooseOneM iid $ scenarioI18n do
-          labeled' "ultimateChaos.doom" $ placeDoom attrs azathoth 1
-          labeled' "ultimateChaos.attack" $ eachInvestigator $ initiateEnemyAttack azathoth attrs
+          labeled "ultimateChaos.doom" $ placeDoom attrs azathoth 1
+          labeled "ultimateChaos.attack" $ eachInvestigator $ initiateEnemyAttack azathoth attrs
       pure t
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth

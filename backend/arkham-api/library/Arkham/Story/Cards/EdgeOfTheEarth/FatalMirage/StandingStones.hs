@@ -24,12 +24,12 @@ instance RunMessage StandingStones where
         for_ mTheBlackStone \loc ->
           withI18n
             $ keyVar "name" "The Black Stone"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
         for_ mDyersClassroom \loc ->
           withI18n
             $ keyVar "name" "Dyer's Classroom"
-            $ labeled' "putSetAsideLocationIntoPlay"
+            $ labeled "putSetAsideLocationIntoPlay"
             $ placeLocation_ loc
 
       pure s

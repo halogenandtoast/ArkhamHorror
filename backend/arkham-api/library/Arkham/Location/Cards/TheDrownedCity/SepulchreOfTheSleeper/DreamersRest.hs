@@ -11,7 +11,7 @@ newtype DreamersRest = DreamersRest LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dreamersRest :: LocationCard DreamersRest
-dreamersRest = location DreamersRest Cards.dreamersRest 1 (Static 5)
+dreamersRest = location DreamersRest Cards.dreamersRest 1 (PerPlayer 5)
 
 instance HasAbilities DreamersRest where
   getAbilities (DreamersRest a) =
@@ -20,7 +20,7 @@ instance HasAbilities DreamersRest where
     extendRevealed1 a
       $ mkAbility a 1
       $ forced
-      $ SkillTestResult #after (InvestigatorAt $ be a) AnySkillTest #failure
+      $ SkillTestResult #after (You <> investigatorAt a) AnySkillTest #failure
 
 instance RunMessage DreamersRest where
   runMessage msg l@(DreamersRest attrs) = runQueueT $ case msg of

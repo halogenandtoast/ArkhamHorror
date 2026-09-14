@@ -22,7 +22,7 @@ instance RunMessage BahiaPalaceGardensAbandoned where
   runMessage msg l@(BahiaPalaceGardensAbandoned attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
       pure l
     _ -> BahiaPalaceGardensAbandoned <$> liftRunMessage msg attrs

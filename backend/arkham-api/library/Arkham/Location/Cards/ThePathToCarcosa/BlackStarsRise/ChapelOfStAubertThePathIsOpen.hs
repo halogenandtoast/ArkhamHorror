@@ -31,7 +31,7 @@ instance HasAbilities ChapelOfStAubertThePathIsOpen where
 instance RunMessage ChapelOfStAubertThePathIsOpen where
   runMessage msg l@(ChapelOfStAubertThePathIsOpen attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> withI18n do
-      countVar 3 $ chooseAmount' iid "takeHorrorUpTo" "$horror" 0 3 attrs
+      countVar 3 $ chooseAmount iid "takeHorrorUpTo" "$horror" 0 3 attrs
       pure l
     ResolveAmounts iid (getChoiceAmount "$horror" -> horrorAmount) (isTarget attrs -> True) -> do
       when (horrorAmount > 0) $ assignHorror iid (attrs.ability 1) horrorAmount

@@ -34,12 +34,12 @@ instance RunMessage DimensionalBeamMachine where
       enemies <- select $ NonEliteEnemy <> enemyAtLocationWith iid
       destinations <- select RevealedLocation
       chooseOneM iid $ scenarioI18n do
-        labeled' "dimensionalBeamMachine.investigator" do
+        labeled "dimensionalBeamMachine.investigator" do
           chooseTargetM iid investigators \investigator ->
             chooseTargetM iid destinations \destination ->
               moveTo (attrs.ability 1) investigator destination
         when (notNull enemies) do
-          labeled' "dimensionalBeamMachine.enemy" do
+          labeled "dimensionalBeamMachine.enemy" do
             chooseTargetM iid enemies \enemy ->
               chooseTargetM iid destinations \destination ->
                 push $ EnemyMove enemy destination

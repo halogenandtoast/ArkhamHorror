@@ -35,9 +35,9 @@ instance RunMessage PatricesViolin where
 
       chooseOneM iid' $ withI18n $ countVar 1 do
         when canGainResources do
-          labeled' "gainResources" $ gainResources iid' source 1
+          labeled "gainResources" $ gainResources iid' source 1
         when canDrawCards do
-          labeled' "drawCards" $ drawCards iid' source 1
+          labeled "drawCards" $ drawCards iid' source 1
 
       pure a
     _ -> PatricesViolin <$> liftRunMessage msg attrs

@@ -56,11 +56,11 @@ instance RunMessage TheTrueCulpritV2 where
       when (clues >= 2) do
         chooseOneM iid $ scenarioI18n $ scope "theTrueCulprit" do
           when isReady do
-            labeled' "removeCluesToExhaust" do
+            labeled "removeCluesToExhaust" do
               removeClues sinisterSolution sinisterSolution 2
               exhaustWith attrs otherworldlyMeddler
 
-          labeled' "removeCluesToDealDamage" do
+          labeled "removeCluesToDealDamage" do
             removeClues sinisterSolution sinisterSolution 2
             nonAttackEnemyDamage (Just iid) sinisterSolution 2 otherworldlyMeddler
           withI18n skip_

@@ -26,8 +26,8 @@ instance HasAbilities TemploMayor_174 where
           $ restricted a 2 (Here <> canDiscoverCluesAt (be a))
           $ freeReaction
           $ oneOf
-            [ IfEnemyDefeated #after You ByAny (enemyAt a.id <> EnemyWithTrait Serpent)
-            , EnemyEvaded #after You (enemyAt a.id <> EnemyWithTrait Serpent)
+            [ IfEnemyDefeated #after You ByAny (enemyWasAt a.id <> EnemyWithTrait Serpent)
+            , EnemyEvaded #after You (enemyWasAt a.id <> EnemyWithTrait Serpent)
             ]
       ]
 

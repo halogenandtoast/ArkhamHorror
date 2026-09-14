@@ -59,8 +59,8 @@ instance RunMessage TheGrandVault where
   runMessage msg s@(TheGrandVault attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "intro" do
       headedWest <- getHasRecord TheExpeditionHeadedWest
-      storyWithContinue' do
-        setTitle "title"
+      storyWithContinue do
+        h "title"
         p.basic "checkCampaignLog"
         ul do
           li.validate headedWest "headedWest"
@@ -83,7 +83,7 @@ instance RunMessage TheGrandVault where
 
       for_ withToeTheLine \iid -> do
         canErase <- canEraseProgress iid Key.ToeTheLine
-        storyWithChooseOneM'
+        storyWithChooseOneM
           ( compose.green do
               h3 "toeTheLine.title"
               p "toeTheLine.instructions"
@@ -102,7 +102,7 @@ instance RunMessage TheGrandVault where
                 attrs
                 iid
                 [SkillModifier st 1 | st <- [minBound ..]]
-            labeled' "toeTheLine.highRoad" do
+            labeled "toeTheLine.highRoad" do
               incrementRecordCountForInvestigator iid Key.ToeTheLine 2
               sufferMentalTrauma iid 1
               createWindowModifierEffect_
@@ -214,10 +214,11 @@ instance RunMessage TheGrandVault where
       eachInvestigator (`forInvestigator` Setup)
     ForInvestigator iid Setup -> do
       artifacts <- getAvailableArtifacts
+      items <- getAvailableExpeditionItems
       chooseOneM iid do
-        questionLabeled' "chooseExpeditionAssetQuestion"
-        labeled' "noExpeditionAsset" nothing
-        for_ (artifacts <> expeditionItems) \asset ->
+        questionLabeled "chooseExpeditionAssetQuestion"
+        labeled "noExpeditionAsset" nothing
+        for_ (artifacts <> items) \asset ->
           cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
@@ -264,7 +265,7 @@ instance RunMessage TheGrandVault where
               filterM (`investigatorHasTask` Assets.goodMoney) =<< select (IncludeEliminated Anyone)
             for_ withGoodMoney \iid -> do
               canErase <- canEraseProgress iid Key.GoodMoney
-              storyWithChooseOneM'
+              storyWithChooseOneM
                 ( compose.green do
                     h3 "goodMoney.title"
                     p "goodMoney.instructions"
@@ -279,7 +280,7 @@ instance RunMessage TheGrandVault where
                   labeledValidate' canErase "goodMoney.playItSafe" do
                     decrementRecordCountForInvestigator iid Key.GoodMoney 1
                     nextSetupModifier attrs.id attrs iid (StartingResources 3)
-                  labeled' "goodMoney.playBothSides" do
+                  labeled "goodMoney.playBothSides" do
                     incrementRecordCountForInvestigator iid Key.GoodMoney 2
                     forNextScenarioModifier attrs.id EffectGameWindow attrs iid DoNotCollectResourcesDuringUpkeep
 
@@ -310,14 +311,14 @@ cultistPenalty :: (HasI18n, ReverseQueue m) => Bool -> InvestigatorId -> m ()
 cultistPenalty easyStandard iid = do
   mlid <- selectOne $ locationWithInvestigator iid <> activatedLocation
   chooseOneM iid do
-    for_ mlid $ labeled' "deactivateYourLocation" . deactivateLocation Cultist
+    for_ mlid $ labeled "deactivateYourLocation" . deactivateLocation Cultist
     withI18n
       $ if easyStandard
         then countVar 1 do
-          labeled' "takeDamage" $ assignDamage iid Cultist 1
-          labeled' "takeHorror" $ assignHorror iid Cultist 1
+          labeled "takeDamage" $ assignDamage iid Cultist 1
+          labeled "takeHorror" $ assignHorror iid Cultist 1
         else
           numberVar "damage" 1
             $ numberVar "horror" 1
-            $ labeled' "takeDamageAndHorror"
+            $ labeled "takeDamageAndHorror"
             $ assignDamageAndHorror iid Cultist 1 1

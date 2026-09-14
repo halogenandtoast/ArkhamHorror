@@ -32,10 +32,10 @@ instance RunMessage GrannyOrne where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withSkillTest \sid ->
         chooseOneM iid do
-          (cardI18n $ labeled' "grannyOrne.failBy1Less") do
+          (cardI18n $ labeled "grannyOrne.failBy1Less") do
             skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier (-1))
             push RecalculateSkillTestResults
-          (cardI18n $ labeled' "grannyOrne.failBy1More") do
+          (cardI18n $ labeled "grannyOrne.failBy1More") do
             skillTestModifier sid (attrs.ability 1) sid (SkillTestResultValueModifier 1)
             push RecalculateSkillTestResults
       pure a

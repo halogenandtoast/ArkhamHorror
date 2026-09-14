@@ -63,7 +63,7 @@ instance RunMessage FateOfTheValeV1 where
       abyss <- getScenarioDeck AbyssDeck
       let revealed = filter ((`elem` map toCardId abyss) . toCardId) originallyRevealed
       chooseOneM iid $ withI18n do
-        labeled' "continue" do
+        labeled "continue" do
           for_ revealed $ scenarioSpecific "removeFromAbyss" . toCardId
           let enemies = filter (\c -> toCardType c == EnemyType && not (cdDoubleSided $ toCardDef c)) revealed
           when (notNull enemies) do
@@ -81,7 +81,7 @@ instance RunMessage FateOfTheValeV1 where
       lead <- getLead
       hasShard <- selectAny $ assetIs Assets.prismaticShardAlienMeteorite <> AssetControlledBy Anyone
       chooseOneM lead $ scenarioI18n do
-        labeled' "fateOfTheValeV1.letMarquezCarryOutPlan" $ push R1
-        when hasShard $ labeled' "fateOfTheValeV1.doItOurselves" $ push R2
+        labeled "fateOfTheValeV1.letMarquezCarryOutPlan" $ push R1
+        when hasShard $ labeled "fateOfTheValeV1.doItOurselves" $ push R2
       pure a
     _ -> FateOfTheValeV1 <$> liftRunMessage msg attrs

@@ -9,7 +9,7 @@ import Arkham.Effect.Import
 import Arkham.Effect.Window
 import Arkham.Fight
 import Arkham.Helpers.Modifiers (effectModifiers)
-import Arkham.Helpers.SkillTest (getAttackedEnemy, withSkillTest)
+import Arkham.Helpers.SkillTest (getAttackedEnemy, getSkillTestId)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher (InvestigatorMatcher (TurnInvestigator))
 import Arkham.Modifier
@@ -32,7 +32,7 @@ instance RunMessage Wither4 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
       sid <- getRandom
-      createCardEffect Cards.wither4 (effectMetaTarget sid) source iid
+      createSkillTestCardEffect sid Cards.wither4 Nothing source iid
       skillTestModifier sid source iid (SkillModifier #willpower 2)
       aspect iid source (#willpower `InsteadOf` #combat) (mkChooseFight sid iid source)
       pure a
@@ -47,35 +47,38 @@ wither4Effect = cardEffect Wither4Effect Cards.wither4
 
 instance RunMessage Wither4Effect where
   runMessage msg e@(Wither4Effect attrs) = runQueueT $ case msg of
-    RevealChaosToken _ iid token | isTarget iid attrs.target -> do
-      withSkillTest \sid -> do
-        isTaboo <- maybe False (>= TabooList25) <$> field InvestigatorTaboo iid
-        let checkToken =
-              if isTaboo
-                then isSymbolChaosToken
-                else (`elem` [Skull, Cultist, Tablet, ElderThing])
-        let triggers =
-              checkToken token.face
-                && maybe False (isTarget sid) attrs.metaTarget
-        when triggers $ getAttackedEnemy >>= \case
-          Nothing -> disable attrs
-          Just enemyId -> do
-            iid' <- selectJust TurnInvestigator
-            ems <-
-              effectModifiers
-                attrs
-                [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1), HealthModifierWithMin (-1) (Min 1)]
-            push
-              $ If
-                (Window.RevealChaosTokenEffect iid token attrs.id)
-                [ CreateWindowModifierEffect
-                    (if isTaboo then EffectPhaseWindow else EffectTurnWindow iid')
-                    ems
-                    attrs.source
-                    (toTarget enemyId)
-                ]
-            disable attrs
-      pure e
-    SkillTestEnds sid _ _ | maybe False (isTarget sid) attrs.metaTarget -> do
-      disableReturn e
+    RevealChaosToken _ iid token
+      | isTarget iid attrs.target
+      , not attrs.finished -> do
+          msid <- getSkillTestId
+          isTaboo <- maybe False (>= TabooList25) <$> field InvestigatorTaboo iid
+          let checkToken =
+                if isTaboo
+                  then isSymbolChaosToken
+                  else (`elem` [Skull, Cultist, Tablet, ElderThing])
+          let triggers = checkToken token.face && isJust msid && msid == attrs.skillTest
+          if triggers
+            then do
+              getAttackedEnemy >>= \case
+                Nothing -> pure ()
+                Just enemyId -> do
+                  iid' <- selectJust TurnInvestigator
+                  ems <-
+                    effectModifiers
+                      attrs
+                      [EnemyFightWithMin (-1) (Min 1), EnemyEvadeWithMin (-1) (Min 1), HealthModifierWithMin (-1) (Min 1)]
+                  push
+                    $ If
+                      (Window.RevealChaosTokenEffect iid token attrs.id)
+                      [ CreateWindowModifierEffect
+                          (if isTaboo then EffectPhaseWindow else EffectTurnWindow iid')
+                          ems
+                          attrs.source
+                          (toTarget enemyId)
+                      ]
+              pure . Wither4Effect $ finishedEffect attrs
+            else pure e
+    RepeatSkillTest _ stId
+      | Just stId == attrs.skillTest ->
+          Wither4Effect <$> liftRunMessage msg (unfinishedEffect attrs)
     _ -> Wither4Effect <$> liftRunMessage msg attrs

@@ -2,6 +2,7 @@ module Arkham.Asset.Assets.TrenchArmor3 (trenchArmor3) where
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Attack.Types (EnemyAttackType (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGetsMaybe)
 import Arkham.History
@@ -22,7 +23,7 @@ instance HasModifiersFor TrenchArmor3 where
 instance RunMessage TrenchArmor3 where
   runMessage msg a@(TrenchArmor3 attrs) = runQueueT $ case msg of
     BeginRound -> pure $ TrenchArmor3 $ attrs & setMeta True
-    EnemyAttack details -> do
+    EnemyAttack details | details.kind == AttackOfOpportunity -> do
       case details.investigator of
         Just iid | Just iid == attrs.controller -> pure $ TrenchArmor3 $ attrs & setMeta False
         _ -> pure a

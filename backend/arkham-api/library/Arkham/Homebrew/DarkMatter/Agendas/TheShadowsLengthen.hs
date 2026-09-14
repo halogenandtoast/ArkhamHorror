@@ -18,7 +18,18 @@ theShadowsLengthen =
 
 instance RunMessage TheShadowsLengthen where
   runMessage msg a@(TheShadowsLengthen attrs) = runQueueT $ case msg of
+    -- The back is a joke with no in-game way to reach it, so the Konami code is
+    -- the only thing that flips it. Agenda 2a is reached from act 2b instead.
+    KonamiCode _ -> do
+      advanceAgenda attrs
+      pure a
+    {- Agenda 1b:
+
+    "You aren't supposed to see this. (Hint: 'Time is a flat circle. Everything
+    we have done or will do we will do over and over and over again — forever.')"
+
+    No mechanical effect; flipping back is all it does. -}
     AdvanceAgenda (isSide B attrs -> True) -> do
-      advanceAgendaDeck attrs
+      revertAgenda attrs
       pure a
     _ -> TheShadowsLengthen <$> liftRunMessage msg attrs

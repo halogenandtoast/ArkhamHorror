@@ -28,7 +28,7 @@ instance RunMessage EvaSuit where
       investigators <- select Anyone
       chooseOneM iid $ campaignI18n do
         targets investigators (`putCardIntoPlay` attrs)
-        labeled' "evaSuit.doNotPutIntoPlay" $ shuffleIntoScanningDeck [attrs]
+        labeled "evaSuit.doNotPutIntoPlay" $ shuffleIntoScanningDeck [attrs]
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withLocationOf iid \current -> do

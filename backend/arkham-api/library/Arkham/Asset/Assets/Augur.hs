@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.I18n
 import Arkham.Investigate
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard)
@@ -22,7 +23,7 @@ instance HasAbilities Augur where
   getAbilities (Augur a) =
     [ controlledAbility a 1 (exists $ oneOf [assetIs Cards.zeal, assetIs Cards.hope])
         $ forced
-        $ AssetEntersPlay #when (be a)
+        $ AssetEntersPlay #after (be a)
     , investigateAbility a 2 (OrCost [exhaust a, discardCost a])
         $ exists (AssetWithId (toId a) <> AssetReady)
     ]
@@ -45,7 +46,7 @@ instance RunMessage Augur where
       pushM $ mkInvestigate sid iid source
       when discarded do
         chooseOrRunOneM iid do
-          questionLabeled "$label.cards.augur.putIntoPlayFromDiscard"
+          cardI18n $ questionLabeled "augur.putIntoPlayFromDiscard"
           for_ catsInDiscard \card -> cardLabeled card do
             shuffleCardsIntoDeck iid (only augurCard)
             putCardIntoPlay iid card

@@ -4,7 +4,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelf
 import Arkham.Location.CardDefs.TheDrownedCity.TheWesternWall qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (cannotEnterFromCluedLocation)
+import Arkham.Scenarios.TheDrownedCity.TheWesternWall.Helpers (treacherousPathModifiers)
 import Arkham.Trait (Trait (DeepOne))
 
 newtype DrownedShanty = DrownedShanty LocationAttrs
@@ -12,11 +12,11 @@ newtype DrownedShanty = DrownedShanty LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 drownedShanty :: LocationCard DrownedShanty
-drownedShanty = withXShroud $ location DrownedShanty Cards.drownedShanty 0 (Static 2)
+drownedShanty = withXShroud $ location DrownedShanty Cards.drownedShanty 0 (PerPlayer 2)
 
 instance HasModifiersFor DrownedShanty where
   getModifiersFor (DrownedShanty a) = do
-    cannotEnterFromCluedLocation a
+    treacherousPathModifiers a
     whenRevealed a do
       deepOneMoving <- selectAny (MovingEnemy <> EnemyWithTrait DeepOne)
       -- While a Deep One enemy is moving, Drowned Shanty is connected to every

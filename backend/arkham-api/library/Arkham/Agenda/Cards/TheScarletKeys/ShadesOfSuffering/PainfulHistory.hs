@@ -35,7 +35,7 @@ instance RunMessage PainfulHistory where
             x <- fieldMap AssetCard printedCardCost ally
             doStep x msg
             beginSkillTest sid lead attrs lead #willpower (Fixed x)
-        labeled' "painfulHistory.doom" do
+        labeled "painfulHistory.doom" do
           selectEach (enemyIs Enemies.tzuSanNiangTheLadyWithTheRedParasol) (placeDoomOn attrs 1)
       n <- getCurrentActStep
       when (n == 1) $ advanceCurrentAct attrs

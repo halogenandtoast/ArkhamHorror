@@ -74,6 +74,12 @@ getSkillValue st iid = do
       else pure 0
   pure $ fromMaybe (x + base) $ minimumMay [n | SetSkillValue st' n <- mods, st' == st]
 
+getHighestSkillValues :: HasGame m => InvestigatorId -> m (Int, [SkillType])
+getHighestSkillValues iid = do
+  skills <- forToSnd (#willpower :| [#intellect, #combat, #agility]) (`getSkillValue` iid)
+  let highest = maximum (toMinList $ snd <$> skills)
+  pure (highest, [sk | (sk, v) <- toList skills, v == highest])
+
 skillValueFor
   :: forall m
    . (HasCallStack, HasGame m)
@@ -463,6 +469,7 @@ investigator f cardDef Stats {..} =
                 , investigatorBeganRoundAt = Nothing
                 , investigatorPreviousLocation = Nothing
                 , investigatorTaboo = Nothing
+                , investigatorCardPool = Nothing
                 , investigatorMutated = Nothing
                 , investigatorDeckUrl = Nothing
                 , investigatorSettings = defaultCardSettings
@@ -693,12 +700,12 @@ healAdditional (toSource -> source) dType ws' additional = do
   -- the additional healing directly without opening another healing window.
   let
     updateHealed = \case
-      Window timing (Healed dType' t s n) mBatchId
-        | dType == dType' ->
-            Window timing (Healed dType' t s (n + additional)) mBatchId
+      w@(windowType -> Healed dType' t s n)
+        | dType == dType' -> w {windowType = Healed dType' t s (n + additional)}
       other -> other
     getHealed = \case
-      Window timing (Healed dType' t s _) _ | dType == dType' -> Just (timing, t, s)
+      Window {windowTiming = timing, windowType = Healed dType' t s _}
+        | dType == dType' -> Just (timing, t, s)
       _ -> Nothing
     (healedTiming, healedTarget, healedSource) =
       fromJustNote "wrong call" $ getFirst $ foldMap (First . getHealed) ws'
@@ -802,6 +809,7 @@ getAsIfInHandEffectCards iid = do
   modifiers & mapMaybeM \case
     AsIfInHand c -> pure $ Just c
     AsIfInHandFor _ c -> Just <$> getCard c
+    AsIfInHandForEffects c -> Just <$> getCard c
     CanCommitToSkillTestsAsIfInHand c | isSkillTest -> pure $ Just c
     _ -> pure Nothing
 

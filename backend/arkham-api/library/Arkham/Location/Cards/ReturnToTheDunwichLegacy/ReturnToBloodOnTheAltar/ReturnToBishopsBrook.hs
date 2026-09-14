@@ -22,7 +22,7 @@ instance RunMessage ReturnToBishopsBrook where
   runMessage msg l@(ReturnToBishopsBrook attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 2)
+      beginSkillTest sid iid (attrs.ability 1) iid #agility (Fixed 4)
       pure l
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       assignDamage iid (attrs.ability 1) 2

@@ -48,9 +48,9 @@ instance RunMessage FollowingLeads where
       advanceVia #other attrs (attrs.ability 1)
       pure a
     AdvanceAct (isSide B attrs -> True) _ _ -> scenarioI18n $ scope "interlude" do
-      storyWithChooseOneM' (h "title" >> p "theTruth1") do
-        labeled' "truth" $ doStep 2 msg
-        labeled' "lie" $ doStep 3 msg
+      storyWithChooseOneM (h "title" >> p "theTruth1") do
+        labeled "truth" $ doStep 2 msg
+        labeled "lie" $ doStep 3 msg
       pure a
     DoStep n msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> scenarioI18n $ scope "interlude" do
       lead <- getLead
@@ -95,13 +95,13 @@ instance RunMessage FollowingLeads where
           case mSergeantMonroe of
             Just sergeantMonroe ->
               leadChooseOneM do
-                unscoped $ nameVar Assets.sergeantMonroe $ questionLabeled' "takeControlOf"
+                unscoped $ nameVar Assets.sergeantMonroe $ questionLabeled "takeControlOf"
                 questionLabeledCard Assets.sergeantMonroe
                 portraits iids (`takeControlOfAsset` sergeantMonroe)
             Nothing -> do
               sergeantMonroe <- fetchCard Assets.sergeantMonroe
               leadChooseOneM do
-                unscoped $ nameVar Assets.sergeantMonroe $ questionLabeled' "takeControlOf"
+                unscoped $ nameVar Assets.sergeantMonroe $ questionLabeled "takeControlOf"
                 questionLabeledCard Assets.sergeantMonroe
                 portraits iids (`takeControlOfSetAsideAsset` sergeantMonroe)
           push $ RemoveAllCopiesOfCardFromGame lead (toCardCode Enemies.arkhamOfficer)

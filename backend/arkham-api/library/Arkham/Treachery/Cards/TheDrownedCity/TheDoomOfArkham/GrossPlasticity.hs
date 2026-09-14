@@ -22,10 +22,10 @@ instance RunMessage GrossPlasticity where
       canFlood <- maybe (pure False) (`matches` CanHaveFloodLevelIncreased) mlid
       chooseOneM iid $ withI18n do
         countVar 1
-          $ labeled' "placeAgendaDoomCanAdvance"
+          $ labeled "placeAgendaDoomCanAdvance"
           $ placeDoomOnAgendaAndCheckAdvance 1
         labeledValidate' canFlood "increaseFloodLevelOfYourLocation" $ for_ mlid increaseFloodLevel
-        labeled' "eachInvestigatorTakesDamageOrHorror" do
+        labeled "eachInvestigatorTakesDamageOrHorror" do
           eachInvestigator \iid' -> assignDamageOrHorror iid' attrs 1 1
       pure t
     _ -> GrossPlasticity <$> liftRunMessage msg attrs

@@ -54,7 +54,7 @@ instance RunMessage MichaelMcGlen where
       firearms <- select $ assetControlledBy iid <> #firearm
       unless (null firearms) do
         chooseOneM iid do
-          cardI18n (scope "michaelMcGlen" $ labeled' "doNotAdd") nothing
+          cardI18n (scope "michaelMcGlen" $ labeled "doNotAdd") nothing
           targets firearms \firearm -> addUses ElderSign firearm Ammo 1
       pure i
     _ -> MichaelMcGlen <$> liftRunMessage msg attrs

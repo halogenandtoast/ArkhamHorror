@@ -23,6 +23,7 @@ import Arkham.Matcher.Investigator
 import Arkham.Matcher.Key
 import Arkham.Matcher.Location
 import Arkham.Matcher.Phase
+import Arkham.Matcher.Placement
 import Arkham.Matcher.SkillTest
 import Arkham.Matcher.SkillType
 import Arkham.Matcher.Source
@@ -107,6 +108,11 @@ data WindowMatcher
   | InvestigatorWouldTakeDamage Timing Who SourceMatcher DamageTypeMatcher
   | InvestigatorWouldTakeHorror Timing Who SourceMatcher
   | EnemyWouldTakeDamage Timing SourceMatcher EnemyMatcher
+  | {- | As 'EnemyWouldTakeDamage', but only for a particular amount. The window
+    always carried the number; this is the way to ask about it, for cards that
+    react to "2 or more damage" rather than to any damage at all.
+    -}
+    EnemyWouldTakeDamageWithAmount Timing SourceMatcher EnemyMatcher ValueMatcher
   | WouldSearchDeck Timing Who DeckMatcher
   | WouldLookAtDeck Timing Who DeckMatcher
   | LookedAtDeck Timing Who DeckMatcher
@@ -207,6 +213,7 @@ data WindowMatcher
   | WouldRevealChaosTokens Timing Who
   | Discarded Timing (Maybe Who) SourceMatcher ExtendedCardMatcher
   | DiscardedFromHand Timing Who SourceMatcher ExtendedCardMatcher
+  | DiscardedFromHandBatch Timing Who SourceMatcher
   | DiscardedFromDeck Timing Who SourceMatcher ExtendedCardMatcher
   | WouldDiscardFromHand Timing Who SourceMatcher
   | WouldDiscardFromDeck Timing Who SourceMatcher
@@ -237,7 +244,7 @@ data WindowMatcher
   | SuccessfullyInvestigatedWithNoClues Timing Who Where
   | EnemyAttemptsToSpawnAt Timing EnemyMatcher LocationMatcher
   | EnemyWouldSpawnAt EnemyMatcher LocationMatcher
-  | EnemySpawns Timing Where EnemyMatcher
+  | EnemySpawns Timing PlacementMatcher EnemyMatcher
   | EnemyFlipped Timing EnemyMatcher
   | EnemyPlaced Timing Placement EnemyMatcher
   | EnemyEntersPlay Timing EnemyMatcher
@@ -411,6 +418,13 @@ instance FromJSON WindowMatcher where
         case econtents of
           Left (a, b, c) -> pure $ EnemyAttackedSuccessfully a b AnySource c
           Right (a, b, c, d) -> pure $ EnemyAttackedSuccessfully a b c d
+      -- The window used to carry a LocationMatcher; a spawn that lands
+      -- nowhere (the shadows) needs the whole placement (#5649).
+      "EnemySpawns" -> do
+        econtents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+        case econtents of
+          Left (a, b, c) -> pure $ EnemySpawns a (PlacementAt b) c
+          Right (a, b, c) -> pure $ EnemySpawns a b c
       "WouldAddChaosTokensToChaosBag" -> do
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of

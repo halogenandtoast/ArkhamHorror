@@ -29,13 +29,27 @@ forestPassage =
 remoteCabin :: CardDef
 remoteCabin =
   victory 1
-    $ location ":circus-ex-mortis:022" "Remote Cabin" [Woods] Equals [Moon, Trefoil] Set.ThePrimrosePath
+    $ locationWithUnrevealed
+      ":circus-ex-mortis:022"
+      "Remote Cabin"
+      [Woods]
+      Equals
+      []
+      "Remote Cabin"
+      [Woods]
+      Equals
+      [Moon, Trefoil]
+      Set.ThePrimrosePath
 
 woodlandOverlook :: CardDef
 woodlandOverlook =
   victory 1
-    $ location
+    $ locationWithUnrevealed
       ":circus-ex-mortis:023"
+      "Woodland Overlook"
+      [Woods]
+      Squiggle
+      []
       "Woodland Overlook"
       [Woods]
       Squiggle
@@ -54,10 +68,13 @@ circusEncampment =
 
 moonlitForestSmolderingCampfire :: CardDef
 moonlitForestSmolderingCampfire =
-  location_
+  locationWithUnrevealedName
     ":circus-ex-mortis:025"
+    "Moonlit Forest"
     ("Moonlit Forest" <:> "Smoldering Campfire")
     [Woods]
+    Star
+    [Trefoil]
     Set.ThePrimrosePath
 
 moonlitForestQuietValley :: CardDef

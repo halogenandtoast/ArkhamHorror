@@ -191,7 +191,7 @@ instance RunMessage TheLostSister where
         leadChooseOneM do
           unscoped
             $ nameVar Assets.helenPetersTheEldestSister
-            $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+            $ questionLabeled "chooseInvestigatorToTakeControlOf"
           questionLabeledCard Assets.helenPetersTheEldestSister
           portraits investigators (`takeControlOfAsset` helenPeters)
 
@@ -200,7 +200,7 @@ instance RunMessage TheLostSister where
           leadChooseOneM do
             unscoped
               $ nameVar Assets.theoPetersJackOfAllTrades
-              $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+              $ questionLabeled "chooseInvestigatorToTakeControlOf"
             questionLabeledCard Assets.theoPetersJackOfAllTrades
             portraits investigators (`takeControlOfAsset` theo)
 
@@ -209,7 +209,7 @@ instance RunMessage TheLostSister where
           leadChooseOneM do
             unscoped
               $ nameVar Assets.gideonMizrahSeasonedSailor
-              $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+              $ questionLabeled "chooseInvestigatorToTakeControlOf"
             questionLabeledCard Assets.gideonMizrahSeasonedSailor
             portraits investigators (`takeControlOfAsset` gideon)
 
@@ -221,7 +221,7 @@ instance RunMessage TheLostSister where
         leadChooseOneM do
           unscoped
             $ nameVar Assets.helenPetersTheEldestSister
-            $ questionLabeled' "chooseInvestigatorToTakeControlOf"
+            $ questionLabeled "chooseInvestigatorToTakeControlOf"
           questionLabeledCard Assets.helenPetersTheEldestSister
           portraits investigators (`takeControlOfAsset` helenPeters)
     ResolveChaosToken drawnToken Tablet iid -> do
@@ -342,7 +342,7 @@ instance RunMessage TheLostSister where
                       gridLabeled_ emptyPos do
                         setScenarioDeck CavernsDeck rest
                         placeLocationInGrid_ emptyPos card
-                  labeled' "bottom" do
+                  labeled "bottom" do
                     setScenarioDeck CavernsDeck (rest <> [card])
         _ -> error "invalid codex entry"
       pure s

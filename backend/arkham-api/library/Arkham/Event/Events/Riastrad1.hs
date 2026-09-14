@@ -3,6 +3,7 @@ module Arkham.Event.Events.Riastrad1 (riastrad1, Riastrad1 (..)) where
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.ChaosBag
+import Arkham.I18n
 
 newtype Riastrad1 = Riastrad1 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
@@ -17,18 +18,19 @@ instance RunMessage Riastrad1 where
       sid <- getRandom
       n <- min 3 <$> getRemainingCurseTokens
       when (n > 0) do
-        chooseAmount
-          iid
-          "Add {curse} tokens to chaos bag"
-          "Curse Tokens"
-          0
-          n
-          (ProxyTarget (toTarget sid) (toTarget attrs))
+        withI18n
+          $ chooseAmount
+            iid
+            "addCurseTokensToChaosBag"
+            "$curseTokens"
+            0
+            n
+            (ProxyTarget (toTarget sid) (toTarget attrs))
       chooseFightEnemy sid iid attrs
       pure e
     ResolveAmounts
       iid
-      (getChoiceAmount "Curse Tokens" -> n)
+      (getChoiceAmount "$curseTokens" -> n)
       (ProxyTarget (SkillTestTarget sid) (isTarget attrs -> True)) | n > 0 -> do
         replicateM_ n $ addChaosToken #curse
         skillTestModifiers sid attrs iid [#combat n, #damage n]

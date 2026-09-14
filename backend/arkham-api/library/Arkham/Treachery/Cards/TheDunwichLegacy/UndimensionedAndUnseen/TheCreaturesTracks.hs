@@ -18,9 +18,9 @@ instance RunMessage TheCreaturesTracks where
     Revelation iid (isSource attrs -> True) -> do
       canSpawn <- notNull <$> getSetAsideBroodOfYogSothoth
       chooseOrRunOneM iid do
-        withI18n $ countVar 2 $ labeled' "takeHorror" $ assignHorror iid attrs 2
+        withI18n $ countVar 2 $ labeled "takeHorror" $ assignHorror iid attrs 2
         when canSpawn $ scenarioI18n do
-          labeled' "spawnSetAsideBrood" $ push $ ChooseRandomLocation (toTarget attrs) mempty
+          labeled "spawnSetAsideBrood" $ push $ ChooseRandomLocation (toTarget attrs) mempty
       pure t
     ChosenRandomLocation target lid | isTarget attrs target -> do
       setAsideBroodOfYogSothoth <- getSetAsideBroodOfYogSothoth

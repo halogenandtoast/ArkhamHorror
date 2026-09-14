@@ -46,8 +46,8 @@ instance RunMessage ProfessorWilliamWebbFinderOfHiddenConnections2 where
 
       when hasLocations do
         chooseOneM iid do
-          (cardI18n $ labeled' "professorWilliamWebbFinderOfHiddenConnections2.discoverClueAtYourLocation") nothing
-          (cardI18n $ labeled' "professorWilliamWebbFinderOfHiddenConnections2.discoverAClueAtAConnectingLocation") $ doStep 1 msg
+          (cardI18n $ labeled "professorWilliamWebbFinderOfHiddenConnections2.discoverClueAtYourLocation") nothing
+          (cardI18n $ labeled "professorWilliamWebbFinderOfHiddenConnections2.discoverAClueAtAConnectingLocation") $ doStep 1 msg
 
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do

@@ -23,7 +23,7 @@ instance RunMessage NileRiver where
   runMessage msg l@(NileRiver attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       withI18n $ chooseOneM iid do
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid (attrs.ability 1) 1
-        countVar 1 $ labeled' "discardRandomCardsFromHand" $ randomDiscard iid (attrs.ability 1)
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+        countVar 1 $ labeled "discardRandomCardsFromHand" $ randomDiscard iid (attrs.ability 1)
       pure l
     _ -> NileRiver <$> liftRunMessage msg attrs

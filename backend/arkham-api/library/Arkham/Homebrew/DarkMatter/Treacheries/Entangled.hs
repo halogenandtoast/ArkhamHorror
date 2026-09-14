@@ -17,6 +17,11 @@ newtype Entangled = Entangled TreacheryAttrs
 entangled :: TreacheryCard Entangled
 entangled = treachery Entangled Cards.entangled
 
+-- "a source other than Entangled" names the card, not this copy: damage
+-- propagated by one copy must not bounce back through the others
+notEntangled :: SourceMatcher
+notEntangled = NotSource $ SourceIsTreacheryEffect $ treacheryIs Cards.entangled
+
 {- | "Forced - After attached investigator or enemy takes any amount of damage
 from a source other than Entangled: Each other investigator or enemy with a copy
 of Entangled attached also takes that amount of damage. Then, discard Entangled."
@@ -24,14 +29,8 @@ of Entangled attached also takes that amount of damage. Then, discard Entangled.
 instance HasAbilities Entangled where
   getAbilities (Entangled a) =
     [ mkAbility a 1 $ forced $ case a.placement of
-        InThreatArea iid -> InvestigatorTakeDamage #after (InvestigatorWithId iid) (NotSource $ SourceIs $ toSource a)
-        AttachedToEnemy eid ->
-          EnemyTakeDamage
-            #after
-            AnyDamageEffect
-            (EnemyWithId eid)
-            AnyValue
-            (NotSource $ SourceIs $ toSource a)
+        InThreatArea iid -> InvestigatorTakeDamage #after (InvestigatorWithId iid) notEntangled
+        AttachedToEnemy eid -> EnemyTakeDamage #after AnyDamageEffect (EnemyWithId eid) (atLeast 1) notEntangled
         _ -> NotAnyWindow
     ]
 
@@ -48,8 +47,8 @@ instance RunMessage Entangled where
       investigators <- filter (not . occupiedBy . InThreatArea) <$> select UneliminatedInvestigator
       enemies <- filter (not . occupiedBy . AttachedToEnemy) <$> select AnyEnemy
       chooseOneM iid do
-        targets investigators \victim -> placeTreachery attrs (InThreatArea victim)
-        targets enemies \eid -> placeTreachery attrs (AttachedToEnemy eid)
+        targets investigators $ placeTreachery attrs . InThreatArea
+        targets enemies $ placeTreachery attrs . AttachedToEnemy
       pure t
     UseCardAbility iid (isSource attrs -> True) 1 ws _ -> do
       let dealt = sum [n | w <- ws, Window.TakeDamage _ _ _ n <- [windowType w]]

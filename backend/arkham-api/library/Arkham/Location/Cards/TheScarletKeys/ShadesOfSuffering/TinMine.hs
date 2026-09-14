@@ -34,7 +34,7 @@ instance RunMessage TinMine where
       let cost = GroupClueCost (PerPlayer 1) (be attrs)
       whenM (getCanAffordCost iid (attrs.ability 1) [] [] cost) do
         chooseOneM iid $ scenarioI18n do
-          labeled' "tinMine.pay" do
+          labeled "tinMine.pay" do
             payEffectCost iid attrs cost
             skillTestModifier sid (attrs.ability 1) sid SkillTestAutomaticallySucceeds
           unscoped skip_

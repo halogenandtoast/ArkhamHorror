@@ -90,6 +90,10 @@ data AppSettings = AppSettings
     , appMailtrapApiToken :: Token
     , appBugsnagApiKey :: Text
     , appAssetHost :: Maybe Text
+    , appCustomCardArtDir :: Maybe FilePath
+    -- ^ Where to put custom card art. In development it goes in the frontend's
+    -- public directory so it is served locally and never reaches the shared
+    -- assets bucket; unset (the default outside development) means S3.
     , appWebsocketCompression :: Bool
     -- ^ permessage-deflate on the game/event websockets. Defaults on; it takes
     -- a 206 KB 'PublicGame' update to ~33 KB. It is also the one thing on that
@@ -125,6 +129,12 @@ instance FromJSON AppSettings where
         appMailtrapApiToken <- o .: "mailtrap-api-token"
         appBugsnagApiKey <- o .: "bugsnag-api-token"
         appAssetHost <- o .:? "asset-host"
+        mArtDir <- o .:? "custom-card-art-dir"
+        let appCustomCardArtDir = case mArtDir of
+                Just "" -> Nothing
+                Just dir -> Just dir
+                -- Relative to the api package, which is where it is run from.
+                Nothing -> if dev then Just "../../frontend/public/img/custom" else Nothing
         appWebsocketCompression <- o .:? "websocket-compression" .!= True
         pure AppSettings {..}
 

@@ -65,12 +65,7 @@ spec = describe "loadDecklist" $ do
   it "restricts arkham.build Chapter 2 random basic weakness candidates to Chapter 2 cards" do
     let candidates =
           randomBasicWeaknessCandidates
-            RandomBasicWeaknessContext
-              { rbwInvestigatorClass = Guardian
-              , rbwPlayerCount = 1
-              , rbwDecklist = Just arkhamBuildChapterTwoDecklist
-              , rbwStandalone = False
-              }
+            (decklistWeaknessContext Guardian 1 False (Just arkhamBuildChapterTwoDecklist))
         candidateCodes = map toCardCode candidates
 
     candidates `shouldSatisfy` notNull
@@ -83,12 +78,7 @@ spec = describe "loadDecklist" $ do
   it "groups reprinted random basic weakness candidates into a single sampling group" do
     let groups =
           randomBasicWeaknessSamplingGroups
-            RandomBasicWeaknessContext
-              { rbwInvestigatorClass = Guardian
-              , rbwPlayerCount = 1
-              , rbwDecklist = Nothing
-              , rbwStandalone = False
-              }
+            (decklistWeaknessContext Guardian 1 False Nothing)
         groupKeys = map (\(d :| _) -> canonicalCardCode d) groups
 
     groups `shouldSatisfy` notNull
@@ -99,12 +89,7 @@ spec = describe "loadDecklist" $ do
   it "keeps the only legal printing when the card pool excludes the original" do
     let groups =
           randomBasicWeaknessSamplingGroups
-            RandomBasicWeaknessContext
-              { rbwInvestigatorClass = Guardian
-              , rbwPlayerCount = 1
-              , rbwDecklist = Just revisedCoreCardPoolDecklist
-              , rbwStandalone = False
-              }
+            (decklistWeaknessContext Guardian 1 False (Just revisedCoreCardPoolDecklist))
 
     groups `shouldSatisfy` notNull
     map toCardCode (concatMap toList $ groupsContaining "01601" groups) `shouldBe` ["01601"]
@@ -149,12 +134,7 @@ spec = describe "loadDecklist" $ do
       $ map
         toCardCode
         ( randomBasicWeaknessCandidates
-            RandomBasicWeaknessContext
-              { rbwInvestigatorClass = Guardian
-              , rbwPlayerCount = 1
-              , rbwDecklist = Just singletonRandomWeaknessDecklist
-              , rbwStandalone = True
-              }
+            (decklistWeaknessContext Guardian 1 True (Just singletonRandomWeaknessDecklist))
         )
       `shouldBe` ["12102"]
     (deckWithoutPlaceholder, replacementDefs) <-
@@ -171,12 +151,12 @@ spec = describe "loadDecklist" $ do
       createMessageChecker \case
         InitDeck
           InitDeckAttrs {initDeckInvestigator = iid, initDeckDecklist = Just decklist, initDeckDeck = deck} ->
-          iid
-            == "12013"
-            && decklist
-            == singletonRandomWeaknessDecklist
-            && map toCardCode (unDeck deck)
-            == ["01000"]
+            iid
+              == "12013"
+              && decklist
+              == singletonRandomWeaknessDecklist
+              && map toCardCode (unDeck deck)
+              == ["01000"]
         _ -> False
 
     run $ LoadDecklist (attr investigatorPlayerId self) singletonRandomWeaknessDecklist
@@ -189,12 +169,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Guardian
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just noCardPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Guardian 1 False (Just noCardPoolDecklist))
 
     candidateCodes `shouldContain` ["02037"]
 
@@ -202,12 +177,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Guardian
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just coreCardPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Guardian 1 False (Just coreCardPoolDecklist))
 
     candidateCodes `shouldSatisfy` notNull
     candidateCodes `shouldSatisfy` all (\code -> any (`T.isPrefixOf` unCardCode code) ["010", "011"])
@@ -218,12 +188,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Seeker
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just arkhamBuildShortCardPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Seeker 1 False (Just arkhamBuildShortCardPoolDecklist))
         allowedPrefixes = ["01", "02", "03", "04", "05"]
 
     candidateCodes `shouldSatisfy` notNull
@@ -234,12 +199,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Mystic
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just arkhamBuildShortPackCardPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Mystic 1 False (Just arkhamBuildShortPackCardPoolDecklist))
 
     candidateCodes `shouldSatisfy` notNull
     candidateCodes `shouldSatisfy` all (`elem` ["60356", "60454", "60554"])
@@ -249,12 +209,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Mystic
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just prefixedArkhamBuildShortPackCardPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Mystic 1 False (Just prefixedArkhamBuildShortPackCardPoolDecklist))
 
     candidateCodes `shouldBe` ["60454"]
 
@@ -262,12 +217,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Mystic
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just arkhamBuildAllPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Mystic 1 False (Just arkhamBuildAllPoolDecklist))
 
     candidateCodes `shouldSatisfy` notNull
     ["01596", "08130", "12102", "51011", "52011", "53012", "54014"]
@@ -277,12 +227,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Guardian
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just echoesOfThePastCardPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Guardian 1 False (Just echoesOfThePastCardPoolDecklist))
 
     candidateCodes `shouldSatisfy` notNull
     candidateCodes `shouldSatisfy` all (\code -> any (`T.isPrefixOf` unCardCode code) ["010", "011"])
@@ -292,12 +237,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Guardian
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just mixedKnownUnknownCardPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Guardian 1 False (Just mixedKnownUnknownCardPoolDecklist))
 
     candidateCodes `shouldSatisfy` notNull
     candidateCodes `shouldSatisfy` all (T.isPrefixOf "01" . unCardCode)
@@ -307,12 +247,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Guardian
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just unknownOnlyCardPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Guardian 1 False (Just unknownOnlyCardPoolDecklist))
 
     candidateCodes `shouldContain` ["02037"]
 
@@ -320,12 +255,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Guardian
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just emptyPackCardPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Guardian 1 False (Just emptyPackCardPoolDecklist))
 
     candidateCodes `shouldBe` []
     candidateCodes `shouldNotContain` ["02037"]
@@ -334,12 +264,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessSamplingCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Guardian
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just emptyPackCardPoolDecklist
-                , rbwStandalone = False
-                }
+              (decklistWeaknessContext Guardian 1 False (Just emptyPackCardPoolDecklist))
 
     candidateCodes `shouldContain` ["02037"]
 
@@ -349,12 +274,7 @@ spec = describe "loadDecklist" $ do
       let candidateCodes =
             map toCardCode
               $ randomBasicWeaknessSamplingCandidates
-                RandomBasicWeaknessContext
-                  { rbwInvestigatorClass = Guardian
-                  , rbwPlayerCount = 1
-                  , rbwDecklist = Just emptyPackTaboo23CardPoolDecklist
-                  , rbwStandalone = True
-                  }
+                (decklistWeaknessContext Guardian 1 True (Just emptyPackTaboo23CardPoolDecklist))
 
       candidateCodes `shouldSatisfy` notNull
       candidateCodes `shouldNotContain` ["08113"]
@@ -363,12 +283,7 @@ spec = describe "loadDecklist" $ do
     let candidateCodes =
           map toCardCode
             $ randomBasicWeaknessCandidates
-              RandomBasicWeaknessContext
-                { rbwInvestigatorClass = Guardian
-                , rbwPlayerCount = 1
-                , rbwDecklist = Just noCardPoolTaboo23Decklist
-                , rbwStandalone = True
-                }
+              (decklistWeaknessContext Guardian 1 True (Just noCardPoolTaboo23Decklist))
 
     candidateCodes `shouldNotContain` ["08113"]
 
@@ -457,13 +372,7 @@ groupsContaining cardCode = filter (any ((== cardCode) . toCardCode))
 
 -- | Matches the context 'Arkham.Helpers.Scenario.addRandomBasicWeaknessIfNeeded' builds.
 standaloneContext :: RandomBasicWeaknessContext
-standaloneContext =
-  RandomBasicWeaknessContext
-    { rbwInvestigatorClass = Guardian
-    , rbwPlayerCount = 1
-    , rbwDecklist = Nothing
-    , rbwStandalone = True
-    }
+standaloneContext = decklistWeaknessContext Guardian 1 True Nothing
 
 arkhamBuildShortCardPoolDecklist :: ArkhamDBDecklist
 arkhamBuildShortCardPoolDecklist = noCardPoolDecklist {meta = Just "{\"card_pool\":\"core,dwlp,ptcp,tfap,tcup\"}"}

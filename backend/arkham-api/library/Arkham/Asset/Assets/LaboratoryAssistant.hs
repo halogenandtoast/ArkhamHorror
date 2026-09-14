@@ -20,7 +20,7 @@ instance HasAbilities LaboratoryAssistant where
   getAbilities (LaboratoryAssistant x) =
     [ restricted x 1 ControlsThis
         $ freeReaction
-        $ AssetEntersPlay #when (AssetWithId $ toId x)
+        $ AssetEntersPlay #after (AssetWithId $ toId x)
     ]
 
 instance RunMessage LaboratoryAssistant where

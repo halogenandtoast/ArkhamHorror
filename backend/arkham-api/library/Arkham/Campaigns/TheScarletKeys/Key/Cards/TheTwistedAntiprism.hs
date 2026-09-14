@@ -23,7 +23,7 @@ instance HasAbilities TheTwistedAntiprism where
     | Just iid <- keyHolderInvestigator a =
         case a.stability of
           Stable ->
-            [ restricted a 1 (exists (colocatedWith iid <> can.manipulate.deck)) $ FastAbility Free
+            [ restricted a 1 (youExist (InvestigatorWithId iid <> can.manipulate.deck)) $ FastAbility Free
             ]
           Unstable -> [restricted a 1 (youExist (InvestigatorWithId iid)) $ FastAbility Free]
     | Just aid <- keyHolderAsset a =

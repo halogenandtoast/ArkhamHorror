@@ -54,10 +54,10 @@ instance RunMessage ChuckFergus2 where
         -- can something else reduce the cost enough?
         when (canAffordCost && canAffordActionCost && not requiresFast) do
           chooseOneM iid do
-            (cardI18n $ labeled' "chuckFergus2.thatEventGainsFast") $ eventModifier attrs card $ BecomesFast FastPlayerWindow
-            (cardI18n $ labeled' "chuckFergus2.thatEventCosts2FewerResourcesToPlay") do
+            (cardI18n $ labeled "chuckFergus2.thatEventGainsFast") $ eventModifier attrs card $ BecomesFast FastPlayerWindow
+            (cardI18n $ labeled "chuckFergus2.thatEventCosts2FewerResourcesToPlay") do
               eventModifier attrs iid $ ReduceCostOf (CardWithId card.id) 2
-            (cardI18n $ labeled' "chuckFergus2.gain2SkillValue") do
+            (cardI18n $ labeled "chuckFergus2.gain2SkillValue") do
               eventModifier attrs iid $ AnySkillValue 2
 
       pure a

@@ -19,7 +19,7 @@ instance HasAbilities Fanatic where
   getAbilities (Fanatic a) =
     extend
       a
-      [ mkAbility a 1 $ forced $ EnemySpawns #after LocationWithAnyClues (be a)
+      [ mkAbility a 1 $ forced $ EnemySpawns #after (PlacementAt LocationWithAnyClues) (be a)
       , mkAbility a 2 $ forced $ EnemyDefeated #when You ByAny (be a <> EnemyWithAnyClues)
       ]
 

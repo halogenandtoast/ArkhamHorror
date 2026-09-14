@@ -13,13 +13,14 @@ newtype PerfectImitation = PerfectImitation TreacheryAttrs
 perfectImitation :: TreacheryCard PerfectImitation
 perfectImitation = treachery PerfectImitation Cards.perfectImitation
 
-{- | "Forced - When you draw a Mimic enemy while you control an [[Ally]] asset:
+{- | "Revelation - Put Perfect Imitation into play in your threat area.
+Forced - When you draw a Mimic enemy while you control an [[Ally]] asset:
 Test [willpower] (4). If you fail, discard this card and an [[Ally]] asset you
 control."
 -}
 instance HasAbilities PerfectImitation where
   getAbilities (PerfectImitation a) =
-    [ restricted a 1 (youExist $ HasMatchingAsset $ #ally <> DiscardableAsset)
+    [ restricted a 1 (InThreatAreaOf You <> youExist (HasMatchingAsset $ #ally <> DiscardableAsset))
         $ forced
         $ DrawCard #when You (basic $ cardIs Enemies.mimic) AnyDeck
     ]

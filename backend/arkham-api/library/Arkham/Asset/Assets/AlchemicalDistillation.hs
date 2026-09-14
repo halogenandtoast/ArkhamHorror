@@ -37,14 +37,14 @@ instance RunMessage AlchemicalDistillation where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       if attrs `hasCustomization` Empowered
         then chooseOneM iid do
-          (cardI18n $ labeled' "alchemicalDistillation.empowerIncreaseDifficultyBy2") do
+          (cardI18n $ labeled "alchemicalDistillation.empowerIncreaseDifficultyBy2") do
             abilityModifier
               (AbilityRef (toSource attrs) 1)
               (attrs.ability 1)
               attrs
               (MetaModifier $ object ["empowered" .= True])
             do_ msg
-          (cardI18n $ labeled' "alchemicalDistillation.doNotEmpower") $ do_ msg
+          (cardI18n $ labeled "alchemicalDistillation.doNotEmpower") $ do_ msg
         else do_ msg
       pure a
     Do (UseThisAbility iid (isSource attrs -> True) 1) -> do
@@ -61,8 +61,8 @@ instance RunMessage AlchemicalDistillation where
       when (n >= 2 && attrs `hasCustomization` Perfected) do
         getSkillTestTarget >>= \case
           Just (InvestigatorTarget iid) -> chooseOneM iid do
-            (cardI18n $ labeled' "alchemicalDistillation.resolveASecondOption") $ do_ msg
-            (cardI18n $ labeled' "alchemicalDistillation.doNotResolveASecondOption") nothing
+            (cardI18n $ labeled "alchemicalDistillation.resolveASecondOption") $ do_ msg
+            (cardI18n $ labeled "alchemicalDistillation.doNotResolveASecondOption") nothing
           _ -> pure ()
       pure a
     Do msg'@(PassedThisSkillTest _ (isAbilitySource attrs 1 -> True)) -> do
@@ -148,7 +148,7 @@ instance RunMessage AlchemicalDistillation where
       msg'@(ForInvestigator iid (DoStep 2 (PassedThisSkillTest _ (isAbilitySource attrs 1 -> True)))) | n > 0 -> do
         locations <- getAccessibleLocations iid attrs
         chooseOneM iid do
-          (cardI18n $ labeled' "alchemicalDistillation.doneMoving") nothing
+          (cardI18n $ labeled "alchemicalDistillation.doneMoving") nothing
           targets locations \lid -> moveTo attrs iid lid >> doStep (n - 1) msg'
         pure a
     _ -> AlchemicalDistillation <$> liftRunMessage msg attrs

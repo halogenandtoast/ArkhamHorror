@@ -44,7 +44,7 @@ instance RunMessage PrudenceDouglas where
       let encounterCards = onlyEncounterCards cards
           discardable = filter (notElem Elite . toTraits) encounterCards
       focusCards encounterCards do
-        cardI18n $ scope "prudenceDouglas" $ chooseUpToNM' iid 2 "doneDiscarding" do
+        cardI18n $ scope "prudenceDouglas" $ chooseUpToNM iid 2 "doneDiscarding" do
           targets discardable $ \c -> push $ AddToEncounterDiscard c
       pure a
     Flip _ ScenarioSource (isTarget attrs -> True) -> do

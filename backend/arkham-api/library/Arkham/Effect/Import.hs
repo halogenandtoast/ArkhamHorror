@@ -29,6 +29,11 @@ disableReturn a = disable (toAttrs a) >> pure a
 finishedEffect :: EffectAttrs -> EffectAttrs
 finishedEffect = Msg.finishedL .~ True
 
+-- Re-arms an effect that uses 'finishedEffect' as a once-per-attempt latch, so a
+-- 'RepeatSkillTest' can grant it again.
+unfinishedEffect :: EffectAttrs -> EffectAttrs
+unfinishedEffect = Msg.finishedL .~ False
+
 getEffectMetaDefault :: FromJSON a => a -> EffectAttrs -> a
 getEffectMetaDefault a attrs = toResultDefault a $ attrs ^. extraL
 

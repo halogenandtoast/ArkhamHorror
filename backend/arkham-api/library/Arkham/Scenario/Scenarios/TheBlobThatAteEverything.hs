@@ -346,10 +346,10 @@ instance RunMessage TheBlobThatAteEverything where
           push $ RaiseShared pendingKey 1
           if countermeasures > 0
             then chooseOneM lead do
-              labeled "Spend 1 countermeasure to prevent the replication" do
+              labeled "replicatingAberration.spendCountermeasure" do
                 push $ RemoveTokens (toSource attrs) ScenarioTarget Token.Resource 1
                 push $ SpendShared pendingKey 1
-              labeled "Allow the Replicating Aberration to spawn" do
+              labeled "replicatingAberration.allowSpawn" do
                 push $ SpendShared pendingKey 1
                 push spawn
             else do

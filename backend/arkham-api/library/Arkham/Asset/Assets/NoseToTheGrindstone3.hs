@@ -46,8 +46,8 @@ instance RunMessage NoseToTheGrindstone3 where
 
       chooseOneM iid $ cardI18n do
         for_ mAsset \aid ->
-          labeled' "noseToTheGrindstone.replenishSupply" $ addUses (attrs.ability 1) aid Supply 1
+          labeled "noseToTheGrindstone.replenishSupply" $ addUses (attrs.ability 1) aid Supply 1
         whenM (can.gain.resources iid) do
-          countVar 1 $ unscoped $ labeled' "gainResources" $ gainResources iid (attrs.ability 1) 1
+          countVar 1 $ unscoped $ labeled "gainResources" $ gainResources iid (attrs.ability 1) 1
       pure a
     _ -> NoseToTheGrindstone3 <$> liftRunMessage msg attrs

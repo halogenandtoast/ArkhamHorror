@@ -280,6 +280,7 @@ versatile2 =
     $ (asset "06167" "Versatile" 0 Neutral)
       { cdCardTraits = singleton Talent
       , cdLevel = Just 2
+      , cdTags = [noGameplayEffectTag]
       }
 
 theSilverKey :: CardDef

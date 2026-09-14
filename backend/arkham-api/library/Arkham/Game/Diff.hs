@@ -12,10 +12,19 @@ import Data.Aeson.Patch (Operation (..), Patch (..), modifyPointer)
 import Data.Aeson.Pointer (Key (..), Pointer (..))
 import Data.Vector qualified as V
 
--- We need to exclude gameActionDiff since it will cause a very large diff
--- We will just copy it directly
+{- | The patch between two game states, as undo and redo replay it.
+
+Two fields are held out of it. @gameActionDiff@ because diffing it produces an
+enormous patch for something that is just copied across. @gameCustomCards@
+because a custom card's definition is what the author last saved, not something
+the game did: rewinding a step should not put an edited card back to the version
+it had when that step ran, which would quietly undo a fix made between the two.
+Neither is touched by the resulting patch, so both survive it as they are.
+-}
 diff :: Game -> Game -> Diff.Patch
-diff a b = Diff.diff (toJSON (a {gameActionDiff = []})) (toJSON (b {gameActionDiff = []}))
+diff a b = Diff.diff (toJSON (excluded a)) (toJSON (excluded b))
+ where
+  excluded g = g {gameActionDiff = [], gameCustomCards = mempty}
 
 patch :: Game -> Diff.Patch -> Result Game
 patch g p = case Diff.patch p (toJSON g) of
@@ -108,8 +117,9 @@ recoverOperation v op = case op of
           _ -> op {changePointer = Pointer newPath}
   _ -> modifyPointer (recoverPointer v) op
 
--- | Navigate a path through a Value, returning Nothing if any step is missing.
--- Used to decide whether to skip a failing patch operation.
+{- | Navigate a path through a Value, returning Nothing if any step is missing.
+Used to decide whether to skip a failing patch operation.
+-}
 navigateValue :: Value -> [Data.Aeson.Pointer.Key] -> Maybe Value
 navigateValue v [] = Just v
 navigateValue (Object obj) (OKey k : rest) = KM.lookup k obj >>= \v' -> navigateValue v' rest
@@ -122,17 +132,18 @@ navigateValue _ _ = Nothing
 -- elements before the op that hits an AndActions object.
 patchWithRecovery :: Game -> Diff.Patch -> Result Game
 patchWithRecovery g (Patch ops) =
-  case foldM applyWithRecovery (toJSON g) ops of
+  case foldM applyWithRecovery (toJSON g) (dropCustomCardOps ops) of
     Error e -> Error e
     Success v -> fromJSON v
 
--- | Apply a patch directly to a JSON Value, avoiding the expensive Game<->Value
--- round-trip. Use this when you already have the game state as a Value (e.g.
--- fetched via ArkhamGameRaw) to avoid two full serialization cycles.
---
--- Returns an error annotated with the failing operation index and path.
+{- | Apply a patch directly to a JSON Value, avoiding the expensive Game<->Value
+round-trip. Use this when you already have the game state as a Value (e.g.
+fetched via ArkhamGameRaw) to avoid two full serialization cycles.
+
+Returns an error annotated with the failing operation index and path.
+-}
 patchValueWithRecovery :: Value -> Diff.Patch -> Result Value
-patchValueWithRecovery v (Patch ops) = foldM applyIndexed v (zip [0 :: Int ..] ops)
+patchValueWithRecovery v (Patch ops) = foldM applyIndexed v (zip [0 :: Int ..] (dropCustomCardOps ops))
  where
   applyIndexed acc (i, op) = case applyWithRecovery acc op of
     Error e ->
@@ -153,6 +164,19 @@ patchValueWithRecovery v (Patch ops) = foldM applyIndexed v (zip [0 :: Int ..] o
   renderPointer (Pointer ks) = mconcat (map renderKey ks)
   renderKey (OKey k) = "/" <> AK.toString k
   renderKey (AKey n) = "/" <> show n
+
+{- | Drop operations that would rewrite a custom card's definition.
+
+'diff' stops writing them, but every step recorded before it did still carries
+them, and replaying one of those would put an edited card back to the version it
+had when that step ran. Filtered here so old steps behave like new ones.
+-}
+dropCustomCardOps :: [Operation] -> [Operation]
+dropCustomCardOps = filter (not . touchesCustomCards)
+ where
+  touchesCustomCards op = case changePointer op of
+    Pointer (OKey "gameCustomCards" : _) -> True
+    _ -> False
 
 -- | Update the gameSeed field directly in a JSON Value without going through Game.
 setGameSeed :: Int -> Value -> Value

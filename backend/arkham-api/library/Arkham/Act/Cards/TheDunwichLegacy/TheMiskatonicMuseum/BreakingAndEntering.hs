@@ -36,7 +36,7 @@ instance RunMessage BreakingAndEntering where
       investigators <- getInvestigators
       haroldWalsted <- fetchCard Assets.haroldWalsted
       chooseOneM lead do
-        questionLabeled' "takeControlOfHaroldWalsted"
+        questionLabeled "takeControlOfHaroldWalsted"
         questionLabeledCard haroldWalsted
         targets investigators (`takeControlOfSetAsideAsset` haroldWalsted)
       restrictedHall <- getRestrictedHall

@@ -10,21 +10,23 @@ import PrimaryButton from '@/components/PrimaryButton.vue';
 import { useToast } from "vue-toastification";
 import { useI18n } from 'vue-i18n'
 import type { InvestigatorClass } from '@/arkham/helpers'
+import { storeToRefs } from 'pinia'
+import { useSettings } from '@/stores/settings'
+import { loadLibrary } from '@/arkham/customCardLibrary'
 
 const { t } = useI18n()
+
+// A deck laid over with your own investigator draws its row from your library.
+const { customCardsEnabled } = storeToRefs(useSettings())
+if (customCardsEnabled.value) loadLibrary()
 
 const allDecks = ref<Arkham.Deck[]>([])
 const deleteId = ref<string | null>(null)
 const toast = useToast()
 const showNewDeck = ref(false)
 const searchText = ref('')
-const sortBy = ref<'name' | 'class'>('name')
+const sortBy = ref<Arkham.DeckSort>('name')
 const filterClasses = ref<InvestigatorClass[]>([])
-
-const CLASS_ORDER: Record<string, number> = {
-  guardian: 0, seeker: 1, rogue: 2, mystic: 3, survivor: 4, neutral: 5
-}
-const allClasses: InvestigatorClass[] = ["guardian", "seeker", "rogue", "mystic", "survivor", "neutral"]
 
 async function addDeck(d: Arkham.Deck) {
   allDecks.value.push(d)
@@ -46,7 +48,7 @@ fetchDecks().then(async (response) => {
 })
 
 const decks = computed(() => {
-  let result = allDecks.value.filter((deck) => {
+  const result = allDecks.value.filter((deck) => {
     const matchesClass = filterClasses.value.length === 0 ||
       filterClasses.value.some((k) => Arkham.deckClass(deck)[k])
     const matchesSearch = !searchText.value ||
@@ -54,18 +56,7 @@ const decks = computed(() => {
     return matchesClass && matchesSearch
   })
 
-  if (sortBy.value === 'name') {
-    result = [...result].sort((a, b) => a.name.localeCompare(b.name))
-  } else if (sortBy.value === 'class') {
-    result = [...result].sort((a, b) => {
-      const classObj = (d: Arkham.Deck) => Arkham.deckClass(d)
-      const ca = allClasses.find(k => classObj(a)[k]) ?? 'neutral'
-      const cb = allClasses.find(k => classObj(b)[k]) ?? 'neutral'
-      return (CLASS_ORDER[ca] ?? 5) - (CLASS_ORDER[cb] ?? 5)
-    })
-  }
-
-  return result
+  return Arkham.sortDecks(result, sortBy.value)
 })
 
 async function sync(deck: Arkham.Deck) {

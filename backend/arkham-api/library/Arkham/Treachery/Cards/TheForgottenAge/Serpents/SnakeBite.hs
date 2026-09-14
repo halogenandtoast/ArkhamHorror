@@ -23,8 +23,8 @@ instance RunMessage SnakeBite where
       allies <- select $ #ally <> assetControlledBy iid
       chooseOrRunOneM iid $ campaignI18n do
         when (notNull allies) do
-          labeled' "snakeBite.damageAlly" $ chooseTargetM iid allies \ally -> dealAssetDamage ally attrs 5
-        labeled' "snakeBite.damageSelf" do
+          labeled "snakeBite.damageAlly" $ chooseTargetM iid allies \ally -> dealAssetDamage ally attrs 5
+        labeled "snakeBite.damageSelf" do
           directDamage iid attrs 1
           unlessM (getIsPoisoned iid) $ becomePoisoned iid
       pure t

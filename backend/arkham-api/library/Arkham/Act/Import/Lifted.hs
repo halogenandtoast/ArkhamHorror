@@ -63,6 +63,8 @@ import Arkham.Message as X (
   pattern BeforeRevealChaosTokens,
   pattern BeforeSkillTest,
   pattern BeginSkillTestAfterFast,
+  pattern AddChaosToken,
+  pattern AddChaosTokenForGame,
   pattern BeginSkillTestWithPreMessages,
   pattern BeginSkillTestWithPreMessages',
   pattern CancelAssetHorror,
@@ -275,6 +277,10 @@ import Arkham.Ability.Types
 import Arkham.Card.CardDef
 import Arkham.Helpers.Act qualified as Msg
 import Arkham.Matcher
+import Arkham.Resolution
+
+noResolution :: ReverseQueue m => m ()
+noResolution = push $ ScenarioResolution NoResolution
 
 advanceVia
   :: (ReverseQueue m, EntityId a ~ ActId, Sourceable source, Entity a)

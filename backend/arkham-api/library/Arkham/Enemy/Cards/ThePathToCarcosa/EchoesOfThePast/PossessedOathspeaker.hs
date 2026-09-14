@@ -37,8 +37,8 @@ instance RunMessage PossessedOathspeaker where
         then withI18n do
           lead <- getLead
           chooseOneM lead do
-            nameVar attrs $ labeled' "ready" $ ready attrs
-            countVar 1 $ nameVar attrs $ labeled' "placeDoom" $ placeDoom (attrs.ability 1) attrs 1
+            nameVar attrs $ labeled "ready" $ ready attrs
+            countVar 1 $ nameVar attrs $ labeled "placeDoom" $ placeDoom (attrs.ability 1) attrs 1
         else placeDoom (attrs.ability 1) attrs 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do

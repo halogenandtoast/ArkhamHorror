@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, computed, ref, onMounted, watch } from 'vue'
+import { inject, computed, ref, onMounted, watch, type Ref } from 'vue'
 import { toCamelCase } from '@/arkham/helpers'
 import { imgsrc } from '@/arkham/helpers'
 import { Game } from '@/arkham/types/Game'
@@ -11,8 +11,16 @@ import { type CampaignStep, campaignStepName, extendWithOptions } from '@/arkham
 import { useI18n } from 'vue-i18n'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
+import SideStoryOption from '@/arkham/components/SideStoryOption.vue'
 import sideStories from '@/arkham/data/side-stories.json'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useClipboard } from '@vueuse/core'
+import { buildShareableUrl } from '@/arkham/helpers'
+import { applyInvestigatorOverlay, joinCampaign, rejoinInvestigator, retireInvestigator } from '@/arkham/api'
+import { useSettings } from '@/stores/settings'
+import { hasLibraryCards, loadLibrary } from '@/arkham/customCardLibrary'
+import { emptyOverlay, overlayIsEmpty, type DeckOverlay } from '@/arkham/deckOverlay'
+import OverlayEditor from '@/arkham/components/debug/OverlayEditor.vue'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
@@ -22,6 +30,7 @@ const props = defineProps<{
   game: Game
   campaign?: Campaign
   scenario?: Scenario
+  playerId?: string
   canUpgradeDecks: boolean
   chooseSideStory: boolean
   canChooseSideStory: boolean
@@ -30,6 +39,7 @@ const props = defineProps<{
 
 const { t, te } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
 const send = inject<(msg: string) => void>('send', () => {})
@@ -85,6 +95,9 @@ const scenario = computed(() => {
 })
 
 const name = computed(() => campaignStepName(props.game, props.step, props.scenario))
+const scenarioOverlay = computed(() => props.campaign?.overlays.find(o =>
+  o.available && o.scenario.replace(/^c/, '') === scenario.value?.replace(/^c/, '')
+))
 
 const numToRomanNumeral = (num: number): string => {
   const romanNumerals: { [key: number]: string } = {
@@ -207,6 +220,8 @@ const standalones = computed(() => {
 
   return filterDisplayable(sideStories, displayRuleOptions.value).flatMap((s: { xp: number, id: string, name: string, requiredInvestigator?: string, deckRequirements?: string[], scenarios?: { id: string, name: string, notAfter?: string[] }[] }) => {
     if (!s.xp) return []
+    const overlay = props.campaign?.overlays.find(o => o.available && o.scenario.replace(/^c/, '') === s.id)
+    const xp = overlay?.xpCost ?? s.xp
     if (s.id === '90094' && !investigators.value.some((i) => hasParallelContent(i.cardCode))) return []
     if (s.requiredInvestigator) {
       // challenge scenarios require their investigator; they pay the full
@@ -214,18 +229,24 @@ const standalones = computed(() => {
       const signature = investigators.value.find((i) => i.name.title === s.requiredInvestigator)
       if (!signature) return []
       if (usesTime.value) {
-        if (s.xp > minXp.value) return []
-      } else if (signature.xp < s.xp || investigators.value.some((i) => i.id !== signature.id && i.xp < 1)) {
+        if (xp > minXp.value) return []
+      } else if (signature.xp < xp || investigators.value.some((i) => i.id !== signature.id && i.xp < 1)) {
         return []
       }
-    } else if (s.xp > minXp.value) return []
+    } else if (xp > minXp.value) return []
     const parts = s.scenarios ?? [{ id: s.id, name: s.name }]
     return parts
       .filter((p) => !completed.includes(p.id))
       .filter((p) => !(p.notAfter ?? []).some((id) => completed.includes(id)))
-      .map((p) => ({ ...s, id: p.id, name: p.name }))
+      .map((p) => ({ ...s, id: p.id, name: p.name, xp, baseXp: s.xp, overlay: overlay?.name }))
   })
 })
+
+/* A side story a campaign overlay is currently offering (the Circus Ex Mortis
+ * discount on Curse of the Rougarou, say) is a one-shot window rather than
+ * something to go hunting for, so it gets its own button beside Continue
+ * instead of hiding behind Add Side Scenario. It stays in the full list too. */
+const promotedSideStories = computed(() => standalones.value.filter((s) => s.overlay))
 
 async function loadSideStory(sideStoryId: string) {
   addSideStory.value = false
@@ -295,6 +316,124 @@ const expeditionLeader = computed(() => {
   return props.campaign.meta?.expeditionLeader
 })
 
+// --- Joining and leaving a campaign (between scenarios) -------------------
+// Only the seat holding the continuation ask can change the roster; the server
+// rejects everyone else, so the controls are hidden rather than left to fail.
+const solo = inject<Ref<boolean>>('solo', ref(false))
+const rosterBusy = ref(false)
+const rosterError = ref<string | null>(null)
+const confirmingRetire = ref<string | null>(null)
+
+/* Laying custom cards over an investigator's deck for the rest of the
+ * campaign. Its own action rather than part of upgrading: you may want to add a
+ * card without buying anything, and the two should not have to happen together. */
+const { customCardsEnabled } = storeToRefs(useSettings())
+// Loaded up front: whether the control appears at all depends on what is in it.
+if (customCardsEnabled.value) loadLibrary()
+const overlayFor = ref<string | null>(null)
+const overlay = ref<DeckOverlay>(emptyOverlay())
+const overlayBusy = ref(false)
+
+/* What is in the deck right now, so cards can be taken back out as well as
+ * added. Counted by card code, the shape an overlay speaks in. */
+function deckSlotsFor(investigator: { deck?: { cardCode: string }[] }): Record<string, number> {
+  const slots: Record<string, number> = {}
+  for (const card of investigator.deck ?? []) {
+    slots[card.cardCode] = (slots[card.cardCode] ?? 0) + 1
+  }
+  return slots
+}
+
+function openOverlay(investigatorId: string) {
+  overlayFor.value = overlayFor.value === investigatorId ? null : investigatorId
+  overlay.value = emptyOverlay()
+  if (overlayFor.value) loadLibrary()
+}
+
+async function applyOverlay(investigatorId: string) {
+  if (overlayIsEmpty(overlay.value)) {
+    overlayFor.value = null
+    return
+  }
+  overlayBusy.value = true
+  rosterError.value = null
+  try {
+    await applyInvestigatorOverlay(props.game.id, investigatorId, overlay.value)
+    overlayFor.value = null
+  } catch (e) {
+    console.error(e)
+    rosterError.value = 'Could not apply the overlay'
+  } finally {
+    overlayBusy.value = false
+  }
+}
+
+const holdsContinuation = computed(() => {
+  if (!props.playerId) return false
+  const question = props.game.question[props.playerId]
+  if (!question) return false
+  const inner = question.tag === 'QuestionLabel' ? question.question : question
+  return inner.tag === 'ContinueCampaign'
+})
+
+const canManageRoster = computed(() => !!props.campaign && holdsContinuation.value)
+const retired = computed(() => Object.values(props.game.retiredInvestigators ?? {}))
+const canRetire = computed(() => investigators.value.length > 1)
+// A scenario is played by one to four investigators.
+const canAdd = computed(() => investigators.value.length < 4)
+
+// A one-player game is created WithFriends, so `solo` is false even though its
+// single seat belongs to one user. Adding a second hand there turns it into
+// multihanded solo, which the server does when it seats the new investigator.
+const isSingleSeat = computed(() => props.game.playerCount === 1 && retired.value.length === 0)
+const canAddOwnInvestigator = computed(() => solo.value || isSingleSeat.value)
+const becomesMultihandedSolo = computed(() => !solo.value && isSingleSeat.value)
+
+// The add control starts as one button. It only opens a panel when there is a
+// choice to make: taking a second hand yourself versus inviting someone.
+const addOpen = ref(false)
+const addOptionCount = computed(() => (canAddOwnInvestigator.value ? 1 : 0) + (solo.value ? 0 : 1))
+
+function startAdd() {
+  if (addOptionCount.value === 1 && canAddOwnInvestigator.value) {
+    addInvestigator()
+    return
+  }
+  addOpen.value = true
+}
+
+const joinUrl = computed(() =>
+  buildShareableUrl(router.resolve({ name: 'JoinGame', params: { gameId: props.game.id } }).href)
+)
+const { copy: copyInvite, copied: inviteCopied } = useClipboard({ source: joinUrl })
+
+async function withRoster(action: () => Promise<void>) {
+  if (rosterBusy.value) return
+  rosterBusy.value = true
+  rosterError.value = null
+  try {
+    await action()
+  } catch (e) {
+    rosterError.value = (e as { response?: { data?: string } }).response?.data ?? t('campaign.roster.failed')
+  } finally {
+    rosterBusy.value = false
+  }
+}
+
+function retire(investigatorId: string) {
+  confirmingRetire.value = null
+  withRoster(() => retireInvestigator(props.game.id, investigatorId))
+}
+
+function rejoin(investigatorId: string) {
+  withRoster(() => rejoinInvestigator(props.game.id, investigatorId))
+}
+
+function addInvestigator() {
+  addOpen.value = false
+  withRoster(() => joinCampaign(props.game.id))
+}
+
 const setIcon = computed(() => {
   if (!scenario.value) return null
   if (scenario.value.startsWith(":")) {
@@ -313,33 +452,33 @@ const setIcon = computed(() => {
   <div class="continue-campaign scroll-container">
     <div v-if="chooseSideStory || (addSideStory && standalones.length > 0)" class="side-story-selection">
       <h2>{{ $t('sideStory.selectSideScenario') }}</h2>
-      <div v-for="sideStory in standalones" :key="sideStory.id" class="side-story-option">
-        <div class="scenario-icon">
-          <img :src="imgsrc(`sets/${sideStory.id}.png`)" />
-        </div>
-        <div class="scenario-info">
-          <h2>{{ sideStory.name }}</h2>
-          <h3 v-if="sideStory.requiredInvestigator">{{ $t('sideStory.xpAsymmetric', { signatureXp: sideStory.xp, name: sideStory.requiredInvestigator, otherXp: 1 }) }}</h3>
-          <template v-else>
-            <h3>({{ sideStory.xp }} XP)</h3>
-            <h3 v-for="requirement in sideStory.deckRequirements" :key="requirement">{{ requirement }}</h3>
-          </template>
-        </div>
-
-        <button class="add" @click="loadSideStory(sideStory.id)" :disabled="hasSent">+</button>
-      </div>
+      <SideStoryOption
+        v-for="sideStory in standalones"
+        :key="sideStory.id"
+        :side-story="sideStory"
+        :disabled="hasSent"
+        @select="loadSideStory"
+      />
       <button v-if="!chooseSideStory" @click="addSideStory = false">{{t('cancel')}}</button>
     </div>
     <div v-else class="next-scenario">
       <div class="next-scenario-info">
-        <div class='scenario-info'>
+        <div class='scenario-info' :class="{ 'scenario-info--overlay': scenarioOverlay }">
           <h3>{{kind}}</h3>
           <h2>{{name}}</h2>
+          <p v-if="scenarioOverlay" class="campaign-overlay-label">{{ t('sideStory.variant') }}</p>
         </div>
         <div class="actions">
           <button @click="startStep" :disable="hasSent">{{t('continue')}}</button>
           <button v-if="canUpgrade" @click="upgradeDecks" :disable="hasSent">{{t('upgradeDecks')}}</button>
           <button v-if="canChooseSideStory && standalones.length > 0" @click="addSideStory = true" :disable="hasSent">+ {{t('addSideScenario')}}</button>
+          <SideStoryOption
+            v-for="sideStory in promotedSideStories"
+            :key="sideStory.id"
+            :side-story="sideStory"
+            :disabled="hasSent"
+            @select="loadSideStory"
+          />
         </div>
       </div>
       <div v-if="setIcon" class="next-step-icon"><img :src="setIcon" /></div>
@@ -348,7 +487,31 @@ const setIcon = computed(() => {
     <template v-if="!addSideStory && !chooseSideStory">
       <div v-if="investigators.length > 0" id="investigators">
         <section v-if="isScenario" id="investigators-header"><i class="secret"></i> {{t('lead')}}</section>
-        <InvestigatorRow v-for="investigator in investigators" :key="investigator.id" :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]">
+        <template v-for="investigator in investigators" :key="investigator.id">
+        <InvestigatorRow :investigator="investigator" :game="game" :bonus-xp="bonusXp && bonusXp[investigator.id]">
+          <template v-if="canManageRoster" #actions="{ investigator }">
+            <template v-if="canRetire && confirmingRetire === investigator.id">
+              <button class="roster-btn roster-btn--danger" :disabled="rosterBusy" @click="retire(investigator.id)">{{ t('campaign.roster.confirmLeave') }}</button>
+              <button class="roster-btn" @click="confirmingRetire = null">{{ t('cancel') }}</button>
+            </template>
+            <template v-else>
+              <button
+                v-if="customCardsEnabled && hasLibraryCards"
+                class="roster-btn"
+                :class="{ 'roster-btn--on': overlayFor === investigator.id }"
+                :disabled="overlayBusy"
+                v-tooltip="'Lay custom cards over this deck'"
+                @click="openOverlay(investigator.id)"
+              ><font-awesome-icon icon="layer-group" /></button>
+              <button
+                v-if="canRetire"
+                class="roster-btn"
+                :disabled="rosterBusy"
+                v-tooltip="t('campaign.roster.leaveTooltip')"
+                @click="confirmingRetire = investigator.id"
+              >{{ t('campaign.roster.leave') }}</button>
+            </template>
+          </template>
           <template v-if="isScenario" #back="{ investigator }">
             <label class="secret-radio">
               <input
@@ -367,12 +530,82 @@ const setIcon = computed(() => {
             </label>
           </template>
         </InvestigatorRow>
+        <div v-if="overlayFor === investigator.id" class="overlay-panel">
+          <p class="overlay-help">
+            Custom cards, laid over this deck for the rest of the campaign. Nothing is bought,
+            so no xp is spent and no trauma is taken for what it adds.
+          </p>
+          <OverlayEditor
+            v-model="overlay"
+            :slots="deckSlotsFor(investigator)"
+            :investigator="investigator.cardCode"
+          />
+          <div class="overlay-actions">
+            <button class="roster-btn" :disabled="overlayBusy" @click="applyOverlay(investigator.id)">
+              Apply overlay
+            </button>
+            <button class="roster-btn" @click="overlayFor = null">{{ t('cancel') }}</button>
+          </div>
+        </div>
+        </template>
+
+        <template v-if="canManageRoster">
+          <InvestigatorRow
+            v-for="investigator in retired"
+            :key="investigator.id"
+            :investigator="investigator"
+            :game="game"
+            dimmed
+          >
+            <template #actions>
+              <button class="roster-btn" :disabled="rosterBusy || !canAdd" @click="rejoin(investigator.id)">
+                {{ t('campaign.roster.rejoin') }}
+              </button>
+            </template>
+          </InvestigatorRow>
+
+          <button
+            v-if="!addOpen"
+            class="roster-btn roster-add"
+            :disabled="rosterBusy || !canAdd"
+            @click="startAdd"
+          >+ {{ t('campaign.roster.add') }}</button>
+
+          <div v-else class="roster-add-panel">
+            <button v-if="canAddOwnInvestigator" class="roster-btn" :disabled="rosterBusy" @click="addInvestigator">
+              {{ becomesMultihandedSolo ? t('campaign.roster.addSolo') : t('campaign.roster.add') }}
+            </button>
+            <p v-if="becomesMultihandedSolo" class="roster-hint">{{ t('campaign.roster.addSoloHint') }}</p>
+            <template v-if="!solo">
+              <p class="roster-hint">{{ t('campaign.roster.inviteHint') }}</p>
+              <div class="roster-invite">
+                <input type="text" :value="joinUrl" readonly />
+                <button class="roster-btn" type="button" @click="copyInvite()">{{ inviteCopied ? t('lobby.copied') : t('lobby.copy') }}</button>
+              </div>
+            </template>
+            <button class="roster-btn" @click="addOpen = false">{{ t('cancel') }}</button>
+          </div>
+
+          <p v-if="rosterError" class="roster-error">{{ rosterError }}</p>
+        </template>
       </div>
+
     </template>
   </div>
 </template>
 
 <style scoped lang="scss">
+.campaign-overlay-label {
+  margin: 0.25rem 0;
+  color: #e1c3f1;
+  font-size: 0.85rem;
+}
+
+.scenario-info--overlay {
+  border-left: 3px solid #b98bd0;
+  padding-left: 12px;
+}
+
 .next-scenario {
   display: flex;
   justify-content: space-between;
@@ -465,28 +698,6 @@ const setIcon = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  .side-story-option {
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    display: flex;
-    gap: 10px;
-    h3 {
-      margin: 0;
-      color: white;
-    }
-    img {
-      max-height: 60px;
-      filter: invert(100%) brightness(60%);
-    }
-    .scenario-icon {
-      margin-right: 10px;
-      width: 60px;
-      justify-content: center;
-      display: flex;
-    }
-  }
 }
 
 button {
@@ -500,17 +711,6 @@ button {
     background: rgba(0, 0, 0, 0.5);
     cursor: pointer;
   }
-}
-
-.add {
-  font-size: 1.5em;
-  width: 40px;
-  height: 40px;
-  align-self: center;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .investigators {
@@ -604,6 +804,64 @@ button {
 }
 
 
+.roster-add {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+}
+
+.roster-add-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.roster-hint {
+  margin: 0;
+  color: #bebebe;
+  font-size: 0.85em;
+}
+
+.roster-invite {
+  display: flex;
+  gap: 8px;
+  input {
+    flex: 1;
+    min-width: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: #e0e0e0;
+    padding: 8px;
+  }
+}
+
+.roster-error {
+  margin: 0;
+  color: var(--survivor);
+}
+
+.roster-btn {
+  font-size: 0.85em;
+  padding: 6px 12px;
+  white-space: nowrap;
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.roster-btn--danger {
+  background: oklch(from var(--survivor) calc(l - 0.35) c h);
+  &:hover {
+    background: oklch(from var(--survivor) calc(l - 0.25) c h);
+  }
+}
+
 #investigators-header {
   color: var(--title);
   text-align: end;
@@ -617,5 +875,32 @@ button {
 
     font-size: 1.5em;
   }
+}
+
+.roster-btn--on {
+  border-color: var(--spooky-green);
+  color: var(--spooky-green);
+}
+
+.overlay-panel {
+  background: color-mix(in srgb, var(--spooky-green-dark) 45%, #12161c);
+  border: 1px solid color-mix(in srgb, var(--spooky-green) 35%, transparent);
+  border-radius: 6px;
+  color: #e6ece4;
+  margin: 0 0 10px;
+  padding: 10px;
+}
+
+.overlay-help {
+  color: #e6ece4;
+  font-size: 0.85em;
+  margin: 0 0 8px;
+  opacity: 0.85;
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
 }
 </style>

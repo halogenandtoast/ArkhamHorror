@@ -54,10 +54,10 @@ instance RunMessage ABitterRivalry where
       withMatch edwin \edwin' -> do
         sid <- getRandom
         chooseOneM iid $ withI18n do
-          labeled' "fight" do
+          labeled "fight" do
             narrowTakenActions [#fight]
             fightEnemy sid iid (attrs.ability 2) edwin'
-          labeled' "evade" do
+          labeled "evade" do
             narrowTakenActions [#evade]
             chooseEvadeEnemyMatch sid iid (attrs.ability 2) (EnemyWithId edwin')
       pure s

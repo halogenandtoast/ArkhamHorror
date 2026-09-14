@@ -23,8 +23,8 @@ instance RunMessage AroundTheTable where
     AdvanceAgenda (isSide B attrs -> True) -> do
       eachInvestigator \iid -> do
         chooseOneM iid $ withI18n do
-          countVar 1 $ labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
-          countVar 1 $ labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+          countVar 1 $ labeled "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+          countVar 1 $ labeled "sufferMentalTrauma" $ sufferMentalTrauma iid 1
         investigatorDefeated attrs iid
       pure a
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

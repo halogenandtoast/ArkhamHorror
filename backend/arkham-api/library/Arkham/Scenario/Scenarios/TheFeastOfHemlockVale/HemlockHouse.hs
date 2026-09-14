@@ -74,7 +74,7 @@ instance RunMessage HemlockHouse where
       time <- getCampaignTime
       let isNight = time == Night
       flavor do
-        setTitle "title"
+        h "title"
         p.basic "body"
         ul $ li.nested.validate isNight "nightSkip" do
           li.validate (not isNight && day == Day1) "day1"
@@ -482,8 +482,8 @@ instance RunMessage HemlockHouse where
         Sigma -> do
           entry "argument1"
           chooseOneM iid do
-            labeled' "judithRight" $ scenarioSpecific "codex" (iid, source, SigmaJudithRight)
-            labeled' "williamRight" $ scenarioSpecific "codex" (iid, source, SigmaWilliamRight)
+            labeled "judithRight" $ scenarioSpecific "codex" (iid, source, SigmaJudithRight)
+            labeled "williamRight" $ scenarioSpecific "codex" (iid, source, SigmaWilliamRight)
         SigmaJudithRight -> do
           entry "argument2"
           william <- selectJust $ assetIs Assets.williamHemlockAspiringPoet

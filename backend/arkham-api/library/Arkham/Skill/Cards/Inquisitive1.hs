@@ -22,10 +22,10 @@ instance RunMessage Inquisitive1 where
             skillTestModifier sid attrs sid (SkillTestResultValueModifier x)
             push RecalculateSkillTestResults
         chooseOneM iid do
-          withI18n $ countVar 2 $ labeledI "passByMore" (go 2)
-          withI18n $ countVar 1 $ labeledI "passByMore" (go 1)
+          withI18n $ countVar 2 $ labeled "passByMore" (go 2)
+          withI18n $ countVar 1 $ labeled "passByMore" (go 1)
           labeledI "doNotModify" nothing
-          when (n > 0) $ withI18n $ countVar 1 $ labeledI "passByLess" (go (-1))
-          when (n > 1) $ withI18n $ countVar 2 $ labeledI "passByLess" (go (-2))
+          when (n > 0) $ withI18n $ countVar 1 $ labeled "passByLess" (go (-1))
+          when (n > 1) $ withI18n $ countVar 2 $ labeled "passByLess" (go (-2))
       pure s
     _ -> Inquisitive1 <$> liftRunMessage msg attrs

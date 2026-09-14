@@ -9,6 +9,7 @@ import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useSettingsFocus } from '@/composable/settingsFocus'
 import { useSettings } from '@/stores/settings'
+import CardOptionsSettings from '@/arkham/components/CardOptionsSettings.vue'
 
 const props = defineProps<{
   game: Game
@@ -43,6 +44,11 @@ const extraAnimationsOverride = computed<'default' | 'on' | 'off'>({
     return settings.extraAnimationsOverride ? 'on' : 'off'
   },
   set: (value) => settings.setExtraAnimationsOverride(value === 'default' ? null : value === 'on'),
+})
+
+const hideInertCards = computed({
+  get: () => settings.hideInertCards,
+  set: (value: boolean) => settings.setHideInertCards(value),
 })
 
 const soundsDisabled = ref(localStorage.getItem('arkhamSoundsDisabled') === 'true')
@@ -250,6 +256,22 @@ onBeforeUnmount(() => {
 
           <div class="toggle-row">
             <div class="toggle-text">
+              <div class="toggle-name">Hide Cards With No Ongoing Effect</div>
+              <div class="toggle-desc">
+                Once setup is over, tuck permanents whose text only applied at deck creation or
+                setup — In the Thick of It, Adaptable, Observed — into a stack beside the play area.
+              </div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-hideInertCards-on" name="opt-hideInertCards" :checked="hideInertCards" @change="hideInertCards = true" />
+              <label for="opt-hideInertCards-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-hideInertCards-off" name="opt-hideInertCards" :checked="!hideInertCards" @change="hideInertCards = false" />
+              <label for="opt-hideInertCards-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
               <div class="toggle-name">Sounds</div>
               <div class="toggle-desc">Play sound effects in this browser.</div>
             </div>
@@ -309,6 +331,8 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </section>
+
+      <CardOptionsSettings :game="game" :playerId="playerId" />
 
       <section class="settings-section">
         <h3 class="section-title">Shared Game Settings</h3>

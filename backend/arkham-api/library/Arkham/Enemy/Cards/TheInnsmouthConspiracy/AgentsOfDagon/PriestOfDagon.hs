@@ -1,4 +1,4 @@
-module Arkham.Enemy.Cards.TheInnsmouthConspiracy.AgentsOfDagon.PriestOfDagon (priestOfDagon, PriestOfDagon (..)) where
+module Arkham.Enemy.Cards.TheInnsmouthConspiracy.AgentsOfDagon.PriestOfDagon (priestOfDagon) where
 
 import Arkham.Ability
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.AgentsOfDagon qualified as Cards
@@ -16,10 +16,10 @@ instance HasAbilities PriestOfDagon where
   getAbilities (PriestOfDagon a) =
     extend
       a
-      [ restrictedAbility a 1 (thisIs a $ EnemyWithoutDoom)
+      [ restricted a 1 (thisIs a EnemyWithoutDoom)
           $ forced
           $ oneOf [EnemyDefeated #when Anyone ByAny (be a), EnemyEvaded #when Anyone (be a)]
-      , restrictedAbility a 2 (thisIs a $ EnemyWithoutDoom <> #ready) $ forced $ RoundEnds #when
+      , restricted a 2 (thisIs a $ EnemyWithoutDoom <> #ready) $ forced $ RoundEnds #when
       ]
 
 instance RunMessage PriestOfDagon where
@@ -29,7 +29,7 @@ instance RunMessage PriestOfDagon where
         response = do
           healAllDamage (attrs.ability 1) attrs
           ready attrs
-          placeDoom (attrs.ability 2) attrs 1
+          placeDoom (attrs.ability 1) attrs 1
       insteadOfDefeat attrs response
       insteadOfEvading attrs response
       pure e

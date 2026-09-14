@@ -3,6 +3,7 @@ module Arkham.Location.Cards.TheFeastOfHemlockVale.HemlockHouse.ParlorHemlockHou
 import Arkham.Ability
 import Arkham.ForMovement
 import Arkham.Helpers.SkillTest (getSkillTestTargetedEnemy)
+import Arkham.I18n
 import Arkham.Location.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -34,10 +35,10 @@ instance RunMessage ParlorHemlockHouse where
       chooseTargetM iid enemies \enemy -> do
         nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2 enemy
         chooseOneM iid do
-          labeled "Test {intellect} (4) for 1 additional damage" do
+          (cardI18n $ labeled "parlorHemlockHouse.testForAdditionalDamage") do
             sid <- getRandom
             beginSkillTest sid iid (attrs.ability 1) enemy #intellect (Fixed 4)
-          labeled "Skip" nothing
+          labeledI "skip" nothing
       pure l
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       whenJustM getSkillTestTargetedEnemy $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 1

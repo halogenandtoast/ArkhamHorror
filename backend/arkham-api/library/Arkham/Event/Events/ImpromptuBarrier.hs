@@ -5,6 +5,7 @@ import Arkham.Enemy.Types qualified as Enemy (Field (..))
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Location (getLocationOf)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Modifier (ModifierType (..))
 
@@ -20,7 +21,7 @@ instance RunMessage ImpromptuBarrier where
     PlayThisEvent iid (is attrs -> True) -> do
       sid <- getRandom
       chooseEvadeEnemyEdit sid iid attrs (setTarget attrs)
-      doStep 1 msg
+      shouldMoveWithSkillTest_ $ doStep 1 msg
       pure e
     DoStep 1 (PlayThisEvent iid (is attrs -> True)) -> do
       when attrs.playedFromDiscard $ shuffleIntoDeck iid attrs
@@ -39,7 +40,7 @@ instance RunMessage ImpromptuBarrier where
             <> not_ (be enemyId)
             <> at_ (LocationWithId loc)
         chooseOrRunOneM iid do
-          questionLabeled "$label.evadeAnotherEnemy"
+          withI18n $ questionLabeled "evadeAnotherEnemy"
           questionLabeledCard attrs
           labeledI "doNotEvadeAnotherEnemy" nothing
           targets enemies (automaticallyEvadeEnemy iid)

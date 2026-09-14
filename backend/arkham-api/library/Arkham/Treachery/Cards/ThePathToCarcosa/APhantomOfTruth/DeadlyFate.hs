@@ -33,8 +33,8 @@ instance RunMessage DeadlyFate where
           -- This technically means we have an enemy at no location
           focusCard c do
             chooseOneM iid $ scenarioI18n do
-              labeled' "deadlyFate.drawEnemy" $ drawCard iid c
-              labeled' "deadlyFate.attack " do
+              labeled "deadlyFate.drawEnemy" $ drawCard iid c
+              labeled "deadlyFate.attack " do
                 addToEncounterDiscard (only c)
                 push $ EnemyAttackFromDiscard iid (toSource attrs) (EncounterCard c)
       pure t

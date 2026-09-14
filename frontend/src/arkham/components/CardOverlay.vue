@@ -12,6 +12,7 @@ import {
 } from 'vue'
 import { cardImg, formatContent, imgsrc, isLocalized, toCamelCase } from '@/arkham/helpers'
 import { homebrewTokenMap } from '@/arkham/homebrewAssets'
+import { originalArt } from '@/arkham/artVariants'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useDebug } from '@/arkham/debug'
 import { fetchCard, fetchPlayability, type PlayabilityResponse } from '@/arkham/api'
@@ -392,8 +393,8 @@ const overlayCardCode = computed<string | null>(() => {
   // like an official card code to the fallback matcher below.
   if (!image || image.includes('/homebrew/')) return null
 
-  const match = image.match(/\/cards\/c?(\d+)b?\.(?:avif|jpg|jpeg|png|webp)(?:\?.*)?$/i)
-  return match?.[1] ?? null
+  const match = image.match(/\/cards\/c?(\d+b?)\.(?:avif|jpg|jpeg|png|webp)(?:\?.*)?$/i)
+  return match ? originalArt(match[1]).replace(/b$/, '') : null
 })
 /* Card-def errata covers a whole card, but some errata only applies to one face —
  * and the overlay resolves both faces to the same card def. A `data-errata`
@@ -645,13 +646,26 @@ const additionalCard = computed<string | null>(() => {
   return imgsrc(`cards/${cardCode.value}b.avif`)
 })
 
+// A later taboo can mutate a card without touching its customizable sheet -- Taboo 24
+// only changed Power Word's test difficulty, which lives on the front. Point those
+// variants at the sheet from the taboo that last changed it.
+const customizationSheetVariants: Record<string, string> = {
+  '09081_Mutated24': '_Mutated21',
+}
+
+const customizationSheetVariant = computed<string>(() => {
+  const variant = customizationVariant.value
+  if (!variant || !cardCode.value) return variant
+  return customizationSheetVariants[`${cardCode.value}${variant}`] ?? variant
+})
+
 const customizationsCard = computed<string | null>(() => {
   if (!cardCode.value) return null
   if (!allCustomizations.has(cardCode.value)) return null
   // Chained sheets (Runic Axe) ship as .avif; base and mutated sheets as .jpg.
   const chained = hoveredElement.value?.dataset?.chained
   if (chained) return imgsrc(`customizations/${cardCode.value}_${chained}.avif`)
-  return imgsrc(`customizations/${cardCode.value}${customizationVariant.value}.jpg`)
+  return imgsrc(`customizations/${cardCode.value}${customizationSheetVariant.value}.jpg`)
 })
 
 /* =============================================================================
@@ -1060,14 +1074,17 @@ watchEffect(() => {
   if (!src) return
   const m = src.match(/(\d+b?)(_.*)?\.avif$/)
   if (!m) return
-  const code = m[1]
+  const code = originalArt(m[1])
   const tabooSuffix = m[2]
   const language = localStorage.getItem('language') || 'en'
   if (imgsrc(`cards/${m[0]}`).includes(language)) return
 
   const dbCard = store.getDbCard(code)
   if (!dbCard) return
-  const needBack = dbCard.code !== code
+  // ArkhamDB records a handful of cards the engine flips (Atlach-Nacha's spinner face,
+  // Hank Samson's transformed face) as single-sided, so their `b` face carries no back_*
+  // fields. Describe it with the front's rather than showing nothing.
+  const needBack = dbCard.code !== code && dbCard.double_sided
 
   const name = getCardName(dbCard, needBack)
   const type = getCardTypeName(dbCard)
@@ -1302,9 +1319,17 @@ watchEffect(() => {
       <KeyToken v-for="k in spentKeys" :key="keyToId(k)" :keyToken="k" @choose="() => {}"/>
     </div>
 
-    <div class="card-data" v-if="dbCardCustomizationText">
-      <p v-if="dbCardName"><b>{{ dbCardName }}</b></p>
-      <p v-if="dbCardCustomizationText" v-html="dbCardCustomizationText" style="font-size: 0.85em;"></p>
+    <div
+      class="card-data card-data-customization"
+      v-if="dbCardCustomizationText"
+      :class="{ [`faction-${dbCardFactionCode || 'neutral'}`]: true }"
+    >
+      <div class="card-data-header">
+        <p v-if="dbCardName"><b>{{ dbCardName }}</b></p>
+      </div>
+      <div class="card-data-body">
+        <p v-html="dbCardCustomizationText"></p>
+      </div>
     </div>
 
     <div v-if="playabilityData && debug.active" class="playability-panel">
@@ -1462,7 +1487,7 @@ watchEffect(() => {
   font-family: serif;
   flex: 1;
   padding: 15px;
-  background-color: rgba(212, 212, 212, 0.85);
+  background-color: rgba(212, 212, 212, 0.96);
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
 }
@@ -1495,6 +1520,18 @@ watchEffect(() => {
 .card-data-body .card-flavor {
   font-size: 0.85em;
   font-style: italic;
+}
+
+/* Customization sheets run longer than card text, and the overlay is
+   pointer-events: none, so a scrollbar would be unusable -- grow instead. */
+.card-data-customization {
+  align-self: flex-start;
+  height: auto;
+  aspect-ratio: auto;
+}
+
+.card-data-customization .card-data-body {
+  font-size: 0.8em;
 }
 
 .card-overlay {

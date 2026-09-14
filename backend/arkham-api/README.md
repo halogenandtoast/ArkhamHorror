@@ -37,6 +37,8 @@ stack test --flag arkham-horror-backend:library-only --flag arkham-horror-backen
 
 ## Documentation
 
+* [Custom chaos bags](docs/custom-chaos-bags.md): shared state, scenario-owned bags, save compatibility, and debugging.
+
 * Read the [Yesod Book](https://www.yesodweb.com/book) online for free
 * Check [Stackage](http://stackage.org/) for documentation on the packages in your LTS Haskell version, or [search it using Hoogle](https://www.stackage.org/lts/hoogle?q=). Tip: Your LTS version is in your `stack.yaml` file.
 * For local documentation, use:

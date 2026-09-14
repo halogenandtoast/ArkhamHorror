@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.TheForgottenAge.TheDepthsOfYoth (setupTheDepthsOfYoth, theDepthsOfYoth, TheDepthsOfYoth (..)) where
+module Arkham.Scenario.Scenarios.TheForgottenAge.TheDepthsOfYoth (
+  setupTheDepthsOfYoth,
+  theDepthsOfYoth,
+  TheDepthsOfYoth (..),
+) where
 
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheForgottenAge.TheDepthsOfYoth qualified as Acts
@@ -336,16 +340,14 @@ instance RunMessage TheDepthsOfYoth where
                             Nothing -> getRecordCount TheHarbingerIsStillAlive
                 recordCount TheHarbingerIsStillAlive damage
 
-          vengeance <- getTotalVengeanceInVictoryDisplay
-          yigsFury <- getRecordCount YigsFury
-          recordCount YigsFury (yigsFury + vengeance)
+          recordVengeance
 
           collectedAStrangeLiquid <- remembered CollectedAStrangeLiquid
           hasStickyGoop <- getAnyHasSupply StickyGoop
           when (collectedAStrangeLiquid && hasStickyGoop) $ do
             investigators <- getInvestigators
             leadChooseOneM do
-              questionLabeled' "stickyGoop"
+              questionLabeled "stickyGoop"
               portraits investigators (`pickSupply` KeyOfEztli)
 
           endOfScenario
@@ -378,7 +380,7 @@ instance RunMessage TheDepthsOfYoth where
               <> oneOf [enemyAtLocationWith iid, EnemyAt $ connectedFrom (locationWithInvestigator iid)]
           for_ serpents \serpent -> do
             push $ HealDamage (toTarget serpent) (ChaosTokenEffectSource Cultist) 2
-        Tablet -> withLocationOf iid \location -> placeTokens Tablet location #clue 2
+        Tablet -> withLocationOf iid \location -> placeTokens Tablet location #clue 1
         _ -> pure ()
       pure s
     UseCardAbility _ ScenarioSource 1 _ _ -> do

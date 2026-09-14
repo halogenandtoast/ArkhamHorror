@@ -45,9 +45,9 @@ instance RunMessage SeaOfSkulls where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasCardsInHand <- selectAny $ inHandOf NotForPlay iid
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeDirectHorror" $ directHorror iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeDirectHorror" $ directHorror iid (attrs.ability 1) 1
         when hasCardsInHand do
-          countVar 3 $ labeled' "discardCardsFromHand" $ chooseAndDiscardCards iid (attrs.ability 1) 3
+          countVar 3 $ labeled "discardCardsFromHand" $ chooseAndDiscardCards iid (attrs.ability 1) 3
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       push $ DrawCards iid $ targetCardDraw attrs CatacombsDeck 1
@@ -68,15 +68,15 @@ instance RunMessage SeaOfSkulls where
       attrs' <- getAttrs @Location lid
       case drewCards.cards of
         [card] -> chooseOrRunOneM iid $ scenarioI18n do
-          whenM (directionEmpty attrs' Above) $ labeled' "above" do
+          whenM (directionEmpty attrs' Above) $ labeled "above" do
             lid' <- placeAtDirection Above attrs' card
             placeTokens (attrs.ability 1) lid' #horror 1
             push $ AddDirectConnection attrs.id lid'
-          whenM (directionEmpty attrs' Below) $ labeled' "below" do
+          whenM (directionEmpty attrs' Below) $ labeled "below" do
             lid' <- placeAtDirection Below attrs' card
             placeTokens (attrs.ability 1) lid' #horror 1
             push $ AddDirectConnection attrs.id lid'
-          whenM (directionEmpty attrs' RightOf) $ labeled' "right" do
+          whenM (directionEmpty attrs' RightOf) $ labeled "right" do
             lid' <- placeAtDirection RightOf attrs' card
             placeTokens (attrs.ability 1) lid' #horror 1
             push $ AddDirectConnection attrs.id lid'

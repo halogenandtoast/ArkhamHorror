@@ -31,7 +31,7 @@ instance RunMessage BurdenOfLeadership where
                   withI18n
                     $ numberVar "damage" 1
                     $ numberVar "horror" 1
-                    $ labeled' "dealDirectDamageAndHorror"
+                    $ labeled "dealDirectDamageAndHorror"
                     $ dealAssetDirectDamageAndHorror ally attrs 1 1
       pure t
     _ -> BurdenOfLeadership <$> liftRunMessage msg attrs

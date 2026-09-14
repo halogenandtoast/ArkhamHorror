@@ -18,7 +18,9 @@ discOfItzamna = asset DiscOfItzamna Cards.discOfItzamna
 
 instance HasAbilities DiscOfItzamna where
   getAbilities (DiscOfItzamna a) =
-    [controlled_ a 1 $ triggered (EnemySpawns #when YourLocation NonEliteEnemy) (discardCost a)]
+    [ controlled_ a 1
+        $ triggered (EnemySpawns #when (PlacementAt YourLocation) NonEliteEnemy) (discardCost a)
+    ]
 
 instance RunMessage DiscOfItzamna where
   runMessage msg a@(DiscOfItzamna attrs) = runQueueT $ case msg of

@@ -11,7 +11,7 @@ newtype CityOfCats = CityOfCats LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 cityOfCats :: LocationCard CityOfCats
-cityOfCats = location CityOfCats Cards.cityOfCats 3 (PerPlayer 1)
+cityOfCats = symbolLabel $ location CityOfCats Cards.cityOfCats 3 (PerPlayer 1)
 
 {- | "[action] Parley. Discard 1 card of each cardtype (asset, event, and skill)
 from your hand: Heal 1 mental trauma. (Group limit once per game.)"

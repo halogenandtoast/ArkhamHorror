@@ -41,7 +41,7 @@ instance RunMessage OtherworldlyVisions where
     DoStep n msg'@(FailedThisSkillTestBy iid (isSource attrs -> True) _) | n > 0 -> do
       hasCards <- fieldMap InvestigatorHand notNull iid
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeHorror" do
+        countVar 1 $ labeled "takeHorror" do
           assignHorror iid attrs 1
           doStep (n - 1) msg'
         countVar 1 $ labeledValidate' hasCards "discardRandomCardsFromHand" do

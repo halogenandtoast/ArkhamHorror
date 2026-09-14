@@ -32,7 +32,7 @@ instance RunMessage VedaWhitsleySkilledBotanist where
       explorationDeck <- getExplorationDeck
       chooseOrRunOneM iid $ scenarioI18n do
         when (notNull explorationDeck) do
-          labeled' "vedaWhitsley.exploration"
+          labeled "vedaWhitsley.exploration"
             $ lookAt
               iid
               (attrs.ability 1)
@@ -41,7 +41,7 @@ instance RunMessage VedaWhitsleySkilledBotanist where
               (basic AnyCard)
               (defer attrs IsNotDraw)
         when hasEncounterDeck do
-          labeled' "vedaWhitsley.encounter"
+          labeled "vedaWhitsley.encounter"
             $ lookAt
               iid
               (attrs.ability 1)
@@ -55,16 +55,16 @@ instance RunMessage VedaWhitsleySkilledBotanist where
         if
           | cardMatch c (CardWithType EnemyType) ->
               chooseOneM iid $ scenarioI18n do
-                labeled' "vedaWhitsley.damage" do
+                labeled "vedaWhitsley.damage" do
                   dealAssetDamage attrs.id (attrs.ability 1) 1
                   discardCard iid (attrs.ability 1) c
-                labeled' "vedaWhitsley.putBack" nothing
+                labeled "vedaWhitsley.putBack" nothing
           | cardMatch c (CardWithType TreacheryType) ->
               chooseOneM iid $ scenarioI18n do
-                labeled' "vedaWhitsley.horror" do
+                labeled "vedaWhitsley.horror" do
                   dealAssetHorror attrs.id (attrs.ability 1) 1
                   discardCard iid (attrs.ability 1) c
-                labeled' "vedaWhitsley.putBack" nothing
+                labeled "vedaWhitsley.putBack" nothing
           | otherwise -> continue_ iid
       pure a
     _ -> VedaWhitsleySkilledBotanist <$> liftRunMessage msg attrs

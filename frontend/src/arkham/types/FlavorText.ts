@@ -20,8 +20,9 @@ export type FlavorTextModifier
   | 'InterludeEntry'
   | 'CodexEntry'
   | 'HauntedEntry'
+  | 'TokenRevealEntry'
 
-export type ImageModifier = 'RemoveImage' | 'SelectImage'
+export type ImageModifier = 'RemoveImage' | 'SelectImage' | 'SmallImage'
 
 export interface ListItemEntry {
   entry: FlavorTextEntry;
@@ -52,6 +53,7 @@ export type FlavorText = {
 export const imageModifierDecoder = JsonDecoder.oneOf<ImageModifier>([
   JsonDecoder.literal('RemoveImage'),
   JsonDecoder.literal('SelectImage'),
+  JsonDecoder.literal('SmallImage'),
 ], 'ImageModifier');
 
 export const flavorTextModifierDecoder = JsonDecoder.oneOf<FlavorTextModifier>([
@@ -71,6 +73,7 @@ export const flavorTextModifierDecoder = JsonDecoder.oneOf<FlavorTextModifier>([
   JsonDecoder.literal('ValidEntry'),
   JsonDecoder.literal('CodexEntry'),
   JsonDecoder.literal('HauntedEntry'),
+  JsonDecoder.literal('TokenRevealEntry'),
 ], 'FlavorTextModifier');
 
 export const listItemEntryDecoder: JsonDecoder.Decoder<ListItemEntry> = JsonDecoder.object<ListItemEntry>(

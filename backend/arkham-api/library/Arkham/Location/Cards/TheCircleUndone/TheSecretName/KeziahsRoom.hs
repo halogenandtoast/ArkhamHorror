@@ -46,8 +46,8 @@ instance RunMessage KeziahsRoom where
       for_ drewCards.cards \card -> do
         lid <- placeLabeledLocation "unknownPlaces" card
         chooseOneM iid $ withI18n do
-          labeled' "doNotMove" nothing
-          labeled' "move" $ moveTo attrs iid lid
+          labeled "doNotMove" nothing
+          labeled "move" $ moveTo attrs iid lid
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       discardUntilFirst iid attrs Deck.EncounterDeck (basic $ withTrait Hex)

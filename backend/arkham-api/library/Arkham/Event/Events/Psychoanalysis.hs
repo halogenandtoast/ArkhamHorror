@@ -25,9 +25,9 @@ instance RunMessage Psychoanalysis where
     SearchFound _iid (isTarget attrs -> True) (Deck.InvestigatorDeck iid') cards -> do
       focusCards cards do
         chooseOneM iid' $ cardI18n $ scope "psychoanalysis" do
-          labeled' "draw" do
+          labeled "draw" do
             chooseOrRunOneM iid' $ targets cards $ drawCard iid'
-          labeled' "heal" do
+          labeled "heal" do
             healHorror iid' attrs 2
             push $ UpdateSearchReturnStrategy iid' FromDeck PutBackInAnyOrder
       pure e

@@ -11,7 +11,7 @@ newtype StarvingCorridor = StarvingCorridor LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 starvingCorridor :: LocationCard StarvingCorridor
-starvingCorridor = location StarvingCorridor Cards.starvingCorridor 3 (Static 2)
+starvingCorridor = location StarvingCorridor Cards.starvingCorridor 3 (PerPlayer 2)
 
 instance RunMessage StarvingCorridor where
   runMessage msg (StarvingCorridor attrs) = runQueueT $ case msg of

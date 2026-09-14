@@ -9,7 +9,7 @@ newtype SpawningGrounds = SpawningGrounds LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 spawningGrounds :: LocationCard SpawningGrounds
-spawningGrounds = location SpawningGrounds Cards.spawningGrounds 3 (Static 2)
+spawningGrounds = location SpawningGrounds Cards.spawningGrounds 3 (PerPlayer 2)
 
 instance RunMessage SpawningGrounds where
   runMessage msg (SpawningGrounds attrs) = runQueueT $ case msg of

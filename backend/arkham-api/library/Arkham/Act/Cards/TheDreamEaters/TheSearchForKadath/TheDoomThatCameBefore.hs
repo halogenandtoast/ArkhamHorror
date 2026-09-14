@@ -35,14 +35,14 @@ instance HasAbilities TheDoomThatCameBefore where
 toOption :: (HasI18n, ReverseQueue m) => Region -> ChooseT m ()
 toOption = \case
   Oriab ->
-    labeled' "visitOriab"
+    labeled "visitOriab"
       $ setScenarioMeta Oriab
   Mnar -> error "Not possible"
   ForbiddenLands ->
-    labeled' "visitForbiddenLands"
+    labeled "visitForbiddenLands"
       $ setScenarioMeta ForbiddenLands
   TimelessRealm ->
-    labeled' "visitTimelessRealm"
+    labeled "visitTimelessRealm"
       $ setScenarioMeta TimelessRealm
 
 instance RunMessage TheDoomThatCameBefore where

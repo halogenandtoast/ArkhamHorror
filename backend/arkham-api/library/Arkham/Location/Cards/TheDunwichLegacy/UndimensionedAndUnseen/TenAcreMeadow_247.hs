@@ -38,8 +38,8 @@ instance RunMessage TenAcreMeadow_247 where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       investigators <- locationInvestigatorsWithClues attrs
       abominations <- locationEnemiesWithTrait attrs Abomination
-      withI18n $ chooseSomeM' iid "done" $ scenarioI18n do
-        countVar 1 $ questionLabeled' "chooseInvestigatorToPlaceClue"
+      withI18n $ chooseSomeM iid "done" $ scenarioI18n do
+        countVar 1 $ questionLabeled "chooseInvestigatorToPlaceClue"
         targets investigators \iid' -> do
           chooseOrRunOneM iid' do
             targets abominations \eid -> moveTokens (attrs.ability 1) iid' eid #clue 1

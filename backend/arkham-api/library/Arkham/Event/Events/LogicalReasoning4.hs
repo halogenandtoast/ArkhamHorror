@@ -33,6 +33,6 @@ instance RunMessage LogicalReasoning4 where
             $ chooseOrRunOneM iid
             $ targets canHealHorror \iid' -> healHorror iid' attrs 2
         unless (null terrors) do
-          cardI18n (scope "logicalReasoning" $ labeled' "discardTerror") $ chooseTargetM iid terrors (toDiscardBy iid attrs)
+          cardI18n (scope "logicalReasoning" $ labeled "discardTerror") $ chooseTargetM iid terrors (toDiscardBy iid attrs)
       pure e
     _ -> LogicalReasoning4 <$> liftRunMessage msg attrs

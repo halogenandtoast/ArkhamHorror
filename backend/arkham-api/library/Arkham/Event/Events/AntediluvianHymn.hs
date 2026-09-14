@@ -29,7 +29,7 @@ instance RunMessage AntediluvianHymn where
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       n <- getRemainingCurseTokens
       focusCards cards do
-        cardI18n $ scope "antediluvianHymn" $ chooseUpToNM' iid n "doNotAddCurseToken" do
+        cardI18n $ scope "antediluvianHymn" $ chooseUpToNM iid n "doNotAddCurseToken" do
           targets cards \card -> do
             addCurseTokens (Just iid) 1
             putCardOnBottomOfDeck iid Deck.EncounterDeck card

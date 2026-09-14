@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { AbilityLabel, AbilityMessage, Message, MessageType } from '@/arkham/types/Message'
-import { useDebug } from '@/arkham/debug'
 import { cardImage } from '@/arkham/cardImages'
 import { useCardFlip } from '@/arkham/composables/useCardFlip'
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import Token from '@/arkham/components/Token.vue'
-import DebugStory from '@/arkham/components/debug/Story.vue'
+import { readTokenBag } from '@/arkham/types/TokenBag'
 import * as Arkham from '@/arkham/types/Story'
 import TokenPool from '@/arkham/components/TokenPool.vue';
 import { TokenType } from '@/arkham/types/Token';
@@ -47,23 +46,8 @@ const checkmarks = computed(() => {
 })
 
 
-const setAsideInfestationTokens = computed(() => props.story.meta?.infestationSetAside ?? [])
-
-const debug = useDebug()
-const debugging = ref(false)
-
-const hasBag = computed(() => {
-  const meta = props.story.meta
-  if (!meta) return false
-  return (
-    (meta.predationTokens?.length ?? 0) > 0 ||
-    (meta.predationSetAside?.length ?? 0) > 0 ||
-    meta.predationCurrentToken != null ||
-    (meta.infestationTokens?.length ?? 0) > 0 ||
-    (meta.infestationSetAside?.length ?? 0) > 0 ||
-    meta.infestationCurrentToken != null
-  )
-})
+const bag = computed(() => readTokenBag(props.story.meta))
+const setAsideTokens = computed(() => bag.value?.setAside ?? [])
 
 function canInteract(c: Message): boolean {
   if (c.tag === MessageType.TARGET_LABEL && c.target.contents === id.value) {
@@ -155,14 +139,10 @@ const sealedChaosTokens = computed(() => props.story.sealedChaosTokens ?? [])
         :game="game"
         @click="$emit('choose', ability.index)"
         />
-      <button v-if="debug.active && hasBag" @click="debugging = true">
-        {{ $t('debug.story.inspectBag') }}
-      </button>
     </div>
-    <div v-if="setAsideInfestationTokens.length > 0" class="infestation-tokens">
-      <Token v-for="token in setAsideInfestationTokens" :key="token.infestationTokenId" :token="Arkham.infestationAsChaosToken(token)" :playerId="playerId" :game="game" @choose="choose" />
+    <div v-if="setAsideTokens.length > 0" class="infestation-tokens">
+      <Token v-for="token in setAsideTokens" :key="token.id" :token="token" :playerId="playerId" :game="game" @choose="choose" />
     </div>
-    <DebugStory v-if="debugging" :story="story" @close="debugging = false" />
   </div>
 </template>
 

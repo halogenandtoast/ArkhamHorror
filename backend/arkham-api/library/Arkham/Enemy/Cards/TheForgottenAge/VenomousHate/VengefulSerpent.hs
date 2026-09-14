@@ -17,7 +17,7 @@ instance HasAbilities VengefulSerpent where
     extend1 a
       $ restricted a 1 (exists $ VictoryDisplayCardMatch $ basic $ cardIs Cards.vengefulSerpent)
       $ forced
-      $ EnemySpawns #after Anywhere (be a)
+      $ EnemySpawns #after AnyPlacement (be a)
 
 instance RunMessage VengefulSerpent where
   runMessage msg e@(VengefulSerpent attrs) = runQueueT $ case msg of

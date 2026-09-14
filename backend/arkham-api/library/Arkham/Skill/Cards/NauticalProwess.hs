@@ -22,11 +22,11 @@ instance RunMessage NauticalProwess where
       whenM (token <=~> WithNegativeModifier) do
         onlyOnceDuringSkillTest attrs \sid -> do
           chooseOrRunOneM attrs.owner do
-            cardI18n $ scope "nauticalProwess" $ labeled' "gainsWildIcons"
+            cardI18n $ scope "nauticalProwess" $ labeled "gainsWildIcons"
               $ skillTestModifier sid attrs (toCardId attrs)
               $ AddSkillIcons [#wild, #wild]
 
             whenM (can.draw.cards attrs.owner) do
-              withI18n $ countVar 1 $ labeled' "drawCards" $ drawCards attrs.owner attrs 1
+              withI18n $ countVar 1 $ labeled "drawCards" $ drawCards attrs.owner attrs 1
       pure s
     _ -> NauticalProwess <$> liftRunMessage msg attrs

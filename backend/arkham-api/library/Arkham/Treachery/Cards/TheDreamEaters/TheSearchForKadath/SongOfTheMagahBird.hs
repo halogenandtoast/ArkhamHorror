@@ -2,6 +2,7 @@ module Arkham.Treachery.Cards.TheDreamEaters.TheSearchForKadath.SongOfTheMagahBi
 
 import Arkham.Ability
 import Arkham.Helpers.Location (withLocationOf)
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Cards
@@ -32,10 +33,13 @@ instance RunMessage SongOfTheMagahBird where
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom
-      let chooseSkillTest lbl sType = labeled lbl $ beginSkillTest sid iid (attrs.ability 2) attrs sType (Fixed 4)
+      let
+        chooseSkillTest lbl sType =
+          (cardI18n $ scope "songOfTheMagahBird" $ labeled lbl)
+            $ beginSkillTest sid iid (attrs.ability 2) attrs sType (Fixed 4)
       chooseOneM iid do
-        chooseSkillTest "Resist the call" #willpower
-        chooseSkillTest "Drive away the birds" #combat
+        chooseSkillTest "resistTheCall" #willpower
+        chooseSkillTest "driveAwayTheBirds" #combat
       pure t
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       toDiscardBy iid (attrs.ability 2) attrs

@@ -36,7 +36,7 @@ instance RunMessage SpectralRazor where
     DoStep 1 (PlayThisEvent iid eid) | eid == toId attrs -> do
       sid <- getRandom
       skillTestModifier sid attrs iid (AddSkillValue #willpower)
-      createCardEffect Cards.spectralRazor Nothing attrs iid
+      createSkillTestCardEffect sid Cards.spectralRazor Nothing attrs iid
       chooseFightEnemy sid iid attrs
       pure e
     _ -> SpectralRazor <$> liftRunMessage msg attrs
@@ -50,11 +50,9 @@ spectralRazorEffect = cardEffect SpectralRazorEffect Cards.spectralRazor
 
 instance HasModifiersFor SpectralRazorEffect where
   getModifiersFor (SpectralRazorEffect a) = maybeModified_ a a.target do
-    EnemyTarget eid <- MaybeT $ getSkillTestTarget
+    EnemyTarget eid <- MaybeT getSkillTestTarget
     elite <- lift $ eid <=~> EliteEnemy
     pure [DamageDealt $ if elite then 1 else 2]
 
 instance RunMessage SpectralRazorEffect where
-  runMessage msg e@(SpectralRazorEffect attrs) = runQueueT $ case msg of
-    SkillTestEnds {} -> disableReturn e
-    _ -> SpectralRazorEffect <$> liftRunMessage msg attrs
+  runMessage msg (SpectralRazorEffect attrs) = runQueueT $ SpectralRazorEffect <$> liftRunMessage msg attrs

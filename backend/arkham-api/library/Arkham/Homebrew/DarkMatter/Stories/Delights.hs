@@ -27,9 +27,9 @@ instance RunMessage Delights where
       faces <- filter (`elem` removableFaces) . map chaosTokenFace . chaosBagChaosTokens <$> getChaosBag
       unless (null faces) do
         chooseOneM iid $ campaignI18n do
-          labeled' "delights.doNotRemoveAToken" nothing
+          labeled "delights.doNotRemoveAToken" nothing
           for_ (ordNub faces) \face ->
-            labeled' ("delights.remove" <> tshow face) $ push $ RemoveChaosToken face
+            labeled ("delights.remove" <> tshow face) $ push $ RemoveChaosToken face
       addToVictory iid attrs
       pure s
     _ -> Delights <$> liftRunMessage msg attrs

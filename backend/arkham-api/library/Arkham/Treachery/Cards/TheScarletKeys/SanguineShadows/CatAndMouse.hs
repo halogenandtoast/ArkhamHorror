@@ -21,7 +21,7 @@ instance RunMessage CatAndMouse where
         concealed <- getConcealedAtAll (ForExpose $ toSource attrs) lid
         unless (null concealed) do
           chooseOneM iid do
-            withI18n $ labeled' "skip" nothing
+            withI18n $ labeled "skip" nothing
             for_ concealed \c -> do
               targeting c.id do
                 if c.isDecoy

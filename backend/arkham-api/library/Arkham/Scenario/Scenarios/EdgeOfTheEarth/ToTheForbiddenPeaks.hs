@@ -16,6 +16,7 @@ import Arkham.Exception
 import Arkham.Field
 import Arkham.FlavorText
 import Arkham.Helpers.ChaosBag
+import Arkham.Helpers.FlavorText (addEntry, setup)
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query (allInvestigators, getLead)
 import Arkham.Helpers.Text
@@ -87,7 +88,7 @@ instance RunMessage ToTheForbiddenPeaks where
           pure $ ToTheForbiddenPeaks $ foldl' (flip addPartner) attrs expeditionTeam
         else pure s
     DoStep 0 PreScenarioSetup -> do
-      story $ i18nWithTitle "intro1"
+      story $ i18nWithHeading "intro1"
 
       eliyahIsAlive <- getPartnerIsAlive Assets.eliyahAshevakDogHandler
       woodenSledgeRecovered <- hasSupply WoodenSledge
@@ -112,9 +113,9 @@ instance RunMessage ToTheForbiddenPeaks where
       unless claypoolIsAlive do
         chooseOneM lead do
           whenM hasRemainingFrostTokens do
-            labeled' "addFrostToken" $ addChaosToken #frost
+            labeled "addFrostToken" $ addChaosToken #frost
           countVar 1
-            $ labeled' "eachInvestigatorSuffersPhysicalTrauma"
+            $ labeled "eachInvestigatorSuffersPhysicalTrauma"
             $ eachInvestigator (`sufferPhysicalTrauma` 1)
       doStep 2 PreScenarioSetup
       pure s
@@ -129,9 +130,9 @@ instance RunMessage ToTheForbiddenPeaks where
       unless takadaIsAlive do
         chooseOneM lead do
           whenM hasRemainingFrostTokens do
-            labeled' "addFrostToken" $ addChaosToken #frost
+            labeled "addFrostToken" $ addChaosToken #frost
           countVar 1
-            $ labeled' "eachInvestigatorSuffersMentalTrauma"
+            $ labeled "eachInvestigatorSuffersMentalTrauma"
             $ eachInvestigator (`sufferMentalTrauma` 1)
       doStep 3 PreScenarioSetup
       pure s
@@ -168,6 +169,21 @@ instance RunMessage ToTheForbiddenPeaks where
       setChaosTokens $ chaosBagContents attrs.difficulty
       pure s
     Setup -> runScenarioSetup ToTheForbiddenPeaks attrs do
+      setup $ addEntry $ ul do
+        li "gatherSets"
+        li.nested "placeLocations" do
+          li "revealLevel0"
+        li "addElderThingToken"
+        li "suppliesRecovered"
+        li "setTerrorOfTheStarsAside"
+        li.nested "checkDifficulty" do
+          li.validate (attrs.difficulty == Hard) "hard"
+          li.validate (attrs.difficulty == Expert) "expert"
+        li "tekelili"
+        unscoped do
+          li "shuffleRemainder"
+          li "readyToBegin"
+
       gather Set.ToTheForbiddenPeaks
       gather Set.DeadlyWeather
       gather Set.ElderThings

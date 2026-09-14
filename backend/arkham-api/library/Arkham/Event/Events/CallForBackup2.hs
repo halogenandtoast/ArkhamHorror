@@ -85,23 +85,23 @@ instance RunMessage CallForBackup2 where
       when (hasRogue || hasGuardian || hasSeeker || hasMystic || hasSurvivor) do
         chooseOneM iid $ cardI18n $ scope "callForBackup2" do
           when hasRogue do
-            labeled' "rogueOption" do
+            labeled "rogueOption" do
               doStep 1 msg'
               do_ msg'
           when hasGuardian do
-            labeled' "guardianOption" do
+            labeled "guardianOption" do
               doStep 2 msg'
               do_ msg'
           when hasSeeker do
-            labeled' "seekerOption" do
+            labeled "seekerOption" do
               doStep 3 msg'
               do_ msg'
           when hasMystic do
-            labeled' "mysticOption" do
+            labeled "mysticOption" do
               doStep 4 msg'
               do_ msg'
           when hasSurvivor do
-            labeled' "survivorOption" do
+            labeled "survivorOption" do
               doStep 5 msg'
               do_ msg'
           labeledI "doneChoosingOptions" nothing

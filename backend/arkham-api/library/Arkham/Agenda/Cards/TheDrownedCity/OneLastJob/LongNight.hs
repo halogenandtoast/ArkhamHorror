@@ -19,7 +19,10 @@ longNight = agenda (2, A) LongNight Cards.longNight (Static 7)
 
 instance HasAbilities LongNight where
   getAbilities (LongNight a) =
-    [ mkAbility a 1 $ triggered_ (DiscoveringLastClue #after Anyone (LocationWithTrait Arkham))
+    [ groupLimit PerWindow
+        $ mkAbility a 1
+        $ triggered_
+        $ DiscoveringLastClue #after Anyone (LocationWithTrait Arkham)
     | onSide A a
     ]
 

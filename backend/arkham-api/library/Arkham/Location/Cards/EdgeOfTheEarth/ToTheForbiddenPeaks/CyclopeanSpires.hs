@@ -1,6 +1,7 @@
 module Arkham.Location.Cards.EdgeOfTheEarth.ToTheForbiddenPeaks.CyclopeanSpires (cyclopeanSpires) where
 
 import Arkham.Ability
+import Arkham.I18n
 import Arkham.Key
 import Arkham.Location.CardDefs.EdgeOfTheEarth.ToTheForbiddenPeaks qualified as Cards
 import Arkham.Location.Import.Lifted
@@ -35,6 +36,9 @@ instance RunMessage CyclopeanSpires where
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (LocationTarget lid) -> do
       ks <- field LocationKeys lid
       chooseOneM iid do
-        for_ ks \k -> labeled ("Move " <> keyName k) $ push $ PlaceKey (toTarget attrs) k
+        for_ ks \k ->
+          (withI18n $ keyVar "key" (keyName k) $ labeled "moveKey")
+            $ push
+            $ PlaceKey (toTarget attrs) k
       pure l
     _ -> CyclopeanSpires <$> liftRunMessage msg attrs

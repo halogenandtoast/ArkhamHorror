@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.TheDrownedCity.CosmicLegacy.EyeOfTheDeep (eyeOfTheDeep) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.Placement (Placement (InThreatArea))
 import Arkham.Treachery.CardDefs.TheDrownedCity.CosmicLegacy qualified as Cards
@@ -17,9 +17,9 @@ eyeOfTheDeep = treachery EyeOfTheDeep Cards.eyeOfTheDeep
 instance HasModifiersFor EyeOfTheDeep where
   getModifiersFor (EyeOfTheDeep a) = case a.placement of
     InThreatArea iid ->
-      modified_
+      modifySelect
         a
-        iid
+        (ChaosTokenRevealedBy $ be iid)
         [ ForcedChaosTokenChange #cultist [#elderthing]
         , ForcedChaosTokenChange #tablet [#elderthing]
         ]

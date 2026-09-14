@@ -26,11 +26,12 @@ daisysToteBag =
 
 theNecronomicon :: CardDef
 theNecronomicon =
-  (weakness "01009" ("The Necronomicon" <:> "John Dee Translation"))
-    { cdCardTraits = setFromList [Item, Tome]
-    , cdSlots = [#hand]
-    , cdAlternateCardCodes = ["01509"]
-    }
+  signature "01002"
+    $ (weakness "01009" ("The Necronomicon" <:> "John Dee Translation"))
+      { cdCardTraits = setFromList [Item, Tome]
+      , cdSlots = [#hand]
+      , cdAlternateCardCodes = ["01509"]
+      }
 
 heirloomOfHyperborea :: CardDef
 heirloomOfHyperborea =

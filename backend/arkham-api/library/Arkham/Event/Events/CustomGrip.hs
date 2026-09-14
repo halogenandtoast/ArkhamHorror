@@ -39,7 +39,7 @@ instance RunMessage CustomGrip where
       cards <- select $ PlayableCard (Cost.UnpaidCost Cost.NoAction) $ inHandOf ForPlay iid <> basic #firearm
       unless (null cards) do
         chooseOrRunOneM iid do
-          cardI18n $ scope "customGrip" $ labeled' "doNotPlayFirearm" nothing
+          cardI18n $ scope "customGrip" $ labeled "doNotPlayFirearm" nothing
           targets cards $ playCardPayingCost iid
       pure e
     _ -> CustomGrip <$> liftRunMessage msg attrs

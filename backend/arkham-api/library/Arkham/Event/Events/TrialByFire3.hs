@@ -17,9 +17,9 @@ instance RunMessage TrialByFire3 where
   runMessage msg e@(TrialByFire3 attrs) = runQueueT $ case msg of
     PlayThisEvent iid eid | eid == attrs.id -> do
       chooseOneM iid $ cardI18n $ scope "trialByFire" do
-        labeled' "all" do
+        labeled "all" do
           turnModifiers iid attrs iid $ map (`BaseSkillOf` 5) allSkills
-        labeled' "one" do
+        labeled "one" do
           chooseOneM iid do
             for_ allSkills \skill -> do
               skillLabeled skill $ turnModifier iid attrs iid $ BaseSkillOf skill 7

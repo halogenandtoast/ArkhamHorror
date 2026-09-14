@@ -19,12 +19,12 @@ scenarios :: HomebrewScenarios
 scenarios =
   [ (":circus-ex-mortis:001", HomebrewScenario OneNightOnly oneNightOnly)
   , (":circus-ex-mortis:017", HomebrewScenario ThePrimrosePath thePrimrosePath)
-  , (":circus-ex-mortis:042", HomebrewScenario HarmsWay harmsWay)
-  , (":circus-ex-mortis:076", HomebrewScenario AllPointsWest allPointsWest)
-  , (":circus-ex-mortis:110", HomebrewScenario PiperAtTheGatesOfDawn piperAtTheGatesOfDawn)
-  , (":circus-ex-mortis:124", HomebrewScenario Bacchanalia bacchanalia)
-  , (":circus-ex-mortis:155", HomebrewScenario RedSunrise redSunrise)
-  , (":circus-ex-mortis:192", HomebrewScenario ThousandToOne thousandToOne)
+  , (":circus-ex-mortis:040", HomebrewScenario HarmsWay harmsWay)
+  , (":circus-ex-mortis:074", HomebrewScenario AllPointsWest allPointsWest)
+  , (":circus-ex-mortis:108", HomebrewScenario PiperAtTheGatesOfDawn piperAtTheGatesOfDawn)
+  , (":circus-ex-mortis:122", HomebrewScenario Bacchanalia bacchanalia)
+  , (":circus-ex-mortis:153", HomebrewScenario RedSunrise redSunrise)
+  , (":circus-ex-mortis:190", HomebrewScenario ThousandToOne thousandToOne)
   ]
 
 campaigns :: HomebrewCampaigns

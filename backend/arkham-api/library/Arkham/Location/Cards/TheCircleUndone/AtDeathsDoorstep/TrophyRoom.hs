@@ -34,9 +34,9 @@ instance RunMessage TrophyRoom where
       hasTwoResources <- (>= 2) <$> getSpendableResources iid
       chooseOrRunOneM iid do
         whenM (can.gain.resources iid) do
-          withI18n $ countVar 2 $ labeled' "gainResources" $ gainResources iid (attrs.ability 1) 2
+          withI18n $ countVar 2 $ labeled "gainResources" $ gainResources iid (attrs.ability 1) 2
         when hasTwoResources do
-          scenarioI18n $ labeled' "trophyRoom.spendResources" do
+          scenarioI18n $ labeled "trophyRoom.spendResources" do
             spendResources iid 2
             gainClues iid (attrs.ability 1) 1
       pure l

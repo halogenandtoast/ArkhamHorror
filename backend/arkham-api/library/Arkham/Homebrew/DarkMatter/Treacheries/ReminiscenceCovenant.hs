@@ -17,8 +17,8 @@ reminiscenceCovenant = treachery ReminiscenceCovenant Cards.reminiscenceCovenant
 instance HasAbilities ReminiscenceCovenant where
   getAbilities (ReminiscenceCovenant a) = case a.placement of
     HiddenInHand iid ->
-      [ mkAbility a 1 $ forced $ oneOf [GameEnds #when, InvestigatorEliminated #when You]
-      , mkAbility a 2
+      [ restricted a 1 InYourHand $ forced $ oneOf [GameEnds #when, InvestigatorEliminated #when You]
+      , restricted a 2 InYourHand
           $ freeReaction
           $ EnemyWouldBeEvaded #when Anyone (EnemyAt $ locationWithInvestigator iid)
       ]

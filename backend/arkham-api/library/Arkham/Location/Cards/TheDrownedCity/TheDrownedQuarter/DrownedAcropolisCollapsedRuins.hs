@@ -16,7 +16,7 @@ newtype DrownedAcropolisCollapsedRuins = DrownedAcropolisCollapsedRuins Location
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 drownedAcropolisCollapsedRuins :: LocationCard DrownedAcropolisCollapsedRuins
-drownedAcropolisCollapsedRuins = location DrownedAcropolisCollapsedRuins Cards.drownedAcropolisCollapsedRuins 3 (Static 2)
+drownedAcropolisCollapsedRuins = location DrownedAcropolisCollapsedRuins Cards.drownedAcropolisCollapsedRuins 3 (PerPlayer 2)
 
 instance HasAbilities DrownedAcropolisCollapsedRuins where
   getAbilities (DrownedAcropolisCollapsedRuins a) =
@@ -36,7 +36,7 @@ instance RunMessage DrownedAcropolisCollapsedRuins where
       adjacent <- select $ connectedTo (be attrs) <> CanHaveFloodLevelIncreased
       chooseOrRunOneM iid $ withI18n do
         targets adjacent increaseThisFloodLevel
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid (attrs.ability 1) 1
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       increaseThisFloodLevel attrs

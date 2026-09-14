@@ -2,6 +2,7 @@ module Arkham.Asset.Assets.AndyVanNortwickAmbitiousJournalist (andyVanNortwick) 
 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.Attack.Types (EnemyAttackType (..))
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, controllerGetsMaybe)
 import Arkham.History
@@ -27,7 +28,7 @@ instance HasModifiersFor AndyVanNortwickAmbitiousJournalist where
 instance RunMessage AndyVanNortwickAmbitiousJournalist where
   runMessage msg a@(AndyVanNortwickAmbitiousJournalist attrs) = runQueueT $ case msg of
     BeginRound -> pure $ AndyVanNortwickAmbitiousJournalist $ attrs & setMeta True
-    EnemyAttack details -> do
+    EnemyAttack details | details.kind == AttackOfOpportunity -> do
       case details.investigator of
         Just iid | Just iid == attrs.controller -> pure $ AndyVanNortwickAmbitiousJournalist $ attrs & setMeta False
         _ -> pure a

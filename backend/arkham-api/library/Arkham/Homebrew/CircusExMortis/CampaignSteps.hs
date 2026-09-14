@@ -14,34 +14,34 @@ pattern ThePrimrosePath <- ScenarioStep ":circus-ex-mortis:017"
     ThePrimrosePath = ScenarioStep ":circus-ex-mortis:017"
 
 pattern HarmsWay :: CampaignStep
-pattern HarmsWay <- ScenarioStep ":circus-ex-mortis:042"
+pattern HarmsWay <- ScenarioStep ":circus-ex-mortis:040"
   where
-    HarmsWay = ScenarioStep ":circus-ex-mortis:042"
+    HarmsWay = ScenarioStep ":circus-ex-mortis:040"
 
 pattern AllPointsWest :: CampaignStep
-pattern AllPointsWest <- ScenarioStep ":circus-ex-mortis:076"
+pattern AllPointsWest <- ScenarioStep ":circus-ex-mortis:074"
   where
-    AllPointsWest = ScenarioStep ":circus-ex-mortis:076"
+    AllPointsWest = ScenarioStep ":circus-ex-mortis:074"
 
 pattern PiperAtTheGatesOfDawn :: CampaignStep
-pattern PiperAtTheGatesOfDawn <- ScenarioStep ":circus-ex-mortis:110"
+pattern PiperAtTheGatesOfDawn <- ScenarioStep ":circus-ex-mortis:108"
   where
-    PiperAtTheGatesOfDawn = ScenarioStep ":circus-ex-mortis:110"
+    PiperAtTheGatesOfDawn = ScenarioStep ":circus-ex-mortis:108"
 
 pattern Bacchanalia :: CampaignStep
-pattern Bacchanalia <- ScenarioStep ":circus-ex-mortis:124"
+pattern Bacchanalia <- ScenarioStep ":circus-ex-mortis:122"
   where
-    Bacchanalia = ScenarioStep ":circus-ex-mortis:124"
+    Bacchanalia = ScenarioStep ":circus-ex-mortis:122"
 
 pattern RedSunrise :: CampaignStep
-pattern RedSunrise <- ScenarioStep ":circus-ex-mortis:155"
+pattern RedSunrise <- ScenarioStep ":circus-ex-mortis:153"
   where
-    RedSunrise = ScenarioStep ":circus-ex-mortis:155"
+    RedSunrise = ScenarioStep ":circus-ex-mortis:153"
 
 pattern ThousandToOne :: CampaignStep
-pattern ThousandToOne <- ScenarioStep ":circus-ex-mortis:192"
+pattern ThousandToOne <- ScenarioStep ":circus-ex-mortis:190"
   where
-    ThousandToOne = ScenarioStep ":circus-ex-mortis:192"
+    ThousandToOne = ScenarioStep ":circus-ex-mortis:190"
 
 -- Interludes
 pattern TheFutureAndThePast :: CampaignStep

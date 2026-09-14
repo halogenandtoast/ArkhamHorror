@@ -19,7 +19,7 @@ instance RunMessage WhisperedBargain where
     Revelation iid (isSource attrs -> True) -> do
       azathoth <- selectJust $ IncludeOmnipotent $ enemyIs Enemies.azathoth
       chooseOneM iid $ scenarioI18n do
-        labeled' "whisperedBargain.doom" $ placeDoom attrs azathoth 1
-        labeled' "whisperedBargain.attack" $ initiateEnemyAttack azathoth attrs iid
+        labeled "whisperedBargain.doom" $ placeDoom attrs azathoth 1
+        labeled "whisperedBargain.attack" $ initiateEnemyAttack azathoth attrs iid
       pure t
     _ -> WhisperedBargain <$> liftRunMessage msg attrs

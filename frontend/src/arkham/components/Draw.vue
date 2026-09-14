@@ -13,6 +13,8 @@ import AbilityButton from '@/arkham/components/AbilityButton.vue';
 import Card from '@/arkham/components/Card.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
+import { useCardStore } from '@/stores/cards';
+import * as DebugMove from '@/arkham/debugCardMove';
 
 const { t } = useI18n();
 
@@ -26,6 +28,7 @@ const props = defineProps<Props>()
 const emit = defineEmits(['choose'])
 const investigatorId = computed(() => props.investigator.id)
 const debug = useDebug()
+const cardStore = useCardStore()
 
 const id = computed(() => props.investigator.id)
 const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
@@ -130,16 +133,38 @@ const topOfDeckTreachery = computed(() => {
   return mTreacheryId ? props.game.treacheries[mTreacheryId] : null
 })
 
+function droppedCardId(event: DragEvent): string | null {
+  const data = event.dataTransfer?.getData('text/plain')
+  if (!data) return null
+  try {
+    const json = JSON.parse(data)
+    return json.tag === 'CardTarget' ? json.contents : null
+  } catch {
+    return null
+  }
+}
+
+function accepts(cardId: string, target: DebugMove.DebugDropTarget) {
+  const card = DebugMove.resolveCard(props.game, cardId)
+  return !!card && DebugMove.canMoveCardTo(DebugMove.cardDefFor(cardStore.cards, card), target)
+}
+
+/* The dragged card's payload is unreadable during dragover, so `draggedCardAccepted`
+ * answers from the id the drag source published instead. `null` means nothing is
+ * being dragged; `false` means this card has no business in a player deck. */
+const deckAccepts = computed(() => DebugMove.draggedCardAccepted(props.game, cardStore.cards, 'playerDeck'))
+const discardAccepts = computed(() => DebugMove.draggedCardAccepted(props.game, cardStore.cards, 'playerDiscard'))
+const discardDraggedOver = ref(false)
+
 function onDropDiscard(event: DragEvent) {
   event.preventDefault()
-  if (event.dataTransfer) {
-    const data = event.dataTransfer.getData('text/plain')
-    if (data) {
-      const json = JSON.parse(data)
-      if (json.tag === "CardTarget") {
-        debug.send(props.game.id, {tag: 'DiscardCard', contents: [id.value, {'tag': 'GameSource' }, json.contents]})
-      }
-    }
+  discardDraggedOver.value = false
+  if (!debug.active) return
+  const cardId = droppedCardId(event)
+  // `DiscardCard` only answers for a card already in hand, and leaves every
+  // other zone alone; `DebugMoveCard` obtains the card first.
+  if (cardId && accepts(cardId, 'playerDiscard')) {
+    DebugMove.debugMoveCard(props.game.id, cardId, DebugMove.discarded)
   }
 }
 
@@ -155,49 +180,66 @@ function deckModeFromEvent(event: DragEvent): DeckDropMode {
 }
 
 const deckDropIndicator = computed(() => {
+  if (deckDropPosition.value && deckAccepts.value === false) {
+    return { icon: '⦸', label: t('debug.cardMove.wrongDeck'), rejected: true }
+  }
   switch (deckDropMode.value) {
-    case 'top': return { icon: '↑', label: 'Place on top' }
-    case 'bottom': return { icon: '↓', label: 'Place on bottom' }
-    case 'shuffle': return { icon: '↻', label: 'Shuffle in' }
+    case 'top': return { icon: '↑', label: t('debug.cardMove.onTop'), rejected: false }
+    case 'bottom': return { icon: '↓', label: t('debug.cardMove.onBottom'), rejected: false }
+    case 'shuffle': return { icon: '↻', label: t('debug.cardMove.shuffleIn'), rejected: false }
     default: return null
   }
 })
+
+const deckPositions = {
+  top: 'DebugDeckTop',
+  bottom: 'DebugDeckBottom',
+  shuffle: 'DebugDeckShuffle',
+} as const
 
 function onDropDeck(event: DragEvent) {
   event.preventDefault()
   deckDropMode.value = null
   deckDropPosition.value = null
   if (!debug.active) return
-  if (!event.dataTransfer) return
-  const data = event.dataTransfer.getData('text/plain')
-  if (!data) return
-  const json = JSON.parse(data)
-  if (json.tag !== 'CardTarget') return
-  const target = { tag: 'CardIdTarget', contents: json.contents }
-  const deckSig = { tag: 'InvestigatorDeck', contents: id.value }
-  const mode = deckModeFromEvent(event)
-  if (mode === 'top') {
-    debug.send(props.game.id, { tag: 'PutOnTopOfDeck', contents: [id.value, deckSig, target] })
-  } else if (mode === 'bottom') {
-    debug.send(props.game.id, { tag: 'PutOnBottomOfDeck', contents: [id.value, deckSig, target] })
-  } else {
-    debug.send(props.game.id, { tag: 'ShuffleIntoDeck', contents: [deckSig, target] })
-  }
-}
-
-const dragover = (e: DragEvent) => {
-  e.preventDefault()
-  if (e.dataTransfer) {
-    e.dataTransfer.dropEffect = 'copy'
-  }
+  const cardId = droppedCardId(event)
+  if (!cardId || !accepts(cardId, 'playerDeck')) return
+  const deckSig = { tag: 'InvestigatorDeck', contents: id.value } as const
+  DebugMove.debugMoveCard(
+    props.game.id,
+    cardId,
+    DebugMove.toDeck(deckSig, deckPositions[deckModeFromEvent(event)]),
+  )
 }
 
 function onDragOverDeck(event: DragEvent) {
-  dragover(event)
-  if (debug.active) {
-    deckDropMode.value = deckModeFromEvent(event)
+  event.preventDefault()
+  if (!debug.active) return
+  if (deckAccepts.value === false) {
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'none'
+    deckDropMode.value = null
     deckDropPosition.value = { x: event.clientX, y: event.clientY }
+    return
   }
+  if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy'
+  deckDropMode.value = deckModeFromEvent(event)
+  deckDropPosition.value = { x: event.clientX, y: event.clientY }
+}
+
+function onDragOverDiscard(event: DragEvent) {
+  event.preventDefault()
+  if (!debug.active) return
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = discardAccepts.value === false ? 'none' : 'copy'
+  }
+  discardDraggedOver.value = true
+}
+
+function onDragLeaveDiscard(event: DragEvent) {
+  const target = event.currentTarget
+  const related = event.relatedTarget
+  if (target instanceof Node && related instanceof Node && target.contains(related)) return
+  discardDraggedOver.value = false
 }
 
 function onDragLeaveDeck(event: DragEvent) {
@@ -227,8 +269,11 @@ watch(choices, async (newChoices) => {
 
 <template>
   <div class="discard"
+    :class="{ 'discard--drop-target': discardDraggedOver && discardAccepts === true, 'discard--drop-refused': discardDraggedOver && discardAccepts === false }"
     @drop="onDropDiscard($event)"
-    @dragover.prevent="dragover($event)"
+    @dragover.prevent="onDragOverDiscard($event)"
+    @dragleave="onDragLeaveDiscard($event)"
+    @dragend="discardDraggedOver = false"
     @dragenter.prevent
   >
     <Card v-if="topOfDiscard" :game="game" :card="topOfDiscard" :playerId="playerId" :allowAbilityButtons="false" :allowInteractions="false" />
@@ -250,7 +295,7 @@ watch(choices, async (newChoices) => {
   <div class="deck-container">
     <div
       class="top-of-deck"
-      :class="{ 'top-of-deck--drop-target': deckDropIndicator }"
+      :class="{ 'top-of-deck--drop-target': deckDropIndicator && !deckDropIndicator.rejected, 'top-of-deck--drop-refused': deckDropIndicator?.rejected }"
       @drop="onDropDeck($event)"
       @dragover.prevent="onDragOverDeck($event)"
       @dragleave="onDragLeaveDeck($event)"
@@ -278,7 +323,7 @@ watch(choices, async (newChoices) => {
       <div
         v-if="deckDropIndicator && deckDropPosition"
         class="deck-drop-indicator"
-        :class="`deck-drop-indicator--${deckDropMode}`"
+        :class="[`deck-drop-indicator--${deckDropMode}`, { 'deck-drop-indicator--rejected': deckDropIndicator.rejected }]"
         :style="{ left: `${deckDropPosition.x}px`, top: `${deckDropPosition.y}px` }"
       >
         <span class="deck-drop-indicator__icon">{{ deckDropIndicator.icon }}</span>
@@ -426,9 +471,26 @@ watch(choices, async (newChoices) => {
   width: fit-content;
 }
 
-.top-of-deck--drop-target .deck {
-  outline: 3px solid var(--select);
+/* A pending drop target is the receiver of the drag, so cyan --highlight rather
+   than the magenta reserved for choices the game is awaiting -- same reasoning as
+   `cards-under-indicator--dragged-over`. */
+.top-of-deck--drop-target .deck,
+.discard--drop-target {
+  outline: 3px solid var(--highlight);
   outline-offset: 3px;
+}
+
+/* Refused: this card has no back matching this deck, so the drop will bounce.
+   A plain red rather than a palette role -- it is an error state, not an actor,
+   receiver or awaited choice. */
+.top-of-deck--drop-refused .deck,
+.discard--drop-refused {
+  outline: 3px solid rgba(220, 70, 70, 0.9);
+  outline-offset: 3px;
+}
+
+.deck-drop-indicator--rejected {
+  border-color: rgba(220, 70, 70, 0.6);
 }
 
 .deck-drop-indicator {

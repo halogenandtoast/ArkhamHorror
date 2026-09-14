@@ -8,6 +8,7 @@ import Arkham.Actions as X
 import Arkham.Asset.Uses
 import Arkham.Calculation
 import Arkham.Card.CardCode
+import Arkham.Card.CardOption
 import Arkham.Card.CardType
 import Arkham.Card.Cost
 import Arkham.ClassSymbol
@@ -160,11 +161,28 @@ toCardCodePairs c =
 
 {- | A stable key shared by every printing of a card. 'toCardCodePairs' rewrites
 'cdCardCode' per printing but preserves the full code set on each copy, so the minimum is
-identical across them. Use this to ask "are these the same card?" when the two 'CardDef's
-may be different printings (their derived 'Eq' would say no).
+identical across them. A campaign-overlay stand-in names its original outright. Use this
+to ask "are these the same card?" when the two 'CardDef's may be different printings
+(their derived 'Eq' would say no).
 -}
 canonicalCardCode :: CardDef -> CardCode
-canonicalCardCode c = foldl' min (cdCardCode c) (cdAlternateCardCodes c)
+canonicalCardCode c =
+  fromMaybe (foldl' min (cdCardCode c) (cdAlternateCardCodes c)) (cdReplacementCardCode c)
+
+{- | Is @cardCode@ one of the printings of this entity's card? 'toCardCodePairs'
+gives every printing its own 'CardDef' with 'cdCardCode' rewritten, so a bare
+@toCardCode x == cardCode@ misses reprints (Revised Core, Chapter 2); a campaign
+overlay's stand-in card is likewise accepted for the code it replaces. Used by the
+'*Is' matchers; still goes through the loose 'Eq CardCode' so a/b sides keep
+cross-matching (see 'Arkham.Matcher.EnemyIsExact' for the strict variant).
+-}
+isPrintingOf :: (HasCardCode a, HasCardDef a) => CardCode -> a -> Bool
+isPrintingOf cardCode x =
+  toCardCode x == cardCode
+    || cardCode `elem` def.cardCodes
+    || cdReplacementCardCode def == Just cardCode
+ where
+  def = toCardDef x
 
 {- | 'cdTags' marker for cards with an ability that triggers on
 'Arkham.Matcher.EnemyReadies' or 'Arkham.Matcher.EnemyWouldReady'. Any such card MUST
@@ -174,6 +192,35 @@ outright when no tagged card is in play, so an untagged card's ability never fir
 -}
 enemyReadyTag :: Text
 enemyReadyTag = "enemy-ready"
+
+{- | 'cdTags' marker for a card whose entire text resolves at deck creation or
+between scenarios (deck size, deckbuilding options, purchase cost, purchase
+trauma/XP). The engine never does anything with it during play.
+-}
+noGameplayEffectTag :: Text
+noGameplayEffectTag = "no-gameplay-effect"
+
+{- | 'cdTags' marker for a card whose entire text resolves once, at or before
+setup, and then never acts again: a slot grant applied on entering play, or a
+draw driven from the setup code. The card stays in play but nothing consults it.
+-}
+setupOnlyTag :: Text
+setupOnlyTag = "setup-only"
+
+{- | 'cdTags' marker for a card that is spent once its once-per-game ability has
+been used, rather than at a fixed point like setup. Clients decide it is spent by
+looking for the card in the controller's used abilities.
+-}
+hideWhenUsedTag :: Text
+hideWhenUsedTag = "hide-when-used"
+
+{- | 'cdTags' marker for the back of a double-sided card that always starts a game
+on its other side. A flip is persisted with the campaign's story cards, so without
+this the card would come back flipped in the next scenario; setup swaps it for
+'cdOtherSide' instead.
+-}
+startsOnOtherSideTag :: Text
+startsOnOtherSideTag = "starts-on-other-side"
 
 data IsRevelation
   = NoRevelation
@@ -250,7 +297,15 @@ data CardDef = CardDef
   , cdStage :: Maybe Int
   , cdSlots :: [SlotType]
   , cdAlternateCardCodes :: [CardCode]
+  , cdReplacementCardCode :: Maybe CardCode
+  {- ^ The printed card this def stands in for when a campaign overlay swaps it
+  in (see 'Arkham.Campaign.Overlay'). Purely an identity annotation: it is never
+  a lookup key, so the original code keeps resolving to the original def, but
+  'isPrintingOf' -- and so every @*Is@ matcher -- accepts the stand-in.
+  -}
   , cdArt :: Text
+  , cdArtVariants :: Map Text CardCode
+  , cdBackArtVariants :: Map Text CardCode
   , cdLocationSymbol :: Maybe LocationSymbol
   , cdLocationRevealedSymbol :: Maybe LocationSymbol
   , cdLocationConnections :: [LocationSymbol]
@@ -267,11 +322,17 @@ data CardDef = CardDef
   , cdWhenDiscarded :: DiscardType
   , cdCanCommitWhenNoIcons :: Bool
   , cdCommitTrigger :: Bool
-  {- ^ True for cards whose RunMessage reacts to `Do (CommitCard …)` or
-  `InvestigatorCommittedSkill`; used in CheckAllAdditionalCommitCosts to
-  decide whether to prompt the active player for ordering.
+  {- ^ True for cards with an on-commit effect whose resolution order relative to
+  the other cards committed to the same test can matter; used in
+  CheckAllAdditionalCommitCosts to decide whether to prompt the active player for
+  ordering. Merely handling `Do (CommitCard …)` or `InvestigatorCommittedSkill` is
+  not enough — a handler that only reconfigures its own card (e.g. Persistence
+  setting its own afterPlay) is invisible to the rest of the test and must stay
+  False, or the player is asked to order a choice with no consequence.
   -}
   , cdMeta :: Map Text Value
+  , cdOptions :: [CardOption]
+  -- ^ Player-configurable options this card offers; see "Arkham.Card.CardOption".
   , cdTags :: [Text]
   , cdOutOfPlayEffects :: [OutOfPlayEffect]
   , cdHealth :: Maybe Health
@@ -403,7 +464,10 @@ emptyCardDef cCode name cType =
     , cdStage = Nothing
     , cdSlots = mempty
     , cdAlternateCardCodes = mempty
+    , cdReplacementCardCode = Nothing
     , cdArt = unCardCode cCode
+    , cdArtVariants = mempty
+    , cdBackArtVariants = mempty
     , cdLocationSymbol = Nothing
     , cdLocationRevealedSymbol = Nothing
     , cdLocationConnections = mempty
@@ -421,6 +485,7 @@ emptyCardDef cCode name cType =
     , cdCanCommitWhenNoIcons = False
     , cdCommitTrigger = False
     , cdMeta = mempty
+    , cdOptions = []
     , cdTags = []
     , cdOutOfPlayEffects = []
     , cdHealth = Nothing
@@ -538,7 +603,10 @@ cardDefKeyValues CardDef {..} =
     , pairJust "stage" cdStage
     , pairWhen (not $ null cdSlots) "slots" cdSlots
     , pairWhen (not $ null cdAlternateCardCodes) "alternateCardCodes" cdAlternateCardCodes
+    , pairJust "replacementCardCode" cdReplacementCardCode
     , ["art" .= cdArt]
+    , ["artVariants" .= cdArtVariants | notNull cdArtVariants]
+    , ["backArtVariants" .= cdBackArtVariants | notNull cdBackArtVariants]
     , pairJust "locationSymbol" cdLocationSymbol
     , pairJust "locationRevealedSymbol" cdLocationRevealedSymbol
     , pairWhen (not $ null cdLocationConnections) "locationConnections" cdLocationConnections
@@ -562,6 +630,7 @@ cardDefKeyValues CardDef {..} =
         cdCanCommitWhenNoIcons
     , pairWhen cdCommitTrigger "commitTrigger" cdCommitTrigger
     , pairWhen (not $ null cdMeta) "meta" cdMeta
+    , pairWhen (not $ null cdOptions) "options" cdOptions
     , pairWhen (not $ null cdTags) "tags" cdTags
     , pairWhen (not $ null cdOutOfPlayEffects) "outOfPlayEffects" cdOutOfPlayEffects
     , pairJust "health" cdHealth
@@ -619,7 +688,10 @@ instance FromJSON CardDef where
     cdStage <- o .:? "stage"
     cdSlots <- o .:? "slots" .!= mempty
     cdAlternateCardCodes <- o .:? "alternateCardCodes" .!= mempty
+    cdReplacementCardCode <- o .:? "replacementCardCode"
     cdArt <- o .: "art"
+    cdArtVariants <- o .:? "artVariants" .!= mempty
+    cdBackArtVariants <- o .:? "backArtVariants" .!= mempty
     cdLocationSymbol <- o .:? "locationSymbol"
     cdLocationRevealedSymbol <- o .:? "locationRevealedSymbol"
     cdLocationConnections <- o .:? "locationConnections" .!= mempty
@@ -638,6 +710,7 @@ instance FromJSON CardDef where
       o .:? "canCommitWhenNoIcons" .!= (null cdSkills && cdCardType == SkillType)
     cdCommitTrigger <- o .:? "commitTrigger" .!= False
     cdMeta <- o .:? "meta" .!= mempty
+    cdOptions <- o .:? "options" .!= []
     cdTags <- o .:? "tags" .!= []
     inHandEffects <- o .:? "cardInHandEffects" .!= False
     inDiscardEffects <- o .:? "cardInDiscardEffects" .!= False

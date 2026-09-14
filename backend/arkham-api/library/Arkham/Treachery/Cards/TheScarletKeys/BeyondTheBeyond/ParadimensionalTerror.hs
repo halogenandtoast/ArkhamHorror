@@ -16,8 +16,8 @@ instance RunMessage ParadimensionalTerror where
   runMessage msg t@(ParadimensionalTerror attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
       chooseOneM iid $ campaignI18n do
-        labeled' "paradimensionalTerror.shuffleAllConcealed" $ scenarioSpecific_ "shuffleAllConcealed"
-        labeled' "paradimensionalTerror.takeDamageAndHorror" do
+        labeled "paradimensionalTerror.shuffleAllConcealed" $ scenarioSpecific_ "shuffleAllConcealed"
+        labeled "paradimensionalTerror.takeDamageAndHorror" do
           eachInvestigator \iid' -> assignDamageAndHorror iid' attrs 1 1
       pure t
     _ -> ParadimensionalTerror <$> liftRunMessage msg attrs

@@ -46,9 +46,9 @@ instance RunMessage ArkhamOfficer where
 
       chooseOrRunOneM iid $ scenarioI18n $ scope "arkhamOfficer" do
         unless attrs.exhausted do
-          labeled' "automaticallyEvade" $ automaticallyEvadeEnemy iid attrs
+          labeled "automaticallyEvade" $ automaticallyEvadeEnemy iid attrs
         when (doom > 0) do
-          labeled' "flipDoomToClue" do
+          labeled "flipDoomToClue" do
             flipDoomToClues attrs 1
             push $ Msg.MovedClues (attrs.ability 2) (toSource attrs) (toTarget iid) 1
       pure e

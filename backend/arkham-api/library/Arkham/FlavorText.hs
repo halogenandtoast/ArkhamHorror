@@ -16,6 +16,7 @@ module Arkham.FlavorText (
   p,
   cols,
   img,
+  smallImg,
   chaosTokenImg,
   chaosTokenMorph,
   UlItems,
@@ -63,6 +64,9 @@ cols = ColumnEntry
 
 img :: CardCode -> FlavorTextEntry
 img = (`CardEntry` [])
+
+smallImg :: CardCode -> FlavorTextEntry
+smallImg = (`CardEntry` [SmallImage])
 
 chaosTokenImg :: ChaosTokenFace -> FlavorTextEntry
 chaosTokenImg = ChaosTokenEntry

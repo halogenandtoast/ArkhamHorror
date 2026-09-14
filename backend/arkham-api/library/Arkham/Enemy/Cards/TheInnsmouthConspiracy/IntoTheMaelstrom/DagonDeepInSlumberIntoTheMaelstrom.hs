@@ -59,9 +59,9 @@ instance RunMessage DagonDeepInSlumberIntoTheMaelstrom where
     PassedThisSkillTest iid (isAbilitySource attrs 2 -> True) -> do
       chooseOrRunOneM iid $ scenarioI18n $ scope "dagonDeepInSlumber" do
         when attrs.ready do
-          labeled' "exhaustDagon" $ exhaustThis attrs
+          labeled "exhaustDagon" $ exhaustThis attrs
         when (attrs.doom > 0) do
-          labeled' "removeDoomFromDagon" $ removeDoom (attrs.ability 2) attrs 1
+          labeled "removeDoomFromDagon" $ removeDoom (attrs.ability 2) attrs 1
       pure e
     FailedThisSkillTestBy _iid (isAbilitySource attrs 2 -> True) n | n >= 3 -> do
       placeDoom (attrs.ability 2) attrs 1

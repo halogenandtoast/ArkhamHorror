@@ -25,7 +25,7 @@ instance RunMessage LogicalReasoning where
           when (canHealHorror || notNull terrors) do
             targeting iid' do
               chooseOneM iid' do
-                when canHealHorror $ withI18n $ countVar 2 $ labeled' "healHorror" $ healHorror iid' attrs 2
+                when canHealHorror $ withI18n $ countVar 2 $ labeled "healHorror" $ healHorror iid' attrs 2
                 unless (null terrors) $ labeledI "discardATerror" do
                   chooseTargetM iid' terrors (toDiscardBy iid attrs)
       pure e

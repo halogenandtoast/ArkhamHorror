@@ -18,7 +18,7 @@ instance HasAbilities GangEnforcer where
       $ groupLimit PerRound
       $ mkAbility attrs 1
       $ forced
-      $ EnemyAttacked #after (at_ $ locationWithEnemy attrs) AnySource (#criminal <> not_ (be attrs))
+      $ EnemyAttacked #after (You <> at_ (locationWithEnemy attrs)) AnySource (#criminal <> not_ (be attrs))
 
 instance RunMessage GangEnforcer where
   runMessage msg e@(GangEnforcer attrs) = runQueueT $ case msg of

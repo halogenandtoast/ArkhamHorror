@@ -22,7 +22,7 @@ instance HasAbilities EscapeTheTowerV1 where
   getAbilities = actAbilities \a ->
     [ restricted a 1 (youExist $ at_ (locationIs Locations.twistingCatwalks))
         $ ActionAbility #resign Nothing (ActionCost 1)
-    , mkAbility a 2 $ actionAbilityWithCost (GroupClueCost (PerPlayer 1) Anywhere)
+    , mkAbility a 2 $ actionAbilityWithCost $ ClueCost (PerPlayer 1)
     , restricted a 3 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
     ]
 

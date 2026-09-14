@@ -49,6 +49,8 @@ export type ModifierType
   | CannotDiscoverCluesAt
   | CannotBeDamaged
   | DamageDealt
+  | HealthModifier
+  | SanityModifier
   | DiscoveredClues
   | SkillTestResultValueModifier
   | AutomaticallyFailIfSucceedByAtLeast
@@ -73,6 +75,7 @@ export type ModifierType
   | HandSizeCardCount
   | HandSize
   | ScenarioModifierValue
+  | MetaModifier
   | AsIfInHand
   | AsIfInHandFor
 
@@ -108,6 +111,11 @@ export type HandSize = {
 export type ScenarioModifierValue = {
   tag: "ScenarioModifierValue"
   contents: [string, any]
+}
+
+export type MetaModifier = {
+  tag: "MetaModifier"
+  contents: unknown
 }
 
 export type HandSizeCardCount = {
@@ -167,6 +175,16 @@ export type AutomaticallyFailIfSucceedByAtLeast = {
 
 export type DamageDealt = {
   tag: "DamageDealt"
+  contents: number
+}
+
+export type HealthModifier = {
+  tag: "HealthModifier"
+  contents: number
+}
+
+export type SanityModifier = {
+  tag: "SanityModifier"
   contents: number
 }
 
@@ -332,6 +350,11 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('HandSize'),
       contents: JsonDecoder.number()
     }, 'HandSize'),
+  JsonDecoder.object<MetaModifier>(
+    {
+      tag: JsonDecoder.literal('MetaModifier'),
+      contents: JsonDecoder.succeed()
+    }, 'MetaModifier'),
   JsonDecoder.object<DiscoveredClues>(
     {
       tag: JsonDecoder.literal('DiscoveredClues'),
@@ -372,6 +395,16 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
       tag: JsonDecoder.literal('DamageDealt'),
       contents: JsonDecoder.number()
     }, 'DamageDealt'),
+  JsonDecoder.object<HealthModifier>(
+    {
+      tag: JsonDecoder.literal('HealthModifier'),
+      contents: JsonDecoder.number()
+    }, 'HealthModifier'),
+  JsonDecoder.object<SanityModifier>(
+    {
+      tag: JsonDecoder.literal('SanityModifier'),
+      contents: JsonDecoder.number()
+    }, 'SanityModifier'),
   JsonDecoder.object<AddSkillValue>(
     {
       tag: JsonDecoder.literal('AddSkillValue'),

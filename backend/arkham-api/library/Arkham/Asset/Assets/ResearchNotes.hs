@@ -7,6 +7,7 @@ import Arkham.Asset.Uses
 import Arkham.Helpers.Investigator (getCanDiscoverClues)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Window (placedTokens)
+import Arkham.I18n
 import Arkham.Matcher hiding (DiscoverClues)
 import Arkham.Taboo
 
@@ -46,10 +47,10 @@ instance RunMessage ResearchNotes where
           whenM (getCanDiscoverClues NotInvestigate iid lid) do
             if tabooed TabooList21 attrs
               then whenNotAtMax Cards.researchNotes 3 \remaining -> do
-                chooseAmount iid "Evidence" "Evidence" 0 (min remaining spendable) attrs
-              else chooseAmount iid "Evidence" "Evidence" 0 spendable attrs
+                withI18n $ chooseAmount iid "evidence" "$evidence" 0 (min remaining spendable) attrs
+              else withI18n $ chooseAmount iid "evidence" "$evidence" 0 spendable attrs
       pure a
-    ResolveAmounts iid (getChoiceAmount "Evidence" -> n) (isTarget attrs -> True) | n > 0 -> do
+    ResolveAmounts iid (getChoiceAmount "$evidence" -> n) (isTarget attrs -> True) | n > 0 -> do
       when (tabooed TabooList21 attrs) do
         updateMax Cards.researchNotes n #round
       push $ SpendUses (attrs.ability 2) (toTarget attrs) Evidence n

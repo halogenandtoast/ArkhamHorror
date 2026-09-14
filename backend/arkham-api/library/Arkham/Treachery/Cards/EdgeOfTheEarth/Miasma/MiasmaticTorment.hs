@@ -52,9 +52,9 @@ instance RunMessage MiasmaticTorment where
           withSanity <- aid <=~> AssetWithSanity
           chooseOrRunOneM iid do
             when withHealth do
-              cardI18n (scope "miasmaticTorment" $ labeled' "damage") $ dealAssetDamage aid (attrs.ability 1) 1
+              cardI18n (scope "miasmaticTorment" $ labeled "damage") $ dealAssetDamage aid (attrs.ability 1) 1
             when withSanity do
-              cardI18n (scope "miasmaticTorment" $ labeled' "horror") $ dealAssetHorror aid (attrs.ability 1) 1
+              cardI18n (scope "miasmaticTorment" $ labeled "horror") $ dealAssetHorror aid (attrs.ability 1) 1
         _ -> pure ()
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do

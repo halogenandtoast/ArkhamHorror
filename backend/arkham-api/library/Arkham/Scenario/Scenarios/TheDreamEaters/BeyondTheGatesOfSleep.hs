@@ -3,13 +3,16 @@ module Arkham.Scenario.Scenarios.TheDreamEaters.BeyondTheGatesOfSleep (beyondThe
 import Arkham.Act.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Acts
 import Arkham.Agenda.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Agendas
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaign.Types (getRandomBasicWeakness)
 import Arkham.Campaigns.TheDreamEaters.ChaosBag
 import Arkham.Campaigns.TheDreamEaters.Key
 import Arkham.Campaigns.TheDreamEaters.Meta
 import Arkham.Card
 import Arkham.ClassSymbol
 import Arkham.Deck qualified as Deck
+import Arkham.Decklist.RandomBasicWeakness (
+  RandomBasicWeaknessContext (..),
+  sampleRandomBasicWeakness,
+ )
 import Arkham.Enemy.CardDefs.TheDreamEaters.BeyondTheGatesOfSleep qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (setupModifier)
@@ -241,13 +244,18 @@ instance RunMessage BeyondTheGatesOfSleep where
       setActDeck
         [Acts.enteringTheDreamlands, Acts.theTrialOfNashtAndKamanThah, Acts.theFinalDescent, Acts.thePath]
     SearchFound iid (LabeledTarget "Drifter" ScenarioTarget) _ cards | notNull cards -> do
-      playerCount <- getPlayerCount
-      classSymbol <- field InvestigatorClass iid
-      newWeakness <- genCard =<< getRandomBasicWeakness classSymbol playerCount Nothing
+      ctx <-
+        RandomBasicWeaknessContext
+          <$> field InvestigatorClass iid
+          <*> getPlayerCount
+          <*> field InvestigatorTaboo iid
+          <*> field InvestigatorCardPool iid
+          <*> getIsStandalone
+      newWeakness <- genCard =<< sampleRandomBasicWeakness ctx
       focusCards cards do
         chooseOneM iid do
-          questionLabeled' "replaceWeaknessQuestion"
-          labeled' "doNotReplace" unfocusCards
+          questionLabeled "replaceWeaknessQuestion"
+          labeled "doNotReplace" unfocusCards
           targets cards \card -> do
             unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)
@@ -255,8 +263,8 @@ instance RunMessage BeyondTheGatesOfSleep where
             removeCardFromDeckForCampaign iid card
             shuffleCardsIntoDeck iid [newWeakness]
             chooseOneM iid $ withI18n $ countVar 1 do
-              labeled' "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
-              labeled' "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+              labeled "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+              labeled "sufferMentalTrauma" $ sufferMentalTrauma iid 1
       pure s
     SearchFound _ (LabeledTarget "Veteran" ScenarioTarget) _ _ -> do
       doStep 2 msg
@@ -264,8 +272,8 @@ instance RunMessage BeyondTheGatesOfSleep where
     DoStep n (SearchFound iid (LabeledTarget "Veteran" ScenarioTarget) deck cards) | notNull cards -> do
       focusCards cards do
         chooseOneM iid do
-          countVar n $ questionLabeled' "chooseUpToTacticSupply"
-          labeled' "doNotTakeAny" unfocusCards
+          countVar n $ questionLabeled "chooseUpToTacticSupply"
+          labeled "doNotTakeAny" unfocusCards
           targets cards \card -> do
             unfocusCards
             push $ RemoveCardFromSearch iid (toCardId card)

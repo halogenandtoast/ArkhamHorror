@@ -29,7 +29,7 @@ instance RunMessage SecretsLost where
       unless (null hollows) do
         chooseOneM iid $ campaignI18n do
           unscoped skip_
-          labeled' "secretsLost.hollowed" do
+          labeled "secretsLost.hollowed" do
             assignHorror iid attrs 1
             focusCards hollows $ chooseTargetM iid hollows \c -> for_ c.owner \owner -> addToHand owner [c]
       pure t

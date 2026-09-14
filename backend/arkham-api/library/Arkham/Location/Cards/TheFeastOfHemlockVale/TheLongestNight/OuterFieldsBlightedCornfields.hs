@@ -28,7 +28,7 @@ instance HasAbilities OuterFieldsBlightedCornfields where
       a
       [ mkAbility a 1 $ freeReaction $ DiscoveringLastClue #after You (be a)
       , playerLimit PerTurn
-          $ restricted a 2 (DuringTurn You <> exists LocationWithAdjacentBarrier)
+          $ restricted a 2 (Here <> DuringTurn You <> exists LocationWithAdjacentBarrier)
           $ FastAbility Free
       ]
 
@@ -50,8 +50,8 @@ instance RunMessage OuterFieldsBlightedCornfields where
         push $ ScenarioCountDecrementBy (Barriers srcLid toLid) 1
         doStep 1 msg
       pure l
-    DoStep 1 msg'@(HandleTargetChoice iid (isAbilitySource attrs 2 -> True) (LocationTarget _srcLid)) -> do
-      allLocations <- select Anywhere
+    DoStep 1 msg'@(HandleTargetChoice iid (isAbilitySource attrs 2 -> True) (LocationTarget srcLid)) -> do
+      allLocations <- select $ Anywhere <> not_ (LocationWithId srcLid)
       chooseTargetM iid allLocations (`forTarget` msg')
       pure l
     ForTarget

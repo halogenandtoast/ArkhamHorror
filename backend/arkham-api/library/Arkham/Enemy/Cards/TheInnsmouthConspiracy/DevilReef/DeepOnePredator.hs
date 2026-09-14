@@ -36,9 +36,9 @@ instance RunMessage DeepOnePredator where
       clues <- iid.clues
       chooseOneM iid $ scenarioI18n $ scope "deepOnePredator" do
         for_ ks \k ->
-          keyVar "key" (keyName k) $ labeled' "moveKey" $ placeKey attrs k
+          keyVar "key" (keyName k) $ labeled "moveKey" $ placeKey attrs k
         when (clues > 0) do
-          labeled' "moveClue" do
+          labeled "moveClue" do
             moveTokens (attrs.ability 1) iid attrs #clue 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do

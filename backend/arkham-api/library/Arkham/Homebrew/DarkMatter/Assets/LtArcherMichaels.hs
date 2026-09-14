@@ -11,7 +11,7 @@ newtype LtArcherMichaels = LtArcherMichaels AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 ltArcherMichaels :: AssetCard LtArcherMichaels
-ltArcherMichaels = asset LtArcherMichaels Cards.ltArcherMichaels
+ltArcherMichaels = ally LtArcherMichaels Cards.ltArcherMichaels (2, 1)
 
 {- | "Revelation - Put this card into play under your control.
 [action]: Deal 2 damage to any enemy in play. This action does not provoke
@@ -19,7 +19,7 @@ attacks of opportunity. (Group limit once per game.)"
 -}
 instance HasAbilities LtArcherMichaels where
   getAbilities (LtArcherMichaels a) =
-    [groupLimit PerGame $ controlled_ a 1 $ actionAbilityWithCost mempty]
+    [groupLimit PerGame $ noAOO $ controlled_ a 1 actionAbility]
 
 instance RunMessage LtArcherMichaels where
   runMessage msg a@(LtArcherMichaels attrs) = runQueueT $ case msg of
@@ -28,7 +28,6 @@ instance RunMessage LtArcherMichaels where
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select AnyEnemy
-      chooseOneM iid $ targets enemies \enemy ->
-        nonAttackEnemyDamage Nothing (attrs.ability 1) 2 enemy
+      chooseOneM iid $ targets enemies $ nonAttackEnemyDamage (Just iid) (attrs.ability 1) 2
       pure a
     _ -> LtArcherMichaels <$> liftRunMessage msg attrs

@@ -32,7 +32,7 @@ instance HasModifiersFor TheColorsOfSpace where
 -- | "[action] Take 1 horror: Discard The Colors of Space."
 instance HasAbilities TheColorsOfSpace where
   getAbilities (TheColorsOfSpace a) =
-    [restricted a 1 Here $ actionAbilityWithCost (HorrorCost (toSource a) YouTarget 1)]
+    [restricted a 1 (InThreatAreaOf You) $ actionAbilityWithCost (HorrorCost (toSource a) YouTarget 1)]
 
 instance RunMessage TheColorsOfSpace where
   runMessage msg t@(TheColorsOfSpace attrs) = runQueueT $ case msg of

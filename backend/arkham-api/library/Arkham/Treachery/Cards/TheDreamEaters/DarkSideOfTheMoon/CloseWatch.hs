@@ -24,7 +24,7 @@ instance RunMessage CloseWatch where
       anyAssets <- selectAny $ AssetWithHighestPrintedCost $ assetControlledBy iid <> DiscardableAsset
       chooseOrRunOneM iid $ scenarioI18n $ scope "closeWatch" do
         when anyAssets do
-          labeled' "discardHighestCost" do
+          labeled "discardHighestCost" do
             chooseAndDiscardAssetMatching iid attrs $ AssetWithHighestPrintedCost AnyAsset
           withI18n $ countVar 1 $ labeledI "raiseAlarmLevel" $ raiseAlarmLevel attrs [iid]
       pure t

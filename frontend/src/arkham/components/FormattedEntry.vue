@@ -22,8 +22,10 @@ function entryStyles(entry: FlavorTextEntry): { [key: string]: boolean } {
     case 'TarotEntry': return {"card": true, "no-overlay": true}
     case 'ChaosTokenEntry': return {"chaos-token": true}
     case 'CardEntry': {
-      const mods = entry.imageModifiers.reduce((acc, m) => { return { [imageModifierToStyle(m)]: true, ...acc }}, {})
-      return {"card": true, "no-overlay": true, ...mods}
+      const mods: { [key: string]: boolean } = entry.imageModifiers.reduce((acc, m) => { return { [imageModifierToStyle(m)]: true, ...acc }}, {})
+      // A small card is a reference rather than the focus of the entry, so it
+      // keeps the hover overlay to read it at a usable size.
+      return {"card": true, ...mods, "no-overlay": !mods.small}
     }
 
     default: return {}
@@ -34,6 +36,7 @@ function imageModifierToStyle(modifier: ImageModifier): string {
   switch (modifier) {
     case 'RemoveImage': return 'remove'
     case 'SelectImage': return 'select'
+    case 'SmallImage': return 'small'
     default: throw new Error("Unknown modifier")
   }
 }
@@ -50,6 +53,7 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
     case 'CheckpointEntry': return 'checkpoint'
     case 'InterludeEntry': return 'interlude'
     case 'HauntedEntry': return 'haunted'
+    case 'TokenRevealEntry': return 'token-reveal'
     case 'RightAligned': return 'right'
     case 'CenteredEntry': return 'center'
     case 'NoUnderline': return 'no-underline'
@@ -805,6 +809,23 @@ ul, :deep(ul) {
   }
 }
 
+/* Share the token-result layout, not Predation's haunted color theme. */
+.token-reveal, :deep(.token-reveal) {
+  .columns, :deep(.columns) {
+    justify-content: space-evenly;
+    gap: 0;
+
+    > * {
+      flex: 0 1 auto;
+      padding: 10px 8px;
+    }
+
+    .composite:has(.chaos-token), :deep(.composite:has(.chaos-token)) {
+      gap: 56px;
+    }
+  }
+}
+
 @keyframes haunted-token-pulse {
   0%, 100% {
     filter:
@@ -1235,6 +1256,18 @@ ul, :deep(ul) {
 
 img.remove {
   filter: brightness(81%) saturate(113%);
+}
+
+img.card.small {
+  width: clamp(160px, 20vw, 260px);
+  cursor: zoom-in;
+}
+
+/* Small cards sit on their own centered row under the text they illustrate. */
+div:has(> img.card.small) {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 div:has(> img.remove) {

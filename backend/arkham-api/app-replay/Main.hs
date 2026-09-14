@@ -3,18 +3,19 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 
--- | Headless replay CLI.
---
--- Loads a game export (from /api/v1/arkham/games/:id/export), optionally pushes
--- a list of raw 'Message's, runs the engine, and prints the resulting 'Game'.
--- No DB, no Yesod, no frontend. The point is to reproduce a bug in <1s instead
--- of the full investigate-bug stack.
+{- | Headless replay CLI.
+
+Loads a game export (from /api/v1/arkham/games/:id/export), optionally pushes
+a list of raw 'Message's, runs the engine, and prints the resulting 'Game'.
+No DB, no Yesod, no frontend. The point is to reproduce a bug in <1s instead
+of the full investigate-bug stack.
+-}
 module Main where
 
-import Api.Arkham.Export
-  ( ArkhamExport (..)
-  , ArkhamGameExportData (..)
-  )
+import Api.Arkham.Export (
+  ArkhamExport (..),
+  ArkhamGameExportData (..),
+ )
 import Api.Arkham.Helpers (GameApp (..), runGameApp)
 import Arkham.Classes.GameLogger (ClientMessage (..))
 import Arkham.Classes.HasQueue (newQueue, pushAll)
@@ -24,10 +25,17 @@ import Arkham.Game.Runner (handleActionDiff)
 import Arkham.Message (Message (ClearUI, SetActivePlayer))
 import Arkham.Metrics (dumpMetricsTo, enableMetrics, withMetric)
 import Control.Exception (evaluate)
-import GHC.Clock (getMonotonicTimeNSec)
 import Control.Monad (forM, forM_, when)
 import Control.Monad.Random (mkStdGen)
-import Data.Aeson (Result (..), Value, eitherDecodeFileStrict', eitherDecode, encode, fromJSON, toJSON)
+import Data.Aeson (
+  Result (..),
+  Value,
+  eitherDecode,
+  eitherDecodeFileStrict',
+  encode,
+  fromJSON,
+  toJSON,
+ )
 import Data.ByteString.Lazy qualified as BSL
 import Data.ByteString.Lazy.Char8 qualified as BL8
 import Data.IORef (newIORef, readIORef)
@@ -37,6 +45,7 @@ import Data.Ord (Down (..))
 import Data.Text qualified as T
 import Entity.Answer (Reply (..), answerPlayer, handleAnswerPure)
 import Entity.Arkham.Step (ArkhamStep (..), Choice (..))
+import GHC.Clock (getMonotonicTimeNSec)
 import System.Environment (getArgs)
 import System.Exit (die, exitSuccess)
 import System.IO (hPutStrLn, stderr)
@@ -76,6 +85,8 @@ formatClientMessage = \case
   ClientUI t -> "ui " <> T.unpack t
   ClientAudio t -> "audio " <> T.unpack t
   ClientPlayabilityReport _ t _ -> "playabilityReport " <> T.unpack t
+  ClientCustomCardIssue cc detail payload ->
+    "customCardIssue " <> T.unpack cc <> " " <> T.unpack detail <> " " <> briefValue payload
  where
   briefValue v = let s = BL8.unpack (encode v) in if length s > 200 then take 200 s <> "..." else s
 
@@ -121,8 +132,9 @@ parseArgs = go defaultOpts
   go o ("--undo" : n : rest) = case reads n of
     [(k, "")] -> go o {optUndo = k} rest
     _ -> die $ "--undo expects an integer, got: " <> n
-  go o ("--metrics" : f : rest) | take 2 f /= "--" =
-    go o {optMetrics = Just (Just f)} rest
+  go o ("--metrics" : f : rest)
+    | take 2 f /= "--" =
+        go o {optMetrics = Just (Just f)} rest
   go o ("--metrics" : rest) = go o {optMetrics = Just Nothing} rest
   go o ("--metrics-top" : n : rest) = case reads n of
     [(k, "")] -> go o {optMetricsTopN = k} rest
@@ -199,12 +211,12 @@ main = do
     t1 <- getMonotonicTimeNSec
     hPutStrLn stderr
       $ "bench-action-diff: "
-      <> show k
-      <> " in-action messages; forcing the save cost took "
-      <> printfMs (fromIntegral (t1 - t0) / 1_000_000)
-      <> " ms ("
-      <> show bytes
-      <> " bytes of actionDiff JSON)"
+        <> show k
+        <> " in-action messages; forcing the save cost took "
+        <> printfMs (fromIntegral (t1 - t0) / 1_000_000)
+        <> " ms ("
+        <> show bytes
+        <> " bytes of actionDiff JSON)"
     exitSuccess
 
   -- The queue waiting at the resume step.
@@ -298,9 +310,9 @@ main = do
             Unhandled reason ->
               hPutStrLn stderr
                 $ "answer "
-                <> show idx
-                <> " unhandled: "
-                <> T.unpack reason
+                  <> show idx
+                  <> " unhandled: "
+                  <> T.unpack reason
             Handled msgs -> do
               let bracketed =
                     [SetActivePlayer answerPid | activePid /= answerPid]
@@ -321,8 +333,8 @@ main = do
       let elapsedMs = fromIntegral (wallEnd - wallStart) / (1_000_000 :: Double)
       hPutStrLn stderr
         $ "Replay wall-clock (excluding load + final encode): "
-        <> show elapsedMs
-        <> " ms"
+          <> show elapsedMs
+          <> " ms"
       dumpMetricsTo dest ref (optMetricsTopN opts)
     _ -> pure ()
 
@@ -336,24 +348,24 @@ main = do
     hPutStrLn stderr ""
     hPutStrLn stderr
       $ "Aggregate: drain "
-      <> printfMs (toMs sumDrain)
-      <> " ms, server-sim "
-      <> printfMs (toMs sumServer)
-      <> " ms over "
-      <> show (length perStepTimings)
-      <> " steps"
+        <> printfMs (toMs sumDrain)
+        <> " ms, server-sim "
+        <> printfMs (toMs sumServer)
+        <> " ms over "
+        <> show (length perStepTimings)
+        <> " steps"
     hPutStrLn stderr "Top slowest steps (descending by drain+server time):"
     hPutStrLn stderr "  step      duration_ms     server_ms   messages_pushed"
     forM_ slowest $ \(step, ns, serverNs, msgs) ->
       hPutStrLn stderr
         $ "  "
-        <> padLeft 8 (show step)
-        <> "  "
-        <> padLeft 11 (printfMs (toMs ns))
-        <> "  "
-        <> padLeft 12 (printfMs (toMs serverNs))
-        <> "  "
-        <> padLeft 5 (show msgs)
+          <> padLeft 8 (show step)
+          <> "  "
+          <> padLeft 11 (printfMs (toMs ns))
+          <> "  "
+          <> padLeft 12 (printfMs (toMs serverNs))
+          <> "  "
+          <> padLeft 5 (show msgs)
     case optPerStepReport opts of
       Nothing -> pure ()
       Just path -> do
@@ -374,8 +386,9 @@ main = do
         writeFile path rows
         hPutStrLn stderr $ "Per-step CSV written to " <> path
 
--- | Apply one step's choicePatchDown to the running JSON value. Stops on the
--- first failure.
+{- | Apply one step's choicePatchDown to the running JSON value. Stops on the
+first failure.
+-}
 applyUndo :: Either String Value -> ArkhamStep -> Either String Value
 applyUndo (Left e) _ = Left e
 applyUndo (Right v) step =

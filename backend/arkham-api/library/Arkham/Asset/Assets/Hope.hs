@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher hiding (AssetCard)
 import Arkham.Message.Lifted.Choose
@@ -21,7 +22,7 @@ instance HasAbilities Hope where
   getAbilities (Hope a) =
     [ controlled a 1 (exists $ oneOf [assetIs Cards.zeal, assetIs Cards.augur])
         $ forced
-        $ AssetEntersPlay #when (be a)
+        $ AssetEntersPlay #after (be a)
     , controlled a 2 (exists $ be a <> AssetReady) $ evadeAction $ OrCost [exhaust a, discardCost a]
     ]
 
@@ -42,7 +43,7 @@ instance RunMessage Hope where
         catsInDiscard <-
           fieldMap InvestigatorDiscard (filterCards (mapOneOf cardIs [Cards.zeal, Cards.augur])) iid
         chooseOrRunOneM iid do
-          questionLabeled "$label.cards.hope.putIntoPlayFromDiscard"
+          cardI18n $ questionLabeled "hope.putIntoPlayFromDiscard"
           for_ catsInDiscard $ \card -> do
             cardLabeled card do
               shuffleCardsIntoDeck iid (only hopeCard)

@@ -20,11 +20,11 @@ instance RunMessage InevitableEnd where
     Revelation iid (isSource attrs -> True) -> do
       hand <- iid.hand
       scenarioI18n $ blueDecide iid do
-        labeled' "placeDoomOnTheBlueAgenda" $ placeDoomOnFactionAgenda attrs BlueFaction 1
+        labeled "placeDoomOnTheBlueAgenda" $ placeDoomOnFactionAgenda attrs BlueFaction 1
         when (length hand >= 3) do
-          labeled' "removeCardsInHandFromGame" do
+          labeled "removeCardsInHandFromGame" do
             chooseNM iid 3 $ targets hand removeCardFromGame
-        labeled' "removeTopOfDeckFromGame" $ doStep 1 msg
+        labeled "removeTopOfDeckFromGame" $ doStep 1 msg
       pure t
     DoStep 1 (Revelation iid (isSource attrs -> True)) -> do
       cards <- iid.topOfDeckN 6

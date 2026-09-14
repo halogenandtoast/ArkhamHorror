@@ -28,7 +28,7 @@ instance RunMessage WukWukWuk where
             chooseOneM iid do
               withLocationOf iid \lid -> do
                 whenM (eid <=~> (notAt_ (LocationWithId lid) <> EnemyCanEnter (LocationWithId lid))) do
-                  campaignI18n (scope "wukWukWuk" $ labeled' "moveToYou") $ enemyMoveTo attrs eid lid
-              campaignI18n (scope "wukWukWuk" $ labeled' "placeDoom") $ placeDoom attrs eid 1
+                  campaignI18n (scope "wukWukWuk" $ labeled "moveToYou") $ enemyMoveTo attrs eid lid
+              campaignI18n (scope "wukWukWuk" $ labeled "placeDoom") $ placeDoom attrs eid 1
       pure t
     _ -> WukWukWuk <$> liftRunMessage msg attrs

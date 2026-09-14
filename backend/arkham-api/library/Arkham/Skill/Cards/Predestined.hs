@@ -1,9 +1,9 @@
 module Arkham.Skill.Cards.Predestined (predestined) where
 
 import Arkham.Helpers.ChaosBag
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.Plural
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted
 
@@ -20,11 +20,11 @@ instance RunMessage Predestined where
       chooseOrRunOneM iid do
         n <- min 2 <$> getRemainingBlessTokens
         when (n > 0) do
-          labeled ("Add " <> pluralize n "{bless} token") $ repeated n (addChaosToken #bless)
+          (withI18n $ countVar n $ labeled "addBlessTokens") $ repeated n (addChaosToken #bless)
 
         x <- selectCount $ ChaosTokenFaceIs #curse
         when (x > 0) do
-          labeled ("Remove " <> pluralize x "{curse} token") $ repeated x (removeChaosToken #curse)
+          (withI18n $ countVar x $ labeled "removeCurseTokens") $ repeated x (removeChaosToken #curse)
 
       pure s
     _ -> Predestined <$> liftRunMessage msg attrs

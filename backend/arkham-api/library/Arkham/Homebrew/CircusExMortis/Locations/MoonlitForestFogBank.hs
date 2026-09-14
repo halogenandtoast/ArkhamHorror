@@ -13,12 +13,11 @@ newtype MoonlitForestFogBank = MoonlitForestFogBank LocationAttrs
 
 moonlitForestFogBank :: LocationCard MoonlitForestFogBank
 moonlitForestFogBank =
-  locationWith
+  location
     MoonlitForestFogBank
     Cards.moonlitForestFogBank
     3
     (Static 2)
-    connectsToAdjacent
 
 instance HasModifiersFor MoonlitForestFogBank where
   getModifiersFor (MoonlitForestFogBank a) = do

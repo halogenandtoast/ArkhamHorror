@@ -29,7 +29,7 @@ instance HasModifiersFor OwnersOffice where
       $ ShroudModifier x
       : [ AdditionalCostToEnter
             (OrCost [GroupClueCost (PerPlayer 2) (LocationWithId locId) | locId <- connected])
-        | not stoleKeys
+        | a.unrevealed && not stoleKeys
         ]
 
 instance HasAbilities OwnersOffice where

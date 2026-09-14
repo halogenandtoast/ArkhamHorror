@@ -29,7 +29,7 @@ instance HasModifiersFor Alienation where
 Alienation."
 -}
 instance HasAbilities Alienation where
-  getAbilities (Alienation a) = [investigateAbility a 1 mempty Here]
+  getAbilities (Alienation a) = [investigateAbility a 1 mempty OnSameLocation]
 
 instance RunMessage Alienation where
   runMessage msg t@(Alienation attrs) = runQueueT $ case msg of

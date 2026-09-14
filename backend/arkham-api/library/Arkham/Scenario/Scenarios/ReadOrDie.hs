@@ -268,16 +268,16 @@ instance RunMessage ReadOrDie where
             hasToteBag <- hasInPool daisy Assets.daisysToteBag
             hasAdvancedNecronomicon <- hasInPool daisy Assets.theNecronomiconAdvanced
             chooseOneM daisy do
-              questionLabeled' "maySwapSignatureCards"
+              questionLabeled "maySwapSignatureCards"
               when hasToteBag do
-                labeled' "upgradeDaisysToteBag" do
+                labeled "upgradeDaisysToteBag" do
                   removeCampaignCardFromDeck daisy Assets.daisysToteBag
                   addCampaignCardToDeck daisy DoNotShuffleIn Assets.daisysToteBagAdvanced
               when hasAdvancedNecronomicon do
-                labeled' "downgradeTheNecronomicon" do
+                labeled "downgradeTheNecronomicon" do
                   removeCampaignCardFromDeck daisy Assets.theNecronomiconAdvanced
                   addCampaignCardToDeck daisy DoNotShuffleIn Assets.theNecronomicon
-              labeled' "doNotSwap" nothing
+              labeled "doNotSwap" nothing
           endOfScenario
         Resolution 2 -> do
           resolutionWithXp "resolution2" $ gainXpWithTomeBonus attrs
@@ -286,13 +286,13 @@ instance RunMessage ReadOrDie where
             hasAdvancedToteBag <- hasInPool daisy Assets.daisysToteBagAdvanced
             when (hasNecronomicon || hasAdvancedToteBag) do
               chooseOrRunOneM daisy do
-                questionLabeled' "mustSwapSignatureCards"
+                questionLabeled "mustSwapSignatureCards"
                 when hasNecronomicon do
-                  labeled' "upgradeTheNecronomicon" do
+                  labeled "upgradeTheNecronomicon" do
                     removeCampaignCardFromDeck daisy Assets.theNecronomicon
                     addCampaignCardToDeck daisy DoNotShuffleIn Assets.theNecronomiconAdvanced
                 when hasAdvancedToteBag do
-                  labeled' "downgradeDaisysToteBag" do
+                  labeled "downgradeDaisysToteBag" do
                     removeCampaignCardFromDeck daisy Assets.daisysToteBagAdvanced
                     addCampaignCardToDeck daisy DoNotShuffleIn Assets.daisysToteBag
           endOfScenario

@@ -22,7 +22,7 @@ instance RunMessage TerribleSecret where
       if null cardsUnderneath
         then shuffleIntoDeck iid attrs
         else focusCards cardsUnderneath do
-          cardI18n $ scope "terribleSecret" $ chooseUpToNM' iid (length cardsUnderneath) "keepRemainingCards" do
+          cardI18n $ scope "terribleSecret" $ chooseUpToNM iid (length cardsUnderneath) "keepRemainingCards" do
             for_ cardsUnderneath \pc -> do
               for_ (preview _PlayerCard pc) \c -> targeting c (addToDiscard iid [c])
           unfocusCards

@@ -188,10 +188,10 @@ instance RunMessage TheMidwinterGala where
       scope "spellbound" $ flavor $ h "title" >> p "body"
       flavor $ h "title" >> p "flavor"
       flavor $ h "title" >> p "body"
-      storyWithChooseOneM' (h "title" >> p "guestChoice") do
+      storyWithChooseOneM (h "title" >> p "guestChoice") do
         for_ (eachWithRest [minBound ..]) \(faction, rest) -> do
           rival <- maybe (error "empty") sample $ nonEmpty rest
-          popScope $ labeled' (factionLabel faction) do
+          popScope $ labeled (factionLabel faction) do
             scope "intro" $ flavor $ h "title" >> p (factionLabel faction)
             push $ SetScenarioMeta $ toJSON $ Meta {ally = faction, rival = rival, score = mempty}
       pure s
@@ -417,8 +417,8 @@ instance RunMessage TheMidwinterGala where
           <> SingleSidedAsset
       when (notNull guests) do
         chooseOneM iid do
-          questionLabeled' "chooseGuest"
-          unscoped $ labeled' "skip" nothing
+          questionLabeled "chooseGuest"
+          unscoped $ labeled "skip" nothing
           for_ guests \(guest, card) -> do
             targeting guest do
               removeFromGame guest

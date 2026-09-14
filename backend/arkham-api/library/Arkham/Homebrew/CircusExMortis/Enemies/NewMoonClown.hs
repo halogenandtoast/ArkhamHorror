@@ -1,11 +1,10 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.NewMoonClown (newMoonClown) where
 
 import Arkham.Ability
-import Arkham.Homebrew.CircusExMortis.Helpers (getSealedMoonTokens)
-import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
-import Arkham.Keyword qualified as Keyword
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Helpers (getSealedMoonTokens)
 import Arkham.Matcher
 
 newtype NewMoonClown = NewMoonClown EnemyAttrs
@@ -19,7 +18,7 @@ instance HasModifiersFor NewMoonClown where
   getModifiersFor (NewMoonClown a) = do
     investigators <- select $ InvestigatorAt (locationWithEnemy a)
     n <- sum <$> traverse (fmap length . getSealedMoonTokens) investigators
-    modifySelf a $ [AddKeyword Keyword.Hunter, AddKeyword Keyword.Retaliate] <> [EnemyEvade n | n > 0]
+    modifySelf a [EnemyEvade n | n > 0]
 
 instance HasAbilities NewMoonClown where
   getAbilities (NewMoonClown a) =

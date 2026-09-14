@@ -24,6 +24,7 @@ import Arkham.Helpers.Scenario
 import Arkham.Metrics (withMetric)
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Token (Token (Clue), subtractTokens)
+import Arkham.TokenBag (editTokenBag)
 import Control.Lens (non)
 
 afterStoryResolution :: HasQueue Message m => StoryAttrs -> [Message] -> m ()
@@ -46,6 +47,9 @@ instance RunMessage Story where
 
 instance RunMessage StoryAttrs where
   runMessage msg attrs = case msg of
+    SendMessage (isTarget attrs -> True) (ScenarioSpecific "debugTokenBag" choice) -> do
+      updated <- editTokenBag choice (storyMeta attrs)
+      pure $ maybe attrs (\meta -> attrs & metaL .~ meta) updated
     StoryMessage smsg -> case smsg of
       ResolvedStory _ story' | story' == toId attrs -> do
         pushWhen (storyRemoveAfterResolution attrs) $ RemoveStory (toId attrs)

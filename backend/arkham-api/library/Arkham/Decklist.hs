@@ -3,6 +3,7 @@ module Arkham.Decklist (module Arkham.Decklist, module Arkham.Decklist.Type) whe
 import Arkham.Card hiding (setTaboo)
 import Arkham.Card.PlayerCard
 import Arkham.Customization
+import Arkham.Decklist.RandomBasicWeakness (ArkhamBuildCardPool, parseArkhamBuildCardPool)
 import Arkham.Decklist.Type
 import Arkham.Id
 import Arkham.Investigator.Cards (allInvestigatorCards)
@@ -25,6 +26,7 @@ data Decklist = Decklist
   , decklistCards :: [PlayerCard]
   , decklistExtraDeck :: [PlayerCard]
   , decklistTaboo :: Maybe TabooList
+  , decklistCardPool :: Maybe ArkhamBuildCardPool
   , decklistUrl :: Maybe Text
   , decklistCardAttachments :: Map CardCode [CardCode]
   }
@@ -42,6 +44,9 @@ instance HasField "extra" Decklist [PlayerCard] where
 instance HasField "taboo" Decklist (Maybe TabooList) where
   getField = decklistTaboo
 
+instance HasField "cardPool" Decklist (Maybe ArkhamBuildCardPool) where
+  getField = decklistCardPool
+
 instance HasField "url" Decklist (Maybe Text) where
   getField = decklistUrl
 
@@ -56,6 +61,7 @@ loadDecklist decklist =
     <$> loadDecklistCards slots decklist
     <*> loadExtraDeck decklist
     <*> pure (fromTabooId $ taboo_id decklist)
+    <*> pure (parseArkhamBuildCardPool decklist)
     <*> pure (url decklist)
     <*> pure (decklistAttachments decklist)
 

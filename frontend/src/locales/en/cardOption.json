@@ -1,0 +1,29 @@
+{
+  "cardOption": {
+    "title": "Card Options",
+    "configure": "Card options",
+    "filterPlaceholder": "Filter cards with options…",
+    "clear": "Clear",
+    "c11582": {
+      "abilities": {
+        "1": "{'{'}fast{'}'} Exhaust Grisly \"Mask\": Disengage from each enemy. Until the beginning of your next turn, you cannot move and cannot damage enemies or engage them."
+      },
+      "onlyWhenEngaged": {
+        "label": "Only offer when engaged"
+      }
+    },
+    "c11756a": {
+      "abilities": {
+        "1": "{'{'}reaction{'}'} When you gain 1 or more resources: Place 1 of those resources on Good Money."
+      },
+      "stopAtFiveResources": {
+        "label": "Stop offering at 5 resources"
+      }
+    },
+    "c11764": {
+      "treatAsPartiallyFlooded": {
+        "label": "Treat fully flooded as partially flooded"
+      }
+    }
+  }
+}

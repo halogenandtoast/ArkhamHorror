@@ -100,10 +100,10 @@ instance RunMessage TheHouseAlwaysWins where
       resourceCount <- getSpendableResources iid
       when (resourceCount >= requiredResources) do
         chooseOneM iid do
-          countVar requiredResources $ labeled' "skull.spend" do
+          countVar requiredResources $ labeled "skull.spend" do
             push $ SpendResources iid requiredResources
             chaosTokenEffect Skull drawnToken $ ChaosTokenFaceModifier [Zero]
-          labeled' "skull.doNotSpend" nothing
+          labeled "skull.doNotSpend" nothing
       pure s
     PassedSkillTestWithToken iid Cultist | isEasyStandard attrs -> do
       tokenSkillTestOptionWithCriteria (exists $ investigator_ $ can.gain.resources iid) Cultist

@@ -4,11 +4,9 @@ import Arkham.Ability
 import Arkham.Asset.Import.Lifted hiding (RevealChaosToken)
 import Arkham.ChaosToken.Types qualified as CT
 import Arkham.Helpers.Modifiers (ModifierType (..))
-import Arkham.Helpers.SkillTest (withSkillTest)
+import Arkham.Helpers.Window (getRevealedChaosTokens)
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Cards
 import Arkham.Matcher
-import Arkham.Window (windowType)
-import Arkham.Window qualified as Window
 
 newtype BottleOfWhispers = BottleOfWhispers AssetAttrs
   deriving anyclass (IsAsset, HasModifiersFor)
@@ -30,13 +28,12 @@ instance HasAbilities BottleOfWhispers where
 
 instance RunMessage BottleOfWhispers where
   runMessage msg a@(BottleOfWhispers attrs) = runQueueT $ case msg of
-    UseCardAbility _ (isSource attrs -> True) 1 ws _ -> do
-      for_ ws \w -> case windowType w of
-        Window.RevealChaosToken _ token ->
-          withSkillTest \sid -> do
-            skillTestModifier sid (attrs.ability 1) token (ChaosTokenFaceModifier [CT.ElderSign])
-            skillTestModifier sid (attrs.ability 1) token IgnoreChaosTokenEffects
-        _ -> pure ()
+    -- "treat it as an [elder_sign] token instead" leaves the elder sign's own
+    -- effect to resolve, so the face is swapped without ignoring its effects
+    -- (same shape as Eucatastrophe (3), which prints the identical clause)
+    UseCardAbility _ (isSource attrs -> True) 1 (getRevealedChaosTokens -> tokens) _ -> do
+      for_ tokens \token ->
+        chaosTokenEffect (attrs.ability 1) token (ChaosTokenFaceModifier [CT.ElderSign])
       push $ RemoveFromGame (toTarget attrs)
       pure a
     _ -> BottleOfWhispers <$> liftRunMessage msg attrs

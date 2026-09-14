@@ -47,12 +47,17 @@ getCompletedScenariosList = do
           ScenarioStep scenarioId -> Just scenarioId
           _ -> Nothing
 
+{- | Story-card ownership is asked by 'CardDef', but the card in the map may be a
+different printing of it -- a reprint, or the stand-in a campaign overlay swapped
+in. 'isPrintingOf' answers "same card?" where a structural 'CardDef' comparison
+would say no (and would also go stale the moment the def gains a field).
+-}
 getOwner :: HasGame m => CardDef -> m (Maybe InvestigatorId)
 getOwner cardDef = do
   iids <- select $ IncludeEliminated Anyone
   cardMap <- getCampaignStoryCards
   let inGame = Map.filterWithKey (\k _ -> k `elem` iids) cardMap
-  pure $ findKey (any ((== cardDef) . toCardDef)) inGame
+  pure $ findKey (any $ isPrintingOf cardDef.cardCode) inGame
 
 withOwner :: HasGame m => CardDef -> (InvestigatorId -> m ()) -> m ()
 withOwner cardDef f =
@@ -73,10 +78,10 @@ getCampaignStoryCard def = fromJustNote "missing card" <$> getMaybeCampaignStory
 getMaybeCampaignStoryCard :: (HasGame m, HasCardCode def) => def -> m (Maybe Card)
 getMaybeCampaignStoryCard (toCardCode -> cardCode) = do
   cards <- concat . Map.elems <$> getCampaignStoryCards
-  pure $ find ((== toCardCode cardCode) . toCardCode) cards
+  pure $ find (isPrintingOf cardCode) cards
 
 getIsAlreadyOwned :: HasGame m => CardDef -> m Bool
-getIsAlreadyOwned cDef = any (any ((== cDef) . toCardDef)) . toList <$> getCampaignStoryCards
+getIsAlreadyOwned cDef = any (any $ isPrintingOf cDef.cardCode) . toList <$> getCampaignStoryCards
 
 campaignField :: (HasCallStack, HasGame m) => Field Campaign a -> m a
 campaignField fld = selectJust TheCampaign >>= field fld

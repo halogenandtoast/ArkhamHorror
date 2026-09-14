@@ -14,6 +14,7 @@ because the harness can't reasonably drive them:
 module Arkham.Achievements.ReturnToNightOfTheZealotSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Asset.Types qualified as Asset
 import Arkham.CampaignLogKey (recorded, toCampaignLogKey)
 import Arkham.Campaigns.NightOfTheZealot.Key
 import Arkham.Difficulty
@@ -24,6 +25,7 @@ import Arkham.Enemy.CardDefs.NightOfTheZealot.TheGathering qualified as Enemies
 import Arkham.Enemy.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Enemies
 import Arkham.Game.Settings (settingsAchievementsEnabled)
 import Arkham.Location.CardDefs.NightOfTheZealot.TheMidnightMasks qualified as Locations
+import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Source
 import Arkham.Trait (Trait (Cultist, Ghoul, Monster))
@@ -31,8 +33,20 @@ import Helpers.Achievements
 import Helpers.UltimatumsAndBoons (Ultimatum (..), asCampaign, withUltimatums)
 import TestImport.New hiding (Cultist)
 
+-- | testAssetWithDef leaves an asset Unplaced with no controller.
+controlledBy :: Investigator -> Asset.AssetAttrs -> Asset.AssetAttrs
+controlledBy i = (Asset.controllerL ?~ toId i) . (Asset.placementL .~ InPlayArea (toId i))
+
 winTheCampaign :: TestAppT ()
 winTheCampaign = run $ Record (toCampaignLogKey TheRitualToSummonUmordhothWasBroken)
+
+{- | Revised Core reprint of Baseball Bat. 'toCardCodePairs' hands each printing
+its own 'CardDef' with 'cdCardCode' rewritten, so this is not
+@Assets.baseballBat@ (see #5596).
+-}
+revisedCoreBaseballBat :: CardDef
+revisedCoreBaseballBat =
+  fromJustNote "missing Revised Core Baseball Bat" $ lookupCardDef ("01574" :: CardCode)
 
 spec :: Spec
 spec = describe "Return to the Night of the Zealot achievements" $ do
@@ -229,9 +243,40 @@ spec = describe "Return to the Night of the Zealot achievements" $ do
   context "Pinch Hitter" $ do
     it "is earned when one Baseball Bat defeats three Ghouls" . gameTest $ \self -> do
       asReturnToNightOfTheZealot
-      bat <- testAssetWithDef Assets.baseballBat id self
+      bat <- testAssetWithDef Assets.baseballBat (controlledBy self) self
       location <- testLocation
-      earned <- didEarn PinchHitter
+      earned <- didEarnBy (toId self) PinchHitter
+      let killWithBat = do
+            enemy <- testEnemy
+            enemy `spawnAt` location
+            run $ Defeated (toTarget enemy) (toCardId enemy) (AbilitySource (toSource bat) 1) [Ghoul]
+      killWithBat
+      killWithBat
+      earned `refShouldBe` False
+      killWithBat
+      earned `refShouldBe` True
+
+    -- A Simultaneously block runs every branch with a cleared queue, so a
+    -- read-modify-write on the kill counter read the same value three times.
+    it "is earned when one Baseball Bat defeats three Ghouls at once" . gameTest $ \self -> do
+      asReturnToNightOfTheZealot
+      bat <- testAssetWithDef Assets.baseballBat (controlledBy self) self
+      location <- testLocation
+      earned <- didEarnBy (toId self) PinchHitter
+      ghouls <- replicateM 3 testEnemy
+      for_ ghouls (`spawnAt` location)
+      run
+        $ Simultaneously
+          [ Defeated (toTarget ghoul) (toCardId ghoul) (AbilitySource (toSource bat) 1) [Ghoul]
+          | ghoul <- ghouls
+          ]
+      earned `refShouldBe` True
+
+    it "is earned with the Revised Core printing of Baseball Bat" . gameTest $ \self -> do
+      asReturnToNightOfTheZealot
+      bat <- testAssetWithDef revisedCoreBaseballBat (controlledBy self) self
+      location <- testLocation
+      earned <- didEarnBy (toId self) PinchHitter
       let killWithBat = do
             enemy <- testEnemy
             enemy `spawnAt` location
@@ -244,10 +289,10 @@ spec = describe "Return to the Night of the Zealot achievements" $ do
 
     it "does not pool kills across different bats" . gameTest $ \self -> do
       asReturnToNightOfTheZealot
-      bat1 <- testAssetWithDef Assets.baseballBat id self
-      bat2 <- testAssetWithDef Assets.baseballBat id self
+      bat1 <- testAssetWithDef Assets.baseballBat (controlledBy self) self
+      bat2 <- testAssetWithDef Assets.baseballBat (controlledBy self) self
       location <- testLocation
-      earned <- didEarn PinchHitter
+      earned <- didEarnBy (toId self) PinchHitter
       let killWith bat = do
             enemy <- testEnemy
             enemy `spawnAt` location

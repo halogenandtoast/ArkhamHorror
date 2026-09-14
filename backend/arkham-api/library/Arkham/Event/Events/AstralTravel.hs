@@ -19,9 +19,18 @@ astralTravel = event AstralTravel Cards.astralTravel
 
 instance RunMessage AstralTravel where
   runMessage msg e@(AstralTravel attrs) = runQueueT $ case msg of
-    PlayThisEvent iid eid | eid == toId attrs -> do
+    -- the destination is chosen before costs are paid, so playing this can be
+    -- judged (attacks of opportunity included) knowing where you are going
+    BeforePlayEvent iid eid acId | eid == toId attrs -> do
       locations <- getCanMoveToMatchingLocations iid attrs RevealedLocation
-      chooseOneM iid $ targets locations \lid ->  push $ MoveAction iid lid Free False
+      unless (null locations) do
+        chooseTargetM iid locations \lid -> push $ UpdateEventTarget eid (Just $ toTarget lid)
+      push $ CreatedCost acId
+      pure e
+    PlayThisEvent iid eid | eid == toId attrs -> do
+      for_ attrs.target \case
+        LocationTarget lid -> push $ MoveAction iid lid Free False
+        _ -> pure ()
       requestChaosTokens iid attrs 1
       pure e
     RequestedChaosTokens (isSource attrs -> True) (Just iid) tokens -> do

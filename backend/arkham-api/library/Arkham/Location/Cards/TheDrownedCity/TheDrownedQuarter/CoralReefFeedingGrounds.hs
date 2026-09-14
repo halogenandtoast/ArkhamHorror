@@ -14,7 +14,7 @@ newtype CoralReefFeedingGrounds = CoralReefFeedingGrounds LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 coralReefFeedingGrounds :: LocationCard CoralReefFeedingGrounds
-coralReefFeedingGrounds = location CoralReefFeedingGrounds Cards.coralReefFeedingGrounds 4 (Static 3)
+coralReefFeedingGrounds = location CoralReefFeedingGrounds Cards.coralReefFeedingGrounds 4 (PerPlayer 3)
 
 instance HasAbilities CoralReefFeedingGrounds where
   getAbilities (CoralReefFeedingGrounds a) =
@@ -22,7 +22,9 @@ instance HasAbilities CoralReefFeedingGrounds where
       $ if a.revealed
         then
           [ mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
-          , restricted a 2 Here $ freeReaction $ DiscoverClues #after You (be a) (atLeast 1)
+          , restricted a 2 (Here <> exists (SetAsideCardMatch $ cardIs Enemies.underseaParasite))
+              $ freeReaction
+              $ DiscoverClues #after You (be a) (atLeast 1)
           ]
         else [mkAbility a 3 $ forced $ Enters #when You (be a)]
 

@@ -32,12 +32,12 @@ instance RunMessage DreamingMigration where
       topEnemy <- findTopOfDiscard #enemy
       campaignI18n $ chooseOneM iid do
         unless (null nearest) do
-          labeled' "dreamingMigration.moveNearestEnemy" do
+          labeled "dreamingMigration.moveNearestEnemy" do
             chooseOrRunOneM iid $ targets nearest \enemy -> do
               withLocationOf iid $ enemyMoveTo attrs enemy
               forTarget enemy msg
         for_ topEnemy
-          $ labeled' "dreamingMigration.drawTopmostEnemy"
+          $ labeled "dreamingMigration.drawTopmostEnemy"
           . drawCardFrom iid Deck.EncounterDiscard
       pure t
     ForTarget (EnemyTarget enemy) (FailedThisSkillTest iid (isSource attrs -> True)) -> do

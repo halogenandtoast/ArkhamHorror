@@ -50,19 +50,20 @@ sourceTraits = \case
   EnemyAttackSource _ -> pure mempty
   EnemyDefeatSource _ -> pure mempty
   EnemyMatcherSource _ -> pure mempty
+  TreacheryMatcherSource _ -> pure mempty
   EnemySource eid -> fromMaybe mempty <$> fieldMay EnemyTraits eid
-  EventSource eid -> field EventTraits eid
+  EventSource eid -> fromMaybe mempty <$> fieldMay EventTraits eid
   GameSource -> pure mempty
   InvestigatorSource iid -> field InvestigatorTraits iid
   LocationMatcherSource _ -> pure mempty
-  LocationSource lid -> field LocationTraits lid
+  LocationSource lid -> fromMaybe mempty <$> fieldMay LocationTraits lid
   ProxySource s _ -> sourceTraits s
   IndexedSource _ s -> sourceTraits s
   ResourceSource _ -> pure mempty
   ScenarioSource -> pure mempty
-  SkillSource sid -> field SkillTraits sid
+  SkillSource sid -> fromMaybe mempty <$> fieldMay SkillTraits sid
   SkillTestSource {} -> pure mempty
-  StorySource _ -> pure mempty
+  StorySource sid -> maybe mempty toTraits <$> fieldMay StoryCard sid
   TarotSource _ -> pure mempty
   TestSource traits -> pure traits
   ThisCard -> error "can not get traits"
@@ -248,6 +249,7 @@ sourceMatches s = \case
         InvestigatorSource {} -> True
         LocationMatcherSource {} -> True
         EnemyMatcherSource {} -> True
+        TreacheryMatcherSource {} -> True
         LocationSource {} -> True
         IndexedSource _ s' -> go s'
         ProxySource (CardIdSource _) s' -> go s'
@@ -281,6 +283,10 @@ sourceMatches s = \case
     -- 'Matcher.ScenarioCardSource' below already does.
     let
       check = \case
+        -- Costs are paid under a 'PaymentSource' wrapper, so an encounter card's
+        -- own ability cost (Idle Hands' "take 2 damage") has to unwrap before it
+        -- can read as an encounter card source (issue #5545).
+        PaymentSource source' -> check source'
         AbilitySource source' n | notPlayerAbilityIndex n -> check source'
         UseAbilitySource _ source' n | notPlayerAbilityIndex n -> check source'
         AssetSource aid -> matches aid (Matcher.AssetCardMatch Matcher.IsEncounterCard <> Matcher.UncontrolledAsset)
@@ -351,13 +357,22 @@ sourceMatches s = \case
       AbilitySource s' _ -> sourceMatches s' Matcher.SourceIsPlayerCard
       UseAbilitySource _ s' _ -> sourceMatches s' Matcher.SourceIsPlayerCard
       _ -> pure False
-  Matcher.SourceWithCard cardMatcher -> do
-    mCard <- sourceCard s
-    pure $ case mCard of
-      Just c -> c `cardMatch` cardMatcher
-      Nothing -> False
+  Matcher.SourceWithCard cardMatcher -> sourceCardMatches s cardMatcher
   Matcher.SourceWithExtendedCard cardMatcher ->
     sourceCard s >>= maybe (pure False) (<=~> cardMatcher)
+
+-- Trait checks go through sourceTraits: a card def only carries the unrevealed
+-- side's traits, so a revealed Glyph location looks Glyph-less to cardMatch.
+sourceCardMatches :: HasGame m => Source -> Matcher.CardMatcher -> m Bool
+sourceCardMatches ThisCard _ = pure False
+sourceCardMatches s matcher = go matcher
+ where
+  go = \case
+    Matcher.CardWithTrait t -> member t <$> sourceTraits s
+    Matcher.CardMatches ms -> allM go ms
+    Matcher.CardWithOneOf ms -> anyM go ms
+    Matcher.NotCard m -> not <$> go m
+    m -> maybe False (`cardMatch` m) <$> sourceCard s
 
 sourceCard :: HasGame m => Source -> m (Maybe Card)
 sourceCard = \case

@@ -15,6 +15,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Location (getCanMoveToLocations)
+import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Helpers.Query (getInvestigators, getJustLocationByName, getPlayerCount)
 import Arkham.I18n
@@ -37,8 +38,11 @@ import Arkham.Strategy
 import Arkham.Window (defaultWindows)
 
 newtype PreludeDawnOfTheSecondDay = PreludeDawnOfTheSecondDay ScenarioAttrs
-  deriving anyclass (IsScenario, HasModifiersFor)
+  deriving anyclass IsScenario
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+instance HasModifiersFor PreludeDawnOfTheSecondDay where
+  getModifiersFor (PreludeDawnOfTheSecondDay a) = modifySelect a Anyone [noCodexEntry Theta]
 
 preludeDawnOfTheSecondDay :: Difficulty -> PreludeDawnOfTheSecondDay
 preludeDawnOfTheSecondDay difficulty =
@@ -69,9 +73,9 @@ instance RunMessage PreludeDawnOfTheSecondDay where
       replaceFatigueChaosTokens
       (finishedTheirMeal, others) <-
         partitionM (`matches` investigatorWithRecord FinishedTheirMeal) =<< getInvestigators
-      storyOnly finishedTheirMeal $ buildFlavor $ h "title" >> p "theHemlockCurse"
+      storyOnlyBuild finishedTheirMeal $ h "title" >> p "theHemlockCurse"
       for_ finishedTheirMeal \iid -> addCampaignCardToDeck iid ShuffleIn Skills.theHemlockCurse
-      storyOnly others $ buildFlavor $ h "title" >> p "gnawingHunger"
+      storyOnlyBuild others $ h "title" >> p "gnawingHunger"
       for_ others (`sufferPhysicalTrauma` 1)
       pure s
     ResolveChaosToken token face iid | face `elem` [Cultist, ElderThing] -> do
@@ -133,7 +137,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           simeon <- selectAny $ SetAsideCardMatch $ cardIs Assets.simeonAtwoodDedicatedTroublemaker
           gideon <- selectAny $ SetAsideCardMatch $ cardIs Assets.gideonMizrahSeasonedSailor
           iids <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
-          storyWithChooseOneM' (setTitle "title" >> p.green "body") do
+          storyWithChooseOneM (setTitle "title" >> p.green "body") do
             labeledValidate' (notNull iids) "help" do
               chooseOrRunOneM iid do
                 targets iids \iid' -> moveTo ScenarioSource iid' theCrossroads
@@ -235,11 +239,11 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           savedYourAss <- getHasRecord JudithSavedYourAss
           if savedYourAss
             then do
-              scope "judithPark" $ storyWithChooseOneM' (judithEntry "judith2") do
-                labeled' "iCanHandleMyself" do
+              scope "judithPark" $ storyWithChooseOneM (judithEntry "judith2") do
+                labeled "iCanHandleMyself" do
                   increaseRelationshipLevel JudithPark 1
                   flavor $ judithEntry "judith3"
-                labeled' "thanksForSavingUs" do
+                labeled "thanksForSavingUs" do
                   decreaseRelationshipLevel JudithPark 1
                   flavor $ judithEntry "judith4"
               eachInvestigator \iid' -> gainXp iid' attrs (ikey "xp.judithPark") 1
@@ -263,7 +267,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
               hr
               p.validate (not theoDistractedTheBear) "otherwise"
           chooseOneM iid $ unscoped do
-            labeled' "move" do
+            labeled "move" do
               locations <- getCanMoveToLocations iid source
               chooseTargetM iid locations $ moveTo source iid
             skip_
@@ -306,12 +310,12 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           william <- getRelationshipLevel WilliamHemlock
           river <- getRelationshipLevel RiverHawthorne
           theAtwoodHouse <- getJustLocationByName "The Atwood House"
-          scope "theAtwoodHouse" $ storyWithChooseOneM' (setTitle "title" >> p.green "body") do
+          scope "theAtwoodHouse" $ storyWithChooseOneM (setTitle "title" >> p.green "body") do
             labeledValidate' (william >= 2) "william" do
               createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation theAtwoodHouse)
             labeledValidate' (river >= 2) "river" do
               createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation theAtwoodHouse)
-            labeled' "fight" do
+            labeled "fight" do
               decrementRecordCount WilliamHemlockRelationshipLevel 1
               decrementRecordCount RiverHawthorneRelationshipLevel 1
               flavor $ setTitle "title" >> p.green "body2"
@@ -332,7 +336,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           unless runningAnErrand do
             when (resources >= 3) $ scope "tadsGeneralStore" do
               chooseOneM iid do
-                labeled' "item" do
+                labeled "item" do
                   spendResources iid 3
                   search iid source iid [fromDeck] (basic #item) (PlayFoundNoCost iid 1)
                 unscoped skip_
@@ -404,7 +408,7 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           areas <- getAreasSurveyed
           let survey k = unless (k `elem` areas)
           leadChooseOneM do
-            questionLabeled' "survey"
+            questionLabeled "survey"
             survey NorthPointMine do
               scenarioLabeled' "writtenInRock" "10501-day2" $ afterPrelude WrittenInRock
             survey HemlockHarbor do

@@ -14,7 +14,7 @@ newtype SigilCarvedAlcoveStoryOfResilience = SigilCarvedAlcoveStoryOfResilience 
 
 sigilCarvedAlcoveStoryOfResilience :: LocationCard SigilCarvedAlcoveStoryOfResilience
 sigilCarvedAlcoveStoryOfResilience =
-  location SigilCarvedAlcoveStoryOfResilience Cards.sigilCarvedAlcoveStoryOfResilience 4 (Static 1)
+  location SigilCarvedAlcoveStoryOfResilience Cards.sigilCarvedAlcoveStoryOfResilience 4 (PerPlayer 1)
 
 instance HasAbilities SigilCarvedAlcoveStoryOfResilience where
   getAbilities (SigilCarvedAlcoveStoryOfResilience a) =

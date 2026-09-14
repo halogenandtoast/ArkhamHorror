@@ -4,29 +4,38 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Treachery.CardDefs.Import
 
 illDoItMyself :: CardDef
-illDoItMyself = (weakness "11003" "\"I'll do it myself\"") {cdCardTraits = setFromList [Flaw]}
+illDoItMyself =
+  signature "11001"
+    $ (weakness "11003" "\"I'll do it myself\"") {cdCardTraits = setFromList [Flaw]}
 
 dreamsOfTheFlood :: CardDef
 dreamsOfTheFlood =
-  (weakness "11006" "Dreams of the Flood") {cdCardTraits = setFromList [Omen, Endtimes]}
+  signature "11004"
+    $ (weakness "11006" "Dreams of the Flood") {cdCardTraits = setFromList [Omen, Endtimes]}
 
 glimpseTheVoid :: CardDef
 glimpseTheVoid =
-  (weakness "11010" "Glimpse the Void") {cdCardTraits = setFromList [Blunder, Insight]}
+  signatureOf ["11007", "11008"]
+    $ (weakness "11010" "Glimpse the Void") {cdCardTraits = setFromList [Blunder, Insight]}
 
 confiscation :: CardDef
-confiscation = (weakness "11013" "Confiscation") {cdCardTraits = setFromList [Blunder]}
+confiscation =
+  signature "11011"
+    $ (weakness "11013" "Confiscation") {cdCardTraits = setFromList [Blunder]}
 
 prophecyOfTheEnd :: CardDef
 prophecyOfTheEnd =
-  (weakness "11016" "Prophecy of the End")
-    { cdCardTraits = setFromList [Omen, Endtimes]
-    , cdKeywords = setFromList [Keyword.Surge]
-    , cdCardType = TreacheryType
-    }
+  signature "11014"
+    $ (weakness "11016" "Prophecy of the End")
+      { cdCardTraits = setFromList [Omen, Endtimes]
+      , cdKeywords = setFromList [Keyword.Surge]
+      , cdCardType = TreacheryType
+      }
 
 castAdrift :: CardDef
-castAdrift = (weakness "11019" "Cast Adrift") {cdCardTraits = setFromList [Hardship]}
+castAdrift =
+  signature "11017"
+    $ (weakness "11019" "Cast Adrift") {cdCardTraits = setFromList [Hardship]}
 
 downAndOut :: CardDef
 downAndOut = (basicWeakness "11126" "Down and Out") {cdCardTraits = setFromList [Hardship]}

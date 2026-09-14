@@ -11,13 +11,12 @@ newtype OutAndAway = OutAndAway ActAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 outAndAway :: ActCard OutAndAway
-outAndAway =
-  act (3, A) OutAndAway Cards.outAndAway Nothing
+outAndAway = act (3, A) OutAndAway Cards.outAndAway Nothing
 
 instance HasAbilities OutAndAway where
   getAbilities (OutAndAway x) =
     [ restricted x 1 (youExist hasSealedMoonToken) $ actionAbilityWithCost (HandDiscardCost 2 #any)
-    , restricted x 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
+    , onlyOnce $ restricted x 2 AllUndefeatedInvestigatorsResigned $ Objective $ forced AnyWindow
     ]
 
 instance RunMessage OutAndAway where

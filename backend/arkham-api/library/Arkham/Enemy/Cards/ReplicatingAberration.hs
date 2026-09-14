@@ -16,8 +16,8 @@ import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (RemoveFromGameInsteadOfDiscard), modifySelf)
 
 newtype ReplicatingAberration = ReplicatingAberration EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 mkAberration :: CardDef -> EnemyCard ReplicatingAberration
 mkAberration def = enemy ReplicatingAberration def

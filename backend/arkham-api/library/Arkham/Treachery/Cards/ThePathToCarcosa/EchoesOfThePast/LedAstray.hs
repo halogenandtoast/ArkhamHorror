@@ -26,8 +26,8 @@ instance RunMessage LedAstray where
         then placeDoomOnAgendaAndCheckAdvance 1
         else do
           chooseOneM iid do
-            scenarioI18n $ labeled' "ledAstray.placeClue" do
+            scenarioI18n $ labeled "ledAstray.placeClue" do
               chooseTargetM iid cultists \cultist -> moveTokens attrs iid cultist #clue 1
-            withI18n $ countVar 1 $ labeled' "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
+            withI18n $ countVar 1 $ labeled "placeAgendaDoomCanAdvance" $ placeDoomOnAgendaAndCheckAdvance 1
       pure t
     _ -> LedAstray <$> liftRunMessage msg attrs

@@ -26,10 +26,10 @@ instance RunMessage Infirmary where
       canHealDamage <- canHaveDamageHealed source iid
       canHealHorror <- canHaveHorrorHealed source iid
       chooseOneM iid $ scenarioI18n do
-        labeled' "infirmary.healDamage" do
+        labeled "infirmary.healDamage" do
           when canHealDamage $ healDamage iid source 1
           directHorror iid source 1
-        labeled' "infirmary.healHorror" do
+        labeled "infirmary.healHorror" do
           when canHealHorror $ healHorror iid source 1
           directDamage iid source 1
       pure l

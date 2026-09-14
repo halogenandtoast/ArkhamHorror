@@ -35,7 +35,7 @@ instance RunMessage ZanEtElSettat where
           $ countVar 1
           $ labeledValidate' (actions > 0) "spendActions"
           $ spendActions iid (attrs.ability 1) 1
-        labeled' "zanEtElSettat.increaseFight" do
+        labeled "zanEtElSettat.increaseFight" do
           whenJustM getSkillTest \st ->
             skillTestModifier st.id (attrs.ability 1) st.target (EnemyFight 2)
       pure l

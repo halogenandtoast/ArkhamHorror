@@ -22,7 +22,7 @@ instance HasAbilities RestrictedAccess where
     [ groupLimit PerTestOrAbility
         $ mkAbility a 1
         $ forced
-        $ EnemySpawns #when Anywhere
+        $ EnemySpawns #when AnyPlacement
         $ enemyIs Enemies.huntingHorror
     ]
 

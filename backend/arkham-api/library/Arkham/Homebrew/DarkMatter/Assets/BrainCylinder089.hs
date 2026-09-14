@@ -14,7 +14,7 @@ newtype BrainCylinder089 = BrainCylinder089 AssetAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 brainCylinder089 :: AssetCard BrainCylinder089
-brainCylinder089 = asset BrainCylinder089 Cards.brainCylinder089
+brainCylinder089 = assetWith BrainCylinder089 Cards.brainCylinder089 (healthL ?~ 2)
 
 instance RunMessage BrainCylinder089 where
   runMessage msg (BrainCylinder089 attrs) = BrainCylinder089 <$> runMessage msg attrs

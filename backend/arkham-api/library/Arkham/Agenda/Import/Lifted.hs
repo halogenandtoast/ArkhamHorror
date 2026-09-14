@@ -127,6 +127,8 @@ import Arkham.Message as X (
   pattern RepeatSkillTest,
   pattern SetSkillTestTarget,
   pattern SetSkillTestResolveFailureInvestigator,
+  pattern AddChaosToken,
+  pattern AddChaosTokenForGame,
   pattern BeginSkillTestWithPreMessages,
   pattern BeginSkillTestWithPreMessages',
   pattern BeginSkillTestAfterFast,

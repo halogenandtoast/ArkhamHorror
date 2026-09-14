@@ -19,9 +19,9 @@ instance RunMessage RuinsOfSarkomand where
     ResolveThisStory iid (is attrs -> True) -> do
       sid <- getRandom
       campaignI18n $ chooseOneM iid do
-        labeled' "ruinsOfSarkomand.speakToTheDenizens"
+        labeled "ruinsOfSarkomand.speakToTheDenizens"
           $ beginSkillTest sid iid (attrs.ability 1) iid #intellect (Fixed 3)
-        labeled' "ruinsOfSarkomand.blockTheTrapdoor"
+        labeled "ruinsOfSarkomand.blockTheTrapdoor"
           $ beginSkillTest sid iid (attrs.ability 2) iid #combat (Fixed 3)
       pure s
     PassedThisSkillTest _ (isAbilitySource attrs 1 -> True) -> do

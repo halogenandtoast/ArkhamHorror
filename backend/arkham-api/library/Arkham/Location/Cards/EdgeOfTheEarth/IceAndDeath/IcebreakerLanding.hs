@@ -35,8 +35,8 @@ instance RunMessage IcebreakerLanding where
       oncePerCampaign "icebreakerLanding" do
         chooseOneM iid $ cardI18n $ scope "icebreakerLanding" do
           whenAny (ChaosTokenFaceIs #frost) do
-            labeled' "removeFrost" $ removeChaosToken #frost
-          labeled' "recordSmallRadio"
+            labeled "removeFrost" $ removeChaosToken #frost
+          labeled "recordSmallRadio"
             $ recoverSupply SmallRadio
 
       pure l

@@ -1,7 +1,6 @@
 module Arkham.Treachery.Cards.ReturnToThePathToCarcosa.ReturnToTheUnspeakableOath.CloudedMemory (cloudedMemory) where
 
 import Arkham.Helpers.Log
-import Arkham.I18n
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.ScenarioLogKey
@@ -43,12 +42,12 @@ instance RunMessage CloudedMemory where
           _ -> error "Unknown key"
       chooseOneM iid do
         when (notNull allRemembered) do
-          labeled' "cloudedMemory.forget" do
+          labeled "cloudedMemory.forget" do
             chooseOneM iid do
-              questionLabeled' "cloudedMemory.chooseForget"
+              questionLabeled "cloudedMemory.chooseForget"
               for_ allRemembered \r -> do
-                labeled ("$" <> ikey ("remembered." <> toKey r)) (forget r)
-        labeled' "cloudedMemory.horror" do
+                labeled ("remembered." <> toKey r) (forget r)
+        labeled "cloudedMemory.horror" do
           assignHorror iid attrs 1
           gainSurge attrs
       pure t

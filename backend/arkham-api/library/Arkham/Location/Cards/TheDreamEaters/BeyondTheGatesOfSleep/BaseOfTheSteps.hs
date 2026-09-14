@@ -42,7 +42,7 @@ instance RunMessage BaseOfTheSteps where
       for_ hand \card -> do
         focusCard card do
           chooseOneM iid $ withI18n do
-            labeledI "discard" $ discardCard iid (attrs.ability 1) card
-            countVar 1 $ labeledI "takeHorror" $ assignHorror iid (attrs.ability 1) 1
+            labeled "discard" $ discardCard iid (attrs.ability 1) card
+            countVar 1 $ labeled "takeHorror" $ assignHorror iid (attrs.ability 1) 1
       pure l
     _ -> BaseOfTheSteps <$> liftRunMessage msg attrs

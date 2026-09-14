@@ -28,9 +28,9 @@ instance RunMessage CosmicOmen where
       glyphs <- select $ TreacheryWithTrait Glyph <> InPlayTreachery
       chooseOrRunOneM iid $ scope "cosmicOmen" do
         when (notNull glyphs) do
-          labeled' "shuffleGlyphIntoEncounterDeck" do
+          labeled "shuffleGlyphIntoEncounterDeck" do
             chooseTargetM iid glyphs shuffleBackIntoEncounterDeck
-        labeled' "takeHorrorAndDiscard" do
+        labeled "takeHorrorAndDiscard" do
           directHorror iid attrs 1
           randomDiscard iid attrs
       pure t

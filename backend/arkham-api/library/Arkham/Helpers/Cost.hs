@@ -2,6 +2,7 @@ module Arkham.Helpers.Cost where
 
 import Arkham.Ability
 import Arkham.Action (Action)
+import Arkham.ActiveCost.Base
 import Arkham.Asset.Types (Field (..))
 import Arkham.Asset.Uses
 import Arkham.Campaigns.TheScarletKeys.Concealed.Kind
@@ -114,6 +115,7 @@ hasSkillTestCost = \case
   AsIfAtLocationCost _ x -> hasSkillTestCost x
   NonBlankedCost x -> hasSkillTestCost x
   LabeledCost _ x -> hasSkillTestCost x
+  SourcedCost _ x -> hasSkillTestCost x
   XCost x -> hasSkillTestCost x
   OneOfDistanceCost _ x -> hasSkillTestCost x
   _ -> False
@@ -190,6 +192,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
                 then pure True
                 else getCanAffordCost_ iid source actions windows' canModify $ fold @[Cost] (replicate dist c)
       LabeledCost _ inner -> getCanAffordCost_ iid source actions windows' canModify inner
+      SourcedCost costSource inner ->
+        getCanAffordCost_ iid costSource actions windows' canModify inner
       ShuffleTopOfScenarioDeckIntoYourDeck n deckKey -> do
         cs <- take n <$> getScenarioDeck deckKey
         andM [pure (length cs >= n), getCanShuffleIn iid cs]
@@ -396,6 +400,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
           elem aid <$> select Matcher.AssetReady
         EventTarget eid ->
           elem eid <$> select Matcher.EventReady
+        EnemyTarget eid ->
+          elem eid <$> select Matcher.ReadyEnemy
         _ -> error $ "Not handled " <> show target
       ExhaustAssetCost matcher ->
         selectAny $ Matcher.replaceYouMatcher iid matcher <> Matcher.AssetReady
@@ -586,6 +592,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       DoomCost _ (AgendaMatcherTarget agendaMatcher) _ -> selectAny agendaMatcher
       DoomCost {} -> pure True -- TODO: Make better
       EnemyDoomCost _ enemyMatcher -> selectAny enemyMatcher
+      AssetDoomCost _ assetMatcher -> selectAny (Matcher.replaceYouMatcher iid assetMatcher)
       SkillIconCostMatching n skillTypes matcher -> do
         cards <- mapMaybe (preview _PlayerCard) <$> select matcher
         let countF = if null skillTypes then const True else (`member` insertSet WildIcon skillTypes)
@@ -615,6 +622,9 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         let total = unionsWith (+) $ map (frequencies . cdSkills . toCardDef) cards
         let wildCount = total ^. at #wild . non 0
         pure $ foldr (\x y -> y || x + wildCount >= n) False $ toList $ deleteMap #wild total
+      CalculatedDiscardCombinedCost calc -> do
+        n <- calculate (Matcher.replaceYouMatcher iid calc)
+        getCanAffordCost_ iid source actions windows' canModify (DiscardCombinedCost n)
       DiscardCombinedCost n -> do
         handCards <-
           mapMaybe (preview _PlayerCard)
@@ -655,6 +665,12 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
         tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
         (>= n) <$> countM (\token -> matchChaosToken iid token tokenMatcher) tokens
       SealChaosTokenCost _ -> pure True
+      SealOnInvestigatorCost tokenMatcher -> do
+        tokens <- scenarioFieldMap ScenarioChaosBag chaosBagChaosTokens
+        anyM (\token -> matchChaosToken iid token tokenMatcher) tokens
+      SealChaosTokenOnInvestigatorCost _ -> pure True
+      RevealChaosTokensCost _ _ -> pure True
+      FindEncounterCardCost {} -> can.target.encounterDeck iid
       ReleaseChaosTokensCost n tokenMatcher -> do
         case tokenMatcher of
           Matcher.SealedOnAsset assetMatcher tokenMatcher' -> do
@@ -723,6 +739,9 @@ getSpendableClueCount :: HasGame m => [InvestigatorId] -> m Int
 getSpendableClueCount investigatorIds =
   getSum <$> foldMapM (fmap Sum . Investigator.getSpendableClueCount) investigatorIds
 
+getSpendableClueCountOf :: HasGame m => Matcher.InvestigatorMatcher -> m Int
+getSpendableClueCountOf = select >=> getSpendableClueCount
+
 applyActionCostModifier :: [[Action]] -> [[Action]] -> [Action] -> ModifierType -> Int -> Int
 applyActionCostModifier _ _ actions (ActionCostOf (IsAction action') m) n
   | action' `elem` actions = n + m
@@ -741,3 +760,20 @@ payEffectCost
   :: (Sourceable source, HasCardCode source, ReverseQueue m)
   => InvestigatorId -> source -> Cost -> m ()
 payEffectCost _iid source cost = push $ Msg.PayForAbility (abilityEffect source [] cost) []
+
+{- | Cancelling or ignoring any part of a cost means the cost was not paid, so
+the ability whose cost it was does not resolve its effect. What was already paid
+stays paid -- Idle Hands is still discarded when Deny Existence takes away the 2
+damage, you just do not get the additional action.
+
+Cost payments run under a 'PaymentSource' wrapper naming the active cost that is
+paying (see 'Arkham.ActiveCost.payCost'), which is what lets a "would take
+damage" window be traced back to the cost it belongs to. Anything else is not a
+cost payment and is left alone.
+-}
+cancelCostPaymentFrom :: (HasGame m, HasQueue Msg.Message m) => Source -> m ()
+cancelCostPaymentFrom = \case
+  PaymentSource s -> do
+    costs <- getActiveCosts
+    for_ (find ((== s) . activeCostSource) costs) $ push . Msg.CancelCostPayment . activeCostId
+  _ -> pure ()

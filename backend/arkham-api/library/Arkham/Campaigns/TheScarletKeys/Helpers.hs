@@ -258,7 +258,7 @@ chooseBearer :: ReverseQueue m => CardDef -> m ()
 chooseBearer def = do
   investigators <- allInvestigators
   leadChooseOneM $ campaignI18n do
-    questionLabeled' "chooseBearer"
+    questionLabeled "chooseBearer"
     questionLabeledCard def
     portraits investigators $ setBearer def . KeyWithInvestigator
 

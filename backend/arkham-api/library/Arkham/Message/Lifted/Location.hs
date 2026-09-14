@@ -276,6 +276,15 @@ removeLocation (asId -> lid) = do
           =<< field LocationVictory lid
       else pushAll $ resolve (RemoveLocation lid)
 
+{- | 'removeLocation' without its victory-display diversion. A Victory X location that is being
+shuffled back into a deck has not been overcome, so it must not score.
+-}
+removeLocationWithoutVictory
+  :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
+removeLocationWithoutVictory (asId -> lid) =
+  whenM (matches lid $ IncludeEmptySpace $ not_ LocationBeingRemoved)
+    $ pushAll (resolve (RemoveLocation lid))
+
 {- | Announce that a location has left play, and queue the deletion of the
 location entity *behind* the announcement.
 

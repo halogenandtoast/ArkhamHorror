@@ -3,6 +3,8 @@ module Arkham.Location.Cards.TheDrownedCity.CourtOfTheAncients.GreatLiftActive (
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Direction
+import Arkham.Helpers.Cost (getSpendableClueCount)
+import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.SkillTest (withSkillTest)
 import Arkham.Location.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Cards
 import Arkham.Location.Grid
@@ -76,19 +78,21 @@ instance RunMessage GreatLiftActive where
       dirs <- slideDirections attrs
       chooseOneM iid $ scenarioI18n do
         for_ dirs \dir ->
-          labeled' (slideLabel dir) $ slideGreatLift attrs dir >> doStep (additionalStep dir) s
+          labeled (slideLabel dir) $ slideGreatLift attrs dir >> doStep (additionalStep dir) s
       pure l
     DoStep n (Successful (Action.Investigate, _) iid _ _ _) | Just dir <- stepDirection n -> do
       -- "You may spend 1 [per_investigator] clues to slide up or down one
       -- additional time." This is a single additional slide in the direction
       -- already taken, offered only while the lift has somewhere left to go.
       dirs <- slideDirections attrs
-      when (dir `elem` dirs) do
+      clues <- getSpendableClueCount [iid]
+      cost <- perPlayer 1
+      when (dir `elem` dirs && clues >= cost) do
         chooseOneM iid $ scenarioI18n do
-          labeled' (slideAdditionalLabel dir)
-            $ withCost iid (GroupClueCost (PerPlayer 1) (be attrs))
+          labeled (slideAdditionalLabel dir)
+            $ withCost iid (ClueCost (PerPlayer 1))
             $ slideGreatLift attrs dir
-          labeled' "greatLift.doNotSlide" nothing
+          labeled "greatLift.doNotSlide" nothing
       pure l
     _ -> GreatLiftActive <$> liftRunMessage msg attrs
 

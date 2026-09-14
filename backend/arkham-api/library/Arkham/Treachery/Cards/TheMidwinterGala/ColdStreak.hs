@@ -22,7 +22,7 @@ instance RunMessage ColdStreak where
       let need = 4 - lost
       loseResources iid attrs lost
       repeated need $ chooseOneM iid $ withI18n do
-        countVar 1 $ labeled' "takeDamage" $ assignDamage iid attrs 1
-        countVar 1 $ labeled' "takeHorror" $ assignHorror iid attrs 1
+        countVar 1 $ labeled "takeDamage" $ assignDamage iid attrs 1
+        countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
       pure t
     _ -> ColdStreak <$> liftRunMessage msg attrs

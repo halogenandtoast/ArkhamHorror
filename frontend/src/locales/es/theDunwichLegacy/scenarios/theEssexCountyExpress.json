@@ -1,0 +1,56 @@
+{
+  "heading": "Escenario III",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X es el número del Plan actual.",
+      "cultist": "-1. Si fracasas y es tu turno, pierde todas las acciones restantes y termina tu turno inmediatamente.",
+      "tablet": "-2. Añade 1 ficha de perdición al enemigo Sectario más cercano.",
+      "elderThing": "-3. Si fracasas, elige y descarta una carta de tu mano."
+    },
+    "hardExpert": {
+      "skull": "-X. X es 1 más que el número del Plan actual.",
+      "cultist": "Revela otra ficha. Si fracasas y es tu turno, pierde todas las acciones restantes y termina tu turno inmediatamente.",
+      "tablet": "-4. Añade 1 ficha de perdición a cada enemigo Sectario en juego.",
+      "elderThing": "-3. Si fracasas, elige y descarta una carta de tu mano por cada punto que te faltó para tener éxito."
+    }
+  },
+  "intro": {
+    "title": "Escenario III: El Essex County Express",
+    "body": "<p>Los recientes sucesos en el museo os han obligado a reevaluar el relato de Armitage sobre Dunwich. No puede ser coincidencia: Wilbur Whateley, el Necronomicón, la criatura de Dunwich y las personas y criaturas que atacaron aquí en Arkham: todo debe estar conectado. Ahora estáis seguros de adónde debéis ir: la solitaria y lúgubre aldea de Dunwich.</p><p>Consideráis contar a la Policía Estatal de Massachusetts lo que sabéis, pero las consecuencias negativas superan la posible ganancia. Dada la naturaleza de vuestro relato, probablemente lo desecharían como un engaño absurdo. Peor aún, podrían encerraros. Al fin y al cabo, estuvisteis en un local clandestino ilegal, y también os colasteis en el museo. En su lugar, decidís ir a Dunwich vosotros mismos para investigar más.</p><p>Empacáis todo lo que creéis que podríais necesitar y conseguís descansar algo por la noche. Por la mañana, os dirigís a la estación de tren del Barrio Norte y compráis un billete de expreso de última hora. Dunwich está a varias horas en tren hacia el noroeste, a lo largo del valle del río Miskatonic. No hay estación de tren en Dunwich, pero conseguís telefonear a uno de los conocidos de Armitage en la pequeña aldea: un hombre llamado Zebulon Whateley que estuvo presente durante los sucesos de hace varios meses.</p><p>Las notas de Armitage indican que la familia Whateley se extiende por muchas ramas, algunas decadentes y sin escrúpulos, otras «no corrompidas» o no tocadas por ritos infames y diabólicos. Según Armitage, la rama de Zebulon se situaba en algún punto entre los Whateley corrompidos y los no corrompidos, que conocía las tradiciones de sus antepasados, pero no estaba corrompido por ellas. Acepta recogiros en la estación más cercana y llevaros al pueblo.</p><p>Cuando el tren parte de Arkham, sentís que os alcanzan los sucesos de la noche anterior, y os invade el agotamiento. Pero antes de que podáis llegar a salvo a vuestro destino, el vagón tiembla y se sacude de pronto, sacándoos de vuestro ensueño. El tren chirría hasta detenerse con violencia, y oís un traqueteo a vuestra espalda…</p>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *El Essex County Express*, *El Más Allá*, *Miedo paralizante*, *Males ancestrales*, *Secta oscura*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/the-essex-county-express.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/striking-fear.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/dark-cult.png' /></section>",
+    "placeLocations": "Pon en juego al azar uno de los tres Lugares Locomotora. Retira del juego las demás versiones de Locomotora. A continuación, pon en juego al azar seis de los ocho Lugares Vagón, en una línea recta a la izquierda de la Locomotora. Retira del juego los dos Lugares Vagón restantes.",
+    "revealTrainCar": "Revela el Vagón más a la izquierda. Cada investigador comienza la partida en ese Lugar. (Si ese Lugar tiene un efecto «obligado» que se desencadena al entrar en ese Lugar, ignóralo.)",
+    "setAside": "Deja aparte las 4 copias de A través del espacio y el tiempo, fuera de juego.",
+    "adjustChaosBag": "Según tu nivel de dificultad, añade las siguientes fichas de caos a la bolsa de caos, durante el resto de la campaña:<div class='columns'><ul><li>_Fácil_: -2</li><li>_Normal_: -3</li></ul><ul><li>_Difícil_: -4</li><li>_Experto_: -5</li></ul></div>"
+  },
+  "moving": {
+    "title": "Moverse en el tren: «izquierda» y «derecha»",
+    "body": "<p class='basic'>Durante este escenario, los Lugares se alinean de izquierda a derecha, con la Locomotora como el Lugar más a la derecha. Cuando un efecto de carta se refiere a «el Lugar de la izquierda» o «el Lugar de la derecha», se refiere al Lugar inmediatamente a la izquierda o a la derecha de tu Lugar.</p><p class='basic'>Cualquier efecto de carta que haga referencia a una dirección (izquierda o derecha) debe interpretarse desde la perspectiva del diagrama de la página anterior.</p>"
+  },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.theEssexCountyExpress.moving.title",
+      "body": "@:theDunwichLegacy.theEssexCountyExpress.moving.body"
+    }
+  ],
+  "xp": {
+    "bonus": "Obtuvo una visión del cosmos"
+  },
+  "resolutions": {
+    "defeat": "<div class='resolution'><p class='basic'>_Antes de resolver cualquier otra resolución, si al menos 1 investigador fue derrotado_: Los investigadores derrotados leen primero _Derrota del investigador_.</p><p>_Derrota del investigador_: Tu experiencia más allá del portal es a la vez aterradora e imposible de recordar con claridad. Un espectáculo hipnótico de luces, sensaciones de otro mundo y geometría alterada danza en los bordes deshilachados de tu mente. Una voz ultraterrena del más allá resuena en tus oídos, su significado un enigma. Cuando despiertas, te encuentras en el bosque, a varios kilómetros del río Miskatonic. Te rodean vagones destruidos. Están aplastados como por un impacto severo; también están podridos, como si años de óxido y miseria se los hubieran reclamado. No hay rastro de los demás pasajeros.</p><ul><li>Cada investigador que fue derrotado ha adquirido la Debilidad A través del espacio y el tiempo y debe añadir 1 copia a su mazo. Esta carta no cuenta para el tamaño de mazo de ese investigador.</li><li>Cada investigador que fue derrotado obtiene 1 de experiencia adicional, pues su experiencia más allá del portal le otorga una visión del cosmos.</li><li>Si un investigador con El Necronomicón (*Traducción de Olaus Wormius*) en su mazo fue derrotado, en tu Registro de campaña anota que el Necronomicón fue robado. El Necronomicón (*Traducción de Olaus Wormius*) debe retirarse del mazo de ese investigador.</li><li>Si un investigador con la carta Dr. Henry Armitage, la carta Profesor Warren Rice o la carta Dr. Francis Morgan en su mazo fue derrotado, en tu Registro de campaña anota que el personaje en cuestión *fue secuestrado*. La carta asociada debe retirarse del mazo de ese investigador.</li><li>Si no se alcanzó ninguna resolución (cada investigador fue derrotado): Ve a la _Resolución 2_.</li></ul></div>",
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: Respiráis aliviados cuando el portal tras el tren se colapsa inofensivamente sobre sí mismo. Los pocos pasajeros que sobrevivieron a la prueba parecen incapaces de comprender lo que acaba de ocurrir. Un pasajero menciona «una tubería que reventó en el vagón trasero», y eso se convierte rápidamente en la explicación para los inocentes e ignorantes, quienes no pueden o no quieren ahondar más en el misterio. Vosotros, en cambio, sabéis más… aunque, a toro pasado, ojalá no lo supierais.</p><ul><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2 (¡lee primero Derrota del investigador!)_: Conmocionados, empezáis a caminar junto a las vías, dirigiéndoos hacia Dunwich.</p><ul><li>En tu Registro de campaña, anota que *los investigadores se retrasaron de camino a Dunwich*.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    }
+  },
+  "label": {
+    "dodge": "Prueba {'{'}agility{'}'} (3) para intentar esquivar a la criatura. Si fracasas, saltas demasiado lejos y apenas te agarras al costado del tren, colgando por tu vida. Aunque consigues subirte, la experiencia es aterradora. Sufres 1 trauma mental.",
+    "endure": "Prueba {'{'}combat{'}'} (3) para intentar soportar el calor extremo de la criatura. Si fracasas, la criatura te atraviesa y el calor te quema. Sufres 1 trauma físico."
+  }
+}

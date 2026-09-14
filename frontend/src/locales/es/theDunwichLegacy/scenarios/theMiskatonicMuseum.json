@@ -1,0 +1,81 @@
+{
+  "heading": "Escenario II",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 (-3 en su lugar si el Horror cazador está en tu Lugar.)",
+      "cultist": "-1. Si fracasas, busca el Horror cazador en el mazo de Encuentro, la pila de descartes y el vacío, y genéralo en tu Lugar, si es posible.",
+      "tablet": "-2. Devuelve 1 de tus pistas a tu Lugar actual.",
+      "elderThing": "-3. Si fracasas, descarta un apoyo que controles."
+    },
+    "hardExpert": {
+      "skull": "-2 (-4 en su lugar si el Horror cazador está en tu Lugar.)",
+      "cultist": "-3. Si fracasas, busca el Horror cazador en el mazo de Encuentro, la pila de descartes y el vacío, y genéralo en tu Lugar, si es posible.",
+      "tablet": "-4. Si el Horror cazador está en tu Lugar, te ataca inmediatamente.",
+      "elderThing": "-5. Si fracasas, descarta un apoyo que controles."
+    }
+  },
+  "intro": {
+    "title": "Escenario II: El museo Miskatonic",
+    "body": "<p>Hace varios meses, Armitage y sus colegas detuvieron a un horror desatado que asolaba Dunwich, un pueblo perdido a varias horas al noroeste de Arkham. Al principio imaginas a esa bestia como un oso rabioso, o peor, pero la descripción del profesor pinta un cuadro distinto.</p><p>Todo comenzó cuando un hombre llamado Wilbur Whateley entró en la Biblioteca Orne buscando la traducción latina de Olaus Wormius de un libro llamado el Necronomicón. Wilbur ya poseía una traducción inglesa ajada del Dr. John Dee, pero no le bastaba para sus propósitos. Armitage lo despachó, temiendo para qué querría el extraño hombre aquel libro. Whateley regresó en secreto, con la esperanza de robarlo, pero fue atacado por un sabueso que guardaba la universidad. Armitage, Rice y Morgan descubrieron más tarde el cuerpo de Whateley. La descripción del cadáver nauseabundo —semiantropomorfo y cubierto de pelo, con una piel correosa y tentáculos verdegrisáceos— os hace preguntaros si Whateley era realmente humano.</p>",
+    "proceedToPart1": "<div class='basic right'><p>Consulta el Registro de campaña. Si *el Dr. Henry Armitage fue secuestrado*:</p><p>Procede a la _Parte 1_</p></div>",
+    "proceedToPart2": "<div class='basic right'><p>Si *los investigadores rescataron al Dr. Henry Armitage*:</p><p>Pasa a la _Parte 2_.</p></div>",
+    "part1": {
+      "title": "Escenario II: El museo Miskatonic",
+      "body": "<p>_Parte 1_: Las notas escritas por el Dr. Armitage en el diario subrayan el deseo de Whateley de hacerse con el Necronomicón para algún terrible propósito. Conforme leéis, parece que el Dr. Armitage llevó el ejemplar de la universidad a Harold Walsted —el conservador del Museo Miskatonic— para guardarlo en la Sala restringida del museo. Aunque os preocupa vuestro mentor, os preocupa igualmente que los secuestradores de Armitage puedan hacerse con este Necronomicón. Decidís ir al museo para impedir que lo consigan.</p><p class='basic right'>Procede a la _Preparación_.</p>"
+    },
+    "part2": {
+      "title": "Escenario II: El museo Miskatonic",
+      "body": "<p>_Parte 2_: «Mis colegas y yo nos apresuramos a dejar atrás aquella prueba», dice Armitage con un suspiro. «Pero parece que las cosas no se han resuelto del todo. Os contaré el resto más tarde, pero por ahora es imprescindible que nos hagamos con ese ejemplar del Necronomicón. Si mis instintos no fallan, los asaltantes que habéis encontrado lo estarán buscando. Después de todo lo ocurrido, no me sentí seguro dejándolo en la biblioteca, así que se lo llevé a mi buen amigo Harold Walsted. Es el actual conservador del Museo Miskatonic. Pensé que estaría a salvo en la Sala restringida del museo, pero ahora ya no estoy tan seguro. ¡Debéis recuperarlo a toda costa! Temo terriblemente lo que podrían hacer con los ritos contenidos en sus páginas…»</p><p class='basic right'>Procede a la _Preparación_.</p>"
+    }
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *El museo Miskatonic*, *Mala suerte*, *Brujería*, *El Más Allá*, *Frío glacial* y *Puertas cerradas*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/the-miskatonic-museum.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/chilling-cold.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+    "placeLocations": "Pon en juego al azar uno de los dos Lugares Oficina de administración y uno de los dos Lugares Oficina de seguridad. Retira del juego las demás versiones de Oficina de administración y Oficina de seguridad. A continuación, pon en juego los Lugares Entrada del museo y Salas del museo. Cada investigador comienza la partida en la Entrada del museo.",
+    "exhibitDeck": {
+      "instructions": "Deja aparte los 6 Lugares «Sala de exposiciones» como un «mazo de Exposiciones» separado. Para ello, realiza lo siguiente:",
+      "bottom": "Baraja juntas la Sala de exposiciones (*Sala restringida*) y otras 2 Salas de exposiciones al azar para formar las 3 cartas inferiores del mazo de Exposiciones, con el lado no revelado boca arriba.",
+      "top": "A continuación, coloca las otras 3 Salas de exposiciones encima, en un orden aleatorio. Las 6 cartas del mazo de Exposiciones deben mostrar sólo el lado no revelado, de modo que los jugadores no sepan cuál es la Sala de exposiciones (*Sala restringida*)."
+    },
+    "setAside": "Deja aparte las siguientes cartas, fuera de juego: Harold Walsted, Adam Lynch, El Necronomicón (*Traducción de Olaus Wormius*) y Engendrado en las sombras."
+  },
+  "theVoid": {
+    "title": "«El vacío»",
+    "body": "Algunas cartas de este escenario hacen referencia a un área llamada «el vacío». El vacío es un área fuera de juego junto al mazo de actos y planes a la que el enemigo Horror cazador puede entrar y salir mediante efectos de cartas. Mientras el Horror cazador está en el vacío, se considera fuera de juego y no puede verse afectado por cartas de jugador ni por acciones de investigadores."
+  },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.theMiskatonicMuseum.theVoid.title",
+      "body": "@:theDunwichLegacy.theMiskatonicMuseum.theVoid.body"
+    }
+  ],
+  "resolutions": {
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'><p>_Si no se alcanzó ninguna resolución (cada investigador abandonó o fue derrotado):_ Fuera lo que fuese aquella criatura del museo, no tuvisteis ni la voluntad ni las herramientas para destruirla. Parece que debéis abandonar toda esperanza de recuperar el Necronomicón. Aun así, hay otros que dependen de vosotros. Reuniendo valor, os preparáis para la siguiente tarea.</p><ul><li>En tu Registro de campaña, anota que *los investigadores no consiguieron recuperar el Necronomicón*.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1:_ Mientras exista esta traducción del Necronomicón, habrá hechiceros y otros agentes infames como Whateley buscándola. Al final, sabéis lo que debe hacerse para proteger a la humanidad de las amenazas que habéis visto. Encontráis un cubo de basura y lo llenáis de libros y documentos, arrojando el Necronomicón encima. Hacen falta varias cerillas para prender el contenido del cubo. Las llamas llenan la sala de calor y las sombras reptantes se retiran de su luz. Observáis arder el libro durante un rato, sus páginas convirtiéndose en ceniza. Sólo os queda esperar haber tomado la decisión correcta.</p><ul><li>En tu Registro de campaña, anota que *los investigadores destruyeron el Necronomicón.*</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2:_ El Necronomicón es más que un libro; es una herramienta. En sus páginas hay un caudal de información sobre las fuerzas y criaturas que habéis encontrado. Sabiendo lo útil que podría ser en vuestras empresas, ¿cómo ibais a destruirlo? Además, mientras conservéis el libro a salvo en vuestra posesión, seguiréis frustrando a quienes deseen usarlo con fines infames.</p><ul><li>En tu Registro de campaña, anota que *los investigadores se hicieron cargo del Necronomicón*.</li><li>Los investigadores han obtenido la carta El Necronomicón (*Traducción de Olaus Wormius*). Cualquier investigador puede elegir añadir El Necronomicón (*Traducción de Olaus Wormius*) a su mazo. Esta carta no cuenta para el tamaño de mazo de ese investigador.</li><li>Habéis sucumbido a la tentación del poder. Añade 1 ficha de caos {'{'}elderThing{'}'} a la bolsa de caos durante el resto de la campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    }
+  },
+  "label": {
+    "takeControlOfHaroldWalsted": "Elige un investigador para tomar el control de Harold Walsted.",
+    "r1": "Es demasiado peligroso conservarlo. Tenemos que destruirlo. (-> R1)",
+    "r2": "Es demasiado valioso para destruirlo. Tenemos que mantenerlo a salvo. (-> R2)",
+    "passageIntoTheVeil": {
+      "damage": "Recibe 1 daño directo e inflige 1 daño a cada uno de tus apoyos Aliado"
+    }
+  },
+  "tooltips": {
+    "museumEntrance": {
+      "resign": "«Bah. ¿Qué importancia puede tener un libro, al fin y al cabo?»"
+    },
+    "museumHalls": {
+      "action": "{'{'}action{'}'}: Prueba {'{'}combat{'}'} (5) para intentar echar abajo la puerta del museo. Si tienes éxito, avanza inmediatamente al Acto 1b"
+    }
+  }
+}

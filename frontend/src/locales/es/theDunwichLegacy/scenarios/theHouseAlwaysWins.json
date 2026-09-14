@@ -1,0 +1,81 @@
+{
+  "heading": "Escenario I-B",
+  "remembered": {
+    "hadADrink": "{name} tomó una copa",
+    "cheated": "{name} hizo trampa"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-2. Puedes gastar 2 recursos para tratar esta ficha como un 0, en su lugar.",
+      "cultist": "-3. Si tienes éxito, gana 3 recursos.",
+      "tablet": "-2. Si fracasas, descarta 3 recursos."
+    },
+    "hardExpert": {
+      "skull": "-3. Puedes gastar 3 recursos para tratar esta ficha como un 0, en su lugar.",
+      "cultist": "-3. Si fracasas, descarta 3 recursos.",
+      "tablet": "-2. Descarta 3 recursos."
+    }
+  },
+  "intro": {
+    "title": "Escenario I-B: La casa siempre gana",
+    "body": "<p>El Dr. Armitage os sugirió localizar a su asociado, el Dr. Francis Morgan. No está seguro de si el Dr. Morgan está en problemas, pero no le hace especialmente feliz la compañía que ha elegido su colega. Está en el Clover Club, un notorio garito de apuestas en algún lugar del Centro. Encontrar la ubicación exacta del club no es fácil: tenéis que untar unas cuantas palmas sólo para saber cuál de los restaurantes del Centro sirve de fachada. Ese restaurante es La Bella Luna, un comedor italiano algo exclusivo junto al teatro. Os ponéis vuestras mejores galas y os dirigís allí.</p><p>Frente a La Bella Luna hay un hombre con traje de raya diplomática que os mide de arriba abajo al acercaros. «Disfrutad», dice con una sonrisa de serpiente mientras os abre la puerta del restaurante.</p>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *La casa siempre gana*, *Mala suerte*, *La banda de Naomi*, *Ratas*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/the-house-always-wins.png' /><img src='{setImgPath}/bad-luck.png' /><img src='{setImgPath}/naomis-crew.png' /><img src='{setImgPath}/rats.png' /></section>",
+    "setAsideEncounterSets": "Deja aparte los conjuntos de encuentro *Abominaciones horribles* y *Miedo paralizante*, fuera de juego. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "Pon en juego los Lugares Salón del Clover Club, Bar del Clover Club, Sala de cartas del Clover Club y La Bella Luna. Cada investigador comienza la partida en La Bella Luna.",
+    "placeCloverClubPitBoss": "Pon en juego Jefe de sala del Clover Club en el Salón del Clover Club.",
+    "setAside": "Deja aparte las siguientes cartas, fuera de juego: Pasillo oscurecido, Peter Clover, Dr. Francis Morgan y cada copia de Puerta del pasillo trasero.",
+    "note": "<p class='basic'>_Nota_: Al comienzo de este escenario, el plan 1a otorga a cada enemigo _Criminal_ la palabra clave indiferente, que impide que esos enemigos se enfrenten a ti automáticamente. En algún momento, esos enemigos pueden perder la palabra clave indiferente. Recuerda que los enemigos que ya no son indiferentes se enfrentarán automáticamente a los investigadores en su Lugar, como es habitual.</p>"
+  },
+  "resolutions": {
+    "xp": {
+      "resolution1": "Reflexiona sobre los sucesos de la noche.",
+      "resolution4": "Reflexiona sobre los sucesos de la noche."
+    },
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'><p class='basic'>_Si no se alcanzó ninguna resolución (cada investigador abandonó antes del Acto 3 o fue derrotado)_: A duras penas lograsteis salir del club con vida. Ve a la _Resolución 1._</p></div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: Huís hasta el final de la manzana y os detenéis a recobrar el aliento. Antes de que podáis respirar, el suelo tiembla con un estruendo atronador. La gente sale de sus casas y comercios a ver qué ocurre, y se forma una muchedumbre en la calle. Os abrís paso hasta el frente de la muchedumbre y contempláis horrorizados el edificio del que acabáis de huir minutos antes reducido a escombros. No hay rastro del Dr. Morgan en ninguna parte.</p><ul><li>En tu Registro de campaña, anota que *la banda de O'Bannion tiene una cuenta pendiente con los investigadores.*</li><li>En tu Registro de campaña, anota que *el Dr. Francis Morgan fue secuestrado.*</li><li>Si algún jugador «hizo trampa», añade 1 ficha de caos {'{'}elderThing{'}'} a la bolsa de caos durante el resto de la campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 1 de experiencia al reflexionar sobre los sucesos de la noche.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si este es el primer escenario de la campaña, procede al Escenario I–A: Actividad extraescolar. En caso contrario, procede al Interludio I: El destino de Armitage.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: «¿Qué demonios…?» El Dr. Morgan por fin sale de su aturdimiento mientras os ponéis a salvo. Le preguntáis qué recuerda, y tartamudea y niega con la cabeza. «Todo es una bruma», explica, visiblemente agotado. «¡Estaba teniendo la racha de mi vida! Quizá me tomé un trago de más. Pero esas criaturas… no había visto nada igual desde…» Se queda a medias, y se nota que su mente vuela. Se le abren los ojos al comprender y palidece. «Puede que no esté en la mejor forma, pero os ayudaré con vuestra investigación. Cueste lo que cueste.»</p><ul><li>En tu Registro de campaña, anota que *la banda de O'Bannion tiene una cuenta pendiente con los investigadores*.</li><li>En tu Registro de campaña, anota que *los investigadores rescataron al Dr. Francis Morgan*. Cualquier investigador puede elegir añadir al Dr. Francis Morgan a su mazo. Esta carta no cuenta para el tamaño de mazo de ese investigador.</li><li>Si algún jugador «hizo trampa», añade 1 ficha de caos {'{'}elderThing{'}'} a la bolsa de caos durante el resto de la campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Procede al Escenario I–A: Actividad extraescolar.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3_: Aunque no pudisteis encontrar al Dr. Morgan en el club, el hombre al que rescatasteis os agradece la ayuda. Se presenta como Peter Clover, el dueño del establecimiento que acabáis de dejar. Pese a la situación, mantiene un aire de profesionalidad serena. Mientras os dirigís hacia la calle, un Chrysler B-70 reluciente se detiene junto a vosotros, y una mujer hermosa de largo cabello castaño y ojos entrecerrados desciende. La flanquean hombres de aspecto peligroso que meten las manos bajo la chaqueta al veros. «Peter», dice con un suspiro de alivio, «menos mal, estás bien. ¿He oído que había problemas?» Se vuelve y os clava una mirada mortal. «¿Quiénes son?»</p><p>El Sr. Clover se sacude el chaleco, sin preocuparse. «Naomi, querida, estos son amigos míos. Ellos…» se aclara la garganta. «Me escoltaron fuera del local», explica tras una breve pausa. «Se han ganado nuestra gratitud.» La mujer se cruza de brazos y se toma un momento para mediros antes de sonreír de medio lado.</p><p>«Muy bien entonces. Debo agradeceros que hayáis cuidado de Peter. Ahora iros; nos encargaremos de las cosas desde aquí.» Asiente a los matones que la flanquean y estos os rebasan hacia la entrada trasera del club, sacando armas de bajo los abrigos. No estáis seguros de qué significa «encargarse de las cosas», pero estáis bastante seguros de que no queréis estar aquí cuando empiecen los disparos. Agradecéis a Naomi y a Peter, y os marcháis.</p><ul><li>En tu Registro de campaña, anota que *Naomi cubre las espaldas de los investigadores*.</li><li>En tu Registro de campaña, anota que *el Dr. Francis Morgan fue secuestrado*.</li><li>Si algún jugador «hizo trampa», añade 1 ficha de caos {'{'}elderThing{'}'} a la bolsa de caos durante el resto de la campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Procede al Interludio I: El destino de Armitage.</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Resolución 4",
+      "body": "<div class='resolution'><p>_Resolución 4_: Varios bomberos os sacan de los escombros, y uno de ellos exclama: «¡Tenemos a uno vivo!» Unos cuantos os curan, y la policía os pregunta qué ha ocurrido. Estáis seguros de que no creerían vuestra historia sobre horribles monstruosidades que demolieron el edificio desde dentro. Sin saber qué decir, dais una declaración vaga sobre no recordar mucho. «Os llevamos a Santa María», dice una de las enfermeras, señalando una ambulancia cercana. Sabiendo ahora lo grave que es la situación, os escabullís mientras ella se distrae con algo más entre los escombros…</p><ul><li>En tu Registro de campaña, anota que *la banda de O'Bannion tiene una cuenta pendiente con los investigadores*.</li><li>En tu Registro de campaña, anota que *el Dr. Francis Morgan fue secuestrado*.</li><li>Si algún jugador «hizo trampa», añade 1 ficha de caos {'{'}elderThing{'}'} a la bolsa de caos durante el resto de la campaña.</li><li>Cada investigador sufre 1 trauma físico.</li><li>En tu Registro de campaña, anota que los investigadores estuvieron inconscientes durante varias horas.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 1 de experiencia al reflexionar sobre los sucesos de la noche.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si este es el primer escenario de la campaña, procede al Escenario I–A: Actividad extraescolar. En caso contrario, procede al Interludio I: El destino de Armitage.</li></ul></div>"
+    }
+  },
+  "label": {
+    "skull": {
+      "spend": "Gasta 1 recurso para tratar esta ficha como un 0, en su lugar. | Gasta {count} recursos para tratar esta ficha como un 0, en su lugar.",
+      "doNotSpend": "No gastes recursos"
+    },
+    "cheated": "Recuerda que has «hecho trampa».",
+    "raiseTheStakes": {
+      "place": "Pon Subir la apuesta en juego en tu zona de amenaza"
+    }
+  },
+  "tooltips": {
+    "laBellaLuna": {
+      "resign": "Esto ha sido un fiasco"
+    },
+    "backAlley": {
+      "resign": "¡Podemos salir por aquí!"
+    }
+  },
+  "returnToCloverClubLounge": {
+    "label": {
+      "putIntoPlay": "Ponla en juego",
+      "doNotPutIntoPlay": "No la pongas en juego"
+    }
+  }
+}

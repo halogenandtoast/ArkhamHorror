@@ -1,0 +1,93 @@
+{
+  "heading": "Escenario VII",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 por cada Lugar _Extradimensional_ en juego (máx. -5).",
+      "cultist": "Revela otra ficha. Si fracasas, después de esta prueba de habilidad, descarta cartas de la parte superior del mazo de Encuentro hasta descartar un Lugar. Pon ese Lugar en juego y muévete allí.",
+      "tablet": "-3. Si Yog-Sothoth está en juego, te ataca después de esta prueba de habilidad.",
+      "elderThing": "-X. X es el valor de velo de tu Lugar. Si fracasas y tu Lugar es _Extradimensional_, descártalo."
+    },
+    "hardExpert": {
+      "skull": "-1 por cada Lugar _Extradimensional_ en juego.",
+      "cultist": "Revela otra ficha. Después de esta prueba de habilidad, descarta cartas de la parte superior del mazo de Encuentro hasta descartar un Lugar. Pon ese Lugar en juego y muévete allí.",
+      "tablet": "-5. Si Yog-Sothoth está en juego, te ataca después de esta prueba de habilidad.",
+      "elderThing": "-X. X es el doble del valor de velo de tu Lugar. Si fracasas y tu Lugar es _Extradimensional_, descártalo."
+    }
+  },
+  "intro": {
+    "title": "Escenario VII: Perdidos en el tiempo y el espacio",
+    "body": "<p>Cruzar el portal no se parece a nada que hayáis experimentado. Sentís vuestro cuerpo retorciéndose y distorsionándose, agitado a través de realidades mientras el portal os arrastra hacia su destino último: un lugar más allá del alcance de la imaginación humana.</p><p>De pronto, todo queda en silencio y el caos del viaje se sustituye por una sensación de soledad y pavor. Estáis en un lugar inimaginable, vasto más allá de vuestra capacidad de razonar y además por completo ajeno. El paisaje es surrealista y extraño, la arquitectura imposible. Estáis tan lejos de casa que el hogar se ha convertido en un sueño raído que apenas recordáis. Incluso si encontráis una salida de este lugar atroz, puede que nunca volváis a ser los mismos.</p>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *Perdidos en el tiempo y el espacio*, *Brujería*, *El Más Allá*, *Abominaciones horribles*, *Agentes de Yog-Sothoth*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/lost-in-time-and-space.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
+    "placeLocations": "Pon en juego Otra dimensión. Cada investigador comienza la partida en Otra dimensión.",
+    "setAside": "Deja aparte las siguientes cartas, fuera de juego: El borde del universo, Desgarro a través del tiempo y Yog-Sothoth."
+  },
+  "locationsInTheEncounterDeck": {
+    "title": "Lugares en el mazo de Encuentro",
+    "body": "<p class='basic'>Este escenario incluye varios Lugares de una sola cara que se barajan en el mazo de Encuentro junto con el resto de los conjuntos de encuentro reunidos. Estos Lugares sólo tienen un lado revelado, y tienen un efecto de _Revelación_ que los pone en juego cuando se roban.</p><p class='basic'>Al ponerse en juego, un Lugar de una sola cara se pone en juego con su lado revelado boca arriba, porque no tiene lado no revelado. Por lo demás, funciona como un Lugar normal en todos los demás aspectos.</p>"
+  },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.lostInTimeAndSpace.locationsInTheEncounterDeck.title",
+      "body": "@:theDunwichLegacy.lostInTimeAndSpace.locationsInTheEncounterDeck.body"
+    }
+  ],
+  "resolutions": {
+    "defeated": "<div class='resolution'><p class='basic'>_Antes de resolver cualquier otra resolución, si al menos 1 investigador fue derrotado_: Los investigadores derrotados leen primero _Derrota del investigador_.</p><p>_Derrota del investigador_: ¿De dónde viniste? ¿Por qué estás aquí? ¿Estás soñando, o este lugar es real? Ahora que lo piensas, ¿no has estado aquí antes? O quizá has estado aquí todo el tiempo. Ahora lo recuerdas. Este es tu verdadero hogar. El camino que ahora recorres no es más que un saliente, con muchos más debajo. Sólo tienes que caer y estarás donde perteneces. Un paso más…</p><ul><li>Cada investigador derrotado es _muerto_.</li><li>Si se alcanzó otra resolución, los demás investigadores leen esa resolución.</li><li>Si no se alcanzó ninguna resolución (cada investigador fue derrotado) y los investigadores estaban en el Acto 4 cuando terminó el escenario, ve a la _Resolución 2_.</li><li>Si no se alcanzó ninguna resolución (cada investigador fue derrotado) y los investigadores estaban en el Acto 1, 2 o 3 cuando terminó el escenario, ve a la _Resolución 4_.</li></ul></div>",
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: Tendido de espaldas en un parche de hierba húmeda, te encuentras contemplando con anhelo el cielo nocturno. De algún modo, estás de nuevo en lo alto de la Colina Sentinel, incapaz de recordar exactamente cómo llegaste aquí. El cielo nocturno te hipnotiza. Los segundos se convierten en minutos, y los minutos en horas. Con el tiempo, un grupo de vecinos de Dunwich te encuentra y te pone en pie. «¿Qué ha pasado? ¿Qué haces aquí?», te preguntan, asustados pero curiosos. No parece que encuentres las palabras adecuadas para describir los sucesos que ocurrieron más allá del portal… si es que ocurrieron de verdad. No parece haber rastro de Seth Bishop, de las criaturas contra las que luchasteis antes, ni del portal fantasmagórico y de otro mundo. Pero cada vez que duermes, sueñas, y cuando sueñas, todo regresa de golpe.</p><ul><li>En tu Registro de campaña, anota que *los investigadores cerraron el desgarro en la realidad*.</li><li>Cada investigador sufre 2 trauma físico y 2 trauma mental, pues nunca se recupera del todo del tiempo pasado fuera del reino de la realidad.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 5 de experiencia adicional, pues han salvado al mundo de ser desgarrado.<ul><li>_Experiencia_: {xp}</li></ul></li><li>¡Los investigadores ganan la campaña!</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: Varios aldeanos de Dunwich oyeron el alboroto en la Colina Sentinel y fueron a investigar. Lo que encontraron allí no respondió ninguna de sus preguntas.</p><p>«¿Qué crees que ha pasado?», pregunta un Curtis Whateley asustado mientras examinan la cima. Los demás aldeanos niegan con la cabeza, sin saber qué decir. «Lo último que vi, el cielo se abrió y hubo un destello brillante», dice uno de ellos, mirando el cielo estrellado desde lo alto de la Colina Sentinel.</p><p>«Esos de Arkham no aparecen por ninguna parte», añade Curtis, mirando el altar de piedra agrietado. «Ni siquiera un rastro. El Sr. Bishop y sus amigos, ahora, eso es otra historia.» El joven señala varios cadáveres en el suelo.</p><p>«¿Crees que deberíamos avisar a esos polis de Aylesbury?»</p><p>«¿Para que se rían de nosotros otra vez?», escupe Curtis. «Nunca van a creernos nada de todo esto de todos modos.» Mira el altar de piedra, inquieto. «Mejor olvidar el asunto. Venga, enterremos a los muertos y salgamos de aquí.»</p><ul><li>Los investigadores ganan la campaña… y nunca se les vuelve a ver ni oír.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3_: La criatura estalla en una furia cósmica de sonido, color y espacio distorsionado, arrojándoos atrás y lejos de ella. Contempláis horrorizados cómo uno de sus brazos rasga el tejido del mundo, y su forma amorfa se embuda a través del desgarro, arrastrando consigo los hilos del mundo. Intentáis aferraros a algo, pero sois succionados inexorablemente hacia el desgarro. Sentís como si vuestro cuerpo se estirara y vuestra mente se aplastara. Entonces, todo se vuelve negro.</p><ul><li>En tu Registro de campaña, anota que *Yog-Sothoth ha huido a otra dimensión*.</li><li>Cada investigador es _muerto_.</li><li>Los investigadores ganan la campaña… y nunca se les vuelve a ver ni oír.</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Resolución 4",
+      "body": "<div class='resolution'><p>_Resolución 4_: Los hechiceros de Dunwich, en busca de poder arcano más allá de este reino, han logrado lo que Wilbur y el Viejo Whateley no pudieron. Mediante sacrificio de sangre y experimentos indescriptibles, el oscuro poder que buscaban los hechiceros está ahora a su alcance. Sin embargo, nunca tendrán la oportunidad de blandirlo de verdad. Al implorar al padre de Wilbur conocimiento, han atraído a la criatura desde su reino extradimensional. Yog-Sothoth emerge del desgarro abierto sobre la Colina Sentinel, cubriendo el cielo y envolviendo el mundo. Ahora ha llegado a la Tierra, y reina donde antaño pisó la humanidad.</p><ul><li>En tu Registro de campaña, anota que *Yog-Sothoth rasgó las barreras entre mundos y se fundió con toda la realidad*.</li><li>Cada investigador superviviente es conducido a la _locura_.</li><li>Los investigadores pierden la campaña.</li></ul></div>"
+    },
+    "xp": {
+      "bonus": "Salvó al mundo de ser desgarrado"
+    }
+  },
+  "tooltips": {
+    "tearThroughTime": {
+      "resign": "Encuentras un nuevo camino y esperas que lleve de vuelta a un lugar seguro."
+    }
+  },
+  "label": {
+    "yogSothoth": "Descarta las {cards} cartas superiores y recibe {horror} horror",
+    "tearThroughSpace": {
+      "placeDoom": "Coloca 1 perdición sobre Desgarro a través del espacio",
+      "discard": "Descarta Desgarro a través del espacio"
+    },
+    "endlessBridge": {
+      "placeDoom": "Coloca 1 perdición sobre Puente interminable",
+      "discard": "Descarta Puente interminable"
+    },
+    "sethBishop": {
+      "move": "Muévete a Otra dimensión después de este ataque",
+      "damage": "Seth Bishop inflige +2 daño en este ataque"
+    },
+    "indecipherableStairs": {
+      "discard": "Descarta Escaleras indescifrables"
+    },
+    "toweringLuminosity": {
+      "doom": "Coloca 1 perdición sobre Luminosidad imponente",
+      "flipClue": "Dale la vuelta a 1 pista sobre Luminosidad imponente a su lado de perdición",
+      "discard": "Descarta Luminosidad imponente"
+    },
+    "unstableVortex": {
+      "chooseTearThroughSpace": "Elige un desgarro a través del espacio para descartar",
+      "shuffle": "Baraja Vórtice inestable en el mazo de Encuentro"
+    },
+    "dimensionalDoorway": {
+      "shuffle": "Baraja Portal dimensional en el mazo de Encuentro"
+    }
+  }
+}

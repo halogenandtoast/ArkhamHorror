@@ -204,6 +204,11 @@ install-hooks:
 	@echo "Pre-commit hook installed."
 .PHONY: install-hooks
 
+## Start the local dev stack: arkham-api + vite, images served from frontend/public
+dev.up:
+	@./dev.up
+.PHONY: dev.up
+
 ## Count lines of code
 count:
 	cloc . --include-lang=Haskell,TypeScript,Vue --exclude-dir=node_modules,dist,.stack-work --timeout=0

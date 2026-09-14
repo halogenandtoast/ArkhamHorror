@@ -1,0 +1,276 @@
+#!/usr/bin/env bash
+#
+# dev.up -- bring up the local development stack, both halves of it:
+#
+#   api       cd backend  && make api.watch     (arkham-api on :3002)
+#   frontend  cd frontend && npm run dev        (vite on :8080, proxies /api)
+#
+# VITE_ASSET_HOST is exported *empty* rather than left alone, because
+# frontend/src/stores/site_settings.ts only falls back to the CDN when it is
+# undefined -- defined-but-empty is what makes the frontend load images out of
+# frontend/public. The process environment beats frontend/.env*, so this works
+# whether or not you keep a .env.development.local around.
+#
+# DEBUG, when set, is handed to the API as its debug level: Arkham.Debug reads
+# it as an Int, 1 (InfoLevel) being the useful one and 0/unset silent. It is
+# kept out of vite's environment on purpose, where it would only switch on the
+# npm `debug` package.
+#
+# Usage:
+#   ./dev.up                              # both servers, CDN off
+#   DEBUG=1 ./dev.up                      # ... plus API info logging
+#   API_TARGET=api.watch.log ./dev.up     # ... tee the build into .claude/build.log
+#   API_TARGET=api.watch.entr ./dev.up    # entr drives the rebuilds, but note
+#                                         # that it builds nothing until the
+#                                         # first edit, so the API only comes
+#                                         # up once you touch a file
+#
+# Other knobs: API_PORT, WEB_PORT, LOG_DIR, API_WAIT, WEB_WAIT.
+# Ctrl-C stops both servers.
+
+set -uo pipefail
+set -m # every child gets its own process group, so teardown kills its whole tree
+
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+API_TARGET=${API_TARGET:-api.watch}
+API_PORT=${API_PORT:-3002} # backend/arkham-api/config/settings.yml default
+WEB_PORT=${WEB_PORT:-8080} # frontend/vite.config.js
+LOG_DIR=${LOG_DIR:-$ROOT/tmp/dev}
+API_WAIT=${API_WAIT:-1800} # seconds to wait on the API (a cold build is slow)
+WEB_WAIT=${WEB_WAIT:-180}
+
+if [ -t 1 ]; then
+  BOLD=$(tput bold 2>/dev/null) || BOLD=
+  RED=$(tput setaf 1 2>/dev/null) || RED=
+  GREEN=$(tput setaf 2 2>/dev/null) || GREEN=
+  YELLOW=$(tput setaf 3 2>/dev/null) || YELLOW=
+  BLUE=$(tput setaf 4 2>/dev/null) || BLUE=
+  MAGENTA=$(tput setaf 5 2>/dev/null) || MAGENTA=
+  CYAN=$(tput setaf 6 2>/dev/null) || CYAN=
+  RESET=$(tput sgr0 2>/dev/null) || RESET=
+else
+  BOLD= RED= GREEN= YELLOW= BLUE= MAGENTA= CYAN= RESET=
+fi
+
+step() { printf '%s>>%s %s\n' "$BOLD" "$RESET" "$*"; }
+ok() { printf '   %s+%s %s\n' "$GREEN" "$RESET" "$*"; }
+warn() { printf '   %s!%s %s\n' "$YELLOW" "$RESET" "$*"; }
+note() { printf '   %s-%s %s\n' "$BLUE" "$RESET" "$*"; }
+die() {
+  printf '   %sx%s %s\n' "$RED" "$RESET" "$*" >&2
+  exit 1
+}
+
+api_job=
+web_job=
+stopping=
+
+cleanup() {
+  [ -n "$stopping" ] && return
+  stopping=1
+  trap '' INT TERM
+  set +m # no "[1]+ Terminated" notices on the way out
+  printf '\n'
+  step "stopping"
+  for job in $web_job $api_job; do
+    kill -TERM -"$job" 2>/dev/null
+  done
+  # api.watch detaches the server with `&` from inside stack --exec; the group
+  # kill above should reach it, but make sure it is gone before we return.
+  [ -n "$api_job" ] && pkill -x arkham-api 2>/dev/null
+  wait 2>/dev/null
+  ok "done"
+}
+
+trap 'cleanup; exit 130' INT
+trap 'cleanup; exit 143' TERM
+
+# Names whichever server has gone away, so neither the readiness wait nor the
+# supervisor keeps going on half a stack.
+dead_job() {
+  if [ -n "$api_job" ] && ! kill -0 "$api_job" 2>/dev/null; then
+    echo api
+    return 0
+  fi
+  if [ -n "$web_job" ] && ! kill -0 "$web_job" 2>/dev/null; then
+    echo web
+    return 0
+  fi
+  return 1
+}
+
+# ---------------------------------------------------------------- preflight
+
+step "checking prerequisites"
+
+missing=
+for cmd in make stack npm node curl; do
+  command -v "$cmd" >/dev/null 2>&1 || missing="$missing $cmd"
+done
+[ -n "$missing" ] && die "not on PATH:$missing"
+ok "make, stack, npm, node, curl"
+
+if [ ! -d "$ROOT/frontend/node_modules" ]; then
+  step "installing frontend dependencies (first run)"
+  (cd "$ROOT/frontend" && npm install) || die "npm install failed"
+fi
+
+listeners() { lsof -nP -tiTCP:"$1" -sTCP:LISTEN 2>/dev/null | tr '\n' ' '; }
+
+held=$(listeners "$API_PORT")
+if [ -n "$held" ]; then
+  owner=$(ps -o comm= -p $held 2>/dev/null | sed 's#.*/##' | sort -u | tr '\n' ' ')
+  case "$owner" in
+    *arkham-api*)
+      warn "an arkham-api already holds :$API_PORT (pid ${held% }) -- stopping it, so the readiness check below waits for *this* build"
+      pkill -x arkham-api 2>/dev/null
+      sleep 1
+      ;;
+    *) die "port $API_PORT is held by ${owner:-an unknown process} (pid ${held% }); stop it or set API_PORT" ;;
+  esac
+fi
+
+held=$(listeners "$WEB_PORT")
+[ -n "$held" ] && die "port $WEB_PORT is in use (pid ${held% }); stop it or set WEB_PORT"
+ok "ports $API_PORT and $WEB_PORT are free"
+
+if [ "$API_PORT" != 3002 ]; then
+  warn "vite proxies /api to 127.0.0.1:3002 (frontend/vite.config.js), so API_PORT=$API_PORT will not be reached through the frontend"
+fi
+
+db_url=${DATABASE_URL:-postgres://localhost:5432/arkham-horror-backend}
+if command -v psql >/dev/null 2>&1; then
+  if psql "$db_url" -Atqc 'select 1' >/dev/null 2>&1; then
+    ok "postgres answering at $db_url"
+  else
+    warn "cannot connect to $db_url -- the API will not boot; see 'Database' in README.md"
+  fi
+else
+  note "psql not installed, skipping the database check"
+fi
+
+cards=$ROOT/frontend/public/img/arkham/cards
+if [ -n "$(find "$cards" -type f -print -quit 2>/dev/null)" ]; then
+  ok "local card images present"
+else
+  warn "no card images under frontend/public/img/arkham/cards -- with VITE_ASSET_HOST empty they will 404; run 'make fetch-cards' (~755MB), or run vite directly to use the CDN"
+fi
+
+api_env="PORT=$API_PORT"
+if [ -n "${DEBUG:-}" ]; then
+  case $DEBUG in
+    *[!0-9]*) warn "DEBUG=$DEBUG is not an integer; Arkham.Debug reads DEBUG as a level and will read this as 0 (silent) -- use DEBUG=1 for info" ;;
+    *) ok "API debug level $DEBUG" ;;
+  esac
+  api_env="$api_env DEBUG=$DEBUG"
+fi
+
+# ----------------------------------------------------------------- launch
+
+mkdir -p "$LOG_DIR" || die "cannot create $LOG_DIR"
+api_log=$LOG_DIR/api.log
+web_log=$LOG_DIR/web.log
+
+# Label each server's output and keep a copy of it on disk.
+stream() { # stream <label> <color> <logfile>
+  tee "$3" | awk -v p="$2[$1]$RESET " '{ print p $0; fflush() }'
+}
+
+api_args=(--no-print-directory "$API_TARGET" "API_ENV=$api_env")
+
+step "starting the api: make $API_TARGET ($api_env) -> $api_log"
+(
+  cd "$ROOT/backend" || exit 1
+  # stack --file-watch reads stdin (enter rebuilds, q quits), so it needs one
+  # that stays open: a closed stdin kills it outright ("hGetLine: end of file")
+  # and reading the terminal from its own process group would stop it with
+  # SIGTTIN. A pipe that never delivers anything keeps it blocked and happy.
+  make "${api_args[@]}" < <(exec tail -f /dev/null) 2>&1 | stream api "$CYAN" "$api_log"
+) &
+api_job=$!
+
+step "starting the frontend: npm run dev, VITE_ASSET_HOST empty -> $web_log"
+(
+  cd "$ROOT/frontend" || exit 1
+  # < /dev/null keeps vite from binding its keyboard shortcuts: reading the
+  # terminal from a background process group would stop it with SIGTTIN.
+  env -u DEBUG VITE_ASSET_HOST= npm run dev -- --port "$WEB_PORT" --strictPort </dev/null 2>&1 |
+    stream web "$MAGENTA" "$web_log"
+) &
+web_job=$!
+
+# -------------------------------------------------------------- readiness
+
+# 0 = answering, 1 = something exited, 2 = still quiet after <timeout>
+wait_for() { # wait_for <label> <url> <timeout>
+  local label=$1 url=$2 timeout=$3 start=$SECONDS elapsed=0 announced=0 gone=
+  while :; do
+    if curl -sfo /dev/null --max-time 2 "$url"; then
+      ok "$label up after $((SECONDS - start))s -- $url"
+      return 0
+    fi
+    if gone=$(dead_job); then
+      warn "$gone exited before the stack came up -- check its output above"
+      return 1
+    fi
+    elapsed=$((SECONDS - start))
+    if [ "$elapsed" -ge "$timeout" ]; then
+      warn "$label has not answered in ${elapsed}s; leaving it running"
+      return 2
+    fi
+    if [ $((elapsed - announced)) -ge 30 ]; then
+      announced=$elapsed
+      note "still waiting on $label (${elapsed}s)"
+    fi
+    sleep 2
+  done
+}
+
+step "waiting for both servers"
+note "a cold API build compiles the whole library, so the first run takes minutes; later ones are quick"
+wait_for frontend "http://127.0.0.1:$WEB_PORT/" "$WEB_WAIT"
+web_state=$?
+api_state=0
+if [ "$web_state" != 1 ]; then
+  wait_for api "http://127.0.0.1:$API_PORT/health" "$API_WAIT"
+  api_state=$?
+fi
+
+if [ "$web_state" = 1 ] || [ "$api_state" = 1 ]; then
+  step "the stack did not come up"
+  note "api log:      tail -n 40 ${api_log#$ROOT/}"
+  note "frontend log: tail -n 40 ${web_log#$ROOT/}"
+  cleanup
+  exit 1
+fi
+
+step "dev stack"
+printf '   %sfrontend%s  http://localhost:%s\n' "$BOLD" "$RESET" "$WEB_PORT"
+printf '   %sapi%s       http://localhost:%s  (also proxied at /api and /health)\n' "$BOLD" "$RESET" "$API_PORT"
+printf '   %sassets%s    frontend/public -- VITE_ASSET_HOST empty, CDN off\n' "$BOLD" "$RESET"
+if [ -n "${DEBUG:-}" ]; then
+  printf '   %sdebug%s     DEBUG=%s\n' "$BOLD" "$RESET" "$DEBUG"
+else
+  printf '   %sdebug%s     off (run DEBUG=1 ./dev.up for API info logging)\n' "$BOLD" "$RESET"
+fi
+printf '   %slogs%s      %s  %s\n' "$BOLD" "$RESET" "${api_log#$ROOT/}" "${web_log#$ROOT/}"
+case $API_TARGET in
+  api.watch | api.watch.log | api.watch.redis*)
+    printf '   %sreload%s    stack --file-watch misses edits under library/ (see backend/Makefile); API_TARGET=api.watch.entr rebuilds reliably, at the cost of not building until the first edit\n' "$BOLD" "$RESET"
+    ;;
+esac
+printf '   Ctrl-C stops both.\n'
+
+# --------------------------------------------------------------- supervise
+
+while :; do
+  if gone=$(dead_job); then
+    warn "$gone stopped -- taking the rest of the stack down too"
+    break
+  fi
+  sleep 2
+done
+
+cleanup
+exit 1

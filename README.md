@@ -290,6 +290,14 @@ table statements and run them manually, you will want to specifically run the
 * start the backend with `cd backend && make api.watch`
 * start the frontend with `cd frontend && npm run dev`
 
+Or start both at once with `./dev.up` (also `make dev.up`). It checks the
+prerequisites, runs the API and Vite with their output labelled, waits until both
+answer, and stops both on Ctrl-C. It always runs the frontend with an empty
+`VITE_ASSET_HOST`, so images come from `frontend/public` rather than the CDN, and
+passes `DEBUG` through to the API when it is set — `DEBUG=1 ./dev.up` turns on
+the API's info logging (see `Arkham.Debug`). `API_TARGET=api.watch.entr ./dev.up`
+picks a different backend watch target.
+
 ## Homebrew content
 
 Want to build your own campaign, scenario, or custom content? See

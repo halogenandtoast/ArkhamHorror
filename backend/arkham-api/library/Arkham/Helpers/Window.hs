@@ -14,6 +14,7 @@ import Arkham.ChaosToken.Types
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Constants
 import Arkham.Cost.Status
 import Arkham.Effect.Types (Field (..))
 import Arkham.Enemy.Types (Field (EnemyAttacking))
@@ -68,6 +69,18 @@ import Control.Lens (over, transform)
 import Control.Monad.Trans.Class
 import Data.Data (cast, gmapQ)
 import Data.Data.Lens (biplate)
+
+-- An investigator's basic Fight/Evade/Engage/Investigate/Move is an ability *on* the
+-- enemy card, so its source unwraps to an EnemySource -- but the enemy is not the one
+-- doing it. #5714
+isBasicActionSource :: Source -> Bool
+isBasicActionSource = \case
+  UseAbilitySource _ _ idx -> idx >= AbilityAttack && idx <= AbilityMove
+  AbilitySource _ idx -> idx >= AbilityAttack && idx <= AbilityMove
+  IndexedSource _ s -> isBasicActionSource s
+  ProxySource s s' -> isBasicActionSource s || isBasicActionSource s'
+  PaymentSource s -> isBasicActionSource s
+  _ -> False
 
 checkWindow :: HasGame m => Window -> m Message
 checkWindow = checkWindows . pure
@@ -2065,7 +2078,8 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             ]
         _ -> noMatch
     Matcher.EnemyDealsDamage timing enemyMatcher -> guardTiming timing $ \case
-      Window.DealtDamage source' _ _ _ -> sourceMatches source' (Matcher.SourceIsEnemy enemyMatcher)
+      Window.DealtDamage source' _ _ _ | not (isBasicActionSource source') ->
+        sourceMatches source' (Matcher.SourceIsEnemy enemyMatcher)
       _ -> noMatch
     Matcher.EnemyDealtDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
       guardTiming timing $ \case

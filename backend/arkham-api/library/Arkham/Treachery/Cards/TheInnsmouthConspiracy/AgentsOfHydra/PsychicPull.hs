@@ -16,7 +16,10 @@ psychicPull = treachery PsychicPull Cards.psychicPull
 instance RunMessage PsychicPull where
   runMessage msg t@(PsychicPull attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      randomDiscardEdit iid attrs \d -> d {discardTarget = Just (toTarget attrs)}
+      hand <- iid.hand
+      if null hand
+        then gainSurge attrs
+        else randomDiscardEdit iid attrs \d -> d {discardTarget = Just (toTarget attrs)}
       pure t
     DiscardedCards iid _ (isTarget attrs -> True) cards -> do
       let

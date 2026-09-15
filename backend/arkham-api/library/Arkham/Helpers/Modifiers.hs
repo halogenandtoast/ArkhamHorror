@@ -180,6 +180,29 @@ immuneToPlayerEffects
   -> m ()
 immuneToPlayerEffects target = modifySelf target immuneToPlayerEffect
 
+{- | Enemies that are "immune to investigator actions": the fight, evade and
+engage actions cannot pick them, and nothing engages them either -- and so no
+attack of opportunity can come of it.
+
+'immuneToPlayerEffect' deliberately leaves basic abilities a way through, since
+an enemy immune to /player card/ effects (Feline Hybrid) can still be fought and
+evaded. This closes that door, so the two are meant to be used together. There is
+no parley entry because a parley action only exists if the enemy's own card grants
+one; @CannotParleyWith@ is an investigator-side modifier.
+-}
+immuneToAction :: [ModifierType]
+immuneToAction = [CannotBeAttacked, CannotBeEvaded, CannotBeEngaged, CannotBeDamaged]
+
+immuneToActions
+  :: ( Targetable target
+     , Sourceable target
+     , HasGame m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => target
+  -> m ()
+immuneToActions target = modifySelf target immuneToAction
+
 modifySelf1
   :: ( Targetable target
      , Sourceable target

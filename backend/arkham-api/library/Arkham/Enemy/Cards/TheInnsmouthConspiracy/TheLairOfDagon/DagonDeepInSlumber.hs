@@ -20,7 +20,11 @@ dagonDeepInSlumber =
     $ \a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing}
 
 instance HasModifiersFor DagonDeepInSlumber where
-  getModifiersFor (DagonDeepInSlumber a) = modifySelf a [Omnipotent]
+  getModifiersFor (DagonDeepInSlumber a) =
+    -- "He cannot attack or engage, and is immune to investigator actions and
+    -- player card effects." His own two abilities are unaffected: these only
+    -- close off what an investigator or a player card may do *to* him.
+    modifySelf a (CannotAttack : immuneToAction <> immuneToPlayerEffect)
 
 instance HasAbilities DagonDeepInSlumber where
   getAbilities (DagonDeepInSlumber a) =
@@ -49,5 +53,4 @@ instance RunMessage DagonDeepInSlumber where
       awakened <- genCard Cards.dagonAwakenedAndEnraged
       push $ ReplaceEnemy attrs.id awakened Swap
       pure e
-    EnemyCheckEngagement eid | eid == attrs.id -> pure e
     _ -> DagonDeepInSlumber <$> liftRunMessage msg attrs

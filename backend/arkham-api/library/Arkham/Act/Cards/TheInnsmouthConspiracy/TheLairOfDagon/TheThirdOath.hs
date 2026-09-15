@@ -47,7 +47,7 @@ instance RunMessage TheThirdOath where
   runMessage msg a@(TheThirdOath attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       record TheOrdersRitualWasDisrupted
-      slumbering <- selectAny $ IncludeOmnipotent $ enemyIs Enemies.dagonDeepInSlumber
+      slumbering <- selectAny $ enemyIs Enemies.dagonDeepInSlumber
       record
         $ if slumbering
           then DagonStillSlumbers

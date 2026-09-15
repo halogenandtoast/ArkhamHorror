@@ -35,7 +35,10 @@ instance HasModifiersFor OnyxGuardians where
     phase <- getPhase
     if phase == #enemy
       then do
-        ancientOnes <- select $ ReadyEnemy <> withTrait AncientOne
+        -- The slumbering ancient ones are ready ancient ones too, but they
+        -- cannot attack, so treating investigators as engaged with them would
+        -- be noise: the point of this is that the ancient one attacks you.
+        ancientOnes <- select $ ReadyEnemy <> withTrait AncientOne <> EnemyWithoutModifier CannotAttack
         modifySelect a (investigatorAt a) $ map AsIfEngagedWith ancientOnes
       else pure mempty
 

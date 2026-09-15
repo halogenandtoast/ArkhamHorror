@@ -21,7 +21,12 @@ hydraDeepInSlumber = enemyWith HydraDeepInSlumber Cards.hydraDeepInSlumber
   $ \a -> a {enemyFight = Nothing, enemyHealth = Nothing, enemyEvade = Nothing}
 
 instance HasModifiersFor HydraDeepInSlumber where
-  getModifiersFor (HydraDeepInSlumber a) = modifySelf a [Omnipotent]
+  getModifiersFor (HydraDeepInSlumber a) =
+    -- "She cannot attack or engage, and is immune to investigator actions and
+    -- player card effects." The sanctum locations still evade (and so exhaust)
+    -- her: EnemyEvaded does not consult CannotBeEvaded, and they are encounter
+    -- sources, so CannotBeExhaustedBy SourceIsPlayerCard does not bite either.
+    modifySelf a (CannotAttack : immuneToAction <> immuneToPlayerEffect)
 
 instance HasAbilities HydraDeepInSlumber where
   getAbilities (HydraDeepInSlumber a) =
@@ -29,7 +34,7 @@ instance HasAbilities HydraDeepInSlumber where
         a
         1
         ( exists (InvestigatorAt $ locationIs Locations.lairOfHydra)
-            <> thisExists a (IncludeOmnipotent ReadyEnemy)
+            <> thisExists a ReadyEnemy
         )
         $ forced
         $ RoundEnds #when
@@ -38,7 +43,6 @@ instance HasAbilities HydraDeepInSlumber where
 
 instance RunMessage HydraDeepInSlumber where
   runMessage msg e@(HydraDeepInSlumber attrs) = runQueueT $ case msg of
-    EnemyCheckEngagement eid | eid == attrs.id -> pure e
     Flip _ _ (isTarget attrs -> True) -> do
       awakened <- genCard Cards.hydraAwakenedAndEnraged
       push $ ReplaceEnemy attrs.id awakened Swap

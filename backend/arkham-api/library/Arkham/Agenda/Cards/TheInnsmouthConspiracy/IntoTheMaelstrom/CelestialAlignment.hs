@@ -21,9 +21,8 @@ instance RunMessage CelestialAlignment where
   runMessage msg a@(CelestialAlignment attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       lead <- getLead
-      selectForMaybeM (IncludeOmnipotent $ enemyIs Enemies.dagonDeepInSlumberIntoTheMaelstrom)
-        $ flipOver lead
-      selectForMaybeM (IncludeOmnipotent $ enemyIs Enemies.hydraDeepInSlumber) $ flipOver lead
+      selectForMaybeM (enemyIs Enemies.dagonDeepInSlumberIntoTheMaelstrom) $ flipOver lead
+      selectForMaybeM (enemyIs Enemies.hydraDeepInSlumber) $ flipOver lead
       advanceAgendaDeck attrs
       pure a
     UseThisAbility iid (isSource attrs -> True) 1 -> do

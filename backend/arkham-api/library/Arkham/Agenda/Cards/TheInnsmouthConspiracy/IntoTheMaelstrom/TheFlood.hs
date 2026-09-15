@@ -19,10 +19,7 @@ instance HasAbilities TheFlood where
     [ restrictedAbility
         a
         1
-        ( exists
-            $ IncludeOmnipotent
-            $ mapOneOf enemyIs [Enemies.dagonDeepInSlumberIntoTheMaelstrom, Enemies.hydraDeepInSlumber]
-        )
+        (exists $ mapOneOf enemyIs [Enemies.dagonDeepInSlumberIntoTheMaelstrom, Enemies.hydraDeepInSlumber])
         $ SilentForcedAbility AnyWindow
     , needsAir a 2
     ]

@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.ChaosBagStepState
 import Arkham.ChaosToken.Types
 import Arkham.Helpers.SkillTest (getSkillTestId, getSkillTestRevealedChaosTokens)
-import Arkham.Matcher hiding (RevealChaosToken)
+import Arkham.Matcher hiding (RevealChaosToken, SkillTestEnded)
 import Arkham.Message.Lifted.Choose
 
 newtype OculaObscuraEsotericEyepiece = OculaObscuraEsotericEyepiece AssetAttrs
@@ -53,8 +53,12 @@ instance RunMessage OculaObscuraEsotericEyepiece where
         Nothing -> do
           for_ attrs.sealedChaosTokens unsealChaosToken
           pure a
-        Just _ -> do
-          afterSkillTestQuiet $ for_ attrs.sealedChaosTokens unsealChaosToken
-          pure . OculaObscuraEsotericEyepiece $ setMetaKey "released" True attrs
-    SkillTestEnds {} -> pure . OculaObscuraEsotericEyepiece $ unsetMetaKey "released" attrs
+        Just _ -> pure . OculaObscuraEsotericEyepiece $ setMetaKey "released" True attrs
+    -- The token comes back as the test ends: after ability 1's "after you succeed"
+    -- window, which must still see it sealed (#5477), but before EndSkillTestWindow,
+    -- because a test nested inside this one's window (the Great Lift's slide) is
+    -- spliced in right after that and would otherwise draw the same token again.
+    SkillTestEnded _ | getMetaKey "released" attrs -> do
+      for_ attrs.sealedChaosTokens unsealChaosToken
+      pure . OculaObscuraEsotericEyepiece $ unsetMetaKey "released" attrs
     _ -> OculaObscuraEsotericEyepiece <$> liftRunMessage msg attrs

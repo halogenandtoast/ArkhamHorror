@@ -23,7 +23,6 @@ import Arkham.Location.Grid (Pos (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheDrownedCity.TheGrandVault.Helpers
@@ -222,9 +221,7 @@ instance RunMessage TheGrandVault where
           cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
-      for_ (lookupCardDef cardCode) \def -> do
-        card <- EncounterCard <$> genEncounterCard def
-        createAssetAt_ card (InPlayArea iid)
+      grantExpeditionAsset iid cardCode
       pure s
     -- "If you fail, you must either deactivate your location or take 1 damage or 1
     -- horror."

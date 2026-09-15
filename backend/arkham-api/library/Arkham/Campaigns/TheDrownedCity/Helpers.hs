@@ -19,10 +19,11 @@ import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorLog))
 import Arkham.Matcher
 import Arkham.Message (Message (CreateEffect, DecreaseFloodLevel, IncreaseFloodLevel))
-import Arkham.Message.Lifted (takeControlOfAsset)
+import Arkham.Message.Lifted (createAssetAt_, takeControlOfAsset)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Queue
 import Arkham.Modifier
+import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection (fieldMap)
 import Arkham.Source
@@ -162,6 +163,29 @@ expeditionItems =
   , Assets.alienTablet
   , Assets.divingSuitTheDrownedCity
   ]
+
+{- | The card for an /Expedition/ set story asset — an Expedition Item or an
+Artifact.
+
+These are printed on *player* card backs, so they have to be generated as player
+cards. Generated as encounter cards they go to the encounter discard when they
+leave play — a spent Laudanum, a destroyed Diving Suit — and the next reshuffle
+deals them back out of the encounter deck as if they were mythos cards, #5711.
+A player card with no owner is simply obtained instead, which is what leaving the
+expedition behind should look like.
+-}
+expeditionAssetCard :: CardGen m => CardDef -> m Card
+expeditionAssetCard = genCard
+
+{- | Put an Expedition Item or Artifact into an investigator's play area. Takes a
+card code because that is the shape the scenarios' setup choice hands back.
+-}
+grantExpeditionAsset
+  :: (ReverseQueue m, HasCardCode cardCode) => InvestigatorId -> cardCode -> m ()
+grantExpeditionAsset iid cardCode =
+  for_ (lookupCardDef cardCode) \def -> do
+    card <- expeditionAssetCard def
+    createAssetAt_ card (InPlayArea iid)
 
 {- | The Expedition Items an investigator may still choose to begin play with.
 

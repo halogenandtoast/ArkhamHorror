@@ -28,7 +28,6 @@ import Arkham.Location.Grid (GridLocation (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
-import Arkham.Placement
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (setAsideCardsL)
@@ -219,9 +218,7 @@ instance RunMessage TheApiary where
           cardLabeled asset.cardCode $ handleTarget iid attrs (CardCodeTarget asset.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
-      for_ (lookupCardDef cardCode) \def -> do
-        card <- EncounterCard <$> genEncounterCard def
-        createAssetAt_ card (InPlayArea iid)
+      grantExpeditionAsset iid cardCode
       pure s
     EndSetup -> do
       -- The final setup shuffle has already happened, so the hidden location has to

@@ -124,9 +124,7 @@ instance RunMessage SepulchreOfTheSleeper where
           cardLabeled item.cardCode $ handleTarget iid attrs (CardCodeTarget item.cardCode)
       pure s
     HandleTargetChoice iid (isSource attrs -> True) (CardCodeTarget cardCode) -> do
-      for_ (lookupCardDef cardCode) \def -> do
-        card <- EncounterCard <$> genEncounterCard def
-        createAssetAt_ card (InPlayArea iid)
+      grantExpeditionAsset iid cardCode
       pure s
     DoStep 1 Setup -> do
       -- "Gather all earned Artifact assets and put each of them into play under an
@@ -146,7 +144,7 @@ instance RunMessage SepulchreOfTheSleeper where
         -- so far are eligible, and the players pick between them.
         unless (null counts) do
           let fewest = minimumEx $ map snd counts
-          card <- EncounterCard <$> genEncounterCard def
+          card <- expeditionAssetCard def
           lead <- getLead
           chooseOrRunOneM lead do
             questionLabeled "chooseArtifactInvestigator"

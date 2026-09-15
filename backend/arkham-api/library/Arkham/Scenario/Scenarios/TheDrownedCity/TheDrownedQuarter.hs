@@ -7,7 +7,6 @@ import Arkham.Campaigns.TheDrownedCity.CampaignSteps (pattern TheApiary, pattern
 import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (getFloodLevelFor)
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheDrownedQuarter qualified as Enemies

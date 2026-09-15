@@ -10,7 +10,6 @@ import Arkham.Campaigns.TheDrownedCity.CampaignSteps (
  )
 import Arkham.Campaigns.TheDrownedCity.Import
 import Arkham.Campaigns.TheDrownedCity.Key qualified as Key
-import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Enemies

@@ -8,6 +8,7 @@ const localeLoaders = {
   ko: () => import('@/locales/ko'),
   es: () => import('@/locales/es'),
   zh: () => import('@/locales/zh'),
+  'zh-cn': () => import('@/locales/zh-cn'),
   de: () => import('@/locales/de'),
 } satisfies Record<UiLocale, () => Promise<unknown>>
 

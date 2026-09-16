@@ -20,8 +20,8 @@ containingTheOutbreak = act (3, A) ContainingTheOutbreak Cards.containingTheOutb
 instance HasAbilities ContainingTheOutbreak where
   getAbilities (ContainingTheOutbreak attrs) =
     [ skillTestAbility
-        $ withTooltip
-          "{action}: Test {willpower} (X) to attempt to seal the rift. X is this location's shroud. Investigators at this location may spend 1 {perPlayer} clues, as a group, to automatically succeed. If you succeed, replace the damage token on this location with a horror token. For the remainder of the game, this location cannot become infested."
+        $ scenarioI18n
+        $ withI18nTooltip "containingTheOutbreak.sealRift"
         $ restricted
           (proxied (LocationMatcherSource InfestedLocation) attrs)
           1

@@ -6,6 +6,7 @@ import Arkham.Act.Runner
 import Arkham.Classes
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
+import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Scenario.Types
@@ -30,20 +31,20 @@ instance HasAbilities TheIsleOfOriab where
         $ ForcedAbility AnyWindow
     ]
 
-toOption :: Region -> UI Message
+toOption :: HasI18n => Region -> UI Message
 toOption = \case
   Oriab -> error "Not possible"
   Mnar ->
     Label
-      "Visit the ancient land of Mnar to the west. Resolve Mnar Setup in the Campaign Guide."
+      (ikey' "label.visitMnar")
       [SetScenarioMeta $ toJSON Mnar]
   ForbiddenLands ->
     Label
-      "Visit the Forbidden Lands to the north. Resolve Forbidden Lands Setup in the Campaign Guide."
+      (ikey' "label.visitForbiddenLands")
       [SetScenarioMeta $ toJSON ForbiddenLands]
   TimelessRealm ->
     Label
-      "Visit the kingdom of the Timeless Realm to the east. Resolve Timeless Realm Setup in the Campaign Guide."
+      (ikey' "label.visitTimelessRealm")
       [SetScenarioMeta $ toJSON TimelessRealm]
 
 instance RunMessage TheIsleOfOriab where
@@ -54,7 +55,7 @@ instance RunMessage TheIsleOfOriab where
       let availableRegions = filter (`notElem` regions n) [Mnar, ForbiddenLands, TimelessRealm]
       if null availableRegions
         then push R1
-        else push $ chooseOrRunOne lead $ map toOption availableRegions
+        else push $ chooseOrRunOne lead $ scenarioI18n $ map toOption availableRegions
       push $ ShuffleEncounterDiscardBackIn
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do

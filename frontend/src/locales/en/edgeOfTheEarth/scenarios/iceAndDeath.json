@@ -1,6 +1,13 @@
 {
   "heading": "Scenario I",
   "part1": {
+    "label": {
+      "proceedToIceAndDeathPart1": "Proceed to _Ice and Death, Part 1_",
+      "proceedToIntro2": "Proceed to _Intro 2_",
+      "skipToIntro3": "Skip to _Intro 3_",
+      "skipToIntro4": "Skip to _Intro 4_",
+      "proceedToIntro4": "Proceed to _Intro 4_"
+    },
     "investigatorSetup": {
       "title": "Investigator Setup",
       "body": "<div class='iceAndDeath'><ul><li>Each investigator may choose one available member of the expedition team who is not crossed off to join them. Put the story asset for the chosen character into play in that investigator’s play area. (These story assets can be found in the Expedition Team encounter set.)</li></ul></div>"

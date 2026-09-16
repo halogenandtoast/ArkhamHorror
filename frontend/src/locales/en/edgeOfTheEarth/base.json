@@ -310,8 +310,16 @@
       "discardAnyuToChooseUpToThreeInAnyOrder": "Discard Anyu to choose up to three, in any order",
       "gain2SkillValue": "You get +2 skill value for your next skill test this round"
     },
+    "danforthBrilliantStudent": {
+      "drawTekelili": "Number of cards to draw from the top of the Tekeli-li deck"
+    },
+    "takadaHirokoAeroplaneMechanic": {
+      "resourcesToTake": "Resources to take"
+    },
     "prologue1Believe": "\"I believe you…but if what you say is true, should we not investigate these findings further?\" Proceed to _Prologue 2._",
     "prologue1Wild": "\"I'm sorry, but this seems too wild to be true.\" Skip to _Prologue 3._",
+    "skipToPrologue4": "Skip to _Prologue 4_",
+    "proceedToPrologue4": "Proceed to _Prologue 4_",
     "readPartnerIntros": "Read _Partner_ intros",
     "skipPartnerIntros": "Skip _Partner_ intros",
     "theyreOnTheirOwn": "They're on their own.",

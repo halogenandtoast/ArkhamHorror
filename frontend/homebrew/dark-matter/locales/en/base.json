@@ -154,5 +154,10 @@
     "hasturAndTassildaAreImprisonedInCarcosaOnceMore": "Hastur and Tassilda are imprisoned in Carcosa once more, and the universe vanquished the inevitable… For now.",
     "impendingDoom": "Impending Doom",
     "memories": "Memories"
+  },
+  "electricNightmare": {
+    "label": {
+      "noInvestigatorAddsK2": "No investigator adds it to their deck"
+    }
   }
 }

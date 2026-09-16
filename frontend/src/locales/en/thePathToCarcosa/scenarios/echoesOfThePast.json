@@ -36,7 +36,8 @@
       "exactly3": "If there are exactly 3 players in the game, search the gathered encounter sets for 2 copies of Seeker of Carcosa. Spawn each at a different _*Third Floor*_ Historical Society location.",
       "exactly4": "If there are exactly 4 players in the game, search the gathered encounter sets for 3 copies of Seeker of Carcosa. Spawn each at different _*Second Floor*_ or _*Third Floor*_ Historical Society locations."
     },
-    "fledTheDinnerParty": "Check Campaign Log. *If you fled the dinner party*: You arrive at the Historical Society with time to spare; each investigator can take 1 additional action during their first turn of this game."
+    "fledTheDinnerParty": "Check Campaign Log. *If you fled the dinner party*: You arrive at the Historical Society with time to spare; each investigator can take 1 additional action during their first turn of this game.",
+    "fledDinnerPartyAdditionalAction": "Fleeing the dinner party"
   },
   "resolutions": {
     "xp": {

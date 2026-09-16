@@ -10,6 +10,7 @@ import Arkham.Helpers.Investigator (getSkillValue)
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers (sendBanished)
 import Arkham.Story.CardDefs.ReturnToTheCircleUndone.ReturnToTheWagesOfSin qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Window qualified as Window
@@ -66,7 +67,7 @@ instance RunMessage ReturnToUnfinishedBusiness_39 where
       let card = lookupCard Enemies.returnToHeretic_39 (toCardId attrs)
       batched \_ -> do
         checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
-        send $ format card <> " is \"banished\""
+        sendBanished $ format card
         addToVictory iid attrs
       pure s
     _ -> ReturnToUnfinishedBusiness_39 <$> liftRunMessage msg attrs

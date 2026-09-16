@@ -117,6 +117,9 @@
       "agree": "\"I agree\"",
       "lie": "\"I agree\" (You are lying)"
     },
+    "xp": {
+      "insight": "Gained insight into the inner workings of the Silver Twilight Lodge"
+    },
     "title": "Interlude II: The Price of Progress",
     "instructions": "<p class='basic'>If at least one of the investigators has the _Silver Twilight_ trait, proceed to _The Price of Progress 1_.</p><p class='basic'>Otherwise, skip to _The Price of Progress 2_.</p>",
     "thePriceOfProgress1": "<p>_The Price of Progress 1_: “Ah, it’s you. I did not expect you to be here, though perhaps I should have,” Mr. Sanford says with a hint of surprise in his voice. “I regret that you had to be involved in this unfortunate affair. I did not plan for you to be a part of any of this.” You narrow your eyes. You suspect fortune had nothing to do with it. You ask him what will happen to those still trapped inside. “Human progress requires sacrifice,” he recites stoically. “It is lamentable when that sacrifice is in blood, but the price in lamentation does not outweigh the yield of our labor.”</p><p class='basic right'>Skip to _The Price of Progress 3_.</p>",

@@ -3,9 +3,11 @@ module Arkham.Treachery.Cards.TheDrownedCity.TheGrandVault.AncientVaultN (ancien
 import Arkham.Ability
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Story (readStory)
+import Arkham.I18n
 import Arkham.Location.Types (Field (..))
 import Arkham.Placement
 import Arkham.Projection
+import Arkham.Scenarios.TheDrownedCity.TheGrandVault.Helpers (scenarioI18n)
 import Arkham.Story.CardDefs.TheDrownedCity.TheGrandVault qualified as Stories
 import Arkham.Treachery.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Treachery.Import.Lifted
@@ -33,16 +35,17 @@ instance RunMessage AncientVaultN where
       x <- case attrs.placement of
         AttachedToLocation lid -> fieldWithDefault 0 LocationShroud lid
         _ -> pure 0
-      chooseAmounts
-        iid
-        "Take a combined total of damage and/or horror"
-        (TotalAmountTarget x)
-        [("Damage", (0, x)), ("Horror", (0, x))]
-        (toTarget attrs)
+      scenarioI18n
+        $ chooseAmounts
+          iid
+          (ikey' "label.ancientVault.takeDamageAndHorror")
+          (TotalAmountTarget x)
+          [("$damage", (0, x)), ("$horror", (0, x))]
+          (toTarget attrs)
       pure t
     ResolveAmounts iid choices (isTarget attrs -> True) -> do
-      let damage = getChoiceAmount "Damage" choices
-      let horror = getChoiceAmount "Horror" choices
+      let damage = getChoiceAmount "$damage" choices
+      let horror = getChoiceAmount "$horror" choices
       assignDamageAndHorror iid (attrs.ability 1) damage horror
       flipOver iid attrs
       pure t

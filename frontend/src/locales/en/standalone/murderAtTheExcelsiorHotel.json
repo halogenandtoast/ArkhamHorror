@@ -11,7 +11,8 @@
   ],
   "tooltips": {
     "theTrueCulprit": {
-      "basement": "{'{'}action{'}'}: Test {'{'}willpower{'}'} (4) or {'{'}agility{'}'} (4). You may remove 1 clue from a Lead asset in the Basement to reduce the difficulty of this test by 2. If you succeed, remove 1 doom from the agenda."
+      "basement": "{'{'}action{'}'}: Test {'{'}willpower{'}'} (4) or {'{'}agility{'}'} (4). You may remove 1 clue from a Lead asset in the Basement to reduce the difficulty of this test by 2. If you succeed, remove 1 doom from the agenda.",
+      "room212": "{'{'}action{'}'} If Tome of Rituals is at this location: Test {'{'}willpower{'}'} (5) or {'{'}intellect{'}'} (5). If you succeed, move up to 1 {'{'}perPlayer{'}'} clues from Tome of Rituals to Harvested Brain."
     },
     "bloodstainedDagger": {
       "fight": "{'{'}action{'}'}: _Fight_. You get +2 {'{'}combat{'}'} for this attack.",
@@ -19,6 +20,23 @@
     },
     "foyer": {
       "resign": "You flee the scene of the crime."
+    },
+    "hotelRoof": {
+      "moveToRoom": "{'{'}action{'}'}: Test {'{'}agility{'}'} (4) or {'{'}combat{'}'} (4). If you succeed, move to either Room 212, Room 225, or Room 245.",
+      "moveClues": "{'{'}action{'}'}: Test {'{'}willpower{'}'} (3). If you succeed, move any number of clues controlled by investigators at this location to Alien Device (if it is in play)."
+    },
+    "room212": {
+      "pickLock": "{'{'}action{'}'}: Test {'{'}agility{'}'} (4) to attempt to pick the lock. If you succeed, reveal Room 212 and immediately move to it.",
+      "moveClues": "{'{'}action{'}'}: Test {'{'}intellect{'}'} (3). If you succeed, move any number of clues controlled by investigators at this location to Sinister Solution (if it is in play)."
+    },
+    "room225": {
+      "cleanBlood": "{'{'}action{'}'}: Test {'{'}willpower{'}'} (3). If you succeed, remember that the investigators \"cleaned up the blood.\"",
+      "hideBody": "{'{'}action{'}'}: Test {'{'}combat{'}'} (3). If you succeed, remember that the investigators \"hid the body.\"",
+      "tidyRoom": "{'{'}action{'}'}: Test {'{'}intellect{'}'} (3). If you succeed, remember that the investigators \"tidied up the room.\""
+    },
+    "office": {
+      "pickLock": "{'{'}action{'}'}: Test {'{'}agility{'}'} (3) to attempt to pick the lock. If you succeed, reveal Office and immediately move to it.",
+      "moveClues": "{'{'}action{'}'}: Test {'{'}intellect{'}'} (0). For each point you succeed by, you may move 1 clue controlled by an investigator in the Office to Manager's Key (if it is in play)."
     }
   },
   "tokens": {
@@ -124,7 +142,25 @@
     }
   },
   "label": {
-    "placeClueToTreatAsNegative": "Place one of your clues on your location to treat this as a -{count}"
+    "placeClueToTreatAsNegative": "Place one of your clues on your location to treat this as a -{count}",
+    "basement": {
+      "moveClues": "Choose how many clues to move to Tome of Rituals"
+    },
+    "hotelRoof": {
+      "moveClues": "Choose how many clues to move to Alien Device"
+    },
+    "office": {
+      "moveClues": "Choose how many clues to move to Manager's Key"
+    },
+    "room212": {
+      "moveClues": "Choose how many clues to move to Sinister Solution"
+    },
+    "room245": {
+      "moveClues": "Choose how many clues to move to Time-worn Locket"
+    },
+    "theTrueCulpritV9": {
+      "moveClues": "Choose how many clues to move to Harvested Brain"
+    }
   },
   "arkhamOfficer": {
     "label": {

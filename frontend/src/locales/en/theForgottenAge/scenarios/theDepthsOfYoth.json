@@ -85,6 +85,7 @@
     "collectedAStrangeLiquid": "Collected a Strange Liquid"
   },
   "label": {
+    "chooseYigsFury": "The investigators may choose how many tally marks are under “Yig’s Fury.” The lower the number chosen, the safer and easier the scenario will be.",
     "perilsOfYoth": {
       "fail": "Set Perils of Yoth aside, out of play. (*This exploration fails.*)",
       "continue": "Set Perils of Yoth aside, out of play: take horror or damage equal to the current depth level; and continue exploring as if you had not drawn Perils of Yoth."

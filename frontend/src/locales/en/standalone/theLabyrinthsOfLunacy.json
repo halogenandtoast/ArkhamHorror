@@ -9,6 +9,9 @@
     "note": "<p><i>It reads:</i></p><p><span class='wolgast' style='font-weight:600;'>Greetings.<br/>I have gathered you here as an experiment. Think of this as a test of human will. You will survive. Or you will die.<br/>You are not alone. Two other groups share in your fate. Will you risk your lives to aid them? Or will you find freedom upon the backs of their corpses?<br/>I will allow you to escape, should you prove strong of will and quick of wit. If not, your pain and anguish shall serve as a reminder that humans are not the inheritors of Earth.</span></p>"
   },
   "label": {
+    "decayDiagram": {
+      "cluesToFlip": "Clues to flip"
+    },
     "satisfyDoomThreshold": "Add doom to the current agenda until its doom threshold is satisfied.",
     "groupA": "Group A",
     "groupB": "Group B",
@@ -53,7 +56,8 @@
   "labyrinthineHalls": {
     "chooseDrawCards": "You find an old lockbox in a pile of refuse, and decide to leave something behind. Choose an investigator to draw 2 cards.",
     "chooseGainResources": "You find the corpse of someone you think you once knew, and wish you could have saved them. Choose an investigator to gain 4 resources.",
-    "chooseAdditionalActions": "You peer through an overgrown mirror and see an unfamiliar reflection. Choose an investigator to take 2 additional actions during their next turn."
+    "chooseAdditionalActions": "You peer through an overgrown mirror and see an unfamiliar reflection. Choose an investigator to take 2 additional actions during their next turn.",
+    "additionalActions": "Labyrinthine Halls"
   },
   "torturedVictim": {
     "label": {

@@ -27,8 +27,8 @@ instance HasAbilities TheGateOfYquaa where
     extendRevealed
       a
       [ restricted a 1 (Here <> youExist (mapOneOf InvestigatorWithActiveSeal [minBound ..])) actionAbility
-      , withTooltip
-          "You retreat, hoping you’ve done enough to seal away whatever lies beyond the gate. (If you control 1 or more seals, you retain control of them.)"
+      , scenarioI18n 2
+          $ withI18nTooltip "theGateOfYquaa.resign"
           $ resignAction a
       ]
 

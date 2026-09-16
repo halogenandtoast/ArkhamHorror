@@ -1,0 +1,74 @@
+{
+  "name": "暗物质",
+  "intro": {
+    "title": "在太空，没有人能听见你的尖叫",
+    "body": "<p class='basic'>“他提到卡尔克萨王朝的创建，连接哈斯塔、毕宿五与昴宿星团之谜的湖泊；又谈到卡西尔达、卡蜜拉，以及德姆赫与哈利湖的幽暗深处。”</p><p class='basic right'>- 罗伯特·W·钱伯斯，《名誉修复者》</p><p>2147年，你从一艘仿佛被遗弃的太空船的冷冻休眠中醒来，随即踏上横越太阳系的深空冒险，试图阻止人类灭绝。《暗物质》由 Axolotl 设计，是一套供1-4名玩家游玩、包含8场冒险的《诡镇奇谈：卡牌版》爱好者剧本，灵感来自《克苏鲁的呼唤》补充资料《卡尔克萨的涟漪》与《终末时刻》。本剧本需要《卡尔克萨之路》豪华扩展；建议先完成《卡尔克萨之路》再游玩，以获得最佳体验。</p>"
+  },
+  "specialRules": [
+    {
+      "title": "扫描",
+      "body": "@:darkMatter.additionalRulesAndClarifications.scan"
+    },
+    {
+      "title": "记忆",
+      "body": "@:darkMatter.additionalRulesAndClarifications.memories"
+    },
+    {
+      "title": "警戒",
+      "body": "@:darkMatter.additionalRulesAndClarifications.alert"
+    }
+  ],
+  "additionalRulesAndClarifications": {
+    "title": "附加规则与说明",
+    "scan": "<h3>扫描</h3><p class='basic'>本剧本部分遭遇卡背面底部印有图示。这些卡会组成“扫描牌堆”，即在某些冒险设置时创建、位于游戏外的牌堆。</p><p class='basic'>带有<b>扫描</b>行动标识的能力让调查员探索环境，通常用来从扫描牌堆中寻找推进冒险所需的剧情支援、剧情卡或地点；通常但不总是通过“启动”行动发动。</p><p class='basic'><b>扫描</b>能力会要求你寻找扫描牌堆顶牌上带有指定图示的卡。查看顶牌底部图示；<b>若其图示与所扫描的图示相同，抽取该卡。</b>这视为“成功”扫描。若未抽取任何卡，则扫描“失败”。</p><p class='basic'>若顶牌没有匹配图示，将其背面朝下置于扫描牌堆旁，继续检查下一张，直到抽到指定类型的卡。此行动结束后，将置于扫描牌堆旁的所有卡洗回扫描牌堆。</p><p class='basic'><b>扫描</b>能力通常会提及地点图示；地点图示即卡牌左上角的连接符号。若需弃掉带有扫描背面的卡，或将其洗入任何其他牌堆，则改为将其洗回扫描牌堆。</p>",
+    "memories": "<h3>记忆</h3><p class='basic'>部分冒险卡、剧情结局与幕间会提及你的“记忆”。每位调查员在剧本日志中都有独立的“记忆”栏位。<b>记忆只属于对应调查员，不与其他调查员共享。</b></p><p class='basic'>若指示你在某位调查员的“记忆”旁增加或划掉计数，便在其剧本日志的对应栏位添加或划掉一条。该调查员未被划掉的计数数量即为其“记忆”数量。</p>",
+    "alert": "<h3>警戒</h3><p class='basic'>调查员尝试躲避带有警戒关键词的敌人时，若技能检定失败，在结算该检定全部结果后，该敌人对该调查员进行一次攻击。敌人进行警戒攻击后不会横置；无论该敌人是否与该调查员交战，都会进行此攻击。</p>"
+  },
+  "prologue": {
+    "title": "序幕",
+    "body": "<p>你翻开手中折起的节目单，再次阅读仿佛你已读过百遍的这张纸片。“米斯卡塔尼克剧院上演：《黄衣之王》，”纸上这么写着。“阿卡姆本地的沃德剧院将迎来这部戏剧的特别上演，为期一晚。这部令人无法抗拒的戏剧共有两幕。本作品由奈杰尔·英格兰姆负责筹划和管理。本剧演员均属于一个小型剧团，在演员名单最后还有个未署名的人物：‘陌生人。’”</p><p>这样一部万众期待的戏剧不远万里从巴黎来到阿卡姆，即便只上演一夜，它也备受瞩目。在演出前的几个星期里，它一直是城中热话。虽然迹象不甚明显……然而，你有证据证明有某种邪恶势力正在行动。最初是剧院有个舞台工作人员失踪，一个才十七岁的男孩在一次彩排中缺席，之后就再也没人见过他。到距离演出已不到两个星期的时候，一位音乐家被发现死亡，并且尸体口中含着枪。或许最让人生畏的是警察从独立广场抓到的疯汉，他满口胡言乱语，说着“王已归来”之类的疯话。他被带到阿卡姆疯人院之后，你惊讶地发现，产生这种妄想的并不止他一人。</p><p>你和同伴深入调查后，发现这些事件十分可疑。尽管无法证实它们之间有何关联，这部即将上演的戏剧周围所发生的离奇事件却远不止这些。一桩桩自杀与发疯事件接踵而来，你决心找出背后的真相。</p><p>观众席的灯光暗了下来，聚光灯落在舞台上。眼前的情景与你的预期相去甚远。《黄衣之王》的第一幕缓慢而单调，使人感到无聊乏味。这部戏剧的背景和角色足够吸引人，但曲折而怪诞的剧情却无法娱乐观众，也传达不了什么信息。你开始怀疑这些发生在《黄衣之王》周围的骇人事件是不是根本没有联系。或许这不过是你想象过度；这场平凡而不起眼的演出怎能引起这般混乱？令你吃惊的是，第一幕没有任何高潮和转折就骤然结束了。幕间休息时灯光亮起，你忍住哈欠，想要提早离场。你正在踌躇之中，突然感觉困意越来越浓……最终昏睡了过去。</p><p class='basic right'>进入<b>冒险I：破衣号</b>。</p>"
+  },
+  "electricNightmare": {
+    "label": {
+      "noInvestigatorAddsK2": "没有调查员将其加入自己的牌组"
+    }
+  },
+  "desynchronization": {
+    "title": "失步",
+    "body": "<p>校园里，一辆翻倒的校车蒙着尘土。你在被破坏的车窗上瞥见自己的倒影，却不再认得那张脸。熟悉的身形与五官明明近在眼前，却绝非你的身体。玻璃中的面孔逐渐化作没有口鼻眼的苍白空白面具；虚拟现实已无法识别你残留的自我形象，你的数字心智投影正在消散。</p><p class='basic'>你必须将“失步”弱点加入牌组；该卡不计入牌组张数。</p>"
+  },
+  "key": {
+    "youWereTransportedToTheVirtualDreamlandsByMaja": "你被玛雅送入虚拟幻梦境。",
+    "youEnteredTheVirtualDreamlandsByYourOwnMeans": "你自行进入了虚拟幻梦境。",
+    "hasBeenInfectedByTheCybervirus": "已感染网络病毒。",
+    "youAreTrappedInAVirtualNightmare": "你被困在虚拟噩梦中。",
+    "youPartiallyRestoredTheSanityOfK2PS187": "你部分恢复了K2-PS187的理智。",
+    "youFullyRestoredTheSanityOfK2PS187": "你完全恢复了K2-PS187的理智。",
+    "youHaveWatchedThePerformanceOfHeirToCarcosa": "你观看了《卡尔克萨的继承人》演出。",
+    "theElbrusStationHasBeenLostInTheQuantumRealm": "厄尔布鲁士站迷失于量子领域。",
+    "theElbrusStationHasBeenFullyStabilized": "厄尔布鲁士站已完全稳定。",
+    "youHaveWitnessedThePrimordialChaos": "你目睹了原初混沌。",
+    "youHaveRescuedTheRemainingCrewOfTheNostalgiaII": "你救出了怀旧II号剩余船员。",
+    "theNostalgiaIIHasBeenSaved": "怀旧II号获救。",
+    "youCouldntSaveTheCrewOfTheNostalgiaII": "你未能救下怀旧II号船员。",
+    "allInvestigatorsHaveBeenCorruptedByTheEarth": "所有调查员均被地球腐化。",
+    "youAreNotInGoodStandingWithTheMiGo": "你未获米·戈信任。",
+    "youAreAlliedWithTheMiGo": "你与米·戈结盟。",
+    "youHaveUncoveredTheCultistsInhumanMethods": "你揭露了邪教徒非人的手段。",
+    "theInvestigatorsAreTrappedWithinCarcosa": "调查员被困在卡尔克萨中。",
+    "theInvestigatorsKnowOfTheAbjurationOfTheThrone": "调查员得知了王座弃绝仪式。",
+    "theSunWentSupernovaAndWipedOutMostOfTheSolarSystem": "太阳成为超新星，摧毁了大半个太阳系。",
+    "miGoSafelyReturnedToTheirHomeWorld": "米·戈安全返回故乡。",
+    "hopeWasShieldedFromTheBlast": "希望避开了爆炸。",
+    "theUCCEscapedToAnotherGalaxy": "UCC逃往另一座星系。",
+    "livedTheRemainderOfTheirDaysWithHope": "与希望共度余生。",
+    "livedTheRemainderOfTheirDaysOnParadise": "在天堂度过余生。",
+    "youHaveReturnedToThePalacesOfDimCarcosa": "你回到了卡城幽影的宫殿。",
+    "wasCaughtInTheSupernovasBlast": "被超新星爆炸吞没。",
+    "theInvestigatorsEscapedHastursGrasp": "调查员终于逃离哈斯塔的掌控，并阻止他逃出囚牢。",
+    "theRealmOfCarcosaOvertookOurUniverse": "卡尔克萨领域吞没了我们的宇宙，塔西尔达统治着黑星。",
+    "hasturAndTassildaAreImprisonedInCarcosaOnceMore": "哈斯塔与塔西尔达再次囚禁于卡尔克萨，宇宙战胜了注定的结局……暂时如此。",
+    "impendingDoom": "迫近的毁灭",
+    "memories": "记忆"
+  }
+}

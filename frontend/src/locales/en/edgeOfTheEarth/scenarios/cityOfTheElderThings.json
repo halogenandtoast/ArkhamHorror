@@ -7,9 +7,17 @@
     }
   ],
   "label": {
+    "placeKey": "Place {key} key",
+    "moveKey": "Move {key} key",
     "v1": "Proceed to _Setup (v. I)_",
     "v2": "Proceed to _Setup (v. II)_",
     "v3": "Proceed to _Setup (v. III)_"
+  },
+  "tooltips": {
+    "cityLandscape": {
+      "look": "During your turn, spend 1 clue: Look at the revealed side of a City Landscape in your column or row. (Limit once per round.)",
+      "move": "During your turn, spend 3 clues: Move to any location in your column or row. (Limit once per round.)"
+    }
   },
   "intro": {
     "title": "Scenario III: City of the Elder Things",

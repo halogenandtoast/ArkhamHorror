@@ -9,6 +9,7 @@ import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Placement
+import Arkham.Scenarios.TheCircleUndone.TheWagesOfSin.Helpers (sendBanished)
 import Arkham.Story.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Cards
 import Arkham.Story.Import.Lifted
 import Arkham.Window qualified as Window
@@ -57,7 +58,7 @@ instance RunMessage UnfinishedBusiness_B where
       let card = lookupCard Enemies.heretic_A (toCardId attrs)
       batched \_ -> do
         checkWhen $ Window.ScenarioEvent "wouldBanish" (Just iid) (toJSON card)
-        send $ format card <> " is \"banished\""
+        sendBanished $ format card
         addToVictory iid attrs
       pure s
     UseThisAbility iid (isSource attrs -> True) 3 -> do

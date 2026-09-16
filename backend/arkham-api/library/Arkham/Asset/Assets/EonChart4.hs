@@ -55,7 +55,11 @@ getAvailable iid attrs canDoActions = do
     select
       $ abilityF
       $ oneOf (map AbilityIsAction canDoActions)
-      <> PerformableAbility [ActionCostModifier (-1)]
+      -- Scoped to `iid`, not the active investigator: Eon Chart (4) resolves two
+      -- actions inside one ability, and a cross-investigator prompt in between
+      -- (e.g. a Safeguard (2) "move with" ask) leaves the active investigator
+      -- pointing at the other player. See #5727.
+      <> PerformableAbilityBy (InvestigatorWithId iid) [ActionCostModifier (-1)]
   pure (playableCards, abilities)
 
 getAvailableActionTypes

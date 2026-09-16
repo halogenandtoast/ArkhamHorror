@@ -8,7 +8,7 @@ import Arkham.Matcher
 import Arkham.Prelude
 
 newtype HordeOfNight = HordeOfNight EnemyAttrs
-  deriving anyclass IsEnemy
+  deriving anyclass (IsEnemy, RunMessage)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 hordeOfNight :: EnemyCard HordeOfNight
@@ -17,8 +17,4 @@ hordeOfNight = enemy HordeOfNight Cards.hordeOfNight
 instance HasModifiersFor HordeOfNight where
   getModifiersFor (HordeOfNight a) = do
     isHost <- toId a <=~> IsHost
-    modifySelf a $ CannotAttack : [ExhaustIfDefeated | isHost]
-
-instance RunMessage HordeOfNight where
-  runMessage msg (HordeOfNight attrs) =
-    HordeOfNight <$> runMessage msg attrs
+    modifySelf a [if isHost then ExhaustIfDefeated else CannotAttack]

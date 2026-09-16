@@ -5,6 +5,7 @@ import Arkham.GameValue
 import Arkham.Id
 import Arkham.Location.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as Cards
 import Arkham.Location.Runner hiding (beginSkillTest)
+import Arkham.Matcher (EnemyMatcher(CanEvadeEnemy))
 import Arkham.Message.Lifted
 import Arkham.Prelude
 import Arkham.Scenarios.TheDreamEaters.DarkSideOfTheMoon.Helpers
@@ -26,7 +27,10 @@ instance HasAbilities MoonForest where
       attrs
       [ skillTestAbility $ restrictedAbility attrs 1 Here actionAbility
       , playerLimit PerRound
-          $ restrictedAbility attrs 2 (Here <> not_ DuringAction)
+          $ restrictedAbility
+            attrs
+            2
+            (Here <> not_ DuringAction <> exists (CanEvadeEnemy (attrs.ability 2)))
           $ FastAbility' Free #evade
       ]
 

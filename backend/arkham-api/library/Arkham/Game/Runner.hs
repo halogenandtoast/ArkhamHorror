@@ -1430,12 +1430,16 @@ runGameMessage msg g = case msg of
       Just enemy -> do
         swarms <- select $ SwarmOf eid
 
+        -- a swarm card can itself have swarm cards, so this must happen even
+        -- when the enemy leaving play is a swarm card, otherwise they are
+        -- orphaned with a host that no longer exists
+        pushAll $ map RemoveEnemy swarms
+
         case attr enemyPlacement enemy of
           AsSwarm _ c -> case toCardOwner c of
             Just owner -> push $ PutCardOnBottomOfDeck owner (Deck.InvestigatorDeck owner) c
             Nothing -> unlessM (hasCampaignOption UseSwarmPlaceholders) $ error "Missing owner"
-          _ -> do
-            pushAll $ map RemoveEnemy swarms
+          _ -> pure ()
 
         zone <-
           case attr enemyPlacement enemy of

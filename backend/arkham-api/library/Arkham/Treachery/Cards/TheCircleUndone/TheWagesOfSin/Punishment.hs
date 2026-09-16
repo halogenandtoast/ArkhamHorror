@@ -22,7 +22,7 @@ instance HasModifiersFor Punishment where
       maybeModified_ attrs (SkillTestTarget st.id) do
         source <- MaybeT getSkillTestSource
         investigator <- MaybeT getSkillTestInvestigator
-        guard $ isSource attrs source && treacheryInThreatArea investigator attrs
+        guard $ isAbilitySource attrs 2 source
         guardM
           . lift
           . selectAny

@@ -48,6 +48,27 @@ REDIS_CONN ?= redis://localhost:6379
 # recipes mention $(MAKE) and make treats such lines as recursive.
 FILE_WATCH ?= --file-watch
 
+# Why every entr loop below starts with a trap.
+#
+# entr exits 0 when it takes a SIGINT -- that is documented, not a bug (see
+# EXIT STATUS in entr(1)) -- and it exits 2 when a file is added to or removed
+# from a watched directory. The `while` wrapper exists for that second case, so
+# the loop re-runs find and picks up new card modules.
+#
+# The catch is that Ctrl-C then has to stop the *shell* running the loop, and
+# whether it does is purely a property of that shell. make runs recipes with
+# /bin/sh: on Linux that is dash, which aborts the loop, but on macOS it is
+# bash, and bash ignores SIGINT while it waits on a foreground child and only
+# re-raises it if that child *died* of the signal. entr exited 0, so bash
+# swallows the Ctrl-C and cheerfully starts the next iteration -- forever.
+# Same Makefile, same entr, opposite behaviour on the two machines.
+#
+# An explicit INT trap takes bash off that path (with a trap installed it stops
+# ignoring the signal), so Ctrl-C ends the loop on either shell. The `[ $$? = 2
+# ]` guard alongside it is the precise version of the same thing: keep looping
+# only for the reason the loop was written, and stop on 0 (SIGINT) or 1 (entr
+# errored, e.g. no regular files on stdin) instead of spinning on it.
+
 .PHONY: core.watch
 core.watch:
 	cd arkham-api && \
@@ -75,7 +96,8 @@ api.watch:
 .PHONY: watch.poke
 watch.poke:
 	@command -v entr >/dev/null || { echo "watch.poke needs entr: brew install entr"; exit 1; }
-	@while :; do \
+	@trap 'exit 0' INT; \
+	while :; do \
 	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
 	    | entr -dnpz true >/dev/null 2>&1; \
 	  cp stack.yaml .stack.yaml.poke && cat .stack.yaml.poke > stack.yaml; \
@@ -129,9 +151,11 @@ api.rebuild:
 .PHONY: api.watch.entr
 api.watch.entr:
 	@command -v entr >/dev/null || { echo "api.watch.entr needs entr: brew install entr"; exit 1; }
-	@while :; do \
+	@trap 'exit 0' INT; \
+	while :; do \
 	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
 	    | entr -dn $(MAKE) --no-print-directory api.rebuild; \
+	  [ $$? = 2 ] || break; \
 	done
 
 ## api.watch.entr + the rolling build log (see api.watch.log).
@@ -199,9 +223,11 @@ api.rebuild.test:
 .PHONY: api.watch.test.entr
 api.watch.test.entr:
 	@command -v entr >/dev/null || { echo "api.watch.test.entr needs entr: brew install entr"; exit 1; }
-	@while :; do \
+	@trap 'exit 0' INT; \
+	while :; do \
 	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
 	    | entr -dn $(MAKE) --no-print-directory api.rebuild.test; \
+	  [ $$? = 2 ] || break; \
 	done
 
 ## The full loop: entr-driven, rebuilds, restarts the server, runs the suite, and
@@ -301,9 +327,11 @@ test.rebuild:
 .PHONY: test.watch.entr
 test.watch.entr:
 	@command -v entr >/dev/null || { echo "test.watch.entr needs entr: brew install entr"; exit 1; }
-	@while :; do \
+	@trap 'exit 0' INT; \
+	while :; do \
 	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
 	    | entr -dn $(MAKE) --no-print-directory test.rebuild; \
+	  [ $$? = 2 ] || break; \
 	done
 
 ## test.watch.entr + the rolling build log (see api.watch.log): entr-driven,

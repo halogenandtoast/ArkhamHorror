@@ -102,9 +102,16 @@ EOF
 _file_size() { stat -c%s "$1" 2>/dev/null || stat -f%z "$1"; }
 export -f _file_size
 
-# Called in parallel by xargs. Args: <expected_size> <key>
+# Called in parallel by xargs. Takes ONE argument, a whole listing record:
+# "<size><TAB><key>". It has to be one argument: 99 keys in the bucket contain
+# spaces (the Spanish card art under img/arkham/es/), and xargs splits on any
+# whitespace, not just newlines. Passing size and key as two arguments let a
+# single spaced key shift every following pair by one -- the next key was read
+# as a size and the one after that as a key -- which silently skipped whole
+# directories that sort after img/arkham/es/ (portraits/, sets/, slots/).
 _fetch_one() {
-  local expected_size="$1" key="$2"
+  local record="$1"
+  local expected_size="${record%%$'\t'*}" key="${record#*$'\t'}"
   local dest="$PUBLIC_DIR/$key" tmp="$PUBLIC_DIR/$key.tmp"
   local retries="${FETCH_RETRIES:-3}"
 
@@ -118,7 +125,11 @@ _fetch_one() {
 
   local attempt=1
   while [ "$attempt" -le "$retries" ]; do
-    if curl -fsSL --retry 0 "$CDN_BASE/$key" -o "$tmp" 2>/dev/null; then
+    # Timeouts matter: without them a stalled connection blocks a worker
+    # forever, and with -P N all N workers can end up wedged, leaving the whole
+    # fetch hung with no output and no downloads in flight.
+    if curl -fsSL --retry 0 --connect-timeout 10 --max-time 300 --speed-time 60 --speed-limit 1024 \
+         "$CDN_BASE/$key" -o "$tmp" 2>/dev/null; then
       local actual; actual=$(_file_size "$tmp")
       if [ "$actual" = "$expected_size" ]; then
         mv "$tmp" "$dest"
@@ -239,8 +250,9 @@ _sync_prefix() {
   fi
 
   local xargs_rc=0
-  printf '%s\n' "$listing" \
-    | xargs -P "$PARALLEL" -n 2 bash -c '_fetch_one "$@"' _ \
+  # NUL-delimited so keys keep their spaces; one record per _fetch_one call.
+  printf '%s\n' "$listing" | tr '\n' '\0' \
+    | xargs -0 -P "$PARALLEL" -n 1 bash -c '_fetch_one "$@"' _ \
     || xargs_rc=$?
 
   # ── Summary ───────────────────────────────────────────────────────────────

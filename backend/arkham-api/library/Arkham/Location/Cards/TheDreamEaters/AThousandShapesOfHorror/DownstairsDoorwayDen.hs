@@ -1,12 +1,11 @@
 module Arkham.Location.Cards.TheDreamEaters.AThousandShapesOfHorror.DownstairsDoorwayDen (downstairsDoorwayDen, DownstairsDoorwayDen (..)) where
 
-import Arkham.Discover
+import Arkham.Ability
 import Arkham.GameValue
 import Arkham.Location.CardDefs.TheDreamEaters.AThousandShapesOfHorror qualified as Cards
-import Arkham.Location.Runner
+import Arkham.Location.Import.Lifted
+import Arkham.Message.Lifted.Log
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
-import Arkham.Prelude
 import Arkham.ScenarioLogKey (ScenarioLogKey (StudiedADesecratedPortrait))
 
 newtype DownstairsDoorwayDen = DownstairsDoorwayDen LocationAttrs
@@ -20,22 +19,22 @@ instance HasAbilities DownstairsDoorwayDen where
   getAbilities (DownstairsDoorwayDen attrs) =
     extendRevealed
       attrs
-      [ restrictedAbility attrs 1 (Here <> canDiscoverCluesAt (be attrs))
+      [ restricted attrs 1 (Here <> canDiscoverCluesAt (be attrs))
           $ triggered
             (SkillTestResult #after You (whileInvestigating attrs) #success)
             (HandDiscardCost 1 #any)
-      , restrictedAbility attrs 2 Here
+      , onlyOnce
+          $ restricted attrs 2 Here
           $ FastAbility
           $ GroupClueCost (PerPlayer 1) (LocationWithId $ toId attrs)
       ]
 
 instance RunMessage DownstairsDoorwayDen where
-  runMessage msg l@(DownstairsDoorwayDen attrs) = case msg of
+  runMessage msg l@(DownstairsDoorwayDen attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      did <- getRandom
-      push $ Msg.DiscoverClues iid $ discoverPure did attrs (attrs.ability 1) 1
+      discoverAtYourLocation NotInvestigate iid (attrs.ability 1) 1
       pure l
     UseThisAbility _ (isSource attrs -> True) 2 -> do
-      push $ Remember StudiedADesecratedPortrait
+      remember StudiedADesecratedPortrait
       pure l
-    _ -> DownstairsDoorwayDen <$> runMessage msg attrs
+    _ -> DownstairsDoorwayDen <$> liftRunMessage msg attrs

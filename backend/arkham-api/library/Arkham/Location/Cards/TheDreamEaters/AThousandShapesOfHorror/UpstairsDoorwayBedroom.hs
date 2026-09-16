@@ -21,7 +21,8 @@ instance HasAbilities UpstairsDoorwayBedroom where
       x
       [ restricted x 1 (Here <> exists (TreacheryInThreatAreaOf You <> TreacheryIsNonWeakness))
           $ ActionAbility mempty Nothing (ActionCost 2)
-      , restricted x 2 (Here <> not_ (Remembered FoundACrackedMirror))
+      , onlyOnce
+          $ restricted x 2 Here
           $ FastAbility
           $ GroupClueCost (PerPlayer 1) (be x)
       ]

@@ -29,12 +29,7 @@ instance HasAbilities DownstairsDoorwayParlor where
       $ restricted
         a
         1
-        ( Here
-            <> exists (enemyIs Enemies.theUnnamable <> EnemyWithDamage (AtLeast $ PerPlayer 1))
-            -- The Attic remembers the same key; see the note there for why
-            -- achievements keep both offerable.
-            <> oneOf [AchievementsEnabled, not_ (Remembered RecoveredAStrangeKey)]
-        )
+        (Here <> exists (enemyIs Enemies.theUnnamable <> EnemyWithDamage (AtLeast $ PerPlayer 1)))
       $ FastAbility Free
 
 instance RunMessage DownstairsDoorwayParlor where

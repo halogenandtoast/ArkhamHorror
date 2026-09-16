@@ -30,10 +30,7 @@ instance HasAbilities Attic where
     extendRevealed
       x
       [ onlyOnce
-          -- The Parlor remembers the same key, so normally whichever fires first
-          -- hides the other. With achievements on, both stay offerable (once each)
-          -- so "Déjà Vu" can tick both boxes; the second is a no-op.
-          $ restrictedAbility x 1 (Here <> oneOf [AchievementsEnabled, not_ (Remembered RecoveredAStrangeKey)])
+          $ restrictedAbility x 1 Here
           $ FastAbility
           $ GroupClueCost (PerPlayer 1) (LocationWithId $ toId x)
       ]

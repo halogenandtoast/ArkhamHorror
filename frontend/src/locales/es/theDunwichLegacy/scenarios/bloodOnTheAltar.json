@@ -1,0 +1,73 @@
+{
+  "heading": "Escenario IV",
+  "label": {
+    "chooseHiredGunLocation": "Elige dónde colocar Pistolero a sueldo"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 por cada Lugar en juego que no tenga una carta de Encuentro debajo (máx. -4).",
+      "cultist": "-2. Si fracasas, añade 1 pista de la reserva de fichas a tu Lugar.",
+      "tablet": "-2. Si estás en la Cámara oculta, revela otra ficha.",
+      "elderThing": "-3. Si fracasas, coloca 1 perdición en el plan actual."
+    },
+    "hardExpert": {
+      "skull": "-1 por cada Lugar en juego que no tenga una carta de Encuentro debajo.",
+      "cultist": "-4. Si fracasas, añade 1 pista de la reserva de fichas a tu Lugar.",
+      "tablet": "-3. Revela otra ficha.",
+      "elderThing": "-3. Coloca 1 perdición en el plan actual."
+    }
+  },
+  "xp": {
+    "bonus": "Obtiene una visión del mundo oculto de los Mitos."
+  },
+  "intro": {
+    "title": "Parte IV: Sangre en el altar",
+    "body": "<p>Cuando por fin llegáis a Dunwich, os reciben Zebulon Whateley y Earl Sawyer, otro hombre de la aldea que se había reunido con el Dr. Armitage durante el incidente de hace varios meses. «Las cosas no pintan demasiado bien por aquí», os dice Earl. «Unos cuantos desaparecieron hace unas noches. Esos chotacabras no callan. No sé qué hacéis aquí, pero la última vez que vinieron los de Arkham fue una mala noticia. Muy mala noticia.» Parpadea con rapidez, tose y aparta la mirada.</p><p>«Mirad, ¿por qué no descansáis esta noche y buscáis lo que sea que buscáis mañana?», interviene Zebulon, poniéndoos una mano arrugada en el hombro. Empezáis a protestar, pero los músculos doloridos y la mente exhausta no os permiten negaros. El anciano se ofrece a hospedaros por la noche y os lleva a su casa en las afueras de la aldea de Dunwich. El pueblo está desaliñado y siniestro, y os encontráis deseando no haber venido. Os dormís durante el trayecto y apenas recordáis nada más de aquella noche.</p><p>Cuando despertáis, encontráis la casa de Zebulon abandonada, y no hay rastro del anciano ni del Sr. Sawyer. Temiendo lo peor, os dirigís a la aldea de Dunwich a investigar, con la esperanza de hallar respuestas.</p>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: Sangre en el altar, Dunwich, Chotacabras, Engendros nocturnos y Males ancestrales. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/blood-on-the-altar.png' /><img src='{setImgPath}/dunwich.png' /><img src='{setImgPath}/whippoorwills.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+    "placeLocations": "Pon en juego Plaza del pueblo. Cada investigador comienza la partida en la Plaza del pueblo.",
+    "placeRandomLocations": "Retira del juego al azar una de las dos copias de cada uno de los demás Lugares. A continuación, elige al azar uno de los seis Lugares restantes y retíralo también del juego. Pon en juego los Lugares restantes.",
+    "potentialSacrifices": "Consulta el Registro de campaña. Reúne las cartas de cada personaje que «fue secuestrado» según tu Registro de campaña. Forma un montón boca abajo de «sacrificios potenciales», compuesto por cada una de esas cartas, junto con la carta Zebulon Whateley y la carta Earl Sawyer.",
+    "setAside": "Deja aparte las siguientes cartas, fuera de juego: Silas Bishop, La Cámara oculta, Llave de la cámara y Polvo de Ibn-Ghazi.",
+    "delayed": "Consulta el Registro de campaña. Si *los investigadores se retrasaron de camino a Dunwich*: Añade 1 perdición al plan 1a.",
+    "seekingVengeance": "Consulta el Registro de campaña. Si *la banda de O'Bannion tiene una cuenta pendiente con los investigadores*: En busca de venganza, la banda del Clover Club os ha seguido hasta Dunwich. Reúne todas las cartas del conjunto de encuentro La banda de Naomi y barájalas en el mazo de Encuentro. Este conjunto se indica con el siguiente icono:<section class='encounter-sets'><img src='{setImgPath}/naomis-crew.png' /></section>",
+    "placeUnderneath": "Toma las cartas La Cámara oculta y Llave de la cámara dejadas aparte, junto con las 3 cartas superiores del mazo de Encuentro. Barájalas y reparte al azar 1 carta boca abajo debajo de cada Lugar en juego excepto la Plaza del pueblo."
+  },
+  "hiddenChamber": {
+    "title": "La Cámara oculta",
+    "body": "<p class='basic'>Este escenario incluye un Lugar de una sola cara (La Cámara oculta) que se ha repartido boca abajo debajo de un Lugar aleatorio. La Cámara oculta sólo tiene un lado revelado, y tiene un efecto de _Revelación_ que la pone en juego cuando se roba.</p><p class='basic'>Al ponerse en juego, un Lugar de una sola cara se pone en juego con su lado revelado boca arriba, porque no tiene lado no revelado. Por lo demás, funciona como un Lugar normal en todos los demás aspectos.</p>"
+  },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.bloodOnTheAltar.hiddenChamber.title",
+      "body": "@:theDunwichLegacy.bloodOnTheAltar.hiddenChamber.body"
+    }
+  ],
+  "resolutions": {
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'><p>_Si no se alcanzó ninguna resolución (cada investigador abandonó o fue derrotado)_: Los gritos de los chotacabras se desvanecen a lo lejos, y la aldea de Dunwich se llena de un silencio siniestro. Todo lo que se oye es el silbido seco del viento gélido y el lento susurro de las hojas muertas. No hay rastro de los aldeanos desaparecidos, ni lo habrá jamás.</p><ul><li>En tu Registro de campaña, anota que *el ritual se completó*.</li><li>Si quedaba algún sacrificio potencial al final de la partida, colócalos debajo del mazo de planes.</li><li>En tu Registro de campaña, bajo «Sacrificados a Yog‑Sothoth», anota los nombres de cada carta única que esté debajo del mazo de planes. Cada una de esas cartas se retira de los mazos de todos los jugadores y ya no puede incluirse en el mazo de ningún jugador durante el resto de la campaña.</li><li>Si un investigador con El Necronomicón (*Traducción de Olaus Wormius*) en su mazo fue derrotado, en tu Registro de campaña anota que el Necronomicón fue robado. El Necronomicón (*Traducción de Olaus Wormius*) debe retirarse del mazo de ese investigador.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 2 de experiencia adicional al vislumbrar el mundo oculto de los Mitos.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Procede al _Escenario V: Indimensionados e invisibles._</li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: Al asestar el golpe de gracia, el cuerpo de la criatura explota en cientos de apéndices retorcidos como cuerdas, que se retuercen por el suelo y trepan por las paredes. Estáis tan sobresaltados que no sois lo bastante rápidos para impedir que escapen de la sala. Aun así, fuera lo que fuese aquella criatura, os alegra que ahora esté muerta.</p><ul><li>En tu Registro de campaña, anota que *los investigadores libraron a Silas Bishop de su sufrimiento*.</li><li>En tu Registro de campaña, bajo «Sacrificados a Yog‑Sothoth», anota los nombres de cada carta única que esté debajo del mazo de planes. Cada una de esas cartas se retira de los mazos de todos los jugadores y ya no puede incluirse en el mazo de ningún jugador durante el resto de la campaña.</li><li>Si un investigador con El Necronomicón (*Traducción de Olaus Wormius*) en su mazo fue derrotado, en tu Registro de campaña anota que el Necronomicón fue robado. El Necronomicón (*Traducción de Olaus Wormius*) debe retirarse del mazo de ese investigador.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 2 de experiencia adicional al vislumbrar el mundo oculto de los Mitos.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Procede al _Interludio II: Los supervivientes_.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: Con la criatura que antaño fue Silas azotándoos desde sus cadenas, tenéis poco tiempo para reaccionar. Sabiendo que el Necronomicón podría tener un hechizo o una invocación que pudiera someter a Silas, rechazáis a la abominación el tiempo suficiente para hallar un pasaje que pueda ayudar. Sin tiempo que perder, recitáis la invocación en latín, y descubrís que las palabras os salen con facilidad de la lengua, como recordadas de una memoria anterior. El cuerpo de la criatura empieza a encogerse y derretirse conforme la invocación crece, sus gritos aterradores y espectrales. Al final, todo lo que queda es el cadáver desfigurado de un hombre: Silas Bishop. Encontráis un colgante de plata con una extraña constelación grabada, metido en su camisa. Os lo lleváis, con la esperanza de encontrarle un uso.</p><ul><li>En tu Registro de campaña, anota que *los investigadores restauraron a Silas Bishop*.</li><li>En tu Registro de campaña, bajo «Sacrificados a Yog‑Sothoth», anota los nombres de cada carta única que esté debajo del mazo de planes. Cada una de esas cartas se retira de los mazos de todos los jugadores y ya no puede incluirse en el mazo de ningún jugador durante el resto de la campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 2 de experiencia adicional al vislumbrar el mundo oculto de los Mitos.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Procede al _Interludio II: Los supervivientes._</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3_: Con la criatura que antaño fue Silas azotándoos desde sus cadenas, tenéis poco tiempo para reaccionar. Con la esperanza de que haya algo en la cámara que podáis usar a vuestro favor, rechazáis a la abominación el tiempo suficiente para hallar un diario; muchos de sus pasajes están escritos en latín. Parece ser un extracto manuscrito del Necronomicón, de propósito desconocido. Sin tiempo que perder, recitáis la invocación, tropezando con las palabras y sintiendo cómo se os cierra la garganta con cada frase. El cuerpo de la criatura empieza a encogerse y derretirse conforme continúa la invocación, sus gritos aterradores y espectrales. Al final, todo lo que queda es un montón de icor húmedo y pegajoso, y un hedor podrido.</p><ul><li>En tu Registro de campaña, anota que *los investigadores desterraron a Silas Bishop*.</li><li>En tu Registro de campaña, bajo «Sacrificados a Yog‑Sothoth», anota los nombres de cada carta única que esté debajo del mazo de planes. Cada una de esas cartas se retira de los mazos de todos los jugadores y ya no puede incluirse en el mazo de ningún jugador durante el resto de la campaña.</li><li>Si un investigador con El Necronomicón (*Traducción de Olaus Wormius*) en su mazo fue derrotado, en tu Registro de campaña anota que el Necronomicón fue robado. El Necronomicón (*Traducción de Olaus Wormius*) debe retirarse del mazo de ese investigador.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 2 de experiencia adicional al vislumbrar el mundo oculto de los Mitos.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Procede al _Interludio II: Los supervivientes._</li></ul></div>"
+    },
+    "xp": {
+      "bonus": "Obtiene una visión del mundo oculto de los Mitos"
+    }
+  },
+  "tooltips": {
+    "villageCommons": {
+      "resign": "«¡Esto es un suicidio! Más nos vale escondernos esta noche.»"
+    }
+  }
+}

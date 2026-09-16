@@ -1,0 +1,66 @@
+{
+  "heading": "Escenario I-A",
+  "intro": {
+    "title": "Escenario I-A: Actividad extraescolar",
+    "body": "<p>El Dr. Armitage está preocupado de que su colega, el profesor Warren Rice, pueda estar en problemas, así que os ha pedido ayuda para encontrar a su amigo. Parece irrazonablemente nervioso por la desaparición de su colega, considerando que el profesor Rice sólo lleva «desaparecido» unas pocas horas…</p>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *Actividad extraescolar*, *Brujería*, *El Más Allá*, *Los siervos de Bishop*, *Chotacabras*, *Males ancestrales*, *Puertas cerradas* y *Agentes de Yog‑Sothoth*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/extracurricular-activity.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/bishops-thralls.png' /><img src='{setImgPath}/whippoorwills.png' /><img src='{setImgPath}/ancient-evils.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
+    "facultyOffices": {
+      "body": "Según las siguientes circunstancias, debe usarse una versión distinta de Despachos de la facultad en este escenario.",
+      "theNightIsStillYoung": "Si Actividad extraescolar es el primer escenario de la campaña, usa Despachos de la facultad (*La noche es joven*). Déjala aparte, fuera de juego. Retira del juego Despachos de la facultad (*Es tarde*).",
+      "theHourIsLate": "Si has completado La casa siempre gana, usa Despachos de la facultad (*Es tarde*). Déjala aparte, fuera de juego. Retira del juego Despachos de la facultad (*La noche es joven*)."
+    },
+    "setAside": "Deja aparte las siguientes cartas, fuera de juego: «Jazz» Mulligan, Pócima alquímica, El Experimento, Profesor Warren Rice, Residencia de estudiantes y Laboratorios de alquimia.",
+    "placeLocations": "Pon en juego los Lugares Patio de Miskatonic, Biblioteca Orne, Edificio de Humanidades, Asociación de estudiantes, Edificio de Ciencias y Edificio de Administración. Cada investigador comienza la partida en el Patio de Miskatonic."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'><p>_Si no se alcanzó ninguna resolución (cada investigador abandonó o fue derrotado)_: Mientras huís de la universidad, oís gritos desde el extremo norte del campus. Una ambulancia os rebasa, y teméis lo peor. Horas más tarde, os enteráis de que un «perro rabioso de algún tipo» se coló en la residencia de estudiantes. La criatura atacó a los estudiantes del interior y muchos resultaron destrozados o muertos en el ataque.</p><ul><li>En tu Registro de campaña, anota que el profesor Warren Rice fue secuestrado.</li><li>En tu Registro de campaña, anota que los investigadores no consiguieron salvar a los estudiantes. Os atormenta la culpa. Añade 1 ficha {'{'}tablet{'}'} a la bolsa de caos durante el resto de la campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 1 de experiencia al reflexionar sobre los sucesos de la noche.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si este es el primer escenario de la campaña, procede al Escenario I–B: La casa siempre gana. En caso contrario, procede al Interludio I: El destino de Armitage.</li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: Encontráis al profesor Rice atado y amordazado en el armario de su despacho. Cuando lo liberáis, os informa de que los extraños hombres y mujeres que deambulan por el campus lo habían estado acechando durante horas. Lo acorralaron en su despacho y lo ataron, aunque Rice no está seguro de con qué propósito. Le informáis de que os ha enviado el Dr. Armitage, y Rice parece aliviado, aunque sospecha que el Dr. Morgan también podría estar en peligro. Como los extraños del campus parecen haber estado persiguiendo al profesor Rice, decidís que lo mejor es escoltarlo fuera del campus lo antes posible. Al dejar la universidad, oís gritos desde el extremo norte del campus. Una ambulancia os rebasa, y teméis lo peor. Horas más tarde, os enteráis de que un «perro rabioso de algún tipo» se coló en la residencia de estudiantes. La criatura atacó a los estudiantes del interior, y muchos resultaron destrozados o muertos en el ataque.</p><ul><li>En tu Registro de campaña, anota que *los investigadores rescataron al profesor Warren Rice*. Cualquier investigador puede elegir añadir al Profesor Warren Rice a su mazo. Esta carta no cuenta para el tamaño de mazo de ese investigador.</li><li>En tu Registro de campaña, anota que *los investigadores no consiguieron salvar a los estudiantes*. Os atormenta la culpa. Añade 1 ficha {'{'}tablet{'}'} a la bolsa de caos durante el resto de la campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Procede al Escenario I–B: La casa siempre gana.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: Activáis todas las alarmas de incendios de la residencia y hacéis salir a los estudiantes por la salida norte del edificio, con la esperanza de abandonar el campus. Muchos de los estudiantes están confusos y agotados, pero creéis que intentar explicar la situación hará más mal que bien. Minutos más tarde, un terrible chillido resuena por el campus, agudo y desgarrador. Decís a los estudiantes que esperen y volvéis a la residencia a investigar. Extrañamente, no halláis rastro de la extraña criatura: una perspectiva que os preocupa más de lo que os alivia. Os apresuráis a los despachos de la facultad para encontrar al profesor Rice, pero no hay señal de él en ninguna parte.</p><ul><li>En tu Registro de campaña, anota que *el profesor Warren Rice fue secuestrado*.</li><li>En tu Registro de campaña, anota que *los estudiantes fueron rescatados*.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si este es el primer escenario de la campaña, procede al Escenario I–B: La casa siempre gana. En caso contrario, procede al Interludio I: El destino de Armitage.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3_: Tras derrotar a la extraña y aterradora criatura del Departamento de Alquimia, corréis a los despachos de la facultad para encontrar al profesor Rice. Para cuando llegáis a su despacho, no hay señal de él en ninguna parte.</p><ul><li>En tu Registro de campaña, anota que *el profesor Warren Rice fue secuestrado*.</li><li>En tu Registro de campaña, anota que *el Experimento fue derrotado*.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si este es el primer escenario de la campaña, pasa a La casa siempre gana. En caso contrario, pasa al Interludio I—El destino de Armitage.</li></ul>"
+    },
+    "resolution4": {
+      "title": "Resolución 4",
+      "body": "<div class='resolution'><p>_Resolución 4_: Despertáis horas más tarde, exhaustos y heridos. No estáis seguros de lo que visteis, pero la visión llenó vuestra mente de terror. Por otros supervivientes, os enteráis de que un «perro rabioso de algún tipo» se coló en la residencia de estudiantes. La criatura atacó a los estudiantes del interior, y muchos resultaron destrozados o muertos en el ataque.</p><ul><li>En tu Registro de campaña, anota que *los investigadores estuvieron inconscientes durante varias horas*.</li><li>En tu Registro de campaña, anota que *el profesor Warren Rice fue secuestrado*.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 1 de experiencia al reflexionar sobre los sucesos de la noche.<ul><li>_Experiencia_: {xp}</li></ul></li><li>En tu Registro de campaña, anota que *los investigadores no consiguieron salvar a los estudiantes*. Os atormenta la culpa. Añade 1 ficha {'{'}tablet{'}'} a la bolsa de caos durante el resto de la campaña.</li><li>Si este es el primer escenario de la campaña, pasa al Escenario I–B: La casa siempre gana. En caso contrario, pasa al Interludio I: El destino de Armitage.</li></ul></div>"
+    },
+    "xp": {
+      "noResolution": "Reflexiona sobre los sucesos de la noche.",
+      "resolution4": "Reflexiona sobre los sucesos de la noche."
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1. Si fracasas, descarta las 3 cartas superiores de tu mazo.",
+      "cultist": "-1 (-3 en su lugar si hay 10 o más cartas en tu pila de descartes).",
+      "elderThing": "-X. Descarta las 2 cartas superiores de tu mazo. X es el coste impreso total de esas cartas descartadas."
+    },
+    "hardExpert": {
+      "skull": "-2. Si fracasas, descarta las 5 cartas superiores de tu mazo.",
+      "cultist": "-1 (-5 en su lugar si hay 10 o más cartas en tu pila de descartes).",
+      "elderThing": "-X. Descarta las 3 cartas superiores de tu mazo. X es el coste impreso total de esas cartas descartadas."
+    }
+  },
+  "tooltips": {
+    "miskatonicQuad": {
+      "resign": "«No encontramos a Rice por ninguna parte…» Dejáis el campus, con la esperanza de que Armitage os perdone."
+    },
+    "alchemyLabs": {
+      "action": {
+        "can": "{'{'}action{'}'}: _Investigar_. Si tienes éxito, en lugar de descubrir pistas, toma la Pócima alquímica de debajo de este Lugar si es posible.",
+        "cannot": "{'{'}action{'}'}: _Investigar_. Si tienes éxito, en lugar de descubrir pistas, toma la Pócima alquímica de debajo de este Lugar si es posible (NO PUEDES)."
+      }
+    }
+  }
+}

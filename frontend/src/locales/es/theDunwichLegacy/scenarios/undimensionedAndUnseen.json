@@ -1,0 +1,81 @@
+{
+  "heading": "Escenario V",
+  "label": {
+    "playPowder": "Juega Polvo de Ibn-Ghazi",
+    "doNotPlayPowder": "No juegues Polvo de Ibn-Ghazi",
+    "doNotRemoveCluesAndFail": "No retires pistas de Prole de Yog-Sothoth y fracasa en la prueba de habilidad",
+    "doNotRemoveCluesAndTreatAsNegative4": "No retires pistas de Prole de Yog-Sothoth y trátalo como -4",
+    "chooseInvestigatorToPlaceClue": "Elige un investigador para colocar una pista",
+    "cluesToSpend": "Número de pistas a gastar",
+    "doNotRemoveCluesFail": "No retires pistas de Prole de Yog-Sothoth y fracasa en la prueba de habilidad",
+    "doNotRemoveCluesTreatAsMinusFour": "No retires pistas de Prole de Yog-Sothoth y trátalo como -4",
+    "spawnSetAsideBrood": "Genera una Prole de Yog-Sothoth dejada aparte en un Lugar aleatorio"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1 por cada Prole de Yog-Sothoth en juego.",
+      "cultist": "Revela otra ficha. Si fracasas en esta prueba, recibe 1 horror.",
+      "tablet": "0. Debes retirar todas las fichas de pista de una Prole de Yog-Sothoth en juego, o el modificador de esta ficha es -4 en su lugar.",
+      "elderThing": "-3. Si se revela esta ficha durante un ataque o un intento de evasión contra una Prole de Yog-Sothoth, te ataca inmediatamente."
+    },
+    "hardExpert": {
+      "skull": "-2 por cada Prole de Yog-Sothoth en juego.",
+      "cultist": "Revela otra ficha. Si fracasas en esta prueba, recibe 1 horror y 1 daño.",
+      "tablet": "0. Debes retirar todas las fichas de pista de una Prole de Yog-Sothoth en juego, o esta prueba fracasa automáticamente.",
+      "elderThing": "-5. Si se revela esta ficha durante un ataque o un intento de evasión contra una Prole de Yog-Sothoth, te ataca inmediatamente."
+    }
+  },
+  "tooltips": {
+    "dunwichVillage": {
+      "resign": "Os escondéis de las criaturas."
+    }
+  },
+  "intro": {
+    "title": "Escenario V: Indimensionados e invisibles",
+    "body": "<p>Vuestra búsqueda en la aldea de Dunwich ha desenterrado numerosos documentos, entradas de diario y teorías esotéricas. Leer esos materiales os deja exhaustos y emocionalmente drenados. La mayor parte del contenido fue escrita por una sola fuente: un hombre llamado Seth Bishop. Cuando preguntáis por el pueblo, os enteráis de que Seth es un vecino de Dunwich. Junto con varios otros, Seth había presenciado de primera mano la devastación causada por los sucesos del «horror de Dunwich», como Armitage había bautizado el incidente. Curiosamente, desde entonces muy poca gente había visto a Seth por el pueblo, y quienes lo vieron afirmaban que tenía los ojos inyectados en sangre y el rostro sudoroso y pálido.</p><p>No dudáis de que alguien que ha visto lo que Seth ha visto parecería nervioso o paranoico. Pero cuanto más leéis de sus escritos frenéticos y desquiciados, más creéis que está involucrado en los sucesos recientes. Sus escritos hablan de haber «reunido los restos» y de usar métodos arcanos para «imbuir la esencia de los padres» en otras criaturas y, con el tiempo, en otras personas. Las explicaciones y diagramas que siguen son inimaginablemente complejos y desafían toda comprensión.</p><p>Antes de que podáis encontrar a Seth y confrontarlo, varios hombres y mujeres de la aldea se os acercan en pánico. «¡Ha vuelto!», se lamenta uno de ellos. Lo reconocéis como Curtis Whateley, de la rama no corrompida. «¡Lo que sea que mató a los Frye, ha vuelto! ¡Ha destrozado la casa de los Bishop como si fuera de papel!» Curtis y los demás aldeanos parlotean entre sí, alzando la voz en pánico.</p>",
+    "label": {
+      "calm": "Intentáis calmar a los aldeanos para saber más. Procede a la _Parte 1_.",
+      "warn": "Intentáis avisar a los aldeanos y convencerlos de evacuar. Pasa a la _Parte 2_."
+    },
+    "part1": "<p>_Parte 1_: Pretendéis calmar a los aldeanos para que os expliquen qué está ocurriendo. Os informan de que hubo un estruendo al norte, y cuando fueron a investigar encontraron la granja de los Bishop hecha trizas. Un rastro de huellas pesadas llevaba a la cercana Cañada de Cold Spring. «Sabéis qué hacer, ¿verdad? Vosotros, los de Arkham, detuvisteis a esa cosa la última vez», dice uno de los aldeanos. Curtis niega con la cabeza y se muerde el labio.</p><p>«Ni siquiera pudimos ver aquella cosa infernal hasta que el viejo profesor le echó aquel polvo», dice. «Hasta el día de hoy, ojalá no la hubiera visto…» Hay que hacer algo para detener la furia del monstruo. Pero, si los documentos que encontrasteis son ciertos, puede que haya más de una criatura suelta…</p><ul><li>Anota en tu Registro de campaña que *calmasteis a los aldeanos*. Continúa con la _Preparación_.</li></ul>",
+    "part2": "<p>_Parte 2_: Avisáis a los aldeanos de que corren un grave peligro, y les instáis a huir de Dunwich mientras puedan. Varios de ellos os hacen caso de inmediato, recordando la terrible monstruosidad que había puesto en peligro al pueblo. Curtis cae de rodillas desesperado, sudando con fiebre. «Es esa _cosa_ otra vez, ¿verdad? Ha vuelto a por nosotros», tartamudea Curtis. «Espero que tengáis algo de aquel polvo que tenía el viejo profesor la última vez. Ni siquiera pudimos ver a la maldita cosa hasta que se lo echó. Hasta el día de hoy, ojalá no la hubiera visto…» Hay que hacer algo para detener la furia del monstruo. Pero, si los documentos que encontrasteis son ciertos, puede que haya más de una criatura suelta…</p><ul><li>Anota en tu Registro de campaña que *avisasteis a los aldeanos*. Continúa con la _Preparación_.</li></ul>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: Indimensionados e invisibles, Chotacabras, Bestias siervas, Dunwich y Miedo paralizante. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/undimensioned-and-unseen.png' /><img src='{setImgPath}/whippoorwills.png' /><img src='{setImgPath}/beast-thralls.png' /><img src='{setImgPath}/dunwich.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "placeLocations": "Pon en juego al azar una de las dos versiones de los siguientes Lugares: Aldea de Dunwich, Cañada de Cold Spring, Páramo devastado, Prado de diez acres, Patio del Diablo y Ruinas Whateley. Retira del juego las demás versiones de cada uno de esos Lugares. Cada investigador comienza la partida en la Aldea de Dunwich.",
+    "sacrificedToYogSothoth": {
+      "instructions": "Consulta el número de nombres anotados bajo «Sacrificados a Yog‑Sothoth» en tu Registro de campaña.",
+      "fourOrMore": "Si hay 4 o más nombres listados, deja aparte 2 copias de Prole de Yog‑Sothoth, fuera de juego. A continuación, retira del juego las 3 copias finales de Prole de Yog‑Sothoth.",
+      "exactlyThree": "Si hay exactamente 3 nombres listados, pon en juego 1 copia de Prole de Yog‑Sothoth en la Cañada de Cold Spring, y deja aparte 2 copias de Prole de Yog‑Sothoth, fuera de juego. A continuación, retira del juego las 2 copias finales de Prole de Yog‑Sothoth.",
+      "exactlyTwo": "Si hay exactamente 2 nombres listados, pon en juego 1 copia de Prole de Yog‑Sothoth en la Cañada de Cold Spring, y deja aparte 3 copias de Prole de Yog‑Sothoth, fuera de juego. A continuación, retira del juego la copia final de Prole de Yog‑Sothoth.",
+      "oneOrFewer": "Si hay 1 o menos nombres listados, pon en juego 1 copia de Prole de Yog‑Sothoth en la Cañada de Cold Spring, y pon en juego 1 copia de Prole de Yog‑Sothoth en el Páramo devastado. A continuación, deja aparte las 3 copias finales de Prole de Yog‑Sothoth, fuera de juego."
+    },
+    "setAside": "Deja aparte cada copia de Fórmula esotérica, fuera de juego.",
+    "powderOfIbnGhazi": "Un investigador con el Polvo de Ibn-Ghazi en su mazo puede buscarlo en su mazo y ponerlo en juego.",
+    "randomBasicWeakness": "Cada investigador busca en la colección una Debilidad básica aleatoria de _*Locura*_, _*Lesión*_ o _*Pacto*_ y la añade a su mazo durante el resto de la campaña."
+  },
+  "choosingARandomLocation": {
+    "title": "Elegir un Lugar aleatorio",
+    "body": "Durante este escenario, a menudo se os pedirá que elijáis un Lugar aleatorio. Esto debe hacerse barajando juntos los 6 Lugares retirados del juego durante la preparación (las versiones de cada Lugar en juego que no se están usando actualmente) y robando 1 al azar."
+  },
+  "specialRules": [
+    {
+      "title": "@:theDunwichLegacy.undimensionedAndUnseen.choosingARandomLocation.title",
+      "body": "@:theDunwichLegacy.undimensionedAndUnseen.choosingARandomLocation.body"
+    }
+  ],
+  "resolutions": {
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'><p class='basic'>_Si no se alcanzó ninguna resolución (cada investigador abandonó o fue derrotado)_: Ve a la _Resolución 1_."
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: Hicisteis todo lo posible por detener a los monstruos desatados, pero había más de los que creíais y no pudisteis matarlos a todos. Exhaustos y aterrorizados, os retiráis a casa de Zebulon con la esperanza de sobrevivir a la noche.</p><ul><li>En tu Registro de campaña, anota que *X prole escapó a la naturaleza*. X es el número total de Prole de Yog‑Sothoth que sigue en juego o dejada aparte.</li><li>Si el mazo de un investigador contiene la carta Polvo de Ibn-Ghazi, retírala del mazo de ese investigador.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: Tras matar a lo que parece ser el último de los monstruos desatados, os retiráis a casa de Zebulon, exhaustos y conmocionados por vuestra experiencia.</p><ul><li>En tu Registro de campaña, anota que *ninguna prole escapó a la naturaleza*.</li><li>Si el mazo de un investigador contiene la carta Polvo de Ibn-Ghazi, retírala del mazo de ese investigador.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    }
+  }
+}

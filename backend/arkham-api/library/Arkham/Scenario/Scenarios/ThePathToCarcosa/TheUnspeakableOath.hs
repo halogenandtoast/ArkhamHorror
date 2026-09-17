@@ -19,11 +19,14 @@ import Arkham.Helpers
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Query
+import Arkham.Helpers.Xp (getInitialVictory)
 import Arkham.I18n
+import Arkham.Id (InvestigatorId, getPlayer)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.CardDefs.ThePathToCarcosa.TheUnspeakableOath qualified as Locations
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (PlaceUnderneath)
+import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
@@ -35,6 +38,7 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.ThePathToCarcosa.TheUnspeakableOath.Helpers
 import Arkham.Trait hiding (Cultist, ElderThing, Expert)
 import Arkham.Treachery.CardDefs.ReturnToThePathToCarcosa.ReturnToTheUnspeakableOath qualified as Treacheries
+import Arkham.UltimatumsAndBoons
 import Arkham.Window qualified as Window
 
 newtype TheUnspeakableOath = TheUnspeakableOath ScenarioAttrs
@@ -247,7 +251,14 @@ instance RunMessage TheUnspeakableOath where
       unless (null defeated) do
         flavor $ scope "defeated" $ setTitle "title" >> p "body"
         for_ defeated drivenInsane
-      if length defeated == length investigators
+      -- "If there are not enough investigators to continue the campaign, the campaign is
+      -- over and the players lose." That pool is every investigator the players can still
+      -- build a deck for, not the ones who just sat down, so losing the whole table does
+      -- not end the campaign: Resolution 1 seats the replacements instead. Ultimatum of
+      -- Survival is the exception -- it eliminates the player along with the investigator,
+      -- so there is nobody left to come back with.
+      survival <- hasUltimatum UltimatumOfSurvival
+      if survival && length defeated == length investigators
         then gameOver
         else case r of
           NoResolution -> do_ R1
@@ -272,18 +283,43 @@ instance RunMessage TheUnspeakableOath where
 
       case r of
         Resolution 1 -> do
-          resolutionWithXp "resolution1" $ allGainXp' attrs
+          -- The experience is the victory display's total, which does not depend on who is
+          -- sitting at the table, so the resolution can be read out with the right number
+          -- before anything else happens. Earning it is a separate, later bullet -- see the
+          -- DoStep below, which runs once the table is the one continuing the campaign.
+          resolutionWithXp "resolution1" getInitialVictory
           record TheKingClaimedItsVictims
-          whenHasRecord YouTookTheOnyxClasp do
-            withOwner Assets.claspOfBlackOnyx \owner -> do
-              removeCampaignCard Assets.claspOfBlackOnyx
-              investigators <- allInvestigators
-              forceAddCampaignCardToDeckChoice
-                (filter (/= owner) investigators)
-                DoNotShuffleIn
-                Assets.claspOfBlackOnyx
           updateSlain
           replaceSymbolTokens Cultist
+
+          -- The clasp's bearer is normally one of the investigators just driven insane, so
+          -- take the card off them here, while getOwner can still see them: once their
+          -- player picks a replacement below they are gone from the game, and the clasp
+          -- would stay owned by an investigator ReloadDecks never deals in again. Who it
+          -- goes to is decided after that, so the owner rides along to the DoStep.
+          mClasp <- runMaybeT do
+            guard =<< lift (getHasRecord YouTookTheOnyxClasp)
+            clasp <- MaybeT $ fetchCardMaybe Assets.claspOfBlackOnyx
+            mOwner <- lift $ getOwner Assets.claspOfBlackOnyx
+            lift do
+              removeCampaignCard Assets.claspOfBlackOnyx
+              for_ mOwner (`removeCardFromDeckForCampaign` clasp)
+            pure (clasp, mOwner)
+
+          -- "Each player whose investigator has been driven insane must choose a new
+          -- investigator from the pool of available investigators." This has to happen
+          -- inside the resolution rather than at the usual between-scenario upgrade window,
+          -- because the two bullets after it -- the clasp and the experience -- belong to
+          -- those new investigators. Ultimatum of Survival keeps those players out,
+          -- matching the campaign's own killed/insane handling.
+          survival <- hasUltimatum UltimatumOfSurvival
+          insane <- if survival then pure [] else select InsaneInvestigator
+          unless (null insane) do
+            push . Msg.chooseUpgradeDecks =<< traverse getPlayer insane
+
+          -- Queued after the deck window, so both remaining bullets see the investigators
+          -- who are actually continuing the campaign.
+          doStep 1 (ScenarioSpecific "resolution1" (toJSON mClasp))
           endOfScenario
         Resolution 2 -> do
           resolutionWithXp "resolution2" $ allGainXp' attrs
@@ -299,5 +335,34 @@ instance RunMessage TheUnspeakableOath where
           replaceSymbolTokens ElderThing
           endOfScenarioThen (InterludeStep 2 (Just interludeResult))
         _ -> throw $ UnknownResolution r
+      pure s
+    DoStep 1 (ScenarioSpecific "resolution1" v) -> do
+      -- Resolution 1's last two bullets, run once every replacement investigator is seated.
+      let mClasp = toResult v :: Maybe (Card, Maybe InvestigatorId)
+
+      -- "Check Campaign Log. If you took the onyx clasp, choose a new investigator to take
+      -- the clasp. That investigator must include the Clasp of Black Onyx weakness in his
+      -- or her deck."
+      for_ mClasp \(clasp, mOwner) -> do
+        -- Not allInvestigators: the scenario's turn order still lists the investigators who
+        -- started it, so a replacement seated moments ago would be filtered straight out of
+        -- it. Anyone still in the campaign is a candidate, resigned survivors included.
+        investigators <-
+          select $ IncludeEliminated (not_ KilledInvestigator <> not_ InsaneInvestigator)
+        -- The previous bearer has usually been replaced by now, so this only bites when
+        -- Resolution 1 was reached with them still around (they resigned); fall back to the
+        -- whole table rather than dropping the clasp out of the campaign.
+        let candidates = case filter (\iid -> Just iid /= mOwner) investigators of
+              [] -> investigators
+              others -> others
+        unless (null candidates)
+          $ forceAddCampaignCardToDeckChoice candidates DoNotShuffleIn clasp
+
+      -- "Each investigator earns experience equal to the Victory X value of each card in
+      -- the victory display." A replacement investigator builds their deck with no
+      -- experience and then earns this, so it has to land on them rather than on the
+      -- investigator they took over from -- otherwise the campaign log credits the
+      -- scenario's experience to someone who is no longer in the campaign.
+      allGainXp attrs
       pure s
     _ -> TheUnspeakableOath <$> liftRunMessage msg attrs

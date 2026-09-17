@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
+import Arkham.Enemy.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Enemies
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Location.CardDefs.TheDrownedCity.TheDoomOfArkham qualified as Locations
 import Arkham.Location.Types (Field (..))
@@ -54,6 +55,10 @@ instance RunMessage ThePhantomShop where
               obtainCard card
               createAssetAt_ card (InPlayArea iid)
             else drawCard iid card
+      -- Randall gets +1[per_investigator] health for each card beneath the shop, so
+      -- taking one can drop his health to or below the damage already on him. Nothing
+      -- rechecks defeat when health falls, only when damage is dealt, so ask here.
+      selectEach (enemyIs Enemies.randallTillinghast) $ checkDefeated (attrs.ability 1)
       pure a
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       advancedWithOther attrs

@@ -1,0 +1,106 @@
+{
+  "heading": "Escenario VIII",
+  "specialRules": [
+    {
+      "title": "La cordura en el reino de Carcosa",
+      "body": "<p class='basic'>En el retorcido y enloquecedor reino de Carcosa, la locura es inevitable. Pero incluso con la mente fracturada y rota, tu investigación no termina aquí. Durante este escenario, los investigadores no son derrotados cuando tienen sobre sí una cantidad de horror igual o superior a su cordura. Los investigadores pueden seguir recibiendo horror incluso por encima de su cordura. Mientras un investigador tenga más horror sobre sí que cordura, se considera que su “cordura restante” es 0.</p>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-2 (-4 en su lugar si no te queda cordura).",
+      "cultist": "Revela otra ficha. Si fracasas, recibe 1 horror.",
+      "tablet": "-3. Si fracasas y Hastur está en juego, coloca 1 pista en tu Lugar (de la reserva de fichas).",
+      "elderThing": "-3. Si se revela esta ficha durante un ataque o un intento de evasión contra un Enemigo _Monstruo_ o _Primigenio_, pierde 1 acción."
+    },
+    "hardExpert": {
+      "skull": "-X. X es la cantidad de horror que tienes sobre ti.",
+      "cultist": "Revela otra ficha. Si fracasas, recibe 2 horror.",
+      "tablet": "-5. Si fracasas y Hastur está en juego, coloca 1 pista en tu Lugar (de la reserva de fichas).",
+      "elderThing": "-5. Si se revela esta ficha durante un ataque o un intento de evasión contra un Enemigo _Monstruo_ o _Primigenio_, pierde 1 acción."
+    }
+  },
+  "label": {
+    "useV2": "Usa Buscad al Extranjero (v. II)",
+    "useV3": "Usa Buscad al Extranjero (v. III)",
+    "theFall": {
+      "cannot": "No puedes decidirte a hacer lo que hay que hacer.",
+      "push": "Al darte cuenta de lo que debes hacer, das un paso adelante y la empujas."
+    },
+    "aMomentsRest": {
+      "chooseEnemy": "Elige un Enemigo en juego. Agota ese Enemigo y haz que deje de estar enfrentado a todos los investigadores"
+    },
+    "madnessCoils": {
+      "takeHorror": "Esto no puede ser real. Esto no puede ser real. Esto no puede ser real. Cada investigador recibe 2 horror. Avanza al plan 2a.",
+      "faint": "Los investigadores se desmayan y despiertan algún tiempo después. Avanza al plan 2a y coloca 1 perdición sobre él."
+    }
+  },
+  "remembered": {
+    "knowTheSecret": "Conocéis el secreto."
+  },
+  "intro": {
+    "title": "Escenario VIII: Penumbrosa Carcosa",
+    "readIntro1": "Consulta el Registro de campaña. *Si los investigadores abrieron el camino de abajo*: Lee la _Introducción 1_.",
+    "readIntro2": "*Si los investigadores abrieron el camino de arriba*, pasa a la _Introducción 2_.",
+    "intro1": "<p>_Introducción 1_: Nadas hasta el borde del agua y te lanzas sobre la orilla rocosa, jadeando en busca de aire. Te quedas allí tendido un rato, completamente agotado. Te duele cada músculo del cuerpo. Ante ti se extiende una llanura desolada. A lo lejos, las torres alienígenas de una ciudad distorsionada se alzan hacia las nubes. Detrás de ti, la oscura superficie del lago del que has emergido refleja el brillo de dos soles. Cuando miras de nuevo las turbias profundidades, no ves ni rastro de la capilla desde la que saltaste, ni de Mont Saint-Michel, ni siquiera de la Tierra. Esto es Carcosa: el reino de la locura entre las estrellas, donde Hastur reina supremo.</p><p class='basic right'>Pasa a _Preparación_.</p>",
+    "intro2": "<p>_Introducción 2_: Aterrizas sobre un trozo de piedra de obsidiana negra que serpentea por una torre oscura. Toses sangre y sientes un dolor abrasador en el vientre, como si te hubieras roto una costilla. Ante ti se extiende una ciudad alienígena y distorsionada. Sus calles retorcidas y su arquitectura aberrante no tienen ni rastro de orden ni estructura. A lo lejos, un lago turbio refleja el brillo de dos soles. Cuando levantas la vista, la abadía de Mont Saint-Michel asoma justo bajo las nubes, boca abajo. Esto es Carcosa: el reino de la locura entre las estrellas, donde Hastur reina supremo.</p><p class='basic right'>Pasa a _Preparación_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *Penumbrosa Carcosa*, *Delirios*, *Secta del Signo Amarillo*, *Habitantes de Carcosa*, *Agentes de Hastur* y *Miedo paralizante*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/dim-carcosa.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+    "act2": {
+      "instructions": "Consulta el Registro de campaña. Según las siguientes circunstancias, debe usarse una versión distinta del Acto 2 en este escenario. Cada otra versión del Acto 2 se retira de la partida.",
+      "v1": "Si tenéis 5 o menos _Dudas_ y _Convicciones_ en total, usa el Acto 2: Buscad al Extranjero (v. I)",
+      "v2": "Si tenéis 6 o más Dudas y Convicciones en total, y tenéis más _Dudas_ que _Convicciones_, usa el Acto 2: Buscad al Extranjero (v. II)",
+      "v3": "Si tenéis 6 o más Dudas y Convicciones en total, y tenéis más _Convicciones_ que _Dudas_, usa el Acto 2: Buscad al Extranjero (v. III)",
+      "choose": "Si tenéis 6 o más _Dudas_ y _Convicciones_ en total, y tenéis exactamente las mismas _Dudas_ que _Convicciones_, podéis elegir usar el Acto 2: Buscad al Extranjero (v. II) o el Acto 2: Buscad al Extranjero (v. III)"
+    },
+    "chooseLocations": "Pon en juego al azar 1 copia de Llanuras desoladas, 1 copia de Calles tenues, 1 copia de Ruinas de Carcosa y 1 copia de Profundidades de Demhe. (Consulta la página siguiente para la distribución sugerida de los Lugares.) Pon aparte, fuera del juego, cada otra copia de Llanuras desoladas, Calles tenues, Ruinas de Carcosa y Profundidades de Demhe.",
+    "placeLocations": {
+      "instructions": "Pon en juego Orillas de Hali, Torres oscuras y Palacio del Rey. (Consulta la página siguiente para la distribución sugerida de los Lugares.)",
+      "startAtShoresOfHali": "Consulta el Registro de campaña. *Si los investigadores abrieron el camino de abajo*, cada investigador comienza la partida en Orillas de Hali.",
+      "startAtDarkSpires": "Consulta el Registro de campaña. *Si los investigadores abrieron el camino de arriba*, cada investigador comienza la partida en Torres oscuras."
+    },
+    "theManInThePallidMask": "El afectado por la Debilidad El hombre de la máscara pálida busca esa carta en su mazo y la pone aparte, fuera del juego.",
+    "setAside": "Pon aparte las siguientes cartas, fuera del juego: Hastur (*El Rey de Amarillo*), Hastur (*Señor de Carcosa*), Hastur (*El Rey Andrajoso*) y Bestia de Aldebarán.",
+    "chasingTheStranger": {
+      "instructions": "Comprueba el número de marcas bajo “Persiguiendo al Extranjero” en tu Registro de campaña.",
+      "twoOrFewer": "Si hay 2 o menos marcas, añade 3 perdición al plan 1a.",
+      "threeToFive": "Si hay entre 3 y 5 marcas, añade 2 perdición al plan 1a.",
+      "sixToEight": "Si hay entre 6 y 8 marcas, añade 1 perdición al plan 1a.",
+      "nineOrMore": "Si hay 9 o más marcas, no se hace ningún cambio."
+    },
+    "takeHorror": "Cada investigador recibe horror directo igual a la mitad de su cordura, redondeando hacia abajo (*no puede evitarse*). Este horror no puede hacer que seas derrotado (consulta “La cordura en el reino de Carcosa”, más abajo)."
+  },
+  "resolutions": {
+    "xp": {
+      "self": "Habéis triunfado sobre vosotros mismos: el enemigo más peligroso.",
+      "truth": "Habéis aprendido la verdad tras El Rey de Amarillo."
+    },
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "_Si no se alcanzó ninguna resolución (cada investigador fue derrotado)_: Consulta el Registro de campaña.",
+      "goToResolution4": "Si tenéis más (o igual) _Convicciones_ que _Dudas_, ve a la _Resolución 4_.",
+      "goToResolution5": "Si tenéis más _Dudas_ que _Convicciones_, ve a la _Resolución 5_."
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: Te encuentras en lo alto del balcón de la torre de la abadía de Mont Saint-Michel, con el viento húmedo recorriéndote el cabello. La Máscara pálida yace en tus manos, desprovista de calor. Apenas puedes decidirte a mirarla. Ahora lo recuerdas todo: cómo empezó, cómo terminó y todo lo que hubo en medio. Sólo queda una cosa por hacer. Lanzas la máscara al aire con todas tus fuerzas y observas cómo vuela hacia las olas agitadas por la tempestad de abajo.</p><ul><li>En tu Registro de campaña, anota que *los investigadores impidieron que Hastur escapara de su prisión*.</li><li>En tu Registro de campaña, anota los nombres de cada investigador que terminó la partida con al menos 1 copia de la Traición Posesión en su mano.</li><li>Cada investigador sufre 2 traumas físicos y 2 traumas mentales, pues nunca se recuperan del todo del tiempo que pasaron en Carcosa, el reino de la locura.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 5 puntos de experiencia adicionales por haber triunfado sobre sí mismo: el enemigo más peligroso.<ul><li>_Experiencia_: {xp}</li></ul></li><li>¡Los investigadores ganan la campaña!</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: Un rugido de aplausos te sobresalta y te despierta. El público del teatro se pone en pie, vitoreando sin fin. Varios espectadores de la primera fila lanzan rosas a los actores del escenario, que se inclinan con amplias sonrisas. Un dolor de cabeza abrasador recorre tus sienes. ¿Cómo has vuelto aquí? ¿Estuviste en el teatro todo el tiempo? ¿Y la cena? ¿El manicomio? ¿Las catacumbas?… ¿Carcosa? ¿Fue todo sólo una terrible pesadilla?</p><p>Sales del auditorio antes de que el público se precipite a hacer lo mismo. El mareo y el agotamiento acosan tus sentidos. El peso de tu larga investigación te aplasta la mente. Para cuando por fin llegas al vestíbulo, estás arrastrándote por el suelo. Justo entonces, un hombre con un traje elegante se agacha y te coge del brazo, poniéndote en pie. Estás a punto de darle las gracias cuando te das cuenta de quién es. La visión te hace recular de horror un instante. El actor que interpreta el papel del Extranjero sigue llevando su máscara pálida y sin facciones. Te hace una reverencia sin palabras, luego se da la vuelta y sale por la entrada principal del Teatro Ward.</p><ul><li>En tu Registro de campaña, anota que *los investigadores impidieron que Hastur escapara de su prisión*.</li><li>En tu Registro de campaña, anota los nombres de cada investigador que terminó la partida con al menos 1 copia de la Traición Posesión en su mano.</li><li>Cada investigador sufre 2 traumas mentales, pues nunca se recuperan del todo del tiempo que pasaron en Carcosa, el reino de la locura.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 5 puntos de experiencia adicionales por haber aprendido la verdad tras El Rey de Amarillo.<ul><li>_Experiencia_: {xp}</li></ul></li><li>¡Los investigadores ganan la campaña!</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3_: Cuando despiertas, estás sentado en el coro gótico de la abadía de Mont Saint-Michel. La lluvia ya no golpea el cristal de las ventanas, y tampoco oyes truenos ni el chillido de los horrores alados. De algún modo, has escapado. Te acercas a la puerta de la abadía y la abres con inquietud. Una deslumbrante luz te ciega, y levantas la mano para tapar el brillo del sol. Tienes ante ti el precioso pueblo de Mont Saint-Michel. Las gaviotas sobrevuelan la abadía por el cielo sin nubes. Las aguas que rodean la abadía están en calma y son de un azul azur.</p><p>“¡Te he estado buscando por todas partes!” Oyes una voz a tu espalda. Te vuelves sobresaltado. Por un momento esperas ver al Extranjero y su Máscara pálida, pero en su lugar, el capitán del barco que contrataste para llevarte a Mont Saint-Michel está al borde de los escalones, sonriéndote. “¿Estás listo para volver?”</p><ul><li>En tu Registro de campaña, anota que *los investigadores impidieron que Hastur escapara de su prisión*.</li><li>En tu Registro de campaña, anota los nombres de cada investigador que terminó la partida con al menos 1 copia de la Traición Posesión en su mano.</li><li>Cada investigador sufre 2 traumas físicos, pues nunca se recuperan del todo del tiempo que pasaron en Carcosa, el reino de la locura.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 5 puntos de experiencia adicionales por haber aprendido la verdad tras El Rey de Amarillo.<ul><li>_Experiencia_: {xp}</li></ul></li><li>¡Los investigadores ganan la campaña!</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Resolución 4",
+      "body": "<div class='resolution'><p>_Resolución 4_: Cuando despiertas, estás sentado en el coro gótico de la abadía de Mont Saint-Michel. La lluvia ya no golpea el cristal de las ventanas, y tampoco oyes truenos ni el chillido de los horrores alados. De algún modo, has escapado a la perdición segura de la isla. Te acercas a la puerta de la abadía y la abres con inquietud. Una deslumbrante luz te ciega, y levantas la mano para tapar el brillo de dos soles. Te encuentras sobre el Lago de Hali. El cielo que hay sobre ti está salpicado de estrellas negras. Más allá, sobre leguas de olas de nubes agitadas, las torres de Carcosa se alzan detrás de la luna destrozada.</p><ul><li>Has encontrado un destino terrible, ¿verdad?</li><li>En tu Registro de campaña, anota que *el reino de Carcosa se fusionó con el nuestro, y Hastur reina sobre ambos*.</li><li>Cada investigador es _enloquecido_.</li><li>Los investigadores pierden la campaña.</li></ul></div>"
+    },
+    "resolution5": {
+      "title": "Resolución 5",
+      "body": "<div class='resolution'><p>_Resolución 5_: El mundo exterior nunca sabrá cómo intentasteis salvarlo. Os tratan con lástima, con desprecio y desdén, pero vosotros conocéis la verdad. Están resignados a su horrible destino, pero aun así intentáis día tras día llevarles vuestro mensaje. Debéis advertirles de El Rey de Amarillo, de Hastur y de Carcosa. “Otra alma perdida”, dicen, pero no pueden ni imaginar lo que habéis pasado en vuestro intento de salvarlos. Les advertís que viene a reclamarlos, pero nunca os creen. Escribís sobre Aldebarán y las estrellas negras en la pared de vuestra celda, pero las palabras se desvanecen con los años. Nunca se hace caso a vuestra advertencia.</p><ul><li>No pensabas de verdad que podrías escapar, ¿verdad?</li><li>En tu Registro de campaña, anota que *Hastur os tiene en su poder*.</li><li>Cada investigador es _enloquecido_.</li><li>Los investigadores pierden la campaña.</li></ul></div>"
+    }
+  }
+}

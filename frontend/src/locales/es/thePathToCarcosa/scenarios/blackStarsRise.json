@@ -1,0 +1,90 @@
+{
+  "heading": "Escenario VII",
+  "specialRules": [
+    {
+      "title": "Planes duales",
+      "body": "<p class='basic'>Durante este escenario hay dos mazos de Plan. Uno representa un medio para que tú y tus aliados abráis el camino a Carcosa, y conduce a una de las dos cartas de Acto puestas aparte. El otro representa un medio para que Hastur escape a nuestro mundo, y supone la perdición de la Tierra.</p><p class='basic'>Al jugar este escenario, mientras haya dos mazos de Plan en juego, los jugadores deben observar las siguientes reglas adicionales:</p><ul><li>Siempre que se coloque 1 o más perdición sobre “el plan actual”, los jugadores pueden decidir sobre cuál de los dos planes colocar esta perdición.</li><li>La perdición sobre cartas que no sean los dos planes (como Enemigos, Lugares o Apoyos) cuenta para el umbral de perdición de ambos planes.</li><li>Cuando un plan avanza, no se retira la perdición del otro plan. Se retira el resto de la perdición en juego.</li><li>Si los umbrales de perdición de ambos planes se cumplen durante el paso “Comprobar el umbral de perdición” de la fase de Mitos, elige sólo un plan para que avance. A continuación, una vez hayas terminado de avanzar ese plan, comprueba el umbral de perdición del otro plan y hazlo avanzar si su umbral de perdición sigue cumpliéndose.</li></ul>"
+    }
+  ],
+  "rollingPits": {
+    "label": {
+      "distributeClues": "Reparte las pistas restantes puestas aparte entre las copias de Mar de brea."
+    }
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X es la mayor cantidad de perdición sobre un plan en juego.",
+      "cultist": "Revela otra ficha. Si se revela esta ficha durante un ataque o un intento de evasión contra un Enemigo con perdición sobre él, esta prueba de habilidad fracasa automáticamente en su lugar.",
+      "tablet": "Revela otra ficha. Si fracasas, coloca 1 perdición sobre cada plan.",
+      "elderThing": "-2. Si fracasas, busca en el mazo de Encuentro y en la pila de descartes un Enemigo _Byakhee_ y róbalo."
+    },
+    "hardExpert": {
+      "skull": "-X. X es la cantidad total de perdición sobre planes en juego.",
+      "cultist": "Revela otra ficha. Si hay un Enemigo con 1 o más perdición sobre él en tu Lugar, esta prueba fracasa automáticamente en su lugar.",
+      "tablet": "Revela otra ficha. Si no tienes éxito por al menos 1, coloca 1 perdición sobre cada plan.",
+      "elderThing": "-3. Si fracasas, busca en el mazo de Encuentro y en la pila de descartes un Enemigo _Byakhee_ y róbalo."
+    }
+  },
+  "label": {
+    "brokenSteps": {
+      "omen": "Roba la Traición Presagio superior de la pila de descartes de Encuentro",
+      "cultist": "Roba el Enemigo Sectario superior de la pila de descartes de Encuentro"
+    },
+    "riftSeeker": {
+      "takeDamageAndHorror": "Recibe 1 daño adicional y 1 horror adicional",
+      "doom": "Coloca 1 perdición sobre cada plan"
+    }
+  },
+  "tooltips": {
+    "knightsHall": {
+      "investigate": "{'{'}action{'}'} Si no hay pistas sobre la Sala de los caballeros: _Investigar_. Investiga usando {'{'}agility{'}'} en lugar de {'{'}intellect{'}'}. Si tienes éxito, en lugar de descubrir pistas, recuerda que “encontrasteis la llave de la torre”."
+    },
+    "ashleighsInformation": {
+      "ability": "{'{'}fast{'}'} Retira 1 perdición de un plan en juego. (Límite de grupo una vez por partida.)"
+    }
+  },
+  "remembered": {
+    "foundTheTowerKey": "Encontrasteis la llave de la torre.",
+    "foundAGuide": "Encontrasteis un guía."
+  },
+  "intro": {
+    "title": "Escenario VII: Surgen estrellas negras",
+    "body": "<p>La comuna insular de Mont Saint-Michel se alza frente a la costa noroeste de Francia. Es bella, elegante y enigmática: un lugar sacado de un cuento de hadas. Sólo que este cuento es uno de horrores y locura. Durante la marea baja, podrías llegar a la isla a pie cruzando el camino de marea que emerge del mar. Sin embargo, para cuando llegas a la costa, la marea está mucho más alta de lo que habías previsto. Nubes oscuras cubren el cielo, y un trueno lejano señala el comienzo de la tormenta que se avecina. Encuentras un barco cuyo capitán está dispuesto a llevarte a la isla, y te preparas para el ritual que está por llegar.</p>",
+    "proceedToAshleighsInformation": "<div class='right'>Pasa a la _Información de Ashleigh_.</div>",
+    "otherwise": "<div class='right'>Si no es así, pasa a _Preparación_.</div>",
+    "ashleighsInformation": "<p>_Información de Ashleigh_: Recuerdas la noche en que todo comenzó, y tus pensamientos se desvían hacia la hipnótica canción que Ashleigh cantó aquella noche. De algún modo recuerdas la letra a la perfección después de todo este tiempo, y su melodía inquietante está grabada en tu mente. “Sobre la ciudad rugen las nubes de tormenta, y las olas rompen la jaula dorada… Bajo la tierra se filtra el agua salada, las sombras caen cuando el sol rojo duerme…” Al estudiar la isla que tienes ante ti, iluminada por destellos de relámpagos y azotada por olas tumultuosas, no puedes evitar preguntarte si Ashleigh estaba cantando sobre este preciso momento.</p><ul><li>Durante este escenario, como capacidad activada {'{'}fast{'}'}, un investigador puede retirar 1 perdición de un plan en juego. (Límite de grupo una vez por partida.)</li></ul><div class='basic right'>Pasa a _Preparación_.</div>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *Surgen estrellas negras*, *Portentos malignos*, *Byakhee*, *Habitantes de Carcosa*, *El Extranjero*, *Secta oscura* y *Males ancestrales*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/black-stars-rise.png' /><img src='{setImgPath}/evil-portents.png' /><img src='{setImgPath}/byakhee.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/ancient-evils.png' /></section>Ten en cuenta que algunas cartas del conjunto de encuentro *Surgen estrellas negras* tienen varias versiones, algunas con el icono del conjunto de encuentro *La inundación de abajo* en su dorso, y otras con el icono del conjunto de encuentro *El vórtice de lo alto* en su dorso. Estos conjuntos de encuentro se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/the-flood-below.png' /><img src='{setImgPath}/the-vortex-above.png' /></section>",
+    "adjustChaosBag": "En función de tu nivel de dificultad, añade las siguientes fichas de caos a la bolsa de caos, durante el resto de la campaña:<div class='columns'><ul><li>_Fácil_: -3</li><li>_Normal_: -5</li></ul><ul><li>_Difícil_: -6</li><li>_Experto_: -7</li></ul></div>",
+    "version": {
+      "instructions": "Ordena cada copia de las siguientes cartas en dos montones separados, según el icono de conjunto de encuentro de su dorso: Plan 2a: Dejad que rija la tormenta, Plan 2c: La entidad de lo alto, Capilla de Saint-Aubert y Torre de la abadía.",
+      "createPiles": "Deberías tener dos montones de exactamente cuatro cartas. Cada montón debería tener una copia de cada una de las cartas enumeradas. Las cartas del primer montón deberían tener el icono del conjunto de encuentro *La inundación de abajo* en su dorso, y las cartas del segundo montón deberían tener el icono del conjunto de encuentro *El vórtice de lo alto* en su dorso.",
+      "randomizePiles": "Dale la vuelta a cada montón de forma que sólo se vea el icono del conjunto de encuentro Surgen estrellas negras. Aleatoriza los dos montones de forma que no puedas distinguir cuál es cuál.",
+      "choosePile": "Elige un montón al azar para retirarlo de la partida y un montón al azar para usarlo durante la preparación de este escenario. _No mires el dorso de ninguna de las cartas de ninguno de los montones_."
+    },
+    "agendaDecks": "Este escenario no tiene un mazo de Acto. En su lugar, tiene dos mazos de Plan. Un mazo de Plan se forma usando los planes 1a, 2a y 3a. El otro mazo de Plan se forma usando los planes 1c, 2c y 3c (*recuerda usar las versiones de los planes 2a y 2c que se eligieron al azar anteriormente*).",
+    "setAside": "Pon aparte las siguientes cartas, fuera del juego: Ambas cartas de Acto (Acto 3a y Acto 3c), Bestia de Aldebarán, cada copia de Terror de la marea, cada copia de Buscador de grietas, Claustro, Sala de los caballeros, Torre de la abadía y Capilla de Saint-Aubert (*recuerda usar las versiones de Torre de la abadía y Capilla de Saint-Aubert que se eligieron al azar anteriormente*).",
+    "chooseSetAsideLocations": "Elige al azar uno de los dos Lugares Coro gótico y ponlo aparte. Retira la otra versión de Coro gótico de la partida.",
+    "chooseLocations": "Elige al azar uno de los dos Lugares Torre norte, uno de los dos Lugares Muralla exterior y uno de los dos Lugares Escalones rotos. Pon en juego los Lugares elegidos. Retira las otras versiones de esos Lugares de la partida. A continuación, pon en juego los Lugares restantes (Porte de l’Avancée, Grand Rue e Iglesia de la abadía). (Consulta la página siguiente para la distribución sugerida.) Cada investigador comienza la partida en Porte de l’Avancée.",
+    "addWeakness": "Cada investigador busca en la colección una Debilidad básica _*Locura*_, _*Pacto*_, _*Sectario*_ o _*Detective*_ aleatoria y la añade a su mazo."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'><p class='basic'>_Si no se alcanzó ninguna resolución (cada investigador desistió o fue derrotado)_: Ve a la _Resolución 3_.</p></div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: Aguantas la respiración mientras buceas por la helada agua hacia las torres de las profundidades. Al acercarte, ves ondas por el agua, como si mirases un reflejo en la superficie del mar. Atraviesas la superficie y jadeas mientras el aire llena tus pulmones.</p><ul><li>En tu Registro de campaña, anota que *los investigadores abrieron el camino de abajo*.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}cultist{'}'} y 2 fichas {'{'}tablet{'}'} a la bolsa de caos.</li><li>Si Ashleigh Clarke (*Los cantos deben morir inaudibles*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: Te maravillas ante las nubosas olas que te rodean y vuelas hacia las torres de lo alto. La desolada e inescrutable ciudad de Carcosa se alza ante ti. De pronto te das cuenta de que estás cayendo —no flotando— y una fuerza de atracción se apodera de tu cuerpo.</p><ul><li>En tu Registro de campaña, anota que *los investigadores abrieron el camino de arriba*.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}cultist{'}'} y 2 fichas {'{'}elderThing{'}'} a la bolsa de caos.</li><li>Si Ashleigh Clarke (*Los cantos deben morir inaudibles*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3_: Cuando despiertas, estás sentado en el coro gótico de la abadía de Mont Saint-Michel. La lluvia ya no golpea el cristal de las ventanas, y tampoco oyes truenos ni el chillido de los horrores alados. De algún modo, has escapado a la perdición segura de la isla. Te acercas a la puerta de la abadía y la abres con inquietud. Una deslumbrante luz te ciega, y levantas la mano para tapar el brillo de dos soles. Te encuentras sobre el Lago de Hali. El cielo que hay sobre ti está salpicado de estrellas negras. Más allá, sobre leguas de olas de nubes agitadas, las torres de Carcosa se alzan detrás de la luna destrozada.</p><ul><li>Has encontrado un destino terrible, ¿verdad?</li><li>En tu Registro de campaña, anota que *el reino de Carcosa se fusionó con el nuestro, y Hastur reina sobre ambos*.</li><li>Cada investigador es _enloquecido_.</li><li>Los investigadores pierden la campaña.</li></ul></div>"
+    }
+  }
+}

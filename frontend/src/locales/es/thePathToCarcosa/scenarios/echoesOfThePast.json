@@ -1,0 +1,83 @@
+{
+  "heading": "Escenario III",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X es la mayor cantidad de perdición sobre un Enemigo en juego.",
+      "cultist": "-2. Si fracasas, coloca 1 perdición sobre el Enemigo más cercano.",
+      "tablet": "-2. Si fracasas, descarta una carta aleatoria de tu mano.",
+      "elderThing": "-2. Si fracasas y hay un Enemigo en tu Lugar, recibe 1 horror."
+    },
+    "hardExpert": {
+      "skull": "-X. X es la cantidad total de perdición sobre Enemigos en juego.",
+      "cultist": "-4. Coloca 1 perdición sobre el Enemigo más cercano.",
+      "tablet": "-4. Descarta una carta aleatoria de tu mano.",
+      "elderThing": "-4. Si hay un Enemigo en tu Lugar, recibe 1 horror."
+    }
+  },
+  "xp": {
+    "resolution4": "Has recibido información sobre las maquinaciones de El Rey de Amarillo."
+  },
+  "intro": {
+    "title": "Escenario III: Ecos del pasado",
+    "body": "<p>Un dolor sordo te palpita en la cabeza mientras conduces por las lluviosas calles de Arkham hacia tu próximo destino. Tienes la amenaza del Extranjero muy en mente, y te descubres mirando por el retrovisor muy a menudo, esperando ver el rostro sin expresión de su máscara persiguiéndote. En lugar de eso, no ves nada más que la neblinosa noche sin estrellas y la carretera desierta que va quedando a tu espalda.</p><p>Tus pensamientos vuelven a divagar, como lo han hecho en varias ocasiones durante las últimas horas, y vuelven a <span class='basic'>El Rey de Amarillo</span> y a la ciudad de Carcosa y sus habitantes. ¿Cuál era el mensaje oculto en esa terrible obra y el significado de su locura? Hay un detalle que se abre paso hasta la primera línea de tus pensamientos. Uno que salió a relucir durante las conversaciones que oísteis en la mansión de la Sra. Dumaine: que la representación de <span class='basic'>El Rey de Amarillo</span> de esta noche no fue la primera vez que Arkham había visto la terrible obra. Había habido al menos una representación más, dirigida por el mismo hombre: Nigel Engram.</p><p>En Arkham hay un lugar en el que suelen conservarse registros de los acontecimientos más importantes que han ocurrido en la ciudad: la casa señorial de la Sociedad Histórica en el Barrio Sur. Si hay algún registro de la representación anterior de <span class='basic'>El Rey de Amarillo</span>, puede que la Sociedad Histórica disponga de él. Quizás allí encuentres respuestas a las preguntas que arden en tu mente.</p>",
+    "proceedToSebastiensInformation": "<div class='right'>Pasa a la _Información de Sebastien_.</div>",
+    "otherwise": "<div class='right'>Si no es así, pasa a _Preparación_.</div>",
+    "sebastiensInformation": "<p>_Información de Sebastien_: Recuerdas lo que te contó Sebastien durante la fiesta. El Rey de Amarillo vino a Arkham hace varias décadas, mucho antes de que se construyera el Teatro Ward. Según él, no es sorprendente que lo recuerden pocas personas; de hecho, parte de su objetivo de esta noche era hacer llegar El Rey de Amarillo a un público mayor. Es posible que la Sociedad Histórica haya conservado algún registro sobre esta producción anterior, especialmente si la siguieron acontecimientos similares a los sucedidos esta noche. Quizás logres encontrar algún recorte de periódico u otros artículos que describan lo que ocurrió en el pasado.</p><ul><li>Después de que pongas en juego el Vestíbulo de entrada durante la preparación, coloca 1 pista {'{'}perPlayer{'}'} sobre él.</li></ul><div class='right'>Pasa a _Preparación_.</div>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *Ecos del pasado*, *Secta del Signo Amarillo*, *Delirios*, *Las máscaras de medianoche*, *Puertas cerradas* y *Secta oscura*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/echoes-of-the-past.png' /><img src='{setImgPath}/cult-of-the-yellow-sign.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/midnight-masks.png' /><img src='{setImgPath}/locked-doors.png' /><img src='{setImgPath}/dark-cult.png' /></section>Al reunir el conjunto de encuentro *Las máscaras de medianoche*, coge sólo las 5 cartas de Traición (2x Pista falsa y 3x Sombra acechante). No cojas las cartas de Lugar, de Acto, de Plan o de referencia de escenario de ese conjunto.",
+    "chooseLocations": "Elige al azar 1 Lugar “Sociedad Histórica” _*Planta baja*_, 1 Lugar “Sociedad Histórica” _*Primer piso*_ y 1 Lugar “Sociedad Histórica” _*Segundo piso*_. Retira esos Lugares de la partida, sin mirar sus lados revelados.",
+    "placeLocations": "Pon los siguientes Lugares en juego: Vestíbulo de entrada, ambas copias de Pasillos tranquilos y los 6 Lugares restantes Sociedad Histórica (consulta la distribución sugerida de los Lugares a continuación). Cada investigador comienza la partida en el Vestíbulo de entrada.",
+    "setAside": "Pon aparte las siguientes cartas, fuera del juego: Biblioteca oculta, Juramentado poseído, Sr. Peabody, El Manto Andrajoso y Broche de ónice negro.",
+    "changes": {
+      "instructions": "En función del número de jugadores de la partida:",
+      "exactly1": "Si hay exactamente 1 jugador en la partida, no hay cambios.",
+      "exactly2": "Si hay exactamente 2 jugadores en la partida, busca en los conjuntos de encuentro reunidos 1 copia del Buscador de Carcosa. Hazlo aparecer en un Lugar “Sociedad Histórica” _*Segundo piso*_.",
+      "exactly3": "Si hay exactamente 3 jugadores en la partida, busca en los conjuntos de encuentro reunidos 2 copias del Buscador de Carcosa. Hazlos aparecer en sendos Lugares “Sociedad Histórica” _*Segundo piso*_ distintos.",
+      "exactly4": "Si hay exactamente 4 jugadores en la partida, busca en los conjuntos de encuentro reunidos 3 copias del Buscador de Carcosa. Hazlos aparecer en sendos Lugares “Sociedad Histórica” _*Primer piso*_ o _*Segundo piso*_ distintos."
+    },
+    "fledTheDinnerParty": "Consulta el Registro de campaña. *Si los investigadores huyeron de la fiesta*: Llegáis a la Sociedad Histórica con tiempo de sobra; cada investigador puede realizar 1 acción adicional durante su primer turno de esta partida."
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "Has recibido información sobre las maquinaciones de El Rey de Amarillo"
+    },
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'>_Si no se alcanzó ninguna resolución (cada investigador desistió o fue derrotado)_: Logras escapar a duras penas del edificio con tu cuerpo y mente intactos y huyes para ponerte a salvo. Lee la _Resolución 4_.</div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: Cuando se trata de El Rey de Amarillo, no existen las coincidencias. No tienes ninguna duda de que el objeto que has encontrado es importante, y decides llevártelo antes de proseguir tu investigación. El último documento que encuentras que esté relacionado con la producción original de El Rey de Amarillo es una evaluación psiquiátrica de un tal Daniel Chesterfield, un tramoyista que perdió la cabeza tras la última representación. Parece que lo ingresaron en el manicomio después de que acabara la producción. Puede que siga allí…</p><ul><li>En tu Registro de campaña, anota que *los investigadores se llevaron el broche de ónice*. Marca una _Convicción_ en tu Registro de campaña. Durante el resto de la campaña, un investigador debe incluir la Debilidad Broche de ónice negro en su mazo. Esta carta no cuenta para el tamaño de mazo de ese investigador.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si Sebastien Moreau (*Histeria salvaje*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}cultist{'}'} a la bolsa de caos.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: Esta investigación volvería paranoico al más pintado. Atribuirle un gran significado a todo lo que encuentras puede ser realmente peligroso. Estás seguro de que este broche no tiene importancia, y puede que sea parte de la utilería de la obra original. Lo dejas allí y prosigues tu investigación. El último documento que encuentras que esté relacionado con la producción original de El Rey de Amarillo es una evaluación psiquiátrica de un tal Daniel Chesterfield, un tramoyista que perdió la cabeza tras la última representación. Parece que lo ingresaron en el manicomio después de que acabara la producción. Puede que siga allí…</p><ul><li>En tu Registro de campaña, anota que *los investigadores dejaron el broche de ónice*. Marca una _Duda_ en tu Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si Sebastien Moreau (*Histeria salvaje*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}tablet{'}'} a la bolsa de caos.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3_: El personaje se desploma en el suelo, y su distorsionado cuerpo se retuerce de agonía mientras parece fundirse. Jadea y grita mientras un brillo amarillo brota del interior de su boca y de sus ojos: –Daniel –dice la cosa con voz quebrada–. Buscad a Daniel… Daniel Chesterfield, el tramoyista. ¡Él lo recuerda! Detrás de las palabras del hombre hay otra voz que susurra levemente en un idioma melódico. –Encontradlo… Él también pronunció el juramento… ¡El juramento que nos condenó a todos…! Con esas últimas palabras, la piel se desprende de los huesos del hombre, y éste se desploma en el suelo.</p><ul><li>En tu Registro de campaña, anota que *los investigadores destruyeron al Juramentado*. Cualquier investigador puede elegir añadir El Manto Andrajoso a su mazo. Esta carta no cuenta para el tamaño de mazo de ese investigador.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si Sebastien Moreau (Histeria salvaje) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}tablet{'}'} a la bolsa de caos.</li></ul></div>"
+    },
+    "resolution4": {
+      "title": "Resolución 4",
+      "body": "<div class='resolution'><p>_Resolución 4_: Los acontecimientos de la noche te han dejado agotado. No lograste descubrir nada en la mansión de la Sociedad Histórica que pudiera hacer avanzar tu investigación. Quienesquiera que fueran esos intrusos, debían de estar buscando la misma información que tú. Consternado, te diriges al alojamiento más cercano que encuentras, la Pensión de Ma, a poca distancia de la Sociedad Histórica. Cuando llegas allí, despunta el alba, y el picaporte de la puerta delantera y los helechos del porche están cubiertos de rocío. Tienes la suerte de conseguir una habitación libre para el día, y pronto estás profundamente dormido.</p><p>De pronto, estás cayendo. Encima y a tu alrededor, un resplandor cegador estalla como un infierno. Te punza la cabeza y tu visión nada entre colores brillantes. Las llamas te chamuscan la piel. Debajo de ti, el abismo se abre y te traga por completo. Entonces te encuentras en una celda húmeda y sin ventanas, llena de un hedor pútrido. Un hombre está encogido en un rincón de la habitación, temblando de frío, o de la desesperanza de su situación, o quizá de ambas. “Sin máscara”, murmura una y otra vez, “sin máscara, sin máscara…” Das unos pasos tentativos hacia delante, pero antes de que puedas alcanzarlo, se abre la ranura metálica de la puerta de su celda y oyes a un auxiliar llamarlo. “Daniel, es la hora”, dice. “Daniel, despierta. Despierta, Daniel.” Entonces despiertas.</p><ul><li>En tu Registro de campaña, anota que *los seguidores del signo han encontrado el camino*.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria. Cada investigador obtiene 1 punto de experiencia adicional por haber recibido información sobre las maquinaciones de El Rey de Amarillo.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si Sebastien Moreau (Histeria salvaje) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 1 ficha {'{'}cultist{'}'}, 1 ficha {'{'}tablet{'}'} y 1 ficha {'{'}elderThing{'}'} a la bolsa de caos.</li></ul></div>"
+    }
+  },
+  "label": {
+    "theOath": {
+      "r1": "¡Esto es un descubrimiento importante! Deberíamos llevárnoslo. (-> R1)",
+      "r2": "Sólo es una chuchería, y sería un error robar a la Sociedad Histórica. Déjalo atrás (-> R2)"
+    },
+    "ledAstray": {
+      "placeClue": "Coloca 1 de tus pistas sobre un Enemigo Sectario"
+    }
+  },
+  "tooltips": {
+    "entryHall": {
+      "resign": "Huyes, dejando los misterios del pasado a los misteriosos sectarios."
+    },
+    "historicalSocietyReadingRoom": {
+      "investigate": "{'{'}action{'}'}: _Investigar_. Si tienes éxito, en lugar de descubrir pistas, elige un Enemigo con perdición sobre él. Toma 1 perdición de ese Enemigo, dale la vuelta a su lado de pista y colócala sobre tu investigador. (Límite de grupo una vez por ronda)."
+    }
+  }
+}

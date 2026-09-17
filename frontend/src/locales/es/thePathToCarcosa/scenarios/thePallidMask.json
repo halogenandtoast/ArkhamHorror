@@ -1,0 +1,77 @@
+{
+  "heading": "Escenario VI",
+  "specialRules": [
+    {
+      "title": "Adyacencia de Lugares en las catacumbas",
+      "body": "<p class='basic'>Durante este escenario, los Lugares se dispondrán en un patrón fijo, y nuevos Lugares del mazo de Catacumbas emergerán a la izquierda, a la derecha, encima o debajo de los Lugares existentes a medida que se revelen. Un Lugar que se ponga en juego a la izquierda, a la derecha, encima o debajo de otro Lugar debe colocarse junto a ese Lugar de la forma descrita, sin ningún otro Lugar entre ellos.</p><p class='basic'>Un Lugar que esté junto a otro Lugar de esta forma se considera _adyacente_. Los Lugares sólo son adyacentes de forma ortogonal (izquierda, derecha, arriba y abajo), y no son adyacentes en diagonal. Durante este escenario, los Lugares adyacentes se consideran conectados entre sí.</p><p class='basic'>No puedes poner un Lugar en juego donde ya haya un Lugar existente. Si se te da a elegir colocar un Lugar del mazo de Catacumbas en uno de varios espacios, y uno de esos espacios está ocupado por un Lugar existente, no puedes elegir ese espacio. Debes elegir un espacio no ocupado por un Lugar, si es posible. Si todos los espacios indicados están ocupados por Lugares existentes, el efecto _Obligado_ falla y no se ponen en juego nuevos Lugares Catacumbas.</p>"
+    }
+  ],
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X es el número de Lugares de distancia a los que estás del Lugar inicial (máx. 5).",
+      "cultist": "-2. Si se revela esta ficha durante un ataque y esta prueba de habilidad tiene éxito, este ataque inflige 1 daño menos.",
+      "tablet": "-2. Si hay un Enemigo _Gul_ o _Geist_ preparado en tu Lugar, te ataca (si hay más de uno, elige uno).",
+      "elderThing": "-3. Si fracasas, busca en el mazo de Encuentro y en la pila de descartes un Enemigo _Gul_ o _Geist_ y róbalo."
+    },
+    "hardExpert": {
+      "skull": "-X. X es el número de Lugares de distancia a los que estás del Lugar inicial.",
+      "cultist": "-3. Si se revela esta ficha durante un ataque y esta prueba de habilidad tiene éxito, este ataque no inflige daño.",
+      "tablet": "-3. Si hay un Enemigo _Gul_ o _Geist_ en tu Lugar, se prepara y te ataca (si hay más de uno, elige uno).",
+      "elderThing": "-4. Si fracasas, busca en el mazo de Encuentro y en la pila de descartes un Enemigo _Gul_ o _Geist_ y róbalo."
+    }
+  },
+  "label": {
+    "chooseWhoReadsActII": "Elige quién leerá el Acto II de El Rey de Amarillo",
+    "above": "Colocar arriba",
+    "below": "Colocar abajo",
+    "right": "Colocar a la derecha",
+    "left": "Colocar a la izquierda",
+    "doneReadingActII": "Los investigadores han terminado de leer el Acto II"
+  },
+  "remembered": {
+    "youOpenedASecretPassageway": "Abristeis un pasadizo secreto."
+  },
+  "intro": {
+    "title": "Escenario VI: La máscara pálida",
+    "readIntro1": "Consulta el Registro de campaña. *Si los investigadores no escaparon de la mirada del Fantasma*, o *si los investigadores no lograron encontrar a Nigel*: Lee la _Introducción 1_.",
+    "readIntro2": "*Si los investigadores encontraron la casa de Nigel*, o *si los investigadores encontraron a Nigel Engram*, pasa a la _Introducción 2_.",
+    "intro1": "<p>_Introducción 1_: Te despiertan el aire sucio y rancio y el polvo que se cuelan en tu garganta. Estás tendido sobre una losa de fría piedra en un pasadizo subterráneo sin luz. ¿Cómo has llegado aquí? ¿Y dónde es “aquí” exactamente? Un escalofrío recorre tu cuerpo y se te ponen los pelos de punta. Al ponerte en pie, observas lo que te rodea. Huesos decoran las paredes y el techo a tu alrededor, y cráneos de bocas abiertas te miran allá donde mires.</p><ul><li>En tu Registro de campaña, anota que *los investigadores despertaron en las catacumbas*.</li></ul>",
+    "intro2": "<p>_Introducción 2_: El contenido de la casa de Nigel Engram no responde a ninguna de tus preguntas sobre El Rey de Amarillo, pero sí da pistas de hacia dónde deberías ir a continuación. El viejo y raído mapa que encontraste en su mesa de café representa una sección de las infames Catacumbas de París. Una habitación concreta del mapa ha sido rodeada con bolígrafo, y junto a ella está escrito: “¡La clave para abrir el Camino está aquí!” Te tragas el miedo y te diriges de inmediato a la entrada de las catacumbas bajo la Rue de la Tombe-Issoire.</p><ul><li>En tu Registro de campaña, anota que *los investigadores entraron en las catacumbas por su cuenta*.</li></ul>",
+    "proceedToHarukosInformation": "Pasa a la _Información de Haruko_.",
+    "otherwise": "Si no es así, pasa a _Preparación_.",
+    "harukosInformation": "<p>_Información de Haruko_: Justo más allá del arco más cercano, ves un símbolo familiar grabado en el cráneo de una oveja: filas de semicírculos concéntricos, recubiertos de runas exóticas. Dos líneas onduladas descienden del diseño, llevando a la mandíbula inferior del cráneo. Lo reconoces como el patrón que te mostró Haruko. Preguntándote por qué aparecería aquí, examinas el cráneo con más detalle. En cuanto tocas la parte inferior de la mandíbula del cráneo, su boca se abre de golpe. Los huesos se derrumban al suelo mientras la pared se desliza para revelar un nuevo camino.</p><ul><li>Recuerda que “abristeis un pasadizo secreto.”</li></ul><p class='basic right'>Pasa a _Preparación_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *La máscara pálida*, *Gules*, *Apariciones* y *Frío glacial*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/the-pallid-mask.png' /><img src='{setImgPath}/ghouls.png' /><img src='{setImgPath}/hauntings.png' /><img src='{setImgPath}/chilling-cold.png' /></section>",
+    "setAside": "Encuentra la Tumba de sombras y el Pasadizo bloqueado (cada uno es el lado revelado de un Lugar Catacumbas). Ponlos aparte, fuera del juego.",
+    "start": {
+      "instructions": "Consulta el Registro de campaña.",
+      "awoke": "*Si los investigadores despertaron en las catacumbas*: Pon en juego un Lugar Catacumbas aleatorio (que no sea la Tumba de sombras ni el Pasadizo bloqueado puestos aparte), con el lado Catacumbas boca arriba. Durante el resto del escenario, se hará referencia a ese Lugar como “el Lugar inicial”. Pon una ficha de Recursos sobre este Lugar para indicar que se trata del Lugar inicial. _No coloques aún a los investigadores aquí_.",
+      "entered": "*Si los investigadores entraron en las catacumbas por su cuenta*: Encuentra La Puerta del Infierno (es el lado revelado de un Lugar Catacumbas). Pon en juego La Puerta del Infierno, con el lado Catacumbas boca arriba. Durante el resto del escenario, se hará referencia a La Puerta del Infierno como “el Lugar inicial”. Pon una ficha de Recursos sobre La Puerta del Infierno para indicar que se trata del Lugar inicial. _No coloques aún a los investigadores aquí_."
+    },
+    "catacombs": {
+      "instructions": "Pon todos los demás Lugares aparte como un “mazo de Catacumbas” separado. Para ello, realiza lo siguiente:",
+      "bottom": "Baraja juntas la Tumba de sombras y el Pasadizo bloqueado puestos aparte y 3 Lugares Catacumbas más para formar las 5 cartas inferiores del mazo de Catacumbas, con el lado Catacumbas boca arriba.",
+      "top": "A continuación, coloca todos los demás Lugares Catacumbas encima, en un orden aleatorio. Todas las cartas del mazo de Catacumbas deben mostrar sólo el lado Catacumbas, de forma que los jugadores no sepan cuál es cuál."
+    },
+    "startAt": "Cada investigador comienza la partida en el Lugar inicial. (*Recuerda activar el efecto _*Obligado*_ de ese Lugar cuando se revele*.) Si “abristeis un pasadizo secreto”, elige un Lugar Catacumbas adyacente al Lugar inicial y revélalo.",
+    "theManInThePallidMask": "El afectado por la Debilidad El hombre de la máscara pálida busca esa carta en su mazo y la pone aparte, fuera del juego."
+  },
+  "resolutions": {
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'><p>_Si no se alcanzó ninguna resolución (cada investigador fue derrotado)_: Te despierta el zarandeo de un agente de policía que te pone en pie. Te sientes como si un tren se hubiera estrellado contra tu cabeza. El dolor es insoportable. El hombre te apunta con una linterna a los ojos y te hace varias preguntas en francés. Aturdido como estás, te resulta difícil responder. Señala la escalera cercana y te aparta de las catacumbas. Tropiezas hacia la Rue de la Tombe-Issoire y te diriges lentamente a un hotel donde pasar la noche.</p><p>Tras varios días de investigación, el significado de los extraños diagramas que viste en las catacumbas sigue escapándosete. Tienes la sensación de que te han llevado de un lado a otro sin rumbo. Justo cuando estás a punto de rendirte, ves un libro amarillo desvaído en la mesa más cercana. Te quedas atónito al descubrir que es el libreto íntegro de El Rey de Amarillo. Dibujado en la cubierta con tinta negra está el mismo diagrama cuyo significado has estado tratando de interpretar durante varias noches en vela. ¿Quién lo había colocado allí? ¿Cómo había llegado a tu habitación de hotel? Sea como sea, sabes lo que debes hacer. La obra guarda los secretos —siempre los ha guardado— y, como un necio, has evitado leer el Acto II por superstición. Sus palabras no pueden hacerte más daño que las criaturas y los fanáticos que ya has encontrado. Temblando, abres la segunda parte y empiezas a leer.</p><ul><li>En tu Registro de campaña, anota que *los investigadores conocen el emplazamiento del portal*.</li><li>Cada investigador debe elegir si lee o no el Acto II de El Rey de Amarillo. Al menos un investigador debe leer el Acto II. En tu Registro de campaña, anota los nombres de cada investigador que eligió leer el Acto II. Cada investigador que leyó el Acto II busca en la colección una Debilidad básica _*Locura*_ o _*Pacto*_ aleatoria y la añade a su mazo (no cuenta para el tamaño de mazo). Cada investigador que leyó el Acto II obtiene 2 puntos de experiencia adicionales por haber recibido información sobre las maquinaciones del Rey Andrajoso.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}elderThing{'}'} a la bolsa de caos.</li><li>Si Ishimaru Haruko (*Piel y huesos*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: El cráneo quemado guarda la clave de todo. Estás seguro de ello. Has probado todos los métodos a tu alcance para estudiar el diagrama que lleva, pero la respuesta sigue escapándosete. Has llevado el cráneo a expertos, ocultistas y profesores. Incluso has intentado hablar con el cráneo en más de una ocasión. Exasperado, colocas el cráneo en tu mesilla de noche e intentas dormir por primera vez desde que escapaste de las catacumbas. Mientras te duermes, no puedes sacudirte la visión del diagrama grabado en la frente del cráneo.</p><p>Te despiertas con una chispa de inspiración y te diriges corriendo al Musée du Louvre, un famoso museo parisino que alberga decenas de miles de cuadros, dibujos y hallazgos arqueológicos. Pasas días explorando el museo: cada exposición, cada colección, cada objeto de arte que podría contener alguna pista sobre el significado del diagrama. Por fin lo ves: un cuadro que muestra una preciosa ciudad isleña que soporta una tormenta torrencial. Las olas chocan contra la piedra de la muralla exterior, y la marea amenaza con engullir la isla entera. Hay destellos de relámpagos alrededor de la torre de la abadía que hay sobre el pueblo. Un remolino de nubes negras se agita en el cielo. El diagrama del cráneo quemado que tienes en las manos está recreado a la perfección en la vidriera de la abadía. El título de la obra es “El camino está abierto”.</p><ul><li>En tu Registro de campaña, anota que *los investigadores conocen el emplazamiento del portal*.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}cultist{'}'} a la bolsa de caos.</li><li>Si Ishimaru Haruko (*Piel y huesos*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: Caes sin cesar por el vacío abismo. Ningún aire frena tu descenso ni recorre tu cabello. Es un pasadizo desprovisto de realidad. Por fin, atraviesas un portal invisible y entras en otro reino. Se alzan sobre ti y debajo de ti dos horizontes urbanos, uno un reflejo distorsionado del otro. Un remolino de nubes negras y olas que rompen se encuentra entre ambos. Estudias ambos lados: la ciudad familiar y su extraño espejo. ¿Podría ser éste el camino a Carcosa? ¿Un pasadizo entre realidades, donde convergen los reinos? Si es así, sólo queda encontrar dónde aparece este portal en la Tierra. Caes en el remolino de abajo.</p><p>Te despierta el zarandeo de un agente de policía que te pone en pie. Te sientes como si un tren se hubiera estrellado contra tu cabeza. El dolor es insoportable. El hombre te apunta con una linterna a los ojos y te hace varias preguntas en francés. Se te abren los ojos al darte cuenta y arrancas el brazo del agarre del hombre confundido. “¡Debo irme de inmediato!”</p><ul><li>En tu Registro de campaña, anota que *los investigadores conocen el emplazamiento del portal*. Añade dos marcas bajo “Persiguiendo al Extranjero”.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}tablet{'}'} a la bolsa de caos.</li><li>Si Ishimaru Haruko (*Piel y huesos*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "xp": {
+      "bonus": "Has recibido información sobre las maquinaciones del Rey Andrajoso."
+    }
+  }
+}

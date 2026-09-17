@@ -1,0 +1,64 @@
+{
+  "heading": "Escenario II",
+  "tokens": {
+    "easyStandard": {
+      "skull": "Revela otra ficha. Si fracasas, coloca 1 perdición sobre un Enemigo _Poseído_ en juego.",
+      "cultist": "-2. Si fracasas, coloca 1 de tus pistas en tu Lugar.",
+      "tablet": "-4. Si fracasas, recibe 1 horror.",
+      "elderThing": "-X. X es el valor de velo de tu Lugar."
+    },
+    "hardExpert": {
+      "skull": "Revela otra ficha. Si fracasas, coloca 1 perdición sobre el Enemigo _Poseído_ en juego con más salud restante.",
+      "cultist": "-3. Coloca 1 de tus pistas en tu Lugar.",
+      "tablet": "-4. Recibe 1 horror.",
+      "elderThing": "-X. X es el valor de velo de tu Lugar. Si fracasas, recibe 1 daño."
+    }
+  },
+  "intro": {
+    "title": "Escenario II: El Último Rey",
+    "body": "<p>Si alguien tiene respuestas para las preguntas que arden en tu mente, son el elenco y el equipo de El Rey de Amarillo. Sin más pistas que seguir, te pones tu mejor ropa y acudes al 1452 de la Avenida Atlantic, donde una mujer llamada Constance Dumaine organiza una velada para celebrar la representación de la obra en Arkham por una sola noche.</p>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *El Último Rey*, *El regalo de Hastur*, *Podredumbre e impurezas*, *El Extranjero*, *Males ancestrales*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/the-last-king.png' /><img src='{setImgPath}/hasturs-gift.png' /><img src='{setImgPath}/decay-and-filth.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+    "placeLocations": "Pon en juego los 6 Lugares (Recibidor, Patio, Sala de estar, Salón de baile, Comedor y Galería). Mira la imagen con la distribución sugerida. Cada investigador comienza la partida en el Recibidor.",
+    "bystanders": {
+      "instructions": "Baraja las 5 cartas de Apoyo _*Transeúnte*_ que se muestran en la imagen (Constance Dumaine, Jordan Perry, Ishimaru Haruko, Sebastien Moreau y Ashleigh Clarke) y coloca 1 al azar en cada Lugar excepto en el Recibidor. Coloca 1 pista sobre cada una de estas cartas de Apoyo, más 1 pista adicional por cada investigador.",
+      "note": "*Nota: Estas cartas son de doble cara y tienen cartas de Historia en el otro lado. Para no estropear la experiencia de juego, no mires el otro lado a menos que te lo indique un efecto.*"
+    },
+    "setAside": "Pon aparte el Enemigo Dianne Devine, fuera del juego.",
+    "sickeningReality": {
+      "instructions": "Coloca las 5 cartas de Historia “Realidad repulsiva” bajo la carta de referencia de escenario.",
+      "note": "*Nota: Estas cartas son de doble cara y tienen cartas de Encuentro en el otro lado. Para no estropear la experiencia de juego, no mires el otro lado a menos que te lo indique un efecto.*"
+    }
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "Pistas que había sobre el mazo de Acto cuando acabó la partida"
+    },
+    "goToR1": "_Si no se alcanzó ninguna resolución y al menos un investigador desistió_: Ve a la _Resolución 1_.",
+    "goToR2": "_Si no se alcanzó ninguna resolución porque cada investigador fue derrotado_: Ve a la _Resolución 2_.",
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: El fresco aire otoñal te recibe cuando sales de la mansión. En tu cabeza no hay la menor duda de que el elenco y el equipo de El Rey de Amarillo están aquejados de locura. Puede que también te esté afectando a ti. Notas una oscuridad invasora, una presencia en tu mente no muy distinta a la mirada del Extranjero. Sobresaltado, miras el patio delantero por primera vez desde que escapaste de la mansión. La escena es… distinta. Las ventanas no están rotas, como lo estaban cuando llegaste por primera vez. El rastro de sangre que viste en el porche ha sido limpiado, y en lugar de la perturbadoramente distorsionada música que oíste al entrar, desde el patio interior llega el relajante sonido de un jazz lento.</p><ul><li>Anota en la sección “VIP interrogados” del Registro de campaña el nombre de todos los personajes a los que hayas “interrogado”.</li><li>Anota en la sección “VIP muertos” del Registro de campaña el nombre de todos los Enemigos _*Lunático*_ únicos que haya en la zona de victoria.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Por cada 2 pistas que hubiera en el mazo de Acto cuando acabara la partida, elige un investigador para que obtenga 1 punto de experiencia adicional. La experiencia de esta recompensa debe repartirse de la forma más equitativa posible entre los investigadores.</li><li>Pasa al _Interludio I: La sombra de la realidad_.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: –Disculpe, pero ya es muy tarde –oyes que dice un criado mientras te da unos ligeros golpecitos en el hombro. Te das cuenta de que estás sentado en un sillón de la sala de estar de la mansión y de que llevas un rato dormido. Parece que la fiesta se va apagando. Ya no se oye música en las salas, prácticamente se ha acabado la comida y sólo quedan unos pocos invitados. –¿Quiere que le traiga su abrigo? –pregunta el criado con una sonrisa practicada. Te pones en pie, algo tambaleante, apoyándote en el brazo del sofá. Notas un martilleo en la cabeza de una intensidad mareante y ves manchas en tu visión. Insistes que estás bien y empiezas a andar hacia el recibidor.</p><p>Ya no está ninguno de los invitados a los que buscabas antes, ni siquiera la anfitriona, la Sra. Dumaine. Ha desaparecido todo rastro de la locura y el terror que experimentaste. Hasta las cosas raras que viste al entrar a la mansión se han esfumado: los signos de pelea, las ventanas rotas, el rastro de sangre en el porche… Han borrado todas las pruebas. Pero aún recuerdas los sucesos de esta noche, y encontrarás respuestas en tu memoria.</p><ul><li>Anota en la sección “VIP interrogados” del Registro de campaña el nombre de todos los personajes a los que hayas “interrogado”.</li><li>Anota en la sección “VIP muertos” del Registro de campaña el nombre de todos los Enemigos _*Lunático*_ únicos que haya en la zona de victoria.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Por cada 2 pistas que hubiera en el mazo de Acto cuando acabara la partida, elige un investigador para que obtenga 1 punto de experiencia adicional. La experiencia de esta recompensa debe repartirse de la forma más equitativa posible entre los investigadores.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 1 ficha {'{'}cultist{'}'}, 1 ficha {'{'}tablet{'}'} y 1 ficha {'{'}elderThing{'}'} a la bolsa de caos.</li><li>Omite el _Interludio I: La sombra de la realidad_ y pasa directamente al _Escenario III: Ecos del pasado_.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3_: Varios días más tarde, te pones a recordar la fiesta a la que asististe en el 1452 de la Avenida Atlantic. ¡Qué velada más fantástica pasaste! Y aun así, tu memoria está borrosa. No puedes evitar tener la sensación de que se te olvida algo importante. Algo sobre la obra que viste esa misma noche: El Rey de Amarillo. Esa persistente sensación te persigue a cada minuto. Por mucho que intentes recordar los sucesos de esa noche por completo, sigue habiendo un evidente agujero en tu memoria. Cuanto más te esfuerzas por recordar, más crece tu preocupación, casi hasta el punto de convertirse en obsesión. Tras decidir que debes saber a toda costa lo que ocurrió esa noche, te diriges a la mansión de la Sociedad Histórica del Barrio Sur. Puede que allí logres encontrar más información sobre la obra El Rey de Amarillo…</p><ul><li>Anota en la sección “VIP interrogados” del Registro de campaña el nombre de todos los personajes a los que hayas “interrogado”. A continuación, tacha todos los nombres, ya que has olvidado todo lo sucedido esa noche.</li><li>Anota en la sección “VIP muertos” del Registro de campaña el nombre de todos los Enemigos _*Lunático*_ únicos que haya en la zona de victoria.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Por cada 2 pistas que hubiera sobre el mazo de Acto cuando acabara la partida, elige un investigador para que obtenga 1 punto de experiencia adicional. La experiencia de esta recompensa debe repartirse de la forma más equitativa posible entre los investigadores.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 1 ficha {'{'}cultist{'}'}, 1 ficha {'{'}tablet{'}'} y 1 ficha {'{'}elderThing{'}'} a la bolsa de caos.</li><li>Omite el _Interludio I: La sombra de la realidad_ y pasa directamente al _Escenario III: Ecos del pasado_.</li></ul></div>"
+    }
+  },
+  "tooltips": {
+    "foyer": {
+      "resign": "Tras encontrar información valiosa sobre la producción, os marcháis y planeáis vuestro siguiente movimiento. (*Si cada investigador no derrotado ha desistido, pasa a «si no se alcanzó ninguna resolución» en la Guía de campaña.*)"
+    }
+  },
+  "label": {
+    "fineDining": {
+      "place": "Coloca 1 de tus pistas sobre un Apoyo Transeúnte en juego"
+    },
+    "gainAdditionalXp": "{name} obtiene 1 punto de experiencia adicional"
+  }
+}

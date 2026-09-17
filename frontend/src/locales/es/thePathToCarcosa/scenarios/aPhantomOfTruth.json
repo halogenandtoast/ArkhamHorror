@@ -1,0 +1,112 @@
+{
+  "heading": "Escenario V",
+  "tokens": {
+    "easyStandard": {
+      "skull": "-X. X es la cantidad de perdición en juego (máx. 5).",
+      "cultist": "-2. Si fracasas, mueve cada _Byakhee_ no enfrentado en juego una vez hacia el investigador más cercano.",
+      "tablet": "-3. Cancela los efectos e iconos de cada carta de Habilidad asignada a esta prueba.",
+      "elderThing": "-2. Si fracasas, pierde 1 recurso por cada punto que te faltó para tener éxito."
+    },
+    "hardExpert": {
+      "skull": "-X. X es la cantidad de perdición en juego.",
+      "cultist": "-2. Mueve cada _Byakhee_ no enfrentado en juego una vez hacia el investigador más cercano.",
+      "tablet": "-4. Cancela los efectos e iconos de cada carta de Habilidad asignada a esta prueba.",
+      "elderThing": "-3. Si fracasas, pierde 1 recurso por cada punto que te faltó para tener éxito."
+    }
+  },
+  "label": {
+    "moveTheOrganist": "Mueve al organista",
+    "theParisianConspiracy": {
+      "spawn": "Dónde hacer aparecer al organista"
+    },
+    "grandGuignol": {
+      "shuffle": "Baraja todas las cartas que no sean Debilidades de tu mano en tu mazo y luego roba el mismo número de cartas"
+    },
+    "deadlyFate": {
+      "attack": "Ese Enemigo te ataca (desde la pila de descartes)",
+      "drawEnemy": "Roba el Enemigo"
+    }
+  },
+  "intro": {
+    "label": {
+      "dream10": {
+        "dream11": "“¿Cómo podría resultarte bello todo esto?”",
+        "dream12": "“¿Qué estoy viendo exactamente?”"
+      }
+    },
+    "title": "Escenario V: El Fantasma de la Verdad",
+    "readIntro1": "Consulta el Registro de campaña. *Si el Rey se cobró sus víctimas*: Lee la _Introducción 1_.",
+    "readIntro2": "Si no es así, pasa a la _Introducción 2_.",
+    "intro1": "<p>_Introducción 1_: Han pasado varios meses desde que El Rey de Amarillo se representara en el Teatro Ward. Tú y tus compañeros habéis estado investigando los extraños incidentes que se produjeron después. Lo que habéis encontrado os hace cuestionar la sabiduría de continuar la investigación, pero la verdad os llama y no podéis evitar responder. Parece que no fuisteis los primeros en unir las extrañas piezas que rodean El Rey de Amarillo. Otro grupo de investigadores también había estado investigando estos sucesos. Apenas unos días después de la representación en Arkham, los internaron en el manicomio, desvariando sobre el regreso del Rey y los “monstruos” que los habían atacado. De algún modo, esto no te sorprende. Su destino te hace aún más seguro de que estás en el buen camino… y aún más seguro de que deberías parar mientras aún puedes.</p><p>Has encontrado los documentos que tenían esos investigadores antes de su ingreso y has seguido las pistas que dejaron. Habían interrogado a parte del elenco y del equipo de El Rey de Amarillo y descubierto varias informaciones de vital importancia. Su investigación también contiene notas sobre sus descubrimientos en la Sociedad Histórica de Arkham, además de la narración del tiempo que pasaron en el manicomio, incluido su encuentro con un paciente llamado “Daniel Chesterfield”. Tras una larga noche de recopilar y comparar notas, te quedas profundamente dormido. En tus sueños, te ves sometido a visiones de Carcosa: sus estrellas negras, soles gemelos, lunas destrozadas y torres retorcidas.</p><p class='basic right'>Continúa con el _Sueño 1_. No te pierdas.</p>",
+    "intro2": "<p>_Introducción 2_: Han pasado varias semanas desde los sucesos del manicomio, y aún no estás más cerca de la verdad sobre El Rey de Amarillo y Carcosa. Has registrado la ciudad en busca de señales de los otros de los que habló Daniel —los que “están abriendo el camino a Carcosa”— pero no has encontrado nada. O la pista se ha enfriado, o ya no están en Arkham. Quizá Daniel realmente estaba loco, y tú sólo lo estás siguiendo más adentro de la madriguera. Cada noche, te das vueltas en la cama sometido a vividos sueños de Carcosa: sus estrellas negras, soles gemelos, lunas destrozadas y torres retorcidas.</p><p class='basic right'>Continúa con el _Sueño 1_. No te pierdas.</p>",
+    "dream1": "<p>_Sueño 1_: Caes por el vacío abismo de Hali. Criaturas de origen desconocido e imposible acechan justo más allá de la oscuridad de tu vista. Hastur se alza sobre ti, magnífico y sin embargo encerrado en su prisión de locura, manipulando tu tortuoso descenso con un único brazo extendido.</p><p class='basic right'>Cada investigador ha obtenido la Debilidad Alma perdida (*El camino a Carcosa n.º 227*) (no cuenta para el tamaño de mazo).</p><p class='basic right'>Baraja una copia de esta Debilidad en el mazo de cada investigador.</p><p class='basic right'>Continúa con el _Sueño 2_.</p>",
+    "dream2": {
+      "body": "<p>_Sueño 2_: Constance te coge de la mano y te arrastra a la pulida pista de baile. “Vamos, no seas tímido. ¡Esta noche es una noche para bailar! ¡Para celebrar!”</p>",
+      "dream8": "<p class='basic right'>Consulta el Registro de campaña. *Si el Rey se cobró sus víctimas*, continúa con el _Sueño 8_.</p>",
+      "dream3": "<p class='basic right'>Si lo anterior no es cierto, *si los investigadores se colaron en una reunión secreta*, continúa con el _Sueño 3_.</p>",
+      "dream4": "<p class='basic right'>*Si los investigadores mataron a los monstruos de la fiesta*, continúa con el _Sueño 4_.</p>",
+      "dream6": "<p class='basic right'>Si nada de lo anterior es cierto, continúa con el _Sueño 6_.</p>"
+    },
+    "dream3": "<p>_Sueño 3_: “Ah, si no es nuestro distinguido invitado”, dice el hombre del bigote y el bastón con mango de plata. Coge una botella de vino de la encimera cercana y te sirve una copa. “Oigo que habéis mostrado un gran interés por nuestra pequeña producción”, dice con una sonrisa. “Decidme: ¿cómo os está resultando el Acto 2, hasta ahora?”</p><p class='basic right'>Continúa con el _Sueño 6_.</p>",
+    "dream4": "<p>_Sueño 4_: Humo y ascuas flotan hacia el cielo nocturno carente de estrellas. Los gritos de criaturas que arden hacen que te invada la horrenda sensación de haberlo logrado. Casi parecen gritos humanos, piensas. Pero sabes que no es verdad.</p><p class='basic right'>Cada investigador sufre 1 trauma mental. Continúa con el _Sueño 6_.</p>",
+    "dream5": "<p>_Sueño 5_: Miras en el espejo, y tu reflejo te observa con curiosidad. –Espera un momento, éste no es el Sueño 1 –dices.</p><p class='basic right'>Continúa con el _Sueño 1_.</p>",
+    "dream6": {
+      "body": "<p>_Sueño 6_: Las luces del teatro se atenúan y un foco ilumina el escenario. “¡Bienvenidas, damas y caballeros!”, exclama la criatura. Sus numerosos tentáculos se extienden por el escenario, suben a las vigas y recorren los pasillos. Arranca el telón, y un paño rojo hecho jirones cae sobre su forma bulbosa.</p>",
+      "dream7": "<p class='basic right'>Consulta el Registro de campaña. Si la policía sospecha de los investigadores, continúa con el _Sueño 7_.</p>",
+      "dream8": "<p class='basic right'>Si no es así, continúa con el _Sueño 8_.</p>"
+    },
+    "dream7": "<p>_Sueño 7_: Te encuentras en el Departamento de Policía de Arkham, tratando desesperadamente de explicarle al sargento de guardia lo que ocurrió en el Teatro Ward. Se burla y se niega a creerte. “Sabemos a qué os dedicáis de verdad”, dice, y te pone un par de esposas en las muñecas. “Estáis detenidos por hurto. Chicos, llévenselos.” Varios otros policías te flanquean e impiden cualquier huida. Tus protestas no se oyen mientras te escoltan con firmeza por un tramo de escaleras de hormigón y te arrojan a una fría celda. “Quizá un tiempo a la sombra cambie vuestra historia”, grita el sargento de guardia. Cierra la puerta de un golpe a tus espaldas, dejándote con tus pensamientos en espiral. ¿Cómo se enteraron? ¿Cómo podían saberlo?</p><p class='basic right'>Elige un investigador. El investigador elegido ha obtenido la Debilidad Paranoia (*Básico 97*) (no cuenta para el tamaño de mazo).</p><p class='basic right'>Baraja 1 copia de esta Debilidad en el mazo de ese investigador, si es posible.</p><p class='basic right'>Continúa con el _Sueño 8_.</p>",
+    "dream8": {
+      "body": "<p>_Sueño 8_: Miras en el espejo, y el Extranjero te devuelve la mirada. Su mirada te perfora la mente. El espejo se hace añicos.</p>",
+      "dream9": "<p class='basic right'>Consulta el Registro de campaña. Si hay 3 o menos marcas bajo “Persiguiendo al Extranjero”, continúa con el _Sueño 9_.</p>",
+      "dream10": "<p class='basic right'>Si hay 4 o más marcas bajo “Persiguiendo al Extranjero”, continúa con el _Sueño 10_."
+    },
+    "dream9": "<p>_Sueño 9_: Persigues al Extranjero por oscuros y fríos pasadizos compuestos de cientos de miles de cuerpos esqueléticos. Los cráneos te observan mientras corres, y sus bocas castañetean una burla mientras pasas. El Extranjero llega a un muro sólido de hueso, y unas manos huesudas lo agarran y lo arrastran al interior del muro. Sus risas burlonas alcanzan un crescendo terrible.</p><p class='basic right'>Continúa con el _Sueño 13_.</p>",
+    "dream10": "<p>_Sueño 10_: Persigues al Extranjero por una empinada escalera de piedra rota mientras una lluvia torrencial descarga sobre ti mientras corres. Ves relámpagos a lo lejos. Un remolino de nubes negras se forma sobre ti, amenazando con tragarse el mundo. El enmascarado atraviesa a la carrera unas anchas puertas que hay en lo alto de las escaleras, y le sigues de cerca. El sonido del trueno queda amortiguado cuando las puertas se cierran a tu espalda. Al levantar la vista, ves una imagen familiar en una vidriera. –¿Verdad que es precioso? –dice el Extranjero en voz baja.</p><ul><li>Los investigadores deben decidir (elige una):<ul><li>“¿Cómo podría resultarte bello todo esto?” Continúa con el _Sueño 11_.</li><li>“¿Qué estoy viendo exactamente?” Continúa con el _Sueño 12_.</li></ul></li></ul>",
+    "dream11": "<p>_Sueño 11_: Evitas mirar la vidriera. Si este hombre vil la considera bella, probablemente sea alguna trampa destinada a atrapar tu mente. Apretas el puño hasta que los nudillos se te ponen blancos y das un paso adelante para enfrentarte al Extranjero.</p><p class='basic right'>Marca una _Convicción_ en tu Registro de campaña. Continúa con el _Sueño 13_.</p>",
+    "dream12": "<p>_Sueño 12_: Miras la vidriera, curioso. ¿Cuál es la forma de la sombra a lo largo de la ventana? ¿Cuál es el significado de este extraño diseño?</p><p class='basic right'>Marca una _Duda_ en tu Registro de campaña. Continúa con el _Sueño 13_.</p>",
+    "dream13": "<p>_Sueño 13_: La voz de Daniel te llama. “Están abriendo el camino a Carcosa.”</p><p class='basic right'>Continúa con _Despertar_.</p>",
+    "awakening": "<p>_Despertar_: Despiertas de tu agitado sueño, sudando y atragantándote. Esto no puede continuar. Sólo te queda una opción si quieres seguir investigando. Debes encontrar a Nigel Engram, director de El Rey de Amarillo y arquitecto de esta locura. Sólo él tendrá las respuestas que buscas. Haces las maletas y planeas tu viaje a París, la Ciudad de la Luz.</p>",
+    "proceedToJordansInformation": "Pasa a la _Información de Jordan_.",
+    "otherwise": "Si no es así, pasa a _Preparación_.",
+    "jordansInformation": "<p>_Información de Jordan_: Según el Sr. Jordan Perry, que había financiado varias representaciones de El Rey de Amarillo por todo el mundo, Nigel Engram era un hombre excéntrico y apasionado, casi hasta el punto de la manía. Se rumoreaba que no había dirigido ninguna otra obra desde que descubrió El Rey de Amarillo. Jordan se había reunido por primera vez con el Sr. Engram en un café de Montparnasse, “L’agneau Perdu”. Viajas allí primero, con la esperanza de encontrar al Sr. Engram…</p><ul><li>Cada investigador comienza la partida con 3 recursos adicionales. En lugar del Lugar inicial habitual, cada investigador comienza la partida en Montparnasse.</li></ul><p class='basic right'>Pasa a _Preparación_.</p>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *El Fantasma de la Verdad*, *Portentos malignos*, *Byakhee*, *El Extranjero*, *Agentes de Hastur* y *Las máscaras de medianoche*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/a-phantom-of-truth.png' /><img src='{setImgPath}/evil-portents.png' /><img src='{setImgPath}/byakhee.png' /><img src='{setImgPath}/the-stranger.png' /><img src='{setImgPath}/agents-of-hastur.png' /><img src='{setImgPath}/midnight-masks.png' /></section>Al reunir el conjunto de encuentro *Las máscaras de medianoche*, coge sólo las 5 cartas de Traición (2x Pista falsa y 3x Sombra acechante). No cojas las cartas de Lugar, de Acto, de Plan o de referencia de escenario de ese conjunto.",
+    "doubt": {
+      "instructions": "Consulta el Registro de campaña. Si tenéis más (o igual) _Dudas_ que _Convicciones_:",
+      "remove": "Busca en los conjuntos de encuentro reunidos ambas copias de Soles gemelos y las 3 copias de Sombra acechante, y retíralas de la partida.",
+      "act": "Durante este escenario, usa el Acto 1: La conspiración parisina (v. I). La otra versión del Acto 1 se retira de la partida."
+    },
+    "conviction": {
+      "instructions": "Si tenéis más _Convicciones_ que _Dudas_:",
+      "remove": "Busca en los conjuntos de encuentro reunidos ambas copias de Surgen estrellas negras y ambas copias de Pista falsa, y retíralas de la partida.",
+      "act": "Durante este escenario, usa el Acto 1: La conspiración parisina (v. II). La otra versión del Acto 1 se retira de la partida."
+    },
+    "chooseLocations": "Elige al azar uno de los dos Lugares Montmartre, uno de los dos Lugares Opéra Garnier y uno de los dos Lugares Le Marais. Pon en juego los Lugares elegidos. Retira las otras versiones de esos Lugares de la partida.",
+    "placeLocations": "Pon en juego los Lugares restantes (Montparnasse, Gare d’Orsay, Grand Guignol, Canal Saint-Martin, Cementerio de Père Lachaise, Notre-Dame y Jardines de Luxemburgo). (Consulta la distribución sugerida a continuación.) Cada investigador comienza la partida en la Gare d’Orsay.",
+    "setAside": "Pon aparte, fuera del juego, el Enemigo de doble cara El organista.",
+    "lostSoul": "Si quedan copias de la Debilidad Alma perdida, ponlas aparte, fuera del juego."
+  },
+  "resolutions": {
+    "xp": {
+      "bonus": "Has recibido información sobre las maquinaciones del Rey Andrajoso."
+    },
+    "noResolution": {
+      "title": "Sin resolución",
+      "body": "<div class='resolution'><p>_Si no se alcanzó ninguna resolución (cada investigador desistió o fue derrotado)_: Ni siquiera miras por dónde vas mientras huyes por la ciudad para ponerte a salvo. Tus pies se mueven solos. El batir de unas fuertes alas y el chillido de las criaturas que te sobrevuelan te hacen ir más rápido. Pronto te encuentras corriendo por una estrecha avenida, pasando un juego de pesadas verjas de hierro. Estás en un callejón sin salida: un patio con casas altas y antiguas a ambos lados. Te vuelves hacia la entrada y encuentras las siluetas de muchas criaturas aladas bloqueando el camino. Están posadas en las verjas y en los balcones de arriba, esperando tu perdición. Caminando con una fría y siniestra confianza, el hombre de negro abre la verja de hierro y entra en el patio. Su rostro brilla en la oscuridad. Sus ojos te perforan el alma. Por un momento, lo reconoces por lo que realmente es. Es lo último que recuerdas de aquella noche.</p><ul><li>En tu Registro de campaña, anota que *los investigadores no escaparon de la mirada del Fantasma*.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}elderThing{'}'} a la bolsa de caos.</li><li>Si Jordan Perry (*Una presencia imponente*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: Supones que esta casa pertenece a Nigel Engram, el director de El Rey de Amarillo. Por fin has encontrado tu objetivo… y aun así, no alivia tu forzada cordura. Te sientes como un perro al que llevan de una correa, con tu destino decidido por un cruel amo que te mantiene en la ignorancia. Apartas estos pesimistas pensamientos de tu mente y llamas a la puerta del Sr. Engram. No hay respuesta, pero una bandada de urracas sale volando del tejado por el ruido. Agarras el picaporte, esperando no tener que recurrir a la fuerza, pero, para tu sorpresa, la puerta está abierta.</p><p>En el interior, la casa de Nigel es un caos de notas, libros viejos y extraños diagramas. Cubriendo la mesa de café de su sala de estar hay un mapa viejo y desvaído, con muchos pliegues y bordes raídos. Parece ser un mapa incompleto de las catacumbas bajo París, o al menos de una sección. La comida de su despensa está vieja y podrida. No hay señal de que nadie haya vivido aquí en años, y sin embargo la tinta de las paredes de la sala de estar está húmeda y fresca. Una y otra vez, en casi cada centímetro del papel pintado, se lee:</p><p class='wolgast'>Él ya está aquí.</p><ul><li>En tu Registro de campaña, anota que *los investigadores encontraron la casa de Nigel*.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}cultist{'}'} a la bolsa de caos.</li><li>Si Jordan Perry (*Una presencia imponente*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2_: Supones que esta casa pertenece a Nigel Engram, el director de El Rey de Amarillo. Por fin has encontrado tu objetivo… y aun así, no alivia tu forzada cordura. Te sientes como un perro al que llevan de una correa, con tu destino decidido por un cruel amo que te mantiene en la ignorancia. Apartas estos pesimistas pensamientos de tu mente y llamas a la puerta del Sr. Engram. Una bandada de urracas sale volando del tejado por el ruido. Entonces, para tu sorpresa, la puerta se abre.</p><p>En el umbral de la puerta se encuentra un hombre alto con un espeso bigote castaño. Un familiar bastón con mango de plata se apoya en la pared junto a su perchero. “Así que sois vosotros”, dice. “Pasad. Os esperaba desde hace algún tiempo.” Se da la vuelta y camina hacia su cocina. Se oye silbar una tetera, como si se hubiera estado preparando para vuestra llegada.</p><p>Entras en su casa, inseguro de qué hacer a continuación. Este hombre amable e inocente no es exactamente lo que esperabas. La casa de Nigel es un caos de notas, libros viejos y extraños diagramas. Cubriendo la mesa de café de su sala de estar hay un mapa viejo y desvaído, con muchos pliegues y bordes raídos. Parece ser un mapa incompleto de las catacumbas bajo París, o al menos de una sección. El Sr. Engram regresa momentos después con té caliente y un plato de queso y galletas. “Supongo que estáis aquí para encontrar el camino a Carcosa”, pregunta, con una sonrisa excitada. Niega con la cabeza como respuesta, pero él no parece darse cuenta. Pasea de un lado a otro de la habitación mientras habla con rapidez. “Me dijo que llegaríais pronto. Que debía… Prepararme.” Nigel se vuelve hacia ti al llegar a la puerta de madera frente a ti, con los ojos relampagueantes. “No os preocupéis. Todo está listo. El camino está pavimentado.” Abre la puerta de su estudio y entra, dejándote atrás para interpretar sus crípticos comentarios. Esperas unos minutos a que regrese, pero cuando no lo hace, empiezas a preocuparte. Entonces te das cuenta de que ya ha empezado a crecer moho sobre el queso que te había traído. “¿Sr. Engram?”, llamas, y llamas con hesitación a la puerta de su estudio. No hay respuesta. Cuando entras en la habitación, lo encuentras colgando del ventilador del techo, su cuerpo pudriéndose tras semanas de descomposición.</p><ul><li>En tu Registro de campaña, anota que *los investigadores encontraron a Nigel Engram*. Cada investigador sufre 1 trauma mental por la conmoción del descubrimiento. Cada investigador obtiene 2 puntos de experiencia adicionales por haber recibido información sobre las maquinaciones del Rey Andrajoso.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}tablet{'}'} a la bolsa de caos.</li><li>Si Jordan Perry (*Una presencia imponente*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3_: Cuando el sol vuelve a salir sobre el horizonte de París, pierdes de vista a la misteriosa figura. Frustrado por tu fracaso, regresas a tu hotel a dormir y recuperarte de los horrores de las últimas noches. Vuelven tus sueños agitados: sueños de Carcosa, del Rey Andrajoso y de la figura sombría a la que habías perseguido por las calles de París. Cuando despiertas, ya no estás en tu habitación de hotel.</p><ul><li>En tu Registro de campaña, anota que *los investigadores no lograron encontrar a Nigel*.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}elderThing{'}'} a la bolsa de caos.</li><li>Si Jordan Perry (*Una presencia imponente*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li></ul></div>"
+    }
+  }
+}

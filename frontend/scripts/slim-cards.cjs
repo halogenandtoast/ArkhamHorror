@@ -6,6 +6,9 @@
 //
 // Run after refreshing the source card files:
 //   npm run slim-cards
+//
+// `slimCards` is also used by the dev server (see vite.config.js), which slims
+// on demand so `vite dev` does not need this to have been run first.
 
 const fs = require('fs')
 const path = require('path')
@@ -43,6 +46,18 @@ const KEEP_FIELDS = [
   'deck_requirements',
 ]
 
+function slimCards(cards) {
+  return cards.map((c) => {
+    const o = {}
+    for (const k of KEEP_FIELDS) if (c[k] !== undefined) o[k] = c[k]
+    return o
+  })
+}
+
+module.exports = { KEEP_FIELDS, slimCards }
+
+if (require.main !== module) return
+
 const publicDir = path.join(__dirname, '..', 'public')
 const outDir = path.join(publicDir, 'cards')
 
@@ -69,13 +84,7 @@ for (const file of sources) {
     console.log(`${file}: empty source, skipping`)
     continue
   }
-  const cards = JSON.parse(raw)
-  const slim = cards.map((c) => {
-    const o = {}
-    for (const k of KEEP_FIELDS) if (c[k] !== undefined) o[k] = c[k]
-    return o
-  })
-  const json = JSON.stringify(slim)
+  const json = JSON.stringify(slimCards(JSON.parse(raw)))
   const dst = path.join(outDir, file)
   fs.writeFileSync(dst, json)
   const gz = zlib.gzipSync(json, { level: 9 })

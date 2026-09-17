@@ -1,10 +1,11 @@
 {
   "heading": "Scenario V",
   "label": {
-    "playPowder": "Play Powder of Ibn-Ghazi",
-    "doNotPlayPowder": "Do no play Powder of Ibn-Ghazi",
-    "doNotRemoveCluesAndFail": "Do not remove clues from Brood of Yog-Sothoth and fail skill test",
-    "doNotRemoveCluesAndTreatAsNegative4": "Do not remove clues from Brood of Yog-Sothoth and treat as -4"
+    "chooseInvestigatorToPlaceClue": "Choose an investigator to place a clue",
+    "cluesToSpend": "Number of clues to spend",
+    "doNotRemoveCluesFail": "Do not remove clues from Brood of Yog-Sothoth and fail skill test",
+    "doNotRemoveCluesTreatAsMinusFour": "Do not remove clues from Brood of Yog-Sothoth and treat as -4",
+    "spawnSetAsideBrood": "Spawn a set aside Brood of Yog-Sothoth at a random location"
   },
   "tokens": {
     "easyStandard": {
@@ -72,12 +73,5 @@
       "title": "Resolution 2",
       "body": "<div class='resolution'><p>_Resolution 2_: After slaying what seems to be the last of the rampaging monsters you retreat to Zebulon’s home, exhausted and rattled by your experience.</p><ul><li>In your Campaign Log, record that *no brood escaped into the wild*.</li><li>If an investigator’s deck contains the Powder of Ibn-Ghazi card, remove it from that investigator’s deck.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul></div>"
     }
-  },
-  "label": {
-    "chooseInvestigatorToPlaceClue": "Choose an investigator to place a clue",
-    "cluesToSpend": "Number of clues to spend",
-    "doNotRemoveCluesFail": "Do not remove clues from Brood of Yog-Sothoth and fail skill test",
-    "doNotRemoveCluesTreatAsMinusFour": "Do not remove clues from Brood of Yog-Sothoth and treat as -4",
-    "spawnSetAsideBrood": "Spawn a set aside Brood of Yog-Sothoth at a random location"
   }
 }

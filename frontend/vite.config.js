@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -26,32 +26,37 @@ const homebrewImages = () => ({
 })
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    homebrewImages(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@homebrew': fileURLToPath(new URL('./homebrew', import.meta.url))
-    }
-  },
-  server: {
-    port: 8080,
-    proxy: {
-      "^/api": {
-        // Docker compose serves API+web on 3000; local Haskell API uses 3002.
-        target: process.env.VITE_API_TARGET || "http://127.0.0.1:3002",
-        changeOrigin: true,
-        secure: false,
-        ws: true
-      },
-      "^/health": {
-        target: process.env.VITE_API_TARGET || "http://127.0.0.1:3002",
-        changeOrigin: true,
-        secure: false,
-        ws: false
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const apiTarget = env.VITE_API_TARGET || process.env.VITE_API_TARGET || 'http://127.0.0.1:3002'
+
+  return {
+    plugins: [
+      vue(),
+      homebrewImages(),
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '@homebrew': fileURLToPath(new URL('./homebrew', import.meta.url))
+      }
+    },
+    server: {
+      port: 8080,
+      proxy: {
+        "^/api": {
+          // Docker compose serves API+web on 3000; local Haskell API uses 3002.
+          target: apiTarget,
+          changeOrigin: true,
+          secure: false,
+          ws: true
+        },
+        "^/health": {
+          target: apiTarget,
+          changeOrigin: true,
+          secure: false,
+          ws: false
+        }
       }
     }
   }

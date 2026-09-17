@@ -174,6 +174,15 @@ function humanQuestionPlayers() {
 // tied to something that just happened and still deserve focus.
 function isDeclinableFastWindow(playerId: string) {
   if (!ArkhamGame.activeQuestionIsPlayerWindow(props.game, playerId)) return false
+  return hasSkipTriggersButton(playerId)
+}
+
+// The seat can walk away from its question. runWindow only offers Skip Triggers for a
+// window it built as skippable, and the forced-ability branch never offers one at all,
+// so this separates "may be held back" from "must claim the perspective to advance the
+// game". Unlike isDeclinableFastWindow it does not require a PlayerWindowChooseOne: the
+// skill test's own fast windows decode as WindowChooseOne (#5730).
+function hasSkipTriggersButton(playerId: string) {
   return ArkhamGame.choices(props.game, playerId)
     .some(choice => choice.tag === MessageType.SKIP_TRIGGERS_BUTTON)
 }
@@ -403,22 +412,27 @@ function inspectActions() {
   }
 
   // A sole question owns the tab even if Vue has left stale actionable controls
-  // on another tab. During a skill test, however, another investigator's fast
-  // window does not pull focus away from the test taker unless that
-  // investigator's tab is the sole place with an actionable control.
+  // on another tab. During a skill test, however, another investigator's
+  // declinable window does not pull focus away from the test taker unless that
+  // investigator's tab is the sole place with an actionable control. The test's
+  // own ST1/ST2 windows decode as WindowChooseOne rather than
+  // PlayerWindowChooseOne, so this asks for the Skip Triggers button directly
+  // instead of going through isDeclinableFastWindow, which would never match
+  // here and would hand every bystander's fast window the perspective (#5730).
   //
   // Only a *declinable* window may be held back that way. game.skillTest stays
   // populated after the test resolves, while the consequences of the result are
   // still resolving -- an Arcane Barrier leave cost that fails can discard the
   // location, move everyone off it, and hand each investigator in turn a forced
-  // ability, all with the failed test still open. A forced ability or reaction
-  // cannot be declined and is the only thing that can advance the game, so it
-  // has to claim the perspective even then; otherwise the sole answerable
-  // question sits behind a tab with no control rendered anywhere on screen.
+  // ability, all with the failed test still open. A forced ability carries no
+  // Skip Triggers button, cannot be declined and is the only thing that can
+  // advance the game, so it has to claim the perspective even then; otherwise
+  // the sole answerable question sits behind a tab with no control rendered
+  // anywhere on screen.
   const skillTestHoldsFocus =
     !!skillTestPlayer
     && soleQuestionPlayer !== skillTestPlayer
-    && isDeclinableFastWindow(soleQuestionPlayer as string)
+    && hasSkipTriggersButton(soleQuestionPlayer as string)
   if (solo?.value === true && soleQuestionPlayer && !skillTestHoldsFocus) {
     if (selectedTab.value !== soleQuestionPlayer || props.playerId !== soleQuestionPlayer) {
       if (!automaticSwitchIsStable(`sole-question:${soleQuestionPlayer}`)) return

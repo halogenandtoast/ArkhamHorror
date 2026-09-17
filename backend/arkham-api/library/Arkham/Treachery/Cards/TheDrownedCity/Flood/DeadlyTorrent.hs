@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.TheDrownedCity.Flood.DeadlyTorrent (deadlyTorrent) where
 
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers (getFloodLevelFor)
-import Arkham.ForMovement (ForMovement (ForMovement))
+import Arkham.Helpers.Location (getAccessibleLocations)
 import Arkham.Location.FloodLevel (FloodLevel (Unflooded))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -37,7 +37,7 @@ instance RunMessage DeadlyTorrent where
       pure $ DeadlyTorrent $ attrs & setMeta sType
     PassedThisSkillTest iid (isSource attrs -> True) -> do
       when (toResult attrs.meta == SkillAgility) do
-        locations <- select $ AccessibleFrom ForMovement (locationWithInvestigator iid)
+        locations <- getAccessibleLocations iid attrs
         chooseOrRunOneM iid $ targets locations $ moveTo attrs iid
       pure t
     FailedThisSkillTest iid (isSource attrs -> True) -> do

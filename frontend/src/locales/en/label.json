@@ -412,6 +412,8 @@
     "removeEnemyDamage": "Remove damage from an enemy",
     "resolveHaunted": "Resolve each haunted ability",
     "resource": "{count} Resource | {count} Resources",
+    "resourceFromCard": "Spend {count} resource from {name} | Spend {count} resources from {name}",
+    "resourceFromPool": "Spend {count} resource from your pool | Spend {count} resources from your pool",
     "returnAssetToHand": "Return matching asset to hand",
     "returnChaosTokenToPool": "Return chaos token to pool",
     "returnChaosTokensToPool": "Return {count} chaos tokens to pool",

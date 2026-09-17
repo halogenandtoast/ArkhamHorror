@@ -21,7 +21,7 @@ instance HasAbilities PhysicalTraining4 where
     [ wantsSkillTest (YourSkillTest $ mapOneOf SkillTestWants [#willpower, #combat])
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
-        $ OrCost [ResourceCost 1, UseCost (be a) #resource 1]
+        $ resourceOrUseCost a 1
     ]
 
 instance RunMessage PhysicalTraining4 where

@@ -17,9 +17,11 @@ import Arkham.Customization
 import {-# SOURCE #-} Arkham.Enemy.Types (Enemy)
 import Arkham.Field
 import Arkham.GameValue
+import Arkham.I18n (cardNameVar, countVar, labelKey, withI18n)
 import Arkham.Id
 import Arkham.Key
 import Arkham.Matcher
+import Arkham.Name (Named)
 import Arkham.Prelude
 import Arkham.Scenario.Deck
 import Arkham.ScenarioLogKey
@@ -287,6 +289,20 @@ assetUseCost a uType n = UseCost (AssetWithId $ toId a) uType n
 
 dynamicAssetUseCost :: (Entity a, EntityId a ~ AssetId) => a -> UseType -> GameCalculation -> Cost
 dynamicAssetUseCost a uType c = DynamicUseCost (AssetWithId $ toId a) uType (DynamicCalculation c)
+
+{- | "Spend N resources", payable from your own pool or from this asset's own
+resource uses. Both branches are labeled: an unlabeled 'OrCost' renders them as
+"N Resources" and "Spend N Resources", which never says which one takes the
+card's own stock (#5730).
+-}
+resourceOrUseCost :: (Entity a, EntityId a ~ AssetId, HasCardCode a, Named a) => a -> Int -> Cost
+resourceOrUseCost a n =
+  OrCost
+    [ LabeledCost (withI18n $ countVar n $ "$" <> labelKey "cost.resourceFromPool") (ResourceCost n)
+    , LabeledCost
+        (withI18n $ countVar n $ cardNameVar a $ "$" <> labelKey "cost.resourceFromCard")
+        (assetUseCost a #resource n)
+    ]
 
 exhaust :: Targetable a => a -> Cost
 exhaust = ExhaustCost . toTarget

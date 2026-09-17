@@ -20,7 +20,7 @@ instance HasAbilities DigDeep4 where
     [ wantsSkillTest (YourSkillTest $ mapOneOf SkillTestWants [#willpower, #agility])
         $ controlledAbility a 1 DuringAnySkillTest
         $ FastAbility
-        $ OrCost [ResourceCost 1, assetUseCost a #resource 1]
+        $ resourceOrUseCost a 1
     ]
 
 instance RunMessage DigDeep4 where

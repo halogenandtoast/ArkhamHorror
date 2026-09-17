@@ -16,6 +16,8 @@ import FormattedEntry from '@/arkham/components/FormattedEntry.vue';
 import * as ArkhamGame from '@/arkham/types/Game';
 import WorldMap, { type MapData } from '@/arkham/components/TheScarletKeys/WorldMap.vue';
 import BuildSpiritDeck from '@/arkham/components/BuildSpiritDeck.vue';
+import CardImage from '@/arkham/components/CardImage.vue';
+import type { CardDef } from '@/arkham/types/CardDef';
 
 export interface Props {
   game: Game
@@ -121,7 +123,9 @@ const choose = (idx: number) => {
   emit('choose', idx)
 }
 
-const flippableCard = (cardCode: string) => {
+// A card the story offers face-down: we have no def for it, only enough of one
+// for CardImage to show both sides.
+const flippableCard = (cardCode: string): CardDef => {
   return {
     cardCode,
     doubleSided: true,
@@ -129,11 +133,13 @@ const flippableCard = (cardCode: string) => {
     cardType: 'UnknownType',
     art: cardArt(cardCode),
     level: 0,
-    traits: [],
-    name: "",
+    cardTraits: [],
+    name: { title: "", subtitle: null },
     skills: [],
     cost: null,
-    otherSide: `${cardCode}b`
+    otherSide: `${cardCode}b`,
+    meta: {},
+    errata: null
   }
 }
 

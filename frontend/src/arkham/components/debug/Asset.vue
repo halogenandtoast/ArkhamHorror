@@ -8,6 +8,7 @@ import { cardImage as cardToImage, asCardCode, toCardContents, type Card as Arkh
 import { keyToId } from '@/arkham/types/Key'
 import type { Game } from '@/arkham/types/Game';
 import KeyToken from '@/arkham/components/Key.vue';
+import Modifier from '@/arkham/components/Modifier.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import TokenView from '@/arkham/components/Token.vue';
 import * as Arkham from '@/arkham/types/Asset';
@@ -163,7 +164,7 @@ const hasPool = computed(() => {
       </div>
       <div v-else-if="setModifiers" class="buttons">
         <button @click="setModifiers = false">{{ $t('debug.common.back') }}</button>
-        <Modifier :modifier="modifier" v-for="(modifier, idx) in asset.modifiers" :key="idx" />
+        <Modifier :modifier="modifier" :game="game" v-for="(modifier, idx) in asset.modifiers" :key="idx" />
       </div>
       <div v-else class="buttons">
         <button @click="placeTokens = true">{{ $t('debug.common.placeTokens') }}</button>

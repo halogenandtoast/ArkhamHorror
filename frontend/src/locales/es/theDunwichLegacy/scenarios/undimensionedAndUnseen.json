@@ -1,6 +1,10 @@
 {
   "heading": "Escenario V",
   "label": {
+    "playPowder": "Juega Polvo de Ibn-Ghazi",
+    "doNotPlayPowder": "No juegues Polvo de Ibn-Ghazi",
+    "doNotRemoveCluesAndFail": "No retires pistas de Prole de Yog-Sothoth y fracasa en la prueba de habilidad",
+    "doNotRemoveCluesAndTreatAsNegative4": "No retires pistas de Prole de Yog-Sothoth y trátalo como -4",
     "chooseInvestigatorToPlaceClue": "Elige un investigador para colocar una pista",
     "cluesToSpend": "Número de pistas a gastar",
     "doNotRemoveCluesFail": "No retires pistas de Prole de Yog-Sothoth y fracasa en la prueba de habilidad",

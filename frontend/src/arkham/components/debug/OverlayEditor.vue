@@ -171,18 +171,21 @@ defineExpose({ isEmpty })
     </p>
 
     <template v-else>
-      <label v-if="investigators.length" class="field">
+      <div v-if="investigators.length" class="field">
         <span class="field-label">Investigator</span>
         <select
           :value="overlay.investigator ?? ''"
           @change="setInvestigator(($event.target as HTMLSelectElement).value || null)"
         >
-          <option value="">Keep the deck's own</option>
+          <option value="">No replacement — keep the deck's own</option>
           <option v-for="card in investigators" :key="card.def.cardCode" :value="card.def.cardCode">
             {{ card.def.name.title }}
           </option>
         </select>
-      </label>
+        <button v-if="!isEmpty" type="button" class="clear" @click="emit('update:modelValue', null)">
+          Clear overlay
+        </button>
+      </div>
       <p v-if="overlay.investigator" class="hint">
         Their signature cards replace the ones the deck's investigator brought.
       </p>
@@ -253,7 +256,12 @@ defineExpose({ isEmpty })
         <p v-if="!deckCards.length" class="muted">No card matches that.</p>
       </section>
 
-      <button v-if="!isEmpty" type="button" class="clear" @click="emit('update:modelValue', null)">
+      <button
+        v-if="!investigators.length && !isEmpty"
+        type="button"
+        class="clear"
+        @click="emit('update:modelValue', null)"
+      >
         Clear overlay
       </button>
     </template>
@@ -267,13 +275,15 @@ defineExpose({ isEmpty })
   display: flex;
   flex-direction: column;
   font-size: 0.85rem;
-  gap: 0.75rem;
+  gap: 0.9rem;
+  min-width: 0;
 }
 
 .field {
-  display: flex;
   align-items: center;
-  gap: 0.5rem;
+  display: flex;
+  gap: 0.65rem;
+  min-width: 0;
 
   select {
     -webkit-appearance: none;
@@ -284,7 +294,14 @@ defineExpose({ isEmpty })
     border-radius: 4px;
     color: inherit;
     font-size: 0.85rem;
-    padding: 0.25rem 1.4rem 0.25rem 0.4rem;
+    min-width: 0;
+    padding: 0.35rem 1.6rem 0.35rem 0.55rem;
+  }
+
+  @media (max-width: 30rem) {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.3rem;
   }
 }
 
@@ -303,8 +320,8 @@ defineExpose({ isEmpty })
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   gap: 0.6rem;
-  margin-bottom: 0.35rem;
-  padding-bottom: 0.25rem;
+  margin-bottom: 0.45rem;
+  padding-bottom: 0.4rem;
 }
 
 .count {
@@ -421,7 +438,9 @@ defineExpose({ isEmpty })
 
 .clear {
   align-self: flex-start;
-  background: rgba(255, 255, 255, 0.08);
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.28);
+  margin-top: 0;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 4px;
   color: inherit;

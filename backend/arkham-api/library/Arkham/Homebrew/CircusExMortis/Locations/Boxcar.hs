@@ -10,7 +10,7 @@ newtype Boxcar = Boxcar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 boxcar :: LocationCard Boxcar
-boxcar = location Boxcar Cards.boxcar 2 (Static 1)
+boxcar = symbolLabel $ location Boxcar Cards.boxcar 2 (Static 1)
 
 instance HasAbilities Boxcar where
   getAbilities (Boxcar a) =

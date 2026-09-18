@@ -11,7 +11,7 @@ newtype Flatcar = Flatcar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 flatcar :: LocationCard Flatcar
-flatcar = location Flatcar Cards.flatcar 1 (Static 1)
+flatcar = symbolLabel $ location Flatcar Cards.flatcar 1 (Static 1)
 
 instance HasAbilities Flatcar where
   getAbilities (Flatcar a) =

@@ -9,7 +9,7 @@ newtype LocomotiveEngine = LocomotiveEngine LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 locomotiveEngine :: LocationCard LocomotiveEngine
-locomotiveEngine = location LocomotiveEngine Cards.locomotiveEngine 3 (Static 1)
+locomotiveEngine = symbolLabel $ location LocomotiveEngine Cards.locomotiveEngine 3 (Static 1)
 
 instance HasAbilities LocomotiveEngine where
   getAbilities (LocomotiveEngine a) =

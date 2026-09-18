@@ -13,7 +13,7 @@ newtype ExoticAnimalCar = ExoticAnimalCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 exoticAnimalCar :: LocationCard ExoticAnimalCar
-exoticAnimalCar = location ExoticAnimalCar Cards.exoticAnimalCar 3 (Static 1)
+exoticAnimalCar = symbolLabel $ location ExoticAnimalCar Cards.exoticAnimalCar 3 (Static 1)
 
 instance HasModifiersFor ExoticAnimalCar where
   getModifiersFor (ExoticAnimalCar a) =

@@ -46,10 +46,18 @@ instance RunMessage EnchantedWoodsLostWoodsEffect where
     EndRoundWindow -> do
       pushAll [disable attrs, placeDoomOnAgenda]
       pure e
-    MoveTo (moveTarget -> InvestigatorTarget iid) | attrs.target == toTarget iid -> do
+    MoveTo movement | attrs.target == movement.target, leavesLostWoods attrs movement -> do
       push $ disable attrs
       pure e
-    After (MoveTo (moveTarget -> InvestigatorTarget iid)) | attrs.target == toTarget iid -> do
+    After (MoveTo movement) | attrs.target == movement.target, leavesLostWoods attrs movement -> do
       push $ disable attrs
       pure e
     _ -> EnchantedWoodsLostWoodsEffect <$> liftRunMessage msg attrs
+
+-- The move that reveals this location pushes its own After (MoveTo) once the
+-- reveal window has resolved, so arriving here must not cancel the pending doom;
+-- only actually leaving does.
+leavesLostWoods :: EffectAttrs -> Movement -> Bool
+leavesLostWoods attrs movement = case (movement.destination, attrs.source.location) of
+  (ToLocation lid, Just here) -> lid /= here
+  _ -> True

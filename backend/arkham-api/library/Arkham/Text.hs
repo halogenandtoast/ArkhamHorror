@@ -36,6 +36,7 @@ data FlavorTextModifier
   | CodexEntry
   | HauntedEntry
   | TokenRevealEntry
+  | ByDifficultyEntry
   deriving stock (Show, Eq, Ord, Data)
 
 data ListItemEntry = ListItemEntry

@@ -90,11 +90,21 @@ instance HasField "nested" (Text -> UlItems) (String -> UlItems -> UlItems) wher
   getField f t items = specialize f (T.pack t) \case
     ListItemEntry entry nested -> ListItemEntry entry (nested <> execWriter items)
 
+instance HasField "nested" (String -> UlItems) (String -> UlItems -> UlItems) where
+  getField f t items = specializeS f t \case
+    ListItemEntry entry nested -> ListItemEntry entry (nested <> execWriter items)
+
 instance HasField "valid" (Text -> UlItems) (String -> UlItems) where
   getField f t = specialize f (T.pack t) \case
     ListItemEntry entry nested -> case entry of
       ModifyEntry modifiers inner -> ListItemEntry (ModifyEntry (ValidEntry : modifiers) inner) nested
       _ -> ListItemEntry (ModifyEntry [ValidEntry] entry) nested
+
+instance HasField "byDifficulty" (Text -> UlItems) (String -> UlItems) where
+  getField f t = specialize f (T.pack t) \case
+    ListItemEntry entry nested -> case entry of
+      ModifyEntry modifiers inner -> ListItemEntry (ModifyEntry (ByDifficultyEntry : modifiers) inner) nested
+      _ -> ListItemEntry (ModifyEntry [ByDifficultyEntry] entry) nested
 
 instance HasField "invalid" (Text -> UlItems) (String -> UlItems) where
   getField f t = specialize f (T.pack t) \case

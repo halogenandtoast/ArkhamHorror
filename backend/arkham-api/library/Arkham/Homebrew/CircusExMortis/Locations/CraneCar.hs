@@ -12,7 +12,7 @@ newtype CraneCar = CraneCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 craneCar :: LocationCard CraneCar
-craneCar = location CraneCar Cards.craneCar 3 (Static 2)
+craneCar = symbolLabel $ location CraneCar Cards.craneCar 3 (Static 2)
 
 instance HasAbilities CraneCar where
   getAbilities (CraneCar a) =

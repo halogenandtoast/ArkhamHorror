@@ -2,22 +2,28 @@
   "allPointsWest": {
     "intro": {
       "title": "Scenario IV: All Points West",
-      "backOnTrack": {
-        "title": "Back on Track",
-        "body": "<p><i>Your decision to pursue the rougarou put you a little far afield, but you return to New Orleans Union Station after a long and harrowing night to find the Dykstras' train waiting for you.</i></p>"
-      },
-      "whatAHorribleNight": {
-        "title": "What a Horrible Night",
-        "body": "<p><i>Even when you have the urges controlled, there seem to be outward signs of the curse affecting you, given the looks from Ralph and Carrie. “I've got a razor and shaving cream in the caboose if you need it,” Ralph states, though you're not sure how seriously.</i></p><p class='basic'><i>Curse of the Rougarou</i> gains “<b>[reaction]</b> After you release a {'{'}moon{'}'} token: Discard <i>Curse of the Rougarou</i>.”</p>"
-      },
-      "goodJuju": {
-        "title": "Good Juju",
-        "body": "<p><i>Lady Esprit accompanies you to the station and wastes little time in setting up shop in the caboose. Carrie watches her with folded arms. “Are you a witch?” the young lady asks. Lady Esprit laughs with surprising spirit and continues without looking. “Even better than that, child.”</i></p><p class='basic'><i>Lady Esprit</i> gains “<b>[reaction]</b> After you release a {'{'}moon{'}'} token: Discover a clue. (Limit once per round.)”</p>"
-      },
-      "rightOnSchedule": {
-        "title": "Right on Schedule",
-        "body": "<p><i>With time of the essence, you tell the Dykstras that you'll meet them at the Northside station and rapidly pack, also calling in a couple small favors to get some extra clothes for Thea to use during the journey. She keeps a close hold on the tome as you depart your house. “California. That'll give me time to read through this book, at least. Hopefully there's something in there that tells us what Blake is trying to do, or what my visions mean.”</i></p>"
-      }
+      "check": "<ul><li>If the investigators played *Curse of the Rougarou* immediately before this scenario, read _Back on Track_. Otherwise, read _Right on Schedule_.</li></ul>",
+      "backOnTrack": "<p>_Back on Track:_ Your decision to pursue the rougarou put you a little far afield, but you return to New Orleans Union Station after a long and harrowing night to find the Dykstras' train waiting for you.</p>",
+      "whatAHorribleNight": "<p class='basic'>If an investigator has Curse of the Rougarou in their deck, read _What a Horrible Night_.</p><p>_What a Horrible Night_: Even when you have the urges controlled, there seem to be outward signs of the curse affecting you, given the looks from Ralph and Carrie. “I've got a razor and shaving cream in the caboose if you need it,” Ralph states, though you're not sure how seriously.</p><p class='basic'>Curse of the Rougarou gains “{'{'}reaction{'}'} After you release a {'{'}moon{'}'} token: Discard Curse of the Rougarou.”</p>",
+      "goodJuju": "<p class='basic'>If an investigator has Lady Esprit in their deck, read _Good Juju_.</p><p>_Good Juju_: Lady Esprit accompanies you to the station and wastes little time in setting up shop in the caboose. Carrie watches her with folded arms. “Are you a witch?” the young lady asks. Lady Esprit laughs with surprising spirit and continues without looking. “Even better than that, child.”</p><p class='basic'>Lady Esprit gains “{'{'}reaction{'}'} After you release a {'{'}moon{'}'} token: Discover a clue. (Limit once per round.)”</p>",
+      "fromNewOrleans": "Remember that \"you're setting out from New Orleans.\"",
+      "fromArkham": "Remember that \"you're setting out from Arkham.\"",
+      "rightOnSchedule": "<p>_Right on Schedule_: With time of the essence, you tell the Dykstras that you'll meet them at the Northside station and rapidly pack, also calling in a couple small favors to get some extra clothes for Thea to use during the journey. She keeps a close hold on the tome as you depart your house. “California. That'll give me time to read through this book, at least. Hopefully there's something in there that tells us what Blake is trying to do, or what my visions mean.”</p>",
+      "skipToSetup": "Skip to Setup",
+      "proceedToSetup": "Proceed to Setup"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *All Points West*, *Cult of Shub-Niggurath*, *New Moon Daredevils*, and *Primordial Evils* encounter sets. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/circus-ex-mortis/sets/all-points-west.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/cult-of-shub-niggurath.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/new-moon-daredevils.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/primordial-evils.png' /></section>",
+      "fromArkham": "If \"you're setting out from Arkham,\" during this scenario, use \"Act 1 - Through the Forests (v.l).\" Remove the other act 1 from the game.",
+      "fromNewOrleans": "If \"you're setting out from New Orleans,\" during this scenario, use \"Act 1 - Through the Forests (v.II).\" Remove the other act 1 from the game.",
+      "placeLocations": "Put the Locomotive Engine and Caboose locations into play. Randomly pick one of the _Freight Car_ and _Special Car_ locations and put them into play. Set each other copy of these locations aside, out of play. Each investigator begins play at Caboose. (*Each location begins play revealed.*)",
+      "allies": "Put Ralph Dykstra into play at Locomotive Engine. Put Carrie Dykstra into play at Caboose.",
+      "setAside": "Set the following cards aside, out of play: Each _Dark Young_ enemy, each _Circus Train_ location.",
+      "addTokens": "Based on the difficulty level, add the following chaos token(s) to the chaos bag for the remainder of the campaign.",
+      "easy": "_Easy_: -2",
+      "standard": "_Standard_: -3",
+      "hard": "_Hard_: -4",
+      "expert": "_Expert_: -5"
     },
     "interludes": {
       "notInThisTown": {

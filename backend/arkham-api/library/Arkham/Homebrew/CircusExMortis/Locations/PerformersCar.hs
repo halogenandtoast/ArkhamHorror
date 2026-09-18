@@ -10,7 +10,7 @@ newtype PerformersCar = PerformersCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 performersCar :: LocationCard PerformersCar
-performersCar = location PerformersCar Cards.performersCar 2 (Static 1)
+performersCar = symbolLabel $ location PerformersCar Cards.performersCar 2 (Static 1)
 
 instance HasModifiersFor PerformersCar where
   getModifiersFor (PerformersCar a) = do

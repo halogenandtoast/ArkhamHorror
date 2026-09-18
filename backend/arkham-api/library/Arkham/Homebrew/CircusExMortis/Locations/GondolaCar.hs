@@ -10,7 +10,7 @@ newtype GondolaCar = GondolaCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 gondolaCar :: LocationCard GondolaCar
-gondolaCar = location GondolaCar Cards.gondolaCar 2 (Static 1)
+gondolaCar = symbolLabel $ location GondolaCar Cards.gondolaCar 2 (Static 1)
 
 instance HasAbilities GondolaCar where
   getAbilities (GondolaCar a) =

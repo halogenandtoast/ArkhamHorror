@@ -60,6 +60,7 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
     case 'PlainText': return 'basic'
     case 'InvalidEntry': return 'invalid'
     case 'ValidEntry': return 'valid'
+    case 'ByDifficultyEntry': return 'by-difficulty'
     default: throw new Error("Unknown modifier")
   }
 }
@@ -264,6 +265,10 @@ export default defineComponent({
   position: relative;
   z-index: var(--z-index-0);
 
+  & ~ .green {
+    margin-top: 1em;
+  }
+
   &:has(.composite > :nth-child(2)) {
     display: flex;
     flex-direction: column;
@@ -288,6 +293,14 @@ export default defineComponent({
 
   > p:first-child {
     margin-left: 35px;
+  }
+
+  &.valid::before {
+    place-self: center;
+  }
+
+  &.invalid::before {
+    place-self: center;
   }
 }
 
@@ -449,6 +462,13 @@ p.billenia, :deep(p.billenia) {
   ul {
     margin-inline: 20px;
   }
+}
+
+.by-difficulty ~ ul, :deep(.by-difficulty ~ ul) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-auto-flow: column;
 }
 
 .invalid, :deep(.invalid) {

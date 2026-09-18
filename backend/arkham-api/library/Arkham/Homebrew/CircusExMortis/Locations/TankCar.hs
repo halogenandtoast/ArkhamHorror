@@ -10,7 +10,7 @@ newtype TankCar = TankCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tankCar :: LocationCard TankCar
-tankCar = location TankCar Cards.tankCar 1 (Static 1)
+tankCar = symbolLabel $ location TankCar Cards.tankCar 1 (Static 1)
 
 instance HasAbilities TankCar where
   getAbilities (TankCar a) =

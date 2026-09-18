@@ -10,7 +10,7 @@ newtype Caboose = Caboose LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 caboose :: LocationCard Caboose
-caboose = location Caboose Cards.caboose 2 (Static 1)
+caboose = symbolLabel $ location Caboose Cards.caboose 2 (Static 1)
 
 instance HasAbilities Caboose where
   getAbilities (Caboose a) =

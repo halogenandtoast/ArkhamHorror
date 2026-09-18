@@ -10,7 +10,7 @@ newtype MailCar = MailCar LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 mailCar :: LocationCard MailCar
-mailCar = location MailCar Cards.mailCar 4 (Static 2)
+mailCar = symbolLabel $ location MailCar Cards.mailCar 4 (Static 2)
 
 instance HasAbilities MailCar where
   getAbilities (MailCar a) =

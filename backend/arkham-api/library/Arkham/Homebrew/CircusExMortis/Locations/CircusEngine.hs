@@ -20,7 +20,7 @@ newtype CircusEngine = CircusEngine LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 circusEngine :: LocationCard CircusEngine
-circusEngine = location CircusEngine Cards.circusEngine 4 (Static 2)
+circusEngine = symbolLabel $ location CircusEngine Cards.circusEngine 4 (Static 2)
 
 instance HasModifiersFor CircusEngine where
   getModifiersFor (CircusEngine a) = modifySelfWhen a a.revealed [CanBeAttackedAsIfEnemy]

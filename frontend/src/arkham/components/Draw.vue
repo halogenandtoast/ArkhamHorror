@@ -40,12 +40,16 @@ const topOfDeckRevealed = computed(() =>
   props.investigator.modifiers?.some((m) => m.type.tag === "OtherModifier" && m.type.contents === "TopCardOfDeckIsRevealed")
 )
 
+// Only expose the top card once it is revealed -- a facedown deck must not leak
+// its customizations into the DOM for the hover overlay to read.
+const topOfDeckCard = computed(() =>
+  topOfDeckRevealed.value ? props.investigator.deck[0] ?? null : null
+)
+
 const topOfDeck = computed(() => {
-  const topCard = props.investigator.deck[0]
-  if  (topOfDeckRevealed.value && topCard) {
-    return cardImage(topCard.cardCode)
-  }
-  return imgsrc("backs/back_player.jpg")
+  const topCard = topOfDeckCard.value
+  if (!topCard) return imgsrc("backs/back_player.jpg")
+  return cardImage(topCard.cardCode, topCard.mutated ? `_${topCard.mutated}` : '')
 })
 
 const playTopOfDeckAction = computed(() => {
@@ -316,6 +320,8 @@ watch(choices, async (newChoices) => {
         :class="{ 'deck--can-draw': drawCardsAction !== -1, 'card': topOfDeckRevealed }"
         class="deck"
         :src="topOfDeck"
+        :data-customizations="topOfDeckCard ? JSON.stringify(topOfDeckCard.customizations) : undefined"
+        :data-chained="topOfDeckCard?.chained || undefined"
         width="150px"
         @click="emit('choose', drawCardsAction)"
       />

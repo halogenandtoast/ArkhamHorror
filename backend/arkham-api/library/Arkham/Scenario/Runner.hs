@@ -1379,8 +1379,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
               remaining
       ShuffleBackIn -> do
         when (foundKey cardSource /= Zone.FromDeck) (error "Expects a deck: Investigator<ShuffleBackIn>")
-        for_ scenarioSearch \MkSearch {searchType} ->
-          pushWhen (searchType == Searching) $ ShuffleDeck deck
+        push $ ShuffleDeck deck
       PutBack -> pure () -- Nothing moves while searching
       DoNothing -> pure () -- Nothing moves while searching
       RemoveRestFromGame -> do

@@ -29,7 +29,7 @@ instance HasAbilities VoidChimeraGorefeaster where
 instance RunMessage VoidChimeraGorefeaster where
   runMessage msg e@(VoidChimeraGorefeaster attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      lookAt iid (attrs.ability 1) iid [fromTopOfDeck 1] #any (defer attrs IsNotDraw)
+      lookAt iid (attrs.ability 1) iid [peekTopOfDeck 1] #any (defer attrs IsNotDraw)
       pure e
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       focusCards cards do

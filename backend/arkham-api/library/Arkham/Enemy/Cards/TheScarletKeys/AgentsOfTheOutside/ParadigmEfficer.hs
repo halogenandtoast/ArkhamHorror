@@ -22,7 +22,7 @@ instance HasAbilities ParadigmEfficer where
 instance RunMessage ParadigmEfficer where
   runMessage msg e@(ParadigmEfficer attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      lookAt iid (attrs.ability 1) iid [fromTopOfDeck 1] #any (defer attrs IsNotDraw)
+      lookAt iid (attrs.ability 1) iid [peekTopOfDeck 1] #any (defer attrs IsNotDraw)
       do_ msg
       pure e
     Do (UseThisAbility iid (isSource attrs -> True) 1) -> do

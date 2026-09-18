@@ -20,7 +20,7 @@ instance RunMessage ScoutingTheVale where
   runMessage msg s@(ScoutingTheVale attrs) = runQueueT $ case msg of
     ResolveThisStory iid (is attrs -> True) -> do
       n <- perPlayer 2
-      lookAt iid attrs EncounterDeckTarget [fromTopOfDeck n] #any (defer attrs IsNotDraw)
+      lookAt iid attrs EncounterDeckTarget [peekTopOfDeck n] #any (defer attrs IsNotDraw)
       cragOfTheGhouls <- selectJust $ locationIs Locations.cragOfTheGhouls
       gameModifier attrs cragOfTheGhouls Blank
       pure s

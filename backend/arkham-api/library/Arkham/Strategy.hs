@@ -111,6 +111,14 @@ fromTopOfDeck n = (FromTopOfDeck n, ShuffleBackIn)
 fromBottomOfDeck :: Int -> (Zone, ZoneReturnStrategy)
 fromBottomOfDeck n = (FromBottomOfDeck n, ShuffleBackIn)
 
+-- | Look at the top n cards without moving anything. Use this, not
+-- 'fromTopOfDeck', for a `lookAt` that must not shuffle the deck.
+peekTopOfDeck :: Int -> (Zone, ZoneReturnStrategy)
+peekTopOfDeck n = (FromTopOfDeck n, DoNothing)
+
+peekBottomOfDeck :: Int -> (Zone, ZoneReturnStrategy)
+peekBottomOfDeck n = (FromBottomOfDeck n, DoNothing)
+
 fromDeck :: (Zone, ZoneReturnStrategy)
 fromDeck = (FromDeck, ShuffleBackIn)
 

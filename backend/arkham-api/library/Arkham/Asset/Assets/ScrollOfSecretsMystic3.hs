@@ -35,8 +35,8 @@ instance RunMessage ScrollOfSecretsMystic3 where
       let doSearch target x = lookAt iid attrs target [x 1] #any (defer attrs IsNotDraw)
       chooseTargetM iid ([EncounterDeckTarget | hasEncounterDeck] <> xs) \target -> do
         chooseOneM iid do
-          labeledI "lookAtTop" $ doSearch target fromTopOfDeck
-          labeledI "lookAtBottom" $ doSearch target fromBottomOfDeck
+          labeledI "lookAtTop" $ doSearch target peekTopOfDeck
+          labeledI "lookAtBottom" $ doSearch target peekBottomOfDeck
       pure a
     SearchFound iid (isTarget attrs -> True) Deck.EncounterDeck cards -> do
       focusCards cards do

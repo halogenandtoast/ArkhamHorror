@@ -145,7 +145,7 @@ instance RunMessage OnThinIce where
           cards <- select $ basic NonWeakness <> inHandOf NotForPlay iid
           focusCards cards $ chooseTargetM iid cards $ hollow iid
         ElderThing | isEasyStandard attrs -> do
-          lookAt iid ElderThing iid [fromTopOfDeck 1] #any (defer ElderThing IsNotDraw)
+          lookAt iid ElderThing iid [peekTopOfDeck 1] #any (defer ElderThing IsNotDraw)
         _ -> pure ()
       pure s
     ResolveChaosToken _ Cultist iid -> do
@@ -160,7 +160,7 @@ instance RunMessage OnThinIce where
       pure s
     ResolveChaosToken _ ElderThing iid -> do
       when (isHardExpert attrs) do
-        lookAt iid ElderThing iid [fromTopOfDeck 1] #any (defer ElderThing IsNotDraw)
+        lookAt iid ElderThing iid [peekTopOfDeck 1] #any (defer ElderThing IsNotDraw)
       pure s
     SearchFound iid (ChaosTokenFaceTarget ElderThing) _ cards | notNull cards -> do
       focusCards cards do

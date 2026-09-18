@@ -2645,6 +2645,7 @@ uiEffect s t m = Msg.pushM $ Msg.uiEffect s t m
 
 healDamage
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
+healDamage _target _source 0 = pure ()
 healDamage target source n = push $ Msg.HealDamage (toTarget target) (toSource source) n
 
 healDamageDelayed
@@ -2662,6 +2663,7 @@ healDamageIfCan target source n = whenM (canHaveDamageHealed source (asId target
 
 healHorror
   :: (ReverseQueue m, Sourceable source, Targetable target) => target -> source -> Int -> m ()
+healHorror _target _source 0 = pure ()
 healHorror target source n = push $ Msg.HealHorror (toTarget target) (toSource source) n
 
 healHorrorDelayed
@@ -3529,6 +3531,11 @@ advanceCurrentAgenda :: ReverseQueue m => source -> m ()
 advanceCurrentAgenda _source = do
   agendaId <- getCurrentAgenda
   push $ AdvanceAgendaBy agendaId AgendaAdvancedWithOther
+
+advanceCurrentAgendaByDoom :: ReverseQueue m => source -> m ()
+advanceCurrentAgendaByDoom _source = do
+  agendaId <- getCurrentAgenda
+  push $ AdvanceAgendaBy agendaId AgendaAdvancedWithDoom
 
 advanceCurrentAct :: (ReverseQueue m, Sourceable source) => source -> m ()
 advanceCurrentAct source = do

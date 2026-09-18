@@ -17,7 +17,7 @@ engineTrouble = act (3, A) EngineTrouble Cards.engineTrouble Nothing
 
 instance HasAbilities EngineTrouble where
   getAbilities = actAbilities1 \a ->
-    restricted a 1 (notExists $ EnemyWithTrait DarkYoung) $ Objective $ forced $ RoundEnds #when
+    restricted a 1 (notExists $ EnemyWithTrait DarkYoung) $ Objective $ triggered_ $ RoundEnds #when
 
 instance RunMessage EngineTrouble where
   runMessage msg a@(EngineTrouble attrs) = runQueueT $ case msg of

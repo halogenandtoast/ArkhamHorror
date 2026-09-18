@@ -18,7 +18,7 @@ noFreeRides = act (2, A) NoFreeRides Cards.noFreeRides Nothing
 
 instance HasAbilities NoFreeRides where
   getAbilities = actAbilities1 \a ->
-    restricted a 1 (notExists $ EnemyWithTrait DarkYoung) $ Objective $ forced $ RoundEnds #when
+    restricted a 1 (notExists $ EnemyWithTrait DarkYoung) $ Objective $ triggered_ $ RoundEnds #when
 
 instance RunMessage NoFreeRides where
   runMessage msg a@(NoFreeRides attrs) = runQueueT $ case msg of

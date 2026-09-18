@@ -17,7 +17,7 @@ throughTheForestsVI = act (1, A) ThroughTheForestsVI Cards.throughTheForestsVI N
 
 instance HasAbilities ThroughTheForestsVI where
   getAbilities = actAbilities1 \a ->
-    restricted a 1 (InvestigatorsHaveClues (atLeast 4)) $ Objective $ forced $ RoundEnds #when
+    restricted a 1 (InvestigatorsHaveClues (atLeast 4)) $ Objective $ triggered_ $ RoundEnds #when
 
 instance RunMessage ThroughTheForestsVI where
   runMessage msg a@(ThroughTheForestsVI attrs) = runQueueT $ case msg of

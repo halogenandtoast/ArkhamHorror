@@ -46,7 +46,9 @@ allPointsWest difficulty =
     ":circus-ex-mortis:074"
     "All Points West"
     difficulty
-    ["equals square star heart"]
+    [ "equals square    star heart"
+    , "moon   hourglass plus ."
+    ]
 
 freightCars :: [CardDef]
 freightCars =
@@ -273,9 +275,20 @@ instance RunMessage AllPointsWest where
       for_ (maybeResult v) \arrival -> do
         doom <- getDoomCount
         let interlude = interludeFor arrival (doom <= 6)
+        canAfford <- case interlude.interludeOption of
+          TestOption {} -> pure True
+          IconTax _ n ts -> do
+            cards <- iconTaxCandidates
+            reduction <- countTraits ts
+            pure $ sum (map (iconCount . snd) cards) >= n - reduction
+          AssetTax _ n ts -> do
+            assets <- selectCount $ DiscardableAsset <> NonWeaknessAsset <> AssetControlledBy Anyone
+            reduction <- countTraits ts
+            pure $ assets >= n - reduction
+
         storyWithChooseOneM (setTitle "title" >> scope interlude.interludeKey (p.green "body")) do
           scope interlude.interludeKey do
-            labeled (optionLabel interlude.interludeOption) $ doStep 1 msg
+            labeledValidate' canAfford (optionLabel interlude.interludeOption) $ doStep 1 msg
             labeled interlude.interludeSkipLabel $ daysBehind interlude.interludeSkipResources
       pure s
     DoStep 1 (ScenarioSpecific key v) | key == nowArrivingKey -> do
@@ -286,7 +299,7 @@ instance RunMessage AllPointsWest where
             lead <- getLead
             setScenarioMetaKey interludeFailureKey failResources
             investigators <- select UneliminatedInvestigator
-            chooseOneM lead $ targets investigators (`forInvestigator` msg)
+            chooseOrRunOneM lead $ targets investigators (`forInvestigator` msg)
           IconTax _ owed traits -> do
             reduction <- countTraits traits
             push $ ScenarioSpecific iconTaxKey $ toJSON $ max 0 (owed - 2 * reduction)
@@ -332,8 +345,7 @@ instance RunMessage AllPointsWest where
           push $ ScenarioSpecific assetTaxKey $ toJSON (owed - 1)
       pure s
     FailedThisSkillTest _ ScenarioSource -> do
-      owed <- getScenarioMetaKeyDefault interludeFailureKey (0 :: Int)
-      daysBehind owed
+      daysBehind =<< getScenarioMetaKeyDefault interludeFailureKey 0
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of

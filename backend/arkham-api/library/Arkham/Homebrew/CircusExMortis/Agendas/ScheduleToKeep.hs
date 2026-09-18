@@ -8,10 +8,12 @@ import Arkham.Helpers.Scenario (getScenarioMetaKeyDefault)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.CircusExMortis.Helpers
+import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorRemainingHealth, InvestigatorRemainingSanity))
 import Arkham.Matcher hiding (InvestigatorDefeated)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message (pattern InvestigatorNoLongerDefeated)
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
 
@@ -56,12 +58,19 @@ instance RunMessage ScheduleToKeep where
         InvestigatorWhenEliminated _ iid' _ -> iid == iid'
         _ -> False
       pure a
+    AdvanceAgendaBy (isSide B attrs -> True) AgendaAdvancedWithDoom -> do
+      eachInvestigator \iid -> do
+        chooseOneM iid $ withI18n $ countVar 1 do
+          labeled "sufferPhysicalTrauma" $ sufferPhysicalTrauma iid 1
+          labeled "sufferMentalTrauma" $ sufferMentalTrauma iid 1
+        investigatorDefeated attrs iid
+      pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       revertAgenda attrs
       pure a
-    AdvanceAct {} | onSide B attrs -> do
+    AdvanceAct {} -> do
       frozen <- getFrozen
-      unless (null frozen) do
+      unless (null frozen) $ priority do
         caboose <- selectJust $ locationIs Locations.caboose
         for_ frozen \iid -> do
           -- "heals damage and horror until they have at least 3 remaining health and sanity"
@@ -75,6 +84,5 @@ instance RunMessage ScheduleToKeep where
           push $ InvestigatorNoLongerDefeated iid
           moveTo attrs iid caboose
         setScenarioMetaKey frozenKey ([] :: [InvestigatorId])
-        push $ RevertAgenda (toId attrs)
       pure a
     _ -> ScheduleToKeep <$> liftRunMessage msg attrs

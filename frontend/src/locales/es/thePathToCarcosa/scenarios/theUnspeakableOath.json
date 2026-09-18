@@ -1,0 +1,106 @@
+{
+  "heading": "Escenario IV",
+  "label": {
+    "placeMonsterUnderActDeck": "Elige al azar un Enemigo de entre los Enemigos Monstruo puestos aparte y colócalo bajo el mazo de Acto sin mirarlo",
+    "automaticFail": "Esta prueba fracasa automáticamente"
+  },
+  "tokens": {
+    "easyStandard": {
+      "skull": "-1. Si fracasas, elige al azar un Enemigo de entre los Enemigos _Monstruo_ puestos aparte y colócalo bajo el mazo de Acto sin mirarlo.",
+      "cultist": "-X. X es la cantidad de horror que tienes sobre ti.",
+      "tablet": "-X. X es el valor de velo básico de tu Lugar.",
+      "elderThing": "0. Elige al azar un Enemigo de entre los Enemigos _Monstruo_ puestos aparte y colócalo bajo el mazo de Acto sin mirarlo, o esta prueba fracasa automáticamente en su lugar."
+    },
+    "hardExpert": {
+      "skull": "Revela otra ficha. Si fracasas, elige al azar un Enemigo de entre los Enemigos _Monstruo_ puestos aparte y colócalo bajo el mazo de Acto sin mirarlo. (Límite una vez por prueba.)",
+      "cultist": "-X. X es la cantidad de horror que tienes sobre ti. Si fracasas, recibe 1 horror.",
+      "tablet": "-X. X es el valor de velo básico de tu Lugar. Si fracasas, recibe 1 horror.",
+      "elderThing": "0. Elige al azar un Enemigo de entre los Enemigos _Monstruo_ puestos aparte y colócalo bajo el mazo de Acto sin mirarlo, o esta prueba fracasa automáticamente en su lugar."
+    }
+  },
+  "remembered": {
+    "setAFireInTheKitchen": "Prendisteis fuego en la cocina",
+    "incitedAFightAmongstThePatients": "Incitasteis una pelea entre los pacientes",
+    "distractedTheGuards": "Distrajisteis a los guardias",
+    "releasedADangerousPatient": "Liberasteis a un paciente peligroso",
+    "knowTheGuardsPatrols": "Conocéis las patrullas de los guardias",
+    "recalledTheWayOut": "Recordasteis la salida",
+    "youTookTheKeysByForce": "Os hicisteis con las llaves por la fuerza"
+  },
+  "intro": {
+    "title": "Escenario IV: El juramento inconfesable",
+    "foundTheWayForward": "Consulta el Registro de campaña. *Si los seguidores del signo han encontrado el camino*: Lee la _Introducción 1_.",
+    "didNotFindTheWayForward": "Si no es así: Lee la _Introducción 2_.",
+    "intro1": "<p>_Introducción 1_: “Despierta, Daniel.” Las palabras resuenan en tus pensamientos mientras das vueltas por la destartalada habitación, tratando de encontrarle un sentido a lo que acabas de experimentar. Te despertaste esa tarde de un sobresalto violento, el cuerpo temblando y las sábanas empapadas de sudor. Aunque habías dormido unas saludables ocho horas y media, te sientes aún más agotado que la noche anterior. Vislumbras tus ojos oscuros e inyectados en sangre en el espejo junto a la cómoda, y te preguntas si has descansado de verdad.</p><p>¿Quién es Daniel?, te preguntas. La cámara de tu sueño parecía una prisión, pero el hombre —Daniel— parecía desquiciado, como si no controlara su mente. Eso sólo llevaba a una conclusión: un manicomio. Sabiendo que aquí descansarás poco, te diriges al Manicomio Arkham, con la esperanza de que tu corazonada sea correcta.</p><p class='basic right'>Continúa con la _Introducción 3_.</p>",
+    "intro2": "<p>_Introducción 2_: A lo largo de los siguientes días, indagas en las pruebas que has reunido, con la esperanza de encontrar cualquier información sobre Daniel Chesterfield, un tramoyista de la producción anterior de El Rey de Amarillo. Por lo que puedes ver, es el único miembro superviviente de aquel elenco y equipo. El resto —es decir, aquellos de los que encuentras algún registro— desaparecieron o murieron poco después del estreno de las formas más variadas, unidas sólo por su morbosidad. Accidentes extraños. Suicidios. Desapariciones.</p><p>Parece que Daniel es tu única pista, si quieres seguir investigando. Según los registros que encontraste, lo internaron en el Manicomio Arkham hace muchos años. Toda la documentación sobre el tratamiento de Daniel parece terminar ahí. No estás seguro de si sigue vivo. Quizá lo curaron y lo pusieron en libertad. Esperabas evitar esto, pero parece que sólo hay una forma de averiguarlo. Recoges tus pertenencias y te diriges al centro, hacia el Manicomio Arkham.</p><p class='basic right'>Continúa con la _Introducción 3_.</p>",
+    "intro3": "<p>_Introducción 3_: Al entrar en el manicomio, te detienes a hablar con el recepcionista, aunque sientes que tu cuerpo te urge a adentrarte más en las garras de este manicomio. Te lanza una expresión confusa cuando le hablas de El Rey de Amarillo y de Daniel. Pero ante tu insistencia, rebusca en su archivador y acaba sacando una carpeta de un blanco intenso. En su interior hay una gran cantidad de información sobre los pacientes internados: historiales médicos, evaluaciones psiquiátricas y similares. Reconoces algunas de las caras mientras pasa las páginas. “Daniel… Daniel Chesterfield, ¿sí? Está internado bajo el cuidado especial del doctor Mintz. Pero no puede verlo; su nivel está restringido al personal.” Discutes e insistes en que te dejen entrar en el ala de pacientes, sabiendo que Daniel debe de guardar la clave para entender lo que realmente está ocurriendo.</p><p>El recepcionista esboza una sonrisa condescendiente y cede, asintiendo a los guardias de seguridad cercanos. “Oh, por supuesto, por supuesto”, dice con toda la honestidad de un vendedor callejero. “Le concertaré una reunión con el doctor Mintz para que pueda hablar con él sobre Daniel. Estos caballeros lo acompañarán.” Aliviado de que pronto tendrás las respuestas que buscas, te escoltan al ala de pacientes del Manicomio Arkham…</p>",
+    "proceedToConstancesInformation": "Pasa a la _Información de Constance_.",
+    "otherwise": "Si no es así, pasa a _Preparación_.",
+    "constancesInformation": "<p>_Información de Constance_: Recuerdas lo que te contó Constance cuando hablaste con ella durante esa infernal fiesta. El director de la obra, Nigel Engram, les pidió a ella y a los demás miembros del elenco y del equipo que recitasen una especie de juramento. Al principio, pensó que no era más que un capricho propio de un artista excéntrico; algo que el Sr. Engram hacía como una extraña formalidad para unir y reforzar los lazos entre el elenco y el equipo. Constance afirmó que, en honor a la verdad, había funcionado; desde que pronunciaron su extraño juramento, tanto ella como los demás miembros de la compañía se sentían mucho más seguros y llenos de espíritu. Quizá Daniel tuvo una experiencia similar durante la última producción de El Rey de Amarillo. Debes hablar con él de esto.</p><ul><li>Cada investigador coloca la carta superior de su mazo boca abajo en su zona de juego, sin mirarla. Trata esta carta como un Apoyo Coraje con coste 0, sin iconos y 2 de cordura. Descarta esta carta si abandona el juego por cualquier motivo.</li></ul><div class='basic right'>Pasa a _Preparación_.</div>"
+  },
+  "setup": {
+    "gatherSets": "Reúne todas las cartas de los siguientes conjuntos de encuentro: *El juramento inconfesable*, *El regalo de Hastur*, *Habitantes de Carcosa*, *Delirios*, *Podredumbre e impurezas* y *Agentes de Hastur*. Estos conjuntos se indican con los siguientes iconos:<section class='encounter-sets'><img src='{setImgPath}/the-unspeakable-oath.png' /><img src='{setImgPath}/hasturs-gift.png' /><img src='{setImgPath}/inhabitants-of-carcosa.png' /><img src='{setImgPath}/delusions.png' /><img src='{setImgPath}/decay-and-filth.png' /><img src='{setImgPath}/agents-of-hastur.png' /></section>",
+    "monsters": "Pon aparte cada Enemigo _Monstruo_ de entre los conjuntos de encuentro reunidos, en un montón separado. (Debería haber 7 Enemigos _Monstruo_ en total.)",
+    "lunatics": "Pon aparte cada Enemigo _Lunático_ de entre los conjuntos de encuentro reunidos, en un montón separado. (Debería haber 7 Enemigos _Lunático_ en total.)",
+    "chooseLocations": "Elige al azar 1 copia de Pasillos del manicomio (*Ala este de pacientes*) y 1 copia de Pasillos del manicomio (*Ala oeste de pacientes*). Retira esas copias de la partida. Pon en juego los Pasillos del manicomio restantes. Cada investigador comienza la partida en unos Pasillos del manicomio a su elección.",
+    "setAside": "Pon aparte las siguientes cartas, fuera del juego: Daniel Chesterfield y cada copia de Celda de paciente.",
+    "placeLocations": "Pon en juego los siguientes Lugares: Comedor, Cocina, Patio, Jardín, Enfermería y Pasillo del sótano (consulta la distribución sugerida de los Lugares).",
+    "adjustChaosBag": "En función de tu nivel de dificultad, añade las siguientes fichas de caos a la bolsa de caos, durante el resto de la campaña:<div class='columns'><ul><li>_Fácil_: -2</li><li>_Normal_: -3</li></ul><ul><li>_Difícil_: -4</li><li>_Experto_: -5</li></ul></div>",
+    "act2": {
+      "instructions": "Consulta el Registro de campaña. Según las siguientes circunstancias, debe usarse una versión distinta del Acto 2 en este escenario. Cada otra versión del Acto 2 se retira de la partida.",
+      "v1": "*Si los investigadores se llevaron el broche de ónice*, usa el Acto 2: «Los realmente malos» (v. I)",
+      "v2": "Si no es así, usa el Acto 2: «Los realmente malos» (v. II)"
+    }
+  },
+  "tooltips": {
+    "noAsylum": {
+      "resign": "¡Por fin, una salida!"
+    }
+  },
+  "label": {
+    "remembered": {
+      "setAFireInTheKitchen": "Prendisteis fuego en la cocina",
+      "incitedAFightAmongstThePatients": "Incitasteis una pelea entre los pacientes",
+      "distractedTheGuards": "Distrajisteis a los guardias",
+      "releasedADangerousPatient": "Liberasteis a un paciente peligroso",
+      "knowTheGuardsPatrols": "Conocéis las patrullas de los guardias",
+      "recalledTheWayOut": "Recordasteis la salida",
+      "youTookTheKeysByForce": "Os hicisteis con las llaves por la fuerza"
+    },
+    "cloudedMemory": {
+      "forget": "Olvida algo que un investigador haya “recordado” por una capacidad de un Lugar. (Ya no es cierto.)",
+      "chooseForget": "Olvida algo que un investigador haya “recordado” por una capacidad de un Lugar. (Ya no es cierto.)",
+      "horror": "Recibe 1 horror y Memoria nublada obtiene oleada."
+    },
+    "placeMonsterUnderActDeck": "Elige al azar un Enemigo de entre los Enemigos Monstruo puestos aparte y colócalo bajo el mazo de Acto sin mirarlo",
+    "thisTestAutomaticallyFails": "Esta prueba fracasa automáticamente",
+    "infirmary": {
+      "healDamage": "Cura 1 daño y recibe 1 horror directo",
+      "healHorror": "Cura 1 horror y recibe 1 daño directo"
+    },
+    "wallsClosingIn": {
+      "chooseEnemy": "Elige al azar 1 Enemigo de entre los Enemigos Monstruo puestos aparte y colócalo bajo el mazo de Acto sin mirarlo"
+    },
+    "arkhamAsylum": {
+      "youKnockHerOverAndGrabTheKeys": "La derribas y te haces con las llaves"
+    }
+  },
+  "resolutions": {
+    "defeated": {
+      "title": "Investigador derrotado",
+      "body": "<div class='resolution'><p class='basic'>_Antes de resolver cualquier otra resolución, si al menos 1 investigador fue derrotado_: Los investigadores derrotados leen primero _Investigador derrotado_.</p><p>_Investigador derrotado_: –Doctor Mintz, el paciente ha sido medicado y está listo para verle –dijo la enfermera Heather mientras abría el archivo del escritorio y dedicaba un instante a repasar el historial del paciente.</p><p>–¿Ha habido algún cambio en el estado del paciente? –preguntó el doctor Mintz con voz monótona. Una formalidad. Ambos sabían que el paciente estaba más allá de cualquier reparación.</p><p>–Ninguno. Los delirios del paciente persisten. Exige hablar con el director, afirma que sólo son huéspedes y divaga sobre esa obra que se representó la otra noche, El Rey de Amarillo.</p><p>–¿Y sus otros delitos? ¿El incidente en el teatro? ¿Y lo del 1452 de la Avenida Atlantic?</p><p>–Creen que los atacaron y que se estaban defendiendo. Su voz estaba cargada de lástima. ¿Qué podría haber hecho que alguien se quebrara así de rápido? Ninguno de los historiales del paciente mostraba ningún antecedente de inestabilidad mental. –¿Puede encontrarle algún sentido, doctor?</p><p>–¿Quién podría? –El doctor Mintz suspiró y se puso en pie, cogiendo el archivo de su escritorio–. Mi trabajo no es comprender. Es curar. Quizá mis procedimientos experimentales den fruto con éste. La enfermera se encogió y sintió carne de gallina en el brazo. Sabía cómo acabarían sus procedimientos, y dudaba que demostraran nada.</p><ul><li>Cada investigador que fue derrotado es _enloquecido_.</li><li>Si no hay suficientes investigadores para continuar la campaña, la campaña termina y los jugadores pierden.</li><li>Si se alcanzó otra resolución, los demás investigadores pasan a esa resolución.</li><li>Si no se alcanzó ninguna resolución (cada investigador fue derrotado): Ve a la _Resolución 1_.</li></ul></div>"
+    },
+    "resolution1": {
+      "title": "Resolución 1",
+      "body": "<div class='resolution'><p>_Resolución 1_: …Y así terminó la locura de El Rey de Amarillo.</p><ul><li>En tu Registro de campaña, anota que *el Rey se cobró sus víctimas*.</li><li>Si no hay suficientes investigadores para continuar la campaña, la campaña termina y los jugadores pierden. En caso contrario, la campaña continúa. (Cada jugador cuyo investigador haya sido enloquecido debe elegir un nuevo investigador del grupo de investigadores disponibles.)</li><li>Consulta el Registro de campaña. *Si los investigadores se llevaron el broche de ónice*, elige un nuevo investigador para que se haga cargo del broche. Ese investigador debe incluir la Debilidad Broche de ónice negro en su mazo. Esta carta no cuenta para el tamaño de mazo de ese investigador.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si Constance Dumaine (*Sociable de más*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}cultist{'}'} a la bolsa de caos.</li><li>Omite el _Interludio II: Alma perdida_ y pasa directamente al _Escenario V: El Fantasma de la Verdad_.</li></ul></div>"
+    },
+    "resolution2": {
+      "title": "Resolución 2",
+      "body": "<div class='resolution'><p>_Resolución 2 (cada investigador derrotado debe resolver primero Investigador derrotado)_: Te ves enfrentado a varios auxiliares y guardias de seguridad que bloquean tu huida. Al sentirte acorralado y atrapado, no te queda más remedio que abrirte paso a la fuerza. Mientras luchas por escapar, varios de los pacientes cercanos ven su oportunidad y atacan a los guardias con una furia enloquecida. La enfermera Heather grita y se retira, y en el tumulto logras escapar, magullado y golpeado, pero libre de nuevo. Tardarás un tiempo en curarte las heridas, pero aún no tienes tiempo para eso.</p><ul><li>En tu Registro de campaña, anota que *los investigadores fueron atacados al escapar del manicomio*.</li><li>Cada investigador sufre 1 trauma físico al ser agredido por los guardias del manicomio.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si Constance Dumaine (*Sociable de más*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}tablet{'}'} a la bolsa de caos.</li><li>Pasa al _Interludio II: Alma perdida_.</li></ul></div>"
+    },
+    "resolution3": {
+      "title": "Resolución 3",
+      "body": "<div class='resolution'><p>_Resolución 3 (cada investigador derrotado debe resolver primero Investigador derrotado)_: Con el personal del manicomio distraído y los pacientes sueltos, logras escabullirte sin que te vean. Escapas más adentro del jardín trasero del manicomio, donde una valla de dos pisos coronada con alambre de espino es todo lo que te separa del mundo exterior. Tienes poco tiempo y necesitas alejarte del manicomio antes de que los guardias regresen y te vean. Usando una camisa de fuerza que encontraste dentro para cubrir el alambre de espino, escalas la valla con rapidez y echas a correr en cuanto llegas al otro lado.</p><ul><li>En tu Registro de campaña, anota que *los investigadores escaparon del manicomio*.</li><li>Cada investigador obtiene una cantidad de experiencia igual al valor de Victoria X de cada carta de la zona de victoria.<ul><li>_Experiencia_: {xp}</li></ul></li><li>Si Constance Dumaine (*Sociable de más*) está en la zona de victoria, anota su nombre en la sección “VIP muertos” del Registro de campaña.</li><li>Retira todas las fichas {'{'}cultist{'}'}, {'{'}tablet{'}'} y {'{'}elderThing{'}'} de la bolsa de caos. A continuación, añade 2 fichas {'{'}elderThing{'}'} a la bolsa de caos.</li><li>Pasa al _Interludio II: Alma perdida_.</li></ul></div>"
+    }
+  }
+}

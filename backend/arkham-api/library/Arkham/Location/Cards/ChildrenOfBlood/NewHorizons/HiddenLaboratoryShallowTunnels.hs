@@ -15,7 +15,7 @@ newtype HiddenLaboratoryShallowTunnels = HiddenLaboratoryShallowTunnels Location
 hiddenLaboratoryShallowTunnels :: LocationCard HiddenLaboratoryShallowTunnels
 hiddenLaboratoryShallowTunnels =
   symbolLabel
-    $ location HiddenLaboratoryShallowTunnels Cards.hiddenLaboratoryShallowTunnels 3 (PerPlayer 1)
+    $ location HiddenLaboratoryShallowTunnels Cards.hiddenLaboratoryShallowTunnels 4 (PerPlayer 1)
 
 instance HasModifiersFor HiddenLaboratoryShallowTunnels where
   getModifiersFor (HiddenLaboratoryShallowTunnels a) = unless a.revealed do

@@ -19,7 +19,7 @@ newtype SecretChamberShallowTunnels = SecretChamberShallowTunnels LocationAttrs
 secretChamberShallowTunnels :: LocationCard SecretChamberShallowTunnels
 secretChamberShallowTunnels =
   symbolLabel
-    $ location SecretChamberShallowTunnels Cards.secretChamberShallowTunnels 3 (PerPlayer 1)
+    $ location SecretChamberShallowTunnels Cards.secretChamberShallowTunnels 2 (PerPlayer 1)
 
 instance HasModifiersFor SecretChamberShallowTunnels where
   getModifiersFor (SecretChamberShallowTunnels a) = unless a.revealed do

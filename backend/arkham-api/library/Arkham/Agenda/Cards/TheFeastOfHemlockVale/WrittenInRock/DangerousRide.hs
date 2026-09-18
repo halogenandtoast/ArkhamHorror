@@ -36,7 +36,7 @@ instance HasAbilities DangerousRide where
 instance HasModifiersFor DangerousRide where
   getModifiersFor (DangerousRide a) = do
     modifySelect a (LocationWithAsset StoryAsset) [CannotBeSlidOrSwapped]
-    modifySelect a (AnyEnemy) [AddKeyword Keyword.Hunter, ResolveHunterTwice]
+    modifySelect a AnyEnemy [AddKeyword Keyword.Hunter, ResolveHunterTwice]
     modifySelectMapM a Anywhere \loc -> do
       connections <- runDefaultMaybeT [] do
         pos <- MaybeT $ field LocationPosition loc

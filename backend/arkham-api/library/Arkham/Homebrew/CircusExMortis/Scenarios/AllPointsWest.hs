@@ -22,6 +22,7 @@ import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Id (InvestigatorId)
 import Arkham.Investigator.Types (Field (InvestigatorHand))
 import Arkham.Matcher
+import Arkham.Message (pattern FailedThisSkillTest)
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
@@ -225,7 +226,7 @@ instance RunMessage AllPointsWest where
         li "placeLocations"
         li "allies"
         li "setAside"
-        li.byDifficulty.nested "addTokens" do
+        li.nested.byDifficulty "addTokens" do
           li.validate (attrs.difficulty == Easy) "easy"
           li.validate (attrs.difficulty == Standard) "standard"
           li.validate (attrs.difficulty == Hard) "hard"
@@ -268,12 +269,12 @@ instance RunMessage AllPointsWest where
 
       setAgendaDeck [Agendas.scheduleToKeep]
       setActDeck [act1, Acts.noFreeRides, Acts.engineTrouble, Acts.theGreatTrainHorror]
-    ScenarioSpecific key v | key == nowArrivingKey -> do
+    ScenarioSpecific key v | key == nowArrivingKey -> scope "interludes" do
       for_ (maybeResult v) \arrival -> do
         doom <- getDoomCount
         let interlude = interludeFor arrival (doom <= 6)
-        scope "interludes" $ scope interlude.interludeKey do
-          storyWithChooseOneM (setTitle "title" >> p "body") do
+        storyWithChooseOneM (setTitle "title" >> scope interlude.interludeKey (p.green "body")) do
+          scope interlude.interludeKey do
             labeled (optionLabel interlude.interludeOption) $ doStep 1 msg
             labeled interlude.interludeSkipLabel $ daysBehind interlude.interludeSkipResources
       pure s
@@ -330,7 +331,7 @@ instance RunMessage AllPointsWest where
           toDiscardBy lead ScenarioSource aid
           push $ ScenarioSpecific assetTaxKey $ toJSON (owed - 1)
       pure s
-    FailedSkillTest _ _ _ (isTarget ScenarioTarget -> True) _ _ -> do
+    FailedThisSkillTest _ ScenarioSource -> do
       owed <- getScenarioMetaKeyDefault interludeFailureKey (0 :: Int)
       daysBehind owed
       pure s

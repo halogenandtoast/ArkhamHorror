@@ -26,65 +26,58 @@
       "expert": "_Expert_: -5"
     },
     "interludes": {
+      "title": "Scenario Interlude: Now Arriving",
       "notInThisTown": {
-        "title": "Not in This Town",
-        "body": "<p><i>Your arrival in Chicago is timely, and you have the opportunity to interfere with the circus greatly before you both move onward. The Chicago police are constantly on edge with the gang activity common to the city, and with a little creative reporting to avoid sounding like a looney, you might convince them to go after Blake, though if it goes badly, the police might waylay you instead.</i></p><p class='basic'>The investigators must decide (choose one):</p>",
+        "body": "<p>_Not in This Town:_ Your arrival in Chicago is timely, and you have the opportunity to interfere with the circus greatly before you both move onward. The Chicago police are constantly on edge with the gang activity common to the city, and with a little creative reporting to avoid sounding like a looney, you might convince them to go after Blake, though if it goes badly, the police might waylay you instead.</i></p><p class='basic'>The investigators must decide (choose one):</p><ul><li>\"We'll try to convince the cops to raid the circus.\" Choose an investigator to test {'{'}intellect{'}'} or {'{'}agility{'}'}(3). This test gets + 1 {'{'}perPlayer{'}'} difficulty. Reduce the difficulty of this test by 1 for each _Police_, _Civic_, _Agency_ and _Veteran_ investigator chosen for this campaign. Investigators at any location may commit to this test. If you fail, place 2 resources on the scenario reference card.</li><li>\"We'll meddle on our own terms, however smaller.\" Place 1 resource on the scenario reference card.</li></ul>",
         "label": {
           "raid": "“We'll try to convince the cops to raid the circus.”",
           "smaller": "“We'll meddle on our own terms, however smaller.”"
         }
       },
       "wrongTerritory": {
-        "title": "Wrong Territory",
-        "body": "<p><i>Your delays in getting to Chicago have limited your options in hampering the circus before you both must move on. The various crime families of the city compete with each other bitterly, and if you could somehow convince one of the dons that the circus is a front for bootlegging on their territory, it could set Blake back quite a bit, though if it goes badly, the gangs are likely to cause you plenty of trouble instead.</i></p><p class='basic'>The investigators must decide (choose one):</p>",
+        "body": "<p>_Wrong Territory:_ Your delays in getting to Chicago have limited your options in hampering the circus before you both must move on. The various crime families of the city compete with each other bitterly, and if you could somehow convince one of the dons that the circus is a front for bootlegging on their territory, it could set Blake back quite a bit, though if it goes badly, the gangs are likely to cause you plenty of trouble instead.</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>\"We'll see if we can rile up the Chicago gangs.\" Choose an investigator to test {intellect} or {agility} (4). This test gets +1 {perPlayer} difficulty. Reduce the difficulty of this test by 1 for each _Criminal_, _Socialite_, and _Entrepreneur_ investigator chosen for this campaign. Investigators at any location may commit to this test. If you fail, place 3 resources on the scenario reference card.</li><li>\"We'll meddle on our own terms, however smaller.\" Place 2 resources on the scenario reference card.</li></ul>",
         "label": {
           "rileUp": "“We'll see if we can rile up the Chicago gangs.”",
           "smaller": "“We'll meddle on our own terms, however smaller.”"
         }
       },
       "stompingGround": {
-        "title": "Stomping Ground",
-        "body": "<p><i>Your timely arrival in Memphis gives you a chance to seek out former members of the New Moon Circus — or rather the Four Leaf Circus, as it used to be. You are able to locate Mr. Konkin, a former strongman who quit after witnessing some of the horrors in the making. He is reluctant to speak until you prove yourself capable of standing against Blake and his monstrous circus, though you will likely be set back by the time spent if you cannot.</i></p><p class='basic'>The investigators must decide (choose one):</p>",
+        "body": "<p>_Stomping Ground:_ Your timely arrival in Memphis gives you a chance to seek out former members of the New Moon Circus — or rather the Four Leaf Circus, as it used to be. You are able to locate Mr. Konkin, a former strongman who quit after witnessing some of the horrors in the making. He is reluctant to speak until you prove yourself capable of standing against Blake and his monstrous circus, though you will likely be set back by the time spent if you cannot.</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>\"You want proof? Well you're gonna get it.\" Choose an investigator to test {willpower} or {combat} (3). This test gets + 1 {perPlayer} difficulty. Reduce the difficulty of this test by 1 for each _Performer_, _Warden_, _Blessed_, and _Cursed_ investigator chosen for this campaign. Investigators at any location may commit to this test. If you fail, place 2 resources on the scenario reference card</li><li>\"Getting back on track right away is more important.\" Place 1 resource on the scenario reference card.</li></ul>",
         "label": {
           "proof": "“You want proof? Well you're gonna get it.”",
           "backOnTrack": "“Getting back on track right away is more important.”"
         }
       },
       "foolsErrand": {
-        "title": "Fool's Errand",
-        "body": "<p><i>With little time to spare before you move on, you decide to take a riskier approach to find answers. Locals direct you to an ancient forest outside of Memphis that was once home to grisly things that sound familiar to you now. It's possible that something yet remains that can give you insight into stopping Blake, but it's a matter of a needle in a haystack. You'll need to be persistent — and lucky — to find anything without misspending days here.</i></p><p class='basic'>The investigators must decide (choose one):</p>",
+        "body": "<p>_Fool's Errand:_ With little time to spare before you move on, you decide to take a riskier approach to find answers. Locals direct you to an ancient forest outside of Memphis that was once home to grisly things that sound familiar to you now. It's possible that something yet remains that can give you insight into stopping Blake, but it's a matter of a needle in a haystack. You'll need to be persistent — and lucky — to find anything without misspending days here.</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>\"Any advantage is worth braving a little danger.\" Choose an investigator to test {willpower} or {combat} (4). This test gets +1 {perPlayer} difficulty. Reduce the difficulty of this test by 1 for each _Hunter_, _Believer_ and _Chosen_ investigator chosen for this campaign. Investigators at any location may commit to this test. If you fail, place 3 resources on the scenario reference card.</li><li>\"Getting back on track right away is more important.\" Place 2 resources on the scenario reference card.</li></ul>",
         "label": {
           "braveDanger": "“Any advantage is worth braving a little danger.”",
           "backOnTrack": "“Getting back on track right away is more important.”"
         }
       },
       "natureOfTheBeast": {
-        "title": "Nature of the Beast",
-        "body": "<p><i>Upon your arrival in St. Louis, you inquire about the circus and find that there has been an “accident” involving them. Several laborers took the initiative to help unload the circus trains and were injured by the animals. While the official word is quick to attribute the attack to temperamental creatures, it's possible that the workers were attacked to prevent them from seeing anything. If you can help with their medical treatment, then you may get the laborers well enough to warn everyone about the circus. It's always easier to trust locals.</i></p><p class='basic'>The investigators must decide (choose one):</p>",
+        "body": "<p>_Nature of the Beast:_ Upon your arrival in St. Louis, you inquire about the circus and find that there has been an “accident” involving them. Several laborers took the initiative to help unload the circus trains and were injured by the animals. While the official word is quick to attribute the attack to temperamental creatures, it's possible that the workers were attacked to prevent them from seeing anything. If you can help with their medical treatment, then you may get the laborers well enough to warn everyone about the circus. It's always easier to trust locals.</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>\"Here, we can help patch them up.\" Investigators as a group must discard cards from their hands and/or play areas with a total of 4 {perPlayer} or more skill icons. Reduce this amount by 2 for each _Medic_, _Assistant_, _Wayfarer_, and _Drifter_ investigator chosen for this campaign.</li><li>\"We don't have the time or resources to help.\" Place 1 resource on the scenario reference card.</li></ul>",
         "label": {
           "patchThemUp": "“Here, we can help patch them up.”",
           "noTime": "“We don't have the time or resources to help.”"
         }
       },
       "skeletonsInTheCloset": {
-        "title": "Skeletons in the Closet",
-        "body": "<p><i>You arrive in St. Louis with only a few hours to spare. You need to find something to hamper the circus activities quickly, something that the authorities can't overlook. It occurs to you that the monsters need tremendous amounts of food over the journey, and if you can dig up some evidence of extra meat in their diet, then you may save some other lives tonight.</i></p><p class='basic'>The investigators must decide (choose one):</p>",
+        "body": "<p>_Skeletons in the Closet:_ You arrive in St. Louis with only a few hours to spare. You need to find something to hamper the circus activities quickly, something that the authorities can't overlook. It occurs to you that the monsters need tremendous amounts of food over the journey, and if you can dig up some evidence of extra meat in their diet, then you may save some other lives tonight.</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>\"You just have to know where to look.\" Investigators as a group must discard cards from their hands and/or play areas with a total of 6 {perPlayer} or more skill icons. Reduce this amount by 2 for each _Reporter_, _Detective_, and _Clairvoyant_ investigator chosen for this campaign.</li><li>\"We don't have the time or resources to help.\" Place 2 resources on the scenario reference card.</li></ul>",
         "label": {
           "whereToLook": "“You just have to know where to look.”",
           "noTime": "“We don't have the time or resources to help.”"
         }
       },
       "behindTheCurtain": {
-        "title": "Behind the Curtain",
-        "body": "<p><i>Out in a city as remote as Denver, you discover that the circus is being a little less careful with its illusory disguises. With the time you've gained, you can afford to watch for an opportunity to undo their spells and reveal their horrid deception to the public. The trick is making the deception plain for all to see.</i></p><p class='basic'>The investigators must decide (choose one):</p>",
+        "body": "<p>_Behind the Curtain:_ Out in a city as remote as Denver, you discover that the circus is being a little less careful with its illusory disguises. With the time you've gained, you can afford to watch for an opportunity to undo their spells and reveal their horrid deception to the public. The trick is making the deception plain for all to see.</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>\"Time to show the city what they really are.\" Investigators as a group must choose and discard 2 {perPlayer} total non-weakness assets they control. Reduce this amount by 1 for each _Sorcerer_, _Silver Twilight_, _Scholar_, and _Cultist_ investigator chosen for this campaign.</li><li>\"We can't afford to stay here a moment longer.\" Place 1 resource on the scenario reference card.</li></ul>",
         "label": {
           "showTheCity": "“Time to show the city what they really are.”",
           "cantStay": "“We can't afford to stay here a moment longer.”"
         }
       },
       "humaneTreatment": {
-        "title": "Humane Treatment",
-        "body": "<p><i>While you arrived in Denver far later than you wished to, there is still an advantage to be exploited. Student groups from several of the city's universities intend to boycott the circus on grounds of animal cruelty. While they don't truly grasp the evil truth of this particular circus, some creativity on your part may assist them in dissuading others from going to see the circus.</i></p><p class='basic'>The investigators must decide (choose one):</p>",
+        "body": "<p>_Humane Treatment:_ While you arrived in Denver far later than you wished to, there is still an advantage to be exploited. Student groups from several of the city's universities intend to boycott the circus on grounds of animal cruelty. While they don't truly grasp the evil truth of this particular circus, some creativity on your part may assist them in dissuading others from going to see the circus.</p><p class='basic'>The investigators must decide (choose one):</p><ul><li>\"Give me that paint can and pasteboard.\" Investigators as a group must choose and discard 3 {perPlayer} total non-weakness assets they control. Reduce this amount by 1 for each _Artist_, _Dreamer_, and _Miskatonic_ investigator chosen for this campaign.</li><li>\"We can't afford to stay here a moment longer.\" Place 2 resources on the scenario reference card.</li></ul>",
         "label": {
           "paintCan": "“Give me that paint can and pasteboard.”",
           "cantStay": "“We can't afford to stay here a moment longer.”"

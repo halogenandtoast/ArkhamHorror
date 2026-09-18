@@ -3,7 +3,7 @@ module Arkham.Homebrew.CircusExMortis.Agendas.ScheduleToKeep (scheduleToKeep) wh
 import Arkham.Ability
 import Arkham.Agenda.Import.Lifted
 import Arkham.Classes.HasGame (HasGame)
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWith, setActiveDuringSetup)
 import Arkham.Helpers.Scenario (getScenarioMetaKeyDefault)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
@@ -20,7 +20,7 @@ newtype ScheduleToKeep = ScheduleToKeep AgendaAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 scheduleToKeep :: AgendaCard ScheduleToKeep
-scheduleToKeep = agenda (1, A) ScheduleToKeep Cards.scheduleToKeep (Static 8)
+scheduleToKeep = agenda (1, A) ScheduleToKeep Cards.scheduleToKeep (Static 0)
 
 -- | Investigators frozen beneath Blood on the Line.
 frozenKey :: Key
@@ -30,14 +30,14 @@ getFrozen :: HasGame m => m [InvestigatorId]
 getFrozen = getScenarioMetaKeyDefault frozenKey []
 
 instance HasModifiersFor ScheduleToKeep where
-  getModifiersFor (ScheduleToKeep a) = modifySelf a [CannotBeAdvancedByDoomThreshold]
+  getModifiersFor (ScheduleToKeep a) = modifySelfWith a setActiveDuringSetup [CannotBeAdvancedByDoomThreshold]
 
 instance HasAbilities ScheduleToKeep where
   getAbilities (ScheduleToKeep a) =
     [ restricted a 1 (exists $ UneliminatedInvestigator <> NotInvestigator You)
         $ forced
         $ InvestigatorWouldBeDefeated #when ByAny You
-    , mkAbility a 2 $ SilentForcedAbility $ Matcher.InvestigatorDefeated #after ByAny Anyone
+    , mkAbility a 2 $ silent $ Matcher.InvestigatorDefeated #after ByAny Anyone
     ]
 
 instance RunMessage ScheduleToKeep where
@@ -45,7 +45,7 @@ instance RunMessage ScheduleToKeep where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       frozen <- getFrozen
       setScenarioMetaKey frozenKey (iid : frozen)
-      advanceAgendaDeck attrs
+      advanceAgenda attrs
       pure a
     -- "Do not remove cards controlled by that investigator from play." Elimination
     -- is what would strip them (and end the scenario), so drop it for the frozen
@@ -55,6 +55,9 @@ instance RunMessage ScheduleToKeep where
       when (iid `elem` frozen) $ don'tMatching \case
         InvestigatorWhenEliminated _ iid' _ -> iid == iid'
         _ -> False
+      pure a
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      revertAgenda attrs
       pure a
     AdvanceAct {} | onSide B attrs -> do
       frozen <- getFrozen

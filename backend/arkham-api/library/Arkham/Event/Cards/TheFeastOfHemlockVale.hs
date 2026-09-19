@@ -206,7 +206,6 @@ uncannyGrowth =
           , Keyword.Bonded 1 "10060"
           , Keyword.Bonded 1 "10061"
           ]
-    , cdLevel = Nothing
     }
 
 controlVariable :: CardDef

@@ -16,6 +16,7 @@ User json sql=users
     email Text
     passwordDigest Text
     beta Bool
+    phaseTransitionNotifications Bool default=False
     admin Bool default=False
     UniqueUsername username
     UniqueEmail email

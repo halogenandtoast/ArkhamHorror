@@ -5,17 +5,18 @@ module Base.Api.Handler.Settings where
 import Database.Esqueleto.Experimental
 import Import hiding (update, (=.), (==.))
 
-newtype UserSettings = UserSettings {beta :: Bool}
+data UserSettings = UserSettings
+  { beta :: Maybe Bool
+  , phaseTransitionNotifications :: Maybe Bool
+  }
   deriving stock Generic
   deriving anyclass FromJSON
-
-betaSetting :: UserSettings -> Bool
-betaSetting (UserSettings b) = b
 
 data CurrentUser = CurrentUser
   { username :: Text
   , email :: Text
   , beta :: Bool
+  , phaseTransitionNotifications :: Bool
   }
   deriving stock Generic
   deriving anyclass ToJSON
@@ -35,8 +36,11 @@ putApiV1SettingsR = do
   userId <- getRequestUserId
   settings <- requireCheckJsonBody
   runDB do
+    let UserSettings mBeta mPhaseTransitionNotifications = settings
     update \u -> do
-      set u [UserBeta =. val (betaSetting settings)]
+      for_ mBeta \value -> set u [UserBeta =. val value]
+      for_ mPhaseTransitionNotifications \value ->
+        set u [UserPhaseTransitionNotifications =. val value]
       where_ $ u.id ==. val userId
-    User {..} <- get404 userId
-    pure $ CurrentUser userUsername userEmail userBeta
+    User { userUsername, userEmail, userBeta, userPhaseTransitionNotifications } <- get404 userId
+    pure $ CurrentUser userUsername userEmail userBeta userPhaseTransitionNotifications

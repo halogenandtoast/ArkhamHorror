@@ -11,7 +11,7 @@ import { loadLocaleMessages, normalizeLocale } from '@/locales/messages'
 
 const props = defineProps<{
   user: User
-  updateBeta: (setting: boolean) => void
+  updateSettings: (settings: { beta: boolean; phaseTransitionNotifications: boolean }) => void
   deleteAccount: () => void
 }>()
 
@@ -22,6 +22,7 @@ const dev = isDevBuild()
 const { availableLocales, locale, setLocaleMessage } = useI18n({ useScope: 'global' })
 const language = ref(localStorage.getItem('language') || locale.value)
 const beta = ref(props.user.beta ? 'On' : 'Off')
+const phaseTransitionNotifications = ref(props.user.phaseTransitionNotifications === true)
 const showDeleteConfirm = ref(false)
 const tabs = ['account', 'features'] as const
 const activeTab = ref<(typeof tabs)[number]>('account')
@@ -50,7 +51,10 @@ function navigateTabs(event: KeyboardEvent) {
   document.getElementById(`settings-tab-${activeTab.value}`)?.focus()
 }
 
-const betaUpdate = async () => props.updateBeta(beta.value == 'On')
+const updateAccountSettings = async () => props.updateSettings({
+  beta: beta.value == 'On',
+  phaseTransitionNotifications: phaseTransitionNotifications.value,
+})
 
 // Dev-only Epic Multiplayer flag, bound to the persisted store value via On/Off.
 const epicMultiplayer = computed({
@@ -180,15 +184,30 @@ const updateLanguage = async (a: Event) => {
             {{ $t('settingsForm.experimentsWarning') }}
           </p>
           <section class="experiment column">
+            <h4>{{ $t('settingsForm.phaseTransitionNotifications') }}</h4>
+            <p>{{ $t('settingsForm.phaseTransitionNotificationsHelp') }}</p>
+            <div class="row">
+              <label class="radio-label">
+                <input type="radio" name="phaseTransitionNotifications" :value="true" v-model="phaseTransitionNotifications" @change="updateAccountSettings" />
+                {{ $t('On') }}
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="phaseTransitionNotifications" :value="false" v-model="phaseTransitionNotifications" @change="updateAccountSettings" />
+                {{ $t('Off') }}
+              </label>
+            </div>
+          </section>
+
+          <section class="experiment column">
             <h4>{{ $t('settingsForm.enrollInBeta') }}</h4>
             <p>{{ $t('settingsForm.betaHelp') }}</p>
             <div class="row">
               <label class="radio-label">
-                <input type="radio" name="beta" value="On" v-model="beta" @change="betaUpdate" />
+                <input type="radio" name="beta" value="On" v-model="beta" @change="updateAccountSettings" />
                 {{ $t('On') }}
               </label>
               <label class="radio-label">
-                <input type="radio" name="beta" value="Off" v-model="beta" @change="betaUpdate" />
+                <input type="radio" name="beta" value="Off" v-model="beta" @change="updateAccountSettings" />
                 {{ $t('Off') }}
               </label>
             </div>

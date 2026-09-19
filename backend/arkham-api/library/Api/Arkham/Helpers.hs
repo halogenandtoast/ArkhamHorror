@@ -11,6 +11,7 @@ import Arkham.Epic.Types (EpicEnv, HasMaybeEpic (..), SharedEventState)
 import Arkham.Game
 import Arkham.Id
 import Arkham.Message
+import Arkham.Phase qualified as Phase
 import Arkham.Queue
 import Arkham.Random
 import Control.Concurrent (threadDelay)
@@ -79,6 +80,7 @@ toPublicGame (Entity gId ArkhamGame {..}) gameLog =
 
 data ApiResponse
   = GameUpdate (PublicGame ArkhamGameId)
+  | PhaseChanged Phase.Phase
   | GameMessage Text
   | GameError Text
   | GameUI Text

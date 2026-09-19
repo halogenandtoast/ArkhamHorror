@@ -10,9 +10,9 @@ const store = useUserStore()
 const { currentUser } = storeToRefs(store)
 const router = useRouter()
 
-const updateBeta = async (beta: boolean) => {
-  await api.put<User>('settings', { beta })
-  store.setCurrentUser()
+const updateSettings = async (settings: { beta: boolean; phaseTransitionNotifications: boolean }) => {
+  await api.put<User>('settings', settings)
+  await store.setCurrentUser()
 }
 
 const deleteAccount = async () => {
@@ -23,5 +23,5 @@ const deleteAccount = async () => {
 </script>
 
 <template>
-  <SettingsForm v-if="currentUser" :user="currentUser" :updateBeta="updateBeta" :deleteAccount="deleteAccount" />
+  <SettingsForm v-if="currentUser" :user="currentUser" :updateSettings="updateSettings" :deleteAccount="deleteAccount" />
 </template>

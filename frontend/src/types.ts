@@ -2,6 +2,7 @@ export interface User {
   username: string;
   email: string;
   beta: boolean;
+  phaseTransitionNotifications?: boolean;
   admin: boolean;
 }
 

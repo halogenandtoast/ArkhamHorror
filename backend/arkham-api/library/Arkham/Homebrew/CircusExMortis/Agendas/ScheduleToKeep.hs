@@ -3,6 +3,7 @@ module Arkham.Homebrew.CircusExMortis.Agendas.ScheduleToKeep (scheduleToKeep) wh
 import Arkham.Ability
 import Arkham.Agenda.Import.Lifted
 import Arkham.Classes.HasGame (HasGame)
+import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWith, setActiveDuringSetup)
 import Arkham.Helpers.Scenario (getScenarioMetaKeyDefault)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Cards
@@ -10,11 +11,10 @@ import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorRemainingHealth, InvestigatorRemainingSanity))
-import Arkham.Matcher hiding (InvestigatorDefeated)
-import Arkham.Matcher qualified as Matcher
+import Arkham.Matcher hiding (InvestigatorEliminated)
 import Arkham.Message (pattern InvestigatorNoLongerDefeated)
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Move
+import Arkham.Message.Lifted.Placement
 import Arkham.Projection
 
 newtype ScheduleToKeep = ScheduleToKeep AgendaAttrs
@@ -31,6 +31,10 @@ frozenKey = "frozen"
 getFrozen :: HasGame m => m [InvestigatorId]
 getFrozen = getScenarioMetaKeyDefault frozenKey []
 
+-- | Lethal trauma really removes them, so they neither keep their cards nor come back.
+isKilledOrInsane :: HasGame m => InvestigatorId -> m Bool
+isKilledOrInsane iid = iid <=~> oneOf [KilledInvestigator, InsaneInvestigator]
+
 instance HasModifiersFor ScheduleToKeep where
   getModifiersFor (ScheduleToKeep a) = modifySelfWith a setActiveDuringSetup [CannotBeAdvancedByDoomThreshold]
 
@@ -39,7 +43,6 @@ instance HasAbilities ScheduleToKeep where
     [ restricted a 1 (exists $ UneliminatedInvestigator <> NotInvestigator You)
         $ forced
         $ InvestigatorWouldBeDefeated #when ByAny You
-    , mkAbility a 2 $ silent $ Matcher.InvestigatorDefeated #after ByAny Anyone
     ]
 
 instance RunMessage ScheduleToKeep where
@@ -50,13 +53,22 @@ instance RunMessage ScheduleToKeep where
       advanceAgenda attrs
       pure a
     -- "Do not remove cards controlled by that investigator from play." Elimination
-    -- is what would strip them (and end the scenario), so drop it for the frozen
-    -- investigator; the defeat itself, and its trauma, still resolve.
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    -- is what strips them -- the asset, event and treachery runners all key off
+    -- InvestigatorEliminated -- so drop that step for a frozen investigator. The
+    -- scenario runs ahead of the agendas, so the message it just queued is still
+    -- poppable here. The defeat, its trauma, and the defeated flag (which keeps
+    -- them out of every query until the act advances) all still stand.
+    InvestigatorWhenEliminated _ iid _ -> do
       frozen <- getFrozen
-      when (iid `elem` frozen) $ don'tMatching \case
-        InvestigatorWhenEliminated _ iid' _ -> iid == iid'
-        _ -> False
+      when (iid `elem` frozen) $ unlessM (isKilledOrInsane iid) do
+        don't $ InvestigatorEliminated iid
+        -- "moves their investigator mini-card beneath the agenda" -- they leave the
+        -- map, so release engaged enemies at the location first, which is all
+        -- elimination would have done for them.
+        withLocationOf iid \lid -> selectEach (EnemyWithPlacement $ InThreatArea iid) \eid -> do
+          place eid lid
+          enemyCheckEngagement eid
+        place iid (AttachedToAgenda attrs.id)
       pure a
     AdvanceAgendaBy (isSide B attrs -> True) AgendaAdvancedWithDoom -> do
       eachInvestigator \iid -> do
@@ -69,7 +81,7 @@ instance RunMessage ScheduleToKeep where
       revertAgenda attrs
       pure a
     AdvanceAct {} -> do
-      frozen <- getFrozen
+      frozen <- filterM (fmap not . isKilledOrInsane) =<< getFrozen
       unless (null frozen) $ priority do
         caboose <- selectJust $ locationIs Locations.caboose
         for_ frozen \iid -> do
@@ -82,7 +94,9 @@ instance RunMessage ScheduleToKeep where
           -- trauma from their defeat" -- the trauma was applied when they were
           -- frozen and is not undone here.
           push $ InvestigatorNoLongerDefeated iid
-          moveTo attrs iid caboose
+          -- "Move their investigator minicards to Caboose" -- a placement, not a
+          -- move: they are attached to the agenda, so there is nowhere to move from.
+          place iid caboose
         setScenarioMetaKey frozenKey ([] :: [InvestigatorId])
       pure a
     _ -> ScheduleToKeep <$> liftRunMessage msg attrs

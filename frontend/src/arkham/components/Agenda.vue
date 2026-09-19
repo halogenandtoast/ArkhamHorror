@@ -17,6 +17,7 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import Event from '@/arkham/components/Event.vue';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Story from '@/arkham/components/Story.vue';
+import Investigator from '@/arkham/components/Investigator.vue';
 import StackIndicator from '@/arkham/components/StackIndicator.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
@@ -244,8 +245,13 @@ const nextToStories = computed(() => Object.values(props.game.stories).
   map((t) => t.id))
 
 const attachedEnemies = computed(() => Object.values(props.game.enemies).
-  filter((t) => t.placement.tag === "AttachedToAgenda").
+  filter((t) => t.placement.tag === "AttachedToAgenda" && t.placement.contents === id.value).
   map((t) => t.id))
+
+// Blood on the Line parks a defeated investigator's mini-card beneath the agenda
+// until the act advances.
+const investigatorsUnder = computed(() => Object.values(props.game.investigators).
+  filter((i) => i.placement.tag === "AttachedToAgenda" && i.placement.contents === id.value))
 
 const groupedTreacheries = computed(() => Object.entries(groupBy([...props.agenda.treacheries, ...nextToTreacheries.value], (t) => props.game.treacheries[t].cardCode)))
 
@@ -319,6 +325,18 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
             >+</button>
           </template>
         </div>
+      </div>
+      <div v-if="investigatorsUnder.length > 0" class="agenda-investigators">
+        <Investigator
+          v-for="investigator in investigatorsUnder"
+          :key="investigator.id"
+          :game="game"
+          :choices="choices"
+          :playerId="playerId"
+          :portrait="true"
+          :investigator="investigator"
+          @choose="$emit('choose', $event)"
+        />
       </div>
       <img
         v-for="(card, idx) in cardsNextTo"
@@ -432,6 +450,21 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
   display: flex;
   align-items: center;
   height: var(--card-width);
+}
+
+/* The minis tuck under the card's bottom edge; .agenda-card is positioned and
+   z-indexed above them, so they read as sitting beneath the agenda. */
+.agenda-investigators {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  margin-top: calc(var(--card-width) * -0.15);
+  padding-left: 10px;
+
+  &:deep(.portrait) {
+    width: calc(var(--card-width) * 0.4);
+    box-shadow: 1px 1px 6px rgb(0 0 0 / 45%);
+  }
 }
 
 .agenda--can-progress {

@@ -898,9 +898,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
     pure a
   ShuffleCardsIntoDeck (Deck.EncounterDeckByKey deckKey) cards -> do
     let encounterCards = mapMaybe (preview _EncounterCard) cards
+    -- A card cannot be in a deck twice, so a card already in this deck moves
+    -- rather than doubling: filterOutCards below cannot do it, since the deck
+    -- it clears is overwritten by deck'.
     deck' <-
       withDeckM
-        (shuffleM . (<> encounterCards))
+        (shuffleM . (<> encounterCards) . filter ((`notElem` cards) . toCard))
         (a ^. encounterDeckLensFromKey deckKey)
     pure
       $ filterOutCards cards a

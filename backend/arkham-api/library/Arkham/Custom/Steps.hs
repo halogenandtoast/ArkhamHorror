@@ -31,6 +31,7 @@ import Arkham.Evade (mkChooseEvade, mkChooseEvadeMatch)
 import Arkham.Evade qualified as Evade
 import Arkham.Fight (ChooseFight (..))
 import Arkham.Helpers.Ability (getCanPerformAbility)
+import Arkham.Helpers.Card (getCardEntityTarget)
 import Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization (
   CustomizationChoiceType (..),
@@ -39,6 +40,7 @@ import Arkham.Helpers.Customization (
   customizationKey,
   hasCustomization_,
  )
+import Arkham.Helpers.FetchCard (findCardFace)
 import Arkham.Helpers.Investigator (getCanDiscoverClues)
 import Arkham.Helpers.Location (Locateable, getLocationOf)
 import Arkham.Helpers.Message (drawCards)
@@ -346,8 +348,24 @@ runGather env spec = do
     into = fromMaybe Deck.EncounterDeck (KeyMap.lookup "into" o >>= decodeWith env)
   for_ (KeyMap.lookup "cardCode" o >>= decodeWith env) \cardCode ->
     for_ (lookupCardDef (cardCode :: CardCode)) \def -> do
-      card <- genEncounterCard def
-      push $ ShuffleCardsIntoDeck into [toCard card]
+      -- A unique card has one physical copy, so gather the one the game already
+      -- has rather than minting a second. The scenario's own setup may have put
+      -- it in the deck already (#5736), and shuffling it in is idempotent.
+      mExisting <- if def.unique then findCardFace def else pure Nothing
+      case mExisting of
+        Nothing -> do
+          card <- genEncounterCard def
+          push $ ShuffleCardsIntoDeck into [toCard card]
+        Just card ->
+          getCardEntityTarget card >>= \case
+            -- The only copy is on the table; shuffling its card in would leave
+            -- the entity behind as a ghost, so say so instead of guessing.
+            Just _ ->
+              sendCustomCardIssue
+                (fromMaybe "" (KeyMap.lookup "cardCode" env >>= parseMaybe parseJSON))
+                "gather could not run because the unique card it names is already in play"
+                spec
+            Nothing -> push $ ShuffleCardsIntoDeck into [card]
 
 {- | Ready a card.
 

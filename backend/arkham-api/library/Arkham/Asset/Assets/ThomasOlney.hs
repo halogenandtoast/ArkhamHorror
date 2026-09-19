@@ -5,10 +5,10 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Helpers.SkillTest
-import Arkham.Matcher
 import Arkham.Homebrew.Defs (allTraits)
-import Arkham.Trait
+import Arkham.Matcher
 import Arkham.Scenarios.TheMidwinterGala.Helpers
+import Arkham.Trait
 
 newtype ThomasOlney = ThomasOlney AssetAttrs
   deriving anyclass IsAsset
@@ -23,7 +23,11 @@ instance HasModifiersFor ThomasOlney where
 instance HasAbilities ThomasOlney where
   getAbilities (ThomasOlney a) =
     [ restricted a 1 ControlsThis $ FastAbility (exhaust a)
-    , controlled a 2 (DuringSkillTest SkillTestAtYourLocation) $ FastAbility (exhaust a)
+    , controlled
+        a
+        2
+        (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestOfInvestigator (affectsOthers Anyone))
+        $ FastAbility (exhaust a)
     ]
 
 instance RunMessage ThomasOlney where

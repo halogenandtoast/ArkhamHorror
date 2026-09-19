@@ -27,6 +27,7 @@ instance HasAbilities GuidedByTheUnseen3 where
           1
           ( DuringSkillTest
               $ SkillTestAtYourLocation
+              <> SkillTestOfInvestigator (affectsOthers Anyone)
               <> SkillTestOfInvestigator (oneOf [can.search.deck, can.manipulate.deck])
           )
         $ FastAbility Free
@@ -43,9 +44,10 @@ instance RunMessage GuidedByTheUnseen3 where
       pure a
     SearchFound iid (isTarget attrs -> True) _ cards | notNull cards -> do
       hasKingInYellow <- selectAny $ assetControlledBy iid <> assetIs Cards.theKingInYellow
-      committable <- if hasKingInYellow
-        then pure []
-        else filterM (getIsCommittable iid) cards
+      committable <-
+        if hasKingInYellow
+          then pure []
+          else filterM (getIsCommittable iid) cards
       focusCards cards do
         if attrs.use Secret == 0 || null committable
           then continue_ iid

@@ -20,7 +20,10 @@ instance HasModifiersFor UncannySpecimen where
 
 instance HasAbilities UncannySpecimen where
   getAbilities (UncannySpecimen a) =
-    [ controlled a 1 (DuringSkillTest SkillTestAtYourLocation)
+    [ controlled
+        a
+        1
+        (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestOfInvestigator (affectsOthers Anyone))
         $ triggered
           ( RevealChaosToken #cancel Anyone
               $ oneOf [#skull, #cultist, #tablet, #elderthing]

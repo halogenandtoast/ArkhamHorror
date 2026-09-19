@@ -18,7 +18,10 @@ ancientCovenant2 = asset AncientCovenant2 Cards.ancientCovenant2
 
 instance HasAbilities AncientCovenant2 where
   getAbilities (AncientCovenant2 x) =
-    [ controlled x 1 (DuringSkillTest SkillTestAtYourLocation)
+    [ controlled
+        x
+        1
+        (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestOfInvestigator (affectsOthers Anyone))
         $ triggered
           ( ResolvesChaosToken
               #when

@@ -21,7 +21,12 @@ import Arkham.Trait (Trait (Ally))
 
 amaltheaWeaverAbilities :: AssetAttrs -> [Ability]
 amaltheaWeaverAbilities a =
-  [controlled a 1 (DuringSkillTest SkillTestAtYourLocation) $ FastAbility (exhaust a)]
+  [ controlled
+      a
+      1
+      (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestOfInvestigator (affectsOthers Anyone))
+      $ FastAbility (exhaust a)
+  ]
 
 {- | "The performing investigator gets +X skill value for this test, where X is
 half the number of moon tokens sealed on cards at your location (rounded up)."

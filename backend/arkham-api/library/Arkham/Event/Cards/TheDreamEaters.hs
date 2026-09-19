@@ -165,7 +165,9 @@ practiceMakesPerfect =
     { cdSkills = [#willpower, #intellect]
     , cdCardTraits = setFromList [Gambit, Tactic]
     , cdFastWindow = Just FastPlayerWindow
-    , cdCriteria = Just $ Criteria.DuringSkillTest SkillTestAtYourLocation
+    , cdCriteria =
+        Just
+          $ Criteria.DuringSkillTest (SkillTestAtYourLocation <> SkillTestOfInvestigator (affectsOthers Anyone))
     }
 
 extensiveResearch1 :: CardDef

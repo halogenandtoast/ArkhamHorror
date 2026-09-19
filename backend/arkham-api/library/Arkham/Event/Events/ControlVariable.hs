@@ -1,4 +1,4 @@
-module Arkham.Event.Events.ControlVariable (controlVariable, ControlVariable (..)) where
+module Arkham.Event.Events.ControlVariable (controlVariable) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted

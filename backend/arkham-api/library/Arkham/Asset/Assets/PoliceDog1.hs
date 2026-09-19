@@ -21,6 +21,7 @@ instance HasAbilities PoliceDog1 where
         1
         ( DuringSkillTest
             $ SkillTestAtYourLocation
+            <> SkillTestOfInvestigator (affectsOthers Anyone)
             <> oneOf [WhileAttacking, WhileInvestigating Anywhere]
         )
         $ FastAbility (exhaust a)

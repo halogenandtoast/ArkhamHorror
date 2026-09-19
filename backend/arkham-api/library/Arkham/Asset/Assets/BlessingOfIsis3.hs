@@ -23,7 +23,14 @@ blessingOfIsis3 = asset BlessingOfIsis3 Cards.blessingOfIsis3
 instance HasAbilities BlessingOfIsis3 where
   getAbilities (BlessingOfIsis3 x) =
     [ wantsSkillTest SkillTestAtYourLocation
-        $ controlled x 1 (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestWithRevealedChaosToken #bless)
+        $ controlled
+          x
+          1
+          ( DuringSkillTest
+              $ SkillTestAtYourLocation
+              <> SkillTestOfInvestigator (affectsOthers Anyone)
+              <> SkillTestWithRevealedChaosToken #bless
+          )
         $ triggered (Matcher.RevealChaosToken #cancel Anyone #bless) (exhaust x)
     ]
 

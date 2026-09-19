@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.PoliceDog (policeDog) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import Arkham.Helpers.SkillTest (withSkillTestInvestigator, withSkillTest)
+import Arkham.Helpers.SkillTest (withSkillTest, withSkillTestInvestigator)
 import Arkham.Matcher
 import Arkham.Modifier
 
@@ -19,7 +19,11 @@ instance HasAbilities PoliceDog where
     [ controlled
         a
         1
-        (DuringSkillTest $ SkillTestAtYourLocation <> oneOf [WhileAttacking, WhileInvestigating Anywhere])
+        ( DuringSkillTest
+            $ SkillTestAtYourLocation
+            <> SkillTestOfInvestigator (affectsOthers Anyone)
+            <> oneOf [WhileAttacking, WhileInvestigating Anywhere]
+        )
         $ FastAbility (exhaust a)
     ]
 

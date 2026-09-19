@@ -25,7 +25,11 @@ instance HasAbilities CurseOfAeons3 where
     [ controlledAbility
         attrs
         1
-        (DuringSkillTest $ SkillTestAtYourLocation <> SkillTestWithRevealedChaosToken #curse)
+        ( DuringSkillTest
+            $ SkillTestAtYourLocation
+            <> SkillTestOfInvestigator (affectsOthers Anyone)
+            <> SkillTestWithRevealedChaosToken #curse
+        )
         $ triggered (Matcher.RevealChaosToken #cancel Anyone #curse) (exhaust attrs)
     ]
 

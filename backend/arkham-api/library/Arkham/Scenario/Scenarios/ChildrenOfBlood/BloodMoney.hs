@@ -30,7 +30,6 @@ import Arkham.Investigator.Types (Field (InvestigatorHorror))
 import Arkham.Location.CardDefs.ChildrenOfBlood.BloodMoney qualified as Locations
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
-import Arkham.SkillTest.Base
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move
 import Arkham.Projection
@@ -39,6 +38,7 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (ScenarioCardsUnderScenarioReference))
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.ChildrenOfBlood.BloodMoney.Helpers
+import Arkham.SkillTest.Base
 import Arkham.Token
 import Arkham.Trait (Trait (Monster))
 import Arkham.Trait qualified as Trait
@@ -208,7 +208,7 @@ instance RunMessage BloodMoney where
     Setup -> runScenarioSetup BloodMoney attrs do
       n <- getPlayerCount
       defeatedZburamoarte <- getHasRecord InvestigatorsDefeatedZburamoarte
-      killedJulia <- getHasRecord InvestigatorsKilledJuliaStern
+      gatherJulia <- not <$> getHasRecord InvestigatorsKilledJuliaStern
 
       setup $ ul do
         li.nested "gatherSets" do
@@ -232,10 +232,10 @@ instance RunMessage BloodMoney where
           li.validate (attrs.difficulty == Easy) "firstChildOfZburamoarte"
           li.validate (attrs.difficulty == Standard) "tooFarGone"
           li.validate (isHardExpert attrs) "ultimatePredator"
-        li.nested.validate (not killedJulia) "juliaStern" do
-          li.validate (attrs.difficulty == Easy) "firstVictimOfNewHorizons"
-          li.validate (attrs.difficulty == Standard) "outForBlood"
-          li.validate (isHardExpert attrs) "childOfVengeance"
+        li.nested "juliaStern" do
+          li.validate (gatherJulia && attrs.difficulty == Easy) "firstVictimOfNewHorizons"
+          li.validate (gatherJulia && attrs.difficulty == Standard) "outForBlood"
+          li.validate (gatherJulia && isHardExpert attrs) "childOfVengeance"
         li "addCultist"
         unscoped $ li "shuffleRemainder"
         unscoped $ li "readyToBegin"
@@ -290,7 +290,7 @@ instance RunMessage BloodMoney where
             Easy -> Enemies.juliaSternFirstVictimOfNewHorizons
             Standard -> Enemies.juliaSternOutForBlood
             _other -> Enemies.juliaSternChildOfVengeance
-        | not killedJulia
+        | gatherJulia
         ]
       removeCards =<< amongGathered (#enemy <> CardWithTitle "Julia Stern")
 

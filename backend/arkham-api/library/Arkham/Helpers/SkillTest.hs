@@ -575,18 +575,23 @@ getAlternateSkill st sType = do
   applyModifier _ a = a
 
 getModifiedSkillTestDifficulty :: (HasCallStack, HasGame m) => SkillTest -> m Int
-getModifiedSkillTestDifficulty s = do
-  -- difficulty can be on the investigator, see: @Despoiled@
-  let
-    forSkillTest = \case
-      Difficulty {} -> True
-      _ -> False
-  imods <- filter forSkillTest <$> getModifiers s.investigator
-  modifiers' <- (imods <>) <$> getModifiers (SkillTestTarget s.id)
-  baseDifficulty <- getBaseSkillTestDifficulty s
-  let preModifiedDifficulty = foldr applyPreModifier baseDifficulty modifiers' + s.difficultyIncrease
-  let doubledDifficulty = foldr applyDoubler preModifiedDifficulty modifiers'
-  max 0 <$> foldrM applyModifier doubledDifficulty modifiers'
+getModifiedSkillTestDifficulty s = case skillTestResult s of
+  -- RR "Automatic Failure/Success": the total difficulty of an automatically
+  -- successful test is 0. Zeroing the base in @Do PassSkillTest@ is not enough,
+  -- a SetDifficulty modifier (Unearth the Ancients, Sixth Sense) replaces it.
+  SucceededBy Automatic _ -> pure 0
+  _ -> do
+    -- difficulty can be on the investigator, see: @Despoiled@
+    let
+      forSkillTest = \case
+        Difficulty {} -> True
+        _ -> False
+    imods <- filter forSkillTest <$> getModifiers s.investigator
+    modifiers' <- (imods <>) <$> getModifiers (SkillTestTarget s.id)
+    baseDifficulty <- getBaseSkillTestDifficulty s
+    let preModifiedDifficulty = foldr applyPreModifier baseDifficulty modifiers' + s.difficultyIncrease
+    let doubledDifficulty = foldr applyDoubler preModifiedDifficulty modifiers'
+    max 0 <$> foldrM applyModifier doubledDifficulty modifiers'
  where
   applyModifier (Difficulty m) n = pure $ n + m
   applyModifier (CalculatedDifficulty calc) n = do

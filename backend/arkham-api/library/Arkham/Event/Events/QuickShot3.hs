@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 
 newtype QuickShot3 = QuickShot3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor)
@@ -18,7 +18,10 @@ instance HasAbilities QuickShot3 where
     [ restrictedAbility
         x
         1
-        (InYourHand <> exists (PlayableCardWithCostReduction NoAction 2 (basic $ CardWithId x.cardId)))
+        ( InYourHand
+            <> DuringTurn You
+            <> exists (PlayableCardWithCostReduction NoAction 2 (basic $ CardWithId x.cardId))
+        )
         $ freeReaction
         $ DrawCard #after You (basic $ CardWithId x.cardId) AnyDeck
     ]

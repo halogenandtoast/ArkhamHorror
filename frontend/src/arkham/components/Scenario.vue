@@ -3067,7 +3067,7 @@ async function addChaosToken(face: any){
       </div>
     </div>
     <div class="phases">
-      <div class="phase" :class="{ 'active-phase': phase == 'MythosPhase' }">
+      <div class="phase phase-mythos" :class="{ 'active-phase': phase == 'MythosPhase' }">
         <div class="subphases">
           <div v-tooltip.left="$t('phase.mythosPhaseBeginsStep')" :class="{'current': phaseStep?.contents === 'MythosPhaseBeginsStep' }">1.1</div>
           <div v-tooltip.left="$t('phase.placeDoomOnAgendaStep')" :class="{'current': phaseStep?.contents === 'PlaceDoomOnAgendaStep'}">1.2</div>
@@ -3078,7 +3078,7 @@ async function addChaosToken(face: any){
         </div>
         <div>{{$t('phase.mythosPhase')}}</div>
       </div>
-      <div class="phase" :class="{ 'active-phase': phase == 'InvestigationPhase' }">
+      <div class="phase phase-investigation" :class="{ 'active-phase': phase == 'InvestigationPhase' }">
         <div class="subphases">
           <div v-tooltip.left="$t('phase.investigationPhaseBeginsStep')" :class="{'current': phaseStep?.contents === 'InvestigationPhaseBeginsStep'}">2.1</div>
           <div v-tooltip.left="$t('phase.playerWindow')" :class="{'current': phaseStep?.contents === 'InvestigationPhaseBeginsWindow'}"><i class="fast-icon" /></div>
@@ -3090,7 +3090,7 @@ async function addChaosToken(face: any){
         </div>
         <div>{{$t('phase.investigationPhase')}}</div>
       </div>
-      <div class="phase" :class="{ 'active-phase': phase == 'EnemyPhase' }">
+      <div class="phase phase-enemy" :class="{ 'active-phase': phase == 'EnemyPhase' }">
         <div class="subphases">
           <div v-tooltip.left="$t('phase.enemyPhaseBeginsStep')" :class="{'current': phaseStep?.contents === 'EnemyPhaseBeginsStep'}">3.1</div>
           <div v-tooltip.left="$t('phase.hunterEnemiesMoveStep')" :class="{'current': phaseStep?.contents === 'HunterEnemiesMoveStep'}">3.2 <span v-if="phaseStep?.contents === 'HunterEnemiesMoveStep'">{{$t('phase.hunterEnemiesMoveStep')}}</span></div>
@@ -3101,7 +3101,7 @@ async function addChaosToken(face: any){
         </div>  
         <div>{{$t('phase.enemyPhase')}}</div>
       </div>
-      <div class="phase" :class="{ 'active-phase': phase == 'UpkeepPhase' }">
+      <div class="phase phase-upkeep" :class="{ 'active-phase': phase == 'UpkeepPhase' }">
         <div class="subphases">
           <div v-tooltip.left="$t('phase.upkeepPhaseBeginsStep')" :class="{'current': phaseStep?.contents === 'UpkeepPhaseBeginsStep'}">4.1</div>
           <div v-tooltip.left="$t('phase.playerWindow')" :class="{'current': phaseStep?.contents === 'UpkeepPhaseBeginsWindow'}"><i class="fast-icon" /></div>
@@ -3599,12 +3599,14 @@ async function addChaosToken(face: any){
 
 .phase {
   display: flex;
+  overflow: visible;
   flex-direction: column;
   width: 100%;
 }
 
 .subphases {
   position: relative;
+  overflow: visible;
   font-size: 0.7em;
   flex: 1;
   writing-mode: lr-tb;
@@ -3664,7 +3666,69 @@ async function addChaosToken(face: any){
 .active-phase {
   font-weight: bold;
   background-color: #8e9ca4;
+
+  > div:last-child {
+    color: #fff;
+    background: var(--phase-tint);
+    border: 0;
+    border-radius: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  }
+
+  .subphases {
+    background: color-mix(in srgb, var(--phase-tint) 52%, #282d30);
+    color: #f4ecd8;
+
+    > div:nth-of-type(odd) {
+      background: color-mix(in srgb, var(--phase-tint) 30%, #484e51);
+    }
+
+    > div:nth-of-type(even) {
+      background: color-mix(in srgb, var(--phase-tint) 48%, #5a6062);
+    }
+
+    .current {
+      background: var(--phase-tint) !important;
+      color: white;
+      box-shadow: inset 0 0 12px color-mix(in srgb, var(--phase-tint) 72%, transparent);
+
+      &::after {
+        content: '';
+        position: absolute;
+        right: -3px;
+        top: 50%;
+        width: 6px;
+        height: 6px;
+        transform: translateY(-50%);
+        background: color-mix(in srgb, var(--phase-tint) 35%, #f4ecd8);
+        border: 1px solid color-mix(in srgb, var(--phase-tint) 55%, #f4ecd8);
+        border-radius: 50%;
+        box-shadow: 0 0 7px color-mix(in srgb, var(--phase-tint) 85%, transparent);
+        z-index: 10;
+      }
+    }
+  }
 }
+
+.active-phase .subphases > div.current::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  transform: translateY(-50%);
+  background: color-mix(in srgb, var(--phase-tint) 35%, #f4ecd8);
+  border: 1px solid color-mix(in srgb, var(--phase-tint) 55%, #f4ecd8);
+  border-radius: 50%;
+  box-shadow: 0 0 7px color-mix(in srgb, var(--phase-tint) 85%, transparent);
+  z-index: 10;
+}
+
+.phase-mythos { --phase-tint: #7b4b91; }
+.phase-investigation { --phase-tint: #a87532; }
+.phase-enemy { --phase-tint: #9f2929; }
+.phase-upkeep { --phase-tint: #315b70; }
 
 .scenario-guide {
   display: flex;

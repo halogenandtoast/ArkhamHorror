@@ -63,6 +63,11 @@ function tabClass(investigator: Investigator) {
   ]
 }
 
+function hasActions(investigator: Investigator) {
+  const pid = investigator.playerId
+  return pid !== selectedTab.value && hasChoices(pid)
+}
+
 function hasSwitch(investigator: Investigator) {
   const pid = investigator.playerId
   return pid !== props.playerId && hasChoices(investigator.playerId)
@@ -495,6 +500,7 @@ watch(
         @click='selectTab(investigator.playerId)'
         :class='tabClass(investigator)'
       >
+        <i v-if="hasActions(investigator)" class="tab-pulse" aria-hidden="true"></i>
         <span v-if="isMobile">{{ getInvestigatorName(investigator.name.title).split(' ')[0] }}</span>
         <span v-else>{{ getInvestigatorName(investigator.name.title) }}</span>
         <button
@@ -515,6 +521,7 @@ watch(
         class="inactive"
         :class='tabClass(investigator)'
       >
+        <i v-if="hasActions(investigator)" class="tab-pulse" aria-hidden="true"></i>
         <span>{{ investigator.name.title }}</span>
         <button
           v-if="solo"
@@ -617,9 +624,19 @@ ul.tabs__header > li.tab--selected {
 
 ul.tabs__header > li.tab--has-actions {
   opacity: 0.85;
+}
+
+/* Runs for as long as another seat has something to do -- most of the game in
+   multi-handed solo. Pulsing a layer's opacity stays on the compositor;
+   pulsing box-shadow repainted the tab every frame. */
+.tab-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
   box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--select) 70%, transparent),
-    0 0 7px color-mix(in srgb, var(--select) 28%, transparent);
+    inset 0 0 0 1px color-mix(in srgb, var(--select) 88%, transparent),
+    0 0 9px color-mix(in srgb, var(--select) 36%, transparent);
   animation: tab-action-pulse 1.8s ease-in-out infinite alternate;
 }
 
@@ -696,6 +713,8 @@ ul.tabs__header > li.tab--has-actions {
 }
 
 .fa-icon {
+  color: var(--select);
+  text-shadow: 0 0 10px var(--select);
   animation: glow 1.5s infinite alternate;
 }
 
@@ -724,27 +743,13 @@ ul.tabs__header > li.tab--has-actions {
 }
 
 @keyframes tab-action-pulse {
-  from {
-    box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--select) 58%, transparent),
-      0 0 4px color-mix(in srgb, var(--select) 18%, transparent);
-  }
-  to {
-    box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--select) 88%, transparent),
-      0 0 9px color-mix(in srgb, var(--select) 36%, transparent);
-  }
+  from { opacity: 0.45; }
+  to { opacity: 1; }
 }
 
 @keyframes glow {
-  from {
-    color: #000; /* Or any other default color */
-    text-shadow: 0 0 0px var(--select);
-  }
-  to {
-    color: var(--select); /* Glowing color */
-    text-shadow: 0 0 10px var(--select);
-  }
+  from { opacity: 0.35; }
+  to { opacity: 1; }
 }
 
 ul.tabs__header > li.inactive {

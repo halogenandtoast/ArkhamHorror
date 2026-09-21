@@ -1899,6 +1899,8 @@ provide('skipAllInProgress', skipAllInProgress)
 provide('showOtherPlayersHands', showOtherPlayersHands)
 
 function updateFocusLight() {
+  if (!realityAcidLightActive.value) return
+
   const highlighted = [...document.querySelectorAll<HTMLElement>(
     '.source-highlight, .ability-target, .card-frame-inner.highlighted, .cards-under-indicator--highlighted',
   )].find((el) => {
@@ -1920,6 +1922,7 @@ function updateFocusLight() {
 }
 
 function scheduleFocusLightUpdate() {
+  if (!realityAcidLightActive.value) return
   if (focusLightAnimationFrame !== null) return
   focusLightAnimationFrame = requestAnimationFrame(() => {
     focusLightAnimationFrame = null
@@ -1927,9 +1930,36 @@ function scheduleFocusLightUpdate() {
   })
 }
 
+// One scenario renders this light, but the observer is a body-wide subtree
+// watch on every class change and the sweep it schedules reads a rect per
+// match. Arm it only when something is actually drawing from it.
+function connectFocusLightObserver() {
+  if (focusLightObserver) return
+  focusLightObserver = new MutationObserver(scheduleFocusLightUpdate)
+  focusLightObserver.observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true })
+  scheduleFocusLightUpdate()
+}
+
+function disconnectFocusLightObserver() {
+  focusLightObserver?.disconnect()
+  focusLightObserver = null
+  if (focusLightAnimationFrame !== null) {
+    cancelAnimationFrame(focusLightAnimationFrame)
+    focusLightAnimationFrame = null
+  }
+  focusLightX.value = -1000
+  focusLightY.value = -1000
+}
+
+watch(realityAcidLightActive, (active) => {
+  if (active) connectFocusLightObserver()
+  else disconnectFocusLightObserver()
+})
+
 const onMove = (event: MouseEvent) => {
   mouseX = event.clientX
   mouseY = event.clientY
+  if (!realityAcidLightActive.value) return
   flashlightX.value = event.clientX
   flashlightY.value = event.clientY
   scheduleFocusLightUpdate()
@@ -1955,9 +1985,7 @@ onMounted(() => {
   ;(window as any).undo = undo
   ;(window as any).debugChoose = choose
   document.addEventListener('mousemove', onMove, { passive: true })
-  focusLightObserver = new MutationObserver(scheduleFocusLightUpdate)
-  focusLightObserver.observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true })
-  scheduleFocusLightUpdate()
+  if (realityAcidLightActive.value) connectFocusLightObserver()
   document.addEventListener('keydown', handleKeyPress)
   window.addEventListener('arkham-setting-change', handleSettingChange)
 })

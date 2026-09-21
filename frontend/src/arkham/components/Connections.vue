@@ -966,13 +966,40 @@ function stopTransientTracking() {
   requestId.value = null
 }
 
+// The burst exists to follow location cards while they move, but most of what
+// wakes it is a --can-interact class landing on a card, which moves nothing.
+// So redraw only on frames where the geometry actually changed, and end the
+// burst once the cards have come to rest. Sub-pixel and five frames: anything
+// still animating moves the rect every frame, easing tail included.
+const TRANSIENT_STABLE_FRAMES = 5
+
+function locationGeometrySignature(): string {
+  const cards = document.querySelector('.location-cards')
+  if (!cards) return ''
+  let sig = ''
+  for (const el of cards.querySelectorAll<HTMLElement>('[data-id]')) {
+    const r = el.getBoundingClientRect()
+    sig += `${el.dataset.id}:${r.left.toFixed(2)},${r.top.toFixed(2)},${r.width.toFixed(2)},${r.height.toFixed(2)};`
+  }
+  return sig
+}
+
 function requestTransientConnectionTracking(durationMs = 260) {
   transientTrackingUntil = Math.max(transientTrackingUntil, performance.now() + durationMs)
   if (requestId.value !== null) return
+  let lastSignature = locationGeometrySignature()
+  let stableFrames = 0
   const tick = (ts: number) => {
     requestId.value = null
     if (ts >= transientTrackingUntil) return
-    handleConnections(false)
+    const signature = locationGeometrySignature()
+    if (signature === lastSignature) {
+      if (++stableFrames >= TRANSIENT_STABLE_FRAMES) return
+    } else {
+      lastSignature = signature
+      stableFrames = 0
+      handleConnections(false)
+    }
     requestId.value = window.requestAnimationFrame(tick)
   }
   requestId.value = window.requestAnimationFrame(tick)

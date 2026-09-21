@@ -118,8 +118,8 @@
   },
   "part3": {
     "investigatorSetup": {
-      "title": "@:edgeOfTheEarth.iceAndDeath.part2.investigator设置。title",
-      "body": "@:edgeOfTheEarth.iceAndDeath.part2.investigator设置。body"
+      "title": "@:edgeOfTheEarth.iceAndDeath.part2.investigatorSetup.title",
+      "body": "@:edgeOfTheEarth.iceAndDeath.part2.investigatorSetup.body"
     },
     "intro": {
       "title": "亡命冰原 第III部分",

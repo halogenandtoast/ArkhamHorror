@@ -25,3 +25,21 @@ test('locale markup uses complete HTML closing tags', () => {
 
   assert.deepEqual(malformedTags, [])
 })
+
+/* A translator localized the key path inside a `@:` link, not just the text
+ * around it: `investigatorSetup.` became `investigator设置。`. vue-i18n still
+ * resolves the outer message, so `fallbackLocale` never fires -- the link
+ * resolves to '' and the modal renders empty, with nothing in the console. */
+test('locale message links keep ASCII key paths', () => {
+  const localizedLinks = []
+  const nonAsciiLinkKey = /@:[A-Za-z0-9_.]*[^\x20-\x7E]/g
+
+  for (const file of jsonFilesUnder(localeRoot)) {
+    const contents = readFileSync(file, 'utf8')
+    for (const match of contents.matchAll(nonAsciiLinkKey)) {
+      localizedLinks.push(`${relative(localeRoot, file)}:${match.index} ${match[0]}`)
+    }
+  }
+
+  assert.deepEqual(localizedLinks, [])
+})

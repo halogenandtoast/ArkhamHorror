@@ -186,6 +186,16 @@ const lastPointer = ref<{ clientX: number; clientY: number } | null>(null)
 
 const clearTimer = (t: number | null) => (t !== null ? (clearTimeout(t), null) : null)
 
+// A card image is natively draggable, so a click-and-drag on one starts an HTML5
+// drag even where nothing accepts the drop. `dragend` is not guaranteed to come
+// back: it never fires if a game update unmounts the source card mid-drag, or if
+// the drop lands outside the window. Treat `dragActive` as evidence rather than
+// state -- the browser suppresses mouse events for the whole native drag, so any
+// buttonless one proves the drag is over.
+const endDragIfIdle = (e: MouseEvent) => {
+  if (dragActive && e.buttons === 0) dragActive = false
+}
+
 const targetFromEvent = (e: Event): HTMLElement | null => {
   const raw = e.target as HTMLElement | null
   const closest = raw ? (raw.closest(CARD_SELECTOR) as HTMLElement | null) : null
@@ -227,6 +237,7 @@ const queueHover = (el: HTMLElement) => {
 }
 
 const onMouseOver = (e: MouseEvent) => {
+  endDragIfIdle(e)
   if (currentPointerType === 'touch' || dragActive) return
   lastPointer.value = { clientX: e.clientX, clientY: e.clientY }
   const el = targetFromEvent(e)
@@ -246,6 +257,7 @@ const onMouseLeave = () => {
 
 const onPointerDown = (e: PointerEvent) => {
   currentPointerType = e.pointerType
+  dragActive = false
   if (e.pointerType === 'touch') {
     const el = targetFromEvent(e)
     if (!el) return
@@ -255,6 +267,7 @@ const onPointerDown = (e: PointerEvent) => {
 }
 
 const onPointerMove = (e: PointerEvent) => {
+  endDragIfIdle(e)
   currentPointerType = e.pointerType
   lastPointer.value = { clientX: e.clientX, clientY: e.clientY }
   if (e.pointerType === 'touch') {
@@ -279,6 +292,7 @@ const onPointerUp = (e: PointerEvent) => {
 }
 
 const clearOverlay = () => {
+  canDisablePress = false
   hoverTimer = clearTimer(hoverTimer)
   pressTimer = clearTimer(pressTimer)
   playabilityTimer = clearTimer(playabilityTimer)

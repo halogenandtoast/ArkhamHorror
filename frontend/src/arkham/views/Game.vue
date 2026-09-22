@@ -421,7 +421,6 @@ const skipAllPending = ref<Set<string>>(new Set())
 const { t } = useI18n()
 const phaseNotification = ref<Phase | null>(null)
 const phaseNotificationQueue = ref<Phase[]>([])
-const standardPhases: Phase[] = ['MythosPhase', 'InvestigationPhase', 'EnemyPhase', 'UpkeepPhase']
 const phaseNotificationPlaying = ref(false)
 const phaseNotificationColor = computed(() => ({
   MythosPhase: '#7b4b91',
@@ -434,22 +433,11 @@ const phaseNotificationColor = computed(() => ({
 function showPhaseNotification(phase: Phase) {
   if (!userStore.currentUser?.phaseTransitionNotifications) return
 
-  const target = game.value?.phase
-  const phases = phase === 'EnemyPhase'
-    ? ['EnemyPhase', 'UpkeepPhase', 'MythosPhase'] as Phase[]
-    : standardPhases.includes(phase) && target && standardPhases.includes(target) && target !== phase
-    ? (() => {
-        const cycle = [...standardPhases, ...standardPhases]
-        const start = cycle.indexOf(phase)
-        const end = cycle.indexOf(target, start + 1)
-        return end >= 0 ? cycle.slice(start, end + 1) : [phase]
-      })()
-    : [phase]
-
-  for (const nextPhase of phases) {
-    if (phaseNotification.value === nextPhase || phaseNotificationQueue.value.includes(nextPhase)) continue
-    phaseNotificationQueue.value.push(nextPhase)
-  }
+  // The server sends one PhaseChanged per phase actually entered, so announce
+  // exactly what arrives. Extrapolating forward from it invented phases the
+  // game had not reached, and ran backwards undos through the cycle.
+  if (phaseNotification.value === phase || phaseNotificationQueue.value.includes(phase)) return
+  phaseNotificationQueue.value.push(phase)
   if (!uiLock.value) void drainPhaseNotificationQueue()
 }
 

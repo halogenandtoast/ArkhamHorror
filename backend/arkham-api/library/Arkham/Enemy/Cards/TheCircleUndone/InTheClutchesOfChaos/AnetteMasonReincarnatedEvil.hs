@@ -44,4 +44,10 @@ instance RunMessage AnetteMasonReincarnatedEvil where
         | (investigator, player) <- investigators
         ]
       pure e
+    -- She gets -2 health per clue the investigators hold, so gaining a clue can drop her
+    -- health to or below the damage already on her. Defeat is only rechecked when damage
+    -- is assigned, never when health falls.
+    After (GainClues {}) -> do
+      push $ checkDefeated GameSource attrs
+      pure e
     _ -> AnetteMasonReincarnatedEvil <$> runMessage msg attrs

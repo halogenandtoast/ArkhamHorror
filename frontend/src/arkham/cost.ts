@@ -152,8 +152,11 @@ export function formatCost(cost: Cost, t: Translate): string {
     case 'AdditionalActionsCost':
     case 'AdditionalActionsCostThatReducesResourceCostBy':
       return t('label.cost.additionalAction')
-    case 'ResourceCost':
-      return t('label.cost.resource', { count: num(cost, 'contents') })
+    case 'ResourceCost': {
+      const n = num(cost, 'contents')
+      if (n <= 0) return ''
+      return t('label.cost.resource', { count: n })
+    }
     case 'ScenarioResourceCost':
       return t('label.cost.scenarioResource', { count: num(cost, 'contents') })
     case 'ClueCostX':

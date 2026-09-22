@@ -300,20 +300,31 @@ getCostForCard iid card isPlayAction = do
                   EnemyRemainingHealthField -> EnemyRemainingHealth
             values <- mapMaybeM (field enemyField) enemies
             pure $ Cost.OrCost $ map Cost.ResourceCost $ nubOrd values
-          _ ->
-            pure
-              $ if isDynamic card
-                then
-                  let
-                    availableForX = max 0 (investigatorResources (toAttrs investigator') - resources)
-                    dynamicPart = case maxDynamic card of
-                      Nothing -> Cost.UpTo (Fixed availableForX) (Cost.ResourceCost 1)
-                      Just c -> Cost.UpTo (MaxCalculation c (Fixed availableForX)) (Cost.ResourceCost 1)
-                   in
-                    if resources == 0
-                      then dynamicPart
-                      else Cost.ResourceCost resources <> dynamicPart
-                else if resources == 0 then Cost.Free else Cost.ResourceCost resources
+          _
+            | isDynamic card -> do
+                -- a reduction past zero is credited to X when the cost is paid, so the player
+                -- should not be offered resources to spend on it as well
+                ucost <- fromMaybe 0 <$> getUnboundedModifiedCardCost iid card
+                let discount = max 0 (negate ucost)
+                let availableForX = max 0 (investigatorResources (toAttrs investigator') - resources)
+                let
+                  dynamicPart = case maxDynamic card of
+                    Nothing -> Cost.UpTo (Fixed availableForX) (Cost.ResourceCost 1)
+                    -- NB. MaxCalculation is min and MinCalculation is max, so this is
+                    -- min (max 0 (cap - discount)) availableForX
+                    Just c ->
+                      Cost.UpTo
+                        ( MaxCalculation
+                            (MinCalculation (Fixed 0) (SubtractCalculation c (Fixed discount)))
+                            (Fixed availableForX)
+                        )
+                        (Cost.ResourceCost 1)
+                -- keep a resource cost around when discounted so the discount still gets credited
+                pure
+                  $ if resources == 0 && discount == 0
+                    then dynamicPart
+                    else Cost.ResourceCost resources <> dynamicPart
+          _ -> pure $ if resources == 0 then Cost.Free else Cost.ResourceCost resources
 
       investigateCosts <- runDefaultMaybeT [] do
         guard isInvestigate

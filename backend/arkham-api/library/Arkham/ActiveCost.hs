@@ -475,7 +475,7 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
       pure c
     UpTo calc cost' -> do
       n <- calculate calc
-      if n == 0
+      if n <= 0
         then pure c
         else do
           canAfford <- andM $ map (\a -> getCanAffordCost iid c.source [a] [] cost') actions
@@ -1034,14 +1034,19 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
                             (SpendUses source (toTarget assetId) uType 1)
                       )
                       (zip rs2 resourcesFromAssets)
-      extra <- case activeCostTarget c of
+      payment <- case activeCostTarget c of
         ForCard _ card -> do
           ucost <- fromMaybe 0 <$> getUnboundedModifiedCardCost iid card
-          if ucost < 0
-            then pure (-ucost)
-            else pure 0
-        _ -> pure 0
-      withPayment $ ResourcePayment $ x + extra
+          let paidSoFar = totalResourcePayment c.payments
+          -- a reduction past zero still counts toward X, but only once per play
+          let extra = if paidSoFar > 0 then 0 else max 0 (negate ucost)
+          case maxDynamic card of
+            Nothing -> pure $ x + extra
+            Just calc -> do
+              limit <- calculate calc
+              pure $ max 0 $ min (x + extra) (limit - paidSoFar)
+        _ -> pure x
+      withPayment $ ResourcePayment payment
     AdditionalActionsCost -> do
       actionRemainingCount <- field InvestigatorRemainingActions iid
       let currentlyPaid = countAdditionalActionPayments c.payments

@@ -11,6 +11,7 @@ import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable.vue';
 import Question from '@/arkham/components/Question.vue';
+import { abilityNeedsGhostModal } from '@/arkham/ghostAbility';
 
 export interface Props {
   game: Game
@@ -164,7 +165,9 @@ const paymentAmountsLabel = computed(() => {
   return null
 })
 
-const choicesRequireModal = computed(() => choices.value.some(choiceRequiresModal))
+const choicesRequireModal = computed(() =>
+  choices.value.some((c) => choiceRequiresModal(c) || abilityNeedsGhostModal(props.game, c))
+)
 
 const tokenChoices = computed(() => props.game.scenario?.chaosBag.choice)
 

@@ -6,6 +6,7 @@ import Arkham.Classes.HasQueue as X hiding (push, pushAll)
 import Arkham.Helpers.Message.Discard as X
 import Arkham.Message as X
 
+import Arkham.Ability.Types (Ability, abilitySource)
 import Arkham.Capability
 import Arkham.Card
 import Arkham.Classes.HasGame
@@ -700,7 +701,10 @@ handleSkillTestNesting sid msg a action = do
   if inSkillTestWindow
     then do
       lift do
-        msgs <- popMessagesMatching \case
+        -- nested-aware: a suspended window effect ('pendingWindowEffect') can sit inside
+        -- a Simultaneously batch, out of a flat scan's reach. Already-glued messages are
+        -- inside MovedWithSkillTest, which is not a group, so they stay with their test.
+        msgs <- popMessagesMatchingNested \case
           MoveWithSkillTest _ -> True
           _ -> False
         insertAfterMatching (msg : map (MovedWithSkillTest sid) msgs) (== EndSkillTestWindow)
@@ -718,6 +722,60 @@ handleSkillTestNesting_
   -> t m ()
   -> t m ()
 handleSkillTestNesting_ sid msg action = handleSkillTestNesting sid msg () action
+
+{- | Sources of every ability a queued 'ResolveWindowInitiations' still has to resolve.
+The ResolvedAbility sweep keeps their parked entities alive: a materialised
+initiation is an in-flight ability, and its source must still be able to claim
+'UseAbility' after leaving play (Caught in the Crossfire discards itself on its
+first resolution). #5743
+-}
+queuedInitiationSources :: HasQueue Message m => m [Source]
+queuedInitiationSources = fromQueue (concatMap go)
+ where
+  go = \case
+    Priority inner -> go inner
+    Retain inner -> go inner
+    MoveWithSkillTest inner -> go inner
+    MovedWithSkillTest _ inner -> go inner
+    Simultaneously inner -> concatMap go inner
+    Run inner -> concatMap go inner
+    ResolveWindowInitiations _ _ pending -> [abilitySource ability | (ability, _, _) <- pending]
+    _ -> []
+
+{- | Consume this initiation out of the queued 'ResolveWindowInitiations' marker,
+returning the pending effects it was holding so they can resolve right behind this use.
+
+Removing the entry is what marks the initiation as done -- the recorded ability use
+cannot be relied on for that, because the continuation fires after the window has
+closed, where the use is depth-filtered away. The marker may already be glued to a test
+('MoveWithSkillTest'/'MovedWithSkillTest') or travelling in an ordinary transport
+wrapper; the rewrite preserves whatever carries it. Returns @[]@ when no marker holds
+this initiation -- initiations outside a materialised queue keep their effects in the
+queue itself. #5743
+-}
+extractInitiationEffects
+  :: HasQueue Message m => InvestigatorId -> Ability -> [Window] -> m [Message]
+extractInitiationEffects iid ability ws = withQueue go
+ where
+  go [] = ([], [])
+  go (msg : rest) = case rewrite msg of
+    Just (msg', effects) -> (msg' : rest, effects)
+    Nothing -> let (rest', effects) = go rest in (msg : rest', effects)
+  chosen (ability', ws', _) = ability' == ability && ws' == ws
+  rewrite = \case
+    Priority inner -> rewrap Priority inner
+    Retain inner -> rewrap Retain inner
+    MoveWithSkillTest inner -> rewrap MoveWithSkillTest inner
+    MovedWithSkillTest sid inner -> rewrap (MovedWithSkillTest sid) inner
+    ResolveWindowInitiations iid' initiationWindows pending
+      | iid == iid'
+      , any chosen pending ->
+          Just
+            ( ResolveWindowInitiations iid' initiationWindows (filter (not . chosen) pending)
+            , concat [effs | entry@(_, _, effs) <- pending, chosen entry]
+            )
+    _ -> Nothing
+  rewrap f inner = (\(inner', effects) -> (f inner', effects)) <$> rewrite inner
 
 createAssetAt :: MonadRandom m => Card -> Placement -> m (AssetId, Message)
 createAssetAt c placement = do

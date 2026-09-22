@@ -3597,7 +3597,7 @@ priority body = do
 simultaneously :: ReverseQueue m => QueueT Message m () -> m ()
 simultaneously body = do
   msgs <- capture body
-  push $ Simultaneously msgs
+  push $ Run [Simultaneously msgs]
 
 flipCluesToDoom :: (ReverseQueue m, Targetable target) => target -> Int -> m ()
 flipCluesToDoom target n = push $ FlipClues (toTarget target) n

@@ -431,3 +431,25 @@ instance FromJSON WindowMatcher where
           Left (a, b, c) -> pure $ WouldAddChaosTokensToChaosBag a Nothing b c
           Right (a, b, c, d) -> pure $ WouldAddChaosTokensToChaosBag a b c d
       _ -> genericParseJSON defaultOptions (Object o)
+
+{- | Does this window describe one event, or one per matching timing point?
+
+A forced ability initiates at every timing point it matches, and a check can carry
+several simultaneous ones -- `simultaneously` merges one `DealtDamage` window per enemy
+for Storm of Spirits, so "when damage is dealt to __a__ Criminal enemy" initiates once per
+enemy and the player chooses the order (Ritual Candles ruling).
+
+A few windows instead stand for a single event that the engine happens to raise once per
+sub-target. Those read "one or more" (or are singular by nature, like a skill test having
+exactly one result) and must collapse to one initiation that sees every window -- the
+ability's own body fans out over the targets. List them here; everything else initiates
+per window.
+-}
+windowIsSingleEvent :: WindowMatcher -> Bool
+windowIsSingleEvent = \case
+  -- a skill test has one result, even when it resolved against several targets
+  -- (Sixth Sense (4) investigating two locations -> Prismatic Phenomenon fires once)
+  SkillTestResult {} -> True
+  WouldHaveSkillTestResult {} -> True
+  OrWindowMatcher ms -> any windowIsSingleEvent ms
+  _ -> False

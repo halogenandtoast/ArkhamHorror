@@ -108,6 +108,31 @@ card entering play in between can't react to a condition it wasn't around for.
 checkWindowsAt :: HasGame m => Int -> [Window] -> m Message
 checkWindowsAt tick windows' = checkWindows (map (setWindowConditionTick tick) windows')
 
+{- | The queued messages a still-open @When@ window is standing in front of.
+
+A "when X" window resolves between an effect being determined and it applying, so its
+pending effect sits behind the window check in the queue. An initiation that resolves
+asynchronously (a nested skill test) needs those messages glued to its resolution --
+'Arkham.Helpers.Message.handleSkillTestNesting' moves anything in 'MoveWithSkillTest'
+along with a deferred test -- or the window would close and the effect apply first.
+
+Only windows listed here suspend anything; extend as further "when" windows grow
+asynchronous responders. For enemy damage the defeat check must ride along too: it is
+what applies the damage tokens ('Arkham.Enemy.Runner', delayed damage has no check of
+its own, the source queues one behind the batch).
+-}
+pendingWindowEffect :: Window -> Message -> Bool
+pendingWindowEffect window = case (windowTiming window, windowType window) of
+  (Timing.When, Window.WouldTakeDamage _ target _ _) -> damageFor target
+  (Timing.When, Window.DealtDamage _ _ target _) -> damageFor target
+  (Timing.When, Window.TakeDamage _ _ target _) -> damageFor target
+  _ -> const False
+ where
+  damageFor target = \case
+    Damaged target' _ -> target == target'
+    CheckDefeated _ target' -> target == target'
+    _ -> False
+
 windows :: [WindowType] -> [Message]
 windows windows' = [CheckWindows $ map (mkWindow timing) windows' | timing <- [#when, #at, #after]]
 
@@ -2078,8 +2103,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             ]
         _ -> noMatch
     Matcher.EnemyDealsDamage timing enemyMatcher -> guardTiming timing $ \case
-      Window.DealtDamage source' _ _ _ | not (isBasicActionSource source') ->
-        sourceMatches source' (Matcher.SourceIsEnemy enemyMatcher)
+      Window.DealtDamage source' _ _ _
+        | not (isBasicActionSource source') ->
+            sourceMatches source' (Matcher.SourceIsEnemy enemyMatcher)
       _ -> noMatch
     Matcher.EnemyDealtDamage timing damageEffectMatcher enemyMatcher sourceMatcher ->
       guardTiming timing $ \case

@@ -624,6 +624,20 @@ handleUseAbility a@InvestigatorAttrs {..} ab msg = do
   pure a
 
 handleDoUseAbility a@InvestigatorAttrs {..} iid ability windows = do
+  -- A When window's pending effect (the Damaged/CheckDefeated a damage window stands in
+  -- front of) has to wait for this initiation to finish resolving, even when that
+  -- resolution is a nested skill test deferred past EndSkillTestWindow. Wrapping the
+  -- messages IN PLACE in MoveWithSkillTest does exactly that: handleSkillTestNesting
+  -- glues them behind a deferred test, and every other path unwraps them where they
+  -- stand, changing nothing.
+  lift
+    $ wrapMessagesMatchingNested
+      (\queued -> any (`Helpers.pendingWindowEffect` queued) windows)
+      MoveWithSkillTest
+  -- an initiation resolved out of a materialised queue holds its pending effects in the
+  -- queued ResolveWindowInitiations marker instead; pull them out so they resolve right
+  -- behind this use (and behind its nested skill test, riding MoveWithSkillTest)
+  initiationEffects <- lift $ extractInitiationEffects iid ability windows
   activeInvestigator <- selectOne ActiveInvestigator
   mods <- filter (\m -> m.kind == MayIgnoreLocationEffectsAndKeywords) <$> getFullModifiers iid
   -- mayIgnoreLocationEffectsAndKeywords <- hasModifier iid MayIgnoreLocationEffectsAndKeywords
@@ -638,6 +652,7 @@ handleDoUseAbility a@InvestigatorAttrs {..} iid ability windows = do
       [SetActiveInvestigator iid | x <- maybeToList activeInvestigator, iid /= x]
         <> [PayForAbility ability windows, MoveWithSkillTest (ResolvedAbility ability)]
         <> [SetActiveInvestigator x | x <- maybeToList activeInvestigator, iid /= x]
+        <> map MoveWithSkillTest initiationEffects
   player <- getPlayer iid
 
   let

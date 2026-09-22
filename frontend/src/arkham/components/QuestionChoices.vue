@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
+import { cardImage } from '@/arkham/cardImages'
+import { ghostCardCode } from '@/arkham/ghostAbility'
 import FormattedEntry from '@/arkham/components/FormattedEntry.vue'
 import { MessageType, Message } from '@/arkham/types/Message';
 import { formatContent } from '@/arkham/helpers';
@@ -78,7 +80,16 @@ const drownedCityTaskRecommendation = (body: string) => {
   <div class='question-choices'>
     <template v-for="[choice, index] in choices" :key="index">
       <template v-if="choice.tag === MessageType.ABILITY_LABEL">
+        <div v-if="ghostCardCode(game, choice)" class="ghost-ability">
+          <img class="card ghost-card" :src="cardImage(ghostCardCode(game, choice)!)" />
+          <AbilityButton
+            :ability="choice"
+            :game="game"
+            @click="choose(index)"
+            />
+        </div>
         <AbilityButton
+          v-else
           :ability="choice"
           :game="game"
           @click="choose(index)"
@@ -177,6 +188,19 @@ const drownedCityTaskRecommendation = (body: string) => {
 </template>
 
 <style scoped>
+.ghost-ability {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+
+  .ghost-card {
+    width: var(--card-width);
+    border-radius: 6px;
+    opacity: 0.8;
+    filter: saturate(0.7);
+  }
+}
 
 a.button {
   display: block;

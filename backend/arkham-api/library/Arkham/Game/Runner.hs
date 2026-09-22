@@ -3899,8 +3899,19 @@ runGameMessage msg g = case msg of
       _ -> error "Unhandle remove card entity type"
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
   ResolvedAbility ab -> do
-    let remainingEvents = Map.filter (attr eventWaiting) $ entitiesEvents (gameActionRemovedEntities g)
-    let remainingTreacheries = Map.filter (attr treacheryWaiting) $ entitiesTreacheries (gameActionRemovedEntities g)
+    -- a queued ResolveWindowInitiations is a set of in-flight abilities: their sources
+    -- must survive this sweep to claim UseAbility, even after leaving play (Caught in
+    -- the Crossfire discards itself on its first resolution). #5743
+    pendingSources <- queuedInitiationSources
+    let
+      stillInitiating :: Sourceable a => a -> Bool
+      stillInitiating source = toSource source `elem` pendingSources
+    let remainingEvents =
+          Map.filter (\e -> attr eventWaiting e || stillInitiating e)
+            $ entitiesEvents (gameActionRemovedEntities g)
+    let remainingTreacheries =
+          Map.filter (\t -> attr treacheryWaiting t || stillInitiating t)
+            $ entitiesTreacheries (gameActionRemovedEntities g)
     let removedEntitiesF =
           if length (gameActiveAbilities g) <= 1
             then

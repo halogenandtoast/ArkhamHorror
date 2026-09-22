@@ -188,6 +188,10 @@ instance QueueWrapper Message where
   stripQueueWrappers (Retain msg) = stripQueueWrappers msg
   stripQueueWrappers msg = msg
 
+  queueGroup (Simultaneously msgs) = Just (msgs, Simultaneously)
+  queueGroup (Run msgs) = Just (msgs, Run)
+  queueGroup _ = Nothing
+
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
 
@@ -521,6 +525,13 @@ data TokenLoss = AllLost | AllLostBut Int | Lose Int
 
 data Message
   = UseAbility InvestigatorId Ability [Window]
+  | {- | The rest of a materialised forced-initiation queue: one entry per initiation,
+    with the windows that initiation covers and the pending effect messages it holds
+    back (a When window's Damaged/CheckDefeated wait for their own initiation to
+    resolve). Carried as data and rebuilt into an ask one round at a time: nesting
+    pre-built follow-up asks instead encodes every permutation of the set, #5743.
+    -}
+    ResolveWindowInitiations InvestigatorId [Window] [(Ability, [Window], [Message])]
   | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
   | SkillTestMessage SkillTestMessage
   | ChaosBagMessage ChaosBagMessage

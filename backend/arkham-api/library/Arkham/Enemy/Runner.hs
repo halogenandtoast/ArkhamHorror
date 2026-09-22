@@ -1751,10 +1751,7 @@ instance RunMessage EnemyAttrs where
       canDamage <- sourceCanDamageEnemy eid source
       if canDamage
         then do
-          amount' <-
-            if damageAssignment.delayed
-              then pure damageAssignment.amount
-              else getModifiedDamageAmount a damageAssignment
+          amount' <- getModifiedDamageAmount a damageAssignment
           let
             damageAssignment' = damageAssignment {damageAssignmentAmount = amount'}
             -- Both halves are real damage and must count toward defeat, so

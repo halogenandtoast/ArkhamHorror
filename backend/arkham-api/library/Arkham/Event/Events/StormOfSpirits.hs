@@ -25,21 +25,17 @@ instance RunMessage StormOfSpirits where
       pure e
     ChoseEnemy sid _ (isSource attrs -> True) _eid -> do
       let tokens = oneOf [#skull, #cultist, #tablet, #elderthing, #autofail]
-      onRevealChaosTokenEffect sid tokens attrs attrs do
-        doStep 1 msg
+      onRevealChaosTokenEffect sid tokens attrs attrs $ doStep 1 msg
       pure e
     DoStep 1 (ChoseEnemy _sid _iid (isSource attrs -> True) eid) -> do
-      selectEach (InvestigatorAt $ locationWithEnemy eid) \iid' -> assignDamage iid' attrs 1
+      simultaneously $ selectEach (InvestigatorAt $ locationWithEnemy eid) \iid' -> assignDamage iid' attrs 1
       pure e
-    Successful (Action.Fight, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
-      let
-        toMsg eid' =
-          if eid == eid'
-            then DealDamage (EnemyTarget eid') $ delayDamage $ attack attrs 2
-            else DealDamage (EnemyTarget eid') $ delayDamage $ isDirect $ attack attrs 2
+    Successful (Action.Fight, EnemyTarget eid) iid _ (isTarget attrs -> True) _ -> do
       eids <- select $ enemyAtLocationWith iid
-      pushAll $ map toMsg eids
-      for_ eids (checkDefeated attrs)
+      simultaneously $ for_ eids \eid' -> do
+        let setAttack = if eid == eid' then id else isDirect
+        push $ DealDamage (toTarget eid') $ delayDamage $ setAttack $ attack attrs 2
+      simultaneously $ for_ eids (checkDefeated attrs)
       chooseExposeConcealed iid attrs
       pure e
     _ -> StormOfSpirits <$> liftRunMessage msg attrs

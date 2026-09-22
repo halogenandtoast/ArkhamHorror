@@ -196,6 +196,7 @@ export type AbilitySkills =
 export type Ability = {
   type: AbilityType
   source: Source
+  cardCode: string | null
   tooltip: string | null
   displayAs: DisplayAs | null
   index: number
@@ -211,6 +212,7 @@ export const abilityDecoder = JsonDecoder.object<Ability>(
   {
     type: abilityTypeDecoder,
     source: sourceDecoder,
+    cardCode: JsonDecoder.optional(JsonDecoder.string()).map((v) => v ?? null),
     tooltip: JsonDecoder.nullable(JsonDecoder.string()),
     displayAs: JsonDecoder.nullable(displayAsDecoder),
     index: JsonDecoder.number(),

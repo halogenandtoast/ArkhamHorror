@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useDebouncedRef } from '@/composable/debouncedRef';
 import { handleEmbeddedI18n, parseInput } from '@/arkham/i18n';
 import { formatCost } from '@/arkham/cost';
+import { abilityNeedsGhostModal } from '@/arkham/ghostAbility';
 import { choiceRequiresModal, MessageType, CardLabel, ChaosTokenLabel, type Message, type TargetLabel } from '@/arkham/types/Message';
 import { computed, inject, ref, watch, onMounted } from 'vue';
 import { imgsrc, formatContent } from '@/arkham/helpers';
@@ -566,6 +567,12 @@ const showChoices = computed(() => {
     return false
   }
   if (choices.value.some(choiceRequiresModal)) {
+    return true
+  }
+  // An ability whose source card has left play has no card to carry its button, so the
+  // modal (with its ghost card) is the only place it can render -- Caught in the
+  // Crossfire's later initiations resolve after it discards itself. #5743
+  if (choices.value.some((c) => abilityNeedsGhostModal(props.game, c))) {
     return true
   }
   return props.game.focusedChaosTokens.length > 0 || focusedCards.value.length > 0 || searchedCards.value.length > 0 || paymentAmountsLabel.value || amountsLabel.value

@@ -54,7 +54,12 @@ import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
 import Arkham.Game.Settings (settingsStrictAsIfAt)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Ability (getAbilityLimit, getCanAffordUseWith, isForcedAbility)
+import Arkham.Helpers.Ability (
+  getAbilityLimit,
+  getCanAffordAbility,
+  getCanAffordUseWith,
+  isForcedAbility,
+ )
 import Arkham.Helpers.Action (getActions)
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.Card (cardIsFast', getModifiedCardCost)
@@ -125,6 +130,7 @@ import Arkham.Matcher (
   locationWithInvestigator,
   oneOf,
   orConnected,
+  windowIsSingleEvent,
   pattern AssetWithAnyClues,
  )
 import Arkham.Message qualified as Msg
@@ -395,6 +401,44 @@ dropSilencedAbilities attrs abilities
  where
   silenced = silencedCardCodes attrs.settings
 
+{- | One round of a materialised forced-initiation queue.
+
+ONE button per ability, no matter how many of its initiations remain: the button fires
+'UseAbility' with every pending window, and 'handleDoUseAbility' inserts the
+choose-target step before resolving the chosen one. Each button's follow-up carries the
+whole set as DATA ('ResolveWindowInitiations'); the next round refilters it against the
+recorded uses, so nothing is nested (pre-built follow-up asks encode every permutation
+of the set -- a six-enemy Storm of Spirits made a 6MB question that timed the server
+out) and the set still survives its sources leaving play. #5743
+-}
+initiationsAsk
+  :: PlayerId -> InvestigatorId -> [Window] -> [(Ability, [Window], [Message])] -> Message
+initiationsAsk player iid windows pending =
+  asWindowChoose windows
+    $ chooseOne
+      player
+      -- the continuation rides MoveWithSkillTest so the chosen initiation resolves in
+      -- FULL -- nested skill test included -- before the next round is offered
+      [ AbilityLabel
+          iid
+          (aimed ability ws)
+          ws
+          []
+          [MoveWithSkillTest (ResolveWindowInitiations iid windows pending)]
+      | ability <- nub [ability | (ability, _, _) <- pending]
+      , let ws = concat [ws' | (ability', ws', _) <- pending, ability' == ability]
+      ]
+ where
+  aimed ability ws
+    | isNothing (abilityTarget ability)
+    , singleWindow ws || abilityHighlightFromWindow ability
+    , Just target <- listToMaybe ws >>= primaryWindowTarget . windowType =
+        withHighlight target ability
+    | otherwise = ability
+  singleWindow = \case
+    [_] -> True
+    _ -> False
+
 runWindow
   :: (HasGame m, HasQueue Message m)
   => InvestigatorAttrs -> [Window] -> [Ability] -> [Card] -> m ()
@@ -404,17 +448,41 @@ runWindow attrs windows allActions playableCards = do
   unless (null playableCards && null actions) $ do
     anyForced <- anyM (isForcedAbility iid) actions
     player <- getPlayer iid
+    -- One check can carry several simultaneous timing points -- `simultaneously` merges one
+    -- DealtDamage window per enemy for Storm of Spirits -- and an ability initiates once per
+    -- point (Ritual Candles ruling), the player choosing the order. So split an ability into
+    -- one initiation per matching window instead of handing it the whole list: every
+    -- `[Window] -> a` helper reads only the head, and one use would otherwise consume the
+    -- rest through the PerWindow limit, which counts against `usedAbilityWindows`. #5743
+    let
+      highlightedFor ability window =
+        if abilityHighlightFromWindow ability && isNothing (abilityTarget ability)
+          then maybe ability (`withHighlight` ability) (primaryWindowTarget $ windowType window)
+          else ability
+      initiationsFor ability@Ability {..} = do
+        matching <- filterM (\w -> windowMatches iid abilitySource w abilityWindow) windows
+        if windowIsSingleEvent abilityWindow
+          then pure [(ability, matching) | notNull matching]
+          else do
+            -- drop the points already resolved: each use is recorded against its own window
+            unconsumed <- filterM (\w -> getCanAffordAbility iid ability [w]) matching
+            pure $ map (\w -> (ability, [w])) unconsumed
     if anyForced
       then do
-        let
-          (isSilent, normal) = partition isSilentForcedAbility actions
-          toForcedAbilities = map (flip (UseAbility iid) windows)
-          toUseAbilities = map ((\f -> f windows [] []) . AbilityLabel iid)
-        -- Silent forced abilities should trigger automatically
+        let (isSilent, normal) = partition isSilentForcedAbility actions
+        silentInitiations <- concatMapM initiationsFor isSilent
+        normalInitiations <- concatMapM initiationsFor normal
+        -- Every initiation is made when the window opens, so the set is materialised and
+        -- worked through one round at a time -- re-deriving it per ask would lose
+        -- initiations whose source left play while an earlier one resolved (Caught in
+        -- the Crossfire discards itself on its first test). Silent forced abilities
+        -- trigger automatically.
         pushAll
-          $ toForcedAbilities isSilent
-          <> [asWindowChoose windows $ chooseOne player (toUseAbilities normal) | notNull normal]
-          <> [Do (CheckWindows windows) | null normal] -- if we have no normal windows the forced silent will not retrigger
+          $ map (uncurry $ UseAbility iid) silentInitiations
+          <> [ ResolveWindowInitiations iid windows [(ability, ws, []) | (ability, ws) <- normalInitiations]
+             | notNull normalInitiations
+             ]
+          <> [Do (CheckWindows windows) | null normalInitiations] -- if we have no normal windows the forced silent will not retrigger
       else do
         let globalSkip = attrs.settings.globalSettings.ignoreUnrelatedSkillTestTriggers
         let
@@ -428,6 +496,9 @@ runWindow attrs windows allActions playableCards = do
                     Nothing -> pure $ not $ globalSkip && isFastAbility ab
                     Just matcher -> skillTestMatches iid GameSource st matcher
         actions' <- filterM applySettingsFilter actions
+        -- NOT split per window, unlike the forced branch: a triggered ability worded
+        -- "one or more" (Bandages) is one reaction covering the whole batch, so it keeps
+        -- every matching window and is offered once.
         actionsWithMatchingWindows <-
           for actions' $ \ability@Ability {..} ->
             (ability,) <$> filterM (\w -> windowMatches iid abilitySource w abilityWindow) windows
@@ -439,17 +510,9 @@ runWindow attrs windows allActions playableCards = do
             $ [ targetLabel c [InitiatePlayCardWithWindows iid c Nothing NoPayment windows True]
               | c <- playableCards
               ]
-            <> map
-              ( \(ability, windows') ->
-                  let ability' =
-                        if abilityHighlightFromWindow ability && isNothing (abilityTarget ability)
-                          then case listToMaybe windows' >>= primaryWindowTarget . windowType of
-                            Just target -> withHighlight target ability
-                            Nothing -> ability
-                          else ability
-                   in AbilityLabel iid ability' windows' [] []
-              )
-              actionsWithMatchingWindows
+            <> [ AbilityLabel iid (maybe ability (highlightedFor ability) (listToMaybe ws)) ws [] []
+               | (ability, ws) <- actionsWithMatchingWindows
+               ]
             <> [SkipTriggersButton iid | skippable]
 
 {- | TEMPORARY profiling instrumentation. 'Arkham.Metrics.withMetric' needs
@@ -2392,6 +2455,25 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure $ a & skippedWindowL .~ False
   SkippedWindow iid | iid == investigatorId -> do
     pure $ a & skippedWindowL .~ True
+  ResolveWindowInitiations iid windows pending | iid == investigatorId -> do
+    player <- getPlayer iid
+    -- every use was recorded against its own windows, so the consumed initiations drop
+    -- out here rather than being book-kept through the buttons
+    remaining <- filterM (\(ability, ws, _) -> getCanAffordAbility iid ability ws) pending
+    if null remaining
+      then push $ Do (CheckWindows windows) -- anything newly available still gets a look
+      else do
+        -- capture every initiation's pending effects out of the queue (first round), so
+        -- no held effect can resolve before its own initiation has; each one is given
+        -- back by extractInitiationEffects when its initiation is used
+        remaining' <- for remaining \entry@(ability, ws, effects) ->
+          if null effects
+            then
+              (ability,ws,)
+                <$> lift (popMessagesMatchingNested \queued -> any (`Helpers.pendingWindowEffect` queued) ws)
+            else pure entry
+        push $ initiationsAsk player iid windows remaining'
+    pure a
   Do (CheckWindows windows)
     | not investigatorSkippedWindow
         && (not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows) -> do
@@ -2847,7 +2929,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   UseCardAbility iid (isSource a -> True) 501 _ _ -> handleUseCardAbilityV2 a iid
   UseCardAbility iid (isSource a -> True) 502 _ _ -> handleUseCardAbilityV3 a iid
   UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> handleUseAbility a ab msg
-  Do (UseAbility iid ability windows) | iid == investigatorId -> handleDoUseAbility a iid ability windows
+  Do (UseAbility iid ability windows) | iid == investigatorId -> do
+    isForced <- isForcedAbility iid ability
+    case traverse (primaryWindowTarget . windowType) windows of
+      Just targets
+        | isForced
+        , not (windowIsSingleEvent $ abilityWindow ability)
+        , notNull (drop 1 windows) -> do
+            -- one button covers every remaining initiation of this ability; the player
+            -- picks which window's target this use resolves against, and the ability is
+            -- then called directly with just that window. #5743
+            player <- getPlayer iid
+            push
+              $ chooseOne
+                player
+                [targetLabel target [Do (UseAbility iid ability [w])] | (w, target) <- zip windows targets]
+            pure a
+      _ -> handleDoUseAbility a iid ability windows
   DoNotCountUseTowardsAbilityLimit iid ability | iid == investigatorId -> handleDoNotCountUseTowardsAbilityLimit a iid ability
   SkillTestEnds {} -> do
     pure

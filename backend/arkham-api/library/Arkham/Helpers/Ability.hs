@@ -64,9 +64,14 @@ getCanPerformAbility !iid !ws !ability = do
     -- abilities for any given check; meetsActionRestrictions (~2ms) and
     -- passesCriteria (~15ms) are 90×–700× more expensive per call, so we
     -- only evaluate them on the survivors.
-    liftGuardM $ anyM (\window -> windowMatches iid (toSource ability) window abWindow) ws
+    matching <- lift $ filterM (\window -> windowMatches iid (toSource ability) window abWindow) ws
+    guard $ notNull matching
     liftGuardM $ not <$> preventedByInvestigatorModifiers iid ability
-    liftGuardM $ getCanAffordAbility iid ability ws
+    -- An ability initiates once per matching window, so it stays available while ANY of
+    -- them is unconsumed. Asking about the whole list instead would let the first use --
+    -- recorded against its own window -- exhaust a PerWindow limit that `countInWs` then
+    -- reads across every window in the batch, hiding the rest. #5743
+    liftGuardM $ anyM (\window -> getCanAffordAbility iid ability [window]) matching
     liftGuardM $ meetsActionRestrictions iid ws ability
     liftGuardM do
       -- When the active investigator is already iid (e.g. inside a cached

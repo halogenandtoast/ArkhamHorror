@@ -2,7 +2,6 @@
 
 module Arkham.Message.Lifted.Damage where
 
-
 import Arkham.Helpers.FetchCard as X
 
 import Arkham.Ability
@@ -91,8 +90,8 @@ import Arkham.Location.Types (Field (..), Location)
 import Arkham.Matcher hiding (PerformAction)
 import Arkham.Message hiding (story)
 import Arkham.Message as X (AndThen (..), getChoiceAmount, optionWhenExists, preOriginalOption)
-import Arkham.Message.Lifted.Queue as X
 import Arkham.Message.Lifted.Base
+import Arkham.Message.Lifted.Queue as X
 import Arkham.Modifier
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -170,6 +169,29 @@ applyHealing source = push $ Msg.ApplyHealing (toSource source)
 
 checkDefeated :: (ReverseQueue m, Sourceable source, Targetable target) => source -> target -> m ()
 checkDefeated source target = push $ Msg.checkDefeated source target
+
+{- | Reduce the damage being dealt to an enemy while it is still pending.
+
+For use inside a When damage window's responder -- including one resolving via a nested
+skill test, whose pending 'Damaged'/'CheckDefeated' ride behind the test in
+'MoveWithSkillTest' (see 'Arkham.Helpers.Window.pendingWindowEffect'). Rewrites the
+queued assignment itself: the only form that reaches direct and delayed damage, whose
+amounts bypass modifiers by design.
+-}
+reduceDamageDealt :: (MonadTrans t, HasQueue Message m) => EnemyId -> Int -> t m ()
+reduceDamageDealt eid n = lift $ withQueue_ $ map go
+ where
+  go = \case
+    Priority inner -> Priority (go inner)
+    Retain inner -> Retain (go inner)
+    MoveWithSkillTest inner -> MoveWithSkillTest (go inner)
+    MovedWithSkillTest sid inner -> MovedWithSkillTest sid (go inner)
+    Simultaneously inner -> Simultaneously (map go inner)
+    Run inner -> Run (map go inner)
+    Damaged target@(EnemyTarget eid') assignment
+      | eid == eid' ->
+          Damaged target assignment {damageAssignmentAmount = max 0 (assignment.amount - n)}
+    other -> other
 
 addCurseTokens :: ReverseQueue m => Maybe InvestigatorId -> Int -> m ()
 addCurseTokens mWho n = do

@@ -23,8 +23,7 @@ instance HasAbilities TheChariotVII where
   getAbilities (TheChariotVII a)
     | onSide A a =
         [ forcedAbility a 1 $ WouldPlaceDoomCounter #when AnySource (TargetIs $ toTarget a)
-        , noLimit
-            $ forcedAbility a 2
+        , forcedAbility a 2
             $ WouldPlaceBreach #when
             $ LocationTargetMatches (LocationWithBreaches $ atLeast 3)
         ]

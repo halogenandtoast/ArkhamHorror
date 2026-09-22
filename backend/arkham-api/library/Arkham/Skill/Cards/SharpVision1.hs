@@ -15,14 +15,14 @@ sharpVision1 = skill SharpVision1 Cards.sharpVision1
 
 instance HasModifiersFor SharpVision1 where
   getModifiersFor (SharpVision1 a) = maybeModified_ a (CardIdTarget $ toCardId a) do
-    liftGuardM isBasicInvestigation
+    ensure isBasicInvestigation
     pure [AddSkillIcons [#intellect, #intellect]]
 
 instance RunMessage SharpVision1 where
   runMessage msg s@(SharpVision1 attrs) = runQueueT $ case msg of
     PassedSkillTest _ _ _ (isTarget attrs -> True) _ n | n >= 2 -> do
       runMaybeT_ do
-        liftGuardM isBasicInvestigation
+        ensure isBasicInvestigation
         iid <- MaybeT getSkillTestInvestigator
         lift $ withSkillTest \sid -> priority $ skillTestModifier sid attrs iid (DiscoveredClues 1)
       pure s

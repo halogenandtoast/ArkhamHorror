@@ -34,8 +34,17 @@ forsakenTowerCriteria attrs =
     <> exists (EnemyInHandOf You <> EnemyWithTitle "Nyarlathotep")
 
 forsakenTowerAbilities :: LocationAttrs -> [Ability]
-forsakenTowerAbilities attrs = [markSkillTest $ restrictedAbility attrs 1 (forsakenTowerCriteria attrs) actionAbility]
+forsakenTowerAbilities attrs =
+  [markSkillTest $ restrictedAbility attrs 1 (forsakenTowerCriteria attrs) towerAction]
  where
+  -- each tower prints its own action designator (#5748)
+  towerAction = case toCardCode attrs of
+    "06300" -> investigateAction_
+    "06301" -> fightActionWith_ #willpower
+    "06302" -> evadeActionWith_ #intellect
+    "06303" -> fightAction_
+    "06304" -> evadeAction_
+    _ -> actionAbility
   markSkillTest = case toCardCode attrs of
     "06305" -> skillTestAbility
     _ -> id

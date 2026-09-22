@@ -2897,6 +2897,7 @@ async function addChaosToken(face: any){
           :playerId="playerId"
           :allowCurvedPaths="allowCurvedPaths"
           :enableCosmicEmissaryAnimation="enableCosmicEmissaryAnimation"
+          :zoom="locationsZoom"
         />
         <transition-group name="map" tag="div" ref="locationMap" class="location-cards" :css="props.scenario.id !== 'c10651'" :style="locationStyles" @before-leave="beforeLeave">
           <!-- Keyed by id, not label: a location that changes grid label (the

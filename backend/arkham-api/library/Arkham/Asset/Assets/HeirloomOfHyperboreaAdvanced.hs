@@ -17,9 +17,11 @@ heirloomOfHyperboreaAdvanced =
     Cards.heirloomOfHyperboreaAdvanced
     ((healthL ?~ 3) . (sanityL ?~ 3))
 
+-- Not <> SourceIsCardEffect: that conjunct rejects CardIdSource, so an in-hand
+-- player weakness (Dark Memory) read as not-a-player-card-effect (issue #5755).
 instance HasModifiersFor HeirloomOfHyperboreaAdvanced where
   getModifiersFor (HeirloomOfHyperboreaAdvanced a) =
-    modifySelf a [CannotBeDamagedBySourcesExcept $ SourceIsPlayerCard <> SourceIsCardEffect]
+    modifySelf a [CannotBeDamagedBySourcesExcept SourceIsPlayerCard]
 
 instance HasAbilities HeirloomOfHyperboreaAdvanced where
   getAbilities (HeirloomOfHyperboreaAdvanced x) =

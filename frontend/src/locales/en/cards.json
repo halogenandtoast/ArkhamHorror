@@ -289,6 +289,18 @@
     "delayTheInevitable": {
       "discard": "Discard Delay the Inevitable"
     },
+    "denyExistence": {
+      "cancelDiscardFromHand": "Cancel discarding cards from your hand",
+      "cancelLoseResources": "Cancel losing 1 resource | Cancel losing {count} resources",
+      "cancelLoseActions": "Cancel losing 1 action | Cancel losing {count} actions"
+    },
+    "denyExistence5": {
+      "drawInstead": "Draw that many cards instead of discarding",
+      "gainResourcesInstead": "Gain 1 resource instead | Gain {count} resources instead",
+      "gainActionsInstead": "Gain 1 action instead | Gain {count} actions instead",
+      "healDamageInstead": "Heal 1 damage instead | Heal {count} damage instead",
+      "healHorrorInstead": "Heal 1 horror instead | Heal {count} horror instead"
+    },
     "detectivesColt1911s": {
       "doNotMoveAnInsight": "Do not move an insight"
     },

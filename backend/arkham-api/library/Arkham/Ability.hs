@@ -249,12 +249,20 @@ investigateAbilityAt entity matcher idx cost criteria =
     }
 
 withInvestigationTargets :: LocationMatcher -> Ability -> Ability
-withInvestigationTargets matcher =
+withInvestigationTargets matcher = withInvestigationTargetsMatching (matcher <> InvestigatableLocation)
+
+{- | Like 'withInvestigationTargets', but the matcher already says which locations
+count as targets. Needed when investigatability differs per target, e.g. Duke,
+which may move you to a location before investigating it, so an unrevealed
+connecting location is a legal target even though it can't be investigated yet.
+-}
+withInvestigationTargetsMatching :: LocationMatcher -> Ability -> Ability
+withInvestigationTargetsMatching matcher =
   delayAdditionalCostsWhen criterion
     . restrict criterion
     . (abilityMetadataL ?~ InvestigateTargets matcher)
  where
-  criterion = exists $ matcher <> InvestigatableLocation
+  criterion = exists matcher
 
 investigateAbilityWith
   :: (Sourceable a, HasCardCode a) => a -> Int -> SkillType -> Cost -> Criterion -> Ability

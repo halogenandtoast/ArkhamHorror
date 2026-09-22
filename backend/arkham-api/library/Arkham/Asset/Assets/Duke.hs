@@ -3,6 +3,7 @@ module Arkham.Asset.Assets.Duke (duke) where
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
+import Arkham.ForMovement
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Investigator
@@ -24,8 +25,13 @@ duke = allyWith Duke Cards.duke (2, 3) noSlots
 instance HasAbilities Duke where
   getAbilities (Duke a) =
     [ fightAbility a 1 (exhaust a) ControlsThis
-    , withInvestigationTargets
-        (oneOf [YourLocation, CanMoveToLocation You (a.ability 2) Anywhere])
+    , withInvestigationTargetsMatching
+        ( oneOf
+            [ YourLocation <> InvestigatableLocation
+            , CanMoveToLocation You (a.ability 2) (AccessibleFrom ForMovement YourLocation)
+                <> PotentiallyInvestigatableLocation
+            ]
+        )
         $ (mkAbility a 2 (investigateAction $ exhaust a))
           { abilityCriteria = ControlsThis
           }

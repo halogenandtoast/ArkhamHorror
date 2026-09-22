@@ -112,6 +112,10 @@ data LocationMatcher
   | RevealedLocation
   | UnrevealedLocation
   | InvestigatableLocation
+  | {- | Investigatable, or unrevealed but printed with a shroud, so that moving
+    there would make it investigatable
+    -}
+    PotentiallyInvestigatableLocation
   | LocationNotInPlay
   | LocationFartherFrom LocationId LocationMatcher
   | LocationFartherFromMatching LocationId LocationId LocationMatcher

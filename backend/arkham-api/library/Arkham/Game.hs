@@ -2837,6 +2837,12 @@ getLocationsMatching lmatcher = do
           [ fieldMap LocationShroud isJust l.id
           , notElem CannotInvestigate <$> getModifiers (toTarget l)
           ]
+    PotentiallyInvestigatableLocation -> do
+      flip filterM ls \l ->
+        andM
+          [ fieldMap LocationPrintedShroud isJust l.id
+          , notElem CannotInvestigate <$> getModifiers (toTarget l)
+          ]
     ConnectedTo forMovement matcher -> do
       -- locations with connections to locations that match
       -- so we filter each location by generating it's connections

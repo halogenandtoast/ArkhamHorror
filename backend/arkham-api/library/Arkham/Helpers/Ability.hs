@@ -324,7 +324,7 @@ getCanAffordAbilityCost iid a@Ability {..} ws = do
       then do
         case abilityMetadata of
           Just (InvestigateTargets matcher) -> do
-            ls <- select (matcher <> Matcher.InvestigatableLocation)
+            ls <- select matcher
             costs <- for ls $ \lid -> do
               -- These costs may be delayed until after choosing the target,
               -- but affordability still depends on at least one target being

@@ -3,6 +3,8 @@ import type { CardContents } from '@/arkham/types/Card';
 import * as CardT from '@/arkham/types/Card';
 import gsap from 'gsap';
 import { computed, inject, Ref, ref, ComputedRef, reactive, watch, onMounted, onBeforeUnmount } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useSettings } from '@/stores/settings';
 import { useDebug } from '@/arkham/debug'
 import * as DebugMove from '@/arkham/debugCardMove';
 import { Game } from '@/arkham/types/Game';
@@ -36,8 +38,6 @@ import * as Api from '@/arkham/api';
 import type { CardDef } from '@/arkham/types/CardDef';
 import { fullName } from '@/arkham/types/Name';
 import { isCthulhuBoardEnemy } from '@/arkham/components/TheDrownedCity/cthulhuBoard'
-import { storeToRefs } from 'pinia';
-import { useSettings } from '@/stores/settings';
 import { useCardStore } from '@/stores/cards';
 import { getGameLocalStorageItem, setGameLocalStorageItem } from '@/arkham/localStorage';
 const { t } = useI18n();
@@ -910,21 +910,21 @@ const handCardExposedHeight_MIN = `${-(handCardHeight - 50)}`;
 const handCardExposedHeight_MAX = `0`;
 const handAreaMarginBottom = ref(handCardExposedHeight_MIN);
 const handAreaPointerEvents = ref('none');
+const stickyHand = ref(localStorage.getItem('arkhamStickyHand') !== 'false');
 
 onMounted(() => {
   if (isMobile) {
-    document.addEventListener('click',toggleHandAreaMarginBottom)
+    document.addEventListener('click', toggleHandAreaMarginBottom)
+    // Keep the hand open while interacting with the board. Assigning several
+    // damage or horror should not require reopening the hand after each click.
     const isMinimized_SkillTest = inject('isMinimized_SkillTest', ref(false))
     watch([() => props.game.skillTest, isMinimized_SkillTest], ([newSkillTest,isMinimized]) => {
       if (newSkillTest && !isMinimized) {
         handAreaMarginBottom.value = handCardExposedHeight_MAX;
         handAreaPointerEvents.value = 'auto';
-        document.removeEventListener('click', toggleHandAreaMarginBottom)
       } else {
         handAreaMarginBottom.value = handCardExposedHeight_MIN;
         handAreaPointerEvents.value = 'none';
-        document.removeEventListener('click', toggleHandAreaMarginBottom)
-        document.addEventListener('click', toggleHandAreaMarginBottom)
       }
     });
   }
@@ -936,15 +936,17 @@ onBeforeUnmount(() => {
   }
 });
 
+function toggleStickyHand() {
+  stickyHand.value = !stickyHand.value
+  localStorage.setItem('arkhamStickyHand', String(stickyHand.value))
+}
+
 function toggleHandAreaMarginBottom(event: Event) {
   const target = event.target as HTMLElement
-  if (target.classList.contains('hand-area-IsMobile')) {
+  if (target.closest('.hand-area-IsMobile')) {
     handAreaMarginBottom.value = handCardExposedHeight_MAX;
     handAreaPointerEvents.value = 'auto'
-  }
-  else if (target.closest('.in-hand, .abilities')) {
-    return
-  } else {
+  } else if (!stickyHand.value) {
     handAreaMarginBottom.value = handCardExposedHeight_MIN;
     handAreaPointerEvents.value = 'none'
   }
@@ -1353,6 +1355,19 @@ function closeHand() {
         @click.stop="closeHand"
       >
         <XMarkIcon aria-hidden="true" />
+      </button>
+      <button
+        v-show="handAreaPointerEvents === 'auto'"
+        class="hand-sticky-toggle"
+        type="button"
+        :aria-pressed="stickyHand"
+        :aria-label="stickyHand ? 'Disable sticky hand' : 'Enable sticky hand'"
+        :title="stickyHand ? 'Disable sticky hand' : 'Enable sticky hand'"
+        @click.stop="toggleStickyHand"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 3h8l-1 7 3 3v2H6v-2l3-3-1-7Zm4 12v6m-3 0h6" />
+        </svg>
       </button>
       <transition-group tag="section" class="hand" @enter="onEnter" @leave="onLeave" @before-enter="onBeforeEnter"
         @drop="onDropHand($event)"
@@ -1969,6 +1984,36 @@ function closeHand() {
 .hand-close-button svg {
   width: 18px;
   height: 18px;
+}
+
+.hand-sticky-toggle {
+  position: absolute;
+  top: 44px;
+  right: 6px;
+  z-index: var(--z-index-101);
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+}
+
+.hand-sticky-toggle svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hand-sticky-toggle[aria-pressed='true'] {
+  color: #8fd3ff;
 }
 
 .card {

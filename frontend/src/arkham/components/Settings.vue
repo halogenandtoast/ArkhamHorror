@@ -53,6 +53,11 @@ const hideInertCards = computed({
 
 const soundsDisabled = ref(localStorage.getItem('arkhamSoundsDisabled') === 'true')
 
+const inlineModals = computed({
+  get: () => settings.inlineModals,
+  set: (value: boolean) => settings.setInlineModals(value),
+})
+
 watch(soundsDisabled, (value) => {
   localStorage.setItem('arkhamSoundsDisabled', value ? 'true' : 'false')
   window.dispatchEvent(new CustomEvent('arkham-setting-change', {
@@ -267,6 +272,19 @@ onBeforeUnmount(() => {
               <label for="opt-hideInertCards-on">{{ $t('On') }}</label>
               <input type="radio" id="opt-hideInertCards-off" name="opt-hideInertCards" :checked="!hideInertCards" @change="hideInertCards = false" />
               <label for="opt-hideInertCards-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">Inline modals</div>
+              <div class="toggle-desc">Show dialogs at the top of the game instead of over the board. The dialog area can scroll, which is more comfortable on phones.</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-inlineModals-on" name="opt-inlineModals" :checked="inlineModals" @change="inlineModals = true" />
+              <label for="opt-inlineModals-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-inlineModals-off" name="opt-inlineModals" :checked="!inlineModals" @change="inlineModals = false" />
+              <label for="opt-inlineModals-off">{{ $t('Off') }}</label>
             </div>
           </div>
 

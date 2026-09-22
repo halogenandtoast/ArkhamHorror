@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import { nextTick, ref, onMounted, onBeforeUnmount, useId } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useSettings } from '@/stores/settings'
+
+const { inlineModals } = storeToRefs(useSettings())
 
 const props = withDefaults(defineProps<{
   centerInSelector?: string
@@ -142,7 +146,7 @@ function avoidOverlapPosition(modalWidth: number, modalHeight: number, maxLeft: 
 
 function placeModal({ resetAnchor = false } = {}) {
   const el = draggable.value
-  if (!el || isMinimized.value || isDragging.value) return
+  if (inlineModals.value || !el || isMinimized.value || isDragging.value) return
 
   const { maxLeft, maxTop, modalWidth, modalHeight } = viewportBounds(el)
 
@@ -363,11 +367,11 @@ function moveUp() {
 </script>
 
 <template>
-  <Teleport to="#modal">
+  <Teleport :to="inlineModals ? '#inline-modal-container' : '#modal'">
   <div
     @pointerdown="moveUp"
     class="draggable"
-    :class="{ 'click-through-chrome': props.clickThroughChrome, 'position-stable': props.preservePosition }"
+    :class="{ 'inline-modal': inlineModals, 'click-through-chrome': props.clickThroughChrome, 'position-stable': props.preservePosition }"
     ref="draggable"
     :id="id"
     :style="{
@@ -380,7 +384,7 @@ function moveUp() {
         <span class="header-title">
           <slot name="handle"></slot>
         </span>
-        <button class="minimize-btn" @click.stop="minimize">
+        <button v-if="!inlineModals" class="minimize-btn" @click.stop="minimize">
           <svg v-if="isMinimized" width="12" height="12" viewBox="0 0 24 24">
             <path d="M12 9l-6 6h12l-6-6z" fill="currentColor" />
           </svg>
@@ -412,6 +416,31 @@ function moveUp() {
   max-height: calc(100dvh - 32px);
   display: flex;
   flex-direction: column;
+
+  &.inline-modal {
+    position: relative;
+    inset: auto;
+    width: min(100%, 640px);
+    max-width: 100%;
+    max-height: none;
+    margin: 0 auto 8px;
+    border-radius: 12px;
+    z-index: 1;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    > header {
+      cursor: default;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    > .content {
+      min-height: 0;
+      overflow: visible;
+    }
+  }
 
   @media (max-width: 768px) {
     max-width: 100%;

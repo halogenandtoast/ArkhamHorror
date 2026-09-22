@@ -27,10 +27,22 @@
   overflow: hidden;
 }
 
+/* Inline game dialogs sit above the fixed-height board and make the page
+   scroll, rather than forcing the board itself to shrink. */
+.router-container:has(#game.game--inline-modals) {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
 .router-container > * {
   flex: 1;
   min-height: 0;
   width: 100%;
+}
+
+.router-container > #game.game--inline-modals {
+  flex: 0 0 auto;
 }
 
 .column {

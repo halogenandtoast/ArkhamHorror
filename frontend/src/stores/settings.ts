@@ -27,6 +27,7 @@ const HIDE_INERT_CARDS_KEY = 'arkhamHideInertCards'
 // as the def behind it, and the builder can express things the engine will
 // happily run but no printed card would ever do.
 const CUSTOM_CARDS_KEY = 'arkhamCustomCardsEnabled'
+const INLINE_MODALS_KEY = 'arkhamInlineModals'
 
 function loadVariants(): string[] {
   try {
@@ -54,6 +55,14 @@ export const useSettings = defineStore("settings", () => {
   const epicMultiplayerEnabled = computed(() => isDevBuild() && epicMultiplayerStored.value)
 
   const customCardsEnabled = ref(localStorage.getItem(CUSTOM_CARDS_KEY) === 'true')
+  // Keep modal-heavy interactions in the document flow for small screens. This
+  // is global because it is a browser/UI preference, not game state.
+  const inlineModals = ref(localStorage.getItem(INLINE_MODALS_KEY) === 'true')
+
+  function setInlineModals(enabled: boolean) {
+    inlineModals.value = enabled
+    localStorage.setItem(INLINE_MODALS_KEY, String(enabled))
+  }
 
   function setCustomCardsEnabled(enabled: boolean) {
     customCardsEnabled.value = enabled
@@ -159,5 +168,7 @@ export const useSettings = defineStore("settings", () => {
     setHideInertCards,
     customCardsEnabled,
     setCustomCardsEnabled,
+    inlineModals,
+    setInlineModals,
   }
 })

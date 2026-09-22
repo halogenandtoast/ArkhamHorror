@@ -11,6 +11,7 @@ import {
   watch,
 } from 'vue'
 import { useToast } from 'vue-toastification'
+import { storeToRefs } from 'pinia'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import confetti from '@/effects/confetti'
@@ -51,6 +52,7 @@ import {
 } from '@/arkham/api'
 import * as Api from '@/arkham/api'
 import { useCardStore } from '@/stores/cards'
+import { useSettings } from '@/stores/settings'
 import { useUserStore } from '@/stores/user'
 import { useEventStore } from '@/arkham/stores/event'
 import { useEventTimer } from '@/arkham/composables/useEventTimer'
@@ -139,6 +141,7 @@ const router = useRouter()
 const route = useRoute()
 const store = useCardStore()
 const userStore = useUserStore()
+const { inlineModals } = storeToRefs(useSettings())
 const eventStore = useEventStore()
 const { addEntry, menuItems } = useMenu()
 const toast = useToast()
@@ -2005,7 +2008,7 @@ onUnmounted(() => {
       </section>
     </div>
   </div>
-  <div id="game" v-else-if="ready && game && playerId" :style="{ '--epic-bar-height': epicBarHeight + 'px' }">
+  <div id="game" v-else-if="ready && game && playerId" :class="{ 'game--inline-modals': inlineModals }" :style="{ '--epic-bar-height': epicBarHeight + 'px' }">
     <dialog v-if="error" class="error-dialog">
       <h2>{{ $t('error') }}</h2>
       <p class="error-message">{{ error }}</p>
@@ -2340,6 +2343,7 @@ onUnmounted(() => {
         </button>
       </div>
     </div>
+    <div id="inline-modal-container" :class="{ 'inline-modal-container--active': inlineModals }" aria-live="polite"></div>
     <div v-if="hasEventBar" ref="epicBarRef" class="epic-bar-slot">
       <OrganizerBar
         v-if="organizerEventId"
@@ -2772,6 +2776,39 @@ onUnmounted(() => {
 }
 
 #game {
+  &.game--inline-modals {
+    // Keep the board's viewport-sized height, then add the modal stack above it.
+    // The surrounding router container owns the page scroll instead of shrinking
+    // the board to make room for the dialogs.
+    flex: 0 0 auto;
+    min-height: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .inline-modal-container--active {
+    flex: 0 0 auto;
+    width: 100%;
+    max-height: min(70dvh, 720px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: max(8px, env(safe-area-inset-top)) 8px 8px;
+    scrollbar-gutter: stable;
+    background: color-mix(in srgb, var(--background-dark) 88%, transparent);
+    border-bottom: 1px solid var(--box-border);
+  }
+
+  .inline-modal-container--active:empty {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    .inline-modal-container--active {
+      max-height: 65dvh;
+      padding-inline: max(6px, env(safe-area-inset-left)) max(6px, env(safe-area-inset-right));
+    }
+  }
+
   width: 100vw;
   display: flex;
   flex-direction: column;
@@ -2794,6 +2831,10 @@ onUnmounted(() => {
   height: calc(100vh - 80px - var(--epic-bar-height, 0px));
   display: flex;
   flex: 1;
+}
+
+#game.game--inline-modals .game-main {
+  flex: 0 0 auto;
 }
 
 .socketWarning {

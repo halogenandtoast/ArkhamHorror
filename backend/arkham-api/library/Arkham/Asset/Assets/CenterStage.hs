@@ -18,7 +18,8 @@ centerStage = assetWith CenterStage Cards.centerStage discardWhenNoUses
 
 instance HasAbilities CenterStage where
   getAbilities (CenterStage a) =
-    [ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ assetUseCost a Renown 1 <> exhaust a)
+    [ wantsSkillTest (YourSkillTest AnySkillTest)
+        $ controlled a 1 (DuringSkillTest AnySkillTest) (FastAbility $ assetUseCost a Renown 1 <> exhaust a)
     ]
 
 instance RunMessage CenterStage where

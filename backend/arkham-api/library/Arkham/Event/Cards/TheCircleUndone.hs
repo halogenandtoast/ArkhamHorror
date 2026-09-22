@@ -126,7 +126,9 @@ denyExistence =
             ]
     }
  where
-  source = SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]
+  source =
+    Matcher.SourceIsCancelable
+      $ SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]
 
 eldritchInspiration :: CardDef
 eldritchInspiration =
@@ -349,7 +351,9 @@ denyExistence5 =
     , cdLevel = Just 5
     }
  where
-  source = SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]
+  source =
+    Matcher.SourceIsCancelable
+      $ SourceMatchesAny [SourceIsEnemyAttack AnyEnemy, Matcher.EncounterCardSource]
 
 trialByFire :: CardDef
 trialByFire =

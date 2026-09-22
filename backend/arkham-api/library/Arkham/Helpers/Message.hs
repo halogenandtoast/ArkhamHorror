@@ -742,25 +742,47 @@ queuedInitiationSources = fromQueue (concatMap go)
     ResolveWindowInitiations _ _ pending -> [abilitySource ability | (ability, _, _) <- pending]
     _ -> []
 
-{- | Consume this initiation out of the queued 'ResolveWindowInitiations' marker,
-returning the pending effects it was holding so they can resolve right behind this use.
+{- | Consume this initiation out of the queued 'ResolveWindowInitiations' marker and
+give the pending effects it was holding back to the queue.
 
 Removing the entry is what marks the initiation as done -- the recorded ability use
 cannot be relied on for that, because the continuation fires after the window has
 closed, where the use is depth-filtered away. The marker may already be glued to a test
 ('MoveWithSkillTest'/'MovedWithSkillTest') or travelling in an ordinary transport
-wrapper; the rewrite preserves whatever carries it. Returns @[]@ when no marker holds
+wrapper; the rewrite preserves whatever carries it. Does nothing when no marker holds
 this initiation -- initiations outside a materialised queue keep their effects in the
 queue itself. #5743
+
+Where they go back depends on whether the marker still owes initiations. While others
+remain they resolve right behind this use, so each initiation resolves IN FULL before the
+next is offered (Caught in the Crossfire reduces each enemy's damage behind its own
+test). On the last one they go behind the marker instead: a window holding a Forced
+ability is worked through in two rounds, and the marker's @Do (CheckWindows ws)@ still
+owes the OPTIONAL reactions a look. Releasing there landed the damage first, so a
+reaction that changes the amount was ignored whenever the damaged entity also had a
+Forced trigger on the same window -- Nathaniel Cho's extra damage went missing against a
+Guardian Elder Thing (#5751).
+
+Either way they ride 'MoveWithSkillTest' so 'handleSkillTestNesting' keeps gluing them
+behind a nested test.
 -}
-extractInitiationEffects
-  :: HasQueue Message m => InvestigatorId -> Ability -> [Window] -> m [Message]
-extractInitiationEffects iid ability ws = withQueue go
+releaseInitiationEffects
+  :: HasQueue Message m => InvestigatorId -> Ability -> [Window] -> m ()
+releaseInitiationEffects iid ability ws = pushAll . map MoveWithSkillTest =<< withQueue go
  where
   go [] = ([], [])
   go (msg : rest) = case rewrite msg of
-    Just (msg', effects) -> (msg' : rest, effects)
+    Just (msg', effects)
+      | exhausted msg' -> (msg' : map MoveWithSkillTest effects <> rest, [])
+      | otherwise -> (msg' : rest, effects)
     Nothing -> let (rest', effects) = go rest in (msg : rest', effects)
+  exhausted = \case
+    Priority inner -> exhausted inner
+    Retain inner -> exhausted inner
+    MoveWithSkillTest inner -> exhausted inner
+    MovedWithSkillTest _ inner -> exhausted inner
+    ResolveWindowInitiations _ _ pending -> null pending
+    _ -> False
   chosen (ability', ws', _) = ability' == ability && ws' == ws
   rewrite = \case
     Priority inner -> rewrap Priority inner

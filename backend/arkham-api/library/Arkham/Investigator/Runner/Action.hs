@@ -635,9 +635,10 @@ handleDoUseAbility a@InvestigatorAttrs {..} iid ability windows = do
       (\queued -> any (`Helpers.pendingWindowEffect` queued) windows)
       MoveWithSkillTest
   -- an initiation resolved out of a materialised queue holds its pending effects in the
-  -- queued ResolveWindowInitiations marker instead; pull them out so they resolve right
-  -- behind this use (and behind its nested skill test, riding MoveWithSkillTest)
-  initiationEffects <- lift $ extractInitiationEffects iid ability windows
+  -- queued ResolveWindowInitiations marker instead; hand them back to the queue, behind
+  -- this use, or behind the marker on the last initiation so the window's optional
+  -- reactions still get to change the damage (#5751)
+  lift $ releaseInitiationEffects iid ability windows
   activeInvestigator <- selectOne ActiveInvestigator
   mods <- filter (\m -> m.kind == MayIgnoreLocationEffectsAndKeywords) <$> getFullModifiers iid
   -- mayIgnoreLocationEffectsAndKeywords <- hasModifier iid MayIgnoreLocationEffectsAndKeywords
@@ -652,7 +653,6 @@ handleDoUseAbility a@InvestigatorAttrs {..} iid ability windows = do
       [SetActiveInvestigator iid | x <- maybeToList activeInvestigator, iid /= x]
         <> [PayForAbility ability windows, MoveWithSkillTest (ResolvedAbility ability)]
         <> [SetActiveInvestigator x | x <- maybeToList activeInvestigator, iid /= x]
-        <> map MoveWithSkillTest initiationEffects
   player <- getPlayer iid
 
   let

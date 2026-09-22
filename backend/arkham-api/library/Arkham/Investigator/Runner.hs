@@ -2465,7 +2465,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       else do
         -- capture every initiation's pending effects out of the queue (first round), so
         -- no held effect can resolve before its own initiation has; each one is given
-        -- back by extractInitiationEffects when its initiation is used
+        -- back by releaseInitiationEffects when its initiation is used
         remaining' <- for remaining \entry@(ability, ws, effects) ->
           if null effects
             then

@@ -53,7 +53,10 @@ instance RunMessage TheDoomThatCameBefore where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       lead <- getLead
       selectEach (enemyIs Enemies.beingsOfIb <> not_ IsSwarm) removeEnemy
-      findCard (`cardMatch` cardIs Enemies.beingsOfIb) >>= traverse_ obtainCard
+      -- Already defeated for victory: obtainCard would pull it back out of the display.
+      victory <- getVictoryDisplay
+      findCard (\c -> c `cardMatch` cardIs Enemies.beingsOfIb && c `notElem` victory)
+        >>= traverse_ obtainCard
       n <- scenarioFieldMap ScenarioMeta toResult
       let availableRegions = filter (`notElem` regions n) [Oriab, ForbiddenLands, TimelessRealm]
       if null availableRegions

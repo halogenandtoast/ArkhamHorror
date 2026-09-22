@@ -1518,7 +1518,7 @@ instance RunMessage EnemyAttrs where
     AfterEnemyAttack eid msgs | eid == enemyId -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       pure $ a & attackingL ?~ details {attackAfter = msgs}
-    EnemyAttack details | details.enemy == enemyId -> do
+    EnemyAttack details | details.enemy == enemyId && not enemyDefeated -> do
       whenM (attackIsValid details a) do
         case details.investigator of
           Just iid -> do
@@ -1545,7 +1545,7 @@ instance RunMessage EnemyAttrs where
               else push $ Do msg
           _ -> push $ Do msg
       pure $ a & wantsToAttackL .~ False
-    Do (EnemyAttack details) | attackEnemy details == enemyId -> do
+    Do (EnemyAttack details) | attackEnemy details == enemyId && not enemyDefeated -> do
       mods <- getModifiers a
       let canBeCancelled = AttacksCannotBeCancelled `notElem` mods
       let strategy =
@@ -1567,7 +1567,14 @@ instance RunMessage EnemyAttrs where
         $ a
         & attackingL
         ?~ details {attackCanBeCanceled = canBeCancelled, attackDamageStrategy = strategy}
-    PerformEnemyAttack eid | eid == enemyId && not enemyDefeated -> do
+    -- Defeat does not cancel an attack that has already begun (FAQ 1.4): a
+    -- "when... attacks" interrupt that kills the attacker (Aquinnah (3)
+    -- redirecting the damage onto it) still leaves the attack to resolve, so
+    -- its horror is dealt. 'enemyAttacking' is only set once 'Do EnemyAttack'
+    -- has run, and is cleared again when the attack finishes, so it marks an
+    -- attack that is mid-flight; an enemy defeated before its attack begins
+    -- never gets there.
+    PerformEnemyAttack eid | eid == enemyId && (not enemyDefeated || isJust enemyAttacking) -> do
       let details = fromJustNote "missing attack details" enemyAttacking
       modifiers <- maybe (pure []) getModifiers details.singleTarget
       mods <- getModifiers a
@@ -1663,6 +1670,7 @@ instance RunMessage EnemyAttrs where
                , swarmExhaust
                , attackExhaustsEnemy details
                , DoNotExhaust `notElem` mods
+               , not enemyDefeated
                ]
             <> ignoreWindows
             <> elusiveMsgs
@@ -1715,7 +1723,7 @@ instance RunMessage EnemyAttrs where
         when (details.kind == AttackOfOpportunity) do
           for_ details.investigator \iid -> push $ UpdateHistory iid (HistoryItem HistoryAttacksOfOpportunity 1)
         pushAll $ afterAttacksWindow : attackAfter updatedDetails
-      pure a
+      pure $ a & attackingL .~ Nothing
     HealDamage (EnemyTarget eid) source n | eid == enemyId -> do
       result <- liftRunMessage (RemoveTokens source (toTarget a) #damage n) a
       Heal.pushHealedAfter DamageType (toTarget a) source n

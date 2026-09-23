@@ -558,11 +558,19 @@ isSilentForcedAbilityType = \case
   ConstantAbility {} -> False
 defaultAbilityLimit :: AbilityType -> AbilityLimit
 defaultAbilityLimit = \case
+  -- Every Forced default is a GROUP limit: `Do (CheckWindows ws)` fans out to every
+  -- investigator and each queues its own ResolveWindowInitiations, so the group limit is
+  -- the cross-seat dedupe -- the later seats' initiations drop out of the re-filter once
+  -- the first seat's use is recorded (#5756). A `You` window only ever matches one seat,
+  -- so group and player agree there; on a shared source with an `Anyone` window they do
+  -- not, and the act's Objective was offered once per seat (#5761). The period still
+  -- scopes the bucket: PerWindow intersects `usedAbilityWindows`, PerTest is cleared at
+  -- SkillTestEnds, and PerMove is rewritten to PerMovement by `upgradePerMove`.
   ForcedAbility window' -> case window' of
-    SkillTestResult {} -> PlayerLimit PerTest 1
-    Moves {} -> PlayerLimit PerMove 1
-    Enters timing _ _ | timing /= #after -> PlayerLimit PerMove 1
-    Enters timing _ _ | timing == #after -> PlayerLimit PerWindow 1
+    SkillTestResult {} -> GroupLimit PerTest 1
+    Moves {} -> GroupLimit PerMove 1
+    Enters timing _ _ | timing /= #after -> GroupLimit PerMove 1
+    Enters timing _ _ | timing == #after -> GroupLimit PerWindow 1
     EnemySpawns {} -> GroupLimit PerSpawn 1
     _ -> GroupLimit PerWindow 1
   SilentForcedAbility _ -> GroupLimit PerWindow 1

@@ -52,6 +52,7 @@ import Arkham.Event.Types (Field (..))
 import Arkham.Fight.Types
 import {-# SOURCE #-} Arkham.Game (asIfTurn, withoutCanModifiers)
 import Arkham.Game.Settings (settingsStrictAsIfAt)
+import {-# SOURCE #-} Arkham.Game.Utils (sourceCanClaimUseAbility)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Ability (
@@ -2458,8 +2459,13 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   ResolveWindowInitiations iid windows pending | iid == investigatorId -> do
     player <- getPlayer iid
     -- every use was recorded against its own windows, so the consumed initiations drop
-    -- out here rather than being book-kept through the buttons
-    remaining <- filterM (\(ability, ws, _) -> getCanAffordAbility iid ability ws) pending
+    -- out here rather than being book-kept through the buttons. An initiation whose
+    -- source can no longer claim UseAbility is dropped too: nothing would push
+    -- Do (UseAbility ...), so neither the recorded use nor releaseInitiationEffects
+    -- could ever consume it and the same button would be re-offered forever (#5761).
+    remaining <-
+      flip filterM pending \(ability, ws, _) ->
+        andM [sourceCanClaimUseAbility ability.source, getCanAffordAbility iid ability ws]
     if null remaining
       then push $ Do (CheckWindows windows) -- anything newly available still gets a look
       else do

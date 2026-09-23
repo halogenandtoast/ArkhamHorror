@@ -35,6 +35,7 @@ import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types hiding (scenario)
 import Arkham.Skill.Types (Skill)
+import Arkham.Source
 import Arkham.Story.Types (Story)
 import Arkham.Target
 import Arkham.Treachery.Types (Treachery)
@@ -421,6 +422,52 @@ maybeEnemyLocation :: HasGame m => LocationId -> m (Maybe EnemyLocationId)
 maybeEnemyLocation lid = do
   g <- getGame
   pure $ EnemyLocationId . toId <$> preview (entitiesL . enemyLocationsL . ix lid) g
+
+{- | Will any entity still claim a 'UseAbility' for this source? Each entity runner's
+@UseAbility _ ab _ | isSource a ab.source@ arm is the ONLY converter to
+@Do (UseAbility ...)@, so an ability whose source has left every map the dispatch reaches
+is silently swallowed -- and a materialised initiation holding it is then re-offered
+forever, because neither the recorded use nor 'releaseInitiationEffects' can mark it done
+(#5761). Anything not entity-backed answers True, so nothing else changes.
+
+The kinds the ResolvedAbility sweep parks (events, treacheries -- Caught in the Crossfire
+discards itself on its first resolution, #5743) go through the @maybe*@ lookups, which
+already consult 'actionRemovedEntitiesL' and the in-hand/in-discard/in-search maps, so
+they keep answering True. Acts, agendas, stories, concealed cards and scarlet keys have no
+such lookup -- theirs are @entitiesL@-only even though 'Arkham.Entities' does fan the
+message over the removed map -- so they are checked against both here.
+-}
+sourceCanClaimUseAbility :: HasGame m => Source -> m Bool
+sourceCanClaimUseAbility = \case
+  AbilitySource s _ -> sourceCanClaimUseAbility s
+  UseAbilitySource _ s _ -> sourceCanClaimUseAbility s
+  PaymentSource s -> sourceCanClaimUseAbility s
+  IndexedSource _ s -> sourceCanClaimUseAbility s
+  -- the runners compare against ProxySource's ORIGINAL source (`isProxySource`)
+  ProxySource _ s -> sourceCanClaimUseAbility s
+  BothSource s1 s2 -> orM [sourceCanClaimUseAbility s1, sourceCanClaimUseAbility s2]
+  AssetSource aid -> isJust <$> maybeAsset aid
+  EventSource eid -> isJust <$> getEventMaybe eid
+  TreacherySource tid -> isJust <$> maybeTreachery tid
+  SkillSource sid -> isJust <$> maybeSkill sid
+  EnemySource eid -> isJust <$> maybeEnemy eid
+  LocationSource lid -> isJust <$> maybeLocation lid
+  EffectSource eid -> isJust <$> maybeEffect eid
+  InvestigatorSource iid -> isJust <$> getInvestigatorMaybe iid
+  ActSource aid -> livesIn actsL aid
+  AgendaSource aid ->
+    orM [livesIn agendasL aid, livesIn actsL (coerce aid :: ActId)]
+  StorySource sid -> livesIn storiesL sid
+  ConcealedCardSource cid -> livesIn concealedL cid
+  ScarletKeySource kid -> livesIn scarletKeysL kid
+  _ -> pure True
+ where
+  livesIn
+    :: (HasGame m, entityId ~ EntityId entity, Ord entityId)
+    => Lens' Entities (EntityMap entity) -> entityId -> m Bool
+  livesIn l eid = do
+    g <- getGame
+    pure $ isJust (preview (entitiesL . l . ix eid) g) || isJust (getRemovedEntity l eid g)
 
 modeScenario :: GameMode -> Maybe Scenario
 modeScenario = \case

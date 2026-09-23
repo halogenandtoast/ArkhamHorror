@@ -185,7 +185,7 @@ spec = describe "The Innsmouth Conspiracy achievements" $ do
       asTheInnsmouthConspiracyScenario "07198"
       car <- aCar self
       earned <- didEarnInnsmouth SpeedingTicket
-      run $ ReplaceAsset (toId car) Assets.thomasDawsonsCarStopped
+      run $ UseCardAbility (toId self) (toSource car) 2 [] NoPayment
       reachFalconPoint
       earned `refShouldBe` False
 

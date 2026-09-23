@@ -109,12 +109,17 @@ runInnsmouthConspiracyAchievements msg = whenEligibleCampaign $ case msg of
   {- "Speeding Ticket" bookkeeping. Any of the three disqualifiers latches a flag
   that is only cleared when Horror in High Gear is set up.
 
-  Stopping: the running cars' only Flip pushes ReplaceAsset with the Stopped
-  side, and nothing else in the scenario stops a car, so this IS the voluntary
-  stop.
+  Stopping has to key on the driver's own stop action -- ability 2 on either
+  running car -- rather than on the resulting ReplaceAsset/Flip. The Chase is
+  On! (v. II) also flips every running vehicle to its stopped side as it
+  advances, and that stall is not voluntary; both routes push the same Flip and
+  the same replacement, so neither can tell them apart. The stopped cars carry
+  an ability 2 of their own (restarting), but the printing in play when the
+  ability is used is the stopped one, so it never matches here.
   -}
-  ReplaceAsset _ def | def `elem` stoppedCars -> whenScenarioIs horrorInHighGearId do
-    setStore speedingTicketBrokenKey True
+  UseCardAbility _ source 2 _ _ | Just aid <- source.asset -> whenScenarioIs horrorInHighGearId do
+    def <- fieldMap Asset.AssetCard toCardDef aid
+    when (def `elem` runningCars) $ setStore speedingTicketBrokenKey True
   -- Getting out: the exit ability re-places the investigator at a location. The
   -- campaign sees this before the placement changes, so a still-InVehicle
   -- placement means they are leaving one. Entering a Long Way Around on foot is
@@ -259,9 +264,9 @@ aLightInTheFogId = "07231"
 theLairOfDagonId = "07274"
 intoTheMaelstromId = "07311"
 
--- | The Stopped side of each chase car; being replaced by one is a voluntary stop.
-stoppedCars :: [CardDef]
-stoppedCars = [Assets.thomasDawsonsCarStopped, Assets.elinaHarpersCarStopped]
+-- | The Running side of each chase car; its ability 2 is the voluntary stop.
+runningCars :: [CardDef]
+runningCars = [Assets.thomasDawsonsCarRunning, Assets.elinaHarpersCarRunning]
 
 {- | The awakened sides of Dagon and Hydra. Dagon has a separate printing for Into
 the Maelstrom, so both of his are listed.

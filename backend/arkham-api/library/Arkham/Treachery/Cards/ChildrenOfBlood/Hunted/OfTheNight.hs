@@ -24,7 +24,7 @@ instance RunMessage OfTheNight where
       hasResources <- fieldP InvestigatorResources (> 0) iid
       hasClues <- fieldP InvestigatorClues (> 0) iid
       chooseOneM iid $ withI18n do
-        countVar 3 $ labeledValidate' hasResources "loseResources" $ loseResources iid attrs 3
-        countVar 2 $ labeledValidate' hasClues "loseClues" $ removeClues attrs iid 2
+        countVar 3 $ labeledValidate hasResources "loseResources" $ loseResources iid attrs 3
+        countVar 2 $ labeledValidate hasClues "loseClues" $ removeClues attrs iid 2
       pure t
     _ -> OfTheNight <$> liftRunMessage msg attrs

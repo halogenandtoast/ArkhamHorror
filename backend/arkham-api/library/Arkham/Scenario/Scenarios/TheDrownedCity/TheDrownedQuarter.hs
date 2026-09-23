@@ -85,7 +85,7 @@ instance RunMessage TheDrownedQuarter where
                 li "noPlaceLikeHome.onMyOwn"
           )
           do
-            labeledValidate' canErase "noPlaceLikeHome.trustHim" do
+            labeledValidate canErase "noPlaceLikeHome.trustHim" do
               -- "Heal 1 mental or 1 physical trauma"; only offer what they have.
               when (hasPhysical || hasMental) do
                 chooseOneM iid do

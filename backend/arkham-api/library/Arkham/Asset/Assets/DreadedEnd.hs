@@ -27,7 +27,7 @@ instance RunMessage DreadedEnd where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       enemies <- select $ NonEliteEnemy <> enemyAtLocationWith iid
       scenarioI18n $ chooseOrRunOneM iid do
-        labeledValidate' (notNull enemies) "placeEnemyOnTopOfEncounterDeck" do
+        labeledValidate (notNull enemies) "placeEnemyOnTopOfEncounterDeck" do
           chooseTargetM iid enemies $ putOnTopOfDeck iid Deck.EncounterDeck
         labeled "lookAtTopOfEncounterDeck" do
           lookAt iid (attrs.ability 1) EncounterDeckTarget [(FromTopOfDeck 5, PutBackInAnyOrder)] #any

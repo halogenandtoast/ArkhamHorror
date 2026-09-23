@@ -154,7 +154,7 @@ instance RunMessage TheDrownedCity where
         let isTaken key = or [t | ((k, _, _), t) <- zip tasks takenFlags, k == key]
         investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "chooseTask") do
           for_ tasks \(key, cardDef, lbl) ->
-            labeledValidate' (not (isTaken key)) lbl do
+            labeledValidate (not (isTaken key)) lbl do
               record key
               addCampaignCardToDeck iid DoNotShuffleIn cardDef
               scope "task" $ scope lbl $ flavor $ setTitle "title" >> p "body"

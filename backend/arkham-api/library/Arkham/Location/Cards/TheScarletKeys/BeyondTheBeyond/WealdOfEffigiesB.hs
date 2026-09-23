@@ -67,7 +67,7 @@ instance RunMessage WealdOfEffigiesB where
       miniCards <- select ConcealedCardAny
       locations <- select $ LocationWithPlacement InTheShadows
       chooseOneM iid $ campaignI18n do
-        labeledValidate' (notNull miniCards) "wealdOfEffigies.miniCards" do
+        labeledValidate (notNull miniCards) "wealdOfEffigies.miniCards" do
           chooseOneM iid do
             for_ (eachWithRest miniCards) \(card, rest) -> do
               targeting card do

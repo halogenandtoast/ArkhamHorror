@@ -20,7 +20,7 @@ instance RunMessage HuntersHungerB where
       others <- select $ not_ (InvestigatorWithId iid)
       sid <- getRandom
       chooseOneM iid $ scenarioI18n do
-        labeledValidate' (notNull allies || notNull others) "huntersHunger.discard" do
+        labeledValidate (notNull allies || notNull others) "huntersHunger.discard" do
           chooseTargetM iid allies $ toDiscardBy iid attrs
           for_ others \iid' -> assignHorror iid' attrs 1
         labeled "huntersHunger.test" $ revelationSkillTest sid iid attrs #agility (Fixed 3)

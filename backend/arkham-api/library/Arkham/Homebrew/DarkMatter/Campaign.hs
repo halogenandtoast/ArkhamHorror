@@ -171,10 +171,10 @@ theSearchForFragment c = scope "theSearchForFragment" do
           when (StrangeMoons `elem` remaining) $ p "trace3"
       )
       do
-        labeledValidate' (LostQuantum `elem` remaining) "lostQuantum"
+        labeledValidate (LostQuantum `elem` remaining) "lostQuantum"
           $ setNextCampaignStep LostQuantum
-        labeledValidate' (InTheShadowOfEarth `elem` remaining) "inTheShadowOfEarth"
+        labeledValidate (InTheShadowOfEarth `elem` remaining) "inTheShadowOfEarth"
           $ setNextCampaignStep InTheShadowOfEarth
-        labeledValidate' (StrangeMoons `elem` remaining) "strangeMoons"
+        labeledValidate (StrangeMoons `elem` remaining) "strangeMoons"
           $ setNextCampaignStep StrangeMoons
   pure c

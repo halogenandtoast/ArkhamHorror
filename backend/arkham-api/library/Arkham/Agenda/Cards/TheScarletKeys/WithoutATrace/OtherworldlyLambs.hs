@@ -52,14 +52,14 @@ instance RunMessage OtherworldlyLambs where
       chooseNM lead 2 $ scenarioI18n do
         labeled "otherworldlyLambs.takeDamageAndHorror" do
           eachInvestigator \iid -> assignDamageAndHorror iid attrs 1 1
-        labeledValidate' canHollow "otherworldlyLambs.hollows" do
+        labeledValidate canHollow "otherworldlyLambs.hollows" do
           eachInvestigator \iid -> do
             cards <-
               select
                 $ basic (NonWeakness <> not_ PermanentCard)
                 <> oneOf [inHandOf NotForPlay iid, inPlayAreaOf iid]
             focusCards cards $ chooseTargetM iid cards $ hollow iid
-        labeledValidate' anyConcealed "otherworldlyLambs.shuffleAllConcealed" do
+        labeledValidate anyConcealed "otherworldlyLambs.shuffleAllConcealed" do
           scenarioSpecific_ "shuffleAllConcealed"
       advanceAgendaDeck attrs
       pure a

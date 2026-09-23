@@ -61,9 +61,9 @@ instance RunMessage RiddlesAndRain where
       flavor $ setTitle "title" >> p "letter"
       n <- getPlayerCount
       storyWithChooseOneM (setTitle "title" >> p "intro1Part2") do
-        labeledValidate' (n == 1) "onlyOne" $ doStep 2 msg
-        labeledValidate' (n > 1) "goAlone" $ doStep 3 msg
-        labeledValidate' (n > 1) "goWithBackup" $ doStep 4 msg
+        labeledValidate (n == 1) "onlyOne" $ doStep 2 msg
+        labeledValidate (n > 1) "goAlone" $ doStep 3 msg
+        labeledValidate (n > 1) "goWithBackup" $ doStep 4 msg
 
       popScope $ scope "trackingTime" $ flavor $ setTitle "title" >> p "body"
       pure s

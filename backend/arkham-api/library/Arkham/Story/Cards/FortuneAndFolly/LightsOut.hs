@@ -43,9 +43,9 @@ instance RunMessage LightsOut where
       lightPublic <- selectAny (LocationWithTrait Public <> LocationWithToken #damage)
       lightRestricted <- selectAny (LocationWithTrait Restricted <> LocationWithToken #damage)
       chooseOneM iid $ scenarioI18n do
-        labeledValidate' lightPublic "lightOut.public" do
+        labeledValidate lightPublic "lightOut.public" do
           selectEach (LocationWithTrait Public) $ removeAllOfTokenOn (attrs.ability 1) #damage
-        labeledValidate' lightRestricted "lightOut.restricted" do
+        labeledValidate lightRestricted "lightOut.restricted" do
           selectEach (LocationWithTrait Restricted) $ removeAllOfTokenOn (attrs.ability 1) #damage
       pure s
     _ -> LightsOut <$> liftRunMessage msg attrs

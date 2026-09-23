@@ -25,7 +25,7 @@ instance RunMessage LightOutOfVoid where
     DoStep n msg'@(Revelation iid (isSource attrs -> True)) | n == 1 || n == 2 -> do
       cultists <- selectMaxBy EnemyEvade (fromMaybe (-1)) (enemy_ #cultist)
       chooseOneM iid $ scenarioI18n do
-        labeledValidate' (notNull cultists) "lightOutOfVoid.doom" do
+        labeledValidate (notNull cultists) "lightOutOfVoid.doom" do
           chooseTargetM iid cultists $ placeDoomOn attrs 1
         unscoped
           $ numberVar "damage" 1

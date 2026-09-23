@@ -29,10 +29,10 @@ instance RunMessage Downpour where
       actions <- field InvestigatorRemainingActions iid
       canPlaceClues <- canPlaceCluesOnYourLocation iid
       chooseOrRunOneM iid $ withI18n do
-        countVar 1 $ labeledValidate' (actions > 0) "loseActions" do
+        countVar 1 $ labeledValidate (actions > 0) "loseActions" do
           loseActions iid attrs 1
           doStep (n - 1) msg'
-        countVar 1 $ labeledValidate' canPlaceClues "placeCluesOnYourLocation" do
+        countVar 1 $ labeledValidate canPlaceClues "placeCluesOnYourLocation" do
           placeCluesOnLocation iid attrs 1
           doStep (n - 1) msg'
       pure t

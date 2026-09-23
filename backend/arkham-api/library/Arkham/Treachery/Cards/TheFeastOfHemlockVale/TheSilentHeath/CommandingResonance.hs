@@ -38,13 +38,13 @@ instance RunMessage CommandingResonance where
           chooseAgain b = doStep (n - 1) (DoStep (setBit used b) msg')
       when (canDamage || canDiscard || canInsect) do
         chooseOneM iid $ withI18n do
-          countVar 1 $ labeledValidate' canDamage "takeDamage" do
+          countVar 1 $ labeledValidate canDamage "takeDamage" do
             assignDamage iid attrs 1
             chooseAgain 0
-          countVar 1 $ labeledValidate' canDiscard "discardRandomCardsFromHand" do
+          countVar 1 $ labeledValidate canDiscard "discardRandomCardsFromHand" do
             randomDiscard iid attrs
             chooseAgain 1
-          labeledValidate' canInsect "nearestInsectEnemyAttacks" do
+          labeledValidate canInsect "nearestInsectEnemyAttacks" do
             do_ msg'
             chooseAgain 2
       pure t

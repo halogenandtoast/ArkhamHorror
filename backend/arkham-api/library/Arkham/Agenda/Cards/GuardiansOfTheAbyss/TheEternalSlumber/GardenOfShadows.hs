@@ -31,8 +31,8 @@ instance RunMessage GardenOfShadows where
         drawOk <- can.draw.cards iid
         healOk <- canHaveHorrorHealed (attrs.ability 1) iid
         chooseOneM iid $ withI18n do
-          countVar 1 $ labeledValidate' drawOk "drawCards" $ drawCards iid (attrs.ability 1) 1
-          countVar 1 $ labeledValidate' healOk "healHorror" $ healHorror iid (attrs.ability 1) 1
+          countVar 1 $ labeledValidate drawOk "drawCards" $ drawCards iid (attrs.ability 1) 1
+          countVar 1 $ labeledValidate healOk "healHorror" $ healHorror iid (attrs.ability 1) 1
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       addStrengthOfTheAbyss 1

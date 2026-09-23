@@ -138,12 +138,12 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           gideon <- selectAny $ SetAsideCardMatch $ cardIs Assets.gideonMizrahSeasonedSailor
           iids <- select $ InvestigatorAt $ locationIs Locations.boardingHouseDay
           storyWithChooseOneM (setTitle "title" >> p.green "body") do
-            labeledValidate' (notNull iids) "help" do
+            labeledValidate (notNull iids) "help" do
               chooseOrRunOneM iid do
                 targets iids \iid' -> moveTo ScenarioSource iid' theCrossroads
-            labeledValidate' simeon "simeon" do
+            labeledValidate simeon "simeon" do
               createAssetAt_ Assets.simeonAtwoodDedicatedTroublemaker (AtLocation theOldMill)
-            labeledValidate' gideon "gideon" do
+            labeledValidate gideon "gideon" do
               createAssetAt_ Assets.gideonMizrahSeasonedSailor (AtLocation theCommons)
           when (k > 1) $ doStep (k - 1) (ScenarioSpecific "codex" v)
         _ -> pure ()
@@ -311,9 +311,9 @@ instance RunMessage PreludeDawnOfTheSecondDay where
           river <- getRelationshipLevel RiverHawthorne
           theAtwoodHouse <- getJustLocationByName "The Atwood House"
           scope "theAtwoodHouse" $ storyWithChooseOneM (setTitle "title" >> p.green "body") do
-            labeledValidate' (william >= 2) "william" do
+            labeledValidate (william >= 2) "william" do
               createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation theAtwoodHouse)
-            labeledValidate' (river >= 2) "river" do
+            labeledValidate (river >= 2) "river" do
               createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation theAtwoodHouse)
             labeled "fight" do
               decrementRecordCount WilliamHemlockRelationshipLevel 1

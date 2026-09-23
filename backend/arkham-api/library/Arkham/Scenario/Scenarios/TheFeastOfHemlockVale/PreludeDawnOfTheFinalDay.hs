@@ -179,11 +179,11 @@ instance RunMessage PreludeDawnOfTheFinalDay where
           theo <- selectAny $ SetAsideCardMatch $ cardIs Assets.theoPetersJackOfAllTrades
           river <- selectAny $ SetAsideCardMatch $ cardIs Assets.riverHawthorneBigInNewYork
           storyWithChooseOneM (setTitle "title" >> p.green "body") do
-            labeledValidate' william "william" do
+            labeledValidate william "william" do
               createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation theOldMill)
-            labeledValidate' theo "theo" do
+            labeledValidate theo "theo" do
               createAssetAt_ Assets.theoPetersJackOfAllTrades (AtLocation tadsStore)
-            labeledValidate' river "river" do
+            labeledValidate river "river" do
               createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation boardingHouse)
           when (k > 1) $ doStep (k - 1) (ScenarioSpecific "codex" v)
         _ -> pure ()

@@ -231,7 +231,7 @@ instance RunMessage RiverOfBlood where
           resolutionFlavorWithChooseOne
             (withVars ["xp" .= xp] $ setTitle "resolution1.title" >> p "resolution1.body")
             $ popScope do
-              labeledValidate' (hasBlood && available >= cost) "spendExperienceToRemoveBlood"
+              labeledValidate (hasBlood && available >= cost) "spendExperienceToRemoveBlood"
                 $ doStep cost msg
               labeled "doNotSpendExperience" nothing
           push R4

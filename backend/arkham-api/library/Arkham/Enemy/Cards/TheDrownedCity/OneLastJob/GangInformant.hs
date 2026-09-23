@@ -26,7 +26,7 @@ instance RunMessage GangInformant where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       n <- getSpendableResources iid
       chooseOneM iid $ withI18n do
-        countVar 3 $ labeledValidate' (n > 0) "spendResources" $ spendResources iid 3
+        countVar 3 $ labeledValidate (n > 0) "spendResources" $ spendResources iid 3
         countVar 1 $ labeled "placeDoomOnAgenda" $ placeDoomOnAgenda 1
       pure e
     _ -> GangInformant <$> liftRunMessage msg attrs

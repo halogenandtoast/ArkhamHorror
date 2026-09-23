@@ -28,7 +28,7 @@ instance RunMessage PainfulHistory where
       allies <- select $ AssetWithHighestPrintedCost $ #ally <> #discardable
       lead <- getLead
       leadChooseOneM $ scenarioI18n do
-        labeledValidate' (notNull allies) "painfulHistory.ally" do
+        labeledValidate (notNull allies) "painfulHistory.ally" do
           sid <- getRandom
           chooseTargetM lead allies \ally -> do
             toDiscardBy lead attrs ally

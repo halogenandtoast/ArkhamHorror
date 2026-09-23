@@ -43,13 +43,13 @@ instance RunMessage WineCellarSpectral where
             $ countVar 1
             $ labeled "discoverAdditionalClues"
             $ skillTestModifier sid (attrs.ability 1) iid (DiscoveredClues 1)
-        labeledValidate' (notNull silverTwilight) "wineCellarSpectral.removeDoom" do
+        labeledValidate (notNull silverTwilight) "wineCellarSpectral.removeDoom" do
           chooseTargetM iid silverTwilight $ removeDoomFrom (attrs.ability 1) 1
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       silverTwilight <- select (EnemyWithTrait SilverTwilight)
       chooseOneM iid do
-        scenarioI18n $ labeledValidate' (notNull silverTwilight) "wineCellarSpectral.placeDoom" do
+        scenarioI18n $ labeledValidate (notNull silverTwilight) "wineCellarSpectral.placeDoom" do
           chooseTargetM iid silverTwilight $ placeDoomOn (attrs.ability 2) 1
         withI18n $ countVar 1 $ labeled "takeDirectHorror" $ directHorror iid (attrs.ability 1) 1
       pure l

@@ -447,8 +447,8 @@ instance RunMessage CongressOfTheKeys where
                   let eceVotedNay = not eceDoesNotTrustTheCell
                   let canOverthrow = laChicaRojaVotedNay && eceVotedNay && desiIsGood
                   let canJoin = claretKnightVotedNay && tuwileMasaiIsOnYourSide && theCellMadeADealWithThorne
-                  labeledValidate' canOverthrow "overthrow" $ doStep 3 PreScenarioSetup
-                  labeledValidate' canJoin "join" $ doStep 4 PreScenarioSetup
+                  labeledValidate canOverthrow "overthrow" $ doStep 3 PreScenarioSetup
+                  labeledValidate canJoin "join" $ doStep 4 PreScenarioSetup
                   labeled "deemedAnAsset" $ doStep 5 PreScenarioSetup
 
       let

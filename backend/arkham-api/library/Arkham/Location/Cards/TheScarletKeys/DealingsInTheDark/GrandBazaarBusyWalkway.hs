@@ -34,7 +34,7 @@ instance RunMessage GrandBazaarBusyWalkway where
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       actions <- field InvestigatorRemainingActions iid
       chooseOneM iid $ withI18n do
-        countVar 1 $ labeledValidate' (actions > 0) "loseActions" $ loseActions iid (attrs.ability 1) 1
+        countVar 1 $ labeledValidate (actions > 0) "loseActions" $ loseActions iid (attrs.ability 1) 1
         labeled "cancelMove" $ cancelMovement (attrs.ability 1) iid
       pure l
     _ -> GrandBazaarBusyWalkway <$> liftRunMessage msg attrs

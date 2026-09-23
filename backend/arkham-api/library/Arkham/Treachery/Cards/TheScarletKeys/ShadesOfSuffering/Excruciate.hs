@@ -35,7 +35,7 @@ instance RunMessage Excruciate where
     FailedThisSkillTestBy iid (isSource attrs -> True) n -> do
       hasDiscard <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
       chooseOneM iid $ withI18n do
-        countVar n $ labeledValidate' hasDiscard "discardCardsFromHand" $ chooseAndDiscardCards iid attrs n
+        countVar n $ labeledValidate hasDiscard "discardCardsFromHand" $ chooseAndDiscardCards iid attrs n
         countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
       pure t
     _ -> Excruciate <$> liftRunMessage msg attrs

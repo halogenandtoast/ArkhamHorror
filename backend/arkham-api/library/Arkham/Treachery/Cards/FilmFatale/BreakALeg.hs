@@ -24,7 +24,7 @@ instance RunMessage BreakALeg where
       hasAsset <- selectAny $ assetControlledBy iid <> #item <> AssetNonStory <> DiscardableAsset
       chooseOneM iid do
         withI18n $ countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
-        scenarioI18n $ labeledValidate' hasAsset "breakALeg.option" $ do_ msg
+        scenarioI18n $ labeledValidate hasAsset "breakALeg.option" $ do_ msg
       pure t
     Do (FailedThisSkillTest iid (isSource attrs -> True)) -> do
       assets <- select $ assetControlledBy iid <> #item <> AssetNonStory <> DiscardableAsset

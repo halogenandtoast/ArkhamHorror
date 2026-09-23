@@ -240,7 +240,7 @@ instance RunMessage UnionAndDisillusion where
           deceivingTheLodge <- getHasRecord TheInvestigatorsAreDeceivingTheLodge
 
           storyWithChooseOneM (compose.resolution $ setTitle "resolution1.title" >> p "resolution1.body") $ unscoped do
-            labeledValidate' (inductedIntoTheInnerCircle && not deceivingTheLodge) "yes" $ push R2
+            labeledValidate (inductedIntoTheInnerCircle && not deceivingTheLodge) "yes" $ push R2
             labeled "no" $ push R3
         Resolution 2 -> do
           resolution "resolution2"
@@ -259,7 +259,7 @@ instance RunMessage UnionAndDisillusion where
               storyWithChooseOneM
                 (compose.resolution $ setTitle "returnToResolution4.title" >> p "returnToResolution4.body")
                 do
-                  labeledValidate' (erynnJoinedTheInvestigators && hasBlackBook) "accept" $ push R9
+                  labeledValidate (erynnJoinedTheInvestigators && hasBlackBook) "accept" $ push R9
                   labeled "flee" $ push R10
             else do
               resolution "resolution4"

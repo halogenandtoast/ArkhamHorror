@@ -300,8 +300,8 @@ instance RunMessage TheTwistedHollow where
           valeLanternExhausted <- selectAny $ AssetWithTitle "Vale Lantern" <> AssetExhausted
           cluesOk <- can.gain.clues iid
           chooseOneM iid do
-            labeledValidate' cluesOk "gainClues" $ eachInvestigator \iid' -> gainClues iid' source 1
-            labeledValidate' valeLanternExhausted "readyValeLantern"
+            labeledValidate cluesOk "gainClues" $ eachInvestigator \iid' -> gainClues iid' source 1
+            labeledValidate valeLanternExhausted "readyValeLantern"
               $ selectEach (AssetWithTitle "Vale Lantern") readyThis
         Sigma -> scope "sigma" do
           mjudith <- getSetAsideCardMaybe Assets.judithParkTheMuscle

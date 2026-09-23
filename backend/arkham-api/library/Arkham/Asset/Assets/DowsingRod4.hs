@@ -32,14 +32,11 @@ instance RunMessage DowsingRod4 where
   runMessage msg a@(DowsingRod4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       canInvestigate <- selectAny $ locationWithInvestigator iid <> InvestigatableLocation
-      let isForced = attrs.ready && not canInvestigate
       accessibleLocations <- getAccessibleLocations iid attrs
-      chooseOneM iid do
-        when (attrs.ready && notNull accessibleLocations) $ forcedWhen isForced do
-          (cardI18n $ labeled "dowsingRod4.exhaustForBoost")
-            $ doStep 2 msg
-        (cardI18n $ labeled "dowsingRod4.onLastClue")
-          $ doStep 3 msg
+      let canBoost = attrs.ready && notNull accessibleLocations
+      chooseOneM iid $ cardI18n do
+        when canBoost $ labeled "dowsingRod4.exhaustForBoost" $ doStep 2 msg
+        labeledValidate (canInvestigate || not canBoost) "dowsingRod4.onLastClue" $ doStep 3 msg
       doStep 1 msg
       pure $ overAttrs (unsetMetaKey "option2" . unsetMetaKey "option1") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
@@ -49,9 +46,9 @@ instance RunMessage DowsingRod4 where
       when (getMetaKey "option1" attrs) do
         skillTestModifier sid (attrs.ability 1) iid $ AnySkillValue 2
 
-      chooseOneM iid do
-        (withI18n $ skillVar #willpower $ labeled "useSkill") $ push $ withSkillType #willpower investigate'
-        (withI18n $ countVar 1 $ skillVar #intellect $ labeled "getPlus") do
+      chooseOneM iid $ withI18n do
+        skillVar #willpower $ labeled "useSkill" $ push $ withSkillType #willpower investigate'
+        countVar 1 $ skillVar #intellect $ labeled "getPlus" do
           skillTestModifier sid (attrs.ability 1) iid $ SkillModifier #intellect 1
           push investigate'
 

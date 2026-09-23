@@ -105,7 +105,7 @@ instance RunMessage CourtOfTheAncients where
             -- nextSetupModifier, which stays inert while its own scenario is
             -- current and would silently do nothing. Both outcomes affect every
             -- investigator, not just the one holding the Task.
-            labeledValidate' canErase "plumbTheDepths.lookAway" do
+            labeledValidate canErase "plumbTheDepths.lookAway" do
               decrementRecordCountForInvestigator iid Key.PlumbTheDepths 1
               for_ investigators \iid' -> setupModifier attrs iid' (StartingClues 1)
             labeled "plumbTheDepths.seekTheTruth" do

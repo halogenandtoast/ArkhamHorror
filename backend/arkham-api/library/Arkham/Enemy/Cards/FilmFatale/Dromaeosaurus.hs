@@ -24,7 +24,7 @@ instance RunMessage Dromaeosaurus where
       hasDiscards <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
       chooseOneM iid $ withI18n do
         countVar 1
-          $ labeledValidate' hasDiscards "discardCards"
+          $ labeledValidate hasDiscards "discardCards"
           $ chooseAndDiscardCard iid (attrs.ability 1)
         nameVar attrs $ labeled "attacksYou" $ initiateEnemyAttack attrs (attrs.ability 1) iid
       pure e

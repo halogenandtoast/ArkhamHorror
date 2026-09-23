@@ -36,7 +36,7 @@ instance RunMessage LibraryOfKos where
       totalClues <- getSpendableClueCount iids
       sameRing <- getLocationsOnSameRing attrs.label UnrevealedLocation
       chooseOrRunOneM iid $ withI18n $ countVar targetAmount do
-        labeledValidate' (totalClues >= targetAmount) "spendCluesToActivate" do
+        labeledValidate (totalClues >= targetAmount) "spendCluesToActivate" do
           push $ SpendClues targetAmount iids
           activateSeal SealE
           chooseOneAtATimeM iid $ targets sameRing $ lookAtRevealed iid (attrs.ability 1)

@@ -28,7 +28,7 @@ instance RunMessage SupplicantOfTheGoat where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       moonInBag <- selectAny moonToken
       chooseOneM iid $ campaignI18n do
-        labeledValidate' moonInBag "sealMoonToken" $ sealMoonTokenOn iid
+        labeledValidate moonInBag "sealMoonToken" $ sealMoonTokenOn iid
         unscoped
           $ nameVar attrs
           $ labeled "attacksYou"

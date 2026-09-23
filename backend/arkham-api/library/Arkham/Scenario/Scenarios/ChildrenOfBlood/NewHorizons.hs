@@ -323,7 +323,7 @@ spendExperienceToRemoveBlood attrs msg key = do
   resolutionFlavorWithChooseOne
     (withVars ["xp" .= xp] $ setTitle (key <> ".title") >> p (key <> ".body"))
     $ popScope do
-      labeledValidate' (hasBlood && available >= cost) "spendExperienceToRemoveBlood"
+      labeledValidate (hasBlood && available >= cost) "spendExperienceToRemoveBlood"
         $ doStep cost msg
       labeled "doNotSpendExperience" nothing
 

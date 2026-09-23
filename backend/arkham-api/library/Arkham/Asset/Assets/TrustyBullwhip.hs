@@ -37,7 +37,7 @@ instance RunMessage TrustyBullwhip where
             canEvade <- eid <=~> EnemyCanBeEvadedBy (attrs.ability 1)
             when canEvade do
               card <- fetchCard eid
-              cardNameVar card $ labeledValidate' canEvade "automaticallyEvade" do
+              cardNameVar card $ labeledValidate canEvade "automaticallyEvade" do
                 exhaustThis attrs
                 automaticallyEvadeEnemy iid eid
           countVar 1 $ labeled "dealAdditionalDamage" do

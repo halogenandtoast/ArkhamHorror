@@ -26,7 +26,7 @@ instance RunMessage Anachronism where
       hasAssets <- selectAny $ DiscardableAsset <> AssetNonStory <> assetControlledBy iid
       chooseOneM iid $ withI18n do
         countVar 1
-          $ labeledValidate' hasAssets "discardAssets"
+          $ labeledValidate hasAssets "discardAssets"
           $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
         chooseTakeHorror iid attrs 1
       doNextStep msg

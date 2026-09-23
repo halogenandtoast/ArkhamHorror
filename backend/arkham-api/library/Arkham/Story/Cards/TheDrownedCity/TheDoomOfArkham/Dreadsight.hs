@@ -45,7 +45,7 @@ instance RunMessage Dreadsight where
           scenarioI18n $ questionLabeled "dreadsightGroupChoice"
           sharedI18n $ countVar 1 $ labeled "loseActions" do
             eachInvestigator \iid -> nextTurnModifier iid attrs iid (FewerActions 1)
-          scenarioI18n $ labeledValidate' (notNull attacked) "cthulhuAttacks" do
+          scenarioI18n $ labeledValidate (notNull attacked) "cthulhuAttacks" do
             for_ attacked $ void . cthulhuFacetAttacks attrs WickedClaw
           sharedI18n $ countVar 1 $ labeled "takeDirectHorror" do
             eachInvestigator \iid -> directHorror iid attrs 1

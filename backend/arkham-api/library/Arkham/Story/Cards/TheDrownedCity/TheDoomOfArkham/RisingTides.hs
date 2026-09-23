@@ -43,6 +43,6 @@ instance RunMessage RisingTides where
       nonStory <- selectAny $ assetControlledBy iid <> AssetNonStory <> DiscardableAsset
       chooseOneM iid $ sharedI18n $ countVar 1 do
         labeled "takeDamage" $ assignDamage iid attrs 1
-        labeledValidate' nonStory "discardAssets" $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
+        labeledValidate nonStory "discardAssets" $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
       pure s
     _ -> RisingTides <$> liftRunMessage msg attrs

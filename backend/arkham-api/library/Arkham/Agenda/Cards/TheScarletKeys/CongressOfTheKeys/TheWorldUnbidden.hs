@@ -37,11 +37,11 @@ instance RunMessage TheWorldUnbidden where
         unstableKeys <- select $ UnstableScarletKey <> ScarletKeyWithBearer (InvestigatorWithId iid)
         stableKeys <- select $ StableScarletKey <> ScarletKeyWithBearer (InvestigatorWithId iid)
         chooseOrRunOneM iid $ scenarioI18n do
-          labeledValidate' (notNull unstableKeys) "theWorldUnbidden.unstable" do
+          labeledValidate (notNull unstableKeys) "theWorldUnbidden.unstable" do
             chooseTargetM iid unstableKeys \k ->
               temporaryModifier k attrs CannotBeFlipped $ shift k
             pushAll [CancelDamage iid dmg, CancelHorror iid hrr]
-          labeledValidate' (notNull stableKeys) "theWorldUnbidden.stable" do
+          labeledValidate (notNull stableKeys) "theWorldUnbidden.stable" do
             doStep dmg $ DoStep hrr msg
           unscoped skip_
 

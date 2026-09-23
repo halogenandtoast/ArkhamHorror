@@ -33,7 +33,7 @@ instance RunMessage ZanEtElSettat where
       chooseOneM iid $ scenarioI18n do
         unscoped
           $ countVar 1
-          $ labeledValidate' (actions > 0) "spendActions"
+          $ labeledValidate (actions > 0) "spendActions"
           $ spendActions iid (attrs.ability 1) 1
         labeled "zanEtElSettat.increaseFight" do
           whenJustM getSkillTest \st ->

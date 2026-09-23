@@ -432,10 +432,10 @@ instance RunMessage PreludeTheFinalEvening where
               codexFinished 13
               flavor body
             else storyWithChooseOneM body do
-              labeledValidate' (isJust river && riverLegacy) "sideRiver" do
+              labeledValidate (isJust river && riverLegacy) "sideRiver" do
                 codexFinished 13
                 createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation theAtwoodHouse)
-              labeledValidate' (isJust william && williamResolved) "sideWilliam" do
+              labeledValidate (isJust william && williamResolved) "sideWilliam" do
                 codexFinished 13
                 createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation theAtwoodHouse)
               labeled "letFight" do

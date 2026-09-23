@@ -168,7 +168,7 @@ instance RunMessage SanguineShadows where
           coteries <- select $ NearestEnemyToFallback iid (EnemyWithTrait Coterie)
           chooseOneM iid do
             withI18n $ countVar 1 $ labeled "placeAgendaDoom" $ placeDoomOnAgenda 1
-            scenarioI18n $ labeledValidate' (notNull coteries) "coterieAttack" do
+            scenarioI18n $ labeledValidate (notNull coteries) "coterieAttack" do
               chooseTargetM iid coteries \targetCoterie -> initiateEnemyAttack targetCoterie ElderThing iid
         _ -> pure ()
       pure s

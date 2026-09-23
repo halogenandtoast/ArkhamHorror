@@ -198,8 +198,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
+              labeledValidate drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           boardingHouse <- getJustLocationByName "Boarding House"
           createAssetAt_ Assets.riverHawthorneBigInNewYork (AtLocation boardingHouse)
@@ -211,8 +211,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
+              labeledValidate drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           theCrossroads <- getJustLocationByName "The Crossroads"
           createAssetAt_ Assets.theoPetersJackOfAllTrades (AtLocation theCrossroads)
@@ -223,8 +223,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
+              labeledValidate drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           hemlockChapel <- getJustLocationByName "Hemlock Chapel"
           createAssetAt_ Assets.motherRachelKindlyMatron (AtLocation hemlockChapel)
@@ -235,8 +235,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
+              labeledValidate drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           theOldMill <- getJustLocationByName "The Old Mill"
           createAssetAt_ Assets.leahAtwoodTheValeCook (AtLocation theOldMill)
@@ -247,8 +247,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
+              labeledValidate drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           theAtwoodHouse <- getJustLocationByName "The Atwood House"
           createAssetAt_ Assets.simeonAtwoodDedicatedTroublemaker (AtLocation theAtwoodHouse)
@@ -272,8 +272,8 @@ instance RunMessage PreludeWelcomeToHemlockVale where
           resourceOk <- can.gain.resources iid
           chooseOneM iid $ unscoped do
             countVar 1 do
-              labeledValidate' drawOk "drawCards" $ drawCards iid source 1
-              labeledValidate' resourceOk "gainResources" $ gainResources iid source 1
+              labeledValidate drawOk "drawCards" $ drawCards iid source 1
+              labeledValidate resourceOk "gainResources" $ gainResources iid source 1
             unscoped skip_
           valeSchoolhouse <- getJustLocationByName "Vale Schoolhouse"
           createAssetAt_ Assets.williamHemlockAspiringPoet (AtLocation valeSchoolhouse)

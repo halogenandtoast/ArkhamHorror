@@ -41,8 +41,8 @@ instance RunMessage DrDewiIrawanCryptozoologist where
       canReveal <- selectAny $ inHandOf NotForPlay iid <> CardWithHollowedCopy (OwnedBy can.shuffle.deck)
       canDiscard <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
       chooseOneM iid $ campaignI18n do
-        labeledValidate' canReveal "drDewiIrawan.reveal" $ doStep 1 msg
-        labeledValidate' canDiscard "drDewiIrawan.discard" $ doStep 2 msg
+        labeledValidate canReveal "drDewiIrawan.reveal" $ doStep 1 msg
+        labeledValidate canDiscard "drDewiIrawan.discard" $ doStep 2 msg
       pure a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       cards <- select $ inHandOf NotForPlay iid <> CardWithHollowedCopy (OwnedBy can.shuffle.deck)

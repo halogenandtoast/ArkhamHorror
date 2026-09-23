@@ -94,7 +94,7 @@ instance RunMessage TheGrandVault where
                 li "toeTheLine.highRoad"
           )
           do
-            labeledValidate' canErase "toeTheLine.oldJob" do
+            labeledValidate canErase "toeTheLine.oldJob" do
               decrementRecordCountForInvestigator iid Key.ToeTheLine 1
               createWindowModifierEffect_
                 EffectFirstAgendaWindow
@@ -274,7 +274,7 @@ instance RunMessage TheGrandVault where
                       li "goodMoney.playBothSides"
                 )
                 do
-                  labeledValidate' canErase "goodMoney.playItSafe" do
+                  labeledValidate canErase "goodMoney.playItSafe" do
                     decrementRecordCountForInvestigator iid Key.GoodMoney 1
                     nextSetupModifier attrs.id attrs iid (StartingResources 3)
                   labeled "goodMoney.playBothSides" do

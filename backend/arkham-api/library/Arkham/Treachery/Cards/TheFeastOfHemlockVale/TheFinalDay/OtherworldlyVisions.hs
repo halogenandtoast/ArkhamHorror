@@ -44,7 +44,7 @@ instance RunMessage OtherworldlyVisions where
         countVar 1 $ labeled "takeHorror" do
           assignHorror iid attrs 1
           doStep (n - 1) msg'
-        countVar 1 $ labeledValidate' hasCards "discardRandomCardsFromHand" do
+        countVar 1 $ labeledValidate hasCards "discardRandomCardsFromHand" do
           randomDiscard iid attrs
           doStep (n - 1) msg'
       pure t

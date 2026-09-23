@@ -51,7 +51,7 @@ instance RunMessage HurricaneForce where
       mlid <- getCthulhuLocation
       canFlood <- maybe (pure False) (`matches` CanHaveFloodLevelIncreased) mlid
       chooseOneM iid do
-        scenarioI18n $ labeledValidate' canFlood "increaseFloodLevel" $ for_ mlid increaseFloodLevel
+        scenarioI18n $ labeledValidate canFlood "increaseFloodLevel" $ for_ mlid increaseFloodLevel
         sharedI18n $ countVar 1 $ labeled "takeDamage" $ assignDamage iid attrs 1
         sharedI18n $ countVar 1 $ labeled "takeHorror" $ assignHorror iid attrs 1
       pure s

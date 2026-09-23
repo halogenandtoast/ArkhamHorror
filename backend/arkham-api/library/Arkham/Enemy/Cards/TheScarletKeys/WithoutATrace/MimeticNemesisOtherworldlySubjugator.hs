@@ -40,7 +40,7 @@ instance RunMessage MimeticNemesisOtherworldlySubjugator where
       selectEach (InvestigatorAt $ locationWithEnemy attrs) \iid -> do
         cards <- select $ inHandOf NotForPlay iid <> basic NonWeakness
         chooseOneM iid $ scenarioI18n do
-          labeledValidate' (notNull cards) "mimeticNemesis.hollow" do
+          labeledValidate (notNull cards) "mimeticNemesis.hollow" do
             chooseTargetM iid cards $ hollow iid
           labeled "mimeticNemesis.attack" do
             initiateEnemyAttack attrs (attrs.ability 2) iid

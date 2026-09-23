@@ -31,7 +31,7 @@ instance RunMessage LurkingFear where
       enemies <- pursuitEnemiesWithHighestFight
       chooseOrRunOneM iid $ scenarioI18n do
         unscoped $ countVar 2 $ labeled "takeDamage" $ assignDamage iid attrs 2
-        labeledValidate' (notNull enemies) "lurkingFear.pursuit" do
+        labeledValidate (notNull enemies) "lurkingFear.pursuit" do
           chooseTargetM iid enemies \e -> spawnAt e (Just iid) (SpawnEngagedWith $ InvestigatorWithId iid)
       pure t
     _ -> LurkingFear <$> liftRunMessage msg attrs

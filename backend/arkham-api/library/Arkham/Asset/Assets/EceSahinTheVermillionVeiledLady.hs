@@ -49,7 +49,7 @@ instance RunMessage EceSahinTheVermillionVeiledLady where
         focusCards [card] do
           chooseOneM iid $ withI18n do
             cardNameVar attrs
-              $ labeledValidate'
+              $ labeledValidate
                 (cardMatch card (card_ NonWeakness) && (length attrs.cardsUnderneath < 5))
                 "placeUnderneath"
               $ placeUnderneath attrs (only card)

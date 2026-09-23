@@ -45,7 +45,7 @@ instance RunMessage DireGale where
       nonStory <- selectAny $ assetControlledBy iid <> AssetNonStory <> DiscardableAsset
       chooseOneM iid $ sharedI18n $ countVar 1 do
         labeled "takeHorror" $ assignHorror iid attrs 1
-        labeledValidate' nonStory "discardAssets"
+        labeledValidate nonStory "discardAssets"
           $ chooseAndDiscardAssetMatching iid attrs AssetNonStory
       pure s
     _ -> DireGale <$> liftRunMessage msg attrs

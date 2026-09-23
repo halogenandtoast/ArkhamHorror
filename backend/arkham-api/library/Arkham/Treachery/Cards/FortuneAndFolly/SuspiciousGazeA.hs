@@ -23,7 +23,7 @@ instance RunMessage SuspiciousGazeA where
       x <- getAlarmLevel iid
       let n = (x + 1) `div` 2
       chooseOneM iid $ scenarioI18n do
-        unscoped $ countVar n $ labeledValidate' (n > 0) "takeDamage" $ assignDamage iid attrs n
-        labeledValidate' (n < 10) "suspiciousGaze.alarm" $ raiseAlarmLevel attrs [iid]
+        unscoped $ countVar n $ labeledValidate (n > 0) "takeDamage" $ assignDamage iid attrs n
+        labeledValidate (n < 10) "suspiciousGaze.alarm" $ raiseAlarmLevel attrs [iid]
       pure t
     _ -> SuspiciousGazeA <$> liftRunMessage msg attrs

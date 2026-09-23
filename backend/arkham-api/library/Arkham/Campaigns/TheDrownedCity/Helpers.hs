@@ -234,7 +234,7 @@ Every Task checkpoint is a choice between erasing 1 progress for a small boon an
 marking 2 progress for a cost (usually trauma). Erasing from 0 progress is a
 no-op — 'decrementRecordCountForInvestigator' clamps at 0 — so at 0 the erase
 branch would be a boon for free, which is not the trade the checkpoint offers.
-Pass this to @labeledValidate'@ so the branch shows up disabled rather than
+Pass this to @labeledValidate@ so the branch shows up disabled rather than
 vanishing, keeping the buttons lined up with the printed choices.
 -}
 canEraseProgress :: (HasGame m, IsCampaignLogKey k) => InvestigatorId -> k -> m Bool

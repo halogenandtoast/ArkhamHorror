@@ -84,7 +84,7 @@ instance RunMessage TheDoomOfArkhamPartII where
         )
         do
           labeled "lastStand" $ doStep 2 msg
-          labeledValidate' canRitual "anotherWay" $ doStep 3 msg
+          labeledValidate canRitual "anotherWay" $ doStep 3 msg
       pure s
     DoStep 2 PreScenarioSetup -> scope "intro" do
       flavor do

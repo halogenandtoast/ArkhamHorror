@@ -47,9 +47,9 @@ instance RunMessage TemporaryHQ where
       drawOk <- can.draw.cards iid
 
       chooseOneM iid $ scenarioI18n do
-        labeledValidate' damageOk "temporaryHQ.healDamage" $ healDamage iid (attrs.ability 1) 3
-        labeledValidate' horrorOk "temporaryHQ.healHorror" $ healHorror iid (attrs.ability 1) 3
-        labeledValidate' resourcesOk "temporaryHQ.gainResources" $ gainResources iid (attrs.ability 1) 5
-        labeledValidate' drawOk "temporaryHQ.drawCards" $ drawCards iid (attrs.ability 1) 3
+        labeledValidate damageOk "temporaryHQ.healDamage" $ healDamage iid (attrs.ability 1) 3
+        labeledValidate horrorOk "temporaryHQ.healHorror" $ healHorror iid (attrs.ability 1) 3
+        labeledValidate resourcesOk "temporaryHQ.gainResources" $ gainResources iid (attrs.ability 1) 5
+        labeledValidate drawOk "temporaryHQ.drawCards" $ drawCards iid (attrs.ability 1) 3
       pure l
     _ -> TemporaryHQ <$> liftRunMessage msg attrs

@@ -39,7 +39,7 @@ instance RunMessage EasyPrey where
       investigators <- select $ investigator_ can.manipulate.deck
       leadChooseOneM $ scenarioI18n do
         labeled "silenceSpeaks.concealed" $ findAndDrawEncounterCard lead CardWithConcealed
-        labeledValidate' (notNull investigators) "silenceSpeaks.hollowed" do
+        labeledValidate (notNull investigators) "silenceSpeaks.hollowed" do
           chooseOneAtATimeM lead $ targets investigators (`forInvestigator` msg)
       advanceAgendaDeck attrs
       pure a

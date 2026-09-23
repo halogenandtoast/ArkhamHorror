@@ -314,16 +314,16 @@ instance RunMessage TheLongestNight where
       decoyLocations <- filterM (\lid -> lid <=~> LocationWithoutModifier CannotHaveDecoys) allLocations
       chooseOneM lead do
         questionLabeled "placeDecoy"
-        unterminated $ for_ decoyLocations \lid -> targeting lid $ placeDecoy ScenarioSource lid
+        for_ decoyLocations \lid -> targeting lid $ placeDecoy ScenarioSource lid
       trapLocations <- filterM (\lid -> lid <=~> LocationWithoutModifier CannotHaveTraps) allLocations
       chooseOneM lead do
         questionLabeled "placeTrap"
-        unterminated $ for_ trapLocations \lid -> targeting lid $ placeTrap ScenarioSource lid
+        for_ trapLocations \lid -> targeting lid $ placeTrap ScenarioSource lid
       playerCount <- getPlayerCount
       for_ [1 .. playerCount] \_ ->
         chooseOneM lead do
           questionLabeled "placeBarrier"
-          unterminated $ for_ allLocations \lid -> targeting lid $ forTarget lid Setup
+          for_ allLocations \lid -> targeting lid $ forTarget lid Setup
       pure s
     ForTarget (LocationTarget lid) Setup -> do
       lead <- getLead

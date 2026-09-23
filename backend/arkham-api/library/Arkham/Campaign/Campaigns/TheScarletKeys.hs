@@ -411,7 +411,7 @@ instance RunMessage TheScarletKeys where
           labeled "supplies" do
             interludeXpAll (toBonus "supplies" 1)
             campaignStep_ (embark attrs)
-          labeledValidate' (not visitedMarrakesh) "intel11" $ interludeStepPart 26 Nothing 3
+          labeledValidate (not visitedMarrakesh) "intel11" $ interludeStepPart 26 Nothing 3
         pure c
       CampaignStep (InterludeStepPart 26 _ 2) -> scope "quidProQuo" do
         let meta = toResult @TheScarletKeysMeta attrs.meta
@@ -424,7 +424,7 @@ instance RunMessage TheScarletKeys where
           labeled "supplies" do
             interludeXpAll (toBonus "supplies" 1)
             campaignStep_ (embark attrs)
-          labeledValidate' (not visitedHavana) "intel28" $ interludeStepPart 26 Nothing 4
+          labeledValidate (not visitedHavana) "intel28" $ interludeStepPart 26 Nothing 4
         pure c
       CampaignStep (InterludeStepPart 26 _ 3) -> scope "quidProQuo" do
         record TheCellKnowsAmaranthsRealName

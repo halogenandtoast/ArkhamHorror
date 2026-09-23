@@ -112,7 +112,7 @@ instance RunMessage TheApiary where
             -- Both riders say "in the next scenario", which for a Task story read
             -- in the intro is this scenario. One effect per investigator, each
             -- spent on that investigator's first encounter-deck draw.
-            labeledValidate' canErase "walkInFaith.doubts" do
+            labeledValidate canErase "walkInFaith.doubts" do
               decrementRecordCountForInvestigator iid Key.WalkInFaith 1
               for_ investigators (walkInFaithDoubts attrs)
             labeled "walkInFaith.resolve" do

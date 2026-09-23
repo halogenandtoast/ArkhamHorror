@@ -26,7 +26,7 @@ instance RunMessage FrankElwoodsRoom where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       hasClues <- fieldMap InvestigatorClues (> 0) iid
       chooseOneM iid $ scenarioI18n do
-        labeledValidate' hasClues "frankElwoodsRoom.place" do
+        labeledValidate hasClues "frankElwoodsRoom.place" do
           removeTokens (attrs.ability 1) iid #clue 1
           placeClues (attrs.ability 1) attrs 1
         unscoped $ labeled "placeAgendaDoom" $ placeDoomOnAgenda 1

@@ -31,7 +31,7 @@ instance RunMessage HypnoticGlamour where
       moonInBag <- selectAny moonToken
       chooseOneM iid $ campaignI18n do
         chooseTakeHorror iid attrs 1
-        labeledValidate' moonInBag "sealMoonToken" $ sealMoonTokenOn iid
+        labeledValidate moonInBag "sealMoonToken" $ sealMoonTokenOn iid
       pure t
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       sid <- getRandom

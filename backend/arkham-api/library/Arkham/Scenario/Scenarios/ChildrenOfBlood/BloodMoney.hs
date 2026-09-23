@@ -202,7 +202,7 @@ instance RunMessage BloodMoney where
       eachInvestigator \iid -> do
         horror <- field InvestigatorHorror iid
         chooseOneM iid $ withI18n do
-          countVar 2 $ labeledValidate' (horror > 0) "healHorror" $ healHorror iid ScenarioSource 2
+          countVar 2 $ labeledValidate (horror > 0) "healHorror" $ healHorror iid ScenarioSource 2
           countVar 3 $ labeled "gainResources" $ gainResources iid ScenarioSource 3
       pure s
     Setup -> runScenarioSetup BloodMoney attrs do

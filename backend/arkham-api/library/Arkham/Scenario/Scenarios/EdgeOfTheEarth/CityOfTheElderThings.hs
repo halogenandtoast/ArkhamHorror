@@ -272,9 +272,9 @@ instance RunMessage CityOfTheElderThings where
               li.validate tied "vote.tied"
         )
         do
-          labeledValidate' (group1Count == mostVotes) "v1" $ doStep 1 PreScenarioSetup
-          labeledValidate' (group2Count == mostVotes) "v2" $ doStep 2 PreScenarioSetup
-          labeledValidate' (group3Count == mostVotes) "v3" $ doStep 3 PreScenarioSetup
+          labeledValidate (group1Count == mostVotes) "v1" $ doStep 1 PreScenarioSetup
+          labeledValidate (group2Count == mostVotes) "v2" $ doStep 2 PreScenarioSetup
+          labeledValidate (group3Count == mostVotes) "v3" $ doStep 3 PreScenarioSetup
 
       eachInvestigator (`forInvestigator` PreScenarioSetup)
       pure s

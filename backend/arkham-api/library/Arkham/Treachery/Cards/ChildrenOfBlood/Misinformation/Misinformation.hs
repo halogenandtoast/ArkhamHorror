@@ -31,10 +31,10 @@ instance RunMessage Misinformation where
       when (canPlaceClues || canDiscard) do
         chooseOneM iid $ withI18n do
           countVar 1
-            $ labeledValidate' canPlaceClues "placeCluesOnYourLocation"
+            $ labeledValidate canPlaceClues "placeCluesOnYourLocation"
             $ placeCluesOnLocation iid attrs 1
           countVar 1
-            $ labeledValidate' canDiscard "discardCardsFromHand"
+            $ labeledValidate canDiscard "discardCardsFromHand"
             $ discardFromHand iid attrs DiscardChoose 1
         doNextStep msg
       pure t

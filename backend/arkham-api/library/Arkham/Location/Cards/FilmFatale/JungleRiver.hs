@@ -30,7 +30,7 @@ instance RunMessage JungleRiver where
       assets <- select (assetControlledBy iid <> hasAnyTrait [Weapon, Clothing] <> DiscardableAsset)
       chooseOneM iid do
         withI18n $ countVar 1 $ labeled "takeDirectDamage" $ directDamage iid (attrs.ability 1) 1
-        scenarioI18n $ labeledValidate' (notNull assets) "jungleRiver.option" do
+        scenarioI18n $ labeledValidate (notNull assets) "jungleRiver.option" do
           chooseTargetM iid assets (toDiscardBy iid (attrs.ability 1))
       pure l
     _ -> JungleRiver <$> liftRunMessage msg attrs

@@ -21,7 +21,7 @@ instance RunMessage Action where
     Revelation iid (isSource attrs -> True) -> do
       hasRemainingActions <- fieldP InvestigatorRemainingActions (> 0) iid
       chooseOneM iid do
-        withI18n $ countVar 2 $ labeledValidate' hasRemainingActions "loseActions" $ loseActions iid attrs 2
+        withI18n $ countVar 2 $ labeledValidate hasRemainingActions "loseActions" $ loseActions iid attrs 2
         scenarioI18n $ labeled "action.option" $ do_ msg
       pure t
     Do (Revelation iid (isSource attrs -> True)) -> do

@@ -35,7 +35,7 @@ instance RunMessage JungleSet where
       assets <- select $ assetControlledBy iid <> DiscardableAsset
       chooseOneM iid $ withI18n do
         countVar 1 $ labeled "takeDamage" $ assignDamage iid (attrs.ability 1) 1
-        countVar 1 $ labeledValidate' (notNull assets) "discardAssets" do
+        countVar 1 $ labeledValidate (notNull assets) "discardAssets" do
           chooseTargetM iid assets $ toDiscardBy iid (attrs.ability 1)
       pure l
     UseThisAbility iid (isSource attrs -> True) 2 -> do

@@ -26,9 +26,9 @@ instance RunMessage NowhereToHide where
       canDiscardCards <- selectAny $ inHandOf NotForPlay iid <> basic DiscardableCard
       when (canDiscardAsset || canDiscardCards) do
         chooseOneM iid $ withI18n do
-          countVar 1 $ labeledValidate' canDiscardAsset "discardAssets" $ chooseAndDiscardAsset iid attrs
+          countVar 1 $ labeledValidate canDiscardAsset "discardAssets" $ chooseAndDiscardAsset iid attrs
           countVar 2
-            $ labeledValidate' canDiscardCards "discardCardsFromHand"
+            $ labeledValidate canDiscardCards "discardCardsFromHand"
             $ discardFromHand iid attrs DiscardChoose 2
       pure t
     _ -> NowhereToHide <$> liftRunMessage msg attrs

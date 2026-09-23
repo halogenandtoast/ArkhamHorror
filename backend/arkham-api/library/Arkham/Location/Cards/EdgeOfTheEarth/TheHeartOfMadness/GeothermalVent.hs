@@ -35,7 +35,7 @@ instance RunMessage GeothermalVent where
       iids <- select $ investigatorAt attrs
       totalClues <- getSpendableClueCount iids
       chooseOneM iid $ withI18n $ countVar targetAmount do
-        labeledValidate' (totalClues >= targetAmount) "spendCluesToActivate" do
+        labeledValidate (totalClues >= targetAmount) "spendCluesToActivate" do
           push $ SpendClues targetAmount iids
           activateSeal SealD
           removeChaosToken #frost

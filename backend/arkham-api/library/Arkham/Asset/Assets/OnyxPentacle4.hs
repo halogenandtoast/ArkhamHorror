@@ -37,14 +37,10 @@ instance HasAbilities OnyxPentacle4 where
 instance RunMessage OnyxPentacle4 where
   runMessage msg a@(OnyxPentacle4 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      isForced <- selectNone $ enemyAtLocationWith iid <> EnemyCanBeEvadedBy (attrs.ability 1)
-      chooseOneM iid do
-        when attrs.ready do
-          forcedWhen isForced
-            $ (cardI18n $ labeled "onyxPentacle4.exhaustToTarget")
-            $ doStep 1 msg
-        (cardI18n $ labeled "onyxPentacle4.succeedBy2")
-          $ doStep 2 msg
+      canEvadeHere <- selectAny $ enemyAtLocationWith iid <> EnemyCanBeEvadedBy (attrs.ability 1)
+      chooseOneM iid $ cardI18n do
+        when attrs.ready $ labeled "onyxPentacle4.exhaustToTarget" $ doStep 1 msg
+        labeledValidate (canEvadeHere || not attrs.ready) "onyxPentacle4.succeedBy2" $ doStep 2 msg
       pure $ overAttrs (unsetMetaKey "option2") a
     DoStep 1 (UseThisAbility iid (isSource attrs -> True) 1) -> do
       exhaustThis attrs

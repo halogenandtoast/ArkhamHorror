@@ -150,7 +150,7 @@ instance RunMessage AThousandShapesOfHorror where
         ElderThing -> do
           playerClueCount <- field InvestigatorClues iid
           chooseOneM iid $ unscoped $ countVar 1 do
-            labeledValidate' (playerClueCount > 0) "placeCluesOnYourLocation"
+            labeledValidate (playerClueCount > 0) "placeCluesOnYourLocation"
               $ placeCluesOnLocation iid ElderThing 1
             labeled "takeDamage" $ assignDamage iid ElderThing 1
         _ -> pure ()

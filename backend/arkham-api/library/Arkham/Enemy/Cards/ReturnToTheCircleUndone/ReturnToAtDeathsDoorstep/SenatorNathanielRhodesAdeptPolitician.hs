@@ -28,9 +28,9 @@ instance RunMessage SenatorNathanielRhodesAdeptPolitician where
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       chooseOneM iid $ scenarioI18n do
-        labeledValidate' (attrs.token #clue > 0) "senatorNathanielRhodesAdeptPolitician.take"
+        labeledValidate (attrs.token #clue > 0) "senatorNathanielRhodesAdeptPolitician.take"
           $ moveTokens (attrs.ability 1) attrs iid #clue 1
-        labeledValidate' (attrs.token #doom > 0) "senatorNathanielRhodesAdeptPolitician.flip"
+        labeledValidate (attrs.token #doom > 0) "senatorNathanielRhodesAdeptPolitician.flip"
           $ flipDoomToClues attrs 1
       pure e
     FailedThisSkillTest _iid (isAbilitySource attrs 1 -> True) -> do

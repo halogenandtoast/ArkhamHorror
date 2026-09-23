@@ -122,7 +122,7 @@ instance RunMessage TheFeastOfHemlockVale where
           n <- getPlayerCount
           let meta = toResultDefault initMeta attrs.meta
           let option k =
-                labeledValidate' (k `notElem` meta.chosenCodexEntries) k
+                labeledValidate (k `notElem` meta.chosenCodexEntries) k
                   $ forInvestigator iid
                   $ CampaignStep (CampaignSpecificStep "preludeTheFirstEvening" (Just k))
           investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "codexChoice") do
@@ -131,7 +131,7 @@ instance RunMessage TheFeastOfHemlockVale where
             option "sigma"
             option "omega"
             option "gamma"
-            labeledValidate'
+            labeledValidate
               ("pi" `notElem` meta.chosenCodexEntries && (n > 1 || notNull meta.chosenCodexEntries))
               "pi"
               $ forInvestigator iid
@@ -280,11 +280,11 @@ instance RunMessage TheFeastOfHemlockVale where
           let meta = toResultDefault initMeta attrs.meta
           crossedOut <- getCrossedOutResidents
           let residentOption r k =
-                labeledValidate' (r `notElem` crossedOut && k `notElem` meta.chosenCodexEntries) k
+                labeledValidate (r `notElem` crossedOut && k `notElem` meta.chosenCodexEntries) k
                   $ forInvestigator iid
                   $ CampaignStep (CampaignSpecificStep "preludeTheSecondEvening" (Just k))
           let option k =
-                labeledValidate' (k `notElem` meta.chosenCodexEntries) k
+                labeledValidate (k `notElem` meta.chosenCodexEntries) k
                   $ forInvestigator iid
                   $ CampaignStep (CampaignSpecificStep "preludeTheSecondEvening" (Just k))
           investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "codexChoice") do
@@ -470,19 +470,19 @@ instance RunMessage TheFeastOfHemlockVale where
         let theo = theoLevel >= 5 && not theoCrossedOut && "theo" `notElem` meta.chosenCodexEntries
         when (atwoods || hemlocks || judith || theo) do
           leadChooseOneM do
-            labeledValidate' atwoods "atwoods"
+            labeledValidate atwoods "atwoods"
               $ push
               $ CampaignStep
               $ CampaignSpecificStep "epilogueCodex" (Just "atwoods")
-            labeledValidate' hemlocks "hemlocks"
+            labeledValidate hemlocks "hemlocks"
               $ push
               $ CampaignStep
               $ CampaignSpecificStep "epilogueCodex" (Just "hemlocks")
-            labeledValidate' judith "judith"
+            labeledValidate judith "judith"
               $ push
               $ CampaignStep
               $ CampaignSpecificStep "epilogueCodex" (Just "judith")
-            labeledValidate' theo "theo"
+            labeledValidate theo "theo"
               $ push
               $ CampaignStep
               $ CampaignSpecificStep "epilogueCodex" (Just "theo")

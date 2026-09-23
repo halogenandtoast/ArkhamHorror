@@ -26,9 +26,9 @@ instance RunMessage FactoryFloorWestNight where
       canBlood <- canAddChaosTokenFace #blood
       canDoom <- selectAny $ not_ (AgendaWithModifier CannotPlaceDoomOnThis)
       chooseOneM iid $ withI18n do
-        labeledValidate' canBlood "addBloodToken" $ addChaosToken #blood
+        labeledValidate canBlood "addBloodToken" $ addChaosToken #blood
         countVar 1
-          $ labeledValidate' canDoom "placeAgendaDoom"
+          $ labeledValidate canDoom "placeAgendaDoom"
           $ placeDoomOnAgendaBy (attrs.ability 1) 1
       pure l
     _ -> FactoryFloorWestNight <$> liftRunMessage msg attrs

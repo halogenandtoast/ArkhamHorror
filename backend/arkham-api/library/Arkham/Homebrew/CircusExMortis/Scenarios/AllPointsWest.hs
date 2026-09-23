@@ -288,7 +288,7 @@ instance RunMessage AllPointsWest where
 
         storyWithChooseOneM (setTitle "title" >> scope interlude.interludeKey (p.green "body")) do
           scope interlude.interludeKey do
-            labeledValidate' canAfford (optionLabel interlude.interludeOption) $ doStep 1 msg
+            labeledValidate canAfford (optionLabel interlude.interludeOption) $ doStep 1 msg
             labeled interlude.interludeSkipLabel $ daysBehind interlude.interludeSkipResources
       pure s
     DoStep 1 (ScenarioSpecific key v) | key == nowArrivingKey -> do

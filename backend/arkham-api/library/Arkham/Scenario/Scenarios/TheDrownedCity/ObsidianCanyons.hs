@@ -100,7 +100,7 @@ instance RunMessage ObsidianCanyons where
                 li "dreamsOfDestruction.letItIn"
           )
           do
-            labeledValidate' canErase "dreamsOfDestruction.drownOut" do
+            labeledValidate canErase "dreamsOfDestruction.drownOut" do
               decrementRecordCountForInvestigator iid Key.DreamsOfDestruction 1
               sufferMentalTrauma iid 1
               -- "You (and only you) gain 2 bonus experience."

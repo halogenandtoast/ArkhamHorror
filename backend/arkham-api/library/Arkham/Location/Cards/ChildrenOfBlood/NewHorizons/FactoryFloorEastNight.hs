@@ -33,7 +33,7 @@ instance RunMessage FactoryFloorEastNight where
           , orM [notNull . unDeck <$> getEncounterDeck, notNull <$> getEncounterDiscard RegularEncounterDeck]
           ]
       chooseOneM iid $ withI18n do
-        labeledValidate' canBlood "addBloodToken" $ addChaosToken #blood
-        labeledValidate' canDraw "drawEncounterCard" $ drawEncounterCard iid (attrs.ability 1)
+        labeledValidate canBlood "addBloodToken" $ addChaosToken #blood
+        labeledValidate canDraw "drawEncounterCard" $ drawEncounterCard iid (attrs.ability 1)
       pure l
     _ -> FactoryFloorEastNight <$> liftRunMessage msg attrs

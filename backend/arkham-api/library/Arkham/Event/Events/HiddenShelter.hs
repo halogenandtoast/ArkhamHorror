@@ -37,10 +37,10 @@ instance RunMessage HiddenShelter where
           canHealDamage <- iid' <=~> HealableInvestigator source #damage (InvestigatorWithId iid')
           canHealHorror <- iid' <=~> HealableInvestigator source #horror (InvestigatorWithId iid')
           chooseOneM iid' $ countVar 1 do
-            labeledValidate' drawOk "drawCards" $ drawCards iid' source 1
-            labeledValidate' resourceOk "gainResources" $ gainResources iid' source 1
-            labeledValidate' canHealDamage "healDamage" $ healDamage iid' source 1
-            labeledValidate' canHealHorror "healHorror" $ healHorror iid' source 1
+            labeledValidate drawOk "drawCards" $ drawCards iid' source 1
+            labeledValidate resourceOk "gainResources" $ gainResources iid' source 1
+            labeledValidate canHealDamage "healDamage" $ healDamage iid' source 1
+            labeledValidate canHealHorror "healHorror" $ healHorror iid' source 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 2 -> do
       toDiscardBy iid (attrs.ability 2) attrs

@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<{
 
 const emits = defineEmits<{
   (e: 'choose', index: number): void;
+  (e: 'hover', value: boolean): void;
 }>();
 
 interface Position {
@@ -163,7 +164,7 @@ onUnmounted(() => {
 <template>
   <Teleport to="body">
     <OnClickOutside @trigger="showAbilities = false" v-if="showAbilities" :options="{ ignore: [frame] }">
-      <div class="abilities" :class="[positionClass, { anchored: supportsAnchor }]" :style="anchorStyle" ref="abilitiesRef" >
+      <div class="abilities" :class="[positionClass, { anchored: supportsAnchor }]" :style="anchorStyle" ref="abilitiesRef" @mouseenter="emits('hover', true)" @mouseleave="emits('hover', false)" >
         <button
           v-if="playAction !== undefined"
           class="play-card-button"

@@ -51,6 +51,7 @@ const dbCardStore = useDbCardStore()
 
 const emits = defineEmits<{
   choose: [value: number]
+  'abilities-hover': [value: boolean]
 }>()
 
 const id = computed(() => props.asset.id)
@@ -497,6 +498,7 @@ function startDrag(event: DragEvent) {
           :abilities="abilities"
           :game="game"
           @choose="chooseAbility"
+          @hover="(value) => emits('abilities-hover', value)"
         />
         <CardConfig :game="game" :playerId="playerId" :cardCode="cardCode" />
       </div>

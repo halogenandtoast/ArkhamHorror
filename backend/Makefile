@@ -16,7 +16,11 @@
 # At that point the peak is the linker (3.7G), not GHC (0.9G), so squeezing the
 # RTS further buys nothing.
 #
-GHC_OPTIONS ?= -j12 +RTS -A128m -n4m -qb0 -qg1 -I0 -RTS
+# -j16 on a 20-core host: four more capabilities buy wall time on the ~7.5k
+# module rebuilds that a hub-module edit triggers, at roughly +1G of peak RSS
+# (each capability carries its own -A128m nursery). Drop back to -j12 if you
+# are memory-bound.
+GHC_OPTIONS ?= -j16 +RTS -A128m -n4m -qb0 -qg1 -I0 -RTS
 
 # Extra environment prepended to the dev server's exec line. Empty by default;
 # api.watch.redis uses it to point the app at a Redis instance.

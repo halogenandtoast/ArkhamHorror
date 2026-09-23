@@ -43,6 +43,7 @@ const props = withDefaults(defineProps<{
 
 const emits = defineEmits<{
   choose: [value: number]
+  'abilities-hover': [value: boolean]
 }>()
 
 
@@ -442,6 +443,7 @@ function onDrop(event: DragEvent) {
             :game="game"
             :host-has-swarm="swarmEnemies.length > 0"
             @choose="chooseAbility"
+            @hover="(value) => emits('abilities-hover', value)"
             />
         </div>
 

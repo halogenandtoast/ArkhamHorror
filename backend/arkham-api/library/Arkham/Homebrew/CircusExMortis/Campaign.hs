@@ -40,10 +40,10 @@ circusExMortis = campaign CircusExMortis (CampaignId ":circus-ex-mortis") "Circu
 instance IsCampaign CircusExMortis where
   campaignTokens = chaosBagContents
 
-  {- | Guide p14: Curse of the Rougarou is offered free immediately after Harm's
-  Way. The side story itself is played with its own printed cards; All Points
-  West is where its two reward cards are upgraded to their Circus printings.
-  -}
+  -- \| Guide p14: Curse of the Rougarou is offered free immediately after Harm's
+  --  Way. The side story itself is played with its own printed cards; All Points
+  --  West is where its two reward cards are upgraded to their Circus printings.
+  --
   campaignOverlays (CircusExMortis attrs) =
     [ CampaignOverlay
         { id = "circus-ex-mortis:rougarou"
@@ -135,41 +135,41 @@ instance RunMessage CircusExMortis where
       pure c
     -- Interlude: The Future and the Past (guide pp9-10)
     CampaignStep (InterludeStep 1 _) -> scope "theFutureAndThePast" do
-      flavor $ setTitle "title" >> p "intro"
-      -- Far-Seeing: 1 bonus xp for each Clairvoyant investigator; the guide
-      -- restricts it to purchasing Augury cards (not enforced by the app).
       clairvoyants <- select $ InvestigatorWithTrait Clairvoyant
-      unless (null clairvoyants) do
-        scope "farSeeing" $ flavor $ setTitle "title" >> p "body"
-        for_ clairvoyants \iid -> interludeXp iid $ toBonus "farSeeing" 1
+      for_ clairvoyants \iid -> interludeXp iid $ toBonus "farSeeing" 1
       flavor do
         setTitle "title"
+        p "intro"
+        -- Far-Seeing: 1 bonus xp for each Clairvoyant investigator; the guide
+        -- restricts it to purchasing Augury cards (not enforced by the app).
+        scope "farSeeing" $ p.green.validate (notNull clairvoyants) "body"
         p "thea"
         ul $ li "addAmaltheaWeaver"
       addCampaignCardToDeckChoice_ HBAssets.amaltheaWeaverCircusFortuneTeller
-      flavor $ setTitle "title" >> p "theTome"
+
       linguists <- select $ mapOneOf InvestigatorWithTrait [Miskatonic, Scholar, Believer]
-      unless (null linguists) do
-        -- The +1 opening hand for the next scenario is applied via
-        -- HasModifiersFor while the campaign step is Harm's Way.
-        scope "linguaFranca" $ flavor $ setTitle "title" >> p "body"
       flavor do
         setTitle "title"
+        p "theTome"
+        -- The +1 opening hand for the next scenario is applied via
+        -- HasModifiersFor while the campaign step is Harm's Way.
+        scope "linguaFranca" $ p.green.validate (notNull linguists) "body"
         p "apuleius"
         ul $ li "addDeCultusBestiae"
       addCampaignCardToDeckChoice_ HBAssets.deCultusBestiaeForgottenWorkOfApuleius
-      flavor $ setTitle "title" >> p "eclipse"
+
+      addChaosToken MoonToken
       normans <- select $ InvestigatorWithTitle "Norman Withers"
-      unless (null normans) do
+      flavor do
+        setTitle "title"
+        p "eclipse"
         -- Like Clockwork grants Norman "up to 2 additional Seeker cards
         -- (level 1-2)" in deckbuilding; deck construction is external to the
         -- engine, so this is informational.
-        scope "likeClockwork" $ flavor $ setTitle "title" >> p "body"
-      flavor do
-        setTitle "title"
+        scope "likeClockwork" $ p.green.validate (notNull normans) "body"
         p "escape"
         ul $ li "addMoonToken"
-      addChaosToken MoonToken
+
       nextCampaignStep
       pure c
     -- Interlude: Written in Stone (guide pp19-20)

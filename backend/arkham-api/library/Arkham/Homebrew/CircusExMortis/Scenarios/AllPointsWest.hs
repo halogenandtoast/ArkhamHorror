@@ -5,6 +5,8 @@ import Arkham.Calculation (GameCalculation (Fixed))
 import Arkham.Card hiding (SkillType)
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame (HasGame)
+import Arkham.Deck qualified as Deck
+import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..))
@@ -31,7 +33,7 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Types (Field (ScenarioActStack))
 import Arkham.SkillType (SkillType)
 import Arkham.Token qualified as Token
-import Arkham.Trait (Trait)
+import Arkham.Trait (Trait (DarkYoung, Hazard))
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.CardDefs.CurseOfTheRougarou qualified as TreacheryCards
 
@@ -347,9 +349,35 @@ instance RunMessage AllPointsWest where
     FailedThisSkillTest _ ScenarioSource -> do
       daysBehind =<< getScenarioMetaKeyDefault interludeFailureKey 0
       pure s
+    FailedSkillTestWithToken _ Cultist | isEasyStandard attrs -> do
+      withMatch (locationIs Locations.locomotiveEngine) $ placeDoomOn Cultist 1
+      pure s
+    ResolveChaosToken _ Cultist _iid | isHardExpert attrs -> do
+      withMatch (locationIs Locations.locomotiveEngine) $ placeDoomOn Cultist 1
+      pure s
+    FailedSkillTestWithToken iid Tablet | isEasyStandard attrs -> do
+      findTopOfDiscard (#treachery <> withTrait Hazard)
+        >>= traverse_ (drawCardFrom iid Deck.EncounterDiscard)
+      pure s
+    ResolveChaosToken _ Tablet iid | isHardExpert attrs -> do
+      findTopOfDiscard (#treachery <> withTrait Hazard)
+        >>= traverse_ (drawCardFrom iid Deck.EncounterDiscard)
+      pure s
+    FailedSkillTestWithToken iid ElderThing | isEasyStandard attrs -> do
+      darkYoung <- select $ enemy_ $ #exhausted <> withTrait DarkYoung
+      chooseTargetM iid darkYoung readyThis
+      pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      darkYoung <- select $ enemy_ $ #exhausted <> withTrait DarkYoung
+      chooseTargetM iid darkYoung readyThis
+      pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
-        _ | r `elem` [NoResolution, Resolution 1] -> do
+        NoResolution -> do
+          resolution "noResolution"
+          act <- getCurrentActStep
+          push $ if act < 4 then R1 else R2
+        Resolution 1 -> do
           remaining <- scenarioFieldMap ScenarioActStack (length . findWithDefault [] 1)
           resolution "resolution1"
           daysBehind (2 * remaining)

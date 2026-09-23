@@ -64,6 +64,7 @@ const dragover = (e: DragEvent) => {
 }
 
 const props = defineProps<Props>()
+const abilitiesHovering = ref(false)
 const emits = defineEmits<{
   choose: [value: number]
   show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean, revealed?: boolean]
@@ -590,7 +591,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           />
         </div>
       </div>
-      <div v-if="vehicleAssetIds.length > 0" class="location-vehicle-asset-column">
+      <div v-if="vehicleAssetIds.length > 0" class="location-vehicle-asset-column" :class="{ 'abilities-hovering': abilitiesHovering }">
         <Asset
           v-for="assetId in vehicleAssetIds"
           :asset="game.assets[assetId]"
@@ -599,6 +600,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           :key="assetId"
           :atLocation="true"
           @choose="choose"
+          @abilities-hover="abilitiesHovering = $event"
         />
       </div>
       <div class="location-column">
@@ -790,7 +792,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           :attached="true"
         />
       </div>
-      <div class="location-asset-column">
+      <div class="location-asset-column" :class="{ 'abilities-hovering': abilitiesHovering }">
         <Asset
           v-for="assetId in nonVehicleAssetIds"
           :asset="game.assets[assetId]"
@@ -799,6 +801,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           :key="assetId"
           :atLocation="true"
           @choose="choose"
+          @abilities-hover="abilitiesHovering = $event"
         />
         <Enemy
           v-for="enemyId in enemies"
@@ -809,6 +812,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           :playerId="playerId"
           :atLocation="true"
           @choose="choose"
+          @abilities-hover="abilitiesHovering = $event"
         />
         <Story
           v-for="storyId in stories"
@@ -1062,7 +1066,8 @@ img.card.source-highlight {
   &:deep(.poolItem) {
     width: calc(var(--card-width) * 0.4) !important;
   }
-  &:hover {
+  &:hover,
+  &.abilities-hovering {
     animation-fill-mode: forwards;
     > div:not(:last-child) {
       margin-top: 10px;

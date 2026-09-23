@@ -21,9 +21,7 @@ instance HasAbilities TheGreatTrainHorror where
         a
         2
         (TokensOnLocation (locationIs Locations.circusEngine) #damage (AtLeast $ PerPlayer 4))
-        $ Objective
-        $ triggered_
-        $ RoundEnds #when
+        $ Objective freeTrigger_
     ]
 
 instance RunMessage TheGreatTrainHorror where

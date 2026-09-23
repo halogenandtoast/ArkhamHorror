@@ -40,6 +40,8 @@ export interface ArkhamDBCard {
 export interface DbCardsState {
   dbCards: ArkhamDBCard[]
   dbCardsIndex: Map<string, ArkhamDBCard>
+  // Ambiguous names map to null; see buildRealNameIndex.
+  dbCardsByRealName: Map<string, ArkhamDBCard | null>
   lang: string
   loadingLang: string | null
   // Languages whose fetch failed. Card lookups happen on every hover, so
@@ -48,10 +50,36 @@ export interface DbCardsState {
   failedLangs: Set<string>
 }
 
+/* A card's `b` face has no record of its own unless ArkhamDB stores one, so a record
+ * lends the face its own entry -- the overlay then reads the `back_*` fields. Alias in
+ * a second pass so that loan never wins over a record filed under the `b` code itself;
+ * in one pass the winner was whichever of the two sat later in the file. */
+function buildCardIndex(cards: ArkhamDBCard[]): Map<string, ArkhamDBCard> {
+  const index = new Map<string, ArkhamDBCard>()
+  for (const card of cards) index.set(card.code, card)
+  for (const card of cards) {
+    const back = `${card.code}b`
+    if (!index.has(back)) index.set(back, card)
+  }
+  return index
+}
+
+/* Untranslated names to records, for the faces the engine codes separately from
+ * ArkhamDB. A name two or more records answer to maps to null rather than to a guess. */
+function buildRealNameIndex(cards: ArkhamDBCard[]): Map<string, ArkhamDBCard | null> {
+  const index = new Map<string, ArkhamDBCard | null>()
+  for (const card of cards) {
+    if (!card.real_name) continue
+    index.set(card.real_name, index.has(card.real_name) ? null : card)
+  }
+  return index
+}
+
 export const useDbCardStore = defineStore("dbCards", {
   state: (): DbCardsState => ({
     dbCards: [],
     dbCardsIndex: new Map(),
+    dbCardsByRealName: new Map(),
     lang: 'en',
     loadingLang: null,
     failedLangs: new Set<string>()
@@ -66,6 +94,19 @@ export const useDbCardStore = defineStore("dbCards", {
       // ArkhamDB stores some split-card fronts with an "a" suffix, while the
       // game runtime refers to the same front using the unsuffixed code.
       return this.dbCardsIndex.get(code) ?? this.dbCardsIndex.get(`${code}a`) ?? null
+    },
+
+    /* The engine codes some faces ArkhamDB does not record separately -- the five
+     * Masked Carnevale-Goers are 82017b-82021b, one per enemy they hide, where
+     * ArkhamDB stores the shared printed card once. Their own name is the only
+     * thing left to find them by, and a name more than one card answers to is no
+     * answer at all. */
+    getDbCardByRealName(realName: string): ArkhamDBCard | null {
+      if (this.dbCards.length < 1) {
+        void this.initDbCards()
+      }
+
+      return this.dbCardsByRealName.get(realName) ?? null
     },
 
     getCardName(cardTitle: string, typeCode: string = ""): string {
@@ -105,12 +146,8 @@ export const useDbCardStore = defineStore("dbCards", {
       if (this.lang !== lang) return
 
       this.dbCards = data
-      const index = new Map<string, ArkhamDBCard>()
-      for (const card of data) {
-        index.set(card.code, card)
-        index.set(`${card.code}b`, card)
-      }
-      this.dbCardsIndex = index
+      this.dbCardsIndex = buildCardIndex(data)
+      this.dbCardsByRealName = buildRealNameIndex(data)
     },
 
     async initDbCards() {

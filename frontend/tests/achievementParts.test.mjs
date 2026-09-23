@@ -47,7 +47,7 @@ test('campaigns sort with Return Tos first, then in release order', async (t) =>
 
   assert.deepEqual(
     campaignIds.sort(compareAchievementCampaignIds),
-    ['50', '51', '52', '53', '54', '06', '07', '08', '09', '10', '11'],
+    ['50', '51', '52', '53', '54', '06', '07', '08', '09', '10', '11', '13'],
   )
 })
 

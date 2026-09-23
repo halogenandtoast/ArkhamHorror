@@ -15,7 +15,7 @@
     "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.{ts,vue}\"",
     "format:check": "prettier --check \"src/**/*.{ts,vue}\"",
-    "test": "node --test tests/**/*.test.mjs",
+    "test": "node --test tests/",
     "digest": "node ./scripts/digest.cjs",
     "fetch-card-data": "node ./scripts/fetch-card-data.cjs --slim",
     "import-fr-cards": "node ./scripts/import-card-translations.cjs --source-locale fr --output-lang fr --slim",

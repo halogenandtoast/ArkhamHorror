@@ -24,7 +24,7 @@ instance HasModifiersFor NephthysHuntressOfBast4 where
 
 instance HasAbilities NephthysHuntressOfBast4 where
   getAbilities (NephthysHuntressOfBast4 x) =
-    [ controlled_ x 1 $ freeReaction (TokensWouldBeRemovedFromChaosBag #when #bless)
+    [ controlled x 1 DuringAnySkillTest $ freeReaction (TokensWouldBeRemovedFromChaosBag #when #bless)
     , controlled x 2 (exists (be x <> AssetWithSealedChaosTokens 3 #bless)) $ FastAbility (exhaust x)
     ]
 

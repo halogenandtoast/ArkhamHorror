@@ -83,6 +83,7 @@ data Payment
   | SealChaosTokenPayment ChaosToken
   | ReleaseChaosTokenPayment ChaosToken
   | ReturnChaosTokenToPoolPayment ChaosToken
+  | ReturnChaosTokensToPoolPayment [ChaosToken]
   | ReturnToHandPayment Card
   | NoPayment
   | SupplyPayment Supply
@@ -236,7 +237,8 @@ data Cost
   | ReleaseChaosTokensCost Int ChaosTokenMatcher
   | SealChaosTokenCost ChaosToken -- internal to track sealed token
   | ReturnChaosTokensToPoolCost Int ChaosTokenMatcher
-  | ReturnChaosTokenToPoolCost ChaosToken
+  | ReturnChaosTokenToPoolCost ChaosToken -- internal to track a chosen token
+  | ReturnChosenChaosTokensToPoolCost -- internal, returns the chosen tokens as one batch
   | SupplyCost LocationMatcher Supply
   | ResolveEachHauntedAbility LocationId -- the circle undone, see TrappedSpirits
   | ShuffleBondedCost Int CardCode

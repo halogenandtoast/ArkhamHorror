@@ -705,6 +705,7 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       ReturnChaosTokensToPoolCost n matcher -> do
         (>= n) <$> selectCount matcher
       ReturnChaosTokenToPoolCost _ -> pure True
+      ReturnChosenChaosTokensToPoolCost -> pure True
       FieldResourceCost (FieldCost mtchr fld) -> do
         ns <- selectFields fld mtchr
         resources <- getSpendableResources iid

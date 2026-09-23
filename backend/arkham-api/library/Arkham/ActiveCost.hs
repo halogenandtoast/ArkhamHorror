@@ -87,7 +87,7 @@ import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
-import Control.Lens (non, over, transform)
+import Control.Lens (non, over, transform, universe)
 import Data.Data.Lens (biplate)
 import Data.List.Extra (nubOrd)
 import Data.List.NonEmpty.Extra (minimum1)
@@ -647,11 +647,21 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
         [ FocusChaosTokens tokens
         , chooseN player n $ targetLabels tokens $ only . pay . ReturnChaosTokenToPoolCost
         , UnfocusChaosTokens
+        , pay ReturnChosenChaosTokensToPoolCost
         ]
       pure c
-    ReturnChaosTokenToPoolCost t -> do
-      push $ ReturnChaosTokensToPool [t]
-      withPayment $ ReturnChaosTokenToPoolPayment t
+    ReturnChaosTokenToPoolCost t -> withPayment $ ReturnChaosTokenToPoolPayment t
+    ReturnChosenChaosTokensToPoolCost -> do
+      -- the tokens leave the bag as one batch so they open a single removal window
+      let chosen = [t | ReturnChaosTokenToPoolPayment t <- universe c.payments]
+      let collapse = \case
+            ReturnChaosTokenToPoolPayment _ -> NoPayment
+            other -> other
+      unless (null chosen) $ push $ ReturnChaosTokensToPool chosen
+      pure
+        $ c
+        & costPaymentsL
+        %~ \p -> Payments [transform collapse p, ReturnChaosTokensToPoolPayment chosen]
     SupplyCost matcher supply -> do
       iid' <- selectJust $ InvestigatorWithSupply supply <> InvestigatorAt matcher
       push $ UseSupply iid' supply

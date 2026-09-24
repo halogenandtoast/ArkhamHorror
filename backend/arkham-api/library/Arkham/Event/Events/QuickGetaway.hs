@@ -33,7 +33,7 @@ instance RunMessage QuickGetaway where
 
       sid <- getRandom
       push $ EvadeEnemy sid iid details.enemy (toSource attrs) Nothing #agility False
-      pure . QuickGetaway $ attrs `with` Meta (Just details)
+      pure . QuickGetaway $ (attrs & targetL ?~ EnemyTarget details.enemy) `with` Meta (Just details)
     PassedThisSkillTest _iid (isSource attrs -> True) -> do
       for_ (attackDetails meta) \details -> do
         when (attackCanBeCanceled details) do

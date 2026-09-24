@@ -957,6 +957,10 @@ data Message
     Investigate Investigate
   | UpdateEventMeta EventId Value
   | UpdateEventTarget EventId (Maybe Target)
+  | {- | A target the player picked while an event was resolving. Recorded as
+    that event's target (first choice wins) so "targets an X" matchers work.
+    -}
+    ChoseTarget Target
   | LoadDeck InvestigatorId (Deck PlayerCard) -- used to reset the deck of the investigator
   | LookAtRevealed InvestigatorId Source Target
   | LookAtTopOfDeck InvestigatorId Target Int
@@ -2809,9 +2813,9 @@ uiToRun = \case
   TooltipLabel _ _ msgs -> Run msgs
   CardLabel _ _ msgs -> Run msgs
   ChaosTokenLabel _ msgs -> Run msgs
-  PortraitLabel _ msgs -> Run msgs
+  PortraitLabel iid msgs -> Run (ChoseTarget (InvestigatorTarget iid) : msgs)
   KeyLabel _ msgs -> Run msgs
-  TargetLabel _ msgs -> Run msgs
+  TargetLabel t msgs -> Run (ChoseTarget t : msgs)
   GridLabel _ msgs -> Run msgs
   ConnectionLabel _ msgs -> Run msgs
   TarotLabel _ msgs -> Run msgs

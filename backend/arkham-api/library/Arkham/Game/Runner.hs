@@ -227,6 +227,44 @@ removeSeat departure iid g = case Map.lookup iid (g ^. entitiesL . investigators
     replaceIid x = if x == iid then heir else x
     replacePid x = if x == pid then heirPid else x
 
+-- fight/evade choices coerce as-if-enemy locations and assets into EnemyId, so
+-- only a real enemy counts as the event's target
+setEventEnemyTarget :: HasGame m => EventId -> EnemyId -> Game -> m Game
+setEventEnemyTarget eid enemyId g = do
+  isEnemy <- selectAny $ EnemyWithId enemyId
+  pure $ if isEnemy then setEventTarget eid (EnemyTarget enemyId) g else g
+
+{- | First target an event picks sticks, later choices are not what it targeted.
+A card in hand or discard is skipped: no "targets an X" matcher reads
+'CardIdTarget', and recording it would hide the real target behind an earlier
+discard\/play choice (Blood Rite picks the card to discard before its enemy).
+-}
+setEventTarget :: EventId -> Target -> Game -> Game
+setEventTarget _ (CardIdTarget _) = id
+setEventTarget eid target =
+  entitiesL . eventsL . ix eid %~ overAttrs \attrs ->
+    if isJust attrs.target then attrs else attrs {eventTarget = Just target}
+
+{- | The innermost event still resolving, i.e. the first pending 'FinishedEvent'
+in the queue. An event played during another event's resolution pushes its own
+'FinishedEvent' in front, so the first one found is the one whose messages are
+running now.
+-}
+resolvingEventId :: [Message] -> Maybe EventId
+resolvingEventId = go
+ where
+  go [] = Nothing
+  go (m : ms) = case m of
+    FinishedEvent eid -> Just eid
+    Run xs -> go (xs <> ms)
+    Simultaneously xs -> go (xs <> ms)
+    Would _ xs -> go (xs <> ms)
+    MoveWithSkillTest x -> go (x : ms)
+    Do x -> go (x : ms)
+    Priority x -> go (x : ms)
+    Retain x -> go (x : ms)
+    _ -> go ms
+
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
   -- ClearUI is pushed exactly once per accepted answer (Api Games.Shared), so
@@ -1854,6 +1892,15 @@ runGameMessage msg g = case msg of
             %~ insertEntity (overAttrs (\e -> e {eventPlacement = Unplaced}) event')
         else pure id
     pure $ g & entitiesL . eventsL %~ deleteMap eventId & removedEntitiesF
+  -- fight/evade events pick their enemy during resolution, so record it as the
+  -- event's target for "targets an enemy" matchers
+  ChoseEnemy _ _ ((.event) -> Just eid) enemyId -> setEventEnemyTarget eid enemyId g
+  -- an event's costs are paid before its 'FinishedEvent' is queued, so payment
+  -- choices find no resolving event and are skipped
+  ChoseTarget target -> do
+    queue <- peekQueue
+    pure $ maybe g (\eid -> setEventTarget eid target g) (resolvingEventId queue)
+  ChosenEvadeEnemy _ ((.event) -> Just eid) enemyId -> setEventEnemyTarget eid enemyId g
   After (ShuffleIntoDeck _ (AssetTarget aid)) -> do
     runMessage (RemoveAsset aid) g
   After (ShuffleIntoDeck _ (EventTarget eid)) ->

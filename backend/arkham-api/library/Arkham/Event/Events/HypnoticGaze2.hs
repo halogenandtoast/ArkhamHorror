@@ -31,7 +31,11 @@ instance RunMessage HypnoticGaze2 where
       cancelAttack attrs currentAttack
       push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
       cancelledOrIgnoredCardOrGameEffect attrs
-      pure $ HypnoticGaze2 ((attrs & waitingL .~ True) `with` Metadata (Just currentAttack.enemy))
+      pure
+        $ HypnoticGaze2
+          ( (attrs & waitingL .~ True & targetL ?~ EnemyTarget currentAttack.enemy)
+              `with` Metadata (Just currentAttack.enemy)
+          )
     RequestedChaosTokens (isSource attrs -> True) (Just iid) faces -> do
       let enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)
       let valid =
@@ -46,10 +50,14 @@ instance RunMessage HypnoticGaze2 where
           $ If
             (Window.RevealChaosTokenEventEffect attrs.owner faces attrs.id)
             [ Msg.chooseOrRunOne player
-                $ [ Label "$cards.label.hypnoticGaze.health" [DealDamage (EnemyTarget enemyId) $ nonAttack (Just iid) attrs healthDamage']
+                $ [ Label
+                      "$cards.label.hypnoticGaze.health"
+                      [DealDamage (EnemyTarget enemyId) $ nonAttack (Just iid) attrs healthDamage']
                   | healthDamage' > 0
                   ]
-                <> [ Label "$cards.label.hypnoticGaze.sanity" [DealDamage (EnemyTarget enemyId) $ nonAttack (Just iid) attrs sanityDamage']
+                <> [ Label
+                       "$cards.label.hypnoticGaze.sanity"
+                       [DealDamage (EnemyTarget enemyId) $ nonAttack (Just iid) attrs sanityDamage']
                    | sanityDamage' > 0
                    ]
             ]

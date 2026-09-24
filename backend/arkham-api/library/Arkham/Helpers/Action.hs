@@ -9,7 +9,12 @@ import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import {-# SOURCE #-} Arkham.GameEnv (getAllAbilities, getCurrentWindowTick, getEntryTicks)
-import Arkham.Helpers.Ability (getCanAffordAbility, getCanPerformAbility, isForcedAbility)
+import Arkham.Helpers.Ability (
+  abilityWindowFor,
+  getCanAffordAbility,
+  getCanPerformAbility,
+  isForcedAbility,
+ )
 import Arkham.Helpers.CombatTarget
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
@@ -23,7 +28,6 @@ import Arkham.Helpers.Source (sourceTraits)
 import {-# SOURCE #-} Arkham.Helpers.Window (windowMatches)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..), Investigator, InvestigatorAttrs (..))
-import Arkham.Matcher (replaceThisLocation)
 import Arkham.Matcher.Ability
 import Arkham.Matcher.Action
 import Arkham.Matcher.Card
@@ -220,9 +224,7 @@ getActionsWith iid ws f = do
     if null ws
       then pure actionsWithSources
       else flip filterM actionsWithSources \ability -> do
-        let abWindow = case (abilitySource ability).location of
-              Nothing -> abilityWindow ability
-              Just lid -> replaceThisLocation lid (abilityWindow ability)
+        let abWindow = abilityWindowFor ability
         -- A forced/reaction ability may only respond to a triggering condition
         -- that occurred while its source card was already in play. A card that
         -- enters during an open window cannot respond to that window's

@@ -13,10 +13,10 @@ buryThemDeep :: EventCard BuryThemDeep
 buryThemDeep = event BuryThemDeep Cards.buryThemDeep
 
 instance RunMessage BuryThemDeep where
-  runMessage msg e@(BuryThemDeep attrs) = runQueueT $ case msg of
+  runMessage msg (BuryThemDeep attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       addToVictory iid attrs
       let enemyId = defeatedEnemy attrs.windows
       insteadOfDefeatWithWindows enemyId $ addToVictory iid enemyId
-      pure e
+      pure . BuryThemDeep $ attrs & targetL ?~ EnemyTarget enemyId
     _ -> BuryThemDeep <$> liftRunMessage msg attrs

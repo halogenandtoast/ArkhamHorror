@@ -397,6 +397,9 @@ filterMapM f = fmap mapFromList . filterM (f . snd) . mapToList
 filterBy :: [a -> Bool] -> [a] -> [a]
 filterBy fs = filter (and . sequence fs)
 
+noneBy :: [a -> Bool] -> [a] -> Bool
+noneBy fs = null . filterBy fs
+
 filterByM :: Monad m => [a -> m Bool] -> [a] -> m [a]
 filterByM fs = filterM (andM . sequence fs)
 

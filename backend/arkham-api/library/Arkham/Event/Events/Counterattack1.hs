@@ -12,10 +12,10 @@ counterattack1 :: EventCard Counterattack1
 counterattack1 = event Counterattack1 Cards.counterattack1
 
 instance RunMessage Counterattack1 where
-  runMessage msg e@(Counterattack1 attrs) = runQueueT $ case msg of
+  runMessage msg (Counterattack1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
       let details = getAttackDetails attrs.windows
       cancelAttack attrs details
       nonAttackEnemyDamage (Just iid) attrs 1 details.enemy
-      pure e
+      pure . Counterattack1 $ attrs & targetL ?~ EnemyTarget details.enemy
     _ -> Counterattack1 <$> liftRunMessage msg attrs

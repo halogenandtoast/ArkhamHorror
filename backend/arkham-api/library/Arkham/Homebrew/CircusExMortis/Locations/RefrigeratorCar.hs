@@ -17,9 +17,8 @@ refrigeratorCar = symbolLabel $ location RefrigeratorCar Cards.refrigeratorCar 4
 
 instance HasModifiersFor RefrigeratorCar where
   getModifiersFor (RefrigeratorCar a) = do
-    noClues <- a.id <=~> LocationWithoutClues
+    noClues <- a.id `matches` LocationWithoutClues
     when noClues $ modifySelectMaybe a (investigatorAt a) \iid -> do
-      playedCards <- getHistoryField #round iid HistoryPlayedCards
-      let playedHere = filter ((== Just a.id) . playedCardLocation) playedCards
-      guard $ none (`cardMatch` card_ #asset) playedHere
+      cards <- getHistoryField #round iid HistoryPlayedCards
+      guard $ noneBy [(== Just a.id) . playedCardLocation, (`cardMatch` card_ #asset)] cards
       pure [ReduceCostOf #asset 1]

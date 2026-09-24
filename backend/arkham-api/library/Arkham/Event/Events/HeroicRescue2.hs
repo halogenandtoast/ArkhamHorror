@@ -16,7 +16,7 @@ heroicRescue2 :: EventCard HeroicRescue2
 heroicRescue2 = event HeroicRescue2 Cards.heroicRescue2
 
 instance RunMessage HeroicRescue2 where
-  runMessage msg e@(HeroicRescue2 attrs) = runQueueT $ case msg of
+  runMessage msg (HeroicRescue2 attrs) = runQueueT $ case msg of
     InvestigatorPlayEvent iid eid _ [windowType -> Window.EnemyWouldAttack details'] _ | eid == toId attrs -> do
       let iid' = fromJustNote "wrong target" $ preview _InvestigatorTarget =<< details'.singleTarget
       let enemy = details'.enemy
@@ -30,5 +30,5 @@ instance RunMessage HeroicRescue2 where
 
       when canDealDamage do
         afterEnemyAttack enemy $ nonAttackEnemyDamage (Just iid) attrs 1 enemy
-      pure e
+      pure . HeroicRescue2 $ attrs & targetL ?~ EnemyTarget enemy
     _ -> HeroicRescue2 <$> liftRunMessage msg attrs

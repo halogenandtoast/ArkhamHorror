@@ -32,7 +32,7 @@ instance RunMessage Restrained where
       let details = getAttackDetails attrs.windows
       automaticallyEvadeEnemy iid details.enemy
       place attrs $ AttachedToEnemy details.enemy
-      pure e
+      pure . Restrained $ attrs & targetL ?~ EnemyTarget details.enemy
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       toDiscardBy attrs.controller (attrs.ability 1) attrs
       pure e

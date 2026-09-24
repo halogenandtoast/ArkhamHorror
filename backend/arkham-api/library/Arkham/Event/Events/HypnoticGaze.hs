@@ -30,7 +30,9 @@ instance RunMessage HypnoticGaze where
       cancelAttack attrs currentAttack
       push $ RequestChaosTokens (toSource attrs) (Just iid) (Reveal 1) SetAside
       cancelledOrIgnoredCardOrGameEffect attrs
-      pure $ HypnoticGaze (attrs `with` Metadata (Just currentAttack.enemy))
+      pure
+        $ HypnoticGaze
+          ((attrs & targetL ?~ EnemyTarget currentAttack.enemy) `with` Metadata (Just currentAttack.enemy))
     RequestedChaosTokens (isSource attrs -> True) (Just iid) faces -> do
       continue_ iid
       let enemyId = fromMaybe (error "missing enemy id") (selectedEnemy meta)

@@ -37,6 +37,18 @@ import Arkham.Window qualified as Window
 getAbility :: HasGame m => AbilityRef -> m (Maybe Ability)
 getAbility ref = selectOne (Matcher.AbilityIs ref.source ref.index)
 
+{- | An ability's window matcher with `ThisLocation` resolved against its source.
+
+`getActionsWith` expands a `LocationMatcherSource` proxy into one source per matching
+location but leaves the ability's own window untouched, and a bare `ThisLocation`
+selects nothing. So anything re-matching that window outside `getActions` must resolve
+it first or the ability is admitted and then silently fails to match. #5764
+-}
+abilityWindowFor :: Ability -> Matcher.WindowMatcher
+abilityWindowFor ability = case ability.source.location of
+  Nothing -> ability.window
+  Just lid -> Matcher.replaceThisLocation lid ability.window
+
 getCanPerformAbility
   :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 getCanPerformAbility !iid !ws !ability = do
@@ -52,9 +64,7 @@ getCanPerformAbility !iid !ws !ability = do
     setCriteria = \case
       SetAbilityCriteria (CriteriaOverride c) -> const c
       _ -> id
-    abWindow = case ability.source.location of
-      Nothing -> ability.window
-      Just lid -> Matcher.replaceThisLocation lid ability.window
+    abWindow = abilityWindowFor ability
 
   runValidT do
     when ability.skipForAll do

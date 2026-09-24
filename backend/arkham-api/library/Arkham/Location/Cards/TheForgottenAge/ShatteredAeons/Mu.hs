@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheForgottenAge.ShatteredAeons.Mu (mu) where
 
 import Arkham.ChaosToken
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Location (isAt)
 import Arkham.Helpers.Modifiers

@@ -13,7 +13,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.EncounterSet (EncounterSet)
 import Arkham.EncounterSet qualified as EncounterSet
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.Cost

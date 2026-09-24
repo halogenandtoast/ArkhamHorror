@@ -3,7 +3,7 @@ module Arkham.Location.Cards.TheMidwinterGala.LanternChamber (lanternChamber) wh
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.Scenario (getEncounterDeck)
 import Arkham.Location.CardDefs.TheMidwinterGala qualified as Cards

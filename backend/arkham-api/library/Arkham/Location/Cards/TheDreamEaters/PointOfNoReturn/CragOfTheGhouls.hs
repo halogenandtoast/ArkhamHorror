@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheDreamEaters.PointOfNoReturn.CragOfTheGhouls (cragOfTheGhouls, CragOfTheGhouls (..)) where
 
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Story (readStory)

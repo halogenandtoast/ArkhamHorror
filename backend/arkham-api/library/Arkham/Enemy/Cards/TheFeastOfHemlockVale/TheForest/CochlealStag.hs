@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.TheFeastOfHemlockVale.TheForest.CochlealStag (cochleal
 
 import Arkham.Enemy.CardDefs.TheFeastOfHemlockVale.TheForest qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Matcher
 import Arkham.SkillType

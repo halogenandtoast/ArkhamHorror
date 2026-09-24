@@ -5,7 +5,7 @@ import Arkham.Attack
 import Arkham.Distance
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheGrandVault qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv (getDistance)
+import Arkham.GameEnv (getDistance)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Location.CardDefs.TheDrownedCity.TheGrandVault qualified as Locations

@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.ReturnToTheDunwichLegacy.ReturnToBloodOnTheAltar.Hired
 import Arkham.Card
 import Arkham.Enemy.CardDefs.ReturnToTheDunwichLegacy.ReturnToBloodOnTheAltar qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (Surge)
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword
 import Arkham.Matcher

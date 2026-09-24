@@ -5,7 +5,7 @@ import Arkham.Action.Additional
 import Arkham.Capability
 import Arkham.Card
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Cost (getCanAffordCost)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf, withModifiersOf)
 import Arkham.Helpers.Playable (getPlayableCardsMatch)

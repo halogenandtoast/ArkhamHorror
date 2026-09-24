@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheFeastOfHemlockVale.TheVale.TheCrossroadsNight (theCrossroadsNight) where
 
 import Arkham.Ability
-import {-# SOURCE #-} Arkham.GameEnv (getPhase)
+import Arkham.GameEnv (getPhase)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Keyword (Keyword (Aloof))
 import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheVale qualified as Cards

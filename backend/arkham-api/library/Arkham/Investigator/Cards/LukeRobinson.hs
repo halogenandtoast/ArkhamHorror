@@ -7,7 +7,7 @@ import Arkham.Classes.HasGame
 import Arkham.Cost
 import Arkham.Cost.Status qualified as CostStatus
 import Arkham.ForMovement
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Action (canDo_, getActions)
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers (

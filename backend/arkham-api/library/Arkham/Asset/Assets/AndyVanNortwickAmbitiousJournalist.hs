@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.AndyVanNortwickAmbitiousJournalist (andyVanNortwick) 
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Attack.Types (EnemyAttackType (..))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets, controllerGetsMaybe)
 import Arkham.History
 import Arkham.Matcher

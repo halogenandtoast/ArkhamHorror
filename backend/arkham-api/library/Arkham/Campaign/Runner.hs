@@ -20,7 +20,7 @@ import Arkham.Classes.GameLogger
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
 import Arkham.Custom.Overlay (DeckOverlay (..))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.GameT
 import Arkham.Helpers
 import Arkham.Helpers.Deck

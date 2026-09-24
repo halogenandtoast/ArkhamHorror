@@ -2,7 +2,7 @@ module Arkham.Skill.Cards.Copycat3 (copycat3, copycat3Effect) where
 
 import Arkham.Deck qualified as Deck
 import Arkham.Effect.Import
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Skill.Cards qualified as Cards

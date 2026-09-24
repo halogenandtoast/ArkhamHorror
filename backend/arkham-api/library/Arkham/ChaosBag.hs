@@ -10,7 +10,7 @@ import Arkham.ChaosToken.Types
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Game.Settings (activeUltimatumsAndBoons)
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.ChaosToken (matchChaosToken)
 import Arkham.Helpers.Message
 import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, hasModifier)

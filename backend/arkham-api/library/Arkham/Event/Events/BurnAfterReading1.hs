@@ -3,7 +3,7 @@ module Arkham.Event.Events.BurnAfterReading1 (burnAfterReading1, BurnAfterReadin
 import Arkham.Discover
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Investigator (getCanDiscoverClues)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Message (handleTargetChoice)

@@ -18,7 +18,7 @@ import Arkham.Target as X
 import Arkham.Card
 import Arkham.Classes.Query (selectOne, (<=~>))
 import Arkham.Classes.RunMessage
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Matcher.Scenario
 import Arkham.Modifier
 import Arkham.Window (Window)

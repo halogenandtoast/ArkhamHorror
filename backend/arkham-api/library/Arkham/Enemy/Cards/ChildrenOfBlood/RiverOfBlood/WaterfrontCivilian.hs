@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.ChildrenOfBlood.RiverOfBlood.WaterfrontCivilian (water
 import Arkham.Ability
 import Arkham.Enemy.CardDefs.ChildrenOfBlood.RiverOfBlood qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.SkillTest.Lifted
 import Arkham.Matcher
 import Arkham.Trait (Trait (Arkham))

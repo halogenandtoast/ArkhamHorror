@@ -9,7 +9,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.BadBlood qualified as Enemies
 import Arkham.Event.Cards qualified as Events
 import Arkham.Exception
-import {-# SOURCE #-} Arkham.GameEnv (findCard)
+import Arkham.GameEnv (findCard)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.SkillTest (getSkillTestInvestigator, withSkillTest)

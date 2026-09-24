@@ -3,7 +3,7 @@ module Arkham.Location.Cards.ThePathToCarcosa.ThePallidMask.NarrowShaft (narrowS
 import Arkham.Ability
 import Arkham.Direction
 import Arkham.Draw.Types
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Location.CardDefs.ThePathToCarcosa.ThePallidMask qualified as Cards
 import Arkham.Location.Helpers

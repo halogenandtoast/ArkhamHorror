@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.EdgeOfTheEarth.TheHeartOfMadness.PrimevalTerror (primevalTerror) where
 
 import Arkham.Distance
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Location.CardDefs.EdgeOfTheEarth.TheHeartOfMadness (theGateOfYquaa)
 import Arkham.Matcher

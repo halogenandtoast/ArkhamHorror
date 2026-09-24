@@ -5,7 +5,7 @@ import Arkham.ChaosToken
 import Arkham.Effect.Import
 import Arkham.Enemy.CardDefs.TheForgottenAge.ShatteredAeons qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest.Lifted (parley)
 import Arkham.Helpers.Story

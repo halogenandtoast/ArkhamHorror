@@ -3,7 +3,7 @@ module Arkham.Behavior.Evade where
 import Arkham.Calculation
 import Arkham.Classes.HasGame (HasGame)
 import Arkham.Classes.HasQueue (HasQueue)
-import {-# SOURCE #-} Arkham.GameEnv (getWindowTick)
+import Arkham.GameEnv (getWindowTick)
 import Arkham.Helpers.Message (push, pushAll)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.SkillTest.Lifted (evade)

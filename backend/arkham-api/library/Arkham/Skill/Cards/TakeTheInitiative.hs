@@ -1,6 +1,6 @@
 module Arkham.Skill.Cards.TakeTheInitiative (takeTheInitiative) where
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.History
 import Arkham.Matcher

@@ -12,7 +12,7 @@ import Arkham.Classes.Query
 import Arkham.Customization
 import Arkham.ForMovement
 import Arkham.Game.Settings
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import {-# SOURCE #-} Arkham.Helpers.Cost (getAdditionalActionCost, getCanAffordCost)
 import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Location (getLocationOf)

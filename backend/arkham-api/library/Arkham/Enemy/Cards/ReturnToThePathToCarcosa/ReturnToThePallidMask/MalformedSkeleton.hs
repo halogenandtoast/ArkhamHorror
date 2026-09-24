@@ -3,7 +3,7 @@ module Arkham.Enemy.Cards.ReturnToThePathToCarcosa.ReturnToThePallidMask.Malform
 import Arkham.Ability
 import Arkham.Enemy.CardDefs.ReturnToThePathToCarcosa.ReturnToThePallidMask qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Query
 import Arkham.Matcher

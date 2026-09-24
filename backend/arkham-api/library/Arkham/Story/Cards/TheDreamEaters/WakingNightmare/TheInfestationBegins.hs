@@ -4,7 +4,7 @@ import Arkham.Card
 import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.Distance
-import {-# SOURCE #-} Arkham.GameEnv (getDistance)
+import Arkham.GameEnv (getDistance)
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getInvestigators, getLead, getPlayerCount)

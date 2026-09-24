@@ -3,7 +3,7 @@ module Arkham.Investigator.Cards.JennyBarnesParallel (jennyBarnesParallel) where
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Playable (getIsPlayableWithResources)

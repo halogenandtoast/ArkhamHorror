@@ -9,7 +9,7 @@ import Arkham.Classes.Query
 import Arkham.Enemy.Types (Enemy, Field (..))
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Location
 import Arkham.Helpers.Query
 import Arkham.Id

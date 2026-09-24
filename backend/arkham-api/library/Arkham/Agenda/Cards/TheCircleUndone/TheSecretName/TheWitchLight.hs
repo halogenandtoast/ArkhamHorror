@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
 import Arkham.Enemy.CardDefs.TheCircleUndone.TheSecretName qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getPlayerCount)

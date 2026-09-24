@@ -4,7 +4,7 @@ import Arkham.Agenda.CardDefs.ChildrenOfBlood.BloodMoney qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
 import Arkham.Enemy.CardDefs.ChildrenOfBlood.AgentsOfZburamoarte qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
+import Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getLead, getPlayerCount, getSetAsideCardsMatching)
 import Arkham.Difficulty

@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.RobertCastaigneStillHasYourBack4 (robertCastaigneStil
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGets)
 import Arkham.Helpers.Playable (getIsPlayable)

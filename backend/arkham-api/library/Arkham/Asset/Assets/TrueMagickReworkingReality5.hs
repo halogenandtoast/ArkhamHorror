@@ -10,7 +10,7 @@ import Arkham.Classes.HasGame
 import Arkham.Constants
 import {-# SOURCE #-} Arkham.Entities
 import {-# SOURCE #-} Arkham.Game
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Criteria (getTrueMagickGrantedTraits)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)

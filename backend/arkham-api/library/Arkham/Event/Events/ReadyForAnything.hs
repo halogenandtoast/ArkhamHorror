@@ -4,7 +4,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.History
 import Arkham.Helpers.Investigator (canHaveHorrorHealed)
-import {-# SOURCE #-} Arkham.GameEnv (getHistoryField)
+import Arkham.GameEnv (getHistoryField)
 
 newtype ReadyForAnything = ReadyForAnything EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

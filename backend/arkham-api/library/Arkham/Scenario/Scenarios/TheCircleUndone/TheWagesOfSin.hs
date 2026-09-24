@@ -13,7 +13,7 @@ import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.ReturnToTheCircleUndone.ReturnToTheWagesOfSin qualified as Enemies
 import Arkham.Enemy.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (roundModifiers)

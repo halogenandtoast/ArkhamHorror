@@ -22,7 +22,7 @@ import Arkham.Matcher (LocationMatcher, MovesVia)
 import Arkham.Phase (Phase)
 import Arkham.Placement
 import Arkham.ScenarioLogKey
-import {-# SOURCE #-} Arkham.SkillTest.Base
+import Arkham.SkillTest.Base
 import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type
 import Arkham.Source (Source (GameSource))

@@ -6,7 +6,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Types qualified as Field
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Query
 import Arkham.Id
 import Arkham.Location.Types qualified as Field

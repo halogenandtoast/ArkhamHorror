@@ -8,7 +8,7 @@ import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (bindMonster2)
 import Arkham.Event.Import.Lifted
 import Arkham.Exception
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Matcher
 
 newtype BindMonster2 = BindMonster2 EventAttrs

@@ -5,7 +5,7 @@ import Arkham.Card
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Playable (getIsPlayableWithResources)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher

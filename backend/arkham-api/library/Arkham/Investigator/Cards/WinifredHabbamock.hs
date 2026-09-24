@@ -2,7 +2,7 @@ module Arkham.Investigator.Cards.WinifredHabbamock (winifredHabbamock, winifredH
 
 import Arkham.Ability
 import Arkham.Effect.Import
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted
 import Arkham.Investigator.Types (Field (InvestigatorCommittedCards))

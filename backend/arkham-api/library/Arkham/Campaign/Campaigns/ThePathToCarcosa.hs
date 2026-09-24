@@ -9,7 +9,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Xp
 import Arkham.Matcher

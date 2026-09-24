@@ -115,7 +115,7 @@ import Arkham.Scenario.Options
 import Arkham.ScenarioLogKey
 import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Cosmos.Types
 import Arkham.Search
-import {-# SOURCE #-} Arkham.SkillTest.Base
+import Arkham.SkillTest.Base
 import Arkham.SkillTest.Type
 import Arkham.SkillTestResult qualified as SkillTest
 import Arkham.SkillType

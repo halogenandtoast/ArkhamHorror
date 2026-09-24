@@ -11,7 +11,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheApiary qualified as Enemies
 import Arkham.Enemy.CardDefs.TheDrownedCity.TheInescapable qualified as Enemies
 import Arkham.Enemy.Creation (EnemyCreation, createExhausted)
-import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
+import Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Cost (getSpendableClueCount)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (

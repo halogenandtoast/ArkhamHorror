@@ -3,7 +3,7 @@ module Arkham.Event.Events.ATestOfWill (aTestOfWill, ATestOfWill (..)) where
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.SkillTest.Target (getSkillTestTarget)
 import Arkham.Matcher hiding (DrawCard)
 import Arkham.Window

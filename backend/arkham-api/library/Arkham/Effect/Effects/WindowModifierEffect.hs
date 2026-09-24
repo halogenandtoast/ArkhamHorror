@@ -8,7 +8,7 @@ import Arkham.Prelude
 
 import Arkham.Classes
 import Arkham.Effect.Runner
-import {-# SOURCE #-} Arkham.GameEnv (getPhase)
+import Arkham.GameEnv (getPhase)
 import Arkham.Matcher
 import Arkham.Modifier
 import Control.Monad.Writer.Class

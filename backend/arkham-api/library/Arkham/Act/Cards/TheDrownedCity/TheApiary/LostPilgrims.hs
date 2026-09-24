@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheDrownedCity.TheApiary qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.ForMovement
-import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
+import Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest.Lifted (parley)

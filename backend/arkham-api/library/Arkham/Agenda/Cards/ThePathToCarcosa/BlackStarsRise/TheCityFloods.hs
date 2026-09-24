@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.ThePathToCarcosa.BlackStarsRise.TheCityFloods (theCit
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.BlackStarsRise qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Treachery.CardDefs.NightOfTheZealot.AncientEvils qualified as Treacheries

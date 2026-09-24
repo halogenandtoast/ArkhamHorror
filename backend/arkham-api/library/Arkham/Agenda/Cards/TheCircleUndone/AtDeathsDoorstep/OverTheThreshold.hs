@@ -5,7 +5,7 @@ import Arkham.Agenda.CardDefs.TheCircleUndone.AtDeathsDoorstep qualified as Card
 import Arkham.Agenda.Import.Lifted hiding (PhaseStep)
 import Arkham.Card
 import Arkham.Enemy.Types (Field (EnemyHealthDamage))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Act
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query

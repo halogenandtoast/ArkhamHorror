@@ -2,7 +2,7 @@ module Arkham.Skill.Cards.Prescient (prescient, prescientEffect) where
 
 import Arkham.ChaosToken
 import Arkham.Effect.Import
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

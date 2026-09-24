@@ -8,7 +8,7 @@ import Arkham.Classes.HasGame
 import Arkham.Effect.Types (Field (..))
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Event.Types (Field (..))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Location.Types (Field (..))
 import Arkham.Prelude
 import Arkham.Projection

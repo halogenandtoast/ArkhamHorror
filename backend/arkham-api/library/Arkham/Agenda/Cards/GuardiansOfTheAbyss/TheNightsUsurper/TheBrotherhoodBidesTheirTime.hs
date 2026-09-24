@@ -4,7 +4,7 @@ import Arkham.Agenda.CardDefs.GuardiansOfTheAbyss.TheNightsUsurper qualified as 
 import Arkham.Agenda.Import.Lifted
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
 import Arkham.Enemy.Creation (EnemyCreationMethod (SpawnEngagedWith))
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Query (getInvestigators, getLead)
 import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Matcher

@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.CeremonialRobes1 (ceremonialRobes1) where
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.History
 import Arkham.Matcher

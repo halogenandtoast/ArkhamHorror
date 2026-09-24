@@ -1,7 +1,7 @@
 module Arkham.Investigator.Cards.DaisyWalkerParallel (daisyWalkerParallel) where
 
 import Arkham.Ability
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
 import Arkham.I18n

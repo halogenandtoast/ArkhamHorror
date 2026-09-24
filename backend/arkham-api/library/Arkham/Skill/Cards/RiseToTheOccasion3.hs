@@ -1,6 +1,6 @@
 module Arkham.Skill.Cards.RiseToTheOccasion3 (riseToTheOccasion3) where
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted

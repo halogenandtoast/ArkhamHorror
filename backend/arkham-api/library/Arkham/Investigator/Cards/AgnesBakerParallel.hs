@@ -3,7 +3,7 @@ module Arkham.Investigator.Cards.AgnesBakerParallel (agnesBakerParallel) where
 import Arkham.ActiveCost.Base
 import Arkham.Card
 import Arkham.Cost
-import {-# SOURCE #-} Arkham.GameEnv (findAllCards, getActiveCosts)
+import Arkham.GameEnv (findAllCards, getActiveCosts)
 import Arkham.Helpers.Investigator (canHaveDamageHealed)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEachMaybe, modifySelf)
 import Arkham.I18n

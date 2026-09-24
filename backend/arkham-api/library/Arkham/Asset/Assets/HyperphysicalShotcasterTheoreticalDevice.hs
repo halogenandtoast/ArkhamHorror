@@ -12,7 +12,7 @@ import Arkham.Customization
 import Arkham.Evade qualified as Evade
 import Arkham.Fight qualified as Fight
 import Arkham.ForMovement
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Message qualified as Msg

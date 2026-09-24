@@ -8,7 +8,7 @@ import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Fight (mkChooseFightPure)
 import Arkham.Fight.Types
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers (ModifierType (..), getMeta)
 import Arkham.Matcher
 

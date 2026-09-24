@@ -4,7 +4,7 @@ import Arkham.Card
 import Arkham.Card.PlayerCard
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Customization
 import Arkham.Homebrew.Defs (allTraits)
 import Arkham.Matcher

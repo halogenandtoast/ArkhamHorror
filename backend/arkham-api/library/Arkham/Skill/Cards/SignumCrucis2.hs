@@ -1,6 +1,6 @@
 module Arkham.Skill.Cards.SignumCrucis2 (signumCrucis2) where
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.ChaosBag
 import Arkham.Helpers.SkillTest
 import Arkham.Skill.Cards qualified as Cards

@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers hiding (drawCard)
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Investigator (getCardAttachments)

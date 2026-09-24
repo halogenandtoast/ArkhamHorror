@@ -1,7 +1,7 @@
 module Arkham.Asset.Assets.ShrewdDealings (shrewdDealings) where
 
 import Arkham.Ability
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted hiding (PlayCard)
 import Arkham.Helpers.Card (passesLimits)

@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.Queue (QueueT)
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Card
 import Arkham.Helpers.Ref
 import Arkham.Helpers.SkillTest (withSkillTest)

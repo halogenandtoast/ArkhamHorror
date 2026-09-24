@@ -9,12 +9,12 @@ import Arkham.Id
 import {-# SOURCE #-} Arkham.Message (Message)
 import Arkham.Prelude
 import Arkham.Question (UI)
-import {-# SOURCE #-} Arkham.SkillTest.Base
-  ( SkillTest
-  , SkillTestBaseValue
-  , SkillTestDifficulty
-  , SkillTestResultsData
-  )
+import Arkham.SkillTest.Base (
+  SkillTest,
+  SkillTestBaseValue,
+  SkillTestDifficulty,
+  SkillTestResultsData,
+ )
 import Arkham.SkillTest.Option (SkillTestOption)
 import Arkham.SkillTest.Type (SkillTestType)
 import Arkham.SkillTestResult qualified as SkillTest
@@ -31,9 +31,10 @@ newtype ToSkillType = ToSkillType SkillType
   deriving stock (Show, Ord, Eq, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)
 
--- | Messages relating to skill-test setup, resolution, commit/uncommit, and
--- skill-test windows. Routed by 'SkillTestId' for the most part — i.e., the
--- in-progress test the message refers to.
+{- | Messages relating to skill-test setup, resolution, commit/uncommit, and
+skill-test windows. Routed by 'SkillTestId' for the most part — i.e., the
+in-progress test the message refers to.
+-}
 data SkillTestMessage
   = AbilityIsSkillTest_ AbilityRef
   | CollectSkillTestOptions_

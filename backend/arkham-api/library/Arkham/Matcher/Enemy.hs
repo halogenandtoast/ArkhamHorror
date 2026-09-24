@@ -103,6 +103,8 @@ data EnemyMatcher
   | AnyEnemy
   | EnemyCanAttack InvestigatorMatcher
   | AttackingEnemy
+  | -- | Deals at least 1 damage or 1 horror, after modifiers
+    EnemyDealsDamageOrHorror
   | AttackedYouSinceTheEndOfYourLastTurn
   | CanFightEnemy Source
   | CanFightEnemyWith SourceMatcher

@@ -6,7 +6,7 @@ where
 
 import Arkham.Card
 import Arkham.Effect.Import
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest (getSkillTestSource, withSkillTest)
 import Arkham.Matcher

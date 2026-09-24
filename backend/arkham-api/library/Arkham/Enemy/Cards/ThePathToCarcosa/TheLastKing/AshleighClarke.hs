@@ -2,7 +2,7 @@ module Arkham.Enemy.Cards.ThePathToCarcosa.TheLastKing.AshleighClarke (ashleighC
 
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Phase

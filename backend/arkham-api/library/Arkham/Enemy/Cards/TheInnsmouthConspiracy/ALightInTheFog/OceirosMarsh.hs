@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks, EnemyEvaded)
 import Arkham.Enemy.Types (Field (EnemyKeys))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.I18n
 import Arkham.Investigator.Projection ()

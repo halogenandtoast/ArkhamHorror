@@ -6,7 +6,7 @@ import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach)
 import Arkham.Investigator.Deck
 import Arkham.Investigator.Types (Field (..))

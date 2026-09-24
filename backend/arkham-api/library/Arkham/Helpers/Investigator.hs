@@ -17,7 +17,8 @@ import Arkham.Criteria qualified as Criteria
 import Arkham.Damage
 import Arkham.Discover (IsInvestigate (..))
 import {-# SOURCE #-} Arkham.Game.Base
-import {-# SOURCE #-} Arkham.GameEnv
+import {-# SOURCE #-} Arkham.Game.Utils (withInvestigatorEdit)
+import Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers
 import {-# SOURCE #-} Arkham.Helpers.Calculation (calculate)

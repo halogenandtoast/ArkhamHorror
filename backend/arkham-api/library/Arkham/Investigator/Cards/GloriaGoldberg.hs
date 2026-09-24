@@ -3,7 +3,7 @@ module Arkham.Investigator.Cards.GloriaGoldberg (gloriaGoldberg) where
 import Arkham.Ability
 import Arkham.Card
 import Arkham.Deck qualified as Deck
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Deck (withDeck)
 import Arkham.I18n

@@ -2,7 +2,7 @@ module Arkham.Treachery.Cards.CallOfTheUnknown (callOfTheUnknown, CallOfTheUnkno
 
 import Arkham.Ability
 import Arkham.Classes
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.History
 import Arkham.Id
 import Arkham.Matcher

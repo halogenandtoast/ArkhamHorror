@@ -12,7 +12,7 @@ import Arkham.Campaigns.TheCircleUndone.Memento.Helpers
 import Arkham.Card
 import Arkham.Card.PlayerCard (lookupPlayerCard)
 import Arkham.ChaosToken
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query

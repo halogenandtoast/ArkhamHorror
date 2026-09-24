@@ -2,7 +2,7 @@ module Arkham.Homebrew.CircusExMortis.Enemies.NewMoonIllusionist (newMoonIllusio
 
 import Arkham.Card
 import Arkham.Enemy.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv (findAllCards, getHistory)
+import Arkham.GameEnv (findAllCards, getHistory)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach, modifySelfWhen)
 import Arkham.History
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards

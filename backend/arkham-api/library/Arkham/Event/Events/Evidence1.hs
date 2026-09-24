@@ -3,7 +3,7 @@ module Arkham.Event.Events.Evidence1 (evidence1) where
 import Arkham.Enemy.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Calculation
 import Arkham.History
 

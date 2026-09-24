@@ -13,7 +13,7 @@ import Arkham.Enemy.Creation (EnemyCreation (..))
 import Arkham.Enemy.Helpers
 import Arkham.Enemy.Types
 import Arkham.ForMovement
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Damage (damageEffectMatches)

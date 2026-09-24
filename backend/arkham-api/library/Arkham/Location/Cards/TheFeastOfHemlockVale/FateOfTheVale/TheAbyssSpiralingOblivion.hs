@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.TheFeastOfHemlockVale.FateOfTheVale.TheAbyssSpiralingOblivion (theAbyssSpiralingOblivion) where
 
 import Arkham.Ability
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Scenario
 import Arkham.Keyword qualified as Keyword

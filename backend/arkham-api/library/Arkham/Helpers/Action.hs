@@ -8,7 +8,7 @@ import Arkham.Card
 import Arkham.ClassSymbol
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
-import {-# SOURCE #-} Arkham.GameEnv (getAllAbilities, getCurrentWindowTick, getEntryTicks)
+import Arkham.GameEnv (getAllAbilities, getCurrentWindowTick, getEntryTicks)
 import Arkham.Helpers.Ability (
   abilityWindowFor,
   getCanAffordAbility,

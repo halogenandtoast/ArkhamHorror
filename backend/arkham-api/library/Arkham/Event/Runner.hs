@@ -28,7 +28,7 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Types (Field (..))
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Modifiers

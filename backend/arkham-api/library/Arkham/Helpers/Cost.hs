@@ -17,7 +17,7 @@ import Arkham.Cost.FieldCost
 import Arkham.Distance
 import Arkham.Enemy.Types (Field (EnemySealedChaosTokens, EnemyTokens))
 import Arkham.Event.Types (Field (..))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Action (additionalActionCovers)
 import {-# SOURCE #-} Arkham.Helpers.Calculation
 import Arkham.Helpers.Card (extendedCardMatch, getModifiedCardCost)
@@ -26,8 +26,8 @@ import Arkham.Helpers.ChaosToken (matchChaosToken)
 import {-# SOURCE #-} Arkham.Helpers.Criteria (passesCriteria)
 import Arkham.Helpers.Customization
 import Arkham.Helpers.GameValue
-import {-# SOURCE #-} Arkham.Helpers.Investigator ()
-import {-# SOURCE #-} Arkham.Helpers.Investigator qualified as Investigator (
+import Arkham.Helpers.Investigator ()
+import Arkham.Helpers.Investigator qualified as Investigator (
   getSpendableClueCount,
  )
 import Arkham.Helpers.Location (getLocationOf)

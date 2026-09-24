@@ -23,7 +23,7 @@ import Arkham.Damage
 import Arkham.DamageEffect
 import Arkham.DefeatedBy
 import Arkham.Event.Types (Field (EventUses))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Card (getVictoryPoints)
 import Arkham.Helpers.Customization

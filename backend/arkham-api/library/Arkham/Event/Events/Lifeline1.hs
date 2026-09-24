@@ -2,7 +2,7 @@ module Arkham.Event.Events.Lifeline1 (lifeline1) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.History
 import Arkham.SkillTestResult
 import Arkham.Strategy

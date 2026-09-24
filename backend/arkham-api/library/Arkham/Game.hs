@@ -70,7 +70,7 @@ import Arkham.Game.Runner (preloadEntities, runPreGameMessage)
 import Arkham.Game.Settings
 import Arkham.Game.State
 import Arkham.Game.Utils
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.GameT
 import Arkham.Git (gitHash)
 import Arkham.Helpers
@@ -3870,6 +3870,9 @@ enemyMatcherFilter [] _ = pure []
 enemyMatcherFilter es matcher' = do
   case matcher' of
     AttackingEnemy -> filterM (fieldMap EnemyAttacking isJust . toId) es
+    EnemyDealsDamageOrHorror ->
+      flip filterM es \e ->
+        orM [fieldP EnemyHealthDamage (> 0) (toId e), fieldP EnemySanityDamage (> 0) (toId e)]
     EnemyWithToken tkn -> filterM (fieldMap EnemyTokens (Token.hasToken tkn) . toId) es
     EnemyWithTokens gv tkn -> do
       n <- getGameValue gv

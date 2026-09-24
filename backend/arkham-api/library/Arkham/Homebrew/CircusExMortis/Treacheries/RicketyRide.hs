@@ -1,7 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Treacheries.RicketyRide (ricketyRide) where
 
 import Arkham.Distance (unDistance)
-import {-# SOURCE #-} Arkham.GameEnv (getDistance)
+import Arkham.GameEnv (getDistance)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModified_)
 import Arkham.Helpers.SkillTest (getSkillTest)

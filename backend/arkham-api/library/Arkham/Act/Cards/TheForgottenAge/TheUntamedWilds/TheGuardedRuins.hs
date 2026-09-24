@@ -3,7 +3,7 @@ module Arkham.Act.Cards.TheForgottenAge.TheUntamedWilds.TheGuardedRuins (theGuar
 import Arkham.Act.CardDefs.TheForgottenAge.TheUntamedWilds qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher

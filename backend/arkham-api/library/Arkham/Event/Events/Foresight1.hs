@@ -3,7 +3,7 @@ module Arkham.Event.Events.Foresight1 (foresight1) where
 import Arkham.Classes.HasGame
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (cardDrawModifier)
-import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
+import Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Modifiers
 import Arkham.Name
 import Arkham.Window (Window (..))

@@ -2,7 +2,7 @@ module Arkham.Location.Cards.TheFeastOfHemlockVale.TheVale.BoardingHouseNight (b
 
 import Arkham.Ability
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.History (History (historyEnemiesDrawn, historyTreacheriesDrawn))
 import Arkham.History.Types

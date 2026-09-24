@@ -3,7 +3,7 @@ module Arkham.Event.Events.UnearthTheAncients2 (unearthTheAncients2, UnearthTheA
 import Arkham.Card
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.SkillTest.Lifted (investigate_)
 import Arkham.Matcher

@@ -59,7 +59,7 @@ import Arkham.Enemy.Creation
 import Arkham.Enemy.Types (Enemy, Field (..), enemyHealth)
 import Arkham.Event.Types (Field (..))
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card

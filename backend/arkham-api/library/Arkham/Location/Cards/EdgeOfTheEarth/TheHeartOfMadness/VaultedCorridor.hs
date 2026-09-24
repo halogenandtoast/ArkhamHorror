@@ -2,7 +2,7 @@ module Arkham.Location.Cards.EdgeOfTheEarth.TheHeartOfMadness.VaultedCorridor (v
 
 import Arkham.Ability
 import Arkham.Distance
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.SkillTest.Target
 import Arkham.Location.CardDefs.EdgeOfTheEarth.TheHeartOfMadness qualified as Cards
 import Arkham.Location.Import.Lifted

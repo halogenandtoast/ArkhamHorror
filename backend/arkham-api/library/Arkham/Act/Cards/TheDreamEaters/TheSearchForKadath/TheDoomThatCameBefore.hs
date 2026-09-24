@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
 import Arkham.Enemy.CardDefs.TheDreamEaters.TheSearchForKadath qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Matcher

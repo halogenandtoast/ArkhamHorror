@@ -2,7 +2,7 @@ module Arkham.Story.Cards.TheInnsmouthConspiracy.TheVanishingOfElinaHarper.Findi
 
 import Arkham.Card
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Matcher
 import Arkham.Name
 import Arkham.Story.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Cards

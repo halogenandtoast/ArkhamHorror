@@ -3,7 +3,7 @@ module Arkham.Asset.Assets.TrenchArmor3 (trenchArmor3) where
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Attack.Types (EnemyAttackType (..))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), controllerGetsMaybe)
 import Arkham.History
 

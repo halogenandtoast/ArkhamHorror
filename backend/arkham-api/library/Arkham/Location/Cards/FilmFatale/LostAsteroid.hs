@@ -1,7 +1,7 @@
 module Arkham.Location.Cards.FilmFatale.LostAsteroid (lostAsteroid) where
 
 import Arkham.Ability
-import {-# SOURCE #-} Arkham.GameEnv (getPhase)
+import Arkham.GameEnv (getPhase)
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.I18n

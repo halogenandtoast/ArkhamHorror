@@ -1,7 +1,7 @@
 module Arkham.Helpers.SkillTest.Target where
 
 import Arkham.Classes.HasGame
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Prelude
 import Arkham.SkillTest.Base

@@ -27,7 +27,7 @@ import Arkham.Direction
 import Arkham.Draw.Types
 import Arkham.Enemy.Types (Field (EnemyCardsUnderneath))
 import {-# SOURCE #-} Arkham.Game ()
-import {-# SOURCE #-} Arkham.GameEnv (getCurrentBatchId)
+import Arkham.GameEnv (getCurrentBatchId)
 import Arkham.Helpers (Deck (..))
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Game (getRemovedFromPlayCards)

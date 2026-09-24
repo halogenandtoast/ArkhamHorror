@@ -8,7 +8,7 @@ import Arkham.Cost
 import Arkham.Effect.Window
 import Arkham.EffectMetadata
 import {-# SOURCE #-} Arkham.Game (Game)
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Ref
 import Arkham.Id
 import Arkham.Matcher.Types

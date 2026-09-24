@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Campaigns.GuardiansOfTheAbyss.Helpers
 import Arkham.Enemy.CardDefs.GuardiansOfTheAbyss.BrotherhoodOfTheBeast qualified as Cards
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
-import {-# SOURCE #-} Arkham.GameEnv (getPhase)
+import Arkham.GameEnv (getPhase)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.I18n
 import Arkham.Matcher

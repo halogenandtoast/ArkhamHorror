@@ -3,7 +3,7 @@ module Arkham.Event.Events.Shortcut (shortcut) where
 import Arkham.Capability
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Investigator
 import Arkham.Helpers.Location
 import Arkham.Matcher

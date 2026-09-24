@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheDunwichLegacy.ExtracurricularActivity.DeadOfNight 
 import Arkham.Agenda.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv (getPhase)
+import Arkham.GameEnv (getPhase)
 import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheDunwichLegacy.ExtracurricularActivity qualified as Locations
 import Arkham.Matcher

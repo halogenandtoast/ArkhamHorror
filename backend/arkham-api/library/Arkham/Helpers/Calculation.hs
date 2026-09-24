@@ -9,7 +9,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Distance
 import Arkham.Enemy.Types (Enemy, Field (EnemyLocation))
-import {-# SOURCE #-} Arkham.GameEnv (getCard, getDistance)
+import Arkham.GameEnv (getCard, getDistance)
 import Arkham.Helpers.Agenda
 import Arkham.Helpers.Card (getModifiedCardCost)
 import Arkham.Helpers.Doom

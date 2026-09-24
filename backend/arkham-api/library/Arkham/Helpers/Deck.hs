@@ -4,7 +4,7 @@ import Arkham.Card
 import Arkham.Classes.HasGame
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers
-import {-# SOURCE #-} Arkham.Helpers.Investigator (matchWho)
+import Arkham.Helpers.Investigator (matchWho)
 import Arkham.Helpers.Scenario
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))

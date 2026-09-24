@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Distance
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.Byakhee qualified as Cards
 import Arkham.Enemy.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

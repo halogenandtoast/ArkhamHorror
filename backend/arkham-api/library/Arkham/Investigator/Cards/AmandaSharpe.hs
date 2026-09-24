@@ -2,7 +2,7 @@ module Arkham.Investigator.Cards.AmandaSharpe (amandaSharpe) where
 
 import Arkham.Ability
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.SkillTest
 import Arkham.Investigator.Cards qualified as Cards

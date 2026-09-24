@@ -11,7 +11,7 @@ import Arkham.Distance
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.CurtainCall qualified as Enemies
 import Arkham.Enemy.CardDefs.ThePathToCarcosa.TheLastKing qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Card
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers hiding (skillTestModifier)

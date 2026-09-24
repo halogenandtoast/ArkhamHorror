@@ -2,7 +2,7 @@ module Arkham.Event.Events.SecondWind2 (secondWind2, SecondWind2 (..)) where
 
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.History
 
 newtype SecondWind2 = SecondWind2 EventAttrs

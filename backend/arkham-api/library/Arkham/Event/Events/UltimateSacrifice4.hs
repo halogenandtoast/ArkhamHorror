@@ -3,7 +3,7 @@ module Arkham.Event.Events.UltimateSacrifice4 (ultimateSacrifice4, ultimateSacri
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv (getPhase)
+import Arkham.GameEnv (getPhase)
 
 newtype UltimateSacrifice4 = UltimateSacrifice4 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

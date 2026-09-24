@@ -1,7 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Treacheries.FocusedSabotage (focusedSabotage) where
 
 import Arkham.Ability
-import {-# SOURCE #-} Arkham.GameEnv (getPhase)
+import Arkham.GameEnv (getPhase)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose

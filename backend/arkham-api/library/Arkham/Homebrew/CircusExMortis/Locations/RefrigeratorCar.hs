@@ -1,7 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Locations.RefrigeratorCar (refrigeratorCar) where
 
 import Arkham.Card (cardMatch, card_)
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMaybe)
 import Arkham.History
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards

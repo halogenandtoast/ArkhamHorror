@@ -298,7 +298,7 @@ import Arkham.Classes.HasQueue (
  )
 import Arkham.DefeatedBy
 import Arkham.Effect.Window
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.I18n
 import Arkham.Matcher hiding (AssetDefeated, DealtDamage, EnemyAttacks, EnemyEvaded)
 import Arkham.Modifier

@@ -5,7 +5,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Card
 import Arkham.Deck qualified as Deck
 import Arkham.Enemy.Creation (createExhausted)
-import {-# SOURCE #-} Arkham.GameEnv (findAllCards)
+import Arkham.GameEnv (findAllCards)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Helpers.Scenario (getVictoryDisplay)

@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.TheCircleUndone.Witchcraft.Wracked (wracked) where
 
 import Arkham.Ability
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.SkillTest.Lifted hiding (beginSkillTest)
 import Arkham.History

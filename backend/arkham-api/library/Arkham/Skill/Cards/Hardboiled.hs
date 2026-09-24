@@ -1,6 +1,6 @@
 module Arkham.Skill.Cards.Hardboiled (hardboiled) where
 
-import {-# SOURCE #-} Arkham.GameEnv (getHistoryField)
+import Arkham.GameEnv (getHistoryField)
 import Arkham.History
 import Arkham.Skill.Cards qualified as Cards
 import Arkham.Skill.Import.Lifted

@@ -6,7 +6,7 @@ import Arkham.Act.Sequence qualified as ActSequence
 import Arkham.Campaigns.TheForgottenAge.Supply
 import Arkham.Card
 import Arkham.Direction
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Location.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Cards
 import Arkham.Location.Import.Lifted

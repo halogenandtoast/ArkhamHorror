@@ -6,7 +6,7 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.Query
 import Arkham.Constants (notPlayerAbilityIndex)
 import Arkham.Field.Import
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.FetchCard
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query

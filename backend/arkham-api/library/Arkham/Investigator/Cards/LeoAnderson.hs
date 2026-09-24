@@ -2,7 +2,7 @@ module Arkham.Investigator.Cards.LeoAnderson (leoAnderson) where
 
 import Arkham.Ability
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Cost
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable

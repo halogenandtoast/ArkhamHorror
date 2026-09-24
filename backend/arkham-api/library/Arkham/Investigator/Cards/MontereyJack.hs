@@ -3,7 +3,7 @@ module Arkham.Investigator.Cards.MontereyJack (montereyJack, MontereyJack (..)) 
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Distance
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Investigator.Cards qualified as Cards

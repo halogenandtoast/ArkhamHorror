@@ -5,7 +5,7 @@ import Arkham.Act.CardDefs.ThePathToCarcosa.BlackStarsRise qualified as Acts
 import Arkham.Agenda.CardDefs.ThePathToCarcosa.BlackStarsRise qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query
 import Arkham.Keyword qualified as Keyword

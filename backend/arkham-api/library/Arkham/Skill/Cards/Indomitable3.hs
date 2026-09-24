@@ -1,6 +1,6 @@
 module Arkham.Skill.Cards.Indomitable3 (indomitable3) where
 
-import {-# SOURCE #-} Arkham.GameEnv (getHistoryField)
+import Arkham.GameEnv (getHistoryField)
 import Arkham.Helpers.Investigator (getJustLocation)
 import Arkham.History
 import Arkham.Matcher

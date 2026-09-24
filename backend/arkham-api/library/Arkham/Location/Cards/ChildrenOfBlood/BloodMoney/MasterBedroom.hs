@@ -2,7 +2,7 @@ module Arkham.Location.Cards.ChildrenOfBlood.BloodMoney.MasterBedroom (masterBed
 
 import Arkham.Card
 import Arkham.Cost
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.History (History (historyTreacheriesDrawn))
 import Arkham.History.Types

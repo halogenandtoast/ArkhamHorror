@@ -1,7 +1,7 @@
 module Arkham.Helpers.Phases where
 
 import Arkham.Classes.HasQueue
-import {-# SOURCE #-} Arkham.GameEnv (getPhase)
+import Arkham.GameEnv (getPhase)
 import Arkham.Helpers.Window (checkWindows)
 import Arkham.Message (Message)
 import Arkham.Message qualified as Msg

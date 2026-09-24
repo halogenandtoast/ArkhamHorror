@@ -1,6 +1,6 @@
 module Arkham.Location.Cards.ReturnToTheCircleUndone.ReturnToTheWitchingHour.ArkhamWoodsHiddenPath (arkhamWoodsHiddenPath) where
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)
 import Arkham.Location.CardDefs.ReturnToTheCircleUndone.ReturnToTheWitchingHour qualified as Cards
 import Arkham.Location.Import.Lifted

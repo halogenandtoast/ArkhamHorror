@@ -4,7 +4,7 @@ import Arkham.Asset.Types (Field (..))
 import Arkham.Cost.Status
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Helpers.Window (getPassedBy)
 import Arkham.Matcher hiding (AssetCard)

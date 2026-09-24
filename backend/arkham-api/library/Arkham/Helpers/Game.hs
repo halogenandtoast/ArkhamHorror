@@ -3,7 +3,7 @@ module Arkham.Helpers.Game (module Arkham.Helpers.Game, module X) where
 import Arkham.Card (Card)
 import Arkham.Classes.HasGame
 import {-# SOURCE #-} Arkham.Game as X
-import {-# SOURCE #-} Arkham.GameEnv as X
+import Arkham.GameEnv as X
 import Arkham.Modifier.Builder (CacheReaderT, runCacheReaderT)
 import Arkham.Prelude
 

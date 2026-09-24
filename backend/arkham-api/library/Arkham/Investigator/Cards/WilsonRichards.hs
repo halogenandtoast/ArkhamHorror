@@ -2,7 +2,7 @@ module Arkham.Investigator.Cards.WilsonRichards (wilsonRichards) where
 
 import Arkham.Asset.Types (Field (..))
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers (ModifierType (..), maybeModifySelf, modifyEachMap)
 import Arkham.Helpers.SkillTest (getSkillTestSource)

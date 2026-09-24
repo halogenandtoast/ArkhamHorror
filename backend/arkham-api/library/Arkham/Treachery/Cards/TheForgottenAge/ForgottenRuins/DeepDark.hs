@@ -1,7 +1,7 @@
 module Arkham.Treachery.Cards.TheForgottenAge.ForgottenRuins.DeepDark (deepDark) where
 
 import Arkham.Ability
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.History
 import Arkham.Matcher hiding (DiscoverClues)

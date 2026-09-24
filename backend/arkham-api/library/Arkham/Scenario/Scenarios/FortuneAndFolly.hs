@@ -15,7 +15,7 @@ import Arkham.Campaigns.TheScarletKeys.Meta hiding (Standard)
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.FortuneAndFolly qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Campaign (campaignField)
 import Arkham.Helpers.FlavorText

@@ -3,7 +3,7 @@ module Arkham.Agenda.Cards.TheDrownedCity.CourtOfTheAncients.UnstableFoundations
 import Arkham.Agenda.CardDefs.TheDrownedCity.CourtOfTheAncients qualified as Cards
 import Arkham.Agenda.Import.Lifted
 import Arkham.Direction (GridDirection (GridDown, GridUp))
-import {-# SOURCE #-} Arkham.GameEnv (getPhase)
+import Arkham.GameEnv (getPhase)
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
   modifiedWith_,

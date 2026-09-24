@@ -30,7 +30,7 @@ import Arkham.Event.Types (Event, Field (..))
 import Arkham.Event.Types qualified
 import {-# SOURCE #-} Arkham.Game
 import Arkham.Game.Settings (settingsAchievementsEnabled)
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Calculation (calculate)

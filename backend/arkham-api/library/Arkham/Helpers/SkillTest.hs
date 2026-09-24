@@ -1,6 +1,6 @@
 module Arkham.Helpers.SkillTest (module X, module Arkham.Helpers.SkillTest) where
 
-import {-# SOURCE #-} Arkham.GameEnv as X (getSkillTest, getSkillTestId)
+import Arkham.GameEnv as X (getSkillTest, getSkillTestId, getsSkillTest)
 import Arkham.Helpers.SkillTest.Target as X
 
 import Arkham.Ability
@@ -20,7 +20,7 @@ import Arkham.Classes.Query qualified as Query
 import Arkham.CommitRestriction
 import Arkham.Constants
 import Arkham.Enemy.Types (Field (..))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Action
 import Arkham.Helpers.Calculation
 import Arkham.Helpers.Card
@@ -133,9 +133,6 @@ isSkillTestSource source = maybe False (isSource source) <$> getSkillTestSource
 getSkillTestBaseSkillForSkillTest :: HasGame m => InvestigatorId -> SkillTest -> m Int
 getSkillTestBaseSkillForSkillTest iid sTest =
   getBaseValueForSkillTestType iid (skillTestAction sTest) (skillTestType sTest)
-
-getsSkillTest :: HasGame m => (SkillTest -> a) -> m (Maybe a)
-getsSkillTest f = fmap f <$> getSkillTest
 
 getSkillTestAction :: HasGame m => m (Maybe Action)
 getSkillTestAction = join <$> getsSkillTest skillTestAction

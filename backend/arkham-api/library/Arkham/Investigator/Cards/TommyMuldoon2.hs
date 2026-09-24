@@ -2,7 +2,7 @@ module Arkham.Investigator.Cards.TommyMuldoon2 (tommyMuldoon2) where
 
 import Arkham.Ability
 import Arkham.Asset.Uses
-import {-# SOURCE #-} Arkham.GameEnv (getCard)
+import Arkham.GameEnv (getCard)
 import Arkham.GameValue
 import Arkham.Helpers.Playable (getPlayableCardsMatch)
 import Arkham.Investigator.Cards qualified as Cards

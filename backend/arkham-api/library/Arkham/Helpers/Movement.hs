@@ -1,7 +1,7 @@
 module Arkham.Helpers.Movement where
 
 import Arkham.Classes.HasQueue
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Message

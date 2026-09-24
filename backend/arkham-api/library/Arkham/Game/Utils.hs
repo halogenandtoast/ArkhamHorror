@@ -26,7 +26,12 @@ import Arkham.Helpers.Investigator (getMaybeLocation)
 import Arkham.Helpers.Modifiers
 import Arkham.Id
 import Arkham.Investigator (promoInvestigators)
-import Arkham.Investigator.Types (Field (..), Investigator, investigatorResources)
+import Arkham.Investigator.Types (
+  Field (..),
+  Investigator,
+  InvestigatorAttrs,
+  investigatorResources,
+ )
 import Arkham.Keyword (Sealing (..))
 import Arkham.Keyword qualified as Keyword
 import Arkham.Location.Types (Location)
@@ -523,3 +528,9 @@ gameAssets = entitiesAssets . gameEntities
 
 gameTreacheries :: Game -> EntityMap Treachery
 gameTreacheries = entitiesTreacheries . gameEntities
+
+withInvestigatorEdit
+  :: HasGame m => InvestigatorId -> (InvestigatorAttrs -> InvestigatorAttrs) -> ReaderT Game m a -> m a
+withInvestigatorEdit iid f body = do
+  game <- getGame
+  runReaderT body $ game & entitiesL . investigatorsL . ix iid %~ overAttrs f

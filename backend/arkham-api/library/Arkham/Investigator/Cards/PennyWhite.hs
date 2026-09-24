@@ -5,7 +5,7 @@ import Arkham.Asset.Cards qualified as Cards hiding (pennyWhite)
 import Arkham.Card
 import Arkham.Effect.Import
 import Arkham.Event.Cards qualified as Cards
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Investigator.Cards qualified as Cards
 import Arkham.Investigator.Import.Lifted

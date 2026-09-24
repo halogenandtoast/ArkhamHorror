@@ -1,8 +1,8 @@
 module Arkham.Helpers.History (module Arkham.Helpers.History, module X) where
 
 import Arkham.Classes.HasGame
-import {-# SOURCE #-} Arkham.GameEnv
-import {-# SOURCE #-} Arkham.GameEnv as X (getHistoryField)
+import Arkham.GameEnv
+import Arkham.GameEnv as X (getHistoryField)
 import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Card (toCardDef)
 import Arkham.Card.CardDef (cdCardTraits)

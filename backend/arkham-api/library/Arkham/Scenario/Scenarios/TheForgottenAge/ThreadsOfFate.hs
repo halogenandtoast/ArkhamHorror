@@ -14,7 +14,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.ReturnToTheForgottenAge.ReturnToTheDoomOfEztli qualified as Enemies
 import Arkham.Enemy.CardDefs.TheForgottenAge.TheDoomOfEztli qualified as Enemies
 import Arkham.Enemy.Types (Enemy, Field (..))
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Card hiding (addCampaignCardToDeckChoice, forceAddCampaignCardToDeckChoice)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.FlavorText

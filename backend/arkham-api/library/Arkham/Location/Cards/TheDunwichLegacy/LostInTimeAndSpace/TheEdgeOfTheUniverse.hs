@@ -1,6 +1,6 @@
 module Arkham.Location.Cards.TheDunwichLegacy.LostInTimeAndSpace.TheEdgeOfTheUniverse (theEdgeOfTheUniverse) where
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheDunwichLegacy.LostInTimeAndSpace qualified as Cards (

@@ -2,7 +2,7 @@ module Arkham.Location.Cards.TheInnsmouthConspiracy.IntoTheMaelstrom.OnyxGuardia
 
 import Arkham.Ability
 import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Key
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards

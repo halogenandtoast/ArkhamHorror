@@ -4,7 +4,7 @@ import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers
 import Arkham.Classes.HasGame (HasGame)
 import Arkham.Distance (Distance (..))
 import {-# SOURCE #-} Arkham.Game.Utils (maybeEnemyLocation)
-import {-# SOURCE #-} Arkham.GameEnv (getDistance)
+import Arkham.GameEnv (getDistance)
 import Arkham.Helpers.Message (push)
 import Arkham.Helpers.Scenario (getGrid)
 import Arkham.I18n

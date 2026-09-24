@@ -10,7 +10,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.LaidToRest qualified as Enemies
 import Arkham.Enemy.CardDefs.Standalone qualified as Enemies
 import Arkham.Enemy.CardDefs.TheCircleUndone.TheWagesOfSin qualified as Enemies
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Campaign (getCampaignStoryCards, matchingCardsAlreadyInDeck)
 import Arkham.Helpers.Card (ConvertToCard (..), getVictoryPoints)
 import Arkham.Helpers.FlavorText

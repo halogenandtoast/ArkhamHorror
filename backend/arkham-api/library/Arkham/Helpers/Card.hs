@@ -15,7 +15,7 @@ import Arkham.Classes.Query
 import Arkham.Deck
 import Arkham.Enemy.Types
 import Arkham.Event.Types qualified as Field
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.GameValue (gameValueMatches)

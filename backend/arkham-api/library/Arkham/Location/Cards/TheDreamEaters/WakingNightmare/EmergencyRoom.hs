@@ -1,6 +1,6 @@
 module Arkham.Location.Cards.TheDreamEaters.WakingNightmare.EmergencyRoom (emergencyRoom, EmergencyRoom (..)) where
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheDreamEaters.WakingNightmare qualified as Cards

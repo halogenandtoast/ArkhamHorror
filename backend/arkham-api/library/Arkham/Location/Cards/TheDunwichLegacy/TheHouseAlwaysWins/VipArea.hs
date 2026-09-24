@@ -1,6 +1,6 @@
 module Arkham.Location.Cards.TheDunwichLegacy.TheHouseAlwaysWins.VipArea (vipArea) where
 
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.CardDefs.TheDunwichLegacy.TheHouseAlwaysWins qualified as Cards (vipArea)

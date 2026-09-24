@@ -14,7 +14,7 @@ import Arkham.ChaosToken
 import Arkham.Classes
 import Arkham.Classes.HasGame
 import Arkham.Difficulty
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Campaign hiding (addCampaignCardToDeckChoice)
 import Arkham.Helpers.FlavorText (buildFlavor, compose, flavor, h3, p, setTitle)
 import Arkham.Helpers.Log hiding (getHasRecord, whenHasRecord)

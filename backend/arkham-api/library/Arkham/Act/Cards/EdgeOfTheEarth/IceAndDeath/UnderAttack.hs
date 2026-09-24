@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Act.CardDefs.EdgeOfTheEarth.IceAndDeath qualified as Cards
 import Arkham.Act.Import.Lifted
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.Helpers.Modifiers
 import Arkham.Matcher
 import Arkham.Trait (Trait (Eidolon))

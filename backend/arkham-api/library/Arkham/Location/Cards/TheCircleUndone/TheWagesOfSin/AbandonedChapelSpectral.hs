@@ -2,7 +2,7 @@ module Arkham.Location.Cards.TheCircleUndone.TheWagesOfSin.AbandonedChapelSpectr
 
 import Arkham.Ability
 import Arkham.Card
-import {-# SOURCE #-} Arkham.GameEnv
+import Arkham.GameEnv
 import Arkham.GameValue
 import Arkham.Helpers.Location
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen)

@@ -5,6 +5,7 @@ module Arkham.Placement (
   IsPlacement (..),
   placementToAttached,
   isDirectlyAtLocation,
+  betweenLocations,
   isOutOfPlayPlacement,
   isInPlayPlacement,
   isHiddenPlacement,
@@ -27,6 +28,12 @@ import GHC.Records
 data Placement
   = AtLocation LocationId
   | AttachedToLocation LocationId
+  | {- | Sits on the *connection* between two locations rather than on either of
+    them (Circus Ex Mortis, "Broken Couplings"). Build it with
+    'betweenLocations' so the pair is order-normalized and two placements of
+    the same connection compare equal.
+    -}
+    BetweenLocations LocationId LocationId
   | InPlayArea InvestigatorId
   | InThreatArea InvestigatorId
   | {- | An encounter card sitting *face down* in an investigator's threat area
@@ -93,6 +100,7 @@ instance HasField "inThreatAreaOf" Placement (Maybe InvestigatorId) where
 placementToAttached :: Placement -> Maybe Target
 placementToAttached = \case
   AttachedToLocation lid -> Just $ LocationTarget lid
+  BetweenLocations _ _ -> Nothing
   AttachedToEnemy eid -> Just $ EnemyTarget eid
   AttachedToTreachery tid -> Just $ TreacheryTarget tid
   Near _ -> Nothing
@@ -129,6 +137,7 @@ isInPlayPlacement :: Placement -> Bool
 isInPlayPlacement = \case
   AtLocation {} -> True
   AttachedToLocation {} -> True
+  BetweenLocations {} -> True
   InPlayArea {} -> True
   InVehicle {} -> True
   InThreatArea {} -> True
@@ -172,6 +181,7 @@ isDirectlyAtLocation :: LocationId -> Placement -> Bool
 isDirectlyAtLocation lid = \case
   AtLocation lid' -> lid' == lid
   AttachedToLocation lid' -> lid' == lid
+  BetweenLocations a b -> a == lid || b == lid
   _ -> False
 
 isInPlayArea :: Placement -> Bool
@@ -212,6 +222,10 @@ mconcat
   [ deriveToJSON defaultOptions ''Placement
   , makePrisms ''Placement
   ]
+
+-- | Order-normalized so the same connection is always the same placement.
+betweenLocations :: LocationId -> LocationId -> Placement
+betweenLocations a b = if a <= b then BetweenLocations a b else BetweenLocations b a
 
 class IsPlacement a where
   toPlacement :: a -> Placement

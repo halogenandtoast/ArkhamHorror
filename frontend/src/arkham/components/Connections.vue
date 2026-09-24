@@ -3,6 +3,7 @@ import { onMounted, onBeforeUnmount, computed, ref, nextTick, watch } from 'vue'
 import type {Game} from '@/arkham/types/Game'
 import { createLaserBeam, COSMIC_EMISSARY_STOPS, type LaserBeamInstance } from '@/arkham/laserBeam'
 import { useSettings } from '@/stores/settings'
+import Treachery from '@/arkham/components/Treachery.vue'
 
 export interface Props {
   game: Game
@@ -17,6 +18,7 @@ export interface Props {
 defineOptions({ inheritAttrs: false })
 
 const props = defineProps<Props>()
+const emits = defineEmits<{ choose: [value: number] }>()
 const settings = useSettings()
 
 // The location grid is scaled with a CSS transform but the SVG is its sibling,
@@ -123,6 +125,33 @@ function locationInDirection(locationId: string, direction: GridDirection): stri
 function connectionKey(id1: string, id2: string): string {
   const [left, right] = [id1, id2].sort()
   return `${left}:${right}`
+}
+
+// Cards placed *between* two locations (Broken Couplings) hang off the
+// connection, not off either location, so they are drawn here rather than in
+// Location.vue. Midpoints come from the same geometry pass that draws the
+// lines; they are only measured when something actually needs them.
+const midpoints = ref<Record<string, { x: number; y: number }>>({})
+
+const betweenTreacheries = computed(() =>
+  Object.values(props.game.treacheries)
+    .filter(t => t.placement.tag === 'BetweenLocations')
+    .map(t => {
+      const [a, b] = (t.placement as { contents: [string, string] }).contents
+      return { treachery: t, connection: connectionKey(a, b) }
+    })
+)
+
+const trackedConnections = computed(() => new Set(betweenTreacheries.value.map(t => t.connection)))
+
+function midpointStyle(connection: string) {
+  const point = midpoints.value[connection]
+  if (!point) return { display: 'none' }
+  return {
+    left: `${point.x}px`,
+    top: `${point.y}px`,
+    transform: `translate(-50%, -50%) scale(${mapZoom.value})`,
+  }
 }
 
 function mineCartNextConnection(): string | null {
@@ -386,6 +415,11 @@ function makeOrUpdateConnectionPath(candidate: ConnectionCandidate, curveOffset 
     const controlY = (y1 + y2) / 2 + (dx / distance) * curveOffset
     path.setAttribute('d', `M ${x1} ${y1} Q ${controlX} ${controlY} ${x2} ${y2}`)
     path.classList.add('curved')
+  }
+
+  if (trackedConnections.value.has(connection)) {
+    const point = path.getPointAtLength(path.getTotalLength() / 2)
+    nextMidpoints[connection] = { x: point.x, y: point.y }
   }
 
   if (connection === mineCartNextConnection()) path.classList.add('mine-cart-next-line')
@@ -830,9 +864,12 @@ function chevronPath(cx: number, cy: number, ux: number, uy: number, px: number,
   return `M${f} L${a} L${b} L${c} L${d} L${e} Z`
 }
 
+let nextMidpoints: Record<string, { x: number; y: number }> = {}
+
 function handleConnections(includeFateOfTheVale = true) {
   if(!svgEl) return
   const live = new Set<string>()
+  nextMidpoints = {}
 
   // Build directed edge set so we can detect one-way connections by absence of
   // the reverse edge. connectedLocations is symmetric for normal connections
@@ -962,6 +999,12 @@ function handleConnections(includeFateOfTheVale = true) {
       chevronsByConn.delete(conn)
     }
   }
+
+  // This runs every animation frame while the board is settling, so only commit
+  // when a midpoint actually moved -- otherwise the overlay re-renders forever.
+  if (JSON.stringify(nextMidpoints) !== JSON.stringify(midpoints.value)) {
+    midpoints.value = nextMidpoints
+  }
 }
 
 const requestId = ref<number | null>(null)
@@ -1068,6 +1111,7 @@ watch(isWrittenInRockAct2, ()=> { requestConnectionUpdate() }, { flush: 'post' }
 watch(enemies, ()=> { requestConnectionUpdate() }, { flush: 'post' })
 watch(() => props.enableCosmicEmissaryAnimation, () => { requestConnectionUpdate() }, { flush: 'post' })
 watch(mapZoom, () => { requestConnectionUpdate() }, { flush: 'post' })
+watch(trackedConnections, () => { requestConnectionUpdate() }, { flush: 'post' })
 // Turning the beams off has to tear the canvases down, not just stop drawing
 // them; the redraw then rebuilds the SVG lines in their place.
 watch(useLaserBeams, (enabled) => {
@@ -1122,6 +1166,16 @@ onBeforeUnmount(()=> {
     <path ref="chevronProtoRef" class="chevrons original"/>
   </svg>
   <div ref="laserLayerRef" class="connections-lasers" aria-hidden="true"></div>
+  <div class="connections-between">
+    <div
+      v-for="{ treachery, connection } in betweenTreacheries"
+      :key="treachery.id"
+      class="between-card"
+      :style="midpointStyle(connection)"
+    >
+      <Treachery :game="game" :treachery="treachery" :playerId="playerId" @choose="emits('choose', $event)" />
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -1155,6 +1209,35 @@ onBeforeUnmount(()=> {
   max-width: none;
   transform-origin: 50% 50%;
   pointer-events: none;
+}
+
+/* .location-cards is a later sibling at z-index 1 and its interactable cells go
+   to 20, so anything lower than this gets painted over -- which swallows clicks
+   on the coupling's ability button where it overlaps a neighbouring car. */
+.connections-between{
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-index-30);
+}
+
+.connections-between > *{
+  position: absolute;
+  pointer-events: auto;
+  transform-origin: 50% 50%;
+}
+
+.between-card{
+  width: 70px;
+}
+
+.between-card :deep(img.card){
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
 }
 
 .line{

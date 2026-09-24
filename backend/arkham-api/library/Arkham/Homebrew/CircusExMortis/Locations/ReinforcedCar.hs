@@ -1,7 +1,7 @@
 module Arkham.Homebrew.CircusExMortis.Locations.ReinforcedCar (reinforcedCar) where
 
 import Arkham.Ability
-import Arkham.Enemy.Types (Field (EnemyHealthDamage, EnemySanityDamage))
+import Arkham.Helpers.Enemy (getEnemyAttackDamageAndHorror)
 import Arkham.Helpers.Window.Enemy (getEnemy)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers (scenarioI18n)
@@ -10,7 +10,6 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Modifier
-import Arkham.Projection
 
 newtype ReinforcedCar = ReinforcedCar LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -32,8 +31,7 @@ instance RunMessage ReinforcedCar where
   runMessage msg l@(ReinforcedCar attrs) = runQueueT $ case msg of
     UseCardAbility iid (isSource attrs -> True) 1 (getEnemy -> enemy) _ -> do
       -- nothing to reduce if the attack does not deal that kind of damage
-      damage <- field EnemyHealthDamage enemy
-      horror <- field EnemySanityDamage enemy
+      (damage, horror) <- getEnemyAttackDamageAndHorror enemy
       chooseOrRunOneM iid $ scenarioI18n "allPointsWest" $ scope "reinforcedCar" do
         when (damage > 0)
           $ labeled "reduceDamage"

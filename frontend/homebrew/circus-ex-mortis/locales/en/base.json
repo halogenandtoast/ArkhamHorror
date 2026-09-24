@@ -75,9 +75,6 @@
   },
   "label": {
     "sealMoonToken": "<span>Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card</span>",
-    "brokenCouplings": {
-      "placeBetween": "Place between {locationA} and {locationB}"
-    },
     "circusEncampment": {
       "doneReleasingMoonTokens": "Done releasing moon tokens"
     }

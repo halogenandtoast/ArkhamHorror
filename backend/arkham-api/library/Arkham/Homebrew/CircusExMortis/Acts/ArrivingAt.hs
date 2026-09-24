@@ -13,16 +13,22 @@ import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.CircusExMortis.NowArriving
 import Arkham.Homebrew.CircusExMortis.Traits
 import Arkham.Matcher
+import Arkham.Message (ReplaceStrategy (DefaultReplace))
 import Arkham.Trait
 
+-- The car is swapped out, not torn off the train: investigators standing on it
+-- ride along to its replacement, so this replaces the location in place rather
+-- than removing it (removal leaves them unplaced and eliminates them).
 replaceCarPool :: ReverseQueue m => Trait -> m ()
 replaceCarPool trait = do
-  whenJustM (selectOne $ LocationWithTrait trait) removeLocation
   replacement <- nonEmpty <$> getSetAsideCardsMatching (#location <> CardWithTrait trait)
   for_ replacement \cards -> do
     card <- sample cards
-    lid <- placeLocation card
-    reveal lid
+    selectOne (LocationWithTrait trait) >>= \case
+      Just lid -> do
+        push $ ReplaceLocation lid card DefaultReplace
+        reveal lid
+      Nothing -> reveal =<< placeLocation card
 
 spawnDarkYoungAt :: (ReverseQueue m, AsId location, IdOf location ~ LocationId) => location -> m ()
 spawnDarkYoungAt location = do

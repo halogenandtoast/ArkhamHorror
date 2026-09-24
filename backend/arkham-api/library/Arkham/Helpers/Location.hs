@@ -77,6 +77,8 @@ placementLocation :: (HasCallStack, HasGame m) => Placement -> m (Maybe Location
 placementLocation = \case
   AtLocation lid -> pure $ Just lid
   AttachedToLocation lid -> pure $ Just lid
+  -- On the connection, not on either end, so it is at neither.
+  BetweenLocations _ _ -> pure Nothing
   -- Use the safe (join) read: an entity may briefly reference an investigator who
   -- has been removed from the game (e.g. while a group swap parks on deck choice),
   -- and a location lookup during a matcher scan must not crash on the missing id.

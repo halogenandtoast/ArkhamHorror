@@ -2109,6 +2109,15 @@ async function toggleZoom(e: MouseEvent) {
   scroller.scrollTop = gridLayoutTop + natY * DOUBLE_ZOOM_LEVEL - scroller.clientHeight / 2
 }
 
+async function handleZoomScroll(e: WheelEvent) {
+  e.preventDefault()
+  if (e.deltaY > 0) {
+    decreaseZoom()
+  } else {
+    increaseZoom()
+  }
+}
+
 const unusedCanInteract = (u: string) => choices.value.findIndex((c) =>
   c.tag === "GridLabel" && c.gridLabel === u
 )
@@ -2840,6 +2849,7 @@ async function addChaosToken(face: any){
           'location-cards-container--fullscreen': locationsFullscreen,
         }"
         @dblclick.passive="toggleZoom"
+        @wheel.alt="handleZoomScroll"
       >
         <!-- ponytail: in-board mirror of the player-zone zoom-control; duplicated markup
              beats prop-drilling ~10 handlers into a shared child. Keep the two in sync.

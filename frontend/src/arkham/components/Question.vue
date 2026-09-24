@@ -25,6 +25,8 @@ import QuestionChoices from '@/arkham/components/QuestionChoices.vue';
 import CardImage from '@/arkham/components/CardImage.vue';
 import CardPoolPicker from '@/arkham/components/CardPoolPicker.vue';
 import { cardPoolForLabelKey } from '@/arkham/cardPools';
+import { putBackInAnyOrderPicks } from '@/arkham/putBackInAnyOrder';
+import PutBackInAnyOrder from '@/arkham/components/PutBackInAnyOrder.vue';
 
 export interface Props {
   game: Game
@@ -371,6 +373,10 @@ const cardPoolCandidates = computed(() => {
 })
 
 const cardPoolActive = computed(() => cardPoolPick.value !== null && cardPoolCandidates.value.length > 0)
+
+// The put-back panel owns its own state and styles; this only decides whether it
+// is what the modal should be showing.
+const putBackActive = computed(() => putBackInAnyOrderPicks(props.game, props.playerId) !== null)
 
 const focusedCardGroups = computed<SearchedCardGroup[]>(() => {
   if (focusedCardsForGroups.value.length === 0) return []
@@ -1009,6 +1015,11 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
             :accent="cardPoolPick.pool.accent"
             @choose="$emit('choose', $event)"
           />
+          <PutBackInAnyOrder
+            v-else-if="putBackActive"
+            :game="game"
+            :playerId="playerId"
+          />
           <div v-else-if="focusedCardGroups.length > 0 && choices.length > 0" class="modal">
             <div class="modal-contents searched-cards focused-cards">
               <div v-for="group in focusedCardGroups" :key="group.key" class="group">
@@ -1031,7 +1042,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
               </div>
             </div>
           </div>
-          <div v-if="searchedCards.length > 0 && choices.length > 0 && !cardPoolActive" class="modal">
+          <div v-if="searchedCards.length > 0 && choices.length > 0 && !cardPoolActive && !putBackActive" class="modal">
             <div class="modal-contents searched-cards">
               <div v-for="group in searchedCards" :key="group.key" class="group">
                 <h2>{{ group.label }}</h2>
@@ -2297,4 +2308,5 @@ h2 {
     width: 100%;
   }
 }
+
 </style>

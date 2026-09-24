@@ -211,6 +211,20 @@ function questionChoices(question: Question): Message[] {
   }
 }
 
+/* Every card a search or a look has put in front of this player: focused, or
+ * still held as the scenario's / the investigator's search results. A card can
+ * be in any of them depending on how it was revealed, so anything that means
+ * "the cards on the table right now" has to check all four. */
+export function revealedCards(game: Game, playerId: string): Card[] {
+  const investigator = Object.values(game.investigators).find((i) => i.playerId === playerId);
+  return [
+    ...game.focusedCards,
+    ...Object.values(game.foundCards).flat(),
+    ...Object.values(game.scenario?.foundCards ?? {}).flat(),
+    ...Object.values(investigator?.foundCards ?? {}).flat(),
+  ];
+}
+
 export function choices(game: Game, playerId: string): Message[] {
   return cachedByPlayer(choicesCache, game, playerId, () => {
     const question = game.question[playerId];

@@ -12,6 +12,7 @@ import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable.vue';
 import Question from '@/arkham/components/Question.vue';
 import { abilityNeedsGhostModal } from '@/arkham/ghostAbility';
+import { putBackInAnyOrderPicks } from '@/arkham/putBackInAnyOrder';
 
 export interface Props {
   game: Game
@@ -231,6 +232,11 @@ const body = computed(() => {
 const title = computed(() => {
   if (skillTestResults.value) {
     return t("Results")
+  }
+
+  // The put-back panel is wordless by design, so the instruction lives here.
+  if (putBackInAnyOrderPicks(props.game, props.playerId)) {
+    return t("putBackInAnyOrder.title")
   }
 
   if (question.value && question.value.tag === QuestionType.READ) {

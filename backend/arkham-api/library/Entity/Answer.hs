@@ -41,6 +41,14 @@ import Json
 
 data Answer
   = Answer QuestionResponse
+  | {- | One answer that resolves a whole @ChooseOneAtATime@ in the order the
+    player arranged it, rather than one card per round trip. Every choice is
+    named exactly once, so the sequence runs in a single queue pass and lands as
+    a single step: one undo takes the whole placement back. Answered card by
+    card it left a step per card, and undoing into the middle of a placement
+    stranded the rest of it.
+    -}
+    OrderedAnswer OrderedResponse
   | Raw Message
   | PaymentAmountsAnswer PaymentAmountsResponse
   | AmountsAnswer AmountsResponse
@@ -78,6 +86,14 @@ data QuestionResponse = QuestionResponse
   }
   deriving stock (Show, Generic)
 
+data OrderedResponse = OrderedResponse
+  { orChoices :: [Int]
+  -- ^ Indices into the question as it was asked, in the order to resolve them.
+  , orPlayerId :: Maybe PlayerId
+  , orQuestionVersion :: Maybe Int
+  }
+  deriving stock (Show, Generic)
+
 data PaymentAmountsResponse = PaymentAmountsResponse
   { parAmounts :: Map UUID Int
   , parQuestionVersion :: Maybe Int
@@ -106,6 +122,13 @@ instance FromJSON QuestionResponse where
     qrPlayerId <- o .:? "playerId"
     qrQuestionVersion <- o .:? "questionVersion"
     pure QuestionResponse {..}
+
+instance FromJSON OrderedResponse where
+  parseJSON = withObject "OrderedResponse" \o -> do
+    orChoices <- o .: "choices"
+    orPlayerId <- o .:? "playerId"
+    orQuestionVersion <- o .:? "questionVersion"
+    pure OrderedResponse {..}
 
 instance FromJSON PaymentAmountsResponse where
   parseJSON = withObject "PaymentAmountsResponse" \o -> do
@@ -303,6 +326,7 @@ makeCampaignLog settings =
 answerPlayer :: Answer -> Maybe PlayerId
 answerPlayer = \case
   Answer response -> qrPlayerId response
+  OrderedAnswer response -> orPlayerId response
   Raw _ -> Nothing
   AmountsAnswer response -> arPlayerId response
   PaymentAmountsAnswer response -> parPlayerId response
@@ -688,26 +712,60 @@ handleAnswerPure game@Game {..} playerId = \case
                   -- stale about re-parking them -- dropping them just destroys the
                   -- messages (#4787). Every seat survives, this one included if it
                   -- still has choices left.
-                  let retained = gameRetainedQuestion
-                      others
-                        | isJust (barrierSeat playerId game) = mempty
-                        | retained = Map.delete playerId gameQuestion
-                        | otherwise = Map.filter isDeckQuestion $ Map.delete playerId gameQuestion
-                  if retained
-                    then do
-                      -- Fold this seat's own re-ask into the same map. Emitting it as a
-                      -- separate `Ask` would park it ahead of the other seats, serialising
-                      -- a question whose whole point is that the table resolves it in an
-                      -- order of its choosing.
-                      let (ran, reask) = case reverse msgs of
-                            (Ask pid reasked : rest) | pid == playerId -> (reverse rest, Just reasked)
-                            _ -> (msgs, Nothing)
-                          question' = maybe others (\reasked -> Map.insert playerId reasked others) reask
-                      handled $ ran <> [Retain (AskMap question') | not (Map.null question')]
-                    else handled $ msgs <> [AskMap others | not (Map.null others)]
+                  finish msgs
+          )
+          $ Map.lookup playerId gameQuestion
+  OrderedAnswer response ->
+    case orQuestionVersion response of
+      Just v | v /= gameScenarioSteps -> unhandled "Stale question"
+      _ ->
+        maybe
+          (unhandled "Player not being asked")
+          ( \q -> case resolveOrdered q (orChoices response) of
+              Nothing -> unhandled "Wrong question type"
+              Just msgs -> finish msgs
           )
           $ Map.lookup playerId gameQuestion
  where
+  finish msgs = do
+    let retained = gameRetainedQuestion
+        others
+          | isJust (barrierSeat playerId game) = mempty
+          | retained = Map.delete playerId gameQuestion
+          | otherwise = Map.filter isDeckQuestion $ Map.delete playerId gameQuestion
+    if retained
+      then do
+        -- Fold this seat's own re-ask into the same map. Emitting it as a
+        -- separate `Ask` would park it ahead of the other seats, serialising
+        -- a question whose whole point is that the table resolves it in an
+        -- order of its choosing.
+        let (ran, reask) = case reverse msgs of
+              (Ask pid reasked : rest) | pid == playerId -> (reverse rest, Just reasked)
+              _ -> (msgs, Nothing)
+            question' = maybe others (\reasked -> Map.insert playerId reasked others) reask
+        handled $ ran <> [Retain (AskMap question') | not (Map.null question')]
+      else handled $ msgs <> [AskMap others | not (Map.null others)]
+
+  -- \| Every choice of a one-at-a-time question, run in the order given. The
+  --  order must name each choice exactly once: a partial order would leave choices
+  --  needing a re-ask, and this exists precisely so that no re-ask happens and the
+  --  whole placement is one step. Anything else is rejected rather than half
+  --  resolved. `ChooseOneAtATimeWithAuto`'s auto option already resolves them all
+  --  in one answer this way; this only adds the player's ordering.
+  --
+  resolveOrdered :: Question Message -> [Int] -> Maybe [Message]
+  resolveOrdered q order = case q of
+    QuestionLabel _ _ q' -> resolveOrdered q' order
+    PayCostQuestion _ q' -> resolveOrdered q' order
+    QuestionWithSource _ _ q' -> resolveOrdered q' order
+    ChooseOneAtATime msgs -> pick msgs
+    ChooseOneAtATimeWithAuto _ msgs -> pick msgs
+    _ -> Nothing
+   where
+    pick msgs
+      | sort order == [0 .. length msgs - 1] = traverse (fmap uiToRun . (msgs !!?)) order
+      | otherwise = Nothing
+
   -- Seats the queue rebuilds on its own: PlayerWindow re-pushes itself, and a
   -- WindowChooseOne is followed by the Do (CheckWindows ws) that WindowAsk
   -- queues behind it. Re-parking either hands back a stale question (#5160).

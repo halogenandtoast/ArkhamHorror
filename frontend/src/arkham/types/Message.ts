@@ -8,6 +8,7 @@ import { Target, targetDecoder } from '@/arkham/types/Target';
 import { FlavorText, flavorTextDecoder } from '@/arkham/types/FlavorText';
 import { TokenFace, tokenFaceDecoder } from '@/arkham/types/ChaosToken';
 import { tarotCardDecoder, TarotCard } from '@/arkham/types/TarotCard';
+import { v2Optional } from '@/arkham/parser';
 
 export enum MessageType {
   LABEL = 'Label',
@@ -110,6 +111,9 @@ export type SkillLabelWithLabel = {
 export type TargetLabel = {
   tag: MessageType.TARGET_LABEL
   target: Target
+  // The engine messages this choice will run. Kept undecoded: they are raw
+  // backend `Message`s, and the UI only ever sniffs their `tag`.
+  messages?: unknown[]
 }
 
 export type EndTurnButton = {
@@ -498,7 +502,8 @@ export const skillLabelWithLabelDecoder = JsonDecoder.object<SkillLabelWithLabel
 export const targetLabelDecoder = JsonDecoder.object<TargetLabel>(
   {
     tag: JsonDecoder.literal(MessageType.TARGET_LABEL),
-    target: targetDecoder
+    target: targetDecoder,
+    messages: v2Optional(JsonDecoder.array(JsonDecoder.succeed(), 'unknown[]')),
   }, 'TargetLabel')
 
 export const componentLabelDecoder = JsonDecoder.object<ComponentLabel>(

@@ -256,6 +256,12 @@
   "fromInvestigatorHand": "From {name}'s Hand",
   "fromInvestigatorDiscard": "From {name}'s Discard",
   "searchThisDeck": "Search this deck (it will be shuffled)",
+  "putBackInAnyOrder": {
+    "title": "Put the cards back in any order",
+    "top": "Top",
+    "bottom": "Bottom",
+    "takeBack": "Take {name} back"
+  },
   "ok": "OK",
   "back": "Back",
   "join": "Join",

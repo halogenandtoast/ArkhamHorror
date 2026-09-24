@@ -5,14 +5,17 @@ module Arkham.History (module Arkham.History, module Arkham.History.Types) where
 import Arkham.Prelude
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Cost (Payment (NoPayment))
 import Arkham.Enemy.Types.Attrs
 import Arkham.History.Types
 import Arkham.Id
 import Arkham.SkillTestResult
 import Arkham.SkillType
 import Arkham.Target
+import Arkham.Trait (HasTraits (..))
 import Control.Monad.Fail (fail)
 import Data.Aeson.TH
+import Data.Aeson.Types (Parser)
 import Data.Data
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -31,6 +34,36 @@ instance Entity DefeatedEnemyAttrs where
   toAttrs = defeatedEnemyAttrs
   overAttrs f a = a {defeatedEnemyAttrs = f (defeatedEnemyAttrs a)}
 
+data PlayedCard = PlayedCard
+  { playedCard :: Card
+  , playedCardLocation :: Maybe LocationId
+  , playedCardTarget :: Maybe Target
+  , playedCardPayment :: Payment
+  }
+  deriving stock (Show, Ord, Eq, Generic, Data)
+  deriving anyclass (FromJSON, ToJSON)
+
+-- | Games saved before 'PlayedCard' existed stored bare cards
+parsePlayedCard :: Value -> Parser PlayedCard
+parsePlayedCard v = parseJSON v <|> (\c -> PlayedCard c Nothing Nothing NoPayment) <$> parseJSON v
+
+instance HasCardCode PlayedCard where
+  toCardCode = toCardCode . playedCard
+
+instance HasCardDef PlayedCard where
+  toCardDef = toCardDef . playedCard
+
+instance HasTraits PlayedCard where
+  toTraits = toTraits . playedCard
+
+instance IsCard PlayedCard where
+  toCard = toCard . playedCard
+  toCardId = toCardId . playedCard
+  toCardOwner = toCardOwner . playedCard
+  toCustomizations = toCustomizations . playedCard
+  toTabooList = toTabooList . playedCard
+  toMutated = toMutated . playedCard
+
 data History = History
   { historyTreacheriesDrawn :: [CardCode]
   , historyEnemiesDrawn :: [CardCode]
@@ -41,7 +74,7 @@ data History = History
   , historySuccessfulExplore :: Bool
   , historyActionsCompleted :: Int
   , historySkillTestsPerformed :: [([SkillType], SkillTestResult)]
-  , historyPlayedCards :: [Card]
+  , historyPlayedCards :: [PlayedCard]
   , historyCluesDiscovered :: Map LocationId Int
   , historyAttacksOfOpportunity :: Int
   , historySuccessfulAttacks :: Int
@@ -65,7 +98,7 @@ data HistoryField k where
   HistorySuccessfulExplore :: HistoryField Bool
   HistoryActionsCompleted :: HistoryField Int
   HistorySkillTestsPerformed :: HistoryField [([SkillType], SkillTestResult)]
-  HistoryPlayedCards :: HistoryField [Card]
+  HistoryPlayedCards :: HistoryField [PlayedCard]
   HistoryCluesDiscovered :: HistoryField (Map LocationId Int)
   HistoryAttacksOfOpportunity :: HistoryField Int
   HistorySuccessfulAttacks :: HistoryField Int
@@ -161,9 +194,9 @@ instance FromJSON HistoryItem where
   parseJSON = withObject "HistoryItem" $ \o -> do
     sfld <- o .: "field"
     case sfld of
-      SomeHistoryField (fld :: HistoryField k) -> do
-        k <- o .: "value"
-        pure $ HistoryItem fld k
+      SomeHistoryField fld -> case fld of
+        HistoryPlayedCards -> HistoryItem fld <$> (o .: "value" >>= traverse parsePlayedCard)
+        _ -> HistoryItem fld <$> o .: "value"
 
 insertHistoryItem :: HistoryItem -> History -> History
 insertHistoryItem (HistoryItem fld k) h =
@@ -244,7 +277,7 @@ instance FromJSON History where
     historyActionsCompleted <- o .: "historyActionsCompleted"
     historySkillTestsPerformed <-
       o .: "historySkillTestsPerformed" <|> (map (,Unrun) <$> o .: "historySkillTestsPerformed")
-    historyPlayedCards <- o .: "historyPlayedCards"
+    historyPlayedCards <- o .: "historyPlayedCards" >>= traverse parsePlayedCard
     historyCluesDiscovered <- o .: "historyCluesDiscovered"
     historyAttacksOfOpportunity <- o .:? "historyAttacksOfOpportunity" .!= 0
     historySuccessfulAttacks <- o .:? "historySuccessfulAttacks" .!= 0

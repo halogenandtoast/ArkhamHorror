@@ -28,6 +28,11 @@
         "successfulInvestigations": "Successful investigations",
         "successfulExplore": "Successful explore"
     },
+    "playedCard": {
+        "at": "At {location}",
+        "target": "Target: {target}",
+        "paid": "Paid {n} resources"
+    },
     "skillResult": {
         "unrun": "Unrun",
         "succeededBy": "Succeeded by {n}",

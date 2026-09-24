@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { useStorage } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 import type { Game } from '@/arkham/types/Game';
-import type { History, SkillTestResult, DefeatedEnemy } from '@/arkham/types/History';
+import type { History, SkillTestResult, DefeatedEnemy, PlayedCard } from '@/arkham/types/History';
 import Card from '@/arkham/components/Card.vue';
 import { useDbCardStore } from '@/stores/dbCards';
 import { cardImg, imgsrc } from '@/arkham/helpers';
@@ -148,6 +148,30 @@ function targetLabel(target: unknown): string {
     return t.tag
   }
   return JSON.stringify(target)
+}
+
+function paymentLabel(payment: unknown): string | null {
+  const resources = resourcesPaid(payment)
+  return resources > 0 ? t('historyPanel.playedCard.paid', { n: resources }) : null
+}
+
+function resourcesPaid(payment: unknown): number {
+  if (!payment || typeof payment !== 'object') return 0
+  const p = payment as { tag?: string; contents?: unknown }
+  if (p.tag === 'ResourcePayment' && typeof p.contents === 'number') return p.contents
+  if (p.tag === 'Payments' && Array.isArray(p.contents)) {
+    return p.contents.reduce((total: number, sub: unknown) => total + resourcesPaid(sub), 0)
+  }
+  return 0
+}
+
+function playedCardDetails(played: PlayedCard): string[] {
+  const details = []
+  if (played.playedCardLocation) details.push(t('historyPanel.playedCard.at', { location: locationName(played.playedCardLocation) }))
+  if (played.playedCardTarget) details.push(t('historyPanel.playedCard.target', { target: targetLabel(played.playedCardTarget) }))
+  const paid = paymentLabel(played.playedCardPayment)
+  if (paid) details.push(paid)
+  return details
 }
 
 function skillTestResultLabel(r: SkillTestResult): string {
@@ -434,13 +458,12 @@ function damagedFallbackText(view: DamagedTargetView): string {
           <div v-if="selected.historyPlayedCards.length > 0" class="section">
             <h4>{{ $t('historyPanel.section.playedCards') }}<span class="section-count">{{ selected.historyPlayedCards.length }}</span></h4>
             <div class="card-grid">
-              <Card
-                v-for="(card, idx) in selected.historyPlayedCards"
-                :key="idx"
-                :game="game"
-                :card="card"
-                :playerId="playerId"
-              />
+              <figure v-for="(played, idx) in selected.historyPlayedCards" :key="idx" class="played-card">
+                <Card :game="game" :card="played.playedCard" :playerId="playerId" />
+                <figcaption v-if="playedCardDetails(played).length > 0">
+                  <span v-for="(detail, didx) in playedCardDetails(played)" :key="didx">{{ detail }}</span>
+                </figcaption>
+              </figure>
             </div>
           </div>
 
@@ -879,6 +902,26 @@ function damagedFallbackText(view: DamagedTargetView): string {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.played-card {
+  margin: 0;
+  width: var(--card-width);
+  min-width: var(--card-width);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.played-card figcaption {
+  font-size: 0.7rem;
+  line-height: 1.15;
+  text-align: center;
+  color: rgba(238, 238, 238, 0.7);
+}
+
+.played-card figcaption span {
+  display: block;
 }
 
 .enemy-grid {

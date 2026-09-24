@@ -1,6 +1,6 @@
 module Arkham.Homebrew.CircusExMortis.Locations.RefrigeratorCar (refrigeratorCar) where
 
-import Arkham.Card (cardMatch)
+import Arkham.Card (cardMatch, card_)
 import {-# SOURCE #-} Arkham.GameEnv
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMaybe)
 import Arkham.History
@@ -9,8 +9,8 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype RefrigeratorCar = RefrigeratorCar LocationAttrs
-  deriving anyclass IsLocation
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsLocation, RunMessage)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 refrigeratorCar :: LocationCard RefrigeratorCar
 refrigeratorCar = symbolLabel $ location RefrigeratorCar Cards.refrigeratorCar 4 (Static 2)
@@ -19,13 +19,7 @@ instance HasModifiersFor RefrigeratorCar where
   getModifiersFor (RefrigeratorCar a) = do
     noClues <- a.id <=~> LocationWithoutClues
     when noClues $ modifySelectMaybe a (investigatorAt a) \iid -> do
-      playedCards <- lift $ historyPlayedCards <$> getHistory RoundHistory iid
-      let assetMatcher = #asset :: CardMatcher
-      guard $ none (`cardMatch` assetMatcher) playedCards
-      pure [ReduceCostOf assetMatcher 1]
-
-instance HasAbilities RefrigeratorCar where
-  getAbilities (RefrigeratorCar a) = extendRevealed a []
-
-instance RunMessage RefrigeratorCar where
-  runMessage msg (RefrigeratorCar attrs) = runQueueT $ RefrigeratorCar <$> liftRunMessage msg attrs
+      playedCards <- getHistoryField #round iid HistoryPlayedCards
+      let playedHere = filter ((== Just a.id) . playedCardLocation) playedCards
+      guard $ none (`cardMatch` card_ #asset) playedHere
+      pure [ReduceCostOf #asset 1]

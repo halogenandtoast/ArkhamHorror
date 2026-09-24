@@ -1896,17 +1896,8 @@ runGameMessage msg g = case msg of
       isPlayAction = if isFast then NotPlayAction else IsPlayAction
     activeCost <- createActiveCostForCard iid card isPlayAction windows'
 
-    let historyItem = HistoryItem HistoryPlayedCards [card]
-        turn = isJust $ view turnPlayerInvestigatorIdL g
-        setTurnHistory = if turn then turnHistoryL %~ insertHistory iid historyItem else id
-
     push $ CreatedCost $ activeCostId activeCost
-    pure
-      $ g
-      & activeCostL
-      %~ insertMap (activeCostId activeCost) activeCost
-      & (phaseHistoryL %~ insertHistory iid historyItem)
-      & setTurnHistory
+    pure $ g & activeCostL %~ insertMap (activeCostId activeCost) activeCost
   WindowAsk ws pid q -> do
     -- get all other asks for these windows and combine into an AskMap
     others <- popMessagesMatching \case
@@ -1947,7 +1938,15 @@ runGameMessage msg g = case msg of
             MaxPerTraitPerRound _ _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             LimitPerRound _ -> g'' & cardUsesL . at (toCardCode card) . non [] %~ (iid :)
             _ -> g''
-        pure $ foldl' recordLimit g' (cdLimits $ toCardDef card)
+        mlid <- getMaybeLocation iid
+        let
+          historyItem = HistoryItem HistoryPlayedCards [PlayedCard card mlid mtarget payment]
+          turn = isJust $ view turnPlayerInvestigatorIdL g'
+          setTurnHistory = if turn then turnHistoryL %~ insertHistory iid historyItem else id
+        pure
+          $ foldl' recordLimit g' (cdLimits $ toCardDef card)
+          & (phaseHistoryL %~ insertHistory iid historyItem)
+          & setTurnHistory
       else do
         debugOut InfoLevel
           $ "Tried to play "

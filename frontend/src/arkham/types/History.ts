@@ -57,6 +57,29 @@ export const skillTestPerformedDecoder: JsonDecoder.Decoder<SkillTestPerformed> 
   '[SkillType[], SkillTestResult]',
 );
 
+export type PlayedCard = {
+  playedCard: Card;
+  playedCardLocation: string | null;
+  playedCardTarget: Target | null;
+  playedCardPayment: unknown;
+}
+
+export const playedCardDecoder = JsonDecoder.oneOf<PlayedCard>([
+  JsonDecoder.object<PlayedCard>({
+    playedCard: cardDecoder,
+    playedCardLocation: JsonDecoder.nullable(JsonDecoder.string()),
+    playedCardTarget: JsonDecoder.nullable(targetDecoder),
+    playedCardPayment: JsonDecoder.succeed(),
+  }, 'PlayedCard'),
+  // games saved before played cards carried details
+  cardDecoder.map((playedCard) => ({
+    playedCard,
+    playedCardLocation: null,
+    playedCardTarget: null,
+    playedCardPayment: null,
+  })),
+], 'PlayedCard');
+
 export type History = {
   historyTreacheriesDrawn: string[];
   historyEnemiesDrawn: string[];
@@ -69,7 +92,7 @@ export type History = {
   historyActionsCompleted: number;
   historyActionsSpent: number;
   historySkillTestsPerformed: SkillTestPerformed[];
-  historyPlayedCards: Card[];
+  historyPlayedCards: PlayedCard[];
   historyCluesDiscovered: Record<string, number>;
   historyAttacksOfOpportunity: number;
   historySuccessfulAttacks: number;
@@ -91,7 +114,7 @@ export const historyDecoder: JsonDecoder.Decoder<History> = JsonDecoder.object<H
   historyActionsCompleted: JsonDecoder.number(),
   historyActionsSpent: JsonDecoder.number(),
   historySkillTestsPerformed: JsonDecoder.array(skillTestPerformedDecoder, 'SkillTestPerformed[]'),
-  historyPlayedCards: JsonDecoder.array(cardDecoder, 'Card[]'),
+  historyPlayedCards: JsonDecoder.array(playedCardDecoder, 'PlayedCard[]'),
   historyCluesDiscovered: JsonDecoder.record(JsonDecoder.number(), 'Record<LocationId, number>'),
   historyAttacksOfOpportunity: JsonDecoder.number(),
   historySuccessfulAttacks: JsonDecoder.number(),

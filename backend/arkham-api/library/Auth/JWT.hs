@@ -68,7 +68,10 @@ tokenToJson jwtSecret token = do
     jwt <- decodeCompact $ TL.encodeUtf8 $ TL.fromStrict token
     verifyJWT (defaultJWTValidationSettings audCheck) jwk (jwt :: SignedJWT)
   pure $ case res of
-    Left (err :: JWTError) -> error $ show err
+    -- an unverifiable token is just not signed in; erroring here turns every
+    -- stale token -- each one held by every client after a secret rotation --
+    -- into a 500 instead of a 401 the client can act on
+    Left (_ :: JWTError) -> Nothing
     Right super -> Just (jwt super)
 
 extractToken :: Text -> Maybe Text

@@ -19,13 +19,13 @@ instance HasAbilities PlazaHotel where
   getAbilities (PlazaHotel a) =
     extendRevealed1 a
       $ groupLimit PerRound
-      $ restricted a 1 Here
+      $ restricted a 1 (Here <> exists (orConnected_ a.match <> WithConcealed))
       $ FastAbility (HorrorCost (toSource a) YouTarget 1)
 
 instance RunMessage PlazaHotel where
   runMessage msg l@(PlazaHotel attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      locations <- select (orConnected_ (LocationWithId attrs.id) <> LocationWithConcealedCard)
+      locations <- select $ orConnected_ attrs.match <> WithConcealed
       chooseTargetM iid locations \lid -> do
         concealed <- map toId <$> getConcealedAt (ForExpose $ toSource attrs) lid
         chooseOrRunOneM iid $ targets concealed $ revealConcealed iid (attrs.ability 1)

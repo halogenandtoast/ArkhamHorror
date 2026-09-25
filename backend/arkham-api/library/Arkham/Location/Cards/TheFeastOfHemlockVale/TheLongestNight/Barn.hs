@@ -2,7 +2,7 @@ module Arkham.Location.Cards.TheFeastOfHemlockVale.TheLongestNight.Barn (barn) w
 
 import Arkham.Ability
 import Arkham.Asset.Cards qualified as Assets
-import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (codex, pattern Omega)
+import Arkham.Campaigns.TheFeastOfHemlockVale.Helpers (codex, youCanTriggerCodex, pattern Omega)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query
 import Arkham.Location.CardDefs.TheFeastOfHemlockVale.TheLongestNight qualified as Cards
@@ -22,7 +22,10 @@ instance HasModifiersFor Barn where
 
 instance HasAbilities Barn where
   getAbilities (Barn a) =
-    extendRevealed1 a $ mkAbility a 1 $ triggered_ $ RevealLocation #after You (be a)
+    extendRevealed1 a
+      $ restricted a 1 (youCanTriggerCodex Omega)
+      $ triggered_
+      $ RevealLocation #after You (be a)
 
 instance RunMessage Barn where
   runMessage msg l@(Barn attrs) = runQueueT $ case msg of

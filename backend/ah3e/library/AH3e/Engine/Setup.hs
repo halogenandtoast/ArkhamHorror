@@ -60,6 +60,7 @@ emptyGame pids seed opts =
     , activatedMonsters = []
     , terrorEncountered = []
     , test = Nothing
+    , damagePrevented = 0
     , encounter = Nothing
     , revealedEvent = Nothing
     , activeCard = Nothing

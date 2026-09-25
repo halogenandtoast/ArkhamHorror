@@ -135,6 +135,10 @@ data Game = Game
   , activatedMonsters :: [CardId]
   , terrorEncountered :: [InvestigatorId]
   , test :: Maybe TestState
+  , damagePrevented :: Int
+  {- ^ Damage a prevention test just prevented, waiting for the harm it was
+  cast against to pick it up (416.6).
+  -}
   , encounter :: Maybe EncounterState
   , revealedEvent :: Maybe CardId
   , activeCard :: Maybe CardId

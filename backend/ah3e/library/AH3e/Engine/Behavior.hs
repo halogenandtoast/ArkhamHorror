@@ -40,6 +40,11 @@ data AssetBehavior = AssetBehavior
   -- ^ additional actions its owner may perform during their turn (402.3)
   , afterGainedFromDeck :: Maybe Effect
   -- ^ resolved for its new owner after the card comes out of its deck, not after a trade
+  , damagePrevention :: CardId -> InvestigatorId -> HarmPlan -> GameM [Reaction]
+  {- ^ once per round, offered to its owner while anyone would suffer damage,
+  wherever they are (416.6). The reaction's messages leave what they prevent in
+  'damagePrevented'.
+  -}
   }
   deriving stock Generic
 
@@ -57,6 +62,7 @@ defaultAssetBehavior =
     , attackSkillInstead = Nothing
     , extraActions = 0
     , afterGainedFromDeck = Nothing
+    , damagePrevention = \_ _ _ -> pure []
     }
 
 data CodexTrigger = CodexTrigger

@@ -422,7 +422,25 @@ runMessage msg = case msg of
   SufferHarm iid src kind dmg hor -> do
     playing <- investigatorIsPlaying iid
     when (playing && (dmg > 0 || hor > 0))
-      $ push (HarmDamageStage (HarmPlan iid src kind dmg hor Nothing Nothing))
+      $ push (PreventDamage (HarmPlan iid src kind dmg hor Nothing Nothing) [])
+  -- Prevention comes before the damage is assigned, and the card doing it may
+  -- belong to anyone, so each holder is asked in turn. A prevention casts a spell
+  -- of its own, which may ask questions or even defeat its caster, so it reports
+  -- what it prevented through damagePrevented and this step runs again behind it.
+  PreventDamage plan0 declined -> do
+    prevented <- use #damagePrevented
+    #damagePrevented .= 0
+    let plan = plan0 {damage = max 0 (plan0.damage - prevented)}
+    when (prevented > 0) $ logText ("Prevented " <> tshow prevented <> " damage")
+    offers <- damagePreventionsFor plan
+    case [(owner, r) | (owner, r) <- offers, r.key `notElem` declined] of
+      [] -> push (HarmDamageStage plan)
+      ((owner, r) : _) -> do
+        let name = maybe "an investigator" (.name) (investigatorDef plan.investigator)
+        chooseFor owner ("Prevent damage to " <> name <> "?")
+          $ [ Choice (DoneLabel "Skip") [PreventDamage plan (r.key : declined)]
+            , Choice (TextLabel r.label) (r.messages <> [PreventDamage plan (r.key : declined)])
+            ]
   -- one asset at most per type: pick it (or nobody), then how much it takes
   -- 483.7-483.9: suffer the spell's horror first, less any remnants spent; a
   -- defeat on the way stops the cast before its test

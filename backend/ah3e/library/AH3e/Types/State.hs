@@ -114,6 +114,8 @@ data AfterTest
   | AfterResearch InvestigatorId
   | AfterWard InvestigatorId SpaceId
   | AfterSpell InvestigatorId CardId
+  | -- | the result is the damage a 'PreventDamage' step prevents
+    AfterPreventDamage
   | AfterCustom Source Text
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

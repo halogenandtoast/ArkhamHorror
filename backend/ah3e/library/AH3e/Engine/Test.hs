@@ -193,4 +193,5 @@ resolveAfter ts r = case ts.after of
   AfterResearch iid -> push (ResearchClues iid r)
   AfterWard iid sid -> push (WardRemove iid sid r)
   AfterSpell _ _ -> logText "Spell resolution not implemented"
+  AfterPreventDamage -> #damagePrevented += r
   AfterCustom _ key -> logText ("Missing custom test continuation: " <> key)

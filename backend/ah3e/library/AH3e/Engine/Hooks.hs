@@ -117,6 +117,15 @@ reactionsFor trigger = do
         b.reactions cid trigger
       pure (sheet <> cards)
 
+-- | Cards anyone in play holds that may prevent the damage about to be suffered.
+damagePreventionsFor :: HarmPlan -> GameM [(InvestigatorId, Reaction)]
+damagePreventionsFor plan = do
+  invs <- playingInvestigators
+  fmap concat $ for invs \i ->
+    fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets, c `notElem` i.usedAssets] \cid -> do
+      b <- assetBehavior cid
+      map (i.id,) <$> b.damagePrevention cid i.id plan
+
 blockedSpaces :: GameM [SpaceId]
 blockedSpaces = do
   codex <- use #codex

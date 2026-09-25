@@ -6,6 +6,8 @@ import Toast from "vue-toastification";
 import { createVfm } from 'vue-final-modal'
 import App from './App.vue'
 import router from './router'
+import api from '@/api'
+import { useUserStore } from '@/stores/user'
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faExpeditedssl } from "@fortawesome/free-brands-svg-icons";
@@ -70,6 +72,23 @@ async function bootstrap() {
     component("font-awesome-icon", FontAwesomeIcon)
 
   app.config.globalProperties.emitter = emitter
+
+  /* A token the server no longer accepts (an expired session, or a rotated
+   * signing secret) fails every call the same way, so it is handled once here
+   * rather than in each caller: drop the dead token and send the player to sign
+   * in, carrying the route they were on so signing in puts them back in their
+   * game. */
+  api.interceptors.response.use(undefined, (error) => {
+    const path = window.location.hash.replace(/^#/, '') || '/'
+    const onAuthPage = path.startsWith('/sign-in') || path.startsWith('/sign-up')
+    if (error.response?.status === 401 && !onAuthPage) {
+      const store = useUserStore()
+      store.logout()
+      store.sessionExpired = true
+      void router.push({ path: '/sign-in', query: { nextUrl: path } })
+    }
+    return Promise.reject(error)
+  })
 
   app.mount('#app')
 }

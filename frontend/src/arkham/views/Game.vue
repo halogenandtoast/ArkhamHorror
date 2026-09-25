@@ -831,8 +831,19 @@ const onError = () => {
     setGameQuestion(oldQuestion.value)
   }
   socketError.value = true
+  /* The socket carries the token too, so a refused connection is often a dead
+   * sign-in rather than a lost network. One cheap authenticated call tells them
+   * apart: a 401 goes through the interceptor in main.ts and lands them on the
+   * sign-in form, anything else is left alone. Reconnects retry on a timer, so
+   * this is rate limited rather than one-shot -- a network blip must not spend
+   * the only probe, and this must not become a request storm. whoami only. */
+  if (Date.now() - lastAuthProbe > 30000) {
+    lastAuthProbe = Date.now()
+    void api.get('whoami').catch(() => {})
+  }
 }
 let hasConnectedOnce = false
+let lastAuthProbe = 0
 
 const onConnected = () => {
   socketError.value = false

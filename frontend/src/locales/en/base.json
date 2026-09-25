@@ -53,6 +53,7 @@
   "passwordResetRequested": "Password reset requested",
   "passwordUpdatedSuccessfully": "Password updated successfully",
   "register": "Register",
+  "sessionExpired": "You were signed out. Sign in to return to your game.",
   "resetPassword": "Reset Password",
   "settings": "Settings",
   "updatePassword": "Update Password",

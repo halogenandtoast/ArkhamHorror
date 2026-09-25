@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
-import { ref, reactive, onUnmounted } from 'vue'
+import { computed, ref, reactive, onUnmounted } from 'vue'
 import { Credentials } from '../types'
 import { useI18n } from 'vue-i18n'
 
@@ -14,6 +14,7 @@ const credentials = reactive<Credentials>({
   password: '',
 })
 const signInError = ref<string|null>(null)
+const expired = computed(() => store.sessionExpired)
 
 const health = ref<boolean>(true)
 
@@ -35,6 +36,7 @@ async function authenticate() {
   signInError.value = null
   try {
     await store.authenticate(credentials)
+    store.sessionExpired = false
     const { nextUrl } = route.query
     if (nextUrl) {
       router.push({ path: nextUrl as string })
@@ -58,6 +60,7 @@ onBeforeRouteLeave(() => {
 <template>
   <form v-if="health" @submit.prevent="authenticate">
     <header><i class="secret"></i></header>
+    <div class="notice" v-if="expired && !signInError">{{$t('sessionExpired')}}</div>
     <div class="error" v-if="signInError">{{signInError}}</div>
     <section>
       <div>
@@ -150,6 +153,14 @@ i.secret {
 .error {
   background:#E3CCCD;
   color: #900000;
+  border-radius: 5px;
+  margin: 10px 5px;
+  padding: 5px 10px;
+}
+
+.notice {
+  background: #D8DFC6;
+  color: #3D4A22;
   border-radius: 5px;
   margin: 10px 5px;
   padding: 5px 10px;

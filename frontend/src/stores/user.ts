@@ -18,6 +18,9 @@ export const useUserStore = defineStore("user", () => {
   const currentUser = ref<User | null>(null)
   const token = ref<string | null>(null)
   const isAdmin = ref(false)
+  // set when the server rejected our token rather than the player signing out,
+  // so the sign-in form can say why they are looking at it
+  const sessionExpired = ref(false)
 
   async function authenticate(credentials: Credentials) {
     const authentication = await api.post<Authentication>('authenticate', credentials)
@@ -70,5 +73,5 @@ export const useUserStore = defineStore("user", () => {
     token.value = null
   }
 
-  return { token, currentUser, isAdmin, loadUserFromStorage, authenticate, register, logout, deleteAccount, setCurrentUser }
+  return { token, currentUser, isAdmin, sessionExpired, loadUserFromStorage, authenticate, register, logout, deleteAccount, setCurrentUser }
 })

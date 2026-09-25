@@ -430,7 +430,7 @@ runMessage msg = case msg of
   PreventDamage plan0 declined -> do
     prevented <- use #damagePrevented
     #damagePrevented .= 0
-    let plan = plan0 {damage = max 0 (plan0.damage - prevented)}
+    let plan = plan0 & #damage .~ max 0 (plan0.damage - prevented)
     when (prevented > 0) $ logText ("Prevented " <> tshow prevented <> " damage")
     offers <- damagePreventionsFor plan
     case [(owner, r) | (owner, r) <- offers, r.key `notElem` declined] of

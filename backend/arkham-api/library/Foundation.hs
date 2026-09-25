@@ -37,6 +37,7 @@ import Data.Bugsnag.Settings qualified as Bugsnag
 import Data.ByteString.Lazy qualified as BSL
 import Data.Time.Clock (UTCTime)
 import Data.Traversable (for)
+import Data.UUID (UUID)
 import Database.Persist.Sql (
   ConnectionPool,
   SqlBackend,
@@ -53,6 +54,7 @@ import Network.Bugsnag.Exception (AsException (..))
 import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
 import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
 import Orphans ()
+import ThirdEdition.Store qualified as ThirdEdition
 import Yesod.Core.Types (Logger)
 import Yesod.Core.Unsafe qualified as Unsafe
 import "bugsnag" Network.Bugsnag qualified as Bugsnag
@@ -174,6 +176,9 @@ data App = App
   {- ^ Epic Multiplayer: per-event websocket rooms (organizer dashboard feed),
   sibling of 'appGameRooms'.
   -}
+  , appThirdEditionRooms :: !(MVar (Map UUID Room))
+  -- ^ Third edition: per-table websocket rooms, sibling of 'appGameRooms'.
+  , appThirdEditionStore :: ThirdEdition.Store
   , appPubSubHealth :: !(TVar UTCTime)
   {- ^ When this pod last saw a message arrive on the pub/sub subscriber
   socket. A half-open subscriber TCP connection is invisible to hedis --

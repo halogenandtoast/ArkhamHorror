@@ -58,6 +58,7 @@ library:
     - aeson
     - aeson-casing
     - aeson-diff
+    - ah3e
     - amazonka
     - amazonka-s3
     - annotated-exception

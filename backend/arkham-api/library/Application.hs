@@ -101,6 +101,7 @@ import Api.Handler.Arkham.Old
 import Api.Handler.Arkham.PendingGames
 import Api.Handler.Arkham.Replay
 import Api.Handler.Arkham.Undo
+import Api.Handler.ThirdEdition
 import Base.Api.Handler.Account
 import Base.Api.Handler.Authentication
 import Base.Api.Handler.CurrentUser
@@ -110,6 +111,7 @@ import Base.Api.Handler.Registration
 import Base.Api.Handler.Settings
 import Control.Concurrent (forkIO)
 import Handler.Health
+import ThirdEdition.Store qualified as ThirdEdition
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
@@ -131,6 +133,7 @@ makeFoundation appSettings = do
 
   appGameRooms <- newMVar mempty
   appEventRooms <- newMVar mempty
+  appThirdEditionRooms <- newMVar mempty
   appPubSubHealth <- newTVarIO =<< getCurrentTime
 
   appMessageBroker <- case appRedisConnectionInfo appSettings of
@@ -150,6 +153,10 @@ makeFoundation appSettings = do
       -- socket at all. See 'pubSubSupervisor'.
       _ <- forkIO $ pubSubSupervisor appPubSubHealth conn ctrl
       pure $ RedisBroker conn ctrl
+
+  appThirdEditionStore <- case appMessageBroker of
+    RedisBroker conn _ -> ThirdEdition.newRedisStore conn
+    WebSocketBroker -> ThirdEdition.newMemoryStore
 
   -- We need a log function to create a connection pool. We need a connection
   -- pool to create our foundation. And we need our foundation to get a

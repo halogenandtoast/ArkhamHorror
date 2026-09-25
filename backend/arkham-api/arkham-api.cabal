@@ -44,6 +44,7 @@ library
       Api.Handler.Arkham.PublishedCardSets
       Api.Handler.Arkham.Replay
       Api.Handler.Arkham.Undo
+      Api.Handler.ThirdEdition
       Application
       Arkham.Ability
       Arkham.Ability.Builder
@@ -8171,6 +8172,8 @@ library
       Model
       Orphans
       Settings
+      ThirdEdition.Store
+      ThirdEdition.Table
       Types
   other-modules:
       Paths_arkham_api
@@ -8208,6 +8211,7 @@ library
     , aeson
     , aeson-casing
     , aeson-diff
+    , ah3e
     , amazonka
     , amazonka-s3
     , annotated-exception

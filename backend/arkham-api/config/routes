@@ -12,6 +12,17 @@
     /account ApiV1AccountR DELETE
     /site-settings ApiV1SiteSettingsR GET
     /notifications ApiV1NotificationsR GET
+    /3ed ApiV1ThirdEditionP:
+      /catalog ApiV1ThirdEditionCatalogR GET
+      /tables ApiV1ThirdEditionTablesR GET POST
+      /tables/#UUID ApiV1ThirdEditionTableP:
+        / ApiV1ThirdEditionTableR GET DELETE
+        /join ApiV1ThirdEditionJoinR POST
+        /leave ApiV1ThirdEditionLeaveR POST
+        /start ApiV1ThirdEditionStartR POST
+        /answer ApiV1ThirdEditionAnswerR POST
+        /debug ApiV1ThirdEditionDebugR POST
+        /undo ApiV1ThirdEditionUndoR POST
     /arkham ApiV1ArkhamP:
       /cards ApiV1ArkhamCardsR GET
       /traits ApiV1ArkhamTraitsR GET

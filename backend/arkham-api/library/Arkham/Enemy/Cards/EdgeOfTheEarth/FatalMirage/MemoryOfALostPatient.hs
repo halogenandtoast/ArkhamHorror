@@ -23,7 +23,7 @@ instance HasAbilities MemoryOfALostPatient where
   getAbilities (MemoryOfALostPatient a) =
     extend
       a
-      [ restricted a 1 (thisExists a ExhaustedEnemy)
+      [ restricted a 1 (OnSameLocation <> thisExists a ExhaustedEnemy)
           $ freeReaction
           $ oneOf
             [ AssetHealed #after #damage AnyAsset (SourceUsedBy You)

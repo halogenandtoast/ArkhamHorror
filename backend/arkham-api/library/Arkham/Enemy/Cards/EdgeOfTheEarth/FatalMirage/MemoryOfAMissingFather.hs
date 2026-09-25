@@ -22,7 +22,7 @@ instance HasAbilities MemoryOfAMissingFather where
   getAbilities (MemoryOfAMissingFather a) =
     extend
       a
-      [ restricted a 1 (thisExists a ExhaustedEnemy)
+      [ restricted a 1 (OnSameLocation <> thisExists a ExhaustedEnemy)
           $ freeReaction
           $ GainsResources #after You AnySource AnyValue
       , mkAbility a 2 $ forced $ EnemyDefeated #when You ByAny (be a)

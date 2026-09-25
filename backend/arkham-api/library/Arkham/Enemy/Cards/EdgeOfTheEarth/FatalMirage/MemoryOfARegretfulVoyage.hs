@@ -23,7 +23,7 @@ instance HasAbilities MemoryOfARegretfulVoyage where
   getAbilities (MemoryOfARegretfulVoyage a) =
     extend
       a
-      [ restricted a 1 (thisExists a ExhaustedEnemy)
+      [ restricted a 1 (OnSameLocation <> thisExists a ExhaustedEnemy)
           $ freeReaction
           $ DrawsCards #after You AnyCards (atLeast 1)
       , mkAbility a 2 $ forced $ EnemyDefeated #when You ByAny (be a)

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '@/api';
+import { getToken, setToken, clearToken } from '@/authToken';
 import {
   Credentials,
   Registration,
@@ -31,14 +32,14 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function logout() {
-    localStorage.removeItem('arkham-token')
+    clearToken()
     delete api.defaults.headers.common.Authorization
     signOut()
   }
 
   async function setCurrentUser() {
     if (token.value) {
-      localStorage.setItem('arkham-token', token.value);
+      setToken(token.value);
       api.defaults.headers.common.Authorization = `Token ${token.value}`;
       try {
         const whoami = await api.get<User>('whoami')
@@ -57,8 +58,8 @@ export const useUserStore = defineStore("user", () => {
 
   async function loadUserFromStorage() {
     if (currentUser.value) return
-    const tokenFromStorage = localStorage.getItem('arkham-token');
-    if (tokenFromStorage !== null && tokenFromStorage !== undefined) {
+    const tokenFromStorage = getToken();
+    if (tokenFromStorage !== null) {
       token.value = tokenFromStorage
       await setCurrentUser()
     }

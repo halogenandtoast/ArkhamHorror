@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { getToken } from '@/authToken'
 import baseRoutes from '@/routes';
 import arkhamRoutes from '@/arkham/routes';
 
@@ -19,7 +20,7 @@ router.beforeEach(async (to, _from, next) => {
   await store.loadUserFromStorage()
 
   if (to.matched.some((record) => record.meta && record.meta.requiresAuth)) {
-    if (localStorage.getItem('arkham-token') === null) {
+    if (getToken() === null) {
       next({ path: '/sign-in', query: { nextUrl: to.fullPath } });
     } else {
       if (to.matched.some((record) => record.meta && record.meta.requiresAdmin)) {
@@ -35,7 +36,7 @@ router.beforeEach(async (to, _from, next) => {
       }
     }
   } else if (to.matched.some((record) => record.meta && record.meta.guest)) {
-    if (localStorage.getItem('arkham-token') === null) {
+    if (getToken() === null) {
       document.title = `${to.meta.title}`
       next();
     } else {

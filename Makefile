@@ -36,6 +36,8 @@ V2_KUBECONFIG  ?= $(CURDIR)/terraform/kubeconfig
 V2_NAMESPACE   ?= arkham
 V2_DEPLOYMENT  ?= arkham-web
 V2_PLATFORM    ?= linux/amd64
+# the sign-in cookie covers every subdomain, so 3ed.arkhamhorror.app shares it
+V2_BUILD_ARGS  ?= --build-arg AUTH_COOKIE_DOMAIN=.arkhamhorror.app
 V2_BUILDER     ?= arkham-multiarch
 V2_DO_CLUSTER  ?= arkham-horror-doks
 V2_CACHE_DIR   ?= $(CURDIR)/.buildx-cache/v2
@@ -76,7 +78,7 @@ v2-deploy: v2-buildx-setup v2-kubeconfig-ensure
 	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
 	  $(V2_CACHE_SETUP); \
 	  echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM))"; \
-	  docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) $$CACHE_ARGS \
+	  docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) $$CACHE_ARGS $(V2_BUILD_ARGS) \
 	    --tag $(V2_IMAGE):$$TAG \
 	    --tag $(V2_IMAGE):latest \
 	    --push . ; \
@@ -105,7 +107,7 @@ v2-deploy-committed: v2-buildx-setup v2-kubeconfig-ensure
 	  while :; do \
 	    $(V2_CACHE_SETUP); \
 	    echo ">> building $(V2_IMAGE):$$TAG ($(V2_PLATFORM)) from committed ref $$REF (attempt $$ATTEMPT)"; \
-	    ( set +e; git archive --format=tar "$$REF" | docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) $$CACHE_ARGS \
+	    ( set +e; git archive --format=tar "$$REF" | docker buildx build --builder $(V2_BUILDER) --platform $(V2_PLATFORM) $$CACHE_ARGS $(V2_BUILD_ARGS) \
 	        --tag $(V2_IMAGE):$$TAG \
 	        --tag $(V2_IMAGE):latest \
 	        --file Dockerfile \
@@ -138,7 +140,7 @@ v2-push-multiarch: v2-buildx-setup
 	  if [ -n "$$DIRTY" ]; then TAG="$$TAG-dirty"; fi; \
 	  $(V2_CACHE_SETUP); \
 	  echo ">> building $(V2_IMAGE):$$TAG (linux/amd64,linux/arm64)"; \
-	  docker buildx build --builder $(V2_BUILDER) --platform linux/amd64,linux/arm64 $$CACHE_ARGS \
+	  docker buildx build --builder $(V2_BUILDER) --platform linux/amd64,linux/arm64 $$CACHE_ARGS $(V2_BUILD_ARGS) \
 	    --tag $(V2_IMAGE):$$TAG \
 	    --tag $(V2_IMAGE):latest \
 	    --push . ; \
@@ -161,10 +163,11 @@ db-unstick-kill:
 	@./scripts/db-unstick.sh --kill
 .PHONY: db-unstick-kill
 
-## Sync local images to s3 bucket (public/ plus homebrew campaign images)
+## Sync local images to s3 bucket (public/ plus homebrew campaign and third edition images)
 sync-images:
 	cd frontend/public && aws s3 sync . s3://arkham-horror-assets --acl public-read --exclude ".DS_Store" --exclude "img/custom/*"
 	./scripts/sync-homebrew-images.sh
+	aws s3 sync frontend-3ed/public/img/ah3e s3://arkham-horror-assets/img/ah3e --acl public-read --exclude ".DS_Store"
 .PHONY: sync-images
 
 ## Fetch all images via CloudFront (requires aws + curl)
@@ -176,6 +179,11 @@ fetch-images:
 fetch-cards:
 	./scripts/fetch-assets.sh cards
 .PHONY: fetch-cards
+
+## Fetch only third edition images via CloudFront (requires aws + curl)
+fetch-images-3ed:
+	./scripts/fetch-assets.sh 3ed
+.PHONY: fetch-images-3ed
 
 ## Fetch English images via Docker (no local aws CLI required)
 fetch-images-docker:

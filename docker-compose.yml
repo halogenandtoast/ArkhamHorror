@@ -67,6 +67,8 @@ services:
       - postgres_password
     ports:
       - "3000:3000"
+      # third edition frontend
+      - "3001:3001"
     depends_on:
       db:
         condition: service_started
@@ -74,11 +76,13 @@ services:
         condition: service_completed_successfully
     volumes:
       - ./frontend/public/img:/opt/arkham/src/frontend/dist/img
+      - ./frontend-3ed/public/img:/opt/arkham/src/frontend-3ed/dist/img
   fetch-images:
     profiles: ["fetch-images"]
     image: amazon/aws-cli
     volumes:
       - ./frontend/public/img:/workspace/frontend/public/img
+      - ./frontend-3ed/public/img:/workspace/frontend-3ed/public/img
       - ./scripts/fetch-assets.sh:/workspace/scripts/fetch-assets.sh:ro
     entrypoint: ["/bin/bash", "/workspace/scripts/fetch-assets.sh"]
     command: en

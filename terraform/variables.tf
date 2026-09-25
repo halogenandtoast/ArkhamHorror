@@ -194,7 +194,7 @@ variable "http3_enabled" {
 }
 
 variable "tls_domains" {
-  description = "Domains for the LE cert. Defaults to [domain, www.<domain>] if left empty. Domains MUST be hosted on DigitalOcean DNS for LE issuance to succeed."
+  description = "Domains for the LE cert. Defaults to [domain, www.<domain>, 3ed.<domain>] if left empty. Domains MUST be hosted on DigitalOcean DNS for LE issuance to succeed."
   type        = list(string)
   default     = []
 }

@@ -14,6 +14,10 @@
 #   ./scripts/fetch-assets.sh en+fr     # English/static + French translations
 #   ./scripts/fetch-assets.sh cards     # English card images + homebrew card images only (~755 MB)
 #   ./scripts/fetch-assets.sh all       # Everything (~2.9 GB)
+#   ./scripts/fetch-assets.sh 3ed       # Third edition images only (~106 MB)
+#
+# Third edition images (img/ah3e/) land in frontend-3ed/public; everything else
+# in frontend/public. en, en+<lang> and all include them.
 #
 # Environment variables:
 #   FETCH_S3_BUCKET   S3 bucket name for listing (default: arkham-horror-assets)
@@ -30,6 +34,7 @@ PARALLEL="${FETCH_PARALLEL:-8}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PUBLIC_DIR="$ROOT_DIR/frontend/public"
+PUBLIC_DIR_3ED="$ROOT_DIR/frontend-3ed/public"
 
 # ── Terminal ──────────────────────────────────────────────────────────────────
 
@@ -89,6 +94,7 @@ Targets:
   ko          Korean translated card images only
   zh          Chinese translated card images only
   all         Everything (~2.9 GB)
+  3ed         Third edition images only (~106 MB)
 
 Env vars:
   FETCH_S3_BUCKET=...         S3 bucket for listing (default: arkham-horror-assets)
@@ -112,7 +118,9 @@ export -f _file_size
 _fetch_one() {
   local record="$1"
   local expected_size="${record%%$'\t'*}" key="${record#*$'\t'}"
-  local dest="$PUBLIC_DIR/$key" tmp="$PUBLIC_DIR/$key.tmp"
+  local public="$PUBLIC_DIR"
+  case "$key" in img/ah3e/*) public="$PUBLIC_DIR_3ED" ;; esac
+  local dest="$public/$key" tmp="$public/$key.tmp"
   local retries="${FETCH_RETRIES:-3}"
 
   # Skip if the file already exists with the correct size
@@ -153,7 +161,7 @@ _fetch_one() {
   return 1
 }
 export -f _fetch_one
-export PUBLIC_DIR CDN_BASE
+export PUBLIC_DIR PUBLIC_DIR_3ED CDN_BASE
 
 _list_objects() {
   aws s3api list-objects-v2 \
@@ -328,6 +336,7 @@ printf '\n%s=== %s ===%s\n\n' "$_BOLD" \
     en+*)              echo "Fetching English/static + ${1#en+} translations" ;;
     fr|es|ita|ko|zh)   echo "Fetching $1 translated images only" ;;
     all)               echo 'Fetching all images' ;;
+    3ed)               echo 'Fetching third edition images' ;;
   esac)" "$_RESET"
 
 case "$1" in
@@ -346,6 +355,9 @@ case "$1" in
     ;;
   all)
     _sync_prefix "img/" -vE "$CUSTOM_PATTERN"
+    ;;
+  3ed)
+    _sync_prefix "img/ah3e/"
     ;;
   *)
     usage

@@ -2,6 +2,8 @@ locals {
   tls_domains = length(var.tls_domains) > 0 ? var.tls_domains : [
     var.domain,
     "www.${var.domain}",
+    # third edition frontend; nginx in each pod routes it by name (prod.nginxconf)
+    "3ed.${var.domain}",
   ]
 
   tls_annotations = var.tls_enabled ? {

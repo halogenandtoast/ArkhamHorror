@@ -107,7 +107,7 @@ async function closeTable() {
   }
 }
 const confirmClose = () => {
-  if (confirm('Close this table for everyone?')) void closeTable()
+  if (confirm('Close this game for everyone?')) void closeTable()
 }
 </script>
 
@@ -118,8 +118,8 @@ const confirmClose = () => {
     </header>
     <div class="screen">
       <p v-if="loadError" class="err">{{ loadError }}</p>
-      <p v-else class="waiting">Loading table…</p>
-      <RouterLink to="/">Back to the tables</RouterLink>
+      <p v-else class="waiting">Loading game…</p>
+      <RouterLink to="/">Back to the games</RouterLink>
     </div>
   </template>
   <GameScreen v-else-if="started && tv.view" :on-close="closeTable" />
@@ -156,7 +156,7 @@ const confirmClose = () => {
         </div>
         <div class="ng-actions table-actions">
           <button v-if="free.length" class="primary" :disabled="busy" @click="join()">
-            {{ ctx.seated.value ? 'Take another seat' : 'Join the table' }}
+            {{ ctx.seated.value ? 'Take another seat' : 'Join the game' }}
           </button>
           <button
             v-if="ctx.isHost.value"
@@ -167,8 +167,8 @@ const confirmClose = () => {
           >
             Start
           </button>
-          <button v-if="ctx.isHost.value" :disabled="busy" @click="confirmClose">Close table</button>
-          <button v-else-if="ctx.seated.value" :disabled="busy" @click="leaveTable">Leave table</button>
+          <button v-if="ctx.isHost.value" :disabled="busy" @click="confirmClose">Close game</button>
+          <button v-else-if="ctx.seated.value" :disabled="busy" @click="leaveTable">Leave game</button>
         </div>
         <div class="err">{{ lobbyError }}</div>
       </div>

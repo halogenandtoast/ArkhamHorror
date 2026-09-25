@@ -436,6 +436,7 @@ details pre { max-height:400px; overflow:auto; font-size:11px; }
 .q-waiting { margin:2px 0 6px; font-style:italic; }
 .pa-user { font-size:12px; color:var(--muted); }
 .lobby-section { margin-bottom:16px; }
+.lobby-new { margin-bottom:16px; }
 .table-list { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
 .table-row { display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--bg); }
 .table-name { font-weight:700; font-size:15px; color:inherit; }

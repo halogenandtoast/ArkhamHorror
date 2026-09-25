@@ -106,7 +106,7 @@ onUnmounted(() => {
   document.body.classList.remove('log-open')
 })
 const close = () => {
-  if (confirm('Close this table for everyone?')) props.onClose()
+  if (confirm('Close this game for everyone?')) props.onClose()
 }
 // the raw JSON is only stringified while its panel is open
 const rawOpen = ref(false)
@@ -149,7 +149,7 @@ const rawOpen = ref(false)
     <button id="logToggle" class="log-toggle" aria-controls="logPanel" @click="ctx.toggleLog()">
       Log<span v-if="ctx.logUnread.value" id="logUnread" class="log-unread">{{ ctx.logUnread.value > 99 ? '99+' : ctx.logUnread.value }}</span>
     </button>
-    <button v-if="ctx.isHost.value" id="abandon" @click="close">Close table</button>
+    <button v-if="ctx.isHost.value" id="abandon" @click="close">Close game</button>
   </header>
   <LogPanel />
   <ScenarioChoice v-if="!inGame" />

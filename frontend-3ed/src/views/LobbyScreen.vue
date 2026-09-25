@@ -13,6 +13,7 @@ const open = ref<TableSummary[]>([])
 const mine = ref<TableSummary[]>([])
 const error = ref('')
 const loading = ref(true)
+const showNew = ref(false)
 const busy = ref<string | null>(null)
 const closedNotice = computed(() => (typeof route.query.closed === 'string' ? route.query.closed : null))
 
@@ -90,54 +91,58 @@ onUnmounted(() => {
   </header>
   <div class="screen lobby">
     <p v-if="closedNotice" class="notice">
-      The table {{ closedNotice === '1' ? '' : `"${closedNotice}" ` }}was closed by its host.
+      The game {{ closedNotice === '1' ? '' : `"${closedNotice}" ` }}was closed by its host.
       <button class="log-close" aria-label="Dismiss" @click="dismissNotice">✕</button>
     </p>
     <div class="err">{{ error }}</div>
 
-    <section class="lobby-section">
-      <h2>My tables</h2>
-      <p v-if="loading" class="waiting">Loading…</p>
-      <p v-else-if="!mine.length" class="waiting">You aren't at any table yet.</p>
-      <ul v-else class="table-list">
-        <li v-for="t in mine" :key="t.id" class="table-row">
-          <div class="table-info">
-            <RouterLink :to="`/tables/${t.id}`" class="table-name">{{ t.name }}</RouterLink>
-            <div class="table-meta">
-              {{ t.started ? 'In progress' : `Waiting · ${seatsLabel(t)} seated` }} · host {{ t.hostName }} ·
-              {{ t.options.expansions.map(expName).join(', ') }}
+    <NewTableForm v-if="showNew && catalog" :catalog="catalog" @cancel="showNew = false" />
+    <template v-else>
+      <div class="ng-actions table-actions lobby-new">
+        <button class="primary" :disabled="!catalog" @click="showNew = true">New game</button>
+      </div>
+      <section class="lobby-section">
+        <h2>My games</h2>
+        <p v-if="loading" class="waiting">Loading…</p>
+        <p v-else-if="!mine.length" class="waiting">You aren't in any game yet.</p>
+        <ul v-else class="table-list">
+          <li v-for="t in mine" :key="t.id" class="table-row">
+            <div class="table-info">
+              <RouterLink :to="`/tables/${t.id}`" class="table-name">{{ t.name }}</RouterLink>
+              <div class="table-meta">
+                {{ t.started ? 'In progress' : `Waiting · ${seatsLabel(t)} seated` }} · host {{ t.hostName }} ·
+                {{ t.options.expansions.map(expName).join(', ') }}
+              </div>
+              <div class="table-meta">{{ myUsers(t) }}</div>
             </div>
-            <div class="table-meta">{{ myUsers(t) }}</div>
-          </div>
-          <div class="table-buttons">
-            <button class="primary" @click="router.push(`/tables/${t.id}`)">{{ t.started ? 'Resume' : 'Open' }}</button>
-            <button v-if="!t.started && !isHost(t)" :disabled="busy === t.id" @click="leave(t)">Leave</button>
-            <button v-if="isHost(t)" :disabled="busy === t.id" @click="close(t)">Close</button>
-          </div>
-        </li>
-      </ul>
-    </section>
-
-    <section class="lobby-section">
-      <h2>Open tables</h2>
-      <p v-if="!loading && !openToJoin.length" class="waiting">No open tables right now.</p>
-      <ul v-else class="table-list">
-        <li v-for="t in openToJoin" :key="t.id" class="table-row">
-          <div class="table-info">
-            <span class="table-name">{{ t.name }}</span>
-            <div class="table-meta">
-              host {{ t.hostName }} · {{ seatsLabel(t) }} seated · {{ t.options.mode.replace('Mode', '') }} mode ·
-              {{ t.options.expansions.map(expName).join(', ') }}{{ t.options.debug ? ' · debug' : '' }}
+            <div class="table-buttons">
+              <button class="primary" @click="router.push(`/tables/${t.id}`)">{{ t.started ? 'Resume' : 'Open' }}</button>
+              <button v-if="!t.started && !isHost(t)" :disabled="busy === t.id" @click="leave(t)">Leave</button>
+              <button v-if="isHost(t)" :disabled="busy === t.id" @click="close(t)">Close</button>
             </div>
-          </div>
-          <div class="table-buttons">
-            <button class="primary" :disabled="!hasFree(t) || busy === t.id" @click="join(t)">Join</button>
-            <button @click="router.push(`/tables/${t.id}`)">View</button>
-          </div>
-        </li>
-      </ul>
-    </section>
+          </li>
+        </ul>
+      </section>
 
-    <NewTableForm v-if="catalog" :catalog="catalog" />
+      <section class="lobby-section">
+        <h2>Open games</h2>
+        <p v-if="!loading && !openToJoin.length" class="waiting">No open games right now.</p>
+        <ul v-else class="table-list">
+          <li v-for="t in openToJoin" :key="t.id" class="table-row">
+            <div class="table-info">
+              <span class="table-name">{{ t.name }}</span>
+              <div class="table-meta">
+                host {{ t.hostName }} · {{ seatsLabel(t) }} seated · {{ t.options.mode.replace('Mode', '') }} mode ·
+                {{ t.options.expansions.map(expName).join(', ') }}{{ t.options.debug ? ' · debug' : '' }}
+              </div>
+            </div>
+            <div class="table-buttons">
+              <button class="primary" :disabled="!hasFree(t) || busy === t.id" @click="join(t)">Join</button>
+              <button @click="router.push(`/tables/${t.id}`)">View</button>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </template>
   </div>
 </template>

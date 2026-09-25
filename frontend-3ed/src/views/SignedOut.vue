@@ -17,7 +17,7 @@ const hasToken = () => !!getToken()
     </template>
     <template v-else>
       <h2>Sign in to play</h2>
-      <p class="sub">Third edition tables use your arkhamhorror.app account. Sign in on the main site, then come back here.</p>
+      <p class="sub">Third edition games use your arkhamhorror.app account. Sign in on the main site, then come back here.</p>
       <a class="sign-in" :href="signInUrl"><span class="button-like primary">Sign in on arkhamhorror.app</span></a>
     </template>
     <p v-if="hasToken()" class="sub">

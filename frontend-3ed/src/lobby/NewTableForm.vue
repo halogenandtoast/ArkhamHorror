@@ -7,6 +7,7 @@ import { GAME_MODES, expArt, expName } from '@/game/util'
 import type { Catalog, GameMode } from '@/types'
 
 const props = defineProps<{ catalog: Catalog }>()
+const emit = defineEmits<{ cancel: [] }>()
 const router = useRouter()
 
 const choice = reactive({ name: '', seats: 1, expansions: ['CoreSet'] as string[], mode: 'StandardMode' as GameMode, debug: false })
@@ -49,11 +50,11 @@ async function submit() {
 
 <template>
   <div id="setup">
-    <header class="ng-header"><h2>New table</h2></header>
+    <header class="ng-header"><h2>New game</h2></header>
     <form class="ng" @submit.prevent="submit">
       <div class="ng-config">
         <div class="ng-card">
-          <div class="ng-title">Table name</div>
+          <div class="ng-title">Game name</div>
           <div class="ng-seed"><input v-model="choice.name" class="ng-text" type="text" placeholder="Optional" maxlength="80" /></div>
         </div>
         <div class="ng-card">
@@ -109,8 +110,9 @@ async function submit() {
           </div>
           <p class="ng-note">Lets every seated player edit tokens, deal cards and look through decks.</p>
         </div>
-        <div class="ng-actions">
-          <button id="ngStart" class="primary" type="submit" :disabled="busy">Create table</button>
+        <div class="ng-actions table-actions">
+          <button id="ngStart" class="primary" type="submit" :disabled="busy">Create game</button>
+          <button type="button" :disabled="busy" @click="emit('cancel')">Cancel</button>
         </div>
         <div id="setupError" class="err">{{ error }}</div>
       </div>

@@ -295,6 +295,8 @@ spec = describe "The Scarlet Keys achievements" $ do
   context "Gift of Gab" $ do
     -- Interlude 37's two intel-handover branches; 2 and 4 are the hand-back.
     let taylorTalks n = run $ DoStep n $ CampaignStep (InterludeStep 37 Nothing)
+        -- The Foundation 1: "'Talk,' the woman commands."
+        theFoundation = run $ CampaignStep (InterludeStep 1 Nothing)
 
     it "is earned the third time Taylor says talk" . gameTest $ \_ -> do
       asTheScarletKeys
@@ -321,6 +323,43 @@ spec = describe "The Scarlet Keys achievements" $ do
       taylorTalks 2
       taylorTalks 4
       taylorTalks 2
+      earned `refShouldBe` False
+
+    -- The Foundation 1 and Epilogue 1 are the other two times Taylor says "Talk";
+    -- both are automatic, so one Special Delivery handover is enough.
+    it "counts The Foundation 1" . gameTest $ \_ -> do
+      asTheScarletKeys
+      withVisited []
+      earned <- didEarnScarletKeys GiftOfGab
+      theFoundation
+      taylorTalks 1
+      taylorTalks 3
+      earned `refShouldBe` True
+
+    it "counts the epilogue" . gameTest $ \_ -> do
+      asTheScarletKeys
+      withVisited []
+      earned <- didEarnScarletKeys GiftOfGab
+      taylorTalks 1
+      taylorTalks 3
+      finishTheCampaign
+      earned `refShouldBe` True
+
+    it "is earned with a single handover on a won campaign" . gameTest $ \_ -> do
+      asTheScarletKeys
+      withVisited []
+      earned <- didEarnScarletKeys GiftOfGab
+      theFoundation
+      taylorTalks 3
+      finishTheCampaign
+      earned `refShouldBe` True
+
+    it "is not earned from the two automatic talks alone" . gameTest $ \_ -> do
+      asTheScarletKeys
+      withVisited []
+      earned <- didEarnScarletKeys GiftOfGab
+      theFoundation
+      finishTheCampaign
       earned `refShouldBe` False
 
   context "All Hollow" $ do

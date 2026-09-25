@@ -155,12 +155,23 @@ runScarletKeysAchievements msg = whenEligibleCampaign $ case msg of
   -- "in a single turn" — cleared at both ends, per the per-turn counter convention.
   BeginTurn _ -> setStore shiftedKeysKey ([] :: [CardCode])
   EndTurn _ -> setStore shiftedKeysKey ([] :: [CardCode])
-  {- "Gift of Gab": Taylor orders you to "talk" three times. Special Delivery
-  (interlude 37) is repeatable — it fires on travelling to Lagos or Tokyo — and
-  these are exactly its two branches that hand over intel, i.e. the two whose text
-  is Taylor's "Talk." The other two branches (2 and 4) are the hand-BACK, where she
-  says nothing of the kind.
+  {- "Gift of Gab": Taylor orders you to "talk" three times. The campaign text has
+  exactly four such commands, and all four count:
+
+    * The Foundation 1 (interlude 1) — "'Talk,' the woman commands", the woman
+      being Taylor, who names herself later in the same passage.
+    * Special Delivery 1 and 3 (interlude 37), below.
+    * Epilogue 1 — "'Talk,' Commissioner Taylor commands."
+
+  Two of those are automatic on a won campaign, so the achievement is really "route
+  through Lagos or Tokyo for a handover at least once".
+
+  Special Delivery is the repeatable one — it fires on travelling to Lagos or
+  Tokyo — and branches 1 and 3 are exactly the two that hand over intel, i.e. the
+  two whose text is Taylor's "Talk." The other two branches (2 and 4) are the
+  hand-BACK, where she says nothing of the kind.
   -}
+  CampaignStep (InterludeStep 1 _) -> bumpCounter taylorTalksKey 1
   DoStep n (CampaignStep (InterludeStep 37 _)) | n `elem` [1, 3] -> do
     bumpCounter taylorTalksKey 1
     -- Tokyo's cuisine moment is Special Delivery 1, which IS the in-Tokyo branch
@@ -302,6 +313,10 @@ runScarletKeysAchievements msg = whenEligibleCampaign $ case msg of
   CampaignStep EpilogueStep -> do
     g <- getGame
     let difficulty = campaignDifficulty . toAttrs <$> currentCampaign (gameMode g)
+
+    -- "Gift of Gab": Epilogue 1 is Taylor's fourth and last "Talk." It is only read
+    -- on a won campaign, which is exactly when this step is reached.
+    bumpCounter taylorTalksKey 1
 
     -- "Speed Demon": win with 17 or fewer time passed.
     time <- getRecordCount Time

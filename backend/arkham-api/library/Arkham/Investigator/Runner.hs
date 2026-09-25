@@ -629,12 +629,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     -- only re-arm records whose window is still open, otherwise a record from a
     -- closed window at the same depth is marked used again and blocks its ability
     currentWindows <- concat <$> getWindowStack
+    -- an initiation deferred past a nested skill test resolves after this close, and the
+    -- Do (CheckWindows ws) it pushes re-derives from scratch -- so a record whose window
+    -- the queue still owes a check must outlive the close or its Forced ability is
+    -- offered a second time (#5772). `lift`: this runs inside runQueueT.
+    pendingChecks <- lift queuedWindowChecks
+    let stillChecking UsedAbility {..} = any (`elem` pendingChecks) usedAbilityWindows
     let
-      filterAbility UsedAbility {..} = do
+      filterAbility u@UsedAbility {..} = do
         getAbilityLimit (toId a) usedAbility <&> \case
           NoLimit -> False
-          PlayerLimit PerWindow _ -> depth >= usedDepth
-          GroupLimit PerWindow _ -> depth >= usedDepth
+          PlayerLimit PerWindow _ -> depth >= usedDepth || stillChecking u
+          GroupLimit PerWindow _ -> depth >= usedDepth || stillChecking u
           _ -> True
 
     usedAbilities <-

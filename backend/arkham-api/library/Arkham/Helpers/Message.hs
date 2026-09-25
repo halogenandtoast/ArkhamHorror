@@ -742,6 +742,27 @@ queuedInitiationSources = fromQueue (concatMap go)
     ResolveWindowInitiations _ _ pending -> [abilitySource ability | (ability, _, _) <- pending]
     _ -> []
 
+{- | Windows the queue still owes a check. A window's 'EndCheckWindow' can fire while one
+of its initiations is still in flight -- 'handleSkillTestNesting' glues the continuation
+behind 'EndSkillTestWindow', but not the window's close -- and that close depth-filters
+the recorded use away, so the trailing @Do (CheckWindows ws)@ re-derives a Forced ability
+that already initiated (Evil Past asked for its 2 horror twice, #5772).
+-}
+queuedWindowChecks :: HasQueue Message m => m [Window]
+queuedWindowChecks = fromQueue (concatMap go)
+ where
+  go = \case
+    Priority inner -> go inner
+    Retain inner -> go inner
+    MoveWithSkillTest inner -> go inner
+    MovedWithSkillTest _ inner -> go inner
+    Simultaneously inner -> concatMap go inner
+    Run inner -> concatMap go inner
+    CheckWindows ws -> ws
+    Do (CheckWindows ws) -> ws
+    ResolveWindowInitiations _ ws _ -> ws
+    _ -> []
+
 {- | Consume this initiation out of the queued 'ResolveWindowInitiations' marker and
 give the pending effects it was holding back to the queue.
 

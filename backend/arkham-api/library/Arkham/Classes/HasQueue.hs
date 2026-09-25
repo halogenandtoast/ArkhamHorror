@@ -236,6 +236,24 @@ removeAllMessagesMatching
   :: (HasQueue msg m, QueueWrapper msg) => (msg -> Bool) -> m ()
 removeAllMessagesMatching matcher = withQueue_ $ filter (not . matchesQueued matcher)
 
+{- | 'removeAllMessagesMatching', but descending into grouped messages ('queueGroup').
+
+A cascade that was batched -- 'Arkham.Message.Simultaneously' and the
+'Arkham.Message.Run' blocks it interleaves into -- keeps its payload where a flat filter
+cannot reach it, so a cancel written as a flat filter silently no-ops. A group a message
+is pulled out of is rebuilt around what is left.
+-}
+removeAllMessagesMatchingNested
+  :: (HasQueue msg m, QueueWrapper msg) => (msg -> Bool) -> m ()
+removeAllMessagesMatchingNested matcher = withQueue_ go
+ where
+  go = mapMaybe prune
+  prune msg
+    | matchesQueued matcher msg = Nothing
+    | otherwise = case queueGroup msg of
+        Just (children, rebuild) -> Just (rebuild (go children))
+        Nothing -> Just msg
+
 removeAllMessagesMatchingM
   :: (HasQueue msg m, QueueWrapper msg) => (msg -> m Bool) -> m ()
 removeAllMessagesMatchingM matcher = do

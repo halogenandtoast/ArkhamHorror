@@ -27,7 +27,7 @@ cancelEnemyDefeat (asId -> eid) = do
     isEnemyDefeated w = case w.kind of
       Window.EnemyDefeated _ _ eid' -> eid' == eid
       _ -> False
-  withQueue_ $ filter (not . isDiscardEnemy)
+  removeAllMessagesMatchingNested isDiscardEnemy
 
 cancelEnemyDefeatWithWindows :: (ToId enemy EnemyId, HasQueue Message m) => enemy -> m ()
 cancelEnemyDefeatWithWindows (asId -> eid) = do
@@ -42,7 +42,7 @@ cancelEnemyDefeatWithWindows (asId -> eid) = do
       Do (Defeated (EnemyTarget eid') _ _ _) -> eid == eid'
       After (Defeated (EnemyTarget eid') _ _ _) -> eid == eid'
       _ -> False
-  withQueue_ $ filter (not . isDiscardEnemy)
+  removeAllMessagesMatchingNested isDiscardEnemy
 
 cancelEnemyDefeatCapture :: (HasQueue Message m, ToId enemy EnemyId) => enemy -> m [Window]
 cancelEnemyDefeatCapture (asId -> eid) = do
@@ -51,7 +51,7 @@ cancelEnemyDefeatCapture (asId -> eid) = do
   -- get after
   after <- fromQueue $ go #after
   -- delete all windows
-  withQueue_ $ filter (not . isDiscardEnemyWindow)
+  removeAllMessagesMatchingNested isDiscardEnemyWindow
   pure after
  where
   isDiscardEnemyWindow = \case
@@ -63,11 +63,10 @@ cancelEnemyDefeatCapture (asId -> eid) = do
     _ -> False
   go _timing [] = []
   go timing (msg : msgs) = do
-    case msg of
-      CheckWindows ws -> case find isEnemyDefeated (filter ((== timing) . (.timing)) ws) of
-        Just w -> w : go timing msgs
+    case stripQueueWrappers msg of
+      CheckWindows ws -> matched timing ws <> go timing msgs
+      Do (CheckWindows ws) -> matched timing ws <> go timing msgs
+      other -> case queueGroup other of
+        Just (children, _) -> go timing children <> go timing msgs
         Nothing -> go timing msgs
-      Do (CheckWindows ws) -> case find isEnemyDefeated (filter ((== timing) . (.timing)) ws) of
-        Just w -> w : go timing msgs
-        Nothing -> go timing msgs
-      _ -> go timing msgs
+  matched timing ws = maybeToList $ find isEnemyDefeated (filter ((== timing) . (.timing)) ws)

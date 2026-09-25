@@ -21,7 +21,7 @@ instance RunMessage CausticReaction2 where
         sid
         attrs
         iid
-        [ SkillModifier #intellect 1
+        [ SkillModifier #intellect 2
         , DamageDealtCalculation
             $ IfInvestigatorExistsCalculation iid (InvestigatorWithClues $ atLeast 2) (Fixed 2) (Fixed 1)
         ]

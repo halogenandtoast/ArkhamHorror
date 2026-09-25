@@ -22,6 +22,7 @@
   --z-index-10: 10;
   --z-index-15: 15;
   --z-index-20: 20;
+  --z-index-25: 25;
   --z-index-30: 30;
   --z-index-49: 49;
   --z-index-50: 50;
@@ -48,6 +49,20 @@
   --z-index-20000000000: 20000000000;
   --z-index-max: 2147483647;
   --z-index-explosion: 100000000000000000000;
+
+  /* Game board, bottom to top.
+   *
+   * Everything drawn inside the location grid shares one stacking context, so
+   * these values are compared ACROSS components (Connections.vue draws the
+   * lines and the cards on them, Scenario.vue the cells, Location.vue the card
+   * itself). Use these rather than a bare number when the thing being layered
+   * is part of the board.
+   */
+  --z-board-connections: var(--z-index-0);
+  --z-board-locations: var(--z-index-1);
+  --z-board-location-active: var(--z-index-20);
+  --z-board-connection-attachments: var(--z-index-25);
+  --z-board-location-raised: var(--z-index-30);
 
   /* Semantic aliases */
   --z-card-hover-overlay: var(--z-index-20000);

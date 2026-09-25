@@ -1187,7 +1187,7 @@ onBeforeUnmount(()=> {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0;
+  z-index: var(--z-board-connections);
   overflow: hidden;
 }
 
@@ -1200,7 +1200,7 @@ onBeforeUnmount(()=> {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 0;
+  z-index: var(--z-board-connections);
   overflow: hidden;
 }
 
@@ -1211,9 +1211,9 @@ onBeforeUnmount(()=> {
   pointer-events: none;
 }
 
-/* .location-cards is a later sibling at z-index 1 and its interactable cells go
-   to 20, so anything lower than this gets painted over -- which swallows clicks
-   on the coupling's ability button where it overlaps a neighbouring car. */
+/* Above the cards, because a coupling hangs in the gutter and its ability button
+   overlaps the neighbouring car -- at the cards' own level the car paints over
+   the button and swallows the click. */
 .connections-between{
   pointer-events: none;
   position: absolute;
@@ -1221,7 +1221,7 @@ onBeforeUnmount(()=> {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: var(--z-index-30);
+  z-index: var(--z-board-connection-attachments);
 }
 
 .connections-between > *{

@@ -3385,7 +3385,7 @@ async function addChaosToken(face: any){
   grid-area: 1 / 1;
   justify-self: center;
   position: relative;
-  z-index: 1;
+  z-index: var(--z-board-locations);
   transition: transform 0.2s ease;
 }
 
@@ -4374,7 +4374,7 @@ async function addChaosToken(face: any){
 }
 
 .location-cell--can-interact {
-  z-index: var(--z-index-20);
+  z-index: var(--z-board-location-active);
 }
 
 /* While a swarm is fanned open (hovering the swarm, or its abilities menu is open),
@@ -4383,7 +4383,7 @@ async function addChaosToken(face: any){
 .location-cell:has(.enemy--outer:hover),
 .location-cell:has(.swarm:hover),
 .location-cell:has(.enemy--swarming.showAbilities) {
-  z-index: var(--z-index-30);
+  z-index: var(--z-board-location-raised);
 }
 
 .location-wrapper {

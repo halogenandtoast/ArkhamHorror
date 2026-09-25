@@ -1244,7 +1244,7 @@ img.card.source-highlight {
 }
 
 .location:has(.abilities) {
-  z-index: var(--z-index-30) !important;
+  z-index: var(--z-board-location-raised) !important;
 }
 
 .locus {

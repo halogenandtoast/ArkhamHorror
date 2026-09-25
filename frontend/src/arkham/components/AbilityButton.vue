@@ -20,7 +20,10 @@ const props = withDefaults(defineProps<{
  tooltipIsButtonText?: boolean
  showMove?: boolean
  hostHasSwarm?: boolean
-}>(), { tooltipIsButtonText: false, showMove: true, hostHasSwarm: false })
+ // Boon buttons anchored to a narrow spot (the discard column) drop the boon's
+ // name for the boon star; the name still reads from the tooltip.
+ iconOnly?: boolean
+}>(), { tooltipIsButtonText: false, showMove: true, hostHasSwarm: false, iconOnly: false })
 
 const ability = computed<Ability | null>(() => "ability" in props.ability ? props.ability.ability : null)
 
@@ -90,6 +93,10 @@ const boonName = computed(() => {
   if (!boonTag.value) return null
   return t(`ultimatumsAndBoons.entries.${boonTag.value}.name`)
 })
+
+// The same star the campaign log marks boons with (CampaignLogUltimatumsAndBoons).
+const boonIcon = '✦'
+const showBoonIcon = computed(() => props.iconOnly && boonTag.value !== null)
 
 const isObjective = computed(() => ability.value && ability.value.type.tag === "Objective")
 const isFastActionAbility = computed(() => ability.value && ability.value.type.tag === "FastAbility")
@@ -227,6 +234,10 @@ const abilityLabel = computed(() => {
 
   if (isDelayedAbility.value === true) {
     return t('Delayed')
+  }
+
+  if (showBoonIcon.value) {
+    return boonIcon
   }
 
   if (boonName.value) {
@@ -426,6 +437,7 @@ const classObject = computed(() => {
 
   return {
     'boon-button': boonTag.value !== null,
+    'boon-button--icon': showBoonIcon.value,
     'zeroed-ability-button': isZeroedActionAbility.value && isNeutralAbility.value,
     'fast-ability-button': isFastActionAbility.value,
     'reaction-ability-button': isReactionAbility.value,
@@ -459,6 +471,7 @@ const classObject = computed(() => {
     @click="$emit('choose', ability)"
     v-bind="attributes"
     v-tooltip="!isButtonText && tooltip"
+    :aria-label="(showBoonIcon && boonName) || undefined"
   >
     <span
       v-if="showSwarmHostWarning"
@@ -706,6 +719,18 @@ const classObject = computed(() => {
   color: #fff;
   &:before {
     content: none;
+  }
+}
+
+/* Star-only boon button: sized to the glyph so it can sit in a card-width
+   column without stretching it. The name lives in the tooltip. */
+.boon-button--icon, button.boon-button--icon {
+  width: auto;
+  min-width: 0;
+  .button-label {
+    padding: 2px 8px;
+    font-size: 1.1em;
+    line-height: 1.2;
   }
 }
 

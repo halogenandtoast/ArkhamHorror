@@ -5,6 +5,13 @@ import Arkham.Event.Cards qualified as Events
 import Helpers.UltimatumsAndBoons
 import TestImport.New
 
+boonSource :: Source
+boonSource = UltimatumOrBoonSource (Boon BoonOfTheChild)
+
+-- N.B. availability is asked through getActions (what the player window uses),
+-- not through the ability matcher: getGameAbilities collects entity abilities
+-- only, so `select (AbilityIs (UltimatumOrBoonSource ...) n)` never matches a
+-- boon even while the boon's ability is being offered.
 spec :: Spec
 spec = describe "Boon of the Child" $ do
   it "once per round you may play the topmost event of your discard, bottom-decking it" . gameTest $ \self -> do
@@ -15,18 +22,20 @@ spec = describe "Boon of the Child" $ do
     withDeck self [Assets.flashlight]
 
     duringRound do
-      asDefs self.playableCards `shouldReturn` [Events.emergencyCache]
-      self `playCard` toCard eventA
-      self.resources `shouldReturn` 3
-      -- it goes to the bottom of the deck instead of the discard pile
-      asDefs self.discard `shouldReturn` [Events.emergencyCache]
-      asDefs self.deck `shouldReturn` [Assets.flashlight, Events.emergencyCache]
-      -- and the permission is spent for the rest of the round. "An investigator
-      -- may play" is group-wide, so the marker sits on GameTarget, not on self
-      getModifiers GameTarget `shouldContainM` [MetaModifier "usedBoonOfTheChild"]
-      asDefs self.playableCards `shouldReturn` []
+      duringTurn self do
+        getActionsFrom self boonSource `shouldSatisfyM` notNull
+        inWindow self $ useFastActionOf boonSource 1
+        self.resources `shouldReturn` 3
+        -- Emergency Cache is not fast, so the play still costs an action
+        self.remainingActions `shouldReturn` 2
+        -- it goes to the bottom of the deck instead of the discard pile
+        asDefs self.discard `shouldReturn` [Events.emergencyCache]
+        asDefs self.deck `shouldReturn` [Assets.flashlight, Events.emergencyCache]
+        -- and the permission is spent for the rest of the round. "An investigator
+        -- may play" is group-wide, hence a GroupLimit rather than a player limit
+        getActionsFrom self boonSource `shouldSatisfyM` null
 
     duringRound do
-      -- the permission returns next round
-      getModifiers GameTarget `shouldNotContainM` [MetaModifier "usedBoonOfTheChild"]
-      asDefs self.playableCards `shouldReturn` [Events.emergencyCache]
+      duringTurn self do
+        -- the permission returns next round
+        getActionsFrom self boonSource `shouldSatisfyM` notNull

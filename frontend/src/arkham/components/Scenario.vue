@@ -1109,7 +1109,11 @@ function isAbility(v: Message): v is AbilityLabel {
   const { source } = v.ability;
   // Ultimatums/Boons are global pseudo-entities with no board presence; their
   // ability buttons render on the scenario card like scenario abilities do.
-  return source.sourceTag === 'OtherSource' && (source.tag === 'ScenarioSource' || source.tag === 'UltimatumOrBoonSource')
+  // Boon of the Child is the exception: it plays the topmost event of a discard
+  // pile, so Draw.vue anchors its button to the pile it acts on.
+  if (source.sourceTag !== 'OtherSource') return false
+  if (source.tag === 'UltimatumOrBoonSource') return source.contents !== 'BoonOfTheChild'
+  return source.tag === 'ScenarioSource'
 }
 
 const abilities = computed(() => {

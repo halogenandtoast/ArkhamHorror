@@ -61,6 +61,7 @@ data ExtendedCardMatcher
   | InDeckOf Who
   | InPlayAreaOf Who
   | InDiscardOf Who
+  | TopmostOfDiscardOf Who CardMatcher
   | InEncounterDiscard
   | TopOfDeckOf Who
   | EligibleForCurrentSkillTest

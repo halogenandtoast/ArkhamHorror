@@ -129,6 +129,28 @@ function isDiscardChoice(c: Message) {
 
 const discardCardsAction = computed(() => choices.value.some(isDiscardChoice))
 
+/* Boon of the Child plays the topmost event of the discard pile, so its button
+ * belongs on the pile. Every other boon has no board presence and renders on the
+ * scenario guide card; Scenario.vue's isAbility excludes this one so it does not
+ * appear twice -- keep the two in step if another discard boon joins it. */
+function isDiscardBoonAbility(v: Message): v is AbilityLabel {
+  if (v.tag !== 'AbilityLabel') return false
+  const { source } = v.ability
+  return source.sourceTag === 'OtherSource'
+    && source.tag === 'UltimatumOrBoonSource'
+    && source.contents === 'BoonOfTheChild'
+}
+
+const discardAbilities = computed<AbilityMessage[]>(() => {
+  if (props.playerId !== props.investigator.playerId) return []
+  return choices.value.reduce<AbilityMessage[]>((acc, v, i) => {
+    if (isDiscardBoonAbility(v)) {
+      return [...acc, { contents: v, displayAsAction: false, index: i }]
+    }
+    return acc
+  }, [])
+})
+
 
 const topOfDeckTreachery = computed(() => {
   const mTreacheryId = Object.values(props.game.treacheries).
@@ -294,6 +316,14 @@ watch(choices, async (newChoices) => {
       :fullWidth="true"
       @choose="emit('choose', $event)"
     />
+    <AbilityButton
+      v-for="ability in discardAbilities"
+      :key="ability.index"
+      :ability="ability.contents"
+      :game="game"
+      iconOnly
+      @click="emit('choose', ability.index)"
+    />
     <button v-if="debug.active && discards.length > 0" class="view-discard-button" @click="debug.send(game.id, {tag: 'ShuffleDiscardBackIn', contents: investigatorId})">{{ $t('draw.shuffleBackIn') }}</button>
   </div>
   <div class="deck-container">
@@ -373,6 +403,12 @@ watch(choices, async (newChoices) => {
     width: var(--card-width);
     :deep(button) {
       display: block;
+    }
+    /* The star-only boon button must not inherit the block stretch the other
+       discard buttons want -- it should hug its glyph. */
+    :deep(button.boon-button--icon) {
+      display: inline-flex;
+      width: auto;
     }
   }
 

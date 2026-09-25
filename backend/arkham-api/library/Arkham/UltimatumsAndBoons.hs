@@ -27,14 +27,13 @@ import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasQueue
-import Arkham.Classes.Query ((<=~>))
+import Arkham.Classes.Query (select, (<=~>))
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist.RandomBasicWeakness (
   RandomBasicWeaknessContext (..),
   sampleRandomBasicWeakness,
  )
 import Arkham.DefeatedBy
-import Arkham.Event.Types (Event)
 import Arkham.Game.Base
 import Arkham.Game.Settings
 import Arkham.Helpers.ChaosToken (cancelChaosToken)
@@ -53,6 +52,7 @@ import Arkham.Investigator.Types (
  )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
+import Arkham.Message.Lifted.Card (playCardPayingCostWithWindows)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
@@ -86,13 +86,14 @@ isUltimatumOrBoonSource = \case
   UltimatumOrBoonSource _ -> True
   _ -> False
 
-{- | Marks that Boon of the Child has been used this round. The card reads "an
-investigator may play", not "each investigator", so the limit is group-wide:
-the marker sits on GameTarget, not on whoever used it. Carried by a
-round-scoped window-modifier effect so it expires on its own.
+{- | The one card Boon of the Child may play: the topmost event in that
+investigator's discard pile, if it is playable. One definition shared by the
+ability's criteria and its handler so the two can never disagree.
 -}
-boonOfTheChildUsedMarker :: ModifierType
-boonOfTheChildUsedMarker = MetaModifier "usedBoonOfTheChild"
+boonOfTheChildCard :: Matcher.InvestigatorMatcher -> Matcher.ExtendedCardMatcher
+boonOfTheChildCard who =
+  Matcher.PlayableCard (UnpaidCost NeedsAction)
+    $ Matcher.TopmostOfDiscardOf who (Matcher.CardWithType EventType)
 
 {- | Marks an investigator whose first autofail of the game has already
 resolved. Boon of Athena is "the first time each game": declining the offer
@@ -154,18 +155,6 @@ instance HasModifiersFor Boon where
       BoonOfPersephone -> modifySelectMaybe source Matcher.DefeatedInvestigator \_ -> do
         liftGuardM $ not <$> getIsStandalone
         pure [XPModifier "Boon of Persephone" 3]
-      BoonOfTheChild -> do
-        used <- (boonOfTheChildUsedMarker `elem`) <$> getModifiers GameTarget
-        unless used do
-          modifySelect source Matcher.Anyone [CanPlayTopmostOfDiscard (Just EventType, [])]
-        -- Bottom-deck instead of discard, computed from the event's own
-        -- played-from zone: message-based effect creation would race the play
-        -- chain (the scenario dispatches before entities, so pushed effects
-        -- resolve only after the event has already discarded).
-        modifySelectMaybe source Matcher.AnyEvent \eid -> do
-          attrs <- lift $ getAttrs @Event eid
-          guard attrs.playedFromDiscard
-          pure [PlaceOnBottomOfDeckInsteadOfDiscard]
       _ -> pure ()
 
 ultimatumOrBoonAbilities :: UltimatumOrBoon -> [Ability]
@@ -190,6 +179,22 @@ boonAbilities b = case b of
         $ playerLimit PerGame
         $ mkAbility (fromUltimatumOrBoon (Boon b)) 1
         $ freeReaction (Matcher.DrawingStartingHand #when Matcher.You)
+    ]
+  {- An explicit ability rather than a CanPlayTopmostOfDiscard permission: the boon
+  has to know which play was its own to bottom-deck the event and to spend its use,
+  and nothing about a card sitting on top of the discard says that. Double, Double
+  replays an event its own first resolution just discarded, so inferring the boon
+  from "the played card is the topmost event of the discard" fired on that replay
+  (#5768); De Vermis Mysteriis (2), Wendy's Amulet and Marion Tavares are the same
+  shape. Recipe is Eldritch Tongue's: the player initiates, the handler attaches the
+  riders to that one play. "An investigator may play" is group-wide, hence groupLimit.
+  -}
+  BoonOfTheChild ->
+    [ withTooltip
+        "Boon of the Child: play the topmost event in your discard pile as if it were in your hand"
+        $ groupLimit PerRound
+        $ fastAbility (fromUltimatumOrBoon (Boon b)) 1 Free
+        $ exists (boonOfTheChildCard Matcher.You)
     ]
   BoonOfOsiris ->
     [ withTooltip "Boon of Osiris: after suffering trauma, heal all damage and horror"
@@ -342,35 +347,19 @@ runUltimatumsAndBoonsMessage msg = case msg of
             (UltimatumOrBoonSource (Boon BoonOfAthena))
             (InvestigatorTarget iid)
             boonOfAthenaExpiredMarker
-  -- Marked on CardEnteredPlay, not PlayCard. The scenario dispatches before the
-  -- entities and the game runner, and `push` prepends, so a marker pushed while
-  -- handling PlayCard sits beneath the whole play chain and only lands once every
-  -- window that play opened has drained -- long enough for Easy Mark (1) to reach
-  -- back into the discard again and again. CardEnteredPlay is the first message of
-  -- that chain, it only fires once costs are paid (so a play cancelled during
-  -- payment never burns the boon), and the card is still in the discard here: the
-  -- investigator clears its zones on this same message, after the scenario.
-  CardEnteredPlay iid card -> do
-    whenM (hasBoon BoonOfTheChild) do
-      mods <- getModifiers GameTarget
-      unless (boonOfTheChildUsedMarker `elem` mods) do
-        discard' <- field InvestigatorDiscard iid
-        -- "topmost event": the first event from the top, whatever sits above
-        -- it (matches CanPlayTopmostOfDiscard's filtered-then-head semantics).
-        case find (`cardMatch` Matcher.CardWithType EventType) discard' of
-          Just topmostEvent | toCardId topmostEvent == toCardId card -> do
-            -- Attributed to this boon even if another effect also allows
-            -- discard plays. Only the once-per-round marker is pushed here;
-            -- the bottom-decking is a computed modifier (HasModifiersFor) on
-            -- events played from the discard, since a pushed effect would
-            -- resolve after the event has already discarded.
-            marker <-
-              roundModifier
-                (UltimatumOrBoonSource (Boon BoonOfTheChild))
-                GameTarget
-                boonOfTheChildUsedMarker
-            push marker
-          _ -> pure ()
+  UseCardAbility iid source@(UltimatumOrBoonSource (Boon BoonOfTheChild)) 1 ws _ -> runQueueT do
+    cards <- select $ boonOfTheChildCard (Matcher.InvestigatorWithId iid)
+    for_ (listToMaybe cards) \card -> do
+      -- Scoped to this play, not to "any event played from a discard": that is what
+      -- kept other effects from inheriting the bottom-decking. UnlessFastActionCost
+      -- keeps the play honest -- a non-fast event still costs an action.
+      push
+        =<< cardResolutionModifiers
+          card
+          source
+          card
+          [PlaceOnBottomOfDeckInsteadOfDiscard, AdditionalCost (UnlessFastActionCost 1)]
+      playCardPayingCostWithWindows iid card ws
   _ -> pure ()
 
 {- | Boon of the Morrígan: instead of adding a random basic weakness, draw

@@ -5956,6 +5956,16 @@ instance Query ExtendedCardMatcher where
         iids <- select who
         discards <- concatMapM (fieldMap InvestigatorDiscard (map PlayerCard)) iids
         pure $ filter (`elem` discards) cs
+      -- The first match from the top, whatever sits above it: the "topmost event in
+      -- their discard pile" wording, and the same semantics getAsIfInHandCardsFor
+      -- gives CanPlayTopmostOfDiscard.
+      TopmostOfDiscardOf who cardMatcher -> do
+        iids <- select who
+        tops <-
+          concatMapM
+            (fieldMap InvestigatorDiscard (take 1 . filter (`cardMatch` cardMatcher) . map PlayerCard))
+            iids
+        pure $ filter (`elem` tops) cs
       InPlayAreaOf who -> do
         iids <- select who
         cards <- concatForM iids \i -> do

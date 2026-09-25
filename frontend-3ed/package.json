@@ -1,0 +1,24 @@
+{
+  "type": "module",
+  "name": "arkhamhorror-3ed",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tc": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@vueuse/core": "^13.9.0",
+    "vue": "^3.5.22",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.2",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9",
+    "vue-tsc": "^3.1.0"
+  }
+}

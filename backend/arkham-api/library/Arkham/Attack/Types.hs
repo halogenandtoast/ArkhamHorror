@@ -31,6 +31,7 @@ data EnemyAttackDetails = EnemyAttackDetails
   , attackDealDamage :: Bool
   , attackDespiteExhausted :: Bool
   , attackCancelled :: Bool
+  , attackDamageReplacement :: [Message]
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -39,6 +40,9 @@ instance HasField "despiteExhausted" EnemyAttackDetails Bool where
 
 instance HasField "cancelled" EnemyAttackDetails Bool where
   getField = attackCancelled
+
+instance HasField "damageReplacement" EnemyAttackDetails [Message] where
+  getField = attackDamageReplacement
 
 instance HasField "kind" EnemyAttackDetails EnemyAttackType where
   getField = attackType
@@ -91,7 +95,8 @@ mconcat
 instance FromJSON EnemyAttackDetails where
   parseJSON = withObject "EnemyAttackDetails" $ \o -> do
     attackTarget <- o .: "attackTarget" <|> (SingleAttackTarget <$> o .: "attackTarget")
-    attackOriginalTarget <- o .: "attackOriginalTarget" <|> (SingleAttackTarget <$> o .: "attackOriginalTarget")
+    attackOriginalTarget <-
+      o .: "attackOriginalTarget" <|> (SingleAttackTarget <$> o .: "attackOriginalTarget")
     attackEnemy <- o .: "attackEnemy"
     attackType <- o .: "attackType"
     attackDamageStrategy <- o .: "attackDamageStrategy"
@@ -103,4 +108,5 @@ instance FromJSON EnemyAttackDetails where
     attackDealDamage <- o .:? "attackDealDamage" .!= True
     attackDespiteExhausted <- o .:? "attackDespiteExhausted" .!= False
     attackCancelled <- o .:? "attackCancelled" .!= False
+    attackDamageReplacement <- o .:? "attackDamageReplacement" .!= []
     pure $ EnemyAttackDetails {..}

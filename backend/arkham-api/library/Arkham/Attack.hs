@@ -32,6 +32,7 @@ enemyAttack (asId -> enemyId) (toSource -> source) (toTarget -> target) =
     , attackDealDamage = True
     , attackDespiteExhausted = False
     , attackCancelled = False
+    , attackDamageReplacement = []
     }
 viaAlert :: EnemyAttackDetails -> EnemyAttackDetails
 viaAlert a = a {attackType = AlertAttack}

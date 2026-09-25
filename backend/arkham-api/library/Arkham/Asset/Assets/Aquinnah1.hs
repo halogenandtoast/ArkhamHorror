@@ -34,8 +34,13 @@ instance HasAbilities Aquinnah1 where
 
 instance RunMessage Aquinnah1 where
   runMessage msg a@(Aquinnah1 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getAttackDetails -> attack) _ -> do
-      changeAttackDetails attack.enemy attack {attackDealDamage = False}
+    -- See Aquinnah3: "instead" replaces how the attack's damage resolves, so the
+    -- redirect is registered on the attack and resolved with it.
+    UseCardAbility _ (isSource attrs -> True) 1 (getAttackDetails -> attack) _ -> do
+      updateAttackDetails attack \details ->
+        details {attackDealDamage = False, attackDamageReplacement = [DoStep 1 msg]}
+      pure a
+    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 1 (getAttackDetails -> attack) _) -> do
       healthDamage' <- field EnemyHealthDamage attack.enemy
       enemies <- select $ enemyAtLocationWith iid <> not_ (be attack.enemy)
       concealed <- getConcealedIds (ForExpose $ toSource attrs) iid

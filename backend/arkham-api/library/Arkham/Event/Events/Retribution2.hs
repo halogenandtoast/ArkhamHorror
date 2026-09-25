@@ -23,10 +23,10 @@ instance RunMessage Retribution2 where
       damage <- field EnemyHealthDamage attack.enemy
       horror <- field EnemySanityDamage attack.enemy
       let n = damage + horror
-      changeAttackDetails attack.enemy
-        $ attack
+      updateAttackDetails attack \live ->
+        live
           { attackTarget = SingleAttackTarget (toTarget iid)
-          , attackAfter = attackAfter attack <> [DoStep n msg]
+          , attackAfter = attackAfter live <> [DoStep n msg]
           }
       pure $ Retribution2 (attrs & afterPlayL .~ DeferDiscard)
     DoStep n msg'@(PlayThisEvent iid (is attrs -> True)) -> do

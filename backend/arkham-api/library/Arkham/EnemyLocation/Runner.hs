@@ -245,7 +245,9 @@ instance RunMessage EnemyLocationAttrs where
             SingleAttackTarget (InvestigatorTarget iid') -> [iid']
             MassiveAttackTargets ts -> [iid' | InvestigatorTarget iid' <- ts]
             _ -> []
-      pushAll [dmgMsg iid' | not details.cancelled, iid' <- targets]
+      pushAll
+        $ [m | not details.cancelled, m <- details.damageReplacement]
+        <> [dmgMsg iid' | not details.cancelled, iid' <- targets]
       pure a
     ForTarget target (CancelEachNext mCardId source [AttackMessage]) | isEnemyTarget a target -> do
       Lifted.checkWhen $ Window.CancelledOrIgnoredCardOrGameEffect source mCardId

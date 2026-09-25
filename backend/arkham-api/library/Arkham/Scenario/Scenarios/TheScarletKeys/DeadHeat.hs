@@ -252,6 +252,7 @@ instance RunMessage DeadHeat where
           , attackDealDamage = True
           , attackDespiteExhausted = True
           , attackCancelled = False
+          , attackDamageReplacement = []
           }
       withLocationOf enemy slayCivilian
       pure s

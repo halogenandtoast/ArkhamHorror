@@ -2875,6 +2875,18 @@ cancelAttack source details = when details.canBeCanceled do
 changeAttackDetails :: (ReverseQueue m, AsId a, IdOf a ~ EnemyId) => a -> EnemyAttackDetails -> m ()
 changeAttackDetails eid details = push $ ChangeEnemyAttackDetails (asId eid) details
 
+{- | Patch the attack in flight. Callers hold the copy of 'EnemyAttackDetails'
+frozen into the window they triggered from, which predates anything @Do
+(EnemyAttack)@ or another card in the same window has since written; this reads
+the live record off the enemy so those edits survive. Falls back to the frozen
+copy for a coerced enemy id with no entity behind it ('EnemyLocation').
+-}
+updateAttackDetails
+  :: ReverseQueue m => EnemyAttackDetails -> (EnemyAttackDetails -> EnemyAttackDetails) -> m ()
+updateAttackDetails details f = do
+  live <- fromMaybe details <$> fieldMayJoin EnemyAttacking details.enemy
+  push $ ChangeEnemyAttackDetails details.enemy (f live)
+
 cancelAssetLeavePlay
   :: (MonadTrans t, HasQueue Message m, AsId asset, IdOf asset ~ AssetId)
   => asset

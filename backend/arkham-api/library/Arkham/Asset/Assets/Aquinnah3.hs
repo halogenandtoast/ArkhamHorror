@@ -28,8 +28,15 @@ instance HasAbilities Aquinnah3 where
 
 instance RunMessage Aquinnah3 where
   runMessage msg a@(Aquinnah3 attrs) = runQueueT $ case msg of
-    UseCardAbility iid (isSource attrs -> True) 1 (getAttackDetails -> attack) _ -> do
-      changeAttackDetails attack.enemy attack {attackDealDamage = False}
+    -- "instead" makes this a replacement effect: the attack still resolves, its
+    -- damage just lands on another enemy when it does. Registering it on the
+    -- attack rather than dealing it here means a later Dodge cancels the whole
+    -- thing, redirected damage included.
+    UseCardAbility _ (isSource attrs -> True) 1 (getAttackDetails -> attack) _ -> do
+      updateAttackDetails attack \details ->
+        details {attackDealDamage = False, attackDamageReplacement = [DoStep 1 msg]}
+      pure a
+    DoStep 1 (UseCardAbility iid (isSource attrs -> True) 1 (getAttackDetails -> attack) _) -> do
       healthDamage' <- field EnemyHealthDamage attack.enemy
       chooseDamageEnemy iid (attrs.ability 1) (locationWithInvestigator iid) AnyEnemy healthDamage'
       pure a

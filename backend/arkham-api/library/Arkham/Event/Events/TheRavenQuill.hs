@@ -44,7 +44,7 @@ instance HasModifiersFor TheRavenQuill where
 
 instance HasAbilities TheRavenQuill where
   getAbilities (TheRavenQuill a) =
-    [ restricted a 1 ControlsThis $ freeReaction (oneOf [GameEnds #when, InvestigatorResigned #when You])
+    [ controlled_ a 1 $ freeReaction (oneOf [GameEnds #when, InvestigatorResigned #when You])
     ]
       <> [ controlled
              a
@@ -57,11 +57,11 @@ instance HasAbilities TheRavenQuill where
              $ FastAbility (exhaust a)
          | a `hasCustomization` EnergySap
          ]
-      <> [ controlled
-             a
-             3
-             (exists $ AssetControlledBy You <> #exhausted <> not_ (assetWithAttachedEvent a.id))
-             $ SilentForcedAbility (ActivateAbility #after You $ AbilityOnAsset $ assetWithAttachedEvent a.id)
+      <> [ controlled a 3 (exists $ AssetControlledBy You <> #exhausted <> not_ (assetWithAttachedEvent a.id))
+             $ silent
+             $ ActivateAbility #after You
+             $ #action
+             <> AbilityOnAsset (assetWithAttachedEvent a.id)
          | a `hasCustomization` InterwovenInk && a.ready
          ]
 
@@ -138,7 +138,8 @@ instance RunMessage TheRavenQuill where
         hasCharge <- sourceAsset <=~> AssetWithUses Charge
         if
           | hasSecret && hasCharge ->
-              chooseOne iid
+              chooseOne
+                iid
                 [ Label "$cards.label.theRavenQuill.moveSecret" [moveToken Secret]
                 , Label "$cards.label.theRavenQuill.moveCharge" [moveToken Charge]
                 ]

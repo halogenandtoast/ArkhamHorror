@@ -374,30 +374,35 @@ replaceWindow f wf = do
       Do (CheckWindows ws) -> [Do (CheckWindows $ map (\w -> if f w then wf w else w) ws)]
       _ -> error "replaceWindow: impossible"
 
+{- | Rewrite the open windows wherever the queue still holds them.
+
+'CheckWindows' is not the only carrier: the materialised forced-initiation set
+('ResolveWindowInitiations', #5743) keeps its own copy of the window list, and by the time
+an ability resolving out of it runs, that marker is sitting behind a 'MoveWithSkillTest' --
+which 'QueueWrapper Message' deliberately neither strips nor groups. Rewriting only
+'CheckWindows' desyncs the pending set from 'rewriteUsedAbilityWindows', and a PerWindow
+limit intersects the two, so it can never bite: Diving Suit reassigned the same damage onto
+itself forever. #5769
+-}
 replaceWindowMany
-  :: (HasCallStack, HasQueue Message m) => (WindowType -> Bool) -> (WindowType -> [WindowType]) -> m ()
-replaceWindowMany f wf = do
-  replaceAllMessagesMatching
-    \case
-      CheckWindows ws -> any (f . windowType) ws
-      Do (CheckWindows ws) -> any (f . windowType) ws
-      _ -> False
-    \case
-      CheckWindows ws ->
-        [ CheckWindows
-            $ concatMap
-              (\w -> if f w.kind then map (`replaceWindowType` w) (wf w.kind) else [w])
-              ws
-        ]
-      Do (CheckWindows ws) ->
-        [ Do
-            ( CheckWindows
-                $ concatMap
-                  (\w -> if f w.kind then map (`replaceWindowType` w) (wf w.kind) else [w])
-                  ws
-            )
-        ]
-      _ -> error "replaceWindowMany: impossible"
+  :: HasQueue Message m => (WindowType -> Bool) -> (WindowType -> [WindowType]) -> m ()
+replaceWindowMany f wf = mapQueue go
+ where
+  rewrite = concatMap \w -> if f w.kind then map (`replaceWindowType` w) (wf w.kind) else [w]
+  go = \case
+    CheckWindows ws -> CheckWindows (rewrite ws)
+    ResolveWindowInitiations iid ws pending ->
+      ResolveWindowInitiations
+        iid
+        (rewrite ws)
+        [(ability, rewrite ws', msgs) | (ability, ws', msgs) <- pending]
+    Do msg -> Do (go msg)
+    MoveWithSkillTest msg -> MoveWithSkillTest (go msg)
+    Priority msg -> Priority (go msg)
+    Retain msg -> Retain (go msg)
+    Run msgs -> Run (map go msgs)
+    Simultaneously msgs -> Simultaneously (map go msgs)
+    other -> other
 
 windowSkillTest :: [Window] -> Maybe SkillTest
 windowSkillTest = \case

@@ -1,0 +1,54 @@
+name:    ah3e
+version: "0.0.0"
+language: GHC2021
+
+default-extensions:
+- BlockArguments
+- DataKinds
+- DeriveAnyClass
+- DerivingStrategies
+- DerivingVia
+- DuplicateRecordFields
+- LambdaCase
+- MultiWayIf
+- NoImplicitPrelude
+- NoFieldSelectors
+- OverloadedLabels
+- OverloadedRecordDot
+- OverloadedStrings
+- PatternSynonyms
+- RecordWildCards
+- StrictData
+- TypeFamilies
+- ViewPatterns
+
+dependencies:
+  - base
+  - aeson
+  - containers
+  - generic-lens
+  - lens
+  - mtl
+  - random
+  - text
+
+ghc-options:
+  - -Wall
+  - -Wno-name-shadowing
+
+library:
+  source-dirs: library
+
+executables:
+  ah3e-dev:
+    main: Main.hs
+    source-dirs: dev
+    ghc-options:
+      - -threaded
+    dependencies:
+      - ah3e
+      - bytestring
+      - directory
+      - http-types
+      - wai
+      - warp

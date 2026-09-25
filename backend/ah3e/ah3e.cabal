@@ -1,0 +1,130 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.39.6.
+--
+-- see: https://github.com/sol/hpack
+
+name:           ah3e
+version:        0.0.0
+build-type:     Simple
+
+library
+  exposed-modules:
+      AH3e.Content
+      AH3e.Content.Allies
+      AH3e.Content.AllyBehaviors
+      AH3e.Content.Behaviors
+      AH3e.Content.ConditionBehaviors
+      AH3e.Content.Conditions
+      AH3e.Content.Core.ApproachOfAzathoth
+      AH3e.Content.Core.ApproachOfAzathothBehaviors
+      AH3e.Content.Core.InvestigatorBehaviors
+      AH3e.Content.Core.Investigators
+      AH3e.Content.Core.NeighborhoodCards
+      AH3e.Content.HeadlineBehaviors
+      AH3e.Content.Headlines
+      AH3e.Content.Items
+      AH3e.Content.Monsters
+      AH3e.Content.Scenarios
+      AH3e.Content.Special
+      AH3e.Content.Spells
+      AH3e.Content.StreetCards
+      AH3e.Content.Tiles
+      AH3e.Content.Vocabulary
+      AH3e.Engine
+      AH3e.Engine.Behavior
+      AH3e.Engine.Effect
+      AH3e.Engine.Helpers
+      AH3e.Engine.Hooks
+      AH3e.Engine.Monad
+      AH3e.Engine.Query
+      AH3e.Engine.Run
+      AH3e.Engine.Setup
+      AH3e.Engine.Test
+      AH3e.Game
+      AH3e.Message
+      AH3e.Prelude
+      AH3e.Types.Board
+      AH3e.Types.Card
+      AH3e.Types.Effect
+      AH3e.Types.Ids
+      AH3e.Types.Skill
+      AH3e.Types.State
+      AH3e.View
+  other-modules:
+      Paths_ah3e
+  hs-source-dirs:
+      library
+  default-extensions:
+      BlockArguments
+      DataKinds
+      DeriveAnyClass
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      LambdaCase
+      MultiWayIf
+      NoImplicitPrelude
+      NoFieldSelectors
+      OverloadedLabels
+      OverloadedRecordDot
+      OverloadedStrings
+      PatternSynonyms
+      RecordWildCards
+      StrictData
+      TypeFamilies
+      ViewPatterns
+  ghc-options: -Wall -Wno-name-shadowing
+  build-depends:
+      aeson
+    , base
+    , containers
+    , generic-lens
+    , lens
+    , mtl
+    , random
+    , text
+  default-language: GHC2021
+
+executable ah3e-dev
+  main-is: Main.hs
+  other-modules:
+      Paths_ah3e
+  hs-source-dirs:
+      dev
+  default-extensions:
+      BlockArguments
+      DataKinds
+      DeriveAnyClass
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      LambdaCase
+      MultiWayIf
+      NoImplicitPrelude
+      NoFieldSelectors
+      OverloadedLabels
+      OverloadedRecordDot
+      OverloadedStrings
+      PatternSynonyms
+      RecordWildCards
+      StrictData
+      TypeFamilies
+      ViewPatterns
+  ghc-options: -Wall -Wno-name-shadowing -threaded
+  build-depends:
+      aeson
+    , ah3e
+    , base
+    , bytestring
+    , containers
+    , directory
+    , generic-lens
+    , http-types
+    , lens
+    , mtl
+    , random
+    , text
+    , wai
+    , warp
+  default-language: GHC2021

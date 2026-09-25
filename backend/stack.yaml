@@ -56,6 +56,7 @@ packages:
   - cards-discover
   - arkham-api
   - validate
+  - ah3e
 
 allow-newer: true
 

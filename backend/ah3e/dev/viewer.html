@@ -1,0 +1,1923 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AH3e Dev Viewer</title>
+<style>
+  :root { --bg:#f6f4ef; --panel:#fff; --ink:#1d1b18; --muted:#6b665d; --line:#ddd6c8; --accent:#5b3fa0; --doom:#b3261e; --clue:#1f6f8b; --ok:#2e7d32; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#16151a; --panel:#211f27; --ink:#ece8f4; --muted:#a39db0; --line:#37333f; --accent:#a98bf0; --doom:#ef6b61; --clue:#5fb8d6; --ok:#6fcf73; } }
+  * { box-sizing: border-box; }
+  [hidden] { display:none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 system-ui, sans-serif; }
+  header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:10px 16px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:1; }
+  header h1 { font-size:16px; margin:0 8px 0 0; }
+  .pill { padding:2px 10px; border-radius:999px; border:1px solid var(--line); white-space:nowrap; }
+  /* the phase pill takes the banner's tint, so the header keeps saying what the banner said */
+  .pill.phase { border-color:color-mix(in srgb, var(--phase-color) 60%, transparent);
+    background:color-mix(in srgb, var(--phase-color) 42%, rgba(8, 11, 13, .88));
+    color:rgba(242, 232, 207, .94);
+    box-shadow:0 0 12px color-mix(in srgb, var(--phase-color) 30%, transparent);
+    transition:background .3s ease, border-color .3s ease, box-shadow .3s ease; }
+  .pills { display:flex; flex-wrap:wrap; gap:6px; }
+  .doom { color:var(--doom); font-weight:600; } .clue { color:var(--clue); font-weight:600; }
+  main { display:grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap:12px; padding:12px 16px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 12px; min-width:0; }
+  section h2 { font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:0 0 8px; }
+  .q { border-left:3px solid var(--accent); padding-left:10px; margin-bottom:12px; }
+  .q .prompt { font-weight:600; margin-bottom:6px; }
+  .q button:has(.label-cards) { display:inline-flex; flex-direction:column; align-items:center; gap:6px; padding:8px; vertical-align:top; }
+  .label-cards { display:flex; gap:6px; }
+  .label-card { position:relative; display:block; }
+  .label-card img { display:block; width:120px; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.4); }
+  .label-sheet img { width:260px; }
+  .label-zoom { position:absolute; right:4px; top:4px; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:rgba(0,0,0,.65); color:#fff; font-size:15px; cursor:zoom-in; }
+  .label-zoom:hover { background:rgba(0,0,0,.85); }
+  .test-box { margin:10px 0 0; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--accent) 6%, transparent); display:grid; gap:10px; }
+  .test-head { display:flex; align-items:center; gap:10px; }
+  .test-head > div:nth-child(2) { flex:1; }
+  .test-kind { font-size:12px; color:var(--muted); }
+  .test-score { text-align:right; font-size:12px; color:var(--muted); white-space:nowrap; }
+  .test-score b { display:block; font-size:22px; line-height:1; color:var(--ink); }
+  .test-score.pass b { color:var(--ok); }
+  .test-steps { display:flex; gap:4px; margin:0; padding:0; list-style:none; counter-reset:step; font-size:12px; }
+  .test-steps li { flex:1; counter-increment:step; padding:4px 8px; border-radius:6px; background:color-mix(in srgb, var(--line) 50%, transparent); color:var(--muted); white-space:nowrap; }
+  .test-steps li::before { content:counter(step) ". "; }
+  .test-steps li.done { color:inherit; opacity:.7; }
+  .test-steps li.now { background:var(--accent); color:#fff; font-weight:600; }
+  .test-dice { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  .test-dice .die { width:34px; height:34px; line-height:34px; margin:0; font-size:17px; border-radius:7px; }
+  .test-dice .die.miss { opacity:.65; }
+  .test-dice .die.removed { opacity:.3; text-decoration:line-through; }
+  .test-facts { display:flex; flex-wrap:wrap; gap:6px; }
+  .test-fact { font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
+  button { font:inherit; border:1px solid var(--line); background:var(--bg); color:var(--ink); padding:4px 10px; border-radius:6px; margin:0 6px 6px 0; cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .nb { border:1px solid var(--line); border-radius:6px; padding:6px 8px; margin-bottom:8px; }
+  .nb .title { font-weight:600; display:flex; gap:8px; flex-wrap:wrap; }
+  .space { display:flex; gap:8px; flex-wrap:wrap; padding:2px 0 2px 10px; }
+  .space .name { min-width:90px; color:var(--muted); }
+  .tag { font-size:12px; padding:0 6px; border-radius:4px; background:var(--bg); border:1px solid var(--line); }
+  .tag.inv { border-color:var(--ok); } .tag.mon { border-color:var(--doom); }
+  table { border-collapse:collapse; width:100%; } td, th { text-align:left; padding:3px 6px; border-bottom:1px solid var(--line); font-size:13px; }
+  .log { max-height:320px; overflow:auto; font-family: ui-monospace, monospace; font-size:12px; white-space:pre-wrap; }
+  .die { display:inline-block; width:24px; height:24px; line-height:24px; text-align:center; border:1px solid var(--line); border-radius:4px; margin-right:4px; font-weight:700; }
+  .die.hit { background:var(--ok); color:#fff; border-color:var(--ok); }
+  .err { color:var(--doom); }
+  .map-section { margin:12px 16px 0; padding:8px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+  .map-wrap { position:relative; overflow:hidden; touch-action:pan-y; }
+  .map-wrap.panning { cursor:grabbing; }
+  .map-wrap.zoomed { cursor:grab; touch-action:none; }
+  .map-controls { position:absolute; top:8px; right:8px; z-index:3; display:flex; gap:4px; }
+  .map-controls button { margin:0; width:34px; height:34px; padding:0; font-size:18px; line-height:1; background:color-mix(in srgb, var(--panel) 85%, transparent); backdrop-filter:blur(4px); }
+  .map-hint { position:absolute; left:10px; bottom:8px; z-index:3; font-size:11px; color:var(--muted); background:color-mix(in srgb, var(--panel) 80%, transparent); padding:2px 8px; border-radius:999px; pointer-events:none; opacity:0; transition:opacity .2s; }
+  .map-wrap:hover .map-hint { opacity:1; }
+  body.map-full { overflow:hidden; }
+  body.map-full .map-wrap { position:fixed; inset:0; z-index:30; background:var(--bg); touch-action:none; }
+  body.map-full #map, body.map-full .map-wrap .board-fit { height:100% !important; }
+  body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .map-controls button svg { width:18px; height:18px; vertical-align:middle; }
+  .map-wrap.hide-tokens #tokensToggle { background:var(--accent); color:#fff; border-color:var(--accent); }
+  /* the anchors stay, so a space you can choose still glows and still takes the click */
+  .map-wrap.hide-tokens .anchor > :not(.pick-ring) { visibility:hidden; }
+  .map-row { display:flex; gap:14px; align-items:flex-start; }
+  .map-row .map-wrap { flex:1; min-width:0; }
+  .scenario-side { flex:0 0 clamp(200px, 20vw, 320px); cursor:zoom-in; position:relative; align-self:flex-start; }
+  .sheet-tokens { position:absolute; left:50%; bottom:-14px; transform:translateX(-50%); display:flex; gap:10px; padding:4px 10px; border-radius:999px; background:color-mix(in srgb, var(--panel) 88%, transparent); box-shadow:0 2px 8px rgba(0,0,0,.35); z-index:2; }
+  .sheet-tokens .tok b { min-width:20px; height:20px; line-height:20px; font-size:13px; }
+  .sheet-tokens .bump { animation:sheetBump .9s ease-out; }
+  @keyframes sheetBump { 0% { transform:scale(1); } 30% { transform:scale(1.45); filter:drop-shadow(0 0 8px var(--doom)); } 100% { transform:scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .sheet-tokens .bump { animation:none; } }
+  @media (max-width: 900px) { .map-row { flex-direction:column; } .scenario-side { width:min(320px, 100%); flex-basis:auto; } }
+  .board-fit { position:relative; overflow:hidden; }
+  .board { position:absolute; top:0; left:0; margin:0; transform-origin:top left; will-change:transform; }
+  .board > img { position:absolute; pointer-events:none; user-select:none; }
+  .anchor { position:absolute; transform:translate(-50%,-50%); display:flex; flex-wrap:wrap; justify-content:center; gap:3px; max-width:120px; min-width:26px; min-height:26px; border-radius:14px; padding:2px; }
+  .anchor.selectable { cursor:pointer; }
+  /* the pick ring is a fixed small circle on the space's point, above its tokens and monster
+     cards, so a click inside it picks the space instead of enlarging a card */
+  .pick-ring { position:absolute; left:50%; top:50%; width:38px; height:38px; transform:translate(-50%,-50%); border-radius:50%; z-index:3; cursor:pointer;
+    box-shadow:0 0 0 3px #ffd54a, 0 0 12px 4px rgba(255,213,74,.7); background:rgba(255,213,74,.22); }
+  .pick-ring:hover { background:rgba(255,213,74,.45); }
+  .chip { font-size:11px; font-weight:700; line-height:1; padding:4px 6px; border-radius:10px; color:#fff; white-space:nowrap; box-shadow:0 1px 3px rgba(0,0,0,.6); }
+  .chip.doom { background:#b3261e; } .chip.clue { background:#1f6f8b; } .chip.inv { background:#2e7d32; }
+  .chip.mon { background:#4a148c; } .chip.marker { background:#555; } .chip.anom { background:#e65100; }
+  .chip.marker.blue { background:#1565c0; } .chip.marker.red { background:#c62828; } .chip.marker.white { background:#eee; color:#222; }
+  .other-space { display:inline-flex; gap:6px; align-items:center; margin:6px 8px 0 0; padding:4px 8px; border:1px solid var(--line); border-radius:6px; }
+  .other-space.selectable { cursor:pointer; box-shadow:0 0 0 3px #ffd54a; }
+  .tok { position:relative; display:inline-block; vertical-align:middle; flex:none; }
+  .tok img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 1px 2px rgba(0,0,0,.7)); }
+  .tok b, .deck-count, .log-unread { user-select:none; -webkit-user-select:none; }
+  .tok b { position:absolute; right:-4px; bottom:-4px; min-width:16px; height:16px; padding:0 3px; border-radius:8px; background:#111; color:#fff; font-size:11px; line-height:16px; text-align:center; box-shadow:0 0 0 1px rgba(255,255,255,.5); }
+  .toks { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  .cup { display:flex; flex-wrap:wrap; gap:4px; align-items:center; margin:4px 0; }
+  #debugToggle.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .dbg-tokwrap { display:inline-flex; flex-direction:column; align-items:center; gap:2px; }
+  .dbg-num { width:46px; background:#1b1a24; color:inherit; border:1px solid var(--line);
+    border-radius:5px; padding:1px 3px; font:inherit; font-size:11px; text-align:center; }
+  .dbg-inline { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:6px;
+    padding-top:6px; border-top:1px dashed var(--line); }
+  .dbg-inline label { display:inline-flex; gap:4px; align-items:center; color:var(--muted); font-size:11px; }
+  .dbg-gain input { width:130px; background:#1b1a24; color:inherit; border:1px solid var(--line);
+    border-radius:5px; padding:2px 5px; font:inherit; font-size:11px; }
+  .dbg-gain button, .dbg-deal { font-size:11px; padding:1px 6px; }
+  .dbg-deal { position:absolute; left:-6px; bottom:-6px; z-index:2; border-radius:11px;
+    min-width:22px; height:22px; line-height:1; }
+  .sheet-tokens .dbg-num { width:40px; }
+  .dbg-view { position:absolute; right:-6px; top:-6px; z-index:2; border-radius:11px;
+    min-width:22px; height:22px; line-height:1; font-size:11px; padding:1px 5px; }
+  .browse { max-width:min(1100px, 92vw); max-height:86vh; overflow:auto; background:var(--panel);
+    border:1px solid var(--line); border-radius:12px; padding:14px 16px; cursor:default; }
+  .browse > h3 { margin:0 0 10px; font-size:12px; text-transform:uppercase;
+    letter-spacing:.04em; color:var(--muted); }
+  .browse-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:10px; }
+  .browse-card { position:relative; margin:0; cursor:pointer; border-radius:8px; }
+  .browse-card img { display:block; width:100%; border-radius:6px; }
+  .browse-card:hover { outline:2px solid var(--accent); outline-offset:2px; }
+  .browse-pos { position:absolute; left:4px; top:4px; min-width:18px; height:18px; padding:0 4px;
+    border-radius:9px; background:rgba(0,0,0,.7); color:#fff; font-size:10px; line-height:18px; text-align:center; }
+  .dbg-row { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:6px 0; }
+  .dbg-row > label { min-width:84px; color:var(--muted); font-size:12px; }
+  .dbg-row input[type=number] { width:64px; }
+  .dbg-row input, .dbg-row select { background:#1b1a24; color:inherit; border:1px solid var(--line); border-radius:6px; padding:4px 6px; font:inherit; font-size:12px; }
+  .dbg-group { border-top:1px solid var(--line); margin-top:10px; padding-top:8px; }
+  .dbg-group > h3 { margin:0 0 4px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  #debug button { font-size:12px; padding:4px 8px; }
+  .cup > span:first-child { min-width:110px; color:var(--muted); }
+  .inv-tok { width:34px; height:34px; border-radius:50%; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.8); }
+  .player-area { display:flex; flex-wrap:wrap; gap:12px; padding:10px; border:1px solid var(--line); border-radius:8px; margin-bottom:10px; }
+  .player-area.turn { box-shadow:0 0 0 2px var(--accent); }
+  .player-area.out .sheet, .player-area.out .standee { filter:grayscale(1) brightness(.7); }
+  .sheet { position:relative; width:min(420px, 100%); flex:none; align-self:flex-start; }
+  .sheet > img { width:100%; display:block; border-radius:6px; }
+  .sheet .sheet-text { display:none; }
+  .sheet.no-art .sheet-text { display:block; padding:10px; border:1px dashed var(--line); border-radius:6px; }
+  .sheet-text i { display:block; color:var(--muted); } .sheet-text p { margin:6px 0 0; }
+  .sheet-focus { position:absolute; left:37%; transform:translate(-50%,-50%); }
+  .pa-side { flex:1; min-width:220px; display:flex; flex-direction:column; gap:10px; }
+  .pa-head { display:flex; gap:10px; align-items:center; }
+  .standee { height:64px; transition:transform .2s; }
+  .standee.delayed { transform:rotate(90deg); }
+  .pa-name { font-weight:700; font-size:15px; }
+  .pa-turn { font-size:11px; font-weight:600; color:var(--accent); }
+  .pa-where { color:var(--muted); }
+  .pa-actions { display:flex; align-items:center; gap:6px; margin-top:4px; font-size:12px; color:var(--muted); }
+  .pa-actions .pips { display:flex; gap:3px; }
+  .pa-actions .pip { width:10px; height:10px; border-radius:50%; border:1.5px solid var(--accent); }
+  .pa-actions .pip.used { background:var(--accent); }
+  .pa-status { display:inline-block; margin-top:2px; font-size:12px; color:var(--doom); font-weight:700; }
+  .pa-cards { display:flex; flex-wrap:wrap; gap:8px; }
+  .asset { position:relative; width:110px; }
+  .asset img { width:100%; display:block; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,.5); }
+  .asset .asset-name { display:none; }
+  .asset.in-test img { outline:3px solid var(--accent); outline-offset:2px; box-shadow:0 0 16px color-mix(in srgb, var(--accent) 55%, transparent); }
+  .asset .in-test-tag { position:absolute; top:-9px; left:50%; transform:translateX(-50%); padding:1px 8px; border-radius:999px; background:var(--accent); color:#fff; font-size:11px; font-weight:600; white-space:nowrap; box-shadow:0 2px 6px rgba(0,0,0,.4); }
+  .q button.chosen { outline:2px solid var(--accent); outline-offset:2px; box-shadow:inset 0 0 0 2px rgba(255,255,255,.55); }
+  .asset.no-art { height:170px; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); }
+  .asset.no-art .asset-name { display:block; font-weight:600; }
+  .asset-badges { position:absolute; left:4px; bottom:4px; display:flex; gap:4px; }
+  .tabs-row { display:flex; align-items:flex-end; }
+  ul.tabs__header { flex:1; display:flex; list-style:none; padding:30px 0 0 5px; margin:0; user-select:none; font-size:min(16px, 2vw); }
+  ul.tabs__header > li { margin:0 3px 0 0; cursor:pointer; color:white; opacity:.5; border-radius:2px 2px 0 0; position:relative; display:inline-flex; align-items:center; }
+  ul.tabs__header > li > span { display:block; width:fit-content; padding:5px 10px; }
+  ul.tabs__header > li.tab--selected { font-weight:bold; opacity:1; }
+  ul.tabs__header > li.tab--has-actions { opacity:.85; }
+  .tab-pulse { position:absolute; inset:0; border-radius:inherit; pointer-events:none; box-shadow:inset 0 0 0 1px color-mix(in srgb, #ff00ff 88%, transparent), 0 0 9px color-mix(in srgb, #ff00ff 36%, transparent); animation:tab-action-pulse 1.8s ease-in-out infinite alternate; }
+  .tab--Guardian { background-color:#0c5693; } .tab--Seeker { background-color:#aa6005; } .tab--Rogue { background-color:#186a1d; }
+  .tab--Mystic { background-color:#5e4389; } .tab--Survivor { background-color:#a3262d; } .tab--Neutral { background-color:#333; }
+  .tab--active-player::before { content:"▶"; font-size:.7em; margin-left:8px; align-self:center; }
+  .tab--lead-player::after { position:absolute; content:""; inset:0; top:-5px; margin-inline:auto; transform:translateY(-100%); width:25px; height:25px; background-image:url('/img/ah3e/tokens/first-player-active.webp'); background-size:contain; background-repeat:no-repeat; }
+  .waiting-indicator { display:inline-flex; align-items:center; justify-content:center; align-self:stretch; padding:4px 8px; border-left:1px solid rgba(0,0,0,.5); background-color:rgba(0,0,0,.5); border-radius:0 2px 0 0; color:#ff00ff; }
+  .waiting-spinner { display:inline-block; animation:waiting-on-spin 5s linear infinite; }
+  @keyframes waiting-on-spin { to { transform:rotate(360deg); } }
+  @keyframes tab-action-pulse { from { opacity:.45; } to { opacity:1; } }
+  ul.tabs__header > li.inactive { filter:grayscale(100%); }
+  .tab .player-area { margin-bottom:0; border-top-left-radius:0; }
+  .decks { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; padding:14px 8px 4px; border-top:1px solid var(--line); margin-top:8px; }
+  .deck { display:flex; flex-direction:column; align-items:center; gap:6px; width:96px; }
+  .deck-stack { position:relative; width:84px; height:132px; }
+  .deck-stack > img { width:84px; height:132px; object-fit:cover; border-radius:6px; }
+  .deck-stack > img + .deck-empty { display:none; }
+  .deck-stack.no-art > .deck-empty { display:flex; }
+  .deck-empty { width:84px; height:132px; border:2px dashed var(--line); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; }
+  .deck-count { position:absolute; right:-6px; bottom:-6px; min-width:24px; height:24px; padding:0 6px; border-radius:12px; background:#111; color:#fff; font-size:13px; line-height:24px; text-align:center; box-shadow:0 0 0 1px rgba(255,255,255,.5); }
+  .deck-clue { position:absolute; left:-8px; top:-8px; }
+  .deck-name { font-size:12px; color:var(--muted); text-align:center; }
+  .sheet-flip { perspective:1400px; }
+  .sheet-flip .flip { position:relative; width:100%; aspect-ratio:1503/1200; transform-style:preserve-3d; transition:transform .9s cubic-bezier(.4,.1,.2,1); }
+  .sheet-flip .flip.flipped { transform:rotateY(180deg); }
+  .sheet-flip .face { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; backface-visibility:hidden; border-radius:8px; }
+  .sheet-flip .front { transform:rotateY(180deg); }
+  @media (prefers-reduced-motion: reduce) {
+    .sheet-flip .flip { transition:none; }
+    ::view-transition-group(*) { animation:none; }
+  }
+  ::view-transition-group(*) { animation-duration:.4s; }
+  /* a banner up when an update starts is captured too, and must stay above the tweening tokens */
+  .phase-banner { view-transition-name:phase-banner; }
+  ::view-transition-group(phase-banner) { z-index:1000; animation:none; }
+  .deck-group.lead { display:flex; flex-wrap:wrap; gap:18px; padding-right:18px; margin-right:4px; border-right:1px solid var(--line); }
+  .anchor.unstable { box-shadow:0 0 0 2px var(--doom), 0 0 14px 4px rgba(179,38,30,.55); background:rgba(179,38,30,.16); }
+  .space-outlines { position:absolute; left:0; top:0; overflow:visible; pointer-events:none; }
+  .space-highlights { position:absolute; left:0; top:0; overflow:visible; pointer-events:none; }
+  .space-highlights > g { display:none; }
+  /* the generic .hl pulse animates CSS filter, which would replace the SVG filter that draws the outline */
+  .space-highlights > g.hl { display:inline; animation:outlinePulse .9s ease-in-out infinite alternate; }
+  @keyframes outlinePulse { from { opacity:1; } to { opacity:.6; } }
+  @media (prefers-reduced-motion: reduce) { .space-highlights > g.hl { animation:none; } }
+  /* the outline marks the whole space, so the ring around its tokens would only repeat it */
+  .anchor.shaped.hl { box-shadow:none; background:none; animation:none; }
+  .space-outlines.held { opacity:0; }
+  .anchor.unstable.held { box-shadow:none; background:none; }
+  .space-outlines.reveal { animation:unstableIn .7s ease-out; }
+  @keyframes unstableIn { from { opacity:0; } 40% { opacity:1; filter:brightness(1.8); } to { opacity:1; } }
+  @media (prefers-reduced-motion: reduce) { .space-outlines.reveal { animation:none; } }
+  .mon-card.hl > img { outline:3px solid #ffd54f; outline-offset:2px; }
+  .anchor.hl { box-shadow:0 0 0 3px #ffd54f, 0 0 18px 6px rgba(255,213,79,.45); background:rgba(255,213,79,.14); border-radius:14px; }
+  .inv-tok.hl { outline:3px solid #ffd54f; outline-offset:2px; }
+  .codex-card.hl, .asset.hl { outline:3px solid #ffd54f; outline-offset:2px; border-radius:8px; }
+  #scenarioSheet.hl { outline:3px solid #ffd54f; outline-offset:3px; border-radius:10px; }
+  .reckoning-pending { outline:2px dashed rgba(255,213,79,.85); outline-offset:3px; border-radius:8px; }
+  .hl { animation:hlPulse .9s ease-in-out infinite alternate; }
+  @keyframes hlPulse { from { filter:none; } to { filter:brightness(1.3); } }
+  @media (prefers-reduced-motion: reduce) { .hl { animation:none; } }
+  .mon-card { position:relative; display:inline-block; line-height:0; }
+  .mon-card > img { width:38px; height:60px; object-fit:cover; border-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,.6); cursor:zoom-in; }
+  .mon-card.engaged > img { outline:2px solid var(--doom); outline-offset:1px; }
+  .mon-card > .chip { display:none; }
+  .pa-engaged { margin:6px 0 10px; padding:8px 10px; border-radius:10px; border:1px solid color-mix(in srgb, var(--doom) 45%, transparent); background:color-mix(in srgb, var(--doom) 8%, transparent); }
+  .pa-engaged-label { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--doom); margin-bottom:6px; }
+  .pa-engaged-cards { display:flex; flex-wrap:wrap; gap:10px; }
+  .pa-engaged .mon-card > img { width:90px; height:auto; }
+  .pa-engaged .mon-card.engaged > img { outline:none; }
+  .pa-engaged .mon-card > .mon-dmg { right:-8px; bottom:-8px; }
+  .mon-card > .mon-dmg { position:absolute; right:-7px; bottom:-6px; line-height:normal; pointer-events:none; }
+  .mon-card.no-art > .chip { display:inline-block; }
+  .zoomable { cursor:zoom-in; }
+  .draggable-inv { cursor:grab; }
+  body.moving .draggable-inv { cursor:grabbing; }
+  /* drag targets use the same small circle as the pick ring, just outside it, rather than
+     outlining every token in the space */
+  .anchor.droppable::before, .anchor.droppable-paid::before { content:''; position:absolute; left:50%; top:50%; width:46px; height:46px; transform:translate(-50%,-50%); border-radius:50%; z-index:2; pointer-events:none; }
+  .anchor.droppable::before { box-shadow:0 0 0 3px #4caf50, 0 0 14px 4px rgba(76,175,80,.45); background:rgba(76,175,80,.16); }
+  .anchor.droppable-paid::before { box-shadow:0 0 0 3px #29b6f6, 0 0 14px 4px rgba(41,182,246,.4); background:rgba(41,182,246,.14); }
+  .anchor.drop-hover::before { box-shadow:0 0 0 4px #ffd54f, 0 0 20px 8px rgba(255,213,79,.6); background:rgba(255,213,79,.28); }
+  .display-group { display:flex; flex-wrap:wrap; gap:18px; padding-left:18px; margin-left:4px; border-left:1px solid var(--line); }
+  .deck-stack.face > img { box-shadow:0 0 0 1px rgba(255,255,255,.35); }
+  .deck-stack.face .deck-empty { display:none; font-size:11px; padding:4px; text-align:center; }
+  .deck-stack.face.no-art .deck-empty { display:flex; }
+  .codex { display:flex; flex-wrap:wrap; gap:10px; }
+  .codex-card { position:relative; margin:0; width:140px; cursor:zoom-in; }
+  .codex-card img { width:100%; display:block; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.6); }
+  .codex-card .asset-name { display:none; }
+  .codex-card.no-art { height:220px; padding:8px; border:1px solid var(--line); border-radius:8px; }
+  .codex-card.no-art .asset-name { display:block; font-weight:600; }
+  .codex-card figcaption { text-align:center; font-size:12px; color:var(--muted); margin-top:4px; }
+  .codex-tok { position:absolute; right:-6px; top:-6px; }
+  .ask-row { display:grid; grid-template-columns:236px minmax(0,1fr); gap:12px; align-items:start; }
+  @media (max-width: 900px) { .ask-row { grid-template-columns:1fr; } }
+  .active-side .encounter { flex-wrap:wrap; gap:8px; padding-left:22px; }
+  .active-side .encounter-card { width:calc(100% - 22px); }
+  .active-side .encounter > div { flex:1 1 100%; }
+  .active-empty { height:300px; display:flex; align-items:center; justify-content:center; text-align:center;
+    color:var(--muted); font-size:12px; border:1px dashed var(--line); border-radius:8px; }
+  .drawn-token { display:flex; align-items:center; gap:12px; margin-bottom:10px; padding:10px 12px;
+    border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--accent) 7%, transparent); }
+  .drawn-token-name { font-weight:600; }
+  .drawn-token-sub { color:var(--muted); font-size:12px; }
+  /* the token is pulled out of the cup: it arrives small and turned, then settles */
+  .drawn-token .tok { animation:token-draw .55s cubic-bezier(.2,.8,.3,1.15) both; }
+  @keyframes token-draw {
+    from { transform:scale(.25) rotate(-35deg); opacity:0; }
+    60%  { transform:scale(1.15) rotate(6deg); opacity:1; }
+    to   { transform:scale(1) rotate(0); opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce) { .drawn-token .tok { animation:none; } }
+  .prompt .asker { width:26px; height:26px; }
+  .prompt { display:flex; gap:8px; align-items:center; }
+  .encounter { display:flex; gap:14px; align-items:flex-start; padding-left:26px; }
+  .encounter-card { width:200px; }
+  .zoom-marked { position:relative; display:inline-block; line-height:0; }
+  .zoom-marked .read-arrow { left:-40px; border-width:18px 0 18px 26px; }
+  .zoom .zoom-marked .zoom-marked-img { max-width:92vw; max-height:92vh; }
+  .read-arrow { position:absolute; left:-24px; width:0; height:0; transform:translateY(-50%); border:11px solid transparent; border-left:16px solid var(--accent); border-right:0; filter:drop-shadow(0 0 4px var(--accent)); z-index:1; pointer-events:none; }
+  .undo-btn { display:inline-flex; align-items:center; gap:6px; }
+  .undo-btn[disabled] { opacity:.45; cursor:default; }
+  .undo-btn .undo-icon { width:16px; height:16px; flex:none; }
+  .undo-btn kbd { font:inherit; font-size:11px; padding:0 5px; border:1px solid var(--line); border-radius:4px; color:var(--muted); }
+  .flash { position:fixed; left:50%; bottom:28px; transform:translateX(-50%); z-index:20; padding:8px 16px; border-radius:999px; background:#111; color:#fff; font-weight:600; opacity:0; pointer-events:none; }
+  .flash.show { animation:flash 1.2s ease-out; }
+  @keyframes flash { 0% { opacity:0; transform:translate(-50%, 8px); } 15%, 70% { opacity:1; transform:translate(-50%, 0); } 100% { opacity:0; } }
+  .log-toggle { position:relative; display:inline-flex; align-items:center; gap:6px; }
+  .log-unread { position:absolute; top:-7px; right:-7px; min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:#ff00ff; color:#fff; font-size:11px; font-weight:700; line-height:18px; text-align:center; }
+  .log-panel { position:fixed; top:0; right:0; bottom:0; width:min(360px, 90vw); z-index:5; display:flex; flex-direction:column; background:var(--panel); border-left:1px solid var(--line); box-shadow:-8px 0 24px rgba(0,0,0,.35); transform:translateX(105%); transition:transform .2s ease-out; }
+  body.log-open .log-panel { transform:none; }
+  body.log-open { padding-right:min(360px, 90vw); }
+  @media (max-width: 900px) { body.log-open { padding-right:0; } }
+  .log-backdrop { display:none; }
+  @media (max-width: 900px) { body.log-open .log-backdrop { display:block; position:fixed; inset:0; z-index:4; background:rgba(0,0,0,.5); } }
+  .log-head { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 10px; border-bottom:1px solid var(--line); }
+  .log-head h2 { margin:0; font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+  .log-close { border:none; background:none; color:var(--muted); font-size:16px; padding:2px 6px; margin:0; }
+  .log-list { list-style:none; margin:0; padding:10px 12px 20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:6px; }
+  .log-entry { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; background:var(--bg); border-left:3px solid var(--line); font-size:13px; line-height:1.4; }
+  .log-round { display:flex; align-items:center; gap:10px; margin:10px 0 2px; color:var(--muted); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+  .log-round::before, .log-round::after { content:""; flex:1; height:1px; background:var(--line); }
+  .log-mythos { border-left-color:#8a6d3b; }
+  .log-roll { border-left-color:#607d8b; }
+  .log-label { color:var(--muted); font-size:12px; }
+  .log-dice { display:flex; flex-wrap:wrap; gap:4px; }
+  .log-die { width:22px; height:22px; border-radius:5px; background:var(--panel); border:1px solid var(--line); display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; }
+  .q-row { display:flex; align-items:flex-start; gap:14px; }
+  .q-row > .q { flex:1; min-width:0; }
+  .spawning { flex:none; width:96px; display:grid; justify-items:center; gap:2px; text-align:center; font-size:13px; }
+  .spawning img { width:96px; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.45); cursor:zoom-in; margin-bottom:4px; }
+  .spawning-label { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+  .loose-roll { display:flex; align-items:center; gap:8px; margin:0 0 8px; color:var(--muted); font-size:13px; }
+  .loose-roll .die { width:34px; height:34px; line-height:34px; margin:0; font-size:17px; border-radius:7px; color:var(--ink); }
+  .log-die.hit { background:var(--ok); border-color:var(--ok); color:#fff; }
+  .log-result.pass { border-left-color:var(--ok); } .log-result.fail { border-left-color:var(--doom); }
+  .log-badge { font-size:11px; font-weight:700; text-transform:uppercase; padding:2px 7px; border-radius:10px; color:#fff; }
+  .log-result.pass .log-badge { background:var(--ok); } .log-result.fail .log-badge { background:var(--doom); }
+  .log-clue { border-left-color:var(--clue); }
+  .log-doom { border-left-color:var(--doom); }
+  .log-codex { border-left-color:var(--accent); font-weight:600; }
+  .log-inv { border-left-color:#2e7d32; font-weight:600; }
+  .log-warn { border-left-color:#e6a100; color:var(--muted); font-size:12px; }
+  .log-story { display:block; border-left-color:transparent; background:none; font-family: Georgia, "Times New Roman", serif; font-style:italic; color:var(--muted); padding:4px 6px 4px 10px; }
+  .log-end { justify-content:center; font-weight:700; font-size:15px; border-left:none; }
+  .log-end.win { background:color-mix(in srgb, var(--ok) 25%, var(--bg)); } .log-end.lose { background:color-mix(in srgb, var(--doom) 25%, var(--bg)); }
+  .log-empty { color:var(--muted); font-style:italic; padding:10px; }
+  .zoom { position:fixed; inset:0; z-index:10; background:rgba(0,0,0,.8); display:flex; align-items:center; justify-content:center; cursor:zoom-out; }
+  .zoom { gap:24px; flex-wrap:wrap; }
+  @font-face { font-family:"Teutonic"; src:url("/fonts/teutonic.ttf"); }
+  .phase-banner { position:fixed; top:0; left:0; right:0; z-index:1000; height:clamp(4.5rem, 9vw, 7rem); display:grid; place-items:center; pointer-events:none; overflow:hidden;
+    background:color-mix(in srgb, var(--phase-color) 54%, rgba(8, 11, 13, .88)); box-shadow:0 14px 36px rgba(0, 0, 0, .42); animation:phase-banner-bloom 1.2s ease-out both; }
+  .phase-banner span { color:rgba(242, 232, 207, .94); font-family:Teutonic, serif; font-size:clamp(1.8rem, 4vw, 3.8rem); letter-spacing:.08em; line-height:1; text-align:center;
+    text-shadow:0 0 35px color-mix(in srgb, var(--phase-color) 80%, transparent), 0 5px 26px rgba(0, 0, 0, .8); animation:phase-banner-title 1.2s ease-out both; }
+  @keyframes phase-banner-bloom { 0% { opacity:0; } 14%, 78% { opacity:1; } 100% { opacity:0; } }
+  @keyframes phase-banner-title {
+    0% { opacity:0; transform:translateX(-110%); filter:blur(8px); }
+    22%, 72% { opacity:1; transform:translateX(0); filter:blur(0); }
+    100% { opacity:0; transform:translateX(110%); filter:blur(8px); }
+  }
+  @media (prefers-reduced-motion: reduce) { .phase-banner span { animation:none; } }
+  .sheet-zoom { width:min(92vw, calc(88vh * var(--ratio))); cursor:pointer; }
+  .sheet-zoom .flip { aspect-ratio:var(--ratio); }
+  .zoom .sheet-zoom .face { max-width:none; max-height:none; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.8); }
+  .zoom-hint { flex-basis:100%; text-align:center; color:#ccc; font-size:13px; margin-top:-12px; }
+  .fly-card { position:fixed; z-index:40; pointer-events:none; transform-origin:top left; perspective:900px; }
+  .fly-inner { position:relative; width:100%; height:100%; transform-style:preserve-3d; }
+  .fly-inner img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:6px; backface-visibility:hidden; box-shadow:0 10px 24px rgba(0,0,0,.6); }
+  .fly-back { transform:rotateY(180deg); }
+  .zoom img { max-width:92vw; max-height:92vh; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.8); }
+  .zoom img:not(:only-child) { max-width:min(45vw, 520px); max-height:88vh; }
+  .screen { max-width:760px; margin:24px auto; padding:0 16px; }
+  .screen h2 { font-size:20px; margin:0 0 4px; }
+  .screen .sub { color:var(--muted); margin:0 0 16px; }
+  .field { margin-bottom:16px; }
+  /* undo the page header's bar styling: this is just the title above the cards */
+  .ng-header { display:block; padding:0; border:0; background:none; position:static; margin:0 0 18px; }
+  .ng-header h2 { margin:0; font-size:24px; }
+  .ng { display:grid; gap:16px; }
+  .ng-config { display:grid; gap:12px; min-width:0; }
+  .ng-card { border-radius:12px; border:1px solid var(--line); background:var(--panel); padding:12px; box-shadow:0 8px 22px rgba(0,0,0,.12); }
+  .ng-title { font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+  .ng-note { margin:8px 0 0; font-size:12px; color:var(--muted); }
+  .ng input[type=radio], .ng input[type=checkbox] { position:absolute; opacity:0; pointer-events:none; }
+  .ng-seg { display:grid; grid-template-columns:repeat(var(--n), 1fr); border-radius:12px; overflow:hidden; border:1px solid var(--line); }
+  .ng-seg label { display:flex; align-items:center; justify-content:center; padding:10px 8px; text-transform:uppercase; letter-spacing:.06em; font-size:12px; cursor:pointer; user-select:none; border-right:1px solid var(--line); background:color-mix(in srgb, var(--ink) 4%, transparent); }
+  .ng-seg label:last-of-type { border-right:0; }
+  .ng-seg label:hover { background:color-mix(in srgb, var(--ink) 9%, transparent); }
+  .ng-seg input:checked + label { background:var(--accent); color:#fff; }
+  .ng-seg input:focus-visible + label, .ng-tiles input:focus-visible + label { outline:2px solid var(--accent); outline-offset:-2px; }
+  .ng-tiles { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:8px; }
+  .ng-tiles label { display:block; padding:0; overflow:hidden; border-radius:10px; border:1px solid var(--line); cursor:pointer; user-select:none; background:color-mix(in srgb, var(--ink) 4%, transparent); }
+  .ng-tiles label img { display:block; width:100%; aspect-ratio:1; object-fit:cover;
+    filter:grayscale(.55) brightness(.7); transition:filter .15s ease; }
+  /* an expansion with no cover yet keeps the plain text tile */
+  .ng-tiles label.no-art .ng-tile-text { padding-top:12px; }
+  .ng-tiles input:checked + label img, .ng-tiles label:hover img { filter:none; }
+  .ng-tile-text { display:grid; gap:2px; padding:10px 12px; }
+  .ng-tiles input:disabled + label { cursor:default; }
+  .ng-tiles label small { color:var(--muted); font-size:12px; }
+  .ng-tiles label:hover { background:color-mix(in srgb, var(--ink) 9%, transparent); }
+  .ng-tiles input:checked + label { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 16%, transparent); box-shadow:inset 0 0 0 1px var(--accent); }
+  .ng-seed { display:flex; gap:8px; }
+  .ng-text { flex:1; min-width:0; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:color-mix(in srgb, var(--ink) 4%, transparent); color:inherit; font:inherit; }
+  .ng-actions { display:grid; }
+  .ng-actions .primary { width:100%; padding:12px 18px; }
+  .field > .name { font-weight:600; margin-bottom:6px; }
+  .opts { display:flex; flex-wrap:wrap; gap:8px; }
+  .opt { display:flex; gap:6px; align-items:center; border:1px solid var(--line); border-radius:6px; padding:6px 10px; background:var(--panel); }
+  .opt small { color:var(--muted); }
+  .cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; }
+  .sc-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:14px; }
+  .sc-tile { position:relative; }
+  .sc-pick { display:grid; gap:2px; width:100%; margin:0; padding:0 0 10px; text-align:left; border-radius:12px; overflow:hidden; border:1px solid var(--line); background:var(--panel); box-shadow:0 8px 22px rgba(0,0,0,.18); transition:transform .15s ease, border-color .15s ease; }
+  .sc-pick img { display:block; width:100%; aspect-ratio:1503 / 1200; object-fit:cover; margin-bottom:8px; }
+  .sc-pick .sc-name { font-weight:700; font-size:15px; padding:0 12px; }
+  .sc-pick .sc-exp { color:var(--muted); font-size:12px; padding:0 12px; }
+  .sc-pick:not([disabled]):hover { border-color:var(--accent); transform:translateY(-2px); }
+  .sc-tile.waiting .sc-pick { cursor:not-allowed; }
+  .sc-tile.waiting img { filter:grayscale(1) brightness(.6); }
+  .sc-tile .label-zoom { top:8px; right:8px; }
+  .scenario-card { text-align:left; padding:14px; margin:0; border-radius:8px; background:var(--panel); min-height:92px; }
+  .scenario-card .title { font-weight:700; font-size:16px; }
+  .scenario-card .exp { color:var(--muted); font-size:12px; margin-top:4px; }
+  .waiting { color:var(--muted); }
+  .scenario-card[disabled] { opacity:.5; cursor:not-allowed; border-style:dashed; }
+  .scenario-card[disabled]:hover { border-color:var(--line); }
+  input { font:inherit; width:70px; padding:3px 6px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--ink); }
+  details pre { max-height:400px; overflow:auto; font-size:11px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>AH3e Dev Viewer</h1>
+  <div id="status" class="pills"></div>
+  <span style="flex:1"></span>
+  <button id="undo" class="undo-btn" onclick="undo()" title="Undo the last choice (U)" hidden><svg class="undo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Undo <kbd>U</kbd></button>
+  <button id="debugToggle" class="undo-btn" onclick="toggleDebug()" title="Show debug controls beside each component" hidden>Debug</button>
+  <button id="logToggle" class="log-toggle" onclick="toggleLog()" aria-controls="logPanel" hidden>Log<span id="logUnread" class="log-unread" hidden></span></button>
+  <button id="abandon" onclick="abandon()" hidden>Abandon game</button>
+</header>
+<aside id="logPanel" class="log-panel" aria-label="Game log">
+  <div class="log-head"><h2>Game log</h2><button class="log-close" onclick="toggleLog(false)" aria-label="Close log">✕</button></div>
+  <ol id="log" class="log-list"></ol>
+</aside>
+<div id="logBackdrop" class="log-backdrop" onclick="toggleLog(false)"></div>
+<div id="setup" class="screen" hidden></div>
+<div id="scenario" class="screen" hidden></div>
+<section id="mapSection" class="map-section" hidden><div class="map-row"><div id="scenarioSheet" data-sheet="scenario" class="sheet-flip scenario-side" title="Click to enlarge" onclick="zoomSheet()"></div><div id="mapViewport" class="map-wrap"><div id="map"></div>
+  <div class="map-controls" role="toolbar" aria-label="Map view">
+    <button onclick="zoomBy(1 / 1.4)" title="Zoom out (−)" aria-label="Zoom out">−</button>
+    <button onclick="zoomBy(1.4)" title="Zoom in (+)" aria-label="Zoom in">+</button>
+    <button onclick="resetView()" title="Fit the whole map (0)" aria-label="Fit map">⤢</button>
+    <button id="tokensToggle" onclick="toggleTokens()" title="Hide tokens (T)" aria-label="Hide tokens" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="eye-off" d="M4 4l16 16" style="display:none"/></svg></button>
+    <button id="mapFullToggle" onclick="toggleMapFull()" title="Full screen map" aria-label="Full screen map">⛶</button>
+  </div>
+  <div class="map-hint">Pinch or Ctrl-scroll to zoom · drag to pan · double-click a tile</div>
+</div></div><div id="otherSpaces"></div><div id="decks" class="decks"></div></section>
+<main id="game" hidden>
+  <div>
+    <div class="ask-row">
+      <section id="activeSection" class="active-side"><h2>Active card</h2><div id="activeToken"></div><div id="activeCard"></div></section>
+      <section><h2>Questions</h2><div id="questions"></div><div id="error" class="err"></div></section>
+    </div>
+    <section style="margin-top:12px"><h2>Player areas</h2><div id="investigators"></div></section>
+  </div>
+  <div>
+    <section><h2>Codex</h2><div id="codexCards" class="codex"></div></section>
+    <section style="margin-top:12px"><h2>Mythos</h2><div id="codex"></div></section>
+    <section style="margin-top:12px"><details><summary>Raw game JSON</summary><pre id="raw"></pre></details></section>
+  </div>
+</main>
+<script>
+let state = null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const cardName = cid => esc(state.cardNames[cid] ?? `#${cid}`);
+const invName = iid => state.investigatorNames[iid] ?? iid;
+const show = v => typeof v === 'string' ? v : (v && v.tag ? v.tag + (v.contents !== undefined ? ' ' + JSON.stringify(v.contents) : '') : JSON.stringify(v));
+
+// which map piece a choice refers to, so hovering it can point the piece out.
+// Kept as "kind:id" rather than a selector so it survives HTML attribute quoting.
+function labelTarget(l) {
+  const c = l.contents;
+  switch (l.tag) {
+    case 'MonsterLabel': case 'CardLabel': return `mon:${c}`;
+    case 'SpaceLabel': return `space:${cssName(c)}`;
+    case 'InvestigatorLabel': return `inv:${cssName(c)}`;
+    case 'SourceLabel': return sourceTarget(c);
+    default: return null;
+  }
+}
+// a reckoning names its source; point at whichever piece of the table holds it
+function sourceTarget(s) {
+  switch (s?.tag) {
+    case 'SourceScenario': return 'sheet:scenario';
+    case 'SourceCodex': return `codex:${s.contents}`;
+    case 'SourceInvestigator': return `inv:${cssName(s.contents)}`;
+    case 'SourceCard': case 'SourceHeadline': case 'SourceEncounter': case 'SourceMonster':
+      return `card:${s.contents}`;
+    default: return null;
+  }
+}
+function sourceLabelHtml(s) {
+  switch (s?.tag) {
+    case 'SourceScenario': return 'Scenario sheet';
+    case 'SourceCodex': return `Codex #${s.contents}`;
+    case 'SourceInvestigator': return esc(invName(s.contents));
+    case 'SourceCard': case 'SourceHeadline': case 'SourceEncounter': case 'SourceMonster':
+      return esc(state.cardNames[s.contents] ?? `Card ${s.contents}`);
+    case 'SourceMythos': return 'Mythos';
+    case 'SourceRules': return 'Rules';
+    default: return esc(show(s));
+  }
+}
+let highlighted = null;
+function applyHighlight() {
+  document.querySelectorAll('.hl').forEach(e => e.classList.remove('hl'));
+  if (!highlighted) return;
+  const [kind, id] = highlighted.split(':');
+  document.querySelectorAll(`[data-${kind}]`).forEach(e => {
+    if (e.getAttribute(`data-${kind}`) === id) e.classList.add('hl');
+  });
+  // a space also lights up its outline, drawn above the unstable one and below the tokens
+  if (kind === 'space') document.querySelectorAll(`[data-space-outline="${id}"]`).forEach(e => e.classList.add('hl'));
+}
+function highlight(target) { highlighted = target; applyHighlight(); }
+document.addEventListener('mouseover', e => {
+  const b = e.target.closest?.('[data-hl]');
+  if (b) highlight(b.dataset.hl);
+});
+document.addEventListener('mouseout', e => {
+  if (e.target.closest?.('[data-hl]')) highlight(null);
+});
+document.addEventListener('focusin', e => {
+  const b = e.target.closest?.('[data-hl]');
+  highlight(b ? b.dataset.hl : null);
+});
+document.addEventListener('focusout', () => highlight(null));
+function labelHtml(l) {
+  const c = l.contents;
+  switch (l.tag) {
+    case 'TextLabel': case 'DoneLabel': return esc(c);
+    case 'ActionLabel': return esc(show(c).replace(/Action$/, '').replace(/([a-z])([A-Z])/g, '$1 $2'));
+    case 'SpaceLabel': return esc(spaceName(c));
+    case 'MonsterLabel': return 'Monster: ' + cardName(c);
+    case 'CardLabel': return cardName(c);
+    case 'SkillLabel': return 'Skill: ' + esc(c);
+    case 'DieLabel': return `Die ${c[0] + 1} (${c[1]})`;
+    case 'CardsLabel': return cardsLabelHtml(c[0], c[1]);
+    case 'InvestigatorLabel': return investigatorLabelHtml(c);
+    case 'ScenarioLabel': return esc(state.scenarios.find(sc => sc.code === c)?.name ?? c);
+    case 'AmountLabel': return esc(c);
+    case 'TokenLabel': return mythosTok(c, 24) + ' ' + esc(c.replace(/Token$/, ''));
+    case 'SourceLabel': return sourceLabelHtml(c);
+    default: return esc(show(l));
+  }
+}
+const spaceName = sid => state.game.board.spaces[sid]?.name ?? sid;
+// the magnifier enlarges a card without answering; the rest of the button still picks the option
+// choosing an investigator is easier with the sheet in front of you; the
+// magnifier opens it flippable, since the back carries the starting possessions
+function investigatorLabelHtml(iid) {
+  const front = `/img/ah3e/investigators/${iid}/front.webp`;
+  const back = `/img/ah3e/investigators/${iid}/back.webp`;
+  const open = `zoomFlip('${front}', '${back}', 1126 / 900)`;
+  return `<span class="label-cards"><span class="label-card label-sheet">`
+    + `<img src="${front}" alt="${esc(invName(iid))}" onerror="hideBroken(this)">`
+    + `<span class="label-zoom" role="button" tabindex="0" title="Enlarge, then click to flip"`
+    + ` onclick="event.stopPropagation();${open}"`
+    + ` onkeydown="if(event.key==='Enter'){event.stopPropagation();event.preventDefault();${open}}">\u2315</span>`
+    + `</span></span><span class="label-cards-text">${esc(invName(iid))}</span>`;
+}
+
+function cardsLabelHtml(text, cids) {
+  if (!cids.length) return esc(text);
+  const cards = cids.map(cid => {
+    const src = `/img/ah3e/cards/${cardCode(cid)}.webp`;
+    return `<span class="label-card"><img src="${src}" alt="${esc(state.cardNames[cid] ?? '')}" onerror="hideBroken(this)">` +
+      `<span class="label-zoom" role="button" tabindex="0" title="Enlarge" onclick="event.stopPropagation();zoom('${src}')" onkeydown="if(event.key==='Enter'){event.stopPropagation();event.preventDefault();zoom('${src}')}">\u2315</span></span>`;
+  }).join('');
+  return `<span class="label-cards">${cards}</span><span class="label-cards-text">${esc(text)}</span>`;
+}
+
+async function call(path, body) {
+  const r = await fetch(path, body === undefined ? {} : { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body ?? {}) });
+  const j = await r.json();
+  if (j.error) { $('error').textContent = j.error; const se = $('setupError'); if (se) se.textContent = j.error; return; }
+  $('error').textContent = '';
+  const apply = () => { animateDraws = path !== '/api/undo'; state = j; render(); animateDraws = true; };
+  // cards and tokens tween between their old and new positions. Await the
+  // update callback (not the animation) so callers see the new state.
+  if (document.startViewTransition && state) {
+    viewTransition = document.startViewTransition(apply);
+    try { await viewTransition.updateCallbackDone; } catch {}
+  } else apply();
+  if (path === '/api/answer') (j.game?.phasesEntered ?? []).forEach(announcePhase);
+}
+let viewTransition = null;
+// undo puts cards back; flying them out of a deck would show the opposite of what happened
+let animateDraws = true;
+const refresh = () => call('/api/state');
+const choose = (player, choice) => call('/api/answer', { player, choice });
+
+// only answers announce: the engine lists the phases it began while resolving one,
+// so a reload or an undo, which begin nothing, stay quiet
+const PHASE_BANNERS = {
+  ActionPhase: ['Action Phase', '#a87532'],
+  MonsterPhase: ['Monster Phase', '#9f2929'],
+  EncounterPhase: ['Encounter Phase', '#2f6b4f'],
+  MythosPhase: ['Mythos Phase', '#7b4b91'],
+};
+const phaseQueue = [];
+let phasePlaying = false;
+function announcePhase(phase) {
+  if (!PHASE_BANNERS[phase]) return;
+  phaseQueue.push(phase);
+  if (!phasePlaying) playPhaseBanners();
+}
+async function playPhaseBanners() {
+  phasePlaying = true;
+  while (phaseQueue.length) {
+    const [name, color] = PHASE_BANNERS[phaseQueue.shift()];
+    // tokens tweening in a view transition are drawn above the whole page, banner included
+    await viewTransition?.finished.catch(() => {});
+    const el = document.createElement('div');
+    el.className = 'phase-banner';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    el.style.setProperty('--phase-color', color);
+    el.innerHTML = `<span>${name}</span>`;
+    document.body.appendChild(el);
+    await new Promise(r => setTimeout(r, 1300));
+    el.remove();
+  }
+  phasePlaying = false;
+}
+let undoing = false;
+async function undo() {
+  if (undoing || !state?.canUndo) return;
+  undoing = true;
+  try {
+    await call('/api/undo', {});
+    flash('Undone');
+  } finally {
+    undoing = false;
+  }
+}
+function flash(text) {
+  let el = document.getElementById('flash');
+  if (!el) { el = document.createElement('div'); el.id = 'flash'; el.className = 'flash'; document.body.appendChild(el); }
+  el.textContent = text;
+  el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== 'u' && e.key !== 'U') return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const t = e.target;
+  if (t instanceof HTMLElement && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName))) return;
+  if (!state?.game) return;
+  e.preventDefault();
+  undo();
+});
+const abandon = () => { if (confirm('Abandon this game?')) call('/api/reset', null); };
+const EXPANSION_NAMES = { CoreSet:'Core Set', DeadOfNight:'Dead of Night', UnderDarkWaves:'Under Dark Waves', SecretsOfTheOrder:'Secrets of the Order', RecursiveEchoes:'Recursive Echoes'};
+const expName = e => EXPANSION_NAMES[e] ?? e;
+
+const TILE_W = 240;
+const TILE_H = TILE_W * 2 / Math.sqrt(3);
+const STREET_W = 0.534 * TILE_W, STREET_H = 0.537 * TILE_W;
+const slugOf = nid => nid;
+// ---- drag to move -------------------------------------------------------
+// The engine only ever offers the next single step, so dragging works out the
+// path itself and answers one step at a time. Paid steps are just another
+// offered choice, so the money is spent by the engine as we walk.
+let moveDrag = null;
+
+function moveContext(g) {
+  for (const [pid, q] of Object.entries(g.questions))
+    for (const c of q.choices) {
+      const mv = (c.messages ?? []).find(m => m.tag === 'MoveInvestigator');
+      if (mv)
+        return {
+          pid: Number(pid),
+          ms: mv.contents[0],
+          iid: mv.contents[0].investigator,
+          // the engine offers either free steps or paid ones, never both
+          paid: (c.messages ?? []).some(m => m.tag === 'PayMoney'),
+        };
+    }
+  return null;
+}
+
+function moveBudget(g, ctx) {
+  const money = g.investigators[ctx.iid]?.money ?? 0;
+  // a choice carries the move state as it would be AFTER that step, so undo it
+  const free = ctx.paid ? ctx.ms.remaining : ctx.ms.remaining + 1;
+  const usedPaid = ctx.paid ? ctx.ms.paidSteps - 1 : ctx.ms.paidSteps;
+  const paid = Math.max(0, Math.min(ctx.ms.maxPaidSteps - usedPaid, money));
+  return { free, paid, total: free + paid };
+}
+
+function movePaths(g, from, budget) {
+  const borders = g.board.borders ?? {};
+  const dist = { [from]: 0 };
+  const prev = {};
+  const queue = [from];
+  while (queue.length) {
+    const cur = queue.shift();
+    if (dist[cur] >= budget) continue;
+    for (const nxt of Object.keys(borders[cur] ?? {}))
+      if (dist[nxt] === undefined) { dist[nxt] = dist[cur] + 1; prev[nxt] = cur; queue.push(nxt); }
+  }
+  delete dist[from];
+  return { dist, prev };
+}
+
+function applyMoveDrag(g) {
+  document.querySelectorAll('.droppable, .droppable-paid, .draggable-inv').forEach(e => {
+    e.classList.remove('droppable', 'droppable-paid', 'draggable-inv');
+    e.removeAttribute('draggable');
+  });
+  moveDrag = null;
+  const ctx = moveContext(g);
+  if (!ctx) return;
+  const from = g.investigators[ctx.iid]?.space;
+  if (!from) return;
+  const { free, total } = moveBudget(g, ctx);
+  const { dist } = movePaths(g, from, total);
+  moveDrag = { ...ctx, from };
+  const tok = document.querySelector(`[data-inv="${cssName(ctx.iid)}"]`);
+  if (tok) { tok.setAttribute('draggable', 'true'); tok.classList.add('draggable-inv'); }
+  for (const [sid, d] of Object.entries(dist)) {
+    const el = document.querySelector(`[data-space="${cssName(sid)}"]`);
+    if (!el) continue;
+    el.dataset.sid = sid;
+    el.classList.add(d <= free ? 'droppable' : 'droppable-paid');
+  }
+}
+
+async function walkTo(target) {
+  for (let guard = 0; guard < 16; guard++) {
+    const g = state?.game;
+    if (!g) return;
+    const ctx = moveContext(g);
+    if (!ctx) return;
+    const from = g.investigators[ctx.iid]?.space;
+    if (!from || from === target) return;
+    const { total } = moveBudget(g, ctx);
+    const { dist, prev } = movePaths(g, from, total);
+    if (dist[target] === undefined) return;
+    let step = target;
+    while (prev[step] !== undefined && prev[step] !== from) step = prev[step];
+    const idx = g.questions[ctx.pid].choices.findIndex(
+      c => c.label.tag === 'SpaceLabel' && c.label.contents === step
+    );
+    if (idx < 0) return;
+    await call('/api/answer', { player: ctx.pid, choice: idx });
+    if (state?.game?.investigators[ctx.iid]?.space === from) return;
+  }
+}
+
+const dropTarget = e => e.target.closest?.('.droppable, .droppable-paid');
+document.addEventListener('dragstart', e => {
+  if (!e.target.closest?.('.draggable-inv') || !moveDrag) return;
+  e.dataTransfer?.setData('text/plain', moveDrag.iid);
+  if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+  document.body.classList.add('moving');
+});
+document.addEventListener('dragend', () => {
+  document.body.classList.remove('moving');
+  document.querySelectorAll('.drop-hover').forEach(e => e.classList.remove('drop-hover'));
+});
+document.addEventListener('dragover', e => {
+  const a = dropTarget(e);
+  if (!a || !moveDrag) return;
+  e.preventDefault();
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  a.classList.add('drop-hover');
+});
+document.addEventListener('dragleave', e => dropTarget(e)?.classList.remove('drop-hover'));
+document.addEventListener('drop', e => {
+  const a = dropTarget(e);
+  if (!a || !moveDrag) return;
+  e.preventDefault();
+  a.classList.remove('drop-hover');
+  document.body.classList.remove('moving');
+  if (a.dataset.sid) walkTo(a.dataset.sid);
+});
+
+function spaceChoices(g) {
+  const m = {};
+  for (const [pid, q] of Object.entries(g.questions))
+    q.choices.forEach((c, i) => { if (c.label.tag === 'SpaceLabel') (m[c.label.contents] ??= []).push([pid, i]); });
+  return m;
+}
+// a pill is plain text, or {text, cls, color} when it wants the phase tint
+const pills = items => items.map(t =>
+  typeof t === 'string'
+    ? `<span class="pill">${esc(t)}</span>`
+    : `<span class="pill ${t.cls ?? ''}"${t.color ? ` style="--phase-color:${t.color}"` : ''}>${esc(t.text)}</span>`
+).join('');
+const TOKEN = n => `/img/ah3e/tokens/${n}.webp`;
+const initials = iid => invName(iid).replace(/"/g, '').split(' ').map(w => w[0]).join('');
+function invFallback(img) { const s = document.createElement('span'); s.className = 'chip inv'; s.title = img.title; s.textContent = img.dataset.initials; img.replaceWith(s); }
+function hideBroken(img) { img.parentElement.classList.add('no-art'); img.remove(); }
+const slug = t => String(t).toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const cardCode = cid => state.cardCodes?.[cid] ?? slug(state.cardNames[cid] ?? cid);
+// skill rows on the investigator sheet front, as fractions of the image
+const SKILL_ROWS = { Lore: 0.6, Influence: 0.685, Observation: 0.77, Strength: 0.853, Will: 0.935 };
+const tok = (name, count, title, size = 28, always = false) =>
+  `<span class="tok" title="${esc(title ?? name)}" style="width:${size}px;height:${size}px"><img src="${TOKEN(name)}" alt="${esc(title ?? name)}">${count !== undefined && count !== null && (always || count !== 1) ? `<b>${count}</b>` : ''}</span>`;
+const MYTHOS = { SpreadDoomToken:'mythos-spread-doom', SpawnMonsterToken:'mythos-spawn-monster', ReadHeadlineToken:'mythos-read-headline', SpawnClueToken:'mythos-spawn-clue', GateBurstToken:'mythos-gate-burst', ReckoningToken:'mythos-reckoning', BlankToken:'mythos-blank', SpreadTerrorToken:'mythos-spread-terror' };
+const FOCUS = { Lore:'focus-lore', Influence:'focus-influence', Observation:'focus-observation', Strength:'focus-strength', Will:'focus-willpower' };
+const mythosTok = (t, size) => tok(MYTHOS[t] ?? 'mythos-blank', null, t.replace(/Token$/, '').replace(/([a-z])([A-Z])/g, '$1 $2'), size);
+const markerTok = m => m.faceUp ? tok(`${m.color}-marker`, null, `${m.color} marker`) : tok('marker-back', null, 'facedown marker');
+const counted = (name, n, title, size) => n ? tok(name, n, title, size) : '';
+const cssName = s => String(s).replace(/[^a-zA-Z0-9_-]/g, '-');
+const vt = (name, html) => `<span style="view-transition-name:${cssName(name)};display:inline-flex">${html}</span>`;
+const SHROUDED = new Set(['haunting-dead', 'screaming-haunt', 'weeping-haunt', 'cacophonous-haunt', 'raging-poltergeist', 'commanding-specter', 'confounding-specter', 'crashing-specter', 'stalking-wraith', 'sanguinous-wraith', 'vomitous-wraith']);
+// 428.2: an engaged monster sits in the play area of the investigator it is engaged with;
+// a massive one stays in its space (451.3)
+const inPlayerArea = m => m.state?.tag === 'Engaged' && !(state.massive ?? []).includes(m.card);
+function monsterCard(m) {
+  const name = state.cardNames[m.card] ?? 'Monster';
+  const ready = m.state?.tag === 'Ready';
+  const src = `/img/ah3e/cards/${cardCode(m.card)}${ready ? '' : 'b'}.webp`;
+  const engaged = m.state?.tag === 'Engaged';
+  const dmg = m.damage ?? 0;
+  const title = `${name}${ready ? '' : engaged ? ' (engaged)' : ' (exhausted)'}${dmg ? ` \u00b7 ${dmg} damage` : ''}`;
+  // a ready shrouded monster keeps its engaged/exhausted side hidden
+  const other = SHROUDED.has(cardCode(m.card)) && ready ? null : `/img/ah3e/cards/${cardCode(m.card)}${ready ? 'b' : ''}.webp`;
+  const zoomArgs = other ? `'${src}','${other}'` : `'${src}'`;
+  return `<span data-mon="${m.card}" data-card="${m.card}" style="view-transition-name:mon-${m.card}" class="mon-card${engaged ? ' engaged' : ''}" title="${esc(title)}" onclick="event.stopPropagation();zoom(${zoomArgs})">
+    <img src="${src}" alt="" onerror="hideBroken(this)"><span class="chip mon">${esc(name.slice(0, 10))}</span>${dmg ? `<span class="mon-dmg">${tok('damage', dmg, `${dmg} damage`, 22, true)}</span>` : ''}</span>`;
+}
+function chipsFor(g, sid, invs, monsters) {
+  const s = g.board.spaces[sid];
+  const out = [];
+  if (s.doom) out.push(vt(`doom-${sid}`, tok('doom', s.doom, `${s.doom} doom`)));
+  if (s.clues) out.push(vt(`clue-${sid}`, tok('clue', s.clues, `${s.clues} clues`)));
+  s.markers.forEach(m => out.push(markerTok(m)));
+  invs.filter(i => i.space === sid).forEach(i => out.push(`<img data-inv="${cssName(i.id)}" style="view-transition-name:inv-${cssName(i.id)}" class="inv-tok" src="/img/ah3e/investigators/${i.id}/token.webp" title="${esc(invName(i.id))}" data-initials="${esc(initials(i.id))}" onerror="invFallback(this)">`));
+  monsters.filter(m => m.space === sid && !inPlayerArea(m)).forEach(m => out.push(monsterCard(m)));
+  return out.join('');
+}
+const HUB_R = 0.135;
+// the piece's own alpha, clipped to the space, eroded and subtracted to leave a ring on its real edge
+const outlineFilter = (id, stroke, fill) => `<filter id="${id}" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+  <feComponentTransfer in="SourceAlpha" result="solid"><feFuncA type="linear" slope="3"/></feComponentTransfer>
+  <feMorphology in="solid" operator="erode" radius="3" result="inner"/>
+  <feComposite in="solid" in2="inner" operator="out" result="ring"/>
+  <feFlood style="flood-color:${stroke}" result="edge"/>
+  <feComposite in="edge" in2="ring" operator="in" result="stroke"/>
+  <feFlood flood-color="${fill}" flood-opacity=".18"/>
+  <feComposite in2="inner" operator="in" result="fill"/>
+  <feGaussianBlur in="stroke" stdDeviation="4" result="glow"/>
+  <feMerge><feMergeNode in="glow"/><feMergeNode in="fill"/><feMergeNode in="stroke"/></feMerge>
+</filter>`;
+const OUTLINE_FILTER = outlineFilter('spaceOutline', 'var(--doom)', 'rgb(179,38,30)');
+const HIGHLIGHT_FILTER = outlineFilter('spaceHighlight', '#ffd54f', 'rgb(255,213,79)');
+// Setup marks no unstable space until step 11 turns the first event card into the
+// discard (111.3); the starting-space fallback of 493.3 is left to the engine.
+function unstableShown(g) {
+  if (g.phase === 'SetupPhase' && !g.decks.eventDiscard.length) return [];
+  return state.unstable ?? [];
+}
+// while an event card is flying to the discard, the unstable space it names stays hidden until it lands
+let holdUnstable = false;
+function holdUnstableUntil(done) {
+  holdUnstable = true;
+  document.querySelectorAll('.space-outlines, .anchor.unstable').forEach(el => el.classList.add('held'));
+  Promise.resolve(done).finally(() => {
+    holdUnstable = false;
+    document.querySelectorAll('.space-outlines.held, .anchor.unstable.held').forEach(el => {
+      el.classList.remove('held');
+      el.classList.add('reveal');
+    });
+  });
+}
+// the outline of one space: a location's wedge of its tile, or a street's body between the tiles
+function spaceShape(g, L, px, py, sid, filter, idPrefix, title = '') {
+  const at = (cx, cy, r, deg) => [px(cx + r * Math.cos(deg * Math.PI / 180)), py(cy + r * Math.sin(deg * Math.PI / 180))];
+  const pt = ([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+  const id = `${idPrefix}-${cssName(sid)}`, key = cssName(sid);
+  const a = L.anchors.find(a => a.space === sid);
+  const t = a && L.tiles.find(t => t.neighborhood === g.board.spaces[sid]?.neighborhood);
+  if (a && t) {
+    const c = Math.atan2(a.y - t.y, a.x - t.x) * 180 / Math.PI, hub = HUB_R * TILE_W;
+    // the wedge between the two dividing lines, running well past the tile so its alpha sets the outer edge
+    const far = [-60, -30, 0, 30, 60].map(o => pt(at(t.x, t.y, 0.8, c + o)));
+    return {
+      clip: `<clipPath id="${id}"><path d="M${pt(at(t.x, t.y, HUB_R, c - 60))} L${far.join(' L')} L${pt(at(t.x, t.y, HUB_R, c + 60))} A${hub} ${hub} 0 0 0 ${pt(at(t.x, t.y, HUB_R, c - 60))} Z"/></clipPath>`,
+      shape: `<g data-space-outline="${key}" filter="url(#${filter})">${title}<image href="/img/ah3e/tiles/${slugOf(t.neighborhood)}.webp" x="${px(t.x) - TILE_W / 2}" y="${py(t.y) - TILE_H / 2}" width="${TILE_W}" height="${TILE_H}" preserveAspectRatio="none" clip-path="url(#${id})"/></g>`,
+    };
+  }
+  const st = L.streets.find(st => st.space === sid);
+  if (!st) return null;
+  const type = (g.board.spaces[sid]?.kind?.contents ?? 'Residential').toLowerCase();
+  let angle = st.angle % 360; if (angle > 90 && angle <= 270) angle -= 180;
+  const cx = px(st.x), cy = py(st.y);
+  // the whole tile, letting its own alpha set the border as a neighborhood tile's does
+  return {
+    clip: '',
+    shape: `<g data-space-outline="${key}" filter="url(#${filter})">${title}<image href="/img/ah3e/streets/${type}.webp" x="${cx - STREET_W / 2}" y="${cy - STREET_H / 2}" width="${STREET_W}" height="${STREET_H}" preserveAspectRatio="none" transform="rotate(${angle} ${cx} ${cy})"/></g>`,
+  };
+}
+function spaceOutlines(g, L, px, py) {
+  const ids = new Set(), clips = [], shapes = [];
+  for (const sid of new Set(unstableShown(g))) {
+    const title = `<title>${esc(g.board.spaces[sid]?.name ?? sid)} \u2014 unstable space</title>`;
+    const s = spaceShape(g, L, px, py, sid, 'spaceOutline', 'clip', title);
+    if (!s) continue;
+    clips.push(s.clip);
+    // the unstable outline is not a hover target; only the highlight layer answers to hovering
+    shapes.push(s.shape.replace(/^<g data-space-outline="[^"]*"/, '<g'));
+    ids.add(sid);
+  }
+  const svg = shapes.length ? `<svg class="space-outlines${holdUnstable ? ' held' : ''}" width="1" height="1"><defs>${OUTLINE_FILTER}${clips.join('')}</defs>${shapes.join('')}</svg>` : '';
+  return { svg, ids };
+}
+// every space's outline, hidden until a choice naming that space is hovered; it sits above the
+// unstable outline and below the tokens
+function spaceHighlights(g, L, px, py) {
+  const clips = [], shapes = [], ids = new Set();
+  for (const sid of [...L.anchors.map(a => a.space), ...L.streets.map(st => st.space)]) {
+    const s = spaceShape(g, L, px, py, sid, 'spaceHighlight', 'hlclip');
+    if (!s) continue;
+    clips.push(s.clip);
+    shapes.push(s.shape);
+    ids.add(sid);
+  }
+  return { svg: `<svg class="space-highlights" width="1" height="1"><defs>${HIGHLIGHT_FILTER}${clips.join('')}</defs>${shapes.join('')}</svg>`, ids };
+}
+
+function renderMap(g, invs, monsters) {
+  const L = g.board.layout;
+  if (!L || !L.tiles.length) { $('map').innerHTML = ''; return; }
+  const pts = [...L.tiles.map(t => [t.x, t.y, 0.5, 0.58]), ...L.streets.map(s => [s.x, s.y, 0.3, 0.3])];
+  const minX = Math.min(...pts.map(p => p[0] - p[2])), maxX = Math.max(...pts.map(p => p[0] + p[2]));
+  const minY = Math.min(...pts.map(p => p[1] - p[3])), maxY = Math.max(...pts.map(p => p[1] + p[3]));
+  const px = x => (x - minX) * TILE_W, py = y => (y - minY) * TILE_W;
+  const selectable = spaceChoices(g);
+  const html = [];
+  for (const st of L.streets) {
+    const kind = g.board.spaces[st.space]?.kind;
+    const type = (kind?.contents ?? 'Residential').toLowerCase();
+    let angle = st.angle % 360; if (angle > 90 && angle <= 270) angle -= 180;
+    html.push(`<img src="/img/ah3e/streets/${type}.webp" style="left:${px(st.x) - STREET_W / 2}px;top:${py(st.y) - STREET_H / 2}px;width:${STREET_W}px;height:${STREET_H}px;transform:rotate(${angle}deg)">`);
+  }
+  for (const t of L.tiles)
+    html.push(`<img src="/img/ah3e/tiles/${slugOf(t.neighborhood)}.webp" style="left:${px(t.x) - TILE_W / 2}px;top:${py(t.y) - TILE_H / 2}px;width:${TILE_W}px;height:${TILE_H}px">`);
+  const anchor = (sid, x, y) => {
+    const sel = selectable[sid];
+    const click = sel && sel.length === 1 ? `onclick="choose(${sel[0][0]},${sel[0][1]})"` : '';
+    const unstable = unstableShown(g).includes(sid) && !outlined.ids.has(sid);
+    const label = `${esc(g.board.spaces[sid]?.name ?? sid)}${unstable ? ' \u2014 unstable space' : ''}`;
+    const ring = sel ? `<span class="pick-ring" ${click.replace('onclick="', 'onclick="event.stopPropagation();')} title="${esc(g.board.spaces[sid]?.name ?? sid)}"></span>` : '';
+    return `<div data-space="${cssName(sid)}" class="anchor ${sel ? 'selectable' : ''}${unstable ? ' unstable' : ''}${unstable && holdUnstable ? ' held' : ''}${shaped.ids.has(sid) ? ' shaped' : ''}" ${click} title="${label}" style="left:${px(x)}px;top:${py(y)}px">${chipsFor(g, sid, invs, monsters)}${ring}</div>`;
+  };
+  const outlined = spaceOutlines(g, L, px, py);
+  const shaped = spaceHighlights(g, L, px, py);
+  html.push(outlined.svg, shaped.svg);
+  for (const a of L.anchors) html.push(anchor(a.space, a.x, a.y));
+  for (const st of L.streets) html.push(anchor(st.space, st.x, st.y));
+  for (const t of L.tiles) {
+    const n = g.board.neighborhoods[t.neighborhood];
+    const chips = counted('clue', n.clues, `${n.clues} clues`, 30) + (n.anomaly ? tok('anomaly', null, 'anomaly', 34) : '') + counted('terror', n.terror, `${n.terror} terror`, 30);
+    if (chips) html.push(`<div class="anchor" style="left:${px(t.x)}px;top:${py(t.y + 0.13)}px">${chips}</div>`);
+  }
+  mapTileCenters = L.tiles.map(t => [px(t.x), py(t.y)]);
+  $('map').innerHTML = `<div class="board-fit"><div class="board" style="width:${(maxX - minX) * TILE_W}px;height:${(maxY - minY) * TILE_W}px">${html.join('')}</div></div>`;
+  fitBoard();
+  const placed = new Set([...L.anchors.map(a => a.space), ...L.streets.map(s => s.space)]);
+  const others = Object.values(g.board.spaces).filter(s => !placed.has(s.id));
+  $('otherSpaces').innerHTML = others.map(s => {
+    const sel = selectable[s.id];
+    const click = sel && sel.length === 1 ? `onclick="choose(${sel[0][0]},${sel[0][1]})"` : '';
+    return `<span class="other-space ${sel ? 'selectable' : ''}" ${click}><b>${esc(s.name)}</b>${chipsFor(g, s.id, invs, monsters)}</span>`;
+  }).join('');
+}
+
+// used and allowed actions this turn; the allowance comes from the server, which counts
+// bonus actions and cards like Pocket Watch
+function actionPips(g, i) {
+  if (g.phase !== 'ActionPhase') return '';
+  const total = state.actionAllowance?.[i.id];
+  // a server that does not report the allowance yet: a guessed total would hide Pocket Watch and friends
+  if (total == null) return `<div class="pa-actions">Actions used: ${i.actionsTaken ?? 0}</div>`;
+  const used = Math.min(i.actionsTaken ?? 0, total);
+  const pips = Array.from({ length: total }, (_, k) => `<span class="pip${k < used ? ' used' : ''}"></span>`).join('');
+  return `<div class="pa-actions" title="${used} of ${total} actions used this turn">Actions <span class="pips">${pips}</span> ${used} / ${total}</div>`;
+}
+// a monster drawn to spawn is not on the board yet; the choices placing it name it
+function spawningHtml(q) {
+  const place = q.choices.flatMap(c => c.messages ?? []).find(m => m.tag === 'PlaceMonster');
+  if (!place) return '';
+  const mid = place.contents[0], code = cardCode(mid), name = state.cardNames[mid] ?? 'Monster';
+  const ready = `/img/ah3e/cards/${code}.webp`, other = `/img/ah3e/cards/${code}b.webp`;
+  // a ready shrouded monster keeps its other side hidden
+  const zoomArgs = SHROUDED.has(code) ? `'${ready}'` : `'${ready}','${other}'`;
+  return `<div class="spawning" data-card="${mid}"><img src="${ready}" alt="${esc(name)}" title="${esc(name)} \u2014 click to enlarge" onclick="zoom(${zoomArgs})" onerror="hideBroken(this)">
+    <div class="spawning-label">Spawning</div><b>${esc(name)}</b></div>`;
+}
+function engagedHtml(g, i) {
+  const engaged = Object.values(g.monsters).filter(m => inPlayerArea(m) && (m.state.contents ?? []).includes(i.id));
+  if (!engaged.length) return '';
+  return `<div class="pa-engaged"><div class="pa-engaged-label">Engaged</div><div class="pa-engaged-cards">${engaged.map(monsterCard).join('')}</div></div>`;
+}
+const ROLE_CLASS = { Guardian: 'Guardian', Mystic: 'Mystic', Rogue: 'Rogue', Seeker: 'Seeker', Survivor: 'Survivor' };
+let selectedTab = (() => { try { return localStorage.getItem('ah3e-selected-tab'); } catch { return null; } })();
+function selectTab(iid) {
+  selectedTab = iid;
+  try { localStorage.setItem('ah3e-selected-tab', iid); } catch {}
+  render();
+}
+function playerTabs(g, invs, playerArea) {
+  const order = g.players.map(p => p.investigator).filter(Boolean);
+  // defeated investigators go back in the box; only currently controlled ones get a tab
+  const sorted = invs.filter(i => order.includes(i.id)).sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+  if (!sorted.length) return '<em>None yet.</em>';
+  if (!sorted.some(i => i.id === selectedTab)) {
+    const mine = sorted.find(i => i.id === g.turn) ?? sorted[0];
+    selectedTab = mine.id;
+  }
+  const playerOf = iid => g.players.find(p => p.investigator === iid)?.id;
+  const hasChoices = iid => { const pid = playerOf(iid); return pid !== undefined && g.questions[pid] !== undefined; };
+  const tabs = sorted.map(i => {
+    const role = state.investigatorDefs?.[i.id]?.roles?.[0];
+    const classes = [
+      `tab--${ROLE_CLASS[role] ?? 'Neutral'}`,
+      i.id === selectedTab ? 'tab--selected' : '',
+      i.id === g.turn ? 'tab--active-player' : '',
+      playerOf(i.id) === g.leader ? 'tab--lead-player' : '',
+      i.status !== 'Playing' ? 'inactive' : '',
+      i.id !== selectedTab && hasChoices(i.id) ? 'tab--has-actions' : '',
+    ].join(' ');
+    const pulse = i.id !== selectedTab && hasChoices(i.id) ? '<i class="tab-pulse" aria-hidden="true"></i>' : '';
+    const waiting = sorted.length > 1 && hasChoices(i.id) ? '<span class="waiting-indicator" title="Waiting on this player"><span class="waiting-spinner">⟳</span></span>' : '';
+    return `<li class="${classes}" onclick="selectTab('${i.id}')">${pulse}<span>${esc(invName(i.id))}</span>${waiting}</li>`;
+  }).join('');
+  const current = sorted.find(i => i.id === selectedTab);
+  return `<div class="tabs-row"><ul class="tabs__header">${tabs}</ul></div><div class="tab">${playerArea(current)}</div>`;
+}
+
+const ANOMALY_BACKS = { 'Temporal Fissure': 'temporal-fissures', 'Fractured Reality': 'fractured-reality', 'Nightmare Breach': 'nightmare-breach' };
+function deckHtml(back, name, count, extra = '', src = null, key = '') {
+  const deal = dbgOn() && key && deckTag(key) && dbgIid()
+    ? `<button class="dbg-deal" title="Deal the top card of this deck"
+        onclick="event.stopPropagation();dbgDeal('${key}')">+</button>`
+      + `<button class="dbg-view" title="Look through this deck and draw any card"
+        onclick="event.stopPropagation();viewDeck('${key}')">\u2315</button>`
+    : '';
+  const layers = Math.min(4, Math.max(0, count - 1));
+  const shadow = Array.from({ length: layers }, (_, k) => `${(k + 1) * 2}px ${(k + 1) * 2}px 0 -1px #111, ${(k + 1) * 2}px ${(k + 1) * 2}px 0 0 #555`).join(', ');
+  return `<div class="deck ${count ? '' : 'empty'}"${key ? ` data-deck="${key}"` : ''} title="${esc(name)}: ${count} card${count === 1 ? '' : 's'}">
+    <div class="deck-stack">${count ? `<img src="${src ?? `/img/ah3e/backs/${back}.webp`}" alt="""" style="box-shadow:${shadow || 'none'}" onerror="hideBroken(this)">` : ''}<div class="deck-empty">${count ? '' : 'empty'}</div>
+      <b class="deck-count">${count}</b>${extra}${deal}</div>
+    <div class="deck-name">${esc(name)}</div></div>`;
+}
+const cardFace = (cid, flipped) => `/img/ah3e/cards/${cardCode(cid)}${flipped ? 'b' : ''}.webp`;
+// a possession's back is its owner's card back, unless the card has a second face of its own
+function backFallback(img, owner) {
+  if (!owner || img.dataset.fellBack) return hideBroken(img);
+  img.dataset.fellBack = '1';
+  img.src = `/img/ah3e/investigators/${owner}/card-back.webp`;
+}
+function zoomCard(src, owner) {
+  return openZoom(`<img src="${src}" alt="" onerror="backFallback(this, '${owner}')">`);
+}
+function faceCardHtml(cid) {
+  const name = state.cardNames[cid] ?? `#${cid}`;
+  const src = cardFace(cid, false);
+  return `<div class="deck zoomable" data-card="${cid}" title="${esc(name)} — click to enlarge" onclick="zoom('${src}')">
+    <div class="deck-stack face"><img src="${src}" alt="${esc(name)}" onerror="hideBroken(this)"><div class="deck-empty">${esc(name)}</div></div>
+    <div class="deck-name">${esc(name)}</div></div>`;
+}
+// an enlarged two-sided sheet that turns over on click; it opens showing `shown`
+function zoomFlip(shown, other, ratio = 1503 / 1200) {
+  const o = openZoom(`<div class="sheet-flip sheet-zoom" style="--ratio:${ratio}" title="Click to flip"><div class="flip">
+      <img class="face back" src="${shown}" alt="" onerror="hideBroken(this)"><img class="face front" src="${other}" alt="" onerror="hideBroken(this)">
+    </div></div><div class="zoom-hint">Click the sheet to flip it</div>`);
+  o.querySelector('.sheet-zoom').onclick = e => {
+    e.stopPropagation();
+    e.currentTarget.querySelector('.flip').classList.toggle('flipped');
+  };
+}
+// flipping here only turns the enlarged copy; the board's sheet keeps following the phase
+function zoomSheet() {
+  const flip = $('scenarioSheet').querySelector('.flip');
+  if (!flip) return;
+  const setup = flip.querySelector('.back').getAttribute('src'), story = flip.querySelector('.front').getAttribute('src');
+  if (flip.classList.contains('flipped')) zoomFlip(story, setup);
+  else zoomFlip(setup, story);
+}
+function renderScenarioSheet(g) {
+  const el = $('scenarioSheet');
+  if (!el) return;
+  const code = g.scenario;
+  if (!code) { el.innerHTML = ''; el.dataset.code = ''; return; }
+  if (el.dataset.code !== code) {
+    el.dataset.code = code;
+    el.innerHTML = `<div class="flip">
+      <img class="face back" src="/img/ah3e/scenarios/${code}b.webp" alt="setup side" onerror="hideBroken(this)">
+      <img class="face front" src="/img/ah3e/scenarios/${code}.webp" alt="${esc(code)}" onerror="hideBroken(this)">
+    </div>`;
+  }
+  // the setup side faces up while setting up, then the sheet flips to the story side
+  el.querySelector('.flip')?.classList.toggle('flipped', g.phase !== 'SetupPhase');
+  renderSheetTokens(el, g);
+}
+// doom and clues on the scenario sheet, always shown so the count can be tracked; a change pulses
+function renderSheetTokens(el, g) {
+  let box = el.querySelector('.sheet-tokens');
+  if (!box) {
+    box = document.createElement('div');
+    box.className = 'sheet-tokens';
+    el.appendChild(box);
+  }
+  const prevDoom = box.dataset.doom, prevClues = box.dataset.clues;
+  box.innerHTML = tok('doom', g.sheetDoom, `${g.sheetDoom} doom on the scenario sheet`, 34, true) +
+    tok('clue', g.sheetClues, `${g.sheetClues} clue${g.sheetClues === 1 ? '' : 's'} on the scenario sheet`, 34, true);
+  if (dbgOn())
+    box.innerHTML = `<span class="dbg-tokwrap">${tok('doom', g.sheetDoom, 'doom on the scenario sheet', 34, true)}`
+      + dbgNum('DebugSetSheetDoom', null, g.sheetDoom, 'doom on the scenario sheet') + '</span>'
+      + `<span class="dbg-tokwrap">${tok('clue', g.sheetClues, 'clues on the scenario sheet', 34, true)}`
+      + dbgNum('DebugSetSheetClues', null, g.sheetClues, 'clues on the scenario sheet') + '</span>';
+  const [doomTok, clueTok] = box.querySelectorAll('.tok');
+  if (prevDoom !== undefined && +prevDoom !== g.sheetDoom) doomTok.classList.add('bump');
+  if (prevClues !== undefined && +prevClues !== g.sheetClues) clueTok.classList.add('bump');
+  box.dataset.doom = g.sheetDoom;
+  box.dataset.clues = g.sheetClues;
+}
+function renderDecks(g) {
+  const d = g.decks;
+  const hoods = (g.board.layout?.tiles ?? []).map(t => t.neighborhood);
+  const out = hoods.map(nid => {
+    const n = g.board.neighborhoods[nid];
+    const clue = n?.clues ? `<span class="deck-clue">${tok('clue', n.clues, `${n.clues} clue${n.clues > 1 ? 's' : ''}: an event card is among the top cards`, 34)}</span>` : '';
+    return deckHtml(nid, n?.name ?? nid, (d.neighborhoods[nid] ?? []).length, clue, null, `neighborhood:${nid}`);
+  });
+  const hasStreets = Object.values(g.board.spaces).some(s => s.kind?.tag === 'StreetSpace');
+  if (hasStreets) out.push(deckHtml('the-street', 'Streets', d.street.length, '', null, 'street'));
+  const set = state.scenarios.find(sc => sc.code === g.scenario)?.anomalySet;
+  if (d.anomaly.length || set) out.push(deckHtml(ANOMALY_BACKS[set] ?? 'temporal-fissures', set ?? 'Anomalies', d.anomaly.length, '', null, 'anomaly'));
+  out.push(deckHtml('ally', 'Allies', d.ally.length, '', null, 'ally'));
+  out.push(deckHtml('spell', 'Spells', d.spell.length, '', null, 'spell'));
+  out.push(deckHtml('item', 'Items', d.item.length, '', null, 'item'));
+  const display = d.display.map(faceCardHtml).join('');
+  // we always draw from the bottom, so the top card's back gives nothing away
+  const topBack = cid => (cid == null ? null : `/img/ah3e/cards/${cardCode(cid)}b.webp`);
+  const topFace = cid => (cid == null ? null : `/img/ah3e/cards/${cardCode(cid)}.webp`);
+  // event cards share their neighborhood's back, so the top of the event deck shows where it points
+  const eventBack = cid => {
+    const nid = state.eventNeighborhoods?.[cid];
+    return cid == null || !nid ? null : `/img/ah3e/backs/${nid}.webp`;
+  };
+  const lead =
+    deckHtml('headline', 'Headlines', d.headline.length, '', null, 'headline')
+    + deckHtml('headline', 'Headline discard', d.headlineDiscard.length, '', topFace(d.headlineDiscard[0]), 'headlineDiscard')
+    + deckHtml('monster', 'Monsters', d.monster.length, '', topBack(d.monster[0]), 'monster')
+    + deckHtml('event', 'Events', d.event.length, '', eventBack(d.event[0]), 'event')
+    + deckHtml('event', 'Event discard', d.eventDiscard.length, '', eventFace(d.eventDiscard[0]), 'eventDiscard');
+  $('decks').innerHTML =
+    `<div class="deck-group lead">${lead}</div>` + out.join('') + (display ? `<div class="display-group">${display}</div>` : '');
+}
+
+const archiveImage = (n, back) => `/img/ah3e/archive/core/${String(n).padStart(3, '0')}${back ? 'b' : ''}.avif`;
+function codexCard(e) {
+  const name = state.cardNames[e.card] || `Card ${e.number}`;
+  const clues = e.tokens?.clues ? `<span class="codex-tok">${tok('clue', e.tokens.clues, `${e.tokens.clues} clues on this card`, 34, true)}</span>` : '';
+  const src = archiveImage(e.number, e.flipped);
+  return `<figure class="codex-card" data-codex="${e.number}" title="${esc(name)}${e.flipped ? ' (back)' : ''}" onclick="zoom('${src}')">
+    <img src="${src}" alt="${esc(name)}" onerror="hideBroken(this)"><span class="asset-name">#${e.number} ${esc(name)}</span>${clues}
+    <figcaption>#${e.number}${e.flipped ? ' · back' : ''}</figcaption></figure>`;
+}
+function rumorCard(r) {
+  const name = state.cardNames[r.card] ?? 'Rumor';
+  const src = `/img/ah3e/cards/${cardCode(r.card)}.webp`;
+  const doom = r.doom ? `<span class="codex-tok">${tok('doom', r.doom, `${r.doom} doom on this card`, 34, true)}</span>` : '';
+  return `<figure class="codex-card" data-card="${r.card}" title="${esc(name)}" onclick="zoom('${src}')">
+    <img src="${src}" alt="${esc(name)}" onerror="hideBroken(this)"><span class="asset-name">${esc(name)}</span>${doom}
+    <figcaption>Rumor</figcaption></figure>`;
+}
+function zoom(...srcs) {
+  return openZoom(srcs.map(src => `<img src="${src}" alt="">`).join(''));
+}
+function openZoom(html) {
+  const o = document.createElement('div');
+  o.className = 'zoom';
+  o.innerHTML = html;
+  const close = () => {
+    o.remove();
+    document.removeEventListener('keydown', onKey, true);
+  };
+  // capture, so escape closes the zoom instead of leaving the full-screen map
+  const onKey = e => {
+    if (e.key !== 'Escape') return;
+    e.preventDefault();
+    e.stopPropagation();
+    close();
+  };
+  o.onclick = close;
+  document.addEventListener('keydown', onKey, true);
+  document.body.appendChild(o);
+  return o;
+}
+
+// debug: look through a deck and take any card out of it
+function viewDeck(key) {
+  const cards = deckCards(key);
+  const iid = dbgIid();
+  const tag = deckTag(key);
+  const grid = cards.map((cid, n) => {
+    const name = state.cardNames[cid] ?? `Card ${cid}`;
+    return `<figure class="browse-card" title="${esc(name)} \u2014 click to draw it">
+      <img src="/img/ah3e/cards/${cardCode(cid)}.webp" alt="${esc(name)}" onerror="hideBroken(this)">
+      <span class="asset-name">${esc(name)}</span><span class="browse-pos">${n + 1}</span></figure>`;
+  }).join('') || '<em class="waiting">This deck is empty.</em>';
+  const o = openZoom(`<div class="browse" onclick="event.stopPropagation()">
+    <h3>${esc(key.replace(NEIGHBOURHOOD_KEY, ''))} \u00b7 ${cards.length} card${cards.length === 1 ? '' : 's'} \u00b7 click one to draw it</h3>
+    <div class="browse-grid">${grid}</div></div>`);
+  // wiring the handlers here keeps card ids out of an inline attribute
+  o.querySelectorAll('.browse-card').forEach((el, n) => {
+    el.onclick = () => { o.remove(); debugAction('DebugDrawCard', [iid, tag, cards[n]]); };
+  });
+}
+
+function eventImage(cid) {
+  const m = /^aoa-event-(\d{2})$/.exec(state.cardCodes?.[cid] ?? '');
+  return m ? `/img/ah3e/events/approach-of-azathoth/${m[1]}.avif` : null;
+}
+const eventFace = eventImage;
+
+// The mythos draws an event card for spread doom, spawn clue and gate burst
+// without asking anything; show it anyway, since spawn clue and gate burst
+// shuffle the card away before anyone could look at it.
+let lastEvents = null;
+function eventRects() {
+  const rect = el => {
+    const r = el?.getBoundingClientRect();
+    return r && r.width ? r : null;
+  };
+  return {
+    deck: rect(document.querySelector('[data-deck="event"] .deck-stack > img')),
+    shown: rect(document.querySelector('#activeCard img[data-event]')),
+  };
+}
+// flies a copy of a card from `from` onto `target`, turning it face up on the way when `back` is given
+// `under` is what the target showed before this card: a pile keeps showing its old top
+// card until the new one lands on it, instead of looking empty
+function flyCard(from, target, face, back, delay = 0, under = null) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return Promise.resolve();
+  const landed = target.getAttribute('src');
+  if (under) target.setAttribute('src', under);
+  else target.style.visibility = 'hidden';
+  const fly = document.createElement('div');
+  fly.className = 'fly-card';
+  Object.assign(fly.style, { left: `${from.left}px`, top: `${from.top}px`, width: `${from.width}px`, height: `${from.height}px` });
+  fly.innerHTML = `<div class="fly-inner">${back ? `<img class="fly-back" src="${back}" alt="">` : ''}<img class="fly-face" src="${face}" alt=""></div>`;
+  const start = async () => {
+    await viewTransition?.finished.catch(() => {});
+    if (delay) await new Promise(r => setTimeout(r, delay));
+    document.body.appendChild(fly);
+    const to = target.getBoundingClientRect();
+    const dx = to.left - from.left, dy = to.top - from.top, sx = to.width / from.width, sy = to.height / from.height;
+    const opts = { duration: 750, easing: 'cubic-bezier(.4,.1,.2,1)', fill: 'forwards' };
+    const move = fly.animate([
+      { transform: 'translate(0, 0) scale(1, 1)' },
+      { transform: `translate(${dx / 2}px, ${dy / 2 - 40}px) scale(${(1 + sx) / 2 * 1.15}, ${(1 + sy) / 2 * 1.15})`, offset: .5 },
+      { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` },
+    ], opts);
+    if (back) fly.firstElementChild.animate([{ transform: 'rotateY(180deg)' }, { transform: 'rotateY(0deg)' }], opts);
+    await move.finished.catch(() => {});
+    if (under) target.setAttribute('src', landed);
+    target.style.visibility = '';
+    fly.remove();
+  };
+  return start();
+}
+// a card reaching the event discard travels there; one that was never shown turns face up on the way
+function flyDiscardedEvent(g, before) {
+  const discard = g.decks.eventDiscard, prev = lastEvents;
+  lastEvents = { discard, revealed: g.revealedEvent };
+  if (!prev || discard.length <= prev.discard.length || discard[0] === prev.discard[0]) return null;
+  const cid = discard[0], face = eventImage(cid), nid = state.eventNeighborhoods?.[cid];
+  const shown = prev.revealed === cid && before.shown;
+  const from = shown || before.deck;
+  const target = document.querySelector('[data-deck="eventDiscard"] .deck-stack > img');
+  if (!face || !from || !target) return null;
+  const under = prev.discard.length ? eventImage(prev.discard[0]) : null;
+  holdUnstableUntil(flyCard(from, target, face, shown ? null : `/img/ah3e/backs/${nid}.webp`, 0, under));
+  return cid;
+}
+
+// Cards drawn from a deck fly out of it: anything newly on screen that sat in a
+// deck a moment ago starts on that deck's top card and turns over on the way.
+const DECK_KEYS = ['street', 'anomaly', 'ally', 'spell', 'item', 'headline', 'headlineDiscard', 'monster', 'event', 'eventDiscard'];
+function deckHolding(g, cid) {
+  const d = g.decks;
+  for (const [nid, cards] of Object.entries(d.neighborhoods ?? {})) if (cards.includes(cid)) return `neighborhood:${nid}`;
+  return DECK_KEYS.find(k => d[k]?.includes(cid)) ?? null;
+}
+let lastDrawGame = null;
+function drawRects() {
+  const rect = el => {
+    const r = el?.getBoundingClientRect();
+    return r && r.width ? r : null;
+  };
+  const decks = {}, shown = new Set();
+  document.querySelectorAll('[data-deck]').forEach(el => {
+    const img = el.querySelector('.deck-stack > img');
+    const r = rect(img ?? el.querySelector('.deck-stack'));
+    if (r) decks[el.dataset.deck] = { rect: r, back: img?.getAttribute('src') ?? null };
+  });
+  document.querySelectorAll('[data-card]').forEach(el => shown.add(el.dataset.card));
+  return { decks, shown };
+}
+function flyDrawnCards(g, before, skip) {
+  const prev = lastDrawGame;
+  lastDrawGame = g;
+  if (!prev) return;
+  let n = 0;
+  const seen = new Set();
+  document.querySelectorAll('[data-card]').forEach(el => {
+    const cid = el.dataset.card;
+    if (before.shown.has(cid) || seen.has(cid) || String(skip) === cid) return;
+    seen.add(cid);
+    const deck = before.decks[deckHolding(prev, +cid)];
+    const img = el.tagName === 'IMG' ? el : el.querySelector('img');
+    if (!deck || !img || !img.getBoundingClientRect().width) return;
+    flyCard(deck.rect, img, img.getAttribute('src'), deck.back ?? img.getAttribute('src'), 120 * n++);
+  });
+}
+function encounterImage(cid) {
+  const m = /^(.+)-(\d{2})$/.exec(state.cardCodes?.[cid] ?? '');
+  return m ? `/img/ah3e/encounters/${m[1]}/${m[2]}.avif` : null;
+}
+// neighborhood and event cards print one section per location, alphabetically, top to bottom
+function encounterSection(g, e, where) {
+  if (e.deck?.tag !== 'NeighborhoodDeck' || !where) return null;
+  const names = Object.values(g.board.spaces).filter(s => s.neighborhood === e.deck.contents).map(s => s.name).sort((a, b) => a.localeCompare(b));
+  const i = names.indexOf(g.board.spaces[where]?.name);
+  return names.length === 3 && i >= 0 ? i : null;
+}
+// Where to point on the encounter card: cards read by a doom range (anomaly, terror) carry
+// the section the engine picked; anomaly cards print a title band above their sections.
+function readArrowTop(g, e, where) {
+  if (e.section) {
+    const [i, n] = e.section;
+    const head = e.deck?.tag === 'AnomalyDeck' ? 8 : 0;
+    return head + (i + 0.5) * (100 - head) / n;
+  }
+  const section = encounterSection(g, e, where);
+  return section == null ? null : (section * 2 + 1) / 6 * 100;
+}
+const activeCardImage = cid => eventImage(cid) ?? encounterImage(cid) ?? `/img/ah3e/cards/${cardCode(cid)}.webp`;
+
+// The card the players are looking at right now: an encounter, a headline
+// being read, or an event the mythos turned up without asking anything.
+// the drawn mythos token sits above the active card until its continue prompt is answered.
+// keyed on the draw count so unrelated re-renders do not restart the animation
+const DBG_SKILLS = ['Lore', 'Influence', 'Observation', 'Strength', 'Will'];
+const DECK_DEBUG = { ally: 'DeckAlly', spell: 'DeckSpell', item: 'DeckItem', street: 'DeckStreet',
+  anomaly: 'DeckAnomaly', monster: 'DeckMonster', headline: 'DeckHeadline' };
+const NEIGHBOURHOOD_KEY = 'neighborhood:';
+// DeckNeighborhood carries an id, which makes aeson tag every case -- even the
+// nullary ones, so they go as {tag} objects rather than bare strings
+const deckTag = key => key.startsWith(NEIGHBOURHOOD_KEY)
+  ? { tag: 'DeckNeighborhood', contents: key.slice(NEIGHBOURHOOD_KEY.length) }
+  : (DECK_DEBUG[key] ? { tag: DECK_DEBUG[key] } : undefined);
+const deckCards = key => key.startsWith(NEIGHBOURHOOD_KEY)
+  ? (state.game.decks.neighborhoods[key.slice(NEIGHBOURHOOD_KEY.length)] ?? [])
+  : (state.game.decks[key] ?? []);
+const dbgDeal = key => debugAction('DebugDrawDeck', [dbgIid(), deckTag(key)]);
+let debugMode = (() => { try { return localStorage.getItem('ah3e-debug') === '1'; } catch { return false; } })();
+let dbgCodeValue = '';
+// a one-argument constructor carries its value bare; the rest take a positional array
+const debugAction = (tag, contents) => call('/api/debug', contents === undefined ? { tag } : { tag, contents });
+// the server refuses debug actions unless the game was started with it enabled
+const dbgOn = () => debugMode && !!state?.game?.debug;
+const dbgIid = () => {
+  const invs = state?.game?.investigators ?? {};
+  return invs[selectedTab] ? selectedTab : Object.keys(invs)[0];
+};
+const dbgNum = (tag, iid, val, title, extra = '') =>
+  `<input class="dbg-num" type="number" ${extra} value="${val}" title="${esc(title)}"
+    onchange="debugAction('${tag}', ${iid === null ? '+this.value' : `['${iid}', +this.value]`})">`;
+function toggleDebug(on = !debugMode) {
+  debugMode = on;
+  try { localStorage.setItem('ah3e-debug', on ? '1' : '0'); } catch {}
+  $('debugToggle').classList.toggle('on', on);
+  if (state) render();
+}
+
+function renderActiveToken(g) {
+  const el = $('activeToken');
+  if (!el) return;
+  const t = g.activeToken;
+  const key = t ? `${t}:${g.drawnTokens.length}` : '';
+  if (el.dataset.key === key) return;
+  el.dataset.key = key;
+  if (!t) { el.innerHTML = ''; return; }
+  const name = LOG_TOKEN[t] ?? t.replace(/Token$/, '');
+  el.innerHTML = `<div class="drawn-token">${mythosTok(t, 56)}<div>
+    <div class="drawn-token-name">${esc(name)}</div>
+    <div class="drawn-token-sub">drawn from the mythos cup</div></div></div>`;
+}
+// the enlarged card keeps the arrow pointing at the section to read
+function zoomMarked(src, top) {
+  openZoom(`<span class="zoom-marked"><img class="zoom-marked-img" src="${src}" alt=""><span class="read-arrow" style="top:${top}%" title="Read this section"></span></span>`);
+}
+function renderActiveCard(g) {
+  const e = g.encounter;
+  const cid = e ? e.card : g.activeCard;
+  const src = cid == null ? null : activeCardImage(cid);
+  if (!src) {
+    $('activeCard').innerHTML = '<div class="active-empty">No card in play</div>';
+    return;
+  }
+  const name = state.cardNames[cid] ?? `Card ${cid}`;
+  const isEvent = eventImage(cid) ? ' data-event=""' : '';
+  let arrow = '';
+  let caption = '';
+  let top = null;
+  if (e) {
+    const where = g.investigators[e.investigator]?.space;
+    top = readArrowTop(g, e, where);
+    if (top != null)
+      arrow = `<span class="read-arrow" style="top:${top}%" title="Read this section"></span>`;
+    caption = `<div><div class="pa-name">${esc(invName(e.investigator))}</div>
+      <div class="pa-where">${esc(where ? spaceName(where) : '')} \u00b7 ${esc(name)}</div></div>`;
+  } else {
+    const kind = cid === g.revealedEvent ? 'Event' : 'Headline';
+    caption = `<div><div class="pa-name">${esc(kind)}</div><div class="pa-where">${esc(name)}</div></div>`;
+  }
+  $('activeCard').innerHTML = `<div class="encounter">
+    <figure class="codex-card encounter-card" data-card="${cid}" style="view-transition-name:active-card" onclick="${top == null ? `zoom('${src}')` : `zoomMarked('${src}', ${top})`}">${arrow}<img src="${src}"${isEvent} alt="${esc(name)}" onerror="hideBroken(this)"><span class="asset-name">${esc(name)}</span></figure>
+    ${caption}</div>`;
+}
+
+let logOpen = (() => { try { return localStorage.getItem('ah3e-log-open') === '1'; } catch { return false; } })();
+let logSeen = 0;
+function toggleLog(open = !logOpen) {
+  logOpen = open;
+  try { localStorage.setItem('ah3e-log-open', open ? '1' : '0'); } catch {}
+  document.body.classList.toggle('log-open', open);
+  requestAnimationFrame(fitBoard);
+  if (open && state?.game) { logSeen = state.game.log.length; updateUnread(state.game.log.length); scrollLog(); }
+}
+function updateUnread(total) {
+  const unread = logOpen ? 0 : Math.max(0, total - logSeen);
+  $('logUnread').hidden = unread === 0;
+  $('logUnread').textContent = unread > 99 ? '99+' : unread;
+}
+function scrollLog() { const l = $('log'); l.scrollTop = l.scrollHeight; }
+const LOG_TOKEN = { SpreadDoomToken:'Spread doom', SpawnMonsterToken:'Spawn monster', ReadHeadlineToken:'Read headline', SpawnClueToken:'Spawn clue', GateBurstToken:'Gate burst', ReckoningToken:'Reckoning', BlankToken:'Blank', SpreadTerrorToken:'Spread terror' };
+function logEntry(line) {
+  let m;
+  if ((m = /^Round (\d+)$/.exec(line))) return `<li class="log-round"><span>Round ${m[1]}</span></li>`;
+  // a marker turned face up (Profane Ritual): show the token that came up
+  if ((m = /^Revealed an? (\w+) marker$/.exec(line)))
+    return `<li class="log-entry log-mythos">${tok(`${m[1].toLowerCase()}-marker`, null, `${m[1]} marker`, 30)}<span>Revealed a <b>${esc(m[1])}</b> marker</span></li>`;
+  if ((m = /^Mythos: (\w+)$/.exec(line))) return `<li class="log-entry log-mythos">${mythosTok(m[1], 30)}<span>Mythos: <b>${esc(LOG_TOKEN[m[1]] ?? m[1])}</b></span></li>`;
+  // the roll records what a die had to beat; older lines without it read as 5+
+  if ((m = /^Rolled \[(.*)\](?: need (\d+))?$/.exec(line))) {
+    const need = m[2] ? +m[2] : 5;
+    const dice = m[1].split(',').filter(Boolean).map(v => `<span class="log-die ${+v >= need ? 'hit' : ''}" title="success on ${need}+">${v.trim()}</span>`).join('');
+    return `<li class="log-entry log-roll"><span class="log-label">Rolled</span><span class="log-dice">${dice}</span></li>`;
+  }
+  // a single die rolled outside a test (rule 474), e.g. Why Even Go On?
+  if ((m = /^Rolled (\d+)$/.exec(line)))
+    return `<li class="log-entry log-roll"><span class="log-label">Rolled</span><span class="log-dice"><span class="log-die">${m[1]}</span></span></li>`;
+  if ((m = /^Rolled (\d+) and (\d+) \((\d+)\)$/.exec(line)))
+    return `<li class="log-entry log-roll"><span class="log-label">Rolled</span><span class="log-dice"><span class="log-die">${m[1]}</span><span class="log-die">${m[2]}</span></span><b>= ${m[3]}</b></li>`;
+  if ((m = /^Test result: (\d+)$/.exec(line))) {
+    const n = +m[1];
+    return `<li class="log-entry log-result ${n > 0 ? 'pass' : 'fail'}"><span class="log-badge">${n > 0 ? 'Pass' : 'Fail'}</span>${n} success${n === 1 ? '' : 'es'}</li>`;
+  }
+  if (/^The investigators (win|lose)/.test(line) || /win the game|lose the game/.test(line))
+    return `<li class="log-entry log-end ${/win/.test(line) ? 'win' : 'lose'}">${esc(line)}</li>`;
+  if ((m = /^A clue spawns in (.+)$/.exec(line))) {
+    const n = state.game?.board.neighborhoods[m[1]]?.name ?? m[1];
+    return `<li class="log-entry log-clue">${tok('clue', null, 'clue', 22)}<span>A clue spawns in <b>${esc(n)}</b></span></li>`;
+  }
+  if (/^(Gate burst|Outbreak|An anomaly)/.test(line)) {
+    const text = line.replace(/in ([a-z-]+)$/, (_, id) => `in ${state.game?.board.neighborhoods[id]?.name ?? id}`);
+    return `<li class="log-entry log-doom">${tok('doom', null, 'doom', 22)}<span>${esc(text)}</span></li>`;
+  }
+  if (/^Card \d+ (added|flips)|^Scenario: /.test(line)) return `<li class="log-entry log-codex">${esc(line)}</li>`;
+  if (/joins the investigation| is (Defeated|Devoured|Retired)$/.test(line)) return `<li class="log-entry log-inv">${esc(line)}</li>`;
+  if (/data missing|unavailable|Missing|hasn't been entered/.test(line)) return `<li class="log-entry log-warn">${esc(line)}</li>`;
+  if (line.length > 110) return `<li class="log-entry log-story">${esc(line)}</li>`;
+  return `<li class="log-entry">${esc(line)}</li>`;
+}
+let lastLogLength = -1;
+function renderLog(lines) {
+  if (lines.length === lastLogLength) return;
+  const list = $('log');
+  const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
+  list.innerHTML = lines.length ? lines.map(logEntry).join('') : '<li class="log-empty">Nothing has happened yet.</li>';
+  if (lastLogLength < 0) logSeen = lines.length;
+  lastLogLength = lines.length;
+  if (logOpen) logSeen = lines.length;
+  updateUnread(lines.length);
+  if (atBottom || logOpen) scrollLog();
+}
+
+let mapTileCenters = [];
+const view = { zoom: 1, x: 0, y: 0, base: 1, fresh: true };
+const MAX_ZOOM = 6;
+function mapParts() {
+  const vp = $('mapViewport');
+  return { vp, fit: vp?.querySelector('.board-fit'), board: vp?.querySelector('.board') };
+}
+function applyView() {
+  const { vp, fit, board } = mapParts();
+  if (!fit || !board) return;
+  const full = document.body.classList.contains('map-full');
+  const W = board.offsetWidth, H = board.offsetHeight, vw = vp.clientWidth;
+  view.base = full ? Math.min(vw / W, vp.clientHeight / H) : Math.min(1, vw / W);
+  fit.style.height = full ? `${vp.clientHeight}px` : `${H * view.base}px`;
+  const vh = full ? vp.clientHeight : H * view.base;
+  const s = view.base * view.zoom, bw = W * s, bh = H * s;
+  if (view.fresh) { view.x = (vw - bw) / 2; view.y = (vh - bh) / 2; view.fresh = false; }
+  view.x = bw <= vw ? (vw - bw) / 2 : Math.min(0, Math.max(vw - bw, view.x));
+  view.y = bh <= vh ? (vh - bh) / 2 : Math.min(0, Math.max(vh - bh, view.y));
+  board.style.transform = `translate(${view.x}px, ${view.y}px) scale(${s})`;
+  vp.classList.toggle('zoomed', view.zoom > 1.001);
+}
+const fitBoard = applyView;
+function zoomAt(factor, cx, cy) {
+  const s = view.base * view.zoom;
+  const zoom = Math.min(MAX_ZOOM, Math.max(1, view.zoom * factor));
+  const s2 = view.base * zoom;
+  view.x = cx - ((cx - view.x) / s) * s2;
+  view.y = cy - ((cy - view.y) / s) * s2;
+  view.zoom = zoom;
+  applyView();
+}
+function zoomBy(factor) {
+  const { vp } = mapParts();
+  if (vp) zoomAt(factor, vp.clientWidth / 2, (document.body.classList.contains('map-full') ? vp.clientHeight : vp.querySelector('.board-fit').offsetHeight) / 2);
+}
+function resetView() { view.zoom = 1; view.fresh = true; applyView(); }
+function zoomToTile(bx, by) {
+  const { vp } = mapParts();
+  const full = document.body.classList.contains('map-full');
+  const vw = vp.clientWidth, vh = full ? vp.clientHeight : vp.querySelector('.board-fit').offsetHeight;
+  const s2 = Math.min(vw * 0.85 / TILE_W, vh * 0.85 / TILE_H);
+  view.zoom = Math.min(MAX_ZOOM, Math.max(1, s2 / view.base));
+  const s = view.base * view.zoom;
+  view.x = vw / 2 - bx * s;
+  view.y = vh / 2 - by * s;
+  applyView();
+}
+function toggleTokens(hide = !$('mapViewport').classList.contains('hide-tokens')) {
+  $('mapViewport').classList.toggle('hide-tokens', hide);
+  const b = $('tokensToggle');
+  b.setAttribute('aria-pressed', String(hide));
+  b.title = hide ? 'Show tokens (T)' : 'Hide tokens (T)';
+  b.setAttribute('aria-label', hide ? 'Show tokens' : 'Hide tokens');
+  b.querySelector('.eye-off').style.display = hide ? '' : 'none';
+  try { localStorage.setItem('ah3e-hide-tokens', hide ? '1' : ''); } catch {}
+}
+function toggleMapFull(open = !document.body.classList.contains('map-full')) {
+  document.body.classList.toggle('map-full', open);
+  resetView();
+}
+(() => {
+  const vp = $('mapViewport');
+  if (!vp) return;
+  let drag = null, suppressClick = false;
+  vp.addEventListener('pointerdown', e => {
+    if (e.button !== 0 || e.target.closest('.map-controls')) return;
+    drag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, x: view.x, y: view.y, moved: false };
+  });
+  vp.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+    if (!drag.moved && Math.hypot(dx, dy) < 5) return;
+    if (!drag.moved) { drag.moved = true; vp.setPointerCapture(e.pointerId); vp.classList.add('panning'); }
+    view.x = drag.x + dx; view.y = drag.y + dy;
+    applyView();
+  });
+  const end = e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (drag.moved) suppressClick = true;
+    drag = null;
+    vp.classList.remove('panning');
+  };
+  vp.addEventListener('pointerup', end);
+  vp.addEventListener('pointercancel', end);
+  // a pan must not also answer a question on the space it ended over
+  vp.addEventListener('click', e => { if (suppressClick) { e.stopPropagation(); e.preventDefault(); suppressClick = false; } }, true);
+  vp.addEventListener('wheel', e => {
+    if (!document.body.classList.contains('map-full') && !e.ctrlKey && !e.metaKey) return;
+    e.preventDefault();
+    const r = vp.getBoundingClientRect();
+    zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), e.clientX - r.left, e.clientY - r.top);
+  }, { passive: false });
+  vp.addEventListener('dblclick', e => {
+    if (e.target.closest('.anchor.selectable, .map-controls')) return;
+    if (view.zoom > 1.5) { resetView(); return; }
+    const r = vp.getBoundingClientRect();
+    const s = view.base * view.zoom;
+    const bx = (e.clientX - r.left - view.x) / s, by = (e.clientY - r.top - view.y) / s;
+    let best = null, dist = Infinity;
+    for (const [tx, ty] of mapTileCenters) { const d = Math.hypot(tx - bx, ty - by); if (d < dist) { dist = d; best = [tx, ty]; } }
+    if (best && dist < TILE_W) zoomToTile(best[0], best[1]); else zoomAt(2, e.clientX - r.left, e.clientY - r.top);
+  });
+  document.addEventListener('keydown', e => {
+    if (e.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+    if (e.key === 'Escape' && document.body.classList.contains('map-full')) { toggleMapFull(false); return; }
+    if (e.metaKey || e.ctrlKey || e.altKey || !state?.game) return;
+    if (e.key === '+' || e.key === '=') zoomBy(1.4);
+    else if (e.key === '-' || e.key === '_') zoomBy(1 / 1.4);
+    else if (e.key === '0') resetView();
+    else if (e.key === 't' || e.key === 'T') toggleTokens();
+  });
+})();
+try { if (localStorage.getItem('ah3e-hide-tokens')) toggleTokens(true); } catch {}
+window.addEventListener('resize', applyView);
+document.querySelector('#logPanel')?.addEventListener('transitionend', applyView);
+
+const GAME_MODES = [
+  ['StandardMode', 'Standard', 'The mythos cup as printed on the scenario sheet.'],
+  ['StoryMode', 'Story', 'One doom token in the mythos cup becomes a blank.'],
+  ['ChallengeMode', 'Challenge', 'One blank token in the mythos cup becomes a doom.'],
+];
+const setupChoice = { players: 1, expansions: ['CoreSet'], mode: 'StandardMode', seed: Math.floor(Math.random() * 100000) };
+// box cover per expansion: CoreSet -> core-set
+const expArt = e => String(e).replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+function renderSetup() {
+  const counts = {};
+  state.scenarios.filter(sc => sc.playable).forEach(sc => counts[sc.expansion] = (counts[sc.expansion] || 0) + 1);
+  const c = setupChoice;
+  $('setup').innerHTML = `
+    <header class="ng-header"><h2>New game</h2></header>
+    <form class="ng" onsubmit="event.preventDefault();startGame()" onchange="readSetup()">
+      <div class="ng-config">
+        <div class="ng-card">
+          <div class="ng-title">Number of players</div>
+          <div class="ng-seg" style="--n:6">${[1, 2, 3, 4, 5, 6].map(n => `
+            <input type="radio" name="players" id="ngP${n}" value="${n}" ${n === c.players ? 'checked' : ''}><label for="ngP${n}">${n}</label>`).join('')}</div>
+        </div>
+        <div class="ng-card">
+          <div class="ng-title">Game content</div>
+          <div class="ng-tiles">${state.expansions.map(e => `
+            <input type="checkbox" name="exp" id="ngE${e}" value="${e}" ${e === 'CoreSet' ? 'checked disabled' : c.expansions.includes(e) ? 'checked' : ''}>
+            <label for="ngE${e}"><img src="/img/ah3e/expansions/${expArt(e)}.webp" alt="" onerror="hideBroken(this)">
+              <span class="ng-tile-text"><b>${esc(expName(e))}</b><small>${e === 'CoreSet' ? 'Always included · ' : ''}${counts[e] ? `${counts[e]} playable scenario${counts[e] === 1 ? '' : 's'}` : 'none playable yet'}</small></span></label>`).join('')}</div>
+        </div>
+        <div class="ng-card">
+          <div class="ng-title">Game mode</div>
+          <div class="ng-seg" style="--n:3">${GAME_MODES.map(([v, l]) => `
+            <input type="radio" name="mode" id="ngM${v}" value="${v}" ${v === c.mode ? 'checked' : ''}><label for="ngM${v}">${l}</label>`).join('')}</div>
+          <p class="ng-note" id="ngModeNote"></p>
+        </div>
+        <div class="ng-card">
+          <div class="ng-title">Seed</div>
+          <div class="ng-seed"><input id="seed" class="ng-text" type="number" value="${c.seed}">
+            <button type="button" onclick="setupChoice.seed = Math.floor(Math.random() * 100000); $('seed').value = setupChoice.seed; readSetup()">Randomize</button></div>
+          <p class="ng-note">The same seed and choices deal the same game.</p>
+        </div>
+        <div class="ng-actions"><button class="primary" type="submit" id="ngStart">Continue to scenario selection</button></div>
+        <div id="setupError" class="err"></div>
+      </div>
+    </form>`;
+  readSetup();
+}
+// keeps the choices across re-renders and updates the notes that depend on them
+function readSetup() {
+  const c = setupChoice;
+  c.players = +(document.querySelector('input[name=players]:checked')?.value ?? c.players);
+  // the core set is the base game; expansions only add to it
+  c.expansions = ['CoreSet', ...[...document.querySelectorAll('input[name=exp]:checked')].map(i => i.value).filter(e => e !== 'CoreSet')];
+  c.mode = document.querySelector('input[name=mode]:checked')?.value ?? c.mode;
+  c.seed = +($('seed')?.value ?? c.seed);
+  const mode = GAME_MODES.find(([v]) => v === c.mode);
+  $('ngModeNote').textContent = mode?.[2] ?? '';
+}
+function startGame() {
+  readSetup();
+  const c = setupChoice;
+  call('/api/new', { seed: c.seed, players: c.players, expansions: c.expansions, mode: c.mode });
+}
+
+// a scenario is picked by its sheet; the magnifier opens it flippable between story and setup sides
+function scenarioTile(sc, pid, choice) {
+  const story = `/img/ah3e/scenarios/${sc.code}.webp`, setup = `/img/ah3e/scenarios/${sc.code}b.webp`;
+  const open = `zoomFlip('${story}', '${setup}')`;
+  const waiting = choice === undefined;
+  return `<div class="sc-tile${waiting ? ' waiting' : ''}">
+    <button class="sc-pick" ${waiting ? 'disabled title="Waiting on card text"' : `onclick="choose(${pid},${choice})" title="Play ${esc(sc.name)}"`}>
+      <img src="${story}" alt="" onerror="hideBroken(this)">
+      <span class="sc-name">${esc(sc.name)}</span>
+      <span class="sc-exp">${esc(expName(sc.expansion))}${waiting ? ' \u00b7 waiting on card text' : ''}</span>
+    </button>
+    <span class="label-zoom" role="button" tabindex="0" title="Enlarge, then click to flip" onclick="${open}"
+      onkeydown="if(event.key==='Enter'){event.preventDefault();${open}}">\u2315</span>
+  </div>`;
+}
+function renderScenarioChoice() {
+  const g = state.game;
+  const entries = Object.entries(g.questions);
+  const expansions = g.expansions.map(expName).join(', ');
+  if (!entries.length) { $('scenario').innerHTML = '<p class="waiting">Setting up…</p>'; return; }
+  const [pid, q] = entries[0];
+  const offered = Object.fromEntries(q.choices.map((c, i) => [c, i]).filter(([c]) => c.label.tag === 'ScenarioLabel').map(([c, i]) => [c.label.contents, i]));
+  const listed = state.scenarios.filter(sc => g.expansions.includes(sc.expansion));
+  const rest = q.choices.map((c, i) => [c, i]).filter(([c]) => c.label.tag !== 'ScenarioLabel');
+  $('scenario').innerHTML = `
+    <h2>Choose a scenario</h2>
+    <p class="sub">Player ${pid} chooses for the group. ${g.players.length} player${g.players.length > 1 ? 's' : ''} · ${esc(expansions)} · ${esc(g.mode.replace('Mode',''))} mode</p>
+    <div class="sc-grid">${listed.map(sc => scenarioTile(sc, pid, offered[sc.code])).join('')}</div>
+    <div style="margin-top:16px">${rest.map(([c, i]) => `<button onclick="choose(${pid},${i})">${labelHtml(c.label)}</button>`).join('')}</div>`;
+}
+
+const TEST_STEPS = [['DeterminePool', 'Gather dice'], ['ManipulateDice', 'Reroll & adjust'], ['TestResolved', 'Resolve']];
+const humanize = s => String(s).replace(/([a-z])([A-Z])/g, '$1 $2');
+// ActionKind arrives tagged ({tag: 'EvadeAction'}), with the card it targets alongside
+function actionTestName([kind, target] = []) {
+  const tag = typeof kind === 'string' ? kind : kind?.tag ?? 'Action';
+  const name = humanize(tag.replace(/Action$/, ''));
+  const what = name ? `${name} action` : 'Action';
+  return target == null ? what : `${what} \u00b7 ${state.cardNames[target] ?? `#${target}`}`;
+}
+// blessed and cursed are two faces of one card, so the name says nothing:
+// the front is BLESSED, the back is CURSED (490.5)
+function blessCurse(g, iid) {
+  for (const cid of g.investigators[iid]?.assets ?? []) {
+    if (cardCode(cid) !== 'blessed') continue;
+    return g.assets[cid]?.flipped ? 'CURSED' : 'BLESSED';
+  }
+  return null;
+}
+function testBox(g, t) {
+  const face = blessCurse(g, t.investigator);
+  const cursed = face === 'CURSED', blessed = face === 'BLESSED';
+  const need = cursed ? 6 : blessed ? 4 : 5;
+  const live = t.dice.filter(d => !d.removed);
+  const successes = live.filter(d => d.value >= need).length + (t.addedSuccesses ?? 0);
+  const what = t.kind?.tag === 'EncounterTest' ? 'Encounter test'
+    : t.kind?.tag === 'ActionTest' ? actionTestName(t.kind.contents)
+    : t.kind?.tag === 'SpellTest' ? `Spell: ${state.cardNames[t.kind.contents] ?? 'spell'}`
+    : humanize(t.kind?.tag ?? 'Test');
+  const at = TEST_STEPS.findIndex(([k]) => k === t.step);
+  const steps = TEST_STEPS.map(([, label], i) => `<li class="${i < at ? 'done' : i === at ? 'now' : ''}">${label}</li>`).join('');
+  const sign = n => (n > 0 ? `+${n}` : n < 0 ? `\u2212${-n}` : '0');
+  const facts = [
+    t.modifier ? `Modifier ${sign(t.modifier)}` : null,
+    t.bonusDice ? `${sign(t.bonusDice)} bonus ${t.bonusDice === 1 ? 'die' : 'dice'}` : null,
+    `Success on ${need === 6 ? '6' : `${need}+`}${cursed ? ' (cursed)' : blessed ? ' (blessed)' : ''}`,
+  ].filter(Boolean).map(f => `<span class="test-fact">${f}</span>`).join('');
+  const dice = t.dice.map(d => `<span class="die ${d.removed ? 'removed' : d.value >= need ? 'hit' : 'miss'}" title="${d.removed ? 'removed' : d.value >= need ? 'success' : 'no success'}">${d.value}</span>`).join('');
+  const added = t.addedSuccesses ? `<span class="test-fact">+${t.addedSuccesses} added</span>` : '';
+  return `<div class="test-box">
+    <div class="test-head">${tok(FOCUS[t.skill] ?? 'focus-lore', null, t.skill, 26)}<div><b>${esc(invName(t.investigator))}</b> tests <b>${esc(t.skill)}</b><div class="test-kind">${esc(what)}</div></div>
+      <div class="test-score ${successes ? 'pass' : ''}"><b>${successes}</b> success${successes === 1 ? '' : 'es'}</div></div>
+    <ol class="test-steps">${steps}</ol>
+    <div class="test-dice">${dice || '<em class="waiting">No dice rolled yet</em>'}${added}</div>
+    <div class="test-facts">${facts}</div></div>`;
+}
+function render() {
+  const g = state.game;
+  const drawBefore = drawRects();
+  const view = !g ? 'setup' : g.scenario === null ? 'scenario' : 'game';
+  $('setup').hidden = view !== 'setup';
+  $('scenario').hidden = view !== 'scenario';
+  $('game').hidden = view !== 'game';
+  $('mapSection').hidden = view !== 'game';
+  $('abandon').hidden = !g;
+  $('logToggle').hidden = !g;
+  $('undo').hidden = !g;
+  $('undo').disabled = !state.canUndo;
+  $('debugToggle').hidden = !g?.debug;
+  $('debugToggle').classList.toggle('on', debugMode);
+  document.body.classList.toggle('log-open', !!g && logOpen);
+  if (view === 'setup') { $('status').innerHTML = pills(['No game']); return renderSetup(); }
+  $('status').innerHTML = pills([`${g.players.length} player${g.players.length > 1 ? 's' : ''}`, `${g.mode.replace('Mode', '')} mode`]);
+  if (view === 'scenario') return renderScenarioChoice();
+  const st = typeof g.status === 'string' ? g.status : g.status.contents === undefined ? g.status.tag : g.status.tag + ': ' + g.status.contents;
+  const phase = g.phase === 'SetupPhase' ? 'Setup' : g.phase.replace(/Phase$/, ' phase');
+  const phaseColor = PHASE_BANNERS[g.phase]?.[1];
+  $('status').innerHTML = pills([
+    state.scenarios.find(sc => sc.code === g.scenario)?.name ?? g.scenario,
+    ...(g.round > 0 ? [`Round ${g.round}`] : []),
+    phaseColor ? { text: phase, cls: 'phase', color: phaseColor } : phase,
+    ...(st === 'InProgress' ? [] : [st]),
+  ]);
+
+  // the dice sit with the tested player's question, just under the answers
+  const t = g.test;
+  const testHtml = t ? testBox(g, t) : '';
+  // a roll outside a test (rule 474) that the open question depends on: show the dice with it
+  const lastLine = g.log[g.log.length - 1] ?? '';
+  const loose = t ? null : (/^Rolled (\d+)$/.exec(lastLine)?.slice(1) ?? /^Rolled (\d+) and (\d+) \(\d+\)$/.exec(lastLine)?.slice(1, 3));
+  const rollHtml = loose ? `<div class="loose-roll">Rolled ${loose.map(v => `<span class="die">${v}</span>`).join('')}</div>` : '';
+  const testPid = t ? g.players.find(p => p.investigator === t.investigator)?.id : null;
+  const qs = Object.entries(g.questions);
+  const testPlaced = qs.some(([pid]) => +pid === testPid);
+  const asker = pid => {
+    const iid = g.players.find(x => String(x.id) === String(pid))?.investigator;
+    if (!iid) return `<span>Player ${pid}</span>`;
+    return `<img class="inv-tok asker" src="/img/ah3e/investigators/${iid}/token.webp" title="${esc(invName(iid))}"
+      data-initials="${esc(initials(iid))}" onerror="invFallback(this)"><span>${esc(invName(iid))}</span>`;
+  };
+  $('questions').innerHTML = (testPlaced ? '' : testHtml) + (qs.length ? qs.map(([pid, q]) =>
+    // a spawning monster sits to the left of the question bar
+    `${spawningHtml(q) ? `<div class="q-row">${spawningHtml(q)}` : ''}<div class="q"><div class="prompt">${asker(pid)}<span>${esc(q.prompt)}</span></div>${rollHtml}` +
+    q.choices.map((c, i) => {
+      const t = labelTarget(c.label);
+      const hl = t ? ` data-hl="${t}"` : '';
+      // a test asset toggles in and out of the dice pool; show which way it is set now
+      const toggle = (c.messages ?? []).find(m => m.tag === 'ToggleTestAsset');
+      const pressed = toggle ? (g.test?.chosenAssets ?? []).includes(toggle.contents) : null;
+      const cls = `${c.label.tag === 'DoneLabel' ? '' : 'primary'}${pressed ? ' chosen' : ''}`;
+      const aria = pressed === null ? '' : ` aria-pressed="${pressed}"`;
+      return `<button class="${cls}"${hl}${aria} onclick="choose(${pid},${i})">${pressed ? '\u2713 ' : ''}${labelHtml(c.label)}</button>`;
+    }).join('') + (+pid === testPid ? testHtml : '') + '</div>' + (spawningHtml(q) ? '</div>' : '')
+  ).join('') : '<em>No open questions.</em>');
+
+  const invs = Object.values(g.investigators);
+  const activation = i => {
+    const leader = g.players.find(p => p.investigator === i.id)?.id === g.leader;
+    return tok(`${leader ? 'first-player' : 'activation'}-${i.active ? 'active' : 'inactive'}`, null, `${leader ? 'Leader, ' : ''}${i.active ? 'active' : 'inactive'}`, 40);
+  };
+  const assetCard = cid => {
+    const a = g.assets[cid] ?? {};
+    const badges = (a.damage ? tok('damage', a.damage, `${a.damage} damage`, 26) : '') + (a.horror ? tok('horror', a.horror, `${a.horror} horror`, 26) : '');
+    const name = state.cardNames[cid] ?? cid;
+    const src = cardFace(cid, a.flipped);
+    const back = a.flipped ? (a.owner ?? '') : '';
+    const inTest = (g.test?.chosenAssets ?? []).includes(cid);
+    return `<div class="asset zoomable${inTest ? ' in-test' : ''}" data-card="${cid}" title="${esc(name)}${inTest ? ' (used in this test)' : ''} — click to enlarge" onclick="zoomCard('${src}', '${back}')"><img src="${src}" alt="${esc(name)}" onerror="backFallback(this, '${back}')"><span class="asset-name">${esc(name)}</span>${inTest ? '<span class="in-test-tag">In test</span>' : ''}${badges ? `<div class="asset-badges">${badges}</div>` : ''}</div>`;
+  };
+  const playerArea = i => {
+    const def = state.investigatorDefs?.[i.id];
+    // a Map Skill Int arrives as [[skill, n], ...], not as an object keyed by skill
+    const focusPairs = Array.isArray(i.focus) ? i.focus : Object.entries(i.focus ?? {});
+    const focus = focusPairs.filter(([, v]) => v > 0).map(([k, v]) =>
+      `<span class="sheet-focus" style="top:${SKILL_ROWS[k] * 100}%">${tok(FOCUS[k] ?? 'focus-lore', v, `${k} focus`, 30)}</span>`).join('');
+    const statusText = i.status !== 'Playing' ? `<span class="pa-status">${esc(i.status)}</span>` : '';
+    return `<div class="player-area ${i.status !== 'Playing' ? 'out' : ''} ${g.turn === i.id ? 'turn' : ''}">
+      <div class="sheet zoomable" title="Click to enlarge" onclick="zoomFlip('/img/ah3e/investigators/${i.id}/front.webp', '/img/ah3e/investigators/${i.id}/back.webp', 1134 / 900)"><img src="/img/ah3e/investigators/${i.id}/front.webp" alt="${esc(invName(i.id))}" onerror="hideBroken(this)">
+        <div class="sheet-text"><b>${esc(invName(i.id))}</b>${def ? `<i>${esc(def.occupation)}</i><p>${esc(def.abilityText)}</p><p>Health ${def.health} · Sanity ${def.sanity} · Focus limit ${def.focusLimit ?? '—'}</p><p>${Object.entries(def.skills).map(([k, v]) => `${esc(k)} ${v}`).join(' · ')}</p>` : ''}</div>
+        ${focus}</div>
+      <div class="pa-side">
+        <div class="pa-head">${activation(i)}<img class="standee ${i.delayed ? 'delayed' : ''}" src="/img/ah3e/investigators/${i.id}/standee.webp" alt="" onerror="this.remove()">
+          <div><div class="pa-name">${esc(invName(i.id))}${g.turn === i.id ? ' <span class="pa-turn">taking a turn</span>' : ''}</div>
+          <div class="pa-where">${esc(i.space ? spaceName(i.space) : '—')}${i.delayed ? ' · delayed' : ''}</div>${actionPips(g, i)}${statusText}</div></div>
+        <div class="toks">${[
+          ['damage', i.damage, `${i.damage} damage`, 'DebugSetDamage'],
+          ['horror', i.horror, `${i.horror} horror`, 'DebugSetHorror'],
+          ['money', i.money, `$${i.money}`, 'DebugSetMoney'],
+          ['clue', i.clues, `${i.clues} clues`, 'DebugSetClues'],
+          ['remnant', i.remnants, `${i.remnants} remnants`, 'DebugSetRemnants'],
+        ].map(([n, v, title, tag]) =>
+          `<span class="dbg-tokwrap">${tok(n, v, title, 34, true)}${dbgOn() ? dbgNum(tag, i.id, v, title) : ''}</span>`).join('')}</div>
+        ${dbgOn() ? `<div class="dbg-inline">${DBG_SKILLS.map(sk => {
+          const v = (focusPairs.find(([k]) => k === sk) ?? [sk, 0])[1];
+          return `<span class="dbg-tokwrap">${tok(FOCUS[sk] ?? 'focus-lore', v, `${sk} focus`, 28, true)}<input class="dbg-num"
+            type="number" min="0" value="${v}" title="${sk} focus"
+            onchange="debugAction('DebugSetFocus', ['${i.id}', '${sk}', +this.value])"></span>`;
+        }).join('')}
+          <label><input type="checkbox" ${i.delayed ? 'checked' : ''}
+            onchange="debugAction('DebugSetDelayed', ['${i.id}', this.checked])">delayed</label>
+          <span class="dbg-gain"><input placeholder="card code" value="${esc(dbgCodeValue)}"
+            oninput="dbgCodeValue = this.value"><button
+            onclick="debugAction('DebugGainCard', ['${i.id}', dbgCodeValue.trim()])">Gain</button></span></div>` : ''}
+        ${engagedHtml(g, i)}
+        <div class="pa-cards">${i.assets.map(assetCard).join('') || '<em class="waiting">No possessions</em>'}</div>
+      </div></div>`;
+  };
+  $('investigators').innerHTML = invs.length ? playerTabs(g, invs, playerArea) : '<em>None yet.</em>';
+
+  const monsters = Object.values(g.monsters);
+  const eventBefore = eventRects();
+  renderMap(g, invs, monsters);
+  renderActiveToken(g);
+  renderActiveCard(g);
+  renderDecks(g);
+  const discarded = flyDiscardedEvent(g, eventBefore);
+  renderScenarioSheet(g);
+  applyHighlight();
+  applyMoveDrag(g);
+  if (animateDraws) flyDrawnCards(g, drawBefore, discarded);
+  else lastDrawGame = g;
+  const rumorHtml = g.rumor ? rumorCard(g.rumor) : '';
+  $('codexCards').innerHTML = g.codex.length || rumorHtml ? g.codex.map(codexCard).join('') + rumorHtml : '<em class="waiting">Empty</em>';
+  $('codex').innerHTML = '' +
+    `<div class="cup"><span>Mythos cup (${g.cup.length})</span>${g.cup.map(t => mythosTok(t, 32)).join('')}</div><div class="cup"><span>Drawn</span>${g.drawnTokens.map(t => mythosTok(t, 32)).join('') || '—'}</div>`;
+
+  renderLog(g.log);
+  markReckonings(g);
+  $('raw').textContent = JSON.stringify(g, null, 1);
+}
+
+// a reckoning resolves one source at a time; mark every source still waiting,
+// so the whole set is visible without hunting through the choices
+function markReckonings(g) {
+  document.querySelectorAll('.reckoning-pending').forEach(e => e.classList.remove('reckoning-pending'));
+  for (const q of Object.values(g.questions ?? {}))
+    for (const c of q.choices ?? []) {
+      if (c.label?.tag !== 'SourceLabel') continue;
+      const t = sourceTarget(c.label.contents);
+      if (!t) continue;
+      const [kind, id] = t.split(':');
+      document.querySelectorAll(`[data-${kind}]`).forEach(e => {
+        if (e.getAttribute(`data-${kind}`) === id) e.classList.add('reckoning-pending');
+      });
+    }
+}
+refresh();
+</script>
+</body>
+</html>

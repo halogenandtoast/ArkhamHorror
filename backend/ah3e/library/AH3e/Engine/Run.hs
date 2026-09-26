@@ -1779,6 +1779,7 @@ runDebug = \case
   DebugSetSpaceDoom sid n -> spaceL sid . #doom .= n >> push CheckStateTriggers
   DebugSetSheetDoom n -> #sheetDoom .= n >> push CheckStateTriggers
   DebugSetSheetClues n -> #sheetClues .= n >> push CheckStateTriggers
+  DebugSetSheetMarkers n -> #sheetMarkers .= n >> push CheckStateTriggers
   DebugGainCard iid code -> do
     cards <- use #cards
     case [cid | (cid, c) <- Map.toList cards, c == code] of

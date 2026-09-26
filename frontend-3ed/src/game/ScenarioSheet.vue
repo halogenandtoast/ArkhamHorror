@@ -62,6 +62,10 @@ watch(
             ><Tok :key="`c${clueBump}`" :class="{ bump: clueBump > 0 }" name="clue" :count="g.sheetClues" title="clues on the scenario sheet" :size="34" always />
             <DbgNum tag="DebugSetSheetClues" :iid="null" :value="g.sheetClues" title="clues on the scenario sheet" @click.stop
           /></span>
+          <span class="dbg-tokwrap sheet-markers"
+            ><span class="marker-count" :title="`${g.sheetMarkers ?? 0} markers on the scenario sheet`">◆ {{ g.sheetMarkers ?? 0 }}</span>
+            <DbgNum tag="DebugSetSheetMarkers" :iid="null" :value="g.sheetMarkers ?? 0" title="markers on the scenario sheet" @click.stop
+          /></span>
         </template>
         <template v-else>
           <Tok
@@ -82,8 +86,28 @@ watch(
             :size="34"
             always
           />
+          <span
+            v-if="g.sheetMarkers"
+            class="marker-count"
+            :title="`${g.sheetMarkers} marker${g.sheetMarkers === 1 ? '' : 's'} on the scenario sheet`"
+            >◆ {{ g.sheetMarkers }}</span
+          >
         </template>
       </div>
     </template>
   </div>
 </template>
+
+<style scoped>
+.marker-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+}
+</style>

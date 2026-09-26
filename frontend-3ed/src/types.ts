@@ -236,4 +236,5 @@ export interface Game {
   log: string[]
   sheetDoom: number
   sheetClues: number
+  sheetMarkers: number
 }

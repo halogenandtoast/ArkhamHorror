@@ -238,6 +238,7 @@ data DebugAction
   | DebugSetSpaceDoom SpaceId Int
   | DebugSetSheetDoom Int
   | DebugSetSheetClues Int
+  | DebugSetSheetMarkers Int
   | DebugGainCard InvestigatorId CardCode
   | DebugDiscardCard CardId
   | DebugAddToCodex ArchiveNumber

@@ -3,7 +3,7 @@
 * { box-sizing: border-box; }
 [hidden] { display:none !important; }
 body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 system-ui, sans-serif; }
-header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:10px 16px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:1; }
+header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:10px 16px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:4; }
 header h1 { font-size:16px; margin:0 8px 0 0; }
 .pill { padding:2px 10px; border-radius:999px; border:1px solid var(--line); white-space:nowrap; }
 /* the phase pill takes the banner's tint, so the header keeps saying what the banner said */

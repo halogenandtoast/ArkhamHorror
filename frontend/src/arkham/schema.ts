@@ -2,6 +2,7 @@
 // /api/v1/arkham/schema and reified from the Haskell types themselves.
 import { reactive, ref } from 'vue'
 import api from '@/api'
+import { FIELD_SCHEMA, setEntityProps } from '@/arkham/customCardExpressions'
 
 export type FieldSchema = { name: string | null; type: string }
 export type ConSchema = {
@@ -216,3 +217,17 @@ export function windowsForMatcher(matcher: string): string[] {
   const schema = types.get('WindowMatcher')
   return schema?.constructors.find((c) => c.name === matcher)?.windows ?? []
 }
+
+/* What an entity's properties are, for the expression language.
+ *
+ * The backend reflects each entity's `Field` GADT into the schema, so this is the
+ * runner's own list rather than a copy of it -- and the type each one yields is
+ * what lets a property read be typed, which is what keeps a transform that wants a
+ * Payment from being offered a Set of traits. Read live, so it starts working as
+ * soon as the schema arrives. */
+setEntityProps((kind) => {
+  const name = FIELD_SCHEMA[kind]
+  const schema = name ? typeSchema(name) : undefined
+  if (!schema) return undefined
+  return Object.fromEntries(schema.constructors.map((c) => [c.name, c.fields[0]?.type ?? '']))
+})

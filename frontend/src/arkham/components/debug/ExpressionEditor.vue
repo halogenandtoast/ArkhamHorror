@@ -11,7 +11,6 @@ import BindingField from '@/arkham/components/debug/BindingField.vue'
 import BindingToggle from '@/arkham/components/debug/BindingToggle.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import PropertyField from '@/arkham/components/debug/PropertyField.vue'
-import { typeSchema } from '@/arkham/schema'
 import type { Binding } from '@/arkham/customCardBindings'
 import {
   SKILL_TEST_PROPS,
@@ -22,6 +21,10 @@ import {
   typeFits,
   QUERY_MODES,
   QUERY_NOUNS,
+  entityOf,
+  isNary,
+  naryExtras,
+  NARY_NAMES,
   propOptionsFor,
   stageProp,
   queryType,
@@ -49,19 +52,8 @@ const emit = defineEmits<{ 'update:modelValue': [v: any] }>()
  * this editor does not. `card` is the one we can type. */
 const KINDS = ['card', 'enemy', 'location', 'investigator', 'asset', 'act']
 
-/* Where an entity kind's properties come from: the backend reflects each entity's
- * `Field` GADT into the schema under this name, so the list the editor offers is
- * the list the runner accepts rather than a copy of it. */
-const FIELD_SCHEMA: Record<string, string> = {
-  investigator: 'Field Investigator',
-  enemy: 'Field Enemy',
-  location: 'Field Location',
-  asset: 'Field Asset',
-  act: 'Field Act',
-}
-
-/* An example Field, for the box that is only reached when the schema has not
- * loaded yet -- the names are the engine's own, so there is nothing to guess from. */
+/* An example Field, for the box that is only reached before the schema has loaded
+ * -- the names are the engine's own, so there is nothing to guess from. */
 const FIELD_PLACEHOLDER: Record<string, string> = {
   investigator: 'InvestigatorTraits',
   enemy: 'EnemyHealth',
@@ -70,51 +62,17 @@ const FIELD_PLACEHOLDER: Record<string, string> = {
   act: 'ActClues',
 }
 
-/* The entity a kind's fields belong to, which is the prefix every one of its field
- * names carries. `card` and `skillTest` are not entities and their readings are
- * already short, so they have none. */
-const entityPrefix = (kind: string | undefined) =>
-  (FIELD_SCHEMA[kind ?? ''] ?? '').replace(/^Field /, '')
-
-/* The properties of a kind, as name to the type reading it yields -- which is what
- * PropertyField shows beside each name and on the chip, so a property says what it
- * gives you instead of only what it is called.
- *
- * `card` and `skillTest` are not entities and have no Field GADT; their readings
- * are `cardProp`/`skillTestProp`, hand-listed on both sides. */
-const propsForKind = (kind: string | undefined): Record<string, string> | undefined => {
-  const listed = propOptionsFor(kind)
-  if (listed) return listed
-  const schemaName = FIELD_SCHEMA[kind ?? '']
-  const schema = schemaName ? typeSchema(schemaName) : undefined
-  if (!schema) return undefined
-  return Object.fromEntries(schema.constructors.map((c) => [c.name, c.fields[0]?.type ?? '']))
-}
-
 /* What an expression can start as. Anything that takes exactly one operand is a
  * transform instead, so it is not repeated here. */
 type Source = {
   key: string
   label: string
-  shape: 'literal' | 'prop' | 'skillTest' | 'filter' | 'nary' | 'query' | 'record'
+  shape: 'literal' | 'prop' | 'skillTest' | 'query' | 'record'
 }
 
 /* Named the way the step kinds are: the short word for the thing, with the
  * controls underneath saying what it does. A sentence in the dropdown says it
  * twice and makes the list slower to scan. */
-/* The word that goes between two operands, so the list reads as the sum it is.
- *
- * Words rather than symbols: `×` is already the remove button everywhere in the
- * builder, so a multiply rendered as `×` puts the same glyph between the operands
- * and on the control that deletes one. */
-const OPERATOR_WORDS: Record<string, string> = {
-  add: 'plus',
-  subtract: 'minus',
-  multiply: 'times',
-  divide: 'divided by',
-  // Not arithmetic, but the same shape: a list of operands read top to bottom.
-  concat: 'and then',
-}
 
 const SOURCES: Source[] = [
   { key: '', label: 'Value', shape: 'literal' },
@@ -123,15 +81,6 @@ const SOURCES: Source[] = [
   { key: 'query', label: 'Query', shape: 'query' },
   { key: 'recordSet', label: 'Campaign log set', shape: 'record' },
   { key: 'recordCount', label: 'Campaign log count', shape: 'record' },
-  { key: 'filter', label: 'Filter', shape: 'filter' },
-  { key: 'add', label: 'Add', shape: 'nary' },
-  { key: 'subtract', label: 'Subtract', shape: 'nary' },
-  { key: 'multiply', label: 'Multiply', shape: 'nary' },
-  { key: 'divide', label: 'Divide', shape: 'nary' },
-  /* Two or more lists end to end. The only way to say "the traits you have learned
-   * and the ones printed on your investigator" -- and without it that expression
-   * reads as an empty value with a stray stage hung off it. */
-  { key: 'concat', label: 'Join lists', shape: 'nary' },
 ]
 
 const PREDICATES = [
@@ -177,7 +126,6 @@ function pickSource(key: string) {
   if (chosen.shape === 'query')
     return rebuild({ query: { kind: 'enemy', matcher: null }, mode: 'all' }, stages)
   if (chosen.shape === 'record') return rebuild({ [key]: homebrewKey('') }, stages)
-  if (chosen.shape === 'filter') return rebuild({ filter: { eq: null }, of: kept ?? null }, stages)
   return rebuild({ [key]: [kept ?? null, null] }, stages)
 }
 
@@ -263,6 +211,33 @@ const stageFits = (at: number) => {
   return !!key && stagesFor(pipelineTypes.value[at]).some((st) => st.name === key)
 }
 
+/* The operands a nary stage carries besides the one it is handed, edited in place.
+ * Stored as the engine stores them -- one list, the handed value first -- so the
+ * hole at index 0 is left alone. */
+const setNaryExtra = (at: number, which: number, value: any) => {
+  const stage = stageAt(at)
+  const key = NARY_NAMES.find((n) => n in (stage ?? {}))
+  if (!key) return
+  const held = [...(stage[key] as any[])]
+  held[which + 1] = value
+  patchStage(at, { [key]: held })
+}
+
+const addNaryExtra = (at: number) => {
+  const stage = stageAt(at)
+  const key = NARY_NAMES.find((n) => n in (stage ?? {}))
+  if (!key) return
+  patchStage(at, { [key]: [...(stage[key] as any[]), null] })
+}
+
+const removeNaryExtra = (at: number, which: number) => {
+  const stage = stageAt(at)
+  const key = NARY_NAMES.find((n) => n in (stage ?? {}))
+  if (!key) return
+  const held = (stage[key] as any[]).filter((_, i) => i !== which + 1)
+  patchStage(at, { [key]: held })
+}
+
 const stageLabel = (at: number) =>
   stageOptions(at).find((st) => st.name === keyAt(at))?.label ?? keyAt(at)
 
@@ -321,35 +296,36 @@ const addStage = () => {
   if (next) rebuild(source.value, [...pipeline.value.stages, { ...next.template }])
 }
 
-const canAddStage = computed(
-  () =>
-    (source.value !== null || pipeline.value.stages.length > 0) &&
-    stagesFor(pipelineTypes.value[pipeline.value.stages.length]).length > 0,
-)
+/* Why there is no transform to add, when there is not.
+ *
+ * Said on a dead button rather than by taking the button away: a control that
+ * vanishes leaves you wondering whether you missed it, where a greyed one with a
+ * reason answers the question -- most usefully when the reason is that nothing can
+ * be read off the type you have arrived at. */
+const noStageReason = computed(() => {
+  if (source.value === null && pipeline.value.stages.length === 0) {
+    return 'Give this a value first'
+  }
+  const incoming = pipelineTypes.value[pipeline.value.stages.length]
+  if (stagesFor(incoming).length === 0) {
+    return incoming
+      ? `Nothing can be read off ${incoming}`
+      : 'Nothing can be read off this yet'
+  }
+  return ''
+})
 
 
 // --- shapes with operands of their own ---
 
-const naryItems = computed<any[]>(() => {
-  const v = source.value?.[currentSource.value.key]
-  return Array.isArray(v) ? v : []
-})
-const setNary = (i: number, item: any) =>
-  patch({ [currentSource.value.key]: naryItems.value.map((x, j) => (j === i ? item : x)) })
-const addNary = () => patch({ [currentSource.value.key]: [...naryItems.value, null] })
-const removeNary = (i: number) =>
-  patch({ [currentSource.value.key]: naryItems.value.filter((_, j) => j !== i) })
 
-const predicateKey = computed(() => {
-  const f = source.value?.filter
-  if (!f || typeof f !== 'object') return 'eq'
-  return PREDICATES.find((p) => p.key in f)?.key ?? 'eq'
-})
-const predicateOperand = computed(() => source.value?.filter?.[predicateKey.value] ?? null)
-const setPredicate = (key: string) => patch({ filter: { [key]: predicateOperand.value } })
-const setPredicateOperand = (v: any) => patch({ filter: { [predicateKey.value]: v } })
 
-const propsFor = computed(() => propsForKind(source.value?.kind ?? 'card') ?? null)
+
+
+
+
+
+const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? null)
 </script>
 
 <template>
@@ -412,7 +388,7 @@ const propsFor = computed(() => propsForKind(source.value?.kind ?? 'card') ?? nu
           :modelValue="source?.get"
           :options="propsFor"
           :of="`a ${source?.kind ?? 'card'}`"
-          :prefix="entityPrefix(source?.kind)"
+          :prefix="entityOf(source?.kind)"
           @update:modelValue="patch({ get: $event })"
         />
         <label v-else>
@@ -458,14 +434,6 @@ const propsFor = computed(() => propsForKind(source.value?.kind ?? 'card') ?? nu
         />
       </template>
 
-      <template v-else-if="currentSource.shape === 'filter'">
-        <label>
-          Which
-          <select :value="predicateKey" @change="setPredicate(($event.target as HTMLSelectElement).value)">
-            <option v-for="p in PREDICATES" :key="p.key" :value="p.key">{{ p.label }}</option>
-          </select>
-        </label>
-      </template>
     </div>
 
     <!-- A set and a count are two different things the log stores under a key,
@@ -512,23 +480,7 @@ const propsFor = computed(() => propsForKind(source.value?.kind ?? 'card') ?? nu
       />
     </div>
 
-    <div v-if="currentSource.shape === 'filter'" class="nested">
-      <ExpressionEditor
-        :modelValue="predicateOperand"
-        :bindings="bindings"
-        label="compared with"
-        @update:modelValue="setPredicateOperand"
-      />
-      <ExpressionEditor
-        :modelValue="source?.of"
-        :bindings="bindings"
-        expect="[any]"
-        label="out of"
-        @update:modelValue="patch({ of: $event })"
-      />
-    </div>
-
-    <div v-else-if="currentSource.shape === 'prop'" class="nested">
+    <div v-if="currentSource.shape === 'prop'" class="nested">
       <ExpressionEditor
         :modelValue="source?.of"
         :bindings="bindings"
@@ -537,29 +489,6 @@ const propsFor = computed(() => propsForKind(source.value?.kind ?? 'card') ?? nu
       />
     </div>
 
-    <!-- Read as the equation it is: each operand bounded, with the operator
-         spelled out between them. Subtract and divide fold left, so the order
-         matters -- which is what reading down the list already says. -->
-    <div v-else-if="currentSource.shape === 'nary'" class="equation">
-      <template v-for="(item, i) in naryItems" :key="i">
-        <div v-if="i > 0" class="operator">{{ OPERATOR_WORDS[currentSource.key] ?? currentSource.label }}</div>
-        <div class="operand">
-          <div class="operand-head">
-            <button type="button" class="remove" title="Remove this value" @click="removeNary(i)">
-              ×
-            </button>
-          </div>
-          <ExpressionEditor
-            :modelValue="item"
-            :bindings="bindings"
-            :queryKinds="queryKinds"
-            expect="Int"
-            @update:modelValue="setNary(i, $event)"
-          />
-        </div>
-      </template>
-      <button type="button" class="add" @click="addNary">+ Value</button>
-    </div>
 
     <!-- What can be done to whatever the source is, in the order it happens. -->
     <div class="pipeline">
@@ -596,12 +525,12 @@ const propsFor = computed(() => propsForKind(source.value?.kind ?? 'card') ?? nu
             </option>
           </select>
           <PropertyField
-            v-if="keyAt(at) === 'get' && propsForKind(stageAt(at)?.kind)"
+            v-if="keyAt(at) === 'get' && propOptionsFor(stageAt(at)?.kind)"
             class="fit"
             :modelValue="stageProp(stageAt(at))"
-            :options="propsForKind(stageAt(at)?.kind)!"
+            :options="propOptionsFor(stageAt(at)?.kind)!"
             :of="`a ${stageAt(at)?.kind ?? 'card'}`"
-            :prefix="entityPrefix(stageAt(at)?.kind)"
+            :prefix="entityOf(stageAt(at)?.kind)"
             @update:modelValue="setStageProp(at, $event)"
           />
           <!-- An entity's Field, which the served schema does not carry, so it is
@@ -650,9 +579,41 @@ const propsFor = computed(() => propsForKind(source.value?.kind ?? 'card') ?? nu
             @update:modelValue="setStagePredicateOperand(at, $event)"
           />
         </div>
+
+        <!-- What it is added to, divided by, joined with. The value handed down the
+             chain is the first operand and is not shown again here; these are the
+             rest of them. -->
+        <div v-if="isNary(keyAt(at))" class="pipe-operand">
+          <div v-for="(extra, which) in naryExtras(stageAt(at))" :key="which" class="extra">
+            <ExpressionEditor
+              :modelValue="extra"
+              :bindings="bindings"
+              :queryKinds="queryKinds"
+              :expect="keyAt(at) === 'concat' ? undefined : 'Int'"
+              :label="stageLabel(at)"
+              @update:modelValue="setNaryExtra(at, which, $event)"
+            />
+            <button
+              v-if="naryExtras(stageAt(at)).length > 1"
+              type="button"
+              class="remove"
+              title="Remove this value"
+              @click="removeNaryExtra(at, which)"
+            >
+              ×
+            </button>
+          </div>
+          <button type="button" class="add" @click="addNaryExtra(at)">+ Value</button>
+        </div>
       </div>
 
-      <button v-if="canAddStage" type="button" class="add-transform" @click="addStage">
+      <button
+        type="button"
+        class="add-transform"
+        :disabled="!!noStageReason"
+        :title="noStageReason || 'Do something to what you have'"
+        @click="addStage"
+      >
         <span class="add-glyph" aria-hidden="true">+</span> transform
       </button>
     </div>
@@ -954,6 +915,18 @@ select {
   }
 }
 
+.add-transform:disabled {
+  border-style: dashed;
+  color: #4b5563;
+  cursor: not-allowed;
+
+  &:hover {
+    background: #111827;
+    border-color: #4b5563;
+    color: #4b5563;
+  }
+}
+
 .add-transform {
   align-items: center;
   align-self: flex-start;
@@ -976,34 +949,19 @@ select {
   }
 }
 
-/* One operand per box, stacked with the operator between: the boxes are what
-   ties a value to the × that removes it, which a flat list of rows did not. */
-.equation {
+/* A transform's own operands, under the step that uses them: what it is added to,
+   divided by, joined with. One each, with a way to add more where the operator
+   takes any number. */
+.extra {
+  align-items: flex-start;
   display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.25rem;
   min-width: 0;
-}
 
-.operand {
-  border: 1px solid #374151;
-  border-radius: 4px;
-  min-width: 0;
-  padding: 0.3rem 0.4rem 0.4rem;
-}
-
-/* Holds only the remove control, at the top right of the operand it removes --
-   which is the whole point of the box: the × belongs to something visible. */
-.operand-head {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.operator {
-  color: #9ca3af;
-  font-size: 0.72rem;
-  padding-left: 0.4rem;
-  text-transform: lowercase;
+  > .expr {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .record-hint {

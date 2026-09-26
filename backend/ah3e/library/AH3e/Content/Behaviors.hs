@@ -5,6 +5,7 @@ import AH3e.Content.ConditionBehaviors qualified as Conditions
 import AH3e.Content.Core.ApproachOfAzathothBehaviors qualified as ApproachOfAzathoth
 import AH3e.Content.Core.InvestigatorBehaviors qualified as Investigators
 import AH3e.Content.HeadlineBehaviors qualified as Headlines
+import AH3e.Content.ItemBehaviors qualified as Items
 import AH3e.Content.SpellBehaviors qualified as Spells
 import AH3e.Engine.Behavior
 import AH3e.Engine.Helpers
@@ -21,6 +22,7 @@ behaviors =
     <> Conditions.behaviors
     <> Allies.behaviors
     <> Headlines.behaviors
+    <> Items.behaviors
     <> Spells.behaviors
     <> mempty
       { customEffects =

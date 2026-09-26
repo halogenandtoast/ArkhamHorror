@@ -44,28 +44,14 @@ behaviors =
                 .~ True
             )
           , ("wrench", defaultAssetBehavior & #testDice .~ wrenchDice)
-          , ("38-revolver", testBonuses [OnAction AttackAction Strength 2])
-          , ("45-automatic", testBonuses [OnAction AttackAction Strength 3])
-          , ("45-thompson", testBonuses [OnAction AttackAction Strength 5])
           , ("becky", testBonuses [OnAction AttackAction Strength 4])
           , ("grande-meres-knife", testBonuses [OnAction AttackAction Strength 2, WhileCasting 2])
           , ("jennys-twin-45s", testBonuses [OnAction AttackAction Strength 3])
-          , ("knife", testBonuses [OnAction AttackAction Strength 1])
-          , ("leather-coat", testBonuses [OnAction EvadeAction Observation 1])
           , ("magicians-cane", testBonuses [WhileCasting 2])
-          , ("magnifying-glass", testBonuses [OnAction ResearchAction Observation 1])
-          , ("mystic-scroll", testBonuses [WhileCasting 2])
-          , ("mystic-tome", testBonuses [WhileCasting 3])
-          , ("occult-scripture", testBonuses [OnAction ResearchAction Observation 2])
           , ("storm-of-spirits", defaultAssetBehavior & #attackSkillInstead ?~ Lore)
-          , ("otherworld-codex", testBonuses [OnAction WardAction Lore 3])
-          , ("secret-page", testBonuses [OnAction WardAction Lore 2])
           , ("service-piece", testBonuses [OnAction AttackAction Strength 2])
-          , ("shotgun", testBonuses [OnAction AttackAction Strength 5])
           , ("spirit-dagger", testBonuses [OnAction AttackAction Strength 2, OnAction WardAction Lore 2])
           , ("gabriel", defaultAssetBehavior & #moveAction ?~ (3, 1))
-          , ("rabbits-foot", defaultAssetBehavior & #freeRerollPerRound .~ True)
-          , ("pocket-watch", defaultAssetBehavior & #extraActions .~ 1)
           ,
             ( "heirloom-of-hyperborea"
             , defaultAssetBehavior

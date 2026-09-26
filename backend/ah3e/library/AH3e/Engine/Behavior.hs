@@ -1,6 +1,7 @@
 module AH3e.Engine.Behavior where
 
 import AH3e.Engine.Monad
+import AH3e.Engine.Query
 import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
@@ -90,6 +91,35 @@ isSpellTest :: TestKind -> Bool
 isSpellTest = \case
   SpellTest _ -> True
   _ -> False
+
+{- | An "Action:" printed on a card: it spends an action like any other, is kept
+back when it could accomplish nothing or its cost cannot be paid, and resolves
+as the card's own effect.
+-}
+cardAction :: Text -> Effect -> AssetBehavior
+cardAction lbl eff =
+  defaultAssetBehavior
+    & #componentActions
+    .~ [ ComponentActionDef
+           { label = lbl
+           , allowedWhileEngaged = False
+           , canPerform = \iid -> do
+               let (cost, body) = case eff of
+                     Pay c rest -> (Just c, rest)
+                     _ -> (Nothing, eff)
+               affordable <- maybe (pure True) (canPayCost iid) cost
+               useful <- effectUseful (EffectCtx iid (SourceInvestigator iid) Nothing) body
+               pure (affordable && useful)
+           , perform = \ctx -> push (ResolveEffect ctx eff)
+           }
+       ]
+
+-- | One die per clue you hold, plus one per clue in your neighborhood.
+aliceLuxleyDice :: CardId -> InvestigatorId -> GameM Int
+aliceLuxleyDice _ iid = do
+  i <- getInvestigator iid
+  here <- investigatorNeighborhood iid >>= maybe (pure 0) (fmap (.clues) . getNeighborhood)
+  pure (i.clues + here)
 
 data CodexTrigger = CodexTrigger
   { key :: Text

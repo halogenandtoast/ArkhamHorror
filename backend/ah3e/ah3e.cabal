@@ -23,6 +23,7 @@ library
       AH3e.Content.Core.NeighborhoodCards
       AH3e.Content.HeadlineBehaviors
       AH3e.Content.Headlines
+      AH3e.Content.ItemBehaviors
       AH3e.Content.Items
       AH3e.Content.Monsters
       AH3e.Content.Scenarios

@@ -231,10 +231,19 @@ export const transformsFor = (type?: string) =>
 /* What the campaign log holds. A set's element type is not knowable — the log
  * stores card codes, mementos and bare values under different keys — so it
  * reports a list of anything, which every list transform accepts. */
-export const RECORD_SOURCES: Record<string, string> = {
-  recordSet: '[any]',
-  recordCount: 'Int',
-}
+/* What a record set holds, which nothing can work out for itself.
+ *
+ * The log stores four kinds of entry, and one of them -- the generic one -- is
+ * arbitrary JSON: a trait, a name, a number. So the type is the author's to say.
+ * Unset it is a list of anything, which accepts every join and is what made this
+ * worth asking: a set of traits would happily be joined with a list of cards.
+ *
+ * Carried as `holds` beside the key. The runner reads only `recordSet`, so this is
+ * inert to it -- a note for the editor, not part of the expression. */
+export const RECORD_HOLDS = ['Trait', 'CardCode', 'Text', 'Int', 'Memento', 'Memory'] as const
+
+export const recordSetHolds = (expr: any): string | undefined =>
+  typeof expr?.holds === 'string' && expr.holds ? expr.holds : undefined
 
 /** What an expression works out to, as far as can be told without running it. */
 export function expressionType(expr: any, bindings: Binding[] = []): string | undefined {
@@ -253,9 +262,8 @@ export function expressionType(expr: any, bindings: Binding[] = []): string | un
     return TRANSFORMS.find((t) => t.name === expr.apply)?.to
   }
   if (typeof expr.skillTest === 'string') return SKILL_TEST_PROPS[expr.skillTest]
-  for (const key of Object.keys(RECORD_SOURCES)) {
-    if (key in expr) return RECORD_SOURCES[key]
-  }
+  if ('recordSet' in expr) return listOf(recordSetHolds(expr) ?? 'any')
+  if ('recordCount' in expr) return 'Int'
   // A query is an expression, so a `let` bound to one is typed like any other.
   if (expr.query) return queryType(expr.query, expr.mode)
   if (typeof expr.get === 'string' || typeof expr.map === 'string') {
@@ -312,6 +320,34 @@ const operandKeyFor = (name: string) => OPERAND_KEY[name] ?? name
 export const NARY_NAMES = ['add', 'subtract', 'multiply', 'divide', 'concat']
 
 export const isNary = (name: string | undefined) => !!name && NARY_NAMES.includes(name)
+
+/* What a nary transform's own operands have to be, given what it was handed.
+ *
+ * Arithmetic wants numbers. A join wants more of the same list: joining a set of
+ * traits to a list of cards is a mistake the runner cannot see -- `concatMap
+ * valueList` will happily glue them together and hand you a list of two different
+ * things -- so it is worth saying here. Unknown on either side fits, as everywhere
+ * else: that is what unknown has to mean. */
+export function naryOperandProblem(
+  name: string | undefined,
+  incoming: string | undefined,
+  operand: string | undefined,
+): string | undefined {
+  if (!operand) return undefined
+  if (name === 'concat') {
+    if (elementOf(operand) === undefined) return `${operand} is not a list`
+    const want = elementOf(withoutMaybe(incoming))
+    const got = elementOf(operand)
+    if (want && got && want !== 'any' && got !== 'any' && want !== got) {
+      return `a list of ${got}, joined to a list of ${want}`
+    }
+    return undefined
+  }
+  if (isNary(name) && !typeFits(withoutMaybe(operand), 'Int')) {
+    return `${operand} is not a number`
+  }
+  return undefined
+}
 
 /** The operands a nary stage carries besides the one handed to it. */
 export const naryExtras = (stage: any): any[] => {

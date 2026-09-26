@@ -24,6 +24,8 @@ import {
   entityOf,
   isNary,
   naryExtras,
+  naryOperandProblem,
+  RECORD_HOLDS,
   NARY_NAMES,
   propOptionsFor,
   stageProp,
@@ -238,6 +240,18 @@ const removeNaryExtra = (at: number, which: number) => {
   patchStage(at, { [key]: held })
 }
 
+/* What is wrong with a transform's own operands, if anything: said under the step
+ * and marked on it, because a join between two different lists is something the
+ * runner will do without complaint. */
+const stageOperandProblems = (at: number): string[] =>
+  naryExtras(stageAt(at))
+    .map((extra) =>
+      naryOperandProblem(keyAt(at), pipelineTypes.value[at], expressionType(extra, props.bindings ?? [])),
+    )
+    .filter((problem): problem is string => !!problem)
+
+const stageIsWrong = (at: number) => !stageFits(at) || stageOperandProblems(at).length > 0
+
 const stageLabel = (at: number) =>
   stageOptions(at).find((st) => st.name === keyAt(at))?.label ?? keyAt(at)
 
@@ -432,6 +446,18 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
           :modelValue="source?.[currentSource.key]"
           @update:modelValue="patch({ [currentSource.key]: $event })"
         />
+        <!-- Nothing can work out what a set holds: the log's generic entry is any
+             JSON at all. Saying so is what lets a join be checked. -->
+        <label v-if="currentSource.key === 'recordSet'">
+          of
+          <select
+            :value="source?.holds ?? ''"
+            @change="patch({ holds: ($event.target as HTMLSelectElement).value || undefined })"
+          >
+            <option value="">anything</option>
+            <option v-for="h in RECORD_HOLDS" :key="h" :value="h">{{ h }}</option>
+          </select>
+        </label>
       </template>
 
     </div>
@@ -493,7 +519,7 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
     <!-- What can be done to whatever the source is, in the order it happens. -->
     <div class="pipeline">
       <div v-for="(stage, at) in pipeline.stages" :key="at" class="pipe-stage">
-        <div class="pipe-step" :class="{ invalid: !stageFits(at) }">
+        <div class="pipe-step" :class="{ invalid: stageIsWrong(at) }">
           <span class="pipe-arrow" aria-hidden="true">
             <svg viewBox="0 0 14 16" width="14" height="16">
               <!-- Down out of the step above, then right into the step this is:
@@ -569,6 +595,9 @@ const propsFor = computed(() => propOptionsFor(source.value?.kind ?? 'card') ?? 
         <p v-if="!stageFits(at)" class="pipe-error">
           <code>{{ pipelineTypes[at] }}</code> is not something “{{ stageLabel(at) }}” can be
           asked for.
+        </p>
+        <p v-for="problem in stageOperandProblems(at)" :key="problem" class="pipe-error">
+          {{ problem }}.
         </p>
 
         <div v-if="keyAt(at) === 'filter'" class="pipe-operand">

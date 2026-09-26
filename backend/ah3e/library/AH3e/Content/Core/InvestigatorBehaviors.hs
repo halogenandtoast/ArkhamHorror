@@ -49,7 +49,6 @@ behaviors =
           , ("jennys-twin-45s", testBonuses [OnAction AttackAction Strength 3])
           , ("magicians-cane", testBonuses [WhileCasting 2])
           , ("storm-of-spirits", defaultAssetBehavior & #attackSkillInstead ?~ Lore)
-          , ("service-piece", testBonuses [OnAction AttackAction Strength 2])
           , ("spirit-dagger", testBonuses [OnAction AttackAction Strength 2, OnAction WardAction Lore 2])
           , ("gabriel", defaultAssetBehavior & #moveAction ?~ (3, 1))
           ,

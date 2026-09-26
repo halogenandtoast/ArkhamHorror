@@ -28,6 +28,7 @@ library
       AH3e.Content.Monsters
       AH3e.Content.Scenarios
       AH3e.Content.Special
+      AH3e.Content.SpecialBehaviors
       AH3e.Content.SpellBehaviors
       AH3e.Content.Spells
       AH3e.Content.StreetCards

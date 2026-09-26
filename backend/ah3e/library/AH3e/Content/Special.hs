@@ -7,7 +7,7 @@ import AH3e.Types.Ids
 
 -- | Cards that raise their holder's focus limit while held (435.11).
 focusLimitBonuses :: [(CardCode, Int)]
-focusLimitBonuses = [("the-moon", 1)]
+focusLimitBonuses = [("the-moon", 1), ("deputy-of-arkham", 1)]
 
 special
   :: CardCode -> Text -> AssetType -> [Trait] -> Int -> Maybe Int -> Maybe Int -> Text -> CardDef

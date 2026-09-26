@@ -3,6 +3,7 @@ module AH3e.Engine (
   runEngine,
   answer,
   applyDebug,
+  withSeedFrom,
   EngineError (..),
 ) where
 
@@ -56,3 +57,10 @@ applyDebug action g
           , queue = Debug action : RestoreQuestions g.questions : g.queue
           , phasesEntered = []
           }
+
+{- | An earlier state to resume from, carrying the seed the state being thrown away
+had reached. The seed is part of the game, so an undo hands back the roll it just
+undid unless the stream is carried across; with it, replaying an action rolls anew.
+-}
+withSeedFrom :: Game -> Game -> Game
+withSeedFrom earlier undone = earlier {seed = undone.seed}

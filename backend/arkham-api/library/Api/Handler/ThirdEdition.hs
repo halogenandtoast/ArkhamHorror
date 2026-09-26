@@ -24,7 +24,7 @@ module Api.Handler.ThirdEdition (
   postApiV1ThirdEditionUndoR,
 ) where
 
-import AH3e.Engine (GameOptions (..), answer, applyDebug, newGame, runEngine)
+import AH3e.Engine (GameOptions (..), answer, applyDebug, newGame, runEngine, withSeedFrom)
 import AH3e.Game (Game)
 import AH3e.Types.Card (Expansion (CoreSet))
 import AH3e.Types.Ids (PlayerId (..))
@@ -200,7 +200,10 @@ postApiV1ThirdEditionUndoR tid = do
   mutate "undo" tid \t prev -> do
     unless (isSeated userId t) $ Left "Only seated players can undo"
     earlier <- maybe (Left "Nothing to undo") Right prev
-    pure (withGame earlier t, PopHistory)
+    -- Resume from before the action, but keep the seed it reached: undoing a roll
+    -- and answering again rolls different dice rather than the same ones.
+    let resumed = maybe earlier (withSeedFrom earlier) t.game
+    pure (withGame resumed t, PopHistory)
 
 -- | Run the engine on the table's game, keeping the state it replaces for undo.
 step :: Show e => Table -> (Game -> Either e Game) -> Either Text (Table, HistoryChange)

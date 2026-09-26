@@ -47,7 +47,12 @@ const viewDeck = () => {
       <slot />
       <template v-if="debuggable">
         <button class="dbg-deal" title="Deal the top card of this deck" @click.stop="deal">+</button>
-        <button class="dbg-view" title="Look through this deck and draw any card" @click.stop="viewDeck">&#x2315;</button>
+        <button class="dbg-view" title="Look through this deck and draw any card" @click.stop="viewDeck">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+            <circle cx="10" cy="10" r="6.5" />
+            <path d="M14.8 14.8 21 21" />
+          </svg>
+        </button>
       </template>
     </div>
     <div class="deck-name">{{ name }}</div>

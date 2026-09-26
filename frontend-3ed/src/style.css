@@ -119,8 +119,10 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 .dbg-deal { position:absolute; left:-6px; bottom:-6px; z-index:2; border-radius:11px;
   min-width:22px; height:22px; line-height:1; }
 .sheet-tokens .dbg-num { width:40px; }
-.dbg-view { position:absolute; right:-6px; top:-6px; z-index:2; border-radius:11px;
-  min-width:22px; height:22px; line-height:1; font-size:11px; padding:1px 5px; }
+.dbg-view { position:absolute; right:-6px; top:-6px; z-index:2; border-radius:13px;
+  min-width:26px; height:26px; line-height:0; font-size:11px; padding:0;
+  display:inline-flex; align-items:center; justify-content:center; }
+.dbg-view svg { width:16px; height:16px; display:block; }
 .browse { max-width:min(1100px, 92vw); max-height:86vh; overflow:auto; background:var(--panel);
   border:1px solid var(--line); border-radius:12px; padding:14px 16px; cursor:default; }
 .browse > h3 { margin:0 0 10px; font-size:12px; text-transform:uppercase;
@@ -245,6 +247,12 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); }
 .mon-dbg button { margin:0; width:22px; height:22px; padding:0; font-size:13px; font-weight:700; line-height:1; border-radius:7px; }
 .mon-dbg button[disabled] { opacity:.4; cursor:not-allowed; }
 .mon-dbg button.defeat { background:var(--doom); border-color:var(--doom); color:#fff; }
+/* the strip is wider than the card it hangs from, so the monster under the pointer
+   comes out on top -- and its space with it, since a space's own transform makes it
+   a stacking context that a child's z-index cannot climb out of */
+.mon-card:hover { z-index:20; }
+.mon-card:hover > .mon-dbg { z-index:21; }
+.anchor:has(.mon-card:hover), .pa-engaged-cards:has(.mon-card:hover) { z-index:20; position:relative; }
 /* taking a card from the display: a label rather than a corner dot, since it is a
    deliberate act and the card is big enough to carry one */
 .dbg-take { position:absolute; left:50%; bottom:6px; transform:translateX(-50%); z-index:3; margin:0; padding:4px 12px;

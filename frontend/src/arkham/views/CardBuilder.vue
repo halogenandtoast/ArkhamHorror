@@ -453,6 +453,13 @@ type PendingImport = {
   replacing: LibrarySet | null
   minisCut: number
   signatures: SignatureSummary | null
+  /* A set to add these to, rather than a set to become.
+   *
+   * A file exported as a single card carries no set of its own, but its def still
+   * remembers the one it came from, so importing it landed as a set named after
+   * somebody else's library. Given a destination it is added to that instead, and
+   * the set name on the card is restamped to match. */
+  into: LibrarySet | null
 }
 
 const pendingImport = ref<PendingImport | null>(null)
@@ -497,6 +504,16 @@ const importBreakdown = computed(() => {
  * and the part a one-line confirm could never say. */
 const importDiff = computed(() => {
   const incoming = pendingImport.value
+  /* Adding to a set takes nothing out of it, so there is no removal to count and
+   * the split that says so does not apply. */
+  if (incoming?.into) {
+    const had = new Set(setCards(incoming.into.id).map((c) => c.def.cardCode))
+    return {
+      added: incoming.cards.filter((c) => !had.has(c.def.cardCode)).length,
+      updated: incoming.cards.filter((c) => had.has(c.def.cardCode)).length,
+      removed: 0,
+    }
+  }
   if (!incoming?.replacing) return null
   const existing = setCards(incoming.replacing.id)
   const had = new Set(existing.map((c) => c.def.cardCode))
@@ -518,6 +535,7 @@ async function reviewImport(
     sourceCode: string | null
     cards: CustomCard[]
   }>,
+  into: LibrarySet | null = null,
 ) {
   error.value = null
   status.value = null
@@ -543,6 +561,7 @@ async function reviewImport(
         const summary = summarizeSignatures(cards)
         return summary.linked || summary.orphans ? summary : null
       })(),
+      into,
     }
     // The panel takes focus so Escape backs out of it without a click first.
     await nextTick()
@@ -559,11 +578,20 @@ async function commitImport() {
   cancelImport()
   busy.value = true
   try {
-    const set = await importSet({
-      name: incoming.name,
-      sourceCode: incoming.sourceCode,
-      cards: incoming.cards,
-    })
+    /* Into a set you already have, one card at a time: the set import replaces a
+     * set's whole contents, which is right for a set and wrong for adding to one.
+     * Saving each card is the same path the editor saves by, so the destination's
+     * name is stamped on and the card lands as yours. */
+    const set = incoming.into
+      ? await (async () => {
+          for (const card of incoming.cards) await saveToLibrary(card, incoming.into!.id)
+          return incoming.into!
+        })()
+      : await importSet({
+          name: incoming.name,
+          sourceCode: incoming.sourceCode,
+          cards: incoming.cards,
+        })
     /* Straight into the set, which is where you were going anyway: an import is
      * only ever the first half of "now let me look at what I just brought in".
      * The status line has its own slot in the editor's head, so it comes too. */
@@ -602,6 +630,22 @@ function isArkhamBuildExport(parsed: any): boolean {
  * for at all. Those cards are coded deterministically from their arkham.build
  * id, so a deck built on arkham.build against them resolves against these rows
  * instead of going missing, and re-importing the same file updates them. */
+/* The same read and the same review as a set import, with somewhere to put it. */
+async function onImportInto(event: Event, set: LibrarySet) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file) return
+  await reviewImport(
+    file,
+    async (text) => {
+      const { parseCardExport } = await import('@/arkham/customCardLibrary')
+      return parseCardExport(text, fileBaseName(file))
+    },
+    set,
+  )
+}
+
 async function onImport(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
@@ -677,9 +721,11 @@ async function onImport(event: Event) {
     >
       <header>
         <h2>
-          {{ pendingImport.replacing
-            ? t(`${K}reviewReplaceTitle`, { name: pendingImport.replacing.name })
-            : t(`${K}reviewTitle`, { name: pendingImport.name }) }}
+          {{ pendingImport.into
+            ? t(`${K}reviewAddTitle`, { name: pendingImport.into.name })
+            : pendingImport.replacing
+              ? t(`${K}reviewReplaceTitle`, { name: pendingImport.replacing.name })
+              : t(`${K}reviewTitle`, { name: pendingImport.name }) }}
         </h2>
         <span class="from">{{ t(`${K}reviewFrom`, { file: pendingImport.fileName }) }}</span>
       </header>
@@ -689,7 +735,7 @@ async function onImport(event: Event) {
         <span v-if="importDiff" class="split">
           <span class="added">{{ t(`${K}reviewAdded`, { n: importDiff.added }) }}</span>
           <span>{{ t(`${K}reviewUpdated`, { n: importDiff.updated }) }}</span>
-          <span :class="{ dropped: importDiff.removed > 0 }">
+          <span v-if="!pendingImport.into" :class="{ dropped: importDiff.removed > 0 }">
             {{ t(`${K}reviewDropped`, { n: importDiff.removed }) }}
           </span>
         </span>
@@ -839,6 +885,21 @@ async function onImport(event: Event) {
             >
               <font-awesome-icon icon="download" />
             </button>
+            <!-- Adds to this set rather than becoming one, which is what a card
+                 somebody sent you needs: it has no set of its own to land as. -->
+            <label
+              class="set-import"
+              v-tooltip="t(`${K}importIntoSet`, { name: set.name })"
+              :aria-label="t(`${K}importIntoSet`, { name: set.name })"
+            >
+              <font-awesome-icon icon="upload" />
+              <input
+                type="file"
+                accept="application/json,.json"
+                @click.stop
+                @change="onImportInto($event, set)"
+              />
+            </label>
             <button
               type="button"
               class="delete"
@@ -1786,6 +1847,29 @@ async function onImport(event: Event) {
 .row-actions {
   display: flex;
   gap: 0.1rem;
+}
+
+/* A file input wearing the same clothes as its neighbours: a label rather than a
+   button, because that is what opens a file picker, so it opts into the styling
+   the buttons beside it get by tag. */
+.row-actions .set-import {
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  font-size: 0.75rem;
+  line-height: 1;
+  opacity: 0.5;
+  padding: 0.25rem 0.35rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+  }
+
+  input {
+    display: none;
+  }
 }
 
 .row-actions button {

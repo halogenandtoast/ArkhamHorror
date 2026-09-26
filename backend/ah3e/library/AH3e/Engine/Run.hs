@@ -1804,3 +1804,4 @@ runDebug = \case
       _ -> \cs -> cid : filter (/= cid) cs
     debugDrawDeck iid deck
   DebugSetDice values -> #test . _Just . #dice .= [Die v False | v <- values]
+  DebugSetAddedSuccesses n -> #test . _Just . #addedSuccesses .= n

@@ -251,5 +251,7 @@ data DebugAction
   | DebugDrawDeck InvestigatorId DebugDeck
   | DebugDrawCard InvestigatorId DebugDeck CardId
   | DebugSetDice [Int]
+  | -- | successes added to the test in progress, on top of what the dice say
+    DebugSetAddedSuccesses Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

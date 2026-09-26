@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import DbgNum from '@/game/DbgNum.vue'
 import { useGame } from '@/game/context'
 import Tok from '@/game/Tok.vue'
 import { FOCUS, TEST_STEPS, humanize } from '@/game/util'
@@ -73,6 +74,14 @@ const dieTitle = (d: { value: number; removed?: boolean }) =>
       <span v-for="(d, k) in t.dice" :key="k" class="die" :class="dieClass(d)" :title="dieTitle(d)">{{ d.value }}</span>
       <em v-if="!t.dice.length" class="waiting">No dice rolled yet</em>
       <span v-if="t.addedSuccesses" class="test-fact">+{{ t.addedSuccesses }} added</span>
+      <span v-if="ctx.dbgOn.value" class="test-fact"
+        >added
+        <DbgNum
+          tag="DebugSetAddedSuccesses"
+          :iid="null"
+          :value="t.addedSuccesses ?? 0"
+          title="successes added to this test"
+      /></span>
     </div>
     <div class="test-facts">
       <span v-for="f in facts" :key="f" class="test-fact">{{ f }}</span>

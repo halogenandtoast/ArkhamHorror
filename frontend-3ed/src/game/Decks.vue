@@ -90,16 +90,16 @@ const faceSrc = (cid: CardId) => ctx.cardFace(cid, false)
         <div class="deck-stack face" :class="{ 'no-art': isBroken(faceSrc(cid)) }">
           <img v-if="!isBroken(faceSrc(cid))" :src="faceSrc(cid)" :alt="ctx.cardName(cid)" @error="markBroken(faceSrc(cid))" />
           <div class="deck-empty">{{ ctx.cardName(cid) }}</div>
+          <button
+            v-if="ctx.dbgOn.value && ctx.dbgIid()"
+            class="dbg-take"
+            :title="`Gain ${ctx.cardName(cid)} for ${ctx.invName(ctx.dbgIid())}`"
+            @click.stop="gainFromDisplay(cid)"
+          >
+            Take
+          </button>
         </div>
         <div class="deck-name">{{ ctx.cardName(cid) }}</div>
-        <button
-          v-if="ctx.dbgOn.value && ctx.dbgIid()"
-          class="dbg-deal"
-          title="Gain this card from the display"
-          @click.stop="gainFromDisplay(cid)"
-        >
-          +
-        </button>
       </div>
     </div>
   </div>

@@ -237,6 +237,18 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); }
 @keyframes hlPulse { from { filter:none; } to { filter:brightness(1.3); } }
 @media (prefers-reduced-motion: reduce) { .hl { animation:none; } }
 .mon-card { position:relative; display:inline-block; line-height:0; }
+/* debug controls for a monster hang below its card, which is too small to hold them,
+   and stay big enough to hit with a thumb */
+.mon-dbg { position:absolute; left:50%; top:calc(100% + 3px); transform:translateX(-50%); z-index:4; display:flex; gap:2px;
+  padding:2px; border-radius:999px; background:color-mix(in srgb, var(--panel) 92%, transparent); border:1px solid var(--line);
+  box-shadow:0 2px 6px rgba(0,0,0,.5); line-height:1; }
+.mon-dbg button { margin:0; width:22px; height:22px; padding:0; font-size:13px; font-weight:700; line-height:1; border-radius:7px; }
+.mon-dbg button[disabled] { opacity:.4; cursor:not-allowed; }
+.mon-dbg button.defeat { background:var(--doom); border-color:var(--doom); color:#fff; }
+/* taking a card from the display: a label rather than a corner dot, since it is a
+   deliberate act and the card is big enough to carry one */
+.dbg-take { position:absolute; left:50%; bottom:6px; transform:translateX(-50%); z-index:3; margin:0; padding:4px 12px;
+  border-radius:999px; font-size:11px; font-weight:700; background:var(--accent); color:#fff; border-color:var(--accent); }
 .mon-card > img { width:38px; height:60px; object-fit:cover; border-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,.6); cursor:zoom-in; }
 .mon-card.engaged > img { outline:2px solid var(--doom); outline-offset:1px; }
 .mon-card > .chip { display:none; }

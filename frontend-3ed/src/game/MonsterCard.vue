@@ -44,17 +44,10 @@ const setDamage = (n: number) => void ctx.debugAction('DebugSetMonsterDamage', [
       name.slice(0, 10)
     }}</span
     ><span v-if="dmg" class="mon-dmg"><Tok name="damage" :count="dmg" :title="`${dmg} damage`" :size="22" always /></span
-    ><template v-if="ctx.dbgOn.value"
-      ><span class="dbg-dmg" @click.stop
-        ><input
-          class="dbg-num"
-          type="number"
-          min="0"
-          :value="dmg"
-          title="damage on this monster"
-          @change="setDamage(+($event.target as HTMLInputElement).value)"
-      /></span>
-      <button class="dbg-defeat" title="Defeat this monster" @click.stop="defeat">&#x2715;</button></template
+    ><span v-if="ctx.dbgOn.value" class="mon-dbg" @click.stop
+      ><button :disabled="!dmg" title="One less damage" @click.stop="setDamage(dmg - 1)">&minus;</button
+      ><button title="One more damage" @click.stop="setDamage(dmg + 1)">+</button
+      ><button class="defeat" :title="`Defeat ${name}`" @click.stop="defeat">&#x2715;</button></span
     >
   </span>
 </template>

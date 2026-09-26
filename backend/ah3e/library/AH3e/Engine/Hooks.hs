@@ -117,6 +117,14 @@ reactionsFor trigger = do
         b.reactions cid trigger
       pure (sheet <> cards)
 
+-- | Ways the tested investigator's cards can change the dice they just rolled.
+dieOptionsFor :: TestState -> GameM [Reaction]
+dieOptionsFor ts = do
+  i <- getInvestigator ts.investigator
+  fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+    b <- assetBehavior cid
+    b.dieOptions cid ts.investigator ts
+
 -- | Cards anyone in play holds that may prevent the damage about to be suffered.
 damagePreventionsFor :: HarmPlan -> GameM [(InvestigatorId, Reaction)]
 damagePreventionsFor plan = do
@@ -141,11 +149,13 @@ codexSpaceEncounter sid = do
   codex <- use #codex
   pure $ listToMaybe (mapMaybe (\e -> (codexBehavior e.number).spaceEncounter e sid) codex)
 
--- | Actions an investigator may take on their turn: the usual two (402.2), plus
--- bonuses earned this phase, plus additional actions from what they hold (402.3).
--- A card traded over after being used this round is locked and adds nothing.
+{- | Actions an investigator may take on their turn: the usual two (402.2), plus
+bonuses earned this phase, plus additional actions from what they hold (402.3).
+A card traded over after being used this round is locked and adds nothing.
+-}
 actionAllowance :: InvestigatorId -> GameM Int
 actionAllowance iid = do
   i <- getInvestigator iid
-  extra <- sum <$> for [c | c <- i.assets, c `notElem` i.lockedAssets] (fmap (.extraActions) . assetBehavior)
+  extra <-
+    sum <$> for [c | c <- i.assets, c `notElem` i.lockedAssets] (fmap (.extraActions) . assetBehavior)
   pure (2 + i.bonusActions + extra)

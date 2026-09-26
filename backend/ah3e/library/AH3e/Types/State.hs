@@ -145,6 +145,8 @@ data TestState = TestState
   , after :: AfterTest
   , casting :: Maybe CardId
   -- ^ the spell being cast, when this test is part of casting one
+  , usedInTest :: [CardId]
+  -- ^ cards whose once-per-test ability has been spent on this test
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

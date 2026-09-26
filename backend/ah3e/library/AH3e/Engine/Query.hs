@@ -318,6 +318,16 @@ recoverTargets ctx r hp sp = do
 nobody in reach needs, or a focus with every allowed skill already focused or
 the focus limit already reached, is not worth offering.
 -}
+
+-- | Whether this card's once-per-round ability has already been spent.
+usedThisRound :: CardId -> InvestigatorId -> GameM Bool
+usedThisRound cid iid = elem cid . (.usedAssets) <$> getInvestigator iid
+
+-- | Clues sitting in the investigator's neighborhood; zero while in a street.
+neighborhoodClues :: InvestigatorId -> GameM Int
+neighborhoodClues iid =
+  investigatorNeighborhood iid >>= maybe (pure 0) (fmap (.clues) . getNeighborhood)
+
 effectUseful :: EffectCtx -> Effect -> GameM Bool
 effectUseful ctx = \case
   RecoverHealth r _ -> needs r 1 0

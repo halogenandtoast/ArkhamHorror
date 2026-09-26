@@ -4,6 +4,12 @@ module AH3e.Engine.Test (
   rollTestDice,
   chooseRerollDie,
   rerollDie,
+  rerollUpTo,
+  rerollOneOf,
+  rerollAll,
+  chooseDieToRaise,
+  raiseDie,
+  markUsedInTest,
   finishTest,
   testPool,
   testPrompt,
@@ -30,7 +36,7 @@ beginTest ts = do
   playing <- investigatorIsPlaying ts.investigator
   if playing
     then do
-      let fresh = ts {step = DeterminePool, dice = [], chosenAssets = [], addedSuccesses = 0}
+      let fresh = ts {step = DeterminePool, dice = [], chosenAssets = [], addedSuccesses = 0, usedInTest = []}
       -- A bonus that takes no hands competes with nothing, and its card states it
       -- flatly ("you get +2 strength as part of an attack action"), so it starts
       -- switched on and the prompt still lets it be switched off. Once-per-round
@@ -111,10 +117,16 @@ testPrompt = do
           $ if b.freeRerollPerRound
             then Just (Choice (CardLabel c) [MarkAssetUsed iid c, SpendForReroll (FreeReroll (SourceCard c))])
             else Nothing
+      fromCards <- dieOptionsFor ts
       chooseFor
         iid
         "Modify your dice"
-        (Choice (DoneLabel "Finish test") [FinishTest] : focusRerolls <> clueRerolls <> freeRerolls)
+        ( Choice (DoneLabel "Finish test") [FinishTest]
+            : focusRerolls
+              <> clueRerolls
+              <> freeRerolls
+              <> [Choice (TextLabel r.label) r.messages | r <- fromCards]
+        )
     TestResolved -> pure ()
 
 toggleTestAsset :: CardId -> GameM ()
@@ -160,6 +172,55 @@ rerollDie cost idx = do
   case cost of
     FocusCost _ -> pushAll [CheckReactions (SpentFocusToReroll ts.investigator) [], ContinueTest]
     _ -> testPrompt
+
+liveDice :: TestState -> [(Int, Die)]
+liveDice ts = [(idx, d) | (idx, d) <- zip [0 ..] ts.dice, not d.removed]
+
+{- | Reroll dice one at a time until they stop or run out of allowance. A card
+that rerolls "any number" of dice passes the whole pool as the allowance.
+-}
+rerollUpTo :: Source -> Int -> GameM ()
+rerollUpTo src n = do
+  ts <- currentTest
+  let live = liveDice ts
+  if n <= 0 || null live
+    then testPrompt
+    else
+      chooseFor ts.investigator ("Choose a die to reroll (" <> tshow n <> " left)")
+        $ Choice (DoneLabel "Done rerolling") [ContinueTest]
+        : [Choice (DieLabel idx d.value) [RerollOneOf src n idx] | (idx, d) <- live]
+
+rerollOneOf :: Source -> Int -> Int -> GameM ()
+rerollOneOf src n idx = do
+  v <- rollDie
+  #test . _Just . #dice . ix idx . #value .= v
+  rerollUpTo src (n - 1)
+
+-- | Reroll every die still in the pool at once, for a card that offers no choice.
+rerollAll :: Source -> GameM ()
+rerollAll _ = do
+  ts <- currentTest
+  for_ (liveDice ts) \(idx, _) -> do
+    v <- rollDie
+    #test . _Just . #dice . ix idx . #value .= v
+  testPrompt
+
+chooseDieToRaise :: Source -> GameM ()
+chooseDieToRaise _ = do
+  ts <- currentTest
+  case liveDice ts of
+    [] -> testPrompt
+    live ->
+      chooseFor ts.investigator "Choose a die to raise by one"
+        $ [Choice (DieLabel idx d.value) [RaiseDie idx] | (idx, d) <- live]
+
+raiseDie :: Int -> GameM ()
+raiseDie idx = do
+  #test . _Just . #dice . ix idx . #value += 1
+  testPrompt
+
+markUsedInTest :: CardId -> GameM ()
+markUsedInTest cid = #test . _Just . #usedInTest %= (<> [cid])
 
 -- 490.5, Blessed/Cursed success thresholds
 successThreshold :: TestState -> GameM Int

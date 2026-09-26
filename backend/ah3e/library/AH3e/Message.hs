@@ -59,6 +59,14 @@ data Message
   | RollDice
   | SpendForReroll RerollCost
   | RerollDie RerollCost Int
+  | -- | reroll dice one at a time, at most this many, stopping whenever they like
+    RerollUpTo Source Int
+  | RerollOneOf Source Int Int
+  | RerollAll Source
+  | -- | add one to the result of a die of their choice
+    AddToDie Source
+  | RaiseDie Int
+  | MarkUsedInTest CardId
   | FinishTest
   | MoveStep MoveState
   | MoveInvestigator MoveState SpaceId

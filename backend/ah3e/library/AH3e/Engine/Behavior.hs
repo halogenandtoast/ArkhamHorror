@@ -41,6 +41,12 @@ data AssetBehavior = AssetBehavior
   -- ^ additional actions its owner may perform during their turn (402.3)
   , afterGainedFromDeck :: Maybe Effect
   -- ^ resolved for its new owner after the card comes out of its deck, not after a trade
+  , dieOptions :: CardId -> InvestigatorId -> TestState -> GameM [Reaction]
+  {- ^ ways this card can change dice already rolled (490.3) -- a reroll, or a
+  die's result. Offered at the manipulate-dice step; whatever limit the card
+  prints, its own messages record ('MarkAssetUsed' per round, 'MarkUsedInTest'
+  per test).
+  -}
   , damagePrevention :: CardId -> InvestigatorId -> HarmPlan -> GameM [Reaction]
   {- ^ once per round, offered to its owner while anyone would suffer damage,
   wherever they are (416.6). The reaction's messages leave what they prevent in
@@ -63,12 +69,18 @@ defaultAssetBehavior =
     , attackSkillInstead = Nothing
     , extraActions = 0
     , afterGainedFromDeck = Nothing
+    , dieOptions = \_ _ _ -> pure []
     , damagePrevention = \_ _ _ -> pure []
     }
 
 {- | When a test asset adds dice: "+N skill as part of an X action", or "+N lore
 while casting a spell".
 -}
+
+-- | Dice still in the pool, which every die option needs at least one of.
+liveDiceCount :: TestState -> Int
+liveDiceCount ts = length [d | d <- ts.dice, not d.removed]
+
 data TestBonus = OnAction ActionKind Skill Int | WhileCasting Int
 
 {- | A test asset whose bonuses add up for the tests they match; it is chosen like

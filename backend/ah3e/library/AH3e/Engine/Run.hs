@@ -974,6 +974,12 @@ runMessage msg = case msg of
   RollDice -> rollTestDice
   SpendForReroll cost -> chooseRerollDie cost
   RerollDie cost idx -> rerollDie cost idx
+  RerollUpTo src n -> rerollUpTo src n
+  RerollOneOf src n idx -> rerollOneOf src n idx
+  RerollAll src -> rerollAll src
+  AddToDie src -> chooseDieToRaise src
+  RaiseDie idx -> raiseDie idx
+  MarkUsedInTest cid -> markUsedInTest cid
   FinishTest -> finishTest
   -- End of game
   WinTheGame -> do

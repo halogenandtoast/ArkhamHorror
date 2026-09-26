@@ -185,6 +185,7 @@ newTest iid skill modifier kind after =
     , addedSuccesses = 0
     , after = after
     , casting = Nothing
+    , usedInTest = []
     }
 
 -- 491.3b: reveal from the bottom of the monster deck until the trait is found

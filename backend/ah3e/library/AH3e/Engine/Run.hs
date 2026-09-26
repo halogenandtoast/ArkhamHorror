@@ -944,7 +944,19 @@ runMessage msg = case msg of
     codexEntry n >>= traverse_ \e -> do
       logText ("Card " <> tshow (coerce n :: Int) <> " flips")
       (codexBehavior n).onFlip e
+  {- A card that sends itself to the archive usually does so on the side it has just
+  been turned to, which nobody has read yet, so the table says when it may go. A
+  card leaving unflipped has shown nothing new and goes at once. -}
   RemoveCodexCard n -> do
+    e <- codexEntry n
+    case e of
+      Just entry
+        | entry.flipped ->
+            askLeader
+              ("Card " <> tshow (coerce n :: Int) <> " read")
+              [Choice (DoneLabel "Continue") [DiscardCodexCard n]]
+      _ -> push (DiscardCodexCard n)
+  DiscardCodexCard n -> do
     entries <- use #codex
     for_ [e | e <- entries, e.number == n] \e -> #decks . #archive %= (e.card :)
     #codex %= filter ((/= n) . (.number))

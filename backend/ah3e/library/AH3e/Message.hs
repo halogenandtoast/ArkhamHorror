@@ -165,6 +165,8 @@ data Message
   | AddArchiveToCodexFlipped ArchiveNumber
   | FlipCodexCard ArchiveNumber
   | RemoveCodexCard ArchiveNumber
+  | -- | the removal itself, once they have read the side that sends it away
+    DiscardCodexCard ArchiveNumber
   | DrawHeadline InvestigatorId
   | DiscardHeadline CardId
   | DiscardRumor

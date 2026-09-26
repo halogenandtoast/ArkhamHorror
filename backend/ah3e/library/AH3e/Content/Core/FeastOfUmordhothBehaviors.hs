@@ -83,19 +83,23 @@ freshMeat =
                 pure (not e.flipped && clues >= 3)
             , action = \_ -> do
                 clues <- use #sheetClues
-                push (SpendSheetClues clues)
-                push (FlipCodexCard 10)
+                pushAll [SpendSheetClues clues, FlipCodexCard 10]
             }
         ]
-    , onFlip = \e -> when e.flipped do
+    , {- The card's own order matters: the masked hunter is abroad before the markers
+      go down, and card 12 only joins the codex after that, so the hunter's own
+      neighborhood keeps its marker. Since a push goes to the front of the queue,
+      the whole sequence is pushed once, in the order it is printed. -}
+      onFlip = \e -> when e.flipped do
         leader <- leaderPlayer >>= investigatorOfPlayer
-        for_ leader \iid -> do
-          push (GainNamedCard iid "Lita Chantler")
-          spawnWorshiperWith iid "masked-hunter"
+        hunter <- maybe (pure []) (`worshiperMessages` "masked-hunter") leader
         for_ [13 .. 17 :: Int] \n -> dealHuntCard (CardCode ("feast-" <> tshow n))
         hoods <- uses (#board . #neighborhoods) Map.keys
         for_ hoods \nid -> neighborhoodL nid . #markers %= (<> [Marker "white" False])
-        pushAll [AddArchiveToCodex 12, RemoveCodexCard 10]
+        pushAll
+          $ [GainNamedCard iid "Lita Chantler" | Just iid <- [leader]]
+          <> hunter
+          <> [AddArchiveToCodex 12, RemoveCodexCard 10]
     }
 
 {- | Card 11. Eight doom on the sheet and Umordhoth arrives at Hangman's Hill,
@@ -116,14 +120,18 @@ theHungerBelow =
         ]
     , onFlip = \e -> when e.flipped do
         stillHunting <- uses #codex (any ((== 10) . (.number)))
-        when stillHunting $ push (FlipCodexCard 10)
         aside <- use (#decks . #setAside)
         found <- filterM (fmap (== "feast-19") . cardCode) aside
-        for_ (take 1 found) \cid -> do
-          #decks . #setAside %= filter (/= cid)
-          logText "Umordhoth is come"
-          push (PlaceMonster cid (spaceIdFor "Hangman's Hill") Ready)
-        pushAll [AddArchiveToCodex 18, RemoveCodexCard 11]
+        spawn <- case take 1 found of
+          [cid] -> do
+            #decks . #setAside %= filter (/= cid)
+            logText "Umordhoth is come"
+            pure [PlaceMonster cid (spaceIdFor "Hangman's Hill") Ready]
+          _ -> pure []
+        pushAll
+          $ [FlipCodexCard 10 | stillHunting]
+          <> spawn
+          <> [AddArchiveToCodex 18, RemoveCodexCard 11]
     }
 
 {- | Card 12. Each worshiper drawn out clears the marker from its neighborhood, and
@@ -227,12 +235,16 @@ dealHuntCard wanted = do
         l <~ shuffleIntoTopTwo cid deck
       _ -> logText "That hunt card is not a neighborhood card"
 
--- | Spawns a set-aside worshiper engaged with one investigator.
-spawnWorshiperWith :: InvestigatorId -> CardCode -> GameM ()
-spawnWorshiperWith iid wcode = do
+{- | Takes a set-aside worshiper out of the pile and returns what puts it on the
+board engaged with one investigator, so the caller can order it against the rest.
+-}
+worshiperMessages :: InvestigatorId -> CardCode -> GameM [Message]
+worshiperMessages iid wcode = do
   aside <- use (#decks . #setAside)
   found <- filterM (fmap (== wcode) . cardCode) aside
-  for_ (take 1 found) \cid -> do
-    #decks . #setAside %= filter (/= cid)
-    investigatorSpace iid >>= traverse_ \sid ->
-      pushAll [PlaceMonster cid sid Ready, EngageMonster iid cid]
+  case take 1 found of
+    [cid] -> do
+      #decks . #setAside %= filter (/= cid)
+      msid <- investigatorSpace iid
+      pure [m | sid <- maybeToList msid, m <- [PlaceMonster cid sid Ready, EngageMonster iid cid]]
+    _ -> pure []

@@ -176,6 +176,7 @@ runMessage msg = case msg of
     ph <- use #phase
     pushAll
       $ [CheckReactions (AfterGatherResources iid) [] | kind == GatherResourcesAction]
+      <> [CheckReactions (AfterResearchAction iid) [] | kind == ResearchAction]
       <> [ActionTurn iid | t == Just iid, ph == ActionPhase]
   EndActionTurn iid -> do
     investigatorL iid . #active .= False
@@ -523,14 +524,22 @@ runMessage msg = case msg of
               ( [(cid, (k, 0)) | Just (cid, k) <- [plan.damageTo]]
                   <> [(cid, (0, k)) | Just (cid, k) <- [plan.horrorTo]]
               )
+    soaked <- for onAssets \(cid, dh) -> (cid,) <$> preventOwnHarm plan.investigator cid dh
     pushAll
-      $ [HarmAsset cid d h | (cid, (d, h)) <- onAssets]
+      $ [HarmAsset cid d h | (cid, (d, h)) <- soaked]
       <> [ ApplyHarm
              plan.investigator
              plan.source
              (plan.damage - taken plan.damageTo)
              (plan.horror - taken plan.horrorTo)
+         , HarmResolved plan
          ]
+  HarmResolved plan -> do
+    playing <- investigatorIsPlaying plan.investigator
+    when playing $ afterHarmFor plan >>= pushAll
+  AddTestSuccesses n -> do
+    inTest <- uses #test isJust
+    if inTest then #test . _Just . #addedSuccesses += n else #pendingSuccesses += n
   HarmAsset cid dmg hor -> do
     assetL cid . #damage += dmg
     assetL cid . #horror += hor
@@ -571,9 +580,15 @@ runMessage msg = case msg of
         monsterL mid . #damage += n
         mh <- monsterHealth mid
         m' <- getMonster mid
-        case mh of
-          Just h | m'.damage >= h -> push (DefeatMonster mid src)
-          _ -> pure ()
+        -- A card that answers damage (Lita Chantler) strikes after the defeat
+        -- check, so a monster this damage already killed is simply no longer there
+        -- to strike -- DealMonsterDamage no-ops for a monster out of play.
+        answers <- afterMonsterDamagedFor mid src
+        pushAll
+          $ case mh of
+            Just h | m'.damage >= h -> [DefeatMonster mid src]
+            _ -> []
+          <> answers
   DefeatMonster mid _ -> do
     logText "Monster defeated"
     push (DiscardMonster mid)
@@ -638,8 +653,11 @@ runMessage msg = case msg of
         when d.remnant $ addRemnants iid 1
         pure True
       Just m -> pure (m.damage > before)
+    gone <- uses #monsters (not . Map.member mid)
     retaliators <- filterM (hasKeyword Retaliate . (.card)) =<< engagedMonsters iid
-    pushAll [MonsterAttacks r.card iid | r <- retaliators, r.card /= mid || not dealt]
+    pushAll
+      $ [MonsterAttacks r.card iid | r <- retaliators, r.card /= mid || not dealt]
+      <> [CheckReactions (AfterDefeatMonsterInAttack iid) [] | gone]
   ClearSpaceDoom sid -> spaceL sid . #doom .= 0
   WardRemove iid sid n -> do
     s <- getSpace sid
@@ -1300,25 +1318,33 @@ buyPrompt ctx mtrait half limit ifBought bought = do
   markup <- displayMarkup iid
   display <- use (#decks . #display)
   i <- getInvestigator iid
-  options <- fmap catMaybes $ for display \cid -> do
+  priced <- fmap catMaybes $ for display \cid -> do
     ok <- maybe (pure True) (\t -> cardMatches (WithTrait t) cid) mtrait
     md <- assetDef cid
     pure do
       d <- md
       v <- (+ markup) <$> d.value
-      let price = if half then (v + 1) `div` 2 else v
-      guard (ok && price <= i.money)
-      pure (cid, price)
+      guard ok
+      pure (cid, if half then (v + 1) `div` 2 else v)
+  -- a card that halves a price (Fine Clothes, Henry Wan) says it does not stack,
+  -- so it is offered only on a purchase that is not halved already
+  discounts <- if half then pure [] else halfPriceCards iid
+  let options = [o | o@(_, price) <- priced, price <= i.money]
+      more = BuyFromDisplayMore ctx mtrait half limit ifBought (bought + 1)
+      halved price = (price + 1) `div` 2
   if maybe False (bought >=) limit
     then pushAll finish
     else
       chooseFor iid "Buy from the display"
         $ Choice (DoneLabel "Done") finish
-        : [ Choice
-              (CardLabel cid)
-              [BuyCard iid cid price, BuyFromDisplayMore ctx mtrait half limit ifBought (bought + 1)]
-          | (cid, price) <- options
-          ]
+        : [Choice (CardLabel cid) [BuyCard iid cid price, more] | (cid, price) <- options]
+          <> [ Choice
+                 (CardsLabel (name <> ": half price") [dcid, cid])
+                 [MarkAssetUsed iid dcid, BuyCard iid cid (halved price), more]
+             | (dcid, name) <- discounts
+             , (cid, price) <- priced
+             , halved price <= i.money
+             ]
 
 displayMarkup :: InvestigatorId -> GameM Int
 displayMarkup iid = do

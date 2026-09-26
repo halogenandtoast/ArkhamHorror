@@ -5,12 +5,15 @@ import AH3e.Engine.Behavior
 import AH3e.Engine.Monad
 import AH3e.Engine.Query
 import AH3e.Game
+import AH3e.Message
 import AH3e.Prelude
 import AH3e.Types.Board
+import AH3e.Types.Card
 import AH3e.Types.Effect
 import AH3e.Types.Ids
 import AH3e.Types.Skill
 import AH3e.Types.State
+import Data.List (nub)
 import Data.Map.Strict qualified as Map
 
 assetBehavior :: CardId -> GameM AssetBehavior
@@ -117,13 +120,75 @@ reactionsFor trigger = do
         b.reactions cid trigger
       pure (sheet <> cards)
 
--- | Ways the tested investigator's cards can change the dice they just rolled.
-dieOptionsFor :: TestState -> GameM [Reaction]
-dieOptionsFor ts = do
+{- | Harm on its way onto a card, less whatever the card itself prevents. The
+prevented harm is gone rather than moved, and the card counts as used.
+-}
+preventOwnHarm :: InvestigatorId -> CardId -> (Int, Int) -> GameM (Int, Int)
+preventOwnHarm iid cid (dmg, hor) = do
+  b <- assetBehavior cid
+  used <- usedThisRound cid iid
+  case b.preventsOwnHarm of
+    Just (stat, threshold, amount) | not used -> do
+      let taken = case stat of DamageStat -> dmg; HorrorStat -> hor
+      if taken < threshold
+        then pure (dmg, hor)
+        else do
+          name <- (.name) <$> getCardDef cid
+          let what = case stat of DamageStat -> " damage"; HorrorStat -> " horror"
+          logText (name <> " prevents " <> tshow amount <> what)
+          investigatorL iid . #usedAssets %= (<> [cid])
+          pure case stat of
+            DamageStat -> (dmg - amount, hor)
+            HorrorStat -> (dmg, hor - amount)
+    _ -> pure (dmg, hor)
+
+{- | What anyone's cards do about a monster that just took damage. Every
+investigator in play is asked, since the card need not belong to whoever dealt it.
+-}
+afterMonsterDamagedFor :: CardId -> Source -> GameM [Message]
+afterMonsterDamagedFor mid src = do
+  invs <- playingInvestigators
+  fmap concat $ for invs \i ->
+    fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+      b <- assetBehavior cid
+      b.afterMonsterDamaged cid i.id mid src
+
+{- | What the sufferer's cards do about a harm plan that has landed. A card the
+harm destroyed is still asked, since it did suffer what destroyed it.
+-}
+afterHarmFor :: HarmPlan -> GameM [Message]
+afterHarmFor plan = do
+  i <- getInvestigator plan.investigator
+  let assigned = [cid | Just (cid, _) <- [plan.damageTo, plan.horrorTo]]
+      cards = nub ([c | c <- i.assets, c `notElem` i.lockedAssets] <> assigned)
+  fmap concat $ for cards \cid -> do
+    b <- assetBehavior cid
+    b.afterHarm cid plan.investigator plan
+
+-- | Cards that could halve a purchase for this investigator, with their names.
+halfPriceCards :: InvestigatorId -> GameM [(CardId, Text)]
+halfPriceCards iid = do
+  i <- getInvestigator iid
+  fmap catMaybes $ for [c | c <- i.assets, c `notElem` i.lockedAssets, c `notElem` i.usedAssets] \cid -> do
+    b <- assetBehavior cid
+    name <- (.name) <$> getCardDef cid
+    pure $ if b.halfPricePerRound then Just (cid, name) else Nothing
+
+-- | Successes the tested investigator's cards add beyond one per passing die.
+extraSuccessesFor :: TestState -> GameM Int
+extraSuccessesFor ts = do
+  i <- getInvestigator ts.investigator
+  sum <$> for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+    b <- assetBehavior cid
+    b.extraSuccesses cid ts.investigator ts
+
+-- | What the tested investigator's cards offer while their test resolves.
+testOptionsFor :: TestState -> GameM [Reaction]
+testOptionsFor ts = do
   i <- getInvestigator ts.investigator
   fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
     b <- assetBehavior cid
-    b.dieOptions cid ts.investigator ts
+    b.testOptions cid ts.investigator ts
 
 -- | Cards anyone in play holds that may prevent the damage about to be suffered.
 damagePreventionsFor :: HarmPlan -> GameM [(InvestigatorId, Reaction)]

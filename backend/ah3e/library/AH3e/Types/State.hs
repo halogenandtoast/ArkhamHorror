@@ -58,6 +58,9 @@ data EffectCtx = EffectCtx
 
 data Trigger
   = AfterGatherResources InvestigatorId
+  | AfterResearchAction InvestigatorId
+  | -- | the monster defeated is gone by now, so only the attacker is carried
+    AfterDefeatMonsterInAttack InvestigatorId
   | DrewBlankToken InvestigatorId
   | SpentFocusToReroll InvestigatorId
   | AfterCastSpell InvestigatorId CardId
@@ -67,6 +70,8 @@ data Trigger
 triggerInvestigator :: Trigger -> InvestigatorId
 triggerInvestigator = \case
   AfterGatherResources iid -> iid
+  AfterResearchAction iid -> iid
+  AfterDefeatMonsterInAttack iid -> iid
   DrewBlankToken iid -> iid
   SpentFocusToReroll iid -> iid
   AfterCastSpell iid _ -> iid

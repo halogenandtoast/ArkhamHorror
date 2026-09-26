@@ -48,11 +48,33 @@ data AssetBehavior = AssetBehavior
   -- ^ additional actions its owner may perform during their turn (402.3)
   , afterGainedFromDeck :: Maybe Effect
   -- ^ resolved for its new owner after the card comes out of its deck, not after a trade
-  , dieOptions :: CardId -> InvestigatorId -> TestState -> GameM [Reaction]
-  {- ^ ways this card can change dice already rolled (490.3) -- a reroll, or a
-  die's result. Offered at the manipulate-dice step; whatever limit the card
-  prints, its own messages record ('MarkAssetUsed' per round, 'MarkUsedInTest'
-  per test).
+  , testOptions :: CardId -> InvestigatorId -> TestState -> GameM [Reaction]
+  {- ^ what this card offers while a test of its owner's is resolving: a reroll or
+  a die's result (490.3), successes, or anything else it prints "as part of" the
+  action. Offered at the manipulate-dice step; whatever limit the card prints, its
+  own messages record ('MarkAssetUsed' per round, 'MarkUsedInTest' per test).
+  -}
+  , halfPricePerRound :: Bool
+  {- ^ once per round, its owner may buy one card at half price, rounded up. The
+  card says it does not stack, so it is not offered on a purchase already halved.
+  -}
+  , extraSuccesses :: CardId -> InvestigatorId -> TestState -> GameM Int
+  {- ^ successes this card adds to the count beyond one per passing die, read as
+  the test finishes (Shotgun's sixes).
+  -}
+  , preventsOwnHarm :: Maybe (HarmStat, Int, Int)
+  {- ^ once per round, when this much or more of that harm is dealt to this card,
+  prevent this much of it. Printed without a "may", so it is not offered, it just
+  happens (Bulletproof Vest, Elder Sign Amulet).
+  -}
+  , afterMonsterDamaged :: CardId -> InvestigatorId -> CardId -> Source -> GameM [Message]
+  {- ^ what this card does after a monster takes damage, wherever the monster is
+  and whoever dealt it. Consulted for every investigator in play, so a card can
+  answer damage another investigator dealt (Lita Chantler).
+  -}
+  , afterHarm :: CardId -> InvestigatorId -> HarmPlan -> GameM [Message]
+  {- ^ what this card does once a harm plan has landed, whether the harm reached
+  the card or its owner. Still consulted for a card the harm destroyed.
   -}
   , damagePrevention :: CardId -> InvestigatorId -> HarmPlan -> GameM [Reaction]
   {- ^ once per round, offered to its owner while anyone would suffer damage,
@@ -78,7 +100,12 @@ defaultAssetBehavior =
     , moveBySpell = Nothing
     , extraActions = 0
     , afterGainedFromDeck = Nothing
-    , dieOptions = \_ _ _ -> pure []
+    , preventsOwnHarm = Nothing
+    , afterMonsterDamaged = \_ _ _ _ -> pure []
+    , afterHarm = \_ _ _ -> pure []
+    , testOptions = \_ _ _ -> pure []
+    , halfPricePerRound = False
+    , extraSuccesses = \_ _ _ -> pure 0
     , damagePrevention = \_ _ _ -> pure []
     }
 

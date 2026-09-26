@@ -96,6 +96,12 @@ data Message
   | HarmChooseAmount HarmStat CardId Int HarmPlan
   | ResolveHarm HarmPlan
   | HarmAsset CardId Int Int
+  | -- | the cards of whoever suffered it answer a harm plan that has landed
+    HarmResolved HarmPlan
+  | {- | add successes to the test in progress, or to the next one to begin when a
+    card promises them while paying for a spell
+    -}
+    AddTestSuccesses Int
   | ApplyHarm InvestigatorId Source Int Int
   | CheckDefeat InvestigatorId
   | DefeatInvestigator InvestigatorId

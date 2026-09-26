@@ -36,7 +36,12 @@ beginTest ts = do
   playing <- investigatorIsPlaying ts.investigator
   if playing
     then do
-      let fresh = ts {step = DeterminePool, dice = [], chosenAssets = [], addedSuccesses = 0, usedInTest = []}
+      -- a card that promised successes while the spell was being paid for has
+      -- been waiting for this test to exist
+      promised <- use #pendingSuccesses
+      #pendingSuccesses .= 0
+      let fresh =
+            ts {step = DeterminePool, dice = [], chosenAssets = [], addedSuccesses = promised, usedInTest = []}
       -- A bonus that takes no hands competes with nothing, and its card states it
       -- flatly ("you get +2 strength as part of an attack action"), so it starts
       -- switched on and the prompt still lets it be switched off. Once-per-round
@@ -117,7 +122,7 @@ testPrompt = do
           $ if b.freeRerollPerRound
             then Just (Choice (CardLabel c) [MarkAssetUsed iid c, SpendForReroll (FreeReroll (SourceCard c))])
             else Nothing
-      fromCards <- dieOptionsFor ts
+      fromCards <- testOptionsFor ts
       chooseFor
         iid
         "Modify your dice"
@@ -237,7 +242,9 @@ finishTest :: GameM ()
 finishTest = do
   ts <- currentTest
   threshold <- successThreshold ts
-  let successes = length [d | d <- ts.dice, not d.removed, d.value >= threshold] + ts.addedSuccesses
+  extra <- extraSuccessesFor ts
+  let successes =
+        length [d | d <- ts.dice, not d.removed, d.value >= threshold] + ts.addedSuccesses + extra
   #test .= Nothing
   logText ("Test result: " <> tshow successes)
   spendBlessCurse ts.investigator (successes > 0)

@@ -135,6 +135,10 @@ data Game = Game
   , activatedMonsters :: [CardId]
   , terrorEncountered :: [InvestigatorId]
   , test :: Maybe TestState
+  , pendingSuccesses :: Int
+  {- ^ Successes a card promised before its test began -- a spell's cast cost
+  lands before the casting test does -- picked up by the next test to start.
+  -}
   , damagePrevented :: Int
   {- ^ Damage a prevention test just prevented, waiting for the harm it was
   cast against to pick it up (416.6).

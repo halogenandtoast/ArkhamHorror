@@ -173,7 +173,11 @@ data Message
   | BuyFromDisplayChecked EffectCtx (Maybe Trait) Bool (Maybe Int) Effect
   | IgnoreRumor InvestigatorId
   | GainItemFromDeck InvestigatorId AssetDeckKind (Maybe Trait) (Maybe ValueBound)
-  | BuyRevealed EffectCtx AssetDeckKind [CardId] (Maybe Int) Bool Int
+  | BuyRevealed EffectCtx AssetDeckKind [CardId] (Maybe Int) Pricing Int
+  | -- | take clues off the scenario sheet, for a card that spends them
+    SpendSheetClues Int
+  | -- | put this many of the pool's markers on the scenario sheet
+    MarkSheet Int
   | ReturnToBottom AssetDeckKind [CardId]
   | GainFromDisplay InvestigatorId CardId
   | RecoverInvestigator InvestigatorId Int Int

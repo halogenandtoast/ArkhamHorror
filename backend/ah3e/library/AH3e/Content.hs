@@ -13,6 +13,7 @@ module AH3e.Content (
 import AH3e.Content.Allies qualified as Allies
 import AH3e.Content.Conditions qualified as Conditions
 import AH3e.Content.Core.ApproachOfAzathoth qualified as ApproachOfAzathoth
+import AH3e.Content.Core.FeastOfUmordhoth qualified as FeastOfUmordhoth
 import AH3e.Content.Core.Investigators qualified as Investigators
 import AH3e.Content.Core.NeighborhoodCards qualified as NeighborhoodCards
 import AH3e.Content.Headlines qualified as Headlines
@@ -37,6 +38,7 @@ cardDefs =
     [ (d.code, d)
     | d <-
         ApproachOfAzathoth.cards
+          <> FeastOfUmordhoth.cards
           <> Investigators.cards
           <> NeighborhoodCards.cards
           <> StreetCards.cards
@@ -59,7 +61,8 @@ investigatorDef :: InvestigatorId -> Maybe InvestigatorDef
 investigatorDef iid = Map.lookup iid investigatorDefs
 
 scenarioDefs :: Map ScenarioCode ScenarioDef
-scenarioDefs = Map.fromList [(d.code, d) | d <- [ApproachOfAzathoth.scenario]]
+scenarioDefs =
+  Map.fromList [(d.code, d) | d <- [ApproachOfAzathoth.scenario, FeastOfUmordhoth.scenario]]
 
 scenarioDef :: ScenarioCode -> Maybe ScenarioDef
 scenarioDef code = Map.lookup code scenarioDefs

@@ -67,6 +67,7 @@ scenario =
           spaceIdFor
           ["Arkham Advertiser", "Independence Square", "Velma's Diner", "Unvisited Isle", "Black Cave"]
     , eventCards = [CardCode ("aoa-event-" <> pad n) | n <- [1 .. 24 :: Int]]
+    , setAside = []
     , codex = [2, 3]
     , anomalySet = Just "Temporal Fissure"
     , terrorSet = Nothing

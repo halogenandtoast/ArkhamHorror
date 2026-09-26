@@ -214,6 +214,28 @@ castingTest ctx cid modifier after =
 whileEngaged :: AssetBehavior -> AssetBehavior
 whileEngaged = #componentActions . each . #allowedWhileEngaged .~ True
 
+{- | What a monster card does beyond its printed stats. Epic monsters especially
+carry text of their own, and it belongs with the monster rather than on whichever
+codex card happens to describe it.
+-}
+data MonsterBehavior = MonsterBehavior
+  { testOptions :: CardId -> InvestigatorId -> TestState -> GameM [Reaction]
+  -- ^ what it offers whoever is testing against it, at the manipulate-dice step
+  , healthDelta :: CardId -> GameM Int
+  -- ^ added to its printed health as things stand, which a card may reduce
+  , removedWhenDefeated :: Bool
+  -- ^ goes back to the box rather than to the monster deck
+  }
+  deriving stock Generic
+
+defaultMonsterBehavior :: MonsterBehavior
+defaultMonsterBehavior =
+  MonsterBehavior
+    { testOptions = \_ _ _ -> pure []
+    , healthDelta = \_ -> pure 0
+    , removedWhenDefeated = False
+    }
+
 data CodexTrigger = CodexTrigger
   { key :: Text
   , once :: Bool
@@ -227,6 +249,9 @@ data CodexBehavior = CodexBehavior
   , onFlip :: CodexEntry -> GameM ()
   , triggers :: [CodexTrigger]
   , reckoning :: CodexEntry -> Maybe Effect
+  , afterMonsterSpawn :: CodexEntry -> CardId -> GameM [Message]
+  -- ^ answers a monster arriving on the board, wherever it came from
+  , afterMonsterDefeated :: CodexEntry -> CardId -> GameM [Message]
   , componentActions :: [ComponentActionDef]
   , blockedSpaces :: CodexEntry -> GameM [SpaceId]
   , spaceEncounter :: CodexEntry -> SpaceId -> Maybe Effect
@@ -240,6 +265,8 @@ defaultCodexBehavior =
     , onFlip = \_ -> pure ()
     , triggers = []
     , reckoning = const Nothing
+    , afterMonsterSpawn = \_ _ -> pure []
+    , afterMonsterDefeated = \_ _ -> pure []
     , componentActions = []
     , blockedSpaces = \_ -> pure []
     , spaceEncounter = \_ _ -> Nothing
@@ -266,6 +293,7 @@ defaultInvestigatorBehavior =
 
 data Behaviors = Behaviors
   { assets :: Map CardCode AssetBehavior
+  , monsters :: Map CardCode MonsterBehavior
   , codex :: Map ArchiveNumber CodexBehavior
   , investigators :: Map InvestigatorId InvestigatorBehavior
   , customAfterTests :: Map Text (Source -> Int -> GameM ())
@@ -281,6 +309,7 @@ instance Semigroup Behaviors where
   a <> b =
     Behaviors
       (a.assets <> b.assets)
+      (a.monsters <> b.monsters)
       (a.codex <> b.codex)
       (a.investigators <> b.investigators)
       (a.customAfterTests <> b.customAfterTests)
@@ -288,4 +317,4 @@ instance Semigroup Behaviors where
       (a.customActivations <> b.customActivations)
 
 instance Monoid Behaviors where
-  mempty = Behaviors mempty mempty mempty mempty mempty mempty
+  mempty = Behaviors mempty mempty mempty mempty mempty mempty mempty

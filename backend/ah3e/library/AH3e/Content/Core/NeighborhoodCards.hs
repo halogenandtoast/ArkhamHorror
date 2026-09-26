@@ -1254,7 +1254,7 @@ uptown =
         ,
           ( "Ye Olde Magick Shoppe"
           , "\"That's enough browsing!\" Startled, you jerk up to see Miriam Beecher, the proprietor, at your shoulder. \"If you're not buying, then get out!\" Reveal the top three spells in the deck. You may buy one of them for half price (rounded up). Put the rest on the bottom of the deck."
-          , spells 3 (Just 1) True
+          , spells 3 (Just 1) HalfPrice
           )
         ]
       )
@@ -1324,7 +1324,7 @@ uptown =
         ,
           ( "Ye Olde Magick Shoppe"
           , "\"These books were owned by the Comte de Saint Germain himself,\" explains Miriam Beecher. \"So you know I can't let 'em go cheap.\" Reveal the top four spells in the deck. You may buy any number of them. Put the rest on the bottom of the deck."
-          , spells 4 Nothing False
+          , spells 4 Nothing FullPrice
           )
         ]
       )
@@ -1344,7 +1344,7 @@ uptown =
         ,
           ( "Ye Olde Magick Shoppe"
           , "Miriam Beecher agrees to teach you meditation exercises. You focus lore even if it exceeds your focus limit. \"That was just a taste,\" she says. \"I charge for the advanced classes.\" Reveal the top three spells in the deck. You may buy one of them. Then put the rest on the bottom of the deck."
-          , Seq [Focus (Just Lore) True, spells 3 (Just 1) False]
+          , Seq [Focus (Just Lore) True, spells 3 (Just 1) FullPrice]
           )
         ]
       )
@@ -1364,7 +1364,7 @@ uptown =
         ,
           ( "Ye Olde Magick Shoppe"
           , "The proprietor Miriam Beecher motions to you. \"For a real aficionado like yourself, I keep a special collection of our rarest offerings in the back room. Care for a look?\" Reveal the top four spells in the deck. You may buy any number of them. Put the rest on the bottom of the deck."
-          , spells 4 Nothing False
+          , spells 4 Nothing FullPrice
           )
         ]
       )
@@ -1384,7 +1384,7 @@ uptown =
         ,
           ( "Ye Olde Magick Shoppe"
           , "\"You're in luck,\" Miriam Beecher tells you. \"I just got this box of books from a collector in Boston. I haven't had a chance to sort it yet. Have a look and make me an offer!\" Reveal the top three spells in the deck. You may buy any number of them. Put the rest on the bottom of the deck."
-          , spells 3 Nothing False
+          , spells 3 Nothing FullPrice
           )
         ]
       )

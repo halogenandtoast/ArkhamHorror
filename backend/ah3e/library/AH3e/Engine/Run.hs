@@ -589,7 +589,7 @@ runMessage msg = case msg of
         _ -> pure ()
       unless blocked do
         monsterL mid . #damage += n
-        mh <- monsterHealth mid
+        mh <- effectiveMonsterHealth mid
         m' <- getMonster mid
         -- A card that answers damage (Lita Chantler) strikes after the defeat
         -- check, so a monster this damage already killed is simply no longer there
@@ -602,12 +602,17 @@ runMessage msg = case msg of
           <> answers
   DefeatMonster mid _ -> do
     logText "Monster defeated"
-    push (DiscardMonster mid)
+    answers <- codexAboutMonster (.afterMonsterDefeated) mid
+    pushAll (DiscardMonster mid : answers)
   DiscardMonster mid -> do
     d <- monsterDef mid
+    gone <- (.removedWhenDefeated) <$> monsterBehavior mid
     #monsters . at mid .= Nothing
     #provoked . at mid .= Nothing
     if
+      -- a card may take a monster out of the game entirely, as the worshipers of
+      -- Umordhoth are taken once they are dealt with
+      | gone -> #decks . #removed %= (mid :)
       | d.epic -> #decks . #archive %= (mid :)
       | Shrouded `elem` d.keywords -> do
           deck <- use (#decks . #monster)
@@ -626,7 +631,8 @@ runMessage msg = case msg of
             $ spaceChoices spaces \s -> [PlaceMonster mid s (if exhausted then Exhausted else Ready)]
   PlaceMonster mid sid state -> do
     #monsters . at mid ?= Monster {card = mid, space = sid, state, damage = 0}
-    push (MonsterEngagesIn mid sid)
+    answers <- codexAboutMonster (.afterMonsterSpawn) mid
+    pushAll (MonsterEngagesIn mid sid : answers)
   AttackDamage iid mid n -> do
     exists <- uses #monsters (Map.member mid)
     when exists do
@@ -841,6 +847,10 @@ runMessage msg = case msg of
   AcknowledgeMythosToken pid tok ->
     ask pid ("Mythos: " <> mythosTokenName tok) [Choice (DoneLabel "Continue") []]
   ClearActiveToken -> #activeToken .= Nothing
+  SpendSheetClues n -> #sheetClues %= max 0 . subtract n
+  MarkSheet n -> do
+    #sheetMarkers += n
+    push CheckStateTriggers
   DiscardClue Nothing -> #sheetClues %= max 0 . subtract 1
   DiscardClue (Just iid) -> addClues iid (-1)
   ResearchClues iid n -> do
@@ -1450,8 +1460,8 @@ gainFromDeck iid kind mtrait mbound = do
       assetDeckLens kind .= map fst after <> back
       pushAll [GainAsset iid cid, AfterGainedFromDeck iid cid]
 
-buyRevealed :: EffectCtx -> AssetDeckKind -> [CardId] -> Maybe Int -> Bool -> Int -> GameM ()
-buyRevealed ctx kind revealed limit half bought = do
+buyRevealed :: EffectCtx -> AssetDeckKind -> [CardId] -> Maybe Int -> Pricing -> Int -> GameM ()
+buyRevealed ctx kind revealed limit pricing bought = do
   let iid = ctx.investigator
       finish = [ReturnToBottom kind revealed]
   i <- getInvestigator iid
@@ -1459,7 +1469,10 @@ buyRevealed ctx kind revealed limit half bought = do
     mv <- cardValue cid
     pure do
       v <- mv
-      let price = if half then (v + 1) `div` 2 else v
+      let price = case pricing of
+            FullPrice -> v
+            HalfPrice -> (v + 1) `div` 2
+            FlatPrice flat -> flat
       guard (price <= i.money)
       pure (cid, price)
   if maybe False (bought >=) limit || null revealed
@@ -1471,7 +1484,7 @@ buyRevealed ctx kind revealed limit half bought = do
               (CardLabel cid)
               [ BuyCard iid cid price
               , AfterGainedFromDeck iid cid
-              , BuyRevealed ctx kind (filter (/= cid) revealed) limit half (bought + 1)
+              , BuyRevealed ctx kind (filter (/= cid) revealed) limit pricing (bought + 1)
               ]
           | (cid, price) <- options
           ]
@@ -1631,6 +1644,7 @@ resolveEncounter iid deck = do
         , card = cid
         , deck = deck
         , gainedNeighborhoodClue = False
+        , returnToArchive = False
         , section = Nothing
         }
     d <- getCardDef cid
@@ -1719,16 +1733,18 @@ finishEncounter = do
   for_ menc \enc -> #activeCard %= \cur -> if cur == Just enc.card then Nothing else cur
   for_ menc \enc -> do
     d <- getCardDef enc.card
-    case (d.kind, enc.deck) of
-      (EventCard e, _)
-        | enc.gainedNeighborhoodClue -> #decks . #eventDiscard %= (enc.card :)
-        | otherwise -> do
-            let l :: Lens' Game [CardId]
-                l = #decks . #neighborhoods . at e.neighborhood . non []
-            deck <- use l
-            l <~ shuffleIntoTopTwo enc.card deck
-      (_, TerrorDeck _) -> #decks . #terror %= (<> [enc.card])
-      (_, deck) -> deckLens deck %= (<> [enc.card])
+    if enc.returnToArchive
+      then #decks . #archive %= (enc.card :)
+      else case (d.kind, enc.deck) of
+        (EventCard e, _)
+          | enc.gainedNeighborhoodClue -> #decks . #eventDiscard %= (enc.card :)
+          | otherwise -> do
+              let l :: Lens' Game [CardId]
+                  l = #decks . #neighborhoods . at e.neighborhood . non []
+              deck <- use l
+              l <~ shuffleIntoTopTwo enc.card deck
+        (_, TerrorDeck _) -> #decks . #terror %= (<> [enc.card])
+        (_, deck) -> deckLens deck %= (<> [enc.card])
 
 setupScenarioDecks :: GameM ()
 setupScenarioDecks = do

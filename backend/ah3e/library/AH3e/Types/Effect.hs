@@ -8,6 +8,11 @@ data AssetDeckKind = ItemDeckKind | AllyDeckKind | SpellDeckKind
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+-- | What a card charges for something bought from a deck or the display.
+data Pricing = FullPrice | HalfPrice | FlatPrice Int
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data ValueBound = AtMost Int | AtLeast Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -129,8 +134,9 @@ data Effect
   | BuyFromDisplay (Maybe Trait) Bool (Maybe Int) Effect
   | Focus (Maybe Skill) Bool
   | DiscardAFocus
-  | BuyFromDeck AssetDeckKind Int (Maybe Int) Bool
+  | BuyFromDeck AssetDeckKind Int (Maybe Int) Pricing
   | PlaceCluesOnSheet Amount
+  | DoomOnSheet Amount
   | SufferDamage Amount
   | SufferHorror Amount
   | SufferHarmE Amount Amount

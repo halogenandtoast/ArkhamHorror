@@ -70,15 +70,16 @@ resolveEffect ctx eff0 = do
         iid
         "Discard a focus"
         [Choice (SkillLabel s) [DiscardFocus iid s] | (s, n) <- Map.toList i.focus, n > 0]
-    BuyFromDeck kind n limit half -> when playing do
+    BuyFromDeck kind n limit pricing -> when playing do
       deck <- use (assetDeckLens kind)
       let (revealed, rest) = splitAt n deck
       assetDeckLens kind .= rest
       logText ("Revealed " <> tshow (length revealed) <> " cards")
-      push (BuyRevealed ctx kind revealed limit half 0)
+      push (BuyRevealed ctx kind revealed limit pricing 0)
     PlaceCluesOnSheet a -> do
       #sheetClues += amt a
       push CheckStateTriggers
+    DoomOnSheet a -> push (PlaceDoomOnSheet (amt a))
     Focus mskill evenIfExceeds -> when playing do
       i <- getInvestigator iid
       let options = [s | s <- maybe allSkills pure mskill, Map.findWithDefault 0 s i.focus == 0]
@@ -182,6 +183,7 @@ fixCounts ctx = \case
   RemoveDoomFrom w a -> RemoveDoomFrom w <$> f a
   PlaceDoomAt w a -> PlaceDoomAt w <$> f a
   PlaceCluesOnSheet a -> PlaceCluesOnSheet <$> f a
+  DoomOnSheet a -> DoomOnSheet <$> f a
   GainE (Money a) -> GainE . Money <$> f a
   GainE (Clues a) -> GainE . Clues <$> f a
   GainE (Remnants a) -> GainE . Remnants <$> f a

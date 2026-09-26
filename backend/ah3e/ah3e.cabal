@@ -18,6 +18,8 @@ library
       AH3e.Content.Conditions
       AH3e.Content.Core.ApproachOfAzathoth
       AH3e.Content.Core.ApproachOfAzathothBehaviors
+      AH3e.Content.Core.FeastOfUmordhoth
+      AH3e.Content.Core.FeastOfUmordhothBehaviors
       AH3e.Content.Core.InvestigatorBehaviors
       AH3e.Content.Core.Investigators
       AH3e.Content.Core.NeighborhoodCards

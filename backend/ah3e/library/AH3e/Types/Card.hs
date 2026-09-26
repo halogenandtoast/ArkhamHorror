@@ -247,6 +247,11 @@ data ScenarioDef = ScenarioDef
   , mythosCup :: [(MythosToken, Int)]
   , startingDoom :: [SpaceId]
   , eventCards :: [CardCode]
+  , setAside :: [CardCode]
+  {- ^ Cards the setup holds back: the monsters a sheet says to set aside, and the
+  cards it leaves in the archive for a codex card to take later. They are kept out
+  of the deck they would otherwise be shuffled into.
+  -}
   , codex :: [ArchiveNumber]
   , anomalySet :: Maybe Text
   , terrorSet :: Maybe Text

@@ -5,7 +5,7 @@ viewer can't cheaply derive on its own.
 module AH3e.View (catalogView, gameView) where
 
 import AH3e.Content (ScenarioInfo (..), cardDef, investigatorDefs, scenarioCatalog, scenarioDefs)
-import AH3e.Engine.Hooks (actionAllowance)
+import AH3e.Engine.Hooks (actionAllowance, effectiveMonsterHealth)
 import AH3e.Engine.Query (unstableSpaces)
 import AH3e.Game
 import AH3e.Prelude hiding ((.=))
@@ -54,6 +54,13 @@ gameView g =
            , Just (MonsterCard d) <- [(.kind) <$> (Map.lookup cid g.cards >>= cardDef)]
            , Massive `elem` d.keywords
            ]
+    , -- a card may reduce a monster's health, so the board is told what it is now
+      "monsterHealth"
+        .= Map.fromList
+          [ (cid, h)
+          | cid <- Map.keys g.monsters
+          , Just h <- [evalState (effectiveMonsterHealth cid) g]
+          ]
     , -- how many actions each investigator may take on their turn
       "actionAllowance"
         .= Map.fromList [(iid, evalState (actionAllowance iid) g) | iid <- Map.keys g.investigators]

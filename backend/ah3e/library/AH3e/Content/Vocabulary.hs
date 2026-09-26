@@ -54,5 +54,5 @@ buyAny t = BuyFromDisplay (Just t) False Nothing NoEffect
 buyOne t = BuyFromDisplay (Just t) False (Just 1) NoEffect
 buyOneHalf t = BuyFromDisplay (Just t) True (Just 1) NoEffect
 
-spells :: Int -> Maybe Int -> Bool -> Effect
+spells :: Int -> Maybe Int -> Pricing -> Effect
 spells = BuyFromDeck SpellDeckKind

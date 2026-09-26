@@ -21,6 +21,11 @@ assetBehavior cid = do
   code <- cardCode cid
   pure $ Map.findWithDefault defaultAssetBehavior code behaviors.assets
 
+monsterBehavior :: CardId -> GameM MonsterBehavior
+monsterBehavior mid = do
+  code <- cardCode mid
+  pure $ Map.findWithDefault defaultMonsterBehavior code behaviors.monsters
+
 codexBehavior :: ArchiveNumber -> CodexBehavior
 codexBehavior n = Map.findWithDefault defaultCodexBehavior n behaviors.codex
 
@@ -203,13 +208,43 @@ extraSuccessesFor ts = do
     b <- assetBehavior cid
     b.extraSuccesses cid ts.investigator ts
 
--- | What the tested investigator's cards offer while their test resolves.
+{- | What is offered while a test resolves: the tested investigator's own cards,
+and the monster they are testing against, which may have text of its own.
+-}
 testOptionsFor :: TestState -> GameM [Reaction]
 testOptionsFor ts = do
   i <- getInvestigator ts.investigator
-  fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+  fromCards <- fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
     b <- assetBehavior cid
     b.testOptions cid ts.investigator ts
+  fromMonster <- case ts.kind of
+    ActionTest _ (Just mid) -> do
+      present <- uses #monsters (Map.member mid)
+      if present
+        then do
+          b <- monsterBehavior mid
+          b.testOptions mid ts.investigator ts
+        else pure []
+    _ -> pure []
+  pure (fromCards <> fromMonster)
+
+{- | A monster's health as it stands: what its card prints, plus its elite health
+per investigator, less whatever a card in play takes off it. Never below one, so a
+monster is defeated by damage rather than by arithmetic.
+-}
+effectiveMonsterHealth :: CardId -> GameM (Maybe Int)
+effectiveMonsterHealth mid = do
+  base <- monsterHealth mid
+  b <- monsterBehavior mid
+  delta <- b.healthDelta mid
+  pure (max 1 . (+ delta) <$> base)
+
+-- | What the codex says about a monster arriving, or being defeated.
+codexAboutMonster
+  :: (CodexBehavior -> CodexEntry -> CardId -> GameM [Message]) -> CardId -> GameM [Message]
+codexAboutMonster which mid = do
+  codex <- use #codex
+  fmap concat $ for codex \e -> which (codexBehavior e.number) e mid
 
 -- | Cards anyone in play holds that may prevent the damage about to be suffered.
 damagePreventionsFor :: HarmPlan -> GameM [(InvestigatorId, Reaction)]

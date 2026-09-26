@@ -129,6 +129,8 @@ data Game = Game
   , codex :: [CodexEntry]
   , sheetDoom :: Int
   , sheetClues :: Int
+  , sheetMarkers :: Int
+  -- ^ markers a scenario sheet has collected, which some cards count (429.7)
   , cup :: [MythosToken]
   , drawnTokens :: [MythosToken]
   , turn :: Maybe InvestigatorId

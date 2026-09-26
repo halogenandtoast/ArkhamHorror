@@ -54,6 +54,7 @@ emptyGame pids seed opts =
     , codex = []
     , sheetDoom = 0
     , sheetClues = 0
+    , sheetMarkers = 0
     , cup = []
     , drawnTokens = []
     , turn = Nothing
@@ -102,7 +103,7 @@ setupScenario sc = do
   let onBoard nid = Map.member nid board.neighborhoods
       kinds = map (.kind) (Map.elems board.spaces)
       hasKind p = any p kinds
-  for_ defs \d -> case d.kind of
+  for_ [d | d <- defs, d.code `notElem` sc.setAside] \d -> case d.kind of
     NeighborhoodCard nid _ | onBoard nid -> do
       cids <- copiesOf d
       #decks . #neighborhoods . at nid %= Just . (<> cids) . fromMaybe []
@@ -133,6 +134,8 @@ setupScenario sc = do
   #decks . #street <~ (use (#decks . #street) >>= shuffle)
   #decks . #travelRoute <~ (use (#decks . #travelRoute) >>= shuffle)
   #decks . #threshold <~ (use (#decks . #threshold) >>= shuffle)
+  aside <- fmap concat $ for (mapMaybe cardDef sc.setAside) copiesOf
+  #decks . #setAside %= (<> aside)
   -- 103
   events <- for sc.eventCards newCard
   #decks . #event <~ shuffle events

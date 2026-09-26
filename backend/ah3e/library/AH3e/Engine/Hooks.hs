@@ -165,6 +165,14 @@ afterHarmFor plan = do
     b <- assetBehavior cid
     b.afterHarm cid plan.investigator plan
 
+-- | What this investigator's cards do about clues they just gained.
+afterGainClueFor :: InvestigatorId -> GameM [Message]
+afterGainClueFor iid = do
+  i <- getInvestigator iid
+  fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+    b <- assetBehavior cid
+    b.afterGainClue cid iid
+
 {- | Whether this monster passes this investigator by: a non-epic monster, an
 investigator wearing something that hides them, and no provocation from them yet.
 -}

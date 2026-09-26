@@ -71,6 +71,10 @@ data AssetBehavior = AssetBehavior
   prevent this much of it. Printed without a "may", so it is not offered, it just
   happens (Bulletproof Vest, Elder Sign Amulet).
   -}
+  , afterGainClue :: CardId -> InvestigatorId -> GameM [Message]
+  {- ^ what this card does when its owner gains clues. Not offered but done, for a
+  card that says "you gain" rather than "you may" (Reporting Gig).
+  -}
   , afterMonsterDamaged :: CardId -> InvestigatorId -> CardId -> Source -> GameM [Message]
   {- ^ what this card does after a monster takes damage, wherever the monster is
   and whoever dealt it. Consulted for every investigator in play, so a card can
@@ -105,6 +109,7 @@ defaultAssetBehavior =
     , extraActions = 0
     , afterGainedFromDeck = Nothing
     , preventsOwnHarm = Nothing
+    , afterGainClue = \_ _ -> pure []
     , afterMonsterDamaged = \_ _ _ _ -> pure []
     , afterHarm = \_ _ _ -> pure []
     , testOptions = \_ _ _ -> pure []

@@ -332,7 +332,10 @@ runMessage msg = case msg of
   AcknowledgeEncounter ->
     use #encounter >>= traverse_ \enc ->
       chooseFor enc.investigator "Encounter resolved" [Choice (DoneLabel "Continue") []]
-  FinishEncounter -> finishEncounter
+  FinishEncounter -> do
+    who <- uses #encounter (fmap (.investigator))
+    finishEncounter
+    for_ who \iid -> push (CheckReactions (AfterEncounter iid) [])
   EndEncounterTurn iid -> do
     investigatorL iid . #active .= True
     #turn .= Nothing

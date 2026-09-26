@@ -195,7 +195,9 @@ gain ctx g = do
       amt = evalAmount ctx
   case g of
     Money a -> addMoney iid (amt a)
-    Clues a -> addClues iid (amt a)
+    Clues a -> do
+      addClues iid (amt a)
+      when (amt a > 0) $ afterGainClueFor iid >>= pushAll
     Remnants a -> addRemnants iid (amt a)
     ClueFromNeighborhood -> do
       msid <- investigatorSpace iid
@@ -228,6 +230,7 @@ gain ctx g = do
   gained = do
     addClues ctx.investigator 1
     #encounter . _Just . #gainedNeighborhoodClue .= True
+    afterGainClueFor ctx.investigator >>= pushAll
 
 recover :: EffectCtx -> Recipient -> Int -> Int -> GameM ()
 recover ctx r hp sp = do

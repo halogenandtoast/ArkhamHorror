@@ -15,7 +15,10 @@ import Data.Map.Strict qualified as Map
 
 behaviors :: Behaviors
 behaviors =
-  mempty
+  ( mempty
+      & #customEffects
+      .~ Map.fromList [("clover-club-gamble", gamble), ("mysterious-serum", serum)]
+  )
     & #assets
     .~ Map.fromList
       [
@@ -23,6 +26,7 @@ behaviors =
         , rerollInstead "ace-of-rods" "Ace of Rods: reroll any number of dice instead" liveDiceCount
         )
       , ("astrolabe", astrolabe)
+      , ("clover-club-member", cloverClubMember)
       , ("contraband-whiskey", contrabandWhiskey)
       , ("deputy-of-arkham", deputyOfArkham)
       , ("gravedigger", gatherTalent "gravedigger" "Gravedigger" "rivertown" Strength)
@@ -35,7 +39,13 @@ behaviors =
             & #reckoning
             ?~ MayPay (SpendFocus 1) NoEffect (SufferHorror (N 1))
         )
+      ,
+        ( "mysterious-serum"
+        , cardAction "Mysterious Serum: discard to recover fully" (Custom "mysterious-serum")
+        )
       , ("performer", gatherTalent "performer" "Performer" "merchant-district" Influence)
+      , ("rare-books-access", rareBooksAccess)
+      , ("reporting-gig", reportingGig)
       , ("server-at-velmas", gatherTalent "server-at-velmas" "Server at Velma's" "easttown" Influence)
       , ("service-piece", testBonuses [OnAction AttackAction Strength 2])
       , ("stevedore", gatherTalent "stevedore" "Stevedore" "merchant-district" Strength)
@@ -144,3 +154,75 @@ deputyOfArkham =
     .~ \_ _ ts -> do
       phase <- use #phase
       pure $ if phase == EncounterPhase && ts.skill == Observation then Just 1 else Nothing
+
+{- | "After you perform a gather resources action in the Downtown neighborhood, you
+may spend $2 to gamble."
+-}
+cloverClubMember :: AssetBehavior
+cloverClubMember =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      AfterGatherResources iid -> do
+        here <- investigatorNeighborhood iid
+        i <- getInvestigator iid
+        let ctx = EffectCtx iid (SourceCard cid) Nothing
+        pure
+          [ Reaction
+              "clover-club-member"
+              "Clover Club Member: spend $2 to gamble"
+              [ResolveEffect ctx (Pay (SpendMoney 2) (Custom "clover-club-gamble"))]
+          | here == Just "downtown"
+          , i.money >= 2
+          ]
+      _ -> pure []
+
+-- | rule 474: a roll outside a test, so nothing can reroll or modify it
+gamble :: EffectCtx -> GameM ()
+gamble ctx = do
+  n <- rollDie
+  logText ("Rolled " <> tshow n <> " and gains $" <> tshow n)
+  addMoney ctx.investigator n
+
+{- | "Action: Discard this card to recover all of your health and sanity and focus
+one skill of your choice, even if it exceeds your focus limit."
+-}
+serum :: EffectCtx -> GameM ()
+serum ctx = do
+  i <- getInvestigator ctx.investigator
+  pushAll
+    $ [DiscardAsset cid | SourceCard cid <- [ctx.source]]
+    <> [ RecoverInvestigator ctx.investigator i.damage i.horror
+       , ResolveEffect ctx (Focus Nothing True)
+       ]
+
+{- | "After you have an encounter in the Miskatonic University neighborhood, you may
+discard one tome if you have one. If you do, or if you have no tomes, you gain one
+tome item."
+-}
+rareBooksAccess :: AssetBehavior
+rareBooksAccess =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      AfterEncounter iid -> do
+        here <- investigatorNeighborhood iid
+        let tome = GainE (AnItem (Just "Tome"))
+            swap = If (HasCard (WithTrait "Tome")) (Pay (CostDiscard (WithTrait "Tome")) tome) tome
+        pure
+          [ Reaction
+              "rare-books-access"
+              "Rare Books Access: trade a tome for a tome"
+              [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) swap]
+          | here == Just "miskatonic-university"
+          ]
+      _ -> pure []
+
+{- | "+1 observation as part of a research action. After you gain a clue, you gain
+\$2." The money is not offered but taken, once per handful of clues.
+-}
+reportingGig :: AssetBehavior
+reportingGig =
+  testBonuses [OnAction ResearchAction Observation 1]
+    & #afterGainClue
+    .~ \cid iid -> pure [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (GainE (Money (N 2)))]

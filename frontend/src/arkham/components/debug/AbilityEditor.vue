@@ -271,9 +271,18 @@ type Entry = {
 }
 
 /* Everything this card does, in one list. Repeated labels are numbered, because
- * two abilities both called Forced are otherwise two identical tabs. */
+ * two abilities both called Forced are otherwise two identical tabs.
+ *
+ * Constants come first. They hold while the card is in play and are the
+ * conditions the abilities below them are read against, so they belong at the
+ * front -- and there is no ordering between the two kinds to drag, since an
+ * ability's position is its index in `_abilities` and a constant's is its place
+ * in `_modifiers`. The strip's shape is this, not a preference. */
 const entries = computed<Entry[]>(() => {
   const out: Entry[] = []
+  modifiers.value.forEach((_, index) =>
+    out.push({ key: `constant:${index}`, label: 'Constant', kind: 'constant', index, fixed: false }),
+  )
   abilities.value.forEach((ability, index) =>
     out.push({
       key: `ability:${index}`,
@@ -283,9 +292,6 @@ const entries = computed<Entry[]>(() => {
       fixed: false,
       icon: abilityKind(ability)?.icon,
     }),
-  )
-  modifiers.value.forEach((_, index) =>
-    out.push({ key: `constant:${index}`, label: 'Constant', kind: 'constant', index, fixed: false }),
   )
   if (hasRevelation.value) {
     out.push({
@@ -328,10 +334,12 @@ const isOpen = (kind: EntryKind, index = 0) =>
 
 // --- reordering ---
 
-/* Tabs drag to reorder, within their own kind: an ability's position is its
- * number on the card, and a constant's is the order its modifiers are collected
- * in. Revelation and the elder sign are one each, so there is nothing to order
- * and they do not drag. */
+/* Tabs drag to reorder within their own kind, because that is the only order that
+ * means anything: an ability's position is its number on the card, and a
+ * constant's is the order its modifiers are collected in. Across kinds there is
+ * nothing to change -- the two are separate lists, and the strip always shows
+ * constants first. Revelation and the elder sign are one each, so there is
+ * nothing to order and they do not drag. */
 const canOrder = (entry: Entry) => entry.kind === 'ability' || entry.kind === 'constant'
 
 const dragKey = ref('')

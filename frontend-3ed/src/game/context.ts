@@ -41,10 +41,15 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   const cardCode = (cid: CardId | string) => view.value?.cardCodes?.[cid] ?? slug(cardNameRaw(cid) ?? cid)
   /* A handful of cards sit in the archive rather than in a deck -- Feast of
   Umordhoth's cards 13 to 19, which the codex deals out -- so their art is the
-  archive's, numbered, not the card deck's. */
+  archive's, numbered, not the card deck's. Cards 13 to 17 wait in the archive with
+  their number facing out, so the encounter they carry is on the far side and their
+  faces read the other way round from a codex card's. */
+  const NUMBER_FACING_OUT = new Set([13, 14, 15, 16, 17])
   const archiveArt = (code: string, flipped: boolean) => {
     const m = /^feast-(\d{1,2})$/.exec(code)
-    return m ? archiveImage(+m[1], flipped) : null
+    if (!m) return null
+    const n = +m[1]
+    return archiveImage(n, NUMBER_FACING_OUT.has(n) ? !flipped : flipped)
   }
   const cardFace = (cid: CardId, flipped: boolean) => {
     const code = cardCode(cid)

@@ -47,6 +47,9 @@ beginTest ts = do
       -- switched on and the prompt still lets it be switched off. Once-per-round
       -- dice ('roundBonusAssets') are a resource, so they stay opt-in.
       free <- map (\(cid, _, _) -> cid) . filter (\(_, _, hands) -> hands == 0) <$> usableTestAssets fresh
+      -- a card that tests while a test is resolving interrupts it rather than
+      -- replacing it, so whatever was in progress waits underneath
+      use #test >>= traverse_ \outer -> #suspendedTests %= (outer :)
       #test ?= fresh {chosenAssets = free}
       testPrompt
     else resolveAfter ts 0
@@ -152,7 +155,12 @@ rollTestDice = do
   -- the threshold rides along: blessed and cursed move it, and the log is read later
   need <- successThreshold ts
   logText ("Rolled " <> tshow values <> " need " <> tshow need)
-  testPrompt
+  -- a card of someone else's may answer this test (Intervene), and that is their
+  -- decision, so each of them is asked before the roller carries on
+  others <- filter ((/= ts.investigator) . (.id)) <$> playingInvestigators
+  pushAll
+    $ [CheckReactions (AnotherResolvesTest o.id ts.investigator) [] | o <- others]
+    <> [ContinueTest]
 
 chooseRerollDie :: RerollCost -> GameM ()
 chooseRerollDie cost = do
@@ -245,7 +253,11 @@ finishTest = do
   extra <- extraSuccessesFor ts
   let successes =
         length [d | d <- ts.dice, not d.removed, d.value >= threshold] + ts.addedSuccesses + extra
-  #test .= Nothing
+  -- the test this one interrupted comes back before this result is resolved, so a
+  -- result that boosts it lands on the right test
+  waiting <- use #suspendedTests
+  #test .= listToMaybe waiting
+  #suspendedTests .= drop 1 waiting
   logText ("Test result: " <> tshow successes)
   spendBlessCurse ts.investigator (successes > 0)
   resolveAfter ts successes
@@ -270,4 +282,7 @@ resolveAfter ts r = case ts.after of
   AfterPreventDamage -> #damagePrevented += r
   AfterExhaustMonster mid -> when (r > 0) $ push (ExhaustMonster mid)
   AfterMoveSpell iid bonus -> push (MoveStep (MoveState iid (r + bonus) 0 0 True False))
+  AfterBoostTest -> do
+    interrupted <- uses #test isJust
+    pushAll $ AddTestSuccesses r : [ContinueTest | interrupted]
   AfterCustom _ key -> logText ("Missing custom test continuation: " <> key)

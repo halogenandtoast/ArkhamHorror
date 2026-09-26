@@ -30,7 +30,9 @@ behaviors =
         , spellAction "Find Gate: move to a space with doom" 0 (MoveDirectlyTo AnySpaceWithDoom)
         )
       , ("flesh-ward", fleshWard)
+      , ("intervene", intervene)
       , ("mists-of-rlyeh", defaultAssetBehavior & #evadeSkillInstead ?~ Lore)
+      , ("wither", wither)
       ,
         ( "healing-words"
         , spellAction
@@ -91,3 +93,43 @@ fleshWard =
             ]
         | plan.damage > 0
         ]
+
+{- | Cast as part of an attack action: its own lore test interrupts the attack's,
+and its result is added to the attack's when it finishes.
+-}
+wither :: AssetBehavior
+wither =
+  defaultAssetBehavior
+    & #testOptions
+    .~ \cid iid ts ->
+      pure
+        [ Reaction
+            "wither"
+            "Wither: test lore and add the result to this attack"
+            [ MarkUsedInTest cid
+            , castingTest (EffectCtx iid (SourceCard cid) Nothing) cid (-1) AfterBoostTest
+            ]
+        | cid `notElem` ts.usedInTest
+        , ActionTest AttackAction _ <- [ts.kind]
+        ]
+
+{- | Offered to its owner while somebody else is resolving a test, so the owner
+decides whether to pay for it. Their result is added to the test they interrupted.
+-}
+intervene :: AssetBehavior
+intervene =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      AnotherResolvesTest owner _ -> do
+        used <- usedThisRound cid owner
+        pure
+          [ Reaction
+              "intervene"
+              "Intervene: test lore and add the result to their test"
+              [ MarkAssetUsed owner cid
+              , castingTest (EffectCtx owner (SourceCard cid) Nothing) cid (-1) AfterBoostTest
+              ]
+          | not used
+          ]
+      _ -> pure []

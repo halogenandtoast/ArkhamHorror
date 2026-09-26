@@ -60,6 +60,7 @@ emptyGame pids seed opts =
     , activatedMonsters = []
     , terrorEncountered = []
     , test = Nothing
+    , suspendedTests = []
     , provoked = mempty
     , pendingSuccesses = 0
     , damagePrevented = 0

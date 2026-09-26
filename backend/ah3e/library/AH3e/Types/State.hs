@@ -57,7 +57,9 @@ data EffectCtx = EffectCtx
   deriving anyclass (ToJSON, FromJSON)
 
 data Trigger
-  = AfterGatherResources InvestigatorId
+  = -- | the owner of a card may act while someone else's test is resolving
+    AnotherResolvesTest InvestigatorId InvestigatorId
+  | AfterGatherResources InvestigatorId
   | AfterResearchAction InvestigatorId
   | -- | the monster defeated is gone by now, so only the attacker is carried
     AfterDefeatMonsterInAttack InvestigatorId
@@ -69,6 +71,7 @@ data Trigger
 
 triggerInvestigator :: Trigger -> InvestigatorId
 triggerInvestigator = \case
+  AnotherResolvesTest owner _ -> owner
   AfterGatherResources iid -> iid
   AfterResearchAction iid -> iid
   AfterDefeatMonsterInAttack iid -> iid
@@ -125,6 +128,8 @@ data AfterTest
     AfterExhaustMonster CardId
   | -- | move this many spaces beyond the result, for a spell taken as a move action
     AfterMoveSpell InvestigatorId Int
+  | -- | add the result to the test this one interrupted
+    AfterBoostTest
   | AfterCustom Source Text
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

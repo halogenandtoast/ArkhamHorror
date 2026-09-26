@@ -135,6 +135,11 @@ data Game = Game
   , activatedMonsters :: [CardId]
   , terrorEncountered :: [InvestigatorId]
   , test :: Maybe TestState
+  , suspendedTests :: [TestState]
+  {- ^ Tests waiting for the one in 'test' to finish, innermost first. A card that
+  tests while another test resolves (Wither, Intervene) stacks one on another, and
+  the view still shows whichever is being resolved now.
+  -}
   , provoked :: Map CardId [InvestigatorId]
   {- ^ Who has attacked or damaged each monster. A monster that would otherwise
   pass an investigator by (Tattered Cloak) still engages the ones who provoked it.

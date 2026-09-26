@@ -159,7 +159,7 @@ runMessage msg = case msg of
                       a -> ActionLabel a
                 chooseFor
                   iid
-                  "Perform an action"
+                  actionPrompt
                   ([Choice (actionLabel a) [PerformAction iid a] | a <- actions] <> [endTurn])
   StandUp iid -> do
     investigatorL iid . #delayed .= False
@@ -1035,7 +1035,9 @@ runMessage msg = case msg of
     #status .= Lost reason
     #queue .= []
     logText ("The investigators lose: " <> reason)
-  Debug action -> runDebug action
+  Debug action -> do
+    runDebug action
+    refreshActionPrompt
   AfterGainedFromDeck iid cid -> do
     b <- assetBehavior cid
     for_ b.afterGainedFromDeck \eff -> push (ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) eff)
@@ -1181,6 +1183,23 @@ feed plan mid = do
       name <- (.name) <$> getCardDef mid
       logText (name <> " feeds, recovering " <> tshow fed <> " health")
       #monsters . ix mid . #damage %= max 0 . subtract fed
+
+-- | What the turn player is asked while choosing what to do with an action.
+actionPrompt :: Text
+actionPrompt = "Perform an action"
+
+{- | A debug change can add or remove what the turn player may do -- clues make a
+research action legal, a defeated monster makes an attack illegal -- so their action
+prompt is asked again. It goes behind whatever the change itself set going, so the
+options are read after that has resolved.
+-}
+refreshActionPrompt :: GameM ()
+refreshActionPrompt = do
+  mturn <- use #turn
+  for_ mturn \iid -> do
+    pid <- playerOf iid
+    asked <- uses #questions (fmap (.prompt) . Map.lookup pid)
+    when (asked == Just actionPrompt) $ pushEnd (ActionTurn iid)
 
 enterWith :: MoveState -> SpaceId -> GameM Bool
 enterWith ms sid =

@@ -146,32 +146,6 @@ afterGatherIf usable key lbl eff =
             pure [Reaction key lbl [ResolveEffect (EffectCtx iid (SourceInvestigator iid) Nothing) eff] | ok]
       _ -> pure []
 
-{- | When a test asset adds dice: "+N skill as part of an X action", or "+N lore
-while casting a spell".
--}
-data TestBonus = OnAction ActionKind Skill Int | WhileCasting Int
-
-{- | A test asset whose bonuses add up for the tests they match; it is chosen like
-any other test asset and takes its printed hands.
--}
-testBonuses :: [TestBonus] -> AssetBehavior
-testBonuses bonuses =
-  defaultAssetBehavior
-    & #testDice
-    .~ \_ _ ts -> pure case [n | b <- bonuses, Just n <- [applies ts b]] of
-      [] -> Nothing
-      ns -> Just (sum ns)
- where
-  applies ts = \case
-    OnAction action skill n | ActionTest a _ <- ts.kind, a == action, ts.skill == skill -> Just n
-    WhileCasting n | isJust ts.casting || isSpellTest ts.kind, ts.skill == Lore -> Just n
-    _ -> Nothing
-
-isSpellTest :: TestKind -> Bool
-isSpellTest = \case
-  SpellTest _ -> True
-  _ -> False
-
 isStrengthAttack :: TestState -> Bool
 isStrengthAttack ts =
   ts.skill == Strength && case ts.kind of

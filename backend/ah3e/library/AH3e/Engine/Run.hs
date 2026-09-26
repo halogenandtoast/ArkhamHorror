@@ -544,6 +544,7 @@ runMessage msg = case msg of
   HarmResolved plan -> do
     playing <- investigatorIsPlaying plan.investigator
     when playing $ afterHarmFor plan >>= pushAll
+    for_ [mid | SourceMonster mid <- [plan.source]] (feed plan)
   AddTestSuccesses n -> do
     inTest <- uses #test isJust
     if inTest then #test . _Just . #addedSuccesses += n else #pendingSuccesses += n
@@ -1150,6 +1151,26 @@ performAction iid kind = do
                 CodexRef a' -> SourceCodex a'
           push after
           a.perform (EffectCtx iid src Nothing)
+
+{- | Feed: "after this monster deals damage to an investigator or ally, it recovers
+that much health". Damage an item soaked is not damage an investigator or an ally
+took, so it feeds nothing, and neither does horror.
+-}
+feed :: HarmPlan -> CardId -> GameM ()
+feed plan mid = do
+  feeds <- hasKeyword Feed mid
+  here <- uses #monsters (Map.member mid)
+  when (feeds && here) do
+    onAlly <- case plan.damageTo of
+      Just (cid, k) -> do
+        ty <- fmap (.assetType) <$> assetDef cid
+        pure (if ty == Just Ally then k else 0)
+      Nothing -> pure 0
+    let fed = plan.damage - maybe 0 snd plan.damageTo + onAlly
+    when (fed > 0) do
+      name <- (.name) <$> getCardDef mid
+      logText (name <> " feeds, recovering " <> tshow fed <> " health")
+      #monsters . ix mid . #damage %= max 0 . subtract fed
 
 enterWith :: MoveState -> SpaceId -> GameM Bool
 enterWith ms sid =

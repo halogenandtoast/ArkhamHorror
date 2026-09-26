@@ -27,6 +27,70 @@ effects rather than drawn from the monster deck.
 noSpawnText :: SpaceRule
 noSpawnText = CustomSpaceRule "no spawn text"
 
+{- | The monsters that leave a remnant behind when they are defeated (429.9). The
+cultists and the human enemies leave nothing, so the list is shorter than the deck.
+-}
+remnantMonsters :: [CardCode]
+remnantMonsters =
+  [ "abyssal-servant"
+  , "altered-beast"
+  , "altered-servant"
+  , "avian-thrall"
+  , "cantor-of-rlyeh"
+  , "capricious-stalker"
+  , "cerebral-extractor"
+  , "confounding-specter"
+  , "corben-bouchard"
+  , "corpse-taker"
+  , "coursing-hound"
+  , "crashing-specter"
+  , "crawling-one"
+  , "crazed-fiend"
+  , "creeping-ghoul"
+  , "cruel-slaver"
+  , "dread-shadow"
+  , "entranced-hybrid"
+  , "eyeless-watcher"
+  , "feasting-master"
+  , "flesh-eater"
+  , "frenzied-hunter"
+  , "ghoul-acolyte"
+  , "ghoul-priest"
+  , "gluttonous-giant"
+  , "grasping-fungus"
+  , "guardian-beast"
+  , "hovering-byakhee"
+  , "hulking-thrall"
+  , "icebound-captive"
+  , "keening-hound"
+  , "lodge-seer"
+  , "lupine-thrall"
+  , "menacing-bulk"
+  , "morphic-terror"
+  , "nightmarish-fiend"
+  , "ocean-scion"
+  , "pale-lord"
+  , "ravenous-predator"
+  , "river-skulk"
+  , "rlyeh-guardian"
+  , "sanguinous-wraith"
+  , "sea-singer"
+  , "shallows-predator"
+  , "shoreline-brute"
+  , "siobhan-riley"
+  , "swift-byakhee"
+  , "swooping-scavenger"
+  , "taloned-cannibal"
+  , "tindalos-alpha"
+  , "tunneling-dhole"
+  , "twilight-sentry"
+  , "undulating-mass"
+  , "vicious-glutton"
+  , "void-touched"
+  , "vomitous-wraith"
+  , "wake-titan"
+  ]
+
 monster
   :: CardCode
   -> Text
@@ -101,7 +165,7 @@ monsterWith code name copies traits speed spawn activation (health, elite) (atk,
           , evadeModifier = evade
           , damage
           , horror
-          , remnant = False
+          , remnant = code `elem` remnantMonsters
           , keywords
           , epic = False
           , text

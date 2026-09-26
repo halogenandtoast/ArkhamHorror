@@ -261,4 +261,6 @@ resolveAfter ts r = case ts.after of
   AfterWard iid sid -> push (WardRemove iid sid r)
   AfterSpell _ _ -> logText "Spell resolution not implemented"
   AfterPreventDamage -> #damagePrevented += r
+  AfterExhaustMonster mid -> when (r > 0) $ push (ExhaustMonster mid)
+  AfterMoveSpell iid bonus -> push (MoveStep (MoveState iid (r + bonus) 0 0 True False))
   AfterCustom _ key -> logText ("Missing custom test continuation: " <> key)

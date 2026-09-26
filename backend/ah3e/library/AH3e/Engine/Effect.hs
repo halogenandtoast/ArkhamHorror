@@ -122,6 +122,16 @@ resolveEffect ctx eff0 = do
       unless restricted $ push (MoveStep (MoveState iid n 0 0 True False))
     MoveUpToIgnoringMonsters n -> when playing $ push (MoveStep (MoveState iid n 0 0 True True))
     MoveDirectlyTo w -> when playing $ withSpace ctx w MoveDirectlyTo \sid -> [MoveDirectly iid sid]
+    -- the spell picks the monster, not the space, so the spaces only set the reach
+    DamageMonsterIn w a -> when playing do
+      here <- spacesFor ctx w
+      monsters <- concat <$> traverse monstersAt here
+      let n = amt a
+      unless (n <= 0 || null monsters)
+        $ chooseFor
+          iid
+          ("Deal " <> tshow n <> " damage to a monster")
+          [Choice (MonsterLabel m.card) [DealMonsterDamage m.card ctx.source n] | m <- monsters]
     AddToCodex n -> push (AddArchiveToCodex n)
     FlipArchiveCard n -> push (FlipCodexCard n)
     RemoveFromCodex n -> push (RemoveCodexCard n)
@@ -267,6 +277,57 @@ scopeInvestigators ctx = \case
         matching <- filterM' sameHood invs
         pure [i.id | isJust nid, i <- matching]
 
+{- | The spaces a 'Where' names, from the point of view of whoever the effect
+belongs to. Shared by the space pickers and by effects that only need the reach.
+-}
+spacesFor :: EffectCtx -> Where -> GameM [SpaceId]
+spacesFor ctx w = do
+  let iid = ctx.investigator
+  case w of
+    YourSpace -> maybeToList <$> investigatorSpace iid
+    SpaceInYourNeighborhood -> yourNeighborhoodSpaces iid
+    OtherSpaceInYourNeighborhood -> do
+      mine <- investigatorSpace iid
+      filter ((/= mine) . Just) <$> yourNeighborhoodSpaces iid
+    AnySpace -> allNeighborhoodSpaces
+    DifferentSpaces _ excluded -> filter (`notElem` excluded) <$> allNeighborhoodSpaces
+    EachSpaceInYourNeighborhood -> yourNeighborhoodSpaces iid
+    TheSpace sid -> pure [sid]
+    TheUnstableSpace -> unstableSpaces
+    AdjacentSpaceWithMostDoom -> do
+      board <- use #board
+      msid <- case ctx.source of
+        SourceMonster m -> uses #monsters (fmap (.space) . Map.lookup m)
+        _ -> investigatorSpace iid
+      adj <- reachable (maybe [] (`adjacentSpaces` board) msid)
+      spaces <- traverse getSpace adj
+      pure case spaces of
+        [] -> []
+        _ -> let best = maximum (map (.doom) spaces) in [s.id | s <- spaces, s.doom == best]
+    AdjacentSpace -> do
+      board <- use #board
+      msid <- case ctx.source of
+        SourceMonster m -> uses #monsters (fmap (.space) . Map.lookup m)
+        _ -> investigatorSpace iid
+      reachable (maybe [] (`adjacentSpaces` board) msid)
+    YourSpaceOrAdjacent -> do
+      board <- use #board
+      msid <- investigatorSpace iid
+      reachable (maybeToList msid <> maybe [] (`adjacentSpaces` board) msid)
+    AnySpaceWithDoom -> do
+      spaces <- traverse getSpace =<< allNeighborhoodSpaces
+      reachable [s.id | s <- spaces, s.doom > 0]
+    AdjacentStreet -> do
+      board <- use #board
+      msid <- investigatorSpace iid
+      streets <-
+        filterM (fmap (isStreetLike . (.kind)) . getSpace) (maybe [] (`adjacentSpaces` board) msid)
+      reachable streets
+    SourceSpace -> case ctx.source of
+      SourceMonster mid -> uses #monsters (maybeToList . fmap (.space) . Map.lookup mid)
+      _ -> maybeToList <$> investigatorSpace iid
+    ScenarioSheet -> pure []
+
 withSpace :: EffectCtx -> Where -> (Where -> Effect) -> (SpaceId -> [Message]) -> GameM ()
 withSpace ctx w = withSpaceWhere ctx w (const (pure True))
 
@@ -280,44 +341,7 @@ withSpaceWhere
   -> GameM ()
 withSpaceWhere ctx w keep rebuild k = do
   let iid = ctx.investigator
-  candidates <-
-    filterM keep =<< case w of
-      YourSpace -> maybeToList <$> investigatorSpace iid
-      SpaceInYourNeighborhood -> yourNeighborhoodSpaces iid
-      OtherSpaceInYourNeighborhood -> do
-        mine <- investigatorSpace iid
-        filter ((/= mine) . Just) <$> yourNeighborhoodSpaces iid
-      AnySpace -> allNeighborhoodSpaces
-      DifferentSpaces _ excluded -> filter (`notElem` excluded) <$> allNeighborhoodSpaces
-      EachSpaceInYourNeighborhood -> yourNeighborhoodSpaces iid
-      TheSpace sid -> pure [sid]
-      TheUnstableSpace -> unstableSpaces
-      AdjacentSpaceWithMostDoom -> do
-        board <- use #board
-        msid <- case ctx.source of
-          SourceMonster m -> uses #monsters (fmap (.space) . Map.lookup m)
-          _ -> investigatorSpace iid
-        adj <- reachable (maybe [] (`adjacentSpaces` board) msid)
-        spaces <- traverse getSpace adj
-        pure case spaces of
-          [] -> []
-          _ -> let best = maximum (map (.doom) spaces) in [s.id | s <- spaces, s.doom == best]
-      AdjacentSpace -> do
-        board <- use #board
-        msid <- case ctx.source of
-          SourceMonster m -> uses #monsters (fmap (.space) . Map.lookup m)
-          _ -> investigatorSpace iid
-        reachable (maybe [] (`adjacentSpaces` board) msid)
-      AdjacentStreet -> do
-        board <- use #board
-        msid <- investigatorSpace iid
-        streets <-
-          filterM (fmap (isStreetLike . (.kind)) . getSpace) (maybe [] (`adjacentSpaces` board) msid)
-        reachable streets
-      SourceSpace -> case ctx.source of
-        SourceMonster mid -> uses #monsters (maybeToList . fmap (.space) . Map.lookup mid)
-        _ -> maybeToList <$> investigatorSpace iid
-      ScenarioSheet -> pure []
+  candidates <- filterM keep =<< spacesFor ctx w
   case w of
     EachSpaceInYourNeighborhood -> pushAll (concatMap k candidates)
     DifferentSpaces n excluded

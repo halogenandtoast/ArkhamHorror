@@ -1,5 +1,6 @@
 module AH3e.Engine.Behavior where
 
+import AH3e.Engine.Helpers
 import AH3e.Engine.Monad
 import AH3e.Engine.Query
 import AH3e.Game
@@ -37,6 +38,12 @@ data AssetBehavior = AssetBehavior
   -}
   , attackSkillInstead :: Maybe Skill
   -- ^ a skill its owner may test in place of strength as part of an attack action
+  , evadeSkillInstead :: Maybe Skill
+  -- ^ likewise in place of observation as part of an evade action
+  , moveBySpell :: Maybe (Skill, Int, Int)
+  {- ^ a spell taken instead of a normal move action: the skill to test, that
+  test's modifier, and the spaces added to its result.
+  -}
   , extraActions :: Int
   -- ^ additional actions its owner may perform during their turn (402.3)
   , afterGainedFromDeck :: Maybe Effect
@@ -67,6 +74,8 @@ defaultAssetBehavior =
     , freeRerollPerRound = False
     , bonusDicePerRound = \_ _ -> pure 0
     , attackSkillInstead = Nothing
+    , evadeSkillInstead = Nothing
+    , moveBySpell = Nothing
     , extraActions = 0
     , afterGainedFromDeck = Nothing
     , dieOptions = \_ _ _ -> pure []
@@ -125,6 +134,40 @@ cardAction lbl eff =
            , perform = \ctx -> push (ResolveEffect ctx eff)
            }
        ]
+
+{- | An "Action:" printed on a spell: it spends an action, casts the spell -- which
+pays its horror and may be interrupted -- and tests lore. The effect resolves
+with the result in hand, so "equal to your test result" reads straight off it,
+and a failed test resolves nothing.
+-}
+spellAction :: Text -> Int -> Effect -> AssetBehavior
+spellAction lbl modifier eff =
+  defaultAssetBehavior
+    & #componentActions
+    .~ [ ComponentActionDef
+           { label = lbl
+           , allowedWhileEngaged = False
+           , canPerform = \iid -> effectUseful (EffectCtx iid (SourceInvestigator iid) Nothing) eff
+           , perform = \ctx -> case ctx.source of
+               SourceCard cid -> push (castingTest ctx cid modifier (AfterEffect ctx eff NoEffect))
+               _ -> pure ()
+           }
+       ]
+
+{- | The cast plus its lore test, for a spell whose action is its own. Kept apart
+from 'spellAction' for spells that must choose a target before they know their
+modifier.
+-}
+castingTest :: EffectCtx -> CardId -> Int -> AfterTest -> Message
+castingTest ctx cid modifier after =
+  CastSpell
+    ctx.investigator
+    cid
+    [BeginTest (newTest ctx.investigator Lore modifier (SpellTest cid) after) {casting = Just cid}]
+
+-- | For a spell that prints "you can perform this action while engaged".
+whileEngaged :: AssetBehavior -> AssetBehavior
+whileEngaged = #componentActions . each . #allowedWhileEngaged .~ True
 
 data CodexTrigger = CodexTrigger
   { key :: Text

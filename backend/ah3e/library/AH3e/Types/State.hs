@@ -116,6 +116,10 @@ data AfterTest
   | AfterSpell InvestigatorId CardId
   | -- | the result is the damage a 'PreventDamage' step prevents
     AfterPreventDamage
+  | -- | exhaust this monster if the test passed
+    AfterExhaustMonster CardId
+  | -- | move this many spaces beyond the result, for a spell taken as a move action
+    AfterMoveSpell InvestigatorId Int
   | AfterCustom Source Text
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -30,8 +30,9 @@ newtype ConditionName = ConditionName Text
   deriving stock (Show, Eq, Ord, Generic)
   deriving newtype (ToJSON, FromJSON, IsString)
 
--- | Who a 'ForInvestigators' effect fans out over. Source-relative scopes read
--- the effect's source, so a lurking monster measures from its own space.
+{- | Who a 'ForInvestigators' effect fans out over. Source-relative scopes read
+the effect's source, so a lurking monster measures from its own space.
+-}
 data InvestigatorScope = EveryInvestigator | NearestToSource | InSourceNeighborhood
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -56,6 +57,8 @@ data Where
   | TheUnstableSpace
   | AdjacentStreet
   | AdjacentSpace
+  | YourSpaceOrAdjacent
+  | AnySpaceWithDoom
   | AdjacentSpaceWithMostDoom
   | SourceSpace
   | ScenarioSheet
@@ -142,6 +145,8 @@ data Effect
   | SpawnOneClue
   | SpawnMonster
   | SpawnMonsterIn Where Bool
+  | -- | one monster of their choice in reach suffers this much damage
+    DamageMonsterIn Where Amount
   | ResolveGateBurst
   | ReadHeadline
   | DrawMythosTokens Int

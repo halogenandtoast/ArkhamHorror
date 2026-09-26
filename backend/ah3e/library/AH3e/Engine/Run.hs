@@ -1034,8 +1034,14 @@ performAction iid kind = do
       vehicles <- fmap catMaybes $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \c -> do
         b <- assetBehavior c
         pure $ (c,) <$> b.moveAction
+      -- a spell like Astral Travel is taken instead of the move, so it belongs
+      -- among these choices rather than as an action of its own
+      spells <- fmap catMaybes $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \c -> do
+        b <- assetBehavior c
+        pure $ (c,) <$> b.moveBySpell
+      spellNames <- for spells \(c, offer) -> (c,offer,) . (.name) <$> getCardDef c
       let normal = [MoveStep (MoveState iid 2 0 2 True False), after]
-      if null vehicles
+      if null vehicles && null spells
         then pushAll normal
         else
           chooseFor iid "Move"
@@ -1043,6 +1049,16 @@ performAction iid kind = do
             : [ Choice (CardLabel c) [MarkAssetUsed iid c, MoveStep (MoveState iid steps 0 paid True False), after]
               | (c, (steps, paid)) <- vehicles
               ]
+              <> [ Choice
+                     (CardsLabel name [c])
+                     [ CastSpell
+                         iid
+                         c
+                         [BeginTest (newTest iid skill modifier (SpellTest c) (AfterMoveSpell iid bonus)) {casting = Just c}]
+                     , after
+                     ]
+                 | (c, (skill, modifier, bonus), name) <- spellNames
+                 ]
     GatherResourcesAction -> addMoney iid 1 >> push after
     FocusAction -> do
       i <- getInvestigator iid
@@ -1061,10 +1077,23 @@ performAction iid kind = do
     EvadeAction -> do
       ms <- engagedMonsters iid
       mods <- for ms \m -> (.evadeModifier) <$> monsterDef m.card
-      pushAll
-        [ BeginTest (newTest iid Observation (minimum mods) (ActionTest EvadeAction Nothing) (AfterEvade iid))
-        , after
-        ]
+      i <- getInvestigator iid
+      -- Mists of R'lyeh offers lore in place of observation; the monster's evade
+      -- modifier applies either way
+      alternatives <- fmap catMaybes $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \c ->
+        fmap (c,) . (.evadeSkillInstead) <$> assetBehavior c
+      let evadeTest skill = newTest iid skill (minimum mods) (ActionTest EvadeAction Nothing) (AfterEvade iid)
+      if null alternatives
+        then pushAll [BeginTest (evadeTest Observation), after]
+        else do
+          names <- for alternatives \(c, skill) -> (c,skill,) . (.name) <$> getCardDef c
+          chooseFor iid "Choose the skill to test"
+            $ label "Test observation" [BeginTest (evadeTest Observation), after]
+            : [ Choice
+                  (CardsLabel ("Test " <> T.toLower (tshow skill) <> " with " <> name) [c])
+                  [CastSpell iid c [BeginTest (evadeTest skill) {casting = Just c}], after]
+              | (c, skill, name) <- names
+              ]
     AttackAction -> do
       ms <- monstersAt sid
       chooseFor

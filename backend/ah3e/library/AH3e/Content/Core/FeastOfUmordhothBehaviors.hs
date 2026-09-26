@@ -94,7 +94,7 @@ freshMeat =
           spawnWorshiperWith iid "masked-hunter"
         for_ [13 .. 17 :: Int] \n -> dealHuntCard (CardCode ("feast-" <> tshow n))
         hoods <- uses (#board . #neighborhoods) Map.keys
-        for_ hoods \nid -> neighborhoodL nid . #markers %= (<> [Marker "hunt" False])
+        for_ hoods \nid -> neighborhoodL nid . #markers %= (<> [Marker "white" False])
         pushAll [AddArchiveToCodex 12, RemoveCodexCard 10]
     }
 

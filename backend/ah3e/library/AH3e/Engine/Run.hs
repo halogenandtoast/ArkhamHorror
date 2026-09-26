@@ -1792,6 +1792,8 @@ runDebug = \case
     pid <- playerOf iid
     push (ResolveMythosToken pid tok)
   DebugSetDelayed iid b -> investigatorL iid . #delayed .= b
+  -- through the usual path, so the opposing condition and any ban still apply
+  DebugGainCondition iid name -> push (GainConditionMsg iid name)
   DebugSetFocus iid skill n ->
     investigatorL iid . #focus . at skill .= (if n > 0 then Just n else Nothing)
   DebugDrawDeck iid deck -> debugDrawDeck iid deck

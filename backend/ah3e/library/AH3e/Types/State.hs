@@ -245,6 +245,8 @@ data DebugAction
   | DebugResolveEffect InvestigatorId Effect
   | DebugDrawMythos InvestigatorId MythosToken
   | DebugSetDelayed InvestigatorId Bool
+  | -- | hand over a condition by name, the way a card would (BLESSED, CURSED, ...)
+    DebugGainCondition InvestigatorId ConditionName
   | DebugSetFocus InvestigatorId Skill Int
   | DebugDrawDeck InvestigatorId DebugDeck
   | DebugDrawCard InvestigatorId DebugDeck CardId

@@ -136,7 +136,7 @@ const tileChips = computed(() => {
   if (!G) return []
   return G.L.tiles
     .map((t) => ({ t, n: g.value.board.neighborhoods[t.neighborhood] }))
-    .filter(({ n }) => n && (n.clues || n.anomaly || n.terror))
+    .filter(({ n }) => n && (n.clues || n.anomaly || n.terror || n.markers?.length))
 })
 
 function anchorInfo(sid: string) {
@@ -525,6 +525,10 @@ onUnmounted(() => {
             <Tok v-if="n.clues" name="clue" :count="n.clues" :title="`${n.clues} clues`" :size="30" />
             <Tok v-if="n.anomaly" name="anomaly" title="anomaly" :size="34" />
             <Tok v-if="n.terror" name="terror" :count="n.terror" :title="`${n.terror} terror`" :size="30" />
+            <template v-for="(m, k) in n.markers ?? []" :key="`nmarker-${k}`">
+              <Tok v-if="m.faceUp" :name="`${m.color}-marker`" :title="`${m.color} marker`" :size="30" />
+              <Tok v-else name="marker-back" title="facedown marker" :size="30" />
+            </template>
           </div>
         </div>
       </div>

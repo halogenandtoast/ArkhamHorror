@@ -63,6 +63,10 @@ function setDelayed(e: Event) {
 function gain() {
   void ctx.debugAction('DebugGainCard', [i.value.id, ctx.dbgCodeValue.value.trim()])
 }
+// conditions come by name rather than by card code, since one card carries two
+function gainCondition(name: string) {
+  void ctx.debugAction('DebugGainCondition', [i.value.id, name])
+}
 const standeeGone = computed(() => isBroken(standee.value))
 </script>
 
@@ -136,6 +140,10 @@ const standeeGone = computed(() => isBroken(standee.value))
         <label><input type="checkbox" :checked="i.delayed" @change="setDelayed" />delayed</label>
         <span class="dbg-gain"
           ><input v-model="ctx.dbgCodeValue.value" placeholder="card code" /><button @click="gain">Gain</button></span
+        >
+        <span class="dbg-gain"
+          ><button title="Become BLESSED" @click="gainCondition('BLESSED')">Bless</button
+          ><button title="Become CURSED" @click="gainCondition('CURSED')">Curse</button></span
         >
       </div>
       <div v-if="engaged.length" class="pa-engaged">

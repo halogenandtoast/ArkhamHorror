@@ -115,6 +115,7 @@ export interface Neighborhood {
   clues: number
   anomaly: boolean
   terror: number
+  markers: Marker[]
 }
 
 export interface Layout {

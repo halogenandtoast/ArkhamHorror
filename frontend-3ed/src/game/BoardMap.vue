@@ -176,6 +176,18 @@ const clearDrag = () => {
 // ---- pan & zoom --------------------------------------------------------------
 const view = { zoom: 1, x: 0, y: 0, base: 1, fresh: true }
 const MAX_ZOOM = 6
+/* The whole map can be turned a quarter at a time, for players sitting along a
+different side of the table. Everything drawn on the map turns with it -- tiles,
+streets, the space outlines -- while the pieces standing on it are turned back so
+they still read upright (see --map-rot). */
+const rotation = ref(((Number(readPref('ah3e-map-rot')) || 0) % 360 + 360) % 360)
+const quarterTurned = computed(() => rotation.value % 180 !== 0)
+function rotateMap() {
+  rotation.value = (rotation.value + 90) % 360
+  writePref('ah3e-map-rot', String(rotation.value))
+  view.fresh = true
+  applyView()
+}
 const zoomed = ref(false)
 const panning = ref(false)
 const isFull = () => document.body.classList.contains('map-full')
@@ -188,12 +200,13 @@ function applyView() {
   const W = board.offsetWidth,
     H = board.offsetHeight,
     vw = vp.clientWidth
-  view.base = full ? Math.min(vw / W, vp.clientHeight / H) : Math.min(1, vw / W)
-  fit.style.height = full ? `${vp.clientHeight}px` : `${H * view.base}px`
-  const vh = full ? vp.clientHeight : H * view.base
+  const [We, He] = boxSize(W, H)
+  view.base = full ? Math.min(vw / We, vp.clientHeight / He) : Math.min(1, vw / We)
+  fit.style.height = full ? `${vp.clientHeight}px` : `${He * view.base}px`
+  const vh = full ? vp.clientHeight : He * view.base
   const s = view.base * view.zoom,
-    bw = W * s,
-    bh = H * s
+    bw = We * s,
+    bh = He * s
   if (view.fresh) {
     view.x = (vw - bw) / 2
     view.y = (vh - bh) / 2
@@ -201,8 +214,44 @@ function applyView() {
   }
   view.x = bw <= vw ? (vw - bw) / 2 : Math.min(0, Math.max(vw - bw, view.x))
   view.y = bh <= vh ? (vh - bh) / 2 : Math.min(0, Math.max(vh - bh, view.y))
-  board.style.transform = `translate(${view.x}px, ${view.y}px) scale(${s})`
+  /* rotate about the board's centre, then bring the turned box back to the origin,
+  since the board is laid out from its top left */
+  board.style.transform =
+    `translate(${view.x}px, ${view.y}px) scale(${s})` +
+    ` translate(${We / 2}px, ${He / 2}px) rotate(${rotation.value}deg) translate(${-W / 2}px, ${-H / 2}px)`
+  board.style.setProperty('--map-rot', `${-rotation.value}deg`)
   zoomed.value = view.zoom > 1.001
+}
+
+// the turned box: a quarter turn swaps the map's width and height
+function boxSize(w: number, h: number): [number, number] {
+  return quarterTurned.value ? [h, w] : [w, h]
+}
+
+// a point on the map, in the turned box the view scrolls around
+function mapToBox(bx: number, by: number): [number, number] {
+  const board = boardEl.value
+  if (!board) return [bx, by]
+  const W = board.offsetWidth,
+    H = board.offsetHeight
+  const [We, He] = boxSize(W, H)
+  const a = (rotation.value * Math.PI) / 180
+  const dx = bx - W / 2,
+    dy = by - H / 2
+  return [Math.cos(a) * dx - Math.sin(a) * dy + We / 2, Math.sin(a) * dx + Math.cos(a) * dy + He / 2]
+}
+
+// and back again, for working out what was clicked
+function boxToMap(ux: number, uy: number): [number, number] {
+  const board = boardEl.value
+  if (!board) return [ux, uy]
+  const W = board.offsetWidth,
+    H = board.offsetHeight
+  const [We, He] = boxSize(W, H)
+  const a = (-rotation.value * Math.PI) / 180
+  const dx = ux - We / 2,
+    dy = uy - He / 2
+  return [Math.cos(a) * dx - Math.sin(a) * dy + W / 2, Math.sin(a) * dx + Math.cos(a) * dy + H / 2]
 }
 function zoomAt(factor: number, cx: number, cy: number) {
   const s = view.base * view.zoom
@@ -230,8 +279,9 @@ function zoomToTile(bx: number, by: number) {
   const s2 = Math.min((vw * 0.85) / TILE_W, (vh * 0.85) / TILE_H)
   view.zoom = Math.min(MAX_ZOOM, Math.max(1, s2 / view.base))
   const s = view.base * view.zoom
-  view.x = vw / 2 - bx * s
-  view.y = vh / 2 - by * s
+  const [ux, uy] = mapToBox(bx, by)
+  view.x = vw / 2 - ux * s
+  view.y = vh / 2 - uy * s
   applyView()
 }
 
@@ -295,8 +345,7 @@ function dblclick(e: MouseEvent) {
   }
   const r = vpEl.value!.getBoundingClientRect()
   const s = view.base * view.zoom
-  const bx = (e.clientX - r.left - view.x) / s,
-    by = (e.clientY - r.top - view.y) / s
+  const [bx, by] = boxToMap((e.clientX - r.left - view.x) / s, (e.clientY - r.top - view.y) / s)
   let best: [number, number] | null = null,
     dist = Infinity
   const G = geo.value
@@ -319,7 +368,8 @@ function keydown(e: KeyboardEvent) {
     return
   }
   if (e.metaKey || e.ctrlKey || e.altKey) return
-  if (e.key === '+' || e.key === '=') zoomBy(1.4)
+  if (e.key === 'r' || e.key === 'R') rotateMap()
+  else if (e.key === '+' || e.key === '=') zoomBy(1.4)
   else if (e.key === '-' || e.key === '_') zoomBy(1 / 1.4)
   else if (e.key === '0') resetView()
   else if (e.key === 't' || e.key === 'T') toggleTokens()
@@ -484,6 +534,14 @@ onUnmounted(() => {
       <button title="Zoom in (+)" aria-label="Zoom in" @click="zoomBy(1.4)">+</button>
       <button title="Fit the whole map (0)" aria-label="Fit map" @click="resetView()">⤢</button>
       <button
+        id="mapRotate"
+        :title="`Turn the map a quarter clockwise (R) — now ${rotation}°`"
+        aria-label="Rotate map"
+        @click="rotateMap()"
+      >
+        ⟳
+      </button>
+      <button
         id="tokensToggle"
         :title="hideTokens ? 'Show tokens (T)' : 'Hide tokens (T)'"
         :aria-label="hideTokens ? 'Show tokens' : 'Hide tokens'"
@@ -498,6 +556,6 @@ onUnmounted(() => {
       </button>
       <button id="mapFullToggle" title="Full screen map" aria-label="Full screen map" @click="toggleMapFull()">⛶</button>
     </div>
-    <div class="map-hint">Pinch or Ctrl-scroll to zoom · drag to pan · double-click a tile</div>
+    <div class="map-hint">Pinch or Ctrl-scroll to zoom · drag to pan · double-click a tile · R to turn the map</div>
   </div>
 </template>

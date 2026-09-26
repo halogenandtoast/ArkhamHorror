@@ -87,7 +87,7 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 .board-fit { position:relative; overflow:hidden; }
 .board { position:absolute; top:0; left:0; margin:0; transform-origin:top left; will-change:transform; }
 .board > img { position:absolute; pointer-events:none; user-select:none; }
-.anchor { position:absolute; transform:translate(-50%,-50%); display:flex; flex-wrap:wrap; justify-content:center; gap:3px; max-width:120px; min-width:26px; min-height:26px; border-radius:14px; padding:2px; }
+.anchor { position:absolute; transform:translate(-50%,-50%) rotate(var(--map-rot, 0deg)); display:flex; flex-wrap:wrap; justify-content:center; gap:3px; max-width:120px; min-width:26px; min-height:26px; border-radius:14px; padding:2px; }
 .anchor.selectable { cursor:pointer; }
 /* the pick ring is a fixed small circle on the space's point, above its tokens and monster
    cards, so a click inside it picks the space instead of enlarging a card */

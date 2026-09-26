@@ -6,7 +6,7 @@ import { user } from '@/session'
 import type { Catalog, CardId, Game, Monster, Tagged, TableView } from '@/types'
 import { drawRects, eventRects, flyCard, type DrawRects, type EventRects } from '@/game/fly'
 import { announcePhase, flash, viewTransition } from '@/game/overlays'
-import { DECK_KEYS, NEIGHBOURHOOD_KEY, cssName, show, slug } from '@/game/util'
+import { DECK_KEYS, NEIGHBOURHOOD_KEY, archiveImage, cssName, show, slug } from '@/game/util'
 
 // initial: first load; quiet: a refetch after reconnecting; live: a move by anyone
 export type ApplyMode = 'initial' | 'quiet' | 'live'
@@ -39,7 +39,17 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   const invName = (iid: string) => catalog.investigatorNames[iid] ?? iid
   const spaceName = (sid: string) => game.value?.board.spaces[sid]?.name ?? sid
   const cardCode = (cid: CardId | string) => view.value?.cardCodes?.[cid] ?? slug(cardNameRaw(cid) ?? cid)
-  const cardFace = (cid: CardId, flipped: boolean) => img(`cards/${cardCode(cid)}${flipped ? 'b' : ''}.webp`)
+  /* A handful of cards sit in the archive rather than in a deck -- Feast of
+  Umordhoth's cards 13 to 19, which the codex deals out -- so their art is the
+  archive's, numbered, not the card deck's. */
+  const archiveArt = (code: string, flipped: boolean) => {
+    const m = /^feast-(\d{1,2})$/.exec(code)
+    return m ? archiveImage(+m[1], flipped) : null
+  }
+  const cardFace = (cid: CardId, flipped: boolean) => {
+    const code = cardCode(cid)
+    return archiveArt(code, flipped) ?? img(`cards/${code}${flipped ? 'b' : ''}.webp`)
+  }
   const initials = (iid: string) =>
     invName(iid)
       .replace(/"/g, '')
@@ -47,16 +57,25 @@ export function createGameContext(tableId: string, catalog: Catalog) {
       .map((w) => w[0])
       .join('')
   const scenarioName = (code: string) => catalog.scenarios.find((sc) => sc.code === code)?.name ?? code
+  // each scenario's event art lives in its own folder, keyed by the code's prefix
+  const EVENT_ART: Record<string, string> = {
+    aoa: 'approach-of-azathoth',
+    feast: 'feast-of-umordhoth',
+  }
   const eventImage = (cid: CardId | null | undefined) => {
     if (cid == null) return null
-    const m = /^aoa-event-(\d{2})$/.exec(view.value?.cardCodes?.[cid] ?? '')
-    return m ? img(`events/approach-of-azathoth/${m[1]}.avif`) : null
+    const m = /^([a-z]+)-event-(\d{2})$/.exec(view.value?.cardCodes?.[cid] ?? '')
+    const dir = m ? EVENT_ART[m[1]] : undefined
+    return dir ? img(`events/${dir}/${m![2]}.avif`) : null
   }
   const encounterImage = (cid: CardId) => {
     const m = /^(.+)-(\d{2})$/.exec(view.value?.cardCodes?.[cid] ?? '')
     return m ? img(`encounters/${m[1]}/${m[2]}.avif`) : null
   }
-  const activeCardImage = (cid: CardId) => eventImage(cid) ?? encounterImage(cid) ?? img(`cards/${cardCode(cid)}.webp`)
+  /* the archive check comes before the encounter one, whose pattern would other-
+  wise read "feast-15" as card 15 of a "feast" encounter set */
+  const activeCardImage = (cid: CardId) =>
+    eventImage(cid) ?? archiveArt(cardCode(cid), false) ?? encounterImage(cid) ?? cardFace(cid, false)
   // 428.2: an engaged monster sits in the play area of the investigator it is engaged with;
   // a massive one stays in its space (451.3)
   const inPlayerArea = (m: Monster) => m.state?.tag === 'Engaged' && !(view.value?.massive ?? []).includes(m.card)

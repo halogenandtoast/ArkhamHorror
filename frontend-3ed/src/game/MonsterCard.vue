@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { img, isBroken, markBroken } from '@/assets'
+import { isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
 import { zoom } from '@/game/overlays'
 import Tok from '@/game/Tok.vue'
@@ -15,7 +15,7 @@ const name = computed(() => ctx.cardNameRaw(m.value.card) ?? 'Monster')
 const ready = computed(() => m.value.state?.tag === 'Ready')
 const engaged = computed(() => m.value.state?.tag === 'Engaged')
 const code = computed(() => ctx.cardCode(m.value.card))
-const src = computed(() => img(`cards/${code.value}${ready.value ? '' : 'b'}.webp`))
+const src = computed(() => ctx.cardFace(m.value.card, !ready.value))
 const dmg = computed(() => m.value.damage ?? 0)
 const title = computed(
   () =>
@@ -23,7 +23,7 @@ const title = computed(
 )
 // a ready shrouded monster keeps its engaged/exhausted side hidden
 const other = computed(() =>
-  SHROUDED.has(code.value) && ready.value ? null : img(`cards/${code.value}${ready.value ? 'b' : ''}.webp`),
+  SHROUDED.has(code.value) && ready.value ? null : ctx.cardFace(m.value.card, ready.value),
 )
 const open = () => (other.value ? zoom(src.value, other.value) : zoom(src.value))
 const defeat = () => void ctx.debugAction('DebugDefeatMonster', m.value.card)

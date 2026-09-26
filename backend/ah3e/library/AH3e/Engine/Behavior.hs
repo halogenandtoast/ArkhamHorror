@@ -54,6 +54,10 @@ data AssetBehavior = AssetBehavior
   action. Offered at the manipulate-dice step; whatever limit the card prints, its
   own messages record ('MarkAssetUsed' per round, 'MarkUsedInTest' per test).
   -}
+  , ignoredByMonsters :: Bool
+  {- ^ non-epic monsters pass its owner by while activating and do not engage
+  them, until its owner attacks or damages the monster (Tattered Cloak).
+  -}
   , halfPricePerRound :: Bool
   {- ^ once per round, its owner may buy one card at half price, rounded up. The
   card says it does not stack, so it is not offered on a purchase already halved.
@@ -104,6 +108,7 @@ defaultAssetBehavior =
     , afterMonsterDamaged = \_ _ _ _ -> pure []
     , afterHarm = \_ _ _ -> pure []
     , testOptions = \_ _ _ -> pure []
+    , ignoredByMonsters = False
     , halfPricePerRound = False
     , extraSuccesses = \_ _ _ -> pure 0
     , damagePrevention = \_ _ _ -> pure []

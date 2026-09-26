@@ -121,8 +121,15 @@ engage iid mid = do
 
 -- 455.3: ready monsters in the space engage the entering investigator
 engageOnEntry :: InvestigatorId -> SpaceId -> GameM Bool
-engageOnEntry iid sid = do
-  ms <- monstersAt sid
+engageOnEntry = engageOnEntryWhere (\_ -> pure True)
+
+{- | 'engageOnEntry', engaging only the monsters that @notices@ keeps. The caller
+supplies that, since what a monster notices is a matter of the cards in play.
+-}
+engageOnEntryWhere
+  :: (CardId -> GameM Bool) -> InvestigatorId -> SpaceId -> GameM Bool
+engageOnEntryWhere notices iid sid = do
+  ms <- filterM (notices . (.card)) =<< monstersAt sid
   engaging <- fmap catMaybes $ for ms \m -> do
     d <- monsterDef m.card
     let massive = Massive `elem` d.keywords

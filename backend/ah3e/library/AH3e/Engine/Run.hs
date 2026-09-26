@@ -123,7 +123,7 @@ runMessage msg = case msg of
     for_ joining \i -> do
       investigatorL i.id . #space ?= start
       investigatorL i.id . #status .= Playing
-      void (engageOnEntry i.id start)
+      void (noticedEngageOnEntry i.id start)
     #investigators %= Map.map \i -> i {active = True, actionsTaken = 0, bonusActions = 0, lockedAssets = []}
     push NextActionTurn
   NextActionTurn -> do
@@ -218,7 +218,10 @@ runMessage msg = case msg of
     when (ready && remaining > 0) do
       targets <- case target of
         TowardSpaces rule -> ruleSpaces (Just mid) rule
-        TowardPrey rule -> mapMaybe (.space) <$> ruleInvestigators rule
+        TowardPrey rule -> do
+          prey <- ruleInvestigators rule
+          noticed <- filterM (fmap not . monsterIgnores mid . (.id)) prey
+          pure (mapMaybe (.space) noticed)
       closest <- closestTo m.space targets
       steps <- nub . concat <$> traverse (nextStepsToward m.space) closest
       chooseGroup
@@ -230,7 +233,8 @@ runMessage msg = case msg of
   MonsterEngagesIn mid sid -> do
     ready <- isMonsterReady mid
     when ready do
-      present <- investigatorsAt sid
+      here <- investigatorsAt sid
+      present <- filterM (fmap not . monsterIgnores mid . (.id)) here
       prey <- activationPrey mid
       engageTargets mid present prey >>= \case
         Right is -> for_ is \i -> engage i.id mid
@@ -417,8 +421,8 @@ runMessage msg = case msg of
     unless (null allowed) do
       investigatorL iid . #space ?= sid
       moveEngagedWatchers iid sid
-      void (engageOnEntry iid sid)
-  EnterSpace iid sid -> void (engageOnEntry iid sid)
+      void (noticedEngageOnEntry iid sid)
+  EnterSpace iid sid -> void (noticedEngageOnEntry iid sid)
   -- Harm (rules 416, 442)
   SufferHarm iid src kind dmg hor -> do
     playing <- investigatorIsPlaying iid
@@ -576,6 +580,9 @@ runMessage msg = case msg of
       blocked <- case src of
         SourceInvestigator iid | Relentless `elem` d.keywords -> (/= Just m.space) <$> investigatorSpace iid
         _ -> pure False
+      case src of
+        SourceInvestigator iid -> #provoked %= Map.insertWith (<>) mid [iid]
+        _ -> pure ()
       unless blocked do
         monsterL mid . #damage += n
         mh <- monsterHealth mid
@@ -595,6 +602,7 @@ runMessage msg = case msg of
   DiscardMonster mid -> do
     d <- monsterDef mid
     #monsters . at mid .= Nothing
+    #provoked . at mid .= Nothing
     if
       | d.epic -> #decks . #archive %= (mid :)
       | Shrouded `elem` d.keywords -> do
@@ -624,6 +632,8 @@ runMessage msg = case msg of
     m <- getMonster mid
     d <- monsterDef mid
     unless (m.state == Exhausted) $ engage iid mid
+    -- attacking provokes it even if the attack cannot engage it
+    #provoked %= Map.insertWith (<>) mid [iid]
     let attackTest skill = newTest iid skill d.attackModifier (ActionTest AttackAction (Just mid)) (AfterAttack iid mid)
         attackWith skill = BeginTest (attackTest skill)
     -- a card like Storm of Spirits offers another skill in place of strength; the
@@ -1136,7 +1146,12 @@ performAction iid kind = do
           a.perform (EffectCtx iid src Nothing)
 
 enterWith :: MoveState -> SpaceId -> GameM Bool
-enterWith ms sid = if ms.ignoringMonsters then pure False else engageOnEntry ms.investigator sid
+enterWith ms sid =
+  if ms.ignoringMonsters then pure False else noticedEngageOnEntry ms.investigator sid
+
+-- | Walking into a space engages what is there, bar what passes you by.
+noticedEngageOnEntry :: InvestigatorId -> SpaceId -> GameM Bool
+noticedEngageOnEntry iid = engageOnEntryWhere (fmap not . flip monsterIgnores iid) iid
 
 moveStep :: MoveState -> GameM ()
 moveStep ms = do

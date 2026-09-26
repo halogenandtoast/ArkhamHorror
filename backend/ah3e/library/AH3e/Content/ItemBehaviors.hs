@@ -51,6 +51,7 @@ behaviors =
       , ("rabbits-foot", defaultAssetBehavior & #freeRerollPerRound .~ True)
       , ("secret-page", testBonuses [OnAction WardAction Lore 2])
       , ("silver-key", silverKey)
+      , ("tattered-cloak", defaultAssetBehavior & #ignoredByMonsters .~ True)
       , ("token-of-faith", tokenOfFaith)
       , ("shotgun", shotgun)
       ]

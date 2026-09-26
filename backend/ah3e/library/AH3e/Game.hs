@@ -135,6 +135,10 @@ data Game = Game
   , activatedMonsters :: [CardId]
   , terrorEncountered :: [InvestigatorId]
   , test :: Maybe TestState
+  , provoked :: Map CardId [InvestigatorId]
+  {- ^ Who has attacked or damaged each monster. A monster that would otherwise
+  pass an investigator by (Tattered Cloak) still engages the ones who provoked it.
+  -}
   , pendingSuccesses :: Int
   {- ^ Successes a card promised before its test began -- a spell's cast cost
   lands before the casting test does -- picked up by the next test to start.

@@ -165,6 +165,16 @@ afterHarmFor plan = do
     b <- assetBehavior cid
     b.afterHarm cid plan.investigator plan
 
+{- | Whether this monster passes this investigator by: a non-epic monster, an
+investigator wearing something that hides them, and no provocation from them yet.
+-}
+monsterIgnores :: CardId -> InvestigatorId -> GameM Bool
+monsterIgnores mid iid = do
+  d <- monsterDef mid
+  hidden <- hasAssetWith iid (.ignoredByMonsters)
+  angered <- uses #provoked (elem iid . Map.findWithDefault [] mid)
+  pure (hidden && not d.epic && not angered)
+
 -- | Cards that could halve a purchase for this investigator, with their names.
 halfPriceCards :: InvestigatorId -> GameM [(CardId, Text)]
 halfPriceCards iid = do

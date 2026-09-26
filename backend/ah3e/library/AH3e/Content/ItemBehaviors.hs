@@ -6,7 +6,6 @@ import AH3e.Engine.Query
 import AH3e.Message
 import AH3e.Prelude
 import AH3e.Types.Effect
-import AH3e.Types.Ids
 import AH3e.Types.Skill
 import AH3e.Types.State
 import Data.Map.Strict qualified as Map

@@ -8,7 +8,6 @@ import AH3e.Engine.Query
 import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
-import AH3e.Types.Board
 import AH3e.Types.Effect
 import AH3e.Types.Ids
 import AH3e.Types.Skill
@@ -108,3 +107,10 @@ danielChesterfield =
         | not used
         , live > 0
         ]
+
+-- | One die per clue you hold, plus one per clue in your neighborhood.
+aliceLuxleyDice :: CardId -> InvestigatorId -> GameM Int
+aliceLuxleyDice _ iid = do
+  i <- getInvestigator iid
+  here <- neighborhoodClues iid
+  pure (i.clues + here)

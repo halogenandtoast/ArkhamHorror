@@ -126,13 +126,6 @@ cardAction lbl eff =
            }
        ]
 
--- | One die per clue you hold, plus one per clue in your neighborhood.
-aliceLuxleyDice :: CardId -> InvestigatorId -> GameM Int
-aliceLuxleyDice _ iid = do
-  i <- getInvestigator iid
-  here <- investigatorNeighborhood iid >>= maybe (pure 0) (fmap (.clues) . getNeighborhood)
-  pure (i.clues + here)
-
 data CodexTrigger = CodexTrigger
   { key :: Text
   , once :: Bool

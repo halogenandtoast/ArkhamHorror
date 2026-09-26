@@ -30,7 +30,13 @@ beginTest ts = do
   playing <- investigatorIsPlaying ts.investigator
   if playing
     then do
-      #test ?= ts {step = DeterminePool, dice = [], chosenAssets = [], addedSuccesses = 0}
+      let fresh = ts {step = DeterminePool, dice = [], chosenAssets = [], addedSuccesses = 0}
+      -- A bonus that takes no hands competes with nothing, and its card states it
+      -- flatly ("you get +2 strength as part of an attack action"), so it starts
+      -- switched on and the prompt still lets it be switched off. Once-per-round
+      -- dice ('roundBonusAssets') are a resource, so they stay opt-in.
+      free <- map (\(cid, _, _) -> cid) . filter (\(_, _, hands) -> hands == 0) <$> usableTestAssets fresh
+      #test ?= fresh {chosenAssets = free}
       testPrompt
     else resolveAfter ts 0
 

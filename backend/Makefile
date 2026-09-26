@@ -52,6 +52,13 @@ REDIS_CONN ?= redis://localhost:6379
 # recipes mention $(MAKE) and make treats such lines as recursive.
 FILE_WATCH ?= --file-watch
 
+# Which trees the entr loops watch. ah3e is a separate package that arkham-api
+# depends on, so an edit there has to rebuild the API too -- leaving it out meant
+# third edition engine changes sat until something under arkham-api happened to
+# change. Deleting a directory listed here makes find exit non-zero and the loop
+# spin, so keep it to trees that exist.
+WATCH_SRC ?= arkham-api/library arkham-api/app arkham-api/tests ah3e/library ah3e/dev
+
 # Why every entr loop below starts with a trap.
 #
 # entr exits 0 when it takes a SIGINT -- that is documented, not a bug (see
@@ -102,7 +109,7 @@ watch.poke:
 	@command -v entr >/dev/null || { echo "watch.poke needs entr: brew install entr"; exit 1; }
 	@trap 'exit 0' INT; \
 	while :; do \
-	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
+	  find $(WATCH_SRC) -name '*.hs' \
 	    | entr -dnpz true >/dev/null 2>&1; \
 	  cp stack.yaml .stack.yaml.poke && cat .stack.yaml.poke > stack.yaml; \
 	  rm -f .stack.yaml.poke; \
@@ -157,7 +164,7 @@ api.watch.entr:
 	@command -v entr >/dev/null || { echo "api.watch.entr needs entr: brew install entr"; exit 1; }
 	@trap 'exit 0' INT; \
 	while :; do \
-	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
+	  find $(WATCH_SRC) -name '*.hs' \
 	    | entr -dn $(MAKE) --no-print-directory api.rebuild; \
 	  [ $$? = 2 ] || break; \
 	done
@@ -229,7 +236,7 @@ api.watch.test.entr:
 	@command -v entr >/dev/null || { echo "api.watch.test.entr needs entr: brew install entr"; exit 1; }
 	@trap 'exit 0' INT; \
 	while :; do \
-	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
+	  find $(WATCH_SRC) -name '*.hs' \
 	    | entr -dn $(MAKE) --no-print-directory api.rebuild.test; \
 	  [ $$? = 2 ] || break; \
 	done
@@ -333,7 +340,7 @@ test.watch.entr:
 	@command -v entr >/dev/null || { echo "test.watch.entr needs entr: brew install entr"; exit 1; }
 	@trap 'exit 0' INT; \
 	while :; do \
-	  find arkham-api/library arkham-api/app arkham-api/tests -name '*.hs' \
+	  find $(WATCH_SRC) -name '*.hs' \
 	    | entr -dn $(MAKE) --no-print-directory test.rebuild; \
 	  [ $$? = 2 ] || break; \
 	done

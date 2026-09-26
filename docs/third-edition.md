@@ -74,7 +74,8 @@ Delete `backend/ah3e`, `frontend-3ed`, `backend/arkham-api/library/ThirdEdition`
   `package.yaml` copy, port 3001), `prod.nginxconf` (the second server block),
   `docker-compose.yml` (port 3001, the two `frontend-3ed` mounts)
 - `dev.up` (the `WEB3ED` server), `Makefile` (`fetch-images-3ed`, the 3ed line
-  in `sync-images`), `scripts/` (`generate-manifest.cjs` app list,
+  in `sync-images`, and `ah3e/library ah3e/dev` in `WATCH_SRC` so the watch loops
+  rebuild on engine edits), `scripts/` (`generate-manifest.cjs` app list,
   `sync-and-manifest.sh`, `check-manifest.sh`, `fetch-assets.sh`)
 - `terraform/ingress.tf` (the `3ed.` domain), `.gitignore`
   (`frontend-3ed/public/img/`)

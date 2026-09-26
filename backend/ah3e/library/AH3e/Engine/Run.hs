@@ -1806,7 +1806,12 @@ runDebug = \case
   DebugSetRemnants iid n -> investigatorL iid . #remnants .= n
   DebugSetDamage iid n -> investigatorL iid . #damage .= n >> push (CheckDefeat iid)
   DebugSetHorror iid n -> investigatorL iid . #horror .= n >> push (CheckDefeat iid)
-  DebugMoveInvestigator iid sid -> investigatorL iid . #space ?= sid
+  {- Debug puts them down where you drop them: no block is respected and nothing is
+  engaged on arrival, so a position can be set up without springing what is there.
+  Monsters engaged with them come along, since an engaged monster shares their space. -}
+  DebugMoveInvestigator iid sid -> do
+    investigatorL iid . #space ?= sid
+    moveEngagedWatchers iid sid
   DebugSetSpaceDoom sid n -> spaceL sid . #doom .= n >> push CheckStateTriggers
   DebugSetSheetDoom n -> #sheetDoom .= n >> push CheckStateTriggers
   DebugSetSheetClues n -> #sheetClues .= n >> push CheckStateTriggers

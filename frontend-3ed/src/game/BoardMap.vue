@@ -154,7 +154,7 @@ function pick(sid: string) {
 const hoverSid = ref<string | null>(null)
 const dropClass = (sid: string) => ctx.moveDrag.value?.targets[sid] ?? null
 function dragOver(e: DragEvent, sid: string) {
-  if (!dropClass(sid)) return
+  if (!dropClass(sid) && !ctx.dbgOn.value) return
   e.preventDefault()
   if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
   hoverSid.value = sid
@@ -163,11 +163,17 @@ function dragLeave(sid: string) {
   if (hoverSid.value === sid) hoverSid.value = null
 }
 function drop(e: DragEvent, sid: string) {
-  if (!dropClass(sid)) return
+  const dragged = e.dataTransfer?.getData('text/plain') ?? ''
+  const walking = ctx.moveDrag.value
+  // a drag along the route of a move action walks; anything else, in debug, is put
+  // straight down where it lands
+  const walks = !!walking && dragged === walking.iid && !!dropClass(sid)
+  if (!walks && !(ctx.dbgOn.value && dragged)) return
   e.preventDefault()
   hoverSid.value = null
   document.body.classList.remove('moving')
-  void ctx.walkTo(sid)
+  if (walks) void ctx.walkTo(sid)
+  else void ctx.debugAction('DebugMoveInvestigator', [dragged, sid])
 }
 const clearDrag = () => {
   hoverSid.value = null

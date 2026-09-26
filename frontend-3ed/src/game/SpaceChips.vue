@@ -15,7 +15,9 @@ const monsters = computed(() =>
   Object.values(ctx.game.value!.monsters).filter((m) => m.space === props.sid && !ctx.inPlayerArea(m)),
 )
 const tokenSrc = (iid: string) => img(`investigators/${iid}/token.webp`)
-const draggable = (iid: string) => ctx.moveDrag.value?.iid === iid
+// the one walking may be dragged along their route; in debug, anyone may be dragged
+// anywhere, which puts them down directly
+const draggable = (iid: string) => ctx.moveDrag.value?.iid === iid || ctx.dbgOn.value
 
 function dragStart(e: DragEvent, iid: string) {
   if (!draggable(iid)) return

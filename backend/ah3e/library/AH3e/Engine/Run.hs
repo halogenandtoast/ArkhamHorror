@@ -1780,11 +1780,9 @@ runDebug = \case
   DebugSetSheetDoom n -> #sheetDoom .= n >> push CheckStateTriggers
   DebugSetSheetClues n -> #sheetClues .= n >> push CheckStateTriggers
   DebugSetSheetMarkers n -> #sheetMarkers .= n >> push CheckStateTriggers
-  DebugGainCard iid code -> do
-    cards <- use #cards
-    case [cid | (cid, c) <- Map.toList cards, c == code] of
-      (cid : _) -> push (GainAsset iid cid)
-      [] -> newCard code >>= push . GainAsset iid
+  DebugGainFromDisplay iid cid -> do
+    inDisplay <- uses (#decks . #display) (elem cid)
+    when inDisplay $ push (GainFromDisplay iid cid)
   DebugDiscardCard cid -> discardAsset cid
   DebugAddToCodex n -> push (AddArchiveToCodex n)
   DebugResolveEffect iid eff -> push (ResolveEffect (EffectCtx iid SourceDebug Nothing) eff)
@@ -1803,5 +1801,9 @@ runDebug = \case
       DeckMonster -> \cs -> filter (/= cid) cs <> [cid]
       _ -> \cs -> cid : filter (/= cid) cs
     debugDrawDeck iid deck
+  DebugSetMonsterDamage mid n -> #monsters . ix mid . #damage .= max 0 n
+  DebugDefeatMonster mid -> do
+    present <- uses #monsters (Map.member mid)
+    when present $ push (DefeatMonster mid SourceDebug)
   DebugSetDice values -> #test . _Just . #dice .= [Die v False | v <- values]
   DebugSetAddedSuccesses n -> #test . _Just . #addedSuccesses .= n

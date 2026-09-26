@@ -10,6 +10,8 @@ import type { CardId } from '@/types'
 
 const ctx = useGame()
 const g = computed(() => ctx.game.value!)
+// debug: hand a card from the display straight to whoever debug is acting as
+const gainFromDisplay = (cid: CardId) => void ctx.debugAction('DebugGainFromDisplay', [ctx.dbgIid(), cid])
 const d = computed(() => g.value.decks)
 
 const hoods = computed(() => (g.value.board.layout?.tiles ?? []).map((t) => t.neighborhood))
@@ -90,6 +92,14 @@ const faceSrc = (cid: CardId) => ctx.cardFace(cid, false)
           <div class="deck-empty">{{ ctx.cardName(cid) }}</div>
         </div>
         <div class="deck-name">{{ ctx.cardName(cid) }}</div>
+        <button
+          v-if="ctx.dbgOn.value && ctx.dbgIid()"
+          class="dbg-deal"
+          title="Gain this card from the display"
+          @click.stop="gainFromDisplay(cid)"
+        >
+          +
+        </button>
       </div>
     </div>
   </div>

@@ -26,6 +26,8 @@ const other = computed(() =>
   SHROUDED.has(code.value) && ready.value ? null : img(`cards/${code.value}${ready.value ? 'b' : ''}.webp`),
 )
 const open = () => (other.value ? zoom(src.value, other.value) : zoom(src.value))
+const defeat = () => void ctx.debugAction('DebugDefeatMonster', m.value.card)
+const setDamage = (n: number) => void ctx.debugAction('DebugSetMonsterDamage', [m.value.card, n])
 </script>
 
 <template>
@@ -41,6 +43,18 @@ const open = () => (other.value ? zoom(src.value, other.value) : zoom(src.value)
     <img v-if="!isBroken(src)" :src="src" alt="" @error="markBroken(src)" /><span class="chip mon">{{
       name.slice(0, 10)
     }}</span
-    ><span v-if="dmg" class="mon-dmg"><Tok name="damage" :count="dmg" :title="`${dmg} damage`" :size="22" always /></span>
+    ><span v-if="dmg" class="mon-dmg"><Tok name="damage" :count="dmg" :title="`${dmg} damage`" :size="22" always /></span
+    ><template v-if="ctx.dbgOn.value"
+      ><span class="dbg-dmg" @click.stop
+        ><input
+          class="dbg-num"
+          type="number"
+          min="0"
+          :value="dmg"
+          title="damage on this monster"
+          @change="setDamage(+($event.target as HTMLInputElement).value)"
+      /></span>
+      <button class="dbg-defeat" title="Defeat this monster" @click.stop="defeat">&#x2715;</button></template
+    >
   </span>
 </template>

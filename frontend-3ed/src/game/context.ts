@@ -158,7 +158,6 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     const invs = game.value?.investigators ?? {}
     return selectedTab.value && invs[selectedTab.value] ? selectedTab.value : Object.keys(invs)[0]
   }
-  const dbgCodeValue = ref('')
 
   const logOpen = ref(readPref('ah3e-log-open') === '1')
   const logSeen = ref(0)
@@ -460,7 +459,6 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     debugAllowed,
     dbgOn,
     dbgIid,
-    dbgCodeValue,
     logOpen,
     logSeen,
     toggleLog,

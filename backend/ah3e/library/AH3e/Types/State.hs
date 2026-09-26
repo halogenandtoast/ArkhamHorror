@@ -239,7 +239,8 @@ data DebugAction
   | DebugSetSheetDoom Int
   | DebugSetSheetClues Int
   | DebugSetSheetMarkers Int
-  | DebugGainCard InvestigatorId CardCode
+  | -- | take one of the display's cards, for nothing
+    DebugGainFromDisplay InvestigatorId CardId
   | DebugDiscardCard CardId
   | DebugAddToCodex ArchiveNumber
   | DebugResolveEffect InvestigatorId Effect
@@ -250,6 +251,9 @@ data DebugAction
   | DebugSetFocus InvestigatorId Skill Int
   | DebugDrawDeck InvestigatorId DebugDeck
   | DebugDrawCard InvestigatorId DebugDeck CardId
+  | DebugSetMonsterDamage CardId Int
+  | -- | defeats it the way a killing blow would, so whatever answers a defeat runs
+    DebugDefeatMonster CardId
   | DebugSetDice [Int]
   | -- | successes added to the test in progress, on top of what the dice say
     DebugSetAddedSuccesses Int

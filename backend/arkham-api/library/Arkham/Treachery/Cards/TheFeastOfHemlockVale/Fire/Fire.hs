@@ -28,14 +28,13 @@ instance HasAbilities Fire where
       let atLid = LocationWithId lid
        in [ forcedAbility a 1 (RoundEnds #when)
               & restrict
-                ( AnyCriterion
-                    [ exists (at_ atLid <> AssetWithHealth)
+                ( oneOf
+                    [ exists $ at_ atLid <> AssetWithHealth
                     , exists
-                        ( EnemyAt atLid
-                            <> EnemyCanBeDamagedBySource (a.ability 1)
-                            <> EnemyWithoutModifier (ScenarioModifier "ignoreFireDamage")
-                        )
-                    , exists (InvestigatorAt atLid)
+                        $ EnemyAt atLid
+                        <> EnemyCanBeDamagedBySource (a.ability 1)
+                        <> EnemyWithoutModifier (ScenarioModifier "ignoreFireDamage")
+                    , exists $ InvestigatorAt atLid
                     ]
                 )
           , skillTestAbility $ restricted a 2 (OnLocation atLid) actionAbility
@@ -45,16 +44,10 @@ instance HasAbilities Fire where
 instance RunMessage Fire where
   runMessage msg t@(Fire attrs) = runQueueT $ case msg of
     Revelation iid (isSource attrs -> True) -> do
-      let noFire = not_ (LocationWithTreachery (treacheryIs Cards.fire))
-      validLocations <-
-        select
-          $ NearestLocationTo iid
-          $ noFire
-          <> ConnectedTo ForMovement (LocationWithTreachery (treacheryIs Cards.fire))
-      finalLocations <-
-        if null validLocations
-          then select $ NearestLocationTo iid noFire
-          else pure validLocations
+      let onFire = LocationWithTreachery (treacheryIs Cards.fire)
+      nearest <- select $ NearestLocationTo iid (not_ onFire)
+      spreading <- select $ mapOneOf LocationWithId nearest <> ConnectedTo ForMovement onFire
+      let finalLocations = if null spreading then nearest else spreading
       chooseOrRunOneM iid $ targets finalLocations $ attachTreachery attrs
       pure t
     UseThisAbility _iid (isSource attrs -> True) 1 -> do

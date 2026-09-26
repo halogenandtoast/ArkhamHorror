@@ -31,7 +31,7 @@ instance HasAbilities Milkhouse where
             [ ScenarioEvent #when Nothing ("wouldPlaceDecoy:" <> tshow a.id)
             , ScenarioEvent #when Nothing ("wouldPlaceTrap:" <> tshow a.id)
             ]
-      , groupLimit PerRound
+      , playerLimit PerRound
           $ restricted a 2 Here actionAbility
       ]
 

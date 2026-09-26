@@ -24,7 +24,7 @@ instance HasModifiersFor Coop where
 instance HasAbilities Coop where
   getAbilities (Coop a) =
     extendRevealed1 a
-      $ groupLimit PerRound
+      $ playerLimit PerRound
       $ restricted a 1 (Here <> exists (SetAsideCardMatch $ cardIs Treacheries.fire)) actionAbility
 
 instance RunMessage Coop where

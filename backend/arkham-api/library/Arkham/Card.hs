@@ -265,6 +265,8 @@ cardMatch a (toCardMatcher -> cardMatcher) = case cardMatcher of
   CardWithTitle title -> (nameTitle . cdName $ toCardDef a) == title
   CardWithTitleContaining sub -> T.toLower sub `T.isInfixOf` T.toLower (nameTitle . cdName $ toCardDef a)
   CardWithTrait trait -> trait `member` toTraits a
+  CardWithAnyTrait -> notNull (toTraits a)
+  CardWithAllTraitsIn ts -> all (`elem` ts) (toTraits a)
   CardWithClass role -> role `member` cdClassSymbols (toCardDef a)
   CardWithLevel n -> Just n == (toCard a).level
   CardWithMaxLevel n -> maybe False (<= n) $ (toCard a).level

@@ -25,6 +25,7 @@ import BindingToggle from '@/arkham/components/debug/BindingToggle.vue'
 import ValueMatcherField from '@/arkham/components/debug/ValueMatcherField.vue'
 import BoolField from '@/arkham/components/debug/BoolField.vue'
 import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
+import RecordedField from '@/arkham/components/debug/RecordedField.vue'
 
 const props = defineProps<{
   type: string
@@ -789,6 +790,15 @@ const asComparison = computed(
       @update:modelValue="emit('update:modelValue', $event)"
     />
 
+    <!-- A log entry, which the schema cannot describe (it is an existential) and
+         so would otherwise be three nested objects typed by hand. -->
+    <RecordedField
+      v-else-if="shape.type === 'SomeRecorded'"
+      :modelValue="modelValue"
+      :bindings="inScope"
+      @update:modelValue="emit('update:modelValue', $event)"
+    />
+
     <div v-else class="picked-row">
       <input
         type="text"
@@ -974,18 +984,26 @@ const asComparison = computed(
  * nested field would otherwise push everything below it down the page, which
  * moves the very field you were aiming at. */
 .binding-menu {
+  /* As wide as its longest entry needs, and never narrower than the field it
+     drops from. Pinned to both edges it could only ever be the field's width, so
+     a name and the type beside it were cut off exactly where they matter --
+     `InvestigatorRemainingSanity :: Int` is mostly ellipsis in a narrow column.
+     Capped so a long type cannot run off the screen. */
+  left: 0;
+  right: auto;
+  min-width: 100%;
+  width: max-content;
+  max-width: min(36rem, 90vw);
   background: #0b1220;
   border: 1px solid #374151;
   border-radius: 5px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
-  left: 0;
   list-style: none;
   margin: 0.3rem 0 0;
   max-height: 15rem;
   overflow-y: auto;
   padding: 0.2rem;
   position: absolute;
-  right: 0;
   top: 100%;
   z-index: 30;
 
@@ -1274,11 +1292,19 @@ const asComparison = computed(
 }
 
 .picker-menu {
+  /* As wide as its longest entry needs, and never narrower than the field it
+     drops from. Pinned to both edges it could only ever be the field's width, so
+     a name and the type beside it were cut off exactly where they matter --
+     `InvestigatorRemainingSanity :: Int` is mostly ellipsis in a narrow column.
+     Capped so a long type cannot run off the screen. */
+  left: 0;
+  right: auto;
+  min-width: 100%;
+  width: max-content;
+  max-width: min(36rem, 90vw);
   position: absolute;
   z-index: 10;
   top: 100%;
-  left: 0;
-  right: 0;
   background: #0f1422;
   border: 1px solid var(--button-highlight);
   border-radius: 4px;

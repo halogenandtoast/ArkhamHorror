@@ -10,9 +10,10 @@ import { onClickOutside } from '@vueuse/core'
 import ExpressionEditor from '@/arkham/components/debug/ExpressionEditor.vue'
 import BoolField from '@/arkham/components/debug/BoolField.vue'
 import CardCodeField from '@/arkham/components/debug/CardCodeField.vue'
+import ScopeBar from '@/arkham/components/debug/ScopeBar.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
+import ValueMatcherField from '@/arkham/components/debug/ValueMatcherField.vue'
 import {
-  jumpToBinding,
   scopeAt,
   scopeInside,
   stepAnchor,
@@ -39,6 +40,7 @@ const steps = computed(() => props.modelValue ?? [])
 type StepKind =
   | 'query'
   | 'let'
+  | 'random'
   | 'push'
   | 'if'
   | 'when'
@@ -59,8 +61,11 @@ type StepKind =
   | 'investigate'
   | 'evade'
   | 'parley'
+  | 'test'
   | 'attack'
   | 'ready'
+  | 'discardCard'
+  | 'record'
   | 'takeAction'
   | 'draw'
   | 'gather'
@@ -69,6 +74,7 @@ type StepKind =
 const KIND_LABELS: Record<StepKind, string> = {
   query: 'Query',
   let: 'Let',
+  random: 'Random',
   push: 'Push',
   if: 'If',
   when: 'When',
@@ -89,8 +95,11 @@ const KIND_LABELS: Record<StepKind, string> = {
   investigate: 'Investigate',
   evade: 'Evade',
   parley: 'Parley',
+  test: 'Skill test',
   attack: 'Attack',
   ready: 'Ready',
+  discardCard: 'Discard a card',
+  record: 'Record in the campaign log',
   takeAction: 'Take an action',
   draw: 'Draw cards',
   gather: 'Gather',
@@ -101,6 +110,7 @@ function kindOf(step: any): StepKind {
   const kinds = [
     'query',
     'let',
+    'random',
     'push',
     'when',
     'if',
@@ -121,8 +131,11 @@ function kindOf(step: any): StepKind {
     'investigate',
     'evade',
     'parley',
+    'test',
     'attack',
     'ready',
+    'discardCard',
+    'record',
     'takeAction',
     'draw',
     'gather',
@@ -138,6 +151,7 @@ const blankStep = (kind: StepKind) =>
   ({
     query: { query: { kind: 'enemy', matcher: null }, bind: '', mode: 'all' },
     let: { let: '', be: null },
+    random: { random: { bind: 'sid' } },
     push: { push: null },
     if: { if: { kind: 'enemy', matcher: null }, then: [], else: [] },
     when: { when: { kind: 'enemy', matcher: null }, then: [] },
@@ -158,8 +172,11 @@ const blankStep = (kind: StepKind) =>
     investigate: { investigate: { modifiers: [] } },
     evade: { evade: { matcher: null, modifiers: [] } },
     parley: { parley: { target: null, modifiers: [] } },
+    test: { test: { skill: 'SkillWillpower', difficulty: 0, modifiers: [] } },
     attack: { attack: {} },
     ready: { ready: {} },
+    discardCard: { discardCard: { card: '$card' } },
+    record: { record: { key: { tag: 'HomebrewCampaignLogKey', contents: '' }, mode: 'flag' } },
     takeAction: { takeAction: true },
     draw: { draw: { amount: 1 } },
     gather: { gather: { cardCode: '' } },
@@ -173,11 +190,12 @@ const blankStep = (kind: StepKind) =>
 const KIND_HELP: Record<StepKind, string> = {
   query: 'Superseded — a Let can bind a query directly.',
   let: 'Works something out and binds it to a name for the steps after this one.',
+  random: 'Binds a fresh id, or one thing picked at random out of a list.',
   push: 'Puts a message on the queue, written as the engine spells it.',
   if: 'Runs a matcher and takes the first branch when it finds anything.',
   when: 'Runs its steps only when a matcher finds something. An If with no else.',
   case: 'Takes the first branch whose condition holds.',
-  forEach: 'Runs its steps once per thing found, with that thing bound inside.',
+  forEach: 'Runs its steps once per thing found, from a matcher or a list, bound inside.',
   repeat: 'Runs its steps a number of times, with the pass number bound inside.',
   distribute: 'Splits a total between investigators, then runs its steps on each share.',
   request: 'Pushes a message that is answered later, with the answer handled here.',
@@ -185,7 +203,7 @@ const KIND_HELP: Record<StepKind, string> = {
   withSkillTest: 'Runs its steps during a skill test, with that test bound inside.',
   withLocationOf: 'Runs its steps where something is, with that location bound inside.',
   choose: 'Offers the player named options, each with steps of its own.',
-  chooseFrom: 'One option per thing a matcher finds, with it bound for the steps below.',
+  chooseFrom: 'One option per thing found — from a matcher or a list — bound for the steps below.',
   playCard: 'Offers the cards that could be played and pays for the one chosen.',
   useAbility: "Resolves one of this card's own abilities, paying its cost.",
   cancelBatch: 'Stops what the ability is reacting to. Needs a "would" window.',
@@ -193,8 +211,11 @@ const KIND_HELP: Record<StepKind, string> = {
   investigate: 'Investigates, the way the action does. The test it starts is $sid.',
   evade: 'Evades an enemy. The test it starts is $sid.',
   parley: 'Parleys against something, naming the target, skill and difficulty itself.',
+  test: 'Begins a plain skill test — "test {willpower} (3)" — and says what its result does.',
   attack: 'This card attacks — an enemy making an immediate attack.',
   ready: 'Readies this card, or the one chosen.',
+  discardCard: 'Discards a card, from hand or from play — whichever it is in.',
+  record: 'Writes in the campaign log — that something happened, a number, or entries in a list.',
   takeAction: 'Takes one immediate action as if it were your turn.',
   draw: 'Draws cards. Nothing is drawn when the amount works out to zero or less.',
   gather: 'Shuffles a card into the encounter deck.',
@@ -266,6 +287,112 @@ const revealScope = (index: number) => [
   ...scopeFor(index),
   ...stepBindings(steps.value[index], anchorFor(index)).after,
 ]
+
+/* Every step that starts a test takes the same two riders — what a token revealed
+ * during it does, and what its result does — so they are asked for once, below
+ * whatever the step itself needs, rather than five times over.
+ *
+ * A basic fight action is the exception: the enemy's own ability makes its own
+ * test, and there is no test of this step's to hang anything on. */
+const TEST_KINDS = ['test', 'fight', 'investigate', 'evade', 'parley']
+
+const startsTest = (step: any) => TEST_KINDS.includes(kindOf(step)) && !step.fight?.basic
+
+/* "If you succeed, …" and "If you fail, …". Kept on the step that started the
+ * test because only it knows which test, and only here can the steps still see
+ * what this run chose. */
+const outcome = (step: any, which: 'onSuccess' | 'onFailure') => step[kindOf(step)]?.[which] ?? null
+
+const setOutcome = (index: number, which: 'onSuccess' | 'onFailure', value: any) => {
+  const step = steps.value[index]
+  const kind = kindOf(step)
+  set(index, { ...step, [kind]: { ...step[kind], [which]: value } })
+}
+
+/* Which of the two difficulty fields is in use. A calculation is a tagged
+ * object; a number or an expression is not, so the shape says which was written
+ * and nothing has to be stored alongside it. */
+const calculatedDifficulty = (value: any) =>
+  !!value && typeof value === 'object' && !Array.isArray(value) && 'tag' in value
+
+const setDifficultyKind = (index: number, kind: string) => {
+  const step = steps.value[index]
+  set(index, { ...step, test: { ...step.test, difficulty: kind === 'calculation' ? null : 0 } })
+}
+
+/* An id or a pick from a list. `from` being absent is what says "an id", so
+ * switching back removes the key rather than emptying it. */
+const setRandomKind = (index: number, kind: string) => {
+  const step = steps.value[index]
+  const { from: _from, ...rest } = step.random ?? {}
+  set(index, { ...step, random: kind === 'from' ? { ...rest, from: null } : rest })
+}
+
+/* What the log can be told, in the words a card uses rather than the seven
+ * messages the engine reaches it through. Each maps to one of those. */
+const RECORD_MODES = [
+  { key: 'flag', label: 'that it happened', help: 'Records the key. "Record that …"' },
+  { key: 'crossOut', label: 'cross it out', help: 'Crosses the key out, undoing a record.' },
+  { key: 'count', label: 'set a number', help: 'Sets the number kept under the key.' },
+  { key: 'increase', label: 'increase the number', help: 'Adds to the number kept under the key.' },
+  { key: 'decrease', label: 'decrease the number', help: 'Takes away from the number kept under the key.' },
+  {
+    key: 'entries',
+    label: 'add to the list',
+    help: 'Adds entries to the set kept under the key. Adding one twice keeps one.',
+  },
+  {
+    key: 'crossOutEntries',
+    label: 'cross out entries in the list',
+    help: 'Marks entries already in the set as no longer true. They stop counting.',
+  },
+] as const
+
+const recordMode = (step: any) => step.record?.mode ?? 'flag'
+const recordModeHelp = (step: any) =>
+  RECORD_MODES.find((m) => m.key === recordMode(step))?.help ?? ''
+const recordTakesAmount = (step: any) =>
+  ['count', 'increase', 'decrease'].includes(recordMode(step))
+const recordTakesValues = (step: any) =>
+  ['entries', 'crossOutEntries'].includes(recordMode(step))
+
+/* A custom card's own log entries are homebrew ones, and the wrapper is what makes
+ * an arbitrary name a CampaignLogKey. An official campaign's key is a constructor,
+ * so that stays a raw JSON job. */
+const recordKeyName = (step: any) => {
+  const k = step.record?.key
+  return k && typeof k === 'object' && k.tag === 'HomebrewCampaignLogKey' ? (k.contents ?? '') : ''
+}
+
+const recordKeyIsHomebrew = (step: any) => {
+  const k = step.record?.key
+  return !k || (typeof k === 'object' && k.tag === 'HomebrewCampaignLogKey')
+}
+
+const setRecord = (index: number, changes: Record<string, any>) => {
+  const step = steps.value[index]
+  set(index, { ...step, record: { ...step.record, ...changes } })
+}
+
+const OUTCOME_LEGENDS: Record<string, string> = {
+  onSuccess: 'If you succeed',
+  onFailure: 'If you fail',
+}
+
+/* A list to choose or loop over can come from a matcher or from a binding. Which
+ * one is stored is the presence of `over`, so switching drops the other rather
+ * than leaving both for the runner to pick between. */
+const overSource = (block: any) => (block?.over === undefined ? 'query' : 'over')
+
+const setSource = (index: number, kind: 'chooseFrom' | 'forEach', source: string) => {
+  const step = steps.value[index]
+  const { over: _over, query: _query, ...rest } = step[kind] ?? {}
+  set(index, {
+    ...step,
+    [kind]:
+      source === 'over' ? { ...rest, over: null } : { ...rest, query: { kind: 'enemy', matcher: null } },
+  })
+}
 
 /* The Locateable instances the runner dispatches on. Which one it is has to be
  * said, because an id is a bare uuid and the instance cannot be chosen from it. */
@@ -363,20 +490,7 @@ const removeOption = (step: any, index: number, at: number) =>
 
 <template>
   <div class="steps">
-    <p v-if="announced.length" class="scope-bar">
-      <span class="scope-label">In scope here:</span>
-      <button
-        v-for="bound in announced"
-        :key="bound.name"
-        type="button"
-        class="scope-chip"
-        :class="{ jumpable: !!bound.anchor }"
-        :title="`${bound.detail ? bound.detail + ' · ' : ''}${bound.origin}${bound.anchor ? ' — click to show' : ''}`"
-        @click="jumpToBinding(bound.anchor)"
-      >
-        ${{ bound.name }}
-      </button>
-    </p>
+    <ScopeBar :bindings="announced" />
     <div v-for="(step, index) in steps" :key="index" :id="anchorFor(index)" class="step">
       <div class="step-head">
         <span class="step-kind">{{ KIND_LABELS[kindOf(step)] }}</span>
@@ -447,6 +561,49 @@ const removeOption = (step: any, index: number, at: number) =>
           @update:modelValue="set(index, { ...step, be: $event })"
         />
 
+      </template>
+
+      <template v-else-if="kindOf(step) === 'random'">
+        <p class="summary">
+          <template v-if="step.random?.from === undefined">
+            A fresh id, for the steps that have to name something before it exists — a skill test an
+            effect is scoped to, pushed before the test itself.
+          </template>
+          <template v-else>One thing out of the list, picked at random.</template>
+        </p>
+        <div class="row">
+          <label>
+            Bind to
+            <input
+              :value="step.random?.bind"
+              placeholder="sid"
+              @input="set(index, { ...step, random: { ...step.random, bind: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+          <label>
+            What
+            <select
+              :value="step.random?.from === undefined ? 'id' : 'from'"
+              @change="setRandomKind(index, ($event.target as HTMLSelectElement).value)"
+            >
+              <option value="id">a fresh id</option>
+              <option value="from">one of a list</option>
+            </select>
+          </label>
+        </div>
+        <ExpressionEditor
+          v-if="step.random?.from !== undefined"
+          :queryKinds="queryKinds"
+          label="Out of"
+          :bindings="scopeFor(index)"
+          :modelValue="step.random?.from"
+          @update:modelValue="set(index, { ...step, random: { ...step.random, from: $event } })"
+        />
+        <p v-if="step.random?.from !== undefined" class="hint">
+          A matcher can be picked from directly — a Query with its mode set to random — so this is
+          for a list a step is already holding.
+        </p>
       </template>
 
       <ValueEditor
@@ -612,6 +769,16 @@ const removeOption = (step: any, index: number, at: number) =>
         <p class="hint">Runs the steps once per thing found, with it bound below.</p>
         <div class="row">
           <label>
+            Over
+            <select
+              :value="overSource(step.forEach)"
+              @change="setSource(index, 'forEach', ($event.target as HTMLSelectElement).value)"
+            >
+              <option value="query">what a matcher finds</option>
+              <option value="over">what is in a list</option>
+            </select>
+          </label>
+          <label v-if="overSource(step.forEach) === 'query'">
             Kind
             <select
               :value="step.forEach?.query?.kind"
@@ -630,11 +797,20 @@ const removeOption = (step: any, index: number, at: number) =>
           </label>
         </div>
         <ValueEditor
+          v-if="overSource(step.forEach) === 'query'"
           :bindings="scopeFor(index)"
           :type="matcherType(step.forEach?.query?.kind)"
           label="Matcher"
           :modelValue="step.forEach?.query?.matcher"
           @update:modelValue="set(index, { ...step, forEach: { ...step.forEach, query: { ...step.forEach.query, matcher: $event } } })"
+        />
+        <ExpressionEditor
+          v-else
+          :queryKinds="queryKinds"
+          label="The list"
+          :bindings="scopeFor(index)"
+          :modelValue="step.forEach?.over"
+          @update:modelValue="set(index, { ...step, forEach: { ...step.forEach, over: $event } })"
         />
         <StepsEditor
           :bindings="innerScope(index)"
@@ -1053,31 +1229,6 @@ const removeOption = (step: any, index: number, at: number) =>
           @update:modelValue="set(index, { ...step, fight: { ...step.fight, modifiers: $event } })"
         />
 
-        <fieldset class="on-reveal">
-          <legend>If a chaos token is revealed during this test</legend>
-          <BoolField
-            label="it does something"
-            :modelValue="!!onReveal(step, 'fight')"
-            @update:modelValue="setOnReveal(index, 'fight', $event ? { tokens: null, steps: [] } : undefined)"
-          />
-          <template v-if="onReveal(step, 'fight')">
-            <ValueEditor
-              type="ChaosTokenMatcher"
-              label="Which tokens"
-              :bindings="scopeFor(index)"
-              :modelValue="onReveal(step, 'fight').tokens"
-              @update:modelValue="setOnReveal(index, 'fight', { ...onReveal(step, 'fight'), tokens: $event })"
-            />
-            <StepsEditor
-              :queryKinds="queryKinds"
-              :bindings="revealScope(index)"
-              :path="innerPath(index, 'fightreveal')"
-              :announce="[]"
-              :modelValue="onReveal(step, 'fight').steps ?? []"
-              @update:modelValue="setOnReveal(index, 'fight', { ...onReveal(step, 'fight'), steps: $event })"
-            />
-          </template>
-        </fieldset>
       </template>
 
       <template v-else-if="kindOf(step) === 'investigate'">
@@ -1121,31 +1272,6 @@ const removeOption = (step: any, index: number, at: number) =>
           @update:modelValue="set(index, { ...step, investigate: { ...step.investigate, modifiers: $event } })"
         />
 
-        <fieldset class="on-reveal">
-          <legend>If a chaos token is revealed during this test</legend>
-          <BoolField
-            label="it does something"
-            :modelValue="!!onReveal(step, 'investigate')"
-            @update:modelValue="setOnReveal(index, 'investigate', $event ? { tokens: null, steps: [] } : undefined)"
-          />
-          <template v-if="onReveal(step, 'investigate')">
-            <ValueEditor
-              type="ChaosTokenMatcher"
-              label="Which tokens"
-              :bindings="scopeFor(index)"
-              :modelValue="onReveal(step, 'investigate').tokens"
-              @update:modelValue="setOnReveal(index, 'investigate', { ...onReveal(step, 'investigate'), tokens: $event })"
-            />
-            <StepsEditor
-              :queryKinds="queryKinds"
-              :bindings="revealScope(index)"
-              :path="innerPath(index, 'investigatereveal')"
-              :announce="[]"
-              :modelValue="onReveal(step, 'investigate').steps ?? []"
-              @update:modelValue="setOnReveal(index, 'investigate', { ...onReveal(step, 'investigate'), steps: $event })"
-            />
-          </template>
-        </fieldset>
       </template>
 
       <template v-else-if="kindOf(step) === 'evade'">
@@ -1188,31 +1314,6 @@ const removeOption = (step: any, index: number, at: number) =>
           @update:modelValue="set(index, { ...step, evade: { ...step.evade, modifiers: $event } })"
         />
 
-        <fieldset class="on-reveal">
-          <legend>If a chaos token is revealed during this test</legend>
-          <BoolField
-            label="it does something"
-            :modelValue="!!onReveal(step, 'evade')"
-            @update:modelValue="setOnReveal(index, 'evade', $event ? { tokens: null, steps: [] } : undefined)"
-          />
-          <template v-if="onReveal(step, 'evade')">
-            <ValueEditor
-              type="ChaosTokenMatcher"
-              label="Which tokens"
-              :bindings="scopeFor(index)"
-              :modelValue="onReveal(step, 'evade').tokens"
-              @update:modelValue="setOnReveal(index, 'evade', { ...onReveal(step, 'evade'), tokens: $event })"
-            />
-            <StepsEditor
-              :queryKinds="queryKinds"
-              :bindings="revealScope(index)"
-              :path="innerPath(index, 'evadereveal')"
-              :announce="[]"
-              :modelValue="onReveal(step, 'evade').steps ?? []"
-              @update:modelValue="setOnReveal(index, 'evade', { ...onReveal(step, 'evade'), steps: $event })"
-            />
-          </template>
-        </fieldset>
       </template>
 
       <template v-else-if="kindOf(step) === 'parley'">
@@ -1251,31 +1352,72 @@ const removeOption = (step: any, index: number, at: number) =>
           @update:modelValue="set(index, { ...step, parley: { ...step.parley, modifiers: $event } })"
         />
 
-        <fieldset class="on-reveal">
-          <legend>If a chaos token is revealed during this test</legend>
-          <BoolField
-            label="it does something"
-            :modelValue="!!onReveal(step, 'parley')"
-            @update:modelValue="setOnReveal(index, 'parley', $event ? { tokens: null, steps: [] } : undefined)"
-          />
-          <template v-if="onReveal(step, 'parley')">
-            <ValueEditor
-              type="ChaosTokenMatcher"
-              label="Which tokens"
-              :bindings="scopeFor(index)"
-              :modelValue="onReveal(step, 'parley').tokens"
-              @update:modelValue="setOnReveal(index, 'parley', { ...onReveal(step, 'parley'), tokens: $event })"
-            />
-            <StepsEditor
-              :queryKinds="queryKinds"
-              :bindings="revealScope(index)"
-              :path="innerPath(index, 'parleyreveal')"
-              :announce="[]"
-              :modelValue="onReveal(step, 'parley').steps ?? []"
-              @update:modelValue="setOnReveal(index, 'parley', { ...onReveal(step, 'parley'), steps: $event })"
-            />
-          </template>
-        </fieldset>
+      </template>
+
+      <template v-else-if="kindOf(step) === 'test'">
+        <p class="summary">
+          A plain skill test the card names itself. The test it starts is <code>$sid</code>, and
+          what its result does goes in the boxes below — no handler, and no ability index to keep
+          in step with.
+        </p>
+        <div class="row">
+          <label>
+            Using
+            <select
+              :value="step.test?.skill ?? 'SkillWillpower'"
+              @change="set(index, { ...step, test: { ...step.test, skill: ($event.target as HTMLSelectElement).value } })"
+            >
+              <option v-for="sk in SKILLS" :key="sk" :value="sk">{{ sk.replace('Skill', '') }}</option>
+            </select>
+          </label>
+        </div>
+        <!-- Two ways to say how hard it is, and they are not the same thing. A
+             calculation is re-read as the test goes on; an expression is worked
+             out once, when the test begins, and can do arithmetic over bindings. -->
+        <div class="row">
+          <label>
+            Difficulty
+            <select
+              :value="calculatedDifficulty(step.test?.difficulty) ? 'calculation' : 'expression'"
+              @change="setDifficultyKind(index, ($event.target as HTMLSelectElement).value)"
+            >
+              <option value="expression">a number the card works out</option>
+              <option value="calculation">something the engine counts</option>
+            </select>
+          </label>
+        </div>
+        <ExpressionEditor
+          v-if="!calculatedDifficulty(step.test?.difficulty)"
+          :queryKinds="queryKinds"
+          label="Difficulty"
+          expect="Int"
+          :bindings="scopeFor(index)"
+          :modelValue="step.test?.difficulty ?? 0"
+          @update:modelValue="set(index, { ...step, test: { ...step.test, difficulty: $event } })"
+        />
+        <ValueEditor
+          v-else
+          :bindings="scopeFor(index)"
+          type="GameCalculation"
+          label="Difficulty"
+          :modelValue="step.test?.difficulty"
+          @update:modelValue="set(index, { ...step, test: { ...step.test, difficulty: $event } })"
+        />
+        <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
+          type="Target"
+          label="About what (optional — you by default)"
+          :modelValue="step.test?.target"
+          @update:modelValue="set(index, { ...step, test: { ...step.test, target: $event } })"
+        />
+        <ValueEditor
+          :bindings="scopeFor(index)"
+          type="[ModifierType]"
+          label="For this test"
+          :modelValue="step.test?.modifiers"
+          @update:modelValue="set(index, { ...step, test: { ...step.test, modifiers: $event } })"
+        />
       </template>
 
       <template v-else-if="kindOf(step) === 'attack'">
@@ -1311,6 +1453,103 @@ const removeOption = (step: any, index: number, at: number) =>
         />
       </template>
 
+      <template v-else-if="kindOf(step) === 'discardCard'">
+        <p class="summary">
+          Discards the card. A card in hand goes to your discard pile; a card in play is discarded
+          as the entity it is, so the asset leaves the table rather than being left behind.
+        </p>
+        <ExpressionEditor
+          :queryKinds="queryKinds"
+          label="Which card"
+          expect="Card"
+          :bindings="scopeFor(index)"
+          :modelValue="step.discardCard?.card"
+          @update:modelValue="set(index, { ...step, discardCard: { card: $event } })"
+        />
+        <p class="hint">
+          Or name the entity outright, which is what "discard that asset" means when you have its
+          id rather than its card.
+        </p>
+        <ValueEditor
+          optional
+          :bindings="scopeFor(index)"
+          type="Target"
+          label="The entity instead (optional)"
+          :modelValue="step.discardCard?.target"
+          @update:modelValue="set(index, { ...step, discardCard: { target: $event } })"
+        />
+      </template>
+
+      <template v-else-if="kindOf(step) === 'record'">
+        <p class="summary">
+          The campaign log keeps three different things under a key — whether it happened, a number,
+          and a list of entries. Say which of those is being written and the rest follows.
+        </p>
+        <div class="row">
+          <label v-if="recordKeyIsHomebrew(step)">
+            Key
+            <input
+              :value="recordKeyName(step)"
+              placeholder="TraitsLearned"
+              @input="setRecord(index, { key: { tag: 'HomebrewCampaignLogKey', contents: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+          <label>
+            Record
+            <select
+              :value="recordMode(step)"
+              @change="setRecord(index, { mode: ($event.target as HTMLSelectElement).value })"
+            >
+              <option v-for="m in RECORD_MODES" :key="m.key" :value="m.key">{{ m.label }}</option>
+            </select>
+          </label>
+        </div>
+        <ValueEditor
+          v-if="!recordKeyIsHomebrew(step)"
+          :bindings="scopeFor(index)"
+          type="CampaignLogKey"
+          label="Key"
+          :modelValue="step.record?.key"
+          @update:modelValue="setRecord(index, { key: $event })"
+        />
+        <p class="hint">{{ recordModeHelp(step) }}</p>
+        <ExpressionEditor
+          v-if="recordTakesAmount(step)"
+          :queryKinds="queryKinds"
+          label="How much"
+          expect="Int"
+          :bindings="scopeFor(index)"
+          :modelValue="step.record?.amount ?? 1"
+          @update:modelValue="setRecord(index, { amount: $event })"
+        />
+        <template v-if="recordTakesValues(step)">
+          <ExpressionEditor
+            :queryKinds="queryKinds"
+            label="What to record"
+            :bindings="scopeFor(index)"
+            :modelValue="step.record?.values"
+            @update:modelValue="setRecord(index, { values: $event })"
+          />
+          <div class="row">
+            <label>
+              Each one is
+              <select
+                :value="step.record?.kind ?? 'value'"
+                @change="setRecord(index, { kind: ($event.target as HTMLSelectElement).value })"
+              >
+                <option value="value">a value — a trait, a name, a number</option>
+                <option value="cardCode">a card</option>
+              </select>
+            </label>
+          </div>
+          <p class="hint">
+            A list records every entry in it, one each. Recording a card rather than a plain value is
+            what lets the log print its name and hand it back as a card.
+          </p>
+        </template>
+      </template>
+
       <template v-else-if="kindOf(step) === 'takeAction'">
         <p class="summary">Take one immediate action as if it were your turn.</p>
       </template>
@@ -1319,7 +1558,7 @@ const removeOption = (step: any, index: number, at: number) =>
         <ExpressionEditor
           :queryKinds="queryKinds"
           label="How many"
-          expect="int"
+          expect="Int"
           :bindings="scopeFor(index)"
           :modelValue="step.draw?.amount ?? 1"
           @update:modelValue="set(index, { ...step, draw: { ...step.draw, amount: $event } })"
@@ -1363,9 +1602,23 @@ const removeOption = (step: any, index: number, at: number) =>
       </template>
 
       <template v-else-if="kindOf(step) === 'chooseFrom'">
-        <p class="hint">One option per thing the matcher finds, with it bound for the steps below.</p>
+        <p class="hint">
+          One option per thing found, with it bound for the steps below. Not everything a card asks
+          you to choose between is something a matcher can name — "one of its traits" is a list read
+          off a card — so the options can come from a list instead.
+        </p>
         <div class="row">
           <label>
+            Between
+            <select
+              :value="overSource(step.chooseFrom)"
+              @change="setSource(index, 'chooseFrom', ($event.target as HTMLSelectElement).value)"
+            >
+              <option value="query">what a matcher finds</option>
+              <option value="over">what is in a list</option>
+            </select>
+          </label>
+          <label v-if="overSource(step.chooseFrom) === 'query'">
             Kind
             <select
               :value="step.chooseFrom?.query?.kind"
@@ -1398,12 +1651,35 @@ const removeOption = (step: any, index: number, at: number) =>
           </label>
         </div>
         <ValueEditor
+          v-if="overSource(step.chooseFrom) === 'query'"
           :bindings="scopeFor(index)"
           :type="matcherType(step.chooseFrom?.query?.kind)"
           label="Matcher"
           :modelValue="step.chooseFrom?.query?.matcher"
           @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, query: { ...step.chooseFrom.query, matcher: $event } } })"
         />
+        <template v-else>
+          <ExpressionEditor
+            :queryKinds="queryKinds"
+            label="The list"
+            :bindings="scopeFor(index)"
+            :modelValue="step.chooseFrom?.over"
+            @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, over: $event } })"
+          />
+          <label>
+            Label each option
+            <input
+              :value="step.chooseFrom?.label"
+              :placeholder="`$${step.chooseFrom?.bind || 'chosen'}`"
+              @input="set(index, { ...step, chooseFrom: { ...step.chooseFrom, label: ($event.target as HTMLInputElement).value } })"
+              @keydown.stop
+            />
+          </label>
+          <p class="hint">
+            An entity shows as itself; a list has nothing behind it to show, so each option reads as
+            the value when that is already a word — a trait, a skill — and otherwise as this.
+          </p>
+        </template>
         <StepsEditor
           :bindings="innerScope(index)"
           :path="innerPath(index, 'chooseFrom')"
@@ -1412,6 +1688,74 @@ const removeOption = (step: any, index: number, at: number) =>
           :modelValue="step.chooseFrom?.steps ?? []"
           @update:modelValue="set(index, { ...step, chooseFrom: { ...step.chooseFrom, steps: $event } })"
         />
+      </template>
+
+      <!-- The riders every test-starting step shares, below whatever that step
+           asked for. Not part of the chain above: they belong to all five. -->
+      <template v-if="startsTest(step)">
+        <fieldset class="on-reveal">
+          <legend>If a chaos token is revealed during this test</legend>
+          <BoolField
+            label="it does something"
+            :modelValue="!!onReveal(step, kindOf(step))"
+            @update:modelValue="setOnReveal(index, kindOf(step), $event ? { tokens: null, steps: [] } : undefined)"
+          />
+          <template v-if="onReveal(step, kindOf(step))">
+            <ValueEditor
+              type="ChaosTokenMatcher"
+              label="Which tokens"
+              :bindings="scopeFor(index)"
+              :modelValue="onReveal(step, kindOf(step)).tokens"
+              @update:modelValue="setOnReveal(index, kindOf(step), { ...onReveal(step, kindOf(step)), tokens: $event })"
+            />
+            <BoolField
+              label="only once the test has succeeded"
+              :modelValue="!!onReveal(step, kindOf(step)).whenPassed"
+              @update:modelValue="setOnReveal(index, kindOf(step), { ...onReveal(step, kindOf(step)), whenPassed: $event })"
+            />
+            <StepsEditor
+              :queryKinds="queryKinds"
+              :bindings="revealScope(index)"
+              :path="innerPath(index, 'reveal')"
+              :announce="[]"
+              :modelValue="onReveal(step, kindOf(step)).steps ?? []"
+              @update:modelValue="setOnReveal(index, kindOf(step), { ...onReveal(step, kindOf(step)), steps: $event })"
+            />
+          </template>
+        </fieldset>
+
+        <fieldset v-for="which in (['onSuccess', 'onFailure'] as const)" :key="which" class="outcome">
+          <legend>{{ OUTCOME_LEGENDS[which] }}</legend>
+          <BoolField
+            label="something happens"
+            :modelValue="!!outcome(step, which)"
+            @update:modelValue="setOutcome(index, which, $event ? { steps: [] } : undefined)"
+          />
+          <template v-if="outcome(step, which)">
+            <ValueMatcherField
+              :bindings="scopeFor(index)"
+              :modelValue="outcome(step, which).by"
+              @update:modelValue="setOutcome(index, which, { ...outcome(step, which), by: $event })"
+            />
+            <p class="hint">
+              By how much, when the card says so — "if you succeed by 2 or more". Any value covers
+              the plain wording.
+            </p>
+            <StepsEditor
+              :queryKinds="queryKinds"
+              :bindings="revealScope(index)"
+              :path="innerPath(index, which)"
+              :announce="[]"
+              :modelValue="outcome(step, which).steps ?? []"
+              @update:modelValue="setOutcome(index, which, { ...outcome(step, which), steps: $event })"
+            />
+            <p class="hint">
+              Worked out when the test begins, so these can name what this ability chose — the card
+              revealed, the trait picked. A query inside them reads the board as it stands now,
+              not after the test; use a handler for anything that has to look afterwards.
+            </p>
+          </template>
+        </fieldset>
       </template>
       </div>
 
@@ -1521,7 +1865,10 @@ const removeOption = (step: any, index: number, at: number) =>
 /* Flashed when a field jumps here to show where a binding came from. The class
  * is set from outside this component, which scoped styles still match: the rule
  * keys off the element's own attribute, not on who added the class. */
-.on-reveal {
+/* The riders a test-starting step carries. Bounded and labelled, because each is
+ * a different moment of the same test and they read as siblings otherwise. */
+.on-reveal,
+.outcome {
   border: 1px solid #374151;
   border-radius: 5px;
   display: flex;
@@ -1536,37 +1883,8 @@ const removeOption = (step: any, index: number, at: number) =>
   }
 }
 
-.scope-bar {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  margin: 0 0 0.2rem;
-}
 
-.scope-label {
-  color: #9ca3af;
-  font-size: 0.72rem;
-}
 
-.scope-chip {
-  background: #1f2937;
-  border: 1px solid #374151;
-  border-radius: 999px;
-  color: #5eead4;
-  cursor: default;
-  font-family: inherit;
-  font-size: 0.72rem;
-  padding: 0.05rem 0.45rem;
-
-  &.jumpable {
-    cursor: pointer;
-
-    &:hover {
-      border-color: #14b8a6;
-    }
-  }
-}
 
 .binding-flash {
   animation: binding-flash 1.4s ease-out;

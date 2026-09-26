@@ -85,6 +85,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Target
 import Arkham.Token qualified as Token
+import Arkham.Trait (displayTrait, toTraits)
 import Arkham.Window (Window (..), mkAfter, mkWhen)
 import Arkham.Window qualified as Window
 import Control.Lens (non, over, transform, universe)
@@ -320,6 +321,27 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
       push $ chooseOne player $ targetLabels cards $ only . pay . ChosenCardCost . toCardId
       pure c
     ChosenCardCost cid -> withPayment $ ChosenCardPayment cid
+    {- Revealed before it is paid, because that is the order the card reads in:
+       the card becomes public, and only then is it what you spent. -}
+    RevealChosenCardCost mtch -> do
+      cards <- select mtch
+      push
+        $ chooseOne player
+        $ targetLabels cards \card ->
+          [RevealCard (toCardId card), pay $ ChosenCardCost (toCardId card)]
+      pure c
+    {- "One of /its/ Traits" -- the card chosen earlier in this same cost, read off
+       what has been paid so far. Asks nothing when no card was chosen, which is a
+       cost written without one before it rather than anything the player did. -}
+    ChooseTraitOfChosenCardCost -> do
+      for_ (chosenCardPayment c.payments) \cid -> do
+        card <- getCard cid
+        let traits = toList (toTraits card)
+        unless (null traits)
+          $ push
+          $ chooseOne player [Label (displayTrait t) [pay $ ChosenTraitCost t] | t <- traits]
+      pure c
+    ChosenTraitCost t -> withPayment $ ChosenTraitPayment t
     ChooseEnemyCost mtch -> do
       enemies <- select mtch
       push $ chooseOne player $ targetLabels enemies $ only . pay . ChosenEnemyCost

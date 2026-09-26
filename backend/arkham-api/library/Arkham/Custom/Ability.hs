@@ -15,12 +15,16 @@ the card def's meta:
 * @_modifiers@ -- modifiers the card hands out while it is in play. Each names
   what to match and the modifiers to give whatever it matches. Matching @card@
   rather than an entity targets the card itself, so the modifier is already
-  there when the engine reads it at draw or spawn time.
+  there when the engine reads it at draw or spawn time. A @let@ block binds
+  expressions first, which is how a modifier reaches what only an expression can
+  (the campaign log) and substitutes it into an otherwise pure matcher.
 
 Both run the same small step language:
 
 * @query@ -- run a matcher and bind the result to a name.
-* @let@ -- bind an expression over what is already bound (see "Arkham.Custom.Expr").
+* @let@ -- bind an expression over what is already bound (see "Arkham.Custom.Expr"),
+  including what the campaign log remembers (@recordSet@, @recordCount@).
+* @random@ -- bind a fresh id, or one element taken at random from a list.
 * @push@ -- push a message.
 * @if@ -- branch on a criterion, or on whether a matcher found anything.
 * @case@ -- the first branch whose condition holds, with an optional fallback.
@@ -29,11 +33,12 @@ Both run the same small step language:
 * @chooseFrom@ -- offer one option per thing a matcher finds, binding it.
 * @playCard@ -- play a card from hand, paying its cost, optionally discounted.
 * @fight@ -- fight an enemy, with modifiers for that attack.
-* @investigate@, @evade@, @parley@ -- start the matching skill test. Each binds
-  the test it started as @$sid@, so a later step can scope a modifier to it, and
-  each takes an @onReveal@ saying what happens if a named chaos token turns up
-  during it, immediately or -- with @whenPassed@ -- once the test is known to
-  have succeeded.
+* @investigate@, @evade@, @parley@ -- start the matching skill test, and @test@
+  a bare one, naming its skill and difficulty itself. Each binds the test it
+  started as @$sid@, so a later step can scope a modifier to it, and each takes
+  an @onReveal@ saying what happens if a named chaos token turns up during it,
+  immediately or -- with @whenPassed@ -- once the test is known to have
+  succeeded, plus @onSuccess@ and @onFailure@ for what the result does.
 * @attack@ -- an enemy attacks an investigator.
 * @ready@ -- ready a card.
 * @takeAction@ -- take an immediate action as if it were your turn.
@@ -44,12 +49,14 @@ Both run the same small step language:
 * @activateAbility@ -- offer an ability the matcher accepts, wherever it is
   printed, with modifiers applied to the ability itself ("without paying its
   cost").
+* @discardCard@ -- discard a card, from hand or from play, whichever it is in.
+* @record@ -- write in the campaign log: a flag, a count, or entries in a set.
 * @place@ -- put a card somewhere: attach it, move it into a threat area.
 * @discover@ -- discover clues, here or at a named location.
 * @setAside@ -- make copies of named cards and set them aside, out of play.
 * @cancelBatch@ -- stop what a @would@ window is about to do, for "instead".
 
-@forEach@ walks a @query@ or, with @over@, a list already bound. A @query@ step
+@forEach@ and @chooseFrom@ walk a @query@ or, with @over@, a list already bound. A @query@ step
 takes @"mode": "random"@ as well as @first@ and @count@. An @if@ or @when@ reads
 a matcher, a @criteria@, a @{"source", "matches"}@ pair, or an @eq@/@ne@ of two
 expressions. An option of a @choose@ may carry a @query@ of its own, so one
@@ -97,7 +104,7 @@ import Arkham.Classes.Query
 -- modules into the cycle and onto their boot interfaces).
 
 import Arkham.Custom.Env
-import Arkham.Custom.Expr (runQuery)
+import Arkham.Custom.Expr (evalExpr, runQuery)
 import Arkham.Custom.Steps
 import Arkham.Helpers.Modifiers (ModifierType, modifySelect)
 import Arkham.Helpers.Window (windowMatches)
@@ -184,6 +191,16 @@ data ModifierSpec = ModifierSpec
   state of the game.
   -}
   , modEachBind :: Text
+  , modLets :: [(Text, Value)]
+  {- ^ Names bound from expressions before anything else in the spec is read, in
+  order, so a later one can use an earlier one.
+
+  This is what lets a modifier depend on something only an expression can reach --
+  the campaign log, most of all. A 'CardMatcher' is matched purely and so cannot
+  read the log itself; binding the answer here and substituting it into the matcher
+  moves that read to the one place it can happen, which is while modifiers are
+  being collected.
+  -}
   , modRequires :: [(Value, Value)]
   {- ^ Pairs that must be equal once substituted, as a handler's @requires@ is.
   Unlike @if@ this asks nothing of the game, so it is the way to gate on where
@@ -207,9 +224,12 @@ instance FromJSON ModifierSpec where
       .:? "if"
       <*> (o .:? "each")
       <*> (o .:? "eachBind" .!= "each")
+      <*> (map toLet <$> o .:? "let" .!= [])
       <*> o
       .:? "requires"
       .!= []
+   where
+    toLet o' = (fromMaybe "" (parseMaybe (.: "name") o'), fromMaybe Null (parseMaybe (.: "be") o'))
 
 data HandlerSpec = HandlerSpec
   { handlerOn :: Text
@@ -508,28 +528,38 @@ keyword, say -- rather than only acting on itself.
 -}
 customModifiers :: (CustomEntity a, HasModifiersM m) => a -> m ()
 customModifiers a = for_ (metaSpecs @ModifierSpec modifiersMetaKey (toCardDef a)) \spec -> do
-  let holds (l, r) = sameValue (substitute env l) (substitute env r)
-  applies <-
-    if all holds (modRequires spec)
-      then maybe (pure True) (runReadCondition env) (modCondition spec)
-      else pure False
-  when applies $ case modKind spec of
-    "enemy" -> apply @EnemyMatcher spec
-    "location" -> apply @LocationMatcher spec
-    "investigator" -> apply @InvestigatorMatcher spec
-    "asset" -> apply @AssetMatcher spec
-    "treachery" -> apply @TreacheryMatcher spec
-    "event" -> apply @EventMatcher spec
-    "skill" -> apply @SkillMatcher spec
-    -- Cards rather than entities: this reaches a card before it is in play,
-    -- which is the only way to change something the engine reads at draw or
-    -- spawn time (a keyword deciding how an enemy enters play, say).
-    "card" -> apply @ExtendedCardMatcher spec
-    -- A chaos token, which is what "treat each X as 0" and its like reach.
-    "chaosToken" -> apply @ChaosTokenMatcher spec
-    _ -> pure ()
+  let holds (l, r) = sameValue (substitute baseEnv l) (substitute baseEnv r)
+  -- @requires@ first, because it is the one gate that asks the game nothing.
+  when (all holds (modRequires spec)) do
+    env <- bindLets spec
+    applies <- maybe (pure True) (runReadCondition env) (modCondition spec)
+    when applies $ case modKind spec of
+      "enemy" -> apply @EnemyMatcher env spec
+      "location" -> apply @LocationMatcher env spec
+      "investigator" -> apply @InvestigatorMatcher env spec
+      "asset" -> apply @AssetMatcher env spec
+      "treachery" -> apply @TreacheryMatcher env spec
+      "event" -> apply @EventMatcher env spec
+      "skill" -> apply @SkillMatcher env spec
+      -- Cards rather than entities: this reaches a card before it is in play,
+      -- which is the only way to change something the engine reads at draw or
+      -- spawn time (a keyword deciding how an enemy enters play, say).
+      "card" -> apply @ExtendedCardMatcher env spec
+      -- A chaos token, which is what "treat each X as 0" and its like reach.
+      "chaosToken" -> apply @ChaosTokenMatcher env spec
+      _ -> pure ()
  where
-  env = bindings a
+  baseEnv = bindings a
+
+  {- The spec's @let@s, bound before the condition, the matcher or the modifiers
+  are read, so all three can use them. In order, so one may build on the last. -}
+  bindLets :: HasModifiersM m' => ModifierSpec -> m' Env
+  bindLets spec = foldM bindLet baseEnv (modLets spec)
+   where
+    bindLet e (name, expr) = do
+      value <- evalExpr e expr
+      pure $ KeyMap.insert (Key.fromText name) value e
+
   apply
     :: forall q m'
      . ( HasModifiersM m'
@@ -537,17 +567,18 @@ customModifiers a = for_ (metaSpecs @ModifierSpec modifiersMetaKey (toCardDef a)
        , Query q
        , Targetable (QueryElement q)
        )
-    => ModifierSpec
+    => Env
+    -> ModifierSpec
     -> m' ()
-  apply spec = for_ (decodeWith env (modMatcher spec)) \matcher -> do
-    envs <- eachEnv spec
+  apply env spec = for_ (decodeWith env (modMatcher spec)) \matcher -> do
+    envs <- eachEnv env spec
     let decoded = concat [mapMaybe (decodeWith @ModifierType e) (modTypes spec) | e <- envs]
     unless (null decoded) $ modifySelect a (matcher :: q) decoded
 
-  -- One environment per thing found, or just the card's own when there is no
-  -- @each@ -- so the ordinary case stays exactly what it was.
-  eachEnv :: HasModifiersM m' => ModifierSpec -> m' [Env]
-  eachEnv spec = case modEach spec of
+  -- One environment per thing found, or just the one it was handed when there is
+  -- no @each@ -- so the ordinary case stays exactly what it was.
+  eachEnv :: HasModifiersM m' => Env -> ModifierSpec -> m' [Env]
+  eachEnv env spec = case modEach spec of
     Nothing -> pure [env]
     Just query -> do
       found <- fromMaybe [] <$> runQuery env query

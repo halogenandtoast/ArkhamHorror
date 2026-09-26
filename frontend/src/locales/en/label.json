@@ -353,6 +353,8 @@
     "calculatedHandDiscard": "Discard cards from your hand",
     "calculatedResource": "Spend resources",
     "chooseCard": "Choose a card",
+    "revealChosenCard": "Reveal a card",
+    "chooseTrait": "Choose a trait",
     "chooseEnemy": "Choose an enemy",
     "clue": "Spend a clue | Spend {count} clues",
     "clueX": "Spend X Clues",

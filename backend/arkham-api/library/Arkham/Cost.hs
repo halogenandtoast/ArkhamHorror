@@ -29,6 +29,7 @@ import Arkham.SkillType
 import Arkham.Source
 import Arkham.Strategy
 import Arkham.Target
+import Arkham.Trait (Trait)
 import Control.Lens (Plated (..), Prism', cosmos, prism', sumOf, toListOf, _2)
 import Data.Aeson.TH
 import Data.Data.Lens (uniplate)
@@ -62,6 +63,7 @@ data Payment
   | AdditionalActionPayment
   | ChosenEnemyPayment EnemyId
   | ChosenCardPayment CardId
+  | ChosenTraitPayment Trait
   | CluePayment InvestigatorId Int
   | DoomPayment Int
   | ResourcePayment Int
@@ -132,7 +134,19 @@ data Cost
   | ChooseEnemyCostAndMaybeGroupFieldClueCost LocationMatcher EnemyMatcher (Field Enemy (Maybe Int))
   | ChosenEnemyCost EnemyId
   | ChooseExtendedCardCost ExtendedCardMatcher
+  | {- | "Reveal a card from your hand": choose a card the matcher accepts and
+    reveal it, paying it as the card chosen.
+
+    Neither half of that is 'RevealCost' or 'ChooseExtendedCardCost' on its own.
+    'RevealCost' reveals a card already named, so it cannot express a reveal the
+    player chooses; 'ChooseExtendedCardCost' chooses without revealing, and
+    revealing is not a formality -- a revealed card is public, and it is what
+    'CannotRevealCards' forbids, so this is unaffordable to an investigator who
+    cannot reveal.
+    -}
+    RevealChosenCardCost ExtendedCardMatcher
   | ChosenCardCost CardId
+  | ChosenTraitCost Trait -- internal to track the chosen trait
   | DiscardAssetCost AssetMatcher
   | ExhaustAssetCost AssetMatcher
   | ExhaustXAssetCost AssetMatcher
@@ -279,6 +293,24 @@ data Cost
   | ConcealedXCost
   | XCost Cost
   | OneOfDistanceCost LocationMatcher Cost
+  | {- | "…and choose one of its Traits": one of the traits of the card chosen
+    earlier in this same cost.
+
+    Sub-costs of a 'Costs' are paid in order, each seeing what the ones before it
+    paid, which is the only way to say "its" -- the trait depends on a card the
+    player has not picked yet when the cost is written.
+
+    Declared last because that /is/ the mechanism. Combining costs sorts them
+    ('Semigroup Cost', and every ability's cost is at least @ActionCost 0 <>@ its
+    own), so the order written down is thrown away and this derived 'Ord' is what
+    decides what is paid when. Last means after anything that could have chosen a
+    card -- including an 'OrCost' of two ways to choose one.
+
+    Affordability cannot be checked: which card it will be is unknown until the
+    earlier cost is paid. So the cost that chooses the card is the one that has to
+    require the card to have a trait at all ('CardWithAnyTrait').
+    -}
+    ChooseTraitOfChosenCardCost
   deriving stock (Show, Eq, Ord, Data)
 
 instance Plated Cost
@@ -458,6 +490,9 @@ chosenEnemyPayment = listToMaybe . toListOf (cosmos . _ChosenEnemyPayment)
 
 chosenCardPayment :: Payment -> Maybe CardId
 chosenCardPayment = listToMaybe . toListOf (cosmos . _ChosenCardPayment)
+
+chosenTraitPayment :: Payment -> Maybe Trait
+chosenTraitPayment = listToMaybe . toListOf (cosmos . _ChosenTraitPayment)
 
 addedCurseTokenPayment :: Payment -> Int
 addedCurseTokenPayment = sum . toListOf (cosmos . _AddCurseTokenPayment)

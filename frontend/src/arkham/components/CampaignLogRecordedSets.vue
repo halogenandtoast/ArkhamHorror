@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
 import { imgsrc } from '@/arkham/helpers'
-import { formatKey } from '@/arkham/types/Log'
+import { formatKey, logKeyTitle } from '@/arkham/types/Log'
 import type { LogKey } from '@/arkham/types/Log'
 import type { RecordCountChange } from '@/arkham/types/Campaign'
 import { campaignStepIcon, campaignStepName } from '@/arkham/types/CampaignStep'
@@ -21,6 +21,10 @@ const props = defineProps<{
 }>()
 
 const keyPath = (k: LogKey) => formatKey(k, props.homebrewScope)
+
+/* A homebrew key from a custom card has no locale entry, so its path would show
+ * as the title. See `logKeyTitle`. */
+const title = (path: string) => logKeyTitle(path, t)
 
 const { t } = useI18n()
 
@@ -85,7 +89,7 @@ const setValueKey = (setKey: string, setValue: any, idx: number): string => {
 <template>
   <template v-if="entries.length > 0">
     <div v-for="[setKey, setValues] in entries" :key="setKey" class="log-section">
-      <h3 class="section-title">{{ t(setKey) }}</h3>
+      <h3 class="section-title">{{ title(setKey) }}</h3>
       <ul :class="['log-list', setClass(setKey)]">
         <li
           v-if="isSeal(setKey)"
@@ -113,7 +117,7 @@ const setValueKey = (setKey: string, setValue: any, idx: number): string => {
         :class="{ expandable: histories[keyPath(k)] }"
         @click="histories[keyPath(k)] && toggle(keyPath(k))"
       >
-        {{ t(keyPath(k)) }}
+        {{ title(keyPath(k)) }}
         <svg
           v-if="histories[keyPath(k)]"
           class="chevron"

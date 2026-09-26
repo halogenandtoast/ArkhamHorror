@@ -75,5 +75,7 @@ subSteps v = fromMaybe [] (parseMaybe parseJSON v)
 
 textField :: Env -> KeyMap.KeyMap Value -> Key.Key -> Text -> Text
 textField env o key fallback = case substitute env <$> KeyMap.lookup key o of
-  Just (String t) -> t
+  -- An empty one is a field the editor left behind, not a label of no words:
+  -- every caller here is a name or a prompt, and none of them means "blank".
+  Just (String t) | not (null t) -> t
   _ -> fallback

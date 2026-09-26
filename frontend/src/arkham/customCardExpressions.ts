@@ -24,6 +24,7 @@ export const TRANSFORMS: Transform[] = [
   { name: 'paidCards', label: 'the cards it discarded', from: 'Payment', to: '[Card]' },
   { name: 'discardedCard', label: 'the single card it discarded', from: 'Payment', to: 'Card' },
   { name: 'chosenCard', label: 'the card it chose', from: 'Payment', to: 'CardId' },
+  { name: 'chosenTrait', label: 'the trait it chose', from: 'Payment', to: 'Trait' },
   { name: 'chosenEnemy', label: 'the enemy it chose', from: 'Payment', to: 'EnemyId' },
   { name: 'exhausted', label: 'what it exhausted', from: 'Payment', to: '[Target]' },
   { name: 'removed', label: 'what it removed', from: 'Payment', to: '[Target]' },
@@ -62,6 +63,30 @@ export const PROP_KINDS: Record<string, string> = {
   card: 'Card',
   skillTest: 'SkillTestId',
 }
+
+/* Which `get property` kind reads a value of this type, mirroring the dispatch in
+ * `getProp` ("Arkham.Custom.Expr"). An entity kind names a Field on that entity --
+ * `InvestigatorTraits`, `EnemyHealth` -- and those names are not in the served
+ * schema, so only `card` and `skillTest` have lists the editor can offer; the rest
+ * are typed in.
+ *
+ * Without this the editor refused a property on anything but a card or a test,
+ * while the runner was perfectly happy to read one off an investigator. */
+export const PROP_KIND_FOR: Record<string, string> = {
+  Card: 'card',
+  SkillTestId: 'skillTest',
+  EnemyId: 'enemy',
+  LocationId: 'location',
+  InvestigatorId: 'investigator',
+  AssetId: 'asset',
+  ActId: 'act',
+}
+
+/** Which kinds the editor knows the property names for. */
+export const propOptionsFor = (kind: string | undefined) =>
+  kind === 'skillTest' ? SKILL_TEST_PROPS : kind === 'card' ? CARD_PROPS : undefined
+
+const DEFAULT_PROP: Record<string, string> = { card: 'name', skillTest: 'difficulty' }
 
 export const CARD_PROPS: Record<string, string> = {
   icons: '[SkillIcon]',
@@ -151,6 +176,14 @@ export function typeFits(actual: string | undefined, expected: string | undefine
 export const transformsFor = (type?: string) =>
   TRANSFORMS.filter((t) => typeFits(type, t.from))
 
+/* What the campaign log holds. A set's element type is not knowable — the log
+ * stores card codes, mementos and bare values under different keys — so it
+ * reports a list of anything, which every list transform accepts. */
+export const RECORD_SOURCES: Record<string, string> = {
+  recordSet: '[any]',
+  recordCount: 'Int',
+}
+
 /** What an expression works out to, as far as can be told without running it. */
 export function expressionType(expr: any, bindings: Binding[] = []): string | undefined {
   if (expr === null || expr === undefined) return undefined
@@ -168,6 +201,9 @@ export function expressionType(expr: any, bindings: Binding[] = []): string | un
     return TRANSFORMS.find((t) => t.name === expr.apply)?.to
   }
   if (typeof expr.skillTest === 'string') return SKILL_TEST_PROPS[expr.skillTest]
+  for (const key of Object.keys(RECORD_SOURCES)) {
+    if (key in expr) return RECORD_SOURCES[key]
+  }
   // A query is an expression, so a `let` bound to one is typed like any other.
   if (expr.query) return queryType(expr.query, expr.mode)
   if (typeof expr.get === 'string' || typeof expr.map === 'string') {
@@ -189,7 +225,12 @@ export function expressionType(expr: any, bindings: Binding[] = []): string | un
     if (key in expr) return expressionType(expr[key], bindings)
   }
   if ('filter' in expr) return expressionType(expr.of, bindings)
-  if ('concat' in expr) return elementOf(expressionType(expr.concat, bindings))
+  if ('concat' in expr) {
+    // Joined lists: the parts are expressions, so nothing here knows what they
+    // hold. Flattening one list of lists yields that list's element type.
+    if (Array.isArray(expr.concat)) return undefined
+    return elementOf(expressionType(expr.concat, bindings))
+  }
   if ('first' in expr) return elementOf(expressionType(expr.first, bindings))
   return undefined
 }
@@ -266,21 +307,20 @@ export function stagesFor(from: string | undefined): Stage[] {
       to: 'SkillTest',
       template: { apply: 'getSkillTest' },
     })
-    stages.push({
-      name: 'get',
-      label: 'get property',
-      to: undefined,
-      template: { get: 'difficulty', kind: 'skillTest' },
-    })
   }
 
+  /* One `get property` stage, whose kind follows from what it is handed -- there is
+   * only ever one reading, so there is nothing to ask. Applied to a list it reads
+   * the property of each, which is what the runner does. */
   const propSubject = list ? element : from
-  if (unknown || typeFits(propSubject, 'Card')) {
+  const propKind = propSubject ? PROP_KIND_FOR[propSubject] : undefined
+  if (unknown || propKind) {
+    const kind = propKind ?? 'card'
     stages.push({
       name: 'get',
       label: 'get property',
       to: undefined,
-      template: { get: 'name', kind: 'card' },
+      template: { get: DEFAULT_PROP[kind] ?? '', kind },
     })
   }
 
@@ -298,7 +338,12 @@ export function stagesFor(from: string | undefined): Stage[] {
       },
     )
     if (unknown || element?.startsWith('[')) {
-      stages.push({ name: 'concat', label: 'flattened', to: element, template: { concat: null } })
+      stages.push({
+        name: 'concat',
+        label: 'the lists inside joined into one',
+        to: element,
+        template: { concat: null },
+      })
     }
     if (unknown || typeFits(element, 'Int')) {
       stages.push(
@@ -332,8 +377,23 @@ export function stageKey(stage: any): string | undefined {
 /** The property a `get` stage reads, however the stage spells it. */
 export const stageProp = (stage: any): string | undefined => stage?.get ?? stage?.map
 
+/* `concat` wears two hats, told apart by its operand.
+ *
+ * Given one list of lists it is a stage -- flatten what you were handed. Given a
+ * *list of expressions* it is n-ary: work each one out and join them end to end,
+ * which is the only way to say "the traits you have learned and the ones printed
+ * on your investigator". Read as a stage, the second form leaves its operands
+ * sitting where the editor expects a single value and they cannot be edited at
+ * all, so it has to be recognised as a source. */
+export const isJoinedLists = (expr: any): boolean =>
+  !!expr && typeof expr === 'object' && !Array.isArray(expr) && Array.isArray(expr.concat)
+
 const isStage = (expr: any) =>
-  !!expr && typeof expr === 'object' && !Array.isArray(expr) && !!stageKey(expr)
+  !!expr &&
+  typeof expr === 'object' &&
+  !Array.isArray(expr) &&
+  !isJoinedLists(expr) &&
+  !!stageKey(expr)
 
 /** A pipeline read outward: the value it starts from, then each stage in order. */
 export function unwindPipeline(expr: any): { source: any; stages: any[] } {
@@ -362,7 +422,8 @@ export const stageResult = (stage: any, incoming: string | undefined) => {
   const key = stageKey(stage)
   // A property stage yields whatever that property is, broadcast over a list.
   if (key === 'get') {
-    const props = stage?.kind === 'skillTest' ? SKILL_TEST_PROPS : CARD_PROPS
+    // An entity's Field has no type the editor knows, which is an honest unknown.
+    const props = propOptionsFor(stage?.kind) ?? {}
     const type = props[stageProp(stage) ?? '']
     return incoming?.startsWith('[') ? listOf(type) : type
   }

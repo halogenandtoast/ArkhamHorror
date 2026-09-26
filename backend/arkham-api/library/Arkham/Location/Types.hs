@@ -230,6 +230,7 @@ instance FromJSON (SomeField Location) where
     "LocationPosition" -> pure $ SomeField LocationPosition
     "LocationCostToEnterUnrevealed" -> pure $ SomeField LocationCostToEnterUnrevealed
     "LocationGlobalMeta" -> pure $ SomeField LocationGlobalMeta
+    "LocationConcealedCards" -> pure $ SomeField LocationConcealedCards
     _ -> error "no such Location field"
 
 instance Entity LocationAttrs where

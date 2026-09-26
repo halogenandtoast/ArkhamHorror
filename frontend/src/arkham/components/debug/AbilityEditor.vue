@@ -24,7 +24,10 @@ import {
   type Binding,
 } from '@/arkham/customCardBindings'
 import BoolField from '@/arkham/components/debug/BoolField.vue'
+import ExpressionEditor from '@/arkham/components/debug/ExpressionEditor.vue'
+import ScopeBar from '@/arkham/components/debug/ScopeBar.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
+import { expressionType } from '@/arkham/customCardExpressions'
 
 const props = defineProps<{
   abilities: any[]
@@ -479,6 +482,72 @@ const setModifier = (i: number, changes: Record<string, any>) =>
 const removeModifier = (i: number) =>
   emit('update:modifiers', modifiers.value.filter((_, j) => j !== i))
 
+/* The constant's `let`s: the same thing a `let` step is, bound before anything
+ * else in the spec is read, so a matcher can use what only an expression can reach
+ * -- the campaign log, above all. A matcher is matched purely and cannot ask the
+ * log itself; this is where that answer is fetched and substituted in. */
+const modifierLets = (modifier: any): any[] => modifier.let ?? []
+
+const setModifierLet = (index: number, at: number, changes: Record<string, any>) =>
+  setModifier(index, {
+    let: modifierLets(modifiers.value[index]).map((l, i) => (i === at ? { ...l, ...changes } : l)),
+  })
+
+const addModifierLet = (index: number) =>
+  setModifier(index, { let: [...modifierLets(modifiers.value[index]), { name: '', be: null }] })
+
+const removeModifierLet = (index: number, at: number) =>
+  setModifier(index, { let: modifierLets(modifiers.value[index]).filter((_, i) => i !== at) })
+
+/* What a constant's own fields can refer to: the card's bindings plus whatever its
+ * lets have named, in order, so a later let can build on an earlier one. Without
+ * this a name the author just bound reads as unbound in every field below it. */
+const modifierScope = (modifier: any): Binding[] => {
+  const scope = [...cardBindings(props.cardType)]
+  for (const bound of modifierLets(modifier)) {
+    const name = String(bound?.name ?? '').trim()
+    if (!name) continue
+    const type = expressionType(bound?.be, scope)
+    scope.push({
+      name,
+      detail: type ? `an expression :: ${type}` : 'an expression',
+      type,
+      origin: "this constant's let",
+    })
+  }
+  // `each` repeats the modifiers once per thing found, binding each under this name.
+  if (modifier?.each) {
+    scope.push({
+      name: String(modifier.eachBind ?? 'each').trim() || 'each',
+      detail: 'one of what was found',
+      origin: "this constant's each",
+    })
+  }
+  return scope
+}
+
+/* What the let at `at` can refer to: the card's bindings plus the lets before it,
+ * never itself. */
+const letScope = (modifier: any, at: number): Binding[] => {
+  const scope = [...cardBindings(props.cardType)]
+  modifierLets(modifier)
+    .slice(0, at)
+    .forEach((bound: any) => {
+      const name = String(bound?.name ?? '').trim()
+      if (name) scope.push({ name, detail: 'an expression', origin: "this constant's let" })
+    })
+  return scope
+}
+
+/* The binding a let introduces, announced beneath it. Nothing to say until it has
+ * a name -- an unnamed let binds nothing and the runner skips it. */
+const letBinds = (modifier: any, at: number): { name: string; type?: string } | null => {
+  const bound = modifierLets(modifier)[at]
+  const name = String(bound?.name ?? '').trim()
+  if (!name) return null
+  return { name, type: expressionType(bound?.be, letScope(modifier, at)) }
+}
+
 /* A modifier can be gated two ways. `if` asks the game a question; `requires`
  * only compares bindings, which is what you need when the question itself would
  * ask for modifiers while modifiers are being collected -- telling a card in
@@ -605,11 +674,14 @@ function handlerScope(handler: any, index: number): Binding[] {
           >
           <button type="button" @click="removeAbility(index)">Remove</button>
         </div>
+        <!-- Said once, at the top, because the ability's own fields can use these
+             too -- a criteria naming $controller, not only the steps below. -->
+        <ScopeBar :bindings="abilityScope(ability, index)" />
 
         <ValueEditor
           type="AbilityType"
           label="When / how it is used"
-          :bindings="cardBindings(props.cardType)"
+          :bindings="abilityScope(ability, index)"
           :modelValue="ability.type"
           @update:modelValue="setAbility(index, { type: $event })"
         />
@@ -617,7 +689,7 @@ function handlerScope(handler: any, index: number): Binding[] {
           optional
           type="Criterion"
           label="Criteria (optional) — gates whether the ability is available"
-          :bindings="cardBindings(props.cardType)"
+          :bindings="abilityScope(ability, index)"
           :modelValue="ability.criteria"
           @update:modelValue="setAbility(index, { criteria: $event })"
         />
@@ -625,7 +697,7 @@ function handlerScope(handler: any, index: number): Binding[] {
           optional
           type="AbilityLimit"
           label="Limit (optional)"
-          :bindings="cardBindings(props.cardType)"
+          :bindings="abilityScope(ability, index)"
           :modelValue="ability.limit"
           @update:modelValue="setAbility(index, { limit: $event })"
         />
@@ -712,6 +784,56 @@ function handlerScope(handler: any, index: number): Binding[] {
           <strong>Constant — gives modifiers to</strong>
           <button type="button" @click="removeModifier(index)">Remove</button>
         </div>
+        <!-- What the constant inherits. A name one of its own lets works out is
+             not inherited, so it is announced at the let that binds it rather
+             than listed here as though it had always been there. -->
+        <ScopeBar :bindings="cardBindings(props.cardType)" />
+
+        <!-- First, because everything below can use what these work out -- the
+             same order a `let` step sits in above the steps that read it. -->
+        <div v-for="(bound, at) in modifierLets(modifier)" :key="`l${at}`" class="let-row">
+          <div class="row">
+            <label>
+              Let
+              <input
+                :value="bound.name"
+                placeholder="known"
+                @input="setModifierLet(index, at, { name: ($event.target as HTMLInputElement).value })"
+                @keydown.stop
+              />
+            </label>
+            <button type="button" title="Remove this value" @click="removeModifierLet(index, at)">
+              ×
+            </button>
+          </div>
+          <ExpressionEditor
+            :queryKinds="QUERY_KINDS"
+            label="be"
+            :bindings="letScope(modifier, at)"
+            :modelValue="bound.be"
+            @update:modelValue="setModifierLet(index, at, { be: $event })"
+          />
+          <!-- Said the way a step says it, because it is the same thing: a name
+               that exists from here down and nowhere above. -->
+          <div v-if="letBinds(modifier, at)" class="let-foot">
+            <span class="binds">
+              <span class="binds-label">binds</span>
+              <code class="binds-name"
+                >${{ letBinds(modifier, at)!.name
+                }}<span v-if="letBinds(modifier, at)!.type" class="binds-type">
+                  :: {{ letBinds(modifier, at)!.type }}</span
+                ></code
+              >
+              <span class="binds-scope">for the matcher, the modifiers and Only if</span>
+            </span>
+          </div>
+        </div>
+        <button type="button" class="add" @click="addModifierLet(index)">+ Let</button>
+        <p class="hint muted">
+          The same <code>let</code> the steps use, and for the same reason: a matcher is read purely
+          and cannot ask the campaign log anything, so the answer is worked out here — where the log
+          <em>can</em> be read — and used as <code>$name</code> below.
+        </p>
         <label>
           What to match
           <select
@@ -723,7 +845,7 @@ function handlerScope(handler: any, index: number): Binding[] {
         </label>
         <ValueEditor
           :type="MODIFIER_KINDS[modifier.kind] ?? 'EnemyMatcher'"
-          :bindings="cardBindings(props.cardType)"
+          :bindings="modifierScope(modifier)"
           label="Matcher"
           :modelValue="modifier.matcher"
           @update:modelValue="setModifier(index, { matcher: $event })"
@@ -731,7 +853,7 @@ function handlerScope(handler: any, index: number): Binding[] {
         <ValueEditor
           type="[ModifierType]"
           label="Modifiers"
-          :bindings="cardBindings(props.cardType)"
+          :bindings="modifierScope(modifier)"
           :modelValue="modifier.modifiers"
           @update:modelValue="setModifier(index, { modifiers: $event })"
         />
@@ -739,10 +861,11 @@ function handlerScope(handler: any, index: number): Binding[] {
           optional
           type="Criterion"
           label="Only if (optional) — a question asked of the game"
-          :bindings="cardBindings(props.cardType)"
+          :bindings="modifierScope(modifier)"
           :modelValue="modifier.if"
           @update:modelValue="setModifier(index, { if: $event })"
         />
+
 
         <div v-for="(pair, at) in modifierRequires(modifier)" :key="at" class="row">
           <label>
@@ -863,6 +986,7 @@ function handlerScope(handler: any, index: number): Binding[] {
           <strong>Listener {{ index + 1 }}</strong>
           <button type="button" @click="removeHandler(index)">Remove</button>
         </div>
+        <ScopeBar :bindings="handlerScope(handler, index)" />
         <label :id="handlerAnchor(index)">
           Message tag
           <input
@@ -1160,6 +1284,76 @@ function handlerScope(handler: any, index: number): Binding[] {
   display: flex;
   gap: 0.4rem;
   flex-wrap: wrap;
+}
+
+/* The name and the expression are one thing, bounded so a constant with two of
+   them does not read as four loose fields. */
+/* Mirrors a step's foot: the name it introduces, set apart from the fields that
+   produce it. */
+/* The builder's add button, same as the editors' -- scoped styles mean each
+   component that has one needs the rule, and this file never had it. */
+.add {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  color: #eee;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.6rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: #6b7280;
+  }
+}
+
+.let-foot {
+  align-items: center;
+  background: #131a27;
+  border-radius: 0 0 4px 4px;
+  border-top: 1px solid #374151;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.6rem;
+  margin: 0.25rem -0.45rem -0.4rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.binds {
+  align-items: baseline;
+  display: inline-flex;
+  font-size: 0.72rem;
+  gap: 0.3rem;
+}
+
+.binds-label {
+  color: #9ca3af;
+  font-size: 0.72rem;
+}
+
+.binds-name {
+  color: #5eead4;
+  font-family: monospace;
+}
+
+.binds-type {
+  opacity: 0.65;
+}
+
+.binds-scope {
+  color: #6b7280;
+}
+
+.let-row {
+  border: 1px solid #374151;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.35rem 0.45rem 0.4rem;
 }
 
 .row > label {

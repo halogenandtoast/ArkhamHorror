@@ -24,6 +24,10 @@ const props = defineProps<{
   inScope?: Binding[]
   /** What this position wants, for the toggle's own description. */
   type: string
+  /* Whether there is a way back to a plain value. A field whose only shape is a
+   * binding (a `$sid` a step must name) has none, so this is asked for rather
+   * than assumed. */
+  clearable?: boolean
 }>()
 const emit = defineEmits<{ 'update:modelValue': [v: string | null] }>()
 
@@ -122,6 +126,15 @@ function choose(name: string) {
             :type="type"
             @toggle="open = !open"
           />
+          <button
+            v-if="clearable"
+            type="button"
+            class="clear-segment"
+            title="Take the binding off and go back to a value"
+            @click="emit('update:modelValue', null)"
+          >
+            ×
+          </button>
         </div>
       </div>
       <span v-if="modelValue && !boundTo" class="from unknown" title="Nothing in scope binds this name">
@@ -132,6 +145,24 @@ function choose(name: string) {
 </template>
 
 <style scoped lang="scss">
+/* Mirrors the same segment on ValueEditor's own chip: a binding looks and clears
+   the same way wherever one is shown. */
+.clear-segment {
+  background: rgba(170, 221, 255, 0.22);
+  border: none;
+  border-left: 1px solid currentColor;
+  color: inherit;
+  cursor: pointer;
+  flex: none;
+  font-family: inherit;
+  padding: 0 0.5rem;
+
+  &:hover {
+    background: rgba(170, 221, 255, 0.4);
+    color: #fff;
+  }
+}
+
 .field-row {
   align-items: flex-start;
   display: flex;
@@ -163,18 +194,26 @@ function choose(name: string) {
 }
 
 .binding-menu {
+  /* As wide as its longest entry needs, and never narrower than the field it
+     drops from. Pinned to both edges it could only ever be the field's width, so
+     a name and the type beside it were cut off exactly where they matter --
+     `InvestigatorRemainingSanity :: Int` is mostly ellipsis in a narrow column.
+     Capped so a long type cannot run off the screen. */
+  left: 0;
+  right: auto;
+  min-width: 100%;
+  width: max-content;
+  max-width: min(36rem, 90vw);
   background: #0b1220;
   border: 1px solid #374151;
   border-radius: 5px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
-  left: 0;
   list-style: none;
   margin: 0.3rem 0 0;
   max-height: 15rem;
   overflow-y: auto;
   padding: 0.2rem;
   position: absolute;
-  right: 0;
   top: 100%;
   z-index: 30;
 

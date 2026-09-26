@@ -19,6 +19,19 @@ const someRecordableDecoder = JsonDecoder.object<SomeRecordable>({
   recordVal: JsonDecoder.succeed()
 }, 'SomeRecordable')
 
+/* The `Recorded` inside, with the recordable type kept alongside it.
+ *
+ * Everything that renders an entry reads `tag`, `circled` and `contents` off the
+ * one object, so the wrapper is flattened away -- but `recordType` has to survive
+ * it. It is the only thing that says whether an entry is a card code, and dropping
+ * it left the log treating a recorded trait as a card it could not find and
+ * printing "unknown".
+ */
+const flattenRecordable = (res: SomeRecordable): unknown =>
+  isRecord(res.recordVal)
+    ? { ...res.recordVal, recordType: res.recordType }
+    : { contents: res.recordVal, recordType: res.recordType }
+
 export type LogKey = {
   tag: string
   contents?: string | { tag: string; contents?: string }
@@ -75,7 +88,7 @@ const campaignOptionTagDecoder = JsonDecoder.object<CampaignOptionTag>({
 
 export const logContentsDecoder = JsonDecoder.object<LogContents>({
   recorded: JsonDecoder.array<LogKey>(logKeyDecoder, 'LogKey[]'),
-  recordedSets: JsonDecoder.array<[LogKey, unknown[]]>(JsonDecoder.tuple([logKeyDecoder, JsonDecoder.array(someRecordableDecoder.map((res) => res.recordVal), 'SomeRecorded[]')], '[string, somerecorded]'), '[string, unknown][]').map<Record<string, unknown[]>>(res => {
+  recordedSets: JsonDecoder.array<[LogKey, unknown[]]>(JsonDecoder.tuple([logKeyDecoder, JsonDecoder.array(someRecordableDecoder.map(flattenRecordable), 'SomeRecorded[]')], '[string, somerecorded]'), '[string, unknown][]').map<Record<string, unknown[]>>(res => {
     return res.reduce<Record<string, unknown[]>>((acc, [k, v]) => {
       return {[formatKey(k)]: v, ...acc}
     }, {})
@@ -105,6 +118,26 @@ function isNestedContents(x: unknown): x is { tag: string; contents: string } {
 export function homebrewScopeFromCampaignId(campaignId: string | undefined): string | undefined {
   if (!campaignId || !campaignId.startsWith(':')) return undefined
   return homebrewCampaignScope(campaignId)
+}
+
+/* The human title for a log key path.
+ *
+ * Every campaign's keys have locale entries, so `t` normally answers. A homebrew
+ * key invented by a custom card never will -- nobody can add a locale entry for a
+ * name a player made up in the builder -- and vue-i18n answers a miss with the key
+ * itself, which is how `thirstForKnowledge.key.traitsLearned` ended up on screen as
+ * a title. Its own last segment, spaced out, is the best title available.
+ *
+ * Deliberately not `toCapitalizedWords` from helpers: that module reaches the
+ * settings stores, and a types module should not.
+ */
+export function logKeyTitle(path: string, t: (key: string) => string): string {
+  const translated = t(path)
+  if (translated !== path) return translated
+  const name = path.split('.').pop() ?? path
+  const words = name.match(/[A-Z]?[a-z']+|[A-Z]+(?![a-z])|\d+/g) ?? [name]
+  const spaced = words.join(' ').toLowerCase()
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1)
 }
 
 export function formatKey(key: LogKey, fallbackHomebrewScope?: string): string {

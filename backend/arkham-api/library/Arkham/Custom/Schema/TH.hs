@@ -1,9 +1,10 @@
 -- | Reifies the schema served by "Arkham.Custom.Schema".
-module Arkham.Custom.Schema.TH (schemaFor, schemaForWith) where
+module Arkham.Custom.Schema.TH (schemaFor, schemaForWith, fieldSchemasFor) where
 
 import Arkham.Custom.Schema.Fields (conFieldNames)
 import Arkham.Custom.Schema.Types
 import Arkham.Custom.Schema.Windows (matcherWindows)
+import Arkham.Field.TH (fieldConstructors)
 import Arkham.Prelude hiding (Type)
 import Data.Set qualified as Set
 import Data.Text qualified as T
@@ -251,6 +252,35 @@ closure shallow (n : queue) seen
           | otherwise = concatMap (filter expandable . snd) entries
     rest <- closure shallow (queue <> next) seen'
     pure (schema : rest)
+
+{- | The properties an entity can be asked for, as one 'TypeSchema' per entity
+named @Field \<Entity\>@.
+
+Read off the same @Field@ GADT that 'Arkham.Field.TH.deriveSomeFieldFromJSON'
+generates the decoder from, so what the editor offers and what the runner accepts
+are the same list by construction. Written by hand they had already drifted.
+
+An 'enum' because that is how a field travels -- @SomeField@ serializes as the
+bare constructor name. The result type rides along in the constructor's one field
+so the editor can show @InvestigatorTraits :: Set Trait@ rather than a name whose
+meaning you have to know already.
+-}
+fieldSchemasFor :: [Name] -> Q Exp
+fieldSchemasFor entities = traverse schemaForEntity entities >>= TH.lift
+ where
+  schemaForEntity entity = do
+    fields <- fieldConstructors entity
+    pure
+      $ TypeSchema
+        { typeName = "Field " <> T.pack (nameBase entity)
+        , typeConstructors =
+            [ ConSchema (T.pack (nameBase name)) [FieldSchema (Just "result") (renderType ty)] []
+            | (name, ty) <- sortOn (nameBase . fst) fields
+            ]
+        , typeIsRecord = False
+        , typeAlias = Nothing
+        , typeIsEnum = True
+        }
 
 -- | Splice the schema for these root types and everything they reach.
 schemaFor :: [Name] -> Q Exp

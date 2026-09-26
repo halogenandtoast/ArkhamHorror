@@ -7,6 +7,7 @@ what a card /has/ -- its abilities, handlers and modifiers -- and calls into
 module Arkham.Custom.Steps where
 
 import Arkham.Ability
+import Arkham.CampaignLogKey (CampaignLogKey, recorded)
 import Arkham.Card
 import Arkham.Classes.GameLogger (HasGameLogger, sendCustomCardIssue)
 import Arkham.Classes.HasGame (HasGame)
@@ -84,7 +85,7 @@ import Arkham.Prelude
 import Arkham.SkillType (SkillType (SkillWillpower))
 import Arkham.Source
 import Arkham.Target
-import Arkham.Trait (displayTrait)
+import Arkham.Trait (Trait, displayTrait)
 import Arkham.Window (defaultWindows, windowBatchId)
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -126,6 +127,12 @@ investigation" is a modifier scoped to a test that did not exist when the card
 was written, so the only way to say it is for the step that starts the test to
 hand the id to the steps after it. @modifiers@ is the common case and is applied
 here; anything richer is a @push@ against @$sid@.
+
+@onSuccess@ and @onFailure@ live here too, so every step that starts a test has
+them. They are what "if you succeed" and "if you fail" mean, and nothing else a
+card can write says it: a handler on @PassedThisSkillTest@ fires for /every/ test
+this card sources and never saw the bindings this run made, so it cannot tell you
+which card you chose to discard.
 -}
 beginTest
   :: (HasGameLogger m, ReverseQueue m)
@@ -145,8 +152,31 @@ beginTest env spec f = do
   -- Registered before the test starts, the way a printed card does it: the
   -- effect has to be watching by the time tokens are revealed.
   for_ (KeyMap.lookup "onReveal" o) (runOnReveal env' sid source)
+  for_ (KeyMap.lookup "onSuccess" o) (runOutcome env' sid source True)
+  for_ (KeyMap.lookup "onFailure" o) (runOutcome env' sid source False)
   f sid iid source
   pure env'
+
+{- | "If you succeed, …" and "If you fail, …", as a rider on the test the step
+just started.
+
+@by@ is the margin the card asks for -- "if you succeed by 2 or more" -- and
+defaults to any. The steps are worked out now and held as messages, which is what
+lets them name what this run chose: the card revealed, the trait picked. The cost
+of that is that a query inside them reads the board as it stands when the test
+begins rather than after it, so anything that has to look afterwards belongs in a
+handler instead.
+-}
+runOutcome
+  :: (HasGameLogger m, ReverseQueue m) => Env -> SkillTestId -> Source -> Bool -> Value -> m ()
+runOutcome env sid source passed spec = do
+  let
+    o = specObject spec
+    by = fromMaybe AnyValue (KeyMap.lookup "by" o >>= decodeWith env)
+    target = fromMaybe (toTarget sid) (KeyMap.lookup "target" env >>= parseMaybe parseJSON)
+    effect = if passed then SkillTest.onSucceedByEffect else SkillTest.onFailedByEffect
+  msgs <- capture $ runSteps env (maybe [] subSteps (KeyMap.lookup "steps" o))
+  unless (null msgs) $ push $ effect sid by source target msgs
 
 {- | "If such a chaos token is revealed during this test, …".
 
@@ -237,10 +267,48 @@ runParley :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m Env
 runParley env spec = beginTest env spec \sid iid source -> do
   let o = specObject spec
   for_ (KeyMap.lookup "target" o >>= decodeWith env) \target -> do
-    let
-      sType = fromMaybe SkillWillpower (KeyMap.lookup "skill" o >>= decodeWith env)
-      difficulty = fromMaybe (Fixed 0) (KeyMap.lookup "difficulty" o >>= decodeWith env)
+    let sType = fromMaybe SkillWillpower (KeyMap.lookup "skill" o >>= decodeWith env)
+    difficulty <- testDifficulty env o
     push $ SkillTest.parley sid iid source (target :: Target) sType difficulty
+
+{- | A bare skill test the card names itself: "test @{willpower}@ (3)".
+
+Not derivable from anything, so the skill and the difficulty are written down.
+
+The target is what the test is /about/, and it defaults to the investigator
+taking it, which is what every hand-written card does for a test with no object.
+It is not a formality: 'SkillTestAt' reads the /target's/ location, so a test
+pointed at the card would answer questions about where the card is rather than
+where you are. A card that tests against something -- the treachery it is
+cancelling, an enemy it is talking down -- names that instead.
+-}
+runTest :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m Env
+runTest env spec = beginTest env spec \sid iid source -> do
+  let
+    o = specObject spec
+    sType = fromMaybe SkillWillpower (KeyMap.lookup "skill" o >>= decodeWith env)
+    target = fromMaybe (toTarget iid) (KeyMap.lookup "target" o >>= decodeWith env)
+  difficulty <- testDifficulty env o
+  push $ SkillTest.beginSkillTest sid iid source (target :: Target) sType difficulty
+
+{- | How hard the test is.
+
+A 'GameCalculation' when the author picked one, and otherwise whatever an
+expression works out to -- the number is then fixed at the moment the test
+begins. Both readings are wanted: "half the traits you have learned" is arithmetic
+over bindings that only the expression language can do, while "the shroud of your
+location" is a calculation the engine re-reads as the test goes on, which an
+expression flattened to a number would stop tracking.
+
+Decoding is tried first because it is the narrower of the two -- a calculation is
+a tagged object or a bare number, neither of which is an expression.
+-}
+testDifficulty :: HasGame m => Env -> KeyMap.KeyMap Value -> m GameCalculation
+testDifficulty env o = case KeyMap.lookup "difficulty" o of
+  Nothing -> pure (Fixed 0)
+  Just v -> case decodeWith env v of
+    Just calc -> pure calc
+    Nothing -> Fixed <$> exprInt env v
 
 -- | The card the step belongs to, which is what the test is sourced from.
 stepSource :: Env -> Source
@@ -366,6 +434,68 @@ runGather env spec = do
                 "gather could not run because the unique card it names is already in play"
                 spec
             Nothing -> push $ ShuffleCardsIntoDeck into [card]
+
+{- | Write something in the campaign log.
+
+The log stores three different things under a key -- whether it happened, a
+number, and a set of entries -- and reaches them through seven messages between
+them. An author should not have to know which, nor that an entry is a
+@SomeRecorded@ wrapping a @Recorded@ wrapping a value; @mode@ names what is being
+written and the message follows from it.
+
+Entries are recorded as plain values unless @kind@ says @cardCode@, which is not
+a formality: the log prints a recorded card by name and hands recorded card codes
+back as card defs ('recordedCardCodes'), neither of which works for a card code
+recorded as a bare value.
+-}
+runRecord :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runRecord env spec =
+  case KeyMap.lookup "key" o >>= decodeWith env of
+    Nothing -> reportBadPayload env "record" spec
+    Just (key :: CampaignLogKey) -> case textField env o "mode" "flag" of
+      "flag" -> push $ Record key
+      "crossOut" -> push $ CrossOutRecord key
+      "count" -> amount >>= push . RecordCount key
+      "increase" -> amount >>= push . IncrementRecordCount key
+      "decrease" -> amount >>= push . DecrementRecordCount key
+      "entries" -> entries >>= \rs -> unless (null rs) $ push $ RecordSetInsert key rs
+      "crossOutEntries" -> entries >>= \rs -> unless (null rs) $ push $ CrossOutRecordSetEntries key rs
+      _ -> reportBadPayload env "record" spec
+ where
+  o = specObject spec
+  amount = maybe (pure 1) (exprInt env) (KeyMap.lookup "amount" o)
+  entries = do
+    values <- maybe (pure []) (fmap valueList . evalExpr env) (KeyMap.lookup "values" o)
+    pure $ case textField env o "kind" "value" of
+      "cardCode" -> [recorded (cc :: CardCode) | Just cc <- map (parseMaybe parseJSON) values]
+      _ -> map recorded values
+
+{- | Discard a card, wherever it is.
+
+"Discard that card" is one thing on a card and two in the engine. A card in hand
+is discarded by its id; a card in play is an entity and has to be discarded as
+one -- 'DiscardCard' aimed at an asset moves its card to the discard pile and
+leaves the asset sitting on the table. Which applies is a question about the
+board rather than about the card, so the step asks it instead of the author
+branching on it.
+
+@target@ names an entity outright, for the ordinary "discard that asset".
+-}
+runDiscardCard :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runDiscardCard env spec = do
+  iid <- stepInvestigator env
+  let
+    o = specObject spec
+    source = stepSource env
+    discardEntity target = push $ Discard (Just iid) source (target :: Target)
+  case KeyMap.lookup "target" o >>= decodeWith env of
+    Just target -> discardEntity target
+    Nothing -> case KeyMap.lookup "card" o >>= decodeWith env of
+      Nothing -> reportBadPayload env "discardCard" spec
+      Just card ->
+        getCardEntityTarget card >>= \case
+          Just target -> discardEntity target
+          Nothing -> push $ DiscardCard iid source (toCardId (card :: Card))
 
 {- | Ready a card.
 
@@ -605,9 +735,9 @@ runSetAside env spec = do
 
 {- | Steps run in order, each seeing what the ones before it bound.
 
-A @query@ and a @let@ add to the environment; everything else acts on it. A branch or
-a choice runs its own steps against the same environment, so a binding made
-before the branch is still there inside it.
+A @query@, a @let@ and a @random@ add to the environment; everything else acts on
+it. A branch or a choice runs its own steps against the same environment, so a
+binding made before the branch is still there inside it.
 -}
 runSteps :: (HasGameLogger m, ReverseQueue m) => Env -> [Value] -> m ()
 runSteps env0 = void . foldM step env0
@@ -620,6 +750,7 @@ runSteps env0 = void . foldM step env0
           pure $ case (KeyMap.lookup "bind" o, result') of
             (Just (String name), Just value) -> KeyMap.insert (Key.fromText name) value env
             _ -> env
+      | Just spec <- KeyMap.lookup "random" o -> runRandom env spec
       | Just (String name) <- KeyMap.lookup "let" o -> do
           value <- evalExpr env (fromMaybe Null (KeyMap.lookup "be" o))
           pure $ KeyMap.insert (Key.fromText name) value env
@@ -677,11 +808,18 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "investigate" o -> runInvestigate env spec
       | Just spec <- KeyMap.lookup "evade" o -> runEvade env spec
       | Just spec <- KeyMap.lookup "parley" o -> runParley env spec
+      | Just spec <- KeyMap.lookup "test" o -> runTest env spec
       | Just spec <- KeyMap.lookup "attack" o -> do
           runAttack env spec
           pure env
       | Just spec <- KeyMap.lookup "ready" o -> do
           runReady env spec
+          pure env
+      | Just spec <- KeyMap.lookup "discardCard" o -> do
+          runDiscardCard env spec
+          pure env
+      | Just spec <- KeyMap.lookup "record" o -> do
+          runRecord env spec
           pure env
       | KeyMap.member "takeAction" o -> do
           runTakeAction env
@@ -731,6 +869,36 @@ pickRandomly (Just (String "random")) (Just v) = case valueList v of
   [] -> pure (Just Null)
   x : xs -> Just <$> sample (x :| xs)
 pickRandomly _ result = pure result
+
+{- | Something random, bound for the steps after it.
+
+Two things a card needs that no expression can give it, because "Arkham.Custom.Expr"
+only reads the game and randomness is not in the game to be read.
+
+Without @from@ it mints a fresh id. Every id in the engine is a bare uuid, so the
+one value serves whichever the step that uses it wants -- and the one that is
+actually wanted is a 'SkillTestId', for the cards that have to name a test before
+starting it (an effect scoped to a test, pushed before the test exists).
+
+With @from@ it takes one at random out of whatever a list works out to. A
+@query@'s @"mode": "random"@ already does that for a matcher; this does it for a
+list a step is holding, which is where "one of the cards you discarded" lives.
+-}
+runRandom :: ReverseQueue m => Env -> Value -> m Env
+runRandom env spec = do
+  let
+    o = specObject spec
+    name = bindingName o "random"
+  value <- case KeyMap.lookup "from" o of
+    Nothing -> do
+      sid <- getRandom
+      pure $ toJSON (sid :: SkillTestId)
+    Just e -> do
+      xs <- valueList <$> evalExpr env e
+      case xs of
+        [] -> pure Null
+        x : rest -> sample (x :| rest)
+  pure $ KeyMap.insert name value env
 
 {- | A condition is either a criterion or a matcher.
 
@@ -1112,12 +1280,19 @@ runDraw env spec = case spec of
 
 {- | One option per thing the matcher finds, with the found thing bound so the
 steps can act on it. @optional@ adds a way to decline.
+
+@over@ offers one option per element of a list already in hand instead. Not
+everything a card asks you to choose between is something a matcher can name --
+"choose one of its traits" is a list read off a card -- and for those the query
+has nowhere to go.
 -}
 runChooseFrom :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
 runChooseFrom env spec = case spec of
   Object o -> do
     iid <- stepInvestigator env
-    found <- maybe (pure Nothing) (runQuery env) (KeyMap.lookup "query" o)
+    found <- case KeyMap.lookup "over" o of
+      Just e -> Just . valueList <$> evalExpr env e
+      Nothing -> maybe (pure Nothing) (runQuery env) (KeyMap.lookup "query" o)
     let
       name = case KeyMap.lookup "bind" o of
         Just (String n) -> Key.fromText n
@@ -1130,16 +1305,34 @@ runChooseFrom env spec = case spec of
     -- choice at all, the same way two events both reading "Play an event"
     -- were not.
     labels <- for (fromMaybe [] found) \value -> do
-      msgs <- capture $ runSteps (KeyMap.insert name value env) steps
+      let inner = KeyMap.insert name value env
+      msgs <- capture $ runSteps inner steps
       pure $ case chosenTarget kind value of
         Just t -> targetLabel t msgs
-        Nothing -> Label (textField env o "label" "Choose") msgs
+        -- Against the option's own environment, so a list with no entity behind
+        -- it can still say which one this is -- as itself when it is a word
+        -- already ("Tome"), or through a @label@ naming the binding.
+        Nothing -> Label (textField inner o "label" (plainLabel value)) msgs
     let
       declined =
         [ Label (textField env o "declineLabel" "Do not") [] | KeyMap.lookup "optional" o == Just (Bool True)
         ]
     unless (null labels && null declined) $ Prompt.chooseOne iid (labels <> declined)
   _ -> pure ()
+
+{- | An option's label when nothing else names it: the value, when the value is
+already a word. A skill or a trait serializes as its own name, which is what the
+option should read as; anything structural falls back to "Choose".
+
+A trait goes through 'displayTrait', because its constructor is not how it is
+written on a card -- @ElderThing@ is "Elder Thing" -- and "choose one of its
+traits" is otherwise a list of run-together names.
+-}
+plainLabel :: Value -> Text
+plainLabel v = case v of
+  String t -> maybe t displayTrait (parseMaybe parseJSON v :: Maybe Trait)
+  Number n -> tshow (round n :: Int)
+  _ -> "Choose"
 
 {- | What an option stands for, from the kind its query named. A card is bound
 as the whole card, everything else as the id the matcher selected.

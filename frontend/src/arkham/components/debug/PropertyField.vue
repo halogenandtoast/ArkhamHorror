@@ -16,6 +16,12 @@ const props = defineProps<{
   options: Record<string, string>
   /** What kind of thing these read, for the search placeholder. */
   of: string
+  /* The entity the properties belong to, dropped from the front of each name for
+   * display. Every field of an entity is prefixed with it -- `InvestigatorTraits`,
+   * `InvestigatorAssignedDamage` -- which is thirteen characters of the answer you
+   * already have, repeated on every row. The value stored is still the whole
+   * constructor name, because that is what the engine decodes. */
+  prefix?: string
 }>()
 const emit = defineEmits<{ 'update:modelValue': [v: string] }>()
 
@@ -24,13 +30,26 @@ const search = ref('')
 const root = ref<HTMLElement | null>(null)
 onClickOutside(root, () => (open.value = false))
 
-const entries = computed(() => Object.entries(props.options).map(([name, type]) => ({ name, type })))
+/* Shortened only when it really is that prefix: a field named against the grain
+ * (`UnsafeLocationRevealedSymbol`) is left exactly as it is, since the name is the
+ * warning. */
+const label = (name: string) =>
+  props.prefix && name.startsWith(props.prefix) && name.length > props.prefix.length
+    ? name.slice(props.prefix.length)
+    : name
+
+const entries = computed(() =>
+  Object.entries(props.options).map(([name, type]) => ({ name, type, label: label(name) })),
+)
 
 const matching = computed(() => {
   const needle = search.value.trim().toLowerCase()
   if (!needle) return entries.value
   return entries.value.filter(
-    (e) => e.name.toLowerCase().includes(needle) || e.type.toLowerCase().includes(needle),
+    (e) =>
+      e.label.toLowerCase().includes(needle) ||
+      e.name.toLowerCase().includes(needle) ||
+      e.type.toLowerCase().includes(needle),
   )
 })
 
@@ -57,7 +76,7 @@ function choose(name: string) {
       <ul class="binding-menu">
         <li v-for="entry in matching" :key="entry.name">
           <button type="button" class="binding-option" @click="choose(entry.name)">
-            <code class="option-name">{{ entry.name }}</code>
+            <code class="option-name" :title="entry.name">{{ entry.label }}</code>
             <span class="option-detail">{{ entry.type }}</span>
           </button>
         </li>
@@ -74,7 +93,7 @@ function choose(name: string) {
             :title="chosen ? `${chosen.name} :: ${chosen.type} — click to choose another` : 'Choose a property'"
             @click="open = true"
           >
-            {{ chosen ? `${chosen.name} :: ${chosen.type}` : (modelValue || 'Choose a property…') }}
+            {{ chosen ? `${chosen.label} :: ${chosen.type}` : (modelValue || 'Choose a property…') }}
           </button>
         </div>
       </div>
@@ -141,18 +160,26 @@ function choose(name: string) {
 }
 
 .binding-menu {
+  /* As wide as its longest entry needs, and never narrower than the field it
+     drops from. Pinned to both edges it could only ever be the field's width, so
+     a name and the type beside it were cut off exactly where they matter --
+     `InvestigatorRemainingSanity :: Int` is mostly ellipsis in a narrow column.
+     Capped so a long type cannot run off the screen. */
+  left: 0;
+  right: auto;
+  min-width: 100%;
+  width: max-content;
+  max-width: min(36rem, 90vw);
   background: #0b1220;
   border: 1px solid #374151;
   border-radius: 5px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
-  left: 0;
   list-style: none;
   margin: 0.3rem 0 0;
   max-height: 15rem;
   overflow-y: auto;
   padding: 0.2rem;
   position: absolute;
-  right: 0;
   top: 100%;
   z-index: 30;
 

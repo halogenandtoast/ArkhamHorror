@@ -237,6 +237,13 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
           clueCount <- field fld enemy
           pure $ maybe False (clues >=) clueCount
       ChooseExtendedCardCost mtcr -> selectAny mtcr
+      -- Revealing is something the investigator does, and a card can forbid it.
+      RevealChosenCardCost mtcr -> andM [can.reveal.cards iid, selectAny mtcr]
+      {- Which card's traits these will be is not known until the cost that chooses
+         it has been paid, so there is nothing to check here. The card matcher of
+         that earlier cost is where the requirement belongs. -}
+      ChooseTraitOfChosenCardCost -> pure True
+      ChosenTraitCost _ -> pure True
       ChosenEnemyCost eid -> selectAny (Matcher.EnemyWithId eid)
       ChosenCardCost cid -> selectAny (Matcher.basic $ Matcher.CardWithId cid)
       Free -> pure True

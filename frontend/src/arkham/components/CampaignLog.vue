@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as Arkham from '@/arkham/types/Game'
-import { LogContents, LogKey, formatKey, homebrewScopeFromCampaignId, logContentsDecoder } from '@/arkham/types/Log'
+import { LogContents, LogKey, formatKey, homebrewScopeFromCampaignId, logContentsDecoder, logKeyTitle } from '@/arkham/types/Log'
 import { toCapitalizedWords, formatContent } from '@/arkham/helpers'
 import { cardArt } from '@/arkham/cardImages'
 import { computed, ref, onMounted, onUnmounted, watch, type Component } from 'vue'
@@ -638,6 +638,9 @@ async function loadMissingCards() {
     for (const [key, setValues] of Object.entries(sets ?? {})) {
       if (NON_CARD_KEYS.has(key)) continue
       for (const val of (setValues as any[]) ?? []) {
+        // An entry that says it is not a card code is not one to go looking for.
+        const recordType = (val as any)?.recordType
+        if (recordType && recordType !== 'RecordableCardCode') continue
         const code = (val as any).contents
         if (code && typeof code === 'string' && !findCard(code)) missing.add(code)
       }
@@ -662,11 +665,37 @@ onMounted(loadMissingCards)
 watch([recordedSets, selectedTitle, investigators], loadMissingCards)
 
 // --- Display helpers ------------------------------------------------------------
+
+/* A log key path as a title. A custom card's homebrew key has no locale entry, so
+ * a bare `t` would print the path. */
+const logTitle = (path: string) => logKeyTitle(path, t)
+
 const isSeal = (key: string): boolean =>
   ['edgeOfTheEarth.key.sealsRecovered', 'edgeOfTheEarth.key.sealsPlaced'].includes(key)
 
+/* A constructor name as words, the way the engine's own `displayTrait` writes one
+ * -- a space where a lower case letter meets an upper, capitals left alone. The
+ * prompt that recorded the trait was labelled with `displayTrait`, so the log has
+ * to agree with it: "Elder Thing", not "Elder thing". */
+const splitCamelCase = (name: string): string => name.replace(/([a-z])([A-Z])/g, '$1 $2')
+
+/* What kind of thing an entry holds, which the entry itself says. Absent on the
+ * older shape, where every entry under a set key was a card code. */
+const recordableType = (value: any): string | undefined => value?.recordType
+
 const displayRecordValue = (key: string, value: any): string => {
   const contents: string | undefined = value.contents || value.recordVal?.contents
+
+  /* A `SomeRecorded` names its own recordable type, so an entry that is not a card
+   * code says so and must not be looked up as one -- that is what put "unknown" on
+   * screen for every trait a custom card recorded. Checked before the per-key
+   * branches below so it cannot be reached by a key nobody has hardcoded. */
+  const recordType = recordableType(value)
+  if (recordType && recordType !== 'RecordableCardCode') {
+    if (contents === undefined || contents === null) return ''
+    // A trait, a memento, a memory: all written as their constructor name.
+    return typeof contents === 'string' ? splitCamelCase(contents) : String(contents)
+  }
 
   if (key === 'theCircleUndone.key.mementosDiscovered') return contents ? toCapitalizedWords(contents) : ''
 
@@ -988,7 +1017,7 @@ onUnmounted(() => {
           <CampaignLogSection
             v-if="recorded.length > 0"
             :title="t('campaignLog.campaignNotes')"
-            :items="recorded.map(r => t(r))"
+            :items="recorded.map(logTitle)"
           />
 
           <!-- Campaign sections -->
@@ -1007,7 +1036,7 @@ onUnmounted(() => {
             <CampaignLogSection
               v-else
               :title="t(section.titleKey)"
-              :items="section.records.map(r => t(r))"
+              :items="section.records.map(logTitle)"
             />
           </template>
 

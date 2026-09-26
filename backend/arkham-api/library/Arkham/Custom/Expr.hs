@@ -15,6 +15,7 @@ module Arkham.Custom.Expr (evalExpr, exprInt, jsonField, runQuery, runQueryStep,
 
 import Arkham.Act.Types (Act)
 import Arkham.Asset.Types (Asset)
+import Arkham.CampaignLogKey (CampaignLogKey, Recorded (..), SomeRecorded (..))
 import Arkham.Card
 import Arkham.Classes.Entity (EntityId)
 import Arkham.Classes.HasGame
@@ -27,6 +28,7 @@ import Arkham.Cost (
   addedCurseTokenPayment,
   chosenCardPayment,
   chosenEnemyPayment,
+  chosenTraitPayment,
   discardPayment,
   discardedCards,
   exhaustedPayments,
@@ -46,6 +48,7 @@ import Arkham.Enemy.Types (Enemy)
 import {-# SOURCE #-} Arkham.Game ()
 import Arkham.Helpers.Card (getModifiedCardCost)
 import Arkham.Helpers.FetchCard (FetchCard (fetchCardMaybe_))
+import Arkham.Helpers.Log (getRecordCount, getRecordSet)
 import Arkham.Helpers.SkillTest (
   getSkillTest,
   getSkillTestAction,
@@ -90,6 +93,16 @@ evalExpr env v0 = case substituteExpr env v0 of
        decoded against the environment, so it can refer to bindings. -}
     | Just q <- KeyMap.lookup "query" o ->
         fromMaybe Null <$> runQueryStep env q (KeyMap.lookup "mode" o)
+    {- What the campaign log remembers.
+
+       The log is not the board, so no matcher reaches it, and a card whose X is
+       "half the traits you have learned" has nothing else to count. A set yields
+       its values so they can be counted, filtered and compared like any other
+       list; a count yields the number kept under that key, which is a different
+       thing the log stores and not the length of the set. -}
+    | Just key <- KeyMap.lookup "recordSet" o ->
+        withKey key (fmap (toJSON . recordedValues) . getRecordSet)
+    | Just key <- KeyMap.lookup "recordCount" o -> withKey key (fmap toJSON . getRecordCount)
     | Just name <- str =<< KeyMap.lookup "apply" o ->
         applyFn name (str =<< KeyMap.lookup "kind" o)
           =<< evalExpr env (fromMaybe Null (KeyMap.lookup "to" o))
@@ -110,6 +123,14 @@ evalExpr env v0 = case substituteExpr env v0 of
     | Just e <- KeyMap.lookup "multiply" o -> number e (product . nums)
     | Just e <- KeyMap.lookup "subtract" o -> number e (pairwise (-))
     | Just e <- KeyMap.lookup "divide" o -> number e (pairwise safeDiv)
+  {- An operand list, each entry an expression in its own right.
+
+     @{"add": [<how many traits you have learned>, 1]}@ is what the editor builds
+     -- it renders a whole expression per operand -- and the arithmetic operators
+     read their list through 'nums', which scores an unevaluated object as zero.
+     So without this an expression over anything but literals answers 0, and says
+     nothing about having done so. -}
+  Array xs -> Array <$> traverse (evalExpr env) xs
   v -> pure v
  where
   -- A predicate's operand is an expression too, so @{"in": {"skillTest": ...}}@
@@ -117,6 +138,9 @@ evalExpr env v0 = case substituteExpr env v0 of
   evalPredicate = \case
     Object po -> Object <$> traverse (evalExpr env) po
     p -> evalExpr env p
+  -- Already substituted, so the key is read as written rather than substituted
+  -- a second time.
+  withKey key f = maybe (pure Null) f (parseMaybe parseJSON key :: Maybe CampaignLogKey)
   unary e f = unaryV e (toJSON . f)
   unaryV e f = f <$> evalExpr env e
   number e f = unaryV e (toJSON . f)
@@ -146,6 +170,24 @@ substituteExpr env = \case
   Object o -> Object (fmap (substituteExpr env) o)
   Array xs -> Array (fmap (substituteExpr env) xs)
   v -> v
+
+{- | The values a record set holds, as JSON.
+
+Crossed out is the log's way of saying "this is no longer true", so those are
+dropped -- a crossed-out trait is one you have unlearned and should not count
+towards anything. A circle is an annotation on a value that /is/ still recorded,
+so it is looked through rather than dropped.
+-}
+recordedValues :: [SomeRecorded] -> [Value]
+recordedValues = mapMaybe recordedValue
+
+recordedValue :: SomeRecorded -> Maybe Value
+recordedValue (SomeRecorded _ rec) = go rec
+ where
+  go = \case
+    Recorded r -> Just (toJSON r)
+    Circled inner -> go inner
+    CrossedOut _ -> Nothing
 
 -- | An expression whose value is wanted as a count.
 exprInt :: HasGame m => Env -> Value -> m Int
@@ -252,6 +294,7 @@ paymentFn name payment = case name of
   "paidCards" -> toJSON (discardedCards payment)
   "discardedCard" -> toJSON (discardPayment payment)
   "chosenCard" -> toJSON (chosenCardPayment payment)
+  "chosenTrait" -> toJSON (chosenTraitPayment payment)
   "chosenEnemy" -> toJSON (chosenEnemyPayment payment)
   "exhausted" -> toJSON (exhaustedPayments payment)
   "removed" -> toJSON (removedPayments payment)

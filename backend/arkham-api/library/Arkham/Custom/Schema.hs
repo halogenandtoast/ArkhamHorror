@@ -16,10 +16,12 @@ module Arkham.Custom.Schema (customSchema, TypeSchema (..), ConSchema (..), Fiel
 
 import Arkham.Ability.Limit
 import Arkham.Ability.Type
+import Arkham.Act.Types (Act)
 import Arkham.Action.Additional (ActionRestriction, AdditionalAction, AdditionalActionType)
+import Arkham.Asset.Types (Asset)
 import Arkham.Cost
 import Arkham.Criteria
-import Arkham.Custom.Schema.TH (schemaForWith)
+import Arkham.Custom.Schema.TH (fieldSchemasFor, schemaForWith)
 import Arkham.Custom.Schema.Types
 import Arkham.DamageEffect (DamageAssignment)
 import Arkham.Discard (HandDiscard)
@@ -29,11 +31,14 @@ import Arkham.Effect.Types (EffectBuilder)
 import Arkham.Effect.Window (EffectWindow)
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation (EnemyCreation)
+import Arkham.Enemy.Types (Enemy)
 import Arkham.Evade.Types (ChooseEvade)
 import Arkham.Exhaust (Exhaustion)
 import Arkham.Fight.Types (ChooseFight)
 import Arkham.Investigate.Types (Investigate)
+import Arkham.Investigator.Types (Investigator)
 import Arkham.Keyword (Keyword, Sealing)
+import Arkham.Location.Types (Location)
 import Arkham.Matcher
 import Arkham.Message (Message)
 import Arkham.Message.ChaosBag (ChaosBagMessage)
@@ -66,6 +71,7 @@ import Arkham.Spawn (SpawnAt, SpawnDetails)
 import Arkham.Strategy (ChosenCardStrategy, FindEncounterCardStrategy, ZoneReturnStrategy)
 import Arkham.Target (Target)
 import Arkham.Window (WindowType)
+import Data.Semigroup ((<>))
 
 {- | Rooted at the types an ability is made of. 'Message' is listed but not
 expanded through: it reaches most of the codebase, so the editor gets a picker
@@ -74,115 +80,131 @@ fields turn out to be.
 -}
 customSchema :: [TypeSchema]
 customSchema =
-  $( schemaForWith
-       [ ''AbilityType
-       , ''AbilityLimit
-       , ''Criterion
-       , ''Cost
-       , {- What a cost becomes once it is paid. Only ever a field of a message,
-            and 'Message' is shallow, so nothing would reach it on its own and
-            the editor would fall back to a raw JSON field for every payment a
-            card writes. Everything it references is already here. -}
-         ''Payment
-       , ''WindowMatcher
-       , {- The window an ability triggered on, whose positional fields its steps
-            read as $w0, $w1, .... Listed so the editor can show what those are;
-            which window a given matcher fires on is not derivable from either
-            type (a third of the names differ), so the editor asks. -}
-         ''WindowType
-       , ''EnemyMatcher
-       , ''LocationMatcher
-       , ''PlacementMatcher
-       , ''InvestigatorMatcher
-       , ''AssetMatcher
-       , ''TreacheryMatcher
-       , ''EventMatcher
-       , ''SkillMatcher
-       , ''StoryMatcher
-       , ''ActMatcher
-       , ''AgendaMatcher
-       , ''ExtendedCardMatcher
-       , ''Source
-       , ''Target
-       , -- What a DealDamage carries: how much, from what, and whether the
-         -- damage is direct. A single-constructor record, so it is written
-         -- without a tag.
-         ''DamageAssignment
-       , -- What an Exhaust carries: who exhausts what, and what follows it.
-         ''Exhaustion
-       , ''ModifierType
-       , -- Scoped modifiers are pushed as CreateWindowModifierEffect, so the
-         -- editor needs the window that scopes them, and the wrapper that
-         -- carries one (a bare ModifierType is not what the message takes).
-         ''Modifier
-       , ''EffectWindow
-       , -- CreateEffect is how a card leaves something behind that acts later:
-         -- messages to run when its window ends.
-         ''EffectBuilder
-       , ''EffectMetadata
-       , ''PreyMatcher
-       , {- Where a card is put. Every "attach to", "put into play in your threat
-            area" and "place beneath" is one of these, and the message that carries
-            one differs by card type -- so without it the editor offers a raw JSON
-            box for the part of a placement that actually says anything. -}
-         ''Placement
-       , {- Keywords a card can be given or have taken away, and what a Seal
-            keyword seals. -}
-         ''Keyword
-       , ''Sealing
-       , {- Which abilities a step reaches for, and what an extra action may be
-            spent on. -}
-         ''AbilityMatcher
-       , ''AdditionalAction
-       , ''AdditionalActionType
-       , ''ActionRestriction
-       , ''SpawnAt
-       , ''SkillTestMatcher
-       , ''SkillTestResultMatcher
-       , {- The payloads of the messages a card pushes. Each of these is a record
-            or a small enum sitting in a 'Message' field, and 'Message' is a
-            shallow root -- so without naming them here nothing reaches them and
-            the editor offers a raw JSON box for the whole payload. Writing
-            @discardStrategy@ and @discardAmount@ by hand is exactly what the
-            editor exists to avoid. -}
-         ''HandDiscard
-       , ''Investigate
-       , ''ChooseFight
-       , ''ChooseEvade
-       , ''Discover
-       , ''Movement
-       , ''CardDraw
-       , ''Search
-       , ''SpawnDetails
-       , ''EnemyCreation
-       , ''Slot
-       , ''SkillTestOption
-       , ''ChosenCardStrategy
-       , ''ZoneReturnStrategy
-       , ''FindEncounterCardStrategy
-       ]
-       ( ''Message
-           -- Most messages sit inside a grouping constructor, and the editor has
-           -- to see through it to name a message and its fields.
-           : [ ''ChaosBagMessage
-             , ''ClueMessage
-             , ''DamageMessage
-             , ''DefeatMessage
-             , ''DoomMessage
-             , ''EngageMessage
-             , ''EnemyAttackMessage
-             , ''EvadeMessage
-             , ''ExhaustMessage
-             , ''FightMessage
-             , ''HorrorMessage
-             , ''HuntMessage
-             , ''InvestigatorMessage
-             , ''SearchMessage
-             , ''SealMessage
-             , ''SkillTestMessage
-             , ''SpawnMessage
-             , ''StoryMessage
-             , ''TokenMessage
-             ]
-       )
-   )
+  entityFieldSchema
+    <> $( schemaForWith
+            [ ''AbilityType
+            , ''AbilityLimit
+            , ''Criterion
+            , ''Cost
+            , {- What a cost becomes once it is paid. Only ever a field of a message,
+                 and 'Message' is shallow, so nothing would reach it on its own and
+                 the editor would fall back to a raw JSON field for every payment a
+                 card writes. Everything it references is already here. -}
+              ''Payment
+            , ''WindowMatcher
+            , {- The window an ability triggered on, whose positional fields its steps
+                 read as $w0, $w1, .... Listed so the editor can show what those are;
+                 which window a given matcher fires on is not derivable from either
+                 type (a third of the names differ), so the editor asks. -}
+              ''WindowType
+            , ''EnemyMatcher
+            , ''LocationMatcher
+            , ''PlacementMatcher
+            , ''InvestigatorMatcher
+            , ''AssetMatcher
+            , ''TreacheryMatcher
+            , ''EventMatcher
+            , ''SkillMatcher
+            , ''StoryMatcher
+            , ''ActMatcher
+            , ''AgendaMatcher
+            , ''ExtendedCardMatcher
+            , ''Source
+            , ''Target
+            , -- What a DealDamage carries: how much, from what, and whether the
+              -- damage is direct. A single-constructor record, so it is written
+              -- without a tag.
+              ''DamageAssignment
+            , -- What an Exhaust carries: who exhausts what, and what follows it.
+              ''Exhaustion
+            , ''ModifierType
+            , -- Scoped modifiers are pushed as CreateWindowModifierEffect, so the
+              -- editor needs the window that scopes them, and the wrapper that
+              -- carries one (a bare ModifierType is not what the message takes).
+              ''Modifier
+            , ''EffectWindow
+            , -- CreateEffect is how a card leaves something behind that acts later:
+              -- messages to run when its window ends.
+              ''EffectBuilder
+            , ''EffectMetadata
+            , ''PreyMatcher
+            , {- Where a card is put. Every "attach to", "put into play in your threat
+                 area" and "place beneath" is one of these, and the message that carries
+                 one differs by card type -- so without it the editor offers a raw JSON
+                 box for the part of a placement that actually says anything. -}
+              ''Placement
+            , {- Keywords a card can be given or have taken away, and what a Seal
+                 keyword seals. -}
+              ''Keyword
+            , ''Sealing
+            , {- Which abilities a step reaches for, and what an extra action may be
+                 spent on. -}
+              ''AbilityMatcher
+            , ''AdditionalAction
+            , ''AdditionalActionType
+            , ''ActionRestriction
+            , ''SpawnAt
+            , ''SkillTestMatcher
+            , ''SkillTestResultMatcher
+            , {- The payloads of the messages a card pushes. Each of these is a record
+                 or a small enum sitting in a 'Message' field, and 'Message' is a
+                 shallow root -- so without naming them here nothing reaches them and
+                 the editor offers a raw JSON box for the whole payload. Writing
+                 @discardStrategy@ and @discardAmount@ by hand is exactly what the
+                 editor exists to avoid. -}
+              ''HandDiscard
+            , ''Investigate
+            , ''ChooseFight
+            , ''ChooseEvade
+            , ''Discover
+            , ''Movement
+            , ''CardDraw
+            , ''Search
+            , ''SpawnDetails
+            , ''EnemyCreation
+            , ''Slot
+            , ''SkillTestOption
+            , ''ChosenCardStrategy
+            , ''ZoneReturnStrategy
+            , ''FindEncounterCardStrategy
+            ]
+            ( ''Message
+                -- Most messages sit inside a grouping constructor, and the editor has
+                -- to see through it to name a message and its fields.
+                : [ ''ChaosBagMessage
+                  , ''ClueMessage
+                  , ''DamageMessage
+                  , ''DefeatMessage
+                  , ''DoomMessage
+                  , ''EngageMessage
+                  , ''EnemyAttackMessage
+                  , ''EvadeMessage
+                  , ''ExhaustMessage
+                  , ''FightMessage
+                  , ''HorrorMessage
+                  , ''HuntMessage
+                  , ''InvestigatorMessage
+                  , ''SearchMessage
+                  , ''SealMessage
+                  , ''SkillTestMessage
+                  , ''SpawnMessage
+                  , ''StoryMessage
+                  , ''TokenMessage
+                  ]
+            )
+        )
+
+{- | What each entity can be asked for, read off its own @Field@ GADT.
+
+An expression in a custom card reads a property off a bound id -- an
+investigator's traits, an enemy's health -- and the names it may use are the
+constructors of that entity's @Field@. Listing them by hand in the editor would be
+a third copy of something already written down twice, so they are reflected.
+
+The entities are exactly the ones a card can hold a reference to: 'runQuery' binds
+an id for each of them, and @getProp@ ("Arkham.Custom.Expr") reads a field off it.
+An entity with no query kind -- a scenario, a campaign -- is never in a card's
+hands, so it is not listed.
+-}
+entityFieldSchema :: [TypeSchema]
+entityFieldSchema = $(fieldSchemasFor [''Act, ''Asset, ''Enemy, ''Investigator, ''Location])

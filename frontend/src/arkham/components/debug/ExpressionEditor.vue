@@ -6,13 +6,14 @@
  * expression you choose between; they are what you can do to whatever you have,
  * which is why they are offered on every expression and filtered by the type at
  * that point in the chain. */
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import BindingField from '@/arkham/components/debug/BindingField.vue'
+import BindingToggle from '@/arkham/components/debug/BindingToggle.vue'
 import ValueEditor from '@/arkham/components/debug/ValueEditor.vue'
 import PropertyField from '@/arkham/components/debug/PropertyField.vue'
+import { typeSchema } from '@/arkham/schema'
 import type { Binding } from '@/arkham/customCardBindings'
 import {
-  CARD_PROPS,
   SKILL_TEST_PROPS,
   expressionType,
   stageKey,
@@ -21,6 +22,7 @@ import {
   typeFits,
   QUERY_MODES,
   QUERY_NOUNS,
+  propOptionsFor,
   stageProp,
   queryType,
   unwindPipeline,
@@ -47,27 +49,89 @@ const emit = defineEmits<{ 'update:modelValue': [v: any] }>()
  * this editor does not. `card` is the one we can type. */
 const KINDS = ['card', 'enemy', 'location', 'investigator', 'asset', 'act']
 
+/* Where an entity kind's properties come from: the backend reflects each entity's
+ * `Field` GADT into the schema under this name, so the list the editor offers is
+ * the list the runner accepts rather than a copy of it. */
+const FIELD_SCHEMA: Record<string, string> = {
+  investigator: 'Field Investigator',
+  enemy: 'Field Enemy',
+  location: 'Field Location',
+  asset: 'Field Asset',
+  act: 'Field Act',
+}
+
+/* An example Field, for the box that is only reached when the schema has not
+ * loaded yet -- the names are the engine's own, so there is nothing to guess from. */
+const FIELD_PLACEHOLDER: Record<string, string> = {
+  investigator: 'InvestigatorTraits',
+  enemy: 'EnemyHealth',
+  location: 'LocationShroud',
+  asset: 'AssetUses',
+  act: 'ActClues',
+}
+
+/* The entity a kind's fields belong to, which is the prefix every one of its field
+ * names carries. `card` and `skillTest` are not entities and their readings are
+ * already short, so they have none. */
+const entityPrefix = (kind: string | undefined) =>
+  (FIELD_SCHEMA[kind ?? ''] ?? '').replace(/^Field /, '')
+
+/* The properties of a kind, as name to the type reading it yields -- which is what
+ * PropertyField shows beside each name and on the chip, so a property says what it
+ * gives you instead of only what it is called.
+ *
+ * `card` and `skillTest` are not entities and have no Field GADT; their readings
+ * are `cardProp`/`skillTestProp`, hand-listed on both sides. */
+const propsForKind = (kind: string | undefined): Record<string, string> | undefined => {
+  const listed = propOptionsFor(kind)
+  if (listed) return listed
+  const schemaName = FIELD_SCHEMA[kind ?? '']
+  const schema = schemaName ? typeSchema(schemaName) : undefined
+  if (!schema) return undefined
+  return Object.fromEntries(schema.constructors.map((c) => [c.name, c.fields[0]?.type ?? '']))
+}
+
 /* What an expression can start as. Anything that takes exactly one operand is a
  * transform instead, so it is not repeated here. */
 type Source = {
   key: string
   label: string
-  shape: 'literal' | 'prop' | 'skillTest' | 'filter' | 'nary' | 'query'
+  shape: 'literal' | 'prop' | 'skillTest' | 'filter' | 'nary' | 'query' | 'record'
 }
 
 /* Named the way the step kinds are: the short word for the thing, with the
  * controls underneath saying what it does. A sentence in the dropdown says it
  * twice and makes the list slower to scan. */
+/* The word that goes between two operands, so the list reads as the sum it is.
+ *
+ * Words rather than symbols: `×` is already the remove button everywhere in the
+ * builder, so a multiply rendered as `×` puts the same glyph between the operands
+ * and on the control that deletes one. */
+const OPERATOR_WORDS: Record<string, string> = {
+  add: 'plus',
+  subtract: 'minus',
+  multiply: 'times',
+  divide: 'divided by',
+  // Not arithmetic, but the same shape: a list of operands read top to bottom.
+  concat: 'and then',
+}
+
 const SOURCES: Source[] = [
   { key: '', label: 'Value', shape: 'literal' },
   { key: 'get', label: 'Property', shape: 'prop' },
   { key: 'skillTest', label: 'Skill test', shape: 'skillTest' },
   { key: 'query', label: 'Query', shape: 'query' },
+  { key: 'recordSet', label: 'Campaign log set', shape: 'record' },
+  { key: 'recordCount', label: 'Campaign log count', shape: 'record' },
   { key: 'filter', label: 'Filter', shape: 'filter' },
   { key: 'add', label: 'Add', shape: 'nary' },
   { key: 'subtract', label: 'Subtract', shape: 'nary' },
   { key: 'multiply', label: 'Multiply', shape: 'nary' },
   { key: 'divide', label: 'Divide', shape: 'nary' },
+  /* Two or more lists end to end. The only way to say "the traits you have learned
+   * and the ones printed on your investigator" -- and without it that expression
+   * reads as an empty value with a stray stage hung off it. */
+  { key: 'concat', label: 'Join lists', shape: 'nary' },
 ]
 
 const PREDICATES = [
@@ -112,8 +176,38 @@ function pickSource(key: string) {
   if (chosen.shape === 'skillTest') return rebuild({ skillTest: 'difficulty' }, stages)
   if (chosen.shape === 'query')
     return rebuild({ query: { kind: 'enemy', matcher: null }, mode: 'all' }, stages)
+  if (chosen.shape === 'record') return rebuild({ [key]: homebrewKey('') }, stages)
   if (chosen.shape === 'filter') return rebuild({ filter: { eq: null }, of: kept ?? null }, stages)
   return rebuild({ [key]: [kept ?? null, null] }, stages)
+}
+
+/* A key the card writes for itself. A custom card's own log entries are homebrew
+ * ones by definition, and the wrapper is what makes an arbitrary name a
+ * CampaignLogKey; an official campaign's key is a constructor, and reaching one
+ * of those is a raw JSON job. */
+const homebrewKey = (name: string) => ({ tag: 'HomebrewCampaignLogKey', contents: name })
+
+const recordKeyName = computed(() => {
+  const v = source.value?.[currentSource.value.key]
+  return v && typeof v === 'object' && v.tag === 'HomebrewCampaignLogKey' ? (v.contents ?? '') : ''
+})
+
+const setRecordKey = (name: string) => patch({ [currentSource.value.key]: homebrewKey(name) })
+
+const recordIsHomebrew = computed(() => {
+  const v = source.value?.[currentSource.value.key]
+  return !v || (typeof v === 'object' && v.tag === 'HomebrewCampaignLogKey')
+})
+
+/* Whether the value field has been swapped for the binding picker. Only needed
+ * while nothing is chosen yet: once a `$name` is in the value, that is what the
+ * field holds and `isBindingText` says so on its own. */
+const bindingInput = ref(false)
+
+function useBinding(name: string | null) {
+  setLiteral(name ?? '')
+  // Cleared back to a value, so the field goes back to being one.
+  if (!name) bindingInput.value = false
 }
 
 // --- the value a plain source holds ---
@@ -255,7 +349,7 @@ const predicateOperand = computed(() => source.value?.filter?.[predicateKey.valu
 const setPredicate = (key: string) => patch({ filter: { [key]: predicateOperand.value } })
 const setPredicateOperand = (v: any) => patch({ filter: { [predicateKey.value]: v } })
 
-const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : null))
+const propsFor = computed(() => propsForKind(source.value?.kind ?? 'card') ?? null)
 </script>
 
 <template>
@@ -271,24 +365,35 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
         <option v-for="o in SOURCES" :key="o.key" :value="o.key">{{ o.label }}</option>
       </select>
 
+      <!-- A value or a binding, never both at once: the binding picker is what
+           the field becomes when you ask for it, the way it is everywhere else in
+           the builder. Showing the two side by side made every number look like it
+           had a second, empty field attached. -->
       <template v-if="currentSource.shape === 'literal'">
-        <input
-          v-if="!isBindingText"
-          class="grow"
-          :value="literalText"
-          :placeholder="expect === 'Int' ? 'a number' : 'a value'"
-          @input="setLiteral(($event.target as HTMLInputElement).value)"
-          @keydown.stop
-        />
         <BindingField
-          v-if="isBindingText || applicableBindings.length"
+          v-if="isBindingText || bindingInput"
+          clearable
           class="grow"
           :modelValue="isBindingText ? literalText.trim() : null"
           :applicable="applicableBindings"
           :inScope="bindings"
           :type="expect ?? 'anything'"
-          @update:modelValue="setLiteral($event ?? '')"
+          @update:modelValue="useBinding($event)"
         />
+        <div v-else class="value-box grow">
+          <input
+            :value="literalText"
+            :placeholder="expect === 'Int' ? 'a number' : 'a value'"
+            @input="setLiteral(($event.target as HTMLInputElement).value)"
+            @keydown.stop
+          />
+          <BindingToggle
+            :open="false"
+            :count="applicableBindings.length"
+            :type="expect ?? 'anything'"
+            @toggle="bindingInput = true"
+          />
+        </div>
       </template>
 
       <template v-else-if="currentSource.shape === 'prop'">
@@ -306,14 +411,15 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
           class="grow"
           :modelValue="source?.get"
           :options="propsFor"
-          of="a card"
+          :of="`a ${source?.kind ?? 'card'}`"
+          :prefix="entityPrefix(source?.kind)"
           @update:modelValue="patch({ get: $event })"
         />
         <label v-else>
           Field
           <input
             :value="source?.get"
-            placeholder="EnemyHealth"
+            :placeholder="FIELD_PLACEHOLDER[source?.kind ?? ''] ?? 'SomeField'"
             @input="patch({ get: ($event.target as HTMLInputElement).value })"
             @keydown.stop
           />
@@ -331,6 +437,27 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
       </template>
 
 
+      <template v-else-if="currentSource.shape === 'record'">
+        <label v-if="recordIsHomebrew" class="grow">
+          Key
+          <input
+            :value="recordKeyName"
+            placeholder="TraitsLearned"
+            @input="setRecordKey(($event.target as HTMLInputElement).value)"
+            @keydown.stop
+          />
+        </label>
+        <ValueEditor
+          v-else
+          class="grow"
+          :bindings="bindings"
+          type="CampaignLogKey"
+          label="Key"
+          :modelValue="source?.[currentSource.key]"
+          @update:modelValue="patch({ [currentSource.key]: $event })"
+        />
+      </template>
+
       <template v-else-if="currentSource.shape === 'filter'">
         <label>
           Which
@@ -340,6 +467,16 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
         </label>
       </template>
     </div>
+
+    <!-- A set and a count are two different things the log stores under a key,
+         and picking the wrong one is silent, so the difference is spelled out. -->
+    <p v-if="currentSource.shape === 'record'" class="record-hint">
+      {{
+        currentSource.key === 'recordSet'
+          ? 'The entries recorded under that key, so they can be counted or filtered. Crossed-out entries are left out.'
+          : 'The number recorded under that key — what the log counts, not how many entries the set has.'
+      }}
+    </p>
 
     <!-- "search: cards  get: first / that match ...", read left to right and then
          down. A block of its own because a query is a small thing entire, not two
@@ -400,16 +537,27 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
       />
     </div>
 
-    <div v-else-if="currentSource.shape === 'nary'" class="nested">
-      <div v-for="(item, i) in naryItems" :key="i" class="row">
-        <ExpressionEditor
-          :modelValue="item"
-          :bindings="bindings"
-          expect="Int"
-          @update:modelValue="setNary(i, $event)"
-        />
-        <button type="button" class="remove" @click="removeNary(i)">×</button>
-      </div>
+    <!-- Read as the equation it is: each operand bounded, with the operator
+         spelled out between them. Subtract and divide fold left, so the order
+         matters -- which is what reading down the list already says. -->
+    <div v-else-if="currentSource.shape === 'nary'" class="equation">
+      <template v-for="(item, i) in naryItems" :key="i">
+        <div v-if="i > 0" class="operator">{{ OPERATOR_WORDS[currentSource.key] ?? currentSource.label }}</div>
+        <div class="operand">
+          <div class="operand-head">
+            <button type="button" class="remove" title="Remove this value" @click="removeNary(i)">
+              ×
+            </button>
+          </div>
+          <ExpressionEditor
+            :modelValue="item"
+            :bindings="bindings"
+            :queryKinds="queryKinds"
+            expect="Int"
+            @update:modelValue="setNary(i, $event)"
+          />
+        </div>
+      </template>
       <button type="button" class="add" @click="addNary">+ Value</button>
     </div>
 
@@ -448,12 +596,23 @@ const propsFor = computed(() => (source.value?.kind === 'card' ? CARD_PROPS : nu
             </option>
           </select>
           <PropertyField
-            v-if="keyAt(at) === 'get'"
+            v-if="keyAt(at) === 'get' && propsForKind(stageAt(at)?.kind)"
             class="fit"
             :modelValue="stageProp(stageAt(at))"
-            :options="stageAt(at)?.kind === 'skillTest' ? SKILL_TEST_PROPS : CARD_PROPS"
-            :of="stageAt(at)?.kind === 'skillTest' ? 'the skill test' : 'a card'"
+            :options="propsForKind(stageAt(at)?.kind)!"
+            :of="`a ${stageAt(at)?.kind ?? 'card'}`"
+            :prefix="entityPrefix(stageAt(at)?.kind)"
             @update:modelValue="setStageProp(at, $event)"
+          />
+          <!-- An entity's Field, which the served schema does not carry, so it is
+               typed rather than chosen. Named the way the engine names it. -->
+          <input
+            v-else-if="keyAt(at) === 'get'"
+            class="fit"
+            :value="stageProp(stageAt(at)) ?? ''"
+            :placeholder="FIELD_PLACEHOLDER[stageAt(at)?.kind ?? ''] ?? 'SomeField'"
+            @input="setStageProp(at, ($event.target as HTMLInputElement).value)"
+            @keydown.stop
           />
           <select
             v-if="keyAt(at) === 'filter'"
@@ -571,6 +730,36 @@ input.unknown {
 
   code {
     color: #adf;
+  }
+}
+
+/* The box the toggle is a segment of.
+ *
+ * The border and the padding belong to this wrapper, not to the input inside it.
+ * The toggle's own negative margins are cut to exactly this padding, which is
+ * what lets it reach the box's edges and read as a segment divided from the value
+ * -- outside a box like this it is a button parked next to the field. Same
+ * metrics as ValueEditor's field box, because it is the same control. */
+.value-box {
+  align-items: stretch;
+  background: #111827;
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0.35rem 0.5rem;
+
+  > input {
+    background: transparent;
+    border-color: transparent;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0;
+  }
+
+  &:focus-within {
+    border-color: #6b7280;
   }
 }
 
@@ -785,6 +974,42 @@ select {
     border-color: #14b8a6;
     color: #5eead4;
   }
+}
+
+/* One operand per box, stacked with the operator between: the boxes are what
+   ties a value to the × that removes it, which a flat list of rows did not. */
+.equation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.operand {
+  border: 1px solid #374151;
+  border-radius: 4px;
+  min-width: 0;
+  padding: 0.3rem 0.4rem 0.4rem;
+}
+
+/* Holds only the remove control, at the top right of the operand it removes --
+   which is the whole point of the box: the × belongs to something visible. */
+.operand-head {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.operator {
+  color: #9ca3af;
+  font-size: 0.72rem;
+  padding-left: 0.4rem;
+  text-transform: lowercase;
+}
+
+.record-hint {
+  color: #9ca3af;
+  font-size: 0.72rem;
+  margin: 0.15rem 0 0;
 }
 
 .add-glyph {

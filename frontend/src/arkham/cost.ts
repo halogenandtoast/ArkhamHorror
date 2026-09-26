@@ -354,6 +354,11 @@ export function formatCost(cost: Cost, t: Translate): string {
     case 'ChooseExtendedCardCost':
     case 'ChosenCardCost':
       return t('label.cost.chooseCard')
+    case 'RevealChosenCardCost':
+      return t('label.cost.revealChosenCard')
+    case 'ChooseTraitOfChosenCardCost':
+    case 'ChosenTraitCost':
+      return t('label.cost.chooseTrait')
     case 'ExhaustXAssetCost':
       return t('label.cost.exhaustXAsset')
     case 'PlaceKeyCost':

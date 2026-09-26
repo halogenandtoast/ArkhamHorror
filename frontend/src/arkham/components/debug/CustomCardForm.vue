@@ -1579,6 +1579,25 @@ fieldset {
 }
 
 /* Opens the picker; it is not a card itself, so it stays the form's plain grey. */
+/* The builder's add button, same as the editors' -- scoped styles mean each
+   component that has one needs the rule, and this file never had it. */
+.add {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  color: #eee;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.6rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: #6b7280;
+  }
+}
+
 .add-chip {
   background: rgba(255, 255, 255, 0.07);
   border-color: #4b5563;

@@ -201,6 +201,19 @@ data CardMatcher
   | CardWithTitle Text
   | CardWithTitleContaining Text
   | CardWithTrait Trait
+  | {- | Has at least one trait, whatever it is. What "choose one of its Traits"
+    needs in order not to offer a card whose trait cost could not then be paid.
+    -}
+    CardWithAnyTrait
+  | {- | Every trait the card has is in this list.
+
+    Vacuously true of a card with no traits, which is the right answer: "only if
+    all its traits are known" asks nothing of a card that has none. The list is a
+    literal, so whoever builds the matcher works out what is allowed -- which for a
+    set that comes from the campaign log means building it where the log can be
+    read, and then this stays a pure match.
+    -}
+    CardWithAllTraitsIn [Trait]
   | CardWithId CardId
   | CardWithLevel Int
   | CardWithMaxLevel Int

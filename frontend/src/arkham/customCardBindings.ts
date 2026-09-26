@@ -8,7 +8,7 @@
  * and lets the author jump back to whatever bound one.
  */
 
-import { QUERY_TYPES, expressionType } from '@/arkham/customCardExpressions'
+import { QUERY_TYPES, elementOf, expressionType } from '@/arkham/customCardExpressions'
 
 export type Binding = {
   /** Without the `$`. */
@@ -179,6 +179,7 @@ export function messageBindings(
 const stepKinds = [
   'query',
   'let',
+  'random',
   'push',
   'when',
   'if',
@@ -197,8 +198,11 @@ const stepKinds = [
   'investigate',
   'evade',
   'parley',
+  'test',
   'attack',
   'ready',
+  'discardCard',
+  'record',
   'takeAction',
   'draw',
   'gather',
@@ -266,6 +270,26 @@ export function stepBindings(
         inside: [],
       }
     }
+    /* A fresh id, or one element out of a list. Which of those it is decides the
+     * type: without a `from` it is an id, and with one it is whatever the list
+     * holds. */
+    case 'random': {
+      const name = named(step.random?.bind, 'random')
+      // `from` absent is what says "an id"; `from` present but empty is a list
+      // not written yet, whose element type is simply not known.
+      const picked = 'from' in (step.random ?? {})
+      return {
+        after: [
+          at(
+            name,
+            picked ? 'one taken at random' : 'a fresh id',
+            'a Random step',
+            picked ? elementOf(expressionType(step.random.from, scope)) : 'SkillTestId',
+          ),
+        ],
+        inside: [],
+      }
+    }
     /* A block, so what it binds is in scope only inside it -- there may be no
      * skill test, and nowhere to be, and a name that means nothing outside the
      * block should not be offered outside it. */
@@ -330,7 +354,9 @@ export function stepBindings(
             named(step.forEach?.bind, 'each'),
             'one of what was found',
             'a For each step',
-            queryType(step.forEach?.query),
+            step.forEach?.over === undefined
+              ? queryType(step.forEach?.query)
+              : elementOf(expressionType(step.forEach?.over, scope)),
           ),
         ],
       }
@@ -342,7 +368,9 @@ export function stepBindings(
             named(step.chooseFrom?.bind, 'chosen'),
             'what was chosen',
             'a Choose from step',
-            queryType(step.chooseFrom?.query),
+            step.chooseFrom?.over === undefined
+              ? queryType(step.chooseFrom?.query)
+              : elementOf(expressionType(step.chooseFrom?.over, scope)),
           ),
         ],
       }
@@ -357,6 +385,8 @@ export function stepBindings(
       return { after: [at('sid', 'SkillTestId', 'an Evade step', 'SkillTestId')], inside: [] }
     case 'parley':
       return { after: [at('sid', 'SkillTestId', 'a Parley step', 'SkillTestId')], inside: [] }
+    case 'test':
+      return { after: [at('sid', 'SkillTestId', 'a Test step', 'SkillTestId')], inside: [] }
     default:
       return none
   }

@@ -271,6 +271,9 @@ instance FromJSON (SomeField Investigator) where
     "InvestigatorBeganRoundAt" -> pure $ SomeField InvestigatorBeganRoundAt
     "InvestigatorPreviousLocation" -> pure $ SomeField InvestigatorPreviousLocation
     "InvestigatorSupplies" -> pure $ SomeField InvestigatorSupplies
+    "InvestigatorCluesInPool" -> pure $ SomeField InvestigatorCluesInPool
+    "InvestigatorSearch" -> pure $ SomeField InvestigatorSearch
+    "InvestigatorSideDeck" -> pure $ SomeField InvestigatorSideDeck
     _ -> error "Unknown Field Investigator"
 
 data InvestigatorForm

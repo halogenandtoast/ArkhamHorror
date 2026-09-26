@@ -95,9 +95,12 @@ darkPactReckoning ctx = for_ (sourceCard ctx) \cid -> do
   if a.flipped
     then for_ (revealedReckoning code) (push . ResolveEffect ctx)
     else do
-      v <- rollDie
-      logText ("Dark pact: rolled " <> tshow v)
-      when (v == 1) do
+      i <- getInvestigator ctx.investigator
+      codes <- traverse cardCode i.assets
+      let dice = if "dark-blessing" `elem` codes then 2 else 1
+      vs <- replicateM dice rollDie
+      logText ("Dark pact: rolled " <> tshow vs)
+      when (1 `elem` vs) do
         logText "Your debt has come due"
         push (ResolveEffect ctx (Custom "flip-condition"))
 

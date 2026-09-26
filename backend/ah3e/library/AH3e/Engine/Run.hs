@@ -793,7 +793,10 @@ runMessage msg = case msg of
         neighborhoodL nid . #attachedTerror %= (<> [cid])
   CheckStateTriggers -> checkStateTriggers
   -- Assets (rules 405, 408, 415, 446, 482, 483, 485)
+  -- a card that bans conditions discards the ones its new owner already holds
   GainAsset iid cid -> do
+    bans <- (.bansConditions) <$> assetBehavior cid
+    for_ bans \name -> conditionCard iid name >>= traverse_ (push . DiscardAsset)
     removeCardEverywhere cid
     #assets
       . at cid
@@ -813,7 +816,7 @@ runMessage msg = case msg of
     pile <- use (#decks . #special)
     matches <- filterM (cardMatches (NamedCard name)) pile
     case matches of
-      (cid : _) -> push (GainAsset iid cid)
+      (cid : _) -> pushAll [GainAsset iid cid, AfterGainedFromDeck iid cid]
       [] -> logText ("Special card unavailable: " <> name)
   GainConditionMsg iid name -> gainCondition iid name
   FocusSkill iid skill evenIfExceeds -> do
@@ -1270,6 +1273,7 @@ discardAsset cid = do
 gainCondition :: InvestigatorId -> ConditionName -> GameM ()
 gainCondition iid name = do
   already <- hasCondition iid name
+  banned <- hasAssetWith iid (elem name . (.bansConditions))
   -- an investigator still joining is being set up, and may start with a condition
   joining <- (== Joining) . (.status) <$> getInvestigator iid
   playing <- (|| joining) <$> investigatorIsPlaying iid
@@ -1279,6 +1283,9 @@ gainCondition iid name = do
     "CURSED" -> conditionCard iid "BLESSED"
     _ -> pure Nothing
   case opposing of
+    _ | banned -> do
+      logText (coerce name <> " cannot be held, and is discarded")
+      conditionCard iid name >>= traverse_ (push . DiscardAsset)
     Just cid | playing -> do
       logText "The opposing condition is discarded instead"
       push (DiscardAsset cid)

@@ -240,8 +240,12 @@ successThreshold :: TestState -> GameM Int
 successThreshold ts = do
   blessed <- hasCondition ts.investigator "BLESSED"
   cursed <- hasCondition ts.investigator "CURSED"
+  -- a card can lower the bar to four on its own (Dark Blessing), which is the
+  -- blessed threshold without the blessing
+  onFour <- hasAssetWith ts.investigator (.successOnFour)
   pure
-    if
+    $ min (if onFour then 4 else 6)
+    $ if
       | cursed -> 6
       | blessed -> 4
       | otherwise -> 5
@@ -285,4 +289,6 @@ resolveAfter ts r = case ts.after of
   AfterBoostTest -> do
     interrupted <- uses #test isJust
     pushAll $ AddTestSuccesses r : [ContinueTest | interrupted]
-  AfterCustom _ key -> logText ("Missing custom test continuation: " <> key)
+  AfterCustom src key -> case customAfterTest key of
+    Just f -> f src r
+    Nothing -> logText ("Missing custom test continuation: " <> key)

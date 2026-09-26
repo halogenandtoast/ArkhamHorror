@@ -2,6 +2,7 @@
 module AH3e.Content.SpecialBehaviors (behaviors) where
 
 import AH3e.Engine.Behavior
+import AH3e.Engine.Helpers
 import AH3e.Engine.Monad
 import AH3e.Engine.Query
 import AH3e.Game
@@ -17,7 +18,13 @@ behaviors :: Behaviors
 behaviors =
   ( mempty
       & #customEffects
-      .~ Map.fromList [("clover-club-gamble", gamble), ("mysterious-serum", serum)]
+      .~ Map.fromList
+        [ ("clover-club-gamble", gamble)
+        , ("mysterious-serum", serum)
+        , ("abandoned-luggage-stash", stash)
+        ]
+      & #customAfterTests
+      .~ Map.fromList [("abandoned-luggage", openLuggage)]
   )
     & #assets
     .~ Map.fromList
@@ -25,9 +32,11 @@ behaviors =
         ( "ace-of-rods"
         , rerollInstead "ace-of-rods" "Ace of Rods: reroll any number of dice instead" liveDiceCount
         )
+      , ("abandoned-luggage", abandonedLuggage)
       , ("astrolabe", astrolabe)
       , ("clover-club-member", cloverClubMember)
       , ("contraband-whiskey", contrabandWhiskey)
+      , ("dark-blessing", darkBlessing)
       , ("deputy-of-arkham", deputyOfArkham)
       , ("gravedigger", gatherTalent "gravedigger" "Gravedigger" "rivertown" Strength)
       ,
@@ -226,3 +235,68 @@ reportingGig =
   testBonuses [OnAction ResearchAction Observation 1]
     & #afterGainClue
     .~ \cid iid -> pure [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (GainE (Money (N 2)))]
+
+{- | "While resolving a test, 4s, 5s, and 6s count as successes. Roll two dice
+while resolving the reckoning effect of your DARK PACT. You cannot be BLESSED or
+CURSED." The pact's own reckoning reads this card by name.
+-}
+darkBlessing :: AssetBehavior
+darkBlessing =
+  defaultAssetBehavior
+    & #successOnFour
+    .~ True
+    & #bansConditions
+    .~ ["BLESSED", "CURSED"]
+
+{- | "When you gain this card from the deck, place the top two cards of the item
+deck facedown under this card. Action: Test observation -1. If you pass, you gain
+those items and discard this card."
+-}
+abandonedLuggage :: AssetBehavior
+abandonedLuggage =
+  defaultAssetBehavior
+    & #afterGainedFromDeck
+    ?~ Custom "abandoned-luggage-stash"
+    & #componentActions
+    .~ [ ComponentActionDef
+           { label = "Abandoned Luggage: test observation to open it"
+           , allowedWhileEngaged = False
+           , canPerform = \_ -> pure True
+           , perform = \ctx -> for_ [cid | SourceCard cid <- [ctx.source]] \cid ->
+               push
+                 $ BeginTest
+                   ( newTest
+                       ctx.investigator
+                       Observation
+                       (-1)
+                       OtherTest
+                       (AfterCustom (SourceCard cid) "abandoned-luggage")
+                   )
+           }
+       ]
+
+{- | The two items wait as assets of their own, attached to the luggage and left out
+of their owner's cards, so they cannot be used until the luggage is opened.
+Discarding the luggage takes them with it.
+-}
+stash :: EffectCtx -> GameM ()
+stash ctx = for_ [cid | SourceCard cid <- [ctx.source]] \cid -> do
+  deck <- use (#decks . #item)
+  let (taken, rest) = splitAt 2 deck
+  #decks . #item .= rest
+  for_ taken \item -> do
+    removeCardEverywhere item
+    #assets . at item ?= Asset item ctx.investigator 0 0 True (Just cid) mempty
+  logText (tshow (length taken) <> " items are tucked under the luggage")
+
+-- | Passing the test hands over what was under the luggage and the luggage goes.
+openLuggage :: Source -> Int -> GameM ()
+openLuggage src r = for_ [cid | SourceCard cid <- [src]] \cid -> do
+  a <- use (#assets . at cid)
+  for_ a \luggage -> when (r > 0) do
+    under <- uses #assets (filter ((== Just cid) . (.attachedTo)) . Map.elems)
+    for_ under \x -> do
+      #assets . ix x.card . #attachedTo .= Nothing
+      #assets . ix x.card . #flipped .= False
+      investigatorL luggage.owner . #assets %= (<> [x.card])
+    push (DiscardAsset cid)

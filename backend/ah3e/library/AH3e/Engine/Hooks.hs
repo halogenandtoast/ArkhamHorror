@@ -27,6 +27,9 @@ codexBehavior n = Map.findWithDefault defaultCodexBehavior n behaviors.codex
 investigatorBehavior :: InvestigatorId -> InvestigatorBehavior
 investigatorBehavior iid = Map.findWithDefault defaultInvestigatorBehavior iid behaviors.investigators
 
+customAfterTest :: Text -> Maybe (Source -> Int -> GameM ())
+customAfterTest key = Map.lookup key behaviors.customAfterTests
+
 customEffect :: Text -> Maybe (EffectCtx -> GameM ())
 customEffect key = Map.lookup key behaviors.customEffects
 

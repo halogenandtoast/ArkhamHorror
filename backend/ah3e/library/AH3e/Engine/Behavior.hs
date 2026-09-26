@@ -58,6 +58,12 @@ data AssetBehavior = AssetBehavior
   {- ^ non-epic monsters pass its owner by while activating and do not engage
   them, until its owner attacks or damages the monster (Tattered Cloak).
   -}
+  , successOnFour :: Bool
+  -- ^ while its owner tests, a four counts as a success as well (Dark Blessing)
+  , bansConditions :: [ConditionName]
+  {- ^ conditions its owner cannot hold: gaining one discards it instead, and
+  holding this card discards the ones already held.
+  -}
   , halfPricePerRound :: Bool
   {- ^ once per round, its owner may buy one card at half price, rounded up. The
   card says it does not stack, so it is not offered on a purchase already halved.
@@ -114,6 +120,8 @@ defaultAssetBehavior =
     , afterHarm = \_ _ _ -> pure []
     , testOptions = \_ _ _ -> pure []
     , ignoredByMonsters = False
+    , successOnFour = False
+    , bansConditions = []
     , halfPricePerRound = False
     , extraSuccesses = \_ _ _ -> pure 0
     , damagePrevention = \_ _ _ -> pure []
@@ -260,6 +268,10 @@ data Behaviors = Behaviors
   { assets :: Map CardCode AssetBehavior
   , codex :: Map ArchiveNumber CodexBehavior
   , investigators :: Map InvestigatorId InvestigatorBehavior
+  , customAfterTests :: Map Text (Source -> Int -> GameM ())
+  {- ^ what a card does with its own test's result, for a test whose ending is the
+  card's business alone ('AfterCustom').
+  -}
   , customEffects :: Map Text (EffectCtx -> GameM ())
   , customActivations :: Map Text (CardId -> GameM ())
   }
@@ -271,8 +283,9 @@ instance Semigroup Behaviors where
       (a.assets <> b.assets)
       (a.codex <> b.codex)
       (a.investigators <> b.investigators)
+      (a.customAfterTests <> b.customAfterTests)
       (a.customEffects <> b.customEffects)
       (a.customActivations <> b.customActivations)
 
 instance Monoid Behaviors where
-  mempty = Behaviors mempty mempty mempty mempty mempty
+  mempty = Behaviors mempty mempty mempty mempty mempty mempty

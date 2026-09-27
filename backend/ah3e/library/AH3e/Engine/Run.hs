@@ -165,6 +165,24 @@ runMessage msg = case msg of
     investigatorL iid . #delayed .= False
     investigatorL iid . #actionsTaken += 1
     push (ActionTurn iid)
+  {- A granted action is performed as its taker's own -- the restrictions on what they
+  may do still hold -- but it costs them none of their own actions. Repeating one they
+  have already taken is what Witch Blood allows, so that skips the used-up check. -}
+  PerformGrantedAction iid kind again -> do
+    legal <- legalActions iid
+    done <- (.performed) <$> getInvestigator iid
+    when (if again then kind `elem` done else kind `elem` legal) do
+      unless again $ investigatorL iid . #performed %= (<> [kind])
+      performAction iid kind
+  OfferGrantedAction from kind -> do
+    others <- filter ((/= from) . (.id)) <$> playingInvestigators
+    takers <- filterM (fmap (elem kind) . legalActions . (.id)) others
+    unless (null takers)
+      $ chooseGroup
+        "Who takes the granted action?"
+        ( Choice (DoneLabel "Nobody") []
+            : [Choice (InvestigatorLabel o.id) [PerformGrantedAction o.id kind False] | o <- takers]
+        )
   PerformAction iid kind -> do
     legal <- legalActions iid
     unless (kind `elem` legal) $ error ("illegal action " <> show kind)
@@ -178,6 +196,7 @@ runMessage msg = case msg of
       $ [CheckReactions (AfterGatherResources iid) [] | kind == GatherResourcesAction]
       <> [CheckReactions (AfterResearchAction iid) [] | kind == ResearchAction]
       <> [CheckReactions (AfterMoveAction iid) [] | kind == MoveAction]
+      <> [CheckReactions (AfterAnyAction iid kind) []]
       <> [ActionTurn iid | t == Just iid, ph == ActionPhase]
   EndActionTurn iid -> do
     investigatorL iid . #active .= False
@@ -246,7 +265,21 @@ runMessage msg = case msg of
   MonsterAttackStep [] -> push MonsterReadyStep
   MonsterAttackStep (iid : rest) -> do
     ms <- map (.card) <$> engagedMonsters iid
-    pushAll [MonstersAttack iid ms, MonsterAttackStep rest]
+    stoppers <- attackStoppers iid
+    case (ms, stoppers) of
+      (_ : _, (cid, cardName) : _) ->
+        chooseFor
+          iid
+          (cardName <> ": call off the attack?")
+          [ Choice (DoneLabel "Let them attack") [MonstersAttack iid ms, MonsterAttackStep rest]
+          , Choice
+              (TextLabel ("Discard " <> cardName <> " to disengage and exhaust them"))
+              ( DiscardAsset cid
+                  : concat [[DisengageMonster iid m, ExhaustMonster m] | m <- ms]
+                    <> [MonsterAttackStep rest]
+              )
+          ]
+      _ -> pushAll [MonstersAttack iid ms, MonsterAttackStep rest]
   MonstersAttack _ [] -> pure ()
   MonstersAttack iid [mid] -> push (MonsterAttacks mid iid)
   MonstersAttack iid ms ->
@@ -271,12 +304,28 @@ runMessage msg = case msg of
     m <- getMonster mid
     let cannot = any (`elem` d.keywords) [Massive, Relentless] || (Shrouded `elem` d.keywords && m.state == Ready)
     unless cannot $ setMonsterState mid Exhausted
-  EngageMonster iid mid -> engage iid mid
+  {- Someone standing beside the one a monster picks may take the engagement instead
+  (Tommy Muldoon, Mr. Pawterson's neighbour), so the engagement itself waits behind
+  that offer. -}
+  EngageMonster iid mid -> do
+    shields <- shieldsFor iid
+    case shields of
+      [] -> push (EngageMonsterNow iid mid)
+      (guardian : _) -> do
+        monsterName <- (.name) <$> getCardDef mid
+        chooseFor
+          guardian
+          ("Take that engagement with " <> monsterName <> " instead?")
+          [ Choice (DoneLabel "No") [EngageMonsterNow iid mid]
+          , Choice (TextLabel "Engage me instead") [EngageMonsterNow guardian mid]
+          ]
+  EngageMonsterNow iid mid -> engage iid mid
   DisengageMonster iid mid -> do
     m <- getMonster mid
     case m.state of
       Engaged is -> setMonsterState mid (if length is > 1 then Engaged (filter (/= iid) is) else Ready)
       _ -> pure ()
+    push (CheckReactions (AfterDisengage iid mid) [])
   CheckEngagement mid -> do
     m <- getMonster mid
     push (MonsterEngagesIn mid m.space)
@@ -503,6 +552,7 @@ runMessage msg = case msg of
   PayCastCost iid cid spent asDamage next -> do
     cost <- maybe 0 (.spellHorror) <$> assetDef cid
     addRemnants iid (negate spent)
+    when (spent > 0) $ push (CheckReactions (AfterSpendRemnant iid) [])
     let rest = cost - spent
         bonus = (investigatorBehavior iid).paidCastLoreBonus
         paid = spent > 0 || (asDamage && rest > 0)
@@ -1342,7 +1392,8 @@ removeInvestigator iid status addDoom = do
 
 discardAsset :: CardId -> GameM ()
 discardAsset cid = do
-  ma <- use (#assets . at cid)
+  refuses <- cannotBeDiscarded cid
+  ma <- if refuses then pure Nothing else use (#assets . at cid)
   for_ ma \a -> do
     investigatorL a.owner . #assets %= filter (/= cid)
     #assets . at cid .= Nothing

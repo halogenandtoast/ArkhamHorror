@@ -383,7 +383,9 @@ payCost ctx cost = do
   let iid = ctx.investigator
   case cost of
     SpendMoney n -> addMoney iid (negate n)
-    SpendRemnants n -> addRemnants iid (negate n)
+    SpendRemnants n -> do
+      addRemnants iid (negate n)
+      when (n > 0) $ push (CheckReactions (AfterSpendRemnant iid) [])
     SpendClues n -> addClues iid (negate n)
     SpendFocus n -> when (n > 0) do
       i <- getInvestigator iid

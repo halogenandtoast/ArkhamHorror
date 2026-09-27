@@ -24,6 +24,12 @@ data Message
   | StartActionTurn InvestigatorId
   | ActionTurn InvestigatorId
   | PerformAction InvestigatorId ActionKind
+  | {- | an action someone else's card granted: it spends none of their own actions,
+    and the flag lets it repeat one they have already taken
+    -}
+    PerformGrantedAction InvestigatorId ActionKind Bool
+  | -- | ask who takes the granted action, if anyone
+    OfferGrantedAction InvestigatorId ActionKind
   | AfterAction InvestigatorId ActionKind
   | StandUp InvestigatorId
   | EndActionTurn InvestigatorId

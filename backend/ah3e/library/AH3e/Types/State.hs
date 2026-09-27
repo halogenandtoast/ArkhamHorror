@@ -67,6 +67,9 @@ data Trigger
   | AfterFailedTest InvestigatorId
   | -- | they and this monster have just come apart
     AfterDisengage InvestigatorId CardId
+  | -- | an action of theirs has finished, whichever it was
+    AfterAnyAction InvestigatorId ActionKind
+  | AfterSpendRemnant InvestigatorId
   | -- | the encounter has finished resolving; its investigator is still standing where it happened
     AfterEncounter InvestigatorId
   | -- | the monster defeated is gone by now, so only the attacker is carried
@@ -86,6 +89,8 @@ triggerInvestigator = \case
   AfterDoomRemoved iid _ -> iid
   AfterFailedTest iid -> iid
   AfterDisengage iid _ -> iid
+  AfterAnyAction iid _ -> iid
+  AfterSpendRemnant iid -> iid
   AfterEncounter iid -> iid
   AfterDefeatMonsterInAttack iid -> iid
   DrewBlankToken iid -> iid

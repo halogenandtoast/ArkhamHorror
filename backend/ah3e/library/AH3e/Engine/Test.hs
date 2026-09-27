@@ -148,7 +148,8 @@ rollTestDice :: GameM ()
 rollTestDice = do
   ts <- currentTest
   pool <- testPool ts
-  values <- replicateM pool rollDie
+  bonus <- dieBonusFor ts
+  values <- map (+ bonus) <$> replicateM pool rollDie
   #test . _Just . #dice .= [Die v False | v <- values]
   #test . _Just . #step .= ManipulateDice
   investigatorL ts.investigator . #usedAssets %= (<> ts.chosenAssets)
@@ -205,17 +206,20 @@ rerollUpTo src n = do
 
 rerollOneOf :: Source -> Int -> Int -> GameM ()
 rerollOneOf src n idx = do
+  ts <- currentTest
+  bonus <- dieBonusFor ts
   v <- rollDie
-  #test . _Just . #dice . ix idx . #value .= v
+  #test . _Just . #dice . ix idx . #value .= v + bonus
   rerollUpTo src (n - 1)
 
 -- | Reroll every die still in the pool at once, for a card that offers no choice.
 rerollAll :: Source -> GameM ()
 rerollAll _ = do
   ts <- currentTest
+  bonus <- dieBonusFor ts
   for_ (liveDice ts) \(idx, _) -> do
     v <- rollDie
-    #test . _Just . #dice . ix idx . #value .= v
+    #test . _Just . #dice . ix idx . #value .= v + bonus
   testPrompt
 
 chooseDieToRaise :: Source -> GameM ()

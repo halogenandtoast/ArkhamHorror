@@ -37,6 +37,7 @@ behaviors =
           , ("rex-murphy", familyCurse)
           , -- Shield From Harm, the sheet's own version of what a card may do
             ("tommy-muldoon", defaultInvestigatorBehavior & #mayTakeEngagement .~ True)
+          , ("marie-lambeau", smokyVelvet)
           , ("jenny-barnes", trustFund)
           ,
             ( "daniela-reyes"
@@ -72,6 +73,7 @@ behaviors =
           , ("mr-pawterson", defaultAssetBehavior & #mayStopAttacks .~ True)
           , ("until-the-end-of-time", untilTheEndOfTime)
           , ("it-all-comes-together", itAllComesTogether)
+          , ("witch-blood", witchBlood)
           , ("the-tower", rerollOneOrAll "the-tower" "The Tower")
           , ("astronomy-book", astronomyBook)
           , ("search-for-izzie", searchForIzzie)
@@ -604,3 +606,64 @@ itAllComesTogether =
     .~ \_ _ ts -> pure case ts.kind of
       ActionTest ResearchAction _ -> 1
       _ -> 0
+
+{- | "Once per round, after you perform an action, another investigator on any space
+may perform that same action." What they may do is still their own business, so the
+offer only reaches those the action is legal for.
+-}
+smokyVelvet :: InvestigatorBehavior
+smokyVelvet =
+  defaultInvestigatorBehavior
+    & #reactions
+    .~ \self -> \case
+      AfterAnyAction iid kind | iid == self -> do
+        used <- usedAbility self "smoky-velvet"
+        pure
+          [ Reaction
+              "smoky-velvet"
+              "Smoky Velvet: another investigator may take that action"
+              [MarkAbilityUsed self "smoky-velvet", OfferGrantedAction self kind]
+          | not used
+          ]
+      _ -> pure []
+
+{- | "Action: You may perform an action you have already performed this round. ... Once
+per round, after you spend a remnant, you gain one remnant." Its first half reaches
+Smoky Velvet by itself, since a granted action is performed like any other.
+-}
+witchBlood :: AssetBehavior
+witchBlood =
+  defaultAssetBehavior
+    & #componentActions
+    .~ [ ComponentActionDef
+           { label = "Witch Blood: take an action again"
+           , allowedWhileEngaged = True
+           , canPerform = \iid -> not . null . repeatable <$> getInvestigator iid
+           , perform = \ctx -> do
+               i <- getInvestigator ctx.investigator
+               chooseFor ctx.investigator "Take which action again?"
+                 $ [ Choice (ActionLabel k) [PerformGrantedAction ctx.investigator k True]
+                   | k <- repeatable i
+                   ]
+           }
+       ]
+    & #reactions
+    .~ \cid -> \case
+      AfterSpendRemnant iid -> do
+        used <- usedThisRound cid iid
+        pure
+          [ Reaction
+              "witch-blood"
+              "Witch Blood: gain one remnant"
+              [MarkAssetUsed iid cid, ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (remnants 1)]
+          | not used
+          ]
+      _ -> pure []
+
+{- | The actions an investigator may take again: the ones they have taken, bar the card
+actions, which are the cards' own business.
+-}
+repeatable :: Investigator -> [ActionKind]
+repeatable i = [k | k <- i.performed, not (isComponent k)]
+ where
+  isComponent = \case ComponentAction _ _ -> True; _ -> False

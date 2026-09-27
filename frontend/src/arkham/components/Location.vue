@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import { onBeforeUnmount, ComputedRef, ref, computed, watch, nextTick } from 'vue'
 import { useDebug } from '@/arkham/debug'
+import { CARD_FLIGHT_ATTR, useCardFlight } from '@/arkham/cardFlight'
 import { Game } from '@/arkham/types/Game'
 import { imgsrc } from '@/arkham/helpers'
 import { cardArt, cardImage } from '@/arkham/cardImages'
@@ -69,6 +70,9 @@ const emits = defineEmits<{
   choose: [value: number]
   show: [cards: ComputedRef<Card[]>, title: string, isDiscards: boolean, revealed?: boolean]
 }>()
+
+// Where a revealed location lands when the revelation overlay hands it over.
+const cardFlightStyle = useCardFlight(() => props.location.cardId)
 
 const choose = (n: number) => emits('choose', n)
 
@@ -634,8 +638,9 @@ const hasAnyLocationVehicleAssets = computed(() =>
             ref="innerFrame"
             class="card-frame-inner"
             :class="{ highlighted, blocked, 'blocked--selectable': blocked && canInteract && !hasObjective, exhausted: isExhausted, 'card--flipping': flipping && !locationStory }"
-            :style="{ '--ui-rotation': `${uiRotation}deg` }"
+            :style="[{ '--ui-rotation': `${uiRotation}deg` }, cardFlightStyle]"
             :data-rotation="uiRotation || undefined"
+            :[CARD_FLIGHT_ATTR]="location.cardId"
           >
             <Story
               v-if="locationStory"

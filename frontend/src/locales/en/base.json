@@ -1,4 +1,6 @@
 {
+  "drewCard": "{iname} drew",
+  "drewCards": "{iname} drew {count} cards",
   "serviceUnavailable": "Service Unavailable",
   "pleaseTryAgainLater": "Please try again later.",
   "nav": {

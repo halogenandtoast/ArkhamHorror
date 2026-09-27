@@ -23,11 +23,38 @@ const EXTRA_ANIMATIONS_SETTING = 'extraAnimations'
 // Off by default: they are still real cards, and some players want to see them.
 const HIDE_INERT_CARDS_KEY = 'arkhamHideInertCards'
 
+/* Show the cards you draw from your own deck, enlarged, the way an encounter
+ * card is shown when it is drawn.
+ *
+ * Three-way rather than a boolean because the pacing complaint cuts both ways:
+ * with it off the upkeep draw goes by with no beat at all, and with it on for
+ * every draw the card that makes you draw six becomes a chore. 'upkeep' is the
+ * middle the engine can actually distinguish -- draws the game forces, not draws
+ * a card handed you.
+ *
+ * Deliberately NOT one of the `legacyGlobalGameSettingKeys` in
+ * arkham/localStorage.ts, which cullGameLocalStorage deletes on sight.
+ */
+const DRAW_SPOTLIGHT_KEY = 'arkhamDrawSpotlight'
+// Same preference, scoped to one game, so a deck that churns cards can be turned
+// down without changing what every other game does.
+const DRAW_SPOTLIGHT_SETTING = 'drawSpotlight'
+
 // Cards you build yourself. Experimental: a custom card is only ever as correct
 // as the def behind it, and the builder can express things the engine will
 // happily run but no printed card would ever do.
 const CUSTOM_CARDS_KEY = 'arkhamCustomCardsEnabled'
 const INLINE_MODALS_KEY = 'arkhamInlineModals'
+
+/* Never trust what comes back out of localStorage: it survives a rename, and a
+ * value this store does not understand would otherwise gate the overlay on a
+ * string comparison that can never be true. */
+export type DrawSpotlightMode = 'off' | 'upkeep' | 'every'
+const DRAW_SPOTLIGHT_MODES: DrawSpotlightMode[] = ['off', 'upkeep', 'every']
+
+function readDrawSpotlightMode(value: string | null): DrawSpotlightMode | null {
+  return DRAW_SPOTLIGHT_MODES.find((m) => m === value) ?? null
+}
 
 function loadVariants(): string[] {
   try {
@@ -124,12 +151,43 @@ export const useSettings = defineStore("settings", () => {
 
     const override = getGameLocalStorageItem(id, EXTRA_ANIMATIONS_SETTING)
     extraAnimationsOverride.value = override === null ? null : override === 'true'
+
+    drawSpotlightOverride.value = readDrawSpotlightMode(
+      getGameLocalStorageItem(id, DRAW_SPOTLIGHT_SETTING),
+    )
   }
 
   function toggleSplitView() {
     splitView.value = !splitView.value
     if (gameId.value) {
       setGameLocalStorageItem(gameId.value, 'splitView', String(splitView.value))
+    }
+  }
+
+  /* Global player preference, and a per-game override that can defer to it --
+   * the same tri-state shape as extraAnimations, for the same reason: "off for
+   * this scenario" and "off everywhere" are different wishes. */
+  const drawSpotlightGlobal = ref<DrawSpotlightMode>(
+    readDrawSpotlightMode(localStorage.getItem(DRAW_SPOTLIGHT_KEY)) ?? 'upkeep',
+  )
+  const drawSpotlightOverride = ref<DrawSpotlightMode | null>(null)
+
+  const drawSpotlight = computed<DrawSpotlightMode>(
+    () => drawSpotlightOverride.value ?? drawSpotlightGlobal.value,
+  )
+
+  function setDrawSpotlightGlobal(mode: DrawSpotlightMode) {
+    drawSpotlightGlobal.value = mode
+    localStorage.setItem(DRAW_SPOTLIGHT_KEY, mode)
+  }
+
+  function setDrawSpotlightOverride(mode: DrawSpotlightMode | null) {
+    drawSpotlightOverride.value = mode
+    if (!gameId.value) return
+    if (mode === null) {
+      removeGameLocalStorageItem(gameId.value, DRAW_SPOTLIGHT_SETTING)
+    } else {
+      setGameLocalStorageItem(gameId.value, DRAW_SPOTLIGHT_SETTING, mode)
     }
   }
 
@@ -170,5 +228,10 @@ export const useSettings = defineStore("settings", () => {
     setCustomCardsEnabled,
     inlineModals,
     setInlineModals,
+    drawSpotlight,
+    drawSpotlightGlobal,
+    drawSpotlightOverride,
+    setDrawSpotlightGlobal,
+    setDrawSpotlightOverride,
   }
 })

@@ -8,8 +8,9 @@ import { gameLocalStorageKey, getGameLocalStorageItem, removeGameLocalStorageIte
 import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useSettingsFocus } from '@/composable/settingsFocus'
-import { useSettings } from '@/stores/settings'
+import { useSettings, type DrawSpotlightMode } from '@/stores/settings'
 import CardOptionsSettings from '@/arkham/components/CardOptionsSettings.vue'
+import ScopedSetting from '@/arkham/components/ScopedSetting.vue'
 
 const props = defineProps<{
   game: Game
@@ -33,23 +34,46 @@ const settings = useSettings()
 // Global player preference, and a per-scenario override that can defer to it.
 // Both live in the settings store; prefers-reduced-motion is folded in there
 // too, which is why the resolved value can be off while both of these read on.
-const extraAnimationsGlobal = computed({
-  get: () => settings.extraAnimationsGlobal,
-  set: (value: boolean) => settings.setExtraAnimationsGlobal(value),
+const extraAnimationsGlobal = computed<string>({
+  get: () => (settings.extraAnimationsGlobal ? 'on' : 'off'),
+  set: (value) => settings.setExtraAnimationsGlobal(value === 'on'),
 })
 
-const extraAnimationsOverride = computed<'default' | 'on' | 'off'>({
-  get: () => {
-    if (settings.extraAnimationsOverride === null) return 'default'
-    return settings.extraAnimationsOverride ? 'on' : 'off'
-  },
-  set: (value) => settings.setExtraAnimationsOverride(value === 'default' ? null : value === 'on'),
+const extraAnimationsOverride = computed<string | null>({
+  get: () => (settings.extraAnimationsOverride === null ? null : settings.extraAnimationsOverride ? 'on' : 'off'),
+  set: (value) => settings.setExtraAnimationsOverride(value === null ? null : value === 'on'),
 })
 
 const hideInertCards = computed({
   get: () => settings.hideInertCards,
   set: (value: boolean) => settings.setHideInertCards(value),
 })
+
+// Same global / per-game pairing as extraAnimations above, tri-state for the
+// same reason: "not in this scenario" and "not ever" are different wishes.
+const drawSpotlightGlobal = computed<string>({
+  get: () => settings.drawSpotlightGlobal,
+  set: (value) => settings.setDrawSpotlightGlobal(value as DrawSpotlightMode),
+})
+
+const drawSpotlightOverrideValue = computed<string | null>({
+  get: () => settings.drawSpotlightOverride,
+  set: (value) => settings.setDrawSpotlightOverride(value as DrawSpotlightMode | null),
+})
+
+const drawSpotlightOptions = computed(() => [
+  { value: 'off', label: t('gameBar.settings.drawSpotlightOff') },
+  { value: 'upkeep', label: t('gameBar.settings.drawSpotlightUpkeep') },
+  { value: 'every', label: t('gameBar.settings.drawSpotlightEvery') },
+])
+
+/* ScopedSetting speaks in option strings so one component can serve a tri-state
+ * and a boolean alike; extraAnimations is stored as a boolean, so it is adapted
+ * here rather than widening the store. */
+const onOffOptions = computed(() => [
+  { value: 'on', label: t('On') },
+  { value: 'off', label: t('Off') },
+])
 
 const soundsDisabled = ref(localStorage.getItem('arkhamSoundsDisabled') === 'true')
 
@@ -182,9 +206,43 @@ const setOptionEnabled = async (o: RecommendedToggle, enabled: boolean) => {
   }
 }
 
+/* The panel was one flat column of a dozen rows spanning five different scopes
+ * -- per-investigator, per-browser, per-game, per-scenario, shared with everyone
+ * at the table -- all looking identical. Tabs group by what a setting affects;
+ * the scope badge on each row says who it affects. The tablist wiring mirrors
+ * components/SettingsForm.vue, the one place the pattern already existed.
+ */
+const TABS = ['table', 'pacing', 'soundMotion', 'cards', 'shared'] as const
+type TabId = (typeof TABS)[number]
+const activeTab = ref<TabId>('table')
+
+/* Which tab each deep-linkable row lives on. `focusSetting` (SkillTest.vue asks
+ * for 'skipTriggers') would otherwise scroll to a row on a panel that is not
+ * showing and silently do nothing. */
+const settingTabs: Record<string, TabId> = {
+  skipTriggers: 'pacing',
+  drawSpotlight: 'pacing',
+}
+
+function navigateTabs(event: KeyboardEvent) {
+  const index = TABS.indexOf(activeTab.value)
+  const next = {
+    ArrowLeft: (index - 1 + TABS.length) % TABS.length,
+    ArrowRight: (index + 1) % TABS.length,
+    Home: 0,
+    End: TABS.length - 1,
+  }[event.key]
+  if (next === undefined) return
+  event.preventDefault()
+  activeTab.value = TABS[next]
+}
+
 const settingRefs: Record<string, HTMLElement | null> = {}
+/* A `ref` on a component yields its instance, not an element, and `focusOn`
+ * needs something it can scroll to. */
 const setSettingRef = (id: string) => (el: unknown) => {
-  settingRefs[id] = (el as HTMLElement | null) ?? null
+  const node = el && typeof el === 'object' && '$el' in el ? (el as { $el: unknown }).$el : el
+  settingRefs[id] = (node as HTMLElement | null) ?? null
 }
 
 const { focusedSettingId, clearFocus } = useSettingsFocus()
@@ -192,6 +250,10 @@ const highlightedSetting = ref<string | null>(null)
 let highlightTimeout: ReturnType<typeof setTimeout> | null = null
 
 const focusOn = async (id: string) => {
+  // Show the row's tab first: a panel kept in the DOM by `v-show` still has no
+  // layout while hidden, so scrollIntoView on it goes nowhere.
+  const tab = settingTabs[id]
+  if (tab) activeTab.value = tab
   await nextTick()
   const el = settingRefs[id]
   if (!el) return
@@ -228,33 +290,37 @@ onBeforeUnmount(() => {
       <h2 class="settings-title">{{$t('gameBar.viewSettingTitle', {investigator: investigator?.name.title ?? ''})}}</h2>
     </div>
 
+    <div class="settings-tabs" role="tablist" @keydown="navigateTabs">
+      <button
+        v-for="tab in TABS"
+        :key="tab"
+        type="button"
+        class="settings-tab"
+        role="tab"
+        :id="`settings-tab-${tab}`"
+        :aria-controls="`settings-panel-${tab}`"
+        :aria-selected="activeTab === tab"
+        :tabindex="activeTab === tab ? 0 : -1"
+        :class="{ 'settings-tab--active': activeTab === tab }"
+        @click="activeTab = tab"
+      >{{ $t(`gameBar.settings.tabs.${tab}`) }}</button>
+    </div>
+
     <div class="settings-body">
-      <section class="settings-section">
-        <h3 class="section-title">Investigator Settings</h3>
-
-        <div class="toggle-list">
-          <div class="toggle-row" :ref="setSettingRef('skipTriggers')" :class="{ 'toggle-row--highlighted': highlightedSetting === 'skipTriggers' }">
-            <div class="toggle-text">
-              <div class="toggle-name">{{$t('gameBar.viewSettingSkipTriggersTitle')}}</div>
-              <div class="toggle-desc">{{$t('gameBar.viewSettingSkipTriggers')}}</div>
-            </div>
-            <div class="segmented toggle-control">
-              <input type="radio" id="opt-skipTriggers-on" name="opt-skipTriggers" :checked="skipTriggers" @change="skipTriggers = true" />
-              <label for="opt-skipTriggers-on">{{ $t('On') }}</label>
-              <input type="radio" id="opt-skipTriggers-off" name="opt-skipTriggers" :checked="!skipTriggers" @change="skipTriggers = false" />
-              <label for="opt-skipTriggers-off">{{ $t('Off') }}</label>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="settings-section">
-        <h3 class="section-title">Your View Settings</h3>
+      <!-- What is on the table and how much of it you can see. -->
+      <section
+        class="settings-section"
+        role="tabpanel"
+        id="settings-panel-table"
+        aria-labelledby="settings-tab-table"
+        v-show="activeTab === 'table'"
+      >
         <div class="toggle-list">
           <div class="toggle-row" v-if="canShowOtherHands">
             <div class="toggle-text">
               <div class="toggle-name">{{$t('gameBar.viewSettingShowOtherPlayersHandsTitle')}}</div>
               <div class="toggle-desc">{{$t('gameBar.viewSettingShowOtherPlayersHands')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.game')}}</div>
             </div>
             <div class="segmented toggle-control">
               <input type="radio" id="opt-showHands-on" name="opt-showHands" :checked="showOtherHands" @change="showOtherHands = true" />
@@ -266,11 +332,9 @@ onBeforeUnmount(() => {
 
           <div class="toggle-row">
             <div class="toggle-text">
-              <div class="toggle-name">Hide Cards With No Ongoing Effect</div>
-              <div class="toggle-desc">
-                Once setup is over, tuck permanents whose text only applied at deck creation or
-                setup — In the Thick of It, Adaptable, Observed — into a stack beside the play area.
-              </div>
+              <div class="toggle-name">{{$t('gameBar.settings.hideInertCardsTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.hideInertCards')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.browser')}}</div>
             </div>
             <div class="segmented toggle-control">
               <input type="radio" id="opt-hideInertCards-on" name="opt-hideInertCards" :checked="hideInertCards" @change="hideInertCards = true" />
@@ -282,8 +346,9 @@ onBeforeUnmount(() => {
 
           <div class="toggle-row">
             <div class="toggle-text">
-              <div class="toggle-name">Inline modals</div>
-              <div class="toggle-desc">Show dialogs at the top of the game instead of over the board. The dialog area can scroll, which is more comfortable on phones.</div>
+              <div class="toggle-name">{{$t('gameBar.settings.inlineModalsTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.inlineModals')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.browser')}}</div>
             </div>
             <div class="segmented toggle-control">
               <input type="radio" id="opt-inlineModals-on" name="opt-inlineModals" :checked="inlineModals" @change="inlineModals = true" />
@@ -292,11 +357,61 @@ onBeforeUnmount(() => {
               <label for="opt-inlineModals-off">{{ $t('Off') }}</label>
             </div>
           </div>
+        </div>
+      </section>
 
+      <!-- When the game stops for you, and when it gets out of your way. -->
+      <section
+        class="settings-section"
+        role="tabpanel"
+        id="settings-panel-pacing"
+        aria-labelledby="settings-tab-pacing"
+        v-show="activeTab === 'pacing'"
+      >
+        <div class="toggle-list">
+          <div class="toggle-row" :ref="setSettingRef('skipTriggers')" :class="{ 'toggle-row--highlighted': highlightedSetting === 'skipTriggers' }">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.viewSettingSkipTriggersTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.viewSettingSkipTriggers')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.you')}}</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-skipTriggers-on" name="opt-skipTriggers" :checked="skipTriggers" @change="skipTriggers = true" />
+              <label for="opt-skipTriggers-on">{{ $t('On') }}</label>
+              <input type="radio" id="opt-skipTriggers-off" name="opt-skipTriggers" :checked="!skipTriggers" @change="skipTriggers = false" />
+              <label for="opt-skipTriggers-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <ScopedSetting
+            :ref="setSettingRef('drawSpotlight')"
+            settingKey="drawSpotlight"
+            :name="$t('gameBar.settings.drawSpotlightTitle')"
+            :description="$t('gameBar.settings.drawSpotlight')"
+            :options="drawSpotlightOptions"
+            :global="drawSpotlightGlobal"
+            :override="drawSpotlightOverrideValue"
+            :highlighted="highlightedSetting === 'drawSpotlight'"
+            @update:global="drawSpotlightGlobal = $event"
+            @update:override="drawSpotlightOverrideValue = $event"
+          />
+        </div>
+      </section>
+
+      <!-- Noise and movement. Nothing here carries information you need to play. -->
+      <section
+        class="settings-section"
+        role="tabpanel"
+        id="settings-panel-soundMotion"
+        aria-labelledby="settings-tab-soundMotion"
+        v-show="activeTab === 'soundMotion'"
+      >
+        <div class="toggle-list">
           <div class="toggle-row">
             <div class="toggle-text">
-              <div class="toggle-name">Sounds</div>
-              <div class="toggle-desc">Play sound effects in this browser.</div>
+              <div class="toggle-name">{{$t('gameBar.settings.soundsTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.sounds')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.browser')}}</div>
             </div>
             <div class="segmented toggle-control">
               <input type="radio" id="opt-sounds-on" name="opt-sounds" :checked="!soundsDisabled" @change="soundsDisabled = false" />
@@ -306,44 +421,23 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <div class="toggle-row">
-            <div class="toggle-text">
-              <div class="toggle-name">Extra Animations</div>
-              <div class="toggle-desc">
-                Decorative effects like burning locations and the Cosmic Emissary beams. Never
-                affects anything you need to see to play.
-                <template v-if="settings.prefersReducedMotion">
-                  Currently off anyway, because this device asks for reduced motion.
-                </template>
-              </div>
-            </div>
-            <div class="segmented toggle-control">
-              <input type="radio" id="opt-extraAnimations-on" name="opt-extraAnimations" :checked="extraAnimationsGlobal" @change="extraAnimationsGlobal = true" />
-              <label for="opt-extraAnimations-on">{{ $t('On') }}</label>
-              <input type="radio" id="opt-extraAnimations-off" name="opt-extraAnimations" :checked="!extraAnimationsGlobal" @change="extraAnimationsGlobal = false" />
-              <label for="opt-extraAnimations-off">{{ $t('Off') }}</label>
-            </div>
-          </div>
-
-          <div class="toggle-row">
-            <div class="toggle-text">
-              <div class="toggle-name">Extra Animations (this scenario)</div>
-              <div class="toggle-desc">Override the setting above for this game only.</div>
-            </div>
-            <div class="segmented toggle-control">
-              <input type="radio" id="opt-extraAnimationsScenario-default" name="opt-extraAnimationsScenario" :checked="extraAnimationsOverride === 'default'" @change="extraAnimationsOverride = 'default'" />
-              <label for="opt-extraAnimationsScenario-default">Default</label>
-              <input type="radio" id="opt-extraAnimationsScenario-on" name="opt-extraAnimationsScenario" :checked="extraAnimationsOverride === 'on'" @change="extraAnimationsOverride = 'on'" />
-              <label for="opt-extraAnimationsScenario-on">{{ $t('On') }}</label>
-              <input type="radio" id="opt-extraAnimationsScenario-off" name="opt-extraAnimationsScenario" :checked="extraAnimationsOverride === 'off'" @change="extraAnimationsOverride = 'off'" />
-              <label for="opt-extraAnimationsScenario-off">{{ $t('Off') }}</label>
-            </div>
-          </div>
+          <ScopedSetting
+            settingKey="extraAnimations"
+            :name="$t('gameBar.settings.extraAnimationsTitle')"
+            :description="$t('gameBar.settings.extraAnimations')"
+            :note="settings.prefersReducedMotion ? $t('gameBar.settings.extraAnimationsReducedMotion') : undefined"
+            :options="onOffOptions"
+            :global="extraAnimationsGlobal"
+            :override="extraAnimationsOverride"
+            @update:global="extraAnimationsGlobal = $event"
+            @update:override="extraAnimationsOverride = $event"
+          />
 
           <div class="toggle-row" v-if="showCosmicEmissaryAnimationSetting">
             <div class="toggle-text">
-              <div class="toggle-name">Enable Cosmic Emissary Animation</div>
-              <div class="toggle-desc">Shows animated Cosmic Emissary connection effects for Fate of the Vale.</div>
+              <div class="toggle-name">{{$t('gameBar.settings.cosmicEmissaryTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.cosmicEmissary')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.game')}}</div>
             </div>
             <div class="segmented toggle-control">
               <input type="radio" id="opt-cosmicEmissaryAnimation-on" name="opt-cosmicEmissaryAnimation" :checked="enableCosmicEmissaryAnimation" @change="enableCosmicEmissaryAnimation = true" />
@@ -355,15 +449,29 @@ onBeforeUnmount(() => {
         </div>
       </section>
 
-      <CardOptionsSettings :game="game" :playerId="playerId" />
+      <div
+        role="tabpanel"
+        id="settings-panel-cards"
+        aria-labelledby="settings-tab-cards"
+        v-show="activeTab === 'cards'"
+      >
+        <CardOptionsSettings :game="game" :playerId="playerId" />
+      </div>
 
-      <section class="settings-section">
-        <h3 class="section-title">Shared Game Settings</h3>
+      <!-- Changing any of these changes the game for everyone at the table. -->
+      <section
+        class="settings-section"
+        role="tabpanel"
+        id="settings-panel-shared"
+        aria-labelledby="settings-tab-shared"
+        v-show="activeTab === 'shared'"
+      >
         <div class="toggle-list">
           <div class="toggle-row">
             <div class="toggle-text">
-              <div class="toggle-name">"As If" Ruling</div>
-              <div class="toggle-desc">Swap between Chapter 1 and Chapter 2 handling for "as if" effects during nested window checks. This affects everyone in the game.</div>
+              <div class="toggle-name">{{$t('gameBar.settings.asIfRulingTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.asIfRuling')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.everyone')}}</div>
             </div>
             <div class="segmented toggle-control">
               <input type="radio" id="opt-asIfRuling-chapter1" name="opt-asIfRuling" :checked="asIfRuling === 'chapter1'" @change="asIfRuling = 'chapter1'" />
@@ -377,6 +485,7 @@ onBeforeUnmount(() => {
             <div class="toggle-text">
               <div class="toggle-name">{{ $t('ultimatumsAndBoons.settingsToggleTitle') }}</div>
               <div class="toggle-desc">{{ $t('ultimatumsAndBoons.settingsToggleDescription') }}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.everyone')}}</div>
             </div>
             <div class="segmented toggle-control">
               <input type="radio" id="opt-ultimatumsAndBoons-on" name="opt-ultimatumsAndBoons" :checked="ultimatumsAndBoonsEnabled" @change="ultimatumsAndBoonsEnabled = true" />
@@ -395,6 +504,7 @@ onBeforeUnmount(() => {
               <div class="toggle-desc" v-if="optionDescription(o.option.tag)">
                 {{ optionDescription(o.option.tag) }}
               </div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.everyone')}}</div>
             </div>
             <div class="segmented toggle-control">
               <input
@@ -451,6 +561,61 @@ onBeforeUnmount(() => {
   text-transform: none;
 }
 
+.settings-tabs {
+  flex-shrink: 0;
+  display: flex;
+  gap: 2px;
+  padding: 0 12px;
+  background: var(--background-dark);
+  border-bottom: 1px solid var(--box-border);
+  overflow-x: auto;
+}
+
+.settings-tab {
+  flex: 0 0 auto;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--background-light);
+  font-family: Teutonic, serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.settings-tab:hover {
+  color: var(--text);
+}
+
+.settings-tab--active {
+  color: var(--text);
+  border-bottom-color: var(--button-1);
+}
+
+/* The row's scope: who a change reaches. Muted and small -- it answers a
+   question you only ask occasionally, and must never compete with the setting's
+   own name. */
+.toggle-scope {
+  margin-top: 6px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--background-light);
+  opacity: 0.75;
+}
+
+.toggle-scope::before {
+  content: '·';
+  margin-right: 4px;
+}
+
+/* Three- and four-way controls need more room than the On/Off pair. */
+.segmented-wide {
+  min-width: 260px;
+}
+
 .settings-body {
   flex: 1 1 auto;
   min-height: 0;
@@ -464,17 +629,6 @@ onBeforeUnmount(() => {
 .settings-section {
   display: flex;
   flex-direction: column;
-}
-
-.section-title {
-  margin: 0 0 10px;
-  padding-bottom: 6px;
-  font-family: Teutonic, serif;
-  font-size: 13px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--title);
-  border-bottom: 1px solid var(--box-border);
 }
 
 .toggle-list {

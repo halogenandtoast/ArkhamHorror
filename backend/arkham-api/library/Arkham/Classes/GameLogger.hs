@@ -41,6 +41,12 @@ data ClientMessage
   | ClientError Text
   | ClientCard Text Value
   | ClientCardOnly PlayerId Text Value
+  | {- | One investigator drew cards from their own deck: who to tell, the
+    heading, the cards themselves, and which kind of draw it was so the client
+    can honour a preference like "only the upkeep draw". Sent for every player
+    draw; the client decides whether to show anything.
+    -}
+    ClientDrewCards PlayerId Text Value Text
   | ClientTarot Value
   | ClientShowDiscard InvestigatorId
   | ClientShowUnder InvestigatorId
@@ -101,6 +107,14 @@ sendEnemyOnly :: HasGameLogger m => PlayerId -> Text -> Value -> m ()
 sendEnemyOnly pid title msg = do
   f <- getLogger
   liftIO $ f (ClientCardOnly pid title msg)
+
+{- | Announce a completed draw from an investigator's own deck. The whole batch
+goes in one message: a draw of six is one look at six cards, never six reveals.
+-}
+sendDrewCards :: HasGameLogger m => PlayerId -> Text -> Value -> Text -> m ()
+sendDrewCards pid title cards kind = do
+  f <- getLogger
+  liftIO $ f (ClientDrewCards pid title cards kind)
 
 sendTarot :: HasGameLogger m => Value -> m ()
 sendTarot msg = do

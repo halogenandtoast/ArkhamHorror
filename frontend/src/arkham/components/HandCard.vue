@@ -12,6 +12,7 @@ import * as ArkhamGame from '@/arkham/types/Game'
 import { IsMobile } from '@/arkham/isMobile'
 import { useDebug } from '@/arkham/debug'
 import { useCardStore } from '@/stores/cards'
+import { CARD_FLIGHT_ATTR, useCardFlight } from '@/arkham/cardFlight'
 
 export interface Props {
   game: Game
@@ -72,6 +73,9 @@ const cardAction = computed(() => {
 
 const solo = inject<Ref<boolean>>('solo')
 const showOtherPlayersHands = inject<Ref<boolean>>('showOtherPlayersHands')
+
+// Where a drawn card lands when the spotlight hands it over.
+const cardFlightStyle = useCardFlight(id)
 
 function isAbility(v: Message): v is AbilityLabel {
   if (v.tag !== 'AbilityLabel') {
@@ -275,6 +279,8 @@ function oilPaintEffect(canvas, radius, intensity) {
   <div
     class="card-container"
     :data-index="id"
+    :[CARD_FLIGHT_ATTR]="id"
+    :style="cardFlightStyle"
     v-if="solo || showOtherPlayersHands || investigatorId == ownerId || revealed"
   >
     <img

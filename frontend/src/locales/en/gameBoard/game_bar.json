@@ -25,6 +25,45 @@
     "viewSettingShowOtherPlayersHands": "See the cards in other players' hands at all times.",
     "viewSettingShowOtherPlayersHandsTitle": "Show Other Players' Hands",
 
+    "settings": {
+        "tabs": {
+            "table": "Table",
+            "pacing": "Pacing",
+            "soundMotion": "Sound & Motion",
+            "cards": "Cards",
+            "shared": "Shared"
+        },
+        "scopeLabel": "Applies to",
+        "scopeEverywhere": "Everywhere",
+        "scopeThisGame": "This game",
+        "scope": {
+            "you": "you",
+            "browser": "this browser",
+            "game": "this game",
+            "everyone": "everyone"
+        },
+        "default": "Default",
+        "hideInertCardsTitle": "Hide Cards With No Ongoing Effect",
+        "hideInertCards": "Once setup is over, tuck permanents whose text only applied at deck creation or setup — In the Thick of It, Adaptable, Observed — into a stack beside the play area.",
+        "inlineModalsTitle": "Inline modals",
+        "inlineModals": "Show dialogs at the top of the game instead of over the board. The dialog area can scroll, which is more comfortable on phones.",
+        "soundsTitle": "Sounds",
+        "sounds": "Play sound effects in this browser.",
+        "extraAnimationsTitle": "Extra Animations",
+        "extraAnimations": "Decorative effects like burning locations and the Cosmic Emissary beams. Never affects anything you need to see to play.",
+        "extraAnimationsReducedMotion": "Currently off anyway, because this device asks for reduced motion.",
+        "cosmicEmissaryTitle": "Enable Cosmic Emissary Animation",
+        "cosmicEmissary": "Shows animated Cosmic Emissary connection effects for Fate of the Vale.",
+        "asIfRulingTitle": "\"As If\" Ruling",
+        "asIfRuling": "Swap between Chapter 1 and Chapter 2 handling for \"as if\" effects during nested window checks. This affects everyone in the game.",
+        "drawSpotlightTitle": "Draw Spotlight",
+        "drawSpotlight": "Show the cards you draw from your own deck, enlarged, the way an encounter card is shown. A draw of several cards is always one look at all of them.",
+        "drawSpotlightOff": "Off",
+        "drawSpotlightUpkeep": "Upkeep only",
+        "drawSpotlightEvery": "Every draw"
+    },
+
+
     "viewChaosBag": "View Chaos Bag",
     "chaosBag": "Chaos Bag",
     "chaosBagStats": {

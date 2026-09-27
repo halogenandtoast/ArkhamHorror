@@ -79,6 +79,8 @@ formatClientMessage = \case
   ClientError t -> "error " <> T.unpack t
   ClientCard t v -> "card " <> T.unpack t <> " " <> briefValue v
   ClientCardOnly pid t v -> "cardOnly[" <> show pid <> "] " <> T.unpack t <> " " <> briefValue v
+  ClientDrewCards pid t v k ->
+    "drewCards[" <> show pid <> "/" <> T.unpack k <> "] " <> T.unpack t <> " " <> briefValue v
   ClientTarot v -> "tarot " <> briefValue v
   ClientShowDiscard iid -> "showDiscard " <> show iid
   ClientShowUnder iid -> "showUnder " <> show iid

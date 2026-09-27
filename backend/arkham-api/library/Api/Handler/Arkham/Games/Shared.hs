@@ -751,6 +751,7 @@ handleMessageLog logRef broadcast msg = liftIO $ do
     ClientAudio txt -> GameAudio txt
     ClientCard t v -> GameCard t v
     ClientCardOnly i t v -> GameCardOnly i t v
+    ClientDrewCards i t v k -> GameDrewCards i t v k
     ClientTarot v -> GameTarot v
     ClientShowDiscard v -> GameShowDiscard v
     ClientShowUnder v -> GameShowUnder v
@@ -763,6 +764,8 @@ handleMessageLog logRef broadcast msg = liftIO $ do
     ClientAudio {} -> Nothing
     ClientCard {} -> Nothing
     ClientCardOnly {} -> Nothing
+    -- A UI event, not a log line: the log already says what was drawn.
+    ClientDrewCards {} -> Nothing
     ClientTarot {} -> Nothing
     ClientShowDiscard {} -> Nothing
     ClientShowUnder {} -> Nothing

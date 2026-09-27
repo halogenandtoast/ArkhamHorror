@@ -87,6 +87,12 @@ data ApiResponse
   | GameAudio Text
   | GameCard {title :: Text, card :: Aeson.Value}
   | GameCardOnly {player :: PlayerId, title :: Text, card :: Aeson.Value}
+  | {- | One investigator drew cards from their own deck. Carries the whole draw
+    rather than one message per card, so a six-card draw is one thing to look at
+    instead of six. Whether it is shown at all, and how, is the receiving
+    client's business -- it is a display preference, not game state.
+    -}
+    GameDrewCards {player :: PlayerId, title :: Text, cards :: Aeson.Value, kind :: Text}
   | GameTarot Aeson.Value
   | GameShowDiscard InvestigatorId
   | GameShowUnder InvestigatorId

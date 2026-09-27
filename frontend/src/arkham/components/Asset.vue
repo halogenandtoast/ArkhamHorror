@@ -3,6 +3,7 @@ import { computed, watch, ref } from 'vue';
 import { Dropdown } from 'floating-vue';
 import useHighlighter from '@/composable/useHighlighter';
 import { useDebug } from '@/arkham/debug';
+import { CARD_FLIGHT_ATTR, useCardFlight } from '@/arkham/cardFlight'
 import { TokenType } from '@/arkham/types/Token';
 import { imgsrc } from '@/arkham/helpers';
 import { cardArt, cardImage } from '@/arkham/cardImages';
@@ -44,6 +45,9 @@ const props = withDefaults(defineProps<{
   // A target label on this asset means discarding it to free that slot
   discardToMakeRoom?: boolean
 }>(), { atLocation: false, pending: false, discardToMakeRoom: false })
+
+// Where a revealed asset lands when the revelation overlay hands it over.
+const cardFlightStyle = useCardFlight(() => props.asset.cardId)
 
 const debugging = ref(false)
 const frame = ref(null)
@@ -372,7 +376,13 @@ function startDrag(event: DragEvent) {
 <template>
   <div class="asset--outer">
     <Story v-if="assetStory && !flipping" :story="assetStory" :game="game" :playerId="playerId" @choose="choose"/>
-    <div v-else class="asset" :data-index="asset.cardId">
+    <div
+      v-else
+      class="asset"
+      :data-index="asset.cardId"
+      :[CARD_FLIGHT_ATTR]="asset.cardId"
+      :style="cardFlightStyle"
+    >
       <div class="card-frame" ref="frame">
         <div v-if="asset.marketDeck" class="market-deck">
           <img

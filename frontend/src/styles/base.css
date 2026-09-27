@@ -95,3 +95,35 @@ footer {
 ::view-transition-new(main-header) {
   mix-blend-mode: normal;
 }
+
+/* A card's flight from a full-screen reveal to wherever it landed: a drawn card
+   into your hand, a revealed encounter card into the threat area, onto a
+   location, or into play. The named group
+ * is the card morphing between the two positions; the old/new snapshots must not
+ * cross-fade through each other, or a 300px card dissolving into a 90px one
+ * reads as a smear rather than a card being put down.
+ *
+ * Selected by `view-transition-class` so one rule covers every card in a draw
+ * without the stylesheet knowing their ids. Browsers without class support fall
+ * back to the generic `::view-transition-group(*)` timing in components.css. */
+::view-transition-group(.card-flight) {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+::view-transition-old(.card-flight),
+::view-transition-new(.card-flight) {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  mix-blend-mode: normal;
+}
+
+/* Game.vue skips the transition entirely under reduced motion, so this only
+ * catches a transition already in flight when the preference flips. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(.card-flight),
+  ::view-transition-old(.card-flight),
+  ::view-transition-new(.card-flight) {
+    animation-duration: 0.01s;
+  }
+}

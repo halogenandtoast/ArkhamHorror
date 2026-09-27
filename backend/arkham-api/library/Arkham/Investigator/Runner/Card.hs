@@ -116,7 +116,7 @@ import Arkham.Helpers.Window (
  )
 import Arkham.Helpers.Window qualified as Helpers
 import Arkham.History
-import Arkham.I18n (countVar, ikey', withI18n)
+import Arkham.I18n (countVar, ikey', investigatorNameVar, withI18n)
 import Arkham.Investigate.Types
 import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Investigator.Runner.Damage
@@ -675,6 +675,25 @@ handleDrawCards a@InvestigatorAttrs {..} iid cardDraw = do
         : [drawEncounterCardWindow | cardDraw.isEncounterDraw] <> [DoDrawCards iid, DrawEnded cid iid]
   pure $ a & drawingL ?~ cardDraw
 
+{- | Which sort of draw this was, so a client can honour a preference narrower
+than on/off.
+
+@upkeep@ is really "the game made you draw this", which is the distinction a
+player means by it -- the noisy case they want to suppress is a card that hands
+them a fistful, not the one card the round gives everybody.
+-}
+cardDrawKindName :: CardDraw msg -> Text
+cardDrawKindName cardDraw
+  | StartingHandCardDraw <- cardDraw.kind = "opening"
+  | cardDrawAction cardDraw = "action"
+  | fromGame (cardDrawSource cardDraw) = "upkeep"
+  | otherwise = "card"
+ where
+  fromGame = \case
+    ScenarioSource -> True
+    GameSource -> True
+    _ -> False
+
 handleMoveTopOfDeckToBottom a@InvestigatorAttrs {..} iid n = do
   let (cards, deck) = draw n investigatorDeck
   pure $ a & deckL .~ Deck.withDeck (<> cards) deck
@@ -768,6 +787,19 @@ handleDoDrawCardsV2 a@InvestigatorAttrs {..} iid cardDraw = do
               min (length discardable) $ getSum (foldMap toDrawDiscard (toList $ cardDrawRules cardDraw))
             -- Only focus those that will still be in hand
             focusable = map toCard $ filter (`cardMatch` NotCard CardWithRevelation) allDrawn
+          -- Tell the drawing player's client what they just drew, as one batch: a
+          -- draw of six is one look at six cards rather than six reveals. Sent
+          -- whatever their preference says, because whether to show it -- and how
+          -- -- is a display choice that belongs to the browser, not to the game.
+          -- `focusable` is the right set: a card with a revelation resolves and
+          -- leaves, and it already announces itself.
+          unless (null focusable) do
+            withI18n $ investigatorNameVar a $ countVar (length focusable) do
+              sendDrewCards
+                player
+                (ikey' $ if length focusable == 1 then "drewCard" else "drewCards")
+                (toJSON focusable)
+                (cardDrawKindName cardDraw)
           pushAll
             $ windowMsgs
             <> [DeckHasNoCards iid Nothing | null deck']

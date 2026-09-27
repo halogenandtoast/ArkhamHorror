@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
+import { CARD_FLIGHT_ATTR, useCardFlight } from '@/arkham/cardFlight'
 import { useDebug } from '@/arkham/debug';
 import { cardImage } from '@/arkham/cardImages';
 import type { Game } from '@/arkham/types/Game';
@@ -26,6 +27,9 @@ export interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), { attached: false })
+
+// Where a revealed treachery lands when the revelation overlay hands it over.
+const cardFlightStyle = useCardFlight(() => props.treachery.cardId)
 
 const emits = defineEmits<{ choose: [value: number] }>()
 
@@ -106,7 +110,12 @@ function handleCardClick() {
 }
 </script>
 <template>
-  <div class="treachery" :class="{ attached, exhausted: isExhausted }">
+  <div
+    class="treachery"
+    :class="{ attached, exhausted: isExhausted }"
+    :[CARD_FLIGHT_ATTR]="treachery.cardId"
+    :style="cardFlightStyle"
+  >
     <MissingCardBadge :card-code="treachery.cardCode" />
     <AbilityButton
       v-if="isInHand && !canUseMobileAbilityMenu"

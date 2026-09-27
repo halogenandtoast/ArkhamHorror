@@ -4,6 +4,7 @@ import { Dropdown } from 'floating-vue'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useI18n } from 'vue-i18n'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
+import { CARD_FLIGHT_ATTR, useCardFlight } from '@/arkham/cardFlight'
 import { useDebug } from '@/arkham/debug'
 import { Game } from '@/arkham/types/Game'
 import { keyToId } from '@/arkham/types/Key'
@@ -40,6 +41,9 @@ const props = withDefaults(defineProps<{
   attached?: boolean
   sourceHighlighted?: boolean
 }>(), { atLocation: false, attached: false, sourceHighlighted: false })
+
+// Where a revealed enemy lands when the revelation overlay hands it over.
+const cardFlightStyle = useCardFlight(() => props.enemy.cardId)
 
 const emits = defineEmits<{
   choose: [value: number]
@@ -366,7 +370,15 @@ function onDrop(event: DragEvent) {
     <div class="enemy">
       <Story v-if="enemyStory && !flipping" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>
-        <div class="card-frame" ref="frame">
+        <!-- The flight lands on the card frame, not the root: Location.vue and
+             Player.vue already put `enemy-<id>` on the root for board movement,
+             and one element can only carry one view-transition-name. -->
+        <div
+          class="card-frame"
+          ref="frame"
+          :[CARD_FLIGHT_ATTR]="enemy.cardId"
+          :style="cardFlightStyle"
+        >
           <div
             class="card-wrapper"
             :class="{ exhausted: isExhausted, 'enemy--objective': hasObjective, 'objective-ring': hasObjective }"

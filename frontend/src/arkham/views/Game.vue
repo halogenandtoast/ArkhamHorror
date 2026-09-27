@@ -73,6 +73,13 @@ import {
 } from '@/arkham/composables/useGameChoices'
 import { buildGameIndexes, gameIndexesKey } from '@/arkham/composables/useGameIndexes'
 import { Card, asCardCode, cardDecoder, toCardContents } from '@/arkham/types/Card'
+import { isDevBuild } from '@/arkham/displayRules'
+import {
+  CARD_FLIGHT_ATTR,
+  CARD_FLIGHT_TRANSITION_CLASS,
+  FLYING_CARD_IDS,
+  cardFlightTransitionName,
+} from '@/arkham/cardFlight'
 import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import * as Message from '@/arkham/types/Message'
 import type { Phase } from '@/arkham/types/Phase'
@@ -96,6 +103,7 @@ import EventActAdvanceBarrier from '@/arkham/components/EventActAdvanceBarrier.v
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
 import StoryQuestion from '@/arkham/components/StoryQuestion.vue'
 import AchievementToast from '@/arkham/components/AchievementToast.vue'
+import DrawSpotlight from '@/arkham/components/DrawSpotlight.vue'
 import Draggable from '@/components/Draggable.vue'
 import Menu from '@/components/Menu.vue'
 import Prompt from '@/components/Prompt.vue'
@@ -111,6 +119,15 @@ interface GameCardOnly {
   card: Card
 }
 
+interface GameDrewCards {
+  player: string
+  title: string
+  cards: Card[]
+  // 'upkeep' | 'action' | 'card' | 'opening' -- kept loose so an unknown kind
+  // from a newer server degrades to "not upkeep" instead of failing to decode.
+  kind: string
+}
+
 // TODO: contents should not be string
 type ServerResult =
   | { tag: 'GameError'; contents: string }
@@ -119,6 +136,7 @@ type ServerResult =
   | { tag: 'GameAchievement'; contents: string }
   | { tag: 'GameCard'; contents: string }
   | { tag: 'GameCardOnly'; contents: string }
+  | { tag: 'GameDrewCards'; contents: string }
   | { tag: 'GameUpdate'; contents: string }
   | { tag: 'PhaseChanged'; contents: Phase }
   | { tag: 'GameShowDiscard'; contents: string }
@@ -141,7 +159,8 @@ const router = useRouter()
 const route = useRoute()
 const store = useCardStore()
 const userStore = useUserStore()
-const { inlineModals } = storeToRefs(useSettings())
+const settings = useSettings()
+const { inlineModals } = storeToRefs(settings)
 const eventStore = useEventStore()
 const { addEntry, menuItems } = useMenu()
 const toast = useToast()
@@ -459,6 +478,103 @@ async function drainPhaseNotificationQueue() {
   } finally {
     phaseNotificationPlaying.value = false
   }
+}
+
+/* ---- Card flight -------------------------------------------------------
+ *
+ * Both full-screen reveals -- the encounter revelation and the draw spotlight --
+ * hand their card off to wherever it actually ended up when you dismiss them:
+ * into your hand, into the threat area, onto a location, into play. The board
+ * behind the lock is already up to date (#4817), so the destination is mounted
+ * and only needs to take the transition name over at the right instant.
+ */
+type DrawSpotlightEntry = { title: string; cards: Card[] }
+
+const drawSpotlight = ref<DrawSpotlightEntry | null>(null)
+const flyingCardIds = ref<ReadonlySet<string>>(new Set())
+
+function showDrawSpotlight(entry: DrawSpotlightEntry) {
+  if (entry.cards.length === 0) return
+  drawSpotlight.value = entry
+  uiLock.value = true
+}
+
+type TransitionDocument = Document & {
+  startViewTransition?: (callback: () => Promise<void>) => { finished: Promise<void> }
+}
+
+/* Which cards have somewhere to fly to.
+ *
+ * Deliberately asked of the DOM rather than of game state: the precondition for
+ * a view transition is that an element carrying the name exists afterwards, and
+ * only the DOM knows that. A treachery may have resolved and gone; a card drawn
+ * by another seat is in a hand that is not on screen. */
+function cardsWithADestination(cards: Card[]): string[] {
+  return cards
+    .map((c) => toCardContents(c).id)
+    .filter((id) => document.querySelector(`[${CARD_FLIGHT_ATTR}="${CSS.escape(id)}"]`))
+}
+
+/* Tear down a reveal, flying its cards home if they have anywhere to go.
+ * `hide` clears the overlay's own state and must NOT release `uiLock`: doing
+ * that inside the callback replays the queued GameUpdate mid-transition and
+ * re-renders the board out from under the cards being morphed. */
+function flyThenDismiss(cards: Card[], hide: () => void) {
+  const settle = () => {
+    flyingCardIds.value = new Set()
+    uiLock.value = false
+  }
+  const release = () => {
+    hide()
+    settle()
+  }
+
+  const transitionDocument = document as TransitionDocument
+  const flying = cardsWithADestination(cards)
+  if (!transitionDocument.startViewTransition || settings.prefersReducedMotion || !flying.length) {
+    release()
+    return
+  }
+
+  try {
+    const transition = transitionDocument.startViewTransition(async () => {
+      flyingCardIds.value = new Set(flying)
+      hide()
+      await nextTick()
+    })
+    // `finished` rejects when the transition is skipped. Either way the overlay
+    // is already gone and the lock has to come off, or the board stays frozen.
+    transition.finished.then(settle, settle)
+  } catch (e) {
+    console.error(e)
+    release()
+  }
+}
+
+/* Built here rather than inline in the template: `view-transition-class` is not
+ * in Vue's CSSProperties, and a style literal in a template is checked against
+ * it strictly. */
+const revelationCardStyle = computed(() =>
+  gameCard.value
+    ? {
+        viewTransitionName: cardFlightTransitionName(gameCard.value.card),
+        viewTransitionClass: CARD_FLIGHT_TRANSITION_CLASS,
+      }
+    : undefined,
+)
+
+function dismissDrawSpotlight() {
+  const entry = drawSpotlight.value
+  if (!entry) return
+  flyThenDismiss(entry.cards, () => {
+    drawSpotlight.value = null
+  })
+}
+
+/* Undo rewinds past the draw or reveal, so it goes with it. */
+function clearDrawSpotlight() {
+  drawSpotlight.value = null
+  flyingCardIds.value = new Set()
 }
 
 const format = (str: string) => {
@@ -821,6 +937,16 @@ const gameCardOnlyDecoder = JsonDecoder.object<GameCardOnly>(
     card: cardDecoder,
   },
   'GameCard',
+)
+
+const gameDrewCardsDecoder = JsonDecoder.object<GameDrewCards>(
+  {
+    player: JsonDecoder.string(),
+    title: JsonDecoder.string(),
+    cards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+    kind: JsonDecoder.string(),
+  },
+  'GameDrewCards',
 )
 
 // Socket Handling
@@ -1248,6 +1374,28 @@ const handleResult = (result: ServerResult) => {
           uiLock.value = false
         })
       return
+    case 'GameDrewCards': {
+      if (props.spectate) return
+      /* Unlike the reveal cases, the preference is read BEFORE the lock is
+       * taken: a draw nobody asked to see must not stall this client's queue
+       * even for the length of a decode. */
+      if (settings.drawSpotlight === 'off') return
+      if (uiLock.value) {
+        qPush(result)
+        return
+      }
+      gameDrewCardsDecoder
+        .decodePromise(result as any)
+        .then((r) => {
+          if (!(solo.value === true || r.player === playerId.value)) return
+          if (settings.drawSpotlight === 'upkeep' && r.kind !== 'upkeep') return
+          showDrawSpotlight({ title: format(r.title), cards: r.cards })
+        })
+        .catch((e) => {
+          console.error(e)
+        })
+      return
+    }
     case 'SharedStateUpdate':
       // "Epic Multiplayer" shared-state feed riding on this group's game ws.
       // Forward it to the event store so the organizer bar's shared counters stay
@@ -1472,6 +1620,13 @@ const handleKeyPress = (event: KeyboardEvent) => {
   if (event.key === ' ' || event.code === 'Space') {
     event.preventDefault()
 
+    // Dismissing the draw spotlight runs the flight to the hand, so it cannot go
+    // through continueUI's blunt teardown.
+    if (drawSpotlight.value) {
+      dismissDrawSpotlight()
+      return
+    }
+
     if (gameCard.value || tarotCards.value.length > 0) {
       continueUI()
       return
@@ -1609,6 +1764,7 @@ async function runUndo(call: (gameId: string) => Promise<void>) {
   resultQueue.value = []
   gameCard.value = null
   tarotCards.value = []
+  clearDrawSpotlight()
   uiLock.value = false
   try {
     await call(props.gameId)
@@ -1667,11 +1823,19 @@ async function fileBug() {
     })
 }
 
-const continueUI = () => {
+const clearRevealState = () => {
   gameCard.value = null
   showTheSilenceModal.value = false
   tarotCards.value = []
-  uiLock.value = false
+  drawSpotlight.value = null
+}
+
+/* The revealed card flies to whatever it became -- the enemy that spawned, the
+ * treachery in the threat area, the location placed on the map. Tarot and The
+ * Silence carry no card, so they fall through to a plain dismissal. */
+const continueUI = () => {
+  const card = gameCard.value?.card
+  flyThenDismiss(card ? [card] : [], clearRevealState)
 }
 
 function preloadImages(game: Arkham.Game): void {
@@ -1922,6 +2086,7 @@ provide('processing', processing)
 provide('chooseOrdered', chooseOrdered)
 provide('storyAnswerPending', storyAnswerPending)
 provide('uiLock', uiLock)
+provide(FLYING_CARD_IDS, flyingCardIds)
 provide('skipAllTriggers', skipAllTriggers)
 provide('skipAllAvailable', skipAllAvailable)
 provide('skipAllInProgress', skipAllInProgress)
@@ -2013,6 +2178,40 @@ onMounted(() => {
   }
   ;(window as any).undo = undo
   ;(window as any).debugChoose = choose
+  /* Lets a dev build fire each draw-spotlight treatment against a real board
+   * without an engine change behind it, so the look can be chosen before the
+   * wiring exists. Dev only: it fabricates a reveal the game never had. */
+  if (isDevBuild()) {
+    ;(window as any).__drawSpotlightDemo = (opts: { count?: number } = {}) => {
+      const g = game.value
+      if (!g) return 'no game loaded'
+      const investigator = Object.values(g.investigators).find(
+        (i) => i.playerId === playerId.value,
+      )
+      // Cards from the hand, so the flight on dismiss lands somewhere real --
+      // which is the whole point of looking at it.
+      const pool = investigator?.hand ?? []
+      if (pool.length === 0) return 'this investigator has no cards in hand'
+      const cards = pool.slice(0, Math.max(1, opts.count ?? 1))
+      // Built as the embedded-i18n string the server actually sends, and run
+      // through the same `format`, so the demo cannot drift from the real thing.
+      const name = investigator?.name.title ?? 'Someone'
+      const key = cards.length > 1 ? 'drewCards' : 'drewCard'
+      const title = format(`$${key} iname=s:"${name}" count=i:${cards.length}`)
+      showDrawSpotlight({ cards, title })
+      return { count: cards.length }
+    }
+    /* Feed a raw server result straight into the socket handler, so the decode
+     * and the preference gating can be exercised without a server that emits it
+     * yet. Takes the same JSON the websocket carries. */
+    ;(window as any).__feedServerResult = (payload: any) => {
+      handleResult(typeof payload === 'string' ? JSON.parse(payload) : payload)
+    }
+    ;(window as any).__drawSpotlightClear = () => {
+      clearDrawSpotlight()
+      uiLock.value = false
+    }
+  }
   document.addEventListener('mousemove', onMove, { passive: true })
   if (realityAcidLightActive.value) connectFocusLightObserver()
   document.addEventListener('keydown', handleKeyPress)
@@ -2032,6 +2231,9 @@ onUnmounted(() => {
   delete (window as any).sendDebug
   delete (window as any).undo
   delete (window as any).debugChoose
+  delete (window as any).__drawSpotlightDemo
+  delete (window as any).__drawSpotlightClear
+  delete (window as any).__feedServerResult
   emitter.off('playabilityResult', onPlayabilityResult)
   close()
 })
@@ -2407,7 +2609,9 @@ onUnmounted(() => {
       :player-id="playerId"
     />
     <template v-else>
-      <Draggable v-if="showSettings">
+      <!-- preserveWidth: the panel is tabbed now, so without it the window
+           resizes every time you change tab. -->
+      <Draggable v-if="showSettings" preserveWidth>
         <Settings
           :game="game"
           :playerId="playerId"
@@ -2452,6 +2656,7 @@ onUnmounted(() => {
             <div class="revelation-card-container">
               <div
                 class="revelation-card"
+                :style="revelationCardStyle"
                 :class="{ 'cthulhu-revelation-card': isCthulhuDeckReveal }"
                 :role="isCthulhuDeckReveal ? 'button' : undefined"
                 :tabindex="isCthulhuDeckReveal ? 0 : undefined"
@@ -2473,6 +2678,14 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
+        <DrawSpotlight
+          v-if="drawSpotlight && game && playerId"
+          :game="game"
+          :playerId="playerId"
+          :title="drawSpotlight.title"
+          :cards="drawSpotlight.cards"
+          @dismiss="dismissDrawSpotlight"
+        />
         <HistoryPanel
           v-if="showHistory && game && playerId"
           :game="game"

@@ -26,6 +26,7 @@ library
       Api.Arkham.Export
       Api.Arkham.Helpers
       Api.Arkham.Types.MultiplayerVariant
+      Api.Handler.ApiKeys
       Api.Handler.Arkham.Achievements
       Api.Handler.Arkham.Admin.Metrics
       Api.Handler.Arkham.Cards
@@ -8136,6 +8137,7 @@ library
       Arkham.Window
       Arkham.Xp
       Arkham.Zone
+      Auth.ApiKey
       Auth.JWT
       Base.Api.Handler.Account
       Base.Api.Handler.Authentication
@@ -8149,6 +8151,7 @@ library
       Entity
       Entity.Answer
       Entity.Arkham.Achievement
+      Entity.Arkham.ApiKey
       Entity.Arkham.ArkhamDBDecklist
       Entity.Arkham.CustomCard
       Entity.Arkham.CustomCardSet

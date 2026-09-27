@@ -10,6 +10,7 @@ module Model (
 
 import Database.Persist.Postgresql.JSON ()
 import Entity.Arkham.Achievement as X
+import Entity.Arkham.ApiKey as X
 import Entity.Arkham.ArkhamDBDecklist as X
 import Entity.Arkham.CustomCard as X
 import Entity.Arkham.CustomCardSet as X

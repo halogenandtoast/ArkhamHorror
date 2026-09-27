@@ -8,12 +8,13 @@ module Api.Handler.Arkham.CustomCardSets (
 
 import Api.Handler.Arkham.CustomCards (
   ownedCardSet,
-  unsubscribeSet,
   persistCard,
   prepareCardForSet,
   stampSetName,
+  unsubscribeSet,
  )
 import Arkham.Card.CustomCard (CustomCard (..))
+import Auth.ApiKey qualified as ApiKey
 import Data.Aeson.Types (parseMaybe)
 import Data.Text qualified as T
 import Data.Time.Clock
@@ -32,9 +33,10 @@ data CustomCardSetResponse = CustomCardSetResponse
   , customCardSetResponseSourceCode :: Maybe Text
   , customCardSetResponseCardCount :: Int
   , customCardSetResponseUpdatedAt :: UTCTime
-  , -- | The marketplace listing this set follows, and where it stands with it.
-    -- Absent once the set has been edited, which is what stops it updating.
-    customCardSetResponsePublishedCardSetId :: Maybe ArkhamPublishedCardSetId
+  , customCardSetResponsePublishedCardSetId :: Maybe ArkhamPublishedCardSetId
+  {- ^ The marketplace listing this set follows, and where it stands with it.
+  Absent once the set has been edited, which is what stops it updating.
+  -}
   , customCardSetResponseSubscribedVersion :: Maybe Int
   , customCardSetResponseLatestVersion :: Maybe Int
   }
@@ -102,7 +104,7 @@ setResponse (Entity setId row) = do
 
 getApiV1ArkhamCustomCardSetsR :: Handler [CustomCardSetResponse]
 getApiV1ArkhamCustomCardSetsR = do
-  userId <- getRequestUserId
+  userId <- callerUserId <$> getScopedCaller [ApiKey.cardsRead]
   sets <-
     runDB
       $ P.selectList [ArkhamCustomCardSetUserId P.==. userId] [P.Asc ArkhamCustomCardSetName]
@@ -114,7 +116,7 @@ and it already has one.
 -}
 postApiV1ArkhamCustomCardSetsR :: Handler CustomCardSetResponse
 postApiV1ArkhamCustomCardSetsR = do
-  userId <- getRequestUserId
+  userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
   SetNamePost {setNameName} <- requireCheckJsonBody
   name <- requireName setNameName
   now <- liftIO getCurrentTime
@@ -134,7 +136,7 @@ leaving it behind would hand out cards still naming the old set.
 -}
 putApiV1ArkhamCustomCardSetR :: ArkhamCustomCardSetId -> Handler CustomCardSetResponse
 putApiV1ArkhamCustomCardSetR setId = do
-  userId <- getRequestUserId
+  userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
   SetNamePost {setNameName} <- requireCheckJsonBody
   name <- requireName setNameName
   row <- ownedCardSet userId setId
@@ -168,7 +170,7 @@ changing your mind is one decision, not a hundred and fifty.
 -}
 deleteApiV1ArkhamCustomCardSetR :: ArkhamCustomCardSetId -> Handler ()
 deleteApiV1ArkhamCustomCardSetR setId = do
-  userId <- getRequestUserId
+  userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
   void $ ownedCardSet userId setId
   runDB do
     -- The foreign key cascades, but the cards are deleted explicitly so this

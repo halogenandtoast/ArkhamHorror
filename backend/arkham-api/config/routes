@@ -10,6 +10,10 @@
     /whoami ApiV1CurrentUserR GET
     /settings ApiV1SettingsR PUT
     /account ApiV1AccountR DELETE
+    /api-keys ApiV1ApiKeysP:
+      / ApiV1ApiKeysR GET POST
+      !/self ApiV1ApiKeySelfR GET
+      /#ArkhamApiKeyId ApiV1ApiKeyR DELETE
     /site-settings ApiV1SiteSettingsR GET
     /notifications ApiV1NotificationsR GET
     /3ed ApiV1ThirdEditionP:

@@ -8,6 +8,7 @@ import { useSettings } from '@/stores/settings'
 import { checkImageExists } from '@/arkham/helpers'
 import { isDevBuild } from '@/arkham/displayRules'
 import { loadLocaleMessages, normalizeLocale } from '@/locales/messages'
+import ApiKeys from '@/components/ApiKeys.vue'
 
 const props = defineProps<{
   user: User
@@ -24,7 +25,7 @@ const language = ref(localStorage.getItem('language') || locale.value)
 const beta = ref(props.user.beta ? 'On' : 'Off')
 const phaseTransitionNotifications = ref(props.user.phaseTransitionNotifications === true)
 const showDeleteConfirm = ref(false)
-const tabs = ['account', 'features'] as const
+const tabs = ['account', 'features', 'apiKeys'] as const
 const activeTab = ref<(typeof tabs)[number]>('account')
 
 function navigateTabs(event: KeyboardEvent) {
@@ -250,6 +251,17 @@ const updateLanguage = async (a: Event) => {
             </div>
           </section>
         </section>
+      </div>
+
+      <div
+        v-show="activeTab === 'apiKeys'"
+        id="settings-panel-apiKeys"
+        class="column settings-panel"
+        role="tabpanel"
+        aria-labelledby="settings-tab-apiKeys"
+        tabindex="0"
+      >
+        <ApiKeys />
       </div>
     </div>
   </div>

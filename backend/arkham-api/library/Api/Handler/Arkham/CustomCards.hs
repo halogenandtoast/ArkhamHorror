@@ -26,6 +26,7 @@ import Arkham.Card.CustomCard (
   registerCustomCards,
   sanitizeCustomCardCode,
  )
+import Auth.ApiKey qualified as ApiKey
 import Crypto.Hash.SHA256 qualified as SHA256
 import Data.Aeson.Types (parseMaybe, withObject)
 import Data.ByteString.Base16 qualified as B16
@@ -49,7 +50,7 @@ a second copy behind.
 -}
 getApiV1ArkhamCustomCardsR :: Handler [Entity ArkhamCustomCard]
 getApiV1ArkhamCustomCardsR = do
-  userId <- getRequestUserId
+  userId <- callerUserId <$> getScopedCaller [ApiKey.cardsRead]
   runDB $ P.selectList [ArkhamCustomCardUserId P.==. userId] [P.Desc ArkhamCustomCardUpdatedAt]
 
 {- | Refuses anything that is not a custom card code, so this cannot be used to
@@ -183,7 +184,7 @@ instance FromJSON SaveCardPost where
 
 postApiV1ArkhamCustomCardsR :: Handler (Entity ArkhamCustomCard)
 postApiV1ArkhamCustomCardsR = do
-  userId <- getRequestUserId
+  userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
   SaveCardPost {saveCardPostSetId, saveCardPostCard} <- requireCheckJsonBody
   set <- ownedCardSet userId saveCardPostSetId
   now <- liftIO getCurrentTime
@@ -191,7 +192,7 @@ postApiV1ArkhamCustomCardsR = do
 
 deleteApiV1ArkhamCustomCardR :: ArkhamCustomCardId -> Handler ()
 deleteApiV1ArkhamCustomCardR cardId = do
-  userId <- getRequestUserId
+  userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
   runDB do
     row <- get404 cardId
     when (arkhamCustomCardUserId row /= userId) $ lift $ permissionDenied "Not your card"
@@ -270,7 +271,7 @@ storeArt userId contentType bytes = do
 
 postApiV1ArkhamCustomCardsArtR :: Handler Text
 postApiV1ArkhamCustomCardsArtR = do
-  userId <- getRequestUserId
+  userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
   (_, files) <- runRequestBody
   file <- case files of
     (_, f) : _ -> pure f

@@ -84,6 +84,7 @@ import Text.Regex.Posix ((=~))
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
 
+import Api.Handler.ApiKeys
 import Api.Handler.Arkham.Achievements
 import Api.Handler.Arkham.Admin.Metrics
 import Api.Handler.Arkham.Cards

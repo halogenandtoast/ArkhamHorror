@@ -225,7 +225,14 @@ class Handler(BaseHTTPRequestHandler):
     # * Routes
 
     def do_GET(self) -> None:  # noqa: N802
-        if self.path in ("/health", "/healthz"):
+        # Matched by suffix, not equality: nginx proxies /mcp here without
+        # stripping the prefix, so what arrives is `/mcp/health`. The discovery
+        # document below was already written this way; this was not, and 404'd in
+        # production while working locally.
+        if self.path.rstrip("/").endswith(("/health", "/healthz")) or self.path.rstrip("/") in (
+            "/health",
+            "/healthz",
+        ):
             return self._send(200, {"ok": True, "server": SERVER_INFO})
         if self.path.endswith("/.well-known/oauth-protected-resource"):
             # Described the OAuth way so a client that looks finds something, while

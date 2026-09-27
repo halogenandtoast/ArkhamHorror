@@ -28,7 +28,14 @@ const props = withDefaults(defineProps<{
   // so those components never render and this card is the only anchor the
   // ability has. Without it a forced trigger on a tucked card is unreachable.
   allowInPlayAbilities?: boolean
-}>(), { revealed: false, allowAbilityButtons: true, allowInteractions: true, allowInPlayAbilities: false })
+  /* Opt this card out of the hover magnifier. For a card that is already being
+   * shown at full size -- the draw spotlight -- magnifying it on hover only
+   * covers the thing you are looking at. `CardOverlay` reads `.no-overlay` off
+   * the element itself; its `.no-card-overlay` container selector only guards
+   * the geometry fallback, and a direct hit on `.card` returns before that is
+   * ever consulted. */
+  noOverlay?: boolean
+}>(), { revealed: false, allowAbilityButtons: true, allowInteractions: true, allowInPlayAbilities: false, noOverlay: false })
 
 const emit = defineEmits<{
   choose: [value: number]
@@ -255,7 +262,7 @@ function startDrag(event: DragEvent) {
       class="playing-card-overlay"
     />
     <img
-      :class="{'card--can-interact': cardAction !== -1, 'card--highlighted': isHighlighted && cardAction === -1, 'sideways': forceSideways}"
+      :class="{'card--can-interact': cardAction !== -1, 'card--highlighted': isHighlighted && cardAction === -1, 'sideways': forceSideways, 'no-overlay': noOverlay}"
       class="card"
       :src="image"
       :data-customizations="JSON.stringify(cardContents.customizations)"

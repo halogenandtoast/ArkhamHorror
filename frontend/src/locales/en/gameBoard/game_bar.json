@@ -57,7 +57,7 @@
         "asIfRulingTitle": "\"As If\" Ruling",
         "asIfRuling": "Swap between Chapter 1 and Chapter 2 handling for \"as if\" effects during nested window checks. This affects everyone in the game.",
         "drawSpotlightTitle": "Draw Spotlight",
-        "drawSpotlight": "Show the cards you draw from your own deck, enlarged, the way an encounter card is shown. A draw of several cards is always one look at all of them.",
+        "drawSpotlight": "Show the cards you draw from your own deck, enlarged, the way an encounter card is shown.",
         "drawSpotlightOff": "Off",
         "drawSpotlightUpkeep": "Upkeep only",
         "drawSpotlightEvery": "Every draw"

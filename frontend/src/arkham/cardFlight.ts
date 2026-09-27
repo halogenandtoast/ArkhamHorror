@@ -31,7 +31,21 @@ export const CARD_FLIGHT_TRANSITION_CLASS = 'card-flight'
  * inside the overlay, which would make the overlay its own destination. */
 export const CARD_FLIGHT_ATTR = 'data-card-flight'
 
-export const FLYING_CARD_IDS = 'flyingCardIds'
+/* Injected as one object so a destination can tell the two phases apart.
+ *
+ * `previewed`: an overlay is showing this card full-screen. The board copy is
+ * hidden so only one image of a card is ever on screen -- a placeholder holds
+ * its slot instead.
+ * `flying`: the view transition is running. The board copy is visible again and
+ * carries the transition name, because a hidden element captures an empty
+ * snapshot and would fly as nothing.
+ */
+export type CardFlightState = {
+  previewed: Ref<ReadonlySet<string>>
+  flying: Ref<ReadonlySet<string>>
+}
+
+export const CARD_FLIGHT_STATE = 'cardFlightState'
 
 /* Style bindings for an element a card can land on. Returns undefined until
  * Game.vue puts this card id in flight, so the name exists on exactly one
@@ -43,13 +57,23 @@ export const FLYING_CARD_IDS = 'flyingCardIds'
  * card frame inside it rather than fighting for the same element.
  */
 export function useCardFlight(id: MaybeRefOrGetter<string | undefined>) {
-  const flying = inject<Ref<ReadonlySet<string>>>(FLYING_CARD_IDS, ref(new Set()))
+  const state = inject<CardFlightState>(CARD_FLIGHT_STATE, {
+    previewed: ref(new Set()),
+    flying: ref(new Set()),
+  })
   return computed(() => {
     const value = toValue(id)
-    if (!value || !flying.value.has(value)) return undefined
-    return {
-      viewTransitionName: cardFlightTransitionName(value),
-      viewTransitionClass: CARD_FLIGHT_TRANSITION_CLASS,
+    if (!value) return undefined
+    if (state.flying.value.has(value)) {
+      return {
+        viewTransitionName: cardFlightTransitionName(value),
+        viewTransitionClass: CARD_FLIGHT_TRANSITION_CLASS,
+      }
     }
+    // `visibility`, not `display`: the slot has to keep its layout box, both so
+    // the board does not reflow under the overlay and so the placeholder can be
+    // measured from it.
+    if (state.previewed.value.has(value)) return { visibility: 'hidden' as const }
+    return undefined
   })
 }

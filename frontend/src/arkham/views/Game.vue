@@ -76,8 +76,8 @@ import { Card, asCardCode, cardDecoder, toCardContents } from '@/arkham/types/Ca
 import { isDevBuild } from '@/arkham/displayRules'
 import {
   CARD_FLIGHT_ATTR,
+  CARD_FLIGHT_STATE,
   CARD_FLIGHT_TRANSITION_CLASS,
-  FLYING_CARD_IDS,
   cardFlightTransitionName,
 } from '@/arkham/cardFlight'
 import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
@@ -491,6 +491,9 @@ async function drainPhaseNotificationQueue() {
 type DrawSpotlightEntry = { title: string; cards: Card[] }
 
 const drawSpotlight = ref<DrawSpotlightEntry | null>(null)
+/* Cards an overlay is showing full-screen right now. Their board copies hide so
+ * that a card is never on screen twice, and a placeholder holds the slot. */
+const previewedCardIds = ref<ReadonlySet<string>>(new Set())
 const flyingCardIds = ref<ReadonlySet<string>>(new Set())
 
 function showDrawSpotlight(entry: DrawSpotlightEntry) {
@@ -503,16 +506,62 @@ type TransitionDocument = Document & {
   startViewTransition?: (callback: () => Promise<void>) => { finished: Promise<void> }
 }
 
-/* Which cards have somewhere to fly to.
+/* The on-screen element a card would fly to, or null if it has none.
  *
- * Deliberately asked of the DOM rather than of game state: the precondition for
- * a view transition is that an element carrying the name exists afterwards, and
- * only the DOM knows that. A treachery may have resolved and gone; a card drawn
- * by another seat is in a hand that is not on screen. */
+ * Asked of the DOM rather than of game state: the precondition for a view
+ * transition is that a laid-out element carrying the name exists afterwards,
+ * and only the DOM knows that. A treachery may have resolved and gone; a card
+ * held by another seat is in a hand that is not on screen.
+ *
+ * It must be the *visible* one. A card is rendered more than once -- Player.vue
+ * lays out a desktop hand and a mobile one and hides the wrong one, and an
+ * inactive investigator tab keeps its whole board in the DOM at
+ * `display: none`. `querySelector` cheerfully returns the hidden copy, whose
+ * box is 0x0, and a view transition to a 0x0 target does not fail: it shrinks
+ * the card to a point and vanishes. So take the first candidate that actually
+ * occupies space. (The hidden copies carry the same name during the flight,
+ * which would normally be a fatal duplicate -- they get away with it only
+ * because an unrendered element's `view-transition-name` is ignored.) */
+function laidOutDestination(id: string): Element | null {
+  const candidates = document.querySelectorAll(`[${CARD_FLIGHT_ATTR}="${CSS.escape(id)}"]`)
+  for (const el of candidates) {
+    const r = el.getBoundingClientRect()
+    if (r.width && r.height) return el
+  }
+  return null
+}
+
 function cardsWithADestination(cards: Card[]): string[] {
-  return cards
-    .map((c) => toCardContents(c).id)
-    .filter((id) => document.querySelector(`[${CARD_FLIGHT_ATTR}="${CSS.escape(id)}"]`))
+  return cards.map((c) => toCardContents(c).id).filter((id) => laidOutDestination(id))
+}
+
+/* A card-shaped hole left where a flying card is going to land.
+ *
+ * A view transition promotes the destination element out of the page for the
+ * duration -- one element cannot be in two places -- so the slot the card was
+ * already sitting in goes empty until the flight arrives, which reads as the
+ * card blinking out. These sit in the page (no transition name, so they are
+ * part of the root snapshot) and hold the space until the card is really back.
+ */
+const flightPlaceholders = ref<{ id: string; style: Record<string, string> }[]>([])
+
+function measureDestinations(ids: string[]) {
+  return ids.flatMap((id) => {
+    const el = laidOutDestination(id)
+    if (!el) return []
+    const r = el.getBoundingClientRect()
+    return [
+      {
+        id,
+        style: {
+          top: `${r.top}px`,
+          left: `${r.left}px`,
+          width: `${r.width}px`,
+          height: `${r.height}px`,
+        },
+      },
+    ]
+  })
 }
 
 /* Tear down a reveal, flying its cards home if they have anywhere to go.
@@ -522,8 +571,10 @@ function cardsWithADestination(cards: Card[]): string[] {
 function flyThenDismiss(cards: Card[], hide: () => void) {
   const settle = () => {
     flyingCardIds.value = new Set()
+    flightPlaceholders.value = []
     uiLock.value = false
   }
+
   const release = () => {
     hide()
     settle()
@@ -536,9 +587,18 @@ function flyThenDismiss(cards: Card[], hide: () => void) {
     return
   }
 
+  // Measured before the transition starts, while the destinations are still
+  // laid out and unpromoted.
+  const placeholders = measureDestinations(flying)
+
   try {
     const transition = transitionDocument.startViewTransition(async () => {
+      // `hide` clears the overlay, which clears `previewedCardIds` and so
+      // un-hides the board copy -- it has to be visible in this new state or it
+      // captures an empty snapshot and flies as nothing. Naming it in the same
+      // render is what makes it the other end of the flight.
       flyingCardIds.value = new Set(flying)
+      flightPlaceholders.value = placeholders
       hide()
       await nextTick()
     })
@@ -550,6 +610,36 @@ function flyThenDismiss(cards: Card[], hide: () => void) {
     release()
   }
 }
+
+/* Whatever an overlay is currently showing. Derived rather than set at each call
+ * site so every entry point is covered -- the encounter revelation, the draw
+ * spotlight, and the dev demo alike -- and so it clears itself the moment the
+ * overlay does, which is exactly when the flight needs the board copy back. */
+watch(
+  [drawSpotlight, gameCard],
+  () => {
+    const cards = drawSpotlight.value?.cards ?? (gameCard.value ? [gameCard.value.card] : [])
+    previewedCardIds.value = new Set(cards.map((c) => toCardContents(c).id))
+  },
+  { immediate: true },
+)
+
+/* The slot is measured while the overlay is up, not when the flight starts.
+ *
+ * It has to be re-measured when the board changes: the client message announcing
+ * the draw arrives before the GameUpdate that actually puts the card in hand, so
+ * at the moment the overlay opens the destination often does not exist yet, and
+ * the hand reflows as it arrives. Placeholders are never cleared here -- they
+ * must outlive `previewedCardIds` to cover the flight -- only in `settle`. */
+watch(
+  [previewedCardIds, game],
+  async () => {
+    if (previewedCardIds.value.size === 0) return
+    await nextTick()
+    flightPlaceholders.value = measureDestinations([...previewedCardIds.value])
+  },
+  { immediate: true },
+)
 
 /* Built here rather than inline in the template: `view-transition-class` is not
  * in Vue's CSSProperties, and a style literal in a template is checked against
@@ -574,7 +664,9 @@ function dismissDrawSpotlight() {
 /* Undo rewinds past the draw or reveal, so it goes with it. */
 function clearDrawSpotlight() {
   drawSpotlight.value = null
+  previewedCardIds.value = new Set()
   flyingCardIds.value = new Set()
+  flightPlaceholders.value = []
 }
 
 const format = (str: string) => {
@@ -2086,7 +2178,7 @@ provide('processing', processing)
 provide('chooseOrdered', chooseOrdered)
 provide('storyAnswerPending', storyAnswerPending)
 provide('uiLock', uiLock)
-provide(FLYING_CARD_IDS, flyingCardIds)
+provide(CARD_FLIGHT_STATE, { previewed: previewedCardIds, flying: flyingCardIds })
 provide('skipAllTriggers', skipAllTriggers)
 provide('skipAllAvailable', skipAllAvailable)
 provide('skipAllInProgress', skipAllInProgress)
@@ -2185,13 +2277,25 @@ onMounted(() => {
     ;(window as any).__drawSpotlightDemo = (opts: { count?: number } = {}) => {
       const g = game.value
       if (!g) return 'no game loaded'
-      const investigator = Object.values(g.investigators).find(
+      /* Cards whose hand slot is actually on screen, so the flight on dismiss
+       * lands somewhere real -- the whole point of looking at it. An inactive
+       * investigator tab keeps its board in the DOM at `display: none`, so
+       * "in hand" is not the same as "visible", and the seat that owns this
+       * playerId is not necessarily the tab being shown. */
+      const onScreen = (cards: Card[]) =>
+        cards.filter((c) => laidOutDestination(toCardContents(c).id))
+      let investigator = Object.values(g.investigators).find(
         (i) => i.playerId === playerId.value,
       )
-      // Cards from the hand, so the flight on dismiss lands somewhere real --
-      // which is the whole point of looking at it.
-      const pool = investigator?.hand ?? []
-      if (pool.length === 0) return 'this investigator has no cards in hand'
+      let pool = onScreen(investigator?.hand ?? [])
+      if (pool.length === 0) {
+        const shown = Object.values(g.investigators).find((i) => onScreen(i.hand ?? []).length)
+        if (shown) {
+          investigator = shown
+          pool = onScreen(shown.hand)
+        }
+      }
+      if (pool.length === 0) return 'no hand cards are visible to fly to'
       const cards = pool.slice(0, Math.max(1, opts.count ?? 1))
       // Built as the embedded-i18n string the server actually sends, and run
       // through the same `format`, so the demo cannot drift from the real thing.
@@ -2678,6 +2782,15 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
+        <Teleport to="body">
+          <div
+            v-for="p in flightPlaceholders"
+            :key="p.id"
+            class="card-flight-placeholder"
+            :style="p.style"
+            aria-hidden="true"
+          />
+        </Teleport>
         <DrawSpotlight
           v-if="drawSpotlight && game && playerId"
           :game="game"
@@ -4322,5 +4435,60 @@ dialog {
   font-weight: bold;
   width: 1rem;
   flex-shrink: 0;
+}
+
+/* Reduced motion keeps the reveal, drops the choreography: the card still fills
+ * the screen, it just arrives already there.
+ *
+ * The flip cannot simply be shortened. The front starts rotated away, at
+ * `opacity: 0` and hidden by `backface-visibility`, and the animation is what
+ * brings it round -- so removing the animation alone leaves a card that never
+ * appears, and a very short duration still plays a rotation. The finished state
+ * is set by hand and the back face dropped instead.
+ *
+ * Selectors carry the full `.revelation-card-container` chain and this block
+ * sits last: the rules it overrides are nested a level deeper, so a shorter
+ * selector earlier in the file loses on both specificity and source order. The
+ * glow stays, static -- the pulse is an animation, the colour is not. */
+@media (prefers-reduced-motion: reduce) {
+  .revelation,
+  .revelation :deep(.card),
+  .revelation.cthulhu-revelation,
+  .revelation.cthulhu-revelation::before,
+  .revelation.cthulhu-revelation::after {
+    animation: none;
+  }
+
+  .revelation-card-container .revelation-card,
+  .revelation-card-container .tarot-card {
+    perspective: none;
+  }
+
+  .revelation-card-container .revelation-card :deep(.card-container),
+  .revelation-card-container .revelation-card .card-container,
+  .revelation-card-container .tarot-card .card-container {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  .revelation-card-container .revelation-card .card.back,
+  .revelation-card-container .tarot-card .card.back {
+    display: none;
+  }
+}
+
+/* Teleported to body -- a `position: fixed` element is still clipped by an
+   ancestor carrying a transform or filter, and the board has several. The scope
+   attribute travels with the teleport, so this scoped rule still reaches it. */
+.card-flight-placeholder {
+  position: fixed;
+  z-index: var(--z-index-900);
+  pointer-events: none;
+  border-radius: 6px;
+  /* Reads as an empty slot waiting to be filled: light enough to see against
+     the dark board, quiet enough not to look like a card of its own. */
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
 }
 </style>

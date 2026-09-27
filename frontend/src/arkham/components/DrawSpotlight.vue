@@ -77,8 +77,11 @@ const backFor = (card: Card) =>
             :playerId="playerId"
             :allowAbilityButtons="false"
             :allowInteractions="false"
+            noOverlay
           />
-          <img class="card back" :src="backFor(card)" />
+          <!-- The back carries it too: it is an `img.card`, so the magnifier
+               would happily blow up a card back mid-flip. -->
+          <img class="card back no-overlay" :src="backFor(card)" />
         </div>
       </div>
 
@@ -163,39 +166,47 @@ const backFor = (card: Card) =>
   aspect-ratio: var(--card-aspect);
   perspective: 1000px;
   animation-delay: calc(var(--i) * var(--spotlight-stagger));
+}
 
-  :deep(.card-container) {
-    transform: rotateY(-180deg);
-    transform-style: preserve-3d;
-    position: absolute;
-    top: 0;
-    left: 0;
-    backface-visibility: hidden;
-    animation: spotlight-flip-front 0.3s linear;
-    animation-fill-mode: forwards;
-    animation-delay: inherit;
-  }
+.spotlight__card .card.back {
+  width: var(--spotlight-card-width);
+  border-radius: 15px;
+  transform-style: preserve-3d;
+  position: absolute;
+  top: 0;
+  left: 0;
+  backface-visibility: hidden;
+  animation: spotlight-flip-back 0.3s linear;
+  animation-fill-mode: forwards;
+  animation-delay: inherit;
+}
 
-  :deep(.card) {
-    width: var(--spotlight-card-width) !important;
-    min-width: 0 !important;
-    aspect-ratio: var(--card-ratio);
-    border-radius: 15px;
-    margin: 0;
-  }
+/* `:deep()` is kept OUT of a nested block deliberately. Nested, Vue emits the
+   scope attribute as a bare `[data-v-x]`, which CSS nesting then reads as a
+   descendant -- `.spotlight__card [data-v-x] .card-container` -- and nothing
+   matches, because the card container IS the scoped child, not inside one. The
+   rule silently did nothing: the front never flipped, it was simply already
+   face-up while the back turned away over it. At top level the same `:deep()`
+   compiles to `.spotlight__card[data-v-x] .card-container`, which is the
+   intended selector. */
+.spotlight__card :deep(.card-container) {
+  transform: rotateY(-180deg);
+  transform-style: preserve-3d;
+  position: absolute;
+  top: 0;
+  left: 0;
+  backface-visibility: hidden;
+  animation: spotlight-flip-front 0.3s linear;
+  animation-fill-mode: forwards;
+  animation-delay: inherit;
+}
 
-  .card.back {
-    width: var(--spotlight-card-width);
-    border-radius: 15px;
-    transform-style: preserve-3d;
-    position: absolute;
-    top: 0;
-    left: 0;
-    backface-visibility: hidden;
-    animation: spotlight-flip-back 0.3s linear;
-    animation-fill-mode: forwards;
-    animation-delay: inherit;
-  }
+.spotlight__card :deep(.card) {
+  width: var(--spotlight-card-width) !important;
+  min-width: 0 !important;
+  aspect-ratio: var(--card-ratio);
+  border-radius: 15px;
+  margin: 0;
 }
 
 /* A fan overlaps the cards so any number of them fits. The overlap is derived
@@ -311,19 +322,34 @@ const backFor = (card: Card) =>
   }
 }
 
-/* Someone who asked their system for less motion gets the cards, not the
- * choreography. The flip is how the card becomes readable at all, so it snaps
- * to its end state rather than being removed. */
+/* Someone who asked their system for less motion still gets the cards, at full
+ * size, immediately -- just none of the choreography.
+ *
+ * The flip cannot simply be shortened. It is not a flourish laid over a visible
+ * card: the front starts rotated away and hidden by `backface-visibility`, and
+ * the animation is what brings it round. Removing the animation alone would
+ * leave a card that never becomes visible, and a 0.01s duration still plays a
+ * rotation, just too fast to follow. So the card is placed in its finished
+ * state by hand and the back face is dropped outright. */
 @media (prefers-reduced-motion: reduce) {
   .spotlight {
     animation: none;
   }
 
-  .spotlight__card,
-  .spotlight__card :deep(.card-container),
+  .spotlight__card {
+    animation: none;
+    perspective: none;
+    transition: none;
+  }
+
+  .spotlight__card :deep(.card-container) {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+
   .spotlight__card .card.back {
-    animation-duration: 0.01s;
-    animation-delay: 0s;
+    display: none;
   }
 }
 

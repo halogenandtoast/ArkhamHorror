@@ -7,7 +7,7 @@ lastChance =
   (skill "04036" "Last Chance" [#wild, #wild, #wild, #wild, #wild] Survivor)
     { cdCardTraits = singleton Gambit
     , cdCommitRestrictions = [OnlyCardCommittedToTest]
-    , cdOutOfPlayEffects = [InHandEffect]
+    , cdOutOfPlayEffects = [InHandEffect, PendingCommitEffect]
     }
 
 stunningBlow :: CardDef
@@ -21,7 +21,7 @@ takeTheInitiative =
   (skill "04150" "Take the Initiative" [#wild, #wild, #wild] Guardian)
     { cdCardTraits = setFromList [Practiced, Bold]
     , cdCommitRestrictions = [OnlyYourTest]
-    , cdOutOfPlayEffects = [InHandEffect]
+    , cdOutOfPlayEffects = [InHandEffect, PendingCommitEffect]
     }
 
 trueUnderstanding :: CardDef

@@ -63,6 +63,7 @@ leadership :: CardDef
 leadership =
   (skill "02260" "Leadership" [#wild] Guardian)
     { cdCardTraits = singleton Practiced
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 fearless2 :: CardDef

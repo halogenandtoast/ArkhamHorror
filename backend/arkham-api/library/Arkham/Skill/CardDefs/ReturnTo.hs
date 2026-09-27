@@ -13,4 +13,5 @@ riseToTheOccasion3 =
     { cdCardTraits = singleton Innate
     , cdCommitRestrictions = [OnlyYourTest, MinSkillTestValueDifference 1]
     , cdLevel = Just 3
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }

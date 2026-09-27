@@ -40,6 +40,7 @@ bruteForce1 =
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = Just 1
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 threeAces1 :: CardDef
@@ -56,6 +57,7 @@ sharpVision1 =
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = Just 1
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 leadership2 :: CardDef
@@ -63,6 +65,7 @@ leadership2 =
   (skill "06235" "Leadership" [#wild] Guardian)
     { cdCardTraits = singleton Practiced
     , cdLevel = Just 2
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 daredevil2 :: CardDef
@@ -79,6 +82,7 @@ expeditiousRetreat1 =
     { cdCardTraits = setFromList [Innate, Developed]
     , cdCommitRestrictions = [MaxOnePerTest]
     , cdLevel = Just 1
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 surprisingFind1 :: CardDef

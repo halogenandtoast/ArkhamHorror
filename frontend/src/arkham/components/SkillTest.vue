@@ -430,7 +430,6 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
       <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
         <template v-if="skillTest.step === 'CommitCardsFromHandToSkillTestStep'">
           <h2>{{t('toBeCommitted')}}</h2>
-          <p class='note'>{{t('toBeCommittedNote')}}</p>
         </template>
         <template v-else>
           <h2>{{t('committedCards')}}</h2>
@@ -1095,12 +1094,6 @@ i.iconSkillAgility {
 .test-source {
   width: 100%;
   align-items: flex-start;
-}
-
-.note {
-  background: var(--neutral-extra-dark);
-  color: #888;
-  padding: 5px;
 }
 
 .skip-triggers-notice {

@@ -6,30 +6,33 @@ steadfast :: CardDef
 steadfast =
   (skill "05022" "Steadfast" [#willpower, #combat] Guardian)
     { cdCardTraits = singleton Innate
-    , cdOutOfPlayEffects = [InHandEffect]
+    , cdOutOfPlayEffects = [InHandEffect, PendingCommitEffect]
     }
 
 curiosity :: CardDef
 curiosity =
   (skill "05026" "Curiosity" [#willpower, #intellect] Seeker)
     { cdCardTraits = singleton Innate
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 cunning :: CardDef
 cunning =
   (skill "05030" "Cunning" [#intellect, #agility] Rogue)
     { cdCardTraits = singleton Innate
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 prophesy :: CardDef
 prophesy =
   (skill "05034" "Prophesy" [#wild] Mystic)
     { cdCardTraits = singleton Practiced
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 ableBodied :: CardDef
 ableBodied =
   (skill "05038" "Able Bodied" [#combat, #agility] Survivor)
     { cdCardTraits = singleton Innate
-    , cdOutOfPlayEffects = [InHandEffect]
+    , cdOutOfPlayEffects = [InHandEffect, PendingCommitEffect]
     }

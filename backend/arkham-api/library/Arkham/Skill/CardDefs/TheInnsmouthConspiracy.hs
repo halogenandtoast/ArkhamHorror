@@ -16,6 +16,7 @@ planOfAction :: CardDef
 planOfAction =
   (skill "07024" "Plan of Action" [#wild] Seeker)
     { cdCardTraits = setFromList [Practiced]
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 promiseOfPower :: CardDef

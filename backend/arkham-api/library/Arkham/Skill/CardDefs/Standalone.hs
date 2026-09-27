@@ -36,6 +36,7 @@ knowTheExit =
   signature "60351"
     $ (skill "60352" "Know the Exit" [#wild] Rogue)
       { cdCardTraits = singleton Practiced
+      , cdOutOfPlayEffects = [PendingCommitEffect]
       }
 
 knowTheLine :: CardDef
@@ -43,6 +44,7 @@ knowTheLine =
   signature "60351"
     $ (skill "60353" "Know the Line" [#wild] Rogue)
       { cdCardTraits = singleton Practiced
+      , cdOutOfPlayEffects = [PendingCommitEffect]
       }
 
 knowTheScene :: CardDef
@@ -50,6 +52,7 @@ knowTheScene =
   signature "60351"
     $ (skill "60354" "Know the Scene" [#wild] Rogue)
       { cdCardTraits = singleton Practiced
+      , cdOutOfPlayEffects = [PendingCommitEffect]
       }
 
 arrogance :: CardDef
@@ -136,6 +139,7 @@ easyStreet =
   (skill "60369" "Easy Street" [#wild] Rogue)
     { cdCardTraits = singleton Favor
     , cdCommitRestrictions = [OnlyYourTest, MaxOnePerTest]
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 outTheDoor :: CardDef
@@ -171,6 +175,7 @@ armedToTheTeeth :: CardDef
 armedToTheTeeth =
   (skill "60168" "Armed to the Teeth" [#agility, #combat, #willpower] Guardian)
     { cdCardTraits = setFromList [Practiced]
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 indomitable3 :: CardDef
@@ -178,6 +183,7 @@ indomitable3 =
   (skill "60180" "Indomitable" [#combat, #wild, #willpower] Guardian)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdLevel = Just 3
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 establishMotive :: CardDef
@@ -240,6 +246,7 @@ rough1 =
   (skill "60572" "Rough" [#combat, #wild] Survivor)
     { cdCardTraits = singleton Innate
     , cdLevel = Just 1
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 timelyIntervention3 :: CardDef

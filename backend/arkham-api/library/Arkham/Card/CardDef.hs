@@ -262,6 +262,10 @@ cdCardInHandEffects :: CardDef -> Bool
 cdCardInHandEffects CardDef {cdOutOfPlayEffects} =
   InHandEffect `elem` cdOutOfPlayEffects
 
+cdCardPendingCommitEffects :: CardDef -> Bool
+cdCardPendingCommitEffects CardDef {cdOutOfPlayEffects} =
+  PendingCommitEffect `elem` cdOutOfPlayEffects
+
 data CardDef = CardDef
   { cdCardCode :: CardCode
   , cdName :: Name
@@ -349,7 +353,22 @@ data CardDef = CardDef
   }
   deriving stock (Show, Eq, Ord, Data)
 
-data OutOfPlayEffect = InHandEffect | InDiscardEffect | InSearchEffect | OnTopOfDeckEffect
+{- | Zones (and, for 'PendingCommitEffect', a moment) in which a card needs an
+entity even though it is not in play.
+
+'PendingCommitEffect' covers the window between 'SkillTestCommitCard' -- the card
+lands in @skillTestCommittedCards@ -- and 'CommitCard', which does not run until
+'StartSkillTest' and is what builds the real Skill entity. A card whose icons
+depend on game state has nothing to compute them on until then, so the running
+skill value reads low while the player is still deciding (#5777). See
+'pendingCommitEntities'.
+-}
+data OutOfPlayEffect
+  = InHandEffect
+  | InDiscardEffect
+  | InSearchEffect
+  | OnTopOfDeckEffect
+  | PendingCommitEffect
   deriving stock (Show, Eq, Ord, Data)
 
 instance HasField "attackOfOpportunityModifiers" CardDef [AttackOfOpportunityModifier] where

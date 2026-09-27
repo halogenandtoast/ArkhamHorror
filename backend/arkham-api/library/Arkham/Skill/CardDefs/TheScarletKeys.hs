@@ -1,7 +1,7 @@
 module Arkham.Skill.CardDefs.TheScarletKeys where
 
-import Arkham.Skill.CardDefs.Import
 import Arkham.Keyword qualified as Keyword
+import Arkham.Skill.CardDefs.Import
 
 asYouWish :: CardDef
 asYouWish =
@@ -47,6 +47,7 @@ calculatedRisk =
     { cdCardTraits = setFromList [Gambit, Fated]
     , cdCommitRestrictions = [OnlyYourTest, OnlyTestDuringYourTurn, MaxOnePerTest]
     , cdCommitTrigger = True
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 ghastlyPossession1 :: CardDef
@@ -62,7 +63,7 @@ grizzled =
   (skill "09101" "Grizzled" [#wild] Survivor)
     { cdCardTraits = setFromList [Innate, Developed]
     , cdKeywords = setFromList [Keyword.Customizable]
-    , cdOutOfPlayEffects = [InHandEffect, InDiscardEffect]
+    , cdOutOfPlayEffects = [InHandEffect, InDiscardEffect, PendingCommitEffect]
     , cdCustomizations =
         mapFromList
           [ (ChoicePlaceholder, 0)

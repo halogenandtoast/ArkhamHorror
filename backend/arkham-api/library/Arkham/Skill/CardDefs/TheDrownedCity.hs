@@ -1,7 +1,7 @@
 module Arkham.Skill.CardDefs.TheDrownedCity where
 
-import Arkham.Skill.CardDefs.Import
 import Arkham.Keyword qualified as Keyword
+import Arkham.Skill.CardDefs.Import
 
 determined :: CardDef
 determined =
@@ -22,7 +22,7 @@ hardboiled =
   (skill "11025" "Hardboiled" [#combat, #wild] Guardian)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
-    , cdOutOfPlayEffects = [InHandEffect]
+    , cdOutOfPlayEffects = [InHandEffect, PendingCommitEffect]
     }
 
 inspiringPresence2 :: CardDef
@@ -38,7 +38,7 @@ quickWitted1 =
     { cdCardTraits = singleton Innate
     , cdKeywords = setFromList [Keyword.Myriad]
     , cdLevel = Just 1
-    , cdOutOfPlayEffects = [InHandEffect]
+    , cdOutOfPlayEffects = [InHandEffect, PendingCommitEffect]
     }
 
 crackShot :: CardDef
@@ -88,7 +88,7 @@ lastChance3 =
   (skill "11093" "Last Chance" [#wild, #wild, #wild, #wild, #wild, #wild] Survivor)
     { cdCardTraits = singleton Gambit
     , cdCommitRestrictions = [OnlyCardCommittedToTest]
-    , cdOutOfPlayEffects = [InHandEffect]
+    , cdOutOfPlayEffects = [InHandEffect, PendingCommitEffect]
     , cdLevel = Just 3
     }
 
@@ -97,6 +97,7 @@ confidence =
   (skill "11097" "Confidence" [#wild] Neutral)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [MaxOnePerTest]
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 dreamsOfTheClay1 :: CardDef

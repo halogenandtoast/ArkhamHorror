@@ -7084,6 +7084,62 @@ asActive iid body = do
   g <- getGame
   runReaderT body (g {gameActiveInvestigatorId = iid})
 
+{- | Card ids that already have an entity somewhere in @e@, so
+'pendingCommitEntities' does not load a second copy of the same card.
+-}
+loadedCardIds :: Entities -> Set CardId
+loadedCardIds e =
+  setFromList
+    $ [(toAttrs s).cardId | s <- toList (e ^. skillsL)]
+    <> [(toAttrs x).cardId | x <- toList (e ^. eventsL)]
+    <> [(toAttrs x).cardId | x <- toList (e ^. assetsL)]
+
+{- | Entities for cards sitting on the current skill test that the engine has not
+turned into real entities yet.
+
+@SkillTestCommitCard@ only files the card under @skillTestCommittedCards@; the
+Skill entity is not built until @StartSkillTest@ -> @CheckAllAdditionalCommitCosts@
+emits @CommitCard@. A card whose icons depend on game state therefore has nothing
+to run its 'HasModifiersFor' on for the whole commit window, and the skill value
+the player is deciding against reads low (#5777, Armed to the Teeth on a Machete
+fight: 1 icon instead of 3).
+
+These are built fresh inside 'preloadModifiers' and thrown away with it. They are
+never stored on 'Game', so they never receive messages and never reach
+'getAbilities' -- a duplicate entity on those paths resolves abilities twice (see
+the note above 'runActionRemovedEntities', #5555 / #4764).
+
+Cards already loaded anywhere else are skipped: the real entity once @CommitCard@
+has run (it and 'ObtainCard' are a message apart, so both would otherwise be live
+at once), and the out-of-play zones for a card that also carries 'InHandEffect'.
+Double-loading would double the icons rather than fix them.
+-}
+pendingCommitEntities :: Game -> Entities
+pendingCommitEntities g = case gameSkillTest g of
+  Nothing -> defaultEntities
+  Just st -> foldl' addPending defaultEntities (pending st)
+ where
+  alreadyLoaded =
+    loadedCardIds (gameEntities g)
+      <> foldMap loadedCardIds (gameInHandEntities g)
+      <> foldMap loadedCardIds (gameInDiscardEntities g)
+      <> loadedCardIds (gameInSearchEntities g)
+  pending st =
+    [ (iid, c)
+    | (iid, cs) <- mapToList (skillTestCommittedCards st)
+    , c <- cs
+    , cdCardPendingCommitEffects (toCardDef c)
+    , c.id `notMember` alreadyLoaded
+    ]
+  -- Matches the real entity: @InvestigatorCommittedSkill@ parks a committed skill
+  -- in 'Limbo' (Skill/Runner.hs), so the stand-in looks the same to any matcher
+  -- that reads placement.
+  setPlacement :: forall a. Typeable a => a -> a
+  setPlacement a
+    | Just Refl <- eqT @a @Skill = overAttrs (\attrs -> attrs {skillPlacement = Limbo}) a
+    | otherwise = a
+  addPending e (iid, c) = addCardEntityWith iid setPlacement (unsafeCardIdToUUID c.id) e c
+
 {- | Preloads Modifiers
 We only preload modifiers while the scenario is active in order to prevent
 scenario specific modifiers from causing an exception. For instance when we
@@ -7101,6 +7157,7 @@ preloadModifiers g = case gameMode g of
           getModifiersFor $ gameEntities g
           traverse_ getModifiersFor $ gameInHandEntities g
           traverse_ getModifiersFor $ gameInDiscardEntities g
+          getModifiersFor $ pendingCommitEntities g
           for_ (activeUltimatumsAndBoons (gameSettings g)) getModifiersFor
           for_ (modeScenario (gameMode g)) getModifiersFor
           for_ (modeCampaign (gameMode g)) \c -> do

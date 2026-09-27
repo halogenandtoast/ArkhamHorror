@@ -80,6 +80,7 @@ torrentOfPower =
   (skill "03235" "Torrent of Power" [#wild] Mystic)
     { cdCardTraits = singleton Practiced
     , cdAlternateCardCodes = ["60469"]
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 notWithoutAFight :: CardDef
@@ -87,6 +88,7 @@ notWithoutAFight =
   (skill "03272" "\"Not without a fight!\"" [#willpower, #combat, #agility] Survivor)
     { cdCardTraits = setFromList [Innate]
     , cdCommitRestrictions = [SelfCanCommitWhen $ InvestigatorEngagedWith AnyEnemy]
+    , cdOutOfPlayEffects = [PendingCommitEffect]
     }
 
 sealOfTheElderSign5 :: CardDef

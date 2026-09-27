@@ -91,8 +91,10 @@ data Message
   | CastSpell InvestigatorId CardId [Message]
   | PayCastCost InvestigatorId CardId Int Bool [Message]
   | ResumeCast InvestigatorId CardId [Message]
-  | -- | offer everyone holding a card that prevents damage, then assign what is left
-    PreventDamage HarmPlan [Text]
+  | -- | offer everyone holding a card that prevents harm, then assign what is left
+    PreventHarm HarmPlan [Text]
+  | -- | harm a card has prevented, which the step it interrupted picks up
+    PreventedHarm Int Int
   | HarmDamageStage HarmPlan
   | HarmHorrorStage HarmPlan
   | HarmChooseAmount HarmStat CardId Int HarmPlan

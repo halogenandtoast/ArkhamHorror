@@ -65,6 +65,7 @@ emptyGame pids seed opts =
     , provoked = mempty
     , pendingSuccesses = 0
     , damagePrevented = 0
+    , horrorPrevented = 0
     , encounter = Nothing
     , revealedEvent = Nothing
     , activeCard = Nothing

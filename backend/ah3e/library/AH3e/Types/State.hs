@@ -61,6 +61,10 @@ data Trigger
     AnotherResolvesTest InvestigatorId InvestigatorId
   | AfterGatherResources InvestigatorId
   | AfterResearchAction InvestigatorId
+  | AfterMoveAction InvestigatorId
+  | -- | they took this much doom off their own space, which some sheets answer
+    AfterDoomRemoved InvestigatorId Int
+  | AfterFailedTest InvestigatorId
   | -- | the encounter has finished resolving; its investigator is still standing where it happened
     AfterEncounter InvestigatorId
   | -- | the monster defeated is gone by now, so only the attacker is carried
@@ -76,6 +80,9 @@ triggerInvestigator = \case
   AnotherResolvesTest owner _ -> owner
   AfterGatherResources iid -> iid
   AfterResearchAction iid -> iid
+  AfterMoveAction iid -> iid
+  AfterDoomRemoved iid _ -> iid
+  AfterFailedTest iid -> iid
   AfterEncounter iid -> iid
   AfterDefeatMonsterInAttack iid -> iid
   DrewBlankToken iid -> iid

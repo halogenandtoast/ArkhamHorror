@@ -94,6 +94,10 @@ data AssetBehavior = AssetBehavior
   {- ^ what this card does once a harm plan has landed, whether the harm reached
   the card or its owner. Still consulted for a card the harm destroyed.
   -}
+  , preventsOneHarmPerRound :: Bool
+  {- ^ once per round its owner may simply prevent one damage or one horror they
+  would suffer, no test asked (Mama's Amulet)
+  -}
   , damagePrevention :: CardId -> InvestigatorId -> HarmPlan -> GameM [Reaction]
   {- ^ once per round, offered to its owner while anyone would suffer damage,
   wherever they are (416.6). The reaction's messages leave what they prevent in
@@ -129,6 +133,7 @@ defaultAssetBehavior =
     , bansConditions = []
     , halfPricePerRound = False
     , extraSuccesses = \_ _ _ -> pure 0
+    , preventsOneHarmPerRound = False
     , damagePrevention = \_ _ _ -> pure []
     }
 
@@ -304,6 +309,10 @@ data InvestigatorBehavior = InvestigatorBehavior
   , reactions :: InvestigatorId -> Trigger -> GameM [Reaction]
   , testOptions :: InvestigatorId -> TestState -> GameM [Reaction]
   -- ^ what the sheet itself offers while its investigator's test resolves
+  , successOnSix :: Bool
+  -- ^ only a six counts for this investigator, whatever else is in play (Rex Murphy)
+  , bansConditions :: [ConditionName]
+  -- ^ conditions this investigator cannot hold at all
   , castWithDamage :: Bool
   -- ^ may suffer damage instead of horror while casting a spell
   , paidCastLoreBonus :: Int
@@ -317,6 +326,8 @@ defaultInvestigatorBehavior =
     { componentActions = []
     , reactions = \_ _ -> pure []
     , testOptions = \_ _ -> pure []
+    , successOnSix = False
+    , bansConditions = []
     , castWithDamage = False
     , paidCastLoreBonus = 0
     }

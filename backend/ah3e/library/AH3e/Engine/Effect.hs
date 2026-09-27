@@ -99,7 +99,7 @@ resolveEffect ctx eff0 = do
     -- only spaces holding doom are worth offering
     RemoveDoomFrom w a ->
       withSpaceWhere ctx w (fmap ((> 0) . (.doom)) . getSpace) (\w' -> RemoveDoomFrom w' a) \sid ->
-        [RemoveDoom sid (amt a)]
+        [RemoveDoom sid (amt a), CheckReactions (AfterDoomRemoved iid (amt a)) []]
     PlaceDoomAt ScenarioSheet a -> push (PlaceDoomOnSheet (amt a))
     PlaceDoomAt EachSpaceInYourNeighborhood a -> do
       spaces <- yourNeighborhoodSpaces iid

@@ -243,12 +243,17 @@ successThreshold ts = do
   -- a card can lower the bar to four on its own (Dark Blessing), which is the
   -- blessed threshold without the blessing
   onFour <- hasAssetWith ts.investigator (.successOnFour)
+  -- a sheet may say only a six counts, whatever else is in play (Rex Murphy)
+  onSix <- (.successOnSix) <$> pure (investigatorBehavior ts.investigator)
   pure
-    $ min (if onFour then 4 else 6)
-    $ if
-      | cursed -> 6
-      | blessed -> 4
-      | otherwise -> 5
+    $ if onSix
+      then 6
+      else
+        min (if onFour then 4 else 6)
+          $ if
+            | cursed -> 6
+            | blessed -> 4
+            | otherwise -> 5
 
 finishTest :: GameM ()
 finishTest = do
@@ -265,6 +270,8 @@ finishTest = do
   logText ("Test result: " <> tshow successes)
   spendBlessCurse ts.investigator (successes > 0)
   resolveAfter ts successes
+  -- a sheet may answer a failure, behind whatever the failure itself set going
+  when (successes == 0) $ pushEnd (CheckReactions (AfterFailedTest ts.investigator) [])
 
 -- 490.5: blessed is discarded after a failed test, cursed after a passed one.
 -- Pushed before 'resolveAfter' so the discard lands behind the test's own effect.

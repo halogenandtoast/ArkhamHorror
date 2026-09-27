@@ -156,6 +156,8 @@ data Game = Game
   {- ^ Damage a prevention test just prevented, waiting for the harm it was
   cast against to pick it up (416.6).
   -}
+  , horrorPrevented :: Int
+  -- ^ likewise for horror, which a card may prevent without a test
   , encounter :: Maybe EncounterState
   , revealedEvent :: Maybe CardId
   , activeCard :: Maybe CardId

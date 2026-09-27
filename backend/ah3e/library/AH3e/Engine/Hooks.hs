@@ -128,6 +128,17 @@ reactionsFor trigger = do
         b.reactions cid trigger
       pure (sheet <> cards)
 
+{- | Cards that can simply prevent one harm this round, with their names, for the
+offer the prevention step makes.
+-}
+harmPreventers :: InvestigatorId -> GameM [(CardId, Text)]
+harmPreventers iid = do
+  i <- getInvestigator iid
+  fmap catMaybes $ for [c | c <- i.assets, c `notElem` i.lockedAssets, c `notElem` i.usedAssets] \cid -> do
+    b <- assetBehavior cid
+    name <- (.name) <$> getCardDef cid
+    pure $ if b.preventsOneHarmPerRound then Just (cid, name) else Nothing
+
 {- | Harm on its way onto a card, less whatever the card itself prevents. The
 prevented harm is gone rather than moved, and the card counts as used.
 -}

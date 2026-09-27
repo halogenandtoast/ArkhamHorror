@@ -177,6 +177,7 @@ runMessage msg = case msg of
     pushAll
       $ [CheckReactions (AfterGatherResources iid) [] | kind == GatherResourcesAction]
       <> [CheckReactions (AfterResearchAction iid) [] | kind == ResearchAction]
+      <> [CheckReactions (AfterMoveAction iid) [] | kind == MoveAction]
       <> [ActionTurn iid | t == Just iid, ph == ActionPhase]
   EndActionTurn iid -> do
     investigatorL iid . #active .= False
@@ -430,25 +431,53 @@ runMessage msg = case msg of
   SufferHarm iid src kind dmg hor -> do
     playing <- investigatorIsPlaying iid
     when (playing && (dmg > 0 || hor > 0))
-      $ push (PreventDamage (HarmPlan iid src kind dmg hor Nothing Nothing) [])
-  -- Prevention comes before the damage is assigned, and the card doing it may
-  -- belong to anyone, so each holder is asked in turn. A prevention casts a spell
-  -- of its own, which may ask questions or even defeat its caster, so it reports
-  -- what it prevented through damagePrevented and this step runs again behind it.
-  PreventDamage plan0 declined -> do
-    prevented <- use #damagePrevented
+      $ push (PreventHarm (HarmPlan iid src kind dmg hor Nothing Nothing) [])
+  {- Prevention comes before the harm is assigned, and the card doing it may belong to
+  anyone, so each holder is asked in turn. What a card prevents is reported through
+  damagePrevented and horrorPrevented rather than returned, because a prevention may
+  cast a spell of its own, which asks questions and may even defeat its caster; this
+  step then runs again behind whatever that set going. -}
+  PreventHarm plan0 declined -> do
+    stoppedDamage <- use #damagePrevented
+    stoppedHorror <- use #horrorPrevented
     #damagePrevented .= 0
-    let plan = plan0 & #damage .~ max 0 (plan0.damage - prevented)
-    when (prevented > 0) $ logText ("Prevented " <> tshow prevented <> " damage")
-    offers <- damagePreventionsFor plan
+    #horrorPrevented .= 0
+    let plan =
+          plan0
+            & #damage
+            .~ max 0 (plan0.damage - stoppedDamage)
+            & #horror
+            .~ max 0 (plan0.horror - stoppedHorror)
+    when (stoppedDamage > 0) $ logText ("Prevented " <> tshow stoppedDamage <> " damage")
+    when (stoppedHorror > 0) $ logText ("Prevented " <> tshow stoppedHorror <> " horror")
+    tested <- damagePreventionsFor plan
+    simple <- harmPreventers plan.investigator
+    let again k = PreventHarm plan (k : declined)
+        oneHarm (cid, cardName) =
+          [ Reaction
+              (cardName <> "-damage")
+              (cardName <> ": prevent one damage")
+              [MarkAssetUsed plan.investigator cid, PreventedHarm 1 0]
+          | plan.damage > 0
+          ]
+            <> [ Reaction
+                   (cardName <> "-horror")
+                   (cardName <> ": prevent one horror")
+                   [MarkAssetUsed plan.investigator cid, PreventedHarm 0 1]
+               | plan.horror > 0
+               ]
+        offers = tested <> [(plan.investigator, r) | c <- simple, r <- oneHarm c]
     case [(owner, r) | (owner, r) <- offers, r.key `notElem` declined] of
       [] -> push (HarmDamageStage plan)
       ((owner, r) : _) -> do
         let name = maybe "an investigator" (.name) (investigatorDef plan.investigator)
-        chooseFor owner ("Prevent damage to " <> name <> "?")
-          $ [ Choice (DoneLabel "Skip") [PreventDamage plan (r.key : declined)]
-            , Choice (TextLabel r.label) (r.messages <> [PreventDamage plan (r.key : declined)])
+        chooseFor owner ("Prevent harm to " <> name <> "?")
+          $ [ Choice (DoneLabel "Skip") [again r.key]
+            , Choice (TextLabel r.label) (r.messages <> [again r.key])
             ]
+  PreventedHarm d h -> do
+    #damagePrevented += d
+    #horrorPrevented += h
   -- one asset at most per type: pick it (or nobody), then how much it takes
   -- 483.7-483.9: suffer the spell's horror first, less any remnants spent; a
   -- defeat on the way stops the cast before its test
@@ -683,7 +712,7 @@ runMessage msg = case msg of
     s <- getSpace sid
     let k = min n s.doom
     when (k >= 2) $ addRemnants iid 1
-    push (RemoveDoom sid k)
+    pushAll [RemoveDoom sid k, CheckReactions (AfterDoomRemoved iid k) []]
   PayMoney iid n -> addMoney iid (negate n)
   BuyFromDisplayMore ctx mtrait half limit ifBought n -> buyPrompt ctx mtrait half limit ifBought n
   EvadeMonsters iid n -> do
@@ -1338,6 +1367,7 @@ gainCondition :: InvestigatorId -> ConditionName -> GameM ()
 gainCondition iid name = do
   already <- hasCondition iid name
   banned <- hasAssetWith iid (elem name . (.bansConditions))
+  bannedBySheet <- pure (name `elem` (investigatorBehavior iid).bansConditions)
   -- an investigator still joining is being set up, and may start with a condition
   joining <- (== Joining) . (.status) <$> getInvestigator iid
   playing <- (|| joining) <$> investigatorIsPlaying iid
@@ -1347,7 +1377,7 @@ gainCondition iid name = do
     "CURSED" -> conditionCard iid "BLESSED"
     _ -> pure Nothing
   case opposing of
-    _ | banned -> do
+    _ | banned || bannedBySheet -> do
       logText (coerce name <> " cannot be held, and is discarded")
       conditionCard iid name >>= traverse_ (push . DiscardAsset)
     Just cid | playing -> do

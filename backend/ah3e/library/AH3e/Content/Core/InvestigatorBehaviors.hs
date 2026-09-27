@@ -33,6 +33,8 @@ behaviors =
           , ("michael-mcglen", outForRevenge)
           , ("dexter-drake", magicalGift)
           , ("minh-thi-phan", allAroundYou)
+          , ("norman-withers", inTheStars)
+          , ("rex-murphy", familyCurse)
           , ("jenny-barnes", trustFund)
           ,
             ( "daniela-reyes"
@@ -62,6 +64,8 @@ behaviors =
           , ("chicago-typewriter", testBonuses [OnAction AttackAction Strength 4])
           , ("overcome-all-odds", defaultAssetBehavior & #focusPerSkill .~ 2)
           , ("analytical-mind", analyticalMind)
+          , ("mamas-amulet", defaultAssetBehavior & #preventsOneHarmPerRound .~ True)
+          , ("ol-boiler", olBoiler)
           , ("the-tower", rerollOneOrAll "the-tower" "The Tower")
           , ("astronomy-book", astronomyBook)
           , ("search-for-izzie", searchForIzzie)
@@ -458,3 +462,67 @@ analyticalMind =
           i <- getInvestigator iid
           limit <- focusLimit iid
           pure (if maybe False (focusCount i >=) limit then Just 1 else Nothing)
+
+{- | "After you remove two or more doom from your space, you may suffer one horror to
+research one clue." Researching moves a clue of your own, so it needs one to move.
+-}
+inTheStars :: InvestigatorBehavior
+inTheStars =
+  defaultInvestigatorBehavior
+    & #reactions
+    .~ \self -> \case
+      AfterDoomRemoved iid removed
+        | iid == self
+        , removed >= 2 -> do
+            i <- getInvestigator iid
+            pure
+              [ Reaction
+                  "in-the-stars"
+                  "In the Stars: suffer one horror to research one clue"
+                  [SufferHarm iid (SourceInvestigator iid) NormalHarm 0 1, ResearchCluesExact iid 1]
+              | i.clues > 0
+              ]
+      _ -> pure []
+
+{- | "Family Curse -- While resolving a test, only 6s count as successes. You cannot
+become BLESSED or CURSED. Never Give Up -- After you fail a test, you focus one skill
+of your choice."
+-}
+familyCurse :: InvestigatorBehavior
+familyCurse =
+  defaultInvestigatorBehavior
+    & #successOnSix
+    .~ True
+    & #bansConditions
+    .~ ["BLESSED", "CURSED"]
+    & #reactions
+    .~ \self -> \case
+      AfterFailedTest iid | iid == self -> do
+        let ctx = EffectCtx iid (SourceInvestigator iid) Nothing
+        ok <- effectUseful ctx focusAny
+        pure [Reaction "never-give-up" "Never Give Up: focus one skill" [ResolveEffect ctx focusAny] | ok]
+      _ -> pure []
+
+{- | "After you perform a move action, you may deal two damage to one monster you are
+engaged with and two damage to this card." The boiler takes its own two whether the
+monster survives or not.
+-}
+olBoiler :: AssetBehavior
+olBoiler =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      AfterMoveAction iid -> do
+        engaged <- engagedMonsters iid
+        pure
+          [ Reaction
+              "ol-boiler"
+              "Ol' Boiler: two damage to a monster and two to itself"
+              [ HarmAsset cid 2 0
+              , ResolveEffect
+                  (EffectCtx iid (SourceCard cid) Nothing)
+                  (DamageMonsterIn YourSpace (N 2))
+              ]
+          | not (null engaged)
+          ]
+      _ -> pure []

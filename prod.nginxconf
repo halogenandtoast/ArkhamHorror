@@ -164,6 +164,31 @@ http {
         proxy_set_header Connection $connection_upgrade;
         add_header P3P 'CP="ALL DSP COR PSAa PSDa OUR NOR ONL UNI COM NAV"';
     }
+
+    # The custom-card MCP server (start.sh, loopback :8420). ^~ for the same
+    # reason /api needs it: the regex locations above must not intercept it.
+    #
+    # Authorization is forwarded explicitly. nginx does pass it by default, but it
+    # is the entire authentication mechanism here and a stray `proxy_set_header
+    # Authorization ""` anywhere would turn every request into a 401 with nothing
+    # to say why -- so it is written down.
+    location ^~ /mcp {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header Authorization $http_authorization;
+        proxy_redirect off;
+        proxy_pass_request_headers      on;
+        proxy_pass http://localhost:8420;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_http_version 1.1;
+
+        # A card def is small; art is uploaded through the web app, not here.
+        client_max_body_size 4m;
+
+        # Off so a future server-sent stream is not buffered into uselessness.
+        proxy_buffering off;
+        proxy_read_timeout 120s;
+    }
   }
 
   # Third edition (frontend-3ed), sharing the API. The exact name wins over the

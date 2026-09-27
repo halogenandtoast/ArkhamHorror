@@ -242,6 +242,17 @@ resource "kubernetes_deployment" "app" {
             value = var.asset_host
           }
 
+          # How the custom-card MCP server describes itself in the 401 challenge it
+          # returns to an unauthenticated client (the `resource_metadata` hint an
+          # OAuth-capable client follows). It runs in this container on loopback
+          # :8420, behind the same nginx that serves /api -- see start.sh -- so it
+          # needs telling its own public address, which it cannot work out from a
+          # request it has not received yet.
+          env {
+            name  = "MCP_PUBLIC_URL"
+            value = "https://${var.domain}/mcp"
+          }
+
           # GHCRTS is honoured because the binary is built with -rtsopts, and it
           # is applied AFTER the baked-in -with-rtsopts, so it wins. See
           # local.app_ghc_rts for why -N must not be left to the RTS to guess.

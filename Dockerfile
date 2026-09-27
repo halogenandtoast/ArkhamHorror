@@ -145,6 +145,24 @@ RUN --mount=type=cache,id=stack-home-${CACHE_ID},target=/root/.stack \
     --mount=type=cache,id=stack-discover-hie-${CACHE_ID},target=/opt/arkham/src/backend/cards-discover/.hie \
   sh /opt/arkham/src/backend/scripts/docker-build-api.sh
 
+# The custom-card MCP server's DSL reference, generated from the Haskell that runs
+# it. Generated here rather than committed: the step and expression languages are
+# `KeyMap.lookup` calls, not types, so nothing reifies them and a checked-in copy
+# is the copy that goes stale.
+FROM ubuntu:22.04 AS mcp
+RUN apt-get update && \
+  apt-get install -y --assume-yes --no-install-recommends python3 && \
+  rm -rf /var/lib/apt/lists/*
+COPY ./mcp /opt/arkham/mcp
+# The whole tree, because the extraction needs more than the DSL modules: every
+# hand-written `instance FromJSON` (to know which fields a decoder defaults) and
+# every `<X>Attrs` record (the `$bindings` a card gets for free) is somewhere in
+# here. Narrowing it would mean enumerating files that move.
+COPY ./backend/arkham-api/library/Arkham /src/library/Arkham
+RUN ARKHAM_SOURCE_DIR=/src/library/Arkham \
+      python3 /opt/arkham/mcp/arkham-cards/extract_dsl.py && \
+      test -s /opt/arkham/mcp/arkham-cards/dsl.json
+
 FROM ubuntu:22.04 AS app
 
 # App
@@ -152,7 +170,7 @@ FROM ubuntu:22.04 AS app
 ENV LC_ALL=C.UTF-8
 
 RUN apt-get update && \
-  apt-get install -y --assume-yes --no-install-recommends libpq-dev ca-certificates nginx curl cron && \
+  apt-get install -y --assume-yes --no-install-recommends libpq-dev ca-certificates nginx curl cron python3 && \
   rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p \
@@ -172,6 +190,8 @@ COPY ./prod.nginxconf /opt/arkham/src/backend/prod.nginxconf
 COPY ./start.sh /opt/arkham/src/backend/arkham-api/start.sh
 COPY ./web-entrypoint.sh /web-entrypoint.sh
 COPY ./backend/arkham-api/digital-ocean.crt /opt/arkham/src/backend/arkham-api/digital-ocean.crt
+# The MCP server, with dsl.json as the mcp stage generated it.
+COPY --from=mcp /opt/arkham/mcp /opt/arkham/mcp
 
 RUN useradd -ms /bin/bash yesod && \
   chown -R yesod:yesod /opt/arkham /var/log/nginx /var/lib/nginx /run && \

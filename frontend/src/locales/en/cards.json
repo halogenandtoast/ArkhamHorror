@@ -103,6 +103,10 @@
       "putBackInjuryIntoPlayInYourThreatArea": "Put Back Injury into play in your threat area",
       "take1DamageAndShuffleItIntoYourDeck": "Take 1 damage and shuffle it into your deck"
     },
+    "baitAndSwitch": {
+      "evadeAndMove": "Evade. If you succeed and the enemy is non-Elite, evade the enemy and move it to a connecting location.",
+      "evadeAndSwitch": "Evade. Use only on a non-Elite enemy at a connecting location. If you succeed, evade that enemy and switch locations with it."
+    },
     "baseballBat2": {
       "returnToHand": "Return baseball Bat to your hand after this attack",
       "extraDamage": "This attack deals an additional +1 damage. Discard Baseball Bat after this attack"

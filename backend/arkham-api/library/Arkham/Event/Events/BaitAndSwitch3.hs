@@ -7,22 +7,18 @@ import Arkham.Evade
 import Arkham.Event.Cards qualified as Cards (baitAndSwitch3)
 import Arkham.Event.Import.Lifted
 import Arkham.ForMovement
-import Arkham.Helpers.Investigator
+import Arkham.Helpers.Investigator hiding (setMeta)
+import Arkham.I18n
 import Arkham.Matcher hiding (EnemyEvaded)
 import Arkham.Message.Lifted.Move
-import Arkham.Modifier
 import Arkham.Projection
 
-newtype Metadata = Metadata {choice :: Maybe Int}
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype BaitAndSwitch3 = BaitAndSwitch3 (EventAttrs `With` Metadata)
+newtype BaitAndSwitch3 = BaitAndSwitch3 EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 baitAndSwitch3 :: EventCard BaitAndSwitch3
-baitAndSwitch3 = event (BaitAndSwitch3 . (`with` Metadata Nothing)) Cards.baitAndSwitch3
+baitAndSwitch3 = event BaitAndSwitch3 Cards.baitAndSwitch3
 
 override :: CriteriaOverride
 override =
@@ -39,30 +35,26 @@ baitAndSwitch3Matcher iid attrs = \case
   _ -> error "Invalid choice"
 
 instance RunMessage BaitAndSwitch3 where
-  runMessage msg e@(BaitAndSwitch3 (attrs `With` meta)) = runQueueT $ case msg of
-    InvestigatorPlayEvent iid eid mTarget ws _ | eid == attrs.id -> do
-      choice1Enemies <- select $ baitAndSwitch3Matcher iid attrs 1
-      choice2Enemies <- select $ baitAndSwitch3Matcher iid attrs 2
-      chooseOrRunOne iid
-        $ [ Label
-              "Evade. If you succeed and the enemy is non-Elite, evade the enemy and move it to a connecting location."
-              [ResolveEventChoice iid eid 1 mTarget ws]
-          | notNull choice1Enemies
-          ]
-        <> [ Label
-               "Evade. Use only on a non-Elite enemy at a connecting location. If you succeed, evade that enemy and switch locations with it."
-               [ResolveEventChoice iid eid 2 mTarget ws]
-           | notNull choice2Enemies
-           ]
+  runMessage msg e@(BaitAndSwitch3 attrs) = runQueueT $ case msg of
+    PlayThisEvent iid (is attrs -> True) -> do
+      canEvadeHere <- selectAny $ baitAndSwitch3Matcher iid attrs 1
+      canEvadeConnecting <- selectAny $ baitAndSwitch3Matcher iid attrs 2
+      chooseOrRunOneM iid $ cardI18n $ scope "baitAndSwitch" do
+        when canEvadeHere $ labeled "evadeAndMove" $ doStep 1 msg
+        when canEvadeConnecting $ labeled "evadeAndSwitch" $ doStep 2 msg
       pure e
-    ResolveEventChoice iid eid n _ _ | eid == attrs.id -> do
+    DoStep n (PlayThisEvent iid (is attrs -> True)) -> do
       sid <- getRandom
-      pushM $ setTarget attrs <$> mkChooseEvade sid iid attrs
-      when (n == 2) $ skillTestModifier sid attrs iid $ EnemyEvadeActionCriteria override
-      pure $ BaitAndSwitch3 (attrs `with` Metadata (Just n))
+      -- The override has to ride on the ChooseEvade itself: as a skill test
+      -- window modifier it isn't visible until the test exists, which is after
+      -- ChooseEvadeEnemy has already picked the eligible enemies.
+      pushM $ setTarget attrs <$> case n of
+        2 -> mkChooseEvadeMatch sid iid attrs (baitAndSwitch3Matcher iid attrs 2)
+        _ -> mkChooseEvade sid iid attrs
+      pure . BaitAndSwitch3 $ setMeta n attrs
     Successful (Action.Evade, EnemyTarget eid) iid _ target _ | isTarget attrs target -> do
       nonElite <- eid <=~> NonEliteEnemy
-      case choice meta of
+      case getEventMeta @Int attrs of
         Just 1 -> pushAll $ EnemyEvaded iid eid : [WillMoveEnemy eid msg | nonElite]
         Just 2 -> do
           lid <- getJustLocation iid
@@ -82,4 +74,4 @@ instance RunMessage BaitAndSwitch3 where
         AfterEvadeEnemy {} -> True
         _ -> False
       pure e
-    _ -> BaitAndSwitch3 . (`with` meta) <$> liftRunMessage msg attrs
+    _ -> BaitAndSwitch3 <$> liftRunMessage msg attrs

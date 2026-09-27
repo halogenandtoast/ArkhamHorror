@@ -122,7 +122,7 @@ focusLimit iid = do
     if iid `elem` focusLimitFromSpells
       then Just . length <$> matchingAssets iid SpellCard
       else pure Nothing
-  pure ((+ bonus) <$> (counted <|> base))
+  pure ((+ bonus) <$> maybe base Just counted)
 
 investigatorHealth :: InvestigatorId -> GameM Int
 investigatorHealth iid = (.health) <$> getInvestigatorDef iid

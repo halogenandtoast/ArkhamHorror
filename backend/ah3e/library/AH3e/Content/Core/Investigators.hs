@@ -120,7 +120,7 @@ investigators =
           ]
       , roles = [Mystic]
       , abilityText =
-          "Magical Gift\8212Once per round, while resolving a will test, you may reroll one or all of your dice. Your focus limit is equal to the number of spells you have."
+          "Magical Gift\8212Once per round, while resolving a lore test, you may reroll one or all of your dice. Your focus limit is equal to the number of spells you have."
       }
   , InvestigatorDef
       { id = "jenny-barnes"

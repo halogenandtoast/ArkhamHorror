@@ -401,7 +401,7 @@ obannionMember =
           ]
       _ -> pure []
 
-{- | "Once per round, while resolving a will test, you may reroll one or all of your
+{- | "Once per round, while resolving a lore test, you may reroll one or all of your
 dice." His focus limit, the other half of the sheet, is counted from his spells (see
 'AH3e.Content.Core.Investigators.focusLimitFromSpells').
 -}
@@ -417,7 +417,7 @@ magicalGift =
         [ o
         | not used
         , live > 0
-        , ts.skill == Will
+        , ts.skill == Lore
         , o <-
             [ offer "magical-gift-one" "reroll one die" [RerollUpTo (SourceInvestigator iid) 1]
             , offer "magical-gift-all" "reroll all dice" [RerollAll (SourceInvestigator iid)]

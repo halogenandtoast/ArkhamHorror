@@ -43,7 +43,7 @@ const validOnly = ref(false)
 function deckPortraitCode(deck: Arkham.Deck): string {
   // The overlay edited here applies to this game only, but the row should still
   // show who you are about to play.
-  if (deck.id === deckId.value && overlay.value?.investigator) {
+  if (deck.id === overlayFor.value && overlay.value?.investigator) {
     return stripCardCodePrefix(overlay.value.investigator)
   }
   return deckInvestigatorCode(Arkham.deckPlayList(deck))
@@ -235,8 +235,9 @@ async function addDeck(d: Arkham.Deck) {
   // back into the existing-deck list to hunt for what they just made (a filter or search
   // could even be hiding it). Reset the pool state up front instead of waiting on the
   // currentDeckList watcher -- it flushes after this function, so a pool left selected on a
-  // PREVIOUS deck would otherwise be applied to this one.
+  // PREVIOUS deck would otherwise be applied to this one. Same for the overlay.
   resetWeaknessPoolFromDeck()
+  resetOverlayFromDeck()
   await choose()
 }
 
@@ -322,12 +323,47 @@ const { customCardsEnabled } = storeToRefs(settings)
 if (customCardsEnabled.value) loadLibrary()
 
 /* Applies to this game only: it rides along with the answer rather than being
- * saved onto the deck. */
+ * saved onto the deck.
+ *
+ * An overlay is built against one deck's slots -- the signatures it takes out
+ * are that deck's -- so it belongs to that deck and nothing else.
+ * `overlayFor` is what says which, and everything reading `overlay` checks it. */
 const overlay = ref<DeckOverlay | null>(null)
+const overlayFor = ref<string | null>(null)
 const overlayOpen = ref(false)
 
+function resetOverlayFromDeck() {
+  overlay.value = null
+  overlayFor.value = null
+  overlayOpen.value = false
+}
+
+/* The overlay of the deck currently selected, or nothing. */
+const selectedOverlay = computed(() =>
+  overlayFor.value !== null && overlayFor.value === deckId.value ? overlay.value : null
+)
+
+async function toggleOverlayForDeck(deck: Arkham.Deck) {
+  if (deckId.value === deck.id) {
+    overlayOpen.value = !overlayOpen.value
+    overlayFor.value = deck.id
+    return
+  }
+
+  deckId.value = deck.id
+  // The reset watcher flushes on the deck change; opening before it does would
+  // close the panel this click is opening.
+  await nextTick()
+  overlayFor.value = deck.id
+  overlayOpen.value = true
+}
+
+// Same trigger as the weakness pool: a deck change drops what was built for the
+// deck before it.
+watch(currentDeckList, resetOverlayFromDeck)
+
 const overlaySummary = computed(() => {
-  const o = overlay.value
+  const o = selectedOverlay.value
   if (!o) return 'none'
   const parts: string[] = []
   if (o.investigator) parts.push('investigator')
@@ -348,7 +384,7 @@ async function choose() {
     if (weaknessPoolTouched.value && chooseDeckList && selectedDeck.value) {
       await chooseDeckList(deckListWithWeaknessPool(deckToArkhamDbDecklist(selectedDeck.value)))
     } else if (chooseDeck) {
-      await chooseDeck(deckId.value, overlay.value)
+      await chooseDeck(deckId.value, selectedOverlay.value)
     }
   }
 }
@@ -495,8 +531,9 @@ const needsReply = computed(() => {
                         v-if="customCardsEnabled && hasLibraryCards"
                         type="button"
                         class="deck-item-overlay"
+                        :class="{ active: overlayFor === deck.id && overlay }"
                         :title="`Overlay: ${overlaySummary}`"
-                        @click.stop.prevent="deckId = deck.id; overlayOpen = !overlayOpen"
+                        @click.stop.prevent="toggleOverlayForDeck(deck)"
                       >
                         <font-awesome-icon icon="layer-group" />
                       </button>
@@ -513,7 +550,7 @@ const needsReply = computed(() => {
                       <button class="deck-item-use" :disabled="deckUsedThisCampaign(deck.list)" @click.stop.prevent="selectAndChoose(deck)" :title="$t('chooseDeck.useThisDeck')">
                         <font-awesome-icon icon="chevron-right" />
                       </button>
-                      <div v-if="deckId === deck.id && overlayOpen" class="weakness-pool-panel deck-item-weakness-pool" @click.stop>
+                      <div v-if="overlayFor === deck.id && overlayOpen" class="weakness-pool-panel deck-item-weakness-pool" @click.stop>
                         <div class="weakness-pool-heading">
                           <span>Overlay</span>
                           <span class="weakness-pool-summary">{{ overlaySummary }}</span>
@@ -954,6 +991,13 @@ const needsReply = computed(() => {
   &:hover {
     background: rgba(110, 134, 64, 1);
   }
+}
+
+/* Lit only on the deck the pending overlay was built for, so it is clear which
+   row it belongs to. */
+.deck-item-overlay.active {
+  background: rgba(235, 235, 235, 0.30);
+  color: white;
 }
 
 .deck-item-weakness-button {

@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import type { Game } from '@/arkham/types/Game';
 import type { Campaign } from '@/arkham/types/Campaign';
+import type { Question } from '@/arkham/types/Question';
 import StoryQuestion from '@/arkham/components/StoryQuestion.vue';
 import Scenario from '@/arkham/components/Scenario.vue';
 import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
@@ -35,18 +36,48 @@ async function choose(idx: number) {
   emit('choose', idx)
 }
 
+// What deferred deck setup actually asks: trauma is ChooseAmounts, Eldritch
+// Brand and Spiritual Healing are ChooseOne, and Ultimatums & Boons arrives
+// labelled (ChooseDeck routes that one to its own panel). Question types with a
+// renderer of their own -- PickDestiny, PickSupplies, Read -- are deliberately
+// absent: <Question> draws nothing for them.
+function isDeckSetupQuestion(question: Question | null | undefined): boolean {
+  if (!question) return false
+  const inner = question.tag === 'QuestionLabel' ? question.question : question
+  return inner.tag === 'ChooseAmounts' || inner.tag === 'ChooseOne'
+}
+
 const chooseDeck = computed(() => {
   if (props.game.campaign && props.game.campaign.step?.tag === 'ChooseDecksStep') return true
-  // Deck screen only while someone actually has a ChooseDeck question parked.
-  // gameState alone is not enough: it can be stuck at IsChooseDecks with a
-  // different question pending (e.g. after a lost DoneChoosingDecks), and
-  // rendering by state would mask that question behind an inert deck screen.
-  return Object.values(props.game.question).some((q) => {
+
+  const hasDeckQuestion = Object.values(props.game.question).some((q) => {
     if (!q) return false
     if (q.tag === 'ChooseDeck' || q.tag === 'ChooseJoinDeck') return true
     return q.tag === 'QuestionLabel'
       && (q.question.tag === 'ChooseDeck' || q.question.tag === 'ChooseJoinDeck')
   })
+  if (hasDeckQuestion) return true
+
+  // The interactive parts of deck setup -- In the Thick of It's trauma, Eldritch
+  // Brand, starting xp -- are deferred past the deck-selection barrier, so they
+  // run once every seat has answered ChooseDeck but before the continuation that
+  // leaves IsChooseDecks. By then nobody holds a ChooseDeck question and the
+  // campaign step has already moved on to what follows, so these asks would drop
+  // into a floating modal over an empty page. Keep the deck screen up instead:
+  // it renders a seated player's pending question in that player's own row.
+  //
+  // gameState alone is still not enough, and this is the original hazard here
+  // (e.g. after a lost DoneChoosingDecks): the deck screen can only show a
+  // question that belongs to a SEATED player, in that player's row, and only the
+  // shapes <Question> draws. Anything else would be masked behind an inert deck
+  // screen, so it keeps the existing path. Upgrades reuse IsChooseDecks and are
+  // likewise left alone.
+  if (props.game.gameState.tag !== 'IsChooseDecks') return false
+  if (props.game.campaign?.step?.tag === 'UpgradeDeckStep') return false
+
+  const seated = new Set(Object.values(props.game.investigators).map((i) => i.playerId))
+  const pending = Object.entries(props.game.question).filter(([, q]) => !!q)
+  return pending.length > 0 && pending.every(([pid, q]) => seated.has(pid) && isDeckSetupQuestion(q))
 })
 
 

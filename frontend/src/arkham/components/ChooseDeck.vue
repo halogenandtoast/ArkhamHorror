@@ -18,6 +18,7 @@ import OverlayEditor, { type DeckOverlay } from '@/arkham/components/debug/Overl
 import { storeToRefs } from 'pinia';
 import { useSettings } from '@/stores/settings';
 import UltimatumsAndBoonsQuestion from '@/arkham/components/UltimatumsAndBoonsQuestion.vue';
+import LogIcons from '@/arkham/components/LogIcons.vue'
 import NewDeck from '@/arkham/components/NewDeck.vue'
 import DeckToolbar from '@/arkham/components/DeckToolbar.vue'
 import { useI18n } from 'vue-i18n'
@@ -443,13 +444,27 @@ const needsReply = computed(() => {
 
 <template>
   <div class="container scroll-container">
+    <LogIcons />
     <div class="investigators">
       <h2 class="page-title">{{$t('create.chooseYourDeck', players.length)}}</h2>
       <div class="portraits">
         <div class="investigator-row" v-for="player in players" :key="player.id">
           <template v-if="player.tag === 'Chosen'">
-            <div class="portrait">
-              <img :src="portraitImage(player.contents)" />
+            <div class="seated">
+              <div class="portrait">
+                <img :src="portraitImage(player.contents)" />
+              </div>
+              <div class="seated-stats">
+                <span class="stat-chip stat-health">
+                  <svg class="icon"><use xlink:href="#icon-health"></use></svg>
+                  <span class="stat-value">{{ player.contents.health }}</span>
+                </span>
+                <span class="stat-chip stat-sanity">
+                  <svg class="icon"><use xlink:href="#icon-sanity"></use></svg>
+                  <span class="stat-value">{{ player.contents.sanity }}</span>
+                </span>
+              </div>
+              <p class="seated-name">{{ player.contents.name.title }}</p>
             </div>
             <div v-if="question && playerId == player.contents.playerId" class="question">
               <UltimatumsAndBoonsQuestion
@@ -705,7 +720,90 @@ const needsReply = computed(() => {
         }
       }
     }
+    /* The amount panel's in-game mauve fights the coloured trauma fields, but a
+       flat black wash leaves the purple submit stranded on blue-grey. A faint
+       violet cast stays dark enough for the red and blue fields to read while
+       giving the button a ground it belongs to. */
+    & :deep(.amount-contents) {
+      background: rgba(38, 28, 47, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+
+      /* In game the submit bleeds edge to edge, so the form carries the side
+         padding and none at the bottom. Here it is an ordinary button sitting
+         under the fields, which wants the panel padded evenly instead. */
+      .amount-form {
+        padding: 16px;
+      }
+
+      /* The in-game #3f2f48 lands at the same lightness as this panel, so it
+         read as a smudge rather than a button. Same hue family, lifted clear of
+         the ground; white on it is 5.8:1. */
+      .amount-submit {
+        transform: none;
+        border-radius: 6px;
+        background: #7e4f9e;
+      }
+
+      .amount-submit:hover:not([disabled]) {
+        background: #8d5bb0;
+      }
+
+      /* The global disabled grey is !important, and a flat #999 slab is the
+         first thing this prompt shows (both fields start at 0). Mute the purple
+         instead of replacing it. */
+      .amount-submit[disabled] {
+        background-color: rgba(126, 79, 158, 0.38) !important;
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
   }
+}
+
+.seated {
+  width: 100px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.seated-stats {
+  display: flex;
+  gap: 6px;
+}
+
+.seated-stats .stat-chip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 0;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-weight: 700;
+}
+
+.seated-stats .icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+.stat-health .icon { color: #f88; }
+.stat-sanity .icon { color: #8af; }
+
+.seated-name {
+  margin: 0;
+  font-size: 0.7em;
+  line-height: 1.3;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .portrait {

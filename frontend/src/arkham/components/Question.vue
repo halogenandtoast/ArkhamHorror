@@ -1074,26 +1074,28 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
                 <legend v-html="paymentAmountsLabel"></legend>
                 <div class="amount-choice-list">
                   <template v-for="amountChoice in paymentAmountsChoices" :key="amountChoice.choiceId">
-                    <div v-if="amountChoice.maxBound !== 0" class="amount-choice">
-                      <label :for="`payment-choice-${amountChoice.choiceId}`">{{ amountChoice.title }}</label>
-                      <span class="amount-input-wrapper">
+                    <div
+                      v-if="amountChoice.maxBound !== 0"
+                      class="amount-choice"
+                      :class="traumaKind(amountChoice.title) ? `amount-choice--${traumaKind(amountChoice.title)}` : null"
+                    >
+                      <label :for="`payment-choice-${amountChoice.choiceId}`">
                         <span
                           v-if="traumaIcon(amountChoice.title)"
-                          class="amount-input-icon"
-                          :class="`amount-input-icon--${traumaKind(amountChoice.title)}`"
+                          class="amount-choice-icon"
                           :style="traumaIconStyle(amountChoice.title)"
                         ></span>
-                        <input
-                          :id="`payment-choice-${amountChoice.choiceId}`"
-                          class="amount-input"
-                          :class="{ 'with-icon': traumaIcon(amountChoice.title) }"
-                          type="number"
-                          :min="amountChoice.minBound"
-                          :max="amountChoice.maxBound"
-                          v-model.number="amountSelections[amountChoice.choiceId]"
-                          onclick="this.select()"
-                        />
-                      </span>
+                        <span>{{ amountChoice.title }}</span>
+                      </label>
+                      <input
+                        :id="`payment-choice-${amountChoice.choiceId}`"
+                        class="amount-input"
+                        type="number"
+                        :min="amountChoice.minBound"
+                        :max="amountChoice.maxBound"
+                        v-model.number="amountSelections[amountChoice.choiceId]"
+                        onclick="this.select()"
+                      />
                     </div>
                   </template>
                 </div>
@@ -1126,27 +1128,29 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
                 <legend v-html="amountsLabel"></legend>
                 <div class="amount-choice-list">
                   <template v-for="paymentChoice in chooseAmountsChoices" :key="paymentChoice.choiceId">
-                    <div v-if="paymentChoice.maxBound !== 0" class="amount-choice">
-                      <label :for="`choice-${paymentChoice.choiceId}`" v-html="paymentChoiceLabel(paymentChoice.label)"></label>
-                      <span class="amount-input-wrapper">
+                    <div
+                      v-if="paymentChoice.maxBound !== 0"
+                      class="amount-choice"
+                      :class="traumaKind(paymentChoice.label) ? `amount-choice--${traumaKind(paymentChoice.label)}` : null"
+                    >
+                      <label :for="`choice-${paymentChoice.choiceId}`">
                         <span
                           v-if="traumaIcon(paymentChoice.label)"
-                          class="amount-input-icon"
-                          :class="`amount-input-icon--${traumaKind(paymentChoice.label)}`"
+                          class="amount-choice-icon"
                           :style="traumaIconStyle(paymentChoice.label)"
                         ></span>
-                        <input
-                          :id="`choice-${paymentChoice.choiceId}`"
-                          class="amount-input"
-                          :class="{ 'with-icon': traumaIcon(paymentChoice.label) }"
-                          type="number"
-                          :min="paymentChoice.minBound"
-                          :max="paymentChoice.maxBound"
-                          v-model.number="amountSelections[paymentChoice.choiceId]"
-                          :name="`choice-${paymentChoice.choiceId}`"
-                          onclick="this.select()"
-                        />
-                      </span>
+                        <span v-html="paymentChoiceLabel(paymentChoice.label)"></span>
+                      </label>
+                      <input
+                        :id="`choice-${paymentChoice.choiceId}`"
+                        class="amount-input"
+                        type="number"
+                        :min="paymentChoice.minBound"
+                        :max="paymentChoice.maxBound"
+                        v-model.number="amountSelections[paymentChoice.choiceId]"
+                        :name="`choice-${paymentChoice.choiceId}`"
+                        onclick="this.select()"
+                      />
                     </div>
                   </template>
                 </div>
@@ -1708,6 +1712,9 @@ h2 {
 }
 
 .amount-choice label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: #f6edf8;
   font-size: 1.05em;
   font-weight: 700;
@@ -1715,34 +1722,46 @@ h2 {
   text-align: left;
 }
 
-.amount-input-wrapper {
-  position: relative;
-  display: block;
-  min-width: 0;
+/* Physical and mental trauma are the same shape of question but not the same
+   decision, so each field carries its own colour rather than an icon tucked
+   inside a shared input. */
+.amount-choice--health {
+  background: rgba(174, 66, 54, 0.18);
+  border-color: rgba(232, 139, 128, 0.38);
 }
 
-.amount-input-icon {
-  position: absolute;
-  top: 50%;
-  left: 0.55em;
-  width: 1.1em;
-  height: 1.1em;
-  transform: translateY(-50%);
-  pointer-events: none;
+.amount-choice--horror {
+  background: rgba(44, 127, 192, 0.18);
+  border-color: rgba(124, 192, 240, 0.38);
+}
+
+.amount-choice--health label {
+  color: #f3c3bd;
+}
+
+.amount-choice--horror label {
+  color: #bcdff7;
+}
+
+.amount-choice--health .amount-input {
+  background: #f4ece9;
+}
+
+.amount-choice--horror .amount-input {
+  background: #e9eef4;
+}
+
+.amount-choice-icon {
+  flex-shrink: 0;
+  width: 1.15em;
+  height: 1.15em;
+  background-color: currentColor;
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
-}
-
-.amount-input-icon--health {
-  background-color: #d44;
-}
-
-.amount-input-icon--horror {
-  background-color: #1f6fbf;
 }
 
 .amount-input {
@@ -1757,10 +1776,6 @@ h2 {
   font-weight: 800;
   text-align: center;
   box-sizing: border-box;
-}
-
-.amount-input.with-icon {
-  padding-left: 2em;
 }
 
 .amount-input::-webkit-inner-spin-button,

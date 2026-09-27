@@ -13,9 +13,9 @@ import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
 import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers (
   placeValeLanternAtNearestLocation,
+  valeLanternIgnoresForcedEffect,
  )
 import Arkham.Trait (Trait (Dark))
-import Arkham.Window qualified as Window
 
 newtype ValeLanternAFaintHope = ValeLanternAFaintHope AssetAttrs
   deriving anyclass IsAsset
@@ -76,15 +76,7 @@ instance HasModifiersFor ValeLanternAFaintHopeEffect where
       [CannotTriggerAbilityMatching $ AbilityIsForcedAbility <> AbilityOnLocation (LocationWithId lid)]
 
 instance RunMessage ValeLanternAFaintHopeEffect where
-  runMessage msg e@(ValeLanternAFaintHopeEffect attrs) = runQueueT $ case msg of
-    Do (CheckWindows ws) | any isRevealAfterWindow ws -> disableReturn e
-    _ -> ValeLanternAFaintHopeEffect <$> liftRunMessage msg attrs
-   where
-    destLid =
-      attrs.metadata >>= \case
-        EffectMetaTarget (LocationTarget lid) -> Just lid
-        _ -> Nothing
-    isRevealAfterWindow w = case w.kind of
-      Window.RevealLocation _ loc -> w.timing == #after && Just loc == destLid
-      Window.RevealLocationByGroup loc -> w.timing == #after && Just loc == destLid
-      _ -> False
+  runMessage msg (ValeLanternAFaintHopeEffect attrs) = runQueueT do
+    valeLanternIgnoresForcedEffect msg attrs >>= \case
+      Just attrs' -> pure $ ValeLanternAFaintHopeEffect attrs'
+      Nothing -> ValeLanternAFaintHopeEffect <$> liftRunMessage msg attrs

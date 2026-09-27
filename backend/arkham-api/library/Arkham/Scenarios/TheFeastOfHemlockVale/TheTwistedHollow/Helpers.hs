@@ -6,7 +6,15 @@ import Arkham.Classes.Entity
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
+import Arkham.Effect.Import (
+  EffectAttrs,
+  EffectMetadata (..),
+  disable,
+  getEffectMetaDefault,
+  setEffectMeta,
+ )
 import Arkham.Enemy.Types (Enemy, Field (..))
+import Arkham.GameEnv (getWindowDepth)
 import Arkham.Helpers.Location (getLocationOf)
 import Arkham.Helpers.Scenario (scenarioFieldMap)
 import Arkham.I18n
@@ -19,7 +27,9 @@ import Arkham.Message.Lifted.Queue
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (..))
+import Arkham.Target (Target (LocationTarget))
 import Arkham.Token
+import Arkham.Window qualified as Window
 import Arkham.Zone
 
 scenarioI18n :: (HasI18n => a) -> a
@@ -127,3 +137,33 @@ drawEnemyFromPursuit :: ReverseQueue m => InvestigatorId -> EnemyId -> m ()
 drawEnemyFromPursuit iid eid = do
   push $ UpdateEnemy eid $ Update EnemyDrawnFrom Nothing
   push $ InvestigatorDrawEnemy iid eid
+
+{- | Vale Lantern's "they ignore that location's forced effect(s)" suppression, shared by
+both lit sides. The suppression has to last the whole @RevealLocation #after@ window, and
+that window is processed more than once: @runWindow@ queues another @Do (CheckWindows ws)@
+behind every ask, so a window carrying two forced abilities (Deepening Dark and the
+location itself) comes back around. Disabling on the first pass let the location's own
+Forced ability through on a later one (#5782), so arm on the way in -- recording the window
+depth, as Fox Mask does -- and disable once that window closes. 'Nothing' means "not mine",
+so the caller falls through to the generic effect runner.
+-}
+valeLanternIgnoresForcedEffect
+  :: ReverseQueue m => Message -> EffectAttrs -> m (Maybe EffectAttrs)
+valeLanternIgnoresForcedEffect msg attrs = case msg of
+  Do (CheckWindows ws) | any isRevealAfterWindow ws -> do
+    depth <- getWindowDepth
+    pure $ Just $ setEffectMeta (Just depth) attrs
+  EndCheckWindow -> do
+    depth <- getWindowDepth
+    case getEffectMetaDefault @(Maybe Int) Nothing attrs of
+      Just d | depth < d -> disable attrs >> pure (Just attrs)
+      _ -> pure Nothing
+  _ -> pure Nothing
+ where
+  destLid = case attrs.metadata of
+    Just (EffectMetaTarget (LocationTarget lid)) -> Just lid
+    _ -> Nothing
+  isRevealAfterWindow w = case w.kind of
+    Window.RevealLocation _ loc -> w.timing == #after && Just loc == destLid
+    Window.RevealLocationByGroup loc -> w.timing == #after && Just loc == destLid
+    _ -> False

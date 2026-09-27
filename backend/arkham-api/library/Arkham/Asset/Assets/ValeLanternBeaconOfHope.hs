@@ -10,6 +10,7 @@ import Arkham.Helpers.Window (getRevealedLocation)
 import Arkham.Matcher
 import Arkham.Scenarios.TheFeastOfHemlockVale.TheTwistedHollow.Helpers (
   placeValeLanternAtNearestLocation,
+  valeLanternIgnoresForcedEffect,
  )
 import Arkham.Trait (Trait (Dark, Forest))
 import Arkham.Window (Window (..))
@@ -81,15 +82,7 @@ instance HasModifiersFor ValeLanternBeaconOfHopeEffect where
       [CannotTriggerAbilityMatching $ AbilityIsForcedAbility <> AbilityOnLocation (LocationWithId lid)]
 
 instance RunMessage ValeLanternBeaconOfHopeEffect where
-  runMessage msg e@(ValeLanternBeaconOfHopeEffect attrs) = runQueueT $ case msg of
-    Do (CheckWindows ws) | any isRevealAfterWindow ws -> disableReturn e
-    _ -> ValeLanternBeaconOfHopeEffect <$> liftRunMessage msg attrs
-   where
-    destLid =
-      attrs.metadata >>= \case
-        EffectMetaTarget (LocationTarget lid) -> Just lid
-        _ -> Nothing
-    isRevealAfterWindow w = case w.kind of
-      Window.RevealLocation _ loc -> w.timing == #after && Just loc == destLid
-      Window.RevealLocationByGroup loc -> w.timing == #after && Just loc == destLid
-      _ -> False
+  runMessage msg (ValeLanternBeaconOfHopeEffect attrs) = runQueueT do
+    valeLanternIgnoresForcedEffect msg attrs >>= \case
+      Just attrs' -> pure $ ValeLanternBeaconOfHopeEffect attrs'
+      Nothing -> ValeLanternBeaconOfHopeEffect <$> liftRunMessage msg attrs

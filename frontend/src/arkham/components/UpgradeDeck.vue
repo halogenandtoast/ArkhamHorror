@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { displayTabooList } from '@/arkham/taboo';
 import { portraitImage } from '@/arkham/cardImages'
-import { ref, computed, inject, onUnmounted } from 'vue';
-import { fetchGame, fetchGameStep, upgradeDeck } from '@/arkham/api';
+import { ref, computed, inject } from 'vue';
+import { fetchGame, upgradeDeck } from '@/arkham/api';
+import { useStepPoller } from '@/arkham/composables/useStepPoller';
 import { localizeArkhamDBBaseUrl, processArkhamBuildDeck } from '@/arkham/helpers';
 import { ArkhamDbDecklist } from '@/arkham/types/Deck';
 import { Game } from '@/arkham/types/Game';
@@ -39,7 +40,6 @@ const props = defineProps<Props>()
 const emit = defineEmits<{ choose: [value: number]; update: [game: Game] }>()
 const choose = (idx: number) => emit('choose', idx)
 const waiting = ref(false)
-let waitingPoll: ReturnType<typeof setTimeout> | null = null
 
 function hasUpgradeQuestions(game: Game): boolean {
   return Object.values(game.question).some((question) =>
@@ -48,41 +48,22 @@ function hasUpgradeQuestions(game: Game): boolean {
   )
 }
 
-// Last step we pulled the full game for; null means "not probed yet", so the
-// first tick resyncs once. Probing the step first keeps this off the expensive
-// game endpoint for every tick where nobody has answered anything.
-let waitingStep: number | null = null
-
-async function pollWaitingGame() {
-  try {
-    const step = await fetchGameStep(props.game.id)
-    if (step !== waitingStep) {
-      waitingStep = step
-      const { game } = await fetchGame(props.game.id)
-      emit('update', game)
-      if (!hasUpgradeQuestions(game)) {
-        waiting.value = false
-        waitingPoll = null
-        return
-      }
-    }
-    waitingPoll = setTimeout(pollWaitingGame, 1000 + Math.floor(Math.random() * 500))
-  } catch {
-    waitingPoll = setTimeout(pollWaitingGame, 2000)
-  }
-}
+// Probing the step first keeps this off the expensive game endpoint for every
+// tick where nobody has answered anything.
+const waitingPoll = useStepPoller({
+  gameId: () => props.game.id,
+  onChange: async () => {
+    const { game } = await fetchGame(props.game.id)
+    emit('update', game)
+    if (!hasUpgradeQuestions(game)) waiting.value = false
+  },
+  shouldContinue: () => waiting.value,
+})
 
 function waitForOtherPlayers() {
   waiting.value = true
-  if (waitingPoll === null) {
-    waitingStep = null
-    waitingPoll = setTimeout(pollWaitingGame, 500)
-  }
+  waitingPoll.start()
 }
-
-onUnmounted(() => {
-  if (waitingPoll !== null) clearTimeout(waitingPoll)
-})
 const deck = ref<string | null>(null)
 const deckUrl = ref<string | null>(null)
 const deckList = ref<ArkhamDbDecklist | null>(null)

@@ -39,7 +39,6 @@ import processingJSON from '@/assets/processing.json'
 import api from '@/api'
 import {
   fetchGame,
-  fetchGameStep,
   buildWebsocketUrl,
   undoChoice,
   undoScenarioChoice,
@@ -56,6 +55,7 @@ import { useSettings } from '@/stores/settings'
 import { useUserStore } from '@/stores/user'
 import { useEventStore } from '@/arkham/stores/event'
 import { useEventTimer } from '@/arkham/composables/useEventTimer'
+import { useStepPoller } from '@/arkham/composables/useStepPoller'
 import { awaitingOrganizer, type SharedEventState } from '@/arkham/types/EpicEvent'
 import { useMenu } from '@/composable/menu'
 import useEmitter from '@/composable/useEmitter'
@@ -766,45 +766,24 @@ watch(questionPlayerId, (owner) => {
 // after the upgrade component has unmounted, so its local waiting poll cannot
 // carry the UI through the whole chain. Keep the game view synchronized until
 // the engine leaves IsChooseDecks.
-let chooseDecksPoll: ReturnType<typeof setTimeout> | null = null
-// Last step this poll has already pulled the full game for. Null means we have
-// not probed yet, which counts as "changed" so the first tick resyncs once.
-let chooseDecksStep: number | null = null
-// Jittered so a table full of clients cannot line up on the same instant.
-const chooseDecksInterval = () => 750 + Math.floor(Math.random() * 250)
-
-async function pollChooseDecksState() {
-  try {
-    const step = await fetchGameStep(props.gameId)
-    if (step !== chooseDecksStep) {
-      chooseDecksStep = step
-      const latest = await fetchGame(props.gameId, props.spectate)
-      game.value = latest.game
-      if (latest.playerId && !latest.game.question[playerId.value ?? '']) {
-        playerId.value = latest.playerId
-      }
-      followPendingUpgradeQuestion(latest.game)
+const chooseDecksPoll = useStepPoller({
+  gameId: () => props.gameId,
+  onChange: async () => {
+    const latest = await fetchGame(props.gameId, props.spectate)
+    game.value = latest.game
+    if (latest.playerId && !latest.game.question[playerId.value ?? '']) {
+      playerId.value = latest.playerId
     }
-    if (game.value?.gameState.tag === 'IsChooseDecks') {
-      chooseDecksPoll = setTimeout(pollChooseDecksState, chooseDecksInterval())
-    } else {
-      chooseDecksPoll = null
-    }
-  } catch {
-    chooseDecksPoll = setTimeout(pollChooseDecksState, 1500)
-  }
-}
+    followPendingUpgradeQuestion(latest.game)
+  },
+  shouldContinue: () => game.value?.gameState.tag === 'IsChooseDecks',
+})
 
 watch(
   () => game.value?.gameState.tag,
   (tag) => {
-    if (tag === 'IsChooseDecks' && chooseDecksPoll === null) {
-      chooseDecksStep = null
-      chooseDecksPoll = setTimeout(pollChooseDecksState, 500)
-    } else if (tag !== 'IsChooseDecks' && chooseDecksPoll !== null) {
-      clearTimeout(chooseDecksPoll)
-      chooseDecksPoll = null
-    }
+    if (tag === 'IsChooseDecks') chooseDecksPoll.start()
+    else chooseDecksPoll.stop()
   },
 )
 
@@ -2330,7 +2309,6 @@ onUnmounted(() => {
   focusLightObserver = null
   if (focusLightAnimationFrame !== null) cancelAnimationFrame(focusLightAnimationFrame)
   window.removeEventListener('arkham-setting-change', handleSettingChange)
-  if (chooseDecksPoll !== null) clearTimeout(chooseDecksPoll)
   if (processingTimer !== null) clearTimeout(processingTimer)
   delete (window as any).sendDebug
   delete (window as any).undo

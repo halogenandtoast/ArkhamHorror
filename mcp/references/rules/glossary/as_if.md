@@ -1,0 +1,54 @@
+---
+title: "As if..."
+source: ArkhamDB Rules Reference (https://arkhamdb.com/rules)
+---
+
+# "As if..."
+
+Some card effects allow an investigator to resolve an ability or perform
+an action as if a certain aspect of the game state were altered, using
+the text "as if..." to indicate the difference. The indicated ability or
+action is resolved with the altered game state in mind, but the actual
+game state remains unchanged.
+
+- The game state is considered to be altered throughout the duration of
+  the indicated ability or action, from its initiation (including the
+  paying of its costs, attacks of opportunity, etc) through the
+  resolution of each aspect of its effect, and up until its completion.
+- Other card abilities or game effects resolved during this duration are
+  also resolved with the altered game state in mind.
+- The game state is not physically altered in any way. (e.g. if you are
+  considered to be at a location, you do not move your mini-card to that
+  location, enemies at that location do not automatically move to your
+  threat area, etc.)
+- Unless otherwise stated, an investigator's threat area is not
+  inherently altered during the resolution of the indicated ability or
+  action. (For example, if you are engaged with an enemy prior to
+  resolving an ability "as if" you are at a connecting location, that
+  enemy remains engaged with you and will still make attacks of
+  opportunity, even though it does not leave your shared, actual
+  location.)
+
+*For example: Luke Robinson wants to play Preposterous Sketches, but is
+at a location with no clues. One of the locations next to him has a clue
+on it, so he uses his ability to play Preposterous Sketches as if he
+were at that location and engaged with each enemy at that location. The
+game state is considered to be altered in this way throughout the
+playing of Preposterous Sketches, from its initiation to its resolution.
+Among other things, this might mean: (a) if there is an enemy at that
+location, playing Preposterous Sketches would provoke an attack of
+opportunity, (b) if that location has an ability that would alter the
+cost of playing the card, it would do so, and (c) other card abilities
+that might trigger from Luke drawing 1 or more cards would do so as if
+he were at that connecting location and engaged with that enemy, and so
+on and so forth. Once Preposterous Sketches has finished resolving and
+is placed in the discard pile, Luke is no longer considered to be at
+that location and engaged with each enemy at that location.*
+
+- <span style="color:blue">(Added in FAQ, section 'Frequently Asked
+  Questions')</span> *Q: Does an enemy exhaust when an effect causes it
+  to attack "as if it were the enemy phase?" What about an effect that
+  causes an enemy to attack without that text?* A: Yes, if an enemy
+  attacks "as if it were the enemy phase," it will exhaust after
+  attacking. However, if an effect causes an enemy to attack without
+  that phrasing, the enemy does not exhaust after attacking.

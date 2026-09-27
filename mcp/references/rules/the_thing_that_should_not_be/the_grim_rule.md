@@ -1,0 +1,29 @@
+---
+title: The Grim Rule
+source: ArkhamDB Rules Reference (https://arkhamdb.com/rules)
+---
+
+# The Grim Rule
+
+If players are unable to find the answer to a rules or timing conflict
+in this Rules Reference, resolve the conflict in the manner that the
+players perceive as the worst possible at that moment with regards to
+winning the scenario, and continue with the game.
+
+When investigators are forced to make a choice and there are multiple
+valid options, the lead investigator decides between those options. The
+Grim Rule does not play a part in these choices.
+
+*For example: Locked Door reads “Attach to the location with the most
+clues, and without a Locked Door attached.” If there are 3 locations
+that are tied for the most clues, and none of them already have a Locked
+Door attached, the lead investigator decides between those 3 locations.
+Players are not forced to decide which of those 3 options would be the
+objectively worst option.*
+
+The Grim Rule only comes into effect if players are unable to find the
+answer to a rules or timing conflict, and are thus unable to continue
+playing the game. It is designed to keep the game moving when looking up
+the correct answer would be too time-consuming or inconvenient for the
+players. The Grim Rule is not an exhaustive answer to rules/timing
+conflicts.

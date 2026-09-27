@@ -319,6 +319,12 @@ nobody in reach needs, or a focus with every allowed skill already focused or
 the focus limit already reached, is not worth offering.
 -}
 
+-- | Whether this investigator holds a particular card, which cards name each other by.
+holdsCard :: InvestigatorId -> CardCode -> GameM Bool
+holdsCard iid wanted = do
+  i <- getInvestigator iid
+  anyM (fmap (== wanted) . cardCode) [c | c <- i.assets, c `notElem` i.lockedAssets]
+
 -- | Whether this card's once-per-round ability has already been spent.
 usedThisRound :: CardId -> InvestigatorId -> GameM Bool
 usedThisRound cid iid = elem cid . (.usedAssets) <$> getInvestigator iid

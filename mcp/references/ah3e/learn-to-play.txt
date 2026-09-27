@@ -1,0 +1,2292 @@
+Learn to Play
+
+Welcome to Arkham!
+The year is 1926, and it is the height of the Roaring Twenties. Flappers dance till dawn
+in smoke-filled speakeasies, drinking alcohol supplied by rum runners and the mob. It’s a
+celebration to end all celebrations in the aftermath of the War to End All Wars.
+Yet a dark shadow grows in the city of Arkham. Alien entities known as Ancient Ones
+lurk in the emptiness beyond space and time, writhing at the thresholds between worlds.
+Occult rituals must be stopped and alien creatures destroyed before the Ancient Ones
+make our world their ruined dominion.
+Only a handful of investigators stand against the Arkham Horror. Will they prevail?
+Arkham Horror is a board game of pulp action and horror for one to six players,
+playable in two to three hours. The game is set in the fictional town of Arkham,
+Massachusetts, made famous by H.P. Lovecraft in his writings about the
+Cthulhu mythos.
+
+Game Overview
+Sidebars
+Sidebars like this one appear throughout
+this booklet to provide context for
+rules, visual diagrams, strategy tips, or
+additional narrative.
+
+Terrible creatures from beyond time and space threaten the city of Arkham. The
+players must join forces to beat back the approaching doom. If left unchecked,
+these ancient evils will rise up and destroy not only Arkham, but the entire world.
+Arkham Horror is a cooperative game. All players are on the same team and win
+or lose the game together. Each player controls an intrepid investigator—one of
+the unlikely few who have become aware of the growing threat to our world. The
+investigators explore the city, encountering places, people, and creatures both
+mundane and supernatural. Through these adventures, the investigators hope to gain
+the clues and resources needed to confront and ultimately thwart the Ancient Ones.
+
+Learning How to Play
+This Learn to Play booklet is designed to teach new players how to play Arkham
+Horror. To make your first game easier, this booklet omits some of the more
+complex rules and game interactions. The Rules Reference contains the complete
+rules of the game and addresses all exceptions that are not addressed here. Questions
+that arise during play are best answered by the Rules Reference.
+
+2
+
+Components
+ApproAch of AzAthoth
+
+d an iela reyes
+T h e M eChan iC
+
+The Story So Far...
+At the center of infinity slumbers
+Azathoth, lulled to sleep by the ceaseless
+piping of accursed flutes. Yet some
+mortals would seek to draw the infinite
+power and calamity of the Blind Idiot
+God to them, and thereby doom all of
+humanity…
+
+Love For the Job—After you perform a
+gather resources action, you may focus
+one skill of your choice.
+“You got a job that needs doing,
+I’m your girl.”
+
+Focus Limit: 3
+
+Starting Space
+
+7
+
+Train Station
+Reckoning
+
+3
+3
+1
+3
+3
+
+For each cultist monster, place
+one doom in its space. (If it’s in
+a street space, place the doom in
+an adjacent neighborhood space
+instead.)
+
+5
+Lore
+Influence
+Observation
+Strength
+Will
+
+Rules Reference
+
+4 Scenario Sheets
+
+12 Map Tiles
+5 Neighborhoods
+7 Streets
+
+Rules Reference
+
+1
+
+1. Action PhAse
+You perform up to two actions. (You can perform
+each action no more than once per round. While
+engaged with a monster, you can only focus,
+attack, or evade.)
+
+12 Investigator Sheets
+With matching token and plastic stand
+
+Outbreak
+
+Windows are shut, curtains drawn, doors
+locked. Citizens hurry through the streets
+casting glances over their shoulders. A sinister
+unease gathers in the city, lurking on the
+rooftops and pooling in every shadow. As
+dread mounts, people and animals react in
+unpredictable ways, fleeing or lashing out
+at those around them. And with each new
+outbreak of fear and violence, the Ancient One
+grows stronger...
+
+2. Monster PhAse
+1. Each ready monster activates, usually by
+moving. (A monster that moves into your
+space engages you.)
+2. Each engaged monster deals damage and
+horror to the investigator it is engaged with.
+3. Each exhausted monster readies.
+
+If a space has four or more doom,
+remove three doom from that space.
+Then place one doom in each other
+space in that neighborhood and one
+doom on the scenario sheet.
+
+3. encounter PhAse
+You draw and resolve an encounter matching your
+space (unless you are engaged with a monster).
+
+4. Mythos PhAse
+You draw two tokens from the mythos cup and
+resolve their effects one at a time. (All investigators
+do this in player order.)
+
+Dow
+nt
+Northside
+reets
+The St own
+
+Dow
+nt
+Northside
+reets
+The St own
+
+1
+
+6 Reference Cards
+
+32 Headline Cards
+
+40 Archive Cards
+
+36 Anomaly Cards
+
+96 Event Cards
+72 Encounter Cards
+Event and encounter cards have the same backs. Don’t sort until setup.
+Cond itio
+Condition
+n
+n
+Cond itio
+
+R
+e
+obed Fi
+heStalker
+Hooded
+ak
+By
+gu re
+Monsteer
+Sw if t
+— Cultist
+Monster
+—khe
+Human
+Hu ma
+— Bya
+
+The Mechanic
+
+While res
+olv a
+While
+resolving
+test,tes
+only 6s
+diet,.
+onae
+and 6s
+lling
+4s, 5s,
+cou
+— Ro
+nt hasuc
+come
+count
+as successes.
+Reckoning
+r deb as
+dieses.
+you
+isces
+1,Aft
+er
+d.
+On aAfter
+you
+pass
+aatest,
+fail(Th
+car
+syou
+thicar
+test,
+d .)
+due; flipdis
+thiscard.
+discard
+this
+test
+card.
+If
+is not
+lyou
+card
+wo
+rol
+uld
+this
+of
+bec
+k
+If you
+would the
+become
+blessed,
+bac
+ome cu
+discar
+so.)
+dorse
+lookd at
+thi
+s car
+discard
+this
+instead.
+rucdtedinsto
+(Do not
+inst
+tead.
+il you are
+
+Spa at
+.
+om
+un
+ststado
+Spawn
+most
+doom.
+ble
+space.
+wn atatmo
+Patro
+Spal—
+Movevetow
+ard and
+tow
+Hunter—Move
+toward
+nd
+spa
+ard unsta
+ce.
+EnMo
+gaglowest
+est
+ble
+Hunter—
+ngage
+.
+hig
+engage low hest .
+
+37 Starting Cards
+
+12 Condition Cards
+
+Blessed
+ct
+Cursed
+Dark Pa
+
+Daniela Reyes
+
+12 Ally Cards
+
+28 Item Cards
+
+10 Spell Cards
+
+26 Special Cards
+
+48 Clue/Doom
+Tokens
+
+42 Horror Tokens
+36 “1 horror”
+6 “3 horror”
+
+30 Focus Tokens
+6 for each skill
+
+n Cu ltis
+
+t
+
+32
+2
+
+unt
+
+42 Damage Tokens
+36 “1 damage”
+6 “3 damage”
+
+5 Anomaly
+Tokens
+
+Monster
+
+6 Dice
+
+62 Monster Cards
+
+40 Money Tokens
+31 “1 dollar”
+6 “5 dollar”
+
+24 Remnant
+Tokens
+
+Event Deck Holder
+Assemble as shown
+
+18 Mythos Tokens
+
+10 Marker Tokens
+
+6 Activation
+Tokens
+
+Setup
+To set up the game, follow these steps in order:
+ApproAch of AzAth
+
+oth
+
+The Story So Far...
+At the center of infini
+ty
+Azathoth, lulled to sleep slumbers
+piping of accursed flutes by the ceaseless
+. Yet some
+ap key ls would seek to draw the
+mmorta
+infinite
+power and calamity
+of the Blind Idiot
+oken
+doom T
+God
+to them, and thereb
+y doom all of
+huma
+iguRe
+Robed F nity…
+
+ApproAch of AzAth
+
+oth
+
+easTTown
+
+Monster Deck
+ss watcher, high
+Abyssal servant, eyele
+r x2, occult
+priest, hooded stalke
+x3, swift
+figure
+ritualist x2, robed
+d of Tindalos
+byakhee, and all houn
+monsters
+Mythos Cup
+, , , ,
+, , , , ,
+s
+, , and three blank
+Finalize Setup
+codex.
+the
+to
+3
+and
+2
+Add cards
+deck using the
+Create the anomaly
+cards.
+“Temporal Fissure”
+
+Starting Space
+Reckoning
+
+For each cultist mons
+ter, place
+one doom in its space
+. (If it’s in
+a street space, place
+the doom in
+an adjacent neighborho
+od space
+instead.)
+
+meRchanT
+disTRicT
+
+downTown
+
+RiveRTown
+
+Train Station
+
+noRThside
+
+The Streets Deck
+
+4
+
+As a group, choose one of the available scenario sheets. For your first game, we
+recommend “Approach of Azathoth.” Place that sheet in the play area. Return all
+other scenario sheets to the game box.
+
+2. Prepare Board and Encounters
+Arrange the neighborhood and street tiles as shown on the back of the scenario sheet.
+Each street tile has an icon indicating its type. Use tiles with the indicated icons.
+Shuffle the encounter cards separately to create the encounter decks. Use only the
+steet cards and the neighborhood cards that correspond to the neighborhoods used
+in the current scenario—for “Approach of Azathoth,” use Downtown, Easttown,
+Merchant District, Northside, and Rivertown. There are exactly eight cards in each
+of these decks. Be careful not to accidentally include any event cards (see step
+three). Return all other neighborhood cards to the game box.
+
+Scenario Sheet
+
+The
+Streets
+The
+TheStreets
+Streets
+
+1. Choose Scenario
+
+Northside
+Northside
+Northside
+
+Downtown
+Downtown
+Downtown
+
+Easttown
+Easttown
+Easttown
+
+Neighborhood Decks
+
+Merchant
+District
+Merchant
+MerchantDistrict
+District
+
+Rivertown
+Rivertown
+Rivertown
+
+3. Prepare Event Deck
+
+ Hibb’s Roadhouse
+
+Each scenario has a unique deck of event cards that correspond to the five
+neighborhoods in that scenario. Event cards are kept in a single deck despite not
+sharing the same card back.
+
+The liquor and conversation in the roadhouse
+work wonders for your weary mind. You or an ally
+recovers two sanity. You hear a distinct clacking
+sound and look around for the source (). If you
+pass, you see a figure with cloven hooves slip out the
+door; you gain one clue from your neighborhood.
+
+There is an identifying label along the bottom-left of each event card that indicates
+which scenario that card belongs to (see sidebar). Take the 24 event cards for the
+“Approach of Azathoth” scenario, shuffle them, and place them facedown in the
+event deck holder.
+
+“They’re a strange lot,” says Sheriff Engle. “We
+rounded ‘em up by the river.” You interrogate the
+robed figures in the holding cell (). If you pass,
+they won’t talk, but you notice a symbol on their
+robes, a swirling ribbon threaded through a circle;
+you gain one clue from your neighborhood.
+
+Police Station
+
+Velma’s Diner
+
+Return the event cards for the other scenarios to the game box.
+
+“Slice of pie, hon?” offers Velma. You or an ally
+recovers two health. Velma returns a moment later.
+“Slice of pie, hon?” You may spend $1 to order
+another. If you do, the event repeats in a loop until
+you leave; you or an ally recovers two health and
+you gain one clue from your neighborhood.
+
+1/24
+
+Event Encounter (Approach of Azathoth)
+
+Event Deck Holder
+
+Event cards have card backs that are
+identical to neighborhood cards. They
+can be differentiated from neighborhood
+cards by the clue () icon in the top-left
+corner and the scenario name along the
+bottom of the card.
+
+The event deck holder keeps the
+event deck at an angle to allow you
+to more easily draw cards from both
+the top and bottom of the deck.
+
+4. Create Monster Deck
+Gather the monster cards indicated in the “Monster Deck” section on the back of
+the scenario sheet. Return all other monster cards to the game box.
+Place the starting monsters as indicated on the back of the scenario sheet—for
+“Approach of Azathoth” place one robed figure on Independence Square and a second
+robed figure on the Black Cave.
+Robed Figure
+Monster — Human Cultist
+
+Place the monsters in the
+indicated spaces ready
+side up (the side with the
+larger art showing).
+
+Different Card Backs
+The cards in the event and monster decks
+have different card backs, so you can
+easily tell what card is on top of the deck.
+After you shuffle a set of event or
+monster cards, cut the deck so the top
+card is randomized.
+
+2
+Spawn at unstable space.
+Patrol—Move toward unstable
+space. Engage highest .
+
+Then, shuffle the remaining cards to form the monster deck. Place it ready side up
+near the board.
+
+5. Create Mythos Cup
+The mythos cup is an opaque container (such as a dice bag, a bowl, or the lid of the
+game box) from which mythos tokens will be drawn at random. You will need to
+provide your own mythos cup.
+Gather the mythos tokens in the quantities indicated on the back of the scenario sheet
+and put them into the mythos cup. Return the other mythos tokens to the game box.
+
+Mythos Tokens
+
+5
+
+W E HAVE
+NO ON E TO
+BLAM E BU
+T OU RSEL
+VES
+Opinion: Our
+this path • New choices have placed us on
+civic engagem
+• Advertiser dese
+ent
+rves its share of required
+blame
+by Doyle Jefferies,
+editor in chief.
+Arkham, Mass.
+Headline
+Place two
+unless you gaindoom in your space
+a dark pact
+condition.
+(If you are in
+a street space,
+place the
+doom in an adja
+cent neig
+space instead.) hborhood
+
+1
+
+Headline Cards
+
+6. Create Headline Deck
+Shuffle the headline cards and deal 13 of them into a facedown deck. These 13 cards
+are the headline deck. Return the other headline cards to the game box.
+
+7. Prepare Assets and Display
+Separately shuffle the item cards, ally cards, and spell cards to form three decks and
+place them in the play area. Keep the special cards and condition cards sorted and
+place them off to the side (see the sidebar for more information).
+Take the top five cards of the item deck and place them in a faceup row next to the
+item deck. This row of cards is called the display. The items in the display can be
+gained or bought by having encounters during the game. Certain locations—such
+as the general store—allow you to buy items from the display by spending money.
+3
+
+2
+
+6
+
+Blessed
+Cond ition
+
+While resolv
+ing
+and 6s count a test, 4s, 5s,
+as successes.
+After you fai
+l a test,
+discard this car
+d.
+If you would
+become curse
+discard this car
+d,
+d instead.
+
+Special cards can be items, allies, spells,
+or talents, but all share the same card
+back shown above. Conditions are
+double-sided. You will be instructed to
+find specific special or condition cards
+by name, so keep each deck organized
+alphabetically.
+
+.38 Revolver
+
+Allies
+
+Spells
+
+3
+
+Item — Common Weapon
+
+Action: An investigator or
+ally in your space recovers one
+health. (You are an investigator
+in your space.)
+
+You get +5  as part
+of an attack action.
+
+Items
+
+Each 6 you roll as part
+of an attack action counts
+as two successes.
+
+The Display
+
+Separate all tokens by type and keep them nearby for easy access along with the dice.
+
+Horror Tokens
+
+Focus Tokens
+
+Money Tokens
+
+Déjà Vu
+
+The day daw
+
+ns the
+
+color of ham
+with a stillness
+AnomAlies
+and chill tha mered lead ,
+gabled
+t sett
+
+roofs of
+les over
+go through you Arkham and lingers. As the
+you
+People walk with theirshak
+heads
+down, r mor
+shoulders
+ning routine
+e the
+feel
+of having don , you cannot
+hunched.
+With each new oddity,
+it ing
+becomes
+e it before— the
+breakfas
+eakto pretend thatsame
+t,
+theBut
+Outbrharder
+nothing
+is
+wrong.
+sam
+e
+hea
+new
+dlin
+spaper warnin
+es in the
+g
+the vanishings,
+the
+strange
+lights,
+the
+sightings
+rs
+of
+disa
+doo
+goin
+ppe
+wn,
+gs-o
+ara
+s dra creatures, they aren.not
+And a
+curtain
+note, in your nces and odd
+inhuman
+something
+shut, of
+the streetsreading “The Dae
+handwriting,
+Windows are s hurthat
+ry thro
+mon
+canugh
+be ignored…at
+least, not for long.
+sinister
+locked. Citizen over their shoulders. A at the train station .” Sultan approaches. Meet
+casting glances in the city, lurking on the
+As
+ers
+ow.
+gath
+shad
+ase
+y
+une
+When
+three
+doom or a
+ever a space hast in
+When
+pooling in
+reac
+the
+and
+s
+re
+mal
+tops
+are
+ani
+roof
+three or more
+neighborhood hasout
+a total
+of five doom,
+people and
+ario
+clues on
+sheet, add card
+lashing inscen
+dread mounts, ways, flee
+place
+that
+neighborhood.
+ingan anomaly
+(Do
+4 to the codex.the
+not remove
+unpredictable them . And with each new On
+this
+ient
+additional
+doom
+woulde be placed incard from the codex.)
+, the Anc
+at those around andIfviolence
+a neighborhood with an anomaly, place
+outbreak of fear
+r... that doom on the scenario sheet instead.
+When there
+grows stronge
+is three or mo
+scen
+re doom on
+ario she
+If you would
+resolve
+encounter
+in
+m, an
+et, flip
+the
+more doo
+this card.
+four or
+neighborhood
+an anomaly, you
+space.
+If a space hasadoo
+from thatwith
+m an
+e
+er
+thre
+resolve
+anomaly
+instead.
+oth
+remove
+m in each encounter
+doo
+one
+e
+one
+plac
+and
+Then
+Whenhbo
+a rhood
+neighborhood
+has zero
+neig
+t
+tha
+in
+space
+she t.the anomaly from that
+doom,
+remove
+scenario
+doom on theneighborhood.
+
+1
+
+Each archive card has a number in
+the top-left corner of the front of the
+card. Because archive cards can have3
+many different appearances, 2these card
+1 to identify
+numbers are the best way
+archive cards.
+The side of the card with the number in
+the top-left corner is the front.
+
+6
+
+Shotgun
+
+Item — Common
+
+You get +2  as part
+of an attack action.
+
+8. Prepare Token Pools
+
+Damage Tokens
+
+2
+
+First Aid Kit
+
+Item — Common Weapon
+
+Remnant Tokens
+
+Clue/Doom Tokens
+
+9. Prepare the Archive
+The archive is a collection of cards that are used by scenarios to create an evolving
+narrative during the game. Archive cards have an assortment of different fronts and
+backs, but all share a large card number in the top-left corner of the card. Keep all
+archive cards in a single stack in numerical order until you are instructed to use them.
+
+10. Choose Investigator(s)
+Each player chooses one of the investigator sheets. There are many investigators,
+and each one has unique abilities and skills.
+
+Investigator Roles
+
+Each player takes their respective investigator token (inserted into a plastic stand),
+one activation token, and one reference card. As a group, choose one player to be the
+leader. That player takes the leader activation token (the one with the flashlight on
+it) as their activation token. Players are hereafter referred to as “investigators.”
+
+Each investigator has one or two roles
+described on the back of their sheet. These
+roles offer advice about the strengths and
+effective strategies for that investigator and
+have no mechanical effect.
+
+dan iela reyes
+T h e M eChan iC
+
+Love For the Job—After you perform a
+gather resources action, you may focus
+one skill of your choice.
+“You got a job that needs doing,
+I’m your girl.”
+
+Player actions
+You can perform each action no more
+than once per round.
+Move: Move up to two spaces. Spend up to
+
+$2 to move that many additional spaces.
+
+Gather Resources: Gain $1.
+
+We recommend choosing at least one
+mystic and one guardian for your first
+game, but feel free to experiment and have
+fun with different combinations!
+
+*Focus: Focus one skill of your choice.
+Ward: Test  to remove doom equal to your
+
+test result from your space. If you remove two
+or more, you gain one remnant.
+
+Focus Limit: 3
+
+7
+3
+3
+1
+3
+3
+
+5
+
+*Attack: Engage one monster in your space.
+
+Test  to deal damage equal to your test
+result (the number of successes rolled).
+
+*Evade: Test  to disengage and exhaust
+
+Lore
+Influence
+Observation
+Strength
+
+monsters equal to your test result. If you
+evade all, perform one additional action.
+
+Research: Test  to place clues equal to
+
+your test result on the scenario sheet.
+Trade: Exchange any number of possessions
+with other investigators in your space.
+Some components have Actions: on them.
+*While engaged with a monster, you
+can only focus, attack, or evade.
+
+Will
+
+Starting Possessions—Each investigator gains the cards and money tokens
+indicated in the “Starting Possessions” section on the back of their sheet.
+Investigator starting cards are easily identified by that investigator’s portrait on the
+back of the card (see sidebar). Some investigators must choose between two or more
+of their possessions. You may review your options before making a decision. Return
+the unchosen cards and all unused investigator starting cards to the game box.
+Starting Space—Place all of the investigator tokens in the starting space indicated
+on the scenario sheet. The starting space for the “Approach of Azathoth” scenario is
+the Train Station in Northside.
+
+rCalvin Wright Da niela Re
+
+Agnes Basske
+The Wa itre
+
+The Haunted
+
+The Mecha nic
+
+yes
+
+An investigator’s starting cards feature
+their character portrait, name, and
+occupation on the back of the card.
+
+11. Final Preparations
+With everything in place, all that remains is to set up the clues and doom that await
+the investigators in the coming story.
+Spawn Starting Clues—Draw the top three cards of the event deck one at a
+time. For each card, place one clue token in the central area of its corresponding
+neighborhood tile. Then, add that card to its corresponding neighborhood deck by
+taking the top two cards of that deck, shuffling all three cards together, and placing
+them on top of that deck.
+Place Starting Doom—Place one doom token on each space indicated on the back
+of the scenario sheet. (For “Approach of Azathoth,” these are Arkham Advertiser,
+Independence Square, Velma’s Diner, the Unvisited Isle, and the Black Cave.)
+Spread Doom Once—Draw the bottom card of the event deck and discard it
+faceup next to the deck. Place one doom token in each space that has a doom icon
+next to its name on the card (see sidebar).
+Final Scenario Setup—Resolve any effects in the “Finalize Setup” section on the
+back of the scenario sheet. (For “Approach of Azathoth,” take cards #2 and #3 from
+the archive and place them faceup next to the scenario sheet; this area is known as
+the codex. Create the anomaly deck by shuffling the “Temporal Fissure” anomaly
+cards together and placing them in the play area. Return all other anomaly cards to
+the game box.) Cards in the codex provide scenario-specific rules and narrative.
+The codex is explained in detail later. For now, read those cards aloud in order,
+starting with the front of card #2 (the side with the number on it).
+
+ Hibb’s Roadhouse
+The liquor and conversation in the roadhouse
+work wonders for your weary mind. You or an ally
+recovers two sanity. You hear a distinct clacking
+sound and look around for the source (). If you
+pass, you see a figure with cloven hooves slip out the
+door;
+gain one
+clueto
+from
+your neighborhood.
+DoomyouIcon
+Next
+“Hibb’s
+Roadhouse”
+
+Police Station
+“They’re a strange lot,” says Sheriff Engle. “We
+rounded ‘em up by the river.” You interrogate the
+robed figures in the holding cell (). If you pass,
+they won’t talk, but you notice a symbol on their
+robes, a swirling ribbon threaded through a circle;
+you gain one clue from your
+neighborhood.
+Tem
+po
+ral Fiss
+
+ure
+
+ 0-1
+
+A one-armed
+uniform rattlesbeggar in a dirty silver mili
+moon. You mayhis tin at you and babblestary
+cup. If you do, spend $2 to drop a few about the
+coins in his
+Moon” that “herhe warns you about the “Ne
+one doom from alds the Daemon Sultan;” mesis
+rem
+any space in you
+r neighborhooove
+d.
+
+Velma’s Diner
+
+“Slice of pie, hon?” offers Velma. You or an ally
+recovers two health. Velma returns a moment later.
+2
+“Slice of pie, hon?” YouYourmay
+spend $1 to order
+vision blur
+burn. You clut s. Buildings fall. Cities qua
+ch your headin a loopkeuntil
+another. If you do, theyou
+event
+repeats
+and refocus () and
+pass, it all
+. If
+remove one doovanishes like evaporating dew
+m
+;
+you
+from
+you leave; you or an ally
+recovers
+two
+health
+and
+your
+bodies fall thro
+ugh space and space. If you fail,
+your head
+worsen; you suff
+you gain one clue fromnausea
+your
+neighborhood.
+er
+one horror. ache and
+3
+
+You learn fasc
+inating and help
+an
+secrets
+, the
+remove three of the universe to you; youbook
+one remnant. doom from your space and
+writing are hauIf you fail, the messages in gain
+the
+nting; you beco
+me cursed.
+
+ful thin
+ure book (
+Event Encounter (Approach ofwhiobsc
+Azathoth)
+–2). If you pass gs from
+sper
+s
+
+1
+
+An Anomaly Encounter Card
+
+7
+
+1/24
+
+Playing the Game
+Arkham Horror is played over a number of rounds; each round consists of four phases:
+
+Tracking Your Turns
+During the action phase and encounter
+phase, investigators can take their turns
+in any order.
+After you perform your two actions, flip
+your token to its inactive side.
+
+1. Action Phase—During the action phase, investigators take turns performing up
+to two actions each (such as moving or attacking monsters).
+2. Monster Phase—During the monster phase, monsters activate, attack
+investigators they are engaged with, or ready if they were previously exhausted.
+3. Encounter Phase—During the encounter phase, investigators take turns
+resolving an encounter. Each encounter tells a short narrative about what the
+investigator experiences in their location.
+4. Mythos Phase—During the mythos phase, each investigator draws two tokens
+that can cause clues, monsters, and doom to spread across Arkham.
+
+Active
+
+Inactive
+
+After you resolve your encounter, flip
+your token back to the active side.
+
+After the mythos phase, the game continues to a new round starting again with
+the action phase. Each phase is described in more detail on the following pages.
+
+Winning the Game
+At the start of the game, it is not obvious how you win. You should begin by
+investigating every lead and studying the clues to unravel the scenario’s mystery and
+discover a way to fight back against the encroaching doom.
+
+The Codex
+The codex is the collection of cards
+placed in the
+area next to the
+éjà Vu
+3 Dplay
+scenario sheet. These cards add scenarioThe day dawns the color of hammered lead,
+specific
+rules
+theover
+game.
+with agoals
+stillnessand
+and chill
+thattosettles
+the
+of Arkham
+lingers.
+As youuntil
+Rulesgabled
+on roofs
+these
+cards and
+are in
+effect
+go through your morning routine, you cannot
+the card
+removed
+from
+thebefore—the
+codex.
+shake is
+the feeling
+of having
+done it
+same breakfast, the same headlines in the
+newspaper warning of disappearances and odd
+goings-on. And a note, in your handwriting,
+reading “The Daemon Sultan approaches. Meet
+at the train station.”
+When there are three or more clues on the
+scenario sheet, add card 4 to the codex.
+(Do not remove this card from the codex.)
+When there is three or more doom on the
+scenario sheet, flip this card.
+
+Many cards show a number of clues you
+need to research or a number of doom
+3
+you want to prevent from being placed.
+These show a clue or doom token next to
+the text to help you quickly spot them.
+
+8
+
+The cards in the codex (see sidebar) provide you with objectives that help you
+progress the scenario. The first objective in “Approach of Azathoth” on card #3 is
+to have three clues on the scenario sheet. After you complete your first objective, a
+card is added to the codex that provides you with a new objective. Continuing to
+complete these objectives eventually leads you to victory.
+
+Researching Clues
+The “Approach of Azathoth” scenario begins with three clues that are spread
+throughout neighborhoods on the board. By moving to any spaces in those
+neighborhoods and having encounters (which you will learn about later), you are
+able to gather those clues. However, it may take a few encounters to find them.
+After gathering the clues, use the research action (which you will also learn about
+later) to research your findings. This is how you place the clues you gathered onto
+the scenario sheet­to make progress toward your first goal.
+
+Warding Doom
+The cards in the codex also have conditions under which the eldritch forces working
+against you can hinder your progress. In “Approach to Azathoth,” card #3 is flipped
+over if there are ever three or more doom on the scenario sheet. You can remove doom
+from the board to prevent this by using the ward action (which is described later).
+You must not become too obsessed with your investigation because if doom is left
+unchecked, it can spread across Arkham and quickly overwhelm the entire city,
+causing you to lose the game. Balancing your approach of researching clues to
+achieve your goals while also warding off doom is your key to saving Arkham from
+ultimate peril!
+
+Core Concepts
+Before you learn more about the phases of the game, it is important that you
+understand some core concepts that are commonly referenced throughout the game.
+
+Skill Tests
+A skill test (or “test”) represents a physical, mental, or social challenge you are facing.
+Cards instruct you to resolve tests, either by directly instructing you to or by simply
+showing a skill icon in parentheses (as shown in the first sentence of the sidebar).
+To resolve a test, roll a number of dice equal to the value shown next to the skill
+on your investigator sheet. This value can be modified up or down by various game
+effects, or by a test modifier next to the test declaration (such as “–1”). Even if the
+modifier reduces your skill value to zero, you roll a minimum of one die.
+Each five or six you roll is a success. If you roll at least one success, you pass the
+test. If you roll zero successes, you fail the test. The total number of successes you
+rolled is called your test result, which may be referenced by effects on the card.
+After passing or failing a test, follow the card’s instructions for the matching result.
+If a matching results is not listed, the card has no further effect.
+
+Modifying Tests
+Some components allow you to reroll dice, manipulate dice, or directly add
+successes to your test result. For example, you can spend a clue token or focus
+token to reroll one die. These occur after your initial roll but before your final
+result is determined.
+
+Damage and Horror
+Both your physical and mental endurance will be challenged on the streets of
+Arkham. When you suffer damage or horror, place that many damage or horror
+tokens on your investigator sheet, respectively.
+Your investigator sheet shows your health and sanity values (see sidebar). If you
+have damage greater than or equal to your health or horror greater than or equal to
+your sanity, you are defeated.
+When you recover health or sanity, you remove that many damage or horror tokens
+from your sheet, respectively.
+
+Being Defeated
+When you are defeated, remove your investigator token from the board and discard
+all of your cards and tokens.
+Not only do you lose your investigator and equipment, the city of Arkham suffers
+as well. When you are defeated, you must place one doom on the scenario sheet.
+You will need to select a new investigator to control. Return your defeated
+investigator sheet and token to the box and choose a new investigator that has not
+been played yet during this game.
+As in setup, gather your new investigator sheet, investigator token, and unique
+starting possessions.
+After the mythos phase is over, place your investigator token at the starting space
+(the Train Station for “Approach of Azathoth”). You are ready to continue the
+investigation.
+
+Example Test
+Dexter Drake is instructed to test lore
+(). He has a lore of four, so he rolls four
+dice and gets the following results.
+
+He has rolled
+single
+success (the five).
+d a
+exTer
+d rake
+One success is enough to pass the test,
+T h e M agiCian
+but he was hoping for more.
+Magical Gift—Once per round, while
+resolving a  test, you may reroll one or
+all of your dice.
+“You don’t want to see real magic, kid.
+Nobody does.”
+
+Your focus limit is equal to the number
+
+Dexter’s
+of spellsmagical
+you have.gift ability allows him
+to reroll one or all of his dice. He doesn’t
+want to reroll the five, so he decides to
+reroll only one of the dice.
+
+5
+
+7
+
+Lore
+4
+Influence
+3
+After2the reroll,
+Dexter has rolled both a
+Observation
+five and a six, a total of two successes. He
+iela r eyes
+Strength
+has passed
+2 dthisantest.
+T
+M
+Will
+2
+Love For the Job—After you perform a
+he
+
+eChan iC
+
+gather resources action, you may focus
+one skill of your choice.
+
+Health“Youand
+Sanity
+got a job that
+needs doing,
+I’m your girl.”
+
+Your health and sanity values are shown
+on your investigator sheet.
+Focus Limit: 3
+
+7
+
+5
+
+Lore
+3
+Sanity
+Influence
+To 3
+recover health and
+sanity, try having
+encounters at locations with icons
+Observation
+matching
+your sheet, such as
+1 those on
+Velma’s Diner.
+Strength
+3
+Will
+3
+
+Health
+
+While Defeated
+Between your old investigator being
+defeated and your new one being placed,
+you do not have encounters and are
+unaffected by headline cards; you still
+draw two mythos tokens during the
+mythos phase as normal. (The mythos
+phase is explained later.)
+
+9
+
+Action Phase
+Map Spaces
+Each neighborhood tile features three
+spaces (locations) that are separated
+by white lines. The central area of a
+neighborhood tile is not a space; you
+cannot move into it. Each street tile is a
+single space.
+
+During the action phase, investigators move around the city, gathering resources
+and fighting off the encroaching evils. Each investigator takes one turn. These turns
+can be taken in an order of their choice.
+During your turn, you perform up to two of the following actions. You can
+perform each action no more than once per round.
+
+Move Action
+Move your investigator token up to two spaces (see sidebar). You may spend money
+to move farther. For each dollar you spend, you move one additional space, up to a
+maximum of two additional spaces.
+If you move into a space with a ready monster, that monster engages you. Remove
+the monster card from the board and place it near your investigator sheet. (When a
+monster is engaged with you, it is most helpful to keep its exhausted side up—the
+side shown on the opposite-page sidebar).
+
+Gather Resources Action
+When you perform a gather resources action, you gain one dollar.
+Investigators move to adjacent spaces.
+Daniela can move up to two spaces using
+a move action.
+Foriela
+her firsteyes
+movement,
+dan
+she moves from Velma’s Diner to the
+T h e M eChan iC
+adjacent street space.
+Love For the Job—After you perform a
+gather resources action, you may focus
+one skill of your choice.
+“You got a job that needs doing,
+I’m your girl.”
+
+Money Token
+
+Focus Action
+Choose one skill and gain a focus token that corresponds to that skill. That skill value
+is increased by one for as long as you have the focus token.
+
+Focus Limit: 3
+
+7
+
+5
+
+Lore
+3
+Focus Limit
+Influence
+3
+Observation
+1
+Strength
+3
+Remnants
+Will
+3
+
+Remnants represent the remains of
+arcane rituals or supernatural creatures.
+You can use remnants to more safely cast
+spells or exchange remnants for money
+during certain encounters at either the
+Arkham Advertiser or the river docks.
+
+10
+
+Focus Tokens
+
+Focus tokens can be spent while resolving a test to reroll dice. For each focus token
+you spend, reroll one die, even if the skill being tested does not match the focus token.
+You can have, at maximum, one of any given focus token. You have a focus limit
+on your investigator sheet (see sidebar) that indicates how many focus tokens you
+can have at once.
+
+Ward Action
+When you perform a ward action, you resolve a lore () test. For each success you
+roll, you may remove one doom from your space. If you remove two or more doom
+with a single ward action, you also gain one remnant (see sidebar).
+
+Attack Action
+Choose a monster in your space­—even one engaged with you or another
+investigator in your space—and engage it by placing it near your investigator sheet
+(if it is not there aleady). You resolve a strength () test modified by the monster’s
+attack modifier (see sidebar).
+For each success you roll, deal one damage to the monster. Mark this damage by
+placing that many damage tokens on the monster card. These tokens stay with
+the monster when it moves. If the monster has damage greater than or equal to its
+health, you have defeated it. When a monster is defeated, place it on the top of the
+monster deck; if the monster has a remnant () icon, gain one remnant.
+
+Monster Cards
+Ravenous Predator
+Monster — Hound of Tindalos
+
+d
+a
+3
+
+b
+
+-1
+
+-1
+
+“All the evil in the universe was
+concentrated in their lean, hungry
+bodies.” —The Hounds of Tindalos,
+Frank Belknap Long
+
+c
+
+Evade Action
+When you are engaged with a monster, the actions you can perform are limited (see
+sidebar). To disengage monsters, you can perform an evade action by resolving an
+observation () test modified by the monster’s evade modifier. If you are engaged
+with multiple monsters, you apply only the modifier that results in you rolling the
+fewest dice.
+For each success you roll, you disengage and exhaust one monster by placing
+it in your space on the board with its exhausted side up. If you roll enough
+successes to evade all of the monsters you were engaged with, you may perform one
+additional action.
+
+a. Health—How much damage is
+required to defeat the monster.
+b. Attack Modifier—This modifier affects
+the test during an attack action.
+c. Evade Modifier—This modifier affects
+the test during an evade action.
+d. Remnant—You gain one remnant for
+defeating a monster that has this icon.
+
+Research Action
+Most scenarios require you to get a certain number of clues onto the scenario sheet.
+The research action is the main way of doing this.
+When you perform this action, resolve an observation () test. For each success you
+roll, you may place one of your clues on the scenario sheet.
+
+While Engaged
+While you are engaged with a monster,
+you can perform only the focus, attack,
+and evade2actions. You cannot resolve an
+encounter.
+
+Trade Action
+When you perform a trade action, you and all other investigators in your space may
+exchange any number of allies, items, spells, money, clues, and/or remnants with
+one another. Health, sanity, talents, and conditions cannot normally be traded.
+First Aid Kit
+
+Component Actions
+
+Item — Common
+
+In addition to the above actions, some components allow you to perform unique
+actions that are described on those components. Each component action is
+preceded by the word “action” in bold.
+
+Delayed
+
+Action: An investigator or
+ally in your space recovers one
+health. (You are an investigator
+in your space.)
+
+Component Action of an Item Card
+
+During the game, you might become delayed. When you are delayed, tip your
+investigator token on its side. At the start of your turn during the next action phase,
+you stand up your token, but you can perform only a single action that turn.
+
+Delayed Investigator
+
+11
+
+hee
+Sw if t Byak
+akhee
+Monster —
+
+Monster Phase
+
+Sw if t Byak
+
+By
+
+Monster —
+
+3
+
+hee
+
+Byakhee
+
+The maligned forces of the mythos lurk in every corner of Arkham, threatening the
+investigators and furthering their own ends. During the monster phase, monsters
+move, attack, and advance their own twisted agendas.
+
+-0
+
+-1
+Reward—Aft
+er
+monster as paryou defeat this
+action, you ma t of an attack
+monsters andy disengage all
+st doom.
+move
+Spawn at mo
+three spaces. up to
+d
+ve toward. an
+Mo
+r—
+nte
+Hu
+
+engage lowest
+
+3
+
+Ready Side
+
+Monster States
+A monster can either be ready, exhausted, or engaged based on where it is
+physically located and what side of the card is showing.
+• Ready—Monsters that are ready are actively seeking out investigators and are
+prepared to move or attack. A monster that is in a space on the board with its
+ready side showing (see sidebar) is ready.
+
+Exhausted Side
+
+If a ready monster is in the same space as an investigator (for any reason),
+the monster engages that investigator. Monsters that are exhausted or already
+engaged do not engage investigators in their spaces.
+
+While Engaged
+While you are engaged with one or
+more monsters, you can perform only
+the attack, evade, and focus actions and
+you will not get an encounter during the
+encounter phase.
+
+Monster Cards
+
+• Exhausted—Monsters that are exhausted are distracted or otherwise
+encumbered, usually due to being evaded by an investigator. A monster that is
+in a space with its exhausted side up is exhausted.
+An exhausted monster cannot move, attack, or engage investigators.
+• Engaged—Monsters that are engaged have found an investigator and are about
+to attack. A monster that is placed next to an investigator’s sheet is engaged with
+that investigator. Engaged monsters should be kept with their exhausted side
+showing so you can more easily see what you are up against.
+Most monsters can be engaged with only a single investigator at a time. There is
+no limit to the number of monsters an investigator can be engaged with.
+
+Swift Byakhee
+Monster — Byakhee
+
+Steps of the Monster Phase
+The monster phase is resolved in three steps.
+3
+
+a
+
+c
+
+Spawn at most doom.
+Hunter—Move toward and
+engage lowest .
+
+b
+
+a. Spawn Text—This text indicates what
+space the monster spawns in.
+b. Activation Text—This text indicates
+how the monster activates.
+c. Speed—This indicates how far the
+monster moves during its activation.
+Swift Byakhee
+Monster — Byakhee
+
+1. Ready monsters activate—Each ready monster activates according to its
+activation text:
+• Hunter—Monsters with hunter move toward and engage specific
+investigators, such as the investigator with the “lowest ” or “most clues.”
+• Patrol—Monsters with patrol move toward locations instead of investigators,
+such as the space with the “most doom” or the “unstable space” (see below).
+• Lurker—Monsters with lurker do not move. Instead, they cause some other
+negative effect to occur, such as placing doom on the board.
+When a monster moves, it moves a number of spaces up to its speed, unless the
+text specifies that it “moves directly,” in which case it is placed in the specified
+space, regardless of how far away it is. Remember that when a monster enters an
+investigator’s space, it stops moving and engages that investigator.
+The unstable space is a beacon for paranormal activity. The space marked with a
+doom () icon on the top event card in the discard pile is the unstable space.
+
+3
+
+-0
+
+-1
+
+Reward—After you defeat this
+monster as part of an attack
+action, you may disengage all
+monsters and move up to
+three spaces.
+
+2. Engaged monsters attack—Each monster that is engaged with an investigator
+deals damage and horror to the investigator it is engaged with equal to the number
+of damage and horror icons at the bottom of the monster’s card (see sidebar).
+
+d. Damage and Horror—The amount of
+damage and horror this monster deals.
+
+3. Exhausted monsters ready—Each exhausted monster readies; flip the card
+ready side up. The monster did not move or attack this round, but it is ready to
+do so next round. Since this monster is now ready, it engages an investigator if
+there is one in its space.
+
+d
+
+12
+
+BLack caVe
+
+Encounter Phase
+
+Reading Encounters
+Ar
+
+kh am Asylu
+You check you
+m
+sanity. You befrrself into the asylum. You reco
+mumbles abo iend one of the other pati ver two
+the mortal. Youut cursed oaths and powersents, who
+you pass, dan decide to sneak him out beyond
+(
+iel che
+fail, you are caug sterfield joins you. If ). If
+you
+ht and forced
+to leave.
+
+During the encounter phase, each investigator resolves a short narrative about what
+they are doing at their current location. These encounters can have a wide variety
+of effects based on the investigator’s choices and test results. Investigators take turns
+resolving encounters in an order of their choice.
+
+Independen
+
+ce
+
+Squa re
+“You must allo
+the fortune tellew me to read your future!”
+insists
+r Anna Kaslow.
+tarot cards as
+She flips several
+you
+Arkham is wat sit. “The darkness that falls
+chin
+over
+g you closely.
+Seize any opp
+Be ready to act.
+ortu
+keep as a talismannity.” She gives you a card
+to
+. You gain the
+ace of rods.
+
+During your turn, you draw and resolve an encounter card unless you are engaged
+with a monster. While engaged, you do not get to have an encounter.
+If you are in a neighborhood space, draw a card from the matching neighborhood
+encounter deck and resolve the encounter text matching the name of the space you
+are in. If you are in a street space, draw a card from the street deck and resolve the
+encounter matching the type of street you are in:
+
+rIVertown
+
+La Be
+
+lla Lu na
+The Clover
+best place to Club beneath La Bella Lun
+“Pass-line bet gamble away your hard-ear a is the
+“Roll ‘em!” Rolfor our friend here,” says thened cash.
+your bet; you l two dice. On a 7 or 11, croupier.
+gain
+you
+bet and tip out $5. On a 2, 3, or 12, you double
+the croupier; you
+lose
+discard $3. the
+
+Downtown
+
+1/8
+
+If you are playing with multiple players,
+have someone else read your encounter
+aloud to you. The reader should not
+reveal the results of a test or a choice
+until the test has been resolved or the
+choice has been made. This increases the
+suspense of every decision!
+
+Gaining Cards by Name
+Blessed
+
+Residential Street
+
+Bridge Street
+
+Cond ition
+
+Scenic Street
+
+Encounter Benefits
+Neighborhood spaces have icons that indicate what encounters in that space are
+graVeyard
+likely to involve.
+The icons to the left of the arrow indicate the skills that are likely to be tested or
+the type of payment you might be asked to make. The icons to the right of the
+arrow indicate the expected benefits of the encounter. A reference for these icons is
+provided on the back of the rules reference.
+
+generaL store
+The icons above “General Store” indicate that you are likely to be asked to spend
+money, and that you will receive common items for doing so.
+
+While resolv
+ing
+and 6s count a test, 4s, 5s,
+as successes.
+After you fai
+l a test,
+discard this car
+d.
+If you would
+bec
+discard this carome cursed,
+d instead.
+
+If an effect instructs you to gain a card by
+name in all caps, find that card by name
+in the special cards or conditions decks.
+Conditions are double-sided. The
+blessed and cursed conditions are
+on opposite sides of the same card.
+The dark pact condition has hidden
+information on the back. When you gain
+it, draw a random copy without looking
+at the back.
+
+Finishing the Encounter
+After you finish resolving the effects of an encounter, discard that card to the bottom
+of the deck it was drawn from unless that card is an event card (see sidebar).
+
+Event Cards
+
+After resolving an encounter on an event card, if you gained a clue from your
+neighborhood, discard that card faceup to the event card discard pile. If you did
+not gain a clue, add it back to the neighborhood by taking the top two cards of the
+corresponding neighborhood deck, shuffling them together with the event card, and
+placing them all back on top of that deck.
+
+The liquor and conversation in the roadhouse
+work wonders for your weary mind. You or an ally
+recovers two sanity. You hear a distinct clacking
+sound and look around for the source (). If you
+Encounters
+ona figure
+event
+cards
+represent
+pass, you see
+with
+cloven hooves
+slip out the
+door; you gain one clue from your neighborhood.
+
+Clue tokens are necessary to advancing most scenarios. Each clue token on
+a neighborhood indicates that there is an event card in the top three cards
+of that neighborhood’s deck that will give you a shot at gaining that clue.
+In addition to advancing the investigation, during a test, a clue can be
+discarded to reroll one die.
+
+ Hibb’s Roadhouse
+
+chances to gain clues to aid in the
+investigation. If you failPolice
+to gainStation
+the clue
+from the
+encounter,
+added
+back
+“They’re a strange
+lot,” it
+saysisSheriff
+Engle.
+“We to the
+‘em up by the river.” You interrogate the
+deckrounded
+to
+give
+you
+another
+shot
+at
+it
+later.
+pass,
+robed figures in the holding cell (). If you
+they won’t talk, but you notice a symbol on their
+robes, a swirling ribbon threaded through a circle;
+you gain one clue from your neighborhood.
+
+Velma’s13
+Diner
+
+“Slice of pie, hon?” offers Velma. You or an ally
+recovers two health. Velma returns a moment later.
+“Slice of pie, hon?” You may spend $1 to order
+another. If you do, the event repeats in a loop until
+you leave; you or an ally recovers two health and
+
+Mythos Phase
+During the mythos phase, each investigator takes a turn drawing tokens from the
+mythos cup, starting with the leader and proceeding around the table clockwise. On
+your turn, draw two tokens from the mythos cup, one at a time, and resolve their
+effects. After you have drawn your tokens, do not return them to the cup.
+Spread Doom ()—Spread doom once by discarding the bottom card of the event
+deck faceup and placing one doom token in the location on that card marked with
+a doom () icon.
+The more doom that builds up on the board, the worse off Arkham will be. Cards
+in the codex will indicate what terrible things happen as doom accrues.
+Spawn Monster ()—Spawn one monster by drawing the bottom card of the
+monster deck and placing it on the board as instructed by its spawn text. If the
+spawn text refers to a monster’s prey, that is the investigator that it moves toward
+when activating.
+Read Headline ()—Draw and read the top card of the headline deck. The card
+effects only you unless it specifies otherwise. Then, discard that card to a faceup
+discard pile. If you are instructed to draw a headline card while the deck is empty,
+you must place one doom on the scenario sheet instead.
+Spawn Clue ()—Spawn one clue by taking the top card of the event deck and placing
+one clue token in the area in the center of the corresponding neighborhood. Then, take
+that card and the top two cards of the corresponding neighborhood deck, shuffle those
+cards together, and place them on top of the neighborhood deck.
+Gate Burst ()—Resolve a gate burst by taking the top card of the event deck
+and placing one doom token in each space of the corresponding neighborhood.
+Then, shuffle that card and the entire event discard pile together, and place them on
+the bottom of the event deck.
+Reckoning ()—Resolve the reckoning effects—all effects preceded by the
+reckoning () icon—of all components in play. Usually this will just be the
+reckoning effect of the scenario sheet, but some headlines or other cards might also
+have reckoning effects.
+Blank—When you draw this token, nothing happens. You have been afforded a
+most brief respite from the ever-growing dangers of the mythos.
+
+Replenishing the Mythos Cup
+Another Round!
+After the mythos phase is done, the game
+continues with a new round, starting
+with the action phase. This continues
+until you have won or lost the game.
+
+14
+
+When you need to draw tokens but the mythos cup is empty, return all mythos
+tokens being used this game to the cup; then draw from the newly replenished cup.
+
+Adding Mythos Tokens
+Some rare game effects instruct you to add tokens to the mythos cup. These tokens
+should be taken from the game box and added to the mythos cup.
+
+Additional Rules
+There are a few more things you need to know to save Arkham. The next several
+sections describe anomalies and the items, allies, and spells you get along the way.
+
+Item Cards
+a
+
+3
+
+Items, Allies, and Spells
+
+c
+.38 Revolver
+
+As you have encounters across Arkham, you will gain allies, spells, and items to help
+you to combat the evils of the mythos. When you gain one of these cards, draw one
+card from the corresponding deck.
+
+Item — Common Weapon
+
+b
+
+You get +2  as part
+of an attack action.
+
+a. Value—The amount of money you
+must spend to buy the item.
+b. Traits—Traits have no inherent effect,
+but encounters or other text might
+refer to an item’s traits.
+
+Allies
+
+Spells
+
+Items
+
+If you are instructed to gain a card with a specific trait (like a “common item” or a
+“curio item”), reveal cards from the top of the deck until you reveal a card with the
+indicated trait. Gain that card and shuffle the other revealed cards back into the deck.
+
+The Display
+When you gain an item, instead of drawing it from the item deck, you can instead
+choose an item from the display that has the specified traits (if any). After you take
+an item from the display, draw a new item to replace it.
+If you are instructed to buy items from the display, you must spend an amount of
+money equal to the item’s value (see sidebar) to take the item.
+
+c. Hands—The number of hands
+required to use the item during a test.
+
+Discarding Cards
+When you discard a condition, special
+card, or starting card, return that card to
+its deck.
+When you discard an ally card, item
+card, or spell card, place that card on the
+bottom of its respective deck.
+
+1
+
+Hands
+While resolving a test, you can use any number of cards with up to two hand icons
+total (see sidebar). For example, you could use a two-handed shotgun or a onehanded revolver while attacking, but not both at the same time.
+There is no limit to the number of items you can carry.
+
+Casting Spells
+Unlike items and allies, using spells comes with a cost. When using the game effect
+on a spell, you must first suffer horror equal to the number of horror icons on the
+spell card (see sidebar). You may spend remnants instead of suffering horror on a
+one-for-one basis.
+
+Assigning Damage and Horror
+Some cards (mainly allies) have health and sanity values just like investigators.
+When you suffer damage or horror, you may instead assign it to one of your cards
+with a health or sanity value by placing the tokens on the card. You cannot assign
+damage to a card that does not have a health value, nor can you assign horror to one
+without a sanity value. When an ally or other asset has damage equal to its health or
+horror greater than or equal to its sanity, you must discard that card.
+Sometimes you suffer direct damage or direct horror. Direct damage and direct
+horror cannot be assigned to allies or items. You must suffer it yourself.
+
+Magic in the Mythos
+Magic in Arkham
+is an
+MistsHorror
+of R’lyeh
+unknowable Spell
+and —
+terrifying
+force that can
+Incantation
+be bent to your will or turned against
+You may test  in place
+you and of
+shred
+yourpart
+mind.
+ as
+of an evade
+action. (The monster’s evade
+modifier still applies.)
+
+When you cast a spell, you first suffer
+horror equal to the number of horror
+icons along the bottom of the card.
+
+Alice Luxley
+
+Ally — Police Detective
+
+Once per round, while resolving
+a test, you may roll one additional
+die for each clue you have and one
+additional die for each clue in
+your neighborhood.
+
+3
+
+2
+
+An Ally Card’s Health and Sanity Values
+
+15
+
+Anomalies
+Anomalies are strange and terrifying occurrences such as gateways to other
+dimensions. These are a result of doom spreading out of control, and are the first
+big sign that you are in trouble!
+Anomalies are not used in every scenario, but are used in “Approach of Azathoth.”
+A card summarizing these rules (card #2) is added to the codex if they are in effect.
+
+Placing Anomaly Tokens
+When any one space has three doom, place an anomaly token in the central area of
+that neighborhood tile. Likewise, if a neighborhood has a total of five doom, place
+an anomaly in that neighborhood. Do not place multiple anomaly tokens in the
+same neighborhood.
+
+Anomalies and Doom
+An anomaly token is placed in the
+central area of a neighborhood.
+
+Temporal
+
+Fissure
+
+ 0-1
+
+A one-armed
+uniform rattlesbeggar in a dirty silver mili
+moon. You mayhis tin at you and babblestary
+cup. If you do, spend $2 to drop a few about the
+coins in his
+Moon” that “herhe warns you about the “Ne
+one doom from alds the Daemon Sultan;” mesis
+rem
+any space in you
+r neighborhooove
+d.
+
+2
+
+Your vision blur
+burn. You clut s. Buildings fall. Cities qua
+you pass, it all ch your head and refocus ()ke and
+. If
+remove one doovanishes like evaporating dew
+bodies fall thro m from your space. If you ; you
+nausea worsen; ugh space and your headachefail,
+you suffer one
+and
+horror.
+
+3
+
+You learn fasc
+an obscure booinating and helpful things
+whispers secretsk (–2). If you pass, thefrom
+remove three of the universe to you; youbook
+one remnant. doom from your space and
+writing are hauIf you fail, the messages in gain
+the
+nting; you beco
+me cursed.
+
+1
+
+Anomaly Encounter Card
+
+If doom would be placed in any space of a neighborhood tile that has an anomaly,
+it is placed on the scenario sheet instead, regardless of the number of doom still
+in the neighborhood.
+
+Removing Anomalies
+Both the ward action and anomaly encounters allow you to remove doom from
+your space. When you have removed all doom from a neighborhood, the anomaly
+in that neighborhood stabilizes and you remove the anomaly token.
+
+Anomaly Encounters
+During your turn of the encounter phase, if you are in a neighborhood with
+an anomaly, you must have an anomaly encounter instead of a normal
+neighborhood encounter (see sidebar). You draw the top card of the anomaly deck
+and resolve the section that corresponds to the amount of doom in your space.
+
+Credits
+Third Edition Game Design: Nikki Valens
+Original Game Design: Richard Launius and Kevin Wilson
+Additional Development: Daniel Lovet Clark with Dane Beltrami,
+Pat Harrigan, and Tim Uren
+Editing: Adam Baker
+Proofreading: Molly Glover with Matt Click
+Board Game Manager: Andrew Fischer
+Arkham Horror Story Review: Kara Centell-Dunk and Matt Newman
+Story Manager: Katrina Ostrander
+Graphic Design: WiL Springer and Evan Simonet
+Graphic Design Manager: Christopher Hosch
+Cover Art: Anders Finer
+Map Tile Art: Jokubas Uoginas
+Interior Art: Justin Adams, Tommy Arnold, Cristi Balanescu, Tiziano
+Baracchi, Mark Behm, Massimiliano Bertolini, Sara Biddle, Dimitri
+Bielak, Greg Bobrowski, Jon Bosco, Matt Bradbury, Igor Burlakov,
+Joshua Cairós, Mike Capprotti, Chelsea Conlin, Matthew Cowdery,
+Alexandre Dainche, Mauro Dal Bo, Christina Davis, Nick Deligaris,
+Anthony Devine, Nele Diel, Stanislav Dikolenko, Dleoblack, Dual
+Brush Studios, Guillaume Ducos, Nicholas Elias, Alexandr Elichev,
+Melissa Findley, Aurore Folny, Tony Foti, Michele Frigo, Nicholas
+Gregory, Ethan Patrick Harris, Dani Hartel, Ilich Henriquez, Jeff
+Himmelman, Rafal Hrynkiewicz, Clark Huggins, Taylor Ingvarsson,
+Maggie Ivy, Jason Juta, Romana Kendelic, Jeffrey Klein, Sam Lamont,
+
+Robert Laskey, Chun Lo, Dan Masso, Jesse Mead, Lindsey Messecar,
+Michal Milkowski, Aaron B. Miller, Mark Molnar, Monztre, Reiko
+Murakami, Jake Murray, David Auden Nash, Germán Nóbile, Andrew
+Olson, John Pacer, Chris Peuler, Borja Pindado, Scott Purdy, Chris
+Rallis, Jose Manuel Rey, Roberto Ricci, Brad Rigney, Jordan Saia, Adam
+Schumpert, Stephen Somers, Anna Steinbauer, Caravan Studio, Andreia
+Ugrai, Brian Valenzuela, VIKO, Magali Villeneuve, SC Watson, Owen
+William Weber, Jarreau Wimberly, Darek Zabrocki, Andreas Zafiratos
+Art Direction: Jeff Lee Johnson
+Managing Art Director: Melissa Shetler
+Quality Assurance Coordinator: Zach Tewalthomas
+Production Management: Jason Beaudoin and Megan Duehn
+Visual Creative Director: Brian Schomburg
+Senior Project Manager: John Franz-Wichlacz
+Senior Manager of Product Development: Chris Gerber
+Executive Game Designer: Corey Konieczka
+Publisher: Andrew Navaro
+Playtesters: Carolina Blanken, Pieter Blanken, Andrea Dell’Agnese,
+Caterina D’Agostini, Julia Faeta, Crystalyn Flores, Anita Hilberdink,
+Alene Horner, Jason Horner, Julien Horner, Matthew Landis, Emile de
+Maat, Kestrel McCarthy, Michelle McCarthy, Jeremy Rainbow, Kendra
+Rainbow, Jerry Santos, Emiel Speets, Léon Tichelaar, Marjan TichelaarHaug, Luuk Weltevreden, Maree Weltevreden
+Special thanks to all of our beta testers!
+
+

@@ -1,0 +1,22 @@
+---
+title: project_labyrinths_mini_campaign
+description: Labyrinths of Lunacy mini-campaign mode; standalone restart-with-new-decks pattern via chooseDecks+StartScenario
+---
+
+The Labyrinths of Lunacy (side story "70001") supports a mini-campaign: play all three groups (A/B/C) consecutively. Mode is chosen on the **new-game screen** (like Epic Multiplayer but NOT dev-gated): side-stories.json flag `miniCampaign: true` → GameOptions.vue shows a "Play Mode" segmented control (`scenarioSupportsMiniCampaign`, no dev flag) → NewCampaign.start() adds `{tag:'PlayAsMiniCampaign'}` to newGame `options`. Backend `CampaignOption PlayAsMiniCampaign` → scenario `HandleOption PlayAsMiniCampaign` sets `meta.miniCampaign=True` (via SetScenarioMeta, runs before StartCampaign→StartScenario which carries the meta). Stored as `miniCampaign :: Bool` in `Arkham.Scenarios.TheLabyrinthsOfLunacy.Meta`. `PreScenarioSetup` no longer prompts for mode — just `chooseGroup (toResultDefault (initialMeta GroupA) attrs.meta)`.
+
+**Restart a standalone/side-story scenario with fresh investigators between games:**
+```haskell
+players <- allPlayers
+pushAll [chooseDecks players, ResetInvestigators, ResetGame, StartScenario attrs.id Nothing]
+pure $ Scenario attrs {scenarioPlayerDecks = mempty, scenarioStoryCards = mempty}
+```
+This mirrors the initial standalone `StartCampaign` flow. `StartScenario` (Game/Runner) carries scenarioMeta/playerDecks/counts across the rebuild for standalone (That mode) via `extractStandaloneOnly`, but RESETS `scenarioTimesPlayed` to 0 — so detect "replay/continuing" via `meta` (e.g. `playedGroups` non-empty), NOT `scenarioTimesPlayed`. `chooseDecks` (Arkham.Message, not re-exported by Import.Lifted — import explicitly) sets `IsChooseDecks`, wipes investigators, prompts each player, InitDeck repopulates decks.
+
+**Gotcha (deck swap):** `chooseDecks` runs `ChoosingDecks` (wipes investigators) then PARKS on the deck prompt (`AskMap`). Any board teardown queued *after* it (ResetGame) doesn't run until players finish choosing — so the group's enemies sit in play referencing now-missing investigators, and any enemy-matcher scan or plain game load crashes with `MissingEntity "Unknown investigator"`. Fix: push `ResetGame` BEFORE `chooseDecks` so the board is torn down before parking. Also hardened `Arkham.Helpers.Location.placementLocation` (InPlayArea/InThreatArea/AttachedToInvestigator) to use `fieldMayJoin InvestigatorLocation` (returns Nothing on missing id) instead of the crashing `field`.
+
+**Frontend:** `StandaloneScenario.vue` renders `ChooseDeck` whenever `game.gameState.tag === 'IsChooseDecks'` (before the IsActive branch), so mid-game deck swaps surface the deck-choose UI with no frontend changes. Side stories (campaign == null) route to StandaloneScenario.
+
+**Per-group campaign log (threaded, Dream-Eaters-style sections):** standalone scenarios already expose `scenario.standaloneCampaignLog` and the frontend renders it (CampaignLog.vue `mainLog` fallback; "View Log" button unconditional). Per-group SECTIONS need a section-tagged `CampaignLogKey` whose serialized shape is `{tag, contents:{tag, contents}}` (frontend `isSection`). Implemented: `Arkham.Scenarios.TheLabyrinthsOfLunacy.Key` defines `TheLabyrinthsOfLunacyKey = GroupA/GroupB/GroupC GroupOutcome` (GroupOutcome all-nullary → string leaf); registered in `Arkham.CampaignLogKey` (constructor + FromJSON alt + IsCampaignLogKey instance). Scenario `record`s `Log.GroupA TheGroupEscapedTheLabyrinth`/`TheGroupPerished` at each resolution (helper `recordGroupOutcome`); standalone log persists across the Step-10 rebuild (StartScenario carries it). Frontend `sections` computed groups by `sectionId` and needs i18n at TOP-LEVEL `theLabyrinthsOfLunacy.key['[groupA]'].{title,orderKey,<leaf>}` — NOTE the scenario's own text is under `standalone.theLabyrinthsOfLunacy` (from backend `standaloneI18n` = scope "standalone"), but the log baseKey strips "Key"→`theLabyrinthsOfLunacy` with NO standalone prefix, so a separate top-level `src/locales/en/theLabyrinthsOfLunacy.json` is imported in en.ts as `theLabyrinthsOfLunacy`. Locale merge: each campaign has a sibling `<name>.ts` merging its folder's JSONs; `standalone.ts` namespaces each json under `standalone.<name>`.
+
+In mini-campaign, the last act's resolution auto-continues to the next group (no "end or continue" prompt); final tally maps `survivedGroups` count → resolution1-4 (see [[feedback_i18n_card_implementation]]).

@@ -236,6 +236,28 @@ defaultMonsterBehavior =
     , removedWhenDefeated = False
     }
 
+{- | A card that widens the reroll a focus paid for: the focus bought one die, and
+this offers the rest. @howMany@ counts them from the test, zero meaning the pool.
+-}
+rerollInstead :: Text -> Text -> (TestState -> Int) -> AssetBehavior
+rerollInstead key lbl howMany =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      SpentFocusToReroll iid -> do
+        mts <- use #test
+        i <- getInvestigator iid
+        used <- usedThisRound cid iid
+        pure case mts of
+          Just ts | not used -> do
+            let n = if howMany ts == 0 then i.horror else howMany ts
+            [ Reaction key lbl [MarkAssetUsed iid cid, RerollUpTo (SourceCard cid) (min (liveDiceCount ts) n)]
+              | n > 0
+              , liveDiceCount ts > 0
+              ]
+          _ -> []
+      _ -> pure []
+
 data CodexTrigger = CodexTrigger
   { key :: Text
   , once :: Bool

@@ -1,0 +1,24 @@
+---
+title: Replacing an Opening Hand
+source: ArkhamDB Rules Reference (https://arkhamdb.com/rules)
+---
+
+# Replacing an Opening Hand
+
+If an ability replaces an investigator’s opening hand with a different
+set of cards, that set of cards is considered to be their new opening
+hand for the purposes of effects which would alter the number of cards
+in their opening hand.
+
+If an ability replaces an investigator’s opening hand with a number of
+cards "kept" from a larger set of cards, an effect which alters the
+number of cards in that investigator’s opening hand alters both the
+cards originally drawn to replace that opening hand, and the number of
+cards "kept" from that larger set.
+
+*For example, the ability on Sefina Rousseau reads: "When you would draw
+your opening hand: Draw 13 cards,instead. Choose up to 5 events to place
+beneath this card and keep 8 cards as your opening hand. Discard the
+rest." If a card effect or game effect alters the number of cards in
+Sefina’s opening hand, it would alter both the number of cards drawn
+from her ability and the number of cards she keeps as her opening hand.*

@@ -1,0 +1,710 @@
+Rules Reference Using this Document 1 Setup This document is the definitive source for all Arkham Horror Third Edition rules. This document is not intended to teach new players how to play the game. Players who wish to learn how to play for the first time should read the Learn to Play booklet instead. As questions arise during the game, players should refer to this document. 
+100 Before playing each game, resolve the following steps in order. 
+101 1. Choose Scenario 
+101.1 Choose one of the available scenario sheets (either at random or by whatever means you see fit). Return all other scenario sheets to the box. 
+102 2. Prepare Board and Encounters 
+102.1 The back of the scenario sheet shows a setup map. Place the neighborhood and street tiles as indicated by the map. Return any excess tiles to the box. 
+102.2 Place doom tokens and monster cards as indicated. 
+102.3 Shuffle the street cards to prepare the street deck. 
+102.4 For each neighborhood represented on the map, shuffle the corresponding neighborhood cards to prepare the neighborhood decks. For each neighborhood not represented on the map, return the corresponding neighborhood cards to the box. 
+103 3. Prepare Event Deck 
+103.1 Shuffle the event cards that correspond to the scenario to prepare the event deck. Place the deck facedown in the event deck holder (encounter text down). Return all other event cards to the box. 
+104 4. Create Monster Deck 
+104.1 Take the monster cards indicated by the scenario sheet and shuffle them together to create the monster deck. Keep this deck ready side up. Return all other monster cards to the box. 
+104.2 The monsters placed on the board are included in the quantities listed. (See rule 102.2) 
+105 5. Create Mythos Cup 
+105.1 Take the mythos tokens indicated on the scenario sheet and place them into an opaque container (such as a Fantasy Flight Supply™ Dice Bag) to create the mythos cup. Return all other mythos tokens to the box. 
+106 6. Create Headline Deck 
+106.1 Take thirteen headline cards at random from all available headline cards and shuffle them to create the headline deck. Return all other headline cards to the box. 
+107 7. Prepare Assets and Display 
+107.1 Shuffle the item cards, ally cards, and spell cards separately to create the normal asset decks. This document includes five main sections: golden rules, setup, round structure, end of the game, and the rules glossary. The rules glossary provides players with detailed rules listed in alphabetical order by topic. Players are encouraged to use the index on page 22 to find specific topics within this document. 0 Golden Rules 
+001 If a component’s text directly contradicts these rules, the component takes precedence. The component overrides only the rule that applies to that specific situation. 
+002 If a rule or effect allows or instructs something to happen but another rule or effect states that it cannot, the “cannot” rule or effect takes precedence. 
+003 Any part of an effect that is impossible to resolve is ignored. 
+004 If an effect has multiple possible outcomes, the outcome is chosen by the players as a group. If multiple effects would occur at the same time, the players as a group choose the order in which those effects resolve. 
+005 Component Limitations 
+005.1 There are two broad categories of components: those that contain game information and those that do not. 
+005.2 Components that contain game information (such as investigator sheets and cards) are limited by the quantities in the game. Example: You would not be able to gain a spell if the spell deck is empty. Nor would you be able to choose a new investigator if all investigators are in use or have been defeated, devoured, or retired. 
+005.3 Components that do not contain game information (all tokens and dice) are not limited by the quantities in the game. If you need more of these components for any reason, you can use any suitable proxy, such as a button or components from another game. Example: If Jenny Barnes has all fifty-four dollars worth of money tokens and you would gain a dollar, you can mark that dollar by some other means or take some of Jenny’s money tokens and make her use proxies because she doesn’t need that much money anyway. 2 
+107.2 Reveal five cards from the top of the item deck and set them aside to create the display. 
+107.3 Keep the special cards—alphabetized or otherwise organized—and condition cards nearby for easy access. 
+108 8. Prepare Token Pools 
+108.1 Separate all tokens by type and keep them nearby for easy access. 
+109 9. Prepare Archive 
+109.1 Keep all archive cards nearby and in numerical order for easy access. 
+110 10. Choose Investigator(s) 
+110.1 Each player chooses one of the available investigator sheets (either at random or by whatever means they see fit). Each player takes their respective investigator token, one activation token, and one reference card. 
+110.2 One of the players must take the leader token as their activation token. 
+110.3 Return all excess investigator sheets, investigator tokens, activation tokens, and reference cards to the box. 
+110.4 Players are referred to as “investigators” in rules and mechanical text. 
+110.5 Starting Possessions 
+110.5a 
+110.6 Investigators gain the starting cards listed on their sheets. Each sheet indicates a choice between two or more starting cards. You may look at each of those components before choosing. Each player places their investigator token on the starting space indicated on the scenario sheet. 
+111 11. Final Preparations 
+111.1 Resolve these final steps to complete setup. 
+111.2 Spawn Starting Clues 
+111.2a Spread doom once. (See rules 423.2–423.3.) 2 Round Structure 
+200 A round consists of four phases in this order: action, monster, encounter, and mythos. 
+201 Action Phase 
+201.1 During an investigator’s turn, they can perform up to two actions. (See rule 402, “Action.”) 
+201.2 Investigators take their turns in the order of their choice. After you have taken your turn, flip your activation token to the inactive side. 
+201.3 Game effects might allow you to perform actions during other phases or “additional” actions. Such actions are performed as normal and do not count against the two actions you can perform on your turn during the action phase. 
+201.4 While you are engaged with a monster, the actions you can perform are restricted. (See rule 428.5.) 
+202 Monster Phase 
+202.1 The monster phase consists of three steps in this order: monster activation, monster attack, and monster ready. (See rule 453, “Monster.”) 
+202.2 Monster Activation Step 
+202.2a During the monster activation step, each ready monster activates. Investigators choose the order in which monsters activate. 
+202.2b To activate a monster, resolve the activation text on the monster card’s ready side. (See rule 453.3c.) 
+202.2c If a monster’s activation causes it to move, it moves a number of spaces equal to its speed. (See rule 453.3d.) 
+202.2d A monster’s activation text might indicate a destination or prey that it moves toward, engages, or affects in some other way. (See rule 418, “Destination” and rule 466, “Prey”) 
+202.2e If a monster moves into a space with one or more investigators, it engages one of those investigators and its activation ends. (See rule 427, “Engage.”) 
+202.2f Onlyreadymonstersactivate.Engagedandexhausted monsters do not activate. (See rule 453.2.) Final Scenario Setup 
+111.4a Resolve the indicated “finalize setup” instructions on the scenario sheet. You will be instructed to add one or more archive cards to the codex. Read all cards in the codex before beginning the game. This section indicates which, if any, anomaly cards will be used during the game. Shuffle those cards together to create an anomaly deck and return all others to the game box. Spawn three clues. (See rule 412.3.) Spread Doom Once 
+111.3a 
+111.4 
+111.5 Starting Space 
+110.6a 
+111.3 
+111.4b 3 If multiple spaces could be a monster’s destination, the space closer to that monster takes precedence. If one or more of those spaces are the same distance from the monster, the players as a group choose which of those spaces is the monster’s destination. 
+202.2g 
+202.3 During the monster attack step, each engaged monster deals damage and horror to the investigator it is engaged with. Monster attacks are resolved starting with monsters engaged with the leader and proceed in player order. Each monster deals damage and horror equal to the number of damage and horror icons on the monster’s exhausted side. (See rule 453.8i.) 
+202.3b If an investigator is defeated during the monster attack step, they disengage from each monster that they were engaged with and exhaust them. (See rule 444.6.) 
+202.3c Only engaged monsters deal damage and horror. Ready and exhausted monsters are not engaged and do not deal damage and horror. (See rule 453.2.) 
+202.3d Monster Ready Step 
+202.4a During the monster ready step, each exhausted monster readies. (See rule 467.2.) 
+202.4b If there are one or more investigators in a ready monster’s space, it engages one of those investigators. (See rules 467.5–467.6.) 
+203 Encounter Phase 
+203.1 During the encounter phase, investigators take turns resolving encounters. During your turn, you draw and resolve an encounter card that corresponds to your space. (See rule 426, “Encounter.”) 
+203.2 Investigators take their turns in the order of their choice. After you have taken your turn, flip your activation token to the active side. 
+203.3 If you are engaged with one or more monsters, you do not resolve an encounter. Instead, just flip your activation token to the active side. 
+204 Mythos Phase 
+204.1 During the mythos phase, investigators take turns drawing tokens from the mythos cup. During your turn, you draw two tokens from the mythos cup and resolve their effects one at a time. 
+204.2 The drawn tokens are not returned to the mythos cup until the mythos cup is empty. 
+204.4 You draw and resolve mythos tokens even if your investigator has been defeated, devoured, or retired. 
+204.5 If you are instructed to draw a token but the mythos cup is empty, return all mythos tokens to the mythos cup before drawing. 
+204.6 Rules 204.7–204.13 list the mythos tokens and their effects. Monster Attack Step 
+202.3a 
+202.4 
+204.3 Investigators take their turns in player order starting with the leader. 4 
+204.7 Spread Doom (Mythos Token) 
+204.7a 
+204.8 Spawn Monster (Mythos Token) 
+204.8a 
+204.9 When you draw a read headline token, you must draw and resolve the top card of the headline deck. (See rule 440, “Headline.”) Gate Burst (Mythos Token) 
+204.11a 
+204.12 When you draw a spawn clue token, you must spawn one clue. (See rule 412.3.) Read Headline (Mythos Token) 
+204.10a 
+204.11 When you draw a spawn monster token, you must spawn one monster. (See rule 453.5.) Spawn Clue (mythos token) 
+204.9a 
+204.10 When you draw a spread doom token, you must spread doom once. (See rules 423.2–423.3.) When you draw a gate burst token, place one doom in each space of the neighborhood that corresponds to the top card of the event deck. Take that card and the event discard pile, shuffle them together, and place them on the bottom of the event deck. Reckoning (Mythos Token) 
+204.12a When you draw a reckoning token, investigators must resolve the reckoning effects on the scenario sheet, on all cards in the codex, and on all cards in the investigators’ possession. 
+204.12b Reckoning effects are a type of mechanical effect marked with a red reckoning icon () and surrounded by a red border. Reckoning effects are resolved only when the reckoning mythos token is drawn from the mythos cup. 
+204.12c Investigators choose the order in which reckoning effects are resolved. 
+204.13 Blank (Mythos Token) 
+204.13a When you draw a blank token, there is no effect. 
+205 End of Round 
+205.1 After all four phases are complete, play continues to a new round beginning with the action phase. 
+205.2 Before continuing to the next round, if your investigator has been defeated, devoured, or retired, you select a new investigator by following the instructions in rule 444.7. 
+400.1c Some mechanical effects appear commonly or have nuances that cannot be easily described. In those cases, a card’s text states only a keyword (a shorthand name for an ability) and reminder text that summarizes the rules for that ability. 
+400.1d Card text can state a cost and an effect separated by the word “to.” In such a case, the effect following “to” is resolved only if the cost is paid in full. 3 End of the Game 
+300 There are many ways for a game of Arkham Horror to end. However, many of those ways depend on the scenario and the cards in the codex. 
+301 Winning the Game 
+301.1 There are no default ways to win the game. You must progress the cards in the codex in positive ways until one of those cards states that you win the game. (See rule 407.5c.) Example: An encounter states, “you may spend $3 to gain one common item.” You choose to pay the cost of “spend $3” or not. If you pay the cost, you resolve the effect “gain one common item.” Otherwise, you do not resolve that effect. 
+400.1e Either the cost, effect, or both can be flavor text. In such a case, mechanical text following the sentence elaborates on what happens. Example: An encounter states, “You may gain a dark pact to sign your name in blood. If you do, you feel power flowing through you; you become blessed.” You can pay the cost of “gain a dark pact,” but the effect “sign your name in blood” is flavor text and has no mechanical effect. Instead, the following sentence instructs you to “become blessed” only if you paid the cost of gaining a dark pact. 
+301.2 Winning the game typically requires gaining clues from event encounters, researching those clues, and spending the clues from the scenario sheet to resolve the effects of cards in the codex. 
+302 Losing the Game 
+302.1 There is only a single default way to lose the game, but there are multiple ways to lose the game if cards in the codex progress negatively. (See rule 407.5d.) 
+400.1f If you are unable to pay a cost in full, you pay no part of the cost and do not resolve the effect following “to.” 
+302.2 Losing the game typically happens because too much doom accrues on the board causing doom to be placed on the scenario sheet, which causes the cards in the codex to progress negatively. 
+400.1g You cannot become delayed as part of a cost if you are already delayed. (See rule 417, “Delayed.”) 
+400.1h You cannot gain a condition as part of a cost if you already have a condition with the same name. (See rule 415, “Condition.”) 
+400.1i Some mechanical text begins with a conditional statement such as “if you pass” or “if you do.” In such a case, the remainder of that sentence is resolved only if the circumstances stated are true. Mechanical text outside of that sentence are not subject to the circumstances being checked. 
+302.3 The players also lose the game if every investigator available to the players is defeated, devoured, or retired. If there are no remaining investigators for the players to play as, they lose the game. 4 Rules Glossary There are three primary kinds of text that appear on components in Arkham Horror: mechanical text, reminder text, and flavor text. 
+400 
+400.1 Mechanical Text 
+400.1a Mechanical text is any text on a component that has some mechanical effect. Mechanical text is never italicized and it never appears inside parentheses. The majority of text on components is mechanical text. 
+400.1b Traits are a type of mechanical text that has no inherent effect but are frequently referenced by other mechanical text. 
+400.2 Reminder Text 
+400.2a Reminder text is parenthetical text in italics that summarizes a rule that applies to the component it appears on. It usually appears on the same line as the mechanical text it is relevant to, but it might appear on its own if it applies to an aspect of the component other than mechanical text. 
+400.2b Reminder text has no real mechanical effect as it is only summarizing an existing rule or rules. 
+400.2c Reminder text is not a definitive source of rules text and might not state all nuances of the summarized rule or rules. 5 
+400.3 
+403 Activation Token 
+403.1 Activation tokens are used as a reminder of who has taken their turn during the action phase and encounter phase. An activation token has two sides: an active side and an inactive side. 
+403.2 Flavor text usually appears as italicized text that is not within parentheses. However, as part of an encounter, flavor text is not italicized. After you have taken your turn during the action phase, flip your activation token to the inactive side. 
+403.3 After you have taken your turn during the encounter phase, flip your activation token to the active side. Flavor text in encounters is separated from mechanical text by a period, a comma, a semicolon (;), or the word “to.” 
+403.4 Flavor Text 
+400.3a All text on components that is neither mechanical text nor reminder text is flavor text. 
+400.3b Flavor text, like a component’s art, adds to the narrative quality of the game and the story told by the scenario. It has no mechanical effect. 
+400.3c 
+400.3d Ability labels (italic text followed by a long dash) are a form of flavor text used to apply a name or narrative quality to the mechanical text that follows the dash. (See rule 401, “Ability Label.”) 
+400.3e 
+401 Ability Label 
+401.1 Some instances of mechanical text have an ability label that appears in italics followed by a dash. An ability label has no mechanical effect. 
+401.2 Ability labels are used to name abilities or group a set of abilities with similar mechanical effects. 
+401.3 The mechanical text that follows an ability label describes exactly how it affects the game. 
+402 Action 
+402.1 Actions are a type of mechanical effect that can be performed by investigators. 
+402.2 During the action phase, investigators take turns performing actions. During your turn, you can perform up to two actions. (See rule 201, “Action Phase.”) 
+402.3 Game effects might allow you to perform actions during other phases or “additional” actions. Such actions are performed as normal and do not count against the two actions you can perform on your turn during the action phase. 
+402.4 You can perform each action no more than once per round regardless of the source of the action or the current phase. 
+402.5 While you are engaged with a monster, the only actions you can perform are the attack action, the evade action, the focus action, and any action that is specifically allowed while you are engaged. (See rule 428, “Engaged.”) 
+402.6 Mechanical text can allow you to resolve effects “as part of ” an action. These effects are in addition to an action’s normal effects. 
+402.7 Each reference card provides a summary of the actions an investigator can perform. 6 Leader Token 
+403.4a The leader token is a unique activation token. The investigator with the leader token is the leader. (See rule 448, “Leader.”) 
+403.4b The leader token is used exactly like other activation tokens. 
+404 Adjacent 
+404.1 Adjacent is a quality of spaces and components that are placed on spaces. 
+404.2 Two spaces are adjacent if they share a border—a solid white line that separates spaces. 
+404.3 A component is adjacent to each space that is adjacent to the space it is on. And a component is adjacent to each component in an adjacent space. 
+404.4 A component or space is not adjacent to itself;, a component is not adjacent to the space it is on, and a component is not adjacent to other components on the same space. 
+405 Ally 
+405.1 An ally is a type of asset represented by an ally card or a special card. All rules that apply to assets apply to allies. (See rule 408, “Asset.”) 
+405.2 An ally’s health and sanity denote how much damage and horror can be assigned to them. (See rules 408.7 and 408.9.) 
+405.3 Mechanical text can instruct you to gain an ally. To do so, draw the top card of the ally deck and place it in your player area. 
+405.4 Mechanical text can instruct an ally to recover health or sanity. Recovering health removes damage, and recovering sanity removes horror. (See rules 416.10 and 442.10.) 
+405.5 Allies can be traded between investigators as part of a trade action. (See rule 492, “Trade Action.”) 
+405.6 When an ally card is discarded, place it on the bottom of the ally deck. When a special card or starting card is discarded, return it to its place in its respective deck. 
+406 Anomaly 
+407.3 
+406.1 An anomaly represents a strange occurrence in a neighborhood. Anomalies are represented by anomaly tokens and anomaly cards. Archive cards are used for many different purposes and they have many different appearances. 
+407.4 
+406.2 What an anomaly represents specifically is determined by the scenario. There are multiple sets of anomaly cards. Each is used by a different scenario. Each archive card has a unique card number indicated in the top-left (on the front) and bottomright corners of the card. Aside from this identifying feature, archive cards do not share any other defining quality. 
+407.5 Mechanical text (including that of archive cards) might instruct you to take a specific card or cards from the archive. Such effects describe how to use those cards. Example: The Veil of Twilight scenario instructs you to use the set of “Fractured Reality” anomaly cards while the Approach of Azathoth scenario uses the “Temporal Fissure” anomaly cards. 
+406.3 A scenario can add archive card two (“Anomalies”) to the codex. That card adds rules 406.3a–406.3e to the game. These rules are summarized on archive card two and they are in effect only if that card is in the codex. 
+406.3a When a space has three doom or a neighborhood has a total of five doom, place an anomaly token in that neighborhood’s central area. Other tokens in the central area are unaffected. 
+406.3b If additional doom would be placed in any space of a neighborhood with an anomaly token, place that doom on the scenario sheet instead. 
+406.3c If you would resolve an encounter in any space of a neighborhood with an anomaly token, you resolve an anomaly encounter instead. 
+406.3d To resolve an anomaly encounter, draw the top card of the anomaly deck and read the section based on the amount of doom in your space. 
+406.3e 
+406.4 
+406.5 
+406.6 Most commonly, archive cards are added to the codex. Cards added to the codex provide additional rules and mechanical effects for as long as they remain in the codex. (See rule 413, “Codex.”) 
+407.5b Archive cards that are added to the codex should be read and any instructions on them resolved. 
+407.5c Mechanical text on an archive card that is preceded by a clue icon () directs investigators toward their immediate objective. Following these effects will result in the investigators winning the game. 
+407.5d Mechanical text on an archive card that is preceded by a doom icon () states the circumstances that will lead toward investigators losing the game. 
+407.5e Some archive cards represent epic monsters and are essentially oversized monster cards. Epic monsters are treated as monsters. They have all attributes that monsters have, and all rules and effects that apply to monsters apply to epic monsters. 
+407.5f Mechanical text can affect specifically “nonepic” monsters. Such effects apply to monsters represented by normal monster cards, but not epic monsters. 
+407.5g When an epic monster is defeated or discarded, return that card to the archive. When a neighborhood with an anomaly has zero doom, remove the anomaly from that neighborhood. Each component that adds archive card two to the codex also instructs you to add an anomaly deck to the game. The encounters represented on these cards are called anomaly encounters. Each anomaly card is split into three unique encounters. Each anomaly encounter correlates to an amount of doom that could be in the space of the investigator that is resolving the anomaly encounter. 
+407 Archive 
+407.1 The archive is the main tool with which a scenario drives the story and mechanics of the game. The archive is a set of numbered cards that can be used by any scenario to tell stories, add new rules to a game, provide a means of winning or losing the game, or do whatever else is needed by the scenario. 
+407.2 
+407.5a 
+408 Asset 
+408.1 “Asset” is a collective term that refers to any card that is gained by an investigator. There are five types of assets: allies, conditions, items, spells, and talents. 
+408.2 Assets are represented by ally cards, item cards, spell cards, special cards, and starting cards. Special cards and starting cards specifically can represent any type of asset. 
+408.3 All assets, regardless of type, share some attributes, though where those attributes appear on a component differs by asset type. 
+408.4 An asset’s name and art have no mechanical effect. All archive cards are kept in numerical order in the archive when not in use. 7 
+408.5 An asset’s type line has no mechanical effect, but it does indicate what type of asset the card is. 
+408.6 An asset’s text box includes its mechanical text and/or flavor text if it has any. 
+408.7 An asset with a health value greater than zero can be assigned damage. An asset with a sanity greater than zero value can be assigned horror. (See rules 416.7 and 442.7.) 
+408.8 If an asset has suffered damage equal to its health or horror equal to its sanity, it is discarded. 
+408.9 An asset cannot be assigned damage or horror in excess of its health or sanity, respectively. 
+408.10 When an ally card, item card, or spell card is discarded, place it on the bottom of its deck. When a special card or starting card is discarded, return it to its place in its respective deck. 
+411 Buy 
+411.1 To “buy” an item or spell means to spend money equal to that card’s value and gain that card. 
+411.2 Mechanical text can allow you to buy an item or spell for “half price.” In such a case, you spend money equal to half the card’s value (rounded up) instead. 
+411.3 Multiple effects that halve the price of an item or spell are not cumulative. 
+411.4 After an effect allows you to buy from the display, if you could not or chose not to buy anything, you may discard up to two cards from the display. (See rule 422, “Display.”) 
+412 Clue 
+412.1 Clues represent the information the investigators have gathered about unusual happenings in town. 
+409 Attack Action 
+412.2 
+409.1 The attack action is an action that can be performed by investigators. (See rule 402, “Action.”) Rules and mechanical text can instruct you to spawn one or more clues. 
+412.3 
+409.2 When you perform an attack action, you choose one monster in your space, engage that monster, and test strength (). For each success you roll, you deal one damage to that monster. (See rule 427, “Engage” and rules 416.13 and 416.15 regarding dealing damage to a monster.) To spawn a clue, place one clue from the token pool in the central area of the neighborhood that corresponds to the top card of the event deck. Then, take that card and the top two cards of the corresponding neighborhood deck, shuffle them together, and place them on top of that deck. 
+412.4 Each clue in a neighborhood indicates that an event card has been shuffled into the top few cards of the corresponding neighborhood deck. 
+412.5 The mechanical text of an encounter in a neighborhood with a clue can instruct you to gain a clue from your neighborhood. (See rule 430.6.) 
+412.6 When you gain a clue, place it in your player area. 
+412.7 Clues you have gained can be placed on the scenario sheet by using the research action (see rule 471, “Research Action”) or spent to reroll dice while resolving a test (see rule 490.4a). 
+412.8 Gathering and researching clues is instrumental to winning the game. (See rule 301.2.) 
+412.9 After you defeat a monster as part of an attack action, if the monster has a remnant icon (), you gain one remnant. The other side of each clue token is a doom token. (See rule 423, “Doom.”) 
+412.10 Clues can be traded between investigators as part of a trade action. (See rule 492, “Trade Action.”) 
+410 Board 
+413 Codex 
+410.1 “Board” is the collective term for all neighborhood tiles and street tiles as well as all spaces represented by those tiles. (See rule 481, “Space.”) 
+413.1 The codex is a game area that includes the scenario sheet and any other cards—usually archive cards— that you are instructed to add to the codex. 
+413.2 To add a card to the codex, place it next to the scenario sheet. 
+413.3 Cards added to the codex provide additional rules and effects while they remain in the codex. 
+409.3 
+409.4 You can attack a monster that is engaged with another investigator in your space. If you do, you engage that monster and it is no longer engaged with the other investigator. Each monster has an attack modifier that affects the number of dice you roll during your strength test. (See rule 453.8f.) 
+409.5 If you are engaged with multiple monsters, you can attack only one of them and you apply only the attack modifier of the monster you are attacking. 
+409.6 If the monster you are attacking is exhausted, you do not engage it. The monster remains exhausted and you deal damage as normal. 
+409.7 8 
+414 Component Action 
+416 Damage 
+414.1 Mechanical text of components—primarily investigator sheets and assets—have unique actions that can be performed by investigators. These actions are labeled “Action:” in bold. 
+416.1 Damage can be suffered by investigators, assets, and monsters, and is represented by damage tokens. 
+416.2 A three-damage token is a stand-in for three onedamage tokens. A three-damage token and three one-damage tokens are interchangeable. 
+416.3 Being dealt damage and suffering damage are synonymous. 
+416.4 When you suffer damage, place that many damage tokens on your investigator sheet. 
+416.5 When you recover health, remove that many damage tokens from your investigator sheet. 
+416.6 If you have suffered damage equal to your health, you are defeated. (See rule 444.6.) 
+416.7 If you would suffer damage, you may assign some or all of that damage to one of your assets instead. (See rule 408, “Asset.”) 
+416.8 Mechanical text can deal “direct damage.” Direct damage cannot be assigned to assets. 
+416.9 When an asset is dealt damage, place that many damage tokens on that card. 
+416.10 When an asset recovers health, remove that many damage tokens from that card. 
+416.11 If an asset has suffered damage equal to or exceeding its health, it is discarded. (See rule 408.10.) 
+416.12 An asset cannot be assigned damage in excess of its health. 
+416.13 When a monster is dealt damage, place that many damage tokens on that monster. 
+416.14 When a monster recovers health, remove that many damage tokens from that monster. 
+416.15 If a monster has suffered damage equal to its health, it is defeated. (See rule 453.11.) 
+417 Delayed 
+417.1 “Delayed” is a game state that affects investigators and is represented by an investigator token being tipped on its side. 
+417.2 While you are delayed, you cannot perform actions. Instead, the next time you could perform an action, you stand up your investigator token and skip that action; you are no longer delayed. 
+417.3 Mechanical text can instruct you to become delayed or allow you to become delayed as part of a cost. 
+417.4 If mechanical text causes you to become delayed while you are already delayed, nothing happens. Multiple instances of delayed are not cumulative. 
+417.5 You cannot become delayed as part of a cost if you are already delayed. (See rules 400.1d–400.1h.) Example: The Jenny Barnes investigator sheet states, “Action: If you have fewer than $3, you gain $3.” 
+414.2 You can perform the component action of only your own investigator sheet or the component actions of assets only if those cards are in your possession. 
+414.3 Each component action is considered independent from other component actions. You can perform each component action no more than once per round. 
+414.4 Some component actions can be performed only under specific circumstances, such as while in a specific space. These restrictions are described at the end of the action text. Example: The rare books access special card states, “Action: You discard one tome if you have one. Then you gain one tome item. Perform this action only at Orne Library.” 
+415 Condition 
+415.1 A condition is a type of asset which represents a status that is affecting an investigator, whether positive or negative. All rules that apply to assets apply to conditions. (See rule 408, “Asset.”) 
+415.2 There are three conditions: blessed, cursed, and dark pact. Blessed and cursed are on opposite sides of the same card. 
+415.3 Mechanical text that refers to a condition always refers to it by name. The name of a condition appears in all capital letters in mechanical text. 
+415.4 You cannot gain a condition if you already have a condition with the same name. 
+415.5 You cannot choose to gain a condition as part of a cost if you already have a condition with the same name. (See rules 400.1d–400.1h.) 
+415.6 There are multiple copies of each condition. When you gain a condition, take one of those copies at random and place it in your play area. Example: There are six unique copies of the dark pact special card. When you are instructed to gain a dark pact, you gain one of those six at random. 
+415.7 
+415.8 Players cannot look at the back of their conditions unless mechanical text specifically instructs them to flip the card or look at or reveal the back of the card. When a special card or starting card is discarded, return it to its place in its respective deck. 9 
+418 Destination 
+418.1 A monster’s “destination” is the specific space or spaces the monster moves toward or affects. Example: The robed figure monster’s activation text states, “Move toward unstable space.” The monster’s destination is the unstable space or unstable spaces if there are multiple. 
+419 Devoured 
+419.1 Mechanical text might cause investigators to be “devoured.” An investigator that is devoured is defeated regardless of how much damage or horror they have suffered. (See rule 444.6.) 
+420 Dice 
+420.1 Arkham Horror uses standard six-sided dice. The game comes with four dice, but the number of dice you can roll at once is not limited by that amount. Feel free to use additional six-sided dice from other sources (such as an Arkham Horror Dice Set™). 
+423.3 If there is more than one doom icon on the event card, place one doom for each icon onto the indicated space or spaces. 
+423.4 Each scenario adds one or more cards to the codex that indicate how doom that accrues on the board causes doom to be placed on the scenario sheet. Doom on the scenario sheet will eventually cause the investigators to lose the game. 
+423.5 Doom on the board can be removed using the ward action. (See rule 494, “Ward Action.”) 
+423.6 The other side of a doom token is a clue token. (See rule 412, “Clue.”) 
+424 Elite 
+424.1 “Elite” is a keyword ability that appears on monsters. 
+424.2 “Elite [number]” means “This monster’s health is increased by [number] for each investigator.” Example: During a five-player game, a monster with “elite 1” has five additional health. 
+424.3 Elite checks the number of investigators who started the game. The number is constant, even if one or more investigators are currently defeated. 
+424.4 A plus sign (+) appears in the monster’s health value to indicate that the monster’s health is increased by one or more mechanical effects. 
+421 Disengage 
+421.1 To disengage a monster that you are engaged with, place it in your space ready side up. You are no longer engaged with that monster, and the monster is ready. (See rule 453.2.) 
+421.2 You can disengage a monster only if you are engaged with it. 
+425 Elusive 
+425.1 “Elusive” is a keyword that appears on monsters. 
+422 Display 
+425.2 
+422.1 The display is a group of five set-aside items cards. 
+422.2 Mechanical text can instruct you to buy or gain items from the display. (See rule 411, “Buy.”) A ready monster with elusive does not engage an investigator in its space unless another effect causes it to do so. 
+422.3 After an effect allows you to buy from the display, if you could not or chose not to buy anything, you may discard up to two cards from the display. 
+422.4 If there are fewer than five cards in the display for any reason, reveal and set aside cards from the top of the item deck until the display has five cards. 
+422.5 If an effect allows you to buy multiple items from the display at the same time, the purchases are simultaneous. 
+423 Doom 
+423.1 Doom represents the threat of the Ancient Ones on the world. Rules and mechanical text can instruct you to spread doom one or more times. 
+423.2 To spread doom, discard the bottom card of the event deck. Place one doom on the space that corresponds to the space on that card that is marked with a doom icon (). 10 Example: You move into a space with a ready monster that has elusive, so it does not immediately engage you. You perform an attack action to engage and deal damage to the monster. 
+426 Encounter 
+426.1 An encounter is a short narrative represented by a card—usually a neighborhood or street card. 
+426.2 During the encounter phase, investigators take turns resolving encounters. During your turn, you draw and resolve an encounter card that corresponds to your space. (See rule 203, “Encounter Phase.”) 
+426.3 There are different types of encounters you can resolve depending on your space and other circumstances. Often you will have only one option available to you. However, if there are multiple options available, you choose which type of encounter you will resolve. 
+426.4 If you are in a space on a neighborhood tile, you resolve a neighborhood encounter. (See rule 460.4.) 
+426.5 If you are on a street tile, you resolve a street encounter. (See rule 487.3.) 
+428.3 While a monster is engaged, it is recommended that its card is placed with its exhausted side faceup. 
+426.6 Rules and mechanical text can provide additional encounter options or restrict your options. 
+428.4 An engaged monster is neither ready nor exhausted. 
+428.5 
+426.7 Encounters can instruct you to resolve a test. Such test declarations are presented either by a skill icon in parentheses following flavor text or by directly instructing you to test a skill. You resolve the declared test before continuing the encounter. (See rule 490, “Test.”) While you are engaged with one or more monsters, the only actions you can perform are the attack action, the evade action, the focus action, and any action that is specifically allowed while you are engaged. 
+428.6 If you are engaged with one or more monsters during the encounter phase, you do not resolve an encounter. 
+428.7 During the monster attack step of the monster phase, each engaged monster deals damage and horror to the investigator it is engaged with. (See rule 202.3b.) 
+428.8 An engaged monster is still considered to be in the space of the investigator it is engaged with. 
+428.9 A monster can be engaged with only a single investigator at a time. 
+428.10 An investigator can be engaged with any number of monsters. 
+428.11 If you are engaged with a monster and another investigator engages that monster, you are no longer engaged with that monster and that investigator is now engaged with that monster. 
+428.12 As a player, you might enjoy the game more if someone else reads aloud to you. The reader should not reveal the results of passing or failing a test or the results of a choice until the test has been resolved or the choice has been made. You being engaged with a monster and that monster being engaged with you are synonymous concepts. 
+429 Evade Action 
+429.1 The evade action is an action that can be performed by investigators. (See rule 402, “Action.”) This is how we (the development team) play, and we quite enjoy it. It makes the story more suspenseful. 
+429.2 When you perform an evade action, you test observation (). For each success you roll, you disengage and exhaust one monster of your choice. If you disengage all monsters that you were engaged with, you may perform one additional action. (See rule 421, “Disengage,” rule 432, “Exhaust,” and rule 402.3 regarding additional actions.) Example: An encounter states, “You attempt to decipher the arcane script ().” The encounter has declared that you resolve a lore test, which you do before continuing. 
+426.8 
+426.9 Encounters that instruct you to resolve a test have a pass effect preceded by “if you pass” and/or a fail effect preceded by “if you fail.” Read only the text that corresponds to the result of the resolved test. Encounters can instruct you to make a choice. Such choices begin with “you may” or are presented as multiple options separated by “or.” You make the decision before continuing the encounter. Example: An encounter states, “Test  to teach the witch a recipe or spend one remnant to provide her with ingredients.” You can either test lore or spend one remnant. You decide before continuing. 
+426.10 
+426.11 After you finish reading the encounter, place that card on the bottom of the deck it was drawn from, unless it is an event card. 
+427 Engage 
+427.1 To engage a monster, place it in your player area. You are now engaged with that monster, and it is engaged with you. (See rule 453.2.) 
+429.3 Each monster has an evade modifier that affects the number of dice you roll during your observation test. (See rule 453.8g.) 
+427.2 An engaged monster is neither ready nor exhausted. When engaged with a monster, its card can be flipped to either side; however, it is recommended that it is placed exhausted side up. 
+429.4 If you are engaged with multiple monsters, you apply only the worst modifier from among all monsters you are engaged with. 
+429.5 You can perform the evade action only if you are engaged with one or more monsters. 
+428 Engaged 
+428.1 “Engaged” is a game state that affects monsters and investigators. (See rule 453.2.) 
+428.2 While a monster is engaged, it is placed in the player area of the investigator it is engaged with. 11 
+430 Event 
+431 Event Deck Holder 
+430.1 Event cards are used to spread doom, spawn clues, and resolve gate bursts. They can also represent encounters. 
+431.1 
+430.2 Event cards are primarily kept in the event deck, which is kept facedown in the event deck holder. The event deck holder allows you to more easily draw cards from either the top or bottom of the deck. (See rule 431, “Event Deck Holder.”) The event deck holder holds the event deck during the game to more easily facilitate drawing cards from both the front and back of the deck as well as placing cards on the bottom of the deck. 
+432 Exhaust 
+432.1 To exhaust a monster, flip it ready side down. The monster is now exhausted and no longer ready. (See rule 453.2.) 
+432.2 If a monster is engaged with an investigator when it becomes exhausted, that investigator disengages the monster by placing it in their space, then exhausts it by flipping it ready side down. The investigator is no longer engaged with the monster, and it is exhausted. 
+433 Exhausted 
+433.1 “Exhausted” is a game state that affects monsters (See rule 453.2.). 
+433.2 While a monster is exhausted, it is in a space on the board with its ready side down. 
+433.3 While exhausted, a monster does not activate, does not engage investigators in its space, and does not deal damage or horror. 
+433.4 During the monster ready step of the monster phase, each exhausted monster readies. (See rule 467.2.) 
+434 Feed 
+434.1 “Feed” is a keyword ability that appears on monsters. 
+434.2 After a monster with feed deals damage to an investigator or ally, it recover an amount of health equal to the amount of damage dealt. (See rule 416.14.) 
+434.3 Damage that is prevented is not dealt and does not cause the monster to recover health. 
+435 Focus 
+435.1 “Focus” represents an investigator’s ability to prepare for an upcoming task. 
+430.3 
+430.4 The event deck is one of two main tools with which a scenario drives the story and mechanics of the game. Each scenario has a unique set of event cards which are used while playing that scenario. Event cards have many different appearances, all of which mimic the appearance of neighborhood cards. Rules 430.4a–430.4c describe the attributes of an event card. 
+430.4a Event cards have all attributes of neighborhood cards, but with some additional attributes. (See rule 460, “Neighborhood Card.”) 
+430.4b Event cards have a clue icon () in the topleft corner of the card to make them easier to distinguish from neighborhood cards. 
+430.4c 
+430.5 Event cards have text in the bottom-left corner of the card that indicates which scenario they belong to. Event cards are used while spawning clues, during which they are shuffled into one of the neighborhood decks. (See rule 412.3.) 
+430.6 When you draw an event card from a neighborhood deck, resolve it as if it were a neighborhood card. That encounter can instruct you to gain a clue from your neighborhood. 
+430.7 After you resolve an encounter represented by an event card, if you gained a clue from your neighborhood, discard that card. If you did not gain a clue from your neighborhood, take the top two cards of that neighborhood deck, shuffle the event card and those two cards together, and place them on top of that deck. 
+430.8 Event cards are also used to spread doom, after which they are discarded. (See rules 423.2–423.3.) 
+435.2 There are five different kinds of focus tokens, one for each of the five skills. (See rule 480, “Skill.”) 
+430.9 Event cards are used while resolving a gate burst, during which they are shuffled and placed on the bottom of the event deck. (See rule 204.11a.) 
+435.3 Rules and mechanical effects can instruct you to focus a particular skill or a skill of your choice. 
+435.4 
+430.10 When an event card is discarded for any reason, place it in a faceup discard pile next to the event deck. To focus a skill, place one focus token that corresponds to that skill on your investigator sheet. 
+435.5 You can focus each skill no more than once. 
+435.6 Each focus token you have increases the corresponding skill value by one. 12 
+435.7 While resolving a test, for each focus token you have, you may spend that focus to reroll one die. (See rule 490, “Test.”) 
+435.8 Each investigator has a focus limit indicated on their investigator sheet. Your focus limit determines the number of focus tokens you can have at once. (See rule 444.2c.) 
+435.9 If you are instructed to focus a skill but doing so causes you to exceed your focus limit, you must discard one of your focus tokens. 
+435.10 Mechanical text can instruct you to focus one or more skills “even if it exceeds your focus limit.” In such a case, you do not discard focus tokens. These effects do not allow you to focus a skill more than once. 
+435.11 Your focus limit might change over time, either naturally or due to mechanical text. 
+435.12 If your focus limit is reduced below the amount of focus tokens you have, you do not automatically discard excess focus. 
+435.13 Focus tokens cannot be traded. 
+436 Focus Action 
+436.1 The focus action is an action that can be performed by investigators. (See rule 402, “Action.”) 
+436.2 When you perform a focus action, you focus one skill of your choice. (See rule 435.4.) 
+436.3 You can focus each skill no more than once. 
+436.4 After you perform a focus action, if you have focus tokens exceeding your focus limit, you must discard one of your focus tokens. (See rule 444.2c.) 
+437 Gather Resources Action 
+437.1 The gather resources action is an action that can be performed by investigators. (See rule 402, “Action.”) 
+437.2 When you perform a gather resources action, you gain one dollar. (See rule 452, “Money.”) 
+438 Guardian 
+438.1 “Guardian” is an investigator role. (See rule 445.) 
+438.2 If you are a guardian, it is your responsibility to protect your fellow investigators. That could mean helping them recover from trauma or dispatching monsters before they become a threat. 
+438.3 Guardians are likely to have abilities or starting assets that allow them to more easily defeat monsters, prevent damage or horror, or allow other investigators to recover health or sanity. 
+439 Half 
+439.1 Mechanical text can refer to half of a numerical value. In such a case, always round up. 
+439.2 Multiple effects that halve the same value are not cumulative. 
+440 Headline 
+440.1 Headlines represent the passage of time and the lurking threats to our world. Rules 440.1a–440.1d describe the attributes of a headline card. 
+440.1a A headline’s title has no mechanical effect. 
+440.1b Flavor text has no mechanical effect. 
+440.1c A headline’s type line has no mechanical effect. 
+440.1d A headline’s mechanical text describes exactly what it does and might include reminder text. 
+440.2 Rules and mechanical text can instruct you to draw and read a headline card. When you do so, you do as its mechanical text instructs. 
+440.3 When the mechanical text of a headline card refers to “you,” it is referring only to the investigator that drew the headline card unless otherwise specified. 
+440.4 After you resolve the mechanical text of a headline card, discard it. 
+440.5 When a headline card is discarded, place it in a faceup pile next to the headline deck. 
+440.6 If you are instructed to draw a headline card while the headline deck is empty, place one doom on the scenario sheet instead. 
+440.7 Some headlines have the rumor trait in their type line preceded by a long dash. All rumor headlines instruct you to add them to the codex and discard all other rumor headlines in the codex. (See rule 413, “Codex.”) 
+440.8 The mechanical text of a rumor headline is in effect for as long as the card remains in the codex. 
+441 Health 
+441.1 Health is an attribute of investigators, monsters, and some assets that represents the maximum amount of damage they can suffer. (See rule 416, “Damage.”) 
+442 Horror 
+442.1 Horror is mental trauma that can be suffered by investigators and assets and is represented by horror tokens. 
+442.2 A three-horror token is a stand-in for three onehorror tokens. You can exchange a three-horror token for three one-horror tokens or the reverse at any time. 
+442.3 Being dealt horror and suffering horror are synonymous. 13 
+442.4 When you suffer horror, place that many horror tokens on your investigator sheet. 
+442.5 When you recover sanity, remove that many horror tokens from your investigator sheet. 
+442.6 If you have suffered horror equal to your sanity, you are defeated. (See rule 444.6.) 
+442.7 If you would suffer horror, you may assign some or all of that horror to one of your assets instead. (See rule 408, “Asset.”) 
+442.8 Mechanical text can deal “direct horror.” Direct horror cannot be assigned to assets. 
+442.9 When an asset is dealt horror, place that many horror tokens on that card. 
+442.10 When an asset recovers sanity, remove that many horror tokens from that card. 
+442.11 If an asset has suffered horror equal to or exceeding its sanity, it is discarded. (See rule 408.10.) 
+442.12 An asset cannot be assigned horror in excess of its sanity. 
+443 Hunter 
+443.1 “Hunter” is an ability label that appears on monster activation text. (See rule 401, “Ability Label.”) 
+443.2 Monsters with hunter activations move toward and engage their prey. (See rule 466, “Prey.”) 
+444 Investigator 
+444.1 The term “investigator” refers to a player and the investigator sheet and investigator token that player controls. 
+444.2 Rules 444.2a–444.2f describe the attributes on the front of an investigator sheet. 
+444.2a An investigator’s name and occupation have no mechanical effect. 
+444.2b An investigator’s art has no mechanical effect. 
+444.2c An investigator’s focus limit indicates how many skills they can have focused at once. (See rule 435, “Focus.”) 
+444.2d An investigator’s ability or abilities are mechanical effects unique to that investigator. 
+444.2e An investigator’s health and sanity indicate how much damage and horror they can suffer before being defeated. (See rule 416, “Damage”, and rule 442, “Horror”) 
+444.2f An investigator’s skills represent their collective strengths and weaknesses as a character. (See rule 480, “Skill.”) 
+444.3 Rules 444.3a–444.3c describe the attributes on the back of an investigator sheet. 14 
+444.3a An investigator’s starting possessions are listed on the back of their investigator sheet. (See rule 110.5, “Starting Possessions.”) 
+444.3b An investigator’s role or roles are described on the back of their investigator sheet. (See rule 445, “Investigator Role.”) 
+444.3c An investigator’s personal history has no mechanical effect, but it might help you get into character. 
+444.4 Investigator tokens are used to indicate the positions of investigators on the board. Each investigator has an investigator token with art that matches the art on their investigator sheet. 
+444.5 Each investigator token should be inserted into a plastic stand while in use. 
+444.6 Defeated 
+444.6a If you have suffered damage equal to or exceeding your health or you have suffered horror equal to or exceeding your sanity, you are defeated. 
+444.6b When you are defeated, disengage all monsters, exhaust them, discard all of your cards and tokens, and return your investigator sheet and investigator token to the box. Then place one doom on the scenario sheet. 
+444.6c If your investigator is defeated, devoured, or retired, you must select a new investigator who will join the game at the beginning of the next action phase. Rules 444.7a–444.7c describe the steps for selecting a new investigator. 
+444.7 Selecting a New Investigator 
+444.7a You take one of the investigator sheets that is not being used by another player and has not been defeated, devoured, or retired during this game. Take the matching investigator token. 
+444.7b You gain the starting cards described on the back of your next investigator sheet. 
+444.7c You place your investigator token on the starting space indicated on the scenario sheet. 
+445 Investigator Role 
+445.1 Investigators fall into five roles that act as suggested methods of playing those investigators: guardian, mystic, rogue, seeker, and survivor. 
+445.2 Each investigator has a primary role and might have a secondary role. An investigator is likely to have an ability or starting assets that relate to their role. 
+446 Item 
+448.4 
+446.1 An item is a tool or some other equipment used by an investigator. An item is a type of asset represented by an item card or a special card. All rules that apply to assets apply to items. (See rule 408, “Asset.”) If the investigators must make a decision as a group but they do not agree, the leader has the final say. 
+449 Lurker 
+449.1 Items represented by item cards have a value. (See rule 411, “Buy.”) Items represented by special cards do not have a value. “Lurker” is an ability label that appears on monster activation text. (See rule 401, “Ability Label.”) 
+449.2 Monsters with lurker activations do not usually move. Instead, they cause some negative effect, such as dealing damage or horror or placing doom. 
+450 Marker Token 
+450.1 Markers have multiple different appearances while faceup, but all markers have the same appearance while facedown. 
+450.2 Markers have no inherent mechanical effect or meaning. Markers are placed by mechanical text of archive cards and other components, and what they represent and do is defined by that text. 
+451 Massive 
+451.1 “Massive” is a keyword ability that appears on monsters. 
+451.2 A monster with massive engages every investigator in its space. It engages all investigators that move into its space, even if it is already engaged. 
+451.3 To indicate that a monster with massive is engaged with one or more investigators, place it in its space ready side down (the same way you would normally indicate that a monster is exhausted). 
+451.4 During the monster attack step, a monster with massive deals damage and horror to each investigator it is engaged with. 
+451.5 A monster with massive cannot be exhausted. After you evade a monster with massive and perform the additional action, if you have not left the space, the monster engages you again. 
+452 Money 
+452.1 Money tokens come in two denominations: one-dollar tokens and five-dollar tokens. 
+452.2 A five-dollar token is a stand-in for five one-dollar tokens. You can exchange a five-dollar token for five one-dollar tokens or the reverse at any time. 
+452.3 Money can be traded between investigators as part of a trade action. (See rule 492, “Trade Action.”) 
+453 Monster 
+453.1 Monsters represent the enemies the investigator face during the game. Monster cards have many attributes split between both sides of the card. 
+446.2 
+446.3 An item’s hand icon denotes how many hands it takes to use the item during a test. (See rule 490.2c.) 
+446.4 An item’s health and sanity (if it has them) denote how much damage and horror can be assigned to it. (See rules 408.7 and 408.9.) 
+446.5 Mechanical text can instruct you to gain an item. To do so, either you take an item of your choice from the display or you take the top card of the item deck. Place the card you take in your player area. 
+446.6 More commonly, mechanical text will instruct you to gain an item with a specific trait, such as “common” or “curio.” To do so, either you take an item of your choice with the specified trait from the display or you reveal cards from the top of the item deck until you reveal an item with the specified trait. Place that card in your player area. Shuffle any other cards you revealed this way and place them on the bottom of the item deck. 
+446.7 Mechanical text can instruct you to buy items from the display. (See rule 411, “Buy.”) 
+446.8 Items can be traded between investigators as part of a trade action. (See rule 492, “Trade Action.”) 
+446.9 When an item card is discarded, place it on the bottom of the item deck. When a special card or starting card is discarded, return it to its place in its respective deck. 
+447 Keyword 
+447.1 A keyword is a shorthand for a type mechanical text that frequently appears on cards but contains nuances that cannot be easily described. 
+447.2 Keywords are usually followed by reminder text that summarizes the rules for that ability. 
+447.3 The following words are keywords: Elite, Elusive, Feed, Massive, Watcher. 
+448 Leader 
+448.1 The investigator with the leader token is the leader. (See rule 403.4, “Leader Token.”) 
+448.2 The monster attack step and mythos phase are resolved in player order starting with the leader. 
+448.3 Mechanical text can reference the leader or instruct the leader to resolve additional effects. 15 
+453.2 
+453.3 There are three game states that affect monsters: ready, engaged, and exhausted. Each monster is in exactly one of these states at all times. (See rule 428, “Engaged,” rule 433, “Exhausted,” and rule 467, “Ready.”) Rules 453.3a–453.3d describe the attributes of the ready side of a monster card. 
+453.3a A monster’s art appears on both sides of the card. It has no mechanical effect. 
+453.3b A monster’s spawn text describes how and where the monster spawns. (See rule 453.5.) 
+453.3c 
+453.3d 
+453.8i A monster’s damage and horror icons denote how much damage and horror the monster deals when it attacks. (See rule 202.3b.) 
+453.9 If a monster has suffered damage equal to or exceeding its health, it is defeated. Investigators most commonly damage monsters using the attack action. (See rule 409, “Attack Action.”) 
+453.10 Mechanical text can instruct you to defeat monsters directly without dealing damage to them. Example: The handcuffs special card states, “Once per round, after you damage, disengage, or are damaged by a human monster, you may defeat that monster.” An investigator uses this effect to defeat a human monster, even if it has not suffered damage equal to its health. A monster’s speed indicates how many spaces it moves during its activation. Mechanical text can instruct you to spawn one or more monsters. 
+453.5 To spawn a monster, take the bottom card of the monster deck and place it in the space described by the monster’s spawn text. 
+453.6 Mechanical text that spawns a monster can describe how or where to spawn a monster. Those instructions override the monster’s spawn text. 
+453.7 Monsters are spawned ready unless their spawn text or the mechanical text that spawns them instructs you to spawn them engaged or exhausted. Rules 453.8a–453.8i describe the attributes of the exhausted side of a monster card. 
+453.8a A monster’s name has no mechanical effect, but mechanical text can refer to monsters by name. 
+453.8b A monster’s type line has no mechanical effect, though mechanical text can refer to monsters with specific traits in their type line. 
+453.8c Some monsters have a remnant icon (). This indicates that an investigator gains one remnant for defeating the monster as part of an attack action. (See rule 409.7.) 
+453.8d A monster’s art appears on both sides of the card. It has no mechanical effect. 
+453.8e A monster’s health indicates how much damage it must be dealt in order to be defeated. (See rule 453.9.) 
+453.8f A monster’s attack modifier applies only to the test resolved as part of an attack action. (See rule 490.2b.) 
+453.8g A monster’s evade modifier applies only to the test resolved as part of an evade action. (See rule 490.2b.) 16 A monster’s text box includes any abilities the monster has as well as the monster’s flavor text if it has any. A monster’s activation text describes what a monster does when it activates. (See rule 202.2, “Monster Activation Step.”) 
+453.4 
+453.8 
+453.8h 
+453.11 When a monster represented by a monster card is defeated or discarded, place it on the top of the monster deck. 
+454 Move 
+454.1 Mechanical text can instruct investigators or components to move between game areas. Most commonly this is investigators or monsters moving from one space to another. 
+454.2 Mechanical text that moves an investigator moves only the corresponding investigator token unless the text specifically describes other components. 
+454.3 Mechanical text can instruct components to move a number of spaces which refers to spaces on the board. A component moved in this way moves from its space to an adjacent space one at a time, entering and leaving each space it moves through. 
+454.4 Mechanical text can instruct components to move directly to a space or other game area using the words “move directly to” or simply “move to.” A component moved in this way is removed from its current space or game area and placed directly on its new space or game area. It does not enter or leave any other space or game area during the move. 
+455 Move Action 
+455.1 The move action is an action that can be performed by investigators. (See rule 402, “Action.”) 
+455.2 When you perform a move action, you move your investigator token up to two spaces. You may spend up to two dollars to move one additional space for each dollar spent this way. (See rule 454.3.) 
+455.3 If you move into a space with a monster, that monster immediately engages you and your movement ends. (See rule 427, “Engage.”) 
+456 Mystic 
+456.1 “Mystic” is an investigator role. (See rule 445.) 
+456.2 If you are a mystic, you are adept at warding against evil. You should concentrate on removing doom from the board. You are the best defense against the Ancient Ones. 
+460.4 To resolve a neighborhood encounter, you draw the top card of the neighborhood deck that corresponds to the neighborhood tile you are on and read the encounter that corresponds to your space. 
+460.5 Each neighborhood space has unique icons that denote a set of common effects that you can expect from encounters in that space. The icon or icons to the left of the arrow indicate which skills are likely to be tested and/or which components you can be asked to spend. The icon or icons to the right of the arrow indicate the expected benefits. 
+456.3 Mystics have higher-than-average lore () which allows them to more easily remove doom using the ward action and cast spells. 
+457 Mythos Cup 
+457.1 The mythos cup is an opaque container (such as a Fantasy Flight Supply™ Dice Bag) that holds the mythos tokens during a game. 
+458 Mythos Token 
+461 Outbreak 
+458.1 Mythos tokens have many different appearances. Each mythos token has a unique effect when it is drawn from the mythos cup. 
+461.1 
+458.2 Rules 204.7–204.13 list the mythos tokens and their effects. A scenario can add archive card one (“Outbreak”) to the codex. That card adds rule 461.1a to the game. Rule 461.1a is summarized on archive card one, and it is in effect only if that card is in the codex. 
+459 Neighborhood 
+459.1 The term neighborhood refers to a neighborhood tile, the spaces in that neighborhood and the central area of that neighborhood. 
+459.2 Each neighborhood tile has three distinct spaces and a central area. A neighborhood’s central area is not a space. (See rule 481, “Space.”) 
+459.3 Each space on a neighborhood tile has a name and icons that denote the most likely outcome of encounters in that space. (See rule 460.5.) 
+459.4 If an effect instructs you to place a component in a neighborhood without indicating a specific space, that component is placed in the neighborhood’s central area. 
+459.5 Clues and other tokens in a neighborhood’s central area indicate unusual activity in that neighborhood. 
+460 Neighborhood Card 
+460.1 A unique set of neighborhood cards corresponds to each neighborhood. Each set of cards is referred to as a neighborhood deck. 
+460.2 Each neighborhood card contains three encounters, one for each space in that neighborhood. 
+460.3 On your turn during the encounter phase, if you are in a space of a neighborhood, you resolve a neighborhood encounter. Example: The general store space shows a money icon () as a requirement and a common item icon () as a benefit. While having an encounter at the general store, you can expect to spend money to gain common items. 
+461.1a If a space has four or more doom, remove three doom from that space. Then place one doom in each other space in that neighborhood and one doom on the scenario sheet. 
+462 Place 
+462.1 To place a component, physically put the component in the zone indicated by the effect that is placing it. 
+463 Patrol 
+463.1 “Patrol” is an ability label that appears on monster activation text. (See rule 401, “Ability Label.”) 
+463.2 Monsters with patrol activations move toward their destination. The activation might indicate a prey that the monster engages. (See rule 418, “Destination”, and rule 466, “Prey”) 
+464 Player Order 
+464.1 When investigators are instructed to resolve a sequence of effects in “player order,” the leader resolves their part of the sequence first, followed by the other investigators proceeding clockwise around the table. (See rule 448, “Leader.”) 
+465 Prevent 
+465.1 Mechanical text can instruct you to prevent damage or horror. Damage or horror that is prevented is not dealt or suffered. (See rule 416, “Damage”, and rule 442, “Horror”) 17 
+466 Prey 
+470 Research 
+466.1 A monster’s “prey” is the specific investigator or investigators the monster moves toward, engages, and/or affects with its activation text. 
+470.1 To “research” a clue means to place a clue token from your player area onto on the scenario sheet. Clues are researched primarily by the research action. Example: The hooded stalker monster’s activation text states, “Move toward and engage lowest .” The monster’s prey is the investigator with the lowest strength or each investigator that is tied for lowest strength. 
+470.2 You can only research clues that are in your player area unless an effect specifically allows you to research clues from other sources. 
+471 Research Action 
+471.1 The research action is an action that can be performed by investigators. (See rule 402, “Action.”) 
+471.2 When you perform a research action, you test observation (). For each success you roll, you may research one clue. (See rule 470.1.) 
+472 Retire 
+472.1 Mechanical text might cause investigators to “retire.” An investigator that retires is permanently removed from the game. 
+472.2 After your investigator retires, you select a new investigator who joins the game at the beginning of the next action phase. (See rule 444.7.) 
+473 Rogue 
+473.1 “Rogue” is an investigator role. (See rule 445.) 
+473.2 If you are a rogue, you have a unique skill set that allows you to specialize on a specific task. 
+473.3 Each rogue has a specialty that is unique to them as a character. That specialty might overlap with another role or it might not. A rogue’s specialty is described on their investigator sheet. 
+474 Roll 
+474.1 Dice are usually rolled as part of a test, but mechanical text can instruct you to roll one or more dice without instructing you to resolve a test. 
+474.2 Dice that are rolled outside of a test resolution cannot be manipulated by effects that manipulate dice or dice results as part of a test. 
+467 Ready 
+467.1 “Ready” is a game state that affects monsters. (See rule 453.2.) 
+467.2 To ready a monster, flip it ready side up. The monster is now ready and not engaged or exhausted. (See rule 453.2.) 
+467.3 While a monster is ready, it is in a space on the board with its ready side up. 
+467.4 During the monster activation step of the monster phase, each ready monster activates. (See rule 202.2, “Monster Activation Step.”) 
+467.5 If a ready monster is in the same space as an investigator for any reason, it engages that investigator. (See rule 427, “Engage.”) 
+467.6 If a ready monster is in the same space as two or more investigators, it engages its prey. If the monster does not have a prey, the investigators choose which investigator the monster engages. (See rule 466, “Prey.”) 
+468 Reference Card 
+468.1 Reference cards exist as an easy way for players to reference the round structure and the actions that are available to them. 
+468.2 Reference cards are not exhaustive descriptions of all rules related to those topics. For full rules, see the respective sections of this rules document. 
+469 Remnant Token 
+469.1 Remnants represent the remains of defeated monsters, leftover ritual components, or other oddities discovered by the investigators. 
+469.2 You can spend remnants while casting a spell to prevent suffering horror. (See rule 483.9.) 
+469.3 Mechanical text can instruct you to spend remnants for other benefits. 
+469.4 Remnants can be gained most commonly from defeating monsters as part of an attack action (See rule 409.7.) or by removing two or more doom from a space as part of a ward action (See rule 494.3.). 
+469.5 Remnants can be traded between investigators as part of a trade action. (See rule 492, “Trade Action.”) 18 Example: A dark pact instructs you to “roll one die.” That die is not part of a test. It cannot be rerolled by an effect that allows you to reroll a die as part of a test. 
+475 Sanity 
+475.1 Sanity is an attribute of investigators and some assets that represents the maximum amount of horror they can suffer. (See rule 442, “Horror.”) 
+476 Scenario 
+476.1 During each game of Arkham Horror, you play using one of the provided scenarios. Each scenario tells a different story about the investigators fighting against the forces of the Ancient Ones. 
+476.2 Each scenario has unique instructions for setup which affects how the game plays out. The narrative text, map tiles, monsters, events, and how you win or lose the game are all determined by the scenario. 
+476.3 The following rules describe the attributes of the front side of a scenario sheet. 
+476.3a A scenario’s art and title have no mechanical effect. 
+476.3b A scenario’s starting space denotes where to place investigator tokens during setup (See rule 110.6a.). The starting space is the default unstable space (See rule 493.3.). 
+476.3c 
+476.4 A scenario’s reckoning effect is resolved whenever an investigator draws a reckoning token from the mythos cup. (See rule 204.12.) The following rules describe the attributes of the front side of a scenario sheet. 
+476.4a The setup map on the back of a scenario sheet is used only during setup. (See rule 102.1.) 
+476.4b A scenario’s monster deck list denotes which monsters are used during the game. (See rule 104, “Create Monster Deck.”) 
+476.4c A scenario’s mythos cup list denotes which mythos tokens are used during the game. (See rule 105, “Create Mythos Cup.”) 
+476.4d Set-aside components remain set aside until an effect instructs you to do something with them. 
+478.3 Set-aside components or components that were previously set aside are treated exactly like other components of their kind including being discarded as normal. 
+479 Shuffle 
+479.1 To “shuffle” a set of cards, randomize their order so that no players know their relative order. 
+480 Skill 
+480.1 There are five skills that together represent an investigator’s strengths and weaknesses as a character: influence (), lore (), observation (), strength (), and will (). 
+480.2 Each skill is represented by a value. A higher value indicates you are better with that skill. 
+480.3 Rules and mechanical text can instruct you to test one of your skills. (See rule 490, “Test.”) 
+480.4 Influence () represents your charisma and social acumen. Although it is not a key skill for any standard action, many locations require you to test influence to receive their benefits. 
+480.5 Lore () represents your academic and arcane knowledge and your capacity for wielding magic. It is the key skill for the ward action and casting spells. Few locations require you to test lore to receive their benefits. 
+480.6 Observation () represents your attention to detail, spacial awareness, and problem-solving capabilities. It is the key skill for the evade and research actions. Few locations require you to test observation to receive their benefits. 
+480.7 Strength () represents your physical prowess. It is the key skill for the attack action which is necessary to defeat monsters. Few locations require you to test strength to receive their benefits. 
+480.8 Will () represents your discipline and moxie. Although it is not the key skill for any standard action, many locations require you to test will to receive their benefits. In addition, will is often tested to resist the negative effects of headline cards. 
+481 Space 
+481.1 A space is a portion of the board where investigators, monsters, and other components can be placed. 
+481.2 Each space represents a named location or street. 
+481.3 A space is adjacent to each other space with which it shares a border—a solid white line. (See rule 404, “Adjacent.”) A scenario’s “finalize setup” text instructs you how to complete setup. (See rule 111.4.) 
+477 Seeker 
+477.1 “Seeker” is an investigator role. (See rule 445.) 
+477.2 If you are a seeker, you are an intrepid sleuth. You should concentrate on gathering clues and researching their deeper meaning. Your work is instrumental in putting a stop to the evil plots at work. 
+477.3 
+478.2 Seekers are likely to have abilities or starting assets that allow them to more easily research clues they have gathered or that provide benefits for gathering clues or being near clues on the board. 
+478 Set Aside 
+478.1 Mechanical text can instruct you to set aside components. To do so, simply place them nearby for easy access. 19 
+482 Special Cards 
+482.1 A special card could be an ally, item, spell, or talent. All rules that apply to assets apply to special cards. (See rule 408, “Asset.”) 
+482.2 Special cards should be kept organized alphabetically for easy access. 
+482.3 Mechanical text that refers to special cards always refers to them by name. The name of a special card appears in all capital letters in mechanical text. 
+482.4 Mechanical text can instruct you to gain a special card by using the word “gain,” “become,” or “joins.” The mechanical text does not state the type of card being gained. 
+483.8 You suffer horror before resolving the test. If this would cause you to be defeated, you do not finish casting the spell. 
+483.9 You can prevent the horror you would suffer from casting a spell by spending remnants. For each remnant you spend, you prevent one horror. 
+483.10 While casting a spell with a one-hand or two-hand icon, the icon of the spell being cast counts toward the two hand limit during the spell’s lore test. (See rule 490.2c.) 
+483.11 Spells can be traded between investigators as part of a trade action. (See rule 492, “Trade Action.”) 
+483.12 When a spell card is discarded, place it on the bottom of the spell deck. When a special card or starting card is discarded, return it to its place in its respective deck. 
+484 Spend 
+484.1 To “spend” a component means to discard it as part of a cost. (See rules 400.1d–400.1h.) 
+485 Starting Card 
+485.1 Starting cards represent the unique possessions of the investigators. 
+485.2 A starting card can represent any of the five types of assets: ally, condition, item, spell, or talent. All rules that apply to assets apply to starting cards. (See rule 408, “Asset.”) 
+485.3 Starting cards should be kept organized—either alphabetically or by investigator—for easy access. 
+485.4 Starting cards are gained only during setup or when selecting a new investigator. 
+485.5 To gain a starting card, simply look through the organized pile of starting cards for the named card. 
+485.6 When a starting card is discarded, return it to the organized pile of starting cards. 
+486 Street 
+486.1 The term “street” refers to a street tile and the space represented by that tile. 
+486.2 There are three types of street spaces represented by street tiles. Rules 486.2a–486.2c describe the three types. Example: “Ezra Graves joins you” would yield the Ezra Graves special card. 
+482.5 To gain a special card, simply look through the organized pile of special cards for the named card. 
+482.6 When a special card is discarded, return it to the organized pile of special cards. 
+483 Spell 
+483.1 Spells represent mysterious and sometimes terrifying arcane rituals that can be learned and cast by the investigators. A spell is a type of asset represented by a spell card or a special card. All rules that apply to assets apply to spells. (See rule 408, “Asset.”) 
+483.2 Spells represented by spell cards have a value. (See rule 411, “Buy.”) Spells represented by special cards and starting cards do not have a value. 
+483.3 A spell’s hand icon denotes how many hands are required to cast the spell or use the spell during a test. (See rule 490.2c.) 
+483.4 A spell’s horror icons denote how much horror an investigator suffers while casting the spell. (See rule 483.7.) 
+483.5 
+483.6 
+483.7 Mechanical text can instruct you to gain a spell. To do so, draw the top card of the ally deck and place it in your player area. Mechanical text may instruct you to gain a spell with a specific trait, such as “Ritual” or “Incantation.” To do so, you reveal cards from the top of the spell deck until you reveal a spell with the specified trait. Place that card in your player area. Shuffle any other cards you revealed this way and place them on the bottom of the spell deck. Unlike other assets, spells must be “cast” to benefit from their effects. To cast a spell means to suffer horror equal to the amount of horror icons on the card and resolve the effects as described on the card, which always includes testing lore (). 20 
+486.2a Residential street spaces are represented by street tiles that contain art of houses. 
+486.2b Bridge street spaces are represented by street tiles that contain art of bridges. 
+486.2c Scenic street spaces are represented by street tiles that contain art of densely wooded areas. 
+486.3 Doom cannot be placed in a street space. If doom would be placed in a street space for any reason, place that doom in an adjacent neighborhood space instead. 
+487 Street Card 
+487.1 Each street card contains three encounters, one for each type of street space. (See rule 486.2.) 
+487.2 On your turn during the encounter phase, if you are in a street space, you resolve a street encounter. 
+487.3 To resolve a street encounter, you draw the top card of the street deck and read the encounter that corresponds to the type of street space you are on. 
+488 Survivor 
+488.1 “Survivor” is an investigator role. (See rule 445.) 
+488.2 If you are a survivor, your advantages lie with surviving the relentless assault of the mythos and helping your fellow investigators do the same. Supporting one another will lead to victory 
+488.3 Survivors are likely to have abilities or starting assets that allow them to more easily survive danger. They often have ways of improving their own or other investigators’ chances of success with tests. 
+489 Talent 
+489.1 A talent is an inherent or learned aptitude that benefits an investigator. A talent is a type of asset represented by a special card. All rules that apply to assets apply to talents. (See rule 408, “Asset.”) 
+489.2 
+489.3 A talent’s health and sanity (if it has them) denote how much damage and horror can be assigned to it. (See rules 408.7–408.9.) When a special card or starting card is discarded, return it to its respective organization. 
+490.2c Chooseanynumberofyourassetsorothercomponents with a total of two or fewer hand icons to modify the test. If the test is part of an action, no more than two hands worth of assets can be used throughout that action. 
+490.2d Effects that provide “additional dice” or state that you get an increase to the tested skill must be used during this step before dice are rolled. 
+490.3 2. Roll Dice 
+490.3a Roll a number of dice equal to your dice pool. 
+490.3b If your dice pool is less than one, you roll one die instead. 
+490.3c The number of dice you can roll is not limited by the number of dice provided in the game. 
+490.4 3. Manipulate Dice 
+490.4a For each focus token or clue token you have, you may spend that token to reroll one die. 
+490.4b You may use any number of effects of your chosen components to reroll dice or alter the results of the dice. 
+490.4c If an effect instructs you to reroll a number of dice that is greater than your dice pool, you reroll all of your dice instead. Example: You have a dice pool of one die and an effect that allows you to reroll “up to two dice.” You reroll your single die once. 
+490.4d Effects that add successes to the test result are used during this step, after dice are rolled but before the final test result is determined. 
+490.4e You may spend clue and focus tokens or use other effects to manipulate dice or add successes in any order. 
+490.5 4. Determine Results 
+490 Test 
+490.5a 
+490.1 A test is an abstraction of an investigator struggling to overcome some challenge. To resolve a test, follow rules 490.2–490.5c in order. Each five or six result is a success. The total number of successes is the “test result.” 
+490.5b If you have one or more successes, you pass the test. If you have zero successes, you fail the test. 
+490.5c The consequences of passing or failing a test are determined by the effect that instructed you to resolve the test. 
+490.2 1. Determine Dice Pool 
+490.2a 
+490.2b Your dice pool is the number of dice you will roll. To calculate your dice pool, begin with the value of the skill being tested, including the increase from focus (if applicable). Apply any test modifier provided by the encounter or whatever component instructed you to perform the test. A positive modifier adds dice to your pool. A negative modifier removes dice from your pool. 
+491 Trait 
+491.1 A trait is type of mechanical text that has no inherent effects. Other mechanical effects may refer to a card’s trait. 
+491.2 Traits are presented under a card’s name in their type line, and they are usually preceded by a dash. 21 
+492 Trade Action 
+492.1 The trade action is an action that can be performed by investigators. (See rule 402, “Action.”) 
+492.2 When you perform a trade action, you exchange any number of allies, items, spells, money tokens, clues, and remnants with one or more other investigators in your space. 
+492.3 You can trade with an investigator even if that investigator is engaged with a monster. 
+492.4 Items, allies, and spells that were used by an investigator during their turn and then traded to another investigator during that same turn cannot be used by the second investigator until the start of the following action phase. 
+493 Unstable Space 
+493.1 The unstable space is a space that changes over the course of the game. 
+493.2 If there are one or more cards in the event card discard pile, the space marked with a doom icon () on the top card of the discard pile is the unstable space. If multiple spaces on that card are marked with a doom icon, each of those spaces is an unstable space. 
+493.3 If there are no cards in the event card discard pile, the starting space is the unstable space. 
+494 Ward Action 
+494.1 The ward action is an action that can be performed by investigators. (See rule 402, “Action.”) 
+494.2 When you perform a ward action, you test lore (). For each success you roll, remove one doom from your space and return it to the doom token pool. 
+494.3 If you remove two or more doom as part of a ward action, you gain one remnant. 
+495 Watcher 
+495.1 “Watcher” is a keyword ability that appears on monsters. 
+495.2 A monster with watcher does not restrict which actions you can perform while you are engaged with it. This rule overrides rule 428.5. 
+495.3 If you are also engaged with one or more monsters that do not have watcher, rule 428.5 still applies to you for those monsters. 
+495.4 If you move while engaged with a monster with watcher, that monster moves with you and remains engaged with you. Index This index refers to rule numbers instead of page numbers. The number after each entry corresponds to a rule number in this document. The relevant information for that entry can be found in the rule sharing that number or nested section of that rule. A ability label, 401.0 action, 402.0 action phase, 201.0 actions additional action, 402.3 as part of, 402.6 delayed, 417.0 free action, 402.3 list of actions attack action, 409.0 component action, 414.0 evade action, 429.0 focus action, 436.0 gather resources action, 437.0 move action, 455.0 research action, 471.0 trade action, 492.0 ward action, 494.0 once per round, 402.4 action phase, 201.0 activation token, 403.0 leader token, 403.4 taking turns action phase, 201.2 encounter phase, 203.1 additional action, 402.3 add to codex, 413.2 adjacent, 404.0 ally, 405.0 discard, 405.6 gain, 405.3 health, 405.2 sanity, 405.2 anomaly, 406.0 removing anomalies, 406.3e archive, 407.0 archive card, 407.3 card number, 407.4 codex, 407.5a numerical order, 407.2 as part of action, 402.6 asset, 408.0 ally, 405.0 condition, 415.0 discard, 408.10 health, 408.7 item, 446.0 sanity, 408.7 special card, 482.0 spell, 483.0 starting card, 485.0 talent, 489.0 attack action, 409.0 attack modifier, 409.4 engage, 427.0 gain remnant, 409.7 monster trophy, 409.7 multiple monsters, 409.5 B become delayed, 417.3 “you become,” 482.4 blessed, 482.4 board, 410.0 buy, 411.0 half price, 411.2 C cannot “cannot” overrides “can,” 002.0 22 cast spell, 483.7 clue, 412.0 gaining clues, 412.5 research, 412.7 spawn, 412.3 spend to reroll dice, 412.7 codex, 413.0 common item, 446.6 component action, 414.0 component limitations, 005.0 condition, 415.0 multiple unique copies, 415.6 hidden information, 415.7 referred to by name, 415.3 conditional statement, 400.1i contradictions “cannot” overrides “can”, 002.0 components override rules, 001.0 multiple effects at same time, 004.0 multiple possible outcomes, 004.0 cost, 400.1d become delayed as cost, 400.1g gain condition as cost, 400.1h pay in full, 400.1f curio item, 446.6 cursed, 482.4 cycle the display, 422.3 D damage, 416.0 assign to card, 416.7 damage token, 416.1 denominations, 416.2 deal, 416.3 direct damage, 416.8 prevent, 465.0 recover, 416.5 suffer, 416.3 dark pact, 482.4 deal damage, 416.3 horror, 442.3 defeat investigator defeated, 444.6 monster, 453.9 delayed, 417.0 doesn’t stack, 417.4 destination, 418.0 devoured, 419.0 dice, 420.0 component limitations, 420.1 roll additional dice, 490.2d direct direct damage, 416.8 direct horror, 442.8 move directly to, 454.4 disagreements final say, 448.4 discard ally card, 405.6 epic monster, 407.5g event card, 430.10 headline card, 440.5 item card, 446.9 monster monster card, 453.11 special card, 482.6 spell card, 483.12 starting card, 485.6 disengage, 421.0 display, 422.0 cycle the display, 422.3 replenish the display, 422.4 dollar, 452.0 doom, 423.0 anomaly, 406.0 on street, 486.3 outbreak, 461.0 remove doom, 423.5 to spread, 423.2 multiple doom, 423.3 golden rules, 0.0 “cannot” overrides “can”, 002.0 component limitations, 005.0 components override rules, 001.0 multiple effects, 004.0 multiple outcomes, 004.0 resolve as much as possible, 003.0 guardian, 438.0 E H elite, 424.0 elusive, 425.0 encounter, 426.0 choices, 426.9 expected results, 460.5 “if you,” 426.8 restrictions while engaged, 428.6 someone else reads, 426.10 tests, 426.7 types, 426.3 neighborhood, 426.4 other options, 426.6 street encounter, 426.5 encounter phase, 203.0 end of game, 3.0 losing, 302.0 winning, 301.0 engage, 427.0 engaged, 428.0 action restrictions, 428.5 encounter restrictions, 428.6 engaged side, 453.8 epic monster, 407.5e discard, 407.5g non-epic monster, 407.5f evade action, 429.0 disengage, 421.0 evade modifier, 429.3 multiple monsters, 429.4 exhaust, 432.0 event card, 430.4 clue encounter, 430.6 discard event card, 430.7 discard, 430.10 event deck, 430.2 event deck holder, 431.0 exceed focus limit, 435.10 exhaust, 432.0 exhausted, 433.0 exhausted side, 453.8 F fail, 490.5b feed, 434.0 flavor text, 400.3 ability label, 401.0 focus, 435.4 focus limit, 435.8 exceed focus limit, 435.10 focus token, 435.2 spend to reroll dice, 435.7 focus action, 436.0 G gain ally, 405.3 card name in capital letters, 482.3 item, 446.5 common, 446.6 curio, 446.6 special card, 482.5 spell, 483.5 starting card, 485.5 game board, 410.0 gate burst, 204.11 gate trophy, 469.4 gather resources action, 437.0 half, 439.0 half price, 411.2 round up, 439.1 hands, 490.2c headline, 440.0 discard, 440.5 empty deck, 440.6 rumor, 440.7 codex, 413.0 health, 441.0 asset recover health, 416.10 investigator recover health, 416.5 monster recover health, 416.14 horror, 442.0 assign to card, 442.7 deal, 442.3 direct horror, 442.8 horror token, 442.1 denominations, 442.2 prevent, 465.0 suffer, 442.3 hunter, 443.0 I if, 400.1i influence, 480.4 in player order, 464.0 investigator, 444.0 defeated, 444.6 replacement, 444.7 roles, 445.0 guardian, 438.0 mystic, 456.0 rogue, 473.0 seeker, 477.0 survivor, 488.0 select new, 444.7 starting possessions, 485.0 item, 446.0 discard, 446.9 gain, 446.5 common item, 446.6 curio item, 446.6 hands, 446.3 health, 446.4 sanity, 446.4 J “joins you,” 482.4 K keyword, 447.0 elite, 424.0 elusive, 425.0 feed, 434.0 massive, 451.0 watcher, 495.0 L leader, 448.0 final say, 448.4 leader token, 403.4 location, 481.2 lore, 480.5 losing the game, 302.0 lurker, 449.0 M map, 410.0 marker, 450.0 massive, 451.0 mechanical text, 400.1 conditional statement, 400.1i cost, 400.1d keyword, 400.1c money, 452.0 denominations, 452.2 monster, 453.0 defeat, 453.9 destination, 418.0 discard, 453.11 engaged, 453.2 engaged side, 453.8 epic monster, 407.5e discard, 407.5g exhausted, 453.2 exhausted side, 453.8 monster trophy, 453.8c non-epic monster, 407.5f prey, 466.0 ready, 453.2 ready side, 453.3 remnant, 453.8c spawn, 453.5 monster activation step, 202.2 monster attack step, 202.3 monster phase monster activation step, 202.2 monster attack step, 202.3 monster ready step, 202.4 order of, 202.1 monster ready step, 202.4 monster trophy, 409.7 move, 454.0 directly, 454.4 move to, 454.4 move action, 455.0 movement interrupted, 455.3 mystic, 456.0 mythos cup, 457.0 mythos phase, 204.0 mythos token, 458.0 blank token, 204.13 gate burst token, 204.11 mythos cup, 457.0 read headline token, 204.10 reckoning token, 204.12 spawn clue token, 204.9 spawn monster token, 204.8 spread doom token, 204.7 N neighborhood, 459.1 neighborhood card, 460.0 neighborhood encounter, 426.4 expected results, 460.5 neighborhood tile, 459.2 central area, 459.2 icons, 459.3 O objective, 407.5c observation, 480.6 outbreak, 461.0 P pass, 490.5b patrol, 463.0 perform, 402.1 phase action phase, 201.0 encounter phase, 203.0 monster phase, 202.0 mythos phase, 204.0 phases, order of, 200.0 place, 462.0 plastic stand, 444.5 player order, 464.0 prevent damage, 465.0 horror, 465.0 prey, 466.0 R ready, 467.0 ready side, 453.3 reckoning reckoning effect, 204.12b reckoning token, 204.12 recover health, 416.5 sanity, 442.5 reference card, 468.0 reminder text, 400.2 remnant, 469.0 gate trophy, 494.3 monster trophy, 453.8c spend while casting spell, 483.9 reroll, 490.4b research, 470.0 research action, 471.0 resolve as much as possible, 003.0 retire, 472.0 rogue, 473.0 role investigator role, 445.0 roll, 474.0 not a test, 474.2 round end of round, 205.0 phases, 2.0 action phase, 201.0 encounter phase, 203.0 monster phase, 202.0 mythos phase, 204.0 order of, 200.0 rounding always round up, 439.1 rumor, 440.7 codex, 413.0 S sanity, 475.0 asset recover sanity, 442.10 investigator recover sanity, 442.5 scenario, 476.0 seeker, 477.0 set aside, 478.0 discard, 478.3 setup, 1.0 shuffle, 479.0 skill, 480.0 focus, 435.6 space, 481.0 unstable space, 493.0 spawn clue, 412.3 monster, 453.5 special card, 482.0 asset, 408.0 discard, 482.6 gain, 482.5 multiple unique copies referred to by name, 482.3 spell, 483.0 cast, 483.7 discard, 483.12 gain, 483.5 hands, 483.3 spend, 484.0 starting card, 485.0 discard, 485.6 gain, 485.5 starting space, 476.3b default unstable space, 493.3 street, 486.0 doom cannot be placed, 486.3 space, 486.2 street card, 487.0 street encounter, 426.5 street tile, 486.2 strength, 480.7 success, 490.5a add success to test, 490.4d suffer damage, 416.3 horror, 442.3 survivor, 488.0 T talent, 489.0 test, 490.0 add success, 490.4d additional dice, 490.2d fail, 490.5b hands, 490.2c minimum one die, 490.3b modifier, 490.2b pass, 490.5b reroll dice, 490.4b success, 490.5a test result, 490.5a tests in encounters, 426.7 text flavor text, 400.3 mechanical text, 400.1 reminder text, 400.2 ties final say, 448.4 multiple effects, 004.0 multiple outcomes, 004.0 trade action, 492.0 trait, 491.0 turn action phase, 201.2 encounter phase, 203.2 mythos phase, 204.2 U unstable space, 493.0 defaults to starting space, 493.3 V value, 446.2 W ward action, 494.0 gate trophy, 494.3 watcher, 495.0 will, 480.8 winning the game, 301.0 objective, 407.5c 23 Quick Reference Mythos Tokens Encounter Icons Spread Doom ()—Discard the bottom card of the event deck faceup and place one doom token in the location on that card marked with a doom () icon. Spawn Monster ()—Draw the bottom card of the monster deck and place it on the board as instructed by its spawn text. Read Headline ()—Draw and read the top card of the headline deck. The card affects only you unless it specifies otherwise. Spawn Clue ()—Take the top card of the event deck. Place one clue in its neighborhood and shuffle the card into the top two cards of that neighborhood deck. Gate Burst ()—Take the top card of the event deck. Place one doom token in each space of its neighborhood. Shuffle the card into the discard and place it on the bottom. Tests/Payments Rewards  Test Lore  Test Influence  Test Observation  Test Strength  Test Will  Spend Money  Spend Remnants  Recover Health  Recover Sanity  Gain Common Item  Gain Curio Item  Gain Spell  Gain Ally  Gain Money  Gain Remnants  Remove Doom Street Encounters Reckoning ()—Resolve the reckoning effects of all components in play. Blank—No effect.  Residential Street Monster Cards Swift Byakhee Swift Byakhee Monster — Byakhee Monster — Byakhee  Bridge Street  Scenic Street Finishing an Encounter After resolving an encounter on an event card, if you gained a clue from your neighborhood, discard that card faceup to the event card discard pile. 3 3 Spawn at most doom. Hunter—Move toward and engage lowest . Ready Side -0 -1 Reward—After you defeat this monster as part of an attack action, you may disengage all monsters and move up to three spaces. If you did not gain a clue, add it back to the neighborhood by taking the top two cards of the corresponding neighborhood deck, shuffling them together with the event card, and placing them all back on top of that deck. Exhausted Side © 2018 Fantasy Flight Games. Fantasy Flight Supply is a TM of Fantasy Flight Games. Arkham Horror, Fantasy Flight Games, and the FFG logo are ® of Fantasy Flight Games. Fantasy Flight Games is located at 1995 West County Road B2 Roseville, Minnesota 55113 USA 651-639-1905. Actual components may vary from those shown. Made in China. THIS PRODUCT IS NOT A TOY. NOT INTENDED FOR USE BY PERSONS 13 YEARS OF AGE OR YOUNGER. 24 

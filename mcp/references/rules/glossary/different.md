@@ -1,0 +1,24 @@
+---
+title: "Different"
+source: ArkhamDB Rules Reference (https://arkhamdb.com/rules)
+---
+
+# "Different"
+
+Some card abilities refer to "different" cards. Different cards are
+cards with different titles (excluding subtitles). *(e.g. two copies of
+Ward of Protection are not considered to be "different," even if they
+have different levels.)*
+
+Some card abilities refer to "different" actions or "different"
+abilities. An ability or action is different from another ability/action
+if the two are non‑identical abilities, separate abilities on the same
+card, or abilities on two different cards. *(e.g. the two separate fight
+abilities on Sledgehammer are different from one another, however
+identical fight abilities on two copies of Machete are not different
+from one another, nor are two basic fight actions).*
+
+- The exception to this rule is locations. Separate location cards are,
+  by their very nature, not the same location. Therefore, multiple
+  copies of locations with the same title are still considered to be
+  different locations.

@@ -1,0 +1,2670 @@
+{
+  "generatedFrom": {
+    "steps": "backend/arkham-api/library/Arkham/Custom/Steps.hs",
+    "expressions": "backend/arkham-api/library/Arkham/Custom/Expr.hs",
+    "abilities": "backend/arkham-api/library/Arkham/Custom/Ability.hs"
+  },
+  "steps": [
+    {
+      "step": "query",
+      "handler": "runSteps (inline)",
+      "keysIn": "both",
+      "stepKeys": [
+        "mode",
+        "bind"
+      ],
+      "payloadKeys": [
+        "kind",
+        "matcher"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": "an object with `kind` and `matcher`, plus `mode` and `bind` beside it in the step",
+      "doc": "",
+      "via": []
+    },
+    {
+      "step": "random",
+      "handler": "runRandom",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "from",
+        "bind"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Something random, bound for the steps after it.\n\nTwo things a card needs that no expression can give it, because \"Arkham.Custom.Expr\"\nonly reads the game and randomness is not in the game to be read.\n\nWithout @from@ it mints a fresh id. Every id in the engine is a bare uuid, so the\none value serves whichever the step that uses it wants -- and the one that is\nactually wanted is a 'SkillTestId', for the cards that have to name a test before\nstarting it (an effect scoped to a test, pushed before the test exists).\n\nWith @from@ it takes one at random out of whatever a list works out to. A\n@query@'s @\"mode\": \"random\"@ already does that for a matcher; this does it for a\nlist a step is holding, which is where \"one of the cards you discarded\" lives.",
+      "via": [
+        "bindingName"
+      ]
+    },
+    {
+      "step": "let",
+      "handler": "runSteps (inline)",
+      "keysIn": "step",
+      "stepKeys": [
+        "be"
+      ],
+      "payloadKeys": [],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": "the name to bind, as a string, with `be` holding the expression",
+      "doc": "",
+      "via": []
+    },
+    {
+      "step": "push",
+      "handler": "runSteps (inline)",
+      "keysIn": "none",
+      "stepKeys": [],
+      "payloadKeys": [],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": "a Message, decoded against the Message schema",
+      "doc": "",
+      "via": []
+    },
+    {
+      "step": "if",
+      "handler": "runReadCondition",
+      "keysIn": "both",
+      "stepKeys": [
+        "then",
+        "else"
+      ],
+      "payloadKeys": [
+        "criteria",
+        "source",
+        "matches",
+        "eq",
+        "ne",
+        "kind",
+        "matcher"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "source"
+      ],
+      "valueShape": null,
+      "doc": "A condition is either a criterion or a matcher.\n\nA criterion covers what a card says about the situation (\"if you succeeded by 2\nor more\"); a matcher covers what is on the table. Both read as @if@ in the\neditor.",
+      "via": []
+    },
+    {
+      "step": "when",
+      "handler": "runReadCondition",
+      "keysIn": "both",
+      "stepKeys": [
+        "then"
+      ],
+      "payloadKeys": [
+        "criteria",
+        "source",
+        "matches",
+        "eq",
+        "ne",
+        "kind",
+        "matcher"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "source"
+      ],
+      "valueShape": null,
+      "doc": "A condition is either a criterion or a matcher.\n\nA criterion covers what a card says about the situation (\"if you succeeded by 2\nor more\"); a matcher covers what is on the table. Both read as @if@ in the\neditor.",
+      "via": []
+    },
+    {
+      "step": "case",
+      "handler": "runCase",
+      "keysIn": "both",
+      "stepKeys": [
+        "else"
+      ],
+      "payloadKeys": [
+        "if",
+        "steps",
+        "criteria",
+        "source",
+        "matches",
+        "eq",
+        "ne",
+        "kind",
+        "matcher"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "source"
+      ],
+      "valueShape": null,
+      "doc": "The first branch whose condition holds. Nothing runs if none do, unless a\nfallback is given.",
+      "via": [
+        "runReadCondition"
+      ]
+    },
+    {
+      "step": "forEach",
+      "handler": "runForEach",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "over",
+        "query",
+        "each",
+        "steps",
+        "bind"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Steps once per thing the matcher finds, with it bound each time. The loop\nis over what the query saw when it ran, so steps that change the board do not\nchange what is still to come.",
+      "via": [
+        "bindingName"
+      ]
+    },
+    {
+      "step": "request",
+      "handler": "runRequest",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "push",
+        "on",
+        "steps"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": "an object with `push` (the Message to send) and `steps` (run when its answer arrives)",
+      "doc": "Ask the game something, and say here what to do with the answer.\n\nThe engine has a dozen or so of these pairs -- @RequestChaosTokens_@ answered by\n@RequestedChaosTokens_@, @FindEncounterCard@ by @FoundEncounterCard@, and so on.\nThey are two messages with the game's turn between them, and every one of them\nsends its answer back by source or by target, which for a custom card is the\ncard itself.\n\nSo the listening is not the hard part; a handler could already do it. What a\nhandler cannot do is sit next to the question. This holds both, and the answer's\nfields are bound the way a handler binds them: @$message@, and @$0@, @$1@, ...\nfor what it carries.\n\nThe steps run on the answer, which is a later message -- so they see the card's\nown bindings and the answer's, not what earlier steps in this run bound.",
+      "via": []
+    },
+    {
+      "step": "distribute",
+      "handler": "runDistribute",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "total",
+        "among",
+        "label"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "Split a total between investigators, and say here what each one's share\ndoes.\n\nThe ask and the answer are two messages with the game's turn in between, so the\nsteps below cannot simply follow: they run when the answer arrives. Written as\none block all the same, because \"investigators at your location draw a combined\ntotal of 3 cards\" is one thing a card does, and splitting it across a step and a\nhandler would leave the author holding the join.\n\nThe block is found again by its own JSON, carried on the question's target -- so\nwhat runs on the answer is exactly what was written next to the ask, and a card\nmay hold as many of these as it likes.\n\nThe steps see the card's own bindings plus the two this block makes. They do\n/not/ see what earlier steps in the same run bound: those belong to a message\nthat has already finished.",
+      "via": [
+        "distributeTarget",
+        "distributeKey"
+      ]
+    },
+    {
+      "step": "repeat",
+      "handler": "runRepeat",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "times",
+        "i",
+        "bind",
+        "steps"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "The steps inside, run a number of times worked out from the game.\n\n\"Investigators at your location gain a total of 8 resources, distributed as you\nwish\" is eight choices of who gets one, which is how the engine plays it. The\ncount is an expression, so it can be counted rather than written down, and the\nturn number is bound for the steps in case they care which pass they are on.",
+      "via": [
+        "bindingName",
+        "subStepsOf"
+      ]
+    },
+    {
+      "step": "modify",
+      "handler": "runModify",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "modifiers",
+        "window",
+        "target"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Give something modifiers for as long as a window lasts.\n\nThe message underneath is @CreateWindowModifierEffect@, whose payload is four\nlevels of wrapping around what a card actually says: a window, an effect holding\na list of modifiers, the source, and the target. Three of those never vary --\nthe source is this card, the modifier carries no card of its own, and nothing a\ncard does is active during setup -- so the step asks for the three that do.\n\nThe window defaults to the test being resolved, which is what almost every\n\"+2 for this test\" is.",
+      "via": []
+    },
+    {
+      "step": "withSkillTest",
+      "handler": "runWithSkillTest",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "skillTestId",
+        "bind",
+        "steps"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "The steps inside, with the skill test being resolved bound for them.\n\nA block rather than a binding on every step: there may be no test, and a step\nthat reads @$skillTestId@ when there is none has nothing sensible to do. Running\nthe inner steps only when there is one says that once, where a card would say it\nonce -- \"during a skill test\".",
+      "via": [
+        "bindingName",
+        "subStepsOf"
+      ]
+    },
+    {
+      "step": "withLocationOf",
+      "handler": "runWithLocationOf",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "of",
+        "location",
+        "kind",
+        "bind",
+        "steps"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "The steps inside, with the location of something bound for them.\n\nWhich kind of thing is being located has to be said: every id is a bare uuid, so\nan @EnemyId@ and an @AssetId@ are the same JSON and the 'Locateable' instance\ncannot be chosen from the value. Nothing runs when it is nowhere, which is what\n@withLocationOf@ in \"Arkham.Helpers.Location\" already does.",
+      "via": [
+        "bindingName",
+        "subStepsOf"
+      ]
+    },
+    {
+      "step": "choose",
+      "handler": "runChoose",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "options"
+      ],
+      "nestedKeys": {
+        "opt": [
+          "steps",
+          "query",
+          "label",
+          "bind"
+        ]
+      },
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Named options, each running its own steps.\n\nAn option may instead carry a @query@, in which case it stands for one option\nper thing found, bound the way 'runChooseFrom' binds it. That is what lets a\nsingle prompt span several kinds of thing: \"a card attached to your location\"\nis an event or an asset or a treachery, which are three queries and three\nmessages but one choice.",
+      "via": [
+        "chosenTarget"
+      ]
+    },
+    {
+      "step": "chooseFrom",
+      "handler": "runChooseFrom",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "over",
+        "query",
+        "bind",
+        "steps",
+        "label",
+        "declineLabel",
+        "optional"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "One option per thing the matcher finds, with the found thing bound so the\nsteps can act on it. @optional@ adds a way to decline.\n\n@over@ offers one option per element of a list already in hand instead. Not\neverything a card asks you to choose between is something a matcher can name --\n\"choose one of its traits\" is a list read off a card -- and for those the query\nhas nowhere to go.",
+      "via": [
+        "chosenTarget",
+        "plainLabel"
+      ]
+    },
+    {
+      "step": "playCard",
+      "handler": "runPlayCard",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "discount",
+        "discountIf",
+        "matcher",
+        "extendedMatcher",
+        "card",
+        "free",
+        "declineLabel",
+        "optional",
+        "criteria",
+        "source",
+        "matches",
+        "eq",
+        "ne"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "source"
+      ],
+      "valueShape": null,
+      "doc": "Play a card from hand, paying its cost.\n\nA discount has to be decided before the choice is offered, not after: a card is\nonly playable if you can afford it, so the cost reduction must be in effect while\nplayability is worked out. 'withModifiers' does that as a question -- what would\nbe playable if this discount applied -- and the reduction is then really applied\non the branch the player takes.",
+      "via": [
+        "runReadCondition"
+      ]
+    },
+    {
+      "step": "fight",
+      "handler": "runFight",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "matcher",
+        "basic",
+        "modifiers",
+        "onReveal",
+        "onSuccess",
+        "onFailure",
+        "tokens",
+        "whenPassed",
+        "steps",
+        "by"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "Fight an enemy.\n\nTwo different things wear the word \"fight\". A card with the Fight action on it\n/is/ a fight action when you play it, and the attack it then makes is just an\nattack -- that is this step, and its source is the card. A /basic/ fight action\nis the enemy's own attack ability, which no card can ever be; @basic@ offers\nthat instead, granted so that \"immediately\" does not cost an action.\n\nModifiers given here go on the attack's skill test, which is what \"for this\nattack\" means. They have no home on a basic fight action, which makes its own\ntest.",
+      "via": [
+        "runBasicFight",
+        "beginTest",
+        "runOnReveal",
+        "runOutcome"
+      ]
+    },
+    {
+      "step": "investigate",
+      "handler": "runInvestigate",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "location",
+        "asAction",
+        "modifiers",
+        "onReveal",
+        "onSuccess",
+        "onFailure",
+        "tokens",
+        "whenPassed",
+        "steps",
+        "by",
+        "skill",
+        "insteadOf"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "Investigate.\n\nDefaults to where you are; @location@ names somewhere else, which is what a card\nthat investigates a connecting location needs.",
+      "via": [
+        "beginTest",
+        "withTestSkill",
+        "runOnReveal",
+        "runOutcome"
+      ]
+    },
+    {
+      "step": "evade",
+      "handler": "runEvade",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "matcher",
+        "modifiers",
+        "onReveal",
+        "onSuccess",
+        "onFailure",
+        "tokens",
+        "whenPassed",
+        "steps",
+        "by",
+        "skill",
+        "insteadOf"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "",
+      "via": [
+        "beginTest",
+        "withTestSkill",
+        "runOnReveal",
+        "runOutcome"
+      ]
+    },
+    {
+      "step": "parley",
+      "handler": "runParley",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "target",
+        "skill",
+        "modifiers",
+        "onReveal",
+        "onSuccess",
+        "onFailure",
+        "difficulty",
+        "tokens",
+        "whenPassed",
+        "steps",
+        "by"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "Parley against something.\n\nUnlike the others this has nothing to derive its test from -- there is no\n\"parley action\" the engine builds for you -- so the target, the skill and the\ndifficulty are all the card's to name.",
+      "via": [
+        "beginTest",
+        "testDifficulty",
+        "runOnReveal",
+        "runOutcome"
+      ]
+    },
+    {
+      "step": "test",
+      "handler": "runTest",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "skill",
+        "target",
+        "modifiers",
+        "onReveal",
+        "onSuccess",
+        "onFailure",
+        "difficulty",
+        "tokens",
+        "whenPassed",
+        "steps",
+        "by"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "A bare skill test the card names itself: \"test @{willpower}@ (3)\".\n\nNot derivable from anything, so the skill and the difficulty are written down.\n\nThe target is what the test is /about/, and it defaults to the investigator\ntaking it, which is what every hand-written card does for a test with no object.\nIt is not a formality: 'SkillTestAt' reads the /target's/ location, so a test\npointed at the card would answer questions about where the card is rather than\nwhere you are. A card that tests against something -- the treachery it is\ncancelling, an enemy it is talking down -- names that instead.",
+      "via": [
+        "beginTest",
+        "testDifficulty",
+        "runOnReveal",
+        "runOutcome"
+      ]
+    },
+    {
+      "step": "attack",
+      "handler": "runAttack",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "target",
+        "enemy"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "source",
+        "id"
+      ],
+      "valueShape": null,
+      "doc": "An enemy attacks.\n\nDefaults to this card attacking whoever triggered the ability, which is what\n\"it makes an immediate attack against you\" means on an enemy.",
+      "via": []
+    },
+    {
+      "step": "ready",
+      "handler": "runReady",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "target"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "Ready a card.\n\n@Ready@ is a pattern synonym, so it is not a constructor the editor's schema\nknows and a raw push of it shows up blank. As a step it reads as what it is, and\ndefaults to this card.",
+      "via": []
+    },
+    {
+      "step": "discardCard",
+      "handler": "runDiscardCard",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "target",
+        "card"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Discard a card, wherever it is.\n\n\"Discard that card\" is one thing on a card and two in the engine. A card in hand\nis discarded by its id; a card in play is an entity and has to be discarded as\none -- 'DiscardCard' aimed at an asset moves its card to the discard pile and\nleaves the asset sitting on the table. Which applies is a question about the\nboard rather than about the card, so the step asks it instead of the author\nbranching on it.\n\n@target@ names an entity outright, for the ordinary \"discard that asset\".",
+      "via": []
+    },
+    {
+      "step": "record",
+      "handler": "runRecord",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "key",
+        "mode",
+        "amount",
+        "values",
+        "kind"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Write something in the campaign log.\n\nThe log stores three different things under a key -- whether it happened, a\nnumber, and a set of entries -- and reaches them through seven messages between\nthem. An author should not have to know which, nor that an entry is a\n@SomeRecorded@ wrapping a @Recorded@ wrapping a value; @mode@ names what is being\nwritten and the message follows from it.\n\nEntries are recorded as plain values unless @kind@ says @cardCode@, which is not\na formality: the log prints a recorded card by name and hands recorded card codes\nback as card defs ('recordedCardCodes'), neither of which works for a card code\nrecorded as a bare value.",
+      "via": []
+    },
+    {
+      "step": "takeAction",
+      "handler": "runTakeAction",
+      "keysIn": "none",
+      "stepKeys": [],
+      "payloadKeys": [],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": "any value; only the key's presence is read",
+      "doc": "",
+      "via": []
+    },
+    {
+      "step": "cancelBatch",
+      "handler": "runCancelBatch",
+      "keysIn": "none",
+      "stepKeys": [],
+      "payloadKeys": [],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "window"
+      ],
+      "valueShape": "`true`; cancels the batch on the window in $window",
+      "doc": "Stop the thing the ability is reacting to.\n\nA @would@ window opens a batch that carries the messages it is about to run, and\ncancelling that batch is how \"instead\" is said -- a card that replaces its own\ndiscard has to stop the discard, not merely act after it. The batch is the one\non the window the ability triggered on, which is what @$window@ holds.",
+      "via": []
+    },
+    {
+      "step": "useAbility",
+      "handler": "runUseAbility",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "source",
+        "index",
+        "ignoreLimit",
+        "declineLabel",
+        "optional"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Resolve one of this card's own abilities.\n\nAn elder sign that reads \"you may resolve the above reaction\" is asking for the\nability the card already has, on the usual terms -- so it is offered rather than\nrun, and the cost is paid the way using it normally would. @ignoreLimit@ is for\nthe wording that says so explicitly; @optional@ for \"you may\".",
+      "via": []
+    },
+    {
+      "step": "draw",
+      "handler": "runDraw",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "iid",
+        "amount"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "source"
+      ],
+      "valueShape": null,
+      "doc": "Draw cards.\n\n@amount@ is an expression, so \"one card for each unique icon committed\" is the\ncount that expression works out to rather than a number written in advance.",
+      "via": []
+    },
+    {
+      "step": "gather",
+      "handler": "runGather",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "into",
+        "cardCode"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "cardCode"
+      ],
+      "valueShape": null,
+      "doc": "Gather a card from an encounter set into a deck.\n\n\"Gather X from the Y encounter set\" is a setup instruction, and setup is over\nby the time a card in play can act, so the nearest honest equivalent is to\nshuffle the card in where it would have ended up.",
+      "via": []
+    },
+    {
+      "step": "customize",
+      "handler": "runCustomize",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "iid",
+        "declineLabel",
+        "optional"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Mark a checkbox on an upgrade sheet for a customizable card you own.\n\nThe flow the printed cards use, written here rather than shared with them: pick\none of your customizable cards that still has a box free, and pick which\ncustomization to mark. A customization whose last box asks for something (a\ntrait, a card, a skill) asks for it in the same breath -- a step has nowhere to\ndefer to, so it cannot re-enter itself the way a card with its own handlers can.",
+      "via": []
+    },
+    {
+      "step": "activateAbility",
+      "handler": "runActivateAbility",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "matcher",
+        "modifiers",
+        "noAttacksOfOpportunity",
+        "declineLabel",
+        "optional"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Use an ability that is not this card's own.\n\n@useAbility@ names one of the card's own abilities by index; this names a\n/shape/ of ability and offers every ability of that shape, which is what a card\nthat reaches onto another card says: \"take a fight action printed on each\nFirearm asset you control\", \"activate an ability on the attached card\".\n\n@modifiers@ are applied to the abilities themselves rather than to anything on\nthe table, so \"without paying its cost\" is @ActionCostSetToModifier 0@ and not a\nmodifier anyone else can see. Only abilities that could actually be used are\noffered, the way the action bar decides.",
+      "via": []
+    },
+    {
+      "step": "place",
+      "handler": "runPlace",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "target",
+        "placement"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "target"
+      ],
+      "valueShape": null,
+      "doc": "Put a card somewhere.\n\n'Placement' is what \"attach to your location\" and \"put into play in your threat\narea\" both are, but the message that carries one is a different constructor per\ncard type -- so a @push@ of it would make the author pick the constructor that\nmatches whatever the target turned out to be. The target says which; this reads\nit off.\n\nDefaults to this card, which is what a card attaching /itself/ means.",
+      "via": []
+    },
+    {
+      "step": "discover",
+      "handler": "runDiscover",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "iid",
+        "amount",
+        "via",
+        "location"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [],
+      "valueShape": null,
+      "doc": "Discover clues.\n\nNot a @push@: a discovery carries an id minted for it, which is what the\n@WouldDiscoverClues@ window and everything that reacts to it are keyed on, and a\nstep written in advance has no way to invent one.\n\nDefaults to where you are. @via@ says whether this counts as investigating,\nwhich decides whether \"discover 1 additional clue when you investigate\" applies.",
+      "via": []
+    },
+    {
+      "step": "setAside",
+      "handler": "runSetAside",
+      "keysIn": "payload",
+      "stepKeys": [],
+      "payloadKeys": [
+        "cards",
+        "iid"
+      ],
+      "nestedKeys": {},
+      "bindingsRead": [
+        "meta"
+      ],
+      "valueShape": null,
+      "doc": "Put copies of named cards into the set-aside zone, owned by an investigator.\n\n\"You begin the game with each copy of X set aside, out of play\" is not something\na card can do to itself: the copies are not anywhere yet. They are made here,\nthe way the engine makes an investigator's bonded cards, and land in the zone a\n@SetAsideCardMatch@ query can find them in.\n\nWhich cards defaults to the def's own @_setAside@ list, which is also what gets\nthose defs registered on the game -- nothing in a decklist names them, so a card\nset aside here and declared nowhere would be a code the game cannot look up.",
+      "via": []
+    }
+  ],
+  "expressions": {
+    "operators": [
+      "get",
+      "map",
+      "filter",
+      "skillTest",
+      "field",
+      "query",
+      "recordSet",
+      "recordCount",
+      "apply",
+      "iconValue",
+      "unique",
+      "concat",
+      "reverse",
+      "count",
+      "sum",
+      "max",
+      "min",
+      "first",
+      "add",
+      "multiply",
+      "subtract",
+      "divide"
+    ],
+    "listPredicates": [
+      "eq",
+      "ne",
+      "in",
+      "notIn",
+      "gt",
+      "lt",
+      "gte",
+      "lte"
+    ],
+    "auxiliaryKeys": {
+      "of": "the value an operator broadcasts over; a `get` with no `of` is Null",
+      "kind": "how to read the value: a queryKind for a query, a propertyKind for a get",
+      "to": "what `apply` transforms",
+      "mode": "what a query binds: first, count, random, or the whole list"
+    },
+    "note": "Anything that is not an operator is a literal, with $bindings substituted."
+  },
+  "conditions": {
+    "forms": [
+      "criteria",
+      "source",
+      "matches",
+      "eq",
+      "ne"
+    ],
+    "note": "A condition is either a criterion or a matcher.\n\nA criterion covers what a card says about the situation (\"if you succeeded by 2\nor more\"); a matcher covers what is on the table. Both read as @if@ in the\neditor."
+  },
+  "vocabulary": {
+    "queryKinds": [
+      "enemy",
+      "location",
+      "investigator",
+      "asset",
+      "treachery",
+      "event",
+      "skill",
+      "story",
+      "act",
+      "agenda",
+      "card",
+      "chaosToken"
+    ],
+    "propertyKinds": [
+      "skillTest",
+      "enemy",
+      "location",
+      "investigator",
+      "asset",
+      "act",
+      "card"
+    ],
+    "cardProperties": [
+      "icons",
+      "skills",
+      "traits",
+      "class",
+      "name",
+      "cardCode",
+      "cardType",
+      "level",
+      "cost",
+      "printedCost",
+      "id",
+      "subType",
+      "owner",
+      "modifiedCost"
+    ],
+    "skillTestProperties": [
+      "matchingIcons",
+      "difficulty",
+      "action",
+      "investigator",
+      "committedCards",
+      "id"
+    ],
+    "transforms": [
+      "fetchCard",
+      "getSkillTest",
+      "paidCards",
+      "discardedCard",
+      "chosenCard",
+      "chosenTrait",
+      "chosenEnemy",
+      "exhausted",
+      "removed",
+      "paymentTargets",
+      "sealedTokens",
+      "actionsPaid",
+      "resourcesPaid",
+      "cluesPaid",
+      "usesPaid",
+      "damagePaid",
+      "horrorPaid",
+      "curseTokensPaid",
+      "cardsDiscarded"
+    ],
+    "fetchCardKinds": [
+      "asset",
+      "event",
+      "treachery",
+      "enemy",
+      "location",
+      "story"
+    ],
+    "modifierKinds": [
+      "enemy",
+      "location",
+      "investigator",
+      "asset",
+      "treachery",
+      "event",
+      "skill",
+      "card",
+      "chaosToken"
+    ],
+    "abilityZones": [
+      "hand",
+      "discard"
+    ],
+    "revelationPlacements": [
+      "threatArea",
+      "playArea"
+    ],
+    "queryModes": [
+      "first",
+      "count",
+      "random"
+    ]
+  },
+  "handWrittenDecoders": {
+    "AbilityType": {
+      "required": [
+        "cost",
+        "window",
+        "actions",
+        "skillType"
+      ],
+      "optional": [
+        "skillTypes"
+      ]
+    },
+    "Ability": {
+      "required": [
+        "source",
+        "cardCode",
+        "index",
+        "type",
+        "limit",
+        "window",
+        "criteria",
+        "doesNotProvokeAttacksOfOpportunity",
+        "canBeCancelled",
+        "basic",
+        "additionalCosts"
+      ],
+      "optional": [
+        "metadata",
+        "tooltip",
+        "displayAsAction",
+        "displayAs",
+        "delayAdditionalCosts",
+        "requestor",
+        "triggersSkillTest",
+        "wantsSkillTest",
+        "target",
+        "highlightFromWindow",
+        "skipForAll",
+        "ignoreAllCosts",
+        "fightCriteriaOverride",
+        "evadeCriteriaOverride"
+      ]
+    },
+    "UsedAbility": {
+      "required": [
+        "usedAbility",
+        "usedAbilityInitiator",
+        "usedAbilityWindows",
+        "usedTimes",
+        "usedDepth",
+        "usedAbilityTraits"
+      ],
+      "optional": [
+        "usedThisWindow",
+        "usedAbilityTarget"
+      ]
+    },
+    "ActAttrs": {
+      "required": [
+        "id",
+        "cardId",
+        "sequence",
+        "deckId",
+        "usedWheelOfFortuneX",
+        "meta"
+      ],
+      "optional": [
+        "advanceCost",
+        "tokens",
+        "clues",
+        "breaches",
+        "keys",
+        "flipped",
+        "cardsUnderneath"
+      ]
+    },
+    "Act": {
+      "required": [
+        "id"
+      ],
+      "optional": []
+    },
+    "ActiveCost": {
+      "required": [
+        "activeCostId",
+        "activeCostCosts",
+        "activeCostPayments",
+        "activeCostTarget",
+        "activeCostWindows",
+        "activeCostInvestigator",
+        "activeCostSealedChaosTokens"
+      ],
+      "optional": [
+        "activeCostCancelled",
+        "activeCostChosenOrAction",
+        "activeCostPendingEventId"
+      ]
+    },
+    "AgendaAttrs": {
+      "required": [
+        "doom",
+        "id",
+        "cardId",
+        "sequence",
+        "flipped",
+        "cardsUnderneath",
+        "deckId",
+        "removeDoomMatchers",
+        "usedWheelOfFortuneX"
+      ],
+      "optional": [
+        "doomThreshold",
+        "meta",
+        "tokens"
+      ]
+    },
+    "Agenda": {
+      "required": [
+        "id"
+      ],
+      "optional": []
+    },
+    "Meta": {
+      "required": [
+        "barriers"
+      ],
+      "optional": [
+        "discardNextEnemyDraw"
+      ]
+    },
+    "AssetAttrs": {
+      "required": [
+        "id",
+        "cardId",
+        "cardCode",
+        "originalCardCode",
+        "placement",
+        "owner",
+        "controller",
+        "slots",
+        "health",
+        "sanity",
+        "printedUses",
+        "exhausted",
+        "exiled",
+        "tokens",
+        "canLeavePlayByNormalMeans",
+        "whenNoUses",
+        "cardsUnderneath",
+        "sealedChaosTokens",
+        "keys",
+        "assignedHealthDamage",
+        "assignedSanityDamage",
+        "assignedHealthHeal",
+        "assignedSanityHeal",
+        "customizations",
+        "meta",
+        "flipped",
+        "taboo",
+        "mutated",
+        "driver"
+      ],
+      "optional": [
+        "metaMap",
+        "chained",
+        "visible"
+      ]
+    },
+    "Uses": {
+      "required": [
+        "type",
+        "amount",
+        "limit"
+      ],
+      "optional": []
+    },
+    "Asset": {
+      "required": [
+        "cardCode"
+      ],
+      "optional": []
+    },
+    "EnemyAttackDetails": {
+      "required": [
+        "attackTarget",
+        "attackOriginalTarget",
+        "attackEnemy",
+        "attackType",
+        "attackDamageStrategy",
+        "attackExhaustsEnemy",
+        "attackSource",
+        "attackCanBeCanceled",
+        "attackAfter",
+        "attackDamaged"
+      ],
+      "optional": [
+        "attackDealDamage",
+        "attackDespiteExhausted",
+        "attackCancelled",
+        "attackDamageReplacement"
+      ]
+    },
+    "XpBreakdownStep": {
+      "required": [
+        "step",
+        "investigators",
+        "entries"
+      ],
+      "optional": []
+    },
+    "ChaosBagChange": {
+      "required": [
+        "step",
+        "before",
+        "after"
+      ],
+      "optional": []
+    },
+    "RecordCountChange": {
+      "required": [
+        "step",
+        "key",
+        "before",
+        "after"
+      ],
+      "optional": []
+    },
+    "CampaignAttrs": {
+      "required": [
+        "id",
+        "name",
+        "decks",
+        "storyCards",
+        "difficulty",
+        "chaosBag",
+        "log",
+        "step",
+        "completedSteps",
+        "resolutions",
+        "xpBreakdown",
+        "modifiers",
+        "meta"
+      ],
+      "optional": [
+        "chaosBagHistory",
+        "recordCountHistory",
+        "modifiersForAll",
+        "store",
+        "destiny",
+        "usedAbilities"
+      ]
+    },
+    "Campaign": {
+      "required": [
+        "id"
+      ],
+      "optional": []
+    },
+    "CampaignLog": {
+      "required": [
+        "recorded",
+        "crossedOut",
+        "recordedCounts",
+        "recordedSets",
+        "orderedKeys",
+        "options"
+      ],
+      "optional": [
+        "partners"
+      ]
+    },
+    "Recorded": {
+      "required": [],
+      "optional": [
+        "circled"
+      ]
+    },
+    "SomeRecorded": {
+      "required": [
+        "recordType",
+        "recordVal"
+      ],
+      "optional": []
+    },
+    "Seal": {
+      "required": [
+        "sealKind",
+        "sealActive"
+      ],
+      "optional": [
+        "sealPlacedBy"
+      ]
+    },
+    "TheFeastOfHemlockValeMeta": {
+      "required": [
+        "day",
+        "time"
+      ],
+      "optional": [
+        "chosenCodexEntries"
+      ]
+    },
+    "Metadata": {
+      "required": [
+        "supplyPoints",
+        "yithians"
+      ],
+      "optional": [
+        "expeditionLeader",
+        "bonusXp"
+      ]
+    },
+    "ScarletKeyAttrs": {
+      "required": [
+        "id",
+        "cardId",
+        "placement",
+        "stability",
+        "bearer"
+      ],
+      "optional": [
+        "tokens",
+        "shifted",
+        "meta"
+      ]
+    },
+    "ScarletKey": {
+      "required": [
+        "id"
+      ],
+      "optional": []
+    },
+    "CardDef": {
+      "required": [
+        "cardCode",
+        "name",
+        "cardType",
+        "art"
+      ],
+      "optional": [
+        "revealedName",
+        "cost",
+        "additionalCost",
+        "level",
+        "cardSubType",
+        "classSymbols",
+        "skills",
+        "cardTraits",
+        "revealedCardTraits",
+        "keywords",
+        "fastWindow",
+        "actions",
+        "revelation",
+        "victoryPoints",
+        "vengeancePoints",
+        "criteria",
+        "overrideActionPlayableIfCriteriaMet",
+        "commitRestrictions",
+        "attackOfOpportunityModifiers",
+        "permanent",
+        "encounterSet",
+        "encounterSetQuantity",
+        "unique",
+        "doubleSided",
+        "limits",
+        "exceptional",
+        "uses",
+        "playableFromDiscard",
+        "stage",
+        "slots",
+        "alternateCardCodes",
+        "replacementCardCode",
+        "artVariants",
+        "backArtVariants",
+        "locationSymbol",
+        "locationRevealedSymbol",
+        "locationConnections",
+        "locationRevealedConnections",
+        "purchaseTrauma",
+        "grantedXp",
+        "canReplace",
+        "deckRestrictions",
+        "bondedWith",
+        "skipPlayWindows",
+        "beforeEffect",
+        "customizations",
+        "otherSide",
+        "whenDiscarded",
+        "canCommitWhenNoIcons",
+        "commitTrigger",
+        "meta",
+        "options",
+        "tags",
+        "cardInHandEffects",
+        "cardInDiscardEffects",
+        "cardInSearchEffects",
+        "outOfPlayEffects",
+        "health",
+        "fight",
+        "evade",
+        "healthDamage",
+        "sanityDamage",
+        "alternateSkills",
+        "alternateErrata",
+        "errata"
+      ]
+    },
+    "CardOptionType": {
+      "required": [
+        "default",
+        "values"
+      ],
+      "optional": []
+    },
+    "CardOption": {
+      "required": [
+        "key",
+        "type"
+      ],
+      "optional": [
+        "ability"
+      ]
+    },
+    "CustomCard": {
+      "required": [
+        "def"
+      ],
+      "optional": [
+        "art"
+      ]
+    },
+    "PlayerCard": {
+      "required": [
+        "id",
+        "cardCode",
+        "originalCardCode",
+        "customizations"
+      ],
+      "optional": [
+        "owner",
+        "tabooList",
+        "mutated",
+        "chained",
+        "meta",
+        "facedown"
+      ]
+    },
+    "PerCardSettings": {
+      "required": [
+        "cardIgnoreUnrelatedSkillTestTriggers",
+        "cardIgnoreDuringSkillTests"
+      ],
+      "optional": [
+        "cardAttachments",
+        "cardOptions",
+        "cardSilenced"
+      ]
+    },
+    "SetCardSetting": {
+      "required": [
+        "value"
+      ],
+      "optional": []
+    },
+    "ChaosBag": {
+      "required": [
+        "chaosTokens",
+        "setAsideChaosTokens",
+        "revealedChaosTokens",
+        "tokenPool"
+      ],
+      "optional": [
+        "choice",
+        "forceDraw",
+        "totalRevealedChaosTokens",
+        "pendingRequests"
+      ]
+    },
+    "FieldCost": {
+      "required": [
+        "entity",
+        "field",
+        "matcher"
+      ],
+      "optional": []
+    },
+    "MaybeFieldCost": {
+      "required": [
+        "entity",
+        "field",
+        "matcher"
+      ],
+      "optional": []
+    },
+    "AbilitySpec": {
+      "required": [
+        "type"
+      ],
+      "optional": [
+        "criteria",
+        "limit",
+        "tooltip",
+        "zone",
+        "steps",
+        "effect"
+      ]
+    },
+    "ModifierSpec": {
+      "required": [
+        "kind",
+        "matcher",
+        "name",
+        "be"
+      ],
+      "optional": [
+        "modifiers",
+        "if",
+        "each",
+        "eachBind",
+        "let",
+        "requires"
+      ]
+    },
+    "HandlerSpec": {
+      "required": [
+        "on"
+      ],
+      "optional": [
+        "requires",
+        "global",
+        "steps"
+      ]
+    },
+    "DeckOverlay": {
+      "required": [],
+      "optional": [
+        "investigator",
+        "swaps",
+        "add",
+        "remove"
+      ]
+    },
+    "ArkhamBuildDecklistMeta": {
+      "required": [],
+      "optional": [
+        "card_pool"
+      ]
+    },
+    "ArkhamDBDecklist": {
+      "required": [
+        "slots",
+        "sideSlots",
+        "investigator_code"
+      ],
+      "optional": [
+        "investigator_name",
+        "meta",
+        "taboo_id",
+        "url",
+        "id",
+        "name"
+      ]
+    },
+    "HandDiscard": {
+      "required": [
+        "discardStrategy",
+        "discardInvestigator",
+        "discardSource",
+        "discardTarget",
+        "discardFilter",
+        "discardAmount",
+        "discardThen"
+      ],
+      "optional": [
+        "discardDestination",
+        "discardBatchCards"
+      ]
+    },
+    "Discover": {
+      "required": [
+        "discoverCount",
+        "discoverLocation",
+        "discoverSource"
+      ],
+      "optional": [
+        "discoverId",
+        "discoverAction",
+        "discoverThen"
+      ]
+    },
+    "CardDraw": {
+      "required": [
+        "cardDrawSource",
+        "cardDrawDeck",
+        "cardDrawAmount",
+        "cardDrawState",
+        "cardDrawTarget",
+        "cardDrawAction",
+        "cardDrawKind",
+        "cardDrawRules",
+        "cardDrawAndThen"
+      ],
+      "optional": [
+        "cardDrawPosition",
+        "cardDrawAlreadyDrawn",
+        "cardDrawDiscard"
+      ]
+    },
+    "EffectAttrs": {
+      "required": [
+        "id",
+        "cardCode",
+        "target",
+        "source",
+        "traits",
+        "metadata",
+        "window",
+        "finished",
+        "extraMetadata",
+        "skillTest"
+      ],
+      "optional": [
+        "cardId",
+        "disableWindow",
+        "metaKeys",
+        "onDisable"
+      ]
+    },
+    "Effect": {
+      "required": [
+        "cardCode"
+      ],
+      "optional": []
+    },
+    "EnemyCreation": {
+      "required": [
+        "enemyCreationCard",
+        "enemyCreationEnemyId",
+        "enemyCreationMethod",
+        "enemyCreationTarget",
+        "enemyCreationExhausted",
+        "enemyCreationAfter",
+        "enemyCreationInvestigator"
+      ],
+      "optional": [
+        "enemyCreationBefore"
+      ]
+    },
+    "EnemyAttrs": {
+      "required": [
+        "id",
+        "cardId",
+        "cardCode",
+        "originalCardCode",
+        "placement",
+        "fight",
+        "health",
+        "evade",
+        "assignedDamage",
+        "healthDamage",
+        "sanityDamage",
+        "prey",
+        "modifiers",
+        "exhausted",
+        "tokens",
+        "surgeIfUnableToSpawn",
+        "movedFromHunterKeyword",
+        "damageStrategy",
+        "sealedChaosTokens",
+        "keys",
+        "defeated",
+        "attacks",
+        "unableToSpawn",
+        "meta",
+        "flipped"
+      ],
+      "optional": [
+        "spawnAt",
+        "asSelfLocation",
+        "bearer",
+        "spawnedBy",
+        "discardedBy",
+        "attacking",
+        "wantsToAttack",
+        "delayEngagement",
+        "cardsUnderneath",
+        "lastKnownLocation",
+        "referenceCards",
+        "spawnDetails",
+        "movement",
+        "attackOfOpportunityFlagged",
+        "drawnFrom"
+      ]
+    },
+    "Enemy": {
+      "required": [
+        "cardCode"
+      ],
+      "optional": []
+    },
+    "EnemyLocationAttrs": {
+      "required": [
+        "id",
+        "cardId",
+        "cardCode",
+        "originalCardCode",
+        "label",
+        "tokens",
+        "connectedMatchers",
+        "revealedConnectedMatchers",
+        "directions",
+        "connectsTo",
+        "healthDamage",
+        "sanityDamage"
+      ],
+      "optional": [
+        "shroud",
+        "position",
+        "placement",
+        "meta",
+        "fight",
+        "health",
+        "evade",
+        "assignedDamage",
+        "attacking",
+        "defeated",
+        "exhausted"
+      ]
+    },
+    "EnemyLocation": {
+      "required": [
+        "cardCode"
+      ],
+      "optional": []
+    },
+    "Entities": {
+      "required": [
+        "locations",
+        "investigators"
+      ],
+      "optional": [
+        "enemies",
+        "enemyLocations",
+        "assets",
+        "acts",
+        "agendas",
+        "treacheries",
+        "events",
+        "effects",
+        "skills",
+        "stories",
+        "scarletKeys",
+        "concealed"
+      ]
+    },
+    "ChooseEvade": {
+      "required": [
+        "chooseEvadeInvestigator",
+        "chooseEvadeEnemyMatcher",
+        "chooseEvadeSource",
+        "chooseEvadeSkillType",
+        "chooseEvadeIsAction",
+        "chooseEvadeOverride",
+        "chooseEvadeSkillTest"
+      ],
+      "optional": [
+        "chooseEvadeTarget",
+        "chooseEvadePayCost",
+        "chooseEvadeAdditionalOptions"
+      ]
+    },
+    "EventAttrs": {
+      "required": [
+        "cardCode",
+        "cardId",
+        "originalCardCode",
+        "id",
+        "owner",
+        "controller",
+        "exhausted",
+        "beingPaidFor",
+        "payment",
+        "paymentMessages",
+        "sealedChaosTokens",
+        "cardsUnderneath",
+        "placement",
+        "afterPlay",
+        "playedFrom",
+        "windows",
+        "target",
+        "meta",
+        "tokens",
+        "customizations",
+        "printedUses",
+        "taboo",
+        "mutated"
+      ],
+      "optional": [
+        "doom",
+        "waiting"
+      ]
+    },
+    "Event": {
+      "required": [
+        "cardCode"
+      ],
+      "optional": []
+    },
+    "FieldEq": {
+      "required": [
+        "entity",
+        "field",
+        "value"
+      ],
+      "optional": []
+    },
+    "Update": {
+      "required": [
+        "field",
+        "value"
+      ],
+      "optional": []
+    },
+    "ChooseFight": {
+      "required": [
+        "chooseFightInvestigator",
+        "chooseFightEnemyMatcher",
+        "chooseFightSource",
+        "chooseFightSkillType",
+        "chooseFightIsAction",
+        "chooseFightOnlyChoose",
+        "chooseFightOverride",
+        "chooseFightSkillTest",
+        "chooseFightDifficulty"
+      ],
+      "optional": [
+        "chooseFightTarget",
+        "chooseFightPayCost"
+      ]
+    },
+    "Game": {
+      "required": [
+        "gameInitialSeed",
+        "gameSeed",
+        "gameWindowDepth",
+        "gameWindowStack",
+        "gameRunWindows",
+        "gameDepthLock",
+        "gameIgnoreCanModifiers",
+        "gameMode",
+        "gameEntities",
+        "gameActionRemovedEntities",
+        "gamePlayers",
+        "gameModifiers",
+        "gameEncounterDiscardEntities",
+        "gameInHandEntities",
+        "gameInDiscardEntities",
+        "gameInSearchEntities",
+        "gamePlayerCount",
+        "gameActiveInvestigatorId",
+        "gameActivePlayerId",
+        "gameTurnPlayerInvestigatorId",
+        "gameLeadInvestigatorId",
+        "gamePlayerOrder",
+        "gamePhase",
+        "gamePhaseStep",
+        "gameSkillTest",
+        "gameFocusedCards",
+        "gameFocusedTarotCards",
+        "gameFoundCards",
+        "gameFocusedChaosTokens",
+        "gameActiveCard",
+        "gameResolvingCard",
+        "gameActiveAbilities",
+        "gameRemovedFromPlay",
+        "gameInSetup",
+        "gameGameState",
+        "gameSkillTestResults",
+        "gameEnemyMoving",
+        "gameEnemyEvading",
+        "gameQuestion",
+        "gameActionCanBeUndone",
+        "gameActionDiff",
+        "gameInAction",
+        "gameCards",
+        "gameCardUses",
+        "gameActiveCost",
+        "gameGitRevision",
+        "gameAllowEmptySpaces",
+        "gamePerformTarotReadings",
+        "gameCurrentBatchId"
+      ],
+      "optional": [
+        "gamePhaseHistory",
+        "gameTurnHistory",
+        "gameRoundHistory",
+        "gameSettings",
+        "gameWindowTick",
+        "gameWindowTickStack",
+        "gameEntryTicks",
+        "gameCustomCards",
+        "gameTombstones",
+        "gameRetiredInvestigators",
+        "gameHighlightedCards",
+        "gameRetainedQuestion",
+        "gameSimultaneousAsks",
+        "gameScenarioSteps",
+        "gameUndoActionStep",
+        "gameUndoTurnStep",
+        "gameUndoPhaseStep",
+        "gameUndoRoundStep",
+        "gameLocationOffsets"
+      ]
+    },
+    "Settings": {
+      "required": [],
+      "optional": [
+        "settingsAbilitiesCannotReactToThemselves",
+        "settingsStrictAsIfAt",
+        "settingsAsIfRuling",
+        "settingsUltimatumsAndBoons",
+        "settingsUltimatumsAndBoonsEnabled",
+        "settingsRolledUltimatumOrBoon",
+        "settingsScreamedAllies",
+        "settingsAchievementsEnabled"
+      ]
+    },
+    "HistoryItem": {
+      "required": [
+        "field",
+        "value"
+      ],
+      "optional": []
+    },
+    "History": {
+      "required": [
+        "historyTreacheriesDrawn",
+        "historyDealtDamageTo",
+        "historyEnemiesDefeated",
+        "historyMoved",
+        "historyLocationsSuccessfullyInvestigated",
+        "historySuccessfulExplore",
+        "historyActionsCompleted",
+        "historySkillTestsPerformed",
+        "historyPlayedCards",
+        "historyCluesDiscovered"
+      ],
+      "optional": [
+        "historyEnemiesAttackedBy",
+        "historyAttacksOfOpportunity",
+        "historySuccessfulAttacks",
+        "historySuccessfulEvasions",
+        "historySuccessfulInvestigations",
+        "historyEnemiesDrawn",
+        "historyActionsSpent",
+        "historyResourcesGained",
+        "historyCardsDrawn"
+      ]
+    },
+    "Investigate": {
+      "required": [
+        "investigateInvestigator",
+        "investigateLocation",
+        "investigateSkillType",
+        "investigateSource",
+        "investigateIsAction",
+        "investigateSkillTest"
+      ],
+      "optional": [
+        "investigateTarget",
+        "investigatePayCost"
+      ]
+    },
+    "InvestigatorAttrs": {
+      "required": [
+        "id",
+        "playerId",
+        "name",
+        "cardCode",
+        "art",
+        "class",
+        "health",
+        "assignedHealthDamage",
+        "assignedHealthHeal",
+        "sanity",
+        "assignedSanityDamage",
+        "assignedSanityHeal",
+        "willpower",
+        "intellect",
+        "combat",
+        "agility",
+        "tokens",
+        "placement",
+        "actionsTaken",
+        "actionsPerformed",
+        "remainingActions",
+        "endedTurn",
+        "deck",
+        "decks",
+        "discard",
+        "hand",
+        "traits",
+        "defeated",
+        "resigned",
+        "killed",
+        "drivenInsane",
+        "slots",
+        "xp",
+        "physicalTrauma",
+        "mentalTrauma",
+        "startsWith",
+        "startsWithInHand",
+        "cardsUnderneath",
+        "usedAbilities",
+        "usedAdditionalActions",
+        "mulligansTaken",
+        "bondedCards",
+        "meta",
+        "unhealedHorrorThisRound",
+        "horrorHealed",
+        "supplies",
+        "drawnCards",
+        "keys",
+        "log",
+        "deckBuildingAdjustments"
+      ],
+      "optional": [
+        "sideDeck",
+        "eliminated",
+        "spentXp",
+        "search",
+        "movement",
+        "formMeta",
+        "sealedChaosTokens",
+        "isYithian",
+        "form",
+        "seals",
+        "beganRoundAt",
+        "previousLocation",
+        "discarding",
+        "discover",
+        "drawing",
+        "skippedWindow",
+        "taboo",
+        "cardPool",
+        "mutated",
+        "deckUrl",
+        "settings",
+        "excludeFromMulligan"
+      ]
+    },
+    "Investigator": {
+      "required": [
+        "cardCode"
+      ],
+      "optional": []
+    },
+    "LocationAttrs": {
+      "required": [
+        "id",
+        "cardCode",
+        "cardId",
+        "label",
+        "revealClues",
+        "tokens",
+        "revealed",
+        "symbol",
+        "revealedSymbol",
+        "connectedMatchers",
+        "revealedConnectedMatchers",
+        "directions",
+        "connectsTo",
+        "cardsUnderneath",
+        "costToEnterUnrevealed",
+        "canBeFlipped",
+        "investigateSkill",
+        "keys",
+        "withoutClues",
+        "meta"
+      ],
+      "optional": [
+        "shroud",
+        "inFrontOf",
+        "placement",
+        "seals",
+        "sealedChaosTokens",
+        "placedChaosTokens",
+        "floodLevel",
+        "brazier",
+        "breaches",
+        "globalMeta",
+        "position",
+        "beingRemoved",
+        "concealedCards",
+        "outOfGame"
+      ]
+    },
+    "Location": {
+      "required": [
+        "cardCode"
+      ],
+      "optional": []
+    },
+    "Movement": {
+      "required": [
+        "moveSource",
+        "moveTarget",
+        "moveDestination",
+        "moveMeans",
+        "moveCancelable",
+        "movePayAdditionalCosts",
+        "moveAfter"
+      ],
+      "optional": [
+        "moveAdditionalEnterCosts",
+        "moveSkipEngagement",
+        "moveId",
+        "moveForced",
+        "moveFromInPlay"
+      ]
+    },
+    "Labeled": {
+      "required": [
+        "getLabel",
+        "unLabel"
+      ],
+      "optional": []
+    },
+    "ScenarioOptions": {
+      "required": [
+        "scenarioOptionsStandalone",
+        "scenarioOptionsPerformTarotReading"
+      ],
+      "optional": [
+        "scenarioOptionsLeadInvestigator",
+        "scenarioOptionsDelayChoosingLead",
+        "scenarioOptionsSkipInvestigatorSetup",
+        "scenarioOptionsSkipStartOfGame"
+      ]
+    },
+    "HeartOfTheEldersMetadata": {
+      "required": [
+        "scenarioStep",
+        "reachedAct2"
+      ],
+      "optional": [
+        "part1StartingCard"
+      ]
+    },
+    "ScenarioAttrs": {
+      "required": [
+        "name",
+        "id",
+        "reference",
+        "difficulty",
+        "cardsUnderScenarioReference",
+        "cardsUnderAgendaDeck",
+        "cardsUnderActDeck",
+        "cardsNextToActDeck",
+        "cardsNextToAgendaDeck",
+        "actStack",
+        "agendaStack",
+        "completedAgendaStack",
+        "completedActStack",
+        "locationLayout",
+        "decks",
+        "log",
+        "counts",
+        "standaloneCampaignLog",
+        "setAsideCards",
+        "inResolution",
+        "noRemainingInvestigatorsHandler",
+        "victoryDisplay",
+        "chaosBag",
+        "encounterDeck",
+        "hasEncounterDeck",
+        "discard",
+        "encounterDecks",
+        "activeEncounterDeck",
+        "resignedCardCodes",
+        "resolvedStories",
+        "decksLayout",
+        "setAsideKeys",
+        "meta",
+        "usesGrid",
+        "tokens",
+        "tarotCards",
+        "tarotDeck",
+        "turn",
+        "timesPlayed",
+        "defeatedEnemies",
+        "storyCards",
+        "playerDecks"
+      ],
+      "optional": [
+        "additionalReferences",
+        "grid",
+        "deckDiscards",
+        "useHardExpertReference",
+        "customChaosBags",
+        "keys",
+        "isSideStory",
+        "isPrelude",
+        "inShuffle",
+        "xpBreakdown",
+        "campaignStep",
+        "search",
+        "started",
+        "scope",
+        "options"
+      ]
+    },
+    "Scenario": {
+      "required": [
+        "id"
+      ],
+      "optional": []
+    },
+    "CheckGameIcons": {
+      "required": [
+        "target",
+        "investigator",
+        "n",
+        "cards",
+        "mulligan"
+      ],
+      "optional": [
+        "setAside"
+      ]
+    },
+    "Search": {
+      "required": [
+        "searchType",
+        "searchingType",
+        "searchInvestigator",
+        "searchingInvestigator",
+        "searchSource",
+        "searchingSource",
+        "searchTarget",
+        "searchingTarget",
+        "searchZones",
+        "searchingZones",
+        "searchMatcher",
+        "searchingMatcher",
+        "searchFoundStrategy",
+        "searchingFoundCardsStrategy",
+        "searchFoundCards",
+        "searchingFoundCards",
+        "searchDrawnCards",
+        "searchingDrawnCards"
+      ],
+      "optional": []
+    },
+    "SkillAttrs": {
+      "required": [
+        "id",
+        "cardId",
+        "cardCode",
+        "owner",
+        "afterPlay",
+        "placement"
+      ],
+      "optional": [
+        "additionalCost",
+        "additionalPayment",
+        "sealedChaosTokens",
+        "meta",
+        "customizations",
+        "taboo",
+        "mutated"
+      ]
+    },
+    "Skill": {
+      "required": [
+        "cardCode"
+      ],
+      "optional": []
+    },
+    "SkillTest": {
+      "required": [
+        "id",
+        "investigator",
+        "resolveFailureInvestigator",
+        "type",
+        "baseValue",
+        "difficulty",
+        "setAsideChaosTokens",
+        "revealedChaosTokens",
+        "resolvedChaosTokens",
+        "toResolveChaosTokens",
+        "result",
+        "committedCards",
+        "source",
+        "target",
+        "action",
+        "subscribers",
+        "isRevelation",
+        "iconValues"
+      ],
+      "optional": [
+        "originalDifficulty",
+        "difficultyIncrease",
+        "additionalRevealedChaosTokens",
+        "resultForced",
+        "targetCard",
+        "sourceCard",
+        "card",
+        "step",
+        "revealedChaosTokensCount"
+      ]
+    },
+    "SpawnDetails": {
+      "required": [
+        "spawnDetailsEnemy",
+        "spawnDetailsSpawnAt"
+      ],
+      "optional": [
+        "spawnDetailsInvestigator",
+        "spawnDetailsOverridden",
+        "spawnDetailsExhausted",
+        "spawnDetailsUnengaged",
+        "spawnDetailsAfter"
+      ]
+    },
+    "StoryAttrs": {
+      "required": [
+        "id",
+        "cardId",
+        "placement",
+        "otherSide",
+        "flipped",
+        "meta",
+        "removeAfterResolution"
+      ],
+      "optional": [
+        "cardsUnderneath",
+        "tokens",
+        "sealedChaosTokens",
+        "art",
+        "flippedArt"
+      ]
+    },
+    "Story": {
+      "required": [
+        "id"
+      ],
+      "optional": []
+    },
+    "BagToken": {
+      "required": [
+        "bagTokenId",
+        "infestationTokenId",
+        "predationTokenId",
+        "bagTokenFace",
+        "infestationTokenFace",
+        "predationTokenFace"
+      ],
+      "optional": []
+    },
+    "TokenBag": {
+      "required": [],
+      "optional": [
+        "bagDebugNext"
+      ]
+    },
+    "TreacheryAttrs": {
+      "required": [
+        "id",
+        "cardId",
+        "cardCode",
+        "owner",
+        "tokens",
+        "placement",
+        "canBeCommitted",
+        "drawnBy",
+        "drawnFrom",
+        "resolved",
+        "discardedBy",
+        "meta",
+        "sealedChaosTokens",
+        "taboo",
+        "mutated"
+      ],
+      "optional": [
+        "exhausted",
+        "waiting"
+      ]
+    },
+    "Treachery": {
+      "required": [
+        "cardCode"
+      ],
+      "optional": []
+    }
+  },
+  "metaKeys": {
+    "_abilities": {
+      "holds": "a list of ability specs",
+      "readIn": "arkham-api/library/Arkham/Custom/Ability.hs"
+    },
+    "_handlers": {
+      "holds": "a list of handler specs",
+      "readIn": "arkham-api/library/Arkham/Custom/Ability.hs"
+    },
+    "_modifiers": {
+      "holds": "a list of modifier specs",
+      "readIn": "arkham-api/library/Arkham/Custom/Ability.hs"
+    },
+    "_onRevelation": {
+      "holds": "a list of steps",
+      "readIn": "arkham-api/library/Arkham/Custom/Ability.hs"
+    },
+    "_revelationPlacement": {
+      "holds": "threatArea or playArea",
+      "readIn": "arkham-api/library/Arkham/Custom/Ability.hs"
+    },
+    "_onPlay": {
+      "holds": "a list of steps",
+      "readIn": "arkham-api/library/Arkham/Custom/Event.hs"
+    },
+    "_elderSign": {
+      "holds": "card data, not steps",
+      "readIn": "arkham-api/library/Arkham/Custom/Investigator.hs"
+    },
+    "_onSetup": {
+      "holds": "a list of steps",
+      "readIn": "arkham-api/library/Arkham/Custom/Investigator.hs"
+    },
+    "_elderSignRevealSteps": {
+      "holds": "a list of steps",
+      "readIn": "arkham-api/library/Arkham/Custom/Investigator.hs"
+    },
+    "_elderSignSteps": {
+      "holds": "a list of steps",
+      "readIn": "arkham-api/library/Arkham/Custom/Investigator.hs"
+    },
+    "_elderSignSuccessSteps": {
+      "holds": "a list of steps",
+      "readIn": "arkham-api/library/Arkham/Custom/Investigator.hs"
+    },
+    "_signatures": {
+      "holds": "card data, not steps",
+      "readIn": "arkham-api/library/Arkham/Custom/Overlay.hs"
+    },
+    "_setAside": {
+      "holds": "card data, not steps",
+      "readIn": "arkham-api/library/Arkham/Custom/Overlay.hs"
+    }
+  },
+  "arrayTolerantDecoders": [
+    "Actions",
+    "GroupKey",
+    "Search"
+  ],
+  "entityBindings": {
+    "act": [
+      "id",
+      "cardId",
+      "sequence",
+      "advanceCost",
+      "tokens",
+      "deckId",
+      "breaches",
+      "usedWheelOfFortuneX",
+      "meta",
+      "keys",
+      "flipped",
+      "cardsUnderneath"
+    ],
+    "agenda": [
+      "doom",
+      "doomThreshold",
+      "id",
+      "cardId",
+      "sequence",
+      "flipped",
+      "cardsUnderneath",
+      "deckId",
+      "removeDoomMatchers",
+      "usedWheelOfFortuneX",
+      "meta",
+      "tokens"
+    ],
+    "asset": [
+      "id",
+      "cardId",
+      "cardCode",
+      "originalCardCode",
+      "placement",
+      "owner",
+      "controller",
+      "slots",
+      "health",
+      "sanity",
+      "printedUses",
+      "exhausted",
+      "exiled",
+      "tokens",
+      "canLeavePlayByNormalMeans",
+      "whenNoUses",
+      "cardsUnderneath",
+      "sealedChaosTokens",
+      "keys",
+      "assignedHealthDamage",
+      "assignedSanityDamage",
+      "assignedHealthHeal",
+      "assignedSanityHeal",
+      "customizations",
+      "meta",
+      "metaMap",
+      "flipped",
+      "taboo",
+      "mutated",
+      "chained",
+      "driver",
+      "visible",
+      "resolved"
+    ],
+    "enemy": [
+      "id",
+      "cardId",
+      "cardCode",
+      "originalCardCode",
+      "placement",
+      "fight",
+      "health",
+      "evade",
+      "assignedDamage",
+      "healthDamage",
+      "sanityDamage",
+      "prey",
+      "modifiers",
+      "exhausted",
+      "tokens",
+      "spawnAt",
+      "surgeIfUnableToSpawn",
+      "asSelfLocation",
+      "movedFromHunterKeyword",
+      "damageStrategy",
+      "bearer",
+      "sealedChaosTokens",
+      "keys",
+      "spawnedBy",
+      "discardedBy",
+      "defeated",
+      "attacks",
+      "unableToSpawn",
+      "meta",
+      "flipped",
+      "attacking",
+      "wantsToAttack",
+      "delayEngagement",
+      "cardsUnderneath",
+      "lastKnownLocation",
+      "referenceCards",
+      "spawnDetails",
+      "movement",
+      "attackOfOpportunityFlagged",
+      "drawnFrom"
+    ],
+    "event": [
+      "cardCode",
+      "cardId",
+      "originalCardCode",
+      "id",
+      "owner",
+      "controller",
+      "exhausted",
+      "beingPaidFor",
+      "payment",
+      "paymentMessages",
+      "sealedChaosTokens",
+      "cardsUnderneath",
+      "placement",
+      "afterPlay",
+      "playedFrom",
+      "windows",
+      "target",
+      "meta",
+      "tokens",
+      "customizations",
+      "printedUses",
+      "taboo",
+      "mutated",
+      "waiting"
+    ],
+    "investigator": [
+      "id",
+      "playerId",
+      "name",
+      "cardCode",
+      "art",
+      "class",
+      "health",
+      "assignedHealthDamage",
+      "assignedHealthHeal",
+      "sanity",
+      "assignedSanityDamage",
+      "assignedSanityHeal",
+      "willpower",
+      "intellect",
+      "combat",
+      "agility",
+      "tokens",
+      "placement",
+      "actionsTaken",
+      "actionsPerformed",
+      "remainingActions",
+      "endedTurn",
+      "deck",
+      "sideDeck",
+      "decks",
+      "discard",
+      "hand",
+      "traits",
+      "defeated",
+      "resigned",
+      "killed",
+      "drivenInsane",
+      "eliminated",
+      "slots",
+      "xp",
+      "spentXp",
+      "physicalTrauma",
+      "mentalTrauma",
+      "startsWith",
+      "startsWithInHand",
+      "cardsUnderneath",
+      "search",
+      "movement",
+      "usedAbilities",
+      "usedAdditionalActions",
+      "mulligansTaken",
+      "bondedCards",
+      "meta",
+      "formMeta",
+      "unhealedHorrorThisRound",
+      "sealedChaosTokens",
+      "horrorHealed",
+      "supplies",
+      "drawnCards",
+      "form",
+      "keys",
+      "seals",
+      "beganRoundAt",
+      "previousLocation",
+      "log",
+      "discarding",
+      "discover",
+      "drawing",
+      "skippedWindow",
+      "deckBuildingAdjustments",
+      "taboo",
+      "cardPool",
+      "mutated",
+      "deckUrl",
+      "settings",
+      "excludeFromMulligan"
+    ],
+    "location": [
+      "id",
+      "cardCode",
+      "cardId",
+      "label",
+      "revealClues",
+      "tokens",
+      "shroud",
+      "revealed",
+      "symbol",
+      "revealedSymbol",
+      "connectedMatchers",
+      "revealedConnectedMatchers",
+      "directions",
+      "connectsTo",
+      "cardsUnderneath",
+      "costToEnterUnrevealed",
+      "canBeFlipped",
+      "investigateSkill",
+      "placement",
+      "keys",
+      "seals",
+      "sealedChaosTokens",
+      "placedChaosTokens",
+      "floodLevel",
+      "brazier",
+      "breaches",
+      "withoutClues",
+      "meta",
+      "globalMeta",
+      "position",
+      "beingRemoved",
+      "concealedCards",
+      "outOfGame"
+    ],
+    "skill": [
+      "cardCode",
+      "cardId",
+      "id",
+      "owner",
+      "additionalCost",
+      "additionalPayment",
+      "afterPlay",
+      "placement",
+      "sealedChaosTokens",
+      "meta",
+      "customizations",
+      "taboo",
+      "mutated"
+    ],
+    "story": [
+      "id",
+      "cardId",
+      "placement",
+      "otherSide",
+      "flipped",
+      "meta",
+      "removeAfterResolution",
+      "cardsUnderneath",
+      "tokens",
+      "sealedChaosTokens",
+      "art",
+      "flippedArt"
+    ],
+    "treachery": [
+      "id",
+      "cardId",
+      "cardCode",
+      "owner",
+      "tokens",
+      "placement",
+      "canBeCommitted",
+      "drawnBy",
+      "drawnFrom",
+      "resolved",
+      "discardedBy",
+      "meta",
+      "sealedChaosTokens",
+      "taboo",
+      "mutated",
+      "exhausted",
+      "waiting"
+    ]
+  },
+  "specs": {
+    "_abilities": [
+      "type",
+      "criteria",
+      "limit",
+      "tooltip",
+      "zone",
+      "steps",
+      "effect"
+    ],
+    "_handlers": [
+      "on",
+      "requires",
+      "global",
+      "steps"
+    ],
+    "_modifiers": [
+      "kind",
+      "matcher",
+      "modifiers",
+      "if",
+      "each",
+      "eachBind",
+      "let",
+      "requires"
+    ],
+    "_revelationPlacementValues": [
+      "threatArea",
+      "playArea"
+    ]
+  }
+}

@@ -1,0 +1,446 @@
+FAQ Update 9/18/20
+
+•
+
+p7, Archive, 407.5h: Add this entry: “When an archive
+card attaches to another component, most commonly a
+neighborhood deck, tuck that card under the component it
+attaches to, such that the effect text is still visible.”
+
+•
+
+p7. Archive, 407.5i: Add this entry: “An attached card
+will state a mechanical effect triggered by interacting with the
+component it is attached to.”
+
+•
+
+p8, Attack Action, 409.5: This action should read, “If
+there are multiple monsters in your space, you can attack
+only one of them and you apply only the attack modifier
+of the monster you are attacking.”
+
+•
+
+p9, Component Action, 414.2a: Add this entry: “A
+component action on a card in the codex can be performed by
+any investigator.”
+
+•
+
+p9, Damage, 416.12: This entry should read, “An asset
+cannot be voluntarily assigned damage in excess of its
+health.”
+
+•
+
+p11, Engaged, 428: Add these entries:
+
+This document contains errata and rules clarifications for
+the third edition of Arkham Horror.
+Content added or modified in this update is in red text.
+
+Errata
+This section contains changes to the game’s printed
+components—the changed or added text is italicized.
+
+Rules Reference (Core Game)
+•
+
+•
+
+•
+
+p3, Monster Phase, 202.2d: This entry should read, “A
+monster’s activation text might indicate a destination or
+prey that it moves toward, engages, or affects in some
+other way. A monster moves towards its destination or prey
+by the shortest possible path. (See rule 418, ‘Destination’
+and rule 466, ‘Prey’)
+p4, Monster Phase, 202.2g: This entry should read, “If
+a monster has multiple possible destinations or targets, the
+option closer to the monster takes precedence. If one or more
+of these options are the same distance from the monster,
+the players as a group decide which of those spaces is the
+monster’s destination.”
+p4, Reckoning (Mythos Token), 204.12: Add these
+entries:
+•
+
+•
+
+204.12d: “Resolve all reckoning effects that are in play
+when the reckoning token is drawn from the cup. One at a
+time, in any order, resolve each effect in its entirety before
+resolving the next effect.”
+204.12e: “If a component with a reckoning effect enters
+play while the investigators are resolving a reckoning
+mythos token, do not resolve the new reckoning effect on
+that component as part of the resolution of that token. The
+effect will be active while resolving the next mythos token
+drawn from the cup.”
+
+•
+
+428.3.1: “While a monster is engaged, it cannot move,
+unless an effect states that any investigators with which it is
+engaged move with it.”
+
+•
+
+428.5.1: “While you are engaged with a monster, you
+cannot move, unless an effect states that any monsters with
+which you are engaged move with you.”
+
+•
+
+p12, Event, 430.9: This entry should read, “Event cards
+are used while resolving a gate burst, during which the
+event discard pile is shuffled and placed on the bottom of
+the event deck. (See rule 204.11)”
+
+•
+
+p11, Engage, 427.1a: Add this entry: “There is no
+functional difference between a monster engaging an
+investigator and an investigator engaging a monster. The
+phrases ‘when you engage this monster’ and ‘when this
+monster engages you’ are synonymous.”
+
+1
+
+•
+
+p12, Event, 430.11: Add this entry: “If an effect would
+take or discard a card from the event deck when there are no
+cards in the deck, cancel the entire effect and instead place
+one doom on the scenario sheet; then shuffle the event deck to
+create a new event deck.”
+
+•
+
+p22, Trade Action, 492.4: This entry should read, “Assets
+that were used by an investigator during the action phase
+and then traded to another investigator during that same
+phase cannot be used again until the start of the next
+action phase.”
+
+•
+
+p13, Headlines, 440.8a: Add this entry: “The mechanical
+text of a rumor headline in the codex affects all investigators.”
+
+•
+
+•
+
+p14, Horror, 442.12: This entry should read, “An asset
+can not be voluntarily assigned horror in excess of its
+sanity.”
+
+p22, Watcher, 495.2.1: Add this entry: “A monster with
+watcher does not prevent you from having an encounter
+during the encounter phase while you are engaged with it.
+This rule overrides 428.6”
+
+•
+
+p16, Movement, 455.3: This entry should read, “If you
+move into a space with a ready monster, that monster
+immediately engages you and your movement ends. (See
+rule 427, ‘Engage’)”
+
+•
+
+p21, Traits, 491.3: Add these entries:
+•
+
+491.3: An effect may instruct you to reveal, spawn, or gain
+a card with a specific trait. To do so, reveal cards from the
+appropriate deck until you reveal a card with the specified
+trait and put that card into play as instructed. Shuffle any
+other cards you revealed this way and return them to the
+deck from which they came.
+
+•
+
+491.3a: For decks where you normally take or reveal cards
+from the top of the deck, such as the item deck, reveal cards
+from the top and return them to the bottom.
+
+•
+
+491.3b: For decks where you normally take or reveal cards
+from the bottom of the deck, such as the monster deck,
+reveal cards from the bottom and return them to the top.
+
+•
+
+2
+
+Cards and Sheets
+•
+
+Archive, Card 5: The clue text box should read, “When
+there are three or more clues on the scenario sheet, if there
+are no markers on the board, add card 4 to the codex.”
+
+•
+
+Scenario Sheet, Tyrants of Ruin: The starting space
+should be the “Gilman House.” A corrected copy of this
+scenario sheet is included at the back of this document.
+
+Frequently Asked
+Questions
+
+Encounter
+An encounter allows me or an ally to recover damage or
+sanity. Can another investigator recover?
+
+This section addresses questions that are frequently
+submitted by players. It is organized alphabetically by the
+relevant rules reference topic.
+
+No. “Ally” is a card type; when game text refers to allies, it is
+referring to those cards. Players are exclusively referenced as
+“investigators.”
+
+Action
+
+After resolving an anomaly encounter, what do I do with
+the card?
+
+Can you interrupt a move action to perform a separate
+action?
+
+Like other non-event encounters, place the card on the
+bottom of the deck it was drawn from.
+
+No. You must finish resolving each action before performing
+a different one.
+
+Focus
+Can I spend a focus to reroll a die during any of my tests?
+
+Assets
+An encounter at Arkham Asylum told me that an ally
+could recover sanity. Can I choose any ally in play?
+Unless an effect that affects an asset specifies a location for
+that asset (such as “an ally in any space” or “an item in your
+space”), that effect can target only the assets controlled by
+the investigator encountering or triggering it. An asset controlled by an investigator is in that investigator’s space.
+
+Clues
+The Follow Up talent instructed me to spawn a clue.
+Where does it go?
+Any time an effect spawns a clue, resolve that effect the same
+way you would resolve a spawn clue mythos token: take the
+top card of the event deck, place a clue in central area of the
+corresponding neighborhood, and shuffle the card into the
+top of that neighborhood deck.
+
+Doom
+What happens when you place multiple doom at once?
+When a game effect places more than one doom, place them
+one at a time, in the order of your choosing. If any of that
+doom triggers a game effect, resolve it before placing the
+remaining doom.
+Example: During a scenario that uses Anomalies, there is three
+doom in Rivertown—two at the Black Cave and one at the
+Graveyard—when a Gate Burst resolves in Rivertown that adds
+one doom to each location. The investigators add one doom
+to the Graveyard and then add one to the Black Cave, which
+causes an anomaly in that neighborhood. The final doom would
+be added to the General Store, but it is instead placed on the
+scenario sheet because of the anomaly.
+
+Yes; it does not need to be a test using the skill matching
+that focus.
+Do my focus tokens affect when a monster considers me
+its prey?
+Yes; a focus token increases the corresponding skill for all
+purposes, including monster prey.
+Example: Tommy and Norman each have an Observation of
+three, and a Hulking Thrall’s activation text states, “Move
+toward and engage highest ,” so the thrall moves toward
+whichever of those two investigators is closest. Ever the
+guardian, Tommy focuses his  so that the monster will move
+toward him instead of Norman.
+
+Headline
+What happens when I draw a headline card while my
+investigator is defeated?
+Resolve as much of the headline effect as you can. Since you
+do not have an investigator, you cannot suffer damage or
+horror or gain conditions. You do not have a space, so effects
+that spawn a monster or add doom to your space will have
+no effect. You have no skills, so you cannot make any tests
+(you have a non-value for skills, not a zero); assume that you
+gained no successes and apply any applicable consequences.
+
+Monster
+Can I look at both sides of a monster card?
+Both sides of a monster card in play are open knowledge.
+Investigators may look at either side of any monster cards in
+play at any time, unless specified otherwise. Players cannot
+look at monster cards in the monster deck.
+
+3
+
+Mythos Token
+Do I draw my two mythos tokens simultaneously? In
+what order do I resolve them?
+Draw and resolve them one at a time. Resolve the entire
+effect of the first token before drawing and resolving the
+second.
+
+Remnant
+I just used the shriveling spell to defeat a monster. Do I
+get a remnant?
+No. You only gain a remnant for defeating a monster if you
+did it as part of an attack action, not if the monster was
+defeated via a different effect or component action.
+
+Starting Card
+Can I trade my starting assets to another investigator?
+Yes. Starting assets are treated just like other assets, so spells,
+allies, and items can be exchanged during a trade action.
+Talents and conditions cannot normally be traded, so you
+cannot trade starting talents or conditions.
+
+Test
+Can I use an effect that lets me modify a die result (like
+the lucky cigarette case) to activate the additional ability
+on the shotgun (“Each 6 you roll as part of an attack
+action counts as two successes”)?
+
+Clarifications
+This section includes clarifications for specific cards and
+abilities, organized alphabetically by the component’s title
+(the component type is stated in parentheses).
+
+Calvin Wright (Investigator)
+Calvin’s Friend in Need ability works much like exchanging
+money or remnants during a trade action. Calvin and the
+other investigator (or ally) may move damage or horror
+tokens freely between their investigator sheets (or ally card).
+This can be a one way trade (e.g. Calvin takes three damage
+tokens from Sachiko Higa and gives her no horror in return)
+or tokens can move in both directions (e.g. Calvin takes
+three horror from Tommy Muldoon while Tommy takes two
+damage from Calvin.)
+Because this damage/horror is not being “suffered,” it
+cannot be prevented or assigned to assets, nor can Calvin
+exchange damage or horror with an item or talent; his ability
+specifically allows him to exchange damage and/or horror
+with an investigator or an ally.
+
+Dark Insight (Starting Card)
+Diana’s Dark Insight talent allows her to modify a number
+of different dice equal to the amount of doom in her space.
+She cannot increase the result on any individual die by more
+than one.
+
+Yes. Changing the result of the die will trigger any effect that
+requires a specific die result, including the shotgun or the
+cursed condition.
+
+For example, if there is two doom in her space, Diana could
+use Dark Insight to change two different dice showing 4s to 5s
+(and thus increase the number of successes in her test result).
+She could not use Dark Insight to increase one die two times to
+change a 3 to a 5.
+
+Trade Action
+
+Gabriel and Motorcycle (Starting Cards)
+
+If an item is traded and has already been used this action
+phase, it cannot be used again until the next action
+phase. What is “using” an item?
+
+When you perform a move action, the effect of the item
+replaces the usual effect of that move action. You are still
+considered to have performed a move action, and thus
+cannot both use Gabriel (or the motorcycle) and a normal
+move action on the same turn.
+
+An item is considered used if its mechanical text has affected
+the game state. For example, the ally Sachiko Higa has been
+used if an investigator has gained her +2 bonus to  as part
+of an attack action this round. The tattered cloak item has
+been used if it has prevented its owner from being targeted
+or engaged by a monster this round.
+
+4
+
+Marie Lambeau (Investigator)
+
+Wendy Adams (Investigator)
+
+After you perform the action granted by Smoky Velvet, you
+still get two actions on your turn; the action granted by
+Smoky Velvet is an additional, out-of-turn action. However,
+you are still limited to performing any given action once per
+round. For example, if you performed a move action during
+your turn before Marie uses Smoky Velvet, she cannot grant
+you a move action, nor can you perform a move action on
+your turn if she granted you that action earlier this round
+using Smoky Velvet.
+
+Shortcut is not a move action, so Wendy can use the extra
+movement granted by the ability in the same round in
+which she uses a move action.
+
+When Marie grants you an action while you are delayed,
+you stand your investigator instead of performing that
+action. Per the rules reference (417.2), “the next time you
+would perform an action, you stand up your investigator
+token and skip that action; you are no longer delayed.” You
+can still perform that action during your turn this round,
+since you skipped the action when you recovered from being
+delayed.
+
+Rex Murphy (Investigator)
+Rex has no focus limit to allow him to benefit fully from
+mechanical effects that may allow him to focus a skill more
+than once, including his Overcome All Odds starting talent.
+
+Witch-Blood (Starting Card)
+“This action” refers to Witch-Blood’s component action:
+“Perform an action you have already performed this turn.”
+It does not allow the other investigator to use the action that
+Marie performed twice, but rather to use an action that they
+themselves used earlier this round.
+Example: On Tommy Muldoon’s turn, he focuses and attacks
+a monster. On Marie’s turn she wards her space and then uses
+her Witch-Blood talent to perform a second ward action on her
+turn. She then uses Smoky Velvet so that Tommy can perform
+Witch-Blood’s component action; he can either focus or attack
+again.
+The Witch-Blood component action cannot be granted to
+an investigator who has not yet activated this round, because
+there are no actions that they’ve already taken
+
+5
+
+Tyrants of Ruin
+The Story So Far...
+Deep beneath Devil Reef, the tyrants
+of Y’ha-nthlei rule the dark waves,
+yearning to surpass their ancient, mortal
+frames. They stir below the water,
+sending their Deep One progeny to
+corrupt the surface world.
+Starting Space
+Gilman House
+Reckoning
+
+Spread terror in each
+neighborhood with a
+Deep One monster.
+
+
+
+

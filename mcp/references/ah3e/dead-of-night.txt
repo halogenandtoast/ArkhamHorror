@@ -1,0 +1,181 @@
+Components
+
+Dead of Night
+Kate Winthrop pulled the collar of her long coat tight against her
+neck to ward off the creeping chill of a damp autumn night. With a
+squeal of tires, a long black car raced by, pursued closely by a police
+wagon. Kate pressed herself up against the iron railing of the bridge
+over the Miskatonic to keep clear of the chaos.
+She’d read in the papers about the recent upsurge in violent crime
+and felt the increasing tension all around the city. As the nights grew
+longer, she noticed a deeper darkness lurking in the shadows around
+Arkham, and the instruments in her research lab at the university
+were responding to some influence that she couldn’t observe.
+Something was coming.
+
+Overview
+In Dead of Night, investigators explore the facets of Arkham best
+left unseen in the light of day. Organized crime builds a strong
+foothold in the city, secret cults labor for a dark master, an alien
+moon hangs overhead, and unknowable horrors stalk the night.
+This expansion includes two all-new scenarios, new encounters
+for every location in Arkham, new monsters and anomalies, and
+four new investigators to face these fresh horrors, armed with
+new spells, items and allies.
+
+Expansion Icon
+Each card in this expansion is marked with the Dead of
+Night expansion icon to distinguish it from cards in the
+base game and other Arkham Horror products.
+
+2 Scenario Sheets
+
+4 Spell Cards
+
+4 Investigator Sheets
+
+28 Special Cards
+
+7 Headline Cards
+
+12 Starting Cards
+
+20 Archive Cards
+
+6 wanted Condition Cards
+
+12 Anomaly Cards
+
+22 Monster Cards
+
+48 Event Cards
+
+Monster Deck Holder
+
+72 Encounter Cards
+
+4 Investigator Tokens (with
+plastic stands)
+
+4 Ally Cards
+4 Item Cards
+
+8 “3 Clue/Doom” Tokens
+7 “1 Clue/Doom” Tokens
+
+Using this Expansion
+Some components in this expansion interact with other elements
+from this expansion (conditions or special cards, for example).
+For this reason, unless otherwise instructed, use all Dead of Night
+content while playing with this expansion.
+•
+
+Encounters, headlines, allies, items, and spells are
+shuffled into their respective decks.
+
+•
+
+Archive, special, starting, condition, and monster cards
+are sorted into their respective decks (alphabetically,
+numerically, or by character).
+
+•
+
+The new anomaly and event decks are separated for use
+as instructed in each scenario. Be sure not to mix the
+event cards into the encounter decks.
+
+•
+
+New investigators can be freely mixed with those from
+the base game.
+
+•
+
+New scenarios use some monsters and codex cards from
+the base game, as well as this expansion.
+
+While playing, place the monster deck into the deck holder, ready
+side up. See the assembly diagram on the back of this sheet. As
+normal, draw from the bottom of the deck, and discard to the top.
+
+Rules Clariﬁcations
+
+Credits
+Expansion Design and Development: Philip D. Henry with Daniel Lovat Clark
+
+Wanted
+The new wanted condition, like other condition cards,
+is double-sided. Do not look at the back of the card until
+instructed to do so by a game eﬀect.
+
+Elite Monsters
+When a monster gains the elite X ability from more than one
+game eﬀect, the eﬀect is cumulative.
+For example: A Morphic Terror monster with 4 Health has
+“elite 1” printed in its textbox, and a card in the codex also gives it
+“elite 1.” The monster has 4 Health plus 2 Health per Investigator.
+
+Removing Map Tiles
+Some eﬀects can remove map tiles from the game. When a
+neighborhood tile is removed from the game, also remove
+all matching encounter cards, including those in the event
+deck. Search the event discard and the event deck for all cards
+matching that neighborhood and remove those cards from the
+game. Shuffle the event deck, but do not shuffle the event discard
+into the deck or change the order of the event discard.
+
+Modifying the Mythos Cup
+When instructed to remove a mythos token from the game, select
+a token of the appropriate type from those still in the cup, if able.
+Otherwise, select a token of the appropriate type from those that
+have been drawn from the cup, but not yet returned to it.
+When adding a token, add it directly to the mythos cup.
+
+Monster Deck Holder
+Assemble as shown
+
+Producer: Jason Walden
+Proofreading: Christopher Meyer
+Board Game Manager: Andrew Fischer
+Arkham Horror Story Review: Dane Beltrami, Kara Centell-Dunk,
+and Matt Newman
+Expansion Graphic Design: WiL Springer
+Graphic Design Manager: Christopher Hosch
+Cover Art: Anders Finer
+Interior Art: Cristi Balanescu, Helge C. Balzer, Tiziano Baracchi, Ryan Barger,
+Ignazio Bazán Lazcano, Arden Beckwith, Mark Behm, Dimitri Bielak, Yoann
+Boissonnet, Christopher Burdett, Joshua Cairos, Felicia Cano, Mike Capprotti,
+Caravan Studios, Matthew Cowdery, Guillaume Ducos, Derek D. Edgell, David
+Gaillet, Diego Gisbert, Quintin Gleim, Falk Haensel, Woodrow Hinton, Rafal
+Hrynkiewicz, Aurelian Hubert, Romana Kendelic, Igor Kieryluk, Priscilla Kim,
+Drazenka Kimpel, Julian Kok, Alexander Kozachenko, Robert Laskey, Patrick
+McEvoy, Brynn Metheney, Mark Molnar, Reiko Murakami, David Nash, John
+Pacer, Borja Pindado, Jose Manuel Rey, Adam Schumpert, Stephen Somers, Anna
+Steinbauer, Andreia Ugrai, Magali Villeneuve, and Frank Walls
+Art Direction: Jeﬀ Lee Johnson
+Managing Art Director: Tony Bradt
+QA Coordination: Andrew Janeba and Zach Tewalthomas
+Production Management: Justin Anger and Jason Glawe
+Visual Creative Director: Brian Schomburg
+Senior Project Manager: John Franz-Wichlacz
+Senior Manager of Product Development: Chris Gerber
+Executive Game Designer: Corey Konieczka
+Head of Studio: Andrew Navaro
+Playtesters: America, Boyd Bottorf, Kerry Boyles, Monica Brivio, Brian Carpenter,
+Jim Cartwright, Mr. Chip, Kevin Cioﬃ, Sarah Cioﬃ, Carl Coﬀey, Dane Curi,
+Caterina D’Agostini, Andrea Dell’Agnese, Gavin Duﬀy, Dave Dzwonek, Julia Faeta,
+Zachary Foggo, Marieke Franssen, Anita Hilberdink, Grace Holdinghaus, Jason
+Horner, Tim Huckelbery, Clinton Jeﬀrey, Ander L., Stefan Lilly, Betsy Munro
+Jeﬀrey, Emile de Maat, David McCulloch, Adam McLean, Francis Mercier, Todd
+Michlitsch, Calli Oliverius, Jamie Perconti, Brandon Perdue, Emiel Speets, Léon
+Tichelaar, Marjan Tichelaar-Haug, Matt Turchyn, Amudha Venugopalan, Luuk
+Weltevreden, Maree Weltevreden, Matt Wenderski, and Billy Wilkins
+Special thanks to all of our beta testers!
+© 2019 Fantasy Flight Games. Fantasy Flight Supply is a TM of Fantasy
+Flight Games. Arkham Horror, Fantasy Flight Games, and the FFG logo are
+® of Fantasy Flight Games. Fantasy Flight Games is located at 1995 West
+County Road B2 Roseville, Minnesota 55113 USA 651-639-1905. Actual
+components may vary from those shown.
+
+

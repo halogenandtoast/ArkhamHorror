@@ -53,6 +53,8 @@ data Message
   | CheckReactions Trigger [Text]
   | ContinueTest
   | MarkAssetUsed InvestigatorId CardId
+  | -- | an investigator's own ability is spent for the round
+    MarkAbilityUsed InvestigatorId Text
   | PayCost EffectCtx Cost
   | BeginTest TestState
   | ToggleTestAsset CardId

@@ -5,9 +5,11 @@ import AH3e.Prelude
 import AH3e.Types.Card
 import AH3e.Types.Ids
 
--- | Cards that raise their holder's focus limit while held (435.11).
+{- | Cards that raise their holder's focus limit while held (435.11). Any pile's
+cards may, so a starting possession sits here beside the special pile's.
+-}
 focusLimitBonuses :: [(CardCode, Int)]
-focusLimitBonuses = [("the-moon", 1), ("deputy-of-arkham", 1)]
+focusLimitBonuses = [("the-moon", 1), ("deputy-of-arkham", 1), ("synergy", 1)]
 
 special
   :: CardCode -> Text -> AssetType -> [Trait] -> Int -> Maybe Int -> Maybe Int -> Text -> CardDef

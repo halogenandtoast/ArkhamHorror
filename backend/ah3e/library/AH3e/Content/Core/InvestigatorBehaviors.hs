@@ -31,6 +31,8 @@ behaviors =
             )
           , ("agnes-baker", defaultInvestigatorBehavior & #castWithDamage .~ True & #paidCastLoreBonus .~ 2)
           , ("michael-mcglen", outForRevenge)
+          , ("dexter-drake", magicalGift)
+          , ("minh-thi-phan", allAroundYou)
           , ("jenny-barnes", trustFund)
           ,
             ( "daniela-reyes"
@@ -58,6 +60,8 @@ behaviors =
           , -- the same offer as Gabriel's: three spaces, and a dollar buys a fourth
             ("motorcycle", defaultAssetBehavior & #moveAction ?~ (3, 1))
           , ("chicago-typewriter", testBonuses [OnAction AttackAction Strength 4])
+          , ("overcome-all-odds", defaultAssetBehavior & #focusPerSkill .~ 2)
+          , ("analytical-mind", analyticalMind)
           , ("the-tower", rerollOneOrAll "the-tower" "The Tower")
           , ("astronomy-book", astronomyBook)
           , ("search-for-izzie", searchForIzzie)
@@ -379,3 +383,78 @@ obannionMember =
               [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (pass Strength 0 (money 2))]
           ]
       _ -> pure []
+
+{- | "Once per round, while resolving a will test, you may reroll one or all of your
+dice." His focus limit, the other half of the sheet, is counted from his spells (see
+'AH3e.Content.Core.Investigators.focusLimitFromSpells').
+-}
+magicalGift :: InvestigatorBehavior
+magicalGift =
+  defaultInvestigatorBehavior
+    & #testOptions
+    .~ \iid ts -> do
+      used <- usedAbility iid "magical-gift"
+      let live = liveDiceCount ts
+          offer k lbl ms = Reaction k ("Magical Gift: " <> lbl) (MarkAbilityUsed iid "magical-gift" : ms)
+      pure
+        [ o
+        | not used
+        , live > 0
+        , ts.skill == Will
+        , o <-
+            [ offer "magical-gift-one" "reroll one die" [RerollUpTo (SourceInvestigator iid) 1]
+            , offer "magical-gift-all" "reroll all dice" [RerollAll (SourceInvestigator iid)]
+            ]
+        ]
+
+{- | "Once per round, while resolving a test, you or another investigator in your space
+may reroll dice up to the number of clues in your neighborhood." Her own test is
+offered through the sheet; someone else's reaches her through the window their roll
+opens, since it is her ability to spend.
+-}
+allAroundYou :: InvestigatorBehavior
+allAroundYou =
+  defaultInvestigatorBehavior
+    & #testOptions
+    .~ minhReroll
+    & #reactions
+    .~ \self -> \case
+      AnotherResolvesTest owner tested | owner == self -> do
+        mine <- investigatorSpace self
+        theirs <- investigatorSpace tested
+        mts <- use #test
+        case mts of
+          Just ts | isJust mine, mine == theirs -> minhReroll self ts
+          _ -> pure []
+      _ -> pure []
+
+-- | The offer itself: as many dice as there are clues in her neighborhood.
+minhReroll :: InvestigatorId -> TestState -> GameM [Reaction]
+minhReroll iid ts = do
+  used <- usedAbility iid "all-around-you"
+  clues <- neighborhoodClues iid
+  let live = liveDiceCount ts
+  pure
+    [ Reaction
+        "all-around-you"
+        ("All Around You: reroll up to " <> tshow (min live clues) <> " dice")
+        [MarkAbilityUsed iid "all-around-you", RerollUpTo (SourceInvestigator iid) (min live clues)]
+    | not used
+    , live > 0
+    , clues > 0
+    ]
+
+{- | "You roll one additional die while resolving a will or observation test if you are
+at or above your focus limit."
+-}
+analyticalMind :: AssetBehavior
+analyticalMind =
+  defaultAssetBehavior
+    & #testDice
+    .~ \_ iid ts ->
+      if ts.skill `notElem` [Will, Observation]
+        then pure Nothing
+        else do
+          i <- getInvestigator iid
+          limit <- focusLimit iid
+          pure (if maybe False (focusCount i >=) limit then Just 1 else Nothing)

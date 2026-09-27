@@ -191,6 +191,14 @@ monsterIgnores mid iid = do
   angered <- uses #provoked (elem iid . Map.findWithDefault [] mid)
   pure (hidden && not d.epic && not angered)
 
+-- | The most focus this investigator may put on one skill, which a card may raise.
+focusPerSkillFor :: InvestigatorId -> GameM Int
+focusPerSkillFor iid = do
+  i <- getInvestigator iid
+  limits <-
+    for [c | c <- i.assets, c `notElem` i.lockedAssets] (fmap (.focusPerSkill) . assetBehavior)
+  pure (maximum (1 : limits))
+
 -- | Cards that could halve a purchase for this investigator, with their names.
 halfPriceCards :: InvestigatorId -> GameM [(CardId, Text)]
 halfPriceCards iid = do
@@ -217,6 +225,7 @@ testOptionsFor ts = do
   fromCards <- fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
     b <- assetBehavior cid
     b.testOptions cid ts.investigator ts
+  fromSheet <- (investigatorBehavior ts.investigator).testOptions ts.investigator ts
   fromMonster <- case ts.kind of
     ActionTest _ (Just mid) -> do
       present <- uses #monsters (Map.member mid)
@@ -226,7 +235,7 @@ testOptionsFor ts = do
           b.testOptions mid ts.investigator ts
         else pure []
     _ -> pure []
-  pure (fromCards <> fromMonster)
+  pure (fromCards <> fromSheet <> fromMonster)
 
 {- | A monster's health as it stands: what its card prints, plus its elite health
 per investigator, less whatever a card in play takes off it. Never below one, so a

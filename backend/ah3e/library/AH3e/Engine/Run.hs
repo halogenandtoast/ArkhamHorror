@@ -112,7 +112,7 @@ runMessage msg = case msg of
     #rumorIgnored .= []
     #activatedMonsters .= []
     #terrorEncountered .= []
-    #investigators %= Map.map \i -> i {performed = [], usedAssets = []}
+    #investigators %= Map.map \i -> i {performed = [], usedAssets = [], usedAbilities = []}
     r <- use #round
     logText ("Round " <> tshow r)
     push BeginActionPhase
@@ -828,9 +828,10 @@ runMessage msg = case msg of
   GainConditionMsg iid name -> gainCondition iid name
   FocusSkill iid skill evenIfExceeds -> do
     i <- getInvestigator iid
-    let already = Map.findWithDefault 0 skill i.focus > 0
-    unless already do
-      investigatorL iid . #focus . at skill ?= 1
+    most <- focusPerSkillFor iid
+    let on = Map.findWithDefault 0 skill i.focus
+    when (on < most) do
+      investigatorL iid . #focus . at skill ?= on + 1
       checkFocusLimit iid evenIfExceeds
   FocusSkillAgain iid skill -> do
     investigatorL iid . #focus . at skill %= Just . maybe 1 (+ 1)
@@ -938,6 +939,7 @@ runMessage msg = case msg of
         ]
   ContinueTest -> testPrompt
   MarkAssetUsed iid cid -> investigatorL iid . #usedAssets %= (<> [cid])
+  MarkAbilityUsed iid key -> investigatorL iid . #usedAbilities %= (<> [key])
   FlipCodexCard n -> do
     #codex %= map (\e -> if e.number == n then e {flipped = not e.flipped, fired = []} else e)
     push CheckStateTriggers

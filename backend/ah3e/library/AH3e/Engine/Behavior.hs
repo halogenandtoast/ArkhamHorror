@@ -54,6 +54,10 @@ data AssetBehavior = AssetBehavior
   action. Offered at the manipulate-dice step; whatever limit the card prints, its
   own messages record ('MarkAssetUsed' per round, 'MarkUsedInTest' per test).
   -}
+  , focusPerSkill :: Int
+  {- ^ how many focus its owner may put on one skill, one unless a card says more
+  (Overcome All Odds)
+  -}
   , ignoredByMonsters :: Bool
   {- ^ non-epic monsters pass its owner by while activating and do not engage
   them, until its owner attacks or damages the monster (Tattered Cloak).
@@ -119,6 +123,7 @@ defaultAssetBehavior =
     , afterMonsterDamaged = \_ _ _ _ -> pure []
     , afterHarm = \_ _ _ -> pure []
     , testOptions = \_ _ _ -> pure []
+    , focusPerSkill = 1
     , ignoredByMonsters = False
     , successOnFour = False
     , bansConditions = []
@@ -297,6 +302,8 @@ defaultCodexBehavior =
 data InvestigatorBehavior = InvestigatorBehavior
   { componentActions :: [ComponentActionDef]
   , reactions :: InvestigatorId -> Trigger -> GameM [Reaction]
+  , testOptions :: InvestigatorId -> TestState -> GameM [Reaction]
+  -- ^ what the sheet itself offers while its investigator's test resolves
   , castWithDamage :: Bool
   -- ^ may suffer damage instead of horror while casting a spell
   , paidCastLoreBonus :: Int
@@ -309,6 +316,7 @@ defaultInvestigatorBehavior =
   InvestigatorBehavior
     { componentActions = []
     , reactions = \_ _ -> pure []
+    , testOptions = \_ _ -> pure []
     , castWithDamage = False
     , paidCastLoreBonus = 0
     }

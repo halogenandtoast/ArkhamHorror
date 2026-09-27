@@ -1,4 +1,4 @@
-module AH3e.Content.Core.Investigators (investigators, cards) where
+module AH3e.Content.Core.Investigators (investigators, cards, focusLimitFromSpells) where
 
 import AH3e.Prelude
 import AH3e.Types.Card
@@ -15,6 +15,12 @@ skills lore influence observation strength will =
     , (Strength, strength)
     , (Will, will)
     ]
+
+{- | Sheets whose focus limit is not a number on the card: Dexter Drake's is however
+many spells he holds.
+-}
+focusLimitFromSpells :: [InvestigatorId]
+focusLimitFromSpells = ["dexter-drake"]
 
 investigators :: [InvestigatorDef]
 investigators =

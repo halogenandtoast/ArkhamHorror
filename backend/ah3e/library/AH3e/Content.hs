@@ -8,6 +8,7 @@ module AH3e.Content (
   ScenarioInfo (..),
   scenarioCatalog,
   focusLimitBonus,
+  focusLimitFromSpells,
 ) where
 
 import AH3e.Content.Allies qualified as Allies
@@ -28,7 +29,12 @@ import AH3e.Types.Card
 import AH3e.Types.Ids
 import Data.Map.Strict qualified as Map
 
--- | How much holding this card raises its holder's focus limit.
+{- | How much holding this card raises its holder's focus limit.
+| Sheets whose focus limit is counted from what they hold.
+-}
+focusLimitFromSpells :: [InvestigatorId]
+focusLimitFromSpells = Investigators.focusLimitFromSpells
+
 focusLimitBonus :: CardCode -> Int
 focusLimitBonus code = Map.findWithDefault 0 code (Map.fromList Special.focusLimitBonuses)
 

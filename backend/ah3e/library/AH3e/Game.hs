@@ -27,6 +27,8 @@ data Investigator = Investigator
   , bonusActions :: Int
   , lockedAssets :: [CardId]
   , usedAssets :: [CardId]
+  , usedAbilities :: [Text]
+  -- ^ once-a-round abilities of the investigator's own, spent this round
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -200,4 +202,5 @@ newInvestigator iid pid =
     , bonusActions = 0
     , lockedAssets = []
     , usedAssets = []
+    , usedAbilities = []
     }

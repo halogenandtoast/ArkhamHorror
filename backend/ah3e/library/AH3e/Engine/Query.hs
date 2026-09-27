@@ -117,7 +117,12 @@ focusLimit iid = do
   base <- (.focusLimit) <$> getInvestigatorDef iid
   i <- getInvestigator iid
   bonus <- sum <$> for i.assets (fmap focusLimitBonus . cardCode)
-  pure ((+ bonus) <$> base)
+  -- a sheet may say its limit is counted rather than printed (Dexter Drake's spells)
+  counted <-
+    if iid `elem` focusLimitFromSpells
+      then Just . length <$> matchingAssets iid SpellCard
+      else pure Nothing
+  pure ((+ bonus) <$> (counted <|> base))
 
 investigatorHealth :: InvestigatorId -> GameM Int
 investigatorHealth iid = (.health) <$> getInvestigatorDef iid
@@ -318,6 +323,10 @@ recoverTargets ctx r hp sp = do
 nobody in reach needs, or a focus with every allowed skill already focused or
 the focus limit already reached, is not worth offering.
 -}
+
+-- | Whether an ability of the investigator's own has been spent this round.
+usedAbility :: InvestigatorId -> Text -> GameM Bool
+usedAbility iid key = elem key . (.usedAbilities) <$> getInvestigator iid
 
 -- | Whether this investigator holds a particular card, which cards name each other by.
 holdsCard :: InvestigatorId -> CardCode -> GameM Bool

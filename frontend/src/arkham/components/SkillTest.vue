@@ -246,6 +246,10 @@ const skillValue = computed(() => {
 const testResult = computed(() => {
   const result = skillTestResults.value
   if (result !== null) {
+    // A forced result (Scrape By (1), Lab Coat (1)) overrides the tested values,
+    // so it can't be derived from them -- take the engine's own answer.
+    const forced = props.skillTest.resultForced ? props.skillTest.result?.contents?.[1] : undefined
+    if (forced !== undefined) return forced
     const {skillTestResultsDifficulty} = result
     return skillValue.value - skillTestResultsDifficulty
   } else {

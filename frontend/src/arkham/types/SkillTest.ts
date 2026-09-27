@@ -105,7 +105,8 @@ export type SkillTest = {
   skills: SkillType[];
   step: SkillTestStep;
   baseValue: SkillTestBaseValue;
-  result: null | { tag: string };
+  result: null | { tag: string; contents?: [string, number] };
+  resultForced: boolean;
   modifiers?: Modifier[];
   valueBreakdown?: SkillTestValueBreakdown;
 }
@@ -154,7 +155,11 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     skills: JsonDecoder.array(skillTypeDecoder, 'SkillType[]'),
     step: JsonDecoder.fallback("DetermineSkillOfTestStep", skillTestStepDecoder),
     baseValue: baseValueDecoder,
-    result: JsonDecoder.nullable(JsonDecoder.object({ tag: JsonDecoder.string() }, 'SkillTestResult')),
+    result: JsonDecoder.nullable(JsonDecoder.object({
+      tag: JsonDecoder.string(),
+      contents: v2Optional(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.number()], '[string, number]')),
+    }, 'SkillTestResult')),
+    resultForced: JsonDecoder.fallback(false, JsonDecoder.boolean()),
     modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
     valueBreakdown: v2Optional(skillTestValueBreakdownDecoder),
   },

@@ -467,6 +467,28 @@ totalChaosTokenValues s = do
 calculateSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 calculateSkillTestResultsData s = do
   modifiers' <- getModifiers (SkillTestTarget s.id)
+  results <- calculateRawSkillTestResultsData s
+  let
+    modifiedSkillValue' =
+      max
+        0
+        ( skillTestResultsSkillValue results
+            + skillTestResultsChaosTokensValue results
+            + skillTestResultsIconValue results
+        )
+    succeedByAmount = modifiedSkillValue' - skillTestResultsDifficulty results
+    autoFailThresholds = [t | AutomaticallyFailIfSucceedByAtLeast t <- modifiers']
+  if any (succeedByAmount >=) autoFailThresholds
+    then autoFailSkillTestResultsData s
+    else pure results
+
+{- | The tested values without the @AutomaticallyFailIfSucceedByAtLeast@
+short-circuit. A forced result (@PassSkillTestBy@) reports the real numbers
+it is overriding, so it must not be turned into an auto-fail here.
+-}
+calculateRawSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
+calculateRawSkillTestResultsData s = do
+  modifiers' <- getModifiers (SkillTestTarget s.id)
   modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
   iconValue <- signedSkillIconCount s
   currentSkillValue <- getCurrentSkillValue s
@@ -479,19 +501,14 @@ calculateSkillTestResultsData s = do
       max 0 (currentSkillValue + chaosTokenValues + iconValue)
     op = if FailTies `elem` modifiers' then (>) else (>=)
     baseSuccess = modifiedSkillValue' `op` modifiedSkillTestDifficulty
-    succeedByAmount = modifiedSkillValue' - modifiedSkillTestDifficulty
-    autoFailThresholds = [t | AutomaticallyFailIfSucceedByAtLeast t <- modifiers']
-  if any (succeedByAmount >=) autoFailThresholds
-    then autoFailSkillTestResultsData s
-    else
-      pure
-        $ SkillTestResultsData
-          currentSkillValue
-          iconValue
-          chaosTokenValues
-          modifiedSkillTestDifficulty
-          (resultValueModifiers <$ guard (resultValueModifiers /= 0))
-          baseSuccess
+  pure
+    $ SkillTestResultsData
+      currentSkillValue
+      iconValue
+      chaosTokenValues
+      modifiedSkillTestDifficulty
+      (resultValueModifiers <$ guard (resultValueModifiers /= 0))
+      baseSuccess
 
 autoFailSkillTestResultsData :: HasGame m => SkillTest -> m SkillTestResultsData
 autoFailSkillTestResultsData s = do

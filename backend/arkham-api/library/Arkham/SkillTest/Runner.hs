@@ -465,15 +465,15 @@ instance RunMessage SkillTest where
         _ -> False
       push $ chooseOne player [SkillTestApplyResultsButton]
       -- "You succeed by n, instead" overrides the tested values entirely, so the
-      -- result can't be recalculated from them (FailTies etc. must not apply)
-      mods <- getModifiers (toTarget s)
-      let x = getSum $ mconcat [Sum m | SkillTestResultValueModifier m <- mods]
-      push $ SkillTestResults $ SkillTestResultsData n 0 0 0 (guard (x /= 0) $> x) True
+      -- result can't be recalculated from them (FailTies etc. must not apply).
+      -- The test itself is untouched though: only an *automatic* success has a
+      -- total difficulty of 0, so the real numbers are still reported.
+      results <- calculateRawSkillTestResultsData s
+      push $ SkillTestResults results {skillTestResultsSuccess = True}
       pure
         $ s
         & (resultL .~ SucceededBy NonAutomatic n)
-        & (difficultyL .~ SkillTestDifficulty (Fixed 0))
-        & (difficultyIncreaseL .~ 0)
+        & (resultForcedL .~ True)
     FailSkillTest -> do
       push $ Do FailSkillTest
       when (skillTestStep < SkillTestFastWindow2) $ push CheckAllAdditionalCommitCosts
@@ -1070,6 +1070,9 @@ instance RunMessage SkillTest where
         unless hasRun $ push $ RunSkillTest skillTestInvestigator
         pure s
     RecalculateSkillTestResults -> runMessage (RecalculateSkillTestResultsCanChangeAutomatic False) s
+    -- A forced "you succeed by n instead" is not derived from the tested
+    -- values, so there is nothing to recalculate it from.
+    RecalculateSkillTestResultsCanChangeAutomatic _ | skillTestResultForced -> pure s
     RecalculateSkillTestResultsCanChangeAutomatic canChange -> do
       let
         isAutomatic =

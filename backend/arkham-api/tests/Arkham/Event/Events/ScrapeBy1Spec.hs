@@ -1,6 +1,8 @@
 module Arkham.Event.Events.ScrapeBy1Spec (spec) where
 
 import Arkham.Event.Cards qualified as Events
+import Arkham.GameEnv (getJustSkillTest)
+import Arkham.Helpers.SkillTest (getModifiedSkillTestDifficulty)
 import Helpers.Message qualified
 import TestImport.New
 
@@ -44,3 +46,21 @@ spec = describe "Scrape By (1)" do
     assertPassedSkillTest
     click "Apply results"
     didPassBy0 `refShouldBe` True
+
+  it "does not change the difficulty of the test" . gameTest $ \self -> do
+    withProp @"intellect" 5 self
+    withProp @"resources" 1 self
+    scrapeBy1 <- genCard Events.scrapeBy1
+    self `addToHand` scrapeBy1
+
+    setChaosTokens [Zero]
+    sid <- getRandom
+    run $ Helpers.Message.beginSkillTest sid self #intellect 8
+    startSkillTest
+    assertFailedSkillTest
+    chooseTarget scrapeBy1
+    assertPassedSkillTest
+
+    -- only an *automatic* success has a total difficulty of 0
+    difficulty <- getJustSkillTest >>= getModifiedSkillTestDifficulty
+    difficulty `shouldBe` 8

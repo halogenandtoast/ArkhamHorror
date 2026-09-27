@@ -45,6 +45,10 @@ data SkillTest = SkillTest
   , skillTestResolvedChaosTokens :: [ChaosToken]
   , skillTestToResolveChaosTokens :: [ChaosToken]
   , skillTestResult :: SkillTestResult
+  , skillTestResultForced :: Bool
+  {- ^ A "you succeed by N instead" result overrides the tested values entirely,
+  so it must not be recalculated from them.
+  -}
   , skillTestCommittedCards :: Map InvestigatorId [Card]
   , skillTestSource :: Source
   , skillTestTarget :: Target
@@ -172,6 +176,7 @@ buildSkillTest sid iid (toSource -> source) (toTarget -> target) stType bValue d
     , skillTestResolvedChaosTokens = mempty
     , skillTestToResolveChaosTokens = mempty
     , skillTestResult = Unrun
+    , skillTestResultForced = False
     , skillTestCommittedCards = mempty
     , skillTestSource = source
     , skillTestTarget = target
@@ -203,6 +208,7 @@ resetSkillTest sid skillTest =
     , skillTestResolvedChaosTokens = mempty
     , skillTestToResolveChaosTokens = mempty
     , skillTestResult = Unrun
+    , skillTestResultForced = False
     , skillTestCommittedCards = mempty
     , skillTestSubscribers = [toTarget $ skillTestInvestigator skillTest]
     , skillTestId = sid
@@ -230,6 +236,7 @@ instance FromJSON SkillTest where
     skillTestResolvedChaosTokens <- o .: "resolvedChaosTokens"
     skillTestToResolveChaosTokens <- o .: "toResolveChaosTokens"
     skillTestResult <- o .: "result"
+    skillTestResultForced <- o .:? "resultForced" .!= False
     skillTestCommittedCards <- o .: "committedCards"
     skillTestSource <- o .: "source"
     skillTestTarget <- o .: "target"

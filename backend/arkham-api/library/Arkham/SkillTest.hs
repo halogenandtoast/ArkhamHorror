@@ -66,6 +66,9 @@ committedCardsL = lens skillTestCommittedCards $ \m x -> m {skillTestCommittedCa
 resultL :: Lens' SkillTest SkillTestResult
 resultL = lens skillTestResult $ \m x -> m {skillTestResult = x}
 
+resultForcedL :: Lens' SkillTest Bool
+resultForcedL = lens skillTestResultForced $ \m x -> m {skillTestResultForced = x}
+
 typeL :: Lens' SkillTest SkillTestType
 typeL = lens skillTestType $ \m x -> m {skillTestType = x}
 

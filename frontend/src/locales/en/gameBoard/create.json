@@ -51,6 +51,9 @@
     "create": "Create",
 
     "chooseYourDeck": "Choose your deck | Choose your decks",
+    "decksChosen": "{chosen} of {total} decks chosen",
+    "seatNumber": "Investigator {number}",
+    "seatNoDeckYet": "No deck chosen yet",
     "tabooList": "Taboo List: {tabooList}",
     "useExistingDeck": "Use Existing Deck",
     "loadNewDeck": "Load New Deck",

@@ -1711,6 +1711,19 @@ h2 {
   max-width: 100%;
 }
 
+/* Two side by side leaves the label about 45px once the number field has taken
+   its 5.5rem, which clips "Physical" down to its first letter. Stack them. */
+@media (max-width: 700px) {
+  .amount-choice {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+
+  .amount-input {
+    padding: 0.75em 0.65em;
+  }
+}
+
 .amount-choice label {
   display: flex;
   align-items: center;

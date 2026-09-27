@@ -417,6 +417,8 @@ const players = computed<Player[]>(() => {
   })
 })
 
+const chosenCount = computed(() => players.value.filter((p) => p.tag === 'Chosen').length)
+
 // A challenge scenario only needs one player to use the required deck. The
 // required investigator is therefore only enforced on the final player still
 // choosing, and only if nobody else has already provided it.
@@ -447,14 +449,60 @@ const needsReply = computed(() => {
     <LogIcons />
     <div class="investigators">
       <h2 class="page-title">{{$t('create.chooseYourDeck', players.length)}}</h2>
+      <p v-if="players.length > 1" class="page-progress">
+        {{ $t('create.decksChosen', { chosen: chosenCount, total: players.length }) }}
+      </p>
       <div class="portraits">
-        <div class="investigator-row" v-for="player in players" :key="player.id">
+        <div
+          class="investigator-row"
+          :class="{ 'investigator-row--choosing': needsReply && player.id == playerId }"
+          v-for="(player, index) in players"
+          :key="player.id"
+        >
           <template v-if="player.tag === 'Chosen'">
-            <div class="seated">
-              <div class="portrait">
-                <img :src="portraitImage(player.contents)" />
+            <!-- Setup still wants something from this seat, so the investigator
+                 becomes a sidebar for the question rather than a summary. -->
+            <template v-if="question && playerId == player.contents.playerId">
+              <div class="seated">
+                <div class="portrait">
+                  <img :src="portraitImage(player.contents)" />
+                </div>
+                <div class="seated-stats">
+                  <span class="stat-chip stat-health">
+                    <svg class="icon"><use xlink:href="#icon-health"></use></svg>
+                    <span class="stat-value">{{ player.contents.health }}</span>
+                  </span>
+                  <span class="stat-chip stat-sanity">
+                    <svg class="icon"><use xlink:href="#icon-sanity"></use></svg>
+                    <span class="stat-value">{{ player.contents.sanity }}</span>
+                  </span>
+                </div>
+                <p class="seated-name">{{ player.contents.name.title }}</p>
               </div>
-              <div class="seated-stats">
+              <div class="question">
+                <UltimatumsAndBoonsQuestion
+                  v-if="isUltimatumsAndBoonsQuestion"
+                  :game="game"
+                  :playerId="playerId"
+                  @choose="chooseChoice"
+                />
+                <template v-else>
+                  <h2 v-if="questionLabel" class="title question-label">{{ questionLabel }}</h2>
+                  <Question :game="game" :playerId="playerId" @choose="chooseChoice" />
+                </template>
+              </div>
+            </template>
+            <!-- Settled: nothing is being asked, so the seat reads across the
+                 row at the same height as one still waiting for a deck. -->
+            <div v-else class="seated-summary">
+              <img class="seated-summary-portrait" :src="portraitImage(player.contents)" :alt="player.contents.name.title" />
+              <div class="seated-summary-text">
+                <span class="seated-summary-name">{{ player.contents.name.title }}</span>
+                <span v-if="tabooList(player.contents)" class="taboo-list">
+                  {{$t('create.tabooList', {tabooList: tabooList(player.contents)})}}
+                </span>
+              </div>
+              <div class="seated-summary-stats">
                 <span class="stat-chip stat-health">
                   <svg class="icon"><use xlink:href="#icon-health"></use></svg>
                   <span class="stat-value">{{ player.contents.health }}</span>
@@ -464,28 +512,10 @@ const needsReply = computed(() => {
                   <span class="stat-value">{{ player.contents.sanity }}</span>
                 </span>
               </div>
-              <p class="seated-name">{{ player.contents.name.title }}</p>
-            </div>
-            <div v-if="question && playerId == player.contents.playerId" class="question">
-              <UltimatumsAndBoonsQuestion
-                v-if="isUltimatumsAndBoonsQuestion"
-                :game="game"
-                :playerId="playerId"
-                @choose="chooseChoice"
-              />
-              <template v-else>
-                <h2 v-if="questionLabel" class="title question-label">{{ questionLabel }}</h2>
-                <Question :game="game" :playerId="playerId" @choose="chooseChoice" />
-              </template>
-            </div>
-            <div v-else>
-              <div v-if="tabooList(player.contents)" class="taboo-list">
-                {{$t('create.tabooList', {tabooList: tabooList(player.contents)})}}
-              </div>
             </div>
           </template>
-          <template v-else>
-            <div v-if="needsReply && player.id == playerId" class="deck-main">
+          <template v-else-if="needsReply && player.id == playerId">
+            <div class="deck-main">
               <div v-if="deckRequirements.length" class="deck-requirements-card">
                 <div class="deck-requirements-title">Deck Requirements</div>
                 <div class="deck-requirements-body">
@@ -640,6 +670,17 @@ const needsReply = computed(() => {
               </div>
             </div>
           </template>
+          <template v-else>
+            <div class="seat-pending">
+              <div class="seat-pending-portrait">
+                <img :src="imgsrc('slots/ally.png')" alt="" />
+              </div>
+              <div class="seat-pending-text">
+                <span class="seat-pending-name">{{ $t('create.seatNumber', { number: index + 1 }) }}</span>
+                <span class="seat-pending-status">{{ $t('create.seatNoDeckYet') }}</span>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -676,10 +717,66 @@ const needsReply = computed(() => {
   letter-spacing: 0.04em;
 }
 
+.page-progress {
+  margin: -6px 0 12px 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .portraits {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* A seat nobody has filled yet still belongs to the table, so it keeps the row
+   shape rather than collapsing to an empty box -- but it is secondary, so it
+   sits at a fraction of the height of the seat actually being chosen for. */
+.seat-pending {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.55;
+}
+
+.seat-pending-portrait {
+  width: 40px;
+  height: 58px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+
+  img {
+    width: 55%;
+    opacity: 0.5;
+  }
+}
+
+.seat-pending-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.seat-pending-name {
+  font-size: 0.86em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.seat-pending-status {
+  font-size: 0.74em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .investigator-row {
@@ -690,6 +787,14 @@ const needsReply = computed(() => {
   display: flex;
   gap: 12px;
   align-items: flex-start;
+
+  /* The one seat the table is waiting on you for. Same accent the deck list
+     uses for a selected deck, so "this is the thing to act on" reads the same
+     way at both levels. */
+  &.investigator-row--choosing {
+    background: rgba(110, 134, 64, 0.10);
+    border-color: rgba(110, 134, 64, 0.40);
+  }
 
   & :deep(.choices) {
     margin: 0;
@@ -767,18 +872,12 @@ const needsReply = computed(() => {
   gap: 8px;
 }
 
-.seated-stats {
-  display: flex;
-  gap: 6px;
-}
-
-.seated-stats .stat-chip {
-  flex: 1;
+.stat-chip {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
-  padding: 5px 0;
+  padding: 5px 10px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
@@ -786,7 +885,7 @@ const needsReply = computed(() => {
   font-weight: 700;
 }
 
-.seated-stats .icon {
+.stat-chip .icon {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -798,12 +897,64 @@ const needsReply = computed(() => {
 .stat-health .icon { color: #f88; }
 .stat-sanity .icon { color: #8af; }
 
+.seated-stats {
+  display: flex;
+  gap: 6px;
+
+  .stat-chip {
+    flex: 1;
+    padding: 5px 0;
+  }
+}
+
 .seated-name {
   margin: 0;
   font-size: 0.7em;
   line-height: 1.3;
   text-align: center;
   color: rgba(255, 255, 255, 0.55);
+}
+
+/* A seat that is done: same height as one still waiting, so the row being
+   acted on is the only tall thing on the page. */
+.seated-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.seated-summary-portrait {
+  width: 40px;
+  height: 58px;
+  flex-shrink: 0;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 4px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.45);
+}
+
+.seated-summary-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.seated-summary-name {
+  font-size: 0.94em;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seated-summary-stats {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .portrait {

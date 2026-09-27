@@ -2065,7 +2065,17 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
   SetLayout layout -> do
     pure $ a & locationLayoutL .~ layout
   ChooseLeadInvestigator -> do
-    getInvestigators >>= \case
+    -- A simultaneous "each investigator is defeated" queues one defeat per
+    -- investigator, and the first one to resolve pushes this message ahead of the
+    -- rest. Promoting a candidate who is already queued to be defeated makes the
+    -- promotion stick once the queue drains, so the resolution ends up addressing
+    -- whoever happened to be defeated last instead of the lead (#5779). Wait
+    -- behind the queued eliminations instead: by then there is nobody left and
+    -- the recorded lead stands. Should one of those defeats be prevented after
+    -- all, the deferred re-check still promotes the survivor.
+    pending <- lift getPendingEliminations
+    candidates <- filter (`notElem` pending) <$> getInvestigators
+    case candidates of
       [x] -> push $ ChoosePlayer x SetLeadInvestigator
       xs@(x : _) -> do
         questionLabel' "chooseLeadInvestigator" x
@@ -2073,6 +2083,7 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
             [ PortraitLabel iid [ChoosePlayer iid SetLeadInvestigator]
             | iid <- xs
             ]
+      [] | notNull pending -> lift $ insertAfterLastMatching [ChooseLeadInvestigator] isPendingElimination
       [] -> pure ()
     pure a
   ReportXp breakdown -> do

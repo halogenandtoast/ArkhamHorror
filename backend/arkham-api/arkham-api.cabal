@@ -8642,6 +8642,7 @@ test-suite spec
       Arkham.Event.Events.WorkingAHunchSpec
       Arkham.Game.ChooseDecksSpec
       Arkham.Game.DiffSpec
+      Arkham.Game.LeadInvestigatorSpec
       Arkham.Game.PendingGameOptionsSpec
       Arkham.Game.ResetGameSpec
       Arkham.GameSpec

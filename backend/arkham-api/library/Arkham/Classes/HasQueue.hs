@@ -269,6 +269,19 @@ insertAfterMatching msgs p = withQueue_ \queue ->
         (x : xs) -> before <> (x : msgs <> xs)
         _ -> error $ "no matching message:\n" <> prettyCallStack callStack
 
+{- | 'insertAfterMatching', anchored on the LAST match instead of the first, and
+a no-op when nothing matches.
+
+Waiting behind a batch of queued messages means waiting behind all of them, not
+just the one nearest the front.
+-}
+insertAfterLastMatching
+  :: (HasQueue msg m, QueueWrapper msg) => [msg] -> (msg -> Bool) -> m ()
+insertAfterLastMatching msgs p = withQueue_ \queue ->
+  case break (matchesQueued p) (reverse queue) of
+    (_, []) -> queue
+    (after, anchor : before) -> reverse before <> (anchor : msgs) <> reverse after
+
 insertAfterMatchingOrNow
   :: (HasQueue msg m, QueueWrapper msg) => [msg] -> (msg -> Bool) -> m ()
 insertAfterMatchingOrNow msgs p = do

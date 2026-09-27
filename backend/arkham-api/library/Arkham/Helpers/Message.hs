@@ -835,3 +835,31 @@ createTreacheryAt c placement = do
 
 createTreacheryAt_ :: MonadRandom m => Card -> Placement -> m Message
 createTreacheryAt_ c placement = snd <$> createTreacheryAt c placement
+
+{- | The investigator an already-queued elimination is going to take out, if this
+message is one. X. qualified throughout, because "Arkham.Matcher" has window
+matchers by the same names.
+-}
+pendingElimination :: Message -> Maybe InvestigatorId
+pendingElimination = \case
+  X.InvestigatorDefeated _ iid -> Just iid
+  X.InvestigatorWhenDefeated _ iid -> Just iid
+  X.InvestigatorIsDefeated _ iid -> Just iid
+  X.InvestigatorKilled _ iid -> Just iid
+  X.InvestigatorWhenEliminated _ iid _ -> Just iid
+  X.InvestigatorEliminated iid -> Just iid
+  X.Resign iid -> Just iid
+  X.InvestigatorResigned iid -> Just iid
+  _ -> Nothing
+
+isPendingElimination :: Message -> Bool
+isPendingElimination = isJust . pendingElimination
+
+{- | Every investigator with an elimination still waiting in the queue.
+
+"Each investigator is defeated" queues one defeat per investigator, so the first
+one to resolve still sees the others as candidates for anything that asks who is
+left standing.
+-}
+getPendingEliminations :: HasQueue Message m => m [InvestigatorId]
+getPendingEliminations = mapMaybe (pendingElimination . stripQueueWrappers) <$> peekQueue

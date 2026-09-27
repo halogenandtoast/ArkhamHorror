@@ -92,9 +92,9 @@ computeCommitCosts iid cards = do
 instance RunMessage SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     RepeatSkillTest sid skillTestId' | skillTestId' == skillTestId -> do
-      push
-        $ BeginSkillTestWithPreMessages' []
-        $ ( buildSkillTest
+      let
+        repeated =
+          ( buildSkillTest
               sid
               skillTestInvestigator
               skillTestSource
@@ -103,9 +103,29 @@ instance RunMessage SkillTest where
               skillTestBaseValue
               (fromMaybe skillTestDifficulty skillTestOriginalDifficulty)
           )
-          { skillTestAction = skillTestAction
-          , skillTestDifficultyIncrease = skillTestDifficultyIncrease
-          }
+            { skillTestAction = skillTestAction
+            , skillTestDifficultyIncrease = skillTestDifficultyIncrease
+            }
+      -- A repeat is not the declaring card's own test, so it is deferred here rather than
+      -- by 'handleSkillTestNesting': the card's tail must not ride along with it, or an
+      -- event that repeats a test (Live and Learn) discards only after the repeat ends.
+      inSkillTestWindow <- fromQueue $ elem EndSkillTestWindow
+      if inSkillTestWindow
+        then do
+          -- the test is performed again, not responded to twice, so the window it was
+          -- declared in is over: drop the re-check 'WindowAsk' queued behind the ask, or a
+          -- second Live and Learn is offered against a test that is already being repeated
+          let
+            endedThisTest w = case windowType w of
+              Window.SkillTestEnded st -> st.id == skillTestId
+              _ -> False
+          removeAllMessagesMatching \case
+            Do (CheckWindows ws) -> any endedThisTest ws
+            _ -> False
+          -- while this test is still current, so 'EffectNextSkillTestWindow' re-points
+          push $ NextSkillTest sid
+          insertAfterMatching [BeginSkillTestWithPreMessages' [] repeated] (== EndSkillTestWindow)
+        else push $ BeginSkillTestWithPreMessages' [] repeated
       pure s
     IncreaseSkillTestDifficulty n -> do
       -- see: faqs/drawing-thin

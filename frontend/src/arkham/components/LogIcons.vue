@@ -13,3 +13,12 @@
     </defs>
   </svg>
 </template>
+
+<style scoped>
+/* A `<defs>` sprite for `<use>` to reference, never drawn itself. Without this
+   it lays out as a 300x150 replaced element and pushes the page down; every
+   host used to have to remember its own `.hidden` rule. */
+.hidden {
+  display: none;
+}
+</style>

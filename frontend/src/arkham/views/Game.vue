@@ -496,10 +496,13 @@ const drawSpotlight = ref<DrawSpotlightEntry | null>(null)
 const previewedCardIds = ref<ReadonlySet<string>>(new Set())
 const flyingCardIds = ref<ReadonlySet<string>>(new Set())
 
-function showDrawSpotlight(entry: DrawSpotlightEntry) {
-  if (entry.cards.length === 0) return
+/* Returns whether the overlay actually opened, so a caller holding the lock on
+ * its behalf knows to let go again. */
+function showDrawSpotlight(entry: DrawSpotlightEntry): boolean {
+  if (entry.cards.length === 0) return false
   drawSpotlight.value = entry
   uiLock.value = true
+  return true
 }
 
 type TransitionDocument = Document & {
@@ -1072,7 +1075,7 @@ const qPop = () => {
   return resultQueue.value[qHead++]
 }
 let decoding = false
-let pendingUpdate: string | null = null
+let pendingUpdate: { payload: string; queued: boolean } | null = null
 
 function entitiesMoved(previous: Arkham.Game, current: Arkham.Game) {
   const placementChanged = (
@@ -1106,9 +1109,19 @@ function applyGameUpdate(updatedGame: Arkham.Game, locked: boolean) {
   }
 }
 
-function scheduleApplyUpdate(payload: string) {
+/* `queued` says whether the caller already put this update on the replay queue,
+ * which it does when the lock was held the moment the update arrived.
+ *
+ * The distinction matters because the lock is sampled again below, after the
+ * decode: an overlay can take it in between -- the draw spotlight does exactly
+ * that, from its own decode callback -- and then an update that arrived unlocked,
+ * and so was never queued, gets its question blanked with nothing left to restore
+ * it. That is a board that cannot be clicked, with no error, until a refetch. So
+ * when the lock is found to have been taken meanwhile, the update is queued here
+ * instead. */
+function scheduleApplyUpdate(payload: string, queued: boolean) {
   if (decoding) {
-    pendingUpdate = payload
+    pendingUpdate = { payload, queued }
     return
   }
   decoding = true
@@ -1116,6 +1129,7 @@ function scheduleApplyUpdate(payload: string) {
     .decodePromise(payload)
     .then((updatedGame) => {
       const locked = uiLock.value
+      if (locked && !queued) qPush({ tag: 'GameUpdate', contents: payload })
       // Behind a revelation: refresh the board but keep the question hidden so the
       // player can't act until they dismiss it. On unlock the queued GameUpdate is
       // replayed (locked === false) and restores the real question + side effects.
@@ -1175,7 +1189,7 @@ function scheduleApplyUpdate(payload: string) {
       if (pendingUpdate) {
         const p = pendingUpdate
         pendingUpdate = null
-        scheduleApplyUpdate(p)
+        scheduleApplyUpdate(p.payload, p.queued)
       }
     })
 }
@@ -1447,23 +1461,41 @@ const handleResult = (result: ServerResult) => {
       return
     case 'GameDrewCards': {
       if (props.spectate) return
-      /* Unlike the reveal cases, the preference is read BEFORE the lock is
-       * taken: a draw nobody asked to see must not stall this client's queue
-       * even for the length of a decode. */
+      /* The one preference that costs nothing is read BEFORE the lock is taken: a
+       * draw nobody asked to see must not stall this client's queue even for the
+       * length of a decode. */
       if (settings.drawSpotlight === 'off') return
       if (uiLock.value) {
         qPush(result)
         return
       }
+      /* Everything past here takes the lock FIRST and releases it on the paths
+       * that turn out not to open the spotlight, exactly as GameCardOnly does.
+       * Deferring the lock to the decode callback left a window in which this
+       * client looked unlocked while a spotlight was already on its way: another
+       * result popped off the replay queue could take the lock for its own overlay,
+       * and a GameUpdate handled in that window blanked its question against a lock
+       * that was not held when it arrived. */
+      uiLock.value = true
       gameDrewCardsDecoder
         .decodePromise(result as any)
         .then((r) => {
-          if (!(solo.value === true || r.player === playerId.value)) return
-          if (settings.drawSpotlight === 'upkeep' && r.kind !== 'upkeep') return
-          showDrawSpotlight({ title: format(r.title), cards: r.cards })
+          if (!(solo.value === true || r.player === playerId.value)) {
+            uiLock.value = false
+            return
+          }
+          if (settings.drawSpotlight === 'upkeep' && r.kind !== 'upkeep') {
+            uiLock.value = false
+            return
+          }
+          // Re-takes the lock, and leaves it alone if it has nothing to show.
+          if (!showDrawSpotlight({ title: format(r.title), cards: r.cards })) {
+            uiLock.value = false
+          }
         })
         .catch((e) => {
           console.error(e)
+          uiLock.value = false
         })
       return
     }
@@ -1481,14 +1513,16 @@ const handleResult = (result: ServerResult) => {
     case 'PhaseChanged':
       showPhaseNotification(result.contents as Phase)
       return
-    case 'GameUpdate':
+    case 'GameUpdate': {
       // Flush the latest state onto the board even while a revelation/modal holds
       // the UI lock, so the table behind it reflects the current situation instead
       // of freezing on the pre-revelation state (issue #4817). Keep it queued so
       // the pending question is only restored once every revelation is dismissed.
-      if (uiLock.value) qPush(result)
-      scheduleApplyUpdate(result.contents)
+      const queued = uiLock.value
+      if (queued) qPush(result)
+      scheduleApplyUpdate(result.contents, queued)
       return
+    }
   }
 }
 

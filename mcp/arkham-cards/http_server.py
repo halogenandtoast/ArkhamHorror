@@ -248,7 +248,8 @@ class Handler(BaseHTTPRequestHandler):
                     "resource_documentation": AUTH_DOCS_URL or None,
                     "note": (
                         "Authenticate with a personal API key: Settings -> API keys in the "
-                        "Arkham Horror web app, then send `Authorization: Bearer ak_...`. "
+                        "Arkham Horror web app (admin accounts only while this settles), then "
+                        "send `Authorization: Bearer ak_...`. "
                         "No authorization server is offered yet, so there is no OAuth flow "
                         "to follow."
                     ),
@@ -283,7 +284,7 @@ class Handler(BaseHTTPRequestHandler):
         if not authorization:
             return self._unauthorized(
                 "Send your Arkham Horror API key as `Authorization: Bearer ak_...`. "
-                "Make one under Settings -> API keys."
+                "Make one under Settings -> API keys, which is admin-only while this settles."
             )
 
         fingerprint = library.Library(authorization).fingerprint

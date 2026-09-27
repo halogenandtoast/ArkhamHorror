@@ -260,6 +260,20 @@ instance Yesod App where
       AdminP _ -> do
         _ <- getAdminUser
         pure Authorized
+      -- API keys are admin-only while they settle. Gated here rather than in the
+      -- handlers to match the admin routes above, and because a gate a new
+      -- endpoint has to remember to apply is a gate that will be forgotten.
+      --
+      -- `self` is deliberately excluded: it is the one endpoint a *key* calls
+      -- about itself, so the MCP server can ask what its credential may do and
+      -- offer only the tools it can use. `getAdminUser` goes through
+      -- `getRequestUserId`, which is JWT-only, so gating it would 401 every key
+      -- and take that away.
+      ApiV1ApiKeysP keys -> case keys of
+        ApiV1ApiKeySelfR -> pure Authorized
+        _ -> do
+          _ <- getAdminUser
+          pure Authorized
       ApiV1ArkhamP arkham -> case arkham of
         ApiV1ArkhamGamesP games -> case games of
           ApiV1ArkhamGamesImportR -> pure Authorized

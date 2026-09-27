@@ -107,7 +107,8 @@ class Library:
         if not authorization or not authorization.strip():
             raise Unauthorized(
                 "This server needs your Arkham Horror API key. Send it as "
-                "`Authorization: Bearer ak_...` -- make one under Settings -> API keys."
+                "`Authorization: Bearer ak_...` -- make one under Settings -> API keys,\n"
+                "which is admin-only while this settles."
             )
         self.authorization = authorization.strip()
         self._cache: dict[str, tuple[float, Any]] = {}

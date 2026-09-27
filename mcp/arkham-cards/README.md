@@ -145,7 +145,8 @@ restart, exactly as for the app.
 ### The credential, and what this process must not hold
 
 Callers authenticate with a **personal API key** (Settings → API keys in the web
-app), sent as `Authorization: Bearer ak_...`. Scoped (`cards:read`,
+app — **admin accounts only** while this settles; the routes are gated in
+`Foundation.isAuthorized` and the tab is hidden to match), sent as `Authorization: Bearer ak_...`. Scoped (`cards:read`,
 `cards:write`), revocable on its own, and it records when it was last used — none
 of which the account token is, which is why pasting *that* into a client is the
 wrong answer.

@@ -25,30 +25,38 @@ const language = ref(localStorage.getItem('language') || locale.value)
 const beta = ref(props.user.beta ? 'On' : 'Off')
 const phaseTransitionNotifications = ref(props.user.phaseTransitionNotifications === true)
 const showDeleteConfirm = ref(false)
-const tabs = ['account', 'features', 'apiKeys'] as const
-const activeTab = ref<(typeof tabs)[number]>('account')
+const ALL_TABS = ['account', 'features', 'apiKeys'] as const
+type Tab = (typeof ALL_TABS)[number]
+
+/* API keys are admin-only while they settle. The endpoints are gated in
+ * Foundation's isAuthorized too, so this is the UI agreeing with the server
+ * rather than being the gate itself. */
+const tabs = computed<readonly Tab[]>(() =>
+  ALL_TABS.filter((tab) => tab !== 'apiKeys' || props.user.admin),
+)
+const activeTab = ref<Tab>('account')
 
 function navigateTabs(event: KeyboardEvent) {
-  const index = tabs.indexOf(activeTab.value)
+  const index = tabs.value.indexOf(activeTab.value)
   let next: number
   switch (event.key) {
     case 'ArrowRight':
-      next = (index + 1) % tabs.length
+      next = (index + 1) % tabs.value.length
       break
     case 'ArrowLeft':
-      next = (index + tabs.length - 1) % tabs.length
+      next = (index + tabs.value.length - 1) % tabs.value.length
       break
     case 'Home':
       next = 0
       break
     case 'End':
-      next = tabs.length - 1
+      next = tabs.value.length - 1
       break
     default:
       return
   }
   event.preventDefault()
-  activeTab.value = tabs[next]
+  activeTab.value = tabs.value[next]
   document.getElementById(`settings-tab-${activeTab.value}`)?.focus()
 }
 
@@ -254,7 +262,7 @@ const updateLanguage = async (a: Event) => {
       </div>
 
       <div
-        v-show="activeTab === 'apiKeys'"
+        v-if="user.admin && activeTab === 'apiKeys'"
         id="settings-panel-apiKeys"
         class="column settings-panel"
         role="tabpanel"

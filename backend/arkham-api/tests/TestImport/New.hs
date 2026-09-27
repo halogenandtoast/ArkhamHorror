@@ -873,6 +873,42 @@ assertNotTarget (toTarget -> target) = do
     Nothing -> pure ()
     Just _ -> expectationFailure $ "expected not to find target " <> show target <> " but did"
 
+{- | Assert the open question does not offer to /play/ this card.
+
+Narrower than 'assertNotTarget', which only sees the target: a card can sit under
+the same 'CardIdTarget' as a commit option, so an event with a skill icon (Live
+and Learn) is a legitimate target of a commit window while not being on offer as
+a reaction.
+-}
+assertNotPlayable :: (HasCallStack, IsCard card) => card -> TestAppT ()
+assertNotPlayable (toCardId -> cardId) = do
+  questionMap <- gameQuestion <$> getGame
+  let
+    choices = case mapToList questionMap of
+      [(_, question)] -> case stripQuestionWrappers question of
+        ChooseOne msgs -> msgs
+        PlayerWindowChooseOne msgs -> msgs
+        ChooseN _ msgs -> msgs
+        _ -> []
+      _ -> []
+    isPlayOf = \case
+      InitiatePlayCard _ c _ _ _ _ -> toCardId c == cardId
+      InitiatePlayCardWithWindows _ c _ _ _ _ -> toCardId c == cardId
+      PlayCard _ c _ _ _ _ -> toCardId c == cardId
+      _ -> False
+    playsCard = \case
+      TargetLabel _ msgs -> any isPlayOf msgs
+      _ -> False
+
+  case find playsCard choices of
+    Nothing -> pure ()
+    Just choice ->
+      expectationFailure
+        $ "expected "
+        <> show cardId
+        <> " not to be playable, but found:\n\n"
+        <> show choice
+
 unlessSetting :: (Settings -> Bool) -> TestAppT () -> TestAppT ()
 unlessSetting f body = do
   setting <- getSettings

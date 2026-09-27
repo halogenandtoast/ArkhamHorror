@@ -79,8 +79,10 @@ spec = describe "Live and Learn" $ do
     -- 1 intellect vs shroud 6, failed by 5
     chooseTarget liveAndLearn1
     -- repeating the test closes the window it was declared in, so the second copy is
-    -- not on offer yet and the repeat is already under way
-    assertNotTarget liveAndLearn2
+    -- not on offer yet and the repeat is already under way. It is still a legal
+    -- commit for the repeat (it has a wild icon), so this has to check playability
+    -- rather than the target.
+    assertNotPlayable liveAndLearn2
     asDefs self.discard `shouldReturn` [Events.liveAndLearn]
     startSkillTest
     applyResults

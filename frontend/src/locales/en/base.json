@@ -492,6 +492,8 @@
     "search": "Search…",
     "useThisDeck": "Use this deck",
     "alreadyPlayedThisCampaign": "This investigator has already played in this campaign",
+    "investigatorAlreadyChosen": "This investigator has already been chosen",
+    "investigatorInAnotherScenario": "This investigator is already playing another scenario in this campaign",
     "randomBasicWeaknessPoolTooltip": "Adjust which products are used when randomly assigning this deck's basic weakness."
   },
   "campaign": {

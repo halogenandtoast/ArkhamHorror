@@ -4,7 +4,7 @@ import { computed, ref, inject, watch, nextTick } from 'vue'
 import type { Game } from '@/arkham/types/Game';
 import { fetchDecks } from '@/arkham/api'
 import { cardImg, imgsrc, type InvestigatorClass } from '@/arkham/helpers'
-import { stripCardCodePrefix } from '@/arkham/customCards'
+import { bareCardCode, customCardDef, isCustomCardCode, stripCardCodePrefix } from '@/arkham/customCards'
 import { overlayIsEmpty } from '@/arkham/deckOverlay'
 import { hasLibraryCards, loadLibrary } from '@/arkham/customCardLibrary'
 import { portraitImage as portraitImageHelper } from '@/arkham/cardImages'
@@ -17,6 +17,7 @@ import Question from '@/arkham/components/Question.vue';
 import OverlayEditor, { type DeckOverlay } from '@/arkham/components/debug/OverlayEditor.vue';
 import { storeToRefs } from 'pinia';
 import { useSettings } from '@/stores/settings';
+import { useDbCardStore } from '@/stores/dbCards';
 import UltimatumsAndBoonsQuestion from '@/arkham/components/UltimatumsAndBoonsQuestion.vue';
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import NewDeck from '@/arkham/components/NewDeck.vue'
@@ -25,6 +26,7 @@ import { useI18n } from 'vue-i18n'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
 
 const { t } = useI18n()
+const dbCards = useDbCardStore()
 
 const decks = ref<Arkham.Deck[]>([])
 const ready = ref(false)
@@ -260,6 +262,43 @@ function deckUsedThisCampaign(deckList: SelectableDeckList): boolean {
   return usedInvestigators.value.includes(deckInvestigatorCode(deckList))
 }
 
+/* Who an investigator is, rather than which printing of them you own: a
+ * parallel front and the original are the same person and cannot both sit at
+ * the table. Game state serialises codes with a leading 'c' while a decklist
+ * carries the bare code, so neither side can be compared raw -- both resolve
+ * through the card store to a name instead. */
+function investigatorIdentity(cardCode: string): string {
+  if (isCustomCardCode(cardCode)) {
+    return (customCardDef(cardCode)?.name?.title ?? bareCardCode(cardCode)).toLowerCase()
+  }
+  const code = bareCardCode(cardCode)
+  return (dbCards.getDbCard(code)?.real_name ?? code).toLowerCase()
+}
+
+const seatedIdentities = computed(
+  () => new Set(Object.values(props.game.investigators).map((i) => investigatorIdentity(i.cardCode)))
+)
+
+const otherScenarioIdentities = computed(
+  () => new Set(Object.values(props.game.otherInvestigators).map((i) => investigatorIdentity(i.id)))
+)
+
+function deckInvestigatorTaken(deckList: SelectableDeckList): boolean {
+  return seatedIdentities.value.has(investigatorIdentity(deckInvestigatorCode(deckList)))
+}
+
+// Anything the table cannot seat: the row dims and its "use" button is dead,
+// rather than letting the pick through to an error.
+function deckUnavailable(deckList: SelectableDeckList): boolean {
+  return deckUsedThisCampaign(deckList) || deckInvestigatorTaken(deckList)
+}
+
+function deckUnavailableReason(deckList: SelectableDeckList): string | undefined {
+  if (deckUsedThisCampaign(deckList)) return t('chooseDeck.alreadyPlayedThisCampaign')
+  if (deckInvestigatorTaken(deckList)) return t('chooseDeck.investigatorAlreadyChosen')
+  return undefined
+}
+
 function deckError(deckList: SelectableDeckList): string | null {
   if (deckUsedThisCampaign(deckList)) {
     return t('chooseDeck.alreadyPlayedThisCampaign')
@@ -274,21 +313,12 @@ function deckError(deckList: SelectableDeckList): string | null {
   }, t, { isLastPlayer: isLastPlayerChoosing.value })
   if (restrictionError) return restrictionError
 
-  const investigator = deckInvestigatorCode(deckList)
-  const alreadyTaken = Object.values(props.game.investigators).some((i) => {
-    return i.id === investigator
-  })
-
-  if (alreadyTaken) {
-    return 'This investigator is already taken'
+  if (deckInvestigatorTaken(deckList)) {
+    return t('chooseDeck.investigatorAlreadyChosen')
   }
 
-  const inOtherScenario = Object.values(props.game.otherInvestigators).some((i) => {
-    return i.id === investigator
-  })
-
-  if (inOtherScenario) {
-    return 'This investigator is already taken in this campaign'
+  if (otherScenarioIdentities.value.has(investigatorIdentity(deckInvestigatorCode(deckList)))) {
+    return t('chooseDeck.investigatorInAnotherScenario')
   }
 
   return null
@@ -553,8 +583,8 @@ const needsReply = computed(() => {
                   <template v-for="deck in filteredDecks" :key="deck.id">
                     <div
                       class="deck-item"
-                      :class="[deckClass(deck), { selected: deckId === deck.id, 'has-error': deckId === deck.id && error, 'deck-item--used': deckUsedThisCampaign(deck.list) }]"
-                      v-tooltip="deckUsedThisCampaign(deck.list) ? $t('chooseDeck.alreadyPlayedThisCampaign') : undefined"
+                      :class="[deckClass(deck), { selected: deckId === deck.id, 'has-error': deckId === deck.id && error, 'deck-item--used': deckUnavailable(deck.list) }]"
+                      v-tooltip="deckUnavailableReason(deck.list)"
                       @click.prevent="deckId = deck.id"
                     >
                       <img class="deck-item-portrait" :src="cardImg(deckPortraitCode(deck))" />
@@ -592,7 +622,7 @@ const needsReply = computed(() => {
                       >
                         <font-awesome-icon icon="shuffle" />
                       </button>
-                      <button class="deck-item-use" :disabled="deckUsedThisCampaign(deck.list)" @click.stop.prevent="selectAndChoose(deck)" :title="$t('chooseDeck.useThisDeck')">
+                      <button class="deck-item-use" :disabled="deckUnavailable(deck.list)" @click.stop.prevent="selectAndChoose(deck)" :title="$t('chooseDeck.useThisDeck')">
                         <font-awesome-icon icon="chevron-right" />
                       </button>
                       <div v-if="overlayFor === deck.id && overlayOpen" class="weakness-pool-panel deck-item-weakness-pool" @click.stop>

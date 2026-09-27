@@ -30,7 +30,9 @@ instance HasAbilities LoomingGoatspawn where
       [ mkAbility a 1 $ forced $ EnemyWouldTakeDamage #when (SourceUsedBy hasSealedMoonToken) (be a)
       , mkAbility a 2
           $ triggered
-            (EnemyTakeDamage #after AnyDamageEffect (be a) (atLeast 1) AnySource)
+            ( EnemyTakeDamage #after AnyDamageEffect (be a) (atLeast 1)
+                $ NotSource (SourceIsAbility $ AbilityIs (toSource a) 2)
+            )
             (GroupClueCostRange (1, 3) Anywhere)
       ]
 

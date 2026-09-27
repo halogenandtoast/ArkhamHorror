@@ -1741,16 +1741,12 @@ instance RunMessage EnemyAttrs where
         damageAmount = damageAssignmentAmount damageAssignment
       canDamage <- sourceCanDamageEnemy eid source
       when canDamage do
-        -- Defeat is part of *dealing* damage (Rules Reference, "Dealing Damage/Horror"
-        -- step 2), and "after..." effects only execute once the triggering condition has
-        -- fully resolved (FAQ 1.4), so both after-windows sit below `Damaged` -- which
-        -- pushes AssignedDamage + checkDefeated ahead of them, #5682.
+        -- The after-windows belong to `Damaged`, which knows the amount that
+        -- survived the reductions declared in these when-windows, #5682.
         Lifted.checkWhen $ Window.WouldTakeDamage source (toTarget a) damageAmount DamageDirect
         Lifted.checkWhen $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
         Lifted.checkWhen $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
         push $ Damaged (EnemyTarget eid) damageAssignment
-        Lifted.checkAfter $ Window.DealtDamage source damageEffect (toTarget a) damageAmount
-        Lifted.checkAfter $ Window.TakeDamage source damageEffect (toTarget a) damageAmount
       pure a
     Damaged (EnemyTarget eid) damageAssignment'' | eid == enemyId -> do
       let source = damageAssignment''.source
@@ -1774,6 +1770,14 @@ instance RunMessage EnemyAttrs where
           push $ AssignedDamage (toTarget a) amount' 0
           unless damageAssignment'.delayed do
             push $ checkDefeated source eid
+          -- Damage reduced away was never dealt, so nothing happened "after" it.
+          -- Defeat is part of *dealing* damage (Rules Reference, "Dealing
+          -- Damage/Horror" step 2) and "after..." effects only execute once the
+          -- triggering condition has fully resolved (FAQ 1.4), so both windows sit
+          -- below the AssignedDamage + checkDefeated pushed above, #5682.
+          when (amount' > 0) do
+            Lifted.checkAfter $ Window.DealtDamage source damageAssignment'.effect (toTarget a) amount'
+            Lifted.checkAfter $ Window.TakeDamage source damageAssignment'.effect (toTarget a) amount'
           pure $ a & assignedDamageL %~ insertWith combine source damageAssignment'
         else pure a
     CheckDefeated source (isTarget a -> True) | not enemyDefeated -> do

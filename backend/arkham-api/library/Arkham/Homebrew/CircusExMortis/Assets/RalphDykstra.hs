@@ -3,6 +3,7 @@ module Arkham.Homebrew.CircusExMortis.Assets.RalphDykstra (ralphDykstra) where
 import Arkham.Ability
 import Arkham.Asset.Import.Lifted hiding (AssetExhausted)
 import Arkham.Classes.HasGame (HasGame)
+import Arkham.Criteria qualified as Criteria
 import Arkham.GameValue (GameValue (..))
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Location (getLocationOf)
@@ -20,7 +21,10 @@ ralphDykstra = asset RalphDykstra Cards.ralphDykstra
 instance HasAbilities RalphDykstra where
   getAbilities (RalphDykstra attrs) =
     [ groupLimit PerRound
-        $ restricted attrs 1 (thisExists attrs (not_ AssetExhausted) <> OnSameLocation)
+        $ restricted
+          attrs
+          1
+          (thisExists attrs (not_ AssetExhausted) <> OnSameLocation <> Criteria.CardWithRemovableDoomExists)
         $ freeTrigger (GroupClueCost (PerPlayer 1) YourLocation)
     ]
 

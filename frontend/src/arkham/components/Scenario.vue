@@ -417,6 +417,14 @@ const hasAnyOffset = computed(() =>
 // "into" the grid (e.g. a bottom-row cell nudged up) shouldn't grow padding.
 const layoutPadding = ref({ left: 0, right: 0, top: 0, bottom: 0 })
 
+// A card placed *between* two locations (Broken Couplings) is drawn centred on
+// the connection, so the default gutter leaves it sitting on top of both cards
+// and everything they hold. Widen every gutter while such a card is in play --
+// it is 70px in grid coordinates, so this clears it with room on either side.
+const gridGap = computed(() =>
+  Object.values(props.game.treacheries).some(t => t.placement.tag === 'BetweenLocations') ? 110 : 20
+)
+
 async function updateLayoutPadding() {
   await nextTick()
   const grid = (locationMap.value as any)?.$el ?? locationMap.value as HTMLElement | null
@@ -433,8 +441,8 @@ async function updateLayoutPadding() {
     const userOffset = pendingOffsets.value[id] ?? locationOffsets.value[id] ?? { x: 0, y: 0 }
     const gridOffset = locationGridOffsets.value[id] ?? { column: 0, row: 0 }
     allOffsets[id] = {
-      x: userOffset.x + gridOffset.column * (cellDimensions.value.w + 20),
-      y: userOffset.y + gridOffset.row * (cellDimensions.value.h + 20),
+      x: userOffset.x + gridOffset.column * (cellDimensions.value.w + gridGap.value),
+      y: userOffset.y + gridOffset.row * (cellDimensions.value.h + gridGap.value),
     }
   }
 
@@ -492,8 +500,8 @@ function locationOffsetStyle(location: { id: string }) {
   const userOffset = effectiveOffset(location.id)
   const gridOffset = locationGridOffsets.value[location.id] ?? { column: 0, row: 0 }
   const canonical = {
-    x: userOffset.x + gridOffset.column * (cellDimensions.value.w + 20),
-    y: userOffset.y + gridOffset.row * (cellDimensions.value.h + 20),
+    x: userOffset.x + gridOffset.column * (cellDimensions.value.w + gridGap.value),
+    y: userOffset.y + gridOffset.row * (cellDimensions.value.h + gridGap.value),
   }
   // Apply the user's current rotation so the offset moves with the rotated
   // layout instead of staying in absolute screen space.
@@ -1320,7 +1328,7 @@ const locationStyles = computed(() => {
   const mobileEdgePadding = isMobile.value ? 140 : 0
   return {
     display: 'grid',
-    gap: '20px',
+    gap: `${gridGap.value}px`,
     'grid-template-areas': gridAreas.value ?? '',
     gridAutoColumns: 'max-content',
     gridAutoRows: 'max-content',

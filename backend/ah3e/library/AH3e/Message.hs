@@ -76,6 +76,8 @@ data Message
   | MoveDirectly InvestigatorId SpaceId
   | EnterSpace InvestigatorId SpaceId
   | EngageMonster InvestigatorId CardId
+  | -- | the engagement itself, once anyone who could step in has decided
+    EngageMonsterNow InvestigatorId CardId
   | DisengageMonster InvestigatorId CardId
   | ExhaustMonster CardId
   | ReadyMonster CardId

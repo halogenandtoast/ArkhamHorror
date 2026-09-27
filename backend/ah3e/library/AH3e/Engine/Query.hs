@@ -106,7 +106,21 @@ skillValue :: InvestigatorId -> Skill -> GameM Int
 skillValue iid skill = do
   i <- getInvestigator iid
   d <- getInvestigatorDef iid
-  pure $ Map.findWithDefault 0 skill d.skills + Map.findWithDefault 0 skill i.focus
+  shared <- sharedFocus iid skill
+  pure $ Map.findWithDefault 0 skill d.skills + Map.findWithDefault 0 skill i.focus + shared
+
+{- | What the others in this space lend them: a card may share each skill its holder
+has focused with everyone standing there (Synergy).
+-}
+sharedFocus :: InvestigatorId -> Skill -> GameM Int
+sharedFocus iid skill = do
+  here <- investigatorSpace iid
+  others <- filter ((/= iid) . (.id)) <$> playingInvestigators
+  shares <- for [o | o <- others, isJust here, o.space == here] \o -> do
+    codes <- traverse cardCode [c | c <- o.assets, c `notElem` o.lockedAssets]
+    let sharing = any (`elem` sharesFocusedSkills) codes
+    pure (if sharing && Map.findWithDefault 0 skill o.focus > 0 then 1 else 0)
+  pure (sum shares)
 
 focusCount :: Investigator -> Int
 focusCount i = sum (Map.elems i.focus)

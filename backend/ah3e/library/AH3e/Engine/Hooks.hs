@@ -202,6 +202,45 @@ monsterIgnores mid iid = do
   angered <- uses #provoked (elem iid . Map.findWithDefault [] mid)
   pure (hidden && not d.epic && not angered)
 
+-- | What this investigator's cards add to the result of each die they roll.
+dieBonusFor :: TestState -> GameM Int
+dieBonusFor ts = do
+  i <- getInvestigator ts.investigator
+  sum <$> for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+    b <- assetBehavior cid
+    b.dieBonus cid ts.investigator ts
+
+{- | Whether a card of theirs refuses to be discarded, damage and horror included
+(Until the End of Time).
+-}
+cannotBeDiscarded :: CardId -> GameM Bool
+cannotBeDiscarded cid = (.undiscardable) <$> assetBehavior cid
+
+{- | Investigators other than this one, in the same space, who may take an engagement
+meant for them (Tommy Muldoon).
+-}
+shieldsFor :: InvestigatorId -> GameM [InvestigatorId]
+shieldsFor iid = do
+  here <- investigatorSpace iid
+  others <- filter ((/= iid) . (.id)) <$> playingInvestigators
+  fmap (map (.id))
+    $ filterM
+      ( \o -> do
+          fromCard <- hasAssetWith o.id (.mayTakeEngagement)
+          let fromSheet = (investigatorBehavior o.id).mayTakeEngagement
+          pure ((fromCard || fromSheet) && isJust here && o.space == here)
+      )
+      others
+
+-- | Cards its owner may discard to call off an attack, with their names.
+attackStoppers :: InvestigatorId -> GameM [(CardId, Text)]
+attackStoppers iid = do
+  i <- getInvestigator iid
+  fmap catMaybes $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+    b <- assetBehavior cid
+    name <- (.name) <$> getCardDef cid
+    pure $ if b.mayStopAttacks then Just (cid, name) else Nothing
+
 -- | The most focus this investigator may put on one skill, which a card may raise.
 focusPerSkillFor :: InvestigatorId -> GameM Int
 focusPerSkillFor iid = do

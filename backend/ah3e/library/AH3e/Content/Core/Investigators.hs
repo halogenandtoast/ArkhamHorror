@@ -1,4 +1,4 @@
-module AH3e.Content.Core.Investigators (investigators, cards, focusLimitFromSpells) where
+module AH3e.Content.Core.Investigators (investigators, cards, focusLimitFromSpells, sharesFocusedSkills) where
 
 import AH3e.Prelude
 import AH3e.Types.Card
@@ -15,6 +15,12 @@ skills lore influence observation strength will =
     , (Strength, strength)
     , (Will, will)
     ]
+
+{- | Cards whose holder shares each skill they have focused with the others in their
+space (Synergy). Read where skills are worked out, which cannot see behaviours.
+-}
+sharesFocusedSkills :: [CardCode]
+sharesFocusedSkills = ["synergy"]
 
 {- | Sheets whose focus limit is not a number on the card: Dexter Drake's is however
 many spells he holds.

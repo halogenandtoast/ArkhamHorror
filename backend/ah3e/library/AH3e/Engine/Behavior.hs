@@ -54,6 +54,14 @@ data AssetBehavior = AssetBehavior
   action. Offered at the manipulate-dice step; whatever limit the card prints, its
   own messages record ('MarkAssetUsed' per round, 'MarkUsedInTest' per test).
   -}
+  , undiscardable :: Bool
+  -- ^ nothing discards this card, damage and horror included
+  , dieBonus :: CardId -> InvestigatorId -> TestState -> GameM Int
+  -- ^ added to the result of each die its owner rolls for this test
+  , mayTakeEngagement :: Bool
+  -- ^ its owner may step in when a monster would engage someone in their space
+  , mayStopAttacks :: Bool
+  -- ^ its owner may discard it to disengage and exhaust what is about to attack them
   , focusPerSkill :: Int
   {- ^ how many focus its owner may put on one skill, one unless a card says more
   (Overcome All Odds)
@@ -127,6 +135,10 @@ defaultAssetBehavior =
     , afterMonsterDamaged = \_ _ _ _ -> pure []
     , afterHarm = \_ _ _ -> pure []
     , testOptions = \_ _ _ -> pure []
+    , undiscardable = False
+    , dieBonus = \_ _ _ -> pure 0
+    , mayTakeEngagement = False
+    , mayStopAttacks = False
     , focusPerSkill = 1
     , ignoredByMonsters = False
     , successOnFour = False
@@ -309,6 +321,8 @@ data InvestigatorBehavior = InvestigatorBehavior
   , reactions :: InvestigatorId -> Trigger -> GameM [Reaction]
   , testOptions :: InvestigatorId -> TestState -> GameM [Reaction]
   -- ^ what the sheet itself offers while its investigator's test resolves
+  , mayTakeEngagement :: Bool
+  -- ^ this investigator may step in when a monster would engage someone beside them
   , successOnSix :: Bool
   -- ^ only a six counts for this investigator, whatever else is in play (Rex Murphy)
   , bansConditions :: [ConditionName]
@@ -326,6 +340,7 @@ defaultInvestigatorBehavior =
     { componentActions = []
     , reactions = \_ _ -> pure []
     , testOptions = \_ _ -> pure []
+    , mayTakeEngagement = False
     , successOnSix = False
     , bansConditions = []
     , castWithDamage = False

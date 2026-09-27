@@ -9,6 +9,7 @@ module AH3e.Content (
   scenarioCatalog,
   focusLimitBonus,
   focusLimitFromSpells,
+  sharesFocusedSkills,
 ) where
 
 import AH3e.Content.Allies qualified as Allies
@@ -34,6 +35,10 @@ import Data.Map.Strict qualified as Map
 -}
 focusLimitFromSpells :: [InvestigatorId]
 focusLimitFromSpells = Investigators.focusLimitFromSpells
+
+-- | Cards that share their holder's focused skills with their space.
+sharesFocusedSkills :: [CardCode]
+sharesFocusedSkills = Investigators.sharesFocusedSkills
 
 focusLimitBonus :: CardCode -> Int
 focusLimitBonus code = Map.findWithDefault 0 code (Map.fromList Special.focusLimitBonuses)

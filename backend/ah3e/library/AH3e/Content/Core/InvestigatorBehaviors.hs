@@ -35,6 +35,8 @@ behaviors =
           , ("minh-thi-phan", allAroundYou)
           , ("norman-withers", inTheStars)
           , ("rex-murphy", familyCurse)
+          , -- Shield From Harm, the sheet's own version of what a card may do
+            ("tommy-muldoon", defaultInvestigatorBehavior & #mayTakeEngagement .~ True)
           , ("jenny-barnes", trustFund)
           ,
             ( "daniela-reyes"
@@ -66,6 +68,10 @@ behaviors =
           , ("analytical-mind", analyticalMind)
           , ("mamas-amulet", defaultAssetBehavior & #preventsOneHarmPerRound .~ True)
           , ("ol-boiler", olBoiler)
+          , ("handcuffs", handcuffs)
+          , ("mr-pawterson", defaultAssetBehavior & #mayStopAttacks .~ True)
+          , ("until-the-end-of-time", untilTheEndOfTime)
+          , ("it-all-comes-together", itAllComesTogether)
           , ("the-tower", rerollOneOrAll "the-tower" "The Tower")
           , ("astronomy-book", astronomyBook)
           , ("search-for-izzie", searchForIzzie)
@@ -144,7 +150,12 @@ behaviors =
                    )
             )
           ]
-    , customEffects = Map.fromList [("scrounge", scrounge), ("petes-guitar", petesGuitar)]
+    , customEffects =
+        Map.fromList
+          [ ("scrounge", scrounge)
+          , ("petes-guitar", petesGuitar)
+          , ("until-the-end-of-time", mendItself)
+          ]
     }
 
 afterGather :: Text -> Text -> Effect -> InvestigatorBehavior
@@ -526,3 +537,70 @@ olBoiler =
           | not (null engaged)
           ]
       _ -> pure []
+
+{- | "Once per round, after you damage, disengage, or are damaged by a non-epic human
+monster, you may defeat that monster." All three ways in are covered: what its owner
+damages, what damages them, and what comes apart from them.
+-}
+handcuffs :: AssetBehavior
+handcuffs =
+  defaultAssetBehavior
+    & #afterMonsterDamaged
+    .~ ( \cid owner mid src -> case src of
+           SourceInvestigator who | who == owner -> cuffOffer cid owner mid
+           _ -> pure []
+       )
+    & #afterHarm
+    .~ ( \cid iid plan -> case plan.source of
+           SourceMonster mid | plan.damage > 0 -> cuffOffer cid iid mid
+           _ -> pure []
+       )
+    & #reactions
+    .~ \cid -> \case
+      AfterDisengage iid mid -> cuffOffer cid iid mid >>= \ms -> pure [Reaction "handcuffs" "Handcuffs" ms | not (null ms)]
+      _ -> pure []
+
+-- | The offer itself, for a human monster that is not epic and still in play.
+cuffOffer :: CardId -> InvestigatorId -> CardId -> GameM [Message]
+cuffOffer cid iid mid = do
+  used <- usedThisRound cid iid
+  here <- uses #monsters (Map.member mid)
+  d <- monsterDef mid
+  name <- (.name) <$> getCardDef mid
+  pure
+    [ AskAboutAsset
+        iid
+        cid
+        ("Handcuffs: defeat " <> name <> "?")
+        [ Choice (DoneLabel "Skip") []
+        , Choice (TextLabel ("Defeat " <> name)) [MarkAssetUsed iid cid, DefeatMonster mid (SourceCard cid)]
+        ]
+    | not used
+    , here
+    , not d.epic
+    , "Human" `elem` d.traits
+    ]
+
+{- | "This card cannot be discarded by any means. Reckoning -- Remove one damage and
+one horror from this card."
+-}
+untilTheEndOfTime :: AssetBehavior
+untilTheEndOfTime =
+  defaultAssetBehavior
+    & #undiscardable
+    .~ True
+    & #reckoning
+    ?~ Custom "until-the-end-of-time"
+
+-- | The card mends itself, which needs the card rather than its owner.
+mendItself :: EffectCtx -> GameM ()
+mendItself ctx = for_ [cid | SourceCard cid <- [ctx.source]] \cid -> push (RecoverAsset cid 1 1)
+
+-- | "As part of a research action, add one to the result of each die you roll."
+itAllComesTogether :: AssetBehavior
+itAllComesTogether =
+  defaultAssetBehavior
+    & #dieBonus
+    .~ \_ _ ts -> pure case ts.kind of
+      ActionTest ResearchAction _ -> 1
+      _ -> 0

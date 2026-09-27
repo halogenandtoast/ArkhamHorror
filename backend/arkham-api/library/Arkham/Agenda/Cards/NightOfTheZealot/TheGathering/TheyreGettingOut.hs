@@ -8,7 +8,6 @@ import Arkham.Helpers.Query (getLead)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Move
-import Arkham.Resolution
 
 newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -32,7 +31,11 @@ instance RunMessage TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs) = runQueueT $ case msg of
     AdvanceAgenda (isSide B attrs -> True) -> do
       actSequence <- getCurrentActStep
-      push $ if actSequence `elem` [1, 2] then R3 else ScenarioResolution NoResolution
+      if actSequence `elem` [1, 2]
+        then push R3
+        else eachInvestigator \iid -> do
+          sufferPhysicalTrauma iid 1
+          investigatorDefeated attrs iid
       pure a
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       enemiesToMove <- select $ UnengagedEnemy <> #ghoul <> not_ (at_ "Parlor")

@@ -654,7 +654,11 @@
       "ready": "Ready",
       "defeat": "Defeat",
       "evade": "Evade",
-      "addDamage": "Add Damage"
+      "addDamage": "Add Damage",
+      "state": "State",
+      "sealedTokens": "Sealed Tokens",
+      "release": "Release this token",
+      "shiftFive": "Shift-click for 5"
     },
     "location": {
       "title": "Debug Location",

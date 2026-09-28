@@ -1,5 +1,17 @@
 {
   "name": "Circus Ex Mortis",
+  "interludes": {
+    "1": "The Future and the Past",
+    "2": "Written in Stone",
+    "3": "Good Omens"
+  },
+  "headings": {
+    "interludes": {
+      "1": "Interlude",
+      "2": "Interlude",
+      "3": "Interlude"
+    }
+  },
   "intro": "<h1>In the Shadow of the New Moon</h1><p>The New Moon Circus has come to Arkham for one night only &mdash; and missing person cases and mysterious deaths have followed it up the coast. <i>Circus Ex Mortis</i> is an eight-part fan-made campaign for <i>Arkham Horror: The Card Game</i>, designed by Tyler Gotch.</p>",
   "specialRules": [
     {

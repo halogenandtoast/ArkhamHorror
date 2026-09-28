@@ -2812,9 +2812,11 @@ onUnmounted(() => {
       :player-id="playerId"
     />
     <template v-else>
-      <!-- preserveWidth: the panel is tabbed now, so without it the window
-           resizes every time you change tab. -->
-      <Draggable v-if="showSettings" preserveWidth>
+      <!-- The panel is tabbed, so without these the window resizes and its header
+           walks up the screen every time you change tab: preserveWidth keeps the
+           widest tab's width, preservePosition pins the title bar and caps the
+           height instead of recentering. Same pair the chaos bag window uses. -->
+      <Draggable v-if="showSettings" preserveWidth preservePosition>
         <Settings
           :game="game"
           :playerId="playerId"

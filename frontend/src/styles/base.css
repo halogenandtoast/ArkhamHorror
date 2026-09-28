@@ -26,12 +26,63 @@ body {
   flex-direction: column;
 }
 
+/* The baseline look for a button with no component styling of its own. Components
+ * that dress their own buttons (Question.vue, the debug panels, ScenarioDebug) are
+ * scoped, so they outrank this and are unaffected.
+ *
+ * Surface rather than gradient: a hairline top highlight and a soft drop shadow give
+ * the edge definition a flat fill lacks, without the glassy bevel that dates a dark
+ * UI. Colours stay on --button: per the highlight language chrome is neutral, and
+ * --select means "the game wants a choice from you", so it appears only on focus.
+ */
 button {
-  padding: 0px 5px;
-  font-family: Arial;
+  /* Tight vertically, roomy horizontally: these sit in dense rows and stacks, so
+     height is the expensive axis. */
+  padding: 1px 11px;
+  font-family: inherit;
   font-size: min(12px, 2vw);
-  transition: transform 80ms ease;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+  color: var(--text);
+  background: var(--button);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 80ms ease,
+    background-color 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
   i { display: contents; font-style: italic; }
+}
+
+/* Lifts on hover rather than dimming: on a dark surface, lighter reads as raised,
+ * and the older --button-highlight went darker, which read as already pressed. */
+button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--button) 84%, white);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+button:active:not(:disabled) {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--select);
+  outline-offset: 2px;
 }
 
 /* The press shrinks the button under the pointer, so a click aimed at its outer

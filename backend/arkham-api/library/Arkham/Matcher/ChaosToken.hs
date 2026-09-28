@@ -7,9 +7,9 @@ import Arkham.ChaosToken.Types qualified as ChaosToken
 import {-# SOURCE #-} Arkham.Matcher.Asset
 import {-# SOURCE #-} Arkham.Matcher.Enemy
 import {-# SOURCE #-} Arkham.Matcher.Investigator
+import {-# SOURCE #-} Arkham.Matcher.Location
 import Arkham.Prelude
 import Data.Aeson.TH
-import Data.Text qualified as T
 import GHC.OverloadedLabels
 
 pattern NonSymbol :: ChaosTokenMatcher
@@ -35,6 +35,7 @@ data ChaosTokenMatcher
   | NotChaosToken ChaosTokenMatcher
   | SealedOnAsset AssetMatcher ChaosTokenMatcher
   | SealedOnEnemy EnemyMatcher ChaosTokenMatcher
+  | SealedOnLocation LocationMatcher ChaosTokenMatcher
   | SealedOnInvestigator InvestigatorMatcher ChaosTokenMatcher
   | RevealedChaosTokens ChaosTokenMatcher
   | ChaosTokenRevealedBy InvestigatorMatcher
@@ -53,35 +54,6 @@ chaosTokenIs = ChaosTokenIs . chaosTokenId
 
 pattern RevealedChaosToken :: ChaosTokenMatcher
 pattern RevealedChaosToken = RevealedChaosTokens AnyChaosToken
-
-instance ToDisplay ChaosTokenMatcher where
-  toDisplay = \case
-    OnlyInBag inner -> toDisplay inner
-    ChaosTokenIs _ -> "Specific chaos token"
-    WithNegativeModifier -> "Chaos token with negative modifier"
-    WithNonNegativeModifier -> "Chaos token with non-negative modifier"
-    WithAutoFailModifier -> "Chaos token with auto fail modifier"
-    ChaosTokenOriginalFaceIs face -> toDisplay face
-    ChaosTokenFaceIs face -> toDisplay face
-    ChaosTokenFaceIsNot face -> "not " <> toDisplay face
-    ChaosTokenMatchesAny inner -> "one of: " <> T.intercalate "," (map toDisplay inner)
-    AnyChaosToken -> "any chaos token"
-    IsSymbol -> "symbol chaos token"
-    InTokenPool inner -> toDisplay inner <> " in the token pool"
-    ChaosTokenMatches inner -> toSentence $ map toDisplay inner
-    IncludeSealed inner -> toDisplay inner <> " in all play areas"
-    IncludeTokenPool inner -> toDisplay inner
-    WouldReduceYourSkillValueToZero -> "chaos token that would reduce you skill value to zero"
-    IsInfestationToken inner -> toDisplay inner
-    NotChaosToken inner -> "not " <> toDisplay inner
-    SealedOnAsset _ inner -> toDisplay inner <> " sealed on a relevant asset"
-    SealedOnEnemy _ inner -> toDisplay inner <> " sealed on a relevant enemy"
-    SealedOnInvestigator _ inner -> toDisplay inner <> " sealed on a relevant enemy"
-    RevealedChaosTokens inner -> toDisplay inner <> " among revealed"
-    ChaosTokenMatchesOrElse inner1 inner2 -> toDisplay inner1 <> " if possible, otherwise " <> toDisplay inner2
-    ChaosTokenRevealedBy _ -> "Revealed chaos token"
-    CancelableChaosToken inner -> toDisplay inner
-    FirstChaosTokenRevealedThisSkillTest -> "First chaos token revealed this skill test"
 
 instance Not ChaosTokenMatcher where
   not_ = NotChaosToken

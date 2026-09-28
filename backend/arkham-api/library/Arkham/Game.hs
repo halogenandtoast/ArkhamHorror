@@ -5514,6 +5514,10 @@ instance Query ChaosTokenMatcher where
       InTokenPool m -> go m
       OnlyInBag m -> go m
       NotChaosToken m -> fmap not . go m
+      SealedOnLocation locationMatcher chaosTokenMatcher -> \t -> do
+        sealedTokens <- selectAgg id LocationSealedChaosTokens locationMatcher
+        isMatch' <- go chaosTokenMatcher t
+        pure $ isMatch' && t `elem` sealedTokens
       SealedOnEnemy enemyMatcher chaosTokenMatcher -> \t -> do
         sealedTokens <- selectAgg id EnemySealedChaosTokens enemyMatcher
         isMatch' <- go chaosTokenMatcher t

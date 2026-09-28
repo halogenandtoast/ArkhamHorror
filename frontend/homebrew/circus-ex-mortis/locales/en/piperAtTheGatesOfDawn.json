@@ -22,25 +22,11 @@
    "manyDays": "...5 or more days to prepare, place that many resources on the scenario reference card. Use “Act 2 — Audience Participation (v.III)” for this scenario. Remove each other copy of act 2 from the game.",
    "setAside": "Set the Sylvester Blake enemy aside, out of play."
   },
-  "allsFair": {
-   "title": "The Show Must Go On",
-   "body": "<p>Once more, you slowly but deliberately unravel the illusions permeating the grounds and unmask the hidden entrance. You are now free to escape... but for the first time now, Sylvester Blake is in sight without crowds of innocents in need of protection. In spite of the other illusions, this may be your only chance to fight Blake without any handicaps.</p>"
-  },
-  "theTrueMonster": {
-   "title": "Got His Goat",
-   "body": "<p>You have stepped into the role of the beast tamer in this mad circus. The monster lashes and bays with frightening power, but you beat it back with equal courage. With all of Blake's subtlety beaten, there is little left but monstrous strength, and as you prove with one final blow, it is not enough to stop you.</p>"
-  },
-  "repeatShowing": {
-   "title": "Light of the False Moon",
-   "body": "<p>You've been so used to facing the circus in dark and moonlit places that you almost didn't realize that there is a full moon shining down on the circus grounds. The moon is almost empty, but its light seems very real &mdash; just like the other illusions.</p>"
-  },
-  "doomAndGloom": {
-   "title": "Blue Moon",
-   "body": "<p>With each passing moment, the moon looms ever closer, as if descending onto the circus grounds. Surely a catastrophic illusion like that is beyond Blake's capacity, or he would have done it from the start... right?</p>"
-  },
+  "allsFair": {},
+  "theTrueMonster": {},
+  "repeatShowing": {},
+  "doomAndGloom": {},
   "whirlingSpectacle": {
-   "title": "Life is an Illusion",
-   "body": "<p>The illusions strobe and blare, overwhelming your senses from every angle and forcing you to your knees in physical pain at the assault.</p>",
    "label": {
     "physicalTrauma": "Suffer 1 physical trauma",
     "mentalTrauma": "Suffer 1 mental trauma"
@@ -82,15 +68,6 @@
     "body": "<p>_Resolution 5:_ Exhausted from escaping the circus trap, you trudge back to the hotel, weighed down as much mentally as physically. You have less than a day before the eclipse, and no leads to where it could take place. There is one hope, however. With Blake running the circus across the country and fattening the monsters as he traveled, he couldn't be organizing the ritual here in California directly. There simply wouldn't be time enough for everything. A branch of the cult of Shub-Niggurath must have been long established here in Los Angeles, preparing for the eclipse.</p><p>You settle into your room to ponder the problem, weighing time and risk in frustrating repetition. Not long into your meditations, Thea sits up with a quizzical expression and carries the book over to you. “Remember how the cult in ancient Rome disguised itself as one of Bacchus? What if they're using the same tactic now, hiding in plain sight as another organization like it?”</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 bonus experience if each *The Big Top* location was revealed during the scenario.</li><li>Add a {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Proceed to _Scenario VI: Bacchanalia_.</li></ul>"
    }
   },
-  "audienceParticipation": {
-   "releaseTheBeast": {
-    "title": "Release the Beast",
-    "body": "<p>The ringmaster's tricks and tactics fail to fool you, and he collapses down, coughing black ichor. Blake's ever-present grin is clenched in hate, but still smiling as he rises up. His skin seems to fade into the shadow, and his form mutates. Rapidly Blake evolves into one of the horrid caprine creatures, only much larger, and with that same glint of intelligent malice still in its eyes. A primal scream from its many mouths rips through the air.</p>"
-   },
-   "monstrousTransformation": {
-    "title": "Monstrous Transformation",
-    "body": "<p>The bestial roar from the abomination triggers a primal urge deep within you, one you've only felt since your assumption of the curse in New Orleans. A need to fight savagery with savagery.</p>"
-   }
-  }
+  "audienceParticipation": {}
  }
 }

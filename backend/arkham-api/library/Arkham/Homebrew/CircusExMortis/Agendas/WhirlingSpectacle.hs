@@ -1,7 +1,6 @@
 module Arkham.Homebrew.CircusExMortis.Agendas.WhirlingSpectacle (whirlingSpectacle) where
 
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.FlavorText (flavor, p, setTitle)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.I18n
@@ -25,7 +24,6 @@ instance RunMessage WhirlingSpectacle where
         pure a
       -- resigned investigators are already eliminated, so 'eachInvestigator' skips them
       AdvanceAgenda (isSide B attrs -> True) -> do
-        flavor $ setTitle "title" >> p "body"
         eachInvestigator \iid -> do
           chooseOneM iid do
             labeled "physicalTrauma" $ sufferPhysicalTrauma iid 1

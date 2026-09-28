@@ -1,10 +1,8 @@
 module Arkham.Homebrew.CircusExMortis.Agendas.DoomAndGloom (doomAndGloom) where
 
 import Arkham.Agenda.Import.Lifted
-import Arkham.Helpers.FlavorText (flavor, p, setTitle)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers
-import Arkham.I18n
 
 newtype DoomAndGloom = DoomAndGloom AgendaAttrs
   deriving anyclass (IsAgenda, HasModifiersFor)
@@ -17,17 +15,15 @@ instance HasAbilities DoomAndGloom where
   getAbilities (DoomAndGloom a) = [replenishBigTopRingsAbility a]
 
 instance RunMessage DoomAndGloom where
-  runMessage msg a@(DoomAndGloom attrs) =
-    runQueueT $ scenarioI18n "piperAtTheGatesOfDawn" $ scope "doomAndGloom" $ case msg of
-      UseThisAbility _ (isSource attrs -> True) 1 -> do
-        replenishBigTopRings (attrs.ability 1)
-        pure a
-      AdvanceAgenda (isSide B attrs -> True) -> do
-        flavor $ setTitle "title" >> p "body"
-        forEachInvestigator (push msg)
-        advanceAgendaDeck attrs
-        pure a
-      ForInvestigator iid (AdvanceAgenda (isSide B attrs -> True)) -> do
-        sealMoonTokenOrLoseAction attrs iid
-        pure a
-      _ -> DoomAndGloom <$> liftRunMessage msg attrs
+  runMessage msg a@(DoomAndGloom attrs) = runQueueT $ case msg of
+    UseThisAbility _ (isSource attrs -> True) 1 -> do
+      replenishBigTopRings (attrs.ability 1)
+      pure a
+    AdvanceAgenda (isSide B attrs -> True) -> do
+      forEachInvestigator (push msg)
+      advanceAgendaDeck attrs
+      pure a
+    ForInvestigator iid (AdvanceAgenda (isSide B attrs -> True)) -> do
+      sealMoonTokenOrLoseAction attrs iid
+      pure a
+    _ -> DoomAndGloom <$> liftRunMessage msg attrs

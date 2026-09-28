@@ -15,10 +15,9 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes.HasQueue (HasQueue)
 import Arkham.Helpers.Campaign (getOwner)
-import Arkham.Helpers.FlavorText (flavor, p, scope, setTitle, unscoped)
+import Arkham.Helpers.FlavorText (scope, unscoped)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.CircusExMortis.Helpers
-import Arkham.I18n (Scope)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Strategy
@@ -47,11 +46,6 @@ audienceParticipationAbilities releaseCost a =
       $ EnemyWouldBeDefeated #when blakeIsInPlay
   ]
 
-actTwoBFlavor :: ReverseQueue m => Scope -> m ()
-actTwoBFlavor s =
-  scenarioI18n "piperAtTheGatesOfDawn" $ scope "audienceParticipation" $ scope s do
-    flavor $ setTitle "title" >> p "body"
-
 releasedToken :: [Window] -> Maybe ChaosToken
 releasedToken =
   listToMaybe
@@ -79,7 +73,6 @@ audienceParticipationAdvance
 audienceParticipationAdvance attrs = do
   blake <- selectJust blakeIsInPlay
   cancelEnemyDefeat blake
-  actTwoBFlavor "releaseTheBeast"
   healAllDamage attrs blake
   lead <- getLead
   flipOverBy lead attrs blake
@@ -96,7 +89,6 @@ monstrousTransformation attrs blackGoat =
   getOwner Assets.monstrousTransformation >>= traverse_ \iid -> do
     inPlay <- selectAny $ assetIs Assets.monstrousTransformation
     moonInBag <- selectAny moonToken
-    actTwoBFlavor "monstrousTransformation"
     campaignI18n $ scope "audienceParticipation" $ chooseOneM iid do
       if inPlay
         then labeledValidate moonInBag "sealOnTheBlackGoat" $ sealMoonTokenOnTarget iid blackGoat

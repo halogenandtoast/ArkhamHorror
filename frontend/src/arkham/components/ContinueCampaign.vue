@@ -531,9 +531,10 @@ const setIcon = computed(() => {
           </template>
         </InvestigatorRow>
         <div v-if="overlayFor === investigator.id" class="overlay-panel">
+          <h3 class="overlay-title">Overlay</h3>
           <p class="overlay-help">
-            Custom cards, laid over this deck for the rest of the campaign. Nothing is bought,
-            so no xp is spent and no trauma is taken for what it adds.
+            Overlays allow you to add custom cards to your deck to use during the campaign.
+            If custom cards cost trauma or xp this will not be reflected in game.
           </p>
           <OverlayEditor
             v-model="overlay"
@@ -893,6 +894,12 @@ button {
 
 .overlay-panel :deep(.overlay-editor) {
   padding: 0;
+}
+
+.overlay-title {
+  color: #e6ece4;
+  font-size: 1em;
+  margin: 0 0 6px;
 }
 
 .overlay-help {

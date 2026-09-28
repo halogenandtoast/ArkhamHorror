@@ -40,7 +40,7 @@ import Arkham.Effect.Window
 import Arkham.EffectMetadata (EffectMetadata)
 import Arkham.Enemy.Creation
 import Arkham.Enemy.Helpers qualified as Msg
-import Arkham.Enemy.Types (Field (..))
+import Arkham.Enemy.Types (Enemy, Field (..))
 import Arkham.Evade
 import Arkham.Evade qualified as Evade
 import Arkham.Exhaust qualified as Exhaust
@@ -3566,6 +3566,14 @@ updateLocation
   -> a
   -> m ()
 updateLocation lid fld a = push $ UpdateLocation lid $ Update fld a
+
+updateEnemy
+  :: (ReverseQueue m, Ord a, Show a, Typeable a, ToJSON a, FromJSON a)
+  => EnemyId
+  -> Field Enemy a
+  -> a
+  -> m ()
+updateEnemy lid fld a = push $ UpdateEnemy lid $ Update fld a
 
 setActions
   :: (ToId investigator InvestigatorId, Sourceable source, ReverseQueue m)

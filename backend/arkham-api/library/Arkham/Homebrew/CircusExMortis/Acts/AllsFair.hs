@@ -10,7 +10,6 @@ import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.CircusExMortis.Helpers (bigTopRings)
 import Arkham.Matcher
 import Arkham.Placement (atLocations)
-import Arkham.Projection
 
 newtype AllsFair = AllsFair ActAttrs
   deriving anyclass IsAct
@@ -34,7 +33,7 @@ instance RunMessage AllsFair where
         reveal lid
         placeClues attrs lid extraClues
       eid <- createSetAsideEnemy Enemies.sylvesterBlake (atLocations rings)
-      push $ UpdateEnemy eid $ Update EnemyAsSelfLocation (Just "sylvesterBlake")
+      updateEnemy eid EnemyAsSelfLocation (Just "sylvesterBlake")
       advanceActDeck attrs
       pure a
     _ -> AllsFair <$> liftRunMessage msg attrs

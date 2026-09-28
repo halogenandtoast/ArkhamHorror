@@ -30,11 +30,11 @@ body {
  * that dress their own buttons (Question.vue, the debug panels, ScenarioDebug) are
  * scoped, so they outrank this and are unaffected.
  *
- * Flat and neutral: a translucent white fill over whatever sits behind it, a hairline
- * border, no inset highlight or drop shadow. This is the house recipe for optional
- * chrome (StackPopoverCard.vue's flip button) rather than the muddy --button grey,
- * and it sits correctly on every surface in the app. --select means "the game wants a
- * choice from you", so it appears only on the focus ring.
+ * Flat and neutral: a near-opaque dark fill and a hairline border, no inset highlight
+ * or drop shadow. The fill is nearly opaque on purpose -- these sit over card art as
+ * often as over a panel (the +/- doom buttons on an agenda), and a translucent one
+ * disappears into anything busy. --select means "the game wants a choice from you", so
+ * it appears only on the focus ring.
  */
 button {
   /* Tight vertically, roomy horizontally: these sit in dense rows and stacks, so
@@ -47,8 +47,8 @@ button {
   font-weight: 500;
   line-height: 1.4;
   color: var(--text);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(22, 25, 30, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 6px;
   cursor: pointer;
   transition:
@@ -59,14 +59,14 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(44, 49, 58, 0.94);
   border-color: rgba(255, 255, 255, 0.45);
 }
 
 /* The press is the scale transform below; dropping the fill back is enough alongside
    it without an inset shadow. */
 button:active:not(:disabled) {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(12, 14, 18, 0.94);
 }
 
 button:disabled {

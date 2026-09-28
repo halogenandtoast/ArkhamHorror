@@ -1869,8 +1869,13 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         _ -> noMatch
     Matcher.ChaosTokenReleased timing whoMatcher tokenMatcher ->
       guardTiming timing $ \case
-        Window.ChaosTokenReleased who token ->
+        Window.ChaosTokenReleased (InvestigatorTarget who) token ->
           andM [matchWho iid who whoMatcher, matchChaosToken who token tokenMatcher]
+        _ -> noMatch
+    Matcher.ChaosTokenReleasedFrom timing targetMatcher tokenMatcher ->
+      guardTiming timing $ \case
+        Window.ChaosTokenReleased target token ->
+          andM [targetMatches target targetMatcher, matchChaosToken iid token tokenMatcher]
         _ -> noMatch
     Matcher.AddedToVictory timing mWhoMatcher cardMatcher -> guardTiming timing $ \case
       Window.AddedToVictory mWho card ->

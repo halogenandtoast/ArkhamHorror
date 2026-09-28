@@ -20,7 +20,7 @@ import Arkham.ChaosToken
 import Arkham.Classes.Entity
 import Arkham.Classes.RunMessage
 import Arkham.Helpers.Customization
-import Arkham.Helpers.Window (checkAfter, checkWindows)
+import Arkham.Helpers.Window (checkAfter, checkWhen, checkWindows)
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Window (mkWindow)
@@ -42,7 +42,11 @@ instance RunMessage SkillAttrs where
       pure $ a & sealedChaosTokensL %~ (token :)
     SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
-    UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    UnsealChaosToken token -> do
+      when (token `elem` skillSealedChaosTokens a) do
+        let released = Window.ChaosTokenReleased (toTarget a) token
+        pushAllM $ sequence [checkWhen released, checkAfter released]
+      pure $ a & sealedChaosTokensL %~ filter (/= token)
     RemoveAllChaosTokens face -> do
       pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     UseCardAbility _ (isSource a -> True) (-1) _ payment -> do

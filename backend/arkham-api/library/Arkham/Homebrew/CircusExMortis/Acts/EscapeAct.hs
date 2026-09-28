@@ -2,6 +2,7 @@ module Arkham.Homebrew.CircusExMortis.Acts.EscapeAct (escapeActAdvance) where
 
 import Arkham.Act.Import.Lifted
 import Arkham.Card.CardDef
+import Arkham.ChaosToken (ChaosTokenFace)
 import Arkham.Helpers.FlavorText (
   chaosTokenImg,
   cols,
@@ -17,6 +18,27 @@ import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Location.Grid (GridLocation (..))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose (storyWithContinue)
+import Arkham.TokenBag
+
+{- | Act 1's back reads the same direction table as 'revealFuryToken' for a different
+purpose: a ☾ is ignored and another token drawn (no recursion), and nothing attacks.
+Persist the consumed debug override here too, even though all drawn tokens return to
+the bag.
+-}
+drawFuryTokenForDirection :: ReverseQueue m => (ChaosTokenFace -> m ()) -> m (Maybe FuryDirection)
+drawFuryTokenForDirection onReveal = go =<< getFuryBag
+ where
+  go bag = do
+    (drawn, bag') <- drawBagToken (.face) bag
+    case drawn of
+      Nothing -> setFuryBag (returnSetAsideTokens bag') $> Nothing
+      Just token -> do
+        onReveal token.face
+        case furyDirection token.face of
+          Just direction -> do
+            setFuryBag $ returnSetAsideTokens $ returnBagToken bag'
+            pure $ Just direction
+          Nothing -> go $ setAsideBagToken bag'
 
 {- | Under Suspicion and Under Their Noses differ only in which Camp Outskirts
 they bring into play.

@@ -7,7 +7,6 @@ where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.DamageEffect
 import Arkham.Enemy.CardDefs.SinsOfThePast qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
@@ -33,14 +32,8 @@ instance HasAbilities VengefulSpecter where
       ]
 
 instance RunMessage VengefulSpecter where
-  runMessage msg e@(VengefulSpecter attrs) = case msg of
+  runMessage msg e@(VengefulSpecter attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      replaceMessageMatching
-        \case
-          Damaged (EnemyTarget eid) _ -> eid == toId attrs
-          _ -> False
-        \case
-          Damaged (EnemyTarget eid) dmg -> [Damaged (EnemyTarget eid) (dmg {damageAssignmentAmount = 1})]
-          _ -> error "invalid match"
+      reduceDamageTakenTo attrs 1
       pure e
-    _ -> VengefulSpecter <$> runMessage msg attrs
+    _ -> VengefulSpecter <$> liftRunMessage msg attrs

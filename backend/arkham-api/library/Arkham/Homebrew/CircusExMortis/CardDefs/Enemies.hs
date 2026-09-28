@@ -232,6 +232,26 @@ sylvesterBlake =
       , cdEvade = evade 3
       , cdHealth = healthPerInvestigator 4
       , cdCardTraits = setFromList [Humanoid, Performer, Elite]
+      , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate, Keyword.Alert]
+      }
+
+theBlackGoat :: CardDef
+theBlackGoat =
+  doubleSided ":circus-ex-mortis:118"
+    $ ( enemy
+          ":circus-ex-mortis:118b"
+          ("The Black Goat" <:> "Consort of Shub-Niggurath")
+          Set.PiperAtTheGatesOfDawn
+          1
+      )
+      { cdHealthDamage = healthDamage 1
+      , cdSanityDamage = sanityDamage 1
+      , cdFight = fight 4
+      , cdEvade = evade 4
+      , cdHealth = healthPerInvestigator 6
+      , cdCardTraits = setFromList [Monster, Abomination, Avatar, Elite]
+      , cdKeywords = singleton Keyword.Massive
+      , cdVictoryPoints = Just 2
       }
 
 -- bacchanalia

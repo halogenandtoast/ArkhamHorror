@@ -4367,7 +4367,7 @@ enemyMatcherFilter es matcher' = do
       es & filterM \enemy -> do
         if enemy.placement.isAttached
           then pure False
-          else Helpers.placementLocation enemy.placement <&> maybe False (`elem` locations)
+          else Helpers.placementLocations enemy.placement <&> any (`elem` locations)
     M.EnemyWasAt locationMatcher -> do
       locations <- select locationMatcher
       es & filterM \enemy -> do

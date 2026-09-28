@@ -6,6 +6,7 @@ module Arkham.Homebrew.CircusExMortis.DestinyAndProphecy where
 
 import Arkham.Ability hiding (you)
 import Arkham.Asset.Import.Lifted
+import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes.HasGame (HasGame)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..))
@@ -16,6 +17,16 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Queue (QueueT)
 import Arkham.Trait (Trait (Ally))
+
+{- | Tokens sealed on cards at a location. Seals land on investigator cards (the
+☾ reveal effect) and on assets (De Cultus Bestiae), so those are the two pools
+"sealed on cards at your location" can draw from.
+-}
+getSealedTokensAtMatching :: HasGame m => ChaosTokenMatcher -> LocationId -> m [ChaosToken]
+getSealedTokensAtMatching matcher lid = do
+  onInvestigators <- select $ SealedOnInvestigator (InvestigatorAt $ LocationWithId lid) matcher
+  onAssets <- select $ SealedOnAsset (AssetAtLocation lid) matcher
+  pure $ nub (onInvestigators <> onAssets)
 
 -- * Amalthea Weaver
 
@@ -34,7 +45,7 @@ half the number of moon tokens sealed on cards at your location (rounded up)."
 amaltheaWeaverBoost :: ReverseQueue m => AssetAttrs -> m ()
 amaltheaWeaverBoost attrs = for_ attrs.controller \you ->
   withLocationOf you \lid -> do
-    n <- length <$> getSealedMoonTokensAt lid
+    n <- length <$> getSealedTokensAtMatching moonToken lid
     when (n > 0) do
       withSkillTest \sid -> withSkillTestInvestigator \performer ->
         skillTestModifier sid (attrs.ability 1) performer (AnySkillValue $ (n + 1) `div` 2)
@@ -49,7 +60,7 @@ literally: any sealed token, not only ☾ (the +X clause is the ☾-only one).
 -}
 amaltheaWeaverRelease :: ReverseQueue m => AssetAttrs -> Int -> m ()
 amaltheaWeaverRelease attrs n = for_ attrs.controller \you ->
-  withLocationOf you $ chooseReleaseTokens you n <=< getSealedTokensAt
+  withLocationOf you $ chooseReleaseTokens you n <=< getSealedTokensAtMatching AnyChaosToken
 
 {- | "You or the performing investigator may ...": the choice belongs to
 Amalthea's controller, and the Done button covers the "may".

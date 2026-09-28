@@ -342,7 +342,11 @@ instance RunMessage EnemyAttrs where
       pure $ a & sealedChaosTokensL %~ (token :)
     SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
-    UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    UnsealChaosToken token -> do
+      when (token `elem` enemySealedChaosTokens) do
+        Lifted.checkWhen (Window.ChaosTokenReleased (toTarget a) token)
+        Lifted.checkAfter (Window.ChaosTokenReleased (toTarget a) token)
+      pure $ a & sealedChaosTokensL %~ filter (/= token)
     RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       preyIds <- select =<< getPreyMatcher a

@@ -1391,6 +1391,9 @@ runGameMessage msg g = case msg of
               attrs
                 { enemyTokens = enemyTokens oldAttrs
                 , enemyPlacement = enemyPlacement oldAttrs
+                , -- Swap is the same physical card flipped over, so an enemy that
+                  -- is its own location keeps its grid cell.
+                  enemyAsSelfLocation = enemyAsSelfLocation oldAttrs
                 , enemyAssignedDamage = enemyAssignedDamage oldAttrs
                 , enemyExhausted = enemyExhausted oldAttrs
                 , enemyMovedFromHunterKeyword = enemyMovedFromHunterKeyword oldAttrs

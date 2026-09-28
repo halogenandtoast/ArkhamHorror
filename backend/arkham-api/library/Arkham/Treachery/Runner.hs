@@ -62,7 +62,11 @@ instance RunMessage TreacheryAttrs where
   runMessage msg a@TreacheryAttrs {..} = runQueueT $ case msg of
     Msg.SealedChaosToken token _ (isTarget a -> True) -> do
       pure $ a & sealedChaosTokensL %~ (token :)
-    Msg.UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    Msg.UnsealChaosToken token -> do
+      when (token `elem` treacherySealedChaosTokens) do
+        checkWhen $ Window.ChaosTokenReleased (toTarget a) token
+        checkAfter $ Window.ChaosTokenReleased (toTarget a) token
+      pure $ a & sealedChaosTokensL %~ filter (/= token)
     Msg.RemoveAllChaosTokens face -> do
       pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)
     Msg.InvestigatorEliminated iid -> do

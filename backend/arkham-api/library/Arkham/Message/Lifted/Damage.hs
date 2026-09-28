@@ -179,19 +179,11 @@ queued assignment itself: the only form that reaches direct and delayed damage, 
 amounts bypass modifiers by design.
 -}
 reduceDamageDealt :: (MonadTrans t, HasQueue Message m) => EnemyId -> Int -> t m ()
-reduceDamageDealt eid n = lift $ withQueue_ $ map go
- where
-  go = \case
-    Priority inner -> Priority (go inner)
-    Retain inner -> Retain (go inner)
-    MoveWithSkillTest inner -> MoveWithSkillTest (go inner)
-    MovedWithSkillTest sid inner -> MovedWithSkillTest sid (go inner)
-    Simultaneously inner -> Simultaneously (map go inner)
-    Run inner -> Run (map go inner)
-    Damaged target@(EnemyTarget eid') assignment
-      | eid == eid' ->
-          Damaged target assignment {damageAssignmentAmount = max 0 (assignment.amount - n)}
-    other -> other
+reduceDamageDealt eid n = lift $ overMessagesM $ rewriteQueuedM \case
+  Damaged target@(EnemyTarget eid') assignment
+    | eid == eid' ->
+        pure [Damaged target assignment {damageAssignmentAmount = max 0 (assignment.amount - n)}]
+  other -> pure [other]
 
 addCurseTokens :: ReverseQueue m => Maybe InvestigatorId -> Int -> m ()
 addCurseTokens mWho n = do

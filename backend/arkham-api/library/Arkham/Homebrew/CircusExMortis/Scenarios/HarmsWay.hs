@@ -4,6 +4,7 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Enemy.Types (Field (EnemyAsSelfLocation))
 import Arkham.Helpers (unDeck)
+import Arkham.Helpers.CustomChaosBag (initCustomChaosBag)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.History (getHistoryField)
 import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCard)
@@ -156,7 +157,8 @@ instance RunMessage HarmsWay where
         eid <- placeEnemyCapture def (InPosition pos)
         push $ UpdateEnemy eid $ Update EnemyAsSelfLocation (Just $ gridLabel pos)
 
-      initFuryBag
+      -- The fury bag starts with these four; agenda flips add ☾ tokens on top.
+      initCustomChaosBag furyBagKey [Skull, Cultist, Tablet, ElderThing]
       placeStory Stories.theDarkYoungStir
 
       (removedCitizens, keptCitizens) <- splitAt 2 <$> shuffle kidnappedCitizens

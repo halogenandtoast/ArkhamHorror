@@ -4133,7 +4133,12 @@ library
       Arkham.History
       Arkham.History.Types
       Arkham.Homebrew.CardRegistry
+      Arkham.Homebrew.CircusExMortis.Acts.AllsFair
       Arkham.Homebrew.CircusExMortis.Acts.ArrivingAt
+      Arkham.Homebrew.CircusExMortis.Acts.AudienceParticipation
+      Arkham.Homebrew.CircusExMortis.Acts.AudienceParticipationVI
+      Arkham.Homebrew.CircusExMortis.Acts.AudienceParticipationVII
+      Arkham.Homebrew.CircusExMortis.Acts.AudienceParticipationVIII
       Arkham.Homebrew.CircusExMortis.Acts.EngineTrouble
       Arkham.Homebrew.CircusExMortis.Acts.EscapeAct
       Arkham.Homebrew.CircusExMortis.Acts.EscapeActVI
@@ -4148,17 +4153,21 @@ library
       Arkham.Homebrew.CircusExMortis.Acts.RatsInACageInThePrizeDisplay
       Arkham.Homebrew.CircusExMortis.Acts.SmokeAndMirrors
       Arkham.Homebrew.CircusExMortis.Acts.TheGreatTrainHorror
+      Arkham.Homebrew.CircusExMortis.Acts.TheTrueMonster
       Arkham.Homebrew.CircusExMortis.Acts.ThroughTheForestsVI
       Arkham.Homebrew.CircusExMortis.Acts.ThroughTheForestsVII
       Arkham.Homebrew.CircusExMortis.Agendas.BloodMoon
+      Arkham.Homebrew.CircusExMortis.Agendas.DoomAndGloom
       Arkham.Homebrew.CircusExMortis.Agendas.HouseOfHorrors
       Arkham.Homebrew.CircusExMortis.Agendas.MesmericMagic
+      Arkham.Homebrew.CircusExMortis.Agendas.RepeatShowing
       Arkham.Homebrew.CircusExMortis.Agendas.SavageNature
       Arkham.Homebrew.CircusExMortis.Agendas.ScheduleToKeep
       Arkham.Homebrew.CircusExMortis.Agendas.SleepWhenYoureDead
       Arkham.Homebrew.CircusExMortis.Agendas.TheCircusSleeps
       Arkham.Homebrew.CircusExMortis.Agendas.TheTrueFace
       Arkham.Homebrew.CircusExMortis.Agendas.TreadingOnEggshells
+      Arkham.Homebrew.CircusExMortis.Agendas.WhirlingSpectacle
       Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverAspirantOfCourage
       Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverAspirantOfWisdom
       Arkham.Homebrew.CircusExMortis.Assets.AmaltheaWeaverCircusFortuneTeller
@@ -4214,6 +4223,8 @@ library
       Arkham.Homebrew.CircusExMortis.Enemies.RavenousGoatspawn
       Arkham.Homebrew.CircusExMortis.Enemies.SacrificialShepherd
       Arkham.Homebrew.CircusExMortis.Enemies.SupplicantOfTheGoat
+      Arkham.Homebrew.CircusExMortis.Enemies.SylvesterBlake
+      Arkham.Homebrew.CircusExMortis.Enemies.TheBlackGoat
       Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_065
       Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_066
       Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_067
@@ -4232,6 +4243,7 @@ library
       Arkham.Homebrew.CircusExMortis.Locations.Carousel
       Arkham.Homebrew.CircusExMortis.Locations.CircusEncampment
       Arkham.Homebrew.CircusExMortis.Locations.CircusEngine
+      Arkham.Homebrew.CircusExMortis.Locations.CircusGatesDoorwayToDoom
       Arkham.Homebrew.CircusExMortis.Locations.CircusGatesPathToFreedom
       Arkham.Homebrew.CircusExMortis.Locations.CoalHopperCar
       Arkham.Homebrew.CircusExMortis.Locations.CraneCar
@@ -4296,6 +4308,7 @@ library
       Arkham.Homebrew.CircusExMortis.Treacheries.CloseWatch
       Arkham.Homebrew.CircusExMortis.Treacheries.CurseOfTheRougarou
       Arkham.Homebrew.CircusExMortis.Treacheries.DenseTangle
+      Arkham.Homebrew.CircusExMortis.Treacheries.DuplicitousIllusion
       Arkham.Homebrew.CircusExMortis.Treacheries.EndlessSpawn
       Arkham.Homebrew.CircusExMortis.Treacheries.FeralImpulses
       Arkham.Homebrew.CircusExMortis.Treacheries.FocusedSabotage
@@ -4310,10 +4323,12 @@ library
       Arkham.Homebrew.CircusExMortis.Treacheries.OminousMoonlight
       Arkham.Homebrew.CircusExMortis.Treacheries.OverloadedEngine
       Arkham.Homebrew.CircusExMortis.Treacheries.PhantasmalDeception
+      Arkham.Homebrew.CircusExMortis.Treacheries.PhantomBeasts
       Arkham.Homebrew.CircusExMortis.Treacheries.PrimordialEvils
       Arkham.Homebrew.CircusExMortis.Treacheries.QuickerThanTheEye
       Arkham.Homebrew.CircusExMortis.Treacheries.RecklessStunt
       Arkham.Homebrew.CircusExMortis.Treacheries.RicketyRide
+      Arkham.Homebrew.CircusExMortis.Treacheries.ShadowyPerformance
       Arkham.Homebrew.CircusExMortis.Treacheries.ViolentThrashing
       Arkham.Homebrew.CircusExMortis.Treacheries.WildHysteria
       Arkham.Homebrew.ContentEntries

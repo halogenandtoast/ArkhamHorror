@@ -27,7 +27,7 @@ import Arkham.SkillTest.Step
 import Arkham.SkillTest.Type
 import Arkham.Source (Source (GameSource))
 import Arkham.Strategy (DamageStrategy)
-import Arkham.Target (Target (EnemyTarget))
+import Arkham.Target (Target (EnemyTarget, InvestigatorTarget))
 import Arkham.Timing (Timing)
 import Arkham.Timing qualified as Timing
 import Arkham.Token qualified as Token
@@ -404,7 +404,10 @@ data WindowType
     fires for seals onto their assets too.
     -}
     ChaosTokenSealedOn InvestigatorId ChaosToken
-  | ChaosTokenReleased InvestigatorId ChaosToken
+  | {- | Raised on the card the token was sealed on, whichever card that is: an
+    investigator card, but also an enemy, asset, location, treachery or skill.
+    -}
+    ChaosTokenReleased Target ChaosToken
   | IgnoreChaosToken InvestigatorId ChaosToken
   | CancelChaosToken InvestigatorId ChaosToken
   | RevealChaosTokenEffect InvestigatorId ChaosToken EffectId
@@ -538,6 +541,13 @@ mconcat
               case contents of
                 Right (eid, placement) -> pure $ EnemySpawns eid placement
                 Left (eid, lid) -> pure $ EnemySpawns eid (AtLocation lid)
+            -- Used to carry the investigator whose card held the token; a
+            -- seal lives on any card type, so it carries that card's target.
+            "ChaosTokenReleased" -> do
+              contents <- (Right <$> o .: "contents") <|> (Left <$> o .: "contents")
+              case contents of
+                Right (t, token) -> pure $ ChaosTokenReleased t token
+                Left (iid, token) -> pure $ ChaosTokenReleased (InvestigatorTarget iid) token
             "PerformedDifferentTypesOfActionsInARow" -> do
               -- New shape carries the per-action type groups ([[Action]]); old
               -- saves carry a single flattened SDR ([Action]). Treat each legacy

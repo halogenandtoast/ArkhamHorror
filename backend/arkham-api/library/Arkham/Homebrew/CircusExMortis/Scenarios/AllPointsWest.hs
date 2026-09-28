@@ -7,6 +7,7 @@ import Arkham.ChaosToken
 import Arkham.Classes.HasGame (HasGame)
 import Arkham.Deck qualified as Deck
 import Arkham.Helpers.Act (getCurrentActStep)
+import Arkham.Helpers.Campaign (getCompletedSteps, getMaybeCampaignStoryCard, getOwner)
 import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..))
@@ -36,6 +37,32 @@ import Arkham.Token qualified as Token
 import Arkham.Trait (Trait (DarkYoung, Hazard))
 import Arkham.Trait qualified as Trait
 import Arkham.Treachery.CardDefs.CurseOfTheRougarou qualified as TreacheryCards
+
+{- | The guide offers Curse of the Rougarou between Harm's Way and All Points West;
+this scenario reads its Back on Track intro when the side story was the most recently
+completed scenario. Completion itself is recorded by the official scenario's
+resolutions (the TheRougarou* campaign log keys).
+-}
+playedCurseOfTheRougarouEnRoute :: HasGame m => m Bool
+playedCurseOfTheRougarouEnRoute = do
+  steps <- getCompletedSteps
+  -- completed steps are stored most-recent-first
+  pure $ case mapMaybe (.scenario) steps of
+    (sid : _) -> sid == curseOfTheRougarouId
+    _ -> False
+
+{- | Upgrade a campaign story card to a different printing in place. Unlike
+'swapCampaignCard' this keeps the card id, so the copy already dealt into the current
+scenario's deck becomes the new card too rather than only the campaign store (which
+would not take effect until the next scenario).
+-}
+upgradeCampaignCard :: ReverseQueue m => CardDef -> CardDef -> m ()
+upgradeCampaignCard old new = do
+  mOwner <- getOwner old
+  mCard <- getMaybeCampaignStoryCard old
+  for_ ((,) <$> mOwner <*> mCard) \(iid, card) -> do
+    new' <- setOwner iid (lookupCard new card.id)
+    push $ ReplaceCard card.id new'
 
 newtype AllPointsWest = AllPointsWest ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)

@@ -151,7 +151,11 @@ instance RunMessage LocationAttrs where
       pure $ a & placedChaosTokensL %~ (token {chaosTokenSealed = False} :)
     PlacedChaosToken token _ -> do
       pure $ a & placedChaosTokensL %~ filter (/= token)
-    UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    UnsealChaosToken token -> do
+      when (token `elem` locationSealedChaosTokens) do
+        pushM $ checkWhen $ Window.ChaosTokenReleased (toTarget a) token
+        pushM $ checkAfter $ Window.ChaosTokenReleased (toTarget a) token
+      pure $ a & sealedChaosTokensL %~ filter (/= token)
     RemovePlacedChaosToken token -> pure $ a & placedChaosTokensL %~ filter (/= token)
     RemoveAllChaosTokens face -> pure $ a & sealedChaosTokensL %~ filter ((/= face) . (.face))
     RemoveAllPlacedChaosTokens face -> pure $ a & placedChaosTokensL %~ filter ((/= face) . (.face))

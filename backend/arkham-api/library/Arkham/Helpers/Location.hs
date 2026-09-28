@@ -76,6 +76,8 @@ whenAt iid lid = whenM (isAt iid lid)
 placementLocation :: (HasCallStack, HasGame m) => Placement -> m (Maybe LocationId)
 placementLocation = \case
   AtLocation lid -> pure $ Just lid
+  -- At several locations at once: callers that can only hold one take the first.
+  AtLocations (lid :| _) -> pure $ Just lid
   AttachedToLocation lid -> pure $ Just lid
   -- On the connection, not on either end, so it is at neither.
   BetweenLocations _ _ -> pure Nothing
@@ -110,6 +112,14 @@ placementLocation = \case
   InTheShadows -> pure Nothing
   OutOfGame _ -> pure Nothing
   InPosition _ -> pure Nothing
+
+{- | Every location a placement is at. Only 'AtLocations' answers with more than
+one; everything else defers to 'placementLocation'.
+-}
+placementLocations :: (HasCallStack, HasGame m) => Placement -> m [LocationId]
+placementLocations = \case
+  AtLocations lids -> pure $ toList lids
+  placement -> maybeToList <$> placementLocation placement
 
 class Locateable a where
   getLocationOf :: HasGame m => a -> m (Maybe LocationId)

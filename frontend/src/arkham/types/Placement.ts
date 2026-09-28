@@ -16,6 +16,7 @@ export type Placement
   | { tag: "OnTopOfDeck", contents: string }
   | { tag: "OutOfPlay", contents: string }
   | { tag: "AtLocation", contents: string }
+  | { tag: "AtLocations", contents: string[] }
   | { tag: "InVehicle", contents: string }
   | { tag: "InPosition", contents: Position }
   | { tag: "AttachedToLocation", contents: string }
@@ -49,6 +50,7 @@ export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToAgenda"), contents: JsonDecoder.string() }, 'AttachedToAgenda'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("Limbo")}, 'Limbo'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AtLocation"), contents: JsonDecoder.string() }, 'AtLocation'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AtLocations"), contents: JsonDecoder.array(JsonDecoder.string(), 'AtLocationsContents') }, 'AtLocations'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InVehicle"), contents: JsonDecoder.string() }, 'InVehicle'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AttachedToLocation"), contents: JsonDecoder.string() }, 'AttachedToLocation'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("BetweenLocations"), contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.string()], 'BetweenLocationsContents') }, 'BetweenLocations'),

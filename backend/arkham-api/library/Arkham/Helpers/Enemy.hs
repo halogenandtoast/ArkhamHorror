@@ -333,12 +333,16 @@ enemyEngagedInvestigators eid = do
   mPlacement <- fieldMay EnemyPlacement eid
   others <- case mPlacement of
     Just (InThreatArea iid) -> pure [iid]
-    Just (AtLocation lid) -> do
-      isEngagedMassive <- eid <=~> (MassiveEnemy <> ReadyEnemy)
-      if isEngagedMassive then select (investigatorAt lid) else pure []
+    Just (AtLocation lid) -> massiveEngaged [lid]
+    -- At each of its locations, so Massive engages everyone standing on any of them.
+    Just (AtLocations lids) -> massiveEngaged (toList lids)
     Just (AsSwarm eid' _) -> enemyEngagedInvestigators eid'
     _ -> pure []
   pure . nub $ asIfEngaged <> others
+ where
+  massiveEngaged lids = do
+    isEngagedMassive <- eid <=~> (MassiveEnemy <> ReadyEnemy)
+    if isEngagedMassive then select (investigatorAt $ mapOneOf LocationWithId lids) else pure []
 
 enemyMatches :: HasGame m => EnemyId -> Matcher.EnemyMatcher -> m Bool
 enemyMatches !enemyId !mtchr = elem enemyId <$> select mtchr
@@ -538,13 +542,14 @@ insteadOfDamage (asId -> eid) body = do
     notAfterDamage = \case
       (windowType -> Window.TakeDamage _ _ (EnemyTarget eid') _) | eid == eid' -> False
       _ -> True
-  lift do
-    overMessagesM \case
-      CheckWindows ws -> case filter notAfterDamage ws of
-        [] -> pure []
-        ws' -> pure [CheckWindows ws']
-      Damaged (EnemyTarget eid') dmg | eid == eid' -> evalQueueT (body dmg)
-      other -> pure [other]
+  -- 'rewriteQueuedM' because the pending 'Damaged' is wrapped in 'MoveWithSkillTest' by
+  -- the time any When-damage-window responder runs; a flat scan never finds it.
+  lift $ overMessagesM $ rewriteQueuedM \case
+    CheckWindows ws -> case filter notAfterDamage ws of
+      [] -> pure []
+      ws' -> pure [CheckWindows ws']
+    Damaged (EnemyTarget eid') dmg | eid == eid' -> evalQueueT (body dmg)
+    other -> pure [other]
 
 {- | Reduce the amount of the pending 'Damaged' message on this enemy to at most
 @n@ (leaving it unchanged if it is already lower). Pair with a forced ability
@@ -555,12 +560,10 @@ reduceDamageTakenTo
   :: (HasQueue Message m, MonadTrans t, ToId enemy EnemyId)
   => enemy -> Int -> t m ()
 reduceDamageTakenTo (asId -> eid) n =
-  lift
-    $ replaceMessageMatching
-      (\case Damaged (EnemyTarget eid') _ -> eid == eid'; _ -> False)
-      \case
-        Damaged target dmg -> [Damaged target dmg {damageAssignmentAmount = min n dmg.amount}]
-        other -> [other]
+  lift $ overMessagesM $ rewriteQueuedM \case
+    Damaged target@(EnemyTarget eid') dmg
+      | eid == eid' -> pure [Damaged target dmg {damageAssignmentAmount = min n dmg.amount}]
+    other -> pure [other]
 
 patrol :: (ReverseQueue m, ToId enemy EnemyId) => enemy -> m ()
 patrol (asId -> eid) = whenJustM (getPatrolMatcher eid) $ push . PatrolMove eid

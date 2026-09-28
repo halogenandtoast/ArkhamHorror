@@ -260,7 +260,11 @@ instance RunMessage AssetAttrs where
       pure $ a & sealedChaosTokensL %~ (\ts -> if token `elem` ts then ts else token : ts)
     SealedChaosToken token _ _ -> do
       pure $ a & sealedChaosTokensL %~ filter (/= token)
-    UnsealChaosToken token -> pure $ a & sealedChaosTokensL %~ filter (/= token)
+    UnsealChaosToken token -> runQueueT do
+      when (token `elem` assetSealedChaosTokens) do
+        pushM $ checkWhen $ Window.ChaosTokenReleased (toTarget a) token
+        pushM $ checkAfter $ Window.ChaosTokenReleased (toTarget a) token
+      pure $ a & sealedChaosTokensL %~ filter (/= token)
     ReturnChaosTokensToPool tokens -> pure $ a & sealedChaosTokensL %~ filter (`notElem` tokens)
     RemoveAllChaosTokens face -> do
       pure $ a & sealedChaosTokensL %~ filter ((/= face) . chaosTokenFace)

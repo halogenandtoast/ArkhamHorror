@@ -6,6 +6,7 @@ module Arkham.Placement (
   placementToAttached,
   isDirectlyAtLocation,
   betweenLocations,
+  atLocations,
   isOutOfPlayPlacement,
   isInPlayPlacement,
   isHiddenPlacement,
@@ -27,6 +28,12 @@ import GHC.Records
 
 data Placement
   = AtLocation LocationId
+  | {- | At *every* one of these locations at once (Circus Ex Mortis, "Sylvester
+    Blake is considered to be at each The Big Top location"). Unlike
+    'BetweenLocations' — which is on the connection and so at neither end — this
+    is at all of them, so 'EnemyAt', Massive engagement and @Here@ all see it.
+    -}
+    AtLocations (NonEmpty LocationId)
   | AttachedToLocation LocationId
   | {- | Sits on the *connection* between two locations rather than on either of
     them (Circus Ex Mortis, "Broken Couplings"). Build it with
@@ -105,6 +112,7 @@ placementToAttached = \case
   AttachedToTreachery tid -> Just $ TreacheryTarget tid
   Near _ -> Nothing
   AtLocation _ -> Nothing
+  AtLocations _ -> Nothing
   InPlayArea _ -> Nothing
   InVehicle _ -> Nothing
   InThreatArea _ -> Nothing
@@ -136,6 +144,7 @@ isOutOfPlayPlacement = not . isInPlayPlacement
 isInPlayPlacement :: Placement -> Bool
 isInPlayPlacement = \case
   AtLocation {} -> True
+  AtLocations {} -> True
   AttachedToLocation {} -> True
   BetweenLocations {} -> True
   InPlayArea {} -> True
@@ -180,6 +189,7 @@ responsibility when the host leaves play, see #5426.
 isDirectlyAtLocation :: LocationId -> Placement -> Bool
 isDirectlyAtLocation lid = \case
   AtLocation lid' -> lid' == lid
+  AtLocations lids -> lid `elem` lids
   AttachedToLocation lid' -> lid' == lid
   BetweenLocations a b -> a == lid || b == lid
   _ -> False
@@ -226,6 +236,13 @@ mconcat
 -- | Order-normalized so the same connection is always the same placement.
 betweenLocations :: LocationId -> LocationId -> Placement
 betweenLocations a b = if a <= b then BetweenLocations a b else BetweenLocations b a
+
+-- | At each of these locations at once; a single location stays 'AtLocation'.
+atLocations :: [LocationId] -> Placement
+atLocations = \case
+  [] -> Unplaced
+  [lid] -> AtLocation lid
+  (lid : lids) -> AtLocations (lid :| lids)
 
 class IsPlacement a where
   toPlacement :: a -> Placement

@@ -55,6 +55,7 @@ windowTable =
   , ("CancelChaosToken", ["CancelChaosToken"])
   , ("CancelledOrIgnoredCardOrGameEffect", ["CancelledOrIgnoredCardOrGameEffect"])
   , ("ChaosTokenReleased", ["ChaosTokenReleased"])
+  , ("ChaosTokenReleasedFrom", ["ChaosTokenReleased"])
   , ("ChaosTokenSealed", ["ChaosTokenSealed"])
   , ("ChaosTokenSealedOn", ["ChaosTokenSealedOn"])
   , ("ChosenRandomLocation", ["ChosenRandomLocation"])

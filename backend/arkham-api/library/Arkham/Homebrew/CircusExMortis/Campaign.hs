@@ -4,6 +4,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaign.Overlay
 import Arkham.CampaignLogKey (recorded)
+import Arkham.Card.CardDef (CardDef)
 import Arkham.Classes.HasGame (getGame)
 import Arkham.Decklist.Type (investigator_name)
 import Arkham.Game.Base (gamePerformTarotReadings)
@@ -30,6 +31,16 @@ import Arkham.Source
 import Arkham.Tarot (TarotCard (..), TarotCardArcana (..), TarotCardFacing (Upright))
 import Arkham.Trait (Trait (Believer, Chosen, Clairvoyant, Miskatonic, Scholar))
 import Data.Text qualified as T
+
+{- | Swap a versioned campaign story card for its next version in the same
+investigator's deck (Relic of Ages pattern: remove the old def, add the new one
+without counting toward deck size). No-op when nobody owns the old version.
+-}
+swapCampaignCard :: ReverseQueue m => CardDef -> CardDef -> m ()
+swapCampaignCard old new =
+  getOwner old >>= traverse_ \iid -> do
+    removeCampaignCard old
+    addCampaignCardToDeck iid DoNotShuffleIn new
 
 newtype CircusExMortis = CircusExMortis CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)

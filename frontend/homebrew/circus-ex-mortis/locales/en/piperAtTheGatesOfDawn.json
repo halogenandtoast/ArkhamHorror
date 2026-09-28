@@ -1,0 +1,96 @@
+{
+ "piperAtTheGatesOfDawn": {
+  "intro": {
+   "title": "Scenario V: Piper at the Gates of Dawn",
+   "body1": "<p>You depart the hotel in the afternoon sun. The streets are as busy as you'd expect for a metropolis on a Sunday, but you have other things on your mind. Given your treatment on the railways west, Blake is not content to let you live, but at the same time, has been reluctant to act within large cities. You've essentially reached a stalemate, and not one that Blake can afford to wait out. Still, with the final circus show tonight and the eclipse tomorrow, you'd be a fool not to keep a close eye on him.</p><p>The circus grounds lie a short distance outside the city limits, but as you approach the road leading to it, you find a total lack of activity. Surely some early spectators or curious onlookers would be gathered outside, but there is nothing at all. A pit grows in your stomach as you approach the circus grounds and find them silent. From the open gates, you survey an empty site, like the one the police found in Arkham after their departure.</p>",
+   "body2": "<p>One circus poster remains hanging beside the abandoned grounds, with the word CANCELED painted in red diagonally across it. Panic begins to flood your system. You had counted on Blake's ego to see the spectacle to the end, but has he really given you the slip? Without any leads, you'd have to comb all of southern California — an option you can't afford to pursue with only one day remaining. You earnestly hope that some clue was left in their hurry to leave, and you step forward to investigate.</p>",
+   "body3": "<p>The instant you cross the threshold, light and sound flood your senses. Your eyes open blearily to see the entire circus before you — and impenetrable iron bars behind you. Memories of the illusions from the circus' night in Arkham return, and the truth dawns on you. The New Moon Circus was here and fully prepared, masking their appearance to the Los Angeles public with those same illusions. Only you would have entered the abandoned grounds so soon before a canceled show, and now you're in Blake's domain once more. What's the plan now?</p>",
+   "decide": "The investigators must decide (choose one):",
+   "hitHard": "“No time to be cautious now. We hit him hard and fast.” If there are 1 or more {'{'}tablet{'}'} tokens in the chaos bag, remove 1 of them and add a {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.",
+   "slowAndSteady": "“Recklessness is what he wants from us. Slow and steady.” If there are 1 or more {'{'}cultist{'}'} tokens in the chaos bag, remove 1 of them and add a {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.",
+   "label": {
+    "hitHard": "“No time to be cautious now. We hit him hard and fast.”",
+    "slowAndSteady": "“Recklessness is what he wants from us. Slow and steady.”"
+   }
+  },
+  "setup": {
+   "gatherSets": "Gather all cards from the *Piper at the Gates of Dawn*, *Circus Grounds*, *Children of the Goat*, *Illusory Tricks*, *Lunatic Night*, *New Moon Daredevils*, and *New Moon Entertainers* encounter sets. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/circus-ex-mortis/sets/108.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/circus-grounds.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/children-of-the-goat.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/illusory-tricks.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/lunatic-night.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/new-moon-daredevils.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/new-moon-entertainers.png' /></section>",
+   "placeLocations": "Put the three *The Big Top* locations into play along with Carousel, Games Gallery, Animal Cages, Performer Trailers, and Circus Gates (Doorway to Doom). Each investigator begins play at Circus Gates.",
+   "checkLog": "Check the Campaign Log. If the ringmaster had...",
+   "noDays": "...0 days to prepare, use “Act 2 — Audience Participation (v.I)” for this scenario. Remove each other copy of act 2 from the game.",
+   "someDays": "...between 1 and 4 days to prepare, place that many resources on the scenario reference card. Use “Act 2 — Audience Participation (v.II)” for this scenario. Remove each other copy of act 2 from the game.",
+   "manyDays": "...5 or more days to prepare, place that many resources on the scenario reference card. Use “Act 2 — Audience Participation (v.III)” for this scenario. Remove each other copy of act 2 from the game.",
+   "setAside": "Set the Sylvester Blake enemy aside, out of play."
+  },
+  "allsFair": {
+   "title": "The Show Must Go On",
+   "body": "<p>Once more, you slowly but deliberately unravel the illusions permeating the grounds and unmask the hidden entrance. You are now free to escape... but for the first time now, Sylvester Blake is in sight without crowds of innocents in need of protection. In spite of the other illusions, this may be your only chance to fight Blake without any handicaps.</p>"
+  },
+  "theTrueMonster": {
+   "title": "Got His Goat",
+   "body": "<p>You have stepped into the role of the beast tamer in this mad circus. The monster lashes and bays with frightening power, but you beat it back with equal courage. With all of Blake's subtlety beaten, there is little left but monstrous strength, and as you prove with one final blow, it is not enough to stop you.</p>"
+  },
+  "repeatShowing": {
+   "title": "Light of the False Moon",
+   "body": "<p>You've been so used to facing the circus in dark and moonlit places that you almost didn't realize that there is a full moon shining down on the circus grounds. The moon is almost empty, but its light seems very real &mdash; just like the other illusions.</p>"
+  },
+  "doomAndGloom": {
+   "title": "Blue Moon",
+   "body": "<p>With each passing moment, the moon looms ever closer, as if descending onto the circus grounds. Surely a catastrophic illusion like that is beyond Blake's capacity, or he would have done it from the start... right?</p>"
+  },
+  "whirlingSpectacle": {
+   "title": "Life is an Illusion",
+   "body": "<p>The illusions strobe and blare, overwhelming your senses from every angle and forcing you to your knees in physical pain at the assault.</p>",
+   "label": {
+    "physicalTrauma": "Suffer 1 physical trauma",
+    "mentalTrauma": "Suffer 1 mental trauma"
+   }
+  },
+  "circusGatesDoorwayToDoom": {},
+  "sylvesterBlake": {},
+  "theBlackGoat": {},
+  "duplicitousIllusion": {},
+  "phantomBeasts": {},
+  "shadowyPerformance": {},
+  "xp": {
+   "unmaskedBlake": "learning the truth about the ringmaster",
+   "bigTop": "revealing each *The Big Top* location"
+  },
+  "resolutions": {
+   "noResolution": {
+    "title": "No Resolution",
+    "body": "<p class='basic'>_If no resolution was reached (each investigator was defeated):_ If the investigators were defeated during act 1, read _Resolution 1_. If the investigators were defeated during act 2, read _Resolution 2_. Otherwise, read _Resolution 3_.</p>"
+   },
+   "resolution1": {
+    "title": "Resolution 1",
+    "body": "<p>_Resolution 1:_ You are trapped. Everywhere you turn, a new illusion waits. Around every corner, a member of the circus waiting to dispatch you. Blindly you stumble through a fog of light and sound, whirling ever faster.</p><p>“Destiny, was it?” You turn to see Blake striding toward you, his form little but a growing shadow in the spectacle. “Like the priestess of Diana and the fortune teller foresaw, we met, and indeed we clashed. But neither said anything about you leaving alive.”</p><ul><li>In your Campaign Log, record that *the investigators could not escape the circus*.</li><li>Each investigator is killed.</li><li>The investigators lose the campaign.</li></ul>"
+   },
+   "resolution2": {
+    "title": "Resolution 2",
+    "body": "<p>_Resolution 2:_ This was a trap to begin with, and there is no shame in escaping it alive. You leap through the circus gates, returning once again to the lazy Sunday afternoon in Los Angeles. Only a stray dog and a half-awake vagrant bear witness to your escape from that illusory hell, and perhaps it's better that way. Inciting a panic would only grant the circus a better smokescreen to escape. You're already hard pressed to determine where their ritual will take place, and you can't waste any time in finding it.</p><ul><li>In your Campaign Log, record that *the investigators clashed with Blake*.</li><li>Skip to _Resolution 5_.</li></ul>"
+   },
+   "resolution3": {
+    "title": "Resolution 3",
+    "body": "<p>_Resolution 3:_ You flee the circus for your life, making for the revealed exit ahead of the monster that Blake has become. You may have imagined something horrible at work from a worshipper of Shub-Niggurath, but for Blake himself to be an incarnation of the Black Goat is deeply disturbing. The revelation also lends some clarity to Blake's fervent belief in the prophecies of old. In one form or another, he — or it, rather — may have been present for those events.</p><p>The instant you pass through the revealed entrance, the spectacle ceases and the calm ambiance of the Los Angeles afternoon greets you. You wait tensely, still ready to fight or flee, but the circus grounds lie silent. Even in this form, Blake may not want to risk revealing anything that would betray the coming ritual — the very thing that you must discover before tomorrow.</p><ul><li>In your Campaign Log, record that *the investigators unmasked Blake*.</li><li>Each investigator earns 1 bonus experience as they have learned the truth about the ringmaster.</li><li>Skip to _Resolution 5_.</li></ul>"
+   },
+   "resolution4": {
+    "title": "Resolution 4",
+    "body": "<p>_Resolution 4:_ The Black Goat screams and writhes, its form disrupted and shifting in a slurry of animal features. As the thing roils, the illusions surrounding the circus blur and dissolve, like smoke in a strong wind. The face of the goat shifts briefly to a crude visage of Blake once more before one final screech bellows out, and its form is suddenly gone.</p><p>Stripped away from the circus grounds, the vanishing illusions reveal ripped tents, cracked lights, and an air of decay lingering in the aftermath. No trace of the other performers or savage monsters remain, leaving you alone to ponder the end of the ringmaster.</p><p>The revelation that Sylvester Blake was an incarnation of the Black Goat is unsettling to say the least, but explains just why he — or it, rather — believed so fervently in prophecies and visions. As an extension of Shub-Niggurath, it has existed for millennia, likely even guided the ancient cult that Apuleius helped to destroy. The cosmic events surrounding this ritual factored into everything that Blake did with the circus. And even without Blake, the ritual will continue... but where?</p><ul><li>In your Campaign Log, record that *the investigators struck down Blake*.</li><li>Proceed to _Resolution 5_.</li></ul>"
+   },
+   "resolution5": {
+    "title": "Resolution 5",
+    "body": "<p>_Resolution 5:_ Exhausted from escaping the circus trap, you trudge back to the hotel, weighed down as much mentally as physically. You have less than a day before the eclipse, and no leads to where it could take place. There is one hope, however. With Blake running the circus across the country and fattening the monsters as he traveled, he couldn't be organizing the ritual here in California directly. There simply wouldn't be time enough for everything. A branch of the cult of Shub-Niggurath must have been long established here in Los Angeles, preparing for the eclipse.</p><p>You settle into your room to ponder the problem, weighing time and risk in frustrating repetition. Not long into your meditations, Thea sits up with a quizzical expression and carries the book over to you. “Remember how the cult in ancient Rome disguised itself as one of Bacchus? What if they're using the same tactic now, hiding in plain sight as another organization like it?”</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 bonus experience if each *The Big Top* location was revealed during the scenario.</li><li>Add a {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Proceed to _Scenario VI: Bacchanalia_.</li></ul>"
+   }
+  },
+  "audienceParticipation": {
+   "releaseTheBeast": {
+    "title": "Release the Beast",
+    "body": "<p>The ringmaster's tricks and tactics fail to fool you, and he collapses down, coughing black ichor. Blake's ever-present grin is clenched in hate, but still smiling as he rises up. His skin seems to fade into the shadow, and his form mutates. Rapidly Blake evolves into one of the horrid caprine creatures, only much larger, and with that same glint of intelligent malice still in its eyes. A primal scream from its many mouths rips through the air.</p>"
+   },
+   "monstrousTransformation": {
+    "title": "Monstrous Transformation",
+    "body": "<p>The bestial roar from the abomination triggers a primal urge deep within you, one you've only felt since your assumption of the curse in New Orleans. A need to fight savagery with savagery.</p>"
+   }
+  }
+ }
+}

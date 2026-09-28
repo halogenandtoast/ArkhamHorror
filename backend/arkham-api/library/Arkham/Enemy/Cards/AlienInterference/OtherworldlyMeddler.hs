@@ -7,11 +7,11 @@ where
 import Arkham.Prelude
 
 import Arkham.Classes
-import Arkham.DamageEffect
 import Arkham.Enemy.CardDefs.AlienInterference qualified as Cards
 import Arkham.Enemy.Runner
 import Arkham.Matcher
 import Arkham.Matcher qualified as Matcher
+import Arkham.Message.Lifted.Damage (reduceDamageDealt)
 
 newtype OtherworldlyMeddler = OtherworldlyMeddler EnemyAttrs
   deriving anyclass (IsEnemy, HasModifiersFor)
@@ -31,19 +31,12 @@ instance HasAbilities OtherworldlyMeddler where
       ]
 
 instance RunMessage OtherworldlyMeddler where
-  runMessage msg e@(OtherworldlyMeddler attrs) = case msg of
+  runMessage msg e@(OtherworldlyMeddler attrs) = runQueueT $ case msg of
     UseThisAbility _ (isSource attrs -> True) 1 -> do
-      replaceMessageMatching
-        \case
-          Damaged (EnemyTarget eid) _ -> eid == toId attrs
-          _ -> False
-        \case
-          Damaged (EnemyTarget eid) dmg ->
-            [Damaged (EnemyTarget eid) (dmg {damageAssignmentAmount = max 0 (damageAssignmentAmount dmg - 1)})]
-          _ -> error "invalid match"
+      reduceDamageDealt attrs.id 1
       push $ RemoveDoom (toAbilitySource attrs 1) (toTarget attrs) 1
       pure e
     UseThisAbility _ (isSource attrs -> True) 2 -> do
       push $ PlaceDoom (toAbilitySource attrs 2) (toTarget attrs) 3
       pure e
-    _ -> OtherworldlyMeddler <$> runMessage msg attrs
+    _ -> OtherworldlyMeddler <$> liftRunMessage msg attrs

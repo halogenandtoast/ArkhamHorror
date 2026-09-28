@@ -24,9 +24,13 @@ import Arkham.Trait (Trait (Ally))
 -}
 getSealedTokensAtMatching :: HasGame m => ChaosTokenMatcher -> LocationId -> m [ChaosToken]
 getSealedTokensAtMatching matcher lid = do
-  onInvestigators <- select $ SealedOnInvestigator (InvestigatorAt $ LocationWithId lid) matcher
-  onAssets <- select $ SealedOnAsset (AssetAtLocation lid) matcher
-  pure $ nub (onInvestigators <> onAssets)
+  select
+    $ oneOf
+      [ SealedOnInvestigator (InvestigatorAt $ LocationWithId lid) matcher
+      , SealedOnAsset (AssetAtLocation lid) matcher
+      , SealedOnEnemy (EnemyAt $ LocationWithId lid) matcher
+      , SealedOnLocation (LocationWithId lid) matcher
+      ]
 
 -- * Amalthea Weaver
 

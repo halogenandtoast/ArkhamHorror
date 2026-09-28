@@ -98,6 +98,9 @@ const spreadStyle = computed(() => ({
   '--sealed-bg-collapsed-scale': `${Math.min(1, 20 / Math.max(layout.value.width, layout.value.height))}`,
 }))
 const shapePath = computed(() => layout.value.shapePath)
+// A single sealed token has nothing to spread out, and the expanded backdrop
+// around it reads as a UI glitch, so only a group can expand.
+const canExpand = computed(() => props.tokens.length > 1)
 const expanded = ref(false)
 </script>
 
@@ -105,7 +108,7 @@ const expanded = ref(false)
   <div
     v-if="tokens.length > 0"
     class="sealed-chaos-tokens no-card-overlay"
-    :class="{ 'sealed-chaos-tokens--expanded': expanded }"
+    :class="{ 'sealed-chaos-tokens--expanded': expanded && canExpand }"
     :style="spreadStyle"
     @mouseleave="expanded = false"
   >
@@ -126,7 +129,7 @@ const expanded = ref(false)
       @choose="emit('choose', $event)"
       class="sealed sealed-token"
       :style="{ '--sealed-index': index, ...positions[index] }"
-      @mouseenter="expanded = true"
+      @mouseenter="expanded = canExpand"
     />
   </div>
 </template>

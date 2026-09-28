@@ -25,7 +25,7 @@ instance HasModifiersFor TheBigTopSecondRing where
 instance HasAbilities TheBigTopSecondRing where
   getAbilities (TheBigTopSecondRing a) =
     extendRevealed1 a
-      $ restricted a 1 (exists $ enemy_ $ withTrait Performer <> #hunter)
+      $ restricted a 1 (exists $ enemy_ $ withTrait Performer <> oneOf [#hunter, #exhausted])
       $ forced
       $ DiscoverClues #after You (be a) (atLeast 1)
 

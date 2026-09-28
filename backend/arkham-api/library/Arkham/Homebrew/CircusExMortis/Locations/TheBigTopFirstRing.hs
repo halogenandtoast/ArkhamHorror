@@ -24,7 +24,13 @@ instance HasModifiersFor TheBigTopFirstRing where
 
 instance HasAbilities TheBigTopFirstRing where
   getAbilities (TheBigTopFirstRing a) =
-    extendRevealed1 a $ mkAbility a 1 $ forced $ DiscoverClues #after You (be a) (atLeast 1)
+    extendRevealed1 a
+      $ restricted
+        a
+        1
+        (exists $ enemy_ $ mapOneOf withTrait [Creature, Monster] <> oneOf [#hunter, #exhausted])
+      $ forced
+      $ DiscoverClues #after You (be a) (atLeast 1)
 
 instance RunMessage TheBigTopFirstRing where
   runMessage msg l@(TheBigTopFirstRing attrs) = runQueueT $ case msg of

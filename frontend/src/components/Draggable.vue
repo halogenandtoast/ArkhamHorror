@@ -621,8 +621,13 @@ function moveUp() {
       border: none;
       color: white;
       border-radius: 50%;
-      width: min(24px, 2vw);
-      height: min(24px, 2vw);
+      /* The global button rule pads 1px 11px, and box-sizing is border-box, so
+         22px of that came out of this box and crushed the glyph. It was also
+         sized `min(24px, 2vw)`, which only reaches 24px at a 1200px viewport --
+         every narrower window got a smaller box with the same padding. */
+      padding: 0;
+      width: 24px;
+      height: 24px;
       aspect-ratio: 1;
       display: flex;
       align-items: center;
@@ -639,6 +644,7 @@ function moveUp() {
 
       svg {
         fill: currentColor;
+        flex-shrink: 0;
       }
     }
   }

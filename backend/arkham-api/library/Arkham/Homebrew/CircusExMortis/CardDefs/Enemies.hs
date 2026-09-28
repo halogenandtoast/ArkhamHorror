@@ -244,7 +244,7 @@ theBlackGoat =
           Set.PiperAtTheGatesOfDawn
           1
       )
-      { cdHealthDamage = healthDamage 1
+      { cdHealthDamage = healthDamage 2
       , cdSanityDamage = sanityDamage 1
       , cdFight = fight 4
       , cdEvade = evade 4

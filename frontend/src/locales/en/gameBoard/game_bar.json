@@ -46,7 +46,7 @@
         "hideInertCardsTitle": "Hide Cards With No Ongoing Effect",
         "hideInertCards": "Once setup is over, tuck permanents whose text only applied at deck creation or setup — In the Thick of It, Adaptable, Observed — into a stack beside the play area.",
         "keybindingsTitle": "Keyboard Shortcuts",
-        "keybindings": "Which set of keys the board answers to. Tabletop Simulator puts undo on Ctrl+Z, rotates with Q and E, and spawns a resource on numpad 9; SCE's Upkeep hotkey ends the turn.",
+        "keybindings": "Use Tabletop Simulator style keybinds. Note that some of them will only work in debug mode.",
         "keybindingProfile": {
             "default": "Default",
             "tts": "Tabletop Simulator"

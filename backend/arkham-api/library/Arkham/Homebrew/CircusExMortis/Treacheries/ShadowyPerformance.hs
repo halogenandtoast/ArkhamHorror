@@ -6,6 +6,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMapM)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers (getSealedMoonTokens)
 import Arkham.Matcher
+import Arkham.SkillType (allSkills)
 import Arkham.Treachery.Import.Lifted
 
 newtype ShadowyPerformance = ShadowyPerformance TreacheryAttrs
@@ -19,7 +20,7 @@ instance HasModifiersFor ShadowyPerformance where
   getModifiersFor (ShadowyPerformance a) = for_ a.attached.location \lid ->
     modifySelectMapM a (investigatorAt lid) \iid -> do
       n <- length <$> getSealedMoonTokens iid
-      pure [AnySkillValue (-n) | n > 0]
+      pure [SkillModifier sk (-n) | n > 0, sk <- allSkills]
 
 instance HasAbilities ShadowyPerformance where
   getAbilities (ShadowyPerformance a) = [mkAbility a 1 $ forced $ RoundEnds #when]

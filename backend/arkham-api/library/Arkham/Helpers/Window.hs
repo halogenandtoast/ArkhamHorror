@@ -1645,14 +1645,24 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     -- fast player window via the actual turn investigator) -- NOT the NonFast
     -- action-taking window, so "Play during your turn" Fast cards cannot be played
     -- with a granted "as if it were your turn" action. See #4894.
-    Matcher.DuringTurn whoMatcher -> guardTiming #when $ \case
-      Window.DuringTurn who -> matchWho iid who whoMatcher
-      Window.FastPlayerWindow -> do
-        miid <- selectOne Matcher.TurnInvestigator
-        case miid of
-          Nothing -> pure False
-          Just who -> matchWho iid who whoMatcher
-      _ -> noMatch
+    Matcher.DuringTurn whoMatcher -> case wType of
+      -- Both turn-begins windows are during that investigator's turn, at either timing.
+      -- A reaction with no timing point of its own ("during another investigator's turn",
+      -- Safeguard (2)) can be used there, rather than first becoming available at the
+      -- action prompt -- by which point an `After your turn begins` Forced (The Red Clock
+      -- (2)) has already moved the active investigator away. #5784
+      --
+      -- Deliberately not extended to DuringYourAction: every ActionAbility carries that
+      -- window (Arkham.Ability), and no action is being taken yet.
+      Window.TurnBegins who -> matchWho iid who whoMatcher
+      _ -> guardTiming #when $ \case
+        Window.DuringTurn who -> matchWho iid who whoMatcher
+        Window.FastPlayerWindow -> do
+          miid <- selectOne Matcher.TurnInvestigator
+          case miid of
+            Nothing -> pure False
+            Just who -> matchWho iid who whoMatcher
+        _ -> noMatch
     -- "You have an action to take": matches the NonFast action-taking window
     -- (real turn or granted action), the genuine DuringTurn window, and the fast
     -- player window. See #4894.

@@ -2806,7 +2806,12 @@ runGameMessage msg g = case msg of
     pure $ g & phaseL .~ InvestigationPhase & undoPhaseStepL ?~ (gameScenarioSteps g + 1)
   BeginTurn x -> do
     player <- getPlayer x
-    pushM $ checkWindows [mkWhen (Window.TurnBegins x), mkAfter (Window.TurnBegins x)]
+    -- Two checks, not one batch: a `When your turn begins` reaction is a different timing
+    -- point from an `After your turn begins` Forced, and `runWindow`'s forced branch would
+    -- otherwise resolve the Forced first and offer the reaction only afterwards. #5784
+    whenWindow <- checkWindows [mkWhen (Window.TurnBegins x)]
+    afterWindow <- checkWindows [mkAfter (Window.TurnBegins x)]
+    pushAll [whenWindow, afterWindow]
     pure
       $ g
       & (activeInvestigatorIdL .~ x)

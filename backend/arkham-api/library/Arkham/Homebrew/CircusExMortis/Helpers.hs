@@ -7,13 +7,16 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.Direction (Direction (..))
+import Arkham.Effect.Builder
+import Arkham.Effect.Window
 import Arkham.Enemy.Types (Field (EnemyPlacement))
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.CustomChaosBag
 import Arkham.Helpers.FlavorText (chaosTokenImg, cols, compose, img, p, setTitle, tokenReveal)
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Scenario (scenarioField, setScenarioMeta)
+import Arkham.Helpers.SkillTest (getIsBeingInvestigated, getSkillTestInvestigator)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
@@ -23,18 +26,26 @@ import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Grid (Pos (..))
+import Arkham.Location.Types (LocationAttrs)
 import Arkham.Matcher
 import Arkham.Message (pattern PlaceCluesUpToClueValue)
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
+import Arkham.Message.Lifted.Log (remember)
+import Arkham.Modifier (Modifier)
+import Arkham.Name (Labeled (..), Named)
+import Arkham.Name qualified as Name
 import Arkham.Placement (Placement (InPosition))
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Scenario.Types (Field (ScenarioMeta))
+import Arkham.Scenario.Types (Field (ScenarioMeta, ScenarioRemembered))
+import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
 import Arkham.TokenBag
+import Control.Monad.Writer.Class
 import Data.Aeson.KeyMap qualified as KeyMap
+import Data.Map.Monoidal.Strict (MonoidalMap)
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "circusExMortis" a
@@ -361,3 +372,87 @@ sealMoonTokenOrLoseAction
 sealMoonTokenOrLoseAction source iid = unlessM (iid <=~> hasSealedMoonToken) do
   moonInBag <- selectAny moonToken
   if moonInBag then sealMoonTokenOn iid else loseActions iid source 1
+
+-- * Bacchanalia: vices
+
+{- | The four vices an investigator may claim in the scenario's intro. Each one is
+remembered about that investigator ('HomebrewScenarioLogKeyFor'), so the scenario
+log both shows them and pays them out as bonus experience at the resolution.
+-}
+data Vice = Revelry | Intimacy | Opulence | Violence
+  deriving stock (Show, Eq, Ord, Enum, Bounded)
+
+allVices :: [Vice]
+allVices = [minBound .. maxBound]
+
+-- | Namespaced so the frontend can pick the campaign's i18n scope out of the key.
+viceKey :: Vice -> Text
+viceKey v = "circusExMortis.AViceFor" <> tshow v
+
+viceByKey :: [(Text, Vice)]
+viceByKey = [(viceKey v, v) | v <- allVices]
+
+viceLogKey :: Named name => name -> InvestigatorId -> Vice -> ScenarioLogKey
+viceLogKey name iid v = HomebrewScenarioLogKeyFor (viceKey v) (Name.labeled name iid)
+
+recordVice :: ReverseQueue m => InvestigatorId -> Vice -> m ()
+recordVice iid v = do
+  name <- field InvestigatorName iid
+  remember $ viceLogKey name iid v
+
+vicesOf :: Set ScenarioLogKey -> InvestigatorId -> [Vice]
+vicesOf ks iid =
+  [ v | HomebrewScenarioLogKeyFor t (Labeled _ i) <- toList ks, i == iid, Just v <- [lookup t viceByKey]
+  ]
+
+{- | Reads the scenario log rather than modifiers, so it is safe to call from a
+card's 'HasModifiersFor' — the shroud reductions on the four themed locations all
+do. 'investigatorWithVice' is the matcher form.
+-}
+getVices :: HasGame m => InvestigatorId -> m [Vice]
+getVices iid = flip vicesOf iid <$> scenarioField ScenarioRemembered
+
+hasVice :: HasGame m => InvestigatorId -> Vice -> m Bool
+hasVice iid v = elem v <$> getVices iid
+
+getViceCount :: HasGame m => InvestigatorId -> m Int
+getViceCount = fmap length . getVices
+
+{- | Matcher form, backed by the 'ScenarioModifier's the scenario republishes from
+the log (the three Cultists' @Prey@ lines need a matcher). Never read these from
+inside a 'HasModifiersFor'; use 'hasVice' there.
+-}
+investigatorWithVice :: Vice -> InvestigatorMatcher
+investigatorWithVice = InvestigatorWithModifier . ScenarioModifier . viceKey
+
+{- | "While you are investigating <location>, if you have \"a vice for X,\" it gets
+-2 shroud value." Banquet Hall, Statuary Gardens, Private Parlor and Collection Hall
+each print this for a different vice. It reads the vice of whoever is running the
+investigation, so only that investigator sees the reduced shroud.
+-}
+viceShroudReduction
+  :: (HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
+  => LocationAttrs -> Vice -> m ()
+viceShroudReduction a v = modifySelfMaybe a do
+  liftGuardM $ getIsBeingInvestigated a
+  iid <- MaybeT getSkillTestInvestigator
+  liftGuardM $ hasVice iid v
+  pure [ShroudModifier (-2)]
+
+{- | "You get +1 skill value while parleying at <location> until the end of the
+round" — Banquet Hall, Statuary Gardens and Private Parlor all grant it. The
+effect is enabled only for that investigator's parley tests while they are at the
+location, and is removed at the end of the round.
+-}
+parleyBonusAt
+  :: (ReverseQueue m, WithEffect m, Sourceable source)
+  => source -> InvestigatorId -> LocationId -> m ()
+parleyBonusAt source iid lid = effectWithSource source iid do
+  enableOn
+    $ EffectSkillTestMatchingWindow
+    $ SkillTestMatches
+      [ WhileParleying
+      , SkillTestOfInvestigator (InvestigatorWithId iid <> InvestigatorAt (LocationWithId lid))
+      ]
+  removeOn EffectRoundWindow
+  apply $ AnySkillValue 1

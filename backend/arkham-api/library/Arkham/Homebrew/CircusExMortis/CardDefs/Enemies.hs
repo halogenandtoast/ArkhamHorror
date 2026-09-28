@@ -264,6 +264,8 @@ goatspawnCorruptor =
     , cdEvade = evade 4
     , cdHealth = healthPerInvestigator 6
     , cdCardTraits = setFromList [Humanoid, Monster, Elite]
+    , -- Victory 0: it belongs in the victory display, but is worth no experience.
+      cdVictoryPoints = Just 0
     }
 
 brashLothario :: CardDef
@@ -274,6 +276,7 @@ brashLothario =
     , cdEvade = evade 3
     , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
 
 partyAnimal :: CardDef
@@ -284,6 +287,7 @@ partyAnimal =
     , cdEvade = evade 2
     , cdHealth = health 4
     , cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
 
 sadisticSocialite :: CardDef
@@ -294,6 +298,7 @@ sadisticSocialite =
     , cdEvade = evade 2
     , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
 
 struttingPeacock :: CardDef
@@ -304,6 +309,7 @@ struttingPeacock =
     , cdEvade = evade 4
     , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
     }
 
 -- red_sunrise

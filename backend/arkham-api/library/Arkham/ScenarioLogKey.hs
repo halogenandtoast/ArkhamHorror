@@ -195,7 +195,29 @@ data ScenarioLogKey
   | TheInvestigatorsSpokeWithPriscillaThomas
   | -- Investigator Cards
     YouOweBiancaResources (Labeled InvestigatorId) Int
+  | {- | Homebrew campaigns record their own scenario-log keys through these three
+    wrappers, the way 'Arkham.CampaignLogKey.HomebrewCampaignLogKey' carries their
+    campaign-log keys. The 'Text' is the key name, namespaced
+    @"\<campaignScope\>.KeyName"@ so the frontend can pick the i18n scope out of it.
+    -}
+    HomebrewScenarioLogKey Text
+  | -- | A homebrew key remembered about one investigator (cf. 'HadADrink').
+    HomebrewScenarioLogKeyFor Text (Labeled InvestigatorId)
+  | -- | A homebrew key carrying an arbitrary payload.
+    HomebrewScenarioLogKeyWith Text JsonValue
   deriving stock (Eq, Show, Ord, Data)
+
+{- | Payload for 'HomebrewScenarioLogKeyWith'. aeson gives 'Value' no 'Ord'
+instance, but 'Arkham.Scenario.Types.ScenarioRemembered' is a 'Set', so ordering
+goes through 'show' — which agrees with 'Eq' because a 'KeyMap' element order
+depends only on the keys it holds.
+-}
+newtype JsonValue = JsonValue Value
+  deriving stock Data
+  deriving newtype (Eq, Show, ToJSON, FromJSON)
+
+instance Ord JsonValue where
+  compare = comparing show
 
 data ScenarioCountKey
   = CurrentDepth
@@ -261,8 +283,24 @@ instance ToGameLoggerFormat ScenarioLogKey where
     PulledTheMiddleLever (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} pulled the middle lever"
     PulledTheRightLever (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} pulled the right lever"
     TurnedTheValve (Labeled name iid) -> "{investigator:\"" <> display name <> "\":" <> tshow iid <> "} turned the valve"
+    -- Homebrew keys are namespaced "<campaignScope>.KeyName"; the scope is for
+    -- i18n lookup and does not belong in the printed text.
+    HomebrewScenarioLogKey t -> pack . go . dropScope $ unpack t
+    HomebrewScenarioLogKeyWith t _ -> pack . go . dropScope $ unpack t
+    HomebrewScenarioLogKeyFor t (Labeled name iid) ->
+      "{investigator:\""
+        <> display name
+        <> "\":"
+        <> tshow iid
+        <> "} "
+        <> (pack . go . dropScope $ unpack t)
     other -> pack . go $ show other
    where
+    dropScope :: String -> String
+    dropScope s = case break (== '.') s of
+      (_, '.' : rest) -> rest
+      _ -> s
+
     go :: String -> String
     go [] = []
     go (x : xs) = toLower x : go' xs

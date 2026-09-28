@@ -1,0 +1,59 @@
+{
+  "bacchanalia": {
+    "heading": "Scenario VI",
+    "intro": {
+      "title": "Scenario VI: Bacchanalia",
+      "body1": "<p>There's not a moment to lose now. You make a tour of the city's newspaper stands and delve into the society pages. If there's any big organization dedicated to Shub-Niggurath, it has to be exclusive, perhaps even secretive to avoid any ignorant socialite joining them by mistake, and likely has some obvious connection only noticeable to those looking for it. One name among the newspapers catches your eye more than the others — the Liber Pater Society.</p>",
+      "body2": "<p>From what you can gather, the society is long-established with a reputation for hosting lavish affairs for the elite. Many a celebrity and millionaire have been denied membership, the papers eagerly tell, and committees for public morals have often denounced their libertine activities, but never to any real effect. The few pictures available of their weekly galas depict scenes of Roman decadence, connecting the old cult alibi with modern entertainment of Blake's caliber. You're in luck that the society meets on Sunday nights.</p>",
+      "upperEchelons": "If 1 or more _Socialite_ or _Silver Twilight_ investigators were chosen for this campaign, those investigators read _Upper Echelons_.<p class='basic'>_Upper Echelons_: It's hardly your kind of crowd, but you're accustomed to social hobnobbing and prying into hidden affairs. It's almost a relief from the circus and wilderness.</p><p class='basic'>You begin this scenario with 2 additional resources.</p>",
+      "body3": "<p>You return to the hotel at once and prepare your best available clothes for the society affair. Though not exactly formal, Thea's fortune teller robes do fit the old Roman theme of their parties. She looks in the mirror self-consciously as you converse. “I've never been to something so... extravagant. Or maybe corrupt is more like it. The Four Leaf Circus wasn't exactly high class, but they had standards. What about you? Y'all don't have any... vices, do you?”</p>",
+      "choose": "Each investigator may choose any amount of the following:",
+      "revelry": "“Of course not.” Remember that you have “a vice for revelry.”",
+      "intimacy": "“Not a bit.” Remember that you have “a vice for intimacy.”",
+      "opulence": "“Don't worry.” Remember that you have “a vice for opulence.”",
+      "violence": "“I'll be fine.” Remember that you have “a vice for violence.” If the Curse of the Rougarou is in your deck, you must choose this option.",
+      "label": {
+        "revelry": "“Of course not.”",
+        "intimacy": "“Not a bit.”",
+        "opulence": "“Don't worry.”",
+        "violence": "“I'll be fine.”",
+        "done": "Done"
+      }
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *Bacchanalia*, *Cult of Shub-Niggurath*, *New Moon Entertainers*, *Panicked Masses*, and *Primordial Evils* encounter sets. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/circus-ex-mortis/sets/122.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/cult-of-shub-niggurath.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/new-moon-entertainers.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/panicked-masses.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/primordial-evils.png' /></section>",
+      "placeLocations": "Put the Vestibule, Banquet Hall, Statuary Gardens, Private Parlor, Collection Hall, and Upper Balcony locations into play. Each investigator begins play at Vestibule.",
+      "socialites": "Shuffle the five _Socialite_ story assets and put each one into play at a different location other than Vestibule. Place 1{perPlayer} clues on each of these assets.",
+      "setAside": "Set the following cards aside, out of play: Each copy of Terrified Captives and Wild Hysteria, each _Restricted_ location, Goatspawn Corruptor."
+    },
+    "vestibule": {
+      "resign": "“It's been a wonderful evening, but I really must be going.”"
+    },
+    "savageAltar": {
+      "label": {
+        "sealMoonToken": "Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card",
+        "loseAction": "Lose 1 action"
+      }
+    },
+    "socialite": {
+      "label": {
+        "takeAdditionalClue": "Take control of 1 additional clue",
+        "discoverClue": "Discover 1 clue from this location"
+      }
+    },
+    "feverPitch": {
+      "label": {
+        "physicalTrauma": "Suffer 1 physical trauma",
+        "mentalTrauma": "Suffer 1 mental trauma"
+      }
+    },
+    "xp": {
+      "vices": "each vice you took at the start of the scenario"
+    },
+    "resolutions": {
+      "resolution1": "<p>You stumble out the front door of the manor, struggling to find your wits and scrambling to defend yourself, but you find that nothing pursues you. The party-goers are so devoted to their wild activity that none of them can find the time or inclination to chase you. You seize the strange chance and retreat to safety.</p><p>This unfortunately puts you back to where you were hours ago, having learned nothing substantial from the party. However, knowing that the Liber Pater Society is in fact a branch of the Cult of Shub-Niggurath, they won't fail to attend the ritual to their foul deity. You take up a quiet vigil through the night as you lick your wounds, waiting for the members to depart to the ritual site en masse. This will spread you thin, to be sure, but the alternative is to abandon your quest in the final stretch.</p>",
+      "resolution2": "<p>You retire from the party at an almost leisurely pace that feels quite out of place with the last two weeks of frantic peril. The society — and the cult — must feel secure in the upcoming ritual to behave so frivolously. Regardless of how they feel, you depart with the knowledge of their site, and a welcome feeling of accomplishment. From here, it's back for as much sleep as you can gather. It will be a busy morning tomorrow.</p>",
+      "resolution3": "<p>Thoughts of destiny and prophecy occupy your mind late into the night. For all your wits, is everything arranged to lead you to this confrontation? Or has it all depended on someone acting of their own accord, simply hoping for the best? You're not certain which you like better.</p>"
+    }
+  }
+}

@@ -566,6 +566,20 @@ function moveUp() {
     }
   }
 
+  /* Debug panels get their own chrome: the default desaturated green reads as an
+     ordinary game prompt, and a debug window should be obviously not that. Cool
+     blue-slate picked to match the minimize button already in this header, with a
+     teal edge -- deliberately not magenta, which means "the game wants a choice". */
+  &:has(.debug-modal) {
+    background: rgba(60, 79, 90, 0.62);
+    border-color: rgba(102, 200, 214, 0.28);
+
+    > header {
+      background: rgba(18, 26, 31, 0.78);
+      border-bottom: 1px solid rgba(102, 200, 214, 0.22);
+    }
+  }
+
   &:has(.amount-modal) {
     background: #735e7b;
     border-color: rgba(255, 255, 255, 0.18);

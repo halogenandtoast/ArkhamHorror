@@ -102,7 +102,7 @@ const hasPool = computed(() => {
 <template>
   <Draggable>
     <template #handle><h2>{{ $t('debug.asset.title') }}</h2></template>
-    <div class="asset--outer">
+    <div class="debug-modal asset--outer">
       <div class="asset" :data-index="asset.cardId">
         <div class="card-frame">
           <div class="card-wrapper">
@@ -225,7 +225,9 @@ const hasPool = computed(() => {
   padding: 10px;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  /* Card pinned to the top: the button column is taller than the art, and
+     centring it left the card floating mid-panel. */
+  align-items: flex-start;
   gap: 10px;
 }
 

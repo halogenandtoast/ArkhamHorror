@@ -67,7 +67,7 @@ const debug = useDebug()
 <template>
   <Draggable>
     <template #handle><h2>{{ $t('debug.concealedCard.title') }}</h2></template>
-    <div class="concealed-card--outer">
+    <div class="debug-modal concealed-card--outer">
       <div class="concealed-card" :data-index="card.id">
         <div class="card-frame">
           <div class="card-wrapper">
@@ -108,7 +108,9 @@ const debug = useDebug()
   padding: 10px;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  /* Card pinned to the top: the button column is taller than the art, and
+     centring it left the card floating mid-panel. */
+  align-items: flex-start;
   gap: 10px;
 }
 

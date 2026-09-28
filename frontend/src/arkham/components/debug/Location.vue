@@ -81,7 +81,7 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
 <template>
   <Draggable>
     <template #handle><h2>{{ $t('debug.location.title') }}</h2></template>
-    <div class="location--outer">
+    <div class="debug-modal location--outer">
       <div class="location" :data-index="location.cardId">
         <div class="card-frame">
           <div class="card-wrapper">
@@ -163,7 +163,9 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
   padding: 10px;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  /* Card pinned to the top: the button column is taller than the art, and
+     centring it left the card floating mid-panel. */
+  align-items: flex-start;
   gap: 10px;
 }
 

@@ -96,6 +96,41 @@ const hasPool = computed(() => {
   return cardCode.value == 'c07189' || health
 })
 
+/* The + keeps going through DealDamage so the damage windows and the defeat check
+ * still fire; the - heals, which is the real inverse rather than silently pulling
+ * tokens off. Shift does five, matching the rest of the debug panels. */
+function dealDamage(amount: number) {
+  debug.send(props.game.id, {
+    tag: 'DamageMessage',
+    contents: {
+      tag: 'DealDamage_',
+      contents: [
+        { tag: 'EnemyTarget', contents: id.value },
+        {
+          damageAssignmentSource: { tag: 'InvestigatorSource', contents: investigatorId.value },
+          damageAssignmentAmount: amount,
+          damageAssignmentDirect: true,
+          damageAssignmentDelayed: false,
+          damageAssignmentDamageEffect: 'NonAttackDamageEffect',
+        },
+      ],
+    },
+  })
+}
+
+function healDamage(amount: number) {
+  debug.send(props.game.id, {
+    tag: 'HealDamage',
+    contents: [{ tag: 'EnemyTarget', contents: id.value }, { tag: 'GameSource' }, amount],
+  })
+}
+
+/* Damage and horror dealt are read off the enemy (already modified) and nudged by
+ * stacking a signed modifier, the same mechanism the old "Increase Damage Dealt"
+ * button used -- so a -1 nets an earlier +1 out rather than editing it. */
+const adjustDealt = (tag: 'DamageDealt' | 'HorrorDealt', amount: number) =>
+  createModifier({ tag: 'EnemyTarget', contents: id.value }, { tag, contents: amount })
+
 const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: unknown}) => 
   debug.send(props.game.id,
     { tag: 'CreateWindowModifierEffect'
@@ -144,6 +179,18 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
             />
           </div>
         </div>
+        <div class="debug-steppers">
+          <div class="debug-stepper" v-tooltip="$t('debug.enemy.damageDealt')">
+            <button type="button" @click="adjustDealt('DamageDealt', -1)">−</button>
+            <PoolItem type="health" :amount="enemy.healthDamage" />
+            <button type="button" @click="adjustDealt('DamageDealt', 1)">+</button>
+          </div>
+          <div class="debug-stepper" v-tooltip="$t('debug.enemy.horrorDealt')">
+            <button type="button" @click="adjustDealt('HorrorDealt', -1)">−</button>
+            <PoolItem type="horror" :amount="enemy.sanityDamage" />
+            <button type="button" @click="adjustDealt('HorrorDealt', 1)">+</button>
+          </div>
+        </div>
       </div>
       <div class="debug-panel">
         <section class="debug-section">
@@ -159,11 +206,11 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <section class="debug-section">
           <span class="debug-label">{{ $t('debug.common.placeTokens') }}</span>
           <div class="debug-row">
-            <button
-              v-tooltip="$t('debug.enemy.shiftFive')"
-              @click.exact="debug.send(game.id, {tag: 'DamageMessage', contents: {tag: 'DealDamage_', contents: [{tag: 'EnemyTarget', contents: id}, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 1, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]}})"
-              @click.shift="debug.send(game.id, {tag: 'DamageMessage', contents: {tag: 'DealDamage_', contents: [{tag: 'EnemyTarget', contents: id}, {damageAssignmentSource: {tag: 'InvestigatorSource', contents:investigatorId}, damageAssignmentAmount: 5, damageAssignmentDirect: true, damageAssignmentDelayed: false, damageAssignmentDamageEffect: 'NonAttackDamageEffect'}]}})"
-            >{{ $t('debug.enemy.addDamage') }}</button>
+            <div class="debug-stepper" v-tooltip="$t('debug.enemy.damage')">
+              <button type="button" @click.exact="healDamage(1)" @click.shift="healDamage(5)">−</button>
+              <PoolItem type="health" :amount="damage || 0" />
+              <button type="button" @click.exact="dealDamage(1)" @click.shift="dealDamage(5)">+</button>
+            </div>
             <button v-if="anyTokens" @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'ClearTokens_', contents: { tag: 'EnemyTarget', contents: id}}})">{{ $t('debug.common.removeAllTokens') }}</button>
           </div>
           <div class="debug-row">
@@ -198,7 +245,6 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
         <section class="debug-section">
           <span class="debug-label">{{ $t('debug.common.modifiers') }}</span>
           <div class="debug-row">
-            <button @click="createModifier({tag: 'EnemyTarget', contents: id}, {tag: 'DamageDealt', contents: 1})">{{ $t('debug.enemy.increaseDamageDealt') }}</button>
             <button @click="createModifier({tag: 'EnemyTarget', contents: id}, {tag: 'AddKeyword', contents: {tag: 'Hunter'}})">{{ $t('debug.enemy.addHunter') }}</button>
             <button @click="createModifier({tag: 'EnemyTarget', contents: id}, {tag: 'HealthModifier', contents: 1})">{{ $t('debug.enemy.increaseHealth') }}</button>
           </div>
@@ -288,7 +334,45 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
   background: var(--background-dark);
   color: var(--text);
   font-size: 0.8rem;
-  padding: 6px 8px;
+  /* Extra right padding so the native chevron is not flush against the border. */
+  padding: 6px 14px 6px 8px;
+}
+
+.debug-steppers {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.debug-stepper {
+  --pool-token-width: 26px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.debug-stepper button {
+  min-width: 0;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  background: var(--background-dark);
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.debug-stepper button:hover {
+  background: var(--button);
+  border-color: var(--select);
 }
 
 /* A sealed token doubles as its own release button: the × only shows on hover so

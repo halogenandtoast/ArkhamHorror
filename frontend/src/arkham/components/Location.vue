@@ -760,7 +760,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
         </button>
 
         <template v-if="debug.active">
-          <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
+          <button class="debug-open" @click="debugging = true">{{ $t('enemy.debug') }}</button>
         </template>
       </div>
       <div class="attachments" v-if="hasAttachments">

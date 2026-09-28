@@ -203,6 +203,12 @@ h2.title {
   font-size: calc(var(--card-token-width) * 0.62) !important;
 }
 
+/* The per-card "Debug" opener sits directly beneath the card art, where it was
+   flush against it. */
+.debug-open {
+  margin-top: 4px;
+}
+
 /* Debug windows: a column of [card + controls] with a full-width close along the
    bottom, so closing is one target in the same place in every panel. The classes
    live here rather than in each panel's scoped styles because all four share them,

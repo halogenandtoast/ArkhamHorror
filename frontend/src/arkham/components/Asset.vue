@@ -562,7 +562,7 @@ function startDrag(event: DragEvent) {
         :attached="true"
       />
       <template v-if="debug.active">
-        <button @click="debugging = true">{{ $t('enemy.debug') }}</button>
+        <button class="debug-open" @click="debugging = true">{{ $t('enemy.debug') }}</button>
       </template>
       <template v-if="isTheBeyond">
         <div v-if="(asset.assets?.length ?? 0) > 0 || (asset.enemies?.length ?? 0) > 0" class="spirit-manifest-row">

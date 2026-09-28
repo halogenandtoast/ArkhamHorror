@@ -39,7 +39,9 @@ button {
   /* Tight vertically, roomy horizontally: these sit in dense rows and stacks, so
      height is the expensive axis. */
   padding: 1px 11px;
-  font-family: inherit;
+  /* The platform UI face renders crisper at this size than the body font: none of
+     the bundled faces is a UI sans, they are all display/flavour faces. */
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: min(12px, 2vw);
   font-weight: 600;
   letter-spacing: 0.01em;

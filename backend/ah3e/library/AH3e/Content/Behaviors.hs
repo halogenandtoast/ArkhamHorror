@@ -3,6 +3,7 @@ module AH3e.Content.Behaviors (behaviors) where
 import AH3e.Content.AllyBehaviors qualified as Allies
 import AH3e.Content.ConditionBehaviors qualified as Conditions
 import AH3e.Content.Core.ApproachOfAzathothBehaviors qualified as ApproachOfAzathoth
+import AH3e.Content.Core.EchoesOfTheDeepBehaviors qualified as EchoesOfTheDeep
 import AH3e.Content.Core.FeastOfUmordhothBehaviors qualified as FeastOfUmordhoth
 import AH3e.Content.Core.InvestigatorBehaviors qualified as Investigators
 import AH3e.Content.HeadlineBehaviors qualified as Headlines
@@ -22,6 +23,7 @@ behaviors =
   ApproachOfAzathoth.behaviors
     <> Investigators.behaviors
     <> FeastOfUmordhoth.behaviors
+    <> EchoesOfTheDeep.behaviors
     <> Conditions.behaviors
     <> Allies.behaviors
     <> Headlines.behaviors

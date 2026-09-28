@@ -297,6 +297,8 @@ data CodexBehavior = CodexBehavior
   -- ^ answers a monster arriving on the board, wherever it came from
   , afterMonsterDefeated :: CodexEntry -> CardId -> GameM [Message]
   , componentActions :: [ComponentActionDef]
+  , reactions :: CodexEntry -> InvestigatorId -> Trigger -> GameM [Reaction]
+  -- ^ what a codex card offers an investigator when something triggers
   , blockedSpaces :: CodexEntry -> GameM [SpaceId]
   , spaceEncounter :: CodexEntry -> SpaceId -> Maybe Effect
   }
@@ -312,6 +314,7 @@ defaultCodexBehavior =
     , afterMonsterSpawn = \_ _ -> pure []
     , afterMonsterDefeated = \_ _ -> pure []
     , componentActions = []
+    , reactions = \_ _ _ -> pure []
     , blockedSpaces = \_ -> pure []
     , spaceEncounter = \_ _ -> Nothing
     }

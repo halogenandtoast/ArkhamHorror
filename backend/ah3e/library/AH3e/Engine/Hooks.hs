@@ -126,7 +126,9 @@ reactionsFor trigger = do
       cards <- fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
         b <- assetBehavior cid
         b.reactions cid trigger
-      pure (sheet <> cards)
+      entries <- use #codex
+      codex <- fmap concat $ for entries \e -> (codexBehavior e.number).reactions e iid trigger
+      pure (sheet <> cards <> codex)
 
 {- | Cards that can simply prevent one harm this round, with their names, for the
 offer the prevention step makes.

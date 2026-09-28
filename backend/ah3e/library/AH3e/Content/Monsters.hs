@@ -13,6 +13,7 @@ import AH3e.Types.Card
 import AH3e.Types.Effect
 import AH3e.Types.Ids
 import AH3e.Types.Skill
+import Data.Map.Strict qualified as Map
 
 {- | A monster that moves "directly to" its prey rather than a fixed number of
 spaces; the engine walks the whole path, so any distance past the board's
@@ -26,6 +27,13 @@ effects rather than drawn from the monster deck.
 -}
 noSpawnText :: SpaceRule
 noSpawnText = CustomSpaceRule "no spawn text"
+
+{- | Monsters printed outside the core set. A scenario that asks for "every Deep
+One monster" names them all, and setup keeps back the ones whose box is not in
+play, so this is what tells the two apart.
+-}
+printedIn :: Map CardCode Expansion
+printedIn = Map.fromList [("entranced-hybrid", UnderDarkWaves), ("frenzied-hunter", UnderDarkWaves)]
 
 {- | The monsters that leave a remnant behind when they are defeated (429.9). The
 cultists and the human enemies leave nothing, so the list is shorter than the deck.
@@ -149,7 +157,7 @@ monsterWith code name copies traits speed spawn activation (health, elite) (atk,
   CardDef
     code
     name
-    CoreSet
+    (Map.findWithDefault CoreSet code printedIn)
     copies
     ( MonsterCard
         MonsterDef

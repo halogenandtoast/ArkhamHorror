@@ -141,7 +141,11 @@ setupScenario sc = do
   events <- for sc.eventCards newCard
   #decks . #event <~ shuffle events
   -- 104
-  let (known, unknown) = partition (isJust . cardDef . fst) sc.monsters
+  {- A sheet that asks for a whole trait ("every Deep One monster") names the
+  monsters from every box, so the ones whose expansion is not in play are left out
+  rather than treated as missing. -}
+  let (found, unknown) = partition (isJust . cardDef . fst) sc.monsters
+      known = [m | m@(mcode, _) <- found, maybe False ((`elem` expansions) . (.expansion)) (cardDef mcode)]
   for_ unknown \(mcode, _) -> logText ("Monster card data missing: " <> coerce mcode)
   monsters <- fmap concat $ for known \(mcode, n) -> replicateM n (newCard mcode)
   placed <- placeStartingMonsters monsters sc.startingMonsters

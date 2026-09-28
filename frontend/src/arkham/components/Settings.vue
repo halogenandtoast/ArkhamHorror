@@ -595,6 +595,8 @@ onBeforeUnmount(() => {
   flex: 0 0 auto;
   border: 0;
   border-bottom: 2px solid transparent;
+  /* The global button radius would curl the active underline up at both ends. */
+  border-radius: 0;
   background: none;
   color: var(--background-light);
   font-family: Teutonic, serif;

@@ -57,7 +57,17 @@ import { useEventStore } from '@/arkham/stores/event'
 import { useEventTimer } from '@/arkham/composables/useEventTimer'
 import { useStepPoller } from '@/arkham/composables/useStepPoller'
 import { awaitingOrganizer, type SharedEventState } from '@/arkham/types/EpicEvent'
-import { useMenu } from '@/composable/menu'
+import { useMenu, type MenuEntry } from '@/composable/menu'
+import { useKeybindings, type HoverAction } from '@/arkham/keybindings'
+import {
+  assetTarget,
+  enemyTarget,
+  investigatorTarget,
+  locationTarget,
+  placeTokensOn,
+  type PlaceableToken,
+  type SealTarget,
+} from '@/arkham/debugCardDrop'
 import useEmitter from '@/composable/useEmitter'
 import { useDebug } from '@/arkham/debug'
 import { cardImg, imgsrc, isTypingTarget } from '@/arkham/helpers'
@@ -163,6 +173,14 @@ const settings = useSettings()
 const { inlineModals } = storeToRefs(settings)
 const eventStore = useEventStore()
 const { addEntry, menuItems } = useMenu()
+const {
+  is: isKey,
+  isHover: isHoverKey,
+  boundHoverActions,
+  anyBindingMatches,
+  keys: shortcutKeys,
+  profile: keybindingProfile,
+} = useKeybindings()
 const toast = useToast()
 
 // "Epic Multiplayer": a group's game can be entered two ways — via the dashboard's
@@ -700,7 +718,7 @@ addEntry({
   id: 'viewSettings',
   icon: AdjustmentsHorizontalIcon,
   content: t('gameBar.viewSettings'),
-  shortcut: 'S',
+  binding: 'viewSettings',
   nested: 'view',
   action: () => (showSettings.value = !showSettings.value),
 })
@@ -709,7 +727,7 @@ addEntry({
   id: 'viewHistory',
   icon: ClockIcon,
   content: t('gameBar.viewHistory'),
-  shortcut: 'H',
+  binding: 'viewHistory',
   nested: 'view',
   action: () => (showHistory.value = !showHistory.value),
 })
@@ -1541,13 +1559,83 @@ watch(uiLock, async () => {
 
 const confirmingUndoScenario = ref(false)
 
-const actionMap = computed<Map<string, () => void>>(() => {
-  const map = new Map<string, () => void>()
+/* A menu entry names its shortcut so it follows the active keybinding profile;
+ * `shortcut` remains the raw-key escape hatch for keys no profile remaps. */
+const runMenuShortcut = (event: KeyboardEvent): boolean => {
   for (const item of menuItems.value) {
-    if (item.shortcut) map.set(item.shortcut, item.action)
+    if (item.binding ? isKey(item.binding, event) : item.shortcut === event.key) {
+      item.action()
+      return true
+    }
   }
-  return map
-})
+  return false
+}
+
+const menuShortcutKeys = (item: MenuEntry): string[] => {
+  if (item.binding) return shortcutKeys(item.binding)
+  return item.shortcut ? [item.shortcut] : []
+}
+
+/* The card under the cursor as a debug target. `data-id` sits on the card image for
+ * assets, enemies and locations, and on the two wrappers an investigator renders as
+ * -- the same four kinds `debugCardDrop` can aim at with a drag.
+ *
+ * `closest` rather than the element itself, because these keys are pressed while
+ * pointing at whatever happens to be on top: a status badge, a token pool, the
+ * action pips over a portrait. The nearest ancestor wins, so an asset in a player
+ * area still resolves to the asset and not to the investigator behind it. */
+const hoveredCardTarget = (): SealTarget | null => {
+  const id = document
+    .elementFromPoint(mouseX, mouseY)
+    ?.closest('[data-id]')
+    ?.getAttribute('data-id')
+  const currentGame = game.value
+  if (!id || !currentGame) return null
+  if (currentGame.assets[id]) return assetTarget(id)
+  if (currentGame.enemies[id]) return enemyTarget(id)
+  if (currentGame.locations[id]) return locationTarget(id)
+  if (currentGame.investigators[id]) return investigatorTarget(id)
+  return null
+}
+
+const HOVER_TOKENS: Record<Exclude<HoverAction, 'exhaustHovered'>, PlaceableToken> = {
+  placeDamage: 'Damage',
+  placeHorror: 'Horror',
+  placeDoom: 'Doom',
+  placeClue: 'Clue',
+  placeResource: 'Resource',
+}
+
+/* Runs before the board-level shortcuts, and only when a card is really under the
+ * cursor, which is what lets one press place a resource on the card you are pointing
+ * at and take resources from the pool otherwise -- the way SCE's numpad 9 does.
+ *
+ * Debug-only, because placing a token is not a player action here: the engine owns
+ * every token on the table. */
+const runHoverShortcut = (event: KeyboardEvent): boolean => {
+  if (!debug.active) return false
+  const currentGame = game.value
+  if (!currentGame) return false
+
+  const target = hoveredCardTarget()
+  if (!target) return false
+
+  if (isHoverKey('exhaustHovered', event)) {
+    if (target.tag !== 'AssetTarget') return false
+    const exhausted = currentGame.assets[target.contents]?.exhausted
+    debug.send(currentGame.id, { tag: exhausted ? 'Ready' : 'Exhaust', contents: target })
+    return true
+  }
+
+  for (const [action, token] of Object.entries(HOVER_TOKENS)) {
+    if (!isHoverKey(action as HoverAction, event)) continue
+    // Same convention as dragging a token out of the debug panel: shift places five.
+    placeTokensOn(currentGame.id, target, token, event.shiftKey ? 5 : 1)
+    return true
+  }
+
+  return false
+}
 
 const canUndoScenario = computed(() => {
   if (!game.value) return false
@@ -1658,9 +1746,10 @@ const feedKonami = (rawKey: string): boolean => {
 const handleKeyPress = (event: KeyboardEvent) => {
   if (filingBug.value) return
   if (isTypingTarget(event.target)) return
-  if (event.ctrlKey) return
-  if (event.metaKey) return
   if (event.altKey) return
+  /* Ctrl/Cmd chords stay the browser's unless the active profile actually asked
+   * for one -- the TTS profile puts undo on Ctrl+Z. */
+  if ((event.ctrlKey || event.metaKey) && !anyBindingMatches(event)) return
 
   if (feedKonami(event.key)) return
 
@@ -1692,9 +1781,10 @@ const handleKeyPress = (event: KeyboardEvent) => {
       confirmingUndoScenario.value = true
       return
     }
-    // Pressing U again while armed = single undo (re-pressing the prefix)
-    if (k === 'u') {
+    // Pressing the prefix again while armed = single undo
+    if (isKey('undo', event) || isKey('undoChord', event)) {
       clearUndoChord()
+      event.preventDefault()
       undo()
       return
     }
@@ -1702,27 +1792,30 @@ const handleKeyPress = (event: KeyboardEvent) => {
     clearUndoChord()
   }
 
-  if (event.key === 'u') {
+  if (isKey('undo', event)) {
+    event.preventDefault()
     undo()
     return
   }
 
-  if (event.key === 'U') {
+  if (isKey('undoChord', event)) {
     armUndoChord()
     return
   }
 
-  if (event.key === 'D') {
+  if (isKey('toggleDebug', event)) {
     debug.toggle()
     return
   }
 
-  if (event.key === '?') {
+  if (isKey('showShortcuts', event)) {
     showShortcuts.value = !showShortcuts.value
     return
   }
 
-  if (event.key === ' ' || event.code === 'Space') {
+  if (runHoverShortcut(event)) return
+
+  if (isKey('continue', event) || event.code === 'Space') {
     event.preventDefault()
 
     // Dismissing the draw spotlight runs the flight to the hand, so it cannot go
@@ -1773,7 +1866,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     return
   }
 
-  if (event.key === 'd') {
+  if (isKey('draw', event)) {
     const draw = choices.value.findIndex((c) => {
       if (c.tag !== Message.MessageType.COMPONENT_LABEL) return false
       if (c.component.tag !== 'InvestigatorDeckComponent') return false
@@ -1793,7 +1886,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     return
   }
 
-  if (event.key === 'r') {
+  if (isKey('takeResources', event)) {
     const resource = choices.value.findIndex((c) => {
       if (c.tag !== Message.MessageType.COMPONENT_LABEL) return false
       if (c.component.tag !== 'InvestigatorComponent') return false
@@ -1805,27 +1898,8 @@ const handleKeyPress = (event: KeyboardEvent) => {
     return
   }
 
-  if (event.key === 'e') {
+  if (isKey('endTurn', event)) {
     if (!game.value || !playerId.value) return
-    const elementUnderMouse = document.elementFromPoint(mouseX, mouseY)
-    if (debug.active && elementUnderMouse) {
-      const dataId = elementUnderMouse.getAttribute('data-id')
-      if (dataId && game.value.assets[dataId]) {
-        const exhausted = elementUnderMouse.classList.contains('exhausted')
-        if (exhausted) {
-          debug.send(game.value.id, {
-            tag: 'Ready',
-            contents: { tag: 'AssetTarget', contents: dataId },
-          })
-        } else {
-          debug.send(game.value.id, {
-            tag: 'Exhaust',
-            contents: { tag: 'AssetTarget', contents: dataId },
-          })
-        }
-        return
-      }
-    }
     const endTurn = choices.value.findIndex((c) => {
       if (c.tag !== Message.MessageType.END_TURN_BUTTON) return false
       return game.value?.investigators[c.investigatorId]?.playerId === playerId.value
@@ -1834,7 +1908,7 @@ const handleKeyPress = (event: KeyboardEvent) => {
     return
   }
 
-  actionMap.value.get(event.key)?.()
+  runMenuShortcut(event)
 }
 
 // Sidebar
@@ -2413,6 +2487,7 @@ onUnmounted(() => {
       <div class="shortcuts-modal">
         <div class="shortcuts-header">
           <h2 class="shortcuts-title">{{ $t('gameBar.shortcutsTitle') }}</h2>
+          <p class="shortcuts-profile">{{ $t(`gameBar.settings.keybindingProfile.${keybindingProfile}`) }}</p>
         </div>
 
         <div class="shortcuts-body">
@@ -2421,19 +2496,19 @@ onUnmounted(() => {
             <div class="shortcut-list">
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutSkipTriggers') }}</div>
-                <div class="shortcut-keys"><kbd> </kbd></div>
+                <div class="shortcut-keys"><kbd>{{ shortcutKeys('continue').join('+') }}</kbd></div>
               </div>
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutEndTurn') }}</div>
-                <div class="shortcut-keys"><kbd>e</kbd></div>
+                <div class="shortcut-keys"><kbd>{{ shortcutKeys('endTurn').join('+') }}</kbd></div>
               </div>
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutDraw') }}</div>
-                <div class="shortcut-keys"><kbd>d</kbd></div>
+                <div class="shortcut-keys"><kbd>{{ shortcutKeys('draw').join('+') }}</kbd></div>
               </div>
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutTakeResources') }}</div>
-                <div class="shortcut-keys"><kbd>r</kbd></div>
+                <div class="shortcut-keys"><kbd>{{ shortcutKeys('takeResources').join('+') }}</kbd></div>
               </div>
             </div>
           </section>
@@ -2443,37 +2518,49 @@ onUnmounted(() => {
             <div class="shortcut-list">
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutUndo') }}</div>
-                <div class="shortcut-keys"><kbd>u</kbd></div>
+                <div class="shortcut-keys"><kbd>{{ shortcutKeys('undo').join('+') }}</kbd></div>
               </div>
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('game.shortcutUndoActionStart') }}</div>
                 <div class="shortcut-keys">
-                  <kbd>U</kbd><span class="chord-arrow">+</span><kbd>A</kbd>
+                  <kbd>{{ shortcutKeys('undoChord').join('+') }}</kbd><span class="chord-arrow">+</span><kbd>A</kbd>
                 </div>
               </div>
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('game.shortcutUndoTurnStart') }}</div>
                 <div class="shortcut-keys">
-                  <kbd>U</kbd><span class="chord-arrow">+</span><kbd>T</kbd>
+                  <kbd>{{ shortcutKeys('undoChord').join('+') }}</kbd><span class="chord-arrow">+</span><kbd>T</kbd>
                 </div>
               </div>
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('game.shortcutUndoPhaseStart') }}</div>
                 <div class="shortcut-keys">
-                  <kbd>U</kbd><span class="chord-arrow">+</span><kbd>P</kbd>
+                  <kbd>{{ shortcutKeys('undoChord').join('+') }}</kbd><span class="chord-arrow">+</span><kbd>P</kbd>
                 </div>
               </div>
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('game.shortcutUndoRoundStart') }}</div>
                 <div class="shortcut-keys">
-                  <kbd>U</kbd><span class="chord-arrow">+</span><kbd>R</kbd>
+                  <kbd>{{ shortcutKeys('undoChord').join('+') }}</kbd><span class="chord-arrow">+</span><kbd>R</kbd>
                 </div>
               </div>
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutRestartScenario') }}</div>
                 <div class="shortcut-keys">
-                  <kbd>U</kbd><span class="chord-arrow">+</span><kbd>S</kbd>
+                  <kbd>{{ shortcutKeys('undoChord').join('+') }}</kbd><span class="chord-arrow">+</span><kbd>S</kbd>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Debug-only: placing a token is not a player action, the engine owns them. -->
+          <section v-if="debug.active" class="shortcuts-section">
+            <h3 class="section-title">{{ $t('game.shortcutSection.hovered') }}</h3>
+            <p class="section-hint">{{ $t('game.shortcutHover.hint') }}</p>
+            <div class="shortcut-list">
+              <div v-for="[action, binding] in boundHoverActions" :key="action" class="shortcut-row">
+                <div class="shortcut-name">{{ $t(`game.shortcutHover.${action}`) }}</div>
+                <div class="shortcut-keys"><kbd>{{ binding.display.join('+') }}</kbd></div>
               </div>
             </div>
           </section>
@@ -2483,11 +2570,11 @@ onUnmounted(() => {
             <div class="shortcut-list">
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutShowOrHideShortcuts') }}</div>
-                <div class="shortcut-keys"><kbd>?</kbd></div>
+                <div class="shortcut-keys"><kbd>{{ shortcutKeys('showShortcuts').join('+') }}</kbd></div>
               </div>
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutToggleDebug') }}</div>
-                <div class="shortcut-keys"><kbd>D</kbd></div>
+                <div class="shortcut-keys"><kbd>{{ shortcutKeys('toggleDebug').join('+') }}</kbd></div>
               </div>
               <div class="shortcut-row">
                 <div class="shortcut-name">{{ $t('gameBar.shortcutSelectInvestigator') }}</div>
@@ -2500,10 +2587,10 @@ onUnmounted(() => {
                 </div>
               </div>
               <template v-for="item in menuItems" :key="item.id">
-                <div v-if="item.shortcut" class="shortcut-row">
+                <div v-if="menuShortcutKeys(item).length" class="shortcut-row">
                   <div class="shortcut-name">{{ item.content }}</div>
                   <div class="shortcut-keys">
-                    <kbd>{{ item.shortcut }}</kbd>
+                    <kbd>{{ menuShortcutKeys(item).join('+') }}</kbd>
                   </div>
                 </div>
               </template>
@@ -2562,7 +2649,7 @@ onUnmounted(() => {
             <MenuItem v-slot="{ active }">
               <button :class="{ active }" @click="showShortcuts = !showShortcuts">
                 <BoltIcon aria-hidden="true" /> {{ $t('gameBar.shortcuts') }}
-                <span class="shortcut">?</span>
+                <span class="shortcut">{{ shortcutKeys('showShortcuts').join('+') }}</span>
               </button>
             </MenuItem>
             <template v-for="item in menuItems" :key="item.id">
@@ -2570,7 +2657,7 @@ onUnmounted(() => {
                 <button :class="{ active }" @click="item.action">
                   <component v-if="item.icon" v-bind:is="item.icon"></component>
                   {{ item.content }}
-                  <span v-if="item.shortcut" class="shortcut">{{ item.shortcut }}</span>
+                  <span v-if="menuShortcutKeys(item).length" class="shortcut">{{ menuShortcutKeys(item).join('+') }}</span>
                 </button>
               </MenuItem>
             </template>
@@ -2585,7 +2672,7 @@ onUnmounted(() => {
             <MenuItem v-slot="{ active }">
               <button :class="{ active }" @click="debug.toggle">
                 <BugAntIcon aria-hidden="true" /> {{ $t('gameBar.toggleDebug') }}
-                <span class="shortcut">D</span>
+                <span class="shortcut">{{ shortcutKeys('toggleDebug').join('+') }}</span>
               </button>
             </MenuItem>
             <MenuItem v-slot="{ active }">
@@ -2614,7 +2701,7 @@ onUnmounted(() => {
             <MenuItem v-slot="{ active }">
               <button :class="{ active }" @click="undo">
                 <BackwardIcon aria-hidden="true" /> {{ $t('gameBar.undo') }}
-                <span class="shortcut">u</span>
+                <span class="shortcut">{{ shortcutKeys('undo').join('+') }}</span>
               </button>
             </MenuItem>
             <div
@@ -2624,7 +2711,7 @@ onUnmounted(() => {
             >
               <div class="undo-jump-header">
                 <span>{{ $t('game.undoTo') }}</span>
-                <span class="chord-prefix"><kbd>U</kbd> + <span class="chord-hint">…</span></span>
+                <span class="chord-prefix"><kbd>{{ shortcutKeys('undoChord').join('+') }}</kbd> + <span class="chord-hint">…</span></span>
               </div>
               <MenuItem v-if="canUndoAction" v-slot="{ active }">
                 <button class="undo-jump scope-action" :class="{ active }" @click="undoActionStart">
@@ -4035,6 +4122,18 @@ header {
   padding: 8px 16px;
   background: var(--background-dark);
   border-bottom: 1px solid var(--box-border);
+}
+
+.section-hint {
+  margin: 0 0 6px;
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+.shortcuts-profile {
+  margin: 0;
+  font-size: 0.8em;
+  opacity: 0.7;
 }
 
 .shortcuts-title {

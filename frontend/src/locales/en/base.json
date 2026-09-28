@@ -318,7 +318,17 @@
     "shortcutSection": {
       "game": "Game",
       "undo": "Undo",
-      "view": "View"
+      "view": "View",
+      "hovered": "Card Under The Cursor"
+    },
+    "shortcutHover": {
+      "hint": "Debug only. Hold shift to place five.",
+      "exhaustHovered": "Exhaust / ready",
+      "placeDamage": "Place damage",
+      "placeHorror": "Place horror",
+      "placeDoom": "Place doom",
+      "placeClue": "Place clue",
+      "placeResource": "Place resource"
     },
     "undoTo": "Undo to",
     "startOfAction": "Start of action",

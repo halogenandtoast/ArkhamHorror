@@ -9,6 +9,7 @@ import campaignJSON from '@/arkham/data/campaigns.json'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
 import { useSettingsFocus } from '@/composable/settingsFocus'
 import { useSettings, type DrawSpotlightMode } from '@/stores/settings'
+import { keybindingProfile, setKeybindingProfile, type KeybindingProfile } from '@/arkham/keybindings'
 import CardOptionsSettings from '@/arkham/components/CardOptionsSettings.vue'
 import ScopedSetting from '@/arkham/components/ScopedSetting.vue'
 
@@ -80,6 +81,11 @@ const soundsDisabled = ref(localStorage.getItem('arkhamSoundsDisabled') === 'tru
 const inlineModals = computed({
   get: () => settings.inlineModals,
   set: (value: boolean) => settings.setInlineModals(value),
+})
+
+const keybindings = computed<KeybindingProfile>({
+  get: () => keybindingProfile.value,
+  set: (value) => setKeybindingProfile(value),
 })
 
 watch(soundsDisabled, (value) => {
@@ -341,6 +347,20 @@ onBeforeUnmount(() => {
               <label for="opt-hideInertCards-on">{{ $t('On') }}</label>
               <input type="radio" id="opt-hideInertCards-off" name="opt-hideInertCards" :checked="!hideInertCards" @change="hideInertCards = false" />
               <label for="opt-hideInertCards-off">{{ $t('Off') }}</label>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-text">
+              <div class="toggle-name">{{$t('gameBar.settings.keybindingsTitle')}}</div>
+              <div class="toggle-desc">{{$t('gameBar.settings.keybindings')}}</div>
+              <div class="toggle-scope">{{$t('gameBar.settings.scope.browser')}}</div>
+            </div>
+            <div class="segmented toggle-control">
+              <input type="radio" id="opt-keybindings-default" name="opt-keybindings" :checked="keybindings === 'default'" @change="keybindings = 'default'" />
+              <label for="opt-keybindings-default">{{ $t('gameBar.settings.keybindingProfile.default') }}</label>
+              <input type="radio" id="opt-keybindings-tts" name="opt-keybindings" :checked="keybindings === 'tts'" @change="keybindings = 'tts'" />
+              <label for="opt-keybindings-tts">{{ $t('gameBar.settings.keybindingProfile.tts') }}</label>
             </div>
           </div>
 

@@ -139,6 +139,24 @@ function send(
   })
 }
 
+/* The token half of a drop without the drag, so the hover keybindings can place the
+ * same tokens from the keyboard. It goes through `send` rather than building its own
+ * message, so the two paths cannot drift apart.
+ *
+ * `useType` defaults to null: a dragged resource becomes the card's printed use
+ * (ammo, supplies) because the drop zone reads that off the hovered card's def, and
+ * a keypress has no such lookup. A bare Resource is the honest answer here.
+ */
+export function placeTokensOn(
+  gameId: string,
+  target: CardDropTarget,
+  token: PlaceableToken,
+  amount: number,
+  useType: string | null = null,
+) {
+  return send(gameId, { kind: 'tokens', token }, target, amount, useType)
+}
+
 /* Listeners for a card that accepts these drags, spread with `v-bind`.
  *
  * `dragover` must call `preventDefault` or the browser refuses the drop, and it only

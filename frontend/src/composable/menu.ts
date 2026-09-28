@@ -1,9 +1,14 @@
 import { reactive, toRefs, FunctionalComponent, HTMLAttributes, VNodeProps } from 'vue'
+import type { ShortcutAction } from '@/arkham/keybindings'
 
 export type MenuEntry = {
   id: string;
   icon?: FunctionalComponent<HTMLAttributes & VNodeProps, {}, any, {}>;
   content: string;
+  /* A named shortcut, resolved to a key at render time so the entry follows the
+   * active keybinding profile. `shortcut` is the raw-key escape hatch for keys no
+   * profile remaps (Escape). */
+  binding?: ShortcutAction;
   shortcut?: string;
   nested?: string;
   action: () => void;

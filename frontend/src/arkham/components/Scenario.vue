@@ -1001,7 +1001,7 @@ addEntry({
   id: "viewChaosBag",
   icon: QuestionMarkCircleIcon,
   content: t('gameBar.viewChaosBag'),
-  shortcut: "c",
+  binding: "viewChaosBag",
   nested: 'view',
   action: () => showChaosBag.value = !showChaosBag.value
 })
@@ -1027,7 +1027,7 @@ addEntry({
   id: "rotateLayout",
   icon: ArrowPathIcon,
   content: t('gameBar.rotateLayout'),
-  shortcut: ">",
+  binding: "rotateLayout",
   nested: 'view',
   action: () => {
     rotationSteps.value = (rotationSteps.value + 1) % 4
@@ -1038,7 +1038,7 @@ addEntry({
   id: "rotateLayoutCounterClockwise",
   icon: ArrowPathIcon,
   content: t('gameBar.rotateLayout'),
-  shortcut: "<",
+  binding: "rotateLayoutCcw",
   nested: 'hidden',
   action: () => {
     rotationSteps.value = (rotationSteps.value - 1) % 4
@@ -1715,7 +1715,7 @@ watchEffect(() => {
       icon: EyeIcon,
       content: t('gameBar.showOutOfPlay'),
       nested: 'view',
-      shortcut: 'o',
+      binding: 'showOutOfPlay',
       action: () => showOutOfPlay.value = !showOutOfPlay.value
     })
   }

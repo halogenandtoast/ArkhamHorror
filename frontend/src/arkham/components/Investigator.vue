@@ -81,7 +81,7 @@ watch(() => props.playerId, () => {
         id: `viewBonded-${props.investigator.playerId}`,
         icon: PaperClipIcon,
         content: t('gameBar.viewBonded'),
-        shortcut: "b",
+        binding: "viewBonded",
         nested: 'view',
         action: () => toggleShowBonded()
       })
@@ -456,7 +456,7 @@ const spadeInjury = computed(() => {
 </script>
 
 <template>
-  <div v-if="portrait" class="portrait-container" v-bind="cardDrop">
+  <div v-if="portrait" class="portrait-container" :data-id="investigator.id" v-bind="cardDrop">
     <span v-if="isMobile">
       <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
       <template v-for="action in investigator.additionalActions" :key="action">
@@ -530,7 +530,7 @@ const spadeInjury = computed(() => {
           <div class="combat combat-icon">{{combat}}</div>
           <div class="agility agility-icon">{{agility}}</div>
         </div>
-        <div class="investigator-image">
+        <div class="investigator-image" :data-id="investigator.id">
           <img
             :class="{ 'investigator--can-interact': investigatorAction !== -1, 'ability-target': isHighlighted || isAttackTarget }"
             class="card card--sideways"

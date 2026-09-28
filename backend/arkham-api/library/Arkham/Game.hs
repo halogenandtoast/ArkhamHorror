@@ -1474,6 +1474,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         [] -> False
         x : _ -> cardMatch (PlayerCard x) cardMatcher
     UnengagedInvestigator -> flip runMatchesM as $ selectNone . enemyEngagedWith . toId
+    TestingInvestigator -> getSkillTestInvestigator <&> \case
+      Nothing -> noMatch
+      Just iid -> runMatches ((== iid) . toId) as
     NoDamageDealtThisTurn -> flip runMatchesM as $ \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ null (historyDealtDamageTo history)

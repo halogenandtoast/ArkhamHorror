@@ -6,6 +6,7 @@ module Arkham.Homebrew.CircusExMortis.DestinyAndProphecy where
 
 import Arkham.Ability hiding (you)
 import Arkham.Asset.Import.Lifted
+import Arkham.Capability
 import Arkham.ChaosToken (ChaosToken)
 import Arkham.Classes.HasGame (HasGame)
 import Arkham.Helpers.Location (withLocationOf)
@@ -23,13 +24,16 @@ import Arkham.Trait (Trait (Ally))
 "sealed on cards at your location" can draw from.
 -}
 getSealedTokensAtMatching :: HasGame m => ChaosTokenMatcher -> LocationId -> m [ChaosToken]
-getSealedTokensAtMatching matcher lid = do
-  select
+getSealedTokensAtMatching matcher lid = select $ sealedChaosTokensAt (LocationWithId lid) matcher
+
+sealedChaosTokensAt :: LocationMatcher -> ChaosTokenMatcher -> ChaosTokenMatcher
+sealedChaosTokensAt lmatcher matcher =
+  IncludeSealed
     $ oneOf
-      [ SealedOnInvestigator (InvestigatorAt $ LocationWithId lid) matcher
-      , SealedOnAsset (AssetAtLocation lid) matcher
-      , SealedOnEnemy (EnemyAt $ LocationWithId lid) matcher
-      , SealedOnLocation (LocationWithId lid) matcher
+      [ SealedOnInvestigator (InvestigatorAt lmatcher) matcher
+      , SealedOnAsset (AssetAt lmatcher) matcher
+      , SealedOnEnemy (EnemyAt lmatcher) matcher
+      , SealedOnLocation lmatcher matcher
       ]
 
 -- * Amalthea Weaver
@@ -68,11 +72,17 @@ amaltheaWeaverRelease attrs n = for_ attrs.controller \you ->
 
 {- | "You or the performing investigator may ...": the choice belongs to
 Amalthea's controller, and the Done button covers the "may".
+
+Every rider that uses this draws cards, so a candidate who cannot draw is dropped, and
+with nobody left the option is not offered at all rather than as a prompt whose only
+move is Done.
 -}
 amaltheaWeaverChooseRecipient
   :: ReverseQueue m => AssetAttrs -> (InvestigatorId -> QueueT Message m ()) -> m ()
 amaltheaWeaverChooseRecipient attrs f = for_ attrs.controller \you ->
-  withSkillTestInvestigator \performer -> chooseUpToNM_ you 1 $ targets (nub [you, performer]) f
+  withSkillTestInvestigator \performer -> do
+    recipients <- filterM (\iid -> can.draw.cards iid) (nub [you, performer])
+    unless (null recipients) $ chooseUpToNM_ you 1 $ targets recipients f
 
 -- * De Cultus Bestiae
 

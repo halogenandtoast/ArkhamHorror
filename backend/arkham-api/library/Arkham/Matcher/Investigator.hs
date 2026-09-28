@@ -89,6 +89,7 @@ data InvestigatorMatcher
   | InvestigatorWithSealedChaosToken ChaosTokenMatcher
   | InvestigatorWithMostSealedChaosToken ChaosTokenMatcher
   | You
+  | TestingInvestigator
   | ThatInvestigator
   | UnengagedInvestigator
   | NoOne

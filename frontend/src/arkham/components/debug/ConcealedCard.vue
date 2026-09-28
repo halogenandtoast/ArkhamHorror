@@ -67,7 +67,8 @@ const debug = useDebug()
 <template>
   <Draggable>
     <template #handle><h2>{{ $t('debug.concealedCard.title') }}</h2></template>
-    <div class="debug-modal concealed-card--outer">
+    <div class="debug-modal debug-window">
+      <div class="concealed-card--outer">
       <div class="concealed-card" :data-index="card.id">
         <div class="card-frame">
           <div class="card-wrapper">
@@ -75,9 +76,8 @@ const debug = useDebug()
           </div>
         </div>
       </div>
-      <div class="buttons">
-        <button @click="emit('close')">{{ $t('debug.common.close') }}</button>
       </div>
+      <button class="debug-close" @click="emit('close')">{{ $t('debug.common.close') }}</button>
     </div>
   </Draggable>
 </template>
@@ -105,7 +105,6 @@ const debug = useDebug()
 }
 
 .concealed-card--outer {
-  padding: 10px;
   display: flex;
   flex-direction: row;
   /* Card pinned to the top: the button column is taller than the art, and

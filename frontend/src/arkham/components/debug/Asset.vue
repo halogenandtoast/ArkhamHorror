@@ -102,7 +102,8 @@ const hasPool = computed(() => {
 <template>
   <Draggable>
     <template #handle><h2>{{ $t('debug.asset.title') }}</h2></template>
-    <div class="debug-modal asset--outer">
+    <div class="debug-modal debug-window">
+      <div class="asset--outer">
       <div class="asset" :data-index="asset.cardId">
         <div class="card-frame">
           <div class="card-wrapper">
@@ -186,9 +187,10 @@ const hasPool = computed(() => {
           Edit custom card
         </router-link>
         <button @click="setModifiers = true">{{ $t('debug.common.modifiers') }}</button>
-        <button @click="emit('close')">{{ $t('debug.common.close') }}</button>
       </div>
 
+      </div>
+      <button class="debug-close" @click="emit('close')">{{ $t('debug.common.close') }}</button>
     </div>
   </Draggable>
 </template>
@@ -222,7 +224,6 @@ const hasPool = computed(() => {
 }
 
 .asset--outer {
-  padding: 10px;
   display: flex;
   flex-direction: row;
   /* Card pinned to the top: the button column is taller than the art, and

@@ -203,6 +203,34 @@ h2.title {
   font-size: calc(var(--card-token-width) * 0.62) !important;
 }
 
+/* Debug windows: a column of [card + controls] with a full-width close along the
+   bottom, so closing is one target in the same place in every panel. The classes
+   live here rather than in each panel's scoped styles because all four share them,
+   and Draggable keys its own chrome off `.debug-modal`. */
+.debug-window {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.debug-window > .debug-close {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  background: var(--background-dark);
+  color: var(--text);
+  font-size: 0.8rem;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.debug-window > .debug-close:hover {
+  background: var(--button);
+  border-color: var(--select);
+}
+
 .count-pill {
   display: inline-flex;
   align-items: center;

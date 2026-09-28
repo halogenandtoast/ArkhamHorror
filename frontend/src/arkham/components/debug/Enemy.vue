@@ -118,7 +118,8 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
 <template>
   <Draggable>
     <template #handle><h2>{{ $t('debug.enemy.title') }}</h2></template>
-    <div class="debug-modal enemy--outer">
+    <div class="debug-modal debug-window">
+      <div class="enemy--outer">
       <div class="enemy" :data-index="enemy.cardId">
         <div class="card-frame">
           <div class="card-wrapper">
@@ -206,8 +207,9 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
           </div>
         </section>
 
-        <button class="debug-close" @click="emit('close')">{{ $t('debug.common.close') }}</button>
       </div>
+      </div>
+      <button class="debug-close" @click="emit('close')">{{ $t('debug.common.close') }}</button>
     </div>
   </Draggable>
 </template>
@@ -330,12 +332,8 @@ const createModifier = (target: {tag: string, contents: string}, modifier: {tag:
   gap: 4px;
 }
 
-.debug-close {
-  align-self: flex-end;
-}
 
 .enemy--outer {
-  padding: 10px;
   display: flex;
   flex-direction: row;
   /* Card pinned to the top: the section column is taller than the art, and

@@ -14,6 +14,7 @@ import { useI18n } from 'vue-i18n';
 import { Dropdown } from 'floating-vue';
 import { chanceOfSuccess } from '@/arkham/chaosBagOdds';
 import { chaosTokenImage, compareTokenFaces, numericTokenFaces } from '@/arkham/types/ChaosToken';
+import { beginSealDrag, endCardDrag } from '@/arkham/debugCardDrop';
 
 const props = defineProps<{
   game: Game
@@ -42,7 +43,12 @@ const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST_BUTTON))
 const debug = useDebug()
 const { t } = useI18n()
-const allTokenFaces = computed(() => props.chaosBag.chaosTokens.map(t => t.face).sort(compareTokenFaces))
+// The preview drags real tokens (debug sealing needs an id), so sort the tokens
+// themselves and read the faces back off them rather than sorting faces.
+const allTokens = computed(() =>
+  [...props.chaosBag.chaosTokens].sort((a, b) => compareTokenFaces(a.face, b.face))
+)
+const allTokenFaces = computed(() => allTokens.value.map(t => t.face))
 
 // Scenario effect text for the symbol tokens. `false` disables `v-tooltip` on the
 // faces that have none.
@@ -140,17 +146,20 @@ const choose = (idx: number) => emit('choose', idx)
 
     <div class="token-preview" :class="{ 'token-preview--debug': canForceDraw }">
       <div
-        v-for="(tokenFace, idx) in allTokenFaces"
-        :key="`${tokenFace}${idx}`"
+        v-for="(token, idx) in allTokens"
+        :key="`${token.face}${idx}`"
         class="token-slot"
-        v-tooltip="tokenTooltip(tokenFace)"
-        @click="canForceDraw && forceDraw(tokenFace)"
+        v-tooltip="tokenTooltip(token.face)"
+        :draggable="debug.active"
+        @click="canForceDraw && forceDraw(token.face)"
+        @dragstart="beginSealDrag(token)"
+        @dragend="endCardDrag"
       >
-        <span v-if="faceValueLabel(tokenFace)" class="count-pill token-slot__value">{{ faceValueLabel(tokenFace) }}</span>
+        <span v-if="faceValueLabel(token.face)" class="count-pill token-slot__value">{{ faceValueLabel(token.face) }}</span>
         <img
           class="token"
           :class="{'token-big': skillTest === null}"
-          :src="chaosTokenImage(tokenFace)"
+          :src="chaosTokenImage(token.face)"
         />
       </div>
     </div>
@@ -497,6 +506,11 @@ const choose = (idx: number) => emit('choose', idx)
   font-size: 8px;
   font-weight: 400;
   line-height: 1;
+}
+
+/* Debug: the slots are draggable onto a card to seal the token there. */
+.token-slot[draggable='true'] {
+  cursor: grab;
 }
 
 .token-preview--debug .token-slot {

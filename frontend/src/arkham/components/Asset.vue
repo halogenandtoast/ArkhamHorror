@@ -29,6 +29,7 @@ import MissingCardBadge from '@/arkham/components/MissingCardBadge.vue';
 import Story from '@/arkham/components/Story.vue';
 import { useCardFlip } from '@/arkham/composables/useCardFlip';
 import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue';
+import { assetTarget, cardDropHandlers } from '@/arkham/debugCardDrop';
 import * as Arkham from '@/arkham/types/Asset';
 import { useSettings } from '@/stores/settings';
 import { isManifestedSpiritAsset } from '@/arkham/spiritVisuals';
@@ -238,6 +239,9 @@ const cardsUnderneath = computed(() => props.asset.cardsUnderneath)
 const keys = computed(() => props.asset.keys)
 
 const debug = useDebug()
+// Debug: a chaos token dragged from the bag seals here; a token from the debug
+// token panel is placed here.
+const cardDrop = cardDropHandlers(props.game.id, () => assetTarget(props.asset.id))
 const settings = useSettings()
 const dragging = ref(false)
 
@@ -374,7 +378,7 @@ function startDrag(event: DragEvent) {
 </script>
 
 <template>
-  <div class="asset--outer">
+  <div class="asset--outer" v-bind="cardDrop">
     <Story v-if="assetStory && !flipping" :story="assetStory" :game="game" :playerId="playerId" @choose="choose"/>
     <div
       v-else

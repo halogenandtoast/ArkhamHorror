@@ -691,7 +691,12 @@
       "onTop": "Place on top",
       "onBottom": "Place on bottom",
       "shuffleIn": "Shuffle in",
-      "wrongDeck": "Wrong back for this deck"
+      "wrongDeck": "Wrong back for this deck",
+      "sealToken": "Seal token here",
+      "placeTokens": "Place {count}"
+    },
+    "tokenPanel": {
+      "hint": "Drag to a card (shift: 5)"
     }
   },
   "customizations": {

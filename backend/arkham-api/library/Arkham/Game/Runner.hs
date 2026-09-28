@@ -61,6 +61,7 @@ import Arkham.Game.State
 import Arkham.Game.Utils
 import Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Enemy (getModifiedKeywords, spawnAt)
@@ -2906,6 +2907,11 @@ runGameMessage msg g = case msg of
   DebugAddToEncounterDeck deck cardId -> do
     card <- getCard cardId
     push $ ShuffleCardsIntoDeck deck [card]
+    pure g
+  DebugSealChaosToken tokenId target -> do
+    tokens <- getBagChaosTokens
+    for_ (find ((== tokenId) . (.id)) tokens) \token ->
+      pushAll [SealChaosToken token, SealedChaosToken token Nothing target]
     pure g
   DebugMoveCard cardId destination -> do
     card <- getCard cardId

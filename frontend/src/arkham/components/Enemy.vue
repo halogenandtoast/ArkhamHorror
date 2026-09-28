@@ -25,6 +25,7 @@ import Asset from '@/arkham/components/Asset.vue'
 import Event from '@/arkham/components/Event.vue'
 import Skill from '@/arkham/components/Skill.vue'
 import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue'
+import { enemyTarget, cardDropHandlers } from '@/arkham/debugCardDrop'
 import Story from '@/arkham/components/Story.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue';
 import * as Arkham from '@/arkham/types/Enemy'
@@ -208,6 +209,9 @@ const isExhausted = computed(() => props.enemy.exhausted)
 const keys = computed(() => props.enemy.keys)
 
 const debug = useDebug()
+// Debug: a chaos token dragged from the bag seals here; a token from the debug
+// token panel is placed here.
+const cardDrop = cardDropHandlers(props.game.id, () => enemyTarget(props.enemy.id))
 
 const enemyDamage = computed(() => (props.enemy.tokens[TokenType.Damage] || 0) + props.enemy.assignedDamage)
 const enemyTokens = computed(() => {
@@ -366,7 +370,7 @@ function onDrop(event: DragEvent) {
 </script>
 
 <template>
-  <div class="enemy--outer" :class="{showAbilities, oversized}">
+  <div class="enemy--outer" :class="{showAbilities, oversized}" v-bind="cardDrop">
     <div class="enemy">
       <Story v-if="enemyStory && !flipping" :story="enemyStory" :game="game" :playerId="playerId" @choose="choose"/>
       <template v-else>

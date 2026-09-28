@@ -7,6 +7,7 @@ import { storeToRefs } from 'pinia';
 import { useSettings } from '@/stores/settings';
 import { useDebug } from '@/arkham/debug'
 import * as DebugMove from '@/arkham/debugCardMove';
+import { cardDropInFlight } from '@/arkham/debugCardDrop';
 import { Game } from '@/arkham/types/Game';
 import { toCardContents } from '@/arkham/types/Card';
 import { imgsrc } from '@/arkham/helpers';
@@ -847,7 +848,8 @@ const realityAcid = ref('89005')
 const dragover = (e: DragEvent) => {
   e.preventDefault()
   if (e.dataTransfer) {
-    e.dataTransfer.dropEffect = 'copy'
+    // Tokens seal onto cards in play, never into a hand or a play area.
+    e.dataTransfer.dropEffect = cardDropInFlight() ? 'none' : 'copy'
   }
 }
 

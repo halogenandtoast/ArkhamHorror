@@ -15,6 +15,7 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import { useCardStore } from '@/stores/cards';
 import * as DebugMove from '@/arkham/debugCardMove';
+import { cardDropInFlight } from '@/arkham/debugCardDrop';
 
 const { t } = useI18n();
 
@@ -241,6 +242,12 @@ function onDropDeck(event: DragEvent) {
 function onDragOverDeck(event: DragEvent) {
   event.preventDefault()
   if (!debug.active) return
+  // A chaos token seals onto a card in play; a deck or discard is not a seal
+  // target, so refuse it outright rather than advertising a card move.
+  if (cardDropInFlight()) {
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'none'
+    return
+  }
   if (deckAccepts.value === false) {
     if (event.dataTransfer) event.dataTransfer.dropEffect = 'none'
     deckDropMode.value = null
@@ -255,6 +262,12 @@ function onDragOverDeck(event: DragEvent) {
 function onDragOverDiscard(event: DragEvent) {
   event.preventDefault()
   if (!debug.active) return
+  // A chaos token seals onto a card in play; a deck or discard is not a seal
+  // target, so refuse it outright rather than advertising a card move.
+  if (cardDropInFlight()) {
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'none'
+    return
+  }
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = discardAccepts.value === false ? 'none' : 'copy'
   }

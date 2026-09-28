@@ -27,6 +27,7 @@ import Story from '@/arkham/components/Story.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue'
 import Treachery from '@/arkham/components/Treachery.vue'
 import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue'
+import { locationTarget, cardDropHandlers } from '@/arkham/debugCardDrop'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import TokenPool from '@/arkham/components/TokenPool.vue'
@@ -486,6 +487,9 @@ const { displayedImage: displayedFloodLevel, flipping: floodLevelFlipping } = us
 )
 
 const debug = useDebug()
+// Debug: a chaos token dragged from the bag seals here; a token from the debug
+// token panel is placed here.
+const cardDrop = cardDropHandlers(props.game.id, () => locationTarget(props.location.id))
 
 function onDrop(event: DragEvent) {
   event.preventDefault()
@@ -607,7 +611,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           @abilities-hover="abilitiesHovering = $event"
         />
       </div>
-      <div class="location-column">
+      <div class="location-column" v-bind="cardDrop">
         <div class="card-frame" :class="{ explosion, 'location--objective': hasObjective, 'objective-ring': hasObjective }" ref="frame" @click="clicked">
           <Locus v-if="locus" class="locus" />
           <span v-if="blocked" class="status-icon" v-tooltip="'Blocked'">

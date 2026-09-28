@@ -12,6 +12,7 @@ import type { CardDef } from '@/arkham/types/CardDef'
 import { fullName } from '@/arkham/types/Name'
 import { useCardStore } from '@/stores/cards'
 import * as DebugMove from '@/arkham/debugCardMove'
+import { cardDropInFlight } from '@/arkham/debugCardDrop'
 
 export interface Props {
   game: Game
@@ -91,6 +92,12 @@ const draggedOver = ref(false)
 
 const dragover = (e: DragEvent) => {
   e.preventDefault()
+  // A chaos token seals onto a card in play; a deck is not a seal target, so refuse
+  // it outright rather than lighting up as a card destination.
+  if (cardDropInFlight()) {
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'none'
+    return
+  }
   draggedOver.value = true
   if (e.dataTransfer) {
     // The drag sources declare effectAllowed 'copy'; answering with a dropEffect

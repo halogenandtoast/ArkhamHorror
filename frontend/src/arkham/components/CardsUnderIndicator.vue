@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { cardDropInFlight } from '@/arkham/debugCardDrop'
 import { Dropdown } from 'floating-vue'
 import { type Card as ArkhamCard, type CardContents, cardImage, toCardContents } from '@/arkham/types/Card'
 import type { Message } from '@/arkham/types/Message'
@@ -162,6 +163,11 @@ function onCardDragStart(event: DragEvent, index: number) {
 // dropEffect outside that set makes the browser refuse the drop outright.
 function onDragOver(event: DragEvent) {
   if (!props.droppable) return
+  // A chaos token seals onto a card, never under one.
+  if (cardDropInFlight()) {
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'none'
+    return
+  }
   event.preventDefault()
   if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
 }
@@ -172,7 +178,7 @@ const dragDepth = ref(0)
 const draggedOver = computed(() => dragDepth.value > 0)
 
 function onDragEnter(event: DragEvent) {
-  if (!props.droppable) return
+  if (!props.droppable || cardDropInFlight()) return
   event.preventDefault()
   dragDepth.value++
 }

@@ -17,6 +17,7 @@ import type { AbilityLabel, AbilityMessage, Message } from '@/arkham/types/Messa
 import { MessageType } from '@/arkham/types/Message'
 import { cardId, toCardContents } from '@/arkham/types/Card'
 import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue';
+import { investigatorTarget, cardDropHandlers } from '@/arkham/debugCardDrop';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composable/menu';
 import { useI18n } from 'vue-i18n';
@@ -43,6 +44,9 @@ const highlighter = useHighlighter()
 const isHighlighted = computed(() => highlighter.highlighted.value === props.investigator.id)
 const isAttackTarget = computed(() => props.game.enemyAttackTargets.some((e) => e.target.contents === props.investigator.id))
 const debug = useDebug()
+// Debug: a chaos token dragged from the bag seals here; a token from the debug
+// token panel is placed here.
+const cardDrop = cardDropHandlers(props.game.id, () => investigatorTarget(props.investigator.id))
 const choose = (idx: number) => emit('choose', idx)
 
 function clicked() {
@@ -441,7 +445,7 @@ const spadeInjury = computed(() => {
 </script>
 
 <template>
-  <div v-if="portrait" class="portrait-container">
+  <div v-if="portrait" class="portrait-container" v-bind="cardDrop">
     <span v-if="isMobile">
       <i class="action" v-for="n in investigator.remainingActions" :key="n"></i>
       <template v-for="action in investigator.additionalActions" :key="action">
@@ -506,7 +510,7 @@ const spadeInjury = computed(() => {
       @dragenter.prevent
     />
   </div>
-  <div v-else class="player-container">
+  <div v-else class="player-container" v-bind="cardDrop">
     <div class="player-area">
       <div class="player-card">
         <div class="stats">

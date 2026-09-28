@@ -1313,6 +1313,11 @@ data Message
     -- obtains the card first, so it leaves the victory display, set-aside pile or
     -- deck it came from rather than being duplicated into the destination.
     DebugMoveCard CardId DebugCardDestination
+  | {- | Debug: seal a token from the chaos bag onto a card. Named by id rather
+    than by value so the sealed copy keeps the real token's face, and so a token
+    that is no longer in the bag is a no-op instead of a fabricated seal.
+    -}
+    DebugSealChaosToken ChaosTokenId Target
   | DebugCustomize InvestigatorId CardId
   | DebugIncreaseCustomization InvestigatorId CardCode Customization [CustomizationChoice]
   | SetScenarioDifficulty Difficulty

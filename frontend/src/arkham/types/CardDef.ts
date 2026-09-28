@@ -43,6 +43,9 @@ export type CardDef = {
   stage?: number | null;
   name: Name;
   cardTraits: string[];
+  /* The card's printed uses, when it has any. Only the type is decoded: the
+   * amount is a GameCalculation and nothing here needs it. */
+  uses?: { type: string };
   skills: SkillIcon[];
   cost: CardCost | null;
   otherSide: string | null;
@@ -109,6 +112,7 @@ export const cardDefDecoder = JsonDecoder.object<CardDef>(
     meta: withDefault<Record<string, any>>({}, JsonDecoder.record(JsonDecoder.succeed(), 'CardDef.meta')),
     errata: withDefault(null, JsonDecoder.string()),
     encounterSet: v2Optional(JsonDecoder.succeed()),
+    uses: v2Optional(JsonDecoder.object({ type: JsonDecoder.string() }, 'Uses')),
     customizations: withDefault<CustomizationDef[]>([], JsonDecoder.array(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.number()], 'CustomizationDef'), 'CustomizationDef[]')),
     options: withDefault<CardOption[]>([], JsonDecoder.array<CardOption>(cardOptionDecoder, 'CardOption[]')),
     tags: withDefault<string[]>([], JsonDecoder.array<string>(JsonDecoder.string(), 'string[]')),

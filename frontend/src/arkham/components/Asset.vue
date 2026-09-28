@@ -241,7 +241,15 @@ const keys = computed(() => props.asset.keys)
 const debug = useDebug()
 // Debug: a chaos token dragged from the bag seals here; a token from the debug
 // token panel is placed here.
-const cardDrop = cardDropHandlers(props.game.id, () => assetTarget(props.asset.id))
+// A resource dropped here becomes this card's own use type when it prints one.
+const printedUseType = computed(
+  () => cardStore.cards.find((def) => def.cardCode === cardCode.value)?.uses?.type ?? null
+)
+const cardDrop = cardDropHandlers(
+  props.game.id,
+  () => assetTarget(props.asset.id),
+  () => printedUseType.value
+)
 const settings = useSettings()
 const dragging = ref(false)
 

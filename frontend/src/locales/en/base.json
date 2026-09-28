@@ -693,7 +693,8 @@
       "shuffleIn": "Shuffle in",
       "wrongDeck": "Wrong back for this deck",
       "sealToken": "Seal token here",
-      "placeTokens": "Place {count}"
+      "placeTokens": "Place {count}",
+      "placeUses": "Add {count} {use}"
     },
     "tokenPanel": {
       "hint": "Drag to a card (shift: 5)"

@@ -58,6 +58,16 @@ export type DebugCardDrop =
   | { kind: 'seal'; chaosToken: ChaosToken }
   | { kind: 'tokens'; token: PlaceableToken }
 
+/* A card with printed uses takes those instead of bare resources: a resource
+ * dropped on a Flashlight is a supply, on a .45 Automatic an ammo. Read off the
+ * card def, which is also what the hint reads, so what it promises and what the
+ * drop sends cannot drift apart. Customizations that change a use type are not
+ * followed -- the printed type is the debug-useful answer. */
+export function resolveToken(drop: DebugCardDrop, useType: string | null): string | null {
+  if (drop.kind !== 'tokens') return null
+  return drop.token === 'Resource' && useType ? useType : drop.token
+}
+
 /* What is in flight, if anything.
  *
  * `dataTransfer.getData` returns '' during dragover in every browser -- the payload
@@ -74,6 +84,9 @@ const dropPosition = ref<{ x: number; y: number } | null>(null)
 
 /* How many tokens the drop would place, so the hint can say so before the drop. */
 const dropAmount = ref(1)
+
+/* The hovered card's own use type, when it has one, so the hint can name it. */
+const dropUseType = ref<string | null>(null)
 
 /* Shift places five at a time. Read per event rather than captured at dragstart, so
  * pressing or releasing shift mid-drag updates the hint. */
@@ -92,6 +105,7 @@ export function endCardDrag() {
   draggedDrop.value = null
   dropPosition.value = null
   dropAmount.value = 1
+  dropUseType.value = null
 }
 
 /* True while either kind of drag is in flight.
@@ -105,14 +119,23 @@ export function cardDropInFlight(): boolean {
   return draggedDrop.value !== null
 }
 
-function send(gameId: string, drop: DebugCardDrop, target: CardDropTarget, amount: number) {
+function send(
+  gameId: string,
+  drop: DebugCardDrop,
+  target: CardDropTarget,
+  amount: number,
+  useType: string | null,
+) {
   const debug = useDebug()
   if (drop.kind === 'seal') {
     return debug.send(gameId, { tag: 'DebugSealChaosToken', contents: [drop.chaosToken.id, target] })
   }
   return debug.send(gameId, {
     tag: 'TokenMessage',
-    contents: { tag: 'PlaceTokens_', contents: [{ tag: 'GameSource' }, target, drop.token, amount] },
+    contents: {
+      tag: 'PlaceTokens_',
+      contents: [{ tag: 'GameSource' }, target, resolveToken(drop, useType), amount],
+    },
   })
 }
 
@@ -122,7 +145,11 @@ function send(gameId: string, drop: DebugCardDrop, target: CardDropTarget, amoun
  * does so while one of our drags is actually in flight -- otherwise a card would
  * swallow the card-moving drags that `debugCardMove` owns.
  */
-export function cardDropHandlers(gameId: string, target: () => CardDropTarget) {
+export function cardDropHandlers(
+  gameId: string,
+  target: () => CardDropTarget,
+  useType: () => string | null = () => null,
+) {
   const over = (event: DragEvent) => {
     const drop = draggedDrop.value
     if (!drop) return
@@ -136,6 +163,7 @@ export function cardDropHandlers(gameId: string, target: () => CardDropTarget) {
     if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy'
     dropPosition.value = { x: event.clientX, y: event.clientY }
     dropAmount.value = amountFor(event)
+    dropUseType.value = useType()
   }
 
   return {
@@ -155,10 +183,11 @@ export function cardDropHandlers(gameId: string, target: () => CardDropTarget) {
       event.preventDefault()
       event.stopPropagation()
       const amount = amountFor(event)
+      const uses = useType()
       endCardDrag()
-      send(gameId, drop, target(), amount)
+      send(gameId, drop, target(), amount, uses)
     },
   }
 }
 
-export { draggedDrop, dropPosition, dropAmount }
+export { draggedDrop, dropPosition, dropAmount, dropUseType }

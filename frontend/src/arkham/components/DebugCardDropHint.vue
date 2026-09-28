@@ -8,7 +8,7 @@
  * `deck-drop-indicator`, which is the same affordance for cards.
  */
 import PoolItem from '@/arkham/components/PoolItem.vue'
-import { TOKEN_POOL_TYPE, draggedDrop, dropAmount, dropPosition } from '@/arkham/debugCardDrop'
+import { TOKEN_POOL_TYPE, draggedDrop, dropAmount, dropPosition, dropUseType } from '@/arkham/debugCardDrop'
 import { chaosTokenImage } from '@/arkham/types/ChaosToken'
 </script>
 
@@ -25,7 +25,12 @@ import { chaosTokenImage } from '@/arkham/types/ChaosToken'
     <template v-else>
       <PoolItem class="card-drop-indicator__pool" :type="TOKEN_POOL_TYPE[draggedDrop.token]" />
       <span class="card-drop-indicator__label">
-        {{ $t('debug.cardMove.placeTokens', { count: dropAmount }) }}
+        <template v-if="draggedDrop.token === 'Resource' && dropUseType">
+          {{ $t('debug.cardMove.placeUses', { count: dropAmount, use: dropUseType }) }}
+        </template>
+        <template v-else>
+          {{ $t('debug.cardMove.placeTokens', { count: dropAmount }) }}
+        </template>
       </span>
     </template>
   </div>

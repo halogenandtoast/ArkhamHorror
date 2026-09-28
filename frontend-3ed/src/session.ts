@@ -1,5 +1,6 @@
 import { ref, shallowRef } from 'vue'
 import { ApiError, errorText, getCatalog, whoami } from '@/api'
+import { cardArtDirs } from '@/assets'
 import { clearToken, getToken } from '@/authToken'
 import type { Catalog, User } from '@/types'
 
@@ -44,7 +45,10 @@ let catalogLoad: Promise<Catalog> | null = null
 export function loadCatalog(): Promise<Catalog> {
   if (catalog.value) return Promise.resolve(catalog.value)
   catalogLoad ??= getCatalog().then(
-    (c) => (catalog.value = c),
+    (c) => {
+      cardArtDirs.value = c.cardArt ?? {}
+      return (catalog.value = c)
+    },
     (e) => {
       catalogLoad = null
       throw e

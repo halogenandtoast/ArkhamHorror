@@ -580,7 +580,7 @@ function investigatorLabelHtml(iid) {
 function cardsLabelHtml(text, cids) {
   if (!cids.length) return esc(text);
   const cards = cids.map(cid => {
-    const src = `/img/ah3e/cards/${cardCode(cid)}.webp`;
+    const src = cardArt(cid);
     return `<span class="label-card"><img src="${src}" alt="${esc(state.cardNames[cid] ?? '')}" onerror="hideBroken(this)">` +
       `<span class="label-zoom" role="button" tabindex="0" title="Enlarge" onclick="event.stopPropagation();zoom('${src}')" onkeydown="if(event.key==='Enter'){event.stopPropagation();event.preventDefault();zoom('${src}')}">\u2315</span></span>`;
   }).join('');
@@ -811,6 +811,9 @@ function invFallback(img) { const s = document.createElement('span'); s.classNam
 function hideBroken(img) { img.parentElement.classList.add('no-art'); img.remove(); }
 const slug = t => String(t).toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const cardCode = cid => state.cardCodes?.[cid] ?? slug(state.cardNames[cid] ?? cid);
+// card art is filed by type; the catalog says which folder holds each code
+const cardImg = (code, back) => `/img/ah3e/cards/${state.cardArt?.[code] ? `${state.cardArt[code]}/` : ''}${code}${back ? 'b' : ''}.webp`;
+const cardArt = (cid, back) => cardImg(cardCode(cid), back);
 // skill rows on the investigator sheet front, as fractions of the image
 const SKILL_ROWS = { Lore: 0.6, Influence: 0.685, Observation: 0.77, Strength: 0.853, Will: 0.935 };
 const tok = (name, count, title, size = 28, always = false) =>
@@ -829,12 +832,12 @@ const inPlayerArea = m => m.state?.tag === 'Engaged' && !(state.massive ?? []).i
 function monsterCard(m) {
   const name = state.cardNames[m.card] ?? 'Monster';
   const ready = m.state?.tag === 'Ready';
-  const src = `/img/ah3e/cards/${cardCode(m.card)}${ready ? '' : 'b'}.webp`;
+  const src = cardArt(m.card, !ready);
   const engaged = m.state?.tag === 'Engaged';
   const dmg = m.damage ?? 0;
   const title = `${name}${ready ? '' : engaged ? ' (engaged)' : ' (exhausted)'}${dmg ? ` \u00b7 ${dmg} damage` : ''}`;
   // a ready shrouded monster keeps its engaged/exhausted side hidden
-  const other = SHROUDED.has(cardCode(m.card)) && ready ? null : `/img/ah3e/cards/${cardCode(m.card)}${ready ? 'b' : ''}.webp`;
+  const other = SHROUDED.has(cardCode(m.card)) && ready ? null : cardArt(m.card, ready);
   const zoomArgs = other ? `'${src}','${other}'` : `'${src}'`;
   return `<span data-mon="${m.card}" data-card="${m.card}" style="view-transition-name:mon-${m.card}" class="mon-card${engaged ? ' engaged' : ''}" title="${esc(title)}" onclick="event.stopPropagation();zoom(${zoomArgs})">
     <img src="${src}" alt="" onerror="hideBroken(this)"><span class="chip mon">${esc(name.slice(0, 10))}</span>${dmg ? `<span class="mon-dmg">${tok('damage', dmg, `${dmg} damage`, 22, true)}</span>` : ''}</span>`;
@@ -1001,7 +1004,7 @@ function spawningHtml(q) {
   const place = q.choices.flatMap(c => c.messages ?? []).find(m => m.tag === 'PlaceMonster');
   if (!place) return '';
   const mid = place.contents[0], code = cardCode(mid), name = state.cardNames[mid] ?? 'Monster';
-  const ready = `/img/ah3e/cards/${code}.webp`, other = `/img/ah3e/cards/${code}b.webp`;
+  const ready = cardImg(code), other = cardImg(code, true);
   // a ready shrouded monster keeps its other side hidden
   const zoomArgs = SHROUDED.has(code) ? `'${ready}'` : `'${ready}','${other}'`;
   return `<div class="spawning" data-card="${mid}"><img src="${ready}" alt="${esc(name)}" title="${esc(name)} \u2014 click to enlarge" onclick="zoom(${zoomArgs})" onerror="hideBroken(this)">
@@ -1063,7 +1066,7 @@ function deckHtml(back, name, count, extra = '', src = null, key = '') {
       <b class="deck-count">${count}</b>${extra}${deal}</div>
     <div class="deck-name">${esc(name)}</div></div>`;
 }
-const cardFace = (cid, flipped) => `/img/ah3e/cards/${cardCode(cid)}${flipped ? 'b' : ''}.webp`;
+const cardFace = (cid, flipped) => cardArt(cid, flipped);
 // a possession's back is its owner's card back, unless the card has a second face of its own
 function backFallback(img, owner) {
   if (!owner || img.dataset.fellBack) return hideBroken(img);
@@ -1153,8 +1156,8 @@ function renderDecks(g) {
   out.push(deckHtml('item', 'Items', d.item.length, '', null, 'item'));
   const display = d.display.map(faceCardHtml).join('');
   // we always draw from the bottom, so the top card's back gives nothing away
-  const topBack = cid => (cid == null ? null : `/img/ah3e/cards/${cardCode(cid)}b.webp`);
-  const topFace = cid => (cid == null ? null : `/img/ah3e/cards/${cardCode(cid)}.webp`);
+  const topBack = cid => (cid == null ? null : cardArt(cid, true));
+  const topFace = cid => (cid == null ? null : cardArt(cid));
   // event cards share their neighborhood's back, so the top of the event deck shows where it points
   const eventBack = cid => {
     const nid = state.eventNeighborhoods?.[cid];
@@ -1181,7 +1184,7 @@ function codexCard(e) {
 }
 function rumorCard(r) {
   const name = state.cardNames[r.card] ?? 'Rumor';
-  const src = `/img/ah3e/cards/${cardCode(r.card)}.webp`;
+  const src = cardArt(r.card);
   const doom = r.doom ? `<span class="codex-tok">${tok('doom', r.doom, `${r.doom} doom on this card`, 34, true)}</span>` : '';
   return `<figure class="codex-card" data-card="${r.card}" title="${esc(name)}" onclick="zoom('${src}')">
     <img src="${src}" alt="${esc(name)}" onerror="hideBroken(this)"><span class="asset-name">${esc(name)}</span>${doom}
@@ -1219,7 +1222,7 @@ function viewDeck(key) {
   const grid = cards.map((cid, n) => {
     const name = state.cardNames[cid] ?? `Card ${cid}`;
     return `<figure class="browse-card" title="${esc(name)} \u2014 click to draw it">
-      <img src="/img/ah3e/cards/${cardCode(cid)}.webp" alt="${esc(name)}" onerror="hideBroken(this)">
+      <img src="${cardArt(cid)}" alt="${esc(name)}" onerror="hideBroken(this)">
       <span class="asset-name">${esc(name)}</span><span class="browse-pos">${n + 1}</span></figure>`;
   }).join('') || '<em class="waiting">This deck is empty.</em>';
   const o = openZoom(`<div class="browse" onclick="event.stopPropagation()">
@@ -1359,7 +1362,7 @@ function readArrowTop(g, e, where) {
   const section = encounterSection(g, e, where);
   return section == null ? null : (section * 2 + 1) / 6 * 100;
 }
-const activeCardImage = cid => eventImage(cid) ?? encounterImage(cid) ?? `/img/ah3e/cards/${cardCode(cid)}.webp`;
+const activeCardImage = cid => eventImage(cid) ?? encounterImage(cid) ?? cardArt(cid);
 
 // The card the players are looking at right now: an encounter, a headline
 // being read, or an event the mythos turned up without asking anything.

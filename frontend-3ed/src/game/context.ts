@@ -1,6 +1,6 @@
 import { computed, inject, nextTick, provide, ref, shallowRef, type InjectionKey } from 'vue'
 import * as api from '@/api'
-import { img } from '@/assets'
+import { cardImg, img } from '@/assets'
 import { readPref, writePref } from '@/prefs'
 import { user } from '@/session'
 import type { Catalog, CardId, Game, Monster, Tagged, TableView } from '@/types'
@@ -46,14 +46,14 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   faces read the other way round from a codex card's. */
   const NUMBER_FACING_OUT = new Set([13, 14, 15, 16, 17])
   const archiveArt = (code: string, flipped: boolean) => {
-    const m = /^feast-(\d{1,2})$/.exec(code)
+    const m = /^(feast|echoes)-(\d{1,2})$/.exec(code)
     if (!m) return null
-    const n = +m[1]
-    return archiveImage(n, NUMBER_FACING_OUT.has(n) ? !flipped : flipped)
+    const n = +m[2]
+    return archiveImage(n, m[1] === 'feast' && NUMBER_FACING_OUT.has(n) ? !flipped : flipped)
   }
   const cardFace = (cid: CardId, flipped: boolean) => {
     const code = cardCode(cid)
-    return archiveArt(code, flipped) ?? img(`cards/${code}${flipped ? 'b' : ''}.webp`)
+    return archiveArt(code, flipped) ?? cardImg(code, flipped)
   }
   const initials = (iid: string) =>
     invName(iid)
@@ -65,6 +65,7 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   // each scenario's event art lives in its own folder, keyed by the code's prefix
   const EVENT_ART: Record<string, string> = {
     aoa: 'approach-of-azathoth',
+    echoes: 'echoes-of-the-deep',
     feast: 'feast-of-umordhoth',
   }
   const eventImage = (cid: CardId | null | undefined) => {

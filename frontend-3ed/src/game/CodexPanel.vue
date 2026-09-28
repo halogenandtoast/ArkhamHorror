@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { img, isBroken, markBroken } from '@/assets'
+import { cardImg, isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
 import MythosTok from '@/game/MythosTok.vue'
 import { zoom } from '@/game/overlays'
@@ -16,7 +16,7 @@ const codexSrc = (e: CodexEntry) => archiveImage(e.number, e.flipped)
 const rumor = computed(() => {
   const r = g.value.rumor
   if (!r) return null
-  return { ...r, name: ctx.cardNameRaw(r.card) ?? 'Rumor', src: img(`cards/${ctx.cardCode(r.card)}.webp`) }
+  return { ...r, name: ctx.cardNameRaw(r.card) ?? 'Rumor', src: cardImg(ctx.cardCode(r.card)) }
 })
 </script>
 

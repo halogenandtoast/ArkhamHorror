@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue'
-import { img, isBroken, markBroken } from '@/assets'
+import { cardImg, img, isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
 import { banner, closeZoom, flashState, zoomState } from '@/game/overlays'
 import { NEIGHBOURHOOD_KEY, deckTag } from '@/game/util'
@@ -54,7 +54,7 @@ function drawFromDeck(cid: CardId) {
   closeZoom()
   void ctx.debugAction('DebugDrawCard', [iid, tag, cid])
 }
-const cardSrc = (cid: CardId) => img(`cards/${ctx.cardCode(cid)}.webp`)
+const cardSrc = (cid: CardId) => cardImg(ctx.cardCode(cid))
 </script>
 
 <template>

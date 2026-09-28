@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { img, isBroken, markBroken } from '@/assets'
+import { cardImg, img, isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
 import Deck from '@/game/Deck.vue'
 import { zoom } from '@/game/overlays'
@@ -19,8 +19,8 @@ const hasStreets = computed(() => Object.values(g.value.board.spaces).some((s) =
 const anomalySet = computed(() => ctx.catalog.scenarios.find((sc) => sc.code === g.value.scenario)?.anomalySet ?? null)
 
 // we always draw from the bottom, so the top card's back gives nothing away
-const topBack = (cid: CardId | undefined) => (cid == null ? null : img(`cards/${ctx.cardCode(cid)}b.webp`))
-const topFace = (cid: CardId | undefined) => (cid == null ? null : img(`cards/${ctx.cardCode(cid)}.webp`))
+const topBack = (cid: CardId | undefined) => (cid == null ? null : cardImg(ctx.cardCode(cid), true))
+const topFace = (cid: CardId | undefined) => (cid == null ? null : cardImg(ctx.cardCode(cid)))
 // event cards share their neighborhood's back, so the top of the event deck shows where it points
 const eventBack = (cid: CardId | undefined) => {
   const nid = cid == null ? null : ctx.view.value?.eventNeighborhoods?.[cid]

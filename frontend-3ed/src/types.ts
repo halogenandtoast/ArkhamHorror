@@ -35,6 +35,7 @@ export interface Catalog {
   expansions: string[]
   investigatorNames: Record<string, string>
   investigatorDefs: Record<string, InvestigatorDef>
+  cardArt: Record<string, string>
 }
 
 export interface Seat {

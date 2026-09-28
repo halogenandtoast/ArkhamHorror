@@ -165,6 +165,33 @@ data CardKind
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+{- | Where a card's art is filed under @img/ah3e/cards@. Art is split by card
+type; both faces of a card live in its front's folder, so a monster whose back
+is an ally is still under @monsters@.
+-}
+cardArtDir :: CardKind -> Text
+cardArtDir = \case
+  MonsterCard _ -> "monsters"
+  AssetCard d -> case d.origin of
+    AllyDeck -> "allies"
+    ItemDeck -> "items"
+    SpellDeck -> "spells"
+    SpecialPile -> "special"
+    StartingPile -> "starting"
+    ConditionPile -> "conditions"
+    Archive -> "archive"
+  ConditionCard _ -> "conditions"
+  NeighborhoodCard _ _ -> "neighborhoods"
+  StreetCard _ -> "streets"
+  EventCard _ -> "events"
+  HeadlineCard _ -> "headlines"
+  AnomalyCard _ -> "anomalies"
+  ArchiveCard _ -> "archive"
+  TerrorCard _ -> "terror"
+  MysteryCard _ -> "mysteries"
+  TravelRouteCard _ -> "routes"
+  ThresholdCard _ -> "thresholds"
+
 data CardDef = CardDef
   { code :: CardCode
   , name :: Text

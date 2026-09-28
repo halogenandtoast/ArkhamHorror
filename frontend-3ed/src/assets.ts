@@ -16,8 +16,16 @@ export async function loadAssetHost() {
   }
 }
 
-// every third-edition image goes through here: img('cards/x.webp')
+// every third-edition image goes through here: img('cards/items/x.webp')
 export const img = (path: string) => `${assetHost.value}/img/ah3e/${path}`
+
+// Card art is filed by type (monsters/, items/, ...); the catalog says which
+// folder each code lives in, and both faces of a card share it.
+export const cardArtDirs = ref<Record<string, string>>({})
+export const cardImg = (code: string, back = false) => {
+  const dir = cardArtDirs.value[code]
+  return img(`cards/${dir ? `${dir}/` : ''}${code}${back ? 'b' : ''}.webp`)
+}
 
 // An image that failed to load. The viewer removed the <img> and marked its
 // parent `no-art`; here the parent binds `no-art` and the img is v-if'd away.

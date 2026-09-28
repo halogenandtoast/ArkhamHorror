@@ -4,7 +4,14 @@ viewer can't cheaply derive on its own.
 -}
 module AH3e.View (catalogView, gameView) where
 
-import AH3e.Content (ScenarioInfo (..), cardDef, investigatorDefs, scenarioCatalog, scenarioDefs)
+import AH3e.Content (
+  ScenarioInfo (..),
+  cardDef,
+  cardDefs,
+  investigatorDefs,
+  scenarioCatalog,
+  scenarioDefs,
+ )
 import AH3e.Engine.Hooks (actionAllowance, effectiveMonsterHealth)
 import AH3e.Engine.Query (unstableSpaces)
 import AH3e.Game
@@ -30,6 +37,8 @@ catalogView =
   , "expansions" .= [CoreSet, DeadOfNight, UnderDarkWaves, SecretsOfTheOrder, RecursiveEchoes]
   , "investigatorNames" .= Map.map (.name) investigatorDefs
   , "investigatorDefs" .= investigatorDefs
+  , -- card art is filed by type: img/ah3e/cards/<dir>/<code>.webp
+    "cardArt" .= Map.map (cardArtDir . (.kind)) cardDefs
   ]
 
 gameView :: Game -> Value

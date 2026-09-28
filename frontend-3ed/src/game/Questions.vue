@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { img, isBroken, markBroken } from '@/assets'
+import { cardImg, isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
 import { zoom } from '@/game/overlays'
 import QuestionBlock from '@/game/QuestionBlock.vue'
@@ -33,8 +33,8 @@ function spawning(q: Question) {
   const mid = place.contents[0],
     code = ctx.cardCode(mid),
     name = ctx.cardNameRaw(mid) ?? 'Monster'
-  const ready = img(`cards/${code}.webp`),
-    other = img(`cards/${code}b.webp`)
+  const ready = cardImg(code),
+    other = cardImg(code, true)
   // a ready shrouded monster keeps its other side hidden
   const srcs = SHROUDED.has(code) ? [ready] : [ready, other]
   return { mid, name, ready, srcs }

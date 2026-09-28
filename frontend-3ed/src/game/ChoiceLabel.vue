@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { img, isBroken, markBroken } from '@/assets'
+import { cardImg, img, isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
 import MythosTok from '@/game/MythosTok.vue'
 import { zoom, zoomFlip } from '@/game/overlays'
@@ -47,7 +47,7 @@ const text = computed((): string | null => {
 
 const cards = computed(() =>
   props.label.tag === 'CardsLabel'
-    ? (props.label.contents[1] as CardId[]).map((cid) => ({ cid, src: img(`cards/${ctx.cardCode(cid)}.webp`) }))
+    ? (props.label.contents[1] as CardId[]).map((cid) => ({ cid, src: cardImg(ctx.cardCode(cid)) }))
     : [],
 )
 // choosing an investigator is easier with the sheet in front of you; the

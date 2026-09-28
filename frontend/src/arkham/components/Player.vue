@@ -657,21 +657,38 @@ function campaignKey(value: string) {
   return value.toLocaleLowerCase().replace(/[^a-z0-9]/g, '')
 }
 
-function currentCampaignPrefixes() {
-  const campaign = props.game.campaign
-  if (!campaign) return []
-
-  return [campaign.id, campaign.name]
-    .map(campaignKey)
-    .flatMap((key) => campaignCardPrefixes[key] ?? [key])
+/* Whatever names the content this game is playing: a campaign by id and name, or the
+ * scenario alone when there is no campaign (a standalone). */
+function currentContentIds(): string[] {
+  const { campaign, scenario } = props.game
+  return [campaign?.id, campaign?.name, scenario?.id].filter((id): id is string => id != null)
 }
 
-function isCurrentCampaignPlayerCard(card: CardDef) {
+/* The card-code prefixes that belong to this game's content.
+ *
+ * Official content is numbered, so an id maps through campaignCardPrefixes. Homebrew
+ * is keyed by a `:slug:` in the code instead, which that table cannot express, so the
+ * slug is taken straight off the id. Both go in the same list: one keying mechanism,
+ * whether the game is an official campaign, a homebrew campaign or a standalone. */
+function currentContentPrefixes(): string[] {
+  const ids = currentContentIds()
+  const homebrew = ids.flatMap((id) => {
+    const match = id.match(/^c?(:[^:]+:)/)
+    return match ? [match[1]] : []
+  })
+  const official = ids
+    .map((id) => campaignKey(id.replace(/^c/, '')))
+    .flatMap((key) => campaignCardPrefixes[key] ?? [key])
+
+  return [...homebrew, ...official]
+}
+
+function isCurrentContentPlayerCard(card: CardDef) {
   if (currentCampaignPlayerCardCodes.value.has(card.cardCode)) return true
-  if (!props.game.campaign || card.encounterSet == null || !playerCardTypes.has(card.cardType)) return false
+  if (card.encounterSet == null || !playerCardTypes.has(card.cardType)) return false
 
   const cardCode = card.cardCode.replace(/^c/, '')
-  return currentCampaignPrefixes().some((prefix) => cardCode.startsWith(prefix))
+  return currentContentPrefixes().some((prefix) => cardCode.startsWith(prefix))
 }
 
 function isStandaloneSideStoryPlayerCard(card: CardDef) {
@@ -684,7 +701,7 @@ function isStandaloneSideStoryPlayerCard(card: CardDef) {
 
 function isDebugPlayerCard(card: CardDef) {
   return (card.encounterSet == null && debugCardTypes.has(card.cardType))
-    || isCurrentCampaignPlayerCard(card)
+    || isCurrentContentPlayerCard(card)
     || isStandaloneSideStoryPlayerCard(card)
 }
 

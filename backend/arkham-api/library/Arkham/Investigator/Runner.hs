@@ -674,7 +674,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                   else u
         )
         <$> filterM filterAbility investigatorUsedAbilities
-    pure $ a & usedAbilitiesL .~ usedAbilities
+    -- a skip belongs to the window that asked it. windowDepth is decremented before
+    -- entities see EndCheckWindow, so depth > 0 means we just unwound into an enclosing
+    -- window whose own Do (CheckWindows ws) is still queued -- it must not inherit the
+    -- skip (#5793). At depth 0 the next CheckWindows clears it as before, which is what
+    -- the PlayerWindow re-ask guard (#5284) relies on.
+    pure $ a & usedAbilitiesL .~ usedAbilities & skippedWindowL %~ (&& depth <= 0)
   ForTarget (isTarget a -> True) (EndOfScenario {}) -> do
     -- eliminated must clear with defeated/resigned, or interludes (and scenarios
     -- with skipInvestigatorSetup, which never run ForInvestigators ResetGame)

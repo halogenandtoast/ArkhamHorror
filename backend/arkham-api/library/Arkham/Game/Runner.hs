@@ -61,6 +61,7 @@ import Arkham.Game.State
 import Arkham.Game.Utils
 import Arkham.GameEnv
 import Arkham.Helpers
+import Arkham.Helpers.Ability (abilityRidesAlong)
 import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
@@ -271,19 +272,18 @@ Triggers button). Such an ask is dropped unless some other seat is stopping the 
 anyway -- see the @WindowAsk@ handler. A question with no ability choices at all is not
 "only non-blocking": it has something real to offer.
 -}
-questionIsOnlyNonBlocking :: Question Message -> Bool
+questionIsOnlyNonBlocking :: HasGame m => Question Message -> m Bool
 questionIsOnlyNonBlocking q = case q of
   ChooseOne cs -> go cs
   WindowChooseOne cs -> go cs
   PlayerWindowChooseOne cs -> go cs
-  _ -> False
+  _ -> pure False
  where
-  go cs = notNull (abilities cs) && all ok cs
-  abilities cs = [ab | AbilityLabel {ability = ab} <- cs]
+  go cs = if null [() | AbilityLabel {} <- cs] then pure False else allM ok cs
   ok = \case
-    AbilityLabel {ability = ab} -> ab.nonBlocking
-    SkipTriggersButton {} -> True
-    _ -> False
+    AbilityLabel {investigatorId = i, ability = ab, windows = ws} -> abilityRidesAlong i ws ab
+    SkipTriggersButton {} -> pure True
+    _ -> pure False
 
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
@@ -1981,7 +1981,7 @@ runGameMessage msg g = case msg of
     -- blocking anywhere the window raises no prompt at all -- and must NOT re-check, or
     -- the same set would be rebuilt and dropped forever. #5784
     let allAsks = (pid, q) : [(pid', q') | WindowAsk _ pid' q' <- others]
-    let anyBlocking = any (not . questionIsOnlyNonBlocking . snd) allAsks
+    anyBlocking <- anyM (fmap not . questionIsOnlyNonBlocking . snd) allAsks
     let kept = if anyBlocking then allAsks else []
     pushAll
       $ [ case kept of

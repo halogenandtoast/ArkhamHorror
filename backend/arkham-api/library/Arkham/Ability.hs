@@ -328,6 +328,10 @@ already stops for, and never on its own. See 'runWindow'.
 nonBlocking :: Ability -> Ability
 nonBlocking ab = ab {abilityNonBlocking = True}
 
+-- | Non-blocking, except in windows matching this matcher, where it blocks as usual.
+nonBlockingExcept :: WindowMatcher -> Ability -> Ability
+nonBlockingExcept m ab = ab {abilityNonBlocking = True, abilityBlocksIn = Just m}
+
 mkAbility :: (Sourceable a, HasCardCode a) => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' =
   Ability
@@ -356,6 +360,7 @@ mkAbility entity idx type' =
     , abilityFightCriteriaOverride = Nothing
     , abilityEvadeCriteriaOverride = Nothing
     , abilityNonBlocking = False
+    , abilityBlocksIn = Nothing
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

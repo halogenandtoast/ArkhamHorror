@@ -50,6 +50,17 @@ abilityWindowFor ability = case ability.source.location of
   Nothing -> ability.window
   Just lid -> Matcher.replaceThisLocation lid ability.window
 
+{- | Whether this ability only rides along in these windows -- non-blocking, and not in one
+of the windows it is declared to block in. Such an ask is dropped unless some seat is
+stopping the window anyway; see the @WindowAsk@ handler in "Arkham.Game.Runner".
+-}
+abilityRidesAlong :: HasGame m => InvestigatorId -> [Window] -> Ability -> m Bool
+abilityRidesAlong iid ws ability
+  | not ability.nonBlocking = pure False
+  | otherwise = case ability.blocksIn of
+      Nothing -> pure True
+      Just m -> not <$> anyM (\w -> windowMatches iid (toSource ability) w m) ws
+
 {- | Whether this ability's own cost payment is still in flight, keyed by 'abilityRef' so
 a sibling ability on the same card does not block it.
 -}

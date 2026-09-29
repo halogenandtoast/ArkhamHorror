@@ -15,7 +15,7 @@ safeguard2 = asset Safeguard2 Cards.safeguard2
 
 instance HasAbilities Safeguard2 where
   getAbilities (Safeguard2 a) =
-    [ nonBlocking
+    [ nonBlockingExcept (TurnBegins #when Anyone)
         $ restricted a 1 ControlsThis
         $ triggered (DuringTurn $ not_ $ HasMatchingAsset (be a)) (exhaust a)
     ]

@@ -56,6 +56,7 @@ import {-# SOURCE #-} Arkham.Game.Utils (sourceCanClaimUseAbility)
 import Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Ability (
+  abilityRidesAlong,
   abilityWindowFor,
   getAbilityLimit,
   getCanAffordAbility,
@@ -507,7 +508,8 @@ runWindow attrs windows allActions playableCards = do
         -- Non-blocking reactions stay out of the materialised set entirely: it is worked
         -- through until empty with no skip button, which would make them mandatory. In a
         -- forced window they are simply not offered. #5784
-        let (isSilent, normal) = partition isSilentForcedAbility (filter (not . (.nonBlocking)) actions)
+        considered <- filterM (fmap not . abilityRidesAlong iid windows) actions
+        let (isSilent, normal) = partition isSilentForcedAbility considered
         silentInitiations <- concatMapM initiationsFor isSilent
         normalInitiations <- concatMapM initiationsFor normal
         -- Every initiation is made when the window opens, so the set is materialised and

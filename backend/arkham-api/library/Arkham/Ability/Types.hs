@@ -57,6 +57,12 @@ data Ability = Ability
   answered, so it never produces a lone prompt needing a Skip Triggers press.
   See 'runWindow' in "Arkham.Investigator.Runner".
   -}
+  , abilityBlocksIn :: Maybe WindowMatcher
+  {- ^ Windows in which a non-blocking reaction blocks anyway, so it still gets one
+  deliberate prompt of its own there. Safeguard (2) uses the start of a turn: that is the
+  only point at which arming it can still matter, and nothing else is ever on offer in the
+  windows that follow.
+  -}
   }
   deriving stock (Show, Ord, Data)
 
@@ -103,6 +109,7 @@ buildAbility source idx abilityType =
     , abilityFightCriteriaOverride = Nothing
     , abilityEvadeCriteriaOverride = Nothing
     , abilityNonBlocking = False
+    , abilityBlocksIn = Nothing
     }
 
 withHighlight :: Targetable target => target -> Ability -> Ability
@@ -128,6 +135,9 @@ instance HasField "skipForAll" Ability Bool where
 
 instance HasField "nonBlocking" Ability Bool where
   getField = abilityNonBlocking
+
+instance HasField "blocksIn" Ability (Maybe WindowMatcher) where
+  getField = abilityBlocksIn
 
 instance HasField "wantsSkillTest" Ability (Maybe SkillTestMatcher) where
   getField = abilityWantsSkillTest
@@ -269,6 +279,7 @@ instance FromJSON Ability where
     abilityFightCriteriaOverride <- o .:? "fightCriteriaOverride"
     abilityEvadeCriteriaOverride <- o .:? "evadeCriteriaOverride"
     abilityNonBlocking <- o .:? "nonBlocking" .!= False
+    abilityBlocksIn <- o .:? "blocksIn"
 
     pure Ability {..}
 

@@ -2,13 +2,13 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import ActiveSide from '@/game/ActiveSide.vue'
 import BoardMap from '@/game/BoardMap.vue'
-import CodexPanel from '@/game/CodexPanel.vue'
 import MythosPanel from '@/game/MythosPanel.vue'
 import { useGame } from '@/game/context'
 import Decks from '@/game/Decks.vue'
 import LogPanel from '@/game/LogPanel.vue'
 import PlayerAreas from '@/game/PlayerAreas.vue'
 import Questions from '@/game/Questions.vue'
+import UnderMap from '@/game/UnderMap.vue'
 import ScenarioChoice from '@/game/ScenarioChoice.vue'
 import ScenarioSheet from '@/game/ScenarioSheet.vue'
 import SpaceChips from '@/game/SpaceChips.vue'
@@ -180,19 +180,14 @@ const close = () => {
           <ScenarioSheet />
           <MythosPanel />
           <ActiveSide />
-          <Questions v-if="!wideRail && !stacked" />
+          <!-- with two columns the cards keep the sheet company; otherwise they follow the map -->
+          <UnderMap v-if="!wideRail && !stacked" />
         </div>
         <div class="map-col">
           <BoardMap />
-          <Questions v-if="stacked" />
+          <Questions v-if="!wideRail" />
           <PlayerAreas v-if="!wideRail" />
-          <div class="under-map">
-            <CodexPanel />
-            <section>
-              <h2>Display</h2>
-              <Decks part="display" />
-            </section>
-          </div>
+          <UnderMap v-if="wideRail || stacked" />
         </div>
         <div v-if="wideRail" class="side-rail">
           <Questions />

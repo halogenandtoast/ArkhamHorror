@@ -151,8 +151,10 @@ which is how the map comes out as large as it can be. */
 /* Without a rail (see wideRail) the two columns carry it between them, so they
 each keep their own flow rather than waiting on the taller of the two. */
 @media (max-width: 1800px) {
-  .sheet-col { flex:0 1 clamp(280px, 30vw, 560px); }
+  .sheet-col { flex:0 1 clamp(280px, 34vw, 620px); }
   .map-col { flex:1 1 420px !important; }
+  /* in the sheet's column the cards have less width, so they wrap rather than scroll */
+  .sheet-col .under-map { flex-wrap:wrap; overflow-x:visible; }
 }
 @media (max-width: 1100px) {
   .map-row { flex-wrap:wrap; }

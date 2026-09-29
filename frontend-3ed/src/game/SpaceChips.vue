@@ -51,7 +51,6 @@ function dragEnd() {
       <span
         class="inv-wrap"
         :class="{ delayed: i.delayed }"
-        :style="{ '--piece': `url(${pieceSrc(i.id)})` }"
         :title="pieceTitle(i.id, i.delayed)"
       >
         <span

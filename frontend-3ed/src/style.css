@@ -197,9 +197,11 @@ each keep their own flow rather than waiting on the taller of the two. */
   .sheet-col, .map-col { flex:1 1 100%; max-width:none; }
   /* in one column the sheet is only as tall as the mythos cup and the active card
   beside it, and only as wide as that height leaves it */
-  .sheet-col { display:grid; grid-template-columns:auto minmax(0, 1fr); align-items:stretch; }
-  .sheet-col > .scenario-side { grid-column:1; grid-row:1 / span 2; width:auto; }
-  .sheet-col > .scenario-side .flip { height:100%; width:auto; }
+  /* the sheet takes a third of the row and stands as tall as that makes it; the
+  mythos cup and the active card have the rest */
+  .sheet-col { display:grid; grid-template-columns:minmax(0, min(34%, 420px)) minmax(0, 1fr); align-items:stretch; }
+  .sheet-col > .scenario-side { grid-column:1; grid-row:1 / span 2; width:100%; align-self:start; }
+  .sheet-col > .scenario-side .flip { width:100%; height:auto; }
   .sheet-col > section:nth-of-type(1) { grid-column:2; grid-row:1; }
   .sheet-col > section:nth-of-type(2) { grid-column:2; grid-row:2; }
   .sheet-col > section:nth-of-type(3) { grid-column:1 / -1; grid-row:3; }
@@ -217,9 +219,9 @@ each keep their own flow rather than waiting on the taller of the two. */
 stops sharing its row, the map's controls come off the map and sit under it, and
 every row of cards divides the width it has rather than running past the edge. */
 @media (max-width: 560px) {
-  main, .map-section { margin-inline:8px; }
+  .map-section { margin-inline:8px; }
   .map-row { gap:8px; }
-  .sheet-col { display:flex; flex-direction:column; gap:8px; }
+  .sheet-col { display:flex; flex-direction:column; gap:8px; flex:1 1 100%; width:100%; max-width:none; }
   .sheet-col > .scenario-side { width:100%; }
   .sheet-col > .scenario-side .flip { width:100%; height:auto; }
   /* the controls leave the map and sit under it -- except in full screen, where the
@@ -260,7 +262,9 @@ every row of cards divides the width it has rather than running past the edge. *
   header button { padding:2px 7px; }
   .table-name { display:none; }
 }
-@media (max-width: 900px) { .map-row { flex-direction:column; } .sheet-col { flex-basis:auto; width:min(340px, 100%); } }
+/* stacked, the sheet's column is the width of the page -- it was still pinned to
+340px here, which is what squeezed the mythos cup and the active card beside it */
+@media (max-width: 900px) { .map-row { flex-direction:column; } .sheet-col { flex-basis:auto; width:100%; } }
 .board-fit { position:relative; overflow:hidden; }
 .board { position:absolute; top:0; left:0; margin:0; transform-origin:top left; will-change:transform; }
 .board > img { position:absolute; pointer-events:none; user-select:none; }
@@ -360,12 +364,10 @@ needs a layer of its own or the one behind paints through the one in front */
 .inv-piece { width:34px; height:50px; object-fit:contain; align-self:flex-end; position:relative;
   filter:var(--rim) drop-shadow(0 1px 2px rgba(0,0,0,.7)); }
 /* a shadow pooled under the base, so the piece stands on the space rather than floating on it */
-.inv-wrap:has(> .inv-piece)::before { content:""; position:absolute; left:50%; bottom:2px; width:34px; height:50px; pointer-events:none;
-  background:var(--piece) center/contain no-repeat; transform-origin:50% 100%;
-  transform:translateX(-50%) scale(1, -0.26) skewX(-48deg); filter:brightness(0) blur(2.5px); opacity:.5; }
-/* lying down, the piece casts a flat pool rather than a standing silhouette */
-.inv-wrap.delayed:has(> .inv-piece)::before { width:46px; height:12px; bottom:1px; border-radius:50%;
-  background:radial-gradient(closest-side, rgba(0,0,0,.8), rgba(0,0,0,0)); transform:translateX(-50%); filter:none; opacity:.9; }
+/* a flat shadow under the base, not a silhouette thrown across the board */
+.inv-wrap:has(> .inv-piece)::before { content:""; position:absolute; left:50%; bottom:1px; width:26px; height:6px;
+  pointer-events:none; border-radius:50%; background:rgba(0,0,0,.55); filter:blur(1.5px); transform:translateX(-50%); }
+.inv-wrap.delayed:has(> .inv-piece)::before { width:40px; height:5px; }
 /* delayed: the piece lies on its side, as the card does on the table, and wears a badge
    since a round marker turned sideways looks no different */
 .inv-wrap { position:relative; display:inline-flex; }

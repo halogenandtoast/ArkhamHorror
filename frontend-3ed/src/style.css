@@ -90,7 +90,7 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 .map-wrap.hide-tokens .anchor > :not(.pick-ring) { visibility:hidden; }
 /* One band across the top: the sheet, the map, and everything the turn player
 reads or answers, all the same height, so the page is about one screen tall. */
-.map-row { display:flex; gap:12px; align-items:stretch; justify-content:center; }
+.map-row { display:flex; gap:12px; align-items:stretch; justify-content:space-between; }
 .map-row .map-wrap { flex:1 1 auto; min-width:280px; height:var(--band); }
 .sheet-col { flex:0 0 clamp(190px, 15vw, 290px); min-width:0; display:flex; flex-direction:column; gap:10px; }
 .side-rail { flex:0 0 clamp(430px, 33vw, 840px); min-width:0; display:flex; flex-direction:column; gap:10px; }

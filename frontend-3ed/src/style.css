@@ -17,6 +17,17 @@ header h1 { font-size:16px; margin:0 8px 0 0; }
 main { display:grid; grid-template-columns: minmax(0,1fr); gap:12px; padding:12px 16px; }
 section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 12px; min-width:0; }
 section h2 { font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:0 0 8px; }
+/* inside the table, a panel wears its name up its left edge rather than across
+the top, which costs a line of height on every box */
+.map-section section { display:flex; align-items:stretch; gap:8px; padding:0; overflow:hidden; }
+/* the label is a band down the box's left edge, flush with it */
+.map-section section > h2 { flex:0 0 auto; margin:0; writing-mode:vertical-rl; transform:rotate(180deg);
+  letter-spacing:.1em; font-size:11px; align-self:stretch; padding:6px 3px;
+  background:color-mix(in srgb, var(--ink) 7%, transparent); }
+/* the content sits against its label rather than stretching away from it */
+.map-section section > :not(h2) { flex:0 1 auto; min-width:0; padding:8px 8px 8px 0; }
+/* the chip in a heading turns back the right way up */
+.map-section section > h2 .inv-chip { transform:rotate(180deg); }
 .q { border-left:3px solid var(--accent); padding-left:10px; margin-bottom:12px; }
 .q .prompt { font-weight:600; margin-bottom:6px; }
 .q button:has(.label-cards) { display:inline-flex; flex-direction:column; align-items:center; gap:6px; padding:8px; vertical-align:top; }
@@ -59,7 +70,8 @@ table { border-collapse:collapse; width:100%; } td, th { text-align:left; paddin
 .die { display:inline-block; width:24px; height:24px; line-height:24px; text-align:center; border:1px solid var(--line); border-radius:4px; margin-right:4px; font-weight:700; }
 .die.hit { background:var(--ok); color:#fff; border-color:var(--ok); }
 .err { color:var(--doom); }
-.map-section { --band:clamp(340px, 66vh, 1040px); margin:12px 16px 0; padding:8px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+/* the table itself is the page; the boxes inside it carry the panels */
+.map-section { --band:clamp(340px, 66vh, 1040px); margin:12px 16px 0; padding:0; background:none; border:none; }
 /* the codex and the decks are all cards: one row along the bottom, scrolled rather than wrapped */
 /* a badge rides above a deck's top corner and another below it, and a row that
 scrolls sideways would otherwise clip them -- or grow a scrollbar for the 2px */

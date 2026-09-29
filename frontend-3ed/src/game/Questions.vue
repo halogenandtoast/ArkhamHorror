@@ -65,7 +65,7 @@ function spawning(q: Question) {
         <QuestionBlock v-else :pid="pid" :question="q" :test="test" :loose="loose" />
       </template>
       <em v-if="!qs.length">No open questions.</em>
+      <div id="error" class="err">{{ ctx.error.value }}</div>
     </div>
-    <div id="error" class="err">{{ ctx.error.value }}</div>
   </section>
 </template>

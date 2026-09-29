@@ -134,7 +134,7 @@ const close = () => {
 
 <template>
   <header>
-    <h1><RouterLink to="/" class="home-link">AH3e</RouterLink> {{ tv.name }}</h1>
+    <h1><RouterLink to="/" class="home-link">AH3e</RouterLink> <span class="table-name">{{ tv.name }}</span></h1>
     <div id="status" class="pills">
       <template v-for="(p, k) in pills" :key="k">
         <span v-if="typeof p === 'string'" class="pill">{{ p }}</span>

@@ -252,7 +252,8 @@ function applyView() {
   view.base = full ? Math.min(vw / We, room / He) : Math.min(vwNow / We, room / He)
   // and a board shorter than the band gives the rest of the band back
   const vh = full ? room : Math.min(room, Math.round(He * view.base))
-  if (!full) vp.style.height = `${vh}px`
+  // full screen is the window's height, not the one we measured for the band
+  vp.style.height = full ? '' : `${vh}px`
   fit.style.height = `${vh}px`
   const s = view.base * view.zoom,
     bw = We * s,

@@ -17,7 +17,7 @@ const tokens = computed(() => (side.value === 'cup' ? g.value.cup : g.value.draw
     <div id="codex" class="mythos">
       <div class="mythos-switch" role="group" aria-label="Mythos tokens">
         <button :class="{ on: side === 'cup' }" :aria-pressed="side === 'cup'" @click="side = 'cup'">
-          In the cup <b>{{ g.cup.length }}</b>
+          Cup <b>{{ g.cup.length }}</b>
         </button>
         <button :class="{ on: side === 'drawn' }" :aria-pressed="side === 'drawn'" @click="side = 'drawn'">
           Drawn <b>{{ g.drawnTokens.length }}</b>

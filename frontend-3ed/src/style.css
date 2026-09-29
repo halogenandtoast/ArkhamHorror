@@ -191,6 +191,35 @@ each keep their own flow rather than waiting on the taller of the two. */
   .card-strip .decks, .card-strip .deck-group.lead, .card-strip .display-group { flex-wrap:wrap; }
   .card-strip .decks { justify-content:center; }
 }
+/* Phone width: everything in one column, nothing beside anything else. The sheet
+stops sharing its row, the map's controls come off the map and sit under it, and
+every row of cards divides the width it has rather than running past the edge. */
+@media (max-width: 560px) {
+  main, .map-section { margin-inline:8px; }
+  .map-row { gap:8px; }
+  .sheet-col { display:flex; flex-direction:column; gap:8px; }
+  .sheet-col > .scenario-side { width:100%; }
+  .sheet-col > .scenario-side .flip { width:100%; height:auto; }
+  /* the controls leave the map and sit under it -- except in full screen, where the
+  map is the whole window and they have nowhere else to be */
+  body:not(.map-full) .map-wrap { height:auto !important; }
+  body:not(.map-full) .map-controls { position:static; justify-content:center; margin-top:6px; }
+  body.map-full .map-controls { top:calc(8px + env(safe-area-inset-top, 0px)); }
+  .map-hint { display:none; }
+  .under-map, .card-strip { display:block; overflow-x:visible; }
+  .under-map > section + section, .card-strip > * + * { margin-top:8px; }
+  .under-map .decks, .under-map .display-group, .under-map .codex,
+  .card-strip .decks, .card-strip .deck-group.lead, .card-strip .display-group {
+    flex-wrap:wrap; gap:4px; width:100%; justify-content:flex-start; }
+  .under-map .deck, .under-map .codex-card, .card-strip .deck { width:calc(20% - 4px); min-width:0; flex:0 0 auto; }
+  .under-map .codex-card { width:calc(33.333% - 4px); }
+  .under-map .deck-stack, .card-strip .deck-stack { width:100%; height:auto; aspect-ratio:76 / 120; }
+  .under-map .deck-stack > img, .under-map .deck-empty,
+  .card-strip .deck-stack > img, .card-strip .deck-empty { width:100%; height:100%; }
+  .card-strip .deck-group.lead, .card-strip .display-group { padding:0; border:none; }
+  .player-area { padding:8px; gap:8px; }
+  .sheet { width:100%; }
+}
 /* a narrow header says the same in less room */
 @media (max-width: 1100px) {
   header { gap:8px; padding:6px 10px; font-size:13px; }
@@ -201,8 +230,13 @@ each keep their own flow rather than waiting on the taller of the two. */
   .pill-seats { display:none; }
 }
 @media (max-width: 760px) {
-  header h1 { max-width:8ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .table-name { max-width:8ch; display:inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; }
   #status .pill:not(.phase) { display:none; }
+}
+@media (max-width: 560px) {
+  header { gap:6px; padding:5px 8px; }
+  header button { padding:2px 7px; }
+  .table-name { display:none; }
 }
 @media (max-width: 900px) { .map-row { flex-direction:column; } .sheet-col { flex-basis:auto; width:min(340px, 100%); } }
 .board-fit { position:relative; overflow:hidden; }
@@ -270,12 +304,17 @@ whatever art it happens to sit on */
 .dbg-group { border-top:1px solid var(--line); margin-top:10px; padding-top:8px; }
 .dbg-group > h3 { margin:0 0 4px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
 #debug button { font-size:12px; padding:4px 8px; }
-/* the mythos panel shows one side of the cup at a time */
+/* the mythos panel shows one side of the cup at a time, chosen from two segments
+along the top of the panel, flush with its edges */
 .mythos { display:flex; flex-direction:column; gap:6px; }
-.mythos-switch { display:flex; gap:4px; }
-.mythos-switch button { padding:2px 8px; font-size:11px; border-radius:999px; background:none; color:var(--muted); }
+.mythos-switch { display:flex; margin:-8px -8px 2px 0; border-bottom:1px solid var(--line); }
+.mythos-switch button { flex:1 1 0; margin:0; padding:5px 8px; font-size:11px; white-space:nowrap; border:none; border-radius:0;
+  background:none; color:var(--muted); transition:background .12s, color .12s; }
+.mythos-switch button + button { border-left:1px solid var(--line); }
+.mythos-switch button:hover { color:var(--ink); background:color-mix(in srgb, var(--ink) 6%, transparent); }
 .mythos-switch button b { font-weight:700; color:var(--ink); }
-.mythos-switch button.on { background:color-mix(in srgb, var(--accent) 24%, transparent); border-color:color-mix(in srgb, var(--accent) 55%, var(--line)); color:var(--ink); }
+.mythos-switch button.on { background:color-mix(in srgb, var(--accent) 22%, transparent); color:var(--ink);
+  box-shadow:inset 0 -2px 0 var(--accent); }
 .sheet-col .cup { gap:2px; }
 .mythos .cup { gap:2px; }
 .inv-tok { width:34px; height:34px; border-radius:50%; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.8); }

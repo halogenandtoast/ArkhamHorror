@@ -50,7 +50,6 @@ const tabClasses = (iid: string, status: string) => {
     `tab--${ROLE_CLASS[role ?? ''] ?? 'Neutral'}`,
     iid === ctx.selectedTab.value ? 'tab--selected' : '',
     iid === g.value.turn ? 'tab--active-player' : '',
-    pid !== undefined && pid === g.value.leader ? 'tab--lead-player' : '',
     status !== 'Playing' ? 'inactive' : '',
     iid !== ctx.selectedTab.value && hasChoices(iid) ? 'tab--has-actions' : '',
   ]

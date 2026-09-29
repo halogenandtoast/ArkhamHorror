@@ -61,9 +61,10 @@ table { border-collapse:collapse; width:100%; } td, th { text-align:left; paddin
 .err { color:var(--doom); }
 .map-section { --band:clamp(340px, 66vh, 1040px); margin:12px 16px 0; padding:8px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }
 /* the codex and the decks are all cards: one row along the bottom, scrolled rather than wrapped */
-.card-strip { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; }
+/* the clue badge rides above a deck's top corner, and a scrolling row clips it */
+.card-strip { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; padding-top:10px; }
 .card-strip > section { flex:0 0 auto; }
-.card-strip .decks { flex:1 1 auto; flex-wrap:nowrap; justify-content:flex-start; border-top:none; margin-top:0; padding-top:4px; }
+.card-strip .decks { flex:1 1 auto; flex-wrap:nowrap; justify-content:flex-start; border-top:none; margin-top:0; padding-top:0; }
 .card-strip .codex, .card-strip .deck-group.lead, .card-strip .display-group { flex-wrap:nowrap; }
 .card-strip .decks, .card-strip .deck-group.lead, .card-strip .display-group { align-items:flex-start; }
 .card-strip .codex-card { width:96px; }
@@ -91,12 +92,24 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 /* One band across the top: the sheet, the map, and everything the turn player
 reads or answers, all the same height, so the page is about one screen tall. */
 .map-row { display:flex; gap:12px; align-items:stretch; justify-content:space-between; }
-.map-row .map-wrap { flex:1 1 auto; min-width:280px; height:var(--band); }
+/* the map and the codex share a column: whatever height the map does not take,
+the codex sits in, so a map that shrinks does not leave a hole under it */
+.map-col { flex:1 1 auto; min-width:280px; display:flex; flex-direction:column; gap:10px; }
+.map-row .map-wrap { max-height:var(--band); }
+/* under the map: the codex and the display, side by side */
+.under-map { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; padding-top:10px; }
+.under-map > section { flex:0 0 auto; }
+.under-map .decks { flex:0 1 auto; flex-wrap:nowrap; border-top:none; margin-top:0; padding:0; gap:12px; }
+.under-map .display-group { flex-wrap:nowrap; align-items:flex-start; gap:12px; padding-left:14px; }
+.under-map .deck { width:88px; gap:4px; }
+.under-map .deck-stack, .under-map .deck-stack > img, .under-map .deck-empty { width:76px; height:120px; }
+.under-map .deck-name { font-size:11px; }
+.map-col .codex-card { width:96px; }
 /* the column takes whatever width the row has spare, up to the point where the
 mythos cup stops wrapping, since the map beside it asks for a fixed width */
 .sheet-col { flex:1 1 clamp(190px, 15vw, 290px); min-width:190px; max-width:min(38vw, 560px); display:flex; flex-direction:column; gap:10px; }
-.side-rail { flex:0 0 clamp(430px, 33vw, 840px); min-width:0; display:flex; flex-direction:column; gap:10px; }
-.side-rail .ask-row { flex:0 0 auto; }
+.side-rail { flex:0 0 clamp(400px, 24vw, 620px); min-width:0; display:flex; flex-direction:column; gap:10px; }
+.side-rail > section:first-child { flex:0 0 auto; }
 .side-rail .rail-players { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
 .side-rail .rail-players > #investigators { flex:1 1 auto; min-height:0; overflow:auto; }
 .scenario-side { width:100%; cursor:zoom-in; position:relative; }
@@ -109,9 +122,9 @@ mythos cup stops wrapping, since the map beside it asks for a fixed width */
 drops under the map and turns on its side, so it stays one band deep */
 @media (max-width: 1800px) {
   .map-row { flex-wrap:wrap; }
-  .map-row .map-wrap { flex:1 1 420px !important; }
+  .map-col { flex:1 1 420px !important; }
   .side-rail { flex:1 1 100%; flex-direction:row; align-items:flex-start; }
-  .side-rail .ask-row { flex:1 1 640px; }
+  .side-rail > section:first-child { flex:1 1 480px; }
   .side-rail .rail-players { flex:2 1 720px; }
 }
 @media (max-width: 1100px) {
@@ -239,7 +252,7 @@ whole width and stay on one row */
 .asset.no-art .asset-name { display:block; font-weight:600; }
 .asset-badges { position:absolute; left:4px; bottom:4px; display:flex; gap:4px; }
 .tabs-row { display:flex; align-items:flex-end; }
-ul.tabs__header { flex:1; display:flex; list-style:none; padding:30px 0 0 5px; margin:0; user-select:none; font-size:min(16px, 2vw); }
+ul.tabs__header { flex:1; display:flex; list-style:none; padding:0 0 0 5px; margin:0; user-select:none; font-size:min(16px, 2vw); }
 ul.tabs__header > li { margin:0 3px 0 0; cursor:pointer; color:white; opacity:.5; border-radius:2px 2px 0 0; position:relative; display:inline-flex; align-items:center; }
 ul.tabs__header > li > span { display:block; width:fit-content; padding:5px 10px; }
 ul.tabs__header > li.tab--selected { font-weight:bold; opacity:1; }
@@ -248,7 +261,6 @@ ul.tabs__header > li.tab--has-actions { opacity:.85; }
 .tab--Guardian { background-color:#0c5693; } .tab--Seeker { background-color:#aa6005; } .tab--Rogue { background-color:#186a1d; }
 .tab--Mystic { background-color:#5e4389; } .tab--Survivor { background-color:#a3262d; } .tab--Neutral { background-color:#333; }
 .tab--active-player::before { content:"▶"; font-size:.7em; margin-left:8px; align-self:center; }
-.tab--lead-player::after { position:absolute; content:""; inset:0; top:-5px; margin-inline:auto; transform:translateY(-100%); width:25px; height:25px; background-image:var(--first-player-img); background-size:contain; background-repeat:no-repeat; }
 .waiting-indicator { display:inline-flex; align-items:center; justify-content:center; align-self:stretch; padding:4px 8px; border-left:1px solid rgba(0,0,0,.5); background-color:rgba(0,0,0,.5); border-radius:0 2px 0 0; color:#ff00ff; }
 .waiting-spinner { display:inline-block; animation:waiting-on-spin 5s linear infinite; }
 @keyframes waiting-on-spin { to { transform:rotate(360deg); } }
@@ -366,7 +378,13 @@ body.moving .draggable-inv { cursor:grabbing; }
 .active-side .encounter { flex-wrap:wrap; gap:8px; padding-left:22px; }
 .active-side .encounter-card { width:calc(100% - 22px); }
 .active-side .encounter > div { flex:1 1 100%; }
-.active-empty { height:300px; display:flex; align-items:center; justify-content:center; text-align:center;
+/* in the sheet column the card keeps a card's width; whose card it is, and where,
+is the chip in the heading rather than a paragraph under it */
+.sheet-col .active-side .encounter { flex-wrap:nowrap; gap:10px; }
+.sheet-col .active-side .encounter-card { flex:0 0 200px; width:200px; }
+.active-side h2 { display:flex; align-items:center; gap:6px; }
+.inv-chip { width:18px; height:18px; border-radius:50%; box-shadow:0 0 0 1px rgba(255,255,255,.55); }
+.active-empty { height:120px; display:flex; align-items:center; justify-content:center; text-align:center;
   color:var(--muted); font-size:12px; border:1px dashed var(--line); border-radius:8px; }
 .drawn-token { display:flex; align-items:center; gap:12px; margin-bottom:10px; padding:10px 12px;
   border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--accent) 7%, transparent); }

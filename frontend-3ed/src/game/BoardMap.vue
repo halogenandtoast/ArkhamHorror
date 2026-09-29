@@ -209,23 +209,35 @@ function applyView() {
   const [We, He] = boxSize(W, H)
   /* the viewport's own height bounds the map as well as its width, so the band
   keeps the height the layout gave it rather than growing to the board's own */
-  // measure against the band the layout offers, not the height we last asked for
-  if (!full) vp.style.height = ''
-  const room = vp.clientHeight
+  /* The band bounds the column, and whatever shares it with the map -- the codex --
+  takes its share first; the map has what is left. Read from the CSS bound rather
+  than from our own last height, so the measurement cannot chase itself. */
+  const col = vp.parentElement
+  let room = vp.clientHeight
+  if (!full) {
+    const cap = parseFloat(getComputedStyle(vp).maxHeight)
+    if (col && Number.isFinite(cap)) {
+      const gap = parseFloat(getComputedStyle(col).rowGap) || 0
+      let taken = 0
+      for (const kid of col.children) if (kid !== vp) taken += (kid as HTMLElement).offsetHeight + gap
+      room = Math.max(240, cap - taken)
+    }
+  }
   /* A board narrower than its column leaves dead space either side, so the column
   asks for only the width the map draws in and the rest of the row gets it. Taken
   from the height the band allows, so the measurement cannot oscillate. */
+  const sized = (col?.classList.contains('map-col') ? col : vp) as HTMLElement
   if (!full) {
     /* The column asks for exactly the width the map draws in at the band's height
     and never for more, so the spare width of the row goes to the sheet beside it.
     It still gives way, last, when the row is too narrow to hold everything. */
-    vp.style.flexGrow = '0'
-    vp.style.flexShrink = '1'
-    vp.style.flexBasis = `${Math.ceil(We * Math.min(1, room / He))}px`
+    sized.style.flexGrow = '0'
+    sized.style.flexShrink = '1'
+    sized.style.flexBasis = `${Math.ceil(We * Math.min(1, room / He))}px`
   } else {
-    vp.style.flexGrow = ''
-    vp.style.flexBasis = ''
-    vp.style.flexShrink = ''
+    sized.style.flexGrow = ''
+    sized.style.flexBasis = ''
+    sized.style.flexShrink = ''
   }
   const vwNow = full ? vw : vp.clientWidth
   view.base = full ? Math.min(vw / We, room / He) : Math.min(1, vwNow / We, room / He)

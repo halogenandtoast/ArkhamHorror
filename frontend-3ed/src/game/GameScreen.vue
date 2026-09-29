@@ -158,13 +158,20 @@ const close = () => {
         <div class="sheet-col">
           <ScenarioSheet />
           <MythosPanel />
+          <ActiveSide />
         </div>
-        <BoardMap />
-        <div class="side-rail">
-          <div class="ask-row">
-            <ActiveSide />
-            <Questions />
+        <div class="map-col">
+          <BoardMap />
+          <div class="under-map">
+            <CodexPanel />
+            <section>
+              <h2>Display</h2>
+              <Decks part="display" />
+            </section>
           </div>
+        </div>
+        <div class="side-rail">
+          <Questions />
           <section class="rail-players">
             <h2>Player areas</h2>
             <div id="investigators">
@@ -185,8 +192,7 @@ const close = () => {
         /></span>
       </div>
       <div class="card-strip">
-        <CodexPanel />
-        <Decks />
+        <Decks part="decks" />
       </div>
     </section>
   </template>

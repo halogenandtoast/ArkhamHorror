@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { isBroken, markBroken } from '@/assets'
+import { img, isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
 import MythosTok from '@/game/MythosTok.vue'
 import { zoom, zoomMarked } from '@/game/overlays'
@@ -55,12 +55,12 @@ const card = computed(() => {
       name,
       isEvent,
       top: readArrowTop(g.value, e, where),
-      title: ctx.invName(e.investigator),
-      sub: `${where ? ctx.spaceName(where) : ''} · ${name}`,
+      iid: e.investigator,
+      title: `${ctx.invName(e.investigator)} — ${where ? ctx.spaceName(where) : ''} · ${name}`,
     }
   }
   const kind = cid === g.value.revealedEvent ? 'Event' : 'Headline'
-  return { cid, src, name, isEvent, top: null, title: kind, sub: name }
+  return { cid, src, name, isEvent, top: null, iid: null, title: `${kind} · ${name}` }
 })
 function open() {
   const c = card.value
@@ -72,7 +72,15 @@ function open() {
 
 <template>
   <section id="activeSection" class="active-side">
-    <h2>Active card</h2>
+    <h2>
+      Active card<img
+        v-if="card?.iid"
+        class="inv-chip"
+        :src="img(`investigators/${card.iid}/token.webp`)"
+        :alt="ctx.invName(card.iid)"
+        :title="card.title"
+      />
+    </h2>
     <div id="activeToken">
       <div v-if="token" :key="tokenKey" class="drawn-token">
         <MythosTok :token="token" :size="56" />
@@ -101,10 +109,6 @@ function open() {
             @error="markBroken(card.src)"
           /><span class="asset-name">{{ card.name }}</span>
         </figure>
-        <div>
-          <div class="pa-name">{{ card.title }}</div>
-          <div class="pa-where">{{ card.sub }}</div>
-        </div>
       </div>
     </div>
   </section>

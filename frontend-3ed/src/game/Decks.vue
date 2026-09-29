@@ -8,6 +8,10 @@ import Tok from '@/game/Tok.vue'
 import { ANOMALY_BACKS } from '@/game/util'
 import type { CardId } from '@/types'
 
+// the display sits with the codex, the rest of the decks in their own row
+const props = withDefaults(defineProps<{ part?: 'all' | 'decks' | 'display' }>(), { part: 'all' })
+const shows = (which: 'decks' | 'display') => props.part === 'all' || props.part === which
+
 const ctx = useGame()
 const g = computed(() => ctx.game.value!)
 // debug: hand a card from the display straight to whoever debug is acting as
@@ -31,7 +35,7 @@ const faceSrc = (cid: CardId) => ctx.cardFace(cid, false)
 
 <template>
   <div id="decks" class="decks">
-    <div class="deck-group lead">
+    <div v-if="shows('decks')" class="deck-group lead">
       <Deck back="headline" name="Headlines" :count="d.headline.length" deck-key="headline" />
       <Deck
         back="headline"
@@ -51,7 +55,7 @@ const faceSrc = (cid: CardId) => ctx.cardFace(cid, false)
       />
     </div>
     <Deck
-      v-for="nid in hoods"
+      v-for="nid in shows('decks') ? hoods : []"
       :key="nid"
       :back="nid"
       :name="g.board.neighborhoods[nid]?.name ?? nid"
@@ -66,18 +70,18 @@ const faceSrc = (cid: CardId) => ctx.cardFace(cid, false)
           :size="34"
       /></span>
     </Deck>
-    <Deck v-if="hasStreets" back="the-street" name="Streets" :count="d.street.length" deck-key="street" />
+    <Deck v-if="shows('decks') && hasStreets" back="the-street" name="Streets" :count="d.street.length" deck-key="street" />
     <Deck
-      v-if="d.anomaly.length || anomalySet"
+      v-if="shows('decks') && (d.anomaly.length || anomalySet)"
       :back="ANOMALY_BACKS[anomalySet ?? ''] ?? 'temporal-fissures'"
       :name="anomalySet ?? 'Anomalies'"
       :count="d.anomaly.length"
       deck-key="anomaly"
     />
-    <Deck back="ally" name="Allies" :count="d.ally.length" deck-key="ally" />
-    <Deck back="spell" name="Spells" :count="d.spell.length" deck-key="spell" />
-    <Deck back="item" name="Items" :count="d.item.length" deck-key="item" />
-    <div v-if="d.display.length" class="display-group">
+    <Deck v-if="shows('decks')" back="ally" name="Allies" :count="d.ally.length" deck-key="ally" />
+    <Deck v-if="shows('decks')" back="spell" name="Spells" :count="d.spell.length" deck-key="spell" />
+    <Deck v-if="shows('decks')" back="item" name="Items" :count="d.item.length" deck-key="item" />
+    <div v-if="shows('display') && d.display.length" class="display-group">
       <div
         v-for="cid in d.display"
         :key="cid"

@@ -154,12 +154,6 @@ each keep their own flow rather than waiting on the taller of the two. */
   .sheet-col { flex:0 1 clamp(280px, 30vw, 560px); }
   .map-col { flex:1 1 420px !important; }
 }
-/* with room for two columns the cards stay under the map and the players below them;
-narrower, the question and the players come first and the cards go last */
-@media (min-width: 1101px) {
-  .map-col > .under-map { order:1; }
-  .map-col > .rail-players { order:2; }
-}
 @media (max-width: 1100px) {
   .map-row { flex-wrap:wrap; }
   .sheet-col, .map-col { flex:1 1 100%; max-width:none; }

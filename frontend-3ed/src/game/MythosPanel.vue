@@ -17,8 +17,14 @@ const side = ref<'drawn' | 'cup'>('drawn')
     <h2>Mythos</h2>
     <div id="codex" class="mythos">
       <div class="mythos-drawer">
-        <button class="mythos-tab" :class="{ on: side === 'drawn' }" :aria-expanded="side === 'drawn'" @click="side = 'drawn'">
-          Drawn <b>{{ g.drawnTokens.length }}</b>
+        <button
+          class="mythos-tab"
+          :class="{ on: side === 'drawn' }"
+          :aria-expanded="side === 'drawn'"
+          :title="`${g.drawnTokens.length} drawn`"
+          @click="side = 'drawn'"
+        >
+          Drawn
         </button>
         <div class="cup">
           <MythosTok v-for="(t, k) in g.drawnTokens" :key="`d${k}`" :token="t" :size="24" />
@@ -26,8 +32,14 @@ const side = ref<'drawn' | 'cup'>('drawn')
         </div>
       </div>
       <div class="mythos-drawer sliding" :class="{ open: side === 'cup' }">
-        <button class="mythos-tab" :class="{ on: side === 'cup' }" :aria-expanded="side === 'cup'" @click="side = 'cup'">
-          Cup <b>{{ g.cup.length }}</b>
+        <button
+          class="mythos-tab"
+          :class="{ on: side === 'cup' }"
+          :aria-expanded="side === 'cup'"
+          :title="`${g.cup.length} in the cup`"
+          @click="side = 'cup'"
+        >
+          Cup
         </button>
         <div class="cup">
           <MythosTok v-for="(t, k) in g.cup" :key="`c${k}`" :token="t" :size="24" />

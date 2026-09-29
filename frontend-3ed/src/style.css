@@ -308,20 +308,23 @@ whatever art it happens to sit on */
 the cup is shut against the right edge with only its handle showing. Taking the
 cup's handle slides it across the panel, and the other handle sends it back. */
 /* its children are drawers, which stand outside the flow, so the panel itself has
-to ask for the width */
-.map-section section > .mythos { flex:1 1 auto; }
+to ask for the width -- and it fills the box, so the handles meet its edges */
+.map-section section > .mythos { flex:1 1 auto; padding:0; }
 .mythos { --handle:23px; position:relative; height:52px; overflow:hidden; }
-.mythos-drawer { position:absolute; inset:0; display:flex; gap:6px; background:var(--panel); }
+/* the tokens inside a drawer raise themselves for their own badges, so each drawer
+needs a layer of its own or the one behind paints through the one in front */
+.mythos-drawer { position:absolute; inset:0; z-index:1; display:flex; background:var(--panel); }
+.mythos-drawer.sliding { z-index:2; }
 .mythos-drawer.sliding { transform:translateX(calc(100% - var(--handle))); transition:transform .32s cubic-bezier(.4,.1,.2,1); }
-.mythos-drawer.sliding.open { transform:translateX(calc(var(--handle) + 6px)); }
-.mythos-tab { flex:0 0 auto; width:var(--handle); margin:0; padding:6px 3px; font-size:10px; letter-spacing:.06em;
-  text-transform:uppercase; writing-mode:vertical-rl; transform:rotate(180deg); border:none; border-radius:5px;
-  cursor:pointer; background:color-mix(in srgb, var(--ink) 8%, transparent); color:var(--muted);
+.mythos-drawer.sliding.open { transform:translateX(var(--handle)); }
+.mythos-tab { flex:0 0 auto; width:var(--handle); align-self:stretch; margin:0; padding:6px 3px; font-size:10px;
+  letter-spacing:.06em; text-transform:uppercase; writing-mode:vertical-rl; transform:rotate(180deg); border:none;
+  border-radius:0; cursor:pointer; background:color-mix(in srgb, var(--ink) 8%, transparent); color:var(--muted);
   transition:background .14s, color .14s; }
 .mythos-tab:hover { color:var(--ink); background:color-mix(in srgb, var(--ink) 14%, transparent); }
 .mythos-tab b { font-weight:700; color:var(--ink); }
 .mythos-tab.on { background:color-mix(in srgb, var(--accent) 26%, transparent); color:var(--ink); }
-.mythos-drawer > .cup { flex:1 1 auto; min-width:0; margin:0; flex-wrap:wrap; align-content:center; align-items:center; overflow:hidden; }
+.mythos-drawer > .cup { flex:1 1 auto; min-width:0; margin:0; padding:0 8px; flex-wrap:wrap; align-content:center; align-items:center; overflow:hidden; }
 .mythos .waiting { font-size:12px; }
 @media (prefers-reduced-motion: reduce) { .mythos-drawer.sliding { transition:none; } }
 .sheet-col .cup { gap:2px; }

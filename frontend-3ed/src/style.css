@@ -241,7 +241,9 @@ whole width and stay on one row */
 .inv-wrap.delayed > .inv-piece { transform:rotate(90deg); }
 /* the rotated standee is wider than its box, so the box turns with it */
 .inv-wrap.delayed:has(> .inv-piece) { width:52px; height:36px; align-items:center; justify-content:center; }
-.inv-wrap.delayed > .inv-tok, .inv-wrap.delayed > .inv-piece { filter:grayscale(.8) brightness(.75); }
+/* the rim survives being delayed: greying a piece would otherwise drop it */
+.inv-wrap.delayed > .inv-tok, .inv-wrap.delayed > .inv-piece {
+  filter:grayscale(.8) brightness(.75) drop-shadow(0 0 1px rgba(255,255,255,.7)) drop-shadow(0 0 1px rgba(255,255,255,.5)); }
 .inv-wrap.delayed > .inv-tok { box-shadow:0 0 0 2px var(--delayed), 0 2px 6px rgba(0,0,0,.8); }
 .inv-wrap.delayed::after { content:""; position:absolute; right:-3px; bottom:-3px; width:15px; height:15px; border-radius:50%;
   background:var(--delayed) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 6.8V12l3.6 2.1'/%3E%3C/svg%3E") center/10px 10px no-repeat;

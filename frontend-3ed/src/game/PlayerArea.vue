@@ -7,7 +7,7 @@ import DbgNum from '@/game/DbgNum.vue'
 import MonsterCard from '@/game/MonsterCard.vue'
 import { zoomFlip } from '@/game/overlays'
 import Tok from '@/game/Tok.vue'
-import { DBG_SKILLS, FOCUS, SKILL_ROWS } from '@/game/util'
+import { cssName, DBG_SKILLS, FOCUS, SKILL_ROWS } from '@/game/util'
 import type { Investigator } from '@/types'
 
 const props = defineProps<{ inv: Investigator }>()
@@ -108,7 +108,13 @@ function gainCondition(name: string) {
     <div class="pa-side">
       <!-- one line of status: where they are, who plays them, and what is true of them now -->
       <div class="pa-bar">
-        <span class="pa-where">{{ i.space ? ctx.spaceName(i.space) : '—' }}</span>
+        <span
+          class="pa-where"
+          :class="{ 'pa-where-known': !!i.space }"
+          :data-hl="i.space ? `space:${cssName(i.space)}` : undefined"
+          :title="i.space ? 'Where they stand — hover to find it on the map' : undefined"
+          >{{ i.space ? ctx.spaceName(i.space) : '—' }}</span
+        >
         <span v-if="username" class="pa-user">{{ username }}</span>
         <span v-if="turn" class="pa-turn">taking a turn</span>
         <span v-if="i.delayed" class="pa-delayed" title="Delayed: they skip their next turn">delayed</span>

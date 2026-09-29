@@ -153,6 +153,12 @@ each keep their own flow rather than waiting on the taller of the two. */
 .board { position:absolute; top:0; left:0; margin:0; transform-origin:top left; will-change:transform; }
 .board > img { position:absolute; pointer-events:none; user-select:none; }
 .anchor { position:absolute; transform:translate(-50%,-50%) rotate(var(--map-rot, 0deg)); display:flex; flex-wrap:wrap; justify-content:center; gap:3px; max-width:120px; min-width:26px; min-height:26px; border-radius:14px; padding:2px; }
+/* everything standing on the board wears a soft light edge, so it reads against
+whatever art it happens to sit on */
+.map-wrap .tok img, .map-wrap .mon-card > img, .map-wrap .inv-piece {
+  filter:drop-shadow(0 0 1px rgba(255,255,255,.7)) drop-shadow(0 0 1px rgba(255,255,255,.5)) drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
+.map-wrap .inv-tok { box-shadow:0 0 0 2px rgba(255,255,255,.75), 0 2px 6px rgba(0,0,0,.8); }
+.map-wrap .mon-card > img { box-shadow:0 0 0 1px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.6); }
 .anchor.selectable { cursor:pointer; }
 /* the pick ring is a fixed small circle on the space's point, above its tokens and monster
    cards, so a click inside it picks the space instead of enlarging a card */
@@ -263,6 +269,9 @@ each piece separated by a dot rather than a line of its own */
 .pa-bar > * + *::before { content:"\00b7"; margin-right:8px; color:color-mix(in srgb, var(--muted) 60%, transparent); }
 .pa-bar > .pa-delayed::before, .pa-bar > .pa-status::before { content:none; }
 .pa-where { color:var(--ink); font-weight:600; }
+/* hovering where they stand lights that space on the map */
+.pa-where-known { cursor:help; text-decoration:underline dotted color-mix(in srgb, var(--ink) 40%, transparent); text-underline-offset:3px; }
+.pa-where-known:hover { color:#ffd54f; text-decoration-color:#ffd54f; }
 .pa-turn { font-weight:600; color:var(--accent); }
 .pa-actions { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
 .pa-actions .pips { display:flex; gap:3px; }

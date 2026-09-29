@@ -1713,6 +1713,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               ]
           _ -> noMatch
         _ -> noMatch
+    -- tolerate removed enemies, the attacker can be defeated mid-attack
     Matcher.EnemyAttacks timing whoMatcher enemyAttackMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyAttacks details -> case attackTarget details of
@@ -1720,7 +1721,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             andM
               [ not <$> isAttackCancelled details
               , matchWho iid who whoMatcher
-              , matches (attackEnemy details) enemyMatcher
+              , enemyMatches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
           -- An asset attacked "as if it were an engaged investigator" (Dogs of
@@ -1734,7 +1735,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               , aid <=~> AssetAt (locationWithInvestigator iid)
               , not <$> isAttackCancelled details
               , matchWho iid iid whoMatcher
-              , matches (attackEnemy details) enemyMatcher
+              , enemyMatches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
           _ -> noMatch
@@ -1745,7 +1746,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           SingleAttackTarget (InvestigatorTarget who) ->
             andM
               [ matchWho iid who whoMatcher
-              , matches (attackEnemy details) enemyMatcher
+              , enemyMatches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
           SingleAttackTarget (AssetTarget aid) ->
@@ -1753,17 +1754,18 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
               [ not . settingsStrictAsIfAt <$> getSettings
               , aid <=~> AssetAt (locationWithInvestigator iid)
               , matchWho iid iid whoMatcher
-              , matches (attackEnemy details) enemyMatcher
+              , enemyMatches (attackEnemy details) enemyMatcher
               , enemyAttackMatches iid details enemyAttackMatcher
               ]
           _ -> noMatch
         _ -> noMatch
+    -- tolerate removed enemies, your attack often defeats them before the window
     Matcher.EnemyAttacked timing whoMatcher sourceMatcher enemyMatcher ->
       guardTiming timing $ \case
         Window.EnemyAttacked who source' enemyId ->
           andM
             [ matchWho iid who whoMatcher
-            , matches enemyId enemyMatcher
+            , enemyMatches enemyId enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
@@ -1772,7 +1774,7 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
         Window.SuccessfulAttackEnemy who source' enemyId _ -> do
           andM
             [ matchWho iid who whoMatcher
-            , matches enemyId enemyMatcher
+            , enemyMatches enemyId enemyMatcher
             , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch

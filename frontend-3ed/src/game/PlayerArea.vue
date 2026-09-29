@@ -18,7 +18,6 @@ const i = computed(() => props.inv)
 const def = computed(() => ctx.catalog.investigatorDefs?.[i.value.id])
 const front = computed(() => img(`investigators/${i.value.id}/front.webp`))
 const back = computed(() => img(`investigators/${i.value.id}/back.webp`))
-const standee = computed(() => img(`investigators/${i.value.id}/standee.webp`))
 // a Map Skill Int arrives as [[skill, n], ...], not as an object keyed by skill
 const focusPairs = computed<[string, number][]>(() =>
   Array.isArray(i.value.focus) ? i.value.focus : Object.entries(i.value.focus ?? {}),
@@ -64,7 +63,6 @@ function setDelayed(e: Event) {
 function gainCondition(name: string) {
   void ctx.debugAction('DebugGainCondition', [i.value.id, name])
 }
-const standeeGone = computed(() => isBroken(standee.value))
 </script>
 
 <template>
@@ -108,27 +106,20 @@ const standeeGone = computed(() => isBroken(standee.value))
       </div>
     </div>
     <div class="pa-side">
-      <div class="pa-head">
-        <img v-if="!standeeGone" class="standee" :class="{ delayed: i.delayed }" :src="standee" alt="" @error="markBroken(standee)" />
-        <div>
-          <div class="pa-name">
-            {{ ctx.invName(i.id) }}<template v-if="turn">{{ " " }}<span class="pa-turn">taking a turn</span></template>
-          </div>
-          <div class="pa-where">
-            {{ i.space ? ctx.spaceName(i.space) : '—'
-            }}<span v-if="i.delayed" class="pa-delayed" title="Delayed: they skip their next turn">delayed</span>
-          </div>
-          <div v-if="username" class="pa-user">Played by {{ username }}</div>
-          <template v-if="actions">
-            <div v-if="actions.total === null" class="pa-actions">Actions used: {{ actions.used }}</div>
-            <div v-else class="pa-actions" :title="`${actions.used} of ${actions.total} actions used this turn`">
-              Actions
-              <span class="pips"><span v-for="k in actions.total" :key="k" class="pip" :class="{ used: k - 1 < actions.used }"></span></span>
-              {{ actions.used }} / {{ actions.total }}
-            </div>
+      <!-- one line of status: where they are, who plays them, and what is true of them now -->
+      <div class="pa-bar">
+        <span class="pa-where">{{ i.space ? ctx.spaceName(i.space) : '—' }}</span>
+        <span v-if="username" class="pa-user">{{ username }}</span>
+        <span v-if="turn" class="pa-turn">taking a turn</span>
+        <span v-if="i.delayed" class="pa-delayed" title="Delayed: they skip their next turn">delayed</span>
+        <span v-if="out" class="pa-status">{{ i.status }}</span>
+        <span v-if="actions" class="pa-actions" :title="`${actions.used} of ${actions.total ?? '—'} actions used this turn`">
+          <template v-if="actions.total === null">Actions used: {{ actions.used }}</template>
+          <template v-else>
+            <span class="pips"><span v-for="k in actions.total" :key="k" class="pip" :class="{ used: k - 1 < actions.used }"></span></span>
+            {{ actions.used }} / {{ actions.total }}
           </template>
-          <span v-if="out" class="pa-status">{{ i.status }}</span>
-        </div>
+        </span>
       </div>
       <div v-if="ctx.dbgOn.value" class="dbg-inline">
         <span v-for="sk in DBG_SKILLS" :key="sk" class="dbg-tokwrap"

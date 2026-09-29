@@ -244,7 +244,7 @@ whole width and stay on one row */
 /* whose turn it is reads from the tab's own marker and the name beside the sheet,
 so the panel needs no border of its own */
 .player-area.turn { box-shadow:none; }
-.player-area.out .sheet, .player-area.out .standee { filter:grayscale(1) brightness(.7); }
+.player-area.out .sheet { filter:grayscale(1) brightness(.7); }
 .sheet { position:relative; width:min(420px, 100%); flex:none; align-self:flex-start; }
 .sheet > img { width:100%; display:block; border-radius:6px; }
 .sheet .sheet-text { display:none; }
@@ -257,17 +257,18 @@ so the panel needs no border of its own */
   background:color-mix(in srgb, var(--panel) 62%, transparent); backdrop-filter:blur(3px);
   box-shadow:0 2px 10px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.08); }
 .pa-side { flex:1; min-width:220px; display:flex; flex-direction:column; gap:10px; }
-.pa-head { display:flex; gap:10px; align-items:center; }
-.standee { height:64px; transition:transform .2s; }
-.standee.delayed { transform:rotate(90deg); }
-.pa-name { font-weight:700; font-size:15px; }
-.pa-turn { font-size:11px; font-weight:600; color:var(--accent); }
-.pa-where { color:var(--muted); }
-.pa-actions { display:flex; align-items:center; gap:6px; margin-top:4px; font-size:12px; color:var(--muted); }
+/* one status line under the card: place, player, and whatever is true of them now,
+each piece separated by a dot rather than a line of its own */
+.pa-bar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
+.pa-bar > * + *::before { content:"\00b7"; margin-right:8px; color:color-mix(in srgb, var(--muted) 60%, transparent); }
+.pa-bar > .pa-delayed::before, .pa-bar > .pa-status::before { content:none; }
+.pa-where { color:var(--ink); font-weight:600; }
+.pa-turn { font-weight:600; color:var(--accent); }
+.pa-actions { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
 .pa-actions .pips { display:flex; gap:3px; }
 .pa-actions .pip { width:10px; height:10px; border-radius:50%; border:1.5px solid var(--accent); }
 .pa-actions .pip.used { background:var(--accent); }
-.pa-status { display:inline-block; margin-top:2px; font-size:12px; color:var(--doom); font-weight:700; }
+.pa-status { font-size:11px; color:var(--doom); font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
 .pa-cards { display:flex; flex-wrap:wrap; gap:8px; }
 .asset { position:relative; width:110px; }
 .asset img { width:100%; display:block; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,.5); }
@@ -348,7 +349,7 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); opacity:.6; }
 .anchor.hl { box-shadow:0 0 0 3px #ffd54f, 0 0 18px 6px rgba(255,213,79,.45); background:rgba(255,213,79,.14); border-radius:14px; }
 .inv-tok.hl { outline:3px solid #ffd54f; outline-offset:2px; }
 .inv-piece.hl { filter:drop-shadow(0 0 3px #ffd54f) drop-shadow(0 0 6px #ffd54f); }
-.pa-delayed { display:inline-flex; align-items:center; gap:4px; margin-left:6px; padding:1px 7px 1px 5px; border-radius:999px;
+.pa-delayed { display:inline-flex; align-items:center; gap:4px; padding:1px 7px 1px 5px; border-radius:999px;
   background:var(--delayed); color:#fff; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; vertical-align:1px; }
 .pa-delayed::before { content:""; width:11px; height:11px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 6.8V12l3.6 2.1'/%3E%3C/svg%3E") center/11px 11px no-repeat; }
 /* the clock rides beside the name itself; the tab's own ::after is the first-player token */

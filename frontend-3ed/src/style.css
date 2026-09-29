@@ -251,6 +251,11 @@ so the panel needs no border of its own */
 .sheet.no-art .sheet-text { display:block; padding:10px; border:1px dashed var(--line); border-radius:6px; }
 .sheet-text i { display:block; color:var(--muted); } .sheet-text p { margin:6px 0 0; }
 .sheet-focus { position:absolute; left:37%; transform:translate(-50%,-50%); }
+.sheet-lead { position:absolute; right:6px; top:6px; display:inline-flex; filter:drop-shadow(0 2px 4px rgba(0,0,0,.6)); }
+/* the tokens ride on the card, bottom right, clear of the skills down its left */
+.sheet .toks { position:absolute; right:6px; bottom:6px; gap:5px; padding:5px 7px; border-radius:10px; cursor:default;
+  background:color-mix(in srgb, var(--panel) 62%, transparent); backdrop-filter:blur(3px);
+  box-shadow:0 2px 10px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.08); }
 .pa-side { flex:1; min-width:220px; display:flex; flex-direction:column; gap:10px; }
 .pa-head { display:flex; gap:10px; align-items:center; }
 .standee { height:64px; transition:transform .2s; }

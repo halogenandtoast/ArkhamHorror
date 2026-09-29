@@ -88,14 +88,27 @@ const standeeGone = computed(() => isBroken(standee.value))
       <span v-for="[k, v] in focus" :key="k" class="sheet-focus" :style="{ top: `${(SKILL_ROWS[k] ?? 0) * 100}%` }"
         ><Tok :name="FOCUS[k] ?? 'focus-lore'" :count="v" :title="`${k} focus`" :size="30"
       /></span>
+      <!-- the leader's token, or the activation token, sits on the card's top corner -->
+      <span class="sheet-lead"
+        ><Tok
+          :name="`${leader ? 'first-player' : 'activation'}-${i.active ? 'active' : 'inactive'}`"
+          :title="`${leader ? 'Leader, ' : ''}${i.active ? 'active' : 'inactive'}`"
+          :size="34"
+      /></span>
+      <!-- what they are carrying rides on the card itself, clear of the skill column -->
+      <div class="toks" @click.stop>
+        <span v-for="[n, v, title, tag] in toks" :key="n" class="dbg-tokwrap"
+          ><Tok :name="n" :count="v" :title="title" :size="30" always /><DbgNum
+            v-if="ctx.dbgOn.value"
+            :tag="tag"
+            :iid="i.id"
+            :value="v"
+            :title="title"
+        /></span>
+      </div>
     </div>
     <div class="pa-side">
       <div class="pa-head">
-        <Tok
-          :name="`${leader ? 'first-player' : 'activation'}-${i.active ? 'active' : 'inactive'}`"
-          :title="`${leader ? 'Leader, ' : ''}${i.active ? 'active' : 'inactive'}`"
-          :size="40"
-        />
         <img v-if="!standeeGone" class="standee" :class="{ delayed: i.delayed }" :src="standee" alt="" @error="markBroken(standee)" />
         <div>
           <div class="pa-name">
@@ -116,16 +129,6 @@ const standeeGone = computed(() => isBroken(standee.value))
           </template>
           <span v-if="out" class="pa-status">{{ i.status }}</span>
         </div>
-      </div>
-      <div class="toks">
-        <span v-for="[n, v, title, tag] in toks" :key="n" class="dbg-tokwrap"
-          ><Tok :name="n" :count="v" :title="title" :size="34" always /><DbgNum
-            v-if="ctx.dbgOn.value"
-            :tag="tag"
-            :iid="i.id"
-            :value="v"
-            :title="title"
-        /></span>
       </div>
       <div v-if="ctx.dbgOn.value" class="dbg-inline">
         <span v-for="sk in DBG_SKILLS" :key="sk" class="dbg-tokwrap"

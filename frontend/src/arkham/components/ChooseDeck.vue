@@ -1243,6 +1243,10 @@ const needsReply = computed(() => {
 .deck-item-use,
 .deck-item-weakness-button {
   flex-shrink: 0;
+  /* The global button rule pads 1px 11px, which leaves a fixed-width icon button
+     no content box at all -- the icon then has zero width and Font Awesome paints
+     its path at full 512px scale over the rows below. */
+  padding: 0;
   width: 34px;
   height: 34px;
   border-radius: 5px;

@@ -72,7 +72,6 @@ table { border-collapse:collapse; width:100%; } td, th { text-align:left; paddin
 .card-strip .decks, .card-strip .deck-group.lead, .card-strip .display-group { gap:12px; }
 .card-strip .deck { width:88px; gap:4px; }
 .card-strip .deck-stack, .card-strip .deck-stack > img, .card-strip .deck-empty { width:76px; height:120px; }
-.card-strip .deck-name { font-size:11px; }
 .card-strip .codex-card figcaption { font-size:11px; }
 .map-wrap { position:relative; overflow:hidden; touch-action:pan-y; }
 .map-wrap.panning { cursor:grabbing; }
@@ -96,14 +95,16 @@ reads or answers, all the same height, so the page is about one screen tall. */
 the codex sits in, so a map that shrinks does not leave a hole under it */
 .map-col { flex:1 1 auto; min-width:280px; display:flex; flex-direction:column; gap:10px; }
 .map-row .map-wrap { max-height:var(--band); }
-/* under the map: the codex and the display, side by side */
-.under-map { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; padding-top:10px; }
+/* under the map: the codex and the display, side by side, sitting on the bottom of
+the row so the slack the map leaves is above them rather than below */
+.under-map { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; padding-top:10px; margin-top:auto; }
+/* the art says which card it is, and the title says the rest */
+.under-map .codex-card figcaption { display:none; }
 .under-map > section { flex:0 0 auto; }
 .under-map .decks { flex:0 1 auto; flex-wrap:nowrap; border-top:none; margin-top:0; padding:0; gap:12px; }
 .under-map .display-group { flex-wrap:nowrap; align-items:flex-start; gap:12px; }
 .under-map .deck { width:88px; gap:4px; }
 .under-map .deck-stack, .under-map .deck-stack > img, .under-map .deck-empty { width:76px; height:120px; }
-.under-map .deck-name { font-size:11px; }
 .map-col .codex-card { width:96px; }
 /* the column takes whatever width the row has spare, up to the point where the
 mythos cup stops wrapping, since the map beside it asks for a fixed width */
@@ -201,7 +202,9 @@ whole width and stay on one row */
 .sheet-col .cup > span:first-child { flex:0 0 100%; min-width:0; font-size:12px; }
 .inv-tok { width:34px; height:34px; border-radius:50%; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.8); }
 /* the whole standee stands on the space instead of the round marker */
-.inv-piece { width:34px; height:50px; object-fit:contain; filter:drop-shadow(0 1px 2px rgba(0,0,0,.7)); align-self:flex-end; position:relative; }
+/* a faint white rim picks the piece out of the art it stands on */
+.inv-piece { width:34px; height:50px; object-fit:contain; align-self:flex-end; position:relative;
+  filter:drop-shadow(0 0 1px rgba(255,255,255,.65)) drop-shadow(0 0 1px rgba(255,255,255,.5)) drop-shadow(0 1px 2px rgba(0,0,0,.7)); }
 /* a shadow pooled under the base, so the piece stands on the space rather than floating on it */
 .inv-wrap:has(> .inv-piece)::before { content:""; position:absolute; left:50%; bottom:2px; width:34px; height:50px; pointer-events:none;
   background:var(--piece) center/contain no-repeat; transform-origin:50% 100%;
@@ -290,7 +293,6 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); opacity:.6; }
 .deck-empty { width:84px; height:132px; border:2px dashed var(--line); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; }
 .deck-count { position:absolute; right:-6px; bottom:-6px; min-width:24px; height:24px; padding:0 6px; border-radius:12px; background:#111; color:#fff; font-size:13px; line-height:24px; text-align:center; box-shadow:0 0 0 1px rgba(255,255,255,.5); }
 .deck-clue { position:absolute; left:-8px; top:-8px; }
-.deck-name { font-size:12px; color:var(--muted); text-align:center; }
 .sheet-flip { perspective:1400px; }
 .sheet-flip .flip { position:relative; width:100%; aspect-ratio:1503/1200; transform-style:preserve-3d; transition:transform .9s cubic-bezier(.4,.1,.2,1); }
 .sheet-flip .flip.flipped { transform:rotateY(180deg); }

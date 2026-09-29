@@ -103,7 +103,6 @@ const faceSrc = (cid: CardId) => ctx.cardFace(cid, false)
             Take
           </button>
         </div>
-        <div class="deck-name">{{ ctx.cardName(cid) }}</div>
       </div>
     </div>
   </div>

@@ -55,6 +55,5 @@ const viewDeck = () => {
         </button>
       </template>
     </div>
-    <div class="deck-name">{{ name }}</div>
   </div>
 </template>

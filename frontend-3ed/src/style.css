@@ -1,5 +1,5 @@
-:root { --bg:#f6f4ef; --panel:#fff; --ink:#1d1b18; --muted:#6b665d; --line:#ddd6c8; --accent:#5b3fa0; --doom:#b3261e; --clue:#1f6f8b; --ok:#2e7d32; }
-@media (prefers-color-scheme: dark) { :root { --bg:#16151a; --panel:#211f27; --ink:#ece8f4; --muted:#a39db0; --line:#37333f; --accent:#a98bf0; --doom:#ef6b61; --clue:#5fb8d6; --ok:#6fcf73; } }
+:root { --bg:#f6f4ef; --panel:#fff; --ink:#1d1b18; --muted:#6b665d; --line:#ddd6c8; --accent:#5b3fa0; --doom:#b3261e; --clue:#1f6f8b; --ok:#2e7d32; --delayed:#c62828; }
+@media (prefers-color-scheme: dark) { :root { --bg:#16151a; --panel:#211f27; --ink:#ece8f4; --muted:#a39db0; --line:#37333f; --accent:#a98bf0; --doom:#ef6b61; --clue:#5fb8d6; --ok:#6fcf73; --delayed:#e04a43; } }
 * { box-sizing: border-box; }
 [hidden] { display:none !important; }
 body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 system-ui, sans-serif; }
@@ -102,9 +102,16 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 .other-space { display:inline-flex; gap:6px; align-items:center; margin:6px 8px 0 0; padding:4px 8px; border:1px solid var(--line); border-radius:6px; }
 .other-space.selectable { cursor:pointer; box-shadow:0 0 0 3px #ffd54a; }
 .tok { position:relative; display:inline-block; vertical-align:middle; flex:none; }
-.tok img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 1px 2px rgba(0,0,0,.7)); }
+.tok img { width:100%; height:100%; object-fit:contain; position:relative; z-index:1; filter:drop-shadow(0 2px 2px rgba(0,0,0,.55)); }
+/* a token is a disc lying on the board: a contact shadow under it, and a sheen
+   across the face so the cardboard catches the light */
+.tok::before { content:""; position:absolute; left:50%; bottom:-2px; transform:translateX(-50%); width:78%; height:20%;
+  border-radius:50%; background:radial-gradient(closest-side, rgba(0,0,0,.6), rgba(0,0,0,0)); }
+.tok::after { content:""; position:absolute; inset:0; border-radius:50%; pointer-events:none; z-index:2; mix-blend-mode:soft-light;
+  background:radial-gradient(circle at 32% 26%, rgba(255,255,255,.45), rgba(255,255,255,0) 48%),
+    linear-gradient(to bottom, rgba(255,255,255,.14), rgba(0,0,0,.22)); }
 .tok b, .deck-count, .log-unread { user-select:none; -webkit-user-select:none; }
-.tok b { position:absolute; right:-4px; bottom:-4px; min-width:16px; height:16px; padding:0 3px; border-radius:8px; background:#111; color:#fff; font-size:11px; line-height:16px; text-align:center; box-shadow:0 0 0 1px rgba(255,255,255,.5); }
+.tok b { position:absolute; z-index:3; right:-4px; bottom:-4px; min-width:16px; height:16px; padding:0 3px; border-radius:8px; background:#111; color:#fff; font-size:11px; line-height:16px; text-align:center; box-shadow:0 0 0 1px rgba(255,255,255,.5); }
 .toks { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 .cup { display:flex; flex-wrap:wrap; gap:4px; align-items:center; margin:4px 0; }
 #debugToggle.on { background:var(--accent); color:#fff; border-color:var(--accent); }
@@ -144,7 +151,11 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 .cup > span:first-child { min-width:110px; color:var(--muted); }
 .inv-tok { width:34px; height:34px; border-radius:50%; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.8); }
 /* the whole standee stands on the space instead of the round marker */
-.inv-piece { width:34px; height:50px; object-fit:contain; filter:drop-shadow(0 2px 3px rgba(0,0,0,.85)); align-self:flex-end; }
+.inv-piece { width:34px; height:50px; object-fit:contain; filter:drop-shadow(0 1px 2px rgba(0,0,0,.7)); align-self:flex-end; position:relative; }
+/* a shadow pooled under the base, so the piece stands on the space rather than floating on it */
+.inv-wrap:has(> .inv-piece)::before { content:""; position:absolute; left:50%; bottom:-3px; transform:translateX(-50%);
+  width:33px; height:11px; border-radius:50%; background:radial-gradient(closest-side, rgba(0,0,0,.8), rgba(0,0,0,.45) 55%, rgba(0,0,0,0)); }
+.inv-wrap.delayed:has(> .inv-piece)::before { width:46px; height:9px; bottom:0; }
 /* delayed: the piece lies on its side, as the card does on the table, and wears a badge
    since a round marker turned sideways looks no different */
 .inv-wrap { position:relative; display:inline-flex; }
@@ -152,9 +163,9 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 /* the rotated standee is wider than its box, so the box turns with it */
 .inv-wrap.delayed:has(> .inv-piece) { width:52px; height:36px; align-items:center; justify-content:center; }
 .inv-wrap.delayed > .inv-tok, .inv-wrap.delayed > .inv-piece { filter:grayscale(.8) brightness(.75); }
-.inv-wrap.delayed > .inv-tok { box-shadow:0 0 0 2px #f0b429, 0 2px 6px rgba(0,0,0,.8); }
-.inv-wrap.delayed::after { content:"\23F8"; position:absolute; right:-3px; bottom:-3px; width:15px; height:15px; border-radius:50%;
-  background:#f0b429; color:#1a1712; font-size:9px; line-height:15px; text-align:center; font-weight:700;
+.inv-wrap.delayed > .inv-tok { box-shadow:0 0 0 2px var(--delayed), 0 2px 6px rgba(0,0,0,.8); }
+.inv-wrap.delayed::after { content:""; position:absolute; right:-3px; bottom:-3px; width:15px; height:15px; border-radius:50%;
+  background:var(--delayed) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 6.8V12l3.6 2.1'/%3E%3C/svg%3E") center/10px 10px no-repeat;
   box-shadow:0 1px 3px rgba(0,0,0,.7); pointer-events:none; }
 .player-area { display:flex; flex-wrap:wrap; gap:12px; padding:10px; border:1px solid var(--line); border-radius:8px; margin-bottom:10px; }
 .player-area.turn { box-shadow:0 0 0 2px var(--accent); }
@@ -247,9 +258,11 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); }
 .anchor.hl { box-shadow:0 0 0 3px #ffd54f, 0 0 18px 6px rgba(255,213,79,.45); background:rgba(255,213,79,.14); border-radius:14px; }
 .inv-tok.hl { outline:3px solid #ffd54f; outline-offset:2px; }
 .inv-piece.hl { filter:drop-shadow(0 0 3px #ffd54f) drop-shadow(0 0 6px #ffd54f); }
-.pa-delayed { display:inline-block; margin-left:6px; padding:1px 6px; border-radius:999px; background:#f0b429; color:#1a1712;
-  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; vertical-align:1px; }
-.tab--delayed::after { content:"\23F8"; margin-left:6px; color:#f0b429; font-size:.85em; }
+.pa-delayed { display:inline-flex; align-items:center; gap:4px; margin-left:6px; padding:1px 7px 1px 5px; border-radius:999px;
+  background:var(--delayed); color:#fff; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; vertical-align:1px; }
+.pa-delayed::before, .tab--delayed::after { content:""; width:11px; height:11px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 6.8V12l3.6 2.1'/%3E%3C/svg%3E") center/11px 11px no-repeat; }
+.tab--delayed::after { display:inline-block; margin-left:6px; vertical-align:-1px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e04a43' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 6.8V12l3.6 2.1'/%3E%3C/svg%3E"); }
 .codex-card.hl, .asset.hl { outline:3px solid #ffd54f; outline-offset:2px; border-radius:8px; }
 #scenarioSheet.hl { outline:3px solid #ffd54f; outline-offset:3px; border-radius:10px; }
 .reckoning-pending { outline:2px dashed rgba(255,213,79,.85); outline-offset:3px; border-radius:8px; }

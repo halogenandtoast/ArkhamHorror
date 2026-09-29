@@ -63,6 +63,10 @@ table { border-collapse:collapse; width:100%; } td, th { text-align:left; paddin
 /* the codex and the decks are all cards: one row along the bottom, scrolled rather than wrapped */
 .card-strip { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; }
 .card-strip > section { flex:0 0 auto; }
+/* the band is already a panel, so what sits inside it is a heading and its content,
+not another box inset from the edges */
+.map-row section, .card-strip > section { background:none; border:none; border-radius:0; padding:0; }
+.map-row section > h2, .card-strip > section > h2 { margin-bottom:6px; }
 .card-strip .decks { flex:1 1 auto; flex-wrap:nowrap; justify-content:flex-start; border-top:none; margin-top:0; padding-top:4px; }
 .card-strip .codex, .card-strip .deck-group.lead, .card-strip .display-group { flex-wrap:nowrap; }
 .card-strip .decks, .card-strip .deck-group.lead, .card-strip .display-group { align-items:flex-start; }

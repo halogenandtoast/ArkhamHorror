@@ -11,10 +11,12 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Classes.RunMessage
+import Arkham.Deck qualified as Deck
 import Arkham.Effect.Builder
 import Arkham.Effect.Types
 import Arkham.Effect.Window
 import Arkham.GameT
+import Arkham.Helpers.Shuffle (getCanShuffleIn)
 import Arkham.Helpers.SkillTest.Lifted qualified as Msg (revelationSkillTest)
 import Arkham.Helpers.Window qualified as Window
 import Arkham.Id
@@ -510,7 +512,22 @@ drawnCard :: (?windows :: [Window]) => Window.DrawnCard
 drawnCard = Window.drawnCard ?windows
 
 shuffleDrawnCardBackIntoDeck :: (?windows :: [Window]) => ScriptT a ()
-shuffleDrawnCardBackIntoDeck = Msg.shuffleCardsIntoDeck drawnCard.drawnFrom drawnCard
+shuffleDrawnCardBackIntoDeck = do
+  let drawn = drawnCard
+  let deck = itsDeck drawn.drawnFrom
+  -- cancelling the draw already obtained the card out of every zone, so if the
+  -- shuffle is suppressed (shuffling into an empty deck) it would be orphaned.
+  canShuffle <- getCanShuffleIn deck drawn
+  if canShuffle
+    then Msg.shuffleCardsIntoDeck deck drawn
+    else Msg.addToDiscard drawn.drawnBy drawn
+ where
+  -- "back into its deck": a card drawn out of a discard pile belongs in the
+  -- matching deck, and ShuffleCardsIntoDeck has no handler for a discard.
+  itsDeck = \case
+    Deck.InvestigatorDiscard iid -> Deck.InvestigatorDeck iid
+    Deck.EncounterDiscard -> Deck.EncounterDeck
+    other -> other
 
 cancelCardDraw :: (?windows :: [Window], ?source :: Source) => ScriptT a ()
 cancelCardDraw = Script $ lift $ lift $ lift do

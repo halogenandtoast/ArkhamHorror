@@ -1,6 +1,7 @@
 module Arkham.Skill.Cards.Daredevil (daredevil) where
 
 import Arkham.Card
+import Arkham.Deck qualified as Deck
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -36,6 +37,8 @@ instance RunMessage Daredevil where
       when (attrs.tabooed TabooList21 && notNull weaknesses) do
         afterSkillTest iid "Daredevil" do
           ifCardExists (inDiscardOf iid <> basic (mapOneOf (CardWithId . toCardId) weaknesses)) do
-            chooseOneAtATimeM iid $ targets weaknesses $ drawCard iid
+            chooseOneAtATimeM iid
+              $ targets weaknesses
+              $ drawCardFrom iid (Deck.InvestigatorDiscard iid)
       pure s
     _ -> Daredevil <$> liftRunMessage msg attrs

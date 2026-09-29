@@ -17,6 +17,9 @@ const monsters = computed(() =>
 // the round marker, or the whole standee when that is what they asked for
 const pieceSrc = (iid: string) =>
   img(`investigators/${iid}/${ctx.standeePieces.value ? 'standee' : 'token'}.webp`)
+// delayed is a state the board should show, not something to read off the sheet
+const pieceTitle = (iid: string, delayed: boolean) =>
+  delayed ? `${ctx.invName(iid)} — delayed, they skip their next turn` : ctx.invName(iid)
 // the one walking may be dragged along their route; in debug, anyone may be dragged
 // anywhere, which puts them down directly
 const draggable = (iid: string) => ctx.moveDrag.value?.iid === iid || ctx.dbgOn.value
@@ -45,33 +48,33 @@ function dragEnd() {
       <Tok v-else name="marker-back" title="facedown marker" />
     </template>
     <template v-for="i in invs" :key="`inv-${i.id}`">
-      <span
-        v-if="isBroken(pieceSrc(i.id))"
-        class="chip inv"
-        :title="ctx.invName(i.id)"
-        :data-inv="cssName(i.id)"
-        :class="[ctx.marks(['inv', cssName(i.id)]), { 'draggable-inv': draggable(i.id) }]"
-        :draggable="draggable(i.id) ? 'true' : undefined"
-        @dragstart="dragStart($event, i.id)"
-        @dragend="dragEnd"
-        >{{ ctx.initials(i.id) }}</span
-      >
-      <img
-        v-else
-        :data-inv="cssName(i.id)"
-        :style="{ viewTransitionName: `inv-${cssName(i.id)}` }"
-        :class="[
-          ctx.standeePieces.value ? 'inv-piece' : 'inv-tok',
-          ctx.marks(['inv', cssName(i.id)]),
-          { 'draggable-inv': draggable(i.id) },
-        ]"
-        :src="pieceSrc(i.id)"
-        :title="ctx.invName(i.id)"
-        :draggable="draggable(i.id) ? 'true' : undefined"
-        @dragstart="dragStart($event, i.id)"
-        @dragend="dragEnd"
-        @error="markBroken(pieceSrc(i.id))"
-      />
+      <span class="inv-wrap" :class="{ delayed: i.delayed }" :title="pieceTitle(i.id, i.delayed)">
+        <span
+          v-if="isBroken(pieceSrc(i.id))"
+          class="chip inv"
+          :data-inv="cssName(i.id)"
+          :class="[ctx.marks(['inv', cssName(i.id)]), { 'draggable-inv': draggable(i.id) }]"
+          :draggable="draggable(i.id) ? 'true' : undefined"
+          @dragstart="dragStart($event, i.id)"
+          @dragend="dragEnd"
+          >{{ ctx.initials(i.id) }}</span
+        >
+        <img
+          v-else
+          :data-inv="cssName(i.id)"
+          :style="{ viewTransitionName: `inv-${cssName(i.id)}` }"
+          :class="[
+            ctx.standeePieces.value ? 'inv-piece' : 'inv-tok',
+            ctx.marks(['inv', cssName(i.id)]),
+            { 'draggable-inv': draggable(i.id) },
+          ]"
+          :src="pieceSrc(i.id)"
+          :draggable="draggable(i.id) ? 'true' : undefined"
+          @dragstart="dragStart($event, i.id)"
+          @dragend="dragEnd"
+          @error="markBroken(pieceSrc(i.id))"
+        />
+      </span>
     </template>
     <MonsterCard v-for="m in monsters" :key="`mon-${m.card}`" :monster="m" />
   </template>

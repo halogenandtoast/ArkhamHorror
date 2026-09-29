@@ -8,6 +8,7 @@ import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
 import AH3e.Types.Board
+import AH3e.Types.Card
 import AH3e.Types.Effect
 import AH3e.Types.Ids
 import AH3e.Types.Skill
@@ -115,7 +116,11 @@ resolveEffect ctx eff0 = do
     DrawMythosTokens n -> do
       i <- getInvestigator iid
       pushAll (replicate n (DrawMythosToken i.player))
-    BecomeDelayed -> when playing $ investigatorL iid . #delayed .= True
+    BecomeDelayed -> when playing do
+      i <- getInvestigator iid
+      investigatorL iid . #delayed .= True
+      d <- getInvestigatorDef iid
+      unless i.delayed $ logText (d.name <> " is delayed")
     BecomeDevoured -> push (DevourInvestigator iid)
     Retire -> push (RetireInvestigator iid)
     MoveUpTo n -> when playing do

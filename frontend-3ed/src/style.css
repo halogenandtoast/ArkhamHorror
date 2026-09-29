@@ -145,6 +145,17 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 .inv-tok { width:34px; height:34px; border-radius:50%; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.8); }
 /* the whole standee stands on the space instead of the round marker */
 .inv-piece { width:34px; height:50px; object-fit:contain; filter:drop-shadow(0 2px 3px rgba(0,0,0,.85)); align-self:flex-end; }
+/* delayed: the piece lies on its side, as the card does on the table, and wears a badge
+   since a round marker turned sideways looks no different */
+.inv-wrap { position:relative; display:inline-flex; }
+.inv-wrap.delayed > .inv-piece { transform:rotate(90deg); }
+/* the rotated standee is wider than its box, so the box turns with it */
+.inv-wrap.delayed:has(> .inv-piece) { width:52px; height:36px; align-items:center; justify-content:center; }
+.inv-wrap.delayed > .inv-tok, .inv-wrap.delayed > .inv-piece { filter:grayscale(.8) brightness(.75); }
+.inv-wrap.delayed > .inv-tok { box-shadow:0 0 0 2px #f0b429, 0 2px 6px rgba(0,0,0,.8); }
+.inv-wrap.delayed::after { content:"\23F8"; position:absolute; right:-3px; bottom:-3px; width:15px; height:15px; border-radius:50%;
+  background:#f0b429; color:#1a1712; font-size:9px; line-height:15px; text-align:center; font-weight:700;
+  box-shadow:0 1px 3px rgba(0,0,0,.7); pointer-events:none; }
 .player-area { display:flex; flex-wrap:wrap; gap:12px; padding:10px; border:1px solid var(--line); border-radius:8px; margin-bottom:10px; }
 .player-area.turn { box-shadow:0 0 0 2px var(--accent); }
 .player-area.out .sheet, .player-area.out .standee { filter:grayscale(1) brightness(.7); }
@@ -236,6 +247,9 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); }
 .anchor.hl { box-shadow:0 0 0 3px #ffd54f, 0 0 18px 6px rgba(255,213,79,.45); background:rgba(255,213,79,.14); border-radius:14px; }
 .inv-tok.hl { outline:3px solid #ffd54f; outline-offset:2px; }
 .inv-piece.hl { filter:drop-shadow(0 0 3px #ffd54f) drop-shadow(0 0 6px #ffd54f); }
+.pa-delayed { display:inline-block; margin-left:6px; padding:1px 6px; border-radius:999px; background:#f0b429; color:#1a1712;
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; vertical-align:1px; }
+.tab--delayed::after { content:"\23F8"; margin-left:6px; color:#f0b429; font-size:.85em; }
 .codex-card.hl, .asset.hl { outline:3px solid #ffd54f; outline-offset:2px; border-radius:8px; }
 #scenarioSheet.hl { outline:3px solid #ffd54f; outline-offset:3px; border-radius:10px; }
 .reckoning-pending { outline:2px dashed rgba(255,213,79,.85); outline-offset:3px; border-radius:8px; }

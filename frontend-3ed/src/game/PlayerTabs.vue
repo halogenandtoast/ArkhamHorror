@@ -43,7 +43,7 @@ const hasChoices = (iid: string) => {
   const pid = ctx.playerOfInv(iid)
   return pid !== undefined && g.value.questions[pid] !== undefined
 }
-const tabClasses = (iid: string, status: string) => {
+const tabClasses = (iid: string, status: string, delayed: boolean) => {
   const role = ctx.catalog.investigatorDefs?.[iid]?.roles?.[0]
   const pid = ctx.playerOfInv(iid)
   return [
@@ -52,13 +52,16 @@ const tabClasses = (iid: string, status: string) => {
     iid === g.value.turn ? 'tab--active-player' : '',
     pid !== undefined && pid === g.value.leader ? 'tab--lead-player' : '',
     status !== 'Playing' ? 'inactive' : '',
+    delayed ? 'tab--delayed' : '',
     iid !== ctx.selectedTab.value && hasChoices(iid) ? 'tab--has-actions' : '',
   ]
 }
-const tabTitle = (iid: string) => {
+const tabTitle = (iid: string, delayed: boolean) => {
   const pid = ctx.playerOfInv(iid)
   const u = pid === undefined ? null : ctx.usernameOf(pid)
-  return u ? `Played by ${u}` : undefined
+  const who = u ? `Played by ${u}` : null
+  const wait = delayed ? 'Delayed: they skip their next turn' : null
+  return [who, wait].filter(Boolean).join(' · ') || undefined
 }
 </script>
 
@@ -70,8 +73,8 @@ const tabTitle = (iid: string) => {
         <li
           v-for="i in sorted"
           :key="i.id"
-          :class="tabClasses(i.id, i.status)"
-          :title="tabTitle(i.id)"
+          :class="tabClasses(i.id, i.status, i.delayed)"
+          :title="tabTitle(i.id, i.delayed)"
           @click="ctx.selectTab(i.id)"
         >
           <i v-if="i.id !== ctx.selectedTab.value && hasChoices(i.id)" class="tab-pulse" aria-hidden="true"></i>

@@ -173,6 +173,8 @@ runMessage msg = case msg of
                   )
   StandUp iid -> do
     investigatorL iid . #delayed .= False
+    d <- getInvestigatorDef iid
+    logText (d.name <> " stands up")
     investigatorL iid . #actionsTaken += 1
     push (ActionTurn iid)
   {- A granted action is performed as its taker's own -- the restrictions on what they

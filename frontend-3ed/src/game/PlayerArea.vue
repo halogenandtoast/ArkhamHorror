@@ -101,7 +101,10 @@ const standeeGone = computed(() => isBroken(standee.value))
           <div class="pa-name">
             {{ ctx.invName(i.id) }}<template v-if="turn">{{ " " }}<span class="pa-turn">taking a turn</span></template>
           </div>
-          <div class="pa-where">{{ i.space ? ctx.spaceName(i.space) : '—' }}{{ i.delayed ? ' · delayed' : '' }}</div>
+          <div class="pa-where">
+            {{ i.space ? ctx.spaceName(i.space) : '—'
+            }}<span v-if="i.delayed" class="pa-delayed" title="Delayed: they skip their next turn">delayed</span>
+          </div>
           <div v-if="username" class="pa-user">Played by {{ username }}</div>
           <template v-if="actions">
             <div v-if="actions.total === null" class="pa-actions">Actions used: {{ actions.used }}</div>

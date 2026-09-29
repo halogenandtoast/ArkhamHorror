@@ -207,18 +207,39 @@ function applyView() {
     H = board.offsetHeight,
     vw = vp.clientWidth
   const [We, He] = boxSize(W, H)
-  view.base = full ? Math.min(vw / We, vp.clientHeight / He) : Math.min(1, vw / We)
-  fit.style.height = full ? `${vp.clientHeight}px` : `${He * view.base}px`
-  const vh = full ? vp.clientHeight : He * view.base
+  /* the viewport's own height bounds the map as well as its width, so the band
+  keeps the height the layout gave it rather than growing to the board's own */
+  // measure against the band the layout offers, not the height we last asked for
+  if (!full) vp.style.height = ''
+  const room = vp.clientHeight
+  /* A board narrower than its column leaves dead space either side, so the column
+  asks for only the width the map draws in and the rest of the row gets it. Taken
+  from the height the band allows, so the measurement cannot oscillate. */
+  if (!full) {
+    const wanted = Math.ceil(We * Math.min(1, room / He))
+    const fits = wanted <= vp.clientWidth || vp.style.flexBasis !== ''
+    vp.style.flexGrow = fits ? '0' : '1'
+    vp.style.flexBasis = fits ? `${wanted}px` : ''
+  } else {
+    vp.style.flexGrow = ''
+    vp.style.flexBasis = ''
+  }
+  const vwNow = full ? vw : vp.clientWidth
+  view.base = full ? Math.min(vw / We, room / He) : Math.min(1, vwNow / We, room / He)
+  // and a board shorter than the band gives the rest of the band back
+  const vh = full ? room : Math.min(room, Math.round(He * view.base))
+  if (!full) vp.style.height = `${vh}px`
+  fit.style.height = `${vh}px`
   const s = view.base * view.zoom,
     bw = We * s,
     bh = He * s
   if (view.fresh) {
-    view.x = (vw - bw) / 2
+    view.x = (vwNow - bw) / 2
     view.y = (vh - bh) / 2
     view.fresh = false
   }
-  view.x = bw <= vw ? (vw - bw) / 2 : Math.min(0, Math.max(vw - bw, view.x))
+  const vwFinal = full ? vw : vp.clientWidth
+  view.x = bw <= vwFinal ? (vwFinal - bw) / 2 : Math.min(0, Math.max(vwFinal - bw, view.x))
   view.y = bh <= vh ? (vh - bh) / 2 : Math.min(0, Math.max(vh - bh, view.y))
   /* rotate about the board's centre, then bring the turned box back to the origin,
   since the board is laid out from its top left */

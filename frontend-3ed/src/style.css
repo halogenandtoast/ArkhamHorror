@@ -59,7 +59,20 @@ table { border-collapse:collapse; width:100%; } td, th { text-align:left; paddin
 .die { display:inline-block; width:24px; height:24px; line-height:24px; text-align:center; border:1px solid var(--line); border-radius:4px; margin-right:4px; font-weight:700; }
 .die.hit { background:var(--ok); color:#fff; border-color:var(--ok); }
 .err { color:var(--doom); }
-.map-section { margin:12px 16px 0; padding:8px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+.map-section { --band:clamp(340px, 66vh, 1040px); margin:12px 16px 0; padding:8px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+/* the codex and the decks are all cards: one row along the bottom, scrolled rather than wrapped */
+.card-strip { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; }
+.card-strip > section { flex:0 0 auto; }
+.card-strip .decks { flex:1 1 auto; flex-wrap:nowrap; justify-content:flex-start; border-top:none; margin-top:0; padding-top:4px; }
+.card-strip .codex, .card-strip .deck-group.lead, .card-strip .display-group { flex-wrap:nowrap; }
+.card-strip .decks, .card-strip .deck-group.lead, .card-strip .display-group { align-items:flex-start; }
+.card-strip .codex-card { width:96px; }
+/* the strip is tighter than the old full-width row, so the cards give a little back */
+.card-strip .decks, .card-strip .deck-group.lead, .card-strip .display-group { gap:12px; }
+.card-strip .deck { width:88px; gap:4px; }
+.card-strip .deck-stack, .card-strip .deck-stack > img, .card-strip .deck-empty { width:76px; height:120px; }
+.card-strip .deck-name { font-size:11px; }
+.card-strip .codex-card figcaption { font-size:11px; }
 .map-wrap { position:relative; overflow:hidden; touch-action:pan-y; }
 .map-wrap.panning { cursor:grabbing; }
 .map-wrap.zoomed { cursor:grab; touch-action:none; }
@@ -75,17 +88,33 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 .map-wrap.hide-tokens #tokensToggle { background:var(--accent); color:#fff; border-color:var(--accent); }
 /* the anchors stay, so a space you can choose still glows and still takes the click */
 .map-wrap.hide-tokens .anchor > :not(.pick-ring) { visibility:hidden; }
-.map-row { display:flex; gap:14px; align-items:flex-start; }
-.map-row .map-wrap { flex:1; min-width:0; }
-/* the sheet and what belongs with it -- codex cards, the mythos cup -- stack beside the map */
-.sheet-col { flex:0 0 clamp(200px, 22vw, 340px); min-width:0; display:flex; flex-direction:column; gap:12px; align-self:flex-start; }
-.sheet-col .codex-card { width:calc(50% - 5px); }
+/* One band across the top: the sheet, the map, and everything the turn player
+reads or answers, all the same height, so the page is about one screen tall. */
+.map-row { display:flex; gap:12px; align-items:stretch; justify-content:center; }
+.map-row .map-wrap { flex:1 1 auto; min-width:280px; height:var(--band); }
+.sheet-col { flex:0 0 clamp(190px, 15vw, 290px); min-width:0; display:flex; flex-direction:column; gap:10px; }
+.side-rail { flex:0 0 clamp(430px, 33vw, 840px); min-width:0; display:flex; flex-direction:column; gap:10px; }
+.side-rail .ask-row { flex:0 0 auto; }
+.side-rail .rail-players { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
+.side-rail .rail-players > #investigators { flex:1 1 auto; min-height:0; overflow:auto; }
 .scenario-side { width:100%; cursor:zoom-in; position:relative; }
 .sheet-tokens { position:absolute; left:50%; bottom:-14px; transform:translateX(-50%); display:flex; gap:10px; padding:4px 10px; border-radius:999px; background:color-mix(in srgb, var(--panel) 88%, transparent); box-shadow:0 2px 8px rgba(0,0,0,.35); z-index:2; }
 .sheet-tokens .tok b { min-width:20px; height:20px; line-height:20px; font-size:13px; }
 .sheet-tokens .bump { animation:sheetBump .9s ease-out; }
 @keyframes sheetBump { 0% { transform:scale(1); } 30% { transform:scale(1.45); filter:drop-shadow(0 0 8px var(--doom)); } 100% { transform:scale(1); } }
 @media (prefers-reduced-motion: reduce) { .sheet-tokens .bump { animation:none; } }
+/* the rail only earns its place beside the map on a wide screen; below that it
+drops under the map and turns on its side, so it stays one band deep */
+@media (max-width: 1800px) {
+  .map-row { flex-wrap:wrap; }
+  .map-row .map-wrap { flex:1 1 420px !important; }
+  .side-rail { flex:1 1 100%; flex-direction:row; align-items:flex-start; }
+  .side-rail .ask-row { flex:1 1 640px; }
+  .side-rail .rail-players { flex:2 1 720px; }
+}
+@media (max-width: 1100px) {
+  .side-rail { flex-direction:column; }
+}
 @media (max-width: 900px) { .map-row { flex-direction:column; } .sheet-col { flex-basis:auto; width:min(340px, 100%); } }
 .board-fit { position:relative; overflow:hidden; }
 .board { position:absolute; top:0; left:0; margin:0; transform-origin:top left; will-change:transform; }

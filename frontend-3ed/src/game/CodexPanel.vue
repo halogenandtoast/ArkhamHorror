@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { cardImg, isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
-import MythosTok from '@/game/MythosTok.vue'
 import { zoom } from '@/game/overlays'
 import Tok from '@/game/Tok.vue'
 import { archiveImage } from '@/game/util'
@@ -58,20 +57,6 @@ const rumor = computed(() => {
         <figcaption>Rumor</figcaption>
       </figure>
       <em v-if="!g.codex.length && !rumor" class="waiting">Empty</em>
-    </div>
-  </section>
-  <section>
-    <h2>Mythos</h2>
-    <div id="codex">
-      <div class="cup">
-        <span>Mythos cup ({{ g.cup.length }})</span><MythosTok v-for="(t, k) in g.cup" :key="k" :token="t" :size="32" />
-      </div>
-      <div class="cup">
-        <span>Drawn</span><MythosTok v-for="(t, k) in g.drawnTokens" :key="k" :token="t" :size="32" /><template
-          v-if="!g.drawnTokens.length"
-          >—</template
-        >
-      </div>
     </div>
   </section>
 </template>

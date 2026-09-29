@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, watch } from 'vue'
 import ActiveSide from '@/game/ActiveSide.vue'
 import BoardMap from '@/game/BoardMap.vue'
 import CodexPanel from '@/game/CodexPanel.vue'
+import MythosPanel from '@/game/MythosPanel.vue'
 import { useGame } from '@/game/context'
 import Decks from '@/game/Decks.vue'
 import LogPanel from '@/game/LogPanel.vue'
@@ -156,9 +157,22 @@ const close = () => {
       <div class="map-row">
         <div class="sheet-col">
           <ScenarioSheet />
-          <CodexPanel />
+          <MythosPanel />
         </div>
         <BoardMap />
+        <div class="side-rail">
+          <div class="ask-row">
+            <ActiveSide />
+            <Questions />
+          </div>
+          <section class="rail-players">
+            <h2>Player areas</h2>
+            <div id="investigators">
+              <PlayerTabs v-if="Object.keys(g.investigators).length" />
+              <em v-else>None yet.</em>
+            </div>
+          </section>
+        </div>
       </div>
       <div id="otherSpaces">
         <span
@@ -170,22 +184,10 @@ const close = () => {
           ><b>{{ s.name }}</b><SpaceChips :sid="s.id"
         /></span>
       </div>
-      <Decks />
-    </section>
-    <main id="game">
-      <div>
-        <div class="ask-row">
-          <ActiveSide />
-          <Questions />
-        </div>
-        <section style="margin-top: 12px">
-          <h2>Player areas</h2>
-          <div id="investigators">
-            <PlayerTabs v-if="Object.keys(g.investigators).length" />
-            <em v-else>None yet.</em>
-          </div>
-        </section>
+      <div class="card-strip">
+        <CodexPanel />
+        <Decks />
       </div>
-    </main>
+    </section>
   </template>
 </template>

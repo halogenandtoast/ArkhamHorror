@@ -1,12 +1,12 @@
 module Arkham.Asset.Assets.SummonedServitor (summonedServitor) where
 
 import Arkham.Ability
-import Arkham.ForMovement
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Card
+import Arkham.ForMovement
 import Arkham.Helpers.Customization
 import Arkham.Helpers.Location (onSameLocation)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWhen, modifySelfWhen)
@@ -73,10 +73,7 @@ instance RunMessage SummonedServitor where
       case mlid of
         Nothing -> toDiscardBy iid attrs attrs
         Just lid -> push $ PlaceAsset attrs.id (AtLocation lid)
-      pure
-        $ if attrs `hasCustomization` ArmoredCarapace
-          then SummonedServitor $ attrs & healthL ?~ 3
-          else a
+      pure . SummonedServitor $ withCarapaceHealth attrs
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       locations <- select $ RevealedLocation <> connectedFrom (locationWithAsset attrs.id)
       when (notNull locations) do
@@ -123,4 +120,12 @@ instance RunMessage SummonedServitor where
       pure . SummonedServitor $ overMeta (<>) [Action.Investigate] attrs
     BeginTurn iid | attrs `controlledBy` iid -> do
       pure . SummonedServitor $ setMeta @[Action] [] attrs
-    _ -> SummonedServitor <$> liftRunMessage msg attrs
+    _ -> SummonedServitor . withCarapaceHealth <$> liftRunMessage msg attrs
+
+-- Refine can check Armored Carapace while the Servitor is already in play, so
+-- the health cannot be applied once at enter-play; treat it as an invariant of
+-- the attrs instead. Cheap because it stops at the first `Just`.
+withCarapaceHealth :: AssetAttrs -> AssetAttrs
+withCarapaceHealth attrs
+  | isNothing (assetHealth attrs), attrs `hasCustomization` ArmoredCarapace = attrs & healthL ?~ 3
+  | otherwise = attrs

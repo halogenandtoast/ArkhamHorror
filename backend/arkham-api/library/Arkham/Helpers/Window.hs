@@ -1645,24 +1645,37 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     -- fast player window via the actual turn investigator) -- NOT the NonFast
     -- action-taking window, so "Play during your turn" Fast cards cannot be played
     -- with a granted "as if it were your turn" action. See #4894.
-    Matcher.DuringTurn whoMatcher -> case wType of
-      -- Both turn-begins windows are during that investigator's turn, at either timing.
-      -- A reaction with no timing point of its own ("during another investigator's turn",
-      -- Safeguard (2)) can be used there, rather than first becoming available at the
-      -- action prompt -- by which point an `After your turn begins` Forced (The Red Clock
-      -- (2)) has already moved the active investigator away. #5784
-      --
-      -- Deliberately not extended to DuringYourAction: every ActionAbility carries that
-      -- window (Arkham.Ability), and no action is being taken yet.
-      Window.TurnBegins who -> matchWho iid who whoMatcher
-      _ -> guardTiming #when $ \case
-        Window.DuringTurn who -> matchWho iid who whoMatcher
-        Window.FastPlayerWindow -> do
-          miid <- selectOne Matcher.TurnInvestigator
-          case miid of
+    Matcher.DuringTurn whoMatcher -> do
+      let
+        matchTurnInvestigator =
+          selectOne Matcher.TurnInvestigator >>= \case
             Nothing -> pure False
             Just who -> matchWho iid who whoMatcher
-        _ -> noMatch
+      case wType of
+        -- Still NOT the NonFast action-taking window, so "Play during your turn" Fast
+        -- cards cannot be played with a granted "as if it were your turn" action. #4894
+        Window.NonFast -> noMatch
+        Window.DuringTurn who | timing' == #when -> matchWho iid who whoMatcher
+        Window.FastPlayerWindow | timing' == #when -> matchTurnInvestigator
+        -- For an ABILITY, "during your turn" is a CONDITION that holds for the whole
+        -- turn, not a window type. Keyed to the live turn investigator it matches every
+        -- window the turn opens, so a reaction with no timing point of its own
+        -- (Safeguard (2), "during another investigator's turn") can be used at any point
+        -- -- including the Leaving/Entering/Moves windows between The Red Clock (2)'s two
+        -- moves, where the old two-window whitelist left no opening at all. #5784
+        --
+        -- Card playability keeps that narrow whitelist. 'cardInFastWindows' passes the
+        -- card alongside the source, so `isJust mcard` marks the playability pass; giving
+        -- it the turn-wide reading re-offered every Fast "during your turn" card in every
+        -- one of those windows (30 Segment of Onyx prompts in a single Red Clock
+        -- resolution).
+        --
+        -- Not extended to DuringYourAction below either: every ActionAbility carries that
+        -- window (Arkham.Ability), so widening it would offer every action ability in
+        -- every window of the turn.
+        _
+          | isJust mcard -> noMatch
+          | otherwise -> matchTurnInvestigator
     -- "You have an action to take": matches the NonFast action-taking window
     -- (real turn or granted action), the genuine DuringTurn window, and the fast
     -- player window. See #4894.

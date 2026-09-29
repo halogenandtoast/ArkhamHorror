@@ -159,7 +159,14 @@ import Arkham.Token qualified as Token
 import Arkham.Treachery.CardDefs.TheCircleUndone.UnspeakableFate qualified as Treacheries
 import Arkham.Treachery.CardDefs.TheDreamEaters.DarkSideOfTheMoon qualified as DarkSideOfTheMoon
 import Arkham.Treachery.CardDefs.TheDreamEaters.PointOfNoReturn qualified as PointOfNoReturn
-import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow, primaryWindowTarget)
+import Arkham.Window (
+  Window (..),
+  mkAfter,
+  mkWhen,
+  mkWindow,
+  primaryWindowTarget,
+  windowEventGroups,
+ )
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, non, sumOf)
@@ -433,11 +440,13 @@ initiationsAsk player iid windows pending =
  where
   aimed ability ws
     | isNothing (abilityTarget ability)
-    , singleWindow ws || abilityHighlightFromWindow ability
+    , singleEvent ws || abilityHighlightFromWindow ability
     , Just target <- listToMaybe ws >>= primaryWindowTarget . windowType =
         withHighlight target ability
     | otherwise = ability
-  singleWindow = \case
+  -- one timing point, not one window: an attack's damage and horror halves are the same
+  -- point, so the button still aims at their shared target (#5785)
+  singleEvent ws = case windowEventGroups ws of
     [_] -> True
     _ -> False
 
@@ -464,9 +473,11 @@ runWindow attrs windows allActions playableCards = do
     -- One check can carry several simultaneous timing points -- `simultaneously` merges one
     -- DealtDamage window per enemy for Storm of Spirits -- and an ability initiates once per
     -- point (Ritual Candles ruling), the player choosing the order. So split an ability into
-    -- one initiation per matching window instead of handing it the whole list: every
+    -- one initiation per matching *point* instead of handing it the whole list: every
     -- `[Window] -> a` helper reads only the head, and one use would otherwise consume the
     -- rest through the PerWindow limit, which counts against `usedAbilityWindows`. #5743
+    -- The points are `windowEventGroups`, not the raw windows: an attack's damage and
+    -- horror halves are one point, so Spectral Shield sees both and fires once. #5785
     let
       highlightedFor ability window =
         if abilityHighlightFromWindow ability && isNothing (abilityTarget ability)
@@ -488,12 +499,15 @@ runWindow attrs windows allActions playableCards = do
                 live <- initiationIsLive iid ability matching
                 pure [(ability, matching) | live]
           else do
-            -- drop the points already resolved: each use is recorded against its own window
-            unconsumed <- filterM (\w -> initiationIsLive iid ability [w]) matching
-            pure $ map (\w -> (ability, [w])) unconsumed
+            -- drop the points already resolved: each use is recorded against its own windows
+            unconsumed <- filterM (initiationIsLive iid ability) (windowEventGroups matching)
+            pure $ map (ability,) unconsumed
     if anyForced
       then do
-        let (isSilent, normal) = partition isSilentForcedAbility actions
+        -- Non-blocking reactions stay out of the materialised set entirely: it is worked
+        -- through until empty with no skip button, which would make them mandatory. In a
+        -- forced window they are simply not offered. #5784
+        let (isSilent, normal) = partition isSilentForcedAbility (filter (not . (.nonBlocking)) actions)
         silentInitiations <- concatMapM initiationsFor isSilent
         normalInitiations <- concatMapM initiationsFor normal
         -- Every initiation is made when the window opens, so the set is materialised and
@@ -531,6 +545,10 @@ runWindow attrs windows allActions playableCards = do
             (ability,)
               <$> filterM (\w -> windowMatches iid abilitySource w (abilityWindowFor ability)) windows
         skippable <- getAllAbilitiesSkippable attrs windows
+        -- A non-blocking reaction is offered here like any other, including when it is the
+        -- only thing on offer. Whether that ask actually reaches a player is decided in the
+        -- `WindowAsk` handler, once every seat's ask for these windows is in hand -- this
+        -- seat cannot see on its own whether another seat is stopping the window. #5784
         unless (null playableCards && null actionsWithMatchingWindows) do
           push
             $ asWindowChoose windows
@@ -2970,19 +2988,23 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   UseAbility _ ab _ | isSource a ab.source || isProxySource a ab.source -> handleUseAbility a ab msg
   Do (UseAbility iid ability windows) | iid == investigatorId -> do
     isForced <- isForcedAbility iid ability
-    case traverse (primaryWindowTarget . windowType) windows of
+    -- the initiations this button covers are the window *groups* `runWindow` derived, not
+    -- the raw windows: an attack's damage and horror halves are one point, and asking
+    -- which of them to resolve offered two identical target buttons (#5785)
+    let groups = windowEventGroups windows
+    case traverse (primaryWindowTarget . windowType <=< listToMaybe) groups of
       Just targets
         | isForced
         , not (windowIsSingleEvent $ abilityWindow ability)
-        , notNull (drop 1 windows) -> do
+        , notNull (drop 1 groups) -> do
             -- one button covers every remaining initiation of this ability; the player
-            -- picks which window's target this use resolves against, and the ability is
-            -- then called directly with just that window. #5743
+            -- picks which point's target this use resolves against, and the ability is
+            -- then called directly with just that point's windows. #5743
             player <- getPlayer iid
             push
               $ chooseOne
                 player
-                [targetLabel target [Do (UseAbility iid ability [w])] | (w, target) <- zip windows targets]
+                [targetLabel target [Do (UseAbility iid ability g)] | (g, target) <- zip groups targets]
             pure a
       _ -> handleDoUseAbility a iid ability windows
   DoNotCountUseTowardsAbilityLimit iid ability | iid == investigatorId -> handleDoNotCountUseTowardsAbilityLimit a iid ability

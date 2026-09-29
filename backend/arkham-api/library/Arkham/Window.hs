@@ -147,6 +147,34 @@ primaryWindowTarget = \case
   DealtDamage _ _ target _ -> Just target
   _ -> Nothing
 
+{- | The timing points a matched window list holds, for splitting a forced ability's
+initiations (@runWindow@ in "Arkham.Investigator.Runner").
+
+A forced ability initiates once per timing point, and one check can carry several
+(@simultaneously@ merges one 'DealtDamage' window per enemy for Storm of Spirits). But the
+damage and the horror one source deals to one target are a __single__ point: "when X is
+dealt damage or horror" is one trigger that sees both halves. Splitting them made Spectral
+Shield offer two identical target buttons, then cancel damage without asking, then trigger
+again for the horror (#5785). Grouping by source and target keeps "damage dealt to __an__
+asset" initiating once per asset.
+
+'DealtExcessDamage' is deliberately not grouped -- it is its own timing point.
+-}
+windowEventGroups :: [Window] -> [[Window]]
+windowEventGroups = go
+ where
+  go [] = []
+  go (w : rest) = case damageEventKey w of
+    Nothing -> [w] : go rest
+    Just k -> let (same, others) = partition ((== Just k) . damageEventKey) rest in (w : same) : go others
+  damageEventKey w =
+    (windowTiming w,) <$> case windowType w of
+      DealtDamage source _ target _ -> Just (source, target)
+      DealtHorror source target _ -> Just (source, target)
+      TakeDamage source _ target _ -> Just (source, target)
+      TakeHorror source target _ -> Just (source, target)
+      _ -> Nothing
+
 revealedChaosTokens :: [Window] -> [ChaosToken]
 revealedChaosTokens [] = []
 revealedChaosTokens ((windowType -> RevealChaosToken _ token) : rest) = token : revealedChaosTokens rest

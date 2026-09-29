@@ -322,6 +322,12 @@ basicAbility ab = ab {abilityBasic = True}
 skipForAll :: Ability -> Ability
 skipForAll ab = ab {abilitySkipForAll = True}
 
+{- | Mark a reaction non-blocking: it is offered only alongside whatever else the window
+already stops for, and never on its own. See 'runWindow'.
+-}
+nonBlocking :: Ability -> Ability
+nonBlocking ab = ab {abilityNonBlocking = True}
+
 mkAbility :: (Sourceable a, HasCardCode a) => a -> Int -> AbilityType -> Ability
 mkAbility entity idx type' =
   Ability
@@ -349,6 +355,7 @@ mkAbility entity idx type' =
     , abilityHighlightFromWindow = False
     , abilityFightCriteriaOverride = Nothing
     , abilityEvadeCriteriaOverride = Nothing
+    , abilityNonBlocking = False
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

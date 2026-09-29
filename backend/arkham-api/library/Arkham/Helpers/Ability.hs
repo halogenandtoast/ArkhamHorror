@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Actions
+import Arkham.ActiveCost.Base (ActiveCostTarget (ForAbility), activeCostTarget)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Types (Field (..))
@@ -49,6 +50,16 @@ abilityWindowFor ability = case ability.source.location of
   Nothing -> ability.window
   Just lid -> Matcher.replaceThisLocation lid ability.window
 
+{- | Whether this ability's own cost payment is still in flight, keyed by 'abilityRef' so
+a sibling ability on the same card does not block it.
+-}
+abilityCostIsInFlight :: HasGame m => Ability -> m Bool
+abilityCostIsInFlight ability = any isThisAbility <$> getActiveCosts
+ where
+  isThisAbility ac = case activeCostTarget ac of
+    ForAbility a -> a.ref == ability.ref
+    _ -> False
+
 getCanPerformAbility
   :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 getCanPerformAbility !iid !ws !ability = do
@@ -77,6 +88,13 @@ getCanPerformAbility !iid !ws !ability = do
     matching <- lift $ filterM (\window -> windowMatches iid (toSource ability) window abWindow) ws
     guard $ notNull matching
     liftGuardM $ not <$> preventedByInvestigatorModifiers iid ability
+    -- An ability whose own cost is still being paid must not be offered again. A cost is
+    -- not applied where it is declared: `ExhaustCost` only pushes `Exhaust`, so the
+    -- CheckWindows the cost pipeline opens before it still see a ready asset. An ability
+    -- whose window holds for the whole turn (Safeguard (2)'s "during another
+    -- investigator's turn") matches those windows and triggers off its own payment.
+    -- `PayCostFinished` always clears the entry, so this cannot strand an ability. #5784
+    liftGuardM $ not <$> abilityCostIsInFlight ability
     -- An ability initiates once per matching window, so it stays available while ANY of
     -- them is unconsumed. Asking about the whole list instead would let the first use --
     -- recorded against its own window -- exhaust a PerWindow limit that `countInWs` then

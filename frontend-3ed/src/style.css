@@ -309,8 +309,11 @@ the cup is shut against the right edge with only its handle showing. Taking the
 cup's handle slides it across the panel, and the other handle sends it back. */
 /* its children are drawers, which stand outside the flow, so the panel itself has
 to ask for the width -- and it fills the box, so the handles meet its edges */
-.map-section section > .mythos { flex:1 1 auto; padding:0; }
-.mythos { --handle:23px; position:relative; height:52px; overflow:hidden; }
+/* the drawers fill the panel, so its handles meet the label band and the box's
+own top and bottom */
+.map-section section:has(> .mythos) { gap:0; }
+.map-section section > .mythos { flex:1 1 auto; padding:0; align-self:stretch; }
+.mythos { --handle:23px; position:relative; min-height:52px; overflow:hidden; }
 /* the tokens inside a drawer raise themselves for their own badges, so each drawer
 needs a layer of its own or the one behind paints through the one in front */
 .mythos-drawer { position:absolute; inset:0; z-index:1; display:flex; background:var(--panel); }

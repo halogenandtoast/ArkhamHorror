@@ -29,7 +29,7 @@ const rumor = computed(() => {
         class="codex-card"
         :class="[{ 'no-art': isBroken(codexSrc(e)) }, ctx.marks(['codex', e.number])]"
         :data-codex="e.number"
-        :title="`${codexName(e)}${e.flipped ? ' (back)' : ''}`"
+        :title="`#${e.number} ${codexName(e)}${e.flipped ? ' · back' : ''}`"
         @click="zoom(codexSrc(e))"
       >
         <img v-if="!isBroken(codexSrc(e))" :src="codexSrc(e)" :alt="codexName(e)" @error="markBroken(codexSrc(e))" /><span
@@ -38,7 +38,6 @@ const rumor = computed(() => {
         ><span v-if="e.tokens?.clues" class="codex-tok"
           ><Tok name="clue" :count="e.tokens.clues" :title="`${e.tokens.clues} clues on this card`" :size="34" always
         /></span>
-        <figcaption>#{{ e.number }}{{ e.flipped ? ' · back' : '' }}</figcaption>
       </figure>
       <figure
         v-if="rumor"
@@ -54,7 +53,6 @@ const rumor = computed(() => {
         ><span v-if="rumor.doom" class="codex-tok"
           ><Tok name="doom" :count="rumor.doom" :title="`${rumor.doom} doom on this card`" :size="34" always
         /></span>
-        <figcaption>Rumor</figcaption>
       </figure>
       <em v-if="!g.codex.length && !rumor" class="waiting">Empty</em>
     </div>

@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import ActiveSide from '@/game/ActiveSide.vue'
 import BoardMap from '@/game/BoardMap.vue'
+import CodexPanel from '@/game/CodexPanel.vue'
 import MythosPanel from '@/game/MythosPanel.vue'
 import { useGame } from '@/game/context'
 import Decks from '@/game/Decks.vue'
@@ -182,12 +183,14 @@ const close = () => {
           <ActiveSide />
           <!-- with two columns the cards keep the sheet company; otherwise they follow the map -->
           <UnderMap v-if="!wideRail && !stacked" />
+          <!-- with three, the display joins the deck row and the codex ends this column -->
+          <CodexPanel v-if="wideRail" />
         </div>
         <div class="map-col">
           <BoardMap />
           <Questions v-if="!wideRail" />
           <PlayerAreas v-if="!wideRail" />
-          <UnderMap v-if="wideRail || stacked" />
+          <UnderMap v-if="stacked" />
         </div>
         <div v-if="wideRail" class="side-rail">
           <Questions />
@@ -205,7 +208,7 @@ const close = () => {
         /></span>
       </div>
       <div class="card-strip">
-        <Decks part="decks" />
+        <Decks :part="wideRail ? 'all' : 'decks'" />
       </div>
     </section>
   </template>

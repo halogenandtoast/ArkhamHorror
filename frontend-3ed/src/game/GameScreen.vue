@@ -113,8 +113,19 @@ for the taller one as a grid row would make it. */
 const railQuery = window.matchMedia('(min-width: 1801px)')
 const wideRail = ref(railQuery.matches)
 const onRailQuery = (e: MediaQueryListEvent) => (wideRail.value = e.matches)
-onMounted(() => railQuery.addEventListener('change', onRailQuery))
-onUnmounted(() => railQuery.removeEventListener('change', onRailQuery))
+/* Narrower still and the sheet's column has no room for the question either, so it
+goes above the player areas in the map's column, where the eye already is. */
+const stackedQuery = window.matchMedia('(max-width: 1100px)')
+const stacked = ref(stackedQuery.matches)
+const onStackedQuery = (e: MediaQueryListEvent) => (stacked.value = e.matches)
+onMounted(() => {
+  railQuery.addEventListener('change', onRailQuery)
+  stackedQuery.addEventListener('change', onStackedQuery)
+})
+onUnmounted(() => {
+  railQuery.removeEventListener('change', onRailQuery)
+  stackedQuery.removeEventListener('change', onStackedQuery)
+})
 
 const close = () => {
   if (confirm('Close this game for everyone?')) props.onClose()
@@ -169,10 +180,12 @@ const close = () => {
           <ScenarioSheet />
           <MythosPanel />
           <ActiveSide />
-          <Questions v-if="!wideRail" />
+          <Questions v-if="!wideRail && !stacked" />
         </div>
         <div class="map-col">
           <BoardMap />
+          <Questions v-if="stacked" />
+          <PlayerAreas v-if="!wideRail" />
           <div class="under-map">
             <CodexPanel />
             <section>
@@ -180,7 +193,6 @@ const close = () => {
               <Decks part="display" />
             </section>
           </div>
-          <PlayerAreas v-if="!wideRail" />
         </div>
         <div v-if="wideRail" class="side-rail">
           <Questions />

@@ -144,9 +144,45 @@ each keep their own flow rather than waiting on the taller of the two. */
   .sheet-col { flex:0 1 clamp(280px, 30vw, 560px); }
   .map-col { flex:1 1 420px !important; }
 }
+/* with room for two columns the cards stay under the map and the players below them;
+narrower, the question and the players come first and the cards go last */
+@media (min-width: 1101px) {
+  .map-col > .under-map { order:1; }
+  .map-col > .rail-players { order:2; }
+}
 @media (max-width: 1100px) {
   .map-row { flex-wrap:wrap; }
   .sheet-col, .map-col { flex:1 1 100%; max-width:none; }
+  /* in one column the sheet is only as tall as the mythos cup and the active card
+  beside it, and only as wide as that height leaves it */
+  .sheet-col { display:grid; grid-template-columns:auto minmax(0, 1fr); align-items:stretch; }
+  .sheet-col > .scenario-side { grid-column:1; grid-row:1 / span 2; width:auto; }
+  .sheet-col > .scenario-side .flip { height:100%; width:auto; }
+  .sheet-col > section:nth-of-type(1) { grid-column:2; grid-row:1; }
+  .sheet-col > section:nth-of-type(2) { grid-column:2; grid-row:2; }
+  .sheet-col > section:nth-of-type(3) { grid-column:1 / -1; grid-row:3; }
+  /* the question, then whose turn it is, then the board they are playing on */
+  .map-col > section:not(.rail-players) { order:1; }
+  .map-col > .rail-players { order:2; }
+  .map-col > .map-wrap { order:3; }
+  .map-col > .under-map { order:4; }
+  /* one column has no width to scroll sideways in, so the decks wrap into rows */
+  .card-strip { overflow-x:visible; flex-wrap:wrap; }
+  .card-strip .decks, .card-strip .deck-group.lead, .card-strip .display-group { flex-wrap:wrap; }
+  .card-strip .decks { justify-content:center; }
+}
+/* a narrow header says the same in less room */
+@media (max-width: 1100px) {
+  header { gap:8px; padding:6px 10px; font-size:13px; }
+  header h1 { font-size:14px; margin-right:2px; }
+  header .pill { padding:1px 8px; }
+  header button { padding:3px 8px; }
+  .undo-btn kbd { display:none; }
+  .pill-seats { display:none; }
+}
+@media (max-width: 760px) {
+  header h1 { max-width:8ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  #status .pill:not(.phase) { display:none; }
 }
 @media (max-width: 900px) { .map-row { flex-direction:column; } .sheet-col { flex-basis:auto; width:min(340px, 100%); } }
 .board-fit { position:relative; overflow:hidden; }

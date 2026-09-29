@@ -60,6 +60,10 @@ instance RunMessage EnchantedArmor2 where
       pure $ EnchantedArmor2 $ attrs & setMeta (x, y)
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       let (x, y) = toResult @(Int, Int) attrs.meta
-      pushAll [toDiscardBy iid (attrs.ability 1) attrs, assignDamageAndHorror iid (attrs.ability 1) x y]
+      -- The owner takes the test, but the damage was dealt to whoever controls the
+      -- armor, so they are the one who reassigns it elsewhere.
+      let assignee = fromMaybe iid attrs.controller
+      pushAll
+        [toDiscardBy iid (attrs.ability 1) attrs, assignDamageAndHorror assignee (attrs.ability 1) x y]
       pure a
     _ -> EnchantedArmor2 <$> runMessage msg attrs

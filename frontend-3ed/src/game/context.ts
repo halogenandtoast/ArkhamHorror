@@ -1,6 +1,6 @@
 import { computed, inject, nextTick, provide, ref, shallowRef, type InjectionKey } from 'vue'
 import * as api from '@/api'
-import { cardImg, img } from '@/assets'
+import { cardArtPaths, cardImg, img } from '@/assets'
 import { readPref, writePref } from '@/prefs'
 import { user } from '@/session'
 import type { Catalog, CardId, Game, Monster, Tagged, TableView } from '@/types'
@@ -46,7 +46,7 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   faces read the other way round from a codex card's. */
   const NUMBER_FACING_OUT = new Set([13, 14, 15, 16, 17])
   const archiveArt = (code: string, flipped: boolean) => {
-    const m = /^(feast|echoes)-(\d{1,2})$/.exec(code)
+    const m = /^(feast|echoes|vot|sot|sitd)-(\d{1,2})$/.exec(code)
     if (!m) return null
     const n = +m[2]
     return archiveImage(n, m[1] === 'feast' && NUMBER_FACING_OUT.has(n) ? !flipped : flipped)
@@ -67,6 +67,9 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     aoa: 'approach-of-azathoth',
     echoes: 'echoes-of-the-deep',
     feast: 'feast-of-umordhoth',
+    sitd: 'shots-in-the-dark',
+    sot: 'silence-of-tsathoggua',
+    vot: 'veil-of-twilight',
   }
   const eventImage = (cid: CardId | null | undefined) => {
     if (cid == null) return null
@@ -74,9 +77,13 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     const dir = m ? EVENT_ART[m[1]] : undefined
     return dir ? img(`events/${dir}/${m![2]}.avif`) : null
   }
+  // anomaly art is filed under anomalies/, every other encounter under encounters/
   const encounterImage = (cid: CardId) => {
-    const m = /^(.+)-(\d{2})$/.exec(view.value?.cardCodes?.[cid] ?? '')
-    return m ? img(`encounters/${m[1]}/${m[2]}.avif`) : null
+    const code = view.value?.cardCodes?.[cid] ?? ''
+    const m = /^(.+)-(\d{2})$/.exec(code)
+    if (!m) return null
+    const dir = cardArtPaths.value[code]?.startsWith('anomalies/') ? 'anomalies' : 'encounters'
+    return img(`${dir}/${m[1]}/${m[2]}.avif`)
   }
   /* the archive check comes before the encounter one, whose pattern would other-
   wise read "feast-15" as card 15 of a "feast" encounter set */

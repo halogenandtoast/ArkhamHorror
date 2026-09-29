@@ -1,6 +1,6 @@
 import { ref, shallowRef } from 'vue'
 import { ApiError, errorText, getCatalog, whoami } from '@/api'
-import { cardArtDirs } from '@/assets'
+import { cardArtPaths } from '@/assets'
 import { clearToken, getToken } from '@/authToken'
 import type { Catalog, User } from '@/types'
 
@@ -46,7 +46,7 @@ export function loadCatalog(): Promise<Catalog> {
   if (catalog.value) return Promise.resolve(catalog.value)
   catalogLoad ??= getCatalog().then(
     (c) => {
-      cardArtDirs.value = c.cardArt ?? {}
+      cardArtPaths.value = c.cardArt ?? {}
       return (catalog.value = c)
     },
     (e) => {

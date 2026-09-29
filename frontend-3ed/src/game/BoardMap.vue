@@ -215,8 +215,11 @@ function applyView() {
   const col = vp.parentElement
   let room = vp.clientHeight
   if (!full) {
-    const cap = parseFloat(getComputedStyle(vp).maxHeight)
-    if (col && Number.isFinite(cap)) {
+    /* what bounds the map: the band, or -- where the table fills the window -- the
+    height its own column was given, which does not depend on the map */
+    const capped = parseFloat(getComputedStyle(vp).maxHeight)
+    const cap = Number.isFinite(capped) ? capped : (col?.clientHeight ?? 0)
+    if (col && cap > 0) {
       const gap = parseFloat(getComputedStyle(col).rowGap) || 0
       let taken = 0
       // only the cards under the map share its band; anything else below flows on
@@ -238,14 +241,15 @@ function applyView() {
     It still gives way, last, when the row is too narrow to hold everything. */
     sized.style.flexGrow = '0'
     sized.style.flexShrink = '1'
-    sized.style.flexBasis = `${Math.ceil(We * Math.min(1, room / He))}px`
+    sized.style.flexBasis = `${Math.ceil(We * (room / He))}px`
   } else {
     sized.style.flexGrow = ''
     sized.style.flexBasis = ''
     sized.style.flexShrink = ''
   }
   const vwNow = full ? vw : vp.clientWidth
-  view.base = full ? Math.min(vw / We, room / He) : Math.min(1, vwNow / We, room / He)
+  // the map grows into whatever the band gives it rather than stopping at its own size
+  view.base = full ? Math.min(vw / We, room / He) : Math.min(vwNow / We, room / He)
   // and a board shorter than the band gives the rest of the band back
   const vh = full ? room : Math.min(room, Math.round(He * view.base))
   if (!full) vp.style.height = `${vh}px`

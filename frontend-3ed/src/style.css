@@ -124,9 +124,9 @@ the row so the slack the map leaves is above them rather than below */
 mythos cup stops wrapping, since the map beside it asks for a fixed width */
 .sheet-col { flex:1 1 clamp(190px, 15vw, 290px); min-width:190px; max-width:min(38vw, 560px); display:flex; flex-direction:column; gap:10px; }
 .side-rail { flex:0 0 clamp(400px, 24vw, 620px); min-width:0; display:flex; flex-direction:column; gap:10px; }
-/* the question fills what the rail has spare, and spreads what it holds down it */
-.side-rail > section:first-child { flex:1 1 auto; }
-.side-rail > section:first-child > #questions { display:flex; flex-direction:column; justify-content:space-evenly; gap:10px; }
+/* the question panel is only as tall as the question */
+.side-rail > section:first-child { flex:0 0 auto; }
+.side-rail > section:first-child > #questions { display:flex; flex-direction:column; gap:10px; }
 /* the player panel is as tall as the player area in it, not as tall as the rail */
 .side-rail .rail-players { flex:0 0 auto; display:flex; flex-direction:column; }
 /* the tabs sit on the player area's own box, so the panel around them adds nothing
@@ -140,6 +140,14 @@ and its content fills it edge to edge */
 .sheet-tokens .bump { animation:sheetBump .9s ease-out; }
 @keyframes sheetBump { 0% { transform:scale(1); } 30% { transform:scale(1.45); filter:drop-shadow(0 0 8px var(--doom)); } 100% { transform:scale(1); } }
 @media (prefers-reduced-motion: reduce) { .sheet-tokens .bump { animation:none; } }
+/* With room for the rail there is room to fill the window: the table stands exactly
+as tall as the viewport, the deck row sits on its floor, and the band takes the rest,
+which is how the map comes out as large as it can be. */
+@media (min-width: 1801px) {
+  .map-section { --band:none; display:flex; flex-direction:column; gap:10px; height:calc(100dvh - 81px); }
+  .map-row { flex:1 1 auto; min-height:0; }
+  .card-strip { flex:0 0 auto; }
+}
 /* Without a rail (see wideRail) the two columns carry it between them, so they
 each keep their own flow rather than waiting on the taller of the two. */
 @media (max-width: 1800px) {

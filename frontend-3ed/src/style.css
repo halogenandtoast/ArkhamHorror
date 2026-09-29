@@ -28,7 +28,7 @@ the top, which costs a line of height on every box */
 .map-section section > :not(h2) { flex:0 1 auto; min-width:0; padding:8px 8px 8px 0; }
 /* the chip in a heading turns back the right way up */
 .map-section section > h2 .inv-chip { transform:rotate(180deg); }
-.q { border-left:3px solid var(--accent); padding-left:10px; margin-bottom:12px; }
+.q { margin-bottom:12px; }
 .q .prompt { font-weight:600; margin-bottom:6px; }
 .q button:has(.label-cards) { display:inline-flex; flex-direction:column; align-items:center; gap:6px; padding:8px; vertical-align:top; }
 .label-cards { display:flex; gap:6px; }

@@ -221,7 +221,9 @@ whole width and stay on one row */
   background:var(--delayed) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 6.8V12l3.6 2.1'/%3E%3C/svg%3E") center/10px 10px no-repeat;
   box-shadow:0 1px 3px rgba(0,0,0,.7); pointer-events:none; }
 .player-area { display:flex; flex-wrap:wrap; gap:12px; padding:10px; border:1px solid var(--line); border-radius:8px; margin-bottom:10px; }
-.player-area.turn { box-shadow:0 0 0 2px var(--accent); }
+/* whose turn it is reads from the tab's own marker and the name beside the sheet,
+so the panel needs no border of its own */
+.player-area.turn { box-shadow:none; }
 .player-area.out .sheet, .player-area.out .standee { filter:grayscale(1) brightness(.7); }
 .sheet { position:relative; width:min(420px, 100%); flex:none; align-self:flex-start; }
 .sheet > img { width:100%; display:block; border-radius:6px; }
@@ -251,22 +253,34 @@ whole width and stay on one row */
 .asset.no-art { height:170px; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); }
 .asset.no-art .asset-name { display:block; font-weight:600; }
 .asset-badges { position:absolute; left:4px; bottom:4px; display:flex; gap:4px; }
-.tabs-row { display:flex; align-items:flex-end; }
-ul.tabs__header { flex:1; display:flex; list-style:none; padding:0 0 0 5px; margin:0; user-select:none; font-size:min(16px, 2vw); }
-ul.tabs__header > li { margin:0 3px 0 0; cursor:pointer; color:white; opacity:.5; border-radius:2px 2px 0 0; position:relative; display:inline-flex; align-items:center; }
-ul.tabs__header > li > span { display:block; width:fit-content; padding:5px 10px; }
-ul.tabs__header > li.tab--selected { font-weight:bold; opacity:1; }
-ul.tabs__header > li.tab--has-actions { opacity:.85; }
-.tab-pulse { position:absolute; inset:0; border-radius:inherit; pointer-events:none; box-shadow:inset 0 0 0 1px color-mix(in srgb, #ff00ff 88%, transparent), 0 0 9px color-mix(in srgb, #ff00ff 36%, transparent); animation:tab-action-pulse 1.8s ease-in-out infinite alternate; }
-.tab--Guardian { background-color:#0c5693; } .tab--Seeker { background-color:#aa6005; } .tab--Rogue { background-color:#186a1d; }
-.tab--Mystic { background-color:#5e4389; } .tab--Survivor { background-color:#a3262d; } .tab--Neutral { background-color:#333; }
-.tab--active-player::before { content:"▶"; font-size:.7em; margin-left:8px; align-self:center; }
-.waiting-indicator { display:inline-flex; align-items:center; justify-content:center; align-self:stretch; padding:4px 8px; border-left:1px solid rgba(0,0,0,.5); background-color:rgba(0,0,0,.5); border-radius:0 2px 0 0; color:#ff00ff; }
+/* One panel for the player areas: the tabs are its header strip, inside the same
+border, and each tab wears its investigator's role as a bar along its foot. */
+#investigators { border:1px solid var(--line); border-radius:10px; background:var(--panel); overflow:hidden; }
+.tabs-row { display:flex; align-items:stretch; background:color-mix(in srgb, var(--ink) 5%, transparent); border-bottom:1px solid var(--line); }
+ul.tabs__header { flex:1; display:flex; list-style:none; padding:0; margin:0; user-select:none; font-size:min(15px, 1.9vw); }
+ul.tabs__header > li { position:relative; display:inline-flex; align-items:center; margin:0; padding:0 4px 0 0; cursor:pointer;
+  color:var(--muted); border-right:1px solid var(--line);
+  box-shadow:inset 0 -3px 0 color-mix(in srgb, var(--role, var(--line)) 45%, transparent);
+  transition:background .12s, color .12s; }
+ul.tabs__header > li > span { display:block; width:fit-content; padding:7px 12px; }
+ul.tabs__header > li:hover { color:var(--ink); background:color-mix(in srgb, var(--ink) 7%, transparent); }
+ul.tabs__header > li.tab--selected { font-weight:700; color:var(--ink);
+  background:color-mix(in srgb, var(--role, var(--accent)) 26%, var(--panel));
+  box-shadow:inset 0 -3px 0 var(--role, var(--accent)); }
+ul.tabs__header > li.tab--has-actions { color:var(--ink); }
+.tab-pulse { position:absolute; inset:0; pointer-events:none;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 88%, transparent), inset 0 0 9px color-mix(in srgb, var(--accent) 40%, transparent);
+  animation:tab-action-pulse 1.8s ease-in-out infinite alternate; }
+.tab--Guardian { --role:#2f7fc4; } .tab--Seeker { --role:#c98218; } .tab--Rogue { --role:#2d9a36; }
+.tab--Mystic { --role:#8a6bd1; } .tab--Survivor { --role:#c4444c; } .tab--Neutral { --role:#7a7686; }
+.tab--active-player::before { content:"▶"; font-size:.65em; margin-left:10px; align-self:center; color:var(--accent); }
+.waiting-indicator { display:inline-flex; align-items:center; justify-content:center; align-self:stretch; padding:0 8px; color:var(--accent); }
 .waiting-spinner { display:inline-block; animation:waiting-on-spin 5s linear infinite; }
 @keyframes waiting-on-spin { to { transform:rotate(360deg); } }
 @keyframes tab-action-pulse { from { opacity:.45; } to { opacity:1; } }
-ul.tabs__header > li.inactive { filter:grayscale(100%); }
-.tab .player-area { margin-bottom:0; border-top-left-radius:0; }
+ul.tabs__header > li.inactive { filter:grayscale(100%); opacity:.6; }
+.tab { padding:10px; }
+.tab .player-area { margin:0; border:none; border-radius:0; padding:0; }
 .decks { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; padding:14px 8px 4px; border-top:1px solid var(--line); margin-top:8px; }
 .deck { display:flex; flex-direction:column; align-items:center; gap:6px; width:96px; }
 .deck-stack { position:relative; width:84px; height:132px; }

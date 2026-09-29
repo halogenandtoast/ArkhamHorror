@@ -6,9 +6,13 @@ as a drawn line rather than a glow. */
   drop-shadow(0 1px 0 rgba(255,255,255,.45)) drop-shadow(0 -1px 0 rgba(255,255,255,.45)); }
 * { box-sizing: border-box; }
 [hidden] { display:none !important; }
-body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 system-ui, sans-serif; }
-header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:10px 16px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:4; }
-header h1 { font-size:16px; margin:0 8px 0 0; }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 system-ui, sans-serif; display:flex; flex-direction:column; min-height:100dvh; }
+header { display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:4px 16px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:4; }
+header h1 { font-size:15px; margin:0 8px 0 0; }
+/* one height for everything in the bar, so the pills and the buttons sit on the
+same line rather than each finding its own */
+header button, header .pill { min-height:28px; display:inline-flex; align-items:center; padding:3px 10px; margin:0; }
+header .pills { align-items:center; }
 .pill { padding:2px 10px; border-radius:999px; border:1px solid var(--line); white-space:nowrap; }
 /* the phase pill takes the banner's tint, so the header keeps saying what the banner said */
 .pill.phase { border-color:color-mix(in srgb, var(--phase-color) 60%, transparent);
@@ -129,7 +133,9 @@ the row so the slack the map leaves is above them rather than below */
 .map-col .codex-card { width:96px; }
 /* the column takes whatever width the row has spare, up to the point where the
 mythos cup stops wrapping, since the map beside it asks for a fixed width */
-.sheet-col { flex:1 1 clamp(190px, 15vw, 290px); min-width:190px; max-width:min(38vw, 560px); display:flex; flex-direction:column; gap:10px; }
+/* the basis is five mythos tokens wider than the cup needs, so the sheet and what
+sits under it start out readable rather than only growing into what is spare */
+.sheet-col { flex:1 1 clamp(240px, 18vw, 470px); min-width:190px; max-width:min(38vw, 560px); display:flex; flex-direction:column; gap:10px; }
 /* the rail holds a player's four cards across and no more, so what it does not
 need goes to the map */
 .side-rail { flex:0 0 clamp(380px, 20vw, 500px); min-width:0; display:flex; flex-direction:column; gap:10px; }
@@ -153,7 +159,8 @@ and its content fills it edge to edge */
 as tall as the viewport, the deck row sits on its floor, and the band takes the rest,
 which is how the map comes out as large as it can be. */
 @media (min-width: 1801px) {
-  .map-section { --band:none; display:flex; flex-direction:column; gap:10px; height:calc(100dvh - 81px); }
+  /* the table takes whatever the header leaves, measured rather than guessed */
+  .map-section { --band:none; display:flex; flex-direction:column; gap:10px; flex:1 1 auto; min-height:0; margin-bottom:12px; }
   .map-row { flex:1 1 auto; min-height:0; }
   .card-strip { flex:0 0 auto; }
   /* the codex ends the sheet's column, and its cards answer to that column's width */

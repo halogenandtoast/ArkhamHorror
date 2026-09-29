@@ -1,27 +1,18 @@
 module Arkham.Behavior.Fight where
 
-import Arkham.Action qualified as Action
 import Arkham.Calculation
-import Arkham.Classes.HasGame (HasGame)
 import Arkham.Classes.HasQueue (HasQueue)
 import Arkham.Fight (mkChooseFightPure)
 import Arkham.Fight.Types
-import Arkham.Helpers.Message (push, pushAll)
+import Arkham.Helpers.Message (push)
 import Arkham.Helpers.SkillTest qualified as Msg
 import Arkham.Helpers.SkillTest.Lifted (fight)
-import Arkham.Helpers.Window (checkAfter, checkWhen)
 import Arkham.Id
-import Arkham.Message
-  ( Message
-  , pattern FightTarget
-  , pattern InvestigatorDamageEnemy
-  , pattern Successful
-  )
+import Arkham.Message (Message, pattern FightTarget)
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
 import Arkham.Source
 import Arkham.Target
-import Arkham.Window qualified as Window
 
 {- | The 'Fightable' behavior. An entity that is fightable has a fight value
 (or a calculated difficulty) and responds to 'AttackTarget' messages by
@@ -87,20 +78,3 @@ mkAttackMessage entity defaultDifficulty choose =
         target
         choose.skillType
         difficulty
-
--- | Push the standard successful-attack cascade for an entity:
--- @when SuccessfulAttackEnemy@, damage, @Successful (Fight, _)@,
--- @after SuccessfulAttackEnemy@. The entity is identified by an 'EnemyId' for
--- routing through the fight/damage subsystem (enemy-locations pass a coerced id).
-pushSuccessfulAttack
-  :: (HasGame m, HasQueue Message m)
-  => InvestigatorId -> Source -> EnemyId -> Int -> m ()
-pushSuccessfulAttack iid source eid n = do
-  whenMsg <- checkWhen $ Window.SuccessfulAttackEnemy iid source eid n
-  afterMsg <- checkAfter $ Window.SuccessfulAttackEnemy iid source eid n
-  pushAll
-    [ whenMsg
-    , InvestigatorDamageEnemy iid eid source
-    , Successful (Action.Fight, EnemyTarget eid) iid source (EnemyTarget eid) n
-    , afterMsg
-    ]

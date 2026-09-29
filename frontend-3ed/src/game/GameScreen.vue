@@ -154,7 +154,10 @@ const close = () => {
   <template v-else>
     <section id="mapSection" class="map-section">
       <div class="map-row">
-        <ScenarioSheet />
+        <div class="sheet-col">
+          <ScenarioSheet />
+          <CodexPanel />
+        </div>
         <BoardMap />
       </div>
       <div id="otherSpaces">
@@ -182,9 +185,6 @@ const close = () => {
             <em v-else>None yet.</em>
           </div>
         </section>
-      </div>
-      <div>
-        <CodexPanel />
       </div>
     </main>
   </template>

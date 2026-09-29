@@ -60,7 +60,7 @@ const rumor = computed(() => {
       <em v-if="!g.codex.length && !rumor" class="waiting">Empty</em>
     </div>
   </section>
-  <section style="margin-top: 12px">
+  <section>
     <h2>Mythos</h2>
     <div id="codex">
       <div class="cup">

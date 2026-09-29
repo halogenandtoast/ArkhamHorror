@@ -14,8 +14,7 @@ header h1 { font-size:16px; margin:0 8px 0 0; }
   transition:background .3s ease, border-color .3s ease, box-shadow .3s ease; }
 .pills { display:flex; flex-wrap:wrap; gap:6px; }
 .doom { color:var(--doom); font-weight:600; } .clue { color:var(--clue); font-weight:600; }
-main { display:grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap:12px; padding:12px 16px; }
-@media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+main { display:grid; grid-template-columns: minmax(0,1fr); gap:12px; padding:12px 16px; }
 section { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 12px; min-width:0; }
 section h2 { font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:0 0 8px; }
 .q { border-left:3px solid var(--accent); padding-left:10px; margin-bottom:12px; }
@@ -78,13 +77,16 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 .map-wrap.hide-tokens .anchor > :not(.pick-ring) { visibility:hidden; }
 .map-row { display:flex; gap:14px; align-items:flex-start; }
 .map-row .map-wrap { flex:1; min-width:0; }
-.scenario-side { flex:0 0 clamp(200px, 20vw, 320px); cursor:zoom-in; position:relative; align-self:flex-start; }
+/* the sheet and what belongs with it -- codex cards, the mythos cup -- stack beside the map */
+.sheet-col { flex:0 0 clamp(200px, 22vw, 340px); min-width:0; display:flex; flex-direction:column; gap:12px; align-self:flex-start; }
+.sheet-col .codex-card { width:calc(50% - 5px); }
+.scenario-side { width:100%; cursor:zoom-in; position:relative; }
 .sheet-tokens { position:absolute; left:50%; bottom:-14px; transform:translateX(-50%); display:flex; gap:10px; padding:4px 10px; border-radius:999px; background:color-mix(in srgb, var(--panel) 88%, transparent); box-shadow:0 2px 8px rgba(0,0,0,.35); z-index:2; }
 .sheet-tokens .tok b { min-width:20px; height:20px; line-height:20px; font-size:13px; }
 .sheet-tokens .bump { animation:sheetBump .9s ease-out; }
 @keyframes sheetBump { 0% { transform:scale(1); } 30% { transform:scale(1.45); filter:drop-shadow(0 0 8px var(--doom)); } 100% { transform:scale(1); } }
 @media (prefers-reduced-motion: reduce) { .sheet-tokens .bump { animation:none; } }
-@media (max-width: 900px) { .map-row { flex-direction:column; } .scenario-side { width:min(320px, 100%); flex-basis:auto; } }
+@media (max-width: 900px) { .map-row { flex-direction:column; } .sheet-col { flex-basis:auto; width:min(340px, 100%); } }
 .board-fit { position:relative; overflow:hidden; }
 .board { position:absolute; top:0; left:0; margin:0; transform-origin:top left; will-change:transform; }
 .board > img { position:absolute; pointer-events:none; user-select:none; }

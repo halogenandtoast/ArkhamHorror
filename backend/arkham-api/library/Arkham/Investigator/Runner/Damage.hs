@@ -30,7 +30,7 @@ import Arkham.Action (Action)
 import Arkham.Action qualified as Action
 import Arkham.Action.Additional
 import Arkham.Actions (actionsToList)
-import Arkham.Asset.Types (Field (..))
+import Arkham.Asset.Types (Asset, Field (..))
 import Arkham.Campaign.Option
 import Arkham.CampaignLog
 import Arkham.Campaigns.EdgeOfTheEarth.Seal
@@ -699,8 +699,12 @@ assignDamageToSingleTarget a@InvestigatorAttrs {..} iid source matcher health sa
         , continue h s (InvestigatorTarget hank)
         ]
   assetsWithCounts <- for damageableAssets $ \asset -> do
-    health' <- fieldMap AssetRemainingHealth (fromMaybe 0) asset
-    sanity' <- fieldMap AssetRemainingSanity (fromMaybe 0) asset
+    -- No printed health/sanity means an unlimited soak, but only for the type this
+    -- asset was actually offered for -- see withSoakCapacity.
+    let unlimitedHealth = if asset `member` healthDamageableAssets then health else 0
+    let unlimitedSanity = if asset `member` sanityDamageableAssets then sanity else 0
+    health' <- fieldMap AssetRemainingHealth (fromMaybe unlimitedHealth) asset
+    sanity' <- fieldMap AssetRemainingSanity (fromMaybe unlimitedSanity) asset
     pure (asset, (health', sanity'))
   investigatorsWithCounts <- for damageableInvestigators $ \hank -> do
     health' <- field InvestigatorRemainingHealth hank
@@ -773,15 +777,14 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
         let
           assetsFirst amatcher = do
             matchingAssets <- select $ mapOneOf AssetWithId healthDamageableAssets <> amatcher
-            healthDamageableAssets' <-
-              mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd matchingAssets (field AssetRemainingHealth)
+            healthDamageableAssets' <- withSoakCapacity AssetRemainingHealth health matchingAssets
             -- Nothing matched the "assign to these first" clause and Composure has
             -- gated your card, so offer the Composure assets: the damage still has
             -- to land somewhere.
             offeredAssets <-
               if null healthDamageableAssets' && selfDamageBlocked
                 then
-                  mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd blockingDamageAssets (field AssetRemainingHealth)
+                  withSoakCapacity AssetRemainingHealth health blockingDamageAssets
                 else pure healthDamageableAssets'
             let
               offerSelf = null healthDamageableAssets' && not selfDamageBlocked
@@ -834,8 +837,7 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
             DamageFromHastur -> go DamageAny
             DamageAnyDeferred -> go DamageAny
             DamageAny -> do
-              healthDamageableAssets' <-
-                mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd healthDamageableAssets (field AssetRemainingHealth)
+              healthDamageableAssets' <- withSoakCapacity AssetRemainingHealth health healthDamageableAssets
               mustBeAssignedDamage <-
                 healthDamageableAssets' & filterM \(aid, _) -> do
                   mods <- getModifiers aid
@@ -963,8 +965,7 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
                   [damageInvestigator iid' False | (iid', _, False) <- perInvestigator]
                     <> [damageAsset aid False | aid <- soakAssets]
             DamageAssetsFirst _ -> do
-              sanityDamageableAssets' <-
-                mapMaybe (\(x, mb) -> (x,) <$> mb) <$> forToSnd sanityDamageableAssets (field AssetRemainingSanity)
+              sanityDamageableAssets' <- withSoakCapacity AssetRemainingSanity sanity sanityDamageableAssets
               let
                 targetCount =
                   if null sanityDamageableAssets'
@@ -1031,7 +1032,7 @@ assignDamageDivided a@InvestigatorAttrs {..} iid source strategy matcher health 
       _ -> False
     targetCanAbsorb capacityField = \case
       InvestigatorTarget _ -> pure True
-      AssetTarget aid -> fieldMap capacityField (maybe False (> 0)) aid
+      AssetTarget aid -> fieldMap capacityField (maybe True (> 0)) aid
       _ -> pure False
     restrictToCurrent tokenType capacityField targets choices
       | not agony = pure choices
@@ -1376,6 +1377,17 @@ handleHealTrauma a@InvestigatorAttrs {..} iid physical mental = do
     & (physicalTraumaL %~ max 0 . subtract physical)
     & (mentalTraumaL %~ max 0 . subtract mental)
 
+{- | Pair each asset with how much of this assignment it can still soak.
+
+An asset with no printed health (or sanity) that a modifier explicitly lets you
+assign to soaks without limit -- Enchanted Armor (2) piles the tokens on and
+tests against the total -- so report the whole amount instead of dropping it.
+-}
+withSoakCapacity
+  :: HasGame m => Field Asset (Maybe Int) -> Int -> [AssetId] -> m [(AssetId, Int)]
+withSoakCapacity fld amount aids =
+  map (second (fromMaybe amount)) <$> forToSnd aids (field fld)
+
 getHealthDamageableAssets
   :: HasGame m
   => InvestigatorId
@@ -1403,10 +1415,14 @@ getHealthDamageableAssets iid matcher source _ damageTargets horrorTargets = do
   -- For deferred assignment the tokens aren't placed yet, so AssetRemainingHealth
   -- still reads full. Drop assets already filled by damage assigned earlier in this
   -- same assignment (assigned is 0 for the immediate strategies, so they're unaffected).
+  -- No printed health means an unlimited soak, so it is never full -- see
+  -- withSoakCapacity.
   notFull <- flip filterM allAssets \aid -> do
-    remaining <- fieldMap AssetRemainingHealth (fromMaybe 0) aid
-    assigned <- field AssetAssignedHealthDamage aid
-    pure $ remaining - assigned > 0
+    field AssetRemainingHealth aid >>= \case
+      Nothing -> pure True
+      Just remaining -> do
+        assigned <- field AssetAssignedHealthDamage aid
+        pure $ remaining - assigned > 0
   pure $ setFromList $ filter (`notElem` excludes) notFull
 
 getSanityDamageableAssets
@@ -1434,11 +1450,14 @@ getSanityDamageableAssets iid matcher source _ damageTargets horrorTargets = do
       [] -> pure mempty
       xs -> select (AssetOneOf xs)
   -- See getHealthDamageableAssets: drop assets already filled by horror assigned
-  -- earlier in this same (deferred) assignment.
+  -- earlier in this same (deferred) assignment, and treat no printed sanity as an
+  -- unlimited soak.
   notFull <- flip filterM allAssets \aid -> do
-    remaining <- fieldMap AssetRemainingSanity (fromMaybe 0) aid
-    assigned <- field AssetAssignedSanityDamage aid
-    pure $ remaining - assigned > 0
+    field AssetRemainingSanity aid >>= \case
+      Nothing -> pure True
+      Just remaining -> do
+        assigned <- field AssetAssignedSanityDamage aid
+        pure $ remaining - assigned > 0
   pure $ setFromList $ filter (`notElem` excludes) notFull
 
 sourcePerformerHasModifier :: HasGame m => Source -> ModifierType -> m Bool

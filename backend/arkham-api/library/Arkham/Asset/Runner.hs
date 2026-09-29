@@ -79,6 +79,25 @@ defeated AssetAttrs {assetId, assetAssignedHealthDamage, assetAssignedSanityDama
 hasUses :: AssetAttrs -> Bool
 hasUses = any (> 0) . toList . assetUses
 
+{- | Whether this asset soaks damage / horror without limit.
+
+An asset with no printed health (or sanity) that its controller is explicitly
+permitted to assign to has no capacity to clamp against -- Enchanted Armor (2)
+piles the tokens on and tests against the total. Mirrors the fallback in
+@AssetCanBeAssignedDamageBy@; without it the generic clamp places nothing.
+-}
+unlimitedSoak :: HasGame m => AssetAttrs -> m (Bool, Bool)
+unlimitedSoak a
+  | isJust (assetHealth a) && isJust (assetSanity a) = pure (False, False)
+  | otherwise = case a.controller of
+      Nothing -> pure (False, False)
+      Just iid -> do
+        mods <- getModifiers iid
+        pure
+          ( isNothing (assetHealth a) && CanAssignDamageToAsset (toId a) `elem` mods
+          , isNothing (assetSanity a) && CanAssignHorrorToAsset (toId a) `elem` mods
+          )
+
 instance RunMessage Asset where
   runMessage msg x@(Asset a) = do
     if x.placement.outOfGame
@@ -223,11 +242,19 @@ instance RunMessage AssetAttrs where
       canDamage <- matches a.id (AssetCanBeDamagedBySource source)
       when canDamage do
         mods <- getModifiers a
+        (soaksDamage, soaksHorror) <- unlimitedSoak a
         let n = sum [x | DamageTaken x <- mods]
             extraHealth = sum [x | HealthModifier x <- mods]
             extraSanity = sum [x | SanityModifier x <- mods]
-        let damage' = maybe 0 (min (damage + n) . subtract (assetDamage a) . (+ extraHealth)) assetHealth
-        let horror' = maybe 0 (min horror . subtract (assetHorror a) . (+ extraSanity)) assetSanity
+        let clamp amount cap current extra = maybe 0 (min amount . subtract current . (+ extra)) cap
+        let damage' =
+              if soaksDamage
+                then damage + n
+                else clamp (damage + n) assetHealth (assetDamage a) extraHealth
+        let horror' =
+              if soaksHorror
+                then horror
+                else clamp horror assetSanity (assetHorror a) extraSanity
         if doCheck
           then push $ Msg.DealAssetDirectDamage aid source damage' horror'
           else

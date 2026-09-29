@@ -19,6 +19,11 @@ import AH3e.Content.Core.EchoesOfTheDeep qualified as EchoesOfTheDeep
 import AH3e.Content.Core.FeastOfUmordhoth qualified as FeastOfUmordhoth
 import AH3e.Content.Core.Investigators qualified as Investigators
 import AH3e.Content.Core.NeighborhoodCards qualified as NeighborhoodCards
+import AH3e.Content.Core.VeilOfTwilight qualified as VeilOfTwilight
+import AH3e.Content.DeadOfNight.Encounters qualified as DeadOfNightEncounters
+import AH3e.Content.DeadOfNight.Investigators qualified as DeadOfNightInvestigators
+import AH3e.Content.DeadOfNight.ShotsInTheDark qualified as ShotsInTheDark
+import AH3e.Content.DeadOfNight.SilenceOfTsathoggua qualified as SilenceOfTsathoggua
 import AH3e.Content.Headlines qualified as Headlines
 import AH3e.Content.Items qualified as Items
 import AH3e.Content.Monsters qualified as Monsters
@@ -52,6 +57,11 @@ cardDefs =
         ApproachOfAzathoth.cards
           <> EchoesOfTheDeep.cards
           <> FeastOfUmordhoth.cards
+          <> VeilOfTwilight.cards
+          <> SilenceOfTsathoggua.cards
+          <> ShotsInTheDark.cards
+          <> DeadOfNightInvestigators.cards
+          <> DeadOfNightEncounters.cards
           <> Investigators.cards
           <> NeighborhoodCards.cards
           <> StreetCards.cards
@@ -68,7 +78,9 @@ cardDef :: CardCode -> Maybe CardDef
 cardDef code = Map.lookup code cardDefs
 
 investigatorDefs :: Map InvestigatorId InvestigatorDef
-investigatorDefs = Map.fromList [(d.id, d) | d <- Investigators.investigators]
+investigatorDefs =
+  Map.fromList
+    [(d.id, d) | d <- Investigators.investigators <> DeadOfNightInvestigators.investigators]
 
 investigatorDef :: InvestigatorId -> Maybe InvestigatorDef
 investigatorDef iid = Map.lookup iid investigatorDefs
@@ -77,7 +89,14 @@ scenarioDefs :: Map ScenarioCode ScenarioDef
 scenarioDefs =
   Map.fromList
     [ (d.code, d)
-    | d <- [ApproachOfAzathoth.scenario, EchoesOfTheDeep.scenario, FeastOfUmordhoth.scenario]
+    | d <-
+        [ ApproachOfAzathoth.scenario
+        , EchoesOfTheDeep.scenario
+        , FeastOfUmordhoth.scenario
+        , VeilOfTwilight.scenario
+        , SilenceOfTsathoggua.scenario
+        , ShotsInTheDark.scenario
+        ]
     ]
 
 scenarioDef :: ScenarioCode -> Maybe ScenarioDef

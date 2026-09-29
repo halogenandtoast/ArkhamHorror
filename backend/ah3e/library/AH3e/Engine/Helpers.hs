@@ -13,6 +13,15 @@ import AH3e.Types.Skill
 import AH3e.Types.State
 import Data.Map.Strict qualified as Map
 
+{- | Tokens go back into the mythos cup, and the table's cards hear about it: a
+card may answer tokens being added or returned (The Star), wherever they came from.
+-}
+returnTokensToCup :: [MythosToken] -> GameM ()
+returnTokensToCup toks = unless (null toks) do
+  #cup %= (toks <>)
+  invs <- playingInvestigators
+  pushAll [CheckReactions (TokensReturnedToCup i.id (length toks)) [] | i <- invs]
+
 label :: Text -> [Message] -> Choice
 label t = Choice (TextLabel t)
 
@@ -66,6 +75,23 @@ evalAmount ctx = \case
 
 addRemnants :: InvestigatorId -> Int -> GameM ()
 addRemnants iid n = investigatorL iid . #remnants += n
+
+{- | The mark an investigator carries for the rest of the round once something has
+put them out of the monsters' sight; cleared with the round's other once-a-round
+abilities.
+-}
+hiddenForTheRound :: Text
+hiddenForTheRound = "hidden-for-the-round"
+
+-- | What a reroll costs, paid whether the die is rerolled or simply raised.
+payRerollCost :: InvestigatorId -> RerollCost -> GameM ()
+payRerollCost iid = \case
+  FocusCost s ->
+    investigatorL iid . #focus . at s %= \case
+      Just n | n > 1 -> Just (n - 1)
+      _ -> Nothing
+  ClueCost -> addClues iid (-1)
+  FreeReroll _ -> pure ()
 
 addMoney :: InvestigatorId -> Int -> GameM ()
 addMoney iid n = investigatorL iid . #money %= max 0 . (+ n)
@@ -187,12 +213,14 @@ newTest iid skill modifier kind after =
     , kind = kind
     , step = DeterminePool
     , bonusDice = 0
+    , fixedPool = Nothing
     , chosenAssets = []
     , dice = []
     , addedSuccesses = 0
     , after = after
     , casting = Nothing
     , usedInTest = []
+    , riders = []
     }
 
 -- 491.3b: reveal from the bottom of the monster deck until the trait is found

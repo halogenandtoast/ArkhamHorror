@@ -27,6 +27,8 @@ behaviors =
           , ("masked-man-mystery", maskedManMystery)
           , ("magician-vanishes", magicianVanishes)
           , ("big-city-burglars-busted", bigCityBurglarsBusted)
+          , ("rumor-something-rotten", somethingRotten)
+          , ("discard-richest-item", discardRichestItem)
           ]
     }
 
@@ -104,3 +106,36 @@ magicianVanishes ctx = do
     [sid] -> pushAll (go sid)
     _ ->
       chooseFor iid "Move to the unstable space" [Choice (SpaceLabel sid) (go sid) | sid <- destinations]
+
+{- | "Reckoning-Spawn one monster. Any investigator may suffer one damage and one
+horror to cancel this effect."
+-}
+somethingRotten :: EffectCtx -> GameM ()
+somethingRotten ctx = do
+  everyone <- playingInvestigators
+  chooseGroup
+    "Something Rotten in Arkham: spawn one monster?"
+    ( [ Choice
+          (InvestigatorLabel i.id)
+          [SufferHarm i.id ctx.source NormalHarm 1 1]
+      | i <- everyone
+      ]
+        <> [Choice (DoneLabel "Let it spawn") [ResolveEffect ctx SpawnMonster]]
+    )
+
+{- | "Discard the item in the display with the highest value." Ties are the
+leader's to break, since nothing on the card says otherwise.
+-}
+discardRichestItem :: EffectCtx -> GameM ()
+discardRichestItem _ = do
+  display <- use (#decks . #display)
+  valued <- for display \cid -> do
+    v <- maybe 0 (fromMaybe 0 . (.value)) <$> assetDef cid
+    pure (cid, v)
+  case valued of
+    [] -> pure ()
+    _ -> do
+      let best = maximum (map snd valued)
+      chooseGroup
+        "Discard the item in the display with the highest value"
+        [Choice (CardLabel c) [DiscardFromDisplay c, RefillDisplay] | (c, v) <- valued, v == best]

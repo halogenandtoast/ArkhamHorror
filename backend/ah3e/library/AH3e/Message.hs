@@ -30,6 +30,8 @@ data Message
     PerformGrantedAction InvestigatorId ActionKind Bool
   | -- | ask who takes the granted action, if anyone
     OfferGrantedAction InvestigatorId ActionKind
+  | -- | an ability a card gives freely during its owner's turn; costs no action
+    PerformFreeAction InvestigatorId ComponentRef Int
   | AfterAction InvestigatorId ActionKind
   | StandUp InvestigatorId
   | EndActionTurn InvestigatorId
@@ -63,6 +65,15 @@ data Message
     MarkAbilityUsed InvestigatorId Text
   | PayCost EffectCtx Cost
   | BeginTest TestState
+  | -- | remembers one thing on a card while its own test resolves
+    RememberOnCard CardId Text
+  | -- | notes a number on a card, for a card whose own test resolves later
+    NoteOnCard CardId Text Int
+  | -- | gain remnants, offering first whatever a card takes in their place
+    GainRemnants InvestigatorId Int
+  | GainRemnantsNow InvestigatorId Int
+  | -- | add one to a die instead of rerolling it, paying the reroll's cost
+    RaiseInsteadOfReroll RerollCost Int CardId
   | ToggleTestAsset CardId
   | RollDice
   | SpendForReroll RerollCost
@@ -73,6 +84,11 @@ data Message
   | RerollAll Source
   | -- | add one to the result of a die of their choice
     AddToDie Source
+  | -- | set a die of their choice to this value (Grave Dirt's six)
+    ChooseDieToSet Int
+  | SetDieValue Int Int
+  | -- | hold this effect back until the test in progress has resolved
+    AddTestRider EffectCtx Effect
   | RaiseDie Int
   | MarkUsedInTest CardId
   | FinishTest
@@ -86,6 +102,8 @@ data Message
     EngageMonsterNow InvestigatorId CardId
   | DisengageMonster InvestigatorId CardId
   | ExhaustMonster CardId
+  | -- | the activation itself, once anything that could replace it has passed
+    DoActivateMonster CardId
   | ReadyMonster CardId
   | CheckEngagement CardId
   | MonsterStep CardId Int MonsterTarget
@@ -124,7 +142,11 @@ data Message
   | DiscardMonster CardId
   | SpawnMonsterAt (Maybe SpaceId) Bool
   | PlaceMonster CardId SpaceId MonsterState
+  | -- | the monster, once anyone who could stop it has decided
+    PlaceMonsterNow CardId SpaceId MonsterState
   | PlaceDoom Source SpaceId
+  | -- | the doom, once anyone who could stop it has decided
+    PlaceDoomNow Source SpaceId
   | PlaceDoomInStreet Source SpaceId
   | PlaceDoomOnSheet Int
   | PlaceDoomInOrder Source [SpaceId]
@@ -136,6 +158,10 @@ data Message
   | CheckDoomThresholds SpaceId
   | ChooseGateBurstSpaces [SpaceId] [SpaceId]
   | ClearSpaceDoom SpaceId
+  | -- | put a face-up marker of that colour on the space
+    PlaceMarker SpaceId Text
+  | -- | put a face-up marker of that colour on the monster, which travels with it
+    PlaceMonsterMarker CardId Text
   | WardRemove InvestigatorId SpaceId Int
   | CheckStateTriggers
   | GainAsset InvestigatorId CardId
@@ -167,9 +193,9 @@ data Message
   | PayMoney InvestigatorId Int
   | TradeWith InvestigatorId InvestigatorId
   | TradeTransfer InvestigatorId InvestigatorId TradeItem
-  | BuyFromDisplayMsg EffectCtx (Maybe Trait) Bool (Maybe Int) Effect
+  | BuyFromDisplayMsg EffectCtx (Maybe Trait) Pricing (Maybe Int) Effect
   | BuyCard InvestigatorId CardId Int
-  | BuyFromDisplayMore EffectCtx (Maybe Trait) Bool (Maybe Int) Effect Int
+  | BuyFromDisplayMore EffectCtx (Maybe Trait) Pricing (Maybe Int) Effect Int
   | CycleDisplay InvestigatorId Int
   | DiscardFromDisplay CardId
   | RefillDisplay
@@ -184,7 +210,7 @@ data Message
   | DiscardRumor
   | AddRumorDoom
   | OfferRumorDiscard EffectCtx Effect
-  | BuyFromDisplayChecked EffectCtx (Maybe Trait) Bool (Maybe Int) Effect
+  | BuyFromDisplayChecked EffectCtx (Maybe Trait) Pricing (Maybe Int) Effect
   | IgnoreRumor InvestigatorId
   | GainItemFromDeck InvestigatorId AssetDeckKind (Maybe Trait) (Maybe ValueBound)
   | BuyRevealed EffectCtx AssetDeckKind [CardId] (Maybe Int) Pricing Int
@@ -192,6 +218,10 @@ data Message
     SpendSheetClues Int
   | -- | put this many of the pool's markers on the scenario sheet
     MarkSheet Int
+  | {- | add to (or, negative, take from) one of the scenario sheet's named token
+    piles; a scenario keeps its own state here too
+    -}
+    MarkSheetToken Text Int
   | ReturnToBottom AssetDeckKind [CardId]
   | GainFromDisplay InvestigatorId CardId
   | RecoverInvestigator InvestigatorId Int Int
@@ -216,7 +246,12 @@ data MonsterTarget = TowardSpaces SpaceRule | TowardPrey InvestigatorRule
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data TradeItem = TradeMoney Int | TradeClues Int | TradeRemnants Int | TradeCard CardId
+data TradeItem
+  = TradeMoney Int
+  | TradeClues Int
+  | TradeRemnants Int
+  | TradeCard CardId
+  | TradeFocus Skill
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

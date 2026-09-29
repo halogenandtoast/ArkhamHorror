@@ -1,5 +1,6 @@
 module AH3e.Content.Spells (cards) where
 
+import AH3e.Content.Vocabulary (fromBox)
 import AH3e.Prelude
 import AH3e.Types.Card
 import AH3e.Types.Ids
@@ -15,7 +16,10 @@ spell c n value trait hands horror txt =
     (AssetCard (AssetDef Spell SpellDeck [trait] (Just value) hands Nothing Nothing horror txt))
 
 cards :: [CardDef]
-cards =
+cards = core <> fromBox DeadOfNight deadOfNight
+
+core :: [CardDef]
+core =
   [ spell
       "mists-of-rlyeh"
       "Mists of R'lyeh"
@@ -96,4 +100,41 @@ cards =
       0
       1
       "Action: Choose one monster on any space and test lore using that monster's evade modifier. If you pass, exhaust that monster. (It disengages.)"
+  ]
+
+-- Dead of Night
+deadOfNight :: [CardDef]
+deadOfNight =
+  [ spell
+      "clairvoyance"
+      "Clairvoyance"
+      2
+      "Incantation"
+      0
+      1
+      "At the start of your turn, you may test lore. Look at the top card of a number of neighborhood decks up to your test result. Of those, you may discard one non-event card."
+  , spell
+      "instill-bravery"
+      "Instill Bravery"
+      4
+      "Incantation"
+      1
+      1
+      "Once per round, if you, another investigator, or an ally on any space would suffer horror, you may test lore. Prevent horror equal to your test result."
+  , spell
+      "lure-monster"
+      "Lure Monster"
+      2
+      "Incantation"
+      0
+      1
+      "Once per round, when a ready, non-epic monster would activate, you may test lore. If you pass, move it two spaces toward you instead."
+  , spell
+      "wrack"
+      "Wrack"
+      2
+      "Ritual"
+      1
+      1
+      "Action: Test lore +1. Defeat one monster in your space with remaining health equal to or lower than your test result. You may perform this action while engaged with a monster."
   ]

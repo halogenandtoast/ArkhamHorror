@@ -12,6 +12,7 @@ import AH3e.Types.Skill
 import AH3e.Types.State
 import Data.List (nub)
 import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 import Data.Text qualified as T
 
 getCardDef :: HasCallStack => CardId -> GameM CardDef
@@ -232,8 +233,31 @@ ruleInvestigators rule = do
         let best = pick (map snd scored)
         pure [x | (x, v) <- scored, v == best]
 
+{- | The spaces a rule names, less any a scenario has taken off the board -- an
+unstable space or a starting space can be devoured like any other.
+-}
+
+{- | Whether exhausting this monster would do anything: 443.4 and the Massive,
+Relentless and Shrouded keywords all refuse it, and an exhausted one is already
+there. Cards that pay a cost to exhaust read this first, so the cost is never
+spent on a no-op -- and so a ready Shrouded monster is not named in a prompt.
+-}
+canBeExhausted :: CardId -> GameM Bool
+canBeExhausted mid = do
+  d <- monsterDef mid
+  m <- uses #monsters (Map.lookup mid)
+  let refuses =
+        any (`elem` d.keywords) [Massive, Relentless]
+          || (Shrouded `elem` d.keywords && maybe False ((== Ready) . (.state)) m)
+  pure (isJust m && not refuses && maybe False ((/= Exhausted) . (.state)) m)
+
 ruleSpaces :: Maybe CardId -> SpaceRule -> GameM [SpaceId]
-ruleSpaces mid = \case
+ruleSpaces mid rule = do
+  onBoard <- uses (#board . #spaces) Map.keysSet
+  filter (`Set.member` onBoard) <$> ruleSpaces' mid rule
+
+ruleSpaces' :: Maybe CardId -> SpaceRule -> GameM [SpaceId]
+ruleSpaces' mid = \case
   UnstableSpace -> unstableSpaces
   MostDoomSpace -> mostDoomSpaces
   StartingSpace -> pure . (.startingSpace) <$> getScenarioDef
@@ -320,11 +344,13 @@ recoverTargets ctx r hp sp = do
   let reachable = case r of
         You -> [self]
         YouOrAlly -> [self]
+        YouAndYourAllies -> [self]
         EachInvestigatorInYourSpace -> here
         InvestigatorInYourSpace -> here
         InvestigatorOrAllyInYourSpace -> here
       owners = case r of
         YouOrAlly -> [self]
+        YouAndYourAllies -> [self]
         InvestigatorOrAllyInYourSpace -> here
         _ -> []
       hurt d h = (hp > 0 && d > 0) || (sp > 0 && h > 0)

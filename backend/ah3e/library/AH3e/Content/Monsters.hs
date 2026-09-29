@@ -33,7 +33,16 @@ One monster" names them all, and setup keeps back the ones whose box is not in
 play, so this is what tells the two apart.
 -}
 printedIn :: Map CardCode Expansion
-printedIn = Map.fromList [("entranced-hybrid", UnderDarkWaves), ("frenzied-hunter", UnderDarkWaves)]
+printedIn =
+  Map.fromList
+    [ ("vengeful-pursuer", DeadOfNight)
+    , ("entranced-hybrid", UnderDarkWaves)
+    , ("frenzied-hunter", UnderDarkWaves)
+    , ("icebound-captive", UnderDarkWaves)
+    , ("lodge-guardian", SecretsOfTheOrder)
+    , ("lodge-seer", SecretsOfTheOrder)
+    , ("twilight-sentry", SecretsOfTheOrder)
+    ]
 
 {- | The monsters that leave a remnant behind when they are defeated (429.9). The
 cultists and the human enemies leave nothing, so the list is shorter than the deck.
@@ -1397,4 +1406,17 @@ cards =
       Will
       (Just "Stalking Wraith")
       "Retaliate (After you perform an attack action, if you did not damage this monster, it attacks you.)"
+  , monster
+      "vengeful-pursuer"
+      "Vengeful Pursuer"
+      1
+      ["Human"]
+      0
+      (CustomSpaceRule "Revealed from the back of a WANTED condition")
+      (CustomActivation "If this monster is not engaged with an investigator, discard it.")
+      (3, 0)
+      (0, -2)
+      (2, 0)
+      []
+      "When revealed, this monster engages you. If this monster is not engaged with an investigator, discard it."
   ]

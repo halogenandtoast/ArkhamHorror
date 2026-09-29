@@ -82,6 +82,7 @@ scenario =
         map
           spaceIdFor
           ["La Bella Luna", "Police Station", "Graveyard", "Hangman's Hill", "Historical Society"]
+    , startingMarkers = []
     , eventCards = [CardCode ("feast-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , setAside = worshipers <> heldBack
     , codex = [1, 10, 11]
@@ -534,7 +535,7 @@ events =
       ,
         ( "General Store"
         , "Davy Schoffner says that the expedition into the caves ordered a lot of equipment that they didn't pick up. You may buy one common item from the display for half price (rounded up). If you do, he outlines what the expedition hoped to accomplish; you gain one clue from your neighborhood."
-        , BuyFromDisplay (Just "Common") True (Just 1) clue
+        , BuyFromDisplay (Just "Common") HalfPrice (Just 1) clue
         )
       ,
         ( "Graveyard"

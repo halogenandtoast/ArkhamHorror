@@ -812,7 +812,7 @@ function hideBroken(img) { img.parentElement.classList.add('no-art'); img.remove
 const slug = t => String(t).toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const cardCode = cid => state.cardCodes?.[cid] ?? slug(state.cardNames[cid] ?? cid);
 // card art is filed by type; the catalog says which folder holds each code
-const cardImg = (code, back) => `/img/ah3e/cards/${state.cardArt?.[code] ? `${state.cardArt[code]}/` : ''}${code}${back ? 'b' : ''}.webp`;
+const cardImg = (code, back) => `/img/ah3e/cards/${state.cardArt?.[code] ?? code}${back ? 'b' : ''}.webp`;
 const cardArt = (cid, back) => cardImg(cardCode(cid), back);
 // skill rows on the investigator sheet front, as fractions of the image
 const SKILL_ROWS = { Lore: 0.6, Influence: 0.685, Observation: 0.77, Strength: 0.853, Will: 0.935 };
@@ -1340,9 +1340,13 @@ function flyDrawnCards(g, before, skip) {
     flyCard(deck.rect, img, img.getAttribute('src'), deck.back ?? img.getAttribute('src'), 120 * n++);
   });
 }
+// anomaly art is filed under anomalies/, every other encounter under encounters/
 function encounterImage(cid) {
-  const m = /^(.+)-(\d{2})$/.exec(state.cardCodes?.[cid] ?? '');
-  return m ? `/img/ah3e/encounters/${m[1]}/${m[2]}.avif` : null;
+  const code = state.cardCodes?.[cid] ?? '';
+  const m = /^(.+)-(\d{2})$/.exec(code);
+  if (!m) return null;
+  const dir = state.cardArt?.[code]?.startsWith('anomalies/') ? 'anomalies' : 'encounters';
+  return `/img/ah3e/${dir}/${m[1]}/${m[2]}.avif`;
 }
 // neighborhood and event cards print one section per location, alphabetically, top to bottom
 function encounterSection(g, e, where) {

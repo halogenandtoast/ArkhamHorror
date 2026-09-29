@@ -151,7 +151,7 @@ falseFaces =
             for_ (msid >>= (`spaceNeighborhood` board)) \nid ->
               neighborhoodL nid . #markers %= drop 1
             pure []
-    , afterMonsterDefeated = \_ mid -> do
+    , afterMonsterDefeated = \_ mid _ -> do
         code <- cardCode mid
         pure
           $ if code `elem` worshipers
@@ -177,7 +177,7 @@ doom on the sheet is the end of it.
 theFeastOfGhouls :: CodexBehavior
 theFeastOfGhouls =
   defaultCodexBehavior
-    { afterMonsterDefeated = \_ mid -> do
+    { afterMonsterDefeated = \_ mid _ -> do
         code <- cardCode mid
         pure [FlipCodexCard 12 | code == "feast-19"]
     , triggers =

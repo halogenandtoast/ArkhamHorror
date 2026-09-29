@@ -25,6 +25,17 @@ library
       AH3e.Content.Core.InvestigatorBehaviors
       AH3e.Content.Core.Investigators
       AH3e.Content.Core.NeighborhoodCards
+      AH3e.Content.Core.VeilOfTwilight
+      AH3e.Content.Core.VeilOfTwilightBehaviors
+      AH3e.Content.DeadOfNight.EncounterBehaviors
+      AH3e.Content.DeadOfNight.Encounters
+      AH3e.Content.DeadOfNight.InvestigatorBehaviors
+      AH3e.Content.DeadOfNight.Investigators
+      AH3e.Content.DeadOfNight.ShotsInTheDark
+      AH3e.Content.DeadOfNight.ShotsInTheDarkBehaviors
+      AH3e.Content.DeadOfNight.SilenceOfTsathoggua
+      AH3e.Content.DeadOfNight.SilenceOfTsathogguaBehaviors
+      AH3e.Content.DeadOfNight.StartingBehaviors
       AH3e.Content.HeadlineBehaviors
       AH3e.Content.Headlines
       AH3e.Content.ItemBehaviors

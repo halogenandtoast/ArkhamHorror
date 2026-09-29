@@ -8,8 +8,10 @@ data AssetDeckKind = ItemDeckKind | AllyDeckKind | SpellDeckKind
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
--- | What a card charges for something bought from a deck or the display.
-data Pricing = FullPrice | HalfPrice | FlatPrice Int
+{- | What a card charges for something bought from a deck or the display.
+| 'Markup' is a price a card raises for buying on its own terms.
+-}
+data Pricing = FullPrice | HalfPrice | FlatPrice Int | Markup Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -45,6 +47,8 @@ data InvestigatorScope = EveryInvestigator | NearestToSource | InSourceNeighborh
 data Recipient
   = You
   | YouOrAlly
+  | -- | you and every ally you hold, all of them, not a choice between them
+    YouAndYourAllies
   | InvestigatorInYourSpace
   | InvestigatorOrAllyInYourSpace
   | EachInvestigatorInYourSpace
@@ -95,6 +99,8 @@ data Predicate
   | HasCondition ConditionName
   | HasCard CardFilter
   | IsDelayed
+  | -- | one of the counts an effect can read has reached this much
+    CountAtLeast Count Int
   | CodexHas ArchiveNumber
   | Not Predicate
   | CustomPredicate Text
@@ -131,7 +137,7 @@ data Effect
   | If Predicate Effect Effect
   | GainE Gain
   | LoseMoney Amount
-  | BuyFromDisplay (Maybe Trait) Bool (Maybe Int) Effect
+  | BuyFromDisplay (Maybe Trait) Pricing (Maybe Int) Effect
   | Focus (Maybe Skill) Bool
   | DiscardAFocus
   | BuyFromDeck AssetDeckKind Int (Maybe Int) Pricing
@@ -153,6 +159,10 @@ data Effect
   | SpawnMonsterIn Where Bool
   | -- | one monster of their choice in reach suffers this much damage
     DamageMonsterIn Where Amount
+  | {- | one monster of their choice in reach whose remaining health is at most this
+    much is defeated outright
+    -}
+    DefeatMonsterIn Where Amount
   | ResolveGateBurst
   | ReadHeadline
   | DrawMythosTokens Int

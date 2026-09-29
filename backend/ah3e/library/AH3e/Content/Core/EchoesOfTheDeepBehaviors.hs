@@ -260,7 +260,7 @@ thirteen doom on the sheet is the end of everything.
 rlyehRises :: CodexBehavior
 rlyehRises =
   defaultCodexBehavior
-    { afterMonsterDefeated = \_ mid -> do
+    { afterMonsterDefeated = \_ mid _ -> do
         code <- cardCode mid
         pure
           [ m

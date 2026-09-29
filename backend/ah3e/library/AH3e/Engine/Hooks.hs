@@ -2,6 +2,7 @@ module AH3e.Engine.Hooks where
 
 import AH3e.Content.Behaviors
 import AH3e.Engine.Behavior
+import AH3e.Engine.Helpers (hiddenForTheRound)
 import AH3e.Engine.Monad
 import AH3e.Engine.Query
 import AH3e.Game
@@ -84,6 +85,35 @@ tradePartners iid = do
     ]
 
 -- rules 402.4, 402.5, 409, 429.5, 436, 492
+
+{- | The abilities a card offers during its owner's turn for free, with the
+reference that names them.
+-}
+freeActionsFor :: InvestigatorId -> GameM [(ComponentRef, Int, ComponentActionDef)]
+freeActionsFor iid = do
+  i <- getInvestigator iid
+  fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+    b <- assetBehavior cid
+    fmap catMaybes $ for (zip [0 ..] b.freeActions) \(n, a) -> do
+      ok <- a.canPerform iid
+      pure (if ok then Just (CardRef cid, n, a) else Nothing)
+
+{- | What anyone in reach offers to stop something being put down in their own
+neighborhood; the first card to answer is asked.
+-}
+placementStops :: Placement -> SpaceId -> GameM [(InvestigatorId, Reaction)]
+placementStops what sid = do
+  board <- use #board
+  let there = spaceNeighborhood sid board
+  invs <- playingInvestigators
+  fmap concat $ for invs \i -> do
+    mine <- investigatorNeighborhood i.id
+    if isNothing there || mine /= there
+      then pure []
+      else fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets, c `notElem` i.usedAssets] \cid -> do
+        b <- assetBehavior cid
+        map (i.id,) <$> b.stopsPlacement cid i.id what sid
+
 legalActions :: InvestigatorId -> GameM [ActionKind]
 legalActions iid = do
   i <- getInvestigator iid
@@ -129,6 +159,21 @@ reactionsFor trigger = do
       entries <- use #codex
       codex <- fmap concat $ for entries \e -> (codexBehavior e.number).reactions e iid trigger
       pure (sheet <> cards <> codex)
+
+-- | What the codex does when an anomaly opens in a neighborhood, in codex order.
+anomalyOpened :: NeighborhoodId -> GameM [Message]
+anomalyOpened nid = do
+  entries <- use #codex
+  fmap concat $ for entries \e -> (codexBehavior e.number).afterAnomaly e nid
+
+{- | The effect a codex card puts in place of the encounter about to be read, if
+any; the first card to answer wins.
+-}
+encounterOverrideFor :: InvestigatorId -> Encounter -> GameM (Maybe Effect)
+encounterOverrideFor iid enc = do
+  entries <- use #codex
+  overrides <- for entries \e -> (codexBehavior e.number).encounterOverride e iid enc
+  pure (listToMaybe (catMaybes overrides))
 
 {- | Cards that can simply prevent one harm this round, with their names, for the
 offer the prevention step makes.
@@ -200,9 +245,33 @@ investigator wearing something that hides them, and no provocation from them yet
 monsterIgnores :: CardId -> InvestigatorId -> GameM Bool
 monsterIgnores mid iid = do
   d <- monsterDef mid
-  hidden <- hasAssetWith iid (.ignoredByMonsters)
+  i <- getInvestigator iid
+  held <-
+    anyM
+      (\cid -> assetBehavior cid >>= \b -> b.ignoredByMonsters cid iid)
+      [c | c <- i.assets, c `notElem` i.lockedAssets]
+  -- a card may buy the same thing for the rest of the round (On the Lam)
+  laidLow <- usedAbility iid hiddenForTheRound
+  let hidden = held || laidLow
   angered <- uses #provoked (elem iid . Map.findWithDefault [] mid)
   pure (hidden && not d.epic && not angered)
+
+-- | Hands' worth of assets this investigator may use beyond the usual two.
+handsAllowance :: InvestigatorId -> GameM Int
+handsAllowance iid = do
+  i <- getInvestigator iid
+  sum <$> for [c | c <- i.assets, c `notElem` i.lockedAssets] (fmap (.handsDelta) . assetBehavior)
+
+{- | What every investigator's cards do about a monster being defeated, whoever
+finished it; the monster is still on the board here, so its traits can be read.
+-}
+cardsAboutDefeat :: CardId -> Source -> GameM [Message]
+cardsAboutDefeat mid src = do
+  invs <- playingInvestigators
+  fmap concat $ for invs \i ->
+    fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+      b <- assetBehavior cid
+      b.afterMonsterDefeated cid i.id mid src
 
 -- | What this investigator's cards add to the result of each die they roll.
 dieBonusFor :: TestState -> GameM Int
@@ -251,6 +320,27 @@ focusPerSkillFor iid = do
     for [c | c <- i.assets, c `notElem` i.lockedAssets] (fmap (.focusPerSkill) . assetBehavior)
   pure (maximum (1 : limits))
 
+{- | What this investigator's cards offer in place of paying for the card on sale
+at that price.
+-}
+buyOffersFor :: InvestigatorId -> CardId -> Int -> GameM [Reaction]
+buyOffersFor iid cid price = do
+  i <- getInvestigator iid
+  fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \c -> do
+    b <- assetBehavior c
+    b.buyOffers c iid cid price
+
+{- | What anyone in play offers in place of this monster's activation. Offered to
+the table together, since the monster activates once however many could answer.
+-}
+activationReplacements :: CardId -> GameM [Reaction]
+activationReplacements mid = do
+  invs <- playingInvestigators
+  fmap concat $ for invs \i ->
+    fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \c -> do
+      b <- assetBehavior c
+      b.replacesActivation c i.id mid
+
 -- | Cards that could halve a purchase for this investigator, with their names.
 halfPriceCards :: InvestigatorId -> GameM [(CardId, Text)]
 halfPriceCards iid = do
@@ -298,7 +388,8 @@ effectiveMonsterHealth mid = do
   base <- monsterHealth mid
   b <- monsterBehavior mid
   delta <- b.healthDelta mid
-  pure (max 1 . (+ delta) <$> base)
+  extra <- codexMonsterHealth mid
+  pure (max 1 . (+ (delta + extra)) <$> base)
 
 -- | What the codex says about a monster arriving, or being defeated.
 codexAboutMonster
@@ -307,14 +398,37 @@ codexAboutMonster which mid = do
   codex <- use #codex
   fmap concat $ for codex \e -> which (codexBehavior e.number) e mid
 
+-- | Likewise for a defeat, which also carries whatever finished the monster off.
+codexAboutDefeat :: CardId -> Source -> GameM [Message]
+codexAboutDefeat mid src = do
+  codex <- use #codex
+  fmap concat $ for codex \e -> (codexBehavior e.number).afterMonsterDefeated e mid src
+
+-- | Health the codex adds to a monster beyond what its own card and behaviour say.
+codexMonsterHealth :: CardId -> GameM Int
+codexMonsterHealth mid = do
+  codex <- use #codex
+  sum <$> for codex \e -> (codexBehavior e.number).monsterHealthDelta e mid
+
+{- | What a codex card does instead of putting doom on the scenario sheet; the
+first card to answer wins.
+-}
+sheetDoomInstead :: Int -> GameM (Maybe [Message])
+sheetDoomInstead n = do
+  codex <- use #codex
+  answers <- for codex \e -> (codexBehavior e.number).sheetDoomReplacement e n
+  pure (listToMaybe (catMaybes answers))
+
 -- | Cards anyone in play holds that may prevent the damage about to be suffered.
 damagePreventionsFor :: HarmPlan -> GameM [(InvestigatorId, Reaction)]
 damagePreventionsFor plan = do
   invs <- playingInvestigators
-  fmap concat $ for invs \i ->
-    fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets, c `notElem` i.usedAssets] \cid -> do
+  fmap concat $ for invs \i -> do
+    sheet <- (investigatorBehavior i.id).damagePrevention i.id plan
+    cards <- fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets, c `notElem` i.usedAssets] \cid -> do
       b <- assetBehavior cid
-      map (i.id,) <$> b.damagePrevention cid i.id plan
+      b.damagePrevention cid i.id plan
+    pure (map (i.id,) (sheet <> cards))
 
 blockedSpaces :: GameM [SpaceId]
 blockedSpaces = do

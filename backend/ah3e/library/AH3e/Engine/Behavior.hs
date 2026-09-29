@@ -6,6 +6,7 @@ import AH3e.Engine.Query
 import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
+import AH3e.Types.Card (Encounter)
 import AH3e.Types.Effect
 import AH3e.Types.Ids
 import AH3e.Types.Skill
@@ -22,9 +23,22 @@ data ComponentActionDef = ComponentActionDef
 data Reaction = Reaction {key :: Text, label :: Text, messages :: [Message]}
   deriving stock Generic
 
+-- | What is about to be put down on the board, for a card that may stop it.
+data Placement = PlacingDoom | PlacingMonster CardId
+  deriving stock (Show, Eq)
+
 data AssetBehavior = AssetBehavior
   { testDice :: CardId -> InvestigatorId -> TestState -> GameM (Maybe Int)
   , componentActions :: [ComponentActionDef]
+  , stopsPlacement :: CardId -> InvestigatorId -> Placement -> SpaceId -> GameM [Reaction]
+  {- ^ once per round, what this card offers when doom or a monster would be put
+  down in its owner's neighborhood (Flux Stabilizer). A reaction's messages are
+  run in place of the placement.
+  -}
+  , freeActions :: [ComponentActionDef]
+  {- ^ what a card printed "during your turn, you may ..." offers: it costs none of
+  their actions and stays available once both are spent.
+  -}
   , reckoning :: Maybe Effect
   , reactions :: CardId -> Trigger -> GameM [Reaction]
   , moveAction :: Maybe (Int, Int)
@@ -56,6 +70,10 @@ data AssetBehavior = AssetBehavior
   -}
   , undiscardable :: Bool
   -- ^ nothing discards this card, damage and horror included
+  , poolDelta :: CardId -> InvestigatorId -> TestState -> GameM Int
+  {- ^ dice this card adds to or takes from every pool its owner rolls, without
+  being chosen and without taking hands (RATTLED's one fewer die).
+  -}
   , dieBonus :: CardId -> InvestigatorId -> TestState -> GameM Int
   -- ^ added to the result of each die its owner rolls for this test
   , mayTakeEngagement :: Bool
@@ -66,9 +84,20 @@ data AssetBehavior = AssetBehavior
   {- ^ how many focus its owner may put on one skill, one unless a card says more
   (Overcome All Odds)
   -}
-  , ignoredByMonsters :: Bool
+  , ignoredByMonsters :: CardId -> InvestigatorId -> GameM Bool
   {- ^ non-epic monsters pass its owner by while activating and do not engage
-  them, until its owner attacks or damages the monster (Tattered Cloak).
+  them, until its owner attacks or damages the monster (Tattered Cloak). A card
+  that only hides them somewhere in particular answers for itself.
+  -}
+  , ignoredWhileMoving :: Bool
+  {- ^ monsters do not engage its owner while a move action is in flight, and go
+  back to engaging them normally once it ends (Chuck Fergus).
+  -}
+  , handsDelta :: Int
+  -- ^ hands' worth of assets its owner may use in a test beyond the usual two
+  , afterMonsterDefeated :: CardId -> InvestigatorId -> CardId -> Source -> GameM [Message]
+  {- ^ what this card does when a monster is defeated, whoever finished it and
+  however. The monster is still on the board, so its traits can be read.
   -}
   , successOnFour :: Bool
   -- ^ while its owner tests, a four counts as a success as well (Dark Blessing)
@@ -76,6 +105,14 @@ data AssetBehavior = AssetBehavior
   {- ^ conditions its owner cannot hold: gaining one discards it instead, and
   holding this card discards the ones already held.
   -}
+  , bansTraits :: [Trait]
+  {- ^ likewise for whole traits, which is how WANTED keeps its holder out of the
+  gangs' good books.
+  -}
+  , displayDelta :: CardId -> GameM Int
+  -- ^ how many more cards the display holds while this card is in play
+  , onDiscard :: CardId -> InvestigatorId -> GameM [Message]
+  -- ^ what leaving play sets going, for a card that prints a cost for losing it
   , halfPricePerRound :: Bool
   {- ^ once per round, its owner may buy one card at half price, rounded up. The
   card says it does not stack, so it is not offered on a purchase already halved.
@@ -88,6 +125,14 @@ data AssetBehavior = AssetBehavior
   {- ^ once per round, when this much or more of that harm is dealt to this card,
   prevent this much of it. Printed without a "may", so it is not offered, it just
   happens (Bulletproof Vest, Elder Sign Amulet).
+  -}
+  , insteadOfRemnant :: CardId -> InvestigatorId -> GameM [Reaction]
+  {- ^ what this card takes in place of a remnant its owner would gain; offered
+  alongside simply taking the remnant.
+  -}
+  , raiseInsteadOfReroll :: Bool
+  {- ^ once per round, its owner may add one to a die instead of rerolling it,
+  paying the reroll's cost either way (Research Notes).
   -}
   , afterGainClue :: CardId -> InvestigatorId -> GameM [Message]
   {- ^ what this card does when its owner gains clues. Not offered but done, for a
@@ -111,6 +156,20 @@ data AssetBehavior = AssetBehavior
   wherever they are (416.6). The reaction's messages leave what they prevent in
   'damagePrevented'.
   -}
+  , buyOffers :: CardId -> InvestigatorId -> CardId -> Int -> GameM [Reaction]
+  {- ^ what this card offers in place of paying a display card's price, asked once
+  per card on sale with that card's price (Good Standing). The reaction buys, or
+  does not; the display prompt comes back around either way.
+  -}
+  , tradesFocusAndTalents :: Bool
+  {- ^ its holder's trades may also exchange focus tokens and talents (Mi-Go Brain
+  Case), within both sides' focus limits.
+  -}
+  , replacesActivation :: CardId -> InvestigatorId -> CardId -> GameM [Reaction]
+  {- ^ what its owner may do when that monster would activate, in place of the
+  activation (Lure Monster). A reaction that lets the monster act anyway pushes
+  'DoActivateMonster' itself.
+  -}
   }
   deriving stock Generic
 
@@ -119,6 +178,8 @@ defaultAssetBehavior =
   AssetBehavior
     { testDice = \_ _ _ -> pure Nothing
     , componentActions = []
+    , stopsPlacement = \_ _ _ _ -> pure []
+    , freeActions = []
     , reckoning = Nothing
     , reactions = \_ _ -> pure []
     , moveAction = Nothing
@@ -131,22 +192,34 @@ defaultAssetBehavior =
     , extraActions = 0
     , afterGainedFromDeck = Nothing
     , preventsOwnHarm = Nothing
+    , insteadOfRemnant = \_ _ -> pure []
+    , raiseInsteadOfReroll = False
     , afterGainClue = \_ _ -> pure []
     , afterMonsterDamaged = \_ _ _ _ -> pure []
     , afterHarm = \_ _ _ -> pure []
     , testOptions = \_ _ _ -> pure []
     , undiscardable = False
+    , poolDelta = \_ _ _ -> pure 0
     , dieBonus = \_ _ _ -> pure 0
     , mayTakeEngagement = False
     , mayStopAttacks = False
     , focusPerSkill = 1
-    , ignoredByMonsters = False
+    , ignoredByMonsters = \_ _ -> pure False
+    , ignoredWhileMoving = False
+    , handsDelta = 0
+    , afterMonsterDefeated = \_ _ _ _ -> pure []
     , successOnFour = False
     , bansConditions = []
+    , bansTraits = []
+    , displayDelta = \_ -> pure 0
+    , onDiscard = \_ _ -> pure []
     , halfPricePerRound = False
     , extraSuccesses = \_ _ _ -> pure 0
     , preventsOneHarmPerRound = False
     , damagePrevention = \_ _ _ -> pure []
+    , buyOffers = \_ _ _ _ -> pure []
+    , tradesFocusAndTalents = False
+    , replacesActivation = \_ _ _ -> pure []
     }
 
 {- | When a test asset adds dice: "+N skill as part of an X action", or "+N lore
@@ -247,6 +320,12 @@ data MonsterBehavior = MonsterBehavior
   -- ^ added to its printed health as things stand, which a card may reduce
   , removedWhenDefeated :: Bool
   -- ^ goes back to the box rather than to the monster deck
+  , afterAttack :: CardId -> InvestigatorId -> GameM [Message]
+  -- ^ what it does to the investigator it has just attacked
+  , afterDisengage :: CardId -> InvestigatorId -> GameM [Message]
+  {- ^ what it does to whoever has just come away from it. Not offered but done,
+  for a monster that prints it flatly rather than as a "may".
+  -}
   }
   deriving stock Generic
 
@@ -256,6 +335,8 @@ defaultMonsterBehavior =
     { testOptions = \_ _ _ -> pure []
     , healthDelta = \_ -> pure 0
     , removedWhenDefeated = False
+    , afterAttack = \_ _ -> pure []
+    , afterDisengage = \_ _ -> pure []
     }
 
 {- | A card that widens the reroll a focus paid for: the focus bought one die, and
@@ -295,10 +376,24 @@ data CodexBehavior = CodexBehavior
   , reckoning :: CodexEntry -> Maybe Effect
   , afterMonsterSpawn :: CodexEntry -> CardId -> GameM [Message]
   -- ^ answers a monster arriving on the board, wherever it came from
-  , afterMonsterDefeated :: CodexEntry -> CardId -> GameM [Message]
+  , afterMonsterDefeated :: CodexEntry -> CardId -> Source -> GameM [Message]
+  -- ^ the monster is gone by now, so the source that finished it is carried
+  , monsterHealthDelta :: CodexEntry -> CardId -> GameM Int
+  -- ^ health this card adds to a monster it has marked or singled out
+  , sheetDoomReplacement :: CodexEntry -> Int -> GameM (Maybe [Message])
+  {- ^ what happens instead when doom would be placed on the scenario sheet; the
+  first card to answer wins (Tsathoggua eats the city rather than the sheet)
+  -}
   , componentActions :: [ComponentActionDef]
   , reactions :: CodexEntry -> InvestigatorId -> Trigger -> GameM [Reaction]
   -- ^ what a codex card offers an investigator when something triggers
+  , afterAnomaly :: CodexEntry -> NeighborhoodId -> GameM [Message]
+  -- ^ answers an anomaly opening in a neighborhood (406.3a)
+  , encounterOverride :: CodexEntry -> InvestigatorId -> Encounter -> GameM (Maybe Effect)
+  {- ^ replaces the encounter about to be read, for a card that answers what the
+  text says rather than where it was drawn ("whenever your encounter text
+  includes...").
+  -}
   , blockedSpaces :: CodexEntry -> GameM [SpaceId]
   , spaceEncounter :: CodexEntry -> SpaceId -> Maybe Effect
   }
@@ -312,9 +407,13 @@ defaultCodexBehavior =
     , triggers = []
     , reckoning = const Nothing
     , afterMonsterSpawn = \_ _ -> pure []
-    , afterMonsterDefeated = \_ _ -> pure []
+    , afterMonsterDefeated = \_ _ _ -> pure []
+    , monsterHealthDelta = \_ _ -> pure 0
+    , sheetDoomReplacement = \_ _ -> pure Nothing
     , componentActions = []
     , reactions = \_ _ _ -> pure []
+    , afterAnomaly = \_ _ -> pure []
+    , encounterOverride = \_ _ _ -> pure Nothing
     , blockedSpaces = \_ -> pure []
     , spaceEncounter = \_ _ -> Nothing
     }
@@ -330,10 +429,17 @@ data InvestigatorBehavior = InvestigatorBehavior
   -- ^ only a six counts for this investigator, whatever else is in play (Rex Murphy)
   , bansConditions :: [ConditionName]
   -- ^ conditions this investigator cannot hold at all
+  , bansTraits :: [Trait]
+  -- ^ likewise for whole traits
   , castWithDamage :: Bool
   -- ^ may suffer damage instead of horror while casting a spell
   , paidCastLoreBonus :: Int
   -- ^ +lore while casting a spell paid for with damage or remnants
+  , damagePrevention :: InvestigatorId -> HarmPlan -> GameM [Reaction]
+  {- ^ what the sheet itself offers while anyone would suffer harm (416.6), the
+  same way a card may. The reaction's messages leave what they prevent in
+  'damagePrevented' and 'horrorPrevented'.
+  -}
   }
   deriving stock Generic
 
@@ -346,8 +452,10 @@ defaultInvestigatorBehavior =
     , mayTakeEngagement = False
     , successOnSix = False
     , bansConditions = []
+    , bansTraits = []
     , castWithDamage = False
     , paidCastLoreBonus = 0
+    , damagePrevention = \_ _ -> pure []
     }
 
 data Behaviors = Behaviors

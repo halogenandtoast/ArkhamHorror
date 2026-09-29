@@ -37,8 +37,9 @@ catalogView =
   , "expansions" .= [CoreSet, DeadOfNight, UnderDarkWaves, SecretsOfTheOrder, RecursiveEchoes]
   , "investigatorNames" .= Map.map (.name) investigatorDefs
   , "investigatorDefs" .= investigatorDefs
-  , -- card art is filed by type: img/ah3e/cards/<dir>/<code>.webp
-    "cardArt" .= Map.map (cardArtDir . (.kind)) cardDefs
+  , -- card art is filed by type: img/ah3e/cards/<dir>/<code>.webp, save for
+    -- headlines, which the box numbers instead of naming
+    "cardArt" .= Map.map cardArtPath cardDefs
   ]
 
 gameView :: Game -> Value

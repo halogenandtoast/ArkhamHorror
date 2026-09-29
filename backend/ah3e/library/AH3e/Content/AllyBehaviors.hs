@@ -22,7 +22,10 @@ behaviors =
     & #assets
     .~ Map.fromList
       [ ("alice-luxley", defaultAssetBehavior & #bonusDicePerRound .~ aliceLuxleyDice)
+      , ("amos-blythe", amosBlythe)
       , ("arthur-johnson", defaultAssetBehavior & #freeRerollPerRound .~ True)
+      , ("chuck-fergus", defaultAssetBehavior & #ignoredWhileMoving .~ True)
+      , ("delilah-orourke", delilahOrourke)
       ,
         ( "delphinia-bell"
         , cardAction
@@ -46,6 +49,7 @@ behaviors =
       , ("jenica-capra", jenicaCapra)
       , ("lewis-hayes", testBonuses [WhileCasting 2])
       , ("lita-chantler", litaChantler)
+      , ("nick-cutrere", nickCutrere)
       , ("stray-cat", strayCat)
       , ("stray-dog", strayDog)
       , ("tetsuo-mori", tetsuoMori)
@@ -173,6 +177,27 @@ tetsuoMori =
           ]
       _ -> pure []
 
+{- | "After you deal damage to a monster as part of an attack action, you may deal
+one additional damage to a monster in your space." Any monster in her space, not
+only the one just attacked -- which by now may be defeated and gone -- so the
+offer is worth making only while the space still holds one.
+-}
+delilahOrourke :: AssetBehavior
+delilahOrourke =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      AfterDamageMonsterInAttack iid _ -> do
+        monsters <- investigatorSpace iid >>= maybe (pure []) monstersAt
+        pure
+          [ Reaction
+              "delilah-orourke"
+              "Delilah O'Rourke: deal one additional damage to a monster in your space"
+              [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (DamageMonsterIn YourSpace (N 1))]
+          | not (null monsters)
+          ]
+      _ -> pure []
+
 -- | As Tetsuo, but the doom has to be there to remove.
 jenicaCapra :: AssetBehavior
 jenicaCapra =
@@ -189,6 +214,55 @@ jenicaCapra =
           | doom > 0
           ]
       _ -> pure []
+
+{- | "After you deal damage to a non-epic monster, you may suffer one damage to
+exhaust that monster." Printed without a limit, so every point of damage offers it
+again. The monster has to still be standing to be worth a damage: the engine pushes
+its defeat ahead of these answers, and 'ExhaustMonster' reads the monster off the
+board. A monster already exhausted, or whose health is still hidden -- which only a
+ready shrouded monster's is, and those cannot be exhausted either -- is no offer at
+all, just a damage spent for nothing.
+-}
+amosBlythe :: AssetBehavior
+amosBlythe =
+  defaultAssetBehavior
+    & #afterMonsterDamaged
+    .~ \cid owner mid src -> case src of
+      SourceInvestigator who | who == owner -> do
+        d <- monsterDef mid
+        m <- getMonster mid
+        ok <- canBeExhausted mid
+        mh <- monsterHealth mid
+        name <- (.name) <$> getCardDef mid
+        pure
+          [ AskAboutAsset
+              owner
+              cid
+              ("Amos Blythe: suffer one damage to exhaust " <> name <> "?")
+              [ Choice (DoneLabel "Skip") []
+              , Choice
+                  (TextLabel ("Exhaust " <> name))
+                  [ ResolveEffect (EffectCtx owner (SourceCard cid) Nothing) (SufferDamage (N 1))
+                  , ExhaustMonster mid
+                  ]
+              ]
+          | not d.epic
+          , ok
+          , Just h <- [mh]
+          , m.damage < h
+          ]
+      _ -> pure []
+
+{- | "Action: Become WANTED to gain one curio with a value of $4 or less." The
+condition is the price, so it is paid first. Unlike Daniel Chesterfield's pact this
+needs no "if you are not already" guard: 'gainCondition' does nothing for a
+condition its holder already has, and the curio still comes either way.
+-}
+nickCutrere :: AssetBehavior
+nickCutrere =
+  cardAction
+    "Nick Cutrere: become WANTED to gain a curio"
+    (Seq [GainE (Condition "WANTED"), GainE (AnItemValued (Just "Curio") (AtMost 4))])
 
 {- | She answers damage any investigator dealt, so long as the monster is in her
 own space. Her damage comes from the card, so it does not answer itself.

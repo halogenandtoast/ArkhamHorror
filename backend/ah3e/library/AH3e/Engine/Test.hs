@@ -8,6 +8,8 @@ module AH3e.Engine.Test (
   rerollOneOf,
   rerollAll,
   chooseDieToRaise,
+  chooseDieToSet,
+  setDieValue,
   raiseDie,
   markUsedInTest,
   finishTest,
@@ -86,9 +88,20 @@ testPool ts = do
   base <- skillValue ts.investigator ts.skill
   usable <- usableTestAssets ts
   bonus <- roundBonusAssets ts
+  held <- poolDeltaFor ts
   let assetDice = sum [n | (cid, n, _) <- usable, cid `elem` ts.chosenAssets]
       roundDice = sum [n | (cid, n) <- bonus, cid `elem` ts.chosenAssets]
-  pure (max 1 (base + ts.modifier + assetDice + roundDice + ts.bonusDice))
+  pure $ case ts.fixedPool of
+    Just n -> max 0 (n + assetDice + roundDice + ts.bonusDice + held)
+    Nothing -> max 1 (base + ts.modifier + assetDice + roundDice + ts.bonusDice + held)
+
+-- | Dice the cards its owner holds add to or take from every pool, unasked.
+poolDeltaFor :: TestState -> GameM Int
+poolDeltaFor ts = do
+  i <- getInvestigator ts.investigator
+  sum <$> for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+    b <- assetBehavior cid
+    b.poolDelta cid ts.investigator ts
 
 testPrompt :: GameM ()
 testPrompt = do
@@ -99,11 +112,13 @@ testPrompt = do
       usable <- usableTestAssets ts
       bonus <- roundBonusAssets ts
       used <- handsUsed ts
+      -- a card may let its owner bring an extra hand's worth to bear
+      spare <- handsAllowance ts.investigator
       pool <- testPool ts
       let toggles =
             [ Choice (CardLabel cid) [ToggleTestAsset cid]
             | (cid, _, hands) <- usable
-            , cid `elem` ts.chosenAssets || used + hands <= 2
+            , cid `elem` ts.chosenAssets || used + hands <= 2 + spare
             ]
               <> [ Choice (CardLabel cid) [ToggleTestAsset cid]
                  | (cid, _) <- bonus
@@ -166,21 +181,27 @@ rollTestDice = do
 chooseRerollDie :: RerollCost -> GameM ()
 chooseRerollDie cost = do
   ts <- currentTest
+  i <- getInvestigator ts.investigator
+  raisers <-
+    filterM (fmap (.raiseInsteadOfReroll) . assetBehavior) [c | c <- i.assets, c `notElem` i.usedAssets]
+  let dice = [(idx, d) | (idx, d) <- zip [0 ..] ts.dice, not d.removed]
   chooseFor
     ts.investigator
     "Choose a die to reroll"
-    [Choice (DieLabel idx d.value) [RerollDie cost idx] | (idx, d) <- zip [0 ..] ts.dice, not d.removed]
+    ( [Choice (DieLabel idx d.value) [RerollDie cost idx] | (idx, d) <- dice]
+        -- two dice can show the same face, so the offer names the die's position
+        <> [ Choice
+               (TextLabel ("Add one to die " <> tshow (idx + 1) <> " (" <> tshow d.value <> ") instead"))
+               [RaiseInsteadOfReroll cost idx cid]
+           | cid <- take 1 raisers
+           , (idx, d) <- dice
+           ]
+    )
 
 rerollDie :: RerollCost -> Int -> GameM ()
 rerollDie cost idx = do
   ts <- currentTest
-  case cost of
-    FocusCost s ->
-      investigatorL ts.investigator . #focus . at s %= \case
-        Just n | n > 1 -> Just (n - 1)
-        _ -> Nothing
-    ClueCost -> addClues ts.investigator (-1)
-    FreeReroll _ -> pure ()
+  payRerollCost ts.investigator cost
   v <- rollDie
   #test . _Just . #dice . ix idx . #value .= v
   case cost of
@@ -231,6 +252,23 @@ chooseDieToRaise _ = do
       chooseFor ts.investigator "Choose a die to raise by one"
         $ [Choice (DieLabel idx d.value) [RaiseDie idx] | (idx, d) <- live]
 
+{- | A card that sets a die outright (Grave Dirt's six) rather than nudging it.
+Only dice still in the pool can be set, as for a raise.
+-}
+chooseDieToSet :: Int -> GameM ()
+chooseDieToSet n = do
+  ts <- currentTest
+  case liveDice ts of
+    [] -> testPrompt
+    live ->
+      chooseFor ts.investigator ("Choose a die to change to a " <> tshow n)
+        $ [Choice (DieLabel idx d.value) [SetDieValue idx n] | (idx, d) <- live]
+
+setDieValue :: Int -> Int -> GameM ()
+setDieValue idx n = do
+  #test . _Just . #dice . ix idx . #value .= n
+  testPrompt
+
 raiseDie :: Int -> GameM ()
 raiseDie idx = do
   #test . _Just . #dice . ix idx . #value += 1
@@ -273,6 +311,9 @@ finishTest = do
   #suspendedTests .= drop 1 waiting
   logText ("Test result: " <> tshow successes)
   spendBlessCurse ts.investigator (successes > 0)
+  {- What a card left for "after resolving the test", pushed ahead of the result so
+  that the result's own work, prepended next, still lands in front of it. -}
+  for_ (reverse ts.riders) \(ctx, eff) -> push (ResolveEffect ctx eff)
   resolveAfter ts successes
   -- a sheet may answer a failure, behind whatever the failure itself set going
   when (successes == 0) $ pushEnd (CheckReactions (AfterFailedTest ts.investigator) [])

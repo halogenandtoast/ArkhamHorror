@@ -1,5 +1,6 @@
 module AH3e.Content.Items (cards) where
 
+import AH3e.Content.Vocabulary (fromBox)
 import AH3e.Prelude
 import AH3e.Types.Card
 import AH3e.Types.Ids
@@ -18,7 +19,10 @@ itemWith c n value traits hands health sanity txt =
     (AssetCard (AssetDef Item ItemDeck traits (Just value) hands health sanity 0 txt))
 
 cards :: [CardDef]
-cards =
+cards = core <> fromBox DeadOfNight deadOfNight
+
+core :: [CardDef]
+core =
   [ item
       "shotgun"
       "Shotgun"
@@ -209,4 +213,39 @@ cards =
       ["Common", "Weapon"]
       2
       "You get +5 strength as part of an attack action."
+  ]
+
+-- Dead of Night
+deadOfNight :: [CardDef]
+deadOfNight =
+  [ item
+      "camera"
+      "Camera"
+      4
+      ["Common"]
+      2
+      "After you gain a clue, you may test observation -1. If you pass, research one clue."
+  , item
+      "map-of-arkham"
+      "Map of Arkham"
+      2
+      ["Common", "Curio"]
+      0
+      "While you are in a street space, monsters do not engage you unless you attack them."
+  , item
+      "true-magick"
+      "True Magick"
+      6
+      ["Curio", "Tome"]
+      1
+      "You get +3 lore while casting a spell. Each 6 you roll while casting a spell counts as two successes."
+  , itemWith
+      "warding-stone"
+      "Warding Stone"
+      2
+      ["Curio"]
+      1
+      (Just 0)
+      (Just 2)
+      "Once per round, as part of a ward action, you may spend one remnant to reroll any number of dice."
   ]

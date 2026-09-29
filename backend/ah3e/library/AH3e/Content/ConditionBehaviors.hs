@@ -5,12 +5,14 @@ off a card's own reckoning.
 module AH3e.Content.ConditionBehaviors (behaviors) where
 
 import AH3e.Engine.Behavior
+import AH3e.Engine.Helpers
 import AH3e.Engine.Monad
 import AH3e.Engine.Query
 import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
 import AH3e.Types.Board
+import AH3e.Types.Card
 import AH3e.Types.Effect
 import AH3e.Types.Ids
 import AH3e.Types.Skill
@@ -25,14 +27,28 @@ darkPacts =
   , "dark-pact-an-alliance-of-evil"
   , "dark-pact-dark-destiny"
   , "dark-pact-forbidden-knowledge"
-  , "dark-pact-tainted"
-  , "dark-pact-wanted"
+  ]
+
+{- | Dead of Night's WANTED cards. One front, and a different reckoning on each
+back for whatever finally catches up with you.
+-}
+wantedCards :: [CardCode]
+wantedCards =
+  [ "wanted-beaten"
+  , "wanted-detained"
+  , "wanted-disarmed"
+  , "wanted-rattled"
+  , "wanted-shaken-down"
+  , "wanted-vengeful-pursuer"
   ]
 
 behaviors :: Behaviors
 behaviors =
   mempty
-    { assets = Map.fromList [(c, darkPactBehavior) | c <- darkPacts]
+    { assets =
+        Map.fromList
+          $ [(c, darkPactBehavior) | c <- darkPacts]
+          <> [(c, wantedBehavior c) | c <- wantedCards]
     , customEffects =
         Map.fromList
           [ ("dark-pact-reckoning", darkPactReckoning)
@@ -45,6 +61,10 @@ behaviors =
           , ("forbidden-knowledge:2", forbiddenKnowledge 2)
           , ("forbidden-knowledge:1", forbiddenKnowledge 1)
           , ("forbidden-knowledge:0", forbiddenKnowledge 0)
+          , ("wanted-reckoning", wantedReckoning)
+          , ("wanted-disarm", disarm)
+          , ("wanted-shake-down", shakeDown)
+          , ("wanted-vengeful-pursuer", vengefulPursuer)
           ]
     }
 
@@ -54,10 +74,7 @@ darkPactBehavior = defaultAssetBehavior & #reckoning ?~ Custom "dark-pact-reckon
 discardSelf :: Effect
 discardSelf = Custom "discard-condition"
 
-{- | What the exhausted side of a dark pact does the moment it is revealed.
-Tainted and Wanted are conditions in their own right, so they simply stay in
-play and take over the card's reckoning.
--}
+-- | What the exhausted side of a dark pact does the moment it is revealed.
 revealedSide :: CardCode -> Maybe Effect
 revealedSide = \case
   "dark-pact-the-world-undone" -> Just (Seq [PlaceDoomAt YourSpace (N 3), discardSelf])
@@ -68,19 +85,107 @@ revealedSide = \case
   "dark-pact-forbidden-knowledge" -> Just (Custom "forbidden-knowledge")
   _ -> Nothing
 
--- | The reckoning of a revealed side, for the two that keep the card in play.
+-- | The reckoning of a revealed side, for a card that keeps playing once flipped.
 revealedReckoning :: CardCode -> Maybe Effect
 revealedReckoning = \case
-  "dark-pact-tainted" -> Just (Custom "flip-condition")
-  "dark-pact-wanted" ->
-    Just
-      ( Test
-          Influence
-          0
-          (ByResult [((2, Nothing), discardSelf)])
-          (Custom "flip-condition")
-      )
+  -- RATTLED stays in play for one die, and clears itself at the next reckoning
+  "wanted-rattled" -> Just discardSelf
   _ -> Nothing
+
+{- | A WANTED card. Face up it is the law closing in -- an influence test each
+reckoning, passed well enough to shake them off or failed into whatever the back
+has waiting. Its reckoning fires from whichever side is showing.
+-}
+
+{- | The traits WANTED keeps you out of: every faction's reputation talent. A new
+faction's reputation needs adding here as well as to its own cards.
+-}
+reputationTraits :: [Trait]
+reputationTraits =
+  ["Arkham Reputation", "O'Bannion Reputation", "Police Reputation", "Sheldon Reputation"]
+
+wantedBehavior :: CardCode -> AssetBehavior
+wantedBehavior code =
+  defaultAssetBehavior
+    & #reckoning
+    ?~ Custom "wanted-reckoning"
+    & #bansTraits
+    .~ reputationTraits
+    & #poolDelta
+    .~ \cid iid _ ->
+      if code /= "wanted-rattled"
+        then pure 0
+        else do
+          flipped <- maybe False (.flipped) <$> uses #assets (Map.lookup cid)
+          owned <- uses #assets (maybe False ((== iid) . (.owner)) . Map.lookup cid)
+          pure (if flipped && owned then -1 else 0)
+
+{- | Front: test influence, shake them off on a two or better, and flip on a
+failure. Back: whatever they did to you when they caught up.
+-}
+wantedReckoning :: EffectCtx -> GameM ()
+wantedReckoning ctx = for_ (sourceCard ctx) \cid -> do
+  flipped <- maybe False (.flipped) <$> uses #assets (Map.lookup cid)
+  code <- cardCode cid
+  if flipped
+    then for_ (caughtUp code) \eff -> push (ResolveEffect ctx eff)
+    else
+      push
+        ( ResolveEffect
+            ctx
+            (Test Influence 0 (ByResult [((2, Nothing), discardSelf)]) (Custom "flip-condition"))
+        )
+
+-- | The back of each WANTED card, read the moment the reckoning turns it over.
+caughtUp :: CardCode -> Maybe Effect
+caughtUp = \case
+  "wanted-beaten" -> Just (Seq [SufferDamage (N 2), discardSelf])
+  "wanted-detained" -> Just (Seq [BecomeDelayed, discardSelf])
+  "wanted-disarmed" -> Just (Custom "wanted-disarm")
+  "wanted-shaken-down" -> Just (Custom "wanted-shake-down")
+  "wanted-vengeful-pursuer" -> Just (Custom "wanted-vengeful-pursuer")
+  -- RATTLED is the one that lingers; its own reckoning discards it
+  _ -> Nothing
+
+-- | "You discard one non-curio weapon."
+disarm :: EffectCtx -> GameM ()
+disarm ctx = do
+  i <- getInvestigator ctx.investigator
+  weapons <- filterM (fmap (maybe False isWeapon) . assetDef) i.assets
+  case weapons of
+    [] -> push (ResolveEffect ctx discardSelf)
+    _ ->
+      chooseFor
+        ctx.investigator
+        "Discard a weapon"
+        [Choice (CardLabel c) [DiscardAsset c, ResolveEffect ctx discardSelf] | c <- weapons]
+ where
+  isWeapon :: AssetDef -> Bool
+  isWeapon d = "Weapon" `elem` d.traits && "Curio" `notElem` d.traits
+
+-- | "You discard all of your money."
+shakeDown :: EffectCtx -> GameM ()
+shakeDown ctx = do
+  i <- getInvestigator ctx.investigator
+  addMoney ctx.investigator (negate i.money)
+  logText "They take every cent you have"
+  push (ResolveEffect ctx discardSelf)
+
+{- | The back that is a monster: it comes for you where you stand, and wanders off
+again the moment nobody is holding it.
+-}
+vengefulPursuer :: EffectCtx -> GameM ()
+vengefulPursuer ctx = do
+  msid <- investigatorSpace ctx.investigator
+  case msid of
+    Nothing -> push (ResolveEffect ctx discardSelf)
+    Just sid -> do
+      cid <- newCard "vengeful-pursuer"
+      pushAll
+        [ PlaceMonster cid sid Ready
+        , EngageMonster ctx.investigator cid
+        , ResolveEffect ctx discardSelf
+        ]
 
 sourceCard :: EffectCtx -> Maybe CardId
 sourceCard ctx = case ctx.source of

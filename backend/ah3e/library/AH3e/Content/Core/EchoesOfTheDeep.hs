@@ -78,6 +78,7 @@ scenario =
         map
           spaceIdFor
           ["Train Station", "La Bella Luna", "River Docks", "Unvisited Isle", "Black Cave"]
+    , startingMarkers = []
     , eventCards = [CardCode ("echoes-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , setAside = heldBack
     , codex = [2, 29, 30]
@@ -103,8 +104,8 @@ anywhere n = RemoveDoomFrom AnySpace (N n)
 
 -- | "You may buy one X from the display. If you do, ..."
 buyOneThen, buyOneHalfThen :: Trait -> Effect -> Effect
-buyOneThen t = BuyFromDisplay (Just t) False (Just 1)
-buyOneHalfThen t = BuyFromDisplay (Just t) True (Just 1)
+buyOneThen t = BuyFromDisplay (Just t) FullPrice (Just 1)
+buyOneHalfThen t = BuyFromDisplay (Just t) HalfPrice (Just 1)
 
 remnant :: Effect
 remnant = remnants 1

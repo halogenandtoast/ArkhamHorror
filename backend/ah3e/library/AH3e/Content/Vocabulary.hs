@@ -2,6 +2,7 @@
 module AH3e.Content.Vocabulary where
 
 import AH3e.Prelude
+import AH3e.Types.Card
 import AH3e.Types.Effect
 import AH3e.Types.Ids
 import AH3e.Types.Skill
@@ -50,9 +51,15 @@ focusAny = Focus Nothing False
 focusExceed = Focus Nothing True
 
 buyAny, buyOne, buyOneHalf :: Trait -> Effect
-buyAny t = BuyFromDisplay (Just t) False Nothing NoEffect
-buyOne t = BuyFromDisplay (Just t) False (Just 1) NoEffect
-buyOneHalf t = BuyFromDisplay (Just t) True (Just 1) NoEffect
+buyAny t = BuyFromDisplay (Just t) FullPrice Nothing NoEffect
+buyOne t = BuyFromDisplay (Just t) FullPrice (Just 1) NoEffect
+buyOneHalf t = BuyFromDisplay (Just t) HalfPrice (Just 1) NoEffect
 
 spells :: Int -> Maybe Int -> Pricing -> Effect
 spells = BuyFromDeck SpellDeckKind
+
+{- | Retags a card as printed in another box. The per-type helpers all build core
+set cards, so an expansion's list is written with them and stamped once.
+-}
+fromBox :: Expansion -> [CardDef] -> [CardDef]
+fromBox e = map \d -> CardDef d.code d.name e d.copies d.kind

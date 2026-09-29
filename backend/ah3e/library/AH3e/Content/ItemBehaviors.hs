@@ -7,6 +7,7 @@ import AH3e.Engine.Query
 import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
+import AH3e.Types.Board
 import AH3e.Types.Effect
 import AH3e.Types.Skill
 import AH3e.Types.State
@@ -51,10 +52,17 @@ behaviors =
       , ("rabbits-foot", defaultAssetBehavior & #freeRerollPerRound .~ True)
       , ("secret-page", testBonuses [OnAction WardAction Lore 2])
       , ("silver-key", silverKey)
-      , ("tattered-cloak", defaultAssetBehavior & #ignoredByMonsters .~ True)
+      , ("tattered-cloak", defaultAssetBehavior & #ignoredByMonsters .~ \_ _ -> pure True)
       , ("token-of-faith", tokenOfFaith)
       , ("shotgun", shotgun)
+      , -- Dead of Night
+        ("camera", camera)
+      , ("map-of-arkham", mapOfArkham)
+      , ("true-magick", trueMagick)
+      , ("warding-stone", wardingStone)
       ]
+    & #customEffects
+    .~ Map.fromList [("camera-research", cameraResearch)]
 
 {- | Once per attack test -- the card prints no round limit, and an attack action
 is one opportunity to use it. It adds no dice, so it reports a bonus of none at
@@ -178,3 +186,83 @@ shotgun =
         $ if isAttackTest ts && cid `elem` ts.chosenAssets
           then length [d | d <- ts.dice, not d.removed, d.value >= 6]
           else 0
+
+{- | "After you gain a clue, you may test observation -1. If you pass, research
+one clue." The test is the card's, not an action, so it rides the effect
+vocabulary's own test rather than an action test.
+-}
+camera :: AssetBehavior
+camera =
+  defaultAssetBehavior
+    & #afterGainClue
+    .~ \cid iid ->
+      pure
+        [ ResolveEffect
+            (EffectCtx iid (SourceCard cid) Nothing)
+            ( May
+                "Camera: test observation -1 to research one clue"
+                (Test Observation (-1) (Custom "camera-research") NoEffect)
+            )
+        ]
+
+-- | Researching moves a clue of your own, so it needs one to move.
+cameraResearch :: EffectCtx -> GameM ()
+cameraResearch ctx = do
+  i <- getInvestigator ctx.investigator
+  when (i.clues > 0) $ push (ResearchCluesExact ctx.investigator 1)
+
+{- | "While you are in a street space, monsters do not engage you unless you
+attack them." The hook reads this alongside its own provocation check, which is
+the "unless you attack them" half, so this only answers for the space.
+-}
+mapOfArkham :: AssetBehavior
+mapOfArkham =
+  defaultAssetBehavior
+    & #ignoredByMonsters
+    .~ \_ iid ->
+      investigatorSpace iid >>= \case
+        Nothing -> pure False
+        Just sid -> isStreetLike . (.kind) <$> getSpace sid
+
+{- | "+3 lore while casting a spell. Each 6 you roll while casting a spell counts
+as two successes." The six already counted once as a success, so each one adds
+one more; like the Shotgun, it only speaks for a test it was taken up for.
+-}
+trueMagick :: AssetBehavior
+trueMagick =
+  testBonuses [WhileCasting 3]
+    & #extraSuccesses
+    .~ \cid _ ts ->
+      pure
+        $ if isCastingTest ts && cid `elem` ts.chosenAssets
+          then length [d | d <- ts.dice, not d.removed, d.value >= 6]
+          else 0
+
+isCastingTest :: TestState -> Bool
+isCastingTest ts = isJust ts.casting || isSpellTest ts.kind
+
+{- | "Once per round, as part of a ward action, you may spend one remnant to
+reroll any number of dice." Nothing else checks the reaction's cost, so the
+remnant has to be in hand before it is offered at all.
+-}
+wardingStone :: AssetBehavior
+wardingStone =
+  defaultAssetBehavior
+    & #testOptions
+    .~ \cid iid ts -> do
+      used <- usedThisRound cid iid
+      affordable <- canPayCost iid (SpendRemnants 1)
+      let live = liveDiceCount ts
+      pure
+        [ Reaction
+            "warding-stone"
+            "Warding Stone: spend one remnant to reroll any number of dice"
+            [ MarkAssetUsed iid cid
+            , PayCost (EffectCtx iid (SourceCard cid) Nothing) (SpendRemnants 1)
+            , RerollUpTo (SourceCard cid) live
+            ]
+        | not used
+        , affordable
+        , live > 0
+        , ActionTest WardAction _ <- [ts.kind]
+        ]

@@ -61,6 +61,10 @@ data Trigger
     AnotherResolvesTest InvestigatorId InvestigatorId
   | AfterGatherResources InvestigatorId
   | AfterResearchAction InvestigatorId
+  | -- | a research action has finished, and this was its test result
+    AfterResearchResult InvestigatorId Int
+  | -- | this many clues have just gone from an investigator onto the sheet
+    AfterCluesResearched InvestigatorId Int
   | AfterMoveAction InvestigatorId
   | -- | they took this much doom off their own space, which some sheets answer
     AfterDoomRemoved InvestigatorId Int
@@ -74,9 +78,24 @@ data Trigger
     AfterEncounter InvestigatorId
   | -- | the monster defeated is gone by now, so only the attacker is carried
     AfterDefeatMonsterInAttack InvestigatorId
+  | -- | they have just dealt damage to this monster as part of an attack action
+    AfterDamageMonsterInAttack InvestigatorId CardId
+  | -- | a move action has ended, having carried them this many spaces
+    AfterMoveDistance InvestigatorId Int
+  | AtStartOfTurn InvestigatorId
+  | AtEndOfMonsterPhase InvestigatorId
+  | -- | this many tokens have just gone into the mythos cup
+    TokensReturnedToCup InvestigatorId Int
   | DrewBlankToken InvestigatorId
   | SpentFocusToReroll InvestigatorId
   | AfterCastSpell InvestigatorId CardId
+  | -- | someone in this investigator's space has just recovered sanity
+    AfterRecoverSanity InvestigatorId RecoverTarget
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+-- | Who a recovery reached, so a card can add to that same one.
+data RecoverTarget = RecoveredInvestigator InvestigatorId | RecoveredAsset CardId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -85,6 +104,8 @@ triggerInvestigator = \case
   AnotherResolvesTest owner _ -> owner
   AfterGatherResources iid -> iid
   AfterResearchAction iid -> iid
+  AfterResearchResult iid _ -> iid
+  AfterCluesResearched iid _ -> iid
   AfterMoveAction iid -> iid
   AfterDoomRemoved iid _ -> iid
   AfterFailedTest iid -> iid
@@ -93,9 +114,15 @@ triggerInvestigator = \case
   AfterSpendRemnant iid -> iid
   AfterEncounter iid -> iid
   AfterDefeatMonsterInAttack iid -> iid
+  AfterDamageMonsterInAttack iid _ -> iid
+  AfterMoveDistance iid _ -> iid
+  AtStartOfTurn iid -> iid
+  AtEndOfMonsterPhase iid -> iid
+  TokensReturnedToCup iid _ -> iid
   DrewBlankToken iid -> iid
   SpentFocusToReroll iid -> iid
   AfterCastSpell iid _ -> iid
+  AfterRecoverSanity iid _ -> iid
 
 data HarmKind = NormalHarm | DirectHarm
   deriving stock (Show, Eq, Generic)
@@ -171,6 +198,10 @@ data TestState = TestState
   , kind :: TestKind
   , step :: TestStep
   , bonusDice :: Int
+  , fixedPool :: Maybe Int
+  {- ^ a pool the card states outright, which the skill and its modifier do not
+  contribute to ("resolve a test using that number of dice")
+  -}
   , chosenAssets :: [CardId]
   , dice :: [Die]
   , addedSuccesses :: Int
@@ -179,6 +210,10 @@ data TestState = TestState
   -- ^ the spell being cast, when this test is part of casting one
   , usedInTest :: [CardId]
   -- ^ cards whose once-per-test ability has been spent on this test
+  , riders :: [(EffectCtx, Effect)]
+  {- ^ what a card printed "after resolving the test" left behind, resolved once
+  the test's own result has been (Grave Dirt's CURSED).
+  -}
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -1,6 +1,7 @@
 -- | The special pile: the named cards encounters hand out by name.
 module AH3e.Content.Special (cards, focusLimitBonuses) where
 
+import AH3e.Content.Vocabulary (fromBox)
 import AH3e.Prelude
 import AH3e.Types.Card
 import AH3e.Types.Ids
@@ -9,7 +10,7 @@ import AH3e.Types.Ids
 cards may, so a starting possession sits here beside the special pile's.
 -}
 focusLimitBonuses :: [(CardCode, Int)]
-focusLimitBonuses = [("the-moon", 1), ("deputy-of-arkham", 1), ("synergy", 1)]
+focusLimitBonuses = [("the-moon", 1), ("deputy-of-arkham", 1), ("synergy", 1), ("miles-crown", 1)]
 
 special
   :: CardCode -> Text -> AssetType -> [Trait] -> Int -> Maybe Int -> Maybe Int -> Text -> CardDef
@@ -23,7 +24,10 @@ companion :: CardCode -> Text -> Trait -> Int -> Int -> Text -> CardDef
 companion c n trait health sanity = special c n Ally [trait] 0 (Just health) (Just sanity)
 
 cards :: [CardDef]
-cards =
+cards = core <> fromBox DeadOfNight deadOfNight
+
+core :: [CardDef]
+core =
   [ talent
       "stevedore"
       "Stevedore"
@@ -194,4 +198,207 @@ cards =
       1
       3
       "While casting a spell, if this ally suffers one or more horror, you add one success to your test result."
+  ]
+
+-- Dead of Night
+deadOfNight :: [CardDef]
+deadOfNight =
+  [ talent
+      "armed-backup"
+      "Armed Backup"
+      "O'Bannion Reputation"
+      "Once per round, at the end of the monster phase, you may spend $1 to exhaust one non-epic monster in your space."
+  , special
+      "black-grimoire"
+      "Black Grimoire"
+      Item
+      ["Curio", "Tome"]
+      0
+      Nothing
+      Nothing
+      "Action: Test lore -1. If you pass, gain one spell. If you fail, suffer one horror or place one doom in your space."
+  , talent
+      "bocce-champion"
+      "Bocce Champion"
+      "Retainer"
+      "After you perform a gather resources action in the Downtown neighborhood, you may test observation. If you pass, gain an additional $3. If you fail, discard this card."
+  , talent
+      "cleaner"
+      "Cleaner"
+      "O'Bannion Reputation"
+      "When you defeat a Sheldon monster, you may recover one sanity or focus one skill of your choice."
+  , special
+      "donohues-new-45s"
+      "Donohue's New .45s"
+      Item
+      ["Common", "Weapon"]
+      2
+      Nothing
+      Nothing
+      "You get +3 strength as part of an attack action. Once per round, while resolving a test, you may reroll one die."
+  , companion
+      "friendly-raven"
+      "Friendly Raven"
+      "Animal"
+      2
+      1
+      "At the start of your turn, you may deal one damage to this ally to exhaust one non-epic monster in your neighborhood."
+  , talent
+      "good-standing"
+      "Good Standing"
+      "Arkham Reputation"
+      "Once per round, when buying an item, you may test influence. Reduce the value of that item by your test result, to a minimum of $1."
+  , special
+      "grave-dirt"
+      "Grave Dirt"
+      Item
+      ["Curio"]
+      0
+      Nothing
+      Nothing
+      "While resolving a test, if you are not CURSED, you may suffer one direct horror to change one die to a 6. After resolving the test, become CURSED."
+  , talent
+      "hired-muscle"
+      "Hired Muscle"
+      "Sheldon Reputation"
+      "Once per round, during your turn, you may spend $1 to deal one damage to a monster in your space."
+  , special
+      "hypnotists-mirror"
+      "Hypnotist's Mirror"
+      Item
+      ["Common", "Curio"]
+      0
+      Nothing
+      Nothing
+      "Once per round, when an ally or investigator in your space recovers sanity, they recover one additional sanity. (You are an investigator in your space.)"
+  , talent
+      "joey-vigils-supply"
+      "Joey Vigil's Supply"
+      "O'Bannion Reputation"
+      "Increase the size of the display by one card. If JOEY VIGIL'S SUPPLY is discarded, discard the item in the display with the highest value."
+  , talent
+      "legbreaker"
+      "Legbreaker"
+      "Sheldon Reputation"
+      "When you defeat an O'Bannion monster, you may recover one health or gain $1."
+  , companion
+      "leo-de-luca"
+      "Leo De Luca"
+      "The Louisiana Lion"
+      3
+      2
+      "Once per round, as an additional action during your turn, you may perform an action that you have already performed this round."
+  , talent
+      "library-docent"
+      "Library Docent"
+      "Retainer"
+      "After you perform a gather resources action in the Miskatonic University neighborhood, each investigator in your neighborhood may focus lore."
+  , companion
+      "maeve-chapman"
+      "Maeve Chapman"
+      "Nurse"
+      2
+      2
+      "Action: An investigator or ally in your space recovers one health. (You are an investigator in your space.)"
+  , special
+      "mas-apple-pie"
+      "Ma's Apple Pie"
+      Item
+      ["Common"]
+      0
+      (Just 0)
+      (Just 3)
+      "After you perform a gather resources action, you may deal one horror to this item for an investigator or ally in your space to recover one sanity."
+  , special
+      "mi-go-brain-case"
+      "Mi-Go Brain Case"
+      Item
+      ["Curio"]
+      0
+      Nothing
+      Nothing
+      "As part of a trade action, you may also exchange focus tokens and talents. (No investigator may exceed their focus limit as a result of this trade.)"
+  , companion
+      "miles-crown"
+      "Miles Crown"
+      "Victim of the Mi-Go"
+      1
+      3
+      "Increase your focus limit by one. You can focus each skill one additional time."
+  , companion
+      "peter-sylvestre"
+      "Peter Sylvestre"
+      "Student Athlete"
+      2
+      3
+      "While performing a test, you can use one additional hand's worth of assets."
+  , special
+      "puzzle-box"
+      "Puzzle Box"
+      Item
+      ["Curio"]
+      0
+      (Just 0)
+      (Just 2)
+      "Action: Test lore -1. If you pass, gain two curios from the deck (not the display) and discard this card."
+  , special
+      "schoffners-catalogue"
+      "Schoffner's Catalogue"
+      Item
+      ["Common", "Curio"]
+      0
+      Nothing
+      Nothing
+      "Action: Buy one common item from the display, increasing its value by $1."
+  , talent
+      "smuggler-contacts"
+      "Smuggler Contacts"
+      "Sheldon Reputation"
+      "Action: Spend any number of remnants to gain $1 for each remnant spent this way."
+  , special
+      "the-star"
+      "The Star"
+      Item
+      ["Curio"]
+      0
+      Nothing
+      Nothing
+      "When one or more mythos tokens are added or returned to the mythos cup, you may recover one health or one sanity."
+  , special
+      "the-world"
+      "The World"
+      Item
+      ["Curio"]
+      0
+      Nothing
+      Nothing
+      "After you perform a move action, if you moved more than two spaces, you may focus one skill of your choice."
+  , talent
+      "trusted-source"
+      "Trusted Source"
+      "Police Reputation"
+      "Once per round, while resolving a test, if there are one or more clues in your neighborhood, you may reroll one die."
+  , talent
+      "valued-donor"
+      "Valued Donor"
+      "Retainer"
+      "After you perform a gather resources action in the Southside neighborhood, you may spend one remnant to focus one skill of your choice."
+  , special
+      "velmas-cherry-pie"
+      "Velma's Cherry Pie"
+      Item
+      ["Common"]
+      0
+      (Just 3)
+      (Just 0)
+      "After you perform a gather resources action, you may deal one damage to this item for an investigator or ally in your space to recover one health."
+  , special
+      "witchweed"
+      "Witchweed"
+      Item
+      ["Curio"]
+      0
+      (Just 0)
+      (Just 3)
+      "When this item suffers one or more horror, you may focus one skill of your choice, even if it exceeds your focus limit."
   ]

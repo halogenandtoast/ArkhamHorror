@@ -55,6 +55,7 @@ emptyGame pids seed opts =
     , sheetDoom = 0
     , sheetClues = 0
     , sheetMarkers = 0
+    , sheetTokens = mempty
     , cup = []
     , drawnTokens = []
     , turn = Nothing
@@ -135,8 +136,13 @@ setupScenario sc = do
   #decks . #street <~ (use (#decks . #street) >>= shuffle)
   #decks . #travelRoute <~ (use (#decks . #travelRoute) >>= shuffle)
   #decks . #threshold <~ (use (#decks . #threshold) >>= shuffle)
-  aside <- fmap concat $ for (mapMaybe cardDef sc.setAside) copiesOf
+  {- Set-aside cards are filtered the same way as the monster pool: a sheet that
+  says "set aside all Lodge monsters" names them from every box. -}
+  aside <-
+    fmap concat $ for [d | d <- mapMaybe cardDef sc.setAside, d.expansion `elem` expansions] copiesOf
   #decks . #setAside %= (<> aside)
+  for_ sc.startingMarkers \(sid, colour) ->
+    #board . #spaces . ix sid . #markers %= (<> [Marker colour True])
   -- 103
   events <- for sc.eventCards newCard
   #decks . #event <~ shuffle events
@@ -178,7 +184,7 @@ placeStartingMonsters pool = go []
     candidates <- filterM (\cid -> (== mcode) <$> cardCode cid) (filter (`notElem` used) pool)
     case candidates of
       (cid : _) -> do
-        #monsters . at cid ?= Monster {card = cid, space = sid, state = Ready, damage = 0}
+        #monsters . at cid ?= Monster {card = cid, space = sid, state = Ready, damage = 0, markers = []}
         go (cid : used) rest
       [] -> go used rest
 

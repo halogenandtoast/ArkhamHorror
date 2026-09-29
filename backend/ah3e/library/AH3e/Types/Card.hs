@@ -124,7 +124,9 @@ data EventDef = EventDef
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data HeadlineDef = HeadlineDef {rumor :: Bool, text :: Text, effect :: Effect, reckoning :: Maybe Effect}
+-- | @number@ is the 1-32 printed in the card's bottom-right corner; its art is filed under it.
+data HeadlineDef = HeadlineDef
+  {number :: Int, rumor :: Bool, text :: Text, effect :: Effect, reckoning :: Maybe Effect}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -202,6 +204,18 @@ data CardDef = CardDef
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+{- | A card's art path under @img/ah3e/cards@, without the @b@ back suffix or the
+extension. A card is filed under its own code, except headlines, which the box
+numbers 1-32 rather than naming.
+-}
+cardArtPath :: CardDef -> Text
+cardArtPath d = cardArtDir d.kind <> "/" <> stem
+ where
+  CardCode code = d.code
+  stem = case d.kind of
+    HeadlineCard h -> (if h.number < 10 then "00" else if h.number < 100 then "0" else "") <> tshow h.number
+    _ -> code
+
 data StartingPossession
   = StartingCard CardCode
   | StartingMoney Int
@@ -273,6 +287,8 @@ data ScenarioDef = ScenarioDef
   , startingMonsters :: [(CardCode, SpaceId)]
   , mythosCup :: [(MythosToken, Int)]
   , startingDoom :: [SpaceId]
+  , startingMarkers :: [(SpaceId, Text)]
+  -- ^ markers a sheet's setup puts on the board face up, with their colour
   , eventCards :: [CardCode]
   , setAside :: [CardCode]
   {- ^ Cards the setup holds back: the monsters a sheet says to set aside, and the

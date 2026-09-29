@@ -63,7 +63,7 @@ resolveEffect ctx eff0 = do
       push (again (if ok then yes else no))
     GainE g -> when playing $ gain ctx g
     LoseMoney a -> addMoney iid (negate (amt a))
-    BuyFromDisplay mtrait half limit ifBought -> when playing $ push (BuyFromDisplayMsg ctx mtrait half limit ifBought)
+    BuyFromDisplay mtrait pricing limit ifBought -> when playing $ push (BuyFromDisplayMsg ctx mtrait pricing limit ifBought)
     DiscardAFocus -> when playing do
       i <- getInvestigator iid
       chooseFor
@@ -133,6 +133,20 @@ resolveEffect ctx eff0 = do
           iid
           ("Deal " <> tshow n <> " damage to a monster")
           [Choice (MonsterLabel m.card) [DealMonsterDamage m.card ctx.source n] | m <- monsters]
+    {- Wrack and its kind read the health the board is actually using, which the
+    behaviour registry can move; a Shrouded monster's is deliberately hidden, so it
+    is not a legal target. -}
+    DefeatMonsterIn w a -> when playing do
+      here <- spacesFor ctx w
+      monsters <- concat <$> traverse monstersAt here
+      let n = amt a
+      frail <-
+        filterM (\m -> effectiveMonsterHealth m.card <&> maybe False ((<= n) . subtract m.damage)) monsters
+      unless (null frail)
+        $ chooseFor
+          iid
+          ("Defeat a monster with " <> tshow n <> " health or less remaining")
+          [Choice (MonsterLabel m.card) [DefeatMonster m.card ctx.source] | m <- frail]
     AddToCodex n -> push (AddArchiveToCodex n)
     FlipArchiveCard n -> push (FlipCodexCard n)
     RemoveFromCodex n -> push (RemoveCodexCard n)
@@ -200,7 +214,7 @@ gain ctx g = do
     Clues a -> do
       addClues iid (amt a)
       when (amt a > 0) $ afterGainClueFor iid >>= pushAll
-    Remnants a -> addRemnants iid (amt a)
+    Remnants a -> push (GainRemnants iid (amt a))
     ClueFromNeighborhood -> do
       msid <- investigatorSpace iid
       for_ msid \sid -> do
@@ -246,6 +260,9 @@ recover ctx r hp sp = do
   case r of
     You -> push (RecoverInvestigator iid hp sp)
     EachInvestigatorInYourSpace -> pushAll [RecoverInvestigator i.id hp sp | i <- here]
+    -- everyone at once, rather than a choice between them
+    YouAndYourAllies ->
+      pushAll (RecoverInvestigator iid hp sp : [RecoverAsset c hp sp | c <- allies])
     -- only those with something to recover are offered
     _ -> chooseFor iid "Choose who recovers" who
 
@@ -374,6 +391,7 @@ evalPredicate ctx p = do
     IsDelayed -> pure i.delayed
     CodexHas n -> codexHas n
     Not q -> not <$> evalPredicate ctx q
+    CountAtLeast c n -> (>= n) <$> countOf ctx c
     CustomPredicate key -> do
       logText ("Missing custom predicate: " <> key)
       pure False

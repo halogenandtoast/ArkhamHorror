@@ -66,6 +66,7 @@ scenario =
         map
           spaceIdFor
           ["Arkham Advertiser", "Independence Square", "Velma's Diner", "Unvisited Isle", "Black Cave"]
+    , startingMarkers = []
     , eventCards = [CardCode ("aoa-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , setAside = []
     , codex = [2, 3]
@@ -98,8 +99,8 @@ mayPay :: Cost -> Effect -> Effect
 mayPay c e = MayPay c e NoEffect
 
 buyAny, buyOne :: Trait -> Effect
-buyAny t = BuyFromDisplay (Just t) False Nothing NoEffect
-buyOne t = BuyFromDisplay (Just t) False (Just 1) NoEffect
+buyAny t = BuyFromDisplay (Just t) FullPrice Nothing NoEffect
+buyOne t = BuyFromDisplay (Just t) FullPrice (Just 1) NoEffect
 
 sanity, health :: Int -> Effect
 sanity n = RecoverSanity YouOrAlly (N n)
@@ -246,7 +247,7 @@ events =
       ,
         ( "General Store"
         , "Davy Schoffner is looking rather glum, and old Mr. Hatle is nowhere to be seen. You may buy any number of common items from the display. If you buy something, Davy tells you it hasn't been the same since the \"re-re-opening\" without Uncle Hatle; you gain one clue from your neighborhood."
-        , BuyFromDisplay (Just "Common") False Nothing clue
+        , BuyFromDisplay (Just "Common") FullPrice Nothing clue
         )
       ,
         ( "Graveyard"
@@ -455,7 +456,7 @@ events =
       ,
         ( "Curiositie Shoppe"
         , "The shop cat nudges something off the shelf, and Mr. Thomas offers it to you at a discount. You may buy one curio item from the display for half price (rounded up). If you do, the object whispers secrets to you of its long life in the hands of an old warlock; you gain one clue from your neighborhood."
-        , BuyFromDisplay (Just "Curio") True (Just 1) clue
+        , BuyFromDisplay (Just "Curio") HalfPrice (Just 1) clue
         )
       ,
         ( "Train Station"
@@ -535,7 +536,7 @@ events =
       ,
         ( "Curiositie Shoppe"
         , "There are a number of items for sale today. You may buy any number of curio items from the display. If you buy something, the proprietor, Oliver Thomas, mentions the \"unusual clustering of stars\" he saw last night while he wraps up your purchase; you gain one clue from your neighborhood."
-        , BuyFromDisplay (Just "Curio") False Nothing clue
+        , BuyFromDisplay (Just "Curio") FullPrice Nothing clue
         )
       ,
         ( "Train Station"
@@ -555,7 +556,7 @@ events =
       ,
         ( "General Store"
         , "Mr. Hatle sits disconsolately on the crates he was able to rescue. The smell of woodsmoke still hangs in the air. \"I gotta get a stake together to rebuild.\" You may buy any number of common items. If you buy something, \"My nephew Davy will be taking over;\" you gain one clue from your neighborhood."
-        , BuyFromDisplay (Just "Common") False Nothing clue
+        , BuyFromDisplay (Just "Common") FullPrice Nothing clue
         )
       ,
         ( "Graveyard"

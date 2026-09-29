@@ -23,6 +23,8 @@ data Investigator = Investigator
   , active :: Bool
   , assets :: [CardId]
   , actionsTaken :: Int
+  , spacesMoved :: Int
+  -- ^ how far the move action in flight has carried them, for cards that count it
   , performed :: [ActionKind]
   , bonusActions :: Int
   , lockedAssets :: [CardId]
@@ -42,6 +44,8 @@ data Monster = Monster
   , space :: SpaceId
   , state :: MonsterState
   , damage :: Int
+  , markers :: [Marker]
+  -- ^ markers a scenario has put on the monster itself, which travel with it
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -133,6 +137,10 @@ data Game = Game
   , sheetClues :: Int
   , sheetMarkers :: Int
   -- ^ markers a scenario sheet has collected, which some cards count (429.7)
+  , sheetTokens :: Map Text Int
+  {- ^ the scenario sheet's other piles, by name: a sheet may collect damage and
+  horror tokens as well as markers, and a scenario may keep its own state here.
+  -}
   , cup :: [MythosToken]
   , drawnTokens :: [MythosToken]
   , turn :: Maybe InvestigatorId
@@ -200,6 +208,7 @@ newInvestigator iid pid =
     , active = True
     , assets = []
     , actionsTaken = 0
+    , spacesMoved = 0
     , performed = []
     , bonusActions = 0
     , lockedAssets = []

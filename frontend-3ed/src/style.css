@@ -263,9 +263,10 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); }
 .inv-piece.hl { filter:drop-shadow(0 0 3px #ffd54f) drop-shadow(0 0 6px #ffd54f); }
 .pa-delayed { display:inline-flex; align-items:center; gap:4px; margin-left:6px; padding:1px 7px 1px 5px; border-radius:999px;
   background:var(--delayed); color:#fff; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; vertical-align:1px; }
-.pa-delayed::before, .tab--delayed::after { content:""; width:11px; height:11px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 6.8V12l3.6 2.1'/%3E%3C/svg%3E") center/11px 11px no-repeat; }
-.tab--delayed::after { display:inline-block; margin-left:6px; vertical-align:-1px;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e04a43' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 6.8V12l3.6 2.1'/%3E%3C/svg%3E"); }
+.pa-delayed::before { content:""; width:11px; height:11px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 6.8V12l3.6 2.1'/%3E%3C/svg%3E") center/11px 11px no-repeat; }
+/* the clock rides beside the name itself; the tab's own ::after is the first-player token */
+.delayed-icon { display:inline-block; width:11px; height:11px; margin-left:5px; vertical-align:-1px; flex:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e04a43' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 6.8V12l3.6 2.1'/%3E%3C/svg%3E") center/11px 11px no-repeat; }
 .codex-card.hl, .asset.hl { outline:3px solid #ffd54f; outline-offset:2px; border-radius:8px; }
 #scenarioSheet.hl { outline:3px solid #ffd54f; outline-offset:3px; border-radius:10px; }
 .reckoning-pending { outline:2px dashed rgba(255,213,79,.85); outline-offset:3px; border-radius:8px; }

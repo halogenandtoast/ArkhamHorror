@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 import ActiveSide from '@/game/ActiveSide.vue'
 import BoardMap from '@/game/BoardMap.vue'
 import CodexPanel from '@/game/CodexPanel.vue'
@@ -108,8 +108,6 @@ onUnmounted(() => {
 const close = () => {
   if (confirm('Close this game for everyone?')) props.onClose()
 }
-// the raw JSON is only stringified while its panel is open
-const rawOpen = ref(false)
 </script>
 
 <template>
@@ -187,12 +185,6 @@ const rawOpen = ref(false)
       </div>
       <div>
         <CodexPanel />
-        <section style="margin-top: 12px">
-          <details @toggle="rawOpen = ($event.target as HTMLDetailsElement).open">
-            <summary>Raw game JSON</summary>
-            <pre v-if="rawOpen" id="raw">{{ JSON.stringify(g, null, 1) }}</pre>
-          </details>
-        </section>
       </div>
     </main>
   </template>

@@ -216,13 +216,16 @@ function applyView() {
   asks for only the width the map draws in and the rest of the row gets it. Taken
   from the height the band allows, so the measurement cannot oscillate. */
   if (!full) {
-    const wanted = Math.ceil(We * Math.min(1, room / He))
-    const fits = wanted <= vp.clientWidth || vp.style.flexBasis !== ''
-    vp.style.flexGrow = fits ? '0' : '1'
-    vp.style.flexBasis = fits ? `${wanted}px` : ''
+    /* The column asks for exactly the width the map draws in at the band's height
+    and never for more, so the spare width of the row goes to the sheet beside it.
+    It still gives way, last, when the row is too narrow to hold everything. */
+    vp.style.flexGrow = '0'
+    vp.style.flexShrink = '1'
+    vp.style.flexBasis = `${Math.ceil(We * Math.min(1, room / He))}px`
   } else {
     vp.style.flexGrow = ''
     vp.style.flexBasis = ''
+    vp.style.flexShrink = ''
   }
   const vwNow = full ? vw : vp.clientWidth
   view.base = full ? Math.min(vw / We, room / He) : Math.min(1, vwNow / We, room / He)

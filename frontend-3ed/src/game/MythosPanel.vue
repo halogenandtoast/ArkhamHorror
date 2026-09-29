@@ -12,10 +12,10 @@ const g = computed(() => ctx.game.value!)
     <h2>Mythos</h2>
     <div id="codex">
       <div class="cup">
-        <span>Cup ({{ g.cup.length }})</span><MythosTok v-for="(t, k) in g.cup" :key="k" :token="t" :size="28" />
+        <span>Cup ({{ g.cup.length }})</span><MythosTok v-for="(t, k) in g.cup" :key="k" :token="t" :size="24" />
       </div>
       <div class="cup">
-        <span>Drawn</span><MythosTok v-for="(t, k) in g.drawnTokens" :key="k" :token="t" :size="28" /><template
+        <span>Drawn</span><MythosTok v-for="(t, k) in g.drawnTokens" :key="k" :token="t" :size="24" /><template
           v-if="!g.drawnTokens.length"
           >—</template
         >

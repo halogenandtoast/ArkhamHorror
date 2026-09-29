@@ -92,7 +92,9 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 reads or answers, all the same height, so the page is about one screen tall. */
 .map-row { display:flex; gap:12px; align-items:stretch; justify-content:space-between; }
 .map-row .map-wrap { flex:1 1 auto; min-width:280px; height:var(--band); }
-.sheet-col { flex:0 0 clamp(190px, 15vw, 290px); min-width:0; display:flex; flex-direction:column; gap:10px; }
+/* the column takes whatever width the row has spare, up to the point where the
+mythos cup stops wrapping, since the map beside it asks for a fixed width */
+.sheet-col { flex:1 1 clamp(190px, 15vw, 290px); min-width:190px; max-width:min(38vw, 560px); display:flex; flex-direction:column; gap:10px; }
 .side-rail { flex:0 0 clamp(430px, 33vw, 840px); min-width:0; display:flex; flex-direction:column; gap:10px; }
 .side-rail .ask-row { flex:0 0 auto; }
 .side-rail .rail-players { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
@@ -180,6 +182,10 @@ drops under the map and turns on its side, so it stays one band deep */
 .dbg-group > h3 { margin:0 0 4px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
 #debug button { font-size:12px; padding:4px 8px; }
 .cup > span:first-child { min-width:110px; color:var(--muted); }
+/* in the narrow column the label takes its own line, so the tokens have the
+whole width and stay on one row */
+.sheet-col .cup { gap:3px; }
+.sheet-col .cup > span:first-child { flex:0 0 100%; min-width:0; font-size:12px; }
 .inv-tok { width:34px; height:34px; border-radius:50%; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.8); }
 /* the whole standee stands on the space instead of the round marker */
 .inv-piece { width:34px; height:50px; object-fit:contain; filter:drop-shadow(0 1px 2px rgba(0,0,0,.7)); align-self:flex-end; position:relative; }

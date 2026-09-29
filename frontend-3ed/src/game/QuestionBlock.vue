@@ -31,6 +31,16 @@ const choices = computed(() =>
     }
   }),
 )
+/* A question that offers nothing but spaces (and a way to stop) is answered on the
+map, where every one of those spaces is already ringed; listing them here as well
+only buries the one button that ends it. */
+const onTheMap = computed(
+  () =>
+    props.question.choices.some((c: Choice) => c.label.tag === 'SpaceLabel') &&
+    props.question.choices.every((c: Choice) => c.label.tag === 'SpaceLabel' || c.label.tag === 'DoneLabel'),
+)
+const shown = computed(() => (onTheMap.value ? choices.value.filter((c) => c.label.tag !== 'SpaceLabel') : choices.value))
+
 const testHere = computed(() => {
   const t = props.test
   if (!t) return false
@@ -55,7 +65,7 @@ const testHere = computed(() => {
     </div>
     <template v-if="mine">
       <button
-        v-for="c in choices"
+        v-for="c in shown"
         :key="c.i"
         v-bind="c.attrs"
         :class="c.cls"

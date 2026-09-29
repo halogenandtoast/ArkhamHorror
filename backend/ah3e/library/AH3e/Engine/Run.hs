@@ -1438,7 +1438,8 @@ moveStep ms = do
             else []
         choices = stepChoices <> routes
     unless (null choices)
-      $ chooseFor ms.investigator "Move" (choices <> [Choice (DoneLabel "Stop moving") []])
+      -- the spaces are picked on the map, so the only button this prompt needs is its last
+      $ chooseFor ms.investigator "Move" (choices <> [Choice (DoneLabel "Done moving") []])
 
 hazardPrompt :: MoveState -> Hazard -> GameM ()
 hazardPrompt ms hz = do

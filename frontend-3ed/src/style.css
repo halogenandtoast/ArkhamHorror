@@ -61,8 +61,9 @@ table { border-collapse:collapse; width:100%; } td, th { text-align:left; paddin
 .err { color:var(--doom); }
 .map-section { --band:clamp(340px, 66vh, 1040px); margin:12px 16px 0; padding:8px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }
 /* the codex and the decks are all cards: one row along the bottom, scrolled rather than wrapped */
-/* the clue badge rides above a deck's top corner, and a scrolling row clips it */
-.card-strip { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; padding-top:10px; }
+/* a badge rides above a deck's top corner and another below it, and a row that
+scrolls sideways would otherwise clip them -- or grow a scrollbar for the 2px */
+.card-strip { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; padding:10px 0 8px; }
 .card-strip > section { flex:0 0 auto; }
 .card-strip .decks { flex:1 1 auto; flex-wrap:nowrap; justify-content:flex-start; border-top:none; margin-top:0; padding-top:0; }
 .card-strip .codex, .card-strip .deck-group.lead, .card-strip .display-group { flex-wrap:nowrap; }
@@ -97,7 +98,7 @@ the codex sits in, so a map that shrinks does not leave a hole under it */
 .map-row .map-wrap { max-height:var(--band); }
 /* under the map: the codex and the display, side by side, sitting on the bottom of
 the row so the slack the map leaves is above them rather than below */
-.under-map { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; padding-top:10px; margin-top:auto; }
+.under-map { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; padding:10px 0 8px; margin-top:auto; }
 /* the art says which card it is, and the title says the rest */
 .under-map .codex-card figcaption { display:none; }
 .under-map > section { flex:0 0 auto; }

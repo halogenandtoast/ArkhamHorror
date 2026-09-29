@@ -41,6 +41,20 @@
     "img/ah3e/anomalies/temporal-fissure/11.avif",
     "img/ah3e/anomalies/temporal-fissure/12.avif"
   ],
+  "img/ah3e/anomalies/yuggoth-emergent": [
+    "img/ah3e/anomalies/yuggoth-emergent/01.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/02.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/03.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/04.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/05.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/06.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/07.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/08.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/09.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/10.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/11.avif",
+    "img/ah3e/anomalies/yuggoth-emergent/12.avif"
+  ],
   "img/ah3e/archive/core": [
     "img/ah3e/archive/core/001.avif",
     "img/ah3e/archive/core/001b.avif",
@@ -121,7 +135,47 @@
     "img/ah3e/archive/core/039.avif",
     "img/ah3e/archive/core/039b.avif",
     "img/ah3e/archive/core/040.avif",
-    "img/ah3e/archive/core/040b.avif"
+    "img/ah3e/archive/core/040b.avif",
+    "img/ah3e/archive/core/041.avif",
+    "img/ah3e/archive/core/041b.avif",
+    "img/ah3e/archive/core/042.avif",
+    "img/ah3e/archive/core/042b.avif",
+    "img/ah3e/archive/core/043.avif",
+    "img/ah3e/archive/core/043b.avif",
+    "img/ah3e/archive/core/044.avif",
+    "img/ah3e/archive/core/044b.avif",
+    "img/ah3e/archive/core/045.avif",
+    "img/ah3e/archive/core/045b.avif",
+    "img/ah3e/archive/core/046.avif",
+    "img/ah3e/archive/core/046b.avif",
+    "img/ah3e/archive/core/047.avif",
+    "img/ah3e/archive/core/047b.avif",
+    "img/ah3e/archive/core/048.avif",
+    "img/ah3e/archive/core/048b.avif",
+    "img/ah3e/archive/core/049.avif",
+    "img/ah3e/archive/core/049b.avif",
+    "img/ah3e/archive/core/050.avif",
+    "img/ah3e/archive/core/050b.avif",
+    "img/ah3e/archive/core/051.avif",
+    "img/ah3e/archive/core/051b.avif",
+    "img/ah3e/archive/core/052.avif",
+    "img/ah3e/archive/core/052b.avif",
+    "img/ah3e/archive/core/053.avif",
+    "img/ah3e/archive/core/053b.avif",
+    "img/ah3e/archive/core/054.avif",
+    "img/ah3e/archive/core/054b.avif",
+    "img/ah3e/archive/core/055.avif",
+    "img/ah3e/archive/core/055b.avif",
+    "img/ah3e/archive/core/056.avif",
+    "img/ah3e/archive/core/056b.avif",
+    "img/ah3e/archive/core/057.avif",
+    "img/ah3e/archive/core/057b.avif",
+    "img/ah3e/archive/core/058.avif",
+    "img/ah3e/archive/core/058b.avif",
+    "img/ah3e/archive/core/059.avif",
+    "img/ah3e/archive/core/059b.avif",
+    "img/ah3e/archive/core/060.avif",
+    "img/ah3e/archive/core/060b.avif"
   ],
   "img/ah3e/backs": [
     "img/ah3e/backs/ally.webp",
@@ -540,6 +594,16 @@
     "img/ah3e/encounters/downtown/07.avif",
     "img/ah3e/encounters/downtown/08.avif"
   ],
+  "img/ah3e/encounters/downtown-don": [
+    "img/ah3e/encounters/downtown-don/01.avif",
+    "img/ah3e/encounters/downtown-don/02.avif",
+    "img/ah3e/encounters/downtown-don/03.avif",
+    "img/ah3e/encounters/downtown-don/04.avif",
+    "img/ah3e/encounters/downtown-don/05.avif",
+    "img/ah3e/encounters/downtown-don/06.avif",
+    "img/ah3e/encounters/downtown-don/07.avif",
+    "img/ah3e/encounters/downtown-don/08.avif"
+  ],
   "img/ah3e/encounters/easttown": [
     "img/ah3e/encounters/easttown/01.avif",
     "img/ah3e/encounters/easttown/02.avif",
@@ -549,6 +613,16 @@
     "img/ah3e/encounters/easttown/06.avif",
     "img/ah3e/encounters/easttown/07.avif",
     "img/ah3e/encounters/easttown/08.avif"
+  ],
+  "img/ah3e/encounters/easttown-don": [
+    "img/ah3e/encounters/easttown-don/01.avif",
+    "img/ah3e/encounters/easttown-don/02.avif",
+    "img/ah3e/encounters/easttown-don/03.avif",
+    "img/ah3e/encounters/easttown-don/04.avif",
+    "img/ah3e/encounters/easttown-don/05.avif",
+    "img/ah3e/encounters/easttown-don/06.avif",
+    "img/ah3e/encounters/easttown-don/07.avif",
+    "img/ah3e/encounters/easttown-don/08.avif"
   ],
   "img/ah3e/encounters/merchant-district": [
     "img/ah3e/encounters/merchant-district/01.avif",
@@ -560,6 +634,16 @@
     "img/ah3e/encounters/merchant-district/07.avif",
     "img/ah3e/encounters/merchant-district/08.avif"
   ],
+  "img/ah3e/encounters/merchant-district-don": [
+    "img/ah3e/encounters/merchant-district-don/01.avif",
+    "img/ah3e/encounters/merchant-district-don/02.avif",
+    "img/ah3e/encounters/merchant-district-don/03.avif",
+    "img/ah3e/encounters/merchant-district-don/04.avif",
+    "img/ah3e/encounters/merchant-district-don/05.avif",
+    "img/ah3e/encounters/merchant-district-don/06.avif",
+    "img/ah3e/encounters/merchant-district-don/07.avif",
+    "img/ah3e/encounters/merchant-district-don/08.avif"
+  ],
   "img/ah3e/encounters/miskatonic-university": [
     "img/ah3e/encounters/miskatonic-university/01.avif",
     "img/ah3e/encounters/miskatonic-university/02.avif",
@@ -569,6 +653,16 @@
     "img/ah3e/encounters/miskatonic-university/06.avif",
     "img/ah3e/encounters/miskatonic-university/07.avif",
     "img/ah3e/encounters/miskatonic-university/08.avif"
+  ],
+  "img/ah3e/encounters/miskatonic-university-don": [
+    "img/ah3e/encounters/miskatonic-university-don/01.avif",
+    "img/ah3e/encounters/miskatonic-university-don/02.avif",
+    "img/ah3e/encounters/miskatonic-university-don/03.avif",
+    "img/ah3e/encounters/miskatonic-university-don/04.avif",
+    "img/ah3e/encounters/miskatonic-university-don/05.avif",
+    "img/ah3e/encounters/miskatonic-university-don/06.avif",
+    "img/ah3e/encounters/miskatonic-university-don/07.avif",
+    "img/ah3e/encounters/miskatonic-university-don/08.avif"
   ],
   "img/ah3e/encounters/northside": [
     "img/ah3e/encounters/northside/01.avif",
@@ -580,6 +674,16 @@
     "img/ah3e/encounters/northside/07.avif",
     "img/ah3e/encounters/northside/08.avif"
   ],
+  "img/ah3e/encounters/northside-don": [
+    "img/ah3e/encounters/northside-don/01.avif",
+    "img/ah3e/encounters/northside-don/02.avif",
+    "img/ah3e/encounters/northside-don/03.avif",
+    "img/ah3e/encounters/northside-don/04.avif",
+    "img/ah3e/encounters/northside-don/05.avif",
+    "img/ah3e/encounters/northside-don/06.avif",
+    "img/ah3e/encounters/northside-don/07.avif",
+    "img/ah3e/encounters/northside-don/08.avif"
+  ],
   "img/ah3e/encounters/rivertown": [
     "img/ah3e/encounters/rivertown/01.avif",
     "img/ah3e/encounters/rivertown/02.avif",
@@ -589,6 +693,16 @@
     "img/ah3e/encounters/rivertown/06.avif",
     "img/ah3e/encounters/rivertown/07.avif",
     "img/ah3e/encounters/rivertown/08.avif"
+  ],
+  "img/ah3e/encounters/rivertown-don": [
+    "img/ah3e/encounters/rivertown-don/01.avif",
+    "img/ah3e/encounters/rivertown-don/02.avif",
+    "img/ah3e/encounters/rivertown-don/03.avif",
+    "img/ah3e/encounters/rivertown-don/04.avif",
+    "img/ah3e/encounters/rivertown-don/05.avif",
+    "img/ah3e/encounters/rivertown-don/06.avif",
+    "img/ah3e/encounters/rivertown-don/07.avif",
+    "img/ah3e/encounters/rivertown-don/08.avif"
   ],
   "img/ah3e/encounters/southside": [
     "img/ah3e/encounters/southside/01.avif",
@@ -600,6 +714,16 @@
     "img/ah3e/encounters/southside/07.avif",
     "img/ah3e/encounters/southside/08.avif"
   ],
+  "img/ah3e/encounters/southside-don": [
+    "img/ah3e/encounters/southside-don/01.avif",
+    "img/ah3e/encounters/southside-don/02.avif",
+    "img/ah3e/encounters/southside-don/03.avif",
+    "img/ah3e/encounters/southside-don/04.avif",
+    "img/ah3e/encounters/southside-don/05.avif",
+    "img/ah3e/encounters/southside-don/06.avif",
+    "img/ah3e/encounters/southside-don/07.avif",
+    "img/ah3e/encounters/southside-don/08.avif"
+  ],
   "img/ah3e/encounters/street": [
     "img/ah3e/encounters/street/01.avif",
     "img/ah3e/encounters/street/02.avif",
@@ -610,6 +734,16 @@
     "img/ah3e/encounters/street/07.avif",
     "img/ah3e/encounters/street/08.avif"
   ],
+  "img/ah3e/encounters/street-don": [
+    "img/ah3e/encounters/street-don/01.avif",
+    "img/ah3e/encounters/street-don/02.avif",
+    "img/ah3e/encounters/street-don/03.avif",
+    "img/ah3e/encounters/street-don/04.avif",
+    "img/ah3e/encounters/street-don/05.avif",
+    "img/ah3e/encounters/street-don/06.avif",
+    "img/ah3e/encounters/street-don/07.avif",
+    "img/ah3e/encounters/street-don/08.avif"
+  ],
   "img/ah3e/encounters/uptown": [
     "img/ah3e/encounters/uptown/01.avif",
     "img/ah3e/encounters/uptown/02.avif",
@@ -619,6 +753,16 @@
     "img/ah3e/encounters/uptown/06.avif",
     "img/ah3e/encounters/uptown/07.avif",
     "img/ah3e/encounters/uptown/08.avif"
+  ],
+  "img/ah3e/encounters/uptown-don": [
+    "img/ah3e/encounters/uptown-don/01.avif",
+    "img/ah3e/encounters/uptown-don/02.avif",
+    "img/ah3e/encounters/uptown-don/03.avif",
+    "img/ah3e/encounters/uptown-don/04.avif",
+    "img/ah3e/encounters/uptown-don/05.avif",
+    "img/ah3e/encounters/uptown-don/06.avif",
+    "img/ah3e/encounters/uptown-don/07.avif",
+    "img/ah3e/encounters/uptown-don/08.avif"
   ],
   "img/ah3e/events/approach-of-azathoth": [
     "img/ah3e/events/approach-of-azathoth/01.avif",
@@ -698,6 +842,58 @@
     "img/ah3e/events/feast-of-umordhoth/23.avif",
     "img/ah3e/events/feast-of-umordhoth/24.avif"
   ],
+  "img/ah3e/events/shots-in-the-dark": [
+    "img/ah3e/events/shots-in-the-dark/01.avif",
+    "img/ah3e/events/shots-in-the-dark/02.avif",
+    "img/ah3e/events/shots-in-the-dark/03.avif",
+    "img/ah3e/events/shots-in-the-dark/04.avif",
+    "img/ah3e/events/shots-in-the-dark/05.avif",
+    "img/ah3e/events/shots-in-the-dark/06.avif",
+    "img/ah3e/events/shots-in-the-dark/07.avif",
+    "img/ah3e/events/shots-in-the-dark/08.avif",
+    "img/ah3e/events/shots-in-the-dark/09.avif",
+    "img/ah3e/events/shots-in-the-dark/10.avif",
+    "img/ah3e/events/shots-in-the-dark/11.avif",
+    "img/ah3e/events/shots-in-the-dark/12.avif",
+    "img/ah3e/events/shots-in-the-dark/13.avif",
+    "img/ah3e/events/shots-in-the-dark/14.avif",
+    "img/ah3e/events/shots-in-the-dark/15.avif",
+    "img/ah3e/events/shots-in-the-dark/16.avif",
+    "img/ah3e/events/shots-in-the-dark/17.avif",
+    "img/ah3e/events/shots-in-the-dark/18.avif",
+    "img/ah3e/events/shots-in-the-dark/19.avif",
+    "img/ah3e/events/shots-in-the-dark/20.avif",
+    "img/ah3e/events/shots-in-the-dark/21.avif",
+    "img/ah3e/events/shots-in-the-dark/22.avif",
+    "img/ah3e/events/shots-in-the-dark/23.avif",
+    "img/ah3e/events/shots-in-the-dark/24.avif"
+  ],
+  "img/ah3e/events/silence-of-tsathoggua": [
+    "img/ah3e/events/silence-of-tsathoggua/01.avif",
+    "img/ah3e/events/silence-of-tsathoggua/02.avif",
+    "img/ah3e/events/silence-of-tsathoggua/03.avif",
+    "img/ah3e/events/silence-of-tsathoggua/04.avif",
+    "img/ah3e/events/silence-of-tsathoggua/05.avif",
+    "img/ah3e/events/silence-of-tsathoggua/06.avif",
+    "img/ah3e/events/silence-of-tsathoggua/07.avif",
+    "img/ah3e/events/silence-of-tsathoggua/08.avif",
+    "img/ah3e/events/silence-of-tsathoggua/09.avif",
+    "img/ah3e/events/silence-of-tsathoggua/10.avif",
+    "img/ah3e/events/silence-of-tsathoggua/11.avif",
+    "img/ah3e/events/silence-of-tsathoggua/12.avif",
+    "img/ah3e/events/silence-of-tsathoggua/13.avif",
+    "img/ah3e/events/silence-of-tsathoggua/14.avif",
+    "img/ah3e/events/silence-of-tsathoggua/15.avif",
+    "img/ah3e/events/silence-of-tsathoggua/16.avif",
+    "img/ah3e/events/silence-of-tsathoggua/17.avif",
+    "img/ah3e/events/silence-of-tsathoggua/18.avif",
+    "img/ah3e/events/silence-of-tsathoggua/19.avif",
+    "img/ah3e/events/silence-of-tsathoggua/20.avif",
+    "img/ah3e/events/silence-of-tsathoggua/21.avif",
+    "img/ah3e/events/silence-of-tsathoggua/22.avif",
+    "img/ah3e/events/silence-of-tsathoggua/23.avif",
+    "img/ah3e/events/silence-of-tsathoggua/24.avif"
+  ],
   "img/ah3e/events/veil-of-twilight": [
     "img/ah3e/events/veil-of-twilight/01.avif",
     "img/ah3e/events/veil-of-twilight/02.avif",
@@ -765,12 +961,26 @@
     "img/ah3e/investigators/dexter-drake/standee.webp",
     "img/ah3e/investigators/dexter-drake/token.webp"
   ],
+  "img/ah3e/investigators/diana-stanley": [
+    "img/ah3e/investigators/diana-stanley/back.webp",
+    "img/ah3e/investigators/diana-stanley/card-back.webp",
+    "img/ah3e/investigators/diana-stanley/front.webp",
+    "img/ah3e/investigators/diana-stanley/standee.webp",
+    "img/ah3e/investigators/diana-stanley/token.webp"
+  ],
   "img/ah3e/investigators/jenny-barnes": [
     "img/ah3e/investigators/jenny-barnes/back.webp",
     "img/ah3e/investigators/jenny-barnes/card-back.webp",
     "img/ah3e/investigators/jenny-barnes/front.webp",
     "img/ah3e/investigators/jenny-barnes/standee.webp",
     "img/ah3e/investigators/jenny-barnes/token.webp"
+  ],
+  "img/ah3e/investigators/kate-winthrop": [
+    "img/ah3e/investigators/kate-winthrop/back.webp",
+    "img/ah3e/investigators/kate-winthrop/card-back.webp",
+    "img/ah3e/investigators/kate-winthrop/front.webp",
+    "img/ah3e/investigators/kate-winthrop/standee.webp",
+    "img/ah3e/investigators/kate-winthrop/token.webp"
   ],
   "img/ah3e/investigators/marie-lambeau": [
     "img/ah3e/investigators/marie-lambeau/back.webp",
@@ -806,6 +1016,20 @@
     "img/ah3e/investigators/rex-murphy/front.webp",
     "img/ah3e/investigators/rex-murphy/standee.webp",
     "img/ah3e/investigators/rex-murphy/token.webp"
+  ],
+  "img/ah3e/investigators/roland-banks": [
+    "img/ah3e/investigators/roland-banks/back.webp",
+    "img/ah3e/investigators/roland-banks/card-back.webp",
+    "img/ah3e/investigators/roland-banks/front.webp",
+    "img/ah3e/investigators/roland-banks/standee.webp",
+    "img/ah3e/investigators/roland-banks/token.webp"
+  ],
+  "img/ah3e/investigators/skids-otoole": [
+    "img/ah3e/investigators/skids-otoole/back.webp",
+    "img/ah3e/investigators/skids-otoole/card-back.webp",
+    "img/ah3e/investigators/skids-otoole/front.webp",
+    "img/ah3e/investigators/skids-otoole/standee.webp",
+    "img/ah3e/investigators/skids-otoole/token.webp"
   ],
   "img/ah3e/investigators/tommy-muldoon": [
     "img/ah3e/investigators/tommy-muldoon/back.webp",

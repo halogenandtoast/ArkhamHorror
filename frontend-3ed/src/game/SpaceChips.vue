@@ -48,7 +48,12 @@ function dragEnd() {
       <Tok v-else name="marker-back" title="facedown marker" />
     </template>
     <template v-for="i in invs" :key="`inv-${i.id}`">
-      <span class="inv-wrap" :class="{ delayed: i.delayed }" :title="pieceTitle(i.id, i.delayed)">
+      <span
+        class="inv-wrap"
+        :class="{ delayed: i.delayed }"
+        :style="{ '--piece': `url(${pieceSrc(i.id)})` }"
+        :title="pieceTitle(i.id, i.delayed)"
+      >
         <span
           v-if="isBroken(pieceSrc(i.id))"
           class="chip inv"

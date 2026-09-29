@@ -114,7 +114,8 @@ the row so the slack the map leaves is above them rather than below */
 /* the art says which card it is, and the title says the rest */
 .under-map .codex-card figcaption { display:none; }
 .under-map > section { flex:0 0 auto; }
-.under-map .decks { flex:0 1 auto; flex-wrap:nowrap; border-top:none; margin-top:0; padding:0; gap:12px; }
+/* the display's cards sit in their box the way the codex's do */
+.under-map .decks { flex:0 1 auto; flex-wrap:nowrap; border-top:none; margin-top:0; padding:8px 8px 8px 0; gap:12px; }
 .under-map .display-group { flex-wrap:nowrap; align-items:flex-start; gap:12px; }
 .under-map .deck { width:88px; gap:4px; }
 .under-map .deck-stack, .under-map .deck-stack > img, .under-map .deck-empty { width:76px; height:120px; }
@@ -125,8 +126,10 @@ mythos cup stops wrapping, since the map beside it asks for a fixed width */
 .side-rail { flex:0 0 clamp(400px, 24vw, 620px); min-width:0; display:flex; flex-direction:column; gap:10px; }
 .side-rail > section:first-child { flex:0 0 auto; }
 .side-rail .rail-players { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
-/* the tabs sit on the player area's own box, so the panel around them adds nothing */
+/* the tabs sit on the player area's own box, so the panel around them adds nothing
+and its content fills it edge to edge */
 .rail-players { background:none; border:none; padding:0; }
+.map-section .rail-players > #investigators { padding:0; }
 .side-rail .rail-players > #investigators { flex:1 1 auto; min-height:0; overflow:auto; }
 .scenario-side { width:100%; cursor:zoom-in; position:relative; }
 .sheet-tokens { position:absolute; left:50%; bottom:-14px; transform:translateX(-50%); display:flex; gap:10px; padding:4px 10px; border-radius:999px; background:color-mix(in srgb, var(--panel) 88%, transparent); box-shadow:0 2px 8px rgba(0,0,0,.35); z-index:2; }

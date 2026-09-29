@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import ActiveSide from '@/game/ActiveSide.vue'
 import BoardMap from '@/game/BoardMap.vue'
 import CodexPanel from '@/game/CodexPanel.vue'
@@ -7,7 +7,7 @@ import MythosPanel from '@/game/MythosPanel.vue'
 import { useGame } from '@/game/context'
 import Decks from '@/game/Decks.vue'
 import LogPanel from '@/game/LogPanel.vue'
-import PlayerTabs from '@/game/PlayerTabs.vue'
+import PlayerAreas from '@/game/PlayerAreas.vue'
 import Questions from '@/game/Questions.vue'
 import ScenarioChoice from '@/game/ScenarioChoice.vue'
 import ScenarioSheet from '@/game/ScenarioSheet.vue'
@@ -106,6 +106,16 @@ onUnmounted(() => {
   document.removeEventListener('transitionend', onTransitionEnd)
   document.body.classList.remove('log-open')
 })
+/* The rail is a column of its own only on a wide screen. Narrower, its two halves
+belong with the columns they answer to: the question under the active card, the
+player areas under the codex, each following its own column rather than waiting
+for the taller one as a grid row would make it. */
+const railQuery = window.matchMedia('(min-width: 1801px)')
+const wideRail = ref(railQuery.matches)
+const onRailQuery = (e: MediaQueryListEvent) => (wideRail.value = e.matches)
+onMounted(() => railQuery.addEventListener('change', onRailQuery))
+onUnmounted(() => railQuery.removeEventListener('change', onRailQuery))
+
 const close = () => {
   if (confirm('Close this game for everyone?')) props.onClose()
 }
@@ -159,6 +169,7 @@ const close = () => {
           <ScenarioSheet />
           <MythosPanel />
           <ActiveSide />
+          <Questions v-if="!wideRail" />
         </div>
         <div class="map-col">
           <BoardMap />
@@ -169,16 +180,11 @@ const close = () => {
               <Decks part="display" />
             </section>
           </div>
+          <PlayerAreas v-if="!wideRail" />
         </div>
-        <div class="side-rail">
+        <div v-if="wideRail" class="side-rail">
           <Questions />
-          <section class="rail-players">
-            <h2>Player areas</h2>
-            <div id="investigators">
-              <PlayerTabs v-if="Object.keys(g.investigators).length" />
-              <em v-else>None yet.</em>
-            </div>
-          </section>
+          <PlayerAreas />
         </div>
       </div>
       <div id="otherSpaces">

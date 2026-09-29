@@ -219,8 +219,13 @@ function applyView() {
     if (col && Number.isFinite(cap)) {
       const gap = parseFloat(getComputedStyle(col).rowGap) || 0
       let taken = 0
-      for (const kid of col.children) if (kid !== vp) taken += (kid as HTMLElement).offsetHeight + gap
-      room = Math.max(240, cap - taken)
+      // only the cards under the map share its band; anything else below flows on
+      for (const kid of col.children)
+        if (kid.classList.contains('under-map')) taken += (kid as HTMLElement).offsetHeight + gap
+      /* the cards give way rather than squeeze the map: on a short screen they
+      simply fall past the band instead of taking most of it */
+      const shared = cap - taken
+      room = shared >= cap * 0.6 ? shared : cap
     }
   }
   /* A board narrower than its column leaves dead space either side, so the column

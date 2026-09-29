@@ -100,7 +100,7 @@ the codex sits in, so a map that shrinks does not leave a hole under it */
 .under-map { display:flex; align-items:flex-start; gap:14px; overflow-x:auto; padding-top:10px; }
 .under-map > section { flex:0 0 auto; }
 .under-map .decks { flex:0 1 auto; flex-wrap:nowrap; border-top:none; margin-top:0; padding:0; gap:12px; }
-.under-map .display-group { flex-wrap:nowrap; align-items:flex-start; gap:12px; padding-left:14px; }
+.under-map .display-group { flex-wrap:nowrap; align-items:flex-start; gap:12px; }
 .under-map .deck { width:88px; gap:4px; }
 .under-map .deck-stack, .under-map .deck-stack > img, .under-map .deck-empty { width:76px; height:120px; }
 .under-map .deck-name { font-size:11px; }
@@ -111,6 +111,8 @@ mythos cup stops wrapping, since the map beside it asks for a fixed width */
 .side-rail { flex:0 0 clamp(400px, 24vw, 620px); min-width:0; display:flex; flex-direction:column; gap:10px; }
 .side-rail > section:first-child { flex:0 0 auto; }
 .side-rail .rail-players { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
+/* the tabs sit on the player area's own box, so the panel around them adds nothing */
+.rail-players { background:none; border:none; padding:0; }
 .side-rail .rail-players > #investigators { flex:1 1 auto; min-height:0; overflow:auto; }
 .scenario-side { width:100%; cursor:zoom-in; position:relative; }
 .sheet-tokens { position:absolute; left:50%; bottom:-14px; transform:translateX(-50%); display:flex; gap:10px; padding:4px 10px; border-radius:999px; background:color-mix(in srgb, var(--panel) 88%, transparent); box-shadow:0 2px 8px rgba(0,0,0,.35); z-index:2; }
@@ -118,17 +120,15 @@ mythos cup stops wrapping, since the map beside it asks for a fixed width */
 .sheet-tokens .bump { animation:sheetBump .9s ease-out; }
 @keyframes sheetBump { 0% { transform:scale(1); } 30% { transform:scale(1.45); filter:drop-shadow(0 0 8px var(--doom)); } 100% { transform:scale(1); } }
 @media (prefers-reduced-motion: reduce) { .sheet-tokens .bump { animation:none; } }
-/* the rail only earns its place beside the map on a wide screen; below that it
-drops under the map and turns on its side, so it stays one band deep */
+/* Without a rail (see wideRail) the two columns carry it between them, so they
+each keep their own flow rather than waiting on the taller of the two. */
 @media (max-width: 1800px) {
-  .map-row { flex-wrap:wrap; }
+  .sheet-col { flex:0 1 clamp(280px, 30vw, 560px); }
   .map-col { flex:1 1 420px !important; }
-  .side-rail { flex:1 1 100%; flex-direction:row; align-items:flex-start; }
-  .side-rail > section:first-child { flex:1 1 480px; }
-  .side-rail .rail-players { flex:2 1 720px; }
 }
 @media (max-width: 1100px) {
-  .side-rail { flex-direction:column; }
+  .map-row { flex-wrap:wrap; }
+  .sheet-col, .map-col { flex:1 1 100%; max-width:none; }
 }
 @media (max-width: 900px) { .map-row { flex-direction:column; } .sheet-col { flex-basis:auto; width:min(340px, 100%); } }
 .board-fit { position:relative; overflow:hidden; }
@@ -361,7 +361,7 @@ body.moving .draggable-inv { cursor:grabbing; }
 .anchor.droppable::before { box-shadow:0 0 0 3px #4caf50, 0 0 14px 4px rgba(76,175,80,.45); background:rgba(76,175,80,.16); }
 .anchor.droppable-paid::before { box-shadow:0 0 0 3px #29b6f6, 0 0 14px 4px rgba(41,182,246,.4); background:rgba(41,182,246,.14); }
 .anchor.drop-hover::before { box-shadow:0 0 0 4px #ffd54f, 0 0 20px 8px rgba(255,213,79,.6); background:rgba(255,213,79,.28); }
-.display-group { display:flex; flex-wrap:wrap; gap:18px; padding-left:18px; margin-left:4px; border-left:1px solid var(--line); }
+.display-group { display:flex; flex-wrap:wrap; gap:18px; }
 .deck-stack.face > img { box-shadow:0 0 0 1px rgba(255,255,255,.35); }
 .deck-stack.face .deck-empty { display:none; font-size:11px; padding:4px; text-align:center; }
 .deck-stack.face.no-art .deck-empty { display:flex; }

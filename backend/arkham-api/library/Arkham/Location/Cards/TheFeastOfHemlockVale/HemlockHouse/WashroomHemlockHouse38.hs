@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Location.CardDefs.TheFeastOfHemlockVale.HemlockHouse qualified as Cards
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Location.Import.Lifted
-import Arkham.Matcher
+import Arkham.Matcher hiding (DuringTurn)
 import Arkham.Token (Token (..))
 
 newtype WashroomHemlockHouse38 = WashroomHemlockHouse38 LocationAttrs
@@ -20,8 +20,8 @@ washroomHemlockHouse38 =
 instance HasAbilities WashroomHemlockHouse38 where
   getAbilities (WashroomHemlockHouse38 a) =
     extendRevealed1 a
-      $ groupLimit PerTurn
-      $ restricted a 1 (Here <> CluesOnThis (atLeast 1) <> exists below)
+      $ playerLimit PerTurn
+      $ restricted a 1 (DuringTurn Anyone <> Here <> CluesOnThis (atLeast 1) <> exists below)
       $ FastAbility Free
    where
     below = case a.position of

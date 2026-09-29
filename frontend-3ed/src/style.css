@@ -304,23 +304,26 @@ whatever art it happens to sit on */
 .dbg-group { border-top:1px solid var(--line); margin-top:10px; padding-top:8px; }
 .dbg-group > h3 { margin:0 0 4px; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
 #debug button { font-size:12px; padding:4px 8px; }
-/* The mythos panel is two drawers behind a pair of tabs turned on their side, like
-the panel's own label: picking one slides its row of tokens into view. */
-.mythos { display:flex; align-items:stretch; gap:6px; }
-.mythos-tabs { display:flex; gap:3px; flex:0 0 auto; }
-.mythos-tab { flex:0 0 auto; margin:0; padding:6px 3px; font-size:10px; letter-spacing:.06em; text-transform:uppercase;
-  writing-mode:vertical-rl; transform:rotate(180deg); border:none; border-radius:5px; cursor:pointer;
-  background:color-mix(in srgb, var(--ink) 6%, transparent); color:var(--muted); transition:background .14s, color .14s; }
-.mythos-tab:hover { color:var(--ink); background:color-mix(in srgb, var(--ink) 11%, transparent); }
+/* The mythos panel is two drawers on vertical handles. What was drawn lies open;
+the cup is shut against the right edge with only its handle showing. Taking the
+cup's handle slides it across the panel, and the other handle sends it back. */
+/* its children are drawers, which stand outside the flow, so the panel itself has
+to ask for the width */
+.map-section section > .mythos { flex:1 1 auto; }
+.mythos { --handle:23px; position:relative; height:52px; overflow:hidden; }
+.mythos-drawer { position:absolute; inset:0; display:flex; gap:6px; background:var(--panel); }
+.mythos-drawer.sliding { transform:translateX(calc(100% - var(--handle))); transition:transform .32s cubic-bezier(.4,.1,.2,1); }
+.mythos-drawer.sliding.open { transform:translateX(calc(var(--handle) + 6px)); }
+.mythos-tab { flex:0 0 auto; width:var(--handle); margin:0; padding:6px 3px; font-size:10px; letter-spacing:.06em;
+  text-transform:uppercase; writing-mode:vertical-rl; transform:rotate(180deg); border:none; border-radius:5px;
+  cursor:pointer; background:color-mix(in srgb, var(--ink) 8%, transparent); color:var(--muted);
+  transition:background .14s, color .14s; }
+.mythos-tab:hover { color:var(--ink); background:color-mix(in srgb, var(--ink) 14%, transparent); }
 .mythos-tab b { font-weight:700; color:var(--ink); }
-.mythos-tab.on { background:color-mix(in srgb, var(--accent) 26%, transparent); color:var(--ink);
-  box-shadow:inset 2px 0 0 var(--accent); }
-.mythos-drawer { flex:1 1 auto; min-width:0; height:52px; overflow:hidden; }
-.mythos-track { display:flex; flex-direction:column; transition:transform .3s cubic-bezier(.4,.1,.2,1); }
-.mythos-track.show-cup { transform:translateY(-52px); }
-.mythos-track > .cup { height:52px; margin:0; flex:0 0 52px; flex-wrap:wrap; align-content:center; align-items:center; overflow:hidden; }
-.mythos-track .waiting { font-size:12px; }
-@media (prefers-reduced-motion: reduce) { .mythos-track { transition:none; } }
+.mythos-tab.on { background:color-mix(in srgb, var(--accent) 26%, transparent); color:var(--ink); }
+.mythos-drawer > .cup { flex:1 1 auto; min-width:0; margin:0; flex-wrap:wrap; align-content:center; align-items:center; overflow:hidden; }
+.mythos .waiting { font-size:12px; }
+@media (prefers-reduced-motion: reduce) { .mythos-drawer.sliding { transition:none; } }
 .sheet-col .cup { gap:2px; }
 .mythos .cup { gap:2px; }
 .inv-tok { width:34px; height:34px; border-radius:50%; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.8); }

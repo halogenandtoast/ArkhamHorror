@@ -191,6 +191,14 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     return selectedTab.value && invs[selectedTab.value] ? selectedTab.value : Object.keys(invs)[0]
   }
 
+  /* Investigators stand on the map either as the round marker or as the whole
+  standee, which is the same art the player area shows. */
+  const standeePieces = ref(readPref('ah3e-standees') === '1')
+  const toggleStandees = (on = !standeePieces.value) => {
+    standeePieces.value = on
+    writePref('ah3e-standees', on ? '1' : '0')
+  }
+
   const logOpen = ref(readPref('ah3e-log-open') === '1')
   const logSeen = ref(0)
   const toggleLog = (open = !logOpen.value) => {
@@ -491,6 +499,8 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     debugAllowed,
     dbgOn,
     dbgIid,
+    standeePieces,
+    toggleStandees,
     logOpen,
     logSeen,
     toggleLog,

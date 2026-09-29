@@ -379,6 +379,7 @@ function keydown(e: KeyboardEvent) {
   else if (e.key === '-' || e.key === '_') zoomBy(1 / 1.4)
   else if (e.key === '0') resetView()
   else if (e.key === 't' || e.key === 'T') toggleTokens()
+  else if (e.key === 'p' || e.key === 'P') ctx.toggleStandees()
 }
 const refit = () => applyView()
 
@@ -562,6 +563,18 @@ onUnmounted(() => {
           <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
           <circle cx="12" cy="12" r="3" />
           <path class="eye-off" d="M4 4l16 16" :style="{ display: hideTokens ? '' : 'none' }" />
+        </svg>
+      </button>
+      <button
+        id="piecesToggle"
+        :title="ctx.standeePieces.value ? 'Show investigators as round markers (P)' : 'Show investigators as standees (P)'"
+        :aria-label="ctx.standeePieces.value ? 'Show round markers' : 'Show standees'"
+        :aria-pressed="ctx.standeePieces.value"
+        @click="ctx.toggleStandees()"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <template v-if="ctx.standeePieces.value"><circle cx="12" cy="12" r="7" /></template>
+          <template v-else><path d="M7 20V9a5 5 0 0 1 10 0v11z" /><path d="M6 20h12" /></template>
         </svg>
       </button>
       <button id="mapFullToggle" title="Full screen map" aria-label="Full screen map" @click="toggleMapFull()">⛶</button>

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { cardImg, img, isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
+import ExamineIcon from '@/game/ExamineIcon.vue'
 import MythosTok from '@/game/MythosTok.vue'
 import { zoom, zoomFlip } from '@/game/overlays'
 import { show } from '@/game/util'
@@ -79,7 +80,7 @@ const inv = computed(() => {
           title="Enlarge"
           @click.stop="zoom(c.src)"
           @keydown.enter.stop.prevent="zoom(c.src)"
-          >&#x2315;</span
+          ><ExamineIcon /></span
         ></span
       ></span
     ><span class="label-cards-text">{{ label.contents[0] }}</span></template
@@ -94,7 +95,7 @@ const inv = computed(() => {
           title="Enlarge, then click to flip"
           @click.stop="zoomFlip(inv.front, inv.back, 1126 / 900)"
           @keydown.enter.stop.prevent="zoomFlip(inv.front, inv.back, 1126 / 900)"
-          >&#x2315;</span
+          ><ExamineIcon /></span
         ></span
       ></span
     ><span class="label-cards-text">{{ ctx.invName(inv.iid) }}</span></template

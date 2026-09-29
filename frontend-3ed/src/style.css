@@ -25,8 +25,9 @@ section h2 { font-size:13px; text-transform:uppercase; letter-spacing:.04em; col
 .label-card { position:relative; display:block; }
 .label-card img { display:block; width:120px; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.4); }
 .label-sheet img { width:260px; }
-.label-zoom { position:absolute; right:4px; top:4px; width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:rgba(0,0,0,.65); color:#fff; font-size:15px; cursor:zoom-in; }
-.label-zoom:hover { background:rgba(0,0,0,.85); }
+.label-zoom { position:absolute; right:4px; top:4px; width:26px; height:26px; border-radius:8px; display:grid; place-items:center; background:rgba(0,0,0,.55); color:#fff; cursor:zoom-in; backdrop-filter:blur(2px); box-shadow:0 1px 4px rgba(0,0,0,.5); transition:background .12s, transform .12s; }
+.label-zoom:hover { background:rgba(0,0,0,.85); transform:scale(1.08); }
+.examine-icon { width:15px; height:15px; display:block; }
 .test-box { margin:10px 0 0; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--accent) 6%, transparent); display:grid; gap:10px; }
 .test-head { display:flex; align-items:center; gap:10px; }
 .test-head > div:nth-child(2) { flex:1; }
@@ -142,6 +143,8 @@ body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-colo
 #debug button { font-size:12px; padding:4px 8px; }
 .cup > span:first-child { min-width:110px; color:var(--muted); }
 .inv-tok { width:34px; height:34px; border-radius:50%; box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.8); }
+/* the whole standee stands on the space instead of the round marker */
+.inv-piece { width:34px; height:50px; object-fit:contain; filter:drop-shadow(0 2px 3px rgba(0,0,0,.85)); align-self:flex-end; }
 .player-area { display:flex; flex-wrap:wrap; gap:12px; padding:10px; border:1px solid var(--line); border-radius:8px; margin-bottom:10px; }
 .player-area.turn { box-shadow:0 0 0 2px var(--accent); }
 .player-area.out .sheet, .player-area.out .standee { filter:grayscale(1) brightness(.7); }
@@ -232,6 +235,7 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); }
 .mon-card.hl > img { outline:3px solid #ffd54f; outline-offset:2px; }
 .anchor.hl { box-shadow:0 0 0 3px #ffd54f, 0 0 18px 6px rgba(255,213,79,.45); background:rgba(255,213,79,.14); border-radius:14px; }
 .inv-tok.hl { outline:3px solid #ffd54f; outline-offset:2px; }
+.inv-piece.hl { filter:drop-shadow(0 0 3px #ffd54f) drop-shadow(0 0 6px #ffd54f); }
 .codex-card.hl, .asset.hl { outline:3px solid #ffd54f; outline-offset:2px; border-radius:8px; }
 #scenarioSheet.hl { outline:3px solid #ffd54f; outline-offset:3px; border-radius:10px; }
 .reckoning-pending { outline:2px dashed rgba(255,213,79,.85); outline-offset:3px; border-radius:8px; }

@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { img, isBroken, markBroken } from '@/assets'
 import ChoiceLabel from '@/game/ChoiceLabel.vue'
 import { useGame } from '@/game/context'
+import ExamineIcon from '@/game/ExamineIcon.vue'
 import { zoomFlip } from '@/game/overlays'
 import { expName } from '@/game/util'
 
@@ -78,7 +79,7 @@ const pick = (i: number) => {
             title="Enlarge, then click to flip"
             @click="zoomFlip(story(sc.code), setup(sc.code))"
             @keydown.enter.prevent="zoomFlip(story(sc.code), setup(sc.code))"
-            >&#x2315;</span
+            ><ExamineIcon /></span
           >
         </div>
       </div>

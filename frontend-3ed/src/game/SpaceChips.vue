@@ -14,7 +14,9 @@ const invs = computed(() => Object.values(ctx.game.value!.investigators).filter(
 const monsters = computed(() =>
   Object.values(ctx.game.value!.monsters).filter((m) => m.space === props.sid && !ctx.inPlayerArea(m)),
 )
-const tokenSrc = (iid: string) => img(`investigators/${iid}/token.webp`)
+// the round marker, or the whole standee when that is what they asked for
+const pieceSrc = (iid: string) =>
+  img(`investigators/${iid}/${ctx.standeePieces.value ? 'standee' : 'token'}.webp`)
 // the one walking may be dragged along their route; in debug, anyone may be dragged
 // anywhere, which puts them down directly
 const draggable = (iid: string) => ctx.moveDrag.value?.iid === iid || ctx.dbgOn.value
@@ -44,7 +46,7 @@ function dragEnd() {
     </template>
     <template v-for="i in invs" :key="`inv-${i.id}`">
       <span
-        v-if="isBroken(tokenSrc(i.id))"
+        v-if="isBroken(pieceSrc(i.id))"
         class="chip inv"
         :title="ctx.invName(i.id)"
         :data-inv="cssName(i.id)"
@@ -58,14 +60,17 @@ function dragEnd() {
         v-else
         :data-inv="cssName(i.id)"
         :style="{ viewTransitionName: `inv-${cssName(i.id)}` }"
-        class="inv-tok"
-        :class="[ctx.marks(['inv', cssName(i.id)]), { 'draggable-inv': draggable(i.id) }]"
-        :src="tokenSrc(i.id)"
+        :class="[
+          ctx.standeePieces.value ? 'inv-piece' : 'inv-tok',
+          ctx.marks(['inv', cssName(i.id)]),
+          { 'draggable-inv': draggable(i.id) },
+        ]"
+        :src="pieceSrc(i.id)"
         :title="ctx.invName(i.id)"
         :draggable="draggable(i.id) ? 'true' : undefined"
         @dragstart="dragStart($event, i.id)"
         @dragend="dragEnd"
-        @error="markBroken(tokenSrc(i.id))"
+        @error="markBroken(pieceSrc(i.id))"
       />
     </template>
     <MonsterCard v-for="m in monsters" :key="`mon-${m.card}`" :monster="m" />

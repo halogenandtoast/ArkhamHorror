@@ -35,6 +35,7 @@ import Arkham.Deck qualified as Deck
 import Arkham.Discover
 import Arkham.Enemy.Types
 import Arkham.Enemy.Types qualified as Field
+import Arkham.EnemyLocation.Types (EnemyLocationAttrs, enemyLocationAsEnemyId)
 import Arkham.Entities qualified as Entities
 import Arkham.Exhaust
 import Arkham.Fight
@@ -149,6 +150,27 @@ setChaosTokens = run . SetChaosTokens
 
 spawnAt :: Enemy -> Location -> TestAppT ()
 spawnAt e l = run $ EnemySpawnAtLocationMatching Nothing (Matcher.LocationWithId $ toId l) (toId e)
+
+{- | Put an enemy-location into play. Enemy-locations aren't 'Location' entities, so
+they need their own helper; 'PlaceEnemyLocation' is the path 'Arkham.Game.Runner' uses.
+-}
+placeEnemyLocation :: CardDef -> TestAppT LocationId
+placeEnemyLocation def = do
+  card <- genCard def
+  lid <- getRandom
+  run $ PlaceEnemyLocation lid card
+  pure lid
+
+-- | The coerced 'EnemyId' the fight and evade subsystems target an enemy-location by.
+asEnemyLocationEnemy :: LocationId -> EnemyId
+asEnemyLocationEnemy = enemyLocationAsEnemyId . EnemyLocationId
+
+enemyLocationAttrs :: HasCallStack => LocationId -> TestAppT EnemyLocationAttrs
+enemyLocationAttrs lid = do
+  els <- view (entitiesL . Entities.enemyLocationsL) <$> getGame
+  case lookup lid els of
+    Just el -> pure (toAttrs el)
+    Nothing -> error $ "expected an enemy-location at " <> show lid
 
 class CanMoveTo a where
   moveTo :: Investigator -> a -> TestAppT ()

@@ -2,12 +2,14 @@
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { img, isBroken, markBroken } from '@/assets'
 import AssetCard from '@/game/AssetCard.vue'
+import CardText from '@/game/CardText.vue'
+import Icon from '@/game/Icon.vue'
 import { useGame } from '@/game/context'
 import DbgNum from '@/game/DbgNum.vue'
 import MonsterCard from '@/game/MonsterCard.vue'
 import { zoomFlip } from '@/game/overlays'
 import Tok from '@/game/Tok.vue'
-import { cssName, DBG_SKILLS, FOCUS, SKILL_ROWS } from '@/game/util'
+import { cssName, DBG_SKILLS, FOCUS, SKILL_ICON, SKILL_ROWS } from '@/game/util'
 import type { Investigator } from '@/types'
 
 const props = defineProps<{ inv: Investigator }>()
@@ -70,7 +72,11 @@ const engaged = computed(() =>
     (m) => ctx.inPlayerArea(m) && ((m.state.contents ?? []) as string[]).includes(i.value.id),
   ),
 )
-const skillEntries = computed(() => Object.entries(def.value?.skills ?? {}))
+// skills arrive as [[skill, n], ...] the way focus does, not as an object
+const skillEntries = computed<[string, number][]>(() => {
+  const sk = def.value?.skills
+  return Array.isArray(sk) ? (sk as [string, number][]) : Object.entries(sk ?? {})
+})
 
 function setFocus(sk: string, e: Event) {
   void ctx.debugAction('DebugSetFocus', [i.value.id, sk, +(e.target as HTMLInputElement).value])
@@ -97,9 +103,11 @@ function gainCondition(name: string) {
         <b>{{ ctx.invName(i.id) }}</b>
         <template v-if="def">
           <i>{{ def.occupation }}</i>
-          <p>{{ def.abilityText }}</p>
+          <p><CardText :text="def.abilityText" /></p>
           <p>Health {{ def.health }} · Sanity {{ def.sanity }} · Focus limit {{ def.focusLimit ?? '—' }}</p>
-          <p>{{ skillEntries.map(([k, v]) => `${k} ${v}`).join(' · ') }}</p>
+          <p class="sheet-skills">
+            <span v-for="e in skillEntries" :key="e[0]"><Icon :name="SKILL_ICON[e[0]] ?? 'lore'" :title="e[0]" /> {{ e[1] }}</span>
+          </p>
         </template>
       </div>
       <span v-for="[k, v] in focus" :key="k" class="sheet-focus" :style="{ top: `${(SKILL_ROWS[k] ?? 0) * 100}%` }"

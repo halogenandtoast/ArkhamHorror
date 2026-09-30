@@ -338,10 +338,6 @@ every row of cards divides the width it has rather than running past the edge. *
 .board { position:absolute; top:0; left:0; margin:0; transform-origin:top left; will-change:transform; }
 .board > img { position:absolute; pointer-events:none; user-select:none; }
 .anchor { position:absolute; transform:translate(-50%,-50%) rotate(var(--map-rot, 0deg)); display:flex; flex-wrap:wrap; justify-content:center; gap:3px; max-width:120px; min-width:26px; min-height:26px; border-radius:14px; padding:2px; }
-/* everything standing on the board wears a soft light edge, so it reads against
-whatever art it happens to sit on */
-.map-wrap .tok img, .map-wrap .mon-card > img, .map-wrap .inv-piece {
-  filter:var(--rim) drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
 .map-wrap .inv-tok { box-shadow:0 0 0 1.5px rgba(255,255,255,.55), 0 2px 6px rgba(0,0,0,.8); }
 .map-wrap .mon-card > img { box-shadow:0 0 0 1px rgba(255,255,255,.28), 0 1px 3px rgba(0,0,0,.6); }
 .anchor.selectable { cursor:pointer; }
@@ -469,6 +465,8 @@ so the panel needs no border of its own */
 .sheet .sheet-text { display:none; }
 .sheet.no-art .sheet-text { display:block; padding:10px; border:1px dashed var(--line); border-radius:6px; }
 .sheet-text i { display:block; color:var(--muted); } .sheet-text p { margin:6px 0 0; }
+.sheet-skills { display:flex; flex-wrap:wrap; gap:10px; }
+.sheet-skills .ico { font-size:15px; }
 .sheet-focus { position:absolute; left:37%; transform:translate(-50%,-50%); }
 .sheet-lead { position:absolute; right:6px; top:6px; display:inline-flex; filter:drop-shadow(0 2px 4px rgba(0,0,0,.6)); }
 /* the tokens ride on the card, bottom right, clear of the skills down its left */

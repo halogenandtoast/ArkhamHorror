@@ -50,6 +50,46 @@ export const ICON: Record<string, string> = {
   move: '\uf4c7',
   'spread-terror': '\uf4c8',
 }
+/* Card copy names a skill in a handful of set ways -- "test lore", "(will)",
+"lore -1", "+2 strength", "an observation test", "in place of influence", "may
+focus will". Only those are the game's skill; everywhere else "will" is a verb
+and "influence" is a noun, so the words are left alone. */
+const SKILL_WORDS = 'lore|will|strength|observation|influence'
+const SKILL_SENSE = new RegExp(
+  [
+    `\\b(?:tests?|testing|tested|focus|focuses|focused|focusing)\\s+(?:a\\s+|an\\s+|one\\s+)?(${SKILL_WORDS})\\b`,
+    `\\bin place of\\s+(${SKILL_WORDS})\\b`,
+    `\\(\\s*(${SKILL_WORDS})\\s*\\)`,
+    `(?:[+\\-\u2212]\\d+)\\s*(${SKILL_WORDS})\\b`,
+    `\\b(${SKILL_WORDS})\\s*(?=[+\\-\u2212]\\d)`,
+    `\\b(${SKILL_WORDS})\\s+tests?\\b`,
+    `\\b(${SKILL_WORDS})\\s+modifier\\b`,
+    `\\bthan\\s+(${SKILL_WORDS})\\b`,
+    // a skill listed beside another is one too: "a will or observation test"
+    `\\b(${SKILL_WORDS})\\b(?=\\s*(?:,|/|\\bor\\b|\\band\\b)\\s*(?:${SKILL_WORDS})\\b)`,
+    `(?<=\\b(?:${SKILL_WORDS})\\s{0,3}(?:,|/|\\bor\\b|\\band\\b)\\s{0,3})(${SKILL_WORDS})\\b`,
+  ].join('|'),
+  'gi',
+)
+
+export type TextPart = { text: string } | { icon: string; word: string }
+/** Card copy split into its words and the skill icons that stand in for them. */
+export function skillParts(copy: string): TextPart[] {
+  const parts: TextPart[] = []
+  let at = 0
+  for (const m of copy.matchAll(SKILL_SENSE)) {
+    const word = m.slice(1).find(Boolean)
+    if (!word || m.index === undefined) continue
+    // the match carries its context ("test lore"); only the skill itself becomes the icon
+    const start = m.index + m[0].toLowerCase().lastIndexOf(word.toLowerCase())
+    if (start > at) parts.push({ text: copy.slice(at, start) })
+    parts.push({ icon: word.toLowerCase(), word })
+    at = start + word.length
+  }
+  if (at < copy.length) parts.push({ text: copy.slice(at) })
+  return parts
+}
+
 // a skill's icon, by the name the engine uses
 export const SKILL_ICON: Record<string, string> = {
   Lore: 'lore',

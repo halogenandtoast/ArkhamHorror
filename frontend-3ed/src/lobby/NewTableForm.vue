@@ -92,7 +92,6 @@ async function submit() {
   <div id="setup" class="ng-page">
     <header class="ng-header">
       <h2>New game</h2>
-      <p class="ng-lede">Pick the scenario you want to play, then say who is at the table.</p>
     </header>
     <form class="ng" @submit.prevent="submit">
       <div class="ng-scenarios">

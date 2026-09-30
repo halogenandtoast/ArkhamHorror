@@ -705,7 +705,6 @@ body.log-open { padding-right:min(360px, 90vw); }
 /* undo the page header's bar styling: this is just the title above the cards */
 .ng-header { display:block; padding:0; border:0; background:none; position:static; margin:0 0 18px; }
 .ng-header h2 { margin:0; font-size:28px; letter-spacing:-.01em; }
-.ng-lede { margin:6px 0 0; color:var(--muted); }
 .ng { display:grid; gap:16px; }
 /* on the new game page the scenarios take the width and the setup rides beside them */
 .ng-page .ng { grid-template-columns:minmax(0, 1fr) 320px; align-items:start; }

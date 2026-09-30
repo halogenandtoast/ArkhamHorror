@@ -43,6 +43,18 @@ const hasChoices = (iid: string) => {
   const pid = ctx.playerOfInv(iid)
   return pid !== undefined && g.value.questions[pid] !== undefined
 }
+
+/* Holding every seat yourself there is nobody else to switch for, so the tab
+follows whoever is up -- the one being asked, else whose turn it is -- rather
+than being clicked back and forth all game. A tab picked by hand stays put
+until the game moves on to someone else. */
+const soloMultiHanded = computed(
+  () => sorted.value.length > 1 && sorted.value.every((i) => ctx.myInvestigators.value.includes(i.id)),
+)
+const acting = computed(() => sorted.value.find((i) => hasChoices(i.id))?.id ?? g.value.turn ?? null)
+watch([soloMultiHanded, acting], ([solo, who]) => {
+  if (solo && who && sorted.value.some((i) => i.id === who)) ctx.selectedTab.value = who
+})
 const tabClasses = (iid: string, status: string) => {
   const role = ctx.catalog.investigatorDefs?.[iid]?.roles?.[0]
   const pid = ctx.playerOfInv(iid)

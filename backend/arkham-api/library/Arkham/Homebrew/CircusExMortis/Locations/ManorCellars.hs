@@ -19,7 +19,7 @@ instance HasModifiersFor ManorCellars where
   getModifiersFor (ManorCellars a) =
     modifySelectWhen
       a
-      (a.clues > 0)
+      (a.revealed && a.clues > 0)
       (InvestigatorAt (be a))
       [CannotMoveTo (locationIs Cards.savageAltar)]
 

@@ -21,7 +21,9 @@ instance HasAbilities BrashLothario where
   getAbilities (BrashLothario a) =
     extend
       a
-      [ restricted a 1 (exists $ InvestigatorAt (locationWithEnemy a)) $ forced $ RoundEnds #when
+      [ restricted a 1 (exists $ InvestigatorAt (locationWithEnemy a) <> InvestigatorWithDiscardableCard)
+          $ forced
+          $ RoundEnds #when
       , skillTestAbility $ restricted a 2 OnSameLocation parleyAction_
       ]
 

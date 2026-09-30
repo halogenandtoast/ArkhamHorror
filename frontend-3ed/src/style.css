@@ -184,9 +184,12 @@ need goes to the map */
 .side-rail { flex:0 0 clamp(380px, 20vw, 500px); min-width:0; display:flex; flex-direction:column; gap:10px; }
 /* the question panel is only as tall as the question */
 .side-rail > section:first-child { flex:0 0 auto; }
-.side-rail > section:first-child > #questions { display:flex; flex-direction:column; gap:10px; }
 /* the questions take the panel's width rather than their own content's, so the
-   test box under them spans it too */
+   test box under them spans it too, and they are spaced by the column's gap
+   rather than by margins that hang off the last one */
+#questions { display:flex; flex-direction:column; gap:10px; }
+#questions > .q, #questions .q-row > .q { margin-bottom:0; }
+#questions > #error:empty { display:none; }
 .questions-panel > #questions { flex:1 1 auto; }
 /* the player panel is as tall as the player area in it, not as tall as the rail */
 .side-rail .rail-players { flex:0 0 auto; display:flex; flex-direction:column; }

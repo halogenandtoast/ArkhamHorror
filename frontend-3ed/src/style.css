@@ -723,6 +723,8 @@ body.log-open { padding-right:min(360px, 90vw); }
 .ng-config .ng-tiles { grid-template-columns:minmax(0, 1fr); }
 .ng-config .ng-tiles label { display:grid; grid-template-columns:72px minmax(0, 1fr); align-items:center; }
 .ng-config .ng-tiles label img { height:100%; aspect-ratio:auto; }
+/* the covers and sheets are buttons, so dragging one should not peel off a ghost image */
+.ng-box img, .ng-tiles label img, .sc-pick img { -webkit-user-drag:none; user-select:none; }
 /* the boxes as a row of covers; the open one shows its scenarios underneath */
 .ng-boxes { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-bottom:14px; }
 .ng-box { display:grid; gap:0; margin:0; padding:0; text-align:left; overflow:hidden; border-radius:10px;

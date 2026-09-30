@@ -316,7 +316,7 @@ whatever art it happens to sit on */
 .map-wrap .tok img, .map-wrap .mon-card > img, .map-wrap .inv-piece {
   filter:var(--rim) drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
 .map-wrap .inv-tok { box-shadow:0 0 0 1.5px rgba(255,255,255,.55), 0 2px 6px rgba(0,0,0,.8); }
-.map-wrap .mon-card > img { box-shadow:0 0 0 1px rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.6); }
+.map-wrap .mon-card > img { box-shadow:0 0 0 1px rgba(255,255,255,.28), 0 1px 3px rgba(0,0,0,.6); }
 .anchor.selectable { cursor:pointer; }
 /* the pick ring is a fixed small circle on the space's point, above its tokens and monster
    cards, so a click inside it picks the space instead of enlarging a card */
@@ -546,7 +546,11 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); opacity:.6; }
 .space-outlines.reveal { animation:unstableIn .7s ease-out; }
 @keyframes unstableIn { from { opacity:0; } 40% { opacity:1; filter:brightness(1.8); } to { opacity:1; } }
 @media (prefers-reduced-motion: reduce) { .space-outlines.reveal { animation:none; } }
-.mon-card.hl > img { outline:3px solid #ffd54f; outline-offset:2px; }
+.mon-card.hl > img { outline:2px solid #ffd54f; outline-offset:1px; }
+/* the monster the open question is about keeps its ring until it is answered */
+.mon-card.acting > img { outline:2px solid var(--accent); outline-offset:1px;
+  box-shadow:0 0 10px color-mix(in srgb, var(--accent) 70%, transparent); }
+.mon-card.acting { z-index:15; }
 .anchor.hl { box-shadow:0 0 0 3px #ffd54f, 0 0 18px 6px rgba(255,213,79,.45); background:rgba(255,213,79,.14); border-radius:14px; }
 .inv-tok.hl { outline:3px solid #ffd54f; outline-offset:2px; }
 .inv-piece.hl { filter:drop-shadow(0 0 3px #ffd54f) drop-shadow(0 0 6px #ffd54f); }
@@ -586,7 +590,7 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); opacity:.6; }
 .dbg-take { position:absolute; left:50%; bottom:6px; transform:translateX(-50%); z-index:3; margin:0; padding:4px 12px;
   border-radius:999px; font-size:11px; font-weight:700; background:var(--accent); color:#fff; border-color:var(--accent); }
 .mon-card > img { width:38px; height:60px; object-fit:cover; border-radius:3px; box-shadow:0 1px 3px rgba(0,0,0,.6); cursor:zoom-in; }
-.mon-card.engaged > img { outline:2px solid var(--doom); outline-offset:1px; }
+.mon-card.engaged > img { outline:1px solid var(--doom); outline-offset:1px; }
 .mon-card > .chip { display:none; }
 .pa-engaged { margin:6px 0 10px; padding:8px 10px; border-radius:10px; border:1px solid color-mix(in srgb, var(--doom) 45%, transparent); background:color-mix(in srgb, var(--doom) 8%, transparent); }
 .pa-engaged-label { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--doom); margin-bottom:6px; }

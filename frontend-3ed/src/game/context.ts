@@ -162,6 +162,30 @@ export function createGameContext(tableId: string, catalog: Catalog) {
       }
     return out
   })
+  /* The monster an open question is about -- the one being moved, activated or
+  attacking -- so the board keeps saying which one you are answering for. */
+  const MONSTER_MESSAGES = new Set([
+    'MoveMonsterTo',
+    'MonsterStep',
+    'MonsterEngagesIn',
+    'ActivateMonster',
+    'DoActivateMonster',
+    'MonsterAttacks',
+    'ExhaustMonster',
+    'ReadyMonster',
+    'DefeatMonster',
+  ])
+  const acting = computed(() => {
+    const out = new Set<string>()
+    for (const q of Object.values(game.value?.questions ?? {}))
+      for (const c of q.choices ?? [])
+        for (const m of c.messages ?? []) {
+          if (!MONSTER_MESSAGES.has(m.tag)) continue
+          const cid = Array.isArray(m.contents) ? m.contents[0] : m.contents
+          if (typeof cid === 'number') out.add(`mon:${cid}`)
+        }
+    return out
+  })
   // class bindings for a piece carrying these data-* identities
   type Mark = [string, string | number | null | undefined]
   const marks = (...pairs: Mark[]) => {
@@ -169,6 +193,7 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     return {
       hl: highlighted.value !== null && keys.includes(highlighted.value),
       'reckoning-pending': keys.some((k) => reckonings.value.has(k)),
+      acting: keys.some((k) => acting.value.has(k)),
     }
   }
 

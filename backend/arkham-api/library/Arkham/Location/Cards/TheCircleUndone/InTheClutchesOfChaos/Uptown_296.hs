@@ -1,7 +1,6 @@
 module Arkham.Location.Cards.TheCircleUndone.InTheClutchesOfChaos.Uptown_296 (uptown_296) where
 
 import Arkham.Ability
-import Arkham.Card
 import Arkham.GameValue
 import Arkham.Location.BreachStatus hiding (removeBreaches)
 import Arkham.Location.CardDefs.TheCircleUndone.InTheClutchesOfChaos qualified as Cards
@@ -25,7 +24,7 @@ instance HasAbilities Uptown_296 where
 instance RunMessage Uptown_296 where
   runMessage msg l@(Uptown_296 attrs) = runQueueT $ case msg of
     UseCardAbility _ (isSource attrs -> True) 1 _ (discardedCards -> (card : _)) -> do
-      let icons = count (== #agility) $ cdSkills $ toCardDef card
+      let icons = count (`elem` [#agility, #wild]) card.skills
           n = 1 + min (maybe 0 countBreaches $ locationBreaches attrs) icons
       act <- selectJust AnyAct
       removeBreaches attrs n

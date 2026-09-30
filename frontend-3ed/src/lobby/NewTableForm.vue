@@ -18,21 +18,22 @@ const choice = reactive({
   scenario: '',
   extras: [] as string[],
   mode: 'StandardMode' as GameMode,
-  debug: false,
 })
 const error = ref('')
 const busy = ref(false)
 
-// the scenarios box by box, in the order the catalog lists them; a box with nothing
-// implemented yet is folded away rather than filling the page
+// the scenarios box by box, in the order the catalog lists them
 const groups = computed(() =>
   props.catalog.expansions
     .map((e) => {
       const scenarios = props.catalog.scenarios.filter((sc) => sc.expansion === e)
-      return { exp: e, scenarios, playable: scenarios.some((sc) => sc.playable) }
+      return { exp: e, scenarios, playable: scenarios.filter((sc) => sc.playable).length }
     })
     .filter((g) => g.scenarios.length),
 )
+// one box is open at a time: its cover is the toggle, its scenarios sit under the row
+const openBox = ref(groups.value.find((g) => g.playable)?.exp ?? groups.value[0]?.exp ?? '')
+const shown = computed(() => groups.value.find((g) => g.exp === openBox.value)?.scenarios ?? [])
 const picked = computed<ScenarioInfo | null>(
   () => props.catalog.scenarios.find((sc) => sc.code === choice.scenario) ?? null,
 )
@@ -76,7 +77,6 @@ async function submit() {
       seats: choice.seats,
       expansions: expansions.value,
       mode: choice.mode,
-      debug: choice.debug,
       scenario: choice.scenario,
     })
     void router.push(`/tables/${t.id}`)
@@ -96,15 +96,30 @@ async function submit() {
     </header>
     <form class="ng" @submit.prevent="submit">
       <div class="ng-scenarios">
-        <section v-for="g in groups" :key="g.exp" class="ng-card" :class="{ 'ng-later': !g.playable }">
-          <!-- a box with nothing implemented yet opens only if you ask to see it -->
-          <component :is="g.playable ? 'div' : 'details'" class="ng-group">
-            <component :is="g.playable ? 'div' : 'summary'" class="ng-title">
-              {{ expName(g.exp) }}<template v-if="!g.playable"> · not implemented yet</template>
-            </component>
-            <div class="sc-grid">
+        <section class="ng-card">
+          <div class="ng-title">Scenario</div>
+          <!-- the covers are the toggle: whichever box is open shows its scenarios below -->
+          <div class="ng-boxes">
+            <button
+              v-for="g in groups"
+              :key="g.exp"
+              type="button"
+              class="ng-box"
+              :class="{ on: openBox === g.exp, 'no-art': isBroken(cover(g.exp)), later: !g.playable }"
+              @click="openBox = g.exp"
+            >
+              <img v-if="!isBroken(cover(g.exp))" :src="cover(g.exp)" alt="" @error="markBroken(cover(g.exp))" />
+              <span class="ng-box-text"
+                ><b>{{ expName(g.exp) }}</b
+                ><small>{{
+                  g.playable ? `${g.playable} scenario${g.playable === 1 ? '' : 's'}` : 'not implemented yet'
+                }}</small></span
+              >
+            </button>
+          </div>
+          <div class="sc-grid">
             <!-- a scenario is picked by its sheet; the corner icon opens it flippable between story and setup sides -->
-            <div v-for="sc in g.scenarios" :key="sc.code" class="sc-tile" :class="{ waiting: !sc.playable }">
+            <div v-for="sc in shown" :key="sc.code" class="sc-tile" :class="{ waiting: !sc.playable }">
               <button
                 type="button"
                 class="sc-pick"
@@ -115,7 +130,7 @@ async function submit() {
               >
                 <img v-if="!isBroken(story(sc.code))" :src="story(sc.code)" alt="" @error="markBroken(story(sc.code))" />
                 <span class="sc-name">{{ sc.name }}</span>
-                <span class="sc-exp">{{ sc.playable ? expName(sc.expansion) : 'Not implemented yet' }}</span>
+                <span v-if="!sc.playable" class="sc-exp">Not implemented yet</span>
               </button>
               <span
                 class="label-zoom"
@@ -126,9 +141,8 @@ async function submit() {
                 @keydown.enter.prevent="zoomFlip(story(sc.code), setup(sc.code))"
                 ><ExamineIcon
               /></span>
-              </div>
             </div>
-          </component>
+          </div>
         </section>
       </div>
 
@@ -185,17 +199,6 @@ async function submit() {
             </template>
           </div>
           <p id="ngModeNote" class="ng-note">{{ modeNote }}</p>
-        </div>
-
-        <div class="ng-card">
-          <div class="ng-title">Debug controls</div>
-          <div class="ng-seg" style="--n: 2">
-            <input id="ngDbgOff" v-model="choice.debug" type="radio" name="debug" :value="false" /><label for="ngDbgOff"
-              >Off</label
-            >
-            <input id="ngDbgOn" v-model="choice.debug" type="radio" name="debug" :value="true" /><label for="ngDbgOn">On</label>
-          </div>
-          <p class="ng-note">Lets every seated player edit tokens, deal cards and look through decks.</p>
         </div>
 
         <div class="ng-actions table-actions">

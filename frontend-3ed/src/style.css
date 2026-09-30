@@ -723,12 +723,18 @@ body.log-open { padding-right:min(360px, 90vw); }
 .ng-config .ng-tiles { grid-template-columns:minmax(0, 1fr); }
 .ng-config .ng-tiles label { display:grid; grid-template-columns:72px minmax(0, 1fr); align-items:center; }
 .ng-config .ng-tiles label img { height:100%; aspect-ratio:auto; }
-.ng-later { opacity:.75; }
-.ng-later summary { cursor:pointer; list-style:none; }
-.ng-later summary::-webkit-details-marker { display:none; }
-.ng-later summary::before { content:'▸ '; }
-.ng-later details[open] > summary::before { content:'▾ '; }
-.ng-later .sc-grid { margin-top:10px; }
+/* the boxes as a row of covers; the open one shows its scenarios underneath */
+.ng-boxes { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-bottom:14px; }
+.ng-box { display:grid; gap:0; margin:0; padding:0; text-align:left; overflow:hidden; border-radius:10px;
+  border:1px solid var(--line); background:color-mix(in srgb, var(--ink) 4%, transparent); }
+.ng-box img { display:block; width:100%; aspect-ratio:1; object-fit:cover; filter:grayscale(.55) brightness(.7);
+  transition:filter .15s ease; }
+.ng-box:hover img, .ng-box.on img { filter:none; }
+.ng-box-text { display:grid; gap:2px; padding:8px 10px; }
+.ng-box-text small { color:var(--muted); font-size:12px; }
+.ng-box.on { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow:inset 0 0 0 1px var(--accent); }
+.ng-box.later { opacity:.7; }
 .ng-card { border-radius:12px; border:1px solid var(--line); background:var(--panel); padding:12px; box-shadow:0 8px 22px rgba(0,0,0,.12); }
 .ng-title { font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
 .ng-note { margin:8px 0 0; font-size:12px; color:var(--muted); }

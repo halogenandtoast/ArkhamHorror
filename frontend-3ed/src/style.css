@@ -775,7 +775,10 @@ body.log-open { padding-right:min(360px, 90vw); }
 .fly-back { transform:rotateY(180deg); }
 .zoom img { max-width:92vw; max-height:92vh; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.8); }
 .zoom img:not(:only-child) { max-width:min(45vw, 520px); max-height:88vh; }
-.screen { max-width:760px; margin:24px auto; padding:0 16px; }
+/* a page takes the width it is given and the cap decides how much it keeps: the
+table's #app is a flex column at wide sizes, where auto side margins would
+otherwise shrink a page to its own content */
+.screen { width:100%; max-width:760px; margin:24px auto; padding:0 16px; }
 /* the lobby and the new game page are whole pages rather than a panel in a table */
 .screen.lobby, .ng-page { max-width:1180px; }
 .screen h2 { font-size:20px; margin:0 0 4px; }
@@ -892,7 +895,6 @@ details pre { max-height:400px; overflow:auto; font-size:11px; }
 /* the lobby: a heading and a start button over two lists of tables */
 .lobby-hero { display:flex; align-items:center; gap:16px; margin:0 0 20px; flex-wrap:wrap; }
 .lobby-hero h2 { margin:0; font-size:28px; letter-spacing:-.01em; }
-.lobby-lede { margin:6px 0 0; color:var(--muted); }
 .lobby-start { margin:0 0 0 auto; padding:12px 22px; font-size:15px; }
 .lobby-section { margin-bottom:16px; padding:14px 16px; }
 .lobby-new { margin-bottom:16px; }

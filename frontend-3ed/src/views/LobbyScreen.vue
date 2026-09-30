@@ -111,7 +111,6 @@ onUnmounted(() => {
       <div class="lobby-hero">
         <div>
           <h2>Your games</h2>
-          <p class="lobby-lede">Pick up a game in progress, join a table, or start a new one.</p>
         </div>
         <button class="primary lobby-start" :disabled="!catalog" @click="showNew = true">New game</button>
       </div>

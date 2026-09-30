@@ -201,6 +201,8 @@ data Message
   | RefillDisplay
   | AddArchiveToCodex ArchiveNumber
   | AddArchiveToCodexFlipped ArchiveNumber
+  | -- | flip once the table has read the side showing
+    TurnCodexCard ArchiveNumber
   | FlipCodexCard ArchiveNumber
   | RemoveCodexCard ArchiveNumber
   | -- | the removal itself, once they have read the side that sends it away

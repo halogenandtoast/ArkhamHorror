@@ -126,7 +126,7 @@ profaneRitual =
           )
           \(c, sid) ->
             setMarkers sid (<> [Marker c False])
-        push (FlipCodexCard 4)
+        push (TurnCodexCard 4)
     , componentActions =
         [ ComponentActionDef
             { label = "Profane Ritual"
@@ -265,7 +265,7 @@ azathothAwakens =
         when (null markers) do
           start <- (.startingSpace) <$> getScenarioDef
           setMarkers start (<> [Marker "red" True])
-        pushAll [RemoveCodexCard 4, RemoveCodexCard 6, RemoveCodexCard 7, FlipCodexCard 8]
+        pushAll [RemoveCodexCard 4, RemoveCodexCard 6, RemoveCodexCard 7, TurnCodexCard 8]
     , componentActions =
         [ ComponentActionDef
             { label = "Move to the future"

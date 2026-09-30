@@ -1104,6 +1104,12 @@ runMessage msg = case msg of
   ContinueTest -> testPrompt
   MarkAssetUsed iid cid -> investigatorL iid . #usedAssets %= (<> [cid])
   MarkAbilityUsed iid key -> investigatorL iid . #usedAbilities %= (<> [key])
+  {- A card that turns itself over the moment it arrives shows a side nobody has
+  read: the instructions that put it there. The table says when it may turn. -}
+  TurnCodexCard n ->
+    askLeader
+      ("Card " <> tshow (coerce n :: Int) <> " read")
+      [Choice (DoneLabel "Continue") [FlipCodexCard n]]
   FlipCodexCard n -> do
     #codex %= map (\e -> if e.number == n then e {flipped = not e.flipped, fired = []} else e)
     push CheckStateTriggers

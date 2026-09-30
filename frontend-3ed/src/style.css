@@ -185,7 +185,9 @@ and its content fills it edge to edge */
 .side-rail .rail-players > #investigators { flex:0 0 auto; }
 .scenario-side { width:100%; cursor:zoom-in; position:relative; }
 /* over the art, which is the left 58% of every sheet, and standing on the bottom edge rather than below it */
-.sheet-tokens { position:absolute; left:29%; bottom:10px; transform:translateX(-50%); display:flex; gap:10px; padding:8px 24px; border-radius:999px; background:rgba(0,0,0,.72); border:1px solid rgba(255,255,255,.28); box-shadow:0 2px 8px rgba(0,0,0,.45); z-index:2; }
+.sheet-tokens { position:absolute; left:29%; bottom:14px; transform:translateX(-50%); display:flex; gap:18px; z-index:2; }
+/* no plate behind them: each token throws its own shadow onto the art instead */
+.sheet-tokens .tok { filter:drop-shadow(0 4px 5px rgba(0,0,0,.8)) drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
 .sheet-tokens .tok b { min-width:20px; height:20px; line-height:20px; font-size:13px; }
 .sheet-tokens .bump { animation:sheetBump .9s ease-out; }
 @keyframes sheetBump { 0% { transform:scale(1); } 30% { transform:scale(1.45); filter:drop-shadow(0 0 8px var(--doom)); } 100% { transform:scale(1); } }

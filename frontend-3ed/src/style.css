@@ -604,10 +604,14 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); opacity:.6; }
 /* while a space is being chosen the ring is what is being aimed at: a monster on
    the space neither climbs over its neighbours nor swallows the click */
 .map-wrap.picking-space .mon-card { pointer-events:none; }
-.map-wrap.picking-space .mon-card:hover, .map-wrap.picking-space .anchor:has(.mon-card:hover) { z-index:auto; }
+.map-wrap.picking-space .mon-card:hover, .map-wrap.picking-space .anchor:hover { z-index:auto; }
 .mon-card:hover { z-index:20; }
 .mon-card:hover > .mon-dbg { z-index:21; }
-.anchor:has(.mon-card:hover), .pa-engaged-cards:has(.mon-card:hover) { z-index:20; position:relative; }
+/* The space comes forward, not the card: hovering the space itself covers the gaps
+   between its pieces, and the anchor keeps the absolute placement that lays them
+   out -- making it relative dropped it into the flow and the layout flickered. */
+.anchor:hover { z-index:20; }
+.pa-engaged-cards:has(.mon-card:hover) { z-index:20; position:relative; }
 /* taking a card from the display: a label rather than a corner dot, since it is a
    deliberate act and the card is big enough to carry one */
 .dbg-take { position:absolute; left:50%; bottom:6px; transform:translateX(-50%); z-index:3; margin:0; padding:4px 12px;

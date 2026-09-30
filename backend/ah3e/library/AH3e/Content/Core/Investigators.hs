@@ -42,7 +42,7 @@ investigators =
       , starting =
           [ StartingCard "duke"
           , StartingMoney 1
-          , -- Wanderer comes from Under Dark Waves, so it is offered only with that box
+          , -- Wanderer is printed in Under Dark Waves, as Pete's own sheet finally was
             StartingChoice
               [ [StartingCard "petes-guitar"]
               , [StartingCard "dark-dreams"]

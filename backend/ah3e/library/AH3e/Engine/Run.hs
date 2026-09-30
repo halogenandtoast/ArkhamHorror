@@ -80,11 +80,7 @@ runMessage msg = case msg of
     StartingEffect _ eff -> push (ResolveEffect (EffectCtx iid (SourceInvestigator iid) Nothing) eff)
     StartingChoice options -> do
       pile <- startingPool
-      -- a sheet may list a possession from a box that is not on the table
-      expansions <- use #expansions
-      let inPlay o =
-            and [maybe False ((`elem` expansions) . (.expansion)) (cardDef code) | StartingCard code <- o]
-      choices <- for (filter inPlay options) \o -> do
+      choices <- for options \o -> do
         cids <- fmap concat $ for [code | StartingCard code <- o] \code ->
           take 1 <$> filterM (fmap (== code) . cardCode) pile
         pure $ Choice (CardsLabel (possessionsText o) cids) [GainStartingPossessions iid o]

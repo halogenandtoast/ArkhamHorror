@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { img, isBroken, markBroken } from '@/assets'
 import AssetCard from '@/game/AssetCard.vue'
 import { useGame } from '@/game/context'
@@ -46,6 +46,25 @@ const toks = computed(() => [
   ['clue', i.value.clues, `${i.value.clues} clues`, 'DebugSetClues'],
   ['remnant', i.value.remnants, `${i.value.remnants} remnants`, 'DebugSetRemnants'],
 ] as [string, number, string, string][])
+
+/* Money gathered, clues found, damage taken: the count changing is the whole
+story of an action, so the token it lands on jumps and says how much. */
+const bumps = ref<Record<string, number>>({})
+const gains = ref<Record<string, number>>({})
+const timers: Record<string, ReturnType<typeof setTimeout>> = {}
+watch(toks, (now, before) => {
+  if (!before) return
+  const was = Object.fromEntries(before.map(([n, v]) => [n, v]))
+  for (const [n, v] of now) {
+    const prev = was[n]
+    if (prev === undefined || v <= prev) continue
+    bumps.value[n] = (bumps.value[n] ?? 0) + 1
+    gains.value[n] = v - prev
+    clearTimeout(timers[n])
+    timers[n] = setTimeout(() => delete gains.value[n], 900)
+  }
+})
+onUnmounted(() => Object.values(timers).forEach(clearTimeout))
 const engaged = computed(() =>
   Object.values(g.value.monsters).filter(
     (m) => ctx.inPlayerArea(m) && ((m.state.contents ?? []) as string[]).includes(i.value.id),
@@ -96,7 +115,15 @@ function gainCondition(name: string) {
       <!-- what they are carrying rides on the card itself, clear of the skill column -->
       <div class="toks" @click.stop>
         <span v-for="[n, v, title, tag] in toks" :key="n" class="dbg-tokwrap"
-          ><Tok :name="n" :count="v" :title="title" :size="30" always /><DbgNum
+          ><Tok
+            :key="`${n}${bumps[n] ?? 0}`"
+            :class="{ gained: !!gains[n] }"
+            :name="n"
+            :count="v"
+            :title="title"
+            :size="30"
+            always
+          /><span v-if="gains[n]" class="tok-gain">+{{ gains[n] }}</span><DbgNum
             v-if="ctx.dbgOn.value"
             :tag="tag"
             :iid="i.id"

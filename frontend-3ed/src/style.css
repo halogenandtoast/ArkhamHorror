@@ -209,6 +209,14 @@ and its content fills it edge to edge */
 .sheet-tokens .tok { filter:drop-shadow(0 4px 5px rgba(0,0,0,.8)) drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
 .sheet-tokens .tok b { min-width:20px; height:20px; line-height:20px; font-size:13px; }
 .sheet-tokens .bump { animation:sheetBump .9s ease-out; }
+/* a count that just went up: the token jumps and the amount floats off it */
+.toks .dbg-tokwrap { position:relative; }
+.toks .tok.gained { animation:tokGain .7s cubic-bezier(.2,.8,.3,1.2); }
+.tok-gain { position:absolute; left:50%; top:-4px; z-index:3; pointer-events:none; font-weight:700; font-size:13px;
+  color:var(--ok); text-shadow:0 1px 3px rgba(0,0,0,.85); animation:tokGainFloat .9s ease-out forwards; }
+@keyframes tokGain { 0% { transform:scale(1); } 35% { transform:scale(1.35); } 100% { transform:scale(1); } }
+@keyframes tokGainFloat { 0% { opacity:0; transform:translate(-50%, 8px); } 25% { opacity:1; } 100% { opacity:0; transform:translate(-50%, -18px); } }
+@media (prefers-reduced-motion: reduce) { .toks .tok.gained { animation:none; } .tok-gain { animation:none; opacity:0; } }
 @keyframes sheetBump { 0% { transform:scale(1); } 30% { transform:scale(1.45); filter:drop-shadow(0 0 8px var(--doom)); } 100% { transform:scale(1); } }
 @media (prefers-reduced-motion: reduce) { .sheet-tokens .bump { animation:none; } }
 /* With room for the rail there is room to fill the window: the table stands exactly

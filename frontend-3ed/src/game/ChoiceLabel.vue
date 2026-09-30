@@ -69,10 +69,9 @@ const inv = computed(() => {
 
 <template>
   <template v-if="text !== null">{{ text }}</template>
-  <!-- a skill is the focus token that sits on it -->
+  <!-- a skill is the focus token that sits on it, which says it without the word -->
   <template v-else-if="label.tag === 'SkillLabel'"
-    ><Tok :name="FOCUS[label.contents] ?? 'focus-lore'" :title="`${label.contents} focus`" :size="26" />
-    {{ label.contents }}</template
+    ><Tok :name="FOCUS[label.contents] ?? 'focus-lore'" :title="`${label.contents} focus`" :size="30" /></template
   >
   <template v-else-if="label.tag === 'TokenLabel'"
     ><MythosTok :token="label.contents" :size="24" /> {{ String(label.contents).replace(/Token$/, '') }}</template

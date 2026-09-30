@@ -184,7 +184,8 @@ and its content fills it edge to edge */
 .map-section .rail-players > #investigators { padding:0; }
 .side-rail .rail-players > #investigators { flex:0 0 auto; }
 .scenario-side { width:100%; cursor:zoom-in; position:relative; }
-.sheet-tokens { position:absolute; left:50%; bottom:-14px; transform:translateX(-50%); display:flex; gap:10px; padding:4px 10px; border-radius:999px; background:color-mix(in srgb, var(--panel) 88%, transparent); box-shadow:0 2px 8px rgba(0,0,0,.35); z-index:2; }
+/* over the art, which is the left 58% of every sheet, and standing on the bottom edge rather than below it */
+.sheet-tokens { position:absolute; left:29%; bottom:10px; transform:translateX(-50%); display:flex; gap:10px; padding:8px 12px; border-radius:999px; background:rgba(0,0,0,.72); border:1px solid rgba(255,255,255,.28); box-shadow:0 2px 8px rgba(0,0,0,.45); z-index:2; }
 .sheet-tokens .tok b { min-width:20px; height:20px; line-height:20px; font-size:13px; }
 .sheet-tokens .bump { animation:sheetBump .9s ease-out; }
 @keyframes sheetBump { 0% { transform:scale(1); } 30% { transform:scale(1.45); filter:drop-shadow(0 0 8px var(--doom)); } 100% { transform:scale(1); } }

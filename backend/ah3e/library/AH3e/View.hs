@@ -21,6 +21,7 @@ import Control.Monad.State.Strict (evalState)
 import Data.Aeson (Value, object, (.=))
 import Data.Aeson.Types (Pair)
 import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 
 catalogView :: [Pair]
 catalogView =
@@ -35,6 +36,8 @@ catalogView =
          | i <- scenarioCatalog
          ]
   , "expansions" .= [CoreSet, DeadOfNight, UnderDarkWaves, SecretsOfTheOrder, RecursiveEchoes]
+  , -- which boxes have cards in the engine, so the lobby only offers content that exists
+    "contentExpansions" .= Set.toAscList (Set.fromList [d.expansion | d <- Map.elems cardDefs])
   , "investigatorNames" .= Map.map (.name) investigatorDefs
   , "investigatorDefs" .= investigatorDefs
   , -- card art is filed by type: img/ah3e/cards/<dir>/<code>.webp, save for

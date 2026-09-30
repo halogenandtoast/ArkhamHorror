@@ -9,6 +9,7 @@ module ThirdEdition.Table where
 
 import AH3e.Game (Game)
 import AH3e.Types.Card (Expansion)
+import AH3e.Types.Ids (ScenarioCode)
 import AH3e.Types.State (GameMode)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Time (UTCTime)
@@ -21,7 +22,8 @@ data Seat = Seat {player :: Int, user :: Maybe UserId, username :: Maybe Text}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data TableOptions = TableOptions {expansions :: [Expansion], mode :: GameMode, debug :: Bool}
+data TableOptions = TableOptions
+  {expansions :: [Expansion], mode :: GameMode, debug :: Bool, scenario :: Maybe ScenarioCode}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

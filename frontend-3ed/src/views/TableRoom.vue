@@ -70,6 +70,10 @@ const filled = computed(() => seats.value.filter((s) => s.username).length)
 const free = computed(() => seats.value.filter((s) => !s.username))
 const allFilled = computed(() => seats.value.length > 0 && free.value.length === 0)
 const started = computed(() => !!tv.value?.started)
+// tables made since the lobby picked a scenario say which one they are playing
+const scenarioName = computed(
+  () => props.catalog.scenarios.find((sc) => sc.code === tv.value?.options.scenario)?.name ?? null,
+)
 
 async function act(f: () => Promise<unknown>) {
   if (busy.value) return
@@ -129,6 +133,7 @@ const confirmClose = () => {
       <div class="pills">
         <span class="pill">{{ filled }}/{{ seats.length }} seated</span>
         <span class="pill">{{ tv.options.mode.replace('Mode', '') }} mode</span>
+        <span v-if="scenarioName" class="pill">{{ scenarioName }}</span>
         <span class="pill">{{ tv.options.expansions.map(expName).join(', ') }}</span>
         <span v-if="tv.options.debug" class="pill">Debug</span>
       </div>

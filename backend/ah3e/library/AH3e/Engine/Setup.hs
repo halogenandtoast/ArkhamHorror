@@ -23,12 +23,14 @@ data GameOptions = GameOptions
   { expansions :: [Expansion]
   , mode :: GameMode
   , debug :: Bool
+  , -- | the scenario the table was made for; without one the group is asked
+    scenario :: Maybe ScenarioCode
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 defaultOptions :: GameOptions
-defaultOptions = GameOptions [CoreSet] StandardMode False
+defaultOptions = GameOptions [CoreSet] StandardMode False Nothing
 
 emptyGame :: [PlayerId] -> Int -> GameOptions -> Game
 emptyGame pids seed opts =
@@ -85,9 +87,14 @@ newGame :: [PlayerId] -> Int -> GameOptions -> Either Text Game
 newGame pids seed opts = do
   when (null pids) $ Left "A game needs at least one player"
   when (length pids > 6) $ Left "Arkham Horror supports one to six players"
-  when (null (availableScenarios opts.expansions))
-    $ Left "No playable scenario in the chosen expansions"
-  pure (emptyGame pids seed opts) {queue = [ChooseScenario]}
+  let playable = availableScenarios opts.expansions
+  when (null playable) $ Left "No playable scenario in the chosen expansions"
+  start <- case opts.scenario of
+    Nothing -> pure ChooseScenario
+    Just code -> do
+      unless (code `elem` map (.code) playable) $ Left "That scenario is not in the chosen expansions"
+      pure (SelectScenario code)
+  pure (emptyGame pids seed opts) {queue = [start]}
 
 availableScenarios :: [Expansion] -> [ScenarioDef]
 availableScenarios expansions = [sc | sc <- Map.elems scenarioDefs, sc.expansion `elem` expansions]

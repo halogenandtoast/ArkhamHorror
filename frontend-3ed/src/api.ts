@@ -51,6 +51,7 @@ export interface NewTable {
   expansions: string[]
   mode: GameMode
   debug: boolean
+  scenario?: string
 }
 export const createTable = (body: NewTable) => request<TableView>('POST', '/3ed/tables', body)
 export const getTable = (id: string) => request<TableView>('GET', `/3ed/tables/${id}`)

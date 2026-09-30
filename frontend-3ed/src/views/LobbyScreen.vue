@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import * as api from '@/api'
+import { img, isBroken, markBroken } from '@/assets'
 import { expName } from '@/game/util'
 import NewTableForm from '@/lobby/NewTableForm.vue'
 import { catalog, loadCatalog, signOut, user } from '@/session'
@@ -36,6 +37,15 @@ const hasFree = (t: TableSummary) => t.seats.some((s) => !s.username)
 const isHost = (t: TableSummary) => t.hostName === me.value
 const openToJoin = computed(() => open.value.filter((t) => !mine.value.some((m) => m.id === t.id)))
 const seatsLabel = (t: TableSummary) => `${filled(t)}/${t.seats.length}`
+// what the table is playing, when it was made for a scenario rather than asked in game
+const scenarioOf = (t: TableSummary) =>
+  catalog.value?.scenarios.find((sc) => sc.code === t.options.scenario) ?? null
+const scenarioName = (t: TableSummary) => scenarioOf(t)?.name ?? null
+const scenarioArt = (t: TableSummary) => {
+  const sc = scenarioOf(t)
+  return sc ? img(`scenarios/${sc.code}.webp`) : null
+}
+const extras = (t: TableSummary) => t.options.expansions.filter((e) => e !== 'CoreSet' && e !== scenarioOf(t)?.expansion)
 const myUsers = (t: TableSummary) =>
   t.seats
     .filter((s) => s.username)
@@ -98,8 +108,12 @@ onUnmounted(() => {
 
     <NewTableForm v-if="showNew && catalog" :catalog="catalog" @cancel="showNew = false" />
     <template v-else>
-      <div class="ng-actions table-actions lobby-new">
-        <button class="primary" :disabled="!catalog" @click="showNew = true">New game</button>
+      <div class="lobby-hero">
+        <div>
+          <h2>Your games</h2>
+          <p class="lobby-lede">Pick up a game in progress, join a table, or start a new one.</p>
+        </div>
+        <button class="primary lobby-start" :disabled="!catalog" @click="showNew = true">New game</button>
       </div>
       <section class="lobby-section">
         <h2>My games</h2>
@@ -107,11 +121,19 @@ onUnmounted(() => {
         <p v-else-if="!mine.length" class="waiting">You aren't in any game yet.</p>
         <ul v-else class="table-list">
           <li v-for="t in mine" :key="t.id" class="table-row">
+            <img
+              v-if="scenarioArt(t) && !isBroken(scenarioArt(t)!)"
+              class="table-art"
+              :src="scenarioArt(t)!"
+              alt=""
+              @error="markBroken(scenarioArt(t)!)"
+            />
             <div class="table-info">
               <RouterLink :to="`/tables/${t.id}`" class="table-name">{{ t.name }}</RouterLink>
               <div class="table-meta">
-                {{ t.started ? 'In progress' : `Waiting · ${seatsLabel(t)} seated` }} · host {{ t.hostName }} ·
-                {{ t.options.expansions.map(expName).join(', ') }}
+                <template v-if="scenarioName(t)">{{ scenarioName(t) }} · </template>
+                {{ t.started ? 'In progress' : `Waiting · ${seatsLabel(t)} seated` }} · host {{ t.hostName }}
+                <template v-if="extras(t).length"> · with {{ extras(t).map(expName).join(', ') }}</template>
               </div>
               <div class="table-meta">{{ myUsers(t) }}</div>
             </div>
@@ -129,11 +151,22 @@ onUnmounted(() => {
         <p v-if="!loading && !openToJoin.length" class="waiting">No open games right now.</p>
         <ul v-else class="table-list">
           <li v-for="t in openToJoin" :key="t.id" class="table-row">
+            <img
+              v-if="scenarioArt(t) && !isBroken(scenarioArt(t)!)"
+              class="table-art"
+              :src="scenarioArt(t)!"
+              alt=""
+              @error="markBroken(scenarioArt(t)!)"
+            />
             <div class="table-info">
               <span class="table-name">{{ t.name }}</span>
               <div class="table-meta">
-                host {{ t.hostName }} · {{ seatsLabel(t) }} seated · {{ t.options.mode.replace('Mode', '') }} mode ·
-                {{ t.options.expansions.map(expName).join(', ') }}{{ t.options.debug ? ' · debug' : '' }}
+                <template v-if="scenarioName(t)">{{ scenarioName(t) }} · </template>host {{ t.hostName }} ·
+                {{ seatsLabel(t) }} seated · {{ t.options.mode.replace('Mode', '') }} mode<template
+                  v-if="extras(t).length"
+                >
+                  · with {{ extras(t).map(expName).join(', ') }}</template
+                >{{ t.options.debug ? ' · debug' : '' }}
               </div>
             </div>
             <div class="table-buttons">

@@ -33,6 +33,8 @@ export interface InvestigatorDef {
 export interface Catalog {
   scenarios: ScenarioInfo[]
   expansions: string[]
+  // the boxes the engine has cards for, which is what the lobby may add to a game
+  contentExpansions?: string[]
   investigatorNames: Record<string, string>
   investigatorDefs: Record<string, InvestigatorDef>
   cardArt: Record<string, string>
@@ -47,6 +49,8 @@ export interface TableOptions {
   expansions: string[]
   mode: GameMode
   debug: boolean
+  // the scenario the table was made for; older tables chose one after starting
+  scenario?: string | null
 }
 
 export interface TableSummary {

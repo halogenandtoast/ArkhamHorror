@@ -27,7 +27,7 @@ module Api.Handler.ThirdEdition (
 import AH3e.Engine (GameOptions (..), answer, applyDebug, newGame, runEngine, withSeedFrom)
 import AH3e.Game (Game)
 import AH3e.Types.Card (Expansion (CoreSet))
-import AH3e.Types.Ids (PlayerId (..))
+import AH3e.Types.Ids (PlayerId (..), ScenarioCode)
 import AH3e.Types.State (DebugAction, GameMode)
 import AH3e.View (catalogView, gameView)
 import Api.Arkham.Helpers (joinRoomIn, releaseRoomIfEmpty)
@@ -72,6 +72,7 @@ data NewTable = NewTable
   , expansions :: [Expansion]
   , mode :: GameMode
   , debug :: Bool
+  , scenario :: Maybe ScenarioCode
   }
   deriving stock Generic
   deriving anyclass FromJSON
@@ -97,7 +98,7 @@ postApiV1ThirdEditionTablesR = do
               | n <- [1 .. body.seats]
               ]
           , -- the core set is always in play
-            options = TableOptions (ordNub (CoreSet : body.expansions)) body.mode body.debug
+            options = TableOptions (ordNub (CoreSet : body.expansions)) body.mode body.debug body.scenario
           , game = Nothing
           , version = 0
           , createdAt = now
@@ -162,7 +163,7 @@ postApiV1ThirdEditionStartR tid = do
     unless (t.host == userId) $ Left "Only the host can start the game"
     when (started t) $ Left "The game has already started"
     unless (null (freeSeats t)) $ Left "Every seat needs a player first"
-    let opts = GameOptions {expansions = t.options.expansions, mode = t.options.mode, debug = t.options.debug}
+    let opts = GameOptions {expansions = t.options.expansions, mode = t.options.mode, debug = t.options.debug, scenario = t.options.scenario}
     g <- newGame [PlayerId s.player | s <- t.seats] seed opts
     g' <- first tshow (runEngine g)
     pure (withGame g' t, KeepHistory)

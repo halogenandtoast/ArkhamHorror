@@ -697,14 +697,38 @@ body.log-open { padding-right:min(360px, 90vw); }
 .zoom img { max-width:92vw; max-height:92vh; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.8); }
 .zoom img:not(:only-child) { max-width:min(45vw, 520px); max-height:88vh; }
 .screen { max-width:760px; margin:24px auto; padding:0 16px; }
+/* the lobby and the new game page are whole pages rather than a panel in a table */
+.screen.lobby, .ng-page { max-width:1180px; }
 .screen h2 { font-size:20px; margin:0 0 4px; }
 .screen .sub { color:var(--muted); margin:0 0 16px; }
 .field { margin-bottom:16px; }
 /* undo the page header's bar styling: this is just the title above the cards */
 .ng-header { display:block; padding:0; border:0; background:none; position:static; margin:0 0 18px; }
-.ng-header h2 { margin:0; font-size:24px; }
+.ng-header h2 { margin:0; font-size:28px; letter-spacing:-.01em; }
+.ng-lede { margin:6px 0 0; color:var(--muted); }
 .ng { display:grid; gap:16px; }
+/* on the new game page the scenarios take the width and the setup rides beside them */
+.ng-page .ng { grid-template-columns:minmax(0, 1fr) 320px; align-items:start; }
+.ng-scenarios { display:grid; gap:16px; min-width:0; }
 .ng-config { display:grid; gap:12px; min-width:0; }
+.ng-page .ng-config { position:sticky; top:16px; }
+@media (max-width: 900px) { .ng-page .ng { grid-template-columns:minmax(0, 1fr); } .ng-page .ng-config { position:static; } }
+.ng-card .ng-title { font-size:13px; letter-spacing:.08em; }
+.ng-scenarios .ng-card { padding:14px; }
+.ng-scenarios .sc-grid { grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; }
+/* the chosen sheet keeps the accent; the others stay quiet until hovered */
+.sc-pick.on { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent), 0 8px 22px rgba(0,0,0,.28); }
+.sc-pick.on .sc-exp { color:var(--accent); }
+/* beside the scenarios a box is a row, not a poster */
+.ng-config .ng-tiles { grid-template-columns:minmax(0, 1fr); }
+.ng-config .ng-tiles label { display:grid; grid-template-columns:72px minmax(0, 1fr); align-items:center; }
+.ng-config .ng-tiles label img { height:100%; aspect-ratio:auto; }
+.ng-later { opacity:.75; }
+.ng-later summary { cursor:pointer; list-style:none; }
+.ng-later summary::-webkit-details-marker { display:none; }
+.ng-later summary::before { content:'▸ '; }
+.ng-later details[open] > summary::before { content:'▾ '; }
+.ng-later .sc-grid { margin-top:10px; }
 .ng-card { border-radius:12px; border:1px solid var(--line); background:var(--panel); padding:12px; box-shadow:0 8px 22px rgba(0,0,0,.12); }
 .ng-title { font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
 .ng-note { margin:8px 0 0; font-size:12px; color:var(--muted); }
@@ -764,13 +788,22 @@ details pre { max-height:400px; overflow:auto; font-size:11px; }
 .q-user { font-weight:400; color:var(--muted); }
 .q-waiting { margin:2px 0 6px; font-style:italic; }
 .pa-user { font-size:12px; color:var(--muted); }
-.lobby-section { margin-bottom:16px; }
+/* the lobby: a heading and a start button over two lists of tables */
+.lobby-hero { display:flex; align-items:center; gap:16px; margin:0 0 20px; flex-wrap:wrap; }
+.lobby-hero h2 { margin:0; font-size:28px; letter-spacing:-.01em; }
+.lobby-lede { margin:6px 0 0; color:var(--muted); }
+.lobby-start { margin:0 0 0 auto; padding:12px 22px; font-size:15px; }
+.lobby-section { margin-bottom:16px; padding:14px 16px; }
 .lobby-new { margin-bottom:16px; }
-.table-list { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
-.table-row { display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--bg); }
-.table-name { font-weight:700; font-size:15px; color:inherit; }
-.table-meta { font-size:12px; color:var(--muted); }
-.table-buttons { display:flex; flex-wrap:wrap; }
+.table-list { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+.table-row { display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:var(--bg); }
+.table-row:hover { border-color:color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.table-art { width:104px; aspect-ratio:1503 / 1200; object-fit:cover; border-radius:8px; flex:none; }
+.table-info { flex:1 1 220px; min-width:0; display:grid; gap:3px; }
+.table-name { font-weight:700; font-size:17px; color:inherit; }
+.table-meta { font-size:13px; color:var(--muted); }
+.table-buttons { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.table-buttons button { margin:0; }
 .seat-list { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
 .seat { display:grid; grid-template-columns:70px minmax(0,1fr) auto; gap:10px; align-items:center; padding:6px 10px; border:1px solid var(--line); border-radius:8px; }
 .seat.mine { border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent); }
@@ -783,4 +816,4 @@ details pre { max-height:400px; overflow:auto; font-size:11px; }
 .signed-out .sign-in { text-decoration:none; }
 .button-like { display:inline-block; font:inherit; border:1px solid var(--line); padding:10px 18px; border-radius:6px; }
 .button-like.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
-.lobby-section h2 { font-size:13px; }
+.lobby-section h2 { font-size:15px; text-transform:none; letter-spacing:0; color:var(--ink); margin-bottom:10px; }

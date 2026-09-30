@@ -101,7 +101,7 @@ scrolls sideways would otherwise clip them -- or grow a scrollbar for the 2px */
 .map-hint { position:absolute; left:10px; bottom:8px; z-index:3; font-size:11px; color:var(--muted); background:color-mix(in srgb, var(--panel) 80%, transparent); padding:2px 8px; border-radius:999px; pointer-events:none; opacity:0; transition:opacity .2s; }
 .map-wrap:hover .map-hint { opacity:1; }
 body.map-full { overflow:hidden; }
-body.map-full .map-wrap { position:fixed; inset:0; z-index:30; background:var(--bg); touch-action:none; }
+body.map-full .map-wrap { position:fixed; inset:0; z-index:30; max-height:none; background:var(--bg); touch-action:none; }
 body.map-full #map, body.map-full .map-wrap .board-fit { height:100% !important; }
 body.map-full #mapFullToggle { background:var(--accent); color:#fff; border-color:var(--accent); }
 .map-controls button svg { width:18px; height:18px; vertical-align:middle; }
@@ -152,8 +152,8 @@ the row so the slack the map leaves is above them rather than below */
 .under-map { display:flex; align-items:flex-start; gap:14px; overflow:hidden; padding:10px 0 8px; margin-top:auto; }
 .under-map .codex, .under-map .decks, .under-map .display-group { flex-wrap:nowrap; min-width:0; }
 /* the codex gives way by wrapping rather than by shrinking its cards to slivers */
-.under-map .codex { flex-wrap:wrap; }
-.under-map .codex-card { flex:1 1 90px; width:auto; min-width:90px; max-width:140px; }
+.under-map .codex { display:grid; grid-template-columns:repeat(auto-fill, minmax(90px, 140px)); }
+.under-map .codex-card { width:auto; min-width:0; max-width:none; }
 .under-map .deck { flex:1 1 0; width:auto; min-width:0; }
 .under-map .deck-stack { width:100%; height:auto; aspect-ratio:76 / 120; }
 .under-map .deck-stack > img, .under-map .deck-empty { width:100%; height:100%; }
@@ -202,8 +202,8 @@ which is how the map comes out as large as it can be. */
   /* the codex ends the sheet's column, and its cards answer to that column's width */
   .sheet-col > section:last-child { margin-top:auto; }
   .sheet-col > section { overflow:hidden; }
-  .sheet-col .codex { flex-wrap:wrap; gap:clamp(3px, 0.4vw, 10px); width:100%; }
-  .sheet-col .codex-card { flex:1 1 90px; width:auto; min-width:90px; max-width:140px; }
+  .sheet-col .codex { display:grid; grid-template-columns:repeat(auto-fill, minmax(90px, 140px)); gap:clamp(3px, 0.4vw, 10px); width:100%; }
+  .sheet-col .codex-card { width:auto; min-width:0; max-width:none; }
   /* the deck row carries the display as well, and gives a little rather than scroll */
   .card-strip .decks { flex-wrap:nowrap; }
   .card-strip .deck { flex:1 1 0; width:auto; min-width:52px; max-width:88px; }
@@ -221,9 +221,9 @@ each keep their own flow rather than waiting on the taller of the two. */
   .sheet-col .under-map > section + section { margin-top:10px; }
   .sheet-col .under-map .decks,
   .sheet-col .under-map .display-group,
-  .sheet-col .under-map .codex { flex-wrap:wrap; gap:clamp(3px, 0.5vw, 12px); width:100%; }
+  .sheet-col .under-map .codex { display:grid; grid-template-columns:repeat(auto-fill, minmax(90px, 140px)); gap:clamp(3px, 0.5vw, 12px); width:100%; }
   .sheet-col .under-map .deck { flex:1 1 0; width:auto; min-width:0; }
-  .sheet-col .under-map .codex-card { flex:1 1 90px; width:auto; min-width:90px; max-width:140px; }
+  .sheet-col .under-map .codex-card { width:auto; min-width:0; max-width:none; }
   .sheet-col .under-map .deck-stack { width:100%; height:auto; aspect-ratio:76 / 120; }
   .sheet-col .under-map .deck-stack > img,
   .sheet-col .under-map .deck-empty { width:100%; height:100%; }
@@ -381,9 +381,12 @@ own top and bottom */
 .mythos { --handle:23px; position:relative; min-height:52px; overflow:hidden; }
 /* the tokens inside a drawer raise themselves for their own badges, so each drawer
 needs a layer of its own or the one behind paints through the one in front */
-.mythos-drawer { position:absolute; inset:0; z-index:1; display:flex; background:var(--panel); }
-.mythos-drawer.sliding { z-index:2; }
-.mythos-drawer.sliding { transform:translateX(calc(100% - var(--handle))); transition:transform .32s cubic-bezier(.4,.1,.2,1); }
+/* each drawer stops a handle's width short of the far edge: the open one ends
+where the other's handle begins, so nothing is ever drawn under a handle or past
+the panel */
+.mythos-drawer { position:absolute; inset:0 var(--handle) 0 0; z-index:1; display:flex; background:var(--panel); }
+.mythos-drawer.sliding { z-index:2; inset:0 0 0 0; right:auto; width:calc(100% - var(--handle));
+  transform:translateX(100%); transition:transform .32s cubic-bezier(.4,.1,.2,1); }
 .mythos-drawer.sliding.open { transform:translateX(var(--handle)); }
 .mythos-tab { flex:0 0 auto; width:var(--handle); align-self:stretch; margin:0; padding:6px 3px; font-size:10px;
   letter-spacing:.06em; text-transform:uppercase; writing-mode:vertical-rl; transform:rotate(180deg); border:none;
@@ -392,7 +395,8 @@ needs a layer of its own or the one behind paints through the one in front */
 .mythos-tab:hover { color:var(--ink); background:color-mix(in srgb, var(--ink) 14%, transparent); }
 .mythos-tab b { font-weight:700; color:var(--ink); }
 .mythos-tab.on { background:color-mix(in srgb, var(--accent) 26%, transparent); color:var(--ink); }
-.mythos-drawer > .cup { flex:1 1 auto; min-width:0; margin:0; padding:0 8px; flex-wrap:wrap; align-content:center; align-items:center; overflow:hidden; }
+.mythos-drawer > .cup { flex:1 1 auto; min-width:0; margin:0; padding:0 8px; flex-wrap:wrap; align-content:center;
+  align-items:center; overflow-x:hidden; overflow-y:auto; scrollbar-width:thin; }
 .mythos .waiting { font-size:12px; }
 @media (prefers-reduced-motion: reduce) { .mythos-drawer.sliding { transition:none; } }
 .sheet-col .cup { gap:2px; }
@@ -636,6 +640,20 @@ is the chip in the heading rather than a paragraph under it */
 .undo-btn[disabled] { opacity:.45; cursor:default; }
 .undo-btn .undo-icon { width:16px; height:16px; flex:none; }
 .undo-btn kbd { font:inherit; font-size:11px; padding:0 5px; border:1px solid var(--line); border-radius:4px; color:var(--muted); }
+/* the tooltip a token raises: fixed, so a panel that clips its own overflow cannot
+clip it, and never under the pointer */
+.tip { position:fixed; z-index:60; transform:translate(-50%, -100%); max-width:260px; pointer-events:none;
+  display:grid; gap:3px; padding:8px 10px; border-radius:10px; border:1px solid var(--line);
+  background:color-mix(in srgb, var(--panel) 94%, #000); color:var(--ink); font-size:12px; line-height:1.4;
+  box-shadow:0 10px 26px rgba(0,0,0,.55); animation:tip-in .12s ease-out; }
+.tip.below { transform:translate(-50%, 0); }
+.tip b { font-size:13px; }
+.tip span { color:var(--muted); }
+.tip::after { content:''; position:absolute; left:50%; margin-left:-5px; border:5px solid transparent; }
+.tip:not(.below)::after { top:100%; border-top-color:var(--line); }
+.tip.below::after { bottom:100%; border-bottom-color:var(--line); }
+@keyframes tip-in { from { opacity:0; transform:translate(-50%, calc(-100% - 4px)); } }
+@media (prefers-reduced-motion: reduce) { .tip { animation:none; } }
 .flash { position:fixed; left:50%; bottom:28px; transform:translateX(-50%); z-index:20; padding:8px 16px; border-radius:999px; background:#111; color:#fff; font-weight:600; opacity:0; pointer-events:none; }
 .flash.show { animation:flash 1.2s ease-out; }
 @keyframes flash { 0% { opacity:0; transform:translate(-50%, 8px); } 15%, 70% { opacity:1; transform:translate(-50%, 0); } 100% { opacity:0; } }

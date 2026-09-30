@@ -45,6 +45,41 @@ export const LOG_TOKEN: Record<string, string> = {
   BlankToken: 'Blank',
   SpreadTerrorToken: 'Spread terror',
 }
+/* What a token is and what it does, keyed by the art it is drawn with. The
+tooltip reads these; a token with no entry keeps its plain name. */
+export const TOKEN_TIP: Record<string, [string, string]> = {
+  'mythos-spread-doom': ['Spread doom', 'The bottom event card is revealed and doom is placed on the spaces it names.'],
+  'mythos-spawn-monster': ['Spawn monster', 'A monster is drawn from the monster cup and spawns.'],
+  'mythos-read-headline': ['Read headline', 'The investigator who drew the token reads a headline card.'],
+  'mythos-spawn-clue': ['Spawn clue', 'The top event card is revealed and a clue appears in its neighborhood.'],
+  'mythos-gate-burst': ['Gate burst', 'The top event card is revealed and an anomaly bursts in its neighborhood.'],
+  'mythos-reckoning': ['Reckoning', 'Every reckoning effect in play resolves, one source at a time.'],
+  'mythos-blank': ['Blank', 'Nothing happens, unless a card reacts to drawing a blank.'],
+  'mythos-spread-terror': ['Spread terror', 'Terror spreads through a neighborhood holding an unstable space.'],
+  clue: ['Clue', 'Investigators spend clues on scenario objectives and card effects.'],
+  doom: ['Doom', 'The mythos places doom on spaces and the scenario sheet; scenarios turn on how much has gathered.'],
+  damage: ['Damage', 'An investigator is defeated when damage reaches their health.'],
+  horror: ['Horror', 'An investigator is defeated when horror reaches their sanity.'],
+  money: ['Money', 'Spent to buy items and on card effects.'],
+  remnant: ['Remnant', 'A keepsake spent on card effects, and traded between investigators.'],
+  terror: ['Terror', "A neighborhood's terror level, which rises as terror spreads."],
+  anomaly: ['Anomaly', 'A rift on a space; the scenario says what passing through it costs.'],
+  'activation-active': ['Activation', 'This monster acts during the monster phase.'],
+  'activation-inactive': ['Activation', 'This monster does not act during the monster phase.'],
+  'first-player-active': ['Lead investigator', 'Takes the first turn and answers the questions the group is asked.'],
+  'first-player-inactive': ['Lead investigator', 'Passes to the next investigator at the end of the round.'],
+  'focus-lore': ['Lore focus', 'Spend it to reroll a die on a lore test.'],
+  'focus-influence': ['Influence focus', 'Spend it to reroll a die on an influence test.'],
+  'focus-observation': ['Observation focus', 'Spend it to reroll a die on an observation test.'],
+  'focus-strength': ['Strength focus', 'Spend it to reroll a die on a strength test.'],
+  'focus-willpower': ['Will focus', 'Spend it to reroll a die on a will test.'],
+  'red-marker': ['Red marker', 'A scenario component; the scenario sheet says what it marks.'],
+  'blue-marker': ['Blue marker', 'A scenario component; the scenario sheet says what it marks.'],
+  'white-marker': ['White marker', 'A scenario component; the scenario sheet says what it marks.'],
+  'green-marker': ['Green marker', 'A scenario component; the scenario sheet says what it marks.'],
+  'marker-back': ['Marker', 'Face down: what it marks is not known yet.'],
+}
+
 // skill rows on the investigator sheet front, as fractions of the image
 export const SKILL_ROWS: Record<string, number> = { Lore: 0.6, Influence: 0.685, Observation: 0.77, Strength: 0.853, Will: 0.935 }
 export const SHROUDED = new Set([

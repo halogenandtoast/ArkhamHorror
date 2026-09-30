@@ -3,6 +3,7 @@ import { computed, onUnmounted, ref, watch } from 'vue'
 import { cardImg, img, isBroken, markBroken } from '@/assets'
 import { useGame } from '@/game/context'
 import { banner, closeZoom, flashState, zoomState } from '@/game/overlays'
+import Tooltip from '@/game/Tooltip.vue'
 import { NEIGHBOURHOOD_KEY, deckTag } from '@/game/util'
 import type { CardId } from '@/types'
 
@@ -124,4 +125,5 @@ const cardSrc = (cid: CardId) => cardImg(ctx.cardCode(cid))
     <span>{{ banner.name }}</span>
   </div>
   <div v-if="flashState.key" :key="flashState.key" id="flash" class="flash show">{{ flashState.text }}</div>
+  <Tooltip />
 </template>

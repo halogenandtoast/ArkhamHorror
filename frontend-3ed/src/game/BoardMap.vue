@@ -346,6 +346,9 @@ function zoomToTile(bx: number, by: number) {
   applyView()
 }
 
+// while a space is being chosen the pieces on the board are not what is being asked for
+const pickingSpace = computed(() => Object.keys(ctx.spaceChoices.value).length > 0)
+
 const hideTokens = ref(!!readPref('ah3e-hide-tokens'))
 function toggleTokens(hide = !hideTokens.value) {
   hideTokens.value = hide
@@ -460,7 +463,7 @@ onUnmounted(() => {
     id="mapViewport"
     ref="vpEl"
     class="map-wrap"
-    :class="{ 'hide-tokens': hideTokens, zoomed, panning }"
+    :class="{ 'hide-tokens': hideTokens, zoomed, panning, 'picking-space': pickingSpace }"
     @pointerdown="pointerDown"
     @pointermove="pointerMove"
     @pointerup="pointerEnd"

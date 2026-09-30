@@ -565,6 +565,10 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); opacity:.6; }
 /* the strip is wider than the card it hangs from, so the monster under the pointer
    comes out on top -- and its space with it, since a space's own transform makes it
    a stacking context that a child's z-index cannot climb out of */
+/* while a space is being chosen the ring is what is being aimed at: a monster on
+   the space neither climbs over its neighbours nor swallows the click */
+.map-wrap.picking-space .mon-card { pointer-events:none; }
+.map-wrap.picking-space .mon-card:hover, .map-wrap.picking-space .anchor:has(.mon-card:hover) { z-index:auto; }
 .mon-card:hover { z-index:20; }
 .mon-card:hover > .mon-dbg { z-index:21; }
 .anchor:has(.mon-card:hover), .pa-engaged-cards:has(.mon-card:hover) { z-index:20; position:relative; }

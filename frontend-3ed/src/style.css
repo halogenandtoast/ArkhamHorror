@@ -646,17 +646,18 @@ is the chip in the heading rather than a paragraph under it */
 .undo-btn kbd { font:inherit; font-size:11px; padding:0 5px; border:1px solid var(--line); border-radius:4px; color:var(--muted); }
 /* the tooltip a token raises: fixed, so a panel that clips its own overflow cannot
 clip it, and never under the pointer */
-.tip { position:fixed; z-index:60; transform:translate(-50%, -100%); max-width:260px; pointer-events:none;
+.tip { position:fixed; z-index:60; max-width:260px; pointer-events:none;
   display:grid; gap:3px; padding:8px 10px; border-radius:10px; border:1px solid var(--line);
   background:color-mix(in srgb, var(--panel) 94%, #000); color:var(--ink); font-size:12px; line-height:1.4;
-  box-shadow:0 10px 26px rgba(0,0,0,.55); animation:tip-in .12s ease-out; }
-.tip.below { transform:translate(-50%, 0); }
+  box-shadow:0 10px 26px rgba(0,0,0,.55); }
+.tip.placed { animation:tip-in .12s ease-out; }
 .tip b { font-size:13px; }
 .tip span { color:var(--muted); }
-.tip::after { content:''; position:absolute; left:50%; margin-left:-5px; border:5px solid transparent; }
+/* the arrow sits under the token even when the box has been pushed off its centre */
+.tip::after { content:''; position:absolute; left:var(--arrow, 50%); margin-left:-5px; border:5px solid transparent; }
 .tip:not(.below)::after { top:100%; border-top-color:var(--line); }
 .tip.below::after { bottom:100%; border-bottom-color:var(--line); }
-@keyframes tip-in { from { opacity:0; transform:translate(-50%, calc(-100% - 4px)); } }
+@keyframes tip-in { from { opacity:0; } }
 @media (prefers-reduced-motion: reduce) { .tip { animation:none; } }
 .flash { position:fixed; left:50%; bottom:28px; transform:translateX(-50%); z-index:20; padding:8px 16px; border-radius:999px; background:#111; color:#fff; font-weight:600; opacity:0; pointer-events:none; }
 .flash.show { animation:flash 1.2s ease-out; }

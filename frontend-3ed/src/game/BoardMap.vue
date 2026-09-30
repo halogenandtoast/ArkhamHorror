@@ -203,6 +203,9 @@ function applyView() {
     board = boardEl.value
   if (!vp || !fit || !board) return
   const full = isFull()
+  /* full screen is the window: drop the height we pinned for the band before
+  measuring, or we measure the band we are leaving */
+  if (full) vp.style.height = ''
   const W = board.offsetWidth,
     H = board.offsetHeight,
     vw = vp.clientWidth

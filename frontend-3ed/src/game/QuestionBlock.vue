@@ -45,6 +45,13 @@ const onTheMap = computed(
 )
 const shown = computed(() => (onTheMap.value ? choices.value.filter((c) => c.label.tag !== 'SpaceLabel') : choices.value))
 
+/* "Roll 2 dice" is better shown than said: the test box lays out that many blank
+dice above the button that rolls them, so the prompt itself is dropped. */
+const rollCount = computed(() => {
+  const m = /^Roll (\d+) dic?e$/.exec(props.question.prompt)
+  return m ? Number(m[1]) : null
+})
+
 // nothing but "take your turn": the chip already names them, so the prompt would
 // only say what the one button says
 const turnOnly = computed(
@@ -68,11 +75,13 @@ const testHere = computed(() => {
         >
       </template>
       <span v-else>Player {{ pid }}</span>
-      <span v-if="!turnOnly">{{ question.prompt }}</span>
+      <span v-if="!turnOnly && rollCount === null">{{ question.prompt }}</span>
     </div>
     <div v-if="loose" class="loose-roll">
       Rolled <span v-for="(v, k) in loose" :key="k" class="die">{{ v }}</span>
     </div>
+    <!-- the test is what the buttons are about, so it is read first -->
+    <TestBox v-if="test && testHere" :test="test" :pending="rollCount" />
     <template v-if="mine">
       <button
         v-for="c in shown"
@@ -87,6 +96,5 @@ const testHere = computed(() => {
       </button>
     </template>
     <p v-else class="waiting q-waiting">Waiting for {{ username ?? `player ${pid}` }}&hellip;</p>
-    <TestBox v-if="test && testHere" :test="test" />
   </div>
 </template>

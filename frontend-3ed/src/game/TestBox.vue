@@ -6,7 +6,8 @@ import Tok from '@/game/Tok.vue'
 import { FOCUS, TEST_STEPS, humanize } from '@/game/util'
 import type { SkillTest, Tagged } from '@/types'
 
-const props = defineProps<{ test: SkillTest }>()
+// pending: dice the open question is about to roll, shown as blanks until it does
+const props = defineProps<{ test: SkillTest; pending?: number | null }>()
 const ctx = useGame()
 const t = computed(() => props.test)
 
@@ -72,7 +73,13 @@ const dieTitle = (d: { value: number; removed?: boolean }) =>
     </ol>
     <div class="test-dice">
       <span v-for="(d, k) in t.dice" :key="k" class="die" :class="dieClass(d)" :title="dieTitle(d)">{{ d.value }}</span>
-      <em v-if="!t.dice.length" class="waiting">No dice rolled yet</em>
+      <span
+        v-for="n in props.pending ?? 0"
+        :key="`p${n}`"
+        class="die blank"
+        :title="`${props.pending} to roll`"
+      ></span>
+      <em v-if="!t.dice.length && !props.pending" class="waiting">No dice rolled yet</em>
       <span v-if="t.addedSuccesses" class="test-fact">+{{ t.addedSuccesses }} added</span>
       <span v-if="ctx.dbgOn.value" class="test-fact"
         >added

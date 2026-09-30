@@ -46,7 +46,7 @@ the top, which costs a line of height on every box */
 .label-zoom { position:absolute; right:4px; top:4px; width:26px; height:26px; border-radius:8px; display:grid; place-items:center; background:rgba(0,0,0,.55); color:#fff; cursor:zoom-in; backdrop-filter:blur(2px); box-shadow:0 1px 4px rgba(0,0,0,.5); transition:background .12s, transform .12s; }
 .label-zoom:hover { background:rgba(0,0,0,.85); transform:scale(1.08); }
 .examine-icon { width:15px; height:15px; display:block; }
-.test-box { margin:10px 0 0; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--accent) 6%, transparent); display:grid; gap:10px; }
+.test-box { width:100%; margin:6px 0 10px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--accent) 6%, transparent); display:grid; gap:10px; }
 .test-head { display:flex; align-items:center; gap:10px; }
 .test-head > div:nth-child(2) { flex:1; }
 .test-kind { font-size:12px; color:var(--muted); }
@@ -61,6 +61,9 @@ the top, which costs a line of height on every box */
 .test-dice { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 .test-dice .die { width:34px; height:34px; line-height:34px; margin:0; font-size:17px; border-radius:7px; }
 .test-dice .die.miss { opacity:.65; }
+/* what is about to be rolled: the dice are there, waiting to be filled in */
+.test-dice .die.blank { border-style:dashed; border-color:color-mix(in srgb, var(--accent) 55%, var(--line));
+  background:color-mix(in srgb, var(--accent) 8%, transparent); }
 .test-dice .die.removed { opacity:.3; text-decoration:line-through; }
 .test-facts { display:flex; flex-wrap:wrap; gap:6px; }
 .test-fact { font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }

@@ -79,6 +79,14 @@ const assets = computed(() => {
   return xs
 })
 
+const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
+
+// A tucked card the engine is currently asking about has to come back to the
+// table, or the question has no clickable answer and the game cannot continue
+// (Charisma is `setup-only` but is still a legal ExhaustAssetCost target). A
+// substring hit that is not really a target only un-tucks a card, which is safe.
+const choiceBlob = computed(() => JSON.stringify(choices.value))
+
 const settings = useSettings()
 const cardStore = useCardStore()
 
@@ -133,6 +141,7 @@ watch(manuallyHidden, v => setGameLocalStorageItem(props.game.id, hiddenKey.valu
 watch(manuallyShown, v => setGameLocalStorageItem(props.game.id, shownKey.value, JSON.stringify(v)))
 
 function isCardHidden(entity: { id: string, cardCode: string }) {
+  if (choiceBlob.value.includes(entity.id)) return false
   if (manuallyShown.value.includes(entity.id)) return false
   if (manuallyHidden.value.includes(entity.id)) return true
   if (inertCardCodes.value.has(entity.cardCode)) return true
@@ -377,7 +386,6 @@ const topOfHunchDeck = computed(() => {
 const viewingDiscard = ref(false)
 
 const id = computed(() => props.investigator.id)
-const choices = computed(() => ArkhamGame.choices(props.game, props.playerId))
 
 const tarotCardAbility = (card: TarotCard) => {
   if(props.playerId !== props.investigator.playerId) {

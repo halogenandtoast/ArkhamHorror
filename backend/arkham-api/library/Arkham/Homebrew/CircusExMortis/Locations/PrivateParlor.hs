@@ -5,7 +5,7 @@ import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
-import Arkham.Trait (Trait (Ally, Creature))
+import Arkham.Trait (Trait (Creature))
 
 newtype PrivateParlor = PrivateParlor LocationAttrs
   deriving anyclass IsLocation
@@ -24,7 +24,8 @@ instance HasAbilities PrivateParlor where
       $ FastAbility
       $ ExhaustAssetCost
       $ AssetControlledBy You
-      <> NotAsset (AssetWithTrait Creature <> AssetWithTrait Ally)
+      <> not_ (AssetWithTrait Creature)
+      <> #ally
 
 instance RunMessage PrivateParlor where
   runMessage msg l@(PrivateParlor attrs) = runQueueT $ case msg of

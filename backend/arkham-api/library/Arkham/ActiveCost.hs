@@ -573,11 +573,13 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
       push $ Exhaust (mkExhaustion c.source target)
       withPayment $ ExhaustPayment [target]
     ExhaustAssetCost matcher -> do
-      assets <- select $ matcher <> AssetReady
+      -- `getCanAffordCost` resolves `You` against the paying investigator, so the
+      -- payment step has to as well or an affordable cost offers nothing to click.
+      assets <- select $ replaceYouMatcher iid matcher <> AssetReady
       push $ chooseOne player $ targetLabels assets $ only . pay . exhaust
       pure c
     ExhaustXAssetCost matcher -> do
-      assets <- select $ matcher <> AssetReady
+      assets <- select $ replaceYouMatcher iid matcher <> AssetReady
       push
         $ chooseSome1 player "Done exhausting"
         $ targetLabels assets
@@ -693,7 +695,7 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
       pushAll [DiscardedCost target, toDiscardBy iid source target]
       withPayment $ DiscardPayment [(zone, card)]
     DiscardAssetCost matcher -> do
-      assets <- select (matcher <> DiscardableAsset)
+      assets <- select (replaceYouMatcher iid matcher <> DiscardableAsset)
       push $ chooseOneSourced $ targetLabels assets $ only . pay . discardCost
       pure c
     DiscardRandomCardCost -> do

@@ -23,8 +23,8 @@ const choice = reactive({
 const error = ref('')
 const busy = ref(false)
 
-// the scenarios box by box, in the order the catalog lists them; a box the engine
-// cannot play yet is folded away rather than filling the page
+// the scenarios box by box, in the order the catalog lists them; a box with nothing
+// implemented yet is folded away rather than filling the page
 const groups = computed(() =>
   props.catalog.expansions
     .map((e) => {
@@ -97,10 +97,10 @@ async function submit() {
     <form class="ng" @submit.prevent="submit">
       <div class="ng-scenarios">
         <section v-for="g in groups" :key="g.exp" class="ng-card" :class="{ 'ng-later': !g.playable }">
-          <!-- a box the engine cannot play yet opens only if you ask to see it -->
+          <!-- a box with nothing implemented yet opens only if you ask to see it -->
           <component :is="g.playable ? 'div' : 'details'" class="ng-group">
             <component :is="g.playable ? 'div' : 'summary'" class="ng-title">
-              {{ expName(g.exp) }}<template v-if="!g.playable"> · not in the engine yet</template>
+              {{ expName(g.exp) }}<template v-if="!g.playable"> · not implemented yet</template>
             </component>
             <div class="sc-grid">
             <!-- a scenario is picked by its sheet; the corner icon opens it flippable between story and setup sides -->
@@ -110,12 +110,12 @@ async function submit() {
                 class="sc-pick"
                 :class="{ 'no-art': isBroken(story(sc.code)), on: choice.scenario === sc.code }"
                 :disabled="!sc.playable"
-                :title="sc.playable ? `Play ${sc.name}` : `${sc.name} is not in the engine yet`"
+                :title="sc.playable ? `Play ${sc.name}` : `${sc.name} is not implemented yet`"
                 @click="pick(sc)"
               >
                 <img v-if="!isBroken(story(sc.code))" :src="story(sc.code)" alt="" @error="markBroken(story(sc.code))" />
                 <span class="sc-name">{{ sc.name }}</span>
-                <span class="sc-exp">{{ sc.playable ? expName(sc.expansion) : 'Not playable yet' }}</span>
+                <span class="sc-exp">{{ sc.playable ? expName(sc.expansion) : 'Not implemented yet' }}</span>
               </button>
               <span
                 class="label-zoom"

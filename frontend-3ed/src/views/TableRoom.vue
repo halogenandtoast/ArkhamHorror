@@ -135,7 +135,6 @@ const confirmClose = () => {
         <span class="pill">{{ tv.options.mode.replace('Mode', '') }} mode</span>
         <span v-if="scenarioName" class="pill">{{ scenarioName }}</span>
         <span class="pill">{{ tv.options.expansions.map(expName).join(', ') }}</span>
-        <span v-if="tv.options.debug" class="pill">Debug</span>
       </div>
       <span style="flex: 1"></span>
       <span v-if="socket.status.value !== 'OPEN'" class="waiting">Reconnecting…</span>

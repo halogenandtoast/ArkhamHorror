@@ -183,8 +183,8 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     debugMode.value = on
     writePref('ah3e-debug', on ? '1' : '0')
   }
-  // the server refuses debug actions unless the table was opened with it, and to anyone not seated
-  const debugAllowed = computed(() => !!tv.value?.options.debug && seated.value)
+  // the server refuses debug actions from anyone not seated
+  const debugAllowed = computed(() => seated.value)
   const dbgOn = computed(() => debugMode.value && debugAllowed.value && !!game.value)
   const dbgIid = () => {
     const invs = game.value?.investigators ?? {}

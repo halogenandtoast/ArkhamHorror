@@ -186,7 +186,6 @@ data Game = Game
   , log :: [Text]
   , rumor :: Maybe Rumor
   , rumorIgnored :: [InvestigatorId]
-  , debug :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -40,7 +40,7 @@ main = do
 
 start :: IORef (Maybe Game) -> NewGame -> IO (Either Text ())
 start ref ng = do
-  let opts = GameOptions {expansions = ng.expansions, mode = ng.mode, debug = True, scenario = Nothing}
+  let opts = GameOptions {expansions = ng.expansions, mode = ng.mode, scenario = Nothing}
   case newGame [PlayerId n | n <- [1 .. ng.players]] ng.seed opts of
     Left e -> pure (Left e)
     Right g -> case runEngine g of

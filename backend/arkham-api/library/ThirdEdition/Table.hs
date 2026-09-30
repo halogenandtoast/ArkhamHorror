@@ -23,7 +23,7 @@ data Seat = Seat {player :: Int, user :: Maybe UserId, username :: Maybe Text}
   deriving anyclass (ToJSON, FromJSON)
 
 data TableOptions = TableOptions
-  {expansions :: [Expansion], mode :: GameMode, debug :: Bool, scenario :: Maybe ScenarioCode}
+  {expansions :: [Expansion], mode :: GameMode, scenario :: Maybe ScenarioCode}
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -166,7 +166,7 @@ onUnmounted(() => {
                   v-if="extras(t).length"
                 >
                   · with {{ extras(t).map(expName).join(', ') }}</template
-                >{{ t.options.debug ? ' · debug' : '' }}
+                >
               </div>
             </div>
             <div class="table-buttons">

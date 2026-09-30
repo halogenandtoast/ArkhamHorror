@@ -22,7 +22,6 @@ import Data.Map.Strict qualified as Map
 data GameOptions = GameOptions
   { expansions :: [Expansion]
   , mode :: GameMode
-  , debug :: Bool
   , -- | the scenario the table was made for; without one the group is asked
     scenario :: Maybe ScenarioCode
   }
@@ -30,7 +29,7 @@ data GameOptions = GameOptions
   deriving anyclass (ToJSON, FromJSON)
 
 defaultOptions :: GameOptions
-defaultOptions = GameOptions [CoreSet] StandardMode False Nothing
+defaultOptions = GameOptions [CoreSet] StandardMode Nothing
 
 emptyGame :: [PlayerId] -> Int -> GameOptions -> Game
 emptyGame pids seed opts =
@@ -80,7 +79,6 @@ emptyGame pids seed opts =
     , log = []
     , rumor = Nothing
     , rumorIgnored = []
-    , debug = opts.debug
     }
 
 newGame :: [PlayerId] -> Int -> GameOptions -> Either Text Game

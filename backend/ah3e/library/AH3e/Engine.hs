@@ -19,7 +19,6 @@ import Data.Map.Strict qualified as Map
 data EngineError
   = NoQuestionFor PlayerId
   | InvalidChoice Int
-  | DebugDisabled
   | EngineStuck
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -45,18 +44,16 @@ answer pid idx g = do
   when (idx < 0) $ Left (InvalidChoice idx)
   runEngine g {questions = mempty, queue = c.messages <> g.queue, phasesEntered = []}
 
+-- | Runs now, even with a question open: the open questions wait behind it and
+-- come back once it finishes, after any question of its own.
 applyDebug :: DebugAction -> Game -> Either EngineError Game
-applyDebug action g
-  | not g.debug = Left DebugDisabled
-  -- runs now, even with a question open: the open questions wait behind it and
-  -- come back once it finishes, after any question of its own
-  | otherwise =
-      runEngine
-        g
-          { questions = mempty
-          , queue = Debug action : RestoreQuestions g.questions : g.queue
-          , phasesEntered = []
-          }
+applyDebug action g =
+  runEngine
+    g
+      { questions = mempty
+      , queue = Debug action : RestoreQuestions g.questions : g.queue
+      , phasesEntered = []
+      }
 
 {- | An earlier state to resume from, carrying the seed the state being thrown away
 had reached. The seed is part of the game, so an undo hands back the roll it just

@@ -50,7 +50,6 @@ export interface NewTable {
   seats: number
   expansions: string[]
   mode: GameMode
-  debug: boolean
   scenario?: string
 }
 export const createTable = (body: NewTable) => request<TableView>('POST', '/3ed/tables', body)

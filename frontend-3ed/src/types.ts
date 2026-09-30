@@ -48,7 +48,6 @@ export interface Seat {
 export interface TableOptions {
   expansions: string[]
   mode: GameMode
-  debug: boolean
   // the scenario the table was made for; older tables chose one after starting
   scenario?: string | null
 }

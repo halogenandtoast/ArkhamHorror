@@ -258,15 +258,22 @@ instance RunMessage CircusExMortis where
               HBAssets.deCultusBestiaeForgottenWorkOfApuleius
               HBAssets.deCultusBestiaeInterpretationOfObsession
       flavor $ setTitle "title" >> p "bookmark"
-      addChaosToken #skull
+      addChaosToken MoonToken
       nextCampaignStep
       pure c
     -- Interlude: Good Omens (guide pp27-28)
     CampaignStep (InterludeStep 3 _) -> scope "goodOmens" do
-      flavor $ setTitle "title" >> p "destinyReminder"
-      flavor $ setTitle "title" >> p "intro"
-      mAmalthea <- getAmaltheaWeaverOwner
-      case snd <$> mAmalthea of
+      -- Which branch the interlude takes is decided by the Amalthea Weaver
+      -- version in play, so the fork is shown validated rather than as prose.
+      amalthea <- fmap snd <$> getAmaltheaWeaverOwner
+      flavor do
+        setTitle "title"
+        ul $ li "destinyReminder"
+        p "intro"
+        ul $ li.nested "amaltheaCheck" do
+          li.validate (amalthea == Just HBAssets.amaltheaWeaverAspirantOfCourage) "aspirantOfCourage"
+          li.validate (amalthea == Just HBAssets.amaltheaWeaverAspirantOfWisdom) "aspirantOfWisdom"
+      case amalthea of
         Just v
           | v == HBAssets.amaltheaWeaverAspirantOfCourage ->
               storyWithChooseOneM (setTitle "title" >> p "moreToDo") do
@@ -286,9 +293,18 @@ instance RunMessage CircusExMortis where
                   flavor $ setTitle "title" >> p "writtenInSmoke"
                   swapCampaignCard v HBAssets.amaltheaWeaverOracleOfMystery
         _ -> pure ()
-      scope "theLastWord" $ flavor $ setTitle "title" >> p "body"
-      mDeCultus <- getDeCultusBestiaeOwner
-      case snd <$> mDeCultus of
+      deCultus <- fmap snd <$> getDeCultusBestiaeOwner
+      scope "theLastWord" $ flavor do
+        setTitle "title"
+        p "body"
+        ul $ li.nested "deCultusCheck" do
+          li.validate
+            (deCultus == Just HBAssets.deCultusBestiaeInterpretationOfConviction)
+            "interpretationOfConviction"
+          li.validate
+            (deCultus == Just HBAssets.deCultusBestiaeInterpretationOfObsession)
+            "interpretationOfObsession"
+      case deCultus of
         Just v
           | v == HBAssets.deCultusBestiaeInterpretationOfConviction ->
               storyWithChooseOneM (setTitle "title" >> p "theInfinite") do
@@ -308,11 +324,8 @@ instance RunMessage CircusExMortis where
                   flavor $ setTitle "title" >> p "againstTheStorm"
                   swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheBehemoth
         _ -> pure ()
-      flavor do
-        setTitle "title"
-        p "breakOfDawn"
-        ul $ li "addSkullToken"
-      addChaosToken #skull
+      flavor $ setTitle "title" >> p "breakOfDawn"
+      addChaosToken MoonToken
       nextCampaignStep
       pure c
     -- Epilogue (guide pp35-36); only reached when the investigators won.

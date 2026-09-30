@@ -247,13 +247,17 @@ function send(
 ) {
   const debug = useDebug()
   if (drop.kind === 'remove') {
-    // Breaches are a location field, not a token, so they have their own messages.
+    // Breaches are a location field, not a token, so they have their own messages and
+    // no MoveTokens equivalent. `Run` keeps the pair in one queue pass, which is what
+    // makes the move a single step: undone message by message, one undo would leave the
+    // breach removed from one location and never placed on the other.
     if (drop.token === 'Breach') {
-      return debug
-        .send(gameId, { tag: 'RemoveBreaches', contents: [drop.target, amount] })
-        .then(() =>
-          target ? debug.send(gameId, { tag: 'PlaceBreaches', contents: [target, amount] }) : null
-        )
+      const remove = { tag: 'RemoveBreaches', contents: [drop.target, amount] }
+      if (!target) return debug.send(gameId, remove)
+      return debug.send(gameId, {
+        tag: 'Run',
+        contents: [remove, { tag: 'PlaceBreaches', contents: [target, amount] }],
+      })
     }
     const contents = target
       ? [{ tag: 'GameSource' }, sourceOf(drop.target), target, drop.token, amount]

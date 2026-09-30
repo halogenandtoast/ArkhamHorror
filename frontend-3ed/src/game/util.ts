@@ -18,6 +18,47 @@ export const show = (v: unknown): string =>
 
 export const TOKEN = (n: string) => img(`tokens/${n}.webp`)
 
+/* The symbols the cards print, as glyphs of the AHRDIcons font. Use them through
+Icon.vue rather than pasting the characters, which are in a private use area. */
+export const ICON: Record<string, string> = {
+  lore: '\uf490',
+  influence: '\uf491',
+  observation: '\uf492',
+  strength: '\uf493',
+  will: '\uf494',
+  items: '\uf495',
+  special: '\uf496',
+  spells: '\uf497',
+  allies: '\uf498',
+  damage: '\uf499',
+  horror: '\uf49a',
+  money: '\uf49b',
+  remnant: '\uf49c',
+  'remove-doom': '\uf49d',
+  doom: '\uf49e',
+  clue: '\uf49f',
+  monster: '\uf4a0',
+  headline: '\uf4a1',
+  'gate-burst': '\uf4a2',
+  reckoning: '\uf4a3',
+  residential: '\uf4af',
+  scenic: '\uf4c0',
+  bridge: '\uf4c1',
+  'train-platform': '\uf4c2',
+  'country-road': '\uf4c3',
+  'ferry-terminal': '\uf4c4',
+  move: '\uf4c7',
+  'spread-terror': '\uf4c8',
+}
+// a skill's icon, by the name the engine uses
+export const SKILL_ICON: Record<string, string> = {
+  Lore: 'lore',
+  Influence: 'influence',
+  Observation: 'observation',
+  Strength: 'strength',
+  Will: 'will',
+}
+
 export const MYTHOS: Record<string, string> = {
   SpreadDoomToken: 'mythos-spread-doom',
   SpawnMonsterToken: 'mythos-spawn-monster',

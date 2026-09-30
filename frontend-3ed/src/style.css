@@ -6,6 +6,12 @@ as a drawn line rather than a glow. */
   drop-shadow(0 1px 0 rgba(255,255,255,.45)) drop-shadow(0 -1px 0 rgba(255,255,255,.45)); }
 * { box-sizing: border-box; }
 [hidden] { display:none !important; }
+/* the game's own icon font: one glyph per symbol the cards print */
+@font-face { font-family:'AHRDIcons'; src:url('/fonts/AHRDIcons.ttf') format('truetype'); font-display:swap;
+  font-weight:normal; font-style:normal; }
+.ico { font-family:'AHRDIcons'; font-weight:normal; font-style:normal; font-variant:normal; line-height:1;
+  display:inline-block; vertical-align:-.08em; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+
 body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 system-ui, sans-serif; display:flex; flex-direction:column; min-height:100dvh; }
 header { display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding:4px 16px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:4; }
 header h1 { font-size:15px; margin:0 8px 0 0; }

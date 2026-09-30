@@ -30,8 +30,8 @@ spec = describe "Lesson Learned" do
     applyAllDamage
 
     useReaction
-    click "Start skill test"
-    click "Apply results"
+    startSkillTest
+    applyResults
 
     assert $ selectNone $ Matcher.EnemyWithId (toId enemy)
     assert survivalKnife.exhausted

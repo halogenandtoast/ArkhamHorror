@@ -6,7 +6,7 @@ import Arkham.Helpers.Act (getCurrentActStep)
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectMapM)
 import Arkham.Helpers.Query (getPlayerCount)
-import Arkham.Helpers.SkillTest (getSkillTestAction, isParley)
+import Arkham.Helpers.SkillTest (isInvestigation, isParley)
 import Arkham.Helpers.Xp (XpBonus (NoBonus))
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Agendas
@@ -124,7 +124,7 @@ instance HasChaosTokenValue Bacchanalia where
       x <- (`divideRoundUp` 2) <$> getViceCount iid
       pure $ toChaosTokenValue attrs Skull x (x + 1)
     Cultist -> do
-      investigating <- (== Just #investigate) <$> getSkillTestAction
+      investigating <- isInvestigation
       pure
         $ if investigating
           then toChaosTokenValue attrs Cultist 4 5

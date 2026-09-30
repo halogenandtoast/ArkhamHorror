@@ -1,8 +1,8 @@
 module Arkham.Event.Events.DarkInsight (darkInsight) where
 
-import Arkham.Script
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (cancelCardDraw)
+import Arkham.Script
 
 newtype DarkInsight = DarkInsight EventAttrs
   deriving anyclass (IsEvent, HasModifiersFor, HasAbilities)

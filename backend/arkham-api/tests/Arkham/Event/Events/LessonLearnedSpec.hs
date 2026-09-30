@@ -2,6 +2,7 @@ module Arkham.Event.Events.LessonLearnedSpec (spec) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Event.Cards qualified as Events
+import Arkham.Matcher qualified as Matcher
 import Arkham.Phase
 import TestImport.New
 
@@ -26,6 +27,7 @@ spec = describe "Lesson Learned" do
 
     run $ SetPhase EnemyPhase
     enemy `attacks` self
+    applyAllDamage
 
     useReaction
     click "Start skill test"

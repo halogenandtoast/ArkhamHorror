@@ -193,6 +193,20 @@ redis.check:
 	  }; \
 	fi
 
+## Build ah3e on its own. Use this rather than a bare `stack build ah3e`: the
+## flags must match what the api.* targets pass, or the two invocations produce
+## different ah3e ABI hashes and arkham-api's cached objects end up referencing
+## a package-id that is no longer registered ("cannot satisfy -package-id
+## ah3e-0.0.0-<hash>"). Never run it at the same time as an api.* build either --
+## both write ah3e/.stack-work/dist, and the loser clobbers package.conf.inplace.
+.PHONY: ah3e.build
+ah3e.build:
+	cd ah3e && \
+	stack build --test --no-run-tests --pedantic --fast ah3e \
+	  --ghc-options "-DDEVELOPMENT $(GHC_OPTIONS)" \
+	  --interleaved-output \
+		$(EXTRA_STACK_FLAGS)
+
 .PHONY: api.build
 api.build:
 	cd arkham-api && \

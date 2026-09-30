@@ -1,11 +1,9 @@
 module Arkham.Treachery.Cards.EdgeOfTheEarth.ElderThings.RiseOfTheElderThings (riseOfTheElderThings) where
 
 import Arkham.Card
-import Arkham.Helpers.Message hiding (gainSurge)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Matcher
-import Arkham.Placement
 import Arkham.Scenario.Types (Field (..))
 import Arkham.Trait (Trait (ElderThing))
 import Arkham.Treachery.CardDefs.EdgeOfTheEarth.ElderThings qualified as Cards
@@ -23,7 +21,7 @@ instance RunMessage RiseOfTheElderThings where
     Revelation iid (isSource attrs -> True) -> do
       elderThings <- filterCards (#enemy <> CardWithTrait ElderThing) <$> scenarioField ScenarioDiscard
       case elderThings of
-        (elderThing : _) -> pushM $ createEnemyWithPlacement_ (toCard elderThing) (InThreatArea iid)
+        (elderThing : _) -> createEnemy_ (toCard elderThing) iid
         [] -> gainSurge attrs
       doStep 2 msg
       pure t

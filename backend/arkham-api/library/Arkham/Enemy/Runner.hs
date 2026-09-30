@@ -588,8 +588,25 @@ instance RunMessage EnemyAttrs where
               | otherwise -> push $ PlaceEnemy enemyId placement
             Just lid ->
               canSpawnInLocation enemyId lid >>= \case
-                True -> spawnInto
                 False -> push $ toDiscard GameSource enemyId
+                True -> case placement of
+                  -- Spawning into a threat area is the same table state as
+                  -- `SpawnEngagedWith`: the enemy arrives at that investigator's
+                  -- location, so it *enters* it and owes the `EnemyEnters` /
+                  -- `EnemyEntersYourLocation` windows (Gather Intel 12036 on Rise
+                  -- of the Elder Things, #5787). `EnemyEntered` raises those and,
+                  -- while `enemySpawnDetails` is set, also emits the `#after
+                  -- EnemySpawns` window itself -- so `spawnInto`'s hand-rolled
+                  -- `afterSpawns` must not be pushed as well, or every "after this
+                  -- enemy spawns" ability fires twice. It reports `AtLocation lid`,
+                  -- matching the `#when` half the non-`Do` handler already pushed.
+                  InThreatArea {} ->
+                    pushAll [PlaceEnemy enemyId placement, EnemyEntered enemyId lid, EnemySpawned details]
+                  -- Every other placement that resolves to a location holds the
+                  -- enemy somewhere other than on the location itself: `AsSwarm`
+                  -- would re-enter its host, and an attachment or a vehicle only
+                  -- borrows its host's location.
+                  _ -> spawnInto
         _ -> error $ "Unhandled spawn: " <> show details.spawnAt
       pure a
     EnemySpawned details | details.enemy == enemyId -> do

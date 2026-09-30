@@ -1,8 +1,10 @@
 module Arkham.Helpers.WindowSpec (spec) where
 
-import Arkham.Attack (enemyAttack)
+import Arkham.Attack qualified as Attack
 import Arkham.Helpers.Window (windowMatches)
+import Arkham.Matcher qualified as Matcher
 import Arkham.Placement
+import Arkham.Window qualified as Window
 import Arkham.Zone
 import TestImport.New
 
@@ -23,7 +25,7 @@ spec = describe "after-attack windows with a removed enemy" do
     enemy <- testEnemy
     self `moveTo` location
     enemy `spawnAt` location
-    let details = enemyAttack (toId enemy) (toId enemy) (toId self)
+    let details = Attack.enemyAttack (toId enemy) (toId enemy) (toId self)
     run $ PlaceEnemy (toId enemy) (OutOfPlay RemovedZone)
     assertNone Matcher.AnyEnemy
     windowMatches
@@ -38,7 +40,7 @@ spec = describe "after-attack windows with a removed enemy" do
     enemy <- testEnemy
     self `moveTo` location
     enemy `spawnAt` location
-    let details = enemyAttack (toId enemy) (toId enemy) (toId self)
+    let details = Attack.enemyAttack (toId enemy) (toId enemy) (toId self)
     run $ PlaceEnemy (toId enemy) (OutOfPlay RemovedZone)
     windowMatches
       (toId self)

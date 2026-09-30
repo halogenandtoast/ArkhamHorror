@@ -203,11 +203,11 @@ const close = () => {
             <ActiveSide />
           </div>
           <Questions v-if="!wideRail || picking" />
-          <PlayerAreas v-if="!wideRail" />
+          <PlayerAreas v-if="!wideRail && !picking" />
           <UnderMap v-if="stacked && !picking" />
         </div>
-        <div v-if="wideRail" class="side-rail">
-          <Questions v-if="!picking" />
+        <div v-if="wideRail && !picking" class="side-rail">
+          <Questions />
           <PlayerAreas />
         </div>
       </div>

@@ -36,8 +36,12 @@ const groups = computed(() =>
 const openBox = ref(groups.value.find((g) => g.playable)?.exp ?? groups.value[0]?.exp ?? '')
 // a sheet holds its place with a skeleton until its own art has arrived
 const loaded = ref<Record<string, boolean>>({})
-// what to add belongs to the box you are looking at, so opening another starts it over
-watch(openBox, () => (choice.extras = []))
+// the pick belongs to the box you are looking at, so opening another starts over:
+// no scenario, and with it nothing to add to one
+watch(openBox, () => {
+  choice.scenario = ''
+  choice.extras = []
+})
 const picked = computed<ScenarioInfo | null>(
   () => props.catalog.scenarios.find((sc) => sc.code === choice.scenario) ?? null,
 )

@@ -21,7 +21,7 @@ instance HasAbilities StatuaryGardens where
     extendRevealed1 a
       $ restricted a 1 Here
       $ freeReaction
-      $ EnemyDealtDamage #after AnyDamageEffect (enemyAt a) (SourceUsedBy You)
+      $ EnemyDealtDamage #after AnyDamageEffect (oneOf [enemyAt a, enemyWasAt a]) (SourceUsedBy You)
 
 instance RunMessage StatuaryGardens where
   runMessage msg l@(StatuaryGardens attrs) = runQueueT $ case msg of

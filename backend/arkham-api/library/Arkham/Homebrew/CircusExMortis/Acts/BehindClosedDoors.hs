@@ -6,8 +6,8 @@ import Arkham.Matcher
 import Arkham.Trait (Trait (Restricted))
 
 newtype BehindClosedDoors = BehindClosedDoors ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 behindClosedDoors :: ActCard BehindClosedDoors
 behindClosedDoors = act (1, A) BehindClosedDoors Cards.behindClosedDoors (groupClueCost $ PerPlayer 7)

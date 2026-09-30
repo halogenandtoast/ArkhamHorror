@@ -5,7 +5,8 @@ import { useGame } from '@/game/context'
 import ExamineIcon from '@/game/ExamineIcon.vue'
 import MythosTok from '@/game/MythosTok.vue'
 import { zoom, zoomFlip } from '@/game/overlays'
-import { show } from '@/game/util'
+import Tok from '@/game/Tok.vue'
+import { FOCUS, show } from '@/game/util'
 import type { CardId, Tagged } from '@/types'
 
 // compact: an investigator named in passing -- traded with, attacked, chosen to
@@ -31,8 +32,6 @@ const text = computed((): string | null => {
       return 'Monster: ' + ctx.cardName(c)
     case 'CardLabel':
       return ctx.cardName(c)
-    case 'SkillLabel':
-      return 'Skill: ' + c
     case 'DieLabel':
       return `Die ${c[0] + 1} (${c[1]})`
     case 'ScenarioLabel':
@@ -41,6 +40,7 @@ const text = computed((): string | null => {
       return ctx.sourceLabelText(c)
     case 'CardsLabel':
     case 'InvestigatorLabel':
+    case 'SkillLabel':
     case 'TokenLabel':
       return null
     default:
@@ -69,6 +69,11 @@ const inv = computed(() => {
 
 <template>
   <template v-if="text !== null">{{ text }}</template>
+  <!-- a skill is the focus token that sits on it -->
+  <template v-else-if="label.tag === 'SkillLabel'"
+    ><Tok :name="FOCUS[label.contents] ?? 'focus-lore'" :title="`${label.contents} focus`" :size="26" />
+    {{ label.contents }}</template
+  >
   <template v-else-if="label.tag === 'TokenLabel'"
     ><MythosTok :token="label.contents" :size="24" /> {{ String(label.contents).replace(/Token$/, '') }}</template
   >

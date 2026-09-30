@@ -148,7 +148,7 @@ async function submit() {
 
       <div class="ng-config">
         <div v-if="extrasOffered.length" class="ng-card">
-          <div class="ng-title">Add content</div>
+          <div class="ng-title">Include content</div>
           <div class="ng-tiles">
             <template v-for="e in extrasOffered" :key="e">
               <input

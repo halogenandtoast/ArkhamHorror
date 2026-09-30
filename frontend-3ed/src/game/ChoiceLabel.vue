@@ -8,7 +8,9 @@ import { zoom, zoomFlip } from '@/game/overlays'
 import { show } from '@/game/util'
 import type { CardId, Tagged } from '@/types'
 
-const props = defineProps<{ label: Tagged }>()
+// compact: an investigator named in passing -- traded with, attacked, chosen to
+// act -- is their standee, not their whole sheet; only the setup pick needs that
+const props = defineProps<{ label: Tagged; compact?: boolean }>()
 const ctx = useGame()
 
 const text = computed((): string | null => {
@@ -60,6 +62,7 @@ const inv = computed(() => {
     iid,
     front: img(`investigators/${iid}/front.webp`),
     back: img(`investigators/${iid}/back.webp`),
+    standee: img(`investigators/${iid}/standee.webp`),
   }
 })
 </script>
@@ -84,6 +87,15 @@ const inv = computed(() => {
         ></span
       ></span
     ><span class="label-cards-text">{{ label.contents[0] }}</span></template
+  >
+  <template v-else-if="inv && compact"
+    ><img
+      v-if="!isBroken(inv.standee)"
+      class="label-standee"
+      :src="inv.standee"
+      :alt="ctx.invName(inv.iid)"
+      @error="markBroken(inv.standee)"
+    />{{ ctx.invName(inv.iid) }}</template
   >
   <template v-else-if="inv"
     ><span class="label-cards"

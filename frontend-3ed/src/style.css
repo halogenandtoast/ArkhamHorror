@@ -65,11 +65,15 @@ the top, which costs a line of height on every box */
 .test-steps li.done { color:inherit; opacity:.7; }
 .test-steps li.now { background:var(--accent); color:#fff; font-weight:600; }
 .test-dice { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
-.test-dice .die { width:34px; height:34px; line-height:34px; margin:0; font-size:17px; border-radius:7px; }
+/* a die is a piece on the table, not a hole in the panel: it carries its own face */
+.test-dice .die { width:34px; height:34px; line-height:34px; margin:0; font-size:17px; border-radius:7px;
+  background:color-mix(in srgb, var(--ink) 14%, var(--panel)); border-color:color-mix(in srgb, var(--ink) 34%, var(--line));
+  box-shadow:0 1px 3px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12); }
+.test-dice .die.hit { background:var(--ok); border-color:var(--ok); }
 .test-dice .die.miss { opacity:.65; }
 /* what is about to be rolled: the dice are there, waiting to be filled in */
 .test-dice .die.blank { border-style:dashed; border-color:color-mix(in srgb, var(--accent) 55%, var(--line));
-  background:color-mix(in srgb, var(--accent) 8%, transparent); }
+  background:color-mix(in srgb, var(--accent) 10%, var(--panel)); box-shadow:none; }
 .test-dice .die.removed { opacity:.3; text-decoration:line-through; }
 .test-facts { display:flex; flex-wrap:wrap; gap:6px; }
 .test-fact { font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }

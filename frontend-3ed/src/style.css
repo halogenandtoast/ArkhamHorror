@@ -734,6 +734,9 @@ holds the height, and this fills it rather than flashing an empty panel */
   background-size:220% 100%; animation:skeleton 1.2s linear infinite; }
 @keyframes skeleton { from { background-position:120% 0; } to { background-position:-120% 0; } }
 @media (prefers-reduced-motion: reduce) { .sc-tile.loading .sc-pick::after { animation:none; } }
+/* a hairline under each piece of art, so it reads as a card rather than bleeding
+into the name below it */
+.ng-page .ng-box img, .ng-page .ng-tiles label img, .ng-page .sc-pick img { border-bottom:1px solid rgba(255,255,255,.22); }
 /* the covers and sheets are buttons, so dragging one should not peel off a ghost image */
 .ng-box img, .ng-tiles label img, .sc-pick img { -webkit-user-drag:none; user-select:none; }
 /* the boxes as a row of covers; the open one shows its scenarios underneath */

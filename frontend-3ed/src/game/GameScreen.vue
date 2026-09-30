@@ -22,8 +22,11 @@ const tv = computed(() => ctx.tv.value!)
 const inGame = computed(() => g.value.scenario !== null)
 /* Picking investigators there is nothing on the table to look at, so the board,
 the cup, the codex and the deck row stand down and the choice takes the room. */
+// an investigator label alone is not enough: "Take your turn" wears one too
 const picking = computed(() =>
-  Object.values(g.value.questions).some((q) => q.choices.some((c) => c.label.tag === 'InvestigatorLabel')),
+  Object.values(g.value.questions).some((q) =>
+    q.choices.some((c) => c.messages?.some((m) => m.tag === 'SelectInvestigator')),
+  ),
 )
 
 // a pill is plain text, or {text, cls, color} when it wants the phase tint

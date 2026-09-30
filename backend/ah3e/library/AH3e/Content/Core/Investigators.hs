@@ -42,7 +42,12 @@ investigators =
       , starting =
           [ StartingCard "duke"
           , StartingMoney 1
-          , StartingChoice [[StartingCard "petes-guitar"], [StartingCard "dark-dreams"]]
+          , -- Wanderer comes from Under Dark Waves, so it is offered only with that box
+            StartingChoice
+              [ [StartingCard "petes-guitar"]
+              , [StartingCard "dark-dreams"]
+              , [StartingCard "wanderer"]
+              ]
           ]
       , roles = [Survivor]
       , abilityText =

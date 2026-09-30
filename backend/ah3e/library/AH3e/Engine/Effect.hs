@@ -1,4 +1,4 @@
-module AH3e.Engine.Effect (resolveEffect, payCost, evalPredicate) where
+module AH3e.Engine.Effect (resolveEffect, gain, payCost, evalPredicate) where
 
 import AH3e.Engine.Helpers
 import AH3e.Engine.Hooks
@@ -63,7 +63,15 @@ resolveEffect ctx eff0 = do
     If p yes no -> do
       ok <- evalPredicate ctx p
       push (again (if ok then yes else no))
-    GainE g -> when playing $ gain ctx g
+    {- A card may want a word before its owner takes cards of a kind (Eye for
+    Appraisal's curios); the gain waits behind that word only when one is offered. -}
+    GainE g -> when playing case acquiring g of
+      Nothing -> gain ctx g
+      Just mtrait -> do
+        offers <- reactionsFor (BeforeAcquiring iid mtrait)
+        if null offers
+          then gain ctx g
+          else pushAll [CheckReactions (BeforeAcquiring iid mtrait) [], GainNow ctx g]
     LoseMoney a -> addMoney iid (negate (amt a))
     BuyFromDisplay mtrait pricing limit ifBought -> when playing $ push (BuyFromDisplayMsg ctx mtrait pricing limit ifBought)
     DiscardAFocus -> when playing do
@@ -100,8 +108,14 @@ resolveEffect ctx eff0 = do
     RemoveDoomFrom ScenarioSheet a -> #sheetDoom %= max 0 . subtract (amt a)
     -- only spaces holding doom are worth offering
     RemoveDoomFrom w a ->
-      withSpaceWhere ctx w (fmap ((> 0) . (.doom)) . getSpace) "choose a space to take doom from" (\w' -> RemoveDoomFrom w' a) \sid ->
-        [RemoveDoom sid (amt a), CheckReactions (AfterDoomRemoved iid (amt a)) []]
+      withSpaceWhere
+        ctx
+        w
+        (fmap ((> 0) . (.doom)) . getSpace)
+        "choose a space to take doom from"
+        (\w' -> RemoveDoomFrom w' a)
+        \sid ->
+          [RemoveDoom sid (amt a), CheckReactions (AfterDoomRemoved iid (amt a)) []]
     PlaceDoomAt ScenarioSheet a -> push (PlaceDoomOnSheet (amt a))
     PlaceDoomAt EachSpaceInYourNeighborhood a -> do
       spaces <- yourNeighborhoodSpaces iid
@@ -168,6 +182,13 @@ resolveEffect ctx eff0 = do
   optionAffordable = \case
     Pay cost _ -> canPayCost ctx.investigator cost
     _ -> pure True
+
+-- | The kind of card a gain would bring in, for the cards that answer one (446.5).
+acquiring :: Gain -> Maybe (Maybe Trait)
+acquiring = \case
+  AnItem mtrait -> Just mtrait
+  AnItemValued mtrait _ -> Just mtrait
+  _ -> Nothing
 
 countOf :: EffectCtx -> Count -> GameM Int
 countOf ctx c = do
@@ -348,6 +369,11 @@ spacesFor ctx w = do
     AnySpaceWithDoom -> do
       spaces <- traverse getSpace =<< allNeighborhoodSpaces
       reachable [s.id | s <- spaces, s.doom > 0]
+    SpaceInAnotherNeighborhood -> do
+      mine <- investigatorNeighborhood iid
+      board <- use #board
+      spaces <- reachable =<< allNeighborhoodSpaces
+      pure [sid | sid <- spaces, spaceNeighborhood sid board /= mine]
     AdjacentStreet -> do
       board <- use #board
       msid <- investigatorSpace iid
@@ -376,10 +402,12 @@ askingName = \case
   SourceMythos -> pure (Just "The mythos")
   _ -> pure Nothing
  where
-  nameOf cid = uses #cards (Map.member cid) >>= \known -> if known then Just . (.name) <$> getCardDef cid else pure Nothing
+  nameOf cid =
+    uses #cards (Map.member cid) >>= \known -> if known then Just . (.name) <$> getCardDef cid else pure Nothing
 
--- | @"Grasping Fungus: choose a space for the doom"@, and the instruction alone
--- when nothing names the asker.
+{- | @"Grasping Fungus: choose a space for the doom"@, and the instruction alone
+when nothing names the asker.
+-}
 spacePrompt :: EffectCtx -> Text -> GameM Text
 spacePrompt ctx what = do
   who <- askingName ctx.source
@@ -439,7 +467,7 @@ payCost :: EffectCtx -> Cost -> GameM ()
 payCost ctx cost = do
   let iid = ctx.investigator
   case cost of
-    SpendMoney n -> addMoney iid (negate n)
+    SpendMoney n -> spendMoney iid n
     SpendRemnants n -> do
       addRemnants iid (negate n)
       when (n > 0) $ push (CheckReactions (AfterSpendRemnant iid) [])

@@ -16,6 +16,8 @@ import AH3e.Content.HeadlineBehaviors qualified as Headlines
 import AH3e.Content.ItemBehaviors qualified as Items
 import AH3e.Content.SpecialBehaviors qualified as Specials
 import AH3e.Content.SpellBehaviors qualified as Spells
+import AH3e.Content.UnderDarkWaves.InvestigatorBehaviors qualified as UnderDarkWavesInvestigators
+import AH3e.Content.UnderDarkWaves.StartingBehaviors qualified as UnderDarkWavesStarting
 import AH3e.Engine.Behavior
 import AH3e.Engine.Helpers
 import AH3e.Engine.Monad
@@ -37,6 +39,8 @@ behaviors =
     <> DeadOfNightStarting.behaviors
     <> DeadOfNightEncounters.behaviors
     <> DeadOfNightInvestigators.behaviors
+    <> UnderDarkWavesInvestigators.behaviors
+    <> UnderDarkWavesStarting.behaviors
     <> Conditions.behaviors
     <> Allies.behaviors
     <> Headlines.behaviors

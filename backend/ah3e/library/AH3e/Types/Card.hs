@@ -67,6 +67,8 @@ data InvestigatorRule
   | MostItems
   | -- | Every investigator; the hunter pathway already prefers the closest.
     NearestInvestigator
+  | -- | that one investigator, named on a card that hunts or watches only them
+    NamedInvestigator InvestigatorId
   | LowestRemainingHealth
   | LowestRemainingSanity
   | TheLeader
@@ -222,6 +224,10 @@ data StartingPossession
   | StartingRemnants Int
   | StartingClues Int
   | StartingCondition ConditionName
+  | {- | anything else a sheet's setup says to do, as the sheet's own effect,
+    with the wording the sheet prints for it
+    -}
+    StartingEffect Text Effect
   | StartingChoice [[StartingPossession]]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

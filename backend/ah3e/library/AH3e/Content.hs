@@ -9,6 +9,9 @@ module AH3e.Content (
   scenarioCatalog,
   focusLimitBonus,
   focusLimitFromSpells,
+  focusLimitFromAllies,
+  spendableMoneyCards,
+  encounterPhaseSkillBonus,
   sharesFocusedSkills,
 ) where
 
@@ -31,6 +34,7 @@ import AH3e.Content.Scenarios
 import AH3e.Content.Special qualified as Special
 import AH3e.Content.Spells qualified as Spells
 import AH3e.Content.StreetCards qualified as StreetCards
+import AH3e.Content.UnderDarkWaves.Investigators qualified as UnderDarkWavesInvestigators
 import AH3e.Prelude
 import AH3e.Types.Card
 import AH3e.Types.Ids
@@ -41,6 +45,19 @@ import Data.Map.Strict qualified as Map
 -}
 focusLimitFromSpells :: [InvestigatorId]
 focusLimitFromSpells = Investigators.focusLimitFromSpells
+
+-- | Sheets whose focus limit is counted from the allies they hold instead.
+focusLimitFromAllies :: [InvestigatorId]
+focusLimitFromAllies = UnderDarkWavesInvestigators.focusLimitFromAllies
+
+-- | Cards whose money their holder may spend as their own.
+spendableMoneyCards :: [CardCode]
+spendableMoneyCards = UnderDarkWavesInvestigators.spendableMoneyCards
+
+-- | How much this card adds to every skill its holder has during the encounter phase.
+encounterPhaseSkillBonus :: CardCode -> Int
+encounterPhaseSkillBonus code =
+  Map.findWithDefault 0 code (Map.fromList UnderDarkWavesInvestigators.encounterPhaseSkillBonuses)
 
 -- | Cards that share their holder's focused skills with their space.
 sharesFocusedSkills :: [CardCode]
@@ -61,6 +78,7 @@ cardDefs =
           <> SilenceOfTsathoggua.cards
           <> ShotsInTheDark.cards
           <> DeadOfNightInvestigators.cards
+          <> UnderDarkWavesInvestigators.cards
           <> DeadOfNightEncounters.cards
           <> Investigators.cards
           <> NeighborhoodCards.cards
@@ -80,7 +98,12 @@ cardDef code = Map.lookup code cardDefs
 investigatorDefs :: Map InvestigatorId InvestigatorDef
 investigatorDefs =
   Map.fromList
-    [(d.id, d) | d <- Investigators.investigators <> DeadOfNightInvestigators.investigators]
+    [ (d.id, d)
+    | d <-
+        Investigators.investigators
+          <> DeadOfNightInvestigators.investigators
+          <> UnderDarkWavesInvestigators.investigators
+    ]
 
 investigatorDef :: InvestigatorId -> Maybe InvestigatorDef
 investigatorDef iid = Map.lookup iid investigatorDefs

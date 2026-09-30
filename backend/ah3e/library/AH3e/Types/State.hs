@@ -69,10 +69,19 @@ data Trigger
   | -- | they took this much doom off their own space, which some sheets answer
     AfterDoomRemoved InvestigatorId Int
   | AfterFailedTest InvestigatorId
+  | AfterPassedTest InvestigatorId
   | -- | they and this monster have just come apart
     AfterDisengage InvestigatorId CardId
+  | -- | they and this monster have just come together
+    AfterEngaged InvestigatorId CardId
+  | -- | this much doom has just gone onto the scenario sheet
+    AfterDoomOnSheet InvestigatorId Int
   | -- | an action of theirs has finished, whichever it was
     AfterAnyAction InvestigatorId ActionKind
+  | {- | somebody else's action has finished; the first is the card's owner, whose
+    decision it is, and the second whoever took it
+    -}
+    AnotherPerformsAction InvestigatorId InvestigatorId ActionKind
   | AfterSpendRemnant InvestigatorId
   | -- | the encounter has finished resolving; its investigator is still standing where it happened
     AfterEncounter InvestigatorId
@@ -91,6 +100,18 @@ data Trigger
   | AfterCastSpell InvestigatorId CardId
   | -- | someone in this investigator's space has just recovered sanity
     AfterRecoverSanity InvestigatorId RecoverTarget
+  | -- | a card has just joined the codex, or one already there has turned over
+    AfterCodexChanged InvestigatorId
+  | -- | the encounter just resolved came off the street deck (426.5)
+    AfterStreetEncounter InvestigatorId
+  | {- | the action is about to be performed and can still be prepared for; the
+    action itself has not begun, so nothing about it has been chosen yet
+    -}
+    BeforePerformAction InvestigatorId ActionKind
+  | {- | cards of this kind are about to be bought or gained, while the display can
+    still be changed (Eye for Appraisal)
+    -}
+    BeforeAcquiring InvestigatorId (Maybe Trait)
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -109,8 +130,12 @@ triggerInvestigator = \case
   AfterMoveAction iid -> iid
   AfterDoomRemoved iid _ -> iid
   AfterFailedTest iid -> iid
+  AfterPassedTest iid -> iid
   AfterDisengage iid _ -> iid
+  AfterEngaged iid _ -> iid
+  AfterDoomOnSheet iid _ -> iid
   AfterAnyAction iid _ -> iid
+  AnotherPerformsAction owner _ _ -> owner
   AfterSpendRemnant iid -> iid
   AfterEncounter iid -> iid
   AfterDefeatMonsterInAttack iid -> iid
@@ -123,6 +148,10 @@ triggerInvestigator = \case
   SpentFocusToReroll iid -> iid
   AfterCastSpell iid _ -> iid
   AfterRecoverSanity iid _ -> iid
+  AfterCodexChanged iid -> iid
+  AfterStreetEncounter iid -> iid
+  BeforePerformAction iid _ -> iid
+  BeforeAcquiring iid _ -> iid
 
 data HarmKind = NormalHarm | DirectHarm
   deriving stock (Show, Eq, Generic)

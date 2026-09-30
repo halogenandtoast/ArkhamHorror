@@ -68,6 +68,8 @@ data Where
   | AdjacentSpace
   | YourSpaceOrAdjacent
   | AnySpaceWithDoom
+  | -- | any space of a neighborhood other than the one you stand in
+    SpaceInAnotherNeighborhood
   | AdjacentSpaceWithMostDoom
   | SourceSpace
   | ScenarioSheet

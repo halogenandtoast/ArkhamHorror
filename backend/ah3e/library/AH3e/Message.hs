@@ -53,6 +53,8 @@ data Message
   | BeginMythosPhase
   | MythosTurn [PlayerId]
   | DrawMythosToken PlayerId
+  | -- | the draw itself, once anything offered in its place has been declined
+    DrawMythosTokenNow PlayerId
   | ResolveMythosToken PlayerId MythosToken
   | EndRound
   | ReplaceInvestigator PlayerId
@@ -75,6 +77,8 @@ data Message
   | -- | add one to a die instead of rerolling it, paying the reroll's cost
     RaiseInsteadOfReroll RerollCost Int CardId
   | ToggleTestAsset CardId
+  | -- | test this skill instead, the pool not yet being rolled (Voice of Authority)
+    SetTestSkill Skill
   | RollDice
   | SpendForReroll RerollCost
   | RerollDie RerollCost Int
@@ -86,6 +90,8 @@ data Message
     AddToDie Source
   | -- | set a die of their choice to this value (Grave Dirt's six)
     ChooseDieToSet Int
+  | -- | pick a result, then the die it replaces (Lucky Coin)
+    ChooseDieResult
   | SetDieValue Int Int
   | -- | hold this effect back until the test in progress has resolved
     AddTestRider EffectCtx Effect
@@ -96,11 +102,17 @@ data Message
   | MoveInvestigator MoveState SpaceId
   | UseTravelRoute MoveState SpaceId
   | MoveDirectly InvestigatorId SpaceId
+  | {- | offer each of these investigators, one at a time, a ride to that space
+    (Delivery Truck)
+    -}
+    OfferRide [InvestigatorId] SpaceId
   | EnterSpace InvestigatorId SpaceId
   | EngageMonster InvestigatorId CardId
   | -- | the engagement itself, once anyone who could step in has decided
     EngageMonsterNow InvestigatorId CardId
   | DisengageMonster InvestigatorId CardId
+  | -- | name this monster's prey for the monster phase, in place of its printed rule
+    SetMonsterPrey CardId InvestigatorId
   | ExhaustMonster CardId
   | -- | the activation itself, once anything that could replace it has passed
     DoActivateMonster CardId
@@ -109,6 +121,10 @@ data Message
   | MonsterStep CardId Int MonsterTarget
   | MoveMonsterTo CardId SpaceId
   | MonsterEngagesIn CardId SpaceId
+  | {- | the monster attacked, chosen once anything that hauls one in has moved it
+    (Harpoon)
+    -}
+    ChooseAttackTarget InvestigatorId
   | AttackMonster InvestigatorId CardId
   | AttackDamage InvestigatorId CardId Int
   | AttackResolved InvestigatorId CardId Int
@@ -163,8 +179,16 @@ data Message
   | -- | put a face-up marker of that colour on the monster, which travels with it
     PlaceMonsterMarker CardId Text
   | WardRemove InvestigatorId SpaceId Int
+  | {- | spend a ward's successes one at a time, for a card that offers something
+    else to do with them: successes left, and doom taken off so far
+    -}
+    WardStep InvestigatorId SpaceId Int Int
   | CheckStateTriggers
+  | -- | the gain itself, once anything that answers it has had its say
+    GainNow EffectCtx Gain
   | GainAsset InvestigatorId CardId
+  | -- | put this card under another, which may be an asset or a monster
+    AttachAsset CardId CardId
   | DiscardAsset CardId
   | GainNamedCard InvestigatorId Text
   | GainConditionMsg InvestigatorId ConditionName
@@ -194,6 +218,8 @@ data Message
   | TradeWith InvestigatorId InvestigatorId
   | TradeTransfer InvestigatorId InvestigatorId TradeItem
   | BuyFromDisplayMsg EffectCtx (Maybe Trait) Pricing (Maybe Int) Effect
+  | -- | the purchase itself, once anything that reshuffles the display has passed
+    BuyFromDisplayNow EffectCtx (Maybe Trait) Pricing (Maybe Int) Effect
   | BuyCard InvestigatorId CardId Int
   | BuyFromDisplayMore EffectCtx (Maybe Trait) Pricing (Maybe Int) Effect Int
   | CycleDisplay InvestigatorId Int
@@ -229,8 +255,16 @@ data Message
   | RecoverInvestigator InvestigatorId Int Int
   | RecoverAsset CardId Int Int
   | EncounterOptions InvestigatorId
+  | {- | an "Encounter:" ability taken in place of the encounter its taker would
+    have resolved (Under Dark Waves)
+    -}
+    UseEncounterAbility InvestigatorId ComponentRef Int
   | ResolveReckonings [Source]
   | ResolveReckoning Source
+  | -- | the reckoning itself, once anything that could hold it back has passed
+    ResolveReckoningNow Source
+  | -- | that source's reckoning does not resolve again this mythos phase
+    CancelReckoning Text
   | WinTheGame
   | LoseTheGame Text
   | Debug DebugAction

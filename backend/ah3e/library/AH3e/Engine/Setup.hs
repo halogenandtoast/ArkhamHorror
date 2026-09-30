@@ -22,8 +22,8 @@ import Data.Map.Strict qualified as Map
 data GameOptions = GameOptions
   { expansions :: [Expansion]
   , mode :: GameMode
-  , -- | the scenario the table was made for; without one the group is asked
-    scenario :: Maybe ScenarioCode
+  , scenario :: Maybe ScenarioCode
+  -- ^ the scenario the table was made for; without one the group is asked
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -189,7 +189,9 @@ placeStartingMonsters pool = go []
     candidates <- filterM (\cid -> (== mcode) <$> cardCode cid) (filter (`notElem` used) pool)
     case candidates of
       (cid : _) -> do
-        #monsters . at cid ?= Monster {card = cid, space = sid, state = Ready, damage = 0, markers = []}
+        #monsters
+          . at cid
+          ?= Monster {card = cid, space = sid, state = Ready, damage = 0, markers = [], prey = Nothing}
         go (cid : used) rest
       [] -> go used rest
 

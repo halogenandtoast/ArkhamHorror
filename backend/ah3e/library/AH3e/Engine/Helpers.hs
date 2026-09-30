@@ -118,12 +118,22 @@ engageTargets mid present mPrey = do
           [i] -> Right [i]
           _ -> Left pool
 
+{- | Where a reckoning held back for the rest of the mythos phase is recorded, so
+the card that holds it and the step that reads it agree on the key.
+-}
+reckoningHeldKey :: Source -> Text
+reckoningHeldKey src = "reckoning-held:" <> tshow src
+
 activationPrey :: CardId -> GameM (Maybe InvestigatorRule)
-activationPrey mid =
-  monsterDef mid <&> \d -> case d.activation of
-    Hunter r -> Just r
-    Patrol _ r -> r
-    _ -> Nothing
+activationPrey mid = do
+  named <- uses #monsters (maybe Nothing (.prey) . Map.lookup mid)
+  case named of
+    Just who -> pure (Just (NamedInvestigator who))
+    Nothing ->
+      monsterDef mid <&> \d -> case d.activation of
+        Hunter r -> Just r
+        Patrol _ r -> r
+        _ -> Nothing
 
 isMonsterReady :: CardId -> GameM Bool
 isMonsterReady mid = uses #monsters (maybe False ((== Ready) . (.state)) . Map.lookup mid)
@@ -144,6 +154,7 @@ engage iid mid = do
         | otherwise = Engaged [iid]
   monsterL mid . #state .= st
   monsterL mid . #space .= sid
+  push (CheckReactions (AfterEngaged iid mid) [])
 
 -- 455.3: ready monsters in the space engage the entering investigator
 engageOnEntry :: InvestigatorId -> SpaceId -> GameM Bool

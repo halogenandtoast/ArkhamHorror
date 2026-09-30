@@ -39,6 +39,10 @@ data AssetBehavior = AssetBehavior
   {- ^ what a card printed "during your turn, you may ..." offers: it costs none of
   their actions and stays available once both are spent.
   -}
+  , encounterAbilities :: [ComponentActionDef]
+  {- ^ what a card printed "Encounter:" offers in place of the encounter its owner
+  would resolve this phase (Under Dark Waves). Taking one is the encounter.
+  -}
   , reckoning :: Maybe Effect
   , reactions :: CardId -> Trigger -> GameM [Reaction]
   , moveAction :: Maybe (Int, Int)
@@ -170,6 +174,37 @@ data AssetBehavior = AssetBehavior
   activation (Lure Monster). A reaction that lets the monster act anyway pushes
   'DoActivateMonster' itself.
   -}
+  , poolOptions :: CardId -> InvestigatorId -> TestState -> GameM [Reaction]
+  {- ^ what this card offers while the pool is still being worked out, before the
+  dice are rolled: anything printed "before you resolve a test", or that changes
+  what the test is (Voice of Authority's influence, Bonnie Walsh's focus).
+  -}
+  , stopsMonsterReady :: Bool
+  -- ^ the monster this card is attached to cannot ready (Fishing Net)
+  , monsterModifierFloor :: CardId -> InvestigatorId -> CardId -> GameM (Maybe Int)
+  {- ^ the least that monster's attack and evade modifiers may be read as while
+  its owner faces it (Holy Water's +1 against the inhuman).
+  -}
+  , afterReroll :: CardId -> InvestigatorId -> Int -> GameM [Message]
+  -- ^ what this card does to a die its owner has just rerolled, by its position
+  , replacesMythosDraw :: CardId -> InvestigatorId -> GameM [Reaction]
+  -- ^ what its owner may take in place of drawing a mythos token
+  , beforeReckoning :: CardId -> InvestigatorId -> Source -> GameM [Reaction]
+  -- ^ what its owner may do before that reckoning resolves
+  , wardWhileEngaged :: Bool
+  -- ^ its owner may ward although a monster has hold of them (Captivating Melody)
+  , carriesPassengers :: Bool
+  {- ^ when its owner leaves a space, the unengaged investigators standing there
+  may come along (Delivery Truck)
+  -}
+  , forcedRerollOfSuccess :: Bool
+  {- ^ its holder must reroll one success on every test of theirs; not offered but
+  done, since the card compels it (The Watcher)
+  -}
+  , wardAlternative :: Bool
+  {- ^ its owner may spend a ward's successes exhausting monsters in their space
+  rather than removing doom
+  -}
   }
   deriving stock Generic
 
@@ -180,6 +215,7 @@ defaultAssetBehavior =
     , componentActions = []
     , stopsPlacement = \_ _ _ _ -> pure []
     , freeActions = []
+    , encounterAbilities = []
     , reckoning = Nothing
     , reactions = \_ _ -> pure []
     , moveAction = Nothing
@@ -220,6 +256,16 @@ defaultAssetBehavior =
     , buyOffers = \_ _ _ _ -> pure []
     , tradesFocusAndTalents = False
     , replacesActivation = \_ _ _ -> pure []
+    , poolOptions = \_ _ _ -> pure []
+    , stopsMonsterReady = False
+    , monsterModifierFloor = \_ _ _ -> pure Nothing
+    , afterReroll = \_ _ _ -> pure []
+    , replacesMythosDraw = \_ _ -> pure []
+    , beforeReckoning = \_ _ _ -> pure []
+    , wardWhileEngaged = False
+    , carriesPassengers = False
+    , forcedRerollOfSuccess = False
+    , wardAlternative = False
     }
 
 {- | When a test asset adds dice: "+N skill as part of an X action", or "+N lore
@@ -326,6 +372,11 @@ data MonsterBehavior = MonsterBehavior
   {- ^ what it does to whoever has just come away from it. Not offered but done,
   for a monster that prints it flatly rather than as a "may".
   -}
+  , insteadOfEngaging :: CardId -> InvestigatorId -> GameM (Maybe [Message])
+  {- ^ what happens in place of this monster engaging them, for a card that turns
+  over rather than closing in (The Watcher becomes a condition). Answering leaves
+  the monster unengaged, so the replacement takes it off the board itself.
+  -}
   }
   deriving stock Generic
 
@@ -337,6 +388,7 @@ defaultMonsterBehavior =
     , removedWhenDefeated = False
     , afterAttack = \_ _ -> pure []
     , afterDisengage = \_ _ -> pure []
+    , insteadOfEngaging = \_ _ -> pure Nothing
     }
 
 {- | A card that widens the reroll a focus paid for: the focus bought one die, and
@@ -440,6 +492,21 @@ data InvestigatorBehavior = InvestigatorBehavior
   same way a card may. The reaction's messages leave what they prevent in
   'damagePrevented' and 'horrorPrevented'.
   -}
+  , replacesActivation :: InvestigatorId -> CardId -> GameM [Reaction]
+  {- ^ what the sheet offers when that monster would activate, alongside letting
+  it activate normally (Silas Marsh naming its prey). A reaction that still wants
+  the activation pushes 'DoActivateMonster' itself.
+  -}
+  , afterHarm :: InvestigatorId -> HarmPlan -> GameM [Message]
+  {- ^ what the sheet does once a harm plan of theirs has landed, the same way a
+  card may (Father Mateo's remnant).
+  -}
+  , afterMonsterDefeated :: InvestigatorId -> CardId -> Source -> GameM [Message]
+  {- ^ what the sheet does when a monster is defeated, whoever finished it. The
+  monster is still on the board, so its card can be read.
+  -}
+  , onOwnedDiscard :: InvestigatorId -> CardId -> GameM [Message]
+  -- ^ what the sheet does when one of their own cards leaves play (Charlie Kane)
   }
   deriving stock Generic
 
@@ -456,6 +523,10 @@ defaultInvestigatorBehavior =
     , castWithDamage = False
     , paidCastLoreBonus = 0
     , damagePrevention = \_ _ -> pure []
+    , replacesActivation = \_ _ -> pure []
+    , afterHarm = \_ _ -> pure []
+    , afterMonsterDefeated = \_ _ _ -> pure []
+    , onOwnedDiscard = \_ _ -> pure []
     }
 
 data Behaviors = Behaviors

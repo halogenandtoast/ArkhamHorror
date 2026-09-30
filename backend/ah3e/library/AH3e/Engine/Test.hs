@@ -124,10 +124,14 @@ testPrompt = do
                  | (cid, _) <- bonus
                  , cid `notElem` map (\(c, _, _) -> c) usable
                  ]
+      fromCards <- poolOptionsFor ts
       chooseFor
         iid
         ("Roll " <> tshow pool <> " dice")
-        (Choice (DoneLabel "Roll dice") [RollDice] : toggles)
+        ( Choice (DoneLabel "Roll dice") [RollDice]
+            : toggles
+              <> [Choice (TextLabel r.label) r.messages | r <- fromCards]
+        )
     ManipulateDice -> do
       i <- getInvestigator iid
       let live = any (not . (.removed)) ts.dice
@@ -171,6 +175,14 @@ rollTestDice = do
   -- the threshold rides along: blessed and cursed move it, and the log is read later
   need <- successThreshold ts
   logText ("Rolled " <> tshow values <> " need " <> tshow need)
+  -- a card may compel a success to be rolled again; it is not offered, so the
+  -- first one on the table is the one that goes back
+  compelled <- hasAssetWith ts.investigator (.forcedRerollOfSuccess)
+  rolled <- currentTest
+  when compelled $ for_ (take 1 [idx | (idx, d) <- liveDice rolled, d.value >= need]) \idx -> do
+    v <- rollDie
+    #test . _Just . #dice . ix idx . #value .= v
+    logText ("A success is rolled again and comes up " <> tshow v)
   -- a card of someone else's may answer this test (Intervene), and that is their
   -- decision, so each of them is asked before the roller carries on
   others <- filter ((/= ts.investigator) . (.id)) <$> playingInvestigators
@@ -204,6 +216,7 @@ rerollDie cost idx = do
   payRerollCost ts.investigator cost
   v <- rollDie
   #test . _Just . #dice . ix idx . #value .= v
+  afterRerollFor ts.investigator idx >>= pushAll
   case cost of
     FocusCost _ -> pushAll [CheckReactions (SpentFocusToReroll ts.investigator) [], ContinueTest]
     _ -> testPrompt
@@ -316,7 +329,10 @@ finishTest = do
   for_ (reverse ts.riders) \(ctx, eff) -> push (ResolveEffect ctx eff)
   resolveAfter ts successes
   -- a sheet may answer a failure, behind whatever the failure itself set going
-  when (successes == 0) $ pushEnd (CheckReactions (AfterFailedTest ts.investigator) [])
+  pushEnd
+    $ CheckReactions
+      (if successes == 0 then AfterFailedTest ts.investigator else AfterPassedTest ts.investigator)
+      []
 
 -- 490.5: blessed is discarded after a failed test, cursed after a passed one.
 -- Pushed before 'resolveAfter' so the discard lands behind the test's own effect.

@@ -25,6 +25,11 @@ behaviors =
         , ("mysterious-serum", serum)
         , ("abandoned-luggage-stash", stash)
         , ("puzzle-box", openPuzzleBox)
+        , ("friend-of-a-friend-discard", friendOfAFriendDiscard)
+        , ("friend-of-a-friend-gain", friendOfAFriendGain)
+        , ("lonnie-ritter-spend", lonnieRitterSpend)
+        , ("lonnie-ritter-repair", lonnieRitterRepair)
+        , ("strangers-contract", strangersContractClears)
         ]
       & #customAfterTests
       .~ Map.fromList [("abandoned-luggage", openLuggage), ("good-standing", goodStandingPrice)]
@@ -130,6 +135,29 @@ behaviors =
             (RecoverHealth InvestigatorOrAllyInYourSpace (N 1))
         )
       , ("witchweed", witchweed)
+      , -- Under Dark Waves
+        ("death", death)
+      , ("eben-halls-journal", ebenHallsJournal)
+      , ("eye-for-appraisal", eyeForAppraisal)
+      , ("four-of-cups", fourOfCups)
+      , ("friend-of-a-friend", friendOfAFriend)
+      ,
+        ( "golden-crown"
+        , testBonuses [WhileCasting 2]
+            & #reckoning
+            ?~ Choose
+              [ ("Place one doom in your space", PlaceDoomAt YourSpace (N 1))
+              , ("Suffer one horror", SufferHorror (N 1))
+              ]
+        )
+      , ("harpoon", harpoon)
+      , ("hotel-porter", hotelPorter)
+      , ("inuksuk", inuksuk)
+      , ("kerosene", kerosene)
+      , ("lonnie-ritter", lonnieRitter)
+      , ("lucky-coin", luckyCoin)
+      , ("strangers-contract", strangersContract)
+      , ("twisted-flesh", twistedFlesh)
       ]
 
 {- | "After you perform a gather resources action in <neighborhood>, test <skill>.
@@ -783,3 +811,358 @@ theStar =
           | not (null options)
           ]
       _ -> pure []
+
+{- | "After a card is added to the codex or a card in the codex is flipped, you may
+remove one doom from any space or spawn one clue." The codex changes often enough
+that the offer is kept to what could do something: with no doom anywhere on the
+board, only the clue is worth naming.
+-}
+death :: AssetBehavior
+death =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      AfterCodexChanged iid -> do
+        spaces <- traverse getSpace =<< allNeighborhoodSpaces
+        let options =
+              [ ("Remove one doom from any space", RemoveDoomFrom AnySpaceWithDoom (N 1))
+              | any ((> 0) . (.doom)) spaces
+              ]
+                <> [("Spawn one clue", SpawnOneClue)]
+        pure
+          [ Reaction
+              "death"
+              "Death: remove one doom from any space or spawn one clue"
+              [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (Choose options)]
+          ]
+      _ -> pure []
+
+{- | "+2 lore while casting a spell. After you perform a gather resources action in
+Kingsport, you may test lore -1. If you pass, you gain one spell." Kingsport is a
+town rather than a neighborhood, so either of its tiles answers.
+-}
+ebenHallsJournal :: AssetBehavior
+ebenHallsJournal =
+  testBonuses [WhileCasting 2]
+    & #reactions
+    .~ \cid -> \case
+      AfterGatherResources iid -> do
+        town <- investigatorTown iid
+        let ctx = EffectCtx iid (SourceCard cid) Nothing
+            study = Test Lore (-1) (GainE (ASpell Nothing)) NoEffect
+        pure
+          [ Reaction "eben-halls-journal" "Eben Hall's Journal: test lore for a spell" [ResolveEffect ctx study]
+          | town == Just Kingsport
+          ]
+      _ -> pure []
+
+{- | "Before you would buy or gain one or more curios, you may discard and replace
+one item from the display." Cycling one card is that swap, and it is offered while
+the shelf can still be read by whatever is about to take from it.
+-}
+eyeForAppraisal :: AssetBehavior
+eyeForAppraisal =
+  defaultAssetBehavior
+    & #reactions
+    .~ \_ -> \case
+      BeforeAcquiring iid mtrait
+        | mtrait == Just "Curio" ->
+            pure
+              [ Reaction
+                  "eye-for-appraisal"
+                  "Eye for Appraisal: discard and replace one item from the display"
+                  [CycleDisplay iid 1]
+              ]
+      _ -> pure []
+
+{- | "Once per round, while performing a test, if you are the only investigator in
+your neighborhood, you may reroll any number of dice."
+-}
+fourOfCups :: AssetBehavior
+fourOfCups =
+  defaultAssetBehavior
+    & #testOptions
+    .~ \cid iid ts -> do
+      used <- usedThisRound cid iid
+      alone <- onlyInvestigatorInNeighborhood iid
+      let live = liveDiceCount ts
+      pure
+        [ Reaction
+            "four-of-cups"
+            "Four of Cups: reroll any number of dice"
+            [MarkAssetUsed iid cid, RerollUpTo (SourceCard cid) live]
+        | not used
+        , alone
+        , live > 0
+        ]
+
+{- | "After you resolve a street encounter, you may discard an item to gain one item
+of equal or lesser value from the display." An item with no printed value sets no
+price, so it cannot be the one traded in.
+-}
+friendOfAFriend :: AssetBehavior
+friendOfAFriend =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      AfterStreetEncounter iid -> do
+        tradable <- pricedItems iid
+        pure
+          [ Reaction
+              "friend-of-a-friend"
+              "Friend of a Friend: trade an item in for one of equal or lesser value"
+              [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (Custom "friend-of-a-friend-discard")]
+          | not (null tradable)
+          ]
+      _ -> pure []
+
+-- | The items an investigator holds that carry a printed value, with it.
+pricedItems :: InvestigatorId -> GameM [(CardId, Int)]
+pricedItems iid = do
+  items <- matchingAssets iid ItemCard
+  catMaybes <$> for items \cid -> fmap (cid,) <$> cardValue cid
+
+{- | The item traded in sets what the replacement may cost, so its value is noted on
+the talent and the display is read once it has gone. A discarded item goes to the
+bottom of the item deck rather than onto the shelf, so it cannot be bought back.
+-}
+friendOfAFriendDiscard :: EffectCtx -> GameM ()
+friendOfAFriendDiscard ctx = for_ [c | SourceCard c <- [ctx.source]] \self -> do
+  tradable <- pricedItems ctx.investigator
+  chooseFor
+    ctx.investigator
+    "Discard an item"
+    [ Choice
+        (CardLabel cid)
+        [ NoteOnCard self "swap-value" v
+        , DiscardAsset cid
+        , ResolveEffect ctx (Custom "friend-of-a-friend-gain")
+        ]
+    | (cid, v) <- tradable
+    ]
+
+-- | The replacement comes off the display alone, at the value noted a moment ago.
+friendOfAFriendGain :: EffectCtx -> GameM ()
+friendOfAFriendGain ctx = for_ [c | SourceCard c <- [ctx.source]] \self -> do
+  noted <- uses #assets (Map.lookup "swap-value" . maybe mempty (.tokens) . Map.lookup self)
+  for_ noted \v -> do
+    assetL self . #tokens .= mempty
+    display <- use (#decks . #display)
+    eligible <- filterM (itemMatches Nothing (Just (AtMost v))) display
+    chooseFor
+      ctx.investigator
+      ("Gain an item worth $" <> tshow v <> " or less")
+      [Choice (CardLabel cid) [GainFromDisplay ctx.investigator cid] | cid <- eligible]
+
+{- | "+3 strength as part of an attack action. Before you perform an attack action,
+you may move a monster in an adjacent space to your space." The haul happens before
+the target is chosen, so what it drags in can be what is attacked. It is not once a
+round, but every offer shares one key, so only one monster comes in per action.
+-}
+harpoon :: AssetBehavior
+harpoon =
+  testBonuses [OnAction AttackAction Strength 3]
+    & #reactions
+    .~ \_ -> \case
+      BeforePerformAction iid AttackAction -> do
+        msid <- investigatorSpace iid
+        board <- use #board
+        ms <- concat <$> traverse monstersAt (maybe [] (`adjacentSpaces` board) msid)
+        for [(m, sid) | m <- ms, sid <- maybeToList msid] \(m, sid) -> do
+          name <- (.name) <$> getCardDef m.card
+          pure
+            $ Reaction "harpoon" ("Harpoon: haul " <> name <> " into your space") [MoveMonsterTo m.card sid]
+      _ -> pure []
+
+{- | "After you perform a gather resources action in the Innsmouth Shore
+neighborhood, you gain an additional $1 for each focus you have." Nothing is
+offered to someone holding no focus, since the dollar count would be zero.
+-}
+hotelPorter :: AssetBehavior
+hotelPorter =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      AfterGatherResources iid -> do
+        here <- investigatorNeighborhood iid
+        n <- focusCount <$> getInvestigator iid
+        pure
+          [ Reaction
+              "hotel-porter"
+              ("Hotel Porter: gain an additional $" <> tshow n)
+              [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (GainE (Money (N n)))]
+          | here == Just "innsmouth-shore"
+          , n > 0
+          ]
+      _ -> pure []
+
+{- | "Encounter: Move an unengaged investigator from any space to any space in
+another neighborhood." Taking it is the encounter, so it is offered in the
+encounter phase in place of the card that would be read.
+-}
+inuksuk :: AssetBehavior
+inuksuk =
+  defaultAssetBehavior
+    & #encounterAbilities
+    .~ [ ComponentActionDef
+           { label = "Inuksuk: move an unengaged investigator to another neighborhood"
+           , allowedWhileEngaged = False
+           , canPerform = \_ -> not . null <$> unengagedInvestigators
+           , perform = \ctx -> do
+               travellers <- map (.id) <$> unengagedInvestigators
+               push (ChooseInvestigatorsFor ctx 1 travellers (MoveDirectlyTo SpaceInAnotherNeighborhood))
+           }
+       ]
+
+{- | "When you would gain a remnant, you may instead discard this card to remove one
+doom from your space and for you or an ally to recover two sanity."
+-}
+kerosene :: AssetBehavior
+kerosene =
+  defaultAssetBehavior
+    & #insteadOfRemnant
+    .~ \cid iid ->
+      pure
+        [ Reaction
+            "kerosene"
+            "Kerosene: burn it to remove one doom from your space and recover two sanity"
+            [ DiscardAsset cid
+            , ResolveEffect
+                (EffectCtx iid (SourceCard cid) Nothing)
+                (Seq [RemoveDoomFrom YourSpace (N 1), RecoverSanity YouOrAlly (N 2)])
+            ]
+        ]
+
+{- | "Action: Spend up to $3 and choose an investigator in your space. One of that
+investigator's items recovers health equal to the amount spent." Kept off the menu
+while nothing in the space is damaged or there is no dollar to spend.
+-}
+lonnieRitter :: AssetBehavior
+lonnieRitter =
+  defaultAssetBehavior
+    & #componentActions
+    .~ [ ComponentActionDef
+           { label = "Lonnie Ritter: spend up to $3 to mend an item"
+           , allowedWhileEngaged = False
+           , canPerform = \iid -> do
+               i <- getInvestigator iid
+               damaged <- damagedItemsInSpace iid
+               pure (i.money >= 1 && not (null damaged))
+           , perform = \ctx -> push (ResolveEffect ctx (Custom "lonnie-ritter-spend"))
+           }
+       ]
+
+-- | The damaged items held by anyone standing in this investigator's space.
+damagedItemsInSpace :: InvestigatorId -> GameM [CardId]
+damagedItemsInSpace iid = do
+  sid <- investigatorSpace iid
+  here <- maybe (pure []) investigatorsAt sid
+  items <- filterM (cardMatches ItemCard) (concatMap (.assets) here)
+  filterM (\c -> uses #assets (maybe False ((> 0) . (.damage)) . Map.lookup c)) items
+
+{- | The money is spent before the item is chosen, so only amounts that could mend
+something are offered and the one chosen is noted for the second half.
+-}
+lonnieRitterSpend :: EffectCtx -> GameM ()
+lonnieRitterSpend ctx = for_ [c | SourceCard c <- [ctx.source]] \self -> do
+  let iid = ctx.investigator
+  i <- getInvestigator iid
+  damaged <- damagedItemsInSpace iid
+  worst <- maximum . (0 :) <$> for damaged \c -> uses #assets (maybe 0 (.damage) . Map.lookup c)
+  chooseFor
+    iid
+    "Spend up to $3 to mend an item"
+    [ Choice
+        (AmountLabel n)
+        [ PayCost ctx (SpendMoney n)
+        , NoteOnCard self "mend" n
+        , ResolveEffect ctx (Custom "lonnie-ritter-repair")
+        ]
+    | n <- [1 .. minimum [3, i.money, worst]]
+    ]
+
+-- | The item mended, for the money already spent on it.
+lonnieRitterRepair :: EffectCtx -> GameM ()
+lonnieRitterRepair ctx = for_ [c | SourceCard c <- [ctx.source]] \self -> do
+  noted <- uses #assets (Map.lookup "mend" . maybe mempty (.tokens) . Map.lookup self)
+  for_ noted \n -> do
+    assetL self . #tokens .= mempty
+    damaged <- damagedItemsInSpace ctx.investigator
+    chooseFor
+      ctx.investigator
+      ("Choose an item to recover " <> tshow n <> " health")
+      [Choice (CardLabel cid) [RecoverAsset cid n 0] | cid <- damaged]
+
+{- | "After you roll a die, you may discard this card to change that die roll to a
+result of your choice." Rolls outside a test are resolved where they are made
+(rule 474), so the coin answers the dice on the table, which is every roll the
+engine keeps long enough to change.
+-}
+luckyCoin :: AssetBehavior
+luckyCoin =
+  defaultAssetBehavior
+    & #testOptions
+    .~ \cid _ ts ->
+      pure
+        [ Reaction
+            "lucky-coin"
+            "Lucky Coin: spend it to change a die to a result of your choice"
+            [DiscardAsset cid, ChooseDieResult]
+        | liveDiceCount ts > 0
+        ]
+
+{- | "During your turn, you may discard this card and gain a DARK PACT to defeat all
+non-epic monsters in your space and remove all doom from your space." The pact is
+the price, so it is not asked for while the space holds nothing to clear.
+-}
+strangersContract :: AssetBehavior
+strangersContract =
+  defaultAssetBehavior
+    & #freeActions
+    .~ [ ComponentActionDef
+           { label = "Stranger's Contract: sign it to clear your space"
+           , allowedWhileEngaged = True
+           , canPerform = spaceWorthClearing
+           , perform = \ctx ->
+               pushAll
+                 $ [DiscardAsset cid | SourceCard cid <- [ctx.source]]
+                 <> [ ResolveEffect ctx (GainE (Condition "DARK PACT"))
+                    , ResolveEffect ctx (Custom "strangers-contract")
+                    ]
+           }
+       ]
+
+-- | Whether the contract would clear anything: a non-epic monster, or any doom.
+spaceWorthClearing :: InvestigatorId -> GameM Bool
+spaceWorthClearing iid =
+  investigatorSpace iid >>= \case
+    Nothing -> pure False
+    Just sid -> do
+      nonEpic <- nonEpicMonstersAt sid
+      doom <- (.doom) <$> getSpace sid
+      pure (doom > 0 || not (null nonEpic))
+
+nonEpicMonstersAt :: SpaceId -> GameM [Monster]
+nonEpicMonstersAt sid = monstersAt sid >>= filterM (fmap (not . (.epic)) . monsterDef . (.card))
+
+{- | The monsters go together rather than one at a time, since the contract names
+them all at once, and the space's doom goes with them.
+-}
+strangersContractClears :: EffectCtx -> GameM ()
+strangersContractClears ctx = do
+  msid <- investigatorSpace ctx.investigator
+  for_ msid \sid -> do
+    nonEpic <- nonEpicMonstersAt sid
+    doom <- (.doom) <$> getSpace sid
+    pushAll
+      $ [DefeatMonster m.card ctx.source | m <- nonEpic]
+      <> [RemoveDoom sid doom | doom > 0]
+
+{- | "When this talent is discarded, draw and resolve two tokens from the mythos
+cup." Its three health are what usually discards it.
+-}
+twistedFlesh :: AssetBehavior
+twistedFlesh =
+  defaultAssetBehavior
+    & #onDiscard
+    .~ \cid iid -> pure [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (DrawMythosTokens 2)]

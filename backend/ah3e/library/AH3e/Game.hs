@@ -25,6 +25,10 @@ data Investigator = Investigator
   , actionsTaken :: Int
   , spacesMoved :: Int
   -- ^ how far the move action in flight has carried them, for cards that count it
+  , spacesMovedThisRound :: Int
+  {- ^ how far they have been carried since the round began, which a sheet may
+  count across several moves (Stella Clark's delivery route)
+  -}
   , performed :: [ActionKind]
   , bonusActions :: Int
   , lockedAssets :: [CardId]
@@ -46,6 +50,10 @@ data Monster = Monster
   , damage :: Int
   , markers :: [Marker]
   -- ^ markers a scenario has put on the monster itself, which travel with it
+  , prey :: Maybe InvestigatorId
+  {- ^ whoever a card has named as this monster's prey for the monster phase,
+  in place of the rule its activation prints (Silas Marsh)
+  -}
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -208,6 +216,7 @@ newInvestigator iid pid =
     , assets = []
     , actionsTaken = 0
     , spacesMoved = 0
+    , spacesMovedThisRound = 0
     , performed = []
     , bonusActions = 0
     , lockedAssets = []

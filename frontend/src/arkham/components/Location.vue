@@ -27,7 +27,7 @@ import Story from '@/arkham/components/Story.vue'
 import ScarletKey from '@/arkham/components/ScarletKey.vue'
 import Treachery from '@/arkham/components/Treachery.vue'
 import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue'
-import { locationTarget, cardDropHandlers } from '@/arkham/debugCardDrop'
+import { locationTarget, cardDropHandlers, draggedOff, removeDragAttrs } from '@/arkham/debugCardDrop'
 import AbilitiesMenu from '@/arkham/components/AbilitiesMenu.vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import TokenPool from '@/arkham/components/TokenPool.vue'
@@ -491,6 +491,25 @@ const debug = useDebug()
 // token panel is placed here.
 const cardDrop = cardDropHandlers(props.game.id, () => locationTarget(props.location.id))
 
+/* Debug-only: the pools this component renders itself (clues, breaches) get the same
+ * drag-off as the ones TokenPool renders. `Breach` is not a token tag -- the drop turns
+ * it into `RemoveBreaches`/`PlaceBreaches`. */
+const removeAttrs = (token: string, count: number) =>
+  debug.active && count > 0
+    ? removeDragAttrs(locationTarget(props.location.id), token, count)
+    : {}
+
+/* What the pool shows while one of its tokens is in flight off this location. */
+const inFlight = (token: string, count: number) =>
+  draggedOff(locationTarget(props.location.id), token, count)
+const displayedClues = computed(() => {
+  const count = clues.value ?? 0
+  return Math.max(0, count - inFlight('Clue', count))
+})
+const displayedBreaches = computed(() =>
+  Math.max(0, breaches.value - inFlight('Breach', breaches.value))
+)
+
 function onDrop(event: DragEvent) {
   event.preventDefault()
   if (event.dataTransfer) {
@@ -580,7 +599,11 @@ const hasAnyLocationVehicleAssets = computed(() =>
 
 <template>
   <div>
-    <div class="location-container" :class="{ 'location-container--has-vehicle-column': hasAnyLocationVehicleAssets }">
+    <div
+      class="location-container"
+      :class="{ 'location-container--has-vehicle-column': hasAnyLocationVehicleAssets }"
+      v-bind="cardDrop"
+    >
       <div class="location-investigator-column">
         <div
           v-for="investigator in investigators"
@@ -611,7 +634,7 @@ const hasAnyLocationVehicleAssets = computed(() =>
           @abilities-hover="abilitiesHovering = $event"
         />
       </div>
-      <div class="location-column" v-bind="cardDrop">
+      <div class="location-column">
         <div class="card-frame" :class="{ explosion, 'location--objective': hasObjective, 'objective-ring': hasObjective }" ref="frame" @click="clicked">
           <Locus v-if="locus" class="locus" />
           <span v-if="blocked" class="status-icon" v-tooltip="'Blocked'">
@@ -693,7 +716,13 @@ const hasAnyLocationVehicleAssets = computed(() =>
             class="clues pool location-pool"
             v-if="!flipping && ((clues ?? 0) > 0 || displayedFloodLevel)"
           >
-            <PoolItem v-if="clues && clues > 0" type="clue" :amount="clues" />
+            <PoolItem
+              v-if="(clues ?? 0) > 0"
+              type="clue"
+              :amount="displayedClues"
+              :style="displayedClues > 0 ? undefined : { display: 'none' }"
+              v-bind="removeAttrs('Clue', clues ?? 0)"
+            />
             <img
               v-if="displayedFloodLevel"
               :src="displayedFloodLevel"
@@ -712,8 +741,14 @@ const hasAnyLocationVehicleAssets = computed(() =>
               @choose="choose"
             />
             <Seal v-for="seal in seals" :key="seal.sealKind" :seal="seal" />
-            <TokenPool :tokens="locationTokens" />
-            <PoolItem v-if="breaches > 0" type="resource" :amount="breaches" />
+            <TokenPool :tokens="locationTokens" :target="locationTarget(location.id)" />
+            <PoolItem
+              v-if="breaches > 0"
+              type="resource"
+              :amount="displayedBreaches"
+              :style="displayedBreaches > 0 ? undefined : { display: 'none' }"
+              v-bind="removeAttrs('Breach', breaches)"
+            />
             <PoolItem
               v-if="location.brazier && location.brazier === 'Lit'"
               type="resource"

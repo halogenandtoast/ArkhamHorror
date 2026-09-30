@@ -22,7 +22,12 @@ import { chaosTokenImage } from '@/arkham/types/ChaosToken'
       <img class="card-drop-indicator__token" :src="chaosTokenImage(draggedDrop.chaosToken.face)" />
       <span class="card-drop-indicator__label">{{ $t('debug.cardMove.sealToken') }}</span>
     </template>
-    <template v-else>
+    <template v-else-if="draggedDrop.kind === 'remove'">
+      <span class="card-drop-indicator__label">
+        {{ $t('debug.cardMove.moveTokens', { count: dropAmount }) }}
+      </span>
+    </template>
+    <template v-else-if="draggedDrop.kind === 'tokens'">
       <PoolItem class="card-drop-indicator__pool" :type="TOKEN_POOL_TYPE[draggedDrop.token]" />
       <span class="card-drop-indicator__label">
         <template v-if="draggedDrop.token === 'Resource' && dropUseType">

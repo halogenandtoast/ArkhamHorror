@@ -257,3 +257,10 @@ h2.title {
   text-transform: none;
   vertical-align: middle;
 }
+
+/* Debug: a token dragged off a card and onto the token panel's trash. Pools turn
+   pointer events off for normal play, so the draggable ones have to take them back. */
+.poolItem[draggable='true'] {
+  pointer-events: auto !important;
+  cursor: grab;
+}

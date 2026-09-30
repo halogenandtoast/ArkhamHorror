@@ -272,7 +272,7 @@ const hiGradId = computed(() => `auxMagentaHi-${iid.value}`)
       >+</button>
     </template>
 
-    <TokenPool :tokens="otherTokens" />
+    <TokenPool :tokens="otherTokens" :target="{ tag: 'InvestigatorTarget', contents: iid }" />
   </div>
 </template>
 

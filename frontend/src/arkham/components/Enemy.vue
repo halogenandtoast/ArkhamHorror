@@ -441,7 +441,7 @@ function onDrop(event: DragEvent) {
               <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
             </div>
             <PoolItem v-if="!omnipotent && !attached && showDamage" type="health" :amount="enemyDamage" />
-            <TokenPool :tokens="enemyTokens" />
+            <TokenPool :tokens="enemyTokens" :target="enemyTarget(enemy.id)" />
             <PoolItem v-if="enemy.cardsUnderneath.length > 0" type="card" :amount="enemy.cardsUnderneath.length" />
             <SealedChaosTokens
               :tokens="enemy.sealedChaosTokens"

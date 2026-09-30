@@ -2888,7 +2888,7 @@ async function addChaosToken(face: any){
           :class="locationsFullscreen ? 'zoom-control--fullscreen' : 'zoom-control--docked'"
           @dblclick.stop
         >
-          <DebugTokenPanel v-if="debug.active" />
+          <DebugTokenPanel v-if="debug.active" :game-id="game.id" />
           <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
           <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
           <button class="zoom-btn" @pointerdown.stop="startHold(increaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">+</button>
@@ -3062,7 +3062,7 @@ async function addChaosToken(face: any){
           @choose="choose"
         >
           <div v-if="!splitView" class="zoom-control">
-            <DebugTokenPanel v-if="debug.active" />
+            <DebugTokenPanel v-if="debug.active" :game-id="game.id" />
             <button class="zoom-btn" @pointerdown.stop="startHold(decreaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">−</button>
             <input v-model.number="locationsZoom" type="range" min="0.25" max="6" step="0.05" class="zoom-slider" />
             <button class="zoom-btn" @pointerdown.stop="startHold(increaseZoom)" @pointerup="stopHold" @pointerleave="stopHold">+</button>

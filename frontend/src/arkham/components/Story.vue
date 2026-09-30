@@ -124,7 +124,7 @@ const sealedChaosTokens = computed(() => props.story.sealedChaosTokens ?? [])
           @click="directAction !== -1 && $emit('choose', directAction)"
         />
         <div class="pool" v-if="hasPool">
-          <TokenPool :tokens="storyTokens" />
+          <TokenPool :tokens="storyTokens" :target="{ tag: 'StoryTarget', contents: story.id }" />
         </div>
         <div class="sealed-tokens" v-if="sealedChaosTokens.length > 0">
           <Token v-for="(sealedToken, index) in sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />

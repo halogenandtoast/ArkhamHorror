@@ -709,10 +709,12 @@
       "wrongDeck": "Wrong back for this deck",
       "sealToken": "Seal token here",
       "placeTokens": "Place {count}",
-      "placeUses": "Add {count} {use}"
+      "placeUses": "Add {count} {use}",
+      "moveTokens": "Move {count}"
     },
     "tokenPanel": {
-      "hint": "Drag to a card (shift: 5)"
+      "hint": "Drag to a card (shift: 5)",
+      "trash": "Drop a token here to remove it"
     }
   },
   "customizations": {

@@ -26,8 +26,10 @@
       "socialites": "Shuffle the five _Socialite_ story assets and put each one into play at a different location other than Vestibule. Place 1{perPlayer} clues on each of these assets.",
       "setAside": "Set the following cards aside, out of play: Each copy of Terrified Captives and Wild Hysteria, each _Restricted_ location, Goatspawn Corruptor."
     },
-    "vestibule": {
-      "resign": "“It's been a wonderful evening, but I really must be going.”"
+    "tooltips": {
+      "vestibule": {
+        "resign": "\"It's been a wonderful evening, but I really must be going.\""
+      }
     },
     "savageAltar": {
       "label": {
@@ -51,9 +53,22 @@
       "vices": "each vice you took at the start of the scenario"
     },
     "resolutions": {
-      "resolution1": "<p>You stumble out the front door of the manor, struggling to find your wits and scrambling to defend yourself, but you find that nothing pursues you. The party-goers are so devoted to their wild activity that none of them can find the time or inclination to chase you. You seize the strange chance and retreat to safety.</p><p>This unfortunately puts you back to where you were hours ago, having learned nothing substantial from the party. However, knowing that the Liber Pater Society is in fact a branch of the Cult of Shub-Niggurath, they won't fail to attend the ritual to their foul deity. You take up a quiet vigil through the night as you lick your wounds, waiting for the members to depart to the ritual site en masse. This will spread you thin, to be sure, but the alternative is to abandon your quest in the final stretch.</p>",
-      "resolution2": "<p>You retire from the party at an almost leisurely pace that feels quite out of place with the last two weeks of frantic peril. The society — and the cult — must feel secure in the upcoming ritual to behave so frivolously. Regardless of how they feel, you depart with the knowledge of their site, and a welcome feeling of accomplishment. From here, it's back for as much sleep as you can gather. It will be a busy morning tomorrow.</p>",
-      "resolution3": "<p>Thoughts of destiny and prophecy occupy your mind late into the night. For all your wits, is everything arranged to lead you to this confrontation? Or has it all depended on someone acting of their own accord, simply hoping for the best? You're not certain which you like better.</p>"
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p class='basic'>_If no resolution was reached (each investigator was defeated or resigned before act 3):_ If each investigator was defeated before act 3, read _Resolution 1_. Otherwise, read _Resolution 2_.</p>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1:_ You stumble out the front door of the manor, struggling to find your wits and scrambling to defend yourself, but you find that nothing pursues you. The party-goers are so devoted to their wild activity that none of them can find the time or inclination to chase you. You seize the strange chance and retreat to safety.</p><p>This unfortunately puts you back to where you were hours ago, having learned nothing substantial from the party. However, knowing that the Liber Pater Society is in fact a branch of the Cult of Shub-Niggurath, they won't fail to attend the ritual to their foul deity. You take up a quiet vigil through the night as you lick your wounds, waiting for the members to depart to the ritual site en masse. This will spread you thin, to be sure, but the alternative is to abandon your quest in the final stretch.</p><ul><li>In your Campaign Log, record that *the investigators must follow the cult*.</li><li>Skip to _Resolution 3_.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2:_ You retire from the party at an almost leisurely pace that feels quite out of place with the last two weeks of frantic peril. The society — and the cult — must feel secure in the upcoming ritual to behave so frivolously. Regardless of how they feel, you depart with the knowledge of their site, and a welcome feeling of accomplishment. From here, it's back for as much sleep as you can gather. It will be a busy morning tomorrow.</p><ul><li>In your Campaign Log, record that *the investigators discovered the ritual's location*.</li><li>Proceed to _Resolution 3_.</li></ul>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<p>_Resolution 3:_ Thoughts of destiny and prophecy occupy your mind late into the night. For all your wits, is everything arranged to lead you to this confrontation? Or has it all depended on someone acting of their own accord, simply hoping for the best? You're not certain which you like better.</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display. Each investigator earns 1 bonus experience for each vice they picked at the start of the scenario.</li><li>Proceed to _Interlude: Good Omens_.</li></ul>"
+      }
     }
   }
 }

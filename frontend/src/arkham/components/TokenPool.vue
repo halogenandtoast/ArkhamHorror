@@ -2,6 +2,8 @@
 import { computed, ref, nextTick, onUnmounted } from 'vue'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import { type Token, type Tokens } from '@/arkham/types/Token'
+import { useDebug } from '@/arkham/debug'
+import { draggedOff, removeDragAttrs, type RemoveTarget } from '@/arkham/debugCardDrop'
 
 // Unique per TokenPool instance, so view-transition-names never collide between
 // different cards' pools.
@@ -17,6 +19,10 @@ export type TokenPoolItem = {
   tooltip?: string
   class?: unknown
   force?: boolean
+  /* The backend `Token` tag to remove when this item is dragged to the debug trash.
+   * Only needed for `extraItems`, whose keys are display names; a token's own key
+   * already is its tag. */
+  removeToken?: string
 }
 
 export type TokenPoolOverride = {
@@ -71,6 +77,8 @@ const TOKEN_CONFIG: Partial<Record<Token, { type: string; tooltip?: string }>> =
 const props = withDefaults(defineProps<{
   tokens?: Tokens
   order?: readonly Token[]
+  /* Set to make this pool's tokens draggable onto the debug trash can. */
+  target?: RemoveTarget
   overrides?: Partial<Record<Token, TokenPoolOverride>>
   extraItems?: readonly TokenPoolItem[]
 }>(), {
@@ -80,6 +88,14 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{ choose: [key: string] }>()
+
+const debug = useDebug()
+
+/* Debug-only: drag a token off the card and onto the token panel's trash to remove it. */
+function removeAttrs(item: TokenPoolItem & { count: number }) {
+  if (!debug.active || !props.target || item.count <= 0) return {}
+  return removeDragAttrs(props.target, item.removeToken ?? item.key, item.count)
+}
 
 const tokenKeys = computed<Token[]>(() => {
   if (props.order) return [...props.order]
@@ -108,10 +124,36 @@ const tokenItems = computed<TokenPoolItem[]>(() => tokenKeys.value.flatMap((toke
   }]
 }))
 
-const items = computed(() => [
-  ...props.extraItems.filter((item) => item.force || (item.amount ?? 0) > 0),
-  ...tokenItems.value,
-])
+/* A token being dragged off the card has already left it as far as the pool is
+ * concerned: the count shows one fewer (or the whole stack fewer while shift is held)
+ * and the item drops out entirely once none are left. `count` keeps what is really
+ * there, which is what shift takes. */
+type DisplayItem = TokenPoolItem & { count: number; hidden?: boolean }
+
+const items = computed<DisplayItem[]>(() =>
+  [...props.extraItems, ...tokenItems.value].flatMap((item) => {
+    const count = item.amount ?? 0
+    const inFlight = draggedOff(props.target, item.removeToken ?? item.key, count)
+    const amount = Math.max(0, count - inFlight)
+    if (!item.force && amount <= 0) {
+      if (inFlight <= 0) return []
+      /* Dragging the last one away empties the pool, but the element has to stay
+       * mounted until the drag is over: `dragend` on a detached node never reaches
+       * the window listener that clears the drag. Hide it instead. */
+      return [{ ...item, amount, count, hidden: true }]
+    }
+    return [{ ...item, amount, count }]
+  })
+)
+
+function itemStyle(item: DisplayItem, i: number) {
+  if (!clumped.value) return item.hidden ? { display: 'none' } : undefined
+  return {
+    '--token-index': i,
+    viewTransitionName: expanded.value ? undefined : vtName(item.key),
+    display: item.hidden || expanded.value ? 'none' : undefined,
+  }
+}
 
 // When there are more tokens than fit comfortably, clump them into an
 // overlapping stack and fan them out into an auto-orienting shape on hover —
@@ -290,7 +332,8 @@ onUnmounted(() => {
       :amount="item.amount"
       :tooltip="item.tooltip"
       :class="item.class"
-      :style="clumped ? { '--token-index': i, viewTransitionName: expanded ? undefined : vtName(item.key), display: expanded ? 'none' : undefined } : undefined"
+      :style="itemStyle(item, i)"
+      v-bind="removeAttrs(item)"
       @choose="emit('choose', item.key)"
     />
   </div>
@@ -320,7 +363,8 @@ onUnmounted(() => {
         :amount="item.amount"
         :tooltip="item.tooltip"
         :class="item.class"
-        :style="{ ...clumpLayout.positions[i], viewTransitionName: vtName(item.key) }"
+        :style="{ ...clumpLayout.positions[i], viewTransitionName: vtName(item.key), display: item.hidden ? 'none' : undefined }"
+        v-bind="removeAttrs(item)"
         @choose="emit('choose', item.key)"
       />
     </div>

@@ -155,7 +155,11 @@ function handleCardClick() {
       @choose="$emit('choose', $event)"
     />
     <div class="pool">
-      <TokenPool :tokens="treachery.tokens" :overrides="tokenOverrides" />
+      <TokenPool
+        :tokens="treachery.tokens"
+        :overrides="tokenOverrides"
+        :target="{ tag: 'TreacheryTarget', contents: treachery.id }"
+      />
       <Token v-for="(sealedToken, index) in treachery.sealedChaosTokens" :key="index" :token="sealedToken" :playerId="playerId" :game="game" @choose="choose" />
     </div>
 

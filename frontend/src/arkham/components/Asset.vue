@@ -287,6 +287,7 @@ const forcedTokenItems = computed<TokenPoolItem[]>(() => [
   {
     key: 'health',
     type: 'health',
+    removeToken: 'Damage',
     amount: damage.value || 0,
     force: !isSpirit.value && (cardCode.value == 'c07189' || (props.asset.health !== null || (damage.value || 0) > 0)),
     class: { 'health--can-interact': healthAction.value !== -1 },
@@ -294,6 +295,7 @@ const forcedTokenItems = computed<TokenPoolItem[]>(() => [
   {
     key: 'sanity',
     type: 'sanity',
+    removeToken: 'Horror',
     amount: horror.value || 0,
     force: !isSpirit.value && (cardCode.value == 'c07189' || (props.asset.sanity !== null || (horror.value || 0) > 0)),
     class: { 'sanity--can-interact': sanityAction.value !== -1 },
@@ -506,7 +508,12 @@ function startDrag(event: DragEvent) {
           <div class="keys" v-if="keys.length > 0">
             <KeyToken v-for="k in keys" :key="keyToId(k)" :keyToken="k" :game="game" :playerId="playerId" @choose="choose" />
           </div>
-          <TokenPool :tokens="assetTokens" :extra-items="forcedTokenItems" @choose="chooseTokenPoolItem" />
+          <TokenPool
+            :tokens="assetTokens"
+            :extra-items="forcedTokenItems"
+            :target="assetTarget(asset.id)"
+            @choose="chooseTokenPoolItem"
+          />
           <SealedChaosTokens
             :tokens="asset.sealedChaosTokens"
             :game="game"

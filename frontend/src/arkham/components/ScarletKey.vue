@@ -89,7 +89,7 @@ const abilities = computed(() => {
           @click="$emit('choose', cardAction)"
         />
         <div class="pool">
-          <TokenPool :tokens="scarletKey.tokens" />
+          <TokenPool :tokens="scarletKey.tokens" :target="{ tag: 'ScarletKeyTarget', contents: scarletKey.id }" />
         </div>
       </div>
       <AbilityButton

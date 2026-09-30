@@ -20,6 +20,11 @@ const ctx = useGame()
 const g = computed(() => ctx.game.value!)
 const tv = computed(() => ctx.tv.value!)
 const inGame = computed(() => g.value.scenario !== null)
+/* Picking investigators there is nothing on the table to look at, so the board,
+the cup, the codex and the deck row stand down and the choice takes the room. */
+const picking = computed(() =>
+  Object.values(g.value.questions).some((q) => q.choices.some((c) => c.label.tag === 'InvestigatorLabel')),
+)
 
 // a pill is plain text, or {text, cls, color} when it wants the phase tint
 type Pill = string | { text: string; cls?: string; color?: string }
@@ -185,28 +190,28 @@ const close = () => {
       <div class="map-row">
         <div class="sheet-col">
           <ScenarioSheet />
-          <MythosPanel />
+          <MythosPanel v-if="!picking" />
           <!-- with two columns the cards keep the sheet company; otherwise they follow the map -->
-          <UnderMap v-if="!wideRail && !stacked" />
+          <UnderMap v-if="!wideRail && !stacked && !picking" />
           <!-- with three, the display joins the deck row and the codex ends this column -->
-          <CodexPanel v-if="wideRail" />
+          <CodexPanel v-if="wideRail && !picking" />
         </div>
         <div class="map-col">
           <!-- the active card rides over the board, beside whatever asks about it -->
-          <div class="map-stage">
+          <div v-if="!picking" class="map-stage">
             <BoardMap />
             <ActiveSide />
           </div>
-          <Questions v-if="!wideRail" />
+          <Questions v-if="!wideRail || picking" />
           <PlayerAreas v-if="!wideRail" />
-          <UnderMap v-if="stacked" />
+          <UnderMap v-if="stacked && !picking" />
         </div>
         <div v-if="wideRail" class="side-rail">
-          <Questions />
+          <Questions v-if="!picking" />
           <PlayerAreas />
         </div>
       </div>
-      <div id="otherSpaces">
+      <div v-if="!picking" id="otherSpaces">
         <span
           v-for="s in others"
           :key="s.id"
@@ -216,7 +221,7 @@ const close = () => {
           ><b>{{ s.name }}</b><SpaceChips :sid="s.id"
         /></span>
       </div>
-      <div class="card-strip">
+      <div v-if="!picking" class="card-strip">
         <Decks :part="wideRail ? 'all' : 'decks'" />
       </div>
     </section>

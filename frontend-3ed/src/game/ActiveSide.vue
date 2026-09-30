@@ -91,8 +91,7 @@ function open() {
       </div>
     </div>
     <div id="activeCard">
-      <div v-if="!card" class="active-empty">No card in play</div>
-      <div v-else class="encounter">
+      <div v-if="card" class="encounter">
         <figure
           class="codex-card encounter-card"
           :class="[{ 'no-art': isBroken(card.src) }, ctx.marks(['card', card.cid])]"

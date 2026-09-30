@@ -654,10 +654,11 @@ is the chip in the heading rather than a paragraph under it */
 .sheet-col .active-side .encounter-card { flex:0 0 200px; width:200px; }
 .active-side h2 { display:flex; align-items:center; gap:6px; }
 .inv-chip { width:18px; height:18px; border-radius:50%; box-shadow:0 0 0 1px rgba(255,255,255,.55); }
-.active-empty { height:120px; display:flex; align-items:center; justify-content:center; text-align:center;
-  color:var(--muted); font-size:12px; border:1px dashed var(--line); border-radius:8px; }
+/* it rides over the board, so it carries its own surface rather than letting the
+   map show through the words */
 .drawn-token { display:flex; align-items:center; gap:12px; margin-bottom:10px; padding:10px 12px;
-  border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--accent) 7%, transparent); }
+  border:1px solid var(--line); border-radius:10px; background:color-mix(in srgb, var(--accent) 14%, var(--panel));
+  box-shadow:0 6px 18px rgba(0,0,0,.5); }
 .drawn-token-name { font-weight:600; }
 .drawn-token-sub { color:var(--muted); font-size:12px; }
 /* the token is pulled out of the cup: it arrives small and turned, then settles */

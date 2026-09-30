@@ -448,6 +448,9 @@ runGameMessage msg g = case msg of
   ReplaceInvestigator oldIid decklist -> do
     playerId <- getPlayer oldIid
     dl <- loadDecklist decklist
+    -- The card pool is fixed once chosen (in the app or by the deck), so a later
+    -- decklist can only ever supply one we don't have yet.
+    let keptCardPool = attr investigatorCardPool =<< Map.lookup oldIid (gameInvestigators g)
     let iid' = dl.investigator
     let deck = dl.cards
     let sideDeck = dl.extra
@@ -460,7 +463,7 @@ runGameMessage msg g = case msg of
           updateAttrs (lookupInvestigator iid' playerId) \ia ->
             ia
               { investigatorTaboo = dl.taboo
-              , investigatorCardPool = dl.cardPool
+              , investigatorCardPool = keptCardPool <|> dl.cardPool
               , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
               , investigatorSettings =
                   let settings = investigatorSettings ia
@@ -502,8 +505,10 @@ runGameMessage msg g = case msg of
           These (Campaign c) _ -> invalidCards c
 
     -- if the player is changing decks during the game (i.e. prologue investigators) we need to replace the old investigator
-    let mOldId = toId <$> find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)
+    let mOldInvestigator = find ((== playerId) . attr investigatorPlayerId) (toList $ gameInvestigators g)
+        mOldId = toId <$> mOldInvestigator
         replaceIds = InvestigatorId "00000" : toList mOldId
+        keptCardPool = attr investigatorCardPool =<< mOldInvestigator
 
     dl <- loadDecklist decklist
     let invalids = filter ((`elem` invalid) . toCardCode) dl.cards
@@ -523,7 +528,7 @@ runGameMessage msg g = case msg of
           updateAttrs (lookupInvestigator iid' playerId) \ia ->
             ia
               { investigatorTaboo = dl.taboo
-              , investigatorCardPool = dl.cardPool
+              , investigatorCardPool = keptCardPool <|> dl.cardPool
               , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
               , investigatorSettings =
                   let settings = ia.settings
@@ -567,7 +572,7 @@ runGameMessage msg g = case msg of
             ( \ia ->
                 ia
                   { investigatorTaboo = dl.taboo
-                  , investigatorCardPool = dl.cardPool
+                  , investigatorCardPool = ia.cardPool <|> dl.cardPool
                   , investigatorMutated = tabooMutated' dl.taboo (coerce iid')
                   , investigatorSettings =
                       let settings = investigatorSettings ia

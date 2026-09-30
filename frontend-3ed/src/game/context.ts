@@ -249,8 +249,11 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     return DECK_KEYS.find((k) => d[k]?.includes(cid)) ?? null
   }
 
-  // a card reaching the event discard travels there; one that was never shown turns face up on the way
-  function flyDiscardedEvent(g: Game, before: EventRects, fly: boolean): CardId | null {
+  /* a card reaching the event discard travels there; one that was never shown turns
+  face up on the way. `wasUnstable` is the unstable space the board showed before it
+  left: the outline is only taken down and re-lit when the card lands on a different
+  one, so an encounter going to the discard does not blink the space it did not move. */
+  function flyDiscardedEvent(g: Game, before: EventRects, fly: boolean, wasUnstable: string): CardId | null {
     const discard = g.decks.eventDiscard,
       prev = lastEvents
     lastEvents = { discard, revealed: g.revealedEvent }
@@ -263,9 +266,13 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     const target = document.querySelector<HTMLElement>('[data-deck="eventDiscard"] .deck-stack > img')
     if (!face || !from || !target) return null
     const under = prev.discard.length ? eventImage(prev.discard[0]) : null
-    unstableHeld.value = true
-    unstableReveal.value = false
+    const moved = (view.value?.unstable ?? []).join() !== wasUnstable
+    if (moved) {
+      unstableHeld.value = true
+      unstableReveal.value = false
+    }
     flyCard(from, target, face, shown ? null : img(`backs/${nid}.webp`), 0, under).finally(() => {
+      if (!moved) return
       unstableHeld.value = false
       unstableReveal.value = true
     })
@@ -303,6 +310,7 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     const run = async () => {
       const drawBefore = drawRects()
       const eventBefore = eventRects()
+      const unstableBefore = (view.value?.unstable ?? []).join()
       if (!unstableHeld.value) unstableReveal.value = false
       tv.value = next
       await nextTick()
@@ -312,7 +320,7 @@ export function createGameContext(tableId: string, catalog: Catalog) {
         lastDrawGame = null
         return
       }
-      const discarded = flyDiscardedEvent(g, eventBefore, live)
+      const discarded = flyDiscardedEvent(g, eventBefore, live, unstableBefore)
       if (animate) flyDrawnCards(g, drawBefore, discarded)
       else lastDrawGame = g
     }

@@ -80,11 +80,15 @@ export function skillParts(copy: string): TextPart[] {
   for (const m of copy.matchAll(SKILL_SENSE)) {
     const word = m.slice(1).find(Boolean)
     if (!word || m.index === undefined) continue
-    // the match carries its context ("test lore"); only the skill itself becomes the icon
-    const start = m.index + m[0].toLowerCase().lastIndexOf(word.toLowerCase())
+    /* the match carries its context ("test lore"), and only the skill itself becomes
+    the icon -- except for a skill standing alone in brackets, where the icon is what
+    the card prints and the brackets go with the word */
+    const bracketed = /^\(\s*[a-z]+\s*\)$/i.test(m[0])
+    const start = bracketed ? m.index : m.index + m[0].toLowerCase().lastIndexOf(word.toLowerCase())
+    const end = bracketed ? m.index + m[0].length : start + word.length
     if (start > at) parts.push({ text: copy.slice(at, start) })
     parts.push({ icon: word.toLowerCase(), word })
-    at = start + word.length
+    at = end
   }
   if (at < copy.length) parts.push({ text: copy.slice(at) })
   return parts

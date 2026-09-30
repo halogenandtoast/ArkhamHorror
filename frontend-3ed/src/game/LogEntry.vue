@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import CardText from '@/game/CardText.vue'
 import { useGame } from '@/game/context'
 import MythosTok from '@/game/MythosTok.vue'
 import Tok from '@/game/Tok.vue'
@@ -99,7 +100,8 @@ const entry = computed((): Entry => {
     >
   </li>
   <li v-else-if="entry.kind === 'doom'" class="log-entry log-doom">
-    <Tok name="doom" title="doom" :size="22" /><span>{{ entry.text }}</span>
+    <Tok name="doom" title="doom" :size="22" /><span><CardText :text="entry.text" /></span>
   </li>
-  <li v-else class="log-entry" :class="entry.cls">{{ line }}</li>
+  <!-- a card's own words land in the log, so the skills it names are icons there -->
+  <li v-else class="log-entry" :class="entry.cls"><CardText :text="line" /></li>
 </template>

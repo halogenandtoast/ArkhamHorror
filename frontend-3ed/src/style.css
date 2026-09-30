@@ -703,7 +703,8 @@ body.log-open { padding-right:min(360px, 90vw); }
 .screen .sub { color:var(--muted); margin:0 0 16px; }
 .field { margin-bottom:16px; }
 /* undo the page header's bar styling: this is just the title above the cards */
-.ng-header { display:block; padding:0; border:0; background:none; position:static; margin:0 0 18px; }
+.ng-header { display:flex; align-items:center; gap:12px; padding:0; border:0; background:none; position:static; margin:0 0 18px; }
+.ng-cancel { margin:0 0 0 auto; }
 .ng-header h2 { margin:0; font-size:28px; letter-spacing:-.01em; }
 .ng { display:grid; gap:16px; }
 /* on the new game page the scenarios take the width and the setup rides beside them */
@@ -722,6 +723,17 @@ body.log-open { padding-right:min(360px, 90vw); }
 .ng-config .ng-tiles { grid-template-columns:minmax(0, 1fr); }
 .ng-config .ng-tiles label { display:grid; grid-template-columns:72px minmax(0, 1fr); align-items:center; }
 .ng-config .ng-tiles label img { height:100%; aspect-ratio:auto; }
+/* a sheet keeps its place while its art is still coming: the image box already
+holds the height, and this fills it rather than flashing an empty panel */
+.sc-tile.loading .sc-pick img { visibility:hidden; }
+.sc-tile.loading .sc-pick { position:relative; }
+.sc-tile.loading .sc-pick::after { content:''; position:absolute; left:0; right:0; top:0;
+  aspect-ratio:1503 / 1200; pointer-events:none;
+  background:linear-gradient(100deg, color-mix(in srgb, var(--ink) 6%, transparent) 30%,
+    color-mix(in srgb, var(--ink) 14%, transparent) 50%, color-mix(in srgb, var(--ink) 6%, transparent) 70%);
+  background-size:220% 100%; animation:skeleton 1.2s linear infinite; }
+@keyframes skeleton { from { background-position:120% 0; } to { background-position:-120% 0; } }
+@media (prefers-reduced-motion: reduce) { .sc-tile.loading .sc-pick::after { animation:none; } }
 /* the covers and sheets are buttons, so dragging one should not peel off a ghost image */
 .ng-box img, .ng-tiles label img, .sc-pick img { -webkit-user-drag:none; user-select:none; }
 /* the boxes as a row of covers; the open one shows its scenarios underneath */

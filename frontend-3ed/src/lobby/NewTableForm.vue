@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { createTable, errorText } from '@/api'
 import { img, isBroken, markBroken } from '@/assets'
@@ -31,9 +31,13 @@ const groups = computed(() =>
     })
     .filter((g) => g.scenarios.length),
 )
-// one box is open at a time: its cover is the toggle, its scenarios sit under the row
+// one box is open at a time: its cover is the toggle, its scenarios sit under the row.
+// Every box's grid stays mounted and is only hidden, so switching never reloads art.
 const openBox = ref(groups.value.find((g) => g.playable)?.exp ?? groups.value[0]?.exp ?? '')
-const shown = computed(() => groups.value.find((g) => g.exp === openBox.value)?.scenarios ?? [])
+// a sheet holds its place with a skeleton until its own art has arrived
+const loaded = ref<Record<string, boolean>>({})
+// what to add belongs to the box you are looking at, so opening another starts it over
+watch(openBox, () => (choice.extras = []))
 const picked = computed<ScenarioInfo | null>(
   () => props.catalog.scenarios.find((sc) => sc.code === choice.scenario) ?? null,
 )
@@ -92,6 +96,7 @@ async function submit() {
   <div id="setup" class="ng-page">
     <header class="ng-header">
       <h2>New game</h2>
+      <button class="ng-cancel" type="button" :disabled="busy" @click="emit('cancel')">Cancel</button>
     </header>
     <form class="ng" @submit.prevent="submit">
       <div class="ng-scenarios">
@@ -116,9 +121,14 @@ async function submit() {
               >
             </button>
           </div>
-          <div class="sc-grid">
+          <div v-for="g in groups" v-show="openBox === g.exp" :key="g.exp" class="sc-grid">
             <!-- a scenario is picked by its sheet; the corner icon opens it flippable between story and setup sides -->
-            <div v-for="sc in shown" :key="sc.code" class="sc-tile" :class="{ waiting: !sc.playable }">
+            <div
+              v-for="sc in g.scenarios"
+              :key="sc.code"
+              class="sc-tile"
+              :class="{ waiting: !sc.playable, loading: !loaded[sc.code] && !isBroken(story(sc.code)) }"
+            >
               <button
                 type="button"
                 class="sc-pick"
@@ -127,7 +137,13 @@ async function submit() {
                 :title="sc.playable ? `Play ${sc.name}` : `${sc.name} is not implemented yet`"
                 @click="pick(sc)"
               >
-                <img v-if="!isBroken(story(sc.code))" :src="story(sc.code)" alt="" @error="markBroken(story(sc.code))" />
+                <img
+                  v-if="!isBroken(story(sc.code))"
+                  :src="story(sc.code)"
+                  alt=""
+                  @load="loaded[sc.code] = true"
+                  @error="markBroken(story(sc.code))"
+                />
                 <span class="sc-name">{{ sc.name }}</span>
                 <span v-if="!sc.playable" class="sc-exp">Not implemented yet</span>
               </button>
@@ -146,28 +162,6 @@ async function submit() {
       </div>
 
       <div class="ng-config">
-        <div v-if="extrasOffered.length" class="ng-card">
-          <div class="ng-title">Include content</div>
-          <div class="ng-tiles">
-            <template v-for="e in extrasOffered" :key="e">
-              <input
-                :id="`ngE${e}`"
-                type="checkbox"
-                name="exp"
-                :value="e"
-                :checked="choice.extras.includes(e)"
-                @change="toggleExtra(e, ($event.target as HTMLInputElement).checked)"
-              /><label :for="`ngE${e}`" :class="{ 'no-art': isBroken(cover(e)) }"
-                ><img v-if="!isBroken(cover(e))" :src="cover(e)" alt="" @error="markBroken(cover(e))" />
-                <span class="ng-tile-text"
-                  ><b>{{ expName(e) }}</b
-                  ><small>Monsters, encounters and cards from this box</small></span
-                ></label
-              >
-            </template>
-          </div>
-        </div>
-
         <div class="ng-card">
           <div class="ng-title">Game name</div>
           <div class="ng-seed">
@@ -199,11 +193,32 @@ async function submit() {
           <p id="ngModeNote" class="ng-note">{{ modeNote }}</p>
         </div>
 
+        <div v-if="extrasOffered.length" class="ng-card">
+          <div class="ng-title">Include content</div>
+          <div class="ng-tiles">
+            <template v-for="e in extrasOffered" :key="e">
+              <input
+                :id="`ngE${e}`"
+                type="checkbox"
+                name="exp"
+                :value="e"
+                :checked="choice.extras.includes(e)"
+                @change="toggleExtra(e, ($event.target as HTMLInputElement).checked)"
+              /><label :for="`ngE${e}`" :class="{ 'no-art': isBroken(cover(e)) }"
+                ><img v-if="!isBroken(cover(e))" :src="cover(e)" alt="" @error="markBroken(cover(e))" />
+                <span class="ng-tile-text"
+                  ><b>{{ expName(e) }}</b
+                  ><small>Monsters, encounters and cards from this box</small></span
+                ></label
+              >
+            </template>
+          </div>
+        </div>
+
         <div class="ng-actions table-actions">
           <button id="ngStart" class="primary" type="submit" :disabled="busy || !picked">
             {{ picked ? `Play ${picked.name}` : 'Pick a scenario' }}
           </button>
-          <button type="button" :disabled="busy" @click="emit('cancel')">Cancel</button>
         </div>
         <div id="setupError" class="err">{{ error }}</div>
       </div>

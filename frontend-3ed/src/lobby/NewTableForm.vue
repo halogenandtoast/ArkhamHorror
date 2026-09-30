@@ -167,7 +167,6 @@ async function submit() {
               >
             </template>
           </div>
-          <p class="ng-note">The base game is always included.</p>
         </div>
 
         <div class="ng-card">

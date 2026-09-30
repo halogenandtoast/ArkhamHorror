@@ -185,6 +185,9 @@ need goes to the map */
 /* the question panel is only as tall as the question */
 .side-rail > section:first-child { flex:0 0 auto; }
 .side-rail > section:first-child > #questions { display:flex; flex-direction:column; gap:10px; }
+/* the questions take the panel's width rather than their own content's, so the
+   test box under them spans it too */
+.questions-panel > #questions { flex:1 1 auto; }
 /* the player panel is as tall as the player area in it, not as tall as the rail */
 .side-rail .rail-players { flex:0 0 auto; display:flex; flex-direction:column; }
 /* the tabs sit on the player area's own box, so the panel around them adds nothing

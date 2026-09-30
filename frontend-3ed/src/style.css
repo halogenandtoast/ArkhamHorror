@@ -495,8 +495,9 @@ ul.tabs__header > li.tab--has-actions { color:var(--ink); }
 .tab--Guardian { --role:#2f7fc4; } .tab--Seeker { --role:#c98218; } .tab--Rogue { --role:#2d9a36; }
 .tab--Mystic { --role:#8a6bd1; } .tab--Survivor { --role:#c4444c; } .tab--Neutral { --role:#7a7686; }
 .tab--active-player::before { content:"▶"; font-size:.65em; margin-left:10px; align-self:center; color:var(--accent); }
-.waiting-indicator { display:inline-flex; align-items:center; justify-content:center; align-self:stretch; padding:0 8px;
-  color:var(--accent); }
+/* sits towards the tab's right edge, clear of the name */
+ul.tabs__header li > .waiting-indicator { display:inline-flex; align-items:center; justify-content:center; align-self:stretch;
+  padding:0 2px 0 4px; color:var(--accent); }
 /* a ring rather than a glyph: it fills its box, so it sits on the tab's middle and
    turns about its own centre */
 .waiting-spinner { display:block; width:18px; height:18px; animation:waiting-on-spin 1.6s linear infinite; }

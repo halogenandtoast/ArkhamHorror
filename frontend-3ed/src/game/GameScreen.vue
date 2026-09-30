@@ -167,8 +167,14 @@ const close = () => {
     >
       Debug
     </button>
-    <button id="logToggle" class="log-toggle" aria-controls="logPanel" @click="ctx.toggleLog()">
-      Log<span v-if="ctx.logUnread.value" id="logUnread" class="log-unread">{{ ctx.logUnread.value > 99 ? '99+' : ctx.logUnread.value }}</span>
+    <button
+      id="logToggle"
+      class="log-toggle"
+      :class="{ unread: ctx.logUnread.value > 0 }"
+      aria-controls="logPanel"
+      @click="ctx.toggleLog()"
+    >
+      Log<span v-if="ctx.logUnread.value" id="logUnread">&nbsp;{{ ctx.logUnread.value > 99 ? '99+' : ctx.logUnread.value }}</span>
     </button>
     <button v-if="ctx.isHost.value" id="abandon" @click="close">Close game</button>
   </header>
@@ -180,14 +186,17 @@ const close = () => {
         <div class="sheet-col">
           <ScenarioSheet />
           <MythosPanel />
-          <ActiveSide />
           <!-- with two columns the cards keep the sheet company; otherwise they follow the map -->
           <UnderMap v-if="!wideRail && !stacked" />
           <!-- with three, the display joins the deck row and the codex ends this column -->
           <CodexPanel v-if="wideRail" />
         </div>
         <div class="map-col">
-          <BoardMap />
+          <!-- the active card rides over the board, beside whatever asks about it -->
+          <div class="map-stage">
+            <BoardMap />
+            <ActiveSide />
+          </div>
           <Questions v-if="!wideRail" />
           <PlayerAreas v-if="!wideRail" />
           <UnderMap v-if="stacked" />

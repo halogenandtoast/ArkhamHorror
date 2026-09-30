@@ -42,7 +42,7 @@ function spawning(q: Question) {
 </script>
 
 <template>
-  <section>
+  <section class="questions-panel">
     <h2>Questions</h2>
     <div id="questions">
       <TestBox v-if="test && !testPlaced" :test="test" />

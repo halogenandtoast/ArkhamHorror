@@ -15,6 +15,7 @@ import AH3e.Types.Skill
 import AH3e.Types.State
 import Data.List (nub)
 import Data.Map.Strict qualified as Map
+import Data.Text qualified as T
 
 resolveEffect :: EffectCtx -> Effect -> GameM ()
 resolveEffect ctx eff0 = do
@@ -99,18 +100,21 @@ resolveEffect ctx eff0 = do
     RemoveDoomFrom ScenarioSheet a -> #sheetDoom %= max 0 . subtract (amt a)
     -- only spaces holding doom are worth offering
     RemoveDoomFrom w a ->
-      withSpaceWhere ctx w (fmap ((> 0) . (.doom)) . getSpace) (\w' -> RemoveDoomFrom w' a) \sid ->
+      withSpaceWhere ctx w (fmap ((> 0) . (.doom)) . getSpace) "choose a space to take doom from" (\w' -> RemoveDoomFrom w' a) \sid ->
         [RemoveDoom sid (amt a), CheckReactions (AfterDoomRemoved iid (amt a)) []]
     PlaceDoomAt ScenarioSheet a -> push (PlaceDoomOnSheet (amt a))
     PlaceDoomAt EachSpaceInYourNeighborhood a -> do
       spaces <- yourNeighborhoodSpaces iid
       push (PlaceDoomInOrder ctx.source (concatMap (replicate (amt a)) spaces))
-    PlaceDoomAt w a -> withSpace ctx w (\w' -> PlaceDoomAt w' a) \sid -> [PlaceDoomInOrder ctx.source (replicate (amt a) sid)]
+    PlaceDoomAt w a ->
+      withSpace ctx w (doomPrompt (amt a)) (\w' -> PlaceDoomAt w' a) \sid ->
+        [PlaceDoomInOrder ctx.source (replicate (amt a) sid)]
     SpreadDoomOnce -> push SpreadDoom
     SpawnOneClue -> push SpawnClue
     SpawnMonster -> push (SpawnMonsterAt Nothing False)
     SpawnMonsterIn w exhausted ->
-      withSpace ctx w (\w' -> SpawnMonsterIn w' exhausted) \sid -> [SpawnMonsterAt (Just sid) exhausted]
+      withSpace ctx w "choose a space for the monster" (\w' -> SpawnMonsterIn w' exhausted) \sid ->
+        [SpawnMonsterAt (Just sid) exhausted]
     ResolveGateBurst -> push GateBurst
     ReadHeadline -> push (DrawHeadline iid)
     DrawMythosTokens n -> do
@@ -127,7 +131,7 @@ resolveEffect ctx eff0 = do
       restricted <- isRestrictedByEngagement iid
       unless restricted $ push (MoveStep (MoveState iid n 0 0 True False))
     MoveUpToIgnoringMonsters n -> when playing $ push (MoveStep (MoveState iid n 0 0 True True))
-    MoveDirectlyTo w -> when playing $ withSpace ctx w MoveDirectlyTo \sid -> [MoveDirectly iid sid]
+    MoveDirectlyTo w -> when playing $ withSpace ctx w "choose where to move" MoveDirectlyTo \sid -> [MoveDirectly iid sid]
     -- the spell picks the monster, not the space, so the spaces only set the reach
     DamageMonsterIn w a -> when playing do
       here <- spacesFor ctx w
@@ -355,7 +359,35 @@ spacesFor ctx w = do
       _ -> maybeToList <$> investigatorSpace iid
     ScenarioSheet -> pure []
 
-withSpace :: EffectCtx -> Where -> (Where -> Effect) -> (SpaceId -> [Message]) -> GameM ()
+{- | What is asking. A lurking monster placing doom, or a card resolving its own
+text, is not obvious from "Choose a space" alone, so the prompt says whose effect
+this is where it can name it.
+-}
+doomPrompt :: Int -> Text
+doomPrompt n = "choose a space for " <> (if n == 1 then "the doom" else tshow n <> " doom")
+
+askingName :: Source -> GameM (Maybe Text)
+askingName = \case
+  SourceMonster mid -> nameOf mid
+  SourceCard cid -> nameOf cid
+  SourceEncounter cid -> nameOf cid
+  SourceHeadline cid -> nameOf cid
+  SourceCodex n -> pure (Just ("Card " <> tshow (coerce n :: Int)))
+  SourceMythos -> pure (Just "The mythos")
+  _ -> pure Nothing
+ where
+  nameOf cid = uses #cards (Map.member cid) >>= \known -> if known then Just . (.name) <$> getCardDef cid else pure Nothing
+
+-- | @"Grasping Fungus: choose a space for the doom"@, and the instruction alone
+-- when nothing names the asker.
+spacePrompt :: EffectCtx -> Text -> GameM Text
+spacePrompt ctx what = do
+  who <- askingName ctx.source
+  pure $ case who of
+    Just n -> n <> ": " <> what
+    Nothing -> T.toUpper (T.take 1 what) <> T.drop 1 what
+
+withSpace :: EffectCtx -> Where -> Text -> (Where -> Effect) -> (SpaceId -> [Message]) -> GameM ()
 withSpace ctx w = withSpaceWhere ctx w (const (pure True))
 
 -- | 'withSpace', offering only the spaces that pass @keep@
@@ -363,25 +395,27 @@ withSpaceWhere
   :: EffectCtx
   -> Where
   -> (SpaceId -> GameM Bool)
+  -> Text
   -> (Where -> Effect)
   -> (SpaceId -> [Message])
   -> GameM ()
-withSpaceWhere ctx w keep rebuild k = do
+withSpaceWhere ctx w keep what rebuild k = do
   let iid = ctx.investigator
   candidates <- filterM keep =<< spacesFor ctx w
+  prompt <- spacePrompt ctx what
   case w of
     EachSpaceInYourNeighborhood -> pushAll (concatMap k candidates)
     DifferentSpaces n excluded
       | n <= 0 -> pure ()
       | otherwise ->
-          chooseFor iid "Choose a space"
+          chooseFor iid prompt
             $ spaceChoices
               candidates
               (\sid -> k sid <> [ResolveEffect ctx (rebuild (DifferentSpaces (n - 1) (sid : excluded)))])
             <> [Choice (DoneLabel "Done") []]
     _ -> case candidates of
       [sid] -> pushAll (k sid)
-      _ -> chooseFor iid "Choose a space" (spaceChoices candidates k)
+      _ -> chooseFor iid prompt (spaceChoices candidates k)
 
 evalPredicate :: EffectCtx -> Predicate -> GameM Bool
 evalPredicate ctx p = do

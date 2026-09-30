@@ -212,7 +212,8 @@ function applyView() {
   /* The band bounds the column, and whatever shares it with the map -- the codex --
   takes its share first; the map has what is left. Read from the CSS bound rather
   than from our own last height, so the measurement cannot chase itself. */
-  const col = vp.parentElement
+  // the map shares a stage with the active card; its column is what the band sizes
+  const col = vp.closest('.map-col')
   let room = vp.clientHeight
   if (!full) {
     /* what bounds the map: the band, or -- where the table fills the window -- the
@@ -234,12 +235,14 @@ function applyView() {
   /* A board narrower than its column leaves dead space either side, so the column
   asks for only the width the map draws in and the rest of the row gets it. Taken
   from the height the band allows, so the measurement cannot oscillate. */
-  const sized = (col?.classList.contains('map-col') ? col : vp) as HTMLElement
+  const sized = (col ?? vp) as HTMLElement
   if (!full) {
     /* The column asks for exactly the width the map draws in at the band's height
     and never for more, so the spare width of the row goes to the sheet beside it.
     It still gives way, last, when the row is too narrow to hold everything. */
-    sized.style.flexGrow = '0'
+    /* with the rail beside it the column takes the row's spare width instead of
+    leaving it in the gaps, so the card over the board sits against the rail */
+    sized.style.flexGrow = matchMedia('(min-width: 1801px)').matches ? '1' : '0'
     sized.style.flexShrink = '1'
     sized.style.flexBasis = `${Math.ceil(We * (room / He))}px`
   } else {
@@ -254,6 +257,12 @@ function applyView() {
   const vh = full ? room : Math.min(room, Math.round(He * view.base))
   // full screen is the window's height, not the one we measured for the band
   vp.style.height = full ? '' : `${vh}px`
+  // the active card rides over the board and reads this to cap its own height
+  const stage = vp.closest('.map-stage') as HTMLElement | null
+  if (stage) {
+    if (full) stage.style.removeProperty('--stage-h')
+    else stage.style.setProperty('--stage-h', `${vh}px`)
+  }
   fit.style.height = `${vh}px`
   const s = view.base * view.zoom,
     bw = We * s,

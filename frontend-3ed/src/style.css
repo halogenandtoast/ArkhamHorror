@@ -96,7 +96,7 @@ scrolls sideways would otherwise clip them -- or grow a scrollbar for the 2px */
 .map-wrap { position:relative; overflow:hidden; touch-action:pan-y; }
 .map-wrap.panning { cursor:grabbing; }
 .map-wrap.zoomed { cursor:grab; touch-action:none; }
-.map-controls { position:absolute; top:8px; right:8px; z-index:3; display:flex; gap:4px; }
+.map-controls { position:absolute; bottom:8px; right:8px; z-index:3; display:flex; gap:4px; }
 .map-controls button { margin:0; width:34px; height:34px; padding:0; font-size:18px; line-height:1; background:color-mix(in srgb, var(--panel) 85%, transparent); backdrop-filter:blur(4px); }
 .map-hint { position:absolute; left:10px; bottom:8px; z-index:3; font-size:11px; color:var(--muted); background:color-mix(in srgb, var(--panel) 80%, transparent); padding:2px 8px; border-radius:999px; pointer-events:none; opacity:0; transition:opacity .2s; }
 .map-wrap:hover .map-hint { opacity:1; }
@@ -114,6 +114,37 @@ reads or answers, all the same height, so the page is about one screen tall. */
 /* the map and the codex share a column: whatever height the map does not take,
 the codex sits in, so a map that shrinks does not leave a hole under it */
 .map-col { flex:1 1 auto; min-width:280px; display:flex; flex-direction:column; gap:10px; }
+/* the board and the active card share a stage, so the card can sit over the board
+rather than take a panel's worth of the table */
+.map-stage { position:relative; display:flex; flex-direction:column; min-width:0; min-height:0; }
+/* it is the card itself, not a panel: no frame, no heading, since it sits right
+against the question that names it */
+.map-stage > .active-side { margin:0; padding:0; max-width:322px;
+  background:none; border:none; box-shadow:none; transition:opacity .18s ease; }
+.map-stage > .active-side > h2 { display:none; }
+.map-stage > .active-side > #activeToken { padding:0; }
+.map-stage > .active-side > #activeCard,
+.map-stage > .active-side .encounter,
+.map-stage > .active-side .encounter-card { padding:0; min-height:0; }
+.map-stage > .active-side .encounter { padding-left:22px; }
+.map-stage > .active-side .encounter-card { width:auto; }
+/* both sides free and both capped: the card takes the larger size that fits the
+board's height and a card's width, and keeps its own proportions either way */
+.map-stage > .active-side .encounter-card img { width:auto; height:auto; max-width:300px;
+  max-height:var(--stage-h, none); }
+/* over the board it is capped by the board's own height; below 1101 it flows in the column */
+@media (min-width: 1101px) {
+  .map-stage > .active-side { position:absolute; z-index:6; width:auto;
+    display:flex; flex-direction:column; justify-content:flex-start; }
+  /* reading the board is worth more than the card while the pointer is on it, so the
+  whole card fades out of the way rather than needing to be put away */
+  .map-wrap:hover ~ .active-side { opacity:.1; pointer-events:none; }
+}
+@media (prefers-reduced-motion: reduce) { .map-stage > .active-side { transition:none; } }
+/* three columns: the card sits at the map's right, against the rail that asks */
+@media (min-width: 1801px) { .map-stage > .active-side { top:0; right:0; justify-content:flex-start; } }
+/* two: it sits at the map's foot, over the board, straight above the question */
+@media (max-width: 1800px) and (min-width: 1101px) { .map-stage > .active-side { left:6px; bottom:0; justify-content:flex-end; } }
 .map-row .map-wrap { max-height:var(--band); }
 /* under the map: the codex and the display, side by side, sitting on the bottom of
 the row so the slack the map leaves is above them rather than below */
@@ -159,6 +190,8 @@ and its content fills it edge to edge */
 as tall as the viewport, the deck row sits on its floor, and the band takes the rest,
 which is how the map comes out as large as it can be. */
 @media (min-width: 1801px) {
+  /* the app stands the window's height so the table below the header can fill it */
+  #app { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
   /* the table takes whatever the header leaves, measured rather than guessed */
   .map-section { --band:none; display:flex; flex-direction:column; gap:10px; flex:1 1 auto; min-height:0; margin-bottom:12px; }
   .map-row { flex:1 1 auto; min-height:0; }
@@ -205,11 +238,14 @@ each keep their own flow rather than waiting on the taller of the two. */
   .sheet-col > section:nth-of-type(1) { grid-column:2; grid-row:1; }
   .sheet-col > section:nth-of-type(2) { grid-column:2; grid-row:2; }
   .sheet-col > section:nth-of-type(3) { grid-column:1 / -1; grid-row:3; }
-  /* the question, then whose turn it is, then the board they are playing on */
-  .map-col > section:not(.rail-players) { order:1; }
-  .map-col > .rail-players { order:2; }
-  .map-col > .map-wrap { order:3; }
-  .map-col > .under-map { order:4; }
+  /* whose turn it is, what they are being asked, the card it is about, then the board */
+  .map-stage { display:contents; }
+  .map-stage > .active-side { min-width:0; }
+  .map-col > .rail-players { order:1; }
+  .map-col > .questions-panel { order:2; }
+  .map-stage > .active-side { order:3; }
+  .map-stage > .map-wrap { order:4; }
+  .map-col > .under-map { order:5; }
   /* one column has no width to scroll sideways in, so the decks wrap into rows */
   .card-strip { overflow-x:visible; flex-wrap:wrap; }
   .card-strip .decks, .card-strip .deck-group.lead, .card-strip .display-group { flex-wrap:wrap; }
@@ -228,7 +264,7 @@ every row of cards divides the width it has rather than running past the edge. *
   map is the whole window and they have nowhere else to be */
   body:not(.map-full) .map-wrap { height:auto !important; }
   body:not(.map-full) .map-controls { position:static; justify-content:center; margin-top:6px; }
-  body.map-full .map-controls { top:calc(8px + env(safe-area-inset-top, 0px)); }
+  body.map-full .map-controls { bottom:calc(8px + env(safe-area-inset-bottom, 0px)); }
   .map-hint { display:none; }
   .under-map, .card-strip { display:block; overflow-x:visible; }
   .under-map > section + section, .card-strip > * + * { margin-top:8px; }
@@ -292,7 +328,7 @@ whatever art it happens to sit on */
    its face, and nothing pooled underneath, which only smeared at this size */
 .tok img { width:100%; height:100%; object-fit:contain; position:relative; z-index:1;
   filter:var(--rim) drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
-.tok b, .deck-count, .log-unread { user-select:none; -webkit-user-select:none; }
+.tok b, .deck-count, #logUnread { user-select:none; -webkit-user-select:none; }
 .tok b { position:absolute; z-index:3; right:-4px; bottom:-4px; min-width:16px; height:16px; padding:0 3px; border-radius:8px; background:#111; color:#fff; font-size:11px; line-height:16px; text-align:center; box-shadow:0 0 0 1px rgba(255,255,255,.5); }
 .toks { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 .cup { display:flex; flex-wrap:wrap; gap:4px; align-items:center; margin:4px 0; }
@@ -586,7 +622,7 @@ is the chip in the heading rather than a paragraph under it */
 .zoom-marked { position:relative; display:inline-block; line-height:0; }
 .zoom-marked .read-arrow { left:-40px; border-width:18px 0 18px 26px; }
 .zoom .zoom-marked .zoom-marked-img { max-width:92vw; max-height:92vh; }
-.read-arrow { position:absolute; left:-24px; width:0; height:0; transform:translateY(-50%); border:11px solid transparent; border-left:16px solid var(--accent); border-right:0; filter:drop-shadow(0 0 4px var(--accent)); z-index:1; pointer-events:none; }
+.read-arrow { position:absolute; left:-24px; width:0; height:0; transform:translateY(-50%); border:11px solid transparent; border-left:16px solid var(--accent); border-right:0; filter:var(--rim) drop-shadow(0 1px 2px rgba(0,0,0,.6)); z-index:1; pointer-events:none; }
 .undo-btn { display:inline-flex; align-items:center; gap:6px; }
 .undo-btn[disabled] { opacity:.45; cursor:default; }
 .undo-btn .undo-icon { width:16px; height:16px; flex:none; }
@@ -595,7 +631,9 @@ is the chip in the heading rather than a paragraph under it */
 .flash.show { animation:flash 1.2s ease-out; }
 @keyframes flash { 0% { opacity:0; transform:translate(-50%, 8px); } 15%, 70% { opacity:1; transform:translate(-50%, 0); } 100% { opacity:0; } }
 .log-toggle { position:relative; display:inline-flex; align-items:center; gap:6px; }
-.log-unread { position:absolute; top:-7px; right:-7px; min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:#ff00ff; color:#fff; font-size:11px; font-weight:700; line-height:18px; text-align:center; }
+/* unread lines colour the button rather than hang a badge off it */
+.log-toggle.unread { border-color:color-mix(in srgb, var(--accent) 65%, var(--line));
+  background:color-mix(in srgb, var(--accent) 22%, transparent); color:var(--ink); font-weight:600; }
 .log-panel { position:fixed; top:0; right:0; bottom:0; width:min(360px, 90vw); z-index:5; display:flex; flex-direction:column; background:var(--panel); border-left:1px solid var(--line); box-shadow:-8px 0 24px rgba(0,0,0,.35); transform:translateX(105%); transition:transform .2s ease-out; }
 body.log-open .log-panel { transform:none; }
 body.log-open { padding-right:min(360px, 90vw); }

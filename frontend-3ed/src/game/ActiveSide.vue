@@ -71,7 +71,7 @@ function open() {
 </script>
 
 <template>
-  <section id="activeSection" class="active-side">
+  <section v-if="card || token" id="activeSection" class="active-side">
     <h2>
       Active card<img
         v-if="card?.iid"

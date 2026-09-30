@@ -93,7 +93,10 @@ const tabTitle = (iid: string, delayed: boolean) => {
             }}<i v-if="i.delayed" class="delayed-icon" title="Delayed: they skip their next turn" aria-hidden="true"></i
           ></span>
           <span v-if="sorted.length > 1 && hasChoices(i.id)" class="waiting-indicator" title="Waiting on this player"
-            ><span class="waiting-spinner">⟳</span></span
+            ><svg class="waiting-spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" opacity=".3" />
+              <path d="M21 12a9 9 0 0 0-9-9" />
+            </svg></span
           >
         </li>
       </ul>

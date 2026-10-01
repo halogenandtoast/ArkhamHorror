@@ -12,7 +12,7 @@ module Arkham.Homebrew.CircusExMortis.Stories.PathForward (
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.Query
 import Arkham.Helpers.Modifiers (ModifierType (..), modifiedWhen_, modifyEach)
-import Arkham.Homebrew.CircusExMortis.Helpers (RowEnd (..), locationAtRowEnd)
+import Arkham.Homebrew.CircusExMortis.Helpers (RowEnd, locationAtRowEnd)
 import Arkham.Location.Types (Field (..))
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Placement
@@ -52,12 +52,14 @@ pathForwardModifiers a column = unless a.flipped do
         open <- col <=~> (RevealedLocation <> LocationWithoutClues)
         modifiedWhen_ a open col [ConnectedToWhen (LocationWithId col) (mapOneOf LocationWithId above)]
 
-      {- "The leftmost location in the above row gains Victory 1. This victory applies
-      even if there is only one location in the above row." A separate sentence, so it is
-      not under the first sentence's "if" — being faceup is the whole condition. Kept a
-      live modifier rather than a one-shot push so it does not depend on the above row
-      already being on the board when act 1 flips the card; 'getInitialVictory' scores
-      revealed clueless locations in place, which reads it. -}
-      locationAtRowEnd (FromLeft 0) above >>= traverse_ \lid -> do
+      {- "The <column> location in the above row gains Victory 1. This victory applies
+      even if there is only one location in the above row." The same column the first
+      sentence names, counted in the row above rather than this one -- each copy says it
+      of its own column, not of the leftmost. A separate sentence, so it is not under the
+      first sentence's "if" — being faceup is the whole condition. Kept a live modifier
+      rather than a one-shot push so it does not depend on the above row already being on
+      the board when act 1 flips the card; 'getInitialVictory' scores revealed clueless
+      locations in place, which reads it. -}
+      locationAtRowEnd column above >>= traverse_ \lid -> do
         card <- field LocationCard lid
         modifyEach a [card] [GainVictory 1]

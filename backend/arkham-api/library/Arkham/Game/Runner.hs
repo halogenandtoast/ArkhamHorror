@@ -1991,15 +1991,13 @@ runGameMessage msg g = case msg of
     let allAsks = (pid, q) : [(pid', q') | WindowAsk _ pid' q' <- others]
     anyBlocking <- anyM (fmap not . questionIsOnlyNonBlocking . snd) allAsks
     let kept = if anyBlocking then allAsks else []
-    -- A materialised forced-initiation set drives its own re-checking: every use pushes the
-    -- marker back, which re-filters the set and either re-asks or -- once it is empty --
-    -- pushes the @Do (CheckWindows ws)@ itself (#5743, #5764). Adding one here as well is
-    -- not merely redundant, it is destructive: reaching it re-derives the set from scratch
-    -- and REPLACES the ask, and the ask is the only place the effects this window stands in
-    -- front of are being held (they were popped out of the queue, and 'ClearUI' wipes the
-    -- question before an answer drains). A second seat answering first was enough to reach
-    -- it and silently eat a fight's damage. #5798
-    let selfRechecking = any (notNull . pendingInitiations . snd) kept
+    -- An ask holding a materialised set's pending window effects must drive its own
+    -- re-checking: reaching a trailing check re-derives the set and REPLACES the ask, and
+    -- that ask is the last copy of those effects ('holdsPendingWindowEffects'). The set
+    -- re-checks itself instead -- every use pushes the marker back, which re-filters and,
+    -- once empty, pushes the @Do (CheckWindows ws)@ itself (#5743, #5764). A second seat
+    -- answering first was enough to reach the trailing one and eat a fight's damage. #5798
+    let selfRechecking = any (holdsPendingWindowEffects . snd) kept
     pushAll
       $ [ case kept of
             [(pid', q')] -> Ask pid' q'

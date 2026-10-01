@@ -139,7 +139,27 @@ genMyCard :: Investigator -> CardDef -> TestAppT Card
 genMyCard self = genCard >=> setOwner self.id
 
 useForcedAbility :: HasCallStack => TestAppT ()
-useForcedAbility = chooseOptionMatching "use forced ability" \case
+useForcedAbility = chooseOptionMatching "use forced ability" isForcedAbilityLabel
+
+{- | 'useForcedAbility' / 'skip' for a window that has parked a question on several seats.
+
+A spec pushes a choice's messages straight onto the queue rather than going through
+'Entity.Answer', so answering one seat never clears its entry from @gameQuestion@ the way
+the server does. The single-seat helpers reject a multi-seat map outright, so a spec about
+which seat answers FIRST has to search across seats instead. Each still insists on exactly
+one match.
+-}
+useForcedAbilityAcrossQuestions :: HasCallStack => TestAppT ()
+useForcedAbilityAcrossQuestions =
+  chooseOptionAcrossQuestions "use forced ability" isForcedAbilityLabel
+
+skipAcrossQuestions :: HasCallStack => TestAppT ()
+skipAcrossQuestions = chooseOptionAcrossQuestions "skip" \case
+  SkipTriggersButton {} -> True
+  _ -> False
+
+isForcedAbilityLabel :: UI Message -> Bool
+isForcedAbilityLabel = \case
   AbilityLabel {ability} -> case abilityType ability of
     ForcedAbility {} -> True
     _ -> False
@@ -495,7 +515,10 @@ chooseOptionAcrossQuestions
 chooseOptionAcrossQuestions reason f = do
   questionMap <- gameQuestion <$> getGame
   let
-    findIn = \case
+    -- via stripQuestionWrappers so a window ask (WindowChooseOne) is searched too: this
+    -- is the helper for reaching ONE seat of a multi-seat ask, and a window parking a
+    -- question on several seats at once is exactly where that happens.
+    findIn q' = case stripQuestionWrappers q' of
       QuestionLabel _ _ q -> findIn q
       QuestionWithSource _ _ q -> findIn q
       ChooseOne msgs -> find f msgs

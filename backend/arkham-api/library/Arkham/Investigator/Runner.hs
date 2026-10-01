@@ -2525,7 +2525,12 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     -- emptied set cannot be rebuilt by the Do (CheckWindows ws) below. #5764
     remaining <- flip filterM pending \(ability, ws, _) -> initiationIsLive iid ability ws
     if null remaining
-      then push $ Do (CheckWindows windows) -- anything newly available still gets a look
+      then do
+        -- An emptied set must not take the effects it was holding with it: they are the
+        -- only copy (the pop below took them out of the queue), so stranding them loses
+        -- the damage the window stands in front of outright. #5798
+        pushAll [MoveWithSkillTest effect | (_, _, effects) <- pending, effect <- effects]
+        push $ Do (CheckWindows windows) -- anything newly available still gets a look
       else do
         -- capture every initiation's pending effects out of the queue (first round), so
         -- no held effect can resolve before its own initiation has; each one is given

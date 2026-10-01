@@ -742,6 +742,54 @@ queuedInitiationSources = fromQueue (concatMap go)
     ResolveWindowInitiations _ _ pending -> [abilitySource ability | (ability, _, _) <- pending]
     _ -> []
 
+{- | The initiations a question's 'ResolveWindowInitiations' marker still owes.
+
+Walks exactly where 'initiationsAsk' parks the marker (an 'AbilityLabel' follow-up under a
+window choose) rather than generically: 'WindowAsk' is hot, and a window ask with hundreds
+of choices is a shape this engine has produced before.
+-}
+pendingInitiations :: Question Message -> [(Ability, [Window], [Message])]
+pendingInitiations = goQuestion
+ where
+  goQuestion = \case
+    QuestionLabel _ _ q -> goQuestion q
+    PayCostQuestion _ q -> goQuestion q
+    QuestionWithSource _ _ q -> goQuestion q
+    WindowChooseOne cs -> fromChoices cs
+    ChooseOne cs -> fromChoices cs
+    PlayerWindowChooseOne cs -> fromChoices cs
+    _ -> []
+  fromChoices = concatMap \case
+    AbilityLabel _ _ _ before msgs -> concatMap go (before <> msgs)
+    _ -> []
+  go = \case
+    Priority inner -> go inner
+    Retain inner -> go inner
+    MoveWithSkillTest inner -> go inner
+    MovedWithSkillTest _ inner -> go inner
+    Simultaneously inner -> concatMap go inner
+    Run inner -> concatMap go inner
+    ResolveWindowInitiations _ _ pending -> pending
+    _ -> []
+
+{- | Whether this question is the ONLY place some in-flight effect still exists.
+
+'ResolveWindowInitiations' pops the effect a When damage window stands in front of (the
+@Damaged@/@CheckDefeated@ behind it, see 'pendingWindowEffect') OUT of the queue and parks
+it in the marker it hands to 'initiationsAsk'. 'ClearUI' wipes @gameQuestion@ ahead of every
+answer, so from then until the initiation is used that ask is the last copy: discarding it
+destroys the effect, and re-deriving the set cannot bring it back because its own pop now
+finds nothing. Such a window therefore re-checks ITSELF -- nobody else may queue a
+@Do (CheckWindows ws)@ for it, and no other seat answering may drop it. #5798
+
+Deliberately NOT true of every initiation ask. Only damage windows hold anything, and a
+Forced ability in any other window (Rex's Curse on a would-be success, Dream Gate at the end
+of the phase) still wants the ordinary trailing re-check -- suppressing it there changes the
+flow of every Forced window ability in the game.
+-}
+holdsPendingWindowEffects :: Question Message -> Bool
+holdsPendingWindowEffects = any (\(_, _, effects) -> notNull effects) . pendingInitiations
+
 {- | Windows the queue still owes a check. A window's 'EndCheckWindow' can fire while one
 of its initiations is still in flight -- 'handleSkillTestNesting' glues the continuation
 behind 'EndSkillTestWindow', but not the window's close -- and that close depth-filters

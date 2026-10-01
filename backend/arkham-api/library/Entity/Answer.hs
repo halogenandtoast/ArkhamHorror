@@ -20,6 +20,7 @@ import Arkham.Custom.Overlay (DeckOverlay, applyOverlay, decklistCustomCards)
 import Arkham.Decklist
 import Arkham.Entities
 import Arkham.Game
+import Arkham.Helpers.Message (holdsPendingWindowEffects)
 import Arkham.Id
 import Arkham.Investigator.Types (InvestigatorAttrs (investigatorPlayerId))
 import Arkham.Message
@@ -732,7 +733,7 @@ handleAnswerPure game@Game {..} playerId = \case
         others
           | isJust (barrierSeat playerId game) = mempty
           | retained = Map.delete playerId gameQuestion
-          | otherwise = Map.filter isDeckQuestion $ Map.delete playerId gameQuestion
+          | otherwise = Map.filter survivesAnotherSeat $ Map.delete playerId gameQuestion
     if retained
       then do
         -- Fold this seat's own re-ask into the same map. Emitting it as a
@@ -769,10 +770,24 @@ handleAnswerPure game@Game {..} playerId = \case
   -- Seats the queue rebuilds on its own: PlayerWindow re-pushes itself, and a
   -- WindowChooseOne is followed by the Do (CheckWindows ws) that WindowAsk
   -- queues behind it. Re-parking either hands back a stale question (#5160).
-  isRegeneratedWindowChoose = \case
-    PlayerWindowChooseOne _ -> True
-    WindowChooseOne _ -> True
+  -- An ask holding a materialised set's pending window effects is the exception:
+  -- 'WindowAsk' deliberately queues no trailing check behind it, so nothing rebuilds it,
+  -- and those effects exist nowhere else. #5798
+  isRegeneratedWindowChoose q = case q of
+    PlayerWindowChooseOne _ -> not (holdsPendingWindowEffects q)
+    WindowChooseOne _ -> not (holdsPendingWindowEffects q)
     _ -> False
+
+  -- \| Seats that must survive another seat answering.
+  --
+  --  A deck selection has no regeneration path at all. An ask holding a materialised set's
+  --  pending window effects is the other case: it is NOT rebuilt by the queue, because
+  --  'WindowAsk' deliberately queues no trailing @Do (CheckWindows ws)@ behind it, and those
+  --  effects exist nowhere else (#5798). It is also not stale the way #5159/#5164 were: the
+  --  set re-filters itself against 'initiationIsLive' every round, so a consumed or dead
+  --  initiation drops out on its own. Dropping it instead strands the window with no
+  --  question and nothing to rebuild one.
+  survivesAnotherSeat q = isDeckQuestion q || holdsPendingWindowEffects q
   go
     :: (Question Message -> Question Message)
     -> Question Message

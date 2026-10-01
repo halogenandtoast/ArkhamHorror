@@ -442,6 +442,10 @@ data CodexBehavior = CodexBehavior
   -- ^ the monster is gone by now, so the source that finished it is carried
   , monsterHealthDelta :: CodexEntry -> CardId -> GameM Int
   -- ^ health this card adds to a monster it has marked or singled out
+  , sheetClueReplacement :: CodexEntry -> Int -> GameM (Maybe [Message])
+  {- ^ what happens instead when a clue would be added to the scenario sheet; the
+  first card to answer wins (Cut Off the Head turns each one into damage)
+  -}
   , sheetDoomReplacement :: CodexEntry -> Int -> GameM (Maybe [Message])
   {- ^ what happens instead when doom would be placed on the scenario sheet; the
   first card to answer wins (Tsathoggua eats the city rather than the sheet)
@@ -456,6 +460,12 @@ data CodexBehavior = CodexBehavior
   text says rather than where it was drawn ("whenever your encounter text
   includes...").
   -}
+  , quarrySpaces :: CodexEntry -> GameM [SpaceId]
+  {- ^ spaces a monster hunts and makes for as though an investigator were standing
+  there (Raze the Shrine's bomb)
+  -}
+  , afterMonsterArrives :: CodexEntry -> CardId -> SpaceId -> GameM [Message]
+  -- ^ what a card does about a monster reaching a space it had an interest in
   , blockedSpaces :: CodexEntry -> GameM [SpaceId]
   , spaceEncounter :: CodexEntry -> SpaceId -> Maybe Effect
   }
@@ -471,11 +481,14 @@ defaultCodexBehavior =
     , afterMonsterSpawn = \_ _ -> pure []
     , afterMonsterDefeated = \_ _ _ -> pure []
     , monsterHealthDelta = \_ _ -> pure 0
+    , sheetClueReplacement = \_ _ -> pure Nothing
     , sheetDoomReplacement = \_ _ -> pure Nothing
     , componentActions = []
     , reactions = \_ _ _ -> pure []
     , afterAnomaly = \_ _ -> pure []
     , encounterOverride = \_ _ _ -> pure Nothing
+    , quarrySpaces = \_ -> pure []
+    , afterMonsterArrives = \_ _ _ -> pure []
     , blockedSpaces = \_ -> pure []
     , spaceEncounter = \_ _ -> Nothing
     }

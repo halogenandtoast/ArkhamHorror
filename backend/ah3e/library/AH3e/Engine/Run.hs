@@ -284,12 +284,16 @@ runMessage msg = case msg of
     ready <- isMonsterReady mid
     m <- getMonster mid
     when (ready && remaining > 0) do
-      targets <- case target of
+      {- A card may put something on the board that every monster makes for as
+      though it were an investigator, so it joins whatever the activation names. -}
+      quarry <- codexQuarrySpaces
+      hunted <- case target of
         TowardSpaces rule -> ruleSpaces (Just mid) rule
         TowardPrey rule -> do
           prey <- ruleInvestigators rule
           noticed <- filterM (fmap not . monsterIgnores mid . (.id)) prey
           pure (mapMaybe (.space) noticed)
+      let targets = nub (hunted <> quarry)
       closest <- closestTo m.space targets
       steps <- nub . concat <$> traverse (nextStepsToward m.space) closest
       chooseGroup
@@ -301,6 +305,7 @@ runMessage msg = case msg of
   MonsterEngagesIn mid sid -> do
     ready <- isMonsterReady mid
     holds <- monsterHoldsItsQuarry mid
+    codexMonsterArrived mid sid >>= pushAll
     when (ready && not holds) do
       here <- investigatorsAt sid
       present <- filterM (fmap not . monsterIgnores mid . (.id)) here
@@ -1201,8 +1206,12 @@ runMessage msg = case msg of
         [Choice (AmountLabel k) [ResearchCluesExact iid k] | k <- [0 .. maxN]]
   ResearchCluesExact iid k -> do
     addClues iid (negate k)
-    #sheetClues += k
-    pushAll [CheckReactions (AfterCluesResearched iid k) [], CheckStateTriggers]
+    instead <- sheetCluesInstead k
+    case instead of
+      Just msgs -> pushAll (CheckReactions (AfterCluesResearched iid k) [] : msgs)
+      Nothing -> do
+        #sheetClues += k
+        pushAll [CheckReactions (AfterCluesResearched iid k) [], CheckStateTriggers]
   TradeWith iid other -> tradePrompt iid other
   TradeTransfer giver receiver item -> do
     case item of

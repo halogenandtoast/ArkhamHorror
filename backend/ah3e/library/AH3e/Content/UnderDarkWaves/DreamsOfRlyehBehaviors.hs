@@ -2,6 +2,7 @@
 module AH3e.Content.UnderDarkWaves.DreamsOfRlyehBehaviors (behaviors) where
 
 import AH3e.Content.Tiles
+import AH3e.Content.UnderDarkWaves.Codex
 import AH3e.Engine.Behavior
 import AH3e.Engine.Helpers
 import AH3e.Engine.Monad
@@ -13,6 +14,7 @@ import AH3e.Types.Board
 import AH3e.Types.Card
 import AH3e.Types.Effect
 import AH3e.Types.Ids
+import AH3e.Types.Skill
 import AH3e.Types.State
 import Data.Map.Strict qualified as Map
 
@@ -24,6 +26,14 @@ behaviors =
       [ (106, songOfChaos)
       , (107, maddeningMelody)
       , (108, theCultRevealed)
+      , (109, cutOffTheHead)
+      , (110, callForHelp)
+      , (111, endlessSong)
+      , (112, razeTheShrine)
+      , (113, aDarkHerald)
+      , (114, cripplingVisions)
+      , (115, bloodSacrament)
+      , (116, aDarkAlliance)
       , (117, arrival 117 card117)
       , (118, arrival 118 card118)
       , (119, arrival 119 card119)
@@ -33,7 +43,17 @@ behaviors =
     .~ Map.fromList
       [ ("rlyeh-research", \ctx -> push (ResearchCluesExact ctx.investigator 1))
       , ("rlyeh-blank-token", \_ -> returnTokensToCup [BlankToken])
+      , ("rlyeh-bomb", bombReckoning)
+      , ("rlyeh-doom-ritual-site", doomAtRitualSite)
+      , ("rlyeh-monster-shrine", monsterAtShrine)
       ]
+    & #customAfterTests
+    .~ Map.fromList
+      ( ("call-for-help", \_ r -> when (r >= 5) (push (FlipCodexCard 110)))
+          : [ ("hold-" <> tshow (coerce n :: Int), heldBackTheEnd n against)
+            | (n, against) <- [(113, 117), (114, 118), (115, 119), (116, 120)]
+            ]
+      )
     & #customPredicates
     .~ Map.fromList [("rlyeh-white-marker", standsOnWhite)]
 
@@ -373,3 +393,262 @@ whiteMarkersInArkham = do
 -- | "only be performed by an investigator in a space with a white marker"
 standsOnWhite :: EffectCtx -> GameM Bool
 standsOnWhite ctx = isJust <$> whiteMarkerUnder ctx.investigator
+
+{- | Cards 109-112, one of which card 108 deals out: the four ways the cult can be
+broken. Each ends the game the moment its own condition is met.
+-}
+cutOffTheHead, callForHelp, endlessSong, razeTheShrine :: CodexBehavior
+
+{- | 109. Cthulhu is called up at the ritual site and then drowned in the clues
+that would otherwise have gone to the scenario sheet.
+-}
+cutOffTheHead =
+  defaultCodexBehavior
+    { componentActions =
+        [ ComponentActionDef
+            { label = "Call Cthulhu up at the ritual site"
+            , allowedWhileEngaged = False
+            , canPerform = \iid -> do
+                there <- standsOnMarked "blue" iid
+                up <- inPlay "echoes-40"
+                pure (there && not up)
+            , perform = \ctx -> do
+                msid <- investigatorSpace ctx.investigator
+                for_ msid (spawnHeldBack "echoes-40" >=> pushAll)
+            }
+        ]
+    , -- "Each time a clue would be added to the scenario sheet, instead deal four
+      -- damage to the Cthulhu epic monster."
+      sheetClueReplacement = \_ n -> do
+        ms <- uses #monsters Map.keys
+        codes <- for ms \mid -> (mid,) <$> cardCode mid
+        pure case [mid | (mid, code) <- codes, code == "echoes-40"] of
+          [] -> Nothing
+          mid : _ -> Just (replicate n (DealMonsterDamage mid (SourceCodex 109) 4))
+    , afterMonsterDefeated = \e mid _ -> do
+        code <- cardCode mid
+        pure [FlipCodexCard 109 | code == "echoes-40" && not e.flipped]
+    , onFlip = \e -> when e.flipped (push WinTheGame)
+    }
+
+{- | 110. A call from the cultist shrine, with the sheet's clues spent to make the
+case stick.
+-}
+callForHelp =
+  defaultCodexBehavior
+    { componentActions =
+        [ ComponentActionDef
+            { label = "Call in the Feds"
+            , allowedWhileEngaged = False
+            , canPerform = standsOnMarked "red"
+            , perform = \ctx -> do
+                clues <- use #sheetClues
+                chooseFor
+                  ctx.investigator
+                  "Spend clues from the scenario sheet to add that many successes"
+                  [ Choice
+                      (TextLabel (if k == 0 then "Spend no clues" else tshow k <> " clue" <> plural k))
+                      ([SpendSheetClues k | k > 0] <> [BeginTest (attempt ctx k)])
+                  | k <- [0 .. clues]
+                  ]
+            }
+        ]
+    , onFlip = \e -> when e.flipped (push WinTheGame)
+    }
+ where
+  attempt ctx k =
+    (newTest ctx.investigator Influence (-2) OtherTest (AfterCustom (SourceCodex 110) "call-for-help"))
+      { addedSuccesses = k
+      }
+
+{- | 111. The song is answered space by space until the ritual site's whole
+neighborhood is singing back.
+-}
+endlessSong =
+  defaultCodexBehavior
+    { componentActions =
+        [ ComponentActionDef
+            { label = "Spend a clue from the scenario sheet to sing back"
+            , allowedWhileEngaged = False
+            , canPerform = \iid -> do
+                clues <- use #sheetClues
+                board <- use #board
+                here <- investigatorSpace iid
+                let quiet sid = maybe False (\s -> s.doom == 0 && not (hasWhite board sid)) (Map.lookup sid board.spaces)
+                pure (clues >= 1 && maybe False quiet here)
+            , perform = \ctx -> do
+                msid <- investigatorSpace ctx.investigator
+                for_ msid \sid -> pushAll [SpendSheetClues 1, PlaceMarker sid "white"]
+            }
+        ]
+    , triggers =
+        [ CodexTrigger
+            { key = "endless-song"
+            , once = True
+            , condition = \e -> do
+                board <- use #board
+                site <- markedSpace "blue"
+                let hood = site >>= \sid -> Map.lookup sid board.spaces >>= (.neighborhood)
+                    spaces = maybe [] (\n -> maybe [] (.spaces) (Map.lookup n board.neighborhoods)) hood
+                pure (not e.flipped && not (null spaces) && all (hasWhite board) spaces)
+            , action = \_ -> push (FlipCodexCard 111)
+            }
+        ]
+    , onFlip = \e -> when e.flipped (push WinTheGame)
+    }
+
+{- | 112. The bomb is left at the shrine and has to last until the reckoning.
+Every monster makes for it as though an investigator were standing there, and the
+first one to reach it tears it apart.
+-}
+razeTheShrine =
+  defaultCodexBehavior
+    { componentActions =
+        [ ComponentActionDef
+            { label = "Set the bomb at the cultist shrine"
+            , allowedWhileEngaged = False
+            , canPerform = \iid -> do
+                clues <- use #sheetClues
+                there <- standsOnMarked "red" iid
+                planted <- markedSpace "bomb"
+                pure (there && clues >= 2 && isNothing planted)
+            , perform = \ctx -> do
+                msid <- investigatorSpace ctx.investigator
+                for_ msid \sid -> do
+                  drawn <- use #drawnTokens
+                  #drawnTokens .= []
+                  returnTokensToCup drawn
+                  pushAll [SpendSheetClues 2, PlaceMarker sid "bomb"]
+            }
+        ]
+    , -- "All monsters consider the bomb to be their prey and destination"
+      quarrySpaces = \_ -> maybeToList <$> markedSpace "bomb"
+    , -- "If the bomb suffers any damage from a monster in its space, it is discarded."
+      afterMonsterArrives = \_ _ sid -> do
+        bomb <- markedSpace "bomb"
+        pure [DiscardMarkers "bomb" | bomb == Just sid]
+    , onFlip = \e -> when e.flipped (push WinTheGame)
+    }
+    & #reckoning
+    .~ \_ -> Just (Custom "rlyeh-bomb")
+
+plural :: Int -> Text
+plural k = if k > 1 then "s" else ""
+
+-- | "Reckoning -- If the bomb is at the cultist shrine, flip this card."
+bombReckoning :: EffectCtx -> GameM ()
+bombReckoning _ = do
+  planted <- markedSpace "bomb"
+  shrine <- markedSpace "red"
+  when (isJust planted && planted == shrine) $ push (FlipCodexCard 112)
+
+{- | Cards 113-116: the end drawing in. Each spawns or stirs something on its
+front, flips at ten doom on the sheet, and then asks one investigator to hold it
+back at a price. Each tests against the doom already gathered on the town card
+the investigation turned up, so holding out twice costs more than once.
+-}
+theEnd
+  :: ArchiveNumber
+  -> ArchiveNumber
+  -> Skill
+  -> Text
+  -> (InvestigatorId -> [Message])
+  -> CodexBehavior
+  -> CodexBehavior
+theEnd n against skill priceLabel price base =
+  base
+    { triggers = flipOnSheetDoom ("end-" <> tshow (coerce n :: Int)) 10 n : base.triggers
+    , onFlip = \e ->
+        if e.flipped
+          then do
+            held <- doomOn against
+            leader <- leaderPlayer >>= investigatorOfPlayer
+            case leader of
+              Nothing -> push (LoseTheGame "The end comes")
+              Just iid ->
+                chooseFor
+                  iid
+                  ("Hold the end at bay? You must beat " <> tshow held)
+                  [ label priceLabel (price iid <> [BeginTest (attempt iid)])
+                  , label "Let it come" [LoseTheGame "The end comes"]
+                  ]
+          else base.onFlip e
+    }
+ where
+  attempt iid =
+    newTest iid skill 0 OtherTest (AfterCustom (SourceCodex n) ("hold-" <> tshow (coerce n :: Int)))
+
+-- | Whether the attempt beat the doom already on the town card.
+heldBackTheEnd :: ArchiveNumber -> ArchiveNumber -> Source -> Int -> GameM ()
+heldBackTheEnd n against _ result = do
+  held <- doomOn against
+  if result > held
+    then do
+      doomOntoCard against
+      push (FlipCodexCard n)
+    else push (LoseTheGame "The end comes")
+
+aDarkHerald, cripplingVisions, bloodSacrament, aDarkAlliance :: CodexBehavior
+
+-- | 113. The Servitor of R'lyeh wades ashore at Falcon Point.
+aDarkHerald =
+  theEnd
+    113
+    117
+    Lore
+    "Suffer two direct horror"
+    (\iid -> [SufferHarm iid (SourceCodex 113) DirectHarm 0 2])
+    $ defaultCodexBehavior
+      { onAdd = \_ -> spawnHeldBack "echoes-39" (spaceIdFor "Falcon Point") >>= pushAll
+      }
+
+-- | 114. Warding the board back is answered with visions, and the ritual site drinks doom.
+cripplingVisions =
+  theEnd 114 118 Will "Discard one focus" (\iid -> [ResolveEffect (codexCtx 114 iid) DiscardAFocus])
+    $ defaultCodexBehavior
+    & #reckoning
+    .~ \_ -> Just (Custom "rlyeh-doom-ritual-site")
+
+-- | 115. The cup turns against them and the shrine keeps producing.
+bloodSacrament =
+  theEnd
+    115
+    119
+    Strength
+    "Suffer two direct damage"
+    (\iid -> [SufferHarm iid (SourceCodex 115) DirectHarm 2 0])
+    $ defaultCodexBehavior
+      { onAdd = \_ -> do
+          #cup %= replaceOne BlankToken SpawnMonsterToken
+          logText "A blank token leaves the mythos cup for a spawn monster token"
+      }
+    & #reckoning
+    .~ \_ -> Just (Custom "rlyeh-monster-shrine")
+ where
+  replaceOne from to' = \case
+    [] -> []
+    x : xs | x == from -> to' : xs
+    x : xs -> x : replaceOne from to' xs
+
+-- | 116. Mother Hydra comes up under the lighthouse.
+aDarkAlliance =
+  theEnd
+    116
+    120
+    Will
+    "Suffer one direct damage and one direct horror"
+    (\iid -> [SufferHarm iid (SourceCodex 116) DirectHarm 1 1])
+    $ defaultCodexBehavior
+      { onAdd = \_ -> spawnHeldBack "archive-75" (spaceIdFor "North Point Lighthouse") >>= pushAll
+      }
+
+codexCtx :: ArchiveNumber -> InvestigatorId -> EffectCtx
+codexCtx n iid = EffectCtx {investigator = iid, source = SourceCodex n, testResult = Nothing}
+
+-- | 114's reckoning: "Place one doom at the ritual site."
+doomAtRitualSite :: EffectCtx -> GameM ()
+doomAtRitualSite ctx = markedSpace "blue" >>= traverse_ (push . PlaceDoom ctx.source)
+
+-- | 115's reckoning: "Spawn one monster at the cultist shrine."
+monsterAtShrine :: EffectCtx -> GameM ()
+monsterAtShrine _ = markedSpace "red" >>= traverse_ \sid -> push (SpawnMonsterAt (Just sid) False)

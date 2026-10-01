@@ -522,6 +522,15 @@ codexMonsterHealth mid = do
 {- | What a codex card does instead of putting doom on the scenario sheet; the
 first card to answer wins.
 -}
+sheetCluesInstead :: Int -> GameM (Maybe [Message])
+sheetCluesInstead n = do
+  codex <- use #codex
+  answers <- for codex \e -> (codexBehavior e.number).sheetClueReplacement e n
+  pure (listToMaybe (catMaybes answers))
+
+{- | What a codex card does instead of putting doom on the scenario sheet; the
+first card to answer wins.
+-}
 sheetDoomInstead :: Int -> GameM (Maybe [Message])
 sheetDoomInstead n = do
   codex <- use #codex
@@ -538,6 +547,18 @@ damagePreventionsFor plan = do
       b <- assetBehavior cid
       b.damagePrevention cid i.id plan
     pure (map (i.id,) (sheet <> cards))
+
+-- | Spaces every monster treats as prey, whoever is or is not standing in them.
+codexQuarrySpaces :: GameM [SpaceId]
+codexQuarrySpaces = do
+  codex <- use #codex
+  concat <$> for codex \e -> (codexBehavior e.number).quarrySpaces e
+
+-- | What the codex makes of a monster arriving somewhere.
+codexMonsterArrived :: CardId -> SpaceId -> GameM [Message]
+codexMonsterArrived mid sid = do
+  codex <- use #codex
+  concat <$> for codex \e -> (codexBehavior e.number).afterMonsterArrives e mid sid
 
 blockedSpaces :: GameM [SpaceId]
 blockedSpaces = do

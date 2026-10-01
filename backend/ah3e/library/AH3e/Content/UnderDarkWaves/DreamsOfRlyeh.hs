@@ -83,7 +83,10 @@ scenario =
     , {- Only Arkham's sixteen events start in the deck; cards 117-120 shuffle in
       the eight belonging to whichever town they add. -}
       eventCards = [CardCode ("rlyeh-event-" <> pad n) | n <- [17 .. 32 :: Int]]
-    , setAside = [CardCode ("rlyeh-event-" <> pad n) | n <- [1 .. 16 :: Int]]
+    , setAside =
+        [CardCode ("rlyeh-event-" <> pad n) | n <- [1 .. 16 :: Int]]
+          -- the epic monsters cards 113 and 116 call up, and 109's Cthulhu
+          <> ["echoes-39", "echoes-40", "archive-75"]
     , codex = [1, 106, 107]
     , anomalySet = Nothing
     , terrorSet = Nothing

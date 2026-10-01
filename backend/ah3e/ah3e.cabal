@@ -50,6 +50,7 @@ library
       AH3e.Content.Tiles
       AH3e.Content.UnderDarkWaves.Anomalies
       AH3e.Content.UnderDarkWaves.Archive
+      AH3e.Content.UnderDarkWaves.Codex
       AH3e.Content.UnderDarkWaves.DreamsOfRlyeh
       AH3e.Content.UnderDarkWaves.DreamsOfRlyehBehaviors
       AH3e.Content.UnderDarkWaves.InvestigatorBehaviors

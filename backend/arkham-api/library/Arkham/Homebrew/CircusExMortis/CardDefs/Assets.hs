@@ -346,6 +346,28 @@ kidnappedCitizen_064b =
     , cdDoubleSided = True
     }
 
+{- | thousand_to_one: the two Task assets printed on the backs of the Recite the
+Prayer (:207) and Bear the Burden (:208) Destiny stories. 'cdOtherSide' names the
+story face rather than 'flippedCardCode' so the pair reads the same way round as the
+Kidnapped Citizen backs above; neither carries Victory X, because both cards reach
+the victory display by their own printed instruction rather than by being overcome.
+-}
+dianasBlessing :: CardDef
+dianasBlessing =
+  (encounterAsset_ ":circus-ex-mortis:207b" "Diana's Blessing" Set.ThousandToOne)
+    { cdCardTraits = singleton Task
+    , cdOtherSide = Just ":circus-ex-mortis:207"
+    , cdDoubleSided = True
+    }
+
+darkOfTheMoon :: CardDef
+darkOfTheMoon =
+  (encounterAsset_ ":circus-ex-mortis:208b" "Dark of the Moon" Set.ThousandToOne)
+    { cdCardTraits = singleton Task
+    , cdOtherSide = Just ":circus-ex-mortis:208"
+    , cdDoubleSided = True
+    }
+
 {- | curse_of_the_rougarou: the Circus printings of the side story's two signature
 cards (guide p14). The campaign's overlay swaps them in for 81019/81029; each
 adds a ☾ release reaction to the printed text. 'cdReplacementCardCode' is what

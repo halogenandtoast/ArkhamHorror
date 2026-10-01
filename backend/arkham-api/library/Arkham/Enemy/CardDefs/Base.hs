@@ -49,6 +49,18 @@ doubleSided cCode def =
     , cdOtherSide = Just cCode
     }
 
+{- | The single-sided half of a card whose other face belongs to another type -- an
+enemy printed on the back of a story card, the way Thousand to One's Destiny stories
+carry Malformed Dark Young and Piper of Shub-Niggurath. Mirrors the 'otherSideIs' the
+location and story defs already have.
+-}
+otherSideIs :: CardCode -> CardDef -> CardDef
+otherSideIs cCode def =
+  def
+    { cdDoubleSided = False
+    , cdOtherSide = Just cCode
+    }
+
 -- | Printed-health helpers for the @cdHealth@ field, e.g. @cdHealth = health 1@.
 health :: Int -> Maybe Health
 health = Just . Health . Static

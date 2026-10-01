@@ -3,6 +3,7 @@ module Arkham.Homebrew.CircusExMortis.CardDefs.Stories where
 import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
+import Arkham.Homebrew.CircusExMortis.Traits
 import Arkham.Prelude
 import Arkham.Story.CardDefs.Base
 import Arkham.Trait (Trait (Bystander))
@@ -96,32 +97,32 @@ pathForward_181a = pathForwardCopy pathForward_181
 -- Circus Ex Mortis (fan campaign by Tyler Gotch): thousand_to_one
 strikeTheHeart :: CardDef
 strikeTheHeart =
-  doubleSided $ story ":circus-ex-mortis:201" "Strike the Heart" Set.ThousandToOne
+  addTrait Destiny $ doubleSided $ story ":circus-ex-mortis:201" "Strike the Heart" Set.ThousandToOne
 
 silenceThePipes :: CardDef
 silenceThePipes =
-  doubleSided $ story ":circus-ex-mortis:202" "Silence the Pipes" Set.ThousandToOne
+  addTrait Destiny $ doubleSided $ story ":circus-ex-mortis:202" "Silence the Pipes" Set.ThousandToOne
 
 raiseTheTorch :: CardDef
 raiseTheTorch =
-  doubleSided $ story ":circus-ex-mortis:203" "Raise the Torch" Set.ThousandToOne
+  addTrait Destiny $ doubleSided $ story ":circus-ex-mortis:203" "Raise the Torch" Set.ThousandToOne
 
 splitTheRock :: CardDef
 splitTheRock =
-  doubleSided $ story ":circus-ex-mortis:204" "Split the Rock" Set.ThousandToOne
+  addTrait Destiny $ doubleSided $ story ":circus-ex-mortis:204" "Split the Rock" Set.ThousandToOne
 
 scribeTheSigil :: CardDef
 scribeTheSigil =
-  doubleSided $ story ":circus-ex-mortis:205" "Scribe the Sigil" Set.ThousandToOne
+  addTrait Destiny $ doubleSided $ story ":circus-ex-mortis:205" "Scribe the Sigil" Set.ThousandToOne
 
 cleanseTheStain :: CardDef
 cleanseTheStain =
-  doubleSided $ story ":circus-ex-mortis:206" "Cleanse the Stain" Set.ThousandToOne
+  addTrait Destiny $ doubleSided $ story ":circus-ex-mortis:206" "Cleanse the Stain" Set.ThousandToOne
 
 reciteThePrayer :: CardDef
 reciteThePrayer =
-  doubleSided $ story ":circus-ex-mortis:207" "Recite the Prayer" Set.ThousandToOne
+  addTrait Destiny $ doubleSided $ story ":circus-ex-mortis:207" "Recite the Prayer" Set.ThousandToOne
 
 bearTheBurden :: CardDef
 bearTheBurden =
-  doubleSided $ story ":circus-ex-mortis:208" "Bear the Burden" Set.ThousandToOne
+  addTrait Destiny $ doubleSided $ story ":circus-ex-mortis:208" "Bear the Burden" Set.ThousandToOne

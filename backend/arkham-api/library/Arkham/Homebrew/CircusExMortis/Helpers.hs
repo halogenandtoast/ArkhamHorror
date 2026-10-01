@@ -1,28 +1,34 @@
 module Arkham.Homebrew.CircusExMortis.Helpers where
 
-import Arkham.Ability (Ability, exists, forced, restricted)
+import Arkham.Ability (Ability, exists, forced, mkAbility, restricted)
+import Arkham.CampaignLogKey (recorded)
 import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Classes.HasGame
-import Arkham.Classes.HasQueue (push)
+import Arkham.Classes.HasQueue (push, pushAll)
 import Arkham.Classes.Query
 import Arkham.Direction (Direction (..))
 import Arkham.Distance (unDistance)
 import Arkham.Effect.Builder
 import Arkham.Effect.Window
 import Arkham.Enemy.Types (Field (EnemyLocation, EnemyPlacement))
-import Arkham.GameEnv (getDistance)
+import Arkham.ForMovement (ForMovement (..))
+import Arkham.GameEnv (getDistance, getRetiredInvestigators)
 import Arkham.Helpers.Campaign (getOwner)
+import Arkham.Helpers.ChaosBag (getSealedChaosTokens)
 import Arkham.Helpers.CustomChaosBag
 import Arkham.Helpers.FlavorText (chaosTokenImg, cols, compose, img, p, setTitle, tokenReveal)
+import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Scenario (scenarioField, setScenarioMeta)
 import Arkham.Helpers.SkillTest (getIsBeingInvestigated, getSkillTestInvestigator)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
+import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.CircusExMortis.CardDefs.Stories qualified as Stories
+import Arkham.Homebrew.CircusExMortis.Key (CircusExMortisKey (Destinies))
 import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.I18n
 import Arkham.Id
@@ -30,10 +36,15 @@ import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Grid (Pos (..), positionColumn, positionRow)
 import Arkham.Location.Types (Field (LocationPosition), LocationAttrs)
 import Arkham.Matcher
-import Arkham.Message (pattern PlaceCluesUpToClueValue)
+import Arkham.Message (
+  Message (AddToVictory, ReplaceCard),
+  pattern PlaceCluesUpToClueValue,
+  pattern RemoveLocation,
+ )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
-import Arkham.Message.Lifted.Log (remember)
+import Arkham.Message.Lifted.Log (getSomeRecordSetJSON, recordSetInsert, recordSetReplace, remember)
+import Arkham.Message.Lifted.Move (enemyMoveTo, moveTo, moveToward)
 import Arkham.Modifier (Modifier)
 import Arkham.Name (Labeled (..), Named)
 import Arkham.Name qualified as Name
@@ -48,6 +59,7 @@ import Arkham.TokenBag
 import Control.Monad.Writer.Class
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Map.Monoidal.Strict (MonoidalMap)
+import Data.Text qualified as T
 
 campaignI18n :: (HasI18n => a) -> a
 campaignI18n a = withI18n $ scope "circusExMortis" a
@@ -61,6 +73,13 @@ scenarioI18n scenarioScope a = campaignI18n $ scope scenarioScope a
 getSealedMoonTokens :: HasGame m => InvestigatorId -> m [ChaosToken]
 getSealedMoonTokens iid =
   filter ((== MoonToken) . (.face)) <$> field InvestigatorSealedChaosTokens iid
+
+{- | Every ☾ token sealed on a card, whichever card type it was sealed on --
+"the number of ☾ tokens sealed on cards" (Dread of the New Moon). Sealed tokens
+are not in the chaos bag, so this never overlaps 'moonToken' as selected.
+-}
+getAllSealedMoonTokens :: HasGame m => m [ChaosToken]
+getAllSealedMoonTokens = filter ((== MoonToken) . (.face)) <$> getSealedChaosTokens
 
 moonToken :: ChaosTokenMatcher
 moonToken = ChaosTokenFaceIs MoonToken
@@ -509,6 +528,117 @@ locationAtRowEnd end lids = do
     FromLeft n -> ordered !!? n
     FromRight n -> reverse ordered !!? n
 
+{- | Written in Stone deals each investigator a destiny -- one of the eight words the
+Fata Diana names -- and Thousand to One's cards ask for "the investigator whose destiny
+is <word>" by it. The campaign log keeps them as a recorded set, one entry per
+investigator, keyed by investigator id rather than by name: a name is neither unique
+across a table nor stable across a replacement, and the cards have to find exactly one
+seat. 'destinyEntry' is the only place the entry's shape is written down.
+-}
+destinyEntry :: InvestigatorId -> Text -> Text
+destinyEntry iid word = unCardCode (toCardCode iid) <> ":" <> word
+
+recordDestiny :: ReverseQueue m => InvestigatorId -> Text -> m ()
+recordDestiny iid word = recordSetInsert Destinies [String $ destinyEntry iid word]
+
+{- | Hand a destiny on to another seat.
+
+The printed transfer is "if an investigator is killed or driven insane, their destiny is
+transferred to the investigator chosen to replace them" (guide p19), and a player joining
+mid-campaign in a departed investigator's place is the same move. Both ends go through
+'destinyEntry', so the entry's shape stays written down in exactly one place.
+-}
+transferDestiny :: ReverseQueue m => InvestigatorId -> InvestigatorId -> m ()
+transferDestiny oldIid newIid = do
+  entries <- getSomeRecordSetJSON @Text Destinies
+  for_ entries \entry ->
+    for_ (destinyWordFor oldIid entry) \word ->
+      recordSetReplace Destinies (recorded $ String entry) (recorded . String $ destinyEntry newIid word)
+
+-- | The word in an entry, if the entry belongs to this investigator.
+destinyWordFor :: InvestigatorId -> Text -> Maybe Text
+destinyWordFor iid = T.stripPrefix (unCardCode (toCardCode iid) <> ":")
+
+-- | Every destiny dealt, as (investigator, word).
+getDestinies :: HasGame m => m [(InvestigatorId, Text)]
+getDestinies = do
+  entries <- getSomeRecordSetJSON @Text Destinies
+  pure $ flip mapMaybe entries \entry -> case T.breakOn ":" entry of
+    (code, rest) | Just word <- T.stripPrefix ":" rest -> Just (InvestigatorId (CardCode code), word)
+    _ -> Nothing
+
+-- | The destiny this investigator was dealt, if any.
+destinyOf :: HasGame m => InvestigatorId -> m (Maybe Text)
+destinyOf iid = lookup iid <$> getDestinies
+
+{- | The destinies still keyed to an investigator who has left the table: retired (set
+aside by the continue screen, so the roster can rejoin them), or killed or driven insane
+and never replaced. A replacement rewrites the entry to its own id, so a destiny only
+stays here while nobody has taken it over -- which makes these exactly the destinies a
+player joining mid-campaign can claim.
+-}
+getDepartedDestinies :: HasGame m => m [(InvestigatorId, Text)]
+getDepartedDestinies = do
+  retired <- getRetiredInvestigators
+  eliminated <- liftA2 (<>) (select KilledInvestigator) (select InsaneInvestigator)
+  filter ((`elem` (retired <> eliminated)) . fst) <$> getDestinies
+
+-- | Whether this investigator's destiny is the given word.
+hasDestiny :: HasGame m => InvestigatorId -> Text -> m Bool
+hasDestiny iid word = (== Just word) <$> destinyOf iid
+
+{- | The seat a destiny was dealt to, as a matcher. A game deals one destiny per
+investigator, so most of the eight words belong to nobody at the table and this is
+vacuous for them -- which is what the cards want: an ability gated on a destiny nobody
+holds can never be used.
+-}
+investigatorWithDestiny :: HasGame m => Text -> m InvestigatorMatcher
+investigatorWithDestiny word = do
+  destinies <- getDestinies
+  pure $ mapOneOf InvestigatorWithId [iid | (iid, w) <- destinies, w == word]
+
+-- | The 'ScenarioModifier' tag Thousand to One republishes a destiny under.
+destinyKey :: Text -> Text
+destinyKey word = "destiny." <> word
+
+{- | Pure matcher form of 'investigatorWithDestiny', backed by the 'ScenarioModifier's
+Thousand to One republishes from the campaign log -- the same seam the Bacchanalia vices
+use, and needed for the same reason: 'getAbilities' is pure, so an ability whose criteria
+or window names a destiny cannot read the log itself. Use 'hasDestiny' /
+'investigatorWithDestiny' inside a 'HasModifiersFor'; use this one in 'getAbilities'.
+-}
+investigatorWithDestinyModifier :: Text -> InvestigatorMatcher
+investigatorWithDestinyModifier = InvestigatorWithModifier . ScenarioModifier . destinyKey
+
+{- | "Flip it and move it to the victory display", as each Destiny story card's non-story
+face says. Act 1 counts Destiny /story/ cards in the victory display, so the enemy (or
+location, or asset) face has to be swapped back for the story one before the card lands
+there.
+
+The recode has to come /last/, because it is the only half that cannot be aimed at the
+entity. 'EnemyAttrs' answers 'isTarget' for its own @CardIdTarget@, so the enemy claims
+@AddToVictory miid (CardIdTarget attrs.cardId)@ and runs the whole enemy victory pipeline
+with @field EnemyCard@ -- rebuilt from @enemyOriginalCardCode@, so blind to a recode that
+already happened -- and the enemy face is what lands in the display. Recoding afterwards
+instead rides the @ReplaceCard@ clause in @Scenario/Runner@, whose whole job is keeping a
+card flipped to its other side in sync wherever a scenario zone is holding it. Running the
+pipeline rather than dodging it is also what keeps the enemy's leave-play windows and its
+attached cards' cleanup, which a bare removal skips (#5309).
+
+@removeEntity@ is the caller's own removal message so this serves every face the Destiny
+stories wear: @RemoveEnemy@, @RemoveLocation@, @RemoveAsset@. Only the enemy has a
+pipeline to claim the target; a location or asset is filed straight from the card map, and
+the recode behind it corrects that entry just the same.
+-}
+flipToVictoryDisplay
+  :: ReverseQueue m => Maybe InvestigatorId -> CardDef -> CardId -> Message -> m ()
+flipToVictoryDisplay miid storyDef cardId removeEntity =
+  pushAll
+    [ removeEntity
+    , AddToVictory miid (CardIdTarget cardId)
+    , ReplaceCard cardId (lookupCard storyDef.cardCode cardId)
+    ]
+
 {- | Candidates for "move the nearest enemy once toward <location>", shared by the
 scenario reference card's elder thing token and Shadowed Wilderness (:173).
 
@@ -535,3 +665,49 @@ nearestEnemiesAbleToMoveToward lid matcher = do
   pure case sortOn snd withDistances of
     [] -> []
     nearest@((_, fewest) : _) -> [eid | (eid, distance) <- nearest, distance == fewest]
+
+-- * Thousand to One
+
+{- | "After Shub-Niggurath leaves <this location>", the Forced ability Primal Forest and
+High Thicket both print on either face. 'Window.EnemyLeaves' is raised behind the move's
+own @Do (EnemyMove)@, so Shub-Niggurath has already arrived at its destination by the
+time this resolves -- which is what makes "each OTHER enemy at <this location>" simply
+"every enemy still standing here".
+-}
+shubNiggurathLeaves :: Int -> LocationAttrs -> Ability
+shubNiggurathLeaves n a =
+  mkAbility a n $ forced $ EnemyLeaves #after (be a) (enemyIs Enemies.shubNiggurath)
+
+{- | "Move each investigator and other enemy at <this location> once toward Silent
+Clearing." Shared by Primal Forest and High Thicket, which differ only in where the
+location itself goes afterwards.
+-}
+scatterTowardSilentClearing :: ReverseQueue m => LocationAttrs -> m ()
+scatterTowardSilentClearing a = do
+  let silentClearing = locationIs Locations.silentClearing
+  selectEach (investigatorAt a) (`moveToward` silentClearing)
+  selectEach (enemyAt a <> not_ (enemyIs Enemies.shubNiggurath)) (`moveToward` silentClearing)
+
+{- | "Move each investigator and enemy on it to a connecting location, flip it, and move
+it to the victory display" -- the Forced that Forest Chasm, Canyon Entrance, Marked Grove
+and Defiled Woods all print once their task is done.
+
+Each investigator chooses their own destination and the lead chooses for the enemies, the
+split Waterfront Warehouse (Dawn/Dusk) already uses for this wording. Investigator
+destinations come from 'getConnectedMoveLocations', so a connection they cannot use is
+never offered; enemies are not bound by investigator movement restrictions and read the
+connections directly.
+
+The removal is a bare 'RemoveLocation', which is what @AddToVictory@ on a location target
+pushes for itself -- the clue/damage/horror/resource the location was holding goes with it.
+-}
+destinyLocationOvercome
+  :: (ReverseQueue m, Sourceable source)
+  => source -> InvestigatorId -> CardDef -> LocationAttrs -> m ()
+destinyLocationOvercome source lead storyDef a = do
+  selectEach (investigatorAt a) \iid -> do
+    destinations <- getConnectedMoveLocations iid source
+    chooseTargetM iid destinations $ moveTo source iid
+  connected <- select $ ConnectedTo ForMovement (be a)
+  selectEach (enemyAt a) $ chooseTargetM lead connected . enemyMoveTo source
+  flipToVictoryDisplay Nothing storyDef a.cardId (RemoveLocation a.id)

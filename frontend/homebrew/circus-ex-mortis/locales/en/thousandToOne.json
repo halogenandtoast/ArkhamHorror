@@ -1,0 +1,59 @@
+{
+  "thousandToOne": {
+    "heading": "Scenario VIII",
+    "intro": {
+      "title": "Scenario VIII: Thousand to One",
+      "body1": "<p>Among the towering redwoods, Shub-Niggurath has been called by the faithful cult, and while the ritual has been disrupted, they are not yet thwarted. For six short minutes, you must prevent the cult and the thousand young from retaking the ritual clearing and completing their dark deed. That alone will save the world.</p>",
+      "pureLunacy": "<p class='basic'>If an investigator has Monstrous Transformation in their deck, that investigator reads _Pure Lunacy_.</p><p>_Pure Lunacy:_ The sight of the blank moon shrouding the sun sends a feral chill racing down your spine. Instinct tells you that now is not the time for caution or control. Only wild survival.</p><p class='basic'>You may begin the game with Monstrous Transformation in your hand as an additional card.</p>",
+      "atTheCrossroads": "<p class='basic'>If an investigator has Lady Esprit in their deck, that investigator reads _At the Crossroads_.</p><p>_At the Crossroads:_ Lady Esprit’s head is raised toward the eclipse, though her eyes are closed in concentration. “Halfway between worlds. We must petition Papa Legba and Erzulie.”</p><p class='basic'>You may begin the game with Lady Esprit in your hand as an additional card.</p>",
+      "body2": "<p>Thea watches the forest dim around her, the last slivers of daylight dying between the redwoods. “The priestess saw us standing here. She saw us doing something that helped — all of it set down two thousand years before any of us drew breath.” She closes the tome against her chest. “Whether that makes us fated or merely fortunate, I couldn’t tell you, and I don’t think it makes much difference now. What matters is how we meet this siege.”</p>",
+      "decide": "The investigators must decide (choose one):",
+      "focusDefenses": "“We have to focus our defenses, no matter the stress.” If there is a {'{'}tablet{'}'} token in the chaos bag, remove it and add a {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.",
+      "stretchEquipment": "“We have to stretch our equipment as thin as possible.” If there is a {'{'}cultist{'}'} token in the chaos bag, remove it and add a {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.",
+      "label": {
+        "focusDefenses": "“We have to focus our defenses, no matter the stress.”",
+        "stretchEquipment": "“We have to stretch our equipment as thin as possible.”"
+      },
+      "startingCards": {
+        "label": {
+          "take": "Begin with this card as an additional card in your opening hand",
+          "leave": "Leave this card in your deck"
+        }
+      }
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *Thousand to One*, *Children of the Goat*, *Cult of Shub-Niggurath*, *Lunatic Night*, and *Savage Woods* encounter sets. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/circus-ex-mortis/sets/190.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/children-of-the-goat.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/cult-of-shub-niggurath.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/lunatic-night.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/savage-woods.png' /></section>",
+      "placeLocations": "Put the Primal Forest, High Thicket, Sparse Woodland, Silent Clearing, Mossy Glen, and Fallen Copse locations into play. Each investigator begins play at Silent Clearing.",
+      "shubNiggurath": "Put Shub-Niggurath into play at Primal Forest.",
+      "ravenousBrood": "Put one copy of Ravenous Brood into play at High Thicket, either side face up. The investigators choose which side.",
+      "destinies": "Check the Campaign Log. For each word recorded under “Destinies,” find the story card with the corresponding word and resolve its story text. Remove each other story card from the game.",
+      "checkDoom": "Check the Campaign Log.",
+      "cultRallies": "If *the cult rallies*, place 2 doom on agenda 1a.",
+      "setAside": "Set the following cards aside, out of play: Each other copy of Ravenous Brood, The Prophecy Fulfilled, The Prophecy Unfulfilled."
+    },
+    "ravenousBrood": {
+      "label": {
+        "spawnHunterSide": "Spawn it with its Retaliate side face up",
+        "spawnAlertSide": "Spawn it with its Alert side face up"
+      }
+    },
+    "resolutions": {
+      "trauma": "Suffer any combination of 3 physical and/or mental trauma",
+      "xp": {
+        "savedTheWorld": "saving the world"
+      },
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p class='basic'>_If no resolution was reached (each investigator was defeated):_ Read _Resolution 1_.</p>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1:_ Your strength fails you, and the ritual clearing tilts away as you collapse into the trampled earth. The chanting rises to meet the braying of the thousand young, and through the dark you watch the mother of them all come down into the circle her faithful prepared. The eclipse does not pass. It never will. Earth turns beneath a dead sun, and the forests of the world empty themselves of everything but her brood.</p><ul><li>In your Campaign Log, record that *the investigators were devoured by the thousand young*.</li><li>In your Campaign Log, record that *Shub-Niggurath reigns over an eclipsed world*.</li><li>Each investigator is killed.</li><li>The investigators lose the campaign.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2:_ The last of the dark young breaks and the last of the cultists flees into the redwoods, and then — impossibly, mercifully — a thin blade of sunlight falls across the ritual circle. The eclipse slides away. With it goes the shrieking of a thousand mouths, the shadow in the treeline, the mother and her brood, drawn back out of the world they very nearly inherited. Thea drops to her knees in the ruined clearing, the tome still clutched to her chest, and laughs until she sobs. Whatever you tell the authorities, it cannot be this. No one would survive the knowing of it.</p><ul><li>In your Campaign Log, record that *the investigators ended the ritual*.</li><li>In your Campaign Log, record that *Shub-Niggurath vanished with the eclipse*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display, plus 5 bonus experience for saving the world.</li><li>Each investigator suffers any combination of 3 physical and/or mental trauma.</li><li>The investigators win the campaign!</li></ul>"
+      }
+    }
+  }
+}

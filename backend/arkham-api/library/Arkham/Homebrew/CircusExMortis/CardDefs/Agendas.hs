@@ -81,3 +81,15 @@ fadingSunlightVII =
 underMoonlessSkies :: CardDef
 underMoonlessSkies =
   agenda ":circus-ex-mortis:191" "Under Moonless Skies" 1 Set.ThousandToOne
+
+{- | Set aside; replaces agenda 1 when act 1's back advances. Advancing normally
+(its back) is Resolution 1, so the only way to win is the doom-threshold objective.
+-}
+theProphecyFulfilled :: CardDef
+theProphecyFulfilled =
+  agenda ":circus-ex-mortis:193" "The Prophecy Fulfilled" 2 Set.ThousandToOne
+
+-- | As 'theProphecyFulfilled', but reached from agenda 1's back.
+theProphecyUnfulfilled :: CardDef
+theProphecyUnfulfilled =
+  agenda ":circus-ex-mortis:194" "The Prophecy Unfulfilled" 2 Set.ThousandToOne

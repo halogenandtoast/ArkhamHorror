@@ -20,6 +20,7 @@ declareHomebrewTraits
   [ "Camp"
   , "CircusTrain"
   , "Clearing"
+  , "Destiny"
   , "FreightCar"
   , "LiberPater"
   , "NewMoonCircus"

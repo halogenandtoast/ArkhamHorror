@@ -57,6 +57,8 @@
       "doNotHealTrauma": "Do not heal trauma",
       "fanaticism": "\"Maybe he's so dedicated that literally nothing else matters.\"",
       "nemesis": "\"Maybe we just represent failure to him personally.\"",
+      "destinyOrTransferQuestion": "Choose one of the following destinies. If you are replacing an investigator who has left the campaign, take over their destiny instead.",
+      "claimDestiny": "Replace {iname} and take over their destiny.<br>Record \"{destiny}\"",
       "destinyQuestion": "Choose one of the following destinies:",
       "heart": "\"The one who will strike the heart.\"<br>Record \"heart\"",
       "pipes": "\"The one who will silence the pipes.\"<br>Record \"pipes\"",

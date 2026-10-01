@@ -35,6 +35,8 @@ behaviors =
           , ("minh-thi-phan", allAroundYou)
           , ("norman-withers", inTheStars)
           , ("rex-murphy", familyCurse)
+          , ("calvin-wright", friendIndeed)
+          , ("wendy-adams", shortcut)
           , -- Shield From Harm, the sheet's own version of what a card may do
             ("tommy-muldoon", defaultInvestigatorBehavior & #mayTakeEngagement .~ True)
           , ("marie-lambeau", smokyVelvet)
@@ -667,3 +669,68 @@ repeatable :: Investigator -> [ActionKind]
 repeatable i = [k | k <- i.performed, not (isComponent k)]
  where
   isComponent = \case ComponentAction _ _ -> True; _ -> False
+
+{- | Calvin Wright's Friend Indeed: "Action: You may exchange any amount of health
+and/or sanity with another investigator or ally in any space." Taking their hurt
+onto himself is the point of him, but the card says exchange, so it goes either
+way.
+-}
+friendIndeed :: InvestigatorBehavior
+friendIndeed =
+  defaultInvestigatorBehavior
+    & #componentActions
+    .~ [ ComponentActionDef
+           { label = "Friend Indeed: take on another's hurt, or hand over your own"
+           , allowedWhileEngaged = True
+           , canPerform = \iid -> do
+               others <- friendsOf iid
+               pure (not (null others))
+           , perform = \ctx -> do
+               me <- getInvestigator ctx.investigator
+               others <- friendsOf ctx.investigator
+               let src = SourceInvestigator ctx.investigator
+                   word d = if d > (0 :: Int) then "damage" else "horror"
+                   take' o n d h =
+                     Choice
+                       (TextLabel ("Take " <> tshow n <> " " <> word d <> " from " <> coerce o.id))
+                       [ RecoverInvestigator o.id (d * n) (h * n)
+                       , SufferHarm ctx.investigator src DirectHarm (d * n) (h * n)
+                       ]
+                   give o n d h =
+                     Choice
+                       (TextLabel ("Give " <> tshow n <> " " <> word d <> " to " <> coerce o.id))
+                       [ RecoverInvestigator ctx.investigator (d * n) (h * n)
+                       , SufferHarm o.id src DirectHarm (d * n) (h * n)
+                       ]
+               chooseFor ctx.investigator "Friend Indeed"
+                 $ concat
+                   [ [take' o n 1 0 | n <- [1 .. o.damage]]
+                       <> [take' o n 0 1 | n <- [1 .. o.horror]]
+                       <> [give o n 1 0 | n <- [1 .. me.damage]]
+                       <> [give o n 0 1 | n <- [1 .. me.horror]]
+                   | o <- others
+                   ]
+           }
+       ]
+
+friendsOf :: InvestigatorId -> GameM [Investigator]
+friendsOf iid = filter ((/= iid) . (.id)) <$> playingInvestigators
+
+{- | Wendy Adams's Shortcut: "Before or after you perform an additional action as
+part of an evade action, you may move up to two spaces (for free)." The window
+opens the moment the evade is done, which is before the action it earned.
+-}
+shortcut :: InvestigatorBehavior
+shortcut =
+  defaultInvestigatorBehavior
+    & #reactions
+    .~ \iid -> \case
+      AfterAnyAction who EvadeAction | who == iid -> do
+        let ctx = EffectCtx {investigator = iid, source = SourceInvestigator iid, testResult = Nothing}
+        pure
+          [ Reaction
+              "shortcut"
+              "Shortcut: move up to two spaces"
+              [ResolveEffect ctx (MoveUpTo 2)]
+          ]
+      _ -> pure []

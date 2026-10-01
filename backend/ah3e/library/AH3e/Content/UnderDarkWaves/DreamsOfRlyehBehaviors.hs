@@ -98,7 +98,7 @@ songOfChaos =
                 deck <- use (#decks . #investigation)
                 for_ deck \n -> do
                   #decks . #investigation .= []
-                  pushAll [AddArchiveToCodex n, RemoveCodexCard 106, RemoveCodexCard 107]
+                  push (RevealArchiveCard n [AddArchiveToCodex n, RemoveCodexCard 106, RemoveCodexCard 107])
             }
         ]
     , onFlip = \e -> when e.flipped markEveryNeighborhood
@@ -115,7 +115,8 @@ songOfChaos =
                 msid <- whiteMarkerUnder ctx.investigator
                 for_ msid \sid -> do
                   spaceL sid . #markers %= dropOne "white"
-                  void revealInvestigation
+                  ruled <- revealInvestigation
+                  for_ ruled \k -> push (RevealArchiveCard k [])
                   clues <- use #sheetClues
                   when (clues >= 1)
                     $ chooseFor
@@ -205,7 +206,11 @@ maddeningMelody =
         drawn <- revealInvestigation
         #decks . #investigation .= []
         for_ drawn \n ->
-          pushAll [AddArchiveToCodex n, SpendSheetClues 2, RemoveCodexCard 106, RemoveCodexCard 107]
+          push
+            ( RevealArchiveCard
+                n
+                [AddArchiveToCodex n, SpendSheetClues 2, RemoveCodexCard 106, RemoveCodexCard 107]
+            )
     }
 
 melodyResearch :: Effect

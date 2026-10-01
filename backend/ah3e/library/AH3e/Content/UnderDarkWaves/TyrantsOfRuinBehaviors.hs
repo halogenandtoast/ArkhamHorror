@@ -229,10 +229,13 @@ findTheSource =
                   for_ found \k ->
                     if k `elem` relics
                       then do
-                        push (GainNamedCard ctx.investigator (relicName k))
                         waiting <- archiveHolds 65
-                        when waiting (push (AddArchiveToCodex 65))
-                      else push (AddArchiveToCodex k)
+                        push
+                          ( RevealArchiveCard k
+                              $ GainNamedCard ctx.investigator (relicName k)
+                              : [AddArchiveToCodex 65 | waiting]
+                          )
+                      else push (RevealArchiveCard k [AddArchiveToCodex k])
             }
         ]
     , triggers =

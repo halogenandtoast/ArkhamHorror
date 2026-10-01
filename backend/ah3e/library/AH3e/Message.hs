@@ -243,6 +243,10 @@ data Message
   | CycleDisplay InvestigatorId Int
   | DiscardFromDisplay CardId
   | RefillDisplay
+  | {- | a card turned up from a face-down pile of archive cards: it is put in
+    front of the table to be read before whatever turning it up does
+    -}
+    RevealArchiveCard ArchiveNumber [Message]
   | AddArchiveToCodex ArchiveNumber
   | AddArchiveToCodexFlipped ArchiveNumber
   | -- | flip once the table has read the side showing

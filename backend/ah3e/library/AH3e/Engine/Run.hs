@@ -1281,6 +1281,17 @@ runMessage msg = case msg of
   ReturnToBottom kind cards -> assetDeckLens kind %= (<> cards)
   GainFromDisplay iid cid -> push (GainAsset iid cid)
   -- Codex (rules 407, 413)
+  RevealArchiveCard n after -> do
+    found <- archiveCardFor n
+    case found of
+      Just cid -> do
+        #activeCard ?= cid
+        d <- getCardDef cid
+        logText ("Turned up: " <> (if d.name == "" then "card " <> tshow (coerce n :: Int) else d.name))
+        askLeader
+          ("Card " <> tshow (coerce n :: Int) <> " turned up")
+          [Choice (DoneLabel "Continue") (ClearActiveCard cid : after)]
+      Nothing -> pushAll after
   AddArchiveToCodex n -> addToCodex n False
   AddArchiveToCodexFlipped n -> addToCodex n True
   ChooseInvestigatorsFor ctx n candidates eff
@@ -1981,6 +1992,17 @@ codexChanged :: GameM ()
 codexChanged = do
   invs <- playingInvestigators
   pushAll [CheckReactions (AfterCodexChanged i.id) [] | i <- invs]
+
+{- | The card in the archive that an archive number names. Most are archive cards
+and carry the number themselves; the artifacts printed on one are assets, and only
+their code says which number they were.
+-}
+archiveCardFor :: ArchiveNumber -> GameM (Maybe CardId)
+archiveCardFor n = do
+  archive <- use (#decks . #archive)
+  let numbered d = case d.kind of ArchiveCard a -> a.number == n; _ -> False
+      coded d = d.code == CardCode ("archive-" <> tshow (coerce n :: Int))
+  listToMaybe <$> filterM (\cid -> getCardDef cid <&> \d -> numbered d || coded d) archive
 
 addToCodex :: ArchiveNumber -> Bool -> GameM ()
 addToCodex n flipped = do

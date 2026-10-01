@@ -24,8 +24,11 @@
       "doom": "Check the Campaign Log. Place 4 doom on agenda 1a. Reduce this amount by X, where X groups of citizens were saved from the circus.",
       "setAside": "Set the following cards aside, out of play: Each copy of The Cult En Masse, Devotee of the Thousand."
     },
-    "additionalRules": {
-      "rows": "<p class='basic'>*Rows*: in this scenario, certain cards refer to rows of locations. These are locations with the same name placed next to each other horizontally. A single card without adjacent cards is still considered to be in a row. Some card effects may refer to a row being above or below another row. In this case, above is nearer to Ritual Clearing, and below is nearer to Forgotten Trail.</p>"
+    "rules": {
+      "rows": {
+        "title": "Rows",
+        "body": "<p class='basic'>In this scenario, certain cards refer to rows of locations. These are locations with the same name placed next to each other horizontally. A single card without adjacent cards is still considered to be in a row. Some card effects may refer to a row being above or below another row. In this case, above is nearer to Ritual Clearing, and below is nearer to Forgotten Trail.</p>"
+      }
     },
     "crashingTrees": {
       "label": {

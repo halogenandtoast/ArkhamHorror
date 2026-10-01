@@ -187,7 +187,8 @@ instance RunMessage RedSunrise where
           li "doom"
           li "setAside"
           unscoped $ li "shuffleRemainder"
-        scope "additionalRules" $ p "rows"
+
+      additionalRules "rows"
 
       gather Set.RedSunrise
       gather Set.ChildrenOfTheGoat

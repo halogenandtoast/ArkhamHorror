@@ -22,7 +22,7 @@ const props = defineProps<{
   offsetStyle?: Record<string, string>
   canInteract: boolean
   locationsUnlocked: boolean
-  draggingLocationId: string | null
+  dragging: boolean
   abyssIsLocation: boolean
   abyssDeckCount: number
   onPointerDownCapture: (event: PointerEvent, location: ArkhamLocation) => void
@@ -64,7 +64,7 @@ const emit = defineEmits<{
         class="location"
         :class="{
           'location--unlocked': props.locationsUnlocked,
-          'location--dragging': props.draggingLocationId === props.location.id,
+          'location--dragging': props.dragging,
         }"
         :game="props.game"
         :playerId="props.playerId"

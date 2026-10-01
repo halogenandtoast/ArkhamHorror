@@ -310,7 +310,9 @@ function onFullscreenKeydown(event: KeyboardEvent) {
     locationsFullscreen.value = false
   }
 }
-const draggingLocationId = ref<string | null>(null)
+// Every location moved by the active drag -- a whole group's members, or the one
+// ungrouped location.
+const draggingLocationIds = ref<string[]>([])
 // Optimistic offsets after a drop, kept until the server echoes them back.
 // Stored in canonical (rotationSteps=0) coordinates, same as the backend.
 const pendingOffsets = ref<Record<string, { x: number, y: number }>>({})
@@ -318,8 +320,10 @@ const pendingOffsets = ref<Record<string, { x: number, y: number }>>({})
 // Plain (non-reactive) drag state. Mutated on every pointermove without
 // triggering Vue re-renders; the live drag visual is applied via direct DOM.
 type DragInternal = {
-  locationId: string
-  element: HTMLElement
+  // A grouped location never moves alone: the group's box is one unit, so a drag
+  // started on any member carries every member.
+  locationIds: string[]
+  elements: HTMLElement[]
   pointerId: number
   startX: number
   startY: number
@@ -459,6 +463,12 @@ const locationGroupBoxes = computed(() => {
       'grid-template-columns': `repeat(${Math.max(1, columns)}, auto)`,
     }
 
+    /* A group moves as one unit, so the drag offset rides on the box rather than on
+     * each member -- otherwise the members would slide out of their own frame. The
+     * offset is still stored per-location; read it off the first member. */
+    const off = rotateOffset(effectiveOffset(members[0].id), rotationSteps.value)
+    if (off.x !== 0 || off.y !== 0) style.transform = `translate(${off.x}px, ${off.y}px)`
+
     if (named.has(key)) {
       style['grid-area'] = key
     } else {
@@ -569,7 +579,7 @@ async function updateLayoutPadding() {
 
 // Returns the CANONICAL offset for a location (server-side coordinate frame).
 function effectiveOffset(locationId: string): { x: number, y: number } {
-  if (dragInternal && dragInternal.locationId === locationId && dragInternal.moved) {
+  if (dragInternal && dragInternal.moved && dragInternal.locationIds.includes(locationId)) {
     return { x: dragInternal.canonicalFinalX, y: dragInternal.canonicalFinalY }
   }
   return pendingOffsets.value[locationId] ?? locationOffsets.value[locationId] ?? { x: 0, y: 0 }
@@ -595,17 +605,22 @@ function locationOffsetStyle(location: { id: string }) {
   return style
 }
 
-function onLocationPointerDown(event: PointerEvent, location: { id: string }) {
+function onLocationPointerDown(event: PointerEvent, location: { id: string, group?: { key: string } | null }) {
   if (!locationsUnlocked.value) return
   event.preventDefault()
   event.stopPropagation()
   const element = event.currentTarget as HTMLElement | null
   if (!element) return
-  const baseCanonical = effectiveOffset(location.id)
+  const box = location.group ? element.closest('.location-group') as HTMLElement | null : null
+  const members = location.group && box ? locationGroupMembers.value[location.group.key] : null
+  const locationIds = members?.length ? members.map(m => m.id) : [location.id]
+  const elements = box ? [box] : [element]
+  // One base for the whole group, so members that somehow drifted apart converge.
+  const baseCanonical = effectiveOffset(locationIds[0])
   const baseScreen = rotateOffset(baseCanonical, rotationSteps.value)
   dragInternal = {
-    locationId: location.id,
-    element,
+    locationIds,
+    elements,
     pointerId: event.pointerId,
     startX: event.clientX,
     startY: event.clientY,
@@ -631,13 +646,15 @@ function onWindowPointerMove(event: PointerEvent) {
   if (!dragInternal.moved
     && Math.hypot(event.clientX - dragInternal.startX, event.clientY - dragInternal.startY) > DRAG_THRESHOLD_PX) {
     dragInternal.moved = true
-    draggingLocationId.value = dragInternal.locationId
+    draggingLocationIds.value = dragInternal.locationIds
   }
   if (dragInternal.moved) {
     // Live visual: screen-space delta on top of pre-drag screen position.
     const screenX = dragInternal.baseScreenX + screenDx
     const screenY = dragInternal.baseScreenY + screenDy
-    dragInternal.element.style.transform = `translate(${screenX}px, ${screenY}px)`
+    for (const el of dragInternal.elements) {
+      el.style.transform = `translate(${screenX}px, ${screenY}px)`
+    }
     // Mirror it in canonical coords (inverse rotation) for commit + fallback.
     const canonicalDelta = rotateOffset({ x: screenDx, y: screenDy }, -dragInternal.rotationAtStart)
     dragInternal.canonicalFinalX = dragInternal.baseCanonicalX + canonicalDelta.x
@@ -652,17 +669,21 @@ function onWindowPointerUp(event: PointerEvent) {
   window.removeEventListener('pointermove', onWindowPointerMove)
   window.removeEventListener('pointerup', onWindowPointerUp)
   window.removeEventListener('pointercancel', onWindowPointerUp)
-  draggingLocationId.value = null
+  draggingLocationIds.value = []
   if (!drag.moved) return
   // Stash the drop position before the next render so the inline style stays
   // at the drop point until the server echoes the new modifier back.
+  const dropped = { x: drag.canonicalFinalX, y: drag.canonicalFinalY }
   pendingOffsets.value = {
     ...pendingOffsets.value,
-    [drag.locationId]: { x: drag.canonicalFinalX, y: drag.canonicalFinalY },
+    ...Object.fromEntries(drag.locationIds.map(id => [id, dropped])),
   }
   nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change')))
-  void setLocationOffset(props.game.id, drag.locationId, drag.canonicalFinalX, drag.canonicalFinalY)
-    .finally(() => nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change'))))
+  // The offset stays per-location on the backend; a group just writes the same
+  // one to every member, so each member's own cell carries it for the padding math.
+  void Promise.all(drag.locationIds.map(id =>
+    setLocationOffset(props.game.id, id, dropped.x, dropped.y)
+  )).finally(() => nextTick(() => window.dispatchEvent(new Event('arkham-location-layout-change'))))
 }
 
 // Drop a pending entry once the server's modifier confirms it.
@@ -688,9 +709,9 @@ function cancelActiveDrag() {
   window.removeEventListener('pointermove', onWindowPointerMove)
   window.removeEventListener('pointerup', onWindowPointerUp)
   window.removeEventListener('pointercancel', onWindowPointerUp)
-  dragInternal.element.style.transform = ''
+  for (const el of dragInternal.elements) el.style.transform = ''
   dragInternal = null
-  draggingLocationId.value = null
+  draggingLocationIds.value = []
 }
 
 function toggleLocationsUnlocked() {
@@ -1898,7 +1919,7 @@ function locationHasManualOffset(el: HTMLElement): boolean {
   if (!locationId) return false
   return locationId in locationOffsets.value
     || locationId in pendingOffsets.value
-    || dragInternal?.locationId === locationId
+    || (dragInternal?.locationIds.includes(locationId) ?? false)
 }
 
 function transformTranslate(el: HTMLElement): { x: number, y: number } {
@@ -3029,6 +3050,7 @@ async function addChaosToken(face: any){
             v-for="box in locationGroupBoxes"
             :key="`group-${box.key}`"
             class="location-group"
+            :class="{ 'location-group--dragging': draggingLocationIds.includes(box.members[0].id) }"
             :data-id="box.key"
             :data-group-key="box.key"
             :style="box.style"
@@ -3040,10 +3062,9 @@ async function addChaosToken(face: any){
               :playerId="playerId"
               :location="location"
               :cellStyle="cosmicEmissaryLocationCellStyles[location.label] ?? {}"
-              :offsetStyle="locationOffsetStyle(location)"
               :canInteract="locationCanInteract(location)"
               :locationsUnlocked="locationsUnlocked"
-              :draggingLocationId="draggingLocationId"
+              :dragging="draggingLocationIds.includes(location.id)"
               :abyssIsLocation="abyssIsLocation"
               :abyssDeckCount="abyssDeckCount"
               :onPointerDownCapture="onLocationPointerDown"
@@ -3063,7 +3084,7 @@ async function addChaosToken(face: any){
             :offsetStyle="locationOffsetStyle(location)"
             :canInteract="locationCanInteract(location)"
             :locationsUnlocked="locationsUnlocked"
-            :draggingLocationId="draggingLocationId"
+            :dragging="draggingLocationIds.includes(location.id)"
             :abyssIsLocation="abyssIsLocation"
             :abyssDeckCount="abyssDeckCount"
             :onPointerDownCapture="onLocationPointerDown"
@@ -3538,6 +3559,11 @@ async function addChaosToken(face: any){
    translated past its own cell is clipped by the stage long before it reaches
    the scroller. With a one-location map the stage IS the card, so any drag
    makes it vanish. The scroller is the real boundary; let it do the clipping. */
+.location-group--dragging {
+  z-index: var(--z-index-50);
+  transition: none !important;
+}
+
 .location-cards-container--unlocked .location-cards-stage {
   overflow: visible;
 }
@@ -4499,9 +4525,13 @@ async function addChaosToken(face: any){
   border: 2px solid var(--location-group-border, rgba(255, 255, 255, 0.28));
   border-radius: 12px;
   background: var(--location-group-fill, rgba(255, 255, 255, 0.04));
-  /* Above the connections layer, so a line never reads as crossing the frame. */
-  position: relative;
+  /* Above the connections layer, so a line never reads as crossing the frame.
+     No `position` -- a grid item takes z-index on its own, and positioning the box
+     would make it the offsetParent of its members, whose grid-relative offsetLeft
+     the drag-padding math reads. */
   z-index: 1;
+  /* Match .location-wrapper so a rotation reshuffle slides the offset into place. */
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
   /* Only a frame; the member cells inside re-enable their own pointer events. */
   pointer-events: none;
 }

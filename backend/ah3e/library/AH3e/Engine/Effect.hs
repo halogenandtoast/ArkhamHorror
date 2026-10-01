@@ -459,9 +459,11 @@ evalPredicate ctx p = do
     CodexHas n -> codexHas n
     Not q -> not <$> evalPredicate ctx q
     CountAtLeast c n -> (>= n) <$> countOf ctx c
-    CustomPredicate key -> do
-      logText ("Missing custom predicate: " <> key)
-      pure False
+    CustomPredicate key -> case customPredicate key of
+      Just f -> f ctx
+      Nothing -> do
+        logText ("Missing custom predicate: " <> key)
+        pure False
 
 payCost :: EffectCtx -> Cost -> GameM ()
 payCost ctx cost = do

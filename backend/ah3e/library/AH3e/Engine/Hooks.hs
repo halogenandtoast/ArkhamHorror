@@ -42,6 +42,9 @@ customEffect key = Map.lookup key behaviors.customEffects
 customActivation :: Text -> Maybe (CardId -> GameM ())
 customActivation key = Map.lookup key behaviors.customActivations
 
+customPredicate :: Text -> Maybe (EffectCtx -> GameM Bool)
+customPredicate key = Map.lookup key behaviors.customPredicates
+
 codexEntry :: ArchiveNumber -> GameM (Maybe CodexEntry)
 codexEntry n = uses #codex (listToMaybe . filter ((== n) . (.number)))
 

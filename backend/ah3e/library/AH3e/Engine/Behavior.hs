@@ -550,6 +550,8 @@ data Behaviors = Behaviors
   -}
   , customEffects :: Map Text (EffectCtx -> GameM ())
   , customActivations :: Map Text (CardId -> GameM ())
+  , customPredicates :: Map Text (EffectCtx -> GameM Bool)
+  -- ^ what a card asks about the game that the 'Predicate' vocabulary cannot
   }
   deriving stock Generic
 
@@ -563,6 +565,7 @@ instance Semigroup Behaviors where
       (a.customAfterTests <> b.customAfterTests)
       (a.customEffects <> b.customEffects)
       (a.customActivations <> b.customActivations)
+      (a.customPredicates <> b.customPredicates)
 
 instance Monoid Behaviors where
-  mempty = Behaviors mempty mempty mempty mempty mempty mempty mempty
+  mempty = Behaviors mempty mempty mempty mempty mempty mempty mempty mempty

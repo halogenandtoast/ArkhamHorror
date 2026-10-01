@@ -105,6 +105,8 @@ data Decks = Decks
   , starting :: [CardId]
   , conditions :: [CardId]
   , archive :: [CardId]
+  , investigation :: [ArchiveNumber]
+  -- ^ the archive cards a scenario is still choosing between (Dreams of R'lyeh)
   , setAside :: [CardId]
   , removed :: [CardId]
   }
@@ -112,7 +114,7 @@ data Decks = Decks
   deriving anyclass (ToJSON, FromJSON)
 
 emptyDecks :: Decks
-emptyDecks = Decks mempty [] [] [] mempty [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
+emptyDecks = Decks mempty [] [] [] mempty [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
 
 data PlayerState = PlayerState
   { id :: PlayerId

@@ -151,6 +151,7 @@ import Arkham.Location
 import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid (adjacentPositions, positionColumn, positionRow)
+import Arkham.Location.Group (membershipKey)
 import Arkham.Location.Runner (getModifiedShroudValueFor)
 import Arkham.Location.Types (
   Field (..),
@@ -3077,6 +3078,8 @@ getLocationsMatching lmatcher = do
       xs <-
         catMaybes <$> selectMapM (fmap (fmap positionColumn . attr locationPosition) . getLocation) inner
       pure $ filter (maybe False ((`elem` xs) . positionColumn) . attr locationPosition) ls
+    LocationInGroup key -> do
+      pure $ filter ((== Just key) . fmap membershipKey . attr locationGroup) ls
     LocationInPosition pos -> do
       pure $ filter ((== Just pos) . attr locationPosition) ls
     LocationWithAbility abMatcher -> do
@@ -4771,6 +4774,7 @@ instance Projection Location where
         blank <- hasModifier attrs Blank
         pure $ if blank then Free else replaceThisLocation lid locationCostToEnterUnrevealed
       LocationPosition -> pure locationPosition
+      LocationGroupMembership -> pure locationGroup
       LocationInFrontOf -> pure $ case locationPlacement of
         Just (InPlayArea iid) -> Just iid
         _ -> Nothing
@@ -4921,17 +4925,20 @@ instance Projection Asset where
       AssetCardCode -> pure assetCardCode
       AssetCardId -> pure assetCardId
       AssetSlots -> do
-        -- TODO: if you go back to adding in the card target we have an issue
-        -- with Hunter's Armor duplicating its slots
         mods <- getModifiers aid
+        -- Suppression can be applied to the card, since it may land before the asset
+        -- exists (The Raven Quill's Spectral Binding). Additive slot modifiers stay
+        -- asset-only or Hunter's Armor duplicates its slots.
+        cardMods <- getModifiers assetCardId
         let isSpirit = notNull [() | IsSpirit _ <- mods]
-        if isSpirit || DoNotTakeUpSlots `elem` mods
+        if isSpirit || DoNotTakeUpSlots `elem` (mods <> cardMods)
           then pure []
           else do
             let slotsToRemove = concat [replicate n s | TakeUpFewerSlots s n <- mods]
+            let suppressed = [s | DoNotTakeUpSlot s <- mods <> cardMods]
             pure
               $ (\\ slotsToRemove)
-              $ filter ((`notElem` mods) . DoNotTakeUpSlot)
+              $ filter (`notElem` suppressed)
               $ assetSlots
               <> [s | AdditionalSlot s <- mods]
       AssetPrintedSlots -> do
@@ -6410,6 +6417,7 @@ instance Projection Scenario where
     let ScenarioAttrs {..} = toAttrs s
     case fld of
       ScenarioLocationLayout -> pure scenarioLocationLayout
+      ScenarioLocationGroups -> pure scenarioLocationGroups
       ScenarioGrid -> pure scenarioGrid
       ScenarioCardsUnderActDeck -> pure scenarioCardsUnderActDeck
       ScenarioCardsNextToActDeck -> pure scenarioCardsNextToActDeck

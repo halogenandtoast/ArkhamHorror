@@ -109,12 +109,15 @@ instance RunMessage TheRavenQuill where
       pure e
     SearchFound iid (isTarget attrs -> True) _ xs | notNull xs -> do
       let ws = defaultWindows iid
-      for_ xs \x -> cardResolutionModifiers attrs attrs x $ DoNotTakeUpSlot <$> [minBound ..]
+      -- the asset enters play before we get to attach, so bridge the gap
+      when (attrs `hasCustomization` SpectralBinding)
+        $ for_ xs \x -> cardResolutionModifiers attrs attrs x $ DoNotTakeUpSlot <$> [minBound ..]
       chooseOne iid $ targetLabels xs \x -> [Msg.addToHand iid x, PayCardCost iid x ws, handleTargetChoice iid attrs x]
       pure e
-    HandleTargetChoice _iid (isSource attrs -> True) (CardIdTarget cid) -> do
-      selectOne (AssetWithCardId cid)
-        >>= traverse_ (push . PlaceEvent attrs.id . (`AttachedToAsset` Nothing))
+    HandleTargetChoice iid (isSource attrs -> True) (CardIdTarget cid) -> do
+      selectOne (AssetWithCardId cid) >>= traverse_ \aid -> do
+        push $ PlaceEvent attrs.id (AttachedToAsset aid Nothing)
+        push $ RefillSlots iid []
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       -- [DECKBUILDING]

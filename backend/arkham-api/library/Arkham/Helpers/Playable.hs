@@ -330,6 +330,11 @@ getPlayabilityChecksWithResources
         not <$> case nameSubtitle (cdName pcDef) of
           Nothing -> selectAny (InPlayAsset $ AssetWithTitle title)
           Just subtitle -> selectAny (InPlayAsset $ AssetWithFullTitle title subtitle)
+      -- unique events that remain in play: The Raven Quill, Shrine of the Moirai
+      (True, EventType) ->
+        not <$> case nameSubtitle (cdName pcDef) of
+          Nothing -> selectAny (EventWithTitle title)
+          Just subtitle -> selectAny (EventWithFullTitle title subtitle)
       _ -> pure True
     let uniquenessDetail = if uniquenessOk then Nothing else Just $ "A copy of \"" <> title <> "\" is already in play"
 

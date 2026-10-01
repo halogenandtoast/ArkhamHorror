@@ -1435,7 +1435,7 @@ const locationStyles = computed(() => {
     gridAutoColumns: 'max-content',
     gridAutoRows: 'max-content',
     transform: `scale(${locationsZoom.value})`,
-    transformOrigin: locationsZoom.value >= 1 ? '0 0' : 'center center',
+    transformOrigin: '0 0',
     paddingLeft: `${pad.left + mobileEdgePadding}px`,
     paddingRight: `${pad.right + mobileEdgePadding}px`,
     paddingTop: `${pad.top}px`,
@@ -1449,13 +1449,11 @@ async function updateScrollMargins() {
   if (!grid) return
   const z = locationsZoom.value
   // offsetWidth/Height exclude margins, so we always read the natural grid size directly.
-  if (z >= 1) {
-    grid.style.marginRight  = `${grid.offsetWidth  * (z - 1)}px`
-    grid.style.marginBottom = `${grid.offsetHeight * (z - 1)}px`
-  } else {
-    grid.style.marginRight  = ''
-    grid.style.marginBottom = ''
-  }
+  // Zoomed out these go negative, which is the point: scale() leaves the grid's layout box at
+  // full size, so otherwise the scroller reserves the unzoomed height and the map floats in a
+  // band of empty space.
+  grid.style.marginRight  = `${grid.offsetWidth  * (z - 1)}px`
+  grid.style.marginBottom = `${grid.offsetHeight * (z - 1)}px`
 }
 
 const scenarioDeckStyles = computed(() => {

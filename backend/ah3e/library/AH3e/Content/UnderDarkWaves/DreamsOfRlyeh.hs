@@ -34,7 +34,7 @@ scenario =
               ]
           )
     , setupMap =
-        buildMapWith
+        buildMapLaidOut
           [ nb "Miskatonic University"
           , nb "Rivertown"
           , nb "Uptown"
@@ -44,13 +44,17 @@ scenario =
           , nb "Innsmouth Village"
           , nb "Innsmouth Shore"
           ]
-          -- three clusters: Arkham, Kingsport and Innsmouth, joined by travel routes
           [ StreetDef (nb "Miskatonic University") SideRight (nb "Rivertown") Residential
           , StreetDef (nb "Miskatonic University") BottomRight (nb "Uptown") Residential
           , StreetDef (nb "Rivertown") BottomRight (nb "Southside") Residential
           , StreetDef (nb "Uptown") SideRight (nb "Southside") Scenic
           , StreetDef (nb "Central Kingsport") SideRight (nb "Kingsport Harbor") Scenic
           , StreetDef (nb "Innsmouth Village") SideRight (nb "Innsmouth Shore") Scenic
+          ]
+          {- Arkham is the middle two rows, with Innsmouth above it and Kingsport
+          below, each a row of the same honeycomb and joined to it by nothing. -}
+          [ ClusterLink (nb "Miskatonic University") TopRight (nb "Innsmouth Village")
+          , ClusterLink (nb "Uptown") BottomRight (nb "Central Kingsport")
           ]
           [ RouteDef (nb "Miskatonic University") SideLeft CountryRoad
           , RouteDef (nb "Uptown") BottomLeft TrainPlatform

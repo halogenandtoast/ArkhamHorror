@@ -43,7 +43,7 @@ scenario =
               NoEffect
           )
     , setupMap =
-        buildMapWith
+        buildMapLaidOut
           [ nb "Downtown"
           , nb "Merchant District"
           , nb "Uptown"
@@ -55,6 +55,8 @@ scenario =
           , StreetDef (nb "Merchant District") BottomRight (nb "Uptown") Residential
           , StreetDef (nb "Central Kingsport") SideRight (nb "Kingsport Harbor") Scenic
           ]
+          -- Kingsport runs off to the right of the Merchant District, joined by nothing
+          [ClusterLink (nb "Merchant District") SideRight (nb "Central Kingsport")]
           [ RouteDef (nb "Downtown") SideLeft CountryRoad
           , RouteDef (nb "Merchant District") SideRight TrainPlatform
           , RouteDef (nb "Uptown") SideLeft CountryRoad

@@ -45,13 +45,10 @@ scenario =
           ]
           -- Innsmouth sits above and right of Arkham, a row of the same honeycomb
           [ClusterLink (nb "Northside") TopRight (nb "Innsmouth Village")]
-          {- Nestling the two clusters fills the edges the sheet hangs Innsmouth
-          Village's road and Easttown's ferry off, and a route in the slot a
-          street would take reads as a connection, so both move to a free edge. -}
-          [ RouteDef (nb "Innsmouth Village") TopLeft CountryRoad
+          [ RouteDef (nb "Innsmouth Village") BottomLeft CountryRoad
           , RouteDef (nb "Innsmouth Shore") BottomRight FerryTerminal
           , RouteDef (nb "Northside") TopLeft CountryRoad
-          , RouteDef (nb "Easttown") SideRight FerryTerminal
+          , RouteDef (nb "Easttown") TopRight FerryTerminal
           , RouteDef (nb "Southside") BottomRight CountryRoad
           ]
           [MysteryTile (nb "Innsmouth Shore") TopRight "Devil Reef"]

@@ -34,35 +34,19 @@ scenario =
               ]
           )
     , setupMap =
-        buildMapLaidOut
-          [ nb "Miskatonic University"
-          , nb "Rivertown"
-          , nb "Uptown"
-          , nb "Southside"
-          , nb "Central Kingsport"
-          , nb "Kingsport Harbor"
-          , nb "Innsmouth Village"
-          , nb "Innsmouth Shore"
-          ]
+        {- Only Arkham is set out. Whichever of cards 117-120 the investigation
+        turns up brings its own town's two tiles, laid above Arkham for Innsmouth
+        and below it for Kingsport. -}
+        buildMapWith
+          [nb "Miskatonic University", nb "Rivertown", nb "Uptown", nb "Southside"]
           [ StreetDef (nb "Miskatonic University") SideRight (nb "Rivertown") Residential
           , StreetDef (nb "Miskatonic University") BottomRight (nb "Uptown") Residential
           , StreetDef (nb "Rivertown") BottomRight (nb "Southside") Residential
           , StreetDef (nb "Uptown") SideRight (nb "Southside") Scenic
-          , StreetDef (nb "Central Kingsport") SideRight (nb "Kingsport Harbor") Scenic
-          , StreetDef (nb "Innsmouth Village") SideRight (nb "Innsmouth Shore") Scenic
-          ]
-          {- Arkham is the middle two rows, with Innsmouth above it and Kingsport
-          below, each a row of the same honeycomb and joined to it by nothing. -}
-          [ ClusterLink (nb "Miskatonic University") TopRight (nb "Innsmouth Village")
-          , ClusterLink (nb "Uptown") BottomRight (nb "Central Kingsport")
           ]
           [ RouteDef (nb "Miskatonic University") SideLeft CountryRoad
           , RouteDef (nb "Uptown") BottomLeft TrainPlatform
           , RouteDef (nb "Southside") BottomRight FerryTerminal
-          , RouteDef (nb "Central Kingsport") TopLeft TrainPlatform
-          , RouteDef (nb "Kingsport Harbor") BottomRight FerryTerminal
-          , RouteDef (nb "Innsmouth Village") BottomLeft CountryRoad
-          , RouteDef (nb "Innsmouth Shore") BottomRight FerryTerminal
           ]
           []
     , monsters =
@@ -96,8 +80,10 @@ scenario =
     , startingDoom =
         map spaceIdFor ["Orne Library", "Black Cave", "Hangman's Hill", "Historical Society"]
     , startingMarkers = []
-    , eventCards = [CardCode ("rlyeh-event-" <> pad n) | n <- [1 .. 32 :: Int]]
-    , setAside = []
+    , {- Only Arkham's sixteen events start in the deck; cards 117-120 shuffle in
+      the eight belonging to whichever town they add. -}
+      eventCards = [CardCode ("rlyeh-event-" <> pad n) | n <- [17 .. 32 :: Int]]
+    , setAside = [CardCode ("rlyeh-event-" <> pad n) | n <- [1 .. 16 :: Int]]
     , codex = [1, 106, 107]
     , anomalySet = Nothing
     , terrorSet = Nothing

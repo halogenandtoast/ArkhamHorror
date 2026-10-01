@@ -13,6 +13,7 @@ module AH3e.Content.Tiles (
   buildMap,
   buildMapWith,
   buildMapLaidOut,
+  addedMap,
 ) where
 
 import AH3e.Prelude
@@ -318,3 +319,12 @@ routeLabel = \case
 
 edgeDegrees :: Edge -> Double
 edgeDegrees e = edgeAngle e * 180 / pi
+
+{- | A piece of map a card puts into play part way through a scenario, laid
+against a tile already on the board. That tile sits at the origin here, so the
+engine has only to shift the piece onto wherever it already stands.
+-}
+addedMap :: NeighborhoodId -> Edge -> [NeighborhoodId] -> [StreetDef] -> [RouteDef] -> MapDef
+addedMap against edge nids streets routes = case nids of
+  [] -> buildMap [against] []
+  lead : _ -> buildMapLaidOut (against : nids) streets [ClusterLink against edge lead] routes []

@@ -5,6 +5,7 @@ module AH3e.Engine.Setup (
   newGame,
   availableScenarios,
   setupScenario,
+  buildBoard,
 ) where
 
 import AH3e.Content

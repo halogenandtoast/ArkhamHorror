@@ -162,6 +162,10 @@ data Message
   | PlaceMonster CardId SpaceId MonsterState
   | -- | the monster, once anyone who could stop it has decided
     PlaceMonsterNow CardId SpaceId MonsterState
+  | {- | put a piece of map into play, laid against a tile already on the board: the
+    piece carries that tile at its own origin, so the board has only to shift it
+    -}
+    AddToBoard NeighborhoodId MapDef
   | PlaceDoom Source SpaceId
   | -- | the doom, once anyone who could stop it has decided
     PlaceDoomNow Source SpaceId
@@ -178,6 +182,8 @@ data Message
   | ClearSpaceDoom SpaceId
   | -- | put a face-up marker of that colour on the space
     PlaceMarker SpaceId Text
+  | -- | clear every marker of one colour from the board
+    DiscardMarkers Text
   | -- | put a face-up marker of that colour on the monster, which travels with it
     PlaceMonsterMarker CardId Text
   | WardRemove InvestigatorId SpaceId Int

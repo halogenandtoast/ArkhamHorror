@@ -7,7 +7,7 @@ import AH3e.Engine.Helpers
 import AH3e.Engine.Hooks
 import AH3e.Engine.Monad
 import AH3e.Engine.Query
-import AH3e.Engine.Setup (availableScenarios, setupScenario)
+import AH3e.Engine.Setup (availableScenarios, buildBoard, setupScenario)
 import AH3e.Engine.Test
 import AH3e.Game
 import AH3e.Message
@@ -20,6 +20,7 @@ import AH3e.Types.Skill
 import AH3e.Types.State
 import Data.List (findIndex, nub)
 import Data.Map.Strict qualified as Map
+import Data.Set qualified as Set
 import Data.Text qualified as T
 
 runMessage :: Message -> GameM ()
@@ -963,6 +964,54 @@ runMessage msg = case msg of
   -- Doom and clues (rules 406, 412, 423, 461)
   {- A card may stop doom being put down in its owner's neighborhood, so the ones
   that could are asked before it lands. -}
+  {- A piece of map arriving part way through a scenario. It is built on its own
+  with the tile it hangs off at the origin, so everything it carries is shifted
+  onto that tile's live position and merged in; the union keeps the board's own
+  entry for anything it already has, so the tile it is laid against is untouched. -}
+  AddToBoard against piece -> do
+    board <- use #board
+    let added = buildBoard piece
+        placedAt ts = listToMaybe [t | t <- ts, t.neighborhood == against]
+    case (placedAt board.layout.tiles, placedAt piece.layout.tiles) of
+      (Just live, Just origin) -> do
+        let dx = live.x - origin.x
+            dy = live.y - origin.y
+            known = Map.keysSet board.neighborhoods
+            here = Map.keysSet board.spaces
+            fresh = Map.keysSet added.neighborhoods `Set.difference` known
+        #board . #neighborhoods %= (<> added.neighborhoods)
+        #board . #spaces %= (<> added.spaces)
+        #board . #borders %= \old -> Map.unionWith (<>) old added.borders
+        #board
+          . #layout
+          . #tiles
+          %= ( <>
+                 [ TilePlacement t.neighborhood (t.x + dx) (t.y + dy)
+                 | t <- added.layout.tiles
+                 , t.neighborhood `Set.member` fresh
+                 ]
+             )
+        #board
+          . #layout
+          . #streets
+          %= ( <>
+                 [ StreetPlacement p.space (p.x + dx) (p.y + dy) p.angle
+                 | p <- added.layout.streets
+                 , not (p.space `Set.member` here)
+                 ]
+             )
+        #board
+          . #layout
+          . #anchors
+          %= ( <>
+                 [ SpaceAnchor a.space (a.x + dx) (a.y + dy)
+                 | a <- added.layout.anchors
+                 , not (a.space `Set.member` here)
+                 ]
+             )
+        for_ (Map.elems (Map.restrictKeys added.neighborhoods fresh)) \n ->
+          logText (n.name <> " is added to the board")
+      _ -> logText "Nothing on the board to add that map against"
   PlaceDoom src sid -> whenSpaceExists sid do
     stops <- placementStops PlacingDoom sid
     case stops of
@@ -1028,6 +1077,11 @@ runMessage msg = case msg of
     when exists do
       monsterL mid . #markers %= (<> [Marker colour True])
       logText ("A " <> colour <> " marker is placed on a monster")
+  DiscardMarkers colour -> do
+    let drop' = filter ((/= colour) . (.color))
+    #board . #spaces . traversed . #markers %= drop'
+    #board . #neighborhoods . traversed . #markers %= drop'
+    logText ("All " <> colour <> " markers are discarded")
   PlaceMarker sid colour -> do
     s <- getSpace sid
     spaceL sid . #markers %= (<> [Marker colour True])

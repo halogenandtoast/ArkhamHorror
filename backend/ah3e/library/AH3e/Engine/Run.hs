@@ -78,13 +78,18 @@ runMessage msg = case msg of
     StartingClues n -> addClues iid n
     StartingCondition name -> push (GainConditionMsg iid name)
     StartingEffect _ eff -> push (ResolveEffect (EffectCtx iid (SourceInvestigator iid) Nothing) eff)
-    StartingChoice options -> do
-      pile <- startingPool
-      choices <- for options \o -> do
-        cids <- fmap concat $ for [code | StartingCard code <- o] \code ->
-          take 1 <$> filterM (fmap (== code) . cardCode) pile
-        pure $ Choice (CardsLabel (possessionsText o) cids) [GainStartingPossessions iid o]
-      chooseFor iid "Choose a starting possession" choices
+    {- The pictures go on the button by card code: the investigator's own copy does
+    not exist until it is taken, and a box that is not on the table has dealt no
+    copy to borrow one from. -}
+    StartingChoice options ->
+      chooseFor
+        iid
+        "Choose a starting possession"
+        [ Choice
+            (CardCodesLabel (possessionsText o) [code | StartingCard code <- o])
+            [GainStartingPossessions iid o]
+        | o <- options
+        ]
   GainNamedStarting iid code -> do
     pile <- use (#decks . #starting)
     matches <- filterM (fmap (== code) . cardCode) pile
@@ -294,7 +299,8 @@ runMessage msg = case msg of
     push (MonsterEngagesIn mid sid)
   MonsterEngagesIn mid sid -> do
     ready <- isMonsterReady mid
-    when ready do
+    holds <- monsterHoldsItsQuarry mid
+    when (ready && not holds) do
       here <- investigatorsAt sid
       present <- filterM (fmap not . monsterIgnores mid . (.id)) here
       prey <- activationPrey mid
@@ -380,8 +386,10 @@ runMessage msg = case msg of
     who <- (.name) <$> getInvestigatorDef iid
     logText (name <> " sets its sights on " <> who)
   DisengageMonster iid mid -> do
+    holds <- monsterHoldsItsQuarry mid
     m <- getMonster mid
     case m.state of
+      _ | holds -> pure ()
       Engaged is -> setMonsterState mid (if length is > 1 then Engaged (filter (/= iid) is) else Ready)
       _ -> pure ()
     b <- monsterBehavior mid
@@ -500,7 +508,12 @@ runMessage msg = case msg of
       logText ("Mythos: " <> tshow tok)
       -- the token is read, then put away; its effect resolves without it on show
       pushAll [AcknowledgeMythosToken pid tok, ClearActiveToken, ResolveMythosToken pid tok]
-  ResolveMythosToken pid tok -> case tok of
+  {- A card its drawer holds may answer the token flatly (TAINTED's doom); it
+  lands behind whatever the token itself sets going. -}
+  ResolveMythosToken pid tok -> do
+    answers <- investigatorOfPlayer pid >>= maybe (pure []) (`afterMythosTokenFor` tok)
+    pushAll (ResolveMythosTokenNow pid tok : answers)
+  ResolveMythosTokenNow pid tok -> case tok of
     SpreadDoomToken -> push SpreadDoom
     SpawnMonsterToken -> push (SpawnMonsterAt Nothing False)
     ReadHeadlineToken -> investigatorOfPlayer pid >>= traverse_ (push . DrawHeadline)
@@ -934,7 +947,7 @@ runMessage msg = case msg of
   PayMoney iid n -> spendMoney iid n
   BuyFromDisplayMore ctx mtrait pricing limit ifBought n -> buyPrompt ctx mtrait pricing limit ifBought n
   EvadeMonsters iid n -> do
-    ms <- map (.card) <$> engagedMonsters iid
+    ms <- filterM (fmap not . monsterHoldsItsQuarry) . map (.card) =<< engagedMonsters iid
     if n >= length ms
       then do
         for_ ms \mid -> pushAll [DisengageMonster iid mid, ExhaustMonster mid]
@@ -1565,7 +1578,13 @@ enterWith ms sid =
 
 -- | Walking into a space engages what is there, bar what passes you by.
 noticedEngageOnEntry :: InvestigatorId -> SpaceId -> GameM Bool
-noticedEngageOnEntry iid = engageOnEntryWhere (fmap not . flip monsterIgnores iid) iid
+noticedEngageOnEntry iid = engageOnEntryWhere notices iid
+ where
+  -- a monster that holds its quarry passes everyone else by
+  notices mid = do
+    ignores <- monsterIgnores mid iid
+    holds <- monsterHoldsItsQuarry mid
+    pure (not ignores && not holds)
 
 moveStep :: MoveState -> GameM ()
 moveStep ms = do
@@ -1909,15 +1928,6 @@ addToCodex n flipped = do
       push CheckStateTriggers
       (codexBehavior n).onAdd entry
     [] -> logText ("Archive card unavailable: " <> tshow (coerce n :: Int))
-
-{- | Cards a starting possession's picture may be taken from. The investigator's
-own copy of a deck card does not exist until it is taken, so for the choice
-buttons a deck's copy stands in; nothing is moved by looking.
--}
-startingPool :: GameM [CardId]
-startingPool = do
-  d <- use #decks
-  pure (d.starting <> d.spell <> d.item <> d.ally <> d.special)
 
 possessionsText :: [StartingPossession] -> Text
 possessionsText [] = "Nothing"

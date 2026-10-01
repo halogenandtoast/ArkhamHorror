@@ -50,6 +50,8 @@ library
       AH3e.Content.Tiles
       AH3e.Content.UnderDarkWaves.InvestigatorBehaviors
       AH3e.Content.UnderDarkWaves.Investigators
+      AH3e.Content.UnderDarkWaves.Mysteries
+      AH3e.Content.UnderDarkWaves.NeighborhoodCards
       AH3e.Content.UnderDarkWaves.StartingBehaviors
       AH3e.Content.Vocabulary
       AH3e.Engine

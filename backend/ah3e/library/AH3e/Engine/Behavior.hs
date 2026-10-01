@@ -6,7 +6,7 @@ import AH3e.Engine.Query
 import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
-import AH3e.Types.Card (Encounter)
+import AH3e.Types.Card (Encounter, MythosToken)
 import AH3e.Types.Effect
 import AH3e.Types.Ids
 import AH3e.Types.Skill
@@ -138,6 +138,10 @@ data AssetBehavior = AssetBehavior
   {- ^ once per round, its owner may add one to a die instead of rerolling it,
   paying the reroll's cost either way (Research Notes).
   -}
+  , afterMythosToken :: CardId -> InvestigatorId -> MythosToken -> GameM [Message]
+  {- ^ what this card does when its owner draws a mythos token of that kind. Not
+  offered but done, for a card that states it flatly (TAINTED's doom).
+  -}
   , afterGainClue :: CardId -> InvestigatorId -> GameM [Message]
   {- ^ what this card does when its owner gains clues. Not offered but done, for a
   card that says "you gain" rather than "you may" (Reporting Gig).
@@ -230,6 +234,7 @@ defaultAssetBehavior =
     , preventsOwnHarm = Nothing
     , insteadOfRemnant = \_ _ -> pure []
     , raiseInsteadOfReroll = False
+    , afterMythosToken = \_ _ _ -> pure []
     , afterGainClue = \_ _ -> pure []
     , afterMonsterDamaged = \_ _ _ _ -> pure []
     , afterHarm = \_ _ _ -> pure []
@@ -372,6 +377,10 @@ data MonsterBehavior = MonsterBehavior
   {- ^ what it does to whoever has just come away from it. Not offered but done,
   for a monster that prints it flatly rather than as a "may".
   -}
+  , holdsItsQuarry :: Bool
+  {- ^ it cannot be evaded or disengaged from, and engages nobody beyond whoever
+  it was revealed against (Grim Spectre).
+  -}
   , insteadOfEngaging :: CardId -> InvestigatorId -> GameM (Maybe [Message])
   {- ^ what happens in place of this monster engaging them, for a card that turns
   over rather than closing in (The Watcher becomes a condition). Answering leaves
@@ -388,6 +397,7 @@ defaultMonsterBehavior =
     , removedWhenDefeated = False
     , afterAttack = \_ _ -> pure []
     , afterDisengage = \_ _ -> pure []
+    , holdsItsQuarry = False
     , insteadOfEngaging = \_ _ -> pure Nothing
     }
 

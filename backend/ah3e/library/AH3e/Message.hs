@@ -56,6 +56,8 @@ data Message
   | -- | the draw itself, once anything offered in its place has been declined
     DrawMythosTokenNow PlayerId
   | ResolveMythosToken PlayerId MythosToken
+  | -- | the token's own effect, once the drawer's cards have had their say
+    ResolveMythosTokenNow PlayerId MythosToken
   | EndRound
   | ReplaceInvestigator PlayerId
   | ResolveEffect EffectCtx Effect
@@ -307,6 +309,11 @@ data Label
   | DoneLabel Text
   | -- | text for the choice, with the cards it would give so they can be shown
     CardsLabel Text [CardId]
+  | {- | likewise, but by card code, for cards that do not exist yet: a starting
+    possession is minted when it is taken, and a box that is not on the table has
+    dealt no copy to borrow a picture from
+    -}
+    CardCodesLabel Text [CardCode]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

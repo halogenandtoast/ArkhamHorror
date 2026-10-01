@@ -36,6 +36,7 @@ printedIn :: Map CardCode Expansion
 printedIn =
   Map.fromList
     [ ("vengeful-pursuer", DeadOfNight)
+    , ("grim-spectre", UnderDarkWaves)
     , ("entranced-hybrid", UnderDarkWaves)
     , ("frenzied-hunter", UnderDarkWaves)
     , ("icebound-captive", UnderDarkWaves)
@@ -1419,4 +1420,17 @@ cards =
       (2, 0)
       []
       "When revealed, this monster engages you. If this monster is not engaged with an investigator, discard it."
+  , monster
+      "grim-spectre"
+      "Grim Spectre"
+      1
+      ["Phantom"]
+      0
+      (CustomSpaceRule "Revealed from the back of a DARK PACT")
+      (CustomActivation "It keeps to the investigator it haunts.")
+      (2, 1)
+      (-2, 0)
+      (0, 2)
+      [Watcher]
+      "Elite 1. Watcher. When revealed, this monster engages you. You cannot evade or disengage this monster, and it cannot engage any other investigator."
   ]

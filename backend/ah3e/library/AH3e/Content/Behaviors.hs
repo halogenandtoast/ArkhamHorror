@@ -21,6 +21,7 @@ import AH3e.Content.UnderDarkWaves.StartingBehaviors qualified as UnderDarkWaves
 import AH3e.Engine.Behavior
 import AH3e.Engine.Helpers
 import AH3e.Engine.Monad
+import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
 import AH3e.Types.Card (MythosToken (..))
@@ -52,6 +53,7 @@ behaviors =
           Map.fromList
             [ ("clover-club-craps", cloverClubCraps)
             , ("discard-source", discardSource)
+            , ("recover-all", recoverAll)
             , ("return-spawn-monster-token", returnSpawnMonsterToken)
             ]
       }
@@ -78,6 +80,12 @@ returnSpawnMonsterToken _ = do
       returnTokensToCup [SpawnMonsterToken]
       logText "A spawn monster token returns to the mythos cup"
     _ -> logText "No spawn monster token to return to the mythos cup"
+
+-- | "Recover all of your health and sanity", which no amount can name.
+recoverAll :: EffectCtx -> GameM ()
+recoverAll ctx = do
+  i <- getInvestigator ctx.investigator
+  push (RecoverInvestigator ctx.investigator i.damage i.horror)
 
 -- | Discards whichever card is resolving the effect, for a card that spends itself.
 discardSource :: EffectCtx -> GameM ()

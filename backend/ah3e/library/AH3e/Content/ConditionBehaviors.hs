@@ -21,7 +21,9 @@ import Data.Map.Strict qualified as Map
 
 darkPacts :: [CardCode]
 darkPacts =
-  [ "dark-pact-the-world-undone"
+  [ "dark-pact-virulent-plague"
+  , "dark-pact-grim-spectre"
+  , "dark-pact-the-world-undone"
   , "dark-pact-pact-of-sacrifice"
   , "dark-pact-the-ultimate-price"
   , "dark-pact-an-alliance-of-evil"
@@ -42,6 +44,13 @@ wantedCards =
   , "wanted-vengeful-pursuer"
   ]
 
+{- | Under Dark Waves' TAINTED cards. One front, which bleeds doom into your space
+whenever the mythos turns up nothing, and six numbered backs for what it finally
+does to you.
+-}
+taintedCards :: [CardCode]
+taintedCards = [CardCode ("tainted-" <> tshow n) | n <- [1 :: Int .. 6]]
+
 behaviors :: Behaviors
 behaviors =
   mempty
@@ -49,9 +58,19 @@ behaviors =
         Map.fromList
           $ [(c, darkPactBehavior) | c <- darkPacts]
           <> [(c, wantedBehavior c) | c <- wantedCards]
+          <> [(c, taintedBehavior) | c <- taintedCards]
     , customEffects =
         Map.fromList
           [ ("dark-pact-reckoning", darkPactReckoning)
+          , ("virulent-plague", virulentPlague)
+          , ("grim-spectre", grimSpectre)
+          , ("tainted-reckoning", taintedReckoning)
+          , ("tainted-lash-out:2", taintedLashOut 2)
+          , ("tainted-lash-out:1", taintedLashOut 1)
+          , ("tainted-summon", taintedSummon)
+          , ("tainted-summoned-attacks", taintedSummonedAttacks)
+          , ("tainted-forget", taintedForget)
+          , ("tainted-discard-focus", taintedDiscardFocus)
           , ("flip-condition", flipCondition)
           , ("discard-condition", discardCondition)
           , ("pact-of-sacrifice", pactOfSacrifice)
@@ -77,6 +96,32 @@ discardSelf = Custom "discard-condition"
 -- | What the exhausted side of a dark pact does the moment it is revealed.
 revealedSide :: CardCode -> Maybe Effect
 revealedSide = \case
+  "dark-pact-virulent-plague" -> Just (Custom "virulent-plague")
+  "dark-pact-grim-spectre" -> Just (Custom "grim-spectre")
+  "tainted-1" ->
+    taintedBack
+      (Custom "tainted-lash-out:2")
+      [((1, Just 1), Custom "tainted-lash-out:1"), ((2, Nothing), NoEffect)]
+  "tainted-2" ->
+    taintedBack
+      (GainE (Condition "CURSED"))
+      [((1, Just 1), GainE (Condition "CURSED")), ((2, Nothing), NoEffect)]
+  "tainted-3" ->
+    taintedBack
+      (SufferHarmE (N 2) (N 2))
+      [((1, Just 1), SufferHarmE (N 1) (N 1)), ((2, Nothing), NoEffect)]
+  "tainted-4" ->
+    taintedBack
+      (GainE (Condition "DARK PACT"))
+      [((1, Just 1), GainE (Condition "DARK PACT")), ((2, Nothing), NoEffect)]
+  "tainted-5" ->
+    taintedBack
+      (Custom "tainted-summon")
+      [((1, Just 1), SpawnMonsterIn YourSpace False), ((2, Nothing), NoEffect)]
+  "tainted-6" ->
+    taintedBack
+      (Custom "tainted-forget")
+      [((1, Just 2), Custom "tainted-discard-focus"), ((3, Nothing), NoEffect)]
   "dark-pact-the-world-undone" -> Just (Seq [PlaceDoomAt YourSpace (N 3), discardSelf])
   "dark-pact-the-ultimate-price" -> Just BecomeDevoured
   "dark-pact-dark-destiny" -> Just (Seq [DrawMythosTokens 6, discardSelf])
@@ -285,3 +330,131 @@ forbiddenKnowledge remaining ctx = do
         ctx.investigator
         "Discard a clue"
         [Choice l (ms <> [ResolveEffect ctx next]) | Choice l ms <- sources]
+
+{- | TAINTED's front: doom collects wherever you stand each time the mythos turns
+up nothing, and the first reckoning turns the card over.
+-}
+taintedBehavior :: AssetBehavior
+taintedBehavior =
+  defaultAssetBehavior
+    & #reckoning
+    ?~ Custom "tainted-reckoning"
+    & #afterMythosToken
+    .~ \cid iid tok -> do
+      flipped <- maybe False (.flipped) <$> uses #assets (Map.lookup cid)
+      pure
+        [ ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (PlaceDoomAt YourSpace (N 1))
+        | not flipped
+        , tok `elem` [BlankToken, SpawnClueToken]
+        ]
+
+-- | "Reckoning-Flip this card." The back resolves as it is turned over.
+taintedReckoning :: EffectCtx -> GameM ()
+taintedReckoning ctx = for_ (sourceCard ctx) \cid -> do
+  flipped <- maybe False (.flipped) <$> uses #assets (Map.lookup cid)
+  unless flipped $ push (ResolveEffect ctx (Custom "flip-condition"))
+
+{- | Every TAINTED back reads the same way: test will, resolve the band your
+result falls in, then discard the card. A zero is a failed test, so it rides on
+the test's fail branch while the rest are read off the result.
+-}
+taintedBack :: Effect -> [((Int, Maybe Int), Effect)] -> Maybe Effect
+taintedBack onZero bands = Just (Seq [Test Will 0 (ByResult bands) onZero, discardSelf])
+
+{- | "Choose another investigator in any space to suffer this much damage and
+horror." Not a may, so the choice is only which of them it falls on.
+-}
+taintedLashOut :: Int -> EffectCtx -> GameM ()
+taintedLashOut n ctx = do
+  others <- filter ((/= ctx.investigator) . (.id)) <$> playingInvestigators
+  case others of
+    [] -> logText "There is nobody else to turn on"
+    _ ->
+      chooseFor
+        ctx.investigator
+        ("Choose an investigator to suffer " <> tshow n <> " damage and " <> tshow n <> " horror")
+        $ [Choice (InvestigatorLabel o.id) [SufferHarm o.id ctx.source NormalHarm n n] | o <- others]
+
+{- | "Spawn one monster in your space. If it engages an investigator, that monster
+attacks." The monster is drawn here rather than through 'SpawnMonsterAt' so that
+its card is known afterwards; it is noted on the condition until the attack check.
+-}
+taintedSummon :: EffectCtx -> GameM ()
+taintedSummon ctx = for_ (sourceCard ctx) \self -> do
+  msid <- investigatorSpace ctx.investigator
+  deck <- use (#decks . #monster)
+  case (msid, drawBottom deck) of
+    (Just sid, Just (mid, rest)) -> do
+      #decks . #monster .= rest
+      pushAll
+        [ PlaceMonster mid sid Ready
+        , NoteOnCard self "summoned" (coerce mid)
+        , ResolveEffect ctx (Custom "tainted-summoned-attacks")
+        ]
+    _ -> logText "No monster answers"
+
+-- | The monster the card just summoned attacks whoever it caught.
+taintedSummonedAttacks :: EffectCtx -> GameM ()
+taintedSummonedAttacks ctx = for_ (sourceCard ctx) \self -> do
+  noted <- uses #assets (Map.lookup "summoned" . maybe mempty (.tokens) . Map.lookup self)
+  for_ noted \n -> do
+    assetL self . #tokens .= mempty
+    m <- uses #monsters (Map.lookup (CardId n))
+    for_ m \mon -> case mon.state of
+      Engaged (iid : _) -> push (MonsterAttacks (CardId n) iid)
+      _ -> pure ()
+
+{- | "You discard one talent. If you cannot, you discard all of your focus
+tokens."
+-}
+taintedForget :: EffectCtx -> GameM ()
+taintedForget ctx = do
+  i <- getInvestigator ctx.investigator
+  talents <- filterM isTalent i.assets
+  case talents of
+    [] -> discardAllFocus ctx.investigator
+    _ ->
+      chooseFor
+        ctx.investigator
+        "Discard a talent"
+        [Choice (CardLabel c) [DiscardAsset c] | c <- talents]
+ where
+  isTalent c = maybe False ((== Talent) . (.assetType)) <$> assetDef c
+
+taintedDiscardFocus :: EffectCtx -> GameM ()
+taintedDiscardFocus ctx = discardAllFocus ctx.investigator
+
+discardAllFocus :: InvestigatorId -> GameM ()
+discardAllFocus iid = do
+  i <- getInvestigator iid
+  when (focusCount i > 0) do
+    investigatorL iid . #focus .= mempty
+    logText "Every focus token is discarded"
+
+{- | "You suffer one direct damage and one direct horror. Then each other
+investigator suffers two direct damage and two direct horror." Each investigator
+takes their damage and horror as one plan, the way the card deals it.
+-}
+virulentPlague :: EffectCtx -> GameM ()
+virulentPlague ctx = do
+  others <- filter ((/= ctx.investigator) . (.id)) <$> playingInvestigators
+  pushAll
+    $ SufferHarm ctx.investigator ctx.source DirectHarm 1 1
+    : [SufferHarm o.id ctx.source DirectHarm 2 2 | o <- others]
+      <> [ResolveEffect ctx discardSelf]
+
+{- | The back that is a monster: it fixes on whoever turned the card over and
+cannot be shaken off (see 'holdsItsQuarry').
+-}
+grimSpectre :: EffectCtx -> GameM ()
+grimSpectre ctx = do
+  msid <- investigatorSpace ctx.investigator
+  case msid of
+    Nothing -> push (ResolveEffect ctx discardSelf)
+    Just sid -> do
+      cid <- newCard "grim-spectre"
+      pushAll
+        [ PlaceMonster cid sid Ready
+        , EngageMonster ctx.investigator cid
+        , ResolveEffect ctx discardSelf
+        ]

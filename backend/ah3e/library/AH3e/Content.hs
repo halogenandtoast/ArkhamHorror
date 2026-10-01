@@ -35,6 +35,8 @@ import AH3e.Content.Special qualified as Special
 import AH3e.Content.Spells qualified as Spells
 import AH3e.Content.StreetCards qualified as StreetCards
 import AH3e.Content.UnderDarkWaves.Investigators qualified as UnderDarkWavesInvestigators
+import AH3e.Content.UnderDarkWaves.Mysteries qualified as UnderDarkWavesMysteries
+import AH3e.Content.UnderDarkWaves.NeighborhoodCards qualified as UnderDarkWavesNeighborhoodCards
 import AH3e.Prelude
 import AH3e.Types.Card
 import AH3e.Types.Ids
@@ -82,6 +84,8 @@ cardDefs =
           <> DeadOfNightEncounters.cards
           <> Investigators.cards
           <> NeighborhoodCards.cards
+          <> UnderDarkWavesNeighborhoodCards.cards
+          <> UnderDarkWavesMysteries.cards
           <> StreetCards.cards
           <> Items.cards
           <> Spells.cards

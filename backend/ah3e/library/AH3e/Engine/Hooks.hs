@@ -141,6 +141,8 @@ legalActions iid = do
   space <- getSpace sid
   engaged <- engagedMonsters iid
   partners <- tradePartners iid
+  -- a monster that holds its quarry cannot be evaded, so it offers no evade action
+  evadable <- filterM (fmap not . monsterHoldsItsQuarry . (.card)) engaged
   -- a card may let its holder ward with a monster on them, or spend the successes
   -- on the monsters instead of the doom, so warding is legal without doom to take
   wardAnyway <- hasAssetWith iid (.wardWhileEngaged)
@@ -153,7 +155,7 @@ legalActions iid = do
           -- warding takes doom off your own space, so it needs at least one there
           <> [WardAction | not restricted || wardAnyway, space.doom > 0 || meddle]
           <> [AttackAction | not (null here)]
-          <> [EvadeAction | not (null engaged)]
+          <> [EvadeAction | not (null evadable)]
           -- 470.2: research moves your own clues to the scenario sheet, so it needs at least one
           <> [ResearchAction | not restricted, i.clues > 0]
           <> [TradeAction | not restricted, not (null partners)]
@@ -270,6 +272,22 @@ afterHarmFor plan = do
     b.afterHarm cid plan.investigator plan
   sheet <- (investigatorBehavior plan.investigator).afterHarm plan.investigator plan
   pure (fromCards <> sheet)
+
+{- | What this investigator's cards do about a mythos token they just drew
+(TAINTED's doom). Not offered, since the cards that answer state it flatly.
+-}
+afterMythosTokenFor :: InvestigatorId -> MythosToken -> GameM [Message]
+afterMythosTokenFor iid tok = do
+  i <- getInvestigator iid
+  fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+    b <- assetBehavior cid
+    b.afterMythosToken cid iid tok
+
+{- | Whether this monster refuses to let go: it cannot be evaded or disengaged
+from, and it engages nobody but the investigator it was revealed against.
+-}
+monsterHoldsItsQuarry :: CardId -> GameM Bool
+monsterHoldsItsQuarry mid = (.holdsItsQuarry) <$> monsterBehavior mid
 
 -- | What this investigator's cards do about clues they just gained.
 afterGainClueFor :: InvestigatorId -> GameM [Message]

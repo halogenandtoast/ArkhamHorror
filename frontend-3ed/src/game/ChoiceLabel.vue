@@ -39,6 +39,7 @@ const text = computed((): string | null => {
     case 'SourceLabel':
       return ctx.sourceLabelText(c)
     case 'CardsLabel':
+    case 'CardCodesLabel':
     case 'InvestigatorLabel':
     case 'SkillLabel':
     case 'TokenLabel':
@@ -51,6 +52,13 @@ const text = computed((): string | null => {
 const cards = computed(() =>
   props.label.tag === 'CardsLabel'
     ? (props.label.contents[1] as CardId[]).map((cid) => ({ cid, src: cardImg(ctx.cardCode(cid)) }))
+    : [],
+)
+// a choice may name cards by code rather than by id, for cards that are not on
+// the table yet -- a starting possession is minted only once it is taken
+const codeCards = computed(() =>
+  props.label.tag === 'CardCodesLabel'
+    ? (props.label.contents[1] as string[]).map((code) => ({ code, src: cardImg(code) }))
     : [],
 )
 // choosing an investigator is easier with the sheet in front of you; the
@@ -81,6 +89,22 @@ const inv = computed(() => {
     ><span class="label-cards"
       ><span v-for="c in cards" :key="c.cid" class="label-card" :class="{ 'no-art': isBroken(c.src) }"
         ><img v-if="!isBroken(c.src)" :src="c.src" :alt="ctx.cardNameRaw(c.cid) ?? ''" @error="markBroken(c.src)" /><span
+          class="label-zoom"
+          role="button"
+          tabindex="0"
+          title="Enlarge"
+          @click.stop="zoom(c.src)"
+          @keydown.enter.stop.prevent="zoom(c.src)"
+          ><ExamineIcon /></span
+        ></span
+      ></span
+    ><span class="label-cards-text">{{ label.contents[0] }}</span></template
+  >
+  <template v-else-if="label.tag === 'CardCodesLabel' && !codeCards.length">{{ label.contents[0] }}</template>
+  <template v-else-if="label.tag === 'CardCodesLabel'"
+    ><span class="label-cards"
+      ><span v-for="c in codeCards" :key="c.code" class="label-card" :class="{ 'no-art': isBroken(c.src) }"
+        ><img v-if="!isBroken(c.src)" :src="c.src" alt="" @error="markBroken(c.src)" /><span
           class="label-zoom"
           role="button"
           tabindex="0"

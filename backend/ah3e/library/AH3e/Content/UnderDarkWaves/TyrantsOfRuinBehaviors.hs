@@ -76,52 +76,28 @@ deepOnesRecover _ = do
   for_ deepOnes \m -> #monsters . ix m.card . #damage %= max 0 . subtract 2
   unless (null deepOnes) (logText "Each Deep One monster recovers two health")
 
-{- | Card 61, which Ithaqua's Children keeps in its codex too: a neighborhood that
-drowns in doom gives it up to the scenario sheet and is left terrified instead,
-and anyone can rally a neighborhood out of its terror.
+{- | Card 61, which Ithaqua's Children keeps in its codex too. The doom rule on
+its front is the engine's own ('checkDoomThresholds' reads the card out of the
+codex), so what is left here is the action: anyone can rally a neighborhood back
+out of its terror.
 -}
 terror :: CodexBehavior
 terror =
   defaultCodexBehavior
-    { triggers =
-        [ CodexTrigger
-            { key = "terror-six-doom"
-            , once = False
-            , condition = \_ -> not . null <$> drowning
-            , action = \_ -> do
-                hoods <- drowning
-                for_ (take 1 hoods) \n -> do
-                  board <- use #board
-                  let worst = sortOn (negate . doomIn board) n.spaces
-                  for_ (take 1 worst) \sid -> do
-                    spaceL sid . #doom .= 0
-                    pushAll [PlaceDoomOnSheet 1, SpreadTerror n.id]
-            }
-        ]
-    , componentActions =
-        [ ComponentActionDef
-            { label = "Organize resistance to the terror"
-            , allowedWhileEngaged = False
-            , canPerform = \iid -> do
-                mnid <- investigatorNeighborhood iid
-                maybe (pure False) (fmap terrified . getNeighborhood) mnid
-            , perform = \ctx ->
-                push
-                  (BeginTest (newTest ctx.investigator Influence 0 OtherTest (AfterCustom (SourceCodex 61) "rally")))
-            }
-        ]
-    }
+    & #componentActions
+    .~ [ ComponentActionDef
+           { label = "Organize resistance to the terror"
+           , allowedWhileEngaged = False
+           , canPerform = \iid -> do
+               mnid <- investigatorNeighborhood iid
+               maybe (pure False) (fmap terrified . getNeighborhood) mnid
+           , perform = \ctx ->
+               push
+                 (BeginTest (newTest ctx.investigator Influence 0 OtherTest (AfterCustom (SourceCodex 61) "rally")))
+           }
+       ]
  where
   terrified n = n.terror > 0 || not (null n.attachedTerror)
-
-doomIn :: Board -> SpaceId -> Int
-doomIn board sid = maybe 0 (.doom) (Map.lookup sid board.spaces)
-
--- | Neighborhoods carrying six or more doom across their spaces.
-drowning :: GameM [Neighborhood]
-drowning = do
-  board <- use #board
-  pure [n | n <- Map.elems board.neighborhoods, sum (map (doomIn board) n.spaces) >= 6]
 
 -- | "For each success you roll, you may discard one terror token or terror card."
 rally :: Source -> Int -> GameM ()

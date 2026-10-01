@@ -67,6 +67,7 @@ behaviors =
       , ("interrogation", interrogationResult)
       , ("steal-the-lantern", \_ r -> when (r >= 4) (push (FlipCodexCard 82)))
       , ("sunder", sunderResult)
+      , ("storm-doom", stormDoom)
       , ("storm-beacon", stormBeacon)
       ]
 
@@ -676,6 +677,15 @@ stormTest ctx =
             (AfterCustom (SourceInvestigator ctx.investigator) "storm-doom")
         )
     )
+
+-- | 87's front: a passed test turns one of the storm's doom into a clue.
+stormDoom :: Source -> Int -> GameM ()
+stormDoom _ result = when (result > 0) do
+  left <- tokensOn "doom" 87
+  when (left > 0) do
+    markCard "doom" 87 (-1)
+    markCard "clue" 87 1
+    logText "The storm gives a little ground"
 
 -- | 87's back: a passed test leaves a focus of the investigator's choosing.
 beaconTest :: EffectCtx -> GameM ()

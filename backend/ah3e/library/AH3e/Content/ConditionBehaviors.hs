@@ -85,6 +85,11 @@ behaviors =
           , ("wanted-shake-down", shakeDown)
           , ("wanted-vengeful-pursuer", vengefulPursuer)
           ]
+    , customActivations =
+        Map.fromList
+          [ ("vengeful-pursuer", pursuerActivation)
+          , ("grim-spectre", spectreActivation)
+          ]
     }
 
 darkPactBehavior :: AssetBehavior
@@ -455,6 +460,30 @@ grimSpectre ctx = do
       cid <- newCard "grim-spectre"
       pushAll
         [ PlaceMonster cid sid Ready
+        , SetMonsterPrey cid ctx.investigator
         , EngageMonster ctx.investigator cid
         , ResolveEffect ctx discardSelf
         ]
+
+{- | The Vengeful Pursuer is only here for whoever was WANTED: with nobody held,
+it has nothing to chase and goes.
+-}
+pursuerActivation :: CardId -> GameM ()
+pursuerActivation mid = do
+  m <- getMonster mid
+  case m.state of
+    Engaged (_ : _) -> pure ()
+    _ -> do
+      logText "The Vengeful Pursuer loses the trail"
+      push (DiscardMonster mid)
+
+{- | "It keeps to the investigator it haunts." The Grim Spectre takes no new prey:
+it follows the one the DARK PACT set it on, and does nothing once it has them.
+-}
+spectreActivation :: CardId -> GameM ()
+spectreActivation mid = do
+  m <- getMonster mid
+  d <- monsterDef mid
+  case m.state of
+    Engaged (_ : _) -> pure ()
+    _ -> for_ m.prey (push . MonsterStep mid d.speed . TowardPrey . NamedInvestigator)

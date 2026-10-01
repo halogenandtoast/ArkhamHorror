@@ -1414,7 +1414,7 @@ cards =
       ["Human"]
       0
       (CustomSpaceRule "Revealed from the back of a WANTED condition")
-      (CustomActivation "If this monster is not engaged with an investigator, discard it.")
+      (CustomActivation "vengeful-pursuer")
       (3, 0)
       (0, -2)
       (2, 0)
@@ -1427,7 +1427,7 @@ cards =
       ["Phantom"]
       0
       (CustomSpaceRule "Revealed from the back of a DARK PACT")
-      (CustomActivation "It keeps to the investigator it haunts.")
+      (CustomActivation "grim-spectre")
       (2, 1)
       (-2, 0)
       (0, 2)

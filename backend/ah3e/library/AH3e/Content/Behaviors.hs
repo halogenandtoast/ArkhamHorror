@@ -14,6 +14,7 @@ import AH3e.Content.DeadOfNight.SilenceOfTsathogguaBehaviors qualified as Silenc
 import AH3e.Content.DeadOfNight.StartingBehaviors qualified as DeadOfNightStarting
 import AH3e.Content.HeadlineBehaviors qualified as Headlines
 import AH3e.Content.ItemBehaviors qualified as Items
+import AH3e.Content.MonsterBehaviors qualified as Monsters
 import AH3e.Content.SpecialBehaviors qualified as Specials
 import AH3e.Content.SpellBehaviors qualified as Spells
 import AH3e.Content.UnderDarkWaves.DreamsOfRlyehBehaviors qualified as DreamsOfRlyeh
@@ -60,6 +61,7 @@ behaviors =
     <> Allies.behaviors
     <> Headlines.behaviors
     <> Items.behaviors
+    <> Monsters.behaviors
     <> Specials.behaviors
     <> Spells.behaviors
     <> mempty

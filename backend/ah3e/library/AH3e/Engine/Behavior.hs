@@ -373,6 +373,18 @@ data MonsterBehavior = MonsterBehavior
   -- ^ goes back to the box rather than to the monster deck
   , afterAttack :: CardId -> InvestigatorId -> GameM [Message]
   -- ^ what it does to the investigator it has just attacked
+  , afterDefeated :: CardId -> Source -> GameM [Message]
+  {- ^ what it leaves behind, or exacts, as it goes. The source says who finished
+  it: an investigator means an attack action, which is what most of them ask for.
+  -}
+  , afterEngaged :: CardId -> InvestigatorId -> GameM [Message]
+  -- ^ what it does to whoever it has just closed with
+  , afterEvaded :: CardId -> InvestigatorId -> GameM [Message]
+  -- ^ what it does once someone has slipped past it
+  , afterAttackAction :: CardId -> InvestigatorId -> Bool -> GameM [Message]
+  {- ^ what it does about having been attacked at all, damage dealt or not, the
+  way Retaliate answers the action rather than the damage
+  -}
   , afterDisengage :: CardId -> InvestigatorId -> GameM [Message]
   {- ^ what it does to whoever has just come away from it. Not offered but done,
   for a monster that prints it flatly rather than as a "may".
@@ -396,6 +408,10 @@ defaultMonsterBehavior =
     , healthDelta = \_ -> pure 0
     , removedWhenDefeated = False
     , afterAttack = \_ _ -> pure []
+    , afterDefeated = \_ _ -> pure []
+    , afterEngaged = \_ _ -> pure []
+    , afterEvaded = \_ _ -> pure []
+    , afterAttackAction = \_ _ _ -> pure []
     , afterDisengage = \_ _ -> pure []
     , holdsItsQuarry = False
     , insteadOfEngaging = \_ _ -> pure Nothing

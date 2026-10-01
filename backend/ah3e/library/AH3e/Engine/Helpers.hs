@@ -154,7 +154,7 @@ engage iid mid = do
         | otherwise = Engaged [iid]
   monsterL mid . #state .= st
   monsterL mid . #space .= sid
-  push (CheckReactions (AfterEngaged iid mid) [])
+  pushAll [CheckReactions (AfterEngaged iid mid) [], MonsterEngaged iid mid]
 
 -- 455.3: ready monsters in the space engage the entering investigator
 engageOnEntry :: InvestigatorId -> SpaceId -> GameM Bool

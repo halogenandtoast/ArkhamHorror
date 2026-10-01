@@ -156,6 +156,10 @@ data Message
   | DevourInvestigator InvestigatorId
   | RetireInvestigator InvestigatorId
   | DealMonsterDamage CardId Source Int
+  | -- | slipped past, so the monster has its say before it is left behind
+    EvadedMonster InvestigatorId CardId
+  | -- | closed with, so the monster has its say about whoever it caught
+    MonsterEngaged InvestigatorId CardId
   | DefeatMonster CardId Source
   | DiscardMonster CardId
   | SpawnMonsterAt (Maybe SpaceId) Bool

@@ -827,7 +827,8 @@ runMessage msg = case msg of
     answers <- codexAboutDefeat mid src
     -- read the monster's traits while it is still on the board
     fromCards <- cardsAboutDefeat mid src
-    pushAll (DiscardMonster mid : answers <> fromCards)
+    own <- monsterBehavior mid >>= \b -> b.afterDefeated mid src
+    pushAll (DiscardMonster mid : answers <> fromCards <> own)
   DiscardMonster mid -> do
     d <- monsterDef mid
     gone <- (.removedWhenDefeated) <$> monsterBehavior mid
@@ -921,8 +922,10 @@ runMessage msg = case msg of
       Just m -> pure (m.damage > before)
     gone <- uses #monsters (not . Map.member mid)
     retaliators <- filterM (hasKeyword Retaliate . (.card)) =<< engagedMonsters iid
+    own <- if gone then pure [] else monsterBehavior mid >>= \b -> b.afterAttackAction mid iid dealt
     pushAll
-      $ [MonsterAttacks r.card iid | r <- retaliators, r.card /= mid || not dealt]
+      $ own
+      <> [MonsterAttacks r.card iid | r <- retaliators, r.card /= mid || not dealt]
       <> [CheckReactions (AfterDamageMonsterInAttack iid mid) [] | dealt]
       <> [CheckReactions (AfterDefeatMonsterInAttack iid) [] | gone]
   ClearSpaceDoom sid -> spaceL sid . #doom .= 0
@@ -963,16 +966,24 @@ runMessage msg = case msg of
     ms <- filterM (fmap not . monsterHoldsItsQuarry) . map (.card) =<< engagedMonsters iid
     if n >= length ms
       then do
-        for_ ms \mid -> pushAll [DisengageMonster iid mid, ExhaustMonster mid]
+        for_ ms \mid -> do
+          own <- monsterBehavior mid >>= \b -> b.afterEvaded mid iid
+          pushAll ([DisengageMonster iid mid, ExhaustMonster mid] <> own)
         unless (null ms) $ investigatorL iid . #bonusActions += 1
       else
         when (n > 0)
           $ chooseFor
             iid
             "Choose a monster to evade"
-            [ Choice (MonsterLabel m) [DisengageMonster iid m, ExhaustMonster m, EvadeMonsters iid (n - 1)]
+            [ Choice (MonsterLabel m) [EvadedMonster iid m, EvadeMonsters iid (n - 1)]
             | m <- ms
             ]
+  MonsterEngaged iid mid -> do
+    here <- uses #monsters (Map.member mid)
+    when here $ monsterBehavior mid >>= \b -> b.afterEngaged mid iid >>= pushAll
+  EvadedMonster iid mid -> do
+    own <- monsterBehavior mid >>= \b -> b.afterEvaded mid iid
+    pushAll ([DisengageMonster iid mid, ExhaustMonster mid] <> own)
   -- Doom and clues (rules 406, 412, 423, 461)
   {- A card may stop doom being put down in its owner's neighborhood, so the ones
   that could are asked before it lands. -}

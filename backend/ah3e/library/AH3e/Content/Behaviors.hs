@@ -20,6 +20,7 @@ import AH3e.Content.UnderDarkWaves.DreamsOfRlyehBehaviors qualified as DreamsOfR
 import AH3e.Content.UnderDarkWaves.InvestigatorBehaviors qualified as UnderDarkWavesInvestigators
 import AH3e.Content.UnderDarkWaves.IthaquasChildrenBehaviors qualified as IthaquasChildren
 import AH3e.Content.UnderDarkWaves.StartingBehaviors qualified as UnderDarkWavesStarting
+import AH3e.Content.UnderDarkWaves.ThePaleLanternBehaviors qualified as ThePaleLantern
 import AH3e.Content.UnderDarkWaves.TerrorBehaviors qualified as UnderDarkWavesTerrors
 import AH3e.Content.UnderDarkWaves.TyrantsOfRuinBehaviors qualified as TyrantsOfRuin
 import AH3e.Engine.Behavior
@@ -54,6 +55,7 @@ behaviors =
     <> TyrantsOfRuin.behaviors
     <> IthaquasChildren.behaviors
     <> DreamsOfRlyeh.behaviors
+    <> ThePaleLantern.behaviors
     <> Conditions.behaviors
     <> Allies.behaviors
     <> Headlines.behaviors

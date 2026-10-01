@@ -1087,6 +1087,16 @@ runMessage msg = case msg of
     spaceL sid . #markers %= (<> [Marker colour False])
     logText ("A marker is placed face down at " <> s.name)
   TakeClues iid n -> addClues iid n
+  MarkCodexToken card name k ->
+    #codex
+      . traversed
+      . filtered ((== card) . (.number))
+      . #tokens
+      . at name
+      %= Just
+      . max 0
+      . (+ k)
+      . fromMaybe 0
   PlaceNeighborhoodMarker nid colour faceUp -> do
     n <- getNeighborhood nid
     neighborhoodL nid . #markers %= (<> [Marker colour faceUp])
@@ -2006,11 +2016,7 @@ archiveCardFor n = do
 
 addToCodex :: ArchiveNumber -> Bool -> GameM ()
 addToCodex n flipped = do
-  archive <- use (#decks . #archive)
-  matches <-
-    filterM
-      (\cid -> getCardDef cid <&> \d -> case d.kind of ArchiveCard a -> a.number == n; _ -> False)
-      archive
+  matches <- maybeToList <$> archiveCardFor n
   case matches of
     (cid : _) -> do
       removeCardEverywhere cid

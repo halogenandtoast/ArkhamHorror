@@ -13,6 +13,7 @@ import AH3e.Message
 import AH3e.Prelude
 import AH3e.Types.Board
 import AH3e.Types.Ids
+import AH3e.Types.Skill
 import AH3e.Types.State
 import Data.Map.Strict qualified as Map
 
@@ -150,3 +151,41 @@ markersToSheet colours = do
   #board . #spaces . traversed . #markers %= filter ((`notElem` colours) . (.color))
   pushAll [MarkSheetToken m.color 1 | (_, m) <- moving]
   pure (length moving)
+
+-- | Tokens a card has gathered on itself, whatever it calls them.
+tokensOn :: Text -> ArchiveNumber -> GameM Int
+tokensOn name n =
+  uses #codex (sum . map (Map.findWithDefault 0 name . (.tokens)) . filter ((== n) . (.number)))
+
+-- | Put tokens on a card, or take them off.
+markCard :: Text -> ArchiveNumber -> Int -> GameM ()
+markCard name n k =
+  #codex
+    . traversed
+    . filtered ((== n) . (.number))
+    . #tokens
+    . at name
+    %= Just
+    . max 0
+    . (+ k)
+    . fromMaybe 0
+
+{- | "Each investigator tests X. Each investigator that fails places one doom in
+their space." The Pale Lantern's codex cards all keep one of these.
+-}
+everyoneTests :: Skill -> Int -> Text -> GameM ()
+everyoneTests skill modifier key = do
+  invs <- playingInvestigators
+  pushAll
+    [ BeginTest (newTest i.id skill modifier OtherTest (AfterCustom (SourceInvestigator i.id) key))
+    | i <- invs
+    ]
+
+{- | What failing one of those costs: doom where you stand. The test carries the
+investigator as its source, since an after-test handler is told nothing else
+about who rolled it.
+-}
+doomWhereTheyStand :: Source -> Int -> GameM ()
+doomWhereTheyStand src result = when (result <= 0) case src of
+  SourceInvestigator iid -> investigatorSpace iid >>= traverse_ (push . PlaceDoom src)
+  _ -> pure ()

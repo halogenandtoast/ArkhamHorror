@@ -63,6 +63,7 @@ library
       AH3e.Content.UnderDarkWaves.TerrorBehaviors
       AH3e.Content.UnderDarkWaves.Terrors
       AH3e.Content.UnderDarkWaves.ThePaleLantern
+      AH3e.Content.UnderDarkWaves.ThePaleLanternBehaviors
       AH3e.Content.UnderDarkWaves.TravelRoutes
       AH3e.Content.UnderDarkWaves.TyrantsOfRuin
       AH3e.Content.UnderDarkWaves.TyrantsOfRuinBehaviors

@@ -19,7 +19,7 @@ nb = NeighborhoodId . coerce . spaceIdFor
 
 -- | Declan Pearce waits in the box until card 78 turns him up.
 heldBack :: [CardCode]
-heldBack = ["declan-pearce"]
+heldBack = ["declan-pearce", "archive-89"]
 
 scenario :: ScenarioDef
 scenario =

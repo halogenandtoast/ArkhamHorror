@@ -190,6 +190,8 @@ data Message
     PlaceMarkerFacedown SpaceId Text
   | -- | clues handed straight to an investigator, off the scenario sheet
     TakeClues InvestigatorId Int
+  | -- | tokens a codex card keeps on itself, which several of them count
+    MarkCodexToken ArchiveNumber Text Int
   | {- | clues reaching the scenario sheet once every card has had its say about
     them, so a card answering that can still send some of them there
     -}

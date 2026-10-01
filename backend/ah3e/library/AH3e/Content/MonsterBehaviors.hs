@@ -45,6 +45,8 @@ behaviors =
         ("enraged-dreamer", onDefeatBy \iid -> pure [SufferHarm iid rules NormalHarm 0 1])
       , ("hybrid-thug", onDefeatBy \iid -> pure [SufferHarm iid rules NormalHarm 0 1])
       , ("accursed-somnambulist", onDefeatBy (testAfterwards Will 0 "somnambulist"))
+      , -- "As part of an evade action, you may spend one remnant to add one to a die."
+        ("lupine-thrall", defaultMonsterBehavior & #testOptions .~ lupineThrall)
       , -- the rest, each its own shape
         ("ghoul-acolyte", defaultMonsterBehavior & #afterEvaded .~ \mid _ -> crawlToward mid)
       , ("terrified-wanderer", defaultMonsterBehavior & #afterEngaged .~ terrifiedWanderer)
@@ -191,3 +193,22 @@ declanPearce mid iid _ = do
     , label "Let him go" [DisengageMonster iid mid]
     ]
   pure []
+
+{- | "As part of an evade action, you may spend one remnant to add one to the
+result of one die." Its own ferocity is what the remnant buys you against.
+-}
+lupineThrall :: CardId -> InvestigatorId -> TestState -> GameM [Reaction]
+lupineThrall mid iid ts = do
+  i <- getInvestigator iid
+  pure
+    [ Reaction
+        { key = "lupine-thrall"
+        , label = "Spend a remnant to add one to a die"
+        , messages = [PayCost (ctxFor iid) (SpendRemnants 1), AddToDie (SourceMonster mid)]
+        }
+    | isEvade ts.kind
+    , i.remnants > 0
+    , liveDiceCount ts > 0
+    ]
+ where
+  isEvade = \case ActionTest EvadeAction _ -> True; _ -> False

@@ -7,9 +7,11 @@ import Arkham.Classes.HasGame
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.Direction (Direction (..))
+import Arkham.Distance (unDistance)
 import Arkham.Effect.Builder
 import Arkham.Effect.Window
-import Arkham.Enemy.Types (Field (EnemyPlacement))
+import Arkham.Enemy.Types (Field (EnemyLocation, EnemyPlacement))
+import Arkham.GameEnv (getDistance)
 import Arkham.Helpers.Campaign (getOwner)
 import Arkham.Helpers.CustomChaosBag
 import Arkham.Helpers.FlavorText (chaosTokenImg, cols, compose, img, p, setTitle, tokenReveal)
@@ -510,15 +512,26 @@ locationAtRowEnd end lids = do
 {- | Candidates for "move the nearest enemy once toward <location>", shared by the
 scenario reference card's elder thing token and Shadowed Wilderness (:173).
 
-Returns every enemy tied at the minimum distance that can actually be moved and is
-not already standing there. Both filters are load-bearing: 'NearestEnemyToLocation'
-returns all ties rather than one, an enemy already at the location counts as
-distance 0 and so suppresses every farther enemy while being unable to move toward
-itself, and a pushed 'MoveToward' cannot be observed afterwards — so :173 has to
-know *before* pushing whether anything will move for its "if no enemy moves" clause.
-The caller decides whether one is chosen or all of them move.
+Returns every enemy tied at the fewest moves from reaching the location, among those
+that can be moved and are not already standing there. A pushed 'MoveToward' cannot be
+observed afterwards, so :173 has to know *before* pushing whether anything will move,
+for its "if no enemy moves" clause. The caller decides whether one is chosen or all of
+them move.
+
+Distance is measured from the ENEMY to the location rather than the other way round,
+which is why this does not use 'NearestEnemyToLocation'. That matcher measures the other
+way, out of the location towards the enemy, and Red Sunrise's rows connect one way only
+-- downward -- so every enemy above you answers "no path", they all tie at no distance
+at all, and its Fallback then offers the whole board. The enemy's own journey is the one
+the card means, and the one that exists.
 -}
 nearestEnemiesAbleToMoveToward :: HasGame m => LocationId -> EnemyMatcher -> m [EnemyId]
-nearestEnemiesAbleToMoveToward lid matcher =
-  select (NearestEnemyToLocation lid matcher)
-    >>= filterM (<=~> (EnemyCanMove <> not_ (EnemyAt $ LocationWithId lid)))
+nearestEnemiesAbleToMoveToward lid matcher = do
+  candidates <- select $ matcher <> EnemyCanMove <> not_ (EnemyAt $ LocationWithId lid)
+  withDistances <- forMaybeM candidates \eid -> runMaybeT do
+    elid <- MaybeT $ field EnemyLocation eid
+    distance <- MaybeT $ getDistance elid lid
+    pure (eid, unDistance distance)
+  pure case sortOn snd withDistances of
+    [] -> []
+    nearest@((_, fewest) : _) -> [eid | (eid, distance) <- nearest, distance == fewest]

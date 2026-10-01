@@ -19,6 +19,7 @@ import Arkham.Id
 import Arkham.Json
 import Arkham.Key
 import Arkham.Layout
+import Arkham.Location.Group
 import Arkham.Location.Grid
 import Arkham.Name
 import Arkham.Prelude
@@ -108,6 +109,7 @@ data instance Field Scenario :: Type -> Type where
   ScenarioDefeatedEnemies :: Field Scenario (Map EnemyId DefeatedEnemyAttrs)
   ScenarioGrid :: Field Scenario Grid
   ScenarioLocationLayout :: Field Scenario [GridTemplateRow]
+  ScenarioLocationGroups :: Field Scenario [LocationGroup]
 
 deriving stock instance Show (Field Scenario typ)
 
@@ -127,6 +129,12 @@ data ScenarioAttrs = ScenarioAttrs
   , scenarioCompletedAgendaStack :: IntMap [Card]
   , scenarioCompletedActStack :: IntMap [Card]
   , scenarioLocationLayout :: [GridTemplateRow]
+  , {- | Groups of locations the frontend draws as one box, routing connections to and
+    from the box rather than to each location inside it. Membership is recorded per
+    location ('Arkham.Location.Types.LocationGroupMembership'); this only declares each
+    group's key and how its box arranges its members.
+    -}
+    scenarioLocationGroups :: [LocationGroup]
   , scenarioGrid :: Grid
   , scenarioDecks :: Map ScenarioDeckKey [Card]
   , scenarioDeckDiscards :: Map ScenarioDeckKey [Card]
@@ -332,6 +340,7 @@ scenario f cardCode name difficulty layout =
       , scenarioCardsNextToActDeck = mempty
       , scenarioCardsNextToAgendaDeck = mempty
       , scenarioLocationLayout = layout
+      , scenarioLocationGroups = []
       , scenarioGrid = initGrid
       , scenarioDecks = mempty
       , scenarioDeckDiscards = mempty
@@ -460,6 +469,7 @@ instance FromJSON ScenarioAttrs where
     scenarioCompletedAgendaStack <- o .: "completedAgendaStack"
     scenarioCompletedActStack <- o .: "completedActStack"
     scenarioLocationLayout <- o .: "locationLayout"
+    scenarioLocationGroups <- o .:? "locationGroups" .!= []
     scenarioGrid <- o .:? "grid" .!= initGrid
     scenarioDecks <- o .: "decks"
     scenarioDeckDiscards <- o .:? "deckDiscards" .!= mempty

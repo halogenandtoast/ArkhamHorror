@@ -323,6 +323,13 @@ data CardDef = CardDef
   , cdBeforeEffect :: Bool
   , cdCustomizations :: Map Customization Int
   , cdOtherSide :: Maybe CardCode
+  , {- | Set on the extra defs that stand in for the second, third, ... physical copy
+    of one printed card. Copies need distinct card codes wherever an entity is keyed
+    by code rather than by card id -- 'Arkham.Id.StoryId' is the card code, so two
+    copies of one story could not otherwise be in play at once -- but the card browser
+    should still list the printed card only once, so these are filtered out of it.
+    -}
+    cdDuplicateOf :: Maybe CardCode
   , cdWhenDiscarded :: DiscardType
   , cdCanCommitWhenNoIcons :: Bool
   , cdCommitTrigger :: Bool
@@ -500,6 +507,7 @@ emptyCardDef cCode name cType =
     , cdBeforeEffect = False
     , cdCustomizations = mempty
     , cdOtherSide = Nothing
+    , cdDuplicateOf = Nothing
     , cdWhenDiscarded = ToDiscard
     , cdCanCommitWhenNoIcons = False
     , cdCommitTrigger = False
@@ -642,6 +650,7 @@ cardDefKeyValues CardDef {..} =
     , pairWhen cdBeforeEffect "beforeEffect" cdBeforeEffect
     , pairWhen (not $ null cdCustomizations) "customizations" cdCustomizations
     , pairJust "otherSide" cdOtherSide
+    , pairJust "duplicateOf" cdDuplicateOf
     , pairWhen (cdWhenDiscarded /= ToDiscard) "whenDiscarded" cdWhenDiscarded
     , pairWhen
         (cdCanCommitWhenNoIcons /= (null cdSkills && cdCardType == SkillType))
@@ -724,6 +733,7 @@ instance FromJSON CardDef where
     cdBeforeEffect <- o .:? "beforeEffect" .!= False
     cdCustomizations <- o .:? "customizations" .!= mempty
     cdOtherSide <- o .:? "otherSide"
+    cdDuplicateOf <- o .:? "duplicateOf"
     cdWhenDiscarded <- o .:? "whenDiscarded" .!= ToDiscard
     cdCanCommitWhenNoIcons <-
       o .:? "canCommitWhenNoIcons" .!= (null cdSkills && cdCardType == SkillType)

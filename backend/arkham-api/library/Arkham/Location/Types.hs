@@ -25,6 +25,7 @@ import Arkham.Location.BreachStatus
 import Arkham.Location.Cards
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
+import Arkham.Location.Group
 import Arkham.LocationSymbol
 import Arkham.Matcher.Base (Be (..))
 import Arkham.Matcher.Location (LocationMatcher (..))
@@ -101,6 +102,7 @@ data instance Field Location :: Type -> Type where
   LocationVengeance :: Field Location (Maybe Int)
   LocationVictory :: Field Location (Maybe Int)
   LocationPosition :: Field Location (Maybe Pos)
+  LocationGroupMembership :: Field Location (Maybe GroupMembership)
   LocationCostToEnterUnrevealed :: Field Location Cost
   LocationKeys :: Field Location (Set ArkhamKey)
   LocationSeals :: Field Location (Set Seal)
@@ -137,6 +139,7 @@ fieldLens = \case
   LocationConnectsTo -> connectsToL
   LocationCardsUnderneath -> cardsUnderneathL
   LocationPosition -> positionL
+  LocationGroupMembership -> groupL
   LocationCostToEnterUnrevealed -> costToEnterUnrevealedL
   LocationInvestigateSkill -> investigateSkillL
   LocationInFrontOf -> virtual
@@ -228,6 +231,7 @@ instance FromJSON (SomeField Location) where
     "LocationVictory" -> pure $ SomeField LocationVictory
     "LocationInvestigateDifficulty" -> pure $ SomeField LocationInvestigateDifficulty
     "LocationPosition" -> pure $ SomeField LocationPosition
+    "LocationGroupMembership" -> pure $ SomeField LocationGroupMembership
     "LocationCostToEnterUnrevealed" -> pure $ SomeField LocationCostToEnterUnrevealed
     "LocationGlobalMeta" -> pure $ SomeField LocationGlobalMeta
     "LocationConcealedCards" -> pure $ SomeField LocationConcealedCards
@@ -341,6 +345,7 @@ locationWith f def shroud' revealClues g =
             , locationBreaches = Nothing
             , locationFloodLevel = Nothing
             , locationPosition = Nothing
+            , locationGroup = Nothing
             , locationBeingRemoved = False
             , locationConcealedCards = []
             , locationOutOfGame = False

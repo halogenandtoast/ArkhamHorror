@@ -15,6 +15,7 @@ import Arkham.Location.Brazier
 import Arkham.Location.BreachStatus
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
+import Arkham.Location.Group
 import Arkham.LocationSymbol
 import Arkham.Matcher (IsLocationMatcher (..), LocationMatcher (..))
 import Arkham.Placement
@@ -57,6 +58,8 @@ data LocationAttrs = LocationAttrs
   , locationMeta :: Value
   , locationGlobalMeta :: Map Aeson.Key Value
   , locationPosition :: Maybe Pos
+  , -- | Which group's box this location is drawn in, and where inside it.
+    locationGroup :: Maybe GroupMembership
   , locationBeingRemoved :: Bool
   , locationConcealedCards :: [ConcealedCardId]
   , locationOutOfGame :: Bool
@@ -195,6 +198,7 @@ instance FromJSON LocationAttrs where
     locationMeta <- o .: "meta"
     locationGlobalMeta <- o .:? "globalMeta" .!= mempty
     locationPosition <- o .:? "position"
+    locationGroup <- o .:? "group"
     locationBeingRemoved <- o .:? "beingRemoved" .!= False
     locationConcealedCards <- o .:? "concealedCards" .!= []
     locationOutOfGame <- o .:? "outOfGame" .!= False

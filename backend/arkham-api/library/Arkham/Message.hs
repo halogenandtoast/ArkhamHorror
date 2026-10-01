@@ -92,6 +92,7 @@ import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.FloodLevel
+import Arkham.Location.Group (GroupMembership)
 import Arkham.Location.Grid
 import {-# SOURCE #-} Arkham.Location.Types
 import Arkham.Matcher hiding (
@@ -1127,6 +1128,8 @@ data Message
   | SetLayout [GridTemplateRow]
   | SetDecksLayout [GridTemplateRow]
   | SetLocationLabel LocationId Text
+  | -- | Put a location in a group's box, at a fixed index inside it.
+    SetLocationGroup LocationId GroupMembership
   | SetActiveInvestigator InvestigatorId
   | SetActivePlayer PlayerId
   | Setup

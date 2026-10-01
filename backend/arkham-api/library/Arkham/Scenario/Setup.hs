@@ -16,6 +16,7 @@ import Arkham.Id
 import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.Grid
+import Arkham.Location.Group
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message
 import Arkham.Message.Lifted
@@ -302,6 +303,31 @@ placeLabeled lbl def = do
   lid <- placeLocationCard def
   push $ SetLocationLabel lid lbl
   pure lid
+
+{- | Declare the groups whose boxes the map draws. Membership comes from 'placeLocationGroup'
+(or 'Arkham.Helpers.Location.joinLocationGroup' for a location that arrives later); this
+only fixes each group's key and how its box lays its members out.
+-}
+setLocationGroups :: Monad m => [LocationGroup] -> ScenarioBuilderT m ()
+setLocationGroups groups = attrsL . locationGroupsL .= groups
+
+{- | Place a whole group at once, in the order given. The index is assigned here and
+stored on each location, so the order inside the box is fixed at placement time and
+survives reload, undo and replay — a later query returning members in a different order
+cannot reshuffle the box.
+
+Members may also carry a grid position; a group only changes how they are drawn and how
+connections are routed to them.
+-}
+placeLocationGroup
+  :: ReverseQueue m => LocationGroupKey -> [CardDef] -> ScenarioBuilderT m [LocationId]
+placeLocationGroup key defs = for (zip [0 ..] defs) \(i, def) -> do
+  lid <- place def
+  push $ SetLocationGroup lid (GroupMembership key i)
+  pure lid
+
+placeLocationGroup_ :: ReverseQueue m => LocationGroupKey -> [CardDef] -> ScenarioBuilderT m ()
+placeLocationGroup_ key defs = void $ placeLocationGroup key defs
 
 placeInGrid :: ReverseQueue m => Pos -> CardDef -> ScenarioBuilderT m LocationId
 placeInGrid pos def = do

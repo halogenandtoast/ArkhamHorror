@@ -4146,7 +4146,11 @@ library
       Arkham.Homebrew.CircusExMortis.Acts.EscapeActVI
       Arkham.Homebrew.CircusExMortis.Acts.EscapeActVII
       Arkham.Homebrew.CircusExMortis.Acts.FashionablyEarly
+      Arkham.Homebrew.CircusExMortis.Acts.ForestOfGiantsVI
+      Arkham.Homebrew.CircusExMortis.Acts.ForestOfGiantsVII
+      Arkham.Homebrew.CircusExMortis.Acts.ForestOfGiantsVIII
       Arkham.Homebrew.CircusExMortis.Acts.ForestOfIllusion
+      Arkham.Homebrew.CircusExMortis.Acts.ImpendingZenith
       Arkham.Homebrew.CircusExMortis.Acts.NoFreeRides
       Arkham.Homebrew.CircusExMortis.Acts.OutAndAway
       Arkham.Homebrew.CircusExMortis.Acts.OverdueDeparture
@@ -4161,6 +4165,8 @@ library
       Arkham.Homebrew.CircusExMortis.Acts.ThroughTheForestsVII
       Arkham.Homebrew.CircusExMortis.Agendas.BloodMoon
       Arkham.Homebrew.CircusExMortis.Agendas.DoomAndGloom
+      Arkham.Homebrew.CircusExMortis.Agendas.FadingSunlightVI
+      Arkham.Homebrew.CircusExMortis.Agendas.FadingSunlightVII
       Arkham.Homebrew.CircusExMortis.Agendas.FeverPitch
       Arkham.Homebrew.CircusExMortis.Agendas.HouseOfHorrors
       Arkham.Homebrew.CircusExMortis.Agendas.IntoTheLionsDen
@@ -4216,10 +4222,12 @@ library
       Arkham.Homebrew.CircusExMortis.DestinyAndProphecy
       Arkham.Homebrew.CircusExMortis.Enemies.BrashLothario
       Arkham.Homebrew.CircusExMortis.Enemies.CircusPredator
+      Arkham.Homebrew.CircusExMortis.Enemies.DevoteeOfTheThousand
       Arkham.Homebrew.CircusExMortis.Enemies.DisguisedMonstrosity
       Arkham.Homebrew.CircusExMortis.Enemies.GoatspawnCorruptor
       Arkham.Homebrew.CircusExMortis.Enemies.GrotesqueLion
       Arkham.Homebrew.CircusExMortis.Enemies.LoomingGoatspawn
+      Arkham.Homebrew.CircusExMortis.Enemies.MaliciousGoatspawn
       Arkham.Homebrew.CircusExMortis.Enemies.Mooncalf
       Arkham.Homebrew.CircusExMortis.Enemies.NascentDarkYoung
       Arkham.Homebrew.CircusExMortis.Enemies.NewMoonAcrobat
@@ -4235,12 +4243,16 @@ library
       Arkham.Homebrew.CircusExMortis.Enemies.PartyAnimal
       Arkham.Homebrew.CircusExMortis.Enemies.RampagingGoatspawn
       Arkham.Homebrew.CircusExMortis.Enemies.RavenousGoatspawn
+      Arkham.Homebrew.CircusExMortis.Enemies.RoamingDarkYoung
       Arkham.Homebrew.CircusExMortis.Enemies.SacrificialShepherd
       Arkham.Homebrew.CircusExMortis.Enemies.SadisticSocialite
       Arkham.Homebrew.CircusExMortis.Enemies.StruttingPeacock
       Arkham.Homebrew.CircusExMortis.Enemies.SupplicantOfTheGoat
       Arkham.Homebrew.CircusExMortis.Enemies.SylvesterBlake
       Arkham.Homebrew.CircusExMortis.Enemies.TheBlackGoat
+      Arkham.Homebrew.CircusExMortis.Enemies.TheCultEnMasseBlackGoatsRapture
+      Arkham.Homebrew.CircusExMortis.Enemies.TheCultEnMasseLeaderlessFanaticism
+      Arkham.Homebrew.CircusExMortis.Enemies.TheCultEnMasseRingmastersFervor
       Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_065
       Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_066
       Arkham.Homebrew.CircusExMortis.Enemies.ToweringDarkYoung_067
@@ -4271,7 +4283,12 @@ library
       Arkham.Homebrew.CircusExMortis.Locations.CrowdedRow_051
       Arkham.Homebrew.CircusExMortis.Locations.ExoticAnimalCar
       Arkham.Homebrew.CircusExMortis.Locations.Flatcar
+      Arkham.Homebrew.CircusExMortis.Locations.FoothillSlope_162
+      Arkham.Homebrew.CircusExMortis.Locations.FoothillSlope_163
+      Arkham.Homebrew.CircusExMortis.Locations.FoothillSlope_164
+      Arkham.Homebrew.CircusExMortis.Locations.FoothillSlope_165
       Arkham.Homebrew.CircusExMortis.Locations.ForestPassage
+      Arkham.Homebrew.CircusExMortis.Locations.ForgottenTrail
       Arkham.Homebrew.CircusExMortis.Locations.GamesGallery
       Arkham.Homebrew.CircusExMortis.Locations.GondolaCar
       Arkham.Homebrew.CircusExMortis.Locations.HiddenDungeon
@@ -4288,6 +4305,13 @@ library
       Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestShadowedPath
       Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestShallowRiver
       Arkham.Homebrew.CircusExMortis.Locations.MoonlitForestSmolderingCampfire
+      Arkham.Homebrew.CircusExMortis.Locations.MountainStream_166
+      Arkham.Homebrew.CircusExMortis.Locations.MountainStream_167
+      Arkham.Homebrew.CircusExMortis.Locations.MountainStream_168
+      Arkham.Homebrew.CircusExMortis.Locations.MountainStream_169
+      Arkham.Homebrew.CircusExMortis.Locations.OpenForest_170
+      Arkham.Homebrew.CircusExMortis.Locations.OpenForest_171
+      Arkham.Homebrew.CircusExMortis.Locations.OpenForest_172
       Arkham.Homebrew.CircusExMortis.Locations.PerformersCar
       Arkham.Homebrew.CircusExMortis.Locations.PerformerTrailers
       Arkham.Homebrew.CircusExMortis.Locations.PrivateParlor
@@ -4295,11 +4319,17 @@ library
       Arkham.Homebrew.CircusExMortis.Locations.ReinforcedCar
       Arkham.Homebrew.CircusExMortis.Locations.RemoteCabin
       Arkham.Homebrew.CircusExMortis.Locations.RingmastersTrailer
+      Arkham.Homebrew.CircusExMortis.Locations.RitualClearing
       Arkham.Homebrew.CircusExMortis.Locations.SavageAltar
       Arkham.Homebrew.CircusExMortis.Locations.SecludedTent_052
       Arkham.Homebrew.CircusExMortis.Locations.SecludedTent_053
       Arkham.Homebrew.CircusExMortis.Locations.SecludedTent_054
       Arkham.Homebrew.CircusExMortis.Locations.SecludedTent_055
+      Arkham.Homebrew.CircusExMortis.Locations.ShadowedWilderness_173
+      Arkham.Homebrew.CircusExMortis.Locations.ShadowedWilderness_174
+      Arkham.Homebrew.CircusExMortis.Locations.ShadowedWilderness_175
+      Arkham.Homebrew.CircusExMortis.Locations.ShadowedWilderness_176
+      Arkham.Homebrew.CircusExMortis.Locations.ShadowedWilderness_177
       Arkham.Homebrew.CircusExMortis.Locations.StatuaryGardens
       Arkham.Homebrew.CircusExMortis.Locations.StockCar
       Arkham.Homebrew.CircusExMortis.Locations.TankCar
@@ -4326,6 +4356,15 @@ library
       Arkham.Homebrew.CircusExMortis.Stories.DeepInTheDark
       Arkham.Homebrew.CircusExMortis.Stories.HiddenInPlainSight
       Arkham.Homebrew.CircusExMortis.Stories.HypnoticState
+      Arkham.Homebrew.CircusExMortis.Stories.PathForward
+      Arkham.Homebrew.CircusExMortis.Stories.PathForward_178
+      Arkham.Homebrew.CircusExMortis.Stories.PathForward_178a
+      Arkham.Homebrew.CircusExMortis.Stories.PathForward_179
+      Arkham.Homebrew.CircusExMortis.Stories.PathForward_179a
+      Arkham.Homebrew.CircusExMortis.Stories.PathForward_180
+      Arkham.Homebrew.CircusExMortis.Stories.PathForward_180a
+      Arkham.Homebrew.CircusExMortis.Stories.PathForward_181
+      Arkham.Homebrew.CircusExMortis.Stories.PathForward_181a
       Arkham.Homebrew.CircusExMortis.Stories.TheDarkYoungStir
       Arkham.Homebrew.CircusExMortis.Stories.UnderLockAndKey
       Arkham.Homebrew.CircusExMortis.Tokens
@@ -4334,6 +4373,7 @@ library
       Arkham.Homebrew.CircusExMortis.Treacheries.BestLeftUnsaid
       Arkham.Homebrew.CircusExMortis.Treacheries.BrokenCouplings
       Arkham.Homebrew.CircusExMortis.Treacheries.CloseWatch
+      Arkham.Homebrew.CircusExMortis.Treacheries.CrashingTrees
       Arkham.Homebrew.CircusExMortis.Treacheries.CurseOfTheRougarou
       Arkham.Homebrew.CircusExMortis.Treacheries.DenseTangle
       Arkham.Homebrew.CircusExMortis.Treacheries.DestructiveImpulses
@@ -4360,6 +4400,7 @@ library
       Arkham.Homebrew.CircusExMortis.Treacheries.RecklessStunt
       Arkham.Homebrew.CircusExMortis.Treacheries.RicketyRide
       Arkham.Homebrew.CircusExMortis.Treacheries.ShadowyPerformance
+      Arkham.Homebrew.CircusExMortis.Treacheries.SilentForest
       Arkham.Homebrew.CircusExMortis.Treacheries.ViolentThrashing
       Arkham.Homebrew.CircusExMortis.Treacheries.WildHysteria
       Arkham.Homebrew.ContentEntries
@@ -6280,6 +6321,7 @@ library
       Arkham.Location.Cards.WarOfTheOuterGods.ThePenthouse
       Arkham.Location.FloodLevel
       Arkham.Location.Grid
+      Arkham.Location.Group
       Arkham.Location.Helpers
       Arkham.Location.Import.Lifted
       Arkham.Location.Label

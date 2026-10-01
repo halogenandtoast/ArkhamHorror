@@ -322,6 +322,7 @@ theCultEnMasseLeaderlessFanaticism =
     , cdEvade = evade 4
     , cdHealth = healthPerInvestigator 6
     , cdCardTraits = setFromList [Humanoid, Cultist, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Retaliate, Keyword.Alert]
     , cdVictoryPoints = Just 1
     }
 
@@ -334,6 +335,7 @@ theCultEnMasseBlackGoatsRapture =
     , cdEvade = evade 4
     , cdHealth = healthPerInvestigator 6
     , cdCardTraits = setFromList [Humanoid, Cultist, Elite]
+    , cdKeywords = setFromList [Keyword.Massive, Keyword.Alert]
     , cdVictoryPoints = Just 1
     }
 
@@ -346,6 +348,7 @@ theCultEnMasseRingmastersFervor =
     , cdEvade = evade 3
     , cdHealth = healthPerInvestigator 6
     , cdCardTraits = setFromList [Humanoid, Cultist, Elite]
+    , cdKeywords = setFromList [Keyword.Massive]
     , cdVictoryPoints = Just 1
     }
 
@@ -358,6 +361,7 @@ devoteeOfTheThousand =
     , cdEvade = evade 3
     , cdHealth = healthPerInvestigator 1
     , cdCardTraits = setFromList [Humanoid, Cultist]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate, Keyword.Alert]
     }
 
 maliciousGoatspawn :: CardDef
@@ -369,6 +373,7 @@ maliciousGoatspawn =
     , cdEvade = evade 4
     , cdHealth = health 3
     , cdCardTraits = setFromList [Humanoid, Monster]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Alert]
     }
 
 roamingDarkYoung :: CardDef
@@ -380,6 +385,7 @@ roamingDarkYoung =
     , cdEvade = evade 3
     , cdHealth = health 4
     , cdCardTraits = setFromList [Monster, DarkYoung]
+    , cdKeywords = setFromList [Keyword.Hunter, Keyword.Alert]
     }
 
 -- thousand_to_one

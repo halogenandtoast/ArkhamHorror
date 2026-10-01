@@ -148,7 +148,7 @@ instance FromJSON EnemyAttrs where
     enemyCardId <- v .: "cardId"
     enemyCardCode <- v .: "cardCode"
     enemyOriginalCardCode <- v .: "originalCardCode"
-    enemyPlacement <- v .: "placement"
+    parsedPlacement <- v .: "placement"
     enemyFight <- v .:? "fight" <|> (Just . Fixed <$> v .: "fight")
     enemyHealth <- v .:? "health" <|> (Just . GameValueCalculation <$> v .: "health")
     enemyEvade <- v .:? "evade" <|> (Just . Fixed <$> v .: "evade")
@@ -184,4 +184,12 @@ instance FromJSON EnemyAttrs where
     enemyMovement <- v .:? "movement"
     enemyAttackOfOpportunityFlagged <- v .:? "attackOfOpportunityFlagged" .!= False
     enemyDrawnFrom <- v .:? "drawnFrom"
+    {- 'AsSelfLocation' used to be an enemy-only field rather than a placement. A game
+    saved before the move still carries the label in @asSelfLocation@ and an ordinary
+    placement, so promote it here; the field itself is kept so nothing else has to
+    change at once. -}
+    let enemyPlacement = case (parsedPlacement, enemyAsSelfLocation) of
+          (AsSelfLocation _, _) -> parsedPlacement
+          (_, Just label) | isInPlayPlacement parsedPlacement -> AsSelfLocation label
+          _ -> parsedPlacement
     pure EnemyAttrs {..}

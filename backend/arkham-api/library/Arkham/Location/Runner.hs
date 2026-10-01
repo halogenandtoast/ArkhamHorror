@@ -223,6 +223,8 @@ instance RunMessage LocationAttrs where
       pure $ a & cardsUnderneathL %~ filter ((`notElem` removedIds) . toCardId)
     SetLocationLabel lid label' | lid == locationId -> do
       pure $ a & labelL .~ label'
+    SetLocationGroup lid membership | lid == locationId -> do
+      pure $ a & groupL ?~ membership
     PlacedLocationDirection lid direction lid2 | lid2 == locationId -> do
       pure $ a & (directionsL %~ Map.insertWith (<>) direction [lid])
     PlacedLocationDirection lid direction lid2 | lid == locationId -> do

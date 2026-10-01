@@ -105,6 +105,7 @@ mkEnemyLocationBase lid cardId cardCode label =
     , locationMeta = Null
     , locationGlobalMeta = mempty
     , locationPosition = Nothing
+    , locationGroup = Nothing
     , locationBeingRemoved = False
     , locationConcealedCards = []
     , locationOutOfGame = False
@@ -299,6 +300,7 @@ instance FromJSON EnemyLocationAttrs where
               , locationConnectedMatchers = connectedMatchers
               , locationRevealedConnectedMatchers = revealedConnectedMatchers
               , locationPosition = position
+              , locationGroup = Nothing
               , locationPlacement = placement
               , locationMeta = meta
               , locationDirections = directions

@@ -124,7 +124,9 @@ storyWith f cardDef g =
             , storyCardsUnderneath = []
             , storyTokens = mempty
             , storySealedChaosTokens = []
-            , storyArt = cdCardCode cardDef
+            , -- A duplicate def (same card, distinct code so two copies can coexist
+              -- in the story map) draws the printed card's art, not its own code.
+              storyArt = CardCode $ cdArt cardDef
             , storyFlippedArt = fromMaybe (flippedCardCode $ cdCardCode cardDef) (cdOtherSide cardDef)
             }
     }

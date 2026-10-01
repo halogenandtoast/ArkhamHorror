@@ -31,9 +31,14 @@ their own entry, showing the same card twice. Sides are declared with
 A 'cdOtherSide' pointing at a code that has no def of its own (the usual case,
 where the back is only art) hides nothing, and neither do sibling codes such as
 @89010a@..@89010i@ that are distinct cards rather than two sides of one.
+
+Defs carrying 'cdDuplicateOf' are the extra copies of one printed card, minted only
+so that code-keyed entities can tell them apart, and are likewise listed once.
 -}
 browsableCardDefs :: Map CardCode CardDef -> [CardDef]
-browsableCardDefs defs = filter (\def -> exactCardCode def `Set.notMember` backSides) (toList defs)
+browsableCardDefs defs =
+  filter (\def -> isNothing (cdDuplicateOf def) && exactCardCode def `Set.notMember` backSides)
+    (toList defs)
  where
   codes :: Set CardCodeExact
   codes = Set.fromList [exactCardCode def | def <- toList defs]

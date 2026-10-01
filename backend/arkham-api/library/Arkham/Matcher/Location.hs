@@ -8,6 +8,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.Id
 import {-# SOURCE #-} Arkham.Criteria
 import Arkham.Direction
+import Arkham.Location.Group
 import {-# SOURCE #-} Arkham.Enemy.Types (Enemy)
 import Arkham.Field
 import Arkham.ForMovement
@@ -184,6 +185,8 @@ data LocationMatcher
   | LocationInRowOf LocationMatcher
   | LocationInColumnOf LocationMatcher
   | LocationInPosition Pos
+  | -- | A member of the group drawn in that box.
+    LocationInGroup LocationGroupKey
   | LocationWhenCriteria Criterion
   | LocationWithAbility AbilityMatcher
   | OutOfGameLocation

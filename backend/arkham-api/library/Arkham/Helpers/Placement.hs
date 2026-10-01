@@ -17,6 +17,7 @@ import Arkham.Window qualified as Window
 
 placedInThreatArea :: (HasCallStack, HasGame m) => Placement -> m (Maybe InvestigatorId)
 placedInThreatArea = \case
+  AsSelfLocation {} -> pure Nothing
   AtLocation _ -> pure Nothing
   AtLocations _ -> pure Nothing
   AttachedToLocation _ -> pure Nothing
@@ -66,6 +67,7 @@ attachTo t = case toTarget t of
 
 onSameLocation :: (HasCallStack, HasGame m) => InvestigatorId -> Placement -> m Bool
 onSameLocation iid = \case
+  AsSelfLocation {} -> pure False
   AttachedToLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
   AtLocation lid -> fieldMap InvestigatorLocation (== Just lid) iid
   AtLocations lids -> fieldMap InvestigatorLocation (maybe False (`elem` lids)) iid

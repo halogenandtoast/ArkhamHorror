@@ -25,8 +25,8 @@ import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
-import Arkham.Location.Grid (Pos (..))
-import Arkham.Location.Types (LocationAttrs)
+import Arkham.Location.Grid (Pos (..), positionColumn, positionRow)
+import Arkham.Location.Types (Field (LocationPosition), LocationAttrs)
 import Arkham.Matcher
 import Arkham.Message (pattern PlaceCluesUpToClueValue)
 import Arkham.Message.Lifted
@@ -456,3 +456,69 @@ parleyBonusAt source iid lid = effectWithSource source iid do
       ]
   removeOn EffectRoundWindow
   apply $ AnySkillValue 1
+
+-- * Red Sunrise: rows
+
+{- | "Rows" (guide p29): locations with the same name placed next to each other
+horizontally. Red Sunrise places every location with 'placeInGrid', so a row is
+simply a grid row. Above is nearer Ritual Clearing (higher y, since
+'furyDirectionPos' already fixes north as @+y@), below nearer Forgotten Trail.
+-}
+rowOf :: (AsId l, IdOf l ~ LocationId) => l -> LocationMatcher
+rowOf l = LocationInRowOf (LocationWithId $ asId l)
+
+locationsInRowOf :: (HasGame m, AsId l, IdOf l ~ LocationId) => l -> m [LocationId]
+locationsInRowOf = select . rowOf
+
+-- | "X is the number of locations in your row."
+getRowSize :: (HasGame m, AsId l, IdOf l ~ LocationId) => l -> m Int
+getRowSize = selectCount . rowOf
+
+getRowIndex :: (HasGame m, AsId l, IdOf l ~ LocationId) => l -> m (Maybe Int)
+getRowIndex l = fmap positionRow <$> field LocationPosition (asId l)
+
+-- | The row one step nearer Ritual Clearing.
+rowAbove :: (HasGame m, AsId l, IdOf l ~ LocationId) => l -> m [LocationId]
+rowAbove l = getRowIndex l >>= maybe (pure []) (select . LocationInRow . (+ 1))
+
+-- | The row one step nearer Forgotten Trail.
+rowBelow :: (HasGame m, AsId l, IdOf l ~ LocationId) => l -> m [LocationId]
+rowBelow l = getRowIndex l >>= maybe (pure []) (select . LocationInRow . subtract 1)
+
+{- | Order a row left to right. Path Forward names its column that way ("the
+leftmost location in this row", "the second location from the right"), so the
+ordering has to be by grid column rather than by whatever order 'select' returns.
+-}
+sortRowLeftToRight :: HasGame m => [LocationId] -> m [LocationId]
+sortRowLeftToRight lids = do
+  withColumns <- for lids \lid -> do
+    mpos <- field LocationPosition lid
+    pure (maybe 0 positionColumn mpos, lid)
+  pure $ map snd $ sortOn fst withColumns
+
+-- | Path Forward's column, counted from whichever end the card names.
+data RowEnd = FromLeft Int | FromRight Int
+  deriving stock (Show, Eq)
+
+locationAtRowEnd :: HasGame m => RowEnd -> [LocationId] -> m (Maybe LocationId)
+locationAtRowEnd end lids = do
+  ordered <- sortRowLeftToRight lids
+  pure $ case end of
+    FromLeft n -> ordered !!? n
+    FromRight n -> reverse ordered !!? n
+
+{- | Candidates for "move the nearest enemy once toward <location>", shared by the
+scenario reference card's elder thing token and Shadowed Wilderness (:173).
+
+Returns every enemy tied at the minimum distance that can actually be moved and is
+not already standing there. Both filters are load-bearing: 'NearestEnemyToLocation'
+returns all ties rather than one, an enemy already at the location counts as
+distance 0 and so suppresses every farther enemy while being unable to move toward
+itself, and a pushed 'MoveToward' cannot be observed afterwards — so :173 has to
+know *before* pushing whether anything will move for its "if no enemy moves" clause.
+The caller decides whether one is chosen or all of them move.
+-}
+nearestEnemiesAbleToMoveToward :: HasGame m => LocationId -> EnemyMatcher -> m [EnemyId]
+nearestEnemiesAbleToMoveToward lid matcher =
+  select (NearestEnemyToLocation lid matcher)
+    >>= filterM (<=~> (EnemyCanMove <> not_ (EnemyAt $ LocationWithId lid)))

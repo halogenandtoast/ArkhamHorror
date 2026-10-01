@@ -1,0 +1,62 @@
+{
+  "redSunrise": {
+    "heading": "Scenario VII",
+    "intro": {
+      "title": "Scenario VII: Red Sunrise",
+      "body1": "<p>It takes several hours to reach the border of the great redwood forests. The profane prophecy did mention a red forest, but you didn’t expect such a literal result from the cryptic old text. The scope and scale of the trees is humbling, and reminds you of the colossal dark young that the circus bred. The prospect of meeting them in broad daylight isn’t any more appealing whatsoever.</p>",
+      "body2": "<p>The forest is quiet as you take the trodden trail north. Even the song of birds that would normally fill the air is absent. It’s said that animals go silent when predators are about, and the monstrosities the cult keeps are as terrible as predators come. They’d consume every living thing for miles if only they could. You’d be wise to proceed with caution, and yet the sun is already halfway up the sky.</p><ul><li>The investigators must decide (choose one):<ul><li>“Time is of the essence. The eclipse isn’t waiting for us.”<br><div class='right'>Add a {'{'}cultist{'}'} token to the chaos bag for the remainder of the campaign.</div></li><li>“These woods are filled with danger. Easy does it.”<br><div class='right'>Add a {'{'}tablet{'}'} token to the chaos bag for the remainder of the campaign.</div></li></ul></li></ul>",
+      "label": {
+        "timeIsOfTheEssence": "“Time is of the essence. The eclipse isn’t waiting for us.”",
+        "easyDoesIt": "“These woods are filled with danger. Easy does it.”"
+      }
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *Red Sunrise*, *Children of the Goat*, *Illusory Tricks*, *New Moon Daredevils*, *Primordial Evils*, and *Savage Woods* encounter sets. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/circus-ex-mortis/sets/153.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/children-of-the-goat.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/illusory-tricks.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/new-moon-daredevils.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/primordial-evils.png' /><img src='{imgPath}/homebrew/circus-ex-mortis/sets/savage-woods.png' /></section>",
+      "placeLocations": "For each set of locations with matching names, choose one copy at random and remove it from the game. Put the remaining locations into play, along with the Forgotten Trail and Ritual Clearing locations. Each investigator begins play at Forgotten Trail.",
+      "pathForward": "Choose four of the Path Forward story cards at random and remove them from the game. Shuffle each of the remaining copies together and place one of them facedown beside each row of 2 or more locations. These cards are in play, but not at any location.",
+      "checkAgenda": "Check the Campaign Log.",
+      "discoveredRitual": "If the investigators discovered the ritual’s location, use “Agenda 1 — Fading Sunlight (v.I)” for this scenario. Remove each other copy of agenda 1 from the game.",
+      "followTheCult": "If the investigators must follow the cult, use “Agenda 1 — Fading Sunlight (v.II)” for this scenario. Remove each other copy of agenda 1 from the game.",
+      "checkAct": "Check the Campaign Log.",
+      "struckDownBlake": "If the investigators struck down Blake, use “Act 1 — Forest of Giants (v.I)” for this scenario. Remove each other copy of act 1 from the game.",
+      "unmaskedBlake": "If the investigators unmasked Blake, use “Act 1 — Forest of Giants (v.II)” for this scenario. Remove each other copy of act 1 from the game.",
+      "clashedWithBlake": "If the investigators clashed with Blake, use “Act 1 — Forest of Giants (v.III)” for this scenario. Remove each other copy of act 1 from the game.",
+      "doom": "Check the Campaign Log. Place 4 doom on agenda 1a. Reduce this amount by X, where X groups of citizens were saved from the circus.",
+      "setAside": "Set the following cards aside, out of play: Each copy of The Cult En Masse, Devotee of the Thousand."
+    },
+    "additionalRules": {
+      "rows": "<p class='basic'>*Rows*: in this scenario, certain cards refer to rows of locations. These are locations with the same name placed next to each other horizontally. A single card without adjacent cards is still considered to be in a row. Some card effects may refer to a row being above or below another row. In this case, above is nearer to Ritual Clearing, and below is nearer to Forgotten Trail.</p>"
+    },
+    "crashingTrees": {
+      "label": {
+        "spawnEnemy": "Spawn the topmost enemy in the encounter discard pile at your location",
+        "takeDamage": "Take {count} damage"
+      }
+    },
+    "impendingZenith": {
+      "label": {
+        "moveClues": "Move clues to Impending Zenith"
+      }
+    },
+    "silentForest": {
+      "label": {
+        "spawnEnemy": "Spawn the topmost enemy in the encounter discard pile at your location",
+        "takeHorror": "Take {count} horror"
+      }
+    },
+    "resolutions": {
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "<p class='basic'>_If no resolution was reached (each investigator was defeated):_ Read _Resolution 1_.</p>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1:_ The moon and sun align, and with the ritual complete, they will never again part. The thousands of dark young flow out from the forest, overwhelming you from endless strength alone, and paving the way for their aberrant mother. The world soon succumbs to the monstrosities flowing from every forest on Earth with unending ferocity and hunger.</p><ul><li>In your Campaign Log, record that *the investigators did not arrive in time*.</li><li>In your Campaign Log, record that *Shub-Niggurath reigns over an eclipsed world*.</li><li>Each investigator is killed.</li><li>The investigators lose the campaign.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2:_ The forest, which had been deathly silent since sunrise, erupts with a cacophony of unnatural noises. Some you feel in your bones more than your ears, others deep in your psyche, triggering fight-or-flight instincts. Thea grips the tome as she looks out into the dimming forest. “The cult can summon Shub-Niggurath to any forest during the night of a new moon... and the eclipse sure makes it that way... we can’t let them finish this ritual!” You may have interrupted the profane ceremony, but as long as the eclipse is ongoing, there is a chance the cult can still complete it. The next few minutes will determine the fate of the world.</p><ul><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.</li><li>If The Cult En Masse enemy is not in the victory display, record that *the cult rallies* in your Campaign Log.</li><li>Add a {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign.</li><li>Proceed to _Scenario VIII: Thousand to One_.</li></ul>"
+      }
+    }
+  }
+}

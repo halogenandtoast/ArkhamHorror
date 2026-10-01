@@ -73,6 +73,13 @@ data Placement
   | InTheShadows
   | OutOfGame Placement
   | InPosition Pos
+  | {- | The card occupies a grid cell of its own, named by that label in the scenario's
+    layout, rather than sitting at a location. Generalised from the enemy-only
+    @enemyAsSelfLocation@: an enemy that is its own location (Sylvester Blake across the
+    Big Top), and Red Sunrise's Path Forward stories, which sit beside a row of
+    locations but at no location.
+    -}
+    AsSelfLocation Text
   deriving stock (Show, Eq, Ord, Data, Generic)
 
 instance HasField "attachedTo" Placement (Maybe Target) where
@@ -137,6 +144,7 @@ placementToAttached = \case
   InTheShadows -> Nothing
   OutOfGame _ -> Nothing
   InPosition _ -> Nothing
+  AsSelfLocation _ -> Nothing
 
 isOutOfPlayPlacement :: Placement -> Bool
 isOutOfPlayPlacement = not . isInPlayPlacement
@@ -174,6 +182,7 @@ isInPlayPlacement = \case
   InTheShadows -> True
   OutOfGame _ -> False
   InPosition _ -> True
+  AsSelfLocation _ -> True
 
 isHiddenPlacement :: Placement -> Bool
 isHiddenPlacement = \case

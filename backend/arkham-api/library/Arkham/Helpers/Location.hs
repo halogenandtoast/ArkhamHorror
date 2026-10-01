@@ -16,6 +16,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Source
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Location.Group
 import Arkham.Location.Types (Field (..))
 import Arkham.LocationSymbol
 import Arkham.Matcher hiding (LocationCard)
@@ -75,6 +76,7 @@ whenAt iid lid = whenM (isAt iid lid)
 
 placementLocation :: (HasCallStack, HasGame m) => Placement -> m (Maybe LocationId)
 placementLocation = \case
+  AsSelfLocation {} -> pure Nothing
   AtLocation lid -> pure $ Just lid
   -- At several locations at once: callers that can only hold one take the first.
   AtLocations (lid :| _) -> pure $ Just lid
@@ -375,3 +377,13 @@ getLocationGlobalMeta
 getLocationGlobalMeta key (asId -> lid) = do
   globalMeta <- field LocationGlobalMeta lid
   pure $ lookup key globalMeta >>= maybeResult
+
+{- | Put a location into a group's box after setup, at the end of it. Lost in Time and
+Space puts its locations into play as the scenario runs, so the index cannot be handed
+out up front the way 'Arkham.Scenario.Setup.placeLocationGroup' does; it is counted from
+the members already there and then stored, so it stays fixed from that point on.
+-}
+joinLocationGroup :: ReverseQueue m => LocationId -> LocationGroupKey -> m ()
+joinLocationGroup lid key = do
+  members <- select $ LocationInGroup key
+  push $ Msg.SetLocationGroup lid (GroupMembership key (length members))

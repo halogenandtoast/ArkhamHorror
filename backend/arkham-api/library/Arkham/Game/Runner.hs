@@ -1265,6 +1265,7 @@ runGameMessage msg g = case msg of
                         , locationWithoutClues = Token.countTokens Token.Clue (locationTokens la) == 0
                         , locationLabel = locationLabel la
                         , locationPosition = locationPosition la
+                        , locationGroup = locationGroup la
                         , locationPlacement = locationPlacement la
                         , locationConnectedMatchers = locationConnectedMatchers la
                         , locationConnectsTo = locationConnectsTo la
@@ -1308,6 +1309,7 @@ runGameMessage msg g = case msg of
                   , locationWithoutClues = Token.countTokens Token.Clue (locationTokens la) == 0
                   , locationLabel = locationLabel la
                   , locationPosition = locationPosition la
+                  , locationGroup = locationGroup la
                   , locationPlacement = locationPlacement la
                   , locationConnectedMatchers = locationConnectedMatchers la
                   , locationConnectsTo = locationConnectsTo la
@@ -1387,6 +1389,7 @@ runGameMessage msg g = case msg of
                 , locationGlobalMeta =
                     Map.insert "replacedLocation" (toJSON oldAttrs.cardCode) (locationGlobalMeta oldAttrs)
                 , locationPosition = locationPosition oldAttrs
+                , locationGroup = locationGroup oldAttrs
                 , locationLabel = locationLabel oldAttrs
                 , locationDirections = locationDirections oldAttrs
                 , locationConnectsTo = locationConnectsTo oldAttrs
@@ -1988,13 +1991,22 @@ runGameMessage msg g = case msg of
     let allAsks = (pid, q) : [(pid', q') | WindowAsk _ pid' q' <- others]
     anyBlocking <- anyM (fmap not . questionIsOnlyNonBlocking . snd) allAsks
     let kept = if anyBlocking then allAsks else []
+    -- A materialised forced-initiation set drives its own re-checking: every use pushes the
+    -- marker back, which re-filters the set and either re-asks or -- once it is empty --
+    -- pushes the @Do (CheckWindows ws)@ itself (#5743, #5764). Adding one here as well is
+    -- not merely redundant, it is destructive: reaching it re-derives the set from scratch
+    -- and REPLACES the ask, and the ask is the only place the effects this window stands in
+    -- front of are being held (they were popped out of the queue, and 'ClearUI' wipes the
+    -- question before an answer drains). A second seat answering first was enough to reach
+    -- it and silently eat a fight's damage. #5798
+    let selfRechecking = any (notNull . pendingInitiations . snd) kept
     pushAll
       $ [ case kept of
             [(pid', q')] -> Ask pid' q'
             _ -> AskMap (Map.fromList kept)
         | notNull kept
         ]
-      <> [Do (CheckWindows ws) | notNull ws, notNull kept]
+      <> [Do (CheckWindows ws) | notNull ws, notNull kept, not selfRechecking]
 
     pure g
   PlayCard iid card mtarget payment windows' False -> do

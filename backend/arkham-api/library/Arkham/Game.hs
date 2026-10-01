@@ -451,8 +451,13 @@ withLocationConnectionData
   => With Location ModifierData
   -> m (With (With Location ModifierData) LocationMetadata)
 withLocationConnectionData inner@(With target _) = do
-  matcher <- getConnectedMatcher NotForMovement target
-  lmConnectedLocations <- select matcher
+  -- Both halves come out of one pass: the map draws a printed connection from the
+  -- location's group box and a granted one from the location itself.
+  (printedMatchers, grantedMatchers) <- connectedMatcherParts NotForMovement (toId target)
+  printed <- select $ LocationMatchAny printedMatchers
+  lmConnectedLocations <-
+    (printed <>) . filter (`notElem` printed) <$> select (LocationMatchAny grantedMatchers)
+  let lmGrantedConnections = filter (`notElem` printed) lmConnectedLocations
   lmInvestigators <- select $ InvestigatorAt $ IncludeEmptySpace $ LocationWithId $ toId target
   lmEnemies <-
     select
@@ -552,6 +557,7 @@ withEnemyLocationAsLocationData el = do
       , "cardsUnderneath" .= emptyArray
       , "modifiers" .= emptyArray
       , "connectedLocations" .= lConnectedLocations
+      , "grantedConnections" .= emptyArray
       , "placement" .= attrs.placement
       , "brazier" .= (Nothing :: Maybe Text)
       , "breaches" .= (Nothing :: Maybe Text)
@@ -1475,9 +1481,10 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         [] -> False
         x : _ -> cardMatch (PlayerCard x) cardMatcher
     UnengagedInvestigator -> flip runMatchesM as $ selectNone . enemyEngagedWith . toId
-    TestingInvestigator -> getSkillTestInvestigator <&> \case
-      Nothing -> noMatch
-      Just iid -> runMatches ((== iid) . toId) as
+    TestingInvestigator ->
+      getSkillTestInvestigator <&> \case
+        Nothing -> noMatch
+        Just iid -> runMatches ((== iid) . toId) as
     NoDamageDealtThisTurn -> flip runMatchesM as $ \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ null (historyDealtDamageTo history)

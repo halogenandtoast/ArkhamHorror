@@ -41,7 +41,20 @@ toConnections lid =
   fieldMap LocationCard (cdLocationRevealedConnections . toCardDef) lid
 
 getConnectedMatcher :: HasGame m => ForMovement -> LocationId -> m LocationMatcher
-getConnectedMatcher forMovement l = cached (ConnectedMatcherKey l forMovement) $ do
+getConnectedMatcher forMovement l =
+  cached (ConnectedMatcherKey l forMovement)
+    $ LocationMatchAny
+    . uncurry (<>)
+    <$> connectedMatcherParts forMovement l
+
+{- | The two halves of a location's connections: the printed ones (its own connection
+symbols and directions) and the ones a modifier granted. The map draws them differently
+-- a printed connection belongs to a location group as a whole, a granted one to the
+single location that was granted it -- so they are kept apart rather than merged here.
+-}
+connectedMatcherParts
+  :: HasGame m => ForMovement -> LocationId -> m ([LocationMatcher], [LocationMatcher])
+connectedMatcherParts forMovement l = do
   isRevealed <- field LocationRevealed l
   directionalMatchers <- fieldMap LocationConnectsTo (map (`LocationInDirection` self) . setToList) l
   base <-
@@ -56,8 +69,7 @@ getConnectedMatcher forMovement l = cached (ConnectedMatcherKey l forMovement) $
       keeps = \case
         Matcher.LocationWithSymbol sym -> sym `notElem` lostSymbols
         _ -> True
-  LocationMatchAny
-    <$> foldM applyModifier (filter keeps base <> directionalMatchers) modifiers
+  (filter keeps base <> directionalMatchers,) <$> foldM applyModifier [] modifiers
  where
   applyModifier current (ConnectedToWhen whenMatcher matcher) = do
     matches <- elem l <$> select whenMatcher

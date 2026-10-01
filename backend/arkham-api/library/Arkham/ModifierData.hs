@@ -20,6 +20,9 @@ instance ToJSON ModifierData where
 
 data LocationMetadata = LocationMetadata
   { lmConnectedLocations :: [LocationId]
+  , -- The subset of the above a modifier granted rather than the card printing, which
+    -- the map draws from the single location instead of from its group's box.
+    lmGrantedConnections :: [LocationId]
   , lmInvestigators :: [InvestigatorId]
   , lmEnemies :: [EnemyId]
   , lmTreacheries :: [TreacheryId]

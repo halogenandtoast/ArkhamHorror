@@ -4520,13 +4520,12 @@ async function addChaosToken(face: any){
   padding-top: var(--location-group-art-offset, 18px);
   /* Pull the boxes apart so the connections between them read as real links. */
   margin-block: var(--location-group-spacing, 14px);
-  border: 2px solid var(--location-group-border, rgba(255, 255, 255, 0.28));
-  border-radius: 12px;
-  background: var(--location-group-fill, rgba(255, 255, 255, 0.04));
-  /* Above the connections layer, so a line never reads as crossing the frame.
-     No `position` -- a grid item takes z-index on its own, and positioning the box
-     would make it the offsetParent of its members, whose grid-relative offsetLeft
-     the drag-padding math reads. */
+  /* The frame itself is drawn by Connections.vue, into the SVG under the lines: this
+     div lives inside the scaled location grid, whose transform makes a stacking context,
+     so no sibling of that grid can ever paint between the box and its members. What is
+     left here is the layout and the box's bounds, which the frame is measured from.
+     No `position` -- positioning the box would make it the offsetParent of its members,
+     whose grid-relative offsetLeft the drag-padding math reads. */
   z-index: 1;
   /* Match .location-wrapper so a rotation reshuffle slides the offset into place. */
   transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);

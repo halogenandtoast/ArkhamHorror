@@ -42,6 +42,9 @@ export type Location = {
   cardsUnderneath: Card[];
   modifiers: Modifier[];
   connectedLocations: string[];
+  /* The subset of the above a modifier granted rather than the card printing. The map
+   * draws these from the location itself rather than from its group's box. */
+  grantedConnections: string[];
   placement: Placement | null;
   brazier: Brazier | null;
   breaches: BreachStatus | null;
@@ -98,6 +101,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
     modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
     connectedLocations: JsonDecoder.array<string>(JsonDecoder.string(), 'LocationId[]'),
+    grantedConnections: JsonDecoder.array<string>(JsonDecoder.string(), 'LocationId[]'),
     placement: JsonDecoder.nullable(placementDecoder),
     brazier: JsonDecoder.nullable(brazierDecoder),
     breaches: JsonDecoder.nullable(breachStatusDecoder),

@@ -59,17 +59,30 @@ const sortByDataId = (a: HTMLElement, b: HTMLElement) => {
 const groupKeyOf = (locationId: string): string | null =>
   props.game.locations[locationId]?.group?.key ?? null
 
-const endpointElement = (locationId: string): HTMLElement | null => {
-  const key = groupKeyOf(locationId)
-  if (key) {
-    const box = document.querySelector<HTMLElement>(`.location-group[data-id="${key}"]`)
-    if (box) return box
-  }
-  return document.querySelector<HTMLElement>(`[data-id="${locationId}"]`)
+/** A group's box if the id is a group key, else the location's own element. */
+const elementFor = (id: string): HTMLElement | null =>
+  document.querySelector<HTMLElement>(`.location-group[data-id="${id}"]`)
+    ?? document.querySelector<HTMLElement>(`[data-id="${id}"]`)
+
+const connectionsOf = (locationId: string): string[] => {
+  const cs = props.game.locations[locationId]?.connectedLocations
+  if (!cs) return []
+  return Array.isArray(cs) ? cs : Object.values(cs)
 }
 
-/** What the map actually joins: a group's box if the location is in one, else itself. */
-const endpointId = (locationId: string): string => groupKeyOf(locationId) ?? locationId
+/* A box stands in for its members only for the connections the cards are printed with,
+ * which is what the group was for: a whole row connects to the row below by symbol. A
+ * granted connection belongs to the one location that was granted it -- Path Forward
+ * opens the way up from a single location -- so that edge is drawn from the location
+ * itself, to each location it actually reaches. */
+const isGranted = (fromId: string, toId: string): boolean =>
+  props.game.locations[fromId]?.grantedConnections?.includes(toId) ?? false
+
+/** The pair the map actually joins: the two boxes, or the two locations. */
+const resolvedEdge = (fromId: string, toId: string): [string, string] =>
+  isGranted(fromId, toId)
+    ? [fromId, toId]
+    : [groupKeyOf(fromId) ?? fromId, groupKeyOf(toId) ?? toId]
 
 /** True when both ends sit in the same box, so there is nothing to draw between them. */
 const sameGroup = (a: string, b: string): boolean => {
@@ -88,11 +101,13 @@ const svgRef = ref<SVGSVGElement | null>(null)
 const protoRef = ref<SVGLineElement | null>(null)
 const connectionProtoRef = ref<SVGPathElement | null>(null)
 const chevronProtoRef = ref<SVGPathElement | null>(null)
+const groupFrameProtoRef = ref<SVGRectElement | null>(null)
 let svgEl: SVGSVGElement | null = null
 let defsEl: SVGDefsElement | null = null
 let lineProto: SVGLineElement | null = null
 let connectionProto: SVGPathElement | null = null
 let chevronProto: SVGPathElement | null = null
+let groupFrameProto: SVGRectElement | null = null
 
 const EPS = 0.5
 const close = (a: number, b: number) => Math.abs(a - b) < EPS
@@ -100,6 +115,47 @@ const linesByConn = new Map<string, SVGLineElement>()
 const connectionPathsByConn = new Map<string, SVGPathElement>()
 const fateGlowLinesByConn = new Map<string, SVGLineElement>()
 const chevronsByConn = new Map<string, SVGPathElement>()
+/* The group boxes are drawn here rather than as the div's own border so the connections
+ * sit on top of them: the div lives inside the scaled location grid, which transform
+ * makes a stacking context, so nothing outside it can ever paint between the box and its
+ * members. The div keeps the layout; this draws the frame. */
+const groupFramesByKey = new Map<string, SVGRectElement>()
+
+function drawGroupFrames(): Set<string> {
+  const live = new Set<string>()
+  if (!svgEl) return live
+  const svgRect = svgEl.getBoundingClientRect()
+  for (const box of document.querySelectorAll<HTMLElement>('.location-group[data-id]')) {
+    const key = box.dataset.id
+    if (!key) continue
+    const rect = box.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) continue
+    live.add(key)
+    let frame = groupFramesByKey.get(key)
+    if (!frame) {
+      // Cloned from the proto like every other element here, so it carries the scoped
+      // style attribute -- a freshly created node would match no rule and paint black.
+      if (!groupFrameProto) continue
+      frame = groupFrameProto.cloneNode(true) as SVGRectElement
+      frame.classList.remove('original')
+      // First child, so every line and chevron paints over it.
+      svgEl.insertBefore(frame, svgEl.firstChild)
+      groupFramesByKey.set(key, frame)
+    }
+    setSvgAttr(frame, 'x', String(rect.left - svgRect.left))
+    setSvgAttr(frame, 'y', String(rect.top - svgRect.top))
+    setSvgAttr(frame, 'width', String(rect.width))
+    setSvgAttr(frame, 'height', String(rect.height))
+    setSvgAttr(frame, 'rx', String(scaled(12)))
+    setSvgAttr(frame, 'stroke-width', String(scaled(2)))
+  }
+  for (const [key, frame] of groupFramesByKey) {
+    if (live.has(key)) continue
+    frame.remove()
+    groupFramesByKey.delete(key)
+  }
+  return live
+}
 
 type GridDirection = 'North' | 'East' | 'South' | 'West'
 
@@ -916,15 +972,21 @@ function handleConnections(includeFateOfTheVale = true) {
   const live = new Set<string>()
   nextMidpoints = {}
 
+  drawGroupFrames()
+
   // Build directed edge set so we can detect one-way connections by absence of
   // the reverse edge. connectedLocations is symmetric for normal connections
   // but asymmetric when a location's connectedMatchers don't match back.
+  // Keyed by RESOLVED endpoints: a row's symbols collapse onto the two boxes while the
+  // grant that opens the climb stays on its own location, so the box-to-box edge and the
+  // location's edge back are two different pairs -- each one-way, which is the truth.
   const directed = new Set<string>()
   for (const loc of allLocations.value) {
-    const cs = Array.isArray(loc.connectedLocations)
-      ? loc.connectedLocations
-      : Object.values(loc.connectedLocations)
-    for (const dst of cs) directed.add(`${loc.id}->${dst}`)
+    for (const dst of connectionsOf(loc.id)) {
+      if (sameGroup(loc.id, dst)) continue
+      const [from, to] = resolvedEdge(loc.id, dst)
+      directed.add(`${from}->${to}`)
+    }
   }
 
   const normalConnections = new Map<string, ConnectionCandidate>()
@@ -934,20 +996,19 @@ function handleConnections(includeFateOfTheVale = true) {
       ? connectedLocations
       : Object.values(connectedLocations)
 
-    const start = endpointElement(id)
-    if (!start) continue
-
     for (const dst of connections) {
       const dstId = dst as string
       // Members of one box need no line between them.
       if (sameGroup(id, dstId)) continue
-      const end = endpointElement(dstId)
-      if (!end) continue
+      const [fromId, toId] = resolvedEdge(id, dstId)
+      const start = elementFor(fromId)
+      const end = elementFor(toId)
+      if (!start || !end) continue
       // Both ends resolved to the same element (two members of one box, or a box
       // connecting to itself) -- nothing to draw.
       if (start === end) continue
 
-      const reverseExists = directed.has(`${dst}->${id}`)
+      const reverseExists = directed.has(`${toId}->${fromId}`)
 
       if (reverseExists) {
         const conn = toConnection(start, end)
@@ -965,7 +1026,7 @@ function handleConnections(includeFateOfTheVale = true) {
       } else {
         // Keyed by resolved endpoints, so the many member-to-member edges between two
         // boxes collapse into one arrow instead of one per pair.
-        const conn = `${endpointId(id)}->${endpointId(dstId)}`
+        const conn = `${fromId}->${toId}`
         if (location.modifiers?.some(m =>
           m.type?.tag === 'DoNotDrawConnection' &&
           (
@@ -1129,6 +1190,7 @@ onMounted(async () => {
   lineProto = protoRef.value
   connectionProto = connectionProtoRef.value
   chevronProto = chevronProtoRef.value
+  groupFrameProto = groupFrameProtoRef.value
   // First draw immediately so a cold refresh shows lines at once, then redraw
   // after layout/images/cached Cosmic Emissary transforms settle. The normal
   // animation tick intentionally skips Fate of the Vale enemy lines, so without
@@ -1203,6 +1265,7 @@ onBeforeUnmount(()=> {
   lineProto = null
   connectionProto = null
   chevronProto = null
+  groupFrameProto = null
 })
 </script>
 
@@ -1218,6 +1281,7 @@ onBeforeUnmount(()=> {
     <line ref="protoRef" class="line original" stroke-dasharray="5, 5"/>
     <path ref="connectionProtoRef" class="line original" stroke-dasharray="5, 5"/>
     <path ref="chevronProtoRef" class="chevrons original"/>
+    <rect ref="groupFrameProtoRef" class="location-group-frame original"/>
   </svg>
   <div ref="laserLayerRef" class="connections-lasers" aria-hidden="true"></div>
   <div class="connections-between">
@@ -1233,6 +1297,13 @@ onBeforeUnmount(()=> {
 </template>
 
 <style scoped>
+/* The frame of a location group. Drawn here, under the lines, rather than as the box
+ * div's own border -- see drawGroupFrames. */
+.location-group-frame {
+  fill: var(--location-group-fill, rgba(255, 255, 255, 0.04));
+  stroke: var(--location-group-border, rgba(255, 255, 255, 0.28));
+}
+
 .connections-svg{
   pointer-events: none;
   position: absolute;

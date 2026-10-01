@@ -775,6 +775,16 @@ const questionImage = computed(() => {
   return null
 })
 
+// The same card as a def, so it can be rendered flippably. A prompt about a
+// double-sided card (Ravenous Brood's two faces) is unanswerable until the player
+// can read the side they are not being shown. CardImage drops its own flip button
+// when the back art 404s, so a single-sided card here is unchanged.
+const questionCard = computed(() => {
+  const q = question.value
+  if (q?.tag !== 'QuestionLabel' || !q.card) return null
+  return flippableCard(q.card)
+})
+
 const cardIdImage = (cardId: string) => {
   const card = props.game.cards[cardId]
   return card ? imgsrc(cardImage(card)) : ''
@@ -945,7 +955,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
     <div class="question-label dropdown" v-if="question && question.tag === 'DropDown'">
       <div class="question-image" v-if="questionImage">
-        <img :src="questionImage" class="card" />
+        <CardImage v-if="questionCard" :card="questionCard" class="card" />
       </div>
 
       <DropDown @choose="choose" :options="question.options" />
@@ -965,7 +975,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
     <div class="question-label dropdown" v-if="question && question.tag === 'QuestionLabel' && question.question.tag === 'DropDown'">
       <div class="question-image" v-if="questionImage">
-        <img :src="questionImage" class="card" />
+        <CardImage v-if="questionCard" :card="questionCard" class="card" />
       </div>
 
       <DropDown @choose="choose" :options="question.question.options" />
@@ -973,7 +983,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
     <div class="question-label dropdown" v-if="question && question.tag === 'PayCostQuestion' && question.question.tag === 'DropDown'">
       <div class="question-image" v-if="questionImage">
-        <img :src="questionImage" class="card" />
+        <CardImage v-if="questionCard" :card="questionCard" class="card" />
       </div>
 
       <legend>{{ payCostLabel(question.cost) }}</legend>
@@ -982,7 +992,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
 
     <div v-if="!isSkillTest && !inSkillTest && focusedChaosTokens.length > 0" class="tokens">
       <div class="question-image" v-if="questionImage">
-        <img :src="questionImage" class="card" />
+        <CardImage v-if="questionCard" :card="questionCard" class="card" />
       </div>
 
       <Token
@@ -999,7 +1009,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
     <div v-if="showChoices && (hasInnerContent || questionChoices.length > 0)" class="choices">
       <div v-if="hasInnerContent" class="question-label">
         <div class="question-image" v-if="questionImage">
-          <img :src="questionImage" class="card" />
+          <CardImage v-if="questionCard" :card="questionCard" class="card" />
         </div>
 
         <div class='question-content'>
@@ -1178,7 +1188,7 @@ const filteredCards = computed<{ choice: CardLabel; index: number }[]>(() => {
     </div>
     <template v-else-if="question && question.tag === 'QuestionLabel' && question.question.tag !== 'DropDown'">
       <div v-if="questionImage" class="question-image">
-        <img :src="questionImage" class="card" />
+        <CardImage v-if="questionCard" :card="questionCard" class="card" />
       </div>
     </template>
     <div v-if="doneLabel && doneIsFooter" class="done-choice">
@@ -2197,8 +2207,9 @@ h2 {
   }
   > .question-image {
     justify-content: flex-start;
+    width: calc(var(--card-width) * 4);
     img  {
-      width: calc(var(--card-width) * 4);
+      width: 100%;
       flex-basis: unset;
       flex-shrink: unset;
       height: auto;
@@ -2327,6 +2338,19 @@ h2 {
     height: auto;
     border-radius: 3px;
   }
+}
+
+/* CardImage sizes itself for a grid of cards; here it is the one card the prompt
+   is about, so let it fill the wrapper the plain <img> used to. */
+.question-image :deep(.card-container) {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.question-image :deep(.card-container img) {
+  width: 100%;
+  height: auto;
 }
 
 .filter {

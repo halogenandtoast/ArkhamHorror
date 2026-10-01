@@ -23,10 +23,13 @@ import CardView from '@/arkham/components/Card.vue'
  * / `data-image-id`, so a bare img silently loses taboo art and the
  * customization sheet (#5734).
  */
+/* `title` is optional: a story card you are being told to read already prints
+ * its own name, so repeating it above the art is the duplication the card-only
+ * presentation exists to remove. */
 const props = defineProps<{
   game: Game
   playerId: string
-  title: string
+  title?: string
   cards: Card[]
 }>()
 
@@ -62,7 +65,7 @@ const backFor = (card: Card) =>
     @click="emit('dismiss')"
   >
     <div class="spotlight__inner">
-      <h2 class="spotlight__title">{{ title }}</h2>
+      <h2 v-if="title" class="spotlight__title">{{ title }}</h2>
 
       <div class="spotlight__cards" :style="{ '--count': cards.length }">
         <div
@@ -249,13 +252,15 @@ const backFor = (card: Card) =>
   border: 0;
   padding: 10px;
   text-transform: uppercase;
-  background-color: oklch(38% 0.08 55);
+  /* A caller that is not a card draw -- a story card read -- overrides this to
+     sit with its own glow instead of the draw's amber. */
+  background-color: var(--story-button-color, oklch(38% 0.08 55));
   font-weight: bold;
   color: #eee;
 }
 
 .spotlight__ok:hover {
-  background-color: oklch(44% 0.1 58);
+  background-color: var(--story-button-hover-color, oklch(44% 0.1 58));
 }
 
 @keyframes spotlight-in {

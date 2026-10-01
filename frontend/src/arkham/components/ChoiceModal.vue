@@ -11,8 +11,10 @@ import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { QuestionType } from '@/arkham/types/Question';
 import Draggable from '@/components/Draggable.vue';
 import Question from '@/arkham/components/Question.vue';
+import DrawSpotlight from '@/arkham/components/DrawSpotlight.vue';
 import { abilityNeedsGhostModal } from '@/arkham/ghostAbility';
 import { putBackInAnyOrderPicks } from '@/arkham/putBackInAnyOrder';
+import { storyCardRead as findStoryCardRead } from '@/arkham/storyCardRead';
 
 export interface Props {
   game: Game
@@ -46,6 +48,7 @@ const cthulhuDeckCardCodes = new Set([
   '11715',
 ])
 const investigator = computed(() => Object.values(props.game.investigators).find(i => i.playerId === props.playerId))
+const storyCardRead = computed(() => findStoryCardRead(props.game, props.playerId))
 const searchedCards = computed(() => {
   const playerCards = Object.entries(investigator.value?.foundCards ?? [])
 
@@ -289,8 +292,36 @@ const title = computed(() => {
 </script>
 
 <template>
+  <!-- Not gated on `requiresModal`: the question shape is specific enough on its
+       own, and a story can be read mid-skill-test, where the modal suppresses
+       itself.
+       `--spotlight-card-width` is overridden because a draw only has to be
+       recognised, while a story card has to be *read* -- the spotlight's phone
+       default (55vw) leaves its paragraphs illegible. The `55vh` term keeps the
+       card and its button inside a short window.
+       The glow is neutralised for the same reason: a draw's amber is a flourish
+       around art, but here it sits around text the player is reading, so it
+       keeps the spotlight's lightness ramp and drops the chroma. -->
+  <DrawSpotlight
+    v-if="storyCardRead"
+    :game="game"
+    :playerId="playerId"
+    :cards="[storyCardRead.card]"
+    :aria-label="t('Story')"
+    :style="{
+      '--spotlight-card-width': 'min(420px, 88vw, 55vh)',
+      '--spotlight-glow-core': 'oklch(28% 0.006 250)',
+      '--spotlight-glow-mid': 'oklch(44% 0.008 250)',
+      '--spotlight-glow-ambient': 'oklch(36% 0.006 250)',
+      '--spotlight-glow-halo': 'oklch(42% 0.008 250)',
+      '--spotlight-glow-halo-dim': 'oklch(14% 0.003 250)',
+      '--story-button-color': '#4C5037',
+      '--story-button-hover-color': '#393C29',
+    }"
+    @dismiss="choose(storyCardRead.index)"
+  />
   <div
-    v-if="requiresModal && cthulhuDeckChoice"
+    v-else-if="requiresModal && cthulhuDeckChoice"
     class="cthulhu-enact no-card-overlay"
     :class="{ 'cthulhu-enact--processing': isProcessing }"
   >

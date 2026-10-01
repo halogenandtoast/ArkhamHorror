@@ -47,7 +47,8 @@
     "name": "Red Sunrise",
     "campaign": ":circus-ex-mortis",
     "standalone": false,
-    "i18n": "redSunrise"
+    "i18n": "redSunrise",
+    "allowCurvedPaths": true
   },
   {
     "id": ":circus-ex-mortis:190",

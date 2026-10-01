@@ -487,6 +487,63 @@ function obstructedChevronCurve(candidate: ConnectionCandidate): number | null {
   return (outwardDot >= 0 ? 1 : -1) * magnitude
 }
 
+/** Distance from a point to a segment, clamped to the segment's ends. */
+function distanceToSegment(px: number, py: number, segment: ConnectionCandidate): number {
+  const dx = segment.x2 - segment.x1
+  const dy = segment.y2 - segment.y1
+  const lengthSquared = dx * dx + dy * dy
+  const t = lengthSquared === 0
+    ? 0
+    : Math.max(0, Math.min(1, ((px - segment.x1) * dx + (py - segment.y1) * dy) / lengthSquared))
+  return Math.hypot(px - (segment.x1 + t * dx), py - (segment.y1 + t * dy))
+}
+
+/* 'segmentsConflict' answers whether two segments cross or lie on one line, which is too
+ * exact for two routes that merely run alongside each other: a row connects to the row
+ * below from its box's centre while the location a Path Forward connects back up sits a
+ * couple of pixels off that centre, so the two never quite coincide and neither crosses
+ * the other. Walking the shorter route and asking how much of it runs within a few pixels
+ * of the longer one catches that, and the exact overlap too. */
+function routesShareALane(a: ConnectionCandidate, b: ConnectionCandidate): boolean {
+  // Routes out of the same place are expected to start together and fan apart.
+  if (a.start.dataset.id === b.start.dataset.id || a.start.dataset.id === b.end.dataset.id ||
+      a.end.dataset.id === b.start.dataset.id || a.end.dataset.id === b.end.dataset.id) return false
+
+  const lengthSquared = (c: ConnectionCandidate) => (c.x2 - c.x1) ** 2 + (c.y2 - c.y1) ** 2
+  const [shorter, longer] = lengthSquared(a) <= lengthSquared(b) ? [a, b] : [b, a]
+  const lane = scaled(12)
+  const samples = 20
+  let alongside = 0
+  for (let step = 0; step <= samples; step++) {
+    const t = step / samples
+    const x = shorter.x1 + (shorter.x2 - shorter.x1) * t
+    const y = shorter.y1 + (shorter.y2 - shorter.y1) * t
+    if (distanceToSegment(x, y, longer) <= lane) alongside++
+  }
+  return alongside / (samples + 1) >= 0.5
+}
+
+/* Two arrows can share a lane without either crossing a card, which 'obstructedChevronCurve'
+ * is the only other reason to bend one: a row's printed connection down to the row below and
+ * the single location a Path Forward connects back up both run between the same two boxes.
+ * Bend one of them so they read as two routes rather than one. Which one bends follows
+ * 'curveOffsets' -- the longer route gives way, ties by the stable connection key. */
+function overlappingRouteCurve(candidate: ConnectionCandidate, others: ConnectionCandidate[]): number {
+  const lengthSquared = (c: ConnectionCandidate) => (c.x2 - c.x1) ** 2 + (c.y2 - c.y1) ** 2
+  let conflicts = 0
+  for (const other of others) {
+    if (other.connection === candidate.connection) continue
+    if (!segmentsConflict(candidate, other) && !routesShareALane(candidate, other)) continue
+    const bend = lengthSquared(candidate) === lengthSquared(other)
+      ? candidate.connection > other.connection
+      : lengthSquared(candidate) > lengthSquared(other)
+    if (bend) conflicts++
+  }
+  if (conflicts === 0) return 0
+  const sign = Array.from(candidate.connection).reduce((sum, char) => sum + char.charCodeAt(0), 0) % 2 === 0 ? 1 : -1
+  return sign * scaled(Math.min(34 + (conflicts - 1) * 10, 64))
+}
+
 function makeOrUpdateConnectionPath(candidate: ConnectionCandidate, curveOffset = 0) {
   if (!svgEl || !connectionProto) return
   const { connection, start, end, x1, y1, x2, y2 } = candidate
@@ -990,6 +1047,7 @@ function handleConnections(includeFateOfTheVale = true) {
   }
 
   const normalConnections = new Map<string, ConnectionCandidate>()
+  const chevronCandidates: ConnectionCandidate[] = []
   for (const location of locations.value) {
     const { id, connectedLocations } = location
     const connections = Array.isArray(connectedLocations)
@@ -1037,13 +1095,9 @@ function handleConnections(includeFateOfTheVale = true) {
         if (live.has(conn)) continue
         live.add(conn)
         const points = connectionPoints(start, end)
-        const candidate = points
-          ? { connection: conn, start, end, ...points }
-          : null
-        const curveOffset = props.allowCurvedPaths && candidate
-          ? (obstructedChevronCurve(candidate) ?? 0)
-          : 0
-        makeOrUpdateChevrons(start, end, conn, curveOffset)
+        // Deferred: an arrow's lane depends on the others, and the rest are not known yet.
+        if (points) chevronCandidates.push({ connection: conn, start, end, ...points })
+        else makeOrUpdateChevrons(start, end, conn, 0)
       }
     }
   }
@@ -1052,6 +1106,14 @@ function handleConnections(includeFateOfTheVale = true) {
   const offsets = props.allowCurvedPaths ? curveOffsets(candidates) : new Map<string, number>()
   for (const candidate of candidates) {
     makeOrUpdateConnectionPath(candidate, offsets.get(candidate.connection) ?? 0)
+  }
+
+  const everyRoute = [...candidates, ...chevronCandidates]
+  for (const candidate of chevronCandidates) {
+    const curveOffset = props.allowCurvedPaths
+      ? (obstructedChevronCurve(candidate) ?? overlappingRouteCurve(candidate, everyRoute))
+      : 0
+    makeOrUpdateChevrons(candidate.start, candidate.end, candidate.connection, curveOffset)
   }
 
   const invalidMineCart = mineCartInvalidDirection()

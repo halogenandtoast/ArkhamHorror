@@ -11,7 +11,9 @@ import AH3e.Message
 import AH3e.Prelude
 import AH3e.Types.Board
 import AH3e.Types.Card
+import AH3e.Types.Effect
 import AH3e.Types.Ids
+import AH3e.Types.Skill
 import AH3e.Types.State
 import Data.Map.Strict qualified as Map
 
@@ -28,7 +30,7 @@ behaviors =
     & #monsters
     .~ Map.fromList
       ( ("feast-19", umordhoth)
-          : [(w, defaultMonsterBehavior & #removedWhenDefeated .~ True) | w <- worshipers]
+          : [(w, worshiperBehavior w) | w <- worshipers]
       )
     & #customEffects
     .~ Map.fromList
@@ -38,6 +40,8 @@ behaviors =
       , ("feast-turner", worshiper "ruth-turner" (Just "St. Mary's Hospital"))
       , ("feast-hill", worshiper "alma-hill" (Just "Historical Society"))
       ]
+    & #customAfterTests
+    .~ Map.fromList [("alma-hill", almaHill)]
 
 {- | Draws a set-aside worshiper onto the board, at the space its card names or
 engaged with whoever turned the card up. The card that did it goes back to the
@@ -66,6 +70,54 @@ worshiper wcode mplace ctx = do
 worshipers :: [CardCode]
 worshipers =
   ["alma-hill", "billy-cooper", "herman-collins", "masked-hunter", "ruth-turner", "wolf-man-drew"]
+
+{- | A worshiper leaves the game once they are dealt with, and four of them print
+something of their own on top of that.
+-}
+worshiperBehavior :: CardCode -> MonsterBehavior
+worshiperBehavior w = (defaultMonsterBehavior & #removedWhenDefeated .~ True) & own
+ where
+  rules = SourceRules
+  own = case w of
+    -- "After you defeat Alma, test lore. If you fail, you draw two tokens."
+    "alma-hill" ->
+      #afterDefeated
+        .~ \_ src -> pure case src of
+          SourceInvestigator iid ->
+            [BeginTest (newTest iid Lore 0 OtherTest (AfterCustom (SourceInvestigator iid) "alma-hill"))]
+          _ -> []
+    -- "If you defeat another monster while engaged with Billy, he is also defeated."
+    "billy-cooper" -> #afterAnotherDefeated .~ \mid _ _ -> pure [DefeatMonster mid rules]
+    {- "After you perform a focus action while engaged with Herman, you may spend
+    two focus to defeat him." -}
+    "herman-collins" -> #afterAction .~ hermanCollins
+    -- "After you disengage Ruth, she is defeated."
+    "ruth-turner" -> #afterDisengage .~ \mid _ -> pure [DefeatMonster mid rules]
+    _ -> id
+
+hermanCollins :: CardId -> InvestigatorId -> ActionKind -> GameM [Message]
+hermanCollins mid iid kind = do
+  i <- getInvestigator iid
+  let held = sum (Map.elems i.focus)
+      ctx = EffectCtx {investigator = iid, source = SourceRules, testResult = Nothing}
+  when (kind == FocusAction && held >= 2)
+    $ chooseFor
+      iid
+      "Spend two focus to deal with Herman Collins?"
+      [ label
+          "Spend two focus"
+          [ResolveEffect ctx (Pay (SpendFocus 2) NoEffect), DefeatMonster mid SourceRules]
+      , label "Leave him" []
+      ]
+  pure []
+
+-- | Alma's parting shot: "If you fail, you draw two tokens from the mythos cup."
+almaHill :: Source -> Int -> GameM ()
+almaHill src result = when (result <= 0) case src of
+  SourceInvestigator iid -> do
+    ps <- use #players
+    for_ [p.id | p <- ps, p.investigator == Just iid] \pid -> pushAll [DrawMythosToken pid, DrawMythosToken pid]
+  _ -> pure ()
 
 {- | Card 10. Three clues on the sheet buy Lita Chantler's help, which turns the
 neighborhood decks into a hunt for the worshipers: one card shuffled near the top

@@ -35,7 +35,6 @@ behaviors =
       , -- "After you disengage this monster, ..."
         ("lodge-enforcer", onDisengage \_ iid -> pure [SufferHarm iid rules NormalHarm 0 1])
       , ("lodge-loyalist", onDisengage \mid _ -> doomWhereItStands mid)
-      , ("ruth-turner", onDisengage \mid _ -> pure [DefeatMonster mid rules])
       , -- "Reward -- After you defeat this monster as part of an attack action, ..."
         ("ghoul-priest", reward curioItem)
       , ("high-priest", reward spell)
@@ -46,17 +45,16 @@ behaviors =
         ("enraged-dreamer", onDefeatBy \iid -> pure [SufferHarm iid rules NormalHarm 0 1])
       , ("hybrid-thug", onDefeatBy \iid -> pure [SufferHarm iid rules NormalHarm 0 1])
       , ("accursed-somnambulist", onDefeatBy (testAfterwards Will 0 "somnambulist"))
-      , ("alma-hill", onDefeatBy (testAfterwards Lore 0 "alma-hill"))
       , -- the rest, each its own shape
         ("ghoul-acolyte", defaultMonsterBehavior & #afterEvaded .~ \mid _ -> crawlToward mid)
       , ("terrified-wanderer", defaultMonsterBehavior & #afterEngaged .~ terrifiedWanderer)
       , ("declan-pearce", defaultMonsterBehavior & #afterAttackAction .~ declanPearce)
-      , ("herman-collins", defaultMonsterBehavior & #testOptions .~ hermanCollins)
+      , -- "You cannot evade or disengage this monster, and it cannot engage anyone else."
+        ("grim-spectre", defaultMonsterBehavior & #holdsItsQuarry .~ True)
       ]
     & #customAfterTests
     .~ Map.fromList
       [ ("somnambulist", \src r -> whenFailed src r \iid -> [GainConditionMsg iid "CURSED"])
-      , ("alma-hill", almaHill)
       , ("terrified-wanderer", terrifiedWandererResult)
       ]
 
@@ -155,15 +153,6 @@ whenFailed src result f = when (result <= 0) case src of
   SourceInvestigator iid -> pushAll (f iid)
   _ -> pure ()
 
--- | Alma Hill: "If you fail, you draw two tokens from the mythos cup."
-almaHill :: Source -> Int -> GameM ()
-almaHill src result = when (result <= 0) case src of
-  SourceInvestigator iid -> do
-    ps <- use #players
-    for_ [p.id | p <- ps, p.investigator == Just iid] \pid ->
-      pushAll [DrawMythosToken pid, DrawMythosToken pid]
-  _ -> pure ()
-
 -- | "it moves one space toward the unstable space"
 crawlToward :: CardId -> GameM [Message]
 crawlToward mid = pure [MonsterStep mid 1 (TowardSpaces UnstableSpace)]
@@ -202,20 +191,3 @@ declanPearce mid iid _ = do
     , label "Let him go" [DisengageMonster iid mid]
     ]
   pure []
-
-{- | "After you perform a focus action while engaged with Herman, you may spend
-two focus to defeat him." Nothing the engine offers answers a focus action, so it
-is offered on any test he is part of instead, which is as close as the hooks get.
--}
-hermanCollins :: CardId -> InvestigatorId -> TestState -> GameM [Reaction]
-hermanCollins mid iid _ = do
-  i <- getInvestigator iid
-  let held = sum (Map.elems i.focus)
-  pure
-    [ Reaction
-        { key = "herman-collins"
-        , label = "Spend two focus to deal with Herman Collins"
-        , messages = [ResolveEffect (ctxFor iid) (Pay (SpendFocus 2) NoEffect), DefeatMonster mid rules]
-        }
-    | held >= 2
-    ]

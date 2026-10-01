@@ -381,6 +381,12 @@ data MonsterBehavior = MonsterBehavior
   -- ^ what it does to whoever it has just closed with
   , afterEvaded :: CardId -> InvestigatorId -> GameM [Message]
   -- ^ what it does once someone has slipped past it
+  , afterAction :: CardId -> InvestigatorId -> ActionKind -> GameM [Message]
+  -- ^ what it makes of an action taken by whoever it is engaged with
+  , afterAnotherDefeated :: CardId -> CardId -> InvestigatorId -> GameM [Message]
+  {- ^ what it makes of another monster going down beside it, while it is engaged
+  with whoever did it (Billy Cooper)
+  -}
   , afterAttackAction :: CardId -> InvestigatorId -> Bool -> GameM [Message]
   {- ^ what it does about having been attacked at all, damage dealt or not, the
   way Retaliate answers the action rather than the damage
@@ -411,6 +417,8 @@ defaultMonsterBehavior =
     , afterDefeated = \_ _ -> pure []
     , afterEngaged = \_ _ -> pure []
     , afterEvaded = \_ _ -> pure []
+    , afterAction = \_ _ _ -> pure []
+    , afterAnotherDefeated = \_ _ _ -> pure []
     , afterAttackAction = \_ _ _ -> pure []
     , afterDisengage = \_ _ -> pure []
     , holdsItsQuarry = False

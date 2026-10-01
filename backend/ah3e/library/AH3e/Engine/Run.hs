@@ -232,6 +232,7 @@ runMessage msg = case msg of
       <> [CheckReactions (AfterMoveDistance iid moved) [] | kind == MoveAction]
       <> [CheckReactions (AfterAnyAction iid kind) []]
       <> [CheckReactions (AnotherPerformsAction o.id iid kind) [] | o <- others]
+      <> [MonstersWatchAction iid kind]
       <> [ActionTurn iid | t == Just iid, ph == ActionPhase]
   EndActionTurn iid -> do
     investigatorL iid . #active .= False
@@ -828,7 +829,12 @@ runMessage msg = case msg of
     -- read the monster's traits while it is still on the board
     fromCards <- cardsAboutDefeat mid src
     own <- monsterBehavior mid >>= \b -> b.afterDefeated mid src
-    pushAll (DiscardMonster mid : answers <> fromCards <> own)
+    beside <- case src of
+      SourceInvestigator iid -> do
+        ms <- filter ((/= mid) . (.card)) <$> engagedMonsters iid
+        concat <$> for ms \m -> monsterBehavior m.card >>= \b -> b.afterAnotherDefeated m.card mid iid
+      _ -> pure []
+    pushAll (DiscardMonster mid : answers <> fromCards <> own <> beside)
   DiscardMonster mid -> do
     d <- monsterDef mid
     gone <- (.removedWhenDefeated) <$> monsterBehavior mid
@@ -978,6 +984,10 @@ runMessage msg = case msg of
             [ Choice (MonsterLabel m) [EvadedMonster iid m, EvadeMonsters iid (n - 1)]
             | m <- ms
             ]
+  MonstersWatchAction iid kind -> do
+    ms <- engagedMonsters iid
+    answers <- for ms \m -> monsterBehavior m.card >>= \b -> b.afterAction m.card iid kind
+    pushAll (concat answers)
   MonsterEngaged iid mid -> do
     here <- uses #monsters (Map.member mid)
     when here $ monsterBehavior mid >>= \b -> b.afterEngaged mid iid >>= pushAll

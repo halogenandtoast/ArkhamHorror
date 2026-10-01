@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { nextTick, ref, onMounted, onBeforeUnmount, useId } from 'vue'
+import { nextTick, ref, onMounted, onUpdated, onBeforeUnmount, useId } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSettings } from '@/stores/settings'
 
@@ -340,6 +340,14 @@ onMounted(async () => {
 function handleWindowResize() {
   placeModal()
 }
+
+// The board can gain something worth avoiding after the window is placed -- a
+// forced ability button turning a location interactable mid skill test. Only a
+// refresh moved the window aside, because avoidance was sampled once on mount.
+onUpdated(() => {
+  if (!props.avoidSelector || hasBeenDragged.value) return
+  nextTick(() => placeModal())
+})
 
 onBeforeUnmount(() => {
   const el = draggable.value

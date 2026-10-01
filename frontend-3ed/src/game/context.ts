@@ -46,7 +46,7 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   faces read the other way round from a codex card's. */
   const NUMBER_FACING_OUT = new Set([13, 14, 15, 16, 17])
   const archiveArt = (code: string, flipped: boolean) => {
-    const m = /^(feast|echoes|vot|sot|sitd)-(\d{1,2})$/.exec(code)
+    const m = /^(feast|echoes|vot|sot|sitd|archive)-(\d{1,3})$/.exec(code)
     if (!m) return null
     const n = +m[2]
     return archiveImage(n, m[1] === 'feast' && NUMBER_FACING_OUT.has(n) ? !flipped : flipped)
@@ -70,6 +70,10 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     sitd: 'shots-in-the-dark',
     sot: 'silence-of-tsathoggua',
     vot: 'veil-of-twilight',
+    tyrants: 'tyrants-of-ruin',
+    lantern: 'the-pale-lantern',
+    ithaqua: 'ithaquas-children',
+    rlyeh: 'dreams-of-rlyeh',
   }
   const eventImage = (cid: CardId | null | undefined) => {
     if (cid == null) return null

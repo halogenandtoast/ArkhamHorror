@@ -34,9 +34,17 @@ import AH3e.Content.Scenarios
 import AH3e.Content.Special qualified as Special
 import AH3e.Content.Spells qualified as Spells
 import AH3e.Content.StreetCards qualified as StreetCards
+import AH3e.Content.UnderDarkWaves.Anomalies qualified as UnderDarkWavesAnomalies
+import AH3e.Content.UnderDarkWaves.Archive qualified as UnderDarkWavesArchive
+import AH3e.Content.UnderDarkWaves.DreamsOfRlyeh qualified as DreamsOfRlyeh
 import AH3e.Content.UnderDarkWaves.Investigators qualified as UnderDarkWavesInvestigators
+import AH3e.Content.UnderDarkWaves.IthaquasChildren qualified as IthaquasChildren
 import AH3e.Content.UnderDarkWaves.Mysteries qualified as UnderDarkWavesMysteries
 import AH3e.Content.UnderDarkWaves.NeighborhoodCards qualified as UnderDarkWavesNeighborhoodCards
+import AH3e.Content.UnderDarkWaves.Terrors qualified as UnderDarkWavesTerrors
+import AH3e.Content.UnderDarkWaves.ThePaleLantern qualified as ThePaleLantern
+import AH3e.Content.UnderDarkWaves.TravelRoutes qualified as UnderDarkWavesTravelRoutes
+import AH3e.Content.UnderDarkWaves.TyrantsOfRuin qualified as TyrantsOfRuin
 import AH3e.Prelude
 import AH3e.Types.Card
 import AH3e.Types.Ids
@@ -86,6 +94,14 @@ cardDefs =
           <> NeighborhoodCards.cards
           <> UnderDarkWavesNeighborhoodCards.cards
           <> UnderDarkWavesMysteries.cards
+          <> UnderDarkWavesTravelRoutes.cards
+          <> UnderDarkWavesAnomalies.cards
+          <> UnderDarkWavesTerrors.cards
+          <> UnderDarkWavesArchive.cards
+          <> TyrantsOfRuin.cards
+          <> ThePaleLantern.cards
+          <> IthaquasChildren.cards
+          <> DreamsOfRlyeh.cards
           <> StreetCards.cards
           <> Items.cards
           <> Spells.cards
@@ -123,6 +139,10 @@ scenarioDefs =
         , VeilOfTwilight.scenario
         , SilenceOfTsathoggua.scenario
         , ShotsInTheDark.scenario
+        , TyrantsOfRuin.scenario
+        , ThePaleLantern.scenario
+        , DreamsOfRlyeh.scenario
+        , IthaquasChildren.scenario
         ]
     ]
 

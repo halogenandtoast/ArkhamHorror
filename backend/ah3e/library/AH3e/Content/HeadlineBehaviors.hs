@@ -29,6 +29,8 @@ behaviors =
           , ("big-city-burglars-busted", bigCityBurglarsBusted)
           , ("rumor-something-rotten", somethingRotten)
           , ("discard-richest-item", discardRichestItem)
+          , ("piscine-pox-onset", piscinePoxOnset)
+          , ("rumor-piscine-pox", piscinePoxReckoning)
           ]
     }
 
@@ -139,3 +141,26 @@ discardRichestItem _ = do
       chooseGroup
         "Discard the item in the display with the highest value"
         [Choice (CardLabel c) [DiscardFromDisplay c, RefillDisplay] | (c, v) <- valued, v == best]
+
+{- | "Each investigator's health is reduced by one." The reduction itself is read
+off the rumor by 'investigatorHealth'; this only makes sure anyone already carrying
+that much damage is checked against their new, lower health.
+-}
+piscinePoxOnset :: EffectCtx -> GameM ()
+piscinePoxOnset _ = do
+  invs <- playingInvestigators
+  pushAll [CheckDefeat i.id | i <- invs]
+
+{- | "Reckoning-Any investigator may suffer three damage to discard this card."
+A costlier door out than the usual clue, so it is offered to the whole table.
+-}
+piscinePoxReckoning :: EffectCtx -> GameM ()
+piscinePoxReckoning ctx = do
+  invs <- playingInvestigators
+  chooseGroup "Suffer three damage to discard the rumor?"
+    $ [ Choice
+          (InvestigatorLabel i.id)
+          [SufferHarm i.id ctx.source NormalHarm 3 0, DiscardRumor]
+      | i <- invs
+      ]
+    <> [Choice (DoneLabel "Keep the rumor") []]

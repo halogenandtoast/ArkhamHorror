@@ -14,7 +14,7 @@ import AH3e.Types.Skill
 import Data.Text qualified as T
 
 cards :: [CardDef]
-cards = fromBox UnderDarkWaves devilReef
+cards = fromBox UnderDarkWaves (devilReef <> strangeHighHouse)
 
 card :: Text -> Int -> (Text, Effect) -> [(Text, Text, Effect)] -> CardDef
 card place n (intro, introEffect) branches =
@@ -172,6 +172,147 @@ devilReef =
         ( "Overpower Him"
         , "You board the small vessel and move to wrench the weapon out of his hand (strength). If you fail, he slashes wildly with the damaged weapon, and rakes the blade heavily across your arms and hands; suffer two damage. Whether you pass or not, you are able to subdue the wounded man and open the battered locker; gain one curio."
         , Seq [Test Strength 0 NoEffect (damage 2), curioItem]
+        )
+      ]
+  ]
+
+strangeHighHouse :: [CardDef]
+strangeHighHouse =
+  [ card
+      "Strange High House"
+      1
+      ( "Your attempt to scale the stone ledges of Kingsport Head is stymied by the wind, but something is reacting to your presence. Remove one doom from any space. The wind threatens to tear you from the hard gray stone. You may find a cave to take shelter or put your head down and power through."
+      , RemoveDoomFrom AnySpaceWithDoom (N 1)
+      )
+      [
+        ( "Find a Cave"
+        , "Safe from the wind, you find strange text scrawled over the interior of this cave by an unknown hand. You may become delayed to stay in this cavern and decode the script. If you do, gain one spell. If you refuse, you leave the cave when the wind dies down, only to find no trace of it when you turn to look back again."
+        , mayPay CostDelayed spell
+        )
+      ,
+        ( "Power Through"
+        , "Undeterred by the trial before you, you crawl through the wind toward the beckoning fire that lights the High House (strength). If you pass, William Bain is impressed that you managed to reach the place; become BLESSED. If you fail, a sudden gust rips you from the stone and into the foggy air; move directly to the unstable space."
+        , Test Strength 0 blessed (MoveDirectlyTo TheUnstableSpace)
+        )
+      ]
+  , card
+      "Strange High House"
+      2
+      ( "As you scale the treacherous rocks of Kingsport Head, you see a softly glowing lantern bobbing along through the mist. Spawn one clue. You hear soft voices, but cannot see very far through the fog. You may attempt to follow the light, or stay quiet until it passes you by."
+      , SpawnOneClue
+      )
+      [
+        ( "Follow the Light"
+        , "You carefully follow the light, but the swirling fog threatens to disorient you (will). If you pass, you calmly greet three tall priests in long blue robes; become BLESSED when the servants of Nodens bestow their master's favor upon you. If you fail, you lose your way completely, and the fog deposits you far away; move directly to the unstable space."
+        , Test Will 0 blessed (MoveDirectlyTo TheUnstableSpace)
+        )
+      ,
+        ( "Stay Quiet"
+        , "With stories of will-o'-the-wisps in mind, you stay quiet until the lights move past (observation). If you pass, you watch a trio of tall, blue-robed figures glide harmlessly past you in the fog; remove one doom from any space. If you fail, the figures find you lurking in the fog, and pronounce their judgment upon you; become CURSED."
+        , Test Observation 0 (RemoveDoomFrom AnySpaceWithDoom (N 1)) cursed
+        )
+      ]
+  , card
+      "Strange High House"
+      3
+      ( "William Bain is collapsed on the floor of the odd old house. As you rush to his aid, you see deep claw marks across his back. \"It might still be here,\" he warns, \"learn these words before it returns.\" Gain one spell. You may treat his wounds or drive off the shadow that attacked him."
+      , spell
+      )
+      [
+        ( "Treat His Wounds"
+        , "The curious old man waves off your attempts to treat his wounds with modern medicine, and instead requests an ancient remedy. You may spend one remnant to apply the poultice he describes to his wounds. If you do, Bain recovers swiftly, and bestows upon you the favor of the White Ship; become BLESSED."
+        , mayPay (SpendRemnants 1) blessed
+        )
+      ,
+        ( "Drive Off The Shadow"
+        , "Standing guard over the fallen man, you try to recall the ancient words that will force his attacker into the light (lore). If you pass, the beast howls with rage and dives away through the open door; remove one doom from any space. If you fail, it surprises and overruns you in a rush of black feathers; suffer one damage and one horror."
+        , Test Lore 0 (RemoveDoomFrom AnySpaceWithDoom (N 1)) (harm 1 1)
+        )
+      ]
+  , card
+      "Strange High House"
+      4
+      ( "The woman on the path with you tells you all about the things she saw in the town below. Spawn one clue. As you climb, you are both harried by shadowy creatures swooping out of the dark night. You may attempt to fight the beasts or shield the woman with your own body while she gets to safety."
+      , SpawnOneClue
+      )
+      [
+        ( "Fight The Beasts"
+        , "With a shout, you attempt to startle the nightgaunts and force them to flee (strength). If you pass, you land one solid blow and they take wing to find easier prey; remove one doom from any space. If you fail, they get past you and seize the woman, dragging her out over the bay far below; suffer two horror as you watch her fall."
+        , Test Strength 0 (RemoveDoomFrom AnySpaceWithDoom (N 1)) (horror 2)
+        )
+      ,
+        ( "Shield the Woman"
+        , "The nightgaunts swarm around you while you buy the woman time to escape. Suffer one damage. When you see she is free, you look for an opportunity to get away yourself (will). If you pass, the grateful and learned traveler teaches you well, gain one spell. If you fail, you don't find an opening; suffer two additional damage."
+        , Seq [damage 1, Test Will 0 spell (damage 2)]
+        )
+      ]
+  , card
+      "Strange High House"
+      5
+      ( "You send an offering to Nodens while you wait for William Bain to return. Remove one doom from any space. You hear a loud rasping shriek as something scrapes its heavy claws across the wooden door. You may throw open the door and drive it away or remain hidden until Bain returns."
+      , RemoveDoomFrom AnySpaceWithDoom (N 1)
+      )
+      [
+        ( "Drive it Away"
+        , "You place your hand on the door's handle and steel your nerves (will). If you pass, you startle the nightgaunt that lurks beyond the portal and drive it off with a blow to the head; become BLESSED. If you fail, you hesitate, and the nightgaunt seizes you roughly by the arm before flying into the mist-shrouded night; move directly to the unstable space."
+        , Test Will 0 blessed (MoveDirectlyTo TheUnstableSpace)
+        )
+      ,
+        ( "Remain Hidden"
+        , "You slide behind a heavy desk and keep still when the door swings open (observation). If you pass, you stay quiet when the intruder quickly searches the room; gain one spell when it knocks a pile of papers to the floor and reveals an arcane diagram. If you fail, the nightgaunt spots you with a blood-curdling screech and flies off; suffer two horror."
+        , Test Observation 0 spell (horror 2)
+        )
+      ]
+  , card
+      "Strange High House"
+      6
+      ( "From outside the house, you see William Bain through an old and warped window, speaking to a woman concealed by a dark hood. Spawn one clue. You may attempt to surreptitiously listen in on their conversation or knock on the glass and get their attention."
+      , SpawnOneClue
+      )
+      [
+        ( "Listen In"
+        , "Bain converses with his mysterious guest in a language you cannot hope to understand, but something in the rhythm of her words stands out to you (observation). If you pass, you mouth the words only to find that they have power; gain one spell. If you fail, her words conjure images of your own grisly demise; suffer two horror."
+        , Test Observation 0 spell (horror 2)
+        )
+      ,
+        ( "Knock on the Glass"
+        , "At your knock, the woman locks her golden eyes upon you and bids you speak (influence). If you pass, the Priestess of Bast returns your courtesy and tells you a little of your fate; remove one doom from any space. If you fail, the woman hisses in an unknown tongue and your mind grows cloudy before she vanishes; become CURSED."
+        , Test Influence 0 (RemoveDoomFrom AnySpaceWithDoom (N 1)) cursed
+        )
+      ]
+  , card
+      "Strange High House"
+      7
+      ( "On the high rocks, enveloped in otherworldly fog, you may focus two skills of your choice, even if it exceeds your limit. You see the sails and rigging of a ship just below you. You've climbed so high; surely the water cannot be so near? You may call out to the crew of the vessel or attempt to sneak aboard."
+      , May "Focus two skills, even beyond your limit" (Seq [focusExceed, focusExceed])
+      )
+      [
+        ( "Call Out"
+        , "When the sailors react to your call, you take stock of their odd clothing and introduce yourself (influence). If you pass, the crew of the White Ship welcomes you aboard and offers their help; remove one doom from any space. If you fail, the crew casts you back onto the rocks and the ship heaves out of view; suffer two damage."
+        , Test Influence 0 (RemoveDoomFrom AnySpaceWithDoom (N 1)) (damage 2)
+        )
+      ,
+        ( "Sneak Aboard"
+        , "You drop onto the deck as quietly as you can, and are startled to see the crew conversing wordlessly with a nightgaunt (will). If you pass, you watch quietly and learn how the crew of the White Ship manipulates reality; gain one spell. If you fail, the nightgaunt howls when it hears your sharp intake of breath; suffer two horror."
+        , Test Will 0 spell (horror 2)
+        )
+      ]
+  , card
+      "Strange High House"
+      8
+      ( "While you rest at the warm hearth in the house atop Kingsport Rock, a gust of cold wind slams the heavy door open and snuffs out the fire. Spawn one clue. You suddenly feel particularly vulnerable in this cold and drafty house. You may rush to close the door or attempt to relight the fire."
+      , SpawnOneClue
+      )
+      [
+        ( "Close the Door"
+        , -- the card prints "in any space" here, where its siblings print "from"
+          "You run to close the door, and feel something pushing against the old, scarred wood (strength). If you pass, you force the door closed and drop the heavy iron bar, preventing the beast from reaching your world; remove one doom in any space. If you fail, heavy black limbs snake around the edges of the door and rend your skin; suffer two damage."
+        , Test Strength 0 (RemoveDoomFrom AnySpaceWithDoom (N 1)) (damage 2)
+        )
+      ,
+        ( "Relight the Fire"
+        , "You hurry to the fireplace to hold the dark and chill at bay (lore). If you pass, you read the incantation over the hearth and the fire blazes to life; gain one spell when the text dances before your eyes, revealing a new incantation. If you fail, the darkness surrounds you; become CURSED."
+        , Test Lore 0 spell cursed
         )
       ]
   ]

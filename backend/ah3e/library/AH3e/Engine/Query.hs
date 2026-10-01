@@ -197,8 +197,22 @@ focusLimit iid = do
       | otherwise -> pure Nothing
   pure ((+ bonus) <$> maybe base Just counted)
 
+-- | Whether that rumor headline is the one sitting in the codex.
+rumorInPlay :: CardCode -> GameM Bool
+rumorInPlay code = do
+  mr <- use #rumor
+  codes <- traverse (cardCode . (.card)) mr
+  pure (codes == Just code)
+
+{- | Printed health, less what a rumor has taken off it. Piscine Pox reduces
+every investigator's health while it is in the codex; the floor keeps a card from
+reducing anyone to nothing.
+-}
 investigatorHealth :: InvestigatorId -> GameM Int
-investigatorHealth iid = (.health) <$> getInvestigatorDef iid
+investigatorHealth iid = do
+  base <- (.health) <$> getInvestigatorDef iid
+  plague <- rumorInPlay "piscine-pox-paralyzes-port"
+  pure (max 1 (base - (if plague then 1 else 0)))
 
 investigatorSanity :: InvestigatorId -> GameM Int
 investigatorSanity iid = (.sanity) <$> getInvestigatorDef iid

@@ -31,7 +31,7 @@ unless' :: Text -> Effect -> Text -> Effect -> Effect
 unless' sufferLabel suffer otherLabel other = Choose [(sufferLabel, suffer), (otherLabel, other)]
 
 cards :: [CardDef]
-cards = core <> fromBox DeadOfNight deadOfNight
+cards = core <> fromBox DeadOfNight deadOfNight <> fromBox UnderDarkWaves underDarkWaves
 
 core :: [CardDef]
 core =
@@ -312,4 +312,41 @@ deadOfNight =
       "Add this card to the codex and discard all other rumor headlines. Discard the item in the display with the highest value. While this card is in the codex, reduce the size of the display by one card."
       (Custom "discard-richest-item")
       Nothing
+  ]
+
+-- | "You may focus up to two skills of your choice, even if it exceeds your focus limit."
+focusUpToTwo :: Effect
+focusUpToTwo =
+  Seq
+    [ May "Focus a skill, even beyond your limit" focusExceed
+    , May "Focus another skill, even beyond your limit" focusExceed
+    ]
+
+underDarkWaves :: [CardDef]
+underDarkWaves =
+  [ headline
+      "cattle-cowed-by-coyotes"
+      42
+      "Cattle Cowed by Coyotes"
+      "Test (will) and resolve the effect based on your test result: 0: Become TAINTED. 1-2: Become TAINTED. Then you may focus up to two skills of your choice, even if it exceeds your focus limit. 3+: You may focus up to two skills of your choice, even if it exceeds your focus limit."
+      (graded Will tainted (Seq [tainted, focusUpToTwo]) focusUpToTwo)
+  , headline
+      "lunar-eclipse-looms"
+      41
+      "Lunar Eclipse Looms"
+      "You become TAINTED unless you discard one spell."
+      (unless' "Become TAINTED" tainted "Discard one spell" (Pay (CostDiscard SpellCard) NoEffect))
+  , rumorWith
+      "piscine-pox-paralyzes-port"
+      43
+      "Piscine Pox Paralyzes Port"
+      "Add this card to the codex and discard all other rumor headlines. Each investigator's health is reduced by one. Reckoning—Any investigator may suffer three damage to discard this card."
+      (Custom "piscine-pox-onset")
+      (Just (Custom "rumor-piscine-pox"))
+  , headline
+      "weather-keeps-on-the-sunny-side"
+      40
+      "Weather Keeps on the Sunny Side"
+      "If there is no doom in your space, become delayed."
+      (If (Not (CountAtLeast DoomInYourSpace 1)) delayed NoEffect)
   ]

@@ -6,7 +6,7 @@ import { useGame } from '@/game/context'
 import OutlineFilter from '@/game/OutlineFilter.vue'
 import SpaceChips from '@/game/SpaceChips.vue'
 import Tok from '@/game/Tok.vue'
-import { HUB_R, STREET_H, STREET_W, TILE_H, TILE_W, cssName } from '@/game/util'
+import { CONNECTOR_W, HUB_R, STREET_H, STREET_W, TILE_H, TILE_W, cssName } from '@/game/util'
 import type { Game, Layout } from '@/types'
 
 const ctx = useGame()
@@ -31,11 +31,43 @@ const geo = computed(() => {
 })
 
 const streetType = (sid: string) => (g.value.board.spaces[sid]?.kind?.contents ?? 'Residential').toLowerCase()
+/* Streets are drawn from streets/, while travel routes, mysteries and thresholds
+-- the pieces that join or hang off the map -- are drawn from connectors/. A
+mystery is named for itself (devil-reef); the rest are named for their type. */
+const CONNECTOR: Record<string, string> = {
+  CountryRoad: 'country-roads',
+  FerryTerminal: 'ferry-terminal',
+  TrainPlatform: 'train-platform',
+  HiddenPath: 'hidden-path',
+  DerelictPortal: 'derelict-portal',
+  WildGateway: 'wild-gateway',
+}
+const connectorArt = (sid: string) => {
+  const kind = g.value.board.spaces[sid]?.kind
+  if (kind?.tag === 'MysterySpace') return sid
+  const connector = kind?.contents && CONNECTOR[kind.contents as string]
+  return connector || null
+}
+const spaceArt = (sid: string) => {
+  const connector = connectorArt(sid)
+  return connector ? img(`connectors/${connector}.webp`) : img(`streets/${streetType(sid)}.webp`)
+}
 const streetAngle = (a: number) => {
   let angle = a % 360
   if (angle > 90 && angle <= 270) angle -= 180
   return angle
 }
+/* A street is a symmetric strip laid along the line joining its two tiles, so
+either way round reads the same and the angle folds to the nearer half turn. A
+connector hangs off a single edge, and the tab it joins by is the bottom of its
+art; the backend gives that edge's outward normal, so the bottom has to come
+round to face back along it. */
+const spaceAngle = (sid: string, a: number) => (connectorArt(sid) ? a + 90 : streetAngle(a))
+// a street fills its box; a connector is drawn to fit a smaller square one, keeping its own shape
+const spaceBox = (sid: string) =>
+  connectorArt(sid)
+    ? { w: CONNECTOR_W, h: CONNECTOR_W, fit: 'xMidYMid meet' }
+    : { w: STREET_W, h: STREET_H, fit: 'none' }
 
 interface Shape {
   sid: string
@@ -47,6 +79,7 @@ interface Shape {
   y: number
   w: number
   h: number
+  fit: string
   transform?: string
 }
 // the outline of one space: a location's wedge of its tile, or a street's body between the tiles
@@ -75,27 +108,49 @@ function spaceShape(game: Game, L: Layout, px: (n: number) => number, py: (n: nu
       y: py(t.y) - TILE_H / 2,
       w: TILE_W,
       h: TILE_H,
+      fit: 'none',
     }
   }
   const st = L.streets.find((st) => st.space === sid)
   if (!st) return null
-  const angle = streetAngle(st.angle)
+  const angle = spaceAngle(sid, st.angle)
   const cx = px(st.x),
     cy = py(st.y)
   // the whole tile, letting its own alpha set the border as a neighborhood tile's does
+  const box = spaceBox(sid)
   return {
     sid,
     key,
     clipId: null,
     clipD: null,
-    href: img(`streets/${streetType(sid)}.webp`),
-    x: cx - STREET_W / 2,
-    y: cy - STREET_H / 2,
-    w: STREET_W,
-    h: STREET_H,
+    href: spaceArt(sid),
+    x: cx - box.w / 2,
+    y: cy - box.h / 2,
+    w: box.w,
+    h: box.h,
+    fit: box.fit,
     transform: `rotate(${angle} ${cx} ${cy})`,
   }
 }
+
+// every street-like space as it is drawn: a street fills its box, a connector fits inside a smaller one
+const streetPieces = computed(() => {
+  const G = geo.value
+  if (!G) return []
+  return G.L.streets.map((st) => {
+    const box = spaceBox(st.space)
+    return {
+      sid: st.space,
+      href: spaceArt(st.space),
+      x: G.px(st.x) - box.w / 2,
+      y: G.py(st.y) - box.h / 2,
+      w: box.w,
+      h: box.h,
+      objectFit: (box.fit === 'none' ? 'fill' : 'contain') as 'fill' | 'contain',
+      angle: spaceAngle(st.space, st.angle),
+    }
+  })
+})
 
 const outlined = computed(() => {
   const G = geo.value
@@ -479,15 +534,16 @@ onUnmounted(() => {
       <div v-if="geo" ref="fitEl" class="board-fit">
         <div ref="boardEl" class="board" :style="{ width: `${geo.width}px`, height: `${geo.height}px` }">
           <img
-            v-for="st in geo.L.streets"
-            :key="`street-${st.space}`"
-            :src="img(`streets/${streetType(st.space)}.webp`)"
+            v-for="st in streetPieces"
+            :key="`street-${st.sid}`"
+            :src="st.href"
             :style="{
-              left: `${geo.px(st.x) - STREET_W / 2}px`,
-              top: `${geo.py(st.y) - STREET_H / 2}px`,
-              width: `${STREET_W}px`,
-              height: `${STREET_H}px`,
-              transform: `rotate(${streetAngle(st.angle)}deg)`,
+              left: `${st.x}px`,
+              top: `${st.y}px`,
+              width: `${st.w}px`,
+              height: `${st.h}px`,
+              objectFit: st.objectFit,
+              transform: `rotate(${st.angle}deg)`,
             }"
           />
           <img
@@ -523,7 +579,7 @@ onUnmounted(() => {
                 :y="s.y"
                 :width="s.w"
                 :height="s.h"
-                preserveAspectRatio="none"
+                :preserveAspectRatio="s.fit"
                 :clip-path="s.clipId ? `url(#${s.clipId})` : undefined"
                 :transform="s.transform"
               />
@@ -549,7 +605,7 @@ onUnmounted(() => {
                 :y="s.y"
                 :width="s.w"
                 :height="s.h"
-                preserveAspectRatio="none"
+                :preserveAspectRatio="s.fit"
                 :clip-path="s.clipId ? `url(#${s.clipId})` : undefined"
                 :transform="s.transform"
               />

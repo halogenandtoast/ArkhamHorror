@@ -3,11 +3,16 @@ module AH3e.Content.Tiles (
   Edge (..),
   TileDef (..),
   StreetDef (..),
+  RouteDef (..),
+  MysteryTile (..),
+  ClusterLink (..),
   tiles,
   tile,
   spaceIdFor,
   edgeSpaces,
   buildMap,
+  buildMapWith,
+  buildMapLaidOut,
 ) where
 
 import AH3e.Prelude
@@ -37,6 +42,24 @@ data StreetDef = StreetDef
   , to :: NeighborhoodId
   , streetType :: StreetType
   }
+
+{- | A travel route hanging off one tile's edge. It is a space of its own,
+bordering only that tile; the engine already treats routes of the same type as
+adjacent to each other, so nothing joins them here.
+-}
+data RouteDef = RouteDef {from :: NeighborhoodId, edge :: Edge, routeType :: RouteType}
+
+{- | A mystery attached to one tile's edge (Devil Reef, the Strange High House).
+Unlike a street or a route it belongs to the neighborhood it hangs off, so doom
+placed there counts toward that neighborhood's total (Under Dark Waves, p. 8).
+-}
+data MysteryTile = MysteryTile {from :: NeighborhoodId, edge :: Edge, name :: Text}
+
+{- | Where a cluster of tiles no street reaches is set out: the edge of an already
+placed tile it is laid against. Nothing connects along it -- it only says where
+the tiles go, the way they would be put down on the table.
+-}
+data ClusterLink = ClusterLink {from :: NeighborhoodId, edge :: Edge, to :: NeighborhoodId}
 
 slug :: Text -> Text
 slug =
@@ -149,11 +172,40 @@ streetLength, anchorRadius :: Double
 streetLength = 0.37
 anchorRadius = 0.3
 
-placeTiles :: [NeighborhoodId] -> [StreetDef] -> [(NeighborhoodId, (Double, Double))]
-placeTiles [] _ = []
-placeTiles (origin : _) streets = go [(origin, (0, 0))] [origin]
+{- | How deep a connector is drawn and how much of that depth is the tab it joins
+by, both as a fraction of the tile's width (the frontend's @CONNECTOR_W@ over the
+art's own proportions comes to the first). A connector is not street sized, so it
+is seated by its own depth rather than in the slot a street would take: its
+shoulder lands on the tile's edge and the tab reaches into the notch.
+-}
+connectorDepth, connectorTab :: Double
+connectorDepth = 0.38
+connectorTab = 0.2
+
+-- | How far apart two unconnected clusters of tiles are set out.
+clusterGap :: Double
+clusterGap = 2
+
+{- | Where each tile sits. A scenario's tiles need not form one connected group --
+several Under Dark Waves maps are two separate clusters joined only by travel
+routes -- so each cluster is laid out from its own origin and then shifted clear
+of the ones already placed, the way they would be set out on the table.
+-}
+placeTiles
+  :: [NeighborhoodId] -> [StreetDef] -> [ClusterLink] -> [(NeighborhoodId, (Double, Double))]
+placeTiles nids streets clusters = foldl cluster [] nids
  where
-  links = concat [[(s.from, s.edge, s.to), (s.to, opposite s.edge, s.from)] | s <- streets]
+  links =
+    concat [[(s.from, s.edge, s.to), (s.to, opposite s.edge, s.from)] | s <- streets]
+      <> concat [[(c.from, c.edge, c.to), (c.to, opposite c.edge, c.from)] | c <- clusters]
+  cluster placed n
+    | n `elem` map fst placed = placed
+    | otherwise =
+        let here = go [(n, (0, 0))] [n]
+            shift = case placed of
+              [] -> 0
+              _ -> maximum [x | (_, (x, _)) <- placed] + clusterGap - minimum [x | (_, (x, _)) <- here]
+         in placed <> [(k, (x + shift, y)) | (k, (x, y)) <- here]
   go placed [] = placed
   go placed (n : queue) =
     let (x, y) = fromJustNote "placed" (lookup n placed)
@@ -181,16 +233,48 @@ tileSpaces t =
   ]
 
 buildMap :: [NeighborhoodId] -> [StreetDef] -> MapDef
-buildMap nids streets =
+buildMap nids streets = buildMapWith nids streets [] []
+
+-- | 'buildMap', with the travel routes and mysteries that hang off a tile's edges.
+buildMapWith :: [NeighborhoodId] -> [StreetDef] -> [RouteDef] -> [MysteryTile] -> MapDef
+buildMapWith nids streets = buildMapLaidOut nids streets []
+
+{- | 'buildMapWith', told where the clusters of tiles no street reaches are set
+out. Without a link a cluster is simply set down clear of the ones already
+placed; with one it is laid against the edge it names, still joined by nothing.
+-}
+buildMapLaidOut
+  :: [NeighborhoodId] -> [StreetDef] -> [ClusterLink] -> [RouteDef] -> [MysteryTile] -> MapDef
+buildMapLaidOut nids streets clusters routes mysteries =
   MapDef
     { neighborhoods = [NeighborhoodDef t.neighborhood t.name t.town (tileSpaces t) | t <- ts]
     , otherSpaces =
         [SpaceDef (streetId s) (streetName s) (StreetSpace s.streetType) Nothing | s <- streets]
-    , borders = internal <> concatMap streetBorders streets
-    , layout = BoardLayout tilePlacements streetPlacements anchors
+          <> [SpaceDef (routeId r) (routeName r) (TravelRouteSpace r.routeType) Nothing | r <- routes]
+          <> [SpaceDef (spaceIdFor m.name) m.name MysterySpace (Just m.from) | m <- mysteries]
+    , borders =
+        internal
+          <> concatMap streetBorders streets
+          <> concat [hangingBorders (routeId r) r.from r.edge | r <- routes]
+          <> concat [hangingBorders (spaceIdFor m.name) m.from m.edge | m <- mysteries]
+    , layout = BoardLayout tilePlacements (streetPlacements <> hangingPlacements) anchors
     }
  where
-  positions = [(nid, (x, y * rowStretch)) | (nid, (x, y)) <- placeTiles nids streets]
+  routeId r = SpaceId (coerce r.from <> "--" <> routeSlug r.routeType)
+  routeName r = (tile r.from).name <> " – " <> routeLabel r.routeType
+  -- a dangling space borders only the tile spaces along the edge it is attached to
+  hangingBorders sid nid e = [(sid, s, Nothing) | s <- edgeSpaces (tile nid) e]
+  -- it sits where a street to a neighbour would have sat, just outside that edge
+  hangingPlacements =
+    [ StreetPlacement sid (x + reach * cos a) (y + reach * sin a * rowStretch) (edgeDegrees e)
+    | (sid, nid, e) <-
+        [(routeId r, r.from, r.edge) | r <- routes]
+          <> [(spaceIdFor m.name, m.from, m.edge) | m <- mysteries]
+    , let (x, y) = pos nid
+          a = edgeAngle e
+          reach = edgeApothem e + connectorDepth * (0.5 - connectorTab)
+    ]
+  positions = [(nid, (x, y * rowStretch)) | (nid, (x, y)) <- placeTiles nids streets clusters]
   pos nid = fromJustNote ("tile not connected to the map: " <> show nid) (lookup nid positions)
   tilePlacements = [TilePlacement nid x y | (nid, (x, y)) <- positions]
   streetPlacements =
@@ -219,3 +303,18 @@ buildMap nids streets =
     [ (streetId s, sid, Nothing)
     | sid <- edgeSpaces (tile s.from) s.edge <> edgeSpaces (tile s.to) (opposite s.edge)
     ]
+
+routeSlug :: RouteType -> Text
+routeSlug = \case
+  CountryRoad -> "country-road"
+  FerryTerminal -> "ferry-terminal"
+  TrainPlatform -> "train-platform"
+
+routeLabel :: RouteType -> Text
+routeLabel = \case
+  CountryRoad -> "country road"
+  FerryTerminal -> "ferry terminal"
+  TrainPlatform -> "train platform"
+
+edgeDegrees :: Edge -> Double
+edgeDegrees e = edgeAngle e * 180 / pi

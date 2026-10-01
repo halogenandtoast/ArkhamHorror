@@ -199,6 +199,11 @@ export const TILE_W = 240
 export const TILE_H = (TILE_W * 2) / Math.sqrt(3)
 export const STREET_W = 0.534 * TILE_W
 export const STREET_H = 0.537 * TILE_W
+/* A connector hangs off one edge instead of spanning two tiles, so it is not a
+street length. Its box is square and it is drawn to fit, which keeps every
+connector's own proportions -- the art runs from 1.01:1 to 1.20:1 -- rather than
+stretching them all to the street's. */
+export const CONNECTOR_W = 0.85 * STREET_W
 export const HUB_R = 0.135
 
 export const DECK_KEYS = [
@@ -240,6 +245,6 @@ export const TEST_STEPS: [string, string][] = [
 ]
 
 export const archiveImage = (n: number, back: boolean) =>
-  img(`archive/core/${String(n).padStart(3, '0')}${back ? 'b' : ''}.avif`)
+  img(`archive/${String(n).padStart(3, '0')}${back ? 'b' : ''}.avif`)
 
 export const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms))

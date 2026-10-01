@@ -17,14 +17,21 @@ import AH3e.Content.ItemBehaviors qualified as Items
 import AH3e.Content.SpecialBehaviors qualified as Specials
 import AH3e.Content.SpellBehaviors qualified as Spells
 import AH3e.Content.UnderDarkWaves.InvestigatorBehaviors qualified as UnderDarkWavesInvestigators
+import AH3e.Content.UnderDarkWaves.IthaquasChildrenBehaviors qualified as IthaquasChildren
 import AH3e.Content.UnderDarkWaves.StartingBehaviors qualified as UnderDarkWavesStarting
+import AH3e.Content.UnderDarkWaves.TerrorBehaviors qualified as UnderDarkWavesTerrors
+import AH3e.Content.UnderDarkWaves.TyrantsOfRuinBehaviors qualified as TyrantsOfRuin
 import AH3e.Engine.Behavior
 import AH3e.Engine.Helpers
 import AH3e.Engine.Monad
+import AH3e.Engine.Query
 import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
+import AH3e.Types.Board
 import AH3e.Types.Card (MythosToken (..))
+import AH3e.Types.Effect
+import AH3e.Types.Skill
 import AH3e.Types.State
 import Data.Map.Strict qualified as Map
 
@@ -42,6 +49,9 @@ behaviors =
     <> DeadOfNightInvestigators.behaviors
     <> UnderDarkWavesInvestigators.behaviors
     <> UnderDarkWavesStarting.behaviors
+    <> UnderDarkWavesTerrors.behaviors
+    <> TyrantsOfRuin.behaviors
+    <> IthaquasChildren.behaviors
     <> Conditions.behaviors
     <> Allies.behaviors
     <> Headlines.behaviors
@@ -54,6 +64,13 @@ behaviors =
             [ ("clover-club-craps", cloverClubCraps)
             , ("discard-source", discardSource)
             , ("recover-all", recoverAll)
+            , ("spawn-or-research-clue", spawnOrResearchClue)
+            , ("another-investigator-moves", investigatorMoves False)
+            , ("any-investigator-moves", investigatorMoves True)
+            , ("round-of-drinks", roundOfDrinks)
+            , ("travel-onward", travelOnward Nothing)
+            , ("travel-onward:beast", travelOnward (Just beastOnTheTracks))
+            , ("travel-onward:stranger", travelOnward (Just (Test Influence 0 (GainE (AnAlly Nothing)) NoEffect)))
             , ("return-spawn-monster-token", returnSpawnMonsterToken)
             ]
       }
@@ -86,6 +103,68 @@ recoverAll :: EffectCtx -> GameM ()
 recoverAll ctx = do
   i <- getInvestigator ctx.investigator
   push (RecoverInvestigator ctx.investigator i.damage i.horror)
+
+{- | "Spawn or research one clue." Researching moves one of your own clues onto
+the scenario sheet, so it is only offered to someone holding one.
+-}
+spawnOrResearchClue :: EffectCtx -> GameM ()
+spawnOrResearchClue ctx = do
+  i <- getInvestigator ctx.investigator
+  chooseFor ctx.investigator "Spawn or research one clue"
+    $ label "Spawn one clue" [SpawnClue]
+    : [label "Research one clue" [ResearchCluesExact ctx.investigator 1] | i.clues > 0]
+
+{- | "Another investigator may move one space", and the variant that lets the
+reader move themselves. Whoever is reading picks who goes, and that investigator
+chooses where; declining is what makes it a may.
+-}
+investigatorMoves :: Bool -> EffectCtx -> GameM ()
+investigatorMoves includeSelf ctx = do
+  invs <- playingInvestigators
+  let movers = [o | o <- invs, includeSelf || o.id /= ctx.investigator]
+  unless (null movers)
+    $ chooseFor ctx.investigator "Choose an investigator to move one space"
+    $ Choice (DoneLabel "Nobody moves") []
+    : [ Choice (InvestigatorLabel o.id) [ResolveEffect (ctx & #investigator .~ o.id) (MoveUpTo 1)]
+      | o <- movers
+      ]
+
+{- | "You may spend $1 for each ally and investigator in your space to recover one
+sanity." The price is per head, so the dollars are capped at the number of them
+who have any horror to lose; each one buys a single sanity.
+-}
+roundOfDrinks :: EffectCtx -> GameM ()
+roundOfDrinks ctx = do
+  (invs, allies) <- recoverTargets ctx InvestigatorOrAllyInYourSpace 0 1
+  push (ResolveEffect ctx (rounds (length invs + length allies)))
+ where
+  rounds 0 = NoEffect
+  rounds k =
+    MayPay
+      (SpendMoney 1)
+      (Seq [RecoverSanity InvestigatorOrAllyInYourSpace (N 1), rounds (k - 1)])
+      NoEffect
+
+{- | "You may move one space or move to another <route>", which every travel route
+encounter offers. The second option is a direct move to another travel route of
+the same type, so it is only offered where there is one to go to. A card that
+says "if you do" hands over an effect, which rides on the options that move.
+-}
+travelOnward :: Maybe Effect -> EffectCtx -> GameM ()
+travelOnward after ctx = do
+  let iid = ctx.investigator
+  msid <- investigatorSpace iid
+  board <- use #board
+  let elsewhere = maybe [] (`sameRouteSpaces` board) msid
+      onward = [ResolveEffect ctx e | e <- toList after]
+  chooseFor iid "Travel onward?"
+    $ label "Move one space" (ResolveEffect ctx (MoveUpTo 1) : onward)
+    : [Choice (SpaceLabel s) (MoveDirectly iid s : onward) | s <- elsewhere]
+      <> [Choice (DoneLabel "Stay where you are") []]
+
+-- | "The train hits a large beast on the way", for the one card that tests on arrival.
+beastOnTheTracks :: Effect
+beastOnTheTracks = Test Strength 0 (GainE (Remnants (N 1))) (SufferDamage (N 1))
 
 -- | Discards whichever card is resolving the effect, for a card that spends itself.
 discardSource :: EffectCtx -> GameM ()

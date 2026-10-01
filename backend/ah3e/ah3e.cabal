@@ -48,11 +48,22 @@ library
       AH3e.Content.Spells
       AH3e.Content.StreetCards
       AH3e.Content.Tiles
+      AH3e.Content.UnderDarkWaves.Anomalies
+      AH3e.Content.UnderDarkWaves.Archive
+      AH3e.Content.UnderDarkWaves.DreamsOfRlyeh
       AH3e.Content.UnderDarkWaves.InvestigatorBehaviors
       AH3e.Content.UnderDarkWaves.Investigators
+      AH3e.Content.UnderDarkWaves.IthaquasChildren
+      AH3e.Content.UnderDarkWaves.IthaquasChildrenBehaviors
       AH3e.Content.UnderDarkWaves.Mysteries
       AH3e.Content.UnderDarkWaves.NeighborhoodCards
       AH3e.Content.UnderDarkWaves.StartingBehaviors
+      AH3e.Content.UnderDarkWaves.TerrorBehaviors
+      AH3e.Content.UnderDarkWaves.Terrors
+      AH3e.Content.UnderDarkWaves.ThePaleLantern
+      AH3e.Content.UnderDarkWaves.TravelRoutes
+      AH3e.Content.UnderDarkWaves.TyrantsOfRuin
+      AH3e.Content.UnderDarkWaves.TyrantsOfRuinBehaviors
       AH3e.Content.Vocabulary
       AH3e.Engine
       AH3e.Engine.Behavior

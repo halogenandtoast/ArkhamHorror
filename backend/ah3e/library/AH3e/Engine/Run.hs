@@ -810,11 +810,18 @@ runMessage msg = case msg of
         -- check, so a monster this damage already killed is simply no longer there
         -- to strike -- DealMonsterDamage no-ops for a monster out of play.
         answers <- afterMonsterDamagedFor mid src
-        pushAll
-          $ case mh of
-            Just h | m'.damage >= h -> [DefeatMonster mid src]
-            _ -> []
-          <> answers
+        {- Pursuit: struck from somewhere it cannot reach back to, the monster
+        comes after whoever did it. A blow that finishes it earns no chase. -}
+        chase <- case src of
+          SourceInvestigator iid | Pursuit `elem` d.keywords -> do
+            there <- investigatorSpace iid
+            pure
+              [ MonsterStep mid d.speed (TowardPrey (NamedInvestigator iid))
+              | there `notElem` [Nothing, Just m'.space]
+              ]
+          _ -> pure []
+        let defeated = maybe False (m'.damage >=) mh
+        pushAll $ (if defeated then [DefeatMonster mid src] else chase) <> answers
   DefeatMonster mid src -> do
     logText "Monster defeated"
     answers <- codexAboutDefeat mid src

@@ -255,9 +255,9 @@ instance RunMessage RedSunrise where
         , Enemies.theCultEnMasseRingmastersFervor
         , Enemies.devoteeOfTheThousand
         ]
-    ResolveChaosToken _ ElderThing iid
-      | isHardExpert attrs ->
-          moveNearestEnemyTowardInvestigator iid >> pure s
+    ResolveChaosToken _ ElderThing iid | isHardExpert attrs -> do
+      moveNearestEnemyTowardInvestigator iid
+      pure s
     -- "If you do not succeed by X": a pass whose margin is under X counts too.
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ n -> do
       x <- getRowSizeOf iid

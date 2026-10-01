@@ -1577,8 +1577,16 @@ performAction iid kind = do
         iid
         "Choose a skill to focus"
         [Choice (SkillLabel s) [FocusSkill iid s False, after] | s <- options]
-    WardAction ->
-      pushAll [BeginTest (newTest iid Lore 0 (ActionTest WardAction Nothing) (AfterWard iid sid)), after]
+    WardAction -> do
+      alternatives <- codexWardSkills
+      let attempt s = BeginTest (newTest iid s 0 (ActionTest WardAction Nothing) (AfterWard iid sid))
+      case alternatives of
+        [] -> pushAll [attempt Lore, after]
+        _ ->
+          chooseFor
+            iid
+            "Choose the skill for the ward"
+            [Choice (SkillLabel s) [attempt s, after] | s <- Lore : alternatives]
     ResearchAction ->
       pushAll
         [ BeginTest (newTest iid Observation 0 (ActionTest ResearchAction Nothing) (AfterResearch iid))

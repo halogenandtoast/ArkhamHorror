@@ -17,7 +17,7 @@ import AH3e.Types.Board
 import AH3e.Types.Card
 import AH3e.Types.Ids
 import AH3e.Types.State
-import Data.List (partition)
+import Data.List (nub, partition)
 import Data.Map.Strict qualified as Map
 
 data GameOptions = GameOptions
@@ -30,7 +30,14 @@ data GameOptions = GameOptions
   deriving anyclass (ToJSON, FromJSON)
 
 defaultOptions :: GameOptions
-defaultOptions = GameOptions [CoreSet] StandardMode Nothing
+defaultOptions = GameOptions [] StandardMode Nothing
+
+{- | The boxes a table is playing with. The core box is always one of them: every
+other box is an addition to it, and leans on its cards for everything from the
+street deck to the epic monsters a codex card calls up.
+-}
+expansionsOf :: GameOptions -> [Expansion]
+expansionsOf opts = nub (CoreSet : opts.expansions)
 
 emptyGame :: [PlayerId] -> Int -> GameOptions -> Game
 emptyGame pids seed opts =
@@ -38,7 +45,7 @@ emptyGame pids seed opts =
     { scenario = Nothing
     , mode = opts.mode
     , seed = seed
-    , expansions = opts.expansions
+    , expansions = expansionsOf opts
     , nextCardId = 1
     , status = InProgress
     , phase = SetupPhase
@@ -86,7 +93,7 @@ newGame :: [PlayerId] -> Int -> GameOptions -> Either Text Game
 newGame pids seed opts = do
   when (null pids) $ Left "A game needs at least one player"
   when (length pids > 6) $ Left "Arkham Horror supports one to six players"
-  let playable = availableScenarios opts.expansions
+  let playable = availableScenarios (expansionsOf opts)
   when (null playable) $ Left "No playable scenario in the chosen expansions"
   start <- case opts.scenario of
     Nothing -> pure ChooseScenario

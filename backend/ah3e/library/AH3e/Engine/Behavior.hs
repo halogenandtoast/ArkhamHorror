@@ -460,6 +460,10 @@ data CodexBehavior = CodexBehavior
   text says rather than where it was drawn ("whenever your encounter text
   includes...").
   -}
+  , wardSkills :: CodexEntry -> GameM [Skill]
+  {- ^ skills a card lets a ward action be rolled on in place of lore (the Lantern
+  Club's Inner Workings)
+  -}
   , quarrySpaces :: CodexEntry -> GameM [SpaceId]
   {- ^ spaces a monster hunts and makes for as though an investigator were standing
   there (Raze the Shrine's bomb)
@@ -487,6 +491,7 @@ defaultCodexBehavior =
     , reactions = \_ _ _ -> pure []
     , afterAnomaly = \_ _ -> pure []
     , encounterOverride = \_ _ _ -> pure Nothing
+    , wardSkills = \_ -> pure []
     , quarrySpaces = \_ -> pure []
     , afterMonsterArrives = \_ _ _ -> pure []
     , blockedSpaces = \_ -> pure []

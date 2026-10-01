@@ -175,6 +175,8 @@ theSociety =
   defaultCodexBehavior
     { -- "Society Secrets" is the back: an encounter that buys a space back from the doom
       spaceEncounter = \e _ -> if e.flipped then Just (Custom "lantern-secrets") else Nothing
+    , -- "Inner Workings" is the front: the Club's own way of reading a ward
+      wardSkills = \e -> pure [Influence | not e.flipped]
     }
     & #reckoning
     .~ \e -> Just (Custom (if e.flipped then "lantern-watch-reckoning" else "lantern-dues-reckoning"))

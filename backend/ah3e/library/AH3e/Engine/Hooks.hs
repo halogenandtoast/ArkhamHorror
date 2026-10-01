@@ -549,6 +549,15 @@ damagePreventionsFor plan = do
     pure (map (i.id,) (sheet <> cards))
 
 -- | Spaces every monster treats as prey, whoever is or is not standing in them.
+
+{- | What a ward action may be rolled on besides lore; a card in the codex can
+open another way of doing it.
+-}
+codexWardSkills :: GameM [Skill]
+codexWardSkills = do
+  codex <- use #codex
+  nub . concat <$> for codex \e -> (codexBehavior e.number).wardSkills e
+
 codexQuarrySpaces :: GameM [SpaceId]
 codexQuarrySpaces = do
   codex <- use #codex

@@ -331,6 +331,15 @@ getAvailablePrey a = runDefaultMaybeT [] do
       mBearer <- selectOne other
       pure $ maybe [] (\bearer -> [bearer | bearer `elem` iids]) mBearer
 
+{- | Whether a 'CannotBeDefeatedBy' modifier bans a defeat coming from this source. Damage
+defeats an enemy through 'CheckDefeated', which never reaches the 'DefeatEnemy' handler, so
+both gates have to ask.
+-}
+defeatBlockedBySource :: HasGame m => Source -> [ModifierType] -> m Bool
+defeatBlockedBySource source = anyM \case
+  CannotBeDefeatedBy sm -> sourceMatches source sm
+  _ -> pure False
+
 instance RunMessage EnemyAttrs where
   runMessage msg a@EnemyAttrs {..} = runQueueT $ case msg of
     UpdateEnemy eid upd | eid == enemyId -> do
@@ -1815,7 +1824,10 @@ instance RunMessage EnemyAttrs where
               _ -> First Nothing
             mOnlyBeDefeatedByModifier =
               getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
-          let validDefeat = canBeDefeated && not hasSwarm && isNothing mOnlyBeDefeatedByModifier
+          blockedBySource <- defeatBlockedBySource source modifiers'
+          let
+            validDefeat =
+              canBeDefeated && not hasSwarm && isNothing mOnlyBeDefeatedByModifier && not blockedBySource
           when validDefeat $ do
             field EnemyHealth (toId a) >>= traverse_ \modifiedHealth -> do
               when (enemyDamage a >= modifiedHealth) $ do
@@ -1844,9 +1856,11 @@ instance RunMessage EnemyAttrs where
           when (amount' > 0) do
             let (before, _, after) = frame $ Window.PlacedDamage source (toTarget a) amount'
             pushAll [before, after]
+          blockedBySource <- defeatBlockedBySource source modifiers'
           validDefeat <-
             ( ( canBeDefeated
                   && not hasSwarm
+                  && not blockedBySource
               )
                 &&
             )
@@ -1922,13 +1936,7 @@ instance RunMessage EnemyAttrs where
           _ -> First Nothing
         mOnlyBeDefeatedByModifier =
           getFirst $ foldMap canOnlyBeDefeatedByModifier modifiers'
-      blockedBySource <-
-        anyM
-          ( \case
-              CannotBeDefeatedBy sm -> sourceMatches source sm
-              _ -> pure False
-          )
-          modifiers'
+      blockedBySource <- defeatBlockedBySource source modifiers'
       validDefeat <-
         ( ( canBeDefeated
               && (not canOnlyBeDefeatedByDamage || defeatedByDamage)

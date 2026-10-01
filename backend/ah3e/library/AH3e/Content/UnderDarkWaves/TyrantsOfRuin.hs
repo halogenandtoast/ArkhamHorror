@@ -93,7 +93,8 @@ scenario =
           ]
     , startingMarkers = []
     , eventCards = [CardCode ("tyrants-event-" <> pad n) | n <- [1 .. 24 :: Int]]
-    , setAside = []
+    , -- the tyrants cards 65, 66, 67 and 73 call up
+      setAside = ["archive-74", "archive-75"]
     , codex = [61, 62, 63]
     , anomalySet = Nothing
     , terrorSet = Just "Feeding Frenzy"

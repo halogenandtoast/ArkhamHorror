@@ -1082,6 +1082,13 @@ runMessage msg = case msg of
     when exists do
       monsterL mid . #markers %= (<> [Marker colour True])
       logText ("A " <> colour <> " marker is placed on a monster")
+  PlaceNeighborhoodMarker nid colour faceUp -> do
+    n <- getNeighborhood nid
+    neighborhoodL nid . #markers %= (<> [Marker colour faceUp])
+    logText ("A " <> colour <> " marker is placed in " <> n.name)
+  AddSheetClues n -> do
+    #sheetClues += n
+    push CheckStateTriggers
   DiscardMarkers colour -> do
     let drop' = filter ((/= colour) . (.color))
     #board . #spaces . traversed . #markers %= drop'
@@ -1207,11 +1214,8 @@ runMessage msg = case msg of
   ResearchCluesExact iid k -> do
     addClues iid (negate k)
     instead <- sheetCluesInstead k
-    case instead of
-      Just msgs -> pushAll (CheckReactions (AfterCluesResearched iid k) [] : msgs)
-      Nothing -> do
-        #sheetClues += k
-        pushAll [CheckReactions (AfterCluesResearched iid k) [], CheckStateTriggers]
+    pushAll
+      (CheckReactions (AfterCluesResearched iid k) [] : fromMaybe [AddSheetClues k] instead)
   TradeWith iid other -> tradePrompt iid other
   TradeTransfer giver receiver item -> do
     case item of

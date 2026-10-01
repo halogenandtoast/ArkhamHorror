@@ -87,3 +87,38 @@ flipOnSheetClues key n card =
 -- | The common ending: this card's back is read and the investigators have won.
 winOnFlip :: CodexBehavior -> CodexBehavior
 winOnFlip b = b {onFlip = \e -> when e.flipped (push WinTheGame)}
+
+{- | Two scenarios deal a few archive cards out face down and turn them up over
+time: Tyrants of Ruin's relics and Dreams of R'lyeh's four endings. The pile is
+the same thing both times.
+-}
+setInvestigation :: [ArchiveNumber] -> GameM ()
+setInvestigation ns = do
+  deck <- use (#decks . #investigation)
+  taken <- uses #codex (map (.number))
+  when (null deck && not (any (`elem` taken) ns)) do
+    shuffled <- shuffle ns
+    #decks . #investigation .= shuffled
+
+-- | Turn up the next card of that pile.
+revealInvestigation :: GameM (Maybe ArchiveNumber)
+revealInvestigation =
+  use (#decks . #investigation) >>= \case
+    [] -> pure Nothing
+    n : rest -> do
+      #decks . #investigation .= rest
+      logText ("Archive card " <> tshow (coerce n :: Int) <> " is turned up")
+      pure (Just n)
+
+-- | A card a neighborhood is holding, by the colour of its marker.
+markedNeighborhoods :: Text -> GameM [NeighborhoodId]
+markedNeighborhoods colour = do
+  board <- use #board
+  pure [n.id | n <- Map.elems board.neighborhoods, any ((== colour) . (.color)) n.markers]
+
+-- | Every neighborhood, most doom first.
+byDoom :: GameM [Neighborhood]
+byDoom = do
+  board <- use #board
+  let total n = sum [maybe 0 (.doom) (Map.lookup sid board.spaces) | sid <- n.spaces]
+  pure (sortOn (negate . total) (Map.elems board.neighborhoods))

@@ -88,11 +88,7 @@ resolveEffect ctx eff0 = do
       push (BuyRevealed ctx kind revealed limit pricing 0)
     PlaceCluesOnSheet a -> do
       instead <- sheetCluesInstead (amt a)
-      case instead of
-        Just msgs -> pushAll msgs
-        Nothing -> do
-          #sheetClues += amt a
-          push CheckStateTriggers
+      pushAll (fromMaybe [AddSheetClues (amt a)] instead)
     DoomOnSheet a -> push (PlaceDoomOnSheet (amt a))
     Focus mskill evenIfExceeds -> when playing do
       i <- getInvestigator iid

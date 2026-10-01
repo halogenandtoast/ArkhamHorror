@@ -184,6 +184,12 @@ data Message
     PlaceMarker SpaceId Text
   | -- | clear every marker of one colour from the board
     DiscardMarkers Text
+  | -- | a marker the whole neighborhood holds, rather than one of its spaces
+    PlaceNeighborhoodMarker NeighborhoodId Text Bool
+  | {- | clues reaching the scenario sheet once every card has had its say about
+    them, so a card answering that can still send some of them there
+    -}
+    AddSheetClues Int
   | -- | put a face-up marker of that colour on the monster, which travels with it
     PlaceMonsterMarker CardId Text
   | WardRemove InvestigatorId SpaceId Int

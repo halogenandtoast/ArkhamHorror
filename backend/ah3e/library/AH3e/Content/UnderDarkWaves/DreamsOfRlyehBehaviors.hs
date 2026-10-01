@@ -69,25 +69,7 @@ investigationCards :: [ArchiveNumber]
 investigationCards = [117, 118, 119, 120]
 
 seedInvestigation :: GameM ()
-seedInvestigation = do
-  deck <- use (#decks . #investigation)
-  taken <- uses #codex (map (.number))
-  when (null deck && not (any (`elem` taken) investigationCards))
-    $ #decks
-    . #investigation
-    .= investigationCards
-
--- | Reveal one of the cards still in the investigation deck and return it there.
-drawInvestigation :: GameM (Maybe ArchiveNumber)
-drawInvestigation = do
-  deck <- use (#decks . #investigation)
-  shuffled <- shuffle deck
-  case shuffled of
-    [] -> pure Nothing
-    n : rest -> do
-      #decks . #investigation .= rest
-      logText ("The investigation turns up archive card " <> tshow n)
-      pure (Just n)
+seedInvestigation = setInvestigation investigationCards
 
 {- | Card 106. Its front waits on two clues; its back puts down the white markers
 the melody leaves behind and lets an investigator standing on one discard it to
@@ -133,7 +115,7 @@ songOfChaos =
                 msid <- whiteMarkerUnder ctx.investigator
                 for_ msid \sid -> do
                   spaceL sid . #markers %= dropOne "white"
-                  void drawInvestigation
+                  void revealInvestigation
                   clues <- use #sheetClues
                   when (clues >= 1)
                     $ chooseFor
@@ -220,7 +202,7 @@ maddeningMelody =
           then Nothing
           else Just (If (CustomPredicate "rlyeh-white-marker") melodyResearch NoEffect)
     , onFlip = \e -> when e.flipped do
-        drawn <- drawInvestigation
+        drawn <- revealInvestigation
         #decks . #investigation .= []
         for_ drawn \n ->
           pushAll [AddArchiveToCodex n, SpendSheetClues 2, RemoveCodexCard 106, RemoveCodexCard 107]

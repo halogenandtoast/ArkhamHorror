@@ -186,6 +186,10 @@ data Message
     DiscardMarkers Text
   | -- | a marker the whole neighborhood holds, rather than one of its spaces
     PlaceNeighborhoodMarker NeighborhoodId Text Bool
+  | -- | a marker placed face down, for a card that hides what it put there
+    PlaceMarkerFacedown SpaceId Text
+  | -- | clues handed straight to an investigator, off the scenario sheet
+    TakeClues InvestigatorId Int
   | {- | clues reaching the scenario sheet once every card has had its say about
     them, so a card answering that can still send some of them there
     -}

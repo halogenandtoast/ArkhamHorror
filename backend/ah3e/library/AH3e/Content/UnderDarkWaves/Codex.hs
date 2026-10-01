@@ -5,6 +5,7 @@ gathered on itself.
 module AH3e.Content.UnderDarkWaves.Codex where
 
 import AH3e.Engine.Behavior
+import AH3e.Engine.Helpers
 import AH3e.Engine.Monad
 import AH3e.Engine.Query
 import AH3e.Game
@@ -35,18 +36,12 @@ inPlay code = do
   codes <- traverse cardCode ms
   pure (code `elem` codes)
 
-{- | The space a card marked, named by the colour of the marker it put there --
-Dreams of R'lyeh's ritual site is its blue marker, its cultist shrine the red.
+{- | Whether an investigator stands on the space a card marked -- Dreams of
+R'lyeh's ritual site is its blue marker, its cultist shrine the red.
 -}
-markedSpace :: Text -> GameM (Maybe SpaceId)
-markedSpace colour = do
-  board <- use #board
-  pure $ listToMaybe [s.id | s <- Map.elems board.spaces, any ((== colour) . (.color)) s.markers]
-
--- | Whether an investigator is standing on the space a card marked.
 standsOnMarked :: Text -> InvestigatorId -> GameM Bool
 standsOnMarked colour iid = do
-  there <- markedSpace colour
+  there <- markerSpace colour
   here <- investigatorSpace iid
   pure (isJust here && here == there)
 
@@ -122,3 +117,36 @@ byDoom = do
   board <- use #board
   let total n = sum [maybe 0 (.doom) (Map.lookup sid board.spaces) | sid <- n.spaces]
   pure (sortOn (negate . total) (Map.elems board.neighborhoods))
+
+-- | Every face-up marker on the board, with the space holding it.
+faceUpMarkers :: [Text] -> GameM [(SpaceId, Marker)]
+faceUpMarkers colours = do
+  board <- use #board
+  pure [(s.id, m) | s <- Map.elems board.spaces, m <- s.markers, m.faceUp, m.color `elem` colours]
+
+-- | Every marker on the board, face up or down, in the colours a card cares about.
+placedMarkers :: [Text] -> GameM [(SpaceId, Marker)]
+placedMarkers colours = do
+  board <- use #board
+  pure [(s.id, m) | s <- Map.elems board.spaces, m <- s.markers, m.color `elem` colours]
+
+-- | Turn one face-up marker in that space face down, and say whether there was one.
+turnMarkerDown :: SpaceId -> GameM Bool
+turnMarkerDown sid = do
+  s <- getSpace sid
+  case break (.faceUp) s.markers of
+    (before, m : after) -> do
+      spaceL sid . #markers .= before <> (m {faceUp = False} : after)
+      logText ("A " <> m.color <> " marker is turned face down")
+      pure True
+    _ -> pure False
+
+{- | "Move all X and Y markers on the board to the scenario sheet", which is where
+Ithaqua's Children keeps the ones a branch did not use.
+-}
+markersToSheet :: [Text] -> GameM Int
+markersToSheet colours = do
+  moving <- placedMarkers colours
+  #board . #spaces . traversed . #markers %= filter ((`notElem` colours) . (.color))
+  pushAll [MarkSheetToken m.color 1 | (_, m) <- moving]
+  pure (length moving)

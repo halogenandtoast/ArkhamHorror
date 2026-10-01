@@ -1082,6 +1082,11 @@ runMessage msg = case msg of
     when exists do
       monsterL mid . #markers %= (<> [Marker colour True])
       logText ("A " <> colour <> " marker is placed on a monster")
+  PlaceMarkerFacedown sid colour -> do
+    s <- getSpace sid
+    spaceL sid . #markers %= (<> [Marker colour False])
+    logText ("A marker is placed face down at " <> s.name)
+  TakeClues iid n -> addClues iid n
   PlaceNeighborhoodMarker nid colour faceUp -> do
     n <- getNeighborhood nid
     neighborhoodL nid . #markers %= (<> [Marker colour faceUp])

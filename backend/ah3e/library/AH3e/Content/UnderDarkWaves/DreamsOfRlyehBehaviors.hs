@@ -469,7 +469,7 @@ endlessSong =
             , once = True
             , condition = \e -> do
                 board <- use #board
-                site <- markedSpace "blue"
+                site <- markerSpace "blue"
                 let hood = site >>= \sid -> Map.lookup sid board.spaces >>= (.neighborhood)
                     spaces = maybe [] (\n -> maybe [] (.spaces) (Map.lookup n board.neighborhoods)) hood
                 pure (not e.flipped && not (null spaces) && all (hasWhite board) spaces)
@@ -492,7 +492,7 @@ razeTheShrine =
             , canPerform = \iid -> do
                 clues <- use #sheetClues
                 there <- standsOnMarked "red" iid
-                planted <- markedSpace "bomb"
+                planted <- markerSpace "bomb"
                 pure (there && clues >= 2 && isNothing planted)
             , perform = \ctx -> do
                 msid <- investigatorSpace ctx.investigator
@@ -504,10 +504,10 @@ razeTheShrine =
             }
         ]
     , -- "All monsters consider the bomb to be their prey and destination"
-      quarrySpaces = \_ -> maybeToList <$> markedSpace "bomb"
+      quarrySpaces = \_ -> maybeToList <$> markerSpace "bomb"
     , -- "If the bomb suffers any damage from a monster in its space, it is discarded."
       afterMonsterArrives = \_ _ sid -> do
-        bomb <- markedSpace "bomb"
+        bomb <- markerSpace "bomb"
         pure [DiscardMarkers "bomb" | bomb == Just sid]
     , onFlip = \e -> when e.flipped (push WinTheGame)
     }
@@ -520,8 +520,8 @@ plural k = if k > 1 then "s" else ""
 -- | "Reckoning -- If the bomb is at the cultist shrine, flip this card."
 bombReckoning :: EffectCtx -> GameM ()
 bombReckoning _ = do
-  planted <- markedSpace "bomb"
-  shrine <- markedSpace "red"
+  planted <- markerSpace "bomb"
+  shrine <- markerSpace "red"
   when (isJust planted && planted == shrine) $ push (FlipCodexCard 112)
 
 {- | Cards 113-116: the end drawing in. Each spawns or stirs something on its
@@ -629,8 +629,8 @@ codexCtx n iid = EffectCtx {investigator = iid, source = SourceCodex n, testResu
 
 -- | 114's reckoning: "Place one doom at the ritual site."
 doomAtRitualSite :: EffectCtx -> GameM ()
-doomAtRitualSite ctx = markedSpace "blue" >>= traverse_ (push . PlaceDoom ctx.source)
+doomAtRitualSite ctx = markerSpace "blue" >>= traverse_ (push . PlaceDoom ctx.source)
 
 -- | 115's reckoning: "Spawn one monster at the cultist shrine."
 monsterAtShrine :: EffectCtx -> GameM ()
-monsterAtShrine _ = markedSpace "red" >>= traverse_ \sid -> push (SpawnMonsterAt (Just sid) False)
+monsterAtShrine _ = markerSpace "red" >>= traverse_ \sid -> push (SpawnMonsterAt (Just sid) False)

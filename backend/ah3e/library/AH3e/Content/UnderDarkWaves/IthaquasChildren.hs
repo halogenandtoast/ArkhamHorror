@@ -93,7 +93,8 @@ scenario =
           ]
     , startingMarkers = []
     , eventCards = [CardCode ("ithaqua-event-" <> pad n) | n <- [1 .. 24 :: Int]]
-    , setAside = []
+    , -- the wendigo card 91 calls up, and the Ithaqua of cards 99 and 102
+      setAside = ["archive-104", "archive-105"]
     , codex = [61, 91]
     , anomalySet = Nothing
     , terrorSet = Just "Frozen City"

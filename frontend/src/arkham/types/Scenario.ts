@@ -19,6 +19,26 @@ import { TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/T
 import { XpEntry, xpEntryDecoder} from '@/arkham/types/Xp';
 import { type TokenFace } from '@/arkham/types/ChaosToken';
 
+/** A set of locations the map draws as one box, routing connections to the box. */
+export type GroupLayout = 'GroupRow' | 'GroupColumn' | 'GroupSquare'
+
+export type LocationGroup = {
+  key: string;
+  layout: GroupLayout;
+}
+
+export const locationGroupDecoder = JsonDecoder.object<LocationGroup>(
+  {
+    key: JsonDecoder.string(),
+    layout: JsonDecoder.oneOf<GroupLayout>([
+      JsonDecoder.literal('GroupRow'),
+      JsonDecoder.literal('GroupColumn'),
+      JsonDecoder.literal('GroupSquare'),
+    ], 'GroupLayout'),
+  },
+  'LocationGroup',
+)
+
 export type ScenarioName = {
   title: string;
   subtitle: string | null;
@@ -52,6 +72,7 @@ export type Scenario = {
   difficulty: Difficulty;
   useHardExpertReference: boolean;
   locationLayout: string[] | null;
+  locationGroups: LocationGroup[];
   usesGrid: boolean;
   decksLayout: string[];
   decks: [string, Card[]][];
@@ -156,6 +177,7 @@ export const scenarioDecoder = JsonDecoder.object<DecodedScenario>({
   difficulty: difficultyDecoder,
   useHardExpertReference: withDefault(false, JsonDecoder.boolean()),
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string(), 'GridLayout[]')),
+  locationGroups: JsonDecoder.failover([], JsonDecoder.array<LocationGroup>(locationGroupDecoder, 'LocationGroup[]')),
   usesGrid: JsonDecoder.boolean(),
   decksLayout: JsonDecoder.array<string>(JsonDecoder.string(), 'GridLayout[]'),
   decks: JsonDecoder.array<[string, Card[]]>(JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.array<Card>(cardDecoder, 'Card[]')], '[string, Card[]]'), '[string, Card[]][]'),

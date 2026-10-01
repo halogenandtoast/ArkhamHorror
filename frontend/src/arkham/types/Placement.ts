@@ -19,6 +19,8 @@ export type Placement
   | { tag: "AtLocations", contents: string[] }
   | { tag: "InVehicle", contents: string }
   | { tag: "InPosition", contents: Position }
+  /** The card occupies a grid cell of its own, named by this label in the layout. */
+  | { tag: "AsSelfLocation", contents: string }
   | { tag: "AttachedToLocation", contents: string }
   | { tag: "BetweenLocations", contents: [string, string] }
   | { tag: "AttachedToAsset", contents: [string, Placement | null] }
@@ -65,5 +67,6 @@ export const placementDecoder = JsonDecoder.oneOf<Placement>([
   JsonDecoder.object({ tag: JsonDecoder.literal("OutOfPlay"), contents: JsonDecoder.string()}, 'OutOfPlay'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InTheShadows")}, 'InTheShadows'),
   JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("InPosition"), contents: positionDecoder }, 'InPosition'),
+  JsonDecoder.object<Placement>({ tag: JsonDecoder.literal("AsSelfLocation"), contents: JsonDecoder.string() }, 'AsSelfLocation'),
   JsonDecoder.object({ tag: JsonDecoder.string() }, 'OtherPlacement').map(({tag}) => ({ tag: "OtherPlacement", contents: tag }))
 ], 'Placement')

@@ -51,6 +51,32 @@ const sortByDataId = (a: HTMLElement, b: HTMLElement) => {
   if (!aId || !bId) return 0
   return aId < bId ? -1 : aId > bId ? 1 : 0
 }
+/* A location inside a group is drawn in that group's box, and the box is what the map
+ * connects: every member of a row connecting to every member of the next would otherwise
+ * draw a dozen lines where one belongs. So an endpoint resolves to its box element when
+ * it has one, connections between two members of the SAME box are dropped, and the many
+ * member-to-member edges between two boxes collapse into a single box-to-box edge. */
+const groupKeyOf = (locationId: string): string | null =>
+  props.game.locations[locationId]?.group?.key ?? null
+
+const endpointElement = (locationId: string): HTMLElement | null => {
+  const key = groupKeyOf(locationId)
+  if (key) {
+    const box = document.querySelector<HTMLElement>(`.location-group[data-id="${key}"]`)
+    if (box) return box
+  }
+  return document.querySelector<HTMLElement>(`[data-id="${locationId}"]`)
+}
+
+/** What the map actually joins: a group's box if the location is in one, else itself. */
+const endpointId = (locationId: string): string => groupKeyOf(locationId) ?? locationId
+
+/** True when both ends sit in the same box, so there is nothing to draw between them. */
+const sameGroup = (a: string, b: string): boolean => {
+  const ka = groupKeyOf(a)
+  return ka !== null && ka === groupKeyOf(b)
+}
+
 const toConnection = (div1: HTMLElement, div2: HTMLElement): string | undefined => {
   const [leftDiv, rightDiv] = [div1, div2].sort(sortByDataId)
   const { id: leftDivId } = leftDiv.dataset
@@ -209,12 +235,31 @@ function connectionPoints(div1: HTMLElement, div2: HTMLElement) {
   const offsetTrackLine = isWrittenInRockAct2.value
   const vertical = Math.abs(rCenterY - lCenterY) > Math.abs(rCenterX - lCenterX)
 
-  return {
-    x1: offsetTrackLine && vertical ? (lRect.left - svgRect.left) + (lRect.width * 0.78) : lCenterX,
-    y1: offsetTrackLine && !vertical ? (lRect.top - svgRect.top) + (lRect.height * 0.8) : lCenterY,
-    x2: offsetTrackLine && vertical ? (rRect.left - svgRect.left) + (rRect.width * 0.78) : rCenterX,
-    y2: offsetTrackLine && !vertical ? (rRect.top - svgRect.top) + (rRect.height * 0.8) : rCenterY,
-  }
+  const x1 = offsetTrackLine && vertical ? (lRect.left - svgRect.left) + (lRect.width * 0.78) : lCenterX
+  const y1 = offsetTrackLine && !vertical ? (lRect.top - svgRect.top) + (lRect.height * 0.8) : lCenterY
+  const x2 = offsetTrackLine && vertical ? (rRect.left - svgRect.left) + (rRect.width * 0.78) : rCenterX
+  const y2 = offsetTrackLine && !vertical ? (rRect.top - svgRect.top) + (rRect.height * 0.8) : rCenterY
+
+  /* A line runs centre to centre, which a location's own card hides. A group's box is
+   * mostly empty, so the stretch from its centre out to its edge would be drawn across
+   * the inside of the box -- pull those endpoints back to the edge. */
+  const a = clipToGroupEdge(div1, x1, y1, x2, y2, lRect)
+  const b = clipToGroupEdge(div2, x2, y2, x1, y1, rRect)
+  return { x1: a.x, y1: a.y, x2: b.x, y2: b.y }
+}
+
+/** Endpoint pulled back to the boundary of a group's box, along the line it lies on. */
+function clipToGroupEdge(
+  div: HTMLElement, cx: number, cy: number, towardX: number, towardY: number, rect: DOMRect,
+) {
+  if (!div.classList.contains('location-group')) return { x: cx, y: cy }
+  const dx = towardX - cx
+  const dy = towardY - cy
+  if (dx === 0 && dy === 0) return { x: cx, y: cy }
+  const scaleX = dx === 0 ? Infinity : (rect.width / 2) / Math.abs(dx)
+  const scaleY = dy === 0 ? Infinity : (rect.height / 2) / Math.abs(dy)
+  const scale = Math.min(scaleX, scaleY)
+  return { x: cx + dx * scale, y: cy + dy * scale }
 }
 
 function segmentsConflict(a: ConnectionCandidate, b: ConnectionCandidate): boolean {
@@ -889,12 +934,18 @@ function handleConnections(includeFateOfTheVale = true) {
       ? connectedLocations
       : Object.values(connectedLocations)
 
-    const start = document.querySelector<HTMLElement>(`[data-id="${id}"]`)
+    const start = endpointElement(id)
     if (!start) continue
 
     for (const dst of connections) {
-      const end = document.querySelector<HTMLElement>(`[data-id="${dst}"]`)
+      const dstId = dst as string
+      // Members of one box need no line between them.
+      if (sameGroup(id, dstId)) continue
+      const end = endpointElement(dstId)
       if (!end) continue
+      // Both ends resolved to the same element (two members of one box, or a box
+      // connecting to itself) -- nothing to draw.
+      if (start === end) continue
 
       const reverseExists = directed.has(`${dst}->${id}`)
 
@@ -912,7 +963,9 @@ function handleConnections(includeFateOfTheVale = true) {
           if (points) normalConnections.set(conn, { connection: conn, start: left, end: right, ...points })
         }
       } else {
-        const conn = `${id}->${dst}`
+        // Keyed by resolved endpoints, so the many member-to-member edges between two
+        // boxes collapse into one arrow instead of one per pair.
+        const conn = `${endpointId(id)}->${endpointId(dstId)}`
         if (location.modifiers?.some(m =>
           m.type?.tag === 'DoNotDrawConnection' &&
           (
@@ -920,6 +973,7 @@ function handleConnections(includeFateOfTheVale = true) {
             (m.type.contents?.[0] === dst && m.type.contents?.[1] === id)
           )
         )) continue
+        if (live.has(conn)) continue
         live.add(conn)
         const points = connectionPoints(start, end)
         const candidate = points

@@ -51,7 +51,22 @@ export type Location = {
   sealedChaosTokens: ChaosToken[];
   placedChaosTokens: ChaosToken[];
   concealedCards: string[];
+  group: GroupMembership | null;
 }
+
+/** Which box this location is drawn in, and its fixed slot inside it. */
+export type GroupMembership = {
+  key: string;
+  index: number;
+}
+
+export const groupMembershipDecoder = JsonDecoder.object<GroupMembership>(
+  {
+    key: JsonDecoder.string(),
+    index: JsonDecoder.number(),
+  },
+  'GroupMembership',
+)
 
 type GameValue =
   | { tag: "Static", contents: number }
@@ -92,6 +107,7 @@ export const locationDecoder = JsonDecoder.object<Location>(
     sealedChaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     placedChaosTokens: JsonDecoder.optional(JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]')).map(v => v ?? []),
     concealedCards: JsonDecoder.array<string>(JsonDecoder.string(), 'ConcealedCardId[]'),
+    group: JsonDecoder.nullable(groupMembershipDecoder),
     enemyLocation: JsonDecoder.optional(JsonDecoder.boolean()).map(v => v ?? false),
     exhausted: JsonDecoder.optional(JsonDecoder.boolean()).map(v => v ?? false),
   },

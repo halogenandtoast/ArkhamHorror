@@ -956,7 +956,9 @@ img.card.source-highlight {
   flex-direction: column;
   position: relative;
   grid-area: location;
-  width: min(calc(10vw + 20px), 60px);
+  /* The card img renders at --card-width + 4px, so a column of --card-width
+     left its right edge hanging over the gap into the assets column. */
+  width: calc(var(--card-width) + 4px);
 }
 
 .location-pool {

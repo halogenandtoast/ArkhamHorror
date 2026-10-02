@@ -12,10 +12,11 @@ import Arkham.Source (Source)
 import Arkham.Target (Target)
 import Data.Aeson.TH
 
--- | Messages dealing with chaos-bag draws, reveals, sealing-flow choices,
--- request/resolve cycles, and bag state mutation. Sealing of chaos tokens onto
--- specific entities lives in "Arkham.Message.Seal"; this module handles the
--- bag itself and the in-flight draws.
+{- | Messages dealing with chaos-bag draws, reveals, sealing-flow choices,
+request/resolve cycles, and bag state mutation. Sealing of chaos tokens onto
+specific entities lives in "Arkham.Message.Seal"; this module handles the
+bag itself and the in-flight draws.
+-}
 data ChaosBagMessage
   = DrawChaosToken_ InvestigatorId ChaosToken
   | ResolveChaosToken_ ChaosToken ChaosTokenFace InvestigatorId
@@ -45,6 +46,9 @@ data ChaosBagMessage
   | ChaosTokenCanceled_ InvestigatorId Source ChaosToken
   | ForceChaosTokenDraw_ ChaosTokenFace
   | ForceChaosTokenDrawToken_ ChaosToken
+  | -- Debug: queue the exact faces the next draws take, in order. An empty
+    -- list clears the queue; a face no longer in the bag falls back to random.
+    DebugSetForcedChaosTokenDraws_ [ChaosTokenFace]
   | SetChaosTokens_ [ChaosTokenFace]
   | SetChaosTokensForScenario_
   | SetCampaignChaosBag_ [ChaosTokenFace]

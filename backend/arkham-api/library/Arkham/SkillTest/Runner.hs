@@ -8,7 +8,6 @@ import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Calculation
 import Arkham.Card
-import Arkham.ChaosBag.RevealStrategy
 import Arkham.ChaosToken
 import Arkham.ChaosToken.Types
 import Arkham.Classes hiding (matches)
@@ -284,21 +283,7 @@ instance RunMessage SkillTest where
                   pushAll
                     $ resolve (RevealChaosToken (toSource s) iid (ChaosToken t chaosTokenFace (Just iid) False False))
         | otherwise -> do
-            let
-              applyRevealStategyModifier (MultiReveal _ b) (ChangeRevealStrategy n) = MultiReveal n b
-              applyRevealStategyModifier _ (ChangeRevealStrategy n) = n
-              applyRevealStategyModifier n RevealAnotherChaosToken = MultiReveal n (Reveal 1)
-              applyRevealStategyModifier n (DrawAdditionalChaosTokens m) =
-                let
-                  go = \case
-                    Reveal x -> RevealAndChoose (x + m) 1
-                    RevealAndChoose x z -> RevealAndChoose (x + m) z
-                    other -> other
-                 in
-                  go n
-              applyRevealStategyModifier n _ = n
-              revealStrategy =
-                foldl' applyRevealStategyModifier (Reveal 1) (modifiers' <> modifiers'')
+            revealStrategy <- getSkillTestRevealStrategy s
             hasRun <- fromQueue (elem (RunSkillTest iid))
             lockCommits <-
               if RevealChaosTokensBeforeCommittingCards `notElem` modifiers''

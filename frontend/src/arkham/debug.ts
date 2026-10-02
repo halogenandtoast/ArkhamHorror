@@ -46,7 +46,24 @@ const debug = reactive({
   toggle: () => {
     debug.active = !debug.active
   },
-  send: async (gameId: string, message: any) => updateGameRaw(gameId, message)
+  send: async (gameId: string, message: any) => updateGameRaw(gameId, message),
+  // A modifier that lives for the current skill test only.
+  skillTestModifier: async (
+    gameId: string,
+    skillTestId: string,
+    target: { tag: string, contents?: unknown },
+    modifier: { tag: string, contents?: unknown },
+  ) => updateGameRaw(gameId,
+    { tag: 'CreateWindowModifierEffect'
+    , contents:
+      [ { tag: 'EffectSkillTestWindow', contents: skillTestId }
+      , { tag: 'EffectModifiers'
+        , contents: [{ source: { tag: 'GameSource' }, type: modifier, activeDuringSetup: false, card: null }]
+        }
+      , { tag: 'GameSource' }
+      , target
+      ]
+    })
 })
 
 export function useDebug() {

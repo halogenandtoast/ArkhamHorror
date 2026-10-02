@@ -17,7 +17,7 @@ import { Difficulty, difficultyDecoder } from '@/arkham/types/Difficulty';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
 import { TarotCard, tarotCardDecoder, tarotScopeDecoder } from '@/arkham/types/TarotCard';
 import { XpEntry, xpEntryDecoder} from '@/arkham/types/Xp';
-import { type TokenFace } from '@/arkham/types/ChaosToken';
+import { customTokenKey, type TokenFace } from '@/arkham/types/ChaosToken';
 
 /** A set of locations the map draws as one box, routing connections to the box. */
 export type GroupLayout = 'GroupRow' | 'GroupColumn' | 'GroupSquare'
@@ -296,14 +296,20 @@ export function usesHardExpertReference(scenario: Scenario, difficulty?: string)
  * or the scenario has no i18n scope (unknown homebrew).
  */
 export function chaosTokenEffectKey(scenario: Scenario, face: TokenFace): string | null {
-  if (!(symbolChaosTokenFaces as readonly string[]).includes(face)) return null
-
   let scope: string
   try {
     scope = scenarioToI18n(scenario)
   } catch {
     return null
   }
+
+  /* A homebrew token's effect is a campaign rule rather than a scenario one -- the
+     moon reads the same in all eight Circus scenarios -- so it is keyed off the
+     campaign scope and has no difficulty tier. */
+  const custom = customTokenKey(face)
+  if (custom) return `${scope.split('.')[0]}.tokens.${custom}`
+
+  if (!(symbolChaosTokenFaces as readonly string[]).includes(face)) return null
 
   const difficulty = usesHardExpertReference(scenario) ? 'hardExpert' : 'easyStandard'
   const baseRef = scenario.reference.replace(/b$/, '')

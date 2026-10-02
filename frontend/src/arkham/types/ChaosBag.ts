@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
-import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
+import { ChaosToken, chaosTokenDecoder, type TokenFace } from '@/arkham/types/ChaosToken';
+import { withDefault } from '@/arkham/parser';
 
 export type ChaosBagStepState = Resolved | Decided | Undecided | Deciding
 
@@ -135,9 +136,12 @@ export const chaosBagStepDecoder: JsonDecoder.Decoder<ChaosBagStep> = JsonDecode
 export type ChaosBag = {
   chaosTokens: ChaosToken[]
   choice: ChaosBagStepState | null
+  /** Debug: the faces the next draws are pinned to, in order. */
+  forceDraw: TokenFace[]
 }
 
 export const chaosBagDecoder = JsonDecoder.object<ChaosBag>({
   chaosTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
-  choice: JsonDecoder.nullable(chaosBagStepStateDecoder)
+  choice: JsonDecoder.nullable(chaosBagStepStateDecoder),
+  forceDraw: withDefault<TokenFace[]>([], JsonDecoder.array(JsonDecoder.string(), 'TokenFace[]')),
 }, 'ChaosBag');

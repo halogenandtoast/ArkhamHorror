@@ -37,6 +37,20 @@
         "spawnAlertSide": "Spawn it with its Alert side face up"
       }
     },
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X, where X is the number of {'{'}moon{'}'} tokens sealed on you.",
+        "cultist": "-3. If a {'{'}moon{'}'} token is revealed during this test, choose and discard a card from your hand.",
+        "tablet": "-3. If a {'{'}moon{'}'} token is revealed during this test, lose 1 resource.",
+        "elderThing": "-3. If this test is failed, seal a {'{'}moon{'}'} token on you."
+      },
+      "hardExpert": {
+        "skull": "-X, where X is 1 more than the number of {'{'}moon{'}'} tokens sealed on you.",
+        "cultist": "-4. If a {'{'}moon{'}'} token is revealed during this test, choose and discard a card from your hand.",
+        "tablet": "-4. If a {'{'}moon{'}'} token is revealed during this test, lose 1 resource.",
+        "elderThing": "-4. Seal a {'{'}moon{'}'} token on you."
+      }
+    },
     "resolutions": {
       "trauma": "Suffer any combination of 3 physical and/or mental trauma",
       "xp": {

@@ -715,6 +715,24 @@
     "tokenPanel": {
       "hint": "Drag to a card (shift: 5)",
       "trash": "Drop a token here to remove it"
+    },
+    "skillTestDraw": {
+      "title": "Chaos draw",
+      "currentHint": "The reveal rule this test will use",
+      "forcedCount": "{count} forced",
+      "revealRule": "Reveal rule",
+      "reveal": "reveal",
+      "revealHint": "How many chaos tokens the test reveals",
+      "choose": "resolve",
+      "chooseHint": "How many of the revealed tokens resolve; all means every one of them",
+      "all": "all",
+      "apply": "Apply",
+      "tooLate": "The reveal rule is locked in once tokens are revealed.",
+      "forced": "Forced draws",
+      "empty": "Random",
+      "clear": "Clear",
+      "addToken": "Add to the forced draws",
+      "removeToken": "Remove from the forced draws"
     }
   },
   "customizations": {

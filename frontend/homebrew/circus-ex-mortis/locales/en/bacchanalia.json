@@ -52,6 +52,20 @@
     "xp": {
       "vices": "each vice you took at the start of the scenario"
     },
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is equal to half the number of vices you have (rounded up).",
+        "cultist": "-2. -4 instead if this test is an investigation attempt.",
+        "tablet": "-2. -4 instead if there is a _Cultist_ enemy at your location.",
+        "elderThing": "-2. -4 instead if this test is part of a parley action."
+      },
+      "hardExpert": {
+        "skull": "-X. X is equal to 1 + half the number of vices you have (rounded up).",
+        "cultist": "-3. -5 instead if this test is an investigation attempt.",
+        "tablet": "-3. -5 instead if there is a _Cultist_ enemy at your location.",
+        "elderThing": "-3. -5 instead if this test is part of a parley action."
+      }
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution",

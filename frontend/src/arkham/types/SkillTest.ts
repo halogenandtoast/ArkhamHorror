@@ -87,6 +87,43 @@ export const skillTestValueBreakdownDecoder = JsonDecoder.object<SkillTestValueB
   autoFailIfSucceedByAtLeast: JsonDecoder.array(JsonDecoder.number(), 'number[]'),
 }, 'SkillTestValueBreakdown')
 
+/** How many chaos tokens the test reveals, and how many of those resolve. */
+export type RevealStrategy
+  = { tag: 'Reveal', contents: number }
+  | { tag: 'RevealAndChoose', contents: [number, number] }
+  | { tag: 'MultiReveal', contents: [RevealStrategy, RevealStrategy] }
+
+export const revealStrategyDecoder: JsonDecoder.Decoder<RevealStrategy> = JsonDecoder.oneOf<RevealStrategy>(
+  [
+    JsonDecoder.object({
+      tag: JsonDecoder.literal('Reveal'),
+      contents: JsonDecoder.number(),
+    }, 'Reveal'),
+    JsonDecoder.object({
+      tag: JsonDecoder.literal('RevealAndChoose'),
+      contents: JsonDecoder.tuple([JsonDecoder.number(), JsonDecoder.number()], '[number, number]'),
+    }, 'RevealAndChoose'),
+    JsonDecoder.object({
+      tag: JsonDecoder.literal('MultiReveal'),
+      contents: JsonDecoder.tuple(
+        [JsonDecoder.lazy(() => revealStrategyDecoder), JsonDecoder.lazy(() => revealStrategyDecoder)],
+        '[RevealStrategy, RevealStrategy]',
+      ),
+    }, 'MultiReveal'),
+  ],
+  'RevealStrategy',
+)
+
+/** `Reveal 2 -> 1`, `2 + 1`, ... as a one-line label. */
+export function describeRevealStrategy(strategy: RevealStrategy): string {
+  switch (strategy.tag) {
+    case 'Reveal': return `${strategy.contents}`
+    case 'RevealAndChoose': return `${strategy.contents[0]} \u2192 ${strategy.contents[1]}`
+    case 'MultiReveal':
+      return `${describeRevealStrategy(strategy.contents[0])} + ${describeRevealStrategy(strategy.contents[1])}`
+  }
+}
+
 export type SkillTest = {
   investigator: string;
   setAsideChaosTokens: ChaosToken[];
@@ -109,6 +146,7 @@ export type SkillTest = {
   resultForced: boolean;
   modifiers?: Modifier[];
   valueBreakdown?: SkillTestValueBreakdown;
+  revealStrategy?: RevealStrategy;
 }
 
 export type SkillTestResults = {
@@ -162,6 +200,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     resultForced: JsonDecoder.fallback(false, JsonDecoder.boolean()),
     modifiers: v2Optional(JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]')),
     valueBreakdown: v2Optional(skillTestValueBreakdownDecoder),
+    revealStrategy: v2Optional(revealStrategyDecoder),
   },
   'SkillTest',
 );

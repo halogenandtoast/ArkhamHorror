@@ -15,6 +15,20 @@
         "mentalTrauma": "Suffer 1 mental trauma"
       }
     },
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is equal to the number of locations connected to Circus Encampment.",
+        "cultist": "-3. If there are no {'{'}moon{'}'} tokens sealed on your investigator card, lose an action.",
+        "tablet": "-2. If there are 1 or more {'{'}moon{'}'} tokens sealed on your investigator card, lose an action.",
+        "elderThing": "-2. If a {'{'}moon{'}'} token was revealed during this test, it automatically fails instead."
+      },
+      "hardExpert": {
+        "skull": "-X. X is equal to 1 + the number of locations connected to Circus Encampment.",
+        "cultist": "-4. If there are no {'{'}moon{'}'} tokens sealed on your investigator card, lose an action.",
+        "tablet": "-3. If there are 1 or more {'{'}moon{'}'} tokens sealed on your investigator card, lose an action.",
+        "elderThing": "-4. If a {'{'}moon{'}'} token was revealed during this test, it automatically fails instead."
+      }
+    },
     "resolutions": {
       "resolution1": {
         "title": "Resolution 1",

@@ -5,6 +5,7 @@ module Arkham.ModifierData (
 import Arkham.Prelude
 
 import Arkham.Campaigns.TheScarletKeys.Key.Id
+import Arkham.ChaosBag.RevealStrategy (RevealStrategy)
 import Arkham.ChaosToken.Types (ChaosTokenFace)
 import Arkham.Id
 import Arkham.Json
@@ -126,6 +127,8 @@ data SkillTestMetadata = SkillTestMetadata
   , stmSkills :: [SkillType]
   , stmModifiers :: [Modifier]
   , stmValueBreakdown :: Maybe SkillTestValueBreakdown
+  , -- The reveal strategy as it stands; see 'getSkillTestRevealStrategy'.
+    stmRevealStrategy :: RevealStrategy
   }
   deriving stock (Show, Eq, Generic)
 

@@ -47,6 +47,20 @@
         "takeHorror": "Take {count} horror"
       }
     },
+    "tokens": {
+      "easyStandard": {
+        "skull": "-1. -3 instead if there is a _Monster_ or _Cultist_ enemy in your row.",
+        "cultist": "0. If you do not succeed by X (where X is the number of locations in your row), draw the top card of the encounter deck.",
+        "tablet": "0. If you do not succeed by X (where X is the number of locations in your row), lose an action.",
+        "elderThing": "-2. If you fail, move the nearest enemy once toward your location."
+      },
+      "hardExpert": {
+        "skull": "-2. -4 instead if there is a _Monster_ or _Cultist_ enemy in your row.",
+        "cultist": "-1. If you do not succeed by X (where X is the number of locations in your row), draw the top card of the encounter deck.",
+        "tablet": "-1. If you do not succeed by X (where X is the number of locations in your row), lose an action.",
+        "elderThing": "-3. Move the nearest enemy once toward your location."
+      }
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution",

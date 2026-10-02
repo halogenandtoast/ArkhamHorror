@@ -122,6 +122,20 @@
     "focusedSabotage": {},
     "overloadedEngine": {},
     "ricketyRide": {},
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is equal to half the doom in play (rounded up).",
+        "cultist": "-1. If you fail, place 1 doom on Locomotive Engine.",
+        "tablet": "-1. If you fail, draw the topmost _Hazard_ treachery in the encounter discard pile.",
+        "elderThing": "-2. If you fail, ready a _Dark Young_ enemy in play."
+      },
+      "hardExpert": {
+        "skull": "-X. X is equal to 1 + half the doom in play (rounded up).",
+        "cultist": "-2. Place 1 doom on Locomotive Engine.",
+        "tablet": "-2. Draw the topmost _Hazard_ treachery in the encounter discard pile.",
+        "elderThing": "-2. Ready a _Dark Young_ enemy in play."
+      }
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution",

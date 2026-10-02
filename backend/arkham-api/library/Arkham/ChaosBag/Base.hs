@@ -15,7 +15,7 @@ data ChaosBag = ChaosBag
   , chaosBagSetAsideChaosTokens :: [ChaosToken]
   , chaosBagRevealedChaosTokens :: [ChaosToken]
   , chaosBagChoice :: Maybe ChaosBagStepState
-  , chaosBagForceDraw :: Maybe ChaosTokenFace
+  , chaosBagForceDraw :: [ChaosTokenFace]
   , chaosBagTokenPool :: [ChaosToken]
   , chaosBagTotalRevealedChaosTokens :: [ChaosToken]
   , chaosBagPendingRequests :: Map Source [ChaosToken]
@@ -33,7 +33,8 @@ instance FromJSON ChaosBag where
     chaosBagSetAsideChaosTokens <- o .: "setAsideChaosTokens"
     chaosBagRevealedChaosTokens <- o .: "revealedChaosTokens"
     chaosBagChoice <- o .:? "choice"
-    chaosBagForceDraw <- o .:? "forceDraw"
+    -- old exports stored a single face
+    chaosBagForceDraw <- (o .:? "forceDraw" .!= []) <|> (maybeToList <$> (o .:? "forceDraw"))
     chaosBagTokenPool <- o .: "tokenPool"
     chaosBagTotalRevealedChaosTokens <- o .:? "totalRevealedChaosTokens" .!= []
     chaosBagPendingRequests <- o .:? "pendingRequests" .!= mempty
@@ -46,7 +47,7 @@ emptyChaosBag =
     , chaosBagSetAsideChaosTokens = []
     , chaosBagRevealedChaosTokens = []
     , chaosBagChoice = Nothing
-    , chaosBagForceDraw = Nothing
+    , chaosBagForceDraw = []
     , chaosBagTokenPool = []
     , chaosBagTotalRevealedChaosTokens = []
     , chaosBagPendingRequests = mempty
@@ -64,7 +65,7 @@ chaosTokensL = lens chaosBagChaosTokens $ \m x -> m {chaosBagChaosTokens = x}
 tokenPoolL :: Lens' ChaosBag [ChaosToken]
 tokenPoolL = lens chaosBagTokenPool $ \m x -> m {chaosBagTokenPool = x}
 
-forceDrawL :: Lens' ChaosBag (Maybe ChaosTokenFace)
+forceDrawL :: Lens' ChaosBag [ChaosTokenFace]
 forceDrawL = lens chaosBagForceDraw $ \m x -> m {chaosBagForceDraw = x}
 
 pendingRequestsL :: Lens' ChaosBag (Map Source [ChaosToken])

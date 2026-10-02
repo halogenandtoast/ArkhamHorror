@@ -5,7 +5,7 @@ import { useDebug } from '@/arkham/debug'
 import { computed } from 'vue';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import * as Cards from '@/arkham/types/Card';
-import { chaosTokenImage, type TokenFace } from '@/arkham/types/ChaosToken';
+import { chaosTokenImage, customTokenKey, type TokenFace } from '@/arkham/types/ChaosToken';
 import { chaosTokenEffectKey, symbolChaosTokenFaces } from '@/arkham/types/Scenario';
 import { Game } from '@/arkham/types/Game';
 import { Enemy } from '@/arkham/types/Enemy';
@@ -20,6 +20,7 @@ import * as ArkhamGame from '@/arkham/types/Game';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import { cardArt, portraitImage, sourceCardCode } from '@/arkham/cardImages';
 import ChaosBagView from '@/arkham/components/ChaosBag.vue';
+import SkillTestDraw from '@/arkham/components/debug/SkillTestDraw.vue';
 import Token from '@/arkham/components/Token.vue';
 import { useI18n } from 'vue-i18n';
 import { useMenu } from '@/composable/menu';
@@ -274,8 +275,14 @@ const tokenEffects = computed(() => {
     return displayedToken.modifiedFaces?.length ? displayedToken.modifiedFaces : [token.face]
   })
 
-  return (symbolChaosTokenFaces as readonly TokenFace[])
-    .filter((face) => faces.includes(face))
+  // The printed symbols first, in their canonical order, then any homebrew token
+  // that came out, in the order it was revealed.
+  const effectFaces = [
+    ...(symbolChaosTokenFaces as readonly TokenFace[]).filter((face) => faces.includes(face)),
+    ...new Set(faces.filter((face) => customTokenKey(face) !== null)),
+  ]
+
+  return effectFaces
     .flatMap((face) => {
       const key = chaosTokenEffectKey(scenario, face)
       if (!key) return []
@@ -287,23 +294,8 @@ const tokenEffects = computed(() => {
     })
 })
 
-const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: unknown}) => 
-  debug.send(props.game.id,
-    { tag: 'CreateWindowModifierEffect'
-    , contents:
-      [ {tag: 'EffectSkillTestWindow', contents: props.skillTest.id}
-      , { tag: 'EffectModifiers'
-        , contents:
-          [ { source: {tag: 'GameSource'}
-            , type: modifier
-            , activeDuringSetup: false
-            , card: null}
-          ]
-        }
-      , {tag: 'GameSource'}
-      , target
-      ]
-    })
+const createModifier = (target: {tag: string, contents: string}, modifier: {tag: string, contents: unknown}) =>
+  debug.skillTestModifier(props.game.id, props.skillTest.id, target, modifier)
 
 const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
   const amount = event.shiftKey ? 5 : 1
@@ -431,6 +423,7 @@ const adjustDebugSkillValue = (event: MouseEvent, direction: 1 | -1) => {
         <button @click="debug.send(game.id, {tag: 'SkillTestMessage', contents: {tag: 'PassSkillTest_'}})">{{ $t('skillTestActions.passSkillTest') }}</button>
         <button @click="debug.send(game.id, {tag: 'SkillTestMessage', contents: {tag: 'FailSkillTest_'}})">{{ $t('skillTestActions.failSkillTest') }}</button>
       </div>
+      <SkillTestDraw v-if="debug.active" :gameId="game.id" :skillTest="skillTest" :chaosBag="chaosBag" />
       <div v-if="committedCards.length > 0" class="committed-skills" key="committed-skills">
         <template v-if="skillTest.step === 'CommitCardsFromHandToSkillTestStep'">
           <h2>{{t('toBeCommitted')}}</h2>

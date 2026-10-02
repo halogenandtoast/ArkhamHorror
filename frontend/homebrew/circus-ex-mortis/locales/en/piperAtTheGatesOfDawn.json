@@ -43,6 +43,20 @@
       "unmaskedBlake": "learning the truth about the ringmaster",
       "bigTop": "revealing each *The Big Top* location"
     },
+    "tokens": {
+      "easyStandard": {
+        "skull": "-2. -4 instead if there are 5 or more resources on this card.",
+        "cultist": "-3. If there is a _Hex_ treachery at your location, discard a card from your hand at random.",
+        "tablet": "-3. If there is a _Performer_ enemy at your location, lose 1 resource.",
+        "elderThing": "-3. -5 instead if this is a test against an _Elite_ enemy."
+      },
+      "hardExpert": {
+        "skull": "-3. -5 instead if there are 5 or more resources on this card.",
+        "cultist": "-4. If there is a _Hex_ treachery at your location, discard 2 cards from your hand at random.",
+        "tablet": "-4. If there is a _Performer_ enemy at your location, lose 2 resources.",
+        "elderThing": "-4. -6 instead if this is a test against an _Elite_ enemy."
+      }
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution",

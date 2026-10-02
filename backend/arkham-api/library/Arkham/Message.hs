@@ -92,8 +92,8 @@ import {-# SOURCE #-} Arkham.Investigator
 import Arkham.Key
 import Arkham.Layout
 import Arkham.Location.FloodLevel
-import Arkham.Location.Group (GroupMembership)
 import Arkham.Location.Grid
+import Arkham.Location.Group (GroupMembership)
 import {-# SOURCE #-} Arkham.Location.Types
 import Arkham.Matcher hiding (
   AssetDefeated,
@@ -1651,6 +1651,9 @@ pattern ForceChaosTokenDraw f = ChaosBagMessage (ForceChaosTokenDraw_ f)
 
 pattern ForceChaosTokenDrawToken :: ChaosToken -> Message
 pattern ForceChaosTokenDrawToken t = ChaosBagMessage (ForceChaosTokenDrawToken_ t)
+
+pattern DebugSetForcedChaosTokenDraws :: [ChaosTokenFace] -> Message
+pattern DebugSetForcedChaosTokenDraws fs = ChaosBagMessage (DebugSetForcedChaosTokenDraws_ fs)
 
 pattern SetChaosTokens :: [ChaosTokenFace] -> Message
 pattern SetChaosTokens fs = ChaosBagMessage (SetChaosTokens_ fs)

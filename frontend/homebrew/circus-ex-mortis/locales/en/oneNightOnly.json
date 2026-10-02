@@ -25,6 +25,20 @@
         "mentalTrauma": "Suffer 1 mental trauma"
       }
     },
+    "tokens": {
+      "easyStandard": {
+        "skull": "-X. X is equal to the number of _Creature_ enemies in play.",
+        "cultist": "-2. If you fail, move once toward the nearest The Big Top location.",
+        "tablet": "-2. If you fail, move once toward the nearest The Big Top location.",
+        "elderThing": "-1. -3 instead if this is a test against a _Creature_ enemy."
+      },
+      "hardExpert": {
+        "skull": "-X. X is equal to 1 + the number of _Creature_ enemies in play.",
+        "cultist": "-3. Move once toward the nearest The Big Top location.",
+        "tablet": "-3. Move once toward the nearest The Big Top location.",
+        "elderThing": "-2. -4 instead if this is a test against a _Creature_ enemy."
+      }
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution",

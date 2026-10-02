@@ -15,6 +15,7 @@ module AH3e.Content.Tiles (
   tile,
   spaceIdFor,
   edgeSpaces,
+  aroundFrom,
   buildMap,
   buildMapWith,
   buildMapLaidOut,
@@ -256,6 +257,16 @@ this is what seats the piece flush against the tile it is laid against.
 cornerReach :: Double
 cornerReach = 0.216
 
+{- | The sides of a threshold tile in the order they run round it, which is the order
+its icons are printed in: from due left, turning the way the screen does. Where it
+starts is arbitrary, but it is fixed, so the engine works out the same order again when
+it turns the tile and the icons stay with the sides they are drawn on.
+-}
+aroundFrom :: (Double, Double) -> [(a, (Double, Double))] -> [a]
+aroundFrom (hx, hy) = map fst . sortOn (turning . snd)
+ where
+  turning (x, y) = let a = atan2 (y - hy) (x - hx) in if a < pi then a + 2 * pi else a
+
 -- | The six corners of a tile, each between two of its edges.
 cornerAngles :: [Double]
 cornerAngles = [fromIntegral d * pi / 180 | d <- [30, 90, 150, 210, 270, 330 :: Int]]
@@ -389,13 +400,21 @@ buildMapOf nids streets pieces =
   -- laid between two hexes, a threshold borders both edges the way a street does
   thresholdBorders t =
     [ (thresholdId t.thresholdType, sid, h)
-    | (sid, h) <-
-        zipHazards t.hazards (edgeSpaces (tile t.from) t.edge <> edgeSpaces (tile t.to) (opposite t.edge))
+    | (side, h) <- zipHazards t.hazards (aroundFrom (thresholdSpot t) (map withSpot (sides t)))
+    , sid <- side
     ]
+  sides t = [edgeSpaces (tile t.from) t.edge, edgeSpaces (tile t.to) (opposite t.edge)]
+  thresholdSpot t = let ((x1, y1), (x2, y2)) = (pos t.from, pos t.to) in ((x1 + x2) / 2, (y1 + y2) / 2)
+  withSpot side = (side, meanSpot side)
+  meanSpot side = mean (mapMaybe (`lookup` spaceSpots) side)
+  spaceSpots = [(a.space, (a.x, a.y)) | a <- anchors]
   {- A corner tile abuts one space of each hex it touches: the space whose wedge faces
   the corner, which is where the centres of those hexes average out. -}
   cornerBorders c =
-    [(thresholdId c.thresholdType, sid, h) | (sid, h) <- zipHazards c.hazards (cornerSpaces c)]
+    [ (thresholdId c.thresholdType, sid, h)
+    | (side, h) <- zipHazards c.hazards (aroundFrom (cornerAt c) (map (withSpot . pure) (cornerSpaces c)))
+    , sid <- side
+    ]
   cornerSpaces c =
     [ facing t (pos t.neighborhood) (cornerAt c)
     | nid <- c.tiles
@@ -511,12 +530,12 @@ buildMapOf nids streets pieces =
     | sid <- edgeSpaces (tile s.from) s.edge <> edgeSpaces (tile s.to) (opposite s.edge)
     ]
 
-{- | A threshold tile's icons against the spaces it abuts, in the order both are
-written. Which icon faces which tile is settled when the tile is laid, so setup turns
-it at random; this only has to hand out the ones the tile prints.
+{- | A threshold tile's icons against its sides, in the order the tile prints them.
+Which icon ends up facing which tile is settled when the tile is laid down, so setup
+turns it from here; this only has to hand them out as printed.
 -}
-zipHazards :: [Hazard] -> [SpaceId] -> [(SpaceId, Maybe Hazard)]
-zipHazards hs sids = zip sids (map Just hs <> repeat Nothing)
+zipHazards :: [Hazard] -> [[SpaceId]] -> [([SpaceId], Maybe Hazard)]
+zipHazards hs sides = zip sides (map Just hs <> repeat Nothing)
 
 thresholdName :: ThresholdType -> Text
 thresholdName = \case

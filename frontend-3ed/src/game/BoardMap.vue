@@ -72,7 +72,10 @@ connector hangs off a single edge, and the tab it joins by is the bottom of its
 art; the backend gives that edge's outward normal, so the bottom has to come
 round to face back along it. */
 const spaceAngle = (sid: string, a: number) => {
-  if (laidLikeAStreet(sid)) return streetAngle(a) + 90
+  /* A street reads the same either way round, so its angle folds to the nearer half
+  turn; a threshold does not -- its icons are printed on one side -- so it keeps the
+  angle it was laid at, which is what says which way round it ended up. */
+  if (laidLikeAStreet(sid)) return a + 90
   return connectorArt(sid) ? a + 90 : streetAngle(a)
 }
 // a street fills its box; a connector is drawn to fit a smaller square one, keeping its own shape

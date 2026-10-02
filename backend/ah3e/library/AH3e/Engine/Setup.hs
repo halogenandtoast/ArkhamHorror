@@ -9,7 +9,7 @@ module AH3e.Engine.Setup (
 ) where
 
 import AH3e.Content
-import AH3e.Content.Tiles (spaceIdFor)
+import AH3e.Content.Tiles (aroundFrom, spaceIdFor)
 import AH3e.Engine.Monad
 import AH3e.Game
 import AH3e.Message
@@ -107,25 +107,51 @@ newGame pids seed opts = do
   pure (emptyGame pids seed opts) {queue = [start]}
 
 {- | "When a threshold tile is added to the map, orient the hazardous borders
-randomly" (Secrets of the Order, p. 4). The tile's icons are laid out in order when
-the board is built, so turning it is a matter of dealing them round its borders again.
+randomly" (Secrets of the Order, p. 4). The tile is turned, not just its icons: the
+icons are printed on it, so they move round its sides together and the picture turns
+with them. Anything else and the board shows one hazard while the engine charges
+another.
 -}
 turnThresholdTiles :: GameM ()
 turnThresholdTiles = do
   board <- use #board
-  let isThresholdSpace sid = case Map.lookup sid board.spaces of
+  let spots =
+        Map.fromList
+          $ [(a.space, (a.x, a.y)) | a <- board.layout.anchors]
+          <> [(p.space, (p.x, p.y)) | p <- board.layout.streets]
+      isThresholdSpace sid = case Map.lookup sid board.spaces of
         Just s -> case s.kind of ThresholdSpace _ -> True; _ -> False
         Nothing -> False
   for_ [s.id | s <- Map.elems board.spaces, isThresholdSpace s.id] \sid -> do
     edges <- uses (#board . #borders . at sid . non mempty) Map.toList
-    -- the borders are what the turning moves the icons between, so they are what is
-    -- shuffled: a tile with one icon and three borders can face any of the three
-    order <- shuffle (map fst edges)
-    turned <- shuffle (mapMaybe snd edges)
-    let dealt = zip order (map Just turned <> repeat Nothing)
-    for_ dealt \(other, h) -> do
-      #board . #borders . ix sid . at other ?= h
-      #board . #borders . ix other . at sid ?= h
+    let here = Map.findWithDefault (0, 0) sid spots
+        -- every border along one side of the tile carries that side's icon
+        bySide = Map.toList (Map.fromListWith (<>) [(spaceNeighborhood o board, [(o, h)]) | (o, h) <- edges])
+        placed side = mean (mapMaybe ((`Map.lookup` spots) . fst) side)
+        sides = aroundFrom here [(side, placed side) | (_, side) <- bySide]
+        icons = [listToMaybe (mapMaybe snd side) | side <- sides]
+        turns = length sides
+    k <- if turns > 1 then randomR (0, turns - 1) else pure 0
+    let turned = [icons !! ((j - k) `mod` turns) | j <- [0 .. turns - 1]]
+    for_ (zip sides turned) \(side, h) ->
+      for_ (map fst side) \other -> do
+        #board . #borders . ix sid . at other ?= h
+        #board . #borders . ix other . at sid ?= h
+    -- the picture turns with them
+    #board
+      . #layout
+      . #streets
+      . traversed
+      . filtered ((== sid) . (.space))
+      . #angle
+      += fromIntegral k
+      * 360
+      / fromIntegral turns
+
+-- | The middle of a set of places, for a tile side that abuts more than one space.
+mean :: [(Double, Double)] -> (Double, Double)
+mean [] = (0, 0)
+mean ps = (sum (map fst ps) / fromIntegral (length ps), sum (map snd ps) / fromIntegral (length ps))
 
 availableScenarios :: [Expansion] -> [ScenarioDef]
 availableScenarios expansions = [sc | sc <- Map.elems scenarioDefs, sc.expansion `elem` expansions]

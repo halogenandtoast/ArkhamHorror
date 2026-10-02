@@ -284,7 +284,10 @@ rerollDie cost idx = do
   payRerollCost ts.investigator cost
   v <- rollDie
   #test . _Just . #dice . ix idx . #value .= v
-  afterRerollFor ts.investigator idx >>= pushAll
+  {- All of this goes out in one push: a second one would prepend in front of what
+  the first left, putting ContinueTest ahead of the cards answering the reroll and
+  stranding their messages past the end of the test (Chef's Knife). -}
+  answered <- afterRerollFor ts.investigator idx
   surcharge <- rerollSurcharge ts.investigator
   -- queued rather than prompted, so the surcharge is settled in front of both
   spent <- case cost of
@@ -292,12 +295,13 @@ rerollDie cost idx = do
     _ -> pure []
   pushAll
     $ surcharge
+    <> answered
     <> case cost of
       -- the dice a card buys land behind the window, and roll the test on themselves
       FocusCost _ ->
         CheckReactions (SpentFocusToReroll ts.investigator) []
           : spent
-          <> [ContinueTest | null spent]
+            <> [ContinueTest | null spent]
       _ -> [ContinueTest]
 
 liveDice :: TestState -> [(Int, Die)]

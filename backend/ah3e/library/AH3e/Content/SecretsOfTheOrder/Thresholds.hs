@@ -127,7 +127,7 @@ thresholds =
         )
       ,
         ( HiddenPath
-        , "The shade of a wanderer, long waylaid in their travels, calls out to you. \"Only a gift freely given can untether me from this place.\" You may spend one remnant to free them. If you do, they open your mind to new philosophies; you may focus one skill of your choice, even if it exceeds your focus limit."
+        , "The shade of a wanderer, long waylaid in their travels, waits glumly along your path. \"Only a gift freely given can untether me from this place.\" You may spend one remnant to free them. If you do, they open your mind to new philosophies; you may focus one skill of your choice, even if it exceeds your focus limit."
         , mayPay (SpendRemnants 1) focusExceed
         )
       ,

@@ -1371,7 +1371,11 @@ runMessage msg = case msg of
       $ Choice (DoneLabel "Skip") []
       : [ Choice (TextLabel r.label) (r.messages <> [CheckReactions trigger (r.key : used)]) | r <- available
         ]
-  ContinueTest -> testPrompt
+  {- A test can finish while a ContinueTest of its own is still queued behind what a
+  card left there, so by the time it runs there may be nothing to carry on with. -}
+  ContinueTest -> do
+    inTest <- uses #test isJust
+    when inTest testPrompt
   MarkAssetUsed iid cid -> investigatorL iid . #usedAssets %= (<> [cid])
   MarkAbilityUsed iid key -> investigatorL iid . #usedAbilities %= (<> [key])
   {- A card that turns itself over the moment it arrives shows a side nobody has

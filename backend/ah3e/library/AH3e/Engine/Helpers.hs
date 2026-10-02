@@ -265,7 +265,11 @@ newTest iid skill modifier kind after =
 
 -- 491.3b: reveal from the bottom of the monster deck until the trait is found
 revealMonstersFromBottom :: Trait -> Int -> GameM [CardId]
-revealMonstersFromBottom trait n = go n [] []
+revealMonstersFromBottom trait = revealMonstersMatching (elem trait . (.traits))
+
+-- | 'revealMonstersFromBottom' for a card that asks for something other than a trait.
+revealMonstersMatching :: (MonsterDef -> Bool) -> Int -> GameM [CardId]
+revealMonstersMatching wanted n = go n [] []
  where
   go 0 found revealed = finish found revealed
   go k found revealed = do
@@ -275,7 +279,7 @@ revealMonstersFromBottom trait n = go n [] []
       Just (cid, rest) -> do
         #decks . #monster .= rest
         d <- monsterDef cid
-        if trait `elem` d.traits
+        if wanted d
           then go (k - 1) (found <> [cid]) revealed
           else go k found (cid : revealed)
   finish found revealed = do

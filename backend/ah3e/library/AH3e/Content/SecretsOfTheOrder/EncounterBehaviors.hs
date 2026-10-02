@@ -9,9 +9,11 @@ import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
 import AH3e.Types.Board
+import AH3e.Types.Card
 import AH3e.Types.Effect
 import AH3e.Types.State
 import Data.Map.Strict qualified as Map
+import Data.Text qualified as T
 
 behaviors :: Behaviors
 behaviors =
@@ -21,6 +23,8 @@ behaviors =
           [ ("gateway-onward", gatewayOnward True)
           , ("gateway-onward:must", gatewayOnward False)
           , ("wild-gateway-toll", wildGatewayToll)
+          , ("spawn-inhuman-monster", spawnInhumanMonster)
+          , ("witch-house-spells", witchHouseSpells)
           ]
     }
 
@@ -46,3 +50,40 @@ wildGatewayToll ctx = do
     $ [label "Spend one remnant" [PayCost ctx (SpendRemnants 1), go] | rich]
     <> [Choice (InvestigatorLabel o.id) [GainConditionMsg o.id "FATIGUED", go] | o <- others]
     <> [Choice (DoneLabel "Offer nothing") []]
+
+{- | "Spawn one non-human monster." The monster is found the way a trait is
+(491.3b), then put back on the bottom so the ordinary spawn draws it and
+everything that answers a monster arriving still runs.
+-}
+spawnInhumanMonster :: EffectCtx -> GameM ()
+spawnInhumanMonster _ = do
+  found <- revealMonstersMatching (\d -> "Human" `notElem` d.traits) 1
+  case found of
+    (mid : _) -> do
+      #decks . #monster %= (<> [mid])
+      push (SpawnMonsterAt Nothing False)
+    [] -> logText "Nothing inhuman is left in the monster deck"
+
+{- | "Reveal the top three spells in the deck. You may gain a DARK PACT to gain one
+of them. Place any spells you do not gain on the bottom of the deck." The price is a
+condition rather than money, which the display's own buying cannot charge.
+-}
+witchHouseSpells :: EffectCtx -> GameM ()
+witchHouseSpells ctx = do
+  deck <- use (#decks . #spell)
+  let (revealed, rest) = splitAt 3 deck
+  #decks . #spell .= rest
+  names <- for revealed \cid -> (.name) <$> getCardDef cid
+  unless (null revealed) $ logText ("The voice offers " <> T.intercalate ", " names)
+  pact <- canPayCost ctx.investigator (CostCondition "DARK PACT")
+  chooseFor ctx.investigator "Gain a DARK PACT to take one of them?"
+    $ [ Choice
+          (CardLabel cid)
+          [ PayCost ctx (CostCondition "DARK PACT")
+          , GainAsset ctx.investigator cid
+          , ReturnToBottom SpellDeckKind (filter (/= cid) revealed)
+          ]
+      | pact
+      , cid <- revealed
+      ]
+    <> [Choice (DoneLabel "Take none") [ReturnToBottom SpellDeckKind revealed]]

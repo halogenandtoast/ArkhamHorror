@@ -5,6 +5,7 @@ module Arkham.Campaign.Types where
 
 import Arkham.Ability.Types (Ability)
 import Arkham.Ability.Used
+import Arkham.Campaign.ContinueOption (ContinueOption)
 import Arkham.Campaign.Overlay (CampaignOverlay)
 import Arkham.CampaignLog
 import Arkham.CampaignLogKey
@@ -63,6 +64,12 @@ class
   campaignAbilities _ = []
   campaignOverlays :: a -> [CampaignOverlay]
   campaignOverlays _ = []
+
+  {- | Extra actions the campaign offers on the continuation screen; see
+  'Arkham.Campaign.ContinueOption'.
+  -}
+  campaignContinueOptions :: a -> [ContinueOption]
+  campaignContinueOptions _ = []
 
 data instance Field Campaign :: Type -> Type where
   CampaignCompletedSteps :: Field Campaign [CampaignStep]
@@ -412,7 +419,12 @@ instance Show Campaign where
   show (Campaign a) = show a
 
 instance ToJSON Campaign where
-  toJSON (Campaign a) = toJSON (With a $ Envelope @"overlays" $ campaignOverlays a)
+  toJSON (Campaign a) =
+    toJSON
+      ( With (With a $ Envelope @"overlays" $ campaignOverlays a)
+          $ Envelope @"continueOptions"
+          $ campaignContinueOptions a
+      )
 
 instance HasModifiersFor Campaign where
   getModifiersFor (Campaign a) = getModifiersFor a

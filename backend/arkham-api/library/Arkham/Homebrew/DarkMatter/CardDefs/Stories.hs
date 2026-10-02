@@ -139,3 +139,25 @@ withoutATrace =
     $ (story ":dark-matter:275" "Without a Trace" Set.Starfall) {cdVictoryPoints = Just 1}
 
 --- Circus Ex Mortis (homebrew)
+
+-- Dark Matter (fan campaign by Axolotl): science_expansion
+-- Five extra Starfall scanning cards; the fifth is the Laika asset.
+hiddenSignals :: CardDef
+hiddenSignals =
+  withScanIcons [LS.Droplet]
+    $ story ":dark-matter:301" "Hidden Signals" Set.ScienceExpansion
+
+aWebbOfDiscovery :: CardDef
+aWebbOfDiscovery =
+  withScanIcons [LS.Droplet, LS.Equals]
+    $ story ":dark-matter:302" "A Webb of Discovery" Set.ScienceExpansion
+
+aVoyageBeyondSpace :: CardDef
+aVoyageBeyondSpace =
+  withScanIcons [LS.Moon, LS.Trefoil, LS.Hourglass]
+    $ story ":dark-matter:303" "A Voyage Beyond Space" Set.ScienceExpansion
+
+curiousDiscovery :: CardDef
+curiousDiscovery =
+  withScanIcons [LS.Circle, LS.Triangle, LS.Square]
+    $ story ":dark-matter:304" "Curious Discovery" Set.ScienceExpansion

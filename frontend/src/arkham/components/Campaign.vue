@@ -9,6 +9,7 @@ import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
 import ChooseDeck from '@/arkham/components/ChooseDeck.vue';
 import ContinueCampaign from '@/arkham/components/ContinueCampaign.vue';
 import UltimatumsAndBoonsQuestion from '@/arkham/components/UltimatumsAndBoonsQuestion.vue';
+import { homebrewQuestionPanel } from '@/arkham/homebrewQuestionPanels';
 import { handleEmbeddedI18n } from '@/arkham/i18n';
 import { useI18n } from 'vue-i18n';
 
@@ -198,6 +199,19 @@ const inScenarioStep = computed(() => {
 // of the Morrígan's weakness swap asked between deck loads). It must render
 // through the same question branches as an active game, or the screen is blank.
 const hasQuestion = computed(() => Object.keys(props.game.question).length > 0)
+
+/* A question a homebrew campaign draws itself (Dark Matter's Science Expansion
+ * shop). Matched on the question's own label, so the campaign owns the panel's
+ * layout and styles instead of inheriting StoryQuestion's generic card row --
+ * whose card images are marked `no-overlay` and so cannot be zoomed. */
+const homebrewPanel = computed(() => {
+  for (const [pid, question] of Object.entries(props.game.question)) {
+    if (question?.tag !== 'QuestionLabel') continue
+    const component = homebrewQuestionPanel(question.label)
+    if (component) return { playerId: pid, component }
+  }
+  return null
+})
 </script>
 
 <template>
@@ -221,8 +235,16 @@ const hasQuestion = computed(() => Object.keys(props.game.question).length > 0)
     />
   </div>
   <div v-else-if="game.gameState.tag === 'IsActive' || hasQuestion" id="game" class="game">
+    <component
+      v-if="homebrewPanel"
+      :is="homebrewPanel.component"
+      :game="game"
+      :playerId="homebrewPanel.playerId"
+      :viewOnly="homebrewPanel.playerId !== playerId"
+      @choose="choose"
+    />
     <UltimatumsAndBoonsQuestion
-      v-if="ultimatumsAndBoonsQuestion"
+      v-else-if="ultimatumsAndBoonsQuestion"
       :game="game"
       :playerId="ultimatumsAndBoonsQuestion.playerId"
       :viewOnly="ultimatumsAndBoonsQuestion.playerId !== playerId"

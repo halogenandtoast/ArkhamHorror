@@ -16,6 +16,7 @@ import Arkham.Classes.HasQueue
 import Arkham.Classes.Query
 import Arkham.Constants
 import Arkham.Cost.Status
+import Arkham.Draw.Types (cardDrawSource)
 import Arkham.Effect.Types (Field (..))
 import Arkham.Enemy.Types (Field (EnemyAttacking))
 import Arkham.Event.Types qualified as Field
@@ -2290,6 +2291,16 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
           andM
             [ matchWho iid who whoMatcher
             , deckMatch iid deck $ Matcher.replaceThatInvestigator who deckMatcher
+            ]
+        _ -> noMatch
+    Matcher.WouldDrawCardFrom timing whoMatcher deckMatcher sourceMatcher ->
+      guardTiming timing $ \case
+        Window.WouldDrawCard who _ deck ->
+          andM
+            [ matchWho iid who whoMatcher
+            , deckMatch iid deck $ Matcher.replaceThatInvestigator who deckMatcher
+            , field InvestigatorDrawing who
+                >>= maybe noMatch ((`sourceMatches` sourceMatcher) . cardDrawSource)
             ]
         _ -> noMatch
     Matcher.WouldDrawExactlyOneCard timing whoMatcher deckMatcher ->

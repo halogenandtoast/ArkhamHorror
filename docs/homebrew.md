@@ -370,6 +370,78 @@ is rendered as plain strings. Nothing else is needed — the new-game toggle, th
 campaign log's Achievements tab, the /achievements page and the unlock toast all
 read the catalog.
 
+### Drawing one of your own questions
+
+A question your campaign asks renders through `StoryQuestion`, which draws card
+choices as a small row of images marked `no-overlay` — they cannot be zoomed. When
+that is the wrong shape (a shop, a board, anything where the player has to *read*
+the cards), draw the question yourself: drop a component at
+
+```
+frontend/homebrew/<campaign>/question-panels/<label path>.vue
+```
+
+named after the question's label with its campaign scope and `label.` prefix
+stripped — `questionLabeled "scienceExpansion.purchase"` under `campaignI18n`
+builds `$darkMatter.label.scienceExpansion.purchase`, so the file is
+`question-panels/scienceExpansion.purchase.vue`. Discovered like your locales and
+`campaign.json`; nothing is registered centrally.
+
+The component is handed `{ game, playerId, viewOnly }` and emits `choose(index)`
+against the question's own choices, exactly like a log panel:
+
+```vue
+const props = defineProps<{ game: Game; playerId: string; viewOnly?: boolean }>()
+const emit = defineEmits<{ choose: [value: number] }>()
+```
+
+Read the choices off `game.question[playerId]` (unwrap `QuestionLabel` to its
+`question`), pick out the `CardLabel`s by index, and emit the index the player
+clicked. The panel owns its whole layout and styles, so size the cards however
+your content needs — and leave `no-overlay` off the images if you want the normal
+hover zoom as well.
+
+### Extra actions on the continuation screen
+
+The screen between scenarios shows Continue, Upgrade Decks and Add Side Scenario.
+A campaign can add buttons of its own to it — Dark Matter's Science Expansion
+sells its "Researched" story assets there — by answering
+`campaignContinueOptions`:
+
+```haskell
+instance IsCampaign YourCampaign where
+  campaignContinueOptions (YourCampaign attrs) =
+    [ ContinueOption
+        { key = "yourCampaign.theShop"
+        , label = "yourCampaign.theShop.button" -- a full i18n key
+        , available = somethingAboutAttrs
+        }
+    ]
+```
+
+Only `available` options are drawn. Pressing one answers with
+`CampaignOptionStep <key> <a continuation that redraws this screen>` — a whole
+`ContinueCampaignStep`, not the bare next step, or handing it back would start the
+next scenario instead. You handle it like any other step and hand the table back
+when you are done:
+
+```haskell
+    CampaignStep (CampaignOptionStep k ret) | k == "yourCampaign.theShop" -> do
+      ...                   -- your prompts
+      push $ SetCampaignStep ret
+      push $ CampaignStep ret
+      pure c
+```
+
+`label` is a whole i18n key rather than a scoped fragment, because your campaign
+owns its own locale namespace (`yourCampaign.*`).
+
+One gotcha that is not about this seam: a campaign option chosen at creation time
+(`frontend/homebrew/<campaign>/campaign.json`'s `recommendedOptions`) only
+reaches the campaign log if the campaign *handles* it —
+`HandleOption opt -> pure $ YourCampaign $ c.attrs & logL . optionsL %~ insertSet opt`.
+There is no generic handler; an unhandled option is silently dropped.
+
 ## The frontend side
 
 Your campaign's art, text, and player-facing config live in

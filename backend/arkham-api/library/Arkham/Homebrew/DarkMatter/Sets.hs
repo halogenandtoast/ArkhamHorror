@@ -11,6 +11,7 @@ module Arkham.Homebrew.DarkMatter.Sets (
   pattern InTheShadowOfEarth,
   pattern InterstellarPredators,
   pattern LostQuantum,
+  pattern ScienceExpansion,
   pattern Starfall,
   pattern StrangeMoons,
   pattern TheBoogeyman,
@@ -67,3 +68,11 @@ pattern TheTatterdemalion = Homebrew ":dark-matter:the_tatterdemalion"
 
 pattern Anachronism :: EncounterSet
 pattern Anachronism = Homebrew ":dark-matter:anachronism"
+
+{- | The Science Expansion: purchasable Science story assets plus five extra
+Starfall scanning cards. Never gathered as a set; see
+'Arkham.Homebrew.DarkMatter.Helpers.purchasableScienceCards' and Starfall's
+setup.
+-}
+pattern ScienceExpansion :: EncounterSet
+pattern ScienceExpansion = Homebrew ":dark-matter:science_expansion"

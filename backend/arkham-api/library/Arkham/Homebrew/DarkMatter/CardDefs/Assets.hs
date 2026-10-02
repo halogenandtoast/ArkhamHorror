@@ -346,3 +346,104 @@ universalArchives =
       { cdCardTraits = setFromList [Data]
       , cdUnique = True
       }
+
+-- science_expansion: purchasable Science story assets (Researched)
+grandUnifiedTheory :: CardDef
+grandUnifiedTheory =
+  ( storyAsset
+      ":dark-matter:291"
+      ("Grand Unified Theory" <:> "Fundamental Forces")
+      3
+      Set.ScienceExpansion
+  )
+    { cdCardTraits = setFromList [Tome, Science]
+    , cdSkills = [#wild]
+    , cdSlots = [#hand]
+    , cdUses = uses Secret 3
+    , cdUnique = True
+    }
+
+scienceOverMysticism :: CardDef
+scienceOverMysticism =
+  (storyAsset ":dark-matter:292" "Science Over Mysticism" 1 Set.ScienceExpansion)
+    { cdCardTraits = setFromList [Talent, Science]
+    , cdSkills = [#willpower, #willpower]
+    }
+
+germaniumDetector :: CardDef
+germaniumDetector =
+  (storyAsset ":dark-matter:293" "Germanium Detector" 2 Set.ScienceExpansion)
+    { cdCardTraits = setFromList [Item, Tool, Science]
+    , cdSkills = [#intellect, #intellect]
+    , cdSlots = [#hand]
+    }
+
+subElectronNoiseSensor :: CardDef
+subElectronNoiseSensor =
+  (storyAsset ":dark-matter:294" "Sub-Electron Noise Sensor" 0 Set.ScienceExpansion)
+    { cdCardTraits = setFromList [Item, Tool, Science]
+    , cdSkills = [#agility, #agility]
+    , cdSlots = [#hand]
+    }
+
+machineLearningAlgorithm :: CardDef
+machineLearningAlgorithm =
+  ( storyAsset
+      ":dark-matter:295"
+      ("Machine Learning Algorithm" <:> "Unsupervised")
+      0
+      Set.ScienceExpansion
+  )
+    { cdCardTraits = setFromList [Tool, Science]
+    , cdSkills = [#wild]
+    }
+
+nuclearPowerBank :: CardDef
+nuclearPowerBank =
+  (storyAsset ":dark-matter:296" "Nuclear Power Bank" 2 Set.ScienceExpansion)
+    { cdCardTraits = singleton Science
+    , cdSkills = [#combat, #combat]
+    }
+
+internationalCollaboration :: CardDef
+internationalCollaboration =
+  (storyAsset ":dark-matter:297" "International Collaboration" 0 Set.ScienceExpansion)
+    { cdCardTraits = singleton Science
+    , cdSkills = [#wild]
+    }
+
+rationalMind :: CardDef
+rationalMind =
+  (storyAsset ":dark-matter:298" "Rational Mind" 0 Set.ScienceExpansion)
+    { cdCardTraits = singleton Science
+    , cdSkills = [#wild]
+    }
+
+particleAccelerator :: CardDef
+particleAccelerator =
+  (storyAsset ":dark-matter:299" "Particle Accelerator" 0 Set.ScienceExpansion)
+    { cdCardTraits = singleton Science
+    }
+
+specialRelativity :: CardDef
+specialRelativity =
+  ( storyAsset
+      ":dark-matter:300"
+      ("Special Relativity" <:> "Space and Time")
+      2
+      Set.ScienceExpansion
+  )
+    { cdCardTraits = setFromList [Science, Tome]
+    , cdSkills = [#wild, #wild]
+    , cdSlots = [#hand]
+    , cdUnique = True
+    }
+
+-- science_expansion: the extra Starfall scanning cards
+laika :: CardDef
+laika =
+  withScanIcons [LS.Heart, LS.Diamond]
+    $ (encounterAsset_ ":dark-matter:305" ("Laika" <:> "The First Cosmonaut") Set.ScienceExpansion)
+      { cdCardTraits = setFromList [Ally, Creature, Science]
+      , cdUnique = True
+      }

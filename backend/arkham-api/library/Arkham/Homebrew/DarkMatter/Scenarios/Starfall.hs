@@ -1,6 +1,6 @@
 module Arkham.Homebrew.DarkMatter.Scenarios.Starfall (starfall) where
 
-import Arkham.Card (toCardCode)
+import Arkham.Card (genCards, toCardCode)
 import Arkham.Helpers.FlavorText (flavor, h, li, p, resolutionOnly, setTitle, setup, ul)
 import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Helpers.Query (allInvestigators)
@@ -9,7 +9,15 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.DarkMatter.CardDefs.Locations qualified as Locations
-import Arkham.Homebrew.DarkMatter.Helpers (addScanningDeck, earnXp, getImpendingDoom, scenarioI18n)
+import Arkham.Homebrew.DarkMatter.Helpers (
+  addScanningDeck,
+  earnXp,
+  extraStarfallScanningCards,
+  getImpendingDoom,
+  hasScienceExpansion,
+  scenarioI18n,
+  shuffleIntoScanningDeck,
+ )
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.Sets qualified as Set
 import Arkham.Id (AgendaId (..), InvestigatorId)
@@ -109,6 +117,7 @@ instance RunMessage Starfall where
       stabilized <- getHasRecord TheElbrusStationHasBeenFullyStabilized
       nostalgiaSaved <- getHasRecord TheNostalgiaIIHasBeenSaved
       alliedWithMiGo <- getHasRecord YouAreAlliedWithTheMiGo
+      scienceExpansionIncluded <- hasScienceExpansion
 
       setup $ ul do
         li "gatherSets"
@@ -120,6 +129,7 @@ instance RunMessage Starfall where
           li "nostalgiaII"
           li "miGoAlliance"
         li "createScanningDeck"
+        unscoped $ li.validate scienceExpansionIncluded "darkMatter.scienceExpansion.shuffleIn"
         li.nested "placeLocations" do
           li "startAt"
         li "impendingDoom"
@@ -180,6 +190,13 @@ instance RunMessage Starfall where
         ]
 
       addScanningDeck
+
+      {- Science Expansion: "after the setup of Starfall, shuffle these 5 cards
+      into the scanning deck." They are never gathered, so they are minted here
+      rather than swept up by 'addScanningDeck' with the rest. -}
+      whenM hasScienceExpansion
+        $ shuffleIntoScanningDeck
+        =<< genCards extraStarfallScanningCards
 
       {- "Put the following locations into play: The Tatterdemalion, Mars,
       Asteroid Belt and Pluto. Each investigator begins play at The

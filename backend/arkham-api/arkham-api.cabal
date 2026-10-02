@@ -2297,6 +2297,7 @@ library
       Arkham.Campaign.Campaigns.ThePathToCarcosa.Achievements
       Arkham.Campaign.Campaigns.TheScarletKeys
       Arkham.Campaign.Campaigns.TheScarletKeys.Achievements
+      Arkham.Campaign.ContinueOption
       Arkham.Campaign.Import.Lifted
       Arkham.Campaign.Option
       Arkham.Campaign.Overlay
@@ -4508,26 +4509,37 @@ library
       Arkham.Homebrew.DarkMatter.Assets.ErwinSimmonsFading
       Arkham.Homebrew.DarkMatter.Assets.ErwinSimmonsQuantumPhysicist
       Arkham.Homebrew.DarkMatter.Assets.EvaSuit
+      Arkham.Homebrew.DarkMatter.Assets.GermaniumDetector
+      Arkham.Homebrew.DarkMatter.Assets.GrandUnifiedTheory
       Arkham.Homebrew.DarkMatter.Assets.HeirToCarcosa
+      Arkham.Homebrew.DarkMatter.Assets.InternationalCollaboration
       Arkham.Homebrew.DarkMatter.Assets.K11SurveyUnit
       Arkham.Homebrew.DarkMatter.Assets.K2PS187100Functionality
       Arkham.Homebrew.DarkMatter.Assets.K2PS18725Functionality
       Arkham.Homebrew.DarkMatter.Assets.K2PS18750Functionality
       Arkham.Homebrew.DarkMatter.Assets.K2PS18775Functionality
+      Arkham.Homebrew.DarkMatter.Assets.Laika
       Arkham.Homebrew.DarkMatter.Assets.LastHope
       Arkham.Homebrew.DarkMatter.Assets.LtArcherMichaels
+      Arkham.Homebrew.DarkMatter.Assets.MachineLearningAlgorithm
       Arkham.Homebrew.DarkMatter.Assets.Maja
       Arkham.Homebrew.DarkMatter.Assets.MedicalFoam
       Arkham.Homebrew.DarkMatter.Assets.MiGoCollector
       Arkham.Homebrew.DarkMatter.Assets.MindMachineInterface
       Arkham.Homebrew.DarkMatter.Assets.MUD12Mudbug
+      Arkham.Homebrew.DarkMatter.Assets.NuclearPowerBank
+      Arkham.Homebrew.DarkMatter.Assets.ParticleAccelerator
       Arkham.Homebrew.DarkMatter.Assets.ProjectOrigami
       Arkham.Homebrew.DarkMatter.Assets.RadiationTablets
+      Arkham.Homebrew.DarkMatter.Assets.RationalMind
       Arkham.Homebrew.DarkMatter.Assets.RepairingTheThreshold
+      Arkham.Homebrew.DarkMatter.Assets.ScienceOverMysticism
       Arkham.Homebrew.DarkMatter.Assets.ShieldingDevice
       Arkham.Homebrew.DarkMatter.Assets.Sophie
       Arkham.Homebrew.DarkMatter.Assets.SpaceArtillery
+      Arkham.Homebrew.DarkMatter.Assets.SpecialRelativity
       Arkham.Homebrew.DarkMatter.Assets.StasisCube
+      Arkham.Homebrew.DarkMatter.Assets.SubElectronNoiseSensor
       Arkham.Homebrew.DarkMatter.Assets.ThePallidMask
       Arkham.Homebrew.DarkMatter.Assets.Tilde
       Arkham.Homebrew.DarkMatter.Assets.UniversalArchives
@@ -4675,6 +4687,9 @@ library
       Arkham.Homebrew.DarkMatter.Scenarios.TheTatterdemalion
       Arkham.Homebrew.DarkMatter.Sets
       Arkham.Homebrew.DarkMatter.Stories.ArrivalOfTheKing
+      Arkham.Homebrew.DarkMatter.Stories.AVoyageBeyondSpace
+      Arkham.Homebrew.DarkMatter.Stories.AWebbOfDiscovery
+      Arkham.Homebrew.DarkMatter.Stories.CuriousDiscovery
       Arkham.Homebrew.DarkMatter.Stories.Delights
       Arkham.Homebrew.DarkMatter.Stories.EvidenceAdamTanner
       Arkham.Homebrew.DarkMatter.Stories.EvidenceCaptainBurr
@@ -4684,6 +4699,7 @@ library
       Arkham.Homebrew.DarkMatter.Stories.EvidenceSophie
       Arkham.Homebrew.DarkMatter.Stories.FinalDestination
       Arkham.Homebrew.DarkMatter.Stories.ForYouAlone
+      Arkham.Homebrew.DarkMatter.Stories.HiddenSignals
       Arkham.Homebrew.DarkMatter.Stories.IntoTheArchives
       Arkham.Homebrew.DarkMatter.Stories.K2PS187CyberneticBrains
       Arkham.Homebrew.DarkMatter.Stories.LostExpedition

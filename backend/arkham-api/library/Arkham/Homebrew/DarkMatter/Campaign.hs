@@ -1,6 +1,8 @@
 module Arkham.Homebrew.DarkMatter.Campaign (darkMatter) where
 
+import Arkham.Campaign.ContinueOption (ContinueOption (..))
 import Arkham.Campaign.Import.Lifted
+import Arkham.CampaignLog (optionsL)
 import Arkham.Card (toCardDef)
 import Arkham.ChaosToken
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
@@ -8,9 +10,11 @@ import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.DarkMatter.CampaignSteps
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.Import
+import Arkham.Investigator.Types (Field (InvestigatorXp))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier (ModifierType (..))
+import Arkham.Projection
 import Arkham.Source
 
 newtype DarkMatter = DarkMatter CampaignAttrs
@@ -21,6 +25,22 @@ darkMatter = campaign DarkMatter (CampaignId ":dark-matter") "Dark Matter"
 
 instance IsCampaign DarkMatter where
   campaignTokens = chaosBagContents
+
+  -- "You will be able to purchase these story assets between any scenario of the
+  -- Dark Matter campaign." The continuation screen is "between any scenario", so
+  -- the Science Expansion hangs its shop off it rather than inventing a step of
+  -- its own; see 'Arkham.Campaign.ContinueOption'.
+  campaignContinueOptions (DarkMatter attrs) =
+    [ ContinueOption
+        { key = purchaseScienceCards
+        , label = "darkMatter.scienceExpansion.purchase"
+        , available =
+            scienceExpansion
+              `member` attrs.log.options
+              && notNull (mapMaybe (.scenario) attrs.completedSteps)
+        }
+    ]
+
   nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> continue TheTatterdemalion
     TheTatterdemalion -> continue ElectricNightmare
@@ -58,6 +78,43 @@ instance RunMessage DarkMatter where
     once the previous card has finished resolving. -}
     CampaignSpecific k (maybeResult -> Just (iid, cards)) | k == doDrawFacedownKey -> do
       drawFacedownEncounterCards iid cards
+      pure c
+    -- Options are only folded into the log by the campaign that recognises them.
+    HandleOption opt | opt == scienceExpansion -> do
+      pure $ DarkMatter $ toAttrs c & logL . optionsL %~ insertSet opt
+    {- The Science Expansion's shop, opened from the continuation screen. Each
+    investigator buys in turn; @ret@ is the step that screen was showing, so the
+    table lands back on it when the last one is done. -}
+    CampaignStep (CampaignOptionStep k ret) | k == purchaseScienceCards -> do
+      eachInvestigator \iid -> push $ ForInvestigator iid (CampaignStep (CampaignOptionStep k ret))
+      push $ SetCampaignStep ret
+      push $ CampaignStep ret
+      pure c
+    ForInvestigator iid (CampaignStep (CampaignOptionStep k ret)) | k == purchaseScienceCards -> do
+      owned <- findWithDefault [] iid <$> getCampaignStoryCards
+      xp <- field InvestigatorXp iid
+      memories <- getMemories iid
+      let
+        affordable =
+          [ (def, xpCost, memoryCost)
+          | (def, xpCost, memoryCost) <- purchasableScienceCards
+          , xpCost <= xp
+          , memoryCost <= memories
+          , not $ any ((== def) . toCardDef) owned
+          ]
+      {- The label is also what routes this to the campaign's own panel
+      (@frontend/homebrew/dark-matter/question-panels/scienceExpansion.purchase.vue@),
+      which draws the cards big enough to read the printed "Researched" cost. -}
+      unless (null affordable) $ chooseOneM iid do
+        questionLabeled "scienceExpansion.purchase"
+        for_ affordable \(def, xpCost, memoryCost) -> cardLabeled def do
+          push $ SpendXP iid xpCost
+          crossOffMemories iid memoryCost
+          addCampaignCardToDeck iid ShuffleIn def
+          -- Re-ask: both costs have been paid by the time this is reached, so
+          -- what is still affordable is priced against what is left.
+          push $ ForInvestigator iid (CampaignStep (CampaignOptionStep k ret))
+        labeled "scienceExpansion.donePurchasing" nothing
       pure c
     CampaignStep PrologueStep -> do
       scope "intro" $ flavor $ setTitle "title" >> p "body"

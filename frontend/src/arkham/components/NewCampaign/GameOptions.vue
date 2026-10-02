@@ -18,7 +18,11 @@ type RecommendedToggle = {
   type: 'toggle'
   default?: boolean
   icon?: 'bug-ant'
-  option: { tag: string }
+  // A campaign that owns its own locale namespace (homebrew) names the scope
+  // holding `.title` / `.description`; otherwise they live under
+  // `create.recommendedOption.<tag>`.
+  i18n?: string
+  option: { tag: string; contents?: string }
 }
 
 const props = defineProps<{
@@ -338,7 +342,11 @@ const recommendedToggles = computed<RecommendedToggle[]>(() => {
 })
 
 function optKey(o: RecommendedToggle) {
-  return o.option.tag
+  return o.option.contents ? `${o.option.tag}:${o.option.contents}` : o.option.tag
+}
+
+function optScope(o: RecommendedToggle) {
+  return o.i18n ?? `create.recommendedOption.${o.option.tag}`
 }
 
 function isOptEnabled(o: RecommendedToggle) {
@@ -665,10 +673,10 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
             <div class="recommended-text">
               <div class="recommended-name">
                 <BugAntIcon v-if="o.icon === 'bug-ant'" class="recommended-icon" aria-hidden="true" />
-                {{ $t(`create.recommendedOption.${o.option.tag}.title`) ?? o.option.tag }}
+                {{ $t(`${optScope(o)}.title`) ?? o.option.tag }}
               </div>
-              <div class="recommended-desc" v-if="$te?.(`create.recommendedOption.${o.option.tag}.description`)">
-                {{ $t(`create.recommendedOption.${o.option.tag}.description`) }}
+              <div class="recommended-desc" v-if="$te?.(`${optScope(o)}.description`)">
+                {{ $t(`${optScope(o)}.description`) }}
               </div>
             </div>
 

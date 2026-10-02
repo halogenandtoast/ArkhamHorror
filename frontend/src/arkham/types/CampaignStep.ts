@@ -31,6 +31,7 @@ export type CampaignStep
   | ResupplyPoint
   | CheckpointStep
   | CampaignSpecificStep
+  | CampaignOptionStep
   | ContinueCampaignStep
   | StandaloneScenarioStep
   | StandaloneScenarioStepWithOptions
@@ -57,6 +58,22 @@ export type CampaignSpecificStep = {
   tag: 'CampaignSpecificStep';
   contents: [string, string | null];
 }
+
+/* An extra action the campaign offered on the continuation screen. The step the
+ * screen was showing rides along so the campaign can hand the table back to it;
+ * nothing here needs it, so only the key is decoded. */
+export type CampaignOptionStep = {
+  tag: 'CampaignOptionStep';
+  contents: string;
+}
+
+export const campaignOptionStepDecoder = JsonDecoder.object<CampaignOptionStep>(
+  {
+    tag: JsonDecoder.literal('CampaignOptionStep'),
+    contents: JsonDecoder.tuple([JsonDecoder.string(), JsonDecoder.succeed()], 'contents').map(([key]) => key),
+  },
+  'CampaignOptionStep',
+);
 
 export type EpilogueStep = {
   tag: 'EpilogueStep';
@@ -229,6 +246,7 @@ export const campaignStepDecoder = JsonDecoder.oneOf<CampaignStep>(
     prologueStepDecoder,
     resupplyPointStepDecoder,
     campaignSpecificStepDecoder,
+    campaignOptionStepDecoder,
     scenarioStepDecoder,
     scenarioStepWithOptionsDecoder,
     standaloneScenarioStepDecoder,

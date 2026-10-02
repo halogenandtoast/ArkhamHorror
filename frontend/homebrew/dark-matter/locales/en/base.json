@@ -70,6 +70,11 @@
       "damageMiGoScientist": "Deal 2 damage to Mi-Go Scientist",
       "take2DirectDamage": "Take 2 direct damage"
     },
+    "internationalCollaboration": {
+      "gainResources": "Gain those resources instead",
+      "drawCards": "Draw those cards instead",
+      "decline": "Decline"
+    },
     "jv7Hyades": {
       "trefoil": "Scan for the clover icon",
       "t": "Scan for the T icon"
@@ -94,9 +99,16 @@
     "radiationTablets": {
       "doNotPutIntoPlay": "Do not put Radiation Tablets into play"
     },
+    "scan": {
+      "atYourLocation": "Scan at your own location"
+    },
     "sceneShifting": {
       "placeDoom": "Place 1 doom on the current agenda",
       "moveEnemies": "Move each enemy 1 location toward you. Each enemy at your location immediately attacks you"
+    },
+    "scienceExpansion": {
+      "purchase": "Purchase a Researched Science story asset",
+      "donePurchasing": "Do not purchase anything"
     },
     "solarEclipse": {
       "take1Horror": "Take 1 horror",
@@ -159,5 +171,16 @@
     "label": {
       "noInvestigatorAddsK2": "No investigator adds it to their deck"
     }
+  },
+  "scienceExpansion": {
+    "title": "Science Expansion",
+    "description": "Include the Dark Matter Science Expansion: ten purchasable “Researched” Science story assets, buyable between any scenario for experience and “Memories”, and five extra scanning cards shuffled into Starfall's scanning deck. Kate Winthrop is not included.",
+    "purchase": "Purchase Science Cards",
+    "shuffleIn": "Shuffle the 5 Science Expansion scanning cards into the scanning deck",
+    "instructions": "Purchase a Researched Science story asset, or stop. Each one costs the experience and “Memories” printed on its face.",
+    "waiting": "Waiting for {investigator} to purchase Science cards…",
+    "experienceRemaining": "Experience: {count}",
+    "memoriesRemaining": "“Memories”: {count}",
+    "donePurchasing": "Done purchasing"
   }
 }

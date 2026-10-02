@@ -277,6 +277,33 @@ async function loadSideStory(sideStoryId: string) {
   })
 }
 
+/* Extra actions the campaign itself offers here (Dark Matter's Science
+ * purchases, say). A whole continuation rides along as the return step, not the
+ * bare `step` this screen is showing -- that one is the *next* step, so handing
+ * it back would start the scenario instead of redrawing this screen. Same
+ * wrapping `upgradeDecks` does. */
+const continueOptions = computed(() => (props.campaign?.continueOptions ?? []).filter((o) => o.available))
+
+async function chooseContinueOption(key: string) {
+  sendOnce({
+    tag: 'CampaignStepAnswer',
+    contents: {
+      tag: 'CampaignOptionStep',
+      contents: [
+        key,
+        {
+          tag: 'ContinueCampaignStep',
+          contents: {
+            canUpgradeDecks: props.canUpgradeDecks,
+            canChooseSideStory: props.canChooseSideStory,
+            nextStep: props.step,
+          },
+        },
+      ],
+    },
+  })
+}
+
 async function upgradeDecks() {
   sendOnce({
     tag: 'CampaignStepAnswer',
@@ -472,6 +499,12 @@ const setIcon = computed(() => {
           <button @click="startStep" :disable="hasSent">{{t('continue')}}</button>
           <button v-if="canUpgrade" @click="upgradeDecks" :disable="hasSent">{{t('upgradeDecks')}}</button>
           <button v-if="canChooseSideStory && standalones.length > 0" @click="addSideStory = true" :disable="hasSent">+ {{t('addSideScenario')}}</button>
+          <button
+            v-for="option in continueOptions"
+            :key="option.key"
+            @click="chooseContinueOption(option.key)"
+            :disable="hasSent"
+          >{{ t(option.label) }}</button>
           <SideStoryOption
             v-for="sideStory in promotedSideStories"
             :key="sideStory.id"

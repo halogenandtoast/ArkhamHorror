@@ -36,6 +36,13 @@ data CampaignStep
   | ResupplyPoint
   | CheckpointStep Int
   | CampaignSpecificStep Text (Maybe Text)
+  | {- | An extra action the campaign offered on the continuation screen
+    ('Arkham.Campaign.ContinueOption'), carrying the continuation to return to
+    when it is done. That is a whole 'ContinueCampaignStep' (so the screen is
+    redrawn), not the next step the screen was showing — handing *that* back
+    would start the next scenario. Same shape as 'UpgradeDeckStep'.
+    -}
+    CampaignOptionStep Text CampaignStep
   | ContinueCampaignStep Continuation
   | StandaloneScenarioStep ScenarioId CampaignStep
   | StandaloneScenarioStepWithOptions ScenarioId CampaignStep ScenarioOptions
@@ -108,6 +115,7 @@ defaultNextStep :: CampaignStep -> Maybe CampaignStep
 defaultNextStep = \case
   UpgradeDeckStep nextStep' -> Just nextStep'
   ChooseDecksStep nextStep' -> Just nextStep'
+  CampaignOptionStep _ nextStep' -> Just nextStep'
   ContinueCampaignStep cont -> Just cont.nextStep
   StandaloneScenarioStep _ nextStep' -> Just nextStep'
   StandaloneScenarioStepWithOptions _ nextStep' _ -> Just nextStep'
@@ -150,6 +158,7 @@ normalizedCampaignStep = \case
   ResupplyPoint -> ResupplyPoint
   CheckpointStep n -> CheckpointStep n
   CampaignSpecificStep t ms -> CampaignSpecificStep t ms
+  CampaignOptionStep _ c -> normalizedCampaignStep c
   ContinueCampaignStep c -> ContinueCampaignStep c
   StandaloneScenarioStep sid c -> StandaloneScenarioStep sid c
   StandaloneScenarioStepWithOptions sid c _ -> StandaloneScenarioStep sid c

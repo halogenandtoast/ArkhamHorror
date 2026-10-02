@@ -272,13 +272,23 @@ watch(selectedCampaign, (id) => {
   if (id === '09') fullCampaign.value = 'FullCampaign'
 })
 
-watch(campaign, (c) => {
-  const recs = ((c as any)?.recommendedOptions ?? []) as Array<{ type: 'toggle'; default?: boolean; option: { tag: string } }>
+type RecommendedOption = { tag: string; contents?: string }
+type RecommendedToggle = { type: 'toggle'; default?: boolean; option: RecommendedOption }
+
+// An option carrying `contents` (a `CampaignVariant`, say) needs both halves in
+// the state key, or two variants of the same tag would share one toggle.
+const recommendedOptionKey = (o: RecommendedOption) =>
+  o.contents ? `${o.tag}:${o.contents}` : o.tag
+
+const recommendedOptions = computed(
+  () => (((campaign.value as any)?.recommendedOptions ?? []) as RecommendedToggle[])
+    .filter((r) => r.type === 'toggle' && r.option?.tag)
+)
+
+watch(recommendedOptions, (recs) => {
   const next: Record<string, boolean> = {}
 
-  for (const r of recs) {
-    if (r.type === 'toggle' && r.option?.tag) next[r.option.tag] = r.default ?? true
-  }
+  for (const r of recs) next[recommendedOptionKey(r.option)] = r.default ?? true
 
   recommendedOptionState.value = { ...next, ...recommendedOptionState.value }
 }, { immediate: true })
@@ -309,9 +319,9 @@ const achievementsForCreate = (campaignId: string | null) =>
     : false
 
 async function start() {
-  const enabledRecommendedOptions = Object.entries(recommendedOptionState.value)
-    .filter(([, enabled]) => enabled)
-    .map(([tag]) => ({ tag }))
+  const enabledRecommendedOptions = recommendedOptions.value
+    .filter((r) => recommendedOptionState.value[recommendedOptionKey(r.option)] ?? true)
+    .map((r) => r.option)
 
   const variant = fullCampaignOptionKey.value ? [{ 'tag': 'CampaignVariant', 'contents': fullCampaignOptionKey.value }] : [];
 

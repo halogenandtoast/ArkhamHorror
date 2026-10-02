@@ -15,3 +15,18 @@ export const campaignOverlayDecoder = JsonDecoder.object<CampaignOverlay>({
   available: JsonDecoder.boolean(),
   xpCost: JsonDecoder.number(),
 }, 'CampaignOverlay')
+
+/* An extra action the campaign offers on the continuation screen, beside
+ * Continue and Upgrade Decks. `label` is a full i18n key: a homebrew campaign
+ * owns its own locale namespace. */
+export interface ContinueOption {
+  key: string
+  label: string
+  available: boolean
+}
+
+export const continueOptionDecoder = JsonDecoder.object<ContinueOption>({
+  key: JsonDecoder.string(),
+  label: JsonDecoder.string(),
+  available: JsonDecoder.boolean(),
+}, 'ContinueOption')

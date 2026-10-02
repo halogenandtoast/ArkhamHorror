@@ -252,6 +252,7 @@ windowTable =
   , ("WouldDiscardTopOfEncounterDeck", ["WouldDiscardTopOfEncounterDeck"])
   , ("WouldDiscoverClues", ["WouldDiscoverClues"])
   , ("WouldDrawCard", ["WouldDrawCard"])
+  , ("WouldDrawCardFrom", ["WouldDrawCard"])
   , ("WouldDrawEncounterCard", ["WouldDrawEncounterCard"])
   , ("WouldDrawExactlyOneCard", ["WouldDrawExactlyOneCard"])
   , ("WouldHaveSkillTestResult", ["WouldFailSkillTest", "WouldPassSkillTest"])

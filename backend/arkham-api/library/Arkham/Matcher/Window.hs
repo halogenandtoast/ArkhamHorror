@@ -289,6 +289,12 @@ data WindowMatcher
   | InvestigatorDealtDamageOrHorror Timing SourceMatcher Who
   | WouldDrawEncounterCard Timing Who PhaseMatcher
   | WouldDrawCard Timing Who DeckMatcher
+  | {- | 'WouldDrawCard', restricted by what caused the draw. The window itself
+    carries no source, so this reads the pending draw off
+    'Arkham.Investigator.Types.InvestigatorDrawing' -- which means it only
+    matches a draw the investigator has been given, never a bare encounter draw.
+    -}
+    WouldDrawCardFrom Timing Who DeckMatcher SourceMatcher
   | WouldDrawExactlyOneCard Timing Who DeckMatcher
   | DrawCard Timing Who ExtendedCardMatcher DeckMatcher
   | DrawsCards Timing Who CardListMatcher ValueMatcher

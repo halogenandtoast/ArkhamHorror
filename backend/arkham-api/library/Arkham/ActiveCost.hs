@@ -429,6 +429,9 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
     DiscardEncounterUntilFirstCost requester matcher -> do
       push $ DiscardUntilFirst iid requester Deck.EncounterDeck matcher
       pure c
+    CrossOffRecordCost key n -> do
+      push $ IncrementRecordCountForInvestigator iid key (negate n)
+      pure c
     GloriaCost -> do
       mtarget <- getSkillTestTarget
       case mtarget of

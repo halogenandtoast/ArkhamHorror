@@ -316,6 +316,8 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       EnemyAttackCost eid -> selectAny $ Matcher.EnemyWithId eid <> Matcher.EnemyCanAttack (Matcher.InvestigatorWithId iid)
       DrawEncounterCardsCost _n -> can.target.encounterDeck iid
       DiscardEncounterUntilFirstCost _requester _matcher -> can.target.encounterDeck iid
+      CrossOffRecordCost key n ->
+        fieldMap InvestigatorLog ((>= n) . findWithDefault 0 key . (.recordedCounts)) iid
       CostWhenEnemy mtchr c -> do
         hasEnemy <- selectAny mtchr
         if hasEnemy then getCanAffordCost_ iid source actions windows' canModify c else pure True

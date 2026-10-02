@@ -59,7 +59,7 @@ import { createRainAudio, type RainAudioInstance } from '@/arkham/rainAudio';
 import { useSoundsDisabled } from '@/composable/useSoundsDisabled';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
-import { homebrewTokenCampaign, homebrewTotalsTokens } from '@/arkham/homebrewData';
+import { homebrewNamespaceOf, homebrewTotalsTokens } from '@/arkham/homebrewData';
 import scenarioMetadata from '@/arkham/data/scenarios';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
@@ -1323,6 +1323,22 @@ const spokenHasturTooltip = computed(() => {
   return `Record that ${name} spoke HASTUR aloud and take 1 horror.`
 })
 
+/* Dark Matter's Ultimatum of the Unspeakable Oath is an honor rule -- the engine
+cannot hear a name said at the table -- so it gets the same one-click recorder
+Carcosa's Daniel's warning has. */
+const speaksTheUnspeakableOath = computed(
+  () =>
+    props.game.campaign?.id === ':dark-matter'
+    && props.game.settings.settingsUltimatumsAndBoonsEnabled
+    && props.game.settings.settingsUltimatumsAndBoons.includes(':dark-matter:UltimatumOfTheUnspeakableOath')
+)
+
+const unspeakableOathTooltip = computed(() => {
+  const name = hasturSpeaker.value?.name.title ?? 'an investigator'
+  return `Record that ${name} spoke HASTUR or TASSILDA aloud and take 1 horror.`
+})
+
+// Both recorders do the same thing: 1 horror, from the campaign.
 async function recordSpokenHastur() {
   const investigatorId = hasturSpeaker.value?.id
   if (!investigatorId) return
@@ -2298,7 +2314,7 @@ const homebrewNamespace = computed(() => {
 const campaignTokens = computed(() =>
   homebrewNamespace.value === null
     ? []
-    : homebrewTotalsTokens.filter((cfg) => homebrewTokenCampaign(cfg.face) === homebrewNamespace.value)
+    : homebrewTotalsTokens.filter((cfg) => homebrewNamespaceOf(cfg.face) === homebrewNamespace.value)
 )
 
 const homebrewTotals = computed(() => {
@@ -2855,6 +2871,18 @@ async function addChaosToken(face: any){
                 @click.stop.prevent="recordSpokenHastur"
               >
                 <img :src="imgsrc('chaos-tokens/ct-cultist.png')" alt="" />
+              </button>
+            </div>
+            <div v-if="speaksTheUnspeakableOath" class="spoken-hastur-recorder">
+              <button
+                type="button"
+                class="spoken-hastur-button"
+                :disabled="!hasturSpeaker"
+                v-tooltip="unspeakableOathTooltip"
+                :aria-label="unspeakableOathTooltip"
+                @click.stop.prevent="recordSpokenHastur"
+              >
+                <img :src="imgsrc('chaos-tokens/ct-elderthing.png')" alt="" />
               </button>
             </div>
           </div>

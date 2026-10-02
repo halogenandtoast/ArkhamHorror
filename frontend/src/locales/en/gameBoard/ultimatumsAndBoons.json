@@ -2,6 +2,7 @@
   "title": "Boons & Ultimatums",
   "boons": "Boons",
   "ultimatums": "Ultimatums",
+  "campaignUltimatums": "Campaign Ultimatums",
   "selectedCount": "{count} selected",
   "noneSelected": "None selected",
   "settingsToggleTitle": "Ultimatums & Boons enabled",

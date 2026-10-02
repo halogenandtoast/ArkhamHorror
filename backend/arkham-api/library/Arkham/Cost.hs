@@ -7,6 +7,7 @@ import Arkham.Zone as X
 
 import Arkham.Asset.Uses
 import Arkham.Calculation
+import Arkham.CampaignLogKey (CampaignLogKey)
 import Arkham.Campaigns.TheForgottenAge.Supply
 import {-# SOURCE #-} Arkham.Card
 import Arkham.ChaosToken.Types (ChaosToken, ChaosTokenFace)
@@ -271,6 +272,11 @@ data Cost
     card.
     -}
     DiscardEncounterUntilFirstCost Source ExtendedCardMatcher
+  | {- | Cross out tally marks from one of the paying investigator's own
+    campaign-log counts (Dark Matter's "Memories"). The handler clamps the count
+    at zero, so the affordability check is what keeps the cost honest.
+    -}
+    CrossOffRecordCost CampaignLogKey Int
   | GloriaCost -- lol, not going to attempt to make this generic
   | ArchiveOfConduitsUnidentifiedCost -- this either
   | LabeledCost Text Cost

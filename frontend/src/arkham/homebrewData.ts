@@ -35,11 +35,44 @@ export interface HomebrewTotalsToken {
   iconColor?: string
 }
 
-// ":circus-ex-mortis:moon" -> ":circus-ex-mortis". A custom token's campaign is
-// the namespace in its slug, which is how a game only ever offers its own.
-export function homebrewTokenCampaign(face: string): string | null {
-  const parts = face.split(':')
+/* ":circus-ex-mortis:moon" -> ":circus-ex-mortis". Everything a homebrew
+campaign contributes under its own namespace — chaos tokens, ultimatums — is
+named this way, which is how a game only ever offers its own. */
+export function homebrewNamespaceOf(tag: string): string | null {
+  const parts = tag.split(':')
   return parts.length === 3 && parts[1] ? `:${parts[1]}` : null
+}
+
+/* `ultimatums.json` — ultimatums a campaign adds to the Ultimatums & Boons
+variant, offered only when that campaign is the one being played. Each `key`
+matches the backend's `UltimatumDefs.hs` enum constructor; names and text live
+in the campaign's own locale scope, under `<scope>.ultimatums.<key>`. */
+export interface HomebrewUltimatumList {
+  campaign: string
+  entries: { key: string }[]
+}
+
+const ultimatumModules = import.meta.glob('@homebrew/*/ultimatums.json', { eager: true }) as Record<
+  string,
+  { default: HomebrewUltimatumList }
+>
+
+export const homebrewUltimatumLists: HomebrewUltimatumList[] = Object.values(
+  ultimatumModules,
+).map((m) => m.default)
+
+// The wire tags a campaign's ultimatums are selected and stored under.
+export function homebrewUltimatumTags(campaignId: string | null): string[] {
+  const list = homebrewUltimatumLists.find((l) => l.campaign === campaignId)
+  return list ? list.entries.map((entry) => `${list.campaign}:${entry.key}`) : []
+}
+
+/* Where an Ultimatums & Boons entry's name and text live. Official entries share
+one catalog; a homebrew one belongs to its campaign. */
+export function ultimatumEntryScope(tag: string): string {
+  const parts = tag.split(':')
+  if (parts.length !== 3) return `ultimatumsAndBoons.entries.${tag}`
+  return `${homebrewCampaignScope(`:${parts[1]}`)}.ultimatums.${parts[2]}`
 }
 
 const tokenModules = import.meta.glob('@homebrew/*/tokens.json', { eager: true }) as Record<

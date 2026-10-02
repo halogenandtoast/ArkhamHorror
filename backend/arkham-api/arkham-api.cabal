@@ -4793,6 +4793,8 @@ library
       Arkham.Homebrew.DarkMatter.Treacheries.TheStarsWereRight
       Arkham.Homebrew.DarkMatter.Treacheries.ToxicPits
       Arkham.Homebrew.DarkMatter.Treacheries.UnstableDimension
+      Arkham.Homebrew.DarkMatter.UltimatumDefs
+      Arkham.Homebrew.DarkMatter.Ultimatums
       Arkham.Homebrew.Defs
       Arkham.Homebrew.DefsBase
       Arkham.Homebrew.DefsEntries
@@ -4804,6 +4806,9 @@ library
       Arkham.Homebrew.TokenEntries
       Arkham.Homebrew.Tokens
       Arkham.Homebrew.Types
+      Arkham.Homebrew.UltimatumDefs
+      Arkham.Homebrew.UltimatumEntries
+      Arkham.Homebrew.Ultimatums
       Arkham.I18n
       Arkham.Id
       Arkham.Investigate

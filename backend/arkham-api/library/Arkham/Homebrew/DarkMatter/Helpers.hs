@@ -54,6 +54,7 @@ import Arkham.Homebrew.DarkMatter.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Homebrew.DarkMatter.Key
 import Arkham.Homebrew.DarkMatter.ScenarioDeckKeys (pattern EvidenceDeck, pattern ScanningDeck)
 import Arkham.Homebrew.DarkMatter.Traits (pattern Brain, pattern Carcosa)
+import Arkham.Homebrew.DarkMatter.UltimatumDefs
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (Field (InvestigatorLog, InvestigatorMentalTrauma))
@@ -144,6 +145,8 @@ import Arkham.Story.Types (StoryAttrs)
 import Arkham.Target
 import Arkham.Token qualified as Token
 import Arkham.Trait (Trait (Cave, Crew, Science))
+import Arkham.UltimatumsAndBoons (hasUltimatum)
+import Arkham.UltimatumsAndBoons.Types (homebrewUltimatum)
 import Arkham.Window qualified as Window
 import Arkham.Xp
 
@@ -423,12 +426,28 @@ scanEventForCardType =
     EncounterAssetType -> AssetType
     cardType -> cardType
 
+-- | Is one of this campaign's own ultimatums active?
+hasDarkMatterUltimatum :: HasGame m => DarkMatterUltimatum -> m Bool
+hasDarkMatterUltimatum = hasUltimatum . homebrewUltimatum ultimatumCampaign . tshow
+
 {- | Announce a finished scan. All the keys fire as one window batch so that
 reactions to the same scan are simultaneous, rather than the narrower keys
 resolving after the general one.
+
+The Ultimatum of Exploration rewrites the outcome here rather than at the four
+call sites: a scan that drew a card with no scanning back does not count as
+successful, and a scan that *is* successful feeds the scanning deck from the top
+of the encounter deck.
 -}
 checkScanWindows :: ReverseQueue m => ScanResult -> m ()
-checkScanWindows r = do
+checkScanWindows scanned = do
+  exploration <- hasDarkMatterUltimatum UltimatumOfExploration
+  let
+    successful =
+      scanSuccessful scanned
+        && (not exploration || maybe True hasScanningBack (scannedCard scanned))
+    r = scanned {scanSuccessful = successful}
+  when (exploration && successful) $ shuffleIntoScanningDeck =<< takeTopOfEncounterDeck 1
   let
     event key = Window.mkAfter $ Window.CampaignEvent key (Just $ scannedBy r) (toJSON r)
     ks =
@@ -597,9 +616,15 @@ runPendingScan :: ReverseQueue m => PendingScan -> m ()
 runPendingScan (PendingScan iid source anchor icons) = do
   deck <- getScanningDeck
   banned <- bannedScanSymbols
+  -- Ultimatum of Exploration: an encounter card shuffled in from the encounter
+  -- deck has no scanning back, and counts as showing every icon.
+  exploration <- hasDarkMatterUltimatum UltimatumOfExploration
   let
     allowedIcons = filter (`notElem` banned) icons
-    matches c = notNull allowedIcons && all (`elem` scanIcons c) allowedIcons
+    matchesIcons c
+      | exploration && not (hasScanningBack c) = True
+      | otherwise = all (`elem` scanIcons c) allowedIcons
+    matches c = notNull allowedIcons && matchesIcons c
   case break matches deck of
     (skipped, []) -> do
       unless (null skipped) $ setScenarioDeck ScanningDeck =<< shuffle skipped

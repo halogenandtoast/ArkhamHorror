@@ -857,8 +857,12 @@ runGameMessage msg g = case msg of
     -- non-chaos-bag entry for this game only. Re-rolled every StartScenario;
     -- cleared when the ultimatum isn't active.
     let
+      -- A homebrew campaign's ultimatum is implemented in that campaign's own
+      -- code, so rolling one into any other game would do nothing but confuse
+      -- the log.
       eligibleForRoll entry =
         not (affectsDeckbuildingOrChaosBag entry)
+          && not (isHomebrewVariant entry)
           && entry
           `notElem` settingsUltimatumsAndBoons (gameSettings g)
     rolled <-

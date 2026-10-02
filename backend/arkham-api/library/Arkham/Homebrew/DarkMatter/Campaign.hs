@@ -3,15 +3,21 @@ module Arkham.Homebrew.DarkMatter.Campaign (darkMatter) where
 import Arkham.Campaign.ContinueOption (ContinueOption (..))
 import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLog (optionsL)
+import Arkham.CampaignLogKey (toCampaignLogKey)
 import Arkham.Card (toCardDef)
 import Arkham.ChaosToken
+import Arkham.Cost (Cost (CrossOffRecordCost))
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.FlavorText
+import Arkham.Helpers.Modifiers (modifySelect)
 import Arkham.Homebrew.DarkMatter.Achievements (runDarkMatterAchievements)
 import Arkham.Homebrew.DarkMatter.CampaignSteps
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.Import
+import Arkham.Homebrew.DarkMatter.UltimatumDefs
+import Arkham.Homebrew.DarkMatter.Ultimatums (runDarkMatterUltimatums)
 import Arkham.Investigator.Types (Field (InvestigatorXp))
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Modifier (ModifierType (..))
@@ -19,7 +25,24 @@ import Arkham.Projection
 import Arkham.Source
 
 newtype DarkMatter = DarkMatter CampaignAttrs
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+{- | Ultimatum of Anachronism: "as an additional cost to play unique non-story
+assets, cross out 1 tally mark from your \"Memories\"." The campaign is one of
+the entities 'Arkham.Game.preloadModifiers' collects from, which is what gives a
+homebrew campaign a modifier hook of its own.
+-}
+instance HasModifiersFor DarkMatter where
+  getModifiersFor (DarkMatter attrs) = do
+    getModifiersFor attrs
+    whenM (hasDarkMatterUltimatum UltimatumOfAnachronism) do
+      modifySelect
+        attrs
+        Anyone
+        [ AdditionalPlayCostOf
+            (basic $ #asset <> #unique <> not_ CardIsStoryAsset)
+            (CrossOffRecordCost (toCampaignLogKey Memories) 1)
+        ]
 
 darkMatter :: Difficulty -> DarkMatter
 darkMatter = campaign DarkMatter (CampaignId ":dark-matter") "Dark Matter"
@@ -62,155 +85,159 @@ instance IsCampaign DarkMatter where
 
 instance RunMessage DarkMatter where
   runMessage msg c =
-    runQueueT $ campaignI18n $ lift (runDarkMatterAchievements msg) *> case msg of
-    {- Scanning is campaign-wide, so the deferred scan announced by
-    'Arkham.Homebrew.DarkMatter.Helpers.scan' resolves here — one handler for
-    every scenario. A "when you would scan" effect cancels it by popping this
-    message before it is reached. -}
-    CampaignSpecific k (maybeResult -> Just pending) | k == doScanKey -> do
-      runPendingScan pending
-      pure c
-    {- Likewise for a face-down placement that emptied the encounter deck: it
-    resumes here once 'shuffleEncounterDiscardBackIn' has resolved. -}
-    CampaignSpecific k (maybeResult -> Just (iid, n)) | k == doPlaceFacedownKey -> do
-      placeFacedownInThreatArea iid n
-      pure c
-    {- And likewise for the cards a "draw each face-down encounter card in your
-    threat area, one at a time" effect still owes: the next one is only reached
-    once the previous card has finished resolving. -}
-    CampaignSpecific k (maybeResult -> Just (iid, cards)) | k == doDrawFacedownKey -> do
-      drawFacedownEncounterCards iid cards
-      pure c
-    -- Options are only folded into the log by the campaign that recognises them.
-    HandleOption opt | opt == scienceExpansion -> do
-      pure $ DarkMatter $ toAttrs c & logL . optionsL %~ insertSet opt
-    {- The Science Expansion's shop, opened from the continuation screen. Each
-    investigator buys in turn; @ret@ is the step that screen was showing, so the
-    table lands back on it when the last one is done. -}
-    CampaignStep (CampaignOptionStep k ret) | k == purchaseScienceCards -> do
-      eachInvestigator \iid -> push $ ForInvestigator iid (CampaignStep (CampaignOptionStep k ret))
-      push $ SetCampaignStep ret
-      push $ CampaignStep ret
-      pure c
-    ForInvestigator iid (CampaignStep (CampaignOptionStep k ret)) | k == purchaseScienceCards -> do
-      owned <- findWithDefault [] iid <$> getCampaignStoryCards
-      xp <- field InvestigatorXp iid
-      memories <- getMemories iid
-      let
-        affordable =
-          [ (def, xpCost, memoryCost)
-          | (def, xpCost, memoryCost) <- purchasableScienceCards
-          , xpCost <= xp
-          , memoryCost <= memories
-          , not $ any ((== def) . toCardDef) owned
-          ]
-      {- The label is also what routes this to the campaign's own panel
-      (@frontend/homebrew/dark-matter/question-panels/scienceExpansion.purchase.vue@),
-      which draws the cards big enough to read the printed "Researched" cost. -}
-      unless (null affordable) $ chooseOneM iid do
-        questionLabeled "scienceExpansion.purchase"
-        for_ affordable \(def, xpCost, memoryCost) -> cardLabeled def do
-          push $ SpendXP iid xpCost
-          crossOffMemories iid memoryCost
-          addCampaignCardToDeck iid ShuffleIn def
-          -- Re-ask: both costs have been paid by the time this is reached, so
-          -- what is still affordable is priced against what is left.
-          push $ ForInvestigator iid (CampaignStep (CampaignOptionStep k ret))
-        labeled "scienceExpansion.donePurchasing" nothing
-      pure c
-    CampaignStep PrologueStep -> do
-      scope "intro" $ flavor $ setTitle "title" >> p "body"
-      scope "additionalRulesAndClarifications" do
-        flavor $ setTitle "title" >> p "scan"
-        flavor $ setTitle "title" >> p "memories"
-        flavor $ setTitle "title" >> p "alert"
-      scope "prologue" $ flavor $ setTitle "title" >> p "body"
-      nextCampaignStep
-      pure c
-    -- Interlude I: Mission Briefing
-    CampaignStep (InterludeStep 1 _) -> scope "missionBriefing" do
-      transportedByMaja <- getHasRecord YouWereTransportedToTheVirtualDreamlandsByMaja
-      flavor do
-        setTitle "title"
-        p "checkCampaignLog"
-      flavor do
-        setTitle "title"
-        p $ if transportedByMaja then "missionBriefing1" else "missionBriefing2"
-      flavor $ setTitle "title" >> p "missionBriefing3"
-      storyWithChooseOneM (setTitle "title" >> p "simulatedPerformance") do
-        labeled "watchThePerformance" $ doStep 1 msg
-        labeled "declineToWatch" nothing
-      doStep 2 msg
-      pure c
-    -- Heir to Carcosa (read at your own risk)
-    DoStep 1 (CampaignStep (InterludeStep 1 _)) -> scope "heirToCarcosa" do
-      flavor $ setTitle "title" >> p "body"
-      record YouHaveWatchedThePerformanceOfHeirToCarcosa
-      eachInvestigator (`sufferMentalTrauma` 1)
-      storyCards <- getCampaignStoryCards
-      for_ (mapToList storyCards) \(iid, cards) ->
-        when (any ((== Assets.heirToCarcosa) . toCardDef) cards) do
-          chooseOneM iid do
-            labeled "addTwoMemories" $ addMemories iid 2
-            labeled "doNotAddMemories" nothing
-      pure c
-    DoStep 2 (CampaignStep (InterludeStep 1 _)) -> theSearchForFragment c
-    -- The Search for Fragment, revisited after each Scenario III
-    CampaignStep (InterludeStep 2 _) -> theSearchForFragment c
-    -- Interlude II: Introspection
-    CampaignStep (InterludeStep 3 _) -> scope "introspection" do
-      flavor $ setTitle "title" >> p "body"
-      storyWithChooseOneM (setTitle "title" >> p "searchTheTatterdemalion") do
-        labeled "searchTheShip" do
-          addImpendingDoom 1
-          eachInvestigator (`addMemories` 1)
-        labeled "doNotSearchTheShip" nothing
-      -- The side-story option (crossing out Memories instead of paying
-      -- experience) is resolved manually; surface the guide text so players
-      -- know it exists.
-      flavor do
-        setTitle "title"
-        p "sideStory"
-        p "chaosTokens"
-        p "checkCampaignLog"
-      let difficulty = (toAttrs c).difficulty
-      addChaosToken $ case difficulty of
-        Easy -> MinusThree
-        Standard -> MinusFive
-        Hard -> MinusSix
-        Expert -> MinusSeven
-      when (difficulty `elem` [Hard, Expert]) $ addChaosToken ElderThing
-      whenHasRecord YouHaveUncoveredTheCultistsInhumanMethods $ doStep 1 msg
-      setNextCampaignStep TheMachineInYellow
-      pure c
-    -- Introspection 1
-    DoStep 1 (CampaignStep (InterludeStep 3 _)) -> scope "introspection" do
-      flavor $ setTitle "title" >> p "introspection1"
-      eachInvestigator \iid -> do
-        scenarioSetupModifier ":dark-matter:190" CampaignSource iid (StartingResources 1)
-        scenarioSetupModifier ":dark-matter:190" CampaignSource iid (StartingHand 1)
-      pure c
-    CampaignStep EpilogueStep -> scope "epilogue" do
-      hopeShielded <- getHasRecord HopeWasShieldedFromTheBlast
-      uccEscaped <- getHasRecord TheUCCEscapedToAnotherGalaxy
-      miGoReturned <- getHasRecord MiGoSafelyReturnedToTheirHomeWorld
-      if hopeShielded || uccEscaped
-        then do
-          flavor $ setTitle "title" >> p "epilogue1"
-          if miGoReturned
+    runQueueT
+      $ campaignI18n
+      $ lift (runDarkMatterAchievements msg)
+      *> runDarkMatterUltimatums msg
+      *> case msg of
+        {- Scanning is campaign-wide, so the deferred scan announced by
+        'Arkham.Homebrew.DarkMatter.Helpers.scan' resolves here — one handler for
+        every scenario. A "when you would scan" effect cancels it by popping this
+        message before it is reached. -}
+        CampaignSpecific k (maybeResult -> Just pending) | k == doScanKey -> do
+          runPendingScan pending
+          pure c
+        {- Likewise for a face-down placement that emptied the encounter deck: it
+        resumes here once 'shuffleEncounterDiscardBackIn' has resolved. -}
+        CampaignSpecific k (maybeResult -> Just (iid, n)) | k == doPlaceFacedownKey -> do
+          placeFacedownInThreatArea iid n
+          pure c
+        {- And likewise for the cards a "draw each face-down encounter card in your
+        threat area, one at a time" effect still owes: the next one is only reached
+        once the previous card has finished resolving. -}
+        CampaignSpecific k (maybeResult -> Just (iid, cards)) | k == doDrawFacedownKey -> do
+          drawFacedownEncounterCards iid cards
+          pure c
+        -- Options are only folded into the log by the campaign that recognises them.
+        HandleOption opt | opt == scienceExpansion -> do
+          pure $ DarkMatter $ toAttrs c & logL . optionsL %~ insertSet opt
+        {- The Science Expansion's shop, opened from the continuation screen. Each
+        investigator buys in turn; @ret@ is the step that screen was showing, so the
+        table lands back on it when the last one is done. -}
+        CampaignStep (CampaignOptionStep k ret) | k == purchaseScienceCards -> do
+          eachInvestigator \iid -> push $ ForInvestigator iid (CampaignStep (CampaignOptionStep k ret))
+          push $ SetCampaignStep ret
+          push $ CampaignStep ret
+          pure c
+        ForInvestigator iid (CampaignStep (CampaignOptionStep k ret)) | k == purchaseScienceCards -> do
+          owned <- findWithDefault [] iid <$> getCampaignStoryCards
+          xp <- field InvestigatorXp iid
+          memories <- getMemories iid
+          let
+            affordable =
+              [ (def, xpCost, memoryCost)
+              | (def, xpCost, memoryCost) <- purchasableScienceCards
+              , xpCost <= xp
+              , memoryCost <= memories
+              , not $ any ((== def) . toCardDef) owned
+              ]
+          {- The label is also what routes this to the campaign's own panel
+          (@frontend/homebrew/dark-matter/question-panels/scienceExpansion.purchase.vue@),
+          which draws the cards big enough to read the printed "Researched" cost. -}
+          unless (null affordable) $ chooseOneM iid do
+            questionLabeled "scienceExpansion.purchase"
+            for_ affordable \(def, xpCost, memoryCost) -> cardLabeled def do
+              push $ SpendXP iid xpCost
+              crossOffMemories iid memoryCost
+              addCampaignCardToDeck iid ShuffleIn def
+              -- Re-ask: both costs have been paid by the time this is reached, so
+              -- what is still affordable is priced against what is left.
+              push $ ForInvestigator iid (CampaignStep (CampaignOptionStep k ret))
+            labeled "scienceExpansion.donePurchasing" nothing
+          pure c
+        CampaignStep PrologueStep -> do
+          scope "intro" $ flavor $ setTitle "title" >> p "body"
+          scope "additionalRulesAndClarifications" do
+            flavor $ setTitle "title" >> p "scan"
+            flavor $ setTitle "title" >> p "memories"
+            flavor $ setTitle "title" >> p "alert"
+          scope "prologue" $ flavor $ setTitle "title" >> p "body"
+          nextCampaignStep
+          pure c
+        -- Interlude I: Mission Briefing
+        CampaignStep (InterludeStep 1 _) -> scope "missionBriefing" do
+          transportedByMaja <- getHasRecord YouWereTransportedToTheVirtualDreamlandsByMaja
+          flavor do
+            setTitle "title"
+            p "checkCampaignLog"
+          flavor do
+            setTitle "title"
+            p $ if transportedByMaja then "missionBriefing1" else "missionBriefing2"
+          flavor $ setTitle "title" >> p "missionBriefing3"
+          storyWithChooseOneM (setTitle "title" >> p "simulatedPerformance") do
+            labeled "watchThePerformance" $ doStep 1 msg
+            labeled "declineToWatch" nothing
+          doStep 2 msg
+          pure c
+        -- Heir to Carcosa (read at your own risk)
+        DoStep 1 (CampaignStep (InterludeStep 1 _)) -> scope "heirToCarcosa" do
+          flavor $ setTitle "title" >> p "body"
+          record YouHaveWatchedThePerformanceOfHeirToCarcosa
+          eachInvestigator (`sufferMentalTrauma` 1)
+          storyCards <- getCampaignStoryCards
+          for_ (mapToList storyCards) \(iid, cards) ->
+            when (any ((== Assets.heirToCarcosa) . toCardDef) cards) do
+              chooseOneM iid do
+                labeled "addTwoMemories" $ addMemories iid 2
+                labeled "doNotAddMemories" nothing
+          pure c
+        DoStep 2 (CampaignStep (InterludeStep 1 _)) -> theSearchForFragment c
+        -- The Search for Fragment, revisited after each Scenario III
+        CampaignStep (InterludeStep 2 _) -> theSearchForFragment c
+        -- Interlude II: Introspection
+        CampaignStep (InterludeStep 3 _) -> scope "introspection" do
+          flavor $ setTitle "title" >> p "body"
+          storyWithChooseOneM (setTitle "title" >> p "searchTheTatterdemalion") do
+            labeled "searchTheShip" do
+              addImpendingDoom 1
+              eachInvestigator (`addMemories` 1)
+            labeled "doNotSearchTheShip" nothing
+          -- The side-story option (crossing out Memories instead of paying
+          -- experience) is resolved manually; surface the guide text so players
+          -- know it exists.
+          flavor do
+            setTitle "title"
+            p "sideStory"
+            p "chaosTokens"
+            p "checkCampaignLog"
+          let difficulty = (toAttrs c).difficulty
+          addChaosToken $ case difficulty of
+            Easy -> MinusThree
+            Standard -> MinusFive
+            Hard -> MinusSix
+            Expert -> MinusSeven
+          when (difficulty `elem` [Hard, Expert]) $ addChaosToken ElderThing
+          whenHasRecord YouHaveUncoveredTheCultistsInhumanMethods $ doStep 1 msg
+          setNextCampaignStep TheMachineInYellow
+          pure c
+        -- Introspection 1
+        DoStep 1 (CampaignStep (InterludeStep 3 _)) -> scope "introspection" do
+          flavor $ setTitle "title" >> p "introspection1"
+          eachInvestigator \iid -> do
+            scenarioSetupModifier ":dark-matter:190" CampaignSource iid (StartingResources 1)
+            scenarioSetupModifier ":dark-matter:190" CampaignSource iid (StartingHand 1)
+          pure c
+        CampaignStep EpilogueStep -> scope "epilogue" do
+          hopeShielded <- getHasRecord HopeWasShieldedFromTheBlast
+          uccEscaped <- getHasRecord TheUCCEscapedToAnotherGalaxy
+          miGoReturned <- getHasRecord MiGoSafelyReturnedToTheirHomeWorld
+          if hopeShielded || uccEscaped
             then do
-              flavor $ setTitle "title" >> p "epilogue4"
-              record HasturAndTassildaAreImprisonedInCarcosaOnceMore
+              flavor $ setTitle "title" >> p "epilogue1"
+              if miGoReturned
+                then do
+                  flavor $ setTitle "title" >> p "epilogue4"
+                  record HasturAndTassildaAreImprisonedInCarcosaOnceMore
+                else do
+                  flavor $ setTitle "title" >> p "epilogue3"
+                  record TheRealmOfCarcosaOvertookOurUniverse
             else do
+              flavor $ setTitle "title" >> p "epilogue2"
               flavor $ setTitle "title" >> p "epilogue3"
               record TheRealmOfCarcosaOvertookOurUniverse
-        else do
-          flavor $ setTitle "title" >> p "epilogue2"
-          flavor $ setTitle "title" >> p "epilogue3"
-          record TheRealmOfCarcosaOvertookOurUniverse
-      gameOver
-      pure c
-    _ -> lift $ defaultCampaignRunner msg c
+          gameOver
+          pure c
+        _ -> lift $ defaultCampaignRunner msg c
 
 {- | The Search for Fragment (guide p10): choose a trace that has not already
 been chosen; when every Scenario III is done, skip to Introspection.

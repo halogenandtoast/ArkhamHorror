@@ -1,0 +1,32 @@
+{
+  "ultimatums": {
+    "UltimatumOfTheUnspeakableOath": {
+      "name": "Ultimatum of the Unspeakable Oath",
+      "text": "Each time you speak the name of HASTUR or TASSILDA aloud during the setup or play of a scenario, immediately take 1 horror."
+    },
+    "UltimatumOfImpendingDoom": {
+      "name": "Ultimatum of Impending Doom",
+      "text": "Begin each scenario with doom on the agenda equal to the amount of Impending Doom."
+    },
+    "UltimatumOfTheFeaster": {
+      "name": "Ultimatum of The Feaster",
+      "text": "During the setup of each scenario with a scanning deck, shuffle The Feaster from Afar into the scanning deck."
+    },
+    "UltimatumOfInevitability": {
+      "name": "Ultimatum of Inevitability",
+      "text": "Begin the campaign with 3 tally marks under Impending Doom."
+    },
+    "UltimatumOfTheDarkPast": {
+      "name": "Ultimatum of the Dark Past",
+      "text": "During the setup of each scenario, if it is not already in the encounter deck, shuffle the Dark Past encounter set into the encounter deck. During the resolution of those scenarios, if there is a copy of Reminiscence in the victory display, you must add a Tablet token to the chaos bag (if there are already 4 Tablet tokens in the bag, each investigator suffers 1 mental trauma instead)."
+    },
+    "UltimatumOfExploration": {
+      "name": "Ultimatum of Exploration",
+      "text": "Each time you successfully scan, shuffle the top card of the encounter deck into the scanning deck. When you scan, encounter cards without a scanning back are considered to have icons matching any icon. A scan where you draw an encounter card without a scanning back is considered an unsuccessful scan."
+    },
+    "UltimatumOfAnachronism": {
+      "name": "Ultimatum of Anachronism",
+      "text": "As an additional cost to play unique non-story assets, cross out 1 tally mark from your \"Memories\"."
+    }
+  }
+}

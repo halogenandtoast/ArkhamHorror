@@ -7,6 +7,7 @@ import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
 import type { GameMode, MultiplayerVariant, CampaignType } from '@/arkham/types/NewGame'
 import { ACHIEVEMENT_CAMPAIGN_IDS } from '@/arkham/achievements'
+import { homebrewUltimatumTags, ultimatumEntryScope } from '@/arkham/homebrewData'
 import { useSettings } from '@/stores/settings'
 
 type FullCampaignOption = {
@@ -300,6 +301,19 @@ const uabGroups: { key: 'boons' | 'ultimatums'; beta?: boolean; tags: string[] }
     ],
   },
 ]
+
+/* A homebrew campaign's own ultimatums, offered only while that campaign is the
+one being set up -- they are implemented in its code and would do nothing
+anywhere else. */
+const homebrewUltimatumGroup = computed(() => {
+  const tags = homebrewUltimatumTags(effectiveCampaignId.value)
+  return tags.length > 0 ? { key: 'campaignUltimatums', beta: true, tags } : null
+})
+
+const uabAllGroups = computed(() => {
+  const homebrew = homebrewUltimatumGroup.value
+  return homebrew ? [...uabGroups, homebrew] : uabGroups
+})
 
 // Entries enforced at deck construction (deckRestrictions.ts) rather than at
 // runtime — the in-game Ultimatums & Boons on/off toggle does not affect them.
@@ -701,7 +715,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
         </div>
       </div>
 
-      <template v-for="group in uabGroups" :key="group.key">
+      <template v-for="group in uabAllGroups" :key="group.key">
         <div v-if="group.tags.length > 0" class="card rules-card">
           <button type="button" class="rules-toggle" @click="uabExpanded[group.key] = !uabExpanded[group.key]">
             <span class="card-title" style="margin-bottom: 0">
@@ -724,12 +738,12 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
                   <input type="checkbox" :value="tag" v-model="ultimatumsAndBoons" />
                   <span class="uab-text">
                     <span class="uab-name">
-                      {{ $t(`ultimatumsAndBoons.entries.${tag}.name`) }}
+                      {{ $t(`${ultimatumEntryScope(tag)}.name`) }}
                       <span v-if="UAB_DECKBUILDING_TAGS.has(tag)" class="uab-deckbuilding-badge">
                         {{ $t('ultimatumsAndBoons.deckbuildingBadge') }}
                       </span>
                     </span>
-                    <span class="uab-desc">{{ $t(`ultimatumsAndBoons.entries.${tag}.text`) }}</span>
+                    <span class="uab-desc">{{ $t(`${ultimatumEntryScope(tag)}.text`) }}</span>
                   </span>
                 </label>
               </div>

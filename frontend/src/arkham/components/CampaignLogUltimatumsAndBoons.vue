@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { ultimatumEntryScope } from '@/arkham/homebrewData'
 
 const props = defineProps<{ entries: string[]; enabled: boolean; rolled?: string | null }>()
 const { t } = useI18n()
@@ -9,8 +10,10 @@ const { t } = useI18n()
 // permanent lists, gold for a boon, crimson for an ultimatum.
 const rolledKind = computed(() => (props.rolled?.startsWith('BoonOf') ? 'boons' : 'ultimatums'))
 
+/* Everything that is not a boon is an ultimatum -- a homebrew campaign's own
+ultimatum is named ":campaign:Key" and would fall out of a prefix test. */
 const boons = computed(() => props.entries.filter((tag) => tag.startsWith('BoonOf')))
-const ultimatums = computed(() => props.entries.filter((tag) => tag.startsWith('UltimatumOf')))
+const ultimatums = computed(() => props.entries.filter((tag) => !tag.startsWith('BoonOf')))
 
 const groups = computed(() =>
   [
@@ -30,8 +33,8 @@ const groups = computed(() =>
       <li class="entry rolled-entry">
         <span class="entry-icon" aria-hidden="true">{{ rolledKind === 'boons' ? '✦' : '✖' }}</span>
         <div class="entry-body">
-          <span class="entry-name">{{ t(`ultimatumsAndBoons.entries.${rolled}.name`) }}</span>
-          <span class="entry-text">{{ t(`ultimatumsAndBoons.entries.${rolled}.text`) }}</span>
+          <span class="entry-name">{{ t(`${ultimatumEntryScope(rolled)}.name`) }}</span>
+          <span class="entry-text">{{ t(`${ultimatumEntryScope(rolled)}.text`) }}</span>
         </div>
       </li>
     </ul>
@@ -50,8 +53,8 @@ const groups = computed(() =>
       <li v-for="tag in group.entries" :key="tag" class="entry">
         <span class="entry-icon" aria-hidden="true">{{ group.key === 'boons' ? '✦' : '✖' }}</span>
         <div class="entry-body">
-          <span class="entry-name">{{ t(`ultimatumsAndBoons.entries.${tag}.name`) }}</span>
-          <span class="entry-text">{{ t(`ultimatumsAndBoons.entries.${tag}.text`) }}</span>
+          <span class="entry-name">{{ t(`${ultimatumEntryScope(tag)}.name`) }}</span>
+          <span class="entry-text">{{ t(`${ultimatumEntryScope(tag)}.text`) }}</span>
         </div>
       </li>
     </ul>

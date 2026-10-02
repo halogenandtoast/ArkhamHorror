@@ -2,6 +2,7 @@ module AH3e.Content.Tiles (
   Variety (..),
   Edge (..),
   TileDef (..),
+  hazardous,
   StreetDef (..),
   RouteDef (..),
   MysteryTile (..),
@@ -43,6 +44,10 @@ data TileDef = TileDef
   , town :: Town
   , variety :: Variety
   , spaces :: (Text, Text, Text)
+  , hazards :: [(Text, Text, Hazard)]
+  {- ^ borders between two of this tile's own spaces that cost something to cross.
+  Other worlds have them printed on the tile (Secrets of the Order, p. 4).
+  -}
   }
 
 data StreetDef = StreetDef
@@ -73,6 +78,8 @@ data ThresholdTile = ThresholdTile
   , edge :: Edge
   , to :: NeighborhoodId
   , thresholdType :: ThresholdType
+  , hazards :: [Hazard]
+  -- ^ the icons printed along its borders; setup decides which lands where
   }
 
 {- | A threshold tile laid in the corner where hexes meet, which is what a hidden path
@@ -80,8 +87,16 @@ is. It borders the one space of each tile that owns that corner and nothing else
 not even a street running between two of them -- so the tiles are named and the rest
 is read off the geometry: the corner is where their centres average out, and the space
 each tile puts there is the one whose wedge faces it.
+
+The tile it is laid against is named first, and it stands on that tile's own corner
+rather than out in the middle of the gap, the way it is wedged there on the table.
 -}
-data CornerTile = CornerTile {tiles :: [NeighborhoodId], thresholdType :: ThresholdType}
+data CornerTile = CornerTile
+  { tiles :: [NeighborhoodId]
+  , thresholdType :: ThresholdType
+  , hazards :: [Hazard]
+  -- ^ the icons printed along its borders; setup decides which lands where
+  }
 
 {- | Where a cluster of tiles no street reaches is set out: the edge of an already
 placed tile it is laid against. Nothing connects along it -- it only says where
@@ -114,7 +129,11 @@ spaceIdFor :: Text -> SpaceId
 spaceIdFor = SpaceId . slug
 
 mkTile :: Text -> Town -> Variety -> (Text, Text, Text) -> TileDef
-mkTile n = TileDef (NeighborhoodId (slug n)) n
+mkTile n t v sps = TileDef (NeighborhoodId (slug n)) n t v sps []
+
+-- | The hazardous borders printed between a tile's own spaces, named either way round.
+hazardous :: [(Text, Text, Hazard)] -> TileDef -> TileDef
+hazardous hs t = TileDef t.neighborhood t.name t.town t.variety t.spaces hs
 
 tiles :: [TileDef]
 tiles =
@@ -128,7 +147,12 @@ tiles =
   , mkTile "Southside" Arkham V2 ("Ma's Boarding House", "Historical Society", "South Church")
   , mkTile "French Hill" Arkham V2 ("Bayfriar Gardens", "Duterte Funeral Home", "Silver Twilight Lodge")
   , -- an other world rather than a part of Arkham, and its borders are hazardous
-    mkTile "The Underworld" OtherWorld V2 ("City of the Gugs", "Vale of Pnath", "Vaults of Zin")
+    hazardous
+      [ ("City of the Gugs", "Vale of Pnath", HazardHorror)
+      , ("City of the Gugs", "Vaults of Zin", HazardDamage)
+      , ("Vaults of Zin", "Vale of Pnath", HazardFocus)
+      ]
+      (mkTile "The Underworld" OtherWorld V1 ("City of the Gugs", "Vaults of Zin", "Vale of Pnath"))
   , mkTile
       "Innsmouth Village"
       Innsmouth
@@ -225,6 +249,12 @@ shoulder lands on the tile's edge and the tab reaches into the notch.
 connectorDepth, connectorTab :: Double
 connectorDepth = 0.38
 connectorTab = 0.2
+
+{- | How far from the centre of the tile it is laid against a corner piece stands, in
+units of the tile's flat-to-flat width: its own corner, which is the circumradius.
+-}
+cornerReach :: Double
+cornerReach = 0.5 / cos (pi / 6)
 
 -- | How far apart two unconnected clusters of tiles are set out.
 clusterGap :: Double
@@ -336,12 +366,14 @@ buildMapOf nids streets pieces =
   thresholdId = spaceIdFor . thresholdName
   -- laid between two hexes, a threshold borders both edges the way a street does
   thresholdBorders t =
-    [ (thresholdId t.thresholdType, sid, Nothing)
-    | sid <- edgeSpaces (tile t.from) t.edge <> edgeSpaces (tile t.to) (opposite t.edge)
+    [ (thresholdId t.thresholdType, sid, h)
+    | (sid, h) <-
+        zipHazards t.hazards (edgeSpaces (tile t.from) t.edge <> edgeSpaces (tile t.to) (opposite t.edge))
     ]
   {- A corner tile abuts one space of each hex it touches: the space whose wedge faces
   the corner, which is where the centres of those hexes average out. -}
-  cornerBorders c = [(thresholdId c.thresholdType, sid, Nothing) | sid <- cornerSpaces c]
+  cornerBorders c =
+    [(thresholdId c.thresholdType, sid, h) | (sid, h) <- zipHazards c.hazards (cornerSpaces c)]
   cornerSpaces c =
     [ facing t (pos t.neighborhood) (cornerAt c)
     | nid <- c.tiles
@@ -350,6 +382,18 @@ buildMapOf nids streets pieces =
   cornerAt c = case [pos nid | nid <- c.tiles] of
     [] -> (0, 0)
     ps -> (sum (map fst ps) / fromIntegral (length ps), sum (map snd ps) / fromIntegral (length ps))
+  {- Where the piece itself stands: out from the centre of the tile it is laid against,
+  toward the junction, as far as that tile's own corner. The junction is in the middle
+  of the gap the streets run through, which is further out than the tile reaches. -}
+  cornerStand c = case c.tiles of
+    [] -> cornerAt c
+    anchor : _ ->
+      let (ax, ay) = pos anchor
+          (jx, jy) = cornerAt c
+          away = sqrt ((jx - ax) ** 2 + (jy - ay) ** 2)
+       in if away <= 0
+            then (ax, ay)
+            else (ax + (jx - ax) / away * cornerReach, ay + (jy - ay) / away * cornerReach)
   -- the space of this tile whose wedge points nearest the given place
   facing t (x, y) (tx, ty) =
     let want = atan2 (ty - y) (tx - x)
@@ -361,10 +405,11 @@ buildMapOf nids streets pieces =
     , let (x1, y1) = pos t.from
           (x2, y2) = pos t.to
     ]
-      -- a corner piece stands on the junction itself, and no edge turns it
+      -- a corner piece stands on the corner of the tile it is laid against, and no
+      -- edge turns it
       <> [ StreetPlacement (thresholdId c.thresholdType) x y (-90)
          | c <- corners
-         , let (x, y) = cornerAt c
+         , let (x, y) = cornerStand c
          ]
   routeId r = SpaceId (coerce r.from <> "--" <> routeSlug r.routeType)
   routeName r = (tile r.from).name <> " – " <> routeLabel r.routeType
@@ -399,16 +444,29 @@ buildMapOf nids streets pieces =
   ts = map tile nids
   internal =
     concat
-      [ [(a.id, b.id, Nothing) | (i, a) <- zip [0 :: Int ..] sps, (j, b) <- zip [0 ..] sps, i < j]
+      [ [ (a.id, b.id, hazardBetween t a.name b.name)
+        | (i, a) <- zip [0 :: Int ..] sps
+        , (j, b) <- zip [0 ..] sps
+        , i < j
+        ]
       | t <- ts
       , let sps = tileSpaces t
       ]
+  hazardBetween t a b =
+    listToMaybe [h | (x, y, h) <- t.hazards, (x, y) == (a, b) || (x, y) == (b, a)]
   streetId s = SpaceId (coerce s.from <> "--" <> coerce s.to)
   streetName s = (tile s.from).name <> " – " <> (tile s.to).name <> " street"
   streetBorders s =
     [ (streetId s, sid, Nothing)
     | sid <- edgeSpaces (tile s.from) s.edge <> edgeSpaces (tile s.to) (opposite s.edge)
     ]
+
+{- | A threshold tile's icons against the spaces it abuts, in the order both are
+written. Which icon faces which tile is settled when the tile is laid, so setup turns
+it at random; this only has to hand out the ones the tile prints.
+-}
+zipHazards :: [Hazard] -> [SpaceId] -> [(SpaceId, Maybe Hazard)]
+zipHazards hs sids = zip sids (map Just hs <> repeat Nothing)
 
 thresholdName :: ThresholdType -> Text
 thresholdName = \case

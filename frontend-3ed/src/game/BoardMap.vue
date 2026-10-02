@@ -48,6 +48,12 @@ const connectorArt = (sid: string) => {
   const connector = kind?.contents && CONNECTOR[kind.contents as string]
   return connector || null
 }
+/* A derelict portal is laid between two tiles the way a street is, so it is drawn
+like one -- along the join and filling a street's box -- and not like the pieces that
+hang off a single edge. Its art joins at the top and bottom rather than along its
+length, though, so it stands a quarter turn from where a street would. */
+const laidLikeAStreet = (sid: string) =>
+  g.value.board.spaces[sid]?.kind?.contents === 'DerelictPortal'
 const spaceArt = (sid: string) => {
   const connector = connectorArt(sid)
   return connector ? img(`connectors/${connector}.webp`) : img(`streets/${streetType(sid)}.webp`)
@@ -62,10 +68,13 @@ either way round reads the same and the angle folds to the nearer half turn. A
 connector hangs off a single edge, and the tab it joins by is the bottom of its
 art; the backend gives that edge's outward normal, so the bottom has to come
 round to face back along it. */
-const spaceAngle = (sid: string, a: number) => (connectorArt(sid) ? a + 90 : streetAngle(a))
+const spaceAngle = (sid: string, a: number) => {
+  if (laidLikeAStreet(sid)) return streetAngle(a) + 90
+  return connectorArt(sid) ? a + 90 : streetAngle(a)
+}
 // a street fills its box; a connector is drawn to fit a smaller square one, keeping its own shape
 const spaceBox = (sid: string) =>
-  connectorArt(sid)
+  connectorArt(sid) && !laidLikeAStreet(sid)
     ? { w: CONNECTOR_W, h: CONNECTOR_W, fit: 'xMidYMid meet' }
     : { w: STREET_W, h: STREET_H, fit: 'none' }
 

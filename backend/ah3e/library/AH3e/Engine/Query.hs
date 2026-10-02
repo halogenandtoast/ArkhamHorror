@@ -261,6 +261,19 @@ codexHas :: ArchiveNumber -> GameM Bool
 codexHas n = uses #codex (any ((== n) . (.number)))
 
 -- rule 493
+
+{- | The space a sheet starts its investigators in, as long as it is still on the
+board: a scenario can name a space its own map does not have, and one that devours
+spaces can eat the space out from under the sheet. Everything that reads the starting
+space goes through here, because a SpaceId the board does not know is an error
+wherever it is used.
+-}
+startingSpaceOnBoard :: GameM (Maybe SpaceId)
+startingSpaceOnBoard = do
+  start <- (.startingSpace) <$> getScenarioDef
+  spaces <- uses (#board . #spaces) Map.keys
+  pure (if start `elem` spaces then Just start else listToMaybe spaces)
+
 unstableSpaces :: GameM [SpaceId]
 unstableSpaces =
   use #unstableSpace >>= \case
@@ -276,7 +289,7 @@ printedUnstableSpaces = do
       getCardDef top <&> \d -> case d.kind of
         EventCard e -> nub e.doomSpaces
         _ -> []
-    [] -> pure . (.startingSpace) <$> getScenarioDef
+    [] -> maybeToList <$> startingSpaceOnBoard
 
 mostDoomSpaces :: GameM [SpaceId]
 mostDoomSpaces = do
@@ -343,7 +356,7 @@ ruleSpaces' :: Maybe CardId -> SpaceRule -> GameM [SpaceId]
 ruleSpaces' mid = \case
   UnstableSpace -> unstableSpaces
   MostDoomSpace -> mostDoomSpaces
-  StartingSpace -> pure . (.startingSpace) <$> getScenarioDef
+  StartingSpace -> maybeToList <$> startingSpaceOnBoard
   NamedSpace sid -> pure [sid]
   PreySpace rule -> mapMaybe (.space) <$> ruleInvestigators rule
   NearestStreetTo mrule -> do

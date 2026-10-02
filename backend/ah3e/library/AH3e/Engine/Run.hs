@@ -2177,12 +2177,6 @@ offerRecoverySanity target msid = for_ msid \sid -> do
 starting space (Tsathoggua devours whole tiles), so what is left of the board
 stands in for it.
 -}
-startingSpaceOnBoard :: GameM (Maybe SpaceId)
-startingSpaceOnBoard = do
-  start <- (.startingSpace) <$> getScenarioDef
-  spaces <- uses (#board . #spaces) Map.keys
-  pure (if start `elem` spaces then Just start else listToMaybe spaces)
-
 displayMarkup :: InvestigatorId -> GameM Int
 displayMarkup iid = do
   mr <- use #rumor

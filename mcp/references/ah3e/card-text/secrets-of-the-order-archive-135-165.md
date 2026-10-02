@@ -40,9 +40,11 @@ Nothing here is written yet. Noted while reading, so the cost is known up front:
   `Board` has no notion of a tile moving once it is laid. (The tiles themselves exist
   now: `ThresholdTile` lays one between two hexes and `CornerTile` stands one in the
   corner three hexes share.)
-- **hazardous borders** — the mechanism is there (`Hazard` on a border, and movement
-  stops unless the cost is paid), but the printed icons on the Underworld tile and on
-  the two threshold tiles have not been transcribed, so no border carries one yet.
+- **hazardous borders** — in, for the Underworld tile (gugs/Pnath horror, gugs/Zin
+  damage, Zin/Pnath focus) and for the hidden path (damage, horror and focus, dealt
+  round its three borders at random when the tile is laid, as the rules ask). The
+  derelict portal's own icons have not been transcribed; the rules' example shows a
+  damage border out of it into the Vale of Pnath.
 - **a card that re-enters the headline deck** — 138 shuffles the Seer of Mnar's own card
   into the top three of the headline deck, and drawing it spawns the monster.
 - **markers moved to a codex card** (143's green markers) and **markers of a colour

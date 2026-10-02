@@ -106,6 +106,24 @@ newGame pids seed opts = do
       pure (SelectScenario code)
   pure (emptyGame pids seed opts) {queue = [start]}
 
+{- | "When a threshold tile is added to the map, orient the hazardous borders
+randomly" (Secrets of the Order, p. 4). The tile's icons are laid out in order when
+the board is built, so turning it is a matter of dealing them round its borders again.
+-}
+turnThresholdTiles :: GameM ()
+turnThresholdTiles = do
+  board <- use #board
+  let isThresholdSpace sid = case Map.lookup sid board.spaces of
+        Just s -> case s.kind of ThresholdSpace _ -> True; _ -> False
+        Nothing -> False
+  for_ [s.id | s <- Map.elems board.spaces, isThresholdSpace s.id] \sid -> do
+    edges <- uses (#board . #borders . at sid . non mempty) Map.toList
+    turned <- shuffle (mapMaybe snd edges)
+    let dealt = zip (map fst edges) (map Just turned <> repeat Nothing)
+    for_ dealt \(other, h) -> do
+      #board . #borders . ix sid . at other ?= h
+      #board . #borders . ix other . at sid ?= h
+
 availableScenarios :: [Expansion] -> [ScenarioDef]
 availableScenarios expansions = [sc | sc <- Map.elems scenarioDefs, sc.expansion `elem` expansions]
 
@@ -160,6 +178,7 @@ setupScenario sc = do
   #decks . #setAside %= (<> aside)
   for_ sc.startingMarkers \(sid, colour) ->
     #board . #spaces . ix sid . #markers %= (<> [Marker colour True])
+  turnThresholdTiles
   -- 103
   events <- for sc.eventCards newCard
   #decks . #event <~ shuffle events

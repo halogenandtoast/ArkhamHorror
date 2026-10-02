@@ -262,7 +262,14 @@ codexHas n = uses #codex (any ((== n) . (.number)))
 
 -- rule 493
 unstableSpaces :: GameM [SpaceId]
-unstableSpaces = do
+unstableSpaces =
+  use #unstableSpace >>= \case
+    Just sid -> pure [sid]
+    Nothing -> printedUnstableSpaces
+
+-- | Where the event deck says the unstable space is, whatever a card has to say.
+printedUnstableSpaces :: GameM [SpaceId]
+printedUnstableSpaces = do
   discard <- use (#decks . #eventDiscard)
   case discard of
     (top : _) ->

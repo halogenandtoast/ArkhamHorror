@@ -653,6 +653,8 @@ body.moving .draggable-inv { cursor:grabbing; }
 .codex-card.no-art { height:220px; padding:8px; border:1px solid var(--line); border-radius:8px; }
 .codex-card.no-art .asset-name { display:block; font-weight:600; }
 .codex-tok { position:absolute; right:-6px; top:-6px; }
+/* a card keeping both piles stacks them down its corner */
+.codex-tok.doom { top:28px; }
 .ask-row { display:grid; grid-template-columns:236px minmax(0,1fr); gap:12px; align-items:start; }
 @media (max-width: 900px) { .ask-row { grid-template-columns:1fr; } }
 .active-side .encounter { flex-wrap:wrap; gap:8px; padding-left:22px; }

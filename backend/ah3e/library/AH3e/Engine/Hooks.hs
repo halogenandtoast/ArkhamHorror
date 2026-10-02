@@ -95,11 +95,17 @@ reference that names them.
 freeActionsFor :: InvestigatorId -> GameM [(ComponentRef, Int, ComponentActionDef)]
 freeActionsFor iid = do
   i <- getInvestigator iid
-  fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+  cards <- fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
     b <- assetBehavior cid
     fmap catMaybes $ for (zip [0 ..] b.freeActions) \(n, a) -> do
       ok <- a.canPerform iid
       pure (if ok then Just (CardRef cid, n, a) else Nothing)
+  entries <- use #codex
+  codex <- fmap concat $ for entries \e ->
+    fmap catMaybes $ for (zip [0 ..] (codexBehavior e.number).freeActions) \(n, a) -> do
+      ok <- a.canPerform iid
+      pure (if ok then Just (CodexRef e.number, n, a) else Nothing)
+  pure (cards <> codex)
 
 {- | The "Encounter:" abilities its owner may take in place of an encounter
 (Under Dark Waves). Only a card in their own possession offers one, and an
@@ -594,6 +600,21 @@ sheetCluesInstead n = do
   codex <- use #codex
   answers <- for codex \e -> (codexBehavior e.number).sheetClueReplacement e n
   pure (listToMaybe (catMaybes answers))
+
+{- | What a codex card does instead of handing an investigator the clues they
+would gain; the first card to answer wins.
+-}
+investigatorCluesInstead :: InvestigatorId -> Int -> GameM (Maybe [Message])
+investigatorCluesInstead iid n = do
+  codex <- use #codex
+  answers <- for codex \e -> (codexBehavior e.number).investigatorClueReplacement e iid n
+  pure (listToMaybe (catMaybes answers))
+
+-- | What the codex does about a mythos token of its own, in codex order.
+codexTokenDrawn :: InvestigatorId -> MythosToken -> GameM [Message]
+codexTokenDrawn iid tok = do
+  codex <- use #codex
+  fmap concat $ for codex \e -> (codexBehavior e.number).tokenDrawn e iid tok
 
 {- | What a codex card does instead of putting doom on the scenario sheet; the
 first card to answer wins.

@@ -157,6 +157,8 @@ data Effect
   | RecoverSanity Recipient Amount
   | RecoverBoth Recipient Amount Amount
   | RemoveDoomFrom Where Amount
+  | -- | discard one marker of that colour from each space named, face up for choice
+    RemoveMarkerAt Where Text
   | PlaceDoomAt Where Amount
   | SpreadDoomOnce
   | SpawnOneClue

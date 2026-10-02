@@ -300,6 +300,12 @@ nearestSpacesMatching p from = do
 markersAt :: SpaceId -> GameM [Marker]
 markersAt sid = (.markers) <$> getSpace sid
 
+-- | Takes one marker out of a space's pile, for a card that discards or moves one.
+dropFirstMarker :: (Marker -> Bool) -> [Marker] -> [Marker]
+dropFirstMarker p ms = case break p ms of
+  (before, _ : after) -> before <> after
+  _ -> ms
+
 allMarkers :: GameM [(SpaceId, Marker)]
 allMarkers = uses (#board . #spaces) \spaces -> [(s.id, m) | s <- Map.elems spaces, m <- s.markers]
 

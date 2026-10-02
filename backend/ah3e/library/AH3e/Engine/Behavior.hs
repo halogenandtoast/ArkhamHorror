@@ -523,6 +523,16 @@ data CodexBehavior = CodexBehavior
   first card to answer wins (Tsathoggua eats the city rather than the sheet)
   -}
   , componentActions :: [ComponentActionDef]
+  , freeActions :: [ComponentActionDef]
+  -- ^ what the card offers during a turn without spending an action
+  , investigatorClueReplacement :: CodexEntry -> InvestigatorId -> Int -> GameM (Maybe [Message])
+  {- ^ what happens instead when an investigator would gain clues; the first card
+  to answer wins (Nightmare Plague takes them onto itself)
+  -}
+  , tokenDrawn :: CodexEntry -> InvestigatorId -> MythosToken -> GameM [Message]
+  {- ^ what a card does about a mythos token its own text put in the cup, which
+  nothing else knows what to do with (the white markers)
+  -}
   , reactions :: CodexEntry -> InvestigatorId -> Trigger -> GameM [Reaction]
   -- ^ what a codex card offers an investigator when something triggers
   , afterAnomaly :: CodexEntry -> NeighborhoodId -> GameM [Message]
@@ -560,6 +570,9 @@ defaultCodexBehavior =
     , sheetClueReplacement = \_ _ -> pure Nothing
     , sheetDoomReplacement = \_ _ -> pure Nothing
     , componentActions = []
+    , freeActions = []
+    , investigatorClueReplacement = \_ _ _ -> pure Nothing
+    , tokenDrawn = \_ _ _ -> pure []
     , reactions = \_ _ _ -> pure []
     , afterAnomaly = \_ _ -> pure []
     , encounterOverride = \_ _ _ -> pure Nothing

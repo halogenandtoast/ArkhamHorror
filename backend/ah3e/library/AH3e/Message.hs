@@ -30,6 +30,10 @@ data Message
     PerformGrantedAction InvestigatorId ActionKind Bool
   | -- | ask who takes the granted action, if anyone
     OfferGrantedAction InvestigatorId ActionKind
+  | {- | another action of their own choosing, which may repeat one they have
+    already taken this round (the white markers of the Silver Twilight Lodge)
+    -}
+    GrantAnotherAction InvestigatorId
   | -- | an ability a card gives freely during its owner's turn; costs no action
     PerformFreeAction InvestigatorId ComponentRef Int
   | AfterAction InvestigatorId ActionKind

@@ -112,6 +112,7 @@ export const MYTHOS: Record<string, string> = {
   ReckoningToken: 'mythos-reckoning',
   BlankToken: 'mythos-blank',
   SpreadTerrorToken: 'mythos-spread-terror',
+  WhiteMarkerToken: 'white-marker',
 }
 export const FOCUS: Record<string, string> = {
   Lore: 'focus-lore',
@@ -141,6 +142,7 @@ export const TOKEN_TIP: Record<string, [string, string]> = {
   'mythos-reckoning': ['Reckoning', 'Every reckoning effect in play resolves, one source at a time.'],
   'mythos-blank': ['Blank', 'Nothing happens, unless a card reacts to drawing a blank.'],
   'mythos-spread-terror': ['Spread terror', 'Terror spreads through a neighborhood holding an unstable space.'],
+  'white-marker': ['White marker', 'A marker a card has added to the cup; that card alone says what drawing it does.'],
 }
 
 // skill rows on the investigator sheet front, as fractions of the image

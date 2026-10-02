@@ -261,6 +261,8 @@ data MythosToken
   | ReckoningToken
   | BlankToken
   | SpreadTerrorToken
+  | -- | a marker a card has added to the cup, which that card alone answers
+    WhiteMarkerToken
   deriving stock (Show, Eq, Ord, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

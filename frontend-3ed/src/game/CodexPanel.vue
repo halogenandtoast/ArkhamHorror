@@ -37,6 +37,9 @@ const rumor = computed(() => {
           >#{{ e.number }} {{ codexName(e) }}</span
         ><span v-if="e.tokens?.clues" class="codex-tok"
           ><Tok name="clue" :count="e.tokens.clues" :title="`${e.tokens.clues} clues on this card`" :size="34" always
+        /></span
+        ><span v-if="e.tokens?.doom" class="codex-tok doom"
+          ><Tok name="doom" :count="e.tokens.doom" :title="`${e.tokens.doom} doom on this card`" :size="34" always
         /></span>
       </figure>
       <figure

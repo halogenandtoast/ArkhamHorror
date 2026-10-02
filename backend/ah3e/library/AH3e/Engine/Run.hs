@@ -262,6 +262,23 @@ dispatch msg = case msg of
     when (if again then kind `elem` done else kind `elem` legal) do
       unless again $ investigatorL iid . #performed %= (<> [kind])
       performAction iid kind
+  {- 'legalActions' leaves out what they have already done this round, which is
+  the one rule this action lifts, so the list is taken with their record set aside. -}
+  GrantAnotherAction iid -> do
+    i <- getInvestigator iid
+    investigatorL iid . #performed .= []
+    options <- legalActions iid
+    investigatorL iid . #performed .= i.performed
+    components <- componentActionsFor iid
+    let actionLabel = \case
+          ComponentAction ref n
+            | (name : _) <- [def.label | (r, k, def) <- components, r == ref, k == n] ->
+                TextLabel name
+          a -> ActionLabel a
+    chooseFor
+      iid
+      "Take an additional action"
+      [Choice (actionLabel k) [PerformGrantedAction iid k (k `elem` i.performed)] | k <- options]
   OfferGrantedAction from kind -> do
     others <- filter ((/= from) . (.id)) <$> playingInvestigators
     takers <- filterM (fmap (elem kind) . legalActions . (.id)) others
@@ -594,7 +611,8 @@ dispatch msg = case msg of
       #activeToken ?= tok
       logText ("Mythos: " <> tshow tok)
       -- the token is read, then put away; its effect resolves without it on show
-      pushAll [AcknowledgeMythosToken pid tok, ClearActiveToken, ResolveMythosToken pid tok]
+      pushAll
+        [AcknowledgeMythosToken pid tok, ClearActiveToken, ResolveMythosToken pid tok, CheckStateTriggers]
   {- A card its drawer holds may answer the token flatly (TAINTED's doom); it
   lands behind whatever the token itself sets going. -}
   ResolveMythosToken pid tok -> do
@@ -608,6 +626,14 @@ dispatch msg = case msg of
     GateBurstToken -> push GateBurst
     ReckoningToken -> reckoningSources >>= push . ResolveReckonings
     BlankToken -> investigatorOfPlayer pid >>= traverse_ (\iid -> push (CheckReactions (DrewBlankToken iid) []))
+    {- A white marker is taken out of the cup for good: whichever card put it there
+    says where it goes, so it is never among the tokens returned when the cup runs
+    out. -}
+    WhiteMarkerToken -> do
+      #drawnTokens %= \ts -> case break (== WhiteMarkerToken) ts of
+        (before, _ : after) -> before <> after
+        _ -> ts
+      investigatorOfPlayer pid >>= traverse_ (\iid -> codexTokenDrawn iid WhiteMarkerToken >>= pushAll)
     SpreadTerrorToken -> do
       board <- use #board
       nids <- nub . mapMaybe (`spaceNeighborhood` board) <$> unstableSpaces
@@ -1199,7 +1225,7 @@ dispatch msg = case msg of
     spaceL sid . #markers %= (<> [Marker colour False])
     logText ("A marker is placed face down at " <> s.name)
   TakeClues iid n -> addClues iid n
-  MarkCodexToken card name k ->
+  MarkCodexToken card name k -> do
     #codex
       . traversed
       . filtered ((== card) . (.number))
@@ -1209,6 +1235,7 @@ dispatch msg = case msg of
       . max 0
       . (+ k)
       . fromMaybe 0
+    push CheckStateTriggers
   PlaceNeighborhoodMarker nid colour faceUp -> do
     n <- getNeighborhood nid
     neighborhoodL nid . #markers %= (<> [Marker colour faceUp])
@@ -2310,6 +2337,7 @@ mythosTokenName = \case
   ReckoningToken -> "Reckoning"
   BlankToken -> "Blank"
   SpreadTerrorToken -> "Spread terror"
+  WhiteMarkerToken -> "White marker"
 
 reckoningSources :: GameM [Source]
 reckoningSources = do

@@ -818,7 +818,7 @@ const cardArt = (cid, back) => cardImg(cardCode(cid), back);
 const SKILL_ROWS = { Lore: 0.6, Influence: 0.685, Observation: 0.77, Strength: 0.853, Will: 0.935 };
 const tok = (name, count, title, size = 28, always = false) =>
   `<span class="tok" title="${esc(title ?? name)}" style="width:${size}px;height:${size}px"><img src="${TOKEN(name)}" alt="${esc(title ?? name)}">${count !== undefined && count !== null && (always || count !== 1) ? `<b>${count}</b>` : ''}</span>`;
-const MYTHOS = { SpreadDoomToken:'mythos-spread-doom', SpawnMonsterToken:'mythos-spawn-monster', ReadHeadlineToken:'mythos-read-headline', SpawnClueToken:'mythos-spawn-clue', GateBurstToken:'mythos-gate-burst', ReckoningToken:'mythos-reckoning', BlankToken:'mythos-blank', SpreadTerrorToken:'mythos-spread-terror' };
+const MYTHOS = { SpreadDoomToken:'mythos-spread-doom', SpawnMonsterToken:'mythos-spawn-monster', ReadHeadlineToken:'mythos-read-headline', SpawnClueToken:'mythos-spawn-clue', GateBurstToken:'mythos-gate-burst', ReckoningToken:'mythos-reckoning', BlankToken:'mythos-blank', SpreadTerrorToken:'mythos-spread-terror', WhiteMarkerToken:'white-marker' };
 const FOCUS = { Lore:'focus-lore', Influence:'focus-influence', Observation:'focus-observation', Strength:'focus-strength', Will:'focus-willpower' };
 const mythosTok = (t, size) => tok(MYTHOS[t] ?? 'mythos-blank', null, t.replace(/Token$/, '').replace(/([a-z])([A-Z])/g, '$1 $2'), size);
 const markerTok = m => m.faceUp ? tok(`${m.color}-marker`, null, `${m.color} marker`) : tok('marker-back', null, 'facedown marker');
@@ -1173,13 +1173,14 @@ function renderDecks(g) {
     `<div class="deck-group lead">${lead}</div>` + out.join('') + (display ? `<div class="display-group">${display}</div>` : '');
 }
 
-const archiveImage = (n, back) => `/img/ah3e/archive/core/${String(n).padStart(3, '0')}${back ? 'b' : ''}.avif`;
+const archiveImage = (n, back) => `/img/ah3e/archive/${String(n).padStart(3, '0')}${back ? 'b' : ''}.avif`;
 function codexCard(e) {
   const name = state.cardNames[e.card] || `Card ${e.number}`;
   const clues = e.tokens?.clues ? `<span class="codex-tok">${tok('clue', e.tokens.clues, `${e.tokens.clues} clues on this card`, 34, true)}</span>` : '';
+  const codexDoom = e.tokens?.doom ? `<span class="codex-tok" style="top:28px">${tok('doom', e.tokens.doom, `${e.tokens.doom} doom on this card`, 34, true)}</span>` : '';
   const src = archiveImage(e.number, e.flipped);
   return `<figure class="codex-card" data-codex="${e.number}" title="${esc(name)}${e.flipped ? ' (back)' : ''}" onclick="zoom('${src}')">
-    <img src="${src}" alt="${esc(name)}" onerror="hideBroken(this)"><span class="asset-name">#${e.number} ${esc(name)}</span>${clues}
+    <img src="${src}" alt="${esc(name)}" onerror="hideBroken(this)"><span class="asset-name">#${e.number} ${esc(name)}</span>${clues}${codexDoom}
     <figcaption>#${e.number}${e.flipped ? ' · back' : ''}</figcaption></figure>`;
 }
 function rumorCard(r) {
@@ -1466,7 +1467,7 @@ function updateUnread(total) {
   $('logUnread').textContent = unread > 99 ? '99+' : unread;
 }
 function scrollLog() { const l = $('log'); l.scrollTop = l.scrollHeight; }
-const LOG_TOKEN = { SpreadDoomToken:'Spread doom', SpawnMonsterToken:'Spawn monster', ReadHeadlineToken:'Read headline', SpawnClueToken:'Spawn clue', GateBurstToken:'Gate burst', ReckoningToken:'Reckoning', BlankToken:'Blank', SpreadTerrorToken:'Spread terror' };
+const LOG_TOKEN = { SpreadDoomToken:'Spread doom', SpawnMonsterToken:'Spawn monster', ReadHeadlineToken:'Read headline', SpawnClueToken:'Spawn clue', GateBurstToken:'Gate burst', ReckoningToken:'Reckoning', BlankToken:'Blank', SpreadTerrorToken:'Spread terror', WhiteMarkerToken:'White marker' };
 function logEntry(line) {
   let m;
   if ((m = /^Round (\d+)$/.exec(line))) return `<li class="log-round"><span>Round ${m[1]}</span></li>`;

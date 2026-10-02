@@ -32,6 +32,7 @@ import AH3e.Content.Items qualified as Items
 import AH3e.Content.Monsters qualified as Monsters
 import AH3e.Content.Scenarios
 import AH3e.Content.SecretsOfTheOrder.Anomalies qualified as SecretsOfTheOrderAnomalies
+import AH3e.Content.SecretsOfTheOrder.Archive qualified as SecretsOfTheOrderArchive
 import AH3e.Content.SecretsOfTheOrder.BoundToServe qualified as BoundToServe
 import AH3e.Content.SecretsOfTheOrder.Investigators qualified as SecretsOfTheOrderInvestigators
 import AH3e.Content.SecretsOfTheOrder.Mysteries qualified as SecretsOfTheOrderMysteries
@@ -108,6 +109,7 @@ cardDefs =
           <> SecretsOfTheOrderThresholds.cards
           <> SecretsOfTheOrderMysteries.cards
           <> SecretsOfTheOrderAnomalies.cards
+          <> SecretsOfTheOrderArchive.cards
           <> BoundToServe.cards
           <> UnderDarkWavesMysteries.cards
           <> UnderDarkWavesTravelRoutes.cards

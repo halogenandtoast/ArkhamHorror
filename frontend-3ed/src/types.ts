@@ -193,7 +193,7 @@ export interface CodexEntry {
   number: number
   card: CardId
   flipped: boolean
-  tokens?: { clues?: number }
+  tokens?: { clues?: number; doom?: number } & Record<string, number | undefined>
 }
 
 export interface Decks {

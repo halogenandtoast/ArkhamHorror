@@ -116,6 +116,19 @@ resolveEffect ctx eff0 = do
         (\w' -> RemoveDoomFrom w' a)
         \sid ->
           [RemoveDoom sid (amt a), CheckReactions (AfterDoomRemoved iid (amt a)) []]
+    {- A card that takes a marker off the board names where, so nothing is asked:
+    the colour is discarded face up first, a marker nobody has turned over being
+    the one a card means when it offers to clear one. -}
+    RemoveMarkerAt w colour -> do
+      spaces <- spacesFor ctx w
+      for_ spaces \sid -> do
+        ms <- markersAt sid
+        let mine m = m.color == colour
+            chosen = listToMaybe (filter (\m -> mine m && m.faceUp) ms <> filter mine ms)
+        for_ chosen \m -> do
+          s <- getSpace sid
+          spaceL sid . #markers %= dropFirstMarker (== m)
+          logText ("A " <> colour <> " marker is discarded from " <> s.name)
     PlaceDoomAt ScenarioSheet a -> push (PlaceDoomOnSheet (amt a))
     PlaceDoomAt EachSpaceInYourNeighborhood a -> do
       spaces <- yourNeighborhoodSpaces iid
@@ -243,9 +256,14 @@ gain ctx g = do
       amt = evalAmount ctx
   case g of
     Money a -> addMoney iid (amt a)
-    Clues a -> do
-      addClues iid (amt a)
-      when (amt a > 0) $ afterGainClueFor iid >>= pushAll
+    Clues a
+      | amt a > 0 ->
+          investigatorCluesInstead iid (amt a) >>= \case
+            Just instead -> pushAll instead
+            Nothing -> do
+              addClues iid (amt a)
+              afterGainClueFor iid >>= pushAll
+      | otherwise -> addClues iid (amt a)
     Remnants a -> push (GainRemnants iid (amt a))
     ClueFromNeighborhood -> do
       msid <- investigatorSpace iid
@@ -275,12 +293,17 @@ gain ctx g = do
     chooseFor iid "Gain an item"
       $ [Choice (CardLabel cid) [GainFromDisplay iid cid] | cid <- eligible]
       <> [label "Draw from the item deck" [GainItemFromDeck iid ItemDeckKind mtrait mbound]]
-  gained = do
-    addClues ctx.investigator 1
-    #encounter . _Just . #gainedNeighborhoodClue .= True
-    answers <- afterGainClueFor ctx.investigator
-    -- where the clue came from is what some cards answer, not merely that one came
-    pushAll (answers <> [CheckReactions (AfterGainNeighborhoodClue ctx.investigator) []])
+  {- The clue leaves the neighborhood either way; a card that takes it instead
+  says where it lands, and nothing about gaining one has happened. -}
+  gained =
+    investigatorCluesInstead ctx.investigator 1 >>= \case
+      Just instead -> pushAll instead
+      Nothing -> do
+        addClues ctx.investigator 1
+        #encounter . _Just . #gainedNeighborhoodClue .= True
+        answers <- afterGainClueFor ctx.investigator
+        -- where the clue came from is what some cards answer, not merely that one came
+        pushAll (answers <> [CheckReactions (AfterGainNeighborhoodClue ctx.investigator) []])
 
 recover :: EffectCtx -> Recipient -> Int -> Int -> GameM ()
 recover ctx r hp sp = do

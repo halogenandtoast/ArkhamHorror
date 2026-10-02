@@ -15,7 +15,7 @@ ally c n trait health sanity txt =
     (AssetCard (AssetDef Ally AllyDeck [trait] Nothing 0 (Just health) (Just sanity) 0 txt))
 
 cards :: [CardDef]
-cards = core <> fromBox DeadOfNight deadOfNight
+cards = core <> fromBox DeadOfNight deadOfNight <> fromBox SecretsOfTheOrder secretsOfTheOrder
 
 core :: [CardDef]
 core =
@@ -124,4 +124,23 @@ deadOfNight =
       2
       2
       "Action: Become WANTED to gain one curio with a value of $4 or less."
+  ]
+
+-- Secrets of the Order
+secretsOfTheOrder :: [CardDef]
+secretsOfTheOrder =
+  [ ally
+      "olive-mcbride"
+      "Olive McBride"
+      "Reckless Witch"
+      2
+      3
+      "Once per round, while resolving a test, you may reroll any number of dice. If you do, place one doom in your space after that test."
+  , ally
+      "whitton-greene"
+      "Whitton Greene"
+      "Hunter of Rare Books"
+      2
+      3
+      "At the start of your turn, you may discard one item from the display. Reveal cards from the item deck until you reveal a tome item. Add that card to the display and discard the others."
   ]

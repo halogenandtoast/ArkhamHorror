@@ -61,7 +61,10 @@ behaviors =
           , ("grande-meres-knife", testBonuses [OnAction AttackAction Strength 2, WhileCasting 2])
           , ("jennys-twin-45s", testBonuses [OnAction AttackAction Strength 3])
           , ("magicians-cane", testBonuses [WhileCasting 2])
-          , ("storm-of-spirits", defaultAssetBehavior & #attackSkillInstead ?~ Lore)
+          ,
+            ( "storm-of-spirits"
+            , defaultAssetBehavior & #attackSkillInstead .~ \printed -> Lore <$ guard (printed == Strength)
+            )
           , ("spirit-dagger", testBonuses [OnAction AttackAction Strength 2, OnAction WardAction Lore 2])
           , ("gabriel", defaultAssetBehavior & #moveAction ?~ (3, 1))
           , -- the same offer as Gabriel's: three spaces, and a dollar buys a fourth

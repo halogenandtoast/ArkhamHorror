@@ -6,7 +6,7 @@ The six dark pacts share one front and differ only on the back. Dead of Night's
 six WANTED cards work the same way: one front, six different reckonings for what
 finally catches up with you.
 -}
-module AH3e.Content.Conditions (cards) where
+module AH3e.Content.Conditions (cards, focusLimitBonuses) where
 
 import AH3e.Content.Vocabulary (fromBox)
 import AH3e.Prelude
@@ -87,7 +87,37 @@ core =
   ]
 
 cards :: [CardDef]
-cards = core <> fromBox DeadOfNight deadOfNight <> fromBox UnderDarkWaves underDarkWaves
+cards =
+  core
+    <> fromBox DeadOfNight deadOfNight
+    <> fromBox UnderDarkWaves underDarkWaves
+    <> fromBox SecretsOfTheOrder secretsOfTheOrder
+
+{- | Conditions whose face-up side raises their holder's focus limit. Read where
+the limit is worked out, which cannot see behaviours; the flipped side gives
+nothing, which 'AH3e.Engine.Query.focusLimit' takes care of.
+-}
+focusLimitBonuses :: [(CardCode, Int)]
+focusLimitBonuses = [("driven", 1)]
+
+{- | Secrets of the Order's DRIVEN, whose back is the FATIGUED it costs you. The
+drive buys an extra action at the end of a turn and the card turns over to pay
+for it; fatigue takes a die for every reroll until a focus action shakes it off.
+-}
+secretsOfTheOrder :: [CardDef]
+secretsOfTheOrder =
+  [ condition
+      "driven"
+      "Driven / Fatigued"
+      ( "DRIVEN"
+      , "Your focus limit is increased by one. At the end of your turn, if you are not FATIGUED, you may flip this card to perform one additional action."
+      )
+      ( "FATIGUED"
+      , "If you are DRIVEN, discard that card. You cannot become DRIVEN. While resolving a test, as an additional cost to reroll one or more dice, remove one die from that test. After you perform a focus action, discard this card."
+      )
+      True
+      False
+  ]
 
 wantedFront :: (ConditionName, Text)
 wantedFront =

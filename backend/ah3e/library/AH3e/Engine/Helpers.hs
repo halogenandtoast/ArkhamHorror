@@ -193,6 +193,21 @@ eventDef cid =
     EventCard e -> e
     _ -> error ("not an event card " <> show cid)
 
+{- | The encounter deck an investigator would draw from where they stand. A street
+belongs to no neighborhood, so the street deck is what is drawn there.
+-}
+encounterDeckLens :: Maybe NeighborhoodId -> Lens' Game [CardId]
+encounterDeckLens = \case
+  Just nid -> #decks . #neighborhoods . at nid . non []
+  Nothing -> #decks . #street
+
+{- | Spend a once-a-round ability as its offer is taken rather than queueing
+'MarkAbilityUsed': the turn's action prompt is asked again before the queue
+unwinds, and would otherwise offer the same free action a second time.
+-}
+spendOncePerRound :: InvestigatorId -> Text -> GameM ()
+spendOncePerRound iid key = investigatorL iid . #usedAbilities %= (<> [key])
+
 allNeighborhoodSpaces :: GameM [SpaceId]
 allNeighborhoodSpaces = uses (#board . #spaces) (map (.id) . filter (isNeighborhoodSpace . (.kind)) . Map.elems)
 

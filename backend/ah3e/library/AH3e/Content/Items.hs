@@ -19,7 +19,7 @@ itemWith c n value traits hands health sanity txt =
     (AssetCard (AssetDef Item ItemDeck traits (Just value) hands health sanity 0 txt))
 
 cards :: [CardDef]
-cards = core <> fromBox DeadOfNight deadOfNight
+cards = core <> fromBox DeadOfNight deadOfNight <> fromBox SecretsOfTheOrder secretsOfTheOrder
 
 core :: [CardDef]
 core =
@@ -248,4 +248,32 @@ deadOfNight =
       (Just 0)
       (Just 2)
       "Once per round, as part of a ward action, you may spend one remnant to reroll any number of dice."
+  ]
+
+-- Secrets of the Order
+secretsOfTheOrder :: [CardDef]
+secretsOfTheOrder =
+  [ itemWith
+      "enchanted-knife"
+      "Enchanted Knife"
+      2
+      ["Magical", "Curio", "Weapon"]
+      1
+      (Just 0)
+      (Just 2)
+      "As part of an attack action, you may treat the attack modifier of one monster in your space as +1 (regardless of the skill used to attack that monster)."
+  , item
+      "lucky-charm"
+      "Lucky Charm"
+      2
+      ["Curio"]
+      0
+      "Once per round, while resolving a test, you may remove one die from that test to reroll any number of dice."
+  , item
+      "pallid-mask"
+      "Pallid Mask"
+      4
+      ["Magical", "Curio"]
+      0
+      "You may test will in place of observation as part of an evade action. (The monster's evade modifier still applies.) Once per round, after you evade a non-epic monster, you may place it on the bottom of the monster deck."
   ]

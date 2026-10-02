@@ -16,7 +16,7 @@ spell c n value trait hands horror txt =
     (AssetCard (AssetDef Spell SpellDeck [trait] (Just value) hands Nothing Nothing horror txt))
 
 cards :: [CardDef]
-cards = core <> fromBox DeadOfNight deadOfNight
+cards = core <> fromBox DeadOfNight deadOfNight <> fromBox SecretsOfTheOrder secretsOfTheOrder
 
 core :: [CardDef]
 core =
@@ -137,4 +137,25 @@ deadOfNight =
       1
       1
       "Action: Test lore +1. Defeat one monster in your space with remaining health equal to or lower than your test result. You may perform this action while engaged with a monster."
+  ]
+
+-- Secrets of the Order
+secretsOfTheOrder :: [CardDef]
+secretsOfTheOrder =
+  [ spell
+      "banishment"
+      "Banishment"
+      2
+      "Incantation"
+      0
+      1
+      "Once per round, during your turn, you may choose a non-epic monster and test lore -1. If you pass, that monster disengages all investigators and moves directly to the unstable space."
+  , spell
+      "the-beast-within"
+      "The Beast Within"
+      3
+      "Incantation"
+      0
+      1
+      "When you perform an attack action, you may test lore. If you pass, roll five dice instead of your usual dice pool. Ignore all other modifiers."
   ]

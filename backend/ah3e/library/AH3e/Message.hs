@@ -84,8 +84,21 @@ data Message
   | RollDice
   | SpendForReroll RerollCost
   | RerollDie RerollCost Int
+  | {- | roll this many more dice into the test in progress, after the pool has
+    already been rolled (Just That Good, Reckless Resolve)
+    -}
+    RollAdditionalDice Source Int
+  | {- | roll one more die for each die in the test that is not a success, which
+    only the engine can count (Reckless Resolve)
+    -}
+    RollADiePerFailure Source
+  | -- | take one die of their choice out of the test in progress (FATIGUED)
+    RemoveADie Source
+  | RemoveDieAt Int
   | -- | reroll dice one at a time, at most this many, stopping whenever they like
     RerollUpTo Source Int
+  | -- | the staged rerolls themselves, once any surcharge on rerolling is paid
+    RerollUpToNow Source Int
   | RerollOneOf Source Int Int
   | RerollAll Source
   | -- | add one to the result of a die of their choice
@@ -181,6 +194,10 @@ data Message
   | RemoveDoom SpaceId Int
   | SpreadDoom
   | SpawnClue
+  | {- | spawn a clue whose event card goes on top of its encounter deck rather
+    than being shuffled in with the top two (Spirit Camera)
+    -}
+    SpawnClueOnTop
   | GateBurst
   | SpreadTerror NeighborhoodId
   | CheckDoomThresholds SpaceId

@@ -65,6 +65,7 @@ data Where
   | TheSpace SpaceId
   | TheUnstableSpace
   | AdjacentStreet
+  | AnyStreetSpace
   | AdjacentSpace
   | YourSpaceOrAdjacent
   | AnySpaceWithDoom

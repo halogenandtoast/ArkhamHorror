@@ -23,8 +23,22 @@ talent c n trait = special c n Talent [trait] 0 Nothing Nothing
 companion :: CardCode -> Text -> Trait -> Int -> Int -> Text -> CardDef
 companion c n trait health sanity = special c n Ally [trait] 0 (Just health) (Just sanity)
 
+-- | A spell handed out by name, which pays horror to cast like any other.
+ritual :: CardCode -> Text -> Trait -> Int -> Int -> Text -> CardDef
+ritual c n trait hands horror txt =
+  CardDef
+    c
+    n
+    CoreSet
+    1
+    (AssetCard (AssetDef Spell SpecialPile [trait] Nothing hands Nothing Nothing horror txt))
+
 cards :: [CardDef]
-cards = core <> fromBox DeadOfNight deadOfNight <> fromBox UnderDarkWaves underDarkWaves
+cards =
+  core
+    <> fromBox DeadOfNight deadOfNight
+    <> fromBox UnderDarkWaves underDarkWaves
+    <> fromBox SecretsOfTheOrder secretsOfTheOrder
 
 core :: [CardDef]
 core =
@@ -517,4 +531,145 @@ underDarkWaves =
       (Just 3)
       (Just 0)
       "When this talent is discarded, draw and resolve two tokens from the mythos cup."
+  ]
+
+-- Secrets of the Order
+secretsOfTheOrder :: [CardDef]
+secretsOfTheOrder =
+  [ companion
+      "aquinnah"
+      "Aquinnah"
+      "Forgotten Daughter"
+      2
+      3
+      "When a monster attacks you, you may deal one horror to this ally to prevent all damage and horror dealt to you by that attack and deal one damage to a monster in your space."
+  , special
+      "blackened-athame"
+      "Blackened Athame"
+      Item
+      ["Magical", "Curio"]
+      1
+      Nothing
+      Nothing
+      "While casting a spell, you may suffer one damage to reroll any number of dice."
+  , special
+      "book-of-shadows"
+      "Book of Shadows"
+      Item
+      ["Curio", "Tome"]
+      1
+      Nothing
+      Nothing
+      "Once per round, when you would suffer horror to cast a spell, you may prevent that horror. If you fail the test to cast that spell, suffer that spell's horror twice."
+  , talent
+      "cabbies-favor"
+      "Cabbie's Favor"
+      "Arkham Reputation"
+      "After you spend at least $1 as part of a move action, you may move one additional space."
+  , special
+      "chthonian-stone"
+      "Chthonian Stone"
+      Item
+      ["Magical", "Curio"]
+      0
+      Nothing
+      Nothing
+      "Once per round, while resolving a test, you may reroll one die or all dice. If you do, place one doom in your space after that test."
+  , special
+      "cryptic-sketches"
+      "Cryptic Sketches"
+      Item
+      ["Curio", "Tome"]
+      0
+      Nothing
+      Nothing
+      "After a non-human monster spawns, you may discard one remnant to focus one skill of your choice."
+  , special
+      "cyclopean-hammer"
+      "Cyclopean Hammer"
+      Item
+      ["Magical", "Curio", "Weapon"]
+      2
+      Nothing
+      Nothing
+      "You get +4 strength as part of an attack action. You may always test strength while performing an attack action. (Modifiers still apply.)"
+  , companion
+      "david-renfield"
+      "David Renfield"
+      "Eschatologist"
+      1
+      3
+      "At the end of your turn, you may place one doom in your space for this ally to recover two horror."
+  , companion
+      "guiding-spirit"
+      "Guiding Spirit"
+      "Unquiet Dead"
+      0
+      2
+      "Once per round, you may discard the top card of your neighborhood's encounter deck. If you discard an event this way, discard one clue from your neighborhood and spawn two clues."
+  , talent
+      "hidden-routes"
+      "Hidden Routes"
+      "Arkham Reputation"
+      "Action: Discard one focus token to move directly to any street space."
+  , talent
+      "inner-sanctum-access"
+      "Inner Sanctum Access"
+      "Lodge Reputation"
+      "After you perform a gather resources action in the French Hill neighborhood, you may remove all doom from any space and place an equal amount of doom in any other space."
+  , special
+      "lost-journal"
+      "Lost Journal"
+      Item
+      ["Common", "Tome"]
+      1
+      (Just 0)
+      (Just 2)
+      "Once per round, after you gain a remnant, this item recovers one sanity."
+  , companion
+      "michael-leigh"
+      "Michael Leigh"
+      "Experienced Hunter"
+      3
+      3
+      "Action: Test will. If you pass, exhaust a monster in your space; then you may move that monster one space. You can perform this action while engaged with a monster."
+  , special
+      "nine-of-rods"
+      "Nine of Rods"
+      Item
+      ["Curio"]
+      0
+      Nothing
+      Nothing
+      "While resolving a test, after you spend a focus token to reroll a die, if you have no focus tokens remaining, roll one additional die."
+  , talent
+      "steward-of-the-order"
+      "Steward of the Order"
+      "Lodge Reputation"
+      "After you cast a spell, you may spend one remnant to remove one doom from your space."
+  , special
+      "the-hierophant"
+      "The Hierophant"
+      Item
+      ["Curio"]
+      0
+      Nothing
+      Nothing
+      "After you remove one or more doom from your space, if there is no doom remaining in your space, you or an ally may recover one sanity."
+  , special
+      "the-red-clock"
+      "The Red Clock"
+      Item
+      ["Magical", "Curio"]
+      0
+      Nothing
+      Nothing
+      "After you become delayed, you may disengage all monsters and move directly to the unstable space to become DRIVEN. If you do, you are no longer delayed."
+  , ritual
+      "unknown-liturgy"
+      "Unknown Liturgy"
+      "Ritual"
+      0
+      1
+      "Action: Place one doom in any space and test lore. An investigator in that space may recover health and sanity, both equal to your test result."
   ]

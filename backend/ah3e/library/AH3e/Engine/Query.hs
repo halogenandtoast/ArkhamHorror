@@ -187,7 +187,10 @@ focusLimit :: InvestigatorId -> GameM (Maybe Int)
 focusLimit iid = do
   base <- (.focusLimit) <$> getInvestigatorDef iid
   i <- getInvestigator iid
-  bonus <- sum <$> for i.assets (fmap focusLimitBonus . cardCode)
+  -- a double-sided card only raises the limit on the side that prints it (DRIVEN)
+  bonus <- fmap sum $ for i.assets \cid -> do
+    flipped <- uses #assets (maybe False (.flipped) . Map.lookup cid)
+    if flipped then pure 0 else focusLimitBonus <$> cardCode cid
   -- a sheet may say its limit is counted rather than printed (Dexter Drake's
   -- spells, Charlie Kane's allies)
   counted <-

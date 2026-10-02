@@ -27,6 +27,10 @@ data Reaction = Reaction {key :: Text, label :: Text, messages :: [Message]}
 data Placement = PlacingDoom | PlacingMonster CardId
   deriving stock (Show, Eq)
 
+-- | Which of a monster's two modifiers is being read.
+data MonsterModifier = AttackModifier | EvadeModifier
+  deriving stock (Show, Eq)
+
 data AssetBehavior = AssetBehavior
   { testDice :: CardId -> InvestigatorId -> TestState -> GameM (Maybe Int)
   , componentActions :: [ComponentActionDef]
@@ -54,8 +58,11 @@ data AssetBehavior = AssetBehavior
   determined, before the roll (490.2d). Zero means the card has nothing to add
   and is not offered.
   -}
-  , attackSkillInstead :: Maybe Skill
-  -- ^ a skill its owner may test in place of strength as part of an attack action
+  , attackSkillInstead :: Skill -> Maybe Skill
+  {- ^ a skill its owner may test in place of the monster's own as part of an
+  attack action, given what the monster prints. Storm of Spirits only answers
+  strength; the Cyclopean Hammer answers everything else.
+  -}
   , evadeSkillInstead :: Maybe Skill
   -- ^ likewise in place of observation as part of an evade action
   , moveBySpell :: Maybe (Skill, Int, Int)
@@ -146,6 +153,16 @@ data AssetBehavior = AssetBehavior
   {- ^ what this card does when its owner gains clues. Not offered but done, for a
   card that says "you gain" rather than "you may" (Reporting Gig).
   -}
+  , afterGainRemnant :: CardId -> InvestigatorId -> GameM [Message]
+  -- ^ likewise for remnants coming to its owner (Lost Journal)
+  , afterSpentFocusToReroll :: CardId -> InvestigatorId -> GameM [Message]
+  {- ^ likewise once a focus has bought its owner a reroll, stated flatly rather
+  than offered (Nine of Rods)
+  -}
+  , extraStepWhenPaying :: Int
+  {- ^ once per round, spaces its owner may move beyond the one they paid for
+  during a move action (Cabbie's Favor)
+  -}
   , afterMonsterDamaged :: CardId -> InvestigatorId -> CardId -> Source -> GameM [Message]
   {- ^ what this card does after a monster takes damage, wherever the monster is
   and whoever dealt it. Consulted for every investigator in play, so a card can
@@ -185,9 +202,9 @@ data AssetBehavior = AssetBehavior
   -}
   , stopsMonsterReady :: Bool
   -- ^ the monster this card is attached to cannot ready (Fishing Net)
-  , monsterModifierFloor :: CardId -> InvestigatorId -> CardId -> GameM (Maybe Int)
-  {- ^ the least that monster's attack and evade modifiers may be read as while
-  its owner faces it (Holy Water's +1 against the inhuman).
+  , monsterModifierFloor :: CardId -> InvestigatorId -> CardId -> MonsterModifier -> GameM (Maybe Int)
+  {- ^ the least that modifier of the monster's may be read as while its owner
+  faces it (Holy Water's +1 against the inhuman).
   -}
   , afterReroll :: CardId -> InvestigatorId -> Int -> GameM [Message]
   -- ^ what this card does to a die its owner has just rerolled, by its position
@@ -209,6 +226,15 @@ data AssetBehavior = AssetBehavior
   {- ^ its owner may spend a ward's successes exhausting monsters in their space
   rather than removing doom
   -}
+  , rerollRemovesADie :: CardId -> InvestigatorId -> GameM Bool
+  {- ^ rerolling costs its holder a die as well: whenever they reroll, one die of
+  their choice comes out of the test (FATIGUED). Asked of the card rather than
+  read off it, since a double-sided card only charges on one side.
+  -}
+  , afterOwnerAction :: CardId -> InvestigatorId -> ActionKind -> GameM [Message]
+  {- ^ what this card does once its owner has finished an action of that kind.
+  Not offered but done, for a card that spends itself on one (FATIGUED).
+  -}
   }
   deriving stock Generic
 
@@ -226,7 +252,7 @@ defaultAssetBehavior =
     , tradeInNeighborhood = False
     , freeRerollPerRound = False
     , bonusDicePerRound = \_ _ -> pure 0
-    , attackSkillInstead = Nothing
+    , attackSkillInstead = const Nothing
     , evadeSkillInstead = Nothing
     , moveBySpell = Nothing
     , extraActions = 0
@@ -236,6 +262,9 @@ defaultAssetBehavior =
     , raiseInsteadOfReroll = False
     , afterMythosToken = \_ _ _ -> pure []
     , afterGainClue = \_ _ -> pure []
+    , afterGainRemnant = \_ _ -> pure []
+    , afterSpentFocusToReroll = \_ _ -> pure []
+    , extraStepWhenPaying = 0
     , afterMonsterDamaged = \_ _ _ _ -> pure []
     , afterHarm = \_ _ _ -> pure []
     , testOptions = \_ _ _ -> pure []
@@ -263,7 +292,7 @@ defaultAssetBehavior =
     , replacesActivation = \_ _ _ -> pure []
     , poolOptions = \_ _ _ -> pure []
     , stopsMonsterReady = False
-    , monsterModifierFloor = \_ _ _ -> pure Nothing
+    , monsterModifierFloor = \_ _ _ _ -> pure Nothing
     , afterReroll = \_ _ _ -> pure []
     , replacesMythosDraw = \_ _ -> pure []
     , beforeReckoning = \_ _ _ -> pure []
@@ -271,6 +300,8 @@ defaultAssetBehavior =
     , carriesPassengers = False
     , forcedRerollOfSuccess = False
     , wardAlternative = False
+    , rerollRemovesADie = \_ _ -> pure False
+    , afterOwnerAction = \_ _ _ -> pure []
     }
 
 {- | When a test asset adds dice: "+N skill as part of an X action", or "+N lore
@@ -303,6 +334,9 @@ isSpellTest :: TestKind -> Bool
 isSpellTest = \case
   SpellTest _ -> True
   _ -> False
+
+isCastingTest :: TestState -> Bool
+isCastingTest ts = isJust ts.casting || isSpellTest ts.kind
 
 {- | An "Action:" printed on a card: it spends an action like any other, is kept
 back when it could accomplish nothing or its cost cannot be paid, and resolves
@@ -559,6 +593,10 @@ data InvestigatorBehavior = InvestigatorBehavior
   -}
   , onOwnedDiscard :: InvestigatorId -> CardId -> GameM [Message]
   -- ^ what the sheet does when one of their own cards leaves play (Charlie Kane)
+  , repeatableActions :: [ActionKind]
+  {- ^ actions this investigator may take again having taken them already this
+  round, which the once-each rule otherwise forbids (Mark Harrigan's Steadfast)
+  -}
   }
   deriving stock Generic
 
@@ -579,6 +617,7 @@ defaultInvestigatorBehavior =
     , afterHarm = \_ _ -> pure []
     , afterMonsterDefeated = \_ _ _ -> pure []
     , onOwnedDiscard = \_ _ -> pure []
+    , repeatableActions = []
     }
 
 data Behaviors = Behaviors

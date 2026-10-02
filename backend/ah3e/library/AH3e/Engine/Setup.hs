@@ -74,6 +74,7 @@ emptyGame pids seed opts =
     , suspendedTests = []
     , provoked = mempty
     , pendingSuccesses = 0
+    , pendingRiders = Nothing
     , damagePrevented = 0
     , horrorPrevented = 0
     , encounter = Nothing

@@ -92,6 +92,29 @@ data Trigger
   | -- | a move action has ended, having carried them this many spaces
     AfterMoveDistance InvestigatorId Int
   | AtStartOfTurn InvestigatorId
+  | {- | their turn is over bar anything that answers its ending, which may still
+    hand them another action (War of Attrition, DRIVEN)
+    -}
+    AtEndOfTurn InvestigatorId
+  | -- | a clue has just come to them off their neighborhood (Occult Principle)
+    AfterGainNeighborhoodClue InvestigatorId
+  | -- | a ward action of theirs has finished, and this was its test result
+    AfterWardResult InvestigatorId Int
+  | -- | they have just focused this skill as part of a focus action
+    AfterFocusedSkill InvestigatorId Skill
+  | {- | that monster has just arrived in their space, whether it moved there or
+    spawned there (One Man Army)
+    -}
+    AfterMonsterArrives InvestigatorId CardId
+  | {- | a monster has just been put on the board from off it, wherever it landed;
+    everyone in play is asked, since a card may answer a spawn across town
+    (Cryptic Sketches)
+    -}
+    AfterMonsterSpawned InvestigatorId CardId
+  | -- | they have just become delayed, having not been a moment ago (The Red Clock)
+    AfterBecomeDelayed InvestigatorId
+  | -- | they have just slipped past that monster as part of an evade action
+    AfterEvadeMonster InvestigatorId CardId
   | AtEndOfMonsterPhase InvestigatorId
   | -- | this many tokens have just gone into the mythos cup
     TokensReturnedToCup InvestigatorId Int
@@ -142,6 +165,14 @@ triggerInvestigator = \case
   AfterDamageMonsterInAttack iid _ -> iid
   AfterMoveDistance iid _ -> iid
   AtStartOfTurn iid -> iid
+  AtEndOfTurn iid -> iid
+  AfterGainNeighborhoodClue iid -> iid
+  AfterWardResult iid _ -> iid
+  AfterFocusedSkill iid _ -> iid
+  AfterMonsterArrives iid _ -> iid
+  AfterMonsterSpawned iid _ -> iid
+  AfterBecomeDelayed iid -> iid
+  AfterEvadeMonster iid _ -> iid
   AtEndOfMonsterPhase iid -> iid
   TokensReturnedToCup iid _ -> iid
   DrewBlankToken iid -> iid

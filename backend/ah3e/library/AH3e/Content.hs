@@ -31,6 +31,7 @@ import AH3e.Content.Headlines qualified as Headlines
 import AH3e.Content.Items qualified as Items
 import AH3e.Content.Monsters qualified as Monsters
 import AH3e.Content.Scenarios
+import AH3e.Content.SecretsOfTheOrder.Investigators qualified as SecretsOfTheOrderInvestigators
 import AH3e.Content.Special qualified as Special
 import AH3e.Content.Spells qualified as Spells
 import AH3e.Content.StreetCards qualified as StreetCards
@@ -74,7 +75,11 @@ sharesFocusedSkills :: [CardCode]
 sharesFocusedSkills = Investigators.sharesFocusedSkills
 
 focusLimitBonus :: CardCode -> Int
-focusLimitBonus code = Map.findWithDefault 0 code (Map.fromList Special.focusLimitBonuses)
+focusLimitBonus code =
+  Map.findWithDefault
+    0
+    code
+    (Map.fromList (Special.focusLimitBonuses <> Conditions.focusLimitBonuses))
 
 cardDefs :: Map CardCode CardDef
 cardDefs =
@@ -89,6 +94,7 @@ cardDefs =
           <> ShotsInTheDark.cards
           <> DeadOfNightInvestigators.cards
           <> UnderDarkWavesInvestigators.cards
+          <> SecretsOfTheOrderInvestigators.cards
           <> DeadOfNightEncounters.cards
           <> Investigators.cards
           <> NeighborhoodCards.cards
@@ -123,6 +129,7 @@ investigatorDefs =
         Investigators.investigators
           <> DeadOfNightInvestigators.investigators
           <> UnderDarkWavesInvestigators.investigators
+          <> SecretsOfTheOrderInvestigators.investigators
     ]
 
 investigatorDef :: InvestigatorId -> Maybe InvestigatorDef

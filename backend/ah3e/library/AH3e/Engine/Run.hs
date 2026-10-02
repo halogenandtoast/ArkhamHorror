@@ -152,13 +152,21 @@ runMessage msg = case msg of
         allowance <- actionAllowance iid
         -- a free ability is still on offer once both actions are spent
         free <- freeActionsFor iid
-        let endTurn = Choice (DoneLabel "End turn") [EndActionTurn iid]
+        {- A turn ends once, even when a card hands out another action and the turn
+        comes back round to here (DRIVEN); whatever answers the ending has had its
+        say by then. -}
+        wrapped <- usedAbility iid "end-of-turn"
+        let wrapUp =
+              [MarkAbilityUsed iid "end-of-turn" | not wrapped]
+                <> [CheckReactions (AtEndOfTurn iid) [] | not wrapped]
+                <> [EndActionTurn iid]
+            endTurn = Choice (DoneLabel "End turn") wrapUp
             freeChoices =
               [Choice (TextLabel a.label) [PerformFreeAction iid ref n] | (ref, n, a) <- free]
         if i.actionsTaken >= allowance
           then
             if null freeChoices
-              then push (EndActionTurn iid)
+              then pushAll wrapUp
               else chooseFor iid actionPrompt (freeChoices <> [endTurn])
           else
             if i.delayed
@@ -225,8 +233,10 @@ runMessage msg = case msg of
     ph <- use #phase
     moved <- (.spacesMoved) <$> getInvestigator iid
     others <- filter ((/= iid) . (.id)) <$> playingInvestigators
+    fromCards <- afterOwnerActionFor iid kind
     pushAll
-      $ [CheckReactions (AfterGatherResources iid) [] | kind == GatherResourcesAction]
+      $ fromCards
+      <> [CheckReactions (AfterGatherResources iid) [] | kind == GatherResourcesAction]
       <> [CheckReactions (AfterResearchAction iid) [] | kind == ResearchAction]
       <> [CheckReactions (AfterMoveAction iid) [] | kind == MoveAction]
       <> [CheckReactions (AfterMoveDistance iid moved) [] | kind == MoveAction]
@@ -234,10 +244,15 @@ runMessage msg = case msg of
       <> [CheckReactions (AnotherPerformsAction o.id iid kind) [] | o <- others]
       <> [MonstersWatchAction iid kind]
       <> [ActionTurn iid | t == Just iid, ph == ActionPhase]
+  {- A card may answer the end of a turn by handing out another action (DRIVEN), and
+  the turn then comes back round to here; the second pass finds it already over and
+  leaves the earlier one to stand. -}
   EndActionTurn iid -> do
-    investigatorL iid . #active .= False
-    #turn .= Nothing
-    push NextActionTurn
+    turn <- use #turn
+    when (turn == Just iid) do
+      investigatorL iid . #active .= False
+      #turn .= Nothing
+      push NextActionTurn
   -- Monster phase (rule 202)
   BeginMonsterPhase -> do
     enterPhase MonsterPhase
@@ -306,7 +321,10 @@ runMessage msg = case msg of
   MonsterEngagesIn mid sid -> do
     ready <- isMonsterReady mid
     holds <- monsterHoldsItsQuarry mid
-    codexMonsterArrived mid sid >>= pushAll
+    codex <- codexMonsterArrived mid sid
+    -- whether it walked in or spawned there, it has arrived (One Man Army)
+    arrivedFor <- investigatorsAt sid
+    pushAll (codex <> [CheckReactions (AfterMonsterArrives i.id mid) [] | i <- arrivedFor])
     when (ready && not holds) do
       here <- investigatorsAt sid
       present <- filterM (fmap not . monsterIgnores mid . (.id)) here
@@ -877,7 +895,10 @@ runMessage msg = case msg of
       . at mid
       ?= Monster {card = mid, space = sid, state, damage = 0, markers = [], prey = Nothing}
     answers <- codexAboutMonster (.afterMonsterSpawn) mid
-    pushAll (MonsterEngagesIn mid sid : answers)
+    everyone <- playingInvestigators
+    pushAll
+      $ (MonsterEngagesIn mid sid : answers)
+      <> [CheckReactions (AfterMonsterSpawned i.id mid) [] | i <- everyone]
   AttackDamage iid mid n -> do
     exists <- uses #monsters (Map.member mid)
     when exists do
@@ -896,28 +917,19 @@ runMessage msg = case msg of
     unless (m.state == Exhausted) $ engage iid mid
     -- attacking provokes it even if the attack cannot engage it
     #provoked %= Map.insertWith (<>) mid [iid]
-    attackMod <- readMonsterModifier iid mid d.attackModifier
+    attackMod <- readMonsterModifier iid mid AttackModifier d.attackModifier
     let attackTest skill = newTest iid skill attackMod (ActionTest AttackAction (Just mid)) (AfterAttack iid mid)
         attackWith skill = BeginTest (attackTest skill)
-    -- a card like Storm of Spirits offers another skill in place of strength; the
-    -- monster's attack modifier applies either way
-    i <- getInvestigator iid
-    alternatives <-
-      if d.attackSkill /= Strength
-        then pure []
-        else fmap catMaybes $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \c ->
-          fmap (c,) . (.attackSkillInstead) <$> assetBehavior c
+    -- a card like Storm of Spirits offers another skill in place of the monster's;
+    -- its attack modifier applies either way
+    alternatives <- attackSkillAlternatives iid d.attackSkill
     if null alternatives
       then push (attackWith d.attackSkill)
       else do
-        names <- for alternatives \(c, skill) -> (c,skill,) . (.name) <$> getCardDef c
+        offers <- for alternatives \(c, skill) -> testWithCard iid c (attackTest skill)
         chooseFor iid "Choose the skill to test"
           $ label ("Test " <> T.toLower (tshow d.attackSkill)) [attackWith d.attackSkill]
-          : [ Choice
-                (CardsLabel ("Test " <> T.toLower (tshow skill) <> " with " <> name) [c])
-                [CastSpell iid c [BeginTest (attackTest skill) {casting = Just c}]]
-            | (c, skill, name) <- names
-            ]
+          : offers
   AttackResolved iid mid before -> do
     mm <- use (#monsters . at mid)
     dealt <- case mm of
@@ -974,7 +986,10 @@ runMessage msg = case msg of
       then do
         for_ ms \mid -> do
           own <- monsterBehavior mid >>= \b -> b.afterEvaded mid iid
-          pushAll ([DisengageMonster iid mid, ExhaustMonster mid] <> own)
+          pushAll
+            $ [DisengageMonster iid mid, ExhaustMonster mid]
+            <> own
+            <> [CheckReactions (AfterEvadeMonster iid mid) []]
         unless (null ms) $ investigatorL iid . #bonusActions += 1
       else
         when (n > 0)
@@ -993,7 +1008,10 @@ runMessage msg = case msg of
     when here $ monsterBehavior mid >>= \b -> b.afterEngaged mid iid >>= pushAll
   EvadedMonster iid mid -> do
     own <- monsterBehavior mid >>= \b -> b.afterEvaded mid iid
-    pushAll ([DisengageMonster iid mid, ExhaustMonster mid] <> own)
+    pushAll
+      $ [DisengageMonster iid mid, ExhaustMonster mid]
+      <> own
+      <> [CheckReactions (AfterEvadeMonster iid mid) []]
   -- Doom and clues (rules 406, 412, 423, 461)
   {- A card may stop doom being put down in its owner's neighborhood, so the ones
   that could are asked before it lands. -}
@@ -1151,19 +1169,8 @@ runMessage msg = case msg of
       #activeCard ?= cid
       e <- eventDef cid
       pushAll [PlaceDoomInOrder SourceMythos e.doomSpaces, ClearActiveCard cid]
-  SpawnClue -> withEventDeck \case
-    [] -> pure ()
-    (cid : rest) -> do
-      #decks . #event .= rest
-      #revealedEvent ?= cid
-      #activeCard ?= cid
-      e <- eventDef cid
-      neighborhoodL e.neighborhood . #clues += 1
-      nd <- use (#decks . #neighborhoods . at e.neighborhood . non [])
-      nd' <- shuffleIntoTopTwo cid nd
-      #decks . #neighborhoods . at e.neighborhood ?= nd'
-      logText ("A clue spawns in " <> coerce e.neighborhood)
-      push (ClearActiveCard cid)
+  SpawnClue -> spawnOneClue False
+  SpawnClueOnTop -> spawnOneClue True
   GateBurst -> withEventDeck \case
     [] -> pure ()
     (cid : rest) -> do
@@ -1220,8 +1227,12 @@ runMessage msg = case msg of
     when (on < most) do
       investigatorL iid . #focus . at skill ?= on + 1
       checkFocusLimit iid evenIfExceeds
+  {- A second token on a skill already focused, for a card that says so outright
+  (Life of Privilege, Just That Good). The per-skill limit is what the card lifts;
+  the focus limit still holds. -}
   FocusSkillAgain iid skill -> do
     investigatorL iid . #focus . at skill %= Just . maybe 1 (+ 1)
+    checkFocusLimit iid False
   DiscardFocus iid skill ->
     investigatorL iid . #focus . at skill %= \case
       Just n | n > 1 -> Just (n - 1)
@@ -1478,7 +1489,9 @@ runMessage msg = case msg of
               ( Choice (DoneLabel "Gain the remnant") [GainRemnantsNow iid 1, GainRemnants iid (n - 1)]
                   : [Choice (TextLabel r.label) (r.messages <> [GainRemnants iid (n - 1)]) | r <- offers]
               )
-  GainRemnantsNow iid n -> addRemnants iid n
+  GainRemnantsNow iid n -> do
+    addRemnants iid n
+    when (n > 0) $ afterGainRemnantFor iid >>= pushAll
   RaiseInsteadOfReroll cost idx cid -> do
     ts <- fromJustNote "no test" <$> use #test
     payRerollCost ts.investigator cost
@@ -1497,9 +1510,14 @@ runMessage msg = case msg of
   RollDice -> rollTestDice
   SpendForReroll cost -> chooseRerollDie cost
   RerollDie cost idx -> rerollDie cost idx
-  RerollUpTo src n -> rerollUpTo src n
+  RerollUpTo src n -> rerollUpToPaying src n
+  RerollUpToNow src n -> rerollUpTo src n
   RerollOneOf src n idx -> rerollOneOf src n idx
   RerollAll src -> rerollAll src
+  RollAdditionalDice src n -> rollAdditionalDice src n
+  RollADiePerFailure src -> rollADiePerFailure src
+  RemoveADie src -> removeADie src
+  RemoveDieAt idx -> #test . _Just . #dice . ix idx . #removed .= True
   AddToDie src -> chooseDieToRaise src
   ChooseDieToSet n -> chooseDieToSet n
   {- Lucky Coin names the result before the die, since the die it changes is the
@@ -1511,7 +1529,11 @@ runMessage msg = case msg of
         "Choose the die's new result"
         [Choice (AmountLabel v) [ChooseDieToSet v] | v <- [1 .. 6]]
   SetDieValue idx n -> setDieValue idx n
-  AddTestRider ctx eff -> #test . _Just . #riders %= (<> [(ctx, eff)])
+  AddTestRider ctx eff -> do
+    inTest <- uses #test isJust
+    if inTest
+      then #test . _Just . #riders %= (<> [(ctx, eff)])
+      else #pendingRiders %= Just . (<> [(ctx, eff)]) . fromMaybe []
   RaiseDie idx -> raiseDie idx
   MarkUsedInTest cid -> markUsedInTest cid
   FinishTest -> finishTest
@@ -1562,6 +1584,9 @@ monsterCtx mid = do
 
 performAction :: InvestigatorId -> ActionKind -> GameM ()
 performAction iid kind = do
+  {- A card that matches somebody else's pool reads it off the action just taken, so
+  the count starts again here and stays at nothing for an action with no test. -}
+  investigatorL iid . #lastTestDice .= Nothing
   sid <- fromJustNote "space" <$> investigatorSpace iid
   let after = AfterAction iid kind
   case kind of
@@ -1604,7 +1629,11 @@ performAction iid kind = do
       chooseFor
         iid
         "Choose a skill to focus"
-        [Choice (SkillLabel s) [FocusSkill iid s False, after] | s <- options]
+        -- the skill that was focused is read off the choice, for a card that adds
+        -- to that same one (Life of Privilege)
+        [ Choice (SkillLabel s) [FocusSkill iid s False, CheckReactions (AfterFocusedSkill iid s) [], after]
+        | s <- options
+        ]
     WardAction -> do
       alternatives <- codexWardSkills
       let attempt s = BeginTest (newTest iid s 0 (ActionTest WardAction Nothing) (AfterWard iid sid))
@@ -1622,7 +1651,8 @@ performAction iid kind = do
         ]
     EvadeAction -> do
       ms <- engagedMonsters iid
-      mods <- for ms \m -> readMonsterModifier iid m.card . (.evadeModifier) =<< monsterDef m.card
+      mods <- for ms \m ->
+        readMonsterModifier iid m.card EvadeModifier . (.evadeModifier) =<< monsterDef m.card
       i <- getInvestigator iid
       -- Mists of R'lyeh offers lore in place of observation; the monster's evade
       -- modifier applies either way
@@ -1632,14 +1662,10 @@ performAction iid kind = do
       if null alternatives
         then pushAll [BeginTest (evadeTest Observation), after]
         else do
-          names <- for alternatives \(c, skill) -> (c,skill,) . (.name) <$> getCardDef c
+          offers <- for alternatives \(c, skill) -> testWithCard iid c (evadeTest skill)
           chooseFor iid "Choose the skill to test"
             $ label "Test observation" [BeginTest (evadeTest Observation), after]
-            : [ Choice
-                  (CardsLabel ("Test " <> T.toLower (tshow skill) <> " with " <> name) [c])
-                  [CastSpell iid c [BeginTest (evadeTest skill) {casting = Just c}], after]
-              | (c, skill, name) <- names
-              ]
+            : [Choice l (ms' <> [after]) | Choice l ms' <- offers]
     {- The target is chosen after anything printed "before you perform an attack
     action" has run, so a monster hauled in by then can be the one attacked. -}
     AttackAction ->
@@ -1656,6 +1682,21 @@ performAction iid kind = do
         Just a -> do
           push after
           a.perform (EffectCtx iid (refSource ref) Nothing)
+
+{- | Testing a skill some card of theirs offers in place of the printed one. A
+spell is cast to do it, which costs horror and can be interrupted; an item simply
+lends the skill.
+-}
+testWithCard :: InvestigatorId -> CardId -> TestState -> GameM Choice
+testWithCard iid cid ts = do
+  name <- (.name) <$> getCardDef cid
+  isSpell <- maybe False ((== Spell) . (.assetType)) <$> assetDef cid
+  let lbl = CardsLabel ("Test " <> T.toLower (tshow ts.skill) <> " with " <> name) [cid]
+  pure
+    $ Choice lbl
+    $ if isSpell
+      then [CastSpell iid cid [BeginTest ts {casting = Just cid}]]
+      else [BeginTest ts]
 
 -- | The source a component's own ability speaks with.
 refSource :: ComponentRef -> Source
@@ -1723,11 +1764,19 @@ moveStep ms = do
   for_ i.space \sid -> do
     adj <- reachable (adjacentSpaces sid board)
     routeSpaces <- reachable (sameRouteSpaces sid board)
+    -- a card may throw in a space of its own for the dollar (Cabbie's Favor)
+    tips <- extraPaidSteps ms.investigator
     let free = ms.remaining > 0
         paid = not free && ms.paidSteps < ms.maxPaidSteps && purse >= 1
+        bought =
+          ms
+            { paidSteps = ms.paidSteps + 1
+            , remaining = ms.remaining + sum (map snd tips)
+            }
+        marks = [MarkAssetUsed ms.investigator c | (c, _) <- tips]
         stepChoices
           | free = spaceChoices adj \s -> [MoveInvestigator ms {remaining = ms.remaining - 1} s]
-          | paid = spaceChoices adj \s -> [PayMoney ms.investigator 1, MoveInvestigator ms {paidSteps = ms.paidSteps + 1} s]
+          | paid = spaceChoices adj \s -> marks <> [PayMoney ms.investigator 1, MoveInvestigator bought s]
           | otherwise = []
         routes =
           if ms.voluntary && purse >= 1
@@ -1845,14 +1894,21 @@ gainCondition iid name = do
     "BLESSED" -> conditionCard iid "CURSED"
     "CURSED" -> conditionCard iid "BLESSED"
     _ -> pure Nothing
+  {- FATIGUED does not cancel with DRIVEN but turns it out: the DRIVEN already held
+  goes, and no new one may be taken while the fatigue lasts. -}
+  spent <- if name == "FATIGUED" then conditionCard iid "DRIVEN" else pure Nothing
+  tooTired <- if name == "DRIVEN" then hasCondition iid "FATIGUED" else pure False
   case opposing of
-    _ | banned || bannedBySheet -> do
+    _ | banned || bannedBySheet || tooTired -> do
       logText (coerce name <> " cannot be held, and is discarded")
       conditionCard iid name >>= traverse_ (push . DiscardAsset)
     Just cid | playing -> do
       logText "The opposing condition is discarded instead"
       push (DiscardAsset cid)
     _ -> when (playing && not already) do
+      for_ spent \cid -> do
+        logText "The drive gives out"
+        push (DiscardAsset cid)
       pile <- use (#decks . #conditions)
       copies <- fmap catMaybes $ for pile \cid ->
         getCardDef cid <&> \d -> case d.kind of
@@ -2224,6 +2280,26 @@ resolveReckoning src = do
         HeadlineCard h -> for_ h.reckoning \e -> push (ResolveEffect (EffectCtx leaderInv src Nothing) e)
         _ -> pure ()
     _ -> pure ()
+
+{- | A clue spawning (430.7): the top event card is read, its neighborhood gains
+the clue, and the card goes back among the top two of that neighborhood's deck.
+A card may say to leave it on top instead, so the clue is where it was put
+(Spirit Camera).
+-}
+spawnOneClue :: Bool -> GameM ()
+spawnOneClue onTop = withEventDeck \case
+  [] -> pure ()
+  (cid : rest) -> do
+    #decks . #event .= rest
+    #revealedEvent ?= cid
+    #activeCard ?= cid
+    e <- eventDef cid
+    neighborhoodL e.neighborhood . #clues += 1
+    nd <- use (#decks . #neighborhoods . at e.neighborhood . non [])
+    nd' <- if onTop then pure (cid : nd) else shuffleIntoTopTwo cid nd
+    #decks . #neighborhoods . at e.neighborhood ?= nd'
+    logText ("A clue spawns in " <> coerce e.neighborhood)
+    push (ClearActiveCard cid)
 
 withEventDeck :: ([CardId] -> GameM ()) -> GameM ()
 withEventDeck f = do

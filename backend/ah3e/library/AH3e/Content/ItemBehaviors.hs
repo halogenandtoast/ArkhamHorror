@@ -8,6 +8,7 @@ import AH3e.Game
 import AH3e.Message
 import AH3e.Prelude
 import AH3e.Types.Board
+import AH3e.Types.Card
 import AH3e.Types.Effect
 import AH3e.Types.Skill
 import AH3e.Types.State
@@ -60,6 +61,10 @@ behaviors =
       , ("map-of-arkham", mapOfArkham)
       , ("true-magick", trueMagick)
       , ("warding-stone", wardingStone)
+      , -- Secrets of the Order
+        ("enchanted-knife", enchantedKnife)
+      , ("lucky-charm", luckyCharm)
+      , ("pallid-mask", pallidMask)
       ]
     & #customEffects
     .~ Map.fromList [("camera-research", cameraResearch)]
@@ -238,9 +243,6 @@ trueMagick =
           then length [d | d <- ts.dice, not d.removed, d.value >= 6]
           else 0
 
-isCastingTest :: TestState -> Bool
-isCastingTest ts = isJust ts.casting || isSpellTest ts.kind
-
 {- | "Once per round, as part of a ward action, you may spend one remnant to
 reroll any number of dice." Nothing else checks the reaction's cost, so the
 remnant has to be in hand before it is offered at all.
@@ -266,3 +268,72 @@ wardingStone =
         , live > 0
         , ActionTest WardAction _ <- [ts.kind]
         ]
+
+-- Secrets of the Order --------------------------------------------------------
+
+{- | "As part of an attack action, you may treat the attack modifier of one monster
+in your space as +1 (regardless of the skill used to attack that monster)." Always
+to its holder's advantage, so it is read rather than offered; it takes a hand in the
+attack it helps, and adds no dice of its own.
+-}
+enchantedKnife :: AssetBehavior
+enchantedKnife =
+  defaultAssetBehavior
+    & #testDice
+    .~ (\_ _ ts -> pure (if isAttackTest ts then Just 0 else Nothing))
+    & #monsterModifierFloor
+    .~ \_ iid mid which -> do
+      mine <- investigatorSpace iid
+      theirs <- uses #monsters (fmap (.space) . Map.lookup mid)
+      pure (1 <$ guard (which == AttackModifier && isJust mine && mine == theirs))
+
+{- | "Once per round, while resolving a test, you may remove one die from that test
+to reroll any number of dice." The die comes out before the rerolls, so what is left
+is what can be rerolled.
+-}
+luckyCharm :: AssetBehavior
+luckyCharm =
+  defaultAssetBehavior
+    & #testOptions
+    .~ \cid iid ts -> do
+      used <- usedThisRound cid iid
+      let live = liveDiceCount ts
+      pure
+        [ Reaction
+            "lucky-charm"
+            "Lucky Charm: remove one die to reroll any number of dice"
+            [ MarkAssetUsed iid cid
+            , RemoveADie (SourceCard cid)
+            , RerollUpTo (SourceCard cid) (live - 1)
+            ]
+        | not used
+        , live > 1
+        ]
+
+{- | "You may test will in place of observation as part of an evade action. Once per
+round, after you evade a non-epic monster, you may place it on the bottom of the
+monster deck." Leaving the board for the bottom of the deck is what a defeated
+monster does, so the mask sends it the same way.
+-}
+pallidMask :: AssetBehavior
+pallidMask =
+  defaultAssetBehavior
+    & #evadeSkillInstead
+    ?~ Will
+    & #reactions
+    .~ \cid -> \case
+      AfterEvadeMonster iid mid -> do
+        used <- usedThisRound cid iid
+        d <- monsterDef mid
+        present <- uses #monsters (Map.member mid)
+        name <- (.name) <$> getCardDef mid
+        pure
+          [ Reaction
+              "pallid-mask"
+              ("Pallid Mask: put " <> name <> " on the bottom of the monster deck")
+              [MarkAssetUsed iid cid, DiscardMonster mid]
+          | not used
+          , not d.epic
+          , present
+          ]
+      _ -> pure []

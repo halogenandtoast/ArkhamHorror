@@ -54,12 +54,17 @@ behaviors =
         , whileEngaged
             (spellAction "Wrack: defeat a monster" 1 (DefeatMonsterIn YourSpace TestResult))
         )
+      , -- Secrets of the Order
+        ("banishment", banishment)
+      , ("the-beast-within", theBeastWithin)
       ]
     & #customAfterTests
     .~ Map.fromList
       [ ("instill-bravery", \_ r -> #horrorPrevented += r)
       , ("clairvoyance", clairvoyanceResult)
       , ("lure-monster", lureResult)
+      , ("banishment", banishmentResult)
+      , ("the-beast-within", theBeastWithinResult)
       ]
     & #customEffects
     .~ Map.fromList
@@ -324,3 +329,87 @@ clairvoyanceDiscard ctx = for_ [cid | SourceCard cid <- [ctx.source]] \cid -> do
       #decks . #neighborhoods %= Map.map (filter (/= target))
       #decks . #removed %= (target :)
       logText ("Clairvoyance discards " <> name)
+
+-- Secrets of the Order --------------------------------------------------------
+
+{- | "Once per round, during your turn, you may choose a non-epic monster and test
+lore -1. If you pass, that monster disengages all investigators and moves directly
+to the unstable space." The monster is chosen before the test, so it is noted on the
+card and read back once the test has answered.
+-}
+banishment :: AssetBehavior
+banishment =
+  defaultAssetBehavior
+    & #freeActions
+    .~ [ ComponentActionDef
+           { label = "Banishment: test lore to banish a monster"
+           , allowedWhileEngaged = True
+           , canPerform = \iid -> do
+               used <- usedAbility iid "banishment"
+               ms <- nonEpicMonsters
+               pure (not used && not (null ms))
+           , perform = \ctx -> for_ [c | SourceCard c <- [ctx.source]] \cid -> do
+               spendOncePerRound ctx.investigator "banishment"
+               ms <- nonEpicMonsters
+               chooseFor ctx.investigator "Choose a monster to banish"
+                 $ [ Choice
+                       (MonsterLabel m.card)
+                       [ NoteOnCard cid "banished" (coerce m.card)
+                       , castingTest ctx cid (-1) (AfterCustom (SourceCard cid) "banishment")
+                       ]
+                   | m <- ms
+                   ]
+           }
+       ]
+
+nonEpicMonsters :: GameM [Monster]
+nonEpicMonsters = uses #monsters Map.elems >>= filterM (fmap (not . (.epic)) . monsterDef . (.card))
+
+{- | Letting go of everyone and then arriving in the unstable space, in that order:
+the monster engages whoever is standing there as it lands, like any other arrival.
+-}
+banishmentResult :: Source -> Int -> GameM ()
+banishmentResult src r = for_ [c | SourceCard c <- [src]] \self -> do
+  a <- use (assetL self)
+  mid <-
+    uses #assets (coerce . Map.findWithDefault 0 "banished" . maybe mempty (.tokens) . Map.lookup self)
+  assetL self . #tokens .= mempty
+  m <- uses #monsters (Map.lookup mid)
+  targets <- unstableSpaces
+  for_ m \monster -> when (r > 0) do
+    let holders = case monster.state of Engaged is -> is; _ -> []
+        letGo = [DisengageMonster who mid | who <- holders]
+    case targets of
+      [sid] -> pushAll (letGo <> [MoveMonsterTo mid sid])
+      _ ->
+        chooseFor a.owner "Choose the unstable space"
+          $ [Choice (SpaceLabel sid) (letGo <> [MoveMonsterTo mid sid]) | sid <- targets]
+
+{- | "When you perform an attack action, you may test lore. If you pass, roll five
+dice instead of your usual dice pool. Ignore all other modifiers." Offered before
+the attack's target is chosen, so the pool it states is waiting when that test
+begins.
+-}
+theBeastWithin :: AssetBehavior
+theBeastWithin =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      BeforePerformAction iid AttackAction ->
+        pure
+          [ Reaction
+              "the-beast-within"
+              "The Beast Within: test lore to roll five dice instead"
+              [ castingTest
+                  (EffectCtx iid (SourceCard cid) Nothing)
+                  cid
+                  0
+                  (AfterCustom (SourceCard cid) "the-beast-within")
+              ]
+          ]
+      _ -> pure []
+
+theBeastWithinResult :: Source -> Int -> GameM ()
+theBeastWithinResult src r = for_ [c | SourceCard c <- [src]] \self -> do
+  a <- use (assetL self)
+  when (r > 0) $ investigatorL a.owner . #fixedPoolNext ?= 5

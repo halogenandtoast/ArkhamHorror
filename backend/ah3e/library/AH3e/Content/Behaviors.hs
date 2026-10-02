@@ -15,14 +15,16 @@ import AH3e.Content.DeadOfNight.StartingBehaviors qualified as DeadOfNightStarti
 import AH3e.Content.HeadlineBehaviors qualified as Headlines
 import AH3e.Content.ItemBehaviors qualified as Items
 import AH3e.Content.MonsterBehaviors qualified as Monsters
+import AH3e.Content.SecretsOfTheOrder.InvestigatorBehaviors qualified as SecretsOfTheOrderInvestigators
+import AH3e.Content.SecretsOfTheOrder.StartingBehaviors qualified as SecretsOfTheOrderStarting
 import AH3e.Content.SpecialBehaviors qualified as Specials
 import AH3e.Content.SpellBehaviors qualified as Spells
 import AH3e.Content.UnderDarkWaves.DreamsOfRlyehBehaviors qualified as DreamsOfRlyeh
 import AH3e.Content.UnderDarkWaves.InvestigatorBehaviors qualified as UnderDarkWavesInvestigators
 import AH3e.Content.UnderDarkWaves.IthaquasChildrenBehaviors qualified as IthaquasChildren
 import AH3e.Content.UnderDarkWaves.StartingBehaviors qualified as UnderDarkWavesStarting
-import AH3e.Content.UnderDarkWaves.ThePaleLanternBehaviors qualified as ThePaleLantern
 import AH3e.Content.UnderDarkWaves.TerrorBehaviors qualified as UnderDarkWavesTerrors
+import AH3e.Content.UnderDarkWaves.ThePaleLanternBehaviors qualified as ThePaleLantern
 import AH3e.Content.UnderDarkWaves.TyrantsOfRuinBehaviors qualified as TyrantsOfRuin
 import AH3e.Engine.Behavior
 import AH3e.Engine.Helpers
@@ -52,6 +54,8 @@ behaviors =
     <> DeadOfNightInvestigators.behaviors
     <> UnderDarkWavesInvestigators.behaviors
     <> UnderDarkWavesStarting.behaviors
+    <> SecretsOfTheOrderInvestigators.behaviors
+    <> SecretsOfTheOrderStarting.behaviors
     <> UnderDarkWavesTerrors.behaviors
     <> TyrantsOfRuin.behaviors
     <> IthaquasChildren.behaviors

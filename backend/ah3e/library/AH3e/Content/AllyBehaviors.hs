@@ -58,6 +58,14 @@ behaviors =
         ( "zora-larson"
         , cardAction "Zora Larson: recover one sanity" (RecoverSanity InvestigatorOrAllyInYourSpace (N 1))
         )
+      , -- Secrets of the Order
+        ("olive-mcbride", oliveMcBride)
+      , ("whitton-greene", whittonGreene)
+      ]
+    & #customEffects
+    .~ Map.fromList
+      [ ("whitton-greene", whittonGreeneDiscard)
+      , ("whitton-greene-dig", whittonGreeneDig)
       ]
 
 -- | One die per clue you hold, plus one per clue in your neighborhood.
@@ -291,3 +299,70 @@ strayCat =
             [DiscardAsset cid, AddTestSuccesses 2, ContinueTest]
         | ActionTest EvadeAction _ <- [ts.kind]
         ]
+
+-- Secrets of the Order --------------------------------------------------------
+
+{- | "Once per round, while resolving a test, you may reroll any number of dice. If
+you do, place one doom in your space after that test."
+-}
+oliveMcBride :: AssetBehavior
+oliveMcBride =
+  defaultAssetBehavior
+    & #testOptions
+    .~ \cid iid ts -> do
+      used <- usedThisRound cid iid
+      let live = liveDiceCount ts
+      pure
+        [ Reaction
+            "olive-mcbride"
+            "Olive McBride: reroll any number of dice"
+            [ MarkAssetUsed iid cid
+            , AddTestRider (EffectCtx iid (SourceCard cid) Nothing) (PlaceDoomAt YourSpace (N 1))
+            , RerollUpTo (SourceCard cid) live
+            ]
+        | not used
+        , live > 0
+        ]
+
+{- | "At the start of your turn, you may discard one item from the display. Reveal
+cards from the item deck until you reveal a tome item. Add that card to the display
+and discard the others."
+-}
+whittonGreene :: AssetBehavior
+whittonGreene =
+  defaultAssetBehavior
+    & #reactions
+    .~ \cid -> \case
+      AtStartOfTurn iid -> do
+        a <- use (assetL cid)
+        display <- use (#decks . #display)
+        pure
+          [ Reaction
+              "whitton-greene"
+              "Whitton Greene: trade an item from the display for a tome"
+              [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (Custom "whitton-greene")]
+          | a.owner == iid
+          , not (null display)
+          ]
+      _ -> pure []
+
+whittonGreeneDiscard :: EffectCtx -> GameM ()
+whittonGreeneDiscard ctx = do
+  display <- use (#decks . #display)
+  chooseFor ctx.investigator "Discard an item from the display"
+    $ [ Choice (CardLabel cid) [DiscardFromDisplay cid, ResolveEffect ctx (Custom "whitton-greene-dig")]
+      | cid <- display
+      ]
+
+-- | A discarded item goes under the item deck, which is where the ones she passes go.
+whittonGreeneDig :: EffectCtx -> GameM ()
+whittonGreeneDig _ = do
+  deck <- use (#decks . #item)
+  tomes <- traverse (cardMatches (WithTrait "Tome")) deck
+  case break snd (zip deck tomes) of
+    (_, []) -> logText "Whitton Greene turns up no tome at all"
+    (passed, (cid, _) : rest) -> do
+      #decks . #item .= map fst rest <> map fst passed
+      #decks . #display %= (<> [cid])
+      name <- (.name) <$> getCardDef cid
+      logText ("Whitton Greene turns up " <> name)

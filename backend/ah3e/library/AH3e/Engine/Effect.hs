@@ -138,7 +138,9 @@ resolveEffect ctx eff0 = do
       i <- getInvestigator iid
       investigatorL iid . #delayed .= True
       d <- getInvestigatorDef iid
-      unless i.delayed $ logText (d.name <> " is delayed")
+      unless i.delayed do
+        logText (d.name <> " is delayed")
+        push (CheckReactions (AfterBecomeDelayed iid) [])
     BecomeDevoured -> push (DevourInvestigator iid)
     Retire -> push (RetireInvestigator iid)
     MoveUpTo n -> when playing do
@@ -276,7 +278,9 @@ gain ctx g = do
   gained = do
     addClues ctx.investigator 1
     #encounter . _Just . #gainedNeighborhoodClue .= True
-    afterGainClueFor ctx.investigator >>= pushAll
+    answers <- afterGainClueFor ctx.investigator
+    -- where the clue came from is what some cards answer, not merely that one came
+    pushAll (answers <> [CheckReactions (AfterGainNeighborhoodClue ctx.investigator) []])
 
 recover :: EffectCtx -> Recipient -> Int -> Int -> GameM ()
 recover ctx r hp sp = do
@@ -379,6 +383,9 @@ spacesFor ctx w = do
       msid <- investigatorSpace iid
       streets <-
         filterM (fmap (isStreetLike . (.kind)) . getSpace) (maybe [] (`adjacentSpaces` board) msid)
+      reachable streets
+    AnyStreetSpace -> do
+      streets <- uses (#board . #spaces) (map (.id) . filter (isStreetLike . (.kind)) . Map.elems)
       reachable streets
     SourceSpace -> case ctx.source of
       SourceMonster mid -> uses #monsters (maybeToList . fmap (.space) . Map.lookup mid)
@@ -485,7 +492,10 @@ payCost ctx cost = do
         ]
     CostDamage n -> push (SufferHarm iid ctx.source NormalHarm n 0)
     CostHorror n -> push (SufferHarm iid ctx.source NormalHarm 0 n)
-    CostDelayed -> investigatorL iid . #delayed .= True
+    CostDelayed -> do
+      i <- getInvestigator iid
+      investigatorL iid . #delayed .= True
+      unless i.delayed $ push (CheckReactions (AfterBecomeDelayed iid) [])
     CostCondition c -> push (GainConditionMsg iid c)
     CostDiscard f -> do
       cs <- matchingAssets iid f

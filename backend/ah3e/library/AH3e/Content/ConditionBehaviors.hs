@@ -59,9 +59,11 @@ behaviors =
           $ [(c, darkPactBehavior) | c <- darkPacts]
           <> [(c, wantedBehavior c) | c <- wantedCards]
           <> [(c, taintedBehavior) | c <- taintedCards]
+          <> [("driven", drivenBehavior)]
     , customEffects =
         Map.fromList
-          [ ("dark-pact-reckoning", darkPactReckoning)
+          [ ("driven-extra-action", drivenExtraAction)
+          , ("dark-pact-reckoning", darkPactReckoning)
           , ("virulent-plague", virulentPlague)
           , ("grim-spectre", grimSpectre)
           , ("tainted-reckoning", taintedReckoning)
@@ -94,6 +96,55 @@ behaviors =
 
 darkPactBehavior :: AssetBehavior
 darkPactBehavior = defaultAssetBehavior & #reckoning ?~ Custom "dark-pact-reckoning"
+
+{- | DRIVEN, with the FATIGUED it becomes on its back. "Your focus limit is
+increased by one" is read off 'AH3e.Content.Conditions.focusLimitBonuses', which
+only counts the side showing. The rest is what each side does: the drive turns
+itself over for an extra action, and the fatigue it leaves charges a die for
+every reroll until a focus action clears it.
+-}
+drivenBehavior :: AssetBehavior
+drivenBehavior =
+  defaultAssetBehavior
+    & #rerollRemovesADie
+    .~ showingFatigue
+    & #afterOwnerAction
+    .~ ( \cid iid kind -> do
+           tired <- showingFatigue cid iid
+           pure [DiscardAsset cid | tired, kind == FocusAction]
+       )
+    & #reactions
+    .~ \cid -> \case
+      AtEndOfTurn iid -> do
+        a <- use (assetL cid)
+        -- holding the drive and the fatigue at once takes two copies of the card
+        tired <- hasCondition iid "FATIGUED"
+        pure
+          [ Reaction
+              "driven"
+              "Driven: turn the card over to perform one additional action"
+              [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (Custom "driven-extra-action")]
+          | a.owner == iid
+          , not a.flipped
+          , not tired
+          ]
+      _ -> pure []
+
+-- | Whether this card is theirs and turned to its FATIGUED side.
+showingFatigue :: CardId -> InvestigatorId -> GameM Bool
+showingFatigue cid iid = do
+  a <- use (assetL cid)
+  pure (a.owner == iid && a.flipped)
+
+{- | "You may flip this card to perform one additional action." The action is
+granted first, so the turn it is spent in is still running when the card turns
+over; the turn is then handed back rather than ending.
+-}
+drivenExtraAction :: EffectCtx -> GameM ()
+drivenExtraAction ctx = do
+  investigatorL ctx.investigator . #bonusActions += 1
+  logText "Driven: one more action, and the fatigue to come"
+  pushAll [ResolveEffect ctx (Custom "flip-condition"), ActionTurn ctx.investigator]
 
 discardSelf :: Effect
 discardSelf = Custom "discard-condition"

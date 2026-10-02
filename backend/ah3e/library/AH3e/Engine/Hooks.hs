@@ -169,7 +169,9 @@ legalActions iid = do
       $ if ok && (not restricted || a.allowedWhileEngaged)
         then Just (ComponentAction ref n)
         else Nothing
-  pure $ filter (`notElem` i.performed) (basic <> comps)
+  -- a sheet may lift the once-each rule off an action of its own (Steadfast)
+  let again = (investigatorBehavior iid).repeatableActions
+  pure $ filter (\k -> k `elem` again || k `notElem` i.performed) (basic <> comps)
 
 -- | What the cards its investigator holds offer while a pool is still being built.
 poolOptionsFor :: TestState -> GameM [Reaction]
@@ -294,11 +296,41 @@ monsterHoldsItsQuarry mid = (.holdsItsQuarry) <$> monsterBehavior mid
 
 -- | What this investigator's cards do about clues they just gained.
 afterGainClueFor :: InvestigatorId -> GameM [Message]
-afterGainClueFor iid = do
+afterGainClueFor = ownCards (.afterGainClue)
+
+-- | Likewise about remnants they just gained (Lost Journal).
+afterGainRemnantFor :: InvestigatorId -> GameM [Message]
+afterGainRemnantFor = ownCards (.afterGainRemnant)
+
+-- | Likewise about a focus they just spent on a reroll (Nine of Rods).
+afterSpentFocusFor :: InvestigatorId -> GameM [Message]
+afterSpentFocusFor = ownCards (.afterSpentFocusToReroll)
+
+ownCards
+  :: (AssetBehavior -> CardId -> InvestigatorId -> GameM [Message]) -> InvestigatorId -> GameM [Message]
+ownCards which iid = do
   i <- getInvestigator iid
   fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
     b <- assetBehavior cid
-    b.afterGainClue cid iid
+    which b cid iid
+
+{- | What a card of theirs pays for the step they just bought, with the cards that
+owe it, so they can be marked used as the step is taken (Cabbie's Favor).
+-}
+extraPaidSteps :: InvestigatorId -> GameM [(CardId, Int)]
+extraPaidSteps iid = do
+  i <- getInvestigator iid
+  fmap catMaybes $ for [c | c <- i.assets, c `notElem` i.lockedAssets, c `notElem` i.usedAssets] \cid -> do
+    b <- assetBehavior cid
+    pure (if b.extraStepWhenPaying > 0 then Just (cid, b.extraStepWhenPaying) else Nothing)
+
+-- | What the cards its owner holds do about an action of theirs that has just ended.
+afterOwnerActionFor :: InvestigatorId -> ActionKind -> GameM [Message]
+afterOwnerActionFor iid kind = do
+  i <- getInvestigator iid
+  fmap concat $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+    b <- assetBehavior cid
+    b.afterOwnerAction cid iid kind
 
 {- | Whether this monster passes this investigator by: a non-epic monster, an
 investigator wearing something that hides them, and no provocation from them yet.
@@ -442,13 +474,26 @@ monsterCanReady mid = do
 {- | A monster's attack or evade modifier as this investigator may read it, which
 a card of theirs may lift (Holy Water).
 -}
-readMonsterModifier :: InvestigatorId -> CardId -> Int -> GameM Int
-readMonsterModifier iid mid printed = do
+readMonsterModifier :: InvestigatorId -> CardId -> MonsterModifier -> Int -> GameM Int
+readMonsterModifier iid mid which printed = do
   i <- getInvestigator iid
   floors <- fmap catMaybes $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
     b <- assetBehavior cid
-    b.monsterModifierFloor cid iid mid
+    b.monsterModifierFloor cid iid mid which
   pure (maximum (printed : floors))
+
+{- | The skills its holder may test in place of the one that monster prints as part
+of an attack action, with the cards that offer them (Storm of Spirits).
+-}
+attackSkillAlternatives :: InvestigatorId -> Skill -> GameM [(CardId, Skill)]
+attackSkillAlternatives iid printed = do
+  i <- getInvestigator iid
+  fmap catMaybes $ for [c | c <- i.assets, c `notElem` i.lockedAssets] \cid -> do
+    b <- assetBehavior cid
+    pure do
+      skill <- b.attackSkillInstead printed
+      guard (skill /= printed)
+      pure (cid, skill)
 
 -- | Cards that could halve a purchase for this investigator, with their names.
 halfPriceCards :: InvestigatorId -> GameM [(CardId, Text)]

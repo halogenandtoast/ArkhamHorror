@@ -4,6 +4,7 @@ import AH3e.Message
 import AH3e.Prelude
 import AH3e.Types.Board
 import AH3e.Types.Card
+import AH3e.Types.Effect
 import AH3e.Types.Ids
 import AH3e.Types.Skill
 import AH3e.Types.State
@@ -35,6 +36,15 @@ data Investigator = Investigator
   , usedAssets :: [CardId]
   , usedAbilities :: [Text]
   -- ^ once-a-round abilities of the investigator's own, spent this round
+  , lastTestDice :: Maybe Int
+  {- ^ how many dice they last rolled, for a card that matches somebody else's
+  pool rather than working out its own (Anything You Can Do). Left optional, as
+  'fixedPoolNext' is, so a table saved before either existed still loads.
+  -}
+  , fixedPoolNext :: Maybe Int
+  {- ^ a pool their next test rolls in place of working one out, left by a card
+  that states it outright ("instead of your normal dice pool")
+  -}
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -170,6 +180,11 @@ data Game = Game
   {- ^ Successes a card promised before its test began -- a spell's cast cost
   lands before the casting test does -- picked up by the next test to start.
   -}
+  , pendingRiders :: Maybe [(EffectCtx, Effect)]
+  {- ^ Riders a card left before its test existed, the way 'pendingSuccesses'
+  banks successes (Book of Shadows arms itself as the cast is paid for). Picked
+  up by the next test to start. Optional, so a table saved before it loads.
+  -}
   , damagePrevented :: Int
   {- ^ Damage a prevention test just prevented, waiting for the harm it was
   cast against to pick it up (416.6).
@@ -224,4 +239,6 @@ newInvestigator iid pid =
     , lockedAssets = []
     , usedAssets = []
     , usedAbilities = []
+    , lastTestDice = Nothing
+    , fixedPoolNext = Nothing
     }

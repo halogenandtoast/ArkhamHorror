@@ -339,7 +339,7 @@ holyWater :: AssetBehavior
 holyWater =
   defaultAssetBehavior
     & #monsterModifierFloor
-    .~ ( \_ iid mid -> do
+    .~ ( \_ iid mid _ -> do
            here <- investigatorSpace iid
            m <- uses #monsters (Map.lookup mid)
            inhuman <- notHuman mid

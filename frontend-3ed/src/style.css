@@ -1,5 +1,4 @@
-:root { --bg:#f6f4ef; --panel:#fff; --ink:#1d1b18; --muted:#6b665d; --line:#ddd6c8; --accent:#5b3fa0; --doom:#b3261e; --clue:#1f6f8b; --ok:#2e7d32; --delayed:#c62828; }
-@media (prefers-color-scheme: dark) { :root { --bg:#16151a; --panel:#211f27; --ink:#ece8f4; --muted:#a39db0; --line:#37333f; --accent:#a98bf0; --doom:#ef6b61; --clue:#5fb8d6; --ok:#6fcf73; --delayed:#e04a43; } }
+:root { color-scheme:dark; --bg:#16151a; --panel:#211f27; --ink:#ece8f4; --muted:#a39db0; --line:#37333f; --accent:#a98bf0; --doom:#ef6b61; --clue:#5fb8d6; --ok:#6fcf73; --delayed:#e04a43; }
 /* A rim that follows a piece's own outline: four offsets with no blur, so it reads
 as a drawn line rather than a glow. */
 :root { --rim:drop-shadow(1px 0 0 rgba(255,255,255,.45)) drop-shadow(-1px 0 0 rgba(255,255,255,.45))

@@ -16,6 +16,8 @@ module AH3e.Content.Tiles (
   spaceIdFor,
   edgeSpaces,
   aroundFrom,
+  cornerSeat,
+  ringAround,
   buildMap,
   buildMapWith,
   buildMapLaidOut,
@@ -290,6 +292,85 @@ equidistant (ax, ay) (bx, by) (cx, cy)
   ux = sq ax ay * (by - cy) + sq bx by * (cy - ay) + sq cx cy * (ay - by)
   uy = sq ax ay * (cx - bx) + sq bx by * (ax - cx) + sq cx cy * (bx - ax)
 
+{- | Where a corner piece stands in the junction these tiles share, and which space
+of each tile its edges meet, in the order its printed icons run round it. The piece is
+laid against the first tile named and reaches the rest from there.
+
+The junction itself starts from the middle of the three sides the tiles face each
+other across -- each halfway between two centres that sit an apothem apiece plus a
+street's length apart, which comes to the mean of the centres -- and then settles on
+the point the same distance from all three corners the tiles point at it. The two
+differ only because rows are stretched a little to keep the diagonal streets clear,
+and that difference is the whole reason a piece standing on the mean cannot reach all
+three tiles at once.
+
+The tiles' centres and their spaces' spots are passed in rather than read off the map,
+so this answers for a piece set out at setup and for one that has since walked round a
+tile (Secrets of the Order card 135).
+-}
+cornerSeat
+  :: [(NeighborhoodId, (Double, Double))]
+  -> (SpaceId -> Maybe (Double, Double))
+  -> ((Double, Double), [SpaceId])
+cornerSeat ts spotOf = (seat, aroundFrom seat [(sid, spot sid) | sid <- faces])
+ where
+  centres = map snd ts
+  start = meanOf [mid a b | (a, b) <- pairsOf centres]
+  mid (x1, y1) (x2, y2) = ((x1 + x2) / 2, (y1 + y2) / 2)
+  pairsOf xs = [(a, b) | (i, a) <- zip [0 :: Int ..] xs, (j, b) <- zip [0 ..] xs, i < j]
+  evenly = case [cornerPoint c start | c <- centres] of
+    [a, b, c] -> fromMaybe start (equidistant a b c)
+    _ -> start
+  {- A hidden path is laid against one tile and reaches the others from there, rather
+  than sitting evenly between all three (Secrets of the Order, p. 4: a corner of it is
+  placed adjacent to the other world). So it stands its own reach away from that tile's
+  corner, which leaves the edge it joins by flush against the tile whatever size the
+  piece is drawn. -}
+  seat = case centres of
+    [] -> evenly
+    anchor : _ ->
+      let (x, y) = evenly
+          (cx, cy) = cornerPoint anchor (x, y)
+          away = sqrt ((cx - x) ** 2 + (cy - y) ** 2)
+       in if away <= 0
+            then (x, y)
+            else (cx + (x - cx) / away * cornerReach, cy + (y - cy) / away * cornerReach)
+  faces = [facingSpace (tile nid) c seat | (nid, c) <- ts]
+  spot sid = fromMaybe (0, 0) (spotOf sid)
+  meanOf [] = (0, 0)
+  meanOf ps =
+    ( sum (map fst ps) / fromIntegral (length ps)
+    , sum (map snd ps) / fromIntegral (length ps)
+    )
+
+{- | The corner of a tile at this centre that points nearest the given place. A tile is
+drawn as a regular hexagon however far apart the rows are set, so its corners are not
+stretched along with its centre.
+-}
+cornerPoint :: (Double, Double) -> (Double, Double) -> (Double, Double)
+cornerPoint (x, y) (tx, ty) =
+  let want = atan2 (ty - y) (tx - x)
+      off a = abs (atan2 (sin (a - want)) (cos (a - want)))
+      a' = minimumBy (comparing off) cornerAngles
+   in (x + circumradius * cos a', y + circumradius * sin a')
+
+-- | The space of a tile at this centre whose wedge points nearest the given place.
+facingSpace :: TileDef -> (Double, Double) -> (Double, Double) -> SpaceId
+facingSpace t (x, y) (tx, ty) =
+  let want = atan2 (ty - y) (tx - x)
+      off slot = abs (atan2 (sin (slotAngle t.variety slot - want)) (cos (slotAngle t.variety slot - want)))
+   in spaceIdFor (slotName t (minimumBy (comparing off) [A, B, C]))
+
+{- | The tiles that ring a tile, in the order they run round it on the screen. Two of
+them that fall next to each other in this order share a corner with the tile in the
+middle, which is how a piece walks from one of its corners to the next.
+-}
+ringAround :: (Double, Double) -> [(NeighborhoodId, (Double, Double))] -> [NeighborhoodId]
+ringAround here = aroundFrom here . filter (touching . snd)
+ where
+  touching (x, y) = let d = dist (x, y) in d > 1e-9 && d < 2 * (0.5 + streetLength)
+  dist (x, y) = sqrt ((x - fst here) ** 2 + (y - snd here) ** 2)
+
 -- | How far apart two unconnected clusters of tiles are set out.
 clusterGap :: Double
 clusterGap = 2
@@ -413,63 +494,15 @@ buildMapOf nids streets pieces =
   the corner, which is where the centres of those hexes average out. -}
   cornerBorders c =
     [ (thresholdId c.thresholdType, sid, h)
-    | (side, h) <- zipHazards c.hazards (aroundFrom (cornerAt c) (map (withSpot . pure) (cornerSpaces c)))
-    , sid <- side
+    | (sid, h) <- zipHazards c.hazards (snd (seatOf c))
     ]
-  cornerSpaces c =
-    [ facing t (pos t.neighborhood) (cornerAt c)
-    | nid <- c.tiles
-    , let t = tile nid
-    ]
-  {- The junction the piece stands in. Start from the middle of the three sides the
-  tiles face each other across -- each halfway between two centres that sit an apothem
-  apiece plus a street's length apart, which comes to the mean of the centres -- and
-  then settle on the point the same distance from all three corners the tiles point at
-  it. The two differ only because rows are stretched a little to keep the diagonal
-  streets clear, and that difference is the whole reason a piece standing on the mean
-  cannot reach all three tiles at once.
-  -}
-  cornerAt c = wedged c (even' c)
-   where
-    even' x = case [cornerPoint nid (middling x) | nid <- x.tiles] of
-      [a, b, d] -> fromMaybe (middling x) (equidistant a b d)
-      _ -> middling x
-  {- A hidden path is laid against one tile and reaches the others from there, rather
-  than sitting evenly between all three (Secrets of the Order, p. 4: a corner of it is
-  placed adjacent to the other world). So it stands its own reach away from that tile's
-  corner, which leaves the edge it joins by flush against the tile whatever size the
-  piece is drawn. -}
-  wedged c (x, y) = case c.tiles of
-    [] -> (x, y)
-    anchor : _ ->
-      let (cx, cy) = cornerPoint anchor (x, y)
-          away = sqrt ((cx - x) ** 2 + (cy - y) ** 2)
-       in if away <= 0
-            then (x, y)
-            else (cx + (x - cx) / away * cornerReach, cy + (y - cy) / away * cornerReach)
-  middling c = mean [mid (pos a) (pos b) | (a, b) <- pairs c.tiles]
-   where
-    mid (x1, y1) (x2, y2) = ((x1 + x2) / 2, (y1 + y2) / 2)
-    pairs xs = [(a, b) | (i, a) <- zip [0 :: Int ..] xs, (j, b) <- zip [0 ..] xs, i < j]
+  seatOf c = cornerSeat [(nid, pos nid) | nid <- c.tiles] (\sid -> lookup sid spaceSpots)
+  cornerAt = fst . seatOf
   mean [] = (0, 0)
   mean ps =
     ( sum (map fst ps) / fromIntegral (length ps)
     , sum (map snd ps) / fromIntegral (length ps)
     )
-  {- The corner of this tile that points nearest the given place. A tile is drawn as a
-  regular hexagon however far apart the rows are set, so its corners are not stretched
-  along with its centre. -}
-  cornerPoint nid (tx, ty) =
-    let (x, y) = pos nid
-        want = atan2 (ty - y) (tx - x)
-        off a = abs (atan2 (sin (a - want)) (cos (a - want)))
-        a' = minimumBy (comparing off) cornerAngles
-     in (x + circumradius * cos a', y + circumradius * sin a')
-  -- the space of this tile whose wedge points nearest the given place
-  facing t (x, y) (tx, ty) =
-    let want = atan2 (ty - y) (tx - x)
-        off slot = abs (atan2 (sin (slotAngle t.variety slot - want)) (cos (slotAngle t.variety slot - want)))
-     in spaceIdFor (slotName t (minimumBy (comparing off) [A, B, C]))
   thresholdPlacements =
     [ StreetPlacement (thresholdId t.thresholdType) ((x1 + x2) / 2) ((y1 + y2) / 2) (edgeDegrees t.edge)
     | t <- thresholds
@@ -535,7 +568,7 @@ buildMapOf nids streets pieces =
 Which icon ends up facing which tile is settled when the tile is laid down, so setup
 turns it from here; this only has to hand them out as printed.
 -}
-zipHazards :: [Hazard] -> [[SpaceId]] -> [([SpaceId], Maybe Hazard)]
+zipHazards :: [Hazard] -> [a] -> [(a, Maybe Hazard)]
 zipHazards hs sides = zip sides (map Just hs <> repeat Nothing)
 
 thresholdName :: ThresholdType -> Text

@@ -242,4 +242,6 @@ export interface Game {
   sheetDoom: number
   sheetClues: number
   sheetMarkers: number
+  // ally cards lying facedown on the board, each with the space it lies in
+  bystanders?: [CardId, string][] | null
 }

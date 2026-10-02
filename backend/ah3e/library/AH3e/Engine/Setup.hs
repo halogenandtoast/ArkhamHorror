@@ -6,10 +6,11 @@ module AH3e.Engine.Setup (
   availableScenarios,
   setupScenario,
   buildBoard,
+  moveCornerTile,
 ) where
 
 import AH3e.Content
-import AH3e.Content.Tiles (aroundFrom, spaceIdFor)
+import AH3e.Content.Tiles (aroundFrom, cornerSeat, ringAround, spaceIdFor)
 import AH3e.Engine.Monad
 import AH3e.Game
 import AH3e.Message
@@ -20,6 +21,7 @@ import AH3e.Types.Ids
 import AH3e.Types.State
 import Data.List (nub, partition)
 import Data.Map.Strict qualified as Map
+import Data.Text qualified as T
 
 data GameOptions = GameOptions
   { expansions :: [Expansion]
@@ -147,6 +149,72 @@ turnThresholdTiles = do
       += fromIntegral k
       * 360
       / fromIntegral turns
+
+{- | A corner piece walks round a tile to the next of its corners, clockwise.
+
+Everything standing on the piece comes with it: the space keeps its identity, so the
+card's "set aside all components and return them" needs no doing and nothing on it
+changes state. The piece is laid back down a random way round, as the card asks, which
+decides again which of its printed icons meets which tile -- and those icons are in the
+art, so the picture turns with them (Secrets of the Order card 135).
+-}
+moveCornerTile :: ThresholdType -> NeighborhoodId -> GameM ()
+moveCornerTile piece around = do
+  board <- use #board
+  let centres = [(p.neighborhood, (p.x, p.y)) | p <- board.layout.tiles]
+      spots =
+        Map.fromList
+          $ [(a.space, (a.x, a.y)) | a <- board.layout.anchors]
+          <> [(p.space, (p.x, p.y)) | p <- board.layout.streets]
+      spotAt sid = Map.findWithDefault (0, 0) sid spots
+      standing = [s.id | s <- Map.elems board.spaces, s.kind == ThresholdSpace piece]
+  case (standing, lookup around centres) of
+    ([sid], Just hub) -> do
+      let edges = Map.toList (Map.findWithDefault mempty sid board.borders)
+          -- the icons printed round the piece, in the order they run as it lies now
+          held = [join (lookup o edges) | o <- aroundFrom (spotAt sid) [(o, spotAt o) | (o, _) <- edges]]
+          beside = nub [nid | (o, _) <- edges, Just nid <- [spaceNeighborhood o board], nid /= around]
+          ring = ringAround hub centres
+      case nextCorner ring beside of
+        Nothing -> logText "That piece has nowhere left to go"
+        Just (a, b) -> do
+          let (seat, faces) =
+                cornerSeat
+                  [(nid, Map.findWithDefault hub nid (Map.fromList centres)) | nid <- [around, a, b]]
+                  (`Map.lookup` spots)
+              turns = length faces
+          k <- if turns > 1 then randomR (0, turns - 1) else pure 0
+          let turned = [held !! ((j - k) `mod` max 1 (length held)) | j <- [0 .. turns - 1]]
+          for_ edges \(o, _) -> #board . #borders . ix o . at sid .= Nothing
+          #board . #borders . at sid ?= mempty
+          for_ (zip faces turned) \(o, h) -> do
+            #board . #borders . ix sid . at o ?= h
+            #board . #borders . ix o . at sid ?= h
+          #board . #layout . #streets . traversed . filtered ((== sid) . (.space)) %= \p ->
+            p {x = fst seat, y = snd seat, angle = -90 + fromIntegral k * 360 / fromIntegral turns}
+          s <- use (#board . #spaces . at sid)
+          names <- for [a, b] \nid -> pure (maybe (coerce nid) (.name) (Map.lookup nid board.neighborhoods))
+          logText
+            ( maybe "The path" (.name) s
+                <> " shifts to the corner "
+                <> coerce around
+                <> " shares with "
+                <> T.intercalate " and " names
+            )
+    _ -> logText "No such piece is on the board"
+ where
+  {- The two tiles that share this corner with the one in the middle sit next to each
+  other in the ring; the next corner clockwise is shared with the next pair along. -}
+  nextCorner ring beside =
+    listToMaybe
+      [ (ring !! ((i + 1) `mod` n), ring !! ((i + 2) `mod` n))
+      | let n = length ring
+      , n >= 3
+      , i <- [0 .. n - 1]
+      , let pair = [ring !! i, ring !! ((i + 1) `mod` n)]
+      , length beside == 2
+      , all (`elem` pair) beside
+      ]
 
 -- | The middle of a set of places, for a tile side that abuts more than one space.
 mean :: [(Double, Double)] -> (Double, Double)

@@ -554,6 +554,20 @@ data CodexBehavior = CodexBehavior
   -- ^ what a card does about a monster reaching a space it had an interest in
   , blockedSpaces :: CodexEntry -> GameM [SpaceId]
   , spaceEncounter :: CodexEntry -> SpaceId -> Maybe Effect
+  , atEndOfMonsterPhase :: CodexEntry -> GameM [Message]
+  {- ^ what the card exacts as the monsters finish, before the encounter phase. Not
+  offered but done, for a card that states it flatly (the bystanders the gugs caught).
+  -}
+  , preyReplacement :: CodexEntry -> CardId -> GameM (Maybe [SpaceId])
+  {- ^ where this monster hunts instead of after its own prey; the first card to answer
+  wins (A Wave of Blood sends them after the bystanders). Only asked of a monster that
+  hunts prey at all, so a patrol keeps its orders.
+  -}
+  , headlineReplacement :: CodexEntry -> InvestigatorId -> CardId -> GameM (Maybe [Message])
+  {- ^ what is read instead when that card comes off the headline deck, for a card a
+  codex card has shuffled in there that is no headline at all (the Seer of Mnar's
+  return). The first card to answer wins.
+  -}
   }
   deriving stock Generic
 
@@ -581,6 +595,9 @@ defaultCodexBehavior =
     , afterMonsterArrives = \_ _ _ -> pure []
     , blockedSpaces = \_ -> pure []
     , spaceEncounter = \_ _ -> Nothing
+    , atEndOfMonsterPhase = \_ -> pure []
+    , preyReplacement = \_ _ -> pure Nothing
+    , headlineReplacement = \_ _ _ -> pure Nothing
     }
 
 data InvestigatorBehavior = InvestigatorBehavior

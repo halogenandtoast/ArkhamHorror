@@ -296,6 +296,10 @@ data EncounterState = EncounterState
   , gainedNeighborhoodClue :: Bool
   , returnToArchive :: Bool
   -- ^ set by a card printed "return this card to the archive" rather than to its deck
+  , returnToTop :: Maybe Bool
+  {- ^ set by a card printed "place this card on top of" its own deck, which is not
+  where an encounter otherwise leaves it. Optional, so a table saved before it loads.
+  -}
   , section :: Maybe (Int, Int)
   {- ^ for cards whose section the engine picks (street type, or the doom range on
   anomaly and terror cards): the printed section in use, counted from the top, and

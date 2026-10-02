@@ -1,6 +1,7 @@
 module AH3e.Message where
 
 import AH3e.Prelude
+import AH3e.Types.Board
 import AH3e.Types.Card
 import AH3e.Types.Effect
 import AH3e.Types.Ids
@@ -215,8 +216,18 @@ data Message
     PlaceNeighborhoodMarker NeighborhoodId Text Bool
   | -- | a marker placed face down, for a card that hides what it put there
     PlaceMarkerFacedown SpaceId Text
+  | -- | turn one of a space's facedown markers face up, whatever colour it proves
+    RevealMarkerAt SpaceId
   | -- | lay the top of the ally deck facedown in that space as a bystander
     PlaceBystander SpaceId
+  | -- | an investigator turns a bystander face up and keeps the ally card
+    TakeBystander InvestigatorId CardId
+  | -- | the monsters reached that bystander first
+    DiscardBystander CardId
+  | {- | walk a corner piece round a tile to the next corner of it, turning the piece
+    as it is laid back down (Secrets of the Order card 135)
+    -}
+    MoveCornerTile ThresholdType NeighborhoodId
   | -- | clues handed straight to an investigator, off the scenario sheet
     TakeClues InvestigatorId Int
   | -- | tokens a codex card keeps on itself, which several of them count

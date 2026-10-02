@@ -14,6 +14,12 @@ const invs = computed(() => Object.values(ctx.game.value!.investigators).filter(
 const monsters = computed(() =>
   Object.values(ctx.game.value!.monsters).filter((m) => m.space === props.sid && !ctx.inPlayerArea(m)),
 )
+// bystanders are ally cards lying facedown on the board, so nobody knows who they are
+// until one is reached (The Dead Cry Out)
+const bystanders = computed(() =>
+  (ctx.game.value!.bystanders ?? []).filter(([, sid]) => sid === props.sid).map(([cid]) => cid),
+)
+const allyBack = img('backs/ally.webp')
 // the round marker, or the whole standee when that is what they asked for
 const pieceSrc = (iid: string) =>
   img(`investigators/${iid}/${ctx.standeePieces.value ? 'standee' : 'token'}.webp`)
@@ -80,6 +86,14 @@ function dragEnd() {
         />
       </span>
     </template>
+    <img
+      v-for="cid in bystanders"
+      :key="`bystander-${cid}`"
+      class="bystander"
+      :src="allyBack"
+      title="a bystander — the monsters are hunting them"
+      :style="{ viewTransitionName: cssName(`bystander-${cid}`) }"
+    />
     <MonsterCard v-for="m in monsters" :key="`mon-${m.card}`" :monster="m" />
   </template>
 </template>

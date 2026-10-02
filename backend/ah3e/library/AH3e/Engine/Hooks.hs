@@ -651,6 +651,30 @@ codexQuarrySpaces = do
   codex <- use #codex
   concat <$> for codex \e -> (codexBehavior e.number).quarrySpaces e
 
+-- | What the codex exacts as the monster phase closes, in codex order.
+codexEndOfMonsterPhase :: GameM [Message]
+codexEndOfMonsterPhase = do
+  codex <- use #codex
+  concat <$> for codex \e -> (codexBehavior e.number).atEndOfMonsterPhase e
+
+{- | Where the codex sends this monster instead of after its own prey; the first card
+to answer wins.
+-}
+codexPreyInstead :: CardId -> GameM (Maybe [SpaceId])
+codexPreyInstead mid = do
+  codex <- use #codex
+  answers <- for codex \e -> (codexBehavior e.number).preyReplacement e mid
+  pure (listToMaybe (catMaybes answers))
+
+{- | What the codex reads in place of that card off the headline deck; the first card
+to answer wins.
+-}
+codexHeadlineInstead :: InvestigatorId -> CardId -> GameM (Maybe [Message])
+codexHeadlineInstead iid cid = do
+  codex <- use #codex
+  answers <- for codex \e -> (codexBehavior e.number).headlineReplacement e iid cid
+  pure (listToMaybe (catMaybes answers))
+
 -- | What the codex makes of a monster arriving somewhere.
 codexMonsterArrived :: CardId -> SpaceId -> GameM [Message]
 codexMonsterArrived mid sid = do

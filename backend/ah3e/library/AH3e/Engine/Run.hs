@@ -7,7 +7,7 @@ import AH3e.Engine.Helpers
 import AH3e.Engine.Hooks
 import AH3e.Engine.Monad
 import AH3e.Engine.Query
-import AH3e.Engine.Setup (availableScenarios, buildBoard, setupScenario)
+import AH3e.Engine.Setup (availableScenarios, buildBoard, moveCornerTile, setupScenario)
 import AH3e.Engine.Test
 import AH3e.Game
 import AH3e.Message
@@ -384,10 +384,14 @@ dispatch msg = case msg of
       quarry <- codexQuarrySpaces
       hunted <- case target of
         TowardSpaces rule -> ruleSpaces (Just mid) rule
-        TowardPrey rule -> do
-          prey <- ruleInvestigators rule
-          noticed <- filterM (fmap not . monsterIgnores mid . (.id)) prey
-          pure (mapMaybe (.space) noticed)
+        TowardPrey rule ->
+          -- a codex card may send every hunter after something else entirely
+          codexPreyInstead mid >>= \case
+            Just sids -> pure sids
+            Nothing -> do
+              prey <- ruleInvestigators rule
+              noticed <- filterM (fmap not . monsterIgnores mid . (.id)) prey
+              pure (mapMaybe (.space) noticed)
       let targets = nub (hunted <> quarry)
       closest <- closestTo m.space targets
       steps <- nub . concat <$> traverse (nextStepsToward m.space) closest
@@ -452,8 +456,10 @@ dispatch msg = case msg of
   MonsterReadyStep -> do
     ms <- uses #monsters (filter ((== Exhausted) . (.state)) . Map.elems)
     everyone <- playingInvestigators
+    closing <- codexEndOfMonsterPhase
     pushAll
       $ [ReadyMonster m.card | m <- ms]
+      <> closing
       <> [CheckReactions (AtEndOfMonsterPhase i.id) [] | i <- everyone]
       <> [BeginEncounterPhase]
   ReadyMonster mid -> do
@@ -620,28 +626,31 @@ dispatch msg = case msg of
   ResolveMythosToken pid tok -> do
     answers <- investigatorOfPlayer pid >>= maybe (pure []) (`afterMythosTokenFor` tok)
     pushAll (ResolveMythosTokenNow pid tok : answers)
-  ResolveMythosTokenNow pid tok -> case tok of
-    SpreadDoomToken -> push SpreadDoom
-    SpawnMonsterToken -> push (SpawnMonsterAt Nothing False)
-    ReadHeadlineToken -> investigatorOfPlayer pid >>= traverse_ (push . DrawHeadline)
-    SpawnClueToken -> push SpawnClue
-    GateBurstToken -> push GateBurst
-    ReckoningToken -> reckoningSources >>= push . ResolveReckonings
-    BlankToken -> investigatorOfPlayer pid >>= traverse_ (\iid -> push (CheckReactions (DrewBlankToken iid) []))
-    {- A white marker is taken out of the cup for good: whichever card put it there
-    says where it goes, so it is never among the tokens returned when the cup runs
-    out. -}
-    WhiteMarkerToken -> do
-      #drawnTokens %= \ts -> case break (== WhiteMarkerToken) ts of
-        (before, _ : after) -> before <> after
-        _ -> ts
-      investigatorOfPlayer pid >>= traverse_ (\iid -> codexTokenDrawn iid WhiteMarkerToken >>= pushAll)
-    SpreadTerrorToken -> do
-      board <- use #board
-      nids <- nub . mapMaybe (`spaceNeighborhood` board) <$> unstableSpaces
-      chooseGroup
-        "Choose the neighborhood to spread terror in"
-        [label (coerce n) [SpreadTerror n] | n <- nids]
+  ResolveMythosTokenNow pid tok -> do
+    mine <- investigatorOfPlayer pid
+    -- queued first so the token's own resolution, pushed below, still lands ahead of it
+    maybe (pure []) (`codexTokenDrawn` tok) mine >>= pushAll
+    case tok of
+      SpreadDoomToken -> push SpreadDoom
+      SpawnMonsterToken -> push (SpawnMonsterAt Nothing False)
+      ReadHeadlineToken -> investigatorOfPlayer pid >>= traverse_ (push . DrawHeadline)
+      SpawnClueToken -> push SpawnClue
+      GateBurstToken -> push GateBurst
+      ReckoningToken -> reckoningSources >>= push . ResolveReckonings
+      BlankToken -> investigatorOfPlayer pid >>= traverse_ (\iid -> push (CheckReactions (DrewBlankToken iid) []))
+      {- A white marker is taken out of the cup for good: whichever card put it there
+      says where it goes, so it is never among the tokens returned when the cup runs
+      out. -}
+      WhiteMarkerToken ->
+        #drawnTokens %= \ts -> case break (== WhiteMarkerToken) ts of
+          (before, _ : after) -> before <> after
+          _ -> ts
+      SpreadTerrorToken -> do
+        board <- use #board
+        nids <- nub . mapMaybe (`spaceNeighborhood` board) <$> unstableSpaces
+        chooseGroup
+          "Choose the neighborhood to spread terror in"
+          [label (coerce n) [SpreadTerror n] | n <- nids]
   EndRound -> do
     ps <- use #players
     invs <- use #investigators
@@ -1226,6 +1235,18 @@ dispatch msg = case msg of
     s <- getSpace sid
     spaceL sid . #markers %= (<> [Marker colour False])
     logText ("A marker is placed face down at " <> s.name)
+  RevealMarkerAt sid -> do
+    s <- getSpace sid
+    case [m | m <- s.markers, not m.faceUp] of
+      [] -> logText ("Nothing is hidden at " <> s.name)
+      (m : _) -> do
+        spaceL sid . #markers %= turnOne
+        logText ("The marker at " <> s.name <> " is " <> m.color)
+        push CheckStateTriggers
+   where
+    turnOne ms = case break (not . (.faceUp)) ms of
+      (before, m : after) -> before <> (m {faceUp = True} : after)
+      _ -> ms
   PlaceBystander sid ->
     use (#decks . #ally) >>= \case
       [] -> logText "No ally card is left to stand in for a bystander"
@@ -1234,6 +1255,23 @@ dispatch msg = case msg of
         #bystanders %= Just . (<> [(cid, sid)]) . fromMaybe []
         s <- getSpace sid
         logText ("A bystander is left at " <> s.name)
+  -- the card was face down, so what they have saved is only now known
+  TakeBystander iid cid -> do
+    standing <- uses #bystanders (any ((== cid) . fst) . fromMaybe [])
+    when standing do
+      #bystanders %= fmap (filter ((/= cid) . fst))
+      d <- getCardDef cid
+      logText (d.name <> " is helped to safety")
+      pushAll [GainAsset iid cid, CheckStateTriggers]
+  DiscardBystander cid -> do
+    standing <- uses #bystanders (any ((== cid) . fst) . fromMaybe [])
+    when standing do
+      #bystanders %= fmap (filter ((/= cid) . fst))
+      #decks . #ally %= (<> [cid])
+      d <- getCardDef cid
+      logText (d.name <> " is lost to the monsters")
+      push CheckStateTriggers
+  MoveCornerTile piece around -> moveCornerTile piece around
   TakeClues iid n -> addClues iid n
   MarkCodexToken card name k -> do
     #codex
@@ -1506,18 +1544,22 @@ dispatch msg = case msg of
         #decks . #headline .= rest
         #activeCard ?= cid
         d <- getCardDef cid
-        case d.kind of
-          HeadlineCard h -> do
-            logText ("Headline: " <> d.name)
-            asked <- use #questionsAsked
-            let ctx = EffectCtx {investigator = iid, source = SourceHeadline cid, testResult = Nothing}
-            pushAll
-              [ ResolveEffect ctx h.effect
-              , AcknowledgeHeadline iid asked
-              , DiscardHeadline cid
-              , ClearActiveCard cid
-              ]
-          _ -> error "not a headline"
+        -- a codex card may have shuffled something in that is no headline at all
+        instead <- codexHeadlineInstead iid cid
+        case instead of
+          Just msgs -> pushAll (msgs <> [ClearActiveCard cid])
+          Nothing -> case d.kind of
+            HeadlineCard h -> do
+              logText ("Headline: " <> d.name)
+              asked <- use #questionsAsked
+              let ctx = EffectCtx {investigator = iid, source = SourceHeadline cid, testResult = Nothing}
+              pushAll
+                [ ResolveEffect ctx h.effect
+                , AcknowledgeHeadline iid asked
+                , DiscardHeadline cid
+                , ClearActiveCard cid
+                ]
+            _ -> error "not a headline"
   DiscardHeadline cid -> do
     d <- getCardDef cid
     case d.kind of
@@ -2496,6 +2538,7 @@ resolveEncounter iid deck = do
         , deck = deck
         , gainedNeighborhoodClue = False
         , returnToArchive = False
+        , returnToTop = Nothing
         , section = Nothing
         }
     d <- getCardDef cid
@@ -2588,16 +2631,19 @@ finishEncounter = do
     d <- getCardDef enc.card
     if enc.returnToArchive
       then #decks . #archive %= (enc.card :)
-      else case (d.kind, enc.deck) of
-        (EventCard e, _)
-          | enc.gainedNeighborhoodClue -> #decks . #eventDiscard %= (enc.card :)
-          | otherwise -> do
-              let l :: Lens' Game [CardId]
-                  l = #decks . #neighborhoods . at e.neighborhood . non []
-              deck <- use l
-              l <~ shuffleIntoTopTwo enc.card deck
-        (_, TerrorDeck _) -> #decks . #terror %= (<> [enc.card])
-        (_, deck) -> deckLens deck %= (<> [enc.card])
+      else
+        if enc.returnToTop == Just True
+          then deckLens enc.deck %= (enc.card :)
+          else case (d.kind, enc.deck) of
+            (EventCard e, _)
+              | enc.gainedNeighborhoodClue -> #decks . #eventDiscard %= (enc.card :)
+              | otherwise -> do
+                  let l :: Lens' Game [CardId]
+                      l = #decks . #neighborhoods . at e.neighborhood . non []
+                  deck <- use l
+                  l <~ shuffleIntoTopTwo enc.card deck
+            (_, TerrorDeck _) -> #decks . #terror %= (<> [enc.card])
+            (_, deck) -> deckLens deck %= (<> [enc.card])
 
 setupScenarioDecks :: GameM ()
 setupScenarioDecks = do

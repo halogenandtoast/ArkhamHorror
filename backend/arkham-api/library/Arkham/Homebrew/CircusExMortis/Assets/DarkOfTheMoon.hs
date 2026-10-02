@@ -16,6 +16,7 @@ import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorClues))
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 import Arkham.Projection
 
 {- | The back of the Bear the Burden Destiny story (:208b), in play next to the act deck.
@@ -78,10 +79,14 @@ instance RunMessage DarkOfTheMoon where
     what the four were. -}
     RequestedChaosTokens (isAbilitySource attrs 2 -> True) (Just iid) tokens -> do
       sealRevealedMoonTokens iid tokens
-      withLocationOf iid \lid ->
-        selectEach (InvestigatorAt (LocationWithId lid) <> InvestigatorWithAnyClues) \i -> do
-          clues <- field InvestigatorClues i
-          withI18n $ chooseAmount i "clues" "$clues" 0 clues attrs
+      -- The four are already on screen, so the questions below are what hold them there.
+      withLocationOf iid \lid -> do
+        payers <- select $ InvestigatorAt (LocationWithId lid) <> InvestigatorWithAnyClues
+        if null payers
+          then chooseOneM iid $ withI18n $ labeled "continue" nothing
+          else for_ payers \i -> do
+            clues <- field InvestigatorClues i
+            withI18n $ chooseAmount i "clues" "$clues" 0 clues attrs
       pure a
     ResolveAmounts placer (getChoiceAmount "$clues" -> n) (isTarget attrs -> True) | n > 0 -> do
       push $ InvestigatorPlaceCluesOnLocation placer (attrs.ability 2) n
@@ -95,5 +100,6 @@ instance RunMessage DarkOfTheMoon where
       pure a
     RequestedChaosTokens (IndexedSource _ (isAbilitySource attrs 2 -> True)) (Just iid) tokens -> do
       sealRevealedMoonTokens iid tokens
+      chooseOneM iid $ withI18n $ labeled "continue" nothing
       pure a
     _ -> DarkOfTheMoon <$> liftRunMessage msg attrs

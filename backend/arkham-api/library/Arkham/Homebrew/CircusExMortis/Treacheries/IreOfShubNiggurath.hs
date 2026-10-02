@@ -1,8 +1,9 @@
 module Arkham.Homebrew.CircusExMortis.Treacheries.IreOfShubNiggurath (ireOfShubNiggurath) where
 
 import Arkham.Ability
+import Arkham.ActiveCost.Base (ActiveCostTarget (..))
 import Arkham.ChaosToken
-import Arkham.Classes.HasQueue (popMessageMatching_)
+import Arkham.GameEnv (getActiveCosts)
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers (moonToken)
@@ -20,26 +21,16 @@ newtype IreOfShubNiggurath = IreOfShubNiggurath TreacheryAttrs
 ireOfShubNiggurath :: TreacheryCard IreOfShubNiggurath
 ireOfShubNiggurath = treachery IreOfShubNiggurath Cards.ireOfShubNiggurath
 
-{- | One activation, carried in enough detail to find its queued 'UseCardAbility'
-exactly. `ActiveCost`'s `PayCostFinished` queues
-@UseCardAbility iid ability.source ability.index c.windows c.payments@ and opens the
-@ActivateAbility #when@ window on the same @c.windows@, so all four of these come
-straight off the window payload and identify that one message. Only the payment is
-unknown here, and nothing else in the queue can share the other four.
+{- | The activation being interrupted, named by the ability it activates. That is enough
+to find its 'ActiveCost' again after the chaos-token round trip.
 -}
 data Activation = Activation
   { activationInvestigator :: InvestigatorId
   , activationSource :: Source
   , activationIndex :: Int
-  , activationWindows :: [Window]
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
-
--- | Everything that has to match for a queued 'UseCardAbility' to BE this activation.
-activationKey :: Activation -> (InvestigatorId, Source, Int, [Window])
-activationKey a =
-  (a.activationInvestigator, a.activationSource, a.activationIndex, a.activationWindows)
 
 {- | @pending@ bridges the chaos-token round trip: the reveal answers back as
 'RequestedChaosTokens', whose only payload is a source, so the activation being
@@ -63,13 +54,20 @@ doomFaces = [Skull, Cultist, Tablet, ElderThing, AutoFail, MoonToken]
 activatedAbility :: [Window] -> Maybe Activation
 activatedAbility ws =
   listToMaybe
-    [ Activation iid ability.source ability.index tws
-    | Window.ActivateAbility iid tws ability <- map windowType ws
+    [ Activation iid ability.source ability.index
+    | Window.ActivateAbility iid _ ability <- map windowType ws
     ]
+
+-- | The 'ActiveCost' paying for exactly this activation.
+isActivation :: Activation -> ActiveCostTarget -> Bool
+isActivation activation = \case
+  ForAbility ability ->
+    ability.source == activation.activationSource && ability.index == activation.activationIndex
+  _ -> False
 
 instance HasAbilities IreOfShubNiggurath where
   getAbilities (IreOfShubNiggurath a) =
-    [ restricted a 1 (InThreatAreaOf You) $ forced $ ActivateAbility #when You (interrupted bearer)
+    [ restricted a 1 (InThreatAreaOf You) $ forced $ ActivateAbility #cancel You (interrupted bearer)
     | bearer <- toList a.inThreatAreaOf
     ]
       -- "released at your location": every ☾ in this scenario is sealed on an
@@ -116,22 +114,13 @@ instance RunMessage IreOfShubNiggurath where
       let m = ireMeta attrs
       continue_ iid
       when (any (`elem` doomFaces) faces) $ for_ m.metaPending \activation -> do
-        {- "Cancel that activation." Costs are already paid when this window opens and
-        are NOT refunded (RR "Cancel"), which is also exactly what the engine's own
-        cancel does: `CancelCostPayment` (#5545) suppresses only the `UseCardAbility`
-        and leaves the after-ActivateAbility window standing. Popping the queued
-        activation reproduces that path message-for-message.
-
-        A flat pop is correct here, not `popMessagesMatchingNested`: the message is
-        queued by `PayCostFinished`'s own flat `pushAll`, and a `Would` batch unrolls
-        one message at a time (`Would bId (x:xs) -> pushAll [x, Would bId xs]`), so
-        `PayCostFinished` always runs at top level and its output lands there too.
-        If that `pushAll` is ever batched or wrapped in `simultaneously`, this must
-        switch to the nested variant. -}
-        lift $ popMessageMatching_ \case
-          UseCardAbility uIid uSource uIndex uWindows _ ->
-            (uIid, uSource, uIndex, uWindows) == activationKey activation
-          _ -> False
+        {- "Cancel that activation." The Forced rides the @#cancel@ window, which runs
+        before the ability's cost is created, so `CancelCostPayment` here stops the
+        payment as well as the `UseCardAbility` -- nothing is spent on an activation
+        that never happens. -}
+        costs <- getActiveCosts
+        for_ (find (isActivation activation . (.target)) costs) \cost ->
+          push $ CancelCostPayment cost.id
         -- The ban lives on the investigator: `preventedByInvestigatorModifiers` reads
         -- `CannotTriggerAbilityMatching` off `getModifiers (InvestigatorTarget iid)`.
         phaseModifier (attrs.ability 1) activation.activationInvestigator

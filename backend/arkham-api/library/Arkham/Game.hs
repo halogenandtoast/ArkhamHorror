@@ -6929,6 +6929,14 @@ runMessages gameId mLogger = do
             Do (CheckWindows ws) | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
             CheckWindows ws | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId mLogger
             Do (CheckWindows ws) | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId mLogger
+            -- "The [elder_sign] token cannot be sealed." (Diana's Blessing, and anything
+            -- else publishing 'CannotSealChaosToken'). Both halves of a seal are dropped
+            -- here rather than at each of the ~15 seal sites, which is also what makes it
+            -- hold for the debug seal.
+            -- ponytail: a seal paid as a cost still counts as paid; the cost would have to
+            -- consult this before it is offered.
+            SealChaosToken token | sealForbidden g token -> runMessages gameId mLogger
+            SealedChaosToken token _ _ | sealForbidden g token -> runMessages gameId mLogger
             Simultaneously [] -> runMessages gameId mLogger
             Simultaneously msgs -> do
               -- Save the rest of the queue so we can restore it after collecting results
@@ -7298,6 +7306,14 @@ isSwarmExhaust g = \case
         _ -> False
       Nothing -> False
     _ -> False
+
+{- | Whether something in play forbids sealing this token's face, read straight off the
+preloaded modifier map so the check stays pure.
+-}
+sealForbidden :: Game -> ChaosToken -> Bool
+sealForbidden g token =
+  CannotSealChaosToken token.face
+    `elem` map modifierType (findWithDefault [] GameTarget (gameModifiers g))
 
 hasEnemyReadyAbilities :: Game -> Bool
 hasEnemyReadyAbilities g =

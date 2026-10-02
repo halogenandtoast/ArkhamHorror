@@ -249,6 +249,11 @@ pattern EnemyWithAnyDamage <- EnemyWithDamage (GreaterThan (Static 0))
   where
     EnemyWithAnyDamage = EnemyWithDamage (GreaterThan (Static 0))
 
+pattern EnemyCanHaveAttachments :: EnemyMatcher
+pattern EnemyCanHaveAttachments <- EnemyWithoutModifier CannotHaveAttachments
+  where
+    EnemyCanHaveAttachments = EnemyWithoutModifier CannotHaveAttachments
+
 -- ** Location Patterns **
 
 pattern LocationCanHaveAttachments :: LocationMatcher

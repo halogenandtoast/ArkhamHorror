@@ -61,7 +61,7 @@ import Arkham.Game.State
 import Arkham.Game.Utils
 import Arkham.GameEnv
 import Arkham.Helpers
-import Arkham.Helpers.Ability (abilityRidesAlong)
+import Arkham.Helpers.Ability (abilityRidesAlong, isForcedAbility)
 import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
@@ -156,7 +156,7 @@ import Arkham.Treachery.Types (
   treacheryWaiting,
  )
 import Arkham.UltimatumsAndBoons.Types
-import Arkham.Window (Window (..), mkAfter, mkWhen, mkWindow)
+import Arkham.Window (Window (..), mkAfter, mkCancel, mkWhen, mkWindow)
 import Arkham.Window qualified as Window
 import Arkham.Zone qualified as Zone
 import Control.Lens (each, itraverseOf, itraversed, non, over, set)
@@ -1074,7 +1074,14 @@ runGameMessage msg g = case msg of
           , activeCostChosenOrAction = Nothing
           , activeCostPendingEventId = Nothing
           }
-    push $ CreatedCost acId
+    {- The #cancel window sits ahead of the cost, so an ability cancelled here has not
+    paid anything yet -- unlike the #when window, which `PayCostFinished` opens once the
+    cost is already spent. A canceller answers it with `CancelCostPayment`, which
+    `CreatedCost` then reads to skip the payment entirely. Forced abilities get no
+    activation windows at all, the same way `PayCostFinished` skips theirs. -}
+    isForced <- isForcedAbility iid ability
+    cancelWindow <- checkWindows [mkCancel (Window.ActivateAbility iid windows' ability)]
+    pushAll $ [cancelWindow | not isForced] <> [CreatedCost acId]
     pure $ g & activeCostL %~ insertMap acId activeCost
   PayCostFinished acId -> pure $ g & activeCostL %~ deleteMap acId
   CreateWindowModifierEffect effectWindow effectMetadata source target -> do

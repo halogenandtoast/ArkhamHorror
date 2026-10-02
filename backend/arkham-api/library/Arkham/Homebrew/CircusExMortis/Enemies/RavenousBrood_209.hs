@@ -5,6 +5,7 @@ module Arkham.Homebrew.CircusExMortis.Enemies.RavenousBrood_209 (
 ) where
 
 import Arkham.Ability
+import Arkham.Card
 import Arkham.Classes.HasGame (HasGame)
 import Arkham.Classes.HasQueue (HasQueue)
 import Arkham.Enemy.Import.Lifted
@@ -13,6 +14,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Enemies qualified as Cards
 import Arkham.Matcher
+import Arkham.Message (ReplaceStrategy (..))
 import Arkham.Message qualified as Msg
 import Arkham.Queue (QueueT)
 
@@ -43,8 +45,12 @@ instance HasAbilities RavenousBrood_209 where
 
 instance RunMessage RavenousBrood_209 where
   runMessage msg e@(RavenousBrood_209 attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      setAsideInsteadOfLeavingPlay attrs
+    UseThisAbility _ (isSource attrs -> True) 1 ->
+      RavenousBrood_209 <$> setAsideInsteadOfLeavingPlay attrs
+    -- Each face is its own card, so a flip is a swap to the other one. Nothing in the
+    -- engine does this for an enemy: `Flip` has no handler in 'Enemy.Runner'.
+    Flip _ _ (isTarget attrs -> True) -> do
+      push $ ReplaceEnemy attrs.id (lookupCard Cards.ravenousBrood_209b attrs.cardId) Swap
       pure e
     _ -> RavenousBrood_209 <$> liftRunMessage msg attrs
 
@@ -58,9 +64,13 @@ leaves play has to go back to it rather than to the encounter discard. Same shap
 Devotee of the Thousand: the removal itself stands, only its destination is replaced, and
 dropping the queued discard is what keeps the card out of the encounter discard so
 'SetCardAside' is the only place it lands.
+
+The returned attrs are stripped of their tokens. The entity outlives the card here -- it
+stays in 'RemovedZone' while the card sits set aside -- so damage it took on its way out
+would otherwise still be showing when it is spawned again.
 -}
 setAsideInsteadOfLeavingPlay
-  :: (HasGame m, HasQueue Message m) => EnemyAttrs -> QueueT Message m ()
+  :: (HasGame m, HasQueue Message m) => EnemyAttrs -> QueueT Message m EnemyAttrs
 setAsideInsteadOfLeavingPlay attrs = do
   card <- getCard attrs.cardId
   allMatchingDon't \case
@@ -68,3 +78,4 @@ setAsideInsteadOfLeavingPlay attrs = do
     Do (Msg.Discarded target _ _) -> isTarget attrs target
     _ -> False
   push $ SetCardAside card
+  pure $ attrs & tokensL .~ mempty

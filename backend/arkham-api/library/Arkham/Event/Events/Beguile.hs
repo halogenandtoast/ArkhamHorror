@@ -43,7 +43,7 @@ instance HasAbilities Beguile where
 instance RunMessage Beguile where
   runMessage msg e@(Beguile attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ NonEliteEnemy <> enemyAtLocationWith iid
+      selectOneToHandle iid attrs $ NonEliteEnemy <> EnemyCanHaveAttachments <> enemyAtLocationWith iid
       pure e
     HandleTargetChoice _iid (isSource attrs -> True) (EnemyTarget eid) -> do
       push $ PlaceEvent attrs.id $ AttachedToEnemy eid

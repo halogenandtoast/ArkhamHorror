@@ -1577,7 +1577,13 @@ function isHollow(m: ModifierType): m is Hollow {
 }
 const hollowed = computed(() => [...new Set(Object.values(props.game.investigators).flatMap(i => (i.modifiers || []).map((m) => m.type).filter(isHollow).map(m => props.game.cards[m.contents])))])
 
-const outOfPlay = computed(() => props.scenario?.setAsideCards || [])
+// An enemy that leaves play keeps its entity (defeated, in RemovedZone) while its card
+// goes back to the set-aside pile, so a card whose enemy is already drawn below would be
+// listed twice. The enemy is the richer view, so the bare card gives way.
+const outOfPlay = computed(() => {
+  const shown = new Set(outOfPlayEnemies.value.map((e) => e.cardId))
+  return (props.scenario?.setAsideCards || []).filter((card) => !shown.has(cardId(card)))
+})
 const removedFromPlay = computed(() => props.game.removedFromPlay)
 const noCards = computed<Card[]>(() => [])
 const topOfEncounterDiscard = computed(() => {

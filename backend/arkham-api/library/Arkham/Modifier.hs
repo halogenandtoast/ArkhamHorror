@@ -255,6 +255,7 @@ data ModifierType
   | CannotReady
   | CannotReplaceWeaknesses
   | CannotRevealCards
+  | CannotSealChaosToken ChaosTokenFace
   | CannotSpawnIn LocationMatcher
   | CannotSpendClues
   | CannotSpendKeys

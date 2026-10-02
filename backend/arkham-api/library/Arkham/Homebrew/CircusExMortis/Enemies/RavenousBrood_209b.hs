@@ -1,5 +1,6 @@
 module Arkham.Homebrew.CircusExMortis.Enemies.RavenousBrood_209b (ravenousBrood_209b) where
 
+import Arkham.Card
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
 import Arkham.Helpers.Query (getPlayerCount)
@@ -8,6 +9,7 @@ import Arkham.Homebrew.CircusExMortis.Enemies.RavenousBrood_209 (
   broodAbilities,
   setAsideInsteadOfLeavingPlay,
  )
+import Arkham.Message (ReplaceStrategy (..))
 
 newtype RavenousBrood_209b = RavenousBrood_209b EnemyAttrs
   deriving anyclass IsEnemy
@@ -31,7 +33,11 @@ instance HasAbilities RavenousBrood_209b where
 
 instance RunMessage RavenousBrood_209b where
   runMessage msg e@(RavenousBrood_209b attrs) = runQueueT $ case msg of
-    UseThisAbility _ (isSource attrs -> True) 1 -> do
-      setAsideInsteadOfLeavingPlay attrs
+    UseThisAbility _ (isSource attrs -> True) 1 ->
+      RavenousBrood_209b <$> setAsideInsteadOfLeavingPlay attrs
+    -- Each face is its own card, so a flip is a swap to the other one. Nothing in the
+    -- engine does this for an enemy: `Flip` has no handler in 'Enemy.Runner'.
+    Flip _ _ (isTarget attrs -> True) -> do
+      push $ ReplaceEnemy attrs.id (lookupCard Cards.ravenousBrood_209 attrs.cardId) Swap
       pure e
     _ -> RavenousBrood_209b <$> liftRunMessage msg attrs

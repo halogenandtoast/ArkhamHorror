@@ -3,6 +3,7 @@ module Arkham.Homebrew.CircusExMortis.Assets.DianasBlessing (dianasBlessing) whe
 import Arkham.Ability
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.ChaosToken (getModifiedChaosTokenFaces)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifyEach)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Cards
 import Arkham.Homebrew.CircusExMortis.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.CircusExMortis.Helpers (
@@ -10,7 +11,9 @@ import Arkham.Homebrew.CircusExMortis.Helpers (
   investigatorWithDestinyModifier,
   moonToken,
  )
+import Arkham.I18n
 import Arkham.Matcher
+import Arkham.Message.Lifted.Choose
 
 {- | The back of the Recite the Prayer Destiny story (:207b), in play next to the act deck.
 
@@ -19,18 +22,20 @@ location." The card is at no location at all, so nothing could otherwise be reac
 the sentence names one seat, and that seat is the whole criterion on both abilities -- no
 location requirement, which is what "at any location" means.
 
-"The [elder_sign] token cannot be sealed." NOT IMPLEMENTED: the engine has no
-seal-permission seam (no modifier, criterion or matcher is consulted when a card seals a
-token), so honouring it would need a new modifier read at every seal site. It is inert
-against everything in this scenario and against the player cards that seal, all of which
-already exclude [elder_sign] from their own choices.
+"The [elder_sign] token cannot be sealed." Published as 'CannotSealChaosToken' on
+'GameTarget', which 'runMessages' reads to drop both halves of a seal -- so it holds
+against any card, and against the debug seal, not only the ones that already exclude
+[elder_sign] from their own choices.
 -}
 newtype DianasBlessing = DianasBlessing AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 dianasBlessing :: AssetCard DianasBlessing
 dianasBlessing = asset DianasBlessing Cards.dianasBlessing
+
+instance HasModifiersFor DianasBlessing where
+  getModifiersFor (DianasBlessing a) = modifyEach a [GameTarget] [CannotSealChaosToken #eldersign]
 
 {- | 1. "[reaction] When a ☾ token is released from a card at your location, place 1
 resource on Diana's Blessing." 'ChaosTokenReleased' names the card the token was sealed on
@@ -62,8 +67,11 @@ instance RunMessage DianasBlessing where
     -- "If an [elder_sign] token is revealed, flip Diana's Blessing and add it to the
     -- victory display." Read through the modifier layer, so a token being treated as an
     -- [elder_sign] counts, the same way every other "if X is revealed" rider does.
-    RequestedChaosTokens (isAbilitySource attrs 2 -> True) _ tokens -> do
+    RequestedChaosTokens (isAbilitySource attrs 2 -> True) (Just iid) tokens -> do
       faces <- getModifiedChaosTokenFaces tokens
+      -- The requested tokens are already on screen; this only holds them there until the
+      -- table has read them. Focusing them again would list each one twice.
+      chooseOneM iid $ withI18n $ labeled "continue" nothing
       when (#eldersign `elem` faces)
         $ flipToVictoryDisplay Nothing Stories.reciteThePrayer attrs.cardId (RemoveAsset attrs.id)
       pure a

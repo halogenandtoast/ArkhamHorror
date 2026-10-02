@@ -1746,6 +1746,12 @@ instance RunMessage ActiveCost where
                        <> [PayCostFinished acId]
                    ]
               pure c
+        -- Cancelled at the #cancel window, which runs ahead of this: skip the payment
+        -- outright so nothing is spent. `PayCostFinished` still runs, and still drops the
+        -- `UseCardAbility` for a cancelled cost.
+        ForAbility _ | c.cancelled -> do
+          push $ PayCostFinished acId
+          pure c
         ForAbility a@(Ability {..}) -> do
           modifiers' <- getCombinedModifiers [toTarget iid, AbilityTarget iid $ abilityToRef a]
           let

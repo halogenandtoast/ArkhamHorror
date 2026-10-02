@@ -179,8 +179,12 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
         Lifted.checkAfter $ Window.EntersThreatArea iid' (toCard a)
         handleWindows
         pure updated
+      -- An enemy that cannot have attachments refuses the attach outright, the same way
+      -- an enemy that has already left play does.
       AttachedToEnemy eid' -> do
+        cannotAttach <- hasModifier eid' CannotHaveAttachments
         fieldMay EnemyPlacement eid' >>= \case
+          _ | cannotAttach -> pure a
           Nothing -> pure a
           Just p -> do
             case p of

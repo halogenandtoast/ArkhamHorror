@@ -197,7 +197,7 @@ runAbility iid attrs canTonguetwister = do
 instance RunMessage PowerWord where
   runMessage msg e@(PowerWord attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy
+      enemies <- select $ enemyAtLocationWith iid <> NonEliteEnemy <> EnemyCanHaveAttachments
       chooseOne
         iid
         [targetLabel enemy [PlaceEvent attrs.id $ AttachedToEnemy enemy] | enemy <- enemies]
@@ -238,7 +238,8 @@ instance RunMessage PowerWord where
               when (notNull enemies) do
                 chooseOrRunOne
                   iid
-                  [ targetLabel enemy [DealDamage (EnemyTarget enemy) $ nonAttack (Just iid) (attrs.ability 1) 1] | enemy <- enemies
+                  [ targetLabel enemy [DealDamage (EnemyTarget enemy) $ nonAttack (Just iid) (attrs.ability 1) 1]
+                  | enemy <- enemies
                   ]
             MercyCommand -> do
               let source = attrs.ability 1
@@ -251,10 +252,14 @@ instance RunMessage PowerWord where
                 if damage > 0 then select (HealableInvestigator source #damage atEnemy) else pure []
               choices <- forToSnd (nub $ horrorInvestigators <> damageInvestigators) $ \investigator -> capture do
                 chooseOrRunOne iid
-                  $ [ Label ("$label.healDamage count=i:" <> tshow damage) [HealDamage (toTarget investigator) source damage]
+                  $ [ Label
+                        ("$label.healDamage count=i:" <> tshow damage)
+                        [HealDamage (toTarget investigator) source damage]
                     | investigator `elem` damageInvestigators
                     ]
-                  <> [ Label ("$label.healHorror count=i:" <> tshow horror) [HealHorror (toTarget investigator) source horror]
+                  <> [ Label
+                         ("$label.healHorror count=i:" <> tshow horror)
+                         [HealHorror (toTarget investigator) source horror]
                      | investigator `elem` horrorInvestigators
                      ]
 

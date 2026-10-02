@@ -374,32 +374,34 @@ instance RunMessage CircusExMortis where
       pure c
     -- Epilogue (guide pp35-36); only reached when the investigators won.
     CampaignStep EpilogueStep -> scope "epilogue" do
-      flavor $ setTitle "title" >> p "intro"
-      getOwner Assets.monstrousTransformation >>= traverse_ \_ ->
-        scope "underWraps" $ flavor $ setTitle "title" >> p "body"
-      getOwner Assets.ladyEsprit >>= traverse_ \_ ->
-        scope "divergingPaths" $ flavor $ setTitle "title" >> p "body"
-      flavor $ setTitle "title" >> p "thea"
+      mTransformation <- getOwner Assets.monstrousTransformation
+      mEsprit <- getOwner Assets.ladyEsprit
+      flavor do
+        setTitle "title"
+        p "intro"
+        p.green.validate (isJust mTransformation) "underWraps"
+        p.green.validate (isJust mEsprit) "divergingPaths"
+        p "thea"
       prophecyFulfilled <- getHasRecord TheProphecyWasFulfilled
       if prophecyFulfilled
         then do
-          scope "kernelOfTruth" $ flavor $ setTitle "title" >> p "body"
+          flavor $ setTitle "title" >> p "kernelOfTruth"
           interludeXpAll $ toBonus "kernelOfTruth" 2
-        else scope "grainOfSalt" $ flavor $ setTitle "title" >> p "body"
-      scope "lookingAhead" $ flavor $ setTitle "title" >> p "body"
+        else flavor $ setTitle "title" >> p "grainOfSalt"
+      flavor $ setTitle "title" >> p "lookingAhead"
       clashed <- getHasRecord TheInvestigatorsClashedWithBlake
       unmasked <- getHasRecord TheInvestigatorsUnmaskedBlake
       rallied <- getHasRecord TheCultRallies
       if (clashed || unmasked) && rallied
         then do
-          scope "encore" $ flavor $ setTitle "title" >> p "body"
+          flavor $ setTitle "title" >> p "encore"
           record TheNewMoonCircusMaySomedayReturn
           getAmaltheaWeaverOwner >>= traverse_ \(iid, _) ->
             addCampaignCardToDeck iid DoNotShuffleIn Assets.theTowerXVI
           getDeCultusBestiaeOwner >>= traverse_ \(iid, _) ->
             addCampaignCardToDeck iid DoNotShuffleIn Assets.theDevilXv
         else do
-          scope "restAssured" $ flavor $ setTitle "title" >> p "body"
+          flavor $ setTitle "title" >> p "restAssured"
           record TheNewMoonCircusWasNeverSeenAgain
       push GameOver
       pure c

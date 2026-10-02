@@ -22,7 +22,11 @@ instance HasModifiersFor ExistentialRiddle1 where
 instance RunMessage ExistentialRiddle1 where
   runMessage msg e@(ExistentialRiddle1 attrs) = runQueueT $ case msg of
     PlayThisEvent iid (is attrs -> True) -> do
-      selectOneToHandle iid attrs $ enemyAtLocationWith iid <> NonEliteEnemy <> canParleyEnemy iid
+      selectOneToHandle iid attrs
+        $ enemyAtLocationWith iid
+        <> NonEliteEnemy
+        <> EnemyCanHaveAttachments
+        <> canParleyEnemy iid
       pure e
     HandleTargetChoice iid (is attrs -> True) (EnemyTarget eid) -> do
       sid <- getRandom

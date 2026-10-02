@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { achievementCatalog, achievementChecklists, achievementSections, type AchievementEntry, type AchievementPart } from '@/arkham/achievements'
+import { achievementCatalog, achievementChecklists, achievementEntryScope, achievementSections, type AchievementEntry, type AchievementPart } from '@/arkham/achievements'
 import type { Achievement } from '@/arkham/types/Achievement'
 
 const props = defineProps<{
@@ -78,10 +78,10 @@ const earnedDate = (row: Achievement | null): string | null => {
         <font-awesome-icon :icon="['fas', 'trophy']" class="entry-icon" aria-hidden="true" />
         <div class="entry-body">
           <span class="entry-name">
-            {{ t(`achievements.entries.${entry.tag}.name`) }}
+            {{ t(`${achievementEntryScope(entry.tag)}.name`) }}
             <span v-if="earnedDate(earnedRow(entry))" class="entry-date">{{ earnedDate(earnedRow(entry)) }}</span>
           </span>
-          <span class="entry-text">{{ t(`achievements.entries.${entry.tag}.text`) }}</span>
+          <span class="entry-text">{{ t(`${achievementEntryScope(entry.tag)}.text`) }}</span>
           <ul v-if="checklist(entry)" class="checklist">
             <li
               v-for="item in checklist(entry)"
@@ -90,7 +90,7 @@ const earnedDate = (row: Achievement | null): string | null => {
               :class="{ checked: isChecked(entry, item) }"
             >
               <span class="checkbox" aria-hidden="true">{{ isChecked(entry, item) ? '☑' : '☐' }}</span>
-              {{ t(`achievements.entries.${entry.tag}.items.${item}`) }}
+              {{ t(`${achievementEntryScope(entry.tag)}.items.${item}`) }}
             </li>
           </ul>
         </div>

@@ -13,6 +13,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelectWith, setActiveDuringSetup)
 import Arkham.Helpers.Query (getInvestigators, getLeadPlayer)
 import Arkham.Helpers.Xp (toBonus)
+import Arkham.Homebrew.CircusExMortis.Achievements (runCircusExMortisAchievements)
 import Arkham.Homebrew.CircusExMortis.CampaignSteps
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as HBAssets
 import Arkham.Homebrew.CircusExMortis.CardDefs.Skills qualified as Skills
@@ -171,7 +172,8 @@ instance HasModifiersFor CircusExMortis where
         [StartingHand 1]
 
 instance RunMessage CircusExMortis where
-  runMessage msg c = runQueueT $ campaignI18n $ case msg of
+  runMessage msg c =
+    runQueueT $ campaignI18n $ lift (runCircusExMortisAchievements msg) *> case msg of
     CampaignStep PrologueStep -> do
       scope "additionalRules" $ flavor $ setTitle "title" >> p "moonTokens"
       scope "prologue" do

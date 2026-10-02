@@ -1,0 +1,36 @@
+{
+  "campaign": ":circus-ex-mortis",
+  "entries": [
+    { "key": "Scapegoat" },
+    { "key": "MoonlightSonata" },
+    { "key": "GravesideChat" },
+    { "key": "WolfOfWallStreet" },
+    { "key": "DestinedKarma" },
+    { "key": "TimeOut" },
+    { "key": "WaxAndWane" },
+    { "key": "ShootTheMoon" },
+    { "key": "UtterLunatic" },
+    { "key": "ClownCollege" },
+    { "key": "NaturalSelection" },
+    { "key": "LactoseIntolerant" },
+    { "key": "DeepSleepers" },
+    { "key": "PainTrain" },
+    { "key": "ViceSquad" },
+    {
+      "key": "ManyFutures",
+      "items": ["OracleOfPurity", "OracleOfEnlightenment", "OracleOfResolve", "OracleOfMystery"]
+    },
+    {
+      "key": "ManyPasts",
+      "items": [
+        "ProphecyOfTheBeyond",
+        "ProphecyOfTheHorde",
+        "ProphecyOfTheEternal",
+        "ProphecyOfTheBehemoth"
+      ]
+    },
+    { "key": "GOAT" },
+    { "key": "StealTheShow" },
+    { "key": "GreatestShowOnEarth" }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "achievements": {
+    "Scapegoat": {
+      "name": "Scapegoat",
+      "text": "Play the Circus Ex Mortis campaign as Jenny Barnes and defeat Sacrificial Beast at a location with a copy of Terrified Captives attached."
+    },
+    "MoonlightSonata": {
+      "name": "Moonlight Sonata",
+      "text": "Play the Circus Ex Mortis campaign as Jim Culver and reveal three or more moon tokens while resolving Final Rhapsody."
+    },
+    "GravesideChat": {
+      "name": "Graveside Chat",
+      "text": "Play the Circus Ex Mortis campaign as Marie Lambeau and have Baron Samedi and Lady Esprit in play at the same time."
+    },
+    "WolfOfWallStreet": {
+      "name": "Wolf of Wall Street",
+      "text": "Play the Circus Ex Mortis campaign and have Monstrous Transformation and Lone Wolf in play at the same time while you control 20 or more resources."
+    },
+    "DestinedKarma": {
+      "name": "Destined Karma",
+      "text": "Get +3 skill value from the ability on Amalthea Weaver during a skill test that defeats The Black Goat."
+    },
+    "TimeOut": {
+      "name": "Time Out!",
+      "text": "Activate the action ability on De Cultus Bestiae while you are engaged with 3 or more enemies."
+    },
+    "WaxAndWane": {
+      "name": "Wax and Wane",
+      "text": "Cancel 1 moon token and release 2 moon tokens during a single skill test using Invocation of Diana."
+    },
+    "ShootTheMoon": {
+      "name": "Shoot the Moon",
+      "text": "Reveal four or more moon tokens during a single skill test."
+    },
+    "UtterLunatic": {
+      "name": "Utter Lunatic",
+      "text": "Release all six moon tokens from your investigator card at the end of a single round."
+    },
+    "ClownCollege": {
+      "name": "Clown College",
+      "text": "Evade a New Moon Clown using Disguise."
+    },
+    "NaturalSelection": {
+      "name": "Natural Selection",
+      "text": "Defeat a New Moon Beast Tamer via an ability on a Creature asset you control."
+    },
+    "LactoseIntolerant": {
+      "name": "Lactose Intolerant",
+      "text": "Cancel two or more copies of Milk of Shub-Niggurath during a single scenario."
+    },
+    "DeepSleepers": {
+      "name": "Deep Sleepers",
+      "text": "Reach Resolution 2 of Harm's Way without any investigator being attacked by a Towering Dark Young."
+    },
+    "PainTrain": {
+      "name": "Pain Train",
+      "text": "Earn 3 or more trauma during All Points West."
+    },
+    "ViceSquad": {
+      "name": "Vice Squad",
+      "text": "Reach Resolution 2 of Bacchanalia with each investigator choosing all four vices."
+    },
+    "ManyFutures": {
+      "name": "Many Futures",
+      "text": "Obtain each final version of Amalthea Weaver.",
+      "items": {
+        "OracleOfPurity": "Oracle of Purity",
+        "OracleOfEnlightenment": "Oracle of Enlightenment",
+        "OracleOfResolve": "Oracle of Resolve",
+        "OracleOfMystery": "Oracle of Mystery"
+      }
+    },
+    "ManyPasts": {
+      "name": "Many Pasts",
+      "text": "Obtain each final version of De Cultus Bestiae.",
+      "items": {
+        "ProphecyOfTheBeyond": "Prophecy of the Beyond",
+        "ProphecyOfTheHorde": "Prophecy of the Horde",
+        "ProphecyOfTheEternal": "Prophecy of the Eternal",
+        "ProphecyOfTheBehemoth": "Prophecy of the Behemoth"
+      }
+    },
+    "GOAT": {
+      "name": "G.O.A.T.",
+      "text": "Place 8 or more damage per investigator on Shub-Niggurath in a single round."
+    },
+    "StealTheShow": {
+      "name": "Steal the Show",
+      "text": "Win the Circus Ex Mortis campaign with only Performer investigators chosen for the campaign."
+    },
+    "GreatestShowOnEarth": {
+      "name": "Greatest Show on Earth",
+      "text": "Win the Circus Ex Mortis campaign on Expert difficulty."
+    }
+  }
+}

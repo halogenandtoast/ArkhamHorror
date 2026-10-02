@@ -13,12 +13,18 @@ Sand"), disambiguate the constructor, not the wire format.
 Detection lives with each campaign (e.g.
 "Arkham.Campaign.Campaigns.NightOfTheZealot" pushes 'EarnAchievement'); the
 API layer persists earns per human player and pushes the unlock toast.
+
+Homebrew campaigns come in through 'HomebrewAchievement', whose wire name
+carries the campaign id; they declare their lists in their own
+@AchievementDefs.hs@ (see "Arkham.Homebrew.AchievementDefs").
 -}
 module Arkham.Achievement.Types where
 
+import Arkham.Homebrew.Achievements (homebrewAchievementChecklists, homebrewAchievementNames)
 import Arkham.Prelude
 import Control.Monad.Fail
 import Data.Aeson.TH
+import Data.Text qualified as T
 import Database.Persist.Sql
 
 {- | Return to the Night of the Zealot. Official list: these can only be
@@ -365,6 +371,14 @@ data Achievement
   | EdgeOfTheEarthAchievement EdgeOfTheEarthAchievement
   | TheScarletKeysAchievement TheScarletKeysAchievement
   | TheFeastOfHemlockValeAchievement TheFeastOfHemlockValeAchievement
+  | {- | A homebrew campaign's achievement. The door for content outside core:
+    the 'Text' is the full wire name @":\<campaign-id\>:\<Key\>"@, so the
+    campaign it belongs to is read off the name and core needs no table to
+    parse one back. Campaigns declare their lists in their own
+    @AchievementDefs.hs@ (see "Arkham.Homebrew.AchievementDefs") and detect
+    their own earns from their own @runMessage@.
+    -}
+    HomebrewAchievement Text
   deriving stock (Eq, Show, Ord, Data)
 
 allAchievements :: [Achievement]
@@ -382,6 +396,7 @@ allAchievements =
     <> map EdgeOfTheEarthAchievement [minBound ..]
     <> map TheScarletKeysAchievement [minBound ..]
     <> map TheFeastOfHemlockValeAchievement [minBound ..]
+    <> map HomebrewAchievement homebrewAchievementNames
 
 -- | Flat constructor name; the wire and database representation.
 achievementName :: Achievement -> Text
@@ -399,11 +414,30 @@ achievementName = \case
   EdgeOfTheEarthAchievement a -> tshow a
   TheScarletKeysAchievement a -> tshow a
   TheFeastOfHemlockValeAchievement a -> tshow a
+  HomebrewAchievement t -> t
 
+{- | Homebrew names are recognized by their shape rather than by the registry,
+so a row stays readable after its campaign is removed from the build.
+-}
 parseAchievement :: Text -> Maybe Achievement
-parseAchievement t = lookup t achievementsByName
+parseAchievement t
+  | isJust (homebrewAchievementCampaign t) = Just (HomebrewAchievement t)
+  | otherwise = lookup t achievementsByName
  where
   achievementsByName = map (achievementName &&& id) allAchievements
+
+-- | A homebrew campaign's achievement, by campaign id and key.
+homebrewAchievement :: Text -> Text -> Achievement
+homebrewAchievement campaign key = HomebrewAchievement (campaign <> ":" <> key)
+
+{- | The campaign id inside a homebrew achievement's wire name
+(@":circus-ex-mortis:Scapegoat"@ -> @":circus-ex-mortis"@), or 'Nothing' if the
+name is not one.
+-}
+homebrewAchievementCampaign :: Text -> Maybe Text
+homebrewAchievementCampaign t = case T.splitOn ":" t of
+  ["", campaign, key] | notNull campaign && notNull key -> Just (":" <> campaign)
+  _ -> Nothing
 
 {- | Checklist achievements tracked item-by-item across playthroughs. The
 items are stable wire keys: detection code reports them via
@@ -453,6 +487,7 @@ achievementChecklist = \case
     Just ["DanielaReyes", "MigueldelaCruz"]
   ChildrenOfBloodAchievement WaterfrontWetWork ->
     Just ["Easy", "Standard", "Hard", "Expert"]
+  HomebrewAchievement t -> lookup t homebrewAchievementChecklists
   TheDrownedCityAchievement WithYourPowersCombined ->
     Just
       [ "BarrierNode"
@@ -559,6 +594,7 @@ achievementCampaigns = \case
   EdgeOfTheEarthAchievement _ -> ["08"]
   TheScarletKeysAchievement _ -> ["09"]
   TheFeastOfHemlockValeAchievement _ -> ["10"]
+  HomebrewAchievement t -> maybeToList (homebrewAchievementCampaign t)
 
 {- | Sub-grouping within a campaign, for lists that are printed per mini-campaign.
 Only The Dream-Eaters has one: its achievements are split between The Dream-Quest

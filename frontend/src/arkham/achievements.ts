@@ -1,21 +1,49 @@
+import { homebrewAchievementLists, homebrewCampaignScope } from '@/arkham/homebrewData'
+
 // Achievement catalog ("above the table" per-user accomplishments). Names and
 // descriptions live in the i18n scope `achievements.entries.<tag>` (see
 // locales/en/gameBoard/achievements.json); this module only carries the typed
 // tag -> campaign mapping, mirroring the backend Arkham.Achievement.Types.
 
-// Campaign ids whose official achievement list is implemented backend-side.
-export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = ['06', '07', '08', '09', '10', '11', '13', '50', '51', '52', '53', '54']
+// Campaign ids whose achievement list is implemented backend-side: the official
+// ones, plus every homebrew campaign that ships an achievements.json.
+export const ACHIEVEMENT_CAMPAIGN_IDS: string[] = [
+  '06', '07', '08', '09', '10', '11', '13', '50', '51', '52', '53', '54',
+  ...homebrewAchievementLists.map((list) => list.campaign),
+]
 
 // Return To campaigns use ids in the 50s. They appear first on the standalone
 // achievements page; both groups otherwise follow campaign-id/release order.
+// Homebrew ids are not numbers (':circus-ex-mortis'), so they sort last.
 export function compareAchievementCampaignIds(a: string, b: string): number {
   const aId = Number(a)
   const bId = Number(b)
+  if (isNaN(aId) || isNaN(bId)) {
+    if (isNaN(aId) !== isNaN(bId)) return isNaN(aId) ? 1 : -1
+    return a.localeCompare(b)
+  }
   const aIsReturnTo = aId >= 50
   const bIsReturnTo = bId >= 50
 
   if (aIsReturnTo !== bIsReturnTo) return aIsReturnTo ? -1 : 1
   return aId - bId
+}
+
+/* Homebrew achievements are open: the tag is the backend's wire name
+`:<campaign-id>:<Key>`, and its name/description live in the campaign's own
+locale scope rather than the shared achievements.json. These two helpers are
+what every renderer goes through, so neither side needs to know which kind of
+achievement it is looking at. */
+export function achievementEntryScope(tag: string): string {
+  const parts = tag.split(':')
+  if (parts.length !== 3) return `achievements.entries.${tag}`
+  return `${homebrewCampaignScope(`:${parts[1]}`)}.achievements.${parts[2]}`
+}
+
+// The campaign heading. Homebrew campaigns name themselves in their own scope.
+export function achievementCampaignScope(campaignId: string): string {
+  if (!campaignId.startsWith(':')) return `achievements.campaigns.${campaignId}`
+  return `${homebrewCampaignScope(campaignId)}.name`
 }
 
 // Sub-grouping inside a campaign, for campaigns whose achievement list is
@@ -272,6 +300,10 @@ export type AchievementTag =
   | 'CaptivatingScream'
   | 'HemlockLineInTheSand'
   | 'HemlockExpertise'
+  | HomebrewAchievementTag
+
+// A homebrew campaign's achievement, tagged by its backend wire name.
+export type HomebrewAchievementTag = `:${string}:${string}`
 
 export type AchievementEntry = { tag: AchievementTag; campaignId: string; part?: AchievementPart }
 
@@ -640,3 +672,13 @@ export const achievementCatalog: AchievementEntry[] = [
   { tag: 'HemlockLineInTheSand', campaignId: '10' },
   { tag: 'HemlockExpertise', campaignId: '10' },
 ]
+
+// Homebrew campaigns append their own lists, discovered from
+// frontend/homebrew/<campaign>/achievements.json (see homebrewData.ts).
+for (const list of homebrewAchievementLists) {
+  for (const entry of list.entries) {
+    const tag = `${list.campaign}:${entry.key}` as HomebrewAchievementTag
+    achievementCatalog.push({ tag, campaignId: list.campaign })
+    if (entry.items) achievementChecklists[tag] = entry.items
+  }
+}

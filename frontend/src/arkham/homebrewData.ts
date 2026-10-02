@@ -34,6 +34,25 @@ export const homebrewTotalsTokens: HomebrewTotalsToken[] = Object.values(tokenMo
   (m) => m.default,
 )
 
+// `achievements.json` — the campaign's achievement list, in printed order.
+// Each entry's `key` matches the backend's `AchievementDefs.hs` enum
+// constructor; `items` makes it a cross-playthrough checklist. Names and
+// descriptions live in the campaign's own locale scope, under
+// `<scope>.achievements.<key>`.
+export interface HomebrewAchievementList {
+  campaign: string
+  entries: { key: string; items?: string[] }[]
+}
+
+const achievementModules = import.meta.glob('@homebrew/*/achievements.json', { eager: true }) as Record<
+  string,
+  { default: HomebrewAchievementList }
+>
+
+export const homebrewAchievementLists: HomebrewAchievementList[] = Object.values(
+  achievementModules,
+).map((m) => m.default)
+
 export const homebrewCampaigns: Campaign[] = Object.values(campaignModules).map((m) => m.default)
 
 export const homebrewScenarios: (Scenario & { i18n: string })[] = Object.values(

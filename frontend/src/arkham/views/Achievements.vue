@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { clearAchievements, fetchAchievements, type ClearAchievementsScope } from '@/arkham/api'
-import { achievementCatalog, achievementChecklists, achievementSections, compareAchievementCampaignIds, type AchievementEntry } from '@/arkham/achievements'
+import { achievementCampaignScope, achievementCatalog, achievementChecklists, achievementEntryScope, achievementSections, compareAchievementCampaignIds, type AchievementEntry } from '@/arkham/achievements'
 import type { Achievement } from '@/arkham/types/Achievement'
 import Prompt from '@/components/Prompt.vue'
 
@@ -31,14 +31,14 @@ function requestClearAll() {
 function requestClearCampaign(campaignId: string) {
   pendingClear.value = {
     scope: { scope: 'campaign', campaign: campaignId },
-    prompt: t('achievements.clearCampaignConfirm', { campaign: t(`achievements.campaigns.${campaignId}`) }),
+    prompt: t('achievements.clearCampaignConfirm', { campaign: t(achievementCampaignScope(campaignId)) }),
   }
 }
 
 function requestClearOne(entry: AchievementEntry) {
   pendingClear.value = {
     scope: { scope: 'achievement', achievement: entry.tag },
-    prompt: t('achievements.clearOneConfirm', { name: t(`achievements.entries.${entry.tag}.name`) }),
+    prompt: t('achievements.clearOneConfirm', { name: t(`${achievementEntryScope(entry.tag)}.name`) }),
   }
 }
 
@@ -121,7 +121,7 @@ const earnedDate = (row: Achievement): string | null => {
       <details v-for="campaign in campaigns" :key="campaign.campaignId" class="campaign-section">
         <summary class="campaign-header">
           <div class="campaign-title">
-            <h2>{{ t(`achievements.campaigns.${campaign.campaignId}`) }}</h2>
+            <h2>{{ t(achievementCampaignScope(campaign.campaignId)) }}</h2>
             <div class="campaign-progress" :aria-label="`${campaignEarnedCount(campaign)} of ${campaign.entries.length} achievements earned`">
               <span class="progress-count">{{ campaignEarnedCount(campaign) }}/{{ campaign.entries.length }}</span>
               <span class="progress-track" aria-hidden="true">
@@ -152,8 +152,8 @@ const earnedDate = (row: Achievement): string | null => {
           >
             <font-awesome-icon :icon="['fas', 'trophy']" class="entry-icon" aria-hidden="true" />
             <div class="entry-body">
-              <span class="entry-name">{{ t(`achievements.entries.${entry.tag}.name`) }}</span>
-              <span class="entry-text">{{ t(`achievements.entries.${entry.tag}.text`) }}</span>
+              <span class="entry-name">{{ t(`${achievementEntryScope(entry.tag)}.name`) }}</span>
+              <span class="entry-text">{{ t(`${achievementEntryScope(entry.tag)}.text`) }}</span>
               <ul v-if="checklist(entry)" class="checklist">
                 <li
                   v-for="item in checklist(entry)"
@@ -162,7 +162,7 @@ const earnedDate = (row: Achievement): string | null => {
                   :class="{ checked: isChecked(entry, item) }"
                 >
                   <span class="checkbox" aria-hidden="true">{{ isChecked(entry, item) ? '☑' : '☐' }}</span>
-                  {{ t(`achievements.entries.${entry.tag}.items.${item}`) }}
+                  {{ t(`${achievementEntryScope(entry.tag)}.items.${item}`) }}
                 </li>
               </ul>
               <span v-if="earnedRow(entry)" class="entry-earned">

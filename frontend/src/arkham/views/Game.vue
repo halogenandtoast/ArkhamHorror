@@ -113,6 +113,7 @@ import EventActAdvanceBarrier from '@/arkham/components/EventActAdvanceBarrier.v
 import StandaloneScenario from '@/arkham/components/StandaloneScenario.vue'
 import StoryQuestion from '@/arkham/components/StoryQuestion.vue'
 import AchievementToast from '@/arkham/components/AchievementToast.vue'
+import { achievementEntryScope } from '@/arkham/achievements'
 import DrawSpotlight from '@/arkham/components/DrawSpotlight.vue'
 import Draggable from '@/components/Draggable.vue'
 import Menu from '@/components/Menu.vue'
@@ -1426,8 +1427,8 @@ const handleResult = (result: ServerResult) => {
           component: markRaw(AchievementToast),
           props: {
             title: t('achievements.toastTitle'),
-            name: t(`achievements.entries.${tag}.name`),
-            text: t(`achievements.entries.${tag}.text`),
+            name: t(`${achievementEntryScope(tag)}.name`),
+            text: t(`${achievementEntryScope(tag)}.text`),
           },
         },
         { timeout: 8000, icon: false, closeButton: false, toastClassName: 'achievement-toast' },

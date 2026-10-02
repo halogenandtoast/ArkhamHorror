@@ -78,6 +78,7 @@ it. A minimal campaign is really just cards plus a couple of list files.
 | `Actions.hs` | new actions (like Dark Matter's "Scan") |
 | `ScenarioDeckKeys.hs` | new named decks a scenario sets aside |
 | `Tokens.hs` | custom chaos tokens |
+| `AchievementDefs.hs`, `Achievements.hs` | your achievement list, and the code that notices when one is earned |
 | `Sets.hs` | your encounter sets |
 | `Helpers.hs`, `Import.hs`, `ChaosBag.hs` | campaign-specific helpers, shared import surface, chaos bag |
 | `Scenarios/<Name>.hs` | your scenario runners |
@@ -284,6 +285,90 @@ another (`RevealAnother`), or seal-and-reveal-another
 (`SealOnRevealerAndRevealAnother`). The engine only applies these during skill
 tests, so custom tokens are inert outside them; anything richer, your scenario
 handles in its own message code.
+
+### Achievements
+
+Printed an achievement list for your campaign? Two files. The list itself goes in
+`AchievementDefs.hs` — a plain enum, in printed order, and nothing else:
+
+```haskell
+module Arkham.Homebrew.YourCampaign.AchievementDefs where
+
+import Arkham.Homebrew.AchievementDefs
+import Arkham.Prelude
+
+achievementCampaign :: Text
+achievementCampaign = ":your-campaign"
+
+data YourCampaignAchievement
+  = Scapegoat
+  | ManyFutures
+  deriving stock (Show, Read, Eq, Ord, Enum, Bounded)
+
+-- Items for achievements that are finished across several playthroughs; `[]` for
+-- an ordinary one-shot earn.
+achievementChecklistItems :: YourCampaignAchievement -> [Text]
+achievementChecklistItems = \case
+  ManyFutures -> ["OracleOfPurity", "OracleOfMystery"]
+  _ -> []
+
+data YourCampaignAchievements
+
+instance IsHomebrewAchievements YourCampaignAchievements where
+  homebrewAchievements =
+    campaignAchievements achievementCampaign $ map def [minBound .. maxBound]
+   where
+    def a = case achievementChecklistItems a of
+      [] -> achievement (tshow a)
+      items -> checklistAchievement (tshow a) items
+```
+
+That file is deliberately a leaf — it imports nothing from the engine — because
+the base game reads your list out of it to build the achievement catalog. Keep
+the detection out of it.
+
+The detection goes in `Achievements.hs`, hooked into your campaign's own
+`runMessage`, which sees every message in the game before anything else does:
+
+```haskell
+runMessage msg c =
+  runQueueT $ campaignI18n $ lift (runYourCampaignAchievements msg) *> case msg of
+```
+
+```haskell
+earn :: (HasGame m, HasQueue Message m) => YourCampaignAchievement -> m ()
+earn = earnAchievement . homebrewAchievement achievementCampaign . tshow
+```
+
+`earnAchievement` already checks that achievements are on for this game and that
+the campaign is yours, and the server ignores an earn it has already recorded, so
+a condition that re-checks itself is fine. Cross-playthrough items are reported
+with `achievementProgress` instead; the server collects them per player and
+awards the achievement once every box is checked. Study
+`Arkham/Homebrew/CircusExMortis/Achievements.hs` — it is the worked example, and
+its header lists the timing traps (never key on `ScenarioResolution`; key on what
+a resolution *records*).
+
+On the frontend, `frontend/homebrew/<campaign>/achievements.json` lists the same
+keys in printed order and is discovered like every other homebrew file:
+
+```json
+{
+  "campaign": ":your-campaign",
+  "entries": [
+    { "key": "Scapegoat" },
+    { "key": "ManyFutures", "items": ["OracleOfPurity", "OracleOfMystery"] }
+  ]
+}
+```
+
+Names and descriptions live in your own locale folder, in
+`locales/en/achievements.json` under an `achievements` key —
+`achievements.Scapegoat.name` / `.text`, and `.items.<key>` for a checklist's
+boxes. Write token names as words ("moon tokens"), not `{moon}`: achievement text
+is rendered as plain strings. Nothing else is needed — the new-game toggle, the
+campaign log's Achievements tab, the /achievements page and the unlock toast all
+read the catalog.
 
 ## The frontend side
 

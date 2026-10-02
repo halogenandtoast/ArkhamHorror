@@ -4132,7 +4132,12 @@ library
       Arkham.Helpers.Xp
       Arkham.History
       Arkham.History.Types
+      Arkham.Homebrew.AchievementDefs
+      Arkham.Homebrew.AchievementEntries
+      Arkham.Homebrew.Achievements
       Arkham.Homebrew.CardRegistry
+      Arkham.Homebrew.CircusExMortis.AchievementDefs
+      Arkham.Homebrew.CircusExMortis.Achievements
       Arkham.Homebrew.CircusExMortis.Acts.AgeOldVisions
       Arkham.Homebrew.CircusExMortis.Acts.AllsFair
       Arkham.Homebrew.CircusExMortis.Acts.ArrivingAt

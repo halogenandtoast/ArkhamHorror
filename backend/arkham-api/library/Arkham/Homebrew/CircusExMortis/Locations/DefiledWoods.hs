@@ -45,7 +45,7 @@ instance HasAbilities DefiledWoods where
       a
       [ restricted a 1 (Here <> thisExists a (LocationWithResources $ atLeast 1) <> canPurify)
           $ actionAbilityWithCost (SkillIconCost 2 mempty)
-      , restricted a 2 (thisExists a $ LocationWithResources $ atMost 0) $ forced AnyWindow
+      , onlyOnce $ restricted a 2 (thisExists a $ LocationWithResources $ atMost 0) $ forced AnyWindow
       ]
    where
     canPurify =

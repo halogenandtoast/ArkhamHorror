@@ -5,6 +5,7 @@ import { formatKey, logKeyTitle } from '@/arkham/types/Log'
 import type { LogKey } from '@/arkham/types/Log'
 import type { RecordCountChange } from '@/arkham/types/Campaign'
 import { campaignStepIcon, campaignStepName } from '@/arkham/types/CampaignStep'
+import { homebrewLogPanel } from '@/arkham/homebrewLogPanels'
 import type { Game } from '@/arkham/types/Game'
 import type { Seal } from '@/arkham/types/Seal'
 import { useI18n } from 'vue-i18n'
@@ -76,6 +77,13 @@ const sealImage = (seal: Seal): string => {
 
 const setClass = (key: string): string => key.split('.').pop() || ''
 
+/* A homebrew campaign's own display for one of its recorded sets, if it shipped
+ * one. Needs the game (portraits, the seats at the table), which only the
+ * campaign-level use of this component passes, so a per-investigator set falls
+ * back to the plain list. */
+const panelFor = (setKey: string) =>
+  props.game ? homebrewLogPanel(props.homebrewScope, setKey) : undefined
+
 const setValueKey = (setKey: string, setValue: any, idx: number): string => {
   const tag = String(setValue?.tag ?? '')
   const c = setValue?.contents ?? setValue?.recordVal?.contents
@@ -90,7 +98,13 @@ const setValueKey = (setKey: string, setValue: any, idx: number): string => {
   <template v-if="entries.length > 0">
     <div v-for="[setKey, setValues] in entries" :key="setKey" class="log-section">
       <h3 class="section-title">{{ title(setKey) }}</h3>
-      <ul :class="['log-list', setClass(setKey)]">
+      <component
+        v-if="panelFor(setKey)"
+        :is="panelFor(setKey)"
+        :entries="setValues"
+        :game="game"
+      />
+      <ul v-else :class="['log-list', setClass(setKey)]">
         <li
           v-if="isSeal(setKey)"
           v-for="(setValue, idx) in setValues"

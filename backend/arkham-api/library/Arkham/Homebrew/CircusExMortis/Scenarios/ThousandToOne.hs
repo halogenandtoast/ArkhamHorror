@@ -49,18 +49,26 @@ Shub-Niggurath starts) down through High Thicket and Sparse Woodland to Silent C
 with Mossy Glen and Fallen Copse side by side below it. Every connection comes from the
 printed symbols on the location cards; this only says where each card is drawn.
 
-The last row names the four Destiny locations, which only arrive when a destiny is
-resolved. Without a cell of their own the grid auto-places them into one of the empty @.@
-slots flanking the chain, which reads as a location sitting beside Primal Forest.
+The four Destiny locations, which only arrive when a destiny is resolved, sit in a 2x2
+block to the right of Silent Clearing rather than in a row of their own below the chain.
+They need a named cell each: without one the grid auto-places them into an empty @.@ slot
+flanking the chain, which reads as a location sitting beside Primal Forest.
+
+The block's arrangement is what keeps the lines short. Each of them connects to Silent
+Clearing (Moon) and to both of the two carrying the opposite symbol -- Forest Chasm and
+Marked Grove are Star, Canyon Entrance and Defiled Woods are Plus -- so the four
+Star-to-Plus connections are a complete crossing. Putting the two Stars on one diagonal
+and the two Pluses on the other makes every one of those four a neighbour, horizontally
+or vertically. The gutter column keeps the block clear of the chain, and sitting it on
+Silent Clearing's own row makes two of its four links horizontal.
 -}
 thousandToOneLayout :: [GridTemplateRow]
 thousandToOneLayout =
-  [ ". primalForest primalForest ."
-  , ". highThicket highThicket ."
-  , ". sparseWoodland sparseWoodland ."
-  , ". silentClearing silentClearing ."
-  , "mossyGlen mossyGlen fallenCopse fallenCopse"
-  , "forestChasm canyonEntrance markedGrove defiledWoods"
+  [ ". primalForest primalForest . . . . ."
+  , ". highThicket highThicket . . . . ."
+  , ". sparseWoodland sparseWoodland . forestChasm forestChasm canyonEntrance canyonEntrance"
+  , ". silentClearing silentClearing . defiledWoods defiledWoods markedGrove markedGrove"
+  , "mossyGlen mossyGlen fallenCopse fallenCopse . . . ."
   ]
 
 {- | The eight destiny words the Fata Diana deals in "Written in Stone", each with the

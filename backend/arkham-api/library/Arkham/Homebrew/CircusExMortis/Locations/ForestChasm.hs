@@ -49,6 +49,7 @@ before its 8 clues ever arrived.
 instance HasAbilities ForestChasm where
   getAbilities (ForestChasm a) =
     extendRevealed1 a
+      $ onlyOnce
       $ restricted a 1 (thisExists a LocationWithoutClues)
       $ forced
       $ LastClueRemovedFromLocation #after (be a)

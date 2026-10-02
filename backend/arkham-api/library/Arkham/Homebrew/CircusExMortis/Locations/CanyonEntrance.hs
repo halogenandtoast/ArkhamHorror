@@ -40,7 +40,7 @@ instance HasAbilities CanyonEntrance where
     extendRevealed
       a
       [ skillTestAbility $ restricted a 1 (Here <> canWork) actionAbility
-      , restricted a 2 (thisExists a $ LocationWithDamage $ atLeast 4) $ forced AnyWindow
+      , onlyOnce $ restricted a 2 (thisExists a $ LocationWithDamage $ atLeast 4) $ forced AnyWindow
       ]
    where
     canWork =

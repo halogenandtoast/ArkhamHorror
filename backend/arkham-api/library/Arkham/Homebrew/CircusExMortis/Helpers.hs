@@ -1,6 +1,6 @@
 module Arkham.Homebrew.CircusExMortis.Helpers where
 
-import Arkham.Ability (Ability, exists, forced, mkAbility, restricted)
+import Arkham.Ability (Ability, exists, forced, mkAbility, onlyOnce, restricted)
 import Arkham.CampaignLogKey (recorded)
 import Arkham.Card
 import Arkham.ChaosToken
@@ -676,7 +676,10 @@ time this resolves -- which is what makes "each OTHER enemy at <this location>" 
 -}
 shubNiggurathLeaves :: Int -> LocationAttrs -> Ability
 shubNiggurathLeaves n a =
-  mkAbility a n $ forced $ EnemyLeaves #after (be a) (enemyIs Enemies.shubNiggurath)
+  onlyOnce
+    $ mkAbility a n
+    $ forced
+    $ EnemyLeaves #after (be a) (enemyIs Enemies.shubNiggurath)
 
 {- | "Move each investigator and other enemy at <this location> once toward Silent
 Clearing." Shared by Primal Forest and High Thicket, which differ only in where the

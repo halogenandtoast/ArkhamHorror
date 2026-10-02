@@ -13,7 +13,6 @@ import Arkham.Homebrew.CircusExMortis.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.CircusExMortis.Helpers (
   flipToVictoryDisplay,
   investigatorWithDestinyModifier,
-  scenarioI18n,
  )
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -52,9 +51,7 @@ instance HasAbilities PiperOfShubNiggurath where
           $ SourceUsedBy
           $ NotInvestigator
           $ investigatorWithDestinyModifier "pipes"
-      , scenarioI18n "thousandToOne"
-          $ withI18nTooltip "piperOfShubNiggurath.parley"
-          $ skillTestAbility
+      , skillTestAbility
           $ restricted
             a
             2

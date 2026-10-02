@@ -115,7 +115,9 @@ scenario =
     , startingBystanders =
         map spaceIdFor ["Orne Library", "Silver Twilight Lodge", "St. Mary's Hospital"]
     , eventCards = [eventCode n | n <- [1 .. 28]]
-    , setAside = []
+    , -- the two gug priests the codex spawns, and the three Underworld cards that only
+      -- join that deck once the hunt for the phylactery begins
+      setAside = [CardCode ("archive-" <> tshow n) | n <- [145 .. 149 :: Int]]
     , codex = [1, 135, 136, 137]
     , anomalySet = Nothing
     , terrorSet = Nothing

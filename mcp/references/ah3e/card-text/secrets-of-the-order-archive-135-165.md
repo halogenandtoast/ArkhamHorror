@@ -14,42 +14,44 @@ to Serve's sheet and events — is likewise in `AH3e.Content.*`.
 
 ## Which scenario
 
-The box has three scenarios. Bound to Serve holds cards 2 and 121-134. The other two
-are not implemented, and neither sheet has been transcribed yet:
+The box has three scenarios. Bound to Serve holds cards 2 and 121-134, and The Dead Cry
+Out holds 1 and 135-149; both are implemented, so their text lives in the code and the
+transcription below is kept only as the source it was read from.
 
-- **135-149** — **The Dead Cry Out**, whose sheet and twenty-eight event cards are now
-  implemented: bystanders, a hidden path tile that walks around the Underworld tile on
-  every blank token, the Mummified Gug and the Seer of Mnar as epic monsters, and
-  Underworld encounter cards 147-149.
-- **150-165** — **The Key and the Gate**, likewise implemented: Carl Sanford's missing
-  Elders (161-165 are neighborhood-backed encounters), the Key of Zagan in the
-  Underworld, and a fallen investigator who keeps playing for the other side. Card 153
-  is what puts the Underworld and a derelict portal on that board part way through.
+- **150-165** — **The Key and the Gate**. Its sheet and twenty-eight event cards are in;
+  the codex is not. Carl Sanford's missing Elders (161-165 are neighborhood-backed
+  encounters), the Key of Zagan in the Underworld, and a fallen investigator who keeps
+  playing for the other side. Card 153 is what puts the Underworld and a derelict portal
+  on that board part way through.
 
-Both sheets are in. What is left is the codex: these cards.
+## What these cards asked of the engine
 
-## What these cards will ask of the engine
+What The Dead Cry Out needed is built (`TheDeadCryOutBehaviors`); what is left here is
+The Key and the Gate's.
 
-Nothing here is written yet. Noted while reading, so the cost is known up front:
-
-- **bystanders** — ally cards placed facedown on the board that monsters hunt as prey
-  and that are discarded when caught (136, 137, 138, 139, 141, 144). No such piece
-  exists; monsters have no bystander prey rule and `Marker` is not a card.
-- **a tile that moves** — 135 lifts every component off the hidden path tile, turns the
-  tile, walks it to the next corner of the Underworld, and puts the components back.
-  `Board` has no notion of a tile moving once it is laid. (The tiles themselves exist
-  now: `ThresholdTile` lays one between two hexes and `CornerTile` stands one in the
-  corner three hexes share.)
+- **bystanders** — in. `PlaceBystander`, `TakeBystander` and `DiscardBystander`, with
+  `#bystanders` on the game and the piece drawn on the board (`SpaceChips.vue`). Monsters
+  hunt them through `CodexBehavior.preyReplacement`, and `atEndOfMonsterPhase` is what
+  takes the ones the gugs reach.
+- **a tile that moves** — in. `moveCornerTile` walks a corner piece clockwise round a
+  tile, re-deals its printed icons and turns the picture with them; the space keeps its
+  identity, so everything standing on it comes along without changing state and the
+  card's "set aside and return" needs no doing. Geometry is shared with setup through
+  `Tiles.cornerSeat` and `Tiles.ringAround`.
 - **hazardous borders** — in, for the Underworld tile (gugs/Pnath horror, gugs/Zin
   damage, Zin/Pnath focus) and for the hidden path (damage, horror and focus, dealt
   round its three borders at random when the tile is laid, as the rules ask). The
   derelict portal's own icons have not been transcribed; the rules' example shows a
   damage border out of it into the Vale of Pnath.
-- **a card that re-enters the headline deck** — 138 shuffles the Seer of Mnar's own card
-  into the top three of the headline deck, and drawing it spawns the monster.
-- **markers moved to a codex card** (143's green markers) and **markers of a colour
-  counted on the sheet** — the second half exists now (`bts-seal:<colour>` in
-  `sheetTokens`); the first does not.
+- **a card that re-enters the headline deck** — in. 138 shuffles the Seer of Mnar's own
+  card into the top three of the headline deck, and `CodexBehavior.headlineReplacement`
+  is what reads a monster out of there instead of a headline.
+- **markers moved to a codex card** (143's green markers) — in, as a token on the entry
+  (`MarkCodexToken`), the same shape Bound to Serve's seals use. `RevealMarkerAt` turns
+  one face up where it lies.
+- **an encounter card that goes back on top of its deck** — in, as
+  `EncounterState.returnToTop`, which is what 147-149 use when the phylactery is not in
+  that place.
 - **a mid-scenario map addition** — 153 adds the Underworld and Derelict Portal tiles
   and removes four event cards from the game, then shuffles two set-aside Underworld
   event cards into the deck. `AddToBoard` exists; the event-deck surgery does not.
@@ -59,14 +61,16 @@ Nothing here is written yet. Noted while reading, so the cost is known up front:
 - **a card that passes from investigator to investigator** (158, 159) and a **win for
   only some investigators** (155: "each investigator with a DARK PACT wins the game").
   `WinTheGame` is all or nothing.
-- 144 and 154 both spend mythos tokens or test successes to put markers and clues on
-  the sheet, which the Bound to Serve work already has shapes for.
+- 154 spends mythos tokens or test successes to put markers and clues on the sheet, the
+  way 144 does.
 
 ## Readings I would want confirmed before building
 
 - 136's second line is garbled twice over ("treat the closest bystander as their brey",
   then "their Dyer anders dof the norey are and engage"). Both sides plainly say
-  monsters prey on and engage bystanders as though they were investigators.
+  monsters prey on and engage bystanders as though they were investigators. Built that
+  way, with "engaged with a bystander" read as a monster sharing its space and not
+  holding an investigator -- so standing guard over one protects it.
 - 138: "If the Mummified Gug epic monster is on the board, it deals one damage to each
   investigator engaged with it. Then discard that monster."
 - 144's title reads "AT LAsT".

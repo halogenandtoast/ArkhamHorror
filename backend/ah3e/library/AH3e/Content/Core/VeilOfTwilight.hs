@@ -85,6 +85,7 @@ scenario =
           spaceIdFor
           ["Train Station", "Science Building", "Graveyard", "Hangman's Hill", "Ma's Boarding House"]
     , startingMarkers = [(spaceIdFor "Black Cave", "white")]
+    , startingBystanders = []
     , eventCards = [CardCode ("vot-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , setAside = lodgeMonsters <> ["vot-28"]
     , codex = [2, 20, 21]

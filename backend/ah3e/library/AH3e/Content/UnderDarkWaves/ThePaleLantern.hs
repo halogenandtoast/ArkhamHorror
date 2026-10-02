@@ -102,6 +102,7 @@ scenario =
           , "St. Erasmus's Home"
           ]
     , startingMarkers = []
+    , startingBystanders = []
     , eventCards = [CardCode ("lantern-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , setAside = heldBack
     , codex = [2, 76, 87]

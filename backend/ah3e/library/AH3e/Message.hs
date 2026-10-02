@@ -215,6 +215,8 @@ data Message
     PlaceNeighborhoodMarker NeighborhoodId Text Bool
   | -- | a marker placed face down, for a card that hides what it put there
     PlaceMarkerFacedown SpaceId Text
+  | -- | lay the top of the ally deck facedown in that space as a bystander
+    PlaceBystander SpaceId
   | -- | clues handed straight to an investigator, off the scenario sheet
     TakeClues InvestigatorId Int
   | -- | tokens a codex card keeps on itself, which several of them count

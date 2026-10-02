@@ -5,7 +5,11 @@ module AH3e.Content.Tiles (
   StreetDef (..),
   RouteDef (..),
   MysteryTile (..),
+  ThresholdTile (..),
+  CornerTile (..),
   ClusterLink (..),
+  Pieces (..),
+  noPieces,
   tiles,
   tile,
   spaceIdFor,
@@ -13,7 +17,9 @@ module AH3e.Content.Tiles (
   buildMap,
   buildMapWith,
   buildMapLaidOut,
+  buildMapOf,
   addedMap,
+  addedMapOf,
 ) where
 
 import AH3e.Prelude
@@ -21,6 +27,8 @@ import AH3e.Types.Board
 import AH3e.Types.Card
 import AH3e.Types.Ids
 import Data.Char (isAlphaNum, toLower)
+import Data.List (minimumBy)
+import Data.Ord (comparing)
 import Data.Text qualified as T
 
 data Variety = V1 | V2
@@ -56,11 +64,44 @@ placed there counts toward that neighborhood's total (Under Dark Waves, p. 8).
 -}
 data MysteryTile = MysteryTile {from :: NeighborhoodId, edge :: Edge, name :: Text}
 
+{- | A threshold tile laid between two hexes, the way a street is: its space borders
+the spaces along both edges it touches, and the tiles sit as far apart as a street
+would hold them. Derelict portals are these (Secrets of the Order, p. 4).
+-}
+data ThresholdTile = ThresholdTile
+  { from :: NeighborhoodId
+  , edge :: Edge
+  , to :: NeighborhoodId
+  , thresholdType :: ThresholdType
+  }
+
+{- | A threshold tile laid in the corner where hexes meet, which is what a hidden path
+is. It borders the one space of each tile that owns that corner and nothing else --
+not even a street running between two of them -- so the tiles are named and the rest
+is read off the geometry: the corner is where their centres average out, and the space
+each tile puts there is the one whose wedge faces it.
+-}
+data CornerTile = CornerTile {tiles :: [NeighborhoodId], thresholdType :: ThresholdType}
+
 {- | Where a cluster of tiles no street reaches is set out: the edge of an already
 placed tile it is laid against. Nothing connects along it -- it only says where
 the tiles go, the way they would be put down on the table.
 -}
 data ClusterLink = ClusterLink {from :: NeighborhoodId, edge :: Edge, to :: NeighborhoodId}
+
+{- | Everything a map has besides its hexes and the streets between them. A sheet
+names only the pieces it uses, so this is built from 'noPieces'.
+-}
+data Pieces = Pieces
+  { routes :: [RouteDef]
+  , mysteries :: [MysteryTile]
+  , thresholds :: [ThresholdTile]
+  , corners :: [CornerTile]
+  , clusters :: [ClusterLink]
+  }
+
+noPieces :: Pieces
+noPieces = Pieces {routes = [], mysteries = [], thresholds = [], corners = [], clusters = []}
 
 slug :: Text -> Text
 slug =
@@ -195,11 +236,16 @@ routes -- so each cluster is laid out from its own origin and then shifted clear
 of the ones already placed, the way they would be set out on the table.
 -}
 placeTiles
-  :: [NeighborhoodId] -> [StreetDef] -> [ClusterLink] -> [(NeighborhoodId, (Double, Double))]
-placeTiles nids streets clusters = foldl cluster [] nids
+  :: [NeighborhoodId]
+  -> [StreetDef]
+  -> [ThresholdTile]
+  -> [ClusterLink]
+  -> [(NeighborhoodId, (Double, Double))]
+placeTiles nids streets thresholds clusters = foldl cluster [] nids
  where
   links =
     concat [[(s.from, s.edge, s.to), (s.to, opposite s.edge, s.from)] | s <- streets]
+      <> concat [[(t.from, t.edge, t.to), (t.to, opposite t.edge, t.from)] | t <- thresholds]
       <> concat [[(c.from, c.edge, c.to), (c.to, opposite c.edge, c.from)] | c <- clusters]
   cluster placed n
     | n `elem` map fst placed = placed
@@ -249,20 +295,77 @@ placed; with one it is laid against the edge it names, still joined by nothing.
 buildMapLaidOut
   :: [NeighborhoodId] -> [StreetDef] -> [ClusterLink] -> [RouteDef] -> [MysteryTile] -> MapDef
 buildMapLaidOut nids streets clusters routes mysteries =
+  buildMapOf nids streets noPieces {routes, mysteries, clusters}
+
+-- | 'buildMap' with every other kind of piece a sheet may lay out.
+buildMapOf :: [NeighborhoodId] -> [StreetDef] -> Pieces -> MapDef
+buildMapOf nids streets pieces =
   MapDef
     { neighborhoods = [NeighborhoodDef t.neighborhood t.name t.town (tileSpaces t) | t <- ts]
     , otherSpaces =
         [SpaceDef (streetId s) (streetName s) (StreetSpace s.streetType) Nothing | s <- streets]
           <> [SpaceDef (routeId r) (routeName r) (TravelRouteSpace r.routeType) Nothing | r <- routes]
           <> [SpaceDef (spaceIdFor m.name) m.name MysterySpace (Just m.from) | m <- mysteries]
+          <> [ SpaceDef
+                 (thresholdId t.thresholdType)
+                 (thresholdName t.thresholdType)
+                 (ThresholdSpace t.thresholdType)
+                 Nothing
+             | t <- thresholds
+             ]
+          <> [ SpaceDef
+                 (thresholdId c.thresholdType)
+                 (thresholdName c.thresholdType)
+                 (ThresholdSpace c.thresholdType)
+                 Nothing
+             | c <- corners
+             ]
     , borders =
         internal
           <> concatMap streetBorders streets
           <> concat [hangingBorders (routeId r) r.from r.edge | r <- routes]
           <> concat [hangingBorders (spaceIdFor m.name) m.from m.edge | m <- mysteries]
-    , layout = BoardLayout tilePlacements (streetPlacements <> hangingPlacements) anchors
+          <> concatMap thresholdBorders thresholds
+          <> concatMap cornerBorders corners
+    , layout =
+        BoardLayout tilePlacements (streetPlacements <> hangingPlacements <> thresholdPlacements) anchors
     }
  where
+  Pieces {routes, mysteries, thresholds, corners, clusters} = pieces
+  -- a scenario lays out at most one tile of each kind, so the type names the space
+  thresholdId = spaceIdFor . thresholdName
+  -- laid between two hexes, a threshold borders both edges the way a street does
+  thresholdBorders t =
+    [ (thresholdId t.thresholdType, sid, Nothing)
+    | sid <- edgeSpaces (tile t.from) t.edge <> edgeSpaces (tile t.to) (opposite t.edge)
+    ]
+  {- A corner tile abuts one space of each hex it touches: the space whose wedge faces
+  the corner, which is where the centres of those hexes average out. -}
+  cornerBorders c = [(thresholdId c.thresholdType, sid, Nothing) | sid <- cornerSpaces c]
+  cornerSpaces c =
+    [ facing t (pos t.neighborhood) (cornerAt c)
+    | nid <- c.tiles
+    , let t = tile nid
+    ]
+  cornerAt c = case [pos nid | nid <- c.tiles] of
+    [] -> (0, 0)
+    ps -> (sum (map fst ps) / fromIntegral (length ps), sum (map snd ps) / fromIntegral (length ps))
+  -- the space of this tile whose wedge points nearest the given place
+  facing t (x, y) (tx, ty) =
+    let want = atan2 (ty - y) (tx - x)
+        off slot = abs (atan2 (sin (slotAngle t.variety slot - want)) (cos (slotAngle t.variety slot - want)))
+     in spaceIdFor (slotName t (minimumBy (comparing off) [A, B, C]))
+  thresholdPlacements =
+    [ StreetPlacement (thresholdId t.thresholdType) ((x1 + x2) / 2) ((y1 + y2) / 2) (edgeDegrees t.edge)
+    | t <- thresholds
+    , let (x1, y1) = pos t.from
+          (x2, y2) = pos t.to
+    ]
+      -- a corner piece stands on the junction itself, and no edge turns it
+      <> [ StreetPlacement (thresholdId c.thresholdType) x y (-90)
+         | c <- corners
+         , let (x, y) = cornerAt c
+         ]
   routeId r = SpaceId (coerce r.from <> "--" <> routeSlug r.routeType)
   routeName r = (tile r.from).name <> " – " <> routeLabel r.routeType
   -- a dangling space borders only the tile spaces along the edge it is attached to
@@ -277,7 +380,7 @@ buildMapLaidOut nids streets clusters routes mysteries =
           a = edgeAngle e
           reach = edgeApothem e + connectorDepth * (0.5 - connectorTab)
     ]
-  positions = [(nid, (x, y * rowStretch)) | (nid, (x, y)) <- placeTiles nids streets clusters]
+  positions = [(nid, (x, y * rowStretch)) | (nid, (x, y)) <- placeTiles nids streets thresholds clusters]
   pos nid = fromJustNote ("tile not connected to the map: " <> show nid) (lookup nid positions)
   tilePlacements = [TilePlacement nid x y | (nid, (x, y)) <- positions]
   streetPlacements =
@@ -307,6 +410,12 @@ buildMapLaidOut nids streets clusters routes mysteries =
     | sid <- edgeSpaces (tile s.from) s.edge <> edgeSpaces (tile s.to) (opposite s.edge)
     ]
 
+thresholdName :: ThresholdType -> Text
+thresholdName = \case
+  HiddenPath -> "Hidden Path"
+  DerelictPortal -> "Derelict Portal"
+  WildGateway -> "Wild Gateway"
+
 routeSlug :: RouteType -> Text
 routeSlug = \case
   CountryRoad -> "country-road"
@@ -327,6 +436,15 @@ against a tile already on the board. That tile sits at the origin here, so the
 engine has only to shift the piece onto wherever it already stands.
 -}
 addedMap :: NeighborhoodId -> Edge -> [NeighborhoodId] -> [StreetDef] -> [RouteDef] -> MapDef
-addedMap against edge nids streets routes = case nids of
+addedMap against edge nids streets routes =
+  addedMapOf against edge nids streets noPieces {routes}
+
+-- | 'addedMap' with every other kind of piece the card lays down beside the tiles.
+addedMapOf :: NeighborhoodId -> Edge -> [NeighborhoodId] -> [StreetDef] -> Pieces -> MapDef
+addedMapOf against edge nids streets pieces = case nids of
   [] -> buildMap [against] []
-  lead : _ -> buildMapLaidOut (against : nids) streets [ClusterLink against edge lead] routes []
+  lead : _ ->
+    buildMapOf
+      (against : nids)
+      streets
+      pieces {clusters = ClusterLink against edge lead : pieces.clusters}

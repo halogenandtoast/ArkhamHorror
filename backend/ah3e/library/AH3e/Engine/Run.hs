@@ -167,6 +167,8 @@ dispatch msg = case msg of
       $ [SpawnClue, SpawnClue, SpawnClue]
       <> [PlaceDoomInOrder SourceRules sc.startingDoom | not (null sc.startingDoom)]
       <> [SpreadDoom]
+      -- the ally deck is shuffled by now, so a bystander is whoever comes off the top
+      <> map PlaceBystander sc.startingBystanders
       <> map AddArchiveToCodex sc.codex
       <> [SetupEncounterDecks, BeginRound]
   SetupEncounterDecks -> setupScenarioDecks
@@ -1224,6 +1226,14 @@ dispatch msg = case msg of
     s <- getSpace sid
     spaceL sid . #markers %= (<> [Marker colour False])
     logText ("A marker is placed face down at " <> s.name)
+  PlaceBystander sid ->
+    use (#decks . #ally) >>= \case
+      [] -> logText "No ally card is left to stand in for a bystander"
+      (cid : rest) -> do
+        #decks . #ally .= rest
+        #bystanders %= Just . (<> [(cid, sid)]) . fromMaybe []
+        s <- getSpace sid
+        logText ("A bystander is left at " <> s.name)
   TakeClues iid n -> addClues iid n
   MarkCodexToken card name k -> do
     #codex

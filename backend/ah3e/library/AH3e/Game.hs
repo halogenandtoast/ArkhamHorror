@@ -161,6 +161,11 @@ data Game = Game
   {- ^ the scenario sheet's other piles, by name: a sheet may collect damage and
   horror tokens as well as markers, and a scenario may keep its own state here.
   -}
+  , bystanders :: Maybe [(CardId, SpaceId)]
+  {- ^ Ally cards lying facedown on the board, which The Dead Cry Out calls
+  bystanders: monsters hunt them, and whoever reaches one first may take the card.
+  Optional, so a table saved before it loads.
+  -}
   , unstableSpace :: Maybe SpaceId
   {- ^ The space a card has made the unstable space in place of the one the
   event deck names (Desperate Binding moves it to the Witch House). Optional, so

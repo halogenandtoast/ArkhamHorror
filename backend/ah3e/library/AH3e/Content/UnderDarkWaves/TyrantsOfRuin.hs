@@ -92,6 +92,7 @@ scenario =
           , "South Church"
           ]
     , startingMarkers = []
+    , startingBystanders = []
     , eventCards = [CardCode ("tyrants-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , -- the tyrants cards 65, 66, 67 and 73 call up
       setAside = ["archive-74", "archive-75"]

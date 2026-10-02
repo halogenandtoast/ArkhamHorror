@@ -17,19 +17,16 @@ to Serve's sheet and events — is likewise in `AH3e.Content.*`.
 The box has three scenarios. Bound to Serve holds cards 2 and 121-134. The other two
 are not implemented, and neither sheet has been transcribed yet:
 
-- **135-149** — the gugs of Mnar: bystanders, a hidden path tile that walks around the
-  Underworld tile on every blank token, the Mummified Gug and the Seer of Mnar as epic
-  monsters, and Underworld encounter cards 147-149. Most likely the sheet the user
-  called *The Dead Cry Out* (28 event cards).
-- **150-165** — the Lurker at the Threshold: Carl Sanford's missing Elders (161-165 are
-  neighborhood-backed encounters), the Key of Zagan in the Underworld, and a fallen
-  investigator who keeps playing for the other side. Most likely *The Key and the Gate*
-  (24 event cards). Card 153 is what settles the Underworld tile's variety and its
-  hazardous borders, both of which are a flagged guess in `Content.Tiles` today.
+- **135-149** — **The Dead Cry Out**, whose sheet and twenty-eight event cards are now
+  implemented: bystanders, a hidden path tile that walks around the Underworld tile on
+  every blank token, the Mummified Gug and the Seer of Mnar as epic monsters, and
+  Underworld encounter cards 147-149.
+- **150-165** — **The Key and the Gate**, likewise implemented: Carl Sanford's missing
+  Elders (161-165 are neighborhood-backed encounters), the Key of Zagan in the
+  Underworld, and a fallen investigator who keeps playing for the other side. Card 153
+  is what puts the Underworld and a derelict portal on that board part way through.
 
-Ask for the sheet first (starting space, reckoning, mythos cup, monsters, starting
-doom/monsters/markers, codex, anomaly or terror set, and the setup map in the
-letter-and-connector notation), then the event cards, then build from this file.
+Both sheets are in. What is left is the codex: these cards.
 
 ## What these cards will ask of the engine
 
@@ -38,15 +35,14 @@ Nothing here is written yet. Noted while reading, so the cost is known up front:
 - **bystanders** — ally cards placed facedown on the board that monsters hunt as prey
   and that are discarded when caught (136, 137, 138, 139, 141, 144). No such piece
   exists; monsters have no bystander prey rule and `Marker` is not a card.
-- **threshold tiles at all** — nothing produces a `ThresholdSpace` yet. The threshold
-  encounter deck is implemented and keyed by `ThresholdType` (hidden path, derelict
-  portal, wild gateway), but `setupMap` can only lay neighborhoods, streets, travel
-  routes and a `MysteryTile`, so the deck sits unused on every board. Both of these
-  scenarios need the tiles: 144 acts "only in the hidden path space" and 153 lays the
-  derelict portal.
 - **a tile that moves** — 135 lifts every component off the hidden path tile, turns the
   tile, walks it to the next corner of the Underworld, and puts the components back.
-  `Board` has no notion of a tile moving once it is laid.
+  `Board` has no notion of a tile moving once it is laid. (The tiles themselves exist
+  now: `ThresholdTile` lays one between two hexes and `CornerTile` stands one in the
+  corner three hexes share.)
+- **hazardous borders** — the mechanism is there (`Hazard` on a border, and movement
+  stops unless the cost is paid), but the printed icons on the Underworld tile and on
+  the two threshold tiles have not been transcribed, so no border carries one yet.
 - **a card that re-enters the headline deck** — 138 shuffles the Seer of Mnar's own card
   into the top three of the headline deck, and drawing it spawns the monster.
 - **markers moved to a codex card** (143's green markers) and **markers of a colour

@@ -297,6 +297,8 @@ data ScenarioDef = ScenarioDef
   , startingDoom :: [SpaceId]
   , startingMarkers :: [(SpaceId, Text)]
   -- ^ markers a sheet's setup puts on the board face up, with their colour
+  , startingBystanders :: [SpaceId]
+  -- ^ where a sheet lays an ally card facedown before play (The Dead Cry Out)
   , eventCards :: [CardCode]
   , setAside :: [CardCode]
   {- ^ Cards the setup holds back: the monsters a sheet says to set aside, and the

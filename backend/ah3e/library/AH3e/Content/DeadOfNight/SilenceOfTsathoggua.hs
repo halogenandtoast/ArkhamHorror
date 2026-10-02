@@ -76,6 +76,7 @@ scenario =
           spaceIdFor
           ["Curiositie Shoppe", "Unvisited Isle", "Black Cave", "Science Building", "Hangman's Hill"]
     , startingMarkers = []
+    , startingBystanders = []
     , eventCards = [CardCode ("sot-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , setAside = ["sot-60"]
     , codex = [2, 53, 54]

@@ -83,6 +83,7 @@ scenario =
           spaceIdFor
           ["La Bella Luna", "Police Station", "Graveyard", "Hangman's Hill", "Historical Society"]
     , startingMarkers = []
+    , startingBystanders = []
     , eventCards = [CardCode ("feast-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , setAside = worshipers <> heldBack
     , codex = [1, 10, 11]

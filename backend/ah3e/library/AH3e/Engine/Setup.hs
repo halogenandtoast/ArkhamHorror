@@ -66,6 +66,7 @@ emptyGame pids seed opts =
     , sheetClues = 0
     , sheetMarkers = 0
     , sheetTokens = mempty
+    , bystanders = Nothing
     , unstableSpace = Nothing
     , cup = []
     , drawnTokens = []

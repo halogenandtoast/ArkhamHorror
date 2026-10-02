@@ -95,6 +95,7 @@ scenario =
           , "Historical Society"
           ]
     , startingMarkers = []
+    , startingBystanders = []
     , eventCards = [CardCode ("bound-to-serve-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , setAside = lodgeMonsters
     , codex = [2, 121]

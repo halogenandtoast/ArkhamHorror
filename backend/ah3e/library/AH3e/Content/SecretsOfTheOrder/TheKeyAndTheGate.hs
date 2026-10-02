@@ -102,6 +102,7 @@ scenario =
           , "Hangman's Hill"
           ]
     , startingMarkers = []
+    , startingBystanders = []
     , eventCards = [eventCode n | n <- [1 .. 17] <> [22 .. 28]]
     , -- the four Underworld event cards wait for card 153, which shuffles two of
       -- them into the deck and discards the other two

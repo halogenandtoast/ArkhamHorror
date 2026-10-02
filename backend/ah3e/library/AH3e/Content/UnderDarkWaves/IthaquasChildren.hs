@@ -92,6 +92,7 @@ scenario =
           , "South Church"
           ]
     , startingMarkers = []
+    , startingBystanders = []
     , eventCards = [CardCode ("ithaqua-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , -- the wendigo card 91 calls up, and the Ithaqua of cards 99 and 102
       setAside = ["archive-104", "archive-105"]

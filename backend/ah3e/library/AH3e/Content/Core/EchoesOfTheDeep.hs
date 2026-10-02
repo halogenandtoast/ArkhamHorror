@@ -79,6 +79,7 @@ scenario =
           spaceIdFor
           ["Train Station", "La Bella Luna", "River Docks", "Unvisited Isle", "Black Cave"]
     , startingMarkers = []
+    , startingBystanders = []
     , eventCards = [CardCode ("echoes-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , setAside = heldBack
     , codex = [2, 29, 30]

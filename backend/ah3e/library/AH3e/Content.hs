@@ -37,6 +37,7 @@ import AH3e.Content.SecretsOfTheOrder.BoundToServe qualified as BoundToServe
 import AH3e.Content.SecretsOfTheOrder.Investigators qualified as SecretsOfTheOrderInvestigators
 import AH3e.Content.SecretsOfTheOrder.Mysteries qualified as SecretsOfTheOrderMysteries
 import AH3e.Content.SecretsOfTheOrder.NeighborhoodCards qualified as SecretsOfTheOrderNeighborhoodCards
+import AH3e.Content.SecretsOfTheOrder.TheDeadCryOut qualified as TheDeadCryOut
 import AH3e.Content.SecretsOfTheOrder.TheKeyAndTheGate qualified as TheKeyAndTheGate
 import AH3e.Content.SecretsOfTheOrder.Thresholds qualified as SecretsOfTheOrderThresholds
 import AH3e.Content.Special qualified as Special
@@ -113,6 +114,7 @@ cardDefs =
           <> SecretsOfTheOrderArchive.cards
           <> BoundToServe.cards
           <> TheKeyAndTheGate.cards
+          <> TheDeadCryOut.cards
           <> UnderDarkWavesMysteries.cards
           <> UnderDarkWavesTravelRoutes.cards
           <> UnderDarkWavesAnomalies.cards
@@ -166,6 +168,7 @@ scenarioDefs =
         , IthaquasChildren.scenario
         , BoundToServe.scenario
         , TheKeyAndTheGate.scenario
+        , TheDeadCryOut.scenario
         ]
     ]
 

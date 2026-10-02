@@ -80,6 +80,7 @@ scenario =
     , startingDoom =
         map spaceIdFor ["Orne Library", "Black Cave", "Hangman's Hill", "Historical Society"]
     , startingMarkers = []
+    , startingBystanders = []
     , {- Only Arkham's sixteen events start in the deck; cards 117-120 shuffle in
       the eight belonging to whichever town they add. -}
       eventCards = [CardCode ("rlyeh-event-" <> pad n) | n <- [17 .. 32 :: Int]]

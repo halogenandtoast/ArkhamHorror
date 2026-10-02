@@ -87,6 +87,7 @@ scenario =
           ["La Bella Luna", "Curiositie Shoppe", "Hibb's Roadhouse", "River Docks", "Graveyard"]
     , -- the red marker is the O'Bannion Stronghold, the blue one the Sheldons'
       startingMarkers = [(spaceIdFor "La Bella Luna", "red"), (spaceIdFor "River Docks", "blue")]
+    , startingBystanders = []
     , eventCards = [CardCode ("sitd-event-" <> pad n) | n <- [1 .. 24 :: Int]]
     , setAside = setAsideMonsters
     , codex = [1, 41, 42, 43]

@@ -44,6 +44,8 @@ instance RunMessage CosmicIngress where
       pure l
     UseThisAbility _ source@(ProxySource (LocationSource lid) (isSource attrs -> True)) 1 -> do
       selectEach (investigatorAt lid) \iid -> moveTo (toAbilitySource source 1) iid attrs
+      selectEach (EnemyWithPlacement $ AtLocation lid) \enemy ->
+        enemyMoveTo (toAbilitySource source 1) enemy attrs
       removeLocation lid
       card <- field Field.LocationCard lid
       shuffleCardsIntoDeck (Deck.ScenarioDeckByKey CosmosDeck) [card]

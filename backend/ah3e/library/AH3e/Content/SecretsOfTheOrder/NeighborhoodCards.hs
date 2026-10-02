@@ -16,19 +16,19 @@ cards = fromBox SecretsOfTheOrder (frenchHill <> theUnderworld <> concat extras)
 
 -- | A card of one of the two decks this box brings, both of which hold eight.
 card :: NeighborhoodId -> Int -> [(Text, Text, Effect)] -> CardDef
-card nid = cardOf nid 8
+card nid n = cardOf nid n (tshow n <> "/8")
 
-{- | A card added to a deck Arkham already had, which this box takes from eight
-cards to ten.
+{- | A card added to a deck Arkham already had. The box numbers its own pair 1/2 and
+2/2, as its cards are printed, while their codes carry on from the core set's eight.
 -}
 extra :: NeighborhoodId -> Int -> [(Text, Text, Effect)] -> CardDef
-extra nid = cardOf nid 10
+extra nid n = cardOf nid (8 + n) (tshow n <> "/2")
 
-cardOf :: NeighborhoodId -> Int -> Int -> [(Text, Text, Effect)] -> CardDef
-cardOf nid outOf n encounters =
+cardOf :: NeighborhoodId -> Int -> Text -> [(Text, Text, Effect)] -> CardDef
+cardOf nid n printed encounters =
   CardDef
     { code = CardCode (coerce nid <> "-" <> T.justifyRight 2 '0' (tshow n))
-    , name = (tile nid).name <> " " <> tshow n <> "/" <> tshow outOf
+    , name = (tile nid).name <> " " <> printed
     , expansion = CoreSet
     , copies = 1
     , kind =
@@ -402,7 +402,7 @@ downtown =
   map
     (uncurry (extra "downtown"))
     [
-      ( 9
+      ( 1
       ,
         [
           ( "Arkham Asylum"
@@ -422,7 +422,7 @@ downtown =
         ]
       )
     ,
-      ( 10
+      ( 2
       ,
         [
           ( "Arkham Asylum"
@@ -431,8 +431,8 @@ downtown =
           )
         ,
           ( "Independence Square"
-          , "As you pass by the shops you see a little girl with a Dunwich accent darting through the crowd. She seems to be hiding from something (observation). If you pass, you recognize the game she is playing and decide to play with her. She is delighted and hands you a gift before giggling and running off; gain one curio and become DRIVEN."
-          , pass Observation 0 (Seq [curioItem, driven])
+          , "As you pass by the shops you see a little girl with a Dunwich accent darting through the crowd. She seems to be hiding from something (will). If you pass, you recognize the game she is playing and decide to play with her. She is delighted and hands you a gift before giggling and running off; gain one curio and become DRIVEN."
+          , pass Will 0 (Seq [curioItem, driven])
           )
         ,
           ( "La Bella Luna"
@@ -448,7 +448,7 @@ easttown =
   map
     (uncurry (extra "easttown"))
     [
-      ( 9
+      ( 1
       ,
         [
           ( "Hibb's Roadhouse"
@@ -468,7 +468,7 @@ easttown =
         ]
       )
     ,
-      ( 10
+      ( 2
       ,
         [
           ( "Hibb's Roadhouse"
@@ -494,7 +494,7 @@ merchantDistrict =
   map
     (uncurry (extra "merchant-district"))
     [
-      ( 9
+      ( 1
       ,
         [
           ( "River Docks"
@@ -514,7 +514,7 @@ merchantDistrict =
         ]
       )
     ,
-      ( 10
+      ( 2
       ,
         [
           ( "River Docks"
@@ -540,7 +540,7 @@ miskatonicUniversity =
   map
     (uncurry (extra "miskatonic-university"))
     [
-      ( 9
+      ( 1
       ,
         [
           ( "Observatory"
@@ -560,7 +560,7 @@ miskatonicUniversity =
         ]
       )
     ,
-      ( 10
+      ( 2
       ,
         [
           ( "Observatory"
@@ -586,7 +586,7 @@ northside =
   map
     (uncurry (extra "northside"))
     [
-      ( 9
+      ( 1
       ,
         [
           ( "Arkham Advertiser"
@@ -606,7 +606,7 @@ northside =
         ]
       )
     ,
-      ( 10
+      ( 2
       ,
         [
           ( "Arkham Advertiser"
@@ -632,7 +632,7 @@ rivertown =
   map
     (uncurry (extra "rivertown"))
     [
-      ( 9
+      ( 1
       ,
         [
           ( "Black Cave"
@@ -646,13 +646,13 @@ rivertown =
           )
         ,
           ( "Graveyard"
-          , "You come across a damaged monument. You spend the time to heft the heavy pieces up and attempt to fix it (strength). If you pass, a withered visage appears as you finish, nods its eyeless head to you and extends a gnarled hand; gain one remnant. If you fail, you forget to lift with your legs and hear an unfortunate pop; become FATIGUED."
-          , Test Strength 0 (remnants 1) fatigued
+          , "You come across a damaged monument. You spend the time to heft the heavy pieces up and attempt to fix it (strength). If you pass, a withered visage appears as you finish, nods its eyeless head to you and extends a gnarled hand; gain $3. If you fail, you forget to lift with your legs and hear an unfortunate pop; become FATIGUED."
+          , Test Strength 0 (money 3) fatigued
           )
         ]
       )
     ,
-      ( 10
+      ( 2
       ,
         [
           ( "Black Cave"
@@ -678,7 +678,7 @@ southside =
   map
     (uncurry (extra "southside"))
     [
-      ( 9
+      ( 1
       ,
         [
           ( "Historical Society"
@@ -698,7 +698,7 @@ southside =
         ]
       )
     ,
-      ( 10
+      ( 2
       ,
         [
           ( "Historical Society"
@@ -724,7 +724,7 @@ uptown =
   map
     (uncurry (extra "uptown"))
     [
-      ( 9
+      ( 1
       ,
         [
           ( "Hangman's Hill"
@@ -744,7 +744,7 @@ uptown =
         ]
       )
     ,
-      ( 10
+      ( 2
       ,
         [
           ( "Hangman's Hill"

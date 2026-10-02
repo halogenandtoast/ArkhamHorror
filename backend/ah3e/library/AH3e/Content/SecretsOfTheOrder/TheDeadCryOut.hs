@@ -53,7 +53,10 @@ scenario =
           , StreetDef (nb "French Hill") BottomLeft (nb "Southside") Scenic
           ]
           noPieces
-            { thresholds = [ThresholdTile (nb "The Underworld") BottomLeft (nb "Uptown") DerelictPortal []]
+            { -- the portal's own icon, which setup turns along with the tile; the
+              -- rules' example crosses it as a damage border out into the Vale of Pnath
+              thresholds =
+                [ThresholdTile (nb "The Underworld") BottomLeft (nb "Uptown") DerelictPortal [HazardDamage]]
             , -- the hidden path stands in the corner those three tiles share, so an
               -- investigator on it may step into any of them but not into the street;
               -- each of its three borders carries an icon, and setup turns the tile

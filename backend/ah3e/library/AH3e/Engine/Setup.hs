@@ -118,8 +118,11 @@ turnThresholdTiles = do
         Nothing -> False
   for_ [s.id | s <- Map.elems board.spaces, isThresholdSpace s.id] \sid -> do
     edges <- uses (#board . #borders . at sid . non mempty) Map.toList
+    -- the borders are what the turning moves the icons between, so they are what is
+    -- shuffled: a tile with one icon and three borders can face any of the three
+    order <- shuffle (map fst edges)
     turned <- shuffle (mapMaybe snd edges)
-    let dealt = zip (map fst edges) (map Just turned <> repeat Nothing)
+    let dealt = zip order (map Just turned <> repeat Nothing)
     for_ dealt \(other, h) -> do
       #board . #borders . ix sid . at other ?= h
       #board . #borders . ix other . at sid ?= h

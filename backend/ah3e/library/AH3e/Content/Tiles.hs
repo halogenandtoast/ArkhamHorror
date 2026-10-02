@@ -87,9 +87,6 @@ is. It borders the one space of each tile that owns that corner and nothing else
 not even a street running between two of them -- so the tiles are named and the rest
 is read off the geometry: the corner is where their centres average out, and the space
 each tile puts there is the one whose wedge faces it.
-
-The tile it is laid against is named first, and it stands on that tile's own corner
-rather than out in the middle of the gap, the way it is wedged there on the table.
 -}
 data CornerTile = CornerTile
   { tiles :: [NeighborhoodId]
@@ -250,12 +247,6 @@ connectorDepth, connectorTab :: Double
 connectorDepth = 0.38
 connectorTab = 0.2
 
-{- | How far from the centre of the tile it is laid against a corner piece stands, in
-units of the tile's flat-to-flat width: its own corner, which is the circumradius.
--}
-cornerReach :: Double
-cornerReach = 0.5 / cos (pi / 6)
-
 -- | How far apart two unconnected clusters of tiles are set out.
 clusterGap :: Double
 clusterGap = 2
@@ -379,21 +370,21 @@ buildMapOf nids streets pieces =
     | nid <- c.tiles
     , let t = tile nid
     ]
-  cornerAt c = case [pos nid | nid <- c.tiles] of
-    [] -> (0, 0)
-    ps -> (sum (map fst ps) / fromIntegral (length ps), sum (map snd ps) / fromIntegral (length ps))
-  {- Where the piece itself stands: out from the centre of the tile it is laid against,
-  toward the junction, as far as that tile's own corner. The junction is in the middle
-  of the gap the streets run through, which is further out than the tile reaches. -}
-  cornerStand c = case c.tiles of
-    [] -> cornerAt c
-    anchor : _ ->
-      let (ax, ay) = pos anchor
-          (jx, jy) = cornerAt c
-          away = sqrt ((jx - ax) ** 2 + (jy - ay) ** 2)
-       in if away <= 0
-            then (ax, ay)
-            else (ax + (jx - ax) / away * cornerReach, ay + (jy - ay) / away * cornerReach)
+  {- The junction the piece stands in: the middle of the three sides the tiles face
+  each other across. Each side is halfway between two tile centres, which sit an
+  apothem apiece plus a street's length apart, and the middle of those three midpoints
+  comes to the mean of the centres themselves -- the same point the tiles' own facing
+  corners average out to, since those three offsets cancel.
+  -}
+  cornerAt c = mean [mid (pos a) (pos b) | (a, b) <- pairs c.tiles]
+   where
+    mid (x1, y1) (x2, y2) = ((x1 + x2) / 2, (y1 + y2) / 2)
+    pairs xs = [(a, b) | (i, a) <- zip [0 :: Int ..] xs, (j, b) <- zip [0 ..] xs, i < j]
+    mean [] = (0, 0)
+    mean ps =
+      ( sum (map fst ps) / fromIntegral (length ps)
+      , sum (map snd ps) / fromIntegral (length ps)
+      )
   -- the space of this tile whose wedge points nearest the given place
   facing t (x, y) (tx, ty) =
     let want = atan2 (ty - y) (tx - x)
@@ -405,11 +396,10 @@ buildMapOf nids streets pieces =
     , let (x1, y1) = pos t.from
           (x2, y2) = pos t.to
     ]
-      -- a corner piece stands on the corner of the tile it is laid against, and no
-      -- edge turns it
+      -- a corner piece stands in the junction itself, and no edge turns it
       <> [ StreetPlacement (thresholdId c.thresholdType) x y (-90)
          | c <- corners
-         , let (x, y) = cornerStand c
+         , let (x, y) = cornerAt c
          ]
   routeId r = SpaceId (coerce r.from <> "--" <> routeSlug r.routeType)
   routeName r = (tile r.from).name <> " – " <> routeLabel r.routeType

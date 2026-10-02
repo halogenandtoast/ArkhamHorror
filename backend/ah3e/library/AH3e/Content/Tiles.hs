@@ -90,6 +90,7 @@ each tile puts there is the one whose wedge faces it.
 -}
 data CornerTile = CornerTile
   { tiles :: [NeighborhoodId]
+  -- ^ the tile it is wedged against first, then the others it reaches
   , thresholdType :: ThresholdType
   , hazards :: [Hazard]
   -- ^ the icons printed along its borders; setup decides which lands where
@@ -247,6 +248,12 @@ connectorDepth, connectorTab :: Double
 connectorDepth = 0.38
 connectorTab = 0.2
 
+{- | How far toward the tile it is laid against a corner piece is wedged, in units of
+the tile's flat-to-flat width.
+-}
+cornerSeat :: Double
+cornerSeat = 0.03
+
 -- | The six corners of a tile, each between two of its edges.
 cornerAngles :: [Double]
 cornerAngles = [fromIntegral d * pi / 180 | d <- [30, 90, 150, 210, 270, 330 :: Int]]
@@ -400,9 +407,20 @@ buildMapOf nids streets pieces =
   streets clear, and that difference is the whole reason a piece standing on the mean
   cannot reach all three tiles at once.
   -}
-  cornerAt c = case [cornerPoint nid (middling c) | nid <- c.tiles] of
-    [a, b, d] -> fromMaybe (middling c) (equidistant a b d)
-    _ -> middling c
+  cornerAt c = wedged c (even' c)
+   where
+    even' x = case [cornerPoint nid (middling x) | nid <- x.tiles] of
+      [a, b, d] -> fromMaybe (middling x) (equidistant a b d)
+      _ -> middling x
+  {- A hidden path is laid against one tile and reaches the others, so it is seated a
+  little that way rather than sitting evenly between all three (Secrets of the Order,
+  p. 4: a corner of it is placed adjacent to the other world). -}
+  wedged c (x, y) = case c.tiles of
+    [] -> (x, y)
+    anchor : _ ->
+      let (ax, ay) = pos anchor
+          away = sqrt ((ax - x) ** 2 + (ay - y) ** 2)
+       in if away <= 0 then (x, y) else (x + (ax - x) / away * cornerSeat, y + (ay - y) / away * cornerSeat)
   middling c = mean [mid (pos a) (pos b) | (a, b) <- pairs c.tiles]
    where
     mid (x1, y1) (x2, y2) = ((x1 + x2) / 2, (y1 + y2) / 2)

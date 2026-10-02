@@ -201,17 +201,16 @@ export const TILE_W = 240
 export const TILE_H = (TILE_W * 2) / Math.sqrt(3)
 // a street's length along the join, and how wide it is across that
 export const STREET_W = 0.534 * TILE_W
-export const STREET_H = 0.48 * TILE_W
+export const STREET_H = 0.45 * TILE_W
 /* A connector hangs off one edge instead of spanning two tiles, so it is not a
 street length. Its box is square and it is drawn to fit, which keeps every
 connector's own proportions -- the art runs from 1.01:1 to 1.20:1 -- rather than
 stretching them all to the street's. */
 export const CONNECTOR_W = 0.85 * STREET_W
-/* A corner piece stands where it is the same distance from the three corners it
-joins -- about 0.235 of a tile's width -- and has to reach exactly that far. Its reach
-is the art's half height, and the art is a little wider than it is tall, so the box is
-wider again. */
-export const CORNER_W = 0.57 * TILE_W
+/* A corner piece stands in the junction three tiles leave between them. Reaching all
+three would take it under the street running between two of them, so it is sized to
+stop short of that street instead, which leaves it a little shy of the corners. */
+export const CORNER_W = 0.49 * TILE_W
 export const HUB_R = 0.135
 
 export const DECK_KEYS = [

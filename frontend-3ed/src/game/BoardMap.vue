@@ -6,7 +6,17 @@ import { useGame } from '@/game/context'
 import OutlineFilter from '@/game/OutlineFilter.vue'
 import SpaceChips from '@/game/SpaceChips.vue'
 import Tok from '@/game/Tok.vue'
-import { CONNECTOR_W, CORNER_W, HUB_R, STREET_H, STREET_W, TILE_H, TILE_W, cssName } from '@/game/util'
+import {
+  CONNECTOR_W,
+  CORNER_ART_MIDDLE,
+  CORNER_W,
+  HUB_R,
+  STREET_H,
+  STREET_W,
+  TILE_H,
+  TILE_W,
+  cssName,
+} from '@/game/util'
 import type { Game, Layout } from '@/types'
 
 const ctx = useGame()
@@ -151,21 +161,35 @@ function spaceShape(game: Game, L: Layout, px: (n: number) => number, py: (n: nu
   }
 }
 
+/* A junction piece is placed by its own middle, which sits a little off the middle of
+its picture, and the picture turns about its box -- so the offset is turned too and taken
+back out, or the piece swings about as it is turned. */
+const artOffset = (sid: string, angle: number) => {
+  if (!standsInAJunction(sid)) return { dx: 0, dy: 0 }
+  const art = { w: CORNER_W, h: (CORNER_W * 890) / 1000 }
+  const dx = (CORNER_ART_MIDDLE.x - 0.5) * art.w
+  const dy = (CORNER_ART_MIDDLE.y - 0.5) * art.h
+  const t = (angle * Math.PI) / 180
+  return { dx: dx * Math.cos(t) - dy * Math.sin(t), dy: dx * Math.sin(t) + dy * Math.cos(t) }
+}
+
 // every street-like space as it is drawn: a street fills its box, a connector fits inside a smaller one
 const streetPieces = computed(() => {
   const G = geo.value
   if (!G) return []
   return G.L.streets.map((st) => {
     const box = spaceBox(st.space)
+    const angle = spaceAngle(st.space, st.angle)
+    const off = artOffset(st.space, angle)
     return {
       sid: st.space,
       href: spaceArt(st.space),
-      x: G.px(st.x) - box.w / 2,
-      y: G.py(st.y) - box.h / 2,
+      x: G.px(st.x) - box.w / 2 - off.dx,
+      y: G.py(st.y) - box.h / 2 - off.dy,
       w: box.w,
       h: box.h,
       objectFit: (box.fit === 'none' ? 'fill' : 'contain') as 'fill' | 'contain',
-      angle: spaceAngle(st.space, st.angle),
+      angle,
     }
   })
 })

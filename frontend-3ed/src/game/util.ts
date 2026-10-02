@@ -212,6 +212,10 @@ runs to 0.957 of its own height, so from the middle it reaches 0.457 of that hei
 0.53 * 0.89 * 0.457 = 0.216 of a tile's width, which is the backend's cornerReach, the
 number that seats it flush. Change one and change the other. */
 export const CORNER_W = 0.53 * TILE_W
+/* Where the piece's own middle sits inside its art, as a fraction of the art: the point
+its three joining edges stand evenly round, which is not the middle of the picture. The
+art is turned about its box, so this offset has to be taken out, turned with it. */
+export const CORNER_ART_MIDDLE = { x: 0.503, y: 0.447 }
 export const HUB_R = 0.135
 
 export const DECK_KEYS = [

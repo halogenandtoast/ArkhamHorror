@@ -1184,6 +1184,8 @@ onUnmounted(() => {
   background: transparent;
   border: 0;
   border-bottom: 2px solid transparent;
+  /* The global button radius would curl the active underline up at both ends. */
+  border-radius: 0;
   margin-bottom: -1px;
   padding: 10px 18px;
   font-family: teutonic, sans-serif;

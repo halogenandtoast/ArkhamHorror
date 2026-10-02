@@ -1239,6 +1239,8 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
     background: none;
     border: none;
     border-bottom: 2px solid transparent;
+    /* The global button radius would curl the active underline up at both ends. */
+    border-radius: 0;
     color: #9ca3af;
     cursor: pointer;
     font-size: 0.95rem;

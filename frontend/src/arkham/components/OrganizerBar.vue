@@ -169,6 +169,8 @@ function playSeat(group: GroupDigest) {
   background: transparent;
   border: 0;
   border-bottom: 3px solid transparent;
+  /* The global button radius would curl the active underline up at both ends. */
+  border-radius: 0;
   color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   padding: 6px 14px;

@@ -86,6 +86,8 @@ tiles =
   , mkTile "Uptown" Arkham V1 ("Hangman's Hill", "St. Mary's Hospital", "Ye Olde Magick Shoppe")
   , mkTile "Southside" Arkham V2 ("Ma's Boarding House", "Historical Society", "South Church")
   , mkTile "French Hill" Arkham V2 ("Bayfriar Gardens", "Duterte Funeral Home", "Silver Twilight Lodge")
+  , -- an other world rather than a part of Arkham, and its borders are hazardous
+    mkTile "The Underworld" OtherWorld V2 ("City of the Gugs", "Vale of Pnath", "Vaults of Zin")
   , mkTile
       "Innsmouth Village"
       Innsmouth

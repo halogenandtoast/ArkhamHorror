@@ -1,4 +1,4 @@
--- | The neighborhood encounter deck for the tile Secrets of the Order adds.
+-- | The neighborhood encounter decks for the tiles Secrets of the Order adds.
 module AH3e.Content.SecretsOfTheOrder.NeighborhoodCards (cards) where
 
 import AH3e.Content.Tiles
@@ -12,7 +12,7 @@ import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 
 cards :: [CardDef]
-cards = fromBox SecretsOfTheOrder frenchHill
+cards = fromBox SecretsOfTheOrder (frenchHill <> theUnderworld)
 
 card :: NeighborhoodId -> Int -> [(Text, Text, Effect)] -> CardDef
 card nid n encounters =
@@ -192,6 +192,181 @@ frenchHill =
           ( "Silver Twilight Lodge"
           , "The head of the Lodge, Carl Sanford, begins his speech, \"A member of the Lodge must pledge themself fully to our cause...\" You may gain a DARK PACT to demonstrate your loyalty. If you do, you are taught some of their secrets; gain two spells. If you do not, you feel numerous eyes on you and get a really bad feeling."
           , mayPay (CostCondition "DARK PACT") (Seq [spell, spell])
+          )
+        ]
+      )
+    ]
+
+theUnderworld :: [CardDef]
+theUnderworld =
+  map
+    (uncurry (card "the-underworld"))
+    [
+      ( 1
+      ,
+        [
+          ( "City of the Gugs"
+          , "You bolt across the room as the gug lets loose an unholy screech, slashing at you with a quartet of taloned arms. You could escape, or you could attempt to fight the creature with the hulking hammer that lies on a cracked stone altar. You may suffer two damage to gain the CYCLOPEAN HAMMER."
+          , mayPay (CostDamage 2) (named "CYCLOPEAN HAMMER")
+          )
+        ,
+          ( "Vale of Pnath"
+          , "The dim gray of the Vale shows the mountainous, unending pile of bones at its heart, flanked by the Peaks of Thok. If you take a moment to look at the nearby bodies, you might find something useful amidst the carrion. You may suffer one horror to gain $3. Whether you do or not, something shifting under the bones prompts you to hurry away."
+          , mayPay (CostHorror 1) (money 3)
+          )
+        ,
+          ( "Vaults of Zin"
+          , "You find yourself at the mouth of the Vaults, peering into its lightless depths. Your foot touches something wet: the head of a ghoul. Gain one remnant from the scattered pieces of the beast (will). If you pass, the sight terrifies and energizes you; become DRIVEN. If you fail, hopelessness overwhelms you; become FATIGUED."
+          , Seq [remnants 1, Test Will 0 driven fatigued]
+          )
+        ]
+      )
+    ,
+      ( 2
+      ,
+        [
+          ( "City of the Gugs"
+          , "A gug slumps over to rest after devouring a ghoul. Something gleams inside the gug's mouth. Test will to keep your breath calm or suffer two damage to brashly reach between its teeth. If you pass or suffer the damage, gain one curio. If you fail, the sight stains your mind; suffer one horror."
+          , Choose
+              [ ("Test will", Test Will 0 curioItem (horror 1))
+              , ("Suffer two damage", Pay (CostDamage 2) curioItem)
+              ]
+          )
+        ,
+          ( "Vale of Pnath"
+          , "A few ghouls toss gnawed corpses into a massive pit of bones, and you duck out of sight (observation). If you pass, you wait for the ghouls to leave and rummage through the tattered pockets of their victims; gain one common item. If you fail, they spot you; become FATIGUED."
+          , Test Observation 0 commonItem fatigued
+          )
+        ,
+          ( "Vaults of Zin"
+          , "A group of pale, hooved ghasts rip a gug apart. They have noseless, alien faces, and make terrible, guttural noises (observation). If you pass, you realize they are performing some sort of ritual; gain one spell. If you fail, the memory of the tormented gug haunts you; become CURSED."
+          , Test Observation 0 spell cursed
+          )
+        ]
+      )
+    ,
+      ( 3
+      ,
+        [
+          ( "City of the Gugs"
+          , "You slip into one of the cyclopean towers and find a strange, runic stone; gain one remnant. As you touch it, your mind is filled with unholy screeching (will). If you pass, you shake off the sound and keep searching; gain one curio. If you fail, the noise is inescapable; become CURSED."
+          , Seq [remnants 1, Test Will 0 curioItem cursed]
+          )
+        ,
+          ( "Vale of Pnath"
+          , "You wade through a river of bones and flesh (observation). If you pass, you find a bundle of blood-soaked papers that depict, in gruesome detail, many of the monstrous terrors that face you; gain the CRYPTIC SKETCHES. If you fail, the whispers of the dead call to you, describing your transformation into a terrible creature; become CURSED."
+          , Test Observation 0 (named "CRYPTIC SKETCHES") cursed
+          )
+        ,
+          ( "Vaults of Zin"
+          , "You wake in a damp, lightless cave. The unsettling chanting of the ghasts echoes around you, and you mouth the words to try to understand them. Gain one spell. There must be something here to help you get out (observation). If you pass, you feel around blindly until your hand rests on something sharp; gain one remnant."
+          , Seq [spell, pass Observation 0 (remnants 1)]
+          )
+        ]
+      )
+    ,
+      ( 4
+      ,
+        [
+          ( "City of the Gugs"
+          , "You find yourself in a massive field of huge stone monoliths (will). If you pass, you realize this is some sort of graveyard and spot the detached talon of a gug in the ash-black dirt; gain one remnant. If you fail, you realize too late that you are not alone when a ghoul slashes at your leg; suffer one damage."
+          , Test Will 0 (remnants 1) (damage 1)
+          )
+        ,
+          ( "Vale of Pnath"
+          , "You find a half-dead man moaning on the ground. He throws something at you. Gain $2. He rasps at you, \"Blood...need blood. Mine's all...gone.\" You may suffer one horror to find the man some blood. If you do, he slurps it up noisily and tosses more money at you; gain an additional $2."
+          , Seq [money 2, mayPay (CostHorror 1) (money 2)]
+          )
+        ,
+          ( "Vaults of Zin"
+          , "Two ghasts hold a Nightgaunt at bay with long spears and screech unknowable words. The faceless creature tries to grab at one of the tools and a ghast lets loose something horrible upon it (will). If you pass, you think you can replicate the gestures and most of the words; gain one spell. If you fail, you flee before you see the confrontation end."
+          , pass Will 0 spell
+          )
+        ]
+      )
+    ,
+      ( 5
+      ,
+        [
+          ( "City of the Gugs"
+          , "An impossibly large spire stretches up beyond your eyesight. You manage to make out the forms of several gugs attempting to scale the sides of the tower; one falls, landing with a heavy crack. You may become FATIGUED to run up and search the body. If you do, gain one curio."
+          , mayPay (CostCondition "FATIGUED") curioItem
+          )
+        ,
+          ( "Vale of Pnath"
+          , "Something massive sends ripples through the piles of bodies, like waves on a morbid ocean. You fear that there is more to the motion than just your mind playing tricks on you, but you might be able to find something useful amongst the bodies. You may suffer two horror to gain one common item."
+          , mayPay (CostHorror 2) commonItem
+          )
+        ,
+          ( "Vaults of Zin"
+          , "The cavern is devoid of light, and you worry a torch might attract your pursuers. You feel against the wall, hoping to find something, anything. You may become delayed. If you do, you eventually recognize the runic symbols that are etched into the wall and study them with your hands; gain one spell. If you do not, you run blindly."
+          , mayPay CostDelayed spell
+          )
+        ]
+      )
+    ,
+      ( 6
+      ,
+        [
+          ( "City of the Gugs"
+          , "You see a massive, one-eyed gug pin a noseless ghast to a wall with its horrible, vertical mouth. Gain one remnant as you drop down to search through the gore it leaves behind (will). If you pass, the sight of the carnage steels your resolve; become DRIVEN. If you fail, the savagery leaves you numb."
+          , Seq [remnants 1, pass Will 0 driven]
+          )
+        ,
+          ( "Vale of Pnath"
+          , "You find a bat-winged, faceless Nightgaunt struggling to free itself from under a landslide of corpses. It turns to you and waits patiently. You may gain a DARK PACT to help the beast get free. If you do, the barb-tailed monster rips itself into the air and drops something at your feet; gain one common item with a value of four or more."
+          , mayPay (CostCondition "DARK PACT") (GainE (AnItemValued (Just "Common") (AtLeast 4)))
+          )
+        ,
+          ( "Vaults of Zin"
+          , "A dim glow illuminates the way through the labyrinthine cavern (will). If you pass, you cautiously approach and take the source of the light; gain the CHTHONIAN STONE. If you fail, you see visages of grotesque, thousand-eyed creatures clawing their way to the surface and flee in a blind panic; place one doom in your space."
+          , Test Will 0 (named "CHTHONIAN STONE") (PlaceDoomAt YourSpace (N 1))
+          )
+        ]
+      )
+    ,
+      ( 7
+      ,
+        [
+          ( "City of the Gugs"
+          , "Something catches your eye on the lip of one of the towers, about twenty feet above the ground. You could climb up to see what it is, but getting down might be hard. You may suffer one damage to gain one curio. If you do not, you hurry away before one of the prowling giants spots you."
+          , mayPay (CostDamage 1) curioItem
+          )
+        ,
+          ( "Vale of Pnath"
+          , "The way forward is covered in thick, viscous slime. Test observation to look for clear handholds or become delayed to muddle through. If you pass or become delayed, you manage to move ahead and find the remains of a lost traveler; gain $4. If you fail, wading through the mucus-like fluid taxes your muscles and your resolve; become FATIGUED."
+          , Choose
+              [ ("Test observation", Test Observation 0 (money 4) fatigued)
+              , ("Become delayed", Pay CostDelayed (money 4))
+              ]
+          )
+        ,
+          ( "Vaults of Zin"
+          , "You nearly slip on a piece of rough, knotted skin. Gain one remnant. You look around for its source (observation). If you pass, you find the body of a ghast, pierced through with a jagged slab of rock, and you wonder if you could make something of it."
+          , remnants 1
+          )
+        ]
+      )
+    ,
+      ( 8
+      ,
+        [
+          ( "City of the Gugs"
+          , "You hide as a group of gugs stand together, their vertical, fanged mouths and eyestalks twitching in silent speech (will). If you pass, you decipher some of their conversation and take notes; gain one remnant. If you fail, the gathering lasts an eternity and you lose feeling in your legs; become FATIGUED."
+          , Test Will 0 (remnants 1) fatigued
+          )
+        ,
+          ( "Vale of Pnath"
+          , "After being dropped in a heap of bodies by a Nightgaunt, you have finally made it to the edge of this horrific valley. Become DRIVEN. You can make out several giant pits in front of you through the dim murk. You may suffer one horror to inspect one such pit. If you do, you find something at the edge; gain one common item."
+          , Seq [driven, mayPay (CostHorror 1) commonItem]
+          )
+        ,
+          ( "Vaults of Zin"
+          , "You stumble down a rough stone corridor in the gargantuan, lightless cavern. You wonder if you will ever find a way out. Test will to stay calm or become FATIGUED to push yourself onward. If you pass or gain the condition, when you finally find the dim gloom of the outside, you see awful symbols etched across your arms; gain one spell."
+          , Choose
+              [ ("Test will", pass Will 0 spell)
+              , ("Become FATIGUED", Pay (CostCondition "FATIGUED") spell)
+              ]
           )
         ]
       )

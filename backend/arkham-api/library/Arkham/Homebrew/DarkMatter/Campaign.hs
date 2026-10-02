@@ -7,6 +7,7 @@ import Arkham.Card (toCardDef)
 import Arkham.ChaosToken
 import Arkham.Helpers.Campaign (getCampaignStoryCards)
 import Arkham.Helpers.FlavorText
+import Arkham.Homebrew.DarkMatter.Achievements (runDarkMatterAchievements)
 import Arkham.Homebrew.DarkMatter.CampaignSteps
 import Arkham.Homebrew.DarkMatter.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.DarkMatter.Import
@@ -60,7 +61,8 @@ instance IsCampaign DarkMatter where
     other -> defaultNextStep other
 
 instance RunMessage DarkMatter where
-  runMessage msg c = runQueueT $ campaignI18n $ case msg of
+  runMessage msg c =
+    runQueueT $ campaignI18n $ lift (runDarkMatterAchievements msg) *> case msg of
     {- Scanning is campaign-wide, so the deferred scan announced by
     'Arkham.Homebrew.DarkMatter.Helpers.scan' resolves here — one handler for
     every scenario. A "when you would scan" effect cancels it by popping this

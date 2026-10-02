@@ -1,0 +1,52 @@
+{
+  "achievements": {
+    "Untattered": {
+      "name": "Untattered",
+      "text": "Complete The Tatterdemalion with no cards left in the scanning deck."
+    },
+    "AirlockSequence": {
+      "name": "Airlock Sequence",
+      "text": "Defeat three enemies using the ability on Escape Pod Bay in The Tatterdemalion."
+    },
+    "MentalFortitude": {
+      "name": "Mental Fortitude",
+      "text": "Defeat the Shadow of Thoughts in Electric Nightmare."
+    },
+    "BrainBurn": {
+      "name": "Brain Burn",
+      "text": "Defeat the Boogeyman in Electric Nightmare while spending fewer than 6 clues per investigator during the scenario."
+    },
+    "OutOfTime": {
+      "name": "Out of Time",
+      "text": "Defeat all three copies of Hound of Tindalos in Lost Quantum."
+    },
+    "SaviorOfNostalgia": {
+      "name": "Savior of Nostalgia",
+      "text": "Save 5 or more Crew story assets and defeat the Entity in In the Shadow of Earth."
+    },
+    "Neuroscientist": {
+      "name": "Neuroscientist",
+      "text": "Complete Strange Moons with no cards left in the scanning deck and no damage on any Brain story asset."
+    },
+    "SelfHelp": {
+      "name": "Self Help",
+      "text": "Defeat all copies of Your Other Self without spending clues during the last act of The Machine in Yellow."
+    },
+    "Endtimes": {
+      "name": "Endtimes",
+      "text": "Win the Dark Matter campaign with 4 Elder Thing tokens, 3 Tablet tokens, and no Elder Sign token in the chaos bag at the end."
+    },
+    "ItsTooLate": {
+      "name": "It's Too Late",
+      "text": "Win the Dark Matter campaign with 12 or more Impending Doom."
+    },
+    "LineInTheSky": {
+      "name": "Line in the Sky",
+      "text": "Win the Dark Matter campaign with at least three Ultimatums active."
+    },
+    "TheHeirToCarcosa": {
+      "name": "The Heir to Carcosa",
+      "text": "Win the Dark Matter campaign on Expert difficulty by defeating Tassilda in Starfall."
+    }
+  }
+}

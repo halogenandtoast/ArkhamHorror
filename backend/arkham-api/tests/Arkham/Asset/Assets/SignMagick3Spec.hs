@@ -2,6 +2,7 @@ module Arkham.Asset.Assets.SignMagick3Spec (spec) where
 
 import Arkham.Ability.Types (Ability (..), abilitySource)
 import Arkham.Asset.Cards qualified as Assets
+import Arkham.Window (defaultWindows)
 import TestImport.New
 
 {- | Regression coverage for issue #4905.
@@ -54,59 +55,42 @@ spec = describe "Sign Magick (3)" $ do
       -- and the reaction was suppressed entirely).
       useReactionOf signMagick
 
-      -- Resolving Sign Magick offers True Magick's own tooltip action (cardCode
-      -- 08070, plain AssetSource) at action-cost 0. That wrapper is the single entry
-      -- point: Sign Magick deliberately drops the in-hand abilities that
-      -- getTrueMagickInHandAbilities re-sources onto True Magick, because only the
-      -- wrapper reveals the borrowed card from hand (#5801).
-      chooseOptionMatching "True Magick's action" $ \case
-        AbilityLabel {ability} ->
-          abilitySource ability
-            == AssetSource trueMagick
-            && ability.abilityCardCode
-            == toCardCode Assets.trueMagickReworkingReality5
-        _ -> False
-
-      -- The wrapper asks which in-hand [Spell] to reveal, then offers that card's
-      -- [action] re-sourced onto True Magick via a ProxySource (cardCode 51008).
-      -- Reaching it proves the whole chain (Sign Magick -> True Magick -> reveal ->
-      -- in-hand spell) is wired. Disambiguate by the ProxySource whose unwrapped
-      -- .asset is the True Magick asset id and whose abilityCardCode is the in-hand
-      -- spell's. (We stop here: actually resolving the borrowed Clarity drags in its
-      -- heal arithmetic, which the manual arkham-replay verification already covers.)
-      chooseTarget (toCardId inHandSpell)
-
-      chooseOptionMatching "borrowed in-hand spell action" $ \case
-        AbilityLabel {ability} -> case abilitySource ability of
+      -- Resolving Sign Magick offers the in-hand spell itself, re-sourced onto True
+      -- Magick by getTrueMagickInHandAbilities and revealed as it is chosen. Under the
+      -- project ruling the asset you activate is the revealed [Spell] True Magick became
+      -- a copy of, not True Magick, so the spell is what the list names. (We stop here:
+      -- actually resolving the borrowed Clarity drags in its heal arithmetic, which the
+      -- manual arkham-replay verification already covers.)
+      chooseOptionMatching "borrowed in-hand spell action, revealed first" $ \case
+        AbilityLabel {ability, before = beforeMsgs} -> case abilitySource ability of
           ProxySource {} ->
             (abilitySource ability).asset
               == Just trueMagick
               && ability.abilityCardCode
               == toCardCode Assets.clarityOfMind3
+              && beforeMsgs
+              == [RevealCard (toCardId inHandSpell)]
           _ -> False
         _ -> False
 
-    -- CASE 1b (issue #5801): Sign Magick grants an [action] activation only, so the
-    -- borrowed spell True Magick reveals must have an [action] ability. The FAQ
-    -- (February 2025) lets Sign Magick treat True Magick as a revealed Spell from
-    -- hand, but it does not widen Sign Magick's own "Activate an [action] ability".
-    -- Scrying (3) is a [Spell] asset whose only ability is [fast], so it must not be
-    -- offered -- which it was while Sign Magick published defaultWindows, because the
-    -- wrapper re-filters the hand against those windows and FastPlayerWindow admits a
-    -- [fast] ability.
+    -- CASE 1b (issue #5801): Sign Magick grants an [action] activation only. The FAQ
+    -- (February 2025) lets it treat True Magick as a revealed [Spell] from hand, but it
+    -- does not widen Sign Magick's own "Activate an [action] ability". Scrying (3) is a
+    -- [Spell] asset whose only ability is [fast], so it must not be offered.
     it "does not offer a borrowed in-hand Spell whose only ability is [fast]" . gameTest $ \self -> do
       withProp @"horror" 5 self
       location <- testLocation
       self `moveTo` location
 
       signMagick <- self `putAssetIntoPlay` Assets.signMagick3
-      trueMagick <- self `putAssetIntoPlay` Assets.trueMagickReworkingReality5
+      _trueMagick <- self `putAssetIntoPlay` Assets.trueMagickReworkingReality5
       clarityInPlay <- self `putAssetIntoPlay` Assets.clarityOfMind
 
-      -- the [action] spell that lets True Magick read as a Spell at all
+      -- the [action] spell, which both lets True Magick read as a Spell and is the one
+      -- legal entry Sign Magick may offer
       actionSpell <- self `genMyCard` Assets.clarityOfMind3
       addToHand self actionSpell
-      -- ...and a [fast]-only one, which Sign Magick must not reach
+      -- ...and a [fast]-only one, which must not be reachable
       fastSpell <- self `genMyCard` Assets.scrying3
       addToHand self fastSpell
 
@@ -114,21 +98,48 @@ spec = describe "Sign Magick (3)" $ do
       self `useAbility` clarityAction
       useReactionOf signMagick
 
-      chooseOptionMatching "True Magick's action" $ \case
-        AbilityLabel {ability} ->
-          abilitySource ability
-            == AssetSource trueMagick
-            && ability.abilityCardCode
-            == toCardCode Assets.trueMagickReworkingReality5
-        _ -> False
+      -- chooseOnlyOption fails unless there is EXACTLY one option, so this is the
+      -- assertion that Scrying was excluded
+      chooseOnlyOption "the only legal entry is the borrowed [action] spell"
 
-      -- only the [action] spell is on offer
-      chooseOnlyOption "reveal the only borrowed [action] spell"
-      chooseOptionMatching "borrowed in-hand spell action" $ \case
-        AbilityLabel {ability} -> case abilitySource ability of
-          ProxySource {} -> ability.abilityCardCode == toCardCode Assets.clarityOfMind3
-          _ -> False
-        _ -> False
+    -- CASE 1c (project ruling, issue #5801): what you activate through True Magick is the
+    -- revealed [Spell] it became a copy of -- name included (FAQ v2.5 Q69) -- not True
+    -- Magick itself. So activating True Magick as one spell leaves True Magick available
+    -- to Sign Magick as "a different [[Spell]] asset", for a DIFFERENT spell. The spell
+    -- just revealed is the same asset and must not come back round.
+    it "offers a different in-hand Spell after True Magick was itself activated" . gameTest $ \self -> do
+      withProp @"willpower" 5 self
+      -- horror to heal, so the OTHER borrowed spell (Clarity of Mind (3)) is performable
+      withProp @"horror" 5 self
+      location <- testLocation & prop @"clues" 2 & prop @"shroud" 0
+      setChaosTokens [Zero]
+      self `moveTo` location
+
+      signMagick <- self `putAssetIntoPlay` Assets.signMagick3
+      trueMagick <- self `putAssetIntoPlay` Assets.trueMagickReworkingReality5
+
+      secondSight <- self `genMyCard` Assets.secondSight
+      addToHand self secondSight
+      otherSpell <- self `genMyCard` Assets.clarityOfMind3
+      addToHand self otherSpell
+
+      [tmAction] <- self `getActionsFrom` trueMagick
+      run $ UseAbility (toId self) tmAction (defaultWindows $ toId self)
+      chooseTarget (toCardId secondSight)
+      chooseOnlyOption "resolve the borrowed Second Sight investigate"
+      startSkillTest
+      applyResults
+      -- decline Second Sight's "spend 1 charge for an extra clue", so True Magick keeps
+      -- the charge Clarity of Mind (3) needs
+      clickLabel "$label.skip"
+
+      -- pre-ruling: not offered at all, because ExcludeWindowAssetExists looked through
+      -- the proxy and ruled True Magick out as "not a different asset"
+      useReactionOf signMagick
+
+      -- chooseOnlyOption fails unless there is EXACTLY one option, so this is the
+      -- assertion that Second Sight -- the asset we just activated -- is not offered again
+      chooseOnlyOption "the only different in-hand Spell is Clarity of Mind (3)"
 
     -- CASE 2: the over-trigger guard. Same board but the hand holds no castable
     -- in-hand [Spell] asset, so True Magick has nothing to borrow. True Magick

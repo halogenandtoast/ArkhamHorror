@@ -4,8 +4,11 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Runner
 import Arkham.Card
+import Arkham.Constants (pattern NonActivateAbility)
+import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Ability
 import Arkham.Helpers.Modifiers
+import Arkham.Helpers.Window (getWindowActivatedAsset, getWindowRevealedCardId)
 import Arkham.Matcher
 import Arkham.Prelude
 import Arkham.Slot
@@ -35,11 +38,24 @@ instance HasAbilities SignMagick3 where
           (exhaust a)
     ]
 
-toOriginalAsset :: [Window] -> AssetId
-toOriginalAsset [] = error "invalid window"
-toOriginalAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) =
-  fromMaybe (toOriginalAsset xs) (abilitySource ability).asset
-toOriginalAsset (_ : xs) = toOriginalAsset xs
+{- | The asset to rule out as "not a DIFFERENT asset", if any.
+
+Nothing for a True Magick (5) borrowed activation: what was activated is the revealed
+[Spell] True Magick became a copy of, so True Magick is still a different [Spell] asset
+we may point back at. It cannot re-offer the card it just revealed, though -- that would
+be the same asset -- and it recognises it from the window we forward below.
+-}
+toOriginalAsset :: [Window] -> Maybe AssetId
+toOriginalAsset = join . getWindowActivatedAsset
+
+{- | True Magick (5) resolves an in-hand [Spell] "by revealing them from your hand", so a
+borrowed ability has to show the card before it resolves. Its own chooser pushes the
+@RevealCard@; when we offer the borrowed ability directly, we owe it.
+-}
+revealFirst :: Ability -> [Message]
+revealFirst ab = case ab.source of
+  ProxySource (CardIdSource cid) _ -> [RevealCard cid]
+  _ -> []
 
 instance RunMessage SignMagick3 where
   runMessage msg a@(SignMagick3 attrs) = case msg of
@@ -48,32 +64,46 @@ instance RunMessage SignMagick3 where
         $ AddSlot iid ArcaneSlot
         $ RestrictedSlot (toSource attrs) (CardWithOneOf [CardWithTrait Spell, CardWithTrait Ritual]) []
       SignMagick3 <$> runMessage msg attrs
-    UseCardAbility iid (isSource attrs -> True) 1 (toOriginalAsset -> aid) _ -> do
+    UseCardAbility iid (isSource attrs -> True) 1 ws _ -> do
       let nullifyActionCost ab = applyAbilityModifiers ab [ActionCostSetToModifier 0]
+      let notTheActivatedAsset = maybe id (\aid -> (NotAsset (AssetWithId aid) <>)) (toOriginalAsset ws)
       abilities <-
         selectMap (doesNotProvokeAttacksOfOpportunity . nullifyActionCost)
           $ AbilityIsActionAbility
           <> AssetAbility
-            ( NotAsset (AssetWithId aid)
-                <> assetControlledBy iid
+            ( notTheActivatedAsset
+                $ assetControlledBy iid
                 <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Ritual]
             )
-      -- True Magick (5) surfaces its borrowed in-hand spells as abilities of its own
-      -- (getTrueMagickInHandAbilities), so the matcher offers them alongside True
-      -- Magick's wrapper. Only the wrapper reveals the card from hand, so take it and
-      -- drop the proxies -- otherwise the list names three cards that aren't in play.
-      let notBorrowed ab = case ab.source of
-            ProxySource (CardIdSource _) _ -> False
-            _ -> True
+
+      -- True Magick (5): what you activate is the revealed [Spell] it became a copy of,
+      -- not True Magick (FAQ v2.5 Q69 -- cost, name, text box and traits). So the entries
+      -- here are the in-hand spells themselves, which getTrueMagickInHandAbilities
+      -- re-sources onto True Magick, each revealed as it is chosen. Two things drop out:
+      --
+      --   * the NonActivateAbility wrapper, which is a chooser rather than an [action]
+      --     ability on an asset, and is redundant once the spells are listed directly;
+      --   * every ability belonging to a card revealed in THIS window -- both its proxy
+      --     and, while the copy is still live, the copy's own ability off `getAbilities`.
+      --     That card is the asset just activated, so it is not "a different asset".
+      revealedCodes <- traverse (fmap toCardCode . getCard) (mapMaybe getWindowRevealedCardId ws)
+      let isWrapper ab = ab.index == NonActivateAbility
+      let isActivatedCopy ab = ab.cardCode `elem` revealedCodes
+      let candidates = filter (\ab -> not (isWrapper ab) && not (isActivatedCopy ab)) abilities
+
       -- Sign Magick grants an [action] activation, so the windows must NOT include
-      -- FastPlayerWindow. True Magick's wrapper re-filters its in-hand spells against
-      -- whatever windows we publish, and a FastPlayerWindow lets a borrowed [fast]
-      -- ability through -- Scrying (3) has no [action] at all. Empty windows are not an
-      -- option either: `getCanPerformAbility` guards `notNull matching` before any
-      -- criteria, so the wrapper would find nothing and `chooseOne` would throw (#5801).
+      -- FastPlayerWindow: a borrowed ability is re-checked against them and a fast window
+      -- lets a [fast]-only spell through (Scrying (3) has no [action] at all). Empty
+      -- windows are not an option either -- `getCanPerformAbility` guards `notNull
+      -- matching` ahead of any criteria, so nothing would be performable (#5801).
       let actionWindows = [w | w <- defaultWindows iid, windowType w /= Window.FastPlayerWindow]
-      abilities' <- filterM (getCanPerformAbility iid actionWindows) (filter notBorrowed abilities)
+      candidates' <- filterM (getCanPerformAbility iid actionWindows) candidates
       player <- getPlayer iid
-      push $ chooseOne player [AbilityLabel iid ab actionWindows [] [] | ab <- abilities']
+      push
+        $ chooseOne
+          player
+          [ AbilityLabel iid ab actionWindows (revealFirst ab) []
+          | ab <- candidates'
+          ]
       pure a
     _ -> SignMagick3 <$> runMessage msg attrs

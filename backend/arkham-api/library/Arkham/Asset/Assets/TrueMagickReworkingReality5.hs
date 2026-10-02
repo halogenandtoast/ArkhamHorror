@@ -14,6 +14,7 @@ import Arkham.GameEnv
 import Arkham.Helpers.Ability (getCanPerformAbility)
 import Arkham.Helpers.Criteria (getTrueMagickGrantedTraits)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelf)
+import Arkham.Helpers.Window (getWindowRevealedCardId)
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -90,7 +91,19 @@ instance RunMessage TrueMagickReworkingReality5 where
     Do BeginRound -> do
       pure . TrueMagickReworkingReality5 . (`with` meta) $ attrs & tokensL %~ replenish #charge 1
     UseCardAbility iid (isSource attrs -> True) NonActivateAbility ws _ -> do
-      hand <- fieldMap InvestigatorHand (filterCards (card_ $ #asset <> #spell)) iid
+      -- A borrowed activation IS the revealed asset -- True Magick becomes a copy of it,
+      -- name included (FAQ v2.5 Q69) -- so a [Spell] already revealed in this chain is
+      -- the SAME asset and must not be offered again when a trigger points back at us.
+      -- Sign Magick (3) forwards its ActivateAbility window, which carries that card id.
+      -- That window is the trigger, not a window the borrowed ability may be used in, so
+      -- it is stripped before the performability check.
+      let revealed = mapMaybe getWindowRevealedCardId ws
+      let ws' = filter (isNothing . getWindowRevealedCardId) ws
+      hand <-
+        fieldMap
+          InvestigatorHand
+          (filter ((`notElem` revealed) . toCardId) . filterCards (card_ $ #asset <> #spell))
+          iid
       let adjustCost = overCost (over biplate (const attrs.id))
       choices <- forMaybeM hand \card -> do
         let a =
@@ -102,21 +115,27 @@ instance RunMessage TrueMagickReworkingReality5 where
             local (entitiesL %~ addEntity a) do
               modifiers <- getMonoidalMap <$> execWriterT (getModifiersFor a)
               local (modifiersL <>~ modifiers) do
-                filterM (getCanPerformAbility iid ws) [adjustCost ab | ab <- getAbilities a]
+                filterM (getCanPerformAbility iid ws') [adjustCost ab | ab <- getAbilities a]
         pure $ guard (notNull tmpAbilities) $> (card.id, tmpAbilities)
 
       player <- getPlayer iid
-      chooseOne
-        iid
-        [ targetLabel
-            cardId
-            [ RevealCard cardId
-            , Msg.chooseOne
-                player
-                [AbilityLabel iid a {abilitySource = proxy (CardIdSource cardId) attrs} ws [] [] | a <- as]
-            ]
-        | (cardId, as) <- choices
-        ]
+      -- Never ask with nothing to offer: `chooseOne` on an empty list is an `error`.
+      -- `AssetWithPerformableAbility` (the matcher Sign Magick (3)'s criterion goes
+      -- through) checks us against `defaultWindows`, so it cannot see the revealed-card
+      -- exclusion above and may offer the reaction when the only in-hand [Spell] is the
+      -- one already revealed. #5801
+      unless (null choices) do
+        chooseOne
+          iid
+          [ targetLabel
+              cardId
+              [ RevealCard cardId
+              , Msg.chooseOne
+                  player
+                  [AbilityLabel iid a {abilitySource = proxy (CardIdSource cardId) attrs} ws [] [] | a <- as]
+              ]
+          | (cardId, as) <- choices
+          ]
 
       pure $ TrueMagickReworkingReality5 $ With attrs meta
     UseCardAbility iid (ProxySource (CardIdSource cid) (isSource attrs -> True)) n ws p -> do

@@ -427,6 +427,37 @@ getWindowAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) =
   (abilitySource ability).asset <|> getWindowAsset xs
 getWindowAsset (_ : xs) = getWindowAsset xs
 
+{- | The asset whose OWN ability was activated in an @ActivateAbility@ window, for
+"a different asset" clauses. The outer 'Maybe' says whether such a window was found
+at all; the inner one, whether it excludes an asset in play.
+
+Unlike 'getWindowAsset' this does NOT look through True Magick (5)'s
+@ProxySource (CardIdSource _)@. A borrowed activation resolves the revealed [Spell],
+which True Magick has become a copy of -- cost, name, text box and traits (FAQ v2.5
+Q69) -- so the asset activated is that copy, and True Magick itself is still "a
+different [Spell] asset" the trigger may point back at. Hence @Just Nothing@:
+a window was found, but it excludes nothing in play.
+-}
+getWindowActivatedAsset :: [Window] -> Maybe (Maybe AssetId)
+getWindowActivatedAsset [] = Nothing
+getWindowActivatedAsset ((windowType -> Window.ActivateAbility _ _ ability) : xs) =
+  case abilitySource ability of
+    ProxySource (CardIdSource _) _ -> Just Nothing
+    src -> maybe (getWindowActivatedAsset xs) (Just . Just) src.asset
+getWindowActivatedAsset (_ : xs) = getWindowActivatedAsset xs
+
+{- | The in-hand card a True Magick (5) borrowed activation revealed, read back out of
+the @ActivateAbility@ window a reaction forwards. That card is the asset the borrowed
+ability belonged to, so a card re-entering True Magick through the same chain must not
+offer it again.
+-}
+getWindowRevealedCardId :: Window -> Maybe CardId
+getWindowRevealedCardId (windowType -> Window.ActivateAbility _ _ ability) =
+  case abilitySource ability of
+    ProxySource (CardIdSource cid) _ -> Just cid
+    _ -> Nothing
+getWindowRevealedCardId _ = Nothing
+
 inFastWindow :: HasGame m => m Bool
 inFastWindow = any (any (\w -> windowType w == Window.FastPlayerWindow)) <$> getWindowStack
 

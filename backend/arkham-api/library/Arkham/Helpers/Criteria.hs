@@ -65,7 +65,7 @@ import Arkham.Helpers.Scenario (
 import Arkham.Helpers.SkillTest (skillTestMatches)
 import Arkham.Helpers.Source (sourceMatches)
 import Arkham.Helpers.Tarot (affectedByTarot)
-import Arkham.Helpers.Window (getPassedBy, getWindowAsset)
+import Arkham.Helpers.Window (getPassedBy, getWindowActivatedAsset, getWindowRevealedCardId)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Key
@@ -227,8 +227,19 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
         -- ability (action/fast/reaction) when treated as True Magick. We reuse
         -- the same hand-entity builder that surfaces the re-sourced abilities to
         -- Sign Magick (3) so the two stay in lockstep.
-        results <- eachTrueMagickHandAbility attrs iid \_card abilities ->
-          anyM (getCanPerformAbility iid windows') abilities
+        --
+        -- A card already revealed in this chain is skipped, exactly as the ability's
+        -- own handler skips it: True Magick became a copy of it, so re-revealing it
+        -- would be the SAME asset. Keeping the two in step is what stops Sign Magick (3)
+        -- being offered with nothing left to reveal, which would reach an empty
+        -- `chooseOne` (#5801). The trigger window is stripped from the performability
+        -- check for the same reason the handler strips it.
+        let revealed = mapMaybe getWindowRevealedCardId windows'
+        let ws' = filter (isNothing . getWindowRevealedCardId) windows'
+        results <- eachTrueMagickHandAbility attrs iid \card abilities ->
+          if toCardId card `elem` revealed
+            then pure False
+            else anyM (getCanPerformAbility iid ws') abilities
         pure $ or results
       _ -> error $ "wrong source: " <> show source'
   Criteria.HasCalculation c valueMatcher -> do
@@ -744,12 +755,16 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
     case drawers of
       iid' : _ -> iid' <=~> Matcher.replaceYouMatcher iid whoMatcher
       [] -> pure False
-  Criteria.ExcludeWindowAssetExists matcher -> case getWindowAsset windows' of
+  -- A True Magick (5) borrowed activation excludes NOTHING in play: what was activated
+  -- is the revealed [Spell] True Magick became a copy of, so True Magick is still "a
+  -- different [Spell] asset" the trigger may point back at (FAQ v2.5 Q69). Hence
+  -- getWindowActivatedAsset rather than getWindowAsset, which looks through the proxy.
+  Criteria.ExcludeWindowAssetExists matcher -> case getWindowActivatedAsset windows' of
     Nothing -> pure False
-    Just aid -> do
+    Just mAid -> do
       selectAny
-        $ Matcher.NotAsset (Matcher.AssetWithId aid)
-        <> Matcher.replaceYouMatcher iid matcher
+        $ maybe id (\aid -> (Matcher.NotAsset (Matcher.AssetWithId aid) <>)) mAid
+        $ Matcher.replaceYouMatcher iid matcher
   Criteria.TreacheryExists matcher -> selectAny matcher
   Criteria.InvestigatorExists matcher ->
     -- Because the matcher can't tell who is asking, we need to replace

@@ -23,8 +23,11 @@ instance HasModifiersFor FadingSunlightVII where
 
 instance HasAbilities FadingSunlightVII where
   getAbilities (FadingSunlightVII a) =
-    [ restricted a 1 (SetAsideCardExists $ cardIs Enemies.devoteeOfTheThousand)
-        $ FastAbility Free
+    [ restricted
+        a
+        1
+        (SetAsideCardExists $ cardIs Enemies.devoteeOfTheThousand)
+        freeTrigger_
     ]
 
 instance RunMessage FadingSunlightVII where

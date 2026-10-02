@@ -23,7 +23,6 @@ import Arkham.Id (InvestigatorId, LocationId)
 import Arkham.Investigator.Types (Field (InvestigatorDeck))
 import Arkham.Layout (GridTemplateRow)
 import Arkham.Matcher
-import Arkham.Message (CanAdvance (CanNotAdvance))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Story (resolveStory)
@@ -277,7 +276,7 @@ instance RunMessage ThousandToOne where
           lift $ resolveStory iid card
 
       -- "Check the Campaign Log. If the cult rallies, place 2 doom on agenda 1a."
-      when rallies $ push $ PlaceDoomOnAgenda 2 CanNotAdvance
+      when rallies $ placeDoomOnAgenda 2
 
       setAside [Agendas.theProphecyFulfilled, Agendas.theProphecyUnfulfilled]
     PassedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
@@ -300,7 +299,7 @@ instance RunMessage ThousandToOne where
           record TheInvestigatorsWereDevouredByTheThousandYoung
           record ShubNiggurathReignsOverAnEclipsedWorld
           selectEach UneliminatedInvestigator $ push . InvestigatorKilled (toSource attrs)
-          push GameOver
+          gameOver
           endOfScenario
         Resolution 2 -> do
           record TheInvestigatorsEndedTheRitual

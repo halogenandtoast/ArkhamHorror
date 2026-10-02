@@ -14,7 +14,7 @@ escapeActVII :: ActCard EscapeActVII
 escapeActVII = act (1, A) EscapeActVII Cards.escapeActVII Nothing
 
 instance HasAbilities EscapeActVII where
-  getAbilities = actAbilities1 \a -> restricted a 1 NoRestriction $ Objective $ FastAbility Free
+  getAbilities = actAbilities1 \a -> restricted a 1 NoRestriction $ Objective freeTrigger_
 
 instance RunMessage EscapeActVII where
   runMessage msg a@(EscapeActVII attrs) = runQueueT $ case msg of

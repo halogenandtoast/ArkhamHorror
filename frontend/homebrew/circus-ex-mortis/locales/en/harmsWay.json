@@ -68,12 +68,6 @@
     "overdueDeparture": {},
     "theCircusSleeps": {},
     "treadingOnEggshells": {},
-    "sleepWhenYoureDead": {
-      "label": {
-        "physicalTrauma": "Suffer 1 physical trauma",
-        "mentalTrauma": "Suffer 1 mental trauma"
-      }
-    },
     "theDarkYoungStir": {},
     "hiddenInPlainSight": {},
     "underLockAndKey": {},

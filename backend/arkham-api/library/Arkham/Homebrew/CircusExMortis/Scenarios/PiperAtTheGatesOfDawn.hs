@@ -158,7 +158,7 @@ instance RunMessage PiperAtTheGatesOfDawn where
           resolution "resolution1"
           record TheInvestigatorsCouldNotEscapeTheCircus
           selectEach UneliminatedInvestigator $ push . InvestigatorKilled (toSource attrs)
-          push GameOver
+          gameOver
           endOfScenario
         Resolution 2 -> do
           resolution "resolution2"

@@ -20,7 +20,7 @@ import Arkham.Homebrew.CircusExMortis.ChaosBag
 import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Homebrew.CircusExMortis.Key
 import Arkham.Homebrew.CircusExMortis.Tokens (pattern MoonToken)
-import Arkham.I18n (investigatorNameVar, keyVar)
+import Arkham.I18n (Scope, investigatorNameVar, keyVar)
 import Arkham.Investigator.Cards (allInvestigatorCards)
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher
@@ -42,6 +42,18 @@ swapCampaignCard old new =
   getOwner old >>= traverse_ \iid -> do
     removeCampaignCard old
     addCampaignCardToDeck iid DoNotShuffleIn new
+
+{- | "The investigators must decide (choose one)" between the two next versions of a
+versioned story card -- the shape both Written in Stone and Good Omens use throughout.
+Each option's locale key names both its label and the flavor that branch reads.
+-}
+chooseNextVersion
+  :: (HasI18n, ReverseQueue m) => Scope -> CardDef -> [(Scope, CardDef)] -> m ()
+chooseNextVersion question current options =
+  storyWithChooseOneM (setTitle "title" >> p question) $ for_ options \(key, next) ->
+    labeled key do
+      flavor $ setTitle "title" >> p key
+      swapCampaignCard current next
 
 -- | The eight words the priestess of Diana names (guide p19).
 destinyWords :: [Text]
@@ -252,55 +264,37 @@ instance RunMessage CircusExMortis where
       flavor $ setTitle "title" >> p "destinyIntro"
       investigators <- getInvestigators
       chooseDestinies destinyWords [] investigators
-      storyWithChooseOneM (setTitle "title" >> p "role") do
-        labeled "determination" do
-          flavor $ setTitle "title" >> p "determination"
-          swapCampaignCard
-            HBAssets.amaltheaWeaverCircusFortuneTeller
-            HBAssets.amaltheaWeaverAspirantOfCourage
-        labeled "guidance" do
-          flavor $ setTitle "title" >> p "guidance"
-          swapCampaignCard
-            HBAssets.amaltheaWeaverCircusFortuneTeller
-            HBAssets.amaltheaWeaverAspirantOfWisdom
+      chooseNextVersion
+        "role"
+        HBAssets.amaltheaWeaverCircusFortuneTeller
+        [ ("determination", HBAssets.amaltheaWeaverAspirantOfCourage)
+        , ("guidance", HBAssets.amaltheaWeaverAspirantOfWisdom)
+        ]
+
+      -- Further Reading, then No Choice's trauma heal for each Chosen investigator, then
+      -- the Motive decision -- one screen each.
       chosen <- select $ InvestigatorWithTrait Chosen
-      unless (null chosen) do
-        flavor do
-          scope "furtherReadering" do
-            setTitle "title"
-            p "body"
-          scope "noChoice" $ p.green.valid "body"
-          p "motive"
-
-        for_ chosen \iid -> do
-          hasPhysical <- fieldP InvestigatorPhysicalTrauma (> 0) iid
-          hasMental <- fieldP InvestigatorMentalTrauma (> 0) iid
-          when (hasPhysical || hasMental) do
-            chooseOneM iid do
-              questionLabeledCard iid
-              questionLabeled "healTraumaQuestion"
-              when hasPhysical $ labeled "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
-              when hasMental $ labeled "healMentalTrauma" $ push $ HealTrauma iid 0 1
-              labeled "doNotHealTrauma" nothing
-
-      storyWithChooseOneM
-        do
-          scope "furtherReading" do
-            setTitle "title"
-            p "body"
-          scope "noChoice" $ p.green.validate (not $ null chosen) "body"
-          p "motive"
-        do
-          labeled "fanaticism" do
-            flavor $ setTitle "title" >> p "fanaticism"
-            swapCampaignCard
-              HBAssets.deCultusBestiaeForgottenWorkOfApuleius
-              HBAssets.deCultusBestiaeInterpretationOfConviction
-          labeled "nemesis" do
-            flavor $ setTitle "title" >> p "nemesis"
-            swapCampaignCard
-              HBAssets.deCultusBestiaeForgottenWorkOfApuleius
-              HBAssets.deCultusBestiaeInterpretationOfObsession
+      flavor do
+        scope "furtherReading" do
+          setTitle "title"
+          p "body"
+        scope "noChoice" $ p.green.validate (notNull chosen) "body"
+      for_ chosen \iid -> do
+        hasPhysical <- fieldP InvestigatorPhysicalTrauma (> 0) iid
+        hasMental <- fieldP InvestigatorMentalTrauma (> 0) iid
+        when (hasPhysical || hasMental) do
+          chooseOneM iid do
+            questionLabeledCard iid
+            questionLabeled "healTraumaQuestion"
+            when hasPhysical $ labeled "healPhysicalTrauma" $ push $ HealTrauma iid 1 0
+            when hasMental $ labeled "healMentalTrauma" $ push $ HealTrauma iid 0 1
+            labeled "doNotHealTrauma" nothing
+      chooseNextVersion
+        "motive"
+        HBAssets.deCultusBestiaeForgottenWorkOfApuleius
+        [ ("fanaticism", HBAssets.deCultusBestiaeInterpretationOfConviction)
+        , ("nemesis", HBAssets.deCultusBestiaeInterpretationOfObsession)
+        ]
       flavor $ setTitle "title" >> p "bookmark"
       addChaosToken MoonToken
       nextCampaignStep
@@ -320,22 +314,19 @@ instance RunMessage CircusExMortis where
       case amalthea of
         Just v
           | v == HBAssets.amaltheaWeaverAspirantOfCourage ->
-              storyWithChooseOneM (setTitle "title" >> p "moreToDo") do
-                labeled "priorWarning" do
-                  flavor $ setTitle "title" >> p "priorWarning"
-                  swapCampaignCard v HBAssets.amaltheaWeaverOracleOfPurity
-                labeled "sawItComing" do
-                  flavor $ setTitle "title" >> p "sawItComing"
-                  swapCampaignCard v HBAssets.amaltheaWeaverOracleOfResolve
-        Just v
+              chooseNextVersion
+                "moreToDo"
+                v
+                [ ("priorWarning", HBAssets.amaltheaWeaverOracleOfPurity)
+                , ("sawItComing", HBAssets.amaltheaWeaverOracleOfResolve)
+                ]
           | v == HBAssets.amaltheaWeaverAspirantOfWisdom ->
-              storyWithChooseOneM (setTitle "title" >> p "moreToSee") do
-                labeled "writtenInInk" do
-                  flavor $ setTitle "title" >> p "writtenInInk"
-                  swapCampaignCard v HBAssets.amaltheaWeaverOracleOfEnlightenment
-                labeled "writtenInSmoke" do
-                  flavor $ setTitle "title" >> p "writtenInSmoke"
-                  swapCampaignCard v HBAssets.amaltheaWeaverOracleOfMystery
+              chooseNextVersion
+                "moreToSee"
+                v
+                [ ("writtenInInk", HBAssets.amaltheaWeaverOracleOfEnlightenment)
+                , ("writtenInSmoke", HBAssets.amaltheaWeaverOracleOfMystery)
+                ]
         _ -> pure ()
       deCultus <- fmap snd <$> getDeCultusBestiaeOwner
       scope "theLastWord" $ flavor do
@@ -351,22 +342,19 @@ instance RunMessage CircusExMortis where
       case deCultus of
         Just v
           | v == HBAssets.deCultusBestiaeInterpretationOfConviction ->
-              storyWithChooseOneM (setTitle "title" >> p "theInfinite") do
-                labeled "powersAbove" do
-                  flavor $ setTitle "title" >> p "powersAbove"
-                  swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheBeyond
-                labeled "powersBelow" do
-                  flavor $ setTitle "title" >> p "powersBelow"
-                  swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheEternal
-        Just v
+              chooseNextVersion
+                "theInfinite"
+                v
+                [ ("powersAbove", HBAssets.deCultusBestiaeProphecyOfTheBeyond)
+                , ("powersBelow", HBAssets.deCultusBestiaeProphecyOfTheEternal)
+                ]
           | v == HBAssets.deCultusBestiaeInterpretationOfObsession ->
-              storyWithChooseOneM (setTitle "title" >> p "theEndless") do
-                labeled "againstTheFlood" do
-                  flavor $ setTitle "title" >> p "againstTheFlood"
-                  swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheHorde
-                labeled "againstTheStorm" do
-                  flavor $ setTitle "title" >> p "againstTheStorm"
-                  swapCampaignCard v HBAssets.deCultusBestiaeProphecyOfTheBehemoth
+              chooseNextVersion
+                "theEndless"
+                v
+                [ ("againstTheFlood", HBAssets.deCultusBestiaeProphecyOfTheHorde)
+                , ("againstTheStorm", HBAssets.deCultusBestiaeProphecyOfTheBehemoth)
+                ]
         _ -> pure ()
       flavor $ setTitle "title" >> p "breakOfDawn"
       addChaosToken MoonToken
@@ -403,7 +391,7 @@ instance RunMessage CircusExMortis where
         else do
           flavor $ setTitle "title" >> p "restAssured"
           record TheNewMoonCircusWasNeverSeenAgain
-      push GameOver
+      gameOver
       pure c
     -- Moon tokens, end of round (guide p1): for each moon token sealed on
     -- your investigator card, you must choose to keep it sealed or take 1

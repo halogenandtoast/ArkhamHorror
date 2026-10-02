@@ -32,6 +32,8 @@
     }
   },
   "label": {
+    "physicalTrauma": "承受1点肉体创伤",
+    "mentalTrauma": "承受1点精神创伤",
     "doneReleasingMoonTokens": "{'{'}moon{'}'} 标记释放完毕"
   },
   "illusoryLocus": {

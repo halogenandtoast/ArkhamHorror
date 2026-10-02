@@ -1,4 +1,25 @@
-module Arkham.Homebrew.CircusExMortis.Sets (module Arkham.EncounterSet, pattern AllPointsWest, pattern Bacchanalia, pattern ChildrenOfTheGoat, pattern CircusGrounds, pattern CultOfShubNiggurath, pattern DestinyAndProphecy, pattern HarmsWay, pattern IllusoryTricks, pattern LunaticNight, pattern NewMoonDaredevils, pattern NewMoonEntertainers, pattern OneNightOnly, pattern PanickedMasses, pattern PiperAtTheGatesOfDawn, pattern PrimordialEvils, pattern RedSunrise, pattern SavageWoods, pattern ThePrimrosePath, pattern ThousandToOne) where
+module Arkham.Homebrew.CircusExMortis.Sets (
+  module Arkham.EncounterSet,
+  pattern AllPointsWest,
+  pattern Bacchanalia,
+  pattern ChildrenOfTheGoat,
+  pattern CircusGrounds,
+  pattern CultOfShubNiggurath,
+  pattern DestinyAndProphecy,
+  pattern HarmsWay,
+  pattern IllusoryTricks,
+  pattern LunaticNight,
+  pattern NewMoonDaredevils,
+  pattern NewMoonEntertainers,
+  pattern OneNightOnly,
+  pattern PanickedMasses,
+  pattern PiperAtTheGatesOfDawn,
+  pattern PrimordialEvils,
+  pattern RedSunrise,
+  pattern SavageWoods,
+  pattern ThePrimrosePath,
+  pattern ThousandToOne,
+) where
 
 import Arkham.EncounterSet
 

@@ -1,10 +1,10 @@
 module Arkham.Homebrew.CircusExMortis.Treacheries.FeralImpulses (feralImpulses) where
 
 import Arkham.Ability
+import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.CircusExMortis.Helpers (getSealedMoonTokens)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Placement (Placement (..), place)
-import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype FeralImpulses = FeralImpulses TreacheryAttrs

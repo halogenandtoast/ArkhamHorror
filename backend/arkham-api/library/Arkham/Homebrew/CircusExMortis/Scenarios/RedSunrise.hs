@@ -20,7 +20,6 @@ import Arkham.Layout (GridTemplateRow)
 import Arkham.Location.Grid (Pos (..))
 import Arkham.Location.Group
 import Arkham.Matcher
-import Arkham.Message (CanAdvance (CanNotAdvance))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Message.Lifted.Move (moveToward)
@@ -217,14 +216,14 @@ instance RunMessage RedSunrise where
       the two ungrouped locations, so relabel them to match. Grouped locations need no
       label: their box holds the grid area and lays them out inside it. -}
       forgottenTrail <- placeInGrid (Pos 0 0) Locations.forgottenTrail
-      push $ SetLocationLabel forgottenTrail "forgottenTrail"
+      setLocationLabel forgottenTrail "forgottenTrail"
       startAt forgottenTrail
       for_ (zip [1 ..] keptRows) \(y, defs) -> do
         lids <- for (zip (rowPositions y (length defs)) defs) (uncurry placeInGrid)
         for_ (zip [0 ..] lids) \(i, lid) ->
           push $ SetLocationGroup lid (GroupMembership (rowGroupKey y) i)
       ritualClearing <- placeInGrid (Pos 0 5) Locations.ritualClearing
-      push $ SetLocationLabel ritualClearing "ritualClearing"
+      setLocationLabel ritualClearing "ritualClearing"
       -- Overrides the layout the grid generates from positions.
       push $ SetLayout redSunriseLayout
 
@@ -247,7 +246,7 @@ instance RunMessage RedSunrise where
       -- "Place 4 doom on agenda 1a. Reduce this amount by X, where X groups of
       -- citizens were saved from the circus."
       let doom = max 0 (4 - citizens)
-      when (doom > 0) $ push $ PlaceDoomOnAgenda doom CanNotAdvance
+      placeDoomOnAgenda doom
 
       setAside
         [ Enemies.theCultEnMasseLeaderlessFanaticism
@@ -278,7 +277,7 @@ instance RunMessage RedSunrise where
           record TheInvestigatorsDidNotArriveInTime
           record ShubNiggurathReignsOverAnEclipsedWorld
           selectEach UneliminatedInvestigator $ push . InvestigatorKilled (toSource attrs)
-          push GameOver
+          gameOver
           endOfScenario
         Resolution 2 -> do
           cultDefeated <- selectAny $ VictoryDisplayCardMatch $ basic $ CardWithTitle "The Cult En Masse"

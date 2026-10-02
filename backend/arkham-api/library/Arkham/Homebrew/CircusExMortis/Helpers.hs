@@ -67,6 +67,19 @@ campaignI18n a = withI18n $ scope "circusExMortis" a
 scenarioI18n :: Scope -> (HasI18n => a) -> a
 scenarioI18n scenarioScope a = campaignI18n $ scope scenarioScope a
 
+{- | "Each investigator suffers 1 physical or mental trauma and is defeated" -- how five
+of the campaign's agendas resolve when their last stage advances. The two labels are the
+campaign's own, not each agenda's, so this reads them from the campaign scope whatever
+scope the caller is in. Resigned investigators are eliminated already, so
+'eachInvestigator' skips them.
+-}
+sufferTraumaAndDefeat :: (ReverseQueue m, Sourceable source) => source -> m ()
+sufferTraumaAndDefeat source = eachInvestigator \iid -> do
+  chooseOneM iid $ campaignI18n $ scope "label" do
+    labeled "physicalTrauma" $ sufferPhysicalTrauma iid 1
+    labeled "mentalTrauma" $ sufferMentalTrauma iid 1
+  investigatorDefeated source iid
+
 -- * Moon tokens
 
 -- | Moon tokens sealed on an investigator's investigator card (guide p1).
@@ -266,10 +279,9 @@ furyDirectionOutwardPos = \case
 {- | Draw @n@ pending tokens without replacement; a ☾ costs nothing but adds two
 more pending draws (The Dark Young Stir's recursion). Every drawn token is
 returned once the instruction resolves; only a consumed debug override changes
-the persisted state.
+the persisted state. The temporary set-aside pile prevents repeats during the
+Moon recursion.
 -}
-
--- The temporary set-aside pile prevents repeats during Moon recursion.
 drawFuryBagTokens
   :: MonadRandom m => CustomChaosBag -> Int -> m ([ChaosTokenFace], CustomChaosBag)
 drawFuryBagTokens bag n
@@ -321,7 +333,6 @@ revealFuryToken source = do
           case placement of
             InPosition pos -> do
               let targetPos = furyAttackPosition pos direction
-              -- Outskirts also counts as the Camp location on its side of the map.
               -- Camp Outskirts counts as the Camp location on its side of the map, so
               -- the outward grid slot aliases onto the same direction.
               locations <- case find ((== targetPos) . furyDirectionPos) [FuryNorth, FurySouth, FuryWest, FuryEast] of

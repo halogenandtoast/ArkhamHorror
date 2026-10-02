@@ -23,7 +23,7 @@ instance HasAbilities CrowdedRow_048 where
 instance RunMessage CrowdedRow_048 where
   runMessage msg l@(CrowdedRow_048 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      enemies <- select $ NearestEnemyToLocation (toId attrs) NonEliteEnemy
+      enemies <- select $ NearestEnemyToLocationFallback attrs.id NonEliteEnemy
       chooseTargetM iid enemies $ placeDoomOn (attrs.ability 1) 1
       pure l
     _ -> CrowdedRow_048 <$> liftRunMessage msg attrs

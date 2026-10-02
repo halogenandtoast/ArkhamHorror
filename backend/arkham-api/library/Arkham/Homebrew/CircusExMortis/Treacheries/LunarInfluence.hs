@@ -1,8 +1,8 @@
 module Arkham.Homebrew.CircusExMortis.Treacheries.LunarInfluence (lunarInfluence) where
 
-import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Helpers.Message.Discard.Lifted
 import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
+import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.Treachery.Import.Lifted
 
 newtype LunarInfluence = LunarInfluence TreacheryAttrs

@@ -58,6 +58,8 @@
     }
   },
   "label": {
+    "physicalTrauma": "Suffer 1 physical trauma",
+    "mentalTrauma": "Suffer 1 mental trauma",
     "sealMoonToken": "<span>Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card</span>",
     "circusEncampment": {
       "doneReleasingMoonTokens": "Done releasing moon tokens"

@@ -1,10 +1,10 @@
 module Arkham.Homebrew.CircusExMortis.Treacheries.MilkOfShubNiggurath (milkOfShubNiggurath) where
 
 import Arkham.Ability
+import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Elite))
-import Arkham.Homebrew.CircusExMortis.CardDefs.Treacheries qualified as Cards
 import Arkham.Treachery.Import.Lifted
 
 newtype MilkOfShubNiggurath = MilkOfShubNiggurath TreacheryAttrs

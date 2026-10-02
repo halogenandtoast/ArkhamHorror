@@ -66,174 +66,99 @@ circusEncampment =
     [Trefoil, Squiggle, Equals, Circle, Square]
     Set.ThePrimrosePath
 
-moonlitForestSmolderingCampfire :: CardDef
-moonlitForestSmolderingCampfire =
-  locationWithUnrevealedName
-    ":circus-ex-mortis:025"
+{- | The Primrose Path's ten copies of Moonlit Forest all hide behind the same
+unrevealed face, and differ only in the subtitle, symbol and connections they reveal.
+-}
+moonlitForest :: CardCode -> Text -> LocationSymbol -> [LocationSymbol] -> CardDef
+moonlitForest code subtitle symbol connections =
+  locationWithUnrevealed
+    code
     "Moonlit Forest"
-    ("Moonlit Forest" <:> "Smoldering Campfire")
     [Woods]
     Star
     [Trefoil]
+    ("Moonlit Forest" <:> subtitle)
+    [Woods]
+    symbol
+    connections
     Set.ThePrimrosePath
+
+moonlitForestSmolderingCampfire :: CardDef
+moonlitForestSmolderingCampfire =
+  moonlitForest ":circus-ex-mortis:025" "Smoldering Campfire" Star [Trefoil]
 
 moonlitForestQuietValley :: CardDef
 moonlitForestQuietValley =
-  locationWithUnrevealedName
-    ":circus-ex-mortis:026"
-    "Moonlit Forest"
-    ("Moonlit Forest" <:> "Quiet Valley")
-    [Woods]
-    Star
-    [Trefoil]
-    Set.ThePrimrosePath
+  moonlitForest ":circus-ex-mortis:026" "Quiet Valley" Star [Trefoil]
 
 moonlitForestShallowRiver :: CardDef
 moonlitForestShallowRiver =
-  locationWithUnrevealedName
-    ":circus-ex-mortis:027"
-    "Moonlit Forest"
-    ("Moonlit Forest" <:> "Shallow River")
-    [Woods]
-    Star
-    [Trefoil]
-    Set.ThePrimrosePath
+  moonlitForest ":circus-ex-mortis:027" "Shallow River" Star [Trefoil]
 
 moonlitForestGlassyLake :: CardDef
 moonlitForestGlassyLake =
-  locationWithUnrevealedName
-    ":circus-ex-mortis:028"
-    "Moonlit Forest"
-    ("Moonlit Forest" <:> "Glassy Lake")
-    [Woods]
-    Star
-    [Trefoil]
-    Set.ThePrimrosePath
+  moonlitForest ":circus-ex-mortis:028" "Glassy Lake" Star [Trefoil]
 
 moonlitForestCircularGrove :: CardDef
 moonlitForestCircularGrove =
-  locationWithUnrevealed
-    ":circus-ex-mortis:029"
-    "Moonlit Forest"
-    [Woods]
-    Star
-    [Trefoil]
-    ("Moonlit Forest" <:> "Circular Grove")
-    [Woods]
-    Circle
-    [Trefoil, Moon]
-    Set.ThePrimrosePath
+  moonlitForest ":circus-ex-mortis:029" "Circular Grove" Circle [Trefoil, Moon]
 
 moonlitForestMistyMarsh :: CardDef
 moonlitForestMistyMarsh =
-  locationWithUnrevealed
-    ":circus-ex-mortis:030"
-    "Moonlit Forest"
-    [Woods]
-    Star
-    [Trefoil]
-    ("Moonlit Forest" <:> "Misty Marsh")
-    [Woods]
-    Square
-    [Trefoil, Moon]
-    Set.ThePrimrosePath
+  moonlitForest ":circus-ex-mortis:030" "Misty Marsh" Square [Trefoil, Moon]
 
 moonlitForestShadowedPath :: CardDef
 moonlitForestShadowedPath =
-  victory 1
-    $ locationWithUnrevealed
-      ":circus-ex-mortis:031"
-      "Moonlit Forest"
-      [Woods]
-      Star
-      [Trefoil]
-      ("Moonlit Forest" <:> "Shadowed Path")
-      [Woods]
-      Plus
-      [Trefoil]
-      Set.ThePrimrosePath
+  victory 1 $ moonlitForest ":circus-ex-mortis:031" "Shadowed Path" Plus [Trefoil]
 
 moonlitForestFogBank :: CardDef
 moonlitForestFogBank =
-  victory 1
-    $ locationWithUnrevealed
-      ":circus-ex-mortis:032"
-      "Moonlit Forest"
-      [Woods]
-      Star
-      [Trefoil]
-      ("Moonlit Forest" <:> "Fog Bank")
-      [Woods]
-      Plus
-      [Trefoil]
-      Set.ThePrimrosePath
+  victory 1 $ moonlitForest ":circus-ex-mortis:032" "Fog Bank" Plus [Trefoil]
 
 moonlitForestLabyrinthOfTrees :: CardDef
 moonlitForestLabyrinthOfTrees =
-  victory 1
-    $ locationWithUnrevealed
-      ":circus-ex-mortis:033"
-      "Moonlit Forest"
-      [Woods]
-      Star
-      [Trefoil]
-      ("Moonlit Forest" <:> "Labyrinth of Trees")
-      [Woods]
-      Plus
-      [Trefoil]
-      Set.ThePrimrosePath
+  victory 1 $ moonlitForest ":circus-ex-mortis:033" "Labyrinth of Trees" Plus [Trefoil]
 
 moonlitForestDeadGrove :: CardDef
 moonlitForestDeadGrove =
-  victory 1
-    $ locationWithUnrevealed
-      ":circus-ex-mortis:034"
-      "Moonlit Forest"
-      [Woods]
-      Star
-      [Trefoil]
-      ("Moonlit Forest" <:> "Dead Grove")
-      [Woods]
-      Plus
-      [Trefoil]
-      Set.ThePrimrosePath
+  victory 1 $ moonlitForest ":circus-ex-mortis:034" "Dead Grove" Plus [Trefoil]
 
 -- harm_s_way
 ringmastersTrailer :: CardDef
 ringmastersTrailer =
   location ":circus-ex-mortis:047" "Ringmaster's Trailer" [Camp] Moon [Circle, Square] Set.HarmsWay
 
+-- | The four Crowded Row copies share one printed face; each prints its own ability.
+crowdedRow :: CardCode -> CardDef
+crowdedRow code = location code "Crowded Row" [Camp] Circle [Moon, Square] Set.HarmsWay
+
 crowdedRow_048 :: CardDef
-crowdedRow_048 =
-  location ":circus-ex-mortis:048" "Crowded Row" [Camp] Circle [Moon, Square] Set.HarmsWay
+crowdedRow_048 = crowdedRow ":circus-ex-mortis:048"
 
 crowdedRow_049 :: CardDef
-crowdedRow_049 =
-  location ":circus-ex-mortis:049" "Crowded Row" [Camp] Circle [Moon, Square] Set.HarmsWay
+crowdedRow_049 = crowdedRow ":circus-ex-mortis:049"
 
 crowdedRow_050 :: CardDef
-crowdedRow_050 =
-  location ":circus-ex-mortis:050" "Crowded Row" [Camp] Circle [Moon, Square] Set.HarmsWay
+crowdedRow_050 = crowdedRow ":circus-ex-mortis:050"
 
 crowdedRow_051 :: CardDef
-crowdedRow_051 =
-  location ":circus-ex-mortis:051" "Crowded Row" [Camp] Circle [Moon, Square] Set.HarmsWay
+crowdedRow_051 = crowdedRow ":circus-ex-mortis:051"
+
+-- | As with 'crowdedRow', the four Secluded Tent copies differ only in their abilities.
+secludedTent :: CardCode -> CardDef
+secludedTent code = location code "Secluded Tent" [Camp] Square [Moon, Circle] Set.HarmsWay
 
 secludedTent_052 :: CardDef
-secludedTent_052 =
-  location ":circus-ex-mortis:052" "Secluded Tent" [Camp] Square [Moon, Circle] Set.HarmsWay
+secludedTent_052 = secludedTent ":circus-ex-mortis:052"
 
 secludedTent_053 :: CardDef
-secludedTent_053 =
-  location ":circus-ex-mortis:053" "Secluded Tent" [Camp] Square [Moon, Circle] Set.HarmsWay
+secludedTent_053 = secludedTent ":circus-ex-mortis:053"
 
 secludedTent_054 :: CardDef
-secludedTent_054 =
-  location ":circus-ex-mortis:054" "Secluded Tent" [Camp] Square [Moon, Circle] Set.HarmsWay
+secludedTent_054 = secludedTent ":circus-ex-mortis:054"
 
 secludedTent_055 :: CardDef
-secludedTent_055 =
-  location ":circus-ex-mortis:055" "Secluded Tent" [Camp] Square [Moon, Circle] Set.HarmsWay
+secludedTent_055 = secludedTent ":circus-ex-mortis:055"
 
 campOutskirtsGuardedClosely :: CardDef
 campOutskirtsGuardedClosely =
@@ -265,120 +190,49 @@ locomotiveEngine =
   singleSided
     $ location ":circus-ex-mortis:082" "Locomotive Engine" [Train] Equals [Square, Moon] Set.AllPointsWest
 
-boxcar :: CardDef
-boxcar =
+{- | The train's five Freight Cars are interchangeable but for their names, and so are
+its five Special Cars, which are each worth 1 victory point.
+-}
+freightCar :: CardCode -> Name -> CardDef
+freightCar code name =
   singleSided
-    $ location
-      ":circus-ex-mortis:083"
-      "Boxcar"
-      [Train, FreightCar]
-      Square
-      [Equals, Star, Hourglass]
-      Set.AllPointsWest
+    $ location code name [Train, FreightCar] Square [Equals, Star, Hourglass] Set.AllPointsWest
+
+specialCar :: CardCode -> Name -> CardDef
+specialCar code name =
+  singleSided
+    $ victory 1
+    $ location code name [Train, SpecialCar] Star [Square, Heart, Plus] Set.AllPointsWest
+
+boxcar :: CardDef
+boxcar = freightCar ":circus-ex-mortis:083" "Boxcar"
 
 flatcar :: CardDef
-flatcar =
-  singleSided
-    $ location
-      ":circus-ex-mortis:084"
-      "Flatcar"
-      [Train, FreightCar]
-      Square
-      [Equals, Star, Hourglass]
-      Set.AllPointsWest
+flatcar = freightCar ":circus-ex-mortis:084" "Flatcar"
 
 gondolaCar :: CardDef
-gondolaCar =
-  singleSided
-    $ location
-      ":circus-ex-mortis:085"
-      "Gondola Car"
-      [Train, FreightCar]
-      Square
-      [Equals, Star, Hourglass]
-      Set.AllPointsWest
+gondolaCar = freightCar ":circus-ex-mortis:085" "Gondola Car"
 
 stockCar :: CardDef
-stockCar =
-  singleSided
-    $ location
-      ":circus-ex-mortis:086"
-      "Stock Car"
-      [Train, FreightCar]
-      Square
-      [Equals, Star, Hourglass]
-      Set.AllPointsWest
+stockCar = freightCar ":circus-ex-mortis:086" "Stock Car"
 
 tankCar :: CardDef
-tankCar =
-  singleSided
-    $ location
-      ":circus-ex-mortis:087"
-      "Tank Car"
-      [Train, FreightCar]
-      Square
-      [Equals, Star, Hourglass]
-      Set.AllPointsWest
+tankCar = freightCar ":circus-ex-mortis:087" "Tank Car"
 
 coalHopperCar :: CardDef
-coalHopperCar =
-  singleSided
-    $ victory 1
-    $ location
-      ":circus-ex-mortis:088"
-      "Coal Hopper Car"
-      [Train, SpecialCar]
-      Star
-      [Square, Heart, Plus]
-      Set.AllPointsWest
+coalHopperCar = specialCar ":circus-ex-mortis:088" "Coal Hopper Car"
 
 craneCar :: CardDef
-craneCar =
-  singleSided
-    $ victory 1
-    $ location
-      ":circus-ex-mortis:089"
-      "Crane Car"
-      [Train, SpecialCar]
-      Star
-      [Square, Heart, Plus]
-      Set.AllPointsWest
+craneCar = specialCar ":circus-ex-mortis:089" "Crane Car"
 
 mailCar :: CardDef
-mailCar =
-  singleSided
-    $ victory 1
-    $ location
-      ":circus-ex-mortis:090"
-      "Mail Car"
-      [Train, SpecialCar]
-      Star
-      [Square, Heart, Plus]
-      Set.AllPointsWest
+mailCar = specialCar ":circus-ex-mortis:090" "Mail Car"
 
 refrigeratorCar :: CardDef
-refrigeratorCar =
-  singleSided
-    $ victory 1
-    $ location
-      ":circus-ex-mortis:091"
-      "Refrigerator Car"
-      [Train, SpecialCar]
-      Star
-      [Square, Heart, Plus]
-      Set.AllPointsWest
+refrigeratorCar = specialCar ":circus-ex-mortis:091" "Refrigerator Car"
 
 reinforcedCar :: CardDef
-reinforcedCar =
-  singleSided
-    $ victory 1
-    $ location
-      ":circus-ex-mortis:092"
-      "Reinforced Car"
-      [Train, SpecialCar]
-      Star
-      [Square, Heart, Plus]
-      Set.AllPointsWest
+reinforcedCar = specialCar ":circus-ex-mortis:092" "Reinforced Car"
 
 circusEngine :: CardDef
 circusEngine =
@@ -517,69 +371,71 @@ ritualClearing :: CardDef
 ritualClearing =
   victory 1 $ location ":circus-ex-mortis:161" "Ritual Clearing" [Woods] Moon [Heart] Set.RedSunrise
 
+{- | Red Sunrise builds its rows from four interchangeable copies of each location; only
+the abilities differ between copies.
+-}
+foothillSlope :: CardCode -> CardDef
+foothillSlope code = location code "Foothill Slope" [Woods] Star [T, Star] Set.RedSunrise
+
 foothillSlope_162 :: CardDef
-foothillSlope_162 =
-  location ":circus-ex-mortis:162" "Foothill Slope" [Woods] Star [T, Star] Set.RedSunrise
+foothillSlope_162 = foothillSlope ":circus-ex-mortis:162"
 
 foothillSlope_163 :: CardDef
-foothillSlope_163 =
-  location ":circus-ex-mortis:163" "Foothill Slope" [Woods] Star [T, Star] Set.RedSunrise
+foothillSlope_163 = foothillSlope ":circus-ex-mortis:163"
 
 foothillSlope_164 :: CardDef
-foothillSlope_164 =
-  location ":circus-ex-mortis:164" "Foothill Slope" [Woods] Star [T, Star] Set.RedSunrise
+foothillSlope_164 = foothillSlope ":circus-ex-mortis:164"
 
 foothillSlope_165 :: CardDef
-foothillSlope_165 =
-  location ":circus-ex-mortis:165" "Foothill Slope" [Woods] Star [T, Star] Set.RedSunrise
+foothillSlope_165 = foothillSlope ":circus-ex-mortis:165"
+
+-- | See 'foothillSlope'.
+mountainStream :: CardCode -> CardDef
+mountainStream code = location code "Mountain Stream" [Woods] Diamond [Star, Diamond] Set.RedSunrise
 
 mountainStream_166 :: CardDef
-mountainStream_166 =
-  location ":circus-ex-mortis:166" "Mountain Stream" [Woods] Diamond [Star, Diamond] Set.RedSunrise
+mountainStream_166 = mountainStream ":circus-ex-mortis:166"
 
 mountainStream_167 :: CardDef
-mountainStream_167 =
-  location ":circus-ex-mortis:167" "Mountain Stream" [Woods] Diamond [Star, Diamond] Set.RedSunrise
+mountainStream_167 = mountainStream ":circus-ex-mortis:167"
 
 mountainStream_168 :: CardDef
-mountainStream_168 =
-  location ":circus-ex-mortis:168" "Mountain Stream" [Woods] Diamond [Star, Diamond] Set.RedSunrise
+mountainStream_168 = mountainStream ":circus-ex-mortis:168"
 
 mountainStream_169 :: CardDef
-mountainStream_169 =
-  location ":circus-ex-mortis:169" "Mountain Stream" [Woods] Diamond [Star, Diamond] Set.RedSunrise
+mountainStream_169 = mountainStream ":circus-ex-mortis:169"
+
+-- | See 'foothillSlope'.
+openForest :: CardCode -> CardDef
+openForest code = location code "Open Forest" [Woods] T [Trefoil, T] Set.RedSunrise
 
 openForest_170 :: CardDef
-openForest_170 =
-  location ":circus-ex-mortis:170" "Open Forest" [Woods] T [Trefoil, T] Set.RedSunrise
+openForest_170 = openForest ":circus-ex-mortis:170"
 
 openForest_171 :: CardDef
-openForest_171 =
-  location ":circus-ex-mortis:171" "Open Forest" [Woods] T [Trefoil, T] Set.RedSunrise
+openForest_171 = openForest ":circus-ex-mortis:171"
 
 openForest_172 :: CardDef
-openForest_172 =
-  location ":circus-ex-mortis:172" "Open Forest" [Woods] T [Trefoil, T] Set.RedSunrise
+openForest_172 = openForest ":circus-ex-mortis:172"
+
+-- | See 'foothillSlope'.
+shadowedWilderness :: CardCode -> CardDef
+shadowedWilderness code = location code "Shadowed Wilderness" [Woods] Heart [Diamond, Heart] Set.RedSunrise
 
 shadowedWilderness_173 :: CardDef
-shadowedWilderness_173 =
-  location ":circus-ex-mortis:173" "Shadowed Wilderness" [Woods] Heart [Diamond, Heart] Set.RedSunrise
+shadowedWilderness_173 = shadowedWilderness ":circus-ex-mortis:173"
 
 shadowedWilderness_174 :: CardDef
-shadowedWilderness_174 =
-  location ":circus-ex-mortis:174" "Shadowed Wilderness" [Woods] Heart [Diamond, Heart] Set.RedSunrise
+shadowedWilderness_174 = shadowedWilderness ":circus-ex-mortis:174"
 
 shadowedWilderness_175 :: CardDef
-shadowedWilderness_175 =
-  location ":circus-ex-mortis:175" "Shadowed Wilderness" [Woods] Heart [Diamond, Heart] Set.RedSunrise
+shadowedWilderness_175 = shadowedWilderness ":circus-ex-mortis:175"
 
 shadowedWilderness_176 :: CardDef
-shadowedWilderness_176 =
-  location ":circus-ex-mortis:176" "Shadowed Wilderness" [Woods] Heart [Diamond, Heart] Set.RedSunrise
+shadowedWilderness_176 = shadowedWilderness ":circus-ex-mortis:176"
 
 shadowedWilderness_177 :: CardDef
-shadowedWilderness_177 =
-  location ":circus-ex-mortis:177" "Shadowed Wilderness" [Woods] Heart [Diamond, Heart] Set.RedSunrise
+shadowedWilderness_177 = shadowedWilderness ":circus-ex-mortis:177"
 
 -- thousand_to_one
 silentClearing :: CardDef

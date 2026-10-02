@@ -38,5 +38,4 @@ instance HasModifiersFor RemoteCabin where
       ]
 
 instance RunMessage RemoteCabin where
-  runMessage msg (RemoteCabin attrs) = runQueueT $ case msg of
-    _ -> RemoteCabin <$> liftRunMessage msg attrs
+  runMessage msg (RemoteCabin attrs) = runQueueT $ RemoteCabin <$> liftRunMessage msg attrs

@@ -331,10 +331,10 @@ instance RunMessage AllPointsWest where
             chooseOrRunOneM lead $ targets investigators (`forInvestigator` msg)
           IconTax _ owed traits -> do
             reduction <- countTraits traits
-            push $ ScenarioSpecific iconTaxKey $ toJSON $ max 0 (owed - 2 * reduction)
+            scenarioSpecific iconTaxKey $ max 0 (owed - 2 * reduction)
           AssetTax _ owed traits -> do
             reduction <- countTraits traits
-            push $ ScenarioSpecific assetTaxKey $ toJSON $ max 0 (owed - reduction)
+            scenarioSpecific assetTaxKey $ max 0 (owed - reduction)
       pure s
     ForInvestigator iid (DoStep 1 (ScenarioSpecific key v)) | key == nowArrivingKey -> do
       for_ (maybeResult v) \arrival -> do
@@ -363,7 +363,7 @@ instance RunMessage AllPointsWest where
         unless (null candidates) $ chooseOneM lead $ for_ candidates \(iid, card) ->
           targeting (toCardId card) do
             discardCard iid ScenarioSource card
-            push $ ScenarioSpecific iconTaxKey $ toJSON $ max 0 (owed - iconCount card)
+            scenarioSpecific iconTaxKey $ max 0 (owed - iconCount card)
       pure s
     ScenarioSpecific key v | key == assetTaxKey -> do
       for_ (maybeResult @Int v) \owed -> when (owed > 0) do
@@ -371,7 +371,7 @@ instance RunMessage AllPointsWest where
         assets <- select $ DiscardableAsset <> NonWeaknessAsset <> AssetControlledBy Anyone
         unless (null assets) $ chooseOneM lead $ targets assets \aid -> do
           toDiscardBy lead ScenarioSource aid
-          push $ ScenarioSpecific assetTaxKey $ toJSON (owed - 1)
+          scenarioSpecific assetTaxKey (owed - 1 :: Int)
       pure s
     FailedThisSkillTest _ ScenarioSource -> do
       daysBehind =<< getScenarioMetaKeyDefault interludeFailureKey 0

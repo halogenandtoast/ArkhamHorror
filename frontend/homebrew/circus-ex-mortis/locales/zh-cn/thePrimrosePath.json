@@ -9,12 +9,6 @@
         "shadows": "“尽量待在阴影里。”若混乱袋中有 {'{'}tablet{'}'} 标记，移除它，并加入1个 {'{'}moon{'}'} 标记，直到剧本结束。"
       }
     },
-    "bloodMoon": {
-      "label": {
-        "physicalTrauma": "承受1点肉体创伤",
-        "mentalTrauma": "承受1点精神创伤"
-      }
-    },
     "resolutions": {
       "resolution1": {
         "title": "结局1",

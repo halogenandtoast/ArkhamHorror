@@ -35,7 +35,7 @@ instance HasAbilities ForestOfIllusion where
         2
         (EachUndefeatedInvestigator (at_ $ locationIs Locations.circusEncampment) <> DuringTurn Anyone)
         $ Objective
-        $ FastAbility Free
+          freeTrigger_
     ]
 
 instance RunMessage ForestOfIllusion where

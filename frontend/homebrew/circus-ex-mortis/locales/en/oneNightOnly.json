@@ -19,12 +19,6 @@
         "sealMoonToken": "<span>Search the chaos bag for a {'{'}moon{'}'} token and seal it on your investigator card</span>"
       }
     },
-    "mesmericMagic": {
-      "label": {
-        "physicalTrauma": "Suffer 1 physical trauma",
-        "mentalTrauma": "Suffer 1 mental trauma"
-      }
-    },
     "tokens": {
       "easyStandard": {
         "skull": "-X. X is equal to the number of _Creature_ enemies in play.",

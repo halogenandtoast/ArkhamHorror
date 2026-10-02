@@ -21,5 +21,4 @@ instance HasModifiersFor ShadowedWilderness_177 where
     modifySelfWhen a anyEnemies [ShroudModifier (if exhausted then (-2) else (-1))]
 
 instance RunMessage ShadowedWilderness_177 where
-  runMessage msg (ShadowedWilderness_177 attrs) = runQueueT $ case msg of
-    _ -> ShadowedWilderness_177 <$> liftRunMessage msg attrs
+  runMessage msg (ShadowedWilderness_177 attrs) = runQueueT $ ShadowedWilderness_177 <$> liftRunMessage msg attrs

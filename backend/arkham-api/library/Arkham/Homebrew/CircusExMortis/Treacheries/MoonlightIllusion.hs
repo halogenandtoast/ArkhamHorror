@@ -34,6 +34,6 @@ instance RunMessage MoonlightIllusion where
           $ connectedTo (locationWithInvestigator iid)
           <> LocationWithTrait Woods
           <> canEnterLocation iid
-      when (notNull woods) $ chooseTargetM iid woods \lid -> moveTo attrs iid lid
+      when (notNull woods) $ chooseTargetM iid woods $ moveTo attrs iid
       pure t
     _ -> MoonlightIllusion <$> liftRunMessage msg attrs

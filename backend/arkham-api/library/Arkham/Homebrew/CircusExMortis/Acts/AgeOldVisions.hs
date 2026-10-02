@@ -35,7 +35,7 @@ instance HasAbilities AgeOldVisions where
           <> exists (InvestigatorAt $ locationIs Locations.silentClearing)
       )
       $ Objective
-      $ FastAbility Free
+        freeTrigger_
 
 instance RunMessage AgeOldVisions where
   runMessage msg a@(AgeOldVisions attrs) = runQueueT $ case msg of
@@ -48,7 +48,7 @@ instance RunMessage AgeOldVisions where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       selectEach (enemyIs Enemies.shubNiggurath) \shub -> do
         exhaustThis shub
-        push $ HealAllDamage (toTarget shub) (toSource attrs)
+        healAllDamage attrs shub
         enemyMoveToMatch attrs shub (locationIs Locations.silentClearing)
       -- "Remove the act and agenda from the game and advance to the set-aside The
       -- Prophecy Fulfilled; it is both the current act and the current agenda." The

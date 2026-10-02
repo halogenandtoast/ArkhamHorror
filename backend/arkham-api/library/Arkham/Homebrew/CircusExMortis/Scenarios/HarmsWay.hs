@@ -155,7 +155,7 @@ instance RunMessage HarmsWay where
       let corners = [Pos (-1) 1, Pos 1 1, Pos (-1) (-1), Pos 1 (-1)]
       for_ (zip keptYoung corners) \(def, pos) -> do
         eid <- placeEnemyCapture def (InPosition pos)
-        push $ UpdateEnemy eid $ Update EnemyAsSelfLocation (Just $ gridLabel pos)
+        updateEnemy eid EnemyAsSelfLocation (Just $ gridLabel pos)
 
       -- The fury bag starts with these four; agenda flips add ☾ tokens on top.
       initCustomChaosBag furyBagKey [Skull, Cultist, Tablet, ElderThing]

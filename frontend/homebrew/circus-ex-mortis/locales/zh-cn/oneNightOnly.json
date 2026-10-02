@@ -19,12 +19,6 @@
         "sealMoonToken": "从混乱袋中查找一个 {'{'}moon{'}'} 标记，并将其封印在你的调查员卡上"
       }
     },
-    "mesmericMagic": {
-      "label": {
-        "physicalTrauma": "承受1点肉体创伤",
-        "mentalTrauma": "承受1点精神创伤"
-      }
-    },
     "resolutions": {
       "resolution1": {
         "title": "结局1",

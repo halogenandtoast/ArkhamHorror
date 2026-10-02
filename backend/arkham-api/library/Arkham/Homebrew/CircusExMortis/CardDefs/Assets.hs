@@ -1,8 +1,10 @@
 module Arkham.Homebrew.CircusExMortis.CardDefs.Assets where
 
 import Arkham.Asset.Cards.Import
+import Arkham.Card.CardCode (CardCode)
 import Arkham.Homebrew.CircusExMortis.Sets qualified as Set
 import Arkham.Homebrew.CircusExMortis.Traits
+import Arkham.SkillType (SkillIcon)
 
 -- one_night_only
 illusoryLocus :: CardDef
@@ -33,253 +35,118 @@ ralphDykstra =
     }
 
 -- bacchanalia
-cecilSharpe :: CardDef
-cecilSharpe =
-  (encounterAsset_ ":circus-ex-mortis:138" ("Cecil Sharpe" <:> "Keeps His Hands Clean") Set.Bacchanalia)
-    { cdCardTraits = setFromList [Socialite, LiberPater]
+
+{- | The five Bacchanalia Socialites share a printing; only Phillip Hutchins, who is
+"woefully out of place", is not also a Liber Pater.
+-}
+socialite :: CardCode -> Name -> [Trait] -> CardDef
+socialite code title extraTraits =
+  (encounterAsset_ code title Set.Bacchanalia)
+    { cdCardTraits = setFromList (Socialite : extraTraits)
     , cdUnique = True
     }
+
+cecilSharpe :: CardDef
+cecilSharpe =
+  socialite ":circus-ex-mortis:138" ("Cecil Sharpe" <:> "Keeps His Hands Clean") [LiberPater]
 
 estherMeredith :: CardDef
 estherMeredith =
-  ( encounterAsset_
-      ":circus-ex-mortis:139"
-      ("Esther Meredith" <:> "Deals in Gold, Exclusively")
-      Set.Bacchanalia
-  )
-    { cdCardTraits = setFromList [Socialite, LiberPater]
-    , cdUnique = True
-    }
+  socialite ":circus-ex-mortis:139" ("Esther Meredith" <:> "Deals in Gold, Exclusively") [LiberPater]
 
 phillipHutchins :: CardDef
 phillipHutchins =
-  ( encounterAsset_
-      ":circus-ex-mortis:140"
-      ("Phillip Hutchins" <:> "Woefully Out of Place")
-      Set.Bacchanalia
-  )
-    { cdCardTraits = setFromList [Socialite]
-    , cdUnique = True
-    }
+  socialite ":circus-ex-mortis:140" ("Phillip Hutchins" <:> "Woefully Out of Place") []
 
 richardStratton :: CardDef
 richardStratton =
-  ( encounterAsset_
-      ":circus-ex-mortis:141"
-      ("Richard Stratton" <:> "\"Connoisseur\" of Fine Wines")
-      Set.Bacchanalia
-  )
-    { cdCardTraits = setFromList [Socialite, LiberPater]
-    , cdUnique = True
-    }
+  socialite
+    ":circus-ex-mortis:141"
+    ("Richard Stratton" <:> "\"Connoisseur\" of Fine Wines")
+    [LiberPater]
 
 veraAshcroft :: CardDef
 veraAshcroft =
-  ( encounterAsset_
-      ":circus-ex-mortis:142"
-      ("Vera Ashcroft" <:> "Recently Widowed, Again")
-      Set.Bacchanalia
-  )
-    { cdCardTraits = setFromList [Socialite, LiberPater]
-    , cdUnique = True
-    }
+  socialite ":circus-ex-mortis:142" ("Vera Ashcroft" <:> "Recently Widowed, Again") [LiberPater]
 
 -- destiny_and_prophecy
-amaltheaWeaverCircusFortuneTeller :: CardDef
-amaltheaWeaverCircusFortuneTeller =
-  ( storyAsset
-      ":circus-ex-mortis:228"
-      ("Amalthea Weaver" <:> "Circus Fortune Teller")
-      2
-      Set.DestinyAndProphecy
-  )
+
+{- | Amalthea Weaver's seven printings and De Cultus Bestiae's seven are each the same
+card at a later point in the campaign: only the subtitle and the skill icons change.
+-}
+amaltheaWeaver :: CardCode -> Text -> [SkillIcon] -> CardDef
+amaltheaWeaver code subtitle icons =
+  (storyAsset code ("Amalthea Weaver" <:> subtitle) 2 Set.DestinyAndProphecy)
     { cdCardTraits = setFromList [Ally, Clairvoyant, Performer]
-    , cdSkills = [#wild]
+    , cdSkills = icons
     , cdSlots = [#ally]
     , cdUnique = True
     }
+
+deCultusBestiae :: CardCode -> Text -> [SkillIcon] -> CardDef
+deCultusBestiae code subtitle icons =
+  (storyAsset code ("De Cultus Bestiae" <:> subtitle) 2 Set.DestinyAndProphecy)
+    { cdCardTraits = setFromList [Item, Tome, Occult]
+    , cdSkills = icons
+    , cdSlots = [#hand]
+    , cdUnique = True
+    }
+
+amaltheaWeaverCircusFortuneTeller :: CardDef
+amaltheaWeaverCircusFortuneTeller =
+  amaltheaWeaver ":circus-ex-mortis:228" "Circus Fortune Teller" [#wild]
 
 amaltheaWeaverAspirantOfCourage :: CardDef
 amaltheaWeaverAspirantOfCourage =
-  ( storyAsset
-      ":circus-ex-mortis:229"
-      ("Amalthea Weaver" <:> "Aspirant of Courage")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Ally, Clairvoyant, Performer]
-    , cdSkills = [#willpower, #wild]
-    , cdSlots = [#ally]
-    , cdUnique = True
-    }
+  amaltheaWeaver ":circus-ex-mortis:229" "Aspirant of Courage" [#willpower, #wild]
 
 amaltheaWeaverAspirantOfWisdom :: CardDef
 amaltheaWeaverAspirantOfWisdom =
-  ( storyAsset
-      ":circus-ex-mortis:230"
-      ("Amalthea Weaver" <:> "Aspirant of Wisdom")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Ally, Clairvoyant, Performer]
-    , cdSkills = [#willpower, #wild]
-    , cdSlots = [#ally]
-    , cdUnique = True
-    }
+  amaltheaWeaver ":circus-ex-mortis:230" "Aspirant of Wisdom" [#willpower, #wild]
 
 amaltheaWeaverOracleOfPurity :: CardDef
 amaltheaWeaverOracleOfPurity =
-  ( storyAsset
-      ":circus-ex-mortis:231"
-      ("Amalthea Weaver" <:> "Oracle of Purity")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Ally, Clairvoyant, Performer]
-    , cdSkills = [#willpower, #wild, #wild]
-    , cdSlots = [#ally]
-    , cdUnique = True
-    }
+  amaltheaWeaver ":circus-ex-mortis:231" "Oracle of Purity" [#willpower, #wild, #wild]
 
 amaltheaWeaverOracleOfResolve :: CardDef
 amaltheaWeaverOracleOfResolve =
-  ( storyAsset
-      ":circus-ex-mortis:232"
-      ("Amalthea Weaver" <:> "Oracle of Resolve")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Ally, Clairvoyant, Performer]
-    , cdSkills = [#willpower, #wild, #wild]
-    , cdSlots = [#ally]
-    , cdUnique = True
-    }
+  amaltheaWeaver ":circus-ex-mortis:232" "Oracle of Resolve" [#willpower, #wild, #wild]
 
 amaltheaWeaverOracleOfEnlightenment :: CardDef
 amaltheaWeaverOracleOfEnlightenment =
-  ( storyAsset
-      ":circus-ex-mortis:233"
-      ("Amalthea Weaver" <:> "Oracle of Enlightenment")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Ally, Clairvoyant, Performer]
-    , cdSkills = [#willpower, #wild, #wild]
-    , cdSlots = [#ally]
-    , cdUnique = True
-    }
+  amaltheaWeaver ":circus-ex-mortis:233" "Oracle of Enlightenment" [#willpower, #wild, #wild]
 
 amaltheaWeaverOracleOfMystery :: CardDef
 amaltheaWeaverOracleOfMystery =
-  ( storyAsset
-      ":circus-ex-mortis:234"
-      ("Amalthea Weaver" <:> "Oracle of Mystery")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Ally, Clairvoyant, Performer]
-    , cdSkills = [#willpower, #wild, #wild]
-    , cdSlots = [#ally]
-    , cdUnique = True
-    }
+  amaltheaWeaver ":circus-ex-mortis:234" "Oracle of Mystery" [#willpower, #wild, #wild]
 
 deCultusBestiaeForgottenWorkOfApuleius :: CardDef
 deCultusBestiaeForgottenWorkOfApuleius =
-  ( storyAsset
-      ":circus-ex-mortis:235"
-      ("De Cultus Bestiae" <:> "Forgotten Work of Apuleius")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Item, Tome, Occult]
-    , cdSkills = [#wild]
-    , cdSlots = [#hand]
-    , cdUnique = True
-    }
+  deCultusBestiae ":circus-ex-mortis:235" "Forgotten Work of Apuleius" [#wild]
 
 deCultusBestiaeInterpretationOfConviction :: CardDef
 deCultusBestiaeInterpretationOfConviction =
-  ( storyAsset
-      ":circus-ex-mortis:236"
-      ("De Cultus Bestiae" <:> "Interpretation of Conviction")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Item, Tome, Occult]
-    , cdSkills = [#intellect, #wild]
-    , cdSlots = [#hand]
-    , cdUnique = True
-    }
+  deCultusBestiae ":circus-ex-mortis:236" "Interpretation of Conviction" [#intellect, #wild]
 
 deCultusBestiaeInterpretationOfObsession :: CardDef
 deCultusBestiaeInterpretationOfObsession =
-  ( storyAsset
-      ":circus-ex-mortis:237"
-      ("De Cultus Bestiae" <:> "Interpretation of Obsession")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Item, Tome, Occult]
-    , cdSkills = [#intellect, #wild]
-    , cdSlots = [#hand]
-    , cdUnique = True
-    }
+  deCultusBestiae ":circus-ex-mortis:237" "Interpretation of Obsession" [#intellect, #wild]
 
 deCultusBestiaeProphecyOfTheBeyond :: CardDef
 deCultusBestiaeProphecyOfTheBeyond =
-  ( storyAsset
-      ":circus-ex-mortis:238"
-      ("De Cultus Bestiae" <:> "Prophecy of the Beyond")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Item, Tome, Occult]
-    , cdSkills = [#intellect, #wild, #wild]
-    , cdSlots = [#hand]
-    , cdUnique = True
-    }
+  deCultusBestiae ":circus-ex-mortis:238" "Prophecy of the Beyond" [#intellect, #wild, #wild]
 
 deCultusBestiaeProphecyOfTheEternal :: CardDef
 deCultusBestiaeProphecyOfTheEternal =
-  ( storyAsset
-      ":circus-ex-mortis:239"
-      ("De Cultus Bestiae" <:> "Prophecy of the Eternal")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Item, Tome, Occult]
-    , cdSkills = [#intellect, #wild, #wild]
-    , cdSlots = [#hand]
-    , cdUnique = True
-    }
+  deCultusBestiae ":circus-ex-mortis:239" "Prophecy of the Eternal" [#intellect, #wild, #wild]
 
 deCultusBestiaeProphecyOfTheHorde :: CardDef
 deCultusBestiaeProphecyOfTheHorde =
-  ( storyAsset
-      ":circus-ex-mortis:240"
-      ("De Cultus Bestiae" <:> "Prophecy of the Horde")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Item, Tome, Occult]
-    , cdSkills = [#intellect, #wild, #wild]
-    , cdSlots = [#hand]
-    , cdUnique = True
-    }
+  deCultusBestiae ":circus-ex-mortis:240" "Prophecy of the Horde" [#intellect, #wild, #wild]
 
 deCultusBestiaeProphecyOfTheBehemoth :: CardDef
 deCultusBestiaeProphecyOfTheBehemoth =
-  ( storyAsset
-      ":circus-ex-mortis:241"
-      ("De Cultus Bestiae" <:> "Prophecy of the Behemoth")
-      2
-      Set.DestinyAndProphecy
-  )
-    { cdCardTraits = setFromList [Item, Tome, Occult]
-    , cdSkills = [#intellect, #wild, #wild]
-    , cdSlots = [#hand]
-    , cdUnique = True
-    }
+  deCultusBestiae ":circus-ex-mortis:241" "Prophecy of the Behemoth" [#intellect, #wild, #wild]
 
 -- panicked_masses
 terrifiedCaptives :: CardDef

@@ -15,5 +15,4 @@ instance HasModifiersFor OpenForest_171 where
   getModifiersFor (OpenForest_171 a) = cannotTriggerFreeAbilitiesWhile #evade a
 
 instance RunMessage OpenForest_171 where
-  runMessage msg (OpenForest_171 attrs) = runQueueT $ case msg of
-    _ -> OpenForest_171 <$> liftRunMessage msg attrs
+  runMessage msg (OpenForest_171 attrs) = runQueueT $ OpenForest_171 <$> liftRunMessage msg attrs

@@ -21,5 +21,4 @@ instance HasModifiersFor ShadowedWilderness_175 where
     modifySelect a (enemyAt a) [AddKeyword Keyword.Alert]
 
 instance RunMessage ShadowedWilderness_175 where
-  runMessage msg (ShadowedWilderness_175 attrs) = runQueueT $ case msg of
-    _ -> ShadowedWilderness_175 <$> liftRunMessage msg attrs
+  runMessage msg (ShadowedWilderness_175 attrs) = runQueueT $ ShadowedWilderness_175 <$> liftRunMessage msg attrs

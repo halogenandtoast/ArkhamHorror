@@ -9,12 +9,6 @@
         "shadows": "\"We'll stick the shadows as much as possible.\""
       }
     },
-    "bloodMoon": {
-      "label": {
-        "physicalTrauma": "Suffer 1 physical trauma",
-        "mentalTrauma": "Suffer 1 mental trauma"
-      }
-    },
     "tokens": {
       "easyStandard": {
         "skull": "-X. X is equal to the number of locations connected to Circus Encampment.",

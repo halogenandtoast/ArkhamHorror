@@ -27,5 +27,4 @@ instance HasModifiersFor MoonlitForestFogBank where
     modifySelect a (LocationWithTitle "Moonlit Forest" <> connectedTo (be a)) [ShroudModifier 1]
 
 instance RunMessage MoonlitForestFogBank where
-  runMessage msg (MoonlitForestFogBank attrs) = runQueueT $ case msg of
-    _ -> MoonlitForestFogBank <$> liftRunMessage msg attrs
+  runMessage msg (MoonlitForestFogBank attrs) = runQueueT $ MoonlitForestFogBank <$> liftRunMessage msg attrs

@@ -5,9 +5,8 @@ for each enemy and removing all doom, and the scenario resolves the rest.
 -}
 module Arkham.Homebrew.CircusExMortis.NowArriving (Arrival (..), nowArriving, nowArrivingKey) where
 
-import Arkham.Classes.HasQueue (push)
-import Arkham.Message (Message (ScenarioSpecific))
 import Arkham.Message.Lifted (ReverseQueue)
+import Arkham.Message.Lifted.Scenario (scenarioSpecific)
 import Arkham.Prelude
 
 data Arrival = ArrivingAtChicago | ArrivingAtMemphis | ArrivingAtStLouis | ArrivingAtDenver
@@ -18,4 +17,4 @@ nowArrivingKey :: Text
 nowArrivingKey = "allPointsWest.nowArriving"
 
 nowArriving :: ReverseQueue m => Arrival -> m ()
-nowArriving = push . ScenarioSpecific nowArrivingKey . toJSON
+nowArriving = scenarioSpecific nowArrivingKey

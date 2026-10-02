@@ -81,7 +81,7 @@ amaltheaWeaverChooseRecipient
   :: ReverseQueue m => AssetAttrs -> (InvestigatorId -> QueueT Message m ()) -> m ()
 amaltheaWeaverChooseRecipient attrs f = for_ attrs.controller \you ->
   withSkillTestInvestigator \performer -> do
-    recipients <- filterM (\iid -> can.draw.cards iid) (nub [you, performer])
+    recipients <- filterM can.draw.cards (nub [you, performer])
     unless (null recipients) $ chooseUpToNM_ you 1 $ targets recipients f
 
 -- * De Cultus Bestiae
@@ -93,7 +93,7 @@ deCultusBestiaeAbilities :: Int -> AssetAttrs -> [Ability]
 deCultusBestiaeAbilities sealLimit a =
   [ doesNotProvokeAttacksOfOpportunity
       $ controlled a 1 (thisExists a underLimit <> exists moonToken) actionAbility
-  , controlled a 2 (thisExists a $ AssetWithSealedChaosTokens 1 AnyChaosToken) $ FastAbility Free
+  , controlled a 2 (thisExists a $ AssetWithSealedChaosTokens 1 AnyChaosToken) freeTrigger_
   ]
  where
   underLimit = not_ $ AssetWithSealedChaosTokens (sealLimit + 1) AnyChaosToken

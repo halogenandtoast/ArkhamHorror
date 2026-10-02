@@ -37,5 +37,4 @@ instance HasModifiersFor WoodlandOverlook where
       ]
 
 instance RunMessage WoodlandOverlook where
-  runMessage msg (WoodlandOverlook attrs) = runQueueT $ case msg of
-    _ -> WoodlandOverlook <$> liftRunMessage msg attrs
+  runMessage msg (WoodlandOverlook attrs) = runQueueT $ WoodlandOverlook <$> liftRunMessage msg attrs

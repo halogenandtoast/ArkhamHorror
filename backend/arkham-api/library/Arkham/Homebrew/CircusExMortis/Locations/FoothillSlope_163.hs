@@ -22,5 +22,4 @@ instance HasModifiersFor FoothillSlope_163 where
     modifyEach a spent [CannotDiscoverCluesAt (be a)]
 
 instance RunMessage FoothillSlope_163 where
-  runMessage msg (FoothillSlope_163 attrs) = runQueueT $ case msg of
-    _ -> FoothillSlope_163 <$> liftRunMessage msg attrs
+  runMessage msg (FoothillSlope_163 attrs) = runQueueT $ FoothillSlope_163 <$> liftRunMessage msg attrs

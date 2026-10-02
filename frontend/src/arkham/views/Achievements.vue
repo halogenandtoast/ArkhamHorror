@@ -11,6 +11,14 @@ const { t } = useI18n()
 const rows = ref<Achievement[]>([])
 const ready = ref(false)
 
+// Official campaigns are numbered; a homebrew campaign id is its slug with a
+// leading colon. They get their own tab so a homebrew list cannot be mistaken
+// for a printed one.
+type CatalogTab = 'official' | 'homebrew'
+const activeTab = ref<CatalogTab>('official')
+const tabOf = (campaignId: string): CatalogTab =>
+  campaignId.startsWith(':') ? 'homebrew' : 'official'
+
 function reload() {
   fetchAchievements()
     .then((r) => { rows.value = r })
@@ -20,13 +28,9 @@ function reload() {
 
 onMounted(reload)
 
-// Clearing earned achievements (all / one campaign / one achievement) asks
-// for confirmation first; pendingClear holds the scope + prompt text.
+// Clearing earned achievements (one campaign or one achievement) asks for
+// confirmation first; pendingClear holds the scope + prompt text.
 const pendingClear = ref<{ scope: ClearAchievementsScope, prompt: string } | null>(null)
-
-function requestClearAll() {
-  pendingClear.value = { scope: { scope: 'all' }, prompt: t('achievements.clearAllConfirm') }
-}
 
 function requestClearCampaign(campaignId: string) {
   pendingClear.value = {
@@ -47,8 +51,6 @@ function confirmClear() {
   pendingClear.value = null
   if (pending) clearAchievements(pending.scope).then(reload).catch((e) => console.error(e))
 }
-
-const anyEarned = computed(() => rows.value.some((r) => r.earnedAt !== null))
 
 const campaignEarnedCount = (campaign: { entries: AchievementEntry[] }) =>
   campaign.entries.filter((entry) => !!earnedRow(entry)).length
@@ -78,6 +80,22 @@ const campaigns = computed(() => {
       sections: achievementSections(entries),
     }))
 })
+
+/* Official campaigns keep release order (that is what compareAchievementCampaignIds
+gives); homebrew has no release order, so it is sorted by the name on screen. */
+const visibleCampaigns = computed(() => {
+  const visible = campaigns.value.filter(
+    (campaign) => tabOf(campaign.campaignId) === activeTab.value
+  )
+  if (activeTab.value !== 'homebrew') return visible
+  return [...visible].sort((a, b) =>
+    t(achievementCampaignScope(a.campaignId)).localeCompare(t(achievementCampaignScope(b.campaignId)))
+  )
+})
+
+const hasHomebrew = computed(() =>
+  campaigns.value.some((campaign) => tabOf(campaign.campaignId) === 'homebrew')
+)
 
 const earnedRow = (entry: AchievementEntry): Achievement | null => {
   const row = byTag.value.get(entry.tag)
@@ -113,12 +131,22 @@ const earnedDate = (row: Achievement): string | null => {
     <div class="achievements-column">
       <div class="page-header">
         <h1>{{ t('achievements.pageTitle') }}</h1>
-        <button v-if="anyEarned" type="button" class="clear-btn" @click="requestClearAll">
-          {{ t('achievements.clearAll') }}
-        </button>
       </div>
 
-      <details v-for="campaign in campaigns" :key="campaign.campaignId" class="campaign-section">
+      <nav v-if="hasHomebrew" class="catalog-tabs">
+        <button
+          type="button"
+          :class="{ active: activeTab === 'official' }"
+          @click="activeTab = 'official'"
+        >{{ t('achievements.tabs.official') }}</button>
+        <button
+          type="button"
+          :class="{ active: activeTab === 'homebrew' }"
+          @click="activeTab = 'homebrew'"
+        >{{ t('achievements.tabs.homebrew') }}</button>
+      </nav>
+
+      <details v-for="campaign in visibleCampaigns" :key="campaign.campaignId" class="campaign-section">
         <summary class="campaign-header">
           <div class="campaign-title">
             <h2>{{ t(achievementCampaignScope(campaign.campaignId)) }}</h2>
@@ -258,6 +286,40 @@ h1 {
   text-transform: uppercase;
   padding-bottom: 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.catalog-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: -8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.catalog-tabs button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  /* The global button radius would curl the active underline up at both ends. */
+  border-radius: 0;
+  margin-bottom: -1px;
+  padding: 10px 18px;
+  font-family: teutonic, sans-serif;
+  font-size: 1.05em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.catalog-tabs button:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.catalog-tabs button.active {
+  color: var(--title);
+  border-bottom-color: var(--select, var(--button-1));
 }
 
 .campaign-section {

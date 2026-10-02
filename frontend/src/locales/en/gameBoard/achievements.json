@@ -1,6 +1,10 @@
 {
   "toastTitle": "Achievement unlocked!",
   "tabTitle": "Achievements",
+  "tabs": {
+    "official": "Official",
+    "homebrew": "Homebrew"
+  },
   "pageTitle": "Achievements",
   "gameDeleted": "(game deleted)",
   "viewGame": "View game",
@@ -1027,10 +1031,8 @@
       }
     }
   },
-  "clearAll": "Clear all",
   "clearCampaign": "Clear campaign",
   "clearOne": "Clear this achievement",
-  "clearAllConfirm": "Clear ALL earned achievements? This cannot be undone.",
   "clearCampaignConfirm": "Clear all earned achievements for {campaign}? This cannot be undone.",
   "clearOneConfirm": "Clear the achievement \"{name}\"? This cannot be undone.",
   "parts": {

@@ -159,6 +159,10 @@ data AssetBehavior = AssetBehavior
   {- ^ likewise once a focus has bought its owner a reroll, stated flatly rather
   than offered (Nine of Rods)
   -}
+  , atEndOfOwnerTurn :: CardId -> InvestigatorId -> GameM [Message]
+  {- ^ what this card exacts as its owner's turn closes, for a card that states it
+  flatly rather than offering it (Commanding Specter's doom)
+  -}
   , extraStepWhenPaying :: Int
   {- ^ once per round, spaces its owner may move beyond the one they paid for
   during a move action (Cabbie's Favor)
@@ -264,6 +268,7 @@ defaultAssetBehavior =
     , afterGainClue = \_ _ -> pure []
     , afterGainRemnant = \_ _ -> pure []
     , afterSpentFocusToReroll = \_ _ -> pure []
+    , atEndOfOwnerTurn = \_ _ -> pure []
     , extraStepWhenPaying = 0
     , afterMonsterDamaged = \_ _ _ _ -> pure []
     , afterHarm = \_ _ _ -> pure []
@@ -423,8 +428,15 @@ data MonsterBehavior = MonsterBehavior
   -}
   , afterAttackAction :: CardId -> InvestigatorId -> Bool -> GameM [Message]
   {- ^ what it does about having been attacked at all, damage dealt or not, the
-  way Retaliate answers the action rather than the damage
+  way Retaliate answers the action rather than the damage. Only asked while it is
+  still on the board.
   -}
+  , afterDamagedInAttack :: CardId -> InvestigatorId -> GameM [Message]
+  {- ^ what it exacts for being damaged by an attack action, asked whether or not
+  that damage finished it ("even if you defeat it" -- Gluttonous Giant)
+  -}
+  , afterExhausted :: CardId -> GameM [Message]
+  -- ^ what it does to itself on being exhausted (Crashing Specter)
   , afterDisengage :: CardId -> InvestigatorId -> GameM [Message]
   {- ^ what it does to whoever has just come away from it. Not offered but done,
   for a monster that prints it flatly rather than as a "may".
@@ -454,6 +466,8 @@ defaultMonsterBehavior =
     , afterAction = \_ _ _ -> pure []
     , afterAnotherDefeated = \_ _ _ -> pure []
     , afterAttackAction = \_ _ _ -> pure []
+    , afterDamagedInAttack = \_ _ -> pure []
+    , afterExhausted = \_ -> pure []
     , afterDisengage = \_ _ -> pure []
     , holdsItsQuarry = False
     , insteadOfEngaging = \_ _ -> pure Nothing

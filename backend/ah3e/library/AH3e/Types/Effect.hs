@@ -100,6 +100,8 @@ data Predicate
   | HasClues Int
   | HasRemnants Int
   | HasCondition ConditionName
+  | -- | that condition would actually reach you, which "if you cannot" asks about
+    CanGainCondition ConditionName
   | HasCard CardFilter
   | IsDelayed
   | -- | one of the counts an effect can read has reached this much

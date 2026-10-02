@@ -156,9 +156,12 @@ runMessage msg = case msg of
         comes back round to here (DRIVEN); whatever answers the ending has had its
         say by then. -}
         wrapped <- usedAbility iid "end-of-turn"
+        -- what a card takes as the turn closes, behind whatever was offered
+        closing <- if wrapped then pure [] else atEndOfOwnerTurnFor iid
         let wrapUp =
               [MarkAbilityUsed iid "end-of-turn" | not wrapped]
                 <> [CheckReactions (AtEndOfTurn iid) [] | not wrapped]
+                <> closing
                 <> [EndActionTurn iid]
             endTurn = Choice (DoneLabel "End turn") wrapUp
             freeChoices =
@@ -385,7 +388,9 @@ runMessage msg = case msg of
       push (MonsterEngagesIn mid m.space)
   ExhaustMonster mid -> do
     ok <- canBeExhausted mid
-    when ok $ setMonsterState mid Exhausted
+    when ok do
+      setMonsterState mid Exhausted
+      monsterBehavior mid >>= \b -> b.afterExhausted mid >>= pushAll
   {- Someone standing beside the one a monster picks may take the engagement instead
   (Tommy Muldoon, Mr. Pawterson's neighbour), so the engagement itself waits behind
   that offer. -}
@@ -940,9 +945,13 @@ runMessage msg = case msg of
       Just m -> pure (m.damage > before)
     gone <- uses #monsters (not . Map.member mid)
     retaliators <- filterM (hasKeyword Retaliate . (.card)) =<< engagedMonsters iid
-    own <- if gone then pure [] else monsterBehavior mid >>= \b -> b.afterAttackAction mid iid dealt
+    b <- monsterBehavior mid
+    own <- if gone then pure [] else b.afterAttackAction mid iid dealt
+    -- "even if you defeat it", so this one is asked of a monster already gone
+    exacted <- if dealt then b.afterDamagedInAttack mid iid else pure []
     pushAll
       $ own
+      <> exacted
       <> [MonsterAttacks r.card iid | r <- retaliators, r.card /= mid || not dealt]
       <> [CheckReactions (AfterDamageMonsterInAttack iid mid) [] | dealt]
       <> [CheckReactions (AfterDefeatMonsterInAttack iid) [] | gone]

@@ -324,6 +324,28 @@ extraPaidSteps iid = do
     b <- assetBehavior cid
     pure (if b.extraStepWhenPaying > 0 then Just (cid, b.extraStepWhenPaying) else Nothing)
 
+{- | Whether that condition would actually reach this investigator: a card or sheet
+may ban it, FATIGUED turns DRIVEN away, they may hold it already, and the box may
+have no copy left. This is what a card means by "if you cannot" (Menacing Bulk).
+-}
+canGainCondition :: InvestigatorId -> ConditionName -> GameM Bool
+canGainCondition iid name = do
+  already <- hasCondition iid name
+  banned <- hasAssetWith iid (elem name . (.bansConditions))
+  tooTired <- if name == "DRIVEN" then hasCondition iid "FATIGUED" else pure False
+  pile <- use (#decks . #conditions)
+  copies <- filterM (fmap offers . getCardDef) pile
+  let bannedBySheet = name `elem` (investigatorBehavior iid).bansConditions
+  pure (not (already || banned || bannedBySheet || tooTired) && not (null copies))
+ where
+  offers d = case d.kind of
+    ConditionCard c -> c.front.name == name || (c.backIsCondition && c.back.name == name)
+    _ -> False
+
+-- | What the cards its owner holds exact as their turn closes.
+atEndOfOwnerTurnFor :: InvestigatorId -> GameM [Message]
+atEndOfOwnerTurnFor = ownCards (.atEndOfOwnerTurn)
+
 -- | What the cards its owner holds do about an action of theirs that has just ended.
 afterOwnerActionFor :: InvestigatorId -> ActionKind -> GameM [Message]
 afterOwnerActionFor iid kind = do

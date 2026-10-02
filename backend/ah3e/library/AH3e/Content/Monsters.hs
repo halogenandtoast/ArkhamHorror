@@ -40,9 +40,24 @@ printedIn =
     , ("entranced-hybrid", UnderDarkWaves)
     , ("frenzied-hunter", UnderDarkWaves)
     , ("icebound-captive", UnderDarkWaves)
+    , ("bloody-titan", SecretsOfTheOrder)
+    , ("cacophonous-haunt", SecretsOfTheOrder)
+    , ("commanding-specter", SecretsOfTheOrder)
+    , ("confounding-specter", SecretsOfTheOrder)
+    , ("coursing-hound", SecretsOfTheOrder)
+    , ("crashing-specter", SecretsOfTheOrder)
+    , ("crazed-fiend", SecretsOfTheOrder)
+    , ("gluttonous-giant", SecretsOfTheOrder)
     , ("lodge-guardian", SecretsOfTheOrder)
     , ("lodge-seer", SecretsOfTheOrder)
+    , ("menacing-bulk", SecretsOfTheOrder)
+    , ("sanguinous-wraith", SecretsOfTheOrder)
+    , ("screaming-haunt", SecretsOfTheOrder)
+    , ("taloned-cannibal", SecretsOfTheOrder)
+    , ("tunneling-dhole", SecretsOfTheOrder)
     , ("twilight-sentry", SecretsOfTheOrder)
+    , ("vomitous-wraith", SecretsOfTheOrder)
+    , ("weeping-haunt", SecretsOfTheOrder)
     ]
 
 {- | The monsters that leave a remnant behind when they are defeated (429.9). The
@@ -51,6 +66,7 @@ cultists and the human enemies leave nothing, so the list is shorter than the de
 remnantMonsters :: [CardCode]
 remnantMonsters =
   [ "abyssal-servant"
+  , "bloody-titan"
   , "altered-beast"
   , "altered-servant"
   , "avian-thrall"
@@ -1433,4 +1449,102 @@ cards =
       (0, 2)
       [Watcher]
       "Elite 1. Watcher. When revealed, this monster engages you. You cannot evade or disengage this monster, and it cannot engage any other investigator."
+  , monster
+      "bloody-titan"
+      "Bloody Titan"
+      1
+      ["Gug"]
+      2
+      (NearestStreetTo Nothing)
+      (Hunter (LowestSkill Observation))
+      (4, 0)
+      (-2, -1)
+      (2, 1)
+      [Massive]
+      "Massive (This monster engages and attacks each investigator in its space. It cannot be exhausted.)"
+  , {- The third Haunting Dead: its engaged face is an ally rather than a monster, so
+    engaging it hands over 'weeping-haunt-ally' and takes this card out of the game.
+    The health and modifiers below are never read, since it is never fought. -}
+    monsterWith
+      "weeping-haunt"
+      "Weeping Haunt"
+      1
+      ["Troubled", "Spirit"]
+      0
+      UnstableSpace
+      (Lurker (PlaceDoomAt SourceSpace (N 1)))
+      (2, 0)
+      (0, 0)
+      (0, 0)
+      [Elusive, Shrouded]
+      Will
+      (Just "Haunting Dead")
+      "After you engage this card, gain it."
+  , -- likewise the third Raging Poltergeist, whose engaged face is a condition
+    monsterWith
+      "commanding-specter"
+      "Commanding Specter"
+      1
+      ["Angry", "Spirit"]
+      2
+      MostDoomSpace
+      (Patrol UnstableSpace (Just (LowestSkill Will)))
+      (2, 0)
+      (0, 0)
+      (0, 0)
+      [Shrouded]
+      Will
+      (Just "Raging Poltergeist")
+      "After you engage this card, gain it."
+  , weepingHauntAlly
+  , commandingSpecterCondition
   ]
+
+{- | The engaged face of the Weeping Haunt, filed as its own card because the engine
+keeps one kind per card code. It sits in the special pile, which is where the monster
+hands it over from.
+-}
+weepingHauntAlly :: CardDef
+weepingHauntAlly =
+  CardDef
+    "weeping-haunt-ally"
+    "Weeping Haunt"
+    SecretsOfTheOrder
+    1
+    ( AssetCard
+        AssetDef
+          { assetType = Ally
+          , origin = SpecialPile
+          , traits = ["Troubled", "Spirit"]
+          , value = Nothing
+          , hands = 0
+          , health = Just 0
+          , sanity = Just 2
+          , spellHorror = 0
+          , text =
+              "After you engage this card, gain it. After you assign one or more horror to this ally, remove one doom from your space."
+          }
+    )
+
+-- | Likewise the engaged face of the Commanding Specter, which is a condition.
+commandingSpecterCondition :: CardDef
+commandingSpecterCondition =
+  CardDef
+    "commanding-specter-condition"
+    "Commanding Specter"
+    SecretsOfTheOrder
+    1
+    ( ConditionCard
+        ConditionDef
+          { front =
+              ConditionFace
+                "COMMANDING SPECTER"
+                "After you engage this card, gain it. At the end of your turn, place one doom in your space. Action: Place one doom in your space and become FATIGUED to discard this card."
+          , back =
+              ConditionFace
+                "COMMANDING SPECTER"
+                "Spawn at most doom. Shrouded. Patrol\8212Move toward the unstable space. Engage lowest will."
+          , backIsCondition = False
+          , hiddenBack = False
+          }
+    )

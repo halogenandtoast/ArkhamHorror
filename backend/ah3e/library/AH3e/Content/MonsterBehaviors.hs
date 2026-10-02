@@ -53,6 +53,42 @@ behaviors =
       , ("declan-pearce", defaultMonsterBehavior & #afterAttackAction .~ declanPearce)
       , -- "You cannot evade or disengage this monster, and it cannot engage anyone else."
         ("grim-spectre", defaultMonsterBehavior & #holdsItsQuarry .~ True)
+      , -- Secrets of the Order
+        ("lodge-guardian", onDisengage \_ iid -> pure [GainConditionMsg iid "CURSED"])
+      , ("lodge-seer", onDisengage \_ iid -> pure [doomAt iid TheUnstableSpace 2])
+      , ("twilight-sentry", onDisengage \_ iid -> pure [SufferHarm iid rules NormalHarm 0 1])
+      ,
+        ( "taloned-cannibal"
+        , defaultMonsterBehavior & #afterEngaged .~ \_ iid -> pure [SufferHarm iid rules NormalHarm 0 1]
+        )
+      ,
+        ( "gluttonous-giant"
+        , defaultMonsterBehavior & #afterDamagedInAttack .~ \_ iid -> pure [SufferHarm iid rules NormalHarm 0 1]
+        )
+      ,
+        ( "menacing-bulk"
+        , onAttack \_ iid -> pure [ResolveEffect (ctxFor iid) (fatiguedOr (SufferDamage (N 1)))]
+        )
+      ,
+        ( "sanguinous-wraith"
+        , onAttack \_ iid -> pure [ResolveEffect (ctxFor iid) (fatiguedOr (PlaceDoomAt YourSpace (N 1)))]
+        )
+      , ("tunneling-dhole", onAttack fleeToUnstable)
+      , ("confounding-specter", onAttack confoundingSpecter)
+      ,
+        ( "crashing-specter"
+        , onAttack (\mid _ -> pure [bite mid]) & #afterExhausted .~ \mid -> pure [bite mid]
+        )
+      , ("screaming-haunt", defaultMonsterBehavior & #afterEngaged .~ screamingHaunt)
+      , ("cacophonous-haunt", defaultMonsterBehavior & #afterEngaged .~ cacophonousHaunt)
+      , -- the two Shrouded cards whose engaged face is not a monster at all
+        ("weeping-haunt", becomes (`GainNamedCard` "Weeping Haunt"))
+      , ("commanding-specter", becomes (`GainConditionMsg` "COMMANDING SPECTER"))
+      ]
+    & #assets
+    .~ Map.fromList
+      [ ("weeping-haunt-ally", weepingHauntAlly)
+      , ("commanding-specter-condition", commandingSpecterCondition)
       ]
     & #customAfterTests
     .~ Map.fromList
@@ -212,3 +248,111 @@ lupineThrall mid iid ts = do
     ]
  where
   isEvade = \case ActionTest EvadeAction _ -> True; _ -> False
+
+-- Secrets of the Order --------------------------------------------------------
+
+-- | "Place N doom at <where>", for a monster that puts it down as it lets go.
+doomAt :: InvestigatorId -> Where -> Int -> Message
+doomAt iid w n = ResolveEffect (ctxFor iid) (PlaceDoomAt w (N n))
+
+-- | "Become FATIGUED. If you cannot, <this instead>."
+fatiguedOr :: Effect -> Effect
+fatiguedOr instead =
+  If (CanGainCondition "FATIGUED") (GainE (Condition "FATIGUED")) instead
+
+-- | "It suffers one damage", dealt by the rules rather than by anyone.
+bite :: CardId -> Message
+bite mid = DealMonsterDamage mid rules 1
+
+{- | A Shrouded card whose engaged face is an ally or a condition: engaging it hands
+that card over instead, and the monster card leaves the game rather than going back
+to the monster deck, since the physical card is now in front of its new owner.
+-}
+becomes :: (InvestigatorId -> Message) -> MonsterBehavior
+becomes handOver =
+  defaultMonsterBehavior
+    & #removedWhenDefeated
+    .~ True
+    & #insteadOfEngaging
+    .~ \mid iid -> pure (Just [handOver iid, DiscardMonster mid])
+
+{- | "It disengages all investigators and moves directly to the unstable space."
+Which unstable space is only a choice when the event discard names more than one.
+-}
+fleeToUnstable :: CardId -> InvestigatorId -> GameM [Message]
+fleeToUnstable mid iid = do
+  m <- getMonster mid
+  targets <- unstableSpaces
+  let letGo = [DisengageMonster who mid | who <- holdersOf m]
+  case targets of
+    [sid] -> pure (letGo <> [MoveMonsterTo mid sid])
+    _ -> do
+      chooseFor iid "Choose the unstable space it flees to"
+        $ [Choice (SpaceLabel sid) (letGo <> [MoveMonsterTo mid sid]) | sid <- targets]
+      pure []
+
+holdersOf :: Monster -> [InvestigatorId]
+holdersOf m = case m.state of Engaged is -> is; _ -> []
+
+{- | "Disengage all monsters and move directly to the unstable space. Then become
+delayed."
+-}
+confoundingSpecter :: CardId -> InvestigatorId -> GameM [Message]
+confoundingSpecter _ iid = do
+  ms <- engagedMonsters iid
+  pure
+    $ [DisengageMonster iid m.card | m <- ms]
+    <> [ ResolveEffect (ctxFor iid) (MoveDirectlyTo TheUnstableSpace)
+       , ResolveEffect (ctxFor iid) BecomeDelayed
+       ]
+
+-- | "Place two doom in your space unless you become CURSED."
+screamingHaunt :: CardId -> InvestigatorId -> GameM [Message]
+screamingHaunt _ iid = do
+  chooseFor
+    iid
+    "The haunt screams"
+    [ label "Become CURSED" [GainConditionMsg iid "CURSED"]
+    , label "Place two doom in your space" [doomAt iid YourSpace 2]
+    ]
+  pure []
+
+-- | "You may place one doom in the unstable space to defeat this monster."
+cacophonousHaunt :: CardId -> InvestigatorId -> GameM [Message]
+cacophonousHaunt mid iid = do
+  chooseFor
+    iid
+    "Send the haunt away?"
+    [ label
+        "Place one doom in the unstable space to be rid of it"
+        [doomAt iid TheUnstableSpace 1, DefeatMonster mid rules]
+    , label "Leave it" []
+    ]
+  pure []
+
+{- | "After you assign one or more horror to this ally, remove one doom from your
+space." Stated flatly, so it is not offered; it answers even when that horror was
+its second and discarded it.
+-}
+weepingHauntAlly :: AssetBehavior
+weepingHauntAlly =
+  defaultAssetBehavior
+    & #afterHarm
+    .~ \cid iid plan ->
+      pure
+        [ ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (RemoveDoomFrom YourSpace (N 1))
+        | Just (self, k) <- [plan.horrorTo]
+        , self == cid
+        , k > 0
+        ]
+
+{- | "At the end of your turn, place one doom in your space. Action: Place one doom
+in your space and become FATIGUED to discard this card."
+-}
+commandingSpecterCondition :: AssetBehavior
+commandingSpecterCondition =
+  cardAction
+    "Commanding Specter: place one doom and become FATIGUED to be rid of it"
+    (Seq [PlaceDoomAt YourSpace (N 1), GainE (Condition "FATIGUED"), Custom "discard-source"])
+    & #atEndOfOwnerTurn
+    .~ \cid iid -> pure [ResolveEffect (EffectCtx iid (SourceCard cid) Nothing) (PlaceDoomAt YourSpace (N 1))]

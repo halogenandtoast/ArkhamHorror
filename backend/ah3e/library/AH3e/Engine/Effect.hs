@@ -461,6 +461,7 @@ evalPredicate ctx p = do
     HasClues n -> pure (i.clues >= n)
     HasRemnants n -> pure (i.remnants >= n)
     HasCondition c -> hasCondition iid c
+    CanGainCondition c -> canGainCondition iid c
     HasCard f -> not . null <$> matchingAssets iid f
     IsDelayed -> pure i.delayed
     CodexHas n -> codexHas n

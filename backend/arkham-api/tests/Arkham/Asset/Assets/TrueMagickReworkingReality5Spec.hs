@@ -137,3 +137,38 @@ spec = describe "True Magick: Reworking Reality (5)" $ do
     skipWindow
     -- pre-fix: a second, spurious prompt from the wrapper's own window
     assertNoReaction
+
+  -- CASE 8 (issue #5801): "Treat True Magick as if it were the revealed asset (to
+  -- pay its costs, spend charges, ...)" covers a charge the borrowed ability spends
+  -- AFTER the activation, not just one paid as a cost. The borrowed spell is a
+  -- throwaway entity wearing a copy of True Magick's attrs parked in the Metadata,
+  -- and `With`'s Entity instance reads toAttrs from the OUTER half -- so the
+  -- RemoveTokens landed on the copy and died with the metadata, and True Magick kept
+  -- its charge. A cost-paid charge always worked (ActiveCost settles before the
+  -- UseCardAbility handler installs the metadata), which is why CASE 4 passed.
+  it "spends its charge when the borrowed ability spends one after the test" . gameTest $ \self -> do
+    withProp @"willpower" 5 self
+    -- 2 clues so the extra clue Second Sight buys with the charge is available
+    location <- testLocation & prop @"clues" 2 & prop @"shroud" 0
+    setChaosTokens [Zero]
+    self `moveTo` location
+
+    trueMagick <- self `putAssetIntoPlay` Assets.trueMagickReworkingReality5
+    -- Second Sight investigates, then offers "spend 1 charge to discover 1
+    -- additional clue" off PassedThisSkillTest -- a spend with no cost to pay
+    inHandSpell <- self `genMyCard` Assets.secondSight
+    addToHand self inHandSpell
+
+    trueMagick.charges `shouldReturn` 1
+
+    [tmAction] <- self `getActionsFrom` trueMagick
+    run $ UseAbility (toId self) tmAction (defaultWindows $ toId self)
+    chooseTarget (toCardId inHandSpell)
+    chooseOnlyOption "resolve the borrowed Second Sight [action]"
+    startSkillTest
+    applyResults
+    clickLabel "$cards.label.secondSight.spendChargeForClue"
+
+    -- pre-fix: 1 charge, and only the base clue discovered
+    trueMagick.charges `shouldReturn` 0
+    self.clues `shouldReturn` 2

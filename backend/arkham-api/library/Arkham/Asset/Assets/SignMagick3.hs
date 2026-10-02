@@ -58,8 +58,22 @@ instance RunMessage SignMagick3 where
                 <> assetControlledBy iid
                 <> AssetOneOf [AssetWithTrait Spell, AssetWithTrait Ritual]
             )
-      abilities' <- filterM (getCanPerformAbility iid (defaultWindows iid)) abilities
+      -- True Magick (5) surfaces its borrowed in-hand spells as abilities of its own
+      -- (getTrueMagickInHandAbilities), so the matcher offers them alongside True
+      -- Magick's wrapper. Only the wrapper reveals the card from hand, so take it and
+      -- drop the proxies -- otherwise the list names three cards that aren't in play.
+      let notBorrowed ab = case ab.source of
+            ProxySource (CardIdSource _) _ -> False
+            _ -> True
+      -- Sign Magick grants an [action] activation, so the windows must NOT include
+      -- FastPlayerWindow. True Magick's wrapper re-filters its in-hand spells against
+      -- whatever windows we publish, and a FastPlayerWindow lets a borrowed [fast]
+      -- ability through -- Scrying (3) has no [action] at all. Empty windows are not an
+      -- option either: `getCanPerformAbility` guards `notNull matching` before any
+      -- criteria, so the wrapper would find nothing and `chooseOne` would throw (#5801).
+      let actionWindows = [w | w <- defaultWindows iid, windowType w /= Window.FastPlayerWindow]
+      abilities' <- filterM (getCanPerformAbility iid actionWindows) (filter notBorrowed abilities)
       player <- getPlayer iid
-      push $ chooseOne player [AbilityLabel iid ab [] [] [] | ab <- abilities']
+      push $ chooseOne player [AbilityLabel iid ab actionWindows [] [] | ab <- abilities']
       pure a
     _ -> SignMagick3 <$> runMessage msg attrs

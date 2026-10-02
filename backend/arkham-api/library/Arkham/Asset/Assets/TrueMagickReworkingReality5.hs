@@ -36,6 +36,18 @@ newtype TrueMagickReworkingReality5 = TrueMagickReworkingReality5 (AssetAttrs `W
 trueMagickReworkingReality5 :: AssetCard TrueMagickReworkingReality5
 trueMagickReworkingReality5 = asset (TrueMagickReworkingReality5 . (`with` Metadata Nothing)) Cards.trueMagickReworkingReality5
 
+{- | The metadata asset wears a copy of True Magick's attrs under the borrowed
+card's code, and @With@'s Entity instance reads @toAttrs@ from the outer half
+alone. Anything the borrowed ability writes to its attrs -- the charge Second
+Sight spends, an exhaust, damage soaked -- therefore has to be carried back out,
+or it dies with the metadata. #5801
+-}
+toInner :: AssetAttrs -> Asset -> Asset
+toInner attrs = overAttrs \i -> attrs {assetCardCode = assetCardCode i}
+
+fromInner :: AssetAttrs -> Asset -> AssetAttrs
+fromInner attrs i = (toAttrs i) {assetCardCode = assetCardCode attrs}
+
 instance HasModifiersFor TrueMagickReworkingReality5 where
   getModifiersFor (TrueMagickReworkingReality5 (a `With` meta)) = do
     case currentAsset meta of
@@ -112,20 +124,20 @@ instance RunMessage TrueMagickReworkingReality5 where
       assetId <- getRandom
       let iasset = overAttrs (const (attrs {assetCardCode = card.cardCode})) (createAsset card assetId)
       iasset' <- lift $ runMessage (UseCardAbility iid (toSource attrs) n ws p) iasset
-      pure $ TrueMagickReworkingReality5 $ With attrs (Metadata $ Just iasset')
+      pure $ TrueMagickReworkingReality5 $ With (fromInner attrs iasset') (Metadata $ Just iasset')
     ResolvedAbility ab -> do
       case ab.source of
         ProxySource _ (isSource attrs -> True) ->
           pure $ TrueMagickReworkingReality5 $ With attrs (Metadata Nothing)
         _ -> case currentAsset meta of
           Just iasset -> do
-            iasset' <- lift $ runMessage msg iasset
+            iasset' <- lift $ runMessage msg (toInner attrs iasset)
             pure
               $ TrueMagickReworkingReality5
-              $ With attrs (Metadata $ Just iasset')
+              $ With (fromInner attrs iasset') (Metadata $ Just iasset')
           Nothing -> TrueMagickReworkingReality5 . (`with` meta) <$> liftRunMessage msg attrs
     _ -> case currentAsset meta of
       Just iasset -> do
-        iasset' <- lift $ runMessage msg iasset
-        pure $ TrueMagickReworkingReality5 $ With attrs (Metadata $ Just iasset')
+        iasset' <- lift $ runMessage msg (toInner attrs iasset)
+        pure $ TrueMagickReworkingReality5 $ With (fromInner attrs iasset') (Metadata $ Just iasset')
       Nothing -> TrueMagickReworkingReality5 . (`with` meta) <$> liftRunMessage msg attrs

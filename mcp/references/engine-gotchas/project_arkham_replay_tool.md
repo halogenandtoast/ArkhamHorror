@@ -187,3 +187,41 @@ suspect answer as the FIRST entry (rewind further with `--undo` rather than walk
 forward through several answers). To test RNG sensitivity, patch the seed instead:
 `jq --argjson s 42 '.campaignData.currentData.gameSeed = $s' export.json > seed.json`
 and re-run — used on #5391 across 10 seeds to rule out a layout-dependent hang.
+
+## --replay-all is answer-free, so a recurring window prompt stalls it
+
+`--replay-all` reinstalls each step's recorded `choiceMessages` and drains it. It
+never applies the ANSWER, because the export does not record one — an
+`ArkhamStep` stores `choicePatchDown` (the reverse state diff) plus the queue
+left pending behind that step's outstanding `Ask`.
+
+That is fine while every step's queue drains to empty, which is why `--replay-all`
+succeeds on most exports. It breaks when a step parks on an open window prompt:
+`Do (CheckWindows ws)` re-queues itself after each initiation pass (see
+[[project_do_checkwindows_repeats_per_initiation_pass]]), so with nobody to
+decline it the drain makes no progress, and each forward step reinstalls the same
+blocked queue.
+
+Issue #5801's export is the worked example. The investigator held a fast-playable
+Switchblade, so steps 89–92 were all parked on
+`Do (CheckWindows [When FastPlayerWindow])` offering to play it. The real player
+skipped it; the replay could not, so `SkillTestMessage BeforeSkillTest_` and
+`SkillTestMessage TriggerSkillTest_` — the messages that create and trigger the
+investigate's skill test — never ran. Five steps later the recorded
+`SkillTestMessage CollectSkillTestOptions_` hit `error "missing skill test"`
+(`Game/Runner.hs`).
+
+Both naive repairs were tried and both fail:
+
+- **Push the next step's queue** (what it does today): step N+1's queue is step
+  N's with the consumed head removed, so pushing it in front of the still-pending
+  tail runs that tail TWICE.
+- **Replace the queue instead**: drops exactly the head messages the real game
+  ran between the two steps — here, the skill-test setup.
+
+A faithful fix needs the answer persisted per step, or a synthesized decline when
+the drain stalls on a question offering one (`SkipTriggersButton` / `DoneButton`).
+Until then: `--replay-all` is a perf tool, not a correctness oracle, and a failure
+on one export says nothing about that export's health. Use `--undo` + `--answers`
+to drive a specific path — that path is unaffected and is what bug investigation
+should use anyway.

@@ -59,7 +59,7 @@ import { createRainAudio, type RainAudioInstance } from '@/arkham/rainAudio';
 import { useSoundsDisabled } from '@/composable/useSoundsDisabled';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
-import { homebrewTotalsTokens } from '@/arkham/homebrewData';
+import { homebrewTokenCampaign, homebrewTotalsTokens } from '@/arkham/homebrewData';
 import scenarioMetadata from '@/arkham/data/scenarios';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
@@ -2285,9 +2285,25 @@ const bloodTokens = computed(() => props.scenario.chaosBag.chaosTokens.filter((t
 // totals bar via their campaign's homebrew tokens.json. Counted out of the
 // chaos bag only, like the bless/curse/frost/blood totals above: sealing takes
 // a token out of the bag, and sealed tokens show on the card they sit on.
+/* A homebrew campaign's tokens belong to that campaign only, so everything below
+works off the game's own namespace: the campaign id, or for a homebrew
+standalone the scenario id it was started from (both are ":<slug>:..."). */
+const homebrewNamespace = computed(() => {
+  const id = props.game.campaign?.id ?? props.scenario.id
+  if (!id.startsWith(':')) return null
+  const parts = id.split(':')
+  return parts[1] ? `:${parts[1]}` : null
+})
+
+const campaignTokens = computed(() =>
+  homebrewNamespace.value === null
+    ? []
+    : homebrewTotalsTokens.filter((cfg) => homebrewTokenCampaign(cfg.face) === homebrewNamespace.value)
+)
+
 const homebrewTotals = computed(() => {
   const all = props.scenario.chaosBag.chaosTokens
-  return homebrewTotalsTokens
+  return campaignTokens.value
     .map((cfg) => ({
       face: cfg.face,
       tooltip: cfg.tooltip,
@@ -2439,6 +2455,18 @@ async function addChaosToken(face: any){
             <button class="button auto-fail-button" @click="removeChaosToken('AutoFail')">-</button>
             <span class="auto-fail"></span>
             <button class="button auto-fail-button" @click="addChaosToken('AutoFail')">+</button>
+          </div>
+          <div
+            v-for="token in campaignTokens"
+            :key="token.face"
+            class="tri-button homebrew-token"
+            :style="{ backgroundColor: token.background, color: token.iconColor }"
+            :title="token.tooltip"
+          >
+            <button class="button" @click="removeChaosToken(token.face)">-</button>
+            <span v-if="token.icon" :class="token.icon"></span>
+            <span v-else><img :src="chaosTokenImage(token.face)" :alt="token.tooltip ?? token.face" /></span>
+            <button class="button" @click="addChaosToken(token.face)">+</button>
           </div>
         </div>
       </ChaosBagWindow>
@@ -4768,6 +4796,19 @@ async function addChaosToken(face: any){
 
   button:hover {
     background: rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* A campaign's own token: it brings its own background and glyph color (see its
+tokens.json), so nothing here may repaint them. */
+.homebrew-token {
+  button {
+    background: transparent;
+    color: inherit;
+  }
+  img {
+    width: 1em;
+    height: 1em;
   }
 }
 

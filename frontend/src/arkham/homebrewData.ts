@@ -17,12 +17,29 @@ const scenarioModules = import.meta.glob('@homebrew/*/scenarios.json', { eager: 
   { default: (Scenario & { i18n: string })[] }
 >
 
-// `tokens.json` — custom chaos tokens a campaign wants surfaced in the
-// scenario totals bar (counted across the chaos bag and sealed tokens). Each
-// entry names the token `face` (its slug) and an optional `tooltip`.
+/* `tokens.json` — custom chaos tokens a campaign wants surfaced in the scenario
+totals bar (counted across the chaos bag and sealed tokens) and in the chaos bag
+debug panel. Each entry names the token `face` (its slug) and an optional
+`tooltip`.
+
+`icon` names a CSS class the campaign's own style.css defines (the same masked
+glyph classes icons.json hooks into card text); without one the debug panel
+falls back to the token art. `background` and `iconColor` are the campaign's
+control over how its token reads as a button — `iconColor` paints the glyph and
+the +/- labels, so the pair has to contrast. */
 export interface HomebrewTotalsToken {
   face: string
   tooltip?: string
+  icon?: string
+  background?: string
+  iconColor?: string
+}
+
+// ":circus-ex-mortis:moon" -> ":circus-ex-mortis". A custom token's campaign is
+// the namespace in its slug, which is how a game only ever offers its own.
+export function homebrewTokenCampaign(face: string): string | null {
+  const parts = face.split(':')
+  return parts.length === 3 && parts[1] ? `:${parts[1]}` : null
 }
 
 const tokenModules = import.meta.glob('@homebrew/*/tokens.json', { eager: true }) as Record<

@@ -381,7 +381,7 @@ leading colon), discovered the same hands-off way — no registration anywhere:
 | `campaign.json` | your campaign's new-game entry — name, `designer`, `chapter`, difficulty chaos bags. Appears in a dedicated **Homebrew** section of the new-game screen with a "designed by …" credit. |
 | `scenarios.json` | the scenario list; each entry's `i18n` key names its locale scope |
 | `icons.json` | custom icon names, e.g. `{"moon": "moon-icon"}` — hooks `{moon}` into flavor text and `[moon]` into card text. Style the class in `style.css`; if the icon is art rather than a font glyph, `mask` the image and paint it with `background-color: currentColor` so it follows the surrounding text color (button labels are light-on-dark) |
-| `tokens.json` | custom tokens to show in the scenario **totals bar**, e.g. `[{ "face": ":your-campaign:moon", "tooltip": "Moon Tokens" }]` (counted across the chaos bag and players' sealed tokens) |
+| `tokens.json` | custom tokens to show in the scenario **totals bar** and in the chaos-bag debug panel, e.g. `[{ "face": ":your-campaign:moon", "tooltip": "Moon Tokens", "icon": "moon-icon", "background": "#ffffff", "iconColor": "#2D3F4E" }]` (counted across the chaos bag and players' sealed tokens) |
 | `style.css` | your campaign's styling (use absolute `/img/arkham/homebrew/<campaign>/…` urls inside) |
 | `locales/en/*.json` | your text — `base.json`, `interludes.json`, one file per scenario; merged under the campaign's message scope, with English fallback for other languages |
 | `img/` | art: `cards/`, `boxes/`, `chaos-tokens/`, `icons/`, `encounter-sets/`. Synced to the asset host by `make sync-images`; in dev a Vite middleware serves them straight from this folder, so a local/empty asset host works without syncing. |
@@ -397,7 +397,14 @@ the "as if" ruling) on the new-game screen; players can still override it there
 and in game settings. Omit it and you get Chapter 1.
 
 `tokens.json` is a nice small example of a self-configuring feature: list a token
-face there and it appears in the on-screen totals with no code changes.
+face there and it appears in the on-screen totals and in the chaos-bag debug
+panel (as a −/icon/+ button that adds and removes it) with no code changes. Only
+*your* campaign's games offer it: a token belongs to the campaign named in its
+slug. `icon` names a class your `style.css` defines — a masked glyph painted with
+`currentColor`, like the one `icons.json` hooks into card text — and
+`background`/`iconColor` are your control over how the button reads; `iconColor`
+paints the glyph *and* the −/+ labels, so pick a pair that contrasts. Leave `icon`
+out and the debug button falls back to the token art.
 
 ## Getting started
 

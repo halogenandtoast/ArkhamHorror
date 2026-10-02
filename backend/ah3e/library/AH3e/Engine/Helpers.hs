@@ -184,6 +184,20 @@ moveEngagedWatchers iid sid = do
   ms <- engagedMonsters iid
   for_ ms \m -> monsterL m.card . #space .= sid
 
+{- | "You may move one space or move to another <place of its kind>", which every
+travel route and wild gateway encounter offers. @elsewhere@ is the places of that
+kind, and a card that says "if you do" hands over an effect to ride on the options
+that move.
+-}
+offerOnward :: EffectCtx -> Text -> Bool -> [SpaceId] -> Maybe Effect -> GameM ()
+offerOnward ctx prompt mayStay elsewhere after =
+  chooseFor ctx.investigator prompt
+    $ label "Move one space" (ResolveEffect ctx (MoveUpTo 1) : onward)
+    : [Choice (SpaceLabel s) (MoveDirectly ctx.investigator s : onward) | s <- elsewhere]
+      <> [Choice (DoneLabel "Stay where you are") [] | mayStay]
+ where
+  onward = [ResolveEffect ctx e | e <- toList after]
+
 spaceChoices :: [SpaceId] -> (SpaceId -> [Message]) -> [Choice]
 spaceChoices sids f = [Choice (SpaceLabel s) (f s) | s <- sids]
 

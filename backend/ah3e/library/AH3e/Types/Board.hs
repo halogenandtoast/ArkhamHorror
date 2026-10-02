@@ -130,6 +130,17 @@ sameRouteSpaces sid board = case Map.lookup sid board.spaces >>= routeType of
   Nothing -> []
   Just r -> [s.id | s <- Map.elems board.spaces, s.id /= sid, routeType s == Just r]
 
+{- | The other thresholds of the same type, which a wild gateway encounter carries
+you between the way a travel route carries you to another of its own kind.
+-}
+sameThresholdSpaces :: SpaceId -> Board -> [SpaceId]
+sameThresholdSpaces sid board = case Map.lookup sid board.spaces >>= thresholdType of
+  Nothing -> []
+  Just t -> [s.id | s <- Map.elems board.spaces, s.id /= sid, thresholdType s == Just t]
+
+thresholdType :: Space -> Maybe ThresholdType
+thresholdType s = case s.kind of ThresholdSpace t -> Just t; _ -> Nothing
+
 -- monsters treat same-type travel routes as adjacent
 monsterAdjacent :: SpaceId -> Board -> [SpaceId]
 monsterAdjacent sid board = Set.toList $ Set.fromList (adjacentSpaces sid board <> sameRouteSpaces sid board)

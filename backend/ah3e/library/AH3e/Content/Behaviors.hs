@@ -15,6 +15,7 @@ import AH3e.Content.DeadOfNight.StartingBehaviors qualified as DeadOfNightStarti
 import AH3e.Content.HeadlineBehaviors qualified as Headlines
 import AH3e.Content.ItemBehaviors qualified as Items
 import AH3e.Content.MonsterBehaviors qualified as Monsters
+import AH3e.Content.SecretsOfTheOrder.EncounterBehaviors qualified as SecretsOfTheOrderEncounters
 import AH3e.Content.SecretsOfTheOrder.InvestigatorBehaviors qualified as SecretsOfTheOrderInvestigators
 import AH3e.Content.SecretsOfTheOrder.StartingBehaviors qualified as SecretsOfTheOrderStarting
 import AH3e.Content.SpecialBehaviors qualified as Specials
@@ -56,6 +57,7 @@ behaviors =
     <> UnderDarkWavesStarting.behaviors
     <> SecretsOfTheOrderInvestigators.behaviors
     <> SecretsOfTheOrderStarting.behaviors
+    <> SecretsOfTheOrderEncounters.behaviors
     <> UnderDarkWavesTerrors.behaviors
     <> TyrantsOfRuin.behaviors
     <> IthaquasChildren.behaviors
@@ -162,15 +164,9 @@ says "if you do" hands over an effect, which rides on the options that move.
 -}
 travelOnward :: Maybe Effect -> EffectCtx -> GameM ()
 travelOnward after ctx = do
-  let iid = ctx.investigator
-  msid <- investigatorSpace iid
+  msid <- investigatorSpace ctx.investigator
   board <- use #board
-  let elsewhere = maybe [] (`sameRouteSpaces` board) msid
-      onward = [ResolveEffect ctx e | e <- toList after]
-  chooseFor iid "Travel onward?"
-    $ label "Move one space" (ResolveEffect ctx (MoveUpTo 1) : onward)
-    : [Choice (SpaceLabel s) (MoveDirectly iid s : onward) | s <- elsewhere]
-      <> [Choice (DoneLabel "Stay where you are") []]
+  offerOnward ctx "Travel onward?" True (maybe [] (`sameRouteSpaces` board) msid) after
 
 -- | "The train hits a large beast on the way", for the one card that tests on arrival.
 beastOnTheTracks :: Effect

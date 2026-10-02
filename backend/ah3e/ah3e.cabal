@@ -43,10 +43,12 @@ library
       AH3e.Content.MonsterBehaviors
       AH3e.Content.Monsters
       AH3e.Content.Scenarios
+      AH3e.Content.SecretsOfTheOrder.EncounterBehaviors
       AH3e.Content.SecretsOfTheOrder.InvestigatorBehaviors
       AH3e.Content.SecretsOfTheOrder.Investigators
       AH3e.Content.SecretsOfTheOrder.NeighborhoodCards
       AH3e.Content.SecretsOfTheOrder.StartingBehaviors
+      AH3e.Content.SecretsOfTheOrder.Thresholds
       AH3e.Content.Special
       AH3e.Content.SpecialBehaviors
       AH3e.Content.SpellBehaviors

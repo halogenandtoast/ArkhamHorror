@@ -33,6 +33,7 @@ import AH3e.Content.Monsters qualified as Monsters
 import AH3e.Content.Scenarios
 import AH3e.Content.SecretsOfTheOrder.Investigators qualified as SecretsOfTheOrderInvestigators
 import AH3e.Content.SecretsOfTheOrder.NeighborhoodCards qualified as SecretsOfTheOrderNeighborhoodCards
+import AH3e.Content.SecretsOfTheOrder.Thresholds qualified as SecretsOfTheOrderThresholds
 import AH3e.Content.Special qualified as Special
 import AH3e.Content.Spells qualified as Spells
 import AH3e.Content.StreetCards qualified as StreetCards
@@ -101,6 +102,7 @@ cardDefs =
           <> NeighborhoodCards.cards
           <> UnderDarkWavesNeighborhoodCards.cards
           <> SecretsOfTheOrderNeighborhoodCards.cards
+          <> SecretsOfTheOrderThresholds.cards
           <> UnderDarkWavesMysteries.cards
           <> UnderDarkWavesTravelRoutes.cards
           <> UnderDarkWavesAnomalies.cards

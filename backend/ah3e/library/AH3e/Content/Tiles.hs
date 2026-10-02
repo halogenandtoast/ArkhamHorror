@@ -248,11 +248,13 @@ connectorDepth, connectorTab :: Double
 connectorDepth = 0.38
 connectorTab = 0.2
 
-{- | How far toward the tile it is laid against a corner piece is wedged, in units of
-the tile's flat-to-flat width.
+{- | How far a corner piece reaches, from its own middle out to the edge it joins by,
+in units of a tile's flat-to-flat width. The frontend draws the piece that size
+(@CORNER_W@ in util.ts, less the margin its art leaves); the two have to agree, because
+this is what seats the piece flush against the tile it is laid against.
 -}
-cornerSeat :: Double
-cornerSeat = 0.03
+cornerReach :: Double
+cornerReach = 0.216
 
 -- | The six corners of a tile, each between two of its edges.
 cornerAngles :: [Double]
@@ -412,15 +414,19 @@ buildMapOf nids streets pieces =
     even' x = case [cornerPoint nid (middling x) | nid <- x.tiles] of
       [a, b, d] -> fromMaybe (middling x) (equidistant a b d)
       _ -> middling x
-  {- A hidden path is laid against one tile and reaches the others, so it is seated a
-  little that way rather than sitting evenly between all three (Secrets of the Order,
-  p. 4: a corner of it is placed adjacent to the other world). -}
+  {- A hidden path is laid against one tile and reaches the others from there, rather
+  than sitting evenly between all three (Secrets of the Order, p. 4: a corner of it is
+  placed adjacent to the other world). So it stands its own reach away from that tile's
+  corner, which leaves the edge it joins by flush against the tile whatever size the
+  piece is drawn. -}
   wedged c (x, y) = case c.tiles of
     [] -> (x, y)
     anchor : _ ->
-      let (ax, ay) = pos anchor
-          away = sqrt ((ax - x) ** 2 + (ay - y) ** 2)
-       in if away <= 0 then (x, y) else (x + (ax - x) / away * cornerSeat, y + (ay - y) / away * cornerSeat)
+      let (cx, cy) = cornerPoint anchor (x, y)
+          away = sqrt ((cx - x) ** 2 + (cy - y) ** 2)
+       in if away <= 0
+            then (x, y)
+            else (cx + (x - cx) / away * cornerReach, cy + (y - cy) / away * cornerReach)
   middling c = mean [mid (pos a) (pos b) | (a, b) <- pairs c.tiles]
    where
     mid (x1, y1) (x2, y2) = ((x1 + x2) / 2, (y1 + y2) / 2)

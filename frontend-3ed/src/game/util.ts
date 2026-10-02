@@ -207,10 +207,11 @@ street length. Its box is square and it is drawn to fit, which keeps every
 connector's own proportions -- the art runs from 1.01:1 to 1.20:1 -- rather than
 stretching them all to the street's. */
 export const CONNECTOR_W = 0.85 * STREET_W
-/* A corner piece stands in the junction three tiles leave between them. Reaching all
-three would take it under the street running between two of them, so it is sized to
-stop short of that street instead, which leaves it a little shy of the corners. */
-export const CORNER_W = 0.49 * TILE_W
+/* A corner piece is laid against one tile and reaches the others from there. Its art
+runs to 0.957 of its own height, so from the middle it reaches 0.457 of that height --
+0.53 * 0.89 * 0.457 = 0.216 of a tile's width, which is the backend's cornerReach, the
+number that seats it flush. Change one and change the other. */
+export const CORNER_W = 0.53 * TILE_W
 export const HUB_R = 0.135
 
 export const DECK_KEYS = [

@@ -8,7 +8,7 @@ import AH3e.Types.Ids
 import AH3e.Types.Skill
 import Data.Text qualified as T
 
-spell, ally, commonItem, curioItem, tomeItem, blessed, cursed, tainted, delayed :: Effect
+spell, ally, commonItem, curioItem, tomeItem, blessed, cursed, tainted, fatigued, delayed :: Effect
 spell = GainE (ASpell Nothing)
 ally = GainE (AnAlly Nothing)
 commonItem = GainE (AnItem (Just "Common"))
@@ -17,6 +17,7 @@ tomeItem = GainE (AnItem (Just "Tome"))
 blessed = GainE (Condition "BLESSED")
 cursed = GainE (Condition "CURSED")
 tainted = GainE (Condition "TAINTED")
+fatigued = GainE (Condition "FATIGUED")
 delayed = BecomeDelayed
 
 money, remnants, sanity, health, horror, damage, mySanity, myHealth :: Int -> Effect

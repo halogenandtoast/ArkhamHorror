@@ -2972,6 +2972,15 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       $ a
       & usedAbilitiesL
       %~ filter (\UsedAbility {..} -> abilityLimitType (abilityLimit usedAbility) /= Just PerDepthLevel)
+  EndSetup -> do
+    -- setup is not a round/phase/turn, so a limit spent there must not carry into round 1
+    pure
+      $ a
+      & usedAbilitiesL
+      %~ filter
+        ( \UsedAbility {..} ->
+            abilityLimitType (abilityLimit usedAbility) `notElem` [Just PerRound, Just PerPhase, Just PerTurn]
+        )
   EndUpkeep -> do
     pure
       $ a

@@ -285,6 +285,26 @@ questionIsOnlyNonBlocking q = case q of
     SkipTriggersButton {} -> pure True
     _ -> pure False
 
+-- | Card codes recorded in 'cardUsesL' that carry a limit matching the predicate.
+cardUsesMatching :: (CardLimit -> Bool) -> Game -> [CardCode]
+cardUsesMatching p g =
+  map cdCardCode
+    . filter (any p . cdLimits)
+    . mapMaybe lookupCardDef
+    $ Map.keys (view cardUsesL g)
+
+isPerRoundLimit :: CardLimit -> Bool
+isPerRoundLimit = \case
+  MaxPerRound _ -> True
+  MaxPerTraitPerRound _ _ -> True
+  LimitPerRound _ -> True
+  _ -> False
+
+isPerTurnLimit :: CardLimit -> Bool
+isPerTurnLimit = \case
+  MaxPerTurn _ -> True
+  _ -> False
+
 runGameMessage :: Runner Game
 runGameMessage msg g = case msg of
   -- ClearUI is pushed exactly once per accepted answer (Api Games.Shared), so
@@ -2908,15 +2928,7 @@ runGameMessage msg g = case msg of
         ]
     pure $ g & activeInvestigatorIdL .~ gameLeadInvestigatorId g
   After (EndTurn _) -> do
-    let
-      isPerTurn = \case
-        MaxPerTurn _ -> True
-        _ -> False
-    let turnEndUses =
-          map cdCardCode
-            . filter (any isPerTurn . cdLimits)
-            . mapMaybe lookupCardDef
-            $ Map.keys (view cardUsesL g)
+    let turnEndUses = cardUsesMatching isPerTurnLimit g
     pure
       $ g
       & (turnHistoryL .~ mempty)
@@ -3101,17 +3113,7 @@ runGameMessage msg g = case msg of
       & (phaseStepL ?~ MythosPhaseStep MythosPhaseBeginsStep)
   EndRound -> do
     pushAllEnd [BeginRoundWindow, BeginRound, Begin MythosPhase]
-    let
-      isPerRound = \case
-        MaxPerRound _ -> True
-        MaxPerTraitPerRound _ _ -> True
-        LimitPerRound _ -> True
-        _ -> False
-    let roundEndUses =
-          map cdCardCode
-            . filter (any isPerRound . cdLimits)
-            . mapMaybe lookupCardDef
-            $ Map.keys (view cardUsesL g)
+    let roundEndUses = cardUsesMatching isPerRoundLimit g
     let tabooRoundEndUses = ["02266", "05156", "08055"]
     pure
       $ g
@@ -4406,7 +4408,14 @@ runPreGameMessage msg g = case msg of
       & (undoTurnStepL .~ Nothing)
       & (undoPhaseStepL .~ Nothing)
       & (undoRoundStepL .~ Nothing)
-  EndSetup -> pure $ g & inSetupL .~ False
+  EndSetup -> do
+    -- setup is not a round/turn, so a card limit spent there must not carry into round 1
+    let setupUses = cardUsesMatching (\l -> isPerRoundLimit l || isPerTurnLimit l) g
+    pure
+      $ g
+      & (inSetupL .~ False)
+      & cardUsesL
+      %~ Map.filterWithKey (\k _ -> k `notElem` setupUses)
   BeginRound -> pure $ g & undoRoundStepL ?~ (gameScenarioSteps g + 1)
   -- Entry-tick capture: record the window-tick at which each card entered play
   -- so a card that enters during an open window cannot respond to a triggering

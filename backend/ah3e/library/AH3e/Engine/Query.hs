@@ -280,16 +280,24 @@ unstableSpaces =
     Just sid -> pure [sid]
     Nothing -> printedUnstableSpaces
 
--- | Where the event deck says the unstable space is, whatever a card has to say.
+{- | Where the event deck says the unstable space is, whatever a card has to say. A
+scenario may take a whole tile off the board -- Tsathoggua eats one -- while the card on
+the discard still names a space that stood on it, so what it names is only the unstable
+space while it is still there.
+-}
 printedUnstableSpaces :: GameM [SpaceId]
 printedUnstableSpaces = do
   discard <- use (#decks . #eventDiscard)
-  case discard of
+  named <- case discard of
     (top : _) ->
       getCardDef top <&> \d -> case d.kind of
         EventCard e -> nub e.doomSpaces
         _ -> []
+    [] -> pure []
+  board <- use #board
+  case filter (`Map.member` board.spaces) named of
     [] -> maybeToList <$> startingSpaceOnBoard
+    there -> pure there
 
 mostDoomSpaces :: GameM [SpaceId]
 mostDoomSpaces = do

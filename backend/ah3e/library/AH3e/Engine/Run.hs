@@ -23,8 +23,47 @@ import Data.Map.Strict qualified as Map
 import Data.Set qualified as Set
 import Data.Text qualified as T
 
+{- | A card can leave a message for the test it belongs to queued behind that test's
+own ending -- Chef's Knife's raise, a reroll a reaction bought -- and by the time it
+runs there is nothing left to act on. Rather than let each of them fail on a test
+that has gone, the ones that only speak to a test in progress are skipped.
+-}
 runMessage :: Message -> GameM ()
-runMessage msg = case msg of
+runMessage msg = do
+  live <- uses #test isJust
+  unless (actsOnTestInProgress msg && not live) (dispatch msg)
+
+actsOnTestInProgress :: Message -> Bool
+actsOnTestInProgress = \case
+  RollDice -> True
+  ContinueTest -> True
+  FinishTest -> True
+  ToggleTestAsset _ -> True
+  SetTestSkill _ -> True
+  SpendForReroll _ -> True
+  RerollDie _ _ -> True
+  RerollUpTo _ _ -> True
+  RerollUpToNow _ _ -> True
+  RerollOneOf {} -> True
+  RerollAll _ -> True
+  RaiseInsteadOfReroll {} -> True
+  RollAdditionalDice _ _ -> True
+  RollADiePerFailure _ -> True
+  RemoveADie _ -> True
+  RemoveDieAt _ -> True
+  AddToDie _ -> True
+  ChooseDieToSet _ -> True
+  ChooseDieResult -> True
+  SetDieValue _ _ -> True
+  RaiseDie _ -> True
+  MarkUsedInTest _ -> True
+  {- Successes and riders are not among them: both are banked for the next test to
+  begin when there is none in progress, which is how a spell's cast cost reaches the
+  test it pays for. -}
+  _ -> False
+
+dispatch :: Message -> GameM ()
+dispatch msg = case msg of
   -- Choose scenario (rule 101)
   ChooseScenario -> do
     expansions <- use #expansions
@@ -1371,11 +1410,7 @@ runMessage msg = case msg of
       $ Choice (DoneLabel "Skip") []
       : [ Choice (TextLabel r.label) (r.messages <> [CheckReactions trigger (r.key : used)]) | r <- available
         ]
-  {- A test can finish while a ContinueTest of its own is still queued behind what a
-  card left there, so by the time it runs there may be nothing to carry on with. -}
-  ContinueTest -> do
-    inTest <- uses #test isJust
-    when inTest testPrompt
+  ContinueTest -> testPrompt
   MarkAssetUsed iid cid -> investigatorL iid . #usedAssets %= (<> [cid])
   MarkAbilityUsed iid key -> investigatorL iid . #usedAbilities %= (<> [key])
   {- A card that turns itself over the moment it arrives shows a side nobody has

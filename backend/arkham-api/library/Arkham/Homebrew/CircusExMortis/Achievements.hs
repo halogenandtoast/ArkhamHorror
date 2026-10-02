@@ -39,7 +39,7 @@ import Arkham.Game.Base
 import Arkham.GameEnv (getCard, getSkillTest)
 import Arkham.Helpers.Campaign (stored)
 import Arkham.Helpers.GameValue (perPlayer)
-import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens)
+import Arkham.Helpers.SkillTest (getSkillTestRevealedChaosTokens, inSkillTest)
 import Arkham.Helpers.Source (getSourceController)
 import Arkham.Homebrew.CircusExMortis.AchievementDefs
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as HBActs
@@ -155,10 +155,14 @@ runCircusExMortisAchievements msg = whenEligibleCampaign $ case msg of
 
   {- "Wax and Wane" counts Invocation of Diana's two halves within one test: its
   HasModifiersFor cancels each moon as it resolves, and its post-test option
-  releases up to two. Both are only counted while the skill is committed. -}
+  releases up to two. -}
   ResolveChaosToken _ MoonToken _ -> whenInvocationOfDiana $ bumpCounter waxCancelsKey 1
   UnsealChaosToken token | token.face == MoonToken -> do
-    whenInvocationOfDiana $ bumpCounter waxReleasesKey 1
+    {- The release is tied to the test the skill cancelled moons in, not to the
+    skill still being in play: its release option resolves off PassedSkillTest,
+    behind a prompt, by which point the committed card can already be gone. -}
+    whenM inSkillTest do
+      whenM ((> 0) <$> storedInt waxCancelsKey) $ bumpCounter waxReleasesKey 1
 
     -- "Utter Lunatic": six released from one investigator card in one round. The
     -- token is still sealed on its card at this point.

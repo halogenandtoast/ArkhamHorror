@@ -37,6 +37,7 @@ import AH3e.Content.SecretsOfTheOrder.BoundToServe qualified as BoundToServe
 import AH3e.Content.SecretsOfTheOrder.Investigators qualified as SecretsOfTheOrderInvestigators
 import AH3e.Content.SecretsOfTheOrder.Mysteries qualified as SecretsOfTheOrderMysteries
 import AH3e.Content.SecretsOfTheOrder.NeighborhoodCards qualified as SecretsOfTheOrderNeighborhoodCards
+import AH3e.Content.SecretsOfTheOrder.TheKeyAndTheGate qualified as TheKeyAndTheGate
 import AH3e.Content.SecretsOfTheOrder.Thresholds qualified as SecretsOfTheOrderThresholds
 import AH3e.Content.Special qualified as Special
 import AH3e.Content.Spells qualified as Spells
@@ -111,6 +112,7 @@ cardDefs =
           <> SecretsOfTheOrderAnomalies.cards
           <> SecretsOfTheOrderArchive.cards
           <> BoundToServe.cards
+          <> TheKeyAndTheGate.cards
           <> UnderDarkWavesMysteries.cards
           <> UnderDarkWavesTravelRoutes.cards
           <> UnderDarkWavesAnomalies.cards
@@ -163,6 +165,7 @@ scenarioDefs =
         , DreamsOfRlyeh.scenario
         , IthaquasChildren.scenario
         , BoundToServe.scenario
+        , TheKeyAndTheGate.scenario
         ]
     ]
 

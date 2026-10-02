@@ -19,6 +19,7 @@ import AH3e.Content.SecretsOfTheOrder.BoundToServeBehaviors qualified as BoundTo
 import AH3e.Content.SecretsOfTheOrder.EncounterBehaviors qualified as SecretsOfTheOrderEncounters
 import AH3e.Content.SecretsOfTheOrder.InvestigatorBehaviors qualified as SecretsOfTheOrderInvestigators
 import AH3e.Content.SecretsOfTheOrder.StartingBehaviors qualified as SecretsOfTheOrderStarting
+import AH3e.Content.SecretsOfTheOrder.TheKeyAndTheGateBehaviors qualified as TheKeyAndTheGate
 import AH3e.Content.SpecialBehaviors qualified as Specials
 import AH3e.Content.SpellBehaviors qualified as Spells
 import AH3e.Content.UnderDarkWaves.DreamsOfRlyehBehaviors qualified as DreamsOfRlyeh
@@ -60,6 +61,7 @@ behaviors =
     <> SecretsOfTheOrderStarting.behaviors
     <> SecretsOfTheOrderEncounters.behaviors
     <> BoundToServe.behaviors
+    <> TheKeyAndTheGate.behaviors
     <> UnderDarkWavesTerrors.behaviors
     <> TyrantsOfRuin.behaviors
     <> IthaquasChildren.behaviors

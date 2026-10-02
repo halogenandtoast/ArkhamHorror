@@ -27,8 +27,36 @@ behaviors =
           , ("witch-house-spells", witchHouseSpells)
           , ("la-bella-luna-dice", laBellaLunaDice)
           , ("magick-shoppe-spells", magickShoppeSpells)
+          , ("soto-spell-market:any", spellMarket 3 Nothing FullPrice)
+          , ("soto-spell-market:one-half", spellMarket 3 (Just 1) HalfPrice)
+          , ("soto-spell-market-close", spellMarketClose)
           ]
     }
+
+{- | "Reveal the top three spells from the deck. You may buy ... them. Place the rest
+on the bottom of the deck. If you buy anything, gain one clue from your neighborhood."
+The clue is what buying from the display calls its @ifBought@ effect, which 'BuyFromDeck'
+has no room for, so the spells in hand are counted on the way in and again once the
+shelves close.
+-}
+spellMarket :: Int -> Maybe Int -> Pricing -> EffectCtx -> GameM ()
+spellMarket n limit pricing ctx = do
+  held <- length <$> matchingAssets ctx.investigator SpellCard
+  #sheetTokens . at marketKey ?= held
+  pushAll
+    [ ResolveEffect ctx (BuyFromDeck SpellDeckKind n limit pricing)
+    , ResolveEffect ctx (Custom "soto-spell-market-close")
+    ]
+
+spellMarketClose :: EffectCtx -> GameM ()
+spellMarketClose ctx = do
+  before <- uses #sheetTokens (Map.findWithDefault 0 marketKey)
+  #sheetTokens . at marketKey .= Nothing
+  held <- length <$> matchingAssets ctx.investigator SpellCard
+  when (held > before) $ push (ResolveEffect ctx (GainE ClueFromNeighborhood))
+
+marketKey :: Text
+marketKey = "soto-spells-held"
 
 -- | "You may move one space or to another wild gateway."
 gatewayOnward :: Bool -> EffectCtx -> GameM ()

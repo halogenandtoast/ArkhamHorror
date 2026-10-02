@@ -31,7 +31,25 @@ that has gone, the ones that only speak to a test in progress are skipped.
 runMessage :: Message -> GameM ()
 runMessage msg = do
   live <- uses #test isJust
-  unless (actsOnTestInProgress msg && not live) (dispatch msg)
+  gone <- case namesAMonsterOnTheBoard msg of
+    Just mid -> uses #monsters (not . Map.member mid)
+    Nothing -> pure False
+  unless (gone || (actsOnTestInProgress msg && not live)) (dispatch msg)
+
+{- | A monster a queued message names can be defeated before that message runs -- the
+monster phase lines up a ready step for every exhausted monster at once, and a card
+answering the first can finish off a later one -- and the handler then has nothing to
+look up. Only the messages that read a monster already on the board are listed: the
+ones that put one there must still run.
+-}
+namesAMonsterOnTheBoard :: Message -> Maybe CardId
+namesAMonsterOnTheBoard = \case
+  ReadyMonster mid -> Just mid
+  DisengageMonster _ mid -> Just mid
+  MonsterStep mid _ _ -> Just mid
+  AttackMonster _ mid -> Just mid
+  CheckEngagement mid -> Just mid
+  _ -> Nothing
 
 actsOnTestInProgress :: Message -> Bool
 actsOnTestInProgress = \case

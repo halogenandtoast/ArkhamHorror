@@ -15,6 +15,7 @@ import AH3e.Content.DeadOfNight.StartingBehaviors qualified as DeadOfNightStarti
 import AH3e.Content.HeadlineBehaviors qualified as Headlines
 import AH3e.Content.ItemBehaviors qualified as Items
 import AH3e.Content.MonsterBehaviors qualified as Monsters
+import AH3e.Content.SecretsOfTheOrder.BoundToServeBehaviors qualified as BoundToServe
 import AH3e.Content.SecretsOfTheOrder.EncounterBehaviors qualified as SecretsOfTheOrderEncounters
 import AH3e.Content.SecretsOfTheOrder.InvestigatorBehaviors qualified as SecretsOfTheOrderInvestigators
 import AH3e.Content.SecretsOfTheOrder.StartingBehaviors qualified as SecretsOfTheOrderStarting
@@ -58,6 +59,7 @@ behaviors =
     <> SecretsOfTheOrderInvestigators.behaviors
     <> SecretsOfTheOrderStarting.behaviors
     <> SecretsOfTheOrderEncounters.behaviors
+    <> BoundToServe.behaviors
     <> UnderDarkWavesTerrors.behaviors
     <> TyrantsOfRuin.behaviors
     <> IthaquasChildren.behaviors

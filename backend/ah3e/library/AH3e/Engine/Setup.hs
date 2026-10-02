@@ -9,6 +9,7 @@ module AH3e.Engine.Setup (
 ) where
 
 import AH3e.Content
+import AH3e.Content.Tiles (spaceIdFor)
 import AH3e.Engine.Monad
 import AH3e.Game
 import AH3e.Message
@@ -190,19 +191,40 @@ setupScenario sc = do
     #decks . #display .= take 5 deck
     #decks . #item .= drop 5 deck
 
+{- | The monsters a sheet puts on the board before play. A shrouded monster is named
+by the face it shows while ready, which several cards share, and one of them is taken
+at random so the side it will turn over is a surprise (Secrets of the Order, p. 6).
+-}
 placeStartingMonsters :: [CardId] -> [(CardCode, SpaceId)] -> GameM [CardId]
 placeStartingMonsters pool = go []
  where
   go used [] = pure used
   go used ((mcode, sid) : rest) = do
-    candidates <- filterM (\cid -> (== mcode) <$> cardCode cid) (filter (`notElem` used) pool)
-    case candidates of
+    candidates <- filterM (named mcode) (filter (`notElem` used) pool)
+    chosen <- pickRandom candidates
+    case maybeToList chosen of
       (cid : _) -> do
         #monsters
           . at cid
           ?= Monster {card = cid, space = sid, state = Ready, damage = 0, markers = [], prey = Nothing}
         go (cid : used) rest
       [] -> go used rest
+  {- A shrouded monster's own code is the engaged face nobody has looked at yet, so a
+  sheet names it by the face it shows while ready. -}
+  named wanted cid = do
+    code <- cardCode cid
+    if code == wanted
+      then pure True
+      else do
+        d <- monsterDef' cid
+        pure (any ((== coerce wanted) . coerce . spaceIdFor) d.readyName)
+  monsterDef' cid =
+    getCardDef' cid <&> \d -> case d.kind of
+      MonsterCard m -> m
+      _ -> error ("not a monster " <> show cid)
+  getCardDef' cid = do
+    code <- cardCode cid
+    pure (fromJustNote ("no card def for " <> show code) (cardDef code))
 
 adjustCup :: GameMode -> [MythosToken] -> [MythosToken]
 adjustCup mode cup = case mode of

@@ -44,6 +44,8 @@ library
       AH3e.Content.Monsters
       AH3e.Content.Scenarios
       AH3e.Content.SecretsOfTheOrder.Anomalies
+      AH3e.Content.SecretsOfTheOrder.BoundToServe
+      AH3e.Content.SecretsOfTheOrder.BoundToServeBehaviors
       AH3e.Content.SecretsOfTheOrder.EncounterBehaviors
       AH3e.Content.SecretsOfTheOrder.InvestigatorBehaviors
       AH3e.Content.SecretsOfTheOrder.Investigators

@@ -251,11 +251,12 @@ connectorTab = 0.2
 
 {- | How far a corner piece reaches, from its own middle out to the edge it joins by,
 in units of a tile's flat-to-flat width. The frontend draws the piece that size
-(@CORNER_W@ in util.ts, less the margin its art leaves); the two have to agree, because
-this is what seats the piece flush against the tile it is laid against.
+(@CORNER_W@ in util.ts, less the margin its art leaves, and measured from the piece's
+own middle rather than the middle of its picture); the two have to agree, because this
+is what seats the piece flush against the tile it is laid against.
 -}
 cornerReach :: Double
-cornerReach = 0.216
+cornerReach = 0.24
 
 {- | The sides of a threshold tile in the order they run round it, which is the order
 its icons are printed in: from due left, turning the way the screen does. Where it

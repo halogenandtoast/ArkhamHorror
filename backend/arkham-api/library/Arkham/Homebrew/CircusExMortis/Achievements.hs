@@ -73,20 +73,20 @@ runCircusExMortisAchievements msg = whenEligibleCampaign $ case msg of
     {- "Scapegoat": Sacrificial Beast is Jenny Barnes' signature weakness, so its
     presence already implies the investigator gate. Terrified Captives only ever
     exists attached to a location. -}
-    when (cardDef == Enemies.sacrificialBeast) do
+    when (isPrintingOfAny [Enemies.sacrificialBeast] cardDef) do
       whenM (eid <=~> EnemyAt (LocationWithAsset (assetIs HBAssets.terrifiedCaptives))) do
         earn Scapegoat
 
     {- "Destined Karma": the killing test must be the one Amalthea's ability gave
     +3 to. The test is still live here (the defeat cascade runs inside ST.7). -}
-    when (cardDef == HBEnemies.theBlackGoat) do
+    when (isPrintingOfAny [HBEnemies.theBlackGoat] cardDef) do
       mSid <- fmap (.id) <$> getSkillTest
       marked <- stored karmaTestKey
       when (isJust mSid && marked == fmap tshow mSid) $ earn DestinedKarma
 
     -- "Natural Selection": the killing source must be an ability on a Creature
     -- asset the defeating investigator controls.
-    when (cardDef == HBEnemies.newMoonBeastTamer) do
+    when (isPrintingOfAny [HBEnemies.newMoonBeastTamer] cardDef) do
       for_ (abilityAsset source) \aid -> do
         getSourceController source >>= traverse_ \iid -> do
           whenM (aid <=~> (AssetWithTrait Creature <> assetControlledBy iid)) do
@@ -97,8 +97,10 @@ runCircusExMortisAchievements msg = whenEligibleCampaign $ case msg of
     cardDef <- fieldMap EnemyCard toCardDef eid
     for_ source.asset \aid -> do
       assetDef <- fieldMap Asset.AssetCard toCardDef aid
-      when (cardDef == HBEnemies.newMoonClown && assetDef == Assets.disguise) do
-        earn ClownCollege
+      when
+        (isPrintingOfAny [HBEnemies.newMoonClown] cardDef && isPrintingOfAny [Assets.disguise] assetDef)
+        do
+          earn ClownCollege
 
   {- "Moonlight Sonata": Final Rhapsody (Jim Culver's signature weakness, so the
   investigator gate is implied) draws its five tokens in one request rather than
@@ -106,7 +108,7 @@ runCircusExMortisAchievements msg = whenEligibleCampaign $ case msg of
   RequestedChaosTokens source _ tokens -> do
     for_ source.treachery \tid -> do
       cardDef <- fieldMap TreacheryCard toCardDef tid
-      when (cardDef `elem` finalRhapsodies && countMoons tokens >= 3) $ earn MoonlightSonata
+      when (isPrintingOfAny finalRhapsodies cardDef && countMoons tokens >= 3) $ earn MoonlightSonata
 
   -- Asset board states. The campaign runs before the asset, so the arriving card
   -- is not in play yet: check it against the OTHER half of each pair.
@@ -129,7 +131,7 @@ runCircusExMortisAchievements msg = whenEligibleCampaign $ case msg of
   UseCardAbility iid source 1 _ _ -> do
     for_ source.asset \aid -> do
       cardDef <- fieldMap Asset.AssetCard toCardDef aid
-      when (cardDef `elem` deCultusBestiaeVersions) do
+      when (isPrintingOfAny deCultusBestiaeVersions cardDef) do
         engaged <- selectCount (enemyEngagedWith iid)
         when (engaged >= 3) $ earn TimeOut
 
@@ -140,7 +142,7 @@ runCircusExMortisAchievements msg = whenEligibleCampaign $ case msg of
     | any ((== AnySkillValue 3) . modifierType) mods -> do
         for_ source.asset \aid -> do
           cardDef <- fieldMap Asset.AssetCard toCardDef aid
-          when (cardDef `elem` amaltheaWeavers) do
+          when (isPrintingOfAny amaltheaWeavers cardDef) do
             mSid <- fmap (.id) <$> getSkillTest
             for_ mSid $ setStore karmaTestKey . tshow
 
@@ -168,13 +170,13 @@ runCircusExMortisAchievements msg = whenEligibleCampaign $ case msg of
   cancelCardEffects. -}
   CancelEachNext (Just cid) _ msgTypes | RevelationMessage `elem` msgTypes -> do
     card <- getCard cid
-    when (toCardDef card == HBTreacheries.milkOfShubNiggurath) $ bumpCounter milkCancelsKey 1
+    when (isPrintingOfAny [HBTreacheries.milkOfShubNiggurath] card) $ bumpCounter milkCancelsKey 1
 
   -- "G.O.A.T.": AssignedDamage carries the post-modifier amount that is about to
   -- land; Shub-Niggurath's damage is wiped every round by The Prophecy.
   AssignedDamage (EnemyTarget eid) n _ | n > 0 -> do
     cardDef <- fieldMap EnemyCard toCardDef eid
-    when (cardDef == HBEnemies.shubNiggurath) $ bumpCounter shubDamageKey n
+    when (isPrintingOfAny [HBEnemies.shubNiggurath] cardDef) $ bumpCounter shubDamageKey n
 
   -- "Deep Sleepers" bookkeeping: any Towering Dark Young attack disqualifies it.
   EnemyAttack details -> do
@@ -198,10 +200,9 @@ runCircusExMortisAchievements msg = whenEligibleCampaign $ case msg of
   -- The two checklists. A playthrough grants exactly one final version of each
   -- book, so the items accumulate per user across campaigns.
   AddCampaignCardToDeck _ _ card -> do
-    let cardDef = toCardDef card
-    for_ (lookup cardDef amaltheaFinals) \item ->
+    for_ (checklistItem amaltheaFinals card) \item ->
       achievementProgress (ach ManyFutures) [item]
-    for_ (lookup cardDef deCultusFinals) \item ->
+    for_ (checklistItem deCultusFinals card) \item ->
       achievementProgress (ach ManyPasts) [item]
 
   -- Per-game and per-round counters reset at their boundaries.
@@ -280,6 +281,21 @@ allPointsWestId = ":circus-ex-mortis:074"
 whenInvocationOfDiana :: HasGame m => m () -> m ()
 whenInvocationOfDiana body =
   whenM (selectAny $ skillIs HBSkills.invocationOfDiana) body
+
+{- | True when the card is any printing of one of these defs.
+
+Not a structural 'CardDef' comparison: 'Arkham.Card.PlayerCard.toCardDef' runs
+the card's taboo list over the def, so a tabooed copy of a player card is no
+longer equal to the pristine def -- and alternate and replacement printings
+(Baron Samedi's 99003, the campaign's own Lady Esprit) have codes of their own.
+Taboo never touches the card code, which is what this compares.
+-}
+isPrintingOfAny :: (HasCardCode a, HasCardDef a) => [CardDef] -> a -> Bool
+isPrintingOfAny defs x = any ((`isPrintingOf` x) . toCardCode) defs
+
+-- | The checklist item a card stands for, by printing.
+checklistItem :: (HasCardCode a, HasCardDef a) => [(CardDef, Text)] -> a -> Maybe Text
+checklistItem items x = snd <$> find (\(def, _) -> isPrintingOf (toCardCode def) x) items
 
 countMoons :: [ChaosToken] -> Int
 countMoons = count ((== MoonToken) . (.face))

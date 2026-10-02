@@ -25,6 +25,8 @@ behaviors =
           , ("wild-gateway-toll", wildGatewayToll)
           , ("spawn-inhuman-monster", spawnInhumanMonster)
           , ("witch-house-spells", witchHouseSpells)
+          , ("la-bella-luna-dice", laBellaLunaDice)
+          , ("magick-shoppe-spells", magickShoppeSpells)
           ]
     }
 
@@ -86,4 +88,43 @@ witchHouseSpells ctx = do
       | pact
       , cid <- revealed
       ]
+    <> [Choice (DoneLabel "Take none") [ReturnToBottom SpellDeckKind revealed]]
+
+{- | "Roll four dice; gain $1 for each odd number you roll." A roll outside a test
+(rule 474), so it is resolved where it is made and nothing can change it.
+-}
+laBellaLunaDice :: EffectCtx -> GameM ()
+laBellaLunaDice ctx = do
+  rolls <- replicateM 4 rollDie
+  let won = length (filter odd rolls)
+  logText ("Rolled " <> tshow rolls <> " and gains $" <> tshow won)
+  addMoney ctx.investigator won
+
+{- | "Reveal the top three spells in the deck. You may buy one of them or become
+FATIGUED to gain one of them. Return the rest to the bottom of the deck." A spell
+with no printed value cannot be bought, and nor can one beyond their means.
+-}
+magickShoppeSpells :: EffectCtx -> GameM ()
+magickShoppeSpells ctx = do
+  let iid = ctx.investigator
+  deck <- use (#decks . #spell)
+  let (revealed, rest) = splitAt 3 deck
+  #decks . #spell .= rest
+  names <- for revealed \cid -> (.name) <$> getCardDef cid
+  unless (null revealed) $ logText ("Miriam lays out " <> T.intercalate ", " names)
+  purse <- availableMoney iid
+  tired <- canPayCost iid (CostCondition "FATIGUED")
+  priced <- for (zip revealed names) \(cid, name) -> (cid,name,) <$> cardValue cid
+  let keeping cid = ReturnToBottom SpellDeckKind (filter (/= cid) revealed)
+  chooseFor iid "Buy a spell, or wear yourself out for one"
+    $ [ Choice (CardsLabel ("Buy " <> name <> " for $" <> tshow v) [cid]) [BuyCard iid cid v, keeping cid]
+      | (cid, name, Just v) <- priced
+      , v <= purse
+      ]
+    <> [ Choice
+           (CardsLabel ("Become FATIGUED for " <> name) [cid])
+           [PayCost ctx (CostCondition "FATIGUED"), GainAsset iid cid, keeping cid]
+       | tired
+       , (cid, name, _) <- priced
+       ]
     <> [Choice (DoneLabel "Take none") [ReturnToBottom SpellDeckKind revealed]]

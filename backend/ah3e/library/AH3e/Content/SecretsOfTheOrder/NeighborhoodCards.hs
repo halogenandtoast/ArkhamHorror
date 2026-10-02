@@ -12,13 +12,23 @@ import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 
 cards :: [CardDef]
-cards = fromBox SecretsOfTheOrder (frenchHill <> theUnderworld)
+cards = fromBox SecretsOfTheOrder (frenchHill <> theUnderworld <> concat extras)
 
+-- | A card of one of the two decks this box brings, both of which hold eight.
 card :: NeighborhoodId -> Int -> [(Text, Text, Effect)] -> CardDef
-card nid n encounters =
+card nid = cardOf nid 8
+
+{- | A card added to a deck Arkham already had, which this box takes from eight
+cards to ten.
+-}
+extra :: NeighborhoodId -> Int -> [(Text, Text, Effect)] -> CardDef
+extra nid = cardOf nid 10
+
+cardOf :: NeighborhoodId -> Int -> Int -> [(Text, Text, Effect)] -> CardDef
+cardOf nid outOf n encounters =
   CardDef
     { code = CardCode (coerce nid <> "-" <> T.justifyRight 2 '0' (tshow n))
-    , name = (tile nid).name <> " " <> tshow n <> "/8"
+    , name = (tile nid).name <> " " <> tshow n <> "/" <> tshow outOf
     , expansion = CoreSet
     , copies = 1
     , kind =
@@ -367,6 +377,389 @@ theUnderworld =
               [ ("Test will", pass Will 0 spell)
               , ("Become FATIGUED", Pay (CostCondition "FATIGUED") spell)
               ]
+          )
+        ]
+      )
+    ]
+
+{- | The two cards this box adds to each of Arkham's own neighborhoods, numbered on
+from the eight the core set deals.
+-}
+extras :: [[CardDef]]
+extras =
+  [ downtown
+  , easttown
+  , merchantDistrict
+  , miskatonicUniversity
+  , northside
+  , rivertown
+  , southside
+  , uptown
+  ]
+
+downtown :: [CardDef]
+downtown =
+  map
+    (uncurry (extra "downtown"))
+    [
+      ( 9
+      ,
+        [
+          ( "Arkham Asylum"
+          , "Wandering the halls, you come across a dusty, serene chapel. Become BLESSED. Resting on the altar is an ornate, gold-bound book (will). If you pass, the strange passage offers you hope; you or an ally may recover two sanity. If you fail, the alien language drains you; become FATIGUED."
+          , Seq [blessed, Test Will 0 (sanity 2) fatigued]
+          )
+        ,
+          ( "Independence Square"
+          , "An ephemeral man in a cheap, moldy-smelling suit waves you over. \"Looks like you could use a bit of help, friend.\" His yellowed teeth look like they are about to fall out of his head. You may buy any number of common items from the display. If you buy anything, the man's smile becomes unsettlingly wide, \"Don't forget this;\" gain the NINE OF RODS."
+          , BuyFromDisplay (Just "Common") FullPrice Nothing (named "NINE OF RODS")
+          )
+        ,
+          ( "La Bella Luna"
+          , "After a streak of good luck, you decide to quit while you are ahead. As you try to leave, one of the patrons from whom you won money confronts you with a pit boss. \"You cheated me, and I want my money back,\" the man growls (influence). If you pass, the bouncer believes your version of events; gain $3 and become DRIVEN."
+          , pass Influence 0 (Seq [money 3, driven])
+          )
+        ]
+      )
+    ,
+      ( 10
+      ,
+        [
+          ( "Arkham Asylum"
+          , "The nurse speaks to you soothingly, \"I have your medication, dear. Make sure you drink every drop.\" You may spend $1 for you or an ally to recover two sanity. If you do, the concoction has lasting effects; become DRIVEN."
+          , mayPay (SpendMoney 1) (Seq [sanity 2, driven])
+          )
+        ,
+          ( "Independence Square"
+          , "As you pass by the shops you see a little girl with a Dunwich accent darting through the crowd. She seems to be hiding from something (observation). If you pass, you recognize the game she is playing and decide to play with her. She is delighted and hands you a gift before giggling and running off; gain one curio and become DRIVEN."
+          , pass Observation 0 (Seq [curioItem, driven])
+          )
+        ,
+          ( "La Bella Luna"
+          , "The dice are hot tonight and you're on a roll. Peter Clover cocks an eyebrow from the corner, seemingly interested in whether you have the guts to keep going. You may spend $1 to gamble. If you do, roll four dice; gain $1 for each odd number you roll. If you do not spend the money, he shakes his head in disappointment."
+          , mayPay (SpendMoney 1) (Custom "la-bella-luna-dice")
+          )
+        ]
+      )
+    ]
+
+easttown :: [CardDef]
+easttown =
+  map
+    (uncurry (extra "easttown"))
+    [
+      ( 9
+      ,
+        [
+          ( "Hibb's Roadhouse"
+          , "An old woman starts to sing a jaunty tune, and soon most of the patrons have joined in, filling the old barn with song. You or an ally may recover two sanity. As you sing, you start to lose track of time (observation). If you fail, before you know it, it's already morning; become FATIGUED."
+          , Seq [sanity 2, Test Observation 0 NoEffect fatigued]
+          )
+        ,
+          ( "Police Station"
+          , "As you pass by a holding cell you see a woman with long black hair frantically scrawling strange words onto the floor (influence). If you pass, she rushes over to you and says in a hurried whisper, \"It's to keep Arkham safe. Here, I know a rune that can help.\" She scribbles black smudges onto the back of your hand; become BLESSED."
+          , pass Influence 0 blessed
+          )
+        ,
+          ( "Velma's Diner"
+          , "You arrive at Velma's two minutes before close and she tuts at your haggard appearance, \"I suppose I can't turn you away looking like that, but it'll cost you.\" You may spend $1. If you do, Velma makes some hot turkey sandwiches and warm tea; you become DRIVEN and you or an ally recovers two health."
+          , mayPay (SpendMoney 1) (Seq [driven, health 2])
+          )
+        ]
+      )
+    ,
+      ( 10
+      ,
+        [
+          ( "Hibb's Roadhouse"
+          , "The woman behind the counter quietly suggests a unique vintage she thinks you might like to try. You may spend $2 for you or an ally to recover two sanity. If you do, she commends your taste; become DRIVEN. If you do not, she tuts her disappointment at you and sets the bottle back on the top shelf."
+          , mayPay (SpendMoney 2) (Seq [sanity 2, driven])
+          )
+        ,
+          ( "Police Station"
+          , "You notice a sleek, dark figure lurking in the reception area (observation). If you pass, you realize it's just a coat rack, and you find something in the pocket of one of the coats; gain one common item. If you fail, you see red eyes peering at you from beneath the wide brim of a hat and the vision haunts your dreams; become FATIGUED."
+          , Test Observation 0 commonItem fatigued
+          )
+        ,
+          ( "Velma's Diner"
+          , "You have a delicious fish dinner as you chat up the other patrons. You or an ally may recover two health. You notice a tired-looking man sitting alone (influence). If you pass, you listen to the man's woes and he introduces himself as Jasper Best, a local cab driver; gain the CABBIE'S FAVOR."
+          , Seq [health 2, pass Influence 0 (named "CABBIE'S FAVOR")]
+          )
+        ]
+      )
+    ]
+
+merchantDistrict :: [CardDef]
+merchantDistrict =
+  map
+    (uncurry (extra "merchant-district"))
+    [
+      ( 9
+      ,
+        [
+          ( "River Docks"
+          , "Johnny \"the Don\" Valone looms out of the dark. \"Yeah, you. I heard you got something I might be wantin'. Let's trade, yeah?\" You may spend a remnant to gain one common item. If you do not, he whistles and a crew of guys step out of the shadows; become FATIGUED when you run."
+          , MayPay (SpendRemnants 1) commonItem fatigued
+          )
+        ,
+          ( "Tick-Tock Club"
+          , "The smooth music and hot food are filling. You or an ally may recover one health and one sanity. As you tap your foot to the rhythm, something sounds...off (observation). If you pass, you find the source of the noise is a small clock. \"Take it,\" calls out \"Dainty\" Donohue, \"the thing has never worked right;\" gain THE RED CLOCK."
+          , Seq [RecoverBoth YouOrAlly (N 1) (N 1), pass Observation 0 (named "THE RED CLOCK")]
+          )
+        ,
+          ( "Unvisited Isle"
+          , "A dozen yellow eyes peer at you from the trees (will). If you pass, you refrain from showing your fear and call out calmly, and after a moment of unsettling chittering, something sleek and translucent thuds to the ground; gain one remnant and become DRIVEN. If you fail, you flee from the unblinking sentries."
+          , pass Will 0 (Seq [remnants 1, driven])
+          )
+        ]
+      )
+    ,
+      ( 10
+      ,
+        [
+          ( "River Docks"
+          , "Some shady individuals are loading heavy crates into the back of a car. One of them calls out to you, \"Hey, you, wanna make a buck?\" Gain $3. As you heft a box into the trunk, a thick slime seeps out onto your hands (will). If you pass, you steel yourself and finish the job; become DRIVEN."
+          , Seq [money 3, pass Will 0 driven]
+          )
+        ,
+          ( "Tick-Tock Club"
+          , "You treat yourself to a fine meal and a cold drink. You or an ally may recover two health. \"Hey, you,\" the bartender calls, \"My busboy called in sick. You do some work for me, and I'll keep the food and booze coming. How about it?\" You may become FATIGUED for you or an ally to recover two sanity."
+          , Seq [health 2, mayPay (CostCondition "FATIGUED") (sanity 2)]
+          )
+        ,
+          ( "Unvisited Isle"
+          , "The air feels thick as you reach the base of an impossibly massive tree, covered from top to bottom in carved phrases in a dozen languages from this world and the next (lore). If you pass, you find a pattern and feel rejuvenated as you recite the words; become BLESSED. If you fail, the hot air weighs on you; become FATIGUED."
+          , Test Lore 0 blessed fatigued
+          )
+        ]
+      )
+    ]
+
+miskatonicUniversity :: [CardDef]
+miskatonicUniversity =
+  map
+    (uncurry (extra "miskatonic-university"))
+    [
+      ( 9
+      ,
+        [
+          ( "Observatory"
+          , "As you sift through the notes from the last few weeks, you discover that the stars are aligned over a specific place in a very specific configuration. You see a way to protect that spot from eldritch threats. You may become FATIGUED to remove one doom from any space."
+          , mayPay (CostCondition "FATIGUED") (anywhere 1)
+          )
+        ,
+          ( "Orne Library"
+          , "You page through the library's newspaper archive from the last several years. You notice a pattern of letters in the corners of some of the pages (lore). If you pass, you are able to decipher the secret text; gain one spell and become DRIVEN."
+          , pass Lore 0 (Seq [spell, driven])
+          )
+        ,
+          ( "Science Building"
+          , "Scanning the laboratory, you find the cabinet you were looking for, but it is heavily padlocked. It will take you a long time to break through it or to find a key. You may become FATIGUED to find a way in. If you do, the notes you uncover give you hope; become BLESSED."
+          , mayPay (CostCondition "FATIGUED") blessed
+          )
+        ]
+      )
+    ,
+      ( 10
+      ,
+        [
+          ( "Observatory"
+          , "As you peer through the lens you see something falling from the sky (observation). If you pass, you are able to watch closely enough to perform the necessary calculations and find the site of a fallen comet; gain one remnant and become DRIVEN."
+          , pass Observation 0 (Seq [remnants 1, driven])
+          )
+        ,
+          ( "Orne Library"
+          , "You find a book wedged behind a shelf. Gain the BOOK OF SHADOWS. You open to the first page (will). If you pass, you realize the foreword has a hidden incantation; gain one spell. If you fail, you spend all night searching for answers in the mysterious book; become FATIGUED."
+          , Seq [named "BOOK OF SHADOWS", Test Will 0 spell fatigued]
+          )
+        ,
+          ( "Science Building"
+          , "A group of students exiting a lab pass by you. One stays back a bit and nervously whispers to you, \"I heard you might have something I could use for my project, is that true?\" You may spend one remnant to gain $2 and become DRIVEN."
+          , mayPay (SpendRemnants 1) (Seq [money 2, driven])
+          )
+        ]
+      )
+    ]
+
+northside :: [CardDef]
+northside =
+  map
+    (uncurry (extra "northside"))
+    [
+      ( 9
+      ,
+        [
+          ( "Arkham Advertiser"
+          , "The Advertiser is looking for an errand-runner. Gain $2. As you bring her a coffee, Minnie Klein flashes you a smile. \"Hey there, you look sharp. Would you take a look at my notes (will)?\" If you pass, the notes include details that give you a renewed sense of urgency; become DRIVEN."
+          , Seq [money 2, pass Will 0 driven]
+          )
+        ,
+          ( "Curiositie Shoppe"
+          , "\"I have a few items on sale today,\" Oliver Thomas whispers. You may buy one curio from the display for half price (rounded up). As you leave the shoppe, you spot a small but interesting brass statuette (will). If you pass, the trinket fills you with energy; become DRIVEN. If you fail, you have terrible visions as it clatters to the ground; become FATIGUED."
+          , Seq [buyOneHalf "Curio", Test Will 0 driven fatigued]
+          )
+        ,
+          ( "Train Station"
+          , "Some important files are supposed to arrive on the next train, but it is nearly thirty minutes late (will). If you pass, you decide to pass time by making small talk with a stranger; gain one ally. If you fail, the train takes an eternity to arrive and you fidget on the uncomfortable bench for hours; become FATIGUED."
+          , Test Will 0 ally fatigued
+          )
+        ]
+      )
+    ,
+      ( 10
+      ,
+        [
+          ( "Arkham Advertiser"
+          , "A woman stumbles into the Advertiser claiming to have seen an apparition, but Editor Doyle Jefferies thinks she's delirious. You may spend one remnant to back up her claims. If you do, she thanks you profusely; become BLESSED. If you do not, her sobs weigh heavily upon you; become FATIGUED."
+          , MayPay (SpendRemnants 1) blessed fatigued
+          )
+        ,
+          ( "Curiositie Shoppe"
+          , "You step into the shop to get out of the rain and are greeted by a soft voice. \"Welcome, is there anything I can help you find?\" A slight man waves his hands at the shelves of trinkets. You may spend $3. If you do, you find a particularly intriguing object; gain one curio and become DRIVEN."
+          , mayPay (SpendMoney 3) (Seq [curioItem, driven])
+          )
+        ,
+          ( "Train Station"
+          , "An old woman lets out a grunt of frustration. A crossword sits on her lap (will). If you pass, you help the woman with the questions she was struggling with and another passenger appreciates your efforts; gain one ally. If you fail, listening to the woman complain about the puzzle is mind-numbing; become FATIGUED."
+          , Test Will 0 ally fatigued
+          )
+        ]
+      )
+    ]
+
+rivertown :: [CardDef]
+rivertown =
+  map
+    (uncurry (extra "rivertown"))
+    [
+      ( 9
+      ,
+        [
+          ( "Black Cave"
+          , "A cold wind suddenly extinguishes your lantern. You could turn around and leave the way you came, but a tiny light in the distance seems to call to you. You may become FATIGUED to travel through the cave and gain a GUIDING SPIRIT."
+          , mayPay (CostCondition "FATIGUED") (named "GUIDING SPIRIT")
+          )
+        ,
+          ( "General Store"
+          , "The delivery boy, Nathan, greets you as you enter. \"Mr. Schoffner is sick today, but he said that ain't an excuse to close.\" You may buy any number of common items from the display. If you buy anything, Nathan quietly thanks you for all of your hard work; become DRIVEN."
+          , BuyFromDisplay (Just "Common") FullPrice Nothing driven
+          )
+        ,
+          ( "Graveyard"
+          , "You come across a damaged monument. You spend the time to heft the heavy pieces up and attempt to fix it (strength). If you pass, a withered visage appears as you finish, nods its eyeless head to you and extends a gnarled hand; gain one remnant. If you fail, you forget to lift with your legs and hear an unfortunate pop; become FATIGUED."
+          , Test Strength 0 (remnants 1) fatigued
+          )
+        ]
+      )
+    ,
+      ( 10
+      ,
+        [
+          ( "Black Cave"
+          , "As you make your way quickly through the cave, you notice hastily-sketched symbols scattered across the ceiling (lore). If you pass, you realize the drawings point to a secret cache with a few ancient tomes inside; gain one spell and become DRIVEN."
+          , pass Lore 0 (Seq [spell, driven])
+          )
+        ,
+          ( "General Store"
+          , "Davy Schoffner waves you over when he sees you enter the shop. \"Nathan is bogged down with orders today. If you have a bit of time to help out around the place, I can make it worth your while.\" You may become FATIGUED to gain one common item."
+          , mayPay (CostCondition "FATIGUED") commonItem
+          )
+        ,
+          ( "Graveyard"
+          , "You hear noises that are a cross between whimpering and gagging coming from behind a headstone (will). If you pass, you avoid looking at the cause of the sounds and instead recite a lullaby and the sobs soon turn to gentle laughter; become BLESSED. If you fail, the weeping specter vanishes as soon as you look at it."
+          , pass Will 0 blessed
+          )
+        ]
+      )
+    ]
+
+southside :: [CardDef]
+southside =
+  map
+    (uncurry (extra "southside"))
+    [
+      ( 9
+      ,
+        [
+          ( "Historical Society"
+          , "You participate in a riveting debate and feel exhilarated. Become DRIVEN. One of the debaters refutes your claim and declares your point moot without proof. You may spend a remnant. If you do, another patron is impressed and asks if you want to collaborate; gain one ally."
+          , Seq [driven, mayPay (SpendRemnants 1) ally]
+          )
+        ,
+          ( "Ma's Boarding House"
+          , "Ma hums a gruff tune as she works in the kitchen. Just the smell of the food makes you feel better. You or an ally may recover two health. \"Food's only for those who got a room,\" she snaps. You may spend $1 for you or an ally to recover two health. If you do, it tastes as good as it smells; become DRIVEN."
+          , Seq [health 2, mayPay (SpendMoney 1) (Seq [health 2, driven])]
+          )
+        ,
+          ( "South Church"
+          , "Father Michael begins his sermon (will). If you pass, a hunched, shockingly pale old woman approaches you, saying \"It's good to see there is still faith in this city\8212you stay safe,\" gain THE HIEROPHANT. She nods approvingly and walks away\8212straight through a wall. If you fail, the sermon brings you little comfort in these dire times."
+          , pass Will 0 (named "THE HIEROPHANT")
+          )
+        ]
+      )
+    ,
+      ( 10
+      ,
+        [
+          ( "Historical Society"
+          , "A wet-eyed boy whines from behind his mother's skirt (influence). If you pass, you cleverly entertain him and a woman in a white robe nods at you with approval; become BLESSED. If you fail, the boy begins to cry and wail; become FATIGUED when his squalling triggers a migraine."
+          , Test Influence 0 blessed fatigued
+          )
+        ,
+          ( "Ma's Boarding House"
+          , "Ma stirs the massive stew pot and adds a bit more salt, the delicious aroma filling the room. \"You want some, don't you? Well, you best get those chores done quick. We work for our meals here!\" she laughs. You may become FATIGUED for you or an ally to recover four health."
+          , mayPay (CostCondition "FATIGUED") (health 4)
+          )
+        ,
+          ( "South Church"
+          , "Father Michael looks at you warmly. \"You are doing the works of a virtuous person, my child. We are truly grateful to have you among us.\" Become DRIVEN. \"May I ask,\" he continues, \"that you remember the church, should those good works bear fruit?\" You may spend $1 for you or an ally to recover two sanity."
+          , Seq [driven, mayPay (SpendMoney 1) (sanity 2)]
+          )
+        ]
+      )
+    ]
+
+uptown :: [CardDef]
+uptown =
+  map
+    (uncurry (extra "uptown"))
+    [
+      ( 9
+      ,
+        [
+          ( "Hangman's Hill"
+          , "A morose, ghostly child draws your attention to a tight nook in the roots of a gnarled and twisted tree (strength). If you pass, you break away the thick bark and cold earth to find a long-forgotten book; gain the LOST JOURNAL. If you fail, the girl giggles as you search fruitlessly before disappearing."
+          , pass Strength 0 (named "LOST JOURNAL")
+          )
+        ,
+          ( "St. Mary's Hospital"
+          , "Doctor Mortimore walks into the waiting room, whistling a cheerful tune and gestures for you to follow him. \"Banged up a bit, aren't you? I have a new medication\8212cheers you right up. Let's give it a try?\" You may spend $1 to become DRIVEN and for you or an ally to recover two health."
+          , mayPay (SpendMoney 1) (Seq [driven, health 2])
+          )
+        ,
+          ( "Ye Olde Magick Shoppe"
+          , "\"No, no, that isn't right!\" Miriam Beecher rushes over. \"Here, let me show you before you get yourself into trouble I can't fix.\" Gain one spell. Miriam continues her lesson, but she speaks very quickly (will). If you pass, you manage to keep up and the newfound knowledge invigorates you; become DRIVEN."
+          , Seq [spell, pass Will 0 driven]
+          )
+        ]
+      )
+    ,
+      ( 10
+      ,
+        [
+          ( "Hangman's Hill"
+          , "A flash of dry lightning cuts across the sky, illuminating swaying bodies attached to the boughs of the hunched and shrivelled tree (will). If you pass, you shake away the vision and find something discarded on the ground; become DRIVEN and gain one common item."
+          , pass Will 0 (Seq [driven, commonItem])
+          )
+        ,
+          ( "St. Mary's Hospital"
+          , "\"Oh, the doctor hardly needs to see you for a few scrapes. Here, I have some ointment for that cut,\" Nurse Sharon coos. You or an ally may recover two health. Something about the nurse seems different (observation). If you pass, you notice a new crucifix around her neck and she offers you her old one; become BLESSED."
+          , Seq [health 2, pass Observation 0 blessed]
+          )
+        ,
+          ( "Ye Olde Magick Shoppe"
+          , "You search through the stacks of books until you come across an old mystic journal. It will take some time to parse the faded words, or you could ask Miriam. Reveal the top three spells in the deck. You may buy one of them or become FATIGUED to gain one of them. Return the rest to the bottom of the deck."
+          , Custom "magick-shoppe-spells"
           )
         ]
       )

@@ -31,7 +31,11 @@ unless' :: Text -> Effect -> Text -> Effect -> Effect
 unless' sufferLabel suffer otherLabel other = Choose [(sufferLabel, suffer), (otherLabel, other)]
 
 cards :: [CardDef]
-cards = core <> fromBox DeadOfNight deadOfNight <> fromBox UnderDarkWaves underDarkWaves
+cards =
+  core
+    <> fromBox DeadOfNight deadOfNight
+    <> fromBox UnderDarkWaves underDarkWaves
+    <> fromBox SecretsOfTheOrder secretsOfTheOrder
 
 core :: [CardDef]
 core =
@@ -349,4 +353,33 @@ underDarkWaves =
       "Weather Keeps on the Sunny Side"
       "If there is no doom in your space, become delayed."
       (If (Not (CountAtLeast DoomInYourSpace 1)) delayed NoEffect)
+  ]
+
+-- Secrets of the Order
+secretsOfTheOrder :: [CardDef]
+secretsOfTheOrder =
+  [ headline
+      "feral-felines-feud-in-french-hill"
+      44
+      "Feral Felines Feud in French Hill"
+      "If there are any monsters in your neighborhood, become FATIGUED."
+      (If (CountAtLeast MonstersInYourNeighborhood 1) fatigued NoEffect)
+  , headline
+      "community-leader-calls-for-compassion"
+      45
+      "Community Leader Calls for Compassion"
+      "Test (will). If you pass, become DRIVEN. If you fail, become FATIGUED."
+      (Test Will 0 driven fatigued)
+  , headline
+      "gone-but-not-forgotten"
+      46
+      "Gone but Not Forgotten"
+      "Test (will) and resolve the effect based on your test result: 0: You suffer two horror. 1-2: You suffer two horror and become DRIVEN. 3+: You become DRIVEN."
+      (graded Will (horror 2) (Seq [horror 2, driven]) driven)
+  , headline
+      "carcass-fracas"
+      47
+      "Carcass Fracas"
+      "Spawn one non-human monster unless you discard one focus token."
+      (MayPay (SpendFocus 1) NoEffect (Custom "spawn-inhuman-monster"))
   ]

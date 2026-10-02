@@ -6,7 +6,7 @@ import { useGame } from '@/game/context'
 import OutlineFilter from '@/game/OutlineFilter.vue'
 import SpaceChips from '@/game/SpaceChips.vue'
 import Tok from '@/game/Tok.vue'
-import { CONNECTOR_W, HUB_R, STREET_H, STREET_W, TILE_H, TILE_W, cssName } from '@/game/util'
+import { CONNECTOR_W, CORNER_W, HUB_R, STREET_H, STREET_W, TILE_H, TILE_W, cssName } from '@/game/util'
 import type { Game, Layout } from '@/types'
 
 const ctx = useGame()
@@ -54,6 +54,9 @@ hang off a single edge. Its art joins at the top and bottom rather than along it
 length, though, so it stands a quarter turn from where a street would. */
 const laidLikeAStreet = (sid: string) =>
   g.value.board.spaces[sid]?.kind?.contents === 'DerelictPortal'
+/* A hidden path is not laid against anything: it stands in the junction three tiles
+leave between them, and its art reaches out to all three. */
+const standsInAJunction = (sid: string) => g.value.board.spaces[sid]?.kind?.contents === 'HiddenPath'
 const spaceArt = (sid: string) => {
   const connector = connectorArt(sid)
   return connector ? img(`connectors/${connector}.webp`) : img(`streets/${streetType(sid)}.webp`)
@@ -73,10 +76,13 @@ const spaceAngle = (sid: string, a: number) => {
   return connectorArt(sid) ? a + 90 : streetAngle(a)
 }
 // a street fills its box; a connector is drawn to fit a smaller square one, keeping its own shape
-const spaceBox = (sid: string) =>
-  connectorArt(sid) && !laidLikeAStreet(sid)
-    ? { w: CONNECTOR_W, h: CONNECTOR_W, fit: 'xMidYMid meet' }
-    : { w: STREET_W, h: STREET_H, fit: 'none' }
+const spaceBox = (sid: string) => {
+  if (standsInAJunction(sid)) return { w: CORNER_W, h: CORNER_W, fit: 'xMidYMid meet' }
+  // the portal's art joins top and bottom, so its length is the box's height
+  if (laidLikeAStreet(sid)) return { w: STREET_H, h: STREET_W, fit: 'none' }
+  if (connectorArt(sid)) return { w: CONNECTOR_W, h: CONNECTOR_W, fit: 'xMidYMid meet' }
+  return { w: STREET_W, h: STREET_H, fit: 'none' }
+}
 
 interface Shape {
   sid: string

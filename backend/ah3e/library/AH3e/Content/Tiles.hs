@@ -247,6 +247,28 @@ connectorDepth, connectorTab :: Double
 connectorDepth = 0.38
 connectorTab = 0.2
 
+-- | The six corners of a tile, each between two of its edges.
+cornerAngles :: [Double]
+cornerAngles = [fromIntegral d * pi / 180 | d <- [30, 90, 150, 210, 270, 330 :: Int]]
+
+-- | Distance from a tile's centre to each of its corners.
+circumradius :: Double
+circumradius = 0.5 / cos (pi / 6)
+
+{- | The point the same distance from all three, which is where a piece that has to
+reach all three of them stands. Nothing if they fall in a line.
+-}
+equidistant
+  :: (Double, Double) -> (Double, Double) -> (Double, Double) -> Maybe (Double, Double)
+equidistant (ax, ay) (bx, by) (cx, cy)
+  | abs d < 1e-9 = Nothing
+  | otherwise = Just (ux / d, uy / d)
+ where
+  d = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by))
+  sq x y = x * x + y * y
+  ux = sq ax ay * (by - cy) + sq bx by * (cy - ay) + sq cx cy * (ay - by)
+  uy = sq ax ay * (cx - bx) + sq bx by * (ax - cx) + sq cx cy * (bx - ax)
+
 -- | How far apart two unconnected clusters of tiles are set out.
 clusterGap :: Double
 clusterGap = 2
@@ -370,21 +392,35 @@ buildMapOf nids streets pieces =
     | nid <- c.tiles
     , let t = tile nid
     ]
-  {- The junction the piece stands in: the middle of the three sides the tiles face
-  each other across. Each side is halfway between two tile centres, which sit an
-  apothem apiece plus a street's length apart, and the middle of those three midpoints
-  comes to the mean of the centres themselves -- the same point the tiles' own facing
-  corners average out to, since those three offsets cancel.
+  {- The junction the piece stands in. Start from the middle of the three sides the
+  tiles face each other across -- each halfway between two centres that sit an apothem
+  apiece plus a street's length apart, which comes to the mean of the centres -- and
+  then settle on the point the same distance from all three corners the tiles point at
+  it. The two differ only because rows are stretched a little to keep the diagonal
+  streets clear, and that difference is the whole reason a piece standing on the mean
+  cannot reach all three tiles at once.
   -}
-  cornerAt c = mean [mid (pos a) (pos b) | (a, b) <- pairs c.tiles]
+  cornerAt c = case [cornerPoint nid (middling c) | nid <- c.tiles] of
+    [a, b, d] -> fromMaybe (middling c) (equidistant a b d)
+    _ -> middling c
+  middling c = mean [mid (pos a) (pos b) | (a, b) <- pairs c.tiles]
    where
     mid (x1, y1) (x2, y2) = ((x1 + x2) / 2, (y1 + y2) / 2)
     pairs xs = [(a, b) | (i, a) <- zip [0 :: Int ..] xs, (j, b) <- zip [0 ..] xs, i < j]
-    mean [] = (0, 0)
-    mean ps =
-      ( sum (map fst ps) / fromIntegral (length ps)
-      , sum (map snd ps) / fromIntegral (length ps)
-      )
+  mean [] = (0, 0)
+  mean ps =
+    ( sum (map fst ps) / fromIntegral (length ps)
+    , sum (map snd ps) / fromIntegral (length ps)
+    )
+  {- The corner of this tile that points nearest the given place. A tile is drawn as a
+  regular hexagon however far apart the rows are set, so its corners are not stretched
+  along with its centre. -}
+  cornerPoint nid (tx, ty) =
+    let (x, y) = pos nid
+        want = atan2 (ty - y) (tx - x)
+        off a = abs (atan2 (sin (a - want)) (cos (a - want)))
+        a' = minimumBy (comparing off) cornerAngles
+     in (x + circumradius * cos a', y + circumradius * sin a')
   -- the space of this tile whose wedge points nearest the given place
   facing t (x, y) (tx, ty) =
     let want = atan2 (ty - y) (tx - x)

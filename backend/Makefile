@@ -45,40 +45,36 @@ REDIS_CONN ?= redis://localhost:6379
 #   the build finishes but --exec never runs, so the server never comes up.
 #
 # --file-watch is the less broken of the two, so it stays the default, but the
-# working setups are api.watch.entr (entr drives the loop) or api.watch plus
+# working setups are api.watch.entr (a poller drives the loop) or api.watch plus
 # watch.poke in a second shell. Both are below.
 #
 # Note that `make -n` RUNS those targets instead of printing them, since their
 # recipes mention $(MAKE) and make treats such lines as recursive.
 FILE_WATCH ?= --file-watch
 
-# Which trees the entr loops watch. ah3e is a separate package that arkham-api
+# Which trees the watch loops watch. ah3e is a separate package that arkham-api
 # depends on, so an edit there has to rebuild the API too -- leaving it out meant
 # third edition engine changes sat until something under arkham-api happened to
 # change. Deleting a directory listed here makes find exit non-zero and the loop
 # spin, so keep it to trees that exist.
 WATCH_SRC ?= arkham-api/library arkham-api/app arkham-api/tests ah3e/library ah3e/dev
 
-# Why every entr loop below starts with a trap.
+# Why the loops are named .entr but no longer run entr, and why they trap INT.
 #
-# entr exits 0 when it takes a SIGINT -- that is documented, not a bug (see
-# EXIT STATUS in entr(1)) -- and it exits 2 when a file is added to or removed
-# from a watched directory. The `while` wrapper exists for that second case, so
-# the loop re-runs find and picks up new card modules.
+# entr opens a descriptor per watched file plus one per containing directory,
+# and macOS caps a process at OPEN_MAX (10240) however high the rlimit reads.
+# At 8858 modules over 1545 directories entr stopped starting at all: "Too many
+# files listed; the hard limit for your login class is 10240". The loops poll
+# with scripts/wait-for-change.sh instead -- see that script for why feeding
+# entr directories rather than files is not a fix. The target names stay.
 #
-# The catch is that Ctrl-C then has to stop the *shell* running the loop, and
-# whether it does is purely a property of that shell. make runs recipes with
-# /bin/sh: on Linux that is dash, which aborts the loop, but on macOS it is
-# bash, and bash ignores SIGINT while it waits on a foreground child and only
-# re-raises it if that child *died* of the signal. entr exited 0, so bash
-# swallows the Ctrl-C and cheerfully starts the next iteration -- forever.
-# Same Makefile, same entr, opposite behaviour on the two machines.
-#
-# An explicit INT trap takes bash off that path (with a trap installed it stops
-# ignoring the signal), so Ctrl-C ends the loop on either shell. The `[ $$? = 2
-# ]` guard alongside it is the precise version of the same thing: keep looping
-# only for the reason the loop was written, and stop on 0 (SIGINT) or 1 (entr
-# errored, e.g. no regular files on stdin) instead of spinning on it.
+# The INT trap is older than that change and still earns its place. make runs
+# recipes with /bin/sh: on Linux that is dash, which aborts the loop on Ctrl-C,
+# but on macOS it is bash, and bash ignores SIGINT while it waits on a
+# foreground child and only re-raises it if that child *died* of the signal --
+# so it would swallow the Ctrl-C and cheerfully start the next iteration,
+# forever. An explicit trap takes bash off that path (with one installed it
+# stops ignoring the signal), so Ctrl-C ends the loop on either shell.
 
 .PHONY: core.watch
 core.watch:
@@ -103,14 +99,12 @@ api.watch:
 ## under library/ (see FILE_WATCH above), but its watch on this directory still
 ## fires, so watch the tree here -- one recursive kqueue watcher instead of 1331
 ## FSEvent streams -- and rewrite stack.yaml to poke stack into rebuilding.
-## Rewriting picks up new card files too, since entr -d returns when one appears.
+## Rewriting picks up new card files too, since the poller re-globs every tick.
 .PHONY: watch.poke
 watch.poke:
-	@command -v entr >/dev/null || { echo "watch.poke needs entr: brew install entr"; exit 1; }
 	@trap 'exit 0' INT; \
 	while :; do \
-	  find $(WATCH_SRC) -name '*.hs' \
-	    | entr -dnpz true >/dev/null 2>&1; \
+	  scripts/wait-for-change.sh $(WATCH_SRC) || exit 0; \
 	  cp stack.yaml .stack.yaml.poke && cat .stack.yaml.poke > stack.yaml; \
 	  rm -f .stack.yaml.poke; \
 	  echo "poked stack at $$(date +%T)"; \
@@ -153,20 +147,17 @@ api.rebuild:
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api; DEVELOPMENT=true $(API_ENV) stack exec arkham-api &\"" \
 
-## api.watch with no stack watcher in the loop at all: entr holds one recursive
-## kqueue watch over the tree and reruns api.rebuild per change. Trades a stack
-## startup per change for not depending on --file-watch; watch.poke is the other
-## way round, keeping stack resident and poking it. Pick whichever you prefer.
-## entr -d returns when a new file appears, so the loop re-runs find and picks
-## up new card modules.
+## api.watch with no stack watcher in the loop at all: the poller waits for a
+## change and reruns api.rebuild. Trades a stack startup per change for not
+## depending on --file-watch; watch.poke is the other way round, keeping stack
+## resident and poking it. Pick whichever you prefer. New card modules need no
+## restart, since the poller re-globs the trees every tick.
 .PHONY: api.watch.entr
 api.watch.entr:
-	@command -v entr >/dev/null || { echo "api.watch.entr needs entr: brew install entr"; exit 1; }
 	@trap 'exit 0' INT; \
 	while :; do \
-	  find $(WATCH_SRC) -name '*.hs' \
-	    | entr -dn $(MAKE) --no-print-directory api.rebuild; \
-	  [ $$? = 2 ] || break; \
+	  $(MAKE) --no-print-directory api.rebuild; \
+	  scripts/wait-for-change.sh $(WATCH_SRC) || break; \
 	done
 
 ## api.watch.entr + the rolling build log (see api.watch.log).
@@ -243,19 +234,17 @@ api.rebuild.test:
 		$(EXTRA_STACK_FLAGS) \
 	  --exec "bash -c \"pkill arkham-api || true; DEVELOPMENT=true $(API_ENV) stack exec arkham-api & stack build --test --pedantic --fast arkham-api --ghc-options '-DDEVELOPMENT $(GHC_OPTIONS)' --interleaved-output $(EXTRA_STACK_FLAGS) || echo 'Tests failed; server left running.'\"" \
 
-## api.watch.test with entr driving the loop instead of stack's --file-watch,
+## api.watch.test with the poller driving the loop instead of stack's --file-watch,
 ## which no longer sees edits under library/ on this tree (see FILE_WATCH above).
 .PHONY: api.watch.test.entr
 api.watch.test.entr:
-	@command -v entr >/dev/null || { echo "api.watch.test.entr needs entr: brew install entr"; exit 1; }
 	@trap 'exit 0' INT; \
 	while :; do \
-	  find $(WATCH_SRC) -name '*.hs' \
-	    | entr -dn $(MAKE) --no-print-directory api.rebuild.test; \
-	  [ $$? = 2 ] || break; \
+	  $(MAKE) --no-print-directory api.rebuild.test; \
+	  scripts/wait-for-change.sh $(WATCH_SRC) || break; \
 	done
 
-## The full loop: entr-driven, rebuilds, restarts the server, runs the suite, and
+## The full loop: poller-driven, rebuilds, restarts the server, runs the suite, and
 ## puts compile errors and failing examples in .claude/build.log for agents.
 .PHONY: api.watch.test.entr.log
 api.watch.test.entr.log:
@@ -346,20 +335,18 @@ test.rebuild:
 	  --interleaved-output \
 		$(EXTRA_STACK_FLAGS)
 
-## test.watch with entr driving the loop instead of stack's --file-watch, which
+## test.watch with the poller driving the loop instead of stack's --file-watch, which
 ## no longer sees edits under library/ on this tree (see FILE_WATCH above). No
 ## API server: this only builds and runs the suite.
 .PHONY: test.watch.entr
 test.watch.entr:
-	@command -v entr >/dev/null || { echo "test.watch.entr needs entr: brew install entr"; exit 1; }
 	@trap 'exit 0' INT; \
 	while :; do \
-	  find $(WATCH_SRC) -name '*.hs' \
-	    | entr -dn $(MAKE) --no-print-directory test.rebuild; \
-	  [ $$? = 2 ] || break; \
+	  $(MAKE) --no-print-directory test.rebuild; \
+	  scripts/wait-for-change.sh $(WATCH_SRC) || break; \
 	done
 
-## test.watch.entr + the rolling build log (see api.watch.log): entr-driven,
+## test.watch.entr + the rolling build log (see api.watch.log): poller-driven,
 ## runs the suite, and puts compile errors and failing examples in
 ## .claude/build.log where an agent can read them.
 .PHONY: test.watch.entr.log

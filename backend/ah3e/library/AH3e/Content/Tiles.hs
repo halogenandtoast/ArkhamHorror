@@ -234,8 +234,12 @@ slotAngle v s = deg * pi / 180
     (V2, B) -> 60
     (V2, C) -> 180
 
+{- | The gap between two tiles, in tile widths, which is what a street spans. Measured
+off the tabletop version: its tiles sit 1.279 of a tile picture apart, and a picture is
+wider than the hexagon in it by 1/0.9548, so in hexagons that is 1.339 centre to centre.
+-}
 streetLength, anchorRadius :: Double
-streetLength = 0.37
+streetLength = 0.3395
 anchorRadius = 0.3
 
 {- | How deep a connector is drawn and how much of that depth is the tab it joins

@@ -11,8 +11,11 @@ import {
   CORNER_ART_MIDDLE,
   CORNER_W,
   HUB_R,
+  PORTAL_W,
   STREET_H,
   STREET_W,
+  TILE_ART_H,
+  TILE_ART_W,
   TILE_H,
   TILE_W,
   cssName,
@@ -92,7 +95,7 @@ const spaceAngle = (sid: string, a: number) => {
 const spaceBox = (sid: string) => {
   if (standsInAJunction(sid)) return { w: CORNER_W, h: CORNER_W, fit: 'xMidYMid meet' }
   // the portal's art joins top and bottom, so its length is the box's height
-  if (laidLikeAStreet(sid)) return { w: STREET_H, h: STREET_W, fit: 'none' }
+  if (laidLikeAStreet(sid)) return { w: PORTAL_W, h: PORTAL_W, fit: 'xMidYMid meet' }
   if (connectorArt(sid)) return { w: CONNECTOR_W, h: CONNECTOR_W, fit: 'xMidYMid meet' }
   return { w: STREET_W, h: STREET_H, fit: 'none' }
 }
@@ -132,10 +135,10 @@ function spaceShape(game: Game, L: Layout, px: (n: number) => number, py: (n: nu
       clipId: id,
       clipD: `M${pt(at(t.x, t.y, HUB_R, c - 60))} L${far.join(' L')} L${pt(at(t.x, t.y, HUB_R, c + 60))} A${hub} ${hub} 0 0 0 ${pt(at(t.x, t.y, HUB_R, c - 60))} Z`,
       href: img(`tiles/${t.neighborhood}.webp`),
-      x: px(t.x) - TILE_W / 2,
-      y: py(t.y) - TILE_H / 2,
-      w: TILE_W,
-      h: TILE_H,
+      x: px(t.x) - TILE_ART_W / 2,
+      y: py(t.y) - TILE_ART_H / 2,
+      w: TILE_ART_W,
+      h: TILE_ART_H,
       fit: 'none',
     }
   }
@@ -593,10 +596,10 @@ onUnmounted(() => {
             :key="`tile-${t.neighborhood}`"
             :src="img(`tiles/${t.neighborhood}.webp`)"
             :style="{
-              left: `${geo.px(t.x) - TILE_W / 2}px`,
-              top: `${geo.py(t.y) - TILE_H / 2}px`,
-              width: `${TILE_W}px`,
-              height: `${TILE_H}px`,
+              left: `${geo.px(t.x) - TILE_ART_W / 2}px`,
+              top: `${geo.py(t.y) - TILE_ART_H / 2}px`,
+              width: `${TILE_ART_W}px`,
+              height: `${TILE_ART_H}px`,
             }"
           />
           <svg

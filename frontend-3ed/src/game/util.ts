@@ -199,23 +199,37 @@ export const PHASE_BANNERS: Record<string, [string, string]> = {
 
 export const TILE_W = 240
 export const TILE_H = (TILE_W * 2) / Math.sqrt(3)
-// a street's length along the join, and how wide it is across that
-export const STREET_W = 0.534 * TILE_W
-export const STREET_H = 0.45 * TILE_W
+/* A tile's picture is wider than the hexagon it holds: the hexagon's points touch the top
+and bottom of the picture, and a regular hexagon 907 across stands 1047 tall, not the 1000
+the picture is. The hexagon is 0.9548 of the picture, so the picture is drawn this much
+wider for the hexagon in it to come out TILE_W across -- and then its height is TILE_H,
+which is what a hexagon that wide stands anyway. Drawn any other shape, the tiles no
+longer meet the pieces laid between them. */
+export const TILE_ART_W = (TILE_H * 907) / 1000
+export const TILE_ART_H = TILE_H
+/* A street's length along the join, and how wide it is across that -- the size it is on
+the table, measured off the tabletop version by fitting this same art onto a photograph of
+its board. The art is square and is drawn square; stretching it along the join is what used
+to push the streets over the tiles they join. */
+export const STREET_W = 0.4189 * TILE_W
+export const STREET_H = (STREET_W * 813) / 808
 /* A connector hangs off one edge instead of spanning two tiles, so it is not a
 street length. Its box is square and it is drawn to fit, which keeps every
 connector's own proportions -- the art runs from 1.01:1 to 1.20:1 -- rather than
 stretching them all to the street's. */
 export const CONNECTOR_W = 0.85 * STREET_W
-/* A corner piece stands in the junction three tiles leave between them, which the
-backend puts at the middle of their three centres. This is how wide it is drawn there:
-small enough to sit in the gap without touching the streets that bridge the same corner,
-which is the size the tabletop version uses. */
-export const CORNER_W = 0.4 * TILE_W
+/* A corner piece stands in the junction three tiles leave between them, which the backend
+puts at the middle of their three centres. This is the size it is on the table, and it
+checks out against the hole it has to fill: that middle is 0.773 of a tile from each
+centre and their corners reach 0.562, so an arm has 0.211 to cross, and the art's arms run
+to 0.509 of the piece's width. */
+export const CORNER_W = 0.4158 * TILE_W
+/* A portal spans the same gap but is drawn square and a little larger, also measured. */
+export const PORTAL_W = 0.4409 * TILE_W
 /* Where the piece's own middle sits inside its art, as a fraction of the art: the point
 its three joining edges stand evenly round, which is not the middle of the picture. The
 art is turned about its box, so this offset has to be taken out, turned with it. */
-export const CORNER_ART_MIDDLE = { x: 0.503, y: 0.447 }
+export const CORNER_ART_MIDDLE = { x: 0.4991, y: 0.4585 }
 export const HUB_R = 0.135
 
 export const DECK_KEYS = [

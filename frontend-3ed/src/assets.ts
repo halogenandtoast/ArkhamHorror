@@ -40,3 +40,10 @@ export const isBroken = (src: string | null | undefined) => !!src && broken.has(
 export const markBroken = (src: string | null | undefined) => {
   if (src) broken.add(src)
 }
+/* The first of these that has not already failed to load, or the last if they all have.
+Art for a numbered card is filed one of two ways, so the viewer asks for one, and the
+<img>'s error hands it the other -- after which it remembers and goes straight there. */
+export const firstGood = (...srcs: (string | null | undefined)[]) => {
+  const real = srcs.filter((s): s is string => !!s)
+  return real.find((s) => !broken.has(s)) ?? real[real.length - 1] ?? null
+}

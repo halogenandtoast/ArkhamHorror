@@ -1,6 +1,6 @@
 import { computed, inject, nextTick, provide, ref, shallowRef, type InjectionKey } from 'vue'
 import * as api from '@/api'
-import { cardArtPaths, cardImg, img } from '@/assets'
+import { cardArtPaths, cardImg, firstGood, img } from '@/assets'
 import { readPref, writePref } from '@/prefs'
 import { user } from '@/session'
 import type { Catalog, CardId, Game, Monster, Tagged, TableView } from '@/types'
@@ -84,13 +84,19 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     const dir = m ? (EVENT_ART[m[1]] ?? m[1]) : undefined
     return dir ? img(`events/${dir}/${m![2]}.avif`) : null
   }
-  // anomaly art is filed under anomalies/, every other encounter under encounters/
+  /* Where a card of a numbered set is filed. The core and Dead of Night decks sit by set
+  and number under encounters/, anomaly sets the same under anomalies/; everything filed
+  since -- the two decks Secrets of the Order brings, the pair it adds to each Arkham
+  deck, mysteries, thresholds, terror cards -- sits by card code under cards/, which is
+  what the catalog names. Both namings are in use, so ask for the catalog's and let the
+  picture's own failure send us to the other. */
   const encounterImage = (cid: CardId) => {
     const code = view.value?.cardCodes?.[cid] ?? ''
     const m = /^(.+)-(\d{2})$/.exec(code)
     if (!m) return null
-    const dir = cardArtPaths.value[code]?.startsWith('anomalies/') ? 'anomalies' : 'encounters'
-    return img(`${dir}/${m[1]}/${m[2]}.avif`)
+    const path = cardArtPaths.value[code]
+    const dir = path?.startsWith('anomalies/') ? 'anomalies' : 'encounters'
+    return firstGood(path ? img(`cards/${path}.webp`) : null, img(`${dir}/${m[1]}/${m[2]}.avif`))
   }
   /* the archive check comes before the encounter one, whose pattern would other-
   wise read "feast-15" as card 15 of a "feast" encounter set */

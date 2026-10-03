@@ -117,6 +117,8 @@ data Decks = Decks
   , archive :: [CardId]
   , investigation :: [ArchiveNumber]
   -- ^ the archive cards a scenario is still choosing between (Dreams of R'lyeh)
+  , investigationUnder :: Maybe ArchiveNumber
+  -- ^ the codex card that pile lies under, so the table can show its depth there
   , setAside :: [CardId]
   , removed :: [CardId]
   }
@@ -124,7 +126,7 @@ data Decks = Decks
   deriving anyclass (ToJSON, FromJSON)
 
 emptyDecks :: Decks
-emptyDecks = Decks mempty [] [] [] mempty [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] []
+emptyDecks = Decks mempty [] [] [] mempty [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] [] Nothing [] []
 
 data PlayerState = PlayerState
   { id :: PlayerId

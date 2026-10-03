@@ -154,7 +154,8 @@ cursedGold =
   defaultCodexBehavior
     { triggers = [flipOnSheetClues "cursed-gold" 2 63]
     , onFlip = \e -> when e.flipped do
-        setInvestigation [68, 69, 70, 71]
+        -- 63 leaves the codex as 64 arrives, so the relics lie under 64
+        setInvestigation 64 [68, 69, 70, 71]
         pushAll [AddArchiveToCodex 64, RemoveCodexCard 63]
     }
 

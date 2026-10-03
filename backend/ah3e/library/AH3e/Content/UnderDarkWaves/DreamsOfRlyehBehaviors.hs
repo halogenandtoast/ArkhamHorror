@@ -68,8 +68,8 @@ sets it out.
 investigationCards :: [ArchiveNumber]
 investigationCards = [117, 118, 119, 120]
 
-seedInvestigation :: GameM ()
-seedInvestigation = setInvestigation investigationCards
+seedInvestigation :: CodexEntry -> GameM ()
+seedInvestigation e = setInvestigation e.number investigationCards
 
 {- | Card 106. Its front waits on two clues; its back puts down the white markers
 the melody leaves behind and lets an investigator standing on one discard it to
@@ -78,7 +78,7 @@ rule a card out, until only one card is left to turn up.
 songOfChaos :: CodexBehavior
 songOfChaos =
   defaultCodexBehavior
-    { onAdd = const seedInvestigation
+    { onAdd = seedInvestigation
     , triggers =
         [ CodexTrigger
             { key = "song-of-chaos"
@@ -174,7 +174,7 @@ a sheet clue. Its back decides which town the investigators end up in.
 maddeningMelody :: CodexBehavior
 maddeningMelody =
   defaultCodexBehavior
-    { onAdd = const seedInvestigation
+    { onAdd = seedInvestigation
     , triggers =
         [ {- The card answers each doom reaching the sheet. Counting the markers
           already down against the doom already there comes to the same thing,

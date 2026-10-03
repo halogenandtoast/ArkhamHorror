@@ -662,6 +662,10 @@ body.moving .draggable-inv { cursor:grabbing; }
 .codex-card img { width:100%; display:block; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.6); }
 .codex-card .asset-name { display:none; }
 .codex-card.no-art { height:220px; padding:8px; border:1px solid var(--line); border-radius:8px; }
+/* a codex card with the investigation pile under it is drawn as a stack, and says how deep */
+.codex-card .buried-count { position:absolute; right:6px; bottom:6px; min-width:24px; padding:2px 7px;
+  border-radius:12px; background:#000c; border:1px solid var(--line); color:var(--ink);
+  font:600 13px/1.4 ui-monospace,monospace; text-align:center; }
 .codex-card.no-art .asset-name { display:block; font-weight:600; }
 .codex-tok { position:absolute; right:-6px; top:-6px; }
 /* a card keeping both piles stacks them down its corner */

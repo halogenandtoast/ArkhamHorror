@@ -209,6 +209,10 @@ export interface Decks {
   event: CardId[]
   eventDiscard: CardId[]
   display: CardId[]
+  // the archive numbers still face down under the codex, in the scenarios that have one,
+  // and the codex card they lie under
+  investigation?: number[]
+  investigationUnder?: number | null
 }
 
 export interface Game {

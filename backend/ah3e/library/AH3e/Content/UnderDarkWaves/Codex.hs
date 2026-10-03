@@ -88,13 +88,15 @@ winOnFlip b = b {onFlip = \e -> when e.flipped (push WinTheGame)}
 time: Tyrants of Ruin's relics and Dreams of R'lyeh's four endings. The pile is
 the same thing both times.
 -}
-setInvestigation :: [ArchiveNumber] -> GameM ()
-setInvestigation ns = do
+setInvestigation :: ArchiveNumber -> [ArchiveNumber] -> GameM ()
+setInvestigation under ns = do
   deck <- use (#decks . #investigation)
   taken <- uses #codex (map (.number))
   when (null deck && not (any (`elem` taken) ns)) do
     shuffled <- shuffle ns
     #decks . #investigation .= shuffled
+    -- the pile lies under whichever card set it out, which is where the table shows it
+    #decks . #investigationUnder ?= under
 
 -- | Turn up the next card of that pile.
 revealInvestigation :: GameM (Maybe ArchiveNumber)
@@ -103,6 +105,7 @@ revealInvestigation =
     [] -> pure Nothing
     n : rest -> do
       #decks . #investigation .= rest
+      when (null rest) (#decks . #investigationUnder .= Nothing)
       logText ("Archive card " <> tshow (coerce n :: Int) <> " is turned up")
       pure (Just n)
 

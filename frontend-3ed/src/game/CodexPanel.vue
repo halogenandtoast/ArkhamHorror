@@ -12,6 +12,19 @@ const g = computed(() => ctx.game.value!)
 
 const codexName = (e: CodexEntry) => ctx.cardNameRaw(e.card) || `Card ${e.number}`
 const codexSrc = (e: CodexEntry) => archiveImage(e.number, e.flipped)
+/* Some scenarios deal a face-down investigation deck that the codex draws from -- Dreams
+of R'lyeh rules a line of enquiry out at a time, Tyrants of Ruin turns up relics. The pile
+lies under one codex card and the cards are not the player's to look at, so that card is
+simply drawn as a stack, with the number underneath on it. */
+const buried = computed(() => g.value.decks?.investigation?.length ?? 0)
+const buriedUnder = computed(() => g.value.decks?.investigationUnder ?? null)
+const under = (e: CodexEntry) => (e.number === buriedUnder.value ? buried.value : 0)
+// each card below the top one shows as another edge behind it
+const stack = (n: number) =>
+  Array.from(
+    { length: Math.min(4, n) },
+    (_, k) => `${(k + 1) * 3}px ${(k + 1) * 3}px 0 -1px #111, ${(k + 1) * 3}px ${(k + 1) * 3}px 0 0 #555`,
+  ).join(', ')
 const rumor = computed(() => {
   const r = g.value.rumor
   if (!r) return null
@@ -29,10 +42,16 @@ const rumor = computed(() => {
         class="codex-card"
         :class="[{ 'no-art': isBroken(codexSrc(e)) }, ctx.marks(['codex', e.number])]"
         :data-codex="e.number"
-        :title="`#${e.number} ${codexName(e)}${e.flipped ? ' · back' : ''}`"
+        :title="`#${e.number} ${codexName(e)}${e.flipped ? ' · back' : ''}${under(e) ? ` · ${under(e)} face down under it` : ''}`"
         @click="zoom(codexSrc(e))"
       >
-        <img v-if="!isBroken(codexSrc(e))" :src="codexSrc(e)" :alt="codexName(e)" @error="markBroken(codexSrc(e))" /><span
+        <img
+          v-if="!isBroken(codexSrc(e))"
+          :src="codexSrc(e)"
+          :alt="codexName(e)"
+          :style="under(e) ? { boxShadow: stack(under(e)) } : undefined"
+          @error="markBroken(codexSrc(e))"
+        /><b v-if="under(e)" class="buried-count">{{ under(e) }}</b><span
           class="asset-name"
           >#{{ e.number }} {{ codexName(e) }}</span
         ><span v-if="e.tokens?.clues" class="codex-tok"

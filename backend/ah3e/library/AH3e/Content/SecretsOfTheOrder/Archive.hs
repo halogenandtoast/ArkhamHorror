@@ -10,6 +10,11 @@ headline backs, so neither side of one is ever read until then.
 Cards 135-149 belong to The Dead Cry Out. Not all of them are text: 145 and 146 are
 the two gug priests, and 147-149 are printed on Underworld backs and join that
 neighborhood's encounter deck when the search for the phylactery begins.
+
+Cards 150-165 belong to The Key and the Gate. 158 and 159 are cards an investigator
+holds rather than codex entries, so they are built the way a condition is -- two sides,
+a reckoning on each, and a back nobody reads until it turns -- and 161-165 are printed
+on neighborhood backs, one for each tile the missing Elders are scattered across.
 -}
 module AH3e.Content.SecretsOfTheOrder.Archive (cards) where
 
@@ -24,7 +29,17 @@ import Data.Map.Strict qualified as Map
 
 cards :: [CardDef]
 cards =
-  fromBox SecretsOfTheOrder (boundToServe <> appeals <> theDeadCryOut <> gugPriests <> underworldHunt)
+  fromBox
+    SecretsOfTheOrder
+    ( boundToServe
+        <> appeals
+        <> theDeadCryOut
+        <> gugPriests
+        <> underworldHunt
+        <> theKeyAndTheGate
+        <> lures
+        <> missingElders
+    )
 
 archiveCard :: Int -> Text -> Text -> Maybe Text -> CardDef
 archiveCard n name front back =
@@ -323,3 +338,231 @@ underworldHunt =
     , "The acrid gug temple is quiet, save for the massive footfalls of a patrolling giant. You don't find the phylactery, but you may suffer one damage to brave the danger and gain one remnant from the temple. Whether you do this or not, place this card on top of the Underworld encounter deck."
     , Seq [mayPay (CostDamage 1) (remnants 1), again]
     )
+
+{- | Cards 150-157 and 160, the codex of The Key and the Gate: the Lurker's pull on the
+minds of Arkham, Carl Sanford's scattered Elders, the Key of Zagan in the Underworld, and
+the two ways to use it once it is in hand.
+-}
+theKeyAndTheGate :: [CardDef]
+theKeyAndTheGate =
+  [ archiveCard
+      150
+      "At the Threshold"
+      "When there is four or more doom on the scenario sheet, flip this card."
+      ( Just
+          "The Beyond One\nEach investigator tests {will}. Each investigator that fails places one doom in their space unless they become FATIGUED.\nWhen there is eight or more doom on the scenario sheet, add card 156 to the codex.\n(Do not return this card to the archive.)"
+      )
+  , archiveCard
+      151
+      "Possession"
+      "Action: Suffer two horror to find Carl Sanford and flip this card. Reduce the cost of this action by one horror for each clue on the scenario sheet. (Do not spend or discard those clues.) Perform this action only at the Unnamable."
+      ( Just
+          "Take cards 161-165 from the archive.\nPlace each card facedown on top of the corresponding neighborhood deck. Place one white marker in the central area of each neighborhood.\nAdd card 152 to the codex and return this card to the archive."
+      )
+  , archiveCard
+      152
+      "The Missing Elders"
+      "After you \8220find an Elder\8221 as part of an encounter, move the white marker from your neighborhood to the scenario sheet.\nWhen there is one white marker on the scenario sheet, add card 157 to the codex.\nWhen there are three white markers on the scenario sheet, add card 153 to the codex.\nWhen there are five white markers on the scenario sheet, flip this card."
+      ( Just
+          "Remove one {doom} token from the game and add one blank token to the mythos cup.\nThen discard all white markers from the scenario sheet and return this card to the archive."
+      )
+  , archiveCard
+      153
+      "The Way Opens"
+      "Add the Underworld and the Derelict Portal tiles to the board as shown. Place one doom in each space of the Underworld and spawn one monster at the City of the Gugs.\nRemove the top four cards of the event deck from the game.\nShuffle two of the set aside Underworld event cards into the event deck, and discard the other two into the event discard pile.\nThen flip this card."
+      ( Just
+          "Find the Key\nTake three markers\8212two red and one green\8212and randomize them facedown.\nPlace one marker facedown at each location in the Underworld.\nAction: Reveal a facedown marker at your location and suffer two damage unless you discard one clue from the scenario sheet. Then resolve the effect below based on that marker's color.\n- When you reveal a red marker, the dangers of the Underworld yield no answers; discard that marker.\n- When you reveal the green marker, you find the Key of Zagan; add card 154 to the codex. Then discard all remaining markers in the Underworld and return this card to the archive."
+      )
+  , archiveCard
+      154
+      "Lock the Gate"
+      "Add card 155 to the codex.\nAction: Test {lore}-1. For each success that you roll, move one clue from the scenario sheet to this card. If you fail, suffer two horror. You may perform this action only at the unstable space.\nWhen there are four clues on this card, discard those clues and flip this card."
+      (Just "The investigators win the game!")
+  , archiveCard
+      155
+      "Control the Gate"
+      "Action: Discard one clue from the scenario sheet to gain a DARK PACT. You can use this action to gain a DARK PACT even if you already have one or more conditions with the same name. (Keep all of them.)\nReckoning\8212Resolve this effect after all other reckoning effects. If the investigators have a total of four DARK PACT conditions, flip this card."
+      (Just "Each investigator with a DARK PACT wins the game!")
+  , archiveCard
+      156
+      "Upon the Threshold"
+      "Each investigator tests {will}-1. Each investigator that fails places two doom in their space unless they become CURSED.\nWhen there is thirteen or more doom on the scenario sheet, flip this card."
+      (Just "There is only Yog-Sothoth. (The investigators lose the game.)")
+  , archiveCard
+      157
+      "Scraping at the Door"
+      "If there are 1-3 investigators, the lead investigator gains card 158.\nIf there are 4 or more investigators, the lead investigator gains card 159.\nWhen an investigator is defeated, flip this card."
+      ( Just
+          "Add card 160 to the codex with a random side up.\nInstead of returning the defeated investigator's sheet and token to the box, place their sheet under card 160 and place their token in the unstable space.\nReturn this card to the archive."
+      )
+  , archiveCard
+      160
+      "Serve the Darkness"
+      "The investigator token matching the sheet under this card is the \8220fallen one.\8221\nReckoning\8212Roll one die and resolve the effect below:\n1-3: Place two doom in the fallen one's space.\n4-5: The investigator closest to the fallen one suffers one damage and one horror.\n6: The investigator closest to the fallen one discards one focus, one clue, or one item (of their choice).\nThen move the fallen one to the unstable space and flip this card."
+      ( Just
+          "Hunt the Light\nThe investigator token matching the sheet under this card is the \8220fallen one.\8221\nReckoning\8212Roll one die and resolve the effect below:\n1: Place two doom in the fallen one's space.\n2-4: The investigator closest to the fallen one suffers one damage and one horror.\n5-6: The investigator closest to the fallen one discards one focus, one clue, or one item (of their choice).\nThen move the fallen one to the unstable space and flip this card."
+      )
+  ]
+
+{- | Cards 158 and 159, the Lurker's hold on whoever is carrying it. Each is held like a
+condition rather than kept in the codex: two sides, the same reckoning on both, and a
+back nobody reads until that reckoning turns it. Which actions it spoils is the whole
+difference between the sides, and between the two cards.
+-}
+lures :: [CardDef]
+lures =
+  [ lure
+      158
+      ( "LURE OF POWER"
+      , "After you perform a focus action, place one doom on this card unless you suffer one direct horror.\nAfter you perform a ward action, place one doom on this card unless you suffer one direct horror."
+      )
+      ( "LURE OF SLUMBER"
+      , "After you perform a research action, place one doom on this card unless you suffer one direct horror.\nAfter you perform an attack action, place one doom on this card unless you suffer one direct horror."
+      )
+  , lure
+      159
+      ( "THE BEYOND ONE"
+      , "After you perform a ward action, place one doom on this card unless you suffer one direct horror.\nAfter you perform a focus action, place one doom on this card unless you suffer one direct horror.\nAfter you perform a component action, place one doom on this card unless you suffer one direct horror."
+      )
+      ( "THE LURKER'S WILL"
+      , "After you perform a research action, place one doom on this card unless you suffer one direct horror.\nAfter you perform an attack action, place one doom on this card unless you suffer one direct horror.\nAfter you perform a gather resources action, place one doom on this card unless you suffer one direct horror."
+      )
+  ]
+ where
+  reckoned t =
+    t
+      <> "\nReckoning\8212Move all doom from this card to your space. Then the investigator nearest to the unstable space gains this card and flips it.\nIf you are defeated, gain this card after you select a new investigator."
+  lure :: Int -> (ConditionName, Text) -> (ConditionName, Text) -> CardDef
+  lure n (frontName, frontText) (backName, backText) =
+    CardDef
+      (CardCode ("archive-" <> tshow n))
+      (coerce frontName <> " / " <> coerce backName)
+      CoreSet
+      1
+      ( ConditionCard
+          ConditionDef
+            { front = ConditionFace frontName (reckoned frontText)
+            , back = ConditionFace backName (reckoned backText)
+            , backIsCondition = False
+            , hiddenBack = True
+            }
+      )
+
+{- | Cards 161-165, the five Elders. Each is printed on a neighborhood back and laid
+facedown on top of that neighborhood's deck, so an Elder is found by encountering the
+place rather than by looking for them; every entry ends in finding one.
+-}
+missingElders :: [CardDef]
+missingElders =
+  [ elder
+      161
+      "Easttown"
+      [
+        ( "Hibb's Roadhouse"
+        , "You savor a discreet drink; you or an ally may recover two sanity. You follow a man in the robes of the Order out the side entrance ({will}). If you fail, his sorcery overwhelms you; suffer two damage. Whether you pass or not, you clear his mind and find an Elder."
+        , Seq [May "Recover two sanity" (sanity 2), Test Will 0 NoEffect (damage 2), elderFound]
+        )
+      ,
+        ( "Police Station"
+        , "Deputy Morgan seeks your help with a confused man who looks past you, over your shoulder ({influence}). If you pass, he tells you how to find a lost object; gain one common item. If you fail, he reveals a grim truth; suffer one horror. Whether you pass or not, you recognize him as one of Sanford's lost allies; you find an Elder."
+        , Seq [Test Influence 0 commonItem (horror 1), elderFound]
+        )
+      ,
+        ( "Velma's Diner"
+        , "You take a seat at the counter and chat with the staff over pie and coffee. You may spend $1 for you or an ally to recover two health. The waitress tells you that one of her regulars has been acting oddly. When she points him out, you recognize him as one of Sanford's missing colleagues; you find an Elder."
+        , Seq [mayPay (SpendMoney 1) (health 2), elderFound]
+        )
+      ]
+  , elder
+      162
+      "French Hill"
+      [
+        ( "Bayfriar Gardens"
+        , "Scraps of paper dot the crisp leaves, creating a trail that leads into the hedge maze ({influence}). If you pass, you follow the trail to the end; gain one remnant. Whether you pass or not, you locate a woman with the signet of the Order, whispering to the sky; you find an Elder."
+        , Seq [pass Influence 0 (remnants 1), elderFound]
+        )
+      ,
+        ( "Duterte Funeral Home"
+        , "Samuel points out a circle carved into the cold dirt. \8220Animals avoid it for some reason.\8221 You may spend a remnant to help him disrupt the glyph. If you do, you may remove one doom from any space. Whether you do or not, nearby you find a woman from the Lodge, drawing another such circle; you find an Elder."
+        , Seq [mayPay (SpendRemnants 1) (anywhere 1), elderFound]
+        )
+      ,
+        ( "Silver Twilight Lodge"
+        , "Within the Lodge, you lose your way in twisting hallways that double back on themselves impossibly ({lore}). If you pass, you find the library; gain one spell. If you fail, you wander aimlessly; become FATIGUED. Whether you pass or not, you find an Elder, trapped in the same maze."
+        , Seq [Test Lore 0 spell fatigued, elderFound]
+        )
+      ]
+  , elder
+      163
+      "Merchant District"
+      [
+        ( "River Docks"
+        , "Joey \8220the Rat\8221 is looking to make a deal. You may spend one remnant to gain $3. As you finish with him, you both notice a man mumbling to himself and staring into a street lamp. \8220Friend of yours?\8221 Joey asks, as you recognize the Lodge member; you find an Elder."
+        , Seq [mayPay (SpendRemnants 1) (money 3), elderFound]
+        )
+      ,
+        ( "Tick-Tock Club"
+        , "A relaxing evening in the club gives you time to think. You may spend $1 for you or an ally to recover one health and one sanity. One of the musicians tells you he saw somebody painting a crude door on a wall in the alley outside. You take a look and see one of Carl Sanford's missing allies; you find an Elder."
+        , Seq [mayPay (SpendMoney 1) (Seq [health 1, sanity 1]), elderFound]
+        )
+      ,
+        ( "Unvisited Isle"
+        , "A man draws the sigil of the Order in the air and begins to invoke the Lurker at the Threshold ({will}). If you pass, you disrupt the ritual and confiscate his materials; gain one remnant. If you fail, become CURSED. Whether you pass or not, you know him to be a member of the Lodge; you find an Elder."
+        , Seq [Test Will 0 (remnants 1) cursed, elderFound]
+        )
+      ]
+  , elder
+      164
+      "Rivertown"
+      [
+        ( "Black Cave"
+        , "You recognize the woman in the back of the cave as a member of the Order of the Silver Twilight, and try to interpret her nonsensical rhyming ({lore}). If you pass, you find the trinket she is looking for; gain one curio. Whether you pass or not, you find an Elder."
+        , Seq [pass Lore 0 curioItem, elderFound]
+        )
+      ,
+        ( "General Store"
+        , "Nathan the delivery boy tells you that a woman defaced some of the merchandise with scrawled messages about \8220the Opener of the Way.\8221 You may buy one common item from the display for half price (rounded up). Whether you buy an item or not, you locate the woman and find an Elder."
+        , Seq [buyOneHalf "Common", elderFound]
+        )
+      ,
+        ( "Graveyard"
+        , "A woman from the Lodge stumbles about in a daze, and you see the lurking ghoul before it can strike ({will}). If you pass, you subdue the creature; gain one remnant. If you fail, it lashes out at you as well; suffer two damage. Whether you pass or not, you snap the woman out of her stupor and find an Elder."
+        , Seq [Test Will 0 (remnants 1) (damage 2), elderFound]
+        )
+      ]
+  , elder
+      165
+      "Uptown"
+      [
+        ( "Hangman's Hill"
+        , "Something glistens within the thick patch of witchweed. Before you can look closer, a woman charges you with a shovel ({will}). If you pass, you hold your ground and return for the item; gain one curio. Whether you pass or not, you subdue her and find an Elder."
+        , Seq [pass Will 0 curioItem, elderFound]
+        )
+      ,
+        ( "St. Mary's Hospital"
+        , "Nurse Sharon has a little time. You may spend $1 for you or an ally to recover two health. She tells you there's a woman in one of the wards who keeps tracing the sigil of the Order of the Silver Twilight on the walls. When you speak to the woman, her mind clears a bit, and you find an Elder."
+        , Seq [mayPay (SpendMoney 1) (health 2), elderFound]
+        )
+      ,
+        ( "Ye Olde Magick Shoppe"
+        , "A woman stares at the sundial in front of the shop, murmuring softly ({observation}). If you pass, you can tell she's reciting magical incantations; gain one spell. If you fail, her unknown words send a shiver up your spine; suffer one horror. Whether you pass or not, you gently get her attention; you find an Elder."
+        , Seq [Test Observation 0 spell (horror 1), elderFound]
+        )
+      ]
+  ]
+ where
+  -- the phrase card 152 keys off; the card leaves the deck the moment it is read
+  elderFound = Custom "katg-find-an-elder"
+  anywhere k = RemoveDoomFrom AnySpace (N k)
+  elder :: Int -> Text -> [(Text, Text, Effect)] -> CardDef
+  elder n hood entries =
+    CardDef
+      (CardCode ("archive-" <> tshow n))
+      (hood <> " \8212 an Elder")
+      CoreSet
+      1
+      ( NeighborhoodCard
+          (hoodOf hood)
+          (Map.fromList [(spaceIdFor place, Encounter txt eff) | (place, txt, eff) <- entries])
+      )
+  hoodOf = NeighborhoodId . coerce . spaceIdFor

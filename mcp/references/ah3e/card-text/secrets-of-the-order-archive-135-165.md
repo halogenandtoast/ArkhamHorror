@@ -14,20 +14,13 @@ to Serve's sheet and events — is likewise in `AH3e.Content.*`.
 
 ## Which scenario
 
-The box has three scenarios. Bound to Serve holds cards 2 and 121-134, and The Dead Cry
-Out holds 1 and 135-149; both are implemented, so their text lives in the code and the
-transcription below is kept only as the source it was read from.
-
-- **150-165** — **The Key and the Gate**. Its sheet and twenty-eight event cards are in;
-  the codex is not. Carl Sanford's missing Elders (161-165 are neighborhood-backed
-  encounters), the Key of Zagan in the Underworld, and a fallen investigator who keeps
-  playing for the other side. Card 153 is what puts the Underworld and a derelict portal
-  on that board part way through.
+All three scenarios are implemented, so every card's text lives in the code and this
+transcription is kept only as the source it was read from: Bound to Serve holds cards 2
+and 121-134, The Dead Cry Out 1 and 135-149, and The Key and the Gate 2 and 150-165.
 
 ## What these cards asked of the engine
 
-What The Dead Cry Out needed is built (`TheDeadCryOutBehaviors`); what is left here is
-The Key and the Gate's.
+All of it is built, in `TheDeadCryOutBehaviors` and `TheKeyAndTheGateBehaviors`.
 
 - **bystanders** — in. `PlaceBystander`, `TakeBystander` and `DiscardBystander`, with
   `#bystanders` on the game and the piece drawn on the board (`SpaceChips.vue`). Monsters
@@ -52,17 +45,21 @@ The Key and the Gate's.
 - **an encounter card that goes back on top of its deck** — in, as
   `EncounterState.returnToTop`, which is what 147-149 use when the phylactery is not in
   that place.
-- **a mid-scenario map addition** — 153 adds the Underworld and Derelict Portal tiles
-  and removes four event cards from the game, then shuffles two set-aside Underworld
-  event cards into the deck. `AddToBoard` exists; the event-deck surgery does not.
-- **a defeated investigator who keeps playing** — 157 and 160 put the sheet under a
-  codex card and leave the token on the board as the "fallen one", with a reckoning
-  that rolls a die and hunts the nearest investigator.
-- **a card that passes from investigator to investigator** (158, 159) and a **win for
-  only some investigators** (155: "each investigator with a DARK PACT wins the game").
-  `WinTheGame` is all or nothing.
-- 154 spends mythos tokens or test successes to put markers and clues on the sheet, the
-  way 144 does.
+- **a mid-scenario map addition** — in. 153 lays the Underworld and a derelict portal
+  against French Hill with `AddToBoard`, which now also **turns** the threshold piece it
+  puts down, the way setup does; the event-deck surgery is done in the card's own
+  behaviour.
+- **a defeated investigator who keeps playing** — in. A `Defeated` investigator may keep
+  their `space`, which leaves their token on the board while every query that matters
+  still passes them by, and card 160 remembers which one they are in its own tokens.
+- **a card that passes from investigator to investigator** (158, 159) — in, built as a
+  held condition rather than a codex entry, so `Asset.flipped` is its two sides and
+  `Asset.tokens` is the doom on it.
+- **a win for only some investigators** (155: "each investigator with a DARK PACT wins
+  the game") — **not modelled**. `WinTheGame` has no payload and the engine has no
+  per-investigator win, so the group wins and the log names who shares in it.
+- **a reckoning that goes last** (155) — in, as `CodexBehavior.reckoningLast`. The leader
+  picks the order of reckonings, so list order could not do it.
 
 ## Readings I would want confirmed before building
 

@@ -104,9 +104,13 @@ scenario =
     , startingMarkers = []
     , startingBystanders = []
     , eventCards = [eventCode n | n <- [1 .. 17] <> [22 .. 28]]
-    , -- the four Underworld event cards wait for card 153, which shuffles two of
-      -- them into the deck and discards the other two
-      setAside = [eventCode n | n <- [18 .. 21]]
+    , {- The four Underworld event cards wait for card 153, which shuffles two of them
+      into the deck and discards the other two. The Lurker's two cards (158, 159) and the
+      five Elders (161-165) wait as well: 157 hands out one of the first pair, and 151
+      lays an Elder facedown on top of each neighborhood's deck. -}
+      setAside =
+        [eventCode n | n <- [18 .. 21]]
+          <> [CardCode ("archive-" <> tshow n) | n <- [158, 159] <> [161 .. 165 :: Int]]
     , codex = [2, 150, 151]
     , anomalySet = Just "Fractured Reality"
     , terrorSet = Nothing

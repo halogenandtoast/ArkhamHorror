@@ -1,6 +1,7 @@
 {
   "id": ":circus-ex-mortis",
   "name": "Circus Ex Mortis",
+  "beta": true,
   "homebrew": true,
   "chapter": 1,
   "designer": "The Beard",

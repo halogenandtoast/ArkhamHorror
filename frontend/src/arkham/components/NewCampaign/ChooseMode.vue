@@ -69,12 +69,12 @@ const chapterGroups = computed(() => [
     campaigns: chapter2Campaigns.value,
     sideStories: chapter2SideStories.value,
   },
-  ...(!import.meta.env.PROD ? [{
+  {
     id: 'homebrew' as const,
     label: 'create.homebrewHeading',
     campaigns: homebrewCampaigns.value,
     sideStories: homebrewSideStories.value,
-  }] : []),
+  },
 ].filter((group) => group.campaigns.length || group.sideStories.length))
 
 const activeGroup = computed(() =>
@@ -200,7 +200,7 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
   </template>
   <template v-else>
     <div v-if="campaignGroup === 'homebrew'" class="homebrew-warning">
-      If you are seeing this, do not start one of these campaigns, they will break.
+      Fan-made campaigns, unofficial and still in testing. Expect rough edges.
     </div>
 
     <div class="campaigns">

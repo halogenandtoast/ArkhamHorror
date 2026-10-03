@@ -89,7 +89,7 @@ const miniCampaign = ref(false)
 
 const scenarios = computed<Scenario[]>(() => gate(scenarioJSON))
 const sideStories = computed<Scenario[]>(() => gate(sideStoriesJSON))
-const campaignJSON = dev ? [...officialCampaignJSON, ...homebrewCampaigns] : officialCampaignJSON
+const campaignJSON = [...officialCampaignJSON, ...homebrewCampaigns]
 const campaigns = computed<Campaign[]>(() => gate(campaignJSON))
 
 const scenario = computed(() =>

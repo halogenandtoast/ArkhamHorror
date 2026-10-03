@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n'
 import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import SideStoryOption from '@/arkham/components/SideStoryOption.vue'
-import sideStories from '@/arkham/data/side-stories.json'
+import sideStoriesJSON from '@/arkham/data/side-stories.json'
 import { useRoute, useRouter } from 'vue-router'
 import { useClipboard } from '@vueuse/core'
 import { buildShareableUrl } from '@/arkham/helpers'
@@ -23,8 +23,10 @@ import { emptyOverlay, overlayIsEmpty, type DeckOverlay } from '@/arkham/deckOve
 import OverlayEditor from '@/arkham/components/debug/OverlayEditor.vue'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
-import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
+import { filterDisplayable, isDevBuild, type Gateable } from '@/arkham/displayRules'
 import { hasParallelContent } from '@/arkham/deckRestrictions'
+
+const sideStories = sideStoriesJSON as (Gateable & { xp: number; id: string; name: string })[]
 
 const props = defineProps<{
   game: Game

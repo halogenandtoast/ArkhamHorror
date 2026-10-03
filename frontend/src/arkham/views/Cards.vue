@@ -13,9 +13,10 @@ import cycles from '@/arkham/data/cycles.json'
 import { shallowRef } from 'vue';
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { storeToRefs } from 'pinia'
-import { isDevBuild } from '@/arkham/displayRules'
+import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
 import { homebrewCampaigns } from '@/arkham/homebrewData'
 import { useSettings } from '@/stores/settings'
+import { useUserStore } from '@/stores/user'
 import { byPrintedNumber, hasLibraryCards, libraryCards, librarySets, loadLibrary } from '@/arkham/customCardLibrary'
 import { imgsrc, isTypingTarget } from '@/arkham/helpers'
 import { cardGroupKey, groupCards } from '@/arkham/cardDetails'
@@ -47,6 +48,13 @@ const isExtraSetFilter = (set: string | null) =>
   (set?.startsWith(CUSTOM_SET_PREFIX) ?? false)
 
 const dev = isDevBuild()
+// Homebrew campaigns are gated the same way as on the new-campaign screen: beta
+// users see the beta ones, dev builds also see the dev ones.
+const visibleHomebrewCampaigns = filterDisplayable(homebrewCampaigns, {
+  alpha: dev,
+  beta: !!useUserStore().currentUser?.beta,
+  dev,
+})
 const { customCardsEnabled } = storeToRefs(useSettings())
 if (customCardsEnabled.value) loadLibrary()
 
@@ -127,7 +135,7 @@ const query = ref<string>(queryText)
 const view = ref(route.query.view? toView(route.query.view) : View.List)
 const routeChapter = route.query.chapter ? parseInt(route.query.chapter.toString()) : 1
 const activeChapter = ref<number>(
-  routeChapter === EXTRAS_CHAPTER && !dev && !customCardsEnabled.value ? 1 : routeChapter,
+  routeChapter === EXTRAS_CHAPTER && !visibleHomebrewCampaigns.length && !customCardsEnabled.value ? 1 : routeChapter,
 )
 
 // Pressing `f` flips every card currently shown in image view. CardImage picks
@@ -256,7 +264,7 @@ const fetchData = async () => {
   }
 
   const officialCards = await fetchCards('both')
-  const homebrewCards = dev ? await fetchHomebrewCards() : []
+  const homebrewCards = visibleHomebrewCampaigns.length ? await fetchHomebrewCards() : []
   const sorted = sortCards([
     ...officialCards,
     ...revisedCorePrintings(officialCards),
@@ -314,21 +322,19 @@ interface CardSearchIndex {
 }
 
 const homebrewCycle: CardCycle = { name: 'Homebrew', cycle: HOMEBREW_CYCLE, code: 'homebrew' }
-const homebrewSets: CardSet[] = dev
-  ? homebrewCampaigns.map((campaign) => {
-      const id = campaign.id.replace(/^:/, '')
-      return {
-        name: campaign.name,
-        min: 0,
-        max: 0,
-        code: `${HOMEBREW_SET_PREFIX}${id}`,
-        cycle: HOMEBREW_CYCLE,
-        homebrew: true,
-      }
-    })
-  : []
-const allCycles: CardCycle[] = dev ? [...cycles, homebrewCycle] : cycles
-const allSets: CardSet[] = dev ? [...(sets as CardSet[]), ...homebrewSets] : (sets as CardSet[])
+const homebrewSets: CardSet[] = visibleHomebrewCampaigns.map((campaign) => {
+  const id = campaign.id.replace(/^:/, '')
+  return {
+    name: campaign.name,
+    min: 0,
+    max: 0,
+    code: `${HOMEBREW_SET_PREFIX}${id}`,
+    cycle: HOMEBREW_CYCLE,
+    homebrew: true,
+  }
+})
+const allCycles: CardCycle[] = homebrewSets.length ? [...cycles, homebrewCycle] : cycles
+const allSets: CardSet[] = [...(sets as CardSet[]), ...homebrewSets]
 
 const customCycle: CardCycle = { name: 'Custom', cycle: CUSTOM_CYCLE, code: 'custom' }
 

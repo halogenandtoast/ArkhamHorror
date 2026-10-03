@@ -1,6 +1,7 @@
 {
   "id": ":dark-matter",
   "name": "Dark Matter",
+  "beta": true,
   "homebrew": true,
   "chapter": 1,
   "designer": "Axolotl",

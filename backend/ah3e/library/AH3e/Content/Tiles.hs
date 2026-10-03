@@ -234,10 +234,6 @@ slotAngle v s = deg * pi / 180
     (V2, B) -> 60
     (V2, C) -> 180
 
--- extra vertical room between rows so diagonal streets clear the lower tiles
-rowStretch :: Double
-rowStretch = 1.05
-
 streetLength, anchorRadius :: Double
 streetLength = 0.37
 anchorRadius = 0.3
@@ -252,15 +248,6 @@ connectorDepth, connectorTab :: Double
 connectorDepth = 0.38
 connectorTab = 0.2
 
-{- | How far a corner piece reaches, from its own middle out to the arm it joins by,
-in units of a tile's flat-to-flat width. The frontend draws the piece that size
-(@CORNER_W@ in util.ts, less the margin its art leaves, and measured from the piece's
-own middle rather than the middle of its picture); the two have to agree, because this
-is what seats the piece flush against the tile it is laid against.
--}
-cornerReach :: Double
-cornerReach = 0.24
-
 {- | The sides of a threshold tile in the order they run round it, which is the order
 its icons are printed in: from due left, turning the way the screen does. Where it
 starts is arbitrary, but it is fixed, so the engine works out the same order again when
@@ -271,39 +258,14 @@ aroundFrom (hx, hy) = map fst . sortOn (turning . snd)
  where
   turning (x, y) = let a = atan2 (y - hy) (x - hx) in if a < pi then a + 2 * pi else a
 
--- | The six corners of a tile, each between two of its edges.
-cornerAngles :: [Double]
-cornerAngles = [fromIntegral d * pi / 180 | d <- [30, 90, 150, 210, 270, 330 :: Int]]
-
--- | Distance from a tile's centre to each of its corners.
-circumradius :: Double
-circumradius = 0.5 / cos (pi / 6)
-
-{- | The point the same distance from all three, which is where a piece that has to
-reach all three of them stands. Nothing if they fall in a line.
--}
-equidistant
-  :: (Double, Double) -> (Double, Double) -> (Double, Double) -> Maybe (Double, Double)
-equidistant (ax, ay) (bx, by) (cx, cy)
-  | abs d < 1e-9 = Nothing
-  | otherwise = Just (ux / d, uy / d)
- where
-  d = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by))
-  sq x y = x * x + y * y
-  ux = sq ax ay * (by - cy) + sq bx by * (cy - ay) + sq cx cy * (ay - by)
-  uy = sq ax ay * (cx - bx) + sq bx by * (ax - cx) + sq cx cy * (bx - ax)
-
 {- | Where a corner piece stands in the junction these tiles share, and which space
 of each tile its edges meet, in the order its printed icons run round it. The piece is
 laid against the first tile named and reaches the rest from there.
 
-The junction itself starts from the middle of the three sides the tiles face each
-other across -- each halfway between two centres that sit an apothem apiece plus a
-street's length apart, which comes to the mean of the centres -- and then settles on
-the point the same distance from all three corners the tiles point at it. The two
-differ only because rows are stretched a little to keep the diagonal streets clear,
-and that difference is the whole reason a piece standing on the mean cannot reach all
-three tiles at once.
+The junction is where the three tiles' centres average out. On a regular lattice that is
+also the point equidistant from all three of them, so a piece standing there meets each
+tile alike -- which is where the tabletop version puts it, and the piece is then centred
+rather than laid against any one tile.
 
 The tiles' centres and their spaces' spots are passed in rather than read off the map,
 so this answers for a piece set out at setup and for one that has since walked round a
@@ -320,12 +282,14 @@ cornerSeat ts spotOf =
     , faces = aroundFrom seat [(sid, spot sid) | sid <- faces]
     }
  where
+  centres = map snd ts
+  seat = meanOf centres
   {- Which way round it is laid. A corner piece is a three-armed junction, and an arm has
-  to meet the tile it is laid against or the piece joins nothing. At an angle of zero its
-  arms point due left and a third of a turn either side of that, so bringing the first of
-  them onto the anchor is a half turn back from the anchor's own direction. Setup and card
-  135 then turn it a further whole number of thirds, which keeps every arm on a tile and
-  only changes which icon is on which.
+  to point at the tile it is laid against. At an angle of zero its arms point due left and
+  a third of a turn either side of that, so bringing the first of them onto the anchor is
+  a half turn back from the anchor's own direction. Setup and card 135 then turn it a
+  further whole number of thirds, which keeps every arm on a tile and only changes which
+  icon is on which.
 
   This has to be worked out afresh at every corner: the direction of the tile it is laid
   against turns by a sixth as the piece walks round, so a piece that keeps the angle it
@@ -333,32 +297,6 @@ cornerSeat ts spotOf =
   laidAgainst = case centres of
     [] -> 0
     (ax, ay) : _ -> let (sx, sy) = seat in atan2 (ay - sy) (ax - sx) * 180 / pi - 180
-  centres = map snd ts
-  start = meanOf [mid a b | (a, b) <- pairsOf centres]
-  mid (x1, y1) (x2, y2) = ((x1 + x2) / 2, (y1 + y2) / 2)
-  pairsOf xs = [(a, b) | (i, a) <- zip [0 :: Int ..] xs, (j, b) <- zip [0 ..] xs, i < j]
-  evenly = case [cornerPoint c start | c <- centres] of
-    [a, b, c] -> fromMaybe start (equidistant a b c)
-    _ -> start
-  {- A hidden path is laid against one tile and reaches the others from there, rather
-  than sitting evenly between all three (Secrets of the Order, p. 4: a corner of it is
-  placed adjacent to the other world). So it stands its own reach out from that tile's
-  edge, along the line to the junction, which leaves the arm it joins by touching the
-  tile whatever size the piece is drawn.
-
-  Measuring from the edge rather than from the nearest corner is what makes that true at
-  every junction. The two differ because rows are stretched a little to keep the diagonal
-  streets clear: four of a tile's six junctions then sit a couple of degrees off the
-  corner they are named for, and there the tile's edge is nearer than its corner, so a
-  piece set out from the corner stops short of the tile by about a fortieth of its width.
-  -}
-  seat = case centres of
-    [] -> evenly
-    (ax, ay) : _ ->
-      let (jx, jy) = evenly
-          towards = atan2 (jy - ay) (jx - ax)
-          out = edgeReach towards + cornerReach
-       in (ax + out * cos towards, ay + out * sin towards)
   faces = [facingSpace (tile nid) c seat | (nid, c) <- ts]
   spot sid = fromMaybe (0, 0) (spotOf sid)
   meanOf [] = (0, 0)
@@ -366,30 +304,6 @@ cornerSeat ts spotOf =
     ( sum (map fst ps) / fromIntegral (length ps)
     , sum (map snd ps) / fromIntegral (length ps)
     )
-
-{- | How far a tile's own edge lies from its centre in that direction, which is the
-apothem out at an edge's middle and the circumradius out at a corner. Every edge of a
-hexagon is the same distance away, so which one is asked for does not matter.
--}
-edgeReach :: Double -> Double
-edgeReach towards = edgeApothem SideLeft / cos off
- where
-  off = minimum [abs (atan2 (sin (towards - n)) (cos (towards - n))) | n <- edgeNormals]
-
--- | The six directions a tile's edges face, each square on to one of them.
-edgeNormals :: [Double]
-edgeNormals = [fromIntegral d * pi / 180 | d <- [0, 60 .. 300 :: Int]]
-
-{- | The corner of a tile at this centre that points nearest the given place. A tile is
-drawn as a regular hexagon however far apart the rows are set, so its corners are not
-stretched along with its centre.
--}
-cornerPoint :: (Double, Double) -> (Double, Double) -> (Double, Double)
-cornerPoint (x, y) (tx, ty) =
-  let want = atan2 (ty - y) (tx - x)
-      off a = abs (atan2 (sin (a - want)) (cos (a - want)))
-      a' = minimumBy (comparing off) cornerAngles
-   in (x + circumradius * cos a', y + circumradius * sin a')
 
 -- | The space of a tile at this centre whose wedge points nearest the given place.
 facingSpace :: TileDef -> (Double, Double) -> (Double, Double) -> SpaceId
@@ -566,7 +480,7 @@ buildMapOf nids streets pieces =
   hangingBorders sid nid e = [(sid, s, Nothing) | s <- edgeSpaces (tile nid) e]
   -- it sits where a street to a neighbour would have sat, just outside that edge
   hangingPlacements =
-    [ StreetPlacement sid (x + reach * cos a) (y + reach * sin a * rowStretch) (edgeDegrees e)
+    [ StreetPlacement sid (x + reach * cos a) (y + reach * sin a) (edgeDegrees e)
     | (sid, nid, e) <-
         [(routeId r, r.from, r.edge) | r <- routes]
           <> [(spaceIdFor m.name, m.from, m.edge) | m <- mysteries]
@@ -574,7 +488,11 @@ buildMapOf nids streets pieces =
           a = edgeAngle e
           reach = edgeApothem e + connectorDepth * (0.5 - connectorTab)
     ]
-  positions = [(nid, (x, y * rowStretch)) | (nid, (x, y)) <- placeTiles nids streets thresholds clusters]
+  {- The tiles sit on a regular hex lattice, so every neighbour is the same distance away
+  and every junction between three of them is the same shape. The rows used to be spread a
+  little on top of that, which made the diagonal junctions a different shape from the
+  straight ones -- and that is what a corner piece could not fit. -}
+  positions = placeTiles nids streets thresholds clusters
   pos nid = fromJustNote ("tile not connected to the map: " <> show nid) (lookup nid positions)
   tilePlacements = [TilePlacement nid x y | (nid, (x, y)) <- positions]
   streetPlacements =

@@ -207,12 +207,11 @@ street length. Its box is square and it is drawn to fit, which keeps every
 connector's own proportions -- the art runs from 1.01:1 to 1.20:1 -- rather than
 stretching them all to the street's. */
 export const CONNECTOR_W = 0.85 * STREET_W
-/* A corner piece is laid against one tile and reaches the others from there. Its art
-runs to 0.957 of its own height and its own middle sits at 0.447 of that height, so it
-reaches 0.510 of the height from there -- 0.53 * 0.89 * 0.510 = 0.24 of a tile's width,
-which is the backend's cornerReach, the number that seats it flush. Change one and
-change the other. */
-export const CORNER_W = 0.53 * TILE_W
+/* A corner piece stands in the junction three tiles leave between them, which the
+backend puts at the middle of their three centres. This is how wide it is drawn there:
+small enough to sit in the gap without touching the streets that bridge the same corner,
+which is the size the tabletop version uses. */
+export const CORNER_W = 0.4 * TILE_W
 /* Where the piece's own middle sits inside its art, as a fraction of the art: the point
 its three joining edges stand evenly round, which is not the middle of the picture. The
 art is turned about its box, so this offset has to be taken out, turned with it. */

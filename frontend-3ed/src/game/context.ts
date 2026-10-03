@@ -62,7 +62,9 @@ export function createGameContext(tableId: string, catalog: Catalog) {
       .map((w) => w[0])
       .join('')
   const scenarioName = (code: string) => catalog.scenarios.find((sc) => sc.code === code)?.name ?? code
-  // each scenario's event art lives in its own folder, keyed by the code's prefix
+  /* Each scenario's event art lives in its own folder. The core and Dead of Night codes
+  abbreviate their scenario, so those need naming; a code that already carries the whole
+  scenario code (Secrets of the Order's do) is its own folder name. */
   const EVENT_ART: Record<string, string> = {
     aoa: 'approach-of-azathoth',
     echoes: 'echoes-of-the-deep',
@@ -77,8 +79,9 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   }
   const eventImage = (cid: CardId | null | undefined) => {
     if (cid == null) return null
-    const m = /^([a-z]+)-event-(\d{2})$/.exec(view.value?.cardCodes?.[cid] ?? '')
-    const dir = m ? EVENT_ART[m[1]] : undefined
+    // the prefix may be hyphenated, so it runs up to the last "-event-" in the code
+    const m = /^(.+)-event-(\d{2})$/.exec(view.value?.cardCodes?.[cid] ?? '')
+    const dir = m ? (EVENT_ART[m[1]] ?? m[1]) : undefined
     return dir ? img(`events/${dir}/${m![2]}.avif`) : null
   }
   // anomaly art is filed under anomalies/, every other encounter under encounters/

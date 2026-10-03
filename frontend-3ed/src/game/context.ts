@@ -312,23 +312,32 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     })
   }
 
-  /* The card that lands in the active slot is tweened there from wherever it was, and a
-  view transition photographs it the moment the new state is in place. A picture the browser
-  has not fetched yet photographs as a broken image, and that is what flies across -- so it
-  is asked for first. A card whose art never arrives must not hold the table up, hence the
-  short wait rather than none. */
+  /* Pictures the next moment needs, before it arrives. A view transition photographs the
+  page the instant the new state is in place and a flying card shows the one it lands on
+  top of, so a picture the browser has not fetched yet is a broken image in both -- and the
+  swap happens too early to wait for it there. One that never arrives must not hold the
+  table up, hence the short wait rather than none. */
   const artAsked = new Set<string>()
   async function artInHand(next: TableView) {
     const g = next.view?.game
-    const cid = g?.encounter?.card ?? g?.activeCard
-    if (cid == null) return
-    const src = activeCardImage(cid, next.view)
-    if (!src || artAsked.has(src)) return
-    artAsked.add(src)
-    const im = new Image()
-    im.src = src
+    const coming = g?.encounter?.card ?? g?.activeCard
+    const wanted = [
+      // the card about to land in the active slot, which the transition tweens into place
+      coming == null ? null : activeCardImage(coming, next.view),
+      /* and the event the discard pile is showing now, since the card flying onto it
+      uncovers that one for the length of the flight */
+      eventImage(view.value?.game?.decks?.eventDiscard?.[0]),
+    ].filter((src): src is string => !!src && !artAsked.has(src))
+    if (!wanted.length) return
+    for (const src of wanted) artAsked.add(src)
     await Promise.race([
-      im.decode().catch(() => {}),
+      Promise.all(
+        wanted.map((src) => {
+          const im = new Image()
+          im.src = src
+          return im.decode().catch(() => {})
+        }),
+      ),
       new Promise((done) => setTimeout(done, 500)),
     ])
   }

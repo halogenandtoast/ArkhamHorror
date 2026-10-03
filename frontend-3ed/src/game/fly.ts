@@ -46,7 +46,13 @@ export function flyCard(
 ): Promise<void> {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return Promise.resolve()
   const landed = target.getAttribute('src')
-  if (under) target.setAttribute('src', under)
+  /* While a card flies onto a pile, the pile shows the one it is landing on. That swap has
+  to happen now, before the page is photographed for the transition, so there is no waiting
+  for a picture here: if it is not already in the browser's hands the pile is hidden for the
+  flight instead, which reads as an empty pile rather than a broken card. */
+  const shown = under ? new Image() : null
+  if (shown && under) shown.src = under
+  if (shown?.complete && shown.naturalWidth) target.setAttribute('src', under!)
   else target.style.visibility = 'hidden'
   const fly = document.createElement('div')
   fly.className = 'fly-card'

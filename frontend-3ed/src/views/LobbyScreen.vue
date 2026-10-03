@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import * as api from '@/api'
 import { img, isBroken, markBroken } from '@/assets'
+import Overlays from '@/game/Overlays.vue'
 import { expName } from '@/game/util'
 import NewTableForm from '@/lobby/NewTableForm.vue'
 import { catalog, loadCatalog, signOut, user } from '@/session'
@@ -177,4 +178,5 @@ onUnmounted(() => {
       </section>
     </template>
   </div>
+  <Teleport to="body"><Overlays /></Teleport>
 </template>

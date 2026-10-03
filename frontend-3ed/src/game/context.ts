@@ -572,3 +572,5 @@ export const useGame = () => {
   if (!ctx) throw new Error('useGame outside a table')
   return ctx
 }
+// for the few pieces that are shown in the lobby as well, where there is no table
+export const useGameOrNull = () => inject(key, null)

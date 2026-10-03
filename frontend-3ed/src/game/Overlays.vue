@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { cardImg, img, isBroken, markBroken } from '@/assets'
-import { useGame } from '@/game/context'
+import { useGameOrNull } from '@/game/context'
 import { banner, closeZoom, flashState, zoomState } from '@/game/overlays'
 import Tooltip from '@/game/Tooltip.vue'
 import { NEIGHBOURHOOD_KEY, deckTag } from '@/game/util'
 import type { CardId } from '@/types'
 
-const ctx = useGame()
+const ctx = useGameOrNull()
 const z = zoomState
 
 // capture, so escape closes the zoom instead of leaving the full-screen map
@@ -40,7 +40,7 @@ const cardShown = computed(() => {
 const browse = computed(() => {
   const v = z.value
   if (v?.kind !== 'browse') return null
-  const g = ctx.game.value
+  const g = ctx?.game.value
   if (!g) return null
   const cards: CardId[] = v.key.startsWith(NEIGHBOURHOOD_KEY)
     ? (g.decks.neighborhoods[v.key.slice(NEIGHBOURHOOD_KEY.length)] ?? [])
@@ -49,13 +49,13 @@ const browse = computed(() => {
 })
 function drawFromDeck(cid: CardId) {
   const b = browse.value
-  if (!b) return
+  if (!b || !ctx) return
   const iid = ctx.dbgIid()
   const tag = deckTag(b.key)
   closeZoom()
   void ctx.debugAction('DebugDrawCard', [iid, tag, cid])
 }
-const cardSrc = (cid: CardId) => cardImg(ctx.cardCode(cid))
+const cardSrc = (cid: CardId) => cardImg(ctx?.cardCode(cid) ?? String(cid))
 </script>
 
 <template>
@@ -99,16 +99,16 @@ const cardSrc = (cid: CardId) => cardImg(ctx.cardCode(cid))
           :key="`${cid}-${n}`"
           class="browse-card"
           :class="{ 'no-art': isBroken(cardSrc(cid)) }"
-          :title="`${ctx.cardNameRaw(cid) ?? `Card ${cid}`} — click to draw it`"
+          :title="`${ctx?.cardNameRaw(cid) ?? `Card ${cid}`} — click to draw it`"
           @click="drawFromDeck(cid)"
         >
           <img
             v-if="!isBroken(cardSrc(cid))"
             :src="cardSrc(cid)"
-            :alt="ctx.cardNameRaw(cid) ?? `Card ${cid}`"
+            :alt="ctx?.cardNameRaw(cid) ?? `Card ${cid}`"
             @error="markBroken(cardSrc(cid))"
           />
-          <span class="asset-name">{{ ctx.cardNameRaw(cid) ?? `Card ${cid}` }}</span><span class="browse-pos">{{ n + 1 }}</span>
+          <span class="asset-name">{{ ctx?.cardNameRaw(cid) ?? `Card ${cid}` }}</span><span class="browse-pos">{{ n + 1 }}</span>
         </figure>
         <em v-if="!browse.cards.length" class="waiting">This deck is empty.</em>
       </div>

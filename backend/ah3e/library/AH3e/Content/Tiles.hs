@@ -17,6 +17,7 @@ module AH3e.Content.Tiles (
   edgeSpaces,
   aroundFrom,
   cornerSeat,
+  CornerSeat (..),
   ringAround,
   buildMap,
   buildMapWith,
@@ -311,9 +312,27 @@ tile (Secrets of the Order card 135).
 cornerSeat
   :: [(NeighborhoodId, (Double, Double))]
   -> (SpaceId -> Maybe (Double, Double))
-  -> ((Double, Double), [SpaceId])
-cornerSeat ts spotOf = (seat, aroundFrom seat [(sid, spot sid) | sid <- faces])
+  -> CornerSeat
+cornerSeat ts spotOf =
+  CornerSeat
+    { spot = seat
+    , angle = laidAgainst
+    , faces = aroundFrom seat [(sid, spot sid) | sid <- faces]
+    }
  where
+  {- Which way round it is laid. A corner piece is a three-armed junction, and an arm has
+  to meet the tile it is laid against or the piece joins nothing. At an angle of zero its
+  arms point due left and a third of a turn either side of that, so bringing the first of
+  them onto the anchor is a half turn back from the anchor's own direction. Setup and card
+  135 then turn it a further whole number of thirds, which keeps every arm on a tile and
+  only changes which icon is on which.
+
+  This has to be worked out afresh at every corner: the direction of the tile it is laid
+  against turns by a sixth as the piece walks round, so a piece that keeps the angle it
+  was first laid at points its arms between the tiles instead of at them. -}
+  laidAgainst = case centres of
+    [] -> 0
+    (ax, ay) : _ -> let (sx, sy) = seat in atan2 (ay - sy) (ax - sx) * 180 / pi - 180
   centres = map snd ts
   start = meanOf [mid a b | (a, b) <- pairsOf centres]
   mid (x1, y1) (x2, y2) = ((x1 + x2) / 2, (y1 + y2) / 2)
@@ -370,6 +389,15 @@ ringAround here = aroundFrom here . filter (touching . snd)
  where
   touching (x, y) = let d = dist (x, y) in d > 1e-9 && d < 2 * (0.5 + streetLength)
   dist (x, y) = sqrt ((x - fst here) ** 2 + (y - snd here) ** 2)
+
+{- | Where a corner piece stands, which way round it is laid, and the spaces its edges
+meet, in the order its printed icons run round it.
+-}
+data CornerSeat = CornerSeat
+  { spot :: (Double, Double)
+  , angle :: Double
+  , faces :: [SpaceId]
+  }
 
 -- | How far apart two unconnected clusters of tiles are set out.
 clusterGap :: Double
@@ -494,10 +522,10 @@ buildMapOf nids streets pieces =
   the corner, which is where the centres of those hexes average out. -}
   cornerBorders c =
     [ (thresholdId c.thresholdType, sid, h)
-    | (sid, h) <- zipHazards c.hazards (snd (seatOf c))
+    | (sid, h) <- zipHazards c.hazards (seatOf c).faces
     ]
   seatOf c = cornerSeat [(nid, pos nid) | nid <- c.tiles] (\sid -> lookup sid spaceSpots)
-  cornerAt = fst . seatOf
+  cornerAt c = (seatOf c).spot
   mean [] = (0, 0)
   mean ps =
     ( sum (map fst ps) / fromIntegral (length ps)
@@ -509,8 +537,8 @@ buildMapOf nids streets pieces =
     , let (x1, y1) = pos t.from
           (x2, y2) = pos t.to
     ]
-      -- a corner piece stands in the junction itself, and no edge turns it
-      <> [ StreetPlacement (thresholdId c.thresholdType) x y (-90)
+      -- a corner piece stands in the junction itself, turned to face what it is laid against
+      <> [ StreetPlacement (thresholdId c.thresholdType) x y (seatOf c).angle
          | c <- corners
          , let (x, y) = cornerAt c
          ]

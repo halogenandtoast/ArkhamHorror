@@ -11,7 +11,7 @@ module AH3e.Engine.Setup (
 ) where
 
 import AH3e.Content
-import AH3e.Content.Tiles (aroundFrom, cornerSeat, ringAround, spaceIdFor)
+import AH3e.Content.Tiles (CornerSeat (..), aroundFrom, cornerSeat, ringAround, spaceIdFor)
 import AH3e.Engine.Monad
 import AH3e.Game
 import AH3e.Message
@@ -184,10 +184,11 @@ moveCornerTile piece around = do
       case nextCorner ring beside of
         Nothing -> logText "That piece has nowhere left to go"
         Just (a, b) -> do
-          let (seat, faces) =
+          let seat =
                 cornerSeat
                   [(nid, Map.findWithDefault hub nid (Map.fromList centres)) | nid <- [around, a, b]]
                   (`Map.lookup` spots)
+              faces = seat.faces
               turns = length faces
           k <- if turns > 1 then randomR (0, turns - 1) else pure 0
           let turned = [held !! ((j - k) `mod` max 1 (length held)) | j <- [0 .. turns - 1]]
@@ -196,8 +197,14 @@ moveCornerTile piece around = do
           for_ (zip faces turned) \(o, h) -> do
             #board . #borders . ix sid . at o ?= h
             #board . #borders . ix o . at sid ?= h
+          {- The piece is laid against the tile it walks around, so which way round it
+          goes is decided again at every corner; only the further turn is random. -}
           #board . #layout . #streets . traversed . filtered ((== sid) . (.space)) %= \p ->
-            p {x = fst seat, y = snd seat, angle = -90 + fromIntegral k * 360 / fromIntegral turns}
+            p
+              { x = fst seat.spot
+              , y = snd seat.spot
+              , angle = seat.angle + fromIntegral k * 360 / fromIntegral turns
+              }
           s <- use (#board . #spaces . at sid)
           names <- for [a, b] \nid -> pure (maybe (coerce nid) (.name) (Map.lookup nid board.neighborhoods))
           logText

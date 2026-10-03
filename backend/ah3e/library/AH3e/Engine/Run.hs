@@ -1731,15 +1731,18 @@ dispatch msg = case msg of
     (y : ys) -> if x == y then ys else y : deleteOne x ys
   canContinue ms = ms.remaining > 0 || ms.paidSteps < ms.maxPaidSteps
 
+{- | Every investigator from every box, whichever expansions are on the table: the
+chosen expansions pick the scenario and its content, not who may play it. A
+possession from a box that is not in play is minted rather than taken
+('GainNamedStarting').
+-}
 availableInvestigators :: GameM [InvestigatorDef]
 availableInvestigators = do
   used <- use #usedInvestigators
-  expansions <- use #expansions
   let usedNames = [d.name | iid <- used, Just d <- [investigatorDef iid]]
   pure
     [ d
     | d <- Map.elems investigatorDefs
-    , d.expansion `elem` expansions
     , d.id `notElem` used
     , d.name `notElem` usedNames
     ]

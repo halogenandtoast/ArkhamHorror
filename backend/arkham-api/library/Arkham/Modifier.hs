@@ -280,6 +280,14 @@ data ModifierType
   | CommitCost Cost
   | ConnectedToWhen LocationMatcher LocationMatcher
   | ForMovementConnectedToWhen LocationMatcher LocationMatcher
+  | {- | On the MOVER (investigator or enemy), not on a location: "while moving, treat
+    your location as if it were connected to ...". Connection queries read the start
+    location's modifiers, so a mover-scoped connection cannot be expressed as a
+    location modifier; the movement helpers inject this onto the mover's location for
+    the duration of the query, the way hunter movement already does for
+    'HunterConnectedTo'.
+    -}
+    MovesAsIfConnectedTo LocationMatcher
   | ControlledAssetsCannotReady
   | CountAllDoomInPlay
   | CountsAsInvestigatorForHunterEnemies
@@ -534,6 +542,16 @@ data ModifierType
   | WillCancelHorror Int
   | XPModifier Text Int
   | TreatFullyFloodedAsPartiallyFlooded
+  | {- | On an INVESTIGATOR: their location counts as unflooded however flooded it is.
+    What carries a boat's occupants over open water; the sibling of
+    'TreatFullyFloodedAsPartiallyFlooded', which a diving suit grants.
+    -}
+    TreatLocationAsUnflooded
+  | {- | On an INVESTIGATOR: where a card would have them "choose one", they resolve
+    every option instead (via 'chooseOneAtATimeM'). Only read by the cards whose
+    wording calls for it, so it does not leak into unrelated choices.
+    -}
+    MustResolveAllOptions
   | UIModifier UIModifier
   | BecomeHomunculusWhenDefeated
   | BecomeInvestigator InvestigatorId

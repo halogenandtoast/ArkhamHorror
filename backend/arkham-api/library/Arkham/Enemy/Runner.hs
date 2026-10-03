@@ -275,7 +275,9 @@ getPaths a destinations =
     Just loc -> do
       mods <- getModifiers a
       let locationMatcherModifier = if CanEnterEmptySpace `elem` mods then IncludeEmptySpace else id
-      let additionalConnections = [ConnectedToWhen (LocationWithId loc) (LocationWithId lid') | HunterConnectedTo lid' <- mods]
+      let additionalConnections =
+            [ConnectedToWhen (LocationWithId loc) (LocationWithId lid') | HunterConnectedTo lid' <- mods]
+              <> [ConnectedToWhen (LocationWithId loc) m | MovesAsIfConnectedTo m <- mods]
 
       pathIds' <- withModifiers loc (toModifiers a additionalConnections) do
         concatForM destinations
@@ -303,7 +305,9 @@ selectWithEnemyConnections a matcher =
     Nothing -> select matcher
     Just loc -> do
       mods <- getModifiers a
-      let additionalConnections = [ConnectedToWhen (LocationWithId loc) (LocationWithId lid') | HunterConnectedTo lid' <- mods]
+      let additionalConnections =
+            [ConnectedToWhen (LocationWithId loc) (LocationWithId lid') | HunterConnectedTo lid' <- mods]
+              <> [ConnectedToWhen (LocationWithId loc) m | MovesAsIfConnectedTo m <- mods]
       withModifiers loc (toModifiers a additionalConnections) $ select matcher
 
 getActualAvailablePrey :: HasGame m => EnemyAttrs -> m [InvestigatorId]
@@ -1079,7 +1083,9 @@ instance RunMessage EnemyAttrs where
               DuringEnemyPhaseMustMoveToward (LocationTarget lid) -> Just lid
               _ -> Nothing
             forcedTargetLocation = firstJust matchForcedTargetLocation mods
-            additionalConnections = [ConnectedToWhen (LocationWithId loc) (LocationWithId lid') | HunterConnectedTo lid' <- mods]
+            additionalConnections =
+              [ConnectedToWhen (LocationWithId loc) (LocationWithId lid') | HunterConnectedTo lid' <- mods]
+                <> [ConnectedToWhen (LocationWithId loc) m | MovesAsIfConnectedTo m <- mods]
 
           enemiesAsInvestigatorLocations <-
             withModifiers loc (toModifiers a additionalConnections)

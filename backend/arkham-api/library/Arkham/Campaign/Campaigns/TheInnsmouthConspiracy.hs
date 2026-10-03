@@ -1,4 +1,4 @@
-module Arkham.Campaign.Campaigns.TheInnsmouthConspiracy (theInnsmouthConspiracy) where
+module Arkham.Campaign.Campaigns.TheInnsmouthConspiracy (theInnsmouthConspiracy, TheInnsmouthConspiracy (..)) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Campaigns.TheInnsmouthConspiracy.Achievements (

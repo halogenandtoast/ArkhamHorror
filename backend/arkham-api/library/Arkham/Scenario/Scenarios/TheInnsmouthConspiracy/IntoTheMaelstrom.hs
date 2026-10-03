@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom (intoTheMaelstrom) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom (IntoTheMaelstrom (..), intoTheMaelstrom) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Agendas

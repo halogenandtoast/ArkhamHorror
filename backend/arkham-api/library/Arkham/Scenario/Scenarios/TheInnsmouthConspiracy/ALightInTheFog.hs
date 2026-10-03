@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.ALightInTheFog (aLightInTheFog) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.ALightInTheFog (ALightInTheFog (..), aLightInTheFog) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Acts
 import Arkham.Act.Types (Field(ActKeys))

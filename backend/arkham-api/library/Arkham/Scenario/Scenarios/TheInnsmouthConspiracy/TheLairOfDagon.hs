@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon (theLairOfDagon) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon (TheLairOfDagon (..), theLairOfDagon) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Agendas

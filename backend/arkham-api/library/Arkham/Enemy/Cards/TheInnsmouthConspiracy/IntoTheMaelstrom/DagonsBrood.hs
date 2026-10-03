@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.TheInnsmouthConspiracy.IntoTheMaelstrom.DagonsBrood (d
 import Arkham.Ability
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier)
 import Arkham.I18n
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Locations
 import Arkham.Matcher
@@ -44,7 +45,11 @@ instance RunMessage DagonsBrood where
         Just dagon -> placeDoom (attrs.ability 1) dagon 1
         Nothing -> do
           dagon <- selectJust $ enemyIs Cards.dagonAwakenedAndEnragedIntoTheMaelstrom
-          chooseOneM iid $ scenarioI18n $ scope "dagonsBrood" do
+          -- Presence of the Father/Mother turns this into "choose all possible
+          -- options", which is one-at-a-time rather than one.
+          resolveAll <- hasModifier iid MustResolveAllOptions
+          let chooser = if resolveAll then chooseOneAtATimeM else chooseOneM
+          chooser iid $ scenarioI18n $ scope "dagonsBrood" do
             labeled "placeDoomOnDagon" $ placeDoom (attrs.ability 1) dagon 1
             labeled "dagonAttacksYou" $ initiateEnemyAttack dagon (attrs.ability 1) iid
       pure e

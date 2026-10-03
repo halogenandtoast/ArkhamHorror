@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 import type { Scenario, Campaign } from '@/arkham/data'
-import { imgsrc } from '@/arkham/helpers'
+import { imgsrc, campaignBox, scenarioBox } from '@/arkham/helpers'
 
 type GameMode = 'Campaign' | 'SideStory'
 type CampaignGroup = 'chapter1' | 'chapter2' | 'homebrew'
@@ -51,9 +51,7 @@ const homebrewSideStories = computed(() =>
 const missingBoxArt = ref<Record<string, boolean>>({})
 
 function campaignBoxSrc(campaign: Campaign) {
-  if (!campaign.homebrew) return imgsrc(`boxes/${campaign.id}.jpg`)
-  const homebrewId = campaign.id.replace(/^:/, '')
-  return imgsrc(`homebrew/${homebrewId}/boxes/${homebrewId}.jpg`)
+  return campaignBox(campaign.id)
 }
 
 const chapterGroups = computed(() => [
@@ -185,7 +183,7 @@ function selectGameMode(mode: 'Campaign' | 'SideStory') {
           <img
             class="scenario-box"
             :class="{ 'selected-scenario': selectedScenario == s.id }"
-            :src="imgsrc(`boxes/${s.id}.jpg`)"
+            :src="scenarioBox(s.id)"
             @click="selectedScenario = s.id; emits('go')"
           />
         </div>

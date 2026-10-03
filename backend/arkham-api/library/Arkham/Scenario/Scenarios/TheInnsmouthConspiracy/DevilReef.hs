@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.DevilReef (devilReef) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.DevilReef (DevilReef (..), devilReef) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Acts
 import Arkham.Act.Types (Field (..))

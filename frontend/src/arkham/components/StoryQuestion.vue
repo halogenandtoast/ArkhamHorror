@@ -5,7 +5,7 @@ import { handleEmbeddedI18n } from '@/arkham/i18n';
 import type { Game } from '@/arkham/types/Game';
 import { QuestionType, type Question } from '@/arkham/types/Question';
 import { Done, CardLabel, ChaosTokenLabel, Label, MessageType, PortraitLabel, TooltipLabel, ScenarioLabel, Info, type Message } from '@/arkham/types/Message';
-import { imgsrc, formatContent } from '@/arkham/helpers';
+import { imgsrc, formatContent, scenarioBox } from '@/arkham/helpers';
 import { cardArt, cardImage, investigatorPortrait } from '@/arkham/cardImages';
 import { chaosTokenImage } from '@/arkham/types/ChaosToken';
 import StoryEntry from '@/arkham/components/StoryEntry.vue';
@@ -161,7 +161,7 @@ const scenarioChoices = computed<[ScenarioLabel, number][]>(() => {
 })
 
 const scenarioBoxImage = (scenarioId: string) => {
-  return imgsrc(`boxes/${scenarioId}.jpg`)
+  return scenarioBox(scenarioId)
 }
 
 const isEmbarkQuestion = (q: Question): q is Question & { tag: QuestionType.PICK_CAMPAIGN_SPECIFIC; contents: ['embark', MapData] } =>

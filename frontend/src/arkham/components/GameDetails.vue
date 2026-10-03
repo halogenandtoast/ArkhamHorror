@@ -4,7 +4,7 @@ import type { Game } from '@/arkham/types/Game';
 import type { Difficulty } from '@/arkham/types/Difficulty';
 import type { Campaign } from '@/arkham/types/Campaign';
 import type { Scenario } from '@/arkham/types/Scenario';
-import { imgsrc } from '@/arkham/helpers';
+import { imgsrc, campaignBox, scenarioBox } from '@/arkham/helpers';
 
 export interface Props {
   game: Game
@@ -28,11 +28,11 @@ const difficulty = computed<Difficulty>(() => {
 
 const box = computed(() => {
   if (campaign.value) {
-    return `url('${imgsrc(`boxes/${campaign.value.id}.jpg`)}')`
+    return `url('${campaignBox(campaign.value.id)}')`
   }
 
   if (scenario.value) {
-    return `url('${imgsrc(`boxes/${scenario.value.id.replace(/^c/, '')}.jpg`)}')`
+    return `url('${scenarioBox(scenario.value.id)}')`
   }
 
   return null

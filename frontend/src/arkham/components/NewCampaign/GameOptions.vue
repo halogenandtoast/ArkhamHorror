@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 import { BugAntIcon } from '@heroicons/vue/20/solid'
-import { imgsrc } from '@/arkham/helpers'
+import { imgsrc, campaignBox, scenarioBox } from '@/arkham/helpers'
 import { chaosTokenImage, compareTokenFaces, type TokenFace } from '@/arkham/types/ChaosToken'
 import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
@@ -178,11 +178,7 @@ const selectionBoxSrc = computed(() => {
   const part = selectedSideStoryPart.value
   const id = part ? part.box ?? part.id : selectionSummary.value.id
 
-  if (id.startsWith(":")) {
-    const homebrew = id.slice(1,)
-    return imgsrc(`homebrew/${homebrew}/boxes/${homebrew}.jpg`)
-  }
-  return imgsrc(`boxes/${id}.jpg`)
+  return campaignBox(id)
 })
 
 const selectionKind = computed(() => selectionSummary.value?.kind ?? null)
@@ -559,7 +555,7 @@ function setOptEnabled(o: RecommendedToggle, enabled: boolean) {
                 :class="{ selected: selectedScenario == s.id }"
                 @click="selectedScenario = s.id"
               >
-                <img :src="imgsrc(`boxes/${s.id}.jpg`)" :alt="s.name" />
+                <img :src="scenarioBox(s.id)" :alt="s.name" />
               </button>
             </div>
           </div>

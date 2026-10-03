@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.InTooDeep (inTooDeep) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.InTooDeep (InTooDeep (..), inTooDeep) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Agendas

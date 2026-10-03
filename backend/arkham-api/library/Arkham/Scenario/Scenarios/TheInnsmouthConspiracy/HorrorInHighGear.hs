@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear (horrorInHighGear) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear (HorrorInHighGear (..), horrorInHighGear) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Agendas

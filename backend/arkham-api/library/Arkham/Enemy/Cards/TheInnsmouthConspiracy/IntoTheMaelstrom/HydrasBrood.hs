@@ -3,6 +3,7 @@ module Arkham.Enemy.Cards.TheInnsmouthConspiracy.IntoTheMaelstrom.HydrasBrood (h
 import Arkham.Ability
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Cards
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Modifiers (ModifierType (..), hasModifier)
 import Arkham.I18n
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Locations
 import Arkham.Matcher
@@ -39,7 +40,11 @@ instance RunMessage HydrasBrood where
         Just hydra -> placeDoom (attrs.ability 1) hydra 1
         Nothing -> do
           hydra <- selectJust $ enemyIs Cards.hydraAwakenedAndEnraged
-          chooseOneM iid $ scenarioI18n $ scope "hydrasBrood" do
+          -- Presence of the Father/Mother turns this into "choose all possible
+          -- options", which is one-at-a-time rather than one.
+          resolveAll <- hasModifier iid MustResolveAllOptions
+          let chooser = if resolveAll then chooseOneAtATimeM else chooseOneM
+          chooser iid $ scenarioI18n $ scope "hydrasBrood" do
             labeled "placeDoomOnHydra" $ placeDoom (attrs.ability 1) hydra 1
             labeled "hydraAttacksYou" $ initiateEnemyAttack hydra (attrs.ability 1) iid
       pure e

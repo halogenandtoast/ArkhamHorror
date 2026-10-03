@@ -1,4 +1,4 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper (theVanishingOfElinaHarper) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper (TheVanishingOfElinaHarper (..), theVanishingOfElinaHarper) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Agendas

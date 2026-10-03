@@ -64,7 +64,59 @@ data ScenarioBuilderState = ScenarioBuilderState
   { attrs :: ScenarioAttrs
   , otherCards :: [Card]
   , isReturnTo :: Bool
+  , overrides :: SetupOverrides
   }
+
+{- | Deltas a wrapping scenario declares before running an original setup block, so that
+block can stay a verbatim copy of the one it wraps. An unofficial "Return to" box reads
+like its printed scenario card: @replaceSet AgentsOfCthulhu StalkersOfCthulhu@,
+@substitute Acts.thePit Acts.thePitV2@. Empty for every ordinary scenario, which is
+every scenario that never calls one of these.
+-}
+data SetupOverrides = SetupOverrides
+  { overriddenSets :: Map Set.EncounterSet (Maybe Set.EncounterSet)
+  -- ^ 'Nothing' means the gather is skipped entirely.
+  , overriddenCards :: Map CardCode CardDef
+  }
+
+noSetupOverrides :: SetupOverrides
+noSetupOverrides = SetupOverrides mempty mempty
+
+overrideSetsL :: Lens' SetupOverrides (Map Set.EncounterSet (Maybe Set.EncounterSet))
+overrideSetsL = lens (.overriddenSets) \m x -> m {overriddenSets = x}
+
+overrideCardsL :: Lens' SetupOverrides (Map CardCode CardDef)
+overrideCardsL = lens (.overriddenCards) \m x -> m {overriddenCards = x}
+
+overridesL :: Lens' ScenarioBuilderState SetupOverrides
+overridesL = lens (.overrides) \m x -> m {overrides = x}
+
+-- | Gather @new@ wherever the wrapped block gathers @old@.
+replaceSet :: Monad m => Set.EncounterSet -> Set.EncounterSet -> ScenarioBuilderT m ()
+replaceSet old new = overridesL . overrideSetsL . at old .= Just (Just new)
+
+-- | Skip the wrapped block's gather of this set.
+ignoreSet :: Monad m => Set.EncounterSet -> ScenarioBuilderT m ()
+ignoreSet old = overridesL . overrideSetsL . at old .= Just Nothing
+
+{- | Use @new@ wherever the wrapped block names @old@ -- the "replace the X act card with
+the new version from the Return set" instruction. A total substitution: for a partial
+swap (one of each copy) write the cards out in your own block instead.
+-}
+substitute :: Monad m => CardDef -> CardDef -> ScenarioBuilderT m ()
+substitute old new = overridesL . overrideCardsL . at old.cardCode .= Just new
+
+-- | Resolve a gather through 'replaceSet' or 'ignoreSet'.
+resolveSet
+  :: Monad m => Set.EncounterSet -> ScenarioBuilderT m (Maybe Set.EncounterSet)
+resolveSet s = use (overridesL . overrideSetsL . at s) <&> fromMaybe (Just s)
+
+-- | Resolve a card def through 'substitute'.
+resolveDef :: Monad m => CardDef -> ScenarioBuilderT m CardDef
+resolveDef def = use (overridesL . overrideCardsL . at def.cardCode) <&> fromMaybe def
+
+resolveDefs :: Monad m => [CardDef] -> ScenarioBuilderT m [CardDef]
+resolveDefs = traverse resolveDef
 
 attrsL :: Lens' ScenarioBuilderState ScenarioAttrs
 attrsL = lens (.attrs) \m x -> m {attrs = x}
@@ -114,7 +166,7 @@ runScenarioSetup f attrs body =
     . (.attrs)
     <$> execStateT
       (clearCards >> body.unScenarioBuilderT >> shuffleEncounterDeck)
-      (ScenarioBuilderState (attrs & campaignStepL .~ Nothing) [] False)
+      (ScenarioBuilderState (attrs & campaignStepL .~ Nothing) [] False noSetupOverrides)
 
 shuffleEncounterDeck :: (HasGame m, MonadRandom m, MonadState ScenarioBuilderState m) => m ()
 shuffleEncounterDeck = do
@@ -134,26 +186,40 @@ clearCards = do
   attrsL . victoryDisplayL .= []
 
 gather :: CardGen m => Set.EncounterSet -> ScenarioBuilderT m ()
-gather encounterSet = do
+gather = withResolvedSet \encounterSet -> do
   (other, cards) <- partition isDoubleSided <$> gatherEncounterSet encounterSet
   attrsL . encounterDeckL %= (Deck cards <>)
   otherCardsL %= (map toCard other <>)
 
+{- | Run a gather against the set 'replaceSet' names in its place, or not at all if
+'ignoreSet' dropped it. Plain for every scenario that declares no overrides.
+-}
+withResolvedSet
+  :: Monad m
+  => (Set.EncounterSet -> ScenarioBuilderT m ())
+  -> Set.EncounterSet
+  -> ScenarioBuilderT m ()
+withResolvedSet f encounterSet = resolveSet encounterSet >>= traverse_ f
+
 gatherJust :: CardGen m => Set.EncounterSet -> [CardDef] -> ScenarioBuilderT m ()
-gatherJust encounterSet defs = do
-  cards <-
-    filter ((`cardMatch` mapOneOf cardDefIs defs) . toCard)
-      . excludeDoubleSided
-      <$> gatherEncounterSet encounterSet
-  attrsL . encounterDeckL %= (Deck cards <>)
+gatherJust encounterSet defs = withResolvedSet go encounterSet
+ where
+  go s = do
+    cards <-
+      filter ((`cardMatch` mapOneOf cardDefIs defs) . toCard)
+        . excludeDoubleSided
+        <$> gatherEncounterSet s
+    attrsL . encounterDeckL %= (Deck cards <>)
 
 gatherJustMatching :: ReverseQueue m => Set.EncounterSet -> CardMatcher -> ScenarioBuilderT m ()
-gatherJustMatching encounterSet matcher = do
-  gather encounterSet
-  removeCards =<< amongGathered (CardFromEncounterSet encounterSet <> not_ matcher)
+gatherJustMatching encounterSet matcher = withResolvedSet go encounterSet
+ where
+  go s = do
+    gather s
+    removeCards =<< amongGathered (CardFromEncounterSet s <> not_ matcher)
 
 gatherAndSetAside :: ReverseQueue m => Set.EncounterSet -> ScenarioBuilderT m ()
-gatherAndSetAside encounterSet = do
+gatherAndSetAside = withResolvedSet \encounterSet -> do
   cards <- map toCard <$> gatherEncounterSet encounterSet
   push $ SetAsideCards cards
 
@@ -521,25 +587,25 @@ addAdditionalReferences codes = attrsL . additionalReferencesL %= (<> codes)
 
 setActDeck :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 setActDeck defs = do
-  cards <- genCards defs
+  cards <- genCards =<< resolveDefs defs
   attrsL . actStackL %= insertMap 1 cards
   push SetActDeck
 
 setAgendaDeck :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 setAgendaDeck defs = do
-  cards <- genCards defs
+  cards <- genCards =<< resolveDefs defs
   attrsL . agendaStackL %= insertMap 1 cards
   push SetAgendaDeck
 
 setAgendaDeckN :: ReverseQueue m => Int -> [CardDef] -> ScenarioBuilderT m ()
 setAgendaDeckN n defs = do
-  cards <- genCards defs
+  cards <- genCards =<< resolveDefs defs
   attrsL . agendaStackL %= insertMap n cards
   push SetAgendaDeck
 
 setActDeckN :: ReverseQueue m => Int -> [CardDef] -> ScenarioBuilderT m ()
 setActDeckN n defs = do
-  cards <- genCards defs
+  cards <- genCards =<< resolveDefs defs
   attrsL . actStackL %= insertMap n cards
   push SetActDeck
 

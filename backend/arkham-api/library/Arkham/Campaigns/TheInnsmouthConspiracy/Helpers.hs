@@ -24,7 +24,9 @@ import Arkham.Message (
  )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Log
-import Arkham.Modifier (ModifierType (TreatFullyFloodedAsPartiallyFlooded))
+import Arkham.Modifier (
+  ModifierType (TreatFullyFloodedAsPartiallyFlooded, TreatLocationAsUnflooded),
+ )
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types
@@ -72,17 +74,21 @@ getFloodLevel
   :: (HasGame m, AsId location, IdOf location ~ LocationId) => location -> m FloodLevel
 getFloodLevel = fieldWithDefault Unflooded LocationFloodLevel . asId
 
+{- | How flooded an investigator's location counts as *for them*. Both ways of ignoring
+the water are investigator modifiers rather than special cases here: a boat grants
+'TreatLocationAsUnflooded' (the Fishing Vessel), a diving suit grants
+'TreatFullyFloodedAsPartiallyFlooded'.
+-}
 getFloodLevelFor :: HasGame m => InvestigatorId -> m FloodLevel
 getFloodLevelFor iid = do
-  inFishingVessel <- matches iid $ InVehicleMatching $ assetIs Assets.fishingVessel
-  if inFishingVessel
+  modifiers <- getModifiers iid
+  if TreatLocationAsUnflooded `elem` modifiers
     then pure Unflooded
     else
       getLocationOf iid >>= \case
         Nothing -> pure Unflooded
         Just location -> do
           floodLevel <- getFloodLevel location
-          modifiers <- getModifiers iid
           pure
             $ if floodLevel == FullyFlooded && TreatFullyFloodedAsPartiallyFlooded `elem` modifiers
               then PartiallyFlooded

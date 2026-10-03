@@ -323,19 +323,47 @@ getCanMoveToMatchingLocations iid source matcher = do
   let includeEmpty = if CanEnterEmptySpace `elem` modifiers then IncludeEmptySpace else id
   filter (`elem` ls) <$> select (includeEmpty matcher)
 
+{- | The mover's own 'MovesAsIfConnectedTo' modifiers, rewritten as connections on the
+location it is standing on. A connection query reads the START location's modifiers, so
+a connection that only some movers have cannot live on the location; it is injected for
+the duration of the query instead. Hunter movement does the same thing for
+'HunterConnectedTo' (see 'Arkham.Enemy.Runner'). Empty for every mover that has none,
+and in that case the query runs untouched so the connection cache still applies.
+-}
+getMoverConnections
+  :: (HasGame m, Targetable mover)
+  => mover -> LocationId -> m [ModifierType]
+getMoverConnections mover lid = do
+  mods <- getModifiers mover
+  pure [ConnectedToWhen (Matcher.LocationWithId lid) m | MovesAsIfConnectedTo m <- mods]
+
 -- TODO: CACHE
 getConnectedMoveLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
-getConnectedMoveLocations iid source =
-  getCanMoveToMatchingLocations iid source
-    $ Matcher.ConnectedFrom ForMovement (Matcher.locationWithInvestigator iid)
+getConnectedMoveLocations iid source = do
+  let matcher = Matcher.ConnectedFrom ForMovement (Matcher.locationWithInvestigator iid)
+  getLocationOf iid >>= \case
+    Nothing -> getCanMoveToMatchingLocations iid source matcher
+    Just lid ->
+      getMoverConnections iid lid >>= \case
+        [] -> getCanMoveToMatchingLocations iid source matcher
+        extra ->
+          withModifiers lid (toModifiers iid extra)
+            $ getCanMoveToMatchingLocations iid source matcher
 
 -- TODO: CACHE
 getAccessibleLocations
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m [LocationId]
-getAccessibleLocations iid source =
-  getCanMoveToMatchingLocations iid source
-    $ Matcher.AccessibleFrom ForMovement (Matcher.locationWithInvestigator iid)
+getAccessibleLocations iid source = do
+  let matcher = Matcher.AccessibleFrom ForMovement (Matcher.locationWithInvestigator iid)
+  getLocationOf iid >>= \case
+    Nothing -> getCanMoveToMatchingLocations iid source matcher
+    Just lid ->
+      getMoverConnections iid lid >>= \case
+        [] -> getCanMoveToMatchingLocations iid source matcher
+        extra ->
+          withModifiers lid (toModifiers iid extra)
+            $ getCanMoveToMatchingLocations iid source matcher
 
 getCanLeaveCurrentLocation
   :: (Sourceable source, HasGame m) => InvestigatorId -> source -> m Bool

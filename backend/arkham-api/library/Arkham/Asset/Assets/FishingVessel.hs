@@ -4,14 +4,23 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Helpers.Location
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Vehicle
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Ocean))
 
 newtype FishingVessel = FishingVessel AssetAttrs
-  deriving anyclass (IsAsset, HasModifiersFor)
+  deriving anyclass IsAsset
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+
+{- | "While you are in this vehicle, treat your location as if it were unflooded."
+Granted as a modifier so that 'getFloodLevelFor' needs no knowledge of this card -- the
+same way a diving suit grants 'TreatFullyFloodedAsPartiallyFlooded'.
+-}
+instance HasModifiersFor FishingVessel where
+  getModifiersFor (FishingVessel a) =
+    modifySelect a (InVehicleMatching $ AssetWithId a.id) [TreatLocationAsUnflooded]
 
 fishingVessel :: AssetCard FishingVessel
 fishingVessel = asset FishingVessel Cards.fishingVessel

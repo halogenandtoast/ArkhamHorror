@@ -7,6 +7,7 @@ module AH3e.Engine.Setup (
   setupScenario,
   buildBoard,
   moveCornerTile,
+  turnThresholdTile,
 ) where
 
 import AH3e.Content
@@ -117,38 +118,43 @@ another.
 turnThresholdTiles :: GameM ()
 turnThresholdTiles = do
   board <- use #board
+  let isThresholdSpace s = case s.kind of ThresholdSpace _ -> True; _ -> False
+  traverse_ turnThresholdTile [s.id | s <- Map.elems board.spaces, isThresholdSpace s]
+
+{- | Turns one threshold tile, which is what both setup and a tile laid down part way
+through the game need (Secrets of the Order card 153 brings a derelict portal with it).
+-}
+turnThresholdTile :: SpaceId -> GameM ()
+turnThresholdTile sid = do
+  board <- use #board
   let spots =
         Map.fromList
           $ [(a.space, (a.x, a.y)) | a <- board.layout.anchors]
           <> [(p.space, (p.x, p.y)) | p <- board.layout.streets]
-      isThresholdSpace sid = case Map.lookup sid board.spaces of
-        Just s -> case s.kind of ThresholdSpace _ -> True; _ -> False
-        Nothing -> False
-  for_ [s.id | s <- Map.elems board.spaces, isThresholdSpace s.id] \sid -> do
-    edges <- uses (#board . #borders . at sid . non mempty) Map.toList
-    let here = Map.findWithDefault (0, 0) sid spots
-        -- every border along one side of the tile carries that side's icon
-        bySide = Map.toList (Map.fromListWith (<>) [(spaceNeighborhood o board, [(o, h)]) | (o, h) <- edges])
-        placed side = mean (mapMaybe ((`Map.lookup` spots) . fst) side)
-        sides = aroundFrom here [(side, placed side) | (_, side) <- bySide]
-        icons = [listToMaybe (mapMaybe snd side) | side <- sides]
-        turns = length sides
-    k <- if turns > 1 then randomR (0, turns - 1) else pure 0
-    let turned = [icons !! ((j - k) `mod` turns) | j <- [0 .. turns - 1]]
-    for_ (zip sides turned) \(side, h) ->
-      for_ (map fst side) \other -> do
-        #board . #borders . ix sid . at other ?= h
-        #board . #borders . ix other . at sid ?= h
-    -- the picture turns with them
-    #board
-      . #layout
-      . #streets
-      . traversed
-      . filtered ((== sid) . (.space))
-      . #angle
-      += fromIntegral k
-      * 360
-      / fromIntegral turns
+  edges <- uses (#board . #borders . at sid . non mempty) Map.toList
+  let here = Map.findWithDefault (0, 0) sid spots
+      -- every border along one side of the tile carries that side's icon
+      bySide = Map.toList (Map.fromListWith (<>) [(spaceNeighborhood o board, [(o, h)]) | (o, h) <- edges])
+      placed side = mean (mapMaybe ((`Map.lookup` spots) . fst) side)
+      sides = aroundFrom here [(side, placed side) | (_, side) <- bySide]
+      icons = [listToMaybe (mapMaybe snd side) | side <- sides]
+      turns = length sides
+  k <- if turns > 1 then randomR (0, turns - 1) else pure 0
+  let turned = [icons !! ((j - k) `mod` turns) | j <- [0 .. turns - 1]]
+  for_ (zip sides turned) \(side, h) ->
+    for_ (map fst side) \other -> do
+      #board . #borders . ix sid . at other ?= h
+      #board . #borders . ix other . at sid ?= h
+  -- the picture turns with them
+  #board
+    . #layout
+    . #streets
+    . traversed
+    . filtered ((== sid) . (.space))
+    . #angle
+    += fromIntegral k
+    * 360
+    / fromIntegral turns
 
 {- | A corner piece walks round a tile to the next of its corners, clockwise.
 

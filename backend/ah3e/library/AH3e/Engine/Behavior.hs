@@ -554,6 +554,15 @@ data CodexBehavior = CodexBehavior
   -- ^ what a card does about a monster reaching a space it had an interest in
   , blockedSpaces :: CodexEntry -> GameM [SpaceId]
   , spaceEncounter :: CodexEntry -> SpaceId -> Maybe Effect
+  , reckoningLast :: Bool
+  {- ^ this card's reckoning is held back until every other one has resolved, for a
+  card printed "resolve this effect after all other reckoning effects" (Control the
+  Gate counts the pacts only once the pacts themselves have had their say).
+  -}
+  , afterInvestigatorDefeated :: CodexEntry -> InvestigatorId -> GameM [Message]
+  {- ^ what the card does about an investigator going down. Their sheet is already
+  put away by now, so a card that wants them kept has to say where they go.
+  -}
   , atEndOfMonsterPhase :: CodexEntry -> GameM [Message]
   {- ^ what the card exacts as the monsters finish, before the encounter phase. Not
   offered but done, for a card that states it flatly (the bystanders the gugs caught).
@@ -595,6 +604,8 @@ defaultCodexBehavior =
     , afterMonsterArrives = \_ _ _ -> pure []
     , blockedSpaces = \_ -> pure []
     , spaceEncounter = \_ _ -> Nothing
+    , reckoningLast = False
+    , afterInvestigatorDefeated = \_ _ -> pure []
     , atEndOfMonsterPhase = \_ -> pure []
     , preyReplacement = \_ _ -> pure Nothing
     , headlineReplacement = \_ _ _ -> pure Nothing

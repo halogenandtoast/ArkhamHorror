@@ -7,7 +7,13 @@ import AH3e.Engine.Helpers
 import AH3e.Engine.Hooks
 import AH3e.Engine.Monad
 import AH3e.Engine.Query
-import AH3e.Engine.Setup (availableScenarios, buildBoard, moveCornerTile, setupScenario)
+import AH3e.Engine.Setup (
+  availableScenarios,
+  buildBoard,
+  moveCornerTile,
+  setupScenario,
+  turnThresholdTile,
+ )
 import AH3e.Engine.Test
 import AH3e.Game
 import AH3e.Message
@@ -894,7 +900,10 @@ dispatch msg = case msg of
     h <- investigatorHealth iid
     s <- investigatorSanity iid
     when (isPlaying i && (i.damage >= h || i.horror >= s)) $ push (DefeatInvestigator iid)
-  DefeatInvestigator iid -> removeInvestigator iid Defeated True
+  DefeatInvestigator iid -> do
+    removeInvestigator iid Defeated True
+    -- a card may want them kept rather than put away (Scraping at the Door)
+    codexInvestigatorDefeated iid >>= pushAll
   DevourInvestigator iid -> removeInvestigator iid Devoured True
   RetireInvestigator iid -> removeInvestigator iid Retired False
   RecoverInvestigator iid hp sp -> do
@@ -1163,6 +1172,16 @@ dispatch msg = case msg of
                  , not (a.space `Set.member` here)
                  ]
              )
+        {- A threshold piece laid down now has its icons printed on it the same way one
+        laid at setup does, so it is turned the same way too; otherwise the board shows
+        one hazard while the engine charges another. -}
+        let laid =
+              [ s.id
+              | s <- Map.elems added.spaces
+              , not (s.id `Set.member` here)
+              , case s.kind of ThresholdSpace _ -> True; _ -> False
+              ]
+        traverse_ turnThresholdTile laid
         for_ (Map.elems (Map.restrictKeys added.neighborhoods fresh)) \n ->
           logText (n.name <> " is added to the board")
       _ -> logText "Nothing on the board to add that map against"
@@ -1360,7 +1379,8 @@ dispatch msg = case msg of
     case matches of
       (cid : _) -> pushAll [GainAsset iid cid, AfterGainedFromDeck iid cid]
       [] -> logText ("Special card unavailable: " <> name)
-  GainConditionMsg iid name -> gainCondition iid name
+  GainConditionMsg iid name -> gainCondition False iid name
+  GainAnotherCondition iid name -> gainCondition True iid name
   FocusSkill iid skill evenIfExceeds -> do
     i <- getInvestigator iid
     most <- focusPerSkillFor iid
@@ -1597,10 +1617,13 @@ dispatch msg = case msg of
   ResolveReckonings [] -> pure ()
   -- askLeader, not chooseGroup: the last reckoning is asked for too, since the
   -- prompt is what points it out on the table
-  ResolveReckonings ss ->
+  ResolveReckonings ss -> do
+    -- a card may ask to go last, which the leader's free choice of order would break
+    late <- filterM isLateReckoning ss
+    let offer = case filter (`notElem` late) ss of [] -> ss; early -> early
     askLeader
       "Choose the next reckoning to resolve"
-      [Choice (SourceLabel s) [ResolveReckoning s, ResolveReckonings (filter (/= s) ss)] | s <- ss]
+      [Choice (SourceLabel s) [ResolveReckoning s, ResolveReckonings (filter (/= s) ss)] | s <- offer]
   ResolveReckoning src -> do
     held <- uses #sheetTokens (Map.member (reckoningHeldKey src))
     offers <- if held then pure [] else reckoningOffers src
@@ -2025,10 +2048,13 @@ discardAsset cid = do
       MonsterCard _ -> #decks . #monster %= (cid :)
       _ -> #decks . #removed %= (cid :)
 
--- 415.4, 415.6
-gainCondition :: InvestigatorId -> ConditionName -> GameM ()
-gainCondition iid name = do
-  already <- hasCondition iid name
+{- | Hands over a condition by name (415.4, 415.6). @another@ is for a card that says to
+take one although its holder has one already ("keep all of them"), which the rules
+otherwise refuse.
+-}
+gainCondition :: Bool -> InvestigatorId -> ConditionName -> GameM ()
+gainCondition another iid name = do
+  already <- if another then pure False else hasCondition iid name
   banned <- hasAssetWith iid (elem name . (.bansConditions))
   bannedBySheet <- pure (name `elem` (investigatorBehavior iid).bansConditions)
   -- an investigator still joining is being set up, and may start with a condition

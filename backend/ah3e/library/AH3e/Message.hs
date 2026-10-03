@@ -220,6 +220,10 @@ data Message
     RevealMarkerAt SpaceId
   | -- | lay the top of the ally deck facedown in that space as a bystander
     PlaceBystander SpaceId
+  | {- | a condition taken although one of that name is already held, for a card
+    printed "even if you already have one" (The Key and the Gate's dark pacts)
+    -}
+    GainAnotherCondition InvestigatorId ConditionName
   | -- | an investigator turns a bystander face up and keeps the ally card
     TakeBystander InvestigatorId CardId
   | -- | the monsters reached that bystander first

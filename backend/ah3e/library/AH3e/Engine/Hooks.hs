@@ -651,6 +651,20 @@ codexQuarrySpaces = do
   codex <- use #codex
   concat <$> for codex \e -> (codexBehavior e.number).quarrySpaces e
 
+{- | Whether that reckoning waits for the others. A card may ask to resolve after every
+other reckoning has, which the leader's free choice of order would otherwise break.
+-}
+isLateReckoning :: Source -> GameM Bool
+isLateReckoning = \case
+  SourceCodex n -> pure (codexBehavior n).reckoningLast
+  _ -> pure False
+
+-- | What the codex does about an investigator being defeated, in codex order.
+codexInvestigatorDefeated :: InvestigatorId -> GameM [Message]
+codexInvestigatorDefeated iid = do
+  codex <- use #codex
+  concat <$> for codex \e -> (codexBehavior e.number).afterInvestigatorDefeated e iid
+
 -- | What the codex exacts as the monster phase closes, in codex order.
 codexEndOfMonsterPhase :: GameM [Message]
 codexEndOfMonsterPhase = do

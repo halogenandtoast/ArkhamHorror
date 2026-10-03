@@ -718,6 +718,10 @@
       "resolution6": {
         "title": "Resolution 6",
         "body": "<div class='resolution'><p>_Resolution 6_: “We didn’t need to involve him. He’s much better in a lab than in the field anyway.” Dr. Marquez leads you outside. “Something followed me down from the ridge today. Something big and hungry. I tried to take shelter at the old Atwood Farm, but it was boarded up. Windows and doors. It smelled something awful. I’m not even sure what I heard coming from inside,” she says soberly. When you ask her to explain, she shakes her head.</p><p>“This place definitely isn’t what it seems. I don’t know what the Vale folks are hiding in that old farmhouse, but I plan to find out.”</p><ul><li>Each investigator earns the bonus experience awarded during this prelude. Record each bonus experience earned under “Unspent Experience” in your Campaign Log, _but do not spend any of it until the end of the next scenario_.</li><li>The investigators must decide (choose one):<ul><li>*Follow Dr. Marquez’s lead out to the Atwood Farm.* What is the Vale hiding? Proceed to _The Longest Night_.</li><li>*Gather more information on Hemlock Isle’s unique ecosystem at night.* Check the “Areas Surveyed” section of your Campaign Log and choose a scenario that has not yet been checked off. _If you do, add 1 {'{'}skull{'}'} token, 1 {'{'}cultist{'}'} token, and 1 {'{'}elderThing{'}'} token to the chaos bag for the remainder of the campaign_.</li></ul></li></ul></div>"
+      },
+      "boonOfTheDance": {
+        "met": "<p class='basic'>_Boon of the Dance:_ these codex entries meet their Relationship Level requirement: {'{'}codex{'}'} {codices}.</p>",
+        "none": "<p class='basic'>_Boon of the Dance:_ no codex entry meets its Relationship Level requirement.</p>"
       }
     }
   },

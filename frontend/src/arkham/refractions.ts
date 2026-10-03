@@ -18,14 +18,18 @@ export const REFRACTION_CAMPAIGNS: Record<string, string[]> = {
   UltimatumOfTheUnspeakableName: ['03', '52'],
   UltimatumOfTheBrassCrown: ['03', '52'],
   UltimatumOfTheFaultyCarburetor: ['07'],
+  UltimatumOfTheDrowned: ['07'],
   UltimatumOfTheSleeper: ['11'],
   UltimatumOfInvisibility: ['02', '51'],
+  UltimatumOfMultiplication: ['02', '51'],
   UltimatumOfTheMan: ['03', '52'],
   UltimatumOfSpoilage: ['11'],
   UltimatumOfDeath: ['03', '52'],
   BoonOfTheDreamer: ['06'],
   BoonOfAtonement: ['09'],
   BoonOfBliss: ['10'],
+  BoonOfTheMiners: ['10'],
+  BoonOfTheDance: ['10'],
 }
 
 export function isRefraction(tag: string): boolean {

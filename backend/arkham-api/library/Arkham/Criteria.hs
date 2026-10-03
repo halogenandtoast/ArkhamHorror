@@ -54,6 +54,7 @@ import Arkham.Source
 import Arkham.Taboo.Types
 import Arkham.Token
 import Arkham.Trait (Trait)
+import Arkham.UltimatumsAndBoons.Types (UltimatumOrBoon)
 import Arkham.Zone
 import Control.Lens (Plated, Prism', prism')
 import Data.Aeson.TH
@@ -175,6 +176,12 @@ overCriteria f = \case
 data Criterion
   = AssetExists AssetMatcher
   | TargetExists TargetMatcher
+  | {- | This Ultimatum or Boon is active. Ability lists are pure, so a card
+    whose printed behavior a Refraction rewrites cannot ask
+    'Arkham.UltimatumsAndBoons.hasUltimatum' for itself; it declares both
+    versions and tells them apart with this.
+    -}
+    UltimatumOrBoonIsActive UltimatumOrBoon
   | ScenarioExists ScenarioMatcher
   | DifferentTargetsExist TargetMatcher TargetMatcher
   | DifferentAssetsExist AssetMatcher AssetMatcher

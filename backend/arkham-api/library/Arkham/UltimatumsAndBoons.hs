@@ -40,6 +40,7 @@ import Arkham.Decklist.RandomBasicWeakness (
  )
 import Arkham.DefeatedBy
 import Arkham.EncounterSet (EncounterSet (Tekelili))
+import Arkham.Enemy.CardDefs.TheDunwichLegacy.UndimensionedAndUnseen qualified as Enemies
 import Arkham.Enemy.Helpers (cancelEnemyDefeat)
 import Arkham.Enemy.Types (Field (EnemyCard))
 import Arkham.Game.Base
@@ -66,6 +67,7 @@ import Arkham.Matcher qualified as Matcher
 import Arkham.Message
 import Arkham.Message.Lifted (
   advanceToAgendaA,
+  createEnemyAt_,
   discardTopOfEncounterDeck,
   exhaustWith,
   focusCards,
@@ -172,6 +174,10 @@ instance HasModifiersFor Ultimatum where
         modifySelect source theMan [RemoveTrait Humanoid]
         whenM (selectAny $ Matcher.ActWithStep 2) do
           modifySelect source theMan [CannotMove, CannotBeMoved]
+      -- Ultimatum of the Drowned: "each agenda gets -1 doom threshold." The two
+      -- Awakened-and-Enraged cards carry the rest, keyed on the ultimatum itself.
+      UltimatumOfTheDrowned -> whenM (selectAny $ Matcher.ScenarioWithId "07311") do
+        modifySelect source Matcher.AnyAgenda [DoomThresholdModifier (-1)]
       -- Ultimatum of Death: "Agenda 2a gains +6 doom threshold."
       UltimatumOfDeath -> whenM (anyM (selectAny . Matcher.ScenarioWithId) ["03240", "52048"]) do
         modifySelect source (Matcher.AgendaWithId "03242") [DoomThresholdModifier 6]
@@ -533,6 +539,19 @@ runUltimatumsAndBoonsMessage msg = case msg of
           when (spoken > 0) do
             push $ Msg.assignHorror iid (fromUltimatumOrBoon (Ultimatum UltimatumOfTheBrassCrown)) spoken
             setSpokenHastur iid 0
+    {- Ultimatum of Multiplication: "instead of the standard setup instructions,
+    begin the game with all five Brood of Yog-Sothoth cards in play: one in each
+    of the five locations besides Dunwich Village." The scenario has already put
+    one or two out by now, so this tops the board up rather than replacing the
+    setup wholesale. -}
+    whenM (hasUltimatum UltimatumOfMultiplication) do
+      whenM (anyM (selectAny . Matcher.ScenarioWithId) ["02236", "51041"]) $ runQueueT do
+        for_ broodLocationTitles \title -> do
+          mlid <- selectOne (Matcher.LocationWithTitle title)
+          for_ mlid \lid -> do
+            occupied <-
+              selectAny $ Matcher.EnemyWithTitle "Brood of Yog-Sothoth" <> Matcher.enemyAt lid
+            unless occupied $ createEnemyAt_ Enemies.broodOfYogSothoth lid
     {- Ultimatum of Death: "after setup, immediately advance Agenda 1a to Specter
     of Death and spawn it at your starting location, exhausted." The agenda's own
     side-B handler draws the Specter, which already spawns at position (0,0) by
@@ -683,3 +702,13 @@ of Spoilage). Anything else defeated or discarded is ignored.
 spoilExpeditionItem :: HasQueue Message m => CardDef -> m ()
 spoilExpeditionItem def =
   when (def `elem` expeditionItems) $ push $ recordSetInsert SpoiledExpeditionItems [toCardCode def]
+
+-- | The five Undimensioned and Unseen locations that are not Dunwich Village.
+broodLocationTitles :: [Text]
+broodLocationTitles =
+  [ "Cold Spring Glen"
+  , "Ten-Acre Meadow"
+  , "Blasted Heath"
+  , "Whateley Ruins"
+  , "Devil's Hop Yard"
+  ]

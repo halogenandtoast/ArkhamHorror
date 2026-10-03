@@ -14,6 +14,9 @@ import Arkham.Matcher.Investigator
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Source
+import Arkham.UltimatumsAndBoons (hasBoon)
+import Arkham.UltimatumsAndBoons.Types (Boon (BoonOfTheDance))
+import Data.Text qualified as T
 
 newtype TheFeastOfHemlockVale = TheFeastOfHemlockVale CampaignAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -287,7 +290,31 @@ instance RunMessage TheFeastOfHemlockVale where
                 labeledValidate (k `notElem` meta.chosenCodexEntries) k
                   $ forInvestigator iid
                   $ CampaignStep (CampaignSpecificStep "preludeTheSecondEvening" (Just k))
+          {- Boon of the Dance: "players may check the Relationship Level
+          requirements of a codex entry before resolving it." The requirement is
+          the same for every gated resident, so the hint is which of their codex
+          entries currently meets it. -}
+          dance <- hasBoon BoonOfTheDance
+          met <-
+            if dance
+              then
+                map snd
+                  <$> filterM
+                    (fmap (>= 3) . getRelationshipLevel . fst)
+                    [ (SimeonAtwood, "3")
+                    , (WilliamHemlock, "4")
+                    , (RiverHawthorne, "5")
+                    , (GideonMizrah, "6")
+                    , (JudithPark, "7")
+                    , (TheoPeters, "8")
+                    ]
+              else pure []
           investigatorStoryWithChooseOneM' iid (setTitle "title" >> p "codexChoice") do
+            when dance
+              $ withVar "codices" (toJSON $ T.intercalate ", " met)
+              $ info'
+              $ p
+              $ if null met then "boonOfTheDance.none" else "boonOfTheDance.met"
             residentOption MotherRachel "motherRachel"
             residentOption LeahAtwood "leah"
             residentOption SimeonAtwood "simeon"

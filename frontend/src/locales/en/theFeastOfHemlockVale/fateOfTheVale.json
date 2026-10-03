@@ -52,7 +52,9 @@
   "tooltips": {
     "fateOfTheValeV3": {
       "placeKindling": "{'{'}action{'}'} Spend X {'{'}perPlayer{'}'} clues: Place X resources on your location, as kindling (you may spend 5 resources or discard an _Item_ asset you control to place 1 additional kindling).",
-      "drawFire": "{'{'}action{'}'} If your location has kindling on it equal to or greater than its shroud value, remove all kindling from it: Draw 1 set-aside Fire! treachery. (Group limit once per location.)"
+      "drawFire": "{'{'}action{'}'} If your location has kindling on it equal to or greater than its shroud value, remove all kindling from it: Draw 1 set-aside Fire! treachery. (Group limit once per location.)",
+      "placeKindlingMiners": "{'{'}action{'}'} Spend X clues: Place X resources on your location, as kindling (you may spend 5 resources or discard an _Item_ asset you control to place 1 additional kindling).",
+      "drawFireMiners": "{'{'}fast{'}'} If your location has 1 {'{'}perPlayer{'}'} kindling on it, remove all kindling from it: Draw 1 set-aside Fire! treachery. (Group limit once per location.)"
     }
   },
   "label": {

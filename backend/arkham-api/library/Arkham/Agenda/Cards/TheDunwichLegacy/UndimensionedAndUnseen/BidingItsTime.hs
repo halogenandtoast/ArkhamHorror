@@ -37,10 +37,8 @@ instance RunMessage BidingItsTime where
       shuffleEncounterDiscardBackIn
       lead <- getLead
       withLocationOf lead \lid -> do
-        brood <- getSetAsideBroodOfYogSothoth
-        for_ (nonEmpty brood) \xs -> do
-          x <- sample xs
-          enemy <- createEnemyAt x lid
+        mEnemy <- spawnSetAsideBroodOfYogSothothAt lid
+        for_ mEnemy \enemy ->
           selectEach (colocatedWith lead) \iid -> do
             sid <- getRandom
             beginSkillTest sid iid attrs enemy #agility (Fixed 4)

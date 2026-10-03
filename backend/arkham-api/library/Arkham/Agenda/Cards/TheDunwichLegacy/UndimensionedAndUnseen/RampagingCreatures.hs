@@ -32,8 +32,7 @@ instance RunMessage RampagingCreatures where
       moveToward target lid
       pure a
     ChosenRandomLocation target lid | isTarget attrs target && onSide B attrs -> do
-      setAsideBroodOfYogSothoth <- shuffleM =<< getSetAsideBroodOfYogSothoth
-      for_ (nonEmpty setAsideBroodOfYogSothoth) \(x :| _) -> createEnemyAt_ x lid
+      void $ spawnSetAsideBroodOfYogSothothAt lid
       pure a
     AdvanceAgenda (isSide B attrs -> True) -> do
       shuffleEncounterDiscardBackIn

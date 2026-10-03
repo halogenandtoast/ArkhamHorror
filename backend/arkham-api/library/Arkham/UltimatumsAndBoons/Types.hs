@@ -26,6 +26,8 @@ data Boon
     BoonOfAtonement
   | BoonOfBliss
   | BoonOfTheDreamer
+  | BoonOfTheMiners
+  | BoonOfTheDance
   deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
 
 data Ultimatum
@@ -60,6 +62,8 @@ data Ultimatum
   | UltimatumOfTheMan
   | UltimatumOfSpoilage
   | UltimatumOfDeath
+  | UltimatumOfMultiplication
+  | UltimatumOfTheDrowned
   | {- | A homebrew campaign's ultimatum. The door for content outside core: the
     'Text' is the full wire name @":\<campaign-id\>:\<Key\>"@, so the campaign
     it belongs to is read off the name. Campaigns declare their lists in their
@@ -129,9 +133,13 @@ refractionScope = \case
   Ultimatum UltimatumOfTheMan -> thePathToCarcosa
   Ultimatum UltimatumOfSpoilage -> ["11"]
   Ultimatum UltimatumOfDeath -> thePathToCarcosa
+  Ultimatum UltimatumOfMultiplication -> theDunwichLegacy
+  Ultimatum UltimatumOfTheDrowned -> ["07"]
   Boon BoonOfTheDreamer -> ["06"]
   Boon BoonOfAtonement -> ["09"]
   Boon BoonOfBliss -> ["10"]
+  Boon BoonOfTheMiners -> ["10"]
+  Boon BoonOfTheDance -> ["10"]
   _ -> []
  where
   -- A campaign and its Return to are the same campaign for this purpose.

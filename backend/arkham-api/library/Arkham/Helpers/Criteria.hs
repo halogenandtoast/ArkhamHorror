@@ -29,7 +29,7 @@ import {-# SOURCE #-} Arkham.Entities
 import Arkham.Event.Types (Event, Field (..))
 import Arkham.Event.Types qualified
 import {-# SOURCE #-} Arkham.Game
-import Arkham.Game.Settings (settingsAchievementsEnabled)
+import Arkham.Game.Settings (activeUltimatumsAndBoons, settingsAchievementsEnabled)
 import Arkham.GameEnv
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Ability (getCanPerformAbility)
@@ -707,6 +707,8 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
           Nothing -> pure False
           Just scenario -> pure $ "5" `T.isPrefixOf` coerce scenario
       Just campaign -> pure $ "5" `T.isPrefixOf` coerce campaign
+  Criteria.UltimatumOrBoonIsActive variant ->
+    member variant . activeUltimatumsAndBoons . gameSettings <$> getGame
   Criteria.ScenarioExists matcher -> selectAny matcher
   Criteria.DifferentAssetsExist matcher1 matcher2 -> do
     m1 <- select (Matcher.replaceYouMatcher iid matcher1)

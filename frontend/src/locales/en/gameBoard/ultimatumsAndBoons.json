@@ -192,6 +192,22 @@
     "BoonOfTheDreamer": {
       "name": "Boon of The Dreamer",
       "text": "Where the Gods Dwell (The Dream-Eaters). After advancing to Act 5, advance to agenda 3a and remove all doom from it. This agenda gets +2 doom threshold."
+    },
+    "UltimatumOfMultiplication": {
+      "name": "Ultimatum of Multiplication",
+      "text": "Undimensioned and Unseen (The Dunwich Legacy). Instead of the standard setup instructions, begin the game with all five Brood of Yog-Sothoth cards in play: one in each of the five locations besides Dunwich Village. During this scenario, whenever an effect would cause you to spawn a set-aside Brood of Yog-Sothoth, you must instead place one doom on the current agenda."
+    },
+    "UltimatumOfTheDrowned": {
+      "name": "Ultimatum of the Drowned",
+      "text": "Into the Maelstrom (The Innsmouth Conspiracy). Each agenda gets –1 doom threshold. The Forced effect on Dagon's and Hydra's (Awakened and Enraged) sides instead reads: “Forced – After it is evaded or dealt damage: Do the same to a copy of its Brood in play, as well. Ready it.”"
+    },
+    "BoonOfTheMiners": {
+      "name": "Boon of The Miners",
+      "text": "Fate of the Vale (The Feast of Hemlock Vale). Fate of the Vale (v.III)'s first ability now reads “{'{'}action{'}'} Spend X clues: Place X resources on your location, as kindling…” and its second ability instead reads “{'{'}fast{'}'} If your location has 1 {'{'}perPlayer{'}'} kindling on it, remove all kindling from it: Draw 1 set-aside Fire! treachery. (Group limit once per location.)”"
+    },
+    "BoonOfTheDance": {
+      "name": "Boon of The Dance",
+      "text": "The Feast of Hemlock Vale. When choosing residents to share a dance with during Prelude: The Second Evening, players may check the Relationship Level requirements of a codex entry before resolving it."
     }
   },
   "morrigan": {

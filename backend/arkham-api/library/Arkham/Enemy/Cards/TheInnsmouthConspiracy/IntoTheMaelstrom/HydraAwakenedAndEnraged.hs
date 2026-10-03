@@ -9,6 +9,11 @@ import Arkham.Matcher
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
 import Arkham.Trait (Trait (Sanctum))
+import Arkham.UltimatumsAndBoons (hasUltimatum)
+import Arkham.UltimatumsAndBoons.Types (
+  Ultimatum (UltimatumOfTheDrowned),
+  UltimatumOrBoon (Ultimatum),
+ )
 import Arkham.Window qualified as Window
 
 newtype HydraAwakenedAndEnraged = HydraAwakenedAndEnraged EnemyAttrs
@@ -30,7 +35,16 @@ instance HasModifiersFor HydraAwakenedAndEnraged where
 instance HasAbilities HydraAwakenedAndEnraged where
   getAbilities (HydraAwakenedAndEnraged a) =
     extend1 a
-      $ restricted a 1 (exists $ enemyIs Cards.hydrasBrood)
+      {- The Ultimatum of the Drowned's rewritten Forced readies Hydra even with no
+      Brood in play, so the criterion has to admit that case too. -}
+      $ restricted
+        a
+        1
+        ( oneOf
+            [ exists $ enemyIs Cards.hydrasBrood
+            , UltimatumOrBoonIsActive (Ultimatum UltimatumOfTheDrowned)
+            ]
+        )
       $ forced
       $ oneOf [EnemyDealtDamage #after AnyDamageEffect (be a) AnySource, EnemyEvaded #after Anyone (be a)]
 
@@ -45,5 +59,9 @@ instance RunMessage HydraAwakenedAndEnraged where
           chooseOrRunTargetM iid brood \target ->
             push $ DealDamage (EnemyTarget target) $ DamageAssignment source n damageEffect False False
         _ -> pure ()
+
+      -- The Ultimatum of the Drowned adds "Ready Hydra." to this Forced.
+      whenM (hasUltimatum UltimatumOfTheDrowned) $ readyThis attrs
+
       pure e
     _ -> HydraAwakenedAndEnraged <$> liftRunMessage msg attrs

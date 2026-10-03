@@ -164,16 +164,27 @@ function spaceShape(game: Game, L: Layout, px: (n: number) => number, py: (n: nu
   }
 }
 
-/* A junction piece is placed by its own middle, which sits a little off the middle of
-its picture, and the picture turns about its box -- so the offset is turned too and taken
-back out, or the piece swings about as it is turned. */
-const artOffset = (sid: string, angle: number) => {
+/* A junction piece is placed by its own middle, which sits a little off the middle of its
+picture. The piece is hung on its spot and the offset is taken back out inside the turn --
+`rotate() translate()` turns the shift along with the picture -- so one number serves at
+every angle, and a piece that is turning carries its own middle round with it instead of
+drifting while it goes. */
+const artOffset = (sid: string) => {
   if (!standsInAJunction(sid)) return { dx: 0, dy: 0 }
   const art = { w: CORNER_W, h: (CORNER_W * 890) / 1000 }
-  const dx = (CORNER_ART_MIDDLE.x - 0.5) * art.w
-  const dy = (CORNER_ART_MIDDLE.y - 0.5) * art.h
-  const t = (angle * Math.PI) / 180
-  return { dx: dx * Math.cos(t) - dy * Math.sin(t), dy: dx * Math.sin(t) + dy * Math.cos(t) }
+  return { dx: (CORNER_ART_MIDDLE.x - 0.5) * art.w, dy: (CORNER_ART_MIDDLE.y - 0.5) * art.h }
+}
+
+/* A piece that walks is turned to a new angle, and 300 degrees to 60 is a sixth of a turn
+one way or five sixths the other. CSS animates the number it is given, so the number has to
+carry on from the last one: this keeps the turn the piece has already made and picks the
+reading of the new angle nearest it, which is always the short way round. */
+const spun = new Map<string, number>()
+const continuing = (sid: string, angle: number) => {
+  const was = spun.get(sid)
+  const next = was == null ? angle : angle + 360 * Math.round((was - angle) / 360)
+  spun.set(sid, next)
+  return next
 }
 
 // every street-like space as it is drawn: a street fills its box, a connector fits inside a smaller one
@@ -182,17 +193,20 @@ const streetPieces = computed(() => {
   if (!G) return []
   return G.L.streets.map((st) => {
     const box = spaceBox(st.space)
-    const angle = spaceAngle(st.space, st.angle)
-    const off = artOffset(st.space, angle)
+    const walks = standsInAJunction(st.space)
+    const angle = walks ? continuing(st.space, spaceAngle(st.space, st.angle)) : spaceAngle(st.space, st.angle)
+    const off = artOffset(st.space)
     return {
       sid: st.space,
       href: spaceArt(st.space),
-      x: G.px(st.x) - box.w / 2 - off.dx,
-      y: G.py(st.y) - box.h / 2 - off.dy,
+      x: G.px(st.x) - box.w / 2,
+      y: G.py(st.y) - box.h / 2,
       w: box.w,
       h: box.h,
       objectFit: (box.fit === 'none' ? 'fill' : 'contain') as 'fill' | 'contain',
       angle,
+      off,
+      walks,
     }
   })
 })
@@ -582,13 +596,14 @@ onUnmounted(() => {
             v-for="st in streetPieces"
             :key="`street-${st.sid}`"
             :src="st.href"
+            :class="{ walks: st.walks }"
             :style="{
               left: `${st.x}px`,
               top: `${st.y}px`,
               width: `${st.w}px`,
               height: `${st.h}px`,
               objectFit: st.objectFit,
-              transform: `rotate(${st.angle}deg)`,
+              transform: `rotate(${st.angle}deg) translate(${-st.off.dx}px, ${-st.off.dy}px)`,
             }"
           />
           <img

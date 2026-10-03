@@ -336,6 +336,12 @@ every row of cards divides the width it has rather than running past the edge. *
 .board-fit { position:relative; overflow:hidden; }
 .board { position:absolute; top:0; left:0; margin:0; transform-origin:top left; will-change:transform; }
 .board > img { position:absolute; pointer-events:none; user-select:none; }
+/* A piece that walks the board -- the hidden path -- slides and turns to its new corner
+rather than appearing at it. The turn is driven by an angle that carries on from the last
+one, so it always goes the short way round. */
+.board > img.walks { transition:left .65s cubic-bezier(.33,.1,.25,1), top .65s cubic-bezier(.33,.1,.25,1),
+  transform .65s cubic-bezier(.33,.1,.25,1); }
+@media (prefers-reduced-motion: reduce) { .board > img.walks { transition:none; } }
 .anchor { position:absolute; transform:translate(-50%,-50%) rotate(var(--map-rot, 0deg)); display:flex; flex-wrap:wrap; justify-content:center; gap:3px; max-width:120px; min-width:26px; min-height:26px; border-radius:14px; padding:2px; }
 .map-wrap .inv-tok { box-shadow:0 0 0 1.5px rgba(255,255,255,.55), 0 2px 6px rgba(0,0,0,.8); }
 .map-wrap .mon-card > img { box-shadow:0 0 0 1px rgba(255,255,255,.28), 0 1px 3px rgba(0,0,0,.6); }

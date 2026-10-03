@@ -335,7 +335,10 @@ every row of cards divides the width it has rather than running past the edge. *
 @media (max-width: 900px) { .map-row { flex-direction:column; } .sheet-col { flex-basis:auto; width:100%; } }
 .board-fit { position:relative; overflow:hidden; }
 .board { position:absolute; top:0; left:0; margin:0; transform-origin:top left; will-change:transform; }
-.board > img { position:absolute; pointer-events:none; user-select:none; }
+/* Every piece on the board is cut card lying on a dark table, so it catches a little light
+along its edge: the glow follows each picture's own outline, notches and tabs and all. */
+.board > img { position:absolute; pointer-events:none; user-select:none;
+  filter:drop-shadow(0 0 1px rgba(255,255,255,.4)) drop-shadow(0 0 3px rgba(255,255,255,.12)); }
 /* A piece that walks the board -- the hidden path -- slides and turns to its new corner
 rather than appearing at it. The turn is driven by an angle that carries on from the last
 one, so it always goes the short way round. */

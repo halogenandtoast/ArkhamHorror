@@ -17,6 +17,11 @@ code = "tyrants-of-ruin"
 nb :: Text -> NeighborhoodId
 nb = NeighborhoodId . coerce . spaceIdFor
 
+-- | How far Innsmouth stands off Arkham: out to the right, and lifted.
+out, lift :: Double
+out = 0.37
+lift = 0.15
+
 scenario :: ScenarioDef
 scenario =
   ScenarioDef
@@ -27,7 +32,7 @@ scenario =
     , reckoningText = "Spread terror in each neighborhood with a Deep One monster."
     , reckoning = Custom "tyrants-reckoning"
     , setupMap =
-        buildMapLaidOut
+        buildMapOf
           [ nb "Innsmouth Village"
           , nb "Innsmouth Shore"
           , nb "Northside"
@@ -43,15 +48,24 @@ scenario =
           , StreetDef (nb "Easttown") BottomRight (nb "Southside") Scenic
           , StreetDef (nb "Miskatonic University") SideRight (nb "Southside") Residential
           ]
-          -- Innsmouth sits above and right of Arkham, a row of the same honeycomb
-          [ClusterLink (nb "Northside") TopRight (nb "Innsmouth Village")]
-          [ RouteDef (nb "Innsmouth Village") BottomLeft CountryRoad
-          , RouteDef (nb "Innsmouth Shore") BottomRight FerryTerminal
-          , RouteDef (nb "Northside") TopLeft CountryRoad
-          , RouteDef (nb "Easttown") TopRight FerryTerminal
-          , RouteDef (nb "Southside") BottomRight CountryRoad
-          ]
-          [MysteryTile (nb "Innsmouth Shore") TopRight "Devil Reef"]
+          noPieces
+            { routes =
+                [ RouteDef (nb "Innsmouth Village") BottomLeft CountryRoad
+                , RouteDef (nb "Innsmouth Shore") BottomRight FerryTerminal
+                , RouteDef (nb "Northside") TopLeft CountryRoad
+                , RouteDef (nb "Easttown") TopRight FerryTerminal
+                , RouteDef (nb "Southside") BottomRight CountryRoad
+                ]
+            , mysteries = [MysteryTile (nb "Innsmouth Shore") TopRight "Devil Reef"]
+            , -- Innsmouth sits above and right of Arkham, a row of the same honeycomb
+              clusters = [ClusterLink (nb "Northside") TopRight (nb "Innsmouth Village")]
+            , {- and stands a little clear of it, further along the way it already hangs.
+              Both Innsmouth tiles move together, or the street between them would skew. -}
+              nudges =
+                [ nudge (nb "Innsmouth Village") out lift
+                , nudge (nb "Innsmouth Shore") out lift
+                ]
+            }
     , monsters =
         [ ("altered-beast", 2)
         , ("hulking-thrall", 2)

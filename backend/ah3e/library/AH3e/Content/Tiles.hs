@@ -9,6 +9,8 @@ module AH3e.Content.Tiles (
   ThresholdTile (..),
   CornerTile (..),
   ClusterLink (..),
+  nudge,
+  tileStep,
   Pieces (..),
   noPieces,
   tiles,
@@ -115,10 +117,20 @@ data Pieces = Pieces
   , thresholds :: [ThresholdTile]
   , corners :: [CornerTile]
   , clusters :: [ClusterLink]
+  , nudges :: [(NeighborhoodId, (Double, Double))]
+  -- ^ tiles shifted off the lattice by hand, in tile widths; see 'nudge'
   }
 
 noPieces :: Pieces
-noPieces = Pieces {routes = [], mysteries = [], thresholds = [], corners = [], clusters = []}
+noPieces = Pieces {routes = [], mysteries = [], thresholds = [], corners = [], clusters = [], nudges = []}
+
+{- | A tile shifted off the lattice, so much right and so much up, in tile widths. A sheet
+sometimes sets a loose tile down a little clear of the rest rather than square against it;
+everything hanging off that tile -- its travel routes, its mysteries, any street to it --
+is placed from its middle, so it all goes along.
+-}
+nudge :: NeighborhoodId -> Double -> Double -> (NeighborhoodId, (Double, Double))
+nudge nid right up = (nid, (right, -up))
 
 slug :: Text -> Text
 slug =
@@ -238,6 +250,10 @@ slotAngle v s = deg * pi / 180
 off the tabletop version: its tiles sit 1.279 of a tile picture apart, and a picture is
 wider than the hexagon in it by 1/0.9548, so in hexagons that is 1.339 centre to centre.
 -}
+-- | One step of the lattice: how far apart two neighbouring tiles' middles sit.
+tileStep :: Double
+tileStep = 2 * edgeApothem SideLeft + streetLength
+
 streetLength, anchorRadius :: Double
 streetLength = 0.3395
 anchorRadius = 0.3
@@ -448,7 +464,7 @@ buildMapOf nids streets pieces =
         BoardLayout tilePlacements (streetPlacements <> hangingPlacements <> thresholdPlacements) anchors
     }
  where
-  Pieces {routes, mysteries, thresholds, corners, clusters} = pieces
+  Pieces {routes, mysteries, thresholds, corners, clusters, nudges} = pieces
   -- a scenario lays out at most one tile of each kind, so the type names the space
   thresholdId = spaceIdFor . thresholdName
   -- laid between two hexes, a threshold borders both edges the way a street does
@@ -504,7 +520,10 @@ buildMapOf nids streets pieces =
   and every junction between three of them is the same shape. The rows used to be spread a
   little on top of that, which made the diagonal junctions a different shape from the
   straight ones -- and that is what a corner piece could not fit. -}
-  positions = placeTiles nids streets thresholds clusters
+  positions = [(nid, shift nid p) | (nid, p) <- placeTiles nids streets thresholds clusters]
+  shift nid (x, y) = case lookup nid nudges of
+    Nothing -> (x, y)
+    Just (dx, dy) -> (x + dx, y + dy)
   pos nid = fromJustNote ("tile not connected to the map: " <> show nid) (lookup nid positions)
   tilePlacements = [TilePlacement nid x y | (nid, (x, y)) <- positions]
   streetPlacements =

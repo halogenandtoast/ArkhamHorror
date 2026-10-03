@@ -17,6 +17,11 @@ code = "ithaquas-children"
 nb :: Text -> NeighborhoodId
 nb = NeighborhoodId . coerce . spaceIdFor
 
+-- | How far off Arkham the two towns stand, and how far one is lifted and the other dropped.
+aside, lift :: Double
+aside = -0.15
+lift = 0.15
+
 scenario :: ScenarioDef
 scenario =
   ScenarioDef
@@ -27,33 +32,49 @@ scenario =
     , reckoningText = "Place one doom in any space in Innsmouth and one doom in any space in Kingsport."
     , reckoning = Custom "ithaqua-reckoning"
     , setupMap =
-        buildMapWith
+        buildMapOf
           [ nb "Downtown"
           , nb "Northside"
           , nb "Rivertown"
           , nb "Easttown"
-          , nb "Central Kingsport"
-          , nb "Innsmouth Shore"
           , nb "Southside"
+          , nb "Innsmouth Shore"
+          , nb "Central Kingsport"
           ]
-          -- Innsmouth Shore and Southside hang off the map by travel route alone
           [ StreetDef (nb "Downtown") BottomLeft (nb "Northside") Scenic
           , StreetDef (nb "Downtown") BottomRight (nb "Rivertown") Bridge
           , StreetDef (nb "Northside") SideRight (nb "Rivertown") Bridge
           , StreetDef (nb "Rivertown") SideRight (nb "Easttown") Residential
-          , StreetDef (nb "Rivertown") BottomRight (nb "Central Kingsport") Residential
-          , StreetDef (nb "Easttown") BottomRight (nb "Central Kingsport") Scenic
+          , StreetDef (nb "Rivertown") BottomRight (nb "Southside") Residential
+          , StreetDef (nb "Easttown") BottomRight (nb "Southside") Scenic
           ]
-          [ RouteDef (nb "Innsmouth Shore") SideLeft CountryRoad
-          , RouteDef (nb "Innsmouth Shore") SideRight FerryTerminal
-          , RouteDef (nb "Downtown") TopRight CountryRoad
-          , RouteDef (nb "Northside") BottomRight TrainPlatform
-          , RouteDef (nb "Easttown") SideRight FerryTerminal
-          , RouteDef (nb "Central Kingsport") SideLeft TrainPlatform
-          , RouteDef (nb "Central Kingsport") SideRight CountryRoad
-          , RouteDef (nb "Southside") BottomRight CountryRoad
-          ]
-          []
+          noPieces
+            { routes =
+                [ RouteDef (nb "Innsmouth Shore") SideLeft CountryRoad
+                , RouteDef (nb "Innsmouth Shore") SideRight FerryTerminal
+                , RouteDef (nb "Downtown") TopRight CountryRoad
+                , RouteDef (nb "Northside") BottomRight TrainPlatform
+                , RouteDef (nb "Easttown") SideRight FerryTerminal
+                , RouteDef (nb "Central Kingsport") SideLeft TrainPlatform
+                , RouteDef (nb "Central Kingsport") SideRight CountryRoad
+                , RouteDef (nb "Southside") BottomRight CountryRoad
+                ]
+            , {- Innsmouth Shore and Central Kingsport reach the map by travel route alone,
+              so they are only set down beside it: Innsmouth Shore off Downtown's left, and
+              Central Kingsport off Southside's. -}
+              clusters =
+                [ ClusterLink (nb "Downtown") SideLeft (nb "Innsmouth Shore")
+                , ClusterLink (nb "Southside") SideLeft (nb "Central Kingsport")
+                ]
+            , {- The two towns stand clear of Arkham in one column off its left, Innsmouth
+              lifted above the map and Kingsport dropped below it by as much. Kingsport's
+              own place is a lattice step to the right of Innsmouth's, so its shift carries
+              that step as well. -}
+              nudges =
+                [ nudge (nb "Innsmouth Shore") aside lift
+                , nudge (nb "Central Kingsport") (aside - tileStep) (-lift)
+                ]
+            }
     , monsters =
         [ ("accursed-somnambulist", 2)
         , ("altered-servant", 2)

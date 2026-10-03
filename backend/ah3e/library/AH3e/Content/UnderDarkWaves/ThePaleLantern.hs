@@ -43,7 +43,7 @@ scenario =
               NoEffect
           )
     , setupMap =
-        buildMapLaidOut
+        buildMapOf
           [ nb "Downtown"
           , nb "Merchant District"
           , nb "Uptown"
@@ -55,15 +55,26 @@ scenario =
           , StreetDef (nb "Merchant District") BottomRight (nb "Uptown") Residential
           , StreetDef (nb "Central Kingsport") SideRight (nb "Kingsport Harbor") Scenic
           ]
-          -- Kingsport runs off to the right of the Merchant District, joined by nothing
-          [ClusterLink (nb "Merchant District") SideRight (nb "Central Kingsport")]
-          [ RouteDef (nb "Downtown") SideLeft CountryRoad
-          , RouteDef (nb "Merchant District") SideRight TrainPlatform
-          , RouteDef (nb "Uptown") SideLeft CountryRoad
-          , RouteDef (nb "Central Kingsport") TopRight TrainPlatform
-          , RouteDef (nb "Kingsport Harbor") BottomLeft CountryRoad
-          ]
-          [MysteryTile (nb "Kingsport Harbor") TopRight "Strange High House"]
+          noPieces
+            { routes =
+                [ RouteDef (nb "Downtown") SideLeft CountryRoad
+                , RouteDef (nb "Merchant District") SideRight TrainPlatform
+                , RouteDef (nb "Uptown") SideLeft CountryRoad
+                , RouteDef (nb "Central Kingsport") TopRight TrainPlatform
+                , RouteDef (nb "Kingsport Harbor") BottomLeft CountryRoad
+                ]
+            , mysteries = [MysteryTile (nb "Kingsport Harbor") TopRight "Strange High House"]
+            , {- Kingsport runs off to the left of Uptown, joined by nothing. The link names
+              the Harbor because the street runs from Central Kingsport to it: laying the
+              Harbor against Uptown puts Central Kingsport the next step out. -}
+              clusters = [ClusterLink (nb "Uptown") SideLeft (nb "Kingsport Harbor")]
+            , {- and the town then stands a little further out again, so it reads apart from
+              Arkham. Both its tiles move together, or the street between them would skew. -}
+              nudges =
+                [ nudge (nb "Central Kingsport") (-0.3) 0
+                , nudge (nb "Kingsport Harbor") (-0.3) 0
+                ]
+            }
     , monsters =
         [ ("guardian-beast", 1)
         , ("prowling-abductor", 2)

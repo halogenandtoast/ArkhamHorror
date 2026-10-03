@@ -553,6 +553,19 @@ ul.tabs__header > li.inactive { filter:grayscale(100%); opacity:.6; }
 .deck-empty { width:84px; height:132px; border:2px dashed var(--line); border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:12px; }
 .deck-count { position:absolute; right:-6px; bottom:-6px; min-width:24px; height:24px; padding:0 6px; border-radius:12px; background:#111; color:#fff; font-size:13px; line-height:24px; text-align:center; box-shadow:0 0 0 1px rgba(255,255,255,.5); }
 .deck-clue { position:absolute; left:-8px; top:-8px; }
+/* A terror card is attached to a neighborhood and lies across its encounter deck, turned
+side on as it is on the table; the column widens to take its corners. */
+.deck.has-terror { width:150px; }
+.deck-terror { position:absolute; left:50%; top:50%; width:84px; height:132px; margin:-66px 0 0 -42px;
+  transform:rotate(90deg) translateY(calc(var(--k) * 7px)); cursor:zoom-in;
+  /* every attached card lies over every deck, not just the one it belongs to */
+  z-index:5; }
+.deck-terror img { width:84px; height:132px; object-fit:cover; border-radius:6px;
+  box-shadow:0 3px 12px #000b, 0 0 0 1px rgba(255,255,255,.4); }
+/* how many are under there, in the middle of the one on top, and the right way up */
+.terror-count { position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); min-width:26px; height:26px;
+  padding:0 7px; border-radius:13px; background:#111d; color:#fff; font:600 14px/26px ui-monospace,monospace;
+  text-align:center; box-shadow:0 0 0 1px rgba(255,255,255,.55); z-index:6; }
 .sheet-flip { perspective:1400px; }
 .sheet-flip .flip { position:relative; width:100%; aspect-ratio:1503/1200; transform-style:preserve-3d; transition:transform .9s cubic-bezier(.4,.1,.2,1); }
 .sheet-flip .flip.flipped { transform:rotateY(180deg); }

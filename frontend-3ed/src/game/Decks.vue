@@ -31,6 +31,11 @@ const eventBack = (cid: CardId | undefined) => {
   return cid == null || !nid ? null : img(`backs/${nid}.webp`)
 }
 const faceSrc = (cid: CardId) => ctx.cardFace(cid, false)
+// terror cards are attached to a neighborhood, and lie across its encounter deck
+const terrorOn = (nid: string) => g.value.board.neighborhoods[nid]?.attachedTerror ?? []
+/* Face down until it is encountered, so what shows is its set's back -- which is what the
+card's own code names, less its number: "frozen-city-04" is a Frozen City card. */
+const terrorBack = (cid: CardId) => img(`backs/${ctx.cardCode(cid).replace(/-\d+$/, '')}.webp`)
 </script>
 
 <template>
@@ -58,10 +63,26 @@ const faceSrc = (cid: CardId) => ctx.cardFace(cid, false)
       v-for="nid in shows('decks') ? hoods : []"
       :key="nid"
       :back="nid"
+      :class="{ 'has-terror': terrorOn(nid).length }"
       :name="g.board.neighborhoods[nid]?.name ?? nid"
       :count="(d.neighborhoods[nid] ?? []).length"
       :deck-key="`neighborhood:${nid}`"
     >
+      <span
+        v-for="(cid, k) in terrorOn(nid)"
+        :key="cid"
+        class="deck-terror"
+        :style="{ '--k': k }"
+        :title="`Terror attached to ${g.board.neighborhoods[nid]?.name ?? nid}`"
+        @click.stop="zoom(terrorBack(cid))"
+        ><img :src="terrorBack(cid)" alt=""
+      /></span>
+      <b
+        v-if="terrorOn(nid).length > 1"
+        class="terror-count"
+        :title="`${terrorOn(nid).length} terror cards attached`"
+        >{{ terrorOn(nid).length }}</b
+      >
       <span v-if="g.board.neighborhoods[nid]?.clues" class="deck-clue"
         ><Tok
           name="clue"

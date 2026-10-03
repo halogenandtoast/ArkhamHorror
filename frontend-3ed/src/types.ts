@@ -119,6 +119,8 @@ export interface Neighborhood {
   clues: number
   anomaly: boolean
   terror: number
+  // terror cards attached to this neighborhood, which lie across its encounter deck
+  attachedTerror?: CardId[]
   markers: Marker[]
 }
 

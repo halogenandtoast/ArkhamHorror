@@ -25,6 +25,8 @@ import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers
 import Arkham.Trait (Trait (Vehicle))
+import Arkham.UltimatumsAndBoons (hasUltimatum)
+import Arkham.UltimatumsAndBoons.Types (Ultimatum (UltimatumOfTheFaultyCarburetor))
 
 newtype HorrorInHighGear = HorrorInHighGear ScenarioAttrs
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -158,9 +160,18 @@ instance RunMessage HorrorInHighGear where
           findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
         _ -> pure ()
     ForInvestigator iid (DoStep 1 Setup) -> do
-      vehicles <- selectWithFilterM (AssetWithTrait Vehicle) \vehicle -> do
-        passengers <- selectCount $ InVehicleMatching $ AssetWithId vehicle
-        pure $ passengers < 2
+      cars <- select (AssetWithTrait Vehicle)
+      withPassengers <- for cars \vehicle ->
+        (vehicle,) <$> selectCount (InVehicleMatching $ AssetWithId vehicle)
+      {- Ultimatum of the Faulty Carburetor: at exactly two investigators, the
+      second has to board the car the first took. One candidate means
+      'chooseOrRunOneM' resolves it without asking, and the empty car is already
+      removed from the game by DoStep 2. -}
+      faulty <-
+        andM [hasUltimatum UltimatumOfTheFaultyCarburetor, (== 2) <$> getPlayerCount]
+      let boarded = [vehicle | (vehicle, passengers) <- withPassengers, passengers > 0]
+      let roomy = [vehicle | (vehicle, passengers) <- withPassengers, passengers < 2]
+      let vehicles = if faulty && notNull boarded then boarded else roomy
 
       chooseOrRunOneM iid do
         questionLabeled "whichVehicle"

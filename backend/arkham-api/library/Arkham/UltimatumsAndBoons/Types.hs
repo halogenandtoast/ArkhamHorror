@@ -51,6 +51,10 @@ data Ultimatum
     UltimatumOfVenom
   | UltimatumOfAmbuscade
   | UltimatumOfAnnoyance
+  | UltimatumOfTheUnspeakableName
+  | UltimatumOfTheBrassCrown
+  | UltimatumOfTheSleeper
+  | UltimatumOfTheFaultyCarburetor
   | {- | A homebrew campaign's ultimatum. The door for content outside core: the
     'Text' is the full wire name @":\<campaign-id\>:\<Key\>"@, so the campaign
     it belongs to is read off the name. Campaigns declare their lists in their
@@ -112,12 +116,17 @@ refractionScope = \case
   Ultimatum UltimatumOfVenom -> theForgottenAge
   Ultimatum UltimatumOfAmbuscade -> theForgottenAge
   Ultimatum UltimatumOfAnnoyance -> ["08"]
+  Ultimatum UltimatumOfTheUnspeakableName -> thePathToCarcosa
+  Ultimatum UltimatumOfTheBrassCrown -> thePathToCarcosa
+  Ultimatum UltimatumOfTheSleeper -> ["11"]
+  Ultimatum UltimatumOfTheFaultyCarburetor -> ["07"]
   Boon BoonOfAtonement -> ["09"]
   Boon BoonOfBliss -> ["10"]
   _ -> []
  where
   -- A campaign and its Return to are the same campaign for this purpose.
   theForgottenAge = ["04", "53"]
+  thePathToCarcosa = ["03", "52"]
 
 isRefraction :: UltimatumOrBoon -> Bool
 isRefraction = notNull . refractionScope

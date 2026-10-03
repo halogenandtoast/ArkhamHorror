@@ -156,6 +156,22 @@
     "BoonOfBliss": {
       "name": "Boon of Bliss",
       "text": "Fate of the Vale (The Feast of Hemlock Vale). Each agenda gets +2 doom threshold."
+    },
+    "UltimatumOfTheUnspeakableName": {
+      "name": "Ultimatum of the Unspeakable Name",
+      "text": "The Path to Carcosa. If you heeded Daniel's warning is recorded in your Campaign Log, each time you speak the name of HASTUR aloud during setup or play of a scenario, in addition to taking 1 horror, suffer 1 mental trauma."
+    },
+    "UltimatumOfTheBrassCrown": {
+      "name": "Ultimatum of the Brass Crown",
+      "text": "The Path to Carcosa. If you heeded Daniel's warning is recorded in your Campaign Log, at the beginning of each scenario, take 1 horror for each time you spoke, wrote, or typed the name of HASTUR since the end of the previous scenario."
+    },
+    "UltimatumOfTheFaultyCarburetor": {
+      "name": "Ultimatum of the Faulty Carburetor",
+      "text": "Horror in High Gear (The Innsmouth Conspiracy). During scenario setup, if you are playing with exactly 2 investigators, each investigator must choose to board the same vehicle."
+    },
+    "UltimatumOfTheSleeper": {
+      "name": "Ultimatum of the Sleeper",
+      "text": "The Doom of Arkham Pt II (The Drowned City). The health value of each Cthulhu enemy's Enraged side now reads “X per investigator.”"
     }
   },
   "morrigan": {

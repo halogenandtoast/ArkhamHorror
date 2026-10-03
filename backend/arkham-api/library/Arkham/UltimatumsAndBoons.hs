@@ -22,6 +22,7 @@ module Arkham.UltimatumsAndBoons (
 import Arkham.Ability
 import Arkham.Action.Additional
 import Arkham.Asset.Types (Field (..))
+import Arkham.Campaigns.ThePathToCarcosa.Key (ThePathToCarcosaKey (YouHeadedDanielsWarning))
 import Arkham.Card
 import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
@@ -39,7 +40,9 @@ import Arkham.EncounterSet (EncounterSet (Tekelili))
 import Arkham.Game.Base
 import Arkham.Game.Settings
 import Arkham.Helpers (unDeck)
+import Arkham.Helpers.Campaign (stored)
 import Arkham.Helpers.ChaosToken (cancelChaosToken)
+import Arkham.Helpers.Log (getHasRecord, scenarioCount)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getPlayerCount)
@@ -60,14 +63,16 @@ import Arkham.Message.Lifted.Card (drawEncounterCard, playCardPayingCostWithWind
 import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
 import Arkham.Projection
+import Arkham.ScenarioLogKey (ScenarioCountKey (CthulhuRage))
 import Arkham.Source
 import Arkham.Target
-import Arkham.Trait (Trait (Ally))
+import Arkham.Trait (Trait (Ally, Enraged))
 import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (mkAfter, revealedChaosTokens)
 import Arkham.Window qualified as Window
 import Arkham.Xp
+import Data.Aeson.Key qualified as Key
 
 {- | Selected entries, or the empty set while the runtime toggle is disabled.
 The single gate every hook must read through.
@@ -127,6 +132,17 @@ instance HasModifiersFor Ultimatum where
       UltimatumOfInduction -> modifySelectMaybe source Matcher.Anyone \_ -> do
         liftGuardM $ not <$> getIsStandalone
         pure [CannotGainXP]
+      {- Ultimatum of the Sleeper: each Enraged Cthulhu's health, printed X and
+      resolved to Cthulhu's Rage by the facet itself, becomes that per player.
+      Health modifiers add, so this contributes the extra players' worth. -}
+      UltimatumOfTheSleeper -> whenM (selectAny $ Matcher.ScenarioWithId "11688a") do
+        rage <- scenarioCount CthulhuRage
+        playerCount <- getPlayerCount
+        when (rage > 0 && playerCount > 1) do
+          modifySelect
+            source
+            (Matcher.EnemyWithTrait Enraged)
+            [HealthModifier (rage * (playerCount - 1))]
       UltimatumOfTheScream -> do
         screamed <- settingsScreamedAllies . gameSettings <$> getGame
         unless (null screamed) do
@@ -406,6 +422,28 @@ runUltimatumsAndBoonsMessage msg = case msg of
           $ Matcher.treacheryIs Treacheries.poisoned
           <> Matcher.treacheryInThreatAreaOf iid
       pushAll $ replicate copies (SufferTrauma iid 1 0)
+  {- The Carcosa pair, both keyed on the one-click HASTUR recorder in the
+  scenario UI: it is the only way the engine ever hears a name said at the
+  table, and it assigns its 1 horror from 'CampaignSource'. Both are gated on
+  Daniel's warning, which is also what keeps them out of other campaigns. -}
+  InvestigatorAssignDamage iid CampaignSource _ 0 n | n > 0 -> do
+    whenM (getHasRecord YouHeadedDanielsWarning) do
+      -- "...in addition to taking 1 horror, suffer 1 mental trauma."
+      whenM (hasUltimatum UltimatumOfTheUnspeakableName) $ push (SufferTrauma iid 0 1)
+      -- Brass Crown tallies the same presses, per investigator, until its toll.
+      whenM (hasUltimatum UltimatumOfTheBrassCrown) $ bumpSpokenHastur iid n
+  {- Ultimatum of the Brass Crown: "at the beginning of each scenario, take 1
+  horror for each time you spoke, wrote, or typed the name of HASTUR since the
+  end of the previous scenario." Sourced from the ultimatum rather than the
+  campaign so collecting the toll is not itself counted as speaking. -}
+  EndSetup -> whenM (hasUltimatum UltimatumOfTheBrassCrown) do
+    whenM (getHasRecord YouHeadedDanielsWarning) do
+      iids <- select Matcher.Anyone
+      for_ iids \iid -> do
+        spoken <- spokenHasturCount iid
+        when (spoken > 0) do
+          push $ Msg.assignHorror iid (fromUltimatumOrBoon (Ultimatum UltimatumOfTheBrassCrown)) spoken
+          setSpokenHastur iid 0
   {- Ultimatum of Ambuscade. The card is only looked at -- it is drawn or
   discarded by its own message, so nothing has to be put back. -}
   UseCardAbility iid (UltimatumOrBoonSource (Ultimatum UltimatumOfAmbuscade)) 1 _ _ -> runQueueT do
@@ -497,3 +535,20 @@ annoyanceTekeliliMessages iid = do
     concatMap (\def -> replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def)
       $ filter ((== Just Tekelili) . cdEncounterSet)
       $ toList allPlayerCards
+
+-- Ultimatum of the Brass Crown's tally, per investigator, reset each scenario.
+-- Deliberately not the Carcosa achievements module's counter: that one is a
+-- campaign-lifetime total and only runs in Return to Carcosa.
+spokenHasturKey :: InvestigatorId -> Text
+spokenHasturKey iid = "carcosaSpokenHasturSinceScenario:" <> tshow iid
+
+spokenHasturCount :: HasGame m => InvestigatorId -> m Int
+spokenHasturCount iid = fromMaybe 0 <$> stored (spokenHasturKey iid)
+
+bumpSpokenHastur :: HasQueue Message m => InvestigatorId -> Int -> m ()
+bumpSpokenHastur iid n =
+  push $ Priority $ IncrementGlobal CampaignTarget (Key.fromText $ spokenHasturKey iid) n
+
+setSpokenHastur :: HasQueue Message m => InvestigatorId -> Int -> m ()
+setSpokenHastur iid n =
+  push $ Priority $ SetGlobal CampaignTarget (Key.fromText $ spokenHasturKey iid) (toJSON n)

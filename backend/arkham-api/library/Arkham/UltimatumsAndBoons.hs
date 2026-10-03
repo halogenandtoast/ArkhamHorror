@@ -27,20 +27,23 @@ import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasQueue
-import Arkham.Classes.Query (select, (<=~>))
+import Arkham.Classes.Query (select, selectAny, selectCount, (<=~>))
+import Arkham.Criteria qualified as Criteria
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist.RandomBasicWeakness (
   RandomBasicWeaknessContext (..),
   sampleRandomBasicWeakness,
  )
 import Arkham.DefeatedBy
+import Arkham.EncounterSet (EncounterSet (Tekelili))
 import Arkham.Game.Base
 import Arkham.Game.Settings
+import Arkham.Helpers (unDeck)
 import Arkham.Helpers.ChaosToken (cancelChaosToken)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getPlayerCount)
-import Arkham.Helpers.Scenario (getIsStandalone)
+import Arkham.Helpers.Scenario (getEncounterDeck, getIsStandalone)
 import Arkham.Helpers.Window (checkWindows)
 import Arkham.I18n
 import Arkham.Id
@@ -52,12 +55,15 @@ import Arkham.Investigator.Types (
  )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
-import Arkham.Message.Lifted.Card (playCardPayingCostWithWindows)
+import Arkham.Message.Lifted (discardTopOfEncounterDeck, focusCards)
+import Arkham.Message.Lifted.Card (drawEncounterCard, playCardPayingCostWithWindows)
+import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait (Trait (Ally))
+import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (mkAfter, revealedChaosTokens)
 import Arkham.Window qualified as Window
@@ -155,12 +161,42 @@ instance HasModifiersFor Boon where
       BoonOfPersephone -> modifySelectMaybe source Matcher.DefeatedInvestigator \_ -> do
         liftGuardM $ not <$> getIsStandalone
         pure [XPModifier "Boon of Persephone" 3]
+      -- Refractions: both only bend their own scenario's agendas.
+      BoonOfAtonement -> whenM (selectAny $ Matcher.ScenarioWithId "09660") do
+        modifySelect source Matcher.AnyAgenda [DoomThresholdModifier 1]
+      BoonOfBliss -> whenM (selectAny $ Matcher.ScenarioWithId "10651") do
+        modifySelect source Matcher.AnyAgenda [DoomThresholdModifier 2]
       _ -> pure ()
 
 ultimatumOrBoonAbilities :: UltimatumOrBoon -> [Ability]
 ultimatumOrBoonAbilities = \case
-  Ultimatum {} -> []
+  Ultimatum u -> ultimatumAbilities u
   Boon b -> boonAbilities b
+
+{- | 'HasAbilities' is pure, so an ability cannot ask which campaign is being
+played: the criteria have to make it unreachable elsewhere instead. Both of
+these are self-limiting -- Poisoned and exploration only exist in The Forgotten
+Age.
+-}
+ultimatumAbilities :: Ultimatum -> [Ability]
+ultimatumAbilities u = case u of
+  -- "Each copy of Poisoned gains 'Forced - When the game ends, if you have not
+  -- been eliminated: Suffer 1 physical trauma.'"
+  UltimatumOfVenom ->
+    [ restricted
+        (fromUltimatumOrBoon (Ultimatum u))
+        1
+        (exists $ Matcher.HasMatchingTreachery (Matcher.treacheryIs Treacheries.poisoned))
+        $ forced (Matcher.GameEnds #when)
+    ]
+  -- "After each successful exploration, the performing investigator reveals the
+  -- top card of the encounter deck..."
+  UltimatumOfAmbuscade ->
+    [ restricted (fromUltimatumOrBoon (Ultimatum u)) 1 Criteria.NoRestriction
+        $ forced
+        $ Matcher.Explored #after Matcher.You Matcher.Anywhere (Matcher.SuccessfulExplore Matcher.Anywhere)
+    ]
+  _ -> []
 
 boonAbilities :: Boon -> [Ability]
 boonAbilities b = case b of
@@ -360,6 +396,25 @@ runUltimatumsAndBoonsMessage msg = case msg of
           card
           [PlaceOnBottomOfDeckInsteadOfDiscard, AdditionalCost (UnlessFastActionCost 1)]
       playCardPayingCostWithWindows iid card ws
+  {- Ultimatum of Venom. An eliminated investigator is already excluded: a plain
+  investigator matcher never matches one. -}
+  UseCardAbility _ (UltimatumOrBoonSource (Ultimatum UltimatumOfVenom)) 1 _ _ -> do
+    poisoned <- select $ Matcher.HasMatchingTreachery (Matcher.treacheryIs Treacheries.poisoned)
+    for_ poisoned \iid -> do
+      copies <-
+        selectCount
+          $ Matcher.treacheryIs Treacheries.poisoned
+          <> Matcher.treacheryInThreatAreaOf iid
+      pushAll $ replicate copies (SufferTrauma iid 1 0)
+  {- Ultimatum of Ambuscade. The card is only looked at -- it is drawn or
+  discarded by its own message, so nothing has to be put back. -}
+  UseCardAbility iid (UltimatumOrBoonSource (Ultimatum UltimatumOfAmbuscade)) 1 _ _ -> runQueueT do
+    let source = UltimatumOrBoonSource (Ultimatum UltimatumOfAmbuscade)
+    peeked <- headMay . unDeck <$> getEncounterDeck
+    for_ peeked \card -> focusCards [toCard card] do
+      if toCard card `cardMatch` Matcher.CardWithType EnemyType
+        then drawEncounterCard iid source
+        else discardTopOfEncounterDeck iid source 1
   _ -> pure ()
 
 {- | Boon of the Morrígan: instead of adding a random basic weakness, draw
@@ -421,3 +476,24 @@ ancientsStartingXpMessages iid =
       )
   , GainXP iid (UltimatumOrBoonSource (Boon BoonOfTheAncients)) 5
   ]
+
+{- | Ultimatum of Annoyance: "when the campaign begins, shuffle 3 random cards
+from the Tekeli-li encounter set into each investigator's deck."
+
+The set is read out of the player pool rather than with 'gatherEncounterSet',
+which drops weaknesses -- and every Tekeli-li card is one. Edge of the Earth's
+own 'gatherTekelili' does the same thing minus the cards already dealt out, but
+importing it here would close a module cycle (its helpers reach Scenario.Setup,
+which reaches this module through Scenario.Runner), and at campaign start
+nothing has been dealt yet.
+-}
+annoyanceTekeliliMessages :: CardGen m => InvestigatorId -> m [Message]
+annoyanceTekeliliMessages iid = do
+  defs <- take 3 <$> shuffleM tekeliliDefs
+  cards <- traverse genCard defs
+  pure [AddCampaignCardToDeck iid ShuffleIn card | card <- cards]
+ where
+  tekeliliDefs =
+    concatMap (\def -> replicate (fromMaybe 0 (cdEncounterSetQuantity def)) def)
+      $ filter ((== Just Tekelili) . cdEncounterSet)
+      $ toList allPlayerCards

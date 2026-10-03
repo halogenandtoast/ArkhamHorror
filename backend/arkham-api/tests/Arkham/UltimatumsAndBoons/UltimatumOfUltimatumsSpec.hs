@@ -24,6 +24,9 @@ spec = describe "Ultimatum of Ultimatums" $ do
           , UltimatumOfOrthodoxy
           , UltimatumOfExile
           , UltimatumOfUltimatums
+          , -- A Refraction, and excluded from the roll on that count too, but it
+            -- really does change deckbuilding: 3 Tekeli-li into every deck.
+            UltimatumOfAnnoyance
           ]
         :: IO ()
       )

@@ -8,6 +8,7 @@ import Arkham.Location.Import.Lifted
 import Arkham.Location.Types qualified as Field
 import Arkham.Matcher
 import Arkham.Message.Lifted.Move
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheCircleUndone.BeforeTheBlackThrone.Helpers

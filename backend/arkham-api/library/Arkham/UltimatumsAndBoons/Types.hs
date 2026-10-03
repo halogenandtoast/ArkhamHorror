@@ -8,6 +8,7 @@ import Control.Monad.Fail
 import Data.Aeson.TH
 import Data.Data (dataTypeConstrs, dataTypeOf, fromConstr, showConstr)
 import Data.Map.Strict qualified as Map
+import Data.Text qualified as T
 
 data Boon
   = BoonOfTheAncients
@@ -21,6 +22,9 @@ data Boon
   | BoonOfPersephone
   | BoonOfTheExplorer
   | BoonOfTheChild
+  | -- Refractions (see 'refractionScope').
+    BoonOfAtonement
+  | BoonOfBliss
   deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
 
 data Ultimatum
@@ -43,6 +47,10 @@ data Ultimatum
   | UltimatumOfExile
   | UltimatumOfTheSpiral
   | UltimatumOfMalevolence
+  | -- Refractions (see 'refractionScope').
+    UltimatumOfVenom
+  | UltimatumOfAmbuscade
+  | UltimatumOfAnnoyance
   | {- | A homebrew campaign's ultimatum. The door for content outside core: the
     'Text' is the full wire name @":\<campaign-id\>:\<Key\>"@, so the campaign
     it belongs to is read off the name. Campaigns declare their lists in their
@@ -91,11 +99,36 @@ of its @UltimatumDefs.hs@ declaration.
 homebrewUltimatum :: Text -> Text -> Ultimatum
 homebrewUltimatum campaign key = HomebrewUltimatum (campaign <> ":" <> key)
 
--- | True for a homebrew campaign's own ultimatum.
-isHomebrewVariant :: UltimatumOrBoon -> Bool
-isHomebrewVariant = \case
-  Ultimatum (HomebrewUltimatum _) -> True
-  _ -> False
+{- | A Refraction is an Ultimatum or Boon written for one campaign or scenario
+rather than for the game at large; the FAQ lists them apart from the general
+two. This is the campaign it belongs to, and 'Nothing' for a general entry.
+
+Only a homebrew campaign's own ultimatums are scoped so far; official
+Refractions join them here as they are implemented.
+-}
+refractionScope :: UltimatumOrBoon -> [Text]
+refractionScope = \case
+  Ultimatum (HomebrewUltimatum t) -> maybeToList (homebrewUltimatumCampaign t)
+  Ultimatum UltimatumOfVenom -> theForgottenAge
+  Ultimatum UltimatumOfAmbuscade -> theForgottenAge
+  Ultimatum UltimatumOfAnnoyance -> ["08"]
+  Boon BoonOfAtonement -> ["09"]
+  Boon BoonOfBliss -> ["10"]
+  _ -> []
+ where
+  -- A campaign and its Return to are the same campaign for this purpose.
+  theForgottenAge = ["04", "53"]
+
+isRefraction :: UltimatumOrBoon -> Bool
+isRefraction = notNull . refractionScope
+
+{- | The campaign id inside a homebrew ultimatum's wire name
+(@":dark-matter:UltimatumOfExploration"@ -> @":dark-matter"@).
+-}
+homebrewUltimatumCampaign :: Text -> Maybe Text
+homebrewUltimatumCampaign t = case T.splitOn ":" t of
+  ["", campaign, key] | notNull campaign && notNull key -> Just (":" <> campaign)
+  _ -> Nothing
 
 {- | Entries excluded from Ultimatum of Ultimatums' per-game roll — its own
 text exempts "ultimatums or boons that affect deckbuilding or chaos bag
@@ -116,6 +149,7 @@ affectsDeckbuildingOrChaosBag = \case
              , UltimatumOfOrthodoxy
              , UltimatumOfExile
              , UltimatumOfUltimatums -- never rolls itself
+             , UltimatumOfAnnoyance
              ]
 
 deriveJSON defaultOptions ''Boon

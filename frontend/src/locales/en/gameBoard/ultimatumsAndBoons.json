@@ -2,7 +2,7 @@
   "title": "Boons & Ultimatums",
   "boons": "Boons",
   "ultimatums": "Ultimatums",
-  "campaignUltimatums": "Campaign Ultimatums",
+  "refractions": "Refractions",
   "selectedCount": "{count} selected",
   "noneSelected": "None selected",
   "settingsToggleTitle": "Ultimatums & Boons enabled",
@@ -136,6 +136,26 @@
     "UltimatumOfMalevolence": {
       "name": "Ultimatum of Malevolence",
       "text": "Easy or Standard difficulty only. While playing, use the \"Hard/Expert\" side of the scenario's reference card."
+    },
+    "UltimatumOfVenom": {
+      "name": "Ultimatum of Venom",
+      "text": "The Forgotten Age. Each copy of Poisoned gains “Forced – When the game ends, if you have not been eliminated: Suffer 1 physical trauma.”"
+    },
+    "UltimatumOfAmbuscade": {
+      "name": "Ultimatum of Ambuscade",
+      "text": "The Forgotten Age. After each successful exploration, the performing investigator reveals the top card of the encounter deck. If the revealed card is an enemy, they draw it. Otherwise, they discard it."
+    },
+    "UltimatumOfAnnoyance": {
+      "name": "Ultimatum of Annoyance",
+      "text": "Edge of the Earth. When the campaign begins, shuffle 3 random cards from the Tekeli-li encounter set into each investigator's deck."
+    },
+    "BoonOfAtonement": {
+      "name": "Boon of Atonement",
+      "text": "Shades of Suffering (The Scarlet Keys). Each agenda gets +1 doom threshold."
+    },
+    "BoonOfBliss": {
+      "name": "Boon of Bliss",
+      "text": "Fate of the Vale (The Feast of Hemlock Vale). Each agenda gets +2 doom threshold."
     }
   },
   "morrigan": {

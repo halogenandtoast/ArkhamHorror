@@ -7,7 +7,8 @@ import type { Difficulty } from '@/arkham/types/Difficulty'
 import type { Scenario, Campaign } from '@/arkham/data'
 import type { GameMode, MultiplayerVariant, CampaignType } from '@/arkham/types/NewGame'
 import { ACHIEVEMENT_CAMPAIGN_IDS } from '@/arkham/achievements'
-import { homebrewUltimatumTags, ultimatumEntryScope } from '@/arkham/homebrewData'
+import { ultimatumEntryScope } from '@/arkham/homebrewData'
+import { refractionTagsFor } from '@/arkham/refractions'
 import { useSettings } from '@/stores/settings'
 
 type FullCampaignOption = {
@@ -302,17 +303,16 @@ const uabGroups: { key: 'boons' | 'ultimatums'; beta?: boolean; tags: string[] }
   },
 ]
 
-/* A homebrew campaign's own ultimatums, offered only while that campaign is the
-one being set up -- they are implemented in its code and would do nothing
-anywhere else. */
-const homebrewUltimatumGroup = computed(() => {
-  const tags = homebrewUltimatumTags(effectiveCampaignId.value)
-  return tags.length > 0 ? { key: 'campaignUltimatums', beta: true, tags } : null
+/* Refractions belong to one campaign or scenario, so they are only offered
+while that campaign is the one being set up. */
+const refractionGroup = computed(() => {
+  const tags = refractionTagsFor(effectiveCampaignId.value)
+  return tags.length > 0 ? { key: 'refractions', beta: true, tags } : null
 })
 
 const uabAllGroups = computed(() => {
-  const homebrew = homebrewUltimatumGroup.value
-  return homebrew ? [...uabGroups, homebrew] : uabGroups
+  const refractions = refractionGroup.value
+  return refractions ? [...uabGroups, refractions] : uabGroups
 })
 
 // Entries enforced at deck construction (deckRestrictions.ts) rather than at

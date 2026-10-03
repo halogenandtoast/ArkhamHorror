@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ultimatumEntryScope } from '@/arkham/homebrewData'
+import { isRefraction } from '@/arkham/refractions'
 
 const props = defineProps<{ entries: string[]; enabled: boolean; rolled?: string | null }>()
 const { t } = useI18n()
@@ -10,15 +11,19 @@ const { t } = useI18n()
 // permanent lists, gold for a boon, crimson for an ultimatum.
 const rolledKind = computed(() => (props.rolled?.startsWith('BoonOf') ? 'boons' : 'ultimatums'))
 
-/* Everything that is not a boon is an ultimatum -- a homebrew campaign's own
+/* Refractions are listed on their own, as the FAQ prints them. Of the rest,
+everything that is not a boon is an ultimatum -- a homebrew campaign's own
 ultimatum is named ":campaign:Key" and would fall out of a prefix test. */
-const boons = computed(() => props.entries.filter((tag) => tag.startsWith('BoonOf')))
-const ultimatums = computed(() => props.entries.filter((tag) => !tag.startsWith('BoonOf')))
+const refractions = computed(() => props.entries.filter(isRefraction))
+const general = computed(() => props.entries.filter((tag) => !isRefraction(tag)))
+const boons = computed(() => general.value.filter((tag) => tag.startsWith('BoonOf')))
+const ultimatums = computed(() => general.value.filter((tag) => !tag.startsWith('BoonOf')))
 
 const groups = computed(() =>
   [
     { key: 'boons', title: t('ultimatumsAndBoons.boons'), entries: boons.value },
     { key: 'ultimatums', title: t('ultimatumsAndBoons.ultimatums'), entries: ultimatums.value },
+    { key: 'refractions', title: t('ultimatumsAndBoons.refractions'), entries: refractions.value },
   ].filter((g) => g.entries.length > 0)
 )
 </script>

@@ -265,6 +265,9 @@ defaultCampaignRunner msg a = case msg of
       let weaknessMessages =
             if morrigan then [] else map (AddCampaignCardToDeck iid ShuffleIn) randomWeaknesses
       ancients <- hasBoon BoonOfTheAncients
+      -- Ultimatum of Annoyance (Edge of the Earth Refraction).
+      annoyance <- hasUltimatum UltimatumOfAnnoyance
+      tekelili <- if annoyance then annoyanceTekeliliMessages iid else pure []
       purchaseTrauma <- initDeckTrauma deck' iid CampaignTarget
       initXp <- initDeckXp deck' iid CampaignTarget
       pid <- getPlayer iid
@@ -281,6 +284,7 @@ defaultCampaignRunner msg a = case msg of
       -- messages follow it, so the whole tail defers together and keeps its order.
       pushAll
         $ weaknessMessages
+        <> tekelili
         <> [ DeferPastSimultaneousAsk pid
                $ morriganSwaps
                <> purchaseTrauma

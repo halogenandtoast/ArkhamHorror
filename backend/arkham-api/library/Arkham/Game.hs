@@ -566,6 +566,7 @@ withEnemyLocationAsLocationData el = do
       , "seals" .= emptyArray
       , "sealedChaosTokens" .= emptyArray
       , "concealedCards" .= emptyArray
+      , "group" .= (Nothing :: Maybe Text)
       ]
 
 withAssetMetadata :: HasGame m => Asset -> m (With Asset AssetMetadata)

@@ -38,7 +38,7 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   const cardName = (cid: CardId | string) => cardNameRaw(cid) ?? `#${cid}`
   const invName = (iid: string) => catalog.investigatorNames[iid] ?? iid
   const spaceName = (sid: string) => game.value?.board.spaces[sid]?.name ?? sid
-  const cardCode = (cid: CardId | string) => view.value?.cardCodes?.[cid] ?? slug(cardNameRaw(cid) ?? cid)
+  const cardCode = (cid: CardId | string, v = view.value) => v?.cardCodes?.[cid] ?? slug(cardNameRaw(cid) ?? cid)
   /* A handful of cards sit in the archive rather than in a deck -- Feast of
   Umordhoth's cards 13 to 19, which the codex deals out -- so their art is the
   archive's, numbered, not the card deck's. Cards 13 to 17 wait in the archive with
@@ -51,8 +51,8 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     const n = +m[2]
     return archiveImage(n, m[1] === 'feast' && NUMBER_FACING_OUT.has(n) ? !flipped : flipped)
   }
-  const cardFace = (cid: CardId, flipped: boolean) => {
-    const code = cardCode(cid)
+  const cardFace = (cid: CardId, flipped: boolean, v = view.value) => {
+    const code = cardCode(cid, v)
     return archiveArt(code, flipped) ?? cardImg(code, flipped)
   }
   const initials = (iid: string) =>
@@ -77,10 +77,10 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     ithaqua: 'ithaquas-children',
     rlyeh: 'dreams-of-rlyeh',
   }
-  const eventImage = (cid: CardId | null | undefined) => {
+  const eventImage = (cid: CardId | null | undefined, v = view.value) => {
     if (cid == null) return null
     // the prefix may be hyphenated, so it runs up to the last "-event-" in the code
-    const m = /^(.+)-event-(\d{2})$/.exec(view.value?.cardCodes?.[cid] ?? '')
+    const m = /^(.+)-event-(\d{2})$/.exec(v?.cardCodes?.[cid] ?? '')
     const dir = m ? (EVENT_ART[m[1]] ?? m[1]) : undefined
     return dir ? img(`events/${dir}/${m![2]}.avif`) : null
   }
@@ -90,8 +90,8 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   deck, mysteries, thresholds, terror cards -- sits by card code under cards/, which is
   what the catalog names. Both namings are in use, so ask for the catalog's and let the
   picture's own failure send us to the other. */
-  const encounterImage = (cid: CardId) => {
-    const code = view.value?.cardCodes?.[cid] ?? ''
+  const encounterImage = (cid: CardId, v = view.value) => {
+    const code = v?.cardCodes?.[cid] ?? ''
     const m = /^(.+)-(\d{2})$/.exec(code)
     if (!m) return null
     const path = cardArtPaths.value[code]
@@ -100,8 +100,8 @@ export function createGameContext(tableId: string, catalog: Catalog) {
   }
   /* the archive check comes before the encounter one, whose pattern would other-
   wise read "feast-15" as card 15 of a "feast" encounter set */
-  const activeCardImage = (cid: CardId) =>
-    eventImage(cid) ?? archiveArt(cardCode(cid), false) ?? encounterImage(cid) ?? cardFace(cid, false)
+  const activeCardImage = (cid: CardId, v = view.value) =>
+    eventImage(cid, v) ?? archiveArt(cardCode(cid, v), false) ?? encounterImage(cid, v) ?? cardFace(cid, false, v)
   // 428.2: an engaged monster sits in the play area of the investigator it is engaged with;
   // a massive one stays in its space (451.3)
   const inPlayerArea = (m: Monster) => m.state?.tag === 'Engaged' && !(view.value?.massive ?? []).includes(m.card)
@@ -312,6 +312,27 @@ export function createGameContext(tableId: string, catalog: Catalog) {
     })
   }
 
+  /* The card that lands in the active slot is tweened there from wherever it was, and a
+  view transition photographs it the moment the new state is in place. A picture the browser
+  has not fetched yet photographs as a broken image, and that is what flies across -- so it
+  is asked for first. A card whose art never arrives must not hold the table up, hence the
+  short wait rather than none. */
+  const artAsked = new Set<string>()
+  async function artInHand(next: TableView) {
+    const g = next.view?.game
+    const cid = g?.encounter?.card ?? g?.activeCard
+    if (cid == null) return
+    const src = activeCardImage(cid, next.view)
+    if (!src || artAsked.has(src)) return
+    artAsked.add(src)
+    const im = new Image()
+    im.src = src
+    await Promise.race([
+      im.decode().catch(() => {}),
+      new Promise((done) => setTimeout(done, 500)),
+    ])
+  }
+
   async function doApply(next: TableView, mode: ApplyMode) {
     const cur = tv.value
     // keep whichever copy is newest; the socket and our own replies both deliver it
@@ -338,6 +359,7 @@ export function createGameContext(tableId: string, catalog: Catalog) {
       else lastDrawGame = g
     }
     // cards and tokens tween between their old and new positions
+    await artInHand(next)
     const hadGame = !!cur?.view
     if (document.startViewTransition && hadGame && mode !== 'initial') {
       try {

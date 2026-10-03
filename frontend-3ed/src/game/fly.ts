@@ -58,8 +58,9 @@ export function flyCard(
   })
   const inner = document.createElement('div')
   inner.className = 'fly-inner'
+  let b: HTMLImageElement | null = null
   if (back) {
-    const b = document.createElement('img')
+    b = document.createElement('img')
     b.className = 'fly-back'
     b.src = back
     b.alt = ''
@@ -74,6 +75,13 @@ export function flyCard(
   const start = async () => {
     await transitionDone()
     if (delay) await sleep(delay)
+    /* The card is about to cross the table at full size, so its picture has to be in the
+    browser's hands first -- asking for it as it sets off flies a broken image across. One
+    that never arrives must not strand the card at the deck, hence the short wait. */
+    await Promise.race([
+      Promise.all([f.decode().catch(() => {}), b?.decode().catch(() => {})]),
+      sleep(400),
+    ])
     document.body.appendChild(fly)
     const to = target.getBoundingClientRect()
     const dx = to.left - from.left,

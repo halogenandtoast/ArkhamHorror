@@ -252,7 +252,7 @@ connectorDepth, connectorTab :: Double
 connectorDepth = 0.38
 connectorTab = 0.2
 
-{- | How far a corner piece reaches, from its own middle out to the edge it joins by,
+{- | How far a corner piece reaches, from its own middle out to the arm it joins by,
 in units of a tile's flat-to-flat width. The frontend draws the piece that size
 (@CORNER_W@ in util.ts, less the margin its art leaves, and measured from the piece's
 own middle rather than the middle of its picture); the two have to agree, because this
@@ -342,18 +342,23 @@ cornerSeat ts spotOf =
     _ -> start
   {- A hidden path is laid against one tile and reaches the others from there, rather
   than sitting evenly between all three (Secrets of the Order, p. 4: a corner of it is
-  placed adjacent to the other world). So it stands its own reach away from that tile's
-  corner, which leaves the edge it joins by flush against the tile whatever size the
-  piece is drawn. -}
+  placed adjacent to the other world). So it stands its own reach out from that tile's
+  edge, along the line to the junction, which leaves the arm it joins by touching the
+  tile whatever size the piece is drawn.
+
+  Measuring from the edge rather than from the nearest corner is what makes that true at
+  every junction. The two differ because rows are stretched a little to keep the diagonal
+  streets clear: four of a tile's six junctions then sit a couple of degrees off the
+  corner they are named for, and there the tile's edge is nearer than its corner, so a
+  piece set out from the corner stops short of the tile by about a fortieth of its width.
+  -}
   seat = case centres of
     [] -> evenly
-    anchor : _ ->
-      let (x, y) = evenly
-          (cx, cy) = cornerPoint anchor (x, y)
-          away = sqrt ((cx - x) ** 2 + (cy - y) ** 2)
-       in if away <= 0
-            then (x, y)
-            else (cx + (x - cx) / away * cornerReach, cy + (y - cy) / away * cornerReach)
+    (ax, ay) : _ ->
+      let (jx, jy) = evenly
+          towards = atan2 (jy - ay) (jx - ax)
+          out = edgeReach towards + cornerReach
+       in (ax + out * cos towards, ay + out * sin towards)
   faces = [facingSpace (tile nid) c seat | (nid, c) <- ts]
   spot sid = fromMaybe (0, 0) (spotOf sid)
   meanOf [] = (0, 0)
@@ -361,6 +366,19 @@ cornerSeat ts spotOf =
     ( sum (map fst ps) / fromIntegral (length ps)
     , sum (map snd ps) / fromIntegral (length ps)
     )
+
+{- | How far a tile's own edge lies from its centre in that direction, which is the
+apothem out at an edge's middle and the circumradius out at a corner. Every edge of a
+hexagon is the same distance away, so which one is asked for does not matter.
+-}
+edgeReach :: Double -> Double
+edgeReach towards = edgeApothem SideLeft / cos off
+ where
+  off = minimum [abs (atan2 (sin (towards - n)) (cos (towards - n))) | n <- edgeNormals]
+
+-- | The six directions a tile's edges face, each square on to one of them.
+edgeNormals :: [Double]
+edgeNormals = [fromIntegral d * pi / 180 | d <- [0, 60 .. 300 :: Int]]
 
 {- | The corner of a tile at this centre that points nearest the given place. A tile is
 drawn as a regular hexagon however far apart the rows are set, so its corners are not

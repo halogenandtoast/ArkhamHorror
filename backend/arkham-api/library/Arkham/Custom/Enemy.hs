@@ -27,13 +27,18 @@ newtype CustomEnemy = CustomEnemy EnemyAttrs
 
 {- | Prey and spawn instructions are attrs fields rather than keywords, so they
 come from the def's meta the way an asset's health does.
+
+Where the card says nothing about spawning, what the keywords already decided
+stands: hidden means the card is drawn into your hand rather than spawned, and
+concealed means it starts in the shadows. Overwriting that with the absent meta
+key would spawn both at the drawing investigator's location.
 -}
 customEnemy :: CardDef -> EnemyCard CustomEnemy
 customEnemy def =
   enemyWith CustomEnemy def \a ->
     a
       { enemyPrey = customMeta "prey" (Prey Anyone) def
-      , enemySpawnAt = customMetaMaybe @SpawnAt "spawnAt" def
+      , enemySpawnAt = customMetaMaybe @SpawnAt "spawnAt" def <|> enemySpawnAt a
       }
 
 instance HasModifiersFor CustomEnemy where

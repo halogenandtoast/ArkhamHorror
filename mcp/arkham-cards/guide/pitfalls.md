@@ -63,6 +63,22 @@ which for every step, and `validate_card` reports it as "belongs inside".
 
 Only the first in dispatch order runs; the rest are ignored. Split them.
 
+## A hidden card that places itself
+
+`Hidden` on an enemy or a treachery **is** the revelation. The def is given
+`IsRevelation` whether or not it asks for one, and the revelation secretly places
+the card in the drawing investigator's hand before any `_onRevelation` steps run.
+`_revelationPlacement` is not read for a hidden card, and a step that places it
+anywhere else is fighting the keyword. A card that only *might* hide (Delusory
+Evils) is in hand by the time its steps run, so the other branch has to discard
+it from there.
+
+Nothing discards a hidden card, so the only way out of hand is an ability the card
+prints itself: give it one with `"zone": "hand"`. A hidden enemy does not spawn,
+is not engaged with you and does not attack while it is in your hand.
+
+On any other card type the keyword is printed text and nothing more.
+
 ## A cost written as a step
 
 "Discard a card: draw 2" pays before resolving and does not resolve at all if

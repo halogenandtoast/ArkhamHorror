@@ -16,6 +16,7 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Card.CardType
 import Arkham.Id (InvestigatorId (..))
+import Arkham.Keyword qualified as Keyword
 import Arkham.Name (Name)
 import Arkham.Prelude
 import Data.Aeson.KeyMap qualified as KeyMap
@@ -155,7 +156,34 @@ added to an investigator's signatures is theirs at once, instead of only after
 it is next saved.
 -}
 lookupCustomCardDef :: HasCardCode a => a -> Maybe CardDef
-lookupCustomCardDef = fmap (withAbilityZones . withSignatureRestriction . customCardDef) . lookupCustomCard
+lookupCustomCardDef =
+  fmap (withHiddenRevelation . withAbilityZones . withSignatureRestriction . customCardDef)
+    . lookupCustomCard
+
+{- | Whether the def prints the hidden keyword.
+
+Only an enemy or a treachery can: being hidden is a placement in your hand, and
+the other card types have nowhere to be put there. A card type that cannot be
+hidden keeps the keyword as printed text and nothing more.
+-}
+isHiddenCustomCard :: CardDef -> Bool
+isHiddenCustomCard def = printsHidden && canBeHidden
+ where
+  printsHidden = Keyword.Hidden `elem` cdKeywords def
+  canBeHidden =
+    cdCardType def `elem` [EnemyType, PlayerEnemyType, TreacheryType, PlayerTreacheryType]
+
+{- | The hidden keyword /is/ a revelation: "an encounter card or weakness with the
+hidden keyword has a revelation ability that secretly adds that card to your
+hand". A treachery is drawn with one either way, but an enemy is not, so without
+this a hidden enemy would spawn nothing and sit in limbo. Derived rather than
+asked for, so the keyword alone is enough to say what the card does -- and so an
+author who writes the def by hand cannot print the keyword without it.
+-}
+withHiddenRevelation :: CardDef -> CardDef
+withHiddenRevelation def
+  | isHiddenCustomCard def, cdRevelation def == NoRevelation = def {cdRevelation = IsRevelation}
+  | otherwise = def
 
 withSignatureRestriction :: CardDef -> CardDef
 withSignatureRestriction def

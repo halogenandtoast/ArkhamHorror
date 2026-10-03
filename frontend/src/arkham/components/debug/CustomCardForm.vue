@@ -80,9 +80,30 @@ const ICONS = [
   { value: 'Wild', label: 'Wild', icon: 'wild-icon' },
 ]
 const KEYWORDS = [
-  'Alert', 'Aloof', 'Elusive', 'Fast', 'Hunter', 'Massive', 'Myriad',
-  'Peril', 'Relentless', 'Retaliate', 'Surge', 'Doomed', 'Permanent', 'Predator',
+  'Alert', 'Aloof', 'Doomed', 'Elusive', 'Fast', 'Hidden', 'Hunter', 'Massive',
+  'Myriad', 'Peril', 'Permanent', 'Predator', 'Relentless', 'Retaliate', 'Surge',
 ]
+const ENEMY_TYPES = ['EnemyType', 'PlayerEnemyType']
+const TREACHERY_TYPES = ['TreacheryType', 'PlayerTreacheryType']
+/* Which card types can print a keyword, for the keywords only some can. The rest
+ * are open to any card. Fighting, evading, engaging and moving are things an
+ * enemy does, so the keywords about them are an enemy's alone; hidden is a
+ * revelation that puts the card in your hand, which only an enemy or a treachery
+ * has a placement for. */
+const KEYWORD_TYPES: Record<string, string[]> = {
+  Alert: ENEMY_TYPES,
+  Aloof: ENEMY_TYPES,
+  Doomed: ENEMY_TYPES,
+  Elusive: ENEMY_TYPES,
+  Hunter: ENEMY_TYPES,
+  Massive: ENEMY_TYPES,
+  Predator: ENEMY_TYPES,
+  Relentless: ENEMY_TYPES,
+  Retaliate: ENEMY_TYPES,
+  Hidden: [...ENEMY_TYPES, ...TREACHERY_TYPES],
+}
+const canPrintKeyword = (keyword: string, cardType: string) =>
+  !KEYWORD_TYPES[keyword] || KEYWORD_TYPES[keyword].includes(cardType)
 
 
 const blankForm = () => ({
@@ -198,14 +219,14 @@ function chooseType(cardType: string) {
   form.cardType = cardType
   form.unique = cardType === 'InvestigatorType'
   form.weaknessKind = ALWAYS_WEAKNESS.includes(cardType) ? 'Weakness' : ''
+  // Drop what the new type cannot print rather than keeping it where nothing shows it.
+  form.keywords = form.keywords.filter((k) => canPrintKeyword(k, cardType))
 }
 
 const artFor = (slot: string) => form.artUploaded[slot] || form.artUrls[slot]?.trim() || null
 
-const isEnemy = computed(() => form.cardType === 'EnemyType' || form.cardType === 'PlayerEnemyType')
-const isTreachery = computed(
-  () => form.cardType === 'TreacheryType' || form.cardType === 'PlayerTreacheryType',
-)
+const isEnemy = computed(() => ENEMY_TYPES.includes(form.cardType))
+const isTreachery = computed(() => TREACHERY_TYPES.includes(form.cardType))
 /* Only cards you can commit to a test print skill icons; an investigator has
  * stats instead, and enemies and treacheries have none at all. */
 const hasSkillIcons = computed(
@@ -220,6 +241,15 @@ const hasCost = computed(() => ['AssetType', 'EventType'].includes(form.cardType
 
 const art = computed(() => artFor('art'))
 const isInvestigator = computed(() => form.cardType === 'InvestigatorType')
+
+const keywordChoices = computed(() =>
+  KEYWORDS.filter((k) => canPrintKeyword(k, form.cardType)),
+)
+/* Read the same way the engine reads it: on a card type that cannot be hidden the
+ * keyword is printed text and changes nothing. */
+const isHidden = computed(
+  () => canPrintKeyword('Hidden', form.cardType) && form.keywords.includes('Hidden'),
+)
 
 const isWeakness = computed(() => !!form.weaknessKind)
 /* An asset or an event is a weakness only if it says so; a player treachery or
@@ -240,15 +270,18 @@ const canHaveRevelation = computed(
 /* A treachery always resolves when it is drawn, and so does a weakness asset or
  * event — without a revelation it would simply sit in your hand. A weakness
  * enemy is spawned by being drawn and needs no revelation to do it, so that one
- * is asked for. */
+ * is asked for — unless it is hidden, which is a revelation by definition. */
 const revelationImplied = computed(
-  () => isTreachery.value || (isWeakness.value && (isAsset.value || isEvent.value)),
+  () => isTreachery.value || isHidden.value || (isWeakness.value && (isAsset.value || isEvent.value)),
 )
 
 const hasRevelation = computed(() => revelationImplied.value || form.revelation)
 
-// Only what stays on the table has anywhere to be put.
-const hasRevelationPlacement = computed(() => isAsset.value || isTreachery.value)
+/* Only what stays on the table has anywhere to be put -- and a hidden card is
+ * already answered: it goes secretly into the drawing investigator's hand. */
+const hasRevelationPlacement = computed(
+  () => !isHidden.value && (isAsset.value || isTreachery.value),
+)
 
 const REVELATION_PLACEMENTS = computed(() =>
   isTreachery.value
@@ -944,7 +977,7 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
             <legend>Keywords</legend>
             <div class="chips">
               <button
-                v-for="keyword in KEYWORDS"
+                v-for="keyword in keywordChoices"
                 :key="keyword"
                 type="button"
                 class="chip"
@@ -954,6 +987,11 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
                 {{ keyword }}
               </button>
             </div>
+            <p v-if="isHidden" class="hint">
+              Drawing this secretly puts it into your hand instead of resolving it, and only an
+              ability used "In your hand" can get it out again — nothing discards a hidden card.
+              An enemy's draw is still announced to the table unless it also prints Peril.
+            </p>
           </fieldset>
 
           <fieldset v-if="isInvestigator">

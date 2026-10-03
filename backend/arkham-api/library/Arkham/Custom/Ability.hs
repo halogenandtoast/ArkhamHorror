@@ -112,7 +112,11 @@ import Arkham.Id
 import Arkham.Matcher
 import Arkham.Message
 import Arkham.Message.Lifted (withInvestigatorAmounts)
-import Arkham.Message.Lifted.Placement (Placeable, Placement (InPlayArea, InThreatArea), place)
+import Arkham.Message.Lifted.Placement (
+  Placeable,
+  Placement (HiddenInHand, InPlayArea, InThreatArea),
+  place,
+ )
 import Arkham.Message.Lifted.Queue (ReverseQueue)
 import Arkham.Prelude
 import Arkham.Query (QueryElement)
@@ -437,11 +441,19 @@ runCustomRevelation a iid = do
   for_ (customRevelationPlacement (toCardDef a) iid) (place a)
   runCustomSteps a iid revelationMetaKey
 
+{- | Where the revelation leaves the card.
+
+Hidden is answered before the author is asked, because the keyword is itself the
+answer -- a hidden card's revelation "secretly adds that card to your hand" --
+and it is printed on the card, where a placement chosen in the builder is not.
+-}
 customRevelationPlacement :: CardDef -> InvestigatorId -> Maybe Placement
-customRevelationPlacement def iid = case customMetaMaybe revelationPlacementMetaKey def of
-  Just ("threatArea" :: Text) -> Just (InThreatArea iid)
-  Just "playArea" -> Just (InPlayArea iid)
-  _ -> Nothing
+customRevelationPlacement def iid
+  | isHiddenCustomCard def = Just (HiddenInHand iid)
+  | otherwise = case customMetaMaybe revelationPlacementMetaKey def of
+      Just ("threatArea" :: Text) -> Just (InThreatArea iid)
+      Just "playArea" -> Just (InPlayArea iid)
+      _ -> Nothing
 
 {- | Pick up a @distribute@ block where its ask left off.
 

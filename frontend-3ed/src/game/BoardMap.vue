@@ -7,6 +7,7 @@ import OutlineFilter from '@/game/OutlineFilter.vue'
 import SpaceChips from '@/game/SpaceChips.vue'
 import Tok from '@/game/Tok.vue'
 import {
+  CONNECTOR_D,
   CONNECTOR_W,
   CORNER_ART_MIDDLE,
   CORNER_W,
@@ -96,7 +97,7 @@ const spaceBox = (sid: string) => {
   if (standsInAJunction(sid)) return { w: CORNER_W, h: CORNER_W, fit: 'xMidYMid meet' }
   // the portal's art joins top and bottom, so its length is the box's height
   if (laidLikeAStreet(sid)) return { w: PORTAL_W, h: PORTAL_W, fit: 'xMidYMid meet' }
-  if (connectorArt(sid)) return { w: CONNECTOR_W, h: CONNECTOR_W, fit: 'xMidYMid meet' }
+  if (connectorArt(sid)) return { w: CONNECTOR_W, h: CONNECTOR_D, fit: 'xMidYMid meet' }
   return { w: STREET_W, h: STREET_H, fit: 'none' }
 }
 

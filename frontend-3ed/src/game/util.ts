@@ -213,11 +213,18 @@ its board. The art is square and is drawn square; stretching it along the join i
 to push the streets over the tiles they join. */
 export const STREET_W = 0.4189 * TILE_W
 export const STREET_H = (STREET_W * 813) / 808
-/* A connector hangs off one edge instead of spanning two tiles, so it is not a
-street length. Its box is square and it is drawn to fit, which keeps every
-connector's own proportions -- the art runs from 1.01:1 to 1.20:1 -- rather than
-stretching them all to the street's. */
-export const CONNECTOR_W = 0.85 * STREET_W
+/* A connector hangs off one edge instead of spanning two tiles, so what sets its size is
+how deep it stands, not a street's length. The backend seats it as a piece this deep with a
+fifth of that tucked behind the tile's edge (@connectorDepth@ and @connectorTab@ in
+Tiles.hs), and that fifth is its tab: at this depth the tab is 0.068 long, which is exactly
+how deep the notch in a tile's edge is, so the tab bottoms out in the notch just as the
+piece's body comes up against the edge. Deeper and the tab's flared tip drives into the
+notch's walls, which is what buried the piece's corners in the tile. The
+box is as wide as the widest connector art and each picture is fitted inside it, which
+keeps every connector's own proportions -- they run from 1.01:1 to 1.20:1 -- and brings
+them all out at the same depth. */
+export const CONNECTOR_D = 0.349 * TILE_W
+export const CONNECTOR_W = 1.2 * CONNECTOR_D
 /* A corner piece stands in the junction three tiles leave between them, which the backend
 puts at the middle of their three centres. This is the size it is on the table, and it
 checks out against the hole it has to fill: that middle is 0.773 of a tile from each

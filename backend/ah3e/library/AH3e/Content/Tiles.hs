@@ -249,8 +249,16 @@ is seated by its own depth rather than in the slot a street would take: its
 shoulder lands on the tile's edge and the tab reaches into the notch.
 -}
 connectorDepth, connectorTab :: Double
-connectorDepth = 0.38
+connectorDepth = 0.349
 connectorTab = 0.2
+
+{- | The daylight left between a hanging piece and the tile it hangs from, in tile widths.
+Seated by its tab alone the piece comes up flush against the edge and reads as cut into the
+tile rather than laid against it; this backs it off by a third of the tab's length, which
+still leaves the tab well inside the notch.
+-}
+connectorStandoff :: Double
+connectorStandoff = 0.022
 
 {- | The sides of a threshold tile in the order they run round it, which is the order
 its icons are printed in: from due left, turning the way the screen does. Where it
@@ -490,7 +498,7 @@ buildMapOf nids streets pieces =
           <> [(spaceIdFor m.name, m.from, m.edge) | m <- mysteries]
     , let (x, y) = pos nid
           a = edgeAngle e
-          reach = edgeApothem e + connectorDepth * (0.5 - connectorTab)
+          reach = edgeApothem e + connectorDepth * (0.5 - connectorTab) + connectorStandoff
     ]
   {- The tiles sit on a regular hex lattice, so every neighbour is the same distance away
   and every junction between three of them is the same shape. The rows used to be spread a

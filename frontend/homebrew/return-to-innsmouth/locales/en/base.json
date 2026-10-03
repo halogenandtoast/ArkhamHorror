@@ -8,10 +8,12 @@
     "doNotDiscard": "Done discarding assets"
   },
   "returnToThePitOfDespair": {
-    "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to The Pit of Despair.",
-    "replacedSets": "Stalkers of Cthulhu replaces Agents of Cthulhu, and Rolling Tide replaces Rising Tide.",
-    "tidalTunnels": "Replace one of each Tidal Pool, Underground River and Underwater Cavern with its counterpart from Return to Flooded Caverns, then set the Tidal Tunnels up as usual.",
-    "setAsideTroublingMemories": "Set aside both copies of Troubling Memories, out of play.",
+    "setup": {
+      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to The Pit of Despair.",
+      "replacedSets": "Stalkers of Cthulhu replaces Agents of Cthulhu, and Rolling Tide replaces Rising Tide.",
+      "tidalTunnels": "Replace one of each Tidal Pool, Underground River and Underwater Cavern with its counterpart from Return to Flooded Caverns, then set the Tidal Tunnels up as usual.",
+      "setAsideTroublingMemories": "Set aside both copies of Troubling Memories, out of play."
+    },
     "name": "Return to The Pit of Despair"
   },
   "troublingMemories": {
@@ -21,9 +23,11 @@
     "gainSurge": "Troubling Memories gains surge"
   },
   "returnToTheVanishingOfElinaHarper": {
-    "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to The Vanishing of Elina Harper.",
-    "replacedSets": "Innsmouth Haze replaces Fog over Innsmouth, and Barricaded Doors replaces Locked Doors.",
-    "hybridLeads": "Shuffle the \"Little\" Gemma, Ron Stalwick and Roderick story assets into the Leads deck.",
+    "setup": {
+      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to The Vanishing of Elina Harper.",
+      "replacedSets": "Innsmouth Haze replaces Fog over Innsmouth, and Barricaded Doors replaces Locked Doors.",
+      "hybridLeads": "Shuffle the \"Little\" Gemma, Ron Stalwick and Roderick story assets into the Leads deck."
+    },
     "name": "Return to The Vanishing of Elina Harper",
     "townspeopleInsight": "Your dealings with the townspeople have given you insight into what's going on here: each investigator gains 1 extra experience for each Suspect enemy in the victory display."
   },
@@ -33,9 +37,11 @@
     "removeHybrid": "Remove a Hybrid story asset you control from the game"
   },
   "returnToInTooDeep": {
-    "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to In Too Deep.",
-    "replacedSets": "Stalkers of Cthulhu replaces Agents of Cthulhu, Rolling Tide replaces Rising Tide, and Occultation replaces Syzygy.",
-    "setAsideInnsmouthInfluence": "Set aside all four copies of Innsmouth Influence, out of play.",
+    "setup": {
+      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to In Too Deep.",
+      "replacedSets": "Stalkers of Cthulhu replaces Agents of Cthulhu, Rolling Tide replaces Rising Tide, and Occultation replaces Syzygy.",
+      "setAsideInnsmouthInfluence": "Set aside all four copies of Innsmouth Influence, out of play."
+    },
     "resolution": {
       "innsmouthInfluence": "As you are about to leave this forsaken place, you can feel something in yourself pulling, wanting to go back. You wonder if your stay here already started to affect you."
     },
@@ -43,10 +49,12 @@
   },
   "returnToDevilReef": {
     "name": "Return to Devil Reef",
-    "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to Devil Reef.",
-    "replacedSets": "Rolling Tide replaces Rising Tide.",
-    "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
-    "devilReefLocations": "Shuffle Cave Mouth in with the rest of the Devil Reef locations. Do not remove any; use all six.",
+    "setup": {
+      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to Devil Reef.",
+      "replacedSets": "Rolling Tide replaces Rising Tide.",
+      "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
+      "devilReefLocations": "Shuffle Cave Mouth in with the rest of the Devil Reef locations. Do not remove any; use all six."
+    },
     "aBargain": {
       "title": "A Bargain",
       "body": "You stand in front of the large carved stone depicting a bloated figure with fishlike features. The voice that guided you here is just a whisper now, but you feel power radiating from the statue and you know that's why you are here. It's this power that calls out to you, telling you that you could have all the riches you desired and the long life to take advantage of them.\n\nWhile you approach the statue, you become aware of the price that you would have to pay. You consider your options.",
@@ -56,17 +64,21 @@
   },
   "returnToHorrorInHighGear": {
     "name": "Return to Horror in High Gear",
-    "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to Horror in High Gear.",
-    "replacedSets": "Innsmouth Haze replaces Fog over Innsmouth.",
-    "roadDeck": "Shuffle Mud Track and Straight Section in with the other (non-Long Way Around) road locations, then remove two at random from the game without looking at them.",
-    "endOfRound": "For the duration of this scenario: Forced - At the end of the round, discard all non-Trap cards attached to locations."
+    "setup": {
+      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to Horror in High Gear.",
+      "replacedSets": "Innsmouth Haze replaces Fog over Innsmouth.",
+      "roadDeck": "Shuffle Mud Track and Straight Section in with the other (non-Long Way Around) road locations, then remove two at random from the game without looking at them.",
+      "endOfRound": "For the duration of this scenario: Forced - At the end of the round, discard all non-Trap cards attached to locations."
+    }
   },
   "returnToALightInTheFog": {
     "name": "Return to A Light in the Fog",
-    "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to A Light in the Fog.",
-    "replacedSets": "Occultation replaces Syzygy, and Rolling Tide replaces Rising Tide.",
-    "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
-    "setAsideGrapplers": "Set aside all three copies of Deep One Grappler, out of play, and shuffle both copies of Born to Breed into the encounter deck.",
+    "setup": {
+      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to A Light in the Fog.",
+      "replacedSets": "Occultation replaces Syzygy, and Rolling Tide replaces Rising Tide.",
+      "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
+      "setAsideGrapplers": "Set aside all three copies of Deep One Grappler, out of play, and shuffle both copies of Born to Breed into the encounter deck."
+    },
     "changing": {
       "title": "A Light in the Fog",
       "body": "You awaken abruptly from your sleep. You still have the dreams in front of your eyes, dreams of swimming in the depths, drawn deeper and deeper. You saw others down there with you, looking just like the twisted fish-like creatures you have encountered again and again now. They seemed strangely familiar to you, as if they are good friends. Or family.\n\nYou sit up straight and move to rub the sleep from your eyes, but you recoil at the sight of your own hands. The webbing between two of your fingers confirms your fears... you are not just imagining it, you are actually changing. You need to get out of this town, and quick."
@@ -74,18 +86,22 @@
   },
   "returnToTheLairOfDagon": {
     "name": "Return to The Lair of Dagon",
-    "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to The Lair of Dagon.",
-    "replacedSets": "Occultation replaces Syzygy, and Barricaded Doors replaces Locked Doors.",
-    "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
-    "doorway": "Shuffle the three versions of Doorway to the Depths together, remove two of them from the game at random without looking, and set the remaining one aside without looking at it.",
-    "setAsideStirring": "Set aside the one copy of Stirring in His Sleep, out of play."
+    "setup": {
+      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to The Lair of Dagon.",
+      "replacedSets": "Occultation replaces Syzygy, and Barricaded Doors replaces Locked Doors.",
+      "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
+      "doorway": "Shuffle the three versions of Doorway to the Depths together, remove two of them from the game at random without looking, and set the remaining one aside without looking at it.",
+      "setAsideStirring": "Set aside the one copy of Stirring in His Sleep, out of play."
+    }
   },
   "returnToIntoTheMaelstrom": {
     "name": "Return to Into the Maelstrom",
-    "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to Into the Maelstrom.",
-    "replacedSets": "Occultation replaces Syzygy.",
-    "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
-    "setAsideCards": "Set aside both copies of Stirring in Their Sleep and the single copies of Presence of the Father and Presence of the Mother, out of play."
+    "setup": {
+      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to Into the Maelstrom.",
+      "replacedSets": "Occultation replaces Syzygy.",
+      "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
+      "setAsideCards": "Set aside both copies of Stirring in Their Sleep and the single copies of Presence of the Father and Presence of the Mother, out of play."
+    }
   },
   "flashbackXVI": {
     "title": "Flashback XVI",

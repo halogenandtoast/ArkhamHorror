@@ -194,11 +194,14 @@ count of the copies already in play against @cdEncounterSetQuantity@ rather than
 uniqueness check.
 -}
 getAvailableExpeditionItems :: HasGame m => m [CardDef]
-getAvailableExpeditionItems = filterM available expeditionItems
+getAvailableExpeditionItems = do
+  -- Ultimatum of Spoilage records what has been lost; nothing else writes this.
+  spoiled <- getSomeRecordSet SpoiledExpeditionItems
+  filterM (available spoiled) expeditionItems
  where
-  available def = do
+  available spoiled def = do
     inPlay <- selectCount (assetIs def)
-    pure $ inPlay < fromMaybe 1 (cdEncounterSetQuantity def)
+    pure $ toCardCode def `notElem` spoiled && inPlay < fromMaybe 1 (cdEncounterSetQuantity def)
 
 -- | Each Task: campaign-log key, the story-asset card, and its i18n label.
 tasks :: [(TheDrownedCityKey, CardDef, Text)]

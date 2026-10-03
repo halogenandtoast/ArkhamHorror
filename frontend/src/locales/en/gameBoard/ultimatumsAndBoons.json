@@ -172,6 +172,18 @@
     "UltimatumOfTheSleeper": {
       "name": "Ultimatum of the Sleeper",
       "text": "The Doom of Arkham Pt II (The Drowned City). The health value of each Cthulhu enemy's Enraged side now reads “X per investigator.”"
+    },
+    "UltimatumOfInvisibility": {
+      "name": "Ultimatum of Invisibility",
+      "text": "Undimensioned and Unseen (The Dunwich Legacy). Each Brood of Yog-Sothoth gains the Elite trait and is immune to all player card effects except for the effects of Esoteric Formula."
+    },
+    "UltimatumOfTheMan": {
+      "name": "Ultimatum of The Man",
+      "text": "The Pallid Mask (The Path to Carcosa). For the purposes of Corpse Dweller's spawn ability, The Man in the Pallid Mask does not count as a Humanoid enemy. While it is Act 2, The Man in the Pallid Mask cannot leave the Tomb of Shadows."
+    },
+    "UltimatumOfSpoilage": {
+      "name": "Ultimatum of Spoilage",
+      "text": "The Drowned City. Investigators cannot trigger abilities on or assign damage to Artifact assets. If an Item asset from the Expedition encounter set is ever defeated or discarded, it cannot be chosen during setup for the remainder of the campaign."
     }
   },
   "morrigan": {

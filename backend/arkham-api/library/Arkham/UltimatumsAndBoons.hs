@@ -22,13 +22,15 @@ module Arkham.UltimatumsAndBoons (
 import Arkham.Ability
 import Arkham.Action.Additional
 import Arkham.Asset.Types (Field (..))
+import Arkham.Campaigns.TheDrownedCity.Helpers (expeditionItems)
+import Arkham.Campaigns.TheDrownedCity.Key (TheDrownedCityKey (SpoiledExpeditionItems))
 import Arkham.Campaigns.ThePathToCarcosa.Key (ThePathToCarcosaKey (YouHeadedDanielsWarning))
 import Arkham.Card
 import Arkham.ChaosToken.Types (ChaosTokenFace (..))
 import Arkham.Classes.HasGame
 import Arkham.Classes.HasModifiersFor
 import Arkham.Classes.HasQueue
-import Arkham.Classes.Query (select, selectAny, selectCount, (<=~>))
+import Arkham.Classes.Query (select, selectAny, selectCount, selectOne, (<=~>))
 import Arkham.Criteria qualified as Criteria
 import Arkham.Deck qualified as Deck
 import Arkham.Decklist.RandomBasicWeakness (
@@ -42,7 +44,7 @@ import Arkham.Game.Settings
 import Arkham.Helpers (unDeck)
 import Arkham.Helpers.Campaign (stored)
 import Arkham.Helpers.ChaosToken (cancelChaosToken)
-import Arkham.Helpers.Log (getHasRecord, scenarioCount)
+import Arkham.Helpers.Log (getHasRecord, recordSetInsert, scenarioCount)
 import Arkham.Helpers.Message qualified as Msg
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getPlayerCount)
@@ -66,7 +68,7 @@ import Arkham.Projection
 import Arkham.ScenarioLogKey (ScenarioCountKey (CthulhuRage))
 import Arkham.Source
 import Arkham.Target
-import Arkham.Trait (Trait (Ally, Enraged))
+import Arkham.Trait (Trait (Ally, Artifact, Elite, Enraged, Humanoid))
 import Arkham.Treachery.CardDefs.TheForgottenAge.Poison qualified as Treacheries
 import Arkham.UltimatumsAndBoons.Types
 import Arkham.Window (mkAfter, revealedChaosTokens)
@@ -132,6 +134,45 @@ instance HasModifiersFor Ultimatum where
       UltimatumOfInduction -> modifySelectMaybe source Matcher.Anyone \_ -> do
         liftGuardM $ not <$> getIsStandalone
         pure [CannotGainXP]
+      {- Ultimatum of Invisibility: the Brood already refuses everything but
+      Esoteric Formula's own attacks and damage; this widens that to every kind
+      of player-card effect, and makes it Elite. -}
+      UltimatumOfInvisibility ->
+        -- ScenarioMatcher has no OneOf instance, and ScenarioWithId does not
+        -- fall back to the scenario's reference, so the Return-to id is listed.
+        whenM (anyM (selectAny . Matcher.ScenarioWithId) ["02236", "51041"]) do
+          modifySelect source (Matcher.EnemyWithTitle "Brood of Yog-Sothoth")
+            $ AddTrait Elite
+            : [ CannotBeAttackedByPlayerSourcesExcept exceptFormula
+              , CannotBeEvadedByPlayerSourcesExcept exceptFormula
+              , CannotBeDamagedByPlayerSourcesExcept exceptFormula
+              , CannotBeEngagedByPlayerSourcesExcept exceptFormula
+              , CannotReceiveModifiersFromPlayerSources
+              , CannotBeExhaustedBy Matcher.SourceIsPlayerCard
+              , CannotBeDefeatedBy Matcher.SourceIsPlayerCard
+              , CannotBeRemovedBy Matcher.SourceIsPlayerCard
+              , CannotBeMovedBy Matcher.SourceIsPlayerCard
+              , CannotBeDisengagedBy Matcher.SourceIsPlayerCard
+              ]
+      {- Ultimatum of The Man. Corpse Dweller finds its host with
+      @EnemyWithTrait Humanoid@, which reads the modified traits field, so
+      dropping the trait is enough -- no edit to its module. The trait is gone
+      for every other lookup too, but nothing else in the campaign asks. -}
+      UltimatumOfTheMan -> whenM (selectAny $ Matcher.ScenarioWithId "03240") do
+        modifySelect source theMan [RemoveTrait Humanoid]
+        whenM (selectAny $ Matcher.ActWithStep 2) do
+          modifySelect source theMan [CannotMove, CannotBeMoved]
+      {- Ultimatum of Spoilage: no abilities on Artifacts and no damage assigned
+      to them. The damage half is a per-investigator modifier on the asset, so
+      it is built one investigator at a time. -}
+      UltimatumOfSpoilage -> whenM ((== Just "11") <$> selectOne Matcher.TheCampaign) do
+        modifySelect
+          source
+          Matcher.Anyone
+          [CannotTriggerAbilityMatching $ Matcher.AbilityOnAsset (Matcher.AssetWithTrait Artifact)]
+        iids <- select Matcher.Anyone
+        for_ iids \iid ->
+          modifySelect source (Matcher.AssetWithTrait Artifact) [CannotAssignDamage iid]
       {- Ultimatum of the Sleeper: each Enraged Cthulhu's health, printed X and
       resolved to Cthulhu's Rage by the facet itself, becomes that per player.
       Health modifiers add, so this contributes the extra players' worth. -}
@@ -151,6 +192,11 @@ instance HasModifiersFor Ultimatum where
             Matcher.Anyone
             [CannotPlay $ Matcher.mapOneOf Matcher.CardWithCardCode (toList screamed)]
       _ -> pure ()
+   where
+    exceptFormula =
+      Matcher.oneOf
+        [Matcher.SourceIsAbility Matcher.BasicAbility, Matcher.SourceIsAsset (Matcher.AssetIs "02254")]
+    theMan = Matcher.EnemyWithTitle "The Man in the Pallid Mask"
 
 instance HasModifiersFor Boon where
   getModifiersFor b = do
@@ -317,6 +363,9 @@ runUltimatumsAndBoonsMessage msg = case msg of
   -- Ultimatum of The Scream: a defeated unique non-story, non-weakness ally
   -- is removed from the game and banned for the rest of the campaign.
   When (AssetDefeated _ aid) -> do
+    -- Ultimatum of Spoilage (see the Discarded arm below for the other half).
+    whenM (hasUltimatum UltimatumOfSpoilage) do
+      spoilExpeditionItem =<< fieldMap AssetCard toCardDef aid
     standalone <- getIsStandalone
     unless standalone do
       whenM (hasUltimatum UltimatumOfTheScream) do
@@ -444,6 +493,12 @@ runUltimatumsAndBoonsMessage msg = case msg of
         when (spoken > 0) do
           push $ Msg.assignHorror iid (fromUltimatumOrBoon (Ultimatum UltimatumOfTheBrassCrown)) spoken
           setSpokenHastur iid 0
+  {- Ultimatum of Spoilage: "if an Item asset from the Expedition encounter set
+  is ever defeated or discarded, it cannot be chosen during setup for the
+  remainder of the campaign." Recorded in the campaign log, which is what
+  'getAvailableExpeditionItems' filters on. -}
+  Discarded (AssetTarget _) _ card ->
+    whenM (hasUltimatum UltimatumOfSpoilage) $ spoilExpeditionItem (toCardDef card)
   {- Ultimatum of Ambuscade. The card is only looked at -- it is drawn or
   discarded by its own message, so nothing has to be put back. -}
   UseCardAbility iid (UltimatumOrBoonSource (Ultimatum UltimatumOfAmbuscade)) 1 _ _ -> runQueueT do
@@ -552,3 +607,10 @@ bumpSpokenHastur iid n =
 setSpokenHastur :: HasQueue Message m => InvestigatorId -> Int -> m ()
 setSpokenHastur iid n =
   push $ Priority $ SetGlobal CampaignTarget (Key.fromText $ spokenHasturKey iid) (toJSON n)
+
+{- | Record an Expedition Item as lost for the rest of the campaign (Ultimatum
+of Spoilage). Anything else defeated or discarded is ignored.
+-}
+spoilExpeditionItem :: HasQueue Message m => CardDef -> m ()
+spoilExpeditionItem def =
+  when (def `elem` expeditionItems) $ push $ recordSetInsert SpoiledExpeditionItems [toCardCode def]

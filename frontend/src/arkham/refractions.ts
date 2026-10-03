@@ -19,6 +19,9 @@ export const REFRACTION_CAMPAIGNS: Record<string, string[]> = {
   UltimatumOfTheBrassCrown: ['03', '52'],
   UltimatumOfTheFaultyCarburetor: ['07'],
   UltimatumOfTheSleeper: ['11'],
+  UltimatumOfInvisibility: ['02', '51'],
+  UltimatumOfTheMan: ['03', '52'],
+  UltimatumOfSpoilage: ['11'],
   BoonOfAtonement: ['09'],
   BoonOfBliss: ['10'],
 }

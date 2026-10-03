@@ -66,6 +66,11 @@ data TheDrownedCityKey
     codes of each location that was flooded when Part I ended.
     -}
     FloodedNeighborhoods
+  | {- | Ultimatum of Spoilage: the card codes of the Expedition @Item@ assets
+    that have been defeated or discarded, and so can no longer be chosen during
+    setup for the rest of the campaign.
+    -}
+    SpoiledExpeditionItems
   | CthulhuWasDrivenAway
   | CthulhuAnnihilatedTheExpedition
   | CthulhuAnnihilatedTheCityOfArkham

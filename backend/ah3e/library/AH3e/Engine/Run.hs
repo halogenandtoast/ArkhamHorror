@@ -171,7 +171,9 @@ dispatch msg = case msg of
     sc <- getScenarioDef
     pushAll
       $ [SpawnClue, SpawnClue, SpawnClue]
-      <> [PlaceDoomInOrder SourceRules sc.startingDoom | not (null sc.startingDoom)]
+      {- The sheet prints a space for each of these, so there is nothing for anyone to
+      decide: they go down as printed rather than asking the table to order them. -}
+      <> map (PlaceDoom SourceRules) sc.startingDoom
       <> [SpreadDoom]
       -- the ally deck is shuffled by now, so a bystander is whoever comes off the top
       <> map PlaceBystander sc.startingBystanders

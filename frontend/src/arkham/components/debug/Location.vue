@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 
-import { useMenu } from '@/composable/menu';
+import { useEscape } from '@/composable/escape';
 import Draggable from '@/components/Draggable.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import { computed, ref } from 'vue';
@@ -18,7 +18,6 @@ type Props = {
 
 const emit = defineEmits<{ close: [] }>()
 const props = defineProps<Props>()
-const { addEntry } = useMenu()
 const placeTokens = ref(false);
 const placeTokenType = ref<Token>("Clue");
 const tokenTypes = Object.values(TokenType);
@@ -33,13 +32,7 @@ const canAdjustFloodLevel = computed(() => {
 })
 const currentFloodLevel = computed<Arkham.FloodLevel>(() => props.location.floodLevel ?? 'Unflooded')
 
-addEntry({
-  id: `close-debug-${props.location.id}`,
-  content: "",
-  shortcut: "Escape",
-  action: () => emit('close')
-})
-
+useEscape(() => emit('close'))
 
 const debug = useDebug()
 const id = computed(() => props.location.id)

@@ -9,6 +9,7 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 import Modifier from '@/arkham/components/Modifier.vue';
 import { type ChaosToken, chaosTokenImage } from '@/arkham/types/ChaosToken';
 import * as Arkham from '@/arkham/types/Enemy'
+import { useEscape } from '@/composable/escape'
 
 const props = defineProps<{
   game: Game
@@ -17,6 +18,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{ close: [] }>()
+
+useEscape(() => emit('close'))
 const placeTokenType = ref<Token>("Damage");
 const tokenTypes = Object.values(TokenType);
 

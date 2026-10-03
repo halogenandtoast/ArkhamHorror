@@ -16,6 +16,7 @@ import {isUse} from '@/arkham/types/Token';
 import { useDbCardStore } from '@/stores/dbCards'
 import { useCardStore } from '@/stores/cards'
 import { isCustomCardCode } from '@/arkham/customCards'
+import { useEscape } from '@/composable/escape'
 
 const props = defineProps<{
   game: Game
@@ -24,6 +25,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{ close: [] }>()
+
+useEscape(() => emit('close'))
 const placeTokens = ref(false);
 const setModifiers = ref(false);
 const inspectSpiritDeck = ref(false);

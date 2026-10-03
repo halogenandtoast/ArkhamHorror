@@ -5,6 +5,7 @@ import { type Card, type CardContents, toCardContents } from '@/arkham/types/Car
 import type { Game } from '@/arkham/types/Game'
 import * as DebugMove from '@/arkham/debugCardMove'
 import { useI18n } from 'vue-i18n'
+import { useEscape } from '@/composable/escape'
 
 const { t } = useI18n()
 
@@ -14,6 +15,8 @@ const props = defineProps<{
 }>()
 
 const shown = ref(false)
+
+useEscape(() => { shown.value = false }, shown)
 
 /* Nothing in the rules ever takes a card back out of the victory display, so a
  * card the engine puts there wrongly (#5662) is otherwise stuck for the rest of

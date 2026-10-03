@@ -24,6 +24,7 @@ import HandCard from '@/arkham/components/HandCard.vue';
 import CardRow from '@/arkham/components/CardRow.vue';
 import CardsUnderIndicator from '@/arkham/components/CardsUnderIndicator.vue';
 import CustomCardPicker from '@/arkham/components/debug/CustomCardPicker.vue';
+import { useEscape } from '@/composable/escape';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import { TarotCard, tarotCardImage } from '@/arkham/types/TarotCard';
@@ -575,6 +576,7 @@ const asIfInHandPhantomCards = computed<CardT.Card[]>(() => {
 })
 
 const showDebugAddCard = ref(false)
+useEscape(() => { showDebugAddCard.value = false }, showDebugAddCard)
 const showCustomCardPicker = ref(false)
 const { customCardsEnabled } = storeToRefs(settings)
 const debugPlayerCards = ref<CardDef[]>([])

@@ -5,7 +5,7 @@ import { useDebug } from '@/arkham/debug';
 import { imgsrc } from '@/arkham/helpers';
 import type { Game } from '@/arkham/types/Game';
 import type { ConcealedCard } from '@/arkham/types/ConcealedCard';
-import { useMenu } from '@/composable/menu';
+import { useEscape } from '@/composable/escape';
 
 const props = defineProps<{
   game: Game
@@ -13,16 +13,9 @@ const props = defineProps<{
   playerId: string
 }>()
 
-const { addEntry } = useMenu()
-
 const emit = defineEmits<{ close: [] }>()
 
-addEntry({
-  id: `close-debug-${props.card.id}`,
-  content: "",
-  shortcut: "Escape",
-  action: () => emit('close')
-})
+useEscape(() => emit('close'))
 
 const imageName = computed(() => {
   switch (props.card.kind) {

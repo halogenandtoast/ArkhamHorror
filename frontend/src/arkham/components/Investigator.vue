@@ -20,6 +20,7 @@ import SealedChaosTokens from '@/arkham/components/SealedChaosTokens.vue';
 import { investigatorTarget, cardDropHandlers } from '@/arkham/debugCardDrop';
 import AbilityButton from '@/arkham/components/AbilityButton.vue'
 import { useMenu } from '@/composable/menu';
+import { useEscape } from '@/composable/escape';
 import { useI18n } from 'vue-i18n';
 import useEmitter from '@/composable/useEmitter';
 import useHighlighter from '@/composable/useHighlighter';
@@ -404,6 +405,7 @@ const agility = computed(() => skills.value.agility)
 
 const dragging = ref(false)
 const showModifiers = ref(false)
+useEscape(() => { showModifiers.value = false }, showModifiers)
 function startDrag(event: DragEvent) {
   dragging.value = true
   if (event.dataTransfer) {

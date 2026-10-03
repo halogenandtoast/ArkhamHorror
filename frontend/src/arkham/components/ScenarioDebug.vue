@@ -5,6 +5,7 @@ import TokenBag from '@/arkham/components/debug/TokenBag.vue'
 import type { Game } from '@/arkham/types/Game'
 import type { Scenario } from '@/arkham/types/Scenario'
 import { chaosTokenImage, standardTokenFaces, type TokenFace } from '@/arkham/types/ChaosToken'
+import { useEscape } from '@/composable/escape'
 
 const props = defineProps<{
   game: Game
@@ -12,6 +13,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{ close: [] }>()
+
+useEscape(() => emit('close'))
 
 const debug = useDebug()
 const tokenBags = computed(() => scenarioTokenBagsFor(props.scenario))

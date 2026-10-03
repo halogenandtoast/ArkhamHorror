@@ -16,9 +16,12 @@ import {
 } from '@/arkham/customCards'
 import { libraryCards, libraryLoaded, loadLibrary } from '@/arkham/customCardLibrary'
 import type { Game } from '@/arkham/types/Game'
+import { useEscape } from '@/composable/escape'
 
 const props = defineProps<{ game: Game; investigatorId: string }>()
 const emit = defineEmits<{ close: [] }>()
+
+useEscape(() => emit('close'))
 
 const debug = useDebug()
 const cardStore = useCardStore()

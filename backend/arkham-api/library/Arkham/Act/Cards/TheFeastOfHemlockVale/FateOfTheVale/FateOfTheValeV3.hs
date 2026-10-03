@@ -3,6 +3,7 @@ module Arkham.Act.Cards.TheFeastOfHemlockVale.FateOfTheVale.FateOfTheValeV3 (fat
 import Arkham.Ability
 import Arkham.Act.CardDefs.TheFeastOfHemlockVale.FateOfTheVale qualified as Cards
 import Arkham.Act.Import.Lifted
+import Arkham.Classes.HasGame (HasGame)
 import Arkham.Helpers.Cost (getSpendableResources)
 import Arkham.Helpers.Modifiers (maybeModified_)
 import Arkham.Helpers.Query (getPlayerCount)
@@ -35,8 +36,9 @@ instance HasModifiersFor FateOfTheValeV3 where
 shroud, or 1 per investigator under Boon of the Miners.
 -}
 kindlingNeeded :: HasGame m => LocationId -> m Int
-kindlingNeeded loc =
-  ifM (hasBoon BoonOfTheMiners) getPlayerCount (fieldWithDefault 0 LocationShroud loc)
+kindlingNeeded loc = do
+  miners <- hasBoon BoonOfTheMiners
+  if miners then getPlayerCount else fieldWithDefault 0 LocationShroud loc
 
 fateOfTheValeV3 :: ActCard FateOfTheValeV3
 fateOfTheValeV3 = act (3, A) FateOfTheValeV3 Cards.fateOfTheValeV3 Nothing

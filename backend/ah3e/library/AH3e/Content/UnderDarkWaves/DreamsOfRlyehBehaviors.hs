@@ -117,6 +117,10 @@ songOfChaos =
                   spaceL sid . #markers %= dropOne "white"
                   ruled <- revealInvestigation
                   for_ ruled \k -> push (RevealArchiveCard k [])
+                  {- Ruling one out may leave a single card, which this card then turns up
+                  of its own accord; nothing else looks at the pile, so the trigger is
+                  read here. It is queued behind the card just revealed. -}
+                  push CheckStateTriggers
                   clues <- use #sheetClues
                   when (clues >= 1)
                     $ chooseFor

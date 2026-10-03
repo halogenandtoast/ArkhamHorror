@@ -213,6 +213,8 @@ findTheSource =
                               : [AddArchiveToCodex 65 | waiting]
                           )
                       else push (RevealArchiveCard k [AddArchiveToCodex k])
+                  -- the same here: the card that waits on the last relic is read now
+                  push CheckStateTriggers
             }
         ]
     , triggers =

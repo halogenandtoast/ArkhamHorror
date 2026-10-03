@@ -184,6 +184,14 @@
     "UltimatumOfSpoilage": {
       "name": "Ultimatum of Spoilage",
       "text": "The Drowned City. Investigators cannot trigger abilities on or assign damage to Artifact assets. If an Item asset from the Expedition encounter set is ever defeated or discarded, it cannot be chosen during setup for the remainder of the campaign."
+    },
+    "UltimatumOfDeath": {
+      "name": "Ultimatum of Death",
+      "text": "The Pallid Mask (The Path to Carcosa). After setup, immediately advance Agenda 1a to Specter of Death and spawn it at your starting location, exhausted. Agenda 2a gains +6 doom threshold. Specter of Death gains: “Forced – When Specter of Death is defeated: Instead of adding it to the victory display, heal all damage from it and exhaust it. It does not ready during the next upkeep phase.”"
+    },
+    "BoonOfTheDreamer": {
+      "name": "Boon of The Dreamer",
+      "text": "Where the Gods Dwell (The Dream-Eaters). After advancing to Act 5, advance to agenda 3a and remove all doom from it. This agenda gets +2 doom threshold."
     }
   },
   "morrigan": {

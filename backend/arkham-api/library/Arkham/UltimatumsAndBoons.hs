@@ -21,6 +21,7 @@ module Arkham.UltimatumsAndBoons (
 
 import Arkham.Ability
 import Arkham.Action.Additional
+import Arkham.Agenda.CardDefs.TheDreamEaters.WhereTheGodsDwell qualified as Agendas
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaigns.TheDrownedCity.Helpers (expeditionItems)
 import Arkham.Campaigns.TheDrownedCity.Key (TheDrownedCityKey (SpoiledExpeditionItems))
@@ -39,6 +40,8 @@ import Arkham.Decklist.RandomBasicWeakness (
  )
 import Arkham.DefeatedBy
 import Arkham.EncounterSet (EncounterSet (Tekelili))
+import Arkham.Enemy.Helpers (cancelEnemyDefeat)
+import Arkham.Enemy.Types (Field (EnemyCard))
 import Arkham.Game.Base
 import Arkham.Game.Settings
 import Arkham.Helpers (unDeck)
@@ -50,6 +53,7 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getPlayerCount)
 import Arkham.Helpers.Scenario (getEncounterDeck, getIsStandalone)
 import Arkham.Helpers.Window (checkWindows)
+import Arkham.Helpers.Window.Enemy (defeatedEnemy)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Investigator.Types (
@@ -60,8 +64,14 @@ import Arkham.Investigator.Types (
  )
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message
-import Arkham.Message.Lifted (discardTopOfEncounterDeck, focusCards)
+import Arkham.Message.Lifted (
+  advanceToAgendaA,
+  discardTopOfEncounterDeck,
+  exhaustWith,
+  focusCards,
+ )
 import Arkham.Message.Lifted.Card (drawEncounterCard, playCardPayingCostWithWindows)
+import Arkham.Message.Lifted.Damage (healAllDamage)
 import Arkham.PlayerCard (allPlayerCards)
 import Arkham.Prelude
 import Arkham.Projection
@@ -162,6 +172,9 @@ instance HasModifiersFor Ultimatum where
         modifySelect source theMan [RemoveTrait Humanoid]
         whenM (selectAny $ Matcher.ActWithStep 2) do
           modifySelect source theMan [CannotMove, CannotBeMoved]
+      -- Ultimatum of Death: "Agenda 2a gains +6 doom threshold."
+      UltimatumOfDeath -> whenM (anyM (selectAny . Matcher.ScenarioWithId) ["03240", "52048"]) do
+        modifySelect source (Matcher.AgendaWithId "03242") [DoomThresholdModifier 6]
       {- Ultimatum of Spoilage: no abilities on Artifacts and no damage assigned
       to them. The damage half is a per-investigator modifier on the asset, so
       it is built one investigator at a time. -}
@@ -228,6 +241,10 @@ instance HasModifiersFor Boon where
         modifySelect source Matcher.AnyAgenda [DoomThresholdModifier 1]
       BoonOfBliss -> whenM (selectAny $ Matcher.ScenarioWithId "10651") do
         modifySelect source Matcher.AnyAgenda [DoomThresholdModifier 2]
+      -- Boon of The Dreamer: "this agenda gets +2 doom threshold" -- agenda 3a
+      -- only, which is the one the boon advances to.
+      BoonOfTheDreamer -> whenM (selectAny $ Matcher.ScenarioWithId "06286") do
+        modifySelect source (Matcher.AgendaWithId "06289") [DoomThresholdModifier 2]
       _ -> pure ()
 
 ultimatumOrBoonAbilities :: UltimatumOrBoon -> [Ability]
@@ -258,10 +275,32 @@ ultimatumAbilities u = case u of
         $ forced
         $ Matcher.Explored #after Matcher.You Matcher.Anywhere (Matcher.SuccessfulExplore Matcher.Anywhere)
     ]
+  {- Ultimatum of Death: "Specter of Death gains 'Forced - When Specter of Death
+  is defeated: Instead of adding it to the victory display, heal all damage from
+  it and exhaust it. It does not ready during the next upkeep phase.'" -}
+  UltimatumOfDeath ->
+    [ restricted
+        (fromUltimatumOrBoon (Ultimatum u))
+        1
+        (Criteria.ScenarioExists $ Matcher.ScenarioWithId "03240")
+        $ forced
+        $ Matcher.EnemyWouldBeDefeated #when (Matcher.EnemyWithTitle "Specter of Death")
+    ]
   _ -> []
 
 boonAbilities :: Boon -> [Ability]
 boonAbilities b = case b of
+  {- Boon of The Dreamer: "after advancing to Act 5, advance to agenda 3a and
+  remove all doom from it." Act 5 is already in play when act 4's advance window
+  closes, so this fires off the act that brings it out. -}
+  BoonOfTheDreamer ->
+    [ restricted
+        (fromUltimatumOrBoon (Boon b))
+        1
+        (Criteria.ScenarioExists $ Matcher.ScenarioWithId "06286")
+        $ forced
+        $ Matcher.ActAdvances #after (Matcher.ActWithId "06293")
+    ]
   BoonOfAthena ->
     [ withTooltip
         "Boon of Athena: cancel the autofail token, return it to the chaos bag, and draw another in its place"
@@ -485,20 +524,50 @@ runUltimatumsAndBoonsMessage msg = case msg of
   horror for each time you spoke, wrote, or typed the name of HASTUR since the
   end of the previous scenario." Sourced from the ultimatum rather than the
   campaign so collecting the toll is not itself counted as speaking. -}
-  EndSetup -> whenM (hasUltimatum UltimatumOfTheBrassCrown) do
-    whenM (getHasRecord YouHeadedDanielsWarning) do
-      iids <- select Matcher.Anyone
-      for_ iids \iid -> do
-        spoken <- spokenHasturCount iid
-        when (spoken > 0) do
-          push $ Msg.assignHorror iid (fromUltimatumOrBoon (Ultimatum UltimatumOfTheBrassCrown)) spoken
-          setSpokenHastur iid 0
+  EndSetup -> do
+    whenM (hasUltimatum UltimatumOfTheBrassCrown) do
+      whenM (getHasRecord YouHeadedDanielsWarning) do
+        iids <- select Matcher.Anyone
+        for_ iids \iid -> do
+          spoken <- spokenHasturCount iid
+          when (spoken > 0) do
+            push $ Msg.assignHorror iid (fromUltimatumOrBoon (Ultimatum UltimatumOfTheBrassCrown)) spoken
+            setSpokenHastur iid 0
+    {- Ultimatum of Death: "after setup, immediately advance Agenda 1a to Specter
+    of Death and spawn it at your starting location, exhausted." The agenda's own
+    side-B handler draws the Specter, which already spawns at position (0,0) by
+    its printed text, so only the advance and the exhaust are needed. -}
+    whenM (hasUltimatum UltimatumOfDeath) do
+      whenM (anyM (selectAny . Matcher.ScenarioWithId) ["03240", "52048"]) do
+        push $ AdvanceAgendaBy "03241" AgendaAdvancedWithOther
   {- Ultimatum of Spoilage: "if an Item asset from the Expedition encounter set
   is ever defeated or discarded, it cannot be chosen during setup for the
   remainder of the campaign." Recorded in the campaign log, which is what
   'getAvailableExpeditionItems' filters on. -}
   Discarded (AssetTarget _) _ card ->
     whenM (hasUltimatum UltimatumOfSpoilage) $ spoilExpeditionItem (toCardDef card)
+  {- Ultimatum of Death, the Specter's new Forced. 'cancelEnemyDefeat' drops the
+  whole queued defeat chain, victory display included, so what is left is the
+  heal, the exhaust and the upkeep lock. -}
+  UseCardAbility _ (UltimatumOrBoonSource (Ultimatum UltimatumOfDeath)) 1 (defeatedEnemy -> eid) _ ->
+    runQueueT do
+      let source = UltimatumOrBoonSource (Ultimatum UltimatumOfDeath)
+      cancelEnemyDefeat eid
+      healAllDamage source eid
+      exhaustWith source eid
+      push =<< nextPhaseModifier #upkeep source eid DoesNotReadyDuringUpkeep
+  {- Boon of The Dreamer. The plain 'AdvanceToAgenda' is what removes the doom:
+  the agenda runner prefixes a 'RemoveAllDoomFromPlay' to it. -}
+  UseCardAbility _ (UltimatumOrBoonSource (Boon BoonOfTheDreamer)) 1 _ _ -> runQueueT do
+    advanceToAgendaA (fromUltimatumOrBoon (Boon BoonOfTheDreamer)) Agendas.chaosIncarnate
+  {- Ultimatum of Death: "after setup, immediately advance Agenda 1a to Specter
+  of Death and spawn it at your starting location, exhausted." The agenda's own
+  side-B handler draws the Specter, which spawns at position (0,0) by its own
+  printed text, so only the advance and the exhaust are needed here. -}
+  EnemySpawn details -> whenM (hasUltimatum UltimatumOfDeath) do
+    code <- fieldMap EnemyCard toCardCode details.enemy
+    when (code == "03241b") $ runQueueT do
+      exhaustWith (UltimatumOrBoonSource (Ultimatum UltimatumOfDeath)) details.enemy
   {- Ultimatum of Ambuscade. The card is only looked at -- it is drawn or
   discarded by its own message, so nothing has to be put back. -}
   UseCardAbility iid (UltimatumOrBoonSource (Ultimatum UltimatumOfAmbuscade)) 1 _ _ -> runQueueT do

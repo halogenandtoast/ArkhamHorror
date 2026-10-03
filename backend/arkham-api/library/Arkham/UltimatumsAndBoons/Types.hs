@@ -25,6 +25,7 @@ data Boon
   | -- Refractions (see 'refractionScope').
     BoonOfAtonement
   | BoonOfBliss
+  | BoonOfTheDreamer
   deriving stock (Eq, Show, Ord, Enum, Bounded, Data)
 
 data Ultimatum
@@ -58,6 +59,7 @@ data Ultimatum
   | UltimatumOfInvisibility
   | UltimatumOfTheMan
   | UltimatumOfSpoilage
+  | UltimatumOfDeath
   | {- | A homebrew campaign's ultimatum. The door for content outside core: the
     'Text' is the full wire name @":\<campaign-id\>:\<Key\>"@, so the campaign
     it belongs to is read off the name. Campaigns declare their lists in their
@@ -126,6 +128,8 @@ refractionScope = \case
   Ultimatum UltimatumOfInvisibility -> theDunwichLegacy
   Ultimatum UltimatumOfTheMan -> thePathToCarcosa
   Ultimatum UltimatumOfSpoilage -> ["11"]
+  Ultimatum UltimatumOfDeath -> thePathToCarcosa
+  Boon BoonOfTheDreamer -> ["06"]
   Boon BoonOfAtonement -> ["09"]
   Boon BoonOfBliss -> ["10"]
   _ -> []

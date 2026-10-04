@@ -174,11 +174,16 @@ const selectedSideStoryPart = computed(() => {
 })
 
 const selectionBoxSrc = computed(() => {
-  if (!selectionSummary.value) return null
+  const summary = selectionSummary.value
+  if (!summary) return null
   const part = selectedSideStoryPart.value
-  const id = part ? part.box ?? part.id : selectionSummary.value.id
+  const id = part ? part.box ?? part.id : summary.id
 
-  return campaignBox(id)
+  /* A side story is identified by a scenario id, and a homebrew scenario id
+     names both the campaign and the scenario (`:against-the-wendigo:001`).
+     campaignBox would read the whole thing as one folder name; scenarioBox
+     splits it. The two agree on official ids. */
+  return summary.kind === 'SideStory' ? scenarioBox(id) : campaignBox(id)
 })
 
 const selectionKind = computed(() => selectionSummary.value?.kind ?? null)

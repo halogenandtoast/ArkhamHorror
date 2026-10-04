@@ -13,7 +13,7 @@ import type { GameMode, MultiplayerVariant, CampaignType } from '@/arkham/types/
 
 import { ACHIEVEMENT_CAMPAIGN_IDS } from '@/arkham/achievements'
 import officialCampaignJSON from '@/arkham/data/campaigns'
-import { homebrewCampaigns } from '@/arkham/homebrewData'
+import { homebrewCampaigns, homebrewSideStories } from '@/arkham/homebrewData'
 import scenarioJSON from '@/arkham/data/scenarios'
 import sideStoriesJSON from '@/arkham/data/side-stories'
 import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
@@ -88,7 +88,7 @@ const timeLimitMinutes = ref(180)
 const miniCampaign = ref(false)
 
 const scenarios = computed<Scenario[]>(() => gate(scenarioJSON))
-const sideStories = computed<Scenario[]>(() => gate(sideStoriesJSON))
+const sideStories = computed<Scenario[]>(() => gate([...sideStoriesJSON, ...homebrewSideStories]))
 const campaignJSON = [...officialCampaignJSON, ...homebrewCampaigns]
 const campaigns = computed<Campaign[]>(() => gate(campaignJSON))
 

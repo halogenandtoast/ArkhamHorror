@@ -1,0 +1,36 @@
+[
+  {
+    "id": ":against-the-wendigo:001",
+    "name": "Against the Wendigo",
+    "campaign": ":against-the-wendigo",
+    "i18n": "scenario",
+    "sideStory": true,
+    "xp": 2,
+    "standalone": true,
+    "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
+    "difficultyLevels": {
+      "Easy": [
+        "PlusOne", "PlusOne", "Zero", "Zero", "Zero",
+        "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo",
+        "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ],
+      "Standard": [
+        "PlusOne", "Zero", "Zero",
+        "MinusOne", "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusFour",
+        "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ],
+      "Hard": [
+        "Zero", "Zero", "Zero",
+        "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree",
+        "MinusFour", "MinusFive",
+        "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ],
+      "Expert": [
+        "Zero",
+        "MinusOne", "MinusOne", "MinusTwo", "MinusTwo", "MinusThree", "MinusThree",
+        "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusSeven", "MinusEight",
+        "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ]
+    }
+  }
+]

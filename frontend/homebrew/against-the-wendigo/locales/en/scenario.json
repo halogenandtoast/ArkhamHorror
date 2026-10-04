@@ -1,0 +1,48 @@
+{
+  "scenario": {
+    "label": "Against the Wendigo",
+    "fullLabel": "Against the Wendigo",
+    "prologue": {
+      "title": "Prologue",
+      "body1": "September 1926. You have just witnessed the resounding trial of Dr. Nadelmann, a person close to you, who was the rising star of the Department of Anthropology at Miskatonic University. Nadelmann is the only living member of the science expedition launched to explore a wild valley in northwestern Canada called North Hanninah. Sylvia Davidson, Norman Falkner and Bernard Epstein, the three newly graduated students who accompanied the anthropologist, have disappeared.",
+      "body2": "The Arkham authorities were keen to ensure that justice was done, and Dr. Nadelmann was found guilty of involuntary homicide. However, everyone could see during the testimony that Nadelmann's physical and mental health were severely deteriorated. An ugly throat wound, still unhealed after weeks, prevented Nadelmann from speaking normally; when the words could be understood, they were implausible rants, full of man-eating monsters and local spirits that doomed the expedition. Standing in front of the court, many relatives of the missing students come to find you. They are desperate, and ask you to find the three students.",
+      "body3": "Soon after, you follow the footsteps of the previous expedition, starting by train from Arkham to Central Canada. During the trip you read Dr. Nadelmann's expedition notebook. Several entries in, Nadelmann notes that the Sarcee guide of their expedition, Charlie Foxtail, abandoned the group after seeing the tracks of a being that Charlie called \"The Wendigo\". Then the writing becomes increasingly jerky, unreadable. Your destination is Fort McDonald, an outpost of the Mounted Police, which will give you access to the wild valley of North Hanninah. You have a short time before the arrival of winter."
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the Hanninah Valley encounter set.",
+      "setAsideWendigosMyth": "Set the Wendigo's Myth encounter set aside, out of play.",
+      "placeStartingLocations": "Put the Fort McDonald, Jetty and Sarcee Territory locations into play. Each investigator begins play at the Jetty.",
+      "placeNorthHanninah": "Shuffle the 3 North Hanninah locations and put them into play, one directly to the north of the Jetty, one directly to the north of the first, and one directly to the north of the second.",
+      "placeUncharted": "Randomly take one of the Mountain Range cards and remove it from the game. Shuffle the remaining 6 locations and randomly put one into play directly to the east and one directly to the west of each North Hanninah location.",
+      "studentsFateDeck": "Take the story cards, story side up. For each pair of cards with the same name, remove one at random from the game. The 3 remaining cards named Sylvia's Fate, Norman's Fate and Bernard's Fate make up the Students' Fate deck. Set this deck aside.",
+      "setAsideStories": "Set the remaining story cards aside, out of play.",
+      "setAsideAssets": "Set Expedition Notebook, Sarcee Guide, Tomahawk, Ithaqua's Knowledge and all the Old Injury cards aside, out of play.",
+      "tabletToken": "If you don't have a {tablet} token in your chaos bag, add one for this game."
+    },
+    "navigate": {
+      "testCombat": "Test {combat}",
+      "testAgility": "Test {agility}"
+    },
+    "fortMcDonald": {
+      "healDamage": "Heal 2 damage",
+      "healHorror": "Heal 2 horror"
+    },
+    "xp": {
+      "savedCharlie": "you saved Charlie",
+      "savedTheGoldProspector": "you saved the gold prospector",
+      "glimpsedTheMythos": "having glimpsed the Cthulhu Mythos in this remote, wild corner of the world"
+    },
+    "resolutions": {
+      "noResolution": "No Resolution",
+      "noResolutionBody": "The trip back to Fort McDonald is terribly trying. You do not have time to heal your wounds on the way, and must quickly leave this valley and its dangers. You finally manage to reach Fort McDonald, which you now perceive as a small island of human civilization in the midst of an ocean of wild darkness.",
+      "resolution1": "Resolution 1",
+      "resolution1Body": "After a brutal fight, the Wendigo staggers back, and emits shrieks that no natural creature could produce. The more wounds it takes, the more its cries seem to come from a human in agony. You strike the final blow and see the terrible creature collapse. When you raise your head, the sight of your opponent leaves you astounded: it is the naked body of a man, lying close to you in a pool of blood, his claws and antlers gone, patches of fur and goat-like hoofs remaining. Somehow you make it back to Fort McDonald.",
+      "resolution2": "Resolution 2",
+      "resolution2Body": "Officers listen to the story of your expedition with suspicion, then with amazement when they see the evidence you have collected. You return to Arkham without looking back, and share with the students' relatives the fate of their loved ones. Although they finally have the answers to their questions, some truths are too terrible to hear. Most end up thanking you for putting an end to this case.",
+      "resolution3": "Resolution 3",
+      "resolution3Body": "Officers listen to your story, particularly attentive when you present them with material evidence of what happened. You return to Arkham exhausted, tormented by this experience, but alive. Although the students' families have some answers, the mysteries that remain will haunt them forever. The few truths unveiled will not be enough to remove the nightmares that have invaded your sleep.",
+      "resolution4": "Resolution 4",
+      "resolution4Body": "Officers listen to the story of your expedition. You dare not tell them everything, lest they take you for a fool. You leave immediately, without looking back, and return to Arkham, prey to terrible nightmares. Having no answer to their questions, the students' relatives are plunged into torments that you understand too well."
+    }
+  }
+}

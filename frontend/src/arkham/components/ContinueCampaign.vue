@@ -13,6 +13,7 @@ import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import SideStoryOption from '@/arkham/components/SideStoryOption.vue'
 import sideStoriesJSON from '@/arkham/data/side-stories.json'
+import { homebrewSideStories } from '@/arkham/homebrewData'
 import { useRoute, useRouter } from 'vue-router'
 import { useClipboard } from '@vueuse/core'
 import { buildShareableUrl } from '@/arkham/helpers'
@@ -26,7 +27,7 @@ import { storeToRefs } from 'pinia'
 import { filterDisplayable, isDevBuild, type Gateable } from '@/arkham/displayRules'
 import { hasParallelContent } from '@/arkham/deckRestrictions'
 
-const sideStories = sideStoriesJSON as (Gateable & { xp: number; id: string; name: string })[]
+const sideStories = [...sideStoriesJSON, ...homebrewSideStories] as (Gateable & { xp: number; id: string; name: string })[]
 
 const props = defineProps<{
   game: Game

@@ -109,6 +109,16 @@ export const homebrewScenarios: (Scenario & { i18n: string })[] = Object.values(
   scenarioModules,
 ).flatMap((m) => m.default)
 
+/* A homebrew scenario that plays on its own -- as a standalone game, or added to
+a campaign in progress from the continuation screen -- marks itself
+`sideStory: true` in its scenarios.json and carries what a side story needs
+alongside it: `xp`, `standaloneDifficulties` and `difficultyLevels`, exactly the
+shape of an entry in src/arkham/data/side-stories.json. ChooseMode groups these
+under Homebrew by their `:`-prefixed id. */
+export const homebrewSideStories: (Scenario & { i18n: string })[] = homebrewScenarios.filter(
+  (s) => (s as { sideStory?: boolean }).sideStory,
+)
+
 // ":circus-ex-mortis" -> "circusExMortis" (the campaign i18n scope; the
 // homebrew directory is the kebab-case id without the leading colon)
 export function homebrewCampaignScope(campaignId: string): string {

@@ -1,0 +1,19 @@
+{
+  "name": "Against the Wendigo",
+  "key": {
+    "theSarceeAreHuntingYouDown": "The Sarcee are hunting you down.",
+    "youSavedCharlie": "You saved Charlie.",
+    "youSavedTheGoldProspector": "You saved the gold prospector.",
+    "youHaveFoundHanninahsGold": "You have found Hanninah's gold.",
+    "youAreTheCustodianOfIthaquasKnowledge": "You are the custodian of Ithaqua's knowledge.",
+    "youHaveDiscoveredBernardsFate": "You have discovered Bernard's fate.",
+    "youHaveDiscoveredNormansFate": "You have discovered Norman's fate.",
+    "youHaveDiscoveredSylviasFate": "You have discovered Sylvia's fate.",
+    "youHaveDiscoveredTheFateOfDrNadelmannsStudents": "You have discovered the fate of Dr. Nadelmann's students.",
+    "normanIsAlive": "Norman is alive.",
+    "youLetNormanDie": "You let Norman die.",
+    "youDefeatedTheWendigo": "You defeated the Wendigo.",
+    "youHaveEnoughEvidenceToClearDrNadelmann": "You have enough evidence to clear Dr. Nadelmann.",
+    "theWendigoStillRoamsTheNorthHanninahValley": "You know that the Wendigo still roams the North Hanninah valley."
+  }
+}

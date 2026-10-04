@@ -5,6 +5,7 @@
     "campaign": ":the-symphony-of-erich-zann",
     "i18n": "scenario",
     "sideStory": true,
+    "dev": true,
     "xp": 2,
     "standalone": true,
     "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],

@@ -5,8 +5,10 @@
     "campaign": ":against-the-wendigo",
     "i18n": "scenario",
     "sideStory": true,
+    "dev": true,
     "xp": 2,
     "standalone": true,
+    "allowCurvedPaths": true,
     "standaloneDifficulties": ["Easy", "Standard", "Hard", "Expert"],
     "difficultyLevels": {
       "Easy": [

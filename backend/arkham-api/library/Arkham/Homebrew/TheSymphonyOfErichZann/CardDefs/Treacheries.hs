@@ -20,6 +20,7 @@ stuckInYourHead :: CardDef
 stuckInYourHead =
   (weakness ":the-symphony-of-erich-zann:028" "Stuck in Your Head")
     { cdCardTraits = singleton Madness
+    , cdKeywords = setFromList [Keyword.Peril, Keyword.Hidden]
     , cdEncounterSet = Just Set.TheSymphonyOfErichZann
     , cdEncounterSetQuantity = Just 4
     }

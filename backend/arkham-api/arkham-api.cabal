@@ -4951,6 +4951,73 @@ library
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.TroublingMemories
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.Wrecked
       Arkham.Homebrew.TH
+      Arkham.Homebrew.TheSymphonyOfErichZann.Acts.MusicFromAuseilTheatre
+      Arkham.Homebrew.TheSymphonyOfErichZann.Acts.ThePossessedConductor
+      Arkham.Homebrew.TheSymphonyOfErichZann.Acts.UndreamableOrchestra
+      Arkham.Homebrew.TheSymphonyOfErichZann.Agendas.Crescendo
+      Arkham.Homebrew.TheSymphonyOfErichZann.Agendas.OpusMagnum
+      Arkham.Homebrew.TheSymphonyOfErichZann.Agendas.Overture
+      Arkham.Homebrew.TheSymphonyOfErichZann.Assets.AugusteGaudinMaestroOfSymphonies
+      Arkham.Homebrew.TheSymphonyOfErichZann.Assets.LaFrattasPianoKey
+      Arkham.Homebrew.TheSymphonyOfErichZann.Assets.PagesViolin
+      Arkham.Homebrew.TheSymphonyOfErichZann.Assets.ThePiano
+      Arkham.Homebrew.TheSymphonyOfErichZann.Assets.WalkersTrumpet
+      Arkham.Homebrew.TheSymphonyOfErichZann.Assets.YinsDrumsticks
+      Arkham.Homebrew.TheSymphonyOfErichZann.CardDefEntries
+      Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Acts
+      Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Agendas
+      Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Assets
+      Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies
+      Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations
+      Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Stories
+      Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Treacheries
+      Arkham.Homebrew.TheSymphonyOfErichZann.CardEntries
+      Arkham.Homebrew.TheSymphonyOfErichZann.Defs
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.ArnoldWalker
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.AugusteGaudinConductorOfTheVoid
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.DancingRats
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.EarsOfTheVoid
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.IsabelLaFratta
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.MacabreDancers
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.NicolePage
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.SongYin
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.YoungNightingale
+      Arkham.Homebrew.TheSymphonyOfErichZann.Helpers
+      Arkham.Homebrew.TheSymphonyOfErichZann.Import
+      Arkham.Homebrew.TheSymphonyOfErichZann.Key
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.AnechoicChamber
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.Auditorium
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.EntranceHall
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.Gallery
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.InstrumentCloset
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.MainLobby
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.RecordingStudio
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.RehearsalRoom
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.SceneShop
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.StageHall
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.TheWindowToNothingness
+      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.TiringRoom
+      Arkham.Homebrew.TheSymphonyOfErichZann.Scenarios.TheSymphonyOfErichZann
+      Arkham.Homebrew.TheSymphonyOfErichZann.Sets
+      Arkham.Homebrew.TheSymphonyOfErichZann.Stories.BeyondTheCurtain
+      Arkham.Homebrew.TheSymphonyOfErichZann.Stories.PercussionistsMuse
+      Arkham.Homebrew.TheSymphonyOfErichZann.Stories.PianistsMuse
+      Arkham.Homebrew.TheSymphonyOfErichZann.Stories.ThePianosMuse
+      Arkham.Homebrew.TheSymphonyOfErichZann.Stories.TrumpetersMuse
+      Arkham.Homebrew.TheSymphonyOfErichZann.Stories.ViolinistsMuse
+      Arkham.Homebrew.TheSymphonyOfErichZann.Traits
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.DeafeningBrass
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.DiesIrae
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.EndlessEcho
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.EtherealMelody
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.HeardBySomething
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.HissingNoise
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.Overwhelm
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.RhythmFromBeyond
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.ShriekingViolin
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.StuckInYourHead
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.Turnaround
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.WaltzOfTheSpheres
       Arkham.Homebrew.TokenDefs
       Arkham.Homebrew.TokenEntries
       Arkham.Homebrew.Tokens

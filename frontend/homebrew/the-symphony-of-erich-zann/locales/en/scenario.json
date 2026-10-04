@@ -35,6 +35,30 @@
     "diesIrae": {
       "takeHorror": "Take {count} horror",
       "putIntoPlay": "Put Dies Irae into play next to the agenda deck"
+    },
+    "muse": {
+      "takeInstrument": "Put the instrument into play in an investigator's play area",
+      "leaveInstrument": "Leave the instrument set aside"
+    },
+    "hissingNoise": {
+      "loseResources": "Lose 2 resources",
+      "takeDamage": "Take 1 damage"
+    },
+    "overwhelm": {
+      "discardCards": "Discard {count} cards from your hand",
+      "takeHorror": "Take 2 horror"
+    },
+    "recordingStudio": {
+      "noMusic": "No {Music} treachery in the encounter discard pile"
+    },
+    "nicolePage": {
+      "asset": "Discard 3 assets",
+      "event": "Discard 3 events",
+      "skill": "Discard 3 skills"
+    },
+    "yinsDrumsticks": {
+      "putIntoPlay": "Put Yin's Drumsticks into play",
+      "returnToHand": "Return Yin's Drumsticks to your hand"
     }
   }
 }

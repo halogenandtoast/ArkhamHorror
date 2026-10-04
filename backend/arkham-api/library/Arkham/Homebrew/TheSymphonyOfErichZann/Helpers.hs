@@ -19,16 +19,19 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Helpers where
 import Arkham.Agenda.Sequence (agendaStep, unAgendaStep)
 import Arkham.Agenda.Types (Field (..))
 import Arkham.Classes.HasGame
+import Arkham.Card.CardDef (CardDef)
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
+import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Scenario (getScenarioMetaKeyDefault, scenarioField, setScenarioMeta)
 import Arkham.Homebrew.TheSymphonyOfErichZann.Traits (pattern Music)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Matcher
-import Arkham.Message (Message (PlaceTreachery))
-import Arkham.Placement (Placement (NextToAgenda))
+import Arkham.Message (Message (PlaceTreachery), ShuffleIn (..))
+import Arkham.Placement (Placement (InPlayArea, NextToAgenda))
 import Arkham.Message.Lifted
+import Arkham.Message.Lifted.Choose
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Scenario.Types (Field (ScenarioMeta))
@@ -102,6 +105,30 @@ trait, and the matching [[Music]] treachery is what unlocks them.
 -}
 instrumentInPlay :: HasGame m => Trait -> m Bool
 instrumentInPlay t = selectAny (TreacheryWithTrait t <> InPlayTreachery)
+
+{- | What each Muse pays out.
+
+"Add <Musician> to the victory display. You may choose to put the set aside
+<instrument> into play in any investigator's play area. That investigator has
+earned it and may choose to add it to his or her deck. This card does not count
+toward that investigator's deck size."
+-}
+musePayoff :: (HasI18n, ReverseQueue m) => InvestigatorId -> CardDef -> CardDef -> m ()
+musePayoff iid musician instrument = do
+  selectEach (enemyIs musician) (addToVictory iid)
+  offerInstrument iid instrument
+
+{- | The reward half on its own, for The Piano -- which pays out La Fratta's
+Piano Key the same way, but banks itself rather than a Musician.
+-}
+offerInstrument :: (HasI18n, ReverseQueue m) => InvestigatorId -> CardDef -> m ()
+offerInstrument iid instrument = chooseOneM iid do
+  labeled "takeInstrument" do
+    investigators <- getInvestigators
+    chooseOrRunOneM iid $ targets investigators \owner -> do
+      createAssetAt_ instrument (InPlayArea owner)
+      addCampaignCardToDeck owner DoNotShuffleIn instrument
+  labeled "leaveInstrument" nothing
 
 -- | The campaign's own i18n scope; the folder name camelCased.
 campaignI18n :: (HasI18n => a) -> a

@@ -41,16 +41,16 @@ scenario =
         buildMapWith
           [ nb "Rivertown"
           , nb "Easttown"
-          , nb "French Hill"
           , nb "Merchant District"
+          , nb "French Hill"
           , nb "Uptown"
           ]
           [ StreetDef (nb "Rivertown") SideRight (nb "Easttown") Bridge
-          , StreetDef (nb "Rivertown") BottomLeft (nb "French Hill") Scenic
-          , StreetDef (nb "Rivertown") BottomRight (nb "Merchant District") Residential
-          , StreetDef (nb "Easttown") BottomLeft (nb "Merchant District") Bridge
-          , StreetDef (nb "French Hill") BottomRight (nb "Uptown") Residential
-          , StreetDef (nb "Merchant District") BottomLeft (nb "Uptown") Scenic
+          , StreetDef (nb "Rivertown") BottomLeft (nb "Merchant District") Scenic
+          , StreetDef (nb "Rivertown") BottomRight (nb "French Hill") Residential
+          , StreetDef (nb "Easttown") BottomLeft (nb "French Hill") Bridge
+          , StreetDef (nb "Merchant District") BottomRight (nb "Uptown") Residential
+          , StreetDef (nb "French Hill") BottomLeft (nb "Uptown") Scenic
           ]
           []
           [MysteryTile (nb "Merchant District") SideLeft "The Unnamable"]

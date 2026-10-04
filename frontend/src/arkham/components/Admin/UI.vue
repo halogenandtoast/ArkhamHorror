@@ -1,11 +1,43 @@
 <script setup lang="ts">
-import { computed, nextTick } from 'vue'
+/* The admin shell: a left rail of sections, the section's own page beside it.
+ *
+ * A rail rather than a row of tabs because the sections are a list that grows --
+ * dashboard, rooms, submissions, whatever comes next -- and a vertical list has
+ * room for the next one without squeezing the others. On a narrow screen it
+ * collapses behind a toggle, since a sidebar that eats half a phone is not a
+ * sidebar.
+ */
+import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
 
-const selected = computed(() => route.name === 'Rooms' ? 'rooms' : 'dashboard')
+/* The sections, in the order the rail shows them. Data rather than markup so a
+ * new one is a list entry rather than another copy of the link markup. */
+const sections = [
+  { key: 'dashboard', path: '/admin', label: 'admin.dashboard', icon: 'gear' },
+  { key: 'rooms', path: '/admin/rooms', label: 'admin.rooms', icon: 'layer-group' },
+  { key: 'stats', path: '/admin/stats', label: 'admin.gameStats', icon: 'chart-simple' },
+  { key: 'submissions', path: '/admin/submissions', label: 'admin.submissions', icon: 'clipboard-check' },
+] as const
+
+const byRouteName: Record<string, string> = {
+  Rooms: 'rooms',
+  AdminGameStats: 'stats',
+  AdminSubmissions: 'submissions',
+}
+
+const selected = computed(() => byRouteName[String(route.name)] ?? 'dashboard')
+
+const selectedLabel = computed(
+  () => sections.find((s) => s.key === selected.value)?.label ?? 'admin.dashboard',
+)
+
+/* Only ever used at narrow widths, where the rail is off-canvas. Closed again on
+ * every navigation: the thing you opened it to reach is now on screen behind it. */
+const railOpen = ref(false)
+watch(() => route.fullPath, () => { railOpen.value = false })
 
 async function navigateTo(path: string) {
   if (router.currentRoute.value.path === path) return
@@ -27,82 +59,125 @@ async function navigateTo(path: string) {
 
 <template>
   <div class="admin-page page-container">
-    <div class="admin-layout page-content">
-      <header class="admin-header">
-        <div class="admin-title-block">
+    <div class="admin-layout page-content" :class="{ 'rail-open': railOpen }">
+      <aside class="admin-rail" :class="{ open: railOpen }">
+        <div class="rail-head">
           <p class="eyebrow">{{ $t('admin.title') }}</p>
-          <Transition name="admin-title-fade" mode="out-in">
-            <h1 :key="selected">{{ selected === 'rooms' ? $t('admin.rooms') : $t('admin.dashboard') }}</h1>
-          </Transition>
         </div>
 
-        <nav class="admin-nav" :class="selected" :aria-label="$t('admin.title')">
+        <nav class="admin-nav" :aria-label="$t('admin.title')">
           <a
+            v-for="section in sections"
+            :key="section.key"
             class="admin-nav-link"
-            :class="{ active: selected === 'dashboard' }"
-            :href="router.resolve('/admin').href"
-            @click.prevent="navigateTo('/admin')"
+            :class="{ active: selected === section.key }"
+            :href="router.resolve(section.path).href"
+            :aria-current="selected === section.key ? 'page' : undefined"
+            @click.prevent="navigateTo(section.path)"
           >
-            {{ $t('admin.dashboard') }}
-          </a>
-          <a
-            class="admin-nav-link"
-            :class="{ active: selected === 'rooms' }"
-            :href="router.resolve('/admin/rooms').href"
-            @click.prevent="navigateTo('/admin/rooms')"
-          >
-            {{ $t('admin.rooms') }}
+            <font-awesome-icon :icon="section.icon" fixed-width />
+            <span>{{ $t(section.label) }}</span>
           </a>
         </nav>
-      </header>
+      </aside>
 
-      <RouterView v-slot="{ Component }">
-        <Transition name="admin-route" mode="out-in">
-          <main class="admin-content" :key="route.fullPath">
-            <Suspense>
-              <component :is="Component" />
-              <template #fallback>
-                <div class="admin-loading" role="status" aria-live="polite">
-                  <div class="loading-header">
-                    <span class="loading-title"></span>
-                    <span class="loading-count"></span>
-                  </div>
-                  <div class="loading-line wide"></div>
-                  <div class="loading-line"></div>
-                  <div class="loading-line short"></div>
-                  <span class="sr-only">Loading admin content…</span>
-                </div>
-              </template>
-            </Suspense>
-          </main>
-        </Transition>
-      </RouterView>
+      <!-- Tapping away closes the rail at narrow widths, where it overlays the
+           page rather than sitting beside it. -->
+      <div v-if="railOpen" class="rail-scrim" @click="railOpen = false"></div>
+
+      <div class="admin-main">
+        <header class="admin-header">
+          <button
+            type="button"
+            class="rail-toggle"
+            :aria-expanded="railOpen"
+            :aria-label="$t('admin.toggleSidebar')"
+            @click="railOpen = !railOpen"
+          >
+            <font-awesome-icon icon="bars" />
+          </button>
+          <Transition name="admin-title-fade" mode="out-in">
+            <h1 :key="selected">{{ $t(selectedLabel) }}</h1>
+          </Transition>
+        </header>
+
+        <div class="admin-scroll">
+          <RouterView v-slot="{ Component }">
+            <Transition name="admin-route" mode="out-in">
+              <main class="admin-content" :key="route.fullPath">
+                <Suspense>
+                  <component :is="Component" />
+                  <template #fallback>
+                    <div class="admin-loading" role="status" aria-live="polite">
+                      <div class="loading-header">
+                        <span class="loading-title"></span>
+                        <span class="loading-count"></span>
+                      </div>
+                      <div class="loading-line wide"></div>
+                      <div class="loading-line"></div>
+                      <div class="loading-line short"></div>
+                      <span class="sr-only">Loading admin content…</span>
+                    </div>
+                  </template>
+                </Suspense>
+              </main>
+            </Transition>
+          </RouterView>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* The page itself does not scroll -- the content column does. That is what keeps
+   the rail still: while a section is being swapped there is a moment with no
+   content at all, and if the page were the scroller its height would collapse,
+   the scroll position would clamp, and everything anchored to it would jump. */
 .admin-page {
-  margin-block-start: 0;
-  padding-block: 20px 28px;
   box-sizing: border-box;
-  scrollbar-gutter: stable;
+  margin-block-start: 0;
+  overflow: hidden;
+  padding-block: 20px 28px;
 }
 
+/* Rail then page, both full height. The rail column is a fixed width so the
+   content does not change width between sections either. */
 .admin-layout {
-  width: min(1180px, calc(100vw - 32px));
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 208px minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
   padding-top: 0;
   padding-bottom: 0;
+  position: relative;
+  width: min(1240px, calc(100vw - 32px));
 }
 
-.admin-header {
+/* The rail is the one thing on this page that does not change between sections,
+   so it must not look like it does: it is named for the view transition, which
+   keeps the browser from folding it into the root snapshot and cross-fading it
+   with itself, and it scrolls on its own so a tall page cannot move it. */
+.admin-rail {
+  align-self: start;
+  background: color-mix(in srgb, var(--background-dark) 55%, transparent);
+  border: 1px solid var(--box-border);
+  border-radius: 6px;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
+  flex-direction: column;
+  gap: 10px;
+  /* Its own scroller, and never taller than the column, so a long list of
+     sections cannot push on the layout around it. */
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 12px;
+  view-transition-name: admin-rail;
+}
+
+.rail-head {
   border-bottom: 1px solid var(--box-border);
+  padding-bottom: 8px;
 }
 
 .eyebrow {
@@ -110,12 +185,68 @@ async function navigateTo(path: string) {
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.14em;
-  margin: 0 0 2px;
+  margin: 0;
   text-transform: uppercase;
 }
 
-.admin-title-block {
-  min-width: 14rem;
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-nav-link {
+  align-items: center;
+  border-radius: 4px;
+  color: color-mix(in srgb, var(--spooky-green) 50%, #aaa);
+  display: flex;
+  font-size: 0.85rem;
+  font-weight: 700;
+  gap: 10px;
+  padding: 9px 10px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.admin-nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+}
+
+/* The selected section, marked on the edge nearest the content it is showing. */
+.admin-nav-link.active {
+  background: var(--spooky-green-dark);
+  box-shadow: inset 3px 0 0 var(--spooky-green);
+  color: white;
+}
+
+.admin-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* The only thing on the page that scrolls. `scrollbar-gutter` keeps the column
+   the same width whether or not the section is long enough to need a bar. */
+.admin-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.admin-header {
+  align-items: center;
+  border-bottom: 1px solid var(--box-border);
+  display: flex;
+  flex: none;
+  gap: 12px;
+  min-height: 44px;
+  padding-bottom: 12px;
 }
 
 h1 {
@@ -127,6 +258,26 @@ h1 {
   text-transform: uppercase;
 }
 
+/* Only shown where the rail is off-canvas. */
+.rail-toggle {
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  border-radius: 4px;
+  color: var(--title);
+  cursor: pointer;
+  display: none;
+  flex: none;
+  padding: 8px 11px;
+}
+
+.rail-toggle:hover {
+  border-color: var(--spooky-green);
+}
+
+.rail-scrim {
+  display: none;
+}
+
 .admin-title-fade-enter-active,
 .admin-title-fade-leave-active {
   transition: opacity 130ms ease-in-out;
@@ -135,57 +286,6 @@ h1 {
 .admin-title-fade-enter-from,
 .admin-title-fade-leave-to {
   opacity: 0;
-}
-
-.admin-nav {
-  --admin-nav-gap: 4px;
-  --admin-nav-padding: 4px;
-  align-items: center;
-  background: var(--background-dark);
-  border: 1px solid var(--box-border);
-  border-radius: 5px;
-  display: grid;
-  gap: var(--admin-nav-gap);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  padding: var(--admin-nav-padding);
-  position: relative;
-}
-
-.admin-nav::before {
-  content: '';
-  background: var(--spooky-green-dark);
-  border-radius: 3px;
-  bottom: var(--admin-nav-padding);
-  left: var(--admin-nav-padding);
-  position: absolute;
-  top: var(--admin-nav-padding);
-  transform: translateX(0);
-  transition: transform 220ms cubic-bezier(.2, .8, .2, 1);
-  width: calc((100% - (var(--admin-nav-padding) * 2) - var(--admin-nav-gap)) / 2);
-  z-index: 0;
-}
-
-.admin-nav.rooms::before {
-  transform: translateX(calc(100% + var(--admin-nav-gap)));
-}
-
-.admin-nav-link {
-  border-radius: 3px;
-  color: color-mix(in srgb, var(--spooky-green) 50%, #aaa);
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 8px 12px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: color 0.15s ease;
-  z-index: 1;
-}
-
-.admin-nav-link:hover,
-.admin-nav-link.active {
-  color: white;
 }
 
 .admin-content {
@@ -278,6 +378,18 @@ h1 {
   animation-timing-function: cubic-bezier(.2, .8, .2, 1);
 }
 
+/* Held still. The rail is identical on both sides of the transition, so anything
+   animating it is a flicker with nothing to show for it. */
+:global(::view-transition-group(admin-rail)),
+:global(::view-transition-old(admin-rail)),
+:global(::view-transition-new(admin-rail)) {
+  animation: none;
+}
+
+:global(::view-transition-old(admin-rail)) {
+  display: none;
+}
+
 :global(::view-transition-old(admin-content)) {
   animation: admin-content-out 180ms cubic-bezier(.4, 0, 1, 1) both;
 }
@@ -325,26 +437,66 @@ h1 {
   }
 }
 
-@media (max-width: 700px) {
+/* Narrow: the rail comes off the grid and slides in over the page, which is the
+   only way a 208px column and a readable page both fit. */
+@media (max-width: 860px) {
   .admin-page {
     padding-block: 12px 20px;
   }
 
   .admin-layout {
+    grid-template-columns: minmax(0, 1fr);
     width: calc(100vw - 24px);
   }
 
-  .admin-header {
-    align-items: stretch;
-    flex-direction: column;
+  /* Off-canvas, so it is no longer a column of the grid and the content column
+     is the whole width. */
+  .admin-scroll {
+    scrollbar-gutter: auto;
+  }
+
+  .admin-rail {
+    bottom: 0;
+    border-radius: 0 6px 6px 0;
+    border-left: none;
+    background: var(--background-dark);
+    left: 0;
+    max-height: none;
+    position: fixed;
+    top: 0;
+    transform: translateX(-100%);
+    transition: transform 200ms cubic-bezier(.2, .8, .2, 1);
+    width: 220px;
+    z-index: 30;
+    /* Off-canvas and transformed: naming it here would hand the browser a
+       moving target to hold still. */
+    view-transition-name: none;
+  }
+
+  .admin-rail.open {
+    transform: translateX(0);
+  }
+
+  .rail-scrim {
+    background: rgba(0, 0, 0, 0.55);
+    display: block;
+    inset: 0;
+    position: fixed;
+    z-index: 29;
+  }
+
+  .rail-toggle {
+    display: block;
   }
 
   h1 {
     font-size: 1.8rem;
   }
+}
 
-  .admin-nav {
-    width: fit-content;
+@media (prefers-reduced-motion: reduce) {
+  .admin-rail {
+    transition: none;
   }
 }
 </style>

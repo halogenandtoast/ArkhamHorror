@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import api from '@/api'
+
+const { t } = useI18n()
 
 interface RoomData {
   roomClients: number
-  roomLastUpdateAt: string | null
+  roomLastUpdatedAt: string | null
   roomArkhamGameId: string
 }
 
@@ -12,10 +15,18 @@ const props = defineProps<{
   room: RoomData
 }>()
 
-const lastUpdated = computed(() => props.room.roomLastUpdateAt ? props.room.roomLastUpdateAt : 'deleted')
-const deleted = computed(() => lastUpdated.value === 'deleted')
+/* No timestamp means there is no game row behind this room any more: the game was
+ * deleted and the room outlived it, which is worth calling out on its own. */
+const deleted = computed(() => !props.room.roomLastUpdatedAt)
+const lastUpdated = computed(() => props.room.roomLastUpdatedAt ?? 'deleted')
 
+/* Dropping a room evicts everyone on it -- the server sends them home and closes
+ * their sockets -- so a room with people in it asks first. An orphaned one has
+ * nobody to interrupt. */
 async function deleteRoom() {
+  if (props.room.roomClients > 0 && !confirm(t('admin.confirmDropRoom', props.room.roomClients))) {
+    return
+  }
   await api.delete(`admin/rooms/${props.room.roomArkhamGameId}`)
   window.location.reload()
 }
@@ -33,7 +44,9 @@ async function deleteRoom() {
     </div>
     <div class="room-actions">
       <router-link :to="`/admin/games/${room.roomArkhamGameId}`">View</router-link>
-      <a v-if="deleted" href="#" class="delete" @click.prevent="deleteRoom">Delete</a>
+      <a href="#" class="delete" @click.prevent="deleteRoom">
+        {{ room.roomClients > 0 ? t('admin.dropRoom') : t('admin.deleteRoom') }}
+      </a>
     </div>
   </div>
 </template>

@@ -70,6 +70,26 @@ const shown = computed(() => {
 
 const isSubscribed = computed(() => listing.value?.subscribedVersion != null)
 
+/* A set is in the marketplace once a version of it has been approved. Until then
+ * only its author can reach this page at all, and there is nothing to import. */
+const isListed = computed(() => (listing.value?.latestVersion ?? 0) > 0)
+
+const denied = computed(() => listing.value?.reviewStatus === 'denied')
+
+/* Where your own set stands, in a line. Null for anything approved with nothing
+ * waiting, which is every set anyone else can see. */
+const reviewLine = computed(() => {
+  const set = listing.value
+  if (!set) return null
+  if (set.pendingVersion !== null) {
+    return isListed.value
+      ? t(`${K}reviewPendingUpdate`, { version: set.pendingVersion, live: set.latestVersion })
+      : t(`${K}reviewPending`, { version: set.pendingVersion })
+  }
+  if (denied.value) return t(`${K}reviewDeniedShort`)
+  return null
+})
+
 const behind = computed(
   () =>
     !!listing.value &&
@@ -156,6 +176,13 @@ async function take() {
               · {{ t(`${K}publishedAt`, { date: published }) }}
             </p>
             <p v-if="detail.note" class="note">{{ detail.note }}</p>
+            <!-- Only ever on your own set: nobody else can reach one that has
+                 not been approved. -->
+            <p v-if="reviewLine" class="review" :class="{ denied }">
+              <font-awesome-icon :icon="denied ? 'circle-xmark' : 'hourglass-half'" />
+              {{ reviewLine }}
+              <em v-if="denied && listing.denialReason">{{ listing.denialReason }}</em>
+            </p>
           </div>
 
           <div class="actions">
@@ -173,7 +200,8 @@ async function take() {
             <span v-if="isSubscribed" class="subscribed">
               {{ t(`${K}subscribedBadge`, { version: listing.subscribedVersion }) }}
             </span>
-            <button type="button" :disabled="busy" @click="take">
+            <!-- Nothing to import until a version has been approved. -->
+            <button v-if="isListed" type="button" :disabled="busy" @click="take">
               {{
                 behind
                   ? t(`${K}updateTo`, { version: listing.latestVersion })
@@ -335,6 +363,29 @@ p.error {
 
   &:hover {
     text-decoration: underline;
+  }
+}
+
+/* Only ever on your own set. A denial carries the reason underneath, which is
+   the only part of this a reader has to act on. */
+.review {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  gap: 0.4rem;
+  margin: 0.35rem 0 0;
+  max-width: 60ch;
+  opacity: 0.9;
+
+  em {
+    flex: 1 1 100%;
+    font-style: italic;
+    opacity: 0.85;
+  }
+
+  &.denied {
+    color: color-mix(in srgb, var(--survivor) 70%, white);
   }
 }
 

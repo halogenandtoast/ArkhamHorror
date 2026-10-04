@@ -40,6 +40,21 @@ export default [
         component: () => import('@/views/Rooms.vue'),
         meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Rooms" },
       },
+      {
+        // Play statistics, read off a server-side materialized view.
+        path: 'stats',
+        name: 'AdminGameStats',
+        component: () => import('@/views/AdminGameStats.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Stats" },
+      },
+      {
+        // The card marketplace review queue: nothing people submit is listed
+        // until it is approved here.
+        path: 'submissions',
+        name: 'AdminSubmissions',
+        component: () => import('@/views/AdminSubmissions.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Submissions" },
+      },
     ],
   },
   {

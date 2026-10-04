@@ -24,10 +24,13 @@ import { isDevBuild } from '@/arkham/displayRules'
 import {
   createSet,
   exportCards,
+  isAwaitingReview,
+  isListed,
   isSubscribed,
   publishSet,
   syncSet,
   updateAvailable,
+  wasDenied,
   importSet,
   libraryCard,
   byPrintedNumber,
@@ -70,30 +73,57 @@ const router = useRouter()
  * adds to this page is gated on it, so the page is unchanged without it. */
 const dev = isDevBuild()
 
-/* Which set a publish is being written for, and the note to publish it with.
- * Held here rather than prompted for, because "what changed" wants a text field
- * and a confirm dialog has none. */
+/* Which set a submission is being written for, the note to send with it, and
+ * whether the author wants to be emailed the decision. Held here rather than
+ * prompted for, because "what changed" wants a text field and a confirm dialog
+ * has none.
+ *
+ * Notifying defaults to on: somebody who has just asked a person to look at their
+ * work wants to hear back, and it is one click to say otherwise. */
 const publishingSetId = ref<string | null>(null)
 const publishNote = ref('')
+const publishNotify = ref(true)
 
 function startPublish(set: LibrarySet) {
   publishingSetId.value = set.id
   publishNote.value = ''
+  publishNotify.value = true
   status.value = null
   error.value = null
 }
 
+/* Submitting, not listing: the version goes into the review queue, and nothing
+ * about the marketplace changes until somebody acts on it. The message says so,
+ * because "Published" would be a lie the author only finds out about later. */
 async function commitPublish(set: LibrarySet) {
   const note = publishNote.value.trim()
+  const notify = publishNotify.value
   publishingSetId.value = null
   error.value = null
   try {
-    const published = await publishSet(set.id, note || null)
-    status.value = t(`${K}published`, { name: set.name, version: published.latestVersion })
+    const submitted = await publishSet(set.id, note || null, notify)
+    status.value = t(`${K}submitted`, {
+      name: set.name,
+      version: submitted.pendingVersion ?? submitted.latestVersion,
+    })
   } catch (e) {
     console.error(e)
     error.value = t(`${K}publishFailed`)
   }
+}
+
+/* The one-line account of where a set stands with the marketplace, or null for a
+ * set that has nothing to do with it. Read off the set rather than refetched: the
+ * library is reloaded after every submission. */
+function reviewLine(set: LibrarySet): string | null {
+  if (isAwaitingReview(set)) {
+    return isListed(set)
+      ? t(`${K}reviewPendingUpdate`, { version: set.submittedVersion, live: set.approvedVersion })
+      : t(`${K}reviewPending`, { version: set.submittedVersion })
+  }
+  if (wasDenied(set)) return t(`${K}reviewDenied`, { version: set.submittedVersion })
+  if (isListed(set)) return t(`${K}reviewListed`, { version: set.approvedVersion })
+  return null
 }
 
 /* Pull the newest published version into a subscribed set. Its cards are
@@ -868,8 +898,8 @@ async function onImport(event: Event) {
             <button
               v-if="dev"
               type="button"
-              v-tooltip="t(`${K}publishTitle`, { name: set.name })"
-              :aria-label="t(`${K}publishTitle`, { name: set.name })"
+              v-tooltip="t(`${K}submitTitle`, { name: set.name })"
+              :aria-label="t(`${K}submitTitle`, { name: set.name })"
               @click="startPublish(set)"
             >
               <font-awesome-icon icon="store" />
@@ -911,11 +941,23 @@ async function onImport(event: Event) {
           </div>
         </div>
 
+        <!-- Where this set stands with the marketplace, for a set that has been
+             submitted. A denial carries the reason, which is the whole point of
+             having asked for one. -->
+        <p v-if="dev && reviewLine(set)" class="review" :class="{ denied: wasDenied(set) }">
+          <font-awesome-icon :icon="wasDenied(set) ? 'circle-xmark' : isAwaitingReview(set) ? 'hourglass-half' : 'store'" />
+          <span>
+            {{ reviewLine(set) }}
+            <em v-if="wasDenied(set) && set.submissionReason">{{ set.submissionReason }}</em>
+          </span>
+        </p>
+
         <form
           v-if="publishingSetId === set.id"
           class="publish"
           @submit.prevent="commitPublish(set)"
         >
+          <p class="publish-lede">{{ t(`${K}submitLede`) }}</p>
           <input
             v-model="publishNote"
             type="text"
@@ -923,10 +965,16 @@ async function onImport(event: Event) {
             @keydown.stop
             @keydown.esc="publishingSetId = null"
           />
-          <button type="submit">{{ t(`${K}publishConfirm`) }}</button>
-          <button type="button" class="cancel" @click="publishingSetId = null">
-            {{ t(`${K}publishCancel`) }}
-          </button>
+          <label class="notify">
+            <input v-model="publishNotify" type="checkbox" />
+            <span>{{ t(`${K}notifyMe`) }}</span>
+          </label>
+          <div class="publish-actions">
+            <button type="submit">{{ t(`${K}submitConfirm`) }}</button>
+            <button type="button" class="cancel" @click="publishingSetId = null">
+              {{ t(`${K}publishCancel`) }}
+            </button>
+          </div>
         </form>
 
         <!-- As many cards as fit on one row, and no more: the grid's auto-fill
@@ -1299,12 +1347,71 @@ async function onImport(event: Event) {
   }
 }
 
+/* Where the set stands with the marketplace. Reads as a note on the row rather
+ * than an alert: for a listed set it is good news, and it is on screen always. */
+.review {
+  align-items: flex-start;
+  border-top: 1px solid var(--box-border);
+  color: color-mix(in srgb, var(--title) 75%, transparent);
+  display: flex;
+  font-size: 0.78rem;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+
+  svg {
+    margin-top: 0.15rem;
+    opacity: 0.8;
+  }
+
+  em {
+    color: color-mix(in srgb, var(--title) 90%, transparent);
+    display: block;
+    font-style: italic;
+  }
+
+  &.denied {
+    color: color-mix(in srgb, var(--survivor) 70%, white);
+  }
+}
+
 .publish {
   border-top: 1px solid var(--box-border);
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   padding: 0.6rem 0.75rem;
+
+  /* The form says what submitting does, because it no longer does what the word
+     "publish" promised: it asks somebody to look at the set. */
+  .publish-lede {
+    color: color-mix(in srgb, var(--title) 70%, transparent);
+    flex: 1 1 100%;
+    font-size: 0.75rem;
+    margin: 0;
+  }
+
+  .notify {
+    align-items: center;
+    color: color-mix(in srgb, var(--title) 85%, transparent);
+    cursor: pointer;
+    display: flex;
+    flex: 1 1 100%;
+    font-size: 0.78rem;
+    gap: 0.4rem;
+
+    input[type="checkbox"] {
+      accent-color: var(--spooky-green);
+      flex: none;
+      margin: 0;
+      width: auto;
+    }
+  }
+
+  .publish-actions {
+    display: flex;
+    gap: 0.4rem;
+  }
 
   input {
     background: rgba(0, 0, 0, 0.25);

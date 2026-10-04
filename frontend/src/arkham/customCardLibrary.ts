@@ -240,8 +240,8 @@ export async function importSet(payload: {
  * cards, on an update, and its subscription either way -- so the library is
  * reloaded rather than patched from the response. */
 
-export async function publishSet(id: string, note: string | null) {
-  const published = await Api.publishCustomCardSet(id, note)
+export async function publishSet(id: string, note: string | null, notify: boolean) {
+  const published = await Api.publishCustomCardSet(id, note, notify)
   await loadLibrary(true)
   return published
 }
@@ -267,6 +267,18 @@ export const updateAvailable = (set: LibrarySet) =>
   set.latestVersion !== null &&
   set.subscribedVersion !== null &&
   set.latestVersion > set.subscribedVersion
+
+/* Where a set of your own stands with the marketplace. `null` for a set you have
+ * never submitted, which is most of them. */
+export const reviewStatus = (set: LibrarySet) => set.submissionStatus
+
+export const isAwaitingReview = (set: LibrarySet) => set.submissionStatus === 'pending'
+
+export const wasDenied = (set: LibrarySet) => set.submissionStatus === 'denied'
+
+/* Whether a version of this set is in the marketplace. A later version may be
+ * waiting or have been turned down without changing that. */
+export const isListed = (set: LibrarySet) => set.approvedVersion !== null
 
 export async function saveToLibrary(card: CustomCard, setId: string): Promise<LibraryCard> {
   const saved = toLibraryCard(await Api.saveCustomCard({ setId, def: card.def, art: card.art }))

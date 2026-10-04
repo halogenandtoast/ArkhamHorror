@@ -39,6 +39,19 @@ data CustomCardSetResponse = CustomCardSetResponse
   -}
   , customCardSetResponseSubscribedVersion :: Maybe Int
   , customCardSetResponseLatestVersion :: Maybe Int
+  , -- | Your own marketplace listing for this set, if you have submitted it.
+    -- Distinct from 'customCardSetResponsePublishedCardSetId', which is a listing
+    -- of somebody else's that this set is a copy of.
+    customCardSetResponseSubmittedCardSetId :: Maybe ArkhamPublishedCardSetId
+  , -- | The version of the newest thing you submitted, and what was decided
+    -- about it: @pending@, @approved@ or @denied@. The reason is only ever on a
+    -- denial, and is what the author has to read to know what to change.
+    customCardSetResponseSubmittedVersion :: Maybe Int
+  , customCardSetResponseSubmissionStatus :: Maybe Text
+  , customCardSetResponseSubmissionReason :: Maybe Text
+  , -- | The version of this set that is in the marketplace now, which is not
+    -- necessarily the one you last submitted.
+    customCardSetResponseApprovedVersion :: Maybe Int
   }
   deriving stock Generic
 
@@ -79,15 +92,42 @@ requireName raw = do
   when (T.null name) $ invalidArgs ["A set needs a name"]
   pure name
 
+{- | Where this set stands with the marketplace, if its owner has submitted it:
+the listing, and the newest thing said about it.
+
+Looked up by the listing pointing back at this set, which is how publishing again
+finds the listing to add a version to.
+-}
+submissionFor
+  :: ArkhamCustomCardSetId
+  -> Handler (Maybe (Entity ArkhamPublishedCardSet), Maybe ArkhamCardSetSubmission)
+submissionFor setId = do
+  listing <-
+    runDB
+      $ P.selectFirst [ArkhamPublishedCardSetCustomCardSetId P.==. Just setId] []
+  submission <- case listing of
+    Nothing -> pure Nothing
+    Just (Entity publishedId _) ->
+      fmap (fmap entityVal)
+        $ runDB
+        $ P.selectFirst
+          [ArkhamCardSetSubmissionPublishedCardSetId P.==. publishedId]
+          [P.Desc ArkhamCardSetSubmissionVersion]
+  pure (listing, submission)
+
 setResponse :: Entity ArkhamCustomCardSet -> Handler CustomCardSetResponse
 setResponse (Entity setId row) = do
   cardCount <- runDB $ P.count [ArkhamCustomCardCustomCardSetId P.==. setId]
   subscription <- runDB $ P.getBy (UniqueCardSetSubscription setId)
+  -- What a subscriber can update to is the newest *approved* version: an author's
+  -- unreviewed submission is not an update, and is not importable.
   latest <- case subscription of
     Nothing -> pure Nothing
     Just (Entity _ sub) ->
-      fmap arkhamPublishedCardSetLatestVersion
-        <$> runDB (DB.get (arkhamCardSetSubscriptionPublishedCardSetId sub))
+      fmap (arkhamPublishedCardSetApprovedVersion =<<)
+        $ runDB
+        $ DB.get (arkhamCardSetSubscriptionPublishedCardSetId sub)
+  (listing, submission) <- submissionFor setId
   pure
     $ CustomCardSetResponse
       { customCardSetResponseId = setId
@@ -100,6 +140,15 @@ setResponse (Entity setId row) = do
       , customCardSetResponseSubscribedVersion =
           arkhamCardSetSubscriptionVersion . entityVal <$> subscription
       , customCardSetResponseLatestVersion = latest
+      , customCardSetResponseSubmittedCardSetId = entityKey <$> listing
+      , customCardSetResponseSubmittedVersion =
+          arkhamCardSetSubmissionVersion <$> submission
+      , customCardSetResponseSubmissionStatus =
+          arkhamCardSetSubmissionStatus <$> submission
+      , customCardSetResponseSubmissionReason =
+          arkhamCardSetSubmissionReason =<< submission
+      , customCardSetResponseApprovedVersion =
+          arkhamPublishedCardSetApprovedVersion . entityVal =<< listing
       }
 
 getApiV1ArkhamCustomCardSetsR :: Handler [CustomCardSetResponse]

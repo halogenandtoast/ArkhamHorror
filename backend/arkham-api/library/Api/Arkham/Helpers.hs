@@ -111,6 +111,13 @@ data ApiResponse
   | -- Event membership/group roster changed. Payloads are user-specific, so
     -- clients refetch EventDetails rather than receiving a shared digest.
     EventChanged
+  | {- | The room this socket is attached to has been deleted -- the game was
+    deleted, or an admin dropped the room. The socket is torn down right behind
+    this message, so it is the last thing the client receives; reconnecting
+    would only recreate the room it was just removed from, which is why the
+    client is expected to leave rather than retry.
+    -}
+    RoomClosed Text
   deriving stock Generic
 
 instance Aeson.ToJSON ApiResponse where

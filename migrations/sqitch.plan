@@ -27,3 +27,5 @@ arkham_published_card_set_likes [users arkham_published_card_sets] 2026-09-12T01
 add_last_used_at_to_decks [arkham_decks arkham_players] 2026-09-12T02:00:00Z Claude <noreply@anthropic.com> # Track when a deck was last taken into a game
 add_phase_transition_notifications_to_users [users] 2026-09-12T03:00:00Z Claude <noreply@anthropic.com> # Add phase transition notification preference
 arkham_api_keys [users] 2026-09-27T00:00:00Z Claude <noreply@anthropic.com> # Scoped, revocable per-user keys for programmatic access
+arkham_card_set_submissions [arkham_published_card_sets] 2026-10-04T00:00:00Z Claude <noreply@anthropic.com> # Review queue for sets submitted to the marketplace
+arkham_game_stats [arkham_games] 2026-10-04T01:00:00Z Claude <noreply@anthropic.com> # Pre-extracted game facts for the admin stats panel

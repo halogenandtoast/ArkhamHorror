@@ -5,7 +5,7 @@ import Room from '@/components/admin/Room.vue'
 
 interface RoomData {
   roomClients: number
-  roomLastUpdateAt: string | null
+  roomLastUpdatedAt: string | null
   roomArkhamGameId: string
 }
 

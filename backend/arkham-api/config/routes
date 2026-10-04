@@ -108,6 +108,15 @@
         / ApiV1AdminRoomsR GET
         /#ArkhamGameId ApiV1AdminRoomP:
           / ApiV1AdminRoomR DELETE
+      /game-stats ApiV1AdminGameStatsP:
+        / ApiV1AdminGameStatsR GET
+        !/refresh ApiV1AdminGameStatsRefreshR POST
+      /card-set-submissions ApiV1AdminCardSetSubmissionsP:
+        / ApiV1AdminCardSetSubmissionsR GET
+        /#ArkhamCardSetSubmissionId ApiV1AdminCardSetSubmissionP:
+          / ApiV1AdminCardSetSubmissionR GET
+          /approve ApiV1AdminCardSetSubmissionApproveR POST
+          /deny ApiV1AdminCardSetSubmissionDenyR POST
       /games ApiV1AdminGamesP:
         / ApiV1AdminGamesR GET
         !/active ApiV1AdminActiveGamesR GET

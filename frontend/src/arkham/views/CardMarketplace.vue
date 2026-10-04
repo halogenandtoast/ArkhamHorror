@@ -111,6 +111,27 @@ const isSubscribed = (set: Api.PublishedCardSet) => set.subscribedVersion !== nu
 const behind = (set: Api.PublishedCardSet) =>
   set.subscribedVersion !== null && set.subscribedVersion < set.latestVersion
 
+/* A listing is in the marketplace once a version of it has been approved. Your
+ * own appear here before that so you can see where they stand, and they are the
+ * only ones that can be unapproved -- so these only ever read true on your own. */
+const isListed = (set: Api.PublishedCardSet) => set.latestVersion > 0
+
+const awaitingReview = (set: Api.PublishedCardSet) => set.pendingVersion !== null
+
+const denied = (set: Api.PublishedCardSet) => set.reviewStatus === 'denied'
+
+/* Where your own listing stands, in a line. Null for anything already approved
+ * and with nothing waiting, which is every listing anyone else sees. */
+function reviewLine(set: Api.PublishedCardSet): string | null {
+  if (awaitingReview(set)) {
+    return isListed(set)
+      ? t(`${K}reviewPendingUpdate`, { version: set.pendingVersion, live: set.latestVersion })
+      : t(`${K}reviewPending`, { version: set.pendingVersion })
+  }
+  if (denied(set)) return t(`${K}reviewDeniedShort`)
+  return null
+}
+
 /* The listing comes back with its new count, so the row is replaced rather than
  * the whole list reloaded: nothing else about it has changed. */
 function replace(updated: Api.PublishedCardSet) {
@@ -243,12 +264,21 @@ async function unlist(set: Api.PublishedCardSet) {
                     {{ t(`${K}byAuthor`, { author: set.author }) }}
                   </button>
                   ·
-                  {{ t(`${K}versionCount`, {
-                    version: set.latestVersion,
-                    count: t(`${K}cardCount`, set.cardCount),
-                  }) }}
+                  {{ isListed(set)
+                    ? t(`${K}versionCount`, {
+                        version: set.latestVersion,
+                        count: t(`${K}cardCount`, set.cardCount),
+                      })
+                    : t(`${K}cardCount`, set.cardCount) }}
                 </p>
                 <p v-if="set.note" class="note">{{ set.note }}</p>
+                <!-- Only ever on your own listing: nobody else's is shown here
+                     until it has passed review. -->
+                <p v-if="reviewLine(set)" class="review" :class="{ denied: denied(set) }">
+                  <font-awesome-icon :icon="denied(set) ? 'circle-xmark' : 'hourglass-half'" />
+                  {{ reviewLine(set) }}
+                  <em v-if="denied(set) && set.denialReason">{{ set.denialReason }}</em>
+                </p>
               </div>
 
               <div class="actions">
@@ -266,7 +296,14 @@ async function unlist(set: Api.PublishedCardSet) {
                 <span v-if="isSubscribed(set)" class="subscribed">
                   {{ t(`${K}subscribedBadge`, { version: set.subscribedVersion }) }}
                 </span>
-                <button type="button" :disabled="busy === set.id" @click="take(set)">
+                <!-- There is nothing to import until a version has been
+                     approved, which only your own listing can fail to have. -->
+                <button
+                  v-if="isListed(set)"
+                  type="button"
+                  :disabled="busy === set.id"
+                  @click="take(set)"
+                >
                   {{
                     behind(set)
                       ? t(`${K}updateTo`, { version: set.latestVersion })
@@ -562,6 +599,29 @@ p.error {
   margin: 0.35rem 0 0;
   max-width: 60ch;
   opacity: 0.85;
+}
+
+/* Only ever on your own listing. A denial carries the reason underneath, which
+   is the only part of this a reader has to act on. */
+.review {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  gap: 0.4rem;
+  margin: 0.35rem 0 0;
+  max-width: 60ch;
+  opacity: 0.9;
+
+  em {
+    flex: 1 1 100%;
+    font-style: italic;
+    opacity: 0.85;
+  }
+
+  &.denied {
+    color: color-mix(in srgb, var(--survivor) 70%, white);
+  }
 }
 
 .actions {

@@ -156,6 +156,11 @@ type ServerResult =
   | { tag: 'GameAudio'; contents: string }
   | { tag: 'SharedStateUpdate'; contents: SharedEventState }
   | { tag: 'EventChanged' }
+  /* The room is gone -- the game was deleted, or an admin dropped it. The server
+   * closes the socket right behind this, and `autoReconnect` would otherwise
+   * recreate the very room that was just removed, so this leaves rather than
+   * retries. */
+  | { tag: 'RoomClosed'; contents: string }
 
 export interface Props {
   gameId: string
@@ -1267,6 +1272,16 @@ const { send, close } = useWebSocket(websocketUrl, {
   onMessage,
 })
 
+/* The room was deleted. Close before navigating: `autoReconnect` would
+ * otherwise bring the socket straight back up against a room the server has
+ * just removed, and recreate it. Going home rather than showing a dead board,
+ * because there is nothing left here to look at. */
+function roomClosed() {
+  close()
+  toast.info(t('gameClosed'), { timeout: 6000 })
+  router.push({ name: 'Home' })
+}
+
 /*
  * A GameUpdate is the only message carrying new board state, and it reaches us
  * over a different path than the log lines do: the server broadcasts log lines
@@ -1339,6 +1354,9 @@ function sendAnswer(payload: string) {
 const handleResult = (result: ServerResult) => {
   processing.value = false
   switch (result.tag) {
+    case 'RoomClosed':
+      roomClosed()
+      return
     case 'GameError':
       if (props.spectate) return
       storyAnswerPending.value = false

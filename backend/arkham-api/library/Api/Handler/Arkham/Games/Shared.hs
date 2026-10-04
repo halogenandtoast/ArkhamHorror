@@ -72,7 +72,8 @@ import Arkham.Target (Target (InvestigatorTarget))
 import Arkham.Treachery.Types (treacheryPlacement)
 import Conduit
 import Control.Concurrent.MVar
-import Control.Concurrent.STM.TBQueue (readTBQueue)
+import Control.Concurrent.STM (retry)
+import Control.Concurrent.STM.TBQueue (tryReadTBQueue)
 import Control.Lens (view)
 import Control.Monad.Random (mkStdGen)
 import Data.Aeson.Types (parse)
@@ -218,21 +219,8 @@ gameStream gameId = catchingConnectionException $ withKeepAlive do
 
   bracket acquire (\(room, subId, _) -> cleanup room subId) \(room, _subId, sub) -> do
     let broadcast = broadcastToRoom room
-    let Subscriber {subQueue, subOverflow} = sub
-    let sender =
-          forever
-            ( do
-                msg <- atomically do
-                  overflowed <- readTVar subOverflow
-                  if overflowed
-                    then throwSTM SlowSubscriber
-                    else readTBQueue subQueue
-                sendTextData msg
-            )
-            `catch` (\(_ :: SlowSubscriber) -> pure ())
-
     race_
-      sender
+      (runSubscriberSender sub)
       (runConduit $ sourceWS .| mapM_C (handleData customCards room broadcast))
  where
   handleData customCards room broadcast dataPacket = lift do
@@ -242,9 +230,41 @@ gameStream gameId = catchingConnectionException $ withKeepAlive do
         updateGame customCards answer gameId (Just room) `catch` \(e :: SomeException) -> do
           liftIO $ broadcast $ encode $ GameError $ tshow e
 
-data SlowSubscriber = SlowSubscriber
+{- | Why a subscriber's sender loop ended.
+
+Either way the socket goes with it: the loop is the only thing feeding the
+connection, so returning from it drops out of the 'race_' it is running in and
+runs the bracket's cleanup.
+-}
+data SubscriberStopped
+  = -- | Fell far enough behind that buffering for it was abandoned.
+    SlowSubscriber
+  | -- | The room was deleted out from under it.
+    RoomWasClosed
   deriving stock Show
   deriving anyclass Exception
+
+{- | Feed one websocket from its subscriber queue until it ends.
+
+A closed subscriber drains what is already queued before it stops, so the
+'RoomClosed' notice broadcast just before the room was deleted is the last thing
+the client receives rather than a casualty of the teardown.
+-}
+runSubscriberSender :: Subscriber -> WebSocketsT Handler ()
+runSubscriberSender Subscriber {subQueue, subOverflow, subClosed} =
+  forever
+    ( do
+        msg <- atomically do
+          overflowed <- readTVar subOverflow
+          when overflowed $ throwSTM SlowSubscriber
+          tryReadTBQueue subQueue >>= \case
+            Just m -> pure m
+            Nothing -> do
+              closed <- readTVar subClosed
+              if closed then throwSTM RoomWasClosed else retry
+        sendTextData msg
+    )
+    `catch` (\(_ :: SubscriberStopped) -> pure ())
 
 catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
@@ -268,18 +288,10 @@ streamRoom joinRoom onLeave = catchingConnectionException $ withKeepAlive do
   let cleanup room subId = do
         unsubscribeFromRoom room subId
         lift onLeave
-  bracket (lift joinRoom) (\(room, subId, _) -> cleanup room subId) \(_room, _subId, sub) -> do
-    let Subscriber {subQueue, subOverflow} = sub
-    let sender =
-          forever
-            ( do
-                msg <- atomically do
-                  overflowed <- readTVar subOverflow
-                  if overflowed then throwSTM SlowSubscriber else readTBQueue subQueue
-                sendTextData msg
-            )
-            `catch` (\(_ :: SlowSubscriber) -> pure ())
-    race_ sender (runConduit $ sourceWS .| mapM_C (\(_ :: ByteString) -> pure ()))
+  bracket (lift joinRoom) (\(room, subId, _) -> cleanup room subId) \(_room, _subId, sub) ->
+    race_
+      (runSubscriberSender sub)
+      (runConduit $ sourceWS .| mapM_C (\(_ :: ByteString) -> pure ()))
 
 data GetGameJson = GetGameJson
   { playerId :: Maybe PlayerId
@@ -1417,9 +1429,23 @@ deleteRoom = forceDeleteRoom appGameRooms
 deleteEventRoom :: ArkhamEpicEventId -> Handler ()
 deleteEventRoom = forceDeleteRoom appEventRooms
 
+{- | Delete a room and evict everyone on it.
+
+Dropping the map entry alone does not get rid of a room: every websocket joins
+through 'joinRoomIn', which recreates one on demand, so a client still holding
+the socket -- or reconnecting, which the client does automatically -- puts it
+straight back, now with no game behind it. The sockets have to go too.
+
+Order matters. The notice is broadcast while the subscribers are still reading,
+then they are closed; each drains its queue before stopping, so the notice is
+the last thing delivered rather than something racing the teardown.
+-}
 forceDeleteRoom :: Ord k => (App -> MVar (Map k Room)) -> k -> Handler ()
 forceDeleteRoom roomsOf key = do
   roomsVar <- getsYesod roomsOf
   liftIO $ modifyMVar_ roomsVar \rooms -> do
-    for_ (Map.lookup key rooms) $ tryRedis_ . join . readTVarIO . roomUnsubscribe
+    for_ (Map.lookup key rooms) \room -> do
+      broadcastToRoom room $ encode $ RoomClosed "deleted"
+      closeRoomSubscribers room
+      tryRedis_ . join . readTVarIO $ roomUnsubscribe room
     pure $ Map.delete key rooms

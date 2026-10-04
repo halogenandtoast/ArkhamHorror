@@ -1,14 +1,12 @@
 module Base.Api.Handler.PasswordReset (postApiV1PasswordResetsR, putApiV1PasswordResetR) where
 
+import Base.Mail (sendPlainTextEmail)
 import Crypto.BCrypt
 import Data.Aeson (withObject)
-import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
 import Data.Time.Clock
 import Data.UUID qualified as UUID (toText)
 import Import
-import Network.Mail.Mailtrap
-import Text.Email.Parser (unsafeEmailAddress)
 
 newtype PasswordResetRequest = PasswordResetRequest {resetEmail :: Text}
 
@@ -32,41 +30,20 @@ postApiV1PasswordResetsR = do
  where
   sendPasswordResetEmail :: Text -> Text -> Handler ()
   sendPasswordResetEmail email token = do
-    case parseEmailAddress (TE.encodeUtf8 email) of
-      Left _ -> pure ()
-      Right emailParsed -> do
-        let url = "https://arkhamhorror.app/#/password-reset/" <> token
-        apiToken <- getsYesod $ appMailtrapApiToken . appSettings
-        liftIO $ print apiToken
-        void
-          $ liftIO
-          $ sendEmail apiToken
-          $ Email
-            { email_from =
-                NamedEmailAddress (unsafeEmailAddress "noreply" "arkhamhorror.app") "No Reply"
-            , email_to = [NamedEmailAddress emailParsed ""]
-            , email_cc = []
-            , email_bcc = []
-            , email_attachments = []
-            , email_custom = mempty
-            , email_message =
-                Right
-                  $ Message
-                    { message_subject = "Password Reset for Arkham Horror Online"
-                    , message_body =
-                        PlainTextBody
-                          $ T.unlines
-                            [ "You have requested a password reset."
-                            , ""
-                            , "To reset your password, click the link below:"
-                            , ""
-                            , url
-                            , ""
-                            , "If you did not request a password reset, you can safely ignore this email."
-                            ]
-                    , message_category = "Password Reset"
-                    }
-            }
+    apiToken <- getsYesod $ appMailtrapApiToken . appSettings
+    sendPlainTextEmail
+      apiToken
+      email
+      "Password Reset for Arkham Horror Online"
+      "Password Reset"
+      [ "You have requested a password reset."
+      , ""
+      , "To reset your password, click the link below:"
+      , ""
+      , "https://arkhamhorror.app/#/password-reset/" <> token
+      , ""
+      , "If you did not request a password reset, you can safely ignore this email."
+      ]
 
 putApiV1PasswordResetR :: PasswordResetId -> Handler ()
 putApiV1PasswordResetR resetId = do

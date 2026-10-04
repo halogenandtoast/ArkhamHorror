@@ -28,6 +28,7 @@ library
       Api.Arkham.Types.MultiplayerVariant
       Api.Handler.ApiKeys
       Api.Handler.Arkham.Achievements
+      Api.Handler.Arkham.Admin.GameStats
       Api.Handler.Arkham.Admin.Metrics
       Api.Handler.Arkham.Cards
       Api.Handler.Arkham.CardSetSubmissions
@@ -8381,6 +8382,7 @@ library
       Entity.Arkham.LogEntry
       Entity.Arkham.Player
       Entity.Arkham.PublishedCardSet
+      Entity.Arkham.StatsRefresh
       Entity.Arkham.Step
       Entity.Notification
       Entity.PasswordReset

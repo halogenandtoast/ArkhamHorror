@@ -1,0 +1,58 @@
+[
+  {
+    "id": ":return-to-the-innsmouth-conspiracy:018",
+    "name": "Return to The Pit of Despair",
+    "campaign": ":return-to-the-innsmouth-conspiracy",
+    "standalone": false,
+    "i18n": "returnToThePitOfDespair"
+  },
+  {
+    "id": ":return-to-the-innsmouth-conspiracy:022",
+    "name": "Return to The Vanishing of Elina Harper",
+    "campaign": ":return-to-the-innsmouth-conspiracy",
+    "standalone": false,
+    "i18n": "returnToTheVanishingOfElinaHarper"
+  },
+  {
+    "id": ":return-to-the-innsmouth-conspiracy:028",
+    "name": "Return to In Too Deep",
+    "campaign": ":return-to-the-innsmouth-conspiracy",
+    "standalone": false,
+    "i18n": "returnToInTooDeep"
+  },
+  {
+    "id": ":return-to-the-innsmouth-conspiracy:031",
+    "name": "Return to Devil Reef",
+    "campaign": ":return-to-the-innsmouth-conspiracy",
+    "standalone": false,
+    "i18n": "returnToDevilReef"
+  },
+  {
+    "id": ":return-to-the-innsmouth-conspiracy:035",
+    "name": "Return to Horror in High Gear",
+    "campaign": ":return-to-the-innsmouth-conspiracy",
+    "standalone": false,
+    "i18n": "returnToHorrorInHighGear"
+  },
+  {
+    "id": ":return-to-the-innsmouth-conspiracy:039",
+    "name": "Return to A Light in the Fog",
+    "campaign": ":return-to-the-innsmouth-conspiracy",
+    "standalone": false,
+    "i18n": "returnToALightInTheFog"
+  },
+  {
+    "id": ":return-to-the-innsmouth-conspiracy:043",
+    "name": "Return to The Lair of Dagon",
+    "campaign": ":return-to-the-innsmouth-conspiracy",
+    "standalone": false,
+    "i18n": "returnToTheLairOfDagon"
+  },
+  {
+    "id": ":return-to-the-innsmouth-conspiracy:048",
+    "name": "Return to Into the Maelstrom",
+    "campaign": ":return-to-the-innsmouth-conspiracy",
+    "standalone": false,
+    "i18n": "returnToIntoTheMaelstrom"
+  }
+]

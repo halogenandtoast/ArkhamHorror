@@ -30,6 +30,7 @@ library
       Api.Handler.Arkham.Achievements
       Api.Handler.Arkham.Admin.Metrics
       Api.Handler.Arkham.Cards
+      Api.Handler.Arkham.CardSetSubmissions
       Api.Handler.Arkham.CustomCards
       Api.Handler.Arkham.CustomCardSets
       Api.Handler.Arkham.Decks
@@ -4801,71 +4802,71 @@ library
       Arkham.Homebrew.Generate
       Arkham.Homebrew.Import
       Arkham.Homebrew.Registry
-      Arkham.Homebrew.ReturnToInnsmouth.Acts.BackIntoTheDepthsV2
-      Arkham.Homebrew.ReturnToInnsmouth.Acts.ThePitV2
-      Arkham.Homebrew.ReturnToInnsmouth.Acts.TheSearchForAgentHarperV2
-      Arkham.Homebrew.ReturnToInnsmouth.Acts.TheSecondOathV2
-      Arkham.Homebrew.ReturnToInnsmouth.Acts.ThroughTheLabyrinthV2
-      Arkham.Homebrew.ReturnToInnsmouth.Agendas.CelestialAlignmentV2
-      Arkham.Homebrew.ReturnToInnsmouth.Agendas.TerrorAtFalconPointV2
-      Arkham.Homebrew.ReturnToInnsmouth.Agendas.UnderTheSurfaceV2
-      Arkham.Homebrew.ReturnToInnsmouth.Assets.FishingVesselV2
-      Arkham.Homebrew.ReturnToInnsmouth.Assets.Hybrid
-      Arkham.Homebrew.ReturnToInnsmouth.Assets.LittleGemma
-      Arkham.Homebrew.ReturnToInnsmouth.Assets.Roderick
-      Arkham.Homebrew.ReturnToInnsmouth.Assets.RonStalwick
-      Arkham.Homebrew.ReturnToInnsmouth.Campaign
-      Arkham.Homebrew.ReturnToInnsmouth.CampaignSteps
-      Arkham.Homebrew.ReturnToInnsmouth.CardDefEntries
-      Arkham.Homebrew.ReturnToInnsmouth.CardDefs.Acts
-      Arkham.Homebrew.ReturnToInnsmouth.CardDefs.Agendas
-      Arkham.Homebrew.ReturnToInnsmouth.CardDefs.Assets
-      Arkham.Homebrew.ReturnToInnsmouth.CardDefs.Enemies
-      Arkham.Homebrew.ReturnToInnsmouth.CardDefs.Locations
-      Arkham.Homebrew.ReturnToInnsmouth.CardDefs.Treacheries
-      Arkham.Homebrew.ReturnToInnsmouth.CardEntries
-      Arkham.Homebrew.ReturnToInnsmouth.Content
-      Arkham.Homebrew.ReturnToInnsmouth.Defs
-      Arkham.Homebrew.ReturnToInnsmouth.Enemies.DeepOneAmbusher
-      Arkham.Homebrew.ReturnToInnsmouth.Enemies.DeepOneGrappler
-      Arkham.Homebrew.ReturnToInnsmouth.Enemies.ImmaterialOne
-      Arkham.Homebrew.ReturnToInnsmouth.Helpers
-      Arkham.Homebrew.ReturnToInnsmouth.Locations.CaveMouth
-      Arkham.Homebrew.ReturnToInnsmouth.Locations.DoorwayToTheDepthsV2
-      Arkham.Homebrew.ReturnToInnsmouth.Locations.DoorwayToTheDepthsV3
-      Arkham.Homebrew.ReturnToInnsmouth.Locations.MudTrack
-      Arkham.Homebrew.ReturnToInnsmouth.Locations.ShrineToHydra
-      Arkham.Homebrew.ReturnToInnsmouth.Locations.StraightSection
-      Arkham.Homebrew.ReturnToInnsmouth.Locations.TidalPool
-      Arkham.Homebrew.ReturnToInnsmouth.Locations.UndergroundRiver
-      Arkham.Homebrew.ReturnToInnsmouth.Locations.UnderwaterCavern
-      Arkham.Homebrew.ReturnToInnsmouth.Scenarios.ReturnToALightInTheFog
-      Arkham.Homebrew.ReturnToInnsmouth.Scenarios.ReturnToDevilReef
-      Arkham.Homebrew.ReturnToInnsmouth.Scenarios.ReturnToHorrorInHighGear
-      Arkham.Homebrew.ReturnToInnsmouth.Scenarios.ReturnToInTooDeep
-      Arkham.Homebrew.ReturnToInnsmouth.Scenarios.ReturnToIntoTheMaelstrom
-      Arkham.Homebrew.ReturnToInnsmouth.Scenarios.ReturnToTheLairOfDagon
-      Arkham.Homebrew.ReturnToInnsmouth.Scenarios.ReturnToThePitOfDespair
-      Arkham.Homebrew.ReturnToInnsmouth.Scenarios.ReturnToTheVanishingOfElinaHarper
-      Arkham.Homebrew.ReturnToInnsmouth.Sets
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.BarricadedDoor
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.BornToBreed
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.CallOfTheSea
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.GrowingSuspicion
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.InnsmouthHaze
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.InnsmouthInfluence
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.KingTide
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.LostInTheCaves
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.Occultation
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.PresenceOfTheFather
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.PresenceOfTheMother
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.RollingTide
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.StalkedByDeepOnes
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.StirringInHisSleep
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.StirringInTheirSleep
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.StruggleForAir
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.TroublingMemories
-      Arkham.Homebrew.ReturnToInnsmouth.Treacheries.Wrecked
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Acts.BackIntoTheDepthsV2
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Acts.ThePitV2
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Acts.TheSearchForAgentHarperV2
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Acts.TheSecondOathV2
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Acts.ThroughTheLabyrinthV2
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Agendas.CelestialAlignmentV2
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Agendas.TerrorAtFalconPointV2
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Agendas.UnderTheSurfaceV2
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Assets.FishingVesselV2
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Assets.Hybrid
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Assets.LittleGemma
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Assets.Roderick
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Assets.RonStalwick
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Campaign
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CampaignSteps
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefEntries
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Acts
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Agendas
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Assets
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Enemies
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardEntries
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Content
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Defs
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Enemies.DeepOneAmbusher
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Enemies.DeepOneGrappler
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Enemies.ImmaterialOne
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Locations.CaveMouth
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Locations.DoorwayToTheDepthsV2
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Locations.DoorwayToTheDepthsV3
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Locations.MudTrack
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Locations.ShrineToHydra
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Locations.StraightSection
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Locations.TidalPool
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Locations.UndergroundRiver
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Locations.UnderwaterCavern
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Scenarios.ReturnToALightInTheFog
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Scenarios.ReturnToDevilReef
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Scenarios.ReturnToHorrorInHighGear
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Scenarios.ReturnToInTooDeep
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Scenarios.ReturnToIntoTheMaelstrom
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Scenarios.ReturnToTheLairOfDagon
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Scenarios.ReturnToThePitOfDespair
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Scenarios.ReturnToTheVanishingOfElinaHarper
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.BarricadedDoor
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.BornToBreed
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.CallOfTheSea
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.GrowingSuspicion
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.InnsmouthHaze
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.InnsmouthInfluence
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.KingTide
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.LostInTheCaves
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.Occultation
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.PresenceOfTheFather
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.PresenceOfTheMother
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.RollingTide
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.StalkedByDeepOnes
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.StirringInHisSleep
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.StirringInTheirSleep
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.StruggleForAir
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.TroublingMemories
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.Wrecked
       Arkham.Homebrew.TH
       Arkham.Homebrew.TokenDefs
       Arkham.Homebrew.TokenEntries
@@ -8362,6 +8363,7 @@ library
       Base.Api.Handler.PasswordReset
       Base.Api.Handler.Registration
       Base.Api.Handler.Settings
+      Base.Mail
       Base.Util
       Config
       Entity

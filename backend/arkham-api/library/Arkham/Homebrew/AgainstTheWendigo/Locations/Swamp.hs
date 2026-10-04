@@ -6,8 +6,8 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype Swamp = Swamp LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 swamp :: LocationCard Swamp
 swamp = location Swamp Cards.swamp 3 (PerPlayer 2)

@@ -6,8 +6,8 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype SiteOfAncientStones = SiteOfAncientStones LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 siteOfAncientStones :: LocationCard SiteOfAncientStones
 siteOfAncientStones = location SiteOfAncientStones Cards.siteOfAncientStones 4 (PerPlayer 2)

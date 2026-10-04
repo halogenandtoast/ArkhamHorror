@@ -9,8 +9,8 @@
       "body3": "Soon after, you follow the footsteps of the previous expedition, starting by train from Arkham to Central Canada. During the trip you read Dr. Nadelmann's expedition notebook. Several entries in, Nadelmann notes that the Sarcee guide of their expedition, Charlie Foxtail, abandoned the group after seeing the tracks of a being that Charlie called \"The Wendigo\". Then the writing becomes increasingly jerky, unreadable. Your destination is Fort McDonald, an outpost of the Mounted Police, which will give you access to the wild valley of North Hanninah. You have a short time before the arrival of winter."
     },
     "setup": {
-      "gatherSets": "Gather all cards from the Hanninah Valley encounter set.",
-      "setAsideWendigosMyth": "Set the Wendigo's Myth encounter set aside, out of play.",
+      "gatherSets": "Gather all cards from the *Hanninah Valley* encounter set. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/against-the-wendigo/sets/hanninah-valley.png' /></section>",
+      "setAsideWendigosMyth": "Set the *Wendigo's Myth* encounter set aside, out of play. This set is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/against-the-wendigo/sets/wendigos-myth.png' /></section>",
       "placeStartingLocations": "Put the Fort McDonald, Jetty and Sarcee Territory locations into play. Each investigator begins play at the Jetty.",
       "placeNorthHanninah": "Shuffle the 3 North Hanninah locations and put them into play, one directly to the north of the Jetty, one directly to the north of the first, and one directly to the north of the second.",
       "placeUncharted": "Randomly take one of the Mountain Range cards and remove it from the game. Shuffle the remaining 6 locations and randomly put one into play directly to the east and one directly to the west of each North Hanninah location.",

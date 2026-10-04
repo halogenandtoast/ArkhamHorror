@@ -6,8 +6,8 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype SinisterTaiga = SinisterTaiga LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 sinisterTaiga :: LocationCard SinisterTaiga
 sinisterTaiga = location SinisterTaiga Cards.sinisterTaiga 2 (PerPlayer 1)

@@ -7,8 +7,8 @@ import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Lo
 import Arkham.Matcher
 
 newtype MusicFromAuseilTheatre = MusicFromAuseilTheatre ActAttrs
-  deriving anyclass (IsAct, HasModifiersFor, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass (IsAct, HasModifiersFor)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 {- | "When the round ends, investigators may spend the requisite number of clues,
 as a group, to advance."
@@ -19,7 +19,7 @@ musicFromAuseilTheatre =
     (1, A)
     MusicFromAuseilTheatre
     Cards.musicFromAuseilTheatre
-    (Just $ GroupClueCost (PerPlayer 3) Anywhere)
+    (groupClueCost $ PerPlayer 3)
 
 instance RunMessage MusicFromAuseilTheatre where
   runMessage msg a@(MusicFromAuseilTheatre attrs) = runQueueT $ case msg of

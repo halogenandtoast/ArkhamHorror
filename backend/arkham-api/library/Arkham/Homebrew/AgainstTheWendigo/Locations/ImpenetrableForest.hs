@@ -6,8 +6,8 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype ImpenetrableForest = ImpenetrableForest LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 impenetrableForest :: LocationCard ImpenetrableForest
 impenetrableForest = location ImpenetrableForest Cards.impenetrableForest 4 (PerPlayer 2)

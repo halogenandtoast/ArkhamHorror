@@ -8,8 +8,8 @@ import Arkham.Cost
 import Arkham.Matcher
 
 newtype AnechoicChamber = AnechoicChamber LocationAttrs
-  deriving anyclass (IsLocation, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsLocation
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 anechoicChamber :: LocationCard AnechoicChamber
 anechoicChamber = location AnechoicChamber Cards.anechoicChamber 3 (PerPlayer 1)

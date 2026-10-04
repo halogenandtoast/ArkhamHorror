@@ -6,11 +6,11 @@
  * is in it is then not what was published -- and importing again is how you get
  * back to the published version.
  *
- * Behind the dev flag, like everything else about publishing so far. */
-import { computed, onMounted, ref } from 'vue'
+ * Not for everyone yet: a dev build, or an admin. */
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
-import { isDevBuild } from '@/arkham/displayRules'
+import { useMarketplaceVisible } from '@/composable/marketplaceAccess'
 import { subscribeToSet } from '@/arkham/customCardLibrary'
 import type { CustomCard } from '@/arkham/customCards'
 import { useRoute } from 'vue-router'
@@ -21,7 +21,7 @@ import SegmentedToggle from '@/components/SegmentedToggle.vue'
 const { t } = useI18n()
 const K = 'customCardSets.'
 
-const dev = isDevBuild()
+const visible = useMarketplaceVisible()
 const sets = ref<Api.PublishedCardSet[]>([])
 const loaded = ref(false)
 const busy = ref<string | null>(null)
@@ -40,9 +40,16 @@ async function load() {
   }
 }
 
-onMounted(() => {
-  if (dev) load()
-})
+/* Watched rather than checked once at mount: an admin who opens this page on a
+ * cold load has no `isAdmin` until `whoami` answers, and a mount-time check
+ * would leave them on "Loading..." for good. */
+watch(
+  visible,
+  (allowed) => {
+    if (allowed && !loaded.value) load()
+  },
+  { immediate: true },
+)
 
 // ------------------------------------------------------- searching & order ---
 

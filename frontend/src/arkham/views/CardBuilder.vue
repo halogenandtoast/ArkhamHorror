@@ -20,7 +20,7 @@ import {
   type CustomCard,
   type SignatureSummary,
 } from '@/arkham/customCards'
-import { isDevBuild } from '@/arkham/displayRules'
+import { useMarketplaceVisible } from '@/composable/marketplaceAccess'
 import { useUserStore } from '@/stores/user'
 import {
   createSet,
@@ -70,9 +70,10 @@ const renameDraft = ref('')
 const route = useRoute()
 const router = useRouter()
 
-/* Publishing is behind the dev flag while the marketplace settles. Everything it
- * adds to this page is gated on it, so the page is unchanged without it. */
-const dev = isDevBuild()
+/* Publishing is not for everyone while the marketplace settles -- a dev build, or
+ * an admin. Everything it adds to this page is gated on it, so the page is
+ * unchanged for anybody else. */
+const marketplace = useMarketplaceVisible()
 
 /* An admin's publish is listed outright rather than queued -- they are the person
  * review would wait for. The server decides that on its own; this only picks the
@@ -892,7 +893,7 @@ async function onImport(event: Event) {
           </button>
 
           <span
-            v-if="dev && isSubscribed(set)"
+            v-if="marketplace && isSubscribed(set)"
             class="subscribed"
             v-tooltip="t(`${K}editingUnsubscribes`)"
           >
@@ -900,7 +901,7 @@ async function onImport(event: Event) {
           </span>
 
           <button
-            v-if="dev && updateAvailable(set)"
+            v-if="marketplace && updateAvailable(set)"
             type="button"
             class="update"
             @click="update(set)"
@@ -910,7 +911,7 @@ async function onImport(event: Event) {
 
           <div class="row-actions">
             <button
-              v-if="dev"
+              v-if="marketplace"
               type="button"
               v-tooltip="publishTitle(set)"
               :aria-label="publishTitle(set)"
@@ -958,7 +959,7 @@ async function onImport(event: Event) {
         <!-- Where this set stands with the marketplace, for a set that has been
              submitted. A denial carries the reason, which is the whole point of
              having asked for one. -->
-        <p v-if="dev && reviewLine(set)" class="review" :class="{ denied: wasDenied(set) }">
+        <p v-if="marketplace && reviewLine(set)" class="review" :class="{ denied: wasDenied(set) }">
           <font-awesome-icon :icon="wasDenied(set) ? 'circle-xmark' : isAwaitingReview(set) ? 'hourglass-half' : 'store'" />
           <span>
             {{ reviewLine(set) }}

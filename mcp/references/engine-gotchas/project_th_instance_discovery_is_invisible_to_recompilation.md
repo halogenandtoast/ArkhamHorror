@@ -55,12 +55,28 @@ never mentions.
 
 The Entries modules are preprocessed, and GHC's recompilation check hashes the
 *original* `.hs` — which never changes — plus the import list it parses out of
-the preprocessor's output. So a change that only alters the generated body (a
-new marker, a reworded declaration) does not retrigger anything, and the next
-build fails with `Module ‘Arkham.Homebrew.UltimatumEntries’ does not export
-‘DiscoveredModules’`. Delete the stale interfaces once:
+the preprocessor's output. The generator binary is not an input it knows about.
+So a change that only alters the generated body (a new marker, a reworded
+declaration) retriggers nothing, every one of those modules keeps the interface
+it was last compiled with, and the first importer to mention the new name fails
+on a cache GHC is certain is up to date:
 
 ```
+Module ‘Arkham.Homebrew.UltimatumEntries’ does not export ‘DiscoveredModules’
+```
+
+This bit the Docker image build, whose `.stack-work` is a BuildKit cache mount
+and so survives across deploys. `backend/scripts/drop-stale-generated.sh` now
+supplies the missing dependency edge: it stamps the cache with a hash of
+`cards-discover/{app,library}` and, when that moves, deletes the artifacts of
+every module carrying a `pgmF cards-discover` pragma. Dependents are left to
+GHC — the regenerated interfaces either hash the same (no cascade) or differ
+(normal cascade). `scripts/docker-build-api.sh` calls it before `stack build`.
+
+Locally, run it the same way, or delete the interfaces by hand:
+
+```
+sh scripts/drop-stale-generated.sh arkham-api cards-discover
 rm -f arkham-api/.stack-work/dist/*/ghc-*/build/Arkham/Homebrew/*Entries.{o,hi,dyn_o,dyn_hi}
 ```
 

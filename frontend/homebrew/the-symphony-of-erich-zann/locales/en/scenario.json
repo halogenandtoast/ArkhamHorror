@@ -8,7 +8,7 @@
       "isabel": "It has been some time since you last played at the Auseil Theatre. Lately a dream has returned to you again and again: an impossible sheet of music, signed by one Erich Zann, that you play until your fingers wear through. Gaudin's letter names the very same man."
     },
     "setup": {
-      "gatherSets": "Gather all cards from The Symphony of Erich Zann encounter set.",
+      "gatherSets": "Gather all cards from the <i>The Symphony of Erich Zann</i> encounter set. This set is indicated by this icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/the-symphony-of-erich-zann/sets/the-symphony-of-erich-zann.png' /></section>",
       "setAsideEncounter": "Set the Ears of the Void, Heard by Something and Young Nightingale encounter cards aside, out of play.",
       "setAsideStory": "Set Auguste Gaudin (Maestro of Symphonies), Yin's Drumsticks, Page's Violin, La Fratta's Piano Key, Walker's Trumpet, all copies of Stuck in Your Head and The Piano aside, out of play.",
       "setAsideMusicians": "Set the Arnold Walker, Isabel La Fratta, Nicole Page and Song Yin enemies aside, out of play.",

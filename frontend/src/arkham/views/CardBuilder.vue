@@ -21,6 +21,7 @@ import {
   type SignatureSummary,
 } from '@/arkham/customCards'
 import { isDevBuild } from '@/arkham/displayRules'
+import { useUserStore } from '@/stores/user'
 import {
   createSet,
   exportCards,
@@ -73,13 +74,19 @@ const router = useRouter()
  * adds to this page is gated on it, so the page is unchanged without it. */
 const dev = isDevBuild()
 
+/* An admin's publish is listed outright rather than queued -- they are the person
+ * review would wait for. The server decides that on its own; this only picks the
+ * wording, so a stale flag cannot list anything it should not. */
+const userStore = useUserStore()
+
 /* Which set a submission is being written for, the note to send with it, and
  * whether the author wants to be emailed the decision. Held here rather than
  * prompted for, because "what changed" wants a text field and a confirm dialog
  * has none.
  *
  * Notifying defaults to on: somebody who has just asked a person to look at their
- * work wants to hear back, and it is one click to say otherwise. */
+ * work wants to hear back, and it is one click to say otherwise. It is not asked
+ * of an admin, who is going to be the one deciding. */
 const publishingSetId = ref<string | null>(null)
 const publishNote = ref('')
 const publishNotify = ref(true)
@@ -92,9 +99,10 @@ function startPublish(set: LibrarySet) {
   error.value = null
 }
 
-/* Submitting, not listing: the version goes into the review queue, and nothing
- * about the marketplace changes until somebody acts on it. The message says so,
- * because "Published" would be a lie the author only finds out about later. */
+/* For an admin this lists the set; for anybody else it submits it, and the
+ * version goes into the review queue with nothing about the marketplace changed
+ * until somebody acts on it. The message says which happened, because
+ * "Published" would otherwise be a lie the author only finds out about later. */
 async function commitPublish(set: LibrarySet) {
   const note = publishNote.value.trim()
   const notify = publishNotify.value
@@ -102,14 +110,20 @@ async function commitPublish(set: LibrarySet) {
   error.value = null
   try {
     const submitted = await publishSet(set.id, note || null, notify)
-    status.value = t(`${K}submitted`, {
+    status.value = t(`${K}${userStore.isAdmin ? 'published' : 'submitted'}`, {
       name: set.name,
       version: submitted.pendingVersion ?? submitted.latestVersion,
     })
   } catch (e) {
     console.error(e)
-    error.value = t(`${K}publishFailed`)
+    error.value = t(`${K}${userStore.isAdmin ? 'listFailed' : 'publishFailed'}`)
   }
+}
+
+/* What the marketplace button does, which for an admin is list it rather than ask
+ * for it to be listed. */
+function publishTitle(set: LibrarySet): string {
+  return t(`${K}${userStore.isAdmin ? 'publishTitle' : 'submitTitle'}`, { name: set.name })
 }
 
 /* The one-line account of where a set stands with the marketplace, or null for a
@@ -898,8 +912,8 @@ async function onImport(event: Event) {
             <button
               v-if="dev"
               type="button"
-              v-tooltip="t(`${K}submitTitle`, { name: set.name })"
-              :aria-label="t(`${K}submitTitle`, { name: set.name })"
+              v-tooltip="publishTitle(set)"
+              :aria-label="publishTitle(set)"
               @click="startPublish(set)"
             >
               <font-awesome-icon icon="store" />
@@ -957,7 +971,9 @@ async function onImport(event: Event) {
           class="publish"
           @submit.prevent="commitPublish(set)"
         >
-          <p class="publish-lede">{{ t(`${K}submitLede`) }}</p>
+          <p class="publish-lede">
+            {{ t(`${K}${userStore.isAdmin ? 'publishLede' : 'submitLede'}`) }}
+          </p>
           <input
             v-model="publishNote"
             type="text"
@@ -965,12 +981,15 @@ async function onImport(event: Event) {
             @keydown.stop
             @keydown.esc="publishingSetId = null"
           />
-          <label class="notify">
+          <!-- Nothing to be emailed about a decision you are making yourself. -->
+          <label v-if="!userStore.isAdmin" class="notify">
             <input v-model="publishNotify" type="checkbox" />
             <span>{{ t(`${K}notifyMe`) }}</span>
           </label>
           <div class="publish-actions">
-            <button type="submit">{{ t(`${K}submitConfirm`) }}</button>
+            <button type="submit">
+              {{ t(`${K}${userStore.isAdmin ? 'publishConfirm' : 'submitConfirm'}`) }}
+            </button>
             <button type="button" class="cancel" @click="publishingSetId = null">
               {{ t(`${K}publishCancel`) }}
             </button>

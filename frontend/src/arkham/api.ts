@@ -265,8 +265,14 @@ export const fetchPublishedCardSet = async (
  * the version goes into the review queue, and the marketplace keeps showing
  * whichever version was last approved.
  *
- * `notify` is whether to email the author the decision. Submitting again while
- * something is still waiting replaces it rather than queueing a second thing. */
+ * Unless the caller is an admin -- then the server records the version as
+ * approved by them and lists it at once, and the listing comes back with
+ * `reviewStatus: 'approved'` and the new `latestVersion`. The server decides
+ * that from the account, not from anything sent here.
+ *
+ * `notify` is whether to email the author the decision, and is ignored for a
+ * publish that is already decided. Submitting again while something is still
+ * waiting replaces it rather than queueing a second thing. */
 export const publishCustomCardSet = async (
   id: string,
   note: string | null,

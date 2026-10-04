@@ -7,6 +7,10 @@ version is reviewed on its own -- so a set that passed once cannot be quietly
 swapped for something else. 'Api.Handler.Arkham.CardSetSubmissions' is the other
 half of that: the queue, and the decision.
 
+An admin publishing skips the queue: they are the person review would have waited
+for, so the version is recorded as approved by them and listed at once. It is the
+same path and the same records -- only the decision is already made.
+
 Subscribing runs the same import a file import does, and records which version it
 landed on, so the copy can be brought up to date later. Editing that copy deletes
 the record -- what is in it is then not what was published -- which is the whole
@@ -364,15 +368,15 @@ deleteApiV1ArkhamPublishedCardSetR publishedId = do
     P.deleteWhere [ArkhamPublishedCardSetVersionPublishedCardSetId P.==. publishedId]
     P.delete publishedId
 
-{- | Submit the set as a new version.
+{- | Submit the set as a new version, or -- for an admin -- list it.
 
 The cards are snapshotted as they stand, so the version stays importable however
 the author's own copy changes afterwards -- and so that what a reviewer looked at
 is what anyone importing it gets.
 
-Nothing is listed by this. The version goes into the review queue, and the
-marketplace keeps showing whichever version was last approved until someone acts
-on this one.
+For anybody else nothing is listed by this. The version goes into the review
+queue, and the marketplace keeps showing whichever version was last approved until
+someone acts on this one.
 
 Submitting again while something is still waiting replaces it rather than queueing
 a second thing: the author has changed their mind about what they are asking for,
@@ -382,7 +386,7 @@ superseded snapshot goes with it, since nothing could ever have imported it.
 postApiV1ArkhamCustomCardSetPublishR
   :: ArkhamCustomCardSetId -> Handler PublishedCardSetResponse
 postApiV1ArkhamCustomCardSetPublishR setId = do
-  userId <- getRequestUserId
+  Entity userId user <- getRequestUser
   setRow <- ownedCardSet userId setId
   PublishPost {publishNote, publishNotify} <- requireCheckJsonBody
   now <- liftIO getCurrentTime
@@ -409,55 +413,93 @@ postApiV1ArkhamCustomCardSetPublishR setId = do
         ]
         []
 
-  let notify = fromMaybe True publishNotify
+  let publication = if user.admin then Listed userId else ForReview
+      -- Nothing to be told about a decision you have just made yourself, so an
+      -- admin's row does not claim mail is owed.
+      notify = case publication of
+        Listed _ -> False
+        ForReview -> fromMaybe True publishNotify
 
   publishedId <- runDB case existing of
     Just (Entity found row) -> do
       withdrawPending found
       let version = arkhamPublishedCardSetLatestVersion row + 1
-      P.update
-        found
-        [ ArkhamPublishedCardSetName P.=. name
-        , ArkhamPublishedCardSetLatestVersion P.=. version
-        , ArkhamPublishedCardSetUpdatedAt P.=. now
-        ]
+      P.update found
+        $ [ ArkhamPublishedCardSetName P.=. name
+          , ArkhamPublishedCardSetLatestVersion P.=. version
+          , ArkhamPublishedCardSetUpdatedAt P.=. now
+          ]
+        <> listedUpdates publication version (arkhamPublishedCardSetApprovedVersion row)
       versionId <-
         P.insert $ ArkhamPublishedCardSetVersion found version publishNote name snapshot now
-      submit found versionId userId version notify now
+      submit publication found versionId userId version notify now
       pure found
     Nothing -> do
-      found <- P.insert $ ArkhamPublishedCardSet userId (Just setId) name 1 Nothing now now
+      let approved = case publication of
+            Listed _ -> Just 1
+            ForReview -> Nothing
+      found <- P.insert $ ArkhamPublishedCardSet userId (Just setId) name 1 approved now now
       versionId <-
         P.insert $ ArkhamPublishedCardSetVersion found 1 publishNote name snapshot now
-      submit found versionId userId 1 notify now
+      submit publication found versionId userId 1 notify now
       pure found
 
   row <- runDB $ get404 publishedId
   listingFor userId (Entity publishedId row)
 
--- | Queue a version for review.
+{- | What publishing does with the version it has just made.
+
+'Listed' carries who listed it, because an approval records the person who made
+it and here that is the author.
+-}
+data Publication = ForReview | Listed UserId
+
+{- | Raise the listing's approved version, for a publish that is already approved.
+
+Only ever upwards, the same rule reviewing follows: a publish cannot put the
+marketplace back to an older snapshot than the one people are subscribed to. In
+practice the new version is always the highest, so this is a guard rather than a
+decision.
+-}
+listedUpdates :: Publication -> Int -> Maybe Int -> [P.Update ArkhamPublishedCardSet]
+listedUpdates ForReview _ _ = []
+listedUpdates (Listed _) version approved =
+  [ArkhamPublishedCardSetApprovedVersion P.=. Just (max version (fromMaybe version approved))]
+
+{- | Record the version's submission: queued, or decided on the spot.
+
+An admin's is written as approved by them rather than skipped entirely, so the
+review queue's history is still the whole history of what reached the
+marketplace, and 'versionApproved' needs no second rule to let the version be
+imported.
+-}
 submit
-  :: ArkhamPublishedCardSetId
+  :: Publication
+  -> ArkhamPublishedCardSetId
   -> ArkhamPublishedCardSetVersionId
   -> UserId
   -> Int
   -> Bool
   -> UTCTime
   -> SqlPersistT Handler ()
-submit publishedId versionId userId version notify now =
+submit publication publishedId versionId userId version notify now =
   P.insert_
     $ ArkhamCardSetSubmission
       publishedId
       versionId
       userId
       version
-      submissionPending
+      status
       notify
       Nothing
-      Nothing
-      Nothing
+      reviewedBy
+      reviewedAt
       now
       now
+ where
+  (status, reviewedBy, reviewedAt) = case publication of
+    ForReview -> (submissionPending, Nothing, Nothing)
+    Listed reviewerId -> (submissionApproved, Just reviewerId, Just now)
 
 {- | Drop whatever this listing had waiting, snapshot and all.
 

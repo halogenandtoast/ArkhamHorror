@@ -49,6 +49,15 @@ data PublishedCardSetResponse = PublishedCardSetResponse
   , publishedCardSetResponseName :: Text
   , publishedCardSetResponseAuthor :: Text
   , publishedCardSetResponseMine :: Bool
+  , -- | Whether the author is an admin, which is what the marketplace calls
+    -- officially supported: an admin publishing is the project putting a set up
+    -- rather than passing one.
+    --
+    -- Read off the account every time rather than stamped on the listing when it
+    -- was published. It costs nothing -- the author is already fetched for their
+    -- name -- and a set stops claiming support when whoever was maintaining it
+    -- stops being able to.
+    publishedCardSetResponseOfficial :: Bool
   , -- | The newest version a reviewer has approved: the one being described
     -- below, and the one an import gets. Zero for a set of your own that has
     -- never passed review, which is the only way an unapproved set is listed.
@@ -258,6 +267,7 @@ listingFor userId (Entity publishedId row) = do
       , publishedCardSetResponseName = arkhamPublishedCardSetName row
       , publishedCardSetResponseAuthor = maybe "someone" userUsername author
       , publishedCardSetResponseMine = isAuthor
+      , publishedCardSetResponseOfficial = maybe False userAdmin author
       , publishedCardSetResponseLatestVersion =
           fromMaybe 0 (arkhamPublishedCardSetApprovedVersion row)
       , publishedCardSetResponseReviewStatus =

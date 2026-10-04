@@ -214,6 +214,11 @@ export type PublishedCardSet = {
   name: string
   author: string
   mine: boolean
+  /* Whether the author is an admin, which is what the marketplace calls
+   * officially supported. Read off the account rather than stamped on the
+   * listing, so a set stops claiming support when its author stops being able to
+   * give it. */
+  official: boolean
   // The newest approved version: the one described below, and the one an import
   // gets. Zero for a set of your own that has never passed review, which is the
   // only way an unapproved set is listed at all.

@@ -1002,6 +1002,8 @@
     "byAuthor": "by {author}",
     "versionCount": "v{version} · {count}",
     "yours": "yours",
+    "official": "Official",
+    "officialHelp": "Published by the Site Maintainers and officially supported.",
     "marketplaceLoadFailed": "Could not load the marketplace.",
     "mySets": "My sets",
     "marketplaceFilterPlaceholder": "Search sets, cards and authors…",

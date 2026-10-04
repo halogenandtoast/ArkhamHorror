@@ -160,6 +160,15 @@ async function take() {
             <h1>
               {{ detail.name }}
               <small v-if="listing.mine" class="mine">{{ t(`${K}yours`) }}</small>
+              <!-- The project's own set rather than one it let through. -->
+              <span
+                v-if="listing.official"
+                class="official"
+                v-tooltip="t(`${K}officialHelp`)"
+              >
+                <font-awesome-icon icon="circle-check" />
+                {{ t(`${K}official`) }}
+              </span>
             </h1>
             <p class="meta">
               <router-link
@@ -417,6 +426,20 @@ p.error {
 }
 
 /* The green a resolved card code wears: this is the copy you have, confirmed. */
+.official {
+  align-items: center;
+  border: 1px solid var(--important);
+  border-radius: 999px;
+  color: var(--important);
+  display: inline-flex;
+  font-family: sans-serif;
+  font-size: 0.68rem;
+  gap: 0.3rem;
+  padding: 0.1rem 0.5rem;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
 .subscribed {
   border: 1px solid var(--spooky-green);
   border-radius: 999px;

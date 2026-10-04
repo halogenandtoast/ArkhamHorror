@@ -652,7 +652,6 @@ petOozeling =
   (storyAsset "85030" "Pet Oozeling" 2 MiGoIncursion)
     { cdSkills = [#agility, #wild]
     , cdCardTraits = setFromList [Ally, Monster, Ooze]
-    , cdSlots = [#ally]
     , cdUnique = True
     }
 

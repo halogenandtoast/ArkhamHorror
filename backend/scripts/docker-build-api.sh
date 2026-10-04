@@ -45,6 +45,12 @@ if [ -d "$WORK" ] && [ ! -f "$STAMP" ]; then
   rm -rf "$WORK"/dist/*/ghc-*/build/arkham-* 2>/dev/null || true
 fi
 
+# The generated modules' interfaces are not keyed on the generator that wrote
+# them, so a new cards-discover leaves them stale and believable.
+sh /opt/arkham/src/backend/scripts/drop-stale-generated.sh \
+  /opt/arkham/src/backend/arkham-api \
+  /opt/arkham/src/backend/cards-discover
+
 # Mark the cache dirty for the duration of the build.
 rm -f "$STAMP"
 

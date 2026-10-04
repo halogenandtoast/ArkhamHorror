@@ -1,0 +1,25 @@
+[
+  {
+    "id": ":consternation-on-the-constellation:001",
+    "name": "Consternation on the Constellation",
+    "campaign": ":consternation-on-the-constellation",
+    "i18n": "scenario",
+    "sideStory": true,
+    "dev": true,
+    "xp": 2,
+    "standalone": true,
+    "standaloneDifficulties": ["Standard", "Hard"],
+    "difficultyLevels": {
+      "Standard": [
+        "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne", "MinusOne",
+        "MinusTwo", "MinusTwo", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix",
+        "Skull", "Skull", "Skull", "AutoFail", "ElderSign"
+      ],
+      "Hard": [
+        "PlusOne", "Zero", "Zero", "Zero", "MinusOne", "MinusOne",
+        "MinusTwo", "MinusTwo", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix", "MinusSeven",
+        "Skull", "Skull", "Skull", "AutoFail", "ElderSign"
+      ]
+    }
+  }
+]

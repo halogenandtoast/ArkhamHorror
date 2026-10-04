@@ -4528,6 +4528,68 @@ library
       Arkham.Homebrew.CircusExMortis.Treacheries.SilentForest
       Arkham.Homebrew.CircusExMortis.Treacheries.ViolentThrashing
       Arkham.Homebrew.CircusExMortis.Treacheries.WildHysteria
+      Arkham.Homebrew.ConsternationOnTheConstellation.Acts.FindItFirst
+      Arkham.Homebrew.ConsternationOnTheConstellation.Acts.FleeTheShip
+      Arkham.Homebrew.ConsternationOnTheConstellation.Acts.PlugTheAbyss
+      Arkham.Homebrew.ConsternationOnTheConstellation.Acts.ThinkFast
+      Arkham.Homebrew.ConsternationOnTheConstellation.Agendas.Captured
+      Arkham.Homebrew.ConsternationOnTheConstellation.Agendas.PunishTheInterlopers
+      Arkham.Homebrew.ConsternationOnTheConstellation.Agendas.SearchTheShip
+      Arkham.Homebrew.ConsternationOnTheConstellation.Agendas.SummonThoseBelow
+      Arkham.Homebrew.ConsternationOnTheConstellation.Assets.AbyssalSword
+      Arkham.Homebrew.ConsternationOnTheConstellation.Assets.CrateOfGoods
+      Arkham.Homebrew.ConsternationOnTheConstellation.Assets.CrimsonLedger
+      Arkham.Homebrew.ConsternationOnTheConstellation.Assets.InspectorLegrasse
+      Arkham.Homebrew.ConsternationOnTheConstellation.Assets.RingOfTheDeep
+      Arkham.Homebrew.ConsternationOnTheConstellation.Assets.TabletOfDagon
+      Arkham.Homebrew.ConsternationOnTheConstellation.CardDefEntries
+      Arkham.Homebrew.ConsternationOnTheConstellation.CardDefs.Acts
+      Arkham.Homebrew.ConsternationOnTheConstellation.CardDefs.Agendas
+      Arkham.Homebrew.ConsternationOnTheConstellation.CardDefs.Assets
+      Arkham.Homebrew.ConsternationOnTheConstellation.CardDefs.Enemies
+      Arkham.Homebrew.ConsternationOnTheConstellation.CardDefs.Locations
+      Arkham.Homebrew.ConsternationOnTheConstellation.CardDefs.Treacheries
+      Arkham.Homebrew.ConsternationOnTheConstellation.CardEntries
+      Arkham.Homebrew.ConsternationOnTheConstellation.Content
+      Arkham.Homebrew.ConsternationOnTheConstellation.Defs
+      Arkham.Homebrew.ConsternationOnTheConstellation.Enemies.ColossalServant
+      Arkham.Homebrew.ConsternationOnTheConstellation.Enemies.CultistOfTheDeep
+      Arkham.Homebrew.ConsternationOnTheConstellation.Enemies.DagonWarrior
+      Arkham.Homebrew.ConsternationOnTheConstellation.Enemies.DestroyerFromTheDepths
+      Arkham.Homebrew.ConsternationOnTheConstellation.Enemies.HandOfTheStrangler
+      Arkham.Homebrew.ConsternationOnTheConstellation.Enemies.LutherMarsh
+      Arkham.Homebrew.ConsternationOnTheConstellation.Enemies.OrderEnforcer
+      Arkham.Homebrew.ConsternationOnTheConstellation.Enemies.SeaSinger
+      Arkham.Homebrew.ConsternationOnTheConstellation.Enemies.WakeTitan
+      Arkham.Homebrew.ConsternationOnTheConstellation.Helpers
+      Arkham.Homebrew.ConsternationOnTheConstellation.Import
+      Arkham.Homebrew.ConsternationOnTheConstellation.Key
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.BoilerRoom
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.Bridge
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.CargoRoom
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.DeckLoungeAndTheatre
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.DiningRoom
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.EngineRoom
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.Galley
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.Library
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.Lifeboat
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.OpenWater
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.PassengerCabins
+      Arkham.Homebrew.ConsternationOnTheConstellation.Locations.SunDeck
+      Arkham.Homebrew.ConsternationOnTheConstellation.Scenarios.ConsternationOnTheConstellation
+      Arkham.Homebrew.ConsternationOnTheConstellation.Sets
+      Arkham.Homebrew.ConsternationOnTheConstellation.Traits
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.CallOfRlyeh
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.ClapOfThunder
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.LightsOut
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.OceansMaw
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.OutOfAir
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.RiteOfTheDeep
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.SealedDoors
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.Seasickness
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.SweptAway
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.TakingOnWater
+      Arkham.Homebrew.ConsternationOnTheConstellation.Treacheries.Thalassophobia
       Arkham.Homebrew.ContentEntries
       Arkham.Homebrew.DarkMatter.AchievementDefs
       Arkham.Homebrew.DarkMatter.Achievements

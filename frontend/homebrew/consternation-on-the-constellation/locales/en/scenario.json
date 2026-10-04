@@ -1,0 +1,14 @@
+{
+  "scenario": {
+    "label": "Consternation on the Constellation",
+    "fullLabel": "Consternation on the Constellation",
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: Consternation on the Constellation, Deep Ones, and Sinking Ship.",
+      "placeLocations": "Put Cargo Room and Open Water into play. Each investigator begins play at the Cargo Room. Set each other location aside, out of play.",
+      "takingOnWater": "Remove 1 copy of Taking on Water from the game for each player beyond the first.",
+      "crateOfGoods": "Set the 5 Crate of Goods assets aside. Shuffle the Tablet of Dagon and 2 other random Crate of Goods assets together, and remove the remaining Crate of Goods assets from the game. All 3 cards should be showing only the unrevealed Crate of Goods side, so that players do not know which Crate of Goods is the Tablet of Dagon.",
+      "setAside": "Set Luther Marsh and each card from the Deep Ones and Sinking Ship encounter sets aside, out of play.",
+      "orderEnforcer": "Search the gathered encounter sets for 1 copy of Order Enforcer. Spawn it at Cargo Room."
+    }
+  }
+}

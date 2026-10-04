@@ -130,6 +130,12 @@ instance RunMessage EffectAttrs where
       a <$ push (DisableEffect effectId)
     Do (CheckWindows windows') | any (isTakeDamage a) windows' && isEndOfWindow a EffectDamageWindow -> do
       a <$ push (DisableEffect effectId)
+    -- Damage reduced away to nothing never opens the `after TakeDamage` window (#5682),
+    -- so an effect that cancelled the whole hit lost its only disable trigger above and
+    -- its DamageTaken modifier stuck to the target forever, #5807. AssignedDamage is
+    -- pushed once per resolved assignment whatever amount survived the reductions.
+    AssignedDamage target _ _ | target == effectTarget && isEndOfWindow a EffectDamageWindow -> do
+      a <$ push (DisableEffect effectId)
     AfterRevelation _ tid | isEndOfWindow a (EffectRevelationWindow tid) -> do
       a <$ push (DisableEffect effectId)
     ResolvedCard _ card | isEndOfWindow a (EffectCardResolutionWindow $ toCardId card) -> do

@@ -2,6 +2,7 @@ module Arkham.Homebrew.AgainstTheWendigo.Acts.InSearchOfTheMissing (inSearchOfTh
 
 import Arkham.Act.Import.Lifted
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Acts qualified as Cards
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (drawStudentsFate)
 import Arkham.Matcher
 
 newtype InSearchOfTheMissing = InSearchOfTheMissing ActAttrs
@@ -14,7 +15,10 @@ inSearchOfTheMissing =
 
 instance RunMessage InSearchOfTheMissing where
   runMessage msg a@(InSearchOfTheMissing attrs) = runQueueT $ case msg of
+    -- "The lead investigator randomly takes a card from the Student's Fate deck
+    -- and reads the first part of it."
     AdvanceAct (isSide B attrs -> True) _ _ -> do
+      drawStudentsFate
       advanceActDeck attrs
       pure a
     _ -> InSearchOfTheMissing <$> liftRunMessage msg attrs

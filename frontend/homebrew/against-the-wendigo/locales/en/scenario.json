@@ -43,6 +43,37 @@
       "resolution3Body": "Officers listen to your story, particularly attentive when you present them with material evidence of what happened. You return to Arkham exhausted, tormented by this experience, but alive. Although the students' families have some answers, the mysteries that remain will haunt them forever. The few truths unveiled will not be enough to remove the nightmares that have invaded your sleep.",
       "resolution4": "Resolution 4",
       "resolution4Body": "Officers listen to the story of your expedition. You dare not tell them everything, lest they take you for a fool. You leave immediately, without looking back, and return to Arkham, prey to terrible nightmares. Having no answer to their questions, the students' relatives are plunged into torments that you understand too well."
+    },
+    "hanninahsGold": {
+      "listenToTheProspector": "Listen to the prospector and attempt to leave the mountains",
+      "seeTheGoldVein": "Go and see the gold vein"
+    },
+    "charlieFoxtailsDestiny": {
+      "healCharlie": "Heal Charlie's wounds despite his abandonment of the previous expedition",
+      "turnYourBackOnHim": "Turn your back on him; you do not trust him"
+    },
+    "campfire": {
+      "done": "Done healing"
+    },
+    "epilogue": {
+      "charlie": "Charlie Foxtail",
+      "charlieBody": "On the way back to Fort McDonald, Charlie confessed that he regrets abandoning Dr. Nadelmann and his students, and explains that ever since he left the party he was pursued by the monster that attacked him in the hut, which sensed his fear. He feels he did not deserve your kindness after what he did, and when you arrive back at Fort McDonald he bids you a fond farewell and offers you his weapon. \"This weapon has been in my family for many generations. Your courage and wisdom far surpass my own; I know my ancestors would want you to have it. Go with honor, my friend.\"",
+      "gold": "Hanninah's Gold",
+      "goldBody": "After your return to Arkham you find a gold mining company and share your discovery. The men in charge are very interested, and offer to pay you a percentage of the profits from the Hanninah if you tell them where the seam is. As you sign your contract you remember the mad prospector, and what you had to do to be rid of him. You hope the future workers on the site will not suffer the same fate... or worse.",
+      "ithaqua": "Ithaqua's Knowledge",
+      "ithaquaBody": "When you deciphered all the inscriptions of the temple, Ithaqua found in you a vessel, a channel to our world. Now you are constantly beset with visions that come true, intuitions coming out of nowhere that turn out to be accurate. Your vision of the world has changed, and you have to struggle regularly to avoid falling into madness.",
+      "normanAlive": "Norman Is Alive",
+      "normanAliveBody": "Norman is alive and well, the only real survivor of the previous expedition. You managed to get him back to Fort McDonald, where he was taken care of by the Mounted Police doctor. He behaved strangely, and did not really answer the questions about what happened to him; obviously, he had lost his mind. He kept saying he had to announce an important piece of news to the whole world, but had to find the best way to do it. When you went home you tried to bring Norman with you, but he had already left the fort in the middle of the night. In a letter he left for you, he explains that he will return to Arkham — you can reassure his family about that — but that he has a lot to do before he can come home...",
+      "normanDead": "You Let Norman Die",
+      "normanDeadBody": "When you found Norman there was something off about him, an inner force that could have led to your defeat. However, he was also the only surviving student you could have brought back alive. His death haunts you, but not as much as the tears of his relatives when you tell them that Norman succumbed on the return journey.",
+      "nadelmann1": "Dr. Nadelmann's Fate",
+      "nadelmann1Body": "Shortly after your return to Arkham you ask to see Dr. Nadelmann, to tell the anthropologist that you managed to kill the Wendigo. When you arrive at the asylum you find that Nadelmann's injury has been healed for some time, and that the doctor's appetite and natural energy seem restored. Nadelmann listens distractedly to your story, seemingly busy with lunch. Some time later you learn that Dr. Nadelmann had to be locked in a separate cell, without further details. One morning the police come to ask you about the disappearance of Dr. Nadelmann. They explain that the psychiatrists found the cell empty: there were claw marks all over some ragged clothes, and the window had been brutally forced from the inside. You cannot give them a reasonable explanation, and they leave disappointed. Now you are tormented by the thought that it may not be possible to kill the Wendigo once and for all.",
+      "nadelmann2": "Dr. Nadelmann's Fate",
+      "nadelmann2Body": "Dr. Nadelmann's appeal is held a few weeks after your return, and you present yourself with evidence to clear the anthropologist. You make a strong impression on your audience, and although there is unexplained evidence in this case, Dr. Nadelmann walks free from the hearing with full innocence established. Some time later you learn with satisfaction that Nadelmann will resume classes at the beginning of the next school year. The physical and mental after-effects still persist, though, with panic attacks every winter when the first snowflakes fall.",
+      "nadelmann3": "Dr. Nadelmann's Fate",
+      "nadelmann3Body": "Shortly after your return to Arkham you visit Dr. Nadelmann to help prepare for the appeal. When you arrive at the asylum you find that the wound is still not healed, and the anthropologist is extremely thin now. Nadelmann asks you to tell the story of your expedition, and is very attentive to the details. Even though you had not planned to tell everything, you feel forced to confirm that the Wendigo is still in the valley. The news affects Nadelmann deeply, and when you leave you hope you have not undermined the anthropologist's morale too badly. A few days later you learn with great sadness that Dr. Nadelmann committed suicide in the asylum.",
+      "nadelmann4": "Dr. Nadelmann's Fate",
+      "nadelmann4Body": "Dr. Nadelmann's appeal is held a few weeks after your return. You came hoping to exonerate the anthropologist. Unfortunately there is too much unexplained material in this case and the appeal is rejected. In addition, the mental state of the anthropologist is considered good enough after the few weeks spent in the asylum, so the police escort Nadelmann to Arkham prison to serve the sentence. Since then you often think back to Nadelmann, and feel a great pain knowing your friend is locked up for a long time, the anthropologist's life broken forever."
     }
   }
 }

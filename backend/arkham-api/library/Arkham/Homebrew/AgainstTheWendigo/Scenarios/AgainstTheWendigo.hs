@@ -22,7 +22,10 @@ import Arkham.Homebrew.AgainstTheWendigo.Helpers
 import Arkham.Homebrew.AgainstTheWendigo.Key
 import Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys (pattern StudentsFateDeck)
 import Arkham.Homebrew.AgainstTheWendigo.Sets qualified as Set
+import Arkham.Helpers.Query (getPlayerCount)
+import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
+import Arkham.Projection
 import Arkham.Message.Lifted.Log
 import Arkham.Helpers.Xp (XpBonus (NoBonus), toBonus)
 import Arkham.Resolution
@@ -158,11 +161,23 @@ instance RunMessage AgainstTheWendigo where
         , Acts.onTheStudentsTrack
         , Acts.northHanninahsMysteries
         ]
+    {- | The scenario reference card: "[tablet]: If you succeed, place 1 clue
+    from the reserve on the Mountain Range." Only this ever puts clues there, so
+    the Mountain Range's own "Forced - if there are 2 clues (3 for a 3 or 4
+    player game): reveal it" is checked here too. -}
+    PassedSkillTestWithToken _ Tablet -> do
+      ranges <- select $ LocationWithTitle "Mountain Range" <> UnrevealedLocation
+      for_ (take 1 ranges) \lid -> do
+        placeClues ScenarioSource lid 1
+        n <- getPlayerCount
+        clues <- field LocationClues lid
+        when (clues >= if n >= 3 then 3 else 2) $ reveal lid
+      pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
           flavor $ h "noResolution" >> p "noResolutionBody"
-          resignedOrDefeatedTrauma
+          resignedOrDefeatedTrauma attrs
           studentBranch
         Resolution 1 -> do
           flavor $ h "resolution1" >> p "resolution1Body"
@@ -190,6 +205,72 @@ instance RunMessage AgainstTheWendigo where
       endOfScenario
       pure s
     _ -> AgainstTheWendigo <$> liftRunMessage msg attrs
+
+{- | "Each investigator who resigned suffers 1 physical trauma. Each
+investigator who was defeated by horror suffers 1 additional physical trauma.
+Each investigator defeated by damage takes 1 Old Injury Weakness card and adds
+it to their deck. Each investigator defeated by both damage and horror adds a
+random Madness basic weakness as well."
+-}
+resignedOrDefeatedTrauma :: ReverseQueue m => ScenarioAttrs -> m ()
+resignedOrDefeatedTrauma attrs = do
+  selectEach ResignedInvestigator (`sufferPhysicalTrauma` 1)
+  selectEach InsaneInvestigator (`sufferPhysicalTrauma` 1)
+  selectEach KilledInvestigator \iid -> do
+    addCampaignCardToDeck iid ShuffleIn Treacheries.oldInjury
+    insane <- iid <=~> InsaneInvestigator
+    when insane $ searchCollectionForRandomBasicWeakness iid attrs [Madness]
+
+{- | The epilogue's four passages, then Dr. Nadelmann's fate. Each passage is
+read only if the record it hangs off was made, and each one that hands a card
+over does so here.
+-}
+epilogue :: (HasI18n, ReverseQueue m) => m ()
+epilogue = scope "epilogue" do
+  charlieSurvived <- selectAny $ assetIs Assets.charlieFoxtail
+  when charlieSurvived do
+    flavor $ h "charlie" >> p "charlieBody"
+    investigators <- select UneliminatedInvestigator
+    addCampaignCardToDeckChoice investigators ShuffleIn Assets.tomahawk
+
+  whenHasRecord YouHaveFoundHanninahsGold do
+    flavor $ h "gold" >> p "goldBody"
+    investigators <- select UneliminatedInvestigator
+    addCampaignCardToDeckChoice investigators ShuffleIn Assets.goldMiningRevenues
+
+  whenHasRecord YouAreTheCustodianOfIthaquasKnowledge do
+    flavor $ h "ithaqua" >> p "ithaquaBody"
+    investigators <- select UneliminatedInvestigator
+    addCampaignCardToDeckChoice investigators ShuffleIn Assets.ithaquasKnowledge
+
+  -- Norman only counts as alive if he made it to the end still in play.
+  normanSurvived <- selectAny $ assetIs Assets.normanFalkner
+  if normanSurvived
+    then do
+      record NormanIsAlive
+      flavor $ h "normanAlive" >> p "normanAliveBody"
+    else whenHasRecord YouLetNormanDie do
+      flavor $ h "normanDead" >> p "normanDeadBody"
+      -- "Add a [tablet] token to the Chaos bag for the rest of your campaign."
+      addChaosToken Tablet
+
+  nadelmannsFate
+
+{- | "Check your campaign log. If you defeated the Wendigo: read fate 1.
+Otherwise, if you have enough evidence to clear Dr. Nadelmann: fate 2.
+Otherwise, if you know that the Wendigo still roams: fate 3. Otherwise: fate 4."
+-}
+nadelmannsFate :: (HasI18n, ReverseQueue m) => m ()
+nadelmannsFate = do
+  defeatedWendigo <- getHasRecord YouDefeatedTheWendigo
+  cleared <- getHasRecord YouHaveEnoughEvidenceToClearDrNadelmann
+  stillRoams <- getHasRecord TheWendigoStillRoamsTheNorthHanninahValley
+  let which
+        | defeatedWendigo = "nadelmann1"
+        | cleared = "nadelmann2"
+        | stillRoams = "nadelmann3"
+        | otherwise = "nadelmann4"
+  flavor $ h which >> p (which <> "Body")
 
 -- | Resolutions 2-4 are chosen by how many students' fates were discovered.
 studentBranch :: ReverseQueue m => m ()
@@ -230,12 +311,6 @@ awardScenarioXp attrs extra = do
 rowPairs :: [a] -> [[a]]
 rowPairs (a : b : rest) = [a, b] : rowPairs rest
 rowPairs xs = [xs | notNull xs]
-
-epilogue :: ReverseQueue m => m ()
-epilogue = pure ()
-
-resignedOrDefeatedTrauma :: ReverseQueue m => m ()
-resignedOrDefeatedTrauma = pure ()
 
 chaosBagContents :: Difficulty -> [ChaosTokenFace]
 chaosBagContents = \case

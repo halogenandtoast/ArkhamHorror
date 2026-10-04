@@ -3093,7 +3093,7 @@ takeUpkeepResources a = do
   let additionalAmount =
         sum
           [ n
-          | Modifier s (UpkeepResources n) _ _ <- fullModifiers
+          | Modifier {modifierSource = s, modifierType = UpkeepResources n} <- fullModifiers
           , not cannotGainResourcesFromPlayerCardEffects || sourceToFromSource s /= FromPlayerCardEffect
           ]
   let amount = 1 + additionalAmount

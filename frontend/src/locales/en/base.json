@@ -699,6 +699,7 @@
       "placeTokens": "Place Tokens",
       "removeAllTokens": "Remove All Tokens",
       "modifiers": "Modifiers",
+      "disableEffect": "Disable this effect",
       "close": "Close"
     },
     "victoryDisplay": {

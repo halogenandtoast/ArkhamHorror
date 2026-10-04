@@ -303,6 +303,8 @@ export type Modifier = {
   type: ModifierType;
   source: Source;
   card?: Card;
+  // Set when an effect published this modifier, so debug can disable it.
+  effect?: string;
 }
 
 const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
@@ -546,5 +548,6 @@ const modifierTypeDecoder = JsonDecoder.oneOf<ModifierType>([
 export const modifierDecoder = JsonDecoder.object<Modifier>({
   type: modifierTypeDecoder,
   source: sourceDecoder,
-  card: v2Optional(cardDecoder)
+  card: v2Optional(cardDecoder),
+  effect: v2Optional(JsonDecoder.string())
 }, 'Modifier')

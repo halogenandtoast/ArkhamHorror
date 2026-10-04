@@ -16,11 +16,13 @@ import {-# SOURCE #-} Arkham.Helpers.Ref
 import Arkham.Id
 import Arkham.Json
 import Arkham.Message
+import Arkham.Modifier (Modifier (..))
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Source
 import Arkham.Target
 import Arkham.Trait
+import Control.Monad.Writer.Class (censor)
 import Data.Aeson.TH
 import Data.Data
 import GHC.Records
@@ -298,7 +300,11 @@ instance ToJSON Effect where
 
 instance HasModifiersFor Effect where
   getModifiersFor (Effect a) =
-    unless (effectFinished (toAttrs a)) $ getModifiersFor a
+    unless (effectFinished attrs)
+      $ censor (fmap (map \m -> m {modifierEffect = Just (toId attrs)}))
+      $ getModifiersFor a
+   where
+    attrs = toAttrs a
 
 instance HasAbilities Effect where
   getAbilities (Effect a) = getAbilities a

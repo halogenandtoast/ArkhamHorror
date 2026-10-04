@@ -127,7 +127,12 @@ runNotzAchievements msg = whenEligibleCampaign $ case msg of
       getSkillTestInvestigator >>= traverse_ \iid -> do
         litas <- select $ assetIs Assets.litaChantler
         mods <- getFullModifiers iid
-        let litaBonus = sum [n | Modifier src (DamageDealt n) _ _ <- mods, maybe False (`elem` litas) src.asset]
+        let litaBonus =
+              sum
+                [ n
+                | Modifier {modifierSource = src, modifierType = DamageDealt n} <- mods
+                , maybe False (`elem` litas) src.asset
+                ]
         when (litaBonus > 0) do
           dmg <- field EnemyDamage eid
           mHealth <- field EnemyHealth eid

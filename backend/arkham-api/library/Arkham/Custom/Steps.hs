@@ -1108,7 +1108,7 @@ runModify env spec = case spec of
             push
               $ CreateWindowModifierEffect
                 window
-                (EffectModifiers [Modifier source modifier False Nothing | modifier <- modifiers])
+                (EffectModifiers [Modifier source modifier False Nothing Nothing | modifier <- modifiers])
                 source
                 target
       _ -> reportBadPayload env "modify" spec

@@ -7205,7 +7205,7 @@ preloadModifiers g = case gameMode g of
     allModifiers <- traverse (foldMapM expandForEach . foldMap handleMoving) rawModifiers
     let offsetModifiers =
           Map.fromList
-            [ (LocationTarget lid, [Modifier GameSource (UIModifier (Positioned x y)) True Nothing])
+            [ (LocationTarget lid, [Modifier GameSource (UIModifier (Positioned x y)) True Nothing Nothing])
             | (lid, (x, y)) <- mapToList (gameLocationOffsets g)
             ]
     pure
@@ -7229,12 +7229,12 @@ handleTraitRestrictedModifiers g = do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
       for_ targetModifiers \case
-        Modifier source (TraitRestrictedModifier t mt) isSetup mcard -> do
+        m@(Modifier {modifierType = TraitRestrictedModifier t mt}) -> do
           traits <- runReaderT (targetTraits target) g
-          when (t `member` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup mcard]
-        Modifier source (NonTraitRestrictedModifier t mt) isSetup mcard -> do
+          when (t `member` traits) $ modify $ insertWith (<>) target [m {modifierType = mt}]
+        m@(Modifier {modifierType = NonTraitRestrictedModifier t mt}) -> do
           traits <- runReaderT (targetTraits target) g
-          when (t `notMember` traits) $ modify $ insertWith (<>) target [Modifier source mt isSetup mcard]
+          when (t `notMember` traits) $ modify $ insertWith (<>) target [m {modifierType = mt}]
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 
@@ -7244,8 +7244,8 @@ handleBlanked g = do
     modifiers'' <- get
     for_ (mapToList modifiers'') $ \(target, targetModifiers) -> do
       for_ targetModifiers $ \case
-        Modifier _ Blank _ _ -> applyBlank (targetToSource target)
-        Modifier _ BlankExceptForcedAbilities _ _ -> applyBlank (targetToSource target)
+        Modifier {modifierType = Blank} -> applyBlank (targetToSource target)
+        Modifier {modifierType = BlankExceptForcedAbilities} -> applyBlank (targetToSource target)
         _ -> pure ()
   pure $ g {gameModifiers = modifiers'}
 
@@ -7266,7 +7266,7 @@ applyBlank s = do
   for_ (mapToList current) $ \(target, targetModifiers) -> do
     let
       modifiers' = flip mapMaybe targetModifiers $ \case
-        Modifier s' _ _ _ | s == s' -> Nothing
+        Modifier {modifierSource = s'} | s == s' -> Nothing
         other -> Just other
     modify $ insertMap target modifiers'
 

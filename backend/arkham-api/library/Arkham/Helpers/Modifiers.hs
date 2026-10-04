@@ -126,7 +126,7 @@ withoutModifiers :: (HasGame m, Targetable a) => a -> [ModifierType] -> m Bool
 withoutModifiers a ms = all (`notElem` ms) <$> getModifiers (toTarget a)
 
 toModifier :: (Sourceable a, HasGame m) => a -> ModifierType -> m Modifier
-toModifier a mType = Modifier (toSource a) mType False <$> sourceToMaybeCard a
+toModifier a mType = sourceToMaybeCard a <&> \mcard -> Modifier (toSource a) mType False mcard Nothing
 
 modifySelf
   :: ( Targetable target

@@ -6,9 +6,34 @@ import { Game } from '@/arkham/types/Game';
 import { imgsrc } from '@/arkham/helpers';
 import { cardArt, sourceCardCode } from '@/arkham/cardImages';
 import { toCardContents } from '@/arkham/types/Card';
+import { useDebug } from '@/arkham/debug';
 
 const { t } = useI18n()
 const props = defineProps<{ modifier: Modifier, game: Game }>()
+
+const debug = useDebug()
+
+/* Only an effect-backed modifier can be taken back off; everything a card
+ * reports from `HasModifiersFor` has no effect to disable. */
+const disableableEffect = computed(() => debug.active ? props.modifier.effect : undefined)
+
+/* Modifier.vue only renders the handful of modifiers players see in the skill
+ * test band, so in debug the rest fall back to their tag -- otherwise the pill
+ * (and its ×) is blank. */
+const debugLabel = computed(() => {
+  const { tag, contents } = props.modifier.type as { tag: string, contents?: unknown }
+  if (typeof contents === 'string' || typeof contents === 'number') return `${tag} ${contents}`
+  if (contents && typeof contents === 'object' && typeof (contents as { tag?: unknown }).tag === 'string') {
+    return `${tag} ${(contents as { tag: string }).tag}`
+  }
+  return tag
+})
+
+const disableEffect = () => {
+  const effectId = disableableEffect.value
+  if (!effectId) return
+  debug.send(props.game.id, { tag: 'DisableEffect', contents: effectId })
+}
 
 const modifierSource = computed(() => {
   if(props.modifier.card) {
@@ -107,6 +132,17 @@ const normalizeSkill = (skill: string) => {
     <template v-else-if="modifier.type.tag === 'OtherModifier'">
       <span class="text">{{modifier.type.contents}}</span>
     </template>
+    <template v-else-if="debug.active">
+      <span class="text">{{ debugLabel }}</span>
+    </template>
+    <button
+      v-if="disableableEffect"
+      type="button"
+      class="disable-effect"
+      v-tooltip="$t('debug.common.disableEffect')"
+      :aria-label="$t('debug.common.disableEffect')"
+      @click.stop="disableEffect"
+    >×</button>
   </div>
 </template>
 
@@ -141,6 +177,29 @@ const normalizeSkill = (skill: string) => {
 
   .text {
     font-size: 0.8em;
+  }
+
+  .disable-effect {
+    pointer-events: auto;
+    margin-left: 2px;
+    margin-right: -4px;
+    width: 16px;
+    height: 16px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--title);
+    font-size: 0.9em;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+      background: #7a2020;
+      color: #fff;
+    }
   }
 }
 </style>

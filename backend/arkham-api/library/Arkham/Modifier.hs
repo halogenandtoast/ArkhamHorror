@@ -619,6 +619,10 @@ data Modifier = Modifier
   , modifierType :: ModifierType
   , modifierActiveDuringSetup :: Bool
   , modifierCard :: Maybe Card
+  , modifierEffect :: Maybe EffectId
+  {- ^ Stamped on by 'HasModifiersFor Effect', so the client can tell which
+  modifiers a 'DisableEffect' can take back off.
+  -}
   }
   deriving stock (Show, Eq, Ord, Data)
 
@@ -633,6 +637,9 @@ instance HasField "activeDuringSetup" Modifier Bool where
 
 instance HasField "card" Modifier (Maybe Card) where
   getField = modifierCard
+
+instance HasField "effect" Modifier (Maybe EffectId) where
+  getField = modifierEffect
 
 overModifierTypeM :: Monad m => (ModifierType -> m ModifierType) -> Modifier -> m Modifier
 overModifierTypeM f m = f (modifierType m) <&> \mt -> m {modifierType = mt}
@@ -699,7 +706,18 @@ mconcat
                 Right (s, n) -> pure $ XPModifier s n
             _ -> $(mkParseJSON defaultOptions ''ModifierType) (Object v)
       |]
-  , deriveJSON (aesonOptions $ Just "modifier") ''Modifier
+  , deriveToJSON (aesonOptions $ Just "modifier") ''Modifier
   , deriveJSON defaultOptions ''UIModifier
   , makePrisms ''ModifierType
   ]
+
+-- Hand-written so a payload from before `effect` existed -- a recorded game, or
+-- the debug client's `EffectModifiers` -- still parses.
+instance FromJSON Modifier where
+  parseJSON = withObject "Modifier" \o -> do
+    modifierSource <- o .: "source"
+    modifierType <- o .: "type"
+    modifierActiveDuringSetup <- o .: "activeDuringSetup"
+    modifierCard <- o .:? "card"
+    modifierEffect <- o .:? "effect"
+    pure Modifier {..}

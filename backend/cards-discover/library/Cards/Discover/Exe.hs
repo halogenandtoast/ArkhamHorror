@@ -229,6 +229,16 @@ renderFile amf = render do
       fromString $ moduleName mod'
       " as X"
 
+{- | Besides the instance-only imports, this emits
+
+> type DiscoveredModules = "Mod.A Mod.B"
+
+GHC's recompilation checker cannot see instances that Template Haskell finds by
+'reify', so an aggregator spliced over them looks unchanged when this file gains
+a new import and is never rebuilt. The marker puts the module list in the
+interface, where the aggregator can reference it (see
+@Arkham.Homebrew.TH.discoveredModules@) and be rebuilt when it changes.
+-}
 renderInstancesFile :: AllModelsFile -> String
 renderInstancesFile amf = render do
   let modName = moduleName $ amfModuleBase amf
@@ -240,7 +250,7 @@ renderInstancesFile amf = render do
   renderLine do
     "module "
     fromString modName
-    " () where"
+    " (DiscoveredModules) where"
   ""
   for_
     (amfModuleImports amf)
@@ -248,6 +258,10 @@ renderInstancesFile amf = render do
       "import "
       fromString $ moduleName mod'
       " ()"
+  ""
+  renderLine do
+    "type DiscoveredModules = "
+    fromString $ show $ unwords $ map moduleName $ amfModuleImports amf
 
 data HomebrewEntry = HomebrewEntry
   { heModule :: Module

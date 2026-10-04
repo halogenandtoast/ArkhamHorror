@@ -13,17 +13,23 @@ import Arkham.Asset.Types (SomeAssetCard)
 import Arkham.Card.CardCode
 import Arkham.EncounterSet (EncounterSet)
 import Arkham.Enemy.Types (SomeEnemyCard)
-import Arkham.Homebrew.ContentEntries ()
+import Arkham.Homebrew.ContentEntries (DiscoveredModules)
 import Arkham.Homebrew.TH
 import Arkham.Homebrew.Types as X
 import Arkham.Location.Types (SomeLocationCard)
-import Arkham.Prelude ()
+import Arkham.Prelude (Text)
 import Arkham.Skill.Types (SomeSkillCard)
 import Arkham.Story.Types (SomeStoryCard)
 import Arkham.Treachery.Types (SomeTreacheryCard)
 
 allHomebrewContent :: HomebrewContent
 allHomebrewContent = $(discoverInstances ''IsHomebrewContent 'homebrewContent)
+
+{- | Unused; see 'discoveredModules'. Without it GHC does not rebuild this
+module when a campaign is added.
+-}
+discoveredContentModules :: Text
+discoveredContentModules = discoveredModules @DiscoveredModules
 
 acts :: [SomeActCard]
 acts = allHomebrewContent.acts

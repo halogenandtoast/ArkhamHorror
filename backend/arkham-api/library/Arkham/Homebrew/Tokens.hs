@@ -7,6 +7,7 @@ instance is folded in automatically — no edits here when adding a campaign.
 module Arkham.Homebrew.Tokens (
   module Arkham.Homebrew.TokenDefs,
   customTokenDefs,
+  discoveredTokenModules,
   customTokenRevealEffect,
   chaosTokenFacePool,
   pooledChaosTokenFaces,
@@ -15,8 +16,14 @@ module Arkham.Homebrew.Tokens (
 import Arkham.ChaosToken.Types
 import Arkham.Homebrew.TH
 import Arkham.Homebrew.TokenDefs
-import Arkham.Homebrew.TokenEntries ()
+import Arkham.Homebrew.TokenEntries (DiscoveredModules)
 import Arkham.Prelude
+
+{- | Unused; see 'discoveredModules'. Without it GHC does not rebuild this
+module when a campaign is added.
+-}
+discoveredTokenModules :: Text
+discoveredTokenModules = discoveredModules @DiscoveredModules
 
 customTokenDefs :: Map Text CustomTokenDef
 customTokenDefs =
@@ -25,8 +32,9 @@ customTokenDefs =
     | def <- $(discoverInstances ''IsHomebrewTokens 'homebrewTokens)
     ]
 
--- | Engine-level reveal behavior for a token face; 'RevealNoEffect' for
--- official faces and unregistered custom tokens.
+{- | Engine-level reveal behavior for a token face; 'RevealNoEffect' for
+official faces and unregistered custom tokens.
+-}
 customTokenRevealEffect :: ChaosTokenFace -> CustomTokenReveal
 customTokenRevealEffect (CustomToken slug) =
   maybe RevealNoEffect tokenRevealEffect (lookup slug customTokenDefs)
@@ -49,6 +57,8 @@ chaosTokenFacePool = \case
 pooledChaosTokenFaces :: [(ChaosTokenFace, Int)]
 pooledChaosTokenFaces =
   [ (face, n)
-  | face <- [BlessToken, CurseToken, FrostToken, BloodToken] <> map (CustomToken . tokenSlug) (toList customTokenDefs)
+  | face <-
+      [BlessToken, CurseToken, FrostToken, BloodToken]
+        <> map (CustomToken . tokenSlug) (toList customTokenDefs)
   , Just n <- [chaosTokenFacePool face]
   ]

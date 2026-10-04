@@ -2,6 +2,7 @@
 
 module Arkham.Homebrew.TH (
   discoverInstances,
+  discoveredModules,
   declareOpenExtension,
   declareHomebrewTraits,
   declareHomebrewScenarioDeckKeys,
@@ -14,6 +15,8 @@ import Arkham.Scenario.Deck (ScenarioDeckKey (HomebrewScenarioDeckKey))
 import Arkham.Trait (Trait (HomebrewTrait))
 import Control.Monad.Fail
 import Data.List qualified as List
+import Data.Proxy (Proxy (..))
+import GHC.TypeLits (KnownSymbol, symbolVal)
 import Language.Haskell.TH
 
 {- | @$(discoverInstances ''SomeClass 'someMethod)@ expands to
@@ -31,6 +34,18 @@ discoverInstances cls method = do
     instanceHead _ = Nothing
     tys = mapMaybe instanceHead instances
   appE (varE 'mconcat) (listE [varE method `appTypeE` pure ty | ty <- tys])
+
+{- | @discoveredModules \@DiscoveredModules@ — the module list that
+@cards-discover --instances@ put in the aggregator's entries module.
+
+Nothing reads the result. It exists because GHC's recompilation checker cannot
+see the instances 'discoverInstances' finds by 'reify': a module spliced over
+them looks unchanged when the entries module merely gains an import, so the
+aggregate silently keeps the campaigns it was last compiled with. Referencing
+the marker ties this module's recompilation to that list.
+-}
+discoveredModules :: forall s. KnownSymbol s => Text
+discoveredModules = pack (symbolVal (Proxy @s))
 
 {- | Declare homebrew extension values for a sum type that carries an open
 @Text@-tagged escape-hatch constructor (e.g. @HomebrewTrait Text@ on 'Trait',

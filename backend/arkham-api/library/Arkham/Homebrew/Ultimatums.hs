@@ -8,11 +8,17 @@ module Arkham.Homebrew.Ultimatums where
 
 import Arkham.Homebrew.TH
 import Arkham.Homebrew.UltimatumDefs
-import Arkham.Homebrew.UltimatumEntries ()
+import Arkham.Homebrew.UltimatumEntries (DiscoveredModules)
 import Arkham.Prelude
 
 allHomebrewUltimatums :: [HomebrewUltimatumDef]
 allHomebrewUltimatums = $(discoverInstances ''IsHomebrewUltimatums 'homebrewUltimatums)
+
+{- | Unused; see 'discoveredModules'. Without it GHC does not rebuild this
+module when a campaign is added.
+-}
+discoveredUltimatumModules :: Text
+discoveredUltimatumModules = discoveredModules @DiscoveredModules
 
 -- | Every homebrew ultimatum's wire name, in each campaign's printed order.
 homebrewUltimatumNames :: [Text]

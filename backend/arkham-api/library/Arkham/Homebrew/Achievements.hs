@@ -8,12 +8,18 @@ when adding a campaign.
 module Arkham.Homebrew.Achievements where
 
 import Arkham.Homebrew.AchievementDefs
-import Arkham.Homebrew.AchievementEntries ()
+import Arkham.Homebrew.AchievementEntries (DiscoveredModules)
 import Arkham.Homebrew.TH
 import Arkham.Prelude
 
 allHomebrewAchievements :: [HomebrewAchievementDef]
 allHomebrewAchievements = $(discoverInstances ''IsHomebrewAchievements 'homebrewAchievements)
+
+{- | Unused; see 'discoveredModules'. Without it GHC does not rebuild this
+module when a campaign is added.
+-}
+discoveredAchievementModules :: Text
+discoveredAchievementModules = discoveredModules @DiscoveredModules
 
 -- | Every homebrew achievement's wire name, in each campaign's printed order.
 homebrewAchievementNames :: [Text]

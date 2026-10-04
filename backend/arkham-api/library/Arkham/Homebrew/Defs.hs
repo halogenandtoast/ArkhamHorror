@@ -12,13 +12,19 @@ import Arkham.Card.CardCode
 import Arkham.Card.CardDef
 import Arkham.Criteria (Criterion)
 import Arkham.Homebrew.DefsBase
-import Arkham.Homebrew.DefsEntries ()
+import Arkham.Homebrew.DefsEntries (DiscoveredModules)
 import Arkham.Homebrew.TH
 import Arkham.Prelude
 import Arkham.Trait (Trait, coreTraits)
 
 allHomebrewDefs :: HomebrewDefs
 allHomebrewDefs = $(discoverInstances ''IsHomebrewDefs 'homebrewDefs)
+
+{- | Unused; see 'discoveredModules'. Without it GHC does not rebuild this
+module when a campaign is added.
+-}
+discoveredDefsModules :: Text
+discoveredDefsModules = discoveredModules @DiscoveredModules
 
 {- | The full trait universe: core traits plus every trait every discovered
 homebrew campaign owns. Use in place of the old @[minBound .. maxBound]@.

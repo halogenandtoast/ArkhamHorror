@@ -77,10 +77,9 @@ const more = computed(() => props.total > props.cards.length || clipped.value)
 <template>
   <div class="set-preview">
     <p v-if="!cards.length" class="empty">{{ emptyLabel }}</p>
-    <!-- A section rather than a bare div: the caption is a heading for the
-         cards under it, so it should be one to a screen reader too. -->
+    <!-- A section rather than a bare div: the caption names the cards it sits
+         with, so the box should be labelled to a screen reader too. -->
     <section v-else class="preview-box" :aria-label="caption">
-      <p class="caption">{{ caption }}</p>
       <CardSetStrip
         ref="strip"
         class="strip"
@@ -89,6 +88,7 @@ const more = computed(() => props.total > props.cards.length || clipped.value)
         @pick="emit('pick', $event)"
       />
       <div class="more">
+        <p class="caption">{{ caption }}</p>
         <button type="button" class="view-all" @click="emit('viewAll')">
           {{ more ? t(`${K}viewAll`, { count: total }) : t(`${K}openSet`) }}
           <font-awesome-icon icon="chevron-right" />
@@ -109,17 +109,19 @@ const more = computed(() => props.total > props.cards.length || clipped.value)
 .preview-box {
   background: color-mix(in srgb, black 16%, transparent);
   border-top: 1px solid var(--box-border);
-  padding: 0.5rem 0.9rem 0.15rem;
+  padding: 0.45rem 0.9rem 0.1rem;
 }
 
 /* Small caps rather than a heading size: it names the box, it is not competing
-   with the set's own title above it. */
+   with the set's own title above it. It rides on the footer rather than taking
+   a line above the cards -- a line of its own cost every set in the list the
+   same height again, for one word. */
 .caption {
   color: color-mix(in srgb, var(--title) 55%, transparent);
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  margin: 0 0 0.45rem;
+  margin: 0;
   text-transform: uppercase;
 }
 
@@ -144,9 +146,11 @@ const more = computed(() => props.total > props.cards.length || clipped.value)
    pinned credit line -- fixed to the bottom of the window, and hidden outright
    on a portrait phone, which is where this went missing. */
 .more {
+  align-items: center;
   display: flex;
-  justify-content: flex-end;
-  padding: 0.15rem 0 0.35rem;
+  gap: 0.75rem;
+  justify-content: space-between;
+  padding: 0 0 0.2rem;
 }
 
 /* A link, not a button: it goes somewhere rather than doing something, and a

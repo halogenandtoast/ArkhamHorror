@@ -98,6 +98,17 @@ each one is a line of your card doing nothing.
 verdict that the def decodes as a `CardDef`; nothing else proves that. Saving is
 an upsert on (user, card code), so re-saving an edited card replaces its row.
 
+**Save to the development library only.** Where `save_card` writes depends on
+which arkham-cards server is configured: the stdio server in `.mcp.json` writes
+to `localhost:3002`, but an `http` entry pointing at `https://arkhamhorror.app`
+writes to **production**. `whoami` does not say which; check the MCP config
+before the first save of a session, and if it is the remote one, do not write.
+
+Card defs are not promoted by an agent. The owner exports from dev and imports
+into prod themselves, which is also the only ordering that is safe: a def using
+a DSL feature the deployed engine does not have yet decodes to nothing there,
+silently, and the card is worse off than before it was fixed.
+
 ## 7. Say what is untested
 
 Validation proves the card *decodes*. It cannot prove the card *does what the

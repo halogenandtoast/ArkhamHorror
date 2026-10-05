@@ -112,6 +112,7 @@ const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def
     height: var(--strip-image);
     object-fit: contain;
     object-position: center bottom;
+    transition: filter 120ms ease;
     width: 100%;
   }
 
@@ -129,9 +130,21 @@ const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def
   cursor: pointer;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: var(--spooky-green);
     transform: translateY(-1px);
+
+    /* The highlight goes on the picture, not on the cell. The cell is a fixed
+       box so the row keeps one height whatever shape the card is, and
+       `object-fit: contain` leaves a landscape card -- an investigator, a
+       location -- filling less than half of it. A border on the cell drew a
+       green box more than twice the height of the card it was pointing at.
+       Stacked drop-shadows follow the letterboxed silhouette, the same reason
+       the card's own shadow is drawn that way. */
+    img {
+      filter:
+        drop-shadow(0 0 2px var(--spooky-green))
+        drop-shadow(0 0 2px var(--spooky-green))
+        drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.8));
+    }
 
     .name {
       opacity: 1;

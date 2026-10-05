@@ -224,7 +224,27 @@ const targetFromEvent = (e: Event): HTMLElement | null => {
       && clientX <= rect.right
       && clientY >= rect.top
       && clientY <= rect.bottom
+      && !clippedAt(el, clientX, clientY)
   }) ?? null
+}
+
+/* Whether an ancestor's clipping means nothing is drawn there.
+
+This scan works on layout rects, and `overflow: hidden` does not change those:
+a card strip clipped to one row still lays out the rows beneath it, and those
+cards keep full-size rects behind whatever is painted below the strip. Without
+this, pointing at the page under a clipped strip found a card nobody can see
+and opened its overlay. Hit testing gets this right on its own -- the fallback
+exists for transformed cards, whose ancestors do not clip, so they are
+unaffected. */
+const clippedAt = (el: HTMLElement, x: number, y: number): boolean => {
+  for (let parent = el.parentElement; parent; parent = parent.parentElement) {
+    const { overflowX, overflowY } = getComputedStyle(parent)
+    if (overflowX === 'visible' && overflowY === 'visible') continue
+    const rect = parent.getBoundingClientRect()
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) return true
+  }
+  return false
 }
 
 const queueHover = (el: HTMLElement) => {

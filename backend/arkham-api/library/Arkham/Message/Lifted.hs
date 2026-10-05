@@ -2854,8 +2854,8 @@ quietCancelCardDraw card = do
     Do (InvestigatorDrewEncounterCard _ c) -> c.id == card.id
     Do (InvestigatorDrewEncounterCardFrom _ c _) -> c.id == card.id
     InvestigatorDrewEncounterCard _ c -> c.id == card.id
-    Do (InvestigatorDrewPlayerCardFrom _ c _) -> c.id == card.id
-    InvestigatorDrewPlayerCardFrom _ c _ -> c.id == card.id
+    Do (InvestigatorDrewPlayerCardFrom _ c _ _) -> c.id == card.id
+    InvestigatorDrewPlayerCardFrom _ c _ _ -> c.id == card.id
     DrewTreachery _ _ c -> c.id == card.id
     DrewPlayerEnemy _ c -> c.id == card.id
     Revelation _ (CardIdSource cid) -> cid == card.id

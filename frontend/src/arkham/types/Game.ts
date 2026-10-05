@@ -1,5 +1,6 @@
 import * as JsonDecoder from 'ts.data.json';
 import { v2Optional, withDefault } from '@/arkham/parser';
+import { LogRow, logRowDecoder } from '@/arkham/types/GameLog';
 import { Investigator, InvestigatorDetails, investigatorDecoder, investigatorDetailsDecoder } from '@/arkham/types/Investigator';
 import { Modifier, modifierDecoder } from '@/arkham/types/Modifier';
 import { ConcealedCard, concealedCardDecoder } from '@/arkham/types/ConcealedCard';
@@ -97,7 +98,7 @@ export type GameDetailsEntry = GameDetails & { tag: "game" }| { error: string, t
 export type Game = {
   id: string;
   name: string;
-  log: string[];
+  log: LogRow[];
   settings: GameSettings;
 
   activeInvestigatorId: string;
@@ -352,7 +353,7 @@ export const gameDecoder: JsonDecoder.Decoder<Game> = JsonDecoder.object(
   {
     id: JsonDecoder.string(),
     name: JsonDecoder.string(),
-    log: JsonDecoder.array(JsonDecoder.string(), 'LogEntry[]'),
+    log: JsonDecoder.array(logRowDecoder, 'LogRow[]'),
     settings: v2Optional(gameSettingsDecoder),
     gameSettings: v2Optional(gameSettingsDecoder),
 

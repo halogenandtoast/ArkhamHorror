@@ -165,6 +165,9 @@ import Arkham.Location.Types (
   toLocationLabel,
   toLocationSymbol,
  )
+import Arkham.Log.Entry
+import Arkham.Log.Narrator
+import Arkham.Log.Refs (sendLogDuringTest)
 import Arkham.Matcher hiding (
   AssetCard,
   AssetDefeated,
@@ -285,6 +288,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameCustomCards = mempty
         , gameWindowDepth = 0
         , gameWindowStack = Nothing
+        , gameRoundCount = 0
         , gameWindowTick = 0
         , gameWindowTickStack = []
         , gameEntryTicks = mempty
@@ -696,7 +700,15 @@ withSkillTestModifiers token = do
     | face == original = faces
   applyForcedTokenChange faces _ = faces
 
-data PublicGame gid = PublicGame gid Text [Text] Game | FailedToLoadGame Text
+{- | A game as the client sees it, plus the tail of its log.
+
+The log field was @[Text]@: the whole history, every time, as flat brace-DSL
+strings. Measured on a 2,885-step campaign that was 481 entries and 51,934
+bytes -- 20.5% of a 252,726-byte payload, the second-largest field, of which the
+client rendered the last ten. It is now a bounded tail of structured rows; see
+'Api.Arkham.Helpers.gameLogTailSize' and @docs/game-log/@.
+-}
+data PublicGame gid = PublicGame gid Text [LogRow] Game | FailedToLoadGame Text
   deriving stock Show
 
 getConnectedMatcher :: HasGame m => ForMovement -> Location -> m LocationMatcher
@@ -6696,6 +6708,25 @@ captureSharedDelta key amount = do
     let d = SharedDelta {sharedDeltaId = did, sharedDeltaKey = key, sharedDeltaAmount = amount}
     liftIO $ atomicModifyIORef' (epicEnvDeltaRef epic) \ds -> (ds <> [d], ())
 
+{- | Observers attached to one @runMessages@ run.
+
+Both are optional and neither may affect the game: they see each message as it
+is popped, before it runs.
+-}
+data RunObservers = RunObservers
+  { observeMessage :: Maybe (Message -> IO ())
+  -- ^ Raw message sink. Used to harvest achievements and phase entries.
+  , observeNarration :: Maybe (IORef Narrator)
+  {- ^ The game log's narrator state. See "Arkham.Log.Narrator"; absent means
+  the run produces no derived log, which is what the replay tool and the
+  test harness want unless they ask for it.
+  -}
+  }
+
+-- | Observe nothing.
+noRunObservers :: RunObservers
+noRunObservers = RunObservers Nothing Nothing
+
 runMessages
   :: ( HasGameRef env
      , HasStdGen env
@@ -6707,9 +6738,9 @@ runMessages
      , MonadMask m
      )
   => Text
-  -> Maybe (Message -> IO ())
+  -> RunObservers
   -> m ()
-runMessages gameId mLogger = do
+runMessages gameId observers = do
   g <- readGame
   debugLevel <- getDebugLevel
   when (debugLevel == 2) $ peekQueue >>= pPrint >> putStrLn "\n"
@@ -6740,7 +6771,7 @@ runMessages gameId mLogger = do
             -- choosing decks with no deck question left parked can only mean the
             -- continuation is gone, so re-push it. A healthy flow never gets
             -- here: its drain happens after DoneChoosingDecks has already run.
-            push DoneChoosingDecks >> runMessages gameId mLogger
+            push DoneChoosingDecks >> runMessages gameId observers
       -- The phase is whatever the last scenario left behind: StartScenario sets
       -- InvestigationPhase and ResetGame drops the scenario from the mode without
       -- resetting it. Between scenarios a drained queue must therefore NOT resume the
@@ -6785,7 +6816,7 @@ runMessages gameId mLogger = do
                           | iid <- xs
                           ]
 
-              runMessages gameId mLogger
+              runMessages gameId observers
             else do
               let turnPlayer = fromJustNote "verified above" mTurnInvestigator
               pushAllEnd
@@ -6793,13 +6824,20 @@ runMessages gameId mLogger = do
                     (InvestigationPhaseStep InvestigatorTakesActionStep)
                     [PlayerWindow (toId turnPlayer) [] False False]
                 ]
-                >> runMessages gameId mLogger
+                >> runMessages gameId observers
       Just msg -> do
         when (debugLevel == 1) $ do
           pPrint msg
           putStrLn "\n"
 
-        for_ mLogger $ liftIO . ($ msg)
+        for_ observers.observeMessage $ liftIO . ($ msg)
+        {- The game log. The match is pure, so only a message that actually
+        narrates pays for a 'runWithEnv'; the narrator then reads state to turn
+        the ids in the message into chips, and sends at most one entry. It
+        never touches the queue. See "Arkham.Log.Narrator". -}
+        for_ observers.observeNarration $ \_ref ->
+          for_ (narrationFor msg) \build ->
+            runWithEnv build >>= traverse_ (runWithEnv . sendLogDuringTest)
 
         let
           shouldPreloadModifiers = \case
@@ -6841,20 +6879,20 @@ runMessages gameId mLogger = do
           go = go' False
           go' retained = \case
             Retain msg' -> go' True msg'
-            Priority msg' -> push msg' >> runMessages gameId mLogger
+            Priority msg' -> push msg' >> runMessages gameId observers
             Run msgs -> do
               pushAll msgs
-              runMessages gameId mLogger
+              runMessages gameId observers
             -- Epic Multiplayer: shared-counter mutations never touch this game's
             -- state. When the game belongs to an event we capture them as
             -- invertible deltas (drained under the locked event row at commit);
             -- for ordinary games they are inert no-ops.
-            SpendShared k n -> captureSharedDelta k (negate n) >> runMessages gameId mLogger
-            RaiseShared k n -> captureSharedDelta k n >> runMessages gameId mLogger
-            ClearUI -> runWithEnv (overGameM $ runMessage ClearUI) >> runMessages gameId mLogger
-            Ask _ (ChooseOneAtATime []) -> runMessages gameId mLogger
-            Ask _ (ChooseOneAtATimeWithAuto _ []) -> runMessages gameId mLogger
-            Ask _ (ChooseN _ []) -> runMessages gameId mLogger
+            SpendShared k n -> captureSharedDelta k (negate n) >> runMessages gameId observers
+            RaiseShared k n -> captureSharedDelta k n >> runMessages gameId observers
+            ClearUI -> runWithEnv (overGameM $ runMessage ClearUI) >> runMessages gameId observers
+            Ask _ (ChooseOneAtATime []) -> runMessages gameId observers
+            Ask _ (ChooseOneAtATimeWithAuto _ []) -> runMessages gameId observers
+            Ask _ (ChooseN _ []) -> runMessages gameId observers
             Ask pid q -> do
               -- if we are choosing decks, we do not want to clobber other ChooseDeck
               moreChooseDecks <-
@@ -6870,7 +6908,7 @@ runMessages gameId mLogger = do
                       AskMap askMap | not (null askMap) && ChooseDeck `elem` Map.elems askMap -> AskMap $ insertMap pid q askMap
                       _ -> other
                   withQueue_ (map updateChooseDeck)
-                  runMessages gameId mLogger
+                  runMessages gameId observers
                 else do
                   let
                     shouldCheckTarget = \case
@@ -6900,7 +6938,7 @@ runMessages gameId mLogger = do
                             (singletonMap pid q)
                         )
                         >>= putGame
-                    else runMessages gameId mLogger
+                    else runMessages gameId observers
             AskMap askMap -> do
               -- Read might have only one player being prompted so we need to find the active player
               let current = g ^. activePlayerIdL
@@ -6913,7 +6951,7 @@ runMessages gameId mLogger = do
                 -- No one can answer (only stale empty-choice Reads left over from a
                 -- previous storyWithChooseOne). Skip rather than parking on an
                 -- unanswerable question.
-                [] -> runMessages gameId mLogger
+                [] -> runMessages gameId observers
                 _ -> do
                   let activePid = fromMaybe current $ find (`elem` activePids) (current : keys askMap)
                   runWithEnv
@@ -6922,25 +6960,27 @@ runMessages gameId mLogger = do
                         askMap
                     )
                     >>= putGame
-            CheckWindows {} | not (gameRunWindows g) -> runMessages gameId mLogger
-            Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages gameId mLogger
+            CheckWindows {} | not (gameRunWindows g) -> runMessages gameId observers
+            Do (CheckWindows {}) | not (gameRunWindows g) -> runMessages gameId observers
             -- Setup pushes a CheckWindows for every location placed and every
             -- clue placed. No triggered ability can resolve during setup, so
             -- the entire preload + runWindow pipeline for those windows is
             -- pure waste. Skip them outright while gameInSetup is True.
-            CheckWindows ws | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
-            Do (CheckWindows ws) | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId mLogger
-            CheckWindows ws | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId mLogger
-            Do (CheckWindows ws) | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId mLogger
+            CheckWindows ws | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId observers
+            Do (CheckWindows ws) | gameInSetup g && all Window.isSetupSkippableWindow ws -> runMessages gameId observers
+            CheckWindows ws
+              | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId observers
+            Do (CheckWindows ws)
+              | all Window.isEnemyReadyWindow ws && not (hasEnemyReadyAbilities g) -> runMessages gameId observers
             -- "The [elder_sign] token cannot be sealed." (Diana's Blessing, and anything
             -- else publishing 'CannotSealChaosToken'). Both halves of a seal are dropped
             -- here rather than at each of the ~15 seal sites, which is also what makes it
             -- hold for the debug seal.
             -- ponytail: a seal paid as a cost still counts as paid; the cost would have to
             -- consult this before it is offered.
-            SealChaosToken token | sealForbidden g token -> runMessages gameId mLogger
-            SealedChaosToken token _ _ | sealForbidden g token -> runMessages gameId mLogger
-            Simultaneously [] -> runMessages gameId mLogger
+            SealChaosToken token | sealForbidden g token -> runMessages gameId observers
+            SealedChaosToken token _ _ | sealForbidden g token -> runMessages gameId observers
+            Simultaneously [] -> runMessages gameId observers
             Simultaneously msgs -> do
               -- Save the rest of the queue so we can restore it after collecting results
               savedQueue <- peekQueue
@@ -6949,6 +6989,14 @@ runMessages gameId mLogger = do
               allResults <-
                 traverse
                   ( \m -> do
+                      {- Narrate the sub-message too. These never reach the hook
+                      above -- they are run straight through the pipeline here --
+                      so without this an event resolved simultaneously is
+                      invisible to the log. Standard movement is one:
+                      @EnterLocation@ arrives only inside a @Simultaneously@. -}
+                      for_ observers.observeNarration $ \_ref ->
+                        for_ (narrationFor m) \build ->
+                          runWithEnv build >>= traverse_ (runWithEnv . sendLogDuringTest)
                       asIfLocations' <- runWithEnv getAsIfLocationMap
                       aloofEnemies' <- runWithEnv (select AloofEnemy)
                       investigatorSanityHealth' <- runWithEnv getInvestigatorSanityHealthMap
@@ -6975,7 +7023,7 @@ runMessages gameId mLogger = do
                   msgs
               -- Restore the saved queue with interleaved results at the front
               setQueue (interleaveSimultaneously allResults <> savedQueue)
-              runMessages gameId mLogger
+              runMessages gameId observers
             _ -> do
               -- Hidden Library handling
               -- > While an enemy is moving, Hidden Library gains the Passageway trait.
@@ -7042,7 +7090,7 @@ runMessages gameId mLogger = do
                       >=> handleDefeatedByModifiers investigatorSanityHealth
                   else overGameM $ runMessage msg
                 overGame $ set enemyMovingL Nothing . set enemyEvadingL Nothing
-              runMessages gameId mLogger
+              runMessages gameId observers
         go msg
 
 getAsIfLocationMap :: HasGame m => m (Map InvestigatorId LocationId)

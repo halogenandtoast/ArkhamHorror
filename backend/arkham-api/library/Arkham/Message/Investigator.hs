@@ -51,7 +51,10 @@ data InvestigatorMessage
   | InvestigatorDrawEnemy_ InvestigatorId EnemyId
   | InvestigatorDrewEncounterCard_ InvestigatorId EncounterCard
   | InvestigatorDrewEncounterCardFrom_ InvestigatorId EncounterCard (Maybe DeckSignifier)
-  | InvestigatorDrewPlayerCardFrom_ InvestigatorId PlayerCard (Maybe DeckSignifier)
+  | -- The trailing Source is who caused the draw, for the log. Optional: most
+    -- draws have no interesting cause, and the odd paths that mint this message
+    -- directly have none to hand.
+    InvestigatorDrewPlayerCardFrom_ InvestigatorId PlayerCard (Maybe DeckSignifier) (Maybe Source)
   | InvestigatorEliminated_ InvestigatorId
   | InvestigatorKilled_ Source InvestigatorId
   | InvestigatorMulligan_ InvestigatorId

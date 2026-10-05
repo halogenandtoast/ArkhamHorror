@@ -19,11 +19,14 @@ import Arkham.Helpers.Window (checkWhen, checkWindows)
 import Arkham.Homebrew.Tokens (chaosTokenFacePool, pooledChaosTokenFaces)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
+import Arkham.Log (LogPart (..), ikeyPart, investigatorRef, mechanic, toLogPart, (~>))
+import Arkham.Log.Refs (sendLogDuringTest)
 import Arkham.Matcher (
   ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIs, ChaosTokenFaceIsNot, IncludeSealed),
  )
 import Arkham.Message.Lifted.Queue
 import Arkham.Modifier (_CancelAnyChaosToken, _CancelAnyChaosTokenAndDrawAnother)
+import Arkham.Name (toName)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.RequestedChaosTokenStrategy
@@ -900,14 +903,23 @@ instance RunMessage ChaosBag where
                       [token | token <- tokens', not token.cancelled]
               pure $ cancelMsgs <> whenMsgs <> afterMsgs
             Nothing -> pure []
+          {- Structured, and still batched: a two-token draw is one line, not
+          two, which a per-token narration could not preserve.
+
+          'sendLogDuringTest', so a test's own draw lands inside the test's
+          block instead of beside it. A draw with no test open -- Dark Prophecy,
+          an ability that reveals -- is an ordinary top-level line. -}
           for_ miid \iid -> do
             investigator <- getAttrs @Investigator iid
-            send
-              $ format investigator
-              <> " draws "
-              <> formatAsSentence tokens'
-              <> " chaos "
-              <> (if length tokens' == 1 then "token" else "tokens")
+            sendLogDuringTest
+              $ mechanic
+                [ ikeyPart
+                    "log.drawsChaosTokens"
+                    [ "investigator" ~> investigatorRef investigator.id (toName investigator)
+                    , "tokens" ~> LogList (map (toLogPart . (.face)) tokens')
+                    , "count" ~> length tokens'
+                    ]
+                ]
 
           -- the skill test handles revealing its own tokens so we only reveal
           -- here if the source was something else and we have an investigator

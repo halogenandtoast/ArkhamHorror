@@ -87,6 +87,7 @@ import Arkham.Window (mkAfter, revealedChaosTokens)
 import Arkham.Window qualified as Window
 import Arkham.Xp
 import Data.Aeson.Key qualified as Key
+import Data.Text qualified as T
 
 {- | Selected entries, or the empty set while the runtime toggle is disabled.
 The single gate every hook must read through.
@@ -526,6 +527,21 @@ runUltimatumsAndBoonsMessage msg = case msg of
       whenM (hasUltimatum UltimatumOfTheUnspeakableName) $ push (SufferTrauma iid 0 1)
       -- Brass Crown tallies the same presses, per investigator, until its toll.
       whenM (hasUltimatum UltimatumOfTheBrassCrown) $ bumpSpokenHastur iid n
+  {- "...spoke, WROTE, or TYPED the name" -- so the log's chat box is a second
+  way the engine hears it, and the honour rule should not depend on also
+  remembering to press the button. Resolves to exactly the recorder's message,
+  so everything above applies unchanged.
+
+  Gated the same way the recorder's button is: Daniel's warning for Carcosa, the
+  ultimatum itself for Dark Matter, whose Unspeakable Oath also covers TASSILDA.
+  -}
+  ChatMessage iid text -> do
+    carcosa <- getHasRecord YouHeadedDanielsWarning
+    oath <- hasUltimatum (HomebrewUltimatum ":dark-matter:UltimatumOfTheUnspeakableOath")
+    let said name = name `T.isInfixOf` T.toLower text
+    when ((carcosa && said "hastur") || (oath && (said "hastur" || said "tassilda")))
+      $ push
+      $ InvestigatorAssignDamage iid CampaignSource DamageAny 0 1
   {- Ultimatum of the Brass Crown: "at the beginning of each scenario, take 1
   horror for each time you spoke, wrote, or typed the name of HASTUR since the
   end of the previous scenario." Sourced from the ultimatum rather than the

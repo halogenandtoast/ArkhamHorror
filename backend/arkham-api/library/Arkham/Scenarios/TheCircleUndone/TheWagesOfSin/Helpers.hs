@@ -4,6 +4,7 @@ import Arkham.Ability
 import Arkham.Campaigns.TheCircleUndone.Helpers
 import Arkham.Card
 import Arkham.Classes.Entity
+import Arkham.Classes.GameLogger (HasGameLogger)
 import Arkham.Classes.HasAbilities
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
@@ -15,8 +16,8 @@ import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Keyword (Keyword (Aloof))
+import Arkham.Log (LogKind (..), sendLogI18n)
 import Arkham.Matcher
-import Arkham.Classes.GameLogger (HasGameLogger, send)
 import Arkham.Message.Lifted (checkWindows)
 import Arkham.Modifier
 import Arkham.Placement
@@ -34,7 +35,7 @@ scenarioI18n a = campaignI18n $ scope "theWagesOfSin" a
 
 sendBanished :: HasGameLogger m => Text -> m ()
 sendBanished card =
-  send $ scenarioI18n $ withVar "card" (String card) $ ikey' "messages.banished"
+  scenarioI18n $ withVar "card" (String card) $ sendLogI18n Narrative "messages.banished"
 
 getSpectralDeck :: HasGame m => m (Deck EncounterCard)
 getSpectralDeck =

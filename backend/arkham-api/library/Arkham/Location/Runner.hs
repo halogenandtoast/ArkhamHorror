@@ -565,7 +565,7 @@ instance RunMessage LocationAttrs where
       pure $ a & cardsUnderneathL %~ filter ((/= ec.id) . (.id))
     InvestigatorDrewEncounterCardFrom _iid ec _ -> do
       pure $ a & cardsUnderneathL %~ filter ((/= ec.id) . (.id))
-    InvestigatorDrewPlayerCardFrom _iid pc _ -> do
+    InvestigatorDrewPlayerCardFrom _iid pc _ _ -> do
       pure $ a & cardsUnderneathL %~ filter ((/= pc.id) . (.id))
     UseDrawCardUnderneath iid source | isSource a source ->
       case locationCardsUnderneath of

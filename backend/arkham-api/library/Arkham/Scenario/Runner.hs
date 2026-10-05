@@ -977,7 +977,11 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
 
     let playerCards = onlyPlayerCards drew.cards
     when (notNull playerCards) do
-      pushAll $ InvestigatorDrewPlayerCardFrom iid <$> playerCards <*> pure (Just drew.deck)
+      pushAll
+        $ InvestigatorDrewPlayerCardFrom iid
+        <$> playerCards
+        <*> pure (Just drew.deck)
+        <*> pure (Just drew.source)
 
     let encounterCards = onlyEncounterCards drew.cards
     when (notNull encounterCards) do

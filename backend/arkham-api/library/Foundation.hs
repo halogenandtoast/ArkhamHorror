@@ -30,6 +30,7 @@ import Data.IntMap.Strict qualified as IntMap
 import UnliftIO.Exception qualified as UnliftIO
 
 import Arkham.Card.CardCode
+import Arkham.Log.Entry (LogRow)
 import Auth.ApiKey qualified as ApiKey
 import Auth.JWT qualified as JWT
 import Control.Monad.Logger (LogSource)
@@ -106,7 +107,10 @@ locked game's step doesn't match.
 -}
 data RoomLogCache = RoomLogCache
   { cacheStep :: !Int
-  , cacheEntries :: ![Text]
+  , cacheEntries :: ![LogRow]
+  {- ^ A bounded tail, not the whole history; see
+  'Api.Arkham.Helpers.gameLogTailSize'.
+  -}
   }
 
 instance HasField "broker" Room RedisChannel where

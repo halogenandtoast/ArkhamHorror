@@ -178,7 +178,7 @@ runCircusExMortisAchievements msg = whenEligibleCampaign $ case msg of
 
   -- "G.O.A.T.": AssignedDamage carries the post-modifier amount that is about to
   -- land; Shub-Niggurath's damage is wiped every round by The Prophecy.
-  AssignedDamage (EnemyTarget eid) n _ | n > 0 -> do
+  AssignedDamage (EnemyTarget eid) _ n _ | n > 0 -> do
     cardDef <- fieldMap EnemyCard toCardDef eid
     when (isPrintingOfAny [HBEnemies.shubNiggurath] cardDef) $ bumpCounter shubDamageKey n
 

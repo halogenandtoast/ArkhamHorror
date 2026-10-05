@@ -114,6 +114,8 @@ import Arkham.Investigator.Types qualified as Attrs
 import Arkham.Key
 import Arkham.Keyword (Keyword (Starting))
 import Arkham.Location.Types (Field (..))
+import Arkham.Log (ikeyPart, investigatorRef, mechanic, (~>))
+import Arkham.Log.Refs (locationRefFor, sendLogDuringTest)
 import Arkham.Matcher (
   AssetMatcher (..),
   CardMatcher (..),
@@ -1573,8 +1575,18 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
                  ]
               <> wrapWindows [locationWindowsAfter]
               <> d.discoverThen
-            -- send $ format a <> " discovered " <> pluralize clueCount "clue"
-            send $ format a <> " discovered clue(s)"
+            locRef <- locationRefFor lid
+            -- Inside the test's block when one is open: discovering the clue is
+            -- what the investigation WAS, not a separate thing that happened.
+            sendLogDuringTest
+              $ mechanic
+                [ ikeyPart
+                    "log.discoveredCluesAt"
+                    [ "investigator" ~> investigatorRef a.id (toName a)
+                    , "count" ~> clueCount
+                    , "location" ~> locRef
+                    ]
+                ]
 
         -- Investigating and automatically discovering a clue are two separate exposure triggers.
         -- The investigation one is offered up front at ST.7 (see 'withExposeInsteadOfInvestigating'
@@ -1890,7 +1902,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure $ a & assignedHealthDamageL +~ max 0 damage & assignedSanityDamageL +~ max 0 horror
   DrivenInsane iid | iid == investigatorId -> handleDrivenInsane a iid
   CheckDefeated source (isTarget a -> True) | not (a ^. defeatedL || a ^. resignedL) -> handleCheckDefeated a source
-  AssignDamage target | isTarget a target -> handleAssignDamage a target
+  AssignDamage target source | isTarget a target -> handleAssignDamage a target source
   CancelAssignedDamage target damageReduction horrorReduction | isTarget a target -> handleCancelAssignedDamage a target damageReduction horrorReduction
   ApplyHealing source -> handleApplyHealing a source msg
   Do (ApplyHealing source) -> handleDoApplyHealing a source
@@ -2216,8 +2228,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
   DoDrawCards iid | iid == toId a -> handleDoDrawCards a iid
   ReplaceCurrentCardDraw iid drawing | iid == investigatorId -> handleReplaceCurrentCardDraw a iid drawing
   Do (DrawCards iid cardDraw) | iid == toId a && cardDraw.deck == Deck.InvestigatorDeck iid -> handleDoDrawCardsV2 a iid cardDraw
-  InvestigatorDrewPlayerCardFrom iid card mDeck | iid == investigatorId -> handleInvestigatorDrewPlayerCardFrom a iid card mDeck msg
-  Do (InvestigatorDrewPlayerCardFrom iid card mdeck) | iid == investigatorId -> handleDoInvestigatorDrewPlayerCardFrom a iid card mdeck
+  InvestigatorDrewPlayerCardFrom iid card mDeck _ | iid == investigatorId -> handleInvestigatorDrewPlayerCardFrom a iid card mDeck msg
+  Do (InvestigatorDrewPlayerCardFrom iid card mdeck _) | iid == investigatorId -> handleDoInvestigatorDrewPlayerCardFrom a iid card mdeck
   InvestigatorSpendClues iid n | iid == investigatorId -> do
     includeStory <- not <$> hasCampaignOption PlayersDoNotControlStoryAssetClues
     let storyWrapper = if includeStory then id else (<> AssetNonStory)

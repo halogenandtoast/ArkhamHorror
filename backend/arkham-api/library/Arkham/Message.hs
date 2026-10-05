@@ -754,6 +754,15 @@ data Message
   | BeginRound
   | BeginTrade InvestigatorId Source Target [InvestigatorId]
   | BeginTurn InvestigatorId
+  | {- | Something a player typed into the log's chat box.
+
+    Carried as a message rather than written straight to the log so it travels
+    the normal action path: it is persisted with a step, broadcast to the room,
+    and undoable like anything else. It also gives the rules a seam -- Carcosa's
+    HASTUR recorder reads it (@Arkham.UltimatumsAndBoons@) -- which a log write
+    outside the engine could never have.
+    -}
+    ChatMessage InvestigatorId Text
   | Blanked Message
   | HandleOption CampaignOption
   | RemoveOption CampaignOption
@@ -764,9 +773,11 @@ data Message
   | CancelDamage InvestigatorId Int
   | CancelAssetDamage AssetId Source Int
   | CheckAttackOfOpportunity InvestigatorId Bool (Maybe EnemyMatcher)
-  | AssignDamage Target
+  | -- The source rides along only so the log can say what hurt you; nothing in
+    -- the engine branches on it.
+    AssignDamage Target Source
   | CancelAssignedDamage Target Int Int
-  | AssignedDamage Target Int Int
+  | AssignedDamage Target Source Int Int
   | AssignedHealing Target
   | CheckHandSize InvestigatorId
   | CheckWindows [Window]
@@ -1779,9 +1790,9 @@ pattern InvestigatorDrewEncounterCardFrom iid c mds =
   InvestigatorMessage (InvestigatorDrewEncounterCardFrom_ iid c mds)
 
 pattern InvestigatorDrewPlayerCardFrom
-  :: InvestigatorId -> PlayerCard -> Maybe DeckSignifier -> Message
-pattern InvestigatorDrewPlayerCardFrom iid c mds =
-  InvestigatorMessage (InvestigatorDrewPlayerCardFrom_ iid c mds)
+  :: InvestigatorId -> PlayerCard -> Maybe DeckSignifier -> Maybe Source -> Message
+pattern InvestigatorDrewPlayerCardFrom iid c mds msrc =
+  InvestigatorMessage (InvestigatorDrewPlayerCardFrom_ iid c mds msrc)
 
 pattern InvestigatorEliminated :: InvestigatorId -> Message
 pattern InvestigatorEliminated iid = InvestigatorMessage (InvestigatorEliminated_ iid)
@@ -2203,10 +2214,25 @@ mconcat
                 Right (a, b) -> pure $ StartScenario a b
                 Left a -> pure $ StartScenario a Nothing
             "AssignedDamage" -> do
+              -- Three shapes across the archive: the current one, the one before
+              -- the source was added, and a bare target from before the amounts
+              -- were. A save that predates the source gets GameSource, which is
+              -- only ever read by the log.
+              contents <-
+                (Left <$> o .: "contents")
+                  <|> (Right . Left <$> o .: "contents")
+                  <|> (Right . Right <$> o .: "contents")
+              case contents of
+                Right (Right (a, b, c, d)) -> pure $ AssignedDamage a b c d
+                Right (Left (a, b, c)) -> pure $ AssignedDamage a GameSource b c
+                Left a -> pure $ AssignedDamage a GameSource 0 0
+            "AssignDamage" -> do
+              -- Likewise: a save written before the source was threaded through
+              -- carries the bare target.
               contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
               case contents of
-                Right (a, b, c) -> pure $ AssignedDamage a b c
-                Left a -> pure $ AssignedDamage a 0 0
+                Right (a, b) -> pure $ AssignDamage a b
+                Left a -> pure $ AssignDamage a GameSource
             "RemoveCampaignCard" -> RemoveCampaignCardFromDeck "00000" <$> o .: "contents"
             "ResolvedMovement" -> do
               contents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
@@ -2460,7 +2486,7 @@ mconcat
               pure $ DealAssetDamageWithCheck a b c d e
             "InvestigatorDrewPlayerCard" -> do
               (a, b) <- o .: "contents"
-              pure $ InvestigatorDrewPlayerCardFrom a b Nothing
+              pure $ InvestigatorDrewPlayerCardFrom a b Nothing Nothing
             "ReportXp" -> do
               ReportXp <$> (o .: "contents" <|> (snd @ScenarioId <$> o .: "contents"))
             "ReadStoryWithPlacement" -> do

@@ -73,6 +73,7 @@ import Arkham.Helpers.Action (
 import Arkham.Helpers.Card (
   cardIsFast',
   drawThisCardFrom,
+  drawThisCardFromBy,
   extendedCardMatch,
   getCardEntityTarget,
   getModifiedCardCost,
@@ -755,7 +756,8 @@ handleDoDrawCardsV2 a@InvestigatorAttrs {..} iid cardDraw = do
               if doShuffleBackInEachWeakness
                 then partition (`cardMatch` WeaknessCard) allDrawn
                 else ([], allDrawn)
-            handleCard c = pure $ drawThisCardFrom iid c (Just cardDraw.deck)
+            -- The draw's own source, so the log can say what drew it.
+            handleCard c = pure $ drawThisCardFromBy iid c (Just cardDraw.deck) (Just $ cardDrawSource cardDraw)
           msgs <- concatMapM handleCard resolved
           player <- getPlayer iid
           let
@@ -1043,7 +1045,7 @@ handleDrawToHandFrom a@InvestigatorAttrs {..} iid deck cards = do
   let (before, _, after) = frame $ Window.DrawCards iid $ map toCard cards
   push before
   for_ (reverse cards) \case
-    PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc (Just deck)
+    PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc (Just deck) Nothing
     EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
     VengeanceCard {} -> error "Can not add vengeance card to hand"
   when (isNothing $ a ^. searchL) do
@@ -1070,7 +1072,7 @@ handleDrawToHand a@InvestigatorAttrs {..} iid cards = do
   let (before, _, after) = frame $ Window.DrawCards iid $ map toCard cards
   push before
   for_ (reverse cards) \case
-    PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing
+    PlayerCard pc -> push $ InvestigatorDrewPlayerCardFrom iid pc Nothing Nothing
     EncounterCard ec -> push $ InvestigatorDrewEncounterCard iid ec
     VengeanceCard {} -> error "Can not add vengeance card to hand"
   when (isNothing $ a ^. searchL) do

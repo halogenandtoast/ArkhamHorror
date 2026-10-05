@@ -143,18 +143,209 @@ No memoization: this re-runs for every fragment on every render.
 `frontend/src/locales/en/log.json` — **three keys**. Everything else in the log
 is English hardcoded in Haskell.
 
-## Baselines still to measure (Phase 0)
+## Baselines — measured 2026-10-05
 
-Not yet measured. Record the numbers here when taken.
+Source: game `8572c1df-440e-4f55-a136-90c66d962cd5`, "The Innsmouth Conspiracy",
+2 investigators (Amanda Sharpe, Dexter Drake), **2,885 steps**. Local dev API.
 
-- [ ] Websocket frame count and total bytes during a scenario setup
-      (Chrome DevTools, `list_network_requests` on the game socket).
-- [ ] `PublicGame` payload size vs. its log field, mid-campaign.
-- [ ] Row count in `arkham_log_entries` for a completed campaign.
-- [ ] `GameMessage.vue` render cost — scripting time in a performance trace
-      while a log-heavy setup streams in.
-- [ ] Baseline narrative: `arkham-replay --trace <export.json> 2>&1 | grep '^client>'`
-      for a Core Set scenario, saved as the before-picture.
+Artefacts kept in the session scratchpad (regenerate with the commands below;
+they are not checked in): `export266.json`, `publicgame.json`,
+`trace_all200.txt`.
 
-Blocked on a game export; none is checked in. Get one from
-`/api/v1/arkham/games/:id/export` against a local dev game.
+### Coverage, measured on real play
+
+Replaying 2 steps of this game with `--replay-all --undo 200 --trace`:
+
+| | |
+|---|---|
+| engine messages processed | **3,111** |
+| client messages emitted | **6** |
+| of those, actual log lines (`ClientText`) | **1** |
+| **log lines per message processed** | **0.03%** |
+
+The other 5 were `ClientDrewCards` (dropped from history by `toClientText`)
+and one `ClientError`.
+
+A single step's trace is the whole problem in 14 lines:
+
+```
+> Record (TheInnsmouthConspiracyKey TheInvestigatorsReachedFalconPointBeforeSunrise)
+client> text Record "the investigators reached falcon point before sunrise"
+> ReportXp [AllGainXp {details = XpDetail {source = XpFromVictoryDisplay, sourceName = "Intersection", amount = 1}},
+           AllGainXp {details = XpDetail {source = XpFromVictoryDisplay, sourceName = "Fork in the Road", amount = 1}},
+           AllGainXp {details = XpDetail {source = XpFromVictoryDisplay, sourceName = "Desolate Road", amount = 1}},
+           AllGainXp {details = XpDetail {source = XpFromVictoryDisplay, sourceName = "Cliffside Road", amount = 1}}]
+> GainXP "07002" ScenarioSource 4
+> GainXP "07004" ScenarioSource 4
+> EndOfGame Nothing
+> EndOfScenario Nothing
+...
+```
+
+A player finishing a scenario is told one thing: a campaign-log record. Not
+that they earned 4 XP, not which victory-display cards paid for it — although
+`ReportXp` carries `XpDetail {source, sourceName, amount}`, fully structured,
+right there in the message. **The information already exists and the log throws
+it away.** That is the argument for deriving, in one screenshot.
+
+### What the 481 stored entries actually say
+
+The whole campaign produced **481 log entries** — about one per six steps. By
+content:
+
+| Share | Count | What it says |
+|---|---|---|
+| 60.3% | 290 | `X draws [token] chaos token` |
+| 22.2% | 107 | `X played Y` |
+| 15.4% | 74 | `X discovered N clue` |
+| 1.5% | 7 | campaign-log `Record` |
+| 0.6% | 3 | everything else |
+
+**98% of the log is three sentences.** In practice the log is a chaos-token
+ticker. Damage, horror, enemy attacks, spawns, evades, fights, encounter draws,
+act and agenda advancement, XP, skill-test results, resource gain and movement
+produce *nothing at all*.
+
+### The clue count is a confirmed regression
+
+All 74 clue entries in stored history use the **old** form with the number
+(`discovered 1 clue`). Zero use the current `discovered clue(s)`
+(`Investigator/Runner.hs:1577`). The count used to be in the log, and the
+string DSL is why it is not any more.
+
+### Payload waste, measured
+
+`GET /api/v1/arkham/games/:id` for this game:
+
+| Field | Bytes | Share |
+|---|---|---|
+| `cards` | 146,296 | 57.9% |
+| **`log`** | **51,934** | **20.5%** |
+| `mode` | 25,819 | 10.2% |
+| `investigators` | 22,353 | 8.8% |
+| `modifiers` | 3,940 | 1.6% |
+| **whole payload** | **252,726** | |
+
+The log is the **second-largest field in `PublicGame`** — bigger than every
+investigator combined.
+
+`GameLog.vue:14` renders the last **10** entries. So of the 51,934 bytes sent,
+**2.08% is used and 50,959 bytes are discarded** — on every fetch, and there
+are five `updateGameLog` call sites (`Game.vue:1013, 1161, 1205, 1337` plus the
+socket append).
+
+Entry length: min 41, median 88, mean 98, max 198 bytes.
+
+### The renderer parses for refs that never occur
+
+Across all 481 entries, only **three** ref kinds appear:
+
+| Ref | Occurrences |
+|---|---|
+| `{investigator:…}` | 474 |
+| `{token:…}` | 356 |
+| `{card:…}` | 107 |
+| `{enemy:…}` | **0** |
+| `{location:…}` | **0** |
+
+`GameMessage.vue` runs **seven** regex `test`+`match` pairs per fragment per
+render. Three of them (`enemy`, and both `location` arities) never match in this
+corpus, and they are evaluated for every fragment of every render regardless.
+
+### Message traffic is 64% plumbing, and `Message` is not flat
+
+Top constructors over the 3,111 processed messages:
+
+| Count | Constructor | |
+|---|---|---|
+| 621 | `Do` | wrapper |
+| 384 | `CheckWindows` | plumbing |
+| 372 | `EndCheckWindow` | plumbing |
+| 200 | `ClearUI` | plumbing |
+| 200 | `Ask` | plumbing |
+| 174 | `WindowAsk` | plumbing |
+| 149 | `SkillTestMessage` | **wrapper — payload inside** |
+| 114 | `MoveWithSkillTest` | wrapper |
+| 89 | `ResolvedAbility` | |
+| 88 | `SetActiveInvestigator` | plumbing |
+| 83 | `After` | wrapper |
+| 68 | `ResolveWindowInitiations` | plumbing |
+| 55 | `TakenActions` / `FinishAction` | |
+| 44 | `PhaseStep` | **structure — log this** |
+| 32 | `DrawEnded` | |
+
+Two consequences for the narrator, both learned here rather than assumed:
+
+1. **~64% of messages are plumbing** and must never produce a line. The
+   narrator's default case has to be silence, not a fallback rendering.
+2. **`Message` is not flat.** `Do`, `After`, `When`, `Would`, `ForTarget`,
+   `ForInvestigator`, `SkillTestMessage`, `ChaosBagMessage`,
+   `InvestigatorMessage`, `DamageMessage` and friends *wrap* the real event. The
+   narrator must unwrap, and must distinguish "this is the occurrence" from
+   "this is a pre/post hook on the occurrence" — otherwise `When`, `Would` and
+   `After` of one event each log it. This is the main design risk in Phase 3.
+
+### Reproducing
+
+```sh
+# dev JWT (user 1 is admin on this box); secret is the committed dev default
+#   HS256 over {"iss":"arkham","iat":<now>,"jwt":1}
+# header must be: Authorization: Token <jwt>
+
+curl -H "Authorization: Token $JWT" \
+  "http://127.0.0.1:3002/api/v1/arkham/games/$GAME/export" -o export30.json
+curl -H "Authorization: Token $JWT" \
+  "http://127.0.0.1:3002/api/v1/arkham/games/$GAME" -o publicgame.json   # has .game.log
+
+arkham-replay export266.json --replay-all --undo 200 --trace --output /dev/null 2>trace.txt
+grep -c '^> '      trace.txt   # messages processed
+grep -c '^client>' trace.txt   # client messages
+```
+
+### A log-ordering bug found on the way (fixed)
+
+`Api/Handler/Arkham/Undo.hs:265` published the post-undo log
+`orderBy [desc entries.step, desc entries.id]`, unbounded. Every other log read
+is ascending, and the client renders the tail of the list, so **after an undo
+the panel showed the game's oldest entries**. Fixed in Phase 1: descending with
+a LIMIT, reversed in Haskell.
+
+### Two export bugs found on the way
+
+Both are one root cause and neither is a log problem, but they block exports:
+
+**Step 2619 of this game cannot be decoded.** Its stored queue contains a
+`Message` constructor that no longer exists:
+
+```
+PersistMarshalError "Couldn't parse field `choice` from table `arkham_steps`.
+Error in $.choiceMessages[2]: ... but got EnemyDefeated."
+```
+
+`EnemyDefeated` is now only a `MessageType` tag (`Message/Type.hs:14`
+`EnemyDefeatedMessage`); the message itself was renamed to `Defeated` /
+`EnemyLocationDefeated` (`Message.hs:152-153`). Old rows serialized under the
+old name are permanently undecodable.
+
+1. `GET /scenario-export` → **500**, no body.
+2. `GET /full-export` → **silently truncated**. It streams
+   (`generateFullExportSource`, `Debug.hs:65`), so the exception lands after the
+   200 and the response simply stops: 266 of 2,621 steps, invalid JSON, no
+   error anywhere. **A partial export is indistinguishable from a complete
+   one.** Worth fixing independently of this project — either skip
+   undecodable steps with a count in the payload, or emit a trailing
+   `"truncated": true`.
+
+Repaired locally by cutting at the last complete step object and appending the
+closing `],"log":[],"multiplayerVariant":…}}`, giving a valid 266-step export.
+
+### Still unmeasured
+
+Needs a browser against a running frontend (`npm run dev` was not up):
+
+- [ ] Websocket frame count and bytes during a **scenario setup** — the
+      `Shared.hs:141-143` comment says "hundreds of ~100 byte log lines", which
+      is structural (`handleMessageLog` broadcasts once per `ClientMessage`,
+      `Shared.hs:757`) but has not been counted.
+- [ ] `GameMessage.vue` scripting time in a performance trace while a
+      log-heavy setup streams in.

@@ -30,6 +30,7 @@ instance ToJSON Game where
       , "gameSeed" .= gameSeed g
       , "gameWindowDepth" .= gameWindowDepth g
       , "gameWindowStack" .= gameWindowStack g
+      , "gameRoundCount" .= gameRoundCount g
       , "gameWindowTick" .= gameWindowTick g
       , "gameWindowTickStack" .= gameWindowTickStack g
       , "gameEntryTicks" .= gameEntryTicks g
@@ -102,6 +103,7 @@ instance ToJSON Game where
       <> ("gameSeed" .= gameSeed g)
       <> ("gameWindowDepth" .= gameWindowDepth g)
       <> ("gameWindowStack" .= gameWindowStack g)
+      <> ("gameRoundCount" .= gameRoundCount g)
       <> ("gameWindowTick" .= gameWindowTick g)
       <> ("gameWindowTickStack" .= gameWindowTickStack g)
       <> ("gameEntryTicks" .= gameEntryTicks g)
@@ -174,6 +176,8 @@ instance FromJSON Game where
     gameSeed <- o .: "gameSeed"
     gameWindowDepth <- o .: "gameWindowDepth"
     gameWindowStack <- o .: "gameWindowStack"
+    -- .:? with a default: existing saves predate the counter.
+    gameRoundCount <- o .:? "gameRoundCount" .!= 0
     gameWindowTick <- o .:? "gameWindowTick" .!= 0
     gameWindowTickStack <- o .:? "gameWindowTickStack" .!= []
     gameEntryTicks <- o .:? "gameEntryTicks" .!= mempty

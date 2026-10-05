@@ -212,7 +212,7 @@ putApiV1ArkhamGameDecksR gameId = do
                       $ if sameInvestigator investigatorId decklist
                         then UpgradeDecklist investigatorId decklist
                         else ReplaceInvestigator investigatorId decklist
-                  runMessages (gameIdToText gameId) Nothing
+                  runMessages (gameIdToText gameId) noRunObservers
                 ge <- readIORef gameRef
                 updatedQueue <- readIORef (queueToRef queueRef)
                 diffDown <- evaluate $ diff ge arkhamGameCurrentData

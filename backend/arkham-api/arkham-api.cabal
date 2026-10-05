@@ -6672,6 +6672,10 @@ library
       Arkham.Location.Runner
       Arkham.Location.Types
       Arkham.LocationSymbol
+      Arkham.Log
+      Arkham.Log.Entry
+      Arkham.Log.Narrator
+      Arkham.Log.Refs
       Arkham.Matcher
       Arkham.Matcher.Ability
       Arkham.Matcher.Act

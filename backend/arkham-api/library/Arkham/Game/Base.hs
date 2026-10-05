@@ -61,6 +61,10 @@ data Game = Game
   , gameSeed :: Int
   , gameWindowDepth :: Int
   , gameWindowStack :: Maybe [[Window]]
+  , -- Rounds begun this scenario, 1-based once the first BeginRound lands. The
+    -- engine had no round counter at all; the log wants one to say "Round 3",
+    -- and it is ordinary game information a UI may want elsewhere.
+    gameRoundCount :: Int
   , -- monotonic clock; ticks once per window-open. Parallel to gameWindowStack:
     -- gameWindowTickStack's head is the open-tick of the window currently being
     -- checked. gameEntryTicks records the tick at which each card entered play

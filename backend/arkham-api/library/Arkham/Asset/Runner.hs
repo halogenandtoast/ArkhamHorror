@@ -829,7 +829,7 @@ instance RunMessage AssetAttrs where
       pure $ a & cardsUnderneathL %~ filter (/= card)
     AddToHand _ cards -> do
       pure $ a & cardsUnderneathL %~ filter (`notElem` cards)
-    InvestigatorDrewPlayerCardFrom _ card _ -> do
+    InvestigatorDrewPlayerCardFrom _ card _ _ -> do
       pure $ a & cardsUnderneathL %~ filter (/= toCard card)
     InvestigatorDrewEncounterCard _ card -> do
       pure $ a & cardsUnderneathL %~ filter (/= toCard card)

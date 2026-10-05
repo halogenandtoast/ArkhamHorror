@@ -10,6 +10,7 @@ import Arkham.Debug
 import Arkham.Epic.Types (EpicEnv, HasMaybeEpic (..), SharedEventState)
 import Arkham.Game
 import Arkham.Id
+import Arkham.Log.Entry
 import Arkham.Message
 import Arkham.Phase qualified as Phase
 import Arkham.Queue
@@ -48,23 +49,104 @@ import GHC.Records
 import Import hiding (appLogger, (==.), (>=.))
 import UnliftIO.Async qualified as UA
 
-newtype GameLog = GameLog {gameLogToLogEntries :: [Text]}
+newtype GameLog = GameLog {gameLogToLogEntries :: [LogRow]}
   deriving newtype (Monoid, Semigroup)
 
-instance HasField "entries" GameLog [Text] where
+instance HasField "entries" GameLog [LogRow] where
   getField = gameLogToLogEntries
 
+{- | How much log the game payload carries.
+
+The client renders a window of the most recent entries and pages scrollback on
+demand, so shipping the whole history on every fetch was pure waste: 97.9% of
+the log bytes in a measured mid-campaign payload were discarded immediately.
+Forty is comfortably more than fits the panel, so a reader can scroll a little
+without a round trip.
+-}
+gameLogTailSize :: Int
+gameLogTailSize = 40
+
+{- | A persisted row as the client should see it.
+
+A row written since the overhaul has a @payload@ and is handed over as-is. An
+older row has only its flat @body@, which the client parses once at ingest --
+see 'Arkham.Log.Entry.LogRow'. A payload that fails to decode falls back to the
+legacy shape rather than vanishing: it is someone's game history, and the flat
+body is always present.
+
+Either way the row's own @step@ column wins over anything in the payload: it is
+the column an undo actually targets, and it is present on every row ever
+written, including the whole history that predates the field.
+-}
+toLogRow :: ArkhamLogEntry -> LogRow
+toLogRow e = case arkhamLogEntryPayload e of
+  Just v | Aeson.Success entry <- Aeson.fromJSON v -> LogRowStructured (atLogStep step entry)
+  _ -> LogRowLegacy (arkhamLogEntryBody e) (Just step)
+ where
+  step = arkhamLogEntryStep e
+
+{- | A legacy, text-only row: the brace-DSL string and nothing else.
+
+Still used by every 'Arkham.Classes.GameLogger.ClientText' that has not been
+migrated to a structured entry. Rows written this way have a NULL @payload@ and
+the client parses their @body@ once at ingest.
+-}
 newLogEntry :: ArkhamGameId -> Int -> UTCTime -> Text -> ArkhamLogEntry
 newLogEntry gameId step now body =
   ArkhamLogEntry
     { arkhamLogEntryBody = body
+    , arkhamLogEntryPayload = Nothing
+    , arkhamLogEntrySeq = Nothing
+    , arkhamLogEntryGroupId = Nothing
     , arkhamLogEntryArkhamGameId = gameId
     , arkhamLogEntryStep = step
     , arkhamLogEntryCreatedAt = now
     }
 
+{- | A structured row.
+
+@body@ is still filled, with 'logEntryToText', for two reasons: the legacy
+@PublicGame@ log is a @[Text]@ and clients that have not switched keep working,
+and a flat rendering is what the replay trace and any server-side error message
+can use. It is lossy -- refs become their names, an i18n key becomes the key --
+so nothing should read it back where @payload@ is available.
+-}
+newStructuredLogEntry :: ArkhamGameId -> Int -> UTCTime -> LogEntry -> ArkhamLogEntry
+newStructuredLogEntry gameId step now entry =
+  ArkhamLogEntry
+    { arkhamLogEntryBody = logEntryToText entry
+    , arkhamLogEntryPayload = Just (Aeson.toJSON entry)
+    , arkhamLogEntrySeq = Just entry.logEntrySeq
+    , arkhamLogEntryGroupId = logGroupId <$> entry.logEntryGroup
+    , arkhamLogEntryArkhamGameId = gameId
+    , arkhamLogEntryStep = step
+    , arkhamLogEntryCreatedAt = now
+    }
+
+{- | The next sequence number for a game's structured log entries.
+
+Legacy text rows have a NULL seq and are skipped by @max@, so a game part-way
+through the migration numbers its structured entries 1, 2, 3... regardless of
+how much flat history sits in front of them. Indexed by
+@idx_arkham_log_entry_gameid_seq@.
+-}
+nextLogSeq :: ArkhamGameId -> DB Int
+nextLogSeq gameId = do
+  rows <- select do
+    entries <- from $ table @ArkhamLogEntry
+    where_ $ entries.arkhamGameId ==. val gameId
+    -- `seq` is nullable (legacy rows have none), so max_ comes back doubly
+    -- wrapped; joinV collapses it.
+    pure $ joinV $ max_ entries.seq
+  pure $ case rows of
+    (Value (Just n) : _) -> n + 1
+    _ -> 1
+
+{- | The whole log for a game. Only the admin view wants this; everything on the
+request path uses 'getGameLogTail'.
+-}
 getGameLog :: ArkhamGameId -> Maybe Int -> DB GameLog
-getGameLog gameId mStep = fmap (GameLog . fmap unValue) $ select $ do
+getGameLog gameId mStep = fmap (GameLog . map (toLogRow . entityVal)) $ select $ do
   entries <- from $ table @ArkhamLogEntry
   where_ $ entries.arkhamGameId ==. val gameId
   for_ mStep \step ->
@@ -72,7 +154,22 @@ getGameLog gameId mStep = fmap (GameLog . fmap unValue) $ select $ do
   -- Order by step (monotonic per game) so the planner can use
   -- idx_arkham_log_entry_gameid_step directly without a Sort node.
   orderBy [asc entries.step, asc entries.id]
-  pure entries.body
+  pure entries
+
+{- | The most recent @n@ rows, oldest first.
+
+Reads descending so the index serves the LIMIT, then reverses the (small) page
+in Haskell rather than making Postgres sort the whole history.
+-}
+getGameLogTail :: ArkhamGameId -> Int -> DB GameLog
+getGameLogTail gameId n = do
+  rows <- select $ do
+    entries <- from $ table @ArkhamLogEntry
+    where_ $ entries.arkhamGameId ==. val gameId
+    orderBy [desc entries.step, desc entries.id]
+    limit (fromIntegral n)
+    pure entries
+  pure $ GameLog $ reverse $ map (toLogRow . entityVal) rows
 
 toPublicGame :: Entity ArkhamGame -> GameLog -> PublicGame ArkhamGameId
 toPublicGame (Entity gId ArkhamGame {..}) gameLog =

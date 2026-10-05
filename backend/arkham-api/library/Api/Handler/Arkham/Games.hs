@@ -87,7 +87,7 @@ getApiV1ArkhamGameR gameId = do
   webSocketsOptions wsOptions $ gameStream gameId
   runDB do
     g <- get404 gameId
-    gameLog <- getGameLog gameId Nothing
+    gameLog <- getGameLogTail gameId gameLogTailSize
     Entity playerId _ <- getBy404 (UniquePlayer userId gameId)
     let Game {..} = g.currentData
     let
@@ -110,7 +110,7 @@ getApiV1ArkhamGameSpectateR gameId = do
   runDB do
     g <- get404 gameId
     let Game {..} = g.currentData
-    gameLog <- getGameLog gameId Nothing
+    gameLog <- getGameLogTail gameId gameLogTailSize
     let player = gameActivePlayerId
     mEvt <- lookupGameEvent gameId
     pure
@@ -225,7 +225,7 @@ postApiV1ArkhamGamesR = do
     runGameApp (GameApp gameRef queueRef genRef (pure . const ()) Nothing) do
       for_ pids \pid -> addPlayer (PlayerId $ coerce pid)
       traverse_ (push . HandleOption) (toList options)
-      runMessages (gameIdToText gameId) Nothing
+      runMessages (gameIdToText gameId) noRunObservers
 
     updatedQueue <- liftIO $ readIORef (queueToRef queueRef)
     updatedGame <- liftIO $ readIORef gameRef

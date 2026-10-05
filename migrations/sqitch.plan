@@ -31,3 +31,6 @@ arkham_card_set_submissions [arkham_published_card_sets] 2026-10-04T00:00:00Z Cl
 arkham_game_stats [arkham_games] 2026-10-04T01:00:00Z Claude <noreply@anthropic.com> # Pre-extracted game facts for the admin stats panel
 add_descriptions_to_card_sets [arkham_custom_card_sets arkham_published_card_sets] 2026-10-05T00:00:00Z Claude <noreply@anthropic.com> # What a set is, for its own page and its marketplace listing
 add_urls_to_card_sets [add_descriptions_to_card_sets] 2026-10-05T01:00:00Z Claude <noreply@anthropic.com> # Where a set lives in the world, for its page and its marketplace listing
+add_payload_to_log_entries [add_urls_to_card_sets] 2026-10-05T02:00:00Z Claude <noreply@anthropic.com> # Structured log entries alongside the legacy flat body
+add_key_to_log_entries [add_payload_to_log_entries] 2026-10-05T03:00:00Z Claude <noreply@anthropic.com> # A stable identity for a log entry that is revised in place
+log_entry_group [add_key_to_log_entries] 2026-10-06T00:00:00Z Claude <noreply@anthropic.com> # Group id on a log entry, replacing the revisable-row key

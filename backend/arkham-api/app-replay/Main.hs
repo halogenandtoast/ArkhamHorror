@@ -19,9 +19,11 @@ import Api.Arkham.Export (
 import Api.Arkham.Helpers (GameApp (..), runGameApp)
 import Arkham.Classes.GameLogger (ClientMessage (..))
 import Arkham.Classes.HasQueue (newQueue, pushAll)
-import Arkham.Game (Game (..), PublicGame (..), runMessages)
+import Arkham.Game (Game (..), PublicGame (..), RunObservers (..), runMessages)
 import Arkham.Game.Diff (diff, patchValueWithRecovery)
 import Arkham.Game.Runner (handleActionDiff)
+import Arkham.Log.Entry (logEntryToLines)
+import Arkham.Log.Narrator (emptyNarrator)
 import Arkham.Message (Message (ClearUI, SetActivePlayer))
 import Arkham.Metrics (dumpMetricsTo, enableMetrics, withMetric)
 import Control.Exception (evaluate)
@@ -76,6 +78,10 @@ instance, and the embedded card 'Value's are enormous, so keep it terse.
 formatClientMessage :: ClientMessage -> String
 formatClientMessage = \case
   ClientText t -> "text " <> T.unpack t
+  -- Multi-line on purpose: nesting is the point of a structured entry, and a
+  -- trace that flattens it cannot show whether the grouping is right.
+  ClientLogEntry e -> "log\n" <> T.unpack (T.intercalate "\n" (map ("  " <>) (logEntryToLines e)))
+  ClientRetractLog tag -> "retract " <> T.unpack tag
   ClientError t -> "error " <> T.unpack t
   ClientCard t v -> "card " <> T.unpack t <> " " <> briefValue v
   ClientCardOnly pid t v -> "cardOnly[" <> show pid <> "] " <> T.unpack t <> " " <> briefValue v
@@ -235,6 +241,13 @@ main = do
         | optTrace opts = Just (\m -> hPutStrLn stderr ("> " <> show m))
         | otherwise = Nothing
 
+  -- Narrate while replaying, so --trace shows the derived log beside the
+  -- messages it came from. That pairing is how you tell whether a narration is
+  -- actually right.
+  narratorRef <- newIORef emptyNarrator
+  let observers ref =
+        RunObservers {observeMessage = tracerCallback, observeNarration = Just ref}
+
   gameRef <- newIORef currentData
   queueRef <- newQueue resumeQueue
   genRef <- newIORef (mkStdGen currentData.gameSeed)
@@ -253,7 +266,7 @@ main = do
   -- SetActivePlayer if the answering player isn't the active player), and
   -- run the queue.
   wallStart <- getMonotonicTimeNSec
-  runGameApp app (runMessages "headless" tracerCallback)
+  runGameApp app (runMessages "headless" (observers narratorRef))
 
   perStepTimings <-
     if optReplayAll opts
@@ -273,7 +286,7 @@ main = do
           gBefore <- readIORef gameRef
           runGameApp app (pushAll (ClearUI : msgs))
           t0 <- getMonotonicTimeNSec
-          runGameApp app (runMessages "headless" tracerCallback)
+          runGameApp app (runMessages "headless" (observers narratorRef))
           t1 <- getMonotonicTimeNSec
           serverNs <-
             if optSimulateServer opts
@@ -321,7 +334,7 @@ main = do
                       <> msgs
                       <> [SetActivePlayer activePid | activePid /= answerPid]
               runGameApp app (pushAll (ClearUI : bracketed))
-              runGameApp app (runMessages "headless" tracerCallback)
+              runGameApp app (runMessages "headless" (observers narratorRef))
         pure []
 
   wallEnd <- getMonotonicTimeNSec

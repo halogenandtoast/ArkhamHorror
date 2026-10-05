@@ -2038,7 +2038,6 @@ runGameMessage msg g = case msg of
 
     pure g
   PlayCard iid card mtarget payment windows' False -> do
-    investigator' <- getInvestigator iid
     let ignoreSelfModifiers = card.cardCode `elem` ["90088", "90089", "90090", "90091", "90092"]
     cardMods <- getModifiers (CardIdTarget $ toCardId card)
     let playSource = fromMaybe (toSource iid) $ asum [Just source | PlaySource source <- cardMods]
@@ -2052,7 +2051,6 @@ runGameMessage msg g = case msg of
         let owner = fromMaybe iid $ listToMaybe [o | PlayableCardOf o c <- mods, c == card]
         let controller = fromMaybe owner $ listToMaybe [c | PlayUnderControlOf c <- cardMods]
 
-        send $ format investigator' <> " played " <> format card
         g' <- runGameMessage (PutCardIntoPlay controller card mtarget payment windows') g
         let
           recordLimit g'' = \case
@@ -4415,7 +4413,12 @@ runPreGameMessage msg g = case msg of
       & (inSetupL .~ False)
       & cardUsesL
       %~ Map.filterWithKey (\k _ -> k `notElem` setupUses)
-  BeginRound -> pure $ g & undoRoundStepL ?~ (gameScenarioSteps g + 1)
+  BeginRound ->
+    pure
+      $ g
+      & (undoRoundStepL ?~ (gameScenarioSteps g + 1))
+      -- The round counter the log reads; see Arkham.Game.Base.
+      & (roundCountL +~ 1)
   -- Entry-tick capture: record the window-tick at which each card entered play
   -- so a card that enters during an open window cannot respond to a triggering
   -- condition that already occurred (see Arkham.Helpers.Action). These run

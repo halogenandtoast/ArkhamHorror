@@ -200,6 +200,7 @@ filterOutEnemyMessages eid ask'@(Ask pid q) = case q of
 filterOutEnemyMessages eid msg = case msg of
   InitiateEnemyAttack details | eid == attackEnemy details -> Nothing
   EnemyAttack details | eid == attackEnemy details -> Nothing
+  ChangeEnemyAttackDetails eid' _ | eid' == eid -> Nothing
   Discarded (EnemyTarget eid') _ _ | eid == eid' -> Nothing
   Do (Discarded (EnemyTarget eid') _ _) | eid == eid' -> Nothing
   PlaceEnemy eid' _ | eid' == eid -> Nothing
@@ -1591,13 +1592,29 @@ instance RunMessage EnemyAttrs where
       afterAttacksEventIfCancelledWindow <-
         checkWindows [mkAfter $ Window.EnemyAttacksEvenIfCancelled details]
       whenWouldAttackWindow <- checkWindows [mkWhen $ Window.EnemyWouldAttack details]
+      -- Two attacks by the same enemy can be in flight at once: a Retaliate attack
+      -- provoked from inside this enemy's own `when ... attacks` window (Survival
+      -- Knife's reaction fight) starts while the first attack is still waiting to
+      -- perform. 'enemyAttacking' holds one attack and the nested attack's After step
+      -- clears it, so the interrupted attack's PerformEnemyAttack found Nothing and
+      -- crashed (#5808). Put the interrupted details back behind the nested attack's
+      -- whole chain. A massive attack's per-target sub-attacks are delegation, not
+      -- nesting -- the parent has already performed -- so they must not reinstate it,
+      -- or 'attacking' would be left set forever.
+      let delegatedFrom outer = case outer.target of
+            MassiveAttackTargets ts -> details.target `elem` map SingleAttackTarget ts
+            SingleAttackTarget _ -> False
       pushAll
-        [ whenWouldAttackWindow
-        , whenAttacksWindow
-        , PerformEnemyAttack enemyId
-        , After (PerformEnemyAttack enemyId)
-        , afterAttacksEventIfCancelledWindow
-        ]
+        $ [ whenWouldAttackWindow
+          , whenAttacksWindow
+          , PerformEnemyAttack enemyId
+          , After (PerformEnemyAttack enemyId)
+          , afterAttacksEventIfCancelledWindow
+          ]
+        <> [ ChangeEnemyAttackDetails enemyId outer
+           | Just outer <- [enemyAttacking]
+           , not (delegatedFrom outer)
+           ]
 
       pure
         $ a
@@ -1803,7 +1820,7 @@ instance RunMessage EnemyAttrs where
             -- so the effects can differ; keep the incoming one rather than
             -- crashing -- only the DealtExcessDamage window reads it.
             combine l r = l {damageAssignmentAmount = l.amount + r.amount}
-          push $ AssignedDamage (toTarget a) amount' 0
+          push $ AssignedDamage (toTarget a) source amount' 0
           unless damageAssignment'.delayed do
             push $ checkDefeated source eid
           -- Damage reduced away was never dealt, so nothing happened "after" it.
@@ -2546,7 +2563,7 @@ instance RunMessage EnemyAttrs where
     UseCardAbility iid (isSource a -> True) AbilityEngage _ _ -> do
       push $ EngageEnemy iid (toId a) Nothing False
       pure a
-    AssignDamage target | isTarget a target -> do
+    AssignDamage target _ | isTarget a target -> do
       pushAll $ map (`checkDefeated` a) (keys enemyAssignedDamage)
       pure a
     -- Removing from the game is still leaving play, so an in-play enemy has to go

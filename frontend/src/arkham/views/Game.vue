@@ -46,6 +46,7 @@ import {
   undoTurn,
   undoPhase,
   undoRound,
+  undoToStep,
   markEventReady,
   eventTimeUp,
 } from '@/arkham/api'
@@ -103,6 +104,12 @@ import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardView from '@/arkham/components/Card.vue'
 import MultiplayerLobby from '@/arkham/components/MultiplayerLobby.vue'
 import GameLog from '@/arkham/components/GameLog.vue'
+import type { LogEntry, LogRow } from '@/arkham/types/GameLog'
+import {
+  legacyLogEntry,
+  logRowsToEntries,
+  type LegacyLocationLookup,
+} from '@/arkham/legacyLogParse'
 import HistoryPanel from '@/arkham/components/HistoryPanel.vue'
 import ScenarioSettings from '@/arkham/components/ScenarioSettings.vue'
 import Settings from '@/arkham/components/Settings.vue'
@@ -416,7 +423,11 @@ const isCthulhuDeckReveal = computed(() => {
 })
 const showTheSilenceModal = ref(false)
 const playabilityInfo = ref<PlayabilityInfo | null>(null)
-const gameLog = shallowRef<readonly string[]>(Object.freeze([]))
+/* Append-only. Replaced wholesale only when a full game payload arrives; the
+   socket appends. The previous shape copied and froze the entire history on
+   every update and again on every appended line, which is O(n) per line and
+   O(n^2) across a scenario setup. */
+const gameLog = shallowRef<readonly LogEntry[]>(Object.freeze([]))
 const playerId = ref<string | null>(null)
 const ready = ref(false)
 const resultQueue = ref<any>([])
@@ -707,17 +718,32 @@ function handleSettingChange(event: Event) {
   }
 }
 
-function updateGameLog(nextLog: readonly string[]) {
-  const currentLog = gameLog.value
+/* What the legacy parser needs to tell a revealed location from an unrevealed
+   one. Only legacy rows consult it; structured refs carry faceDown already. */
+function legacyLocations(): LegacyLocationLookup {
+  const locations = game.value?.locations ?? {}
+  const lookup: LegacyLocationLookup = {}
+  for (const [id, location] of Object.entries(locations)) {
+    lookup[id] = { cardCode: location.cardCode, revealed: location.revealed }
+  }
+  return lookup
+}
+
+function updateGameLog(nextLog: readonly LogRow[]) {
+  /* The payload carries a bounded tail and the log is append-only, so comparing
+     the ends is enough to skip a no-op rebuild without walking the rows. */
+  const current = gameLog.value
+  const last = nextLog[nextLog.length - 1]
   if (
-    currentLog.length === nextLog.length &&
-    currentLog[0] === nextLog[0] &&
-    currentLog[currentLog.length - 1] === nextLog[nextLog.length - 1]
+    current.length === nextLog.length &&
+    last?.tag === 'LogRowStructured' &&
+    last.contents.seq > 0 &&
+    current[current.length - 1]?.seq === last.contents.seq
   ) {
     return
   }
 
-  gameLog.value = Object.freeze([...nextLog])
+  gameLog.value = Object.freeze(logRowsToEntries(nextLog, legacyLocations()))
 }
 
 addEntry({
@@ -1366,8 +1392,13 @@ const handleResult = (result: ServerResult) => {
       }
       return
     case 'GameMessage':
-      // Raw, like the game payload's entries: GameMessage.vue localizes at render
-      gameLog.value = Object.freeze([...gameLog.value, result.contents])
+      /* A legacy flat line, parsed to parts once here rather than in a render
+         function. Structured entries do not come this way: they ride in the
+         game payload's log tail, so the log and the board move together. */
+      gameLog.value = Object.freeze([
+        ...gameLog.value,
+        legacyLogEntry(result.contents, 0, legacyLocations()),
+      ])
       return
     case 'GameShowDiscard':
       emitter.emit('showDiscards', result.contents)
@@ -1577,6 +1608,11 @@ watch(uiLock, async () => {
 })
 
 const confirmingUndoScenario = ref(false)
+
+/* "Undo back to here", picked off a log entry. Holds the game step the entry
+   was written under plus a flat rendering of it, so the confirmation can name
+   what is about to be thrown away. */
+const confirmingUndoStep = ref<{ step: number; label: string } | null>(null)
 
 /* A menu entry names its shortcut so it follows the active keybinding profile;
  * `shortcut` remains the raw-key escape hatch for keys no profile remaps. */
@@ -1982,6 +2018,37 @@ async function undo() {
 async function undoScenario() {
   confirmingUndoScenario.value = false
   await runUndo(undoScenarioChoice)
+}
+
+/* Who a typed line is attributed to: this client's own seat, falling back to
+   whoever is active (a multihanded-solo player holds several seats, and any of
+   them is a truthful attribution). */
+const chatInvestigatorId = computed(() => {
+  const g = game.value
+  if (!g) return null
+  const mine = Object.values(g.investigators).find((i) => i.playerId === playerId.value)
+  return mine?.id ?? g.activeInvestigatorId ?? null
+})
+
+async function say(text: string) {
+  const iid = chatInvestigatorId.value
+  if (!iid) return
+  try {
+    await Api.sayInLog(props.gameId, iid, text)
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+function requestUndoToStep(step: number, label: string) {
+  confirmingUndoStep.value = { step, label }
+}
+
+async function undoToStepConfirmed() {
+  const pending = confirmingUndoStep.value
+  confirmingUndoStep.value = null
+  if (!pending) return
+  await runUndo((gameId) => undoToStep(gameId, pending.step))
 }
 
 const undoActionStart = () => runUndo(undoAction)
@@ -2980,7 +3047,6 @@ onUnmounted(() => {
         <Campaign
           v-else-if="game.campaign"
           :game="game"
-          :gameLog="gameLog"
           :playerId="playerId"
           :campaign="game.campaign"
           :realityAcidLightDevoured="realityAcidLightDevoured"
@@ -3023,7 +3089,14 @@ onUnmounted(() => {
             isActualScenarioView
           "
         >
-          <GameLog :game="game" :gameLog="gameLog" @undo="undo" />
+          <GameLog
+            :entries="gameLog"
+            :can-undo="!spectate"
+            :can-chat="!spectate && !!chatInvestigatorId"
+            :player-id="playerId"
+            @undo="requestUndoToStep"
+            @say="say"
+          />
         </div>
         <div class="game-over" v-if="gameOver">
           <p>{{ $t('gameOver') }}</p>
@@ -3048,6 +3121,16 @@ onUnmounted(() => {
       prompt="$game.areYouSureUndoScenario"
       :yes="undoScenario"
       :no="() => confirmingUndoScenario = false"
+    />
+    <Prompt
+      v-if="confirmingUndoStep"
+      :prompt="
+        confirmingUndoStep.label
+          ? $t('log.undoToHereConfirm', { entry: confirmingUndoStep.label })
+          : $t('log.undoToHereConfirmPlain')
+      "
+      :yes="undoToStepConfirmed"
+      :no="() => (confirmingUndoStep = null)"
     />
   </div>
 </template>

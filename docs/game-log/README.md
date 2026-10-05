@@ -6,6 +6,9 @@ first for where the work actually stands, then this file for why.**
 - `README.md` (this file) — the design and the reasoning behind it.
 - `JOURNAL.md` — phase-by-phase status, what is done, what is next, decisions taken.
 - `FINDINGS.md` — the grounded audit of the current system (file:line), kept as evidence.
+- `ADDING-A-MACHINE.md` — how to teach the narrator a new event. **Read it
+  before adding one**; it starts with "observe the message lifecycle first",
+  which is the step that looks skippable and is not.
 
 ## The goal
 
@@ -99,6 +102,7 @@ One shared contract, in `Arkham.Log.Entry`, serialized to the client as-is.
 ```haskell
 data LogEntry = LogEntry
   { seq      :: Int             -- monotonic per game; the client's identity + ordering
+  , step     :: Maybe Int       -- the game step to undo to; see "Undo back to an entry"
   , kind     :: LogKind
   , body     :: [LogPart]       -- the line itself
   , source   :: Maybe LogRef    -- what caused it: answers "why" without prose
@@ -151,7 +155,29 @@ Why each piece earns its place:
   (`Shared.hs:778`), so "you drew an enemy" can never appear in history.
 - `seq` gives the client stable identity for append-only updates, and gives
   scrollback a cursor. `step` stays on the row because undo deletes by it
-  (`Api/Handler/Arkham/Undo.hs:132`).
+  (`Api/Handler/Arkham/Undo.hs:132`), and now rides out to the client too so a
+  reader can rewind to a line.
+
+## Undo back to an entry
+
+Every entry knows the game step it was written under, and the log offers
+"undo back to here" on hover.
+
+The numbering is the whole trick, and it is stated once in `Shared.hs`: the game
+is on step `k`, an action runs and tags every row it writes with `k`, then the
+game becomes `k + 1`. So an entry tagged `k` means "the game was on `k` just
+before this", and landing an undo on `k` puts it back to exactly there. Every
+entry one action produced shares a step, so a rewind is always a whole action.
+
+- The step comes from the **row's column**, not the payload (`toLogRow`). The
+  column exists on every row ever written, including all the history that
+  predates the structured log, which is why a legacy row carries one too.
+- `PUT /undo/step/#Int` is the endpoint. It shares `stepBackToRawStep` with
+  scenario/turn/phase/round undo, so the Epic undo floor, the membership check
+  and the "not in the past" refusal all apply unchanged.
+- The control is hidden until the row is hovered or focused, lives only on
+  top-level entries, and raises a confirmation naming the line. `GameLog`'s
+  `canUndo` is **false** by default, so the replay viewer shows nothing.
 
 ## The narrator
 
@@ -186,6 +212,39 @@ reason  :: Scope -> m ()                       -- add a child to what the engine
 With `ToLogPart` / `ToLogRef` instances, `withVar "card" card $ logsI "banished"`
 makes `card` a chip rather than a quoted string. `reason` is the important one
 for card authors: it annotates the narrator's line instead of replacing it.
+
+## Writing a log entry by hand
+
+The narrator covers what the engine can infer. A campaign's one-off moments —
+a specific card banished, a resident who refuses to speak, a reading that only
+this scenario has — are exactly what it cannot, so **direct sending is a
+first-class path, not a leftover.**
+
+Scenario and campaign code already works inside a `HasI18n` scope, so the short
+form honours it:
+
+```haskell
+scenarioI18n $ withVar "card" (String card) $ sendLogI18n Narrative "messages.banished"
+```
+
+`ikeyScoped` resolves the key against the ambient `?scope` and folds in whatever
+`withVar` / `countVar` put in `?scopeVars`, so an existing call converts by
+swapping `send $ … ikey'` for `sendLogI18n`. For anything richer, build the
+entry:
+
+```haskell
+loc <- locationRefFor lid
+sendLog $ mechanic
+  [ikeyPart "log.discoveredCluesAt" ["investigator" ~> who, "count" ~> n, "location" ~> loc]]
+```
+
+Pick the `LogKind` deliberately — `Narrative` renders as prose, `Notice` is
+subordinate, `Record` is a campaign-log write. The kinds are what let the client
+style and group entries.
+
+The **27 remaining legacy `send` sites still work unchanged**; `ClientText`
+is untouched. They produce flat rows the client parses at ingest, so there is no
+rush to convert them — only a reason to prefer `sendLog` for anything new.
 
 ## Verification
 

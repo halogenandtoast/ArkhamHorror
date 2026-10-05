@@ -1082,15 +1082,16 @@ handleCheckDefeated a@InvestigatorAttrs {..} source = do
       windowMsg <- checkWindows [mkWhen $ Window.InvestigatorWouldBeDefeated defeatedBy (toId a)]
       pushAll
         [ windowMsg
-        , AssignDamage (InvestigatorTarget $ toId a)
+        , AssignDamage (InvestigatorTarget $ toId a) source
         , InvestigatorWhenDefeated source investigatorId
         ]
-    else push $ AssignDamage (InvestigatorTarget $ toId a)
+    else push $ AssignDamage (InvestigatorTarget $ toId a) source
 
   pure a
 
-handleAssignDamage a@InvestigatorAttrs {..} target = do
-  push $ AssignedDamage target investigatorAssignedHealthDamage investigatorAssignedSanityDamage
+handleAssignDamage a@InvestigatorAttrs {..} target source = do
+  push
+    $ AssignedDamage target source investigatorAssignedHealthDamage investigatorAssignedSanityDamage
   pure
     $ a
     & tokensL

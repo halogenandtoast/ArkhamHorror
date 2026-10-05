@@ -2,6 +2,7 @@ module Arkham.Classes.GameLogger where
 
 import Arkham.Card.Id
 import Arkham.Id
+import Arkham.Log.Entry
 import Arkham.Prelude
 import Control.Monad.State.Strict
 import Control.Monad.Writer.Strict
@@ -38,6 +39,20 @@ formatAsSentence = go False
 
 data ClientMessage
   = ClientText Text
+  | {- | A structured log entry. The replacement for 'ClientText': it carries
+    parts rather than a brace-DSL string, so the client renders without
+    regexes, and it carries children, a cause and an audience, none of which a
+    flat string could express. Built with "Arkham.Log"; see @docs/game-log/@.
+    -}
+    ClientLogEntry LogEntry
+  | {- | Take back a log entry sent earlier, by its 'logEntryTag'.
+
+    For something the game said and then unsaid: a card committed to a test and
+    then uncommitted never happened, and leaving the line there is a lie about
+    the board. Deliberately narrow -- it deletes rows carrying that tag and
+    nothing else -- so it stays a retraction rather than a general edit.
+    -}
+    ClientRetractLog Text
   | ClientError Text
   | ClientCard Text Value
   | ClientCardOnly PlayerId Text Value

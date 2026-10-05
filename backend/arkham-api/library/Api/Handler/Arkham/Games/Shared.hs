@@ -59,6 +59,8 @@ import Arkham.Id
 import Arkham.Investigator (lookupInvestigator)
 import Arkham.Investigator.Types (Investigator, investigatorPlacement, investigatorPlayerId)
 import Arkham.Location.CardDefs.TheBlobThatAteEverythingELSE qualified as Locations
+import Arkham.Log.Entry
+import Arkham.Log.Narrator (emptyNarrator)
 import Arkham.Message
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -90,6 +92,9 @@ import Database.Esqueleto.Experimental hiding (update, (=.))
 import Database.Redis (Connection, RedisChannel, publish, runRedis)
 import Entity.Answer
 import Entity.Arkham.GameRaw
+
+import Data.Aeson qualified as Aeson
+import Entity.Arkham.LogEntry
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.), (>=.))
 import Import qualified as P
@@ -412,14 +417,21 @@ updateGame customCards response gameId mRoom = do
   let rejectOrganizerGate action =
         action `catch` \EpicOrganizerGateBlocked ->
           permissionDenied "This event is waiting for the organizer's clue allocation"
-  (ArkhamGame {..}, oldLogEntries, updatedLog, mSharedUpdate, actAdvanced, newAchievements, mPhaseChanged) <- rejectOrganizerGate $ runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
+  ( ArkhamGame {..}
+    , publishLog
+    , mSharedUpdate
+    , actAdvanced
+    , newAchievements
+    , mPhaseChanged
+    ) <- rejectOrganizerGate $ runDB $ atomicallyWithGame gameId \g@ArkhamGame {..} -> do
     -- Read the prior log from the per-room cache when it's in sync with
     -- the just-locked game's step; otherwise fall back to the DB. Avoids
-    -- the 217-row-avg getGameLog read on every action in the common case.
+    -- the 217-row-avg log read on every action in the common case, and the
+    -- fallback is now a bounded tail rather than the whole history.
     oldLogEntries <-
       liftIO (lookupCachedLog mRoom arkhamGameStep) >>= \case
         Just entries -> pure entries
-        Nothing -> gameLogToLogEntries <$> getGameLog gameId Nothing
+        Nothing -> gameLogToLogEntries <$> getGameLogTail gameId gameLogTailSize
 
     mLastStep <- getBy $ UniqueStep gameId arkhamGameStep
     let
@@ -436,10 +448,11 @@ updateGame customCards response gameId mRoom = do
 
     let playerId = fromMaybe activePlayer (answerPlayer response)
 
-    logRef <- newIORef []
+    pendingLogRef <- newIORef []
     reply <- handleAnswer gameJson playerId response
     case reply of
-      Unhandled _ -> pure (g, oldLogEntries, [], Nothing, False, [], [])
+      -- Nothing happened, so the log to publish is the one already there.
+      Unhandled _ -> pure (g, oldLogEntries, Nothing, False, [], [])
       Handled answerMessages -> do
         -- Epic Multiplayer: if this game is a group within an event, build an
         -- EpicEnv so Shared* messages emitted during the action are captured as
@@ -481,6 +494,9 @@ updateGame customCards response gameId mRoom = do
         -- and lets the worker return to the pool.
         -- Above-the-table achievements: collect EarnAchievement messages via
         -- the (otherwise unused) runMessages message logger; persisted below.
+        -- Narrator state for this action only: it accumulates across the
+        -- messages of one multi-message event and is thrown away after.
+        narratorRef <- newIORef emptyNarrator
         achievementsRef <- newIORef []
         achievementsByRef <- newIORef []
         achievementProgressRef <- newIORef []
@@ -496,8 +512,10 @@ updateGame customCards response gameId mRoom = do
             Begin phase -> modifyIORef' enteredPhasesRef (phase :)
             _ -> pure ()
         mResult <- liftIO $ timeout runMessagesTimeoutMicros do
-          runGameApp (GameApp gameRef queueRef genRef (handleMessageLog logRef broadcast) mEpicEnv) do
-            runMessages (gameIdToText gameId) (Just collectFromRun)
+          runGameApp (GameApp gameRef queueRef genRef (handleMessageLog pendingLogRef broadcast) mEpicEnv) do
+            runMessages
+              (gameIdToText gameId)
+              RunObservers {observeMessage = Just collectFromRun, observeNarration = Just narratorRef}
         case mResult of
           Just () -> pure ()
           Nothing -> liftIO $ throwIO $ RunMessagesTimeout gameId runMessagesTimeoutMicros
@@ -514,7 +532,12 @@ updateGame customCards response gameId mRoom = do
 
         updatedQueue <- readIORef $ queueToRef queueRef
         -- handleMessageLog conses for O(1) inserts; reverse here to restore order.
-        updatedLog <- reverse <$> readIORef logRef
+        pendingRows <- reverse <$> readIORef pendingLogRef
+        -- Stamp the structured entries with sequence numbers continuing from
+        -- whatever this game already has, then write them back to the ref so
+        -- the post-commit publish sends the stamped ones.
+        firstSeq <- nextLogSeq gameId
+        let stampedRows = stampPendingRows firstSeq pendingRows
         enteredPhases <- reverse <$> readIORef enteredPhasesRef
 
         now <- liftIO getCurrentTime
@@ -536,7 +559,27 @@ updateGame customCards response gameId mRoom = do
                 arkhamGameCreatedAt
                 now
         replace gameId g'
-        insertMany_ $ map (newLogEntry gameId arkhamGameStep now) updatedLog
+        insertMany_ $ mapMaybe (pendingRowToEntity gameId arkhamGameStep now) stampedRows
+        let retractions = [tag | PendingRetract tag <- stampedRows]
+        traverse_ (retractTaggedRows gameId) retractions
+        {- A retraction deletes a row that is already in the client's tail, so
+        the usual "previous tail plus this action's new rows" would publish it
+        again. Re-read instead -- only when something was actually retracted, so
+        the common action still pays nothing. -}
+        {- The log to publish, already complete -- NOT "this action's new rows".
+
+        These two branches used to return different things and the caller
+        prepended the previous tail to both, which published everything twice
+        the moment a retraction made this the whole tail. One value, one
+        meaning, is what stops that coming back. -}
+        publishLog <-
+          if null retractions
+            then
+              pure
+                $ lastN gameLogTailSize
+                $ oldLogEntries
+                <> mapMaybe (pendingRowToLogRow arkhamGameStep) stampedRows
+            else gameLogToLogEntries <$> getGameLogTail gameId gameLogTailSize
         void
           $ upsertBy
             (UniqueStep gameId (arkhamGameStep + 1))
@@ -629,8 +672,7 @@ updateGame customCards response gameId mRoom = do
 
         pure
           ( g'
-          , oldLogEntries
-          , updatedLog
+          , publishLog
           , mSharedUpdate
           , actAdvanced
           , newAchievements
@@ -638,9 +680,8 @@ updateGame customCards response gameId mRoom = do
               Game {gamePhase = newPhase} -> phaseTransitions oldPhase newPhase enteredPhases
           )
 
-  -- Update the per-room cache after the DB transaction has committed,
-  -- so the cache is never ahead of durably-stored state.
-  let publishLog = oldLogEntries <> updatedLog
+  -- Update the per-room cache after the DB transaction has committed, so the
+  -- cache is never ahead of durably-stored state.
   liftIO $ writeCachedLog mRoom arkhamGameStep publishLog
 
   -- Publish shared state before the acting game's parked question. In particular,
@@ -728,7 +769,7 @@ applyAchievementProgress uid achievement items gameId now = do
 game's current step. Returns Nothing on a mismatch (so the caller refetches
 from the DB and refreshes the cache).
 -}
-lookupCachedLog :: Maybe Room -> Int -> IO (Maybe [Text])
+lookupCachedLog :: Maybe Room -> Int -> IO (Maybe [LogRow])
 lookupCachedLog Nothing _ = pure Nothing
 lookupCachedLog (Just room) currentStep = atomically do
   cachedVal <- readTVar (roomLogCache room)
@@ -740,7 +781,7 @@ lookupCachedLog (Just room) currentStep = atomically do
 post-update step; the next action will read the game at that step and find
 a consistent cache.
 -}
-writeCachedLog :: Maybe Room -> Int -> [Text] -> IO ()
+writeCachedLog :: Maybe Room -> Int -> [LogRow] -> IO ()
 writeCachedLog Nothing _ _ = pure ()
 writeCachedLog (Just room) newStep entries =
   atomically $ writeTVar (roomLogCache room) $ Just $ RoomLogCache newStep entries
@@ -751,18 +792,116 @@ newtype RawGameJsonPut = RawGameJsonPut
   deriving stock (Show, Generic)
   deriving anyclass FromJSON
 
+{- | One thing the log accumulated during an action, in the order it happened.
+
+Both kinds are collected into a single list rather than two, because during the
+migration an action can produce both and splitting them would reorder the log:
+all the legacy lines, then all the structured ones. Each becomes exactly one
+'ArkhamLogEntry' row.
+-}
+data PendingLogRow
+  = -- | A legacy 'ClientText': the brace-DSL string, with a NULL payload.
+    PendingText Text
+  | {- | A structured entry. Its row carries both the payload and a flat
+    rendering in @body@, so it is one row, not two.
+    -}
+    PendingEntry LogEntry
+  | {- | Take back whatever was written under this tag. Writes no row of its
+    own; see 'retractTaggedRows'.
+    -}
+    PendingRetract Text
+
+{- | The last @n@ elements. ClassyPrelude has no list @takeEnd@, and
+Data.Text's shadows the name.
+-}
+lastN :: Int -> [a] -> [a]
+lastN n xs = drop (length xs - n) xs
+
+{- | Number the structured entries from @start@, leaving legacy text rows alone.
+
+Legacy rows keep a NULL seq: they are strictly older than any structured entry
+in the same game, so the client can order by (step, id) as it does today and use
+seq only as identity for the rows that have one.
+-}
+stampPendingRows :: Int -> [PendingLogRow] -> [PendingLogRow]
+stampPendingRows = go
+ where
+  go _ [] = []
+  go n (PendingText t : rest) = PendingText t : go n rest
+  go n (PendingEntry e : rest) = PendingEntry e {logEntrySeq = n} : go (n + 1) rest
+  go n (PendingRetract t : rest) = PendingRetract t : go n rest
+
+{- | One durable row per pending row.
+
+Plain inserts: the log is append-only again. An entry that belongs to a block
+carries that block's id and is grouped by the renderer, so nothing here has to
+find and rewrite an earlier row -- which is what made the publish path, the
+client's change detection and undo all subtly wrong in turn.
+-}
+pendingRowToEntity :: ArkhamGameId -> Int -> UTCTime -> PendingLogRow -> Maybe ArkhamLogEntry
+pendingRowToEntity gameId step now = \case
+  PendingText t -> Just $ newLogEntry gameId step now t
+  PendingEntry e -> Just $ newStructuredLogEntry gameId step now e
+  PendingRetract _ -> Nothing
+
+{- | Delete the rows carrying this tag.
+
+Scoped to the recent tail rather than the whole history: a retraction follows
+what it retracts within moments -- a card committed and then uncommitted in the
+same test -- so anything older is not a candidate, and this stays one bounded,
+indexed read instead of a scan of the game.
+-}
+retractTaggedRows :: MonadIO m => ArkhamGameId -> Text -> SqlPersistT m ()
+retractTaggedRows gameId tag = do
+  recent <-
+    P.selectList
+      [ArkhamLogEntryArkhamGameId P.==. gameId]
+      [P.Desc ArkhamLogEntryStep, P.Desc ArkhamLogEntryId, P.LimitTo gameLogTailSize]
+  let
+    matches (Entity rowId row) = case arkhamLogEntryPayload row of
+      Just v
+        | Aeson.Success (e :: LogEntry) <- Aeson.fromJSON v
+        , e.logEntryTag == Just tag ->
+            Just rowId
+      _ -> Nothing
+  for_ (mapMaybe matches recent) P.delete
+
+{- | A pending row as the client sees it, without a round trip to the DB. The
+step is the one the row will be written under, so a live entry is as undoable
+as one read back later.
+-}
+pendingRowToLogRow :: Int -> PendingLogRow -> Maybe LogRow
+pendingRowToLogRow step = \case
+  PendingText t -> Just $ LogRowLegacy t (Just step)
+  PendingEntry e -> Just $ LogRowStructured (atLogStep step e)
+  PendingRetract _ -> Nothing
+
 handleMessageLog
-  :: MonadIO m => IORef [Text] -> Broadcast -> ClientMessage -> m ()
-handleMessageLog logRef broadcast msg = liftIO $ do
+  :: MonadIO m => IORef [PendingLogRow] -> Broadcast -> ClientMessage -> m ()
+handleMessageLog pendingLogRef broadcast msg = liftIO $ case msg of
+  {- Accumulated, NOT broadcast. The action's entries reach the client in the
+  'GameUpdate' that follows, inside the game payload's log tail -- one frame
+  for the whole action rather than one per line, which is what made a scenario
+  setup hundreds of separately deflated ~100 byte frames. It also means the
+  log and the board move together instead of the log racing ahead. -}
+  ClientLogEntry e -> cons (PendingEntry e)
+  ClientRetractLog tag -> cons (PendingRetract tag)
+  _ -> do
+    for_ (toClientText msg) $ \txt -> cons (PendingText txt)
+    broadcast (encode $ toGameMessage msg)
+ where
   -- Cons in O(1); the caller reverses once when reading the IORef.
   -- The previous (logs <> [txt]) was O(n) per call -> O(n^2) per action,
   -- which mattered during scenario setup with hundreds of log lines.
-  for_ (toClientText msg) $ \txt ->
-    atomicModifyIORef' logRef (\logs -> (txt : logs, ()))
-  broadcast (encode $ toGameMessage msg)
- where
+  cons row = atomicModifyIORef' pendingLogRef (\rows -> (row : rows, ()))
   toGameMessage = \case
     ClientText txt -> GameMessage txt
+    -- Unreachable: handled above, and deliberately has no wire message of its
+    -- own. Present so the case stays total and a new ClientMessage constructor
+    -- is a compile error rather than a silently dropped log line.
+    ClientLogEntry e -> GameMessage (logEntryToText e)
+    -- Unreachable, as above: accumulated, never broadcast on its own.
+    ClientRetractLog tag -> GameMessage tag
     ClientError txt -> GameError txt
     ClientUI txt -> GameUI txt
     ClientAudio txt -> GameAudio txt
@@ -776,6 +915,10 @@ handleMessageLog logRef broadcast msg = liftIO $ do
     ClientCustomCardIssue cc detail payload -> GameCustomCardIssue cc detail payload
   toClientText = \case
     ClientText txt -> Just txt
+    -- Never reached (see above), and would be wrong anyway: a structured entry
+    -- already becomes its own row via PendingEntry.
+    ClientLogEntry {} -> Nothing
+    ClientRetractLog {} -> Nothing
     ClientError {} -> Nothing
     ClientUI {} -> Nothing
     ClientAudio {} -> Nothing
@@ -959,7 +1102,7 @@ runMessagesInGroupCore p msgs gid = do
         genRef <- liftIO $ newIORef (mkStdGen (gameSeed arkhamGameCurrentData))
         liftIO
           $ runGameApp (GameApp gameRef queueRef genRef (pure . const ()) Nothing)
-          $ runMessages (gameIdToText gid) Nothing
+          $ runMessages (gameIdToText gid) noRunObservers
         updatedGame <- liftIO $ readIORef gameRef
         -- The queue left after the run: empty for a pure board sync (it drains to
         -- empty), or the continuation of a question the run parked (e.g. the

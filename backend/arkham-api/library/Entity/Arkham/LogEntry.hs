@@ -21,6 +21,9 @@ share
   [persistLowerCase|
 ArkhamLogEntry sql=arkham_log_entries
   body Text
+  payload Value Maybe
+  seq Int Maybe
+  groupId Text Maybe
   arkhamGameId ArkhamGameId OnDeleteCascade
   step Int
   createdAt UTCTime

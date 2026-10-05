@@ -134,7 +134,7 @@ instance RunMessage EffectAttrs where
     -- so an effect that cancelled the whole hit lost its only disable trigger above and
     -- its DamageTaken modifier stuck to the target forever, #5807. AssignedDamage is
     -- pushed once per resolved assignment whatever amount survived the reductions.
-    AssignedDamage target _ _ | target == effectTarget && isEndOfWindow a EffectDamageWindow -> do
+    AssignedDamage target _ _ _ | target == effectTarget && isEndOfWindow a EffectDamageWindow -> do
       a <$ push (DisableEffect effectId)
     AfterRevelation _ tid | isEndOfWindow a (EffectRevelationWindow tid) -> do
       a <$ push (DisableEffect effectId)

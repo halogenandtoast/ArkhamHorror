@@ -88,7 +88,7 @@ instance RunMessage LilyChenEffect where
           & (if balanced then setEffectKey else unsetEffectKey) "balanced"
     StartSkillTest iid | isTarget iid attrs.target -> do
       pure $ LilyChenEffect $ attrs & unsetEffectKey "prescient"
-    AssignedDamage (InvestigatorTarget iid) damage horror | isTarget iid attrs.target -> do
+    AssignedDamage (InvestigatorTarget iid) _ damage horror | isTarget iid attrs.target -> do
       pure
         $ if damage > 0 || horror > 0
           then LilyChenEffect $ attrs & unsetEffectKey "aligned"

@@ -8,6 +8,8 @@ import * as Arkham from '@/arkham/types/Game'
 import { fetchGameReplay } from '@/arkham/api'
 import { isTypingTarget } from '@/arkham/helpers'
 import GameLog from '@/arkham/components/GameLog.vue'
+import type { LogEntry } from '@/arkham/types/GameLog'
+import { logRowsToEntries } from '@/arkham/legacyLogParse'
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Scenario from '@/arkham/components/Scenario.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
@@ -24,7 +26,7 @@ provide('debug', debug)
 const ready = ref(false)
 const game = ref<Arkham.Game | null>(null)
 const playerId = ref<string | null>(null)
-const gameLog = ref<readonly string[]>(Object.freeze([]))
+const gameLog = ref<readonly LogEntry[]>(Object.freeze([]))
 const totalSteps = ref(0)
 const gameOver = computed(() => game.value?.gameState.tag === "IsOver")
 const campaignLog = computed(() => game.value?.campaign?.log)
@@ -43,7 +45,7 @@ watch(currentStep, nextStep => {
     ready.value = true;
     game.value = newGame;
     totalSteps.value = newTotalSteps
-    gameLog.value = Object.freeze(newGame.log);
+    gameLog.value = Object.freeze(logRowsToEntries(newGame.log));
     playerId.value = newGame.activePlayerId;
     processing.value = false;
   });
@@ -112,19 +114,17 @@ onUnmounted(() => clearInterval(interval.value))
         v-if="game.campaign"
         :game="game"
         :campaign="game.campaign"
-        :gameLog="gameLog"
         :playerId="playerId"
       />
       <Scenario
         v-else-if="game.scenario && !gameOver"
         :game="game"
-        :gameLog="gameLog"
         :scenario="game.scenario"
         :playerId="playerId"
       />
       <div class="sidebar">
         <CardOverlay />
-        <GameLog :game="game" :gameLog="gameLog" />
+        <GameLog :entries="gameLog" />
         <div class="controls">
           <button v-tooltip="t('replay.restart')" :disabled="processing" @click="restart"><BackspaceIcon size="25" /></button>
           <button v-tooltip="t('replay.stepBack')" :disabled="processing" @click="goBack"><BackwardIcon size="25" /></button>

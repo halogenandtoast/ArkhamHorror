@@ -83,7 +83,7 @@ putApiV1ArkhamPendingGameR gameId = do
 
                 runGameApp (GameApp gameRef queueRef genRef (pure . const ()) Nothing) do
                   pushEnd $ JoinCampaign (PlayerId $ coerce pid)
-                  runMessages (gameIdToText gameId) Nothing
+                  runMessages (gameIdToText gameId) noRunObservers
 
                 updatedGame <- liftIO $ readIORef gameRef
                 updatedQueue <- liftIO $ readIORef (queueToRef queueRef)
@@ -145,7 +145,7 @@ putApiV1ArkhamPendingGameR gameId = do
               -- (IsChooseDecks) until players pick decks, so we must NOT run any
               -- further messages here or we'd blast past deck selection and start
               -- the scenario with zero investigators ("No lead found").
-              runMessages (gameIdToText gameId) Nothing
+              runMessages (gameIdToText gameId) noRunObservers
               -- Only when setup actually completed in this request (e.g. a fully
               -- pre-decked/AI group) do we reconcile the board to the shared pool.
               -- Otherwise the reconcile happens after deck selection via the
@@ -154,7 +154,7 @@ putApiV1ArkhamPendingGameR gameId = do
               when (setupState == IsActive) $ for_ mEpicEnv \epic -> do
                 shared <- liftIO $ readIORef (epicEnvSharedRef epic)
                 pushAll (epicSyncMessages (epicEnvGroup epic) shared)
-                runMessages (gameIdToText gameId) Nothing
+                runMessages (gameIdToText gameId) noRunObservers
 
             updatedGame <- liftIO $ readIORef gameRef
             updatedQueue <- liftIO $ readIORef (queueToRef queueRef)

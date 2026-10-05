@@ -100,7 +100,7 @@ getApiV1AdminGameR gameId = do
   webSocketsOptions wsOptions $ gameStream gameId
   g <- runDB $ get404 gameId
   let Game {..} = g.currentData
-  gameLog <- runDB $ getGameLog gameId Nothing
+  gameLog <- runDB $ getGameLogTail gameId gameLogTailSize
   let player = gameActivePlayerId
   mEvt <- runDB $ lookupGameEvent gameId
   pure

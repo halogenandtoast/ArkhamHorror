@@ -832,6 +832,19 @@ export const undoPhase = (gameId: string): Promise<void> =>
 export const undoRound = (gameId: string): Promise<void> =>
   undoRequest(`arkham/games/${gameId}/undo/round`, UNDO_MULTI_TIMEOUT_MS)
 
+/* Undo back to the game step a log entry was written under: everything from
+ * that entry onwards is reverted. The server refuses a step that is not in the
+ * past, so a stale panel cannot roll a game forwards. */
+export const undoToStep = (gameId: string, step: number): Promise<void> =>
+  undoRequest(`arkham/games/${gameId}/undo/step/${step}`, UNDO_MULTI_TIMEOUT_MS)
+
+/* Say something in the log. A real engine message rather than a side channel,
+ * so it is persisted with a step, reaches the room like any other update, and
+ * the rules that care what you typed -- Carcosa's HASTUR recorder -- can see
+ * it. */
+export const sayInLog = (gameId: string, investigatorId: string, text: string): Promise<void> =>
+  updateGameRaw(gameId, { tag: 'ChatMessage', contents: [investigatorId, text] })
+
 export const importGame = async (formData: FormData, multiplayerVariant: string): Promise<Game> => {
   const { data } = await api.post(`arkham/games/import?multiplayerVariant=${multiplayerVariant}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   return gameDecoder.decodePromise(data)

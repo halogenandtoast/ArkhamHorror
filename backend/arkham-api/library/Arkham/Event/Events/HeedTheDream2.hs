@@ -31,7 +31,7 @@ instance RunMessage HeedTheDream2 where
         piles = go (3 :: Int) cards []
 
       let handleCard c = case c.owner of
-            Just iid' -> InvestigatorDrewPlayerCardFrom iid' c Nothing
+            Just iid' -> InvestigatorDrewPlayerCardFrom iid' c Nothing Nothing
             _ -> error "missing owner?"
 
       let handleRest c = case c.owner of
@@ -44,8 +44,8 @@ instance RunMessage HeedTheDream2 where
       chooseOne
         iid
         [ CardPile
-          (map (\c -> PileCard c.id c.owner) pile)
-          (map handleCard pile <> concatMap handleRest (concat rest))
+            (map (\c -> PileCard c.id c.owner) pile)
+            (map handleCard pile <> concatMap handleRest (concat rest))
         | (pile, rest) <- eachWithRest piles
         ]
 

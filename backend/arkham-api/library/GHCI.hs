@@ -63,7 +63,7 @@ runGameMessage gameUUID msg = do
   genRef <- newIORef (mkStdGen gameSeed)
   runGameApp
     (GameApp gameRef queueRef genRef (pure . const ()) Nothing)
-    (runMessages (gameIdToText gameId) Nothing)
+    (runMessages (gameIdToText gameId) noRunObservers)
   ge <- readIORef gameRef
   now <- liftIO getCurrentTime
   void $ dbGhci $ do

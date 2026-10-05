@@ -106,6 +106,12 @@ asActive :: HasGame m => InvestigatorId -> ReaderT Game m a -> m a
 instance HasDistance Game
 instance HasAbilities Game
 
+-- Abstract here: a SOURCE importer only needs the name to spell the signature
+-- below. The real definition, with its fields, is in "Arkham.Game".
+data RunObservers
+
+noRunObservers :: RunObservers
+
 runMessages
   :: ( HasGameRef env
      , HasStdGen env
@@ -117,7 +123,7 @@ runMessages
      , MonadMask m
      )
   => Text
-  -> Maybe (Message -> IO ())
+  -> RunObservers
   -> m ()
 preloadModifiers :: (HasCallStack, Monad m) => Game -> m Game
 handleTraitRestrictedModifiers :: Monad m => Game -> m Game

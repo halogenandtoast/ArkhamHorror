@@ -31,7 +31,6 @@ import Data.Time.Clock
 import Database.Esqueleto.Experimental hiding (update)
 import Database.Persist qualified as Persist
 import Entity.Arkham.CustomCard
-import Entity.Arkham.LogEntry
 import Entity.Arkham.Player
 import Entity.Arkham.Step
 import Import hiding (delete, exists, on, (==.))
@@ -269,7 +268,10 @@ postApiV1ArkhamGamesImportR = do
       pure
         $ toPublicGame
           (Entity key $ ArkhamGame agedName agedCurrentData agedStep variant now now)
-          (GameLog $ map arkhamLogEntryBody agedLog)
+          -- An import's rows come straight from the export, so hand them over
+          -- the same way a live read would: structured where the row has a
+          -- payload, legacy text otherwise.
+          (GameLog $ map toLogRow agedLog)
 
 getApiV1ArkhamGameOpenSeatsR :: ArkhamGameId -> Handler [Text]
 getApiV1ArkhamGameOpenSeatsR gameId = do

@@ -5,17 +5,19 @@ module Api.Handler.Arkham.Undo (
   putApiV1ArkhamGameUndoTurnR,
   putApiV1ArkhamGameUndoPhaseR,
   putApiV1ArkhamGameUndoRoundR,
+  putApiV1ArkhamGameUndoStepR,
 ) where
 
 import Api.Arkham.Epic (getGameUndoFloor, lookupGameEvent, revertEpicDeltasForGameStep)
 import Api.Arkham.Helpers
 import Api.Arkham.Types.MultiplayerVariant
 import Api.Handler.Arkham.Games.Shared (propagateShared, publishToRoom)
-import Arkham.Epic.Types (SharedEventState)
 import Arkham.Card.CardCode
+import Arkham.Epic.Types (SharedEventState)
 import Arkham.Game
 import Arkham.Game.Diff
 import Arkham.Id
+import Arkham.Log.Entry (LogEntry (..), LogKind (Chat))
 import Control.Lens (view)
 import Control.Monad (foldM)
 import Control.Monad.Except
@@ -128,10 +130,7 @@ stepBack isDebug userId gameId = do
           update \g -> do
             set g [ArkhamGameStep =. val (n - 1)]
             where_ $ g.id ==. val gameId
-          delete do
-            entries <- from $ table @ArkhamLogEntry
-            where_ $ entries.arkhamGameId ==. val gameId
-            where_ $ entries.step >=. val (n - 1)
+          trimLogFrom gameId (n - 1)
           deleteKey stepId
           revertShared
         pure
@@ -176,10 +175,7 @@ stepBack isDebug userId gameId = do
                   rawGame.multiplayerVariant
                   rawGame.createdAt
                   now
-              delete do
-                entries <- from $ table @ArkhamLogEntry
-                where_ $ entries.arkhamGameId ==. val gameId
-                where_ $ entries.step >=. val (n - 1)
+              trimLogFrom gameId (n - 1)
               deleteKey stepId
               plan <- revertShared
 
@@ -191,6 +187,43 @@ stepBack isDebug userId gameId = do
                       }
                 WithFriends -> pure ()
               pure (arkhamGame, plan)
+
+{- | Trim the log an undo invalidates, keeping anything a player typed.
+
+A chat line is not a game event, and rolling the game back does not unsay it.
+Rather than delete one, move it just below the step being landed on: that keeps
+it in order with the history that survives, and out of the range this undo --
+and every later one -- deletes.
+
+Chat rows are found by decoding the payloads in the undone range rather than
+reaching into the JSONB from SQL. The range is small for every undo but the
+scenario-wide one, and a hand-written @payload ->> 'kind'@ would silently stop
+matching the day that field is renamed.
+-}
+trimLogFrom :: ArkhamGameId -> Int -> DB ()
+trimLogFrom gameId toStep = do
+  rows <- select do
+    entries <- from $ table @ArkhamLogEntry
+    where_ $ entries.arkhamGameId ==. val gameId
+    where_ $ entries.step >=. val toStep
+    pure (entries.id, entries.payload)
+  let spoken = [eid | (Value eid, Value (Just v)) <- rows, isChatPayload v]
+  {- Not clamped at 0: an undo all the way back to step 0 would then land the
+  chat ON 0 and the delete below (>= toStep) would take it after all. The
+  column is a plain Int, a negative step just sorts first, and only an undo to
+  the very beginning ever produces one. -}
+  unless (null spoken) $ update \entries -> do
+    set entries [ArkhamLogEntryStep =. val (toStep - 1)]
+    where_ $ entries.id `in_` valList spoken
+  delete do
+    entries <- from $ table @ArkhamLogEntry
+    where_ $ entries.arkhamGameId ==. val gameId
+    where_ $ entries.step >=. val toStep
+
+isChatPayload :: Json.Value -> Bool
+isChatPayload v = case fromJSON @LogEntry v of
+  Success e -> e.logEntryKind == Chat
+  Error _ -> False
 
 putApiV1ArkhamGameUndoR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoR gameId = do
@@ -210,11 +243,17 @@ putApiV1ArkhamGameUndoR gameId = do
       liftIO $ print err
       sendStatusJSON Status.status400 err
     Right (ArkhamGame {..}, mPropagate) -> do
+      -- The surviving tail, NOT []. An empty list here is not "no change": the
+      -- client replaces its log with whatever the update carries, so publishing
+      -- [] blanked the whole panel until the next refresh. The multi-step
+      -- handler below has always refetched; this one did not.
+      gameLog <- runDB $ gameLogToLogEntries <$> getGameLogTail gameId gameLogTailSize
       publishToRoom gameId
         $ GameUpdate
-        $ PublicGame gameId arkhamGameName [] arkhamGameCurrentData
-      when (oldPhase /= gamePhase arkhamGameCurrentData) $
-        publishToRoom gameId $ PhaseChanged (gamePhase arkhamGameCurrentData)
+        $ PublicGame gameId arkhamGameName gameLog arkhamGameCurrentData
+      when (oldPhase /= gamePhase arkhamGameCurrentData)
+        $ publishToRoom gameId
+        $ PhaseChanged (gamePhase arkhamGameCurrentData)
       -- Epic Multiplayer: if this undo reverted shared-counter deltas (a
       -- commutative counter like countermeasures / blob health), propagate the
       -- restored shared state across the WHOLE event POST-COMMIT (outside the game
@@ -245,12 +284,30 @@ putApiV1ArkhamGameUndoRoundR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameUndoRoundR =
   multiStepUndoHandler (stepBackToBoundary "gameUndoRoundStep")
 
+{- | Undo back to a game step the client picked out of the log.
+
+Every entry an action wrote is tagged with the step the game was on BEFORE that
+action ran, so landing on that step is exactly "put the game back to just
+before this line". The log delete inside 'stepBackToGameStep' is @>= toStep@,
+so the chosen line and everything after it go with it.
+
+The target is still clamped to the Epic undo floor and refused if it is not
+actually in the past, so a stale log panel cannot roll a game forwards or past
+a cross-group act advance.
+-}
+putApiV1ArkhamGameUndoStepR :: ArkhamGameId -> Int -> Handler ()
+putApiV1ArkhamGameUndoStepR gameId targetStep =
+  multiStepUndoHandler (stepBackToGameStep targetStep) gameId
+
 {- | Shared handler logic for multi-step undo endpoints. Reseeds the game,
 replaces the row with an updated `updatedAt`, and rebroadcasts the
 truncated game log.
 -}
 multiStepUndoHandler
-  :: (UserId -> ArkhamGameId -> DB (Either Json.Value (ArkhamGame, Maybe (ArkhamEpicEventId, SharedEventState))))
+  :: ( UserId
+       -> ArkhamGameId
+       -> DB (Either Json.Value (ArkhamGame, Maybe (ArkhamEpicEventId, SharedEventState)))
+     )
   -> ArkhamGameId
   -> Handler ()
 multiStepUndoHandler runStepBack gameId = do
@@ -262,8 +319,8 @@ multiStepUndoHandler runStepBack gameId = do
     runExceptT do
       (agame, mPropagate) <- ExceptT $ runStepBack userId gameId
       lift do
-        gameLog :: [Text] <-
-          fmap unValue <$> select do
+        gameLog <-
+          reverse . map (toLogRow . entityVal) <$> select do
             entries <- from $ table @ArkhamLogEntry
             where_ $ entries.arkhamGameId ==. val gameId
             -- After landing at agame.step the surviving log entries are exactly those
@@ -271,9 +328,14 @@ multiStepUndoHandler runStepBack gameId = do
             where_ $ entries.step <. val agame.step
             -- Order by step (monotonic per game) so the planner can use
             -- idx_arkham_log_entry_gameid_step directly. id (bigserial)
-            -- is the within-step tiebreaker.
+            -- is the within-step tiebreaker. Descending to let the index serve
+            -- the LIMIT, then reversed above so the client gets oldest-first
+            -- like every other log read -- this used to publish newest-first
+            -- and unbounded, so the panel showed a game's OLDEST entries after
+            -- an undo.
             orderBy [desc entries.step, desc entries.id]
-            pure entries.body
+            limit (fromIntegral gameLogTailSize)
+            pure entries
 
         let g =
               ArkhamGame
@@ -295,8 +357,9 @@ multiStepUndoHandler runStepBack gameId = do
       publishToRoom gameId
         $ GameUpdate
         $ PublicGame gameId arkhamGameName gameLog arkhamGameCurrentData
-      when (oldPhase /= gamePhase arkhamGameCurrentData) $
-        publishToRoom gameId $ PhaseChanged (gamePhase arkhamGameCurrentData)
+      when (oldPhase /= gamePhase arkhamGameCurrentData)
+        $ publishToRoom gameId
+        $ PhaseChanged (gamePhase arkhamGameCurrentData)
       -- Epic Multiplayer: propagate the restored shared state across the event
       -- post-commit (outside the game lock, so other groups' locks are safe to
       -- take), mirroring single-step undo. The origin already reflects the revert
@@ -304,7 +367,10 @@ multiStepUndoHandler runStepBack gameId = do
       for_ mPropagate \(eid, shared) -> propagateShared eid (Just gameId) shared
 
 -- | Multi-step scenario undo: roll back to scenarioSteps = 1 (start of scenario).
-stepBackScenario :: UserId -> ArkhamGameId -> DB (Either Json.Value (ArkhamGame, Maybe (ArkhamEpicEventId, SharedEventState)))
+stepBackScenario
+  :: UserId
+  -> ArkhamGameId
+  -> DB (Either Json.Value (ArkhamGame, Maybe (ArkhamEpicEventId, SharedEventState)))
 stepBackScenario userId gameId = do
   lockGame gameId
   rawGame <- get404 (ArkhamGameRawKey gameId)
@@ -327,11 +393,6 @@ stepBackToBoundary field userId gameId = do
 
 {- | Multi-step undo to the given target scenarioSteps value. Caller is
 responsible for having locked the game and fetched the raw game state.
-
-Optimized to apply a combined patch at the Value level and deserialize only
-once for the return value:
-  Old cost: fromJSON(fetch) + toJSON(patch) + fromJSON(patch) + toJSON(replace) = 4
-  New cost: fromJSON(return value only) = 1
 -}
 stepBackToScenarioStep
   :: UserId
@@ -339,15 +400,48 @@ stepBackToScenarioStep
   -> ArkhamGameRaw
   -> Int
   -> DB (Either Json.Value (ArkhamGame, Maybe (ArkhamEpicEventId, SharedEventState)))
-stepBackToScenarioStep userId gameId rawGame targetStep = runExceptT do
-  let currentSteps = getScenarioSteps rawGame.currentData
-      n = currentSteps - targetStep
-  when (n <= 0) $ throwError "Nothing to undo"
+stepBackToScenarioStep userId gameId rawGame targetStep = do
+  -- gameScenarioSteps and the game's step are different counters, but they
+  -- advance together, so the DISTANCE back is the same in both.
+  let n = getScenarioSteps rawGame.currentData - targetStep
+  if n <= 0
+    then pure $ Left $ jsonError "Nothing to undo"
+    else stepBackToRawStep userId gameId rawGame (arkhamGameRawStep rawGame - n)
+
+{- | Multi-step undo to an absolute game step, which is what a log entry names.
+Locks and fetches like the other entry points, then shares the body below.
+-}
+stepBackToGameStep
+  :: Int
+  -> UserId
+  -> ArkhamGameId
+  -> DB (Either Json.Value (ArkhamGame, Maybe (ArkhamEpicEventId, SharedEventState)))
+stepBackToGameStep targetStep userId gameId = do
+  lockGame gameId
+  rawGame <- get404 (ArkhamGameRawKey gameId)
+  stepBackToRawStep userId gameId rawGame targetStep
+
+{- | The shared body: revert every step above @requestedStep@. Caller is
+responsible for having locked the game and fetched the raw game state.
+
+Optimized to apply a combined patch at the Value level and deserialize only
+once for the return value:
+  Old cost: fromJSON(fetch) + toJSON(patch) + fromJSON(patch) + toJSON(replace) = 4
+  New cost: fromJSON(return value only) = 1
+-}
+stepBackToRawStep
+  :: UserId
+  -> ArkhamGameId
+  -> ArkhamGameRaw
+  -> Int
+  -> DB (Either Json.Value (ArkhamGame, Maybe (ArkhamEpicEventId, SharedEventState)))
+stepBackToRawStep userId gameId rawGame requestedStep = runExceptT do
+  when (requestedStep >= arkhamGameRawStep rawGame) $ throwError $ jsonError "Nothing to undo"
   Entity pid arkhamPlayer <- lift $ getBy404 (UniquePlayer userId gameId)
   -- Epic Multiplayer: never let a multi-step undo cross the act-advance floor
   -- (see 'stepBack'); clamp the target up to it. 0 = no floor.
   undoFloor <- lift $ getGameUndoFloor gameId
-  let toStep = max undoFloor (arkhamGameRawStep rawGame - n)
+  let toStep = max undoFloor requestedStep
   -- Select the steps to revert as those ABOVE the (possibly floor-clamped) target
   -- rather than the top @n@: identical to @limit n@ when unclamped (steps are
   -- contiguous, so @step > rawStep - n@ is exactly the newest n), but when the
@@ -378,13 +472,10 @@ stepBackToScenarioStep userId gameId rawGame targetStep = runExceptT do
       where_ $ xsteps.step >. val toStep
 
     -- Log entries are tagged ONE LOWER than their ArkhamStep (the action landing at
-    -- ArkhamStep k logs under step k-1), so the log delete must be >= toStep to also
+    -- ArkhamStep k logs under step k-1), so the log trim must be >= toStep to also
     -- drop the log of the first undone action (the one that landed at toStep+1), not
     -- just > toStep.
-    delete do
-      entries <- from $ table @ArkhamLogEntry
-      where_ $ entries.arkhamGameId ==. val gameId
-      where_ $ entries.step >=. val toStep
+    trimLogFrom gameId toStep
 
   -- Epic Multiplayer: multi-step undo must ALSO revert the shared-counter deltas
   -- recorded on every undone step (single-step 'stepBack' already does), deleting

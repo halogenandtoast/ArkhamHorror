@@ -20,10 +20,6 @@ import { groupLogEntries, type LogEntry } from '@/arkham/types/GameLog'
 const props = withDefaults(
   defineProps<{
     entries: readonly LogEntry[]
-    /* How many of the most recent entries to render. The panel is a ~400px
-       sidebar and scrollback is paged, so there is no reason to mount history
-       nobody is looking at. */
-    window?: number
     /* Whether entries offer "undo back to here". Off by default so a viewer
        that cannot rewind -- the replay viewer -- has to say nothing. */
     canUndo?: boolean
@@ -37,12 +33,13 @@ const props = withDefaults(
        and not a confidentiality boundary. Treat it as such. */
     playerId?: string | null
   }>(),
-  { window: 40, canUndo: false, canChat: false, playerId: null },
+  { canUndo: false, canChat: false, playerId: null },
 )
 
 const emit = defineEmits<{
   undo: [step: number, label: string]
   say: [text: string]
+  loadOlder: [beforeSeq: number]
 }>()
 
 /* The compose box. Deliberately plain: a line of text, Enter to send. Anything
@@ -64,7 +61,10 @@ const forThisSeat = computed(() =>
   ),
 )
 
-const visible = computed(() => forThisSeat.value.slice(-props.window))
+/* Everything loaded, not a fixed window. The server already bounds the opening
+   payload to its tail; once a reader has deliberately paged further back, the
+   point is to show what they asked for. */
+const visible = computed(() => forThisSeat.value)
 
 /* Consecutive entries sharing a group id are drawn as one block. The grouping
    is done here, not on the server: the stored log stays a flat append-only
@@ -142,11 +142,45 @@ const pinnedToBottom = ref(true)
 
 /* Only follow the log when the reader is already at the bottom. Yanking them
    back down while they are reading scrollback is the classic chat-log bug. */
+/* The oldest structured entry we hold, which is the cursor for the next page
+   back. Legacy rows carry no seq and sort before every structured one, so they
+   are not reachable this way -- see getGameLogBefore. */
+const oldestSeq = computed(() => {
+  for (const entry of props.entries) {
+    if (entry.seq > 0) return entry.seq
+  }
+  return null
+})
+
+const loadingOlder = ref(false)
+
 function onScroll() {
   const el = scroller.value
   if (!el) return
   pinnedToBottom.value = el.scrollHeight - el.scrollTop - el.clientHeight < 40
+
+  /* Near the top: ask for the page before what we hold. Guarded by a flag
+     rather than by scroll position alone, because prepending keeps the reader
+     near the top and would otherwise fire again immediately. */
+  if (el.scrollTop < 80 && !loadingOlder.value && oldestSeq.value !== null) {
+    loadingOlder.value = true
+    emit('loadOlder', oldestSeq.value)
+  }
 }
+
+/* Clear the guard once the prepend has landed, and hold the reader's place:
+   without this the view jumps, because the content above them just grew. */
+watch(
+  () => props.entries.length,
+  async (now, before) => {
+    if (!loadingOlder.value) return
+    const el = scroller.value
+    const heightBefore = el?.scrollHeight ?? 0
+    await nextTick()
+    if (el && now > before) el.scrollTop = el.scrollHeight - heightBefore
+    loadingOlder.value = false
+  },
+)
 
 watch(
   /* Length plus the newest seq, not a deep watch: entries are append-only, so

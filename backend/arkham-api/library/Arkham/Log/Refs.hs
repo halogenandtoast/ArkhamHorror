@@ -82,10 +82,33 @@ eventRefFor :: HasGame m => EventId -> m LogRef
 eventRefFor eid = fromCard RefEvent EventCard eid (eventRef eid)
 
 actRefFor :: HasGame m => ActId -> m LogRef
-actRefFor aid = fromCard RefAct ActCard aid (actRef aid)
+actRefFor aid = do
+  mCard <- fieldMay ActCard aid
+  pure $ case mCard of
+    Just card -> actRef aid (toName card) (toCardCode card)
+    Nothing -> byCardCodeRef RefAct (toCardCode aid)
 
 agendaRefFor :: HasGame m => AgendaId -> m LogRef
-agendaRefFor aid = fromCard RefAgenda AgendaCard aid (agendaRef aid)
+agendaRefFor aid = do
+  mCard <- fieldMay AgendaCard aid
+  pure $ case mCard of
+    Just card -> agendaRef aid (toName card) (toCardCode card)
+    Nothing -> byCardCodeRef RefAgenda (toCardCode aid)
+
+{- | A ref for an act or agenda that is no longer in play.
+
+Their ids ARE card codes, and an act is replaced on the spot when it advances,
+so an effect of the act that just advanced has no entity left to read a name
+off -- which is how the log came to say "takes 1 damage from c03047a". The
+printed definition is still there to ask.
+
+The client cannot rescue this one: its card index carries player and encounter
+cards, not acts and agendas, so the name has to come from here.
+-}
+byCardCodeRef :: LogRefKind -> CardCode -> LogRef
+byCardCodeRef kind cc = case lookupCardDef cc of
+  Just def -> (logRef kind (display $ toName def)) {logRefCardCode = Just cc}
+  Nothing -> fallbackRef kind (unCardCode cc)
 
 {- | Build a ref from the entity's @Card@.
 

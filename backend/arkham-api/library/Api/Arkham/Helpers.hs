@@ -30,6 +30,9 @@ import Data.Time.Clock
 import Data.Time.Clock.POSIX (getPOSIXTime)
 import Data.UUID qualified as UUID
 import Database.Esqueleto.Experimental
+
+-- Aliased for '<.', which Control.Lens and persistent also define.
+import Database.Esqueleto.Experimental qualified as E
 import Database.Redis (
   Connection,
   PubSubController,
@@ -167,6 +170,34 @@ getGameLogTail gameId n = do
     entries <- from $ table @ArkhamLogEntry
     where_ $ entries.arkhamGameId ==. val gameId
     orderBy [desc entries.step, desc entries.id]
+    limit (fromIntegral n)
+    pure entries
+  pure $ GameLog $ reverse $ map (toLogRow . entityVal) rows
+
+{- | The page of rows immediately older than @before@, oldest first.
+
+Scrollback. The payload only ever carries 'gameLogTailSize' rows, so without
+this the rest of a game's history is durable but unreachable in play.
+
+Paged on @seq@, which is monotonic per game and is the client's own identity for
+a row, so a page is exact: no offset to drift when new entries land at the other
+end while the reader is scrolling back.
+
+__Structured rows only.__ Rows written before the overhaul have a NULL @seq@ and
+are strictly older than every structured one, so they sort before this window
+and this cannot reach them. They are a transitional artifact and will age out of
+any game still being played; the alternative is a second, messier cursor over
+@(step, id)@ for history nobody is adding to.
+-}
+getGameLogBefore :: ArkhamGameId -> Int -> Int -> DB GameLog
+getGameLogBefore gameId before n = do
+  rows <- select $ do
+    entries <- from $ table @ArkhamLogEntry
+    where_ $ entries.arkhamGameId ==. val gameId
+    where_ $ entries.seq E.<. just (val before)
+    -- By seq, not (step, id): a retraction can leave a gap, and an undo can
+    -- move a chat row's step, so seq is the only monotonic thing here.
+    orderBy [desc entries.seq]
     limit (fromIntegral n)
     pure entries
   pure $ GameLog $ reverse $ map (toLogRow . entityVal) rows

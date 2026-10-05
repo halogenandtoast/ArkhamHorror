@@ -81,6 +81,7 @@ import Arkham.Helpers.SkillTest (
  )
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
+import Arkham.Keyword (Keyword (Peril))
 import Arkham.Log
 import Arkham.Log.Refs
 import Arkham.Message
@@ -293,11 +294,35 @@ oneShot = \case
     pure $ Just $ mechanic [ikeyPart "log.enemyMovesTo" ["enemy" ~> enemy, "location" ~> loc]]
   EnemyAttackMessage (EnemyAttack_ details) -> Just (renderEnemyAttack details)
   -- \* The encounter deck
-  InvestigatorMessage (InvestigatorDrewEncounterCard_ iid card) -> Just do
+  {- An encounter card drawn.
+
+  NOT treacheries: the dispatcher that handles this pushes @DrewTreachery@ for
+  one (@Game/Runner.hs:3816@), and that is narrated below with the Peril rule.
+  Matching both would log every treachery draw twice. -}
+  InvestigatorMessage (InvestigatorDrewEncounterCard_ iid card)
+    | cdCardType (toCardDef card) /= TreacheryType -> Just do
+        who <- investigatorRefFor iid
+        pure
+          $ Just
+          $ mechanic [ikeyPart "log.drawsEncounter" ["investigator" ~> who, "card" ~> toCard card]]
+  {- A treachery drawn, and the one place the log deliberately tells two seats
+  different things.
+
+  Peril is resolved alone -- nobody else may help -- so naming the card to the
+  table would hand them information the rules are withholding. The drawer gets
+  the card; everyone else is told that a Peril was drawn, which is what they are
+  entitled to know.
+
+  Two entries, so the public one is sent here and the private one returned. -}
+  DrewTreachery iid _ card -> Just do
     who <- investigatorRefFor iid
-    pure
-      $ Just
-      $ mechanic [ikeyPart "log.drawsEncounter" ["investigator" ~> who, "card" ~> toCard card]]
+    mPlayer <- fieldMay InvestigatorPlayerId iid
+    let named = mechanic [ikeyPart "log.drawsTreachery" ["investigator" ~> who, "card" ~> card]]
+    if Peril `member` cdKeywords (toCardDef card)
+      then do
+        sendLog $ mechanic [ikeyPart "log.drawsPeril" ["investigator" ~> who]]
+        pure $ (`forPlayer` named) <$> mPlayer
+      else pure $ Just named
 
   {- Healing.
 

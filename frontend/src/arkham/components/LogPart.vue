@@ -40,7 +40,13 @@ function refName(ref: LogRef): string {
     } else {
       /* cardArt() strips the 'c' the engine prefixes onto a card code; the
        * store is keyed without it, as Question.vue and useCardOptions do. */
-      const card = dbCards.getDbCard(cardArt(ref.cardCode))
+      const code = cardArt(ref.cardCode)
+      /* An act, agenda or double-sided card carries its side as a trailing
+       * letter (03047a), which ArkhamDB does not record separately -- the index
+       * is keyed on the bare 03047. getDbCard already tries an added 'a' for
+       * split-card fronts, so the missing direction is stripping one. Without
+       * this the log printed the raw code: "takes 1 damage from c03047a". */
+      const card = dbCards.getDbCard(code) ?? dbCards.getDbCard(code.replace(/[a-h]$/, ''))
       if (card?.name) return card.name
     }
   }

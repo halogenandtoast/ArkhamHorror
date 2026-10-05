@@ -729,6 +729,26 @@ function legacyLocations(): LegacyLocationLookup {
   return lookup
 }
 
+/* Scrollback: fetch the page before what we hold and prepend it.
+ *
+ * Replaces rather than merges, because `updateGameLog` would otherwise discard
+ * the older rows on the next GameUpdate -- the payload carries only the tail,
+ * so a live update must not be allowed to truncate what the reader has paged
+ * back to. `loadedOlder` keeps them. */
+const loadedOlder = shallowRef<readonly LogEntry[]>(Object.freeze([]))
+
+async function loadOlderLog(beforeSeq: number) {
+  try {
+    const rows = await Api.fetchLogBefore(props.gameId, beforeSeq)
+    if (rows.length === 0) return
+    const older = logRowsToEntries(rows, legacyLocations())
+    loadedOlder.value = Object.freeze([...older, ...loadedOlder.value])
+    gameLog.value = Object.freeze([...older, ...gameLog.value])
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 function updateGameLog(nextLog: readonly LogRow[]) {
   /* The payload carries a bounded tail and the log is append-only, so comparing
      the ends is enough to skip a no-op rebuild without walking the rows. */
@@ -743,7 +763,13 @@ function updateGameLog(nextLog: readonly LogRow[]) {
     return
   }
 
-  gameLog.value = Object.freeze(logRowsToEntries(nextLog, legacyLocations()))
+  /* Anything paged back to stays in front of the tail: the payload only carries
+     the newest rows, so rebuilding from it alone would throw the scrollback
+     away every time the game moved. */
+  gameLog.value = Object.freeze([
+    ...loadedOlder.value,
+    ...logRowsToEntries(nextLog, legacyLocations()),
+  ])
 }
 
 addEntry({
@@ -3096,6 +3122,7 @@ onUnmounted(() => {
             :player-id="playerId"
             @undo="requestUndoToStep"
             @say="say"
+            @load-older="loadOlderLog"
           />
         </div>
         <div class="game-over" v-if="gameOver">

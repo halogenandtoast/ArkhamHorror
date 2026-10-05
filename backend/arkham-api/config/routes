@@ -79,6 +79,7 @@
           /undo/phase ApiV1ArkhamGameUndoPhaseR PUT
           /undo/round ApiV1ArkhamGameUndoRoundR PUT
           /undo/step/#Int ApiV1ArkhamGameUndoStepR PUT
+          /log/before/#Int ApiV1ArkhamGameLogBeforeR GET
           /file-bug ApiV1ArkhamGameBugR POST
           /spectate ApiV1ArkhamGameSpectateR GET
           /export ApiV1ArkhamGameExportR GET

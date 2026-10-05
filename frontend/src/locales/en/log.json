@@ -33,6 +33,8 @@
   "drawsCardFrom": "{investigator} draws {card} from {source}",
   "drawsChaosTokens": "{investigator} reveals {tokens} | {investigator} reveals {tokens}",
   "drawsEncounter": "{investigator} draws {card}",
+  "drawsPeril": "{investigator} draws a Peril treachery",
+  "drawsTreachery": "{investigator} draws {card}",
   "eliminated": "{investigator} is eliminated",
   "enemyAttacks": "{enemy} attacks {target}",
   "enemyMovesTo": "{enemy} moves to {location}",

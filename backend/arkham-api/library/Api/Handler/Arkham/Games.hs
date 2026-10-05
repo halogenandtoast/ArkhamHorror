@@ -6,6 +6,7 @@
 module Api.Handler.Arkham.Games (
   getApiV1ArkhamGameR,
   getApiV1ArkhamGameSpectateR,
+  getApiV1ArkhamGameLogBeforeR,
   getApiV1ArkhamGameStepR,
   getApiV1ArkhamGamesR,
   postApiV1ArkhamGamesR,
@@ -37,6 +38,7 @@ import Arkham.Game.Settings (
 import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Playable (getPlayabilityChecks)
 import Arkham.Id
+import Arkham.Log.Entry (LogRow)
 import Arkham.Message (Message (ChatMessage, HandleOption))
 import Arkham.Queue
 import Arkham.Source
@@ -102,6 +104,19 @@ getApiV1ArkhamGameR gameId = do
         g.variant
         (PublicGame gameId g.name gameLog.entries g.currentData)
         (entityKey . fst <$> mEvt)
+
+{- | A page of scrollback: the rows immediately older than @before@.
+
+The game payload carries only the newest 'gameLogTailSize' entries, so this is
+how a reader reaches the rest. Membership is checked the same way the game read
+is, because the log can carry entries addressed to one seat.
+-}
+getApiV1ArkhamGameLogBeforeR :: ArkhamGameId -> Int -> Handler [LogRow]
+getApiV1ArkhamGameLogBeforeR gameId before = do
+  userId <- getRequestUserId
+  runDB do
+    void $ getBy404 (UniquePlayer userId gameId)
+    (.entries) <$> getGameLogBefore gameId before gameLogTailSize
 
 getApiV1ArkhamGameSpectateR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameSpectateR gameId = do

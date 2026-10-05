@@ -31,14 +31,12 @@ const emit = defineEmits<{
   undo: [step: number, label: string]
 }>()
 
-/* The band is the summary once there is one, and the header until then, so a
-   running test shows "is investigating the Study" and a finished one shows the
-   result. */
-const band = computed<LogEntry | null>(() => props.group.summary ?? props.group.header)
-
-/* The header stays visible above the members once the summary has taken over
-   the band; otherwise it would vanish the moment the test resolved. */
-const showHeader = computed(() => props.group.summary !== null && props.group.header !== null)
+/* The header sits at the top of the block for its whole life, and the summary
+   closes it at the foot. While the test is still running there is no summary
+   and the header is the only bar; once the result lands they bracket the
+   detail between them. */
+const header = computed<LogEntry | null>(() => props.group.header)
+const band = computed<LogEntry | null>(() => props.group.summary)
 
 const tone = computed(() => band.value?.tone?.toLowerCase() ?? 'neutral')
 
@@ -53,7 +51,7 @@ const bandStats = computed(() =>
   band.value && band.value.body.length > 1 ? band.value.body[band.value.body.length - 1] : null,
 )
 
-const hasDetail = computed(() => props.group.members.length > 0 || showHeader.value)
+const hasDetail = computed(() => props.group.members.length > 0)
 const open = computed(() => hasDetail.value && props.isOpen(props.path))
 
 const undoStep = computed(() =>
@@ -79,18 +77,22 @@ function requestUndo() {
 
 <template>
   <li class="log-group" :class="[`log-group--${tone}`, { 'log-entry--tail': isTail(path) }]">
+    <component
+      :is="hasDetail ? 'button' : 'div'"
+      v-if="header"
+      class="log-group__header"
+      :type="hasDetail ? 'button' : undefined"
+      :aria-expanded="hasDetail ? open : undefined"
+      @click="toggle"
+    >
+      <span v-if="hasDetail" class="log-caret" :class="{ 'log-caret--open': open }">&#9654;</span>
+      <span v-else class="log-caret-spacer" />
+      <span class="log-group__body">
+        <LogPart v-for="(part, i) in header.body" :key="i" :part="part" />
+      </span>
+    </component>
+
     <ul v-if="open" class="log-group__detail">
-      <GameLogEntry
-        v-if="showHeader && group.header"
-        :entry="group.header"
-        :path="`${path}.h`"
-        :depth="1"
-        :is-open="isOpen"
-        :is-tail="isTail"
-        :is-pinned="isPinned"
-        :can-undo="false"
-        @toggle="(p, o) => emit('toggle', p, o)"
-      />
       <GameLogEntry
         v-for="(member, i) in group.members"
         :key="i"
@@ -107,14 +109,13 @@ function requestUndo() {
 
     <component
       :is="hasDetail ? 'button' : 'div'"
+      v-if="band"
       class="log-group__band"
       :type="hasDetail ? 'button' : undefined"
-      :aria-expanded="hasDetail ? open : undefined"
       @click="toggle"
     >
       <span class="log-group__line">
-        <span v-if="hasDetail" class="log-caret" :class="{ 'log-caret--open': open }">&#9654;</span>
-        <span v-else class="log-caret-spacer" />
+        <span class="log-caret-spacer" />
         <span class="log-group__body">
           <LogPart v-for="(part, i) in bandSentence" :key="i" :part="part" />
         </span>
@@ -158,6 +159,37 @@ function requestUndo() {
 .log-group--good { --tone: var(--spooky-green); }
 .log-group--bad { --tone: #9f2929; }
 
+/* The block's title bar: full width at the top, there for the whole life of the
+   group. It is the only bar while the test is running; once the summary lands
+   the two bracket the detail. */
+.log-group__header {
+  display: flex;
+  gap: 7px;
+  align-items: baseline;
+  width: 100%;
+  padding: 7px 10px 7px 9px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+button.log-group__header {
+  cursor: pointer;
+}
+
+button.log-group__header:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+button.log-group__header:focus-visible {
+  outline: 2px solid var(--important);
+  outline-offset: -2px;
+}
+
 .log-group__detail {
   margin: 0;
   padding: 7px 10px 6px 12px;
@@ -170,6 +202,7 @@ function requestUndo() {
   display: block;
   width: 100%;
   padding: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
   font: inherit;
   color: inherit;
   text-align: left;

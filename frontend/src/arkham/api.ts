@@ -1,4 +1,5 @@
 import api from '@/api';
+import { logRowDecoder, type LogRow } from '@/arkham/types/GameLog';
 import { Game, GameDetailsEntry, gameDecoder, gameDetailsEntryDecoder } from '@/arkham/types/Game';
 import { ArkhamDbDecklist, Deck, deckDecoder } from '@/arkham/types/Deck';
 import { CardDef, cardDefDecoder } from '@/arkham/types/CardDef';
@@ -842,6 +843,15 @@ export const undoToStep = (gameId: string, step: number): Promise<void> =>
  * so it is persisted with a step, reaches the room like any other update, and
  * the rules that care what you typed -- Carcosa's HASTUR recorder -- can see
  * it. */
+/* A page of scrollback: the entries immediately older than `beforeSeq`.
+ *
+ * The game payload only ever carries the newest 40, so this is how the rest of
+ * a game's history is reached. */
+export const fetchLogBefore = async (gameId: string, beforeSeq: number): Promise<LogRow[]> => {
+  const { data } = await api.get(`arkham/games/${gameId}/log/before/${beforeSeq}`)
+  return JsonDecoder.array(logRowDecoder, 'LogRow[]').decodePromise(data)
+}
+
 export const sayInLog = (gameId: string, investigatorId: string, text: string): Promise<void> =>
   /* The null is the speaker's name: the API fills it from the authenticated
    * session, so sending one here would be ignored anyway. */

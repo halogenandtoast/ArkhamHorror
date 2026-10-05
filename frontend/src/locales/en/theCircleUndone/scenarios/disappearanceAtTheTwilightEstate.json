@@ -50,7 +50,12 @@
     "gatherSets": "Gather all cards from the following encounter sets: *Disappearance at the Twilight Estate*, *At Death’s Doorstep*, *Inexorable Fate*, *Realm of Death*, *Spectral Predators*, *Trapped Spirits*, *The Watcher*, and *Chilling Cold*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/disappearance-at-the-twilight-estate.png' /><img src='{setImgPath}/at-deaths-doorstep.png' /><img src='{setImgPath}/inexorable-fate.png' /><img src='{setImgPath}/realm-of-death.png' /><img src='{setImgPath}/spectral-predators.png' /><img src='{setImgPath}/trapped-spirits.png' /><img src='{setImgPath}/the-watcher.png' /><img src='{setImgPath}/chilling-cold.png' /></section>When gathering the *At Death’s Doorstep* encounter set, only gather the seven _Spectral_ locations from that encounter set. Do not gather any of the other cards from that encounter set.",
     "placeLocations": "Put the seven _Spectral_ locations into play.",
     "theSpectralWatcher": "Put The Spectral Watcher enemy into play in the Entry Hall.",
-    "investigatorSetup": "Each player follows the setup instructions on the back of his or her investigator card."
+    "investigatorSetup": "Each player follows the setup instructions on the back of his or her investigator card.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Disappearance at the Twilight Estate*, *Unspeakable Fate*, *Unstable Realm*, *Bloodthirsty Spirits*, and *Chilling Mists*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-disappearance-at-the-twilight-estate.png' /><img src='{setImgPath}/unspeakable-fate.png' /><img src='{setImgPath}/unstable-realm.png' /><img src='{setImgPath}/bloodthirsty-spirits.png' /><img src='{setImgPath}/chilling-mists.png' /></section>*Unspeakable Fate* replaces *Inexorable Fate*, *Unstable Realm* replaces *Realm of Death*, *Bloodthirsty Spirits* replaces *Trapped Spirits*, and *Chilling Mists* replaces *Chilling Cold*. Remove the replaced sets from the game.",
+      "placeLocations": "Put the _Spectral_ version of the Wine Cellar (card #28) into play.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: while resolving The Watcher’s Grasp treachery, The Spectral Watcher does not exhaust after it attacks."
+    }
   },
   "specialRules": [
     {

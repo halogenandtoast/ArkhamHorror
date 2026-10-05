@@ -100,9 +100,10 @@ cultistEffect = do
 
 setupAPhantomOfTruth :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupAPhantomOfTruth _attrs = do
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li.nested "doubt.instructions" do
         li "doubt.remove"
         li "doubt.act"
@@ -110,8 +111,11 @@ setupAPhantomOfTruth _attrs = do
         li "conviction.remove"
         li "conviction.act"
       li "chooseLocations"
+      onReturnTo isReturnTo $ li.returnTo "chooseLocations"
       li "placeLocations"
       li "setAside"
+      onReturnTo isReturnTo $ li.returnTo "setAside"
+      onReturnTo isReturnTo $ li.returnTo "additionalRule"
       li "lostSoul"
       unscoped $ li "shuffleRemainder"
 
@@ -147,7 +151,6 @@ setupAPhantomOfTruth _attrs = do
   placeOneOf_ (Locations.operaGarnier212, Locations.operaGarnier213)
   placeOneOf_ (Locations.leMarais217, Locations.leMarais218)
 
-  isReturnTo <- getIsReturnTo
   if not isReturnTo
     then
       placeAll

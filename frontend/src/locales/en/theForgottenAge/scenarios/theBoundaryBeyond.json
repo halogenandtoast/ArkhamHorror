@@ -50,7 +50,13 @@
     "explorationDeck": "Create the exploration deck. This is done by taking the 12 single-sided _*Ancient*_ locations and shuffling them together, along with 1 copy each of the following encounter cards: Window to Another Time, Timeline Destabilization, A Tear in Time, and Lost in Time.",
     "setAside": "Set the Padma Amrita enemy aside, out of play.",
     "setActAndAgenda3OutOfPlay": "Set act 3a and agenda 3a aside, out of play. They are not part of the act or agenda decks, for now…",
-    "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
+    "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The Boundary Beyond*, *Temporal Hunters*, *Cult of Pnakotus*, and *Venomous Hate*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-boundary-beyond.png' /><img src='{setImgPath}/temporal-hunters.png' /><img src='{setImgPath}/cult-of-pnakotus.png' /><img src='{setImgPath}/venomous-hate.png' /></section>*Temporal Hunters* replaces *Temporal Flux*, *Cult of Pnakotus* replaces *Dark Cult*, and *Venomous Hate* replaces *Yig’s Venom*. Remove the replaced sets from the game.",
+      "placeLocations": "Add the new _Present-Day_ locations to the original locations from *The Boundary Beyond* encounter set. Remove 1 of the 2 copies of each of these locations from the game at random. Put the remaining locations into play.",
+      "explorationDeck": "When building the exploration deck, use only the 12 single-sided _Ancient_ locations. Do not include any of the other encounter cards listed in the original setup instructions.",
+      "harbinger": "After setup, search the collection for the new Harbinger of Valusia (*The Sleeper Returns*) and set it aside, out of play. If the Harbinger of Valusia would enter play during this scenario, use this version instead of the original one."
+    }
   },
   "resolutions": {
     "noResolution": {

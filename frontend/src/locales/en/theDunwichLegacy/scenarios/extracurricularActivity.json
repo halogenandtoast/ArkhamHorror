@@ -12,7 +12,12 @@
       "theHourIsLate": "If you have completed The House Always Wins, use Faculty Offices (*The Hour is Late*). Set it aside, out of play. Remove Faculty Offices (*The Night is Still Young*) from the game."
     },
     "setAside": "Set the following cards aside, out of play: “Jazz” Mulligan, Alchemical Concoction, The Experiment, Professor Warren Rice, Dormitories, and Alchemy Labs.",
-    "placeLocations": "Put the Miskatonic Quad, Orne Library, Humanities Building, Student Union, Science Building, and Administration Building locations into play. Each investigator begins play at the Miskatonic Quad."
+    "placeLocations": "Put the Miskatonic Quad, Orne Library, Humanities Building, Student Union, Science Building, and Administration Building locations into play. Each investigator begins play at the Miskatonic Quad.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Extracurricular Activity*, *Beyond the Threshold*, *Resurgent Evils*, *Secret Doors*, and *Yog-Sothoth’s Emissaries*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-extracurricular-activities.png' /><img src='{setImgPath}/beyond-the-threshold.png' /><img src='{setImgPath}/resurgent-evils.png' /><img src='{setImgPath}/secret-doors.png' /><img src='{setImgPath}/yog-sothoths-emissaries.png' /></section>*Beyond the Threshold* replaces *The Beyond*, *Resurgent Evils* replaces *Ancient Evils*, *Secret Doors* replaces *Locked Doors*, and *Yog-Sothoth’s Emissaries* replaces *Agents of Yog-Sothoth*. Remove the replaced sets from the game.",
+      "placeLocations": "Put the Miskatonic Quad, Humanities Building, Student Union, Science Building, and Administration Building locations into play. Then randomly choose between Orne Library and Warren Observatory: put the chosen location into play and remove the other from the game. Each investigator begins play at the Miskatonic Quad.",
+      "enthralledSecurityGuard": "Check Campaign Log. If you have completed *Return to The House Always Wins*: Search the encounter sets for 1 copy of Enthralled Security Guard and spawn it at the Administration Building."
+    }
   },
   "resolutions": {
     "noResolution": {

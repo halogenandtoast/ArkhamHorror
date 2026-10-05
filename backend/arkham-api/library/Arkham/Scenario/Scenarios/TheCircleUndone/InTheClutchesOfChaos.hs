@@ -60,9 +60,11 @@ standaloneChaosTokens =
 
 setupInTheClutchesOfChaos :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupInTheClutchesOfChaos attrs = do
+  isReturnTo <- Arkham.Scenario.Import.Lifted.getIsReturnTo
   setup $ ul do
-    li "gatherSets"
+    liGatherSets isReturnTo
     li "placeLocations"
+    onReturnTo isReturnTo $ li.returnTo "placeLocations"
     scope "anetteMasonIsPossessedByEvil" do
       li.nested "checkCampaignLog" do
         li "gatherSets"

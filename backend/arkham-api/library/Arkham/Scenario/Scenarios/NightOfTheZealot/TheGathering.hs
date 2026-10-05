@@ -56,9 +56,12 @@ instance HasChaosTokenValue TheGathering where
 
 setupTheGathering :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheGathering _attrs = do
+  isReturnTo <- getIsReturnTo
   setup $ ul do
-    li "gatherSets"
-    li "placeLocations"
+    liGatherSets isReturnTo
+    onReturnTo isReturnTo $ li.returnTo "mysteriousGateway"
+    liReturnToInstead isReturnTo "placeLocations"
+    onReturnTo isReturnTo $ li.returnTo "atticAndCellar"
     li "setOutOfPlay"
     unscoped $ li "shuffleRemainder"
 
@@ -69,8 +72,6 @@ setupTheGathering _attrs = do
   gather Set.StrikingFear
   gather Set.AncientEvils
   gather Set.ChillingCold
-
-  isReturnTo <- getIsReturnTo
 
   setAgendaDeck [Agendas.whatsGoingOn, Agendas.riseOfTheGhouls, Agendas.theyreGettingOut]
   setActDeck

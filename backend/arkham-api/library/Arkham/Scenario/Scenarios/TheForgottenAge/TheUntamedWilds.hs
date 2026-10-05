@@ -71,12 +71,14 @@ instance HasChaosTokenValue TheUntamedWilds where
 
 setupTheUntamedWilds :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheUntamedWilds _attrs = do
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li "placeLocations"
-      li "explorationDeck"
+      liReturnToInstead isReturnTo "explorationDeck"
       li "setAside"
+      onReturnTo isReturnTo $ li.returnTo "additionalRule"
       unscoped $ li "shuffleRemainder"
 
   -- no return to set
@@ -116,8 +118,6 @@ setupTheUntamedWilds _attrs = do
   moon <- Locations.ropeBridge `orSampleIfReturnTo` [Locations.waterfall]
   triangle <- Locations.serpentsHaven `orSampleIfReturnTo` [Locations.trailOfTheDead]
   heart <- Locations.circuitousTrail `orSampleIfReturnTo` [Locations.cloudForest]
-
-  isReturnTo <- getIsReturnTo
 
   let
     treacheries =

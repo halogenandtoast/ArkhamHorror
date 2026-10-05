@@ -107,14 +107,16 @@ standaloneChaosTokens =
 
 setupBlackStarsRise :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupBlackStarsRise attrs = do
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li "adjustChaosBag"
       li.nested "version.instructions" do
         li "version.createPiles"
         li "version.randomizePiles"
         li "version.choosePile"
+      onReturnTo isReturnTo $ li.returnTo "version"
       li "agendaDecks"
       li "setAside"
       li "chooseSetAsideLocations"

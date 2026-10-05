@@ -29,6 +29,13 @@
     "sickeningReality": {
       "instructions": "Place the 5 “Sickening Reality” story cards underneath the scenario reference card.",
       "note": "*Note: These cards are double‑sided and have encounter cards on their other side. For the best experience, do not look at the other side unless an effect instructs you to do so.*"
+    },
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The Last King*, *Decaying Reality*, and *Delusory Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-last-king.png' /><img src='{setImgPath}/decaying-reality.png' /><img src='{setImgPath}/delusory-evils.png' /></section>*Decaying Reality* replaces *Decay & Filth* and *Delusory Evils* replaces *Ancient Evils*. Remove the replaced sets from the game.",
+      "agendaDeck": "Remove Agenda 1a—*Fashionably Late* from the game and replace it with the new Agenda 1a—*Better Never Than Late*.",
+      "dianneDevine": "Remove the original Dianne Devine (*Mercurial and Mischievous*) from the game and replace her with the new version of Dianne Devine (*Hiding an Oath Unspoken*).",
+      "sickeningReality": "Place the 3 new Sickening Reality cards underneath the scenario reference card along with the 5 original ones, for a total of 8.",
+      "setAside": "Also set the Shocking Display treachery aside, out of play."
     }
   },
   "resolutions": {

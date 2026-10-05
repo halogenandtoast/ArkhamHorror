@@ -9,10 +9,11 @@
   },
   "returnToThePitOfDespair": {
     "setup": {
-      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to The Pit of Despair.",
-      "replacedSets": "Stalkers of Cthulhu replaces Agents of Cthulhu, and Rolling Tide replaces Rising Tide.",
-      "tidalTunnels": "Replace one of each Tidal Pool, Underground River and Underwater Cavern with its counterpart from Return to Flooded Caverns, then set the Tidal Tunnels up as usual.",
-      "setAsideTroublingMemories": "Set aside both copies of Troubling Memories, out of play."
+      "gatherSets": "Gather all cards from the following encounter sets: <span class='return-to-swap'>*Return to The Pit of Despair*</span>, *The Pit of Despair*, *Creatures of the Deep*, *Flooded Caverns*, <span class='return-to-swap'>*Return to Flooded Caverns*</span>, <span class='return-to-swap'>*Rolling Tide*</span>, *Shattered Memories*, <span class='return-to-swap'>*Stalkers of Cthulhu*</span>, and *Rats*. These sets are indicated by the following icons:<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/018.png' /><img src='{setImgPath}/grotto-of-despair.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/return-to-flooded-caverns.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/rolling-tide.png' /><img src='{setImgPath}/shattered-memories.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/stalkers-of-cthulhu.png' /><img src='{setImgPath}/rats.png' /></section>Note: The encounter set icon for each Tidal Tunnel location appears only on the location’s revealed side.",
+      "replacedSets": "*Stalkers of Cthulhu* replaces *Agents of Cthulhu*, and *Rolling Tide* replaces *Rising Tide*. Remove the replaced sets from the game.",
+      "replacedCards": "Use *The Pit* from *Return to The Pit of Despair* as act 1a, instead of the original.",
+      "tidalTunnels": "Replace one of each Tidal Pool, Underground River and Underwater Cavern from *Flooded Caverns* with its counterpart from *Return to Flooded Caverns*, so that six unique Tidal Tunnels remain.",
+      "setAsideTroublingMemories": "Also set both copies of the *Troubling Memories* treachery aside, out of play."
     },
     "name": "Return to The Pit of Despair"
   },
@@ -24,9 +25,11 @@
   },
   "returnToTheVanishingOfElinaHarper": {
     "setup": {
-      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to The Vanishing of Elina Harper.",
-      "replacedSets": "Innsmouth Haze replaces Fog over Innsmouth, and Barricaded Doors replaces Locked Doors.",
-      "hybridLeads": "Shuffle the \"Little\" Gemma, Ron Stalwick and Roderick story assets into the Leads deck."
+      "gatherSets": "Gather all cards from the following encounter sets: <span class='return-to-swap'>*Return to The Vanishing of Elina Harper*</span>, *The Vanishing of Elina Harper*, *Agents of Dagon*, <span class='return-to-swap'>*Innsmouth Haze*</span>, *The Locals*, *Chilling Cold*, <span class='return-to-swap'>*Barricaded Doors*</span>, *Nightgaunts*, and *The Midnight Masks*. These sets are indicated by the following icons:<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/022.png' /><img src='{setImgPath}/disappearance-of-elina-harper.png' /><img src='{setImgPath}/agents-of-dagon.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/innsmouth-haze.png' /><img src='{setImgPath}/locals.png' /><img src='{setImgPath}/chilling-cold.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/barricaded-doors.png' /><img src='{setImgPath}/nightgaunts.png' /><img src='{setImgPath}/midnight-masks.png' /></section>When gathering The Midnight Masks encounter set, only gather the five treachery cards (2x False Lead and 3x Hunting Shadow). Do not gather any of the other cards from that encounter set.",
+      "replacedSets": "*Innsmouth Haze* replaces *Fog over Innsmouth*, and *Barricaded Doors* replaces *Locked Doors*. Remove the replaced sets from the game.",
+      "replacedCards": "Use *The Search for Agent Harper* from *Return to The Vanishing of Elina Harper* as act 1a, instead of the original.",
+      "hybridLeads": "Shuffle the *“Little” Gemma*, *Ron Stalwick* and *Roderick* story assets into the Leads deck as well.",
+      "setAsideCards": "Set each of the following cards aside, out of play: the Thomas Dawson and Elina Harper story assets, both copies of the Hunting Nightgaunt enemy, and the <span class='return-to-swap'>*Immaterial One*</span> enemy (*Innsmouth Haze* stands in for the Winged One)."
     },
     "name": "Return to The Vanishing of Elina Harper",
     "townspeopleInsight": "Your dealings with the townspeople have given you insight into what's going on here: each investigator gains 1 extra experience for each Suspect enemy in the victory display."
@@ -38,9 +41,11 @@
   },
   "returnToInTooDeep": {
     "setup": {
-      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to In Too Deep.",
-      "replacedSets": "Stalkers of Cthulhu replaces Agents of Cthulhu, Rolling Tide replaces Rising Tide, and Occultation replaces Syzygy.",
-      "setAsideInnsmouthInfluence": "Set aside all four copies of Innsmouth Influence, out of play."
+      "gatherSets": "Gather all cards from the following encounter sets: <span class='return-to-swap'>*Return to In Too Deep*</span>, *In Too Deep*, *Creatures of the Deep*, <span class='return-to-swap'>*Rolling Tide*</span>, <span class='return-to-swap'>*Occultation*</span>, *The Locals*, and <span class='return-to-swap'>*Stalkers of Cthulhu*</span>. These sets are indicated by the following icons:<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/028.png' /><img src='{setImgPath}/in-too-deep.png' /><img src='{setImgPath}/undersea-creatures.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/rolling-tide.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/occultation.png' /><img src='{setImgPath}/locals.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/stalkers-of-cthulhu.png' /></section>",
+      "replacedSets": "*Stalkers of Cthulhu* replaces *Agents of Cthulhu*, *Rolling Tide* replaces *Rising Tide*, and *Occultation* replaces *Syzygy*. Remove the replaced sets from the game.",
+      "replacedCards": "Use *Through the Labyrinth* from *Return to In Too Deep* as act 1a, instead of the original.",
+      "setAsideCards": "Set the following cards aside, out of play: 2 copies of the Ravager from the Deep enemy, 2 copies of the <span class='return-to-swap'>*Deep One Ambusher*</span> enemy (*Stalkers of Cthulhu* stands in for the Young Deep One), the Joe Sargent story asset, the Teachings of the Order story asset, and the Innsmouth Shoggoth enemy.",
+      "setAsideInnsmouthInfluence": "Also set all four copies of *Innsmouth Influence* aside, out of play."
     },
     "resolution": {
       "innsmouthInfluence": "As you are about to leave this forsaken place, you can feel something in yourself pulling, wanting to go back. You wonder if your stay here already started to affect you."
@@ -50,10 +55,11 @@
   "returnToDevilReef": {
     "name": "Return to Devil Reef",
     "setup": {
-      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to Devil Reef.",
-      "replacedSets": "Rolling Tide replaces Rising Tide.",
-      "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
-      "devilReefLocations": "Shuffle Cave Mouth in with the rest of the Devil Reef locations. Do not remove any; use all six."
+      "gatherSets": "Gather all cards from the following encounter sets: <span class='return-to-swap'>*Return to Devil Reef*</span>, *Devil Reef*, *Agents of Hydra*, *Creatures of the Deep*, *Flooded Caverns*, <span class='return-to-swap'>*Return to Flooded Caverns*</span>, *Malfunction*, and <span class='return-to-swap'>*Rolling Tide*</span>. These sets are indicated by the following icons:<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/031.png' /><img src='{setImgPath}/devil-reef.png' /><img src='{setImgPath}/agents-of-hydra.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/return-to-flooded-caverns.png' /><img src='{setImgPath}/malfunction.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/rolling-tide.png' /></section>",
+      "replacedSets": "*Rolling Tide* replaces *Rising Tide*. Remove the replaced set from the game.",
+      "replacedCards": "Use the *Fishing Vessel* story asset from *Return to Devil Reef*, instead of the original.",
+      "tidalTunnels": "Combine *Flooded Caverns* with *Return to Flooded Caverns*, replacing one of each Tidal Pool, Underground River and Underwater Cavern, so that six unique Tidal Tunnels remain.",
+      "devilReefLocations": "Shuffle *Cave Mouth* in with the 5 Devil Reef locations and put all 6 of them into play, unrevealed side faceup. Do not remove any. Do not place them adjacent to Churning Waters—these locations are connected not via adjacency, but via their connection symbols."
     },
     "aBargain": {
       "title": "A Bargain",
@@ -65,19 +71,20 @@
   "returnToHorrorInHighGear": {
     "name": "Return to Horror in High Gear",
     "setup": {
-      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to Horror in High Gear.",
-      "replacedSets": "Innsmouth Haze replaces Fog over Innsmouth.",
-      "roadDeck": "Shuffle Mud Track and Straight Section in with the other (non-Long Way Around) road locations, then remove two at random from the game without looking at them.",
-      "endOfRound": "For the duration of this scenario: Forced - At the end of the round, discard all non-Trap cards attached to locations."
+      "gatherSets": "Gather all cards from the following encounter sets: <span class='return-to-swap'>*Return to Horror in High Gear*</span>, *Horror in High Gear*, <span class='return-to-swap'>*Innsmouth Haze*</span>, *Malfunction*, *Shattered Memories*, and *Ancient Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/035.png' /><img src='{setImgPath}/horror-in-high-gear.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/innsmouth-haze.png' /><img src='{setImgPath}/malfunction.png' /><img src='{setImgPath}/shattered-memories.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+      "replacedSets": "*Innsmouth Haze* replaces *Fog over Innsmouth*. Remove the replaced set from the game.",
+      "roadDeck": "Before creating the Road deck, shuffle *Mud Track* and *Straight Section* in with the other (non-Long Way Around) road locations, then remove two of them at random from the game without looking at them.",
+      "endOfRound": "For the duration of this scenario, the following ability is active: _Forced_ – At the end of the round: Discard all non-_Trap_ cards attached to locations."
     }
   },
   "returnToALightInTheFog": {
     "name": "Return to A Light in the Fog",
     "setup": {
-      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to A Light in the Fog.",
-      "replacedSets": "Occultation replaces Syzygy, and Rolling Tide replaces Rising Tide.",
-      "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
-      "setAsideGrapplers": "Set aside all three copies of Deep One Grappler, out of play, and shuffle both copies of Born to Breed into the encounter deck."
+      "gatherSets": "Gather all cards from the following encounter sets: <span class='return-to-swap'>*Return to A Light in the Fog*</span>, *A Light in the Fog*, *Creatures of the Deep*, *Flooded Caverns*, <span class='return-to-swap'>*Return to Flooded Caverns*</span>, <span class='return-to-swap'>*Rolling Tide*</span>, <span class='return-to-swap'>*Occultation*</span>, and *Striking Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/039.png' /><img src='{setImgPath}/a-light-in-the-fog.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/return-to-flooded-caverns.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/rolling-tide.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/occultation.png' /><img src='{setImgPath}/striking-fear.png' /></section>",
+      "replacedSets": "*Occultation* replaces *Syzygy*, and *Rolling Tide* replaces *Rising Tide*. Remove the replaced sets from the game.",
+      "replacedCards": "Use *Terror at Falcon Point* from *Return to A Light in the Fog* as agenda 4a, instead of the original.",
+      "tidalTunnels": "Combine *Flooded Caverns* with *Return to Flooded Caverns*, replacing one of each Tidal Pool, Underground River and Underwater Cavern, so that six unique Tidal Tunnels remain.",
+      "setAsideGrapplers": "Also set all three copies of the *Deep One Grappler* enemy aside, out of play, and shuffle both copies of *Born to Breed* into the encounter deck."
     },
     "changing": {
       "title": "A Light in the Fog",
@@ -87,20 +94,22 @@
   "returnToTheLairOfDagon": {
     "name": "Return to The Lair of Dagon",
     "setup": {
-      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to The Lair of Dagon.",
-      "replacedSets": "Occultation replaces Syzygy, and Barricaded Doors replaces Locked Doors.",
-      "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
-      "doorway": "Shuffle the three versions of Doorway to the Depths together, remove two of them from the game at random without looking, and set the remaining one aside without looking at it.",
-      "setAsideStirring": "Set aside the one copy of Stirring in His Sleep, out of play."
+      "gatherSets": "Gather all cards from the following encounter sets: <span class='return-to-swap'>*Return to The Lair of Dagon*</span>, *The Lair of Dagon*, *Agents of Dagon*, *Flooded Caverns*, <span class='return-to-swap'>*Return to Flooded Caverns*</span>, <span class='return-to-swap'>*Occultation*</span>, *Dark Cult*, and <span class='return-to-swap'>*Barricaded Doors*</span>. These sets are indicated by the following icons:<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/043.png' /><img src='{setImgPath}/lair-of-dagon.png' /><img src='{setImgPath}/agents-of-dagon.png' /><img src='{setImgPath}/flooded-caves.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/return-to-flooded-caverns.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/occultation.png' /><img src='{setImgPath}/dark-cult.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/barricaded-doors.png' /></section>",
+      "replacedSets": "*Occultation* replaces *Syzygy*, and *Barricaded Doors* replaces *Locked Doors*. Remove the replaced sets from the game.",
+      "replacedCards": "Use *The Second Oath* from *Return to The Lair of Dagon* as act 2a, instead of the original.",
+      "tidalTunnels": "Combine *Flooded Caverns* with *Return to Flooded Caverns*, replacing one of each Tidal Pool, Underground River and Underwater Cavern, so that six unique Tidal Tunnels remain.",
+      "doorway": "Shuffle the three versions of *Doorway to the Depths* together, remove two of them from the game at random without looking, and set the remaining one aside without looking at it.",
+      "setAsideStirring": "Also set the one copy of *Stirring in His Sleep* aside, out of play."
     }
   },
   "returnToIntoTheMaelstrom": {
     "name": "Return to Into the Maelstrom",
     "setup": {
-      "gatherSets": "Gather all cards from the encounter sets listed in The Innsmouth Conspiracy Campaign Guide, plus Return to Into the Maelstrom.",
-      "replacedSets": "Occultation replaces Syzygy.",
-      "tidalTunnels": "Combine Flooded Caverns with Return to Flooded Caverns, replacing one of each Tidal Pool, Underground River and Underwater Cavern.",
-      "setAsideCards": "Set aside both copies of Stirring in Their Sleep and the single copies of Presence of the Father and Presence of the Mother, out of play."
+      "gatherSets": "Gather all cards from the following encounter sets: <span class='return-to-swap'>*Return to Into the Maelstrom*</span>, *Into the Maelstrom*, *Agents of Hydra*, *Creatures of the Deep*, *Flooded Caverns*, <span class='return-to-swap'>*Return to Flooded Caverns*</span>, *Shattered Memories*, <span class='return-to-swap'>*Occultation*</span>, and *Ancient Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/048.png' /><img src='{setImgPath}/into-the-maelstrom.png' /><img src='{setImgPath}/agents-of-hydra.png' /><img src='{setImgPath}/undersea-creatures.png' /><img src='{setImgPath}/flooded-caves.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/return-to-flooded-caverns.png' /><img src='{setImgPath}/shattered-memories.png' /><img class='return-to-swap' src='{imgPath}/homebrew/return-to-the-innsmouth-conspiracy/sets/occultation.png' /><img src='{setImgPath}/ancient-evils.png' /></section>",
+      "replacedSets": "*Occultation* replaces *Syzygy*. Remove the replaced set from the game.",
+      "replacedCards": "Use the *Under the Surface* and *Celestial Alignment* agendas and the *Back into the Depths* act from *Return to Into the Maelstrom*, instead of the originals.",
+      "tidalTunnels": "Combine *Flooded Caverns* with *Return to Flooded Caverns*, replacing one of each Tidal Pool, Underground River and Underwater Cavern, so that six unique Tidal Tunnels remain.",
+      "setAsideCards": "Also set both copies of *Stirring in Their Sleep* and the single copies of *Presence of the Father* and *Presence of the Mother* aside, out of play."
     }
   },
   "flashbackXVI": {

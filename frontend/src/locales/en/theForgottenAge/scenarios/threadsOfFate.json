@@ -75,7 +75,12 @@
     "beforeDrawingOpeningHands": "Before drawing opening hands, search the collection and each player’s deck for Alejandro Vela and Relic of Ages, and set them aside, out of play.",
     "placeLocations": "Put Northside, Downtown, Easttown, Miskatonic University, Rivertown, Velma’s Diner, and Curiositie Shoppe into play. Each investigator begins play in Rivertown.",
     "setAside": "Set the Town Hall location, the Ichtaca (*The Forgotten Guardian*) asset, and the Expedition Journal asset aside, out of play.",
-    "actDecks": "Adjust the contents of each act deck, as noted below under _Three Acts, Three Threads._"
+    "actDecks": "Adjust the contents of each act deck, as noted below under _Three Acts, Three Threads._",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Threads of Fate* and *Cult of Pnakotus*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-threads-of-fate.png' /><img src='{setImgPath}/cult-of-pnakotus.png' /></section>*Cult of Pnakotus* replaces *Dark Cult*. Remove the replaced set from the game.",
+      "setAside": "Also set the Veda Whitsley story asset aside, out of play.",
+      "actDecks": "This encounter set contains a fourth “g/h” act deck. The investigators must decide (choose one): if you wish to find the source named in the *Advertiser*’s story, remove Search for the Meaning, both copies of The Overgrown Estate, and 1 of the 2 copies of Seeking Trouble at random from the “g/h” deck; if you wish to find the root of the problem, remove Search for the Source, both copies of Seeking Trouble, and 1 of the 2 copies of The Overgrown Estate at random."
+    }
   },
   "threeActsThreeThreads": {
     "title": "Three Acts, Three Threads",

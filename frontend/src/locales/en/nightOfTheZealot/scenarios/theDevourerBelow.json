@@ -36,7 +36,12 @@
       "fiveOrSixNames": "If there are exactly 5 or 6 names, place 3 doom on Agenda 1a."
     },
     "pastMidnight": "Check Campaign Log. If *it is past midnight*: Each player discards 2 random cards from their starting hand.",
-    "ghoulPriest": "Check Campaign Log. If *the Ghoul Priest is still alive*: Shuffle it into the encounter deck."
+    "ghoulPriest": "Check Campaign Log. If *the Ghoul Priest is still alive*: Shuffle it into the encounter deck.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The Devourer Below*, *Ghouls of Umôrdhoth*, and *The Devourer’s Cult*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-devourer-below.png' /><img src='{setImgPath}/ghouls-of-umrdhoth.png' /><img src='{setImgPath}/the-devourers-cult.png' /></section>*Ghouls of Umôrdhoth* replaces *Ghouls* and *The Devourer’s Cult* replaces *Dark Cult*. Remove the replaced sets from the game.",
+      "placeLocations": "When choosing 4 Arkham Woods locations to put into play at random, include the 4 new Arkham Woods locations from this encounter set, for a total of 10 possibilities.",
+      "vaultOfEarthlyDemise": "After setting the Umôrdhoth enemy aside, attach *Vault of Earthly Demise* to it."
+    }
   },
   "resolutions": {
     "xp": {

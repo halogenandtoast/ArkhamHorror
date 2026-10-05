@@ -77,8 +77,14 @@
     "valentinoNotCrossedOff": "Place 6 clues on the Billiards Room if Valentino Rivas’s profile is not crossed off.",
     "pennyNotCrossedOff": "Place 6 clues on the Balcony if Penny White’s profile is not crossed off.",
     "piecesOfEvidence": "As evenly as possible, remove a total number of clues from the above locations equal to the number of *pieces of evidence that were left behind* in your Campaign Log.",
-    "theMortalRealm": "<section class='note-green'><h1>The Mortal Realm</h1><p>_Note_: This scenario’s setup only uses the seven locations without the _Spectral_ trait. Each of the _Spectral_ locations should be set aside.</p></div>"
-
+    "theMortalRealm": "<section class='note-green'><h1>The Mortal Realm</h1><p>_Note_: This scenario’s setup only uses the seven locations without the _Spectral_ trait. Each of the _Spectral_ locations should be set aside.</p></div>",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to At Death’s Doorstep*, *Bloodthirsty Spirits*, *Unspeakable Fate*, *Chilling Mists*, and *Unstable Realm*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-at-deaths-doorstep.png' /><img src='{setImgPath}/bloodthirsty-spirits.png' /><img src='{setImgPath}/unspeakable-fate.png' /><img src='{setImgPath}/chilling-mists.png' /><img src='{setImgPath}/unstable-realm.png' /></section>*Bloodthirsty Spirits* replaces *Trapped Spirits*, *Unspeakable Fate* replaces *Inexorable Fate*, *Chilling Mists* replaces *Chilling Cold*, and *Unstable Realm* replaces *Realm of Death*. Remove the replaced sets from the game.",
+      "setSetsAside": "Set the *Unstable Realm* encounter set aside, out of play, instead of the *Realm of Death* encounter set. Likewise, when act 1b instructs the players to shuffle the *Realm of Death* encounter set into the encounter deck, shuffle in the *Unstable Realm* encounter set instead.",
+      "placeLocations": "Also put the Senator Nathaniel Rhodes enemy into play in the Entry Hall with 1 clue per investigator on him, and put the Wine Cellar location into play.",
+      "setLocationsAside": "Also set the _Spectral_ version of the Wine Cellar aside, out of play.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: while resolving The Watcher’s Grasp treachery, The Spectral Watcher does not exhaust after it attacks."
+    }
   },
   "interlude1": {
     "title": "Interlude I: A Record of Those Lost",

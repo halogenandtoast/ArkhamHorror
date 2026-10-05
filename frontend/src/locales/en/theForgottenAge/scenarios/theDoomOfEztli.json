@@ -45,7 +45,15 @@
     "placeLocations": "Put the Entryway into play. Each investigator begins play in the Entryway.",
     "explorationDeck": "Create the exploration deck. This is done by taking the five single-sided _*Ancient*_ locations and shuffling them together, along with one copy each of the following treachery cards: Ill Omen, Deep Dark, Final Mistake, Entombed, and Crypt Chill.",
     "setAside": "Set the following cards aside, out of play: The Harbinger of Valusia enemy, the Chamber of Time location, and the Relic of Ages asset.",
-    "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
+    "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The Doom of Eztli*, *Venomous Hate*, and *Temporal Hunters*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-doom-of-eztli.png' /><img src='{setImgPath}/venomous-hate.png' /><img src='{setImgPath}/temporal-hunters.png' /></section>*Venomous Hate* replaces *Yig’s Venom* and *Temporal Hunters* replaces *Temporal Flux*. Remove the replaced sets from the game.",
+      "replaceLocations": "Before setup, remove the original Burial Pit, Underground Ruins, and Secret Passage locations from the game, and replace the original Entryway, Ancient Hall, Grand Chamber, and Chamber of Time locations with the new versions from this encounter set.",
+      "harbinger": "Before setup, replace the original Harbinger of Valusia enemy with the new Harbinger of Valusia (*The Sleeper Returns*).",
+      "setAside": "Also gather the 3 Pit Viper cards from the *Serpents* encounter set and set them aside, out of play.",
+      "explorationDeck": "When building the exploration deck, use only Sealed Passage, Mosaic Chamber, Tomb of the Ancients, Throne Room, Snake Pit, Ancient Hall, and Grand Chamber. Do not include any of the other encounter cards listed in the original setup instructions.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: _Forced_ – After a successful exploration ends: Shuffle the top card of the encounter deck into the exploration deck."
+    }
   },
   "resolutions": {
     "label": {

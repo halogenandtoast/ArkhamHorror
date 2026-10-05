@@ -89,7 +89,15 @@
     "heretics": "Shuffle the six Heretic enemies and set aside four of them, at random. Remove the other two copies from the game. These cards are double-sided and have story cards on their reverse side. For the best experience, do not look at the story cards on their other side.",
     "encounterDecks": "This scenario utilizes two separate encounter decks.",
     "spectralDeck": "Separate each of the remaining cards with the _Spectral_ trait and shuffle them together to build the spectral encounter deck (*see “The Spectral Encounter Deck,” below*).",
-    "standardDeck": "Shuffle each of the remaining non-_Spectral_ cards together to build the standard encounter deck."
+    "standardDeck": "Shuffle each of the remaining non-_Spectral_ cards together to build the standard encounter deck.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The Wages of Sin*, *City of the Damned*, *Unspeakable Fate*, *Unstable Realm*, *Bloodthirsty Spirits*, and *Hexcraft*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-wages-of-sin.png' /><img src='{setImgPath}/city-of-the-damned.png' /><img src='{setImgPath}/unspeakable-fate.png' /><img src='{setImgPath}/unstable-realm.png' /><img src='{setImgPath}/bloodthirsty-spirits.png' /><img src='{setImgPath}/hexcraft.png' /></section>*City of the Damned* replaces *City of Sins*, *Unspeakable Fate* replaces *Inexorable Fate*, *Unstable Realm* replaces *Realm of Death*, *Bloodthirsty Spirits* replaces *Trapped Spirits*, and *Hexcraft* replaces *Witchcraft*. Remove the replaced sets from the game.",
+      "setAside": "Also set the Erynn MacAoidh story asset aside, out of play.",
+      "actDeck": "Check Campaign Log. If *Erynn wants to meet*: When building the act deck, use the new Act 1a—*In Pursuit of Answers* instead of the original act 1, and include both versions of act 2. When advancing to act 2a, put both act cards into play; the text on both cards is active.",
+      "placeLocations": "Randomly choose one of the two Hangman’s Brook locations to use during this scenario’s setup. Remove the other version from the game.",
+      "heretics": "When randomly choosing 4 Heretic enemies to set aside, shuffle the 2 new Heretic enemies in with the original 6, for a total of 8 possibilities.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: while resolving The Watcher’s Grasp treachery, The Spectral Watcher does not exhaust after it attacks."
+    }
   },
   "specialRules": [
     {

@@ -99,14 +99,20 @@ standaloneCampaignLog =
 
 setupAtDeathsDoorstep :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupAtDeathsDoorstep attrs = do
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li "setSetsAside"
+      onReturnTo isReturnTo $ li.returnTo "setSetsAside"
       li "setLocationsAside"
+      onReturnTo isReturnTo $ li.returnTo "setLocationsAside"
       li.nested "setJosefAside" do
         li "josefNote"
       li "placeLocations"
+      onReturnTo isReturnTo do
+        li.returnTo "placeLocations"
+        li.returnTo "additionalRule"
       li.nested "checkCampaignLog" do
         li "gavriellaNotCrossedOff"
         li "jeromeNotCrossedOff"

@@ -23,7 +23,13 @@
     "placeLocations": "Put one of the three Engine Car locations into play at random. Remove the other versions of Engine Car from the game. Then, put six of the eight Train Car locations into play at random, in a straight line to the left of the Engine Car. Remove the remaining two Train Car locations from the game.",
     "revealTrainCar": "Reveal the leftmost Train Car. Each investigator begins play in that location. (If that location has a ‘forced’ effect that triggers upon entering that location, ignore it.)",
     "setAside": "Set all 4 copies of Across Space and Time aside, out of play.",
-    "adjustChaosBag": "Based on your difficulty level, add the following chaos token(s) to the chaos bag, for the remainder of the campaign:<div class='columns'><ul><li>_Easy_: -2</li><li>_Standard_: -3</li></ul><ul><li>_Hard_: -4</li><li>_Expert_: -5</li></ul></div>"
+    "adjustChaosBag": "Based on your difficulty level, add the following chaos token(s) to the chaos bag, for the remainder of the campaign:<div class='columns'><ul><li>_Easy_: -2</li><li>_Standard_: -3</li></ul><ul><li>_Hard_: -4</li><li>_Expert_: -5</li></ul></div>",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The Essex County Express*, *Beyond the Threshold*, *Erratic Fear*, and *Resurgent Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-essex-county-express.png' /><img src='{setImgPath}/beyond-the-threshold.png' /><img src='{setImgPath}/erratic-fear.png' /><img src='{setImgPath}/resurgent-evils.png' /></section>*Beyond the Threshold* replaces *The Beyond*, *Erratic Fear* replaces *Striking Fear*, and *Resurgent Evils* replaces *Ancient Evils*. Remove the replaced sets from the game.",
+      "agendaDeck": "Remove Agenda 1a—*A Tear in Reality* from the game and replace it with the new Agenda 0a—*Where There’s Smoke* and the new Agenda 1a—*A Tear in Reality (v. II)*. When you construct the agenda deck, agenda 0a should be on top.",
+      "placeLocations": "When choosing 6 Train Car locations to put into play at random, include the 2 new Train Car locations from this encounter set, for a total of 10 possible cards. When choosing an Engine Car location to put into play at random, include the new Engine Car location, for a total of 4 possible cards.",
+      "setAside": "Also set the Engineer story asset aside, out of play."
+    }
   },
   "moving": {
     "title": "Moving on the Train: “Left” and “Right”",

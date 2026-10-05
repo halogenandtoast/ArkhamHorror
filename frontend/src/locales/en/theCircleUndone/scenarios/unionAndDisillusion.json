@@ -92,7 +92,12 @@
     "v2": "*If the investigators sided with the coven*, *the investigators are deceiving the Lodge*, and *the investigators were inducted into the Inner Circle*, use Act 3—“Beyond the Mist (v. II)” and Act 4—“The Broken Rite.”",
     "v3": "If the above is not true, *the investigators sided with the coven*, and at least two of the following is true: *the investigators are deceiving the Lodge*, *the investigators hid their knowledge of the coven*, or *the investigators kept their mementos hidden*, use Act 3—“Beyond the Mist (v. III)” and Act 4—“The Broken Rite.”",
     "v4": "If the above is not true and *the investigators sided with the coven*, use Act 3—“Beyond the Mist (v. IV)” and Act 4—“The Broken Rite.”",
-    "heretics": "Check Campaign Log. For each *heretic that was unleashed unto Arkham*, place 1 doom on agenda 1a."
+    "heretics": "Check Campaign Log. For each *heretic that was unleashed unto Arkham*, place 1 doom on agenda 1a.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Union and Disillusion*, *Unspeakable Fate*, *Unstable Realm*, *Impending Evils*, and *Chilling Mists*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-union-and-disillusion.png' /><img src='{setImgPath}/unspeakable-fate.png' /><img src='{setImgPath}/unstable-realm.png' /><img src='{setImgPath}/impending-evils.png' /><img src='{setImgPath}/chilling-mists.png' /></section>*Unspeakable Fate* replaces *Inexorable Fate*, *Unstable Realm* replaces *Realm of Death*, *Impending Evils* replaces *Ancient Evils*, and *Chilling Mists* replaces *Chilling Cold*. Remove the replaced sets from the game.",
+      "acts": "Add the following bullet point above all the others: if *the investigators sided with the Lodge* and *Erynn joined the investigators*, use the new Act 3—*Beyond the Mist (v. V)* and Act 4—*The Binding Rite*.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: while resolving The Watcher’s Grasp treachery, The Spectral Watcher does not exhaust after it attacks."
+    }
   },
   "resolutions": {
     "label": {

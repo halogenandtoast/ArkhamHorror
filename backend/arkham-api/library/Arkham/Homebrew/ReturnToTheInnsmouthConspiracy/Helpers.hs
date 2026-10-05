@@ -18,6 +18,17 @@ campaignI18n a = withI18n $ scope "returnToTheInnsmouthConspiracy" a
 scenarioI18n :: Scope -> (HasI18n => a) -> a
 scenarioI18n scenarioScope a = campaignI18n $ scope scenarioScope a
 
+{- | Read a setup line from the official scenario's own locale.
+
+A "Return to" scenario card prints only its deltas; every instruction it leaves alone is
+still the Campaign Guide's, so the setup list shows the original line rather than a copy
+of it -- which keeps one string in one place and gets its translations for free. The
+box's own lines sit beside them, marked with 'li.returnTo'.
+-}
+officialSetup :: HasI18n => Scope -> (HasI18n => a) -> a
+officialSetup scenarioScope a =
+  unscoped $ scope "theInnsmouthConspiracy" $ scope scenarioScope $ scope "setup" a
+
 {- | "You count as a Deep One Investigator as long as you have the Deep One trait,
 granted through either a scenario card or a player card. You also count as a Deep
 One investigator as long as you have a permanent player card that grants the Deep

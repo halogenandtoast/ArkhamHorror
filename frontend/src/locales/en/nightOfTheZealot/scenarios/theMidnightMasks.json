@@ -46,6 +46,13 @@
     },
     "burnedToTheGround": "Check Campaign Log. If *your house has burned to the ground*: Remove Your House from the game. Each investigator begins play at Rivertown.",
     "houseStillStanding": "Check Campaign Log. If *your house is still standing*: Each investigator begins play at Your House.",
-    "ghoulPriest": "Check Campaign Log. If *the Ghoul Priest is still alive*: Shuffle it into the encounter deck."
+    "ghoulPriest": "Check Campaign Log. If *the Ghoul Priest is still alive*: Shuffle it into the encounter deck.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The Midnight Masks* and *The Devourer’s Cult*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-midnight-masks.png' /><img src='{setImgPath}/the-devourers-cult.png' /></section>*The Devourer’s Cult* replaces *Dark Cult*. Remove the replaced set from the game.",
+      "cultistDeck": "<div class='columns simple'><p class='basic'>When creating the Cultist deck, include the 3 new *Cult of Umôrdhoth* cards from this expansion. Shuffle the Cultist deck and remove 3 random cards from it without looking at them. (You should be left with a 5-card Cultist deck.) The new cards are indicated by the following icon:</p><section class='encounter-sets'><img src='{setImgPath}/return-cult.png' /></section></div>",
+      "predatorOrPrey": "When constructing the agenda deck, use one of the two copies of Agenda 1a—*Predator or Prey* at random, without looking at their other sides. Remove the other version of Agenda 1a from the game.",
+      "placeLocations": "Also choose one of the two Easttown locations, one of the two Northside locations, one of the two Rivertown locations, and one of the two Miskatonic University locations at random, and put those into play. Remove the other versions of Easttown, Northside, Rivertown, and Miskatonic University from the game.",
+      "acolytes": "If you are instructed to search the encounter deck for an Acolyte, search the encounter deck for any 1-health _Cultist_ enemy instead."
+    }
   }
 }

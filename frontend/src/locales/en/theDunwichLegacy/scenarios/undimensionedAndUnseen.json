@@ -47,7 +47,12 @@
     },
     "setAside": "Set each copy of Esoteric Formula aside, out of play.",
     "powderOfIbnGhazi": "An investigator with the Powder of Ibn-Ghazi in their deck may search their deck for it and put it into play.",
-    "randomBasicWeakness": "Each investigator searches the collection for a random basic _*Madness*_, _*Injury*_, or _*Pact*_ weakness and adds it to their deck for the remainder of the campaign."
+    "randomBasicWeakness": "Each investigator searches the collection for a random basic _*Madness*_, _*Injury*_, or _*Pact*_ weakness and adds it to their deck for the remainder of the campaign.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Undimensioned and Unseen* and *Erratic Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-undimensioned-and-unseen.png' /><img src='{setImgPath}/erratic-fear.png' /></section>*Erratic Fear* replaces *Striking Fear*. Remove the replaced set from the game.",
+      "broodOfYogSothoth": "Remove 4 copies of Brood of Yog-Sothoth from the original scenario and replace them with the 4 new versions of Brood of Yog-Sothoth from the *Return to Undimensioned and Unseen* encounter set.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: if a Brood of Yog-Sothoth would be put into play, it is chosen at random from among the set-aside versions of Brood of Yog-Sothoth."
+    }
   },
   "choosingARandomLocation": {
     "title": "Choosing a Random Location",

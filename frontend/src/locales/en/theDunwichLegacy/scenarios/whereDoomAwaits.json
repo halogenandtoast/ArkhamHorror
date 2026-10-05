@@ -49,7 +49,15 @@
       "v3": "If neither of the above are true, use Act 2—Ascending the Hill (v. III)"
     },
     "addDoom": "Check Campaign Log. *For each Brood of Yog-Sothoth that escaped into the wild*, add 1 doom to agenda 1a.",
-    "hideousAbominations": "Check Campaign Log. If *the investigators put Silas Bishop out of his misery*, remnants of the creature’s body have mutated and grown at Sentinel Hill. Put 1 “Conglomeration of Spheres” enemy from the Hideous Abominations encounter set into play at Ascending Path. Shuffle the rest of that set into the encounter deck. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /></section>"
+    "hideousAbominations": "Check Campaign Log. If *the investigators put Silas Bishop out of his misery*, remnants of the creature’s body have mutated and grown at Sentinel Hill. Put 1 “Conglomeration of Spheres” enemy from the Hideous Abominations encounter set into play at Ascending Path. Shuffle the rest of that set into the encounter deck. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/hideous-abominations.png' /></section>",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Where Doom Awaits*, *Erratic Fear*, *Resurgent Evils*, and *Creeping Cold*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-where-doom-awaits.png' /><img src='{setImgPath}/erratic-fear.png' /><img src='{setImgPath}/resurgent-evils.png' /><img src='{setImgPath}/creeping-cold.png' /></section>*Erratic Fear* replaces *Striking Fear*, *Resurgent Evils* replaces *Ancient Evils*, and *Creeping Cold* replaces *Chilling Cold*. Remove the replaced sets from the game.",
+      "placeLocations": "Put Base of the Hill (*Warped and Twisted*), Ascending Path (*Warped and Twisted*), and Sentinel Peak into play. Each investigator begins play at Base of the Hill.",
+      "divergingPaths": "Add the new Diverging Path to the original Diverging Paths, then remove 1 copy of Diverging Path from the game at random. Set the other 3 copies of Diverging Path aside, out of play.",
+      "alteredPaths": "Add the new Altered Path to the original Altered Paths, then remove 1 copy of Altered Path from the game at random. Set the other 3 copies of Altered Path aside, out of play.",
+      "setAside": "Also set Naomi O’Bannion aside, out of play.",
+      "naomi": "Check Campaign Log. If *Naomi has your back*: Instead of gaining clues from the token bank, the lead investigator may choose an investigator to add the set-aside Naomi O’Bannion to their deck. This card does not count toward that investigator’s deck size."
+    }
   },
   "resolutions": {
     "noResolution": {

@@ -97,18 +97,21 @@ standaloneChaosTokens =
 
 setupTheUnspeakableOath :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheUnspeakableOath attrs = do
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li "monsters"
       li "lunatics"
       li "chooseLocations"
       li "setAside"
+      onReturnTo isReturnTo $ li.returnTo "setAside"
       li "placeLocations"
       li "adjustChaosBag"
-      li.nested "act2.instructions" do
+      unless isReturnTo $ li.nested "act2.instructions" do
         li "act2.v1"
         li "act2.v2"
+      onReturnTo isReturnTo $ li.returnTo "act2"
       unscoped $ li "shuffleRemainder"
   whenReturnTo $ gather Set.ReturnToTheUnspeakableOath
   gather Set.TheUnspeakableOath
@@ -155,7 +158,6 @@ setupTheUnspeakableOath attrs = do
     chooseTargetM iid [westernPatientWing, easternPatientWing] $ moveTo_ attrs iid
 
   theReallyBadOnes <- do
-    isReturnTo <- getIsReturnTo
     if not isReturnTo
       then do
         tookTheOnyxClasp <- getHasRecord YouTookTheOnyxClasp

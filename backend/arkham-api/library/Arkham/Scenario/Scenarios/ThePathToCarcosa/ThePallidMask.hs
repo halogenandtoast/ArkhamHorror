@@ -94,16 +94,19 @@ standaloneChaosTokens =
 setupThePallidMask :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupThePallidMask attrs = do
   setUsesGrid
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li "setAside"
       li.nested "start.instructions" do
         li "start.awoke"
         li "start.entered"
+      onReturnTo isReturnTo $ li.returnTo "catacombs"
       li.nested "catacombs.instructions" do
         li "catacombs.bottom"
         li "catacombs.top"
+      onReturnTo isReturnTo $ li.returnTo "additionalRule"
       li "startAt"
       li "theManInThePallidMask"
       unscoped $ li "shuffleRemainder"
@@ -113,8 +116,6 @@ setupThePallidMask attrs = do
   gather Set.Ghouls
   gather Set.Hauntings
   gather Set.ChillingCold
-
-  isReturnTo <- getIsReturnTo
 
   let
     otherCatacombs =

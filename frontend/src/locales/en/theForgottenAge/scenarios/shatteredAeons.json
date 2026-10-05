@@ -62,7 +62,13 @@
     "setAsideEnemiesNote": "<div class='columns' style='overflow: none;padding-bottom: 40px;'><div style='flex-basis: 20%;'>*Note: These cards are double-sided and have story cards on their other side. For the best experience, do not look at the other side unless an effect instructs you to do so.*</div><div style='flex:1; margin-top: 30px;' class='fan'><img src='{setImgPath}/../cards/04325.avif' /><img src='{setImgPath}/../cards/04326.avif' /></div></div>",
     "setAside": "Set the following cards aside, out of play: Formless Spawn, Relic of Ages (*Unleash the Timestream*), A Pocket in Time, Act 4a—“Paradise Lost”, Act 4a—“Timelock”, and the 6 single- sided _Shattered_ locations.",
     "explorationDeck": "Create the exploration deck. This is done by taking the 3 remaining single-sided locations and shuffling them together, along with 1 copy each of the following encounter cards: Wracked by Time, Between Worlds, and Ancient Evils.",
-    "yigsFury": "Check Campaign Log. For every 10 tally marks under “Yig’s Fury,” place the top card of the lead investigator’s deck in the victory display, facedown. For the remainder of the scenario, treat each of those cards as if it has _Vengeance 1_."
+    "yigsFury": "Check Campaign Log. For every 10 tally marks under “Yig’s Fury,” place the top card of the lead investigator’s deck in the victory display, facedown. For the remainder of the scenario, treat each of those cards as if it has _Vengeance 1_.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Shattered Aeons*, *Temporal Hunters*, and *Cult of Pnakotus*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-shattered-aeons.png' /><img src='{setImgPath}/temporal-hunters.png' /><img src='{setImgPath}/cult-of-pnakotus.png' /></section>*Temporal Hunters* replaces *Temporal Flux* and *Cult of Pnakotus* replaces *Dark Cult*. Remove the replaced sets from the game.",
+      "explorationDeck": "When building the exploration deck, use only the 4 single-sided _Otherworld_ locations. Do not include any of the other encounter cards listed in the original setup instructions.",
+      "setAside": "Also set the new _Shattered_ locations aside, out of play.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: _Forced_ – After a successful exploration ends: Shuffle the top card of the encounter deck into the exploration deck."
+    }
   },
   "specialRules": [
     {

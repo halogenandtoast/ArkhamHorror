@@ -84,10 +84,11 @@ standaloneChaosTokens =
 
 setupTheCityOfArchives :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheCityOfArchives _attrs = do
+  isReturnTo <- getIsReturnTo
   cooperated <- getHasRecord TheInvestigatorsCooperatedWithTheYithians
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li "beforeDrawingOpeningHandsItems"
       li "beforeDrawingOpeningHandsAlejandro"
       li "bodyOfAYithian"
@@ -98,7 +99,11 @@ setupTheCityOfArchives _attrs = do
         li.validate cooperated "cooperated2"
         li.validate (not cooperated) "resisted2"
       li "placeLocations"
+      onReturnTo isReturnTo $ li.returnTo "placeLocations"
       li "setAside"
+      onReturnTo isReturnTo do
+        li.returnTo "setAside"
+        li.returnTo "actDeck"
       unscoped $ li "shuffleRemainder"
 
   scope "bodyOfAYithian" $ flavor $ h "title" >> p "body"
@@ -110,7 +115,6 @@ setupTheCityOfArchives _attrs = do
   gather Set.ChillingCold
   gather Set.StrikingFear
 
-  isReturnTo <- getIsReturnTo
   setActDeck
     [ Acts.exploringPnakotus
     , if isReturnTo then Acts.unrestrictedAccess else Acts.restrictedAccess

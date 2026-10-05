@@ -3,7 +3,7 @@ module Arkham.Helpers.FlavorText (module Arkham.Helpers.FlavorText, module X) wh
 import Arkham.Card.CardCode
 import Arkham.ChaosToken.Types (ChaosTokenFace)
 import Arkham.Classes.HasQueue (push)
-import Arkham.FlavorText as X (li)
+import Arkham.FlavorText as X (li, liGatherSets, liOrReturnTo, liReturnToInstead, onReturnTo)
 import Arkham.FlavorText qualified as FT
 import Arkham.Helpers.Query (allPlayers)
 import Arkham.I18n

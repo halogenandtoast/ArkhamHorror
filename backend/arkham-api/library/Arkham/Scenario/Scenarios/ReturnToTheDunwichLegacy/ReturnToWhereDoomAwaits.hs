@@ -45,11 +45,13 @@ instance RunMessage ReturnToWhereDoomAwaits where
 
       setup do
         ul do
-          li "gatherSets"
-          li "placeLocations"
-          li "divergingPaths"
-          li "alteredPaths"
+          liGatherSets True
+          liReturnToInstead True "placeLocations"
+          liReturnToInstead True "divergingPaths"
+          liReturnToInstead True "alteredPaths"
           li "setAside"
+          onReturnTo True $ li.returnTo "setAside"
+          onReturnTo True $ li.returnTo "naomi"
           li "adjustChaosBag"
           li.nested "act2.instructions" do
             li.validate useV1 "act2.v1"

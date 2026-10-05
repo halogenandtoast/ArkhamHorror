@@ -32,7 +32,15 @@
     "setAside": "Set the following cards aside, out of play: Silas Bishop, The Hidden Chamber, Key to the Chamber, and Powder of Ibn-Ghazi.",
     "delayed": "Check Campaign Log. If *the investigators were delayed on their way to Dunwich*: Add 1 doom to agenda 1a.",
     "seekingVengeance": "Check Campaign Log. If *the O’Bannion gang has a bone to pick with the investigators*: Seeking vengeance, the gang from the Clover Club has followed you to Dunwich. Gather all cards from the Naomi’s Crew encounter set and shuffle them into the encounter deck. This set is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/naomis-crew.png' /></section>",
-    "placeUnderneath": "Take the previously set-aside The Hidden Chamber and Key to the Chamber cards, along with the top 3 cards of the encounter deck. Shuffle them and randomly deal 1 card facedown underneath each location in play except Village Commons."
+    "placeUnderneath": "Take the previously set-aside The Hidden Chamber and Key to the Chamber cards, along with the top 3 cards of the encounter deck. Shuffle them and randomly deal 1 card facedown underneath each location in play except Village Commons.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Blood on the Altar* and *Resurgent Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-blood-on-the-altar.png' /><img src='{setImgPath}/resurgent-evils.png' /></section>*Resurgent Evils* replaces *Ancient Evils*. Remove the replaced set from the game.",
+      "placeLocations": "Remove the original Village Commons location from the game and replace it with the new Village Commons (*Silent Decay*). Put it into play. Each investigator begins play in the Village Commons.",
+      "placeRandomLocations": "Add the new locations to the original locations from the *Blood on the Altar* encounter set. Remove 1 of the 3 copies of each of these locations from the game at random. Then choose 1 of the 6 remaining locations at random and remove it from the game as well. Put the remaining locations into play.",
+      "setAside": "Also set each copy of Hired Gun aside, out of play.",
+      "seekingVengeance": "Spawn one set-aside Hired Gun at one of the locations not connected to Village Commons, and shuffle the other set-aside Hired Gun into the encounter deck.",
+      "placeUnderneath": "When placing encounter cards underneath locations, do not include the 6 cards from the *Naomi’s Crew* encounter set."
+    }
   },
   "hiddenChamber": {
     "title": "The Hidden Chamber",
@@ -71,4 +79,3 @@
     }
   }
 }
-

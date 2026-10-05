@@ -58,7 +58,13 @@
     "cooperated2": "*If the investigators cooperated with the Yithians*, search the gathered encounter sets for a Yithian Observer and spawn it unengaged in the lead investigator’s location (note that it gains aloof due to the text on act 1a). Then, each investigator gains 1 clue from the token pool.",
     "resisted2": "*If the investigators resisted captivity*, search the gathered encounter sets for a Yithian Observer and place it in the victory display.",
     "placeLocations": "Put the three Halls of Pnakotus locations into play Set each remaining location aside, out of play.",
-    "setAside": "Set The Custodian aside, out of play."
+    "setAside": "Set The Custodian aside, out of play.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the *Return to The City of Archives* encounter set. It is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/return-to-city-of-archives.png' /></section>",
+      "placeLocations": "Also put Halls of Pnakotus (*Southern Corridors*) into play.",
+      "setAside": "Also set Cyclopean Vaults and Alien Conservatory aside, out of play. (These locations should be put into play during act 1b, when the remainder of the set-aside locations are put into play.)",
+      "actDeck": "Remove Act 2a—*Restricted Access* from the game and replace it with the new Act 2a—*Unrestricted Access*."
+    }
   },
   "specialRules": [
     {

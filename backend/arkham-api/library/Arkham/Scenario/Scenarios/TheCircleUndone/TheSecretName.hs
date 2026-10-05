@@ -71,9 +71,11 @@ standaloneChaosTokens =
 
 setupTheSecretName :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheSecretName _attrs = do
+  isReturnTo <- getIsReturnTo
   setup $ ul do
-    li "gatherSets"
+    liGatherSets isReturnTo
     li "placeLocations"
+    onReturnTo isReturnTo $ li.returnTo "unknownPlaces"
     li.nested "unknownPlaces" do
       li "bottom"
       li "top"
@@ -122,7 +124,6 @@ setupTheSecretName _attrs = do
     , Treacheries.ghostlyPresence
     ]
 
-  isReturnTo <- getIsReturnTo
   -- Unknown Places Deck
   unknownPlaces <-
     fmap (if isReturnTo then drop 4 else id)

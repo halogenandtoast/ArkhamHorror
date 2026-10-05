@@ -26,7 +26,12 @@
     "placeLocations": "Put the Clover Club Lounge, Clover Club Bar, Clover Club Cardroom, and La Bella Luna locations into play. Each investigator begins play in La Bella Luna.",
     "placeCloverClubPitBoss": "Put Clover Club Pit Boss into play in the Clover Club Lounge.",
     "setAside": "Set the following cards aside, out of play: Darkened Hall, Peter Clover, Dr. Francis Morgan, and each copy of Back Hall Doorway.",
-    "note": "<p class='basic'>_Note_: At the start of this scenario, agenda 1a grants each _Criminal_ enemy the aloof keyword, which stops those enemies from automatically engaging you. At some point, those enemies may lose the aloof keyword. Remember that enemies who are no longer aloof will automatically engage investigators at their location, as per normal.</p>"
+    "note": "<p class='basic'>_Note_: At the start of this scenario, agenda 1a grants each _Criminal_ enemy the aloof keyword, which stops those enemies from automatically engaging you. At some point, those enemies may lose the aloof keyword. Remember that enemies who are no longer aloof will automatically engage investigators at their location, as per normal.</p>",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The House Always Wins* and *Erratic Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-house-always-wins.png' /><img src='{setImgPath}/erratic-fear.png' /></section>*Erratic Fear* replaces *Striking Fear*. Remove the replaced set from the game.",
+      "placeLocations": "Put the Clover Club Bar, Clover Club Cardroom, and La Bella Luna locations into play. Then choose one of the two Clover Club Lounge locations at random, put it into play, and remove the other version of Clover Club Lounge from the game. Each investigator begins play in La Bella Luna.",
+      "setAside": "Also set the Clover Club Stage aside, out of play."
+    }
   },
   "resolutions": {
     "xp": {
@@ -68,7 +73,7 @@
     "laBellaLuna": {
       "resign": "This was a bust"
     },
-    "backAlley" : {
+    "backAlley": {
       "resign": "We can get out this way!"
     }
   },

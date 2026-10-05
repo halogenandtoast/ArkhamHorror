@@ -61,6 +61,7 @@ function modifierToStyle(modifier: FlavorTextModifier): string {
     case 'InvalidEntry': return 'invalid'
     case 'ValidEntry': return 'valid'
     case 'ByDifficultyEntry': return 'by-difficulty'
+    case 'ReturnToEntry': return 'return-to'
     default: throw new Error("Unknown modifier")
   }
 }
@@ -462,6 +463,32 @@ p.billenia, :deep(p.billenia) {
   ul {
     margin-inline: 20px;
   }
+}
+
+/* A setup line an unofficial "Return to" box adds or rewrites. The rest of the list is
+   the Campaign Guide's own text, so the deltas are what the reader has to pick out:
+   accent rule down the side, the faintest wash behind it, nothing that fights the
+   parchment. `.return-to-swap` is the inline form, for a set name or icon swapped
+   inside a sentence that is otherwise the original's. */
+.return-to, :deep(.return-to) {
+  --return-to: #2d6a62;
+  padding: 2px 0 2px 10px;
+  border-left: 3px solid var(--return-to);
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(to right, color-mix(in srgb, var(--return-to), transparent 90%), transparent 75%);
+}
+
+:deep(.return-to-swap) {
+  --return-to: #2d6a62;
+  color: var(--return-to);
+  font-weight: 600;
+  border-bottom: 1px solid color-mix(in srgb, var(--return-to), transparent 50%);
+}
+
+:deep(.encounter-sets img.return-to-swap) {
+  border-bottom: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--return-to, #2d6a62), transparent 25%);
 }
 
 .by-difficulty ~ ul, :deep(.by-difficulty ~ ul) {

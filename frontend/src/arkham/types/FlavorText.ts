@@ -22,6 +22,7 @@ export type FlavorTextModifier
   | 'HauntedEntry'
   | 'TokenRevealEntry'
   | 'ByDifficultyEntry'
+  | 'ReturnToEntry'
 
 export type ImageModifier = 'RemoveImage' | 'SelectImage' | 'SmallImage'
 
@@ -76,6 +77,7 @@ export const flavorTextModifierDecoder = JsonDecoder.oneOf<FlavorTextModifier>([
   JsonDecoder.literal('HauntedEntry'),
   JsonDecoder.literal('TokenRevealEntry'),
   JsonDecoder.literal('ByDifficultyEntry'),
+  JsonDecoder.literal('ReturnToEntry'),
 ], 'FlavorTextModifier');
 
 export const listItemEntryDecoder: JsonDecoder.Decoder<ListItemEntry> = JsonDecoder.object<ListItemEntry>(

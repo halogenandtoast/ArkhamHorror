@@ -37,11 +37,12 @@ instance RunMessage ReturnToTheHouseAlwaysWins where
     Setup -> runScenarioSetup (ReturnToTheHouseAlwaysWins . TheHouseAlwaysWins) attrs do
       setup do
         ul do
-          li "gatherSets"
+          liGatherSets True
           li "setAsideEncounterSets"
-          li "placeLocations"
+          liReturnToInstead True "placeLocations"
           li "placeCloverClubPitBoss"
           li "setAside"
+          onReturnTo True $ li.returnTo "setAside"
           unscoped $ li "shuffleRemainder"
         p "note"
 

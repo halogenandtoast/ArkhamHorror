@@ -59,7 +59,12 @@
       "top": "Then, place all of the other Catacombs locations on top, in a random order. All of the cards in the Catacombs Deck should be showing only the Catacombs side, so that the players do not know which is which."
     },
     "startAt": "Each investigator begins play at the starting location. (*Remember to trigger the _*Forced*_ effect on that location when it is revealed*.)If “you opened a secret passageway,” choose a Catacombs location adjacent to the starting location and reveal it.",
-    "theManInThePallidMask": "The bearer of The Man in the Pallid Mask weakness searches their deck for it and sets it aside, out of play."
+    "theManInThePallidMask": "The bearer of The Man in the Pallid Mask weakness searches their deck for it and sets it aside, out of play.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the *Return to The Pallid Mask* encounter set. It is indicated by the following icon:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-pallid-mask.png' /></section>",
+      "catacombs": "When building the Catacombs deck, first set aside the Tomb of Shadows and the Blocked Passage, as normal. Next, add the 4 new Catacombs locations from this encounter set to the remaining Catacombs locations and determine your starting location, as normal. Then randomly choose 4 Catacombs locations and remove them from the game without looking at them. Build the remainder of the Catacombs deck as normal.",
+      "additionalRule": "For the duration of this scenario, the following additional rules apply: for the purposes of Corpse Dweller’s spawn ability, The Man in the Pallid Mask does not count as a _Humanoid_ enemy; and while it is act 2, The Man in the Pallid Mask cannot leave the Tomb of Shadows."
+    }
   },
   "resolutions": {
     "noResolution": {

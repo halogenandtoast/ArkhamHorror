@@ -16,7 +16,11 @@ import Arkham.Helpers.Query
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Acts qualified as HBActs
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations qualified as HBLocations
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries qualified as HBTreacheries
-import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (combineTidalTunnels, scenarioI18n)
+import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (
+  combineTidalTunnels,
+  officialSetup,
+  scenarioI18n,
+ )
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
 import Arkham.Investigator.Projection ()
 import Arkham.Key
@@ -51,15 +55,37 @@ instance RunMessage ReturnToTheLairOfDagon where
         substitute Acts.theSecondOath HBActs.theSecondOathV2
         encounterWithASecretCult <- hasMemory AnEncounterWithASecretCult
         aDecisionToStickTogether <- hasMemory ADecisionToStickTogether
-        _aJailbreak <- hasMemory AJailbreak
+        aJailbreak <- hasMemory AJailbreak
         memories <- getRecordSet MemoriesRecovered
 
         setup $ ul do
-          li "gatherSets"
-          li "replacedSets"
-          li "tidalTunnels"
-          li "doorway"
-          li "setAsideStirring"
+          li.nested "gatherSets" do
+            li.returnTo "replacedSets"
+            li.returnTo "replacedCards"
+          officialSetup "theLairOfDagon" do
+            li.nested "placeKeys" do
+              li "faceupKeys"
+              li "facedownKeys"
+            li.nested "placeLocations" do
+              li "startAt"
+              li "setAsideOtherLocations"
+          li.returnTo "tidalTunnels"
+          li.returnTo "doorway"
+          officialSetup "theLairOfDagon" $ li "setAsideCards"
+          li.returnTo "setAsideStirring"
+          officialSetup "theLairOfDagon" do
+            li.nested "checkMemories" do
+              li.validate (length memories <= 4) "fourOrFewer"
+              li.validate (length memories >= 5 && length memories <= 7) "fiveToSeven"
+              li.validate (length memories >= 8) "eightOrMore"
+            li.validate aJailbreak "jailbreak"
+            li.nested "checkSecretCult" do
+              li.validate encounterWithASecretCult "theInitiationV1"
+              li.validate (not encounterWithASecretCult) "theInitiationV2"
+            li.nested "checkStickTogether" do
+              li.validate aDecisionToStickTogether "whatLurksBelowV1"
+              li.validate (not aDecisionToStickTogether) "whatLurksBelowV2"
+            li "floodTokens"
           unscoped $ li "shuffleRemainder"
 
         gather Sets.ReturnToTheLairOfDagon

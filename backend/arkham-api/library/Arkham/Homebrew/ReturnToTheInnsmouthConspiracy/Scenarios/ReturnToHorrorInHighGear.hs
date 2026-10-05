@@ -9,7 +9,7 @@ import Arkham.EncounterSet qualified as Set
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Query (getLead, getPlayerCount)
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations qualified as HBLocations
-import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (scenarioI18n)
+import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (officialSetup, scenarioI18n)
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Locations
 import Arkham.Matcher hiding (assetAt)
@@ -44,10 +44,31 @@ instance RunMessage ReturnToHorrorInHighGear where
         playerCount <- getPlayerCount
 
         setup $ ul do
-          li "gatherSets"
-          li "replacedSets"
-          li "roadDeck"
-          li "endOfRound"
+          li.nested "gatherSets" do
+            li.returnTo "replacedSets"
+          li.returnTo "roadDeck"
+          officialSetup "horrorInHighGear" do
+            li.nested "roadDeck" do
+              li "findRoadLocations"
+              li "bottomThree"
+              li "remainingOnTop"
+              li "unrevealedSide"
+            li "putRoadIntoPlay"
+            li.nested "chooseVehicles" do
+              li "vehiclesBeginAtFront"
+              li "runningSide"
+              li "beginInVehicle"
+              li "triggerRoad"
+            li.nested "chooseDrivers" do
+              li "driverNote"
+            li.nested "playerCount" do
+              li.validate (playerCount == 1) "onePlayer"
+              li.validate (playerCount `elem` [2, 3]) "twoOrThreePlayers"
+              li.validate (playerCount == 4) "fourPlayers"
+            li.nested "checkCampaignLog" do
+              li.validate theTerrorOfDevilReefIsDead "theChaseIsOnV2"
+              li.validate (not theTerrorOfDevilReefIsDead) "theChaseIsOnV1"
+          li.returnTo "endOfRound"
           unscoped $ li "shuffleRemainder"
 
         gather Sets.ReturnToHorrorInHighGear

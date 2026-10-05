@@ -72,16 +72,21 @@ setupTheMidnightMasks _attrs = do
   burnedToTheGround <- getHasRecord YourHouseHasBurnedToTheGround
   ghoulPriestStillAlive <- getHasRecord GhoulPriestIsStillAlive
   n <- getPlayerCount
+  isReturnTo <- getIsReturnTo
   setup $ ul do
-    li "gatherSets"
+    liGatherSets isReturnTo
     li "cultistDeck"
+    onReturnTo isReturnTo $ li.returnTo "cultistDeck"
+    onReturnTo isReturnTo $ li.returnTo "predatorOrPrey"
     li "placeLocations"
+    onReturnTo isReturnTo $ li.returnTo "placeLocations"
 
     li.nested "acolytes.instructions" do
       li.validate (n == 1) "acolytes.onePlayer"
       li.validate (n == 2) "acolytes.twoPlayer"
       li.validate (n == 3) "acolytes.threePlayer"
       li.validate (n == 4) "acolytes.fourPlayer"
+    onReturnTo isReturnTo $ li.returnTo "acolytes"
 
     li.validate burnedToTheGround "burnedToTheGround"
     li.validate (not burnedToTheGround) "houseStillStanding"
@@ -97,7 +102,6 @@ setupTheMidnightMasks _attrs = do
   gather Set.LockedDoors
   gather Set.DarkCult `orWhenReturnTo` gather Set.TheDevourersCult
 
-  isReturnTo <- getIsReturnTo
   predatorOrPrey <-
     if isReturnTo
       then sample2 Agendas.predatorOrPrey Agendas.returnToPredatorOrPrey

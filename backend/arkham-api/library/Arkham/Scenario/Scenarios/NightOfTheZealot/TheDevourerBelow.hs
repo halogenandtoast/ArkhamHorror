@@ -69,10 +69,13 @@ setupTheDevourerBelow attrs = do
   cultistsWhoGotAway <- getRecordedCardCodes CultistsWhoGotAway
   pastMidnight <- getHasRecord ItIsPastMidnight
   ghoulPriestIsStillAlive <- getHasRecord GhoulPriestIsStillAlive
+  isReturnTo <- getIsReturnTo
   setup $ ul do
-    li "gatherSets"
+    liGatherSets isReturnTo
     li "placeLocations"
+    onReturnTo isReturnTo $ li.returnTo "placeLocations"
     li "setOutOfPlay"
+    onReturnTo isReturnTo $ li.returnTo "vaultOfEarthlyDemise"
     li "randomSet"
     scope "cultistsWhoGotAway" $ li.nested "instructions" do
       li.validate (null cultistsWhoGotAway) "zeroNames"
@@ -104,7 +107,6 @@ setupTheDevourerBelow attrs = do
   addChaosToken ElderThing
 
   startAt =<< place Locations.mainPath
-  isReturnTo <- getIsReturnTo
   placeGroupChooseN 4 "woods"
     $ Locations.arkhamWoodsUnhallowedGround
     :| [ Locations.arkhamWoodsTwistingPaths

@@ -76,14 +76,21 @@ standaloneChaosTokens =
 
 setupTheWagesOfSin :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheWagesOfSin _attrs = do
+  isReturnTo <- getIsReturnTo
   setup $ ul do
-    li "gatherSets"
+    liGatherSets isReturnTo
     li "theWatcherSet"
+    onReturnTo isReturnTo $ li.returnTo "actDeck"
     li.nested "placeLocations" do
       li "spectral"
       li "startAt"
+    onReturnTo isReturnTo $ li.returnTo "placeLocations"
     li "setAside"
+    onReturnTo isReturnTo $ li.returnTo "setAside"
     li "heretics"
+    onReturnTo isReturnTo do
+      li.returnTo "heretics"
+      li.returnTo "additionalRule"
     li.nested "encounterDecks" do
       li "spectralDeck"
       li "standardDeck"
@@ -104,7 +111,6 @@ setupTheWagesOfSin _attrs = do
 
   setAgendaDeck [Agendas.theHangedManXII, Agendas.deathsApproach]
 
-  isReturnTo <- getIsReturnTo
   erynnWantsToMeet <- getHasRecord ErynnWantsToMeet
   setActDeck
     $ if isReturnTo && erynnWantsToMeet

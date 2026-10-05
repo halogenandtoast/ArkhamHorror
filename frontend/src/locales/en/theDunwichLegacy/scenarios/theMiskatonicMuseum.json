@@ -36,7 +36,12 @@
       "bottom": "Shuffle the Exhibit Hall (*Restricted Hall*) and 2 other random Exhibit Hall locations together to form the bottom 3 cards of the Exhibit Deck, unrevealed side faceup.",
       "top": "Then, place the other 3 Exhibit Hall locations on top, in a random order. All 6 cards of the Exhibit Hall deck should be showing only the unrevealed side, so that the players do not know which Exhibit Hall is the Exhibit Hall (*Restricted Hall*)."
     },
-    "setAside": "Set the following cards aside, out of play: Harold Walsted, Adam Lynch, The Necronomicon (*Olaus Wormius Translation*), and Shadow-spawned."
+    "setAside": "Set the following cards aside, out of play: Harold Walsted, Adam Lynch, The Necronomicon (*Olaus Wormius Translation*), and Shadow-spawned.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The Miskatonic Museum*, *Beyond the Threshold*, *Creeping Cold*, and *Secret Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-miskatonic-museum.png' /><img src='{setImgPath}/beyond-the-threshold.png' /><img src='{setImgPath}/creeping-cold.png' /><img src='{setImgPath}/secret-doors.png' /></section>*Beyond the Threshold* replaces *The Beyond*, *Creeping Cold* replaces *Chilling Cold*, and *Secret Doors* replaces *Locked Doors*. Remove the replaced sets from the game.",
+      "exhibitDeck": "Before creating the Exhibit Deck, add the 2 new Exhibit Hall locations to the original 6 Exhibit Hall locations. Set Exhibit Hall (*Restricted Hall*) aside and randomly remove 2 Exhibit Hall locations from the game. Then continue creating the Exhibit Deck as normal.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: while an investigator is resolving the text on agenda 1b and agenda 2b, the _Forced_ ability on the next agenda in the agenda deck is considered to be active."
+    }
   },
   "theVoid": {
     "title": "“The Void”",

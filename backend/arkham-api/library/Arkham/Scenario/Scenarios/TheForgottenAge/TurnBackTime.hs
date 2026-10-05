@@ -68,15 +68,22 @@ instance HasChaosTokenValue TurnBackTime where
 
 setupTurnBackTime :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTurnBackTime _attrs = do
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
+      onReturnTo isReturnTo do
+        li.returnTo "replaceLocations"
+        li.returnTo "harbinger"
       li "actDeck"
       li "relicOfAgesRepossessThePast"
       li "relicOfAgesADeviceOfSomeSort"
       li "placeLocations"
-      li "explorationDeck"
+      liReturnToInstead isReturnTo "explorationDeck"
       li "setAside"
+      onReturnTo isReturnTo do
+        li.returnTo "setAside"
+        li.returnTo "additionalRule"
       li "chaosBag"
       li "poisoned"
       unscoped $ li "shuffleRemainder"
@@ -96,7 +103,6 @@ setupTurnBackTime _attrs = do
   setAgendaDeck [Agendas.somethingStirs, Agendas.theTempleWarden]
   setActDeck [Acts.intoTheRuinsOnceAgain, Acts.theChamberOfStillRemains, Acts.momentOfDoom]
 
-  isReturnTo <- getIsReturnTo
   startAt =<< place (if isReturnTo then Locations.entrywayRearrangedByTime else Locations.entryway)
 
   -- Before setup, replace the original Chamber of Time locations with the new

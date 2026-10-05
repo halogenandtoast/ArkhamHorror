@@ -96,6 +96,7 @@ standaloneCampaignLog =
 
 setupShatteredAeons :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupShatteredAeons _attrs = do
+  isReturnTo <- getIsReturnTo
   tokens <- getBagChaosTokens
   let tokenCount face = count ((== face) . (.face)) tokens
   let tokenResult = compare (tokenCount Cultist) (tokenCount Tablet)
@@ -106,11 +107,14 @@ setupShatteredAeons _attrs = do
         li.validate (tokenResult == GT) "gatherSetsCultist"
         li.validate (tokenResult == LT) "gatherSetsTablet"
         li.validate (tokenResult == EQ) "gatherSetsEqual"
+        onReturnTo isReturnTo $ li.returnTo "gatherSets"
       li "placeLocations"
       li.nested "setAsideEnemies" do
         li "setAsideEnemiesNote"
       li "setAside"
-      li "explorationDeck"
+      onReturnTo isReturnTo $ li.returnTo "setAside"
+      liReturnToInstead isReturnTo "explorationDeck"
+      onReturnTo isReturnTo $ li.returnTo "additionalRule"
       li "yigsFury"
       unscoped $ li "shuffleRemainder"
 
@@ -162,7 +166,6 @@ setupShatteredAeons _attrs = do
 
   whenReturnTo $ setAside [Locations.buenosAires, Locations.ultimaThule]
 
-  isReturnTo <- getIsReturnTo
   addExtraDeck ExplorationDeck
     =<< shuffle
       ( [ Locations.yuggoth

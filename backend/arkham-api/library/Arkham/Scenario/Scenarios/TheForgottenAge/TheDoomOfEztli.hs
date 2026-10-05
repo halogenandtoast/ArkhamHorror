@@ -108,12 +108,19 @@ standaloneCampaignLog =
 setupTheDoomOfEztli
   :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheDoomOfEztli attrs = do
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
+      onReturnTo isReturnTo do
+        li.returnTo "replaceLocations"
+        li.returnTo "harbinger"
       li "placeLocations"
-      li "explorationDeck"
+      liReturnToInstead isReturnTo "explorationDeck"
       li "setAside"
+      onReturnTo isReturnTo do
+        li.returnTo "setAside"
+        li.returnTo "additionalRule"
       li "poisoned"
       unscoped $ li "shuffleRemainder"
 
@@ -132,7 +139,6 @@ setupTheDoomOfEztli attrs = do
   when (resolution4Count > 0) $ placeDoom attrs entryway resolution4Count
   startAt entryway
 
-  isReturnTo <- getIsReturnTo
   setAsidePoisonedCount <- getSetAsidePoisonedCount
   setAside
     $ [ if isReturnTo then Locations.chamberOfTimeRearrangedByTime else Locations.chamberOfTime

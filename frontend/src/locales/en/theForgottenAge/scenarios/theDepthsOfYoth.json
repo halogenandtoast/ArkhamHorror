@@ -71,7 +71,13 @@
     "explorationDeck": "Create the exploration deck. This is done by taking the set-aside Steps of Yoth and 4 of the remaining single-sided locations and shuffling them together.",
     "currentDepth": "Place 1 resource token on the scenario reference card, under “Current Depth.” For the remainder of the scenario, the number of resources under “Current Depth” indicates the current depth level. (See “Depth Level,” below.)",
     "setOutOfPlay": "Set the Relic of Ages (*Repossess the Past*) aside, out of play.",
-    "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
+    "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The Depths of Yoth*, *Venomous Hate*, and *Doomed Expedition*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-depths-of-yoth.png' /><img src='{setImgPath}/venomous-hate.png' /><img src='{setImgPath}/doomed-expedition.png' /></section>*Venomous Hate* replaces *Yig’s Venom* and *Doomed Expedition* replaces *Expedition*. Remove the replaced sets from the game.",
+      "harbinger": "After setup, search the collection for the new Harbinger of Valusia (*The Sleeper Returns*) and set it aside, out of play. If the Harbinger of Valusia would enter play during this scenario, use this version instead of the original one.",
+      "explorationDeck": "After building the exploration deck during setup, shuffle the Perils of Yoth treachery into the exploration deck.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: _Forced_ – After a new exploration deck is created during act 1b: Search the encounter deck, discard pile, and all out-of-play areas for Perils of Yoth and shuffle it into the exploration deck. Shuffle the encounter deck if it was searched."
+    }
   },
   "depthLevel": {
     "title": "Depth Level",

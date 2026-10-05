@@ -66,14 +66,20 @@ instance HasChaosTokenValue TheWitchingHour where
 setupTheWitchingHour
   :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheWitchingHour attrs = do
+  isReturnTo <- getIsReturnTo
   setup $ ul do
-    li "gatherSets"
+    liGatherSets isReturnTo
     li "gatherAgentSets"
+    onReturnTo isReturnTo $ li.returnTo "removeQuietGlade"
     li.nested "placeLocations" do
       li "placeWitchHauntedWoods"
       li "removeRemainingWitchHauntedWoods"
       li "startAtWitchHauntedWoods"
+    onReturnTo isReturnTo $ li.returnTo "placeWitchHauntedWoods"
     li "setAside"
+    onReturnTo isReturnTo do
+      li.returnTo "setAside"
+      li.returnTo "actDeck"
     unscoped $ li "shuffleRemainder"
   -- The Devourer Below is only locations
   whenReturnTo $ gather Set.ReturnToTheWitchingHour
@@ -86,8 +92,6 @@ setupTheWitchingHour attrs = do
 
   gatherAndSetAside Set.AgentsOfShubNiggurath
   gatherAndSetAside Set.AgentsOfAzathoth
-
-  isReturnTo <- getIsReturnTo
 
   witchHauntedWoods <-
     pickN 5

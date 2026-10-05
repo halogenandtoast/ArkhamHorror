@@ -91,12 +91,17 @@ setupEchoesOfThePast :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBu
 setupEchoesOfThePast attrs = do
   pc <- getPlayerCount
   fledTheDinnerParty <- getHasRecord YouFledTheDinnerParty
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li "chooseLocations"
+      onReturnTo isReturnTo $ li.returnTo "chooseLocations"
       li "placeLocations"
+      onReturnTo isReturnTo $ li.returnTo "placeLocations"
       li "setAside"
+      onReturnTo isReturnTo $ li.returnTo "setAside"
+      onReturnTo isReturnTo $ li.returnTo "additionalRule"
       li.nested "changes.instructions" do
         li.validate (pc == 1) "changes.exactly1"
         li.validate (pc == 2) "changes.exactly2"

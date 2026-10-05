@@ -12,7 +12,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Acts qualified as HBActs
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Assets qualified as HBAssets
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Enemies qualified as HBEnemies
-import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (scenarioI18n)
+import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (officialSetup, scenarioI18n)
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
 import Arkham.I18n
 import Arkham.Id
@@ -56,9 +56,20 @@ instance RunMessage ReturnToTheVanishingOfElinaHarper where
         substitute Acts.theSearchForAgentHarper HBActs.theSearchForAgentHarperV2
 
         setup $ ul do
-          li "gatherSets"
-          li "replacedSets"
-          li "hybridLeads"
+          li.nested "gatherSets" do
+            li.returnTo "replacedSets"
+            li.returnTo "replacedCards"
+          officialSetup "theVanishingOfElinaHarper" do
+            li.nested "placeLocations" do
+              li "startAt"
+            li.nested "leadsDeck" do
+              li "findingAgentHarper"
+              li "splitPiles"
+              li "chooseRandomly"
+              li "shuffleRemaining"
+          li.returnTo "hybridLeads"
+          officialSetup "theVanishingOfElinaHarper" $ li "setAsideAgendaAndAct"
+          li.returnTo "setAsideCards"
           unscoped $ li "shuffleRemainder"
 
         gather Sets.ReturnToTheVanishingOfElinaHarper

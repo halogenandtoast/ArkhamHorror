@@ -86,7 +86,13 @@
     "chooseLocations": "Choose one of the two Montmartre locations, one of the two Opéra Garnier locations, and one of the two Le Marais locations, at random. Put the chosen locations into play. Remove the other versions of those locations from the game.",
     "placeLocations": "Put the remaining locations (Montparnasse, Gare d’Orsay, Grand Guignol, Canal Saint-Martin, Père Lachaise Cemetery, Notre-Dame, and Gardens of Luxembourg) into play. (See below for suggested placement.) Each investigator begins play at Gare d’Orsay.",
     "setAside": "Set the double-sided The Organist enemy aside, out of play.",
-    "lostSoul": "If there are any remaining copies of the Lost Soul weakness, set them aside, out of play."
+    "lostSoul": "If there are any remaining copies of the Lost Soul weakness, set them aside, out of play.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to A Phantom of Truth* and *Hastur’s Envoys*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-phantom-of-truth.png' /><img src='{setImgPath}/hasturs-envoys.png' /></section>*Hastur’s Envoys* replaces *Agents of Hastur*. Remove the replaced set from the game.",
+      "chooseLocations": "Randomly choose 1 of the 2 Montparnasse locations, 1 of the 2 Grand Guignol locations, 1 of the 2 Père Lachaise Cemetery locations, 1 of the 2 Canal Saint-Martin locations, 1 of the 2 Notre-Dame locations, and 1 of the 2 Gardens of Luxembourg locations. Put those locations into play. Remove the other versions of those locations from the game.",
+      "setAside": "Also set both copies of Figure in the Shadows aside, out of play.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: _Forced_ – After The Organist enters play: Shuffle both set-aside copies of Figure in the Shadows into the encounter deck, along with the encounter discard pile."
+    }
   },
   "resolutions": {
     "xp": {

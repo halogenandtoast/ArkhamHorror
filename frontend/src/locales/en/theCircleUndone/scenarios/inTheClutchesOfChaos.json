@@ -26,7 +26,7 @@
   },
   "tooltips": {
     "southChurch": {
-      "resign": "You hide through the night." 
+      "resign": "You hide through the night."
     }
   },
   "label": {
@@ -77,6 +77,10 @@
       "twoPlayers": "If there are 2 investigators in the game, perform this step twice.",
       "threePlayers": "If there are 3 investigators in the game, perform this step three times.",
       "fourPlayers": "If there are 4 investigators in the game, perform this step three times, choosing 3 different random locations each time, instead of 2."
+    },
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to In the Clutches of Chaos*, *City of the Damned*, and *Hexcraft*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-in-the-clutches-of-chaos.png' /><img src='{setImgPath}/city-of-the-damned.png' /><img src='{setImgPath}/hexcraft.png' /></section>*City of the Damned* replaces *City of Sins* and *Hexcraft* replaces *Witchcraft*. Remove the replaced sets from the game.",
+      "placeLocations": "Choose at random one of the three copies of each of the following locations: French Hill, Rivertown, Southside, Uptown, South Church, and Merchant District. Remove the chosen locations from the game and use the rest throughout setup, as normal."
     }
   },
   "choosingARandomLocation": {
@@ -91,7 +95,7 @@
     "label": {
       "continuedAlone": "“You’ve done enough harm. We’ll handle this from here.”",
       "askedForAssistance": "“We will need your help to fix this.”",
-      "underArrest": "“You are under arrest.”" ,
+      "underArrest": "“You are under arrest.”",
       "spellsOfOld": "“Then teach me how to be stronger.”",
       "assumedControl": "“You don't deserve to lead us.”"
     },

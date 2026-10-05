@@ -12,7 +12,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Acts qualified as HBActs
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Enemies qualified as HBEnemies
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries qualified as HBTreacheries
-import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (scenarioI18n)
+import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (officialSetup, scenarioI18n)
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
 import Arkham.Id
 import Arkham.Key
@@ -60,9 +60,23 @@ instance RunMessage ReturnToInTooDeep where
         setUsesGrid
 
         setup $ ul do
-          li "gatherSets"
-          li "replacedSets"
-          li "setAsideInnsmouthInfluence"
+          li.nested "gatherSets" do
+            li.returnTo "replacedSets"
+            li.returnTo "replacedCards"
+          officialSetup "inTooDeep" do
+            li.nested "placeLocations" do
+              li "barriers"
+              li "startAt"
+            li.nested "placeKeys" do
+              li "blackKey"
+              li "otherKeys"
+            li "outForBlood"
+          li.returnTo "setAsideCards"
+          li.returnTo "setAsideInnsmouthInfluence"
+          officialSetup "inTooDeep" do
+            li "angryMob"
+            li.nested "floodTokens" do
+              li "increaseFloodLevel"
           unscoped $ li "shuffleRemainder"
 
         gather Sets.ReturnToInTooDeep

@@ -56,10 +56,13 @@ instance HasChaosTokenValue CurtainCall where
 
 setupCurtainCall :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupCurtainCall attrs = do
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
+      onReturnTo isReturnTo $ li.returnTo "actDeck"
       li "setAside"
+      onReturnTo isReturnTo $ li.returnTo "royalEmissary"
       li.nested "placeLocations.instructions" do
         li "placeLocations.lola"
       unscoped $ li "shuffleRemainder"
@@ -110,7 +113,6 @@ setupCurtainCall attrs = do
   whenReturnTo $ push $ PlaceReferenceCard (toTarget royalEmissary) "52014b"
 
   setAgendaDeck [Agendas.theThirdAct, Agendas.encore]
-  isReturnTo <- getIsReturnTo
 
   setActDeck
     $ [ Acts.awakening

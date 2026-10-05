@@ -38,12 +38,13 @@ instance RunMessage ReturnToExtracurricularActivities where
       completedTheHouseAlwaysWins <- elem "51015" <$> getCompletedScenarios
 
       setup $ ul do
-        li "gatherSets"
+        liGatherSets True
         li.nested "facultyOffices.body" do
           li.validate (not completedTheHouseAlwaysWins) "facultyOffices.theNightIsStillYoung"
           li.validate completedTheHouseAlwaysWins "facultyOffices.theHourIsLate"
         li "setAside"
-        li "placeLocations"
+        liReturnToInstead True "placeLocations"
+        onReturnTo completedTheHouseAlwaysWins $ li.returnTo "enthralledSecurityGuard"
         unscoped $ li "shuffleRemainder"
 
       gather Set.ReturnToExtracurricularActivities

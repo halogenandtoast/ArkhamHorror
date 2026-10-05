@@ -98,12 +98,15 @@ standaloneChaosTokens =
 
 setupTheBoundaryBeyond :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheBoundaryBeyond attrs = do
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li "placeLocations"
-      li "explorationDeck"
+      onReturnTo isReturnTo $ li.returnTo "placeLocations"
+      liReturnToInstead isReturnTo "explorationDeck"
       li "setAside"
+      onReturnTo isReturnTo $ li.returnTo "harbinger"
       li "setActAndAgenda3OutOfPlay"
       li "poisoned"
       unscoped $ li "shuffleRemainder"
@@ -139,7 +142,6 @@ setupTheBoundaryBeyond attrs = do
   place_ =<< Locations.xochimilco `orSampleIfReturnTo` [Locations.returnToXochimilco]
   place_ =<< Locations.chapultepecPark `orSampleIfReturnTo` [Locations.returnToChapultepecPark]
 
-  isReturnTo <- getIsReturnTo
   let treacheries =
         guard (not isReturnTo)
           *> [ Treacheries.windowToAnotherTime

@@ -21,7 +21,13 @@
   "setup": {
     "gatherSets": "Gather all cards from the following encounter sets: *Lost in Time and Space*, *Sorcery*, *The Beyond*, *Hideous Abominations*, *Agents of Yog-Sothoth*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/lost-in-time-and-space.png' /><img src='{setImgPath}/sorcery.png' /><img src='{setImgPath}/the-beyond.png' /><img src='{setImgPath}/hideous-abominations.png' /><img src='{setImgPath}/agents-of-yog.png' /></section>",
     "placeLocations": "Put Another Dimension into play. Each investigator begins play in Another Dimension.",
-    "setAside": "Set the following cards aside, out of play: The Edge of the Universe, Tear Through Time, and Yog-Sothoth."
+    "setAside": "Set the following cards aside, out of play: The Edge of the Universe, Tear Through Time, and Yog-Sothoth.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Lost in Time and Space*, *Beyond the Threshold*, and *Yog-Sothoth’s Emissaries*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-lost-in-time-and-space.png' /><img src='{setImgPath}/beyond-the-threshold.png' /><img src='{setImgPath}/yog-sothoths-emissaries.png' /></section>*Beyond the Threshold* replaces *The Beyond* and *Yog-Sothoth’s Emissaries* replaces *Agents of Yog-Sothoth*. Remove the replaced sets from the game.",
+      "placeLocations": "Also put the single-sided Realms Beyond location into play and spawn Yog-Sothoth there.",
+      "setAside": "Also set Seth Bishop (*Thrall of Yog-Sothoth*) aside, out of play.",
+      "actAndAgenda": "Replace Agenda 3a—*Breaking Through* with the new Agenda 3a—*Breaking Through (v. II)*. Check Campaign Log: if *the ritual was completed*, also replace Act 2a—*Into the Beyond* with the new Act 2a—*Into the Beyond (v. II)*."
+    }
   },
   "locationsInTheEncounterDeck": {
     "title": "Locations in the Encounter Deck",

@@ -46,7 +46,9 @@ instance RunMessage ReturnToUndimensionedAndUnseen where
 
       setup do
         ul do
-          li "gatherSets"
+          liGatherSets True
+          onReturnTo True $ li.returnTo "broodOfYogSothoth"
+          onReturnTo True $ li.returnTo "additionalRule"
           li "placeLocations"
           li.nested "sacrificedToYogSothoth.instructions" do
             li.validate (sacrificedToYogSothoth >= 4) "sacrificedToYogSothoth.fourOrMore"

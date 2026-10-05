@@ -13,7 +13,11 @@ import Arkham.Helpers.Query
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Acts qualified as HBActs
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Agendas qualified as HBAgendas
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries qualified as HBTreacheries
-import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (combineTidalTunnels, scenarioI18n)
+import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (
+  combineTidalTunnels,
+  officialSetup,
+  scenarioI18n,
+ )
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
 import Arkham.I18n
 import Arkham.Key
@@ -57,10 +61,28 @@ instance RunMessage ReturnToIntoTheMaelstrom where
         recognized <- getHasRecord TheGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper
 
         setup $ ul do
-          li "gatherSets"
-          li "replacedSets"
-          li "tidalTunnels"
-          li "setAsideCards"
+          li.nested "gatherSets" do
+            li.returnTo "replacedSets"
+            li.returnTo "replacedCards"
+          officialSetup "intoTheMaelstrom" $ li.nested "placeKeys" do
+            li.validate possessTheKey "blueKey"
+            li.validate possessAMap "redKey"
+            li.validate guardianDispatched "greenKey"
+            li.validate recognized "yellowKey"
+            li "fewerThanFour"
+            li "shuffleKeys"
+          li.returnTo "tidalTunnels"
+          officialSetup "intoTheMaelstrom" do
+            li.nested "placeLocations" do
+              li "startAt"
+              li "setAsideOtherLocations"
+            li.nested "checkCampaignLog" do
+              li "divingSuits"
+              li "removeUnusedDivingSuits"
+            li "actDeck"
+            li "setAsideCards"
+          li.returnTo "setAsideCards"
+          officialSetup "intoTheMaelstrom" $ li "floodTokens"
           unscoped $ li "shuffleRemainder"
 
         gather Sets.ReturnToIntoTheMaelstrom

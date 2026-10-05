@@ -24,6 +24,11 @@
     "placeLocations": {
       "instructions": "Put the Theatre, Lobby, Balcony, and Backstage locations into play. Each investigator begins play at the Theatre.",
       "lola": "If Lola Hayes was chosen as an investigator for this campaign, she begins play at Backstage, instead."
+    },
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Curtain Call*, *Maddening Delusions*, and *Neurotic Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-curtain-call.png' /><img src='{setImgPath}/maddening-delusions.png' /><img src='{setImgPath}/neurotic-fear.png' /></section>*Maddening Delusions* replaces *Delusions* and *Neurotic Fear* replaces *Striking Fear*. Remove the replaced sets from the game.",
+      "actDeck": "Construct the act deck using all six copies of Act 2a—*The Stranger*.",
+      "royalEmissary": "Attach this scenario card to Royal Emissary as a reminder: _Forced_ – After Royal Emissary is added to the victory display, place 1 resource on this card as a warning. For each warning on this card, Royal Emissary gets +1 health per investigator."
     }
   },
   "resolutions": {

@@ -58,7 +58,7 @@
       "choice": "Lose 2 resources and connect to an adjacent location in a direction of your choice"
     },
     "flightIntoOblivion": {
-      "choice": "Take 2 horror and connect to the topmost revealed location in a direction of your choice" 
+      "choice": "Take 2 horror and connect to the topmost revealed location in a direction of your choice"
     },
     "chooseWhereToConnect": "Choose where to connect",
     "theBlackThrone": {
@@ -99,7 +99,13 @@
     "placeLocations": "Take the set-aside Hideous Palace and the top card of the Cosmos, and shuffle them so you cannot tell which is which. Then, put them into play along with facedown player cards from the top of the lead investigator’s deck, as depicted in “Location Placement for Setup / Act 1.” Facedown player cards represent empty space (*see “Empty Space” on the next page*).",
     "setAside": "Set the Piper of Azathoth enemy aside, out of play.",
     "placeAzathoth": "Put Azathoth into play next to the agenda deck. For the remainder of the scenario, Azathoth is in play, but is not at any location.",
-    "thePathWindsBeforeYou": "Check Campaign Log. For each tally mark recorded next to *the path winds before you*, place 1 resource on the scenario reference card."
+    "thePathWindsBeforeYou": "Check Campaign Log. For each tally mark recorded next to *the path winds before you*, place 1 resource on the scenario reference card.",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Before the Black Throne*, *Unspeakable Fate*, and *Impending Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-before-the-black-throne.png' /><img src='{setImgPath}/unspeakable-fate.png' /><img src='{setImgPath}/impending-evils.png' /></section>*Unspeakable Fate* replaces *Inexorable Fate* and *Impending Evils* replaces *Ancient Evils*. Remove the replaced sets from the game.",
+      "actDeck": "When building the act deck, replace the original version of act 3 with the new version from this encounter set. Remove the original version from the game.",
+      "cosmos": "When building the Cosmos, include the 3 new Cosmos locations from the *Return to Before the Black Throne* encounter set.",
+      "nightgauntSteed": "When the game begins, the investigators may remove 2 resources from the scenario reference card to have each investigator begin the game with a Nightgaunt Steed story asset in play. Remove each remaining Nightgaunt Steed from the game."
+    }
   },
   "theCosmos": {
     "title": "The Cosmos",

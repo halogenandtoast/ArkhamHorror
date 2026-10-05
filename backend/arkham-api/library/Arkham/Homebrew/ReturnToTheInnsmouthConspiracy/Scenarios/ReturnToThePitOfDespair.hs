@@ -10,7 +10,7 @@ import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Acts qualified as HBActs
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations qualified as HBLocations
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries qualified as HBTreacheries
-import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (scenarioI18n)
+import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (officialSetup, scenarioI18n)
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
 import Arkham.Key
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.FloodedCaverns qualified as Locations
@@ -50,10 +50,24 @@ instance RunMessage ReturnToThePitOfDespair where
         substitute Acts.thePit HBActs.thePitV2
 
         setup $ ul do
-          li "gatherSets"
-          li "replacedSets"
-          li "tidalTunnels"
-          li "setAsideTroublingMemories"
+          li.nested "gatherSets" do
+            li.returnTo "replacedSets"
+            li.returnTo "replacedCards"
+          officialSetup "thePitOfDespair" do
+            li.nested "placeKeys" do
+              li "faceupKeys"
+              li "facedownKeys"
+              li "removeKeys"
+            li.nested "placeLocations" do
+              li "startAt"
+            li "setAsideLocations"
+          li.returnTo "tidalTunnels"
+          officialSetup "thePitOfDespair" do
+            li "tidalTunnels"
+            li "setAsideTidalTunnels"
+            li "setAsideCards"
+          li.returnTo "setAsideTroublingMemories"
+          officialSetup "thePitOfDespair" $ li "floodTokens"
           unscoped $ li "shuffleRemainder"
 
         gather Sets.ReturnToThePitOfDespair

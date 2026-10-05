@@ -59,7 +59,13 @@
       "explorationDeck": "Create the exploration deck. This is done by taking the 6 single-sided _Jungle_ locations and shuffling them together, along with 1 copy each of the following encounter cards: Pitfall, Ants!, Lost in the Wilds, and Low on Supplies.",
       "chooseLocations": "Randomly choose one of the following 3 _Ruins_ locations: Overgrown Ruins, Temple of the Fang, and Stone Altar. Shuffle the randomly chosen location into the exploration deck. Remove the other 2 from the game.",
       "mappedOutTheWayForward": "Check Campaign Log. *If the investigators mapped out the way forward*, instead of shuffling the randomly chosen location into the exploration deck, put it into play.",
-      "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
+      "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck.",
+      "returnTo": {
+        "gatherSets": "Also gather all cards from the following encounter sets: *Return to Heart of the Elders*, *Return to Pillars of Judgement*, *Return to the Rainforest*, and *Doomed Expedition*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-heart-of-the-elders.png' /><img src='{setImgPath}/return-to-pillars-of-judgement.png' /><img src='{setImgPath}/return-to-the-rainforest.png' /><img src='{setImgPath}/doomed-expedition.png' /></section>*Doomed Expedition* replaces *Expedition*. Remove the replaced set from the game.",
+        "actDeck": "Remove Act 1a—*Search for the Pattern* from the game and replace it with the new Act 1a—*A Familiar Pattern*.",
+        "explorationDeck": "When building the exploration deck, include only 1 of the 2 locations with each of the following connection symbols, chosen at random: Purple Moon, Blue Triangle, Red Square, Orange Heart. Remove the other 4 _Jungle_ locations from the game without looking at them. Do not include any of the other encounter cards listed in the original setup instructions. (There should be a total of 6 cards.)",
+        "additionalRule": "For the duration of this scenario, the following additional rules apply: the “check your supplies” ability on the Mouth of K’n-yan can be used from any location; and _Forced_ – After a successful exploration ends: Shuffle the top card of the encounter deck into the exploration deck."
+      }
     },
     "resolutions": {
       "noResolution": {
@@ -87,7 +93,13 @@
       "theJungleWatches": "Search the collection for each card listed in parentheses next to *“the jungle watches”* in your Campaign Log. Add those cards to the victory display.",
       "setAside": "Set the Descent to Yoth location aside, out of play.",
       "explorationDeck": "Create the exploration deck. This is done by taking the 5 remaining single-sided locations from the *K’n-yan* encounter set and shuffling them together, along with 1 copy each of the following encounter cards: Pitfall, No Turning Back, Deep Dark, and Final Mistake.",
-      "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck."
+      "poisoned": "Set aside each Poisoned weakness that is not already in an investigator’s deck.",
+      "returnTo": {
+        "gatherSets": "Also gather all cards from the following encounter sets: *Return to Heart of the Elders*, *Return to K’n-yan*, and *Venomous Hate*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-heart-of-the-elders.png' /><img src='{setImgPath}/return-to-knyan.png' /><img src='{setImgPath}/venomous-hate.png' /></section>*Venomous Hate* replaces *Yig’s Venom*. Remove the replaced set from the game.",
+        "harbinger": "After setup, search the collection for the new Harbinger of Valusia (*The Sleeper Returns*) and set it aside, out of play. If the Harbinger of Valusia would enter play during this scenario, use this version instead of the original one.",
+        "explorationDeck": "When building the exploration deck, include only 1 of the 2 locations with each of the following connection symbols, chosen at random: Purple Moon, Blue Triangle, Red Square, Green Diamond. Remove the other 4 _Ancient_ locations from the game without looking at them. Do not include any of the other encounter cards listed in the original setup instructions. (There should be a total of 5 cards, not counting the set-aside Descent to Yoth.)",
+        "additionalRule": "For the duration of this scenario, the following additional rules apply: the “check your supplies” ability on the Mouth of K’n-yan can be used from any location, and it discards enemies as well as treacheries; and _Forced_ – After a successful exploration ends: Shuffle the top card of the encounter deck into the exploration deck."
+      }
     },
     "resolutions": {
       "noResolution": {

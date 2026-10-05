@@ -14,7 +14,11 @@ import Arkham.Helpers.Query
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Assets qualified as HBAssets
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations qualified as HBLocations
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries qualified as HBTreacheries
-import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (combineTidalTunnels, scenarioI18n)
+import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (
+  combineTidalTunnels,
+  officialSetup,
+  scenarioI18n,
+ )
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
 import Arkham.Key
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Locations
@@ -54,10 +58,30 @@ instance RunMessage ReturnToDevilReef where
         aBattle <- hasMemory ABattleWithAHorrifyingDevil
 
         setup $ ul do
-          li "gatherSets"
-          li "replacedSets"
-          li "tidalTunnels"
-          li "devilReefLocations"
+          li.nested "gatherSets" do
+            li.returnTo "replacedSets"
+            li.returnTo "replacedCards"
+          officialSetup "devilReef" do
+            li.nested "placeKeys" do
+              li "faceupKeys"
+              li "facedownKeys"
+            li.nested "churningWaters" do
+              li "fishingVessel"
+              li "startInVessel"
+            li "setAsideRelics"
+          li.returnTo "devilReefLocations"
+          officialSetup "devilReef" $ li.nested "unfathomableDepths" do
+            li "removeThree"
+            li "setAsideThree"
+          li.returnTo "tidalTunnels"
+          officialSetup "devilReef" do
+            li.nested "tidalTunnelsDeck" do
+              li "unrevealedSide"
+              li "placeNearEncounterDeck"
+            li.nested "checkCampaignLog" do
+              li.validate aBattle "secretsOfTheSeaV1"
+              li.validate (not aBattle) "secretsOfTheSeaV2"
+            li "floodTokens"
           unscoped $ li "shuffleRemainder"
 
         gather Sets.ReturnToDevilReef

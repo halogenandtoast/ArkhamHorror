@@ -33,12 +33,14 @@ instance RunMessage ReturnToTheMiskatonicMuseum where
     Setup -> runScenarioSetup (ReturnToTheMiskatonicMuseum . TheMiskatonicMuseum) attrs do
       setup do
         ul do
-          li "gatherSets"
+          liGatherSets True
           li "placeLocations"
+          onReturnTo True $ li.returnTo "exhibitDeck"
           li.nested "exhibitDeck.instructions" do
             li "exhibitDeck.bottom"
             li "exhibitDeck.top"
           li "setAside"
+          onReturnTo True $ li.returnTo "additionalRule"
           unscoped $ li "shuffleRemainder"
       scope "theVoid" $ flavor do
         setTitle "title"

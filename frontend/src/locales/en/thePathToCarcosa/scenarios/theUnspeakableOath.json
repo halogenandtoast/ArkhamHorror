@@ -50,6 +50,11 @@
       "instructions": "Check Campaign Log. Depending on the following circumstances, a different version of Act 2 should be used in this scenario. Each other version of Act 2 is removed from the game.",
       "v1": "*If you took the onyx clasp*, use Act 2—”The Really Bad Ones” (v. I)",
       "v2": "Otherwise, use Act 2—”The Really Bad Ones” (v. II)"
+    },
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to The Unspeakable Oath*, *Maddening Delusions*, *Decaying Reality*, and *Hastur’s Envoys*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-the-unspeakable-oath.png' /><img src='{setImgPath}/maddening-delusions.png' /><img src='{setImgPath}/decaying-reality.png' /><img src='{setImgPath}/hasturs-envoys.png' /></section>*Maddening Delusions* replaces *Delusions*, *Decaying Reality* replaces *Decay & Filth*, and *Hastur’s Envoys* replaces *Agents of Hastur*. Remove the replaced sets from the game.",
+      "setAside": "Also set the Host of Insanity enemy and the Radical Treatment treachery aside, out of play.",
+      "act2": "When determining which version of act 2 to use, do not follow the original setup instructions. Instead, remove the original versions of act 2 from the game and check the Campaign Log. If you have more (or equal) _Conviction_ than _Doubt_, use the new Act 2—*The Really Bad Ones (v. III)*. If you have more _Doubt_ than _Conviction_, use the new Act 2—*The Really Bad Ones (v. IV)*."
     }
   },
   "tooltips": {

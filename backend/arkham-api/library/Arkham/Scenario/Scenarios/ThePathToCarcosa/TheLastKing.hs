@@ -96,15 +96,20 @@ interviewedToCardCode = \case
 
 setupTheLastKing :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupTheLastKing attrs = do
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
+      onReturnTo isReturnTo $ li.returnTo "agendaDeck"
       li "placeLocations"
       li.nested "bystanders.instructions" do
         li "bystanders.note"
+      onReturnTo isReturnTo $ li.returnTo "dianneDevine"
       li "setAside"
+      onReturnTo isReturnTo $ li.returnTo "setAside"
       li.nested "sickeningReality.instructions" do
         li "sickeningReality.note"
+      onReturnTo isReturnTo $ li.returnTo "sickeningReality"
       unscoped $ li "shuffleRemainder"
 
   whenReturnTo $ gather Set.ReturnToTheLastKing
@@ -138,8 +143,6 @@ setupTheLastKing attrs = do
   for_ (zip bystanders (map AtLocation destinations)) \(bystander, placement) -> do
     assetId <- createAssetAt bystander placement
     placeTokens attrs assetId Clue totalClues
-
-  isReturnTo <- getIsReturnTo
 
   setAside [Enemies.dianneDevine]
     `orWhenReturnTo` setAside [Assets.dianneDevineHidingAnOathUnspoken, Treacheries.shockingDisplay]

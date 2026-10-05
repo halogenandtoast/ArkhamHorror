@@ -34,9 +34,12 @@ instance RunMessage ReturnToLostInTimeAndSpace where
     Setup -> runScenarioSetup (ReturnToLostInTimeAndSpace . LostInTimeAndSpace) attrs do
       setup do
         ul do
-          li "gatherSets"
+          liGatherSets True
+          onReturnTo True $ li.returnTo "actAndAgenda"
           li "placeLocations"
+          onReturnTo True $ li.returnTo "placeLocations"
           li "setAside"
+          onReturnTo True $ li.returnTo "setAside"
           unscoped $ li "shuffleRemainder"
 
       scope "locationsInTheEncounterDeck" $ flavor do

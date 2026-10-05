@@ -73,7 +73,13 @@
       "sixToEight": "If there are between 6-8 tally marks, add 1 doom to agenda 1a.",
       "nineOrMore": "If there are 9 or more tally marks, no change is made."
     },
-    "takeHorror": "Each investigator takes direct horror equal to half their sanity, rounded down (*cannot be prevented*). This horror cannot cause you to become defeated (see “Sanity in the Realm of Carcosa,” below)."
+    "takeHorror": "Each investigator takes direct horror equal to half their sanity, rounded down (*cannot be prevented*). This horror cannot cause you to become defeated (see “Sanity in the Realm of Carcosa,” below).",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Dim Carcosa*, *Maddening Delusions*, *Hastur’s Envoys*, and *Neurotic Fear*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-dim-carcosa.png' /><img src='{setImgPath}/maddening-delusions.png' /><img src='{setImgPath}/hasturs-envoys.png' /><img src='{setImgPath}/neurotic-fear.png' /></section>*Maddening Delusions* replaces *Delusions*, *Hastur’s Envoys* replaces *Agents of Hastur*, and *Neurotic Fear* replaces *Striking Fear*. Remove the replaced sets from the game.",
+      "placeLocations": "Remove the original Palace of the King location from the game and replace it with the new Palace of the King (*Hastur’s Domain*). Proceed with location setup as normal.",
+      "setAside": "Also set the following new locations aside, out of play: Recesses of Your Own Mind, The Throne Room, and Stage of the Ward Theatre.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: Hastur’s health cannot be reduced to less than 2 per investigator unless any investigator _knows the secret_."
+    }
   },
   "resolutions": {
     "xp": {

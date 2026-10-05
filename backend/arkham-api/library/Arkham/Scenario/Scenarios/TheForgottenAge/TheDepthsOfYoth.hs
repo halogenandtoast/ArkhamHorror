@@ -105,7 +105,8 @@ setupTheDepthsOfYoth attrs = do
   theHarbingerIsStillAlive <- getHasRecord TheHarbingerIsStillAlive
 
   setup $ ul do
-    li "gatherSets"
+    liGatherSets isReturnTo
+    onReturnTo isReturnTo $ li.returnTo "harbinger"
     scope "yigsFury" $ li.nested "description" do
       li.validate (yigsFury == 0) "tally0"
       li.validate (yigsFury >= 1 && yigsFury <= 5) "tally1to5"
@@ -120,6 +121,9 @@ setupTheDepthsOfYoth attrs = do
     scope "yig" $ li.nested "description" do
       li.validate startsOnAgenda6 "agenda6"
     li "explorationDeck"
+    onReturnTo isReturnTo do
+      li.returnTo "explorationDeck"
+      li.returnTo "additionalRule"
     li "currentDepth"
     li "setOutOfPlay"
     li "poisoned"

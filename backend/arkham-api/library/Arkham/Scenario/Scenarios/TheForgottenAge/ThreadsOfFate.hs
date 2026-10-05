@@ -86,13 +86,16 @@ standaloneChaosTokens =
 
 setupThreadsOfFate :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupThreadsOfFate _attrs = do
+  isReturnTo <- Arkham.Scenario.Import.Lifted.getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li "beforeDrawingOpeningHands"
       li "placeLocations"
       li "setAside"
+      onReturnTo isReturnTo $ li.returnTo "setAside"
       li "actDecks"
+      onReturnTo isReturnTo $ li.returnTo "actDecks"
       unscoped $ li "shuffleRemainder"
 
   gaveCustodyToHarlan <- getHasRecord TheInvestigatorsGaveCustodyOfTheRelicToHarlanEarnstone

@@ -36,10 +36,13 @@ instance RunMessage ReturnToTheEssexCountyExpress where
 
       setup do
         ul do
-          li "gatherSets"
+          liGatherSets True
+          onReturnTo True $ li.returnTo "agendaDeck"
           li "placeLocations"
+          onReturnTo True $ li.returnTo "placeLocations"
           li "revealTrainCar"
           li "setAside"
+          onReturnTo True $ li.returnTo "setAside"
           li "adjustChaosBag"
           unscoped $ li "shuffleRemainder"
 

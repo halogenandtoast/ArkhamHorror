@@ -74,7 +74,13 @@
     },
     "placeLocations": "Put the Lodge Catacombs and the Lounge into play. Each investigator begins play at the Lodge Gates. Set each other remaining location aside, out of play (Library, Vault, Inner Sanctum, and the 2 Sanctum Doorway locations).",
     "setAside": "Set the following cards aside, out of play: the Puzzle Box asset, the Summoned Beast enemy, the August Lindquist asset, and the double‑sided Nathan Wick enemy.",
-    "setAsideKeys": "Set 1 {'{'}skull{'}'} token, 1 {'{'}cultist{'}'} token, 1 {'{'}tablet{'}'} token, and 1 {'{'}elderThing{'}'} token aside, out of play. These tokens should be taken from your collection, not from your chaos bag. These tokens are keys. (See “Keys” on next page.)"
+    "setAsideKeys": "Set 1 {'{'}skull{'}'} token, 1 {'{'}cultist{'}'} token, 1 {'{'}tablet{'}'} token, and 1 {'{'}elderThing{'}'} token aside, out of play. These tokens should be taken from your collection, not from your chaos bag. These tokens are keys. (See “Keys” on next page.)",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to For the Greater Good*, *City of the Damned*, and *Impending Evils*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-for-the-greater-good.png' /><img src='{setImgPath}/city-of-the-damned.png' /><img src='{setImgPath}/impending-evils.png' /></section>*City of the Damned* replaces *City of Sins* and *Impending Evils* replaces *Ancient Evils*. Remove the replaced sets from the game.",
+      "placeLocations": "Choose 1 of the 2 Lounge locations at random. Put it into play along with the rest of the starting locations. Remove the other version of the Lounge from the game.",
+      "setAside": "Also set the new Hidden Passageway and Sanctum Doorway locations aside, out of play.",
+      "additionalRule": "For the duration of this scenario, the following additional rules apply: the _Objective_ on Act 3a is optional; after all other keys have been put into play, if another effect would cause a set-aside key to be put into play, use another unused (+/-) chaos token instead of putting no key into play; and at the end of the scenario, add each (+/-) chaos token controlled by an investigator to the victory display, each worth _Victory 1_."
+    }
   },
   "specialRules": [
     {

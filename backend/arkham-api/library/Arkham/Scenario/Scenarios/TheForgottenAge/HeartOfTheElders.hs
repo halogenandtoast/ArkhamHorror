@@ -194,14 +194,17 @@ setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata
           withOwner cardDef (`putCampaignCardIntoPlay` cardDef)
 
         mappedOutTheWayForward <- getHasRecord TheInvestigatorsMappedOutTheWayForward
+        isReturnTo <- getIsReturnTo
         setup do
           ul do
             li.invalid "pathsKnownToYou"
-            li "gatherSets"
+            liGatherSets isReturnTo
+            onReturnTo isReturnTo $ li.returnTo "actDeck"
             li.nested "placeLocations" do
               li "insightIntoHowToEnterKnYan"
             li.validate (reachedAct2 metadata) "playedBefore"
-            li "explorationDeck"
+            liReturnToInstead isReturnTo "explorationDeck"
+            onReturnTo isReturnTo $ li.returnTo "additionalRule"
             li.nested "chooseLocations" do
               li.validate mappedOutTheWayForward "mappedOutTheWayForward"
             li "poisoned"
@@ -234,7 +237,6 @@ setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata
         triangle <- Locations.serpentsHaven `orSampleIfReturnTo` [Locations.trailOfTheDead]
         heart <- Locations.circuitousTrail `orSampleIfReturnTo` [Locations.cloudForest]
 
-        isReturnTo <- getIsReturnTo
         let
           treacheries =
             guard (not isReturnTo)
@@ -279,13 +281,16 @@ setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata
             $ forced
             $ Explored #after Anyone Anywhere (SuccessfulExplore Anywhere)
   Two -> scope "part2" do
+    isReturnTo <- getIsReturnTo
     setup do
       ul do
-        li "gatherSets"
+        liGatherSets isReturnTo
+        onReturnTo isReturnTo $ li.returnTo "harbinger"
         li "placeLocations"
         li "theJungleWatches"
         li "setAside"
-        li "explorationDeck"
+        liReturnToInstead isReturnTo "explorationDeck"
+        onReturnTo isReturnTo $ li.returnTo "additionalRule"
         li "poisoned"
         unscoped $ li "shuffleRemainder"
 
@@ -311,8 +316,6 @@ setupHeartOfTheElders metadata attrs = scenarioI18n $ case scenarioStep metadata
 
     setAsidePoisonedCount <- getSetAsidePoisonedCount
     setAside $ Locations.descentToYoth : replicate setAsidePoisonedCount Treacheries.poisoned
-
-    isReturnTo <- getIsReturnTo
 
     let
       treacheries =

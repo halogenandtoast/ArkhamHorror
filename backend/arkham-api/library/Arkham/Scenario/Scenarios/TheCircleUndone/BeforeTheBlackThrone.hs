@@ -81,11 +81,16 @@ standaloneChaosTokens =
 
 setupBeforeTheBlackThrone :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupBeforeTheBlackThrone _attrs = do
+  isReturnTo <- getIsReturnTo
   setup $ ul do
-    li "gatherSets"
+    liGatherSets isReturnTo
+    onReturnTo isReturnTo $ li.returnTo "actDeck"
     li "setLocationsAside"
     li "placeStart"
     li "cosmos"
+    onReturnTo isReturnTo do
+      li.returnTo "cosmos"
+      li.returnTo "nightgauntSteed"
     li "placeLocations"
     li "setAside"
     li "placeAzathoth"
@@ -106,7 +111,6 @@ setupBeforeTheBlackThrone _attrs = do
   cosmicIngress <- place Locations.cosmicIngress
   startAt cosmicIngress
 
-  isReturnTo <- getIsReturnTo
   cosmosCards' <-
     shuffle
       $ [ Locations.infinityOfDarkness

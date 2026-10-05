@@ -71,8 +71,9 @@ standaloneChaosTokens =
 setupForTheGreaterGood
   :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupForTheGreaterGood _attrs = do
+  isReturnTo <- getIsReturnTo
   setup $ ul do
-    li "gatherSets"
+    liGatherSets isReturnTo
     scope "membersOfTheLodge" $ li.nested "instructions" do
       li "actDeck"
       li "weveBeenExpectingYou"
@@ -82,7 +83,11 @@ setupForTheGreaterGood _attrs = do
       li "membersOnly"
       li "removeFromGame"
     li "placeLocations"
+    onReturnTo isReturnTo $ li.returnTo "placeLocations"
     li "setAside"
+    onReturnTo isReturnTo do
+      li.returnTo "setAside"
+      li.returnTo "additionalRule"
     li "setAsideKeys"
     unscoped $ li "shuffleRemainder"
 
@@ -137,7 +142,6 @@ setupForTheGreaterGood _attrs = do
   lounge <- Locations.lounge `orSampleIfReturnTo` [Locations.returnToLounge]
   placeAll [Locations.lodgeCatacombs, lounge]
 
-  isReturnTo <- getIsReturnTo
   setAside
     $ [ Locations.library
       , Locations.vault

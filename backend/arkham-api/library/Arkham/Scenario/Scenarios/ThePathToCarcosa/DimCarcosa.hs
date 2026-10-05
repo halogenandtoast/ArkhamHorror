@@ -97,9 +97,10 @@ setupDimCarcosa attrs = do
   tallies <- getRecordCount ChasingTheStranger
   openedThePathBelow <- getHasRecord YouOpenedThePathBelow
 
+  isReturnTo <- getIsReturnTo
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li.nested "act2.instructions" do
         li.validate (doubt + conviction <= 5) "act2.v1"
         li.validate (doubt + conviction >= 6 && doubt > conviction) "act2.v2"
@@ -110,7 +111,10 @@ setupDimCarcosa attrs = do
         li.validate openedThePathBelow "placeLocations.startAtShoresOfHali"
         li.validate (not openedThePathBelow) "placeLocations.startAtDarkSpires"
       li "theManInThePallidMask"
+      onReturnTo isReturnTo $ li.returnTo "placeLocations"
       li "setAside"
+      onReturnTo isReturnTo $ li.returnTo "setAside"
+      onReturnTo isReturnTo $ li.returnTo "additionalRule"
       li.nested "chasingTheStranger.instructions" do
         li.validate (tallies <= 2) "chasingTheStranger.twoOrFewer"
         li.validate (tallies >= 3 && tallies <= 5) "chasingTheStranger.threeToFive"
@@ -159,8 +163,6 @@ setupDimCarcosa attrs = do
     sampleWithRest
       $ Locations.depthsOfDemheStepsOfThePalace
       :| [Locations.depthsOfDemheTheHeightOfTheDepths]
-
-  isReturnTo <- getIsReturnTo
 
   whenReturnTo $ removeOneOf Locations.palaceOfTheKing
 

@@ -47,15 +47,18 @@ instance RunMessage ReturnToBloodOnTheAltar where
           False
       setup do
         ul do
-          li "gatherSets"
-          li "placeLocations"
-          li "placeRandomLocations"
+          liGatherSets True
+          liReturnToInstead True "placeLocations"
+          liReturnToInstead True "placeRandomLocations"
           li "potentialSacrifices"
           li "setAside"
+          onReturnTo True $ li.returnTo "setAside"
           li "delayed"
           unscoped $ li "shuffleRemainder"
           li.validate oBannionGangHasABoneToPick "seekingVengeance"
+          onReturnTo oBannionGangHasABoneToPick $ li.returnTo "seekingVengeance"
           li "placeUnderneath"
+          onReturnTo True $ li.returnTo "placeUnderneath"
 
       scope "hiddenChamber" $ flavor do
         setTitle "title"

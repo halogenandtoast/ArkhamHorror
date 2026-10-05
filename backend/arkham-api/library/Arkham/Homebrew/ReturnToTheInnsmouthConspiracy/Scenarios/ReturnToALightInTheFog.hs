@@ -14,6 +14,7 @@ import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations qualifi
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (
   combineTidalTunnels,
   deepOneInvestigator,
+  officialSetup,
   scenarioI18n,
  )
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
@@ -50,17 +51,37 @@ instance RunMessage ReturnToALightInTheFog where
         replaceSet Set.Syzygy Sets.Occultation
         replaceSet Set.RisingTide Sets.RollingTide
         substitute Agendas.terrorAtFalconPoint HBAgendas.terrorAtFalconPointV2
-        _idolBrought <- getHasRecord TheIdolWasBroughtToTheLighthouse
-        _mantleBrought <- getHasRecord TheMantleWasBroughtToTheLighthouse
-        _headdressBrought <- getHasRecord TheHeaddressWasBroughtToTheLighthouse
-        _afterSunrise <- getHasRecord TheInvestigatorsReachedFalconPointAfterSunrise
-        _tideGrownStronger <- getHasRecord TheTideHasGrownStronger
+        idolBrought <- getHasRecord TheIdolWasBroughtToTheLighthouse
+        mantleBrought <- getHasRecord TheMantleWasBroughtToTheLighthouse
+        headdressBrought <- getHasRecord TheHeaddressWasBroughtToTheLighthouse
+        afterSunrise <- getHasRecord TheInvestigatorsReachedFalconPointAfterSunrise
+        tideGrownStronger <- getHasRecord TheTideHasGrownStronger
 
         setup $ ul do
-          li "gatherSets"
-          li "replacedSets"
-          li "tidalTunnels"
-          li "setAsideGrapplers"
+          li.nested "gatherSets" do
+            li.returnTo "replacedSets"
+            li.returnTo "replacedCards"
+          li.returnTo "tidalTunnels"
+          officialSetup "aLightInTheFog" do
+            li.nested "placeLocations" do
+              li "startAt"
+              li "removeUndergroundRivers"
+              li "setAsideOtherLocations"
+            li.nested "placeKeys" do
+              li "faceupKeys"
+              li "facedownKeys"
+            li "captured"
+            li "setAsideCards"
+          li.returnTo "setAsideGrapplers"
+          officialSetup "aLightInTheFog" do
+            li.nested "checkCampaignLog" do
+              li.validate idolBrought "wavewornIdol"
+              li.validate mantleBrought "awakenedMantle"
+              li.validate headdressBrought "headdressOfYhaNthlei"
+            li.nested "checkCampaignLogDoom" do
+              li.validate afterSunrise "afterSunrise"
+              li.validate tideGrownStronger "tideHasGrownStronger"
+            li "floodTokens"
           unscoped $ li "shuffleRemainder"
 
         gather Sets.ReturnToALightInTheFog

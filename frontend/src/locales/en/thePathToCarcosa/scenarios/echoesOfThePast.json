@@ -37,7 +37,14 @@
       "exactly4": "If there are exactly 4 players in the game, search the gathered encounter sets for 3 copies of Seeker of Carcosa. Spawn each at different _*Second Floor*_ or _*Third Floor*_ Historical Society locations."
     },
     "fledTheDinnerParty": "Check Campaign Log. *If you fled the dinner party*: You arrive at the Historical Society with time to spare; each investigator can take 1 additional action during their first turn of this game.",
-    "fledDinnerPartyAdditionalAction": "Fleeing the dinner party"
+    "fledDinnerPartyAdditionalAction": "Fleeing the dinner party",
+    "returnTo": {
+      "gatherSets": "Also gather all cards from the following encounter sets: *Return to Echoes of the Past* and *Maddening Delusions*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{setImgPath}/return-to-echoes-of-the-past.png' /><img src='{setImgPath}/maddening-delusions.png' /></section>*Maddening Delusions* replaces *Delusions*. Remove the replaced set from the game.",
+      "chooseLocations": "Randomly choose one _Basement_ Historical Society location and remove it from the game, without looking at its revealed side.",
+      "placeLocations": "When putting locations into play, put all 3 copies of Quiet Halls into play along with the remaining 8 Historical Society locations. (The 3 _Basement_ locations should be placed to form a bottom row below the 3 _Ground Floor_ locations.)",
+      "setAside": "Also set both Keeper of the Oath enemies aside, out of play.",
+      "additionalRule": "For the duration of this scenario, the following additional rule applies: _Forced_ – After the investigators advance to act 2 or act 3: Spawn a set-aside Keeper of the Oath in any empty Historical Society location."
+    }
   },
   "resolutions": {
     "xp": {

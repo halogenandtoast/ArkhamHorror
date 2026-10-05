@@ -67,11 +67,15 @@ instance HasChaosTokenValue DisappearanceAtTheTwilightEstate where
 setupDisappearanceAtTheTwilightEstate
   :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupDisappearanceAtTheTwilightEstate attrs = do
+  isReturnTo <- getIsReturnTo
   -- At Death's Doorstep is only locations so we will manually gather
   setup do
     ul do
-      li "gatherSets"
+      liGatherSets isReturnTo
       li "placeLocations"
+      onReturnTo isReturnTo do
+        li.returnTo "placeLocations"
+        li.returnTo "additionalRule"
       li "theSpectralWatcher"
       li "investigatorSetup"
       unscoped $ li "shuffleRemainder"
@@ -102,8 +106,6 @@ setupDisappearanceAtTheTwilightEstate attrs = do
   whenReturnTo $ place_ Locations.wineCellarSpectral
 
   enemyAt_ Enemies.theSpectralWatcher entryHall
-
-  isReturnTo <- getIsReturnTo
 
   selectForMaybeM (investigatorIs Investigators.gavriellaMizrah) \gavriella -> do
     moveTo_ attrs gavriella victorianHalls

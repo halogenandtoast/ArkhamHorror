@@ -93,8 +93,9 @@ standaloneCampaignLog =
 
 setupUnionAndDisillusion :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> ScenarioBuilderT m ()
 setupUnionAndDisillusion _attrs = do
+  isReturnTo <- Arkham.Scenario.Import.Lifted.getIsReturnTo
   setup $ ul do
-    li "gatherSets"
+    liGatherSets isReturnTo
     li "setSetsAside"
     li.nested "placeLocations" do
       li "sidedWithTheCoven"
@@ -107,10 +108,12 @@ setupUnionAndDisillusion _attrs = do
       li "valentino"
       li "removeRemainder"
     li.nested "acts" do
+      onReturnTo isReturnTo $ li.returnTo "acts"
       li "v1"
       li "v2"
       li "v3"
       li "v4"
+    onReturnTo isReturnTo $ li.returnTo "additionalRule"
     li "heretics"
     unscoped $ li "shuffleRemainder"
 

@@ -457,7 +457,8 @@ defaultCampaignRunner msg a = case msg of
       . overRecordedCount key (const Nothing)
       . (logL . orderedKeysL %~ removeOrderedKey)
   Record key -> do
-    send $ "Record \"" <> format key <> "\""
+    -- The log line is the narrator's now (log.recorded); this used to send its
+    -- own brace-DSL copy, which showed up beside the structured one.
     pure
       $ updateAttrs a
       $ ( logL
@@ -504,8 +505,7 @@ defaultCampaignRunner msg a = case msg of
             )
         )
         key
-  RecordCount key int -> do
-    send $ "Record \"" <> format key <> "\" (" <> tshow int <> ")"
+  RecordCount key int ->
     pure $ updateAttrs a $ overRecordedCount key (const $ Just int)
   IncrementRecordCount key int ->
     pure $ updateAttrs a $ overRecordedCount key (Just . maybe int (+ int))

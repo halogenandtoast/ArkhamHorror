@@ -1,4 +1,5 @@
-import * as JsonDecoder from 'ts.data.json';
+import * as JsonDecoder from 'ts.data.json'
+import { logKeyDecoder, type LogKey } from '@/arkham/types/Log';
 
 /* The structured game log.
  *
@@ -54,6 +55,10 @@ export type LogPart =
   | { tag: 'LogToken'; contents: string }
   | { tag: 'LogIcon'; contents: string }
   /* Joined by the locale's list rule, so "a, b, and c" is not built in Haskell. */
+  /* A campaign-log key as its own JSON. The client owns the mapping from a key
+   * to its i18n path (formatKey in types/Log.ts), so the server sends the key
+   * rather than a path it would have to reimplement. */
+  | { tag: 'LogCampaignKey'; contents: LogKey }
   | { tag: 'LogList'; contents: LogPart[] }
 
 export type LogKind =
@@ -192,6 +197,10 @@ export const logPartDecoder: JsonDecoder.Decoder<LogPart> = JsonDecoder.oneOf<Lo
     JsonDecoder.object(
       { tag: JsonDecoder.literal('LogIcon'), contents: JsonDecoder.string() },
       'LogIcon',
+    ),
+    JsonDecoder.object(
+      { tag: JsonDecoder.literal('LogCampaignKey'), contents: logKeyDecoder },
+      'LogCampaignKey',
     ),
     JsonDecoder.object(
       {

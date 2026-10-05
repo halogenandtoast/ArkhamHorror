@@ -4876,6 +4876,10 @@ tokens.json), so nothing here may repaint them. */
   position: relative;
   width: 34px;
   height: 34px;
+  /* base.css gives every button `padding: 1px 11px`, which on a fixed-size
+     round button adds 22px to the width and stretches it into an oval. */
+  padding: 0;
+  box-sizing: border-box;
   display: inline-grid;
   place-items: center;
   border: 1px solid rgba(241, 196, 15, 0.45);

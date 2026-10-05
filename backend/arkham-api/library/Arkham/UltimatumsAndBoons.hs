@@ -535,7 +535,7 @@ runUltimatumsAndBoonsMessage msg = case msg of
   Gated the same way the recorder's button is: Daniel's warning for Carcosa, the
   ultimatum itself for Dark Matter, whose Unspeakable Oath also covers TASSILDA.
   -}
-  ChatMessage iid text -> do
+  ChatMessage iid _ text -> do
     carcosa <- getHasRecord YouHeadedDanielsWarning
     oath <- hasUltimatum (HomebrewUltimatum ":dark-matter:UltimatumOfTheUnspeakableOath")
     let said name = name `T.isInfixOf` T.toLower text

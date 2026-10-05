@@ -10,6 +10,8 @@
 import { computed } from 'vue'
 import { ArrowUturnLeftIcon } from '@heroicons/vue/20/solid'
 import LogPart from '@/arkham/components/LogPart.vue'
+import { cardArt } from '@/arkham/cardImages'
+import { investigatorClass } from '@/arkham/helpers'
 import { logEntrySize, type LogEntry } from '@/arkham/types/GameLog'
 
 const props = defineProps<{
@@ -53,9 +55,22 @@ const structureTone = computed(() => {
    inline "Name: text" every other entry shape would give. The server still
    builds the body as one sentence so the flat rendering (traces, legacy
    clients) reads correctly; this just takes it apart again. */
-const chatSpeaker = computed(() =>
-  props.entry.body[0]?.tag === 'LogRefPart' ? props.entry.body[0] : null,
-)
+/* The speaker's name takes their investigator's class colour. The name itself
+   is an account name, so it carries no class -- the investigator rides along as
+   the entry's source for exactly this. */
+const chatClass = computed(() => {
+  const code = props.entry.source?.cardCode
+  if (!code) return {}
+  return investigatorClass(cardArt(code))
+})
+
+const chatSpeaker = computed(() => {
+  const first = props.entry.body[0]
+  /* Either shape: the speaker is the account name when the API resolved one (a
+     LogText) and the investigator chip when it did not. */
+  if (props.entry.body.length < 2) return null
+  return first?.tag === 'LogRefPart' || first?.tag === 'LogText' ? first : null
+})
 
 const chatWords = computed(() => {
   const rest = props.entry.body.slice(chatSpeaker.value ? 1 : 0)
@@ -204,7 +219,7 @@ function requestUndo() {
 
   <li v-else-if="entry.kind === 'Chat'" class="log-entry log-entry--chat">
     <div class="log-chat">
-      <LogPart v-if="chatSpeaker" :part="chatSpeaker" class="log-chat__who" />
+      <LogPart v-if="chatSpeaker" :part="chatSpeaker" class="log-chat__who" :class="chatClass" />
       <p class="log-chat__words">
         <LogPart v-for="(part, i) in chatWords" :key="i" :part="part" />
       </p>
@@ -441,24 +456,38 @@ button.log-test__band:focus-visible {
 .log-chat {
   position: relative;
   padding: 8px 11px 9px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.085) 0%,
-    rgba(255, 255, 255, 0.045) 100%
-  );
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-left: 3px solid var(--spooky-green);
   border-radius: 4px 7px 7px 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
+/* The speaker reads as a label, not as the first words of the sentence: a
+   player talking should be unmistakable at a glance among the engine's lines. */
 .log-chat__who {
-  display: block;
-  margin-bottom: 3px;
-  font-size: 0.82em;
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 1px 7px;
+  font-size: 0.74em;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  /* Dark text on a solid class-coloured fill rather than tinted text on a wash:
+     the tinted version was too low-contrast to read at this size. Neutral until
+     the class is known. */
+  color: #12151b;
+  background: var(--neutral);
+  border-radius: 9px;
+  white-space: nowrap;
 }
+
+.log-chat__who.guardian { background: var(--guardian); }
+.log-chat__who.seeker { background: var(--seeker); }
+.log-chat__who.rogue { background: var(--rogue); }
+.log-chat__who.mystic { background: var(--mystic); }
+.log-chat__who.survivor { background: var(--survivor); }
+.log-chat__who.neutral { background: var(--neutral); }
 
 .log-chat__words {
   margin: 0;
@@ -478,6 +507,25 @@ button.log-test__band:focus-visible {
 
 .log-entry--notice {
   color: #9aa4b6;
+}
+
+/* A campaign-log write is the one kind of entry that outlives the scenario, so
+   it reads as something written down rather than something that happened:
+   parchment tone, gold rule, and the words in small caps. */
+.log-entry--record {
+  margin: 8px 0;
+  border-bottom: 0;
+  border-left: 3px solid var(--multiclass);
+  background: color-mix(in srgb, var(--multiclass) 11%, transparent);
+  border-radius: 0 4px 4px 0;
+  color: #f0e4c0;
+}
+
+.log-entry--record > .log-headline {
+  padding-left: 9px;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.05em;
+  font-size: 1.1em;
 }
 
 .log-entry--problem {

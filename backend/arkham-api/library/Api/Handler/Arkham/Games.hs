@@ -37,7 +37,7 @@ import Arkham.Game.Settings (
 import Arkham.GameEnv (getCard)
 import Arkham.Helpers.Playable (getPlayabilityChecks)
 import Arkham.Id
-import Arkham.Message (Message (HandleOption))
+import Arkham.Message (Message (ChatMessage, HandleOption))
 import Arkham.Queue
 import Arkham.Source
 import Arkham.UltimatumsAndBoons.Types (UltimatumOrBoon)
@@ -258,7 +258,14 @@ putApiV1ArkhamGameRawR gameId = do
   customCards <- userCustomCards userId
   response <- requireCheckJsonBody @_ @RawGameJsonPut
   mRoom <- lookupRoom gameId
-  updateGame customCards (Raw response.gameMessage) gameId mRoom
+  {- Stamp who is speaking from the session, not from the body: the client sends
+  the investigator and the words, and the name on the line is the authenticated
+  account's, so a line cannot be signed with somebody else's name. -}
+  let
+    attributed = case response.gameMessage of
+      ChatMessage iid _ text -> ChatMessage iid (Just user.username) text
+      other -> other
+  updateGame customCards (Raw attributed) gameId mRoom
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
 deleteApiV1ArkhamGameR gameId = do

@@ -13,6 +13,7 @@ import { chaosTokenImage } from '@/arkham/types/ChaosToken'
 import { useDbCardStore } from '@/stores/dbCards'
 import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import type { LogPart, LogRef } from '@/arkham/types/GameLog'
+import { formatKey, logKeyTitle } from '@/arkham/types/Log'
 
 const props = defineProps<{ part: LogPart }>()
 
@@ -119,6 +120,13 @@ const plural = computed(() => {
   />
 
   <i v-else-if="part.tag === 'LogIcon'" class="log-icon" :class="`${part.contents}-icon`" />
+
+  <!-- The key's own i18n path and humanised fallback both come from the campaign
+       log's own helpers, so a recorded entry reads the same here as it does on
+       that screen. -->
+  <span v-else-if="part.tag === 'LogCampaignKey'">{{
+    logKeyTitle(formatKey(part.contents), $t)
+  }}</span>
 
   <!-- The locale joins the list, so "a, b, and c" is not built server-side. -->
   <span v-else-if="part.tag === 'LogList'">

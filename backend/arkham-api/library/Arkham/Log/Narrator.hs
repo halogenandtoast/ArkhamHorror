@@ -94,7 +94,6 @@ import Arkham.SkillTest.Type
 import Arkham.Source
 import Arkham.Spawn
 import Arkham.Target
-import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Text qualified as T
 
 -- * State
@@ -327,12 +326,22 @@ oneShot = \case
   The one narration that is not derived from anything: the message exists to
   carry it, so it is a straight render. Kept here rather than in a handler so
   the chat line lands in the log in message order with everything else. -}
-  ChatMessage iid text -> Just do
-    who <- investigatorRefFor iid
+  ChatMessage iid mSpeaker text -> Just do
+    -- The account name when the API resolved one, because a player says this,
+    -- not their investigator. Falls back to the investigator rather than going
+    -- unattributed.
+    speaker <- maybe (toLogPart <$> investigatorRefFor iid) (pure . lit) mSpeaker
     -- Trimmed and capped here rather than trusting the client's maxlength: this
     -- is the copy that becomes a durable row.
     let said = T.take 500 (T.strip text)
-    pure $ if T.null said then Nothing else Just $ chat [toLogPart who, lit ": ", lit said]
+    -- The investigator rides along as the entry's source, which is what lets the
+    -- client colour the speaker's name by their class. The name itself is the
+    -- account's, so it cannot carry that on its own.
+    who <- investigatorRefFor iid
+    pure
+      $ if T.null said
+        then Nothing
+        else Just $ because who $ chat [speaker, lit ": ", lit said]
   {- A card drawn into hand.
 
   Addressed to the drawer alone. A hand is hidden information, so this is the
@@ -458,10 +467,16 @@ oneShot = \case
   -- Qualified: 'Record' is also a 'LogKind', and both are in scope here.
   Msg.Record key -> Just (pure $ Just $ recordEntry "log.recorded" key)
   CrossOutRecord key -> Just (pure $ Just $ recordEntry "log.crossedOut" key)
-  RecordCount key n ->
-    Just
-      $ pure
+  {- A count supersedes the one before it rather than stacking.
+
+  "Chasing the Stranger (1)" then "(2)" is one fact changing, not two things
+  that happened, so the earlier line is retracted as the new one is written. -}
+  RecordCount key n -> Just do
+    let tag = "recordCount:" <> tshow key
+    retractLog tag
+    pure
       $ Just
+      $ tagged tag
       $ record
         [ikeyPart "log.recordedCount" ["entry" ~> campaignLogKeyPart key, "count" ~> n]]
   -- Trauma, which outlives the scenario and so is worth its own line.
@@ -590,25 +605,9 @@ renderTokens key target n = do
   mTarget <- targetRefFor target
   pure $ flip fmap mTarget \t -> mechanic [ikeyPart key ["target" ~> t, "count" ~> n]]
 
-{- | A campaign-log key as the client already names it.
-
-@campaignLog.<Key>@ is the namespace the campaign-log screen reads, so a
-recorded entry reads the same in the log as it does there, in whatever language
-is loaded.
-
-The name is taken from the JSON encoding, not from 'Show'. Every key is wrapped
-in a per-campaign constructor -- @ThePathToCarcosaKey HasturHasYouInHisGrasp@ --
-and it is the @contents@, not the tag, that the locale file is keyed by.
--}
+-- | A campaign-log key, for the client to name. See 'LogCampaignKey'.
 campaignLogKeyPart :: CampaignLogKey -> LogPart
-campaignLogKeyPart key = case toJSON key of
-  Object o | Just (String t) <- KeyMap.lookup "contents" o -> scoped t
-  String t -> scoped t
-  -- A key whose encoding is neither shape has no locale entry to point at, so
-  -- the raw name beats a key that renders as itself.
-  _ -> lit (tshow key)
- where
-  scoped t = ikeyPart ("campaignLog." <> t) []
+campaignLogKeyPart = LogCampaignKey . toJSON
 
 recordEntry :: Text -> CampaignLogKey -> LogEntry
 recordEntry key k = record [ikeyPart key ["entry" ~> campaignLogKeyPart k]]

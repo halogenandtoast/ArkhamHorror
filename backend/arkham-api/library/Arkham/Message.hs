@@ -761,8 +761,14 @@ data Message
     and undoable like anything else. It also gives the rules a seam -- Carcosa's
     HASTUR recorder reads it (@Arkham.UltimatumsAndBoons@) -- which a log write
     outside the engine could never have.
+
+    The middle field is who said it, by account name. Filled in by the API from
+    the authenticated user (@putApiV1ArkhamGameRawR@), never by the client, so
+    nobody can sign a line with somebody else's name; the engine has no concept
+    of a user account, which is why it arrives this way rather than being looked
+    up. 'Nothing' falls back to the investigator.
     -}
-    ChatMessage InvestigatorId Text
+    ChatMessage InvestigatorId (Maybe Text) Text
   | Blanked Message
   | HandleOption CampaignOption
   | RemoveOption CampaignOption

@@ -109,6 +109,17 @@ data LogPart
     LogToken Text
   | -- | A skill icon, by its wire name (@"willpower"@).
     LogIcon Text
+  | {- | A campaign-log key, sent as its own JSON rather than as a resolved
+    string.
+
+    The client already owns this mapping: @formatKey@ in @types/Log.ts@ turns a
+    key into its i18n path, handling the campaign prefix, the @.key.@ segment,
+    nested sections, homebrew scopes and apostrophes, and the campaign-log
+    screen renders every key through it. Reimplementing that in Haskell would be
+    a second copy to drift -- the first attempt guessed
+    @campaignLog.\<ShownKey>@ and rendered the key itself.
+    -}
+    LogCampaignKey Value
   | {- | Several parts joined by the locale's list rule, so "a, b, and c" is not
     built in Haskell.
     -}
@@ -327,6 +338,10 @@ logPartToText = \case
   LogDelta n -> (if n < 0 then "" else "+") <> tshow n
   LogToken t -> "[" <> t <> "]"
   LogIcon t -> "[" <> t <> "]"
+  {- The key itself. This rendering has no locale, and the campaign-log key's
+  display name lives entirely on the client, so the raw key is the honest
+  fallback for a trace or an error message. -}
+  LogCampaignKey v -> tshow v
   LogList ps -> intercalate ", " (map logPartToText ps)
 
 -- | The entry as one line of plain text, children excluded.

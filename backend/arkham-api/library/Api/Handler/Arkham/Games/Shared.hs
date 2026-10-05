@@ -559,13 +559,16 @@ updateGame customCards response gameId mRoom = do
                 arkhamGameCreatedAt
                 now
         replace gameId g'
-        insertMany_ $ mapMaybe (pendingRowToEntity gameId arkhamGameStep now) stampedRows
+        {- In order, one row at a time, NOT every insert then every retraction.
+
+        A narration may retract its own previous line and immediately write the
+        replacement -- a record count superseding the last one does exactly that
+        -- and batching the inserts ahead of the deletes would delete the new
+        row along with the old, because they share a tag. -}
         let retractions = [tag | PendingRetract tag <- stampedRows]
-        traverse_ (retractTaggedRows gameId) retractions
-        {- A retraction deletes a row that is already in the client's tail, so
-        the usual "previous tail plus this action's new rows" would publish it
-        again. Re-read instead -- only when something was actually retracted, so
-        the common action still pays nothing. -}
+        for_ stampedRows \row -> case row of
+          PendingRetract tag -> retractTaggedRows gameId tag
+          _ -> traverse_ insert_ (pendingRowToEntity gameId arkhamGameStep now row)
         {- The log to publish, already complete -- NOT "this action's new rows".
 
         These two branches used to return different things and the caller

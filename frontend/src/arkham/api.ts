@@ -843,7 +843,9 @@ export const undoToStep = (gameId: string, step: number): Promise<void> =>
  * the rules that care what you typed -- Carcosa's HASTUR recorder -- can see
  * it. */
 export const sayInLog = (gameId: string, investigatorId: string, text: string): Promise<void> =>
-  updateGameRaw(gameId, { tag: 'ChatMessage', contents: [investigatorId, text] })
+  /* The null is the speaker's name: the API fills it from the authenticated
+   * session, so sending one here would be ignored anyway. */
+  updateGameRaw(gameId, { tag: 'ChatMessage', contents: [investigatorId, null, text] })
 
 export const importGame = async (formData: FormData, multiplayerVariant: string): Promise<Game> => {
   const { data } = await api.post(`arkham/games/import?multiplayerVariant=${multiplayerVariant}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })

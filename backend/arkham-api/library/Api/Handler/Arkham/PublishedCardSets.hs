@@ -30,7 +30,7 @@ module Api.Handler.Arkham.PublishedCardSets (
   versionCards,
 ) where
 
-import Api.Handler.Arkham.CustomCards (ownedCardSet, persistCard, prepareCardForSet)
+import Api.Handler.Arkham.CustomCards (normalizeUrl, ownedCardSet, persistCard, prepareCardForSet)
 import Arkham.Card.CustomCard (CustomCard (..))
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Aeson.Types (parseEither)
@@ -52,6 +52,11 @@ data PublishedCardSetResponse = PublishedCardSetResponse
   {- ^ What the set is. The listing's own, not the version's: the author can
   rewrite it without republishing and without anyone reviewing it again,
   which is the whole reason it does not live on the snapshot.
+  -}
+  , publishedCardSetResponseUrl :: Maybe Text
+  {- ^ Where the set lives in the world -- the post announcing it, the thread
+  it is discussed in -- for the one thing a listing cannot say for itself.
+  The listing's own, like the description, and rewritable the same way.
   -}
   , publishedCardSetResponseAuthor :: Text
   , publishedCardSetResponseMine :: Bool
@@ -150,12 +155,6 @@ instance ToJSON PublishedCardSetVersionResponse where
 
 data PublishPost = PublishPost
   { publishNote :: Maybe Text
-  , publishDescription :: Maybe Text
-  {- ^ What the set is, offered again at the moment it goes out: this is where
-    an author actually writes the blurb, because it is where they are thinking
-    about how the set reads to a stranger. Absent leaves the set's own
-    description to stand, so a client that does not send one changes nothing.
-  -}
   , publishNotify :: Maybe Bool
   {- ^ Whether to email the author the review decision. Absent means yes: an
   older client that does not know to ask still gets told what happened.
@@ -166,12 +165,20 @@ data PublishPost = PublishPost
 instance FromJSON PublishPost where
   parseJSON = genericParseJSON $ aesonOptions $ Just "publish"
 
--- | What the author is changing about a listing without republishing it.
-newtype ListingPut = ListingPut {listingDescription :: Maybe Text}
-  deriving stock Generic
+{- | What the author is changing about a listing without republishing it.
+
+Both fields are three-valued, as they are on the set: absent leaves what is
+there, null clears it. So a client that knows about descriptions but not links
+cannot blank a link by saving a blurb.
+-}
+data ListingPut = ListingPut
+  { listingDescription :: Maybe (Maybe Text)
+  , listingUrl :: Maybe (Maybe Text)
+  }
 
 instance FromJSON ListingPut where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "listing"
+  parseJSON = withObject "ListingPut" \o ->
+    ListingPut <$> o .:! "description" <*> o .:! "url"
 
 {- | A description as it is stored: blank is nothing, and trimmed, so a field
 someone typed a space into does not read as a description wherever one is shown.
@@ -338,6 +345,7 @@ listingFor userId (Entity publishedId row) = do
       { publishedCardSetResponseId = publishedId
       , publishedCardSetResponseName = arkhamPublishedCardSetName row
       , publishedCardSetResponseDescription = arkhamPublishedCardSetDescription row
+      , publishedCardSetResponseUrl = arkhamPublishedCardSetUrl row
       , publishedCardSetResponseAuthor = maybe "someone" userUsername author
       , publishedCardSetResponseMine = isAuthor
       , publishedCardSetResponseOfficial = maybe False userAdmin author
@@ -475,13 +483,13 @@ anyVersion publishedId wanted = do
 
 {- | Rewrite what a listing says about itself, without republishing it.
 
-Only the description: the name and the cards are the version's, and changing
-those is publishing a new one. Nothing is re-reviewed, because nothing a reviewer
-looked at has changed -- a listing's blurb is not its contents.
+Only the description and the link: the name and the cards are the version's, and
+changing those is publishing a new one. Nothing is re-reviewed, because nothing
+a reviewer looked at has changed -- a listing's blurb is not its contents.
 
-It is written back onto the author's own copy of the set when the listing still
-points at one, so the two do not drift and the next publish does not quietly
-undo the edit made here.
+Both are written back onto the author's own copy of the set when the listing
+still points at one, so the two do not drift and the next publish does not
+quietly undo the edit made here.
 -}
 putApiV1ArkhamPublishedCardSetR
   :: ArkhamPublishedCardSetId -> Handler PublishedCardSetResponse
@@ -489,21 +497,32 @@ putApiV1ArkhamPublishedCardSetR publishedId = do
   userId <- getRequestUserId
   row <- runDB $ get404 publishedId
   unless (arkhamPublishedCardSetUserId row == userId) $ permissionDenied "Not your published set"
-  ListingPut {listingDescription} <- requireCheckJsonBody
+  ListingPut {listingDescription, listingUrl} <- requireCheckJsonBody
   now <- liftIO getCurrentTime
-  let description = normalizeDescription listingDescription
+  let description = case listingDescription of
+        Nothing -> arkhamPublishedCardSetDescription row
+        Just given -> normalizeDescription given
+  url <- case listingUrl of
+    Nothing -> pure $ arkhamPublishedCardSetUrl row
+    Just given -> normalizeUrl given
   runDB do
     P.update
       publishedId
       [ ArkhamPublishedCardSetDescription P.=. description
+      , ArkhamPublishedCardSetUrl P.=. url
       , ArkhamPublishedCardSetUpdatedAt P.=. now
       ]
     for_ (arkhamPublishedCardSetCustomCardSetId row) \setId ->
-      P.update setId [ArkhamCustomCardSetDescription P.=. description]
+      P.update
+        setId
+        [ ArkhamCustomCardSetDescription P.=. description
+        , ArkhamCustomCardSetUrl P.=. url
+        ]
   listingFor userId
     $ Entity publishedId
     $ row
       { arkhamPublishedCardSetDescription = description
+      , arkhamPublishedCardSetUrl = url
       , arkhamPublishedCardSetUpdatedAt = now
       }
 
@@ -524,6 +543,9 @@ deleteApiV1ArkhamPublishedCardSetR publishedId = do
 
 {- | Submit the set as a new version, or -- for an admin -- list it.
 
+Nothing about what the set /is/ is asked for here: the name, the blurb and the
+link are the set's own and are taken as they stand.
+
 The cards are snapshotted as they stand, so the version stays importable however
 the author's own copy changes afterwards -- and so that what a reviewer looked at
 is what anyone importing it gets.
@@ -542,21 +564,20 @@ postApiV1ArkhamCustomCardSetPublishR
 postApiV1ArkhamCustomCardSetPublishR setId = do
   Entity userId user <- getRequestUser
   setRow <- ownedCardSet userId setId
-  PublishPost {publishNote, publishDescription, publishNotify} <- requireCheckJsonBody
+  PublishPost {publishNote, publishNotify} <- requireCheckJsonBody
   now <- liftIO getCurrentTime
 
   cards <- runDB $ P.selectList [ArkhamCustomCardCustomCardSetId P.==. setId] []
   when (null cards) $ invalidArgs ["There is nothing in that set to publish"]
 
-  {- The blurb written in the publish form is the set's description from here on,
-  not a thing said about this one version: it is stored back onto the set as well
-  as onto the listing, so the two places an author can edit it agree. Sending
-  nothing leaves whatever the set already says. -}
-  let description =
-        normalizeDescription publishDescription <|> arkhamCustomCardSetDescription setRow
-  runDB $ P.update setId [ArkhamCustomCardSetDescription P.=. description]
-
-  let name = arkhamCustomCardSetName setRow
+  {- The blurb and the link are the set's, copied onto the listing as it stands
+  rather than asked for here: they say what the set is, which is not a thing
+  about this one version, and a set says them whether or not it is listed. The
+  listing keeps its own copy so it still reads if the author's set is deleted,
+  and editing either side writes to both. -}
+  let description = arkhamCustomCardSetDescription setRow
+      url = arkhamCustomCardSetUrl setRow
+      name = arkhamCustomCardSetName setRow
       -- Printed order, which is the order the author put them in. It is fixed
       -- here rather than by whoever reads the version, because the listing only
       -- carries the first few and they have to be the first few.
@@ -589,6 +610,7 @@ postApiV1ArkhamCustomCardSetPublishR setId = do
       P.update found
         $ [ ArkhamPublishedCardSetName P.=. name
           , ArkhamPublishedCardSetDescription P.=. description
+          , ArkhamPublishedCardSetUrl P.=. url
           , ArkhamPublishedCardSetLatestVersion P.=. version
           , ArkhamPublishedCardSetUpdatedAt P.=. now
           ]
@@ -602,7 +624,8 @@ postApiV1ArkhamCustomCardSetPublishR setId = do
             Listed _ -> Just 1
             ForReview -> Nothing
       found <-
-        P.insert $ ArkhamPublishedCardSet userId (Just setId) name description 1 approved now now
+        P.insert
+          $ ArkhamPublishedCardSet userId (Just setId) name description url 1 approved now now
       versionId <-
         P.insert $ ArkhamPublishedCardSetVersion found 1 publishNote name snapshot now
       submit publication found versionId userId 1 notify now
@@ -736,9 +759,12 @@ importVersion userId publishedId version = do
   cards <- versionCards version
   now <- liftIO getCurrentTime
   let name = arkhamPublishedCardSetVersionName version
-  -- The listing's blurb comes with the set, so a copy of it says what it is
-  -- rather than arriving as a name and a pile of cards.
-  description <- fmap (arkhamPublishedCardSetDescription =<<) $ runDB $ DB.get publishedId
+  -- The listing's blurb and link come with the set, so a copy of it says what
+  -- it is and where it came from rather than arriving as a name and a pile of
+  -- cards.
+  listing <- runDB $ DB.get publishedId
+  let description = arkhamPublishedCardSetDescription =<< listing
+      url = arkhamPublishedCardSetUrl =<< listing
 
   existing <- mineFollowing userId publishedId
   -- A first subscription has to find a name nobody else of yours is using.
@@ -755,11 +781,12 @@ importVersion userId publishedId version = do
           found
           [ ArkhamCustomCardSetName P.=. name'
           , ArkhamCustomCardSetDescription P.=. description
+          , ArkhamCustomCardSetUrl P.=. url
           , ArkhamCustomCardSetUpdatedAt P.=. now
           ]
         P.deleteWhere [ArkhamCustomCardCustomCardSetId P.==. found]
         pure found
-      Nothing -> P.insert $ ArkhamCustomCardSet userId name' description Nothing now now
+      Nothing -> P.insert $ ArkhamCustomCardSet userId name' description url Nothing now now
     for_ prepared $ persistCard userId setId now
     -- Written after the cards, so a failed import leaves nothing claiming to be
     -- up to date.

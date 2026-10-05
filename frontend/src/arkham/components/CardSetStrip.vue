@@ -29,12 +29,15 @@ const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def
       :type="props.interactive ? 'button' : undefined"
       class="strip-card"
       :class="{ pickable: props.interactive }"
-      v-tooltip="card.def.name.title"
       @click="props.interactive ? emit('pick', card) : undefined"
     >
       <!-- `data-image` is what CardOverlay hovers on. The art is given outright
            rather than as a card code, because a custom card's code resolves to
-           nothing in the printed-card image host. -->
+           nothing in the printed-card image host.
+
+           No tooltip on top of it: the name is printed under the card and the
+           overlay is showing the card itself, so a third copy of the title just
+           covers the art you came to look at. -->
       <img :src="cardArt(card)" :data-image="cardArt(card)" alt="" />
       <span class="name">{{ card.def.name.title }}</span>
     </component>
@@ -54,6 +57,11 @@ const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def
   --strip-card: 112px;
   --strip-image: 158px;
   --strip-card-height: 190px;
+  /* A card's own breathing room, which its hover box needs and the picture
+     inside it pays for: the art sits this far in from the cell. Published so a
+     container can pull the strip back out by it and have the first card's art
+     line up with the text above it. */
+  --strip-pad: 0.3rem;
 
   display: grid;
   gap: 0.6rem 0.5rem;
@@ -85,7 +93,7 @@ const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def
   flex-direction: column;
   gap: 0.35rem;
   height: var(--strip-card-height);
-  padding: 0.3rem;
+  padding: var(--strip-pad);
   text-align: center;
   transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
   width: 100%;

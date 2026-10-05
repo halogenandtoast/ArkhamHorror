@@ -8,7 +8,9 @@
 import { computed, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
 import {
+  bareCardCode,
   cardArtReference,
+  customCardCodes,
   normalizeCardDef,
   registerCustomCards,
   unregisterCustomCard,
@@ -148,8 +150,20 @@ export function libraryCards(): LibraryCard[] {
   return [...entries].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
 }
 
+/* Its own code, or one it answers to: a card can name the arkham.build card it
+ * stands in for, and a deck built there names that one. Own codes are checked
+ * across the whole library before any alias, so a card cannot be shadowed by
+ * another one's claim to be it.
+ *
+ * Compared bare on both sides: a stored def's code carries the wire `c`, an
+ * alias is derived bare, and callers pass either. */
 export function libraryCard(cardCode: string): LibraryCard | undefined {
-  return entries.find((e) => e.def.cardCode === cardCode)
+  const want = bareCardCode(cardCode)
+  const bare = (code: string) => bareCardCode(code) === want
+  return (
+    entries.find((e) => bare(e.def.cardCode))
+    ?? entries.find((e) => customCardCodes(e.def).some(bare))
+  )
 }
 
 // ------------------------------------------------------------------ sets ---
@@ -176,19 +190,19 @@ export async function createSet(name: string): Promise<LibrarySet> {
   return set
 }
 
-/* Rename, redescribe, or both. `description` left out keeps whatever is stored,
- * so renaming cannot wipe a blurb. */
+/* Rename, redescribe, relink, or any of them. `description` and `url` left out
+ * keep whatever is stored, so renaming cannot wipe a blurb or a link. */
 export async function updateSet(
   id: string,
-  changes: { name: string; description?: string | null },
+  changes: { name: string; description?: string | null; url?: string | null },
 ): Promise<LibrarySet> {
   const set = await Api.updateCustomCardSet(id, changes)
   upsertSet(set)
   /* The name is stamped onto every card in the set so a card exported on its
    * own still says where it came from; the server rewrites them, and the copies
    * held here have to follow or an export taken before the next reload would
-   * carry the old name. The description is not stamped on: it describes the
-   * set, and a card on its own is not the set. */
+   * carry the old name. The description and the link are not stamped on: they
+   * describe the set, and a card on its own is not the set. */
   for (const card of entries) {
     if (card.setId === id) card.def.meta = { ...card.def.meta, set: set.name }
   }
@@ -218,12 +232,14 @@ export async function removeSet(id: string) {
 export async function importSet(payload: {
   name: string
   description?: string | null
+  url?: string | null
   sourceCode: string | null
   cards: CustomCard[]
 }): Promise<LibrarySet> {
   const { set, cards } = await Api.importCustomCardSet({
     name: payload.name,
     description: payload.description,
+    url: payload.url,
     sourceCode: payload.sourceCode,
     cards: payload.cards.map((c) => ({ def: c.def, art: c.art })),
   })
@@ -250,13 +266,8 @@ export async function importSet(payload: {
  * cards, on an update, and its subscription either way -- so the library is
  * reloaded rather than patched from the response. */
 
-export async function publishSet(
-  id: string,
-  note: string | null,
-  description: string | null,
-  notify: boolean,
-) {
-  const published = await Api.publishCustomCardSet(id, note, description, notify)
+export async function publishSet(id: string, note: string | null, notify: boolean) {
+  const published = await Api.publishCustomCardSet(id, note, notify)
   await loadLibrary(true)
   return published
 }
@@ -324,13 +335,19 @@ export const EXPORT_VERSION = 2
 
 export type CardExport = {
   version: number
-  set?: { name: string; description?: string | null; sourceCode: string | null }
+  set?: {
+    name: string
+    description?: string | null
+    url?: string | null
+    sourceCode: string | null
+  }
   cards: { def: any; art: string | null }[]
 }
 
 export type ParsedCardExport = {
   name: string
   description: string | null
+  url: string | null
   sourceCode: string | null
   cards: CustomCard[]
 }
@@ -354,7 +371,14 @@ export async function exportCards(cards: CustomCard[], set?: LibrarySet): Promis
   return {
     version: EXPORT_VERSION,
     ...(set
-      ? { set: { name: set.name, description: set.description, sourceCode: set.sourceCode } }
+      ? {
+          set: {
+            name: set.name,
+            description: set.description,
+            url: set.url,
+            sourceCode: set.sourceCode,
+          },
+        }
       : {}),
     cards: inlined,
   }
@@ -410,11 +434,13 @@ export function parseCardExport(raw: string, fallbackName = 'Imported cards'): P
   const declared = typeof parsed?.set?.name === 'string' ? parsed.set.name.trim() : ''
   const described =
     typeof parsed?.set?.description === 'string' ? parsed.set.description.trim() : ''
+  const linked = typeof parsed?.set?.url === 'string' ? parsed.set.url.trim() : ''
   return {
     name: declared || (cards.length ? declaredSetName(cards[0]) : null) || fallbackName,
     // Null, not '', for a file written before descriptions existed: the server
     // reads "nothing said" as "leave the set's own alone".
     description: described || null,
+    url: linked || null,
     sourceCode: parsed?.set?.sourceCode ?? null,
     cards,
   }

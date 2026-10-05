@@ -7,6 +7,7 @@ module Api.Handler.Arkham.CustomCardSets (
 ) where
 
 import Api.Handler.Arkham.CustomCards (
+  normalizeUrl,
   ownedCardSet,
   persistCard,
   prepareCardForSet,
@@ -34,6 +35,11 @@ data CustomCardSetResponse = CustomCardSetResponse
   {- ^ What the set is, in the author's own words. Seeds the marketplace
   listing when the set is published, and is what a page showing one set has
   to say about it beyond its name.
+  -}
+  , customCardSetResponseUrl :: Maybe Text
+  {- ^ Where the set lives in the world: the post announcing it, the thread it
+  is discussed in. Seeds the listing alongside the description, and is the one
+  thing here that sends somebody somewhere else.
   -}
   , customCardSetResponseSourceCode :: Maybe Text
   , customCardSetResponseCardCount :: Int
@@ -79,18 +85,19 @@ instance ToJSON CustomCardSetImportResponse where
 
 {- | What a create or an edit says about a set.
 
-@description@ is three-valued on purpose: absent leaves whatever is there, null
-clears it, and a string sets it. A client that does not know about descriptions
-sends only a name, and @.:!@ is what keeps that from wiping one.
+@description@ and @url@ are three-valued on purpose: absent leaves whatever is
+there, null clears it, and a string sets it. A client that does not know about
+either sends only a name, and @.:!@ is what keeps that from wiping one.
 -}
 data SetNamePost = SetNamePost
   { setNameName :: Text
   , setNameDescription :: Maybe (Maybe Text)
+  , setNameUrl :: Maybe (Maybe Text)
   }
 
 instance FromJSON SetNamePost where
   parseJSON = withObject "SetNamePost" \o ->
-    SetNamePost <$> o .: "name" <*> o .:! "description"
+    SetNamePost <$> o .: "name" <*> o .:! "description" <*> o .:! "url"
 
 {- | A description as it is stored: blank is nothing. Trimmed, so a field someone
 typed a space into does not read as a description everywhere one is shown.
@@ -104,6 +111,7 @@ normalizeDescription raw = do
 data ImportSetPost = ImportSetPost
   { importSetName :: Text
   , importSetDescription :: Maybe Text
+  , importSetUrl :: Maybe Text
   , importSetSourceCode :: Maybe Text
   , importSetCards :: [CustomCard]
   }
@@ -160,6 +168,7 @@ setResponse (Entity setId row) = do
       { customCardSetResponseId = setId
       , customCardSetResponseName = arkhamCustomCardSetName row
       , customCardSetResponseDescription = arkhamCustomCardSetDescription row
+      , customCardSetResponseUrl = arkhamCustomCardSetUrl row
       , customCardSetResponseSourceCode = arkhamCustomCardSetSourceCode row
       , customCardSetResponseCardCount = cardCount
       , customCardSetResponseUpdatedAt = arkhamCustomCardSetUpdatedAt row
@@ -194,15 +203,16 @@ and it already has one.
 postApiV1ArkhamCustomCardSetsR :: Handler CustomCardSetResponse
 postApiV1ArkhamCustomCardSetsR = do
   userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
-  SetNamePost {setNameName, setNameDescription} <- requireCheckJsonBody
+  SetNamePost {setNameName, setNameDescription, setNameUrl} <- requireCheckJsonBody
   name <- requireName setNameName
+  url <- normalizeUrl (join setNameUrl)
   now <- liftIO getCurrentTime
   existing <- runDB $ P.getBy (UniqueUserCustomCardSetName userId name)
   case existing of
     Just found -> setResponse found
     Nothing -> do
       let description = normalizeDescription (join setNameDescription)
-          row = ArkhamCustomCardSet userId name description Nothing now now
+          row = ArkhamCustomCardSet userId name description url Nothing now now
       setId <- runDB $ P.insert row
       setResponse $ Entity setId row
 
@@ -211,18 +221,18 @@ postApiV1ArkhamCustomCardSetsR = do
 The copy of the name each card holds is only a copy, but it is the one that
 travels with a card out of here -- an export, and from there someone else's
 account -- so leaving it behind would hand out cards still naming the old set.
-The description is not stamped onto the cards: it describes the set, and a card
-on its own is not the set.
+Neither the description nor the link is stamped onto the cards: they describe
+the set, and a card on its own is not the set.
 
 Renaming stops the set following a published one -- what is in it is then not
-what was published. Rewriting only the description does not: nothing about the
-cards has changed, and taking someone's updates away for editing a blurb would
-be a trap.
+what was published. Rewriting only the description or the link does not: nothing
+about the cards has changed, and taking someone's updates away for editing a
+blurb would be a trap.
 -}
 putApiV1ArkhamCustomCardSetR :: ArkhamCustomCardSetId -> Handler CustomCardSetResponse
 putApiV1ArkhamCustomCardSetR setId = do
   userId <- callerUserId <$> getScopedCaller [ApiKey.cardsWrite]
-  SetNamePost {setNameName, setNameDescription} <- requireCheckJsonBody
+  SetNamePost {setNameName, setNameDescription, setNameUrl} <- requireCheckJsonBody
   name <- requireName setNameName
   row <- ownedCardSet userId setId
   now <- liftIO getCurrentTime
@@ -236,6 +246,9 @@ putApiV1ArkhamCustomCardSetR setId = do
       description = case setNameDescription of
         Nothing -> arkhamCustomCardSetDescription row
         Just given -> normalizeDescription given
+  url <- case setNameUrl of
+    Nothing -> pure $ arkhamCustomCardSetUrl row
+    Just given -> normalizeUrl given
 
   cards <- runDB $ P.selectList [ArkhamCustomCardCustomCardSetId P.==. setId] []
   runDB do
@@ -244,6 +257,7 @@ putApiV1ArkhamCustomCardSetR setId = do
       setId
       [ ArkhamCustomCardSetName P.=. name
       , ArkhamCustomCardSetDescription P.=. description
+      , ArkhamCustomCardSetUrl P.=. url
       , ArkhamCustomCardSetUpdatedAt P.=. now
       ]
     when renamed
@@ -260,6 +274,7 @@ putApiV1ArkhamCustomCardSetR setId = do
     $ row
       { arkhamCustomCardSetName = name
       , arkhamCustomCardSetDescription = description
+      , arkhamCustomCardSetUrl = url
       , arkhamCustomCardSetUpdatedAt = now
       }
 
@@ -288,9 +303,16 @@ a card the set no longer has.
 postApiV1ArkhamCustomCardSetsImportR :: Handler CustomCardSetImportResponse
 postApiV1ArkhamCustomCardSetsImportR = do
   userId <- getRequestUserId
-  ImportSetPost {importSetName, importSetDescription, importSetSourceCode, importSetCards} <-
+  ImportSetPost
+    { importSetName
+    , importSetDescription
+    , importSetUrl
+    , importSetSourceCode
+    , importSetCards
+    } <-
     requireCheckJsonBody
   name <- requireName importSetName
+  url <- normalizeUrl importSetUrl
   let description = normalizeDescription importSetDescription
   now <- liftIO getCurrentTime
 
@@ -324,13 +346,14 @@ postApiV1ArkhamCustomCardSetsImportR = do
             -- blurb its owner has since written.
             ArkhamCustomCardSetDescription
               P.=. (description <|> arkhamCustomCardSetDescription found)
+          , ArkhamCustomCardSetUrl P.=. (url <|> arkhamCustomCardSetUrl found)
           , ArkhamCustomCardSetSourceCode P.=. importSetSourceCode
           , ArkhamCustomCardSetUpdatedAt P.=. now
           ]
         P.deleteWhere [ArkhamCustomCardCustomCardSetId P.==. foundId]
         pure foundId
       Nothing ->
-        P.insert $ ArkhamCustomCardSet userId name description importSetSourceCode now now
+        P.insert $ ArkhamCustomCardSet userId name description url importSetSourceCode now now
     -- Emptying and refilling in one transaction: an import that dies partway
     -- leaves the set as it was rather than as half of what replaced it.
     (setId,) <$> traverse (persistCard userId setId now) prepared

@@ -18,6 +18,7 @@ import CustomCardsPage from '@/arkham/components/CustomCardsPage.vue'
 import MetaChip from '@/arkham/components/MetaChip.vue'
 import SetPreview from '@/arkham/components/SetPreview.vue'
 import { useRouter } from 'vue-router'
+import { isBadLink, setLinkLabel } from '@/arkham/setLink'
 
 const { t } = useI18n()
 const K = 'customCardSets.'
@@ -121,25 +122,37 @@ function replace(updated: Api.PublishedCardSet) {
  * publish does not quietly undo it. */
 const editingId = ref<string | null>(null)
 const descriptionDraft = ref('')
+const urlDraft = ref('')
 
 function startEdit(set: Api.PublishedCardSet) {
   editingId.value = set.id
   descriptionDraft.value = set.description ?? ''
+  urlDraft.value = set.url ?? ''
   status.value = null
   error.value = null
 }
 
+/* Only what changed is sent: a key left out keeps what is stored, so saving a
+ * blurb cannot blank a link and the other way round. */
 async function commitEdit(set: Api.PublishedCardSet) {
   const description = descriptionDraft.value.trim()
+  const url = urlDraft.value.trim()
   editingId.value = null
-  if (description === (set.description ?? '')) return
+  const redescribed = description !== (set.description ?? '')
+  const relinked = url !== (set.url ?? '')
+  if (!redescribed && !relinked) return
   error.value = null
   try {
-    replace(await Api.updatePublishedCardSet(set.id, description || null))
+    replace(
+      await Api.updatePublishedCardSet(set.id, {
+        ...(redescribed ? { description: description || null } : {}),
+        ...(relinked ? { url: url || null } : {}),
+      }),
+    )
     status.value = t(`${K}descriptionSaved`, { name: set.name })
   } catch (e) {
     console.error(e)
-    error.value = t(`${K}descriptionSaveFailed`)
+    error.value = t(`${K}${isBadLink(e) ? 'setLinkInvalid' : 'descriptionSaveFailed'}`)
   }
 }
 
@@ -223,6 +236,15 @@ async function unlist(set: Api.PublishedCardSet) {
                 @keydown.stop
                 @keydown.esc="editingId = null"
               ></textarea>
+              <input
+                v-model="urlDraft"
+                type="url"
+                inputmode="url"
+                :aria-label="t(`${K}setUrlLabel`)"
+                :placeholder="t(`${K}setUrlPlaceholder`)"
+                @keydown.stop
+                @keydown.esc="editingId = null"
+              />
               <div class="describe-actions">
                 <button type="submit" class="go">{{ t(`${K}saveDescription`) }}</button>
                 <button type="button" class="quiet" @click="editingId = null">
@@ -233,6 +255,18 @@ async function unlist(set: Api.PublishedCardSet) {
             <template v-else>
               <p v-if="set.description" class="description">{{ set.description }}</p>
               <p v-else class="description none">{{ t(`${K}noDescriptionYet`) }}</p>
+              <!-- The host rather than the whole address: the slugs and dates
+                   are nobody's business, and the anchor carries them. -->
+              <a
+                v-if="set.url"
+                class="site-link"
+                :href="set.url"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <font-awesome-icon icon="external-link" />
+                {{ setLinkLabel(set.url) }}
+              </a>
               <button type="button" class="link" @click="startEdit(set)">
                 <font-awesome-icon icon="pen" />
                 {{ t(set.description ? `${K}editDescription` : `${K}addDescription`) }}
@@ -428,6 +462,22 @@ async function unlist(set: Api.PublishedCardSet) {
   }
 }
 
+/* The set's own page, which is the one thing a listing cannot say for itself. */
+.site-link {
+  align-items: center;
+  color: var(--spooky-green);
+  display: inline-flex;
+  font-size: 0.8rem;
+  gap: 0.35rem;
+  margin: 0.4rem 0.6rem 0 0;
+  text-decoration: none;
+  word-break: break-all;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .describe-form {
   display: flex;
   flex-direction: column;
@@ -435,7 +485,8 @@ async function unlist(set: Api.PublishedCardSet) {
   margin-top: 0.55rem;
   max-width: 64ch;
 
-  textarea {
+  textarea,
+  input {
     background: var(--background);
     border: 1px solid var(--box-border);
     border-radius: 5px;

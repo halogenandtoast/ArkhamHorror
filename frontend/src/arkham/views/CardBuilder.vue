@@ -21,6 +21,7 @@ import {
   type SignatureSummary,
 } from '@/arkham/customCards'
 import { useMarketplaceVisible } from '@/composable/marketplaceAccess'
+import { isBadLink, setLinkLabel } from '@/arkham/setLink'
 import CustomCardsPage from '@/arkham/components/CustomCardsPage.vue'
 import FilterBar from '@/arkham/components/FilterBar.vue'
 import MetaChip from '@/arkham/components/MetaChip.vue'
@@ -68,12 +69,13 @@ const error = ref<string | null>(null)
 const ACTIVE_SET_KEY = 'arkham:card-builder:active-set'
 const activeSetId = ref<string | null>(null)
 const newSetName = ref('')
-/* Renaming and redescribing are one form: they are the two things a set says
- * about itself, and asking for them in two places means two round trips to
+/* Renaming, redescribing and relinking are one form: they are what a set says
+ * about itself, and asking for them in three places means three round trips to
  * change what reads as one thing. */
 const renamingSetId = ref<string | null>(null)
 const renameDraft = ref('')
 const describeDraft = ref('')
+const linkDraft = ref('')
 
 const route = useRoute()
 const router = useRouter()
@@ -99,19 +101,36 @@ const userStore = useUserStore()
 const publishingSetId = ref<string | null>(null)
 const publishNote = ref('')
 const publishNotify = ref(true)
-/* The set's description, offered again here because this is the moment an
- * author is thinking about how it reads to a stranger. Prefilled with whatever
- * the set already says, and what is submitted becomes the set's description as
- * well as the listing's -- it is one blurb, not two. */
-const publishDescription = ref('')
 
 function startPublish(set: LibrarySet) {
   publishingSetId.value = set.id
   publishNote.value = ''
-  publishDescription.value = set.description ?? ''
   publishNotify.value = true
   status.value = null
   error.value = null
+}
+
+/* What the shelf says about a set -- the blurb and the link -- belongs to the
+ * set, and is written where the set's name is written. Publishing shows it and
+ * hands you that form rather than asking for it a second time: two fields that
+ * fill the same two columns are two chances for them to disagree.
+ *
+ * Which set's publish form it was opened from, so closing the details comes
+ * back to it rather than to the list: the blurb was being edited for the sake
+ * of the submission, and the note typed into it is still there. */
+const detailsForPublish = ref<string | null>(null)
+
+function editDetails(set: LibrarySet) {
+  publishingSetId.value = null
+  startRename(set)
+  detailsForPublish.value = set.id
+}
+
+function leaveDetails(set: LibrarySet) {
+  renamingSetId.value = null
+  if (detailsForPublish.value !== set.id) return
+  detailsForPublish.value = null
+  publishingSetId.value = set.id
 }
 
 /* For an admin this lists the set; for anybody else it submits it, and the
@@ -120,12 +139,11 @@ function startPublish(set: LibrarySet) {
  * "Published" would otherwise be a lie the author only finds out about later. */
 async function commitPublish(set: LibrarySet) {
   const note = publishNote.value.trim()
-  const description = publishDescription.value.trim()
   const notify = publishNotify.value
   publishingSetId.value = null
   error.value = null
   try {
-    const submitted = await publishSet(set.id, note || null, description || null, notify)
+    const submitted = await publishSet(set.id, note || null, notify)
     status.value = t(`${K}${userStore.isAdmin ? 'published' : 'submitted'}`, {
       name: set.name,
       version: submitted.pendingVersion ?? submitted.latestVersion,
@@ -312,33 +330,43 @@ async function addSet() {
 
 function startRename(set: LibrarySet) {
   renamingSetId.value = set.id
+  detailsForPublish.value = null
   renameDraft.value = set.name
   describeDraft.value = set.description ?? ''
+  linkDraft.value = set.url ?? ''
 }
 
-/* Only what actually changed is sent. The description is left out of the body
- * when it is untouched, which is what keeps an older blurb from being cleared;
- * and a form closed without changing anything sends nothing at all, so a set
- * that follows a published one does not lose that for a no-op rename. */
+/* Only what actually changed is sent. The description and the link are left out
+ * of the body when they are untouched, which is what keeps an older blurb or
+ * link from being cleared; and a form closed without changing anything sends
+ * nothing at all, so a set that follows a published one does not lose that for
+ * a no-op rename.
+ *
+ * The server refuses a link that is not an http address, which is the one way
+ * this form can fail on something other than the name. */
 async function commitRename(set: LibrarySet) {
   const name = renameDraft.value.trim()
   const description = describeDraft.value.trim()
-  renamingSetId.value = null
+  const url = linkDraft.value.trim()
+  leaveDetails(set)
   if (!name) return
   const renamed = name !== set.name
   const redescribed = description !== (set.description ?? '')
-  if (!renamed && !redescribed) return
+  const relinked = url !== (set.url ?? '')
+  if (!renamed && !redescribed && !relinked) return
   error.value = null
   try {
     await updateSet(set.id, {
       name,
       ...(redescribed ? { description: description || null } : {}),
+      ...(relinked ? { url: url || null } : {}),
     })
   } catch (e) {
     console.error(e)
-    error.value = t(`${K}setRenameFailed`)
+    error.value = t(`${K}${isBadLink(e) ? 'setLinkInvalid' : 'setRenameFailed'}`)
   }
 }
+
 
 /* The whole point of a set: changing your mind about an import you just made is
  * one decision, so the count is spelled out rather than left to be discovered. */
@@ -494,6 +522,7 @@ type PendingImport = {
   // Only ever something when the file said so; the server leaves the set's own
   // alone otherwise.
   description: string | null
+  url: string | null
   sourceCode: string | null
   cards: CustomCard[]
   replacing: LibrarySet | null
@@ -579,6 +608,7 @@ async function reviewImport(
   parse: (text: string) => Promise<{
     name: string
     description?: string | null
+    url?: string | null
     sourceCode: string | null
     cards: CustomCard[]
   }>,
@@ -590,7 +620,7 @@ async function reviewImport(
   importExpanded.value = false
   portraitsCut.value = 0
   try {
-    const { name, description, sourceCode, cards } = await parse(await file.text())
+    const { name, description, url, sourceCode, cards } = await parse(await file.text())
     if (!cards.length) {
       error.value = t(`${K}fileHasNoCards`)
       return
@@ -599,6 +629,7 @@ async function reviewImport(
       fileName: file.name,
       name,
       description: description ?? null,
+      url: url ?? null,
       sourceCode,
       cards,
       replacing:
@@ -638,6 +669,7 @@ async function commitImport() {
       : await importSet({
           name: incoming.name,
           description: incoming.description,
+          url: incoming.url,
           sourceCode: incoming.sourceCode,
           cards: incoming.cards,
         })
@@ -878,7 +910,7 @@ async function onImport(event: Event) {
               :aria-label="t(`${K}setNameLabel`)"
               :placeholder="t(`${K}setNameLabel`)"
               @keydown.stop
-              @keydown.esc="renamingSetId = null"
+              @keydown.esc="leaveDetails(set)"
             />
             <textarea
               v-model="describeDraft"
@@ -887,11 +919,21 @@ async function onImport(event: Event) {
               :aria-label="t(`${K}setDescriptionLabel`)"
               :placeholder="t(`${K}setDescriptionPlaceholder`)"
               @keydown.stop
-              @keydown.esc="renamingSetId = null"
+              @keydown.esc="leaveDetails(set)"
             ></textarea>
+            <input
+              v-model="linkDraft"
+              class="set-url"
+              type="url"
+              inputmode="url"
+              :aria-label="t(`${K}setUrlLabel`)"
+              :placeholder="t(`${K}setUrlPlaceholder`)"
+              @keydown.stop
+              @keydown.esc="leaveDetails(set)"
+            />
             <div class="rename-actions">
               <button type="submit">{{ t(`${K}saveSetDetails`) }}</button>
-              <button type="button" class="cancel" @click="renamingSetId = null">
+              <button type="button" class="cancel" @click="leaveDetails(set)">
                 {{ t(`${K}publishCancel`) }}
               </button>
             </div>
@@ -919,6 +961,20 @@ async function onImport(event: Event) {
               >
                 {{ t(`${K}listedChip`, { version: set.approvedVersion }) }}
               </MetaChip>
+              <!-- Where the set lives in the world, shown as the host: it is
+                   the only thing on this row that leads somewhere else, and
+                   the whole address would crowd out the facts beside it. -->
+              <a
+                v-if="set.url"
+                class="site-link"
+                :href="set.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                @click.stop
+              >
+                <font-awesome-icon icon="external-link" />
+                {{ setLinkLabel(set.url) }}
+              </a>
             </div>
           </div>
 
@@ -1010,20 +1066,31 @@ async function onImport(event: Event) {
           <p class="publish-lede">
             {{ t(`${K}${userStore.isAdmin ? 'publishLede' : 'submitLede'}`) }}
           </p>
-          <!-- The blurb the marketplace shows. First, because it is the thing
-               someone deciding whether to take the set actually reads; the note
-               below it is only about this version. -->
-          <label class="publish-field">
-            <span>{{ t(`${K}publishDescriptionLabel`) }}</span>
-            <textarea
-              v-model="publishDescription"
-              rows="3"
-              :placeholder="t(`${K}publishDescriptionPlaceholder`)"
-              @keydown.stop
-              @keydown.esc="publishingSetId = null"
-            ></textarea>
-            <small>{{ t(`${K}publishDescriptionHelp`) }}</small>
-          </label>
+          <!-- What the shelf will say: the set's own blurb and link, shown
+               rather than asked for. First, because it is the thing someone
+               deciding whether to take the set actually reads; the note below it
+               is only about this version. -->
+          <div class="publish-details">
+            <span>{{ t(`${K}publishDetailsLabel`) }}</span>
+            <p class="blurb" :class="{ none: !set.description }">
+              {{ set.description || t(`${K}noDescriptionYet`) }}
+            </p>
+            <a
+              v-if="set.url"
+              class="site-link"
+              :href="set.url"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <font-awesome-icon icon="external-link" />
+              {{ setLinkLabel(set.url) }}
+            </a>
+            <small>{{ t(`${K}publishDetailsHelp`) }}</small>
+            <button type="button" class="edit-details" @click="editDetails(set)">
+              <font-awesome-icon icon="pen" />
+              {{ t(`${K}editSetDetails`) }}
+            </button>
+          </div>
           <input
             v-model="publishNote"
             type="text"
@@ -1321,7 +1388,8 @@ async function onImport(event: Event) {
     min-width: 0;
   }
 
-  .describe {
+  .describe,
+  .set-url {
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--box-border);
     border-radius: 4px;
@@ -1364,9 +1432,25 @@ async function onImport(event: Event) {
 }
 
 .set-facts {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
+}
+
+/* Sits among the chips but is not one: it is the only thing on the row that
+   leads off the page, so it reads as a link rather than as a fact. */
+.site-link {
+  align-items: center;
+  color: var(--spooky-green);
+  display: inline-flex;
+  font-size: 0.75rem;
+  gap: 0.3rem;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .row-trailing {
@@ -1472,17 +1556,37 @@ async function onImport(event: Event) {
     gap: 0.4rem;
   }
 
-  /* The blurb gets a label and a line of help; the note below it does not,
-     because "What changed" is the whole of what it is. */
-  .publish-field {
+  /* What the shelf will say, quoted back rather than typed again: a panel the
+     set's own words sit in, with the way to change them under it. */
+  .publish-details {
+    align-items: flex-start;
+    background: rgba(0, 0, 0, 0.18);
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
     display: flex;
     flex: 1 1 100%;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.3rem;
+    padding: 0.45rem 0.55rem;
 
     > span {
       color: color-mix(in srgb, var(--title) 85%, transparent);
       font-size: 0.78rem;
+    }
+
+    .blurb {
+      color: color-mix(in srgb, var(--title) 85%, transparent);
+      font-size: 0.85rem;
+      line-height: 1.45;
+      margin: 0;
+      max-width: 64ch;
+      white-space: pre-wrap;
+
+      /* Nothing written yet reads as the gap it is, not as the blurb. */
+      &.none {
+        color: color-mix(in srgb, var(--title) 55%, transparent);
+        font-style: italic;
+      }
     }
 
     small {
@@ -1490,21 +1594,20 @@ async function onImport(event: Event) {
       font-size: 0.72rem;
     }
 
-    textarea {
-      background: rgba(0, 0, 0, 0.25);
+    /* Leaves the form for the one that owns these words, so it is not one of
+       the two buttons that act on the submission. */
+    .edit-details {
+      background: none;
       border: 1px solid var(--box-border);
-      border-radius: 4px;
-      color: var(--title);
-      font-family: inherit;
-      font-size: 0.85rem;
-      min-width: 0;
-      padding: 0.3rem 0.5rem;
-      resize: vertical;
-      width: 100%;
+      color: color-mix(in srgb, var(--title) 85%, transparent);
+      display: inline-flex;
+      gap: 0.35rem;
+      padding: 0.2rem 0.5rem;
     }
   }
 
-  input {
+  /* The note shares its row with the buttons, so the basis here is a width. */
+  > input {
     background: rgba(0, 0, 0, 0.25);
     border: 1px solid var(--box-border);
     border-radius: 4px;

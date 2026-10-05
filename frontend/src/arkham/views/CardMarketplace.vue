@@ -12,6 +12,7 @@ import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
 import { useMarketplaceVisible } from '@/composable/marketplaceAccess'
 import { subscribeToSet } from '@/arkham/customCardLibrary'
+import { isBadLink, setLinkLabel } from '@/arkham/setLink'
 import type { CustomCard } from '@/arkham/customCards'
 import { useRoute } from 'vue-router'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
@@ -196,25 +197,37 @@ async function take(set: Api.PublishedCardSet) {
  * the next publish does not quietly undo what was typed here. */
 const editingId = ref<string | null>(null)
 const descriptionDraft = ref('')
+const urlDraft = ref('')
 
 function startEdit(set: Api.PublishedCardSet) {
   editingId.value = set.id
   descriptionDraft.value = set.description ?? ''
+  urlDraft.value = set.url ?? ''
   status.value = null
   error.value = null
 }
 
+/* Only what changed is sent: a key left out keeps what is stored, so saving a
+ * blurb cannot blank a link and the other way round. */
 async function commitEdit(set: Api.PublishedCardSet) {
   const description = descriptionDraft.value.trim()
+  const url = urlDraft.value.trim()
   editingId.value = null
-  if (description === (set.description ?? '')) return
+  const redescribed = description !== (set.description ?? '')
+  const relinked = url !== (set.url ?? '')
+  if (!redescribed && !relinked) return
   error.value = null
   try {
-    replace(await Api.updatePublishedCardSet(set.id, description || null))
+    replace(
+      await Api.updatePublishedCardSet(set.id, {
+        ...(redescribed ? { description: description || null } : {}),
+        ...(relinked ? { url: url || null } : {}),
+      }),
+    )
     status.value = t(`${K}descriptionSaved`, { name: set.name })
   } catch (e) {
     console.error(e)
-    error.value = t(`${K}descriptionSaveFailed`)
+    error.value = t(`${K}${isBadLink(e) ? 'setLinkInvalid' : 'descriptionSaveFailed'}`)
   }
 }
 
@@ -290,22 +303,18 @@ async function unlist(set: Api.PublishedCardSet) {
         <li v-for="set in listed" :key="set.id" class="panel">
           <div class="panel-head">
             <div class="about">
-              <h2>
-                <router-link
-                  class="set-link"
-                  :to="{ name: 'CardMarketplaceSet', params: { publishedId: set.id } }"
-                >
-                  {{ set.name }}
-                </router-link>
-              </h2>
-
-              <!-- One line of facts, each its own shape. The author is a button
-                   because clicking it filters the page to them. -->
-              <div class="facts">
-                <button type="button" class="author" @click="author = set.author">
-                  {{ t(`${K}byAuthor`, { author: set.author }) }}
-                </button>
-                <MetaChip v-if="set.mine" tone="mine">{{ t(`${K}yours`) }}</MetaChip>
+              <!-- What the set IS rides with its name: whether the project
+                   stands behind it, and which version this is. The rest are
+                   facts about it and stay on the line below. -->
+              <div class="title-row">
+                <h2>
+                  <router-link
+                    class="set-link"
+                    :to="{ name: 'CardMarketplaceSet', params: { publishedId: set.id } }"
+                  >
+                    {{ set.name }}
+                  </router-link>
+                </h2>
                 <MetaChip
                   v-if="set.official"
                   tone="gold"
@@ -315,6 +324,14 @@ async function unlist(set: Api.PublishedCardSet) {
                   {{ t(`${K}official`) }}
                 </MetaChip>
                 <MetaChip v-if="isListed(set)">v{{ set.latestVersion }}</MetaChip>
+              </div>
+
+              <!-- One line of facts, each its own shape. The author is a button
+                   because clicking it filters the page to them. -->
+              <div class="facts">
+                <button type="button" class="author" @click="author = set.author">
+                  {{ t(`${K}byAuthor`, { author: set.author }) }}
+                </button>
                 <MetaChip>{{ t(`${K}cardCount`, set.cardCount) }}</MetaChip>
                 <MetaChip v-if="set.likes" icon="thumbs-up">{{ set.likes }}</MetaChip>
                 <MetaChip v-if="isSubscribed(set)" tone="good" icon="circle-check">
@@ -338,6 +355,15 @@ async function unlist(set: Api.PublishedCardSet) {
                   @keydown.stop
                   @keydown.esc="editingId = null"
                 ></textarea>
+                <input
+                  v-model="urlDraft"
+                  type="url"
+                  inputmode="url"
+                  :aria-label="t(`${K}setUrlLabel`)"
+                  :placeholder="t(`${K}setUrlPlaceholder`)"
+                  @keydown.stop
+                  @keydown.esc="editingId = null"
+                />
                 <div class="describe-actions">
                   <button type="submit" class="go">{{ t(`${K}saveDescription`) }}</button>
                   <button type="button" class="quiet" @click="editingId = null">
@@ -350,6 +376,19 @@ async function unlist(set: Api.PublishedCardSet) {
                 <p v-else-if="set.mine" class="description none">
                   {{ t(`${K}noDescriptionYet`) }}
                 </p>
+                <!-- Where to read more. The host rather than the whole
+                     address: the slugs and dates are nobody's business, and the
+                     anchor carries them for anyone who hovers. -->
+                <a
+                  v-if="set.url"
+                  class="site-link"
+                  :href="set.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <font-awesome-icon icon="external-link" />
+                  {{ setLinkLabel(set.url) }}
+                </a>
                 <button
                   v-if="set.mine"
                   type="button"
@@ -467,15 +506,19 @@ async function unlist(set: Api.PublishedCardSet) {
     padding: 0.1rem 0.25rem 0.1rem 0.7rem;
   }
 
+  /* `padding: 0` is load-bearing: the global button rule's 11px of side padding
+     leaves this 22px border-box square no content box at all, so the icon has
+     nowhere to draw. */
   .chip-clear {
     background: none;
     border: none;
     color: inherit;
     cursor: pointer;
     display: grid;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     height: 22px;
     opacity: 0.7;
+    padding: 0;
     place-items: center;
     width: 22px;
 
@@ -527,6 +570,16 @@ async function unlist(set: Api.PublishedCardSet) {
     line-height: 1.15;
     margin: 0;
   }
+}
+
+/* The chips sit on the title's baseline rather than centred on it: the display
+   face is tall, and centring left them floating above its x-height. */
+.title-row {
+  align-items: baseline;
+  column-gap: 0.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
 }
 
 .set-link {
@@ -601,6 +654,22 @@ async function unlist(set: Api.PublishedCardSet) {
   }
 }
 
+/* The set's own page, which is the one thing a listing cannot say for itself. */
+.site-link {
+  align-items: center;
+  color: var(--spooky-green);
+  display: inline-flex;
+  font-size: 0.8rem;
+  gap: 0.35rem;
+  margin: 0.4rem 0.6rem 0 0;
+  text-decoration: none;
+  word-break: break-all;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .describe-form {
   display: flex;
   flex-direction: column;
@@ -608,7 +677,8 @@ async function unlist(set: Api.PublishedCardSet) {
   margin-top: 0.55rem;
   max-width: 64ch;
 
-  textarea {
+  textarea,
+  input {
     background: var(--background);
     border: 1px solid var(--box-border);
     border-radius: 5px;

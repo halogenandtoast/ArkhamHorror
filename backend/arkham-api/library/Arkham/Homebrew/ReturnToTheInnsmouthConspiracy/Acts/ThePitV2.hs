@@ -10,7 +10,6 @@ import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries quali
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Locations
 import Arkham.Location.Grid
 import Arkham.Matcher
-import Arkham.Message qualified as Msg
 import Arkham.Scenario.Deck
 import Arkham.Scenarios.TheInnsmouthConspiracy.ThePitOfDespair.Helpers
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Treacheries
@@ -37,13 +36,11 @@ instance RunMessage ThePitV2 where
           , Treacheries.blindsense
           , Treacheries.fromTheDepths
           ]
-      push Msg.ShuffleEncounterDiscardBackIn
+      shuffleEncounterDiscardBackIn
       shuffleSetAsideIntoScenarioDeck TidalTunnelDeck
         $ oneOf
           [ CardWithTitle "Tidal Tunnel"
-          , mapOneOf
-              cardIs
-              [Locations.idolChamber, Locations.altarToDagon, Locations.sealedExit]
+          , mapOneOf cardIs [Locations.idolChamber, Locations.altarToDagon, Locations.sealedExit]
           ]
       doStep 1 msg
       pure a

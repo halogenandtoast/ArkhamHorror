@@ -7,8 +7,10 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
 import {
+  ARKHAM_BUILD_ID_KEY,
   PLAYER_CARD_TYPES,
   cardArtReference,
+  isArkhamBuildCardId,
   renderCardPlaceholder,
   stripCardCodePrefix,
   type CustomCard,
@@ -148,6 +150,7 @@ const blankForm = () => ({
   actions: [] as string[],
   // grouping, so a set of cards made together can be found together
   cardNumber: '',
+  arkhamBuildId: '',
   // investigator
   elderSign: '1',
   elderSignRevealSteps: [] as any[],
@@ -320,6 +323,15 @@ const hasLevel = computed(
 // A class is a player-card idea, and a weakness has no class of its own.
 const hasClass = computed(
   () => (isPlayerCard.value || isInvestigator.value) && !isWeakness.value,
+)
+
+/* Only a card a deck can name needs to claim its arkham.build twin, and an
+ * investigator is one -- a deck names its investigator too, which is the case
+ * this was asked for. */
+const canClaimArkhamBuildId = computed(() => isPlayerCard.value || isInvestigator.value)
+
+const badArkhamBuildId = computed(
+  () => !!form.arkhamBuildId.trim() && !isArkhamBuildCardId(form.arkhamBuildId.trim()),
 )
 
 /* Signature cards are other cards in your library. Held on the investigator by
@@ -513,6 +525,12 @@ function buildDef(cardCode: string): Record<string, any> {
   }
 
   if (form.cardNumber.trim()) def.meta.number = form.cardNumber.trim()
+  /* Written for a player card only, and only when it is an id: a deck names a
+     card by one, so a typo here is a card that answers to nothing. */
+  const buildId = form.arkhamBuildId.trim()
+  if (buildId && canClaimArkhamBuildId.value && isArkhamBuildCardId(buildId)) {
+    def.meta[ARKHAM_BUILD_ID_KEY] = buildId
+  }
 
   if (isInvestigator.value) {
     if (num(form.elderSign) !== null) def.meta._elderSign = num(form.elderSign)
@@ -743,6 +761,7 @@ async function loadCard(card: CustomCard) {
   form.investigatorSanity = meta.sanity === undefined ? '7' : String(meta.sanity)
   form.signatures = (meta._signatures ?? []).map(stripCardCodePrefix)
   form.cardNumber = meta.number ?? ''
+  form.arkhamBuildId = meta[ARKHAM_BUILD_ID_KEY] ?? ''
   // Blank when the card has none, so no Elder sign tab is offered for it.
   form.elderSign = meta._elderSign === undefined ? '' : String(meta._elderSign)
   form.elderSignRevealSteps = meta._elderSignRevealSteps ?? []
@@ -945,7 +964,27 @@ defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.c
               Card number
               <input v-model="form.cardNumber" type="text" placeholder="1" @keydown.stop />
             </label>
+            <label v-if="canClaimArkhamBuildId">
+              arkham.build card id
+              <input
+                v-model="form.arkhamBuildId"
+                type="text"
+                placeholder="6afb2ea0-d5c6-434a-aea9-2b1beff8c74a"
+                spellcheck="false"
+                @keydown.stop
+              />
+            </label>
           </div>
+          <p v-if="canClaimArkhamBuildId" class="hint" :class="{ bad: badArkhamBuildId }">
+            <template v-if="badArkhamBuildId">
+              Not an arkham.build id — a uuid, or the 32- or 8-character form a pack's cards
+              come through with. Left out until it is one.
+            </template>
+            <template v-else>
+              Optional. If this same card is published on arkham.build, paste its id and a deck
+              built there will find this copy instead of failing as an unimplemented card.
+            </template>
+          </p>
 
           <label>
             Traits
@@ -1504,6 +1543,12 @@ select {
   font-size: 0.8rem;
   margin: 0;
   opacity: 0.7;
+
+  /* Said while you are still typing the id, so it warns rather than refuses. */
+  &.bad {
+    color: color-mix(in srgb, var(--important) 85%, white);
+    opacity: 1;
+  }
 }
 
 .trait-preview {

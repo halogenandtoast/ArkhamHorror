@@ -463,6 +463,19 @@ const sideways = computed<boolean>(() => {
   // fall back to natural aspect for dataset image
   const url = el.dataset.image ?? (el.dataset.imageId ? cardImg(el.dataset.imageId) : null)
   if (url) {
+    /* An <img> already showing that same picture knows its own shape now; the
+       cache below only answers on a later tick, because it re-loads the URL
+       through a fresh Image(). That tick is visible: the overlay opened
+       portrait and snapped to landscape on the first hover of every
+       investigator. Guarded on the src matching, since a card showing one face
+       can have the overlay resolve to the other. */
+    if (
+      el instanceof HTMLImageElement
+      && el.naturalWidth > 0
+      && el.getAttribute('src') === url
+    ) {
+      return el.naturalWidth > el.naturalHeight
+    }
     const ar = imgARCache.get(url)
     if (ar != null) return ar > 1
   }

@@ -47,6 +47,10 @@ data SubmissionResponse = SubmissionResponse
   {- ^ What the author says the set is. The listing's, not the version's, so a
   reviewer reads the same blurb a browser would.
   -}
+  , submissionResponseSetUrl :: Maybe Text
+  {- ^ Where the author says the set lives, which is often the only way to
+  check that a set is theirs to publish.
+  -}
   , submissionResponseAuthor :: Text
   , submissionResponseAuthorEmail :: Text
   -- ^ So a reviewer can reach the author about something the form cannot say.
@@ -144,6 +148,7 @@ submissionResponse (Entity submissionId row) = do
         submissionResponseSetName =
           maybe "" arkhamPublishedCardSetVersionName version
       , submissionResponseSetDescription = arkhamPublishedCardSetDescription =<< published
+      , submissionResponseSetUrl = arkhamPublishedCardSetUrl =<< published
       , submissionResponseAuthor = maybe "someone" userUsername author
       , submissionResponseAuthorEmail = maybe "" userEmail author
       , submissionResponseVersion = arkhamCardSetSubmissionVersion row

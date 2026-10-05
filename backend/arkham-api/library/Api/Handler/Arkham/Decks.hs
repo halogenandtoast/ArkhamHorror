@@ -130,7 +130,11 @@ postApiV1ArkhamDecksR = do
 
 postApiV1ArkhamDecksValidateR :: Handler ()
 postApiV1ArkhamDecksValidateR = do
-  _ <- getRequestUserId
+  userId <- getRequestUserId
+  -- The deck may name cards only this user has -- their own, or a set they are
+  -- subscribed to -- so the library has to be resolvable before it is checked,
+  -- or every one of them reads as a card that is not implemented.
+  registerUserCustomCards userId
   decklist <- requireCheckJsonBody
   case toDeckErrors decklist of
     [] -> sendStatusJSON status200 ()
@@ -138,7 +142,8 @@ postApiV1ArkhamDecksValidateR = do
 
 postApiV1ArkhamDecksFetchR :: Handler ArkhamDBDecklist
 postApiV1ArkhamDecksFetchR = do
-  _ <- getRequestUserId
+  userId <- getRequestUserId
+  registerUserCustomCards userId
   FetchDeckPost {..} <- requireCheckJsonBody
   getDeckList fetchDeckUrl >>= \case
     Right decklist -> pure decklist

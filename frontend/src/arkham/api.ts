@@ -147,6 +147,11 @@ export type StoredCustomCardSet = {
    * the set is published, and is the one thing a set says about itself beyond
    * its name. */
   description: string | null
+  /* Where the set lives in the world: the post announcing it, the thread it is
+   * discussed in. Seeds the listing alongside the description. Always an http
+   * address -- the server refuses anything else, so this is safe to put in an
+   * anchor. */
+  url: string | null
   // The pack id an imported set came from, so re-importing that pack replaces
   // this set rather than making a second copy of it. Null for a set made here.
   sourceCode: string | null
@@ -182,22 +187,24 @@ export const fetchCustomCardSets = async (): Promise<StoredCustomCardSet[]> => {
 export const createCustomCardSet = async (
   name: string,
   description?: string | null,
+  url?: string | null,
 ): Promise<StoredCustomCardSet> => {
-  const { data } = await api.post('arkham/custom-card-sets', { name, description })
+  const { data } = await api.post('arkham/custom-card-sets', { name, description, url })
   return data
 }
 
-/* Name and description in one call, because they are one form.
+/* Name, description and link in one call, because they are one form.
  *
- * `description` is three-valued on the wire: leaving the key out keeps whatever
- * is stored, `null` clears it. So a caller that only means to rename passes no
- * description rather than passing null, which would silently wipe the blurb.
+ * `description` and `url` are three-valued on the wire: leaving the key out
+ * keeps whatever is stored, `null` clears it. So a caller that only means to
+ * rename passes neither rather than passing null, which would silently wipe
+ * them.
  *
  * Renaming stops a set following a published one; changing only the description
- * does not. */
+ * or the link does not. */
 export const updateCustomCardSet = async (
   id: string,
-  changes: { name: string; description?: string | null },
+  changes: { name: string; description?: string | null; url?: string | null },
 ): Promise<StoredCustomCardSet> => {
   const { data } = await api.put(`arkham/custom-card-sets/${id}`, changes)
   return data
@@ -217,6 +224,7 @@ export const importCustomCardSet = async (payload: {
   // A file written before descriptions existed carries none, and the server
   // leaves the set's own alone rather than blanking it.
   description?: string | null
+  url?: string | null
   sourceCode: string | null
   cards: { def: any; art: string | null }[]
 }): Promise<{ set: StoredCustomCardSet; cards: StoredCustomCard[] }> => {
@@ -237,6 +245,9 @@ export type PublishedCardSet = {
    * rewrite it at any time without republishing and without it being reviewed
    * again, because the cards have not changed. */
   description: string | null
+  /* Where the set lives in the world, for the one thing a listing cannot say
+   * for itself. The listing's own, like the description. */
+  url: string | null
   author: string
   mine: boolean
   /* Whether the author is an admin, which is what the marketplace calls
@@ -299,15 +310,20 @@ export const fetchPublishedCardSets = async (mine = false): Promise<PublishedCar
   return data
 }
 
-/* Rewrite what your listing says about itself. Only the description: the name
- * and the cards belong to the version, and changing those is publishing a new
- * one. Nothing is re-reviewed, and the server writes the same text back onto
- * your own copy of the set so the two places you can edit it agree. */
+/* Rewrite what your listing says about itself. Only the description and the
+ * link: the name and the cards belong to the version, and changing those is
+ * publishing a new one. Nothing is re-reviewed, and the server writes the same
+ * text back onto your own copy of the set so the two places you can edit it
+ * agree.
+ *
+ * Both are three-valued here too -- a key left out keeps what is stored -- so
+ * this takes a patch rather than two positional arguments that would have to
+ * be spelled out to change one. */
 export const updatePublishedCardSet = async (
   id: string,
-  description: string | null,
+  changes: { description?: string | null; url?: string | null },
 ): Promise<PublishedCardSet> => {
-  const { data } = await api.put(`arkham/published-card-sets/${id}`, { description })
+  const { data } = await api.put(`arkham/published-card-sets/${id}`, changes)
   return data
 }
 
@@ -333,17 +349,14 @@ export const fetchPublishedCardSet = async (
  * `notify` is whether to email the author the decision, and is ignored for a
  * publish that is already decided. Submitting again while something is still
  * waiting replaces it rather than queueing a second thing. */
+/* The listing's blurb and link are not sent: they are the set's, and the server
+ * reads them off it. Only what is about this one submission goes here. */
 export const publishCustomCardSet = async (
   id: string,
   note: string | null,
-  description: string | null,
   notify: boolean,
 ): Promise<PublishedCardSet> => {
-  const { data } = await api.post(`arkham/custom-card-sets/${id}/publish`, {
-    note,
-    description,
-    notify,
-  })
+  const { data } = await api.post(`arkham/custom-card-sets/${id}/publish`, { note, notify })
   return data
 }
 
@@ -395,6 +408,9 @@ export type CardSetSubmission = {
   // What the author says the set is, so a reviewer reads the same blurb a
   // browser would.
   setDescription: string | null
+  // Where they say it lives, which is often the only way to check a set is
+  // theirs to publish.
+  setUrl: string | null
   author: string
   // So a reviewer can reach the author about something the form cannot say.
   authorEmail: string

@@ -133,6 +133,30 @@ export function arkhamBuildCustomCardCode(uuid: string): string {
   return `${CUSTOM_CARD_PREFIX}${uuid.replace(/-/g, '').toLowerCase()}0`
 }
 
+/* The meta key a card records its arkham.build id under. Mirrors
+ * `arkhamBuildIdKey` in `Arkham.Card.CustomCard`. */
+export const ARKHAM_BUILD_ID_KEY = 'arkhamBuildId'
+
+/* The arkham.build card this one stands in for, when its author said so.
+ *
+ * A card imported from an arkham.build pack needs none of this -- its code is
+ * derived from the id, so a deck naming the id lands on it. A card built here
+ * has a code of its own, and this is how it can still be named by a deck built
+ * there: the same set published in both places is the same cards twice.
+ *
+ * Checked rather than trusted, so a mistyped id is a card that answers to one
+ * code instead of one that claims a nonsense second one. */
+export function arkhamBuildIdOf(def: any): string | null {
+  const id = def?.meta?.[ARKHAM_BUILD_ID_KEY]
+  return typeof id === 'string' && isArkhamBuildCardId(id) ? id : null
+}
+
+/* Every code a custom card answers to: its own first, then its aliases. */
+export function customCardCodes(def: any): string[] {
+  const id = arkhamBuildIdOf(def)
+  return id ? [def.cardCode, arkhamBuildCustomCardCode(id)] : [def.cardCode]
+}
+
 /* A def written by the builder only carries the fields that card needed, and a
  * def that came off the wire went through `cardDefDecoder`, which fills in the
  * rest. Anything that reads a custom def as a `CardDef` -- the deck page, the
@@ -162,17 +186,37 @@ export function registerCustomCards(cards: CustomCard[]) {
   for (const card of cards) {
     const cardCode = stripCardCodePrefix(card.def.cardCode)
     const existing = registry.get(cardCode)
-    registry.set(cardCode, {
+    const entry = {
       def: normalizeCardDef({ ...card.def, cardCode, art: stripCardCodePrefix(card.def.art) }),
       // A def can come back from the server without its art (an older card, a
       // partial payload); never drop art already known for that card.
       art: card.art ?? existing?.art ?? null,
-    })
+    }
+    registry.set(cardCode, entry)
+    /* The same entry under every code the card answers to, so a deck built on
+     * arkham.build -- which names it by the code its id derives to -- resolves
+     * to this def rather than to nothing. The entry keeps its own code, so
+     * whatever reads the def back still sees the card's real identity.
+     * Aliases never overwrite a real code: that card is the one a deck means. */
+    for (const alias of customCardCodes(entry.def).slice(1)) {
+      const bare = stripCardCodePrefix(alias)
+      if (!cards.some((c) => stripCardCodePrefix(c.def.cardCode) === bare)) {
+        registry.set(bare, entry)
+      }
+    }
   }
 }
 
 export function unregisterCustomCard(cardCode: string) {
-  registry.delete(stripCardCodePrefix(cardCode))
+  const bare = stripCardCodePrefix(cardCode)
+  const entry = registry.get(bare)
+  // Its aliases go with it, or a deleted card keeps answering under its claim.
+  if (entry) {
+    for (const [code, held] of [...registry.entries()]) {
+      if (held === entry) registry.delete(code)
+    }
+  }
+  registry.delete(bare)
 }
 
 export function customCards(): CustomCard[] {

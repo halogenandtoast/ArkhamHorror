@@ -128,6 +128,40 @@ arkhamBuildCustomCardCode :: Text -> CardCode
 arkhamBuildCustomCardCode t =
   CardCode $ customCardPrefix <> T.toLower (T.filter (/= '-') t) <> "0"
 
+-- | The meta key a card records 'arkhamBuildIdOf' under.
+arkhamBuildIdKey :: Text
+arkhamBuildIdKey = "arkhamBuildId"
+
+{- | The arkham.build card this one stands in for, when its author said so.
+
+A card imported from an arkham.build pack needs none of this: its code is
+derived from the id, so a deck naming the id lands on it. A card built here has
+a code of its own and no way to be named by a deck built there -- which is the
+whole of the problem when the same card exists in both places, as a set
+published to arkham.build and rebuilt here. The id is the author's claim that
+the two are the same card; nothing checks it, because nothing here can.
+
+Validated on the way out rather than on the way in, so a mistyped id is a card
+that answers to one code instead of a card that mints a nonsense second one.
+-}
+arkhamBuildIdOf :: CardDef -> Maybe Text
+arkhamBuildIdOf def = do
+  String t <- Map.lookup arkhamBuildIdKey (cdMeta def)
+  guard $ isArkhamBuildCardId t
+  pure t
+
+{- | Every code a custom card answers to: its own, and the one an arkham.build
+deck would name it by.
+
+The first is the card's identity and the rest are aliases, so a caller building
+a map keyed by code should keep this order and let the real code win a tie.
+-}
+customCardCodes :: CustomCard -> [CardCode]
+customCardCodes card =
+  cdCardCode def : map arkhamBuildCustomCardCode (maybeToList $ arkhamBuildIdOf def)
+ where
+  def = customCardDef card
+
 {-# NOINLINE customCardRegistry #-}
 customCardRegistry :: IORef (Map CardCode CustomCard)
 customCardRegistry = unsafePerformIO (newIORef mempty)

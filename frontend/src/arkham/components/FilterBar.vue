@@ -91,6 +91,10 @@ defineProps<{ placeholder: string; clearLabel: string }>()
   }
 }
 
+/* Both resets matter: the global button rule gives every button 11px of side
+   padding, which on a 28px border-box square leaves a 6px content box that the
+   icon is squeezed into -- and the icon is sized in em, so without a font-size
+   of its own it inherits that rule's 12px as well. */
 .clear {
   background: none;
   border: none;
@@ -98,8 +102,10 @@ defineProps<{ placeholder: string; clearLabel: string }>()
   cursor: pointer;
   display: grid;
   flex: none;
+  font-size: 0.9rem;
   height: 28px;
-  opacity: 0.5;
+  opacity: 0.7;
+  padding: 0;
   place-items: center;
   width: 28px;
 

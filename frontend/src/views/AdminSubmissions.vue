@@ -215,6 +215,15 @@ const isUpdate = (row: Api.CardSetSubmission) =>
               </span>
             </p>
             <p v-if="row.note" class="note">“{{ row.note }}”</p>
+            <!-- Where the author says the set lives. Often the only way to
+                 check that a set is theirs to publish, so it is the whole
+                 address rather than a tidied one. -->
+            <p v-if="row.setUrl" class="source">
+              <a :href="row.setUrl" target="_blank" rel="noopener noreferrer">
+                <font-awesome-icon icon="external-link" />
+                {{ row.setUrl }}
+              </a>
+            </p>
             <p v-if="row.status !== 'pending'" class="decided" :class="row.status">
               {{ row.status === 'approved'
                 ? t(`${K}decidedApproved`, { by: row.reviewedBy ?? '—', at: when(row.reviewedAt ?? row.submittedAt) })
@@ -470,6 +479,24 @@ h3 {
   margin: 0.35rem 0 0;
   max-width: 65ch;
   opacity: 0.85;
+}
+
+.source {
+  font-size: 0.78rem;
+  margin: 0.3rem 0 0;
+  overflow-wrap: anywhere;
+
+  a {
+    align-items: center;
+    color: var(--spooky-green);
+    display: inline-flex;
+    gap: 0.35rem;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .decided {

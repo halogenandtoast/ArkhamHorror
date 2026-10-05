@@ -2,7 +2,7 @@
 import { computed, watch, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
-import {imgsrc} from '@/arkham/helpers';
+import { portraitImage } from '@/arkham/cardImages'
 import { fetchInvestigators, newDeck, validateDeck } from '@/arkham/api'
 import ArkhamDbDeck from '@/arkham/components/ArkhamDbDeck.vue';
 import { ArkhamDbDecklist } from '@/arkham/types/Deck';
@@ -88,9 +88,11 @@ const deckList = ref<ArkhamDbDecklist | null>(null)
 const normalizeCode = (code: string) => code.replace(/^c/, '')
 const isInvestigatorImplemented = (code: string) =>
   investigators.value.includes(code) || investigators.value.includes(normalizeCode(code))
+/* `portraitImage` rather than the portraits directory: a custom investigator has
+ * nothing under it, and carries its own portrait in meta. */
 const maybeSetPortrait = (code: string | null | undefined) => {
   if (!code || !props.setPortrait) return
-  props.setPortrait(imgsrc(`portraits/${normalizeCode(code)}.jpg`))
+  props.setPortrait(portraitImage(code))
 }
 const resolvedInvestigatorCode = (d: ArkhamDbDecklist) => {
   const meta = (() => {
@@ -121,17 +123,8 @@ function loadDeckFromFile(e: Event) {
       investigator.value = null
       investigatorError.value = null
       if (isInvestigatorImplemented(data.investigator_code)) {
-        if(data.meta && data.meta.alternate_front) {
-          investigator.value = data.meta.alternate_front
-          if (props.setPortrait) {
-            props.setPortrait(imgsrc(`portraits/${data.meta.alternate_front.replace('c', '')}.jpg`))
-          }
-        } else {
-          investigator.value = data.investigator_code
-          if (props.setPortrait) {
-            props.setPortrait(imgsrc(`portraits/${data.investigator_code.replace('c', '')}.jpg`))
-          }
-        }
+        investigator.value = data.meta?.alternate_front ?? data.investigator_code
+        maybeSetPortrait(investigator.value)
 
       } else {
         investigatorError.value = `${data.investigator_name} is not yet implemented, please use a different deck ${data}`
@@ -233,7 +226,7 @@ async function createDeck() {
 <template>
   <div class="new-deck">
     <div class="form-body">
-      <img v-if="investigator && !noPortrait" class="portrait" :src="imgsrc(`portraits/${investigator.replace('c', '')}.jpg`)" />
+      <img v-if="investigator && !noPortrait" class="portrait" :src="portraitImage(investigator)" />
       <div class="fields">
         <ArkhamDbDeck v-model="deckList" />
         <input type="file" accept=".json,application/json" @change="loadDeckFromFile" />

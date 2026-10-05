@@ -11,6 +11,7 @@ module Api.Handler.Arkham.CustomCards (
   saveCardInSet,
   stampSetName,
   unsubscribeSet,
+  normalizeUrl,
 ) where
 
 import Amazonka
@@ -22,6 +23,7 @@ import Arkham.Card.CardCode (CardCode (..))
 import Arkham.Card.CardDef (CardDef, cdArt, cdCardCode, cdMeta)
 import Arkham.Card.CustomCard (
   CustomCard (..),
+  customCardCodes,
   isCustomCardCode,
   registerCustomCards,
   sanitizeCustomCardCode,
@@ -87,6 +89,22 @@ ownedCardSet userId setId = do
   set <- runDB $ get404 setId
   unless (arkhamCustomCardSetUserId set == userId) $ permissionDenied "Not your card set"
   pure set
+
+{- | A link as it is stored: blank is nothing, trimmed, and an @http@ address or
+a refusal. The scheme is checked here rather than wherever it is shown, because
+what comes out of this column goes into an anchor someone clicks, and a
+@javascript:@ "address" in that position is not a link.
+
+Shared by the set and its listing, which hold the same link and have to agree on
+what one is.
+-}
+normalizeUrl :: Maybe Text -> Handler (Maybe Text)
+normalizeUrl raw = case T.strip <$> raw of
+  Nothing -> pure Nothing
+  Just text
+    | T.null text -> pure Nothing
+    | any (`T.isPrefixOf` T.toLower text) ["http://", "https://"] -> pure (Just text)
+    | otherwise -> invalidArgs ["A set's link has to start with http:// or https://"]
 
 {- | The set's name, written into the card's own def.
 
@@ -329,10 +347,17 @@ the registry first.
 userCustomCards :: UserId -> Handler (Map CardCode CustomCard)
 userCustomCards userId = do
   rows <- runDB $ P.selectList [ArkhamCustomCardUserId P.==. userId] []
-  pure $ Map.fromList do
-    Entity _ row <- rows
-    def <- maybeToList $ parseMaybe parseJSON (arkhamCustomCardDef row)
-    pure (cdCardCode def, CustomCard def (arkhamCustomCardArt row))
+  let cards = do
+        Entity _ row <- rows
+        def <- maybeToList $ parseMaybe parseJSON (arkhamCustomCardDef row)
+        pure $ CustomCard def (arkhamCustomCardArt row)
+  {- Aliases underneath, so a card's own code always wins one. Importing the
+  arkham.build pack gives its card a code derived from the same id a hand-built
+  card can claim, and in that collision the imported card is the one the deck
+  means. Left-biased union rather than row order, which is `updatedAt` and says
+  nothing about which card is which. -}
+  pure $ Map.fromList [(cdCardCode (customCardDef c), c) | c <- cards]
+    `Map.union` Map.fromList [(code, c) | c <- cards, code <- drop 1 (customCardCodes c)]
 
 registerUserCustomCards :: UserId -> Handler ()
 registerUserCustomCards userId = registerCustomCards =<< userCustomCards userId

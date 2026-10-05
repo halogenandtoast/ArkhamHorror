@@ -23,9 +23,14 @@ const props = withDefaults(
     interactive?: boolean
     /** Said instead of the strip when there is nothing to show. */
     emptyLabel?: string
+    /** The caption on the box. Overridable: a set's own library row is the
+     *  same strip but is not previewing anything. */
+    label?: string
   }>(),
   { interactive: false },
 )
+
+const caption = computed(() => props.label ?? t(`${K}previewLabel`))
 
 const emit = defineEmits<{ pick: [card: CustomCard]; viewAll: [] }>()
 
@@ -72,7 +77,10 @@ const more = computed(() => props.total > props.cards.length || clipped.value)
 <template>
   <div class="set-preview">
     <p v-if="!cards.length" class="empty">{{ emptyLabel }}</p>
-    <template v-else>
+    <!-- A section rather than a bare div: the caption is a heading for the
+         cards under it, so it should be one to a screen reader too. -->
+    <section v-else class="preview-box" :aria-label="caption">
+      <p class="caption">{{ caption }}</p>
       <CardSetStrip
         ref="strip"
         class="strip"
@@ -86,25 +94,50 @@ const more = computed(() => props.total > props.cards.length || clipped.value)
           <font-awesome-icon icon="chevron-right" />
         </button>
       </div>
-    </template>
+    </section>
   </div>
 </template>
 
 <style scoped lang="scss">
 .set-preview {
-  padding: 0.75rem 0.9rem 0;
+  padding: 0;
 }
 
+/* A full-bleed band across the foot of the panel rather than an inset card:
+   the panel clips to its own radius, so a rule along the top and a shade more
+   black is all it takes to read as its own container. */
+.preview-box {
+  background: color-mix(in srgb, black 16%, transparent);
+  border-top: 1px solid var(--box-border);
+  padding: 0.5rem 0.9rem 0.15rem;
+}
+
+/* Small caps rather than a heading size: it names the box, it is not competing
+   with the set's own title above it. */
+.caption {
+  color: color-mix(in srgb, var(--title) 55%, transparent);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.45rem;
+  text-transform: uppercase;
+}
+
+/* Carries the side padding itself, now that the band around it is full-bleed. */
 .empty {
   color: color-mix(in srgb, var(--title) 55%, transparent);
   font-size: 0.85rem;
   font-style: italic;
   margin: 0;
-  padding: 0.5rem 0 1rem;
+  padding: 0.5rem 0.9rem 1rem;
 }
 
+/* Pulled out by the card's own padding, so the first card's art starts on the
+   same line as the caption over it and the set's name above that -- otherwise
+   the whole row reads as nudged to the right. */
 .strip {
   margin-bottom: 0.1rem;
+  margin-inline: calc(-1 * var(--strip-pad));
 }
 
 /* A div, not a <footer>: `base.css` styles bare `footer` into the site's own
@@ -113,7 +146,7 @@ const more = computed(() => props.total > props.cards.length || clipped.value)
 .more {
   display: flex;
   justify-content: flex-end;
-  padding: 0.15rem 0 0.5rem;
+  padding: 0.15rem 0 0.35rem;
 }
 
 /* A link, not a button: it goes somewhere rather than doing something, and a

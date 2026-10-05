@@ -10,6 +10,7 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
 import { subscribeToSet } from '@/arkham/customCardLibrary'
+import { isBadLink, setLinkLabel } from '@/arkham/setLink'
 import type { CustomCard } from '@/arkham/customCards'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CardSetStrip from '@/arkham/components/CardSetStrip.vue'
@@ -136,27 +137,39 @@ async function toggleLike() {
  * subscribed to stays where it is. */
 const editing = ref(false)
 const descriptionDraft = ref('')
+const urlDraft = ref('')
 
 function startEdit() {
   descriptionDraft.value = listing.value?.description ?? ''
+  urlDraft.value = listing.value?.url ?? ''
   editing.value = true
   status.value = null
   error.value = null
 }
 
+/* Only what changed is sent: a key left out keeps what is stored, so saving a
+ * blurb cannot blank a link and the other way round. */
 async function commitEdit() {
   const set = listing.value
   if (!set) return
   const description = descriptionDraft.value.trim()
+  const url = urlDraft.value.trim()
   editing.value = false
-  if (description === (set.description ?? '')) return
+  const redescribed = description !== (set.description ?? '')
+  const relinked = url !== (set.url ?? '')
+  if (!redescribed && !relinked) return
   error.value = null
   try {
-    replace(await Api.updatePublishedCardSet(set.id, description || null))
+    replace(
+      await Api.updatePublishedCardSet(set.id, {
+        ...(redescribed ? { description: description || null } : {}),
+        ...(relinked ? { url: url || null } : {}),
+      }),
+    )
     status.value = t(`${K}descriptionSaved`, { name: set.name })
   } catch (e) {
     console.error(e)
-    error.value = t(`${K}descriptionSaveFailed`)
+    error.value = t(`${K}${isBadLink(e) ? 'setLinkInvalid' : 'descriptionSaveFailed'}`)
   }
 }
 
@@ -234,6 +247,15 @@ async function take() {
               @keydown.stop
               @keydown.esc="editing = false"
             ></textarea>
+            <input
+              v-model="urlDraft"
+              type="url"
+              inputmode="url"
+              :aria-label="t(`${K}setUrlLabel`)"
+              :placeholder="t(`${K}setUrlPlaceholder`)"
+              @keydown.stop
+              @keydown.esc="editing = false"
+            />
             <div class="describe-actions">
               <button type="submit" class="go">{{ t(`${K}saveDescription`) }}</button>
               <button type="button" class="quiet" @click="editing = false">
@@ -246,6 +268,19 @@ async function take() {
             <p v-else-if="listing.mine" class="description none">
               {{ t(`${K}noDescriptionYet`) }}
             </p>
+            <!-- Where to read more: the post it was announced in, the thread
+                 it is discussed in. The host rather than the whole address,
+                 which the anchor carries anyway. -->
+            <a
+              v-if="listing.url"
+              class="site-link"
+              :href="listing.url"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <font-awesome-icon icon="external-link" />
+              {{ setLinkLabel(listing.url) }}
+            </a>
             <button v-if="listing.mine" type="button" class="link" @click="startEdit">
               <font-awesome-icon icon="pen" />
               {{ t(listing.description ? `${K}editDescription` : `${K}addDescription`) }}
@@ -426,6 +461,22 @@ async function take() {
   }
 }
 
+/* The set's own page, which is the one thing a listing cannot say for itself. */
+.site-link {
+  align-items: center;
+  color: var(--spooky-green);
+  display: inline-flex;
+  font-size: 0.85rem;
+  gap: 0.35rem;
+  margin: 0.5rem 0.6rem 0 0;
+  text-decoration: none;
+  word-break: break-all;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .describe-form {
   display: flex;
   flex-direction: column;
@@ -433,7 +484,8 @@ async function take() {
   margin-top: 0.7rem;
   max-width: 64ch;
 
-  textarea {
+  textarea,
+  input {
     background: var(--background-dark);
     border: 1px solid var(--box-border);
     border-radius: 5px;

@@ -29,6 +29,10 @@ rather than a version's because it is not part of what was reviewed: the author
 can rewrite it at any time and nothing about the published cards changes, which
 is the point of it not being on the version.
 
+@url@ is the listing's own copy of where the set lives in the world, and travels
+with the description for the same reason: it says where to read more about the
+set, not what is in a version of it.
+
 @ArkhamPublishedCardSetVersion@ holds a version's cards outright rather than
 reading them back off the author's set. A version has to stay importable exactly
 as published: someone who edited their copy and wants the published one back has
@@ -58,6 +62,7 @@ ArkhamPublishedCardSet sql=arkham_published_card_sets
   customCardSetId ArkhamCustomCardSetId Maybe
   name Text
   description Text Maybe
+  url Text Maybe
   latestVersion Int
   approvedVersion Int Maybe
   createdAt UTCTime

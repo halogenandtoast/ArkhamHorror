@@ -51,6 +51,14 @@ data ModifierType
   | ActionCostOf ActionTarget Int -- TODO: Don't use this for anything than decreasing
   | ActionCostSetToModifier Int
   | ActionDoesNotCauseAttacksOfOpportunity Action
+  | {- | An action taken while this is on the investigator still counts as an
+    action they performed, but is invisible to the "same type of action" checks:
+    it opens no 'PerformedSameTypeOfAction' window of its own, and the next
+    action compares itself against the action before it instead. For "that
+    action ignores this card's forced effect", where the granted action would
+    otherwise become the thing the real action is measured against.
+    -}
+    ActionDoesNotCountAsRepeatedAction
   | ActionSkillModifier {action :: Action, skillType :: SkillType, value :: Int}
   | ActionsAreFree
   | AddChaosTokenValue ChaosTokenValue

@@ -9,7 +9,7 @@
  */
 import { ref } from 'vue'
 import { useDebug } from '@/arkham/debug'
-import { PLAYER_CARD_TYPES } from '@/arkham/customCards'
+import { PLAYER_CARD_TYPES, stripCardCodePrefix } from '@/arkham/customCards'
 import type { CardDef } from '@/arkham/types/CardDef'
 import { type Card, type CardContents, toCardContents } from '@/arkham/types/Card'
 import type { Game } from '@/arkham/types/Game'
@@ -59,8 +59,13 @@ export function resolveCard(game: Game, cardId: string): Card | undefined {
 }
 
 export function cardDefFor(cards: CardDef[], card: Card | CardContents): CardDef | undefined {
-  const cardCode = toCardContents(card).cardCode
-  return cards.find(def => def.cardCode === cardCode)
+  /* Both sides are normalised: a card in play carries the 'c' the engine
+   * prepends ("c*ab12…"), while a custom def is registered under its bare code
+   * ("*ab12…"). Comparing them raw never matched, so every custom card looked
+   * like a card with no def at all -- which reads as "wrong back for this deck"
+   * at a drop zone. */
+  const cardCode = stripCardCodePrefix(toCardContents(card).cardCode)
+  return cards.find(def => stripCardCodePrefix(def.cardCode) === cardCode)
 }
 
 export function isPlayerCardDef(def: CardDef): boolean {

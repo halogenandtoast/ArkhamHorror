@@ -485,9 +485,22 @@ entity -- by its target, its source, or its id. Without that check a handler
 would fire for every copy of the card and for messages aimed at other entities
 entirely.
 -}
+{- | Pick up steps that were deferred to the queue.
+
+A @choose@ that re-asks has to read the board again after each choice, so it
+hands the rest of itself back through the queue rather than resolving it all at
+the moment the card was played. 'RunCustomSteps' is that trip, and this is where
+it lands.
+-}
+resumeCustomSteps :: (CustomEntity a, HasGameLogger m, ReverseQueue m) => a -> Message -> m ()
+resumeCustomSteps a = \case
+  RunCustomSteps target (Object env) steps | target == toTarget a -> runSteps env (subSteps steps)
+  _ -> pure ()
+
 runCustomHandlers :: (CustomEntity a, HasGameLogger m, ReverseQueue m) => a -> Message -> m ()
 runCustomHandlers a msg = do
   resumeDistribute a msg
+  resumeCustomSteps a msg
   case toJSON msg of
     Object o -> handlers o
     _ -> pure ()

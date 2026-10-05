@@ -72,6 +72,7 @@ import Arkham.Message.Lifted (
   reduceCostOf,
   skillTestModifiers,
   takeActionAsIfTurn,
+  temporaryModifiers,
  )
 import Arkham.Message.Lifted.Base (capture)
 import Arkham.Message.Lifted.Card (playCardPayingCost)
@@ -514,11 +515,25 @@ runReady env spec = do
         <|> (KeyMap.lookup "target" env >>= parseMaybe parseJSON)
   for_ target $ push . Ready
 
--- | Open one immediate action with the same as-if-turn semantics as Quick Thinking.
-runTakeAction :: (HasGameLogger m, ReverseQueue m) => Env -> m ()
-runTakeAction env = do
+{- | Open one immediate action with the same as-if-turn semantics as Quick Thinking.
+
+@modifiers@ are given to whoever takes it, for exactly as long as the granted
+action lasts -- the same scope the as-if-turn modifier itself has. That is where
+"that action ignores this card's forced effect" lives, since the action has to
+carry the exemption with it rather than the card's own ability refusing to
+trigger: the granted action is otherwise the thing the *next* action is compared
+against.
+-}
+runTakeAction :: (HasGameLogger m, ReverseQueue m) => Env -> Value -> m ()
+runTakeAction env spec = do
   iid <- stepInvestigator env
-  takeActionAsIfTurn iid (stepSource env)
+  let o = case spec of
+        Object o' -> o'
+        _ -> mempty
+  let mods = mapMaybe (decodeWith @ModifierType env) (maybe [] valueList (KeyMap.lookup "modifiers" o))
+  if null mods
+    then takeActionAsIfTurn iid (stepSource env)
+    else temporaryModifiers iid (stepSource env) mods $ takeActionAsIfTurn iid (stepSource env)
 
 {- | An enemy attacks.
 
@@ -821,8 +836,8 @@ runSteps env0 = void . foldM step env0
       | Just spec <- KeyMap.lookup "record" o -> do
           runRecord env spec
           pure env
-      | KeyMap.member "takeAction" o -> do
-          runTakeAction env
+      | Just spec <- KeyMap.lookup "takeAction" o -> do
+          runTakeAction env spec
           pure env
       | Just (Bool True) <- KeyMap.lookup "cancelBatch" o -> do
           runCancelBatch env
@@ -1171,6 +1186,15 @@ subStepsOf o = maybe [] subSteps (KeyMap.lookup "steps" o)
 
 {- | Named options, each running its own steps.
 
+@oneAtATime@ asks for them all, one after another, in whatever order the player
+picks -- which is what "in any order" means on a card. Without it the prompt is
+a single choice and the rest are dropped.
+
+Each ask is built from scratch, so an option's @criteria@ is re-read every time:
+an enemy that has since been evaded stops being something to fight. Options that
+do not apply are only hidden, never dropped -- moving can make fighting possible
+again. @done@ adds a way out of the loop ("you may"), labelled with its value.
+
 An option may instead carry a @query@, in which case it stands for one option
 per thing found, bound the way 'runChooseFrom' binds it. That is what lets a
 single prompt span several kinds of thing: "a card attached to your location"
@@ -1182,13 +1206,21 @@ runChoose env spec = case spec of
   Object o -> do
     iid <- stepInvestigator env
     let options = maybe [] subSteps (KeyMap.lookup "options" o)
-    labels <- for options \case
+    let oneAtATime = case KeyMap.lookup "oneAtATime" o of
+          Just (Bool b) -> b
+          _ -> False
+    -- Indexed, because a re-ask has to put back every option except the one
+    -- taken -- including the ones that did not apply this time round.
+    let numbered = zip [0 :: Int ..] options
+    applicable <- filterM (optionApplies env . snd) numbered
+    labels <- for applicable \(idx, option) -> case option of
       Object opt -> do
         let steps = maybe [] subSteps (KeyMap.lookup "steps" opt)
+        let continue = if oneAtATime then reAsk env o numbered idx else []
         case KeyMap.lookup "query" opt of
           Nothing -> do
             msgs <- capture $ runSteps env steps
-            pure [Label (textField env opt "label" "Choose") msgs]
+            pure [Label (textField env opt "label" "Choose") (msgs <> continue)]
           Just query -> do
             found <- fromMaybe [] <$> runQuery env query
             let
@@ -1201,11 +1233,51 @@ runChoose env spec = case spec of
             for found \value -> do
               msgs <- capture $ runSteps (KeyMap.insert name value env) steps
               pure $ case chosenTarget kind value of
-                Just t -> targetLabel t msgs
-                Nothing -> Label (textField env opt "label" "Choose") msgs
+                Just t -> targetLabel t (msgs <> continue)
+                Nothing -> Label (textField env opt "label" "Choose") (msgs <> continue)
       _ -> pure []
-    unless (all null labels) $ Prompt.chooseOne iid (concat labels)
+    {- "You may ...": a way out of the loop, offered beside whatever is still
+    possible. Only when something is -- an ask holding nothing but "Done" is a
+    click that does nothing. -}
+    let done =
+          [ Label (textField env o "done" "Done") []
+          | oneAtATime
+          , KeyMap.member "done" o
+          , not (all null labels)
+          ]
+    unless (all null labels) $ Prompt.chooseOne iid (concat labels <> done)
   _ -> pure ()
+
+{- | Whether an option is on the table at all.
+
+Written the same way @when@ is -- a @criteria@, a source match, an @eq@, or a
+bare query that has to find something -- so "only if there is an enemy to fight"
+needs nothing new. An option without one always applies.
+-}
+optionApplies :: HasGame m => Env -> Value -> m Bool
+optionApplies env = \case
+  Object opt -> maybe (pure True) (runReadCondition env) (KeyMap.lookup "criteria" opt)
+  _ -> pure True
+
+{- | The rest of an @oneAtATime@ choose, as a message.
+
+Everything but the option just taken goes back through the queue rather than
+being resolved here, so the next ask reads the board as it stands by then: an
+enemy that has since been evaded is no longer something to fight, and a location
+that just became reachable is now somewhere to move. Without the card's target
+there is nothing to hand it back to, and the choose is simply the one ask.
+-}
+reAsk :: Env -> KeyMap.KeyMap Value -> [(Int, Value)] -> Int -> [Message]
+reAsk env o numbered idx = case KeyMap.lookup "target" env >>= parseMaybe parseJSON of
+  Nothing -> []
+  Just target ->
+    let rest = [option | (i, option) <- numbered, i /= idx]
+     in [ RunCustomSteps
+            target
+            (Object env)
+            (toJSON [Object (KeyMap.insert "choose" (Object (KeyMap.insert "options" (toJSON rest) o)) mempty)])
+        | notNull rest
+        ]
 
 {- | Tell whoever is playing that a step could not be used.
 

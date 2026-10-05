@@ -7,6 +7,7 @@
 // separate on purpose.
 import { computed, reactive, ref } from 'vue'
 import * as Api from '@/arkham/api'
+import { useCardStore } from '@/stores/cards'
 import {
   bareCardCode,
   cardArtReference,
@@ -312,6 +313,11 @@ export async function saveToLibrary(card: CustomCard, setId: string): Promise<Li
   if (index === -1) entries.push(saved)
   else entries.splice(index, 1, saved)
   registerCustomCards([saved])
+  /* The registry is not the card pool the rest of the app reads: a game resolves
+   * defs through the card store, which is loaded once per page. Without this a
+   * save was invisible -- the old def kept answering for the card -- until a
+   * reload. */
+  useCardStore().syncCustomCards()
   recountSets()
   return saved
 }

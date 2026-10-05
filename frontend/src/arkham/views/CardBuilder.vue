@@ -4,8 +4,8 @@
  *
  * In a game you only pick from this library; building and editing happen here,
  * where there is room for it. */
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import CustomCardForm from '@/arkham/components/debug/CustomCardForm.vue'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
@@ -58,6 +58,34 @@ const K = 'customCardSets.'
 
 const form = ref<InstanceType<typeof CustomCardForm> | null>(null)
 const editingCode = ref<string | null>(null)
+
+/* Unsaved work. The baseline is what the editor looked like the last time it
+ * agreed with the library -- loading a card, starting a new one, or saving --
+ * and anything typed after that makes the two differ. Kept as a string so the
+ * comparison is a comparison and not a deep walk on every keystroke. */
+const baseline = ref<string | null>(null)
+const dirty = computed(() => {
+  const current = form.value?.snapshot()
+  return current !== undefined && baseline.value !== null && current !== baseline.value
+})
+
+function markClean() {
+  baseline.value = form.value?.snapshot() ?? null
+}
+
+/* Asking before work is lost. Resolved by the modal, so a caller can await the
+ * answer the same way it would await a navigation. */
+const unsavedAsk = ref<((keepGoing: boolean) => void) | null>(null)
+
+function confirmDiscard(): Promise<boolean> {
+  if (!dirty.value) return Promise.resolve(true)
+  return new Promise((resolve) => {
+    unsavedAsk.value = (keepGoing) => {
+      unsavedAsk.value = null
+      resolve(keepGoing)
+    }
+  })
+}
 const selected = ref<string[]>([])
 const busy = ref(false)
 const libraryCollapsed = ref(false)
@@ -206,8 +234,28 @@ async function openFromRoute() {
   if (card) await edit(card)
 }
 
-onMounted(openFromRoute)
+onMounted(async () => {
+  await openFromRoute()
+  // Nothing has been typed yet, whether a card opened or the editor is blank.
+  if (baseline.value === null) markClean()
+})
 watch(() => route.query.card, openFromRoute)
+
+/* Leaving the builder entirely. Navigating within it -- which is what opening a
+ * card does, since the url names the card -- is not leaving: those paths ask on
+ * their own, before they replace what is in the editor. */
+onBeforeRouteLeave(async (to) => (to.name === 'CardBuilder' ? true : await confirmDiscard()))
+
+/* And leaving the site, where the browser asks in its own words and all we can
+ * do is say that there is something to lose. */
+function warnOnUnload(event: BeforeUnloadEvent) {
+  if (!dirty.value) return
+  event.preventDefault()
+  event.returnValue = ''
+}
+
+onMounted(() => window.addEventListener('beforeunload', warnOnUnload))
+onUnmounted(() => window.removeEventListener('beforeunload', warnOnUnload))
 
 const cards = computed(() => libraryCards())
 const sets = computed(() => librarySets())
@@ -399,6 +447,7 @@ async function dropSet(set: LibrarySet) {
 }
 
 async function edit(card: CustomCard) {
+  if (!(await confirmDiscard())) return
   editingCode.value = card.def.cardCode
   browsingSets.value = false
   status.value = null
@@ -410,14 +459,17 @@ async function edit(card: CustomCard) {
   if (owned && owned.setId !== activeSetId.value) chooseActiveSet(owned.setId)
   await nextTick()
   await form.value?.loadCard(card)
+  markClean()
   syncRoute(card.def.cardCode)
 }
 
-function startNew() {
+async function startNew() {
+  if (!(await confirmDiscard())) return
   editingCode.value = null
   status.value = null
   error.value = null
   form.value?.reset()
+  markClean()
   syncRoute(null)
 }
 
@@ -458,6 +510,7 @@ async function save() {
     if (!card) return
     const saved = await saveToLibrary(card, setId)
     editingCode.value = saved.def.cardCode
+    markClean()
     status.value = t(`${K}saved`)
   } catch (e) {
     console.error(e)
@@ -1236,12 +1289,16 @@ async function onImport(event: Event) {
         </button>
         <h2>
           {{ editingCode ? t(`${K}editingCard`) : t(`${K}newCard`) }}
+          <span v-if="dirty" class="unsaved" :title="t(`${K}unsavedTitle`)">
+            <span class="unsaved-dot" aria-hidden="true"></span>
+            {{ t(`${K}unsaved`) }}
+          </span>
           <small v-if="activeSet" class="in-set">{{ t(`${K}inSet`, { name: activeSet.name }) }}</small>
         </h2>
         <div class="builder-actions">
-          <span v-if="status" class="status">{{ status }}</span>
+          <span v-if="status && !dirty" class="status">{{ status }}</span>
           <span v-if="error" class="error">{{ error }}</span>
-          <button type="button" :disabled="busy" @click="save">
+          <button type="button" class="save" :class="{ dirty }" :disabled="busy" @click="save">
             {{ editingCode ? t(`${K}saveChanges`) : t(`${K}createCard`) }}
           </button>
           <!-- Only worth a slot up here while the panel's own "+ New card" is out
@@ -1278,6 +1335,13 @@ async function onImport(event: Event) {
     :prompt="t(`${K}confirmDeleteCard`, { name: deletingCard.def.name.title })"
     :yes="() => remove(deletingCard!)"
     :no="() => (deletingCard = null)"
+  />
+
+  <Prompt
+    v-if="unsavedAsk"
+    :prompt="t(`${K}confirmDiscard`)"
+    :yes="() => unsavedAsk?.(true)"
+    :no="() => unsavedAsk?.(false)"
   />
   </div>
 </template>
@@ -2425,6 +2489,32 @@ async function onImport(event: Event) {
   display: flex;
   gap: 0.5rem;
   margin-left: auto;
+}
+
+/* Said twice, because one of them is easy to miss: beside the heading, and on
+   the button that resolves it. */
+.unsaved {
+  align-items: center;
+  color: var(--important);
+  display: inline-flex;
+  font-family: sans-serif;
+  font-size: 0.55em;
+  gap: 0.35em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.unsaved-dot {
+  background: currentColor;
+  border-radius: 50%;
+  display: inline-block;
+  height: 0.5em;
+  width: 0.5em;
+}
+
+button.save.dirty {
+  box-shadow: 0 0 0 2px var(--important);
 }
 
 .muted {

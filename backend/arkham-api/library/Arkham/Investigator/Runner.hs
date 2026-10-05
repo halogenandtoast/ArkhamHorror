@@ -2176,6 +2176,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (usedAdditionalActionsL .~ mempty)
       & (actionsTakenL .~ mempty)
       & (actionsPerformedL .~ mempty)
+      & (ignoredPerformedActionsL .~ mempty)
       & (beganRoundAtL .~ current)
       & (unhealedHorrorThisRoundL .~ 0)
   Begin InvestigationPhase -> do
@@ -2188,6 +2189,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
       & (usedAdditionalActionsL .~ mempty)
       & (actionsTakenL .~ mempty)
       & (actionsPerformedL .~ mempty)
+      & (ignoredPerformedActionsL .~ mempty)
   DiscardTopOfDeck iid n source mTarget | iid == investigatorId -> handleDiscardTopOfDeck a iid n source mTarget
   Do (DiscardTopOfDeck iid n source mTarget) | iid == investigatorId -> handleDoDiscardTopOfDeck a iid n source mTarget
   DiscardUntilFirst iid' source (Deck.InvestigatorDeck iid) matcher | iid == investigatorId -> handleDiscardUntilFirst a iid' source iid matcher

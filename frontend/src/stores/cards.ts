@@ -46,16 +46,22 @@ export const useCardStore = defineStore("cards", {
       try {
         const custom = await Api.fetchCustomCards(gameId)
         registerCustomCards(custom)
-        // Read the defs back out of the registry rather than using the payload
-        // directly: that is where card codes get normalised.
-        const defs = customCardDefs()
-        const codes = new Set(defs.map((c) => c.cardCode))
-        this.cards = [...this.cards.filter((c) => !codes.has(c.cardCode)), ...defs]
+        this.syncCustomCards()
         return custom
       } catch (error) {
         console.log(error)
         return []
       }
+    },
+
+    /* Fold the custom-card registry into `cards`, replacing any older copy of
+     * the same code. The registry is read rather than a payload because that is
+     * where card codes get normalised. Saving in the card builder calls this, so
+     * an open game sees the edited def without being reloaded. */
+    syncCustomCards() {
+      const defs = customCardDefs()
+      const codes = new Set(defs.map((c) => c.cardCode))
+      this.cards = [...this.cards.filter((c) => !codes.has(c.cardCode)), ...defs]
     }
   }
 })

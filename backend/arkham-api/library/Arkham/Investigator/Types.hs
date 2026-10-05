@@ -306,6 +306,11 @@ data InvestigatorAttrs = InvestigatorAttrs
   , investigatorPlacement :: Placement
   , investigatorActionsTaken :: [[Action]]
   , investigatorActionsPerformed :: [[Action]]
+  , -- | Actions performed that the "same type of action" checks do not see.
+    -- They are still actions the investigator performed -- the
+    -- 'InvestigatorActionsPerformed' field hands both lists out together -- but
+    -- they are not what the next action is compared against.
+    investigatorIgnoredPerformedActions :: [[Action]]
   , investigatorRemainingActions :: Int
   , investigatorEndedTurn :: Bool
   , investigatorDeck :: Deck PlayerCard
@@ -720,6 +725,7 @@ instance FromJSON InvestigatorAttrs where
     investigatorPlacement <- o .: "placement"
     investigatorActionsTaken <- o .: "actionsTaken"
     investigatorActionsPerformed <- o .: "actionsPerformed"
+    investigatorIgnoredPerformedActions <- o .:? "ignoredPerformedActions" .!= []
     investigatorRemainingActions <- o .: "remainingActions"
     investigatorEndedTurn <- o .: "endedTurn"
     investigatorDeck <- o .: "deck"

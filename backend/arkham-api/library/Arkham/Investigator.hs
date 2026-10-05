@@ -275,6 +275,7 @@ returnFromShatteredSelf = flip handleInvestigator \(ShatteredSelf (attrs `With` 
         , investigatorRemainingActions = investigatorRemainingActions attrs
         , investigatorActionsTaken = investigatorActionsTaken attrs
         , investigatorActionsPerformed = investigatorActionsPerformed attrs
+        , investigatorIgnoredPerformedActions = investigatorIgnoredPerformedActions attrs
         , investigatorEndedTurn = investigatorEndedTurn attrs
         }
     _ ->

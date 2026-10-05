@@ -5354,7 +5354,9 @@ instance Projection Investigator where
                in (toAttrs iinvestigator).classSymbol
         _ -> pure investigatorClass
       InvestigatorActionsTaken -> pure investigatorActionsTaken
-      InvestigatorActionsPerformed -> pure investigatorActionsPerformed
+      -- Both lists: an action a card was told to ignore for repeat checks is
+      -- still an action this investigator performed.
+      InvestigatorActionsPerformed -> pure $ investigatorActionsPerformed <> investigatorIgnoredPerformedActions
       InvestigatorSlots -> do
         mods <- getModifiers attrs
         let

@@ -199,7 +199,6 @@ withKeepAlive inner = do
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
 gameStream gameId = catchingConnectionException $ withKeepAlive do
   userId <- lift getRequestUserId
-  customCards <- lift $ userCustomCards userId
   let cleanup room subId = do
         unsubscribeFromRoom room subId
         lift $ decrRoomMember gameId
@@ -221,12 +220,18 @@ gameStream gameId = catchingConnectionException $ withKeepAlive do
     let broadcast = broadcastToRoom room
     race_
       (runSubscriberSender sub)
-      (runConduit $ sourceWS .| mapM_C (handleData customCards room broadcast))
+      (runConduit $ sourceWS .| mapM_C (handleData userId room broadcast))
  where
-  handleData customCards room broadcast dataPacket = lift do
+  handleData userId room broadcast dataPacket = lift do
     case eitherDecodeStrict dataPacket of
       Left err -> $(logWarn) $ tshow err
-      Right answer ->
+      Right answer -> do
+        {- Read per answer, not once per connection. 'registerCustomCards' is
+        left-biased, so a snapshot taken when the socket opened puts itself back
+        over the live library on every action -- a card-builder save was invisible
+        in an open tab until it reconnected, which is the opposite of what the
+        overlay in 'updateGame' is for. -}
+        customCards <- userCustomCards userId
         updateGame customCards answer gameId (Just room) `catch` \(e :: SomeException) -> do
           liftIO $ broadcast $ encode $ GameError $ tshow e
 

@@ -833,7 +833,17 @@ function toggle(list: string[], value: string) {
   else list.splice(index, 1)
 }
 
-defineExpose({ loadCard, reset, buildCustomCard, cardType: computed(() => form.cardType) })
+/* What is in the editor right now, as a string to compare against.
+
+The fields themselves rather than the built def: 'buildCustomCard' validates and
+can throw on half-typed raw JSON, which is exactly the moment the caller most
+needs to know the card is unsaved. Reading `form` and `art` here is also what
+makes a caller's computed re-run as they type. */
+function snapshot(): string {
+  return JSON.stringify({ form, art: art.value })
+}
+
+defineExpose({ loadCard, reset, buildCustomCard, snapshot, cardType: computed(() => form.cardType) })
 </script>
 <template>
   <div class="custom-card-body">

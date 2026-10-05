@@ -49,6 +49,8 @@ import Arkham.DefeatedBy
 import Arkham.Discard
 import Arkham.Discover
 import Arkham.Draw.Types
+import Arkham.Effect.Window (EffectWindow (EffectNextActionWindow))
+import Arkham.EffectMetadata (EffectMetadata (EffectModifiers))
 import Arkham.Enemy.Types qualified as Field
 import Arkham.Event.Types (Field (..))
 import Arkham.Fight.Types
@@ -195,11 +197,42 @@ handlePerformAction a@InvestigatorAttrs {..} iid source action = do
   handCards <- field InvestigatorHand iid
   let actionCards = filter (elem action . actionsToList . cdActions . toCardDef) handCards
   playableCards <- filterM (getIsPlayable iid source (UnpaidCost NoAction) windows') actionCards
-  when (notNull actions || notNull playableCards) do
+  basics <- basicActions
+  when (notNull actions || notNull playableCards || notNull basics) do
     Lifted.chooseOne iid
       $ map ((\f -> f windows' [] []) . AbilityLabel iid) actions
       <> [targetLabel (toCardId item) [PayCardCost iid item windows'] | item <- playableCards]
+      <> basics
   pure a
+ where
+  {- Resource and draw are not abilities -- the player window offers them as
+  components -- so "take a Resource action" found nothing here and silently did
+  nothing. They go through their own full action sequence (windows, attacks of
+  opportunity, TakenActions), with the action cost waived the way every ability
+  offered here has it waived. -}
+  basicActions
+    | action == #resource = do
+        ok <- andM [canDo_ iid #resource, can.gain.resources (sourceToFromSource source) iid]
+        pure [ResourceLabel iid (freeAction [TakeResources iid 1 (ResourceSource iid) True]) | ok]
+    | action == #draw = do
+        mods <- getModifiers iid
+        ok <- andM [canDo_ iid #draw, pure $ none (`elem` mods) [CannotDrawCards, CannotManipulateDeck]]
+        pure
+          [ ComponentLabel (InvestigatorDeckComponent iid) (freeAction [drawCardsAction iid source 1])
+          | ok
+          ]
+    | otherwise = pure []
+
+  {- The action it is about to start, at no action cost. 'EffectNextActionWindow'
+  is exactly that scope: it arms on the BeginAction the message below pushes and
+  is disabled again by its FinishAction. -}
+  freeAction msgs =
+    CreateWindowModifierEffect
+      EffectNextActionWindow
+      (EffectModifiers [Modifier source (ActionCostOf (IsAction action) (-1)) False Nothing Nothing])
+      source
+      (toTarget iid)
+      : msgs
 
 handleSpendResources a@InvestigatorAttrs {..} iid n msg = do
   let defaultFlow = do
@@ -380,15 +413,16 @@ handleTakeActions a@InvestigatorAttrs {..} iid actions cost = do
   pure a
 
 handleTakenActions a@InvestigatorAttrs {..} iid actions = do
+  ignored <- isRepeatIgnoredAction a
   let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
   let duplicated = actions `List.intersect` previous
   let streak = longestUniqueStreak (actions : reverse investigatorActionsPerformed)
 
-  when (notNull duplicated)
+  when (notNull duplicated && not ignored)
     $ pushM
     $ checkWindows [mkAfter (Window.PerformedSameTypeOfAction iid duplicated)]
 
-  when (length streak > 1)
+  when (length streak > 1 && not ignored)
     $ pushM
     $ checkWindows
       [mkAfter (Window.PerformedDifferentTypesOfActionsInARow iid (length streak) streak)]
@@ -397,13 +431,17 @@ handleTakenActions a@InvestigatorAttrs {..} iid actions = do
     $ pushM
     $ checkWindows [mkWhen (Window.FirstTimeParleyingThisRound iid)]
 
-  pure $ a & actionsTakenL %~ (<> [actions]) & actionsPerformedL %~ (<> [actions])
+  pure
+    $ a
+    & (actionsTakenL %~ (<> [actions]))
+    & ((if ignored then ignoredPerformedActionsL else actionsPerformedL) %~ (<> [actions]))
 
 handlePerformedActions a@InvestigatorAttrs {..} iid actions = do
+  ignored <- isRepeatIgnoredAction a
   let previous = fromMaybe [] $ lastMay investigatorActionsPerformed
   let duplicated = actions `List.intersect` previous
 
-  when (notNull duplicated)
+  when (notNull duplicated && not ignored)
     $ pushM
     $ checkWindows [mkAfter (Window.PerformedSameTypeOfAction iid duplicated)]
 
@@ -411,7 +449,15 @@ handlePerformedActions a@InvestigatorAttrs {..} iid actions = do
     $ pushM
     $ checkWindows [mkWhen (Window.FirstTimeParleyingThisRound iid)]
 
-  pure $ a & actionsPerformedL %~ (<> [actions])
+  pure $ a & (if ignored then ignoredPerformedActionsL else actionsPerformedL) %~ (<> [actions])
+
+{- | Whether the action being recorded is one the "same type of action" checks
+must not see -- a card granting an action it also says to ignore. It is still
+recorded, in its own list, because it remains an action the investigator
+performed for everything that merely counts them.
+-}
+isRepeatIgnoredAction :: HasGame m => InvestigatorAttrs -> m Bool
+isRepeatIgnoredAction a = (ActionDoesNotCountAsRepeatedAction `elem`) <$> getModifiers a
 
 handlePlayerWindow a@InvestigatorAttrs {..} iid additionalActions isAdditional immediate = do
   modifiers <- lift $ withMetric "getModifiers" $ getModifiers iid

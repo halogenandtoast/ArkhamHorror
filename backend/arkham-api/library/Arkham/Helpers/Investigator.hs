@@ -420,6 +420,7 @@ investigator f cardDef Stats {..} =
                 , investigatorPlacement = Unplaced
                 , investigatorActionsTaken = mempty
                 , investigatorActionsPerformed = mempty
+                , investigatorIgnoredPerformedActions = mempty
                 , investigatorRemainingActions = 3
                 , investigatorEndedTurn = False
                 , investigatorDeck = mempty

@@ -1307,6 +1307,16 @@ data Message
     -}
     Retain Message
   | Simultaneously [Message]
+  | {- | Run these custom-card steps later, for the card the target names.
+
+    The step language is otherwise read the moment a card's messages are pushed,
+    which is too early for anything that has to look at the board again: an "in
+    any order" prompt has to re-check what is still possible after each choice.
+    This carries the bindings and the steps through the queue, so they are read
+    when they run rather than when they were written. The two values are the
+    step environment and the steps, both as the author wrote them.
+    -}
+    RunCustomSteps Target Value Value
   | -- Debug
     ClearQueue
   | SetCardOwner CardId InvestigatorId

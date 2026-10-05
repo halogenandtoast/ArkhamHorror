@@ -282,21 +282,35 @@
       "keysIn": "payload",
       "stepKeys": [],
       "payloadKeys": [
-        "options"
+        "options",
+        "oneAtATime",
+        "done",
+        "criteria",
+        "source",
+        "matches",
+        "eq",
+        "ne"
       ],
       "nestedKeys": {
         "opt": [
           "steps",
           "query",
           "label",
-          "bind"
+          "bind",
+          "criteria"
         ]
       },
-      "bindingsRead": [],
+      "bindingsRead": [
+        "target",
+        "source"
+      ],
       "valueShape": null,
-      "doc": "Named options, each running its own steps.\n\nAn option may instead carry a @query@, in which case it stands for one option\nper thing found, bound the way 'runChooseFrom' binds it. That is what lets a\nsingle prompt span several kinds of thing: \"a card attached to your location\"\nis an event or an asset or a treachery, which are three queries and three\nmessages but one choice.",
+      "doc": "Named options, each running its own steps.\n\n@oneAtATime@ asks for them all, one after another, in whatever order the player\npicks -- which is what \"in any order\" means on a card. Without it the prompt is\na single choice and the rest are dropped.\n\nEach ask is built from scratch, so an option's @criteria@ is re-read every time:\nan enemy that has since been evaded stops being something to fight. Options that\ndo not apply are only hidden, never dropped -- moving can make fighting possible\nagain. @done@ adds a way out of the loop (\"you may\"), labelled with its value.\n\nAn option may instead carry a @query@, in which case it stands for one option\nper thing found, bound the way 'runChooseFrom' binds it. That is what lets a\nsingle prompt span several kinds of thing: \"a card attached to your location\"\nis an event or an asset or a treachery, which are three queries and three\nmessages but one choice.",
       "via": [
-        "chosenTarget"
+        "optionApplies",
+        "reAsk",
+        "chosenTarget",
+        "runReadCondition"
       ]
     },
     {
@@ -577,13 +591,15 @@
     {
       "step": "takeAction",
       "handler": "runTakeAction",
-      "keysIn": "none",
+      "keysIn": "payload",
       "stepKeys": [],
-      "payloadKeys": [],
+      "payloadKeys": [
+        "modifiers"
+      ],
       "nestedKeys": {},
       "bindingsRead": [],
       "valueShape": "any value; only the key's presence is read",
-      "doc": "",
+      "doc": "Open one immediate action with the same as-if-turn semantics as Quick Thinking.\n\n@modifiers@ are given to whoever takes it, for exactly as long as the granted\naction lasts -- the same scope the as-if-turn modifier itself has. That is where\n\"that action ignores this card's forced effect\" lives, since the action has to\ncarry the exemption with it rather than the card's own ability refusing to\ntrigger: the granted action is otherwise the thing the *next* action is compared\nagainst.",
       "via": []
     },
     {
@@ -933,7 +949,9 @@
         "skipForAll",
         "ignoreAllCosts",
         "fightCriteriaOverride",
-        "evadeCriteriaOverride"
+        "evadeCriteriaOverride",
+        "nonBlocking",
+        "blocksIn"
       ]
     },
     "UsedAbility": {
@@ -1280,6 +1298,7 @@
         "beforeEffect",
         "customizations",
         "otherSide",
+        "duplicateOf",
         "whenDiscarded",
         "canCommitWhenNoIcons",
         "commitTrigger",
@@ -1920,6 +1939,7 @@
         "deckBuildingAdjustments"
       ],
       "optional": [
+        "ignoredPerformedActions",
         "sideDeck",
         "eliminated",
         "spentXp",
@@ -1985,16 +2005,42 @@
         "breaches",
         "globalMeta",
         "position",
+        "group",
         "beingRemoved",
         "concealedCards",
         "outOfGame"
       ]
+    },
+    "LocationGroup": {
+      "required": [
+        "key",
+        "layout"
+      ],
+      "optional": []
+    },
+    "GroupMembership": {
+      "required": [
+        "key",
+        "index"
+      ],
+      "optional": []
     },
     "Location": {
       "required": [
         "cardCode"
       ],
       "optional": []
+    },
+    "Modifier": {
+      "required": [
+        "source",
+        "type",
+        "activeDuringSetup"
+      ],
+      "optional": [
+        "card",
+        "effect"
+      ]
     },
     "Movement": {
       "required": [
@@ -2089,6 +2135,7 @@
       ],
       "optional": [
         "additionalReferences",
+        "locationGroups",
         "grid",
         "deckDiscards",
         "useHardExpertReference",
@@ -2500,6 +2547,7 @@
       "placement",
       "actionsTaken",
       "actionsPerformed",
+      "ignoredPerformedActions",
       "remainingActions",
       "endedTurn",
       "deck",
@@ -2583,6 +2631,7 @@
       "meta",
       "globalMeta",
       "position",
+      "group",
       "beingRemoved",
       "concealedCards",
       "outOfGame"

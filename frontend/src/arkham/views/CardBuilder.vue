@@ -4,7 +4,7 @@
  *
  * In a game you only pick from this library; building and editing happen here,
  * where there is room for it. */
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import CustomCardForm from '@/arkham/components/debug/CustomCardForm.vue'
@@ -21,6 +21,10 @@ import {
   type SignatureSummary,
 } from '@/arkham/customCards'
 import { useMarketplaceVisible } from '@/composable/marketplaceAccess'
+import CustomCardsPage from '@/arkham/components/CustomCardsPage.vue'
+import FilterBar from '@/arkham/components/FilterBar.vue'
+import MetaChip from '@/arkham/components/MetaChip.vue'
+import SetPreview from '@/arkham/components/SetPreview.vue'
 import { useUserStore } from '@/stores/user'
 import {
   createSet,
@@ -138,9 +142,10 @@ function publishTitle(set: LibrarySet): string {
   return t(`${K}${userStore.isAdmin ? 'publishTitle' : 'submitTitle'}`, { name: set.name })
 }
 
-/* The one-line account of where a set stands with the marketplace, or null for a
- * set that has nothing to do with it. Read off the set rather than refetched: the
- * library is reloaded after every submission. */
+/* Where a set stands with the marketplace, for the states that need a sentence:
+ * waiting on somebody, or turned down and here is why. A set that is simply
+ * listed is good news and gets a chip, not a paragraph. Read off the set rather
+ * than refetched: the library is reloaded after every submission. */
 function reviewLine(set: LibrarySet): string | null {
   if (isAwaitingReview(set)) {
     return isListed(set)
@@ -148,7 +153,7 @@ function reviewLine(set: LibrarySet): string | null {
       : t(`${K}reviewPending`, { version: set.submittedVersion })
   }
   if (wasDenied(set)) return t(`${K}reviewDenied`, { version: set.submittedVersion })
-  if (isListed(set)) return t(`${K}reviewListed`, { version: set.approvedVersion })
+  // Listed and settled says itself in the chip beside the card count.
   return null
 }
 
@@ -276,36 +281,6 @@ const visibleSets = computed(() => {
   }
   return shown
 })
-
-/* Which sets have cards the preview row could not fit. The row is clipped by
- * CSS, so the browser is the only thing that knows how many fit -- asked here
- * rather than guessed at from widths and gaps -- and "View all" is pointless on
- * a set that is already showing everything. */
-const setList = ref<HTMLElement | null>(null)
-const overflowingSets = ref<string[]>([])
-
-function measurePreviews() {
-  const root = setList.value
-  if (!root) return
-  overflowingSets.value = [...root.querySelectorAll<HTMLElement>('[data-set-id]')]
-    .filter((el) => el.scrollHeight > el.clientHeight + 1)
-    .map((el) => el.dataset.setId!)
-}
-
-let previewObserver: ResizeObserver | null = null
-
-watch(setList, (el) => {
-  previewObserver?.disconnect()
-  if (!el) return
-  previewObserver ??= new ResizeObserver(measurePreviews)
-  previewObserver.observe(el)
-})
-
-// A row added or dropped changes the list's height and the observer catches it;
-// a change within the same height (the filter, a deleted card) does not.
-watch([visibleSets, setQuery], () => nextTick(measurePreviews))
-
-onUnmounted(() => previewObserver?.disconnect())
 
 const cardArt = (card: CustomCard) => card.art ?? renderCardPlaceholder(card.def)
 const isSelected = (code: string) => selected.value.includes(code)
@@ -760,28 +735,29 @@ async function onImport(event: Event) {
 
   <!-- Your sets, full width. The editor is one card at a time, so it has no
        room to show a set; here a set can open up and show its cards. -->
-  <section v-if="!inSet" class="sets-page">
-    <header class="sets-head">
-      <h1>{{ t(`${K}title`) }}</h1>
-      <div class="sets-tools">
-        <form class="new-set" @submit.prevent="addSet">
-          <input v-model="newSetName" type="text" :placeholder="t(`${K}newSetName`)" @keydown.stop />
-          <button type="submit" :disabled="!newSetName.trim()">{{ t(`${K}addSet`) }}</button>
-        </form>
-        <label
-          class="tool import"
-          v-tooltip="t(`${K}importTooltip`)"
-        >
-          <span>{{ t(`${K}import`) }}</span>
-          <input type="file" accept="application/json,.json" @change="onImport" />
-        </label>
-      </div>
-    </header>
-
-    <p class="experimental">
-      <font-awesome-icon icon="flask" />
-      {{ t(`${K}experimental`) }}
-    </p>
+  <CustomCardsPage
+    v-if="!inSet"
+    inline
+    class="sets-page"
+    :title="t(`${K}title`)"
+    :lede="t(`${K}setsLede`)"
+    :status="status"
+    :error="error"
+  >
+    <template #actions>
+      <form class="new-set" @submit.prevent="addSet">
+        <input v-model="newSetName" type="text" :placeholder="t(`${K}newSetName`)" @keydown.stop />
+        <button type="submit" class="go" :disabled="!newSetName.trim()">
+          <font-awesome-icon icon="layer-group" />
+          {{ t(`${K}addSet`) }}
+        </button>
+      </form>
+      <label class="tool import" v-tooltip="t(`${K}importTooltip`)">
+        <font-awesome-icon icon="upload" />
+        <span>{{ t(`${K}import`) }}</span>
+        <input type="file" accept="application/json,.json" @change="onImport" />
+      </label>
+    </template>
 
     <!-- What is in the file, before it lands. A browser confirm had room for a
          sentence, and an import is bigger than a sentence: it can replace a set
@@ -860,52 +836,35 @@ async function onImport(event: Event) {
       </div>
     </section>
 
-    <p v-if="status" class="status">{{ status }}</p>
-    <p v-if="error" class="error">{{ error }}</p>
-
     <p v-if="!libraryLoaded" class="muted">{{ t(`${K}loading`) }}</p>
 
     <!-- Nothing to show, so say what the thing is instead. -->
     <section v-else-if="!sets.length" class="empty">
+      <font-awesome-icon icon="layer-group" />
       <h2>{{ t(`${K}emptyTitle`) }}</h2>
       <p class="lede">{{ t(`${K}emptyLede`) }}</p>
     </section>
 
     <template v-else>
-      <div class="sets-browse">
-        <div class="set-filter">
-          <font-awesome-icon icon="search" />
-          <input
-            v-model="setQuery"
-            type="search"
-            :placeholder="t(`${K}filterPlaceholder`)"
-            :aria-label="t(`${K}filterLabel`)"
-            @keydown.stop
-          />
-          <button
-            v-if="setQuery"
-            type="button"
-            class="clear"
-            v-tooltip="t(`${K}clearFilter`)" :aria-label="t(`${K}clearFilter`)"
-            @click="setQuery = ''"
-          >
-            <font-awesome-icon icon="times" />
-          </button>
-        </div>
+      <FilterBar
+        v-model="setQuery"
+        :placeholder="t(`${K}filterPlaceholder`)"
+        :clear-label="t(`${K}clearFilter`)"
+      >
         <SegmentedToggle
           v-model="setOrder"
-          class="set-order"
           :options="setOrderOptions"
           :label="t(`${K}orderLabel`)"
         />
-      </div>
+      </FilterBar>
 
-      <p v-if="!visibleSets.length" class="muted empty">
-        {{ t(`${K}noMatches`, { query: setQuery.trim() }) }}
+      <p v-if="!visibleSets.length" class="no-matches">
+        <font-awesome-icon icon="search" />
+        <span>{{ t(`${K}noMatches`, { query: setQuery.trim() }) }}</span>
       </p>
 
-      <ul v-else ref="setList" class="set-cards">
-      <li v-for="set in visibleSets" :key="set.id">
+      <ul v-else class="set-cards">
+      <li v-for="set in visibleSets" :key="set.id" class="panel">
         <div class="set-row">
           <form
             v-if="renamingSetId === set.id"
@@ -937,72 +896,88 @@ async function onImport(event: Event) {
               </button>
             </div>
           </form>
-          <button v-else type="button" class="set-open" @click="openSet(set.id)">
-            <span class="name">{{ set.name }}</span>
-            <span class="group-count">{{ t(`${K}cardCount`, set.cardCount) }}</span>
-          </button>
+          <div v-else class="set-identity">
+            <button type="button" class="set-open" @click="openSet(set.id)">
+              <span class="name">{{ set.name }}</span>
+            </button>
+            <div class="set-facts">
+              <MetaChip>{{ set.cardCount ? t(`${K}cardCount`, set.cardCount) : t(`${K}emptySetShort`) }}</MetaChip>
+              <MetaChip
+                v-if="marketplace && isSubscribed(set)"
+                tone="good"
+                icon="circle-check"
+                v-tooltip="t(`${K}editingUnsubscribes`)"
+              >
+                {{ t(`${K}subscribedBadge`, { version: set.subscribedVersion }) }}
+              </MetaChip>
+              <!-- Listed and nothing pending is good news and needs no
+                   sentence; only waiting and denied get the line below. -->
+              <MetaChip
+                v-if="marketplace && isListed(set) && !isAwaitingReview(set) && !wasDenied(set)"
+                tone="good"
+                icon="store"
+              >
+                {{ t(`${K}listedChip`, { version: set.approvedVersion }) }}
+              </MetaChip>
+            </div>
+          </div>
 
-          <span
-            v-if="marketplace && isSubscribed(set)"
-            class="subscribed"
-            v-tooltip="t(`${K}editingUnsubscribes`)"
-          >
-            {{ t(`${K}subscribedBadge`, { version: set.subscribedVersion }) }}
-          </span>
+          <div class="row-trailing">
+            <button
+              v-if="marketplace && updateAvailable(set)"
+              type="button"
+              class="update"
+              @click="update(set)"
+            >
+              <font-awesome-icon icon="refresh" />
+              {{ t(`${K}updateTo`, { version: set.latestVersion }) }}
+            </button>
 
-          <button
-            v-if="marketplace && updateAvailable(set)"
-            type="button"
-            class="update"
-            @click="update(set)"
-          >
-            {{ t(`${K}updateTo`, { version: set.latestVersion }) }}
-          </button>
-
-          <div class="row-actions">
-            <button
-              v-if="marketplace"
-              type="button"
-              v-tooltip="publishTitle(set)"
-              :aria-label="publishTitle(set)"
-              @click="startPublish(set)"
-            >
-              <font-awesome-icon icon="store" />
-            </button>
-            <button type="button" v-tooltip="t(`${K}renameSet`)" :aria-label="t(`${K}renameSet`)" @click="startRename(set)">
-              <font-awesome-icon icon="pen" />
-            </button>
-            <button
-              type="button"
-              v-tooltip="t(`${K}exportSet`, { name: set.name })"
-              :aria-label="t(`${K}exportSet`, { name: set.name })"
-              @click="exportSet(set)"
-            >
-              <font-awesome-icon icon="download" />
-            </button>
-            <!-- Adds to this set rather than becoming one, which is what a card
-                 somebody sent you needs: it has no set of its own to land as. -->
-            <label
-              class="set-import"
-              v-tooltip="t(`${K}importIntoSet`, { name: set.name })"
-              :aria-label="t(`${K}importIntoSet`, { name: set.name })"
-            >
-              <font-awesome-icon icon="upload" />
-              <input
-                type="file"
-                accept="application/json,.json"
-                @click.stop
-                @change="onImportInto($event, set)"
-              />
-            </label>
-            <button
-              type="button"
-              class="delete"
-              v-tooltip="t(`${K}deleteSet`)" :aria-label="t(`${K}deleteSet`)"
-              @click="deletingSet = set"
-            >
-              <font-awesome-icon icon="trash" />
-            </button>
+            <div class="row-actions" role="group" :aria-label="t(`${K}setActions`)">
+              <button
+                v-if="marketplace"
+                type="button"
+                v-tooltip="publishTitle(set)"
+                :aria-label="publishTitle(set)"
+                @click="startPublish(set)"
+              >
+                <font-awesome-icon icon="store" />
+              </button>
+              <button type="button" v-tooltip="t(`${K}renameSet`)" :aria-label="t(`${K}renameSet`)" @click="startRename(set)">
+                <font-awesome-icon icon="pen" />
+              </button>
+              <button
+                type="button"
+                v-tooltip="t(`${K}exportSet`, { name: set.name })"
+                :aria-label="t(`${K}exportSet`, { name: set.name })"
+                @click="exportSet(set)"
+              >
+                <font-awesome-icon icon="download" />
+              </button>
+              <!-- Adds to this set rather than becoming one, which is what a card
+                   somebody sent you needs: it has no set of its own to land as. -->
+              <label
+                class="set-import"
+                v-tooltip="t(`${K}importIntoSet`, { name: set.name })"
+                :aria-label="t(`${K}importIntoSet`, { name: set.name })"
+              >
+                <font-awesome-icon icon="upload" />
+                <input
+                  type="file"
+                  accept="application/json,.json"
+                  @click.stop
+                  @change="onImportInto($event, set)"
+                />
+              </label>
+              <button
+                type="button"
+                class="delete"
+                v-tooltip="t(`${K}deleteSet`)" :aria-label="t(`${K}deleteSet`)"
+                @click="deletingSet = set"
+              >
+                <font-awesome-icon icon="trash" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1015,7 +990,11 @@ async function onImport(event: Event) {
         <!-- Where this set stands with the marketplace, for a set that has been
              submitted. A denial carries the reason, which is the whole point of
              having asked for one. -->
-        <p v-if="marketplace && reviewLine(set)" class="review" :class="{ denied: wasDenied(set) }">
+        <p
+          v-if="marketplace && (isAwaitingReview(set) || wasDenied(set))"
+          class="review"
+          :class="{ denied: wasDenied(set) }"
+        >
           <font-awesome-icon :icon="wasDenied(set) ? 'circle-xmark' : isAwaitingReview(set) ? 'hourglass-half' : 'store'" />
           <span>
             {{ reviewLine(set) }}
@@ -1069,32 +1048,19 @@ async function onImport(event: Event) {
 
         <!-- As many cards as fit on one row, and no more: the grid's auto-fill
              decides how many that is, and the row below it is clipped. -->
-        <div class="set-preview">
-          <p v-if="!matchingCards(set.id).length" class="muted">
-            {{ setQuery.trim() ? t(`${K}noCardMatches`) : t(`${K}emptySet`) }}
-          </p>
-          <CardSetStrip
-            v-else
-            interactive
-            class="set-gallery"
-            :data-set-id="set.id"
-            :cards="matchingCards(set.id)"
-            @pick="edit"
-          />
-
-          <button
-            v-if="overflowingSets.includes(set.id)"
-            type="button"
-            class="view-all"
-            @click="openSet(set.id)"
-          >
-            {{ t(`${K}viewAll`, { count: set.cardCount }) }} →
-          </button>
-        </div>
+        <SetPreview
+          interactive
+          :data-set-id="set.id"
+          :cards="matchingCards(set.id)"
+          :total="set.cardCount"
+          :empty-label="setQuery.trim() ? t(`${K}noCardMatches`) : t(`${K}emptySet`)"
+          @pick="edit"
+          @view-all="openSet(set.id)"
+        />
       </li>
       </ul>
     </template>
-  </section>
+  </CustomCardsPage>
 
   <div v-else class="card-builder">
     <aside class="library" :class="{ collapsed: libraryCollapsed }">
@@ -1259,134 +1225,69 @@ async function onImport(event: Event) {
 
 /* The sets page: full width, because a set has cards to show and the editor
    next door only ever shows one. */
-.sets-page {
-  color: var(--title);
-  margin: 0 auto;
-  max-width: 1100px;
-  padding: 1.5rem;
-}
-
-.sets-head {
-  align-items: flex-end;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-between;
-  margin-bottom: 0.9rem;
-
-  h1 {
-    font-family: teutonic, sans-serif;
-    font-size: 1.7em;
-    margin: 0;
-  }
-}
-
-.sets-tools {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.sets-browse {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  margin-bottom: 0.75rem;
-}
-
-.set-filter {
-  align-items: center;
-  background: var(--background-dark);
-  border: 1px solid var(--box-border);
-  border-radius: 5px;
-  color: var(--title);
-  display: flex;
-  flex: 0 1 20rem;
-  gap: 0.45rem;
-  padding: 0.35rem 0.55rem;
-  transition: border-color 0.15s ease;
-
-  &:focus-within {
-    border-color: var(--spooky-green);
-  }
-
-  > svg {
-    flex: none;
-    font-size: 0.8rem;
-    opacity: 0.5;
-  }
-
-  input {
-    background: none;
-    border: none;
-    color: var(--title);
-    flex: 1 1 auto;
-    font-size: 0.85rem;
-    min-width: 0;
-    outline: none;
-
-    /* The platform's own clear button, which does not match anything else. */
-    &::-webkit-search-cancel-button {
-      display: none;
-    }
-  }
-
-  .clear {
-    background: none;
-    border: none;
-    color: var(--title);
-    cursor: pointer;
-    flex: none;
-    font-size: 0.7rem;
-    opacity: 0.5;
-    padding: 0;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-}
-
-.set-order {
-  flex: none;
-  width: 11rem;
-}
-
+/* Nothing yet, said as an invitation rather than as a blank page. */
 .empty {
+  align-items: center;
   border: 1px dashed var(--box-border);
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   margin: 0;
-  max-width: 46rem;
-  padding: 1.25rem 1.5rem;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+
+  > svg {
+    font-size: 1.8rem;
+    opacity: 0.3;
+  }
 
   h2 {
     font-family: teutonic, sans-serif;
     font-size: 1.3em;
-    margin: 0 0 0.5rem;
+    margin: 0;
   }
 
   .lede {
     margin: 0;
-    max-width: 62ch;
-    opacity: 0.8;
+    max-width: 52ch;
+    opacity: 0.75;
+  }
+}
+
+.no-matches {
+  align-items: center;
+  color: color-mix(in srgb, var(--title) 60%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 3rem 1rem;
+  text-align: center;
+
+  svg {
+    font-size: 1.6rem;
+    opacity: 0.4;
   }
 }
 
 .set-cards {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
   list-style: none;
   margin: 0;
   padding: 0;
+}
 
-  > li {
-    background: var(--background-dark);
-    border: 1px solid var(--box-border);
-    border-radius: 8px;
+.panel {
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 150ms ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--box-border) 40%, var(--background-mid));
   }
 }
 
@@ -1394,8 +1295,9 @@ async function onImport(event: Event) {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  gap: 0.5rem 0.75rem;
+  justify-content: space-between;
+  padding: 0.7rem 0.9rem 0.5rem;
 
   .rename {
     background: rgba(0, 0, 0, 0.3);
@@ -1449,39 +1351,58 @@ async function onImport(event: Event) {
 
 /* What the set is. Sits under the row like the review line does, and keeps the
    author's own line breaks: a blurb is often a sentence and a list. */
+/* The name and what it is, left; the things you can do to it, right. Split so
+   the row keeps its shape when the name is long -- it used to push the action
+   rail onto a line of its own halfway through a word. */
+.set-identity {
+  display: flex;
+  flex: 1 1 18rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.6rem;
+  min-width: 0;
+}
+
+.set-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.row-trailing {
+  align-items: center;
+  display: flex;
+  flex: none;
+  gap: 0.5rem;
+}
+
 .set-description {
   color: color-mix(in srgb, var(--title) 78%, transparent);
-  font-size: 0.82rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
   margin: 0;
-  padding: 0 0.75rem 0.5rem;
+  max-width: 64ch;
+  padding: 0 0.9rem 0.6rem;
   white-space: pre-wrap;
 }
 
-/* Confirmed, like a card code that resolves: this really is the published set. */
-.subscribed {
-  border: 1px solid var(--spooky-green);
-  border-radius: 999px;
-  color: var(--spooky-green);
-  flex: none;
-  font-size: 0.7rem;
-  padding: 0.1rem 0.5rem;
-  white-space: nowrap;
-}
-
 .update {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--box-border);
-  border-radius: 4px;
-  color: var(--title);
+  align-items: center;
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--spooky-green) 60%, transparent);
+  border-radius: 5px;
+  color: var(--spooky-green);
   cursor: pointer;
+  display: inline-flex;
   flex: none;
-  font-size: 0.75rem;
-  padding: 0.2rem 0.55rem;
+  font-size: 0.78rem;
+  gap: 0.35rem;
+  min-height: 32px;
+  padding: 0 0.6rem;
   white-space: nowrap;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.14);
-    border-color: var(--spooky-green);
+    background: color-mix(in srgb, var(--spooky-green) 16%, transparent);
   }
 }
 
@@ -1495,7 +1416,7 @@ async function onImport(event: Event) {
   font-size: 0.78rem;
   gap: 0.45rem;
   margin: 0;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 0.9rem;
 
   svg {
     margin-top: 0.15rem;
@@ -1605,70 +1526,35 @@ async function onImport(event: Event) {
 }
 
 .set-open {
-  align-items: baseline;
   background: none;
   border: none;
+  border-radius: 4px;
   color: inherit;
   cursor: pointer;
-  display: flex;
-  flex: 1 1 12rem;
-  gap: 0.6rem;
+  display: block;
+  max-width: 100%;
   min-width: 0;
   padding: 0;
   text-align: left;
 
   .name {
+    display: block;
     font-family: teutonic, sans-serif;
-    font-size: 1.15em;
+    font-size: 1.3em;
+    line-height: 1.15;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   &:hover .name {
-    color: var(--spooky-green);
+    color: white;
+    text-decoration: underline;
   }
-}
 
-/* A single row of cards per set, as a preview. `auto-fill` works out how many
-   whole cards fit the column, so the overflow row is clipped on a card edge
-   rather than through one. */
-.set-preview {
-  --preview-card: 110px;
-  --preview-card-height: 190px;
-
-  align-items: center;
-  border-top: 1px solid var(--box-border);
-  display: flex;
-  gap: 0.75rem;
-  padding: 0.75rem;
-
-  .muted {
-    margin: 0;
-  }
-}
-
-/* Fills the row, with the "View all" pinned beside it. The strip itself is
-   CardSetStrip's business. */
-.set-gallery {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.view-all {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--box-border);
-  border-radius: 4px;
-  color: var(--title);
-  cursor: pointer;
-  flex: none;
-  font-size: 0.8rem;
-  padding: 0.4rem 0.7rem;
-  white-space: nowrap;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: var(--spooky-green);
+  &:focus-visible {
+    outline: 2px solid var(--spooky-green);
+    outline-offset: 2px;
   }
 }
 
@@ -1949,18 +1835,31 @@ async function onImport(event: Event) {
   }
 }
 
+/* The page's two top-level actions, the same height as each other and as the
+   field beside them. They used to be two different heights and two different
+   greys, which is most of why the header read as unfinished. */
 .tool {
-  background: rgba(255, 255, 255, 0.06);
+  align-items: center;
+  background: none;
   border: 1px solid var(--box-border);
-  border-radius: 4px;
+  border-radius: 5px;
   color: var(--title);
   cursor: pointer;
-  font-size: 0.8rem;
-  padding: 0.35rem 0.7rem;
+  display: inline-flex;
+  font-size: 0.85rem;
+  gap: 0.4rem;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 0.85rem;
   text-align: center;
+  transition: border-color 120ms ease;
 
   &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--background-mid);
+  }
+
+  &:focus-within {
+    border-color: var(--spooky-green);
   }
 
   &:disabled {
@@ -1969,30 +1868,64 @@ async function onImport(event: Event) {
   }
 }
 
-.import {
-  input {
-    display: none;
-  }
+.import input {
+  height: 0;
+  opacity: 0;
+  position: absolute;
+  width: 0;
 }
 
 .new-set {
   display: flex;
   gap: 0.4rem;
 
-  input {
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid var(--box-border);
-    border-radius: 4px;
-    color: var(--title);
-    font-size: 0.85rem;
-    min-width: 0;
-    padding: 0.35rem 0.5rem;
-    width: 12rem;
+  @media (max-width: 700px) {
+    flex: 1 1 auto;
   }
 
-  button {
-    font-size: 0.8rem;
-    padding: 0.35rem 0.7rem;
+  input {
+    background: var(--background-dark);
+    border: 1px solid var(--box-border);
+    border-radius: 5px;
+    color: var(--title);
+    font-size: 0.9rem;
+    min-width: 0;
+    padding: 0 0.6rem;
+    width: 13rem;
+
+    &:focus {
+      border-color: var(--spooky-green);
+      outline: none;
+    }
+
+    @media (max-width: 700px) {
+      flex: 1 1 auto;
+      width: auto;
+    }
+  }
+
+  .go {
+    align-items: center;
+    background: var(--button-1);
+    border: 1px solid transparent;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 0.85rem;
+    gap: 0.4rem;
+    min-height: 38px;
+    padding: 0 0.85rem;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background: var(--button-1-highlight);
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.4;
+    }
   }
 }
 
@@ -2121,9 +2054,27 @@ async function onImport(event: Event) {
   }
 }
 
+/* One rail rather than five loose glyphs: bordered so it reads as a group of
+   things you can do to this set, and sized so each one is a real target on a
+   phone. The old 24px squares were below anything you could reliably hit. */
 .row-actions {
+  background: color-mix(in srgb, black 18%, transparent);
+  border: 1px solid var(--box-border);
+  border-radius: 6px;
   display: flex;
   gap: 0.1rem;
+  padding: 0.15rem;
+}
+
+/* Sized by pointer rather than by width: a tablet is wide and still has no
+   cursor, and a 30px glyph is not something you can reliably hit with a thumb.
+   The glyphs keep their size; only the targets around them grow. */
+@media (pointer: coarse) {
+  .row-actions button,
+  .row-actions .set-import {
+    height: 42px;
+    width: 44px;
+  }
 }
 
 /* A file input wearing the same clothes as its neighbours: a label rather than a
@@ -2131,38 +2082,61 @@ async function onImport(event: Event) {
    the buttons beside it get by tag. */
 .row-actions .set-import {
   align-items: center;
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
-  display: flex;
-  font-size: 0.75rem;
+  display: grid;
+  font-size: 0.8rem;
+  height: 30px;
   line-height: 1;
-  opacity: 0.5;
-  padding: 0.25rem 0.35rem;
+  opacity: 0.55;
+  place-items: center;
+  width: 32px;
 
   &:hover {
     background: rgba(255, 255, 255, 0.1);
     opacity: 1;
   }
 
+  &:focus-within {
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+    outline: 2px solid var(--spooky-green);
+    outline-offset: -2px;
+  }
+
   input {
-    display: none;
+    height: 0;
+    opacity: 0;
+    position: absolute;
+    width: 0;
   }
 }
 
 .row-actions button {
   background: none;
   border: none;
-  border-radius: 3px;
+  border-radius: 4px;
   color: inherit;
   cursor: pointer;
-  font-size: 0.75rem;
+  display: grid;
+  font-size: 0.8rem;
+  height: 30px;
   line-height: 1;
-  opacity: 0.5;
-  padding: 0.25rem 0.35rem;
+  opacity: 0.55;
+  padding: 0;
+  place-items: center;
+  width: 32px;
 
   &:hover {
     background: rgba(255, 255, 255, 0.1);
     opacity: 1;
+  }
+
+  &:focus-visible {
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+    outline: 2px solid var(--spooky-green);
+    outline-offset: -2px;
   }
 
   &.delete:hover {
@@ -2327,19 +2301,6 @@ async function onImport(event: Event) {
   }
 }
 
-.experimental {
-  align-items: center;
-  background: rgba(200, 60, 60, 0.1);
-  border: 1px solid var(--delete);
-  border-radius: 6px;
-  color: var(--delete);
-  display: flex;
-  font-size: 0.8rem;
-  gap: 0.5rem;
-  margin: 0 0 0.9rem;
-  padding: 0.45rem 0.65rem;
-}
-
 .builder-head {
   align-items: center;
   display: flex;
@@ -2377,13 +2338,6 @@ async function onImport(event: Event) {
 .error {
   color: var(--delete);
   font-size: 0.85rem;
-}
-
-/* Inline beside the save button in the editor, on their own line on the sets
-   page — the default paragraph margins are wrong for the second case. */
-p.status,
-p.error {
-  margin: 0 0 0.75rem;
 }
 
 button {

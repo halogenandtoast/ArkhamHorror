@@ -14,10 +14,17 @@ import * as Api from '@/arkham/api'
 import { useMarketplaceVisible } from '@/composable/marketplaceAccess'
 import type { CustomCard } from '@/arkham/customCards'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
-import CardSetStrip from '@/arkham/components/CardSetStrip.vue'
+import CustomCardsPage from '@/arkham/components/CustomCardsPage.vue'
+import MetaChip from '@/arkham/components/MetaChip.vue'
+import SetPreview from '@/arkham/components/SetPreview.vue'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
 const K = 'customCardSets.'
+const router = useRouter()
+
+const openSet = (set: Api.PublishedCardSet) =>
+  router.push({ name: 'CardMarketplaceSet', params: { publishedId: set.id } })
 
 const visible = useMarketplaceVisible()
 const listings = ref<Api.PublishedCardSet[]>([])
@@ -65,29 +72,36 @@ const inOrder = (cards: { def: any; art: string | null }[]) =>
 // A listing is in the marketplace once a version of it has been approved.
 const isListed = (set: Api.PublishedCardSet) => set.latestVersion > 0
 
-/* Where the listing stands, in a line: what is live, and what is waiting or was
- * turned down. Unlike the marketplace's, this says something for every row --
- * a page about your listings that went blank for the healthy ones would be
- * hiding the answer it exists to give. */
+/* Where the listing stands, as a chip: a couple of words, because the version
+ * table underneath says the rest. Said for every row, not only the troubled
+ * ones -- a page about your listings that went blank for the healthy ones would
+ * be hiding the answer it exists to give.
+ *
+ * Waiting beats listed when both are true: the thing you came to check on is
+ * the one still in somebody's queue. */
 function standing(set: Api.PublishedCardSet): string {
-  if (set.pendingVersion !== null) {
-    return isListed(set)
-      ? t(`${K}reviewPendingUpdate`, { version: set.pendingVersion, live: set.latestVersion })
-      : t(`${K}reviewPending`, { version: set.pendingVersion })
-  }
-  if (set.reviewStatus === 'denied') {
-    return isListed(set)
-      ? t(`${K}reviewDeniedOverLive`, { live: set.latestVersion })
-      : t(`${K}reviewDeniedShort`)
-  }
-  if (isListed(set)) return t(`${K}reviewListed`, { version: set.latestVersion })
-  return t(`${K}reviewNeverSubmitted`)
+  if (set.pendingVersion !== null) return t(`${K}pendingChip`, { version: set.pendingVersion })
+  if (set.reviewStatus === 'denied') return t(`${K}deniedChip`)
+  if (isListed(set)) return t(`${K}listedChip`, { version: set.latestVersion })
+  return t(`${K}unlistedChip`)
 }
 
 function standingIcon(set: Api.PublishedCardSet) {
   if (set.pendingVersion !== null) return 'hourglass-half'
   if (set.reviewStatus === 'denied') return 'circle-xmark'
   return isListed(set) ? 'store' : 'circle-question'
+}
+
+function standingTone(set: Api.PublishedCardSet) {
+  if (set.pendingVersion !== null) return 'warn' as const
+  if (set.reviewStatus === 'denied') return 'bad' as const
+  return isListed(set) ? ('good' as const) : ('plain' as const)
+}
+
+function versionTone(v: Api.PublishedCardSetVersionSummary) {
+  if (v.live) return 'good' as const
+  if (v.status === 'denied') return 'bad' as const
+  return 'warn' as const
 }
 
 const versionLabel = (v: Api.PublishedCardSetVersionSummary) =>
@@ -148,197 +162,164 @@ async function unlist(set: Api.PublishedCardSet) {
 </script>
 
 <template>
-  <div class="page-container">
-    <section class="listings-page">
-      <header class="head">
-        <div class="titles">
-          <h1>{{ t(`${K}myListings`) }}</h1>
-          <p class="lede">{{ t(`${K}myListingsLede`) }}</p>
-        </div>
-      </header>
+  <CustomCardsPage
+    :title="t(`${K}myListings`)"
+    :lede="t(`${K}myListingsLede`)"
+    :status="status"
+    :error="error"
+  >
+    <p v-if="!loaded" class="muted">{{ t(`${K}loading`) }}</p>
+    <p v-else-if="!ordered.length" class="empty-state">
+      <font-awesome-icon icon="rectangle-list" />
+      <span>{{ t(`${K}myListingsEmpty`) }}</span>
+      <router-link class="go-link" :to="{ name: 'CardBuilder' }">
+        {{ t(`${K}mySets`) }}
+        <font-awesome-icon icon="chevron-right" />
+      </router-link>
+    </p>
 
-      <p class="experimental">
-        <font-awesome-icon icon="flask" />
-        {{ t(`${K}experimental`) }}
-      </p>
-
-      <p v-if="status" class="status">{{ status }}</p>
-      <p v-if="error" class="error">{{ error }}</p>
-
-      <p v-if="!loaded" class="muted">{{ t(`${K}loading`) }}</p>
-      <p v-else-if="!ordered.length" class="muted empty">{{ t(`${K}myListingsEmpty`) }}</p>
-
-      <ul v-else class="listings">
-        <li v-for="set in ordered" :key="set.id">
-          <div class="listing-head">
-            <div class="about">
-              <h2>
-                <router-link
-                  class="set-link"
-                  :to="{ name: 'CardMarketplaceSet', params: { publishedId: set.id } }"
-                >
-                  {{ set.name }}
-                </router-link>
-              </h2>
-              <p class="meta">
-                {{ isListed(set)
-                  ? t(`${K}versionCount`, {
-                      version: set.latestVersion,
-                      count: t(`${K}cardCount`, set.cardCount),
-                    })
-                  : t(`${K}cardCount`, set.cardCount) }}
-                · {{ t(`${K}likeCount`, set.likes) }}
-                · {{ t(`${K}updatedAt`, { date: when(set.updatedAt) }) }}
-              </p>
-
-              <p class="standing" :class="{ denied: set.reviewStatus === 'denied' }">
-                <font-awesome-icon :icon="standingIcon(set)" />
-                <span>
-                  {{ standing(set) }}
-                  <em v-if="set.denialReason">{{ set.denialReason }}</em>
-                </span>
-              </p>
-
-              <!-- The blurb, editable here because this is the page an author
-                   comes to when they want to fix what their set says. -->
-              <form
-                v-if="editingId === set.id"
-                class="describe-form"
-                @submit.prevent="commitEdit(set)"
+    <ul v-else class="listings">
+      <li v-for="set in ordered" :key="set.id" class="panel">
+        <div class="panel-head">
+          <div class="about">
+            <h2>
+              <router-link
+                class="set-link"
+                :to="{ name: 'CardMarketplaceSet', params: { publishedId: set.id } }"
               >
-                <textarea
-                  v-model="descriptionDraft"
-                  rows="3"
-                  :aria-label="t(`${K}setDescriptionLabel`)"
-                  :placeholder="t(`${K}publishDescriptionPlaceholder`)"
-                  @keydown.stop
-                  @keydown.esc="editingId = null"
-                ></textarea>
-                <div class="describe-actions">
-                  <button type="submit">{{ t(`${K}saveDescription`) }}</button>
-                  <button type="button" class="cancel" @click="editingId = null">
-                    {{ t(`${K}publishCancel`) }}
-                  </button>
-                </div>
-              </form>
-              <template v-else>
-                <p v-if="set.description" class="description">{{ set.description }}</p>
-                <p v-else class="description muted">{{ t(`${K}noDescriptionYet`) }}</p>
-                <button type="button" class="link edit-description" @click="startEdit(set)">
-                  {{ t(set.description ? `${K}editDescription` : `${K}addDescription`) }}
-                </button>
-              </template>
+                {{ set.name }}
+              </router-link>
+            </h2>
+
+            <div class="facts">
+              <!-- Said for every listing, not only the troubled ones: this page
+                   exists to answer "where does this stand", so a row that said
+                   nothing would be hiding the answer. -->
+              <MetaChip :tone="standingTone(set)" :icon="standingIcon(set)">
+                {{ standing(set) }}
+              </MetaChip>
+              <MetaChip>{{ t(`${K}cardCount`, set.cardCount) }}</MetaChip>
+              <MetaChip icon="thumbs-up">{{ set.likes }}</MetaChip>
+              <MetaChip>{{ t(`${K}updatedAt`, { date: when(set.updatedAt) }) }}</MetaChip>
             </div>
 
-            <div class="actions">
-              <button
-                type="button"
-                class="unlist"
-                :disabled="busy === set.id"
-                @click="unlist(set)"
-              >
-                {{ t(`${K}unpublish`) }}
-              </button>
-            </div>
-          </div>
+            <p v-if="set.denialReason" class="denial">
+              <font-awesome-icon icon="circle-xmark" />
+              <span>{{ set.denialReason }}</span>
+            </p>
 
-          <!-- Every version, and what came of it. Only ever shown to the author,
-               which is why it is here and not on the marketplace row. -->
-          <ol v-if="set.versions.length" class="versions">
-            <li v-for="v in set.versions" :key="v.version" :class="v.status">
-              <span class="v">v{{ v.version }}</span>
-              <span class="state" :class="{ live: v.live }">{{ versionLabel(v) }}</span>
-              <span class="date">{{ when(v.createdAt) }}</span>
-              <span v-if="v.note" class="vnote">{{ v.note }}</span>
-              <em v-if="v.reason" class="vreason">{{ v.reason }}</em>
-            </li>
-          </ol>
-
-          <div v-if="set.cardCount" class="listing-cards">
-            <CardSetStrip class="preview" :cards="inOrder(set.preview)" />
-            <router-link
-              class="view-all"
-              :to="{ name: 'CardMarketplaceSet', params: { publishedId: set.id } }"
+            <!-- The blurb, editable here because this is the page an author
+                 comes to when they want to fix what their set says. -->
+            <form
+              v-if="editingId === set.id"
+              class="describe-form"
+              @submit.prevent="commitEdit(set)"
             >
-              {{ t(`${K}viewSet`, { count: set.cardCount }) }}
-            </router-link>
+              <textarea
+                v-model="descriptionDraft"
+                rows="3"
+                :aria-label="t(`${K}setDescriptionLabel`)"
+                :placeholder="t(`${K}publishDescriptionPlaceholder`)"
+                @keydown.stop
+                @keydown.esc="editingId = null"
+              ></textarea>
+              <div class="describe-actions">
+                <button type="submit" class="go">{{ t(`${K}saveDescription`) }}</button>
+                <button type="button" class="quiet" @click="editingId = null">
+                  {{ t(`${K}publishCancel`) }}
+                </button>
+              </div>
+            </form>
+            <template v-else>
+              <p v-if="set.description" class="description">{{ set.description }}</p>
+              <p v-else class="description none">{{ t(`${K}noDescriptionYet`) }}</p>
+              <button type="button" class="link" @click="startEdit(set)">
+                <font-awesome-icon icon="pen" />
+                {{ t(set.description ? `${K}editDescription` : `${K}addDescription`) }}
+              </button>
+            </template>
           </div>
-        </li>
-      </ul>
-    </section>
+
+          <div class="actions">
+            <button
+              type="button"
+              class="danger"
+              :disabled="busy === set.id"
+              @click="unlist(set)"
+            >
+              {{ t(`${K}unpublish`) }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Every version, and what came of it. Only ever shown to the author,
+             which is why it is here and not on the marketplace row. -->
+        <ol v-if="set.versions.length" class="versions">
+          <li v-for="v in set.versions" :key="v.version">
+            <span class="v">v{{ v.version }}</span>
+            <MetaChip :tone="versionTone(v)">{{ versionLabel(v) }}</MetaChip>
+            <span class="date">{{ when(v.createdAt) }}</span>
+            <span v-if="v.note" class="vnote">{{ v.note }}</span>
+            <em v-if="v.reason" class="vreason">{{ v.reason }}</em>
+          </li>
+        </ol>
+
+        <SetPreview
+          :cards="inOrder(set.preview)"
+          :total="set.cardCount"
+          @view-all="openSet(set)"
+        />
+      </li>
+    </ul>
 
     <!-- Document-level: anything carrying `data-image` gets a hover preview. -->
-    <CardOverlay />
-  </div>
+    <template #outside><CardOverlay /></template>
+  </CustomCardsPage>
 </template>
 
 <style scoped lang="scss">
-.page-container {
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  width: 100%;
-}
-
-.listings-page {
-  color: var(--title);
-  margin: 0 auto;
-  max-width: 1100px;
-  padding: 1.5rem;
-}
-
-.head {
-  margin-bottom: 0.9rem;
-
-  h1 {
-    font-family: teutonic, sans-serif;
-    font-size: 1.7em;
-    margin: 0 0 0.3rem;
-  }
-}
-
-.lede {
-  margin: 0;
-  max-width: 62ch;
-  opacity: 0.8;
-}
-
-.experimental {
-  align-items: center;
-  background: rgba(200, 60, 60, 0.1);
-  border: 1px solid var(--delete);
-  border-radius: 4px;
-  display: flex;
-  font-size: 0.8rem;
-  gap: 0.5rem;
-  margin: 0 0 1rem;
-  padding: 0.5rem 0.75rem;
-}
-
-.status,
-.error {
-  border-radius: 4px;
-  font-size: 0.85rem;
-  margin: 0 0 0.75rem;
-  padding: 0.5rem 0.75rem;
-}
-
-.status {
-  background: rgba(80, 160, 110, 0.14);
-  border: 1px solid var(--spooky-green);
-}
-
-.error {
-  background: rgba(200, 60, 60, 0.14);
-  border: 1px solid var(--delete);
-}
-
 .muted {
   opacity: 0.65;
 }
 
-.empty {
-  padding: 1.5rem 0;
+.empty-state {
+  align-items: center;
+  color: color-mix(in srgb, var(--title) 60%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+
+  > svg {
+    font-size: 1.6rem;
+    opacity: 0.4;
+  }
+
+  span {
+    max-width: 46ch;
+  }
+}
+
+.go-link {
+  align-items: center;
+  border: 1px solid var(--box-border);
+  border-radius: 5px;
+  color: var(--title);
+  display: inline-flex;
+  font-size: 0.82rem;
+  gap: 0.4rem;
+  min-height: 34px;
+  padding: 0 0.8rem;
+  text-decoration: none;
+
+  svg {
+    font-size: 0.7em;
+  }
+
+  &:hover {
+    border-color: var(--spooky-green);
+  }
 }
 
 .listings {
@@ -348,29 +329,31 @@ async function unlist(set: Api.PublishedCardSet) {
   list-style: none;
   margin: 0;
   padding: 0;
-
-  > li {
-    background: var(--background-dark);
-    border: 1px solid var(--box-border);
-    border-radius: 6px;
-    overflow: hidden;
-  }
 }
 
-.listing-head {
+.panel {
+  background: var(--background-dark);
+  border: 1px solid var(--box-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.panel-head {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.75rem 1rem;
   justify-content: space-between;
-  padding: 0.8rem 0.9rem;
+  padding: 0.85rem 0.9rem 0.6rem;
 }
 
 .about {
+  flex: 1 1 22rem;
   min-width: 0;
 
   h2 {
     font-family: teutonic, sans-serif;
-    font-size: 1.15em;
+    font-size: 1.3em;
+    line-height: 1.15;
     margin: 0;
   }
 }
@@ -380,144 +363,178 @@ async function unlist(set: Api.PublishedCardSet) {
   text-decoration: none;
 
   &:hover {
+    color: white;
     text-decoration: underline;
   }
 }
 
-.meta {
-  font-size: 0.78rem;
-  margin: 0.2rem 0 0;
-  opacity: 0.7;
+.facts {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
 }
 
-/* Said for every listing, not only the ones with a problem: this page exists to
-   answer "where does this stand", so a blank row would be hiding the answer. */
-.standing {
-  align-items: flex-start;
-  color: color-mix(in srgb, var(--title) 80%, transparent);
+.denial {
+  align-items: baseline;
+  color: color-mix(in srgb, var(--survivor) 65%, white);
   display: flex;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+  font-style: italic;
   gap: 0.45rem;
-  margin: 0.4rem 0 0;
+  margin: 0.5rem 0 0;
+  max-width: 64ch;
 
   svg {
-    margin-top: 0.15rem;
-    opacity: 0.8;
-  }
-
-  em {
-    display: block;
-    font-style: italic;
-    opacity: 0.9;
-  }
-
-  &.denied {
-    color: color-mix(in srgb, var(--survivor) 70%, white);
+    flex: none;
+    font-size: 0.85em;
   }
 }
 
 .description {
-  font-size: 0.86rem;
-  margin: 0.45rem 0 0;
-  max-width: 62ch;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin: 0.55rem 0 0;
+  max-width: 64ch;
   white-space: pre-wrap;
 
-  &.muted {
+  &.none {
     font-style: italic;
-    opacity: 0.55;
+    opacity: 0.5;
   }
 }
 
 .link {
+  align-items: center;
   background: none;
   border: none;
-  color: var(--title);
+  color: color-mix(in srgb, var(--title) 65%, transparent);
   cursor: pointer;
-  font-size: 0.78rem;
-  opacity: 0.6;
+  display: inline-flex;
+  font-size: 0.76rem;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+  min-height: 28px;
   padding: 0;
-  text-decoration: underline;
+
+  svg {
+    font-size: 0.8em;
+  }
 
   &:hover {
-    opacity: 1;
+    color: var(--title);
+    text-decoration: underline;
   }
-}
-
-.edit-description {
-  display: inline-block;
-  margin-top: 0.2rem;
 }
 
 .describe-form {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  margin-top: 0.45rem;
-  max-width: 62ch;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+  max-width: 64ch;
 
   textarea {
-    background: rgba(0, 0, 0, 0.25);
+    background: var(--background);
     border: 1px solid var(--box-border);
-    border-radius: 4px;
+    border-radius: 5px;
     color: var(--title);
     font-family: inherit;
-    font-size: 0.86rem;
-    padding: 0.35rem 0.5rem;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    padding: 0.45rem 0.55rem;
     resize: vertical;
     width: 100%;
+
+    &:focus {
+      border-color: var(--spooky-green);
+      outline: none;
+    }
   }
 
   .describe-actions {
     display: flex;
     gap: 0.4rem;
-
-    button {
-      font-size: 0.78rem;
-      padding: 0.25rem 0.7rem;
-    }
-
-    .cancel {
-      background: none;
-    }
   }
 }
 
 .actions {
   align-items: flex-start;
   display: flex;
+  flex: 0 0 auto;
   gap: 0.4rem;
 
-  button {
-    font-size: 0.8rem;
-    padding: 0.3rem 0.7rem;
+  @media (max-width: 640px) {
+    flex: 1 1 100%;
   }
 }
 
-.unlist {
-  background: none;
-  border: 1px solid var(--delete);
-  border-radius: 4px;
-  color: var(--delete);
+button.go,
+button.quiet,
+button.danger {
+  align-items: center;
+  border-radius: 5px;
   cursor: pointer;
+  display: inline-flex;
+  font-size: 0.82rem;
+  gap: 0.35rem;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 0.8rem;
+  transition: background 120ms ease, border-color 120ms ease;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+button.go {
+  background: var(--button-1);
+  border: 1px solid transparent;
+  color: white;
 
   &:hover:not(:disabled) {
-    background: rgba(200, 60, 60, 0.15);
+    background: var(--button-1-highlight);
   }
 }
 
-/* The history, as a list of lines rather than a table: most sets have two or
-   three versions, and a table of three rows is heavier than what it holds. */
+button.quiet {
+  background: none;
+  border: 1px solid var(--box-border);
+  color: var(--title);
+
+  &:hover:not(:disabled) {
+    border-color: var(--background-mid);
+  }
+}
+
+button.danger {
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--delete) 55%, transparent);
+  color: color-mix(in srgb, var(--delete) 40%, white);
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--delete) 18%, transparent);
+    border-color: var(--delete);
+  }
+}
+
+/* The history, as lines rather than a table: most sets have two or three
+   versions, and a table of three rows is heavier than what it holds. */
 .versions {
+  background: color-mix(in srgb, black 14%, transparent);
   border-top: 1px solid var(--box-border);
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.35rem;
   list-style: none;
   margin: 0;
-  padding: 0.6rem 0.9rem;
+  padding: 0.65rem 0.9rem;
 
   > li {
-    align-items: baseline;
+    align-items: center;
     display: flex;
     flex-wrap: wrap;
     font-size: 0.78rem;
@@ -526,27 +543,12 @@ async function unlist(set: Api.PublishedCardSet) {
 
   .v {
     font-variant-numeric: tabular-nums;
-    min-width: 2.5rem;
+    min-width: 2.2rem;
     opacity: 0.85;
   }
 
-  .state {
-    border: 1px solid var(--box-border);
-    border-radius: 999px;
-    font-size: 0.7rem;
-    opacity: 0.8;
-    padding: 0.05rem 0.45rem;
-    white-space: nowrap;
-
-    &.live {
-      border-color: var(--spooky-green);
-      color: var(--spooky-green);
-      opacity: 1;
-    }
-  }
-
   .date {
-    opacity: 0.55;
+    opacity: 0.5;
   }
 
   .vnote {
@@ -556,40 +558,10 @@ async function unlist(set: Api.PublishedCardSet) {
   }
 
   .vreason {
-    color: color-mix(in srgb, var(--survivor) 70%, white);
+    color: color-mix(in srgb, var(--survivor) 65%, white);
     flex: 1 1 100%;
     font-style: italic;
-  }
-
-  > li.denied .v {
-    color: color-mix(in srgb, var(--survivor) 70%, white);
-  }
-}
-
-.listing-cards {
-  align-items: center;
-  border-top: 1px solid var(--box-border);
-  display: flex;
-  gap: 0.75rem;
-  padding: 0.6rem 0.9rem;
-}
-
-.preview {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.view-all {
-  color: var(--title);
-  flex: none;
-  font-size: 0.78rem;
-  opacity: 0.7;
-  text-decoration: none;
-  white-space: nowrap;
-
-  &:hover {
-    opacity: 1;
-    text-decoration: underline;
+    padding-left: 2.7rem;
   }
 }
 </style>

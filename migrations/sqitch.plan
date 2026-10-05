@@ -29,3 +29,4 @@ add_phase_transition_notifications_to_users [users] 2026-09-12T03:00:00Z Claude 
 arkham_api_keys [users] 2026-09-27T00:00:00Z Claude <noreply@anthropic.com> # Scoped, revocable per-user keys for programmatic access
 arkham_card_set_submissions [arkham_published_card_sets] 2026-10-04T00:00:00Z Claude <noreply@anthropic.com> # Review queue for sets submitted to the marketplace
 arkham_game_stats [arkham_games] 2026-10-04T01:00:00Z Claude <noreply@anthropic.com> # Pre-extracted game facts for the admin stats panel
+add_descriptions_to_card_sets [arkham_custom_card_sets arkham_published_card_sets] 2026-10-05T00:00:00Z Claude <noreply@anthropic.com> # What a set is, for its own page and its marketplace listing

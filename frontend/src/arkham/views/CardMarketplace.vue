@@ -55,6 +55,15 @@ watch(
 
 const query = ref('')
 const order = ref<'newest' | 'liked' | 'name'>('newest')
+
+/* Everything, or only what you have put up. Your own listings are mixed into
+ * the marketplace -- they have to be, since this is where you find out what
+ * happened to them -- and this is how you look at just them without leaving. */
+const scope = ref<'all' | 'mine'>('all')
+const scopeOptions = computed(() => [
+  { value: 'all' as const, label: t(`${K}scopeAll`) },
+  { value: 'mine' as const, label: t(`${K}scopeMine`) },
+])
 const orderOptions = computed(() => [
   { value: 'newest' as const, label: t(`${K}orderNewest`) },
   { value: 'liked' as const, label: t(`${K}orderLiked`) },
@@ -86,6 +95,7 @@ const inOrder = (cards: { def: any; art: string | null }[]) =>
  * than claiming to search the whole set. */
 function hits(set: Api.PublishedCardSet, needle: string) {
   if (matches(set.name, needle) || matches(set.author, needle)) return true
+  if (matches(set.description, needle)) return true
   return set.preview.some(
     (c) => matches(c.def?.name?.title, needle) || matches(c.def?.name?.subtitle, needle),
   )
@@ -94,6 +104,7 @@ function hits(set: Api.PublishedCardSet, needle: string) {
 const listed = computed(() => {
   const needle = query.value.trim().toLowerCase()
   let rows = [...sets.value]
+  if (scope.value === 'mine') rows = rows.filter((s) => s.mine)
   if (author.value) rows = rows.filter((s) => s.author === author.value)
   if (needle) rows = rows.filter((s) => hits(s, needle))
   switch (order.value) {
@@ -171,6 +182,34 @@ async function take(set: Api.PublishedCardSet) {
   }
 }
 
+/* Rewriting a listing's blurb. Not a republish: the cards are untouched, so
+ * nothing goes back for review and the version people are subscribed to does
+ * not move. The server writes the same text onto your own copy of the set, so
+ * the next publish does not quietly undo what was typed here. */
+const editingId = ref<string | null>(null)
+const descriptionDraft = ref('')
+
+function startEdit(set: Api.PublishedCardSet) {
+  editingId.value = set.id
+  descriptionDraft.value = set.description ?? ''
+  status.value = null
+  error.value = null
+}
+
+async function commitEdit(set: Api.PublishedCardSet) {
+  const description = descriptionDraft.value.trim()
+  editingId.value = null
+  if (description === (set.description ?? '')) return
+  error.value = null
+  try {
+    replace(await Api.updatePublishedCardSet(set.id, description || null))
+    status.value = t(`${K}descriptionSaved`, { name: set.name })
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}descriptionSaveFailed`)
+  }
+}
+
 async function unlist(set: Api.PublishedCardSet) {
   if (!confirm(t(`${K}confirmUnpublish`, { name: set.name }))) return
   busy.value = set.id
@@ -232,6 +271,12 @@ async function unlist(set: Api.PublishedCardSet) {
             </button>
           </div>
           <SegmentedToggle
+            v-model="scope"
+            class="scope"
+            :options="scopeOptions"
+            :label="t(`${K}scopeLabel`)"
+          />
+          <SegmentedToggle
             v-model="order"
             class="order"
             :options="orderOptions"
@@ -287,6 +332,43 @@ async function unlist(set: Api.PublishedCardSet) {
                       })
                     : t(`${K}cardCount`, set.cardCount) }}
                 </p>
+                <!-- What the set is. The author's blurb, editable in place by
+                     them: it is not part of what was reviewed, so fixing a typo
+                     in it should not cost a round through the queue. -->
+                <form
+                  v-if="editingId === set.id"
+                  class="describe-form"
+                  @submit.prevent="commitEdit(set)"
+                >
+                  <textarea
+                    v-model="descriptionDraft"
+                    rows="3"
+                    :aria-label="t(`${K}setDescriptionLabel`)"
+                    :placeholder="t(`${K}publishDescriptionPlaceholder`)"
+                    @keydown.stop
+                    @keydown.esc="editingId = null"
+                  ></textarea>
+                  <div class="describe-actions">
+                    <button type="submit">{{ t(`${K}saveDescription`) }}</button>
+                    <button type="button" class="cancel" @click="editingId = null">
+                      {{ t(`${K}publishCancel`) }}
+                    </button>
+                  </div>
+                </form>
+                <template v-else>
+                  <p v-if="set.description" class="description">{{ set.description }}</p>
+                  <p v-else-if="set.mine" class="description muted">
+                    {{ t(`${K}noDescriptionYet`) }}
+                  </p>
+                  <button
+                    v-if="set.mine"
+                    type="button"
+                    class="link edit-description"
+                    @click="startEdit(set)"
+                  >
+                    {{ t(set.description ? `${K}editDescription` : `${K}addDescription`) }}
+                  </button>
+                </template>
                 <p v-if="set.note" class="note">{{ set.note }}</p>
                 <!-- Only ever on your own listing: nobody else's is shown here
                      until it has passed review. -->
@@ -615,6 +697,59 @@ p.error {
   margin: 0.35rem 0 0;
   max-width: 60ch;
   opacity: 0.85;
+}
+
+/* What the set is, as against `.note`, which is what changed in this version.
+   Keeps the author's line breaks: a blurb is often a sentence and a list. */
+.description {
+  font-size: 0.86rem;
+  margin: 0.4rem 0 0;
+  max-width: 62ch;
+  white-space: pre-wrap;
+
+  &.muted {
+    font-style: italic;
+    opacity: 0.55;
+  }
+}
+
+.edit-description {
+  display: inline-block;
+  margin-top: 0.2rem;
+}
+
+.describe-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  max-width: 62ch;
+
+  textarea {
+    background: var(--background-dark);
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
+    color: var(--title);
+    font-family: inherit;
+    font-size: 0.86rem;
+    padding: 0.35rem 0.5rem;
+    resize: vertical;
+    width: 100%;
+  }
+
+  .describe-actions {
+    display: flex;
+    gap: 0.4rem;
+
+    button {
+      font-size: 0.78rem;
+      padding: 0.25rem 0.7rem;
+    }
+
+    .cancel {
+      background: none;
+    }
+  }
 }
 
 /* Only ever on your own listing. A denial carries the reason underneath, which

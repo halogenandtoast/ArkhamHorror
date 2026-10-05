@@ -18,6 +18,16 @@ export default [
     props: true,
   },
   {
+    /* Your own listings. Its own page rather than a filter on the marketplace,
+     * because a listing outlives the set it came from and carries history --
+     * versions, decisions, reasons -- that nobody else is shown. */
+    path: '/card-builder/listings',
+    name: 'MyListings',
+    component: () => import('@/arkham/views/MyListings.vue'),
+    meta: { requiresAuth: true, title: "Arkham Horror: My Listings" },
+    props: true,
+  },
+  {
     // One published set, in full. The listing only carries a row's worth of
     // cards, so seeing the rest is its own page rather than a taller row.
     path: '/card-builder/marketplace/:publishedId',

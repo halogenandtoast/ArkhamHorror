@@ -45,7 +45,7 @@
       /published-card-sets ApiV1ArkhamPublishedCardSetsP:
         / ApiV1ArkhamPublishedCardSetsR GET
         /#ArkhamPublishedCardSetId ApiV1ArkhamPublishedCardSetP:
-          / ApiV1ArkhamPublishedCardSetR GET DELETE
+          / ApiV1ArkhamPublishedCardSetR GET PUT DELETE
           /subscribe ApiV1ArkhamPublishedCardSetSubscribeR POST
           /like ApiV1ArkhamPublishedCardSetLikeR POST DELETE
       /homebrew/cards ApiV1ArkhamHomebrewCardsR GET

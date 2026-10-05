@@ -122,6 +122,35 @@ async function toggleLike() {
   }
 }
 
+/* The author rewriting their own blurb, in the place a reader sees it. Not a
+ * republish: nothing a reviewer looked at changes, so the version people are
+ * subscribed to stays where it is. */
+const editing = ref(false)
+const descriptionDraft = ref('')
+
+function startEdit() {
+  descriptionDraft.value = listing.value?.description ?? ''
+  editing.value = true
+  status.value = null
+  error.value = null
+}
+
+async function commitEdit() {
+  const set = listing.value
+  if (!set) return
+  const description = descriptionDraft.value.trim()
+  editing.value = false
+  if (description === (set.description ?? '')) return
+  error.value = null
+  try {
+    replace(await Api.updatePublishedCardSet(set.id, description || null))
+    status.value = t(`${K}descriptionSaved`, { name: set.name })
+  } catch (e) {
+    console.error(e)
+    error.value = t(`${K}descriptionSaveFailed`)
+  }
+}
+
 async function take() {
   if (!listing.value) return
   busy.value = true
@@ -184,6 +213,38 @@ async function take() {
               }) }}
               · {{ t(`${K}publishedAt`, { date: published }) }}
             </p>
+            <!-- The listing's blurb, not the version's: it says what the set
+                 is, and the note below says what changed in this version. -->
+            <form v-if="editing" class="describe-form" @submit.prevent="commitEdit">
+              <textarea
+                v-model="descriptionDraft"
+                rows="4"
+                :aria-label="t(`${K}setDescriptionLabel`)"
+                :placeholder="t(`${K}publishDescriptionPlaceholder`)"
+                @keydown.stop
+                @keydown.esc="editing = false"
+              ></textarea>
+              <div class="describe-actions">
+                <button type="submit">{{ t(`${K}saveDescription`) }}</button>
+                <button type="button" class="cancel" @click="editing = false">
+                  {{ t(`${K}publishCancel`) }}
+                </button>
+              </div>
+            </form>
+            <template v-else>
+              <p v-if="listing.description" class="description">{{ listing.description }}</p>
+              <p v-else-if="listing.mine" class="description muted">
+                {{ t(`${K}noDescriptionYet`) }}
+              </p>
+              <button
+                v-if="listing.mine"
+                type="button"
+                class="link edit-description"
+                @click="startEdit"
+              >
+                {{ t(listing.description ? `${K}editDescription` : `${K}addDescription`) }}
+              </button>
+            </template>
             <p v-if="detail.note" class="note">{{ detail.note }}</p>
             <!-- Only ever on your own set: nobody else can reach one that has
                  not been approved. -->
@@ -403,6 +464,73 @@ p.error {
   margin: 0.5rem 0 0;
   max-width: 60ch;
   opacity: 0.85;
+}
+
+/* What the set is, as against `.note`, which is what changed in this version. */
+.description {
+  font-size: 0.92rem;
+  margin: 0.6rem 0 0;
+  max-width: 62ch;
+  white-space: pre-wrap;
+
+  &.muted {
+    font-style: italic;
+    opacity: 0.55;
+  }
+}
+
+.link {
+  background: none;
+  border: none;
+  color: var(--title);
+  cursor: pointer;
+  font-size: 0.78rem;
+  opacity: 0.6;
+  padding: 0;
+  text-decoration: underline;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.edit-description {
+  display: inline-block;
+  margin-top: 0.25rem;
+}
+
+.describe-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  max-width: 62ch;
+
+  textarea {
+    background: var(--background-dark);
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
+    color: var(--title);
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 0.4rem 0.55rem;
+    resize: vertical;
+    width: 100%;
+  }
+
+  .describe-actions {
+    display: flex;
+    gap: 0.4rem;
+
+    button {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.75rem;
+    }
+
+    .cancel {
+      background: none;
+    }
+  }
 }
 
 .actions {

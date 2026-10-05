@@ -30,6 +30,12 @@ const CUSTOM_CARDS_SUBMENU = [
     icon: 'store',
     covers: ['CardMarketplace', 'CardMarketplaceSet'],
   },
+  {
+    name: 'MyListings',
+    label: 'customCardSets.myListings',
+    icon: 'rectangle-list',
+    covers: ['MyListings'],
+  },
 ]
 
 /* The marketplace is its own top-level route rather than a child of the builder's,

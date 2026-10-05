@@ -24,6 +24,11 @@ published. @customCardSetId@ is the author's own copy, so publishing again knows
 which listing to add to; it goes null rather than taking the listing with it if
 the author deletes that copy, because subscribers still have something to read.
 
+@description@ is the listing's own copy of what the set is. It is the listing's
+rather than a version's because it is not part of what was reviewed: the author
+can rewrite it at any time and nothing about the published cards changes, which
+is the point of it not being on the version.
+
 @ArkhamPublishedCardSetVersion@ holds a version's cards outright rather than
 reading them back off the author's set. A version has to stay importable exactly
 as published: someone who edited their copy and wants the published one back has
@@ -52,6 +57,7 @@ ArkhamPublishedCardSet sql=arkham_published_card_sets
   userId UserId OnDeleteCascade
   customCardSetId ArkhamCustomCardSetId Maybe
   name Text
+  description Text Maybe
   latestVersion Int
   approvedVersion Int Maybe
   createdAt UTCTime
@@ -104,8 +110,9 @@ ArkhamCardSetSubmission sql=arkham_card_set_submissions
   deriving Generic Show
 |]
 
--- | The three states a submission can be in. Spelled out so the handlers and the
--- client agree on what the column says.
+{- | The three states a submission can be in. Spelled out so the handlers and the
+client agree on what the column says.
+-}
 submissionPending, submissionApproved, submissionDenied :: Text
 submissionPending = "pending"
 submissionApproved = "approved"

@@ -43,13 +43,17 @@ data SubmissionResponse = SubmissionResponse
   { submissionResponseId :: ArkhamCardSetSubmissionId
   , submissionResponsePublishedCardSetId :: ArkhamPublishedCardSetId
   , submissionResponseSetName :: Text
+  , submissionResponseSetDescription :: Maybe Text
+  {- ^ What the author says the set is. The listing's, not the version's, so a
+  reviewer reads the same blurb a browser would.
+  -}
   , submissionResponseAuthor :: Text
-  , -- | So a reviewer can reach the author about something the form cannot say.
-    submissionResponseAuthorEmail :: Text
+  , submissionResponseAuthorEmail :: Text
+  -- ^ So a reviewer can reach the author about something the form cannot say.
   , submissionResponseVersion :: Int
   , submissionResponseStatus :: Text
-  , -- | What the author said about this version when they submitted it.
-    submissionResponseNote :: Maybe Text
+  , submissionResponseNote :: Maybe Text
+  -- ^ What the author said about this version when they submitted it.
   , submissionResponseNotify :: Bool
   , submissionResponseReason :: Maybe Text
   , submissionResponseReviewedBy :: Maybe Text
@@ -57,9 +61,10 @@ data SubmissionResponse = SubmissionResponse
   , submissionResponseSubmittedAt :: UTCTime
   , submissionResponseCardCount :: Int
   , submissionResponsePreview :: [CustomCard]
-  , -- | The version currently in the marketplace, so an update is visibly an
-    -- update rather than looking like a first submission.
-    submissionResponseApprovedVersion :: Maybe Int
+  , submissionResponseApprovedVersion :: Maybe Int
+  {- ^ The version currently in the marketplace, so an update is visibly an
+  update rather than looking like a first submission.
+  -}
   }
   deriving stock Generic
 
@@ -98,7 +103,8 @@ getApiV1AdminCardSetSubmissionsR :: Handler [SubmissionResponse]
 getApiV1AdminCardSetSubmissionsR = do
   wanted <- lookupGetParam "status"
   let (filters, order) = case wanted of
-        Nothing -> ([ArkhamCardSetSubmissionStatus P.==. submissionPending], [P.Asc ArkhamCardSetSubmissionCreatedAt])
+        Nothing ->
+          ([ArkhamCardSetSubmissionStatus P.==. submissionPending], [P.Asc ArkhamCardSetSubmissionCreatedAt])
         Just "all" -> ([], [P.Desc ArkhamCardSetSubmissionCreatedAt])
         Just status
           | status == submissionPending ->
@@ -137,6 +143,7 @@ submissionResponse (Entity submissionId row) = do
         -- was published last, and a reviewer has to see what this one is called.
         submissionResponseSetName =
           maybe "" arkhamPublishedCardSetVersionName version
+      , submissionResponseSetDescription = arkhamPublishedCardSetDescription =<< published
       , submissionResponseAuthor = maybe "someone" userUsername author
       , submissionResponseAuthorEmail = maybe "" userEmail author
       , submissionResponseVersion = arkhamCardSetSubmissionVersion row

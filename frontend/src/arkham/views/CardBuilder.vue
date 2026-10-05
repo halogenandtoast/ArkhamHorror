@@ -42,7 +42,7 @@ import {
   loadLibrary,
   removeFromLibrary,
   removeSet,
-  renameSet,
+  updateSet,
   saveToLibrary,
   setCards,
   type LibrarySet,
@@ -64,8 +64,12 @@ const error = ref<string | null>(null)
 const ACTIVE_SET_KEY = 'arkham:card-builder:active-set'
 const activeSetId = ref<string | null>(null)
 const newSetName = ref('')
+/* Renaming and redescribing are one form: they are the two things a set says
+ * about itself, and asking for them in two places means two round trips to
+ * change what reads as one thing. */
 const renamingSetId = ref<string | null>(null)
 const renameDraft = ref('')
+const describeDraft = ref('')
 
 const route = useRoute()
 const router = useRouter()
@@ -91,10 +95,16 @@ const userStore = useUserStore()
 const publishingSetId = ref<string | null>(null)
 const publishNote = ref('')
 const publishNotify = ref(true)
+/* The set's description, offered again here because this is the moment an
+ * author is thinking about how it reads to a stranger. Prefilled with whatever
+ * the set already says, and what is submitted becomes the set's description as
+ * well as the listing's -- it is one blurb, not two. */
+const publishDescription = ref('')
 
 function startPublish(set: LibrarySet) {
   publishingSetId.value = set.id
   publishNote.value = ''
+  publishDescription.value = set.description ?? ''
   publishNotify.value = true
   status.value = null
   error.value = null
@@ -106,11 +116,12 @@ function startPublish(set: LibrarySet) {
  * "Published" would otherwise be a lie the author only finds out about later. */
 async function commitPublish(set: LibrarySet) {
   const note = publishNote.value.trim()
+  const description = publishDescription.value.trim()
   const notify = publishNotify.value
   publishingSetId.value = null
   error.value = null
   try {
-    const submitted = await publishSet(set.id, note || null, notify)
+    const submitted = await publishSet(set.id, note || null, description || null, notify)
     status.value = t(`${K}${userStore.isAdmin ? 'published' : 'submitted'}`, {
       name: set.name,
       version: submitted.pendingVersion ?? submitted.latestVersion,
@@ -327,15 +338,27 @@ async function addSet() {
 function startRename(set: LibrarySet) {
   renamingSetId.value = set.id
   renameDraft.value = set.name
+  describeDraft.value = set.description ?? ''
 }
 
+/* Only what actually changed is sent. The description is left out of the body
+ * when it is untouched, which is what keeps an older blurb from being cleared;
+ * and a form closed without changing anything sends nothing at all, so a set
+ * that follows a published one does not lose that for a no-op rename. */
 async function commitRename(set: LibrarySet) {
   const name = renameDraft.value.trim()
+  const description = describeDraft.value.trim()
   renamingSetId.value = null
-  if (!name || name === set.name) return
+  if (!name) return
+  const renamed = name !== set.name
+  const redescribed = description !== (set.description ?? '')
+  if (!renamed && !redescribed) return
   error.value = null
   try {
-    await renameSet(set.id, name)
+    await updateSet(set.id, {
+      name,
+      ...(redescribed ? { description: description || null } : {}),
+    })
   } catch (e) {
     console.error(e)
     error.value = t(`${K}setRenameFailed`)
@@ -493,6 +516,9 @@ const portraitsCut = ref(0)
 type PendingImport = {
   fileName: string
   name: string
+  // Only ever something when the file said so; the server leaves the set's own
+  // alone otherwise.
+  description: string | null
   sourceCode: string | null
   cards: CustomCard[]
   replacing: LibrarySet | null
@@ -577,6 +603,7 @@ async function reviewImport(
   file: File,
   parse: (text: string) => Promise<{
     name: string
+    description?: string | null
     sourceCode: string | null
     cards: CustomCard[]
   }>,
@@ -588,7 +615,7 @@ async function reviewImport(
   importExpanded.value = false
   portraitsCut.value = 0
   try {
-    const { name, sourceCode, cards } = await parse(await file.text())
+    const { name, description, sourceCode, cards } = await parse(await file.text())
     if (!cards.length) {
       error.value = t(`${K}fileHasNoCards`)
       return
@@ -596,6 +623,7 @@ async function reviewImport(
     pendingImport.value = {
       fileName: file.name,
       name,
+      description: description ?? null,
       sourceCode,
       cards,
       replacing:
@@ -634,6 +662,7 @@ async function commitImport() {
         })()
       : await importSet({
           name: incoming.name,
+          description: incoming.description,
           sourceCode: incoming.sourceCode,
           cards: incoming.cards,
         })
@@ -878,15 +907,36 @@ async function onImport(event: Event) {
       <ul v-else ref="setList" class="set-cards">
       <li v-for="set in visibleSets" :key="set.id">
         <div class="set-row">
-          <input
+          <form
             v-if="renamingSetId === set.id"
-            v-model="renameDraft"
-            class="rename"
-            type="text"
-            @keydown.enter="commitRename(set)"
-            @keydown.esc="renamingSetId = null"
-            @blur="commitRename(set)"
-          />
+            class="rename-form"
+            @submit.prevent="commitRename(set)"
+          >
+            <input
+              v-model="renameDraft"
+              class="rename"
+              type="text"
+              :aria-label="t(`${K}setNameLabel`)"
+              :placeholder="t(`${K}setNameLabel`)"
+              @keydown.stop
+              @keydown.esc="renamingSetId = null"
+            />
+            <textarea
+              v-model="describeDraft"
+              class="describe"
+              rows="2"
+              :aria-label="t(`${K}setDescriptionLabel`)"
+              :placeholder="t(`${K}setDescriptionPlaceholder`)"
+              @keydown.stop
+              @keydown.esc="renamingSetId = null"
+            ></textarea>
+            <div class="rename-actions">
+              <button type="submit">{{ t(`${K}saveSetDetails`) }}</button>
+              <button type="button" class="cancel" @click="renamingSetId = null">
+                {{ t(`${K}publishCancel`) }}
+              </button>
+            </div>
+          </form>
           <button v-else type="button" class="set-open" @click="openSet(set.id)">
             <span class="name">{{ set.name }}</span>
             <span class="group-count">{{ t(`${K}cardCount`, set.cardCount) }}</span>
@@ -956,6 +1006,12 @@ async function onImport(event: Event) {
           </div>
         </div>
 
+        <!-- What the set is, when its author has said. Under the row rather
+             than in it, because it is a paragraph and the row is a line. -->
+        <p v-if="set.description && renamingSetId !== set.id" class="set-description">
+          {{ set.description }}
+        </p>
+
         <!-- Where this set stands with the marketplace, for a set that has been
              submitted. A denial carries the reason, which is the whole point of
              having asked for one. -->
@@ -975,6 +1031,20 @@ async function onImport(event: Event) {
           <p class="publish-lede">
             {{ t(`${K}${userStore.isAdmin ? 'publishLede' : 'submitLede'}`) }}
           </p>
+          <!-- The blurb the marketplace shows. First, because it is the thing
+               someone deciding whether to take the set actually reads; the note
+               below it is only about this version. -->
+          <label class="publish-field">
+            <span>{{ t(`${K}publishDescriptionLabel`) }}</span>
+            <textarea
+              v-model="publishDescription"
+              rows="3"
+              :placeholder="t(`${K}publishDescriptionPlaceholder`)"
+              @keydown.stop
+              @keydown.esc="publishingSetId = null"
+            ></textarea>
+            <small>{{ t(`${K}publishDescriptionHelp`) }}</small>
+          </label>
           <input
             v-model="publishNote"
             type="text"
@@ -1337,6 +1407,54 @@ async function onImport(event: Event) {
     padding: 0.2rem 0.4rem;
     width: 100%;
   }
+
+  /* Takes the whole row while it is open: a name and a paragraph do not sit
+     beside the row's buttons, and the buttons act on the set rather than on
+     what is being typed. */
+  .rename-form {
+    display: flex;
+    flex: 1 1 100%;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+
+  .describe {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--box-border);
+    border-radius: 4px;
+    color: var(--title);
+    font-family: inherit;
+    font-size: 0.85rem;
+    min-width: 0;
+    padding: 0.3rem 0.45rem;
+    resize: vertical;
+    width: 100%;
+  }
+
+  .rename-actions {
+    display: flex;
+    gap: 0.4rem;
+
+    button {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.7rem;
+    }
+
+    .cancel {
+      background: none;
+    }
+  }
+}
+
+/* What the set is. Sits under the row like the review line does, and keeps the
+   author's own line breaks: a blurb is often a sentence and a list. */
+.set-description {
+  color: color-mix(in srgb, var(--title) 78%, transparent);
+  font-size: 0.82rem;
+  margin: 0;
+  padding: 0 0.75rem 0.5rem;
+  white-space: pre-wrap;
 }
 
 /* Confirmed, like a card code that resolves: this really is the published set. */
@@ -1431,6 +1549,38 @@ async function onImport(event: Event) {
   .publish-actions {
     display: flex;
     gap: 0.4rem;
+  }
+
+  /* The blurb gets a label and a line of help; the note below it does not,
+     because "What changed" is the whole of what it is. */
+  .publish-field {
+    display: flex;
+    flex: 1 1 100%;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    > span {
+      color: color-mix(in srgb, var(--title) 85%, transparent);
+      font-size: 0.78rem;
+    }
+
+    small {
+      color: color-mix(in srgb, var(--title) 60%, transparent);
+      font-size: 0.72rem;
+    }
+
+    textarea {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--box-border);
+      border-radius: 4px;
+      color: var(--title);
+      font-family: inherit;
+      font-size: 0.85rem;
+      min-width: 0;
+      padding: 0.3rem 0.5rem;
+      resize: vertical;
+      width: 100%;
+    }
   }
 
   input {

@@ -143,6 +143,10 @@ export type StoredCustomCard = {
 export type StoredCustomCardSet = {
   id: string
   name: string
+  /* What the set is, in its author's words. Seeds the marketplace listing when
+   * the set is published, and is the one thing a set says about itself beyond
+   * its name. */
+  description: string | null
   // The pack id an imported set came from, so re-importing that pack replaces
   // this set rather than making a second copy of it. Null for a set made here.
   sourceCode: string | null
@@ -175,13 +179,27 @@ export const fetchCustomCardSets = async (): Promise<StoredCustomCardSet[]> => {
   return data
 }
 
-export const createCustomCardSet = async (name: string): Promise<StoredCustomCardSet> => {
-  const { data } = await api.post('arkham/custom-card-sets', { name })
+export const createCustomCardSet = async (
+  name: string,
+  description?: string | null,
+): Promise<StoredCustomCardSet> => {
+  const { data } = await api.post('arkham/custom-card-sets', { name, description })
   return data
 }
 
-export const renameCustomCardSet = async (id: string, name: string): Promise<StoredCustomCardSet> => {
-  const { data } = await api.put(`arkham/custom-card-sets/${id}`, { name })
+/* Name and description in one call, because they are one form.
+ *
+ * `description` is three-valued on the wire: leaving the key out keeps whatever
+ * is stored, `null` clears it. So a caller that only means to rename passes no
+ * description rather than passing null, which would silently wipe the blurb.
+ *
+ * Renaming stops a set following a published one; changing only the description
+ * does not. */
+export const updateCustomCardSet = async (
+  id: string,
+  changes: { name: string; description?: string | null },
+): Promise<StoredCustomCardSet> => {
+  const { data } = await api.put(`arkham/custom-card-sets/${id}`, changes)
   return data
 }
 
@@ -196,6 +214,9 @@ export const deleteCustomCardSet = async (id: string): Promise<void> => {
  * name otherwise. */
 export const importCustomCardSet = async (payload: {
   name: string
+  // A file written before descriptions existed carries none, and the server
+  // leaves the set's own alone rather than blanking it.
+  description?: string | null
   sourceCode: string | null
   cards: { def: any; art: string | null }[]
 }): Promise<{ set: StoredCustomCardSet; cards: StoredCustomCard[] }> => {
@@ -212,6 +233,10 @@ export const importCustomCardSet = async (payload: {
 export type PublishedCardSet = {
   id: string
   name: string
+  /* What the set is. The listing's own copy, not the version's: the author can
+   * rewrite it at any time without republishing and without it being reviewed
+   * again, because the cards have not changed. */
+  description: string | null
   author: string
   mine: boolean
   /* Whether the author is an admin, which is what the marketplace calls
@@ -238,6 +263,21 @@ export type PublishedCardSet = {
   updatedAt: string
   // The version your own copy is on, if you have one that still follows this.
   subscribedVersion: number | null
+  /* Every version of your own listing, newest first. Empty on anybody else's:
+   * what someone submitted and what was turned down is theirs to see. */
+  versions: PublishedCardSetVersionSummary[]
+}
+
+/* One version in an author's history of their own listing: what they said about
+ * it and what came of it. No cards -- those are a request of their own. */
+export type PublishedCardSetVersionSummary = {
+  version: number
+  note: string | null
+  status: ReviewStatus
+  reason: string | null
+  // Whether this is the version the marketplace is handing out.
+  live: boolean
+  createdAt: string
 }
 
 /* One set in full: its listing plus every card in the version. The listing comes
@@ -251,8 +291,23 @@ export type PublishedCardSetVersion = {
   createdAt: string
 }
 
-export const fetchPublishedCardSets = async (): Promise<PublishedCardSet[]> => {
-  const { data } = await api.get('arkham/published-card-sets')
+/* The marketplace. `mine` narrows it to your own listings, which is a page of
+ * its own: a listing outlives the set it was published from, so one whose set
+ * has since been deleted is only reachable that way. */
+export const fetchPublishedCardSets = async (mine = false): Promise<PublishedCardSet[]> => {
+  const { data } = await api.get(`arkham/published-card-sets${mine ? '?mine=true' : ''}`)
+  return data
+}
+
+/* Rewrite what your listing says about itself. Only the description: the name
+ * and the cards belong to the version, and changing those is publishing a new
+ * one. Nothing is re-reviewed, and the server writes the same text back onto
+ * your own copy of the set so the two places you can edit it agree. */
+export const updatePublishedCardSet = async (
+  id: string,
+  description: string | null,
+): Promise<PublishedCardSet> => {
+  const { data } = await api.put(`arkham/published-card-sets/${id}`, { description })
   return data
 }
 
@@ -281,9 +336,14 @@ export const fetchPublishedCardSet = async (
 export const publishCustomCardSet = async (
   id: string,
   note: string | null,
+  description: string | null,
   notify: boolean,
 ): Promise<PublishedCardSet> => {
-  const { data } = await api.post(`arkham/custom-card-sets/${id}/publish`, { note, notify })
+  const { data } = await api.post(`arkham/custom-card-sets/${id}/publish`, {
+    note,
+    description,
+    notify,
+  })
   return data
 }
 
@@ -332,6 +392,9 @@ export type CardSetSubmission = {
   id: string
   publishedCardSetId: string
   setName: string
+  // What the author says the set is, so a reviewer reads the same blurb a
+  // browser would.
+  setDescription: string | null
   author: string
   // So a reviewer can reach the author about something the form cannot say.
   authorEmail: string

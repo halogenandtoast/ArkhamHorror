@@ -19,6 +19,7 @@ of the "subscribed or not" rule.
 module Api.Handler.Arkham.PublishedCardSets (
   getApiV1ArkhamPublishedCardSetsR,
   getApiV1ArkhamPublishedCardSetR,
+  putApiV1ArkhamPublishedCardSetR,
   deleteApiV1ArkhamPublishedCardSetR,
   postApiV1ArkhamPublishedCardSetSubscribeR,
   postApiV1ArkhamCustomCardSetPublishR,
@@ -47,43 +48,82 @@ import Network.HTTP.Types.Status qualified as Status
 data PublishedCardSetResponse = PublishedCardSetResponse
   { publishedCardSetResponseId :: ArkhamPublishedCardSetId
   , publishedCardSetResponseName :: Text
+  , publishedCardSetResponseDescription :: Maybe Text
+  {- ^ What the set is. The listing's own, not the version's: the author can
+  rewrite it without republishing and without anyone reviewing it again,
+  which is the whole reason it does not live on the snapshot.
+  -}
   , publishedCardSetResponseAuthor :: Text
   , publishedCardSetResponseMine :: Bool
-  , -- | Whether the author is an admin, which is what the marketplace calls
-    -- officially supported: an admin publishing is the project putting a set up
-    -- rather than passing one.
-    --
-    -- Read off the account every time rather than stamped on the listing when it
-    -- was published. It costs nothing -- the author is already fetched for their
-    -- name -- and a set stops claiming support when whoever was maintaining it
-    -- stops being able to.
-    publishedCardSetResponseOfficial :: Bool
-  , -- | The newest version a reviewer has approved: the one being described
-    -- below, and the one an import gets. Zero for a set of your own that has
-    -- never passed review, which is the only way an unapproved set is listed.
-    publishedCardSetResponseLatestVersion :: Int
-  , -- | Where the newest submission stands: @approved@, @pending@, @denied@, or
-    -- @none@ for a listing with no submission at all. Only ever anything but
-    -- @approved@ on your own listing, since nobody else's is shown to you until
-    -- it has passed.
-    publishedCardSetResponseReviewStatus :: Text
-  , -- | A version of yours waiting to be reviewed, if one is.
-    publishedCardSetResponsePendingVersion :: Maybe Int
-  , -- | Why the last submission was turned down, for the author to read.
-    publishedCardSetResponseDenialReason :: Maybe Text
+  , publishedCardSetResponseOfficial :: Bool
+  {- ^ Whether the author is an admin, which is what the marketplace calls
+  officially supported: an admin publishing is the project putting a set up
+  rather than passing one.
+
+  Read off the account every time rather than stamped on the listing when it
+  was published. It costs nothing -- the author is already fetched for their
+  name -- and a set stops claiming support when whoever was maintaining it
+  stops being able to.
+  -}
+  , publishedCardSetResponseLatestVersion :: Int
+  {- ^ The newest version a reviewer has approved: the one being described
+  below, and the one an import gets. Zero for a set of your own that has
+  never passed review, which is the only way an unapproved set is listed.
+  -}
+  , publishedCardSetResponseReviewStatus :: Text
+  {- ^ Where the newest submission stands: @approved@, @pending@, @denied@, or
+  @none@ for a listing with no submission at all. Only ever anything but
+  @approved@ on your own listing, since nobody else's is shown to you until
+  it has passed.
+  -}
+  , publishedCardSetResponsePendingVersion :: Maybe Int
+  -- ^ A version of yours waiting to be reviewed, if one is.
+  , publishedCardSetResponseDenialReason :: Maybe Text
+  -- ^ Why the last submission was turned down, for the author to read.
   , publishedCardSetResponseCardCount :: Int
   , publishedCardSetResponseNote :: Maybe Text
-  , -- | The first few cards, so the listing can show what is in the set rather
-    -- than only how much. Capped because a listing is a row, not the set.
-    publishedCardSetResponsePreview :: [CustomCard]
+  , publishedCardSetResponsePreview :: [CustomCard]
+  {- ^ The first few cards, so the listing can show what is in the set rather
+  than only how much. Capped because a listing is a row, not the set.
+  -}
   , publishedCardSetResponseLikes :: Int
-  , -- | Whether you are one of them, so the button knows which way it points.
-    publishedCardSetResponseLiked :: Bool
+  , publishedCardSetResponseLiked :: Bool
+  -- ^ Whether you are one of them, so the button knows which way it points.
   , publishedCardSetResponseUpdatedAt :: UTCTime
-  , -- | The version your own copy is following, if you have one.
-    publishedCardSetResponseSubscribedVersion :: Maybe Int
+  , publishedCardSetResponseSubscribedVersion :: Maybe Int
+  -- ^ The version your own copy is following, if you have one.
+  , publishedCardSetResponseVersions :: [PublishedVersionSummary]
+  {- ^ Every version of your own listing, newest first, with what was decided
+    about each. Empty on anybody else's: what they submitted and what was turned
+    down is the author's business, and only the approved one is theirs to see.
+  -}
   }
   deriving stock Generic
+
+{- | One version of a listing, as its author's own history of it reads: what they
+said about it, and what came of it.
+
+The cards are left out. This is a list of what has happened to a set, and the
+cards of a version are a request of their own.
+-}
+data PublishedVersionSummary = PublishedVersionSummary
+  { publishedVersionSummaryVersion :: Int
+  , publishedVersionSummaryNote :: Maybe Text
+  , publishedVersionSummaryStatus :: Text
+  {- ^ @pending@, @approved@, @denied@, or @none@ for a version with no
+  submission against it -- which should not happen, but says so rather than
+  claiming one of the three.
+  -}
+  , publishedVersionSummaryReason :: Maybe Text
+  , publishedVersionSummaryLive :: Bool
+  -- ^ Whether this is the version the marketplace is handing out.
+  , publishedVersionSummaryCreatedAt :: UTCTime
+  }
+  deriving stock Generic
+
+instance ToJSON PublishedVersionSummary where
+  toJSON = genericToJSON $ aesonOptions $ Just "publishedVersionSummary"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "publishedVersionSummary"
 
 instance ToJSON PublishedCardSetResponse where
   toJSON = genericToJSON $ aesonOptions $ Just "publishedCardSetResponse"
@@ -110,14 +150,37 @@ instance ToJSON PublishedCardSetVersionResponse where
 
 data PublishPost = PublishPost
   { publishNote :: Maybe Text
-  , -- | Whether to email the author the review decision. Absent means yes: an
-    -- older client that does not know to ask still gets told what happened.
-    publishNotify :: Maybe Bool
+  , publishDescription :: Maybe Text
+  {- ^ What the set is, offered again at the moment it goes out: this is where
+    an author actually writes the blurb, because it is where they are thinking
+    about how the set reads to a stranger. Absent leaves the set's own
+    description to stand, so a client that does not send one changes nothing.
+  -}
+  , publishNotify :: Maybe Bool
+  {- ^ Whether to email the author the review decision. Absent means yes: an
+  older client that does not know to ask still gets told what happened.
+  -}
   }
   deriving stock Generic
 
 instance FromJSON PublishPost where
   parseJSON = genericParseJSON $ aesonOptions $ Just "publish"
+
+-- | What the author is changing about a listing without republishing it.
+newtype ListingPut = ListingPut {listingDescription :: Maybe Text}
+  deriving stock Generic
+
+instance FromJSON ListingPut where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "listing"
+
+{- | A description as it is stored: blank is nothing, and trimmed, so a field
+someone typed a space into does not read as a description wherever one is shown.
+-}
+normalizeDescription :: Maybe Text -> Maybe Text
+normalizeDescription raw = do
+  text <- T.strip <$> raw
+  guard $ not (T.null text)
+  pure text
 
 -- | Which version to take. Absent means the newest.
 newtype SubscribePost = SubscribePost {subscribeVersion :: Maybe Int}
@@ -182,7 +245,8 @@ printedOrder value = (maybe maxBound id (readMaybe (T.unpack digits)), number)
 
 {- | How many cards a listing carries. Enough to fill a row at any width the
 listing is shown at; the extra are clipped by the layout rather than sent and
-thrown away. -}
+thrown away.
+-}
 previewSize :: Int
 previewSize = 12
 
@@ -192,17 +256,21 @@ whatever state they are in.
 Yours are included because this page is also where you find out what happened to
 what you submitted. Nobody else's unapproved set appears, which is the point of
 reviewing them.
+
+@?mine=true@ narrows it to your own, which is a page of its own: an author's
+listings outlive the sets they were published from, so a listing whose set has
+since been deleted is only reachable from here.
 -}
 getApiV1ArkhamPublishedCardSetsR :: Handler [PublishedCardSetResponse]
 getApiV1ArkhamPublishedCardSetsR = do
   userId <- getRequestUserId
-  rows <-
-    runDB
-      $ P.selectList
-        ( [ArkhamPublishedCardSetApprovedVersion P.!=. Nothing]
-            P.||. [ArkhamPublishedCardSetUserId P.==. userId]
-        )
-        [P.Desc ArkhamPublishedCardSetUpdatedAt]
+  mine <- (== Just "true") <$> lookupGetParam "mine"
+  let whose
+        | mine = [ArkhamPublishedCardSetUserId P.==. userId]
+        | otherwise =
+            [ArkhamPublishedCardSetApprovedVersion P.!=. Nothing]
+              P.||. [ArkhamPublishedCardSetUserId P.==. userId]
+  rows <- runDB $ P.selectList whose [P.Desc ArkhamPublishedCardSetUpdatedAt]
   traverse (listingFor userId) rows
 
 {- | The newest submission against a listing, which is what its review state is.
@@ -224,7 +292,10 @@ your own that has never passed -- the newest one at all, so you can see what you
 submitted while it waits.
 -}
 describedVersion
-  :: Bool -> ArkhamPublishedCardSetId -> ArkhamPublishedCardSet -> Handler (Maybe ArkhamPublishedCardSetVersion)
+  :: Bool
+  -> ArkhamPublishedCardSetId
+  -> ArkhamPublishedCardSet
+  -> Handler (Maybe ArkhamPublishedCardSetVersion)
 describedVersion mine publishedId row = case arkhamPublishedCardSetApprovedVersion row of
   Just version ->
     fmap entityVal <$> runDB (P.getBy (UniquePublishedCardSetVersion publishedId version))
@@ -261,10 +332,12 @@ listingFor userId (Entity publishedId row) = do
     runDB
       $ isJust
       <$> P.getBy (UniquePublishedCardSetLike publishedId userId)
+  versions <- if isAuthor then versionHistory publishedId row else pure []
   pure
     $ PublishedCardSetResponse
       { publishedCardSetResponseId = publishedId
       , publishedCardSetResponseName = arkhamPublishedCardSetName row
+      , publishedCardSetResponseDescription = arkhamPublishedCardSetDescription row
       , publishedCardSetResponseAuthor = maybe "someone" userUsername author
       , publishedCardSetResponseMine = isAuthor
       , publishedCardSetResponseOfficial = maybe False userAdmin author
@@ -289,14 +362,51 @@ listingFor userId (Entity publishedId row) = do
       , publishedCardSetResponseLiked = liked
       , publishedCardSetResponseUpdatedAt = arkhamPublishedCardSetUpdatedAt row
       , publishedCardSetResponseSubscribedVersion = subscribed
+      , publishedCardSetResponseVersions = versions
       }
+
+{- | Every version of a listing, newest first, each with what was decided about
+it.
+
+One query for the versions and one for the submissions, paired up here rather
+than joined per row: a listing has a handful of versions, and this is only ever
+built for the author's own.
+-}
+versionHistory
+  :: ArkhamPublishedCardSetId -> ArkhamPublishedCardSet -> Handler [PublishedVersionSummary]
+versionHistory publishedId row = do
+  versions <-
+    runDB
+      $ P.selectList
+        [ArkhamPublishedCardSetVersionPublishedCardSetId P.==. publishedId]
+        [P.Desc ArkhamPublishedCardSetVersionVersion]
+  submissions <-
+    runDB
+      $ P.selectList [ArkhamCardSetSubmissionPublishedCardSetId P.==. publishedId] []
+  let decided =
+        [(arkhamCardSetSubmissionVersionId sub, sub) | Entity _ sub <- submissions]
+  pure
+    [ PublishedVersionSummary
+        { publishedVersionSummaryVersion = arkhamPublishedCardSetVersionVersion version
+        , publishedVersionSummaryNote = arkhamPublishedCardSetVersionNote version
+        , publishedVersionSummaryStatus = maybe "none" arkhamCardSetSubmissionStatus submission
+        , publishedVersionSummaryReason = arkhamCardSetSubmissionReason =<< submission
+        , publishedVersionSummaryLive =
+            arkhamPublishedCardSetApprovedVersion row
+              == Just (arkhamPublishedCardSetVersionVersion version)
+        , publishedVersionSummaryCreatedAt = arkhamPublishedCardSetVersionCreatedAt version
+        }
+    | Entity versionId version <- versions
+    , let submission = snd <$> find ((== versionId) . fst) decided
+    ]
 
 {- | A version to look at or import. `?version=` for an older one.
 
 Only approved versions, unless you are the author looking at your own -- which
 is how you see what you have waiting, and what you got back.
 -}
-getApiV1ArkhamPublishedCardSetR :: ArkhamPublishedCardSetId -> Handler PublishedCardSetVersionResponse
+getApiV1ArkhamPublishedCardSetR
+  :: ArkhamPublishedCardSetId -> Handler PublishedCardSetVersionResponse
 getApiV1ArkhamPublishedCardSetR publishedId = do
   userId <- getRequestUserId
   published <- runDB $ get404 publishedId
@@ -363,6 +473,40 @@ anyVersion publishedId wanted = do
           [P.Desc ArkhamPublishedCardSetVersionVersion]
   maybe notFound (pure . entityVal) found
 
+{- | Rewrite what a listing says about itself, without republishing it.
+
+Only the description: the name and the cards are the version's, and changing
+those is publishing a new one. Nothing is re-reviewed, because nothing a reviewer
+looked at has changed -- a listing's blurb is not its contents.
+
+It is written back onto the author's own copy of the set when the listing still
+points at one, so the two do not drift and the next publish does not quietly
+undo the edit made here.
+-}
+putApiV1ArkhamPublishedCardSetR
+  :: ArkhamPublishedCardSetId -> Handler PublishedCardSetResponse
+putApiV1ArkhamPublishedCardSetR publishedId = do
+  userId <- getRequestUserId
+  row <- runDB $ get404 publishedId
+  unless (arkhamPublishedCardSetUserId row == userId) $ permissionDenied "Not your published set"
+  ListingPut {listingDescription} <- requireCheckJsonBody
+  now <- liftIO getCurrentTime
+  let description = normalizeDescription listingDescription
+  runDB do
+    P.update
+      publishedId
+      [ ArkhamPublishedCardSetDescription P.=. description
+      , ArkhamPublishedCardSetUpdatedAt P.=. now
+      ]
+    for_ (arkhamPublishedCardSetCustomCardSetId row) \setId ->
+      P.update setId [ArkhamCustomCardSetDescription P.=. description]
+  listingFor userId
+    $ Entity publishedId
+    $ row
+      { arkhamPublishedCardSetDescription = description
+      , arkhamPublishedCardSetUpdatedAt = now
+      }
+
 {- | Unlist a set. The versions go with it, along with anything of it still in the
 review queue, and anyone following it is unsubscribed by the foreign key rather
 than left pointing at nothing.
@@ -398,11 +542,19 @@ postApiV1ArkhamCustomCardSetPublishR
 postApiV1ArkhamCustomCardSetPublishR setId = do
   Entity userId user <- getRequestUser
   setRow <- ownedCardSet userId setId
-  PublishPost {publishNote, publishNotify} <- requireCheckJsonBody
+  PublishPost {publishNote, publishDescription, publishNotify} <- requireCheckJsonBody
   now <- liftIO getCurrentTime
 
   cards <- runDB $ P.selectList [ArkhamCustomCardCustomCardSetId P.==. setId] []
   when (null cards) $ invalidArgs ["There is nothing in that set to publish"]
+
+  {- The blurb written in the publish form is the set's description from here on,
+  not a thing said about this one version: it is stored back onto the set as well
+  as onto the listing, so the two places an author can edit it agree. Sending
+  nothing leaves whatever the set already says. -}
+  let description =
+        normalizeDescription publishDescription <|> arkhamCustomCardSetDescription setRow
+  runDB $ P.update setId [ArkhamCustomCardSetDescription P.=. description]
 
   let name = arkhamCustomCardSetName setRow
       -- Printed order, which is the order the author put them in. It is fixed
@@ -436,6 +588,7 @@ postApiV1ArkhamCustomCardSetPublishR setId = do
       let version = arkhamPublishedCardSetLatestVersion row + 1
       P.update found
         $ [ ArkhamPublishedCardSetName P.=. name
+          , ArkhamPublishedCardSetDescription P.=. description
           , ArkhamPublishedCardSetLatestVersion P.=. version
           , ArkhamPublishedCardSetUpdatedAt P.=. now
           ]
@@ -448,7 +601,8 @@ postApiV1ArkhamCustomCardSetPublishR setId = do
       let approved = case publication of
             Listed _ -> Just 1
             ForReview -> Nothing
-      found <- P.insert $ ArkhamPublishedCardSet userId (Just setId) name 1 approved now now
+      found <-
+        P.insert $ ArkhamPublishedCardSet userId (Just setId) name description 1 approved now now
       versionId <-
         P.insert $ ArkhamPublishedCardSetVersion found 1 publishNote name snapshot now
       submit publication found versionId userId 1 notify now
@@ -582,6 +736,9 @@ importVersion userId publishedId version = do
   cards <- versionCards version
   now <- liftIO getCurrentTime
   let name = arkhamPublishedCardSetVersionName version
+  -- The listing's blurb comes with the set, so a copy of it says what it is
+  -- rather than arriving as a name and a pile of cards.
+  description <- fmap (arkhamPublishedCardSetDescription =<<) $ runDB $ DB.get publishedId
 
   existing <- mineFollowing userId publishedId
   -- A first subscription has to find a name nobody else of yours is using.
@@ -596,10 +753,13 @@ importVersion userId publishedId version = do
       Just found -> do
         P.update
           found
-          [ArkhamCustomCardSetName P.=. name', ArkhamCustomCardSetUpdatedAt P.=. now]
+          [ ArkhamCustomCardSetName P.=. name'
+          , ArkhamCustomCardSetDescription P.=. description
+          , ArkhamCustomCardSetUpdatedAt P.=. now
+          ]
         P.deleteWhere [ArkhamCustomCardCustomCardSetId P.==. found]
         pure found
-      Nothing -> P.insert $ ArkhamCustomCardSet userId name' Nothing now now
+      Nothing -> P.insert $ ArkhamCustomCardSet userId name' description Nothing now now
     for_ prepared $ persistCard userId setId now
     -- Written after the cards, so a failed import leaves nothing claiming to be
     -- up to date.

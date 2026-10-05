@@ -23,6 +23,11 @@ existed only as far as every one of its cards agreed on the spelling, and
 throwing one away meant deleting its cards one at a time. A set is a row now, so
 it can be renamed in one place and deleted with what is in it.
 
+@description@ is what the set is, in the author's own words. It lives on the
+set rather than on a published version because it describes the set and not what
+changed in a version -- which is what @note@ on a version is for -- so it can be
+rewritten without asking anyone to review it again.
+
 @sourceCode@ is the id of the pack an imported set came from (arkham.build gives
 one), so importing that pack again replaces this set rather than making a second
 copy of it. A set built here has none.
@@ -34,6 +39,7 @@ ArkhamCustomCardSet sql=arkham_custom_card_sets
   Id UUID default=uuid_generate_v4()
   userId UserId OnDeleteCascade
   name Text
+  description Text Maybe
   sourceCode Text Maybe
   createdAt UTCTime
   updatedAt UTCTime

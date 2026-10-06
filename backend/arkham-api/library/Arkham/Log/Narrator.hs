@@ -75,9 +75,8 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Base (Game (..))
 import Arkham.GameEnv (getSkillTest)
 import Arkham.Helpers.SkillTest (
+  calculateSkillTestResultsData,
   getModifiedSkillTestDifficulty,
-  getSkillTestDifficulty,
-  getSkillTestModifiedSkillValue,
  )
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
@@ -90,7 +89,7 @@ import Arkham.Phase
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
-import Arkham.SkillTest.Base (SkillTest (..))
+import Arkham.SkillTest.Base (SkillTest (..), SkillTestResultsData (..))
 import Arkham.SkillTest.Type
 import Arkham.Source
 import Arkham.Spawn
@@ -702,7 +701,7 @@ line worth reading. It comes off the message, so no extra bookkeeping -- only a
 lookup to turn the id into a chip.
 -}
 renderSkillTestResult
-  :: HasGame m
+  :: (HasGame m, HasGameLogger m)
   => InvestigatorId
   -> Maybe Action
   -> Target
@@ -736,6 +735,10 @@ renderSkillTestResult iid mAction target sType success n = do
   who <- investigatorRefFor iid
   stats <- skillTestStats
   mKey <- openSkillTestKey
+  -- The arithmetic in full, inside the block. The band carries only the totals,
+  -- which is what a reader scanning the log wants; this is what they open the
+  -- block to check.
+  for_ mKey \k -> traverse_ (sendLog . inGroupOf k) =<< skillTestBreakdown
   let
     entry =
       toned (if success then Good else Bad)
@@ -812,14 +815,56 @@ renderSkillTestOpening st = do
 Dropped rather than guessed when the difficulty cannot be calculated, so the
 band is simply shorter rather than carrying a hole.
 -}
+
+{- | Every number that went into the result, as one line.
+
+The engine already assembles exactly this to decide the outcome
+('SkillTestResultsData'), so the log reports what the test actually used rather
+than recomputing it and risking a different answer.
+
+Icons and tokens are deltas, because both can be negative and a reader is
+adding them up: "Skill 3, +2 from icons, -1 from tokens -- 4 vs 2".
+-}
+skillTestBreakdown :: HasGame m => m (Maybe LogEntry)
+skillTestBreakdown = fmap (fmap render) skillTestResults
+ where
+  render r =
+    notice
+      [ ikeyPart
+          "log.testBreakdown"
+          [ "skill" ~> skillTestResultsSkillValue r
+          , "icons" ~> delta (skillTestResultsIconValue r)
+          , "tokens" ~> delta (skillTestResultsChaosTokensValue r)
+          , "total" ~> adjustedSkillValue r
+          , "difficulty" ~> skillTestResultsDifficulty r
+          ]
+      ]
+
+skillTestResults :: HasGame m => m (Maybe SkillTestResultsData)
+skillTestResults = getSkillTest >>= traverse calculateSkillTestResultsData
+
+{- | What the test was finally worth: the modified skill plus the icons
+committed to it plus the chaos tokens, floored at zero, which is the number the
+difficulty was actually compared against.
+
+NOT 'getSkillTestModifiedSkillValue', which is the skill alone -- the band said
+"5 vs difficulty 4" while the test was decided on a different number.
+-}
+adjustedSkillValue :: SkillTestResultsData -> Int
+adjustedSkillValue r =
+  max 0
+    $ skillTestResultsSkillValue r
+    + skillTestResultsIconValue r
+    + skillTestResultsChaosTokensValue r
+
 skillTestStats :: HasGame m => m [LogPart]
-skillTestStats = do
-  -- The modified value and the difficulty as the engine finally saw them, not
-  -- as printed: this is the line that explains the result.
-  value <- getSkillTestModifiedSkillValue
-  getSkillTestDifficulty <&> \case
-    Just difficulty ->
-      [ikeyPart "log.testArithmetic" ["value" ~> value, "difficulty" ~> difficulty]]
+skillTestStats =
+  skillTestResults <&> \case
+    Just r ->
+      [ ikeyPart
+          "log.testArithmetic"
+          ["value" ~> adjustedSkillValue r, "difficulty" ~> skillTestResultsDifficulty r]
+      ]
     Nothing -> []
 
 {- | The wire name for an action, matching the keys in @log.json@. Every

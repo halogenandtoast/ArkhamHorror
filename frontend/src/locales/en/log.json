@@ -100,6 +100,7 @@
   "takesHorror": "{target} takes {count} horror",
   "takesHorrorFrom": "{target} takes {count} horror from {source}",
   "testArithmetic": "{value} vs difficulty {difficulty}",
+  "testBreakdown": "Skill {skill}, {icons} from icons, {tokens} from tokens — {total} vs {difficulty}",
   "testOpens": "{investigator} is testing {skill} ({difficulty})",
   "testOpensAgainst": "{investigator} is {verb} {target} {skill} ({difficulty})",
   "testOpensVs": "{investigator} is testing {skill} against {target} ({difficulty})",

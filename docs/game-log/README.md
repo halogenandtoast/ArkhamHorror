@@ -1,8 +1,11 @@
 # Game log overhaul
 
-Living design + progress journal. **Any agent picking this up: read `JOURNAL.md`
-first for where the work actually stands, then this file for why.**
+Living design + progress journal. **Any agent picking this up: read
+`STATE-OF-PLAY.md` first for where the work actually stands, then this file for
+why.**
 
+- `STATE-OF-PLAY.md` — current status, the model as built, and the invariants
+  that will bite you. Supersedes `JOURNAL.md`'s closing status.
 - `README.md` (this file) — the design and the reasoning behind it.
 - `JOURNAL.md` — phase-by-phase status, what is done, what is next, decisions taken.
 - `FINDINGS.md` — the grounded audit of the current system (file:line), kept as evidence.

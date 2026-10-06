@@ -56,20 +56,26 @@ targets.
 mid-attack (Hunting Horror's own void ability, `HuntingHorror.hs:47`) cannot have details
 restored for an enemy that is gone.
 
-**Verification note:** `--undo` cannot rewind behind the nested attack in the #5808
-export — no saved queue still contains the retaliate `EnemyAttack`, so every undo depth
-replays a single attack and the crash simply disappears without exercising the fix. The
-nesting has to be re-created by injecting the attack:
+**Verification note:** replaying the #5808 export *without* `--undo` crashes even with the
+fix, and that is expected — the export was captured after the clobber, so its saved queue
+holds a bare `PerformEnemyAttack_` (idx 17 at step 743) with no `Do (EnemyAttack)` and no
+reinstate ahead of it. No code change can rescue that queue; the same is true of the live
+game, which has to be rewound with `PUT /undo` to re-run the attack under fixed code.
+
+To exercise the fix, rewind to **step 735**, whose queue is `[Do EnemiesAttack_,
+RelentlessEnemiesAttack_, PhaseStep, PhaseStep]` — i.e. before the attack begins, so the
+whole nesting is regenerated:
 
 ```bash
-jq -c '{tag:"Raw",contents:{tag:"EnemyAttack",contents:<the enemy`s `attacking` object>}}'
-stack exec arkham-replay -- export.json --undo 3 --answers answers.json --trace
+# 743 - 8 = 735; then re-answer: pick the enemy, trigger Survival Knife, fight, start test,
+# apply results -> Retaliate nests a second attack inside the first's `when attacks` window
+stack exec arkham-replay -- export.json --undo 8 --answers answers.json --output after.json
 ```
 
-With the fix the trace shows `PerformEnemyAttack_` → `After (EnemyAttack_)` →
-`ChangeEnemyAttackDetails_` → a second `PerformEnemyAttack_`, and the investigator takes
-both attacks (Damage 2→4, Horror 0→2) with the enemy ending `attacking = null`,
-`exhausted = true`.
+The run lands on the same "Assign 1 horror" prompt at step 233 the user reported, and
+answering it now drains cleanly: investigator `04001` goes Damage 2 -> 4 and Horror 0 -> 2
+(both 1/1 attacks resolve), with the enemy ending `attacking = null`. Pre-fix, that same
+answer died on `fromJustNote` at `Enemy/Runner.hs:1631`.
 
 See [[project_after_dealt_damage_is_post_defeat]] and
 [[project_fully_cancelled_damage_strands_its_own_reducer]] for the other two ways an

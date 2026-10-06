@@ -14,6 +14,7 @@ import { useDbCardStore } from '@/stores/dbCards'
 import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import type { LogPart, LogRef } from '@/arkham/types/GameLog'
 import { formatKey, logKeyTitle } from '@/arkham/types/Log'
+import { investigatorClass, type CssClassFlags } from '@/arkham/helpers'
 
 const props = defineProps<{ part: LogPart }>()
 
@@ -56,6 +57,14 @@ function refName(ref: LogRef): string {
 /* The art to show on hover. Prefers the specific copy, then the printed code,
  * and honours faceDown -- which the server now resolves, rather than the
  * renderer reaching into game state mid-render as it used to. */
+/* An investigator's name takes their class colour, the way the rest of the app
+   tints an investigator. Only investigators: a location or an enemy has no
+   class, and every other ref kind already has a colour of its own below. */
+function refClass(ref: LogRef): CssClassFlags {
+  if (ref.kind !== 'RefInvestigator' || !ref.cardCode) return {}
+  return investigatorClass(cardArt(ref.cardCode))
+}
+
 function refImageId(ref: LogRef): string | undefined {
   if (ref.cardCode) return cardArt(ref.cardCode, ref.faceDown ? 'b' : '')
   return ref.cardId ?? ref.entityId ?? undefined
@@ -103,7 +112,7 @@ const plural = computed(() => {
   <span
     v-else-if="part.tag === 'LogRefPart'"
     class="log-ref"
-    :class="`log-ref--${part.contents.kind}`"
+    :class="[`log-ref--${part.contents.kind}`, refClass(part.contents)]"
     :data-image-id="refImageId(part.contents)"
     >{{ refName(part.contents) }}</span
   >
@@ -151,7 +160,25 @@ const plural = computed(() => {
   cursor: pointer;
 }
 
+/* Lightened class colours, not the --guardian/--survivor tokens themselves.
+   Those are built to be fills and borders; as text on this panel they fail
+   badly -- survivor is 3.45:1 on the plain background and 2.28:1 on the green
+   result band, where a name is read most often.
+
+   These are the smallest lift toward white that clears 4.5:1 on every surface a
+   name can land on: the panel, a group block, its header and its result band
+   (green, red or neutral), a chat card, a Record entry and the turn banner. The
+   green pass band is the binding case at 4.5; everything else is 5+. The
+   fallback keeps --multiclass, which already passes.
+
+   If a new tinted surface gets an investigator name on it, re-check these. */
 .log-ref--RefInvestigator { color: var(--multiclass); }
+.log-ref--RefInvestigator.guardian { color: #81c5fd; }
+.log-ref--RefInvestigator.seeker { color: #f2b263; }
+.log-ref--RefInvestigator.rogue { color: #8cce90; }
+.log-ref--RefInvestigator.mystic { color: #d4b0f7; }
+.log-ref--RefInvestigator.survivor { color: #f7acb0; }
+.log-ref--RefInvestigator.neutral { color: var(--neutral); }
 .log-ref--RefLocation { color: #9ecbe8; }
 .log-ref--RefEnemy { color: #e39b94; }
 

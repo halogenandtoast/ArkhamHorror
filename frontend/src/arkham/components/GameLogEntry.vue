@@ -90,8 +90,20 @@ const testStats = computed(() =>
   props.entry.body.length > 1 ? props.entry.body[props.entry.body.length - 1] : null,
 )
 
-const hasKids = computed(() => props.entry.children.length > 0)
-const open = computed(() => hasKids.value && props.isOpen(props.path))
+/* An annotation is detail that belongs to the line rather than depth under it:
+   a cost surcharge, a note on why a number came out the way it did. One leaf
+   notice is not worth a caret, and it must not disappear once the entry stops
+   being the tail -- "Daisy Walker moves to Attic / +1 action from Frozen in
+   Fear" is meant to read as one log entry, which is the whole point of
+   attaching it instead of sending it on its own. */
+const annotated = computed(
+  () =>
+    props.entry.children.length > 0 &&
+    props.entry.children.every((c) => c.kind === 'Notice' && c.children.length === 0),
+)
+
+const hasKids = computed(() => !annotated.value && props.entry.children.length > 0)
+const open = computed(() => (annotated.value ? true : hasKids.value && props.isOpen(props.path)))
 const hiddenRows = computed(() =>
   props.entry.children.reduce((acc, c) => acc + logEntrySize(c), 0),
 )
@@ -279,7 +291,7 @@ function requestUndo() {
       <ArrowUturnLeftIcon aria-hidden="true" />
     </button>
 
-    <ul v-if="open" class="log-children">
+    <ul v-if="open" class="log-children" :class="{ 'log-children--annotation': annotated }">
       <GameLogEntry
         v-for="(child, i) in entry.children"
         :key="i"
@@ -649,6 +661,18 @@ button.log-headline:focus-visible {
 .log-undo:hover {
   color: #fff;
   border-color: var(--important);
+}
+
+/* An annotation hangs off the line above rather than sitting at its own level:
+   no gap, tight to the headline, so it reads as a continuation of the entry
+   instead of a reply to it. */
+.log-children--annotation {
+  gap: 0;
+  padding: 0 2px 4px 19px;
+}
+
+.log-children--annotation :deep(.log-caret-spacer) {
+  display: none;
 }
 
 .log-children {

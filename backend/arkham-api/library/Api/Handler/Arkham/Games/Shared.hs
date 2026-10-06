@@ -60,7 +60,7 @@ import Arkham.Investigator (lookupInvestigator)
 import Arkham.Investigator.Types (Investigator, investigatorPlacement, investigatorPlayerId)
 import Arkham.Location.CardDefs.TheBlobThatAteEverythingELSE qualified as Locations
 import Arkham.Log.Entry
-import Arkham.Log.Narrator (emptyNarrator)
+import Arkham.Log.Narrator (emptyNarrator, flushNarrator)
 import Arkham.Message
 import Arkham.Name
 import Arkham.Phase (Phase)
@@ -516,6 +516,9 @@ updateGame customCards response gameId mRoom = do
             runMessages
               (gameIdToText gameId)
               RunObservers {observeMessage = Just collectFromRun, observeNarration = Just narratorRef}
+            -- Anything the narrator was still holding for a following entry that
+            -- never came gets said now, rather than being dropped with the ref.
+            flushNarrator narratorRef
         case mResult of
           Just () -> pure ()
           Nothing -> liftIO $ throwIO $ RunMessagesTimeout gameId runMessagesTimeoutMicros

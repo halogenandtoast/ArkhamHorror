@@ -275,7 +275,7 @@ instance RunMessage LocationAttrs where
         $ a
         & (revealedConnectedMatchersL <>~ [LocationWithId toLid])
         & (connectedMatchersL <>~ [LocationWithId toLid])
-    EnterLocation iid lid | lid == locationId -> do
+    EnterLocation iid lid _ | lid == locationId -> do
       unless locationRevealed $ push (RevealLocation (Just iid) lid)
       pure a
     PlaceAsset aid (AtLocation lid) | lid == locationId -> do
@@ -293,7 +293,7 @@ instance RunMessage LocationAttrs where
           Helpers.checkWindows [Window.mkAfter (Window.VehicleEnters aid lid)]
         pushAll
           $ [ WhenWillEnterLocation iid lid
-            , EnterLocation iid lid
+            , EnterLocation iid lid Nothing
             , afterMoveButBeforeEnemyEngagement
             ]
           <> map EnemyCheckEngagement enemies

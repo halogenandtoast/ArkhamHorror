@@ -3088,7 +3088,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
           [ WhenWillEnterLocation iid lid
           , Do (WhenWillEnterLocation iid lid)
           , After (WhenWillEnterLocation iid lid)
-          , EnterLocation iid lid
+          , EnterLocation iid lid Nothing
           , CheckEnemyEngagement iid
           ]
         pure a

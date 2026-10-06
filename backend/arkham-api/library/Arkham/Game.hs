@@ -167,7 +167,6 @@ import Arkham.Location.Types (
  )
 import Arkham.Log.Entry
 import Arkham.Log.Narrator
-import Arkham.Log.Refs (sendLogDuringTest)
 import Arkham.Matcher hiding (
   AssetCard,
   AssetDefeated,
@@ -6834,10 +6833,14 @@ runMessages gameId observers = do
         {- The game log. The match is pure, so only a message that actually
         narrates pays for a 'runWithEnv'; the narrator then reads state to turn
         the ids in the message into chips, and sends at most one entry. It
-        never touches the queue. See "Arkham.Log.Narrator". -}
-        for_ observers.observeNarration $ \_ref ->
+        never touches the queue.
+
+        'placeNarration', not the logger directly: it decides whether the entry
+        goes out now or waits to be attached to the next one, and a path around
+        it defeats that silently. See "Arkham.Log.Narrator". -}
+        for_ observers.observeNarration $ \ref ->
           for_ (narrationFor msg) \build ->
-            runWithEnv build >>= traverse_ (runWithEnv . sendLogDuringTest)
+            runWithEnv build >>= traverse_ (runWithEnv . placeNarration ref msg)
 
         let
           shouldPreloadModifiers = \case
@@ -6994,9 +6997,9 @@ runMessages gameId observers = do
                       so without this an event resolved simultaneously is
                       invisible to the log. Standard movement is one:
                       @EnterLocation@ arrives only inside a @Simultaneously@. -}
-                      for_ observers.observeNarration $ \_ref ->
+                      for_ observers.observeNarration $ \ref ->
                         for_ (narrationFor m) \build ->
-                          runWithEnv build >>= traverse_ (runWithEnv . sendLogDuringTest)
+                          runWithEnv build >>= traverse_ (runWithEnv . placeNarration ref m)
                       asIfLocations' <- runWithEnv getAsIfLocationMap
                       aloofEnemies' <- runWithEnv (select AloofEnemy)
                       investigatorSanityHealth' <- runWithEnv getInvestigatorSanityHealthMap

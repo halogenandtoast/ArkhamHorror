@@ -532,7 +532,7 @@ handleDoResolveMovement a@InvestigatorAttrs {..} iid = do
           $ [DisengageEnemy iid eid | eid <- disengagers]
           <> [WhenWillEnterLocation iid lid]
           <> [ Simultaneously
-                 $ Run [Do (WhenWillEnterLocation iid lid), EnterLocation iid lid]
+                 $ Run [Do (WhenWillEnterLocation iid lid), EnterLocation iid lid (Just movement)]
                  : [EnemyEnteredFollowing iid eid lid | eid <- followers]
              ]
           <> [After (MoveTo movement)]

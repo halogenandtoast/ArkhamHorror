@@ -23,7 +23,7 @@ import Arkham.Game (Game (..), PublicGame (..), RunObservers (..), runMessages)
 import Arkham.Game.Diff (diff, patchValueWithRecovery)
 import Arkham.Game.Runner (handleActionDiff)
 import Arkham.Log.Entry (logEntryToLines)
-import Arkham.Log.Narrator (emptyNarrator)
+import Arkham.Log.Narrator (emptyNarrator, flushNarrator)
 import Arkham.Message (Message (ClearUI, SetActivePlayer))
 import Arkham.Metrics (dumpMetricsTo, enableMetrics, withMetric)
 import Control.Exception (evaluate)
@@ -266,7 +266,7 @@ main = do
   -- SetActivePlayer if the answering player isn't the active player), and
   -- run the queue.
   wallStart <- getMonotonicTimeNSec
-  runGameApp app (runMessages "headless" (observers narratorRef))
+  runGameApp app (runMessages "headless" (observers narratorRef) >> flushNarrator narratorRef)
 
   perStepTimings <-
     if optReplayAll opts
@@ -286,7 +286,7 @@ main = do
           gBefore <- readIORef gameRef
           runGameApp app (pushAll (ClearUI : msgs))
           t0 <- getMonotonicTimeNSec
-          runGameApp app (runMessages "headless" (observers narratorRef))
+          runGameApp app (runMessages "headless" (observers narratorRef) >> flushNarrator narratorRef)
           t1 <- getMonotonicTimeNSec
           serverNs <-
             if optSimulateServer opts
@@ -334,7 +334,7 @@ main = do
                       <> msgs
                       <> [SetActivePlayer activePid | activePid /= answerPid]
               runGameApp app (pushAll (ClearUI : bracketed))
-              runGameApp app (runMessages "headless" (observers narratorRef))
+              runGameApp app (runMessages "headless" (observers narratorRef) >> flushNarrator narratorRef)
         pure []
 
   wallEnd <- getMonotonicTimeNSec

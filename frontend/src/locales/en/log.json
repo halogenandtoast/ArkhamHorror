@@ -13,6 +13,7 @@
     "resign": "resigning at",
     "resource": "taking a resource at"
   },
+  "actionSurcharge": "+{count} action from {source} | +{count} actions from {source}",
   "activatesAbility": "{investigator} activates an ability on {source}",
   "agendaAdvances": "{agenda} advances",
   "attackOfOpportunityIgnored": "{name}'s attack of opportunity is ignored",
@@ -46,6 +47,7 @@
   "gainsXp": "{investigator} gains {count} experience",
   "healsDamage": "{target} heals {count} damage",
   "healsHorror": "{target} heals {count} horror",
+  "isMovedTo": "{investigator} is moved to {location}",
   "listLast": " and ",
   "listSeparator": ", ",
   "locationRevealed": "{location} is revealed",
@@ -71,6 +73,7 @@
   "removesDoom": "{count} doom is removed from {target} | {count} doom are removed from {target}",
   "resigns": "{investigator} resigns",
   "resolution": "Resolution {count}",
+  "resourceSurcharge": "+{count} resource from {source} | +{count} resources from {source}",
   "resources": "resources",
   "retaliate": "{name} retaliates",
   "revealed": "Reveals {token}",

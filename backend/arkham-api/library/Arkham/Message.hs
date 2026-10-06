@@ -1213,8 +1213,22 @@ data Message
   | Would BatchId [Message]
   | CancelBatch BatchId
   | IgnoreBatch BatchId
+  | {- | Narration only: a card charged an additional cost, and this says which
+    card and how much.
+
+    Pushed where the surcharge is computed, because the condition that produced
+    it does not survive the action being recorded -- Frozen in Fear's
+    @FirstOneOfPerformed@ is false the moment the move it charged for goes into
+    @InvestigatorActionsPerformed@, so nothing downstream can work out who
+    charged what. Nothing in the engine reads this; it exists so the log can
+    say "+1 action from Frozen in Fear" instead of leaving the player to
+    wonder where their action went. -}
+    AdditionalCostPaid InvestigatorId Source Cost
   | WhenWillEnterLocation InvestigatorId LocationId
-  | EnterLocation InvestigatorId LocationId
+  | -- | Carries the 'Movement' that caused it, when there was one, so the log
+    -- can tell a move the investigator chose from one a card forced on them.
+    -- 'Nothing' for the synthesised entries: vehicles and @PlaceInvestigator@.
+    EnterLocation InvestigatorId LocationId (Maybe Movement)
   | Will Message
   | -- must be called on instance directly
     SetOriginalCardCode CardCode

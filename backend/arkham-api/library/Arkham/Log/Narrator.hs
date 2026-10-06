@@ -54,8 +54,9 @@ That is what 'oneShot' is for, and why the skill test lives there.
 module Arkham.Log.Narrator (
   Narrator,
   emptyNarrator,
-  narrate,
   narrationFor,
+  placeNarration,
+  flushNarrator,
 ) where
 
 import Arkham.Ability.Type (AbilityType (..))
@@ -71,6 +72,7 @@ import Arkham.Card
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
 import Arkham.Constants (notPlayerAbilityIndex)
+import Arkham.Cost (Cost (ActionCost, ResourceCost))
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Base (Game (..))
 import Arkham.GameEnv (getSkillTest)
@@ -85,6 +87,7 @@ import Arkham.Log
 import Arkham.Log.Refs
 import Arkham.Message
 import Arkham.Message qualified as Msg
+import Arkham.Movement (moveForced)
 import Arkham.Phase
 import Arkham.Prelude
 import Arkham.Projection
@@ -100,20 +103,26 @@ import Data.Text qualified as T
 
 {- | What the narrator is carrying between messages.
 
-__Empty today, and that is a finding rather than an oversight.__ The design was
-a stack of frames: open on a message, accumulate, emit when you have enough.
-The frames were deleted because nothing could use them — see the note above —
-and GHC proved it: with no machine constructors the frame branch of the driver
-is unreachable, which @-Werror=overlapping-patterns@ rejects outright.
+__Costs, and nothing else.__ The original design was a stack of frames -- open
+on a message, accumulate, emit when you have enough -- and those were deleted
+because, as the note above records, a frame cannot survive the ask that ends
+the action it was opened in.
 
-The ref and the hook stay so that adding state later costs nothing structural.
-When the first event that resolves inside a single action turns up, its frames
-go here.
+A surcharge is the one thing that genuinely has to be carried, and it is safe
+to carry precisely because it does not span an ask: it has to be announced
+where it is computed (see @AdditionalCostPaid@), which is /before/ the thing it
+paid for happens, so sending it straight out would print "+1 action from Frozen
+in Fear" above a move the log has not described yet. Held instead, and attached
+to the next thing narrated, so the two read as one entry.
+
+'flushNarrator' empties this at the end of every action, so a cost whose action
+produced no entry at all is still said, standalone, rather than dropped with
+the ref.
 -}
-data Narrator = Narrator
+newtype Narrator = Narrator {narratorPendingCosts :: [LogEntry]}
 
 emptyNarrator :: Narrator
-emptyNarrator = Narrator
+emptyNarrator = Narrator []
 
 -- * Driver
 
@@ -122,12 +131,62 @@ emptyNarrator = Narrator
 Called for every message popped, before it runs. Reads nothing from game state,
 so it cannot fail on a missing entity, and sends at most one entry.
 -}
-narrate :: (HasGame m, HasGameLogger m) => IORef Narrator -> Message -> m ()
-narrate _ref msg = for_ (narrationFor msg) \build -> build >>= traverse_ sendLog
+
+{- | Send a built narration, or hold it back.
+
+__This, not 'sendLogDuringTest', is what the engine calls.__ Every narration has
+to come through here, because this is the only thing that knows about held
+costs; a second path straight to the logger silently defeats them.
+-}
+placeNarration
+  :: (HasGame m, HasGameLogger m) => IORef Narrator -> Message -> LogEntry -> m ()
+placeNarration ref msg entry = case msg of
+  AdditionalCostPaid {} -> holdCost ref entry
+  _ -> emitWithHeldCosts ref entry
+
+{- | A surcharge waits for the thing it paid for -- unless a block is already
+open, in which case it belongs in that block, now, next to the rest of the
+action it is part of.
+-}
+holdCost :: (HasGame m, HasGameLogger m) => IORef Narrator -> LogEntry -> m ()
+holdCost ref entry = do
+  mst <- getSkillTest
+  case mst of
+    Just _ -> sendLogDuringTest entry
+    Nothing -> modifyIORef' ref \n -> n {narratorPendingCosts = n.narratorPendingCosts <> [entry]}
+
+-- | Send an entry, carrying any held costs with it.
+emitWithHeldCosts :: (HasGame m, HasGameLogger m) => IORef Narrator -> LogEntry -> m ()
+emitWithHeldCosts ref entry = do
+  held <- takeHeldCosts ref
+  if null held
+    then sendLogDuringTest entry
+    else case entry.logEntryGroup of
+      {- A block draws its header's body and nothing else, so a cost attached as a
+      child of one would never be seen. It goes in as the block's first member
+      instead, which is where a reader looking for why the action cost what it
+      did would expect it. -}
+      Just g | g.logGroupRole == GroupHeader -> do
+        sendLogDuringTest entry
+        traverse_ (sendLog . inGroupOf g.logGroupId) held
+      _ -> sendLogDuringTest $ withChildren held entry
+
+{- | Say anything still held at the end of an action.
+
+Nothing claimed it -- a cost paid for something the log has no narration for --
+so it goes out on its own rather than being dropped or leaking into whatever
+the next action happens to narrate first.
+-}
+flushNarrator :: HasGameLogger m => IORef Narrator -> m ()
+flushNarrator ref = takeHeldCosts ref >>= traverse_ sendLog
+
+takeHeldCosts :: MonadIO m => IORef Narrator -> m [LogEntry]
+takeHeldCosts ref =
+  atomicModifyIORef' ref \n -> (n {narratorPendingCosts = []}, n.narratorPendingCosts)
 
 {- | The narration a message calls for, if any.
 
-Split from 'narrate' so the /match/ stays pure: the @Maybe@ is decided without
+Split from 'placeNarration' so the /match/ stays pure: the @Maybe@ is decided without
 touching game state, and only a message that actually narrates pays for a
 'Arkham.GameEnv.runWithEnv'. That matters -- this runs for every message, and
 about 64% of them are plumbing.
@@ -263,10 +322,25 @@ oneShot = \case
   the narrator (fixed in @Arkham.Game@). @MoveTo@ is the intent and can still be
   refused; @PlaceInvestigator@ only fires for vehicles and a few specific
   cards. -}
-  EnterLocation iid lid -> Just do
+  EnterLocation iid lid mMovement -> Just do
     who <- investigatorRefFor iid
     loc <- locationRefFor lid
-    pure $ Just $ action [ikeyPart "log.movesTo" ["investigator" ~> who, "location" ~> loc]]
+    {- Forced moves read differently. "Daisy Walker moves to Attic" is something
+    she decided; a card dragging her there is not, and the log saying she did it
+    invites the reader to look for the action she spent. -}
+    let key = if maybe False moveForced mMovement then "log.isMovedTo" else "log.movesTo"
+    pure $ Just $ action [ikeyPart key ["investigator" ~> who, "location" ~> loc]]
+  {- An extra cost a card imposed.
+
+  Held by 'placeNarration' rather than sent, so it lands under the action it paid for
+  instead of above it. The investigator is not named because by the time this is
+  read it sits beneath an entry that already named them. -}
+  AdditionalCostPaid _ src cost -> Just do
+    mRef <- sourceRefFor src
+    pure do
+      ref <- mRef
+      (key, n) <- surchargeWording cost
+      pure $ notice [ikeyPart key ["count" ~> n, "source" ~> ref]]
   {- Resources gained.
 
   Only the @False@ variant. @True@ is the resource /action/, and its handler
@@ -628,6 +702,17 @@ renderTokens :: HasGame m => Text -> Target -> Int -> m (Maybe LogEntry)
 renderTokens key target n = do
   mTarget <- targetRefFor target
   pure $ flip fmap mTarget \t -> mechanic [ikeyPart key ["target" ~> t, "count" ~> n]]
+
+{- | How to say a surcharge, for the costs that have wording.
+
+Silent for the rest: an unexplained extra cost is worse than nothing, because it
+sends the reader hunting for something the log never said.
+-}
+surchargeWording :: Cost -> Maybe (Text, Int)
+surchargeWording = \case
+  ActionCost n -> Just ("log.actionSurcharge", n)
+  ResourceCost n -> Just ("log.resourceSurcharge", n)
+  _ -> Nothing
 
 -- | A campaign-log key, for the client to name. See 'LogCampaignKey'.
 campaignLogKeyPart :: CampaignLogKey -> LogPart

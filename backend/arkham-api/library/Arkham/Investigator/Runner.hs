@@ -2524,8 +2524,10 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     --        | card <- uncommittableCards
     --        ]
     pure a
-  CheckWindows windows | not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows -> do
-    pure $ a & skippedWindowL .~ False
+  CheckWindows windows
+    | not (investigatorDefeated || investigatorResigned)
+        || Window.hasOwnEliminatedWindow investigatorId windows -> do
+        pure $ a & skippedWindowL .~ False
   SkippedWindow iid | iid == investigatorId -> do
     pure $ a & skippedWindowL .~ True
   ResolveWindowInitiations iid windows pending | iid == investigatorId -> do
@@ -2559,7 +2561,9 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
     pure a
   Do (CheckWindows windows)
     | not investigatorSkippedWindow
-        && (not (investigatorDefeated || investigatorResigned) || Window.hasEliminatedWindow windows) -> do
+        && ( not (investigatorDefeated || investigatorResigned)
+               || Window.hasOwnEliminatedWindow investigatorId windows
+           ) -> do
         actions <- timedSpan "window/getActions" $ getActions a.id windows
         playableCards <-
           if not (investigatorDefeated || investigatorResigned)

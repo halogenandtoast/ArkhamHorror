@@ -137,7 +137,7 @@ instance RunMessage LukeRobinson where
       | active meta
       , not (investigatorSkippedWindow attrs)
       , attrs.inGame
-          || Window.hasEliminatedWindow windows' -> do
+          || Window.hasOwnEliminatedWindow attrs.id windows' -> do
           lukePlayable <- concatMap snd <$> getLukePlayable attrs windows'
           actions <- getActions attrs.id windows'
           playableCards <- getPlayableCards attrs attrs.id (UnpaidCost NeedsAction) windows'

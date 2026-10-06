@@ -99,7 +99,7 @@ runChildrenOfBloodAchievements msg = whenEligibleCampaign $ case msg of
     iids <- select $ IncludeEliminated Anyone
     for_ iids \iid -> setStore (sealedThisRoundKey iid) (0 :: Int)
   -- Per-scenario trackers start clean.
-  CampaignStep (ScenarioStep _) -> setStore civilianDefeatedKey False
+  CampaignStep (normalizedCampaignStep -> ScenarioStep _) -> setStore civilianDefeatedKey False
   EndOfGame _ -> do
     noCivilianDefeats <- not <$> storedFlag civilianDefeatedKey
 

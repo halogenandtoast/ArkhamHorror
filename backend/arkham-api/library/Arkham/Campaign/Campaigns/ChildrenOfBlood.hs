@@ -28,7 +28,7 @@ childrenOfBlood = campaign ChildrenOfBlood (CampaignId "13") "Children of blood"
 
 instance IsCampaign ChildrenOfBlood where
   campaignTokens = chaosBagContents
-  nextStep a = case campaignStep (toAttrs a) of
+  nextStep a = case (toAttrs a).normalizedStep of
     PrologueStep -> continue RiverOfBlood
     RiverOfBlood -> continue NewHorizons
     NewHorizons -> continue $ InterludeStep 1 Nothing

@@ -67,7 +67,6 @@ import Arkham.Matcher (
  )
 import Arkham.Message (Message (MoveAction, RevealLocation))
 import Arkham.Message qualified as Msg
-import Arkham.Name (display, toName)
 import Arkham.Placement
 import Arkham.Prelude
 import Arkham.Projection
@@ -179,10 +178,11 @@ instance RunMessage LocationAttrs where
           [ UpdateHistory iid (HistoryItem HistorySuccessfulInvestigations 1)
           , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
           ]
+      lbl <- getInvestigateResultLabel source a
       push
         $ SkillTestResultOption
           ( SkillTestOption
-              { option = Label ("Discover Clue at " <> display (toName a)) option
+              { option = Label lbl option
               , kind = OriginalOptionKind
               , criteria = Nothing
               }
@@ -195,10 +195,11 @@ instance RunMessage LocationAttrs where
           source
           locationId
           [Successful (Action.Investigate, toTarget a) iid source actual n]
+      lbl <- getInvestigateResultLabel source a
       push
         $ SkillTestResultOption
           ( SkillTestOption
-              { option = Label ("Discover Clue at " <> display (toName a)) option
+              { option = Label lbl option
               , kind = OriginalOptionKind
               , criteria = Nothing
               }

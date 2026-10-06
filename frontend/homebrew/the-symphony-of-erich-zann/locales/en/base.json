@@ -3,5 +3,10 @@
   "key": {
     "youSavedAllTheMusicians": "You saved all the musicians.",
     "allIsQuietAtRueDAuseilForNow": "All is quiet at Rue d'Auseil... for now."
+  },
+  "label": {
+    "gallery": {
+      "investigate": "Discover 1 clue at the Auditorium"
+    }
   }
 }

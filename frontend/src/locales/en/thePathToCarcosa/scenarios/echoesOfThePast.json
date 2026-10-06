@@ -78,6 +78,9 @@
     },
     "ledAstray": {
       "placeClue": "Place 1 of your clues on a Cultist enemy"
+    },
+    "historicalSocietyReadingRoom": {
+      "investigate": "Take 1 doom from an enemy as a clue"
     }
   },
   "tooltips": {

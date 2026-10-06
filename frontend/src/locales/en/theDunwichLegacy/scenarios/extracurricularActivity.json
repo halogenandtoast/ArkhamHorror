@@ -67,5 +67,10 @@
         "cannot": "{'{'}action{'}'}: _Investigate_. If you are successful, instead of discovering clues, take the Alchemical Concoction from underneath this location if able (YOU CANNOT)."
       }
     }
+  },
+  "label": {
+    "alchemyLabs": {
+      "investigate": "Take the Alchemical Concoction"
+    }
   }
 }

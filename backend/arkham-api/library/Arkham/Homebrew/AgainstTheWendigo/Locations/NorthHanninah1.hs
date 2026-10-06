@@ -22,7 +22,10 @@ instance HasAbilities NorthHanninah1 where
       $ riverActions a
       <> [ -- "{action}: Investigate. If you succeed, take control of the
            -- Expedition Notebook."
-           skillTestAbility $ restricted a 3 Here investigateAction_
+           campaignI18n
+             $ withI18nResultLabel "northHanninah.investigate"
+             $ skillTestAbility
+             $ restricted a 3 Here investigateAction_
          ]
 
 instance RunMessage NorthHanninah1 where

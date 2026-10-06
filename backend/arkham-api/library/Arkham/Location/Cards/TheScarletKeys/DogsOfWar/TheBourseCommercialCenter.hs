@@ -22,6 +22,7 @@ instance HasAbilities TheBourseCommercialCenter where
     extendRevealed1 a
       $ scenarioI18n
       $ withI18nTooltip "theBourse.investigate"
+      $ withI18nResultLabel "theBourse.investigate"
       $ groupLimit PerRound
       $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
 

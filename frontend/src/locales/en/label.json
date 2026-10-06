@@ -76,6 +76,7 @@
   "discardTopOfEncounterDeck": "Discard the top card of the encounter deck | Discard the top {count} cards of the encounter deck",
   "discoverAdditionalClues": "Discover 1 additional clue | Discover {count} additional clues",
   "discoverAtYourLocation": "Discover 1 clue at your location | Discover {count} clues at your location",
+  "discoverClueAt": "Discover Clue at {name}",
   "discoverClueAtThisLocation": "Discover a clue at this location",
   "discoverCluesAtConnecting": "Discover 1 clue at a connecting location | Discover {count} clues at a connecting location",
   "discoverNormally": "Discover normally",

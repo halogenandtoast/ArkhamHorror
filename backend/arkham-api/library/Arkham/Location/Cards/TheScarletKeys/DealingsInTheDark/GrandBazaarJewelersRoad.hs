@@ -26,6 +26,7 @@ instance HasAbilities GrandBazaarJewelersRoad where
     extendRevealed1 a
       $ scenarioI18n
       $ withI18nTooltip "grandBazaarJewelersRoad.investigate"
+      $ withI18nResultLabel "grandBazaarJewelersRoad.investigate"
       $ skillTestAbility
       $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
 

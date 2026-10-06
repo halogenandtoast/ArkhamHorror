@@ -128,6 +128,9 @@
     "replicatingAberration": {
       "spendCountermeasure": "Spend 1 countermeasure to prevent the replication",
       "allowSpawn": "Allow the Replicating Aberration to spawn"
+    },
+    "abandonedWindmill": {
+      "investigate": "Move the clues to a Research Site or Temporary HQ"
     }
   },
   "realityAcid": {

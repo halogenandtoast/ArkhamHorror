@@ -40,6 +40,9 @@
     },
     "lightOutOfVoid": {
       "doom": "Place 1 doom on the _Cultist_ enemy in play with the highest evade."
+    },
+    "grandBazaarJewelersRoad": {
+      "investigate": "Play a _Charm_ or _Relic_ from your hand"
     }
   },
   "intro": {

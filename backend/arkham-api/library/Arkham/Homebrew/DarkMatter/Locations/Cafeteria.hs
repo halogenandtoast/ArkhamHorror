@@ -22,6 +22,7 @@ instance HasAbilities Cafeteria where
     extendRevealed1 a
       $ scenarioI18n "electricNightmare"
       $ withI18nTooltip "cafeteria.investigate"
+      $ withI18nResultLabel "cafeteria.investigate"
       $ investigateAbility a 1 mempty Here
 
 instance RunMessage Cafeteria where

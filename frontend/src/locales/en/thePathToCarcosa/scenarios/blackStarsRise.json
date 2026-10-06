@@ -33,6 +33,9 @@
     "riftSeeker": {
       "takeDamageAndHorror": "Take 1 additional damage and 1 additional horror",
       "doom": "Place 1 doom on each agenda"
+    },
+    "knightsHall": {
+      "investigate": "Remember that you have \"found the tower key\""
     }
   },
   "tooltips": {

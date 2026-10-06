@@ -26,6 +26,7 @@ instance HasAbilities AlchemyLabs where
     extendRevealed1 attrs
       $ scenarioI18n
       $ withI18nTooltip ("alchemyLabs.action." <> if canTake then "can" else "cannot")
+      $ withI18nResultLabel "alchemyLabs.investigate"
       $ investigateAbility attrs 1 mempty Here
    where
     canTake = any (`cardMatch` cardIs Assets.alchemicalConcoction) (locationCardsUnderneath attrs)

@@ -57,7 +57,6 @@ import Arkham.Matcher (
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted qualified as Lifted
-import Arkham.Name (display, toName)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Token
@@ -149,10 +148,11 @@ instance RunMessage EnemyLocationAttrs where
              , Successful (Action.Investigate, toTarget a) iid source (toTarget a) n
              ]
           <> [after | clues == 0]
+      lbl <- getInvestigateResultLabel source a
       push
         $ SkillTestResultOption
         $ SkillTestOption
-          { option = Label ("Discover Clue at " <> display (toName a)) option
+          { option = Label lbl option
           , kind = OriginalOptionKind
           , criteria = Nothing
           }

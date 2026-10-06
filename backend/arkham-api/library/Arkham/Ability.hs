@@ -159,6 +159,16 @@ withI18nTooltip t a = a & abilityTooltipL ?~ scope "tooltips" (toI18n t)
 tooltip :: HasI18n => Text -> Ability -> Ability
 tooltip = withI18nTooltip
 
+{- | Name what succeeding at this ability actually does, for the choice that resolves it.
+
+The default label for a successful investigation says "Discover Clue at <location>", which
+is wrong for an ability that does something else instead -- Base of the Hill puts a
+Diverging Path into play. The key is taken under the scope in effect here, so the text
+sits in the scenario's locale beside the tooltip it paraphrases.
+-}
+withI18nResultLabel :: HasI18n => Text -> Ability -> Ability
+withI18nResultLabel t a = a & abilityResultLabelL ?~ ("$" <> labelKey t)
+
 selfAbility :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
 selfAbility a n c = restrictedAbility a n (Self <> c)
 
@@ -347,6 +357,7 @@ mkAbility entity idx type' =
     , abilityCriteria = NoRestriction
     , abilityDoesNotProvokeAttacksOfOpportunity = Nothing
     , abilityTooltip = Nothing
+    , abilityResultLabel = Nothing
     , abilityCanBeCancelled = True
     , abilityDisplayAs = Nothing
     , abilityDelayAdditionalCosts = Nothing

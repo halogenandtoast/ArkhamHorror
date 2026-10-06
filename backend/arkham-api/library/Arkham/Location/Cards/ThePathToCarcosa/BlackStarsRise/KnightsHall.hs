@@ -24,6 +24,7 @@ instance HasAbilities KnightsHall where
     extendRevealed1 a
       $ scenarioI18n
       $ withI18nTooltip "knightsHall.investigate"
+      $ withI18nResultLabel "knightsHall.investigate"
       $ restricted a 1 (Here <> NoCluesOnThis <> thisExists a InvestigatableLocation) investigateAction_
 
 instance RunMessage KnightsHall where

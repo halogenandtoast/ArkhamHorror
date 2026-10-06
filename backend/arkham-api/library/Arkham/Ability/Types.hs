@@ -37,6 +37,11 @@ data Ability = Ability
   , abilityCriteria :: Criterion
   , abilityDoesNotProvokeAttacksOfOpportunity :: Maybe EnemyMatcher
   , abilityTooltip :: Maybe Text
+  , abilityResultLabel :: Maybe Text
+  {- ^ A complete i18n key naming what this ability's success does, for the choice that
+  resolves it. The default label assumes clue discovery, which an ability that does
+  something else instead needs to override. See 'withI18nResultLabel'.
+  -}
   , abilityCanBeCancelled :: Bool
   , abilityDisplayAs :: Maybe AbilityDisplayAs
   , abilityDelayAdditionalCosts :: Maybe AdditionalCostDelay
@@ -94,6 +99,7 @@ buildAbility source idx abilityType =
     , abilityCriteria = NoRestriction
     , abilityDoesNotProvokeAttacksOfOpportunity = Nothing
     , abilityTooltip = Nothing
+    , abilityResultLabel = Nothing
     , abilityCanBeCancelled = True
     , abilityDisplayAs = Nothing
     , abilityDelayAdditionalCosts = Nothing
@@ -141,6 +147,9 @@ instance HasField "blocksIn" Ability (Maybe WindowMatcher) where
 
 instance HasField "wantsSkillTest" Ability (Maybe SkillTestMatcher) where
   getField = abilityWantsSkillTest
+
+instance HasField "resultLabel" Ability (Maybe Text) where
+  getField = abilityResultLabel
 
 instance HasField "limitType" Ability (Maybe AbilityLimitType) where
   getField = abilityLimitType . abilityLimit
@@ -215,6 +224,9 @@ abilityMetadataL = lens abilityMetadata $ \m x -> m {abilityMetadata = x}
 abilityTooltipL :: Lens' Ability (Maybe Text)
 abilityTooltipL = lens abilityTooltip $ \m x -> m {abilityTooltip = x}
 
+abilityResultLabelL :: Lens' Ability (Maybe Text)
+abilityResultLabelL = lens abilityResultLabel $ \m x -> m {abilityResultLabel = x}
+
 abilityCriteriaL :: Lens' Ability Criterion
 abilityCriteriaL = lens abilityCriteria $ \m x -> m {abilityCriteria = x}
 
@@ -259,6 +271,7 @@ instance FromJSON Ability where
         boolVal <- o .: "doesNotProvokeAttacksOfOpportunity"
         pure $ if boolVal then Just AnyEnemy else Nothing
     abilityTooltip <- o .:? "tooltip"
+    abilityResultLabel <- o .:? "resultLabel"
     abilityCanBeCancelled <- o .: "canBeCancelled"
     abilityDisplayAsAction <- o .:? "displayAsAction" .!= False
     abilityDisplayAs <-

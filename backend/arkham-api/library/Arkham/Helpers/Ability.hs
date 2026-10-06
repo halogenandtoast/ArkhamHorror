@@ -8,8 +8,10 @@ import Arkham.ActiveCost.Base (ActiveCostTarget (ForAbility), activeCostTarget)
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Asset.Types (Field (..))
 import Arkham.Campaign.Types (Field (..))
+import Arkham.Card.CardCode (HasCardCode)
 import Arkham.Classes.HasGame
 import Arkham.Classes.Query
+import Arkham.Constants
 import Arkham.Customization
 import Arkham.ForMovement
 import Arkham.Game.Settings
@@ -22,6 +24,7 @@ import Arkham.Helpers.Query (allInvestigators, getActiveInvestigatorId)
 import Arkham.Helpers.Scenario (getScenarioDeck)
 import Arkham.Helpers.Window (getThatEnemy, getThatInvestigator, windowMatches)
 import Arkham.Homebrew.Defs (homebrewActionAffordability)
+import Arkham.I18n (cardNameVar, ikey', varStr, withI18n)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Matcher qualified as Matcher
@@ -37,6 +40,26 @@ import Arkham.Window qualified as Window
 
 getAbility :: HasGame m => AbilityRef -> m (Maybe Ability)
 getAbility ref = selectOne (Matcher.AbilityIs ref.source ref.index)
+
+{- | The label for the choice that resolves a successful investigation of @c@.
+
+It names the location, because that is what a successful investigation normally does to
+it. An ability whose success does something else carries its own key instead (see
+'withI18nResultLabel'); the location's name rides along as @name@ either way. The basic
+investigate action never overrides, so it never pays for the lookup.
+-}
+getInvestigateResultLabel
+  :: (HasGame m, HasCardCode c, Named c) => Source -> c -> m Text
+getInvestigateResultLabel source c = do
+  mLabel <- case source of
+    AbilitySource inner idx -> resultLabelOf inner idx
+    UseAbilitySource _ inner idx -> resultLabelOf inner idx
+    _ -> pure Nothing
+  pure $ withI18n $ cardNameVar c $ maybe (ikey' "label.discoverClueAt") (<> varStr) mLabel
+ where
+  resultLabelOf inner idx
+    | idx == AbilityInvestigate = pure Nothing
+    | otherwise = (>>= (.resultLabel)) <$> getAbility (AbilityRef inner idx)
 
 {- | An ability's window matcher with `ThisLocation` resolved against its source.
 

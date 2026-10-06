@@ -37,13 +37,15 @@
       "reduceDifficulty": "Reduce difficulty by 2 and draw 1 fewer card",
       "doNotReduce": "Do not reduce",
       "pay": "Pay 1{'{'}perPlayer{'}'} clues",
-      "doNotPay": "Do not pay"
+      "doNotPay": "Do not pay",
+      "investigate": "Draw cards"
     },
     "theBourse": {
       "reduceDifficulty": "Reduce difficulty by 2 and gain 2 fewer resources",
       "doNotReduce": "Do not reduce",
       "pay": "Pay 1{'{'}perPlayer{'}'} clues",
-      "doNotPay": "Do not pay"
+      "doNotPay": "Do not pay",
+      "investigate": "Gain resources"
     }
   },
   "intro": {

@@ -24,6 +24,7 @@ instance HasAbilities CatacombsOfKomElShoqafaAncientTomb where
     extendRevealed1 a
       $ scenarioI18n
       $ withI18nTooltip "catacombsOfKomElShoqafa.investigate"
+      $ withI18nResultLabel "catacombsOfKomElShoqafa.investigate"
       $ groupLimit PerRound
       $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
 

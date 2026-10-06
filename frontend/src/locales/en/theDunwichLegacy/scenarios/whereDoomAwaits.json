@@ -72,5 +72,16 @@
       "title": "Resolution 2",
       "body": "<div class='resolution'><p>_Resolution 2_: The sorcerers from Dunwich, seeking arcane power from beyond this realm, have accomplished what Wilbur and Old Whateley could not. Through blood sacrifice and indescribable experiments, the dark power the sorcerers sought is now within their reach. However, they will never get the chance to truly wield this power. In beseeching Wilbur’s father for knowledge, they have drawn the creature forth from its extradimensional realm. Yog-Sothoth emerges from the open rift above Sentinel Hill, blotting out the sky and enveloping the world. Now it has come to Earth, and it rules where humanity once tread.</p><ul><li>In your Campaign Log, record that *Yog-Sothoth tore apart the barrier between worlds, and became one with all reality*.</li><li>Each investigator is driven _insane_.</li><li>The investigators lose the campaign.</li></ul></div>"
     }
+  },
+  "label": {
+    "baseOfTheHill": {
+      "investigate": "Put a random Diverging Path into play"
+    },
+    "ascendingPath": {
+      "investigate": "Put a random Altered Path into play"
+    },
+    "destroyedPath": {
+      "investigate": "Remove 1 doom from {name}"
+    }
   }
 }

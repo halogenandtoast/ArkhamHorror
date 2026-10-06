@@ -15,5 +15,10 @@
     "youDefeatedTheWendigo": "You defeated the Wendigo.",
     "youHaveEnoughEvidenceToClearDrNadelmann": "You have enough evidence to clear Dr. Nadelmann.",
     "theWendigoStillRoamsTheNorthHanninahValley": "You know that the Wendigo still roams the North Hanninah valley."
+  },
+  "label": {
+    "northHanninah": {
+      "investigate": "Take control of the Expedition Notebook"
+    }
   }
 }

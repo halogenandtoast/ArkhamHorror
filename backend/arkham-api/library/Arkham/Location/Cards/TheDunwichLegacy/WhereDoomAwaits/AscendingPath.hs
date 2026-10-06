@@ -27,6 +27,7 @@ instance HasAbilities AscendingPath where
     extendRevealed1 attrs
       $ scenarioI18n
       $ withI18nTooltip "ascendingPath.investigate"
+      $ withI18nResultLabel "ascendingPath.investigate"
       $ playerLimit PerRound
       $ investigateAbility attrs 1 mempty Here
 

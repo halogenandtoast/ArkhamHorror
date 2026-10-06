@@ -24,6 +24,9 @@
     "silenceSpeaks": {
       "concealed": "Search the encounter deck and discard pile for an enemy with the concealed keyword and draw it (resolving its concealed keyword). Shuffle the encounter deck.",
       "hollowed": "Reveal the top card of each investigator's deck. Each investigator draws each weakness they revealed in this way. Set each other revealed card aside, out of play, as a hollow."
+    },
+    "miramarYachtClub": {
+      "investigate": "Look at concealed mini-cards"
     }
   },
   "intro": {

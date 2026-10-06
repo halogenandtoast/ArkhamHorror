@@ -25,7 +25,7 @@ spec = describe "Clean Sweep" $ do
       startSkillTest
       applyResults
       chooseOptionMatching "discover the clue first" \case
-        Label lbl _ -> "Discover Clue at" `isInfixOf` lbl
+        Label lbl _ -> "$label.discoverClueAt" `isPrefixOf` lbl
         _ -> False
       -- Clean Sweep's option is the only one left, so it runs without a further prompt
       clickLabel "$label.moveToConnecting"

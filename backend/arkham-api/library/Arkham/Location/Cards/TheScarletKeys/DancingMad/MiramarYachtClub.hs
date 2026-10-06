@@ -8,6 +8,7 @@ import Arkham.Location.CardDefs.TheScarletKeys.DancingMad qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheScarletKeys.DancingMad.Helpers
 
 newtype MiramarYachtClub = MiramarYachtClub LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,7 +19,10 @@ miramarYachtClub = symbolLabel $ location MiramarYachtClub Cards.miramarYachtClu
 
 instance HasAbilities MiramarYachtClub where
   getAbilities (MiramarYachtClub a) =
-    extendRevealed1 a $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
+    extendRevealed1 a
+      $ scenarioI18n
+      $ withI18nResultLabel "miramarYachtClub.investigate"
+      $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
 
 instance RunMessage MiramarYachtClub where
   runMessage msg l@(MiramarYachtClub attrs) = runQueueT $ case msg of

@@ -8,6 +8,7 @@ import Arkham.Location.CardDefs.TheBlobThatAteEverythingELSE qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
+import Arkham.Scenarios.TheBlobThatAteEverything.Helpers (scenarioI18n)
 
 newtype AbandonedWindmill = AbandonedWindmill LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -18,7 +19,10 @@ abandonedWindmill = locationWith AbandonedWindmill Cards.abandonedWindmill 5 (Pe
 
 instance HasAbilities AbandonedWindmill where
   getAbilities (AbandonedWindmill a) =
-    extendRevealed1 a $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
+    extendRevealed1 a
+      $ scenarioI18n
+      $ withI18nResultLabel "abandonedWindmill.investigate"
+      $ restricted a 1 (Here <> thisExists a InvestigatableLocation) investigateAction_
 
 instance RunMessage AbandonedWindmill where
   runMessage msg l@(AbandonedWindmill attrs) = runQueueT $ case msg of

@@ -3,6 +3,7 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Locations.Gallery (gallery) where
 import Arkham.Ability
 import Arkham.Action qualified as Action
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Cards
+import Arkham.Homebrew.TheSymphonyOfErichZann.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
@@ -15,7 +16,11 @@ gallery = location Gallery Cards.gallery 4 (PerPlayer 2)
 
 instance HasAbilities Gallery where
   -- "[action]: Investigate. If you succeed, discover 1 additional clue from the Auditorium."
-  getAbilities (Gallery a) = extend1 a $ restricted a 1 Here actionAbility
+  getAbilities (Gallery a) =
+    extend1 a
+      $ campaignI18n
+      $ withI18nResultLabel "gallery.investigate"
+      $ restricted a 1 Here actionAbility
 
 instance RunMessage Gallery where
   runMessage msg l@(Gallery attrs) = runQueueT $ case msg of

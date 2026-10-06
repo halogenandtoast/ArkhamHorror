@@ -38,10 +38,18 @@ ikey' t = "$" <> ikey t
 
 ikey :: HasI18n => Scope -> Text
 ikey t = intercalate "." (?scope <> [t]) <> varStr
+
+{- | The trailing @k=v@ pairs 'ikey' appends, on their own.
+
+A key built under one scope and used under another -- an ability's label, frozen at the
+card's definition site and emitted where the location's name is known -- takes its vars
+here instead.
+-}
+varStr :: HasI18n => Text
+varStr = case map toVarPair (mapToList ?scopeVars) of
+  [] -> ""
+  vs -> " " <> unwords vs
  where
-  varStr = case map toVarPair (mapToList ?scopeVars) of
-    [] -> ""
-    vs -> " " <> unwords vs
   toVarPair (k, v) = k <> "=" <> toVar v
   toVar = \case
     Number n -> "i:" <> tshow n

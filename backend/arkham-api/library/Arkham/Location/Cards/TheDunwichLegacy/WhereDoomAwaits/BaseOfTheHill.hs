@@ -30,6 +30,7 @@ instance HasAbilities BaseOfTheHill where
       $ scenarioI18n
         [ withI18nTooltip "baseOfTheHill.resign" $ locationResignAction a
         , withI18nTooltip "baseOfTheHill.investigate"
+            $ withI18nResultLabel "baseOfTheHill.investigate"
             $ playerLimit PerRound
             $ investigateAbility a 1 mempty Here
         ]

@@ -23,6 +23,7 @@ instance HasAbilities DestroyedPath where
       [ mkAbility a 1 $ forced $ RevealLocation #after You (be a)
       , scenarioI18n
           $ withI18nTooltip "destroyedPath.investigate"
+          $ withI18nResultLabel "destroyedPath.investigate"
           $ investigateAbility a 2 mempty Here
       ]
 

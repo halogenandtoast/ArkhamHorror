@@ -23,6 +23,7 @@ instance HasAbilities HistoricalSocietyReadingRoom where
         then
           [ scenarioI18n
               $ withI18nTooltip "historicalSocietyReadingRoom.investigate"
+              $ withI18nResultLabel "historicalSocietyReadingRoom.investigate"
               $ groupLimit PerRound
               $ investigateAbility attrs 1 mempty Here
           ]

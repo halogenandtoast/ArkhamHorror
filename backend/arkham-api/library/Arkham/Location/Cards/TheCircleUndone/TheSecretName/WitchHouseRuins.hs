@@ -8,6 +8,7 @@ import Arkham.I18n
 import Arkham.Location.CardDefs.TheCircleUndone.TheSecretName qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Message qualified as Msg
+import Arkham.Scenarios.TheCircleUndone.TheSecretName.Helpers (scenarioI18n)
 
 newtype WitchHouseRuins = WitchHouseRuins LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -20,7 +21,10 @@ instance HasAbilities WitchHouseRuins where
   getAbilities (WitchHouseRuins a) =
     extendRevealed
       a
-      [ playerLimit PerGame $ investigateAbility a 1 mempty Here
+      [ scenarioI18n
+          $ withI18nResultLabel "witchHouseRuins.investigate"
+          $ playerLimit PerGame
+          $ investigateAbility a 1 mempty Here
       , withI18n $ countVar 1 $ hauntedI "loseActions" a 2
       ]
 

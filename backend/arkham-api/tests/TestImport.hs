@@ -948,6 +948,7 @@ newGame scenario' investigator = do
         , gameUndoRoundStep = Nothing
         , gameAsIfAtIgnored = mempty
         , gameLocationOffsets = mempty
+        , gameCardPlayStack = mempty
         }
 
   liftIO $ do

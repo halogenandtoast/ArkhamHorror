@@ -32,7 +32,7 @@ import Arkham.Event.Types (Field (..))
 which imports this module. The boot file declares them, so taking them from
 there breaks the cycle -- the same trick "Arkham.Investigate" uses. -}
 import {-# SOURCE #-} Arkham.Game ()
-import Arkham.GameEnv (getSkillTest)
+import Arkham.GameEnv (getCardPlayStack, getSkillTest)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
@@ -170,25 +170,45 @@ sourceRefFor = \case
   BothSource s _ -> sourceRefFor s
   _ -> pure Nothing
 
-{- | Send an entry, filed under the open skill test when there is one.
+{- | Send an entry, filed under whatever block is open.
 
-Anything that happens /during/ a test -- the clue it discovered, the tokens it
-revealed -- belongs inside the test's block rather than beside it, and the
-sender should not have to know whether a test is running. With no test open
-this is exactly 'sendLog'.
+Anything that happens /during/ a test or a card play -- the clue it discovered,
+the tokens it revealed, what it cost -- belongs inside that block rather than
+beside it, and the sender should not have to know one is running. With nothing
+open this is exactly 'sendLog'.
+
+__Membership is what keeps a block in one piece.__ The client only merges a
+/contiguous/ run of rows sharing a group id (@groupLogEntries@), so an entry
+that happens mid-block and does not join it does not merely sit outside: it
+splits the block in two.
 -}
-sendLogDuringTest :: (HasGame m, HasGameLogger m) => LogEntry -> m ()
-sendLogDuringTest entry
-  -- An entry that already says which group it belongs to keeps its role: the
-  -- test's own header and summary set theirs explicitly.
+sendLogInOpenBlock :: (HasGame m, HasGameLogger m) => LogEntry -> m ()
+sendLogInOpenBlock entry
+  -- An entry that already says which group it belongs to keeps its role: a
+  -- block's own header and summary set theirs explicitly.
   | isJust entry.logEntryGroup = sendLog entry
   | otherwise = do
-      mst <- getSkillTest
-      sendLog $ maybe entry (\st -> inGroupOf (skillTestLogKey st) entry) mst
+      mkey <- openBlockKey
+      sendLog $ maybe entry (`inGroupOf` entry) mkey
+
+{- | The block an entry should join, if any.
+
+A skill test wins over a card play: playing a card to commit to a test happens
+inside the test, not the other way round.
+-}
+openBlockKey :: HasGame m => m (Maybe Text)
+openBlockKey =
+  getSkillTest >>= \case
+    Just st -> pure $ Just (skillTestLogKey st)
+    Nothing -> fmap cardPlayLogKey . lastMay <$> getCardPlayStack
 
 -- | The key a skill test's block is filed under. Shared with the narrator.
 skillTestLogKey :: SkillTest -> Text
 skillTestLogKey st = "skillTest:" <> tshow st.id
+
+-- | The key a card play's block is filed under. Shared with the narrator.
+cardPlayLogKey :: CardId -> Text
+cardPlayLogKey cid = "cardPlay:" <> tshow cid
 
 {- | Last resort when the entity is gone: the id, so the line still names
 something stable, and the client can still try its own lookup.

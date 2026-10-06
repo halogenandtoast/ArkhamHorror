@@ -138,6 +138,12 @@ instance MonadRandom GameT where
 getSkillTest :: HasGame m => m (Maybe SkillTest)
 getSkillTest = gameSkillTest <$> getGame
 
+{- | The card plays currently resolving, innermost last. Log-only; see
+'Arkham.Game.Base.gameCardPlayStack'.
+-}
+getCardPlayStack :: HasGame m => m [CardId]
+getCardPlayStack = gameCardPlayStack <$> getGame
+
 getsSkillTest :: HasGame m => (SkillTest -> a) -> m (Maybe a)
 getsSkillTest f = fmap f . gameSkillTest <$> getGame
 

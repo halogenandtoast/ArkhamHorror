@@ -115,7 +115,7 @@ import Arkham.Key
 import Arkham.Keyword (Keyword (Starting))
 import Arkham.Location.Types (Field (..))
 import Arkham.Log (ikeyPart, investigatorRef, mechanic, (~>))
-import Arkham.Log.Refs (locationRefFor, sendLogDuringTest)
+import Arkham.Log.Refs (locationRefFor, sendLogInOpenBlock)
 import Arkham.Matcher (
   AssetMatcher (..),
   CardMatcher (..),
@@ -1578,7 +1578,7 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = runQueueT $ case msg of
             locRef <- locationRefFor lid
             -- Inside the test's block when one is open: discovering the clue is
             -- what the investigation WAS, not a separate thing that happened.
-            sendLogDuringTest
+            sendLogInOpenBlock
               $ mechanic
                 [ ikeyPart
                     "log.discoveredCluesAt"

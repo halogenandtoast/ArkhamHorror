@@ -175,6 +175,18 @@ data Game = Game
   , gameUndoRoundStep :: Maybe Int
   , gameAsIfAtIgnored :: Set InvestigatorId -- transient: investigators with AsIfAt suppressed during window processing
   , gameLocationOffsets :: Map LocationId (Double, Double) -- player-driven board layout overrides; shared across players
+  , gameCardPlayStack :: [CardId]
+  {- ^ The card plays currently resolving, innermost last.
+
+    Log-only, and here rather than in the narrator because the narrator cannot
+    hold it: its ref lives for one action, and a reaction to a card entering
+    play (Research Librarian) ends the action between paying for the card and
+    resolving it. The 'Arkham.ActiveCost.ActiveCost' cannot stand in either --
+    @PayCostFinished@ deletes it as soon as the cost is paid, long before the
+    card resolves.
+
+    A stack, not a @Maybe@: playing a card can play another one.
+  -}
   }
   deriving stock (Eq, Show)
 

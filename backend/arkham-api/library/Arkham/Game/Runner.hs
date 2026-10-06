@@ -2014,7 +2014,18 @@ runGameMessage msg g = case msg of
     activeCost <- createActiveCostForCard iid card isPlayAction windows'
 
     push $ CreatedCost $ activeCostId activeCost
-    pure $ g & activeCostL %~ insertMap (activeCostId activeCost) activeCost
+    {- Mark the play as resolving, for the log. The block it opens has to span
+    the cost and the card, and nothing else in state does: the ActiveCost below
+    is deleted by @PayCostFinished@ the moment the cost is paid, and a reaction
+    to the card entering play ends the action, so the narrator cannot hold it
+    either. Popped by 'ResolvedPlayCard'. -}
+    pure
+      $ g
+      & (activeCostL %~ insertMap (activeCostId activeCost) activeCost)
+      & (cardPlayStackL %~ (<> [toCardId card]))
+  {- Ends the block opened above. The narrator sees this message BEFORE it runs,
+  so the stack is still set when the entry naming the card is built. -}
+  ResolvedPlayCard _ card -> pure $ g & cardPlayStackL %~ filter (/= toCardId card)
   WindowAsk ws pid q -> do
     -- get all other asks for these windows and combine into an AskMap
     others <- popMessagesMatching \case

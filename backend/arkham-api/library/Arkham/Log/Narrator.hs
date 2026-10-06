@@ -108,12 +108,20 @@ on a message, accumulate, emit when you have enough -- and those were deleted
 because, as the note above records, a frame cannot survive the ask that ends
 the action it was opened in.
 
-A surcharge is the one thing that genuinely has to be carried, and it is safe
-to carry precisely because it does not span an ask: it has to be announced
-where it is computed (see @AdditionalCostPaid@), which is /before/ the thing it
-paid for happens, so sending it straight out would print "+1 action from Frozen
-in Fear" above a move the log has not described yet. Held instead, and attached
-to the next thing narrated, so the two read as one entry.
+A cost is the one thing that genuinely has to be carried: it has to be
+announced where it is computed (see @AdditionalCostPaid@), which is /before/
+the thing it paid for happens, so sending it straight out would print "+1
+action from Frozen in Fear" above a move the log has not described yet. Held
+instead, and attached to the next thing narrated, so the two read as one entry.
+
+__This hold only works when no ask intervenes, and that is not something to
+assume.__ Research Librarian disproved the comfortable version of this claim: a
+@freeReaction@ on @AssetEntersPlay #after@ ends the action between paying for
+the card and resolving it, so the hold flushed and the payment stranded itself
+above a play the log had not written. Anything that must survive an ask belongs
+in game state, where @gameCardPlayStack@ puts it -- carrying context that is
+gone by the time the entry can be built is exactly what the state-machine
+design was for, and the per-action ref is the wrong place to keep it.
 
 'flushNarrator' empties this at the end of every action, so a cost whose action
 produced no entry at all is still said, standalone, rather than dropped with
@@ -134,15 +142,28 @@ so it cannot fail on a missing entity, and sends at most one entry.
 
 {- | Send a built narration, or hold it back.
 
-__This, not 'sendLogDuringTest', is what the engine calls.__ Every narration has
+__This, not 'sendLogInOpenBlock', is what the engine calls.__ Every narration has
 to come through here, because this is the only thing that knows about held
 costs; a second path straight to the logger silently defeats them.
 -}
 placeNarration
   :: (HasGame m, HasGameLogger m) => IORef Narrator -> Message -> LogEntry -> m ()
-placeNarration ref msg entry = case msg of
-  AdditionalCostPaid {} -> holdCost ref entry
-  _ -> emitWithHeldCosts ref entry
+placeNarration ref msg entry
+  | isCostNarration msg = holdCost ref entry
+  | otherwise = emitWithHeldCosts ref entry
+
+{- | Messages whose narration is a price rather than an event.
+
+Every one of these is announced before the thing it bought -- resources leave
+your pool on the way to playing the card, not after -- so sending them straight
+out puts the cost above an entry the log has not written yet. Held instead, and
+attached to whatever the payment turns out to have been for.
+-}
+isCostNarration :: Message -> Bool
+isCostNarration = \case
+  AdditionalCostPaid {} -> True
+  SpendResources {} -> True
+  _ -> False
 
 {- | A surcharge waits for the thing it paid for -- unless a block is already
 open, in which case it belongs in that block, now, next to the rest of the
@@ -150,26 +171,42 @@ action it is part of.
 -}
 holdCost :: (HasGame m, HasGameLogger m) => IORef Narrator -> LogEntry -> m ()
 holdCost ref entry = do
-  mst <- getSkillTest
-  case mst of
-    Just _ -> sendLogDuringTest entry
+  mkey <- openBlockKey
+  case mkey of
+    Just _ -> sendLogInOpenBlock entry
     Nothing -> modifyIORef' ref \n -> n {narratorPendingCosts = n.narratorPendingCosts <> [entry]}
 
 -- | Send an entry, carrying any held costs with it.
 emitWithHeldCosts :: (HasGame m, HasGameLogger m) => IORef Narrator -> LogEntry -> m ()
 emitWithHeldCosts ref entry = do
   held <- takeHeldCosts ref
-  if null held
-    then sendLogDuringTest entry
-    else case entry.logEntryGroup of
+  case held of
+    [] -> sendLogInOpenBlock entry
+    _ | not (canOwnCosts entry) -> do
+      -- Nothing here paid for anything, so the costs stand on their own rather
+      -- than being adopted by whatever happened to come next.
+      traverse_ sendLog held
+      sendLogInOpenBlock entry
+    _ -> case entry.logEntryGroup of
       {- A block draws its header's body and nothing else, so a cost attached as a
       child of one would never be seen. It goes in as the block's first member
       instead, which is where a reader looking for why the action cost what it
       did would expect it. -}
       Just g | g.logGroupRole == GroupHeader -> do
-        sendLogDuringTest entry
+        sendLogInOpenBlock entry
         traverse_ (sendLog . inGroupOf g.logGroupId) held
-      _ -> sendLogDuringTest $ withChildren held entry
+      _ -> sendLogInOpenBlock $ withChildren held entry
+
+{- | Whether an entry is the kind of thing a payment can belong to.
+
+Something a player chose to do, or a block being opened by one. A payment is
+otherwise left alone: a phase banner, a damage line or a campaign-log write
+would adopt it just as happily, and "Mythos phase / spends 2 resources" is
+worse than the two lines apart.
+-}
+canOwnCosts :: LogEntry -> Bool
+canOwnCosts entry =
+  entry.logEntryKind == Action || any ((== GroupHeader) . logGroupRole) entry.logEntryGroup
 
 {- | Say anything still held at the end of an action.
 
@@ -311,9 +348,21 @@ oneShot = \case
     n <- gameRoundCount <$> getGame
     pure $ Just $ structure [ikeyPart "log.round" ["count" ~> (n + 1)]]
   -- \* Doing things
+  {- Playing a card, as a block: the play, what it cost, and anything the card
+  did on the way in.
+
+  The header arrives LAST -- the cost is paid before the card resolves -- and
+  that is fine, because the client assigns header/member/summary by role rather
+  than by arrival order. What it does need is for every row in between to carry
+  the same group id, which is what @gameCardPlayStack@ and
+  'Arkham.Log.Refs.openBlockKey' are for; a row that does not join splits the
+  block in two. -}
   ResolvedPlayCard iid card -> Just do
     who <- investigatorRefFor iid
-    pure $ Just $ action [ikeyPart "log.playsCard" ["investigator" ~> who, "card" ~> card]]
+    pure
+      $ Just
+      $ opensGroup (cardPlayLogKey card.id)
+      $ action [ikeyPart "log.playsCard" ["investigator" ~> who, "card" ~> card]]
   {- Movement.
 
   @EnterLocation@ after all. It __is__ pushed -- from @handleDoResolveMovement@
@@ -489,9 +538,15 @@ oneShot = \case
             , "count" ~> length cards
             ]
         ]
+  {- Paying for something.
+
+  A 'notice', not a 'mechanic', and held rather than sent: it is the price of
+  the thing on the line above it, not an event of its own. See 'isCostNarration'.
+  Standalone is still a valid outcome -- a card that just takes resources off
+  you pays for nothing -- which is why the investigator stays named. -}
   SpendResources iid n | n > 0 -> Just do
     who <- investigatorRefFor iid
-    pure $ Just $ mechanic [ikeyPart "log.spendsResources" ["investigator" ~> who, "count" ~> n]]
+    pure $ Just $ notice [ikeyPart "log.spendsResources" ["investigator" ~> who, "count" ~> n]]
   {- An ability being used.
 
   @UseAbility@, not @UseCardAbility@: only this one carries the whole 'Ability',

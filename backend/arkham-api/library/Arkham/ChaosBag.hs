@@ -20,7 +20,7 @@ import Arkham.Homebrew.Tokens (chaosTokenFacePool, pooledChaosTokenFaces)
 import Arkham.Id
 import Arkham.Investigator.Types (Investigator)
 import Arkham.Log (LogPart (..), ikeyPart, investigatorRef, mechanic, toLogPart, (~>))
-import Arkham.Log.Refs (sendLogDuringTest)
+import Arkham.Log.Refs (sendLogInOpenBlock)
 import Arkham.Matcher (
   ChaosTokenMatcher (AnyChaosToken, ChaosTokenFaceIs, ChaosTokenFaceIsNot, IncludeSealed),
  )
@@ -906,12 +906,12 @@ instance RunMessage ChaosBag where
           {- Structured, and still batched: a two-token draw is one line, not
           two, which a per-token narration could not preserve.
 
-          'sendLogDuringTest', so a test's own draw lands inside the test's
+          'sendLogInOpenBlock', so a test's own draw lands inside the test's
           block instead of beside it. A draw with no test open -- Dark Prophecy,
           an ability that reveals -- is an ordinary top-level line. -}
           for_ miid \iid -> do
             investigator <- getAttrs @Investigator iid
-            sendLogDuringTest
+            sendLogInOpenBlock
               $ mechanic
                 [ ikeyPart
                     "log.drawsChaosTokens"

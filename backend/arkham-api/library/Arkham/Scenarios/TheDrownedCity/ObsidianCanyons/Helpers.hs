@@ -24,7 +24,7 @@ import Arkham.Location.Grid
 import Arkham.Location.Types (Field (..), LocationAttrs)
 import Arkham.Matcher hiding (LocationCard)
 import Arkham.Message (
-  Message (PlaceEnemy, PlaceGrid, PlaceInvestigator, RemoveFromGame, Run, StoryMessage),
+  Message (PlaceEnemy, PlaceGrid, PlaceInvestigator, Run, StoryMessage),
  )
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted
@@ -443,9 +443,22 @@ obsidianSkylineRules a = do
 {- | "Remove <location> from the game, ignoring its text box." R'lyeh Streets and
 Central Spire both say they cannot leave play, so the act has to go around the
 usual leave-play path rather than through 'removeLocation'.
+
+It still has to ANNOUNCE the removal. A bare @RemoveFromGame (LocationTarget _)@
+only deletes the entity, so everything pointing at it is orphaned: a treachery
+keeps an @AttachedToLocation@ naming a location that no longer exists -- in play,
+still offering its abilities, but with no host for the UI to draw -- and
+surviving locations keep it in their @directions@. Jenny's Searching for Izzie
+attached to R'lyeh Streets survived act 1 that way and left the forced
+"when you are eliminated" ability unclickable, #5812.
+
+Nobody is standing on the location when this runs: every caller's act advances
+only once each undefeated investigator is at the surviving anchor. The scenario's
+generic gap-fill stands down because the act's 'rebuildSkyline' has already
+queued its @PlaceGrid@ ('skylineInstructionsPending').
 -}
 removeIgnoringTextBox :: ReverseQueue m => LocationId -> m ()
-removeIgnoringTextBox lid = push $ RemoveFromGame (LocationTarget lid)
+removeIgnoringTextBox = removedLocation
 
 {- | The @[action]@ every act in this scenario shares:
 

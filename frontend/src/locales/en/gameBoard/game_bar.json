@@ -96,6 +96,7 @@
 
     "debug": "Debug",
     "toggleDebug": "Toggle Debug",
+    "debugEntities": "Entities",
     "debugExport": "Debug Export",
     "debugExportScenario": "Debug Export (Scenario)",
     "debugExportFull": "Debug Export (Full)",

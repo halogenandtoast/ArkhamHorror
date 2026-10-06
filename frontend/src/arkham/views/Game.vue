@@ -32,6 +32,7 @@ import {
   ExclamationTriangleIcon,
   FlagIcon,
   RectangleStackIcon,
+  TableCellsIcon,
 } from '@heroicons/vue/20/solid'
 import { LottieAnimation } from 'lottie-web-vue'
 import * as JsonDecoder from 'ts.data.json'
@@ -71,6 +72,7 @@ import {
 } from '@/arkham/debugCardDrop'
 import useEmitter from '@/composable/useEmitter'
 import { useDebug } from '@/arkham/debug'
+import EntityBrowser from '@/arkham/components/debug/EntityBrowser.vue'
 import { cardImg, imgsrc, isTypingTarget } from '@/arkham/helpers'
 import { cardFaceImages, cardHasDistinctBack } from '@/arkham/cardImages'
 import { handleEmbeddedI18n } from '@/arkham/i18n'
@@ -177,6 +179,7 @@ export interface Props {
 const props = withDefaults(defineProps<Props>(), { spectate: false })
 
 const debug = useDebug()
+const showEntityBrowser = ref(false)
 const emitter = useEmitter()
 const router = useRouter()
 const route = useRoute()
@@ -2802,6 +2805,11 @@ onUnmounted(() => {
                 <DocumentArrowDownIcon aria-hidden="true" /> {{ $t('gameBar.debugExportFull') }}
               </button>
             </MenuItem>
+            <MenuItem v-slot="{ active }">
+              <button :class="{ active }" @click="showEntityBrowser = true">
+                <TableCellsIcon aria-hidden="true" /> {{ $t('gameBar.debugEntities') }}
+              </button>
+            </MenuItem>
           </template>
         </Menu>
       </div>
@@ -3159,6 +3167,14 @@ onUnmounted(() => {
       :yes="undoToStepConfirmed"
       :no="() => (confirmingUndoStep = null)"
     />
+    <Teleport to="body">
+      <EntityBrowser
+        v-if="showEntityBrowser && game !== null && playerId !== null"
+        :game="game"
+        :playerId="playerId"
+        @close="showEntityBrowser = false"
+      />
+    </Teleport>
   </div>
 </template>
 

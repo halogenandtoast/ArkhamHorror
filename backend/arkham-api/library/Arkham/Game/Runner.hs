@@ -1467,7 +1467,16 @@ runGameMessage msg g = case msg of
     pushWhen (replaceStrategy == DefaultReplace) $ EnemyCheckEngagement eid
     when (card.id == toCardId enemy) $ replaceCard card.id card
     -- todo: should we just run this in place?
-    pure $ g & entitiesL . enemiesL . at eid ?~ enemy'
+    -- The replacement side enters play now, so it cannot respond to a window whose
+    -- condition already occurred -- including the fight or evade that flipped it.
+    pure
+      $ g
+      & entitiesL
+      . enemiesL
+      . at eid
+      ?~ enemy'
+      & entryTicksL
+      %~ insertMap card.id (gameWindowTick g)
   Do (DiscardCard iid _ cid) -> do
     card <- getCard cid
     if cdCardInHandEffects (toCardDef card)

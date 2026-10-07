@@ -686,17 +686,6 @@ const recordableType = (value: any): string | undefined => value?.recordType
 const displayRecordValue = (key: string, value: any): string => {
   const contents: string | undefined = value.contents || value.recordVal?.contents
 
-  /* A `SomeRecorded` names its own recordable type, so an entry that is not a card
-   * code says so and must not be looked up as one -- that is what put "unknown" on
-   * screen for every trait a custom card recorded. Checked before the per-key
-   * branches below so it cannot be reached by a key nobody has hardcoded. */
-  const recordType = recordableType(value)
-  if (recordType && recordType !== 'RecordableCardCode') {
-    if (contents === undefined || contents === null) return ''
-    // A trait, a memento, a memory: all written as their constructor name.
-    return typeof contents === 'string' ? splitCamelCase(contents) : String(contents)
-  }
-
   if (key === 'theCircleUndone.key.mementosDiscovered') return contents ? toCapitalizedWords(contents) : ''
 
   if (key === 'theInnsmouthConspiracy.key.memoriesRecovered' && contents) {
@@ -730,6 +719,18 @@ const displayRecordValue = (key: string, value: any): string => {
   }
 
   if (isSeal(key)) return ''
+
+  /* A `SomeRecorded` names its own recordable type, so an entry that is not a card
+   * code says so and must not be looked up as one -- that is what put "unknown" on
+   * screen for every trait a custom card recorded. Below the per-key branches, so a
+   * key with a locale entry keeps it -- a memory is a `RecordableMemory`, and the
+   * generic path printed "AMeeting With Thomas Dawson". */
+  const recordType = recordableType(value)
+  if (recordType && recordType !== 'RecordableCardCode') {
+    if (contents === undefined || contents === null) return ''
+    // A trait, a memento, a memory: all written as their constructor name.
+    return typeof contents === 'string' ? splitCamelCase(contents) : String(contents)
+  }
 
   const code = contents
   return code ? cardCodeToTitle(code) : ''

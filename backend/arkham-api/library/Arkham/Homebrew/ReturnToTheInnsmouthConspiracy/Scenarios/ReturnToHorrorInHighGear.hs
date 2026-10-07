@@ -14,8 +14,8 @@ import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers (scenari
 import Arkham.Trait (Trait (Trap))
 
 newtype ReturnToHorrorInHighGear = ReturnToHorrorInHighGear HorrorInHighGear
-  deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
+  deriving anyclass IsScenario
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue, HasModifiersFor)
 
 returnToHorrorInHighGear :: Difficulty -> ReturnToHorrorInHighGear
 returnToHorrorInHighGear difficulty =

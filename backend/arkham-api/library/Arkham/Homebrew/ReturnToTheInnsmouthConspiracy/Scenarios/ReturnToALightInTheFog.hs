@@ -21,8 +21,8 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.ALightInTheFog
 
 newtype ReturnToALightInTheFog = ReturnToALightInTheFog ALightInTheFog
-  deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
+  deriving anyclass IsScenario
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue, HasModifiersFor)
 
 returnToALightInTheFog :: Difficulty -> ReturnToALightInTheFog
 returnToALightInTheFog difficulty =

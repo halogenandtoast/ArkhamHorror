@@ -24,8 +24,8 @@ import Arkham.Trait (Trait (Suspect))
 
 newtype ReturnToTheVanishingOfElinaHarper
   = ReturnToTheVanishingOfElinaHarper TheVanishingOfElinaHarper
-  deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
+  deriving anyclass IsScenario
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue, HasModifiersFor)
 
 returnToTheVanishingOfElinaHarper :: Difficulty -> ReturnToTheVanishingOfElinaHarper
 returnToTheVanishingOfElinaHarper difficulty =

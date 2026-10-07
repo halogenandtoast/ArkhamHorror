@@ -19,8 +19,8 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom
 
 newtype ReturnToIntoTheMaelstrom = ReturnToIntoTheMaelstrom IntoTheMaelstrom
-  deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
+  deriving anyclass IsScenario
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue, HasModifiersFor)
 
 returnToIntoTheMaelstrom :: Difficulty -> ReturnToIntoTheMaelstrom
 returnToIntoTheMaelstrom difficulty =

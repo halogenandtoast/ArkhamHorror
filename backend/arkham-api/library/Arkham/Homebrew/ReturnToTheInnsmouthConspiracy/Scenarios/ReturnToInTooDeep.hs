@@ -11,8 +11,8 @@ import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.InTooDeep
 
 newtype ReturnToInTooDeep = ReturnToInTooDeep InTooDeep
-  deriving anyclass (IsScenario, HasModifiersFor)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue)
+  deriving anyclass IsScenario
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasChaosTokenValue, HasModifiersFor)
 
 returnToInTooDeep :: Difficulty -> ReturnToInTooDeep
 returnToInTooDeep difficulty =

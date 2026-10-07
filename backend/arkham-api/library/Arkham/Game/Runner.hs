@@ -3737,12 +3737,19 @@ runGameMessage msg g = case msg of
           && (AddKeyword Keyword.Surge `elem` modifiers' || Keyword.Surge `elem` cdKeywords (toCardDef card))
       )
       $ push
-      $ Surge iid GameSource
+      {- The surging CARD, not @GameSource@: the log named the investigator as
+      the surger ("Daisy Walker surges") because nothing else said who did. -}
+      $ Surge iid (CardIdSource $ toCardId card)
     let
       unsetActiveCard = \case
         Just c | c == card -> Nothing
         other -> other
-    pure $ g & resolvingCardL .~ Nothing & activeCardL %~ unsetActiveCard
+    -- Closes the block an encounter draw opened; see 'gameCardPlayStack'.
+    pure
+      $ g
+      & (resolvingCardL .~ Nothing)
+      & (activeCardL %~ unsetActiveCard)
+      & (cardPlayStackL %~ filter (/= toCardId card))
   InvestigatorDrewEncounterCard iid card -> do
     runMessage (InvestigatorDrewEncounterCardFrom iid card Nothing) g
   InvestigatorDrewEncounterCardFrom iid card mdeck -> runQueueT do
@@ -3804,6 +3811,8 @@ runGameMessage msg g = case msg of
       g' =
         g
           & (resolvingCardL ?~ toCard card)
+          -- Opens a log block spanning the whole resolution; popped by 'ResolvedCard'.
+          & (cardPlayStackL %~ (<> [toCardId card]))
           & (focusedCardsL %~ map deleteCard)
           & (foundCardsL %~ Map.map deleteCard)
 
@@ -3953,6 +3962,7 @@ runGameMessage msg g = case msg of
       & (entitiesL . treacheriesL . at treacheryId ?~ treachery)
       & (activeCardL ?~ EncounterCard card)
       & (resolvingCardL ?~ EncounterCard card)
+      & (cardPlayStackL %~ (<> [toCardId card]))
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
   ResolveTreachery iid treacheryId -> do
@@ -4010,6 +4020,7 @@ runGameMessage msg g = case msg of
       $ g
       & (entitiesL . treacheriesL %~ insertMap treacheryId treachery)
       & (resolvingCardL ?~ PlayerCard card)
+      & (cardPlayStackL %~ (<> [toCardId card]))
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & setTurnHistory
   SetActiveCard c -> pure $ g & activeCardL ?~ c
@@ -4363,6 +4374,25 @@ instance RunMessage Game where
 
 runPreGameMessage :: Runner Game
 runPreGameMessage msg g = case msg of
+  {- Opens the log block around a location turning face up: the clues it is
+  stocked with, and anything an "after you reveal" ability does.
+
+  Here rather than in 'runGameMessage' because that runs AFTER the entities, by
+  which point the location has already set @revealed@ and the guard below cannot
+  tell a fresh reveal from a repeat. The closing @After@ is pushed from the same
+  guard, so the two always pair; it lands behind the reveal's own sub-messages
+  because the location prepends those while running. -}
+  Do (RevealLocation _ lid) -> do
+    revealed <- fromMaybe True <$> fieldMay LocationRevealed lid
+    mCard <- fieldMay LocationCard lid
+    case (revealed, mCard) of
+      (False, Just card) -> do
+        push (After msg)
+        pure $ g & cardPlayStackL %~ (<> [toCardId card])
+      _ -> pure g
+  After (Do (RevealLocation _ lid)) -> do
+    mCard <- fieldMay LocationCard lid
+    pure $ maybe g (\card -> g & cardPlayStackL %~ filter (/= toCardId card)) mCard
   ForInvestigator iid _ -> do
     player <- getPlayer iid
     pure $ g & activeInvestigatorIdL .~ iid & activePlayerIdL .~ player

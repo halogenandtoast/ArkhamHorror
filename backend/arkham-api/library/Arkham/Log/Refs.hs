@@ -32,7 +32,7 @@ import Arkham.Event.Types (Field (..))
 which imports this module. The boot file declares them, so taking them from
 there breaks the cycle -- the same trick "Arkham.Investigate" uses. -}
 import {-# SOURCE #-} Arkham.Game ()
-import Arkham.GameEnv (getCardPlayStack, getSkillTest)
+import Arkham.GameEnv (getCardMaybe, getCardPlayStack, getSkillTest)
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Location.Types (Field (..))
@@ -162,6 +162,8 @@ sourceRefFor = \case
   ActSource aid -> Just <$> actRefFor aid
   AgendaSource aid -> Just <$> agendaRefFor aid
   InvestigatorSource iid -> Just <$> investigatorRefFor iid
+  -- A card with no entity behind it: the thing that surged, most often.
+  CardIdSource cid -> fmap toLogRef <$> getCardMaybe cid
   AbilitySource s _ -> sourceRefFor s
   UseAbilitySource _ s _ -> sourceRefFor s
   ProxySource s _ -> sourceRefFor s
@@ -200,15 +202,17 @@ openBlockKey :: HasGame m => m (Maybe Text)
 openBlockKey =
   getSkillTest >>= \case
     Just st -> pure $ Just (skillTestLogKey st)
-    Nothing -> fmap cardPlayLogKey . lastMay <$> getCardPlayStack
+    Nothing -> fmap cardBlockKey . lastMay <$> getCardPlayStack
 
 -- | The key a skill test's block is filed under. Shared with the narrator.
 skillTestLogKey :: SkillTest -> Text
 skillTestLogKey st = "skillTest:" <> tshow st.id
 
--- | The key a card play's block is filed under. Shared with the narrator.
-cardPlayLogKey :: CardId -> Text
-cardPlayLogKey cid = "cardPlay:" <> tshow cid
+{- | The key the block around a card is filed under: a card being played, or an
+encounter card being drawn and resolved. Shared with the narrator.
+-}
+cardBlockKey :: CardId -> Text
+cardBlockKey cid = "cardPlay:" <> tshow cid
 
 {- | Last resort when the entity is gone: the id, so the line still names
 something stable, and the client can still try its own lookup.

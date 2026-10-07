@@ -83,6 +83,7 @@ import Arkham.Helpers.SkillTest (
 import Arkham.Id
 import Arkham.Investigator.Types (Field (..))
 import Arkham.Keyword (Keyword (Peril))
+import Arkham.Location.Types (Field (..))
 import Arkham.Log
 import Arkham.Log.Refs
 import Arkham.Message
@@ -361,7 +362,7 @@ oneShot = \case
     who <- investigatorRefFor iid
     pure
       $ Just
-      $ opensGroup (cardPlayLogKey card.id)
+      $ opensGroup (cardBlockKey card.id)
       $ action [ikeyPart "log.playsCard" ["investigator" ~> who, "card" ~> card]]
   {- Movement.
 
@@ -420,13 +421,17 @@ oneShot = \case
 
   NOT treacheries: the dispatcher that handles this pushes @DrewTreachery@ for
   one (@Game/Runner.hs:3816@), and that is narrated below with the Peril rule.
-  Matching both would log every treachery draw twice. -}
+  Matching both would log every treachery draw twice.
+
+  Both variants, because the deck-aware one is what the encounter phase actually
+  pushes (@Scenario/Runner.hs:988@) -- matching only the plain one dropped every
+  enemy and asset drawn from the encounter deck out of the log. No double entry:
+  the plain variant reaches the other through a direct @runMessage@
+  (@Game/Runner.hs:3747@), which never passes the queue the narrator reads. -}
   InvestigatorMessage (InvestigatorDrewEncounterCard_ iid card)
-    | cdCardType (toCardDef card) /= TreacheryType -> Just do
-        who <- investigatorRefFor iid
-        pure
-          $ Just
-          $ mechanic [ikeyPart "log.drawsEncounter" ["investigator" ~> who, "card" ~> toCard card]]
+    | cdCardType (toCardDef card) /= TreacheryType -> Just (drawsEncounter iid card)
+  InvestigatorMessage (InvestigatorDrewEncounterCardFrom_ iid card _)
+    | cdCardType (toCardDef card) /= TreacheryType -> Just (drawsEncounter iid card)
   {- A treachery drawn, and the one place the log deliberately tells two seats
   different things.
 
@@ -439,10 +444,15 @@ oneShot = \case
   DrewTreachery iid _ card -> Just do
     who <- investigatorRefFor iid
     mPlayer <- fieldMay InvestigatorPlayerId iid
-    let named = mechanic [ikeyPart "log.drawsTreachery" ["investigator" ~> who, "card" ~> card]]
+    let
+      named =
+        opensGroup (cardBlockKey card.id)
+          $ mechanic [ikeyPart "log.drawsTreachery" ["investigator" ~> who, "card" ~> card]]
     if Peril `member` cdKeywords (toCardDef card)
       then do
-        sendLog $ mechanic [ikeyPart "log.drawsPeril" ["investigator" ~> who]]
+        sendLog
+          $ opensGroup (cardBlockKey card.id)
+          $ mechanic [ikeyPart "log.drawsPeril" ["investigator" ~> who]]
         pure $ (`forPlayer` named) <$> mPlayer
       else pure $ Just named
 
@@ -577,9 +587,11 @@ oneShot = \case
   -- still-unrevealed location, so it would draw its back; name it explicitly.
   RevealLocation _ lid -> Just do
     loc <- locationRefFor lid
-    pure
-      $ Just
-      $ mechanic [ikeyPart "log.locationRevealed" ["location" ~> loc {logRefFaceDown = False}]]
+    mCard <- fieldMay LocationCard lid
+    let entry = mechanic [ikeyPart "log.locationRevealed" ["location" ~> loc {logRefFaceDown = False}]]
+    -- Opens the block the reveal's clues and triggers land in; see
+    -- 'runPreGameMessage'. No card means no block, not no line.
+    pure $ Just $ maybe entry (\card -> opensGroup (cardBlockKey (toCardId card)) entry) mCard
   -- Clues moving on and off the board, which is the scenario's clock.
   PlaceClues _ target n | n > 0 -> Just (renderTokens "log.placesClues" target n)
   RemoveClues _ target n | n > 0 -> Just (renderTokens "log.removesClues" target n)
@@ -811,7 +823,17 @@ renderAssignedDamage target source damage horror = do
           Nothing -> (key, extra)
      in mechanic [ikeyPart key' (("target" ~> t) : extra')]
 
--- | "Ghoul Priest spawns at the Study".
+{- | "Ghoul Priest spawns at the Study".
+| "Daisy Walker draws Deep One Ambusher".
+-}
+drawsEncounter :: HasGame m => InvestigatorId -> EncounterCard -> m (Maybe LogEntry)
+drawsEncounter iid card = do
+  who <- investigatorRefFor iid
+  pure
+    $ Just
+    $ opensGroup (cardBlockKey (toCardId card))
+    $ mechanic [ikeyPart "log.drawsEncounter" ["investigator" ~> who, "card" ~> toCard card]]
+
 renderSpawned :: HasGame m => SpawnDetails -> m (Maybe LogEntry)
 renderSpawned details = do
   enemy <- enemyRefFor details.enemy

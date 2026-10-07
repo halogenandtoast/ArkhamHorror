@@ -176,7 +176,8 @@ data Game = Game
   , gameAsIfAtIgnored :: Set InvestigatorId -- transient: investigators with AsIfAt suppressed during window processing
   , gameLocationOffsets :: Map LocationId (Double, Double) -- player-driven board layout overrides; shared across players
   , gameCardPlayStack :: [CardId]
-  {- ^ The card plays currently resolving, innermost last.
+  {- ^ The cards whose log block is open, innermost last: a card being played,
+    or an encounter card being drawn and resolved.
 
     Log-only, and here rather than in the narrator because the narrator cannot
     hold it: its ref lives for one action, and a reaction to a card entering
@@ -185,7 +186,8 @@ data Game = Game
     @PayCostFinished@ deletes it as soon as the cost is paid, long before the
     card resolves.
 
-    A stack, not a @Maybe@: playing a card can play another one.
+    A stack, not a @Maybe@: playing a card can play another one, and a drawn
+    treachery can surge into the next one.
   -}
   }
   deriving stock (Eq, Show)

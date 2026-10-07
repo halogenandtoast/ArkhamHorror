@@ -485,8 +485,18 @@ p.billenia, :deep(p.billenia) {
   border-bottom: 1px solid color-mix(in srgb, var(--return-to), transparent 50%);
 }
 
+/* The ring is drawn on the image's box, and set icons are not square: the official
+   ones are mostly 300x300 but a Return To box's run from 444x512 to 680x512. A
+   percentage radius on that box gives each icon an ellipse of its own size. Forcing a
+   square box and letterboxing the art inside keeps the ring a circle, the same circle
+   for every icon, at whatever width the surrounding list already uses. */
 :deep(.encounter-sets img.return-to-swap) {
   border-bottom: 0;
+  box-sizing: border-box;
+  aspect-ratio: 1;
+  height: auto;
+  object-fit: contain;
+  padding: 2px;
   border-radius: 50%;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--return-to, #2d6a62), transparent 25%);
 }

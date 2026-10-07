@@ -18,6 +18,7 @@ import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations qualifi
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries qualified as HBTreacheries
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (
   combineTidalTunnels,
+  official,
   officialSetup,
   scenarioI18n,
  )
@@ -167,7 +168,7 @@ instance RunMessage ReturnToTheLairOfDagon where
             investigators <- getInvestigators
             thomasDawson <- createAsset =<< genCard Assets.thomasDawsonSoldierInANewWar
             leadChooseOneM do
-              questionLabeled "takeControlOfThomasDawson"
+              official "theLairOfDagon" $ questionLabeled "takeControlOfThomasDawson"
               questionLabeledCard Assets.thomasDawsonSoldierInANewWar
               portraits investigators (`takeControlOfAsset` thomasDawson)
           else setAside [Assets.thomasDawsonSoldierInANewWar]

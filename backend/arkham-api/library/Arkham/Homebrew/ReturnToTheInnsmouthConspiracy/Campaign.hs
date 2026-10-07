@@ -10,7 +10,6 @@ module Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Campaign (returnToTheInnsm
 import Arkham.Campaign.Campaigns.TheInnsmouthConspiracy
 import Arkham.Campaign.Import.Lifted
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
-import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CampaignSteps
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers
 import Arkham.Message.Lifted.Log (recordSetInsert)
@@ -53,7 +52,7 @@ instance RunMessage ReturnToTheInnsmouthConspiracy where
     CampaignStep EpilogueStep -> do
       deepOnes <- deepOneInvestigatorsInCampaign
       unless (null deepOnes) do
-        story $ scope "flashbackXVI" $ i18nWithTitle "body"
+        story $ i18nWithTitle "flashbackXVI"
         recordSetInsert MemoriesRecovered [toJSON youRememberWhereYouHaveToGo]
       ReturnToTheInnsmouthConspiracy <$> liftRunMessage msg innsmouthConspiracy'
     _ -> ReturnToTheInnsmouthConspiracy <$> liftRunMessage msg innsmouthConspiracy'

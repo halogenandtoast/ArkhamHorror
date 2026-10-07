@@ -3124,6 +3124,9 @@ withCardEntity (toCard -> card) body = do
     _ -> pure ()
   push $ RemoveCardEntity uuid card
 
+forChoice :: ReverseQueue m => Int -> Message -> m ()
+forChoice n msg = push $ Msg.ForChoice n msg
+
 handleTarget
   :: (ReverseQueue m, Sourceable source, Targetable target) => InvestigatorId -> source -> target -> m ()
 handleTarget iid source target = push $ Msg.handleTargetChoice iid source target

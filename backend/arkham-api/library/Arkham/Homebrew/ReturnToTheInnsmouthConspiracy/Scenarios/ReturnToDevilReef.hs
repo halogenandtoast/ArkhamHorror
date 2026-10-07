@@ -16,6 +16,7 @@ import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations qualifi
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries qualified as HBTreacheries
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (
   combineTidalTunnels,
+  official,
   officialSetup,
   scenarioI18n,
  )
@@ -97,7 +98,7 @@ instance RunMessage ReturnToDevilReef where
           investigators <- allInvestigators
           thomasDawson <- genCard Assets.thomasDawsonSoldierInANewWar
           leadChooseOneM do
-            questionLabeled "addThomasDawsonToHand"
+            official "devilReef" $ questionLabeled "addThomasDawsonToHand"
             targets investigators (`addToHand` only thomasDawson)
 
         let agenda1 = if aBattle then Agendas.secretsOfTheSeaV1 else Agendas.secretsOfTheSeaV2

@@ -17,16 +17,13 @@ stalkedByDeepOnes = treachery StalkedByDeepOnes Cards.stalkedByDeepOnes
 
 -- | "You gain the Deep One trait." This is what makes you a Deep One investigator.
 instance HasModifiersFor StalkedByDeepOnes where
-  getModifiersFor (StalkedByDeepOnes a) =
-    maybe (pure mempty) (\iid -> modified_ a iid [AddTrait DeepOne]) a.inThreatAreaOf
+  getModifiersFor (StalkedByDeepOnes a) = for_ a.inThreatAreaOf \iid ->
+    modified_ a iid [AddTrait DeepOne]
 
 instance HasAbilities StalkedByDeepOnes where
   getAbilities (StalkedByDeepOnes a) =
     [ skillTestAbility
-        $ restricted
-          a
-          1
-          (InThreatAreaOf You <> youExist (InvestigatorEngagedWith $ EnemyWithTrait DeepOne))
+        $ restricted a 1 (InThreatAreaOf You <> youExist (InvestigatorEngagedWith $ EnemyWithTrait DeepOne))
         $ forced
         $ PhaseBegins #when #investigation
     ]
@@ -44,9 +41,9 @@ instance RunMessage StalkedByDeepOnes where
       toDiscardBy iid (attrs.ability 1) attrs
       pure t
     FailedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      -- The enemy breaks off so it can stalk you again next phase; the treachery
-      -- stays in your threat area and the test repeats until you pass it.
       enemies <- select $ EnemyWithTrait DeepOne <> enemyEngagedWith iid
-      chooseOrRunOneM iid $ targets enemies (disengageEnemy iid)
+      chooseOrRunOneM iid $ targets enemies \enemy -> do
+        disengageEnemy iid enemy
+        enemyCheckEngagement enemy
       pure t
     _ -> StalkedByDeepOnes <$> liftRunMessage msg attrs

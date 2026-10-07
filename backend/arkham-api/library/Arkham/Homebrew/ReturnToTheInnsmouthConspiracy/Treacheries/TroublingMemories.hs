@@ -6,6 +6,7 @@ import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCard)
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries qualified as Cards
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (campaignI18n)
 import Arkham.I18n
+import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Treachery.Import.Lifted
 
@@ -18,35 +19,30 @@ troublingMemories = treachery TroublingMemories Cards.troublingMemories
 
 data Option = OptHorror | OptDamage | OptDiscard | OptSurge
   deriving stock (Eq, Enum, Bounded)
+  deriving (ToJSON, FromJSON) via Enumerated Option
 
-{- | "For each entry under 'Memories Recovered,' you must choose a different option."
-Four options and four memories available in Pit of Despair, so late in the scenario the
-choice can run out and every remaining option is forced (designer's FAQ).
--}
 instance RunMessage TroublingMemories where
   runMessage msg t@(TroublingMemories attrs) = runQueueT $ case msg of
-    Revelation iid (isSource attrs -> True) -> do
-      memories <- length <$> getRecordSet MemoriesRecovered
-      chooseDistinct iid attrs (min memories 4) [minBound .. maxBound]
+    Revelation _iid (isSource attrs -> True) -> do
+      n <- length <$> getRecordSet MemoriesRecovered
+      doStep n msg
       pure t
+    DoStep n (Revelation iid (isSource attrs -> True)) | n > 0 -> campaignI18n $ scope "troublingMemories" do
+      let
+        chosen = toResultDefault [] attrs.meta
+        isValid OptDiscard = matches iid (HandWith $ HasCard DiscardableCard)
+        isValid _ = pure True
+        handleOption opt lbl body = unless (opt `elem` chosen) do
+          whenM (isValid opt) do
+            labeled lbl $ body >> forChoice n msg >> doNextStep msg
+      chooseOneM iid do
+        handleOption OptHorror "takeHorror" $ assignHorror iid attrs 1
+        handleOption OptDamage "takeDamage" $ assignDamage iid attrs 1
+        handleOption OptDiscard "discardCard" $ chooseAndDiscardCard iid attrs
+        handleOption OptSurge "gainSurge" $ gainSurge attrs
+      pure t
+    ForChoice n (Revelation _iid (isSource attrs -> True)) -> do
+      let mopt = toEnumMaybe @Option n
+      let chosen = toResultDefault [] attrs.meta
+      pure $ maybe t (\opt -> t & setMeta (opt : chosen)) mopt
     _ -> TroublingMemories <$> liftRunMessage msg attrs
-
-chooseDistinct :: ReverseQueue m => InvestigatorId -> TreacheryAttrs -> Int -> [Option] -> m ()
-chooseDistinct _ _ 0 _ = pure ()
-chooseDistinct _ _ _ [] = pure ()
-chooseDistinct iid attrs n options =
-  chooseOneM iid $ campaignI18n $ scope "troublingMemories" $ for_ options \option ->
-    labeled (labelFor option) do
-      resolve option
-      chooseDistinct iid attrs (n - 1) (filter (/= option) options)
- where
-  labelFor = \case
-    OptHorror -> "takeHorror"
-    OptDamage -> "takeDamage"
-    OptDiscard -> "discardCard"
-    OptSurge -> "gainSurge"
-  resolve = \case
-    OptHorror -> assignHorror iid attrs 1
-    OptDamage -> assignDamage iid attrs 1
-    OptDiscard -> chooseAndDiscardCard iid attrs
-    OptSurge -> gainSurge attrs

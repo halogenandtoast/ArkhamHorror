@@ -2,10 +2,14 @@
   "name": "Return to The Innsmouth Conspiracy",
   "designer": "DerBK",
   "occultation": {
-    "placeDoom": "Place 1 doom on the current agenda"
+    "label": {
+      "placeDoom": "Place 1 doom on the current agenda"
+    }
   },
   "struggleForAir": {
-    "doNotDiscard": "Done discarding assets"
+    "label": {
+      "doNotDiscard": "Done discarding assets"
+    }
   },
   "returnToThePitOfDespair": {
     "setup": {
@@ -18,10 +22,12 @@
     "name": "Return to The Pit of Despair"
   },
   "troublingMemories": {
-    "takeHorror": "Take 1 horror",
-    "takeDamage": "Take 1 damage",
-    "discardCard": "Discard a card from your hand",
-    "gainSurge": "Troubling Memories gains surge"
+    "label": {
+      "takeHorror": "Take 1 horror",
+      "takeDamage": "Take 1 damage",
+      "discardCard": "Discard a card from your hand",
+      "gainSurge": "Troubling Memories gains surge"
+    }
   },
   "returnToTheVanishingOfElinaHarper": {
     "setup": {
@@ -35,9 +41,11 @@
     "townspeopleInsight": "Your dealings with the townspeople have given you insight into what's going on here: each investigator gains 1 extra experience for each Suspect enemy in the victory display."
   },
   "growingSuspicion": {
-    "placeClue": "Place one of your clues on the nearest Suspect enemy",
-    "suspectAttacks": "The nearest Suspect enemy attacks you",
-    "removeHybrid": "Remove a Hybrid story asset you control from the game"
+    "label": {
+      "placeClue": "Place one of your clues on the nearest Suspect enemy",
+      "suspectAttacks": "The nearest Suspect enemy attacks you",
+      "removeHybrid": "Remove a Hybrid story asset you control from the game"
+    }
   },
   "returnToInTooDeep": {
     "setup": {
@@ -64,8 +72,10 @@
     "aBargain": {
       "title": "A Bargain",
       "body": "You stand in front of the large carved stone depicting a bloated figure with fishlike features. The voice that guided you here is just a whisper now, but you feel power radiating from the statue and you know that's why you are here. It's this power that calls out to you, telling you that you could have all the riches you desired and the long life to take advantage of them.\n\nWhile you approach the statue, you become aware of the price that you would have to pay. You consider your options.",
-      "payThePrice": "You pay the price.",
-      "backOut": "You come to your senses and back out. The voices go quiet."
+      "label": {
+        "payThePrice": "You pay the price.",
+        "backOut": "You come to your senses and back out. The voices go quiet."
+      }
     }
   },
   "returnToHorrorInHighGear": {

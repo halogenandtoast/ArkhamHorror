@@ -26,8 +26,13 @@ of it -- which keeps one string in one place and gets its translations for free.
 box's own lines sit beside them, marked with 'li.returnTo'.
 -}
 officialSetup :: HasI18n => Scope -> (HasI18n => a) -> a
-officialSetup scenarioScope a =
-  unscoped $ scope "theInnsmouthConspiracy" $ scope scenarioScope $ scope "setup" a
+officialSetup scenarioScope a = official scenarioScope $ scope "setup" a
+
+{- | 'officialSetup' for anything outside the setup list, like a prompt the Return To
+scenario reuses unchanged.
+-}
+official :: HasI18n => Scope -> (HasI18n => a) -> a
+official scenarioScope a = unscoped $ scope "theInnsmouthConspiracy" $ scope scenarioScope a
 
 {- | "You count as a Deep One Investigator as long as you have the Deep One trait,
 granted through either a scenario card or a player card. You also count as a Deep

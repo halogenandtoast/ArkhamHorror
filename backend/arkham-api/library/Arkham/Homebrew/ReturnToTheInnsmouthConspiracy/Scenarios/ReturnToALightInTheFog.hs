@@ -145,7 +145,7 @@ instance RunMessage ReturnToALightInTheFog where
       ScenarioResolution r | r `elem` map Resolution [1, 2, 4] -> do
         deepOnes <- select deepOneInvestigator
         unless (null deepOnes) do
-          story $ scope "changing" $ i18nWithTitle "body"
+          story $ i18nWithTitle "changing"
           for_ deepOnes (`sufferMentalTrauma` 1)
         ReturnToALightInTheFog <$> liftRunMessage msg inner
       _ -> ReturnToALightInTheFog <$> liftRunMessage msg inner

@@ -135,7 +135,7 @@ instance RunMessage ReturnToTheVanishingOfElinaHarper where
         suspectCount <-
           selectCount $ VictoryDisplayCardMatch $ basic $ #enemy <> CardWithTrait Suspect
         when (suspectCount > 0) do
-          story $ i18nWithTitle "townspeopleInsight"
+          story $ i18n "townspeopleInsight"
           eachInvestigator \iid ->
             gainXp iid ScenarioSource (ikey "returnToTheInnsmouthConspiracy.xp.townspeopleInsight") suspectCount
         ReturnToTheVanishingOfElinaHarper <$> liftRunMessage msg inner

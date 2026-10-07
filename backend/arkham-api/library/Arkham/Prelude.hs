@@ -73,6 +73,7 @@ import Language.Haskell.TH hiding (location)
 import Safe as X (fromJustNote)
 import System.Random.Shuffle as X hiding (shuffle)
 
+import Control.Monad.Fail (fail)
 import Control.Monad.Trans.Class
 import Data.Aeson.Key qualified as Key
 import Data.Char (isLower, isUpper)
@@ -572,3 +573,20 @@ splitCamelCase (x : y : rest) =
   if isLower x && isUpper y
     then [x, ' ', y] <> splitCamelCase rest
     else [x] <> splitCamelCase (y : rest)
+
+newtype Enumerated a = Enumerated a
+
+instance Enum a => ToJSON (Enumerated a) where
+  toJSON (Enumerated a) = toJSON (fromEnum a)
+
+instance (Bounded a, Enum a) => FromJSON (Enumerated a) where
+  parseJSON v = do
+    n <- parseJSON v
+    case toEnumMaybe @a n of
+      Just x -> pure $ Enumerated x
+      Nothing -> fail "invalid enum value"
+
+toEnumMaybe :: forall a. (Enum a, Bounded a) => Int -> Maybe a
+toEnumMaybe n
+  | n >= fromEnum (minBound @a), n <= fromEnum (maxBound @a) = Just (toEnum n)
+  | otherwise = Nothing

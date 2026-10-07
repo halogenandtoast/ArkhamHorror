@@ -39,13 +39,7 @@ horrorInHighGear difficulty =
     "07198"
     "Horror in High Gear"
     difficulty
-    [ ".      .      .    "
-    , ".      .      .    "
-    , "road1a road2a road3a"
-    , "road1a road2a road3a"
-    , ".      .      .    "
-    , ".      .      .    "
-    ]
+    scenarioLayout
 
 instance HasChaosTokenValue HorrorInHighGear where
   getChaosTokenValue iid tokenFace (HorrorInHighGear attrs) = case tokenFace of

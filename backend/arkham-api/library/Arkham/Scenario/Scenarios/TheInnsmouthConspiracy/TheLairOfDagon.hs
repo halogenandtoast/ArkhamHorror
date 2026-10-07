@@ -43,10 +43,7 @@ theLairOfDagon difficulty =
     "07274"
     "The Lair of Dagon"
     difficulty
-    [ ". thirdFloorHall ."
-    , "secondFloorHall1 foulCorridors secondFloorHall2"
-    , "firstFloorHall1 grandEntryway firstFloorHall2"
-    ]
+    scenarioLayout
 
 instance HasChaosTokenValue TheLairOfDagon where
   getChaosTokenValue iid tokenFace (TheLairOfDagon attrs) = case tokenFace of

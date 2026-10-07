@@ -17,6 +17,7 @@ import Arkham.Message.Lifted.Log
 import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear
+import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers (scenarioLayout)
 import Arkham.Trait (Trait (Trap, Vehicle))
 
 newtype ReturnToHorrorInHighGear = ReturnToHorrorInHighGear HorrorInHighGear
@@ -30,7 +31,7 @@ returnToHorrorInHighGear difficulty =
     ":return-to-the-innsmouth-conspiracy:035"
     "Return to Horror in High Gear"
     difficulty
-    []
+    scenarioLayout
     (referenceL .~ "07198")
 
 instance RunMessage ReturnToHorrorInHighGear where

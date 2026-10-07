@@ -12,6 +12,7 @@ import Arkham.Enemy.Types (Field (..))
 import Arkham.Helpers.Scenario
 import Arkham.I18n
 import Arkham.Id
+import Arkham.Layout
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Locations
 import Arkham.Matcher
 import Arkham.Message (Message (..))
@@ -120,3 +121,16 @@ asHideout (toCardDef -> def) =
     | def.cardCode == Locations.esotericOrderOfDagon.cardCode -> EsotericOrderOfDagon
     | def.cardCode == Locations.newChurchGreen.cardCode -> NewChurchGreen
     | otherwise -> error "wrong card"
+
+{- | The Innsmouth town map. Shared with the Return To box, which replaces sets and
+cards but leaves the map alone.
+-}
+scenarioLayout :: [GridTemplateRow]
+scenarioLayout =
+  [ "esotericOrderOfDagon .                    newChurchGreen  .                theHouseOnWaterStreet"
+  , "esotericOrderOfDagon firstNationalGrocery newChurchGreen  marshRefinery    theHouseOnWaterStreet"
+  , "theLittleBookshop    firstNationalGrocery innsmouthSquare marshRefinery    innsmouthHarbour"
+  , "theLittleBookshop    gilmanHouse          innsmouthSquare fishStreetBridge innsmouthHarbour"
+  , "sawboneAlley         gilmanHouse          innsmouthJail   fishStreetBridge shorewardSlums"
+  , "sawboneAlley         .                    innsmouthJail   .                shorewardSlums"
+  ]

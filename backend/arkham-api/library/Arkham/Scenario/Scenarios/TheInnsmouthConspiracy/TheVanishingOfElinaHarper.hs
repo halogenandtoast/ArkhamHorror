@@ -39,13 +39,7 @@ theVanishingOfElinaHarper difficulty =
     "07056"
     "The Vanishing of Elina Harper"
     difficulty
-    [ "esotericOrderOfDagon .                    newChurchGreen  .                theHouseOnWaterStreet"
-    , "esotericOrderOfDagon firstNationalGrocery newChurchGreen  marshRefinery    theHouseOnWaterStreet"
-    , "theLittleBookshop    firstNationalGrocery innsmouthSquare marshRefinery    innsmouthHarbour"
-    , "theLittleBookshop    gilmanHouse          innsmouthSquare fishStreetBridge innsmouthHarbour"
-    , "sawboneAlley         gilmanHouse          innsmouthJail   fishStreetBridge shorewardSlums"
-    , "sawboneAlley         .                    innsmouthJail   .                shorewardSlums"
-    ]
+    scenarioLayout
 
 instance HasChaosTokenValue TheVanishingOfElinaHarper where
   getChaosTokenValue iid tokenFace (TheVanishingOfElinaHarper attrs) = case tokenFace of

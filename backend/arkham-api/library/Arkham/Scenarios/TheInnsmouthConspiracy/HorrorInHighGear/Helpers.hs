@@ -166,3 +166,16 @@ sawVehicle :: AssetId -> Map Aeson.Key Value -> Map Aeson.Key Value
 sawVehicle aid kmap = insertMap "seenVehicles" (toJSON (aid : current)) kmap
  where
   current = maybe [] (toResultDefault []) $ lookup "seenVehicles" kmap
+
+{- | The three lanes of road. Shared with the Return To box, which builds its road deck
+differently but runs the same three lanes.
+-}
+scenarioLayout :: [GridTemplateRow]
+scenarioLayout =
+  [ ".      .      .    "
+  , ".      .      .    "
+  , "road1a road2a road3a"
+  , "road1a road2a road3a"
+  , ".      .      .    "
+  , ".      .      .    "
+  ]

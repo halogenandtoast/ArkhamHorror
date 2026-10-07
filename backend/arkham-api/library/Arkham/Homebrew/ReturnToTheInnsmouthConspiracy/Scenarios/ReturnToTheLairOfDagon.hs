@@ -30,6 +30,7 @@ import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon
+import Arkham.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon.Helpers (scenarioLayout)
 import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.Syzygy qualified as Treacheries
 
 newtype ReturnToTheLairOfDagon = ReturnToTheLairOfDagon TheLairOfDagon
@@ -43,7 +44,7 @@ returnToTheLairOfDagon difficulty =
     ":return-to-the-innsmouth-conspiracy:043"
     "Return to TheLairOfDagon"
     difficulty
-    []
+    scenarioLayout
     (referenceL .~ "07274")
 
 instance RunMessage ReturnToTheLairOfDagon where

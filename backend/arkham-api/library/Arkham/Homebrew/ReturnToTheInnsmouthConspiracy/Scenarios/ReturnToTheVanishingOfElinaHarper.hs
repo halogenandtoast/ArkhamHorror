@@ -43,7 +43,7 @@ returnToTheVanishingOfElinaHarper difficulty =
     ":return-to-the-innsmouth-conspiracy:022"
     "Return to The Vanishing of Elina Harper"
     difficulty
-    []
+    scenarioLayout
     (referenceL .~ "07056")
 
 instance RunMessage ReturnToTheVanishingOfElinaHarper where

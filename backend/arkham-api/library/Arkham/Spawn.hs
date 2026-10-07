@@ -73,6 +73,9 @@ instance IsString SpawnAt where
 class IsSpawnAt a where
   toSpawnAt :: a -> SpawnAt
 
+instance IsSpawnAt SpawnAt where
+  toSpawnAt = id
+
 instance IsSpawnAt LocationMatcher where
   toSpawnAt = SpawnAt
 

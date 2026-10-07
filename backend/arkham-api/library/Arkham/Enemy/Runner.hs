@@ -462,7 +462,10 @@ instance RunMessage EnemyAttrs where
         SpawnEngagedWith imatcher -> do
           iids <- select imatcher
           case iids of
-            [] -> pure ()
+            -- Nobody to engage. Doing nothing here would leave the enemy in play as
+            -- an Unplaced entity that can never act and never leaves, so resolve it
+            -- the way every other failed spawn does.
+            [] -> noSpawn a details.investigator
             [iid] -> do
               let
                 getModifiedSpawnAt [] = pure Nothing

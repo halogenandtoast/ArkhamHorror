@@ -95,6 +95,14 @@ spawnAt eid miid (SpawnAtFirst (x : xs)) = case x of
     if willMatch
       then spawnAt eid miid (SpawnAt matcher)
       else spawnAt eid miid (SpawnAtFirst xs)
+  -- "Spawn - Engaged with Prey, if possible": the "if possible" is the rest of the
+  -- list, so a SpawnEngagedWith head has to be probed too. Committing to it blind
+  -- leaves the enemy Unplaced forever when nothing matches.
+  SpawnEngagedWith imatcher -> do
+    willMatch <- selectAny imatcher
+    if willMatch
+      then spawnAt eid miid (SpawnEngagedWith imatcher)
+      else spawnAt eid miid (SpawnAtFirst xs)
   other -> spawnAt eid miid other
 spawnAt eid miid SpawnAtRandomLocation = do
   locations <- shuffle =<< select Anywhere

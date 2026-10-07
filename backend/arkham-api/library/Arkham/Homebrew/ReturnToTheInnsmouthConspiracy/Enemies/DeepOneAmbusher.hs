@@ -16,10 +16,8 @@ newtype DeepOneAmbusher = DeepOneAmbusher EnemyAttrs
 
 deepOneAmbusher :: EnemyCard DeepOneAmbusher
 deepOneAmbusher =
-  enemyWith
-    DeepOneAmbusher
-    Cards.deepOneAmbusher
-    (spawnAtL ?~ SpawnAtFirst [SpawnEngagedWith deepOneInvestigator, SpawnAt YourLocation])
+  enemy DeepOneAmbusher Cards.deepOneAmbusher
+    & setSpawnAtFirst [SpawnEngagedWith deepOneInvestigator, SpawnAt YourLocation]
     & setPrey deepOneInvestigator
 
 instance HasAbilities DeepOneAmbusher where

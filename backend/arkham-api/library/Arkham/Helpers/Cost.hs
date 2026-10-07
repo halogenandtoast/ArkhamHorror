@@ -106,6 +106,7 @@ hasSkillTestCost = \case
   CostWhenTreachery _ x -> hasSkillTestCost x
   CostWhenTreacheryElse _ a b -> hasSkillTestCost a || hasSkillTestCost b
   CostOnlyWhen _ x -> hasSkillTestCost x
+  CostWhen _ x -> hasSkillTestCost x
   CostIfEnemy _ a b -> hasSkillTestCost a || hasSkillTestCost b
   CostIfLocation _ a b -> hasSkillTestCost a || hasSkillTestCost b
   CostIfCustomization _ a b -> hasSkillTestCost a || hasSkillTestCost b
@@ -134,6 +135,27 @@ getCanAffordCost iid source actions windows' cost =
 {- | Total uses of @uType@ spendable from @assets@, including uses granted by
 other assets/events via @ProvidesUses@/@ProvidesProxyUses@ modifiers.
 -}
+
+{- | Does this cost tree carry a condition that only the game can settle?
+
+Pure, so it can gate the game-context walk in 'resolveConditionalCosts':
+practically every ability answers 'False' after a constructor match or two and never
+touches game state. Only the spine is inspected -- top level and inside 'Costs' -- because
+that is the only part the resolver rewrites. See 'hasSkillTestCost' for the same shape.
+-}
+hasConditionalCost :: Cost -> Bool
+hasConditionalCost = \case
+  CostOnlyWhen {} -> True
+  CostWhen {} -> True
+  CostWhenEnemy {} -> True
+  CostWhenTreachery {} -> True
+  CostWhenTreacheryElse {} -> True
+  CostIfEnemy {} -> True
+  CostIfLocation {} -> True
+  CostIfRemembered {} -> True
+  Costs xs -> any hasConditionalCost xs
+  _ -> False
+
 getSpendableUseCount :: HasGame m => [AssetId] -> UseType -> m Int
 getSpendableUseCount assets uType =
   flip evalStateT assets $ do
@@ -332,6 +354,11 @@ getCanAffordCost_ !iid !(toSource -> source) !actions !windows' !canModify cost_
       CostOnlyWhen cr c -> do
         ok <- passesCriteria iid Nothing source source windows' cr
         if ok then getCanAffordCost_ iid source actions windows' canModify c else pure False
+      -- Additive, unlike 'CostOnlyWhen': an unmet criterion costs nothing rather than
+      -- making the ability unpayable.
+      CostWhen cr c -> do
+        ok <- passesCriteria iid Nothing source source windows' cr
+        if ok then getCanAffordCost_ iid source actions windows' canModify c else pure True
       CostIfRemembered skey c1 c2 -> do
         ok <- remembered skey
         getCanAffordCost_ iid source actions windows' canModify $ if ok then c1 else c2
@@ -787,3 +814,44 @@ cancelCostPaymentFrom = \case
     costs <- getActiveCosts
     for_ (find ((== s) . activeCostSource) costs) $ push . Msg.CancelCostPayment . activeCostId
   _ -> pure ()
+
+{- | Settle the conditions in a cost tree so the client is shown the cost that will
+actually be paid.
+
+The client cannot evaluate a 'Criterion' or a matcher, so a conditional cost is invisible
+to it: Call of the Sea's @ActionCost 1 <> CostOnlyWhen youAreADeepOne (ActionCost 1)@ drew
+one action arrow for a Deep One investigator who owes two. Rebuilding each branch with
+'<>' melds what survives -- @ActionCost 1 <> ActionCost 1@ is @ActionCost 2@ via 'Cost''s
+own 'Semigroup' -- so the arrows come out right with no client change.
+
+Only the spine is walked. 'OrCost', 'OptionalCost', 'UpTo' and friends stand for a choice
+or an amount the player makes at payment time, and collapsing one here would decide it for
+them (Tommy Muldoon (2) offers a conditional resource cost *or* discarding a Firearm).
+'CostIfCustomization' is left alone too: it needs the source's customizations, which this
+walk does not carry.
+
+Gate every call on the pure 'hasConditionalCost' -- see its note.
+-}
+resolveConditionalCosts
+  :: (HasGame m, Sourceable source) => InvestigatorId -> source -> [Window] -> Cost -> m Cost
+resolveConditionalCosts iid (toSource -> source) ws = go
+ where
+  go = \case
+    Costs xs -> mconcat <$> traverse go xs
+    -- An unmet 'CostOnlyWhen' makes the ability unaffordable rather than free
+    -- ('getCanAffordCost_'), so on an ability the player has been offered this is
+    -- always met. Asked rather than assumed, because this helper does not know
+    -- whether the caller filtered first.
+    CostOnlyWhen cr c -> do
+      ok <- passesCriteria iid Nothing source source ws cr
+      if ok then go c else pure Free
+    CostWhen cr c -> do
+      ok <- passesCriteria iid Nothing source source ws cr
+      if ok then go c else pure Free
+    CostWhenEnemy m c -> selectAny m >>= \ok -> if ok then go c else pure Free
+    CostWhenTreachery m c -> selectAny m >>= \ok -> if ok then go c else pure Free
+    CostWhenTreacheryElse m c1 c2 -> selectAny m >>= \ok -> go (if ok then c1 else c2)
+    CostIfEnemy m c1 c2 -> selectAny m >>= \ok -> go (if ok then c1 else c2)
+    CostIfLocation m c1 c2 -> selectAny m >>= \ok -> go (if ok then c1 else c2)
+    CostIfRemembered k c1 c2 -> remembered k >>= \ok -> go (if ok then c1 else c2)
+    c -> pure c

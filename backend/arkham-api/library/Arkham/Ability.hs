@@ -177,11 +177,7 @@ selfAbility_ a n = restrictedAbility a n Self
 
 restrictedAbility
   :: (HasCardCode a, Sourceable a) => a -> Int -> Criterion -> AbilityType -> Ability
-restrictedAbility entity idx restriction type' =
-  (mkAbility entity idx type')
-    { abilityCriteria = restriction
-    , abilityWantsSkillTest = wantsSkillTestFromCriteria restriction
-    }
+restrictedAbility entity idx restriction type' = restrict restriction (mkAbility entity idx type')
 
 wantsSkillTestFromCriteria :: Criterion -> Maybe SkillTestMatcher
 wantsSkillTestFromCriteria c = case toListOf (Lens.cosmos . _DuringSkillTest) c of

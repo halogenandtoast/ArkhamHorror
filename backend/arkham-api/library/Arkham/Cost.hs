@@ -211,7 +211,17 @@ data Cost
   | CostWhenEnemy EnemyMatcher Cost
   | CostWhenTreachery TreacheryMatcher Cost
   | CostWhenTreacheryElse TreacheryMatcher Cost Cost
-  | CostOnlyWhen Criterion Cost
+  | {- | "Only available when": an unmet criterion makes the whole cost unpayable, so
+    the ability or branch is not offered at all. Inside an 'OrCost' this is what
+    makes one branch unavailable (Tommy Muldoon (2)). For a cost that is simply
+    added when the criterion holds, use 'CostWhen'.
+    -}
+    CostOnlyWhen Criterion Cost
+  | {- | "Increase this ability's cost ... if X": the inner cost applies when the
+    criterion holds and contributes nothing otherwise, so the ability stays usable
+    either way. The 'Criterion' sibling of 'CostWhenEnemy' \/ 'CostWhenTreachery'.
+    -}
+    CostWhen Criterion Cost
   | CostIfEnemy EnemyMatcher Cost Cost
   | CostIfLocation LocationMatcher Cost Cost
   | CostIfCustomization Customization Cost Cost

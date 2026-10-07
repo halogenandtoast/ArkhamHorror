@@ -426,6 +426,9 @@ payCostFrom msg c iid skipAdditionalCosts mCostSource cost = do
     CostOnlyWhen cr cost' -> do
       ok <- passesCriteria iid Nothing c.source c.source c.windows cr
       if ok then payCost msg c iid skipAdditionalCosts cost' else pure c
+    CostWhen cr cost' -> do
+      ok <- passesCriteria iid Nothing c.source c.source c.windows cr
+      if ok then payCost msg c iid skipAdditionalCosts cost' else pure c
     CostWhenTreachery mtchr cost' -> do
       hasTreachery <- selectAny mtchr
       if hasTreachery

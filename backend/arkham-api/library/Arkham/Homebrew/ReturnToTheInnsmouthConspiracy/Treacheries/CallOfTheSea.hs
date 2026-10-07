@@ -16,14 +16,16 @@ callOfTheSea = treachery CallOfTheSea Cards.callOfTheSea
 
 instance HasAbilities CallOfTheSea where
   getAbilities (CallOfTheSea a) =
-    [ restricted a 1 (InThreatAreaOf You) $ forced $ TurnEnds #after You
+    [ mkAbility a 1 (forced $ TurnEnds #after You)
+        & restrict
+          ( InThreatAreaOf (You <> not_ (at_ FullyFloodedLocation))
+              <> exists (CanMoveCloserToLocation (a.ability 1) You FullyFloodedLocation)
+          )
     , -- "If you have the Deep One trait, increase this ability's cost by 1 action."
-      restricted a 2 (InThreatAreaOf You <> youExist (not_ deepOneInvestigator))
-        $ ActionAbility mempty Nothing
-        $ ActionCost 1
-    , restricted a 3 (InThreatAreaOf You <> youExist deepOneInvestigator)
-        $ ActionAbility mempty Nothing
-        $ ActionCost 2
+      -- 'CostWhen', not 'CostOnlyWhen': the extra action is added for a Deep One and
+      -- costs nothing for anyone else, who can still use the ability for 1 action.
+      restricted a 2 (InThreatAreaOf You)
+        $ actionAbilityWithCost (CostWhen (youExist deepOneInvestigator) (ActionCost 1))
     ]
 
 instance RunMessage CallOfTheSea where
@@ -34,7 +36,7 @@ instance RunMessage CallOfTheSea where
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       moveToward iid FullyFloodedLocation
       pure t
-    UseThisAbility iid (isSource attrs -> True) n | n `elem` [2, 3] -> do
-      toDiscardBy iid (attrs.ability n) attrs
+    UseThisAbility iid (isSource attrs -> True) 2 -> do
+      toDiscardBy iid (attrs.ability 2) attrs
       pure t
     _ -> CallOfTheSea <$> liftRunMessage msg attrs

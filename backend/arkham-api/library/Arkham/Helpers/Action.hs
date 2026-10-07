@@ -1,6 +1,7 @@
 module Arkham.Helpers.Action where
 
 import Arkham.Ability hiding (NoRestriction)
+import Arkham.Ability.Types qualified as Ability
 import Arkham.Action
 import Arkham.Action.Additional
 import Arkham.Asset.Types qualified as Field
@@ -16,6 +17,7 @@ import Arkham.Helpers.Ability (
   isForcedAbility,
  )
 import Arkham.Helpers.CombatTarget
+import {-# SOURCE #-} Arkham.Helpers.Cost (hasConditionalCost, resolveConditionalCosts)
 import Arkham.Helpers.Modifiers (
   ModifierType (..),
   getModifiers,
@@ -310,10 +312,22 @@ getActionsWith iid ws f = do
           then Nothing
           else Just $ applyAbilityModifiers ability modifiers'
 
-  actions''' <-
+  affordable <-
     actions'' & filterM \action -> runValidT do
       liftGuardM $ getCanPerformAbility iid ws action
       liftGuardM $ getCanAffordAbility iid action ws
+  {- Settle any conditional cost now that the ability is known performable, so the
+  client is handed the cost that will actually be paid rather than a condition it
+  cannot evaluate (Call of the Sea's second action arrow). The gate is pure and
+  rejects every ability that carries no condition, and the whole enumeration runs
+  under one 'runCachedQueryT', so the rare resolution shares that cache. -}
+  actions''' <-
+    affordable & traverse \action ->
+      if hasConditionalCost action.cost
+        then do
+          cost <- resolveConditionalCosts iid action.source ws action.cost
+          pure action {Ability.abilityType = modifyCost (const cost) action.abilityType}
+        else pure action
   forcedActions <- filterM (isForcedAbility iid) actions'''
   -- Encounter-card forced abilities (Treachery, Enemy, Location, Agenda, Act)
   -- resolve before player-card forced abilities (Asset, Event, Skill).

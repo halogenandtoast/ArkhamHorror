@@ -10,7 +10,6 @@ import Arkham.Target
 import Arkham.Window (Window)
 
 getAdditionalActionCost :: HasGame m => InvestigatorId -> Target -> Action -> m Cost
-
 getCanAffordAdditionalActionCost
   :: (HasCallStack, HasGame m, Sourceable source)
   => InvestigatorId
@@ -18,7 +17,6 @@ getCanAffordAdditionalActionCost
   -> Target
   -> Action
   -> m Bool
-
 getCanAffordCost
   :: (HasCallStack, HasGame m, Sourceable source)
   => InvestigatorId
@@ -27,3 +25,6 @@ getCanAffordCost
   -> [Window]
   -> Cost
   -> m Bool
+hasConditionalCost :: Cost -> Bool
+resolveConditionalCosts
+  :: (HasGame m, Sourceable source) => InvestigatorId -> source -> [Window] -> Cost -> m Cost

@@ -75,7 +75,9 @@ import Arkham.Constants (notPlayerAbilityIndex)
 import Arkham.Cost (Cost (ActionCost, ResourceCost))
 import Arkham.Enemy.Types (Field (..))
 import Arkham.Game.Base (Game (..))
+import Arkham.Game.Utils (modeScenario)
 import Arkham.GameEnv (getSkillTest)
+import Arkham.Helpers.Scenario (getInResolution)
 import Arkham.Helpers.SkillTest (
   calculateSkillTestResultsData,
   getModifiedSkillTestDifficulty,
@@ -93,6 +95,9 @@ import Arkham.Phase
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Resolution
+
+-- For the @HasField "id"@/@"name"@ instances on 'Arkham.Scenario.Types.Scenario'.
+import Arkham.Scenario.Types ()
 import Arkham.SkillTest.Base (SkillTest (..), SkillTestResultsData (..))
 import Arkham.SkillTest.Type
 import Arkham.Source
@@ -333,6 +338,16 @@ oneShot = \case
   InvestigatorMessage (InvestigatorDefeated_ source iid) ->
     Just (renderDefeated (InvestigatorTarget iid) source)
   -- \* Structure: the headings a reader orients by.
+  {- The scenario's own title banner.
+
+  @LoadScenario@, not @StartScenario@: the latter is what /builds/ the scenario,
+  so when the narrator sees it there is no entity to read a name off yet. By
+  @LoadScenario@ there is, and it still lands before the intro flavour and the
+  setup. -}
+  LoadScenario {} -> Just do
+    mScenario <- modeScenario . gameMode <$> getGame
+    pure $ flip fmap mScenario \s ->
+      structure [ikeyPart "log.scenarioBegins" ["scenario" ~> scenarioRef s.id s.name]]
   Begin phase -> Just (pure $ Just $ structure [ikeyPart (phaseKey phase) []])
   {- The round number.
 
@@ -672,9 +687,21 @@ oneShot = \case
   GainXP iid _ n | n > 0 -> Just do
     who <- investigatorRefFor iid
     pure $ Just $ record [ikeyPart "log.gainsXp" ["investigator" ~> who, "count" ~> n]]
-  ScenarioResolution res -> Just $ pure $ Just $ structure $ pure $ case res of
-    Resolution n -> ikeyPart "log.resolution" ["count" ~> n]
-    NoResolution -> ikeyPart "log.noResolution" []
+  {- The scenario's ending.
+
+  Guarded on @inResolution@ because the narrator sees this message TWICE: the
+  first pass clears the queue and re-pushes the message so the end-of-game
+  window can go in front of it (@Arkham.Scenario@), setting @inResolution@ on
+  the way. Only the second pass is the resolution actually happening. -}
+  ScenarioResolution res -> Just do
+    inResolution <- getInResolution
+    pure
+      $ guard inResolution
+      $> structure
+        ( pure $ case res of
+            Resolution n -> ikeyPart "log.resolution" ["count" ~> n]
+            NoResolution -> ikeyPart "log.noResolution" []
+        )
   -- \* The decks that end the scenario
   {- Act and agenda advancement.
 

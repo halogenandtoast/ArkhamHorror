@@ -78,6 +78,7 @@
   "retaliate": "{name} retaliates",
   "revealed": "Reveals {token}",
   "round": "Round {count}",
+  "scenarioBegins": "{scenario}",
   "say": "Say",
   "sayPlaceholder": "Say something…",
   "searchFound": "{investigator} finds {cards}",

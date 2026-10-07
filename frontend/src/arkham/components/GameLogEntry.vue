@@ -40,6 +40,7 @@ const structureTone = computed(() => {
   if (first?.tag !== 'LogI18n') return null
   const key = first.contents[0]
   if (key.startsWith('log.phase.')) return key.slice('log.phase.'.length)
+  if (key === 'log.scenarioBegins') return 'scenario'
   if (key === 'log.round') return 'round'
   if (key === 'log.turn') return 'turn'
   return null
@@ -341,6 +342,20 @@ function requestUndo() {
 .log-structure--upkeep { --tone: #315b70; }
 .log-structure--resolution { --tone: var(--spooky-green-dark); }
 .log-structure--campaign { --tone: var(--mythos-dark); }
+
+/* The scenario title opens the whole log: the one banner that gets to be big,
+   and the only structure line that keeps its own capitalisation. */
+.log-structure--scenario {
+  --tone: var(--mythos-dark);
+  background: color-mix(in srgb, var(--tone) 85%, transparent);
+  margin-top: 26px;
+  padding: 14px 12px 14px 13px;
+  font-size: 1.25em;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  text-align: center;
+}
 
 /* A round opens the biggest break; a turn is a lighter one inside it. */
 .log-structure--round {

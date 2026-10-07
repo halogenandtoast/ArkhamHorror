@@ -4455,6 +4455,8 @@ runPreGameMessage msg g = case msg of
       $ g
       & (inSetupL .~ True)
       & (scenarioStepsL .~ 0)
+      -- Rounds are counted per scenario, not per game.
+      & (roundCountL .~ 0)
       & (undoActionStepL .~ Nothing)
       & (undoTurnStepL .~ Nothing)
       & (undoPhaseStepL .~ Nothing)

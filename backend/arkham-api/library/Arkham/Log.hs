@@ -255,6 +255,13 @@ actRef aid name = entityRef RefAct (display $ toName name) aid
 agendaRef :: Named name => AgendaId -> name -> CardCode -> LogRef
 agendaRef aid name = entityRef RefAgenda (display $ toName name) aid
 
+{- | The scenario itself, for the banner that opens one. Its id IS its card
+code, so the client resolves a localized title and the art to hover; the name
+is the fallback a homebrew scenario needs, since it is in nobody's card index.
+-}
+scenarioRef :: Named name => ScenarioId -> name -> LogRef
+scenarioRef sid name = entityRef RefScenario (display $ toName name) sid (unScenarioId sid)
+
 storyRef :: Named name => StoryId -> name -> LogRef
 storyRef sid name =
   (logRef RefStory (display $ toName name)) {logRefEntityId = Just (idText sid)}

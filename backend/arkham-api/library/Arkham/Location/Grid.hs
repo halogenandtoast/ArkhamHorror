@@ -5,6 +5,7 @@ import Arkham.Prelude hiding ((<|))
 import Arkham.Direction
 import Arkham.Id
 import Arkham.Layout
+import Data.Char (isDigit)
 import Data.Sequence ((<|), (|>))
 import Data.Sequence qualified as Seq
 import Data.Text qualified as T
@@ -243,6 +244,25 @@ gridLabel (Pos x y) =
  where
   negativeStr :: Int -> String
   negativeStr n = if n < 0 then "n" else ""
+
+{- | Inverse of 'gridLabel'. Strict: the whole label must be @pos@ followed by two
+signed two-digit components, so a scenario's own layout cell name (@cnidathqua@,
+@legs1@, @sylvesterBlake@, ...) never parses as a position.
+-}
+posFromGridLabel :: Text -> Maybe Pos
+posFromGridLabel label = do
+  rest <- T.stripPrefix "pos" label
+  (x, rest') <- component rest
+  (y, rest'') <- component rest'
+  guard (T.null rest'')
+  pure $ Pos x y
+ where
+  component t = do
+    let (negated, t') = maybe (False, t) (True,) (T.stripPrefix "n" t)
+    let (digits, r) = T.splitAt 2 t'
+    guard (T.length digits == 2 && T.all isDigit digits)
+    n <- readMay digits
+    pure (if negated then negate n else n, r)
 
 deleteInGrid :: LocationId -> Grid -> Grid
 deleteInGrid b c =

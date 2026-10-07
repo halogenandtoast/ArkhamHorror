@@ -568,7 +568,9 @@ prohibit = require . not
 
 canFightCriteriaObeyAloof :: Bool -> Criterion
 canFightCriteriaObeyAloof obeyAloof =
-  OnSameLocation
+  -- Cnidathqua is fought "as if it were at your location" from anywhere, so the
+  -- modifier stands in for the location check rather than narrowing it.
+  oneOf [OnSameLocation, thisEnemy (InPlayEnemy $ EnemyWithModifier CanBeFoughtAsIfAtYourLocation)]
     <> EnemyCriteria (ThisEnemy $ CanBeAttackedBy You)
     <> CanAttack
     <> (if obeyAloof then aloofFightRestriction else NoRestriction)

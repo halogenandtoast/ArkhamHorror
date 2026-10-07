@@ -77,16 +77,46 @@ data SetupOverrides = SetupOverrides
   { overriddenSets :: Map Set.EncounterSet (Maybe Set.EncounterSet)
   -- ^ 'Nothing' means the gather is skipped entirely.
   , overriddenCards :: Map CardCode CardDef
+  , replacedCopies :: [CardDef]
+  -- ^ Pending 'replaceOneOf' drops: one copy of each leaves the gathered pile, once.
+  , cappedCopies :: [CardDef]
+  -- ^ 'replaceOneOf' counterparts: the gathered pile keeps a single copy of each.
+  , addedDeckCards :: Map ScenarioDeckKey [CardDef]
+  -- ^ Pending 'alsoInDeck' additions, by the deck they join.
+  , addedGridCards :: Map Text [(Pos, CardDef)]
+  -- ^ Pending 'alsoPlaceInGrid' additions, by the 'placeShuffledInGrid' pool they join.
+  , addedPoolCards :: Map Text [CardDef]
+  -- ^ Pending 'addToPool' additions, by 'shuffledPool' key.
+  , thinnedPools :: Map Text Int
+  -- ^ Pending 'thinPool' removals, by 'shuffledPool' key.
   }
 
 noSetupOverrides :: SetupOverrides
-noSetupOverrides = SetupOverrides mempty mempty
+noSetupOverrides = SetupOverrides mempty mempty mempty mempty mempty mempty mempty mempty
 
 overrideSetsL :: Lens' SetupOverrides (Map Set.EncounterSet (Maybe Set.EncounterSet))
 overrideSetsL = lens (.overriddenSets) \m x -> m {overriddenSets = x}
 
 overrideCardsL :: Lens' SetupOverrides (Map CardCode CardDef)
 overrideCardsL = lens (.overriddenCards) \m x -> m {overriddenCards = x}
+
+replacedCopiesL :: Lens' SetupOverrides [CardDef]
+replacedCopiesL = lens (.replacedCopies) \m x -> m {replacedCopies = x}
+
+cappedCopiesL :: Lens' SetupOverrides [CardDef]
+cappedCopiesL = lens (.cappedCopies) \m x -> m {cappedCopies = x}
+
+addedDeckCardsL :: Lens' SetupOverrides (Map ScenarioDeckKey [CardDef])
+addedDeckCardsL = lens (.addedDeckCards) \m x -> m {addedDeckCards = x}
+
+addedGridCardsL :: Lens' SetupOverrides (Map Text [(Pos, CardDef)])
+addedGridCardsL = lens (.addedGridCards) \m x -> m {addedGridCards = x}
+
+addedPoolCardsL :: Lens' SetupOverrides (Map Text [CardDef])
+addedPoolCardsL = lens (.addedPoolCards) \m x -> m {addedPoolCards = x}
+
+thinnedPoolsL :: Lens' SetupOverrides (Map Text Int)
+thinnedPoolsL = lens (.thinnedPools) \m x -> m {thinnedPools = x}
 
 overridesL :: Lens' ScenarioBuilderState SetupOverrides
 overridesL = lens (.overrides) \m x -> m {overrides = x}
@@ -107,6 +137,83 @@ substitute :: Monad m => CardDef -> CardDef -> ScenarioBuilderT m ()
 substitute old new = do
   overridesL . overrideCardsL . at old.cardCode .= Just new
   attrsL . substitutionsL . at old.cardCode .= Just new.cardCode
+
+{- | Use @new@ in place of ONE copy of @old@ -- the "replace one of each Tidal Pool with
+its counterpart from the Return to set" instruction. Both sets are gathered, so this
+drops a single copy of @old@ and keeps a single copy of @new@, however many the box
+ships. A set with two copies of each therefore ends up with one of each.
+-}
+replaceOneOf :: Monad m => CardDef -> CardDef -> ScenarioBuilderT m ()
+replaceOneOf old new = do
+  overridesL . replacedCopiesL %= (old :)
+  overridesL . cappedCopiesL %= (new :)
+
+{- | Apply the 'replaceOneOf' declarations to what has been gathered so far. Runs after
+every gather, so a box may declare its swaps before or after the gathers that supply
+them: the drops happen once each, and the caps are idempotent.
+-}
+applyReplacedCopies :: Monad m => ScenarioBuilderT m ()
+applyReplacedCopies = do
+  use (overridesL . replacedCopiesL) >>= filterM dropOne >>= (overridesL . replacedCopiesL .=)
+  use (overridesL . cappedCopiesL) >>= traverse_ capToOne
+ where
+  -- 'True' keeps the declaration pending: no copy has been gathered yet.
+  dropOne def = maybe (pure True) (\c -> removeGathered c >> pure False) =<< findGathered def
+  capToOne def =
+    findGathered def >>= \case
+      Nothing -> pure ()
+      Just kept -> do
+        cards <- gatheredCards
+        traverse_ removeGathered [c | c <- cards, toCardDef c == def, toCardId c /= toCardId kept]
+
+  gatheredCards = do
+    deck <- use (attrsL . encounterDeckL)
+    others <- use otherCardsL
+    pure (map toCard (unDeck deck) <> others)
+  findGathered def = find ((== def) . toCardDef) <$> gatheredCards
+  removeGathered card = do
+    attrsL . encounterDeckL %= filter ((/= toCardId card) . toCardId)
+    otherCardsL %= filter ((/= toCardId card) . toCardId)
+
+{- | Cards that join a scenario deck the wrapped block builds with 'addExtraDeck', on top
+of whatever it puts there. The deck is reshuffled so they do not all land on the bottom.
+-}
+alsoInDeck :: Monad m => ScenarioDeckKey -> [CardDef] -> ScenarioBuilderT m ()
+alsoInDeck k defs = overridesL . addedDeckCardsL . at k . non [] %= (<> defs)
+
+{- | A location, and the grid seat it takes, joining a pool the wrapped block places with
+'placeShuffledInGrid' -- "shuffle Cave Mouth in with the rest; use all six".
+-}
+alsoPlaceInGrid :: Monad m => Text -> Pos -> CardDef -> ScenarioBuilderT m ()
+alsoPlaceInGrid key pos def =
+  overridesL . addedGridCardsL . at key . non [] %= (<> [(pos, def)])
+
+-- | Cards that join a pool the wrapped block draws from with 'shuffledPool'.
+addToPool :: Monad m => Text -> [CardDef] -> ScenarioBuilderT m ()
+addToPool key defs = overridesL . addedPoolCardsL . at key . non [] %= (<> defs)
+
+{- | Remove @n@ cards at random from a 'shuffledPool' without looking at them -- what a
+box does after shuffling its own cards into one.
+-}
+thinPool :: Monad m => Text -> Int -> ScenarioBuilderT m ()
+thinPool key n = overridesL . thinnedPoolsL . at key . non 0 %= (+ n)
+
+{- | A pool of cards, shuffled, after any 'addToPool' and 'thinPool' a wrapping scenario
+declared. The wrapped block names only its own cards and stays blind to the rest.
+-}
+shuffledPool :: MonadRandom m => Text -> [CardDef] -> ScenarioBuilderT m [CardDef]
+shuffledPool key defs = do
+  added <- use (overridesL . addedPoolCardsL . at key . non [])
+  dropped <- use (overridesL . thinnedPoolsL . at key . non 0)
+  drop dropped <$> shuffleM (defs <> added)
+
+{- | Shuffle a pool of locations across the given grid seats, including any seat a
+wrapping scenario added with 'alsoPlaceInGrid'.
+-}
+placeShuffledInGrid :: ReverseQueue m => Text -> [Pos] -> [CardDef] -> ScenarioBuilderT m ()
+placeShuffledInGrid key seats defs = do
+  added <- use (overridesL . addedGridCardsL . at key . non [])
+  zipWithM_ placeInGrid (seats <> map fst added) =<< shuffleM (defs <> map snd added)
 
 -- | Resolve a gather through 'replaceSet' or 'ignoreSet'.
 resolveSet
@@ -139,9 +246,12 @@ instance MonadRandom m => MonadRandom (ScenarioBuilderT m) where
   getRandomR = lift . getRandomR
   getRandomRs = lift . getRandomRs
 
+{- | Every card the builder makes goes through 'substitute', so a wrapping scenario's
+swap reaches the cards the block it wraps creates and not just the decks it names.
+-}
 instance CardGen m => CardGen (ScenarioBuilderT m) where
-  genEncounterCard = lift . genEncounterCard
-  genPlayerCard = lift . genPlayerCard
+  genEncounterCard a = resolveDef (toCardDef a) >>= lift . genEncounterCard
+  genPlayerCard a = resolveDef (toCardDef a) >>= lift . genPlayerCard
   replaceCard cid = lift . replaceCard cid
   removeCard = lift . removeCard
   clearCardCache = lift clearCardCache
@@ -192,6 +302,7 @@ gather = withResolvedSet \encounterSet -> do
   (other, cards) <- partition isDoubleSided <$> gatherEncounterSet encounterSet
   attrsL . encounterDeckL %= (Deck cards <>)
   otherCardsL %= (map toCard other <>)
+  applyReplacedCopies
 
 {- | Run a gather against the set 'replaceSet' names in its place, or not at all if
 'ignoreSet' dropped it. Plain for every scenario that declares no overrides.
@@ -476,8 +587,10 @@ addToEncounterDeck (toList -> defs) = do
 
 assetAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m AssetId
 assetAt def lid = do
-  attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
-  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
+  -- Both the named card and its 'substitute' leave the decks: neither is left to be drawn.
+  defs <- (def.defs <>) . (.defs) <$> resolveDef def
+  attrsL . encounterDeckL %= flip removeEachFromDeck defs
+  attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck defs
   card <- genCard def
   createAssetAt card (AtLocation lid)
 
@@ -580,16 +693,23 @@ addExtraDeck
   :: (FindInEncounterDeck defs, ReverseQueue m) => ScenarioDeckKey -> [defs] -> ScenarioBuilderT m ()
 addExtraDeck k defs0 = do
   defs <- traverse resolveFindable defs0
-  deck <- use (attrsL . encounterDeckL)
-  cards <- for defs \def -> do
-    case findInDeck def deck of
-      Just card -> do
-        attrsL . encounterDeckL %= filter (/= card)
-        pure $ toCard card
-      Nothing -> notFoundInDeck def
+  cards <- traverse fromDeckOrGen defs
+  added <- use (overridesL . addedDeckCardsL . at k . non [])
+  -- 'alsoInDeck' cards are shuffled through the deck rather than stacked under it.
+  deck <- case added of
+    [] -> pure cards
+    _ -> shuffleM . (cards <>) =<< traverse fromDeckOrGen added
+  attrsL . decksL %= (at k ?~ deck)
 
-  -- cards' <- shuffle cards
-  attrsL . decksL %= (at k ?~ cards)
+fromDeckOrGen
+  :: (FindInEncounterDeck a, ReverseQueue m) => a -> ScenarioBuilderT m Card
+fromDeckOrGen def = do
+  deck <- use (attrsL . encounterDeckL)
+  case findInDeck def deck of
+    Just card -> do
+      attrsL . encounterDeckL %= filter (/= card)
+      pure $ toCard card
+    Nothing -> notFoundInDeck def
 
 addAdditionalReferences :: ReverseQueue m => [CardCode] -> ScenarioBuilderT m ()
 addAdditionalReferences codes = attrsL . additionalReferencesL %= (<> codes)

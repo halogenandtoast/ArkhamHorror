@@ -11,6 +11,7 @@ import Arkham.CampaignLogKey
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Card
 import Arkham.Helpers (unDeck)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.GameValue (perPlayer)
 import Arkham.Helpers.Scenario
 import Arkham.Matcher
@@ -44,6 +45,11 @@ circle k x = do
 instance RunMessage TheSearchForAgentHarper where
   runMessage msg a@(TheSearchForAgentHarper attrs) = runQueueT $ case msg of
     AdvanceAct (isSide B attrs -> True) _ _ -> do
+      {- "Scenario Interlude: The Accusation". Read before the accusation, since it is
+      what tells the players how to make one; the reveal below is read once they have. -}
+      scenarioI18n $ scope "interlude" $ flavor do
+        h "title"
+        p "instructions"
       lead <- getLead
       possibleSuspects <- getPossibleSuspects
       kidnapper <- getKidnapper
@@ -62,7 +68,7 @@ instance RunMessage TheSearchForAgentHarper where
         for_ possibleHideouts \possibleHideout -> do
           cardLabeled possibleHideout do
             if possibleHideout == toCardDef hideout
-              then doStep 1 msg
+              then doStep 4 msg
               else nothing
 
       circle PossibleSuspects (asSuspect kidnapper)
@@ -70,11 +76,35 @@ instance RunMessage TheSearchForAgentHarper where
 
       doStep 2 msg
       pure a
-    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> do
-      let n = toResultDefault (0 :: Int) attrs.meta
-      pure . TheSearchForAgentHarper $ attrs & metaL .~ toJSON (n + 1)
+    DoStep 1 (AdvanceAct (isSide B attrs -> True) _ _) -> matched "suspect"
+    DoStep 4 (AdvanceAct (isSide B attrs -> True) _ _) -> matched "hideout"
     DoStep 2 msg'@(AdvanceAct (isSide B attrs -> True) _ _) -> do
-      case toResultDefault (0 :: Int) attrs.meta of
+      -- The cards from beneath Finding Agent Harper, shown now that the accusation is in.
+      kidnapper <- getKidnapper
+      hideout <- getHideout
+      let correct = toResultDefault ([] :: [Text]) attrs.meta
+      {- The whole second half of the interlude, with the branch the accusation actually
+      took ticked and the other two crossed. The set-up list is only shown when the game
+      goes on: on a miss everyone resigns and none of it happens. -}
+      scenarioI18n $ scope "interlude" $ flavor do
+        h "title"
+        cols do
+          smallImgValidate ("suspect" `elem` correct) kidnapper
+          smallImgValidate ("hideout" `elem` correct) hideout
+        ul do
+          li.nested "accusationMade" do
+            li "reveal"
+            li.validate (null correct) "neither"
+            li.validate (length correct == 1) "one"
+            li.validate (length correct == 2) "both"
+          when (notNull correct) $ li.nested "finalActAndAgenda" do
+            li "advanceAct"
+            li "advanceAgenda"
+            li "putHideoutIntoPlay"
+            li "spawnKidnapper"
+            li "removeLeadsDeck"
+            li "readyToProceed"
+      case length correct of
         0 -> eachInvestigator resign
         1 -> do
           lead <- getLead
@@ -113,3 +143,8 @@ instance RunMessage TheSearchForAgentHarper where
       advancedWithOther attrs
       pure a
     _ -> TheSearchForAgentHarper <$> liftRunMessage msg attrs
+   where
+    -- Which of the two guesses matched, not just how many: the reveal marks each card.
+    matched k = do
+      let ks = toResultDefault ([] :: [Text]) attrs.meta
+      pure . TheSearchForAgentHarper $ attrs & metaL .~ toJSON (k : ks)

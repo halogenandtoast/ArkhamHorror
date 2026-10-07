@@ -30,6 +30,22 @@
     "title": "Scenario II: The Vanishing of Elina Harper",
     "body": "<p>Finally, Mr. Sargent asks you what you’re doing in Innsmouth. You dodge the question with one of your own, asking him if he has seen anybody around town matching Agent Harper’s description. He pauses, then shakes his head. “Never seen ’er,” he mutters, refusing to meet your gaze.</p><p>You spend the rest of the day learning the layout of the town and attempting in vain to make conversation with the locals. The more time you spend in this strange, squalid town, the more you wish you had never taken Agent Dawson up on his offer. There is something foul in the air here, something rotten and fetid that disturbs you to your core.</p><p>Later that night, you meet up with Agent Dawson in the now-deserted town square and share what you have learned. “Take a look at this,” he says, handing you a creased, ink-stained letter addressed to him. “Turns out Harper had a room at that disgusting old hotel. Still does, technically, but it seemed like she hadn’t been around for a few days. I broke in and found this among her things.”</p><p>Judging from the unmailed letter, it seems Agent Harper knew someone in town was tracking her movements. I’m being followed, the missive explains. Don’t know how they know, but they know. It’s like the whole town is in on something. I have no contacts here whom I trust. It’s going to require more than one agent to sort this out, I fear—</p><p>The letter is cut short. “Well, she has more than one agent now,” Dawson says bitterly once you are done reading. “There’s only one reason she wouldn’t have sent this letter. Harper’s in danger, and somebody in this balled‑up town knows where she is.” Together, you begin to formulate a plan to find Agent Harper. First, narrow down her last known location. Second, find out who knew she was in town. Then…pay them a visit.</p>"
   },
+  "interlude": {
+    "title": "Scenario Interlude: The Accusation",
+    "instructions": "<p class='basic'>Using the knowledge you’ve gathered, you must make an accusation in an attempt to locate who has kidnapped Elina Harper and where she is hidden. In order to make this accusation, the players must choose one Suspect enemy and one Hideout location from among the options listed on the Finding Agent Harper reference card.</p><p class='basic'>Note the Suspect cannot be an enemy who is currently in play or in the victory display, nor can the Hideout be a location that is currently in play. Use this information to narrow down your choices.</p>",
+    "accusationMade": "Once the accusation has been made, do the following:",
+    "reveal": "Reveal the Suspect enemy and the Hideout location that are facedown beneath Finding Agent Harper. In your Campaign Log, under “Possible Suspects / Possible Hideouts,” circle the names of the correct Suspect enemy and Hideout location.",
+    "neither": "If neither card matches your accusation, the investigators are on the wrong track and must immediately resign.",
+    "one": "If only one of the two cards matches your accusation, the investigators are partially correct and may proceed, but they have angered the citizens of Innsmouth during their careless investigation. Flip over the Finding Agent Harper reference card and spawn the enemy on its other side at the Innsmouth Square.",
+    "both": "If both cards match your accusation, the investigators are correct and may proceed.",
+    "finalActAndAgenda": "In order to set up the final act and agenda, do the following:",
+    "advanceAct": "Advance the act directly to the set-aside act 2a.",
+    "advanceAgenda": "Advance the agenda directly to the set-aside agenda 3a.",
+    "putHideoutIntoPlay": "Put the Hideout location that was beneath Finding Agent Harper into play. Add 1 {perPlayer} additional clues to that location. Place the set-aside Elina Harper story asset beneath this location to indicate that this is where Elina Harper has been captured.",
+    "spawnKidnapper": "Spawn the Suspect enemy that was beneath Finding Agent Harper at Elina Harper’s location, ignoring their Revelation ability. For the remainder of the scenario, this enemy is referred to as “the kidnapper.”",
+    "removeLeadsDeck": "Remove the Leads deck from the game.",
+    "readyToProceed": "You are now ready to proceed with the final act and agenda."
+  },
   "resolutions": {
     "noResolution": {
       "title": "No Resolution",

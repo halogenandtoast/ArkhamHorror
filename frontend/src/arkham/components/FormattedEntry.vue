@@ -501,6 +501,34 @@ p.billenia, :deep(p.billenia) {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--return-to, #2d6a62), transparent 25%);
 }
 
+/* A validated card image: the tick or cross straddles the top edge of the art, centred.
+
+   Positioned rather than aligned. These entries sit inside `.columns`, whose children are
+   column flex boxes, while the entries themselves declare `display: inline-flex`; which of
+   those won decided whether the marker landed above the card or beside it, and the two
+   cards in a row did not agree. Taking the marker out of flow sidesteps the question. */
+.valid:has(> div > img),
+:deep(.valid):has(> div > img),
+.invalid:has(> div > img),
+:deep(.invalid):has(> div > img) {
+  display: block;
+  position: relative;
+  width: fit-content;
+}
+
+.valid:has(> div > img)::before,
+:deep(.valid):has(> div > img)::before,
+.invalid:has(> div > img)::before,
+:deep(.invalid):has(> div > img)::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  translate: -50% -50%;
+  transform: none;
+  margin: 0;
+  z-index: var(--z-index-1);
+}
+
 .by-difficulty ~ ul, :deep(.by-difficulty ~ ul) {
   display: grid;
   grid-template-columns: 1fr 1fr;

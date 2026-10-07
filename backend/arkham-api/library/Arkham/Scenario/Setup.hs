@@ -104,7 +104,9 @@ the new version from the Return set" instruction. A total substitution: for a pa
 swap (one of each copy) write the cards out in your own block instead.
 -}
 substitute :: Monad m => CardDef -> CardDef -> ScenarioBuilderT m ()
-substitute old new = overridesL . overrideCardsL . at old.cardCode .= Just new
+substitute old new = do
+  overridesL . overrideCardsL . at old.cardCode .= Just new
+  attrsL . substitutionsL . at old.cardCode .= Just new.cardCode
 
 -- | Resolve a gather through 'replaceSet' or 'ignoreSet'.
 resolveSet
@@ -256,7 +258,8 @@ setAsideFacedown = setAsideWith (setFacedown True)
 setAsideWith
   :: (ReverseQueue m, FindInEncounterDeck a, HasCallStack)
   => (Card -> ScenarioBuilderT m Card) -> [a] -> ScenarioBuilderT m ()
-setAsideWith f as = do
+setAsideWith f as0 = do
+  as <- traverse resolveFindable as0
   cards <- for as \a -> do
     deck <- use (attrsL . encounterDeckL)
     case findInDeck a deck of
@@ -555,9 +558,14 @@ class FindInEncounterDeck a where
   findInDeck :: a -> Deck EncounterCard -> Maybe EncounterCard
   notFoundInDeck :: ReverseQueue m => a -> m Card
 
+  -- | Send what the wrapped block named through 'substitute'. Only a def can be swapped.
+  resolveFindable :: Monad m => a -> ScenarioBuilderT m a
+  resolveFindable = pure
+
 instance FindInEncounterDeck CardDef where
   findInDeck def deck = find ((== def) . toCardDef) (unDeck deck)
   notFoundInDeck = genCard
+  resolveFindable = resolveDef
 
 instance FindInEncounterDeck Card where
   findInDeck card deck = find ((== card) . toCard) (unDeck deck)
@@ -570,7 +578,8 @@ instance FindInEncounterDeck EncounterCard where
 -- Does not handle extra encounter decks
 addExtraDeck
   :: (FindInEncounterDeck defs, ReverseQueue m) => ScenarioDeckKey -> [defs] -> ScenarioBuilderT m ()
-addExtraDeck k defs = do
+addExtraDeck k defs0 = do
+  defs <- traverse resolveFindable defs0
   deck <- use (attrsL . encounterDeckL)
   cards <- for defs \def -> do
     case findInDeck def deck of

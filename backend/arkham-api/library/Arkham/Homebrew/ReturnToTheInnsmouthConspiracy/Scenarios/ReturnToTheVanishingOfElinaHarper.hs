@@ -8,6 +8,7 @@ import Arkham.Asset.Cards qualified as Assets
 import Arkham.Card
 import Arkham.EncounterSet qualified as Set
 import Arkham.Enemy.CardDefs.NightOfTheZealot.Nightgaunts qualified as Enemies
+import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.FogOverInnsmouth qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Acts qualified as HBActs
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Assets qualified as HBAssets
@@ -54,6 +55,9 @@ instance RunMessage ReturnToTheVanishingOfElinaHarper where
         replaceSet Set.FogOverInnsmouth Sets.InnsmouthHaze
         replaceSet Set.LockedDoors Sets.BarricadedDoors
         substitute Acts.theSearchForAgentHarper HBActs.theSearchForAgentHarperV2
+        -- Innsmouth Haze replaces Fog over Innsmouth, so its matching enemy stands in for
+        -- the Winged One wherever the official scenario names one.
+        substitute Enemies.wingedOne HBEnemies.immaterialOne
 
         setup $ ul do
           li.nested "gatherSets" do
@@ -114,9 +118,7 @@ instance RunMessage ReturnToTheVanishingOfElinaHarper where
           , Assets.elinaHarperKnowsTooMuch
           , Enemies.huntingNightgaunt
           , Enemies.huntingNightgaunt
-          , -- Innsmouth Haze replaces Fog over Innsmouth, so its matching card stands in
-            -- for the Winged One the official setup sets aside (FAQ v2.0).
-            HBEnemies.immaterialOne
+          , Enemies.wingedOne
           ]
 
         findingAgentHarper <- genCard Stories.findingAgentHarper

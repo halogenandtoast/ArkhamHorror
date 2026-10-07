@@ -103,14 +103,23 @@ This logic is a bit too generous and we may want to specify
 on double sided cards which card code is on the other side.
 -}
 getSetAsideCard :: (HasCallStack, HasGame m) => CardDef -> m Card
-getSetAsideCard def = do
-  card <- selectJust . SetAsideCardMatch $ cardIs def
-  pure $ if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id
+getSetAsideCard def = selectJust (SetAsideCardMatch $ cardIs def) >>= asSideOf def
 
 getSetAsideCardMaybe :: (HasCallStack, HasGame m) => CardDef -> m (Maybe Card)
-getSetAsideCardMaybe def = do
-  (\card -> if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id)
-    <$$> selectOne (SetAsideCardMatch $ cardIs def)
+getSetAsideCardMaybe def = selectOne (SetAsideCardMatch $ cardIs def) >>= traverse (asSideOf def)
+
+{- | Flip a double-sided card to the side @def@ names. A card the setup substituted in for
+@def@ is left alone: it is standing in for that card, not another side of it.
+-}
+asSideOf :: HasGame m => CardDef -> Card -> m Card
+asSideOf def card
+  | exactCardCode card == exactCardCode def = pure card
+  | otherwise = do
+      aliases <- getCardCodeAliases
+      pure
+        $ if lookup (toCardCode card) aliases == Just def.cardCode
+          then card
+          else lookupCard def.cardCode card.id
 
 withSetAsideCard :: (HasCallStack, HasGame m) => CardDef -> (Card -> m ()) -> m ()
 withSetAsideCard def body = getSetAsideCardMaybe def >>= traverse_ body
@@ -123,15 +132,13 @@ maybeGetSetAsideCard :: (HasCallStack, HasGame m) => CardDef -> m (Maybe Card)
 maybeGetSetAsideCard def = runMaybeT do
   guardInScenario
   card <- selectMaybeT $ SetAsideCardMatch $ cardIs def
-  pure $ if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id
+  lift $ asSideOf def card
 
 maybeGetSetAsideEncounterCard :: HasGame m => CardDef -> m (Maybe EncounterCard)
 maybeGetSetAsideEncounterCard def = runMaybeT do
   guardInScenario
   card <- selectMaybeT $ SetAsideCardMatch $ cardIs def
-  hoistMaybe
-    $ preview _EncounterCard
-    $ if exactCardCode card == exactCardCode def then card else lookupCard def.cardCode card.id
+  hoistMaybe . preview _EncounterCard =<< lift (asSideOf def card)
 
 getSetAsideCardsMatching :: (HasCallStack, HasGame m) => CardMatcher -> m [Card]
 getSetAsideCardsMatching = select . SetAsideCardMatch

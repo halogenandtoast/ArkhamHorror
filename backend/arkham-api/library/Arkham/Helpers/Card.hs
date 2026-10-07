@@ -20,7 +20,7 @@ import Arkham.Helpers.Campaign
 import Arkham.Helpers.ChaosToken
 import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Scenario (scenarioFieldMap)
+import Arkham.Helpers.Scenario (getCardCodeAliases, scenarioFieldMap)
 import {-# SOURCE #-} Arkham.Helpers.Window (windowMatches)
 import Arkham.Id
 import Arkham.Investigator.Types qualified as Field
@@ -50,6 +50,18 @@ isWeakness c = case toCard c of
   PlayerCard pc -> isJust $ cdCardSubType $ toCardDef pc
   EncounterCard _ -> True -- maybe?
   VengeanceCard _ -> False -- should be an error
+
+{- | Filter by a 'CardMatcher', letting a card the setup substituted in also answer to
+the def it replaced -- an agenda shuffling the original back in, a search for it.
+-}
+filterCardsSubstituted :: HasGame m => CardMatcher -> [Card] -> m [Card]
+filterCardsSubstituted matcher cards = do
+  aliases <- getCardCodeAliases
+  let asOriginal c = case lookup (toCardCode c) aliases of
+        Nothing -> False
+        Just old -> lookupCard old c.id `cardMatch` matcher
+  pure $ filter (\c -> c `cardMatch` matcher || asOriginal c) cards
+
 extendedCardMatch
   :: (HasGame m, IsCard c) => c -> ExtendedCardMatcher -> m Bool
 extendedCardMatch (toCard -> c) matcher =

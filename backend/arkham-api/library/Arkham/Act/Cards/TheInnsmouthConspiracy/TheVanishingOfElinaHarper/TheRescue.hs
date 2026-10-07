@@ -28,7 +28,8 @@ instance HasModifiersFor TheRescue where
     pure $ enemies <> investigators
 
 instance HasAbilities TheRescue where
-  getAbilities (TheRescue attrs) = extend attrs [restrictedAbility attrs 1 criteria $ Objective $ ForcedAbility AnyWindow]
+  getAbilities (TheRescue attrs) =
+    extend attrs [onlyOnce $ restricted attrs 1 criteria $ Objective $ forced AnyWindow]
    where
     criteria =
       oneOf

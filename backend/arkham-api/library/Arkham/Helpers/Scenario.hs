@@ -61,6 +61,15 @@ scenarioFieldMapM fld f = selectJust TheScenario >>= fieldMapM fld f
 scenarioFieldMaybe :: (HasCallStack, HasGame m) => Field Scenario a -> m (Maybe a)
 scenarioFieldMaybe fld = selectOne TheScenario >>= traverse (field fld)
 
+{- | The card codes a replacement answers to, keyed by its own: the reverse of the
+'substitute' pairs the scenario recorded during setup.
+-}
+getCardCodeAliases :: HasGame m => m (Map CardCode CardCode)
+getCardCodeAliases =
+  scenarioFieldMaybe ScenarioSubstitutions <&> \case
+    Nothing -> mempty
+    Just subs -> mapFromList [(new, old) | (old, new) <- mapToList subs]
+
 getInResolution :: HasGame m => m Bool
 getInResolution = fromMaybe False <$> scenarioFieldMaybe ScenarioInResolution
 

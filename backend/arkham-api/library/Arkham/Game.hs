@@ -81,6 +81,7 @@ import Arkham.Helpers.Campaign (getCurrentDeck)
 import Arkham.Helpers.Card (
   cardListMatches,
   extendedCardMatch,
+  filterCardsSubstituted,
   getHasVictoryPoints,
   getVictoryPoints,
   iconsForCard,
@@ -5796,8 +5797,8 @@ instance Query ExtendedCardMatcher where
           _ -> pure handCards
         pure $ filter (`elem` cards) cs
       SetAsideCardMatch matcher' -> do
-        cards <- scenarioField ScenarioSetAsideCards
-        pure $ filter (`elem` filterCards matcher' cards) cs
+        cards <- filterCardsSubstituted matcher' =<< scenarioField ScenarioSetAsideCards
+        pure $ filter (`elem` cards) cs
       PassesCommitRestrictions inner -> do
         let
           passesCommitRestriction card = \case
@@ -5926,7 +5927,7 @@ instance Query ExtendedCardMatcher where
       CommittableCard imatch matcher' -> do
         iid <- selectJust imatch
         filterM (getIsCommittable iid) =<< go cs matcher'
-      BasicCardMatch cm -> pure $ filter (`cardMatch` cm) cs
+      BasicCardMatch cm -> filterCardsSubstituted cm cs
       InHandOf forPlay who -> do
         iids <- select who
         cards <- case forPlay of
@@ -6446,6 +6447,7 @@ instance Projection Scenario where
     case fld of
       ScenarioLocationLayout -> pure scenarioLocationLayout
       ScenarioLocationGroups -> pure scenarioLocationGroups
+      ScenarioSubstitutions -> pure scenarioSubstitutions
       ScenarioGrid -> pure scenarioGrid
       ScenarioCardsUnderActDeck -> pure scenarioCardsUnderActDeck
       ScenarioCardsNextToActDeck -> pure scenarioCardsNextToActDeck

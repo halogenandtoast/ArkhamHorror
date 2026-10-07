@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
-module Arkham.SkillTest.Runner (module X, totalModifiedSkillValue) where
+module Arkham.SkillTest.Runner (module X, totalModifiedSkillValue, withSkillTestCards) where
 
 import Arkham.SkillTest as X
 
@@ -64,6 +64,29 @@ skillTestSourceToMaybeCard (toSource -> source) = case source of
   IndexedSource _ t -> skillTestSourceToMaybeCard t
   PaymentSource inner -> skillTestSourceToMaybeCard inner
   s -> sourceToMaybeCard s
+
+{- | Fill in the cards the client renders for a test: its source and its target.
+
+Called where the test is installed, not just at declaration. A revelation test opens a
+@WouldPerformRevelationSkillTest@ window, and a skill test with two or more available
+skills asks which to use, both before 'BeginSkillTestAfterFast' runs -- so a test that
+only learned its cards at declaration sat on screen with no card at all.
+
+The ability source is unwrapped first so an ability's own card wins over the card the
+ability happens to be printed on.
+-}
+withSkillTestCards :: (HasCallStack, HasGame m) => SkillTest -> m SkillTest
+withSkillTestCards s = do
+  mAbilityCardId <- case s.source of
+    AbilitySource src _ -> fmap toCardId <$> skillTestSourceToMaybeCard src
+    UseAbilitySource _ src _ -> fmap toCardId <$> skillTestSourceToMaybeCard src
+    t -> fmap toCardId <$> skillTestSourceToMaybeCard t
+  mTargetCardId <- fmap toCardId <$> skillTestTargetToMaybeCard s.target
+  mSourceCardId <- fmap toCardId <$> skillTestSourceToMaybeCard s.source
+  pure
+    $ s
+    & (targetCardL .~ mTargetCardId)
+    & (sourceCardL .~ (mAbilityCardId <|> mSourceCardId))
 
 totalModifiedSkillValue :: HasGame m => SkillTest -> m Int
 totalModifiedSkillValue s = do
@@ -174,12 +197,7 @@ instance RunMessage SkillTest where
         $ windows'
         <> ignoreWindows
         <> [Do BeginSkillTestAfterFast, windowMsg, BeforeSkillTest s.id, EndSkillTestWindow]
-      mAbilityCardId <- case skillTestSource of
-        AbilitySource src _ -> fmap toCardId <$> skillTestSourceToMaybeCard src
-        UseAbilitySource _ src _ -> fmap toCardId <$> skillTestSourceToMaybeCard src
-        t -> fmap toCardId <$> skillTestSourceToMaybeCard t
-      mTargetCardId <- fmap toCardId <$> skillTestTargetToMaybeCard skillTestTarget
-      mSourceCardId <- fmap toCardId <$> skillTestSourceToMaybeCard skillTestSource
+      withCards <- withSkillTestCards s
 
       updatedSkillTestType <- case skillTestType of
         SkillSkillTest stype -> SkillSkillTest <$> getAlternateSkill s stype
@@ -209,9 +227,7 @@ instance RunMessage SkillTest where
                   $ foldr applyModifiers (mapToList skillTestIconValues) mods
 
       pure
-        $ s
-        & (targetCardL .~ mTargetCardId)
-        & (sourceCardL .~ (mAbilityCardId <|> mSourceCardId))
+        $ withCards
         & (skillTestTypeL .~ updatedSkillTestType)
         & (iconValuesL .~ icons)
         & (baseValueL .~ updatedBaseValue)

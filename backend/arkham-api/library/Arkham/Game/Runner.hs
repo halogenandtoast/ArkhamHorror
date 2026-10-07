@@ -3272,7 +3272,11 @@ runGameMessage msg g = case msg of
         <> pre
         <> msgs'
         <> [SetActiveInvestigator (g ^. activeInvestigatorIdL)]
-      pure $ g & (skillTestL ?~ skillTest)
+      -- The cards go on before the test is installed: a revelation window or a
+      -- skill-choice ask opens ahead of BeginSkillTestAfterFast, and the client renders
+      -- the test from these fields.
+      skillTest' <- withSkillTestCards skillTest
+      pure $ g & (skillTestL ?~ skillTest')
   BeforeSkillTest skillTestId -> do
     getSkillTest >>= \case
       Nothing -> pure g

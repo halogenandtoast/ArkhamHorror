@@ -188,10 +188,10 @@ instance RunMessage IntoTheMaelstrom where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          story $ i18nWithTitle "noResolution"
+          resolution "noResolution"
           push R8
         Resolution 1 -> do
-          story $ i18nWithTitle "resolution1"
+          resolution "resolution1"
           record TheInvestigatorsEscapedYhanthlei
           selectEach
             ( mapOneOf
@@ -212,7 +212,7 @@ instance RunMessage IntoTheMaelstrom where
           eachInvestigator (`sufferPhysicalTrauma` 2)
           push $ if shatteredTheAlignment then R2 else R3
         Resolution 2 -> do
-          story $ i18nWithTitle "resolution2"
+          resolution "resolution2"
           record ThePlotOfTheDeepOnesWasThwarted
           conspiracyFulfilled <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV2
           if conspiracyFulfilled
@@ -223,34 +223,34 @@ instance RunMessage IntoTheMaelstrom where
                 then push R5
                 else endOfScenario
         Resolution 3 -> do
-          story $ i18nWithTitle "resolution3"
+          resolution "resolution3"
           record TheFloodHasBegun
           conspiracyFulfilled <- selectAny $ VictoryDisplayCardMatch $ basic $ cardIs Acts.cityOfTheDeepV2
           if conspiracyFulfilled
             then push R6
             else push R7
         Resolution 4 -> do
-          story $ i18nWithTitle "resolution4"
+          resolution "resolution4"
           record AgentHarpersMissionIsComplete
           -- eachInvestigator \iid -> gainXp iid ScenarioSource (ikey "xp.bonus") 3
           endOfScenario
         Resolution 5 -> do
-          story $ i18nWithTitle "resolution5"
+          resolution "resolution5"
           record TheRichesOfTheDeepAreLostForever
           -- eachInvestigator \iid -> gainXp iid ScenarioSource (ikey "xp.bonus") 3
           endOfScenario
         Resolution 6 -> do
-          story $ i18nWithTitle "resolution6"
+          resolution "resolution6"
           record AgentHarpersMissionIsCompleteButAtWhatCost
           eachInvestigator (`sufferMentalTrauma` 2)
           gameOver
         Resolution 7 -> do
-          story $ i18nWithTitle "resolution7"
+          resolution "resolution7"
           record TheRichesOfTheDeepAreLostForeverButAtWhatCost
           eachInvestigator (`sufferMentalTrauma` 2)
           gameOver
         Resolution 8 -> do
-          story $ i18nWithTitle "resolution8"
+          resolution "resolution8"
           record TheDeepOnesHaveFloodedTheEarth
           eachInvestigator (kill attrs)
           gameOver

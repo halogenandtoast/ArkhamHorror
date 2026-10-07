@@ -158,10 +158,10 @@ instance RunMessage TheVanishingOfElinaHarper where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          story $ i18n "noResolution"
+          resolution "noResolution"
           push R1
         Resolution n -> do
-          story $ i18n $ case n of
+          resolution $ case n of
             1 -> "resolution1"
             2 -> "resolution2"
             3 -> "resolution3"

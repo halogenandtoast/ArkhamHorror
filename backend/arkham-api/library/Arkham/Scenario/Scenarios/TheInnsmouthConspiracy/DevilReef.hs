@@ -218,7 +218,7 @@ instance RunMessage DevilReef where
       case r of
         NoResolution -> push R1
         Resolution 1 -> do
-          story $ scope "resolutions" $ i18nWithTitle "resolution1"
+          scope "resolutions" $ resolution "resolution1"
 
           n <- getCurrentAgendaStep
           terrorOfTheDevilReef <- selectOne $ EnemyWithTitle "The Terror of Devil Reef"

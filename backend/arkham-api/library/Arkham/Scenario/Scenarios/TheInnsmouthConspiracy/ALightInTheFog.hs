@@ -226,18 +226,18 @@ instance RunMessage ALightInTheFog where
           step <- agendaStep <$> selectJustField AgendaSequence AnyAgenda
           push $ if step < AgendaStep 4 then R4 else R3
         Resolution 1 -> do
-          story $ i18nWithTitle "resolution1"
+          resolution "resolution1"
           for_ (meta ^. resignedInMoonRoomL) (`recordForInvestigator` PossessesADivingSuit)
           defaultResolution
         Resolution 2 -> do
-          story $ i18nWithTitle "resolution2"
+          resolution "resolution2"
           defaultResolution
         Resolution 3 -> do
-          story $ i18nWithTitle "resolution3"
+          resolution "resolution3"
           eachInvestigator (kill attrs)
           gameOver
         Resolution 4 -> do
-          story $ i18nWithTitle "resolution4"
+          resolution "resolution4"
           defaultResolution
         other -> throw $ UnknownResolution other
       pure s

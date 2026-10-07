@@ -240,10 +240,10 @@ instance RunMessage HorrorInHighGear where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          story $ i18nWithTitle "noResolution"
+          resolution "noResolution"
           record TheInvestigatorsReachedFalconPointAfterSunrise
         Resolution 1 -> do
-          story $ i18nWithTitle "resolution1"
+          resolution "resolution1"
           record TheInvestigatorsReachedFalconPointBeforeSunrise
         other -> throw $ UnknownResolution other
 

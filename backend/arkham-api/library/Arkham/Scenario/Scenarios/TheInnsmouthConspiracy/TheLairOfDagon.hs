@@ -219,7 +219,7 @@ instance RunMessage TheLairOfDagon where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          story $ i18nWithTitle "noResolution"
+          resolution "noResolution"
           record DagonHasAwakened
           push R1
         Resolution 1 -> do
@@ -227,22 +227,20 @@ instance RunMessage TheLairOfDagon where
 
           gateKeeperDefeated <- selectAny (VictoryDisplayCardMatch $ basic $ CardWithTrait Suspect)
           recordWhen gateKeeperDefeated TheGatekeeperHasBeenDefeated
-          storyWithChooseOne
-            (i18nWithTitle "resolution1")
-            [ Label "$theInnsmouthConspiracy.theLairOfDagon.label.tellOceirosNothing" [R2]
-            , Label "$theInnsmouthConspiracy.theLairOfDagon.label.lieToOceiros" [R3]
-            , Label "$theInnsmouthConspiracy.theLairOfDagon.label.tellOceirosEverything" [R4]
-            ]
+          resolutionFlavorWithChooseOne (setTitle "resolution1.title" >> p "resolution1.body") do
+            i18nKeyLabeled "$theInnsmouthConspiracy.theLairOfDagon.label.tellOceirosNothing" $ push R2
+            i18nKeyLabeled "$theInnsmouthConspiracy.theLairOfDagon.label.lieToOceiros" $ push R3
+            i18nKeyLabeled "$theInnsmouthConspiracy.theLairOfDagon.label.tellOceirosEverything" $ push R4
         Resolution 2 -> do
-          story $ i18nWithTitle "resolution2"
+          resolution "resolution2"
           addChaosToken #elderthing
           endOfScenario
         Resolution 3 -> do
-          story $ i18nWithTitle "resolution3"
+          resolution "resolution3"
           addChaosToken #tablet
           endOfScenario
         Resolution 4 -> do
-          story $ i18nWithTitle "resolution4"
+          resolution "resolution4"
           addChaosToken #cultist
           endOfScenario
         _ -> error "Invalid resolution"

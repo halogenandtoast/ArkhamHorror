@@ -143,8 +143,8 @@ instance RunMessage ThePitOfDespair where
       pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
-        NoResolution -> story $ i18n "noResolution"
-        Resolution 1 -> story $ i18n "resolution1"
+        NoResolution -> resolution "noResolution"
+        Resolution 1 -> resolution "resolution1"
         other -> throwIO $ UnknownResolution other
       allGainXp attrs
       endOfScenario

@@ -271,10 +271,10 @@ instance RunMessage InTooDeep where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          story $ i18nWithTitle "noResolution"
+          resolution "noResolution"
           push R1
         Resolution 1 -> do
-          story $ i18nWithTitle "resolution1"
+          resolution "resolution1"
           madeItSafely <- getHasRecord TheInvestigatorsMadeItSafelyToTheirVehicles
           allGainXpWithBonus attrs
             $ if madeItSafely then toBonus "vehicles" 2 else NoBonus

@@ -616,6 +616,9 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
     Matcher.AnyWindowIfEnemy enemyMatcher -> do
       ok <- selectAny enemyMatcher
       if ok then isMatch' else noMatch
+    Matcher.WouldIncreaseFloodLevel timing whereMatcher -> guardTiming timing \case
+      Window.WouldIncreaseFloodLevel where' _ _ -> locationMatches iid source window' where' whereMatcher
+      _ -> noMatch
     Matcher.FloodLevelChanged timing whereMatcher -> guardTiming timing \case
       Window.FloodLevelChanged where' _ _ -> locationMatches iid source window' where' whereMatcher
       _ -> noMatch

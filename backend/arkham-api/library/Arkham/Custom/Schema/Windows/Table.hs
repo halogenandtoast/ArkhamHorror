@@ -245,6 +245,7 @@ windowTable =
   , ("VehicleWouldEnter", ["VehicleWouldEnter"])
   , ("WindowWhen", [])
   , ("WouldAddChaosTokensToChaosBag", ["WouldAddChaosTokensToChaosBag"])
+  , ("WouldIncreaseFloodLevel", ["WouldIncreaseFloodLevel"])
   , ("WouldBeMovedBy", ["WouldMove"])
   , ("WouldBeShuffledIntoDeck", ["WouldBeShuffledIntoDeck"])
   , ("WouldDiscardFromDeck", ["WouldDiscardFromDeck"])

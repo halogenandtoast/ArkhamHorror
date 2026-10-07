@@ -615,6 +615,8 @@ data Message
   | IncreaseFloodLevel LocationId
   | DecreaseFloodLevel LocationId
   | SetFloodLevel LocationId FloodLevel
+  | -- | The write at the end of the flood pipeline; see 'Arkham.Location.Runner'.
+    ApplyFloodLevel LocationId FloodLevel
   | -- Skill Test Specific
     AddSubscriber Target
   | StoryMessage StoryMessage

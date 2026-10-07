@@ -235,6 +235,12 @@ data WindowType
   | VehicleLeaves AssetId LocationId
   | VehicleEnters AssetId LocationId
   | VehicleWouldEnter AssetId LocationId
+  | {- | An increase to this location's flood level is about to be applied. Raised
+    whether or not the level can actually change, so an ability that answers "when
+    its flood level would be increased" still gets its chance on a location that is
+    already at its maximum -- 'FloodLevelChanged' only fires when the level moves.
+    -}
+    WouldIncreaseFloodLevel LocationId FloodLevel FloodLevel
   | FloodLevelChanged LocationId FloodLevel FloodLevel
   | FloodLevelIncreased LocationMatcher
   | FirstTimeParleyingThisRound InvestigatorId

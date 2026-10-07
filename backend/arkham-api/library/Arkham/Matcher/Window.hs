@@ -91,6 +91,7 @@ data WindowMatcher
   | VehicleLeaves Timing AssetMatcher LocationMatcher
   | VehicleEnters Timing AssetMatcher LocationMatcher
   | VehicleWouldEnter Timing AssetMatcher LocationMatcher
+  | WouldIncreaseFloodLevel Timing LocationMatcher
   | FloodLevelChanged Timing LocationMatcher
   | FloodLevelIncreased Timing LocationMatcher
   | FirstTimeParleyingThisRound Timing Who

@@ -314,6 +314,9 @@ interface CardSearchIndex {
   setCode?: string
   cycle?: number
   nameLower: string
+  // Untranslated name, so a non-English view still finds a card by its English
+  // name. Empty when the view is already English.
+  realNameLower: string
   codeLower: string
   typeLower: string
   classSymbolsLower: string[]
@@ -491,6 +494,7 @@ const cardSearchIndex = computed(() => {
       setCode: customCode ?? set?.code,
       cycle: customCode ? CUSTOM_CYCLE : set?.cycle,
       nameLower: cardName(card).toLowerCase(),
+      realNameLower: match?.real_name?.toLowerCase() ?? '',
       codeLower: card.cardCode.toLowerCase(),
       typeLower: cardType(card).toLowerCase().trim(),
       classSymbolsLower: card.classSymbols.map((cs) => cs.toLowerCase()),
@@ -535,7 +539,9 @@ const filteredCardsIgnoringPool = computed(() => {
     }
 
     if (textLower.length > 0) {
-      const cardNameMatches = textLower.some((term) => meta.nameLower.includes(term))
+      const cardNameMatches = textLower.some(
+        (term) => meta.nameLower.includes(term) || meta.realNameLower.includes(term),
+      )
       const cardCodeMatches = codeText.some((term) => meta.codeLower === term)
       if (!cardNameMatches && !cardCodeMatches) return false
     }

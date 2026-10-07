@@ -9,6 +9,10 @@ import type { Game } from '@/arkham/types/Game';
 import * as Arkham from '@/arkham/types/Location';
 import { cardImg } from '@/arkham/helpers';
 import { TokenType, type Token } from '@/arkham/types/Token';
+import officialCampaigns from '@/arkham/data/campaigns.json';
+import allScenarios from '@/arkham/data/scenarios';
+import { homebrewCampaigns } from '@/arkham/homebrewData';
+import { campaignHasFloodRules, type Campaign } from '@/arkham/data';
 
 type Props = {
   game: Game
@@ -25,10 +29,16 @@ const floodLevels: Arkham.FloodLevel[] = ['Unflooded', 'PartiallyFlooded', 'Full
 
 const isNumber = (value: unknown): value is number => typeof value === 'number';
 const anyTokens = computed(() => Object.values(props.location.tokens).some(t => isNumber(t) && t > 0))
+
+/* The flood controls follow the campaign's declared `floodRules` rather than an id
+   allowlist, which had hidden them from the homebrew Return to Innsmouth box. A
+   standalone has no campaign in the game, so the scenario entry names its campaign. */
+const allCampaigns = [...(officialCampaigns as Campaign[]), ...homebrewCampaigns]
 const canAdjustFloodLevel = computed(() => {
-  const campaignId = props.game.campaign?.id;
-  const scenarioId = props.game.scenario?.id.replace(/^c/, '');
-  return campaignId === '07' || campaignId === '11' || scenarioId?.startsWith('07') || scenarioId?.startsWith('11');
+  const scenarioId = props.game.scenario?.id.replace(/^c/, '')
+  const campaignId =
+    props.game.campaign?.id ?? allScenarios.find((s) => s.id === scenarioId)?.campaign
+  return campaignHasFloodRules(allCampaigns.find((c) => c.id === campaignId))
 })
 const currentFloodLevel = computed<Arkham.FloodLevel>(() => props.location.floodLevel ?? 'Unflooded')
 

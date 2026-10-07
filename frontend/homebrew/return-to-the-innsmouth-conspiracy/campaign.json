@@ -1,6 +1,7 @@
 {
   "id": ":return-to-the-innsmouth-conspiracy",
   "name": "Return to The Innsmouth Conspiracy",
+  "floodRules": true,
   "dev": true,
   "homebrew": true,
   "chapter": 1,

@@ -33,12 +33,26 @@ export interface Campaign {
   // are derived from their id; homebrew campaigns declare it in campaign.json.
   chapter?: 1 | 2
   settings?: string[]
+  /* The campaign plays with the flood rules (The Innsmouth Conspiracy, The Drowned
+     City, and any homebrew box that reuses them). Declared here rather than derived
+     from the id, so a homebrew campaign gets the flood UI by saying so in its own
+     campaign.json. */
+  floodRules?: boolean
   returnTo?: {
     id: string
     name: string
     beta?: boolean
     alpha?: boolean
   }
+}
+
+/* Whether the flood rules are in play, for UI that only makes sense in a flooded
+ * scenario (the debug flood controls). Reads the campaign's declared `floodRules`
+ * rather than matching its id, so a homebrew box that reuses the rules opts in from
+ * its own campaign.json. Callers resolve the entry themselves -- for a standalone
+ * there is no campaign in the game, so the scenario's declared `campaign` names it. */
+export function campaignHasFloodRules(campaign?: Campaign | null): boolean {
+  return campaign?.floodRules === true
 }
 
 /* The chapter whose rules a campaign defaults to (currently only the "as if"

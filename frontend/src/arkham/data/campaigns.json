@@ -2341,6 +2341,7 @@
   {
     "id": "07",
     "name": "The Innsmouth Conspiracy",
+    "floodRules": true,
     "difficultyLevels": {
       "Easy": [
         "PlusOne",
@@ -2692,6 +2693,7 @@
   {
     "id": "11",
     "name": "The Drowned City",
+    "floodRules": true,
     "difficultyLevels": {
       "Easy": [
         "PlusOne",

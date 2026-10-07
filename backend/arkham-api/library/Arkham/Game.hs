@@ -5381,11 +5381,16 @@ instance Projection Investigator where
           fewer sType n = ix sType %~ removeSlots n
         pure $ foldr (uncurry fewer) investigatorSlots [(s, n) | FewerSlots s n <- mods]
       InvestigatorUsedAbilities -> pure investigatorUsedAbilities
-      InvestigatorTraits -> case investigatorForm of
-        TransfiguredForm inner -> case lookup inner allInvestigatorCards of
-          Nothing -> error "no valid card def"
-          Just c -> pure $ cdCardTraits c
-        _ -> pure investigatorTraits
+      InvestigatorTraits -> do
+        printedTraits <- case investigatorForm of
+          TransfiguredForm inner -> case lookup inner allInvestigatorCards of
+            Nothing -> error "no valid card def"
+            Just c -> pure $ cdCardTraits c
+          _ -> pure investigatorTraits
+        mods <- getModifiers iid
+        let addedTraits = setFromList [t | AddTrait t <- mods]
+        let removedTraits = setFromList [t | RemoveTrait t <- mods]
+        pure $ (printedTraits <> addedTraits) `difference` removedTraits
       InvestigatorAbilities -> pure $ filter ((< 1000) . abilityIndex) $ getAbilities i
       InvestigatorCommittedCards -> do
         mskillTest <- getSkillTest

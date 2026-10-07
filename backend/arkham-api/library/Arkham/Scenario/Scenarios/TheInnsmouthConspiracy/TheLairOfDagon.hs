@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon (TheLairOfDagon (..), theLairOfDagon) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon (
+  TheLairOfDagon (..),
+  theLairOfDagon,
+  setupTheLairOfDagon,
+) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Agendas
@@ -54,6 +58,75 @@ instance HasChaosTokenValue TheLairOfDagon where
     Tablet -> pure $ ChaosTokenValue Tablet (NegativeModifier 3)
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
+
+{- | The Campaign Guide's setup. A wrapping scenario runs it as-is and declares its
+differences as builder overrides beforehand.
+-}
+setupTheLairOfDagon
+  :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheLairOfDagon _attrs = scenarioI18n do
+  encounterWithASecretCult <- hasMemory AnEncounterWithASecretCult
+  aDecisionToStickTogether <- hasMemory ADecisionToStickTogether
+  memories <- getRecordSet MemoriesRecovered
+  gather Set.TheLairOfDagon
+  gather Set.AgentsOfDagon
+  gather Set.FloodedCaverns
+  gather Set.Syzygy
+  gather Set.DarkCult
+  gather Set.LockedDoors
+
+  randomizedKeys <- shuffle $ map UnrevealedKey [WhiteKey, YellowKey]
+  setAsideKeys $ [BlackKey, BlueKey, GreenKey, PurpleKey, RedKey] <> randomizedKeys
+
+  setAgendaDeck
+    [ if encounterWithASecretCult then Agendas.theInitiationV1 else Agendas.theInitiationV2
+    , if aDecisionToStickTogether then Agendas.whatLurksBelowV1 else Agendas.whatLurksBelowV2
+    , Agendas.theRitualAdvances
+    ]
+
+  setActDeck [Acts.theFirstOath, Acts.theSecondOath, Acts.theThirdOath]
+
+  startAt =<< place Locations.grandEntryway
+  placeAll [Locations.foulCorridors, Locations.hallOfSilence]
+  placeGroup "firstFloorHall" =<< shuffle [Locations.hallOfBlood, Locations.hallOfTheDeep]
+  placeGroup "secondFloorHall" =<< shuffle [Locations.hallOfLoyalty, Locations.hallOfRebirth]
+
+  setAside =<< amongGathered (CardWithTitle "Tidal Tunnel")
+  setAside
+    [ Locations.lairOfDagon
+    , Treacheries.syzygy
+    , Treacheries.syzygy
+    , Treacheries.tidalAlignment
+    , Treacheries.tidalAlignment
+    , Assets.yhanthleiStatueMysteriousRelic
+    , Enemies.apostleOfDagon
+    , Enemies.dagonDeepInSlumber
+    ]
+
+  case length memories of
+    n | n <= 4 -> replicateM_ 5 $ addChaosToken #bless
+    n | n >= 5 && n <= 7 -> replicateM_ 2 $ addChaosToken #curse
+    _ -> replicateM_ 5 $ addChaosToken #curse
+
+  whenRecoveredMemory AJailbreak do
+    mSuspect <- (maybeResult =<<) <$> getCircledRecord PossibleSuspects
+    for_ mSuspect \case
+      BrianBurnham -> setAside [Enemies.brianBurnhamWantsOut]
+      BarnabasMarsh -> setAside [Enemies.barnabasMarshTheChangeIsUponHim]
+      OtheraGilman -> setAside [Enemies.otheraGilmanProprietessOfTheHotel]
+      ZadokAllen -> setAside [Enemies.zadokAllenDrunkAndDisorderly]
+      JoyceLittle -> setAside [Enemies.joyceLittleBookshopOwner]
+      RobertFriendly -> setAside [Enemies.robertFriendlyDisgruntledDockworker]
+
+  if aDecisionToStickTogether
+    then do
+      investigators <- getInvestigators
+      thomasDawson <- createAsset =<< genCard Assets.thomasDawsonSoldierInANewWar
+      leadChooseOneM do
+        questionLabeled "takeControlOfThomasDawson"
+        questionLabeledCard Assets.thomasDawsonSoldierInANewWar
+        portraits investigators (`takeControlOfAsset` thomasDawson)
+    else setAside [Assets.thomasDawsonSoldierInANewWar]
 
 instance RunMessage TheLairOfDagon where
   runMessage msg s@(TheLairOfDagon attrs) = runQueueT $ scenarioI18n $ case msg of
@@ -123,65 +196,8 @@ instance RunMessage TheLairOfDagon where
         li "floodTokens"
         unscoped $ li "shuffleRemainder"
 
-      gather Set.TheLairOfDagon
-      gather Set.AgentsOfDagon
-      gather Set.FloodedCaverns
-      gather Set.Syzygy
-      gather Set.DarkCult
-      gather Set.LockedDoors
 
-      randomizedKeys <- shuffle $ map UnrevealedKey [WhiteKey, YellowKey]
-      setAsideKeys $ [BlackKey, BlueKey, GreenKey, PurpleKey, RedKey] <> randomizedKeys
-
-      setAgendaDeck
-        [ if encounterWithASecretCult then Agendas.theInitiationV1 else Agendas.theInitiationV2
-        , if aDecisionToStickTogether then Agendas.whatLurksBelowV1 else Agendas.whatLurksBelowV2
-        , Agendas.theRitualAdvances
-        ]
-
-      setActDeck [Acts.theFirstOath, Acts.theSecondOath, Acts.theThirdOath]
-
-      startAt =<< place Locations.grandEntryway
-      placeAll [Locations.foulCorridors, Locations.hallOfSilence]
-      placeGroup "firstFloorHall" =<< shuffle [Locations.hallOfBlood, Locations.hallOfTheDeep]
-      placeGroup "secondFloorHall" =<< shuffle [Locations.hallOfLoyalty, Locations.hallOfRebirth]
-
-      setAside =<< amongGathered (CardWithTitle "Tidal Tunnel")
-      setAside
-        [ Locations.lairOfDagon
-        , Treacheries.syzygy
-        , Treacheries.syzygy
-        , Treacheries.tidalAlignment
-        , Treacheries.tidalAlignment
-        , Assets.yhanthleiStatueMysteriousRelic
-        , Enemies.apostleOfDagon
-        , Enemies.dagonDeepInSlumber
-        ]
-
-      case length memories of
-        n | n <= 4 -> replicateM_ 5 $ addChaosToken #bless
-        n | n >= 5 && n <= 7 -> replicateM_ 2 $ addChaosToken #curse
-        _ -> replicateM_ 5 $ addChaosToken #curse
-
-      whenRecoveredMemory AJailbreak do
-        mSuspect <- (maybeResult =<<) <$> getCircledRecord PossibleSuspects
-        for_ mSuspect \case
-          BrianBurnham -> setAside [Enemies.brianBurnhamWantsOut]
-          BarnabasMarsh -> setAside [Enemies.barnabasMarshTheChangeIsUponHim]
-          OtheraGilman -> setAside [Enemies.otheraGilmanProprietessOfTheHotel]
-          ZadokAllen -> setAside [Enemies.zadokAllenDrunkAndDisorderly]
-          JoyceLittle -> setAside [Enemies.joyceLittleBookshopOwner]
-          RobertFriendly -> setAside [Enemies.robertFriendlyDisgruntledDockworker]
-
-      if aDecisionToStickTogether
-        then do
-          investigators <- getInvestigators
-          thomasDawson <- createAsset =<< genCard Assets.thomasDawsonSoldierInANewWar
-          leadChooseOneM do
-            questionLabeled "takeControlOfThomasDawson"
-            questionLabeledCard Assets.thomasDawsonSoldierInANewWar
-            portraits investigators (`takeControlOfAsset` thomasDawson)
-        else setAside [Assets.thomasDawsonSoldierInANewWar]
+      setupTheLairOfDagon attrs
     ResolveChaosToken _ Cultist iid -> do
       withSkillTest \sid -> onRevealChaosTokenEffect sid #curse Cultist sid failSkillTest
       drawAnotherChaosToken iid

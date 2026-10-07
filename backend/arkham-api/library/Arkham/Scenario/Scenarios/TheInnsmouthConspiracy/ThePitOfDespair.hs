@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.ThePitOfDespair (ThePitOfDespair (..), thePitOfDespair) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.ThePitOfDespair (
+  ThePitOfDespair (..),
+  thePitOfDespair,
+  setupThePitOfDespair,
+) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Agendas
@@ -12,7 +16,6 @@ import Arkham.Helpers.Location
 import Arkham.Helpers.Scenario
 import Arkham.Investigator.Projection ()
 import Arkham.Key
-import Arkham.Location.CardDefs.TheInnsmouthConspiracy.FloodedCaverns qualified as Locations
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Locations
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid
@@ -47,6 +50,43 @@ instance HasChaosTokenValue ThePitOfDespair where
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 3)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- | The Campaign Guide's setup. A wrapping scenario runs it as-is and declares its
+differences as builder overrides beforehand.
+-}
+setupThePitOfDespair
+  :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
+setupThePitOfDespair _attrs = scenarioI18n do
+  gather Set.ThePitOfDespair
+  gather Set.CreaturesOfTheDeep
+  gather Set.FloodedCaverns
+  gather Set.RisingTide
+  gather Set.ShatteredMemories
+  gather Set.AgentsOfCthulhu
+  gather Set.Rats
+
+  setAgendaDeck [Agendas.awakening, Agendas.theWaterRises, Agendas.sacrificeForTheDeep]
+  setActDeck [Acts.thePit, Acts.theEscape]
+
+  startAt =<< placeInGrid (Pos 0 0) Locations.unfamiliarChamber
+  setAside [Locations.idolChamber, Locations.altarToDagon, Locations.sealedExit]
+
+  randomizedKeys <- shuffleM $ map UnrevealedKey [RedKey, YellowKey, PurpleKey]
+  setAsideKeys $ BlueKey : GreenKey : randomizedKeys
+
+  (inPlayTidalTunnels, tidalTunnelDeck) <-
+    splitAt 3 <$> (shuffle =<< amongGathered (CardWithTitle "Tidal Tunnel"))
+  addExtraDeck TidalTunnelDeck tidalTunnelDeck
+  for_ (zip [Pos (-1) 0, Pos 1 0, Pos 0 (-1)] inPlayTidalTunnels) (uncurry placeCardInGrid)
+
+  setAside
+    [ Enemies.theAmalgam
+    , Treacheries.blindsense
+    , Treacheries.blindsense
+    , Treacheries.fromTheDepths
+    , Treacheries.fromTheDepths
+    , Treacheries.fromTheDepths
+    ]
+
 instance RunMessage ThePitOfDespair where
   runMessage msg s@(ThePitOfDespair attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -77,46 +117,8 @@ instance RunMessage ThePitOfDespair where
         li "floodTokens"
         unscoped $ li "shuffleRemainder"
 
-      gather Set.ThePitOfDespair
-      gather Set.CreaturesOfTheDeep
-      gather Set.FloodedCaverns
-      gather Set.RisingTide
-      gather Set.ShatteredMemories
-      gather Set.AgentsOfCthulhu
-      gather Set.Rats
 
-      setAgendaDeck [Agendas.awakening, Agendas.theWaterRises, Agendas.sacrificeForTheDeep]
-      setActDeck [Acts.thePit, Acts.theEscape]
-
-      startAt =<< placeInGrid (Pos 0 0) Locations.unfamiliarChamber
-      setAside [Locations.idolChamber, Locations.altarToDagon, Locations.sealedExit]
-
-      randomizedKeys <- shuffleM $ map UnrevealedKey [RedKey, YellowKey, PurpleKey]
-      setAsideKeys $ BlueKey : GreenKey : randomizedKeys
-
-      (inPlayTidalTunnels, tidalTunnelDeck) <-
-        splitAt 3
-          <$> shuffleM
-            [ Locations.boneRiddenPit
-            , Locations.fishGraveyard
-            , Locations.underwaterCavern
-            , Locations.underwaterCavern
-            , Locations.tidalPool
-            , Locations.tidalPool
-            , Locations.undergroundRiver
-            , Locations.undergroundRiver
-            ]
-      addExtraDeck TidalTunnelDeck tidalTunnelDeck
-      for_ (zip [Pos (-1) 0, Pos 1 0, Pos 0 (-1)] inPlayTidalTunnels) (uncurry placeInGrid)
-
-      setAside
-        [ Enemies.theAmalgam
-        , Treacheries.blindsense
-        , Treacheries.blindsense
-        , Treacheries.fromTheDepths
-        , Treacheries.fromTheDepths
-        , Treacheries.fromTheDepths
-        ]
+      setupThePitOfDespair attrs
     ResolveChaosToken _ Cultist iid -> do
       when (isHardExpert attrs) do
         whenAny (locationWithInvestigator iid <> FloodedLocation) $ assignDamage iid Cultist 1

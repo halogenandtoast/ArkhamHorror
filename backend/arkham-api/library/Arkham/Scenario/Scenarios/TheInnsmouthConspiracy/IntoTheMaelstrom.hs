@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom (IntoTheMaelstrom (..), intoTheMaelstrom) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.IntoTheMaelstrom (
+  IntoTheMaelstrom (..),
+  intoTheMaelstrom,
+  setupIntoTheMaelstrom,
+) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.IntoTheMaelstrom qualified as Agendas
@@ -52,6 +56,91 @@ instance HasChaosTokenValue IntoTheMaelstrom where
     ElderThing -> pure $ toChaosTokenValue attrs ElderThing 5 6
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- | The Campaign Guide's setup. A wrapping scenario runs it as-is and declares its
+differences as builder overrides beforehand.
+-}
+setupIntoTheMaelstrom
+  :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
+setupIntoTheMaelstrom _attrs = scenarioI18n do
+  setUsesGrid
+  possessTheKey <- getHasRecord TheInvestigatorsPossessTheKeyToYhaNthlei
+  possessAMap <- getHasRecord TheInvestigatorsPossessAMapOfYhaNthlei
+  guardianDispatched <- getHasRecord TheGuardianOfYhanthleiIsDispatched
+  recognized <- getHasRecord TheGatewayToYhanthleiRecognizesYouAsTheRightfulKeeper
+  gather Set.IntoTheMaelstrom
+  gather Set.AgentsOfHydra
+  gather Set.CreaturesOfTheDeep
+  gather Set.FloodedCaverns
+  gather Set.ShatteredMemories
+  gather Set.Syzygy
+  gather Set.AncientEvils
+
+  setAgendaDeck [Agendas.underTheSurface, Agendas.celestialAlignment, Agendas.theFlood]
+  setActDeck [Acts.backIntoTheDepths, Acts.cityOfTheDeepV1]
+
+  lead <- getLead
+  investigators <- allInvestigators
+  when possessTheKey do
+    chooseOneM lead do
+      withI18n $ keyVar "color" "blue" $ questionLabeled "chooseInvestigatorForKey"
+      targets investigators (`placeKey` BlueKey)
+
+  when possessAMap do
+    chooseOneM lead do
+      withI18n $ keyVar "color" "red" $ questionLabeled "chooseInvestigatorForKey"
+      targets investigators (`placeKey` RedKey)
+
+  when guardianDispatched do
+    chooseOneM lead do
+      withI18n $ keyVar "color" "green" $ questionLabeled "chooseInvestigatorForKey"
+      targets investigators (`placeKey` GreenKey)
+
+  when recognized do
+    chooseOneM lead do
+      withI18n $ keyVar "color" "yellow" $ questionLabeled "chooseInvestigatorForKey"
+      targets investigators (`placeKey` YellowKey)
+
+  let
+    ks =
+      [BlueKey | not possessTheKey]
+        <> [RedKey | not possessAMap]
+        <> [GreenKey | not guardianDispatched]
+        <> [YellowKey | not recognized]
+  otherKs <- shuffle [PurpleKey, WhiteKey, BlackKey]
+
+  setAsideKeys . map UnrevealedKey =<< shuffle (take 4 $ ks <> otherKs)
+
+  gatewayToYhanthlei <- placeInGrid (Pos 0 0) Locations.gatewayToYhanthlei
+  tidalTunnels <- shuffle =<< amongGathered (CardWithTitle "Tidal Tunnel")
+
+  for_
+    ( zip
+        [Pos (-1) (-1), Pos (-1) 0, Pos (-1) 1, Pos 0 (-1), Pos 0 1, Pos 1 (-1), Pos 1 0, Pos 1 1]
+        tidalTunnels
+    )
+    (uncurry placeLocationInGrid_)
+
+  selectEach (investigatorWithRecord PossessesADivingSuit) \iid -> do
+    divingSuit <- genCard Assets.divingSuit
+    createAssetAt_ divingSuit (InPlayArea iid)
+  removeEvery [Assets.divingSuit]
+
+  dagonIsAwake <- getHasRecord DagonHasAwakened
+
+  setAside
+    [ Enemies.lloigor
+    , Enemies.aquaticAbomination
+    , if dagonIsAwake
+        then Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom
+        else Enemies.dagonDeepInSlumberIntoTheMaelstrom
+    , Enemies.hydraDeepInSlumber
+    , Acts.cityOfTheDeepV2
+    , Acts.cityOfTheDeepV3
+    ]
+
+  setAside =<< amongGathered #location
+  startAt gatewayToYhanthlei
+
 instance RunMessage IntoTheMaelstrom where
   runMessage msg s@(IntoTheMaelstrom attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -67,8 +156,6 @@ instance RunMessage IntoTheMaelstrom where
       {- FOURMOLU_ENABLE -}
       pure s
     Setup -> runScenarioSetup IntoTheMaelstrom attrs do
-      setUsesGrid
-
       possessTheKey <- getHasRecord TheInvestigatorsPossessTheKeyToYhaNthlei
       possessAMap <- getHasRecord TheInvestigatorsPossessAMapOfYhaNthlei
       guardianDispatched <- getHasRecord TheGuardianOfYhanthleiIsDispatched
@@ -94,79 +181,8 @@ instance RunMessage IntoTheMaelstrom where
         li "floodTokens"
         unscoped $ li "shuffleRemainder"
 
-      gather Set.IntoTheMaelstrom
-      gather Set.AgentsOfHydra
-      gather Set.CreaturesOfTheDeep
-      gather Set.FloodedCaverns
-      gather Set.ShatteredMemories
-      gather Set.Syzygy
-      gather Set.AncientEvils
 
-      setAgendaDeck [Agendas.underTheSurface, Agendas.celestialAlignment, Agendas.theFlood]
-      setActDeck [Acts.backIntoTheDepths, Acts.cityOfTheDeepV1]
-
-      lead <- getLead
-      investigators <- allInvestigators
-      when possessTheKey do
-        chooseOneM lead do
-          withI18n $ keyVar "color" "blue" $ questionLabeled "chooseInvestigatorForKey"
-          targets investigators (`placeKey` BlueKey)
-
-      when possessAMap do
-        chooseOneM lead do
-          withI18n $ keyVar "color" "red" $ questionLabeled "chooseInvestigatorForKey"
-          targets investigators (`placeKey` RedKey)
-
-      when guardianDispatched do
-        chooseOneM lead do
-          withI18n $ keyVar "color" "green" $ questionLabeled "chooseInvestigatorForKey"
-          targets investigators (`placeKey` GreenKey)
-
-      when recognized do
-        chooseOneM lead do
-          withI18n $ keyVar "color" "yellow" $ questionLabeled "chooseInvestigatorForKey"
-          targets investigators (`placeKey` YellowKey)
-
-      let
-        ks =
-          [BlueKey | not possessTheKey]
-            <> [RedKey | not possessAMap]
-            <> [GreenKey | not guardianDispatched]
-            <> [YellowKey | not recognized]
-      otherKs <- shuffle [PurpleKey, WhiteKey, BlackKey]
-
-      setAsideKeys . map UnrevealedKey =<< shuffle (take 4 $ ks <> otherKs)
-
-      gatewayToYhanthlei <- placeInGrid (Pos 0 0) Locations.gatewayToYhanthlei
-      tidalTunnels <- shuffle =<< amongGathered (CardWithTitle "Tidal Tunnel")
-
-      for_
-        ( zip
-            [Pos (-1) (-1), Pos (-1) 0, Pos (-1) 1, Pos 0 (-1), Pos 0 1, Pos 1 (-1), Pos 1 0, Pos 1 1]
-            tidalTunnels
-        )
-        (uncurry placeLocationInGrid_)
-
-      selectEach (investigatorWithRecord PossessesADivingSuit) \iid -> do
-        divingSuit <- genCard Assets.divingSuit
-        createAssetAt_ divingSuit (InPlayArea iid)
-      removeEvery [Assets.divingSuit]
-
-      dagonIsAwake <- getHasRecord DagonHasAwakened
-
-      setAside
-        [ Enemies.lloigor
-        , Enemies.aquaticAbomination
-        , if dagonIsAwake
-            then Enemies.dagonAwakenedAndEnragedIntoTheMaelstrom
-            else Enemies.dagonDeepInSlumberIntoTheMaelstrom
-        , Enemies.hydraDeepInSlumber
-        , Acts.cityOfTheDeepV2
-        , Acts.cityOfTheDeepV3
-        ]
-
-      setAside =<< amongGathered #location
-      startAt gatewayToYhanthlei
+      setupIntoTheMaelstrom attrs
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _n -> do
       case token.face of
         Cultist -> placeDoomOnAgendaAndCheckAdvance 1

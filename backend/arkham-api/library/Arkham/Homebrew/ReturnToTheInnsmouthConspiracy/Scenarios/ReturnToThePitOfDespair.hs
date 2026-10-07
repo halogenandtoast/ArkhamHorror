@@ -3,23 +3,16 @@ module Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Scenarios.ReturnToThePitOf
 ) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Acts
-import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Agendas
 import Arkham.EncounterSet qualified as Set
-import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Enemies
 import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Acts qualified as HBActs
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations qualified as HBLocations
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Treacheries qualified as HBTreacheries
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (officialSetup, scenarioI18n)
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
-import Arkham.Key
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.FloodedCaverns qualified as Locations
-import Arkham.Location.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Locations
-import Arkham.Location.Grid
-import Arkham.Scenario.Deck
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.ThePitOfDespair
-import Arkham.Treachery.CardDefs.TheInnsmouthConspiracy.ThePitOfDespair qualified as Treacheries
 
 newtype ReturnToThePitOfDespair = ReturnToThePitOfDespair ThePitOfDespair
   deriving anyclass (IsScenario, HasModifiersFor)
@@ -70,51 +63,15 @@ instance RunMessage ReturnToThePitOfDespair where
           officialSetup "thePitOfDespair" $ li "floodTokens"
           unscoped $ li "shuffleRemainder"
 
+        {- "Replace one of each Tidal Pool, Underground River and Underwater Cavern from
+        the original Flooded Caverns set with its counterpart from the Return to Flooded
+        Caverns set." -}
+        replaceOneOf Locations.tidalPool HBLocations.tidalPool
+        replaceOneOf Locations.undergroundRiver HBLocations.undergroundRiver
+        replaceOneOf Locations.underwaterCavern HBLocations.underwaterCavern
         gather Sets.ReturnToThePitOfDespair
-        gather Set.ThePitOfDespair
-        gather Set.CreaturesOfTheDeep
-        gather Set.FloodedCaverns
         gather Sets.ReturnToFloodedCaverns
-        gather Set.RisingTide
-        gather Set.ShatteredMemories
-        gather Set.AgentsOfCthulhu
-        gather Set.Rats
+        setupThePitOfDespair attrs
 
-        setAgendaDeck [Agendas.awakening, Agendas.theWaterRises, Agendas.sacrificeForTheDeep]
-        setActDeck [Acts.thePit, Acts.theEscape]
-
-        startAt =<< placeInGrid (Pos 0 0) Locations.unfamiliarChamber
-        setAside [Locations.idolChamber, Locations.altarToDagon, Locations.sealedExit]
-
-        randomizedKeys <- shuffleM $ map UnrevealedKey [RedKey, YellowKey, PurpleKey]
-        setAsideKeys $ BlueKey : GreenKey : randomizedKeys
-
-        -- "Replace one of each Tidal Pool, Underground River and Underwater Cavern from
-        -- the original Flooded Caverns set with its counterpart from the Return to
-        -- Flooded Caverns", leaving six unique tunnels plus the two scenario locations.
-        (inPlayTidalTunnels, tidalTunnelDeck) <-
-          splitAt 3
-            <$> shuffleM
-              [ Locations.boneRiddenPit
-              , Locations.fishGraveyard
-              , Locations.underwaterCavern
-              , HBLocations.underwaterCavern
-              , Locations.tidalPool
-              , HBLocations.tidalPool
-              , Locations.undergroundRiver
-              , HBLocations.undergroundRiver
-              ]
-        addExtraDeck TidalTunnelDeck tidalTunnelDeck
-        for_ (zip [Pos (-1) 0, Pos 1 0, Pos 0 (-1)] inPlayTidalTunnels) (uncurry placeInGrid)
-
-        setAside
-          [ Enemies.theAmalgam
-          , Treacheries.blindsense
-          , Treacheries.blindsense
-          , Treacheries.fromTheDepths
-          , Treacheries.fromTheDepths
-          , Treacheries.fromTheDepths
-          , HBTreacheries.troublingMemories
-          , HBTreacheries.troublingMemories
-          ]
+        setAside $ replicate 2 HBTreacheries.troublingMemories
       _ -> ReturnToThePitOfDespair <$> liftRunMessage msg inner

@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.ALightInTheFog (ALightInTheFog (..), aLightInTheFog) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.ALightInTheFog (
+  ALightInTheFog (..),
+  aLightInTheFog,
+  setupALightInTheFog,
+) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Acts
 import Arkham.Act.Types (Field(ActKeys))
@@ -84,6 +88,59 @@ instance HasChaosTokenValue ALightInTheFog where
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- | The Campaign Guide's setup. A wrapping scenario runs it as-is and declares its
+differences as builder overrides beforehand.
+-}
+setupALightInTheFog
+  :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
+setupALightInTheFog _attrs = scenarioI18n do
+  gather Set.ALightInTheFog
+  gather Set.CreaturesOfTheDeep
+  gather Set.FloodedCaverns
+  gather Set.RisingTide
+  gather Set.Syzygy
+  gather Set.StrikingFear
+
+  setAgendaDeck
+    [ Agendas.fogOnTheBay
+    , Agendas.unchangingAsTheSea
+    , Agendas.theTideRises
+    , Agendas.terrorAtFalconPoint
+    ]
+  setActDeck [Acts.theLighthouse, Acts.findingThePath, Acts.worshippersOfTheDeep]
+
+  falconPointGatehouse <- placeInGrid (Pos 0 0) Locations.falconPointGatehouse
+  placeInGrid_ (Pos 1 0) Locations.falconPointCliffside
+  placeInGrid_ (Pos 2 0) Locations.lighthouseStairwell
+  placeInGrid_ (Pos 3 0) Locations.lighthouseKeepersCottage
+  placeInGrid_ (Pos 2 1) Locations.lanternRoom
+
+  startAt falconPointGatehouse
+
+  setAside =<< amongGathered (CardWithTitle "Tidal Tunnel" <> not_ (cardIs Locations.undergroundRiver))
+
+  randomizedKeys <- shuffle $ map UnrevealedKey [PurpleKey, GreenKey]
+  setAsideKeys $ [WhiteKey, BlackKey, BlueKey, YellowKey, RedKey] <> randomizedKeys
+
+  placeStory Stories.captured
+
+  setAside
+    [ Enemies.oceirosMarsh
+    , Treacheries.worthHisSalt
+    , Treacheries.worthHisSalt
+    , Treacheries.takenCaptive
+    , Treacheries.takenCaptive
+    , Locations.sunkenGrottoUpperDepths
+    , Locations.sunkenGrottoLowerDepths
+    , Locations.sunkenGrottoFinalDepths
+    ]
+
+  whenHasRecord TheIdolWasBroughtToTheLighthouse $ setAside [Assets.wavewornIdol]
+  whenHasRecord TheMantleWasBroughtToTheLighthouse $ setAside [Assets.awakenedMantle]
+  whenHasRecord TheHeaddressWasBroughtToTheLighthouse $ setAside [Assets.headdressOfYhaNthlei]
+  whenHasRecord TheInvestigatorsReachedFalconPointAfterSunrise $ placeDoomOnAgenda 1
+  whenHasRecord TheTideHasGrownStronger $ placeDoomOnAgenda 1
+
 instance RunMessage ALightInTheFog where
   runMessage msg s@(ALightInTheFog attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -126,52 +183,8 @@ instance RunMessage ALightInTheFog where
         li "floodTokens"
         unscoped $ li "shuffleRemainder"
 
-      gather Set.ALightInTheFog
-      gather Set.CreaturesOfTheDeep
-      gather Set.FloodedCaverns
-      gather Set.RisingTide
-      gather Set.Syzygy
-      gather Set.StrikingFear
 
-      setAgendaDeck
-        [ Agendas.fogOnTheBay
-        , Agendas.unchangingAsTheSea
-        , Agendas.theTideRises
-        , Agendas.terrorAtFalconPoint
-        ]
-      setActDeck [Acts.theLighthouse, Acts.findingThePath, Acts.worshippersOfTheDeep]
-
-      falconPointGatehouse <- placeInGrid (Pos 0 0) Locations.falconPointGatehouse
-      placeInGrid_ (Pos 1 0) Locations.falconPointCliffside
-      placeInGrid_ (Pos 2 0) Locations.lighthouseStairwell
-      placeInGrid_ (Pos 3 0) Locations.lighthouseKeepersCottage
-      placeInGrid_ (Pos 2 1) Locations.lanternRoom
-
-      startAt falconPointGatehouse
-
-      setAside =<< amongGathered (CardWithTitle "Tidal Tunnel" <> not_ (cardIs Locations.undergroundRiver))
-
-      randomizedKeys <- shuffle $ map UnrevealedKey [PurpleKey, GreenKey]
-      setAsideKeys $ [WhiteKey, BlackKey, BlueKey, YellowKey, RedKey] <> randomizedKeys
-
-      placeStory Stories.captured
-
-      setAside
-        [ Enemies.oceirosMarsh
-        , Treacheries.worthHisSalt
-        , Treacheries.worthHisSalt
-        , Treacheries.takenCaptive
-        , Treacheries.takenCaptive
-        , Locations.sunkenGrottoUpperDepths
-        , Locations.sunkenGrottoLowerDepths
-        , Locations.sunkenGrottoFinalDepths
-        ]
-
-      whenHasRecord TheIdolWasBroughtToTheLighthouse $ setAside [Assets.wavewornIdol]
-      whenHasRecord TheMantleWasBroughtToTheLighthouse $ setAside [Assets.awakenedMantle]
-      whenHasRecord TheHeaddressWasBroughtToTheLighthouse $ setAside [Assets.headdressOfYhaNthlei]
-      whenHasRecord TheInvestigatorsReachedFalconPointAfterSunrise $ placeDoomOnAgenda 1
-      whenHasRecord TheTideHasGrownStronger $ placeDoomOnAgenda 1
+      setupALightInTheFog attrs
     ResolveChaosToken _ Skull iid -> do
       whenAny (locationWithInvestigator iid <> FloodedLocation) do
         drawAnotherChaosToken iid

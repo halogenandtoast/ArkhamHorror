@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.DevilReef (DevilReef (..), devilReef) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.DevilReef (
+  DevilReef (..),
+  devilReef,
+  setupDevilReef,
+) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Acts
 import Arkham.Act.Types (Field (..))
@@ -59,6 +63,60 @@ standaloneTokens =
   ]
 {- FOURMOLU_ENABLE -}
 
+{- | The Campaign Guide's setup. A wrapping scenario runs it as-is and declares its
+differences as builder overrides beforehand.
+-}
+setupDevilReef
+  :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
+setupDevilReef _attrs = scenarioI18n do
+  aBattle <- hasMemory ABattleWithAHorrifyingDevil
+  gather Set.DevilReef
+  gather Set.AgentsOfHydra
+  gather Set.CreaturesOfTheDeep
+  gather Set.FloodedCaverns
+  gather Set.Malfunction
+  gather Set.RisingTide
+
+  whenHasRecord TheMissionWasSuccessful do
+    investigators <- allInvestigators
+    thomasDawson <- genCard Assets.thomasDawsonSoldierInANewWar
+    leadChooseOneM do
+      questionLabeled "addThomasDawsonToHand"
+      targets investigators (`addToHand` only thomasDawson)
+
+  let agenda1 = if aBattle then Agendas.secretsOfTheSeaV1 else Agendas.secretsOfTheSeaV2
+
+  setAgendaDeck [agenda1, Agendas.theDevilOfTheDepths]
+  setActDeck [Acts.reefOfMysteries]
+
+  setAsideKeys [PurpleKey, WhiteKey, BlackKey]
+  setAsideKeys . map UnrevealedKey =<< shuffleM [YellowKey, GreenKey, RedKey, BlueKey]
+
+  churningWaters <- placeInGrid (Pos 0 0) Locations.churningWaters
+  push $ SetFloodLevel churningWaters FullyFlooded
+  fishingVessel <- assetAt Assets.fishingVessel churningWaters
+  eachInvestigator \iid -> push $ PlaceInvestigator iid (InVehicle fishingVessel)
+  reveal churningWaters
+
+  setAside [Assets.wavewornIdol, Assets.awakenedMantle, Assets.headdressOfYhaNthlei]
+
+  cyclopeanRuins <- pickFrom (Locations.cyclopeanRuins_176a, Locations.cyclopeanRuins_176b)
+  deepOneGrotto <- pickFrom (Locations.deepOneGrotto_175a, Locations.deepOneGrotto_175b)
+  templeOfTheUnion <- pickFrom (Locations.templeOfTheUnion_177a, Locations.templeOfTheUnion_177b)
+
+  setAside [cyclopeanRuins, deepOneGrotto, templeOfTheUnion]
+
+  placeShuffledInGrid
+    "devilReefLocations"
+    [Pos 0 3, Pos 4 2, Pos (-4) 2, Pos 4 (-2), Pos (-4) (-2)]
+    [ Locations.lonelyIsle
+    , Locations.hiddenCove
+    , Locations.wavewornIsland
+    , Locations.saltMarshes
+    , Locations.blackReef
+    ]
+  addExtraDeck TidalTunnelDeck =<< shuffle =<< amongGathered (CardWithTitle "Tidal Tunnel")
+
 instance RunMessage DevilReef where
   runMessage msg s@(DevilReef attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -110,51 +168,7 @@ instance RunMessage DevilReef where
         li "floodTokens"
         unscoped $ li "shuffleRemainder"
 
-      gather Set.DevilReef
-      gather Set.AgentsOfHydra
-      gather Set.CreaturesOfTheDeep
-      gather Set.FloodedCaverns
-      gather Set.Malfunction
-      gather Set.RisingTide
-
-      whenHasRecord TheMissionWasSuccessful do
-        investigators <- allInvestigators
-        thomasDawson <- genCard Assets.thomasDawsonSoldierInANewWar
-        leadChooseOneM do
-          questionLabeled "addThomasDawsonToHand"
-          targets investigators (`addToHand` only thomasDawson)
-
-      let agenda1 = if aBattle then Agendas.secretsOfTheSeaV1 else Agendas.secretsOfTheSeaV2
-
-      setAgendaDeck [agenda1, Agendas.theDevilOfTheDepths]
-      setActDeck [Acts.reefOfMysteries]
-
-      setAsideKeys [PurpleKey, WhiteKey, BlackKey]
-      setAsideKeys . map UnrevealedKey =<< shuffleM [YellowKey, GreenKey, RedKey, BlueKey]
-
-      churningWaters <- placeInGrid (Pos 0 0) Locations.churningWaters
-      push $ SetFloodLevel churningWaters FullyFlooded
-      fishingVessel <- assetAt Assets.fishingVessel churningWaters
-      eachInvestigator \iid -> push $ PlaceInvestigator iid (InVehicle fishingVessel)
-      reveal churningWaters
-
-      setAside [Assets.wavewornIdol, Assets.awakenedMantle, Assets.headdressOfYhaNthlei]
-
-      cyclopeanRuins <- pickFrom (Locations.cyclopeanRuins_176a, Locations.cyclopeanRuins_176b)
-      deepOneGrotto <- pickFrom (Locations.deepOneGrotto_175a, Locations.deepOneGrotto_175b)
-      templeOfTheUnion <- pickFrom (Locations.templeOfTheUnion_177a, Locations.templeOfTheUnion_177b)
-
-      setAside [cyclopeanRuins, deepOneGrotto, templeOfTheUnion]
-
-      zipWithM_ placeInGrid [Pos 0 3, Pos 4 2, Pos (-4) 2, Pos 4 (-2), Pos (-4) (-2)]
-        =<< shuffleM
-          [ Locations.lonelyIsle
-          , Locations.hiddenCove
-          , Locations.wavewornIsland
-          , Locations.saltMarshes
-          , Locations.blackReef
-          ]
-      addExtraDeck TidalTunnelDeck =<< shuffle =<< amongGathered (CardWithTitle "Tidal Tunnel")
+      setupDevilReef attrs
     PlaceKey (InvestigatorTarget iid) PurpleKey -> do
       selectForMaybeM (assetIs Assets.wavewornIdol) $ takeControlOfAsset iid
       DevilReef <$> liftRunMessage msg attrs

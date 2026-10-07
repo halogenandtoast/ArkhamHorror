@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper (TheVanishingOfElinaHarper (..), theVanishingOfElinaHarper) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheVanishingOfElinaHarper (
+  TheVanishingOfElinaHarper (..),
+  theVanishingOfElinaHarper,
+  setupTheVanishingOfElinaHarper,
+) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.TheVanishingOfElinaHarper qualified as Agendas
@@ -51,6 +55,59 @@ instance HasChaosTokenValue TheVanishingOfElinaHarper where
     ElderThing -> pure $ ChaosTokenValue ElderThing (NegativeModifier 4)
     otherFace -> getChaosTokenValue iid otherFace attrs
 
+{- | The Campaign Guide's setup. A wrapping scenario runs it as-is and declares its
+differences as builder overrides beforehand.
+-}
+setupTheVanishingOfElinaHarper
+  :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
+setupTheVanishingOfElinaHarper _attrs = scenarioI18n do
+  gather Set.TheVanishingOfElinaHarper
+  gather Set.AgentsOfDagon
+  gather Set.FogOverInnsmouth
+  gather Set.TheLocals
+  gather Set.ChillingCold
+  gather Set.LockedDoors
+  gather Set.Nightgaunts
+  gatherJust Set.TheMidnightMasks [Treacheries.falseLead, Treacheries.huntingShadow]
+
+  setAgendaDeck [Agendas.decrepitDecay, Agendas.growingSuspicion]
+  setActDeck [Acts.theSearchForAgentHarper]
+
+  startAt =<< place Locations.innsmouthSquare
+
+  placeAll
+    [ Locations.marshRefinery
+    , Locations.innsmouthHarbour
+    , Locations.fishStreetBridge
+    , Locations.firstNationalGrocery
+    , Locations.gilmanHouse
+    , Locations.theLittleBookshop
+    ]
+
+  (hideout, remainingHideouts) <- sampleWithRest hideouts
+  (kidnapper, remainingSuspects) <- sampleWithRest suspects
+
+  excludeFromEncounterDeck [hideout, kidnapper]
+  addExtraDeck LeadsDeck =<< shuffle (remainingHideouts <> remainingSuspects)
+
+  setAside
+    [ Agendas.franticPursuit
+    , Acts.theRescue
+    , Assets.thomasDawsonSoldierInANewWar
+    , Assets.elinaHarperKnowsTooMuch
+    , Enemies.huntingNightgaunt
+    , Enemies.huntingNightgaunt
+    , Enemies.wingedOne
+    ]
+
+  findingAgentHarper <- genCard Stories.findingAgentHarper
+  push $ PlaceStory findingAgentHarper Global
+  let target = StoryTarget $ StoryId $ coerce $ toCardCode findingAgentHarper
+  kidnapperCard <- genCard kidnapper
+  hideoutCard <- genCard hideout
+  placeUnderneath target [kidnapperCard, hideoutCard]
+  setMeta $ Meta {kidnapper = kidnapperCard, hideout = hideoutCard}
+
 instance RunMessage TheVanishingOfElinaHarper where
   runMessage msg s@(TheVanishingOfElinaHarper attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -85,52 +142,8 @@ instance RunMessage TheVanishingOfElinaHarper where
         li "setAsideCards"
         unscoped $ li "shuffleRemainder"
 
-      gather Set.TheVanishingOfElinaHarper
-      gather Set.AgentsOfDagon
-      gather Set.FogOverInnsmouth
-      gather Set.TheLocals
-      gather Set.ChillingCold
-      gather Set.LockedDoors
-      gather Set.Nightgaunts
-      gatherJust Set.TheMidnightMasks [Treacheries.falseLead, Treacheries.huntingShadow]
 
-      setAgendaDeck [Agendas.decrepitDecay, Agendas.growingSuspicion]
-      setActDeck [Acts.theSearchForAgentHarper]
-
-      startAt =<< place Locations.innsmouthSquare
-
-      placeAll
-        [ Locations.marshRefinery
-        , Locations.innsmouthHarbour
-        , Locations.fishStreetBridge
-        , Locations.firstNationalGrocery
-        , Locations.gilmanHouse
-        , Locations.theLittleBookshop
-        ]
-
-      (hideout, remainingHideouts) <- sampleWithRest hideouts
-      (kidnapper, remainingSuspects) <- sampleWithRest suspects
-
-      excludeFromEncounterDeck [hideout, kidnapper]
-      addExtraDeck LeadsDeck =<< shuffle (remainingHideouts <> remainingSuspects)
-
-      setAside
-        [ Agendas.franticPursuit
-        , Acts.theRescue
-        , Assets.thomasDawsonSoldierInANewWar
-        , Assets.elinaHarperKnowsTooMuch
-        , Enemies.huntingNightgaunt
-        , Enemies.huntingNightgaunt
-        , Enemies.wingedOne
-        ]
-
-      findingAgentHarper <- genCard Stories.findingAgentHarper
-      push $ PlaceStory findingAgentHarper Global
-      let target = StoryTarget $ StoryId $ coerce $ toCardCode findingAgentHarper
-      kidnapperCard <- genCard kidnapper
-      hideoutCard <- genCard hideout
-      placeUnderneath target [kidnapperCard, hideoutCard]
-      setMeta $ Meta {kidnapper = kidnapperCard, hideout = hideoutCard}
+      setupTheVanishingOfElinaHarper attrs
     FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
       let amount = if isEasyStandard attrs then 1 else 2
       case token.face of

@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.InTooDeep (InTooDeep (..), inTooDeep) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.InTooDeep (
+  InTooDeep (..),
+  inTooDeep,
+  setupInTooDeep,
+) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.InTooDeep qualified as Agendas
@@ -102,6 +106,106 @@ setBarriers a b n = do
   meta <- toResultDefault (Meta mempty) <$> use (attrsL . metaL)
   setMeta $ Helpers.setBarriers a b n meta
 
+{- | The Campaign Guide's setup. A wrapping scenario runs it as-is and declares its
+differences as builder overrides beforehand.
+-}
+setupInTooDeep
+  :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
+setupInTooDeep _attrs = scenarioI18n do
+  setUsesGrid
+  gather Set.InTooDeep
+  gather Set.CreaturesOfTheDeep
+  gather Set.RisingTide
+  gather Set.Syzygy
+  gather Set.TheLocals
+  gather Set.AgentsOfCthulhu
+
+  setAgendaDeck
+    [ Agendas.barricadedStreets
+    , Agendas.relentlessTide
+    , Agendas.floodedStreets
+    , Agendas.rageOfTheDeep
+    ]
+  setActDeck [Acts.throughTheLabyrinth]
+
+  -- bottom row
+  desolateCoastline <- placeInGrid (Pos 0 0) Locations.desolateCoastline
+  shorewardSlums <- placeInGrid (Pos (-1) 0) Locations.shorewardSlumsInTooDeep
+  innsmouthJail <- placeInGrid (Pos (-2) 0) Locations.innsmouthJailInTooDeep
+  gilmanHouse <- placeInGrid (Pos (-3) 0) Locations.gilmanHouse
+  sawboneAlley <- placeInGrid (Pos (-4) 0) Locations.sawboneAlleyInTooDeep
+
+  -- middle row
+  innsmouthHarbour <- placeInGrid (Pos 0 1) Locations.innsmouthHarbourInTooDeep
+  fishStreetBridge <- placeInGrid (Pos (-1) 1) Locations.fishStreetBridge
+  innsmouthSquare <- placeInGrid (Pos (-2) 1) Locations.innsmouthSquare
+  firstNationalGrocery <- placeInGrid (Pos (-3) 1) Locations.firstNationalGrocery
+  theLittleBookshop <- placeInGrid (Pos (-4) 1) Locations.theLittleBookshop
+
+  -- top row
+  theHouseOnWaterStreet <- placeInGrid (Pos 0 2) Locations.theHouseOnWaterStreetInTooDeep
+  marshRefinery <- placeInGrid (Pos (-1) 2) Locations.marshRefinery
+  newChurchGreen <- placeInGrid (Pos (-2) 2) Locations.newChurchGreenInTooDeep
+  esotericOrderOfDagon <- placeInGrid (Pos (-3) 2) Locations.esotericOrderOfDagonInTooDeep
+  railroadStation <- placeInGrid (Pos (-4) 2) Locations.railroadStation
+
+  -- bottom row
+  setBarriers desolateCoastline shorewardSlums 2
+  setBarriers shorewardSlums innsmouthJail 1
+  setBarriers innsmouthJail gilmanHouse 3
+  setBarriers gilmanHouse sawboneAlley 1
+
+  -- middle row
+  setBarriers innsmouthHarbour fishStreetBridge 1
+  setBarriers fishStreetBridge innsmouthSquare 2
+  setBarriers innsmouthSquare firstNationalGrocery 2
+  setBarriers firstNationalGrocery theLittleBookshop 2
+  setBarriers theLittleBookshop railroadStation 1
+
+  -- top row
+  setBarriers theHouseOnWaterStreet marshRefinery 1
+  setBarriers marshRefinery newChurchGreen 3
+  setBarriers newChurchGreen esotericOrderOfDagon 1
+  setBarriers esotericOrderOfDagon railroadStation 4
+
+  startAt desolateCoastline
+
+  setAsideKeys $ map UnrevealedKey [RedKey, BlueKey, GreenKey, YellowKey, PurpleKey, WhiteKey]
+
+  mHideout <- maybeResult <$$> getCircledRecord PossibleHideouts
+  for_ (join mHideout) \hideout -> do
+    let
+      hideoutLocation = case hideout of
+        InnsmouthJail -> innsmouthJail
+        ShorewardSlums -> shorewardSlums
+        SawboneAlley -> sawboneAlley
+        TheHouseOnWaterStreet -> theHouseOnWaterStreet
+        EsotericOrderOfDagon -> esotericOrderOfDagon
+        NewChurchGreen -> newChurchGreen
+    placeKey hideoutLocation BlackKey
+
+  outForBlood <- mapMaybe (maybeResult <=< unrecorded) <$> getRecordSet OutForBlood
+  for_ outForBlood \case
+    BrianBurnham -> enemyAt_ Enemies.brianBurnhamWantsOut firstNationalGrocery
+    BarnabasMarsh -> enemyAt_ Enemies.barnabasMarshTheChangeIsUponHim marshRefinery
+    OtheraGilman -> enemyAt_ Enemies.otheraGilmanProprietessOfTheHotel gilmanHouse
+    ZadokAllen -> enemyAt_ Enemies.zadokAllenDrunkAndDisorderly fishStreetBridge
+    JoyceLittle -> enemyAt_ Enemies.joyceLittleBookshopOwner theLittleBookshop
+    RobertFriendly -> enemyAt_ Enemies.robertFriendlyDisgruntledDockworker innsmouthHarbour
+
+  setAside
+    [ Enemies.ravagerFromTheDeep
+    , Enemies.ravagerFromTheDeep
+    , Enemies.youngDeepOne
+    , Enemies.youngDeepOne
+    , Assets.joeSargentRattletrapBusDriver
+    , Assets.teachingsOfTheOrder
+    , Enemies.innsmouthShoggoth
+    , Enemies.angryMob
+    ]
+
+  for_ [theHouseOnWaterStreet, innsmouthHarbour, desolateCoastline] (push . IncreaseFloodLevel)
+
 instance RunMessage InTooDeep where
   runMessage msg s@(InTooDeep attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
@@ -132,8 +236,6 @@ instance RunMessage InTooDeep where
       recordSetReplace PossibleHideouts (recorded $ toJSON hideout) (circled $ toJSON hideout)
       pure s
     Setup -> runScenarioSetup InTooDeep attrs do
-      setUsesGrid
-
       setup $ ul do
         li "gatherSets"
         li.nested "placeLocations" do
@@ -149,98 +251,8 @@ instance RunMessage InTooDeep where
           li "increaseFloodLevel"
         unscoped $ li "shuffleRemainder"
 
-      gather Set.InTooDeep
-      gather Set.CreaturesOfTheDeep
-      gather Set.RisingTide
-      gather Set.Syzygy
-      gather Set.TheLocals
-      gather Set.AgentsOfCthulhu
 
-      setAgendaDeck
-        [ Agendas.barricadedStreets
-        , Agendas.relentlessTide
-        , Agendas.floodedStreets
-        , Agendas.rageOfTheDeep
-        ]
-      setActDeck [Acts.throughTheLabyrinth]
-
-      -- bottom row
-      desolateCoastline <- placeInGrid (Pos 0 0) Locations.desolateCoastline
-      shorewardSlums <- placeInGrid (Pos (-1) 0) Locations.shorewardSlumsInTooDeep
-      innsmouthJail <- placeInGrid (Pos (-2) 0) Locations.innsmouthJailInTooDeep
-      gilmanHouse <- placeInGrid (Pos (-3) 0) Locations.gilmanHouse
-      sawboneAlley <- placeInGrid (Pos (-4) 0) Locations.sawboneAlleyInTooDeep
-
-      -- middle row
-      innsmouthHarbour <- placeInGrid (Pos 0 1) Locations.innsmouthHarbourInTooDeep
-      fishStreetBridge <- placeInGrid (Pos (-1) 1) Locations.fishStreetBridge
-      innsmouthSquare <- placeInGrid (Pos (-2) 1) Locations.innsmouthSquare
-      firstNationalGrocery <- placeInGrid (Pos (-3) 1) Locations.firstNationalGrocery
-      theLittleBookshop <- placeInGrid (Pos (-4) 1) Locations.theLittleBookshop
-
-      -- top row
-      theHouseOnWaterStreet <- placeInGrid (Pos 0 2) Locations.theHouseOnWaterStreetInTooDeep
-      marshRefinery <- placeInGrid (Pos (-1) 2) Locations.marshRefinery
-      newChurchGreen <- placeInGrid (Pos (-2) 2) Locations.newChurchGreenInTooDeep
-      esotericOrderOfDagon <- placeInGrid (Pos (-3) 2) Locations.esotericOrderOfDagonInTooDeep
-      railroadStation <- placeInGrid (Pos (-4) 2) Locations.railroadStation
-
-      -- bottom row
-      setBarriers desolateCoastline shorewardSlums 2
-      setBarriers shorewardSlums innsmouthJail 1
-      setBarriers innsmouthJail gilmanHouse 3
-      setBarriers gilmanHouse sawboneAlley 1
-
-      -- middle row
-      setBarriers innsmouthHarbour fishStreetBridge 1
-      setBarriers fishStreetBridge innsmouthSquare 2
-      setBarriers innsmouthSquare firstNationalGrocery 2
-      setBarriers firstNationalGrocery theLittleBookshop 2
-      setBarriers theLittleBookshop railroadStation 1
-
-      -- top row
-      setBarriers theHouseOnWaterStreet marshRefinery 1
-      setBarriers marshRefinery newChurchGreen 3
-      setBarriers newChurchGreen esotericOrderOfDagon 1
-      setBarriers esotericOrderOfDagon railroadStation 4
-
-      startAt desolateCoastline
-
-      setAsideKeys $ map UnrevealedKey [RedKey, BlueKey, GreenKey, YellowKey, PurpleKey, WhiteKey]
-
-      mHideout <- maybeResult <$$> getCircledRecord PossibleHideouts
-      for_ (join mHideout) \hideout -> do
-        let
-          hideoutLocation = case hideout of
-            InnsmouthJail -> innsmouthJail
-            ShorewardSlums -> shorewardSlums
-            SawboneAlley -> sawboneAlley
-            TheHouseOnWaterStreet -> theHouseOnWaterStreet
-            EsotericOrderOfDagon -> esotericOrderOfDagon
-            NewChurchGreen -> newChurchGreen
-        placeKey hideoutLocation BlackKey
-
-      outForBlood <- mapMaybe (maybeResult <=< unrecorded) <$> getRecordSet OutForBlood
-      for_ outForBlood \case
-        BrianBurnham -> enemyAt_ Enemies.brianBurnhamWantsOut firstNationalGrocery
-        BarnabasMarsh -> enemyAt_ Enemies.barnabasMarshTheChangeIsUponHim marshRefinery
-        OtheraGilman -> enemyAt_ Enemies.otheraGilmanProprietessOfTheHotel gilmanHouse
-        ZadokAllen -> enemyAt_ Enemies.zadokAllenDrunkAndDisorderly fishStreetBridge
-        JoyceLittle -> enemyAt_ Enemies.joyceLittleBookshopOwner theLittleBookshop
-        RobertFriendly -> enemyAt_ Enemies.robertFriendlyDisgruntledDockworker innsmouthHarbour
-
-      setAside
-        [ Enemies.ravagerFromTheDeep
-        , Enemies.ravagerFromTheDeep
-        , Enemies.youngDeepOne
-        , Enemies.youngDeepOne
-        , Assets.joeSargentRattletrapBusDriver
-        , Assets.teachingsOfTheOrder
-        , Enemies.innsmouthShoggoth
-        , Enemies.angryMob
-        ]
-
-      for_ [theHouseOnWaterStreet, innsmouthHarbour, desolateCoastline] (push . IncreaseFloodLevel)
+      setupInTooDeep attrs
     ScenarioCountIncrementBy (Barriers l1 l2) n -> do
       desolateCoastline <- selectJust $ locationIs Locations.desolateCoastline
       if l1 == desolateCoastline || l2 == desolateCoastline

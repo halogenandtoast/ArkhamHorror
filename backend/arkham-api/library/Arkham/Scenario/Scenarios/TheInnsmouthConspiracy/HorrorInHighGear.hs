@@ -1,4 +1,8 @@
-module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear (HorrorInHighGear (..), horrorInHighGear) where
+module Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear (
+  HorrorInHighGear (..),
+  horrorInHighGear,
+  setupHorrorInHighGear,
+) where
 
 import Arkham.Act.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Acts
 import Arkham.Agenda.CardDefs.TheInnsmouthConspiracy.HorrorInHighGear qualified as Agendas
@@ -60,6 +64,73 @@ chaosTokens =
   ]
 {- FOURMOLU_ENABLE -}
 
+{- | The Campaign Guide's setup. A wrapping scenario runs it as-is and declares its
+differences as builder overrides beforehand.
+-}
+setupHorrorInHighGear
+  :: ReverseQueue m => ScenarioAttrs -> ScenarioBuilderT m ()
+setupHorrorInHighGear _attrs = scenarioI18n do
+  theTerrorOfDevilReefIsDead <- getHasRecord TheTerrorOfDevilReefIsDead
+  playerCount <- getPlayerCount
+  gather Set.HorrorInHighGear
+  gather Set.FogOverInnsmouth
+  gather Set.Malfunction
+  gather Set.ShatteredMemories
+  gather Set.AncientEvils
+
+  let agenda1 = if theTerrorOfDevilReefIsDead then Agendas.theChaseIsOnV2 else Agendas.theChaseIsOnV1
+
+  setAgendaDeck [agenda1, Agendas.hotPursuit]
+  setActDeck [Acts.pedalToTheMetal]
+
+  (bottom, top) <-
+    splitAt 2
+      <$> shuffledPool
+        "roads"
+        [ Locations.dimlyLitRoad_a
+        , Locations.dimlyLitRoad_b
+        , Locations.dimlyLitRoad_c
+        , Locations.cliffsideRoad_a
+        , Locations.cliffsideRoad_b
+        , Locations.forkInTheRoad_a
+        , Locations.forkInTheRoad_b
+        , Locations.intersection_a
+        , Locations.intersection_b
+        , Locations.tightTurn_a
+        , Locations.tightTurn_b
+        , Locations.tightTurn_c
+        , Locations.desolateRoad_a
+        , Locations.desolateRoad_b
+        ]
+
+  bottom' <- shuffleM $ Locations.falconPointApproach : bottom
+  setAside $ replicate 6 Locations.longWayAround
+
+  let (inPlay, roadDeck) = splitAt 3 (top <> bottom')
+
+  placed <- for (withIndex1 inPlay) $ \(n, location) -> placeLabeled ("road" <> tshow n <> "a") location
+
+  for_ (zip placed (drop 1 placed)) \(left, right) -> do
+    push $ PlacedLocationDirection left LeftOf right
+
+  for_ (headMay $ reverse placed) \front -> do
+    assetAt_ Assets.thomasDawsonsCarRunning front
+    assetAt_ Assets.elinaHarpersCarRunning front
+    eachInvestigator (`forInvestigator` DoStep 1 Setup)
+    doStep 2 Setup
+    reveal front
+
+  addExtraDeck RoadDeck roadDeck
+
+  lead <- getLead
+  case playerCount of
+    2 -> findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+    3 -> findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+    4 -> do
+      findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+      findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
+    _ -> pure ()
+
 instance RunMessage HorrorInHighGear where
   runMessage msg s@(HorrorInHighGear attrs) = runQueueT $ scenarioI18n $ case msg of
     StandaloneSetup -> do
@@ -96,63 +167,7 @@ instance RunMessage HorrorInHighGear where
           li.validate (not theTerrorOfDevilReefIsDead) "theChaseIsOnV1"
         unscoped $ li "shuffleRemainder"
 
-      gather Set.HorrorInHighGear
-      gather Set.FogOverInnsmouth
-      gather Set.Malfunction
-      gather Set.ShatteredMemories
-      gather Set.AncientEvils
-
-      let agenda1 = if theTerrorOfDevilReefIsDead then Agendas.theChaseIsOnV2 else Agendas.theChaseIsOnV1
-
-      setAgendaDeck [agenda1, Agendas.hotPursuit]
-      setActDeck [Acts.pedalToTheMetal]
-
-      (bottom, top) <-
-        splitAt 2
-          <$> shuffleM
-            [ Locations.dimlyLitRoad_a
-            , Locations.dimlyLitRoad_b
-            , Locations.dimlyLitRoad_c
-            , Locations.cliffsideRoad_a
-            , Locations.cliffsideRoad_b
-            , Locations.forkInTheRoad_a
-            , Locations.forkInTheRoad_b
-            , Locations.intersection_a
-            , Locations.intersection_b
-            , Locations.tightTurn_a
-            , Locations.tightTurn_b
-            , Locations.tightTurn_c
-            , Locations.desolateRoad_a
-            , Locations.desolateRoad_b
-            ]
-
-      bottom' <- shuffleM $ Locations.falconPointApproach : bottom
-      setAside $ replicate 6 Locations.longWayAround
-
-      let (inPlay, roadDeck) = splitAt 3 (top <> bottom')
-
-      placed <- for (withIndex1 inPlay) $ \(n, location) -> placeLabeled ("road" <> tshow n <> "a") location
-
-      for_ (zip placed (drop 1 placed)) \(left, right) -> do
-        push $ PlacedLocationDirection left LeftOf right
-
-      for_ (headMay $ reverse placed) \front -> do
-        assetAt_ Assets.thomasDawsonsCarRunning front
-        assetAt_ Assets.elinaHarpersCarRunning front
-        eachInvestigator (`forInvestigator` DoStep 1 Setup)
-        doStep 2 Setup
-        reveal front
-
-      addExtraDeck RoadDeck roadDeck
-
-      lead <- getLead
-      case playerCount of
-        2 -> findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
-        3 -> findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
-        4 -> do
-          findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
-          findRandomEncounterCard lead ScenarioTarget (#enemy <> CardWithTrait Vehicle)
-        _ -> pure ()
+      setupHorrorInHighGear attrs
     ForInvestigator iid (DoStep 1 Setup) -> do
       cars <- select (AssetWithTrait Vehicle)
       withPassengers <- for cars \vehicle ->

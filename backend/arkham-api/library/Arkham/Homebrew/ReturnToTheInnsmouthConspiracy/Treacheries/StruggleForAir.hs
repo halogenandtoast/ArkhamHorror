@@ -32,7 +32,7 @@ instance RunMessage StruggleForAir where
         Unflooded -> gainSurge attrs
         _ -> do
           -- "you may discard any number of assets you control from play"
-          assets <- select $ assetControlledBy iid
+          assets <- select $ assetControlledBy iid <> DiscardableAsset
           campaignI18n $ scope "struggleForAir" $ chooseSomeM iid "doNotDiscard" do
             targets assets $ toDiscardBy iid attrs
           -- The slots are counted after those discards resolve, so the test is

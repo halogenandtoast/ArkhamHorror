@@ -32,5 +32,6 @@ instance RunMessage CoolantLeak where
       chooseOneM iid $ withI18n do
         countVar 1 $ labeledValidate ok "discardCardsFromHand" $ chooseAndDiscardCard iid attrs
         countVar 1 $ labeled "takeDamage" $ assignDamage iid attrs 1
+      doNextStep msg
       pure t
     _ -> CoolantLeak <$> liftRunMessage msg attrs

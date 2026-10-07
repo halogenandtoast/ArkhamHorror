@@ -966,8 +966,13 @@ img.card.source-highlight {
   flex-direction: row;
   justify-self: flex-start;
   height: 2em;
-  &:not(:has(> .key--can-interact)) {
-    pointer-events: none;
+  /* The pool lies over the card, so it must never eat a click meant for the card:
+     it stays transparent and hands pointer events only to the key you can click.
+     Not `:has()` -- the keys are a child component's root, and the scoped-style
+     rewrite does not reach inside `:has()`, so the guard silently never matched. */
+  pointer-events: none;
+  & :deep(.key--can-interact) {
+    pointer-events: auto;
   }
   & :deep(.poolItem) {
     pointer-events: none;
@@ -1148,8 +1153,9 @@ img.card.source-highlight {
   align-self: flex-start;
   align-items: flex-end;
   gap: 2px;
-  &:not(:has(.keys .key--can-interact)) {
-    pointer-events: none;
+  pointer-events: none;
+  & :deep(.key--can-interact) {
+    pointer-events: auto;
   }
   &.clues {
     top: 10%;

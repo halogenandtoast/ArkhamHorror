@@ -2,7 +2,7 @@
 
 import {computed, ref} from 'vue'
 import {imgsrc} from '@/arkham/helpers'
-import { type ArkhamKey } from '@/arkham/types/Key'
+import { type ArkhamKey, keysMatch } from '@/arkham/types/Key'
 import type { Message } from '@/arkham/types/Message';
 import { MessageType } from '@/arkham/types/Message';
 import type { Game } from '@/arkham/types/Game';
@@ -43,15 +43,7 @@ const choices = computed(() => {
 const tokenKey = computed(() => props.keyToken.tag === 'TokenKey')
 
 function canInteract(c: Message): boolean {
-  if (c.tag === MessageType.KEY_LABEL) {
-    if (c.key.tag === 'TokenKey') {
-      if (props.keyToken.tag !== 'TokenKey') return false
-      return c.key.contents.id === props.keyToken.contents.id
-    } else {
-      return c.key.tag === props.keyToken.tag
-    }
-  }
-
+  if (c.tag === MessageType.KEY_LABEL) return keysMatch(c.key, props.keyToken)
   return false
 }
 
@@ -59,8 +51,13 @@ const keyAction = computed(() => {
   return choices.value.findIndex(canInteract)
 })
 
-function choose() {
+/* Stop the click only when this key answers it. A key sits inside the card frame,
+   whose own handler toggles the abilities menu, so letting a handled click bubble
+   both picks the key and opens that menu. An unhandled click still falls through,
+   which is what should happen when the pool holds a key that is not on offer. */
+function choose(event: MouseEvent) {
   if (keyAction.value !== -1) {
+    event.stopPropagation()
     emit('choose', keyAction.value)
   }
 }

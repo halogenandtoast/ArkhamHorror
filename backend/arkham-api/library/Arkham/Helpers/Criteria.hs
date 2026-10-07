@@ -47,7 +47,11 @@ import Arkham.Helpers.Doom (getDoomCount)
 import Arkham.Helpers.GameValue (gameValueMatches)
 import Arkham.Helpers.History (historyMatches)
 import Arkham.Helpers.Investigator (getAsIfInHandCardsNotForPlay)
-import Arkham.Helpers.Location (getCanMoveToMatchingLocations, locationMatches)
+import Arkham.Helpers.Location (
+  getAccessibleLocations,
+  getCanMoveToMatchingLocations,
+  locationMatches,
+ )
 import Arkham.Helpers.Log (getHasRecord, getRecordCount, getSomeRecordSetJSON, scenarioCount)
 import Arkham.Helpers.Modifiers (getModifiers, hasModifier, withModifiersOf)
 import Arkham.Helpers.Phase (matchPhase)
@@ -258,6 +262,11 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
       <$> selectCount (Matcher.ChaosTokenFaceIs #curse)
       <*> selectCount (Matcher.ChaosTokenFaceIs #bless)
   Criteria.CanMoveTo matcher -> notNull <$> getCanMoveToMatchingLocations iid source matcher
+  Criteria.AccessibleToYou matcher -> do
+    -- getAccessibleLocations injects the mover's own as-if connections before asking
+    -- the board, and already limits the answer to locations they may enter.
+    ls <- getAccessibleLocations iid source
+    any (`elem` ls) <$> select (Matcher.IncludeEmptySpace matcher)
   Criteria.CanMoveThis dir -> do
     case source of
       LocationSource lid -> do

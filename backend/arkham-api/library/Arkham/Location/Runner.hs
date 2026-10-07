@@ -58,7 +58,6 @@ import Arkham.Matcher (
   EnemyMatcher (..),
   InvestigatorMatcher (..),
   LocationMatcher (..),
-  accessibleTo,
   be,
   enemyAt,
   investigatorAt,
@@ -679,7 +678,7 @@ instance HasAbilities LocationAttrs where
           l
           AbilityMove
           ( CanMoveTo (LocationWithId l.id)
-              <> OnLocation (IncludeEmptySpace $ accessibleTo ForMovement l)
+              <> AccessibleToYou (LocationWithId l.id)
               <> exists (You <> can.move <> noModifier (CannotEnter l.id))
           )
         $ ActionAbility #move Nothing moveCost

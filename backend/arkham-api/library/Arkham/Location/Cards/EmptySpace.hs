@@ -3,7 +3,6 @@ module Arkham.Location.Cards.EmptySpace (emptySpace) where
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.Constants
-import Arkham.ForMovement
 import Arkham.GameValue
 import Arkham.Helpers.Modifiers
 import Arkham.Location.Cards qualified as Cards
@@ -32,7 +31,7 @@ instance HasAbilities EmptySpace where
           l
           AbilityMove
           ( CanMoveTo (IncludeEmptySpace $ LocationWithId l.id)
-              <> OnLocation (IncludeEmptySpace $ accessibleTo ForMovement l)
+              <> AccessibleToYou (LocationWithId l.id)
               <> exists
                 (You <> can.move <> noModifier (CannotEnter l.id) <> InvestigatorWithModifier CanEnterEmptySpace)
           )

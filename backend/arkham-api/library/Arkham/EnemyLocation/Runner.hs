@@ -32,7 +32,6 @@ import Arkham.Damage (DamageType (..))
 import Arkham.DamageEffect (DamageAssignment (..))
 import Arkham.Direction
 import Arkham.Discover (DiscoverLocation (DiscoverAtLocation))
-import Arkham.ForMovement (ForMovement (..))
 import Arkham.Helpers.Calculation (calculate)
 import Arkham.Helpers.Discover (
   resolveDiscoverCluesAt,
@@ -51,7 +50,6 @@ import Arkham.Location.Grid
 import Arkham.Matcher (
   InvestigatorMatcher (UneliminatedInvestigator, You),
   LocationMatcher (..),
-  accessibleTo,
   noModifier,
  )
 import Arkham.Message
@@ -103,7 +101,7 @@ instance HasAbilities EnemyLocationAttrs where
           a
           AbilityMove
           ( CanMoveTo (LocationWithId a.id)
-              <> OnLocation (IncludeEmptySpace $ accessibleTo ForMovement a)
+              <> AccessibleToYou (LocationWithId a.id)
               <> exists (You <> can.move <> noModifier (CannotEnter a.id))
           )
         $ ActionAbility #move Nothing (ActionCost 1)

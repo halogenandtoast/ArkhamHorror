@@ -279,6 +279,15 @@ data Criterion
   | ConcealedCardCount Int ConcealedCardMatcher
   | CanMoveThis GridDirection
   | CanMoveTo LocationMatcher
+  | {- | The matching location is one you could move to right now, counting the
+    connections you personally move as if you had ('MovesAsIfConnectedTo').
+
+    Not 'OnLocation' + 'accessibleTo': that asks the board which locations reach the
+    destination, and an as-if connection belongs to the mover rather than to either
+    location, so a location-side question cannot see it. This resolves through the
+    mover, which is also what keeps it from leaking to someone standing beside them.
+    -}
+    AccessibleToYou LocationMatcher
   | TabooCriteria TabooList Criterion Criterion
   | NotYetRecorded CampaignLogKey
   | HasRecord CampaignLogKey

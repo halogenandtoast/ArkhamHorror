@@ -357,8 +357,18 @@ addCampaignCardToDeck
   -> ShuffleIn
   -> card
   -> m ()
-addCampaignCardToDeck investigator shouldShuffleIn card = do
-  push . Msg.AddCampaignCardToDeck (asId investigator) shouldShuffleIn =<< fetchCard card
+addCampaignCardToDeck investigator shouldShuffleIn card = void $ addCampaignCardToDeckCapture investigator shouldShuffleIn card
+
+addCampaignCardToDeckCapture
+  :: (AsId investigator, IdOf investigator ~ InvestigatorId, ReverseQueue m, FetchCard card)
+  => investigator
+  -> ShuffleIn
+  -> card
+  -> m Card
+addCampaignCardToDeckCapture investigator shouldShuffleIn card = do
+  x <- fetchCard card
+  push $ Msg.AddCampaignCardToDeck (asId investigator) shouldShuffleIn x
+  pure x
 
 addCampaignCardToDeckChoice
   :: (FetchCard card, ReverseQueue m) => [InvestigatorId] -> ShuffleIn -> card -> m ()

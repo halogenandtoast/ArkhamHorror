@@ -38,6 +38,7 @@
       "setAsideCards": "Set each of the following cards aside, out of play: the Thomas Dawson and Elina Harper story assets, both copies of the Hunting Nightgaunt enemy, and the <span class='return-to-swap'>*Immaterial One*</span> enemy (*Innsmouth Haze* stands in for the Winged One)."
     },
     "name": "Return to The Vanishing of Elina Harper",
+    "extraResolution": "While resolving one of Resolution 1 to 7, resolve the following as well:",
     "townspeopleInsight": "Your dealings with the townspeople have given you insight into what's going on here: each investigator gains 1 extra experience for each Suspect enemy in the victory display."
   },
   "growingSuspicion": {
@@ -55,9 +56,6 @@
       "setAsideCards": "Set the following cards aside, out of play: 2 copies of the Ravager from the Deep enemy, 2 copies of the <span class='return-to-swap'>*Deep One Ambusher*</span> enemy (*Stalkers of Cthulhu* stands in for the Young Deep One), the Joe Sargent story asset, the Teachings of the Order story asset, and the Innsmouth Shoggoth enemy.",
       "setAsideInnsmouthInfluence": "Also set all four copies of *Innsmouth Influence* aside, out of play."
     },
-    "resolution": {
-      "innsmouthInfluence": "As you are about to leave this forsaken place, you can feel something in yourself pulling, wanting to go back. You wonder if your stay here already started to affect you."
-    },
     "name": "Return to In Too Deep"
   },
   "returnToDevilReef": {
@@ -70,8 +68,12 @@
       "devilReefLocations": "Shuffle *Cave Mouth* in with the 5 Devil Reef locations and put all 6 of them into play, unrevealed side faceup. Do not remove any. Do not place them adjacent to Churning Waters—these locations are connected not via adjacency, but via their connection symbols."
     },
     "aBargain": {
-      "title": "A Bargain",
-      "body": "You stand in front of the large carved stone depicting a bloated figure with fishlike features. The voice that guided you here is just a whisper now, but you feel power radiating from the statue and you know that's why you are here. It's this power that calls out to you, telling you that you could have all the riches you desired and the long life to take advantage of them.\n\nWhile you approach the statue, you become aware of the price that you would have to pay. You consider your options.",
+      "title": "Scenario Interlude: A Bargain",
+      "intro": "_A Bargain 1:_ You stand in front of the large carved stone depicting a bloated figure with fishlike features. The voice that guided you here is just a whisper now, but you feel power radiating from the statue and you know that's why you are here. It's this power that calls out to you, telling you that you could have all the riches you desired and the long life to take advantage of them.",
+      "body": "While you approach the statue, you become aware of the price that you would have to pay. You consider your options.",
+      "chooseOne": "Choose one:",
+      "payThePrice": "You pay the price. Search your collection for a copy of Innsmouth Influence (from the *Return to In Too Deep* set) and add it to your deck. Discover all clues on Shrine to Hydra and gain 5 resources.",
+      "backOut": "You come to your senses and back out. The voices go quiet.",
       "label": {
         "payThePrice": "You pay the price.",
         "backOut": "You come to your senses and back out. The voices go quiet."

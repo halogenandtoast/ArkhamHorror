@@ -43,6 +43,12 @@ roderick =
     }
 
 -- | return_to_devil_reef. Replaces the Fishing Vessel story asset (07178).
+
+{- | The box's Fishing Vessel. 'cdReplacementCardCode' is what keeps the Campaign Guide's
+own @assetIs Assets.fishingVessel@ pointed at it -- "Needs Air" and Secrets of the Sea
+both ask whether you are aboard the Fishing Vessel by card code, and without this the
+engine decides you are swimming.
+-}
 fishingVesselV2 :: CardDef
 fishingVesselV2 =
   ( encounterAsset_
@@ -52,4 +58,5 @@ fishingVesselV2 =
   )
     { cdCardTraits = setFromList [Vehicle]
     , cdUnique = True
+    , cdReplacementCardCode = Just "07178"
     }

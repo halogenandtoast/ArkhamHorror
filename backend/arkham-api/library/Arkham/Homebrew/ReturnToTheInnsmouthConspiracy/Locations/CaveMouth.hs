@@ -26,7 +26,9 @@ instance HasModifiersFor CaveMouth where
   getModifiersFor (CaveMouth a) = whenRevealed a do
     modifySelf a [ConnectedToWhen (be a) (LocationWithTrait Ocean)]
     modifySelect a (LocationWithTrait Ocean) [ConnectedToWhen (LocationWithTrait Ocean) (be a)]
-    modifySelf a [ChangeSpawnLocation (be a) (locationIs DevilReefLocations.churningWaters)]
+    {- The spawn code reads 'ChangeSpawnLocation' off the ENEMY's modifiers, so the
+    redirect has to be published to enemies rather than to this location. -}
+    modifySelect a AnyEnemy [ChangeSpawnLocation (be a) (locationIs DevilReefLocations.churningWaters)]
 
 instance HasAbilities CaveMouth where
   getAbilities (CaveMouth a) =
@@ -35,8 +37,11 @@ instance HasAbilities CaveMouth where
       [ restricted
           a
           1
-          (Here <> HasCalculation (InvestigatorKeyCountCalculation You) (atLeast 2))
-          (ActionAbility mempty Nothing $ ActionCost 1 <> ClueCost (Static 1))
+          ( Here
+              <> HasCalculation (InvestigatorKeyCountCalculation You) (atLeast 2)
+              <> exists (location_ "Bootlegger's Hideaway")
+          )
+          (actionAbilityWithCost $ ClueCost (Static 1))
       ]
 
 instance RunMessage CaveMouth where

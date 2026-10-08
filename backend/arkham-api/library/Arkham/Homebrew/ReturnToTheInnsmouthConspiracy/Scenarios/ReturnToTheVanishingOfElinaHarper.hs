@@ -80,9 +80,12 @@ instance RunMessage ReturnToTheVanishingOfElinaHarper where
         -- `suspects` is already the Helpers' list of possible suspects, hence the name.
         suspectCount <-
           selectCount $ VictoryDisplayCardMatch $ basic $ #enemy <> CardWithTrait Suspect
+        inner' <- liftRunMessage msg inner
         when (suspectCount > 0) do
-          story $ i18n "townspeopleInsight"
+          {- Runs after the resolution it hangs off, which is where the box's campaign guide
+          prints it: the instruction, then the reward on the squared bullet. -}
+          resolutionFlavor $ ul $ li.nested "extraResolution" $ li "townspeopleInsight"
           eachInvestigator \iid ->
             gainXp iid ScenarioSource (ikey "returnToTheInnsmouthConspiracy.xp.townspeopleInsight") suspectCount
-        ReturnToTheVanishingOfElinaHarper <$> liftRunMessage msg inner
+        pure $ ReturnToTheVanishingOfElinaHarper inner'
       _ -> ReturnToTheVanishingOfElinaHarper <$> liftRunMessage msg inner

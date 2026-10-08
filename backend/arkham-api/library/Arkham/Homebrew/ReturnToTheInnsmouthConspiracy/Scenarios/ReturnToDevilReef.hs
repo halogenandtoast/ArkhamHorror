@@ -19,6 +19,7 @@ import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher hiding (assetAt)
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted.Choose
+import Arkham.Placement
 import Arkham.Projection
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.DevilReef
@@ -90,13 +91,26 @@ instance RunMessage ReturnToDevilReef where
       price and Innsmouth Influence joins your deck -- which is what makes you a Deep One
       investigator for the rest of the campaign. -}
       Msg.ScenarioSpecific "aBargain" (maybeResult -> Just iid) -> do
-        scope "aBargain" $ storyWithChooseOneM (setTitle "title" >> p "body") do
-          labeled "payThePrice" do
-            addCampaignCardToDeck iid ShuffleIn HBTreacheries.innsmouthInfluence
-            selectForMaybeM (locationIs HBLocations.shrineToHydra) \lid -> do
-              clues <- field LocationClues lid
-              when (clues > 0) $ discoverAt NotInvestigate iid ScenarioSource clues lid
-            gainResources iid ScenarioSource 5
-          labeled "backOut" nothing
+        scope "aBargain" do
+          let interlude = do
+                h "title"
+                p "intro"
+                p "body"
+                {- The two options read as the squared bullets the buttons use, which is what
+                nesting them under the "Choose one:" line gives. -}
+                ul $ li.nested "chooseOne" do
+                  li "payThePrice"
+                  li "backOut"
+          investigatorStoryWithChooseOneM' iid interlude do
+            labeled "payThePrice" $ do_ msg
+            labeled "backOut" nothing
+        pure s'
+      Do (Msg.ScenarioSpecific "aBargain" (maybeResult -> Just iid)) -> do
+        influence <- addCampaignCardToDeckCapture iid DoNotShuffleIn HBTreacheries.innsmouthInfluence
+        createTreacheryAt_ influence (InThreatArea iid)
+        withMatch (locationIs HBLocations.shrineToHydra) \lid -> do
+          clues <- field LocationClues lid
+          when (clues > 0) $ discoverAt NotInvestigate iid ScenarioSource clues lid
+        gainResources iid ScenarioSource 5
         pure s'
       _ -> ReturnToDevilReef <$> liftRunMessage msg inner

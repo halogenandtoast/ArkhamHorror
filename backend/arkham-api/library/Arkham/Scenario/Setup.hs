@@ -246,12 +246,14 @@ instance MonadRandom m => MonadRandom (ScenarioBuilderT m) where
   getRandomR = lift . getRandomR
   getRandomRs = lift . getRandomRs
 
-{- | Every card the builder makes goes through 'substitute', so a wrapping scenario's
-swap reaches the cards the block it wraps creates and not just the decks it names.
+{- | Card generation is deliberately NOT routed through 'substitute': 'gather' mints the
+cards of the set it is given, and resolving there would make the box's stand-in appear
+twice -- once in place of the original and once from the box's own set. Substitution
+belongs where a def is named, which the helpers below do explicitly.
 -}
 instance CardGen m => CardGen (ScenarioBuilderT m) where
-  genEncounterCard a = resolveDef (toCardDef a) >>= lift . genEncounterCard
-  genPlayerCard a = resolveDef (toCardDef a) >>= lift . genPlayerCard
+  genEncounterCard = lift . genEncounterCard
+  genPlayerCard = lift . genPlayerCard
   replaceCard cid = lift . replaceCard cid
   removeCard = lift . removeCard
   clearCardCache = lift clearCardCache
@@ -586,9 +588,10 @@ addToEncounterDeck (toList -> defs) = do
   attrsL . encounterDeckL %= withDeck (<> cards)
 
 assetAt :: ReverseQueue m => CardDef -> LocationId -> ScenarioBuilderT m AssetId
-assetAt def lid = do
+assetAt def0 lid = do
+  def <- resolveDef def0
   -- Both the named card and its 'substitute' leave the decks: neither is left to be drawn.
-  defs <- (def.defs <>) . (.defs) <$> resolveDef def
+  let defs = nub (def0.defs <> def.defs)
   attrsL . encounterDeckL %= flip removeEachFromDeck defs
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck defs
   card <- genCard def

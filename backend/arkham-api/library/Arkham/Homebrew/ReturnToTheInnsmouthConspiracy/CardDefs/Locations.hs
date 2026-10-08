@@ -99,15 +99,21 @@ straightSection =
     Set.ReturnToHorrorInHighGear
 
 -- | return_to_devil_reef. Shuffled into the encounter deck, so it has an encounter back.
+
+{- | Drawn from the encounter deck, so it needs 'singleSided': 'location' marks a card
+double-sided, which both routes it out of the encounter deck when the set is gathered and
+has 'shuffleEncounterDeck' filter it back out again.
+-}
 shrineToHydra :: CardDef
 shrineToHydra =
-  ( location
-      ":return-to-the-innsmouth-conspiracy:032"
-      "Shrine to Hydra"
-      [Cave]
-      Diamond
-      []
-      Set.ReturnToDevilReef
+  ( singleSided
+      $ location
+        ":return-to-the-innsmouth-conspiracy:032"
+        "Shrine to Hydra"
+        [Cave]
+        NoSymbol
+        [Diamond]
+        Set.ReturnToDevilReef
   )
     { cdVictoryPoints = Just 1
     }

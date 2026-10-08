@@ -455,6 +455,7 @@ leading colon), discovered the same hands-off way — no registration anywhere:
 | `icons.json` | custom icon names, e.g. `{"moon": "moon-icon"}` — hooks `{moon}` into flavor text and `[moon]` into card text. Style the class in `style.css`; if the icon is art rather than a font glyph, `mask` the image and paint it with `background-color: currentColor` so it follows the surrounding text color (button labels are light-on-dark) |
 | `tokens.json` | custom tokens to show in the scenario **totals bar** and in the chaos-bag debug panel, e.g. `[{ "face": ":your-campaign:moon", "tooltip": "Moon Tokens", "icon": "moon-icon", "background": "#ffffff", "iconColor": "#2D3F4E" }]` (counted across the chaos bag and players' sealed tokens) |
 | `style.css` | your campaign's styling (use absolute `/img/arkham/homebrew/<campaign>/…` urls inside) |
+| `fonts.json` | fonts your text uses, family name → file, e.g. `{"Corvisa": "fonts/corvisa.ttf"}`, or an object to give a face its own settings: `size` (`"2em"`) and `stroke` (`"0.15px"`, a hairline for a font that ships only one weight). Each entry gets an `@font-face` and a `.font-<slug>` class (`Corvisa` → `font-corvisa`), so flavor text can say `<div class='font-corvisa'>…</div>`. Drop the file in the campaign folder; Vite bundles it, so there is nothing to sync. |
 | `locales/en/*.json` | your text — `base.json`, `interludes.json`, one file per scenario; merged under the campaign's message scope, with English fallback for other languages |
 | `img/` | art: `cards/`, `boxes/`, `chaos-tokens/`, `icons/`, `encounter-sets/`. Synced to the asset host by `make sync-images`; in dev a Vite middleware serves them straight from this folder, so a local/empty asset host works without syncing. |
 
@@ -467,6 +468,35 @@ their id (`11` and up are Chapter 2), but homebrew ids don't order that way, so
 say it outright. It preselects the Chapter 1/Chapter 2 rules toggle (currently
 the "as if" ruling) on the new-game screen; players can still override it there
 and in game settings. Omit it and you get Chapter 1.
+
+`fonts.json` covers the whole job of using your own typeface: the family is
+registered and a class is generated, so you never write `@font-face` yourself.
+The class works on a wrapper as well as a single element, because the generated
+rule reaches paragraphs inside it — flavor text styles every `<p>` it renders,
+which would otherwise beat a family inherited from an ancestor. A
+`<p class='basic'>` inside keeps the plain UI font, since `basic` means "not
+flavor text"; so does a `_bold_` run. Families are shared across campaigns, so
+name yours after the typeface and expect the last one registered to win a clash.
+The class works inline too, so one word can be set in a different hand — the
+signature on Erich Zann's opening letter is a `<span class='font-vivaldi'>`
+inside a paragraph the rest of the letter sets in Corvisa. Give a display script
+a `size` and it also gets `line-height: 1`, so an inline run at `2em` does not
+crash into the line above it.
+
+`stroke` is there because `font-weight` cannot help a single-weight face: the
+browser's synthetic bold is all-or-nothing and smears a script badly. A hairline
+in `currentColor` thickens it by as little as you like. A family that really
+does ship a bold should register that file as its own entry instead. Because
+`-webkit-text-stroke` inherits, every generated class states its own width — `0`
+when none was asked for — so a face nested inside a stroked one does not wear
+its parent's stroke, and `.basic` opts out the same way it opts out of the font.
+
+Watch out for a font file that *fetches* fine and still never appears: Chrome
+runs every webfont through the OpenType Sanitizer, and a rejection shows up only
+as a console warning (`Failed to decode downloaded font`, then `OTS parsing
+error: …`). Old conversions often trip it — this campaign's Vivaldi declared
+`language=1` on its `cmap` subtables where the sanitizer demands 0, which
+`fontTools` resets in a few lines.
 
 `tokens.json` is a nice small example of a self-configuring feature: list a token
 face there and it appears in the on-screen totals and in the chaos-bag debug

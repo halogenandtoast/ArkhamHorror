@@ -1,0 +1,10 @@
+{
+  "Corvisa": {
+    "file": "fonts/corvisa.ttf",
+    "stroke": "0.15px"
+  },
+  "Vivaldi": {
+    "file": "fonts/vivaldi.ttf",
+    "size": "2em"
+  }
+}

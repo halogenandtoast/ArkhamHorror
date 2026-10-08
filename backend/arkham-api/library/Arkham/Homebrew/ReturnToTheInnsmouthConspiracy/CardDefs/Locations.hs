@@ -70,15 +70,15 @@ caveMouth =
 
 -- return_to_horror_in_high_gear. Road locations, so they share the Innsmouth Road back.
 
-mudTrack :: CardDef
-mudTrack =
+mudTracks :: CardDef
+mudTracks =
   locationWithUnrevealed
     ":return-to-the-innsmouth-conspiracy:036"
     "Old Innsmouth Road"
     [Road]
     NoSymbol
     []
-    "Mud Track"
+    "Mud Tracks"
     [Road]
     NoSymbol
     []

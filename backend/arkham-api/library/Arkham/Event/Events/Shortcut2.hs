@@ -20,10 +20,15 @@ instance HasAbilities Shortcut2 where
     Just lid ->
       [ cardI18n
           $ withI18nTooltip "shortcut.ability"
+          {- Asking whether an accessible location merely exists offered the ability to an
+          investigator who could not move at all -- riding a vehicle, say -- which exhausted
+          the card for nothing. 'InvestigatorCanMoveTo' is the query the move itself uses. -}
           $ restricted
             (proxied lid a)
             1
-            (OnLocation (LocationWithId lid) <> LocationExists AccessibleLocation)
+            ( OnLocation (LocationWithId lid)
+                <> youExist (InvestigatorCanMoveTo (toSource a) AccessibleLocation)
+            )
             (FastAbility' (exhaust a) #move)
       ]
     _ -> []

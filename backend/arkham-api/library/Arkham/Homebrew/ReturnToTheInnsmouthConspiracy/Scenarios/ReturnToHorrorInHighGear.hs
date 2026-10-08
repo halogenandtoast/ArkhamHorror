@@ -8,6 +8,7 @@ import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations qualifi
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (officialSetup, scenarioI18n)
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
 import Arkham.Matcher hiding (assetAt)
+import Arkham.Placement
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear
 import Arkham.Scenarios.TheInnsmouthConspiracy.HorrorInHighGear.Helpers (scenarioLayout)
@@ -67,8 +68,12 @@ instance RunMessage ReturnToHorrorInHighGear where
         {- "Shuffle the Mud Tracks and Straight Section locations in with the other
         (non-Long Way Around) locations, then remove two random locations from the Roads
         deck from the game without looking at them." -}
-        addToPool "roads" [HBLocations.mudTrack, HBLocations.straightSection]
+        addToPool "roads" [HBLocations.mudTracks, HBLocations.straightSection]
         thinPool "roads" 2
+
+        {- "Attach this card to the scenario reference card": the box's own card carries the
+        extra ability below, so it sits beside the Campaign Guide's reference. -}
+        addAdditionalReferences [":return-to-the-innsmouth-conspiracy:035b"]
 
         gather Sets.ReturnToHorrorInHighGear
         setupHorrorInHighGear attrs
@@ -77,7 +82,16 @@ instance RunMessage ReturnToHorrorInHighGear where
       -- locations." Printed on the scenario card rather than on any one card, so it
       -- lives here.
       EndRound -> do
-        selectEach (TreacheryAttachedToLocation Anywhere <> not_ (TreacheryWithTrait Trap))
-          $ toDiscard ScenarioSource
+        {- "Discard all non-Trap cards attached to locations." Any card can be attached to a
+        location, not just treacheries -- Shortcut is an event -- so each kind is asked for
+        by its placement. -}
+        locations <- select Anywhere
+        for_ locations \lid -> do
+          selectEach (TreacheryAttachedToLocation (LocationWithId lid) <> not_ (TreacheryWithTrait Trap))
+            $ toDiscard ScenarioSource
+          selectEach (EventWithPlacement (AttachedToLocation lid) <> not_ (EventWithTrait Trap))
+            $ toDiscard ScenarioSource
+          selectEach (AssetWithPlacement (AttachedToLocation lid) <> not_ (AssetWithTrait Trap))
+            $ toDiscard ScenarioSource
         ReturnToHorrorInHighGear <$> liftRunMessage msg inner
       _ -> ReturnToHorrorInHighGear <$> liftRunMessage msg inner

@@ -78,14 +78,12 @@ instance RunMessage ReturnToTheVanishingOfElinaHarper where
       display." Awarded before delegating so it lands with the scenario's own XP. -}
       ScenarioResolution r | r `elem` map Resolution [1 .. 7] -> do
         -- `suspects` is already the Helpers' list of possible suspects, hence the name.
-        suspectCount <-
-          selectCount $ VictoryDisplayCardMatch $ basic $ #enemy <> CardWithTrait Suspect
-        inner' <- liftRunMessage msg inner
+        suspectCount <- selectCount $ VictoryDisplayCardMatch $ basic $ #enemy <> CardWithTrait Suspect
         when (suspectCount > 0) do
           {- Runs after the resolution it hangs off, which is where the box's campaign guide
           prints it: the instruction, then the reward on the squared bullet. -}
           resolutionFlavor $ ul $ li.nested "extraResolution" $ li "townspeopleInsight"
           eachInvestigator \iid ->
             gainXp iid ScenarioSource (ikey "returnToTheInnsmouthConspiracy.xp.townspeopleInsight") suspectCount
-        pure $ ReturnToTheVanishingOfElinaHarper inner'
+        ReturnToTheVanishingOfElinaHarper <$> liftRunMessage msg inner
       _ -> ReturnToTheVanishingOfElinaHarper <$> liftRunMessage msg inner

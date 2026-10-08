@@ -31,6 +31,8 @@ const MEMORIES = [
   'AConversationWithMrMoore',
   'TheLifecycleOfADeepOne',
   'AStingingBetrayal',
+  // Recovered by the epilogue, once all fourteen above are.
+  'TheHorribleTruth',
 ] as const
 
 // Return to The Innsmouth Conspiracy records one extra memory, and records it as

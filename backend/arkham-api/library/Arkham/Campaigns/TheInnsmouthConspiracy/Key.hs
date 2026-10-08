@@ -36,6 +36,9 @@ data TheInnsmouthConspiracyKey
   | AgentHarpersMissionIsCompleteButAtWhatCost
   | TheRichesOfTheDeepAreLostForeverButAtWhatCost
   | TheDeepOnesHaveFloodedTheEarth
-  | TheHorribleTruth
+  | {- | Recorded under "Memories Recovered" now, as the Campaign Log prints it.
+    Kept so campaigns that finished before the move still decode.
+    -}
+    TheHorribleTruth
   deriving stock (Show, Eq, Ord, Generic, Data)
   deriving anyclass (ToJSON, FromJSON)

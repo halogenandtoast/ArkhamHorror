@@ -302,8 +302,8 @@ checkFullBuild iid cardDef = when (cardDef `elem` relics) do
     earn FullBuild
 
 {- | Each flashback memory paired with its checklist item key, in
-'achievementChecklist' order. The Horrible Truth is not a memory — it is the
-record the epilogue writes once all fourteen are recovered — so it is not here.
+'achievementChecklist' order. The Horrible Truth is the fifteenth memory, recovered
+once all fourteen of these are, so it is derived rather than listed here.
 -}
 memoryItems :: [(Memory, Text)]
 memoryItems =

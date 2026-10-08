@@ -17,5 +17,6 @@ data Memory
   | AConversationWithMrMoore
   | TheLifecycleOfADeepOne
   | AStingingBetrayal
+  | TheHorribleTruth
   deriving stock (Show, Ord, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

@@ -3,6 +3,7 @@ module Arkham.Campaign.Campaigns.TheInnsmouthConspiracy (
   TheInnsmouthConspiracy (..),
   flashback15Memories,
   readEpilogue1,
+  recordTheHorribleTruth,
 ) where
 
 import Arkham.Asset.Cards qualified as Assets
@@ -87,6 +88,10 @@ readEpilogue1 = do
     cols do
       column $ take 7 flashback15Memories
       column $ drop 7 flashback15Memories
+
+-- | The fifteenth memory, recovered once all fourteen the Flashback asks for are.
+recordTheHorribleTruth :: ReverseQueue m => m ()
+recordTheHorribleTruth = recordSetInsert MemoriesRecovered [toJSON TheHorribleTruth]
 
 recoveredMemories :: ReverseQueue m => m [Memory]
 recoveredMemories = do
@@ -218,7 +223,7 @@ instance RunMessage TheInnsmouthConspiracy where
         recovered <- recoveredMemories
         if all ((`elem` recovered) . fst) flashback15Memories
           then do
-            record TheHorribleTruth
+            recordTheHorribleTruth
             story $ i18nWithTitle "flashback15"
           else story $ i18nWithTitle "epilogue2"
         gameOver

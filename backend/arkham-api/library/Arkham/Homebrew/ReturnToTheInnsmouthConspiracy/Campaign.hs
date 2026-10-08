@@ -14,7 +14,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Helpers.Log (getRecordSet)
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CampaignSteps
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers
-import Arkham.Message.Lifted.Log (record, recordSetInsert)
+import Arkham.Message.Lifted.Log (recordSetInsert)
 
 newtype ReturnToTheInnsmouthConspiracy = ReturnToTheInnsmouthConspiracy TheInnsmouthConspiracy
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasModifiersFor)
@@ -70,7 +70,7 @@ instance RunMessage ReturnToTheInnsmouthConspiracy where
             let recovered = count ((`elem` memories) . recorded . fst) flashback15Memories
             if recovered + 1 >= length flashback15Memories
               then do
-                record TheHorribleTruth
+                recordTheHorribleTruth
                 story $ i18nWithTitle "flashback15"
               else story $ i18nWithTitle "epilogue2"
           gameOver

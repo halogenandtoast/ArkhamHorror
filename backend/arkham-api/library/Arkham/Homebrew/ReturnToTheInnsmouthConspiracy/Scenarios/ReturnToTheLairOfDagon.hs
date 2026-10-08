@@ -18,7 +18,6 @@ import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Sets qualified as Sets
 import Arkham.Investigator.Projection ()
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.FloodedCaverns qualified as Locations
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.TheLairOfDagon qualified as Locations
-import Arkham.Matcher
 import Arkham.Scenario.Import.Lifted
 import Arkham.Scenario.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon
 import Arkham.Scenarios.TheInnsmouthConspiracy.TheLairOfDagon.Helpers (scenarioLayout)
@@ -89,19 +88,17 @@ instance RunMessage ReturnToTheLairOfDagon where
         gather Sets.ReturnToTheLairOfDagon
         gather Sets.ReturnToFloodedCaverns
         {- "Shuffle the three versions of Doorway to the Depths together, remove two of
-        them from the game at random without looking." The survivor is set aside with the
-        rest of the tunnels. -}
-        doorways <-
-          shuffle
-            =<< amongGathered
-              ( mapOneOf
-                  cardIs
-                  [ Locations.doorwayToTheDepths
-                  , HBLocations.doorwayToTheDepthsV2
-                  , HBLocations.doorwayToTheDepthsV3
-                  ]
-              )
-        removeCards (drop 1 doorways)
+        them from the game at random without looking." Declared rather than taken off the
+        pile: the printed Doorway arrives with The Lair of Dagon, which the block below is
+        what gathers, so it is not there yet to be removed. The survivor is set aside with
+        the rest of the tunnels. -}
+        let doorways =
+              [ Locations.doorwayToTheDepths
+              , HBLocations.doorwayToTheDepthsV2
+              , HBLocations.doorwayToTheDepthsV3
+              ]
+        doorway <- sample (Locations.doorwayToTheDepths :| drop 1 doorways)
+        excludeCards $ filter (/= doorway) doorways
         setupTheLairOfDagon attrs
 
         setAside [HBTreacheries.stirringInHisSleep]

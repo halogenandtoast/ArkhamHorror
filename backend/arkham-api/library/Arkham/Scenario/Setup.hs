@@ -89,10 +89,12 @@ data SetupOverrides = SetupOverrides
   -- ^ Pending 'addToPool' additions, by 'shuffledPool' key.
   , thinnedPools :: Map Text Int
   -- ^ Pending 'thinPool' removals, by 'shuffledPool' key.
+  , excludedCards :: [CardDef]
+  -- ^ 'excludeCards': defs that never reach play, however late they are gathered.
   }
 
 noSetupOverrides :: SetupOverrides
-noSetupOverrides = SetupOverrides mempty mempty mempty mempty mempty mempty mempty mempty
+noSetupOverrides = SetupOverrides mempty mempty mempty mempty mempty mempty mempty mempty mempty
 
 overrideSetsL :: Lens' SetupOverrides (Map Set.EncounterSet (Maybe Set.EncounterSet))
 overrideSetsL = lens (.overriddenSets) \m x -> m {overriddenSets = x}
@@ -117,6 +119,9 @@ addedPoolCardsL = lens (.addedPoolCards) \m x -> m {addedPoolCards = x}
 
 thinnedPoolsL :: Lens' SetupOverrides (Map Text Int)
 thinnedPoolsL = lens (.thinnedPools) \m x -> m {thinnedPools = x}
+
+excludedCardsL :: Lens' SetupOverrides [CardDef]
+excludedCardsL = lens (.excludedCards) \m x -> m {excludedCards = x}
 
 overridesL :: Lens' ScenarioBuilderState SetupOverrides
 overridesL = lens (.overrides) \m x -> m {overrides = x}
@@ -148,6 +153,14 @@ replaceOneOf old new = do
   overridesL . replacedCopiesL %= (old :)
   overridesL . cappedCopiesL %= (new :)
 
+{- | Cards that never reach play, whichever set brings them and whenever it is gathered --
+"remove two of the three at random without looking". Declared up front rather than read
+off the pile, because a wrapping scenario runs before the block that gathers the original
+set, so the pile is only half there when it declares.
+-}
+excludeCards :: Monad m => [CardDef] -> ScenarioBuilderT m ()
+excludeCards defs = overridesL . excludedCardsL %= (<> defs)
+
 {- | Apply the 'replaceOneOf' declarations to what has been gathered so far. Runs after
 every gather, so a box may declare its swaps before or after the gathers that supply
 them: the drops happen once each, and the caps are idempotent.
@@ -156,9 +169,13 @@ applyReplacedCopies :: Monad m => ScenarioBuilderT m ()
 applyReplacedCopies = do
   use (overridesL . replacedCopiesL) >>= filterM dropOne >>= (overridesL . replacedCopiesL .=)
   use (overridesL . cappedCopiesL) >>= traverse_ capToOne
+  use (overridesL . excludedCardsL) >>= traverse_ dropEvery
  where
   -- 'True' keeps the declaration pending: no copy has been gathered yet.
   dropOne def = maybe (pure True) (\c -> removeGathered c >> pure False) =<< findGathered def
+  dropEvery def = do
+    cards <- gatheredCards
+    traverse_ removeGathered [c | c <- cards, toCardDef c == def]
   capToOne def =
     findGathered def >>= \case
       Nothing -> pure ()

@@ -9,7 +9,7 @@ import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Agendas qualified
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Enemies qualified as HBEnemies
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Locations qualified as HBLocations
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers (
-  deepOneInvestigator,
+  deepOneInvestigatorsInCampaign,
   officialSetup,
   scenarioI18n,
  )
@@ -94,9 +94,17 @@ instance RunMessage ReturnToALightInTheFog where
       read this: ... You gain 1 mental trauma as your mind tries to cope with the changes
       your body is going through." -}
       ScenarioResolution r | r `elem` map Resolution [1, 2, 4] -> do
-        deepOnes <- select deepOneInvestigator
+        {- Innsmouth Influence is a permanent, so who is a Deep One survives the scenario
+        ending: asking the campaign's story cards finds them even once they have resigned
+        and their cards are gone, which asking for the trait does not. -}
+        deepOnes <- deepOneInvestigatorsInCampaign
+        inner' <- liftRunMessage msg inner
         unless (null deepOnes) do
-          story $ i18nWithTitle "changing"
+          resolutionOnly deepOnes $ scope "changing" do
+            setTitle "title"
+            p "instructions"
+            p "body"
+            ul $ li "trauma"
           for_ deepOnes (`sufferMentalTrauma` 1)
-        ReturnToALightInTheFog <$> liftRunMessage msg inner
+        pure $ ReturnToALightInTheFog inner'
       _ -> ReturnToALightInTheFog <$> liftRunMessage msg inner

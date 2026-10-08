@@ -25,7 +25,8 @@
     "name": "Return to Devil Reef",
     "campaign": ":return-to-the-innsmouth-conspiracy",
     "standalone": false,
-    "i18n": "returnToDevilReef"
+    "i18n": "returnToDevilReef",
+    "allowCurvedPaths": true
   },
   {
     "id": ":return-to-the-innsmouth-conspiracy:035",

@@ -12,6 +12,8 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Scenarios.TheSymphonyOfErichZann (
   theSymphonyOfErichZann,
 ) where
 
+import Arkham.Card (genCard)
+import Arkham.Card.CardDef (CardDef)
 import Arkham.Difficulty
 import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Xp (toBonus)
@@ -25,8 +27,6 @@ import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Treacheries qualified as 
 import Arkham.Homebrew.TheSymphonyOfErichZann.Helpers
 import Arkham.Homebrew.TheSymphonyOfErichZann.Key
 import Arkham.Homebrew.TheSymphonyOfErichZann.Sets qualified as Set
-import Arkham.Card (genCard)
-import Arkham.Card.CardDef (CardDef)
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log
 import Arkham.Resolution
@@ -83,11 +83,12 @@ musicians =
 
 instance RunMessage TheSymphonyOfErichZann where
   runMessage msg s@(TheSymphonyOfErichZann attrs) = runQueueT $ scenarioI18n $ case msg of
-    PreScenarioSetup -> scope "prologue" do
-      flavor $ h "title" >> p "body1"
-      -- Isabel La Fratta has her own reason to answer Gaudin's letter.
-      playingIsabel <- selectAny (InvestigatorWithTitle "Isabel La Fratta")
-      when playingIsabel $ flavor $ p "isabel"
+    PreScenarioSetup -> do
+      scope "prologue" do
+        flavor $ h "title" >> p "body"
+        playingIsabel <- selectAny (InvestigatorWithTitle "Isabel La Fratta")
+        when playingIsabel $ flavor $ p "isabel"
+      scope "intro" $ flavor $ h "title" >> p "body"
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
@@ -104,17 +105,21 @@ instance RunMessage TheSymphonyOfErichZann where
         li "performerWeakness"
         unscoped $ li "shuffleRemainder"
 
+      additionalRules "musicTreacheries"
+
       gather Set.TheSymphonyOfErichZann
 
       -- Front of house. Every connection is printed, so nothing is wired here.
-      entranceHall <- placeLabeled "entranceHall" Locations.entranceHall
-      void $ placeLabeled "mainLobby" Locations.mainLobby
-      void $ placeLabeled "gallery" Locations.gallery
-      void $ placeLabeled "auditorium" Locations.auditorium
-      startAt entranceHall
+      startAt =<< placeLabeled "entranceHall" Locations.entranceHall
+      placeLabeled_ "mainLobby" Locations.mainLobby
+      placeLabeled_ "gallery" Locations.gallery
+      placeLabeled_ "auditorium" Locations.auditorium
 
       setAside
         $ [ Enemies.earsOfTheVoid
+          , Enemies.earsOfTheVoid
+          , Treacheries.heardBySomething
+          , Treacheries.heardBySomething
           , Treacheries.heardBySomething
           , Enemies.youngNightingale
           , Assets.augusteGaudinMaestroOfSymphonies
@@ -123,6 +128,9 @@ instance RunMessage TheSymphonyOfErichZann where
           , Assets.laFrattasPianoKey
           , Assets.walkersTrumpet
           , Assets.thePiano
+          , Treacheries.stuckInYourHead
+          , Treacheries.stuckInYourHead
+          , Treacheries.stuckInYourHead
           , Treacheries.stuckInYourHead
           , Stories.beyondTheCurtain
           , Locations.stageHall

@@ -505,6 +505,8 @@ defaultCampaignRunner msg a = case msg of
             )
         )
         key
+  RemoveRecordSetEntries key recs ->
+    pure $ updateAttrs a $ logL . recordedSetsL %~ adjustMap (filter (`notElem` recs)) key
   RecordCount key int ->
     pure $ updateAttrs a $ overRecordedCount key (const $ Just int)
   IncrementRecordCount key int ->

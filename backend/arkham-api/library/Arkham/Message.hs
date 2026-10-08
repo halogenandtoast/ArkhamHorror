@@ -1086,6 +1086,8 @@ data Message
   | RecordSetInsert CampaignLogKey [SomeRecorded]
   | RecordSetReplace CampaignLogKey SomeRecorded SomeRecorded
   | CrossOutRecordSetEntries CampaignLogKey [SomeRecorded]
+  | -- | Debug-only: drop entries from a recorded set. No card un-records one.
+    RemoveRecordSetEntries CampaignLogKey [SomeRecorded]
   | RefillSlots InvestigatorId [AssetId]
   | Remember ScenarioLogKey
   | Forget ScenarioLogKey

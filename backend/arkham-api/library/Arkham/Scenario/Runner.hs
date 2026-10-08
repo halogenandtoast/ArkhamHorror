@@ -1840,6 +1840,12 @@ runScenarioAttrs msg a@ScenarioAttrs {..} = runQueueT $ case msg of
             let set' = map (\x -> if x == v then v' else x) set
              in a & standaloneCampaignLogL . recordedSetsL %~ insertMap key set'
       else pure a
+  RemoveRecordSetEntries key recs -> do
+    isStandalone <- getIsStandalone
+    pure
+      $ if isStandalone
+        then a & standaloneCampaignLogL . recordedSetsL %~ adjustMap (filter (`notElem` recs)) key
+        else a
   ShuffleDeck (Deck.ScenarioDeckByKey deckKey) -> do
     deck' <- shuffleM $ fromMaybe [] (view (decksL . at deckKey) a)
     pure $ a & decksL . at deckKey ?~ deck'

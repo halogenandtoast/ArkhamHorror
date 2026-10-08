@@ -36,6 +36,7 @@ import { useDbCardStore } from '@/stores/dbCards'
 
 import DiscoveredRunes from '@/arkham/components/TheDrownedCity/DiscoveredRunes.vue'
 import ArtifactsEarned from '@/arkham/components/TheDrownedCity/ArtifactsEarned.vue'
+import MemoriesRecovered from '@/arkham/components/TheInnsmouthConspiracy/MemoriesRecovered.vue'
 import ResidentNotes from '@/arkham/components/TheFeastOfHemlockVale/ResidentNotes.vue'
 import AreasSurveyed from '@/arkham/components/TheFeastOfHemlockVale/AreasSurveyed.vue'
 import DayTimeTracker from '@/arkham/components/TheFeastOfHemlockVale/DayTimeTracker.vue'
@@ -116,6 +117,13 @@ const homebrewScope = computed(() => homebrewScopeFromCampaignId(props.game.camp
 const additionalLogSections = computed(() => campaignDefinition.value?.additional ?? [])
 const additionalTabId = (index: number): `additional:${number}` => `additional:${index}`
 const isAdditionalTab = (tab: LogTab): tab is `additional:${number}` => tab.startsWith('additional:')
+
+// Memories Recovered gets its own checklist (and its own debug toggle), so it is
+// kept out of the generic recorded-sets list below.
+const MEMORIES_SET_KEY = 'theInnsmouthConspiracy.key.memoriesRecovered'
+const showMemoriesRecovered = computed(() =>
+  props.game.campaign?.id === '07' || props.game.campaign?.id === ':return-to-the-innsmouth-conspiracy'
+)
 
 const hemlockDayTime = computed(() => {
   if (props.game.campaign?.id !== '10') return null
@@ -1053,11 +1061,19 @@ onUnmounted(() => {
 
           <ArtifactsEarned v-if="game.campaign?.id === '11'" :log="selectedLog" :game-id="game.id" @refresh="emit('refresh')" />
           <DiscoveredRunes v-if="game.campaign?.id === '11'" :log="selectedLog" :game-id="game.id" @refresh="emit('refresh')" />
+          <MemoriesRecovered
+            v-if="showMemoriesRecovered"
+            :log="selectedLog"
+            :campaign-id="game.campaign?.id"
+            :game-id="game.id"
+            :displayRecordValue="displayRecordValue"
+            @refresh="emit('refresh')"
+          />
 
           <!-- Campaign recorded sets + counts -->
           <CampaignLogRecordedSets
             :game="game"
-            :entries="(Object.entries(recordedSets) as [string, any[]][]).filter(([k]) => !k.toLowerCase().includes('discoveredglyph'))"
+            :entries="(Object.entries(recordedSets) as [string, any[]][]).filter(([k]) => !k.toLowerCase().includes('discoveredglyph') && !(showMemoriesRecovered && k === MEMORIES_SET_KEY))"
             :counts="recordedCounts"
             :countHistory="recordCountHistory"
             :displayRecordValue="displayRecordValue"

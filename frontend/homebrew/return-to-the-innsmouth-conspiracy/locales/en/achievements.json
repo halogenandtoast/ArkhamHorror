@@ -1,0 +1,64 @@
+{
+  "achievements": {
+    "AFullBag": {
+      "name": "A Full Bag",
+      "text": "Have both 10 bless and 10 curse tokens in the chaos bag at the same time."
+    },
+    "ThisGuyAgain": {
+      "name": "This Guy Again",
+      "text": "Over the course of the campaign, defeat the Deep One Bull at least five times."
+    },
+    "OffToAGoodStart": {
+      "name": "Off to a Good Start",
+      "text": "Finish Pit of Despair with exactly 1 stamina and sanity remaining."
+    },
+    "FriendOfThePeople": {
+      "name": "Friend of the People",
+      "text": "During The Vanishing of Elina Harper, control all three story assets at the same time."
+    },
+    "RunForYourLives": {
+      "name": "Run for Your Lives",
+      "text": "Finish In Too Deep without defeating a single Deep One enemy."
+    },
+    "GoodSwimmer": {
+      "name": "Good Swimmer",
+      "text": "Finish Devil Reef without ever moving the Fishing Vessel, claiming at least one of the three key objectives."
+    },
+    "StepOnIt": {
+      "name": "Step on It",
+      "text": "During Horror in High Gear, use your car's ability to move faster every single round."
+    },
+    "WayTooCute": {
+      "name": "Way Too Cute",
+      "text": "During A Light in the Fog, have four Deep One Hatchlings in play at the same time."
+    },
+    "MakingYourOwnLuck": {
+      "name": "Making Your Own Luck",
+      "text": "During Lair of Dagon, first get to 10 curse tokens in the chaos bag, then all the way down again to zero curses in the bag."
+    },
+    "GoBackToSleep": {
+      "name": "Go Back to Sleep",
+      "text": "During Into the Maelstrom, have both Dagon and Hydra exhausted at the same time during the investigator phase."
+    },
+    "ActuallyJustHereForTheMoney": {
+      "name": "Actually Just Here for the Money",
+      "text": "Recover the riches of the Deep Ones."
+    },
+    "IDoNotRecallThisPlace": {
+      "name": "I Do Not Recall This Place",
+      "text": "Win The Innsmouth Conspiracy campaign without any entry under “Memories Recovered” in your campaign log."
+    },
+    "TotalRecall": {
+      "name": "Total Recall",
+      "text": "Win The Innsmouth Conspiracy campaign with sixteen entries under “Memories Recovered” in your campaign log."
+    },
+    "SomethingSmellsFishy": {
+      "name": "Something Smells Fishy",
+      "text": "Win The Innsmouth Conspiracy campaign as a Deep One investigator."
+    },
+    "ExpertFisherman": {
+      "name": "Expert Fisherman",
+      "text": "Win The Innsmouth Conspiracy campaign on Expert difficulty."
+    }
+  }
+}

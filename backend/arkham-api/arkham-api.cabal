@@ -4947,6 +4947,8 @@ library
       Arkham.Homebrew.Generate
       Arkham.Homebrew.Import
       Arkham.Homebrew.Registry
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.AchievementDefs
+      Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Achievements
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Acts.BackIntoTheDepthsV2
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Acts.ThePitV2
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Acts.TheSearchForAgentHarperV2

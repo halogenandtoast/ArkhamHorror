@@ -12,6 +12,9 @@ import Arkham.Campaign.Import.Lifted
 import Arkham.CampaignLogKey (recorded)
 import Arkham.Campaigns.TheInnsmouthConspiracy.Key
 import Arkham.Helpers.Log (getRecordSet)
+import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Achievements (
+  runReturnToTheInnsmouthConspiracyAchievements,
+ )
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CampaignSteps
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Helpers
 import Arkham.Message.Lifted.Log (recordSetInsert)
@@ -47,32 +50,36 @@ instance IsCampaign ReturnToTheInnsmouthConspiracy where
     other -> defaultNextStep other
 
 instance RunMessage ReturnToTheInnsmouthConspiracy where
-  runMessage msg c@(ReturnToTheInnsmouthConspiracy innsmouthConspiracy') = runQueueT $ campaignI18n $ case msg of
-    NextCampaignStep _ -> lift $ defaultCampaignRunner msg c
-    -- "Before reading the Epilogue, every Deep One investigator has to read this:
-    -- FLASHBACK XVI". Read before delegating, so it lands ahead of the official epilogue.
-    CampaignStep EpilogueStep -> do
-      deepOnes <- deepOneInvestigatorsInCampaign
-      if null deepOnes
-        then ReturnToTheInnsmouthConspiracy <$> liftRunMessage msg innsmouthConspiracy'
-        else do
-          story $ i18nWithTitle "flashbackXVI"
-          recordSetInsert MemoriesRecovered [toJSON youRememberWhereYouHaveToGo]
-          {- "During the Epilogue, this memory can stand in for another one when determining
-          whether you get to read Flashback XV (you still need 14 or more unlocked
-          Flashbacks, including this one)." The Campaign Guide asks for every memory on its
-          list, which no substitute can satisfy, so the box counts them instead and lets
-          Flashback XVI make up one shortfall. Everything read here is the Campaign Guide's
-          own text. -}
-          official "epilogue" do
-            readEpilogue1
-            memories <- getRecordSet MemoriesRecovered
-            let recovered = count ((`elem` memories) . recorded . fst) flashback15Memories
-            if recovered + 1 >= length flashback15Memories
-              then do
-                recordTheHorribleTruth
-                story $ i18nWithTitle "flashback15"
-              else story $ i18nWithTitle "epilogue2"
-          gameOver
-          pure c
-    _ -> ReturnToTheInnsmouthConspiracy <$> liftRunMessage msg innsmouthConspiracy'
+  runMessage msg c@(ReturnToTheInnsmouthConspiracy innsmouthConspiracy') =
+    runQueueT
+      $ campaignI18n
+      $ lift (runReturnToTheInnsmouthConspiracyAchievements msg)
+      *> case msg of
+        NextCampaignStep _ -> lift $ defaultCampaignRunner msg c
+        -- "Before reading the Epilogue, every Deep One investigator has to read this:
+        -- FLASHBACK XVI". Read before delegating, so it lands ahead of the official epilogue.
+        CampaignStep EpilogueStep -> do
+          deepOnes <- deepOneInvestigatorsInCampaign
+          if null deepOnes
+            then ReturnToTheInnsmouthConspiracy <$> liftRunMessage msg innsmouthConspiracy'
+            else do
+              story $ i18nWithTitle "flashbackXVI"
+              recordSetInsert MemoriesRecovered [toJSON youRememberWhereYouHaveToGo]
+              {- "During the Epilogue, this memory can stand in for another one when determining
+              whether you get to read Flashback XV (you still need 14 or more unlocked
+              Flashbacks, including this one)." The Campaign Guide asks for every memory on its
+              list, which no substitute can satisfy, so the box counts them instead and lets
+              Flashback XVI make up one shortfall. Everything read here is the Campaign Guide's
+              own text. -}
+              official "epilogue" do
+                readEpilogue1
+                memories <- getRecordSet MemoriesRecovered
+                let recovered = count ((`elem` memories) . recorded . fst) flashback15Memories
+                if recovered + 1 >= length flashback15Memories
+                  then do
+                    recordTheHorribleTruth
+                    story $ i18nWithTitle "flashback15"
+                  else story $ i18nWithTitle "epilogue2"
+              gameOver
+              pure c
+        _ -> ReturnToTheInnsmouthConspiracy <$> liftRunMessage msg innsmouthConspiracy'

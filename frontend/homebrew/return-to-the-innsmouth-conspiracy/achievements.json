@@ -1,0 +1,20 @@
+{
+  "campaign": ":return-to-the-innsmouth-conspiracy",
+  "entries": [
+    { "key": "AFullBag" },
+    { "key": "ThisGuyAgain" },
+    { "key": "OffToAGoodStart" },
+    { "key": "FriendOfThePeople" },
+    { "key": "RunForYourLives" },
+    { "key": "GoodSwimmer" },
+    { "key": "StepOnIt" },
+    { "key": "WayTooCute" },
+    { "key": "MakingYourOwnLuck" },
+    { "key": "GoBackToSleep" },
+    { "key": "ActuallyJustHereForTheMoney" },
+    { "key": "IDoNotRecallThisPlace" },
+    { "key": "TotalRecall" },
+    { "key": "SomethingSmellsFishy" },
+    { "key": "ExpertFisherman" }
+  ]
+}

@@ -107,9 +107,27 @@
     }
   },
   "epilogue": {
-    "epilogue1":  {
+    "epilogue1": {
       "title": "Epilogue",
       "body": "<p><b>Epilogue 1:</b> The drive home to Arkham is quiet. After everything you have been through, you would have thought the quiet to be a peaceful repreive…but you are alone with your thoughts—thoughts of Innsmouth, of Deep Ones, of enormous monsters dwelling in the depths beneath the waves. You find yourself checking your rearview mirror regularly, waiting to spot the headlights of pursuers who want you dead; the glowing, unblinking eyes of an aquatic horror in your back seat; or perhaps even the cold, dead glare of Thomas Dawson, mutated nearly beyond recognition. But you see nothing. Just an empty road.</p><p>You sigh and run through the events of the past few weeks once more. You believe you have a complete picture of what occurred, and yet you still feel like there is something missing. Another gap in your memories…</p>"
+    },
+    "checkMemories": "Check the “Memories Recovered” section of the Campaign Log.",
+    "ifAllFourteen": "If all 14 of the following entries are listed under “Memories Recovered,” read _Flashback XV_. Otherwise, proceed to _Epilogue 2_.",
+    "memories": {
+      "aMeetingWithThomasDawson": "A meeting with Thomas Dawson.",
+      "aBattleWithAHorrifyingDevil": "A battle with a horrifying devil.",
+      "aDecisionToStickTogether": "A decision to stick together.",
+      "anEncounterWithASecretCult": "An encounter with a secret cult.",
+      "aDealWithJoeSargent": "A deal with Joe Sargent.",
+      "aFollowedLead": "A followed lead.",
+      "anIntervention": "An intervention.",
+      "aJailbreak": "A jailbreak.",
+      "discoveryOfAStrangeIdol": "Discovery of a strange idol.",
+      "discoveryOfAnUnholyMantle": "Discovery of an unholy mantle.",
+      "discoveryOfAMysticalRelic": "Discovery of a mystical relic.",
+      "aConversationWithMrMoore": "A conversation with Mr. Moore.",
+      "theLifecycleOfADeepOne": "The lifecycle of a “Deep One.”",
+      "aStingingBetrayal": "A stinging betrayal."
     },
     "epilogue2": {
       "title": "Epilogue",

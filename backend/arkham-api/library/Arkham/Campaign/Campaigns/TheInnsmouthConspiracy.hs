@@ -1,4 +1,9 @@
-module Arkham.Campaign.Campaigns.TheInnsmouthConspiracy (theInnsmouthConspiracy, TheInnsmouthConspiracy (..)) where
+module Arkham.Campaign.Campaigns.TheInnsmouthConspiracy (
+  theInnsmouthConspiracy,
+  TheInnsmouthConspiracy (..),
+  flashback15Memories,
+  readEpilogue1,
+) where
 
 import Arkham.Asset.Cards qualified as Assets
 import Arkham.Campaign.Campaigns.TheInnsmouthConspiracy.Achievements (
@@ -10,6 +15,7 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.CampaignSteps
 import Arkham.Campaigns.TheInnsmouthConspiracy.Import
 import Arkham.ChaosToken
 import Arkham.Helpers.Campaign (getOwner, withOwner)
+import Arkham.Helpers.FlavorText
 import Arkham.Helpers.Log hiding (recordSetInsert)
 import Arkham.Helpers.Query
 import Arkham.Helpers.Xp
@@ -42,6 +48,50 @@ instance IsCampaign TheInnsmouthConspiracy where
     IntoTheMaelstrom -> continue EpilogueStep
     EpilogueStep -> Nothing
     other -> defaultNextStep other
+
+{- | The fourteen memories Flashback XV asks for, paired with their locale keys and in the
+order the Campaign Guide prints them: the first seven make its left column, the rest its
+right.
+-}
+flashback15Memories :: [(Memory, String)]
+flashback15Memories =
+  [ (AMeetingWithThomasDawson, "aMeetingWithThomasDawson")
+  , (ABattleWithAHorrifyingDevil, "aBattleWithAHorrifyingDevil")
+  , (ADecisionToStickTogether, "aDecisionToStickTogether")
+  , (AnEncounterWithASecretCult, "anEncounterWithASecretCult")
+  , (ADealWithJoeSargent, "aDealWithJoeSargent")
+  , (AFollowedLead, "aFollowedLead")
+  , (AnIntervention, "anIntervention")
+  , (AJailbreak, "aJailbreak")
+  , (DiscoveryOfAStrangeIdol, "discoveryOfAStrangeIdol")
+  , (DiscoveryOfAnUnholyMantle, "discoveryOfAnUnholyMantle")
+  , (DiscoveryOfAMysticalRelic, "discoveryOfAMysticalRelic")
+  , (AConversationWithMrMoore, "aConversationWithMrMoore")
+  , (TheLifecycleOfADeepOne, "theLifecycleOfADeepOne")
+  , (AStingingBetrayal, "aStingingBetrayal")
+  ]
+
+{- | Epilogue 1 and the check it ends on. The Campaign Guide prints the fourteen memories it
+asks for in two columns, so the reading ticks off the ones recovered and crosses out the ones
+missing: the player can see which gap sent them to Epilogue 2. Read inside the epilogue's
+scope.
+-}
+readEpilogue1 :: (HasI18n, ReverseQueue m) => m ()
+readEpilogue1 = do
+  recovered <- recoveredMemories
+  let column ms = ul $ for_ ms \(m, key) -> li.validate (m `elem` recovered) ("memories." <> key)
+  flavor do
+    withTitle "epilogue1"
+    p.basic "checkMemories"
+    p.basic "ifAllFourteen"
+    cols do
+      column $ take 7 flashback15Memories
+      column $ drop 7 flashback15Memories
+
+recoveredMemories :: ReverseQueue m => m [Memory]
+recoveredMemories = do
+  memories <- getRecordSet MemoriesRecovered
+  pure $ filter ((`elem` memories) . recorded) (map fst flashback15Memories)
 
 instance RunMessage TheInnsmouthConspiracy where
   runMessage msg c@(TheInnsmouthConspiracy _attrs) =
@@ -164,25 +214,9 @@ instance RunMessage TheInnsmouthConspiracy where
         nextCampaignStep
         pure c
       CampaignStep EpilogueStep -> scope "epilogue" do
-        story $ i18nWithTitle "epilogue1"
-        memories <- getRecordSet MemoriesRecovered
-        if all
-          ((`elem` memories) . recorded)
-          [ AMeetingWithThomasDawson
-          , ABattleWithAHorrifyingDevil
-          , ADecisionToStickTogether
-          , AnEncounterWithASecretCult
-          , ADealWithJoeSargent
-          , AFollowedLead
-          , AnIntervention
-          , AJailbreak
-          , DiscoveryOfAStrangeIdol
-          , DiscoveryOfAnUnholyMantle
-          , DiscoveryOfAMysticalRelic
-          , AConversationWithMrMoore
-          , TheLifecycleOfADeepOne
-          , AStingingBetrayal
-          ]
+        readEpilogue1
+        recovered <- recoveredMemories
+        if all ((`elem` recovered) . fst) flashback15Memories
           then do
             record TheHorribleTruth
             story $ i18nWithTitle "flashback15"

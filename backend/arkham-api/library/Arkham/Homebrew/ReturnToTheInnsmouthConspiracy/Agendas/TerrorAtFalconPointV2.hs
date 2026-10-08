@@ -6,7 +6,7 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Enemy.CardDefs.TheInnsmouthConspiracy.ALightInTheFog qualified as Enemies
 import Arkham.Helpers.GameValue
 import Arkham.Helpers.Modifiers
-import Arkham.Helpers.Query (getLead, getSetAsideCardsMatching)
+import Arkham.Helpers.Query (getSetAsideCardsMatching)
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.CardDefs.Enemies qualified as HBEnemies
 import Arkham.Location.Grid
@@ -49,13 +49,9 @@ instance RunMessage TerrorAtFalconPointV2 where
       could <- floodBottommost 4
       if could
         then do
-          -- v2: "If there is at least one copy of Deep One Grappler set aside, spawn one
-          -- of them (following its Spawn instructions)."
           grapplers <- getSetAsideCardsMatching (cardIs HBEnemies.deepOneGrappler)
           unless (null grapplers) do
-            -- "following its Spawn instructions" -- so spawn relative to the lead rather
-            -- than placing it somewhere outright.
-            createSetAsideEnemy_ HBEnemies.deepOneGrappler =<< getLead
+            spawnEnemy_ HBEnemies.deepOneGrappler
           push $ RevertAgenda attrs.id
         else push R3
       pure a

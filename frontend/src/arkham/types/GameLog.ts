@@ -290,7 +290,14 @@ export const logEntryDecoder: JsonDecoder.Decoder<LogEntry> = JsonDecoder.object
 )
 
 /* The log as the renderer wants it: a flat run of entries becomes a run of
- * items, where consecutive entries sharing a group id collapse into one block.
+ * items, where entries sharing a group id collapse into one block.
+ *
+ * Keyed by id rather than by adjacency, because a block's rows are NOT
+ * guaranteed to be contiguous: a card play's own aftermath can arrive after an
+ * unrelated event (in one real log, a treachery's header at seq 77 and its
+ * discard at 82, with a whole skill test between). Adjacency split that into
+ * two blocks, and the half holding only members had neither a header nor a
+ * summary to draw -- an empty, invisible row.
  *
  * Grouping is done here rather than on the server so that the stored log stays
  * append-only -- rows are deleted by step on undo and nothing is ever rewritten,
@@ -302,18 +309,17 @@ export type LogItem =
 
 export function groupLogEntries(entries: readonly LogEntry[]): LogItem[] {
   const items: LogItem[] = []
+  const groups = new Map<string, Extract<LogItem, { kind: 'group' }>>()
   for (const entry of entries) {
     const gid = entry.group?.id
     if (!gid) {
       items.push({ kind: 'entry', entry })
       continue
     }
-    const open = items[items.length - 1]
-    let group: Extract<LogItem, { kind: 'group' }>
-    if (open && open.kind === 'group' && open.id === gid) {
-      group = open
-    } else {
+    let group = groups.get(gid)
+    if (!group) {
       group = { kind: 'group', id: gid, header: null, members: [], summary: null }
+      groups.set(gid, group)
       items.push(group)
     }
     switch (entry.group?.role) {
@@ -327,7 +333,15 @@ export function groupLogEntries(entries: readonly LogEntry[]): LogItem[] {
         group.members.push(entry)
     }
   }
-  return items
+  /* A block with no bar of its own has nothing to collapse to, so its members
+     render as ordinary lines instead of as a box the reader cannot open. That
+     happens legitimately: an undo deletes by step, and a card play's header is
+     written LAST, so undoing one step can leave its members behind. */
+  return items.flatMap(item =>
+    item.kind === 'group' && !item.header && !item.summary
+      ? item.members.map((entry): LogItem => ({ kind: 'entry', entry }))
+      : [item],
+  )
 }
 
 /* Rows an entry occupies when fully expanded: what the "+N" badge counts. */

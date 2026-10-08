@@ -5,13 +5,13 @@ import Arkham.Campaigns.TheInnsmouthConspiracy.Helpers
 import Arkham.Helpers.Scenario
 import Arkham.Key
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Cards
-import Arkham.Location.Grid
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.TheInnsmouthConspiracy.DevilReef.Helpers (islandCells, otherSide, out)
 
 newtype SaltMarshes = SaltMarshes LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -48,17 +48,9 @@ instance RunMessage SaltMarshes where
       pure l
     UseThisAbility _iid (isSource attrs -> True) 2 -> do
       increaseThisFloodLevel attrs
-      grid <- getGrid
       tunnels <- take 1 <$> getScenarioDeck TidalTunnelDeck
-
-      let
-        p1 = case findInGrid attrs.id grid of
-          Just (Pos 0 3) -> Pos (-1) 3
-          Just (Pos 4 2) -> Pos 5 2
-          Just (Pos 4 (-2)) -> Pos 5 (-2)
-          Just (Pos (-4) 2) -> Pos (-5) 2
-          Just (Pos (-4) (-2)) -> Pos (-5) (-2)
-          _ -> error "invalid location"
-      zipWithM_ placeLocationInGrid [p1] tunnels
+      -- One tunnel, off to the island's side.
+      positions <- islandCells attrs.id ([otherSide], [out])
+      zipWithM_ placeLocationInGrid positions tunnels
       pure l
     _ -> SaltMarshes <$> liftRunMessage msg attrs

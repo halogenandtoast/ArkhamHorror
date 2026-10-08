@@ -3,11 +3,11 @@ module Arkham.Location.Cards.TheInnsmouthConspiracy.DevilReef.LonelyIsle (lonely
 import Arkham.Ability
 import Arkham.Helpers.Scenario
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Cards
-import Arkham.Location.Grid
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.TheInnsmouthConspiracy.DevilReef.Helpers (islandCells, otherSide, out, side)
 
 newtype LonelyIsle = LonelyIsle LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -23,17 +23,9 @@ instance HasAbilities LonelyIsle where
 instance RunMessage LonelyIsle where
   runMessage msg l@(LonelyIsle attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      grid <- getGrid
       tunnels <- take 2 <$> getScenarioDeck TidalTunnelDeck
-
-      let
-        positions = case findInGrid attrs.id grid of
-          Just (Pos 0 3) -> [Pos (-1) 3, Pos 1 3]
-          Just (Pos 4 2) -> [Pos 5 2, Pos 4 1]
-          Just (Pos 4 (-2)) -> [Pos 5 (-2), Pos 4 (-1)]
-          Just (Pos (-4) 2) -> [Pos (-5) 2, Pos (-4) 1]
-          Just (Pos (-4) (-2)) -> [Pos (-5) (-2), Pos (-4) (-1)]
-          _ -> error "invalid location"
+      -- A tunnel to either side of the island.
+      positions <- islandCells attrs.id ([otherSide, side], [out, side])
       zipWithM_ placeLocationInGrid positions tunnels
       pure l
     _ -> LonelyIsle <$> liftRunMessage msg attrs

@@ -6,12 +6,12 @@ import Arkham.Card.CardType
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Cards
-import Arkham.Location.Grid
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher hiding (RevealLocation)
 import Arkham.Matcher qualified as Matcher
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.TheInnsmouthConspiracy.DevilReef.Helpers (islandCells, out, side)
 
 newtype BlackReef = BlackReef LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -28,21 +28,13 @@ instance RunMessage BlackReef where
   runMessage msg l@(BlackReef attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
       increaseThisFloodLevel attrs
-      grid <- getGrid
       tunnels <- take 2 <$> getScenarioDeck TidalTunnelDeck
 
-      let
-        (p1, p2, p3) = case findInGrid attrs.id grid of
-          Just (Pos 0 3) -> (Pos 1 3, Pos 0 4, Pos 1 4)
-          Just (Pos 4 2) -> (Pos 5 2, Pos 4 1, Pos 5 1)
-          Just (Pos 4 (-2)) -> (Pos 5 (-2), Pos 4 (-1), Pos 5 (-1))
-          Just (Pos (-4) 2) -> (Pos (-5) 2, Pos (-4) 1, Pos (-5) 1)
-          Just (Pos (-4) (-2)) -> (Pos (-5) (-2), Pos (-4) (-1), Pos (-5) (-1))
-          _ -> error "invalid location"
-      zipWithM_ placeLocationInGrid [p1, p2] tunnels
+      -- Two tunnels alongside and beyond, and the depths in the corner past them.
+      (tunnelCells, depths) <-
+        splitAt 2 <$> islandCells attrs.id ([side, out, out <> side], [out, side, out <> side])
+      zipWithM_ placeLocationInGrid tunnelCells tunnels
       unfathomableDepths <- getSetAsideCardsMatching $ CardWithType LocationType
-      shuffleM unfathomableDepths >>= \case
-        [] -> pure ()
-        (x : _) -> placeLocationInGrid_ p3 x
+      zipWithM_ placeLocationInGrid_ depths =<< shuffleM unfathomableDepths
       pure l
     _ -> BlackReef <$> liftRunMessage msg attrs

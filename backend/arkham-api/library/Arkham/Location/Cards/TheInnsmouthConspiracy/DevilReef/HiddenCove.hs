@@ -5,11 +5,11 @@ import Arkham.Card.CardType
 import Arkham.Helpers.Query
 import Arkham.Helpers.Scenario
 import Arkham.Location.CardDefs.TheInnsmouthConspiracy.DevilReef qualified as Cards
-import Arkham.Location.Grid
 import Arkham.Location.Helpers
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Scenario.Deck
+import Arkham.Scenarios.TheInnsmouthConspiracy.DevilReef.Helpers (islandCells, out, side)
 
 newtype HiddenCove = HiddenCove LocationAttrs
   deriving anyclass (IsLocation, HasModifiersFor)
@@ -25,18 +25,14 @@ instance HasAbilities HiddenCove where
 instance RunMessage HiddenCove where
   runMessage msg l@(HiddenCove attrs) = runQueueT $ case msg of
     UseThisAbility _iid (isSource attrs -> True) 1 -> do
-      grid <- getGrid
       tunnels <- getScenarioDeck TidalTunnelDeck
       unfathomableDepths <- getSetAsideCardsMatching $ CardWithType LocationType
 
-      let
-        (p1, p2) = case findInGrid attrs.id grid of
-          Just (Pos 0 3) -> (Pos 0 4, Pos 1 4)
-          Just (Pos 4 2) -> (Pos 5 2, Pos 6 2)
-          Just (Pos 4 (-2)) -> (Pos 5 (-2), Pos 6 (-2))
-          Just (Pos (-4) 2) -> (Pos (-5) 2, Pos (-6) 2)
-          Just (Pos (-4) (-2)) -> (Pos (-5) (-2), Pos (-6) (-2))
-          _ -> error "invalid location"
+      -- A tunnel beyond the island, and the depths beyond that.
+      (p1, p2) <-
+        islandCells attrs.id ([out, out <> side], [out, out <> out]) >>= \case
+          [a, b] -> pure (a, b)
+          _ -> error "Hidden Cove needs two cells"
       case tunnels of
         [] -> pure ()
         (x : _) -> placeLocationInGrid_ p1 x

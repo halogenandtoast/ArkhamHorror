@@ -16,7 +16,13 @@ import Arkham.Location.CardDefs.Import
 
 entranceHall :: CardDef
 entranceHall =
-  location ":the-symphony-of-erich-zann:009" "Entrance Hall" [AuseilTheatre] Circle [Square] Set.TheSymphonyOfErichZann
+  location
+    ":the-symphony-of-erich-zann:009"
+    "Entrance Hall"
+    [AuseilTheatre]
+    Circle
+    [Square]
+    Set.TheSymphonyOfErichZann
 
 mainLobby :: CardDef
 mainLobby =
@@ -30,7 +36,13 @@ mainLobby =
 
 gallery :: CardDef
 gallery =
-  location ":the-symphony-of-erich-zann:011" "Gallery" [AuseilTheatre] Triangle [Square, Plus] Set.TheSymphonyOfErichZann
+  location
+    ":the-symphony-of-erich-zann:011"
+    "Gallery"
+    [AuseilTheatre]
+    Triangle
+    [Square, Plus]
+    Set.TheSymphonyOfErichZann
 
 auditorium :: CardDef
 auditorium =
@@ -99,4 +111,9 @@ theWindowToNothingness =
       Set.TheSymphonyOfErichZann
   )
     { cdOtherSide = Just ":the-symphony-of-erich-zann:008"
+    , -- `location` assumes a location's other face is its own unrevealed side, so it
+      -- marks the card double-sided and starts it unrevealed. Here the other face is
+      -- the Beyond the Curtain story, and there is no `008bb` art to show for an
+      -- unrevealed Window.
+      cdDoubleSided = False
     }

@@ -2,6 +2,7 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.YoungNightingale (youngNig
 
 import Arkham.Ability
 import Arkham.Enemy.Import.Lifted hiding (EnemyAttacks)
+import Arkham.Helpers.Window (getAttackDetails)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.TheSymphonyOfErichZann.Traits (pattern Music)
 import Arkham.Matcher
@@ -22,7 +23,7 @@ instance HasAbilities YoungNightingale where
         mkAbility a 1 $ forced $ DrawCard #after Anyone (basic $ CardWithTrait Music) AnyDeck
       , -- Its attack can be bought off by drawing from the encounter deck.
         restricted a 2 (youExist $ at_ (locationWithEnemy a.id))
-          $ freeReaction (EnemyAttacks #when You AnyEnemyAttack (be a))
+          $ freeReaction (EnemyAttacks #when You (CancelableEnemyAttack AnyEnemyAttack) (be a))
       ]
 
 instance RunMessage YoungNightingale where
@@ -34,7 +35,9 @@ instance RunMessage YoungNightingale where
         initiateEnemyAttack attrs (attrs.ability 1) iid
         exhaustThis attrs
       pure e
-    UseThisAbility iid (isSource attrs -> True) 2 -> do
+    UseCardAbility iid (isSource attrs -> True) 2 (getAttackDetails -> details) _ -> do
+      -- "...draw the top card of the encounter deck: Cancel that attack."
       drawEncounterCard iid (attrs.ability 2)
+      cancelAttack (attrs.ability 2) details
       pure e
     _ -> YoungNightingale <$> liftRunMessage msg attrs

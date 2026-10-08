@@ -2,11 +2,11 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Acts.ThePossessedConductor (thePos
 
 import Arkham.Ability
 import Arkham.Act.Import.Lifted
+import Arkham.Card.CardDef (CardDef)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Acts qualified as Cards
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Locations
-import Arkham.Card.CardDef (CardDef)
 import Arkham.Matcher
 import Arkham.Placement (Placement (AttachedToLocation))
 
@@ -38,7 +38,11 @@ musicians =
 
 instance HasAbilities ThePossessedConductor where
   getAbilities (ThePossessedConductor a) =
-    [mkAbility a 1 $ Objective $ forced $ EnemyDefeated #after Anyone ByAny (enemyIs Enemies.augusteGaudinConductorOfTheVoid)]
+    [ mkAbility a 1
+        $ Objective
+        $ forced
+        $ EnemyDefeated #after Anyone ByAny (enemyIs Enemies.augusteGaudinConductorOfTheVoid)
+    ]
 
 instance RunMessage ThePossessedConductor where
   runMessage msg a@(ThePossessedConductor attrs) = runQueueT $ case msg of
@@ -67,12 +71,14 @@ instance RunMessage ThePossessedConductor where
             void $ createAssetAt Assets.thePiano (AttachedToLocation room)
           else createEnemyAt_ musician room
 
-      -- "Set the Auguste Gaudin (Conductor of the Void) enemy aside, out of play
-      -- and attach the set aside Auguste Gaudin (Maestro of Symphonies) story
-      -- asset to the Stage Hall location."
+      {- "Set the Auguste Gaudin (Conductor of the Void) enemy aside, out of play
+      and attach the set aside Auguste Gaudin (Maestro of Symphonies) story asset
+      to the Stage Hall location." Setting him aside is the enemy's own job: this
+      act advances on his defeat, so by now he has already left play, and his
+      ability 3 is what sends the card to the set-aside pile instead of the
+      encounter discard -- which the shuffle below would otherwise feed back into
+      the encounter deck. -}
       stageHall <- selectJust $ locationIs Locations.stageHall
-      selectEach (enemyIs Enemies.augusteGaudinConductorOfTheVoid) \eid ->
-        push $ RemoveFromPlay (toSource eid)
       void $ createAssetAt Assets.augusteGaudinMaestroOfSymphonies (AttachedToLocation stageHall)
 
       shuffleEncounterDiscardBackIn

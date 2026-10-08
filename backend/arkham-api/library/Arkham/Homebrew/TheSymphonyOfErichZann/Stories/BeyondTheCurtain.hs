@@ -1,7 +1,6 @@
 module Arkham.Homebrew.TheSymphonyOfErichZann.Stories.BeyondTheCurtain (beyondTheCurtain) where
 
 import Arkham.Helpers.Log (getHasRecord)
-import Arkham.Helpers.Query (getSetAsideCard)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Assets qualified as Assets
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Locations
@@ -25,16 +24,40 @@ instance RunMessage BeyondTheCurtain where
       reachedAct3b <- getHasRecord YouSavedAllTheMusicians
       unless reachedAct3b do
         -- "If Auguste Gaudin (Maestro of Symphonies) is in play, remove him from the game."
-        selectEach (assetIs Assets.augusteGaudinMaestroOfSymphonies) \aid ->
-          push $ RemoveFromGame (toTarget aid)
-        -- "Then, spawn the set aside Auguste Gaudin (Conductor of the Void) at the Stage Hall."
-        stageHall <- selectJust $ locationIs Locations.stageHall
-        gaudin <- getSetAsideCard Enemies.augusteGaudinConductorOfTheVoid
-        createEnemyAt_ gaudin stageHall
+        selectEach (assetIs Assets.augusteGaudinMaestroOfSymphonies)
+          $ push
+          . RemoveFromGame
+          . toTarget
+        {- "Then, spawn the set aside Auguste Gaudin (Conductor of the Void) enemy
+        at the Stage Hall location."
+
+        That sentence is written for the act 3 case, where act 2 has already put
+        the Stage Hall into play and set Gaudin aside. But Coda Ultimatum is also
+        reached by the agenda deck running out, which can happen while the
+        investigators are still on act 1 or 2 -- and then there is no Stage Hall,
+        nothing set aside, and on act 2 Gaudin is still in play with his own act
+        asking you to defeat him.
+
+        So: never a second copy of him, the Stage Hall when it exists and
+        otherwise the Auditorium (his printed spawn, in play from setup), and
+        `fetchCard` rather than `getSetAsideCard` because the card may be set
+        aside, discarded or nowhere yet. -}
+        gaudinInPlay <- selectAny $ enemyIs Enemies.augusteGaudinConductorOfTheVoid
+        unless gaudinInPlay do
+          mLocation <-
+            (<|>)
+              <$> selectOne (locationIs Locations.stageHall)
+              <*> selectOne (locationIs Locations.auditorium)
+          for_ mLocation \location -> do
+            gaudin <- fetchCard Enemies.augusteGaudinConductorOfTheVoid
+            createEnemyAt_ gaudin location
 
       {- "Flip this card over and attach it to the Auditorium." The back is a
-      location of its own, so it is put into play rather than attached -- the
-      engine has no Placeable instance for locations. -}
+      location of its own, so it joins the map beside the Auditorium -- the card
+      says *attach*, and reserves *replace* for the Forced that moves it later.
+      The scenario grid gives it the cell next to the Auditorium, and the
+      location itself is what joins the two (it prints no symbol, so nothing
+      would connect to it otherwise). -}
       void $ placeLocationCard Locations.theWindowToNothingness
       pure s
     _ -> BeyondTheCurtain <$> liftRunMessage msg attrs

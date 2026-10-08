@@ -44,9 +44,9 @@ theSymphonyOfErichZann difficulty =
     ":the-symphony-of-erich-zann:001"
     "The Symphony of Erich Zann"
     difficulty
-    [ ".          entranceHall .         backstage1 backstage2"
-    , "gallery    mainLobby    stageHall .          ."
-    , "auditorium .            .         backstage3 backstage4"
+    [ ".          entranceHall           .         backstage1 backstage2"
+    , "gallery    mainLobby              stageHall .          ."
+    , "auditorium theWindowToNothingness .         backstage3 backstage4"
     ]
 
 instance HasChaosTokenValue TheSymphonyOfErichZann where

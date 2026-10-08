@@ -29,7 +29,9 @@ instance RunMessage Gallery where
       investigate sid iid (attrs.ability 1)
       pure l
     Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
-      auditorium <- selectJust $ locationIs Cards.auditorium
-      discoverAt NotInvestigate iid (attrs.ability 1) 1 auditorium
+      -- Beyond the Curtain swaps the Auditorium out for The Window to
+      -- Nothingness, after which there is nowhere for this clue to go.
+      selectOne (locationIs Cards.auditorium)
+        >>= traverse_ (discoverAt NotInvestigate iid (attrs.ability 1) 1)
       pure l
     _ -> Gallery <$> liftRunMessage msg attrs

@@ -5,10 +5,9 @@ import Arkham.Agenda.Import.Lifted
 import Arkham.Classes.HasGame (HasGame)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWith, setActiveDuringSetup)
-import Arkham.Helpers.Scenario (getScenarioMetaKeyDefault)
+import Arkham.Helpers.Scenario (getScenarioMetaKeyDefault, setScenarioMetaKey)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Agendas qualified as Cards
 import Arkham.Homebrew.CircusExMortis.CardDefs.Locations qualified as Locations
-import Arkham.Homebrew.CircusExMortis.Helpers
 import Arkham.I18n
 import Arkham.Investigator.Types (Field (InvestigatorRemainingHealth, InvestigatorRemainingSanity))
 import Arkham.Matcher hiding (InvestigatorEliminated)

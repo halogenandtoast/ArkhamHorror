@@ -253,7 +253,33 @@ const attachedEnemies = computed(() => Object.values(props.game.enemies).
 const investigatorsUnder = computed(() => Object.values(props.game.investigators).
   filter((i) => i.placement.tag === "AttachedToAgenda" && i.placement.contents === id.value))
 
-const groupedTreacheries = computed(() => Object.entries(groupBy([...props.agenda.treacheries, ...nextToTreacheries.value], (t) => props.game.treacheries[t].cardCode)))
+// A scenario whose cards are "placed next to the agenda deck" rather than
+// attached to it publishes their placement order in scenario meta. That order
+// is the whole point of the row -- oldest first, because the oldest is the one
+// the next placement discards -- and nothing else in the game state records it.
+const nextToAgendaOrder = computed<string[]>(() => {
+  const order = props.game.scenario?.meta?.nextToAgendaOrder
+  return Array.isArray(order) ? order.filter((id): id is string => typeof id === 'string') : []
+})
+
+// Only the ones still in play, then anything placed since that the scenario has
+// not recorded yet, so a card never vanishes from the row waiting on meta.
+const nextToAgendaRow = computed(() => {
+  if (nextToAgendaOrder.value.length === 0) return []
+  const inPlay = nextToTreacheries.value
+  return [
+    ...nextToAgendaOrder.value.filter((t) => inPlay.includes(t)),
+    ...inPlay.filter((t) => !nextToAgendaOrder.value.includes(t)),
+  ]
+})
+
+const groupedTreacheries = computed(() => {
+  const row = nextToAgendaRow.value
+  const attached = [...props.agenda.treacheries, ...nextToTreacheries.value].filter(
+    (t) => !row.includes(t),
+  )
+  return Object.entries(groupBy(attached, (t) => props.game.treacheries[t].cardCode))
+})
 
 // Which treachery group is slid out. We reveal only when the pointer is over the
 // card image, not over its buttons — so mousing straight onto a Forced button
@@ -375,6 +401,16 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
         :playerId="playerId"
         @choose="$emit('choose', $event)"
       />
+      <div v-if="nextToAgendaRow.length > 0" class="next-to-agenda">
+        <Treachery
+          v-for="treacheryId in nextToAgendaRow"
+          :key="treacheryId"
+          :treachery="game.treacheries[treacheryId]"
+          :game="game"
+          :playerId="playerId"
+          @choose="$emit('choose', $event)"
+        />
+      </div>
       <div v-if="groupedTreacheries.length > 0" class="treacheries">
         <div
           v-for="([cCode, treacheries], idx) in groupedTreacheries"
@@ -497,6 +533,18 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+/* Cards placed beside the agenda deck, oldest first. They are their own row
+   rather than attachments, so they do not overlap the way .treachery-group
+   stacks do -- the order has to stay readable, since the oldest is the one the
+   next placement discards. */
+.next-to-agenda {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 5px;
+  margin-top: 5px;
 }
 
 /* The group is the stationary hover target: its layout box stays put while only

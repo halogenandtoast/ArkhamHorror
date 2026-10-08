@@ -21,7 +21,7 @@ import Arkham.Helpers.FlavorText (chaosTokenImg, cols, compose, img, p, setTitle
 import Arkham.Helpers.Location (getConnectedMoveLocations)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Query (getPlayerCount)
-import Arkham.Helpers.Scenario (scenarioField, setScenarioMeta)
+import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Helpers.SkillTest (getIsBeingInvestigated, getSkillTestInvestigator)
 import Arkham.Homebrew.CircusExMortis.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.CircusExMortis.CardDefs.Assets qualified as Assets
@@ -51,13 +51,12 @@ import Arkham.Name qualified as Name
 import Arkham.Placement (Placement (InPosition))
 import Arkham.Prelude
 import Arkham.Projection
-import Arkham.Scenario.Types (Field (ScenarioMeta, ScenarioRemembered))
+import Arkham.Scenario.Types (Field (ScenarioRemembered))
 import Arkham.ScenarioLogKey
 import Arkham.Source
 import Arkham.Target
 import Arkham.TokenBag
 import Control.Monad.Writer.Class
-import Data.Aeson.KeyMap qualified as KeyMap
 import Data.Map.Monoidal.Strict (MonoidalMap)
 import Data.Text qualified as T
 
@@ -214,19 +213,6 @@ getFuryBag = getCustomChaosBag furyBagKey
 
 setFuryBag :: ReverseQueue m => CustomChaosBag -> m ()
 setFuryBag = setCustomChaosBag furyBagKey
-
-{- | Write one key of the scenario's meta object, leaving the rest alone.
-'setScenarioMeta' replaces the whole value, and the engine has no per-key
-setter, so this reads the current object first — which means one call per
-handler: two would both read the pre-write value.
--}
-setScenarioMetaKey :: (ReverseQueue m, ToJSON a) => Key -> a -> m ()
-setScenarioMetaKey k v = do
-  meta <- scenarioField ScenarioMeta
-  let object' = case meta of
-        Object o -> o
-        _ -> KeyMap.empty
-  setScenarioMeta $ Object $ KeyMap.insert k (toJSON v) object'
 
 {- | "Add a ☾ token to the fury bag" (Restless Night, Midnight Snacking). The
 bag only ever grows, so this is the one place its contents change.

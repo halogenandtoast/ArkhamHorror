@@ -244,3 +244,33 @@ inScenario = selectAny TheScenario
 
 setScenarioMeta :: (ReverseQueue m, ToJSON a) => a -> m ()
 setScenarioMeta = push . SetScenarioMeta . toJSON
+
+{- | Write one key of @scenarioMeta@, leaving the rest of the object alone.
+
+'setScenarioMeta' replaces the whole value, so this reads the current object
+first -- which means one call per handler: two would both read the pre-write
+value and the second would drop the first's key.
+-}
+setScenarioMetaKey :: (ReverseQueue m, ToJSON a) => Key -> a -> m ()
+setScenarioMetaKey k v = do
+  meta <- scenarioField ScenarioMeta
+  let object' = case meta of
+        Object o -> o
+        _ -> KeyMap.empty
+  setScenarioMeta $ Object $ KeyMap.insert k (toJSON v) object'
+
+{- | The treacheries beside the agenda deck, in the order they were placed.
+
+Publishing this is what makes the agenda lay them out as a row of their own,
+oldest first, instead of stacking them in with its attachments -- a scenario
+whose cards are "placed next to the agenda deck" rather than attached to it.
+Leave it unset and nothing changes.
+-}
+nextToAgendaOrderKey :: Key
+nextToAgendaOrderKey = "nextToAgendaOrder"
+
+getNextToAgendaOrder :: HasGame m => m [TreacheryId]
+getNextToAgendaOrder = getScenarioMetaKeyDefault nextToAgendaOrderKey []
+
+setNextToAgendaOrder :: ReverseQueue m => [TreacheryId] -> m ()
+setNextToAgendaOrder = setScenarioMetaKey nextToAgendaOrderKey

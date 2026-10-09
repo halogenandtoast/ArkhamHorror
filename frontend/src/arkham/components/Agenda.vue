@@ -332,7 +332,11 @@ const wards = computed(() => props.agenda.tokens[TokenType.Ward])
           :src="displayedImage"
           :data-errata="backErrata ?? undefined"
         />
-        <div class="pool" v-if="!agenda.flipped">
+        <!-- A flipped agenda has normally advanced and is on its way out, so its
+             pool is hidden. Coda Ultimatum stays in play on its b side as both
+             act and agenda and keeps taking doom, so show the pool whenever
+             there is doom to show. -->
+        <div class="pool" v-if="!agenda.flipped || agenda.doom > 0">
           <template v-if="debug.active">
             <button @click="debug.send(game.id, {tag: 'TokenMessage', contents: {tag: 'RemoveTokens_', contents: [{'tag': 'GameSource'}, {'tag': 'AgendaTarget', 'contents': id}, 'Doom', 1]}})">-</button>
           </template>

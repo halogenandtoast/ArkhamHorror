@@ -364,9 +364,14 @@ renderHomebrewContentFile HomebrewSpec {..} base entries = render do
       indent 2 $ renderLine do
         fromString dtMethodName
         " ="
-      indent 4 "mconcat"
-      for_ (zip [0 ..] entries) (uncurry $ entryLine 6)
-      indent 6 "]"
+      -- A campaign can have card defs but no implementations yet; @mconcat@
+      -- followed by a bare @]@ would not parse.
+      if null entries
+        then indent 4 "mempty"
+        else do
+          indent 4 "mconcat"
+          for_ (zip [0 ..] entries) (uncurry $ entryLine 6)
+          indent 6 "]"
     TargetBinding {..} -> do
       renderLine do
         fromString dtBindingName

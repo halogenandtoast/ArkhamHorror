@@ -19,6 +19,7 @@
   "attackOfOpportunityIgnored": "{name}'s attack of opportunity is ignored",
   "attackOfOpportunityIgnoredBy": "{name}'s attack of opportunity is ignored by {source}",
   "baseValue": "base value",
+  "choosingSpawnLocation": "Choosing where {enemy} spawns",
   "commits": "{investigator} commits {card}",
   "committed": "Commits {card}",
   "crossedOut": "Cross out “{entry}”",

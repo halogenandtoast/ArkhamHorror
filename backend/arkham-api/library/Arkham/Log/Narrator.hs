@@ -71,6 +71,7 @@ import Arkham.CampaignLogKey
 import Arkham.Card
 import Arkham.Classes.GameLogger
 import Arkham.Classes.HasGame
+import Arkham.Classes.Query (select)
 import Arkham.Constants (notPlayerAbilityIndex)
 import Arkham.Cost (Cost (ActionCost, ResourceCost))
 import Arkham.Enemy.Types (Field (..))
@@ -88,6 +89,7 @@ import Arkham.Keyword (Keyword (Peril))
 import Arkham.Location.Types (Field (..))
 import Arkham.Log
 import Arkham.Log.Refs
+import Arkham.Matcher (InvestigatorMatcher (ActiveInvestigator), LocationMatcher, replaceYouMatcher)
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Movement (moveForced)
@@ -330,6 +332,33 @@ oneShot = \case
   an attack -- one event, not two, and it names what did it. -}
   AssignedDamage target source damage horror
     | damage > 0 || horror > 0 -> Just (renderAssignedDamage target source damage horror)
+  {- Where an enemy spawns being put to a player.
+
+  __Two messages ask this, and the obvious one is the rare one.__ A card's own
+  @setSpawnAt@ matcher never reaches @Do (EnemySpawn ...)@ as a matcher at all:
+  @Helpers/Enemy.hs:75@ routes @SpawnAt@ through
+  @EnemySpawnAtLocationMatching@, which selects and hands off to
+  @spawnAtOneOf@ (@Helpers/Enemy.hs:407@) -- read off a live game, where
+  Dancing Rats' pending ask carried @SpawnAtLocation@ choices and so had
+  already left the matcher behind. @Do (EnemySpawn ...)@ keeps a matcher only
+  for a spawn a modifier redirected (@ChangeSpawnWith@ / @ChangeSpawnLocation@,
+  @Enemy/Runner.hs:479@), which asks at @Enemy/Runner.hs:511@. Both are live;
+  neither covers the other.
+
+  Either way the prompt is only worth a line when more than one location
+  matches -- a single match resolves without asking, so a line there would
+  describe a choice nobody made. The matcher is re-selected rather than
+  carried, which is safe because the narrator runs /before/ the message does
+  and so reads the same board the ask will. -}
+  SpawnMessage (EnemySpawnAtLocationMatching_ _ matcher eid) -> Just do
+    -- The handler resolves @You@ against the active investigator before
+    -- selecting, so the count has to be taken off the same matcher. Via
+    -- 'select' rather than @getActiveInvestigatorId@, whose 'selectJust' throws.
+    select ActiveInvestigator >>= \case
+      [iid] -> renderSpawnChoice eid (replaceYouMatcher iid matcher)
+      _ -> pure Nothing
+  Do (EnemySpawn details)
+    | SpawnAt matcher <- details.spawnAt -> Just (renderSpawnChoice details.enemy matcher)
   -- An enemy arriving. @EnemySpawn_@ is the request; @EnemySpawned_@ is the fact,
   -- and by then the enemy has a location to read.
   SpawnMessage (EnemySpawned_ details) -> Just (renderSpawned details)
@@ -861,8 +890,26 @@ drawsEncounter iid card = do
     $ opensGroup (cardBlockKey (toCardId card))
     $ mechanic [ikeyPart "log.drawsEncounter" ["investigator" ~> who, "card" ~> toCard card]]
 
-renderSpawned :: HasGame m => SpawnDetails -> m (Maybe LogEntry)
+{- | "Choosing where Dancing Rats spawns", tagged so the spawn takes it back
+out again rather than leaving the question standing above its own answer.
+-}
+renderSpawnChoice :: HasGame m => EnemyId -> LocationMatcher -> m (Maybe LogEntry)
+renderSpawnChoice eid matcher = do
+  locations <- select matcher
+  if length locations < 2
+    then pure Nothing
+    else do
+      enemy <- enemyRefFor eid
+      pure
+        $ Just
+        $ tagged (spawnChoiceLogTag eid)
+        $ notice [ikeyPart "log.choosingSpawnLocation" ["enemy" ~> enemy]]
+
+renderSpawned :: (HasGame m, HasGameLogger m) => SpawnDetails -> m (Maybe LogEntry)
 renderSpawned details = do
+  -- The spawn replaces the prompt that asked for it rather than following it.
+  -- A no-op when nothing asked, which is most spawns.
+  retractLog (spawnChoiceLogTag details.enemy)
   enemy <- enemyRefFor details.enemy
   mLocation <- join <$> fieldMay EnemyLocation details.enemy
   locRef <- traverse locationRefFor mLocation
@@ -952,6 +999,12 @@ renderSkillTestResult iid mAction target sType success n = do
 -- | What a commit's log line is tagged with, so an uncommit can retract it.
 commitLogTag :: Card -> Text
 commitLogTag card = "commit:" <> tshow (toCardId card)
+
+{- | Names the prompt asking where an enemy spawns, so the spawn can take it
+back out. One per enemy: nothing chooses two spawn points for the same enemy.
+-}
+spawnChoiceLogTag :: EnemyId -> Text
+spawnChoiceLogTag eid = "spawnChoice:" <> idText eid
 
 {- | The key the open test's block is filed under.
 

@@ -28,7 +28,6 @@ import Arkham.Homebrew.TheSymphonyOfErichZann.Key
 import Arkham.Homebrew.TheSymphonyOfErichZann.Sets qualified as Set
 import Arkham.Investigator.Types (Field (InvestigatorMentalTrauma))
 import Arkham.Matcher
-import Arkham.Message (CanAdvance (..))
 import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
 import Arkham.Projection
@@ -83,15 +82,6 @@ instance RunMessage TheSymphonyOfErichZann where
         playingIsabel <- selectAny (InvestigatorWithTitle "Isabel La Fratta")
         when playingIsabel $ flavor $ scope "isabel" $ h "title" >> p "body"
       scope "intro" $ flavor $ h "title" >> p "body"
-      pure s
-    {- Mythos doom goes to the *unflipped* agenda, and Coda Ultimatum stays in
-    play on its b side as both act and agenda -- so once it is out the mythos
-    phase lands doom on nobody and the Window to Nothingness, which watches for
-    doom being added, never fires. Put it on whichever agenda is actually there;
-    before Coda that is the same single unflipped agenda the default would pick. -}
-    PlaceDoomOnAgenda n canAdvance -> do
-      selectEach AnyAgenda \agenda -> placeDoom attrs agenda n
-      pushWhen (canAdvance == CanAdvance) AdvanceAgendaIfThresholdSatisfied
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
@@ -148,7 +138,12 @@ instance RunMessage TheSymphonyOfErichZann where
         card <- genCard Treacheries.stuckInYourHead
         addToHand iid [card]
 
-      setAgendaDeck [Agendas.overture, Agendas.crescendo, Agendas.opusMagnum]
+      setAgendaDeck
+        [ Agendas.overture
+        , Agendas.crescendo
+        , Agendas.opusMagnum
+        , Agendas.codaUltimatum
+        ]
       setActDeck
         [ Acts.musicFromAuseilTheatre
         , Acts.thePossessedConductor

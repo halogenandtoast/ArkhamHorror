@@ -1,7 +1,7 @@
 module Arkham.Homebrew.TheSymphonyOfErichZann.Locations.Gallery (gallery) where
 
 import Arkham.Ability
-import Arkham.Action qualified as Action
+import Arkham.Helpers.Modifiers (ModifierType (..))
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.TheSymphonyOfErichZann.Helpers
 import Arkham.Location.Import.Lifted
@@ -26,12 +26,14 @@ instance RunMessage Gallery where
   runMessage msg l@(Gallery attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
+      {- The Auditorium clue is *additional* to the one this investigation
+      discovers here, so it rides on the same discovery rather than on a
+      `Successful` case -- that would shadow the location runner's own, which is
+      what discovers the clue at the Gallery. Beyond the Curtain swaps the
+      Auditorium out, after which there is nowhere for the extra clue to come
+      from. -}
+      selectOne (locationIs Cards.auditorium) >>= traverse_ \auditorium ->
+        skillTestModifier sid (attrs.ability 1) iid (DiscoveredCluesAt auditorium 1)
       investigate sid iid (attrs.ability 1)
-      pure l
-    Successful (Action.Investigate, _) iid (isAbilitySource attrs 1 -> True) _ _ -> do
-      -- Beyond the Curtain swaps the Auditorium out for The Window to
-      -- Nothingness, after which there is nowhere for this clue to go.
-      selectOne (locationIs Cards.auditorium)
-        >>= traverse_ (discoverAt NotInvestigate iid (attrs.ability 1) 1)
       pure l
     _ -> Gallery <$> liftRunMessage msg attrs

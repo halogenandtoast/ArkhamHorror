@@ -2,9 +2,7 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.NicolePage (nicolePage) wh
 
 import Arkham.Ability
 import Arkham.Card.CardType (CardType (..))
-import Arkham.Discard (HandDiscard (..))
 import Arkham.Enemy.Import.Lifted
-import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCardEdit)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.Story (readStory)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies qualified as Cards
@@ -13,7 +11,6 @@ import Arkham.Homebrew.TheSymphonyOfErichZann.Helpers (instrumentInPlay, scenari
 import Arkham.Homebrew.TheSymphonyOfErichZann.Traits qualified as T
 import Arkham.I18n
 import Arkham.Matcher
-import Arkham.Message.Lifted.Choose
 
 newtype NicolePage = NicolePage EnemyAttrs
   deriving anyclass IsEnemy
@@ -31,31 +28,24 @@ instance HasAbilities NicolePage where
   {- "Discard 3 cards of the same cardtype (asset, event, or skill) from your
   hand: Parley. Flip this card over."
 
-  ponytail: the same-cardtype restriction is enforced by the discard prompt
-  below rather than by the ability's cost, because no Cost constructor expresses
-  "3 of one chosen type". The gate still refuses the parley unless three cards
-  of some one type are in hand, so it cannot be attempted unpaid.
-  -}
+  One branch per cardtype: an 'OrCost' only offers the branches that can be
+  paid, so a hand of three cards of three different types cannot reach the
+  parley at all. -}
   getAbilities (NicolePage a) =
     extend1 a
-      $ restricted
-        a
-        1
-        ( OnSameLocation
-            <> exists (TreacheryWithTrait T.String <> InPlayTreachery)
-            <> youExist (HandWith (LengthIs $ atLeast 3))
-        )
-      $ parleyAction_
+      $ restricted a 1 (OnSameLocation <> exists (TreacheryWithTrait T.String <> InPlayTreachery))
+      $ parleyAction
+      $ OrCost
+        [ LabeledCost (scenarioI18n $ scope "nicolePage" $ "$" <> labelKey key)
+            $ HandDiscardCost 3
+            $ basic (CardWithType ty)
+        | (ty, key) <- [(AssetType, "asset"), (EventType, "event"), (SkillType, "skill")]
+        ]
 
 instance RunMessage NicolePage where
   runMessage msg e@(NicolePage attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      chooseOneM iid $ scenarioI18n $ scope "nicolePage" do
-        for_ [(AssetType, "asset"), (EventType, "event"), (SkillType, "skill")] \(ty, key) ->
-          labeled key do
-            chooseAndDiscardCardEdit iid (attrs.ability 1) \d ->
-              d {discardFilter = CardWithType ty, discardAmount = 3}
-            card <- fetchCard Stories.violinistsMuse
-            readStory iid card Stories.violinistsMuse
+      card <- fetchCard Stories.violinistsMuse
+      readStory iid card Stories.violinistsMuse
       pure e
     _ -> NicolePage <$> liftRunMessage msg attrs

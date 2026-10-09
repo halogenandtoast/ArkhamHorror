@@ -1,6 +1,7 @@
 module Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.ArnoldWalker (arnoldWalker) where
 
 import Arkham.Ability
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Enemy.Import.Lifted
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.SkillTest.Lifted (combinationSkillTest)
@@ -28,17 +29,20 @@ instance HasModifiersFor ArnoldWalker where
 instance HasAbilities ArnoldWalker where
   getAbilities (ArnoldWalker a) =
     extend1 a
-      $ restricted a 1 (OnSameLocation <> exists (TreacheryWithTrait Brass <> InPlayTreachery))
-      $ parleyAction_
+      $ restricted a 1 (OnSameLocation <> exists (withTrait Brass <> InPlayTreachery)) parleyAction_
 
 instance RunMessage ArnoldWalker where
   runMessage msg e@(ArnoldWalker attrs) = runQueueT $ case msg of
-    {- "Test [willpower] + [intellect] + [combat] + [agility] (5). Reveal and
-    resolve two additional chaos tokens for this test." -}
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       sid <- getRandom
-      skillTestModifier sid (attrs.ability 1) iid (DrawAdditionalChaosTokens 2)
-      combinationSkillTest sid iid attrs attrs [#willpower, #intellect, #combat, #agility] (Fixed 5)
+      skillTestModifier sid (attrs.ability 1) iid (DrawAdditionalChaosTokens 2 ResolveEach)
+      combinationSkillTest
+        sid
+        iid
+        (attrs.ability 1)
+        attrs
+        [#willpower, #intellect, #combat, #agility]
+        (Fixed 5)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
       card <- fetchCard Stories.trumpetersMuse

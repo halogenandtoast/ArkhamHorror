@@ -1124,10 +1124,12 @@ getSkillTestRevealStrategy s = do
   applyRevealStrategyModifier (MultiReveal _ b) (ChangeRevealStrategy n) = MultiReveal n b
   applyRevealStrategyModifier _ (ChangeRevealStrategy n) = n
   applyRevealStrategyModifier n RevealAnotherChaosToken = MultiReveal n (Reveal 1)
-  applyRevealStrategyModifier n (DrawAdditionalChaosTokens m) = case n of
-    Reveal x -> RevealAndChoose (x + m) 1
-    RevealAndChoose x z -> RevealAndChoose (x + m) z
-    other -> other
+  applyRevealStrategyModifier n (DrawAdditionalChaosTokens m reveals) = case (n, reveals) of
+    (Reveal x, ResolveEach) -> Reveal (x + m)
+    (Reveal x, ResolveOne) -> RevealAndChoose (x + m) 1
+    (RevealAndChoose x z, ResolveEach) -> RevealAndChoose (x + m) (z + m)
+    (RevealAndChoose x z, ResolveOne) -> RevealAndChoose (x + m) z
+    (other, _) -> other
   applyRevealStrategyModifier n _ = n
 
 getAdditionalChaosTokenValues :: HasGame m => SkillTest -> m Int

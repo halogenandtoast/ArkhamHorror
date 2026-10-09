@@ -278,7 +278,7 @@ data ModifierType
   | CardsCannotLeaveYourDiscardPile
   | ChangeChaosTokenModifier ChaosTokenModifier
   | ChangeRevealStrategy RevealStrategy
-  | DrawAdditionalChaosTokens Int
+  | DrawAdditionalChaosTokens Int AdditionalReveals
   | ChangeSpawnLocation LocationMatcher LocationMatcher
   | ChangeSpawnWith InvestigatorId SpawnAt
   | ChaosTokenFaceModifier [ChaosTokenFace]
@@ -674,6 +674,11 @@ mconcat
                     <|> withObject "CanPlayUnderControlOf" parseRecord contents
                     <|> (flip CanPlayUnderControlOf Anyone <$> parseJSON contents)
                 Nothing -> parseRecord v
+            "DrawAdditionalChaosTokens" -> do
+              contents <- (Right <$> v .: "contents") <|> (Left <$> v .: "contents")
+              case contents of
+                Left n -> pure $ DrawAdditionalChaosTokens n ResolveOne
+                Right (n, reveals) -> pure $ DrawAdditionalChaosTokens n reveals
             "MaxDamageTaken" -> do
               contents <- (Right <$> v .: "contents") <|> (Left <$> v .: "contents")
               case contents of

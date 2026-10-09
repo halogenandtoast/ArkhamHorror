@@ -1,6 +1,7 @@
 module Arkham.Event.Events.EatLead (eatLead) where
 
 import Arkham.Asset.Uses
+import Arkham.ChaosBag.RevealStrategy
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted
 import Arkham.Helpers.Window
@@ -18,7 +19,7 @@ instance RunMessage EatLead where
     PlayThisEvent iid (is attrs -> True) -> do
       for_ (getWindowAsset attrs.windows) \aid -> do
         spendUses attrs aid Ammo 1
-        thisSkillTestModifier iid attrs iid (DrawAdditionalChaosTokens 1)
+        thisSkillTestModifier iid attrs iid (DrawAdditionalChaosTokens 1 ResolveOne)
         cancelledOrIgnoredCardOrGameEffect attrs
       pure e
     _ -> EatLead <$> liftRunMessage msg attrs

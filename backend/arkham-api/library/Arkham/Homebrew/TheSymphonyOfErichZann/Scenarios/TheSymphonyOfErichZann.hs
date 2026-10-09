@@ -12,7 +12,6 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Scenarios.TheSymphonyOfErichZann (
   theSymphonyOfErichZann,
 ) where
 
-import Arkham.Card (genCard)
 import Arkham.Card.CardDef (CardDef)
 import Arkham.Difficulty
 import Arkham.Helpers.FlavorText
@@ -135,7 +134,7 @@ instance RunMessage TheSymphonyOfErichZann where
       -- Stuck in Your Head treachery in their hand."
       performers <- select $ InvestigatorWithTrait Performer
       for_ performers \iid -> do
-        card <- genCard Treacheries.stuckInYourHead
+        card <- fromSetAside Treacheries.stuckInYourHead
         addToHand iid [card]
 
       setAgendaDeck

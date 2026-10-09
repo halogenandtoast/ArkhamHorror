@@ -45,13 +45,13 @@ instance RunMessage ThePossessedConductor where
     AdvanceAct (isSide B attrs -> True) _ _ -> do
       -- "Put the set aside Stage Hall location and four random Backstage Room
       -- locations that were set aside into play. Remove the other two from the game."
-      stageHall <- placeLocationCard Locations.stageHall
+      stageHall <- placeSetAsideLocation Locations.stageHall
       (kept, removed) <- splitAt 4 <$> shuffleM backstageRooms
       {- Every Backstage Room prints the same unrevealed face, so they would all
       take the label "backstageRoom" and pile into one cell of the grid. The
       scenario reserves backstage1..4 for them; hand those out here. -}
       rooms <- for (zip [1 :: Int ..] kept) \(idx, def) -> do
-        lid <- placeLocationCard def
+        lid <- placeSetAsideLocation def
         push $ SetLocationLabel lid ("backstage" <> tshow idx)
         pure lid
       traverse_ removeCardFromGame =<< fetchCards removed

@@ -75,6 +75,9 @@ playerAssetsMap = defMap hdPlayerAssets
 playerSkillsMap :: Map CardCode CardDef
 playerSkillsMap = defMap hdPlayerSkills
 
+playerEventsMap :: Map CardCode CardDef
+playerEventsMap = defMap hdPlayerEvents
+
 storiesMap :: Map CardCode CardDef
 storiesMap = defMap hdStories
 

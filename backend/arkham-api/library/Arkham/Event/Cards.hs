@@ -24,11 +24,13 @@ import Arkham.Event.Cards.TommyMuldoon2 as X
 import Arkham.Event.Cards.CarolynFern2 as X
 import Arkham.Event.Cards.MarieLambeau2 as X
 import Arkham.Event.Cards.MiguelDeLaCruz as X
+import Arkham.Homebrew.Defs qualified as Homebrew
 import Arkham.Prelude hiding (catch)
 
 allPlayerEventCards :: Map CardCode CardDef
 allPlayerEventCards =
-  mapFromList
+  (Homebrew.playerEventsMap <>)
+    $ mapFromList
     $ concatMap
       toCardCodePairs
       [ aChanceEncounter

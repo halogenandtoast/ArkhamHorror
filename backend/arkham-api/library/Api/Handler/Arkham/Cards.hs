@@ -98,6 +98,7 @@ getApiV1ArkhamHomebrewCardsR = do
           <> Homebrew.agendasMap
           <> Homebrew.encounterAssetsMap
           <> Homebrew.playerSkillsMap
+          <> Homebrew.playerEventsMap
           <> Homebrew.storiesMap
 
   pure $ browsableCardDefs allHomebrewCards

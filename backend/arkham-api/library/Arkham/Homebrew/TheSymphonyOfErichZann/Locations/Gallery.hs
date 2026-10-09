@@ -19,8 +19,8 @@ instance HasAbilities Gallery where
   getAbilities (Gallery a) =
     extend1 a
       $ campaignI18n
-      $ withI18nResultLabel "gallery.investigate"
-      $ restricted a 1 Here actionAbility
+      $ withI18nTooltip "gallery.investigate"
+      $ investigateAbility a 1 mempty Here
 
 instance RunMessage Gallery where
   runMessage msg l@(Gallery attrs) = runQueueT $ case msg of

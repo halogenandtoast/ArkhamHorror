@@ -4,9 +4,9 @@
     "youSavedAllTheMusicians": "You saved all the musicians.",
     "allIsQuietAtRueDAuseilForNow": "All is quiet at Rue d'Auseil... for now."
   },
-  "label": {
+  "tooltips": {
     "gallery": {
-      "investigate": "Discover 1 clue at the Auditorium"
+      "investigate": "_{'{'}action{'}'} Investigate._ If you succeed, discover 1 additional clue from the Auditorium."
     }
   }
 }

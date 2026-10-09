@@ -85,8 +85,7 @@ export const findGame = async (playerId: string): Promise<GameDetailsEntry> => {
 
 export const fetchGames = async (): Promise<GameDetailsEntry[]> => {
   const { data } = await api.get('arkham/games')
-  const passed = data.filter((g: { error?: string }) => g.error === undefined)
-  return JsonDecoder.array(gameDetailsEntryDecoder, 'GameEntryDetails[]').decodePromise(passed)
+  return JsonDecoder.array(gameDetailsEntryDecoder, 'GameEntryDetails[]').decodePromise(data)
 }
 
 export const fetchDecks = async (): Promise<Deck[]> => {

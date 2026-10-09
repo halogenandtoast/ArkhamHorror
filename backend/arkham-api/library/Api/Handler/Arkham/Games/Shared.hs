@@ -357,12 +357,14 @@ data GameDetails = GameDetails
   deriving stock (Show, Generic)
   deriving anyclass ToJSON
 
-data GameDetailsEntry = FailedGameDetails Text | SuccessGameDetails GameDetails
+data GameDetailsEntry
+  = FailedGameDetails ArkhamGameId Text Text
+  | SuccessGameDetails GameDetails
   deriving stock (Show, Generic)
 
 instance ToJSON GameDetailsEntry where
   toJSON = \case
-    FailedGameDetails t -> object ["error" .= t]
+    FailedGameDetails gid name t -> object ["id" .= gid, "name" .= name, "error" .= t]
     SuccessGameDetails gd -> toJSON gd
 
 {- | A broadcast callback. Used to fan out log lines and game-state updates
@@ -1519,6 +1521,20 @@ settleOrganizerAdvance eid stage spendByOrdinal = do
     -- (3) broadcast LAST: clears AwaitingOrganizer -> lifts the overlay
     broadcastSharedToEvent eid newState
 
+{- | 'toGameDetailsEntry' is lazy, and an unknown card code is a pure 'error'
+rather than an aeson failure, so one unloadable game used to 500 the whole
+list. Force the encoding here and report the throw as the same failed entry a
+decode failure produces, so the rest of the list still renders and the broken
+game can be deleted.
+-}
+tryGameDetailsEntry :: MonadIO m => Entity ArkhamGameRaw -> Int -> m GameDetailsEntry
+tryGameDetailsEntry e@(Entity gameId game) playerCount = liftIO do
+  let entry = toGameDetailsEntry e playerCount
+  result <- try @_ @SomeException $ evaluate $ BSL.length $ Aeson.encode entry
+  pure $ case result of
+    Right _ -> entry
+    Left err -> FailedGameDetails (coerce gameId) (arkhamGameRawName game) (tshow err)
+
 toGameDetailsEntry :: Entity ArkhamGameRaw -> Int -> GameDetailsEntry
 toGameDetailsEntry (Entity gameId game) playerCount =
   case fromJSON @Game (arkhamGameRawCurrentData game) of
@@ -1566,7 +1582,7 @@ toGameDetailsEntry (Entity gameId game) playerCount =
             , multiplayerVariant = variant
             , hasOpenSeats = variant == WithFriends && playerCount < length investigators
             }
-    Error e -> FailedGameDetails ("Failed to load " <> tshow gameId <> ": " <> T.pack e)
+    Error e -> FailedGameDetails (coerce gameId) (arkhamGameRawName game) (T.pack e)
  where
   campaignOtherInvestigators j = case parse (withObject "" (.: "otherCampaignAttrs")) j of
     Error _ -> mempty

@@ -126,10 +126,12 @@ setEncounterDeck = push . SetEncounterDeck
 setAsideCards :: ReverseQueue m => [CardDef] -> m ()
 setAsideCards = genCards >=> push . Msg.SetAsideCards
 
-setCardAside :: (ReverseQueue m, IsCard a) => a -> m ()
-setCardAside (toCard -> c) = do
-  obtainCard c
-  push $ Msg.SetAsideCards [c]
+setCardAside :: (ReverseQueue m, FetchCard a) => a -> m ()
+setCardAside a = do
+  card <- fetchCard a
+  selectEach (EnemyWithCardId card.id) (push . RemoveFromPlay . toSource)
+  obtainCard card
+  push $ Msg.SetAsideCards [card]
 
 shuffleSetAsideEncounterSet :: ReverseQueue m => EncounterSet -> m ()
 shuffleSetAsideEncounterSet eset = do

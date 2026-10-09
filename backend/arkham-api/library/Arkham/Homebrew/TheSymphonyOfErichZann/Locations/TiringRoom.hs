@@ -1,6 +1,7 @@
 module Arkham.Homebrew.TheSymphonyOfErichZann.Locations.TiringRoom (tiringRoom) where
 
 import Arkham.Ability
+import Arkham.Capability
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -17,12 +18,10 @@ tiringRoom =
 
 instance HasAbilities TiringRoom where
   getAbilities (TiringRoom a) =
-    extend
+    extendRevealed
       a
-      [ -- "At the end of the investigator phase: Ready all enemies at this location."
-        mkAbility a 1 $ forced $ PhaseEnds #when #investigation
-      , -- "[action]: Heal 1 damage and 1 horror. (Limit once per game)"
-        playerLimit PerGame $ restricted a 2 Here actionAbility
+      [ restricted a 1 (exists $ EnemyAt (be a) <> #exhausted) $ forced $ PhaseEnds #when #investigation
+      , playerLimit PerGame $ restricted a 2 (Here <> youExist (can.heal.any (a.ability 2))) actionAbility
       ]
 
 instance RunMessage TiringRoom where

@@ -113,6 +113,9 @@ instance FetchCard Field.StoryAttrs where
 newtype UniqueFetchCard = UniqueFetchCard CardDef
   deriving newtype (Show, Eq, ToJSON, FromJSON)
 
+instance FetchCard Field.AssetAttrs where
+  fetchCardMaybe_ = pure . Just . toCard
+
 flippedOver :: (FetchCard c, HasGame m, CardGen m) => c -> m ()
 flippedOver c = do
   card <- fetchCard c

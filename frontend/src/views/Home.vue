@@ -4,7 +4,8 @@ import { useUserStore } from '@/stores/user';
 import { useRouter, useRoute } from 'vue-router';
 import { deleteEvent, deleteGame, fetchGames, fetchEvents, fetchNotifications } from '@/arkham/api';
 import { cullGameLocalStorage, removeGameLocalStorage } from '@/arkham/localStorage';
-import type { GameDetails } from '@/arkham/types/Game';
+import { isDevBuild } from '@/arkham/displayRules';
+import type { BrokenGameDetails, GameDetails } from '@/arkham/types/Game';
 import type { EventListEntry } from '@/arkham/types/EpicEvent';
 import type { AppNotification } from '@/arkham/api';
 import GameRow from '@/arkham/components/GameRow.vue';
@@ -19,6 +20,7 @@ const router = useRouter()
 const store = useUserStore()
 const { currentUser } = storeToRefs(store)
 const games: Ref<GameDetails[]> = ref([])
+const brokenGames: Ref<BrokenGameDetails[]> = ref([])
 const events: Ref<EventListEntry[]> = ref([])
 const notifications: Ref<AppNotification[]> = ref([])
 
@@ -31,6 +33,9 @@ fetchGames().then((result) => {
   const availableGames = result.filter((g) => g.tag === 'game') as GameDetails[]
   cullGameLocalStorage(availableGames)
   games.value = availableGames
+  // Only dev builds get the broken-game rows: in production an unloadable game
+  // is noise a player cannot act on beyond deleting it.
+  brokenGames.value = isDevBuild() ? (result.filter((g) => g.tag === 'error') as BrokenGameDetails[]) : []
 })
 
 // Epic Multiplayer events surface as a single entry each, inline with regular
@@ -53,6 +58,13 @@ async function deleteGameEvent(game: GameDetails) {
     removeGameLocalStorage(game.id)
     games.value = games.value.filter((g) => g.id !== game.id);
   });
+}
+
+async function deleteBrokenGame(game: BrokenGameDetails) {
+  deleteGame(game.id).then(() => {
+    removeGameLocalStorage(game.id)
+    brokenGames.value = brokenGames.value.filter((g) => g.id !== game.id)
+  })
 }
 
 async function deleteEpicEvent(event: EventListEntry) {
@@ -148,8 +160,17 @@ const dismissNotification = (notification: AppNotification) => {
               <ImportGame ref="importGameRef" />
             </div>
           </Transition>
-          <div v-if="activeGames.length === 0 && events.length === 0" class="box">
+          <div v-if="activeGames.length === 0 && events.length === 0 && brokenGames.length === 0" class="box">
             <p>{{ $t('home.noActiveGames') }}</p>
+          </div>
+          <div v-for="game in brokenGames" :key="game.id" class="broken-game">
+            <div class="broken-game-details">
+              <span class="broken-game-title">{{ game.name }}</span>
+              <span class="broken-game-error">{{ game.error }}</span>
+            </div>
+            <a href="#delete" class="broken-game-delete" @click.prevent="deleteBrokenGame(game)">
+              <font-awesome-icon icon="trash" />
+            </a>
           </div>
           <EventRow
             v-for="event in events"
@@ -172,6 +193,45 @@ const dismissNotification = (notification: AppNotification) => {
 </template>
 
 <style scoped>
+.broken-game {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--delete);
+  border-radius: 3px;
+  background-color: var(--box-background);
+}
+
+.broken-game-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.broken-game-title {
+  font-family: teutonic, sans-serif;
+  font-size: 1.6em;
+  color: var(--title);
+}
+
+.broken-game-error {
+  font-size: 0.8em;
+  color: var(--delete);
+  overflow-wrap: anywhere;
+}
+
+.broken-game-delete {
+  padding: 0;
+  font-size: 1.2em;
+  color: var(--delete);
+  &:hover {
+    color: #990000;
+  }
+}
+
 h2 {
   color: var(--title);
   font-size: 2em;

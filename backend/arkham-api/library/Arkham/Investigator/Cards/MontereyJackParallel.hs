@@ -3,6 +3,7 @@ module Arkham.Investigator.Cards.MontereyJackParallel (montereyJackParallel) whe
 import Arkham.Ability
 import Arkham.Capability
 import Arkham.GameEnv
+import Arkham.Helpers.GameValue (getGameValue)
 import Arkham.Helpers.Location (withLocationOf)
 import Arkham.Helpers.Modifiers (getAdditionalSearchTargets)
 import Arkham.Investigator.Cards qualified as Cards
@@ -44,7 +45,8 @@ instance RunMessage MontereyJackParallel where
       gainResources attrs.id (source_ #elderSign) n
       pure i
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      withLocationOf iid $ field LocationShroud >=> traverse_ \x -> do
+      withLocationOf iid $ field LocationPrintedShroud >=> traverse_ \shroud -> do
+        x <- getGameValue shroud
         let match = PlayableCardWithCostReduction NoAction x $ basic $ #asset <> oneOf [#charm, #relic]
         search iid (attrs.ability 1) iid [fromTopOfDeck x] match (defer attrs IsNotDraw)
       pure i
@@ -56,7 +58,8 @@ instance RunMessage MontereyJackParallel where
       chooseOneM iid $ labeledI "noCardsFound" nothing
       pure i
     HandleTargetChoice iid (isAbilitySource attrs 1 -> True) (CardIdTarget cid) -> do
-      withLocationOf iid $ field LocationShroud >=> traverse_ \x -> do
+      withLocationOf iid $ field LocationPrintedShroud >=> traverse_ \shroud -> do
+        x <- getGameValue shroud
         costModifier (attrs.ability 1) cid (ReduceCostOf (CardWithId cid) x)
         playCardPayingCost iid =<< getCard cid
       pure i

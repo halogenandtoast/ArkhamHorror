@@ -301,9 +301,13 @@ const title = computed(() => {
        card and its button inside a short window.
        The glow is neutralised for the same reason: a draw's amber is a flourish
        around art, but here it sits around text the player is reading, so it
-       keeps the spotlight's lightness ramp and drops the chroma. -->
+       keeps the spotlight's lightness ramp and drops the chroma.
+       Teleported to the body because this component renders inside
+       `.scenario-body`, which is `position: relative; z-index: 1` -- a stacking
+       context that caps the spotlight at 1 against the root, under the skill
+       test panel's `#modal` draggable at 100. -->
+  <Teleport v-if="storyCardRead" to="body">
   <DrawSpotlight
-    v-if="storyCardRead"
     :game="game"
     :playerId="playerId"
     :cards="[storyCardRead.card]"
@@ -320,6 +324,7 @@ const title = computed(() => {
     }"
     @dismiss="choose(storyCardRead.index)"
   />
+  </Teleport>
   <div
     v-else-if="requiresModal && cthulhuDeckChoice"
     class="cthulhu-enact no-card-overlay"

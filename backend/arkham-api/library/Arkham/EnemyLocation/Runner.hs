@@ -55,6 +55,7 @@ import Arkham.Matcher (
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Message.Lifted qualified as Lifted
+import Arkham.Name (display, toName)
 import Arkham.Prelude
 import Arkham.Projection
 import Arkham.Token
@@ -165,11 +166,24 @@ instance RunMessage EnemyLocationAttrs where
     Msg.DiscoverClues iid d | d.location == DiscoverAtLocation a.id -> do
       resolveDiscoverCluesAt a.id iid d
       pure a
+    -- Register as the ST.7 original option rather than pushing straight away, the
+    -- same as Arkham.Enemy.Runner. Pushing resolves the damage before
+    -- CollectSkillTestOptions, and leaves a PreOriginalOptionKind rider (Ice Pick
+    -- (3), Machete, Lie in Wait) with no original option to sit in front of, so
+    -- the collector drops it (#5820).
     PassedSkillTest iid (Just Action.Fight) source (Initiator target) _ n | isEnemyTarget a target -> do
-      pushAll
-        [ UpdateHistory iid (HistoryItem HistorySuccessfulAttacks 1)
-        , Successful (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
-        ]
+      push
+        $ SkillTestResultOption
+        $ SkillTestOption
+          { option =
+              Label
+                ("Damage " <> display (toName a))
+                [ UpdateHistory iid (HistoryItem HistorySuccessfulAttacks 1)
+                , Successful (Action.Fight, toProxyTarget target) iid source (toActionTarget target) n
+                ]
+          , kind = OriginalOptionKind
+          , criteria = Nothing
+          }
       pure a
     -- Only deal standard damage when the attack resolves against the enemy-location
     -- itself. A rider is the action target and deals the damage its own way, which is
@@ -178,10 +192,18 @@ instance RunMessage EnemyLocationAttrs where
       push $ InvestigatorDamageEnemy iid (asEnemyId a) source
       pure a
     PassedSkillTest iid (Just Action.Evade) source (Initiator target) _ n | isEnemyTarget a target -> do
-      pushAll
-        [ UpdateHistory iid (HistoryItem HistorySuccessfulEvasions 1)
-        , Successful (Action.Evade, toProxyTarget target) iid source (toActionTarget target) n
-        ]
+      push
+        $ SkillTestResultOption
+        $ SkillTestOption
+          { option =
+              Label
+                ("Evade " <> display (toName a))
+                [ UpdateHistory iid (HistoryItem HistorySuccessfulEvasions 1)
+                , Successful (Action.Evade, toProxyTarget target) iid source (toActionTarget target) n
+                ]
+          , kind = OriginalOptionKind
+          , criteria = Nothing
+          }
       pure a
     Successful (Action.Evade, _) iid source target n | isEnemyTarget a target -> do
       Evade.pushSuccessfulEvade iid source (asEnemyId a) n

@@ -8,8 +8,8 @@ import Arkham.Keyword qualified as Keyword
 import Arkham.Matcher
 
 newtype DancingRats_040b = DancingRats_040b EnemyAttrs
-  deriving anyclass (IsEnemy, HasAbilities)
-  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
+  deriving anyclass IsEnemy
+  deriving newtype (Show, Eq, ToJSON, FromJSON, Entity, HasAbilities)
 
 dancingRats_040b :: EnemyCard DancingRats_040b
 dancingRats_040b =

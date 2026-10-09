@@ -93,7 +93,8 @@ const multiplayerVariantDecoder = JsonDecoder.oneOf<MultiplayerVariant>(
   'MultiplayerVariant'
 );
 
-export type GameDetailsEntry = GameDetails & { tag: "game" }| { error: string, tag: "error" }
+export type BrokenGameDetails = { id: string, name: string, error: string }
+export type GameDetailsEntry = GameDetails & { tag: "game" }| BrokenGameDetails & { tag: "error" }
 
 export type Game = {
   id: string;
@@ -344,7 +345,7 @@ export const gameDetailsDecoder = JsonDecoder.object<GameDetails>(
 export const gameDetailsEntryDecoder = JsonDecoder.oneOf<GameDetailsEntry>(
   [
     gameDetailsDecoder.map(details => ({ ...details, tag: 'game' })),
-    JsonDecoder.object({ error: JsonDecoder.string() }, 'Error').map(error => ({ ...error, tag: 'error' }))
+    JsonDecoder.object({ id: JsonDecoder.string(), name: JsonDecoder.string(), error: JsonDecoder.string() }, 'Error').map(error => ({ ...error, tag: 'error' as const }))
   ],
   'GameDetailsEntry'
 );

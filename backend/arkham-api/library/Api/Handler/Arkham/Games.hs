@@ -160,8 +160,7 @@ getApiV1ArkhamGamesR = do
     groupBy p.arkhamGameId
     pure (p.arkhamGameId, countRows @Int)
   let countMap = Map.fromList [(gid, n) | (Value gid, Value n) <- playerCounts]
-  pure
-    $ map (\g -> toGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
+  traverse (\g -> tryGameDetailsEntry g (fromMaybe 0 $ Map.lookup (coerce $ entityKey g) countMap)) games
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [Maybe ArkhamDeckId]

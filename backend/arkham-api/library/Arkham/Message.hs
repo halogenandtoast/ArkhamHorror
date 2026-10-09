@@ -1011,6 +1011,11 @@ data Message
   | LookAtTopOfDeck InvestigatorId Target Int
   | LoseActions InvestigatorId Source Int
   | LoseResources InvestigatorId Source Int
+  | {- | Like 'LoseActions', but only standard actions can be taken away: the
+    investigator's remaining actions and any additional action without a
+    limitation on its use (see 'isStandardAdditionalAction').
+    -}
+    LoseStandardActions InvestigatorId Source Int
   | LoseTokens InvestigatorId Source Token TokenLoss
   | SpendActions InvestigatorId Source [Action] Int
   | -- | Handles complex movement for a target, triggers Moves windows, and uses MoveFrom, MoveTo messages

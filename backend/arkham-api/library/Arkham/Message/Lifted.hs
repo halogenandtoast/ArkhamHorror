@@ -3450,6 +3450,10 @@ loseActions iid source n = push $ LoseActions iid (toSource source) n
 spendActions :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 spendActions = loseActions
 
+loseStandardActions
+  :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
+loseStandardActions iid source n = push $ LoseStandardActions iid (toSource source) n
+
 requestChaosTokens :: (ReverseQueue m, Sourceable source) => InvestigatorId -> source -> Int -> m ()
 requestChaosTokens iid source n = do
   requestChaosTokens_ iid source n

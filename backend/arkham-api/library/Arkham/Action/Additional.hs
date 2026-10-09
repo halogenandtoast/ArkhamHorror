@@ -42,6 +42,22 @@ additionalActionType (AdditionalAction _ _ aType) = aType
 
 additionalActionSource :: AdditionalAction -> Source
 additionalActionSource (AdditionalAction _ aSource _) = aSource
+
+{- | Is this an additional /standard/ action? Per the Ages Unwound campaign guide:
+
+> A standard action is any action that does not have a limitation on its use,
+> regardless of its source. For example, Finn Edwards has a copy of Leo De Luca
+> in play. He has four standard actions on his turns - the default three and an
+> additional action from Leo - as well as an additional, non-standard action
+> from his investigator ability that can only be used to evade.
+
+So an investigator's standard actions are their remaining actions plus every
+'AdditionalAction' whose kind is 'AnyAdditionalAction'; every other
+'AdditionalActionType' carries a limitation on its use.
+-}
+isStandardAdditionalAction :: AdditionalAction -> Bool
+isStandardAdditionalAction a = additionalActionType a == AnyAdditionalAction
+
 instance IsLabel "evade" AdditionalActionType where
   fromLabel = ActionRestrictedAdditionalAction #evade
 

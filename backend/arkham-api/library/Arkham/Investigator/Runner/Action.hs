@@ -371,6 +371,13 @@ handleLoseActions a@InvestigatorAttrs {..} iid source n msg = do
 handleDoLoseActions a@InvestigatorAttrs {..} iid n = do
   -- TODO: after losing all remaining actions we can lose additional actions
   additionalActions <- getAdditionalActions a
+  doLoseActionsFrom a iid n additionalActions
+
+handleDoLoseStandardActions a@InvestigatorAttrs {..} iid n = do
+  additionalActions <- filter isStandardAdditionalAction <$> getAdditionalActions a
+  doLoseActionsFrom a iid n additionalActions
+
+doLoseActionsFrom a iid n additionalActions = do
   let
     remaining = max 0 (n - a ^. remainingActionsL)
     additional = min remaining (length additionalActions)

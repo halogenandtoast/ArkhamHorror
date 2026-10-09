@@ -11,7 +11,10 @@ newtype RehearsalRoom = RehearsalRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rehearsalRoom :: LocationCard RehearsalRoom
-rehearsalRoom = location RehearsalRoom Cards.rehearsalRoom 3 (PerPlayer 1)
+rehearsalRoom =
+  locationWith RehearsalRoom Cards.rehearsalRoom 3 (PerPlayer 1)
+    $ costToEnterUnrevealedL
+    .~ GroupClueCost (PerPlayer 1) YourLocation
 
 instance HasModifiersFor RehearsalRoom where
   getModifiersFor (RehearsalRoom a) = do

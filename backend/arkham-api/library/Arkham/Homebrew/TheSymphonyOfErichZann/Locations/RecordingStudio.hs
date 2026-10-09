@@ -2,7 +2,6 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Locations.RecordingStudio (recordi
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Trait (toTraits)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Cards
@@ -13,13 +12,17 @@ import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
 import Arkham.Scenario.Types (Field (ScenarioDiscard))
+import Arkham.Trait (toTraits)
 
 newtype RecordingStudio = RecordingStudio LocationAttrs
   deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 recordingStudio :: LocationCard RecordingStudio
-recordingStudio = location RecordingStudio Cards.recordingStudio 2 (PerPlayer 1)
+recordingStudio =
+  locationWith RecordingStudio Cards.recordingStudio 2 (PerPlayer 1)
+    $ costToEnterUnrevealedL
+    .~ GroupClueCost (PerPlayer 1) YourLocation
 
 instance HasModifiersFor RecordingStudio where
   getModifiersFor (RecordingStudio a) = do

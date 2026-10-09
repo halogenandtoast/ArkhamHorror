@@ -11,7 +11,10 @@ newtype SceneShop = SceneShop LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 sceneShop :: LocationCard SceneShop
-sceneShop = location SceneShop Cards.sceneShop 3 (PerPlayer 1)
+sceneShop =
+  locationWith SceneShop Cards.sceneShop 3 (PerPlayer 1)
+    $ costToEnterUnrevealedL
+    .~ GroupClueCost (PerPlayer 1) YourLocation
 
 instance HasModifiersFor SceneShop where
   getModifiersFor (SceneShop a) =

@@ -11,7 +11,10 @@ newtype TiringRoom = TiringRoom LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tiringRoom :: LocationCard TiringRoom
-tiringRoom = location TiringRoom Cards.tiringRoom 2 (PerPlayer 1)
+tiringRoom =
+  locationWith TiringRoom Cards.tiringRoom 2 (PerPlayer 1)
+    $ costToEnterUnrevealedL
+    .~ GroupClueCost (PerPlayer 1) YourLocation
 
 instance HasModifiersFor TiringRoom where
   getModifiersFor (TiringRoom a) = do

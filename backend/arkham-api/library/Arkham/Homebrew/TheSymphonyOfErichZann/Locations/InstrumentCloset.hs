@@ -1,11 +1,11 @@
 module Arkham.Homebrew.TheSymphonyOfErichZann.Locations.InstrumentCloset (instrumentCloset) where
 
 import Arkham.Ability
-import Arkham.Strategy
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelfWhen)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
+import Arkham.Strategy
 import Arkham.Trait (Trait (Ally, Item))
 
 newtype InstrumentCloset = InstrumentCloset LocationAttrs
@@ -13,7 +13,10 @@ newtype InstrumentCloset = InstrumentCloset LocationAttrs
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 instrumentCloset :: LocationCard InstrumentCloset
-instrumentCloset = location InstrumentCloset Cards.instrumentCloset 3 (PerPlayer 1)
+instrumentCloset =
+  locationWith InstrumentCloset Cards.instrumentCloset 3 (PerPlayer 1)
+    $ costToEnterUnrevealedL
+    .~ GroupClueCost (PerPlayer 1) YourLocation
 
 instance HasModifiersFor InstrumentCloset where
   {- "While you are at Instrument Closet, treat each of your non-weakness Ally
@@ -36,6 +39,12 @@ instance HasAbilities InstrumentCloset where
 instance RunMessage InstrumentCloset where
   runMessage msg l@(InstrumentCloset attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      search iid (attrs.ability 1) iid [fromTopOfDeck 9] (basic $ #asset <> CardWithTrait Item) (DrawFound iid 1)
+      search
+        iid
+        (attrs.ability 1)
+        iid
+        [fromTopOfDeck 9]
+        (basic $ #asset <> CardWithTrait Item)
+        (DrawFound iid 1)
       pure l
     _ -> InstrumentCloset <$> liftRunMessage msg attrs

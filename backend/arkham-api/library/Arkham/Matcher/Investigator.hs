@@ -73,6 +73,8 @@ data InvestigatorMatcher
   | InvestigatorSkippedWindow
   | TakenActionThisRound ActionMatcher
   | TakenActionThisTurn ActionMatcher
+  | -- | No action type appears twice among the actions performed this turn.
+    InvestigatorWithNoRepeatedActionsThisTurn
   | SuccessfullyEvadedThisRound
   | SuccessfullyAttackedThisRound
   | SuccessfullyInvestigatedThisRound

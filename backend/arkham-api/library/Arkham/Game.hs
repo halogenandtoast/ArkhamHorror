@@ -1426,6 +1426,10 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
         let iid = toId a
         taken <- nub . concat <$> field InvestigatorActionsTaken iid
         anyM (\action -> actionMatches iid action actionMatcher) taken
+    InvestigatorWithNoRepeatedActionsThisTurn -> do
+      flip runMatchesM as \a -> do
+        performed <- fieldMap InvestigatorActionsPerformed concat (toId a)
+        pure $ length performed == length (nub performed)
     InvestigatorSkippedWindow -> pure $ as & runMatches (attr investigatorSkippedWindow)
     CanTakeUntakenAction -> do
       flip runMatchesM as \a -> do

@@ -201,6 +201,7 @@ export type Ability = {
   displayAs: DisplayAs | null
   index: number
   target: Target | null
+  basic: boolean
 }
 
 const displayAsDecoder = JsonDecoder.oneOf<DisplayAs>([
@@ -216,7 +217,8 @@ export const abilityDecoder = JsonDecoder.object<Ability>(
     tooltip: JsonDecoder.nullable(JsonDecoder.string()),
     displayAs: JsonDecoder.nullable(displayAsDecoder),
     index: JsonDecoder.number(),
-    target: JsonDecoder.nullable(targetDecoder)
+    target: JsonDecoder.nullable(targetDecoder),
+    basic: JsonDecoder.optional(JsonDecoder.boolean()).map((v) => v ?? false)
   }, 'Ability')
 
 export type AbilityRef = {

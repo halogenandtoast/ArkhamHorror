@@ -108,6 +108,10 @@ const isHaunted = computed(() => ability.value && ability.value.type.tag === "Ha
 
 const isNeutralAbility = computed(() => !(isInvestigate.value || isFight.value || isEvade.value || isEngage.value))
 
+// A basic action offered by a location/enemy rather than a card ability.
+const isBasicAbility = computed(() => ability.value?.basic === true)
+const basicIcon = replaceIcons("{perPlayer}")
+
 const isButtonText = computed(() => {
   return (props.tooltipIsButtonText && tooltip.value) || (tooltip.value && tooltip.value.content == "Use True Magick")
 })
@@ -481,6 +485,12 @@ const classObject = computed(() => {
     >
       <font-awesome-icon icon="triangle-exclamation" aria-hidden="true" />
     </span>
+    <span
+      v-if="isBasicAbility"
+      class="button-basic-section"
+      v-html="basicIcon"
+      v-tooltip="t('basicAbility')"
+    />
     <span class="button-label" v-html="abilityLabel" />
     <span v-if="abilitySkillSection" class="button-skill-section" v-html="abilitySkillSection" />
   </button>
@@ -530,6 +540,17 @@ const classObject = computed(() => {
 .button.reaction-ability-button::before {
   padding: 3px 6px;
   margin-right: 0;
+}
+
+.button-basic-section {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  padding: 3px 6px;
+  background: rgba(0, 0, 0, 0.14);
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  white-space: nowrap;
 }
 
 .button-skill-section {

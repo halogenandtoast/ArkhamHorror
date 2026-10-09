@@ -44,6 +44,7 @@ instance RunMessage IsabelLaFratta where
       moveTokens (attrs.ability 2) iid attrs Resource 1
       pure e
     UseThisAbility iid (isSource attrs -> True) 3 -> do
-      readStory iid attrs Stories.pianistsMuse
+      card <- fetchCard Stories.pianistsMuse
+      readStory iid card Stories.pianistsMuse
       pure e
     _ -> IsabelLaFratta <$> liftRunMessage msg attrs

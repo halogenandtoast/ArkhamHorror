@@ -5,7 +5,10 @@
     "prologue": {
       "title": "Call of the Void",
       "body": "<p>Auguste Gaudin's letter reached you in Paris. A week before he wrote it, a German viol player named Erich Zann had joined the orchestra of the Auseil Theatre, grown steadily more withdrawn, and then disappeared altogether, leaving behind only a note begging the conductor's tolerance and forgiveness. Gaudin fears now for the rest of his musicians, and asks you to come to the theatre as soon as you are able.</p><p class='right'>-H.P.Lovecraft, The Music of Erich Zann</p>",
-      "isabel": "It has been some time since you last played at the Auseil Theatre. Lately a dream has returned to you again and again: an impossible sheet of music, signed by one Erich Zann, that you play until your fingers wear through. Gaudin's letter names the very same man."
+      "isabel": {
+        "title": "Isabel La Fratta",
+        "body": "<p>It has been quite some time since you last returned to the Auseil Theatre. It was always a joy to play for the orchestral group under Monsieur Gaudin. Recently you've been troubled by a recurring dream in which you are playing an impossible sheet written by a certain “Erich Zann”, playing until your fingers erode to the bones. When Auguste sends you a letter describing the very same person, you are compelled to investigate.</p>"
+      }
     },
     "intro": {
       "title": "The Symphony of Erich Zann",
@@ -28,47 +31,72 @@
         "body": "<p class='basic'>Some encounter cards in this scenario have the _Music_ trait and must be placed next to the agenda deck as part of its revelation effect. If placing a _Music_ treachery next to the agenda would exceed the maximum amount written on the agenda, discard the earliest _Music_ treachery that was put into play. As such, the amount of _Music_ treacheries next to the agenda deck will never exceed the maximum.</p><p class='basic'>*Note: If there is no maximum written on the agenda, _Music_ treacheries cannot be discarded by the above effect.*</p>"
       }
     },
-    "xp": {
-      "savedAllTheMusicians": "you saved all the musicians"
-    },
     "resolutions": {
-      "investigatorDefeat": "Investigator Defeat",
-      "investigatorDefeatBody": "Darkness takes you, with pandemonium ahead and that night-baying orchestra behind. You stagger back, flail at nothing for what feels like an age, and come to in front of the theatre with the rain beating you awake.",
-      "noResolution": "No Resolution",
-      "resolution1": "Resolution 1",
-      "resolution1Body": "You run: down the steps and the cobbles, across the dark bridge, out into the broader streets you know. There was no wind, the moon was out, and the lights of the city twinkled. Search as you might afterwards, you never find the Auseil Theatre again, nor the Rue d'Auseil, and no one you ask has heard of either. You are not wholly sorry — not for that, and not for the loss of the closely written sheets that alone could have explained the music of Erich Zann."
+      "label": {
+        "removeStuckInYourHead": "Remove Stuck in Your Head from your deck",
+        "keepStuckInYourHead": "Keep Stuck in Your Head",
+        "healMentalTrauma": "Heal 1 mental trauma",
+        "gainExperience": "Earn 1 additional experience"
+      },
+      "xp": {
+        "savedAllTheMusicians": "you saved all the musicians"
+      },
+      "investigatorDefeat": {
+        "title": "Investigator Defeat",
+        "body": "<p>_Investigator Defeat_: You are consumed in savage and impenetrable darkness, with chaos and pandemonium before you and the daemon madness of that night-baying orchestra behind you. About to lose grasp within the paradoxical sounds and unknowable shapes at the edge of your mind, you stagger backwards in the darkness to find your footing but flail away at nothing for what seems like eternity. Before you know it, you find yourself out in front of the theatre, the rain drowning your ears and beating you awake.</p><ul><li>Each investigator who was defeated and does not already have a copy of the Stuck in your Head weakness in their deck must add 1 copy of it to his or her deck. This card does not count toward that investigator's deck size.</li><li>Each investigator who was defeated suffers 1 mental trauma for having listened from within the void.</li><li>If an investigator with Auguste Gaudin (Maestro of Symphonies), Yin's Drumsticks, Page's Violin, La Fratta's Piano Key or Walker's Trumpet was defeated, that card must be removed from that investigator's deck.</li></ul>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: Racing mindlessly out into the narrow, steep, and ancient street of steps and tottering houses; clattering down steps and over cobbles to the lower streets and the putrid canyon-walled river; panting across the great dark bridge to the broader, healthier streets and boulevards we know; all these are terrible impressions that linger with you. And you recall that there was no wind, and that the moon was out, and that all the lights of the city twinkled. Despite your most careful searches and investigations, you have never since been able to find the Auseil Theatre and neither the Rue d'Auseil. No one you've asked has ever seen the Rue d'Auseil or even heard about the orchestra. But you are not wholly sorry; either for this or for the loss in undreamable abysses of the closely written sheets which alone could have explained the music of Erich Zann.</p><ul><li>Each investigator who was not defeated may remove the Stuck in Your Head weakness from their deck.</li><li>In your Campaign Log, record that *all is quiet at Rue d'Auseil... for now*.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li><li>If you \"saved all the musicians\", each investigator may either heal 1 mental trauma, or earn 1 additional experience.</li></ul>"
+      }
     },
     "crescendo": {
-      "testAgility": "Test {agility}",
-      "testIntellect": "Test {intellect}"
+      "label": {
+        "testAgility": "Test {agility}",
+        "testIntellect": "Test {intellect}"
+      }
     },
     "diesIrae": {
-      "takeHorror": "Take {count} horror",
-      "putIntoPlay": "Put Dies Irae into play next to the agenda deck"
+      "label": {
+        "takeHorror": "Take {count} horror",
+        "putIntoPlay": "Put Dies Irae into play next to the agenda deck"
+      }
     },
     "muse": {
-      "takeInstrument": "Put the instrument into play in an investigator's play area",
-      "leaveInstrument": "Leave the instrument set aside"
+      "label": {
+        "putIntoPlay": "Put this instrument into play in an investigator's play area",
+        "leaveInstrument": "Leave the instrument set aside"
+      }
     },
     "hissingNoise": {
-      "loseResources": "Lose 2 resources",
-      "takeDamage": "Take 1 damage"
+      "label": {
+        "loseResources": "Lose 2 resources",
+        "takeDamage": "Take 1 damage"
+      }
     },
     "overwhelm": {
-      "discardCards": "Discard {count} cards from your hand",
-      "takeHorror": "Take 2 horror"
+      "label": {
+        "discardCards": "Discard {count} cards from your hand",
+        "takeHorror": "Take 2 horror"
+      }
     },
     "recordingStudio": {
-      "noMusic": "No _Music_ treachery in the encounter discard pile"
+      "label": {
+        "noMusic": "No _Music_ treachery in the encounter discard pile"
+      }
     },
     "nicolePage": {
-      "asset": "Discard 3 assets",
-      "event": "Discard 3 events",
-      "skill": "Discard 3 skills"
+      "label": {
+        "asset": "Discard 3 assets",
+        "event": "Discard 3 events",
+        "skill": "Discard 3 skills"
+      }
     },
     "yinsDrumsticks": {
-      "putIntoPlay": "Put Yin's Drumsticks into play",
-      "returnToHand": "Return Yin's Drumsticks to your hand"
+      "label": {
+        "putIntoPlay": "Put Yin's Drumsticks into play",
+        "returnToHand": "Return Yin's Drumsticks to your hand"
+      }
     }
   }
 }

@@ -14,7 +14,12 @@ import Arkham.Keyword qualified as Keyword
 -- | The back of act 1. Only enters play when that act advances.
 augusteGaudinConductorOfTheVoid :: CardDef
 augusteGaudinConductorOfTheVoid =
-  (enemy ":the-symphony-of-erich-zann:005b" ("Auguste Gaudin" <:> "Conductor of the Void") Set.TheSymphonyOfErichZann 1)
+  ( enemy
+      ":the-symphony-of-erich-zann:005b"
+      ("Auguste Gaudin" <:> "Conductor of the Void")
+      Set.TheSymphonyOfErichZann
+      1
+  )
     { cdCardTraits = setFromList [Humanoid, Musician, Elite]
     , cdFight = fight 3
     , cdHealth = healthPerInvestigator 2
@@ -25,7 +30,12 @@ augusteGaudinConductorOfTheVoid =
 
 arnoldWalker :: CardDef
 arnoldWalker =
-  (enemy ":the-symphony-of-erich-zann:020" ("Arnold Walker" <:> "Crazed Trumpeter") Set.TheSymphonyOfErichZann 1)
+  ( enemy
+      ":the-symphony-of-erich-zann:020"
+      ("Arnold Walker" <:> "Crazed Trumpeter")
+      Set.TheSymphonyOfErichZann
+      1
+  )
     { cdCardTraits = setFromList [Humanoid, Musician, Elite]
     , cdFight = fight 5
     , cdHealth = health 3
@@ -38,7 +48,12 @@ arnoldWalker =
 
 isabelLaFratta :: CardDef
 isabelLaFratta =
-  (enemy ":the-symphony-of-erich-zann:021" ("Isabel La Fratta" <:> "Delirious Pianist") Set.TheSymphonyOfErichZann 1)
+  ( enemy
+      ":the-symphony-of-erich-zann:021"
+      ("Isabel La Fratta" <:> "Delirious Pianist")
+      Set.TheSymphonyOfErichZann
+      1
+  )
     { cdCardTraits = setFromList [Humanoid, Musician, Elite]
     , cdFight = fight 2
     , cdHealth = health 6
@@ -51,7 +66,12 @@ isabelLaFratta =
 
 nicolePage :: CardDef
 nicolePage =
-  (enemy ":the-symphony-of-erich-zann:022" ("Nicole Page" <:> "Frenzied Violinist") Set.TheSymphonyOfErichZann 1)
+  ( enemy
+      ":the-symphony-of-erich-zann:022"
+      ("Nicole Page" <:> "Frenzied Violinist")
+      Set.TheSymphonyOfErichZann
+      1
+  )
     { cdCardTraits = setFromList [Humanoid, Musician, Elite]
     , cdFight = fight 3
     , cdHealth = health 4
@@ -64,7 +84,12 @@ nicolePage =
 
 songYin :: CardDef
 songYin =
-  (enemy ":the-symphony-of-erich-zann:023" ("Song Yin" <:> "Erratic Percussionist") Set.TheSymphonyOfErichZann 1)
+  ( enemy
+      ":the-symphony-of-erich-zann:023"
+      ("Song Yin" <:> "Erratic Percussionist")
+      Set.TheSymphonyOfErichZann
+      1
+  )
     { cdCardTraits = setFromList [Humanoid, Musician, Elite]
     , cdFight = fight 4
     , cdHealth = health 4
@@ -97,9 +122,17 @@ macabreDancers =
     , cdSanityDamage = sanityDamage 1
     }
 
-dancingRats :: CardDef
-dancingRats =
-  (enemy ":the-symphony-of-erich-zann:040" ("Dancing Rats" <:> "Requiem Mass") Set.TheSymphonyOfErichZann 3)
+{- | Three Dancing Rats, one per card: same spawn and Hunter, but each turns
+aloof against a different instrument, and each has its own statline.
+-}
+dancingRats_040a :: CardDef
+dancingRats_040a =
+  ( enemy
+      ":the-symphony-of-erich-zann:040a"
+      ("Dancing Rats" <:> "Requiem Mass")
+      Set.TheSymphonyOfErichZann
+      1
+  )
     { cdCardTraits = singleton Creature
     , cdFight = fight 1
     , cdHealth = health 2
@@ -109,9 +142,48 @@ dancingRats =
     , cdKeywords = singleton Keyword.Hunter
     }
 
+dancingRats_040b :: CardDef
+dancingRats_040b =
+  ( enemy
+      ":the-symphony-of-erich-zann:040b"
+      ("Dancing Rats" <:> "Romantic Harmony")
+      Set.TheSymphonyOfErichZann
+      1
+  )
+    { cdCardTraits = singleton Creature
+    , cdFight = fight 1
+    , cdHealth = health 1
+    , cdEvade = evade 4
+    , cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdKeywords = singleton Keyword.Hunter
+    }
+
+dancingRats_040c :: CardDef
+dancingRats_040c =
+  ( enemy
+      ":the-symphony-of-erich-zann:040c"
+      ("Dancing Rats" <:> "Sonorous Fanfare")
+      Set.TheSymphonyOfErichZann
+      1
+  )
+    { cdCardTraits = singleton Creature
+    , cdFight = fight 2
+    , cdHealth = health 1
+    , cdEvade = evade 3
+    , cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
+    , cdKeywords = singleton Keyword.Hunter
+    }
+
 youngNightingale :: CardDef
 youngNightingale =
-  (enemy ":the-symphony-of-erich-zann:042" ("Young Nightingale" <:> "Choir of the Abyss") Set.TheSymphonyOfErichZann 1)
+  ( enemy
+      ":the-symphony-of-erich-zann:042"
+      ("Young Nightingale" <:> "Choir of the Abyss")
+      Set.TheSymphonyOfErichZann
+      1
+  )
     { cdCardTraits = setFromList [Monster, Extradimensional]
     , cdFight = fight 4
     , cdHealth = health 6

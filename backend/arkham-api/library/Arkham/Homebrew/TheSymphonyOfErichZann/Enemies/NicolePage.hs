@@ -1,16 +1,16 @@
 module Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.NicolePage (nicolePage) where
 
 import Arkham.Ability
+import Arkham.Card.CardType (CardType (..))
+import Arkham.Discard (HandDiscard (..))
 import Arkham.Enemy.Import.Lifted
+import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCardEdit)
 import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.Story (readStory)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Stories qualified as Stories
-import Arkham.Homebrew.TheSymphonyOfErichZann.Traits qualified as T
-import Arkham.Card.CardType (CardType (..))
-import Arkham.Discard (HandDiscard (..))
-import Arkham.Helpers.Message.Discard.Lifted (chooseAndDiscardCardEdit)
 import Arkham.Homebrew.TheSymphonyOfErichZann.Helpers (instrumentInPlay, scenarioI18n)
+import Arkham.Homebrew.TheSymphonyOfErichZann.Traits qualified as T
 import Arkham.I18n
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -55,6 +55,7 @@ instance RunMessage NicolePage where
           labeled key do
             chooseAndDiscardCardEdit iid (attrs.ability 1) \d ->
               d {discardFilter = CardWithType ty, discardAmount = 3}
-            readStory iid attrs Stories.violinistsMuse
+            card <- fetchCard Stories.violinistsMuse
+            readStory iid card Stories.violinistsMuse
       pure e
     _ -> NicolePage <$> liftRunMessage msg attrs

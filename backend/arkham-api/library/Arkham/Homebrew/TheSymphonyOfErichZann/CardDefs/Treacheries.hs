@@ -92,3 +92,18 @@ turnaround =
     $ (treachery ":the-symphony-of-erich-zann:043" "Turnaround" Set.TheSymphonyOfErichZann 2)
       { cdCardTraits = singleton Tactic
       }
+
+{- | The back of the Beyond the Curtain story card. It attaches to a location
+rather than being one: the card was reworked from a location into a treachery.
+-}
+theWindowToNothingness :: CardDef
+theWindowToNothingness =
+  ( treachery
+      ":the-symphony-of-erich-zann:008b"
+      ("The Window to Nothingness" <:> "Impenetrable Silence")
+      Set.TheSymphonyOfErichZann
+      1
+  )
+    { cdCardTraits = singleton Extradimensional
+    , cdOtherSide = Just ":the-symphony-of-erich-zann:008"
+    }

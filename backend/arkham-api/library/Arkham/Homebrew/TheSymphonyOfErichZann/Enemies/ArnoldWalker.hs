@@ -41,6 +41,7 @@ instance RunMessage ArnoldWalker where
       combinationSkillTest sid iid attrs attrs [#willpower, #intellect, #combat, #agility] (Fixed 5)
       pure e
     PassedThisSkillTest iid (isAbilitySource attrs 1 -> True) -> do
-      readStory iid attrs Stories.trumpetersMuse
+      card <- fetchCard Stories.trumpetersMuse
+      readStory iid card Stories.trumpetersMuse
       pure e
     _ -> ArnoldWalker <$> liftRunMessage msg attrs

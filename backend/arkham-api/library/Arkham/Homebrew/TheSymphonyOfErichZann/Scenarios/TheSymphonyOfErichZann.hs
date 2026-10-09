@@ -16,7 +16,6 @@ import Arkham.Card (genCard)
 import Arkham.Card.CardDef (CardDef)
 import Arkham.Difficulty
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Xp (toBonus)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Assets qualified as Assets
@@ -27,8 +26,12 @@ import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Treacheries qualified as 
 import Arkham.Homebrew.TheSymphonyOfErichZann.Helpers
 import Arkham.Homebrew.TheSymphonyOfErichZann.Key
 import Arkham.Homebrew.TheSymphonyOfErichZann.Sets qualified as Set
+import Arkham.Investigator.Types (Field (InvestigatorMentalTrauma))
 import Arkham.Matcher
+import Arkham.Message (CanAdvance (..))
+import Arkham.Message.Lifted.Choose
 import Arkham.Message.Lifted.Log
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Trait (Trait (Performer))
@@ -44,9 +47,9 @@ theSymphonyOfErichZann difficulty =
     ":the-symphony-of-erich-zann:001"
     "The Symphony of Erich Zann"
     difficulty
-    [ ".          entranceHall           .         backstage1 backstage2"
-    , "gallery    mainLobby              stageHall .          ."
-    , "auditorium theWindowToNothingness .         backstage3 backstage4"
+    [ ".          entranceHall backstage1 backstage2"
+    , "gallery    mainLobby    stageHall  ."
+    , "auditorium .            backstage3 backstage4"
     ]
 
 instance HasChaosTokenValue TheSymphonyOfErichZann where
@@ -72,23 +75,23 @@ backstageRooms =
   , Locations.tiringRoom
   ]
 
--- | The four Musician enemies act 2 deals out, one to each Backstage Room.
-musicians :: [CardDef]
-musicians =
-  [ Enemies.arnoldWalker
-  , Enemies.isabelLaFratta
-  , Enemies.nicolePage
-  , Enemies.songYin
-  ]
-
 instance RunMessage TheSymphonyOfErichZann where
   runMessage msg s@(TheSymphonyOfErichZann attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> do
       scope "prologue" do
         flavor $ h "title" >> p "body"
         playingIsabel <- selectAny (InvestigatorWithTitle "Isabel La Fratta")
-        when playingIsabel $ flavor $ p "isabel"
+        when playingIsabel $ flavor $ scope "isabel" $ h "title" >> p "body"
       scope "intro" $ flavor $ h "title" >> p "body"
+      pure s
+    {- Mythos doom goes to the *unflipped* agenda, and Coda Ultimatum stays in
+    play on its b side as both act and agenda -- so once it is out the mythos
+    phase lands doom on nobody and the Window to Nothingness, which watches for
+    doom being added, never fires. Put it on whichever agenda is actually there;
+    before Coda that is the same single unflipped agenda the default would pick. -}
+    PlaceDoomOnAgenda n canAdvance -> do
+      selectEach AnyAgenda \agenda -> placeDoom attrs agenda n
+      pushWhen (canAdvance == CanAdvance) AdvanceAgendaIfThresholdSatisfied
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
@@ -161,13 +164,36 @@ instance RunMessage TheSymphonyOfErichZann where
           -- "Before resolving any other resolution, if at least 1 investigator
           -- was defeated: the defeated investigators read Investigator Defeat first."
           investigatorDefeat
-          flavor $ h "resolution1" >> p "resolution1Body"
+          record AllIsQuietAtRueDAuseilForNow
+          resolutionWithXp "resolution1" $ allGainXp' attrs
+
           -- "Each investigator who was not defeated may remove the Stuck in
           -- Your Head weakness from their deck."
-          record AllIsQuietAtRueDAuseilForNow
+          survivors <- select $ not_ DefeatedInvestigator
+          for_ survivors \iid -> do
+            hasWeakness <-
+              selectAny
+                $ InvestigatorWithId iid
+                <> DeckWith (HasCard $ cardIs Treacheries.stuckInYourHead)
+            when hasWeakness $ chooseOneM iid do
+              labeled "removeStuckInYourHead"
+                $ removeCampaignCardFromDeck iid Treacheries.stuckInYourHead
+              labeled "keepStuckInYourHead" nothing
+
+          {- "If you 'saved all the musicians', each investigator may either heal
+          1 mental trauma, or earn 1 additional experience." Healing is only
+          offered to someone who has mental trauma to heal. -}
           savedAll <- getHasRecord YouSavedAllTheMusicians
-          allGainXpWithBonus attrs
-            $ mconcat [toBonus "savedAllTheMusicians" 1 | savedAll]
+          when savedAll $ eachInvestigator \iid -> do
+            hasMental <- fieldP InvestigatorMentalTrauma (> 0) iid
+            chooseOneM iid do
+              when hasMental
+                $ labeled "healMentalTrauma"
+                $ push
+                $ HealTrauma iid 0 1
+              labeled "gainExperience"
+                $ gainXp iid attrs (ikey "xp.savedAllTheMusicians") 1
+
           endOfScenario
         _ -> error $ "Unknown resolution: " <> show r
       pure s
@@ -180,7 +206,7 @@ investigatorDefeat :: (HasI18n, ReverseQueue m) => m ()
 investigatorDefeat = do
   defeated <- select DefeatedInvestigator
   unless (null defeated) do
-    flavor $ h "investigatorDefeat" >> p "investigatorDefeatBody"
+    resolutionOnly defeated $ withTitle "investigatorDefeat"
     for_ defeated \iid -> do
       {- "Each investigator who was defeated and does not already have a copy of
       the Stuck in your Head weakness in their deck must add 1 copy of it to his

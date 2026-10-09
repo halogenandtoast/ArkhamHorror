@@ -20,21 +20,28 @@ instance HasModifiersFor ThePiano where
   getModifiersFor (ThePiano a) = modifySelf a []
 
 instance HasAbilities ThePiano where
-  {- Only Isabel La Fratta can finish the piece, only while a Piano treachery is
-  in play, and only after four differently-typed actions at this location. -}
+  {- "[reaction]: If you are Isabel La Fratta, after you perform 4 actions of
+  different types during your turn at this location: Parley."
+
+  A reaction, not an action: the fourth action is what opens the window, and by
+  then there are none left to spend. `handleTakenActions` raises the streak
+  window off `longestUniqueStreak`, the same one Captivating Performance (3)
+  uses for three. -}
   getAbilities (ThePiano a) =
     [ restricted
         a
         1
         ( exists (TreacheryWithTrait T.Piano <> InPlayTreachery)
-            <> youExist (InvestigatorWithTitle "Isabel La Fratta" <> at_ (locationWithAsset a.id))
+            <> youExist
+              (InvestigatorWithTitle "Isabel La Fratta" <> at_ (locationWithAsset a.id))
         )
-        $ parleyAction_
+        $ triggeredAction #parley (PerformedDifferentTypesOfActionsInARow #after You 4 AnyAction) Free
     ]
 
 instance RunMessage ThePiano where
   runMessage msg a@(ThePiano attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      readStory iid attrs Stories.thePianosMuse
+      card <- fetchCard Stories.thePianosMuse
+      readStory iid card Stories.thePianosMuse
       pure a
     _ -> ThePiano <$> liftRunMessage msg attrs

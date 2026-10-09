@@ -96,24 +96,3 @@ stageHall =
     Diamond
     [Square, Plus, Moon]
     Set.TheSymphonyOfErichZann
-
-{- | The back of the Beyond the Curtain story card. It replaces a location in
-play rather than being placed, so it prints no symbol of its own.
--}
-theWindowToNothingness :: CardDef
-theWindowToNothingness =
-  ( location
-      ":the-symphony-of-erich-zann:008b"
-      ("The Window to Nothingness" <:> "Impenetrable Silence")
-      [Extradimensional]
-      NoSymbol
-      []
-      Set.TheSymphonyOfErichZann
-  )
-    { cdOtherSide = Just ":the-symphony-of-erich-zann:008"
-    , -- `location` assumes a location's other face is its own unrevealed side, so it
-      -- marks the card double-sided and starts it unrevealed. Here the other face is
-      -- the Beyond the Curtain story, and there is no `008bb` art to show for an
-      -- unrevealed Window.
-      cdDoubleSided = False
-    }

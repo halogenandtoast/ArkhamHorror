@@ -5040,7 +5040,9 @@ library
       Arkham.Homebrew.TheSymphonyOfErichZann.Defs
       Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.ArnoldWalker
       Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.AugusteGaudinConductorOfTheVoid
-      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.DancingRats
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.DancingRats_040a
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.DancingRats_040b
+      Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.DancingRats_040c
       Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.EarsOfTheVoid
       Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.IsabelLaFratta
       Arkham.Homebrew.TheSymphonyOfErichZann.Enemies.MacabreDancers
@@ -5060,7 +5062,6 @@ library
       Arkham.Homebrew.TheSymphonyOfErichZann.Locations.RehearsalRoom
       Arkham.Homebrew.TheSymphonyOfErichZann.Locations.SceneShop
       Arkham.Homebrew.TheSymphonyOfErichZann.Locations.StageHall
-      Arkham.Homebrew.TheSymphonyOfErichZann.Locations.TheWindowToNothingness
       Arkham.Homebrew.TheSymphonyOfErichZann.Locations.TiringRoom
       Arkham.Homebrew.TheSymphonyOfErichZann.Scenarios.TheSymphonyOfErichZann
       Arkham.Homebrew.TheSymphonyOfErichZann.Sets
@@ -5081,6 +5082,7 @@ library
       Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.RhythmFromBeyond
       Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.ShriekingViolin
       Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.StuckInYourHead
+      Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.TheWindowToNothingness
       Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.Turnaround
       Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.WaltzOfTheSpheres
       Arkham.Homebrew.TokenDefs

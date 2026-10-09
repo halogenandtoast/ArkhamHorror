@@ -5,8 +5,10 @@ import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Assets qualified as Asset
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Stories qualified as Cards
+import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Treacheries qualified as Treacheries
 import Arkham.Homebrew.TheSymphonyOfErichZann.Key
 import Arkham.Matcher
+import Arkham.Placement
 import Arkham.Story.Import.Lifted
 
 newtype BeyondTheCurtain = BeyondTheCurtain StoryAttrs
@@ -52,12 +54,9 @@ instance RunMessage BeyondTheCurtain where
             gaudin <- fetchCard Enemies.augusteGaudinConductorOfTheVoid
             createEnemyAt_ gaudin location
 
-      {- "Flip this card over and attach it to the Auditorium." The back is a
-      location of its own, so it joins the map beside the Auditorium -- the card
-      says *attach*, and reserves *replace* for the Forced that moves it later.
-      The scenario grid gives it the cell next to the Auditorium, and the
-      location itself is what joins the two (it prints no symbol, so nothing
-      would connect to it otherwise). -}
-      void $ placeLocationCard Locations.theWindowToNothingness
+      -- "Flip this card over and attach it to the Auditorium."
+      selectOne (locationIs Locations.auditorium) >>= traverse_ \auditorium -> do
+        window <- fetchCard Treacheries.theWindowToNothingness
+        createTreacheryAt_ window (AttachedToLocation auditorium)
       pure s
     _ -> BeyondTheCurtain <$> liftRunMessage msg attrs

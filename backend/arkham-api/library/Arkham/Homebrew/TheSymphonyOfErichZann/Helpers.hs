@@ -25,6 +25,7 @@ import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
 import Arkham.Helpers.Query (getInvestigators)
 import Arkham.Helpers.Scenario (getNextToAgendaOrder, setNextToAgendaOrder)
+import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies qualified as Enemies
 import Arkham.Homebrew.TheSymphonyOfErichZann.Traits (pattern Music)
 import Arkham.I18n
 import Arkham.Id
@@ -39,9 +40,27 @@ import Arkham.Source (toSource)
 import Arkham.Trait (Trait)
 import Arkham.Treachery.Types (TreacheryAttrs)
 
-{- | Where the placement order of the Music row lives inside @scenarioMeta@.
-| Every [[Music]] treachery currently next to the agenda deck.
+{- | The four Musicians this scenario is about.
+
+An allowlist rather than the [[Musician]] trait: an investigator's own weakness
+could carry that trait without being one of the orchestra, and act 3 would then
+try to flip it to a Muse it does not have. Auguste Gaudin is a [[Musician]] too
+and is deliberately absent -- he is defeated to advance act 2, and his other
+side is act 1, not a Muse.
 -}
+musicians :: [CardDef]
+musicians =
+  [ Enemies.arnoldWalker
+  , Enemies.isabelLaFratta
+  , Enemies.nicolePage
+  , Enemies.songYin
+  ]
+
+-- | Those four, as an enemy matcher.
+musicianEnemies :: EnemyMatcher
+musicianEnemies = mapOneOf enemyIs musicians
+
+-- | Every [[Music]] treachery currently next to the agenda deck.
 musicTreacheriesInPlay :: HasGame m => m [TreacheryId]
 musicTreacheriesInPlay = select $ TreacheryWithTrait Music <> TreacheryWithPlacement NextToAgenda
 
@@ -113,13 +132,17 @@ musePayoff iid musician instrument = do
 Piano Key the same way, but banks itself rather than a Musician.
 -}
 offerInstrument :: (HasI18n, ReverseQueue m) => InvestigatorId -> CardDef -> m ()
-offerInstrument iid instrument = chooseOneM iid do
-  labeled "takeInstrument" do
-    investigators <- getInvestigators
-    chooseOrRunOneM iid $ targets investigators \owner -> do
+offerInstrument iid instrument = do
+  investigators <- getInvestigators
+  -- The Lita Chantler shape: the card beside the question, a portrait per
+  -- investigator, and a decline.
+  chooseOneM iid do
+    questionLabeled "putIntoPlay"
+    questionLabeledCard instrument
+    portraits investigators \owner -> do
       createAssetAt_ instrument (InPlayArea owner)
       addCampaignCardToDeck owner DoNotShuffleIn instrument
-  labeled "leaveInstrument" nothing
+    labeled "leaveInstrument" nothing
 
 -- | The campaign's own i18n scope; the folder name camelCased.
 campaignI18n :: (HasI18n => a) -> a

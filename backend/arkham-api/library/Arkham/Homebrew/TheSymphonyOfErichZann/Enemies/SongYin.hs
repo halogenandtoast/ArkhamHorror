@@ -40,7 +40,8 @@ instance RunMessage SongYin where
       let passes = toResultDefault (0 :: Int) (enemyMeta attrs)
       if passes >= 3
         then do
-          readStory iid attrs Stories.percussionistsMuse
+          card <- fetchCard Stories.percussionistsMuse
+          readStory iid card Stories.percussionistsMuse
           pure . SongYin $ attrs {enemyMeta = toJSON (0 :: Int)}
         else do
           test iid

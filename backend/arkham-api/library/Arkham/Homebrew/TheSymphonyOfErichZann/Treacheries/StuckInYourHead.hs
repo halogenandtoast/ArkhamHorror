@@ -2,10 +2,11 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Treacheries.StuckInYourHead (stuck
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Target
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Treacheries qualified as Cards
 import Arkham.Matcher
+import Arkham.Placement
+import Arkham.Target
 import Arkham.Treachery.Import.Lifted
 
 newtype StuckInYourHead = StuckInYourHead TreacheryAttrs
@@ -31,9 +32,11 @@ instance HasAbilities StuckInYourHead where
 
 instance RunMessage StuckInYourHead where
   runMessage msg t@(StuckInYourHead attrs) = runQueueT $ case msg of
-    -- "Revelation - Secretly add this card to your hand."
+    {- "Revelation - Secretly add this card to your hand." `addToHand` would
+    loop: `handleDoAddToHand` re-draws any card with a revelation, so this one
+    would reveal itself forever. Hidden weaknesses are placed instead. -}
     Revelation iid (isSource attrs -> True) -> do
-      addToHand iid [toCard attrs]
+      placeTreachery attrs (HiddenInHand iid)
       pure t
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       drawEncounterCard iid (attrs.ability 1)

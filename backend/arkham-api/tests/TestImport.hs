@@ -909,6 +909,7 @@ newGame scenario' investigator = do
         , gameModifiers = mempty
         , gameEncounterDiscardEntities = defaultEntities
         , gameInHandEntities = mempty
+        , gameCommittedEntities = mempty
         , gameInDiscardEntities = mempty
         , gameActionRemovedEntities = mempty
         , gameTombstones = mempty

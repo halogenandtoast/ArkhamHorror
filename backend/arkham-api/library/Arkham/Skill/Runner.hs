@@ -87,6 +87,9 @@ instance RunMessage SkillAttrs where
     InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
       push $ Do msg'
       pure a
+    Committed iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
+      push $ Do msg'
+      pure a
     SetLocationOutOfGame lid -> do
       case skillPlacement a of
         p@(AtLocation lid') | lid' == lid -> pure $ a & placementL .~ OutOfGame p

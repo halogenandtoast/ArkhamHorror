@@ -17,7 +17,7 @@ instance HasAbilities EarsOfTheVoid where
   -- While ready, playing or committing a card at its location provokes an attack.
   getAbilities (EarsOfTheVoid a) =
     extend1 a
-      $ restricted a 1 (youExist $ at_ (locationWithEnemy a.id))
+      $ restricted a 1 (youExist (at_ (locationWithEnemy a.id)) <> thisExists a ReadyEnemy)
       $ forced
       $ oneOf
         [ PlayCard #after (at_ $ locationWithEnemy a.id) #any

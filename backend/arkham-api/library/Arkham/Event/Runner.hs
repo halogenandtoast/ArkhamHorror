@@ -359,6 +359,9 @@ runEventMessage msg a@EventAttrs {..} = runQueueT $ case msg of
   InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
     push $ Do msg'
     pure a
+  Committed iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
+    push $ Do msg'
+    pure a
   SetLocationOutOfGame lid -> do
     case eventPlacement of
       AtLocation lid' | lid' == lid -> pure $ a & placementL .~ OutOfGame eventPlacement

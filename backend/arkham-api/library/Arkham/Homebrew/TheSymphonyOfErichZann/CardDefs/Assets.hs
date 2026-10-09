@@ -19,6 +19,7 @@ yinsDrumsticks =
     , cdSlots = [#hand]
     , cdUnique = True
     , cdDeckRestrictions = [PerDeckLimit 1]
+    , cdOutOfPlayEffects = [CommittedEffect]
     }
 
 pagesViolin :: CardDef

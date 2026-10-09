@@ -13,6 +13,7 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Scenarios.TheSymphonyOfErichZann (
 ) where
 
 import Arkham.Card.CardDef (CardDef)
+import Arkham.Deck qualified as Deck
 import Arkham.Difficulty
 import Arkham.Helpers.FlavorText
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Acts qualified as Acts
@@ -25,6 +26,7 @@ import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Treacheries qualified as 
 import Arkham.Homebrew.TheSymphonyOfErichZann.Helpers
 import Arkham.Homebrew.TheSymphonyOfErichZann.Key
 import Arkham.Homebrew.TheSymphonyOfErichZann.Sets qualified as Set
+import Arkham.Homebrew.TheSymphonyOfErichZann.Traits (pattern Music, pattern Musician)
 import Arkham.Investigator.Types (Field (InvestigatorMentalTrauma))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Choose
@@ -148,6 +150,40 @@ instance RunMessage TheSymphonyOfErichZann where
         , Acts.thePossessedConductor
         , Acts.undreamableOrchestra
         ]
+    -- "[skull]: Reveal another token."
+    ResolveChaosToken _ Skull iid -> do
+      drawAnotherChaosToken iid
+      pure s
+    {- "[cultist]: After this test ends, discard cards from the top of the
+    encounter deck until a [[Music]] treachery is discarded. Draw it." -}
+    ResolveChaosToken _ Cultist iid -> do
+      afterMaybeSkillTestQuiet
+        $ discardUntilFirst iid attrs Deck.EncounterDeck (basic $ #treachery <> withTrait Music)
+      pure s
+    RequestedEncounterCard (isSource attrs -> True) (Just iid) (Just card) -> do
+      drawCard iid card
+      pure s
+    FailedSkillTest iid _ _ (ChaosTokenTarget token) _ _ -> do
+      case token.face of
+        {- "[tablet]: If you fail, place 1 doom on a Musician enemy at your
+        location." On Hard/Expert it is instead the /nearest/ Musician enemy,
+        which can be a tie, so both readings ask. -}
+        Tablet -> do
+          candidates <-
+            select
+              $ if isEasyStandard attrs
+                then EnemyWithTrait Musician <> enemyAtLocationWith iid
+                else NearestEnemyTo iid (EnemyWithTrait Musician)
+          chooseTargetM iid candidates $ placeDoomOn Tablet 1
+        {- "[elder thing]: If you fail, each ready Musician enemy at your
+        location immediately engages and attacks you." -}
+        ElderThing -> do
+          enemies <- select $ EnemyWithTrait Musician <> ReadyEnemy <> enemyAtLocationWith iid
+          for_ enemies \enemy -> do
+            engageEnemy iid enemy
+            initiateEnemyAttack enemy ElderThing iid
+        _ -> pure ()
+      pure s
     ScenarioResolution r -> scope "resolutions" do
       case r of
         {- "If no resolution was reached (each investigator resigned or was

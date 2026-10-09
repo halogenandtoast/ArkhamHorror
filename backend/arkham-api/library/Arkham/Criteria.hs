@@ -202,6 +202,11 @@ data Criterion
   | StoryExists StoryMatcher
   | InYourHand
   | InYourDiscard
+  | {- | This card is on the current skill test as a committed card. Pairs with
+    'Arkham.Card.CardDef.CommittedEffect', which is what gives it an entity to
+    carry the ability from there.
+    -}
+    IsCommitted
   | DoomCountIs ValueMatcher
   | PlayerCountIs Int
   | OnAct Int

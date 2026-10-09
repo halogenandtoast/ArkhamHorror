@@ -306,6 +306,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameModifiers = mempty
         , gameEncounterDiscardEntities = defaultEntities
         , gameInHandEntities = mempty
+        , gameCommittedEntities = mempty
         , gameInDiscardEntities = mempty
         , gameInSearchEntities = defaultEntities
         , gamePlayers = mempty
@@ -2159,6 +2160,15 @@ getGameAbilities = do
   inHandAssetAbilities <-
     concatMap (filter inHandAbility . getAbilities)
       <$> filterM unblanked (toList $ g ^. inHandEntitiesL . each . assetsL)
+  -- INVARIANT: a committed card's abilities surface iff their criteria carry
+  -- IsCommitted, the same guard shape as the in-hand zone. (Cards only land in
+  -- gameCommittedEntities when their def has cdCardCommittedEffects.)
+  committedAssetAbilities <-
+    concatMap (filter committedAbility . getAbilities)
+      <$> filterM unblanked (toList $ g ^. committedEntitiesL . each . assetsL)
+  committedEventAbilities <-
+    concatMap (filter committedAbility . getAbilities)
+      <$> filterM unblanked (toList $ g ^. committedEntitiesL . each . eventsL)
   -- A skill is preloaded in hand the same way, and a skill that acts from hand
   -- is the whole point of the InHandEffect zone, so it needs the same guard
   -- rather than being reachable only through the pure sweep.
@@ -2191,6 +2201,8 @@ getGameAbilities = do
     <> inHandEventAbilities
     <> inHandAssetAbilities
     <> inHandSkillAbilities
+    <> committedAssetAbilities
+    <> committedEventAbilities
     <> trueMagickInHandAbilities
     <> campaignAbilities'
     <> inDiscardAssetAbilities
@@ -7182,16 +7194,6 @@ asActive iid body = do
   g <- getGame
   runReaderT body (g {gameActiveInvestigatorId = iid})
 
-{- | Card ids that already have an entity somewhere in @e@, so
-'pendingCommitEntities' does not load a second copy of the same card.
--}
-loadedCardIds :: Entities -> Set CardId
-loadedCardIds e =
-  setFromList
-    $ [(toAttrs s).cardId | s <- toList (e ^. skillsL)]
-    <> [(toAttrs x).cardId | x <- toList (e ^. eventsL)]
-    <> [(toAttrs x).cardId | x <- toList (e ^. assetsL)]
-
 {- | Entities for cards sitting on the current skill test that the engine has not
 turned into real entities yet.
 
@@ -7220,6 +7222,7 @@ pendingCommitEntities g = case gameSkillTest g of
   alreadyLoaded =
     loadedCardIds (gameEntities g)
       <> foldMap loadedCardIds (gameInHandEntities g)
+      <> foldMap loadedCardIds (gameCommittedEntities g)
       <> foldMap loadedCardIds (gameInDiscardEntities g)
       <> loadedCardIds (gameInSearchEntities g)
   pending st =
@@ -7254,6 +7257,7 @@ preloadModifiers g = case gameMode g of
     let rawModifiers = buildModifiers g do
           getModifiersFor $ gameEntities g
           traverse_ getModifiersFor $ gameInHandEntities g
+          traverse_ getModifiersFor $ gameCommittedEntities g
           traverse_ getModifiersFor $ gameInDiscardEntities g
           getModifiersFor $ pendingCommitEntities g
           for_ (activeUltimatumsAndBoons (gameSettings g)) getModifiersFor
@@ -7408,6 +7412,7 @@ instance HasAbilities Game where
     getAbilities (gameEntities g)
       <> getAbilities (gameInSearchEntities g)
       <> concatMap getAbilities (gameInHandEntities g)
+      <> concatMap getAbilities (gameCommittedEntities g)
       <> concatMap getAbilities (gameInDiscardEntities g)
       <> getAbilities (gameMode g)
       <> concatMap ultimatumOrBoonAbilities (toList $ activeUltimatumsAndBoons $ gameSettings g)

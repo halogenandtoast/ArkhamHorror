@@ -49,6 +49,16 @@ import Control.Lens (each)
 import Data.List.Extra (nubOrd)
 import Data.Text qualified as T
 
+{- | Card ids that already have an entity somewhere in @e@, so a preload does not
+load a second copy of the same card.
+-}
+loadedCardIds :: Entities -> Set CardId
+loadedCardIds e =
+  setFromList
+    $ [(toAttrs s).cardId | s <- toList (e ^. skillsL)]
+    <> [(toAttrs x).cardId | x <- toList (e ^. eventsL)]
+    <> [(toAttrs x).cardId | x <- toList (e ^. assetsL)]
+
 newtype MissingEntity = MissingEntity Text
   deriving stock Show
 
@@ -80,6 +90,7 @@ getEventMaybe eid = do
     $ preview (entitiesL . eventsL . ix eid) g
     <|> preview (inSearchEntitiesL . eventsL . ix eid) g
     <|> preview (inHandEntitiesL . each . eventsL . ix eid) g
+    <|> preview (committedEntitiesL . each . eventsL . ix eid) g
     <|> getInDiscardEntity eventsL eid g
     <|> getRemovedEntity eventsL eid g
 
@@ -128,6 +139,7 @@ maybeTreachery tid = do
   pure
     $ preview (entitiesL . treacheriesL . ix tid) g
     <|> preview (inHandEntitiesL . each . treacheriesL . ix tid) g
+    <|> preview (committedEntitiesL . each . treacheriesL . ix tid) g
     <|> preview (inSearchEntitiesL . treacheriesL . ix tid) g
     <|> getInDiscardEntity treacheriesL tid g
     <|> getRemovedEntity treacheriesL tid g
@@ -149,6 +161,7 @@ maybeAsset aid = do
   pure
     $ preview (entitiesL . assetsL . ix aid) g
     <|> preview (inHandEntitiesL . each . assetsL . ix aid) g
+    <|> preview (committedEntitiesL . each . assetsL . ix aid) g
     <|> getInDiscardEntity assetsL aid g
     <|> getRemovedEntity assetsL aid g
     -- Last resort: a leave-play window can surface an asset that has already been
@@ -241,6 +254,7 @@ maybeSkill sid = do
     <|> getInDiscardEntity skillsL sid g
     <|> getRemovedEntity skillsL sid g
     <|> preview (inHandEntitiesL . each . skillsL . ix sid) g
+    <|> preview (committedEntitiesL . each . skillsL . ix sid) g
     <|> preview (inSearchEntitiesL . skillsL . ix sid) g
 
 getStory :: (HasCallStack, HasGame m) => StoryId -> m Story

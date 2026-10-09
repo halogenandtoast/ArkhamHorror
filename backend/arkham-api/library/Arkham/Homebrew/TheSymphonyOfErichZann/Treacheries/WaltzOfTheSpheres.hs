@@ -17,7 +17,7 @@ instance RunMessage WaltzOfTheSpheres where
     {- "If you are at the location with the highest shroud value, Waltz of the
     Spheres gains surge. Otherwise, test agility (3)." -}
     Revelation iid (isSource attrs -> True) -> do
-      atHighest <- selectAny $ locationWithInvestigator iid <> HighestShroud Anywhere
+      atHighest <- selectAny $ HighestShroud Anywhere <> locationWithInvestigator iid
       if atHighest
         then gainSurge attrs
         else do

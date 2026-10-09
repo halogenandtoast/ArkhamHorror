@@ -953,6 +953,8 @@ data Message
   | InDiscard InvestigatorId Message -- Nothing uses this yet
   | InSearch Message
   | InHand InvestigatorId Message
+  | -- | Dispatched to the committed-card entities of that investigator; see 'CommittedEffect'.
+    Committed InvestigatorId Message
   | InitDeck InitDeckAttrs -- used to initialize the deck for the campaign
   | LoadSideDeck InvestigatorId [PlayerCard] -- used to initialize the side deck for the campaign
   | LoadDecklist PlayerId ArkhamDBDecklist

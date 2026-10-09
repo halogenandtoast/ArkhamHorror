@@ -206,6 +206,7 @@ removeSeat departure iid g = case Map.lookup iid (g ^. entitiesL . investigators
       & (playerOrderL .~ order)
       & (playerCountL %~ max 1 . subtract 1)
       & (inHandEntitiesL %~ Map.delete iid)
+      & (committedEntitiesL %~ Map.delete iid)
       & (inDiscardEntitiesL %~ Map.delete iid)
       & (phaseHistoryL %~ Map.delete iid)
       & (turnHistoryL %~ Map.delete iid)
@@ -452,6 +453,8 @@ runGameMessage msg g = case msg of
       & actionRemovedEntitiesL
       %~ (\e -> foldr (over biplate . swapCard) e cards')
       & inHandEntitiesL
+      %~ (\e -> foldr (over biplate . swapCard) e cards')
+      & committedEntitiesL
       %~ (\e -> foldr (over biplate . swapCard) e cards')
       & inDiscardEntitiesL
       %~ (\e -> foldr (over biplate . swapCard) e cards')
@@ -736,6 +739,7 @@ runGameMessage msg g = case msg of
           & (skillTestResultsL .~ Nothing)
           & (inDiscardEntitiesL .~ mempty)
           & (inHandEntitiesL .~ mempty)
+          & (committedEntitiesL .~ mempty)
           & (inSearchEntitiesL .~ mempty)
           & (focusedCardsL .~ mempty)
           & (focusedChaosTokensL .~ mempty)
@@ -798,6 +802,7 @@ runGameMessage msg g = case msg of
       & (modeL %~ fmap (\s -> toResultDefault s (toJSON s)))
       & (inDiscardEntitiesL .~ mempty)
       & (inHandEntitiesL .~ mempty)
+      & (committedEntitiesL .~ mempty)
       & (gameStateL .~ IsActive)
       & (turnPlayerInvestigatorIdL .~ Nothing)
       & (focusedCardsL .~ mempty)
@@ -4187,6 +4192,13 @@ preloadEntities g = do
       | Just Refl <- eqT @a @Event = overAttrs (\attrs -> attrs {eventPlacement = p}) a
       | Just Refl <- eqT @a @Treachery = overAttrs (\attrs -> attrs {treacheryPlacement = p}) a
       | otherwise = a
+    -- Matches the committed skill the engine builds itself: InvestigatorCommittedSkill
+    -- parks it in Limbo, and the committing investigator controls it.
+    setCommitted :: forall a. Typeable a => InvestigatorId -> a -> a
+    setCommitted iid a
+      | Just Refl <- eqT @a @Asset =
+          overAttrs (\attrs -> attrs {assetPlacement = Limbo, assetController = Just iid}) a
+      | otherwise = setPlacement Limbo a
     preloadHandEntities entities investigator' = do
       let iid = toId investigator'
       asIfInHandCards <- getAsIfInHandEffectCards iid
@@ -4269,6 +4281,36 @@ preloadEntities g = do
                   discardEffectCards
              in
               insertMap (toId investigator') discardEntities entities
+    -- A committed card keeps no entity of its own: SkillTestCommitCard files it under
+    -- skillTestCommittedCards and CommitCard then ObtainCards it out of whatever zone
+    -- it came from. Only a committed *skill* is spared, because
+    -- InvestigatorCommittedSkill builds a real Skill entity, parked in Limbo.
+    --
+    -- Anything else that wants to act from the skill test asks for it with
+    -- CommittedEffect and gets an entity here, keyed by the card's own UUID so
+    -- Criteria.IsCommitted can tell it apart from an in-play copy. Cards already
+    -- loaded elsewhere are skipped for the reason given above pendingCommitEntities:
+    -- a second live entity resolves the same ability twice (#5555 / #4764).
+    preloadCommittedEntities skillTest entities investigator' = do
+      let iid = toId investigator'
+      let loadedElsewhere = loadedCardIds (gameEntities g) <> foldMap loadedCardIds (gameInHandEntities g)
+      let
+        committedEffectCards =
+          filter
+            (\c -> cdCardCommittedEffects (toCardDef c) && c.id `notMember` loadedElsewhere)
+            (findWithDefault [] iid $ skillTestCommittedCards skillTest)
+      pure
+        $ if null committedEffectCards
+          then entities
+          else
+            insertMap
+              iid
+              ( foldl'
+                  (\e c -> addCardEntityWith iid (setCommitted iid) (unsafeCardIdToUUID c.id) e c)
+                  defaultEntities
+                  committedEffectCards
+              )
+              entities
     preloadTopOfDeckEntities entities investigator' = do
       topRevealed <- hasModifier (toId investigator') TopCardOfDeckIsRevealed
       let
@@ -4310,6 +4352,9 @@ preloadEntities g = do
 
   let isInScenario = isJust $ modeScenario $ g ^. modeL
   handEntities <- if isInScenario then foldM preloadHandEntities mempty investigators else pure mempty
+  committedEntities <- case guard isInScenario *> gameSkillTest g of
+    Nothing -> pure mempty
+    Just skillTest -> foldM (preloadCommittedEntities skillTest) mempty investigators
   discardEntities <-
     if isInScenario then foldM preloadDiscardEntities mempty investigators else pure mempty
   topOfDeckEntities <-
@@ -4318,6 +4363,7 @@ preloadEntities g = do
   pure
     $ g
       { gameInHandEntities = handEntities
+      , gameCommittedEntities = committedEntities
       , gameInSearchEntities = searchEntities
       , gameInDiscardEntities = discardEntities
       , gameEntities = gameEntities g <> topOfDeckEntities
@@ -4338,6 +4384,7 @@ runActionRemovedEntities msg g = case msg of
       live =
         gameInSearchEntities g
           <> fold (gameInHandEntities g)
+          <> fold (gameCommittedEntities g)
           <> fold (gameInDiscardEntities g)
       removed = gameActionRemovedEntities g
       (parkedEvents, ownEvents) =
@@ -4366,6 +4413,7 @@ instance RunMessage Game where
         >>= entitiesL (runMessage msg)
         >>= runActionRemovedEntities msg
         >>= itraverseOf (inHandEntitiesL . itraversed) (\i -> runMessage (InHand i msg))
+        >>= itraverseOf (committedEntitiesL . itraversed) (\i -> runMessage (Committed i msg))
         >>= itraverseOf (inDiscardEntitiesL . itraversed) (\i -> runMessage (InDiscard i msg))
         >>= (inDiscardEntitiesL . itraversed) (runMessage msg)
         >>= encounterDiscardEntitiesL (runMessage msg)

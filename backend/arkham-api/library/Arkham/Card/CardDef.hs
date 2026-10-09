@@ -266,6 +266,10 @@ cdCardPendingCommitEffects :: CardDef -> Bool
 cdCardPendingCommitEffects CardDef {cdOutOfPlayEffects} =
   PendingCommitEffect `elem` cdOutOfPlayEffects
 
+cdCardCommittedEffects :: CardDef -> Bool
+cdCardCommittedEffects CardDef {cdOutOfPlayEffects} =
+  CommittedEffect `elem` cdOutOfPlayEffects
+
 data CardDef = CardDef
   { cdCardCode :: CardCode
   , cdName :: Name
@@ -376,6 +380,14 @@ data OutOfPlayEffect
   | InSearchEffect
   | OnTopOfDeckEffect
   | PendingCommitEffect
+  | {- | The card needs a live entity for as long as it sits on a skill test as a
+    committed card, so that abilities can trigger from there. Only a committed
+    *skill* gets one for free (a 'Skill' entity parked in 'Limbo'); everything
+    else is filed in @skillTestCommittedCards@ and 'ObtainCard'ed out of its old
+    zone, leaving no entity at all. See 'Arkham.Game.Runner.preloadCommittedEntities',
+    and gate the abilities themselves on 'Arkham.Criteria.IsCommitted'.
+    -}
+    CommittedEffect
   deriving stock (Show, Eq, Ord, Data)
 
 instance HasField "attackOfOpportunityModifiers" CardDef [AttackOfOpportunityModifier] where

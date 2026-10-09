@@ -242,6 +242,7 @@ withAbilityZones def = def {cdOutOfPlayEffects = nub (cdOutOfPlayEffects def <> 
       Just (String "discard") -> Just InDiscardEffect
       Just (String "search") -> Just InSearchEffect
       Just (String "topOfDeck") -> Just OnTopOfDeckEffect
+      Just (String "committed") -> Just CommittedEffect
       _ -> Nothing
     _ -> Nothing
 

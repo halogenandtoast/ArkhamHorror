@@ -322,6 +322,17 @@ passesCriteria iid mcard source' requestor windows' ctr = case ctr of
       then pure False
       else (== uneliminated) <$> select investigatorMatcher
   Criteria.Never -> pure False
+  Criteria.IsCommitted -> do
+    -- The entity's id IS the card's UUID (preloadCommittedEntities keys it that
+    -- way), so an in-play copy of the same card -- whose id is random -- never
+    -- answers true here.
+    committed <- fieldMap InvestigatorCommittedCards (map toCardId) iid
+    pure $ case source of
+      AssetSource aid -> unsafeToCardId aid `elem` committed
+      EventSource eid -> unsafeToCardId eid `elem` committed
+      SkillSource sid -> unsafeToCardId sid `elem` committed
+      TreacherySource tid -> unsafeToCardId tid `elem` committed
+      _ -> False
   Criteria.InYourHand -> do
     hand <-
       liftA2

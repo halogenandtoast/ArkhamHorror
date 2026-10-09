@@ -56,6 +56,15 @@ inDiscardAbility = inDiscardCriteria . abilityCriteria
     AnyCriterion xs -> any inDiscardCriteria xs
     _ -> False
 
+committedAbility :: Ability -> Bool
+committedAbility = committedCriteria . abilityCriteria
+ where
+  committedCriteria = \case
+    IsCommitted -> True
+    Criteria xs -> any committedCriteria xs
+    AnyCriterion xs -> any committedCriteria xs
+    _ -> False
+
 abilityCost :: Ability -> Cost
 abilityCost = abilityTypeCost . abilityType
 

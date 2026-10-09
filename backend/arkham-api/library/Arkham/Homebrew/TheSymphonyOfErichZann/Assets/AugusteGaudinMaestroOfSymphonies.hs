@@ -12,10 +12,9 @@ newtype AugusteGaudinMaestroOfSymphonies = AugusteGaudinMaestroOfSymphonies Asse
 
 augusteGaudinMaestroOfSymphonies :: AssetCard AugusteGaudinMaestroOfSymphonies
 augusteGaudinMaestroOfSymphonies =
-  asset AugusteGaudinMaestroOfSymphonies Cards.augusteGaudinMaestroOfSymphonies
+  ally AugusteGaudinMaestroOfSymphonies Cards.augusteGaudinMaestroOfSymphonies (2, 2)
 
 instance HasAbilities AugusteGaudinMaestroOfSymphonies where
-  -- Any investigator at his location may trigger it, not only his controller.
   getAbilities (AugusteGaudinMaestroOfSymphonies a) =
     [ restricted a 1 (youExist $ at_ (locationWithAsset a.id)) $ FastAbility (exhaust a)
     ]

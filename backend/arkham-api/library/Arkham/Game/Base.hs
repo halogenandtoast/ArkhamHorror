@@ -94,6 +94,13 @@ data Game = Game
   , gameModifiers :: Map Target [Modifier]
   , gameEncounterDiscardEntities :: Entities
   , gameInHandEntities :: Map InvestigatorId Entities
+  , gameCommittedEntities :: Map InvestigatorId Entities
+  {- ^ Entities for cards sitting on the current skill test as committed cards,
+    keyed by the investigator who committed them. Rebuilt from
+    @skillTestCommittedCards@ by 'preloadEntities' before every message, for defs
+    that ask for it with 'CommittedEffect'; a committed skill already has a real
+    'Skill' entity and is skipped.
+  -}
   , gameInDiscardEntities :: Map InvestigatorId Entities
   , gameInSearchEntities :: Entities
   , -- Player Details

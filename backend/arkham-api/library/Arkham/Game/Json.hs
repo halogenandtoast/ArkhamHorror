@@ -46,6 +46,7 @@ instance ToJSON Game where
       , "gameModifiers" .= gameModifiers g
       , "gameEncounterDiscardEntities" .= gameEncounterDiscardEntities g
       , "gameInHandEntities" .= gameInHandEntities g
+      , "gameCommittedEntities" .= gameCommittedEntities g
       , "gameInDiscardEntities" .= gameInDiscardEntities g
       , "gameInSearchEntities" .= gameInSearchEntities g
       , "gamePlayerCount" .= gamePlayerCount g
@@ -120,6 +121,7 @@ instance ToJSON Game where
       <> ("gameModifiers" .= gameModifiers g)
       <> ("gameEncounterDiscardEntities" .= gameEncounterDiscardEntities g)
       <> ("gameInHandEntities" .= gameInHandEntities g)
+      <> ("gameCommittedEntities" .= gameCommittedEntities g)
       <> ("gameInDiscardEntities" .= gameInDiscardEntities g)
       <> ("gameInSearchEntities" .= gameInSearchEntities g)
       <> ("gamePlayerCount" .= gamePlayerCount g)
@@ -201,6 +203,9 @@ instance FromJSON Game where
     gameModifiers <- o .: "gameModifiers"
     gameEncounterDiscardEntities <- o .: "gameEncounterDiscardEntities"
     gameInHandEntities <- o .: "gameInHandEntities"
+    -- Derived state, rebuilt by preloadEntities every message; games persisted
+    -- before the committed zone existed simply have none recorded.
+    gameCommittedEntities <- o .:? "gameCommittedEntities" .!= mempty
     gameInDiscardEntities <- o .: "gameInDiscardEntities"
     gameInSearchEntities <- o .: "gameInSearchEntities"
     gamePlayerCount <- o .: "gamePlayerCount"

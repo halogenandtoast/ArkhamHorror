@@ -917,6 +917,9 @@ instance RunMessage AssetAttrs where
     InHand iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
       push $ Do msg'
       pure a
+    Committed iid msg'@(UseAbility iid' ab _) | iid == iid' && (isSource a ab.source || isProxySource a ab.source) -> do
+      push $ Do msg'
+      pure a
     Flip _ _ target | a `isTarget` target -> do
       let wasFlipped = a.flipped
       let spellbound = fromMaybe False $ a ^? metaMapL . ix "spellbound" . _Bool

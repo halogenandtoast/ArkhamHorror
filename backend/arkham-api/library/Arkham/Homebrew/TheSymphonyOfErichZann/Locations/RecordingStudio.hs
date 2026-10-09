@@ -2,7 +2,6 @@ module Arkham.Homebrew.TheSymphonyOfErichZann.Locations.RecordingStudio (recordi
 
 import Arkham.Ability
 import Arkham.Card
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.Scenario (scenarioField)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.TheSymphonyOfErichZann.Helpers (scenarioI18n)
@@ -15,30 +14,29 @@ import Arkham.Scenario.Types (Field (ScenarioDiscard))
 import Arkham.Trait (toTraits)
 
 newtype RecordingStudio = RecordingStudio LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 recordingStudio :: LocationCard RecordingStudio
 recordingStudio =
   locationWith RecordingStudio Cards.recordingStudio 2 (PerPlayer 1)
     $ costToEnterUnrevealedL
-    .~ GroupClueCost (PerPlayer 1) YourLocation
-
-instance HasModifiersFor RecordingStudio where
-  getModifiersFor (RecordingStudio a) = do
-    -- "The door leading to this room is blocked. As an additional cost to move
-    -- to Backstage Room, the investigators must spend 1 clue per investigator,
-    -- as a group."
-    modifySelfWhen a (not a.revealed) [AdditionalCostToEnter $ GroupClueCost (PerPlayer 1) Anywhere]
+    .~ GroupClueCost (PerPlayer 1) Anywhere
 
 instance HasAbilities RecordingStudio where
   getAbilities (RecordingStudio a) =
     extend
       a
-      [ -- "After you reveal Recording Studio: Draw the bottommost card of the encounter discard pile."
-        mkAbility a 1 $ forced $ RevealLocation #after Anyone (be a)
-      , -- "[free]: Search the encounter discard pile for a Music treachery and draw it. (Group limit once per round)"
-        groupLimit PerRound $ restricted a 2 Here $ freeReaction AnyWindow
+      [ scenarioI18n
+          $ withI18nTooltip "recordingStudio.reveal"
+          $ mkAbility a 1
+          $ forced
+          $ RevealLocation #after Anyone (be a)
+      , scenarioI18n
+          $ withI18nTooltip "recordingStudio.searchDiscard"
+          $ groupLimit PerRound
+          $ restricted a 2 Here
+          $ freeReaction AnyWindow
       ]
 
 instance RunMessage RecordingStudio where

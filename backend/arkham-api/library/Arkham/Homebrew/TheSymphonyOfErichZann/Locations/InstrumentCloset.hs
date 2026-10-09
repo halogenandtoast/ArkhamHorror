@@ -1,7 +1,7 @@
 module Arkham.Homebrew.TheSymphonyOfErichZann.Locations.InstrumentCloset (instrumentCloset) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect, modifySelfWhen)
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
@@ -16,7 +16,7 @@ instrumentCloset :: LocationCard InstrumentCloset
 instrumentCloset =
   locationWith InstrumentCloset Cards.instrumentCloset 3 (PerPlayer 1)
     $ costToEnterUnrevealedL
-    .~ GroupClueCost (PerPlayer 1) YourLocation
+    .~ GroupClueCost (PerPlayer 1) Anywhere
 
 instance HasModifiersFor InstrumentCloset where
   {- "While you are at Instrument Closet, treat each of your non-weakness Ally
@@ -26,10 +26,6 @@ instance HasModifiersFor InstrumentCloset where
       a
       (AssetWithTrait Ally <> NonWeaknessAsset <> AssetControlledBy (investigatorAt a.id))
       [Blank]
-    -- "The door leading to this room is blocked. As an additional cost to move
-    -- to Backstage Room, the investigators must spend 1 clue per investigator,
-    -- as a group."
-    modifySelfWhen a (not a.revealed) [AdditionalCostToEnter $ GroupClueCost (PerPlayer 1) Anywhere]
 
 instance HasAbilities InstrumentCloset where
   -- "[action]: Search the top 9 cards of your deck for an Item asset and draw it. (Limit once per round)"

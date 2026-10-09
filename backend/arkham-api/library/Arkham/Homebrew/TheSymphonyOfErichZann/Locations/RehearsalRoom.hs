@@ -1,27 +1,19 @@
 module Arkham.Homebrew.TheSymphonyOfErichZann.Locations.RehearsalRoom (rehearsalRoom) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype RehearsalRoom = RehearsalRoom LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 rehearsalRoom :: LocationCard RehearsalRoom
 rehearsalRoom =
   locationWith RehearsalRoom Cards.rehearsalRoom 3 (PerPlayer 1)
     $ costToEnterUnrevealedL
-    .~ GroupClueCost (PerPlayer 1) YourLocation
-
-instance HasModifiersFor RehearsalRoom where
-  getModifiersFor (RehearsalRoom a) = do
-    -- "The door leading to this room is blocked. As an additional cost to move
-    -- to Backstage Room, the investigators must spend 1 clue per investigator,
-    -- as a group."
-    modifySelfWhen a (not a.revealed) [AdditionalCostToEnter $ GroupClueCost (PerPlayer 1) Anywhere]
+    .~ GroupClueCost (PerPlayer 1) Anywhere
 
 instance HasAbilities RehearsalRoom where
   getAbilities (RehearsalRoom a) =

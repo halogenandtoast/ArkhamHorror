@@ -97,6 +97,12 @@
         "putIntoPlay": "Put Yin's Drumsticks into play",
         "returnToHand": "Return Yin's Drumsticks to your hand"
       }
+    },
+    "tooltips": {
+      "recordingStudio": {
+        "reveal": "After you reveal Recording Studio: Draw the bottommost card of the encounter discard pile.",
+        "searchDiscard": "{'{'}fast{'}'} Search the encounter discard pile for a _Music_ treachery and draw it. (Group limit once per round.)"
+      }
     }
   }
 }

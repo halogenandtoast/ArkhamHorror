@@ -1,27 +1,19 @@
 module Arkham.Homebrew.TheSymphonyOfErichZann.Locations.TiringRoom (tiringRoom) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Locations qualified as Cards
 import Arkham.Location.Import.Lifted
 import Arkham.Matcher
 
 newtype TiringRoom = TiringRoom LocationAttrs
-  deriving anyclass IsLocation
+  deriving anyclass (IsLocation, HasModifiersFor)
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 tiringRoom :: LocationCard TiringRoom
 tiringRoom =
   locationWith TiringRoom Cards.tiringRoom 2 (PerPlayer 1)
     $ costToEnterUnrevealedL
-    .~ GroupClueCost (PerPlayer 1) YourLocation
-
-instance HasModifiersFor TiringRoom where
-  getModifiersFor (TiringRoom a) = do
-    -- "The door leading to this room is blocked. As an additional cost to move
-    -- to Backstage Room, the investigators must spend 1 clue per investigator,
-    -- as a group."
-    modifySelfWhen a (not a.revealed) [AdditionalCostToEnter $ GroupClueCost (PerPlayer 1) Anywhere]
+    .~ GroupClueCost (PerPlayer 1) Anywhere
 
 instance HasAbilities TiringRoom where
   getAbilities (TiringRoom a) =

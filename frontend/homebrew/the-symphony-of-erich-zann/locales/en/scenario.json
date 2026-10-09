@@ -102,6 +102,11 @@
       "recordingStudio": {
         "reveal": "After you reveal Recording Studio: Draw the bottommost card of the encounter discard pile.",
         "searchDiscard": "{'{'}fast{'}'} Search the encounter discard pile for a _Music_ treachery and draw it. (Group limit once per round.)"
+      },
+      "isabelLaFratta": {
+        "placeClue": "_Parley._ Place 1 of your clues on Isabel La Fratta.",
+        "placeResource": "_Parley._ Place 1 of your resources on Isabel La Fratta.",
+        "flip": "If there is 1 clue and 1 resource on Isabel La Fratta: _Parley._ Flip this card over."
       }
     }
   }

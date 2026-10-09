@@ -6,7 +6,7 @@ import Arkham.Helpers.Modifiers (ModifierType (..), modifySelfWhen)
 import Arkham.Helpers.Story (readStory)
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Enemies qualified as Cards
 import Arkham.Homebrew.TheSymphonyOfErichZann.CardDefs.Stories qualified as Stories
-import Arkham.Homebrew.TheSymphonyOfErichZann.Helpers (instrumentInPlay)
+import Arkham.Homebrew.TheSymphonyOfErichZann.Helpers (instrumentInPlay, scenarioI18n)
 import Arkham.Homebrew.TheSymphonyOfErichZann.Traits qualified as T
 import Arkham.Matcher
 import Arkham.Token
@@ -26,10 +26,16 @@ instance HasModifiersFor IsabelLaFratta where
 instance HasAbilities IsabelLaFratta where
   getAbilities (IsabelLaFratta a) =
     extend a
-      $ [restricted a 1 unlocked parleyAction_, restricted a 2 unlocked parleyAction_]
+      -- "Place 1 of your clues/resources on Isabel La Fratta" -- you need one.
+      $ [ tip "placeClue" $ restricted a 1 (unlocked <> youExist InvestigatorWithAnyClues) parleyAction_
+        , tip "placeResource"
+            $ restricted a 2 (unlocked <> youExist InvestigatorWithAnyResources) parleyAction_
+        ]
       -- "If there is 1 clue and 1 resource on Isabel La Fratta: Parley. Flip."
-      <> [restricted a 3 unlocked parleyAction_ | bribed]
+      <> [tip "flip" $ restricted a 3 unlocked parleyAction_ | bribed]
    where
+    -- All three are a bare Parley, so each says which it is.
+    tip key = scenarioI18n $ withI18nTooltip ("isabelLaFratta." <> key)
     unlocked = OnSameLocation <> exists (TreacheryWithTrait T.Piano <> InPlayTreachery)
     bribed = countTokens Clue a.tokens >= 1 && countTokens Resource a.tokens >= 1
 

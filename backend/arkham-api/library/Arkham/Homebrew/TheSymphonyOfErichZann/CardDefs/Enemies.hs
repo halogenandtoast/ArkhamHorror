@@ -26,6 +26,8 @@ augusteGaudinConductorOfTheVoid =
     , cdEvade = evade 2
     , cdUnique = True
     , cdOtherSide = Just ":the-symphony-of-erich-zann:005"
+    , cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 1
     }
 
 arnoldWalker :: CardDef
@@ -44,6 +46,7 @@ arnoldWalker =
     , cdVictoryPoints = Just 1
     , cdUnique = True
     , cdOtherSide = Just ":the-symphony-of-erich-zann:020b"
+    , cdSanityDamage = sanityDamage 2
     }
 
 isabelLaFratta :: CardDef
@@ -62,6 +65,8 @@ isabelLaFratta =
     , cdVictoryPoints = Just 1
     , cdUnique = True
     , cdOtherSide = Just ":the-symphony-of-erich-zann:021b"
+    , cdHealthDamage = healthDamage 2
+    , cdSanityDamage = sanityDamage 1
     }
 
 nicolePage :: CardDef
@@ -80,6 +85,7 @@ nicolePage =
     , cdVictoryPoints = Just 1
     , cdUnique = True
     , cdOtherSide = Just ":the-symphony-of-erich-zann:022b"
+    , cdHealthDamage = healthDamage 2
     }
 
 songYin :: CardDef
@@ -98,6 +104,8 @@ songYin =
     , cdVictoryPoints = Just 1
     , cdUnique = True
     , cdOtherSide = Just ":the-symphony-of-erich-zann:023b"
+    , cdHealthDamage = healthDamage 1
+    , cdSanityDamage = sanityDamage 2
     }
 
 earsOfTheVoid :: CardDef

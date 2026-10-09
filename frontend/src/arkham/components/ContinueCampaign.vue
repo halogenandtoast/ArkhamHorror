@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { inject, computed, ref, onMounted, watch, type Ref } from 'vue'
-import { toCamelCase } from '@/arkham/helpers'
-import { imgsrc } from '@/arkham/helpers'
+import { toCamelCase, scenarioSetIcon } from '@/arkham/helpers'
 import { Game } from '@/arkham/types/Game'
 import { scenarioIdToI18n } from '@/arkham/types/Scenario'
 import type { Campaign } from '@/arkham/types/Campaign'
@@ -13,7 +12,14 @@ import InvestigatorRow from '@/arkham/components/InvestigatorRow.vue'
 import LogIcons from '@/arkham/components/LogIcons.vue'
 import SideStoryOption from '@/arkham/components/SideStoryOption.vue'
 import sideStoriesJSON from '@/arkham/data/side-stories.json'
-import { homebrewSideStories } from '@/arkham/homebrewData'
+import officialCampaignsJSON from '@/arkham/data/campaigns.json'
+import { homebrewSideStories, homebrewCampaigns } from '@/arkham/homebrewData'
+import {
+  defaultSideStoryGroup,
+  sideStoryGroup,
+  type Campaign as CampaignEntry,
+  type SideStoryGroup,
+} from '@/arkham/data'
 import { useRoute, useRouter } from 'vue-router'
 import { useClipboard } from '@vueuse/core'
 import { buildShareableUrl } from '@/arkham/helpers'
@@ -27,7 +33,8 @@ import { storeToRefs } from 'pinia'
 import { filterDisplayable, isDevBuild, type Gateable } from '@/arkham/displayRules'
 import { hasParallelContent } from '@/arkham/deckRestrictions'
 
-const sideStories = [...sideStoriesJSON, ...homebrewSideStories] as (Gateable & { xp: number; id: string; name: string })[]
+const sideStories = [...sideStoriesJSON, ...homebrewSideStories] as (Gateable & { xp: number; id: string; name: string; group?: SideStoryGroup })[]
+const allCampaignEntries = [...(officialCampaignsJSON as CampaignEntry[]), ...homebrewCampaigns]
 
 const props = defineProps<{
   game: Game
@@ -241,7 +248,7 @@ const standalones = computed(() => {
     return parts
       .filter((p) => !completed.includes(p.id))
       .filter((p) => !(p.notAfter ?? []).some((id) => completed.includes(id)))
-      .map((p) => ({ ...s, id: p.id, name: p.name, xp, baseXp: s.xp, overlay: overlay?.name }))
+      .map((p) => ({ ...s, id: p.id, name: p.name, xp, baseXp: s.xp, overlay: overlay?.name, group: sideStoryGroup(s) }))
   })
 })
 
@@ -250,6 +257,46 @@ const standalones = computed(() => {
  * something to go hunting for, so it gets its own button beside Continue
  * instead of hiding behind Add Side Scenario. It stays in the full list too. */
 const promotedSideStories = computed(() => standalones.value.filter((s) => s.overlay))
+
+/* The side-story list is split the same three ways the new-game screen splits
+ * campaigns, so a Chapter 2 side story isn't buried among the Chapter 1 ones.
+ * Empty groups drop out, and with a single group left there is nothing to pick
+ * between, so no tabs are drawn. */
+const SIDE_STORY_GROUP_LABELS: Record<SideStoryGroup, string> = {
+  chapter1: 'create.chapter1Heading',
+  chapter2: 'create.chapter2Heading',
+  homebrew: 'create.homebrewHeading',
+}
+
+const campaignEntry = computed(() =>
+  allCampaignEntries.find((c) => c.id === props.campaign?.id)
+)
+
+const sideStoryGroups = computed(() =>
+  (['chapter1', 'chapter2', 'homebrew'] as SideStoryGroup[]).flatMap((id) => {
+    const items = standalones.value.filter((s) => s.group === id)
+    return items.length ? [{ id, label: SIDE_STORY_GROUP_LABELS[id], items }] : []
+  })
+)
+
+/* Open on the campaign's own chapter -- a homebrew campaign reads as Chapter 1
+ * unless its campaign.json says otherwise -- falling back to whichever group
+ * actually has something in it. */
+const preferredSideStoryGroup = computed(() =>
+  defaultSideStoryGroup(campaignEntry.value, props.campaign?.id)
+)
+const selectedSideStoryGroup = ref<SideStoryGroup | null>(null)
+const activeSideStoryGroup = computed(() =>
+  sideStoryGroups.value.find((g) => g.id === selectedSideStoryGroup.value)
+    ?? sideStoryGroups.value.find((g) => g.id === preferredSideStoryGroup.value)
+    ?? sideStoryGroups.value[0]
+)
+const groupedStandalones = computed(() => activeSideStoryGroup.value?.items ?? [])
+
+function openSideStories() {
+  selectedSideStoryGroup.value = null
+  addSideStory.value = true
+}
 
 async function loadSideStory(sideStoryId: string) {
   addSideStory.value = false
@@ -464,16 +511,9 @@ function addInvestigator() {
   withRoster(() => joinCampaign(props.game.id))
 }
 
-const setIcon = computed(() => {
-  if (!scenario.value) return null
-  if (scenario.value.startsWith(":")) {
-    const match = scenario.value.match(/^:(.+):(.+)$/)
-    if (!match) return null
-    const [, homebrew, scenarioId] = match
-    return imgsrc(`homebrew/${homebrew}/sets/${scenarioId}.png`)
-  }
-  return imgsrc(`sets/${scenario.value}.png`)
-})
+const setIcon = computed(() =>
+  scenario.value ? scenarioSetIcon(scenario.value) : null
+)
 
 </script>
 
@@ -482,8 +522,25 @@ const setIcon = computed(() => {
   <div class="continue-campaign scroll-container">
     <div v-if="chooseSideStory || (addSideStory && standalones.length > 0)" class="side-story-selection">
       <h2>{{ $t('sideStory.selectSideScenario') }}</h2>
+      <div
+        v-if="sideStoryGroups.length > 1"
+        class="side-story-group-select"
+        :style="{ '--item-count': sideStoryGroups.length }"
+      >
+        <template v-for="group in sideStoryGroups" :key="group.id">
+          <input
+            :id="`side-story-group-${group.id}`"
+            type="radio"
+            name="side-story-group"
+            :value="group.id"
+            :checked="activeSideStoryGroup?.id === group.id"
+            @change="selectedSideStoryGroup = group.id"
+          />
+          <label :for="`side-story-group-${group.id}`">{{ $t(group.label) }}</label>
+        </template>
+      </div>
       <SideStoryOption
-        v-for="sideStory in standalones"
+        v-for="sideStory in groupedStandalones"
         :key="sideStory.id"
         :side-story="sideStory"
         :disabled="hasSent"
@@ -501,7 +558,7 @@ const setIcon = computed(() => {
         <div class="actions">
           <button @click="startStep" :disable="hasSent">{{t('continue')}}</button>
           <button v-if="canUpgrade" @click="upgradeDecks" :disable="hasSent">{{t('upgradeDecks')}}</button>
-          <button v-if="canChooseSideStory && standalones.length > 0" @click="addSideStory = true" :disable="hasSent">+ {{t('addSideScenario')}}</button>
+          <button v-if="canChooseSideStory && standalones.length > 0" @click="openSideStories" :disable="hasSent">+ {{t('addSideScenario')}}</button>
           <button
             v-for="option in continueOptions"
             :key="option.key"
@@ -735,6 +792,40 @@ const setIcon = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* Same underlined tabs the new-game screen splits Chapter 1 / Chapter 2 /
+ * Homebrew with. */
+.side-story-group-select {
+  display: grid;
+  grid-template-columns: repeat(var(--item-count), 1fr);
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  input[type='radio'] {
+    display: none;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 10px;
+    border-bottom: 2px solid transparent;
+    color: var(--background-light);
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  label:hover,
+  input[type='radio']:checked + label {
+    border-bottom-color: var(--button-1);
+    color: var(--text);
+  }
 }
 
 button {

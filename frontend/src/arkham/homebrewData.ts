@@ -113,8 +113,9 @@ export const homebrewScenarios: (Scenario & { i18n: string })[] = Object.values(
 a campaign in progress from the continuation screen -- marks itself
 `sideStory: true` in its scenarios.json and carries what a side story needs
 alongside it: `xp`, `standaloneDifficulties` and `difficultyLevels`, exactly the
-shape of an entry in src/arkham/data/side-stories.json. ChooseMode groups these
-under Homebrew by their `:`-prefixed id. */
+shape of an entry in src/arkham/data/side-stories.json. Both side-story choosers
+group these under Homebrew by their `:`-prefixed id, unless the entry names a
+`group` of its own. */
 export const homebrewSideStories: (Scenario & { i18n: string })[] = homebrewScenarios.filter(
   (s) => (s as { sideStory?: boolean }).sideStory,
 )

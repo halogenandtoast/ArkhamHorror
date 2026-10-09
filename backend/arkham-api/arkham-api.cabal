@@ -5014,6 +5014,9 @@ library
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.StruggleForAir
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.TroublingMemories
       Arkham.Homebrew.ReturnToTheInnsmouthConspiracy.Treacheries.Wrecked
+      Arkham.Homebrew.SideStories
+      Arkham.Homebrew.SideStoryDefs
+      Arkham.Homebrew.SideStoryEntries
       Arkham.Homebrew.TH
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.MusicFromAuseilTheatre
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.ThePossessedConductor
@@ -5066,6 +5069,7 @@ library
       Arkham.Homebrew.TheSymphonyOfErichZann.Locations.TiringRoom
       Arkham.Homebrew.TheSymphonyOfErichZann.Scenarios.TheSymphonyOfErichZann
       Arkham.Homebrew.TheSymphonyOfErichZann.Sets
+      Arkham.Homebrew.TheSymphonyOfErichZann.SideStoryDefs
       Arkham.Homebrew.TheSymphonyOfErichZann.Stories.BeyondTheCurtain
       Arkham.Homebrew.TheSymphonyOfErichZann.Stories.PercussionistsMuse
       Arkham.Homebrew.TheSymphonyOfErichZann.Stories.PianistsMuse

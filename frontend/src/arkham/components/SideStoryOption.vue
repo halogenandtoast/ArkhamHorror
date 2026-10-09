@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import { imgsrc } from '@/arkham/helpers'
+import { scenarioSetIcon } from '@/arkham/helpers'
 
 /* One selectable side story. Shared by the Add Side Scenario list and by the
  * continue screen, which promotes any side story a campaign overlay is
@@ -26,7 +26,7 @@ const { t } = useI18n()
 <template>
   <div class="side-story-option" :class="{ 'side-story-option--overlay': sideStory.overlay }">
     <div class="scenario-icon">
-      <img :src="imgsrc(`sets/${sideStory.id}.png`)" />
+      <img :src="scenarioSetIcon(sideStory.id)" />
     </div>
     <div class="scenario-info">
       <h2>{{ sideStory.name }}</h2>

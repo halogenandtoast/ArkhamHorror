@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
-import type { Scenario, Campaign } from '@/arkham/data'
+import { sideStoryGroup, type Scenario, type Campaign } from '@/arkham/data'
 import { imgsrc, campaignBox, scenarioBox } from '@/arkham/helpers'
 
 type GameMode = 'Campaign' | 'SideStory'
@@ -23,8 +23,6 @@ const campaignGroup = defineModel<CampaignGroup>('campaignGroup', { required: tr
 const scenarioGroup = ref<ScenarioGroup>('sideStories')
 const emits = defineEmits(['go'])
 
-const isChapter2 = (id: string) => Number(id.slice(1,2)) >= 12
-const isHomebrew = (id: string) => id.startsWith(':')
 const isChallengeScenario = (scenario: Scenario) =>
   Boolean(scenario.requiredInvestigator) || Boolean(scenario.deckRequirements?.length)
 
@@ -37,14 +35,17 @@ const chapter2Campaigns = computed(() =>
 const homebrewCampaigns = computed(() =>
   props.campaigns.filter((c) => c.homebrew)
 )
+/* Which chapter a side story belongs to is declared in its entry (the ids are
+ * their own series and don't order by chapter), shared with the in-campaign
+ * side-story chooser. */
 const chapter1SideStories = computed(() =>
-  props.sideStories.filter((s) => !isChapter2(s.id) && !isHomebrew(s.id))
+  props.sideStories.filter((s) => sideStoryGroup(s) === 'chapter1')
 )
 const chapter2SideStories = computed(() =>
-  props.sideStories.filter((s) => isChapter2(s.id))
+  props.sideStories.filter((s) => sideStoryGroup(s) === 'chapter2')
 )
 const homebrewSideStories = computed(() =>
-  props.sideStories.filter((s) => isHomebrew(s.id))
+  props.sideStories.filter((s) => sideStoryGroup(s) === 'homebrew')
 )
 
 // Homebrew box art may not be present yet; fall back to a styled placeholder tile.

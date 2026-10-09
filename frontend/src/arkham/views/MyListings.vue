@@ -5,13 +5,10 @@
  * right for browsing and wrong for keeping track: a listing outlives the set it
  * was published from, so one whose set you have since deleted is only reachable
  * from here, and a version that was turned down is not shown to anyone else at
- * all. This is the page that answers "what is out there under my name".
- *
- * Not for everyone yet: a dev build, or an admin. */
-import { computed, ref, watch } from 'vue'
+ * all. This is the page that answers "what is out there under my name". */
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
-import { useMarketplaceVisible } from '@/composable/marketplaceAccess'
 import type { CustomCard } from '@/arkham/customCards'
 import CardOverlay from '@/arkham/components/CardOverlay.vue'
 import CustomCardsPage from '@/arkham/components/CustomCardsPage.vue'
@@ -27,7 +24,6 @@ const router = useRouter()
 const openSet = (set: Api.PublishedCardSet) =>
   router.push({ name: 'CardMarketplaceSet', params: { publishedId: set.id } })
 
-const visible = useMarketplaceVisible()
 const listings = ref<Api.PublishedCardSet[]>([])
 const loaded = ref(false)
 const busy = ref<string | null>(null)
@@ -46,16 +42,7 @@ async function load() {
   }
 }
 
-/* Watched rather than checked once at mount: an admin who opens this page on a
- * cold load has no `isAdmin` until `whoami` answers, and a mount-time check
- * would leave them on "Loading…" for good. */
-watch(
-  visible,
-  (allowed) => {
-    if (allowed && !loaded.value) load()
-  },
-  { immediate: true },
-)
+load()
 
 const ordered = computed(() =>
   [...listings.value].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),

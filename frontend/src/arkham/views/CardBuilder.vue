@@ -20,7 +20,6 @@ import {
   type CustomCard,
   type SignatureSummary,
 } from '@/arkham/customCards'
-import { useMarketplaceVisible } from '@/composable/marketplaceAccess'
 import { isBadLink, setLinkLabel } from '@/arkham/setLink'
 import CustomCardsPage from '@/arkham/components/CustomCardsPage.vue'
 import FilterBar from '@/arkham/components/FilterBar.vue'
@@ -107,11 +106,6 @@ const linkDraft = ref('')
 
 const route = useRoute()
 const router = useRouter()
-
-/* Publishing is not for everyone while the marketplace settles -- a dev build, or
- * an admin. Everything it adds to this page is gated on it, so the page is
- * unchanged for anybody else. */
-const marketplace = useMarketplaceVisible()
 
 /* An admin's publish is listed outright rather than queued -- they are the person
  * review would wait for. The server decides that on its own; this only picks the
@@ -998,7 +992,7 @@ async function onImport(event: Event) {
             <div class="set-facts">
               <MetaChip>{{ set.cardCount ? t(`${K}cardCount`, set.cardCount) : t(`${K}emptySetShort`) }}</MetaChip>
               <MetaChip
-                v-if="marketplace && isSubscribed(set)"
+                v-if="isSubscribed(set)"
                 tone="good"
                 icon="circle-check"
                 v-tooltip="t(`${K}editingUnsubscribes`)"
@@ -1008,7 +1002,7 @@ async function onImport(event: Event) {
               <!-- Listed and nothing pending is good news and needs no
                    sentence; only waiting and denied get the line below. -->
               <MetaChip
-                v-if="marketplace && isListed(set) && !isAwaitingReview(set) && !wasDenied(set)"
+                v-if="isListed(set) && !isAwaitingReview(set) && !wasDenied(set)"
                 tone="good"
                 icon="store"
               >
@@ -1033,7 +1027,7 @@ async function onImport(event: Event) {
 
           <div class="row-trailing">
             <button
-              v-if="marketplace && updateAvailable(set)"
+              v-if="updateAvailable(set)"
               type="button"
               class="update"
               @click="update(set)"
@@ -1044,7 +1038,6 @@ async function onImport(event: Event) {
 
             <div class="row-actions" role="group" :aria-label="t(`${K}setActions`)">
               <button
-                v-if="marketplace"
                 type="button"
                 v-tooltip="publishTitle(set)"
                 :aria-label="publishTitle(set)"
@@ -1100,7 +1093,7 @@ async function onImport(event: Event) {
              submitted. A denial carries the reason, which is the whole point of
              having asked for one. -->
         <p
-          v-if="marketplace && (isAwaitingReview(set) || wasDenied(set))"
+          v-if="isAwaitingReview(set) || wasDenied(set)"
           class="review"
           :class="{ denied: wasDenied(set) }"
         >

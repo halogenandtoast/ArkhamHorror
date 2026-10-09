@@ -4,13 +4,10 @@
  * Importing one takes it into your collection and keeps it subscribed, so the
  * author's later versions can be pulled in. Editing your copy ends that -- what
  * is in it is then not what was published -- and importing again is how you get
- * back to the published version.
- *
- * Not for everyone yet: a dev build, or an admin. */
-import { computed, ref, watch } from 'vue'
+ * back to the published version. */
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as Api from '@/arkham/api'
-import { useMarketplaceVisible } from '@/composable/marketplaceAccess'
 import { subscribeToSet } from '@/arkham/customCardLibrary'
 import { isBadLink, setLinkLabel } from '@/arkham/setLink'
 import type { CustomCard } from '@/arkham/customCards'
@@ -30,7 +27,6 @@ const router = useRouter()
 const openSet = (set: Api.PublishedCardSet) =>
   router.push({ name: 'CardMarketplaceSet', params: { publishedId: set.id } })
 
-const visible = useMarketplaceVisible()
 const sets = ref<Api.PublishedCardSet[]>([])
 const loaded = ref(false)
 const busy = ref<string | null>(null)
@@ -49,16 +45,7 @@ async function load() {
   }
 }
 
-/* Watched rather than checked once at mount: an admin who opens this page on a
- * cold load has no `isAdmin` until `whoami` answers, and a mount-time check
- * would leave them on "Loading..." for good. */
-watch(
-  visible,
-  (allowed) => {
-    if (allowed && !loaded.value) load()
-  },
-  { immediate: true },
-)
+load()
 
 // ------------------------------------------------------- searching & order ---
 

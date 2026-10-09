@@ -6,7 +6,6 @@ import type { User } from '@/types'
 import { OnClickOutside } from '@vueuse/components'
 import { storeToRefs } from 'pinia'
 import { useSettings } from '@/stores/settings'
-import { useMarketplaceVisible } from '@/composable/marketplaceAccess'
 
 const expanded = ref(false);
 const mobileOpen = ref(false);
@@ -48,13 +47,8 @@ const inCustomCards = computed(() =>
   CUSTOM_CARDS_SUBMENU.some((entry) => entry.covers.includes(routeName.value)),
 )
 
-/* `customCardsEnabled` is a setting anyone can turn on, but the marketplace half
- * of the bar is not for everyone yet, so the bar needs both. */
-const marketplaceVisible = useMarketplaceVisible()
 const submenu = computed(() =>
-  inCustomCards.value && customCardsEnabled.value && marketplaceVisible.value
-    ? CUSTOM_CARDS_SUBMENU
-    : null,
+  inCustomCards.value && customCardsEnabled.value ? CUSTOM_CARDS_SUBMENU : null,
 )
 
 async function logout() {

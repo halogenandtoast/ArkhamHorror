@@ -1,0 +1,44 @@
+{
+  "theMyriadGentleman": {
+    "heading": "Scenario II",
+    "name": "The Myriad Gentleman",
+    "intro": {
+      "title": "Scenario II: The Myriad Gentleman",
+      "intro1": "<p>The package contains a wealth of information &mdash; newspaper clippings, mostly, accompanied by sheets of typed notes. The information all concerns one Joseph Baxter, a self-made millionaire with a manor house on the outskirts of Arkham. His relevance to you is unclear, until you find a series of letters between Joseph and the Sheldon gang, negotiating pay for a variety of shady work, including the 'cleaning up' of, well, you. It's not clear exactly why he wanted you dead &mdash; he refers to you as 'a thorn in his side', but you'd not even heard of the man before today. Curious. And terrifying. Mostly the latter, come to think of it.</p>",
+      "intro2": "<p>With a full stomach and a caffeine buzz, you set out to determine just why you were targeted. It's slow work, tapping any resources you can find, but it pays dividends: buried in today's _Arkham Advertiser_ is a report of three men arrested in your neighbourhood in the early hours of the morning, suspected to be members of the Sheldon gang. A contact of yours manages to dig up another useful tidbit: the Sheldon gang have been doing a considerable amount of work for a new benefactor, one Joseph Baxter. It's not much to show for a morning's work, but it's a start.</p><p class='basic'>When the game begins, place 1 doom on the current agenda.</p>",
+      "intro3": "<p>The gate to Joseph Baxter's mansion is closed and barred, but you've been through too much to let that deter you. You scale a low wall, dropping over it onto a fine manicured lawn. It's time to meet your would-be executioner.</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *The Myriad Gentleman*, *Shifting Reality*, *Unravelling Years*, *Agents of Yog-Sothoth* and *Locked Doors*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/ages-unwound/sets/the-myriad-gentlemen.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/shifting-reality.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/unravelling-years.png' /><img src='{setImgPath}/agents-of-yog.png' /><img src='{setImgPath}/locked-doors.png' /></section>",
+      "placeLocations": "Put the Lawn, Hedge Maze, Ornate Fountain and Stables locations into play. Each investigator begins play at the Lawn.",
+      "setAsideLocations": "Set each remaining location aside, out of play.",
+      "setAsideCards": "Set aside each copy of The Myriad Gentleman, Ex Uno Plures, They Just Keep Coming, Not Welcome Here, Aforgomon's Blade and Gaze of Aforgomon.",
+      "copiesOfEnemies": "*Copies of Enemies:* when an investigator is instructed to spawn a copy of a displayed enemy, they put the top card of their deck into play as a copy of it. When that enemy leaves play, its owner puts the card on the bottom of their deck. Where it is unclear who should do this, the lead investigator does."
+    },
+    "label": {
+      "dealExcessDamage": "Deal the excess damage among the other copies at this location",
+      "divideMyriadAttack": "Divide this attack between damage and horror"
+    },
+    "tooltips": {
+      "lawn": {
+        "resign": "Coming here was a bad idea."
+      }
+    },
+    "armyOfOne": {
+      "label": {
+        "takeHorror": "Take {count} horror",
+        "discardCards": "Choose and discard {count} cards from your hand"
+      }
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>Joseph Baxter, the man whose house you've invaded, is part of a cult dedicated to an entity known as Aforgomon. Quite a large part of it, judging by the quantity of him you've encountered today. They're still coming for you though, endless waves of an impossible man, and you have no choice but to make your escape.</p><p>You've found very little of why he wants you dead &mdash; a scrawled note linking you to an event in Cairo, and a letter from the Sheldon gang promising you'll soon be dealt with. You've never even been to Cairo. Perhaps he's mad. Then again, considering what you've seen today, perhaps you are.</p><p>As the sun dips below the horizon, you consider your options. You could go to the police, but there's no chance they'd believe you. You could walk away, just disappear into the night... but you've seen what this cult can do, and you can't stand back and let them carry out their plan. And besides, insane or not, they still want you dead. Taking the fight to them seems more appealing than simply being hunted down.</p><p>You have a location, and no time to lose. Better get to it.</p><p class='basic'>In your Campaign Log, record that *the investigators learnt of the Myriad's ritual*.</p><p class='basic'>Each investigator earns {xp} experience.</p>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>You barely remember your flight from Joseph Baxter's manor house. The wounds you nurse are severe, but you made it out alive, which is something.</p><p>You don't like what's happening here, not at all. Between the things that pursued you last night, and the unnatural proliferation of the man you faced today... It's enough to make you question your own sanity. Certainly more than you can take to the police, lest you end up in the local asylum. Which means, you conclude with a sinking feeling, that the only force in a position to stand against them is you.</p><p class='basic'>In your Campaign Log, record that *the investigators fled the Gentleman's manor*.</p><p class='basic'>Each investigator earns {xp} experience.</p>"
+      }
+    }
+  }
+}

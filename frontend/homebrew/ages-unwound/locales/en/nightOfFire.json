@@ -1,0 +1,44 @@
+{
+  "nightOfFire": {
+    "heading": "Scenario I",
+    "name": "Night of Fire",
+    "intro": {
+      "title": "Scenario I: Night of Fire",
+      "body": "<p>Your mournful reverie is broken by movement. The pyre that was once your home illuminates three figures, strolling towards you. They seem to be holding...</p><p>A staccato burst of noise shatters the night's quiet. Gunfire. Definitely someone trying to kill you, then.</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *Night of Fire*, *Agents of Chronos*, *Nyctophobia*, *Thugs* and *Unravelling Years*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/ages-unwound/sets/night-of-fire.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/agents-of-chronos.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/nyctophobia.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/thugs.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/unravelling-years.png' /></section>",
+      "placeRivertown": "Put the Rivertown location into play. *(It is on the revealed side of one of the Arkham Streets locations.)*",
+      "startAt": "Each investigator begins play at Rivertown.",
+      "arkhamStreetsDeck": "Shuffle the remaining locations into a separate deck, Arkham Streets side faceup.",
+      "setAside": "Set Myriad Assassin, Irregulars, each copy of Eternity's Sentinel, each copy of Time Spirit and the Agents of Chronos encounter set aside, out of play."
+    },
+    "hunted": {
+      "label": {
+        "spendTwoClues": "Spend 2 clues as a group",
+        "spawnTimeSpirits": "Spawn a Time Spirit engaged with each investigator"
+      }
+    },
+    "resolutions": {
+      "xp": {
+        "desperateFlight": "their desperate flight"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>Tired, beaten, broken, you collapse to the ground. In the distance, the funeral pyre of your home still burns, lighting up the night. With the figures pursuing you endlessly, and the nightmarish creatures accompanying them, you can only assume that you'll shortly be going down with your ship.</p><p>That said, you've been lying here awhile now, and no-one's come to put one last bullet into you. With Herculean effort, you pull yourself to your feet, only to find the streets around you... empty. There are still rattles of gunfire in the distance &mdash; your pursuers finding a new target, perhaps?</p>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>Slowly, the streets are filling. Young people in sports attire pursue early-morning exercise, and men in suits hurry towards some office or other. Of the nightmare creature that pursued you, no sign. For now, at least, you've escaped its clutches.</p>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<p>With the fall of the creature leading your pursuit, the rest of your hunters vanish into the night. The body you are left with quickly dissolves, leaving a brown sludge that someone whose night had been less traumatic might mistake for soil. Someone, or something, must have sent this monster after you. But who, and why?</p>"
+      },
+      "resolution4": {
+        "title": "Resolution 4",
+        "body": "<p>You come to a halt, your lungs and limbs screaming in protest. You take several deep breaths, ragged gasps tearing through the silence of the night.</p><p>Silence... for the first time in hours, no distant shout or rattle of gunfire follows you. You made it.</p>"
+      }
+    }
+  }
+}

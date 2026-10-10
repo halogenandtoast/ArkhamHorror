@@ -641,7 +641,15 @@ getModifiedShroudValueFor attrs = do
   -- SetShroud is the "set the shroud value to X" effect, which overrides every
   -- other modifier, so it has to be applied last. BaseShroud only replaces the
   -- printed value and can still be modified afterwards.
-  pure $ max 0 $ foldr applySetModifier (foldr applyModifier modifiedBase modifiers') modifiers'
+  -- "This location's shroud cannot be reduced" floors the ShroudModifier fold at
+  -- the base value, so a Flashlight (or any other -shroud effect) cannot lower
+  -- it while a +shroud effect still can raise it.
+  let shroudAfterModifiers = foldr applyModifier modifiedBase modifiers'
+      floored =
+        if ShroudCannotBeReduced `elem` modifiers'
+          then max modifiedBase shroudAfterModifiers
+          else shroudAfterModifiers
+  pure $ max 0 $ foldr applySetModifier floored modifiers'
  where
   applyBaseModifier (BaseShroud m) _ = m
   applyBaseModifier _ n = n

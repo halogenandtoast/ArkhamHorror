@@ -1,0 +1,52 @@
+{
+  "aWorldTornDown": {
+    "heading": "Scenario III",
+    "name": "A World Torn Down",
+    "intro": {
+      "title": "Scenario III: A World Torn Down",
+      "intro1": "<p>Lacking other leads to pursue, you stay awhile to observe the Myriad Gentleman's home. You spend a long time waiting, watching the property's exits for any sign of movement. Sure enough, as the sun sets, a convoy of vehicles sets out from the manor. You follow as best you can, careful not to be spotted.</p><p>Before too long, the Myriad Gentleman reaches their destination. A school, by the look of it. You go to follow them, but before you're able to make it inside, the school is suffused with a dim green glow, rebuffing you, as a muffled chanting flows from the building&hellip;</p>",
+      "intro2": "<p>Mount Hollyoke Elementary was condemned by Arkham's town council several years ago, but for unknown reasons was never demolished. This seems to suit the Myriad just fine &mdash; they've repurposed it to their own ends. A ritual takes place here tonight &mdash; one that could spell the end of everything and everywhen.</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all the cards from the following encounter sets: *A World Torn Down*, *Night of the Ritual*, *Agents of Chronos*, *Myriad*, *Nyctophobia*, *Thugs* and *Unleashed Chaos*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/ages-unwound/sets/a-world-torn-down.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/night-of-the-ritual.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/agents-of-chronos.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/myriad.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/nyctophobia.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/thugs.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/unleashed-chaos.png' /></section>",
+      "placeLocations": "Put Front Gates, Side Building, Children's Playground, Sports Field, Front Hallway and Rear Corridors into play.",
+      "startAt": "Each investigator begins play at the Front Gates.",
+      "setAside": "Set each other location aside, out of play, along with Hound of Unmaking, Unstable Warding, each copy of Unleashed Chaos and Stirring Titan, Unstable Energies, Aid from Afar and The Myriad Gentleman _(The High Priest)_."
+    },
+    "aidFromAfar": {
+      "label": {
+        "searchYourDecks": "“One of your companions calls out — they've found something!” Each investigator may search the top 9 cards of their deck for a card and draw it",
+        "discoverClues": "“Your eye catches on a small inscription you'd previously missed.” Discover {count} clues from your location",
+        "callInGunfire": "“A hail of gunfire catches the foe in front of you in the chest.” Defeat a non-Elite enemy at your location, or deal {count} damage to an Elite enemy at your location and exhaust it"
+      }
+    },
+    "timeRunningOut": {
+      "additionalAction": "Time Running Out"
+    },
+    "endOfTheLine": {
+      "additionalActions": "End of the Line"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>Try as you might, the Myriad's fortress is virtually impenetrable. As the ritual inside builds towards its terrible conclusion, you throw yourself at it in desperation, seeking any way to break&mdash;</p>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>The distortions around you grow more and more severe. You can barely stand, can hardly move as broken realities circle and shift. Time melts like butter on a stove, and you find yourself falling, falling outside of time&hellip;</p><p class='basic'>In your Campaign Log, record that *the investigators fell to the Myriad*. Next to this, record the time. If there was no agenda in play, record the time as (3,4).</p><p class='basic'>Each investigator earns {xp} experience.</p>"
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "<p>Tearing apart the first ritual circle, you turn your attention to the other two. The cultists surrounding them advance on you; they don't look like particularly capable fighters, but they outnumber you ten to one. Taking a few cautious steps backwards, you find yourself on the precipice of a swirling, many-hued rift in reality, the untamed schism that was once contained by the arcane circle you broke. It's a way out, maybe, but an unfathomable one&hellip;</p><p>Then, a commotion on the far side of the auditorium. New arrivals, cutting their way through the cultists, making a beeline for the other circles. It's difficult to see past the encroaching cultists, but you manage to catch the eye of&mdash;</p><p>No, that can't be.</p><p>You glance at the rift behind you. The figure nods, once. You step into the unknown.</p><p class='basic'>Each investigator earns {xp} experience.</p>"
+      },
+      "resolution4": {
+        "title": "Resolution 4",
+        "body": "<p>You run, panting, down an alley. The armed men are still in pursuit&mdash;</p><p>As you explore the manor's garden, a tall man in a fine suit strolls out to meet you&mdash;</p><p>Your family, such as it is, stands at your bedside, awaiting&mdash;</p><p>You let out an ear-piercing wail, unsteady on your tiny legs&mdash;</p><p>&mdash;through the barrier. There must be a way, there&mdash;</p><p>“Mama.” Your first word.</p><p>“I'm sorry. I failed you all.” Your last.</p><p class='basic'>In your Campaign Log, record that *all times are one*. Each investigator is driven insane. The investigators lose the campaign.</p>"
+      },
+      "resolution5": {
+        "title": "Resolution 5",
+        "body": "<p>Mount Hollyoke Elementary was condemned by Arkham's town council several years ago, but for unknown reasons was never demolished. This seems to suit the Myriad just fine &mdash; they've repurposed it to their own ends. A ritual takes place here tonight &mdash; one that could spell the end of everything and everywhen.</p><p>“With a sense of troublous familiarity, I beheld the blurred unstable pictures which flowed past me upon this never-resting medium. Orient temples, flashing with sun-struck bronze and gold; the sharp, crowded gables and spires of medieval cities; tropic and northern forests; the costumes and physiognomies of the Levant, of Persia, of old Rome and Carthage, went by like blown, flying mirages. Each succeeding tableau belonged to a more ancient period than the one before it — and I knew that each was a scene from some former existence of my own.”</p><p>&mdash; Clark Ashton Smith, “The Chain of Aforgomon”</p><p class='basic'>In your Campaign Log, record that *the timeline was weakened*. The investigators must replay Scenario III: A World Torn Down. No experience points are earned from your previous game.</p>"
+      }
+    }
+  }
+}

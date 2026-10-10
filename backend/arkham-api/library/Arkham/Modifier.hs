@@ -514,6 +514,12 @@ data ModifierType
   | SetSkillValue {skillType :: SkillType, value :: Int}
   | SharesSlotWith Int CardMatcher -- card matcher allows us to check more easily from hand
   | ShroudModifier Int
+  | {- | "This location's shroud cannot be reduced." 'ShroudModifier's may still
+    raise it, but the result is floored at the location's base value.
+    'SetShroud' is deliberately exempt: it replaces the value outright rather
+    than modifying it.
+    -}
+    ShroudCannotBeReduced
   | ShuffleIntoAnyDeckInsteadOfDiscard
   | ShuffleIntoDeckInsteadOfDiscard
   | SkillCannotBeIncreased SkillType

@@ -1,0 +1,242 @@
+{
+  "name": "Ages Unwound",
+  "interludes": {
+    "1": "An Unknown Benefactor"
+  },
+  "headings": {
+    "interludes": {
+      "1": "Interlude I"
+    }
+  },
+  "intro": {
+    "title": "Ages Unwound",
+    "body": "<p>Ages Unwound is a seven-part fan-made campaign for Arkham Horror: The Card Game, designed by Olivia Juliet, in which the investigators are unstuck from their own timeline and must bind the time-god Aforgomon before every age collapses into one.</p>"
+  },
+  "additionalRulesAndClarifications": {
+    "title": "Additional Rules and Clarifications",
+    "alert": "<p class='basic'>TODO(ages-unwound): the printed Alert rules text. Mechanically: if you fail a skill test while attempting to evade an *Alert* enemy, after that test resolves that enemy attacks you. It does not exhaust, and this happens whether or not you are engaged with it.</p>",
+    "storyCards": "<p class='basic'>TODO(ages-unwound): the printed Story card rules text. Resolve the story text and then the game text; a story card is usually the reverse of another card.</p>",
+    "gainingAndLosingActions": "<p class='basic'>TODO(ages-unwound): the printed Gaining and Losing Actions rules text. A *standard action* is any action without a limitation on its use, regardless of source. Gained actions are granted in upkeep (4.2).</p>"
+  },
+  "prologue": {
+    "title": "Prologue",
+    "body": "<p>TODO(ages-unwound): the prologue flavour (guide p3) &mdash; the fire at your home.</p>"
+  },
+  "anUnknownBenefactor": {
+    "title": "An Unknown Benefactor",
+    "body": "<p>TODO(ages-unwound): Interlude I flavour (guide p5).</p>",
+    "theChoice": "<p>TODO(ages-unwound): the text that frames the choice.</p>",
+    "goingItAlone": "<p>TODO(ages-unwound): the Going It Alone branch.</p>",
+    "leapOfFaith": "<p>TODO(ages-unwound): the Leap of Faith branch.</p>",
+    "label": {
+      "goingItAlone": "Going It Alone",
+      "leapOfFaith": "Leap of Faith"
+    }
+  },
+  "epilogue": {
+    "title": "Epilogue",
+    "bound": "<p>TODO(ages-unwound): the epilogue read when the investigators bound Aforgomon (guide p19).</p>",
+    "allTimesAreOne": "<p>TODO(ages-unwound): the epilogue read when all times are one (guide p19).</p>",
+    "silverTwilight": "<p>TODO(ages-unwound): the extra epilogue paragraph for a campaign log that advanced the schemes of the Silver Twilight Lodge.</p>"
+  },
+  "aforgomonsBlade": {
+    "label": {
+      "spendChargeForAction": "Spend 1 charge and exhaust Aforgomon's Blade",
+      "doNotSpendCharge": "Do not spend a charge"
+    }
+  },
+  "key": {
+    "yourHuntersFoundANewQuarry": "your hunters found a new quarry.",
+    "theInvestigatorsSurvivedTheNightOfFire": "the investigators survived the night of fire.",
+    "theInvestigatorsSlewTheirStrangeObserver": "the investigators slew their strange observer.",
+    "theInvestigatorsEscapedTheNightOfFire": "the investigators escaped the night of fire.",
+    "theInvestigatorsDeclinedAnOfferOfHelp": "the investigators declined an offer of help.",
+    "theInvestigatorsAcceptedAnOfferOfHelp": "the investigators accepted an offer of help.",
+    "theInvestigatorsLearntOfTheMyriadsRitual": "the investigators learnt of the Myriad's ritual.",
+    "theInvestigatorsFledTheGentlemansManor": "the investigators fled the Gentleman's manor.",
+    "theBoundaryIsBroken": "the boundary is broken.",
+    "theInvestigatorsUsedTheSchoolsFrontDoor": "the investigators used the school's front door.",
+    "theInvestigatorsFellToTheMyriad": "the investigators fell to the Myriad.",
+    "theInvestigatorsSteppedIntoThePast": "the investigators stepped into the past.",
+    "theInvestigatorsSteppedIntoTheFuture": "the investigators stepped into the future.",
+    "theInvestigatorsEliminatedTheHighPriest": "the investigators eliminated the high priest.",
+    "theTimelineWasWeakened": "the timeline was weakened.",
+    "allTimesAreOne": "all times are one.",
+    "theRitualIsNigh": "The ritual is nigh.",
+    "returnedToArkhamLate": "returned to Arkham late.",
+    "theInvestigatorsViolatedCausality": "the investigators violated causality.",
+    "theMyriadSolvedTheRiddleOfTheSphinx": "the Myriad solved the riddle of the sphinx.",
+    "theMyriadHarnessedThePowerOfAnotherRealm": "the Myriad harnessed the power of another realm.",
+    "theMyriadTookControlOfAColourOutOfSpace": "the Myriad took control of a colour out of space.",
+    "theMyriadRaisedAPowerfulWarding": "The Myriad raised a powerful warding.",
+    "theMyriadRecruitedACruelSorcerer": "The Myriad recruited a cruel sorcerer.",
+    "theMyriadWeavedADreadCurse": "The Myriad weaved a dread curse.",
+    "disappearedUnexpectedly": "disappeared unexpectedly.",
+    "theInvestigatorsUnleashedChaos": "the investigators unleashed chaos.",
+    "theInvestigatorsBoundAforgomonInAPrisonOfTime": "the investigators bound Aforgomon in a prison of time.",
+    "stillBearsAforgomonsMark": "still bears Aforgomon's mark.",
+    "existenceIsWaning": "'s existence is waning.",
+    "youHaveAdvancedTheSchemesOfTheSilverTwilightLodge": "you have advanced the schemes of the Silver Twilight Lodge.",
+    "strangeAssistance": "Strange Assistance",
+    "recordedTimes": "Recorded times",
+    "mustReplayAWorldTornDown": "the investigators must face A World Torn Down again.",
+    "mustReplayTimeRunsOut": "the investigators must face Time Runs Out again.",
+    "theInvestigatorsSnuckIntoTheBackOfTheSchool": "the investigators snuck into the back of the school.",
+    "theInvestigatorsRepelledTheHoundOfUnmaking": "the investigators repelled the Hound of Unmaking.",
+    "theInvestigatorsPutDownTheHoundOfUnmaking": "the investigators put down the Hound of Unmaking.",
+    "theInvestigatorsDispelledTheWard": "the investigators dispelled the ward.",
+    "theInvestigatorsBrokeTheFirstCircle": "the investigators broke the first circle.",
+    "damageOnTheHoundOfUnmaking": "Damage on the Hound of Unmaking"
+  },
+  "label": {
+    "gainActions": "Gain 1 action | Gain {count} actions",
+    "aspectsOfInfinity": {
+      "loseSurge": "This card loses surge"
+    },
+    "riggedToBlow": {
+      "moveOne": "Move one investigator at your location to a connecting location",
+      "moveEach": "Move each investigator at your location to a connecting location"
+    },
+    "unevenAcceleration": {
+      "gainActionAndDraw": "Gain an action. Draw the top card of the encounter deck"
+    },
+    "houndOfUnmaking": {
+      "discardAsset": "Discard an asset you control",
+      "takeExtraDamage": "The attack deals you +2 damage"
+    },
+    "timeLoop": {
+      "fight": "Fight",
+      "move": "Move",
+      "evade": "Evade",
+      "investigate": "Investigate",
+      "play": "Play",
+      "draw": "Draw",
+      "resource": "Resource"
+    },
+    "timeReshaped": {
+      "loseActionForSkill": "Lose 1 action. You get +1 skill value during skill tests until the end of the round",
+      "gainActionForSkill": "Gain 1 action. You get –1 skill value during skill tests until the end of the round"
+    },
+    "timesEbb": {
+      "doNotChoose": "Do not choose an investigator. Lose an action"
+    },
+    "contactingTheLodge": {
+      "extraActions": "Spend additional actions"
+    },
+    "schemeOfTheMyriad": {
+      "investigate": "Harness the tear in reality instead of discovering clues"
+    },
+    "bookHeist": {
+      "steal": "Wait for your moment, then swoop in and grab it",
+      "notWorthTheRisk": "It's just not worth the risk"
+    },
+    "answers": {
+      "knowledge": "“Knowledge.” Draw cards until you reach your maximum hand size",
+      "power": "“Power.” Distribute 5 supplies, ammo, charges or secrets among assets you control",
+      "wealth": "“Wealth.” Gain 10 resources",
+      "aid": "“Aid.” Move to any location and deal 3 damage to an enemy there",
+      "supply": "Place 1 supply",
+      "ammo": "Place 1 ammo",
+      "charge": "Place 1 charge",
+      "secret": "Place 1 secret"
+    },
+    "windowOfOpportunity": {
+      "retreat": "You retreat, while you still have that option",
+      "digSite": "You move toward the dig site, determined to seal this thing back where it came from"
+    },
+    "agencyStrikeTeam": {
+      "damageEachEnemy": "Deal 3 damage to each enemy at the chosen location",
+      "discoverClues": "Discover 3 clues at the chosen location"
+    },
+    "aLongAndLonelyYear": {
+      "moveToArkham": "Move to Arkham, Massachusetts"
+    },
+    "aMultitudeOfPlots": {
+      "placeDoom": "Place 1 doom on the current agenda. This card gains surge and is removed from the game",
+      "addToVictory": "Add this card to the victory display, advancing the plans of the Myriad"
+    },
+    "childrensPlayground": {
+      "spendActions": "Spend actions to lower Children's Playground's shroud for this investigation"
+    },
+    "assistanceFromTheLodge": {
+      "dealDamage": "“Something moves in the dark beyond, and your foe drops.” Deal 2 damage to an enemy",
+      "discoverClue": "“A note, slipped into your pocket you don't remember.” Discover a clue from your location or a connecting location",
+      "healDamage": "“A sting, a bandage, and the pain recedes.” Heal 2 damage"
+    }
+  },
+  "tooltips": {
+    "frontHallway": {
+      "haunted": "If the Hound of Unmaking is in play and undamaged, place 1 damage on it"
+    },
+    "cafeteria": {
+      "haunted": "Lose all remaining actions and end your turn",
+      "investigate": "Investigate. If you fail, do not trigger this location’s haunted ability"
+    },
+    "classroomRitualSupplies": {
+      "haunted": "End your turn"
+    },
+    "classroomGuardedSecrets": {
+      "haunted": "Search the encounter deck and discard pile for a Criminal enemy and draw it"
+    },
+    "classroomEnergisedAndUnstable": {
+      "haunted": "For each standard action you have remaining, either lose 1 action or take 1 direct damage"
+    },
+    "principalsOffice": {
+      "haunted": "For each action you have completed this turn, take 1 horror or choose and discard a card from your hand"
+    },
+    "ritualCircleAHarnessedFuture": {
+      "haunted": "Suspend your current turn and remove your investigator from the game. At the start of the next investigator phase, return your investigator to this location and resume the current turn"
+    },
+    "ritualCircleGatewayToThePast": {
+      "haunted": "Move to Front Gates"
+    },
+    "schemeOfTheMyriad": {
+      "investigate": "Investigate. If you succeed, instead of discovering clues, flip Scheme of the Myriad over and resolve its text"
+    },
+    "arkhamMassachusetts": {
+      "helpingYourself": "Investigators at this location spend 2 clues per investigator, as a group: Remove 1 resource from Helping Yourself",
+      "move": "Move to London or Paris",
+      "resign": "Resign. You return to Arkham, ready for what is to come"
+    },
+    "sanFrancisco": {
+      "move": "Move to Shanghai or Sydney"
+    },
+    "mexicoCity": {
+      "gainClues": "Discard an Item asset you control: Gain 2 clues from the token pool"
+    },
+    "london": {
+      "move": "Move to Arkham, Massachusetts"
+    },
+    "paris": {
+      "move": "Move to Arkham, Massachusetts"
+    },
+    "istanbul": {
+      "heal": "Spend 2 resources: Heal 1 damage and 1 horror",
+      "move": "Spend 2 resources: Move to a connecting location"
+    },
+    "cairo": {
+      "search": "Search the top 3 cards of your deck for a card and draw it"
+    },
+    "shanghai": {
+      "move": "Move to San Francisco or Sydney",
+      "gainClue": "Spend 3 resources: Gain 1 clue from the token pool"
+    },
+    "sydney": {
+      "move": "Move to San Francisco or Shanghai",
+      "replenish": "Place 4 clues on Sydney. Draw 2 cards and gain 2 resources. Move to any other location"
+    },
+    "displacedLegion": {
+      "parley": "Parley. Test {intellect} (4) to communicate with the soldiers. If you succeed, until the end of the round, Displaced Legion loses massive and gains aloof",
+      "portal": "Test {willpower} (4) to open a portal through time. If you succeed, add Displaced Legion to the victory display"
+    },
+    "theLongGame": {
+      "drawTask": "The investigators spend 1 clue per investigator, as a group: Put the top card of the Task deck into play next to the act deck, resolving its revelation effect"
+    },
+    "ritualCircleThePresentFractured": {
+      "haunted": "<b>Haunted</b> – Take 1 damage and 1 horror. Place 1 of your clues on Ritual Circle. Gain an action, which can only be used to investigate Ritual Circle."
+    }
+  },
+  "ritualCircleThePresentFractured": {
+    "additionalAction": "Ritual Circle"
+  }
+}

@@ -160,6 +160,11 @@ data InvestigatorMatcher
   | YetToTakeTurn
   | NotInvestigator InvestigatorMatcher
   | InvestigatorThatMovedDuringTurn
+  | {- | Round-scoped sibling of 'InvestigatorThatMovedDuringTurn'. Needed for
+    printed text that says "this round" rather than "this turn", which includes
+    movement forced on you outside your own turn (a mythos-phase treachery).
+    -}
+    InvestigatorThatMovedDuringRound
   | InvestigatorWithSupply Supply
   | {- | Investigator-side view of 'LocationWithDiscoverableCluesBy'. Both delegate
     to 'Arkham.Helpers.Investigator.getCanDiscoverClues', so this asks whether

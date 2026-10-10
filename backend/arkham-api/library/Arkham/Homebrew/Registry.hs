@@ -13,6 +13,7 @@ import Arkham.Asset.Types (SomeAssetCard)
 import Arkham.Card.CardCode
 import Arkham.EncounterSet (EncounterSet)
 import Arkham.Enemy.Types (SomeEnemyCard)
+import Arkham.Event.Types (SomeEventCard)
 import Arkham.Homebrew.ContentEntries (DiscoveredModules)
 import Arkham.Homebrew.TH
 import Arkham.Homebrew.Types as X
@@ -42,6 +43,9 @@ assets = allHomebrewContent.assets
 
 enemies :: [SomeEnemyCard]
 enemies = allHomebrewContent.enemies
+
+events :: [SomeEventCard]
+events = allHomebrewContent.events
 
 locations :: [SomeLocationCard]
 locations = allHomebrewContent.locations

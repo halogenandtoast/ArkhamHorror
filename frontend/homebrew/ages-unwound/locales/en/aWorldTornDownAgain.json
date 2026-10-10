@@ -1,0 +1,46 @@
+{
+  "aWorldTornDownAgain": {
+    "heading": "Scenario VI",
+    "name": "A World Torn Down, Again",
+    "intro": {
+      "title": "Scenario VI: A World Torn Down, Again",
+      "intro1": "<p>There was, in the end, a simple way to lure the Sheldon gang and their supernatural compatriots away from your past self. Their target was you, after all.</p><p>That said, your encounters with them mean you reach the ritual site rather the worse for wear.</p><p class='basic'>Each investigator takes 1 direct damage and 1 direct horror.</p>",
+      "intro2": "<p>Mount Hollyoke Elementary School &mdash; the site of the Myriad's profane ritual, the place that sent you tumbling into the past a year ago &mdash; is absent. You've reached its address, the place where you distinctly remember it being, and yet, it is not.</p><p>The air thrums with energy, and a green light glows very faintly in your periphery. The ritual's still happening, then. This&hellip; This could pose an issue.</p>",
+      "intro3": "<p>Mount Hollyoke Elementary School. It's been a long time since you last visited. You can't say you missed it, honestly.</p><p>The barrier erected by the Myriad stands firm around it, and the air is rich with temporal energy. The ritual has begun, which means it's time for you to intervene.</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all the cards from the following encounter sets: *A World Torn Down Again*, *Night of the Ritual*, *Agents of Chronos*, *Myriad*, *Nyctophobia*, *Thugs* and *Unleashed Chaos*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/ages-unwound/sets/a-world-torn-down-again.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/night-of-the-ritual.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/agents-of-chronos.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/myriad.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/nyctophobia.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/thugs.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/unleashed-chaos.png' /></section>",
+      "paradox": "If *the investigators violated causality*, also gather the *Paradox* encounter set, which is indicated by the following icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/ages-unwound/sets/paradox.png' /></section>",
+      "checkCampaignLog": "Check Campaign Log:",
+      "harnessed": "If *the Myriad harnessed the power of another realm*: Put Featureless Streets into play. The starting location is Featureless Streets.",
+      "notHarnessed": "Otherwise, remove Featureless Streets and act 1a from the game. The game begins at act 2a. Put Front Gates, Sports Field, Children's Playground and Side Building into play. If *the investigators used the school's front door*, put Rear Corridors into play. Otherwise, put Front Hallway into play. The starting location is Sports Field.",
+      "lateInvestigators": "Each investigator who *returned to Arkham late* performs setup normally, but begins the game at no location. They are not considered to be in play, and cannot interact with the game in any way. At the end of the first round of the game, each of these investigators enters play at the starting location. Each other investigator begins play at the starting location.",
+      "addChaosToken": "Based on your difficulty level, add the following chaos token to the chaos bag for the remainder of the campaign: Easy &ndash;3, Standard &ndash;5, Hard &ndash;6, Expert &ndash;7.",
+      "nexus": "If *the Myriad raised a powerful warding*, put Nexus of Aforgomon into play next to the agenda deck. Otherwise, remove Nexus of Aforgomon from the game.",
+      "coloursSpread": "If *the Myriad took control of a colour out of space*, put The Colour's Spread into play next to the agenda deck. Otherwise, remove The Colour's Spread from the game.",
+      "removeLodge": "If *you have advanced the schemes of the Silver Twilight Lodge*, no changes are made. Otherwise, remove each copy of Assistance from the Lodge from the game.",
+      "sphinxBonus": "If *you solved the riddle of the sphinx*, each investigator begins the game with 1 additional card and 2 additional resources.",
+      "myriadSphinx": "If *the Myriad solved the riddle of the sphinx*, place 1 doom on the current agenda.",
+      "disappeared": "If *[an enemy] disappeared unexpectedly*, set a copy of that enemy aside, out of play.",
+      "removeHarnessedFuture": "If *the investigators stepped into the future*, remove Ritual Circle _(A Harnessed Future)_ from the game.",
+      "removeGatewayToThePast": "If *the investigators stepped into the past*, remove Ritual Circle _(Gateway to the Past)_ from the game.",
+      "setAside": "Set each remaining location aside, out of play, along with Estravius Malone, Hound of Unmaking, Unstable Warding, Unstable Energies, The Myriad Gentleman _(The High Priest)_ and each copy of Unleashed Chaos, Stirring Titan and Hired Thugs."
+    },
+    "timeRunningShort": {
+      "additionalAction": "Time Running Short"
+    },
+    "rageAgainstTheEnd": {
+      "additionalActions": "Rage Against The End"
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>Minutes and eons rush past you, ancient secrets and terrible futures. A force tugs on you, urging you to fall, to be lost in the timestream once more.</p><p>This time, however, you are not so easily taken. You stand, holding firm against the pull of entropy, and step. One step, then another, dragging yourself through time. You can control this, forge your own path, straight towards Aforgomon. Pushing towards an ending, one way or another.</p><p class='basic'>Each investigator earns experience equal to the Victory X value of each card in the victory display.</p>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>You run, panting, down an alley. The armed men are still in pursuit&mdash;</p><p>As you explore the manor's garden, a tall man in a fine suit strolls out to meet you&mdash;</p><p>Your family, such as it is, stands at your bedside, awaiting&mdash;</p><p>You let out an ear-piercing wail, unsteady on your tiny legs&mdash;</p><p>&mdash;scratching desperately at the runes painted on the floor, hoping against hope that&mdash;</p><p>“Mama.” Your first word.</p><p>“I'm sorry. I failed you all.” Your last.</p><p class='basic'>In your Campaign Log, record that *all times are one*. Each investigator is driven insane. The investigators lose the campaign.</p>"
+      }
+    }
+  }
+}

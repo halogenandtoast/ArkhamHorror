@@ -91,6 +91,7 @@ homebrewSpec = \case
             "AgendaCard" -> Just "agendaContent"
             "AssetCard" -> Just "assetContent"
             "EnemyCard" -> Just "enemyContent"
+            "EventCard" -> Just "eventContent"
             "LocationCard" -> Just "locationContent"
             "SkillCard" -> Just "skillContent"
             "StoryCard" -> Just "storyContent"

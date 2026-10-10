@@ -1,0 +1,61 @@
+{
+  "unstuck": {
+    "heading": "Scenario IV",
+    "name": "Unstuck",
+    "intro": {
+      "title": "Scenario IV: Unstuck",
+      "body": "<p>You fall. Though fall is maybe the wrong word &mdash; fall implies a sense of down. You tumble through realities, flashes of years long past and dizzying futures muddling your senses. You feel sick, faint, close to passing out.</p><p>A sudden stillness. You lie on solid ground. It takes you a minute to pull yourself to your feet, and your head still pounds. You're in a forest. Not one that looks familiar, but it's something. It's reality.</p><p>A roar cuts through your musings, painfully loud. Three creatures burst from the foliage, screeching as they flee past you, lizard-like beasts almost as tall as you are. You watch them flee, turning back just in time to spot a colossal beast crushing the trees in front of you. It roars again, the sound pounding your bones to jelly, as it charges you...</p><p>Existence gives way, and you find yourself falling once more.</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *Unstuck* and *Paradox* encounter sets. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/ages-unwound/sets/unstuck.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/paradox.png' /></section>",
+      "setAside": "Set the Paradox encounter set, The Timestream and Arkham, Massachusetts *(Present Day?)* locations, and each copy of the Time Runs Backwards weakness aside, out of play.",
+      "theRing": "Remove one of the two copies of each other location from the game, at random.",
+      "removeOneVersion": "The removed versions are kept to one side: agenda 3b swaps a location for the version that was removed from the game.",
+      "shuffleAndPlace": "Shuffle the eight remaining locations together and put them into play in a random order, forming a circle.",
+      "shuffleElites": "Shuffle the four Elite enemies together. Set three of them aside, out of play, without looking at them. *(The fourth will be shuffled into the encounter deck.)*",
+      "checkCampaignLog": "Check Campaign Log.",
+      "steppedIntoThePast": "If the investigators stepped into the past, each investigator begins play at Arkham, Massachusetts *(16th Century)*.",
+      "steppedIntoTheFuture": "If the investigators stepped into the future, each investigator begins play at A Disquieting Future.",
+      "fellToTheMyriad": "If the investigators fell to the Myriad, each investigator begins play at a different random Adrift location.",
+      "addChaosToken": "Based on your difficulty level, add the following chaos token to the chaos bag for the remainder of the campaign: Easy &minus;2, Standard &minus;3, Hard &minus;4, Expert &minus;5."
+    },
+    "eagerSphinx": {
+      "label": {
+        "defeatEagerSphinx": "Defeat Eager Sphinx",
+        "drawTwoCards": "Draw 2 cards",
+        "gainThreeResources": "Gain 3 resources"
+      }
+    },
+    "aerialBombardment": {
+      "label": {
+        "spendAnAction": "Spend 1 action",
+        "takeOneDamage": "Take 1 damage",
+        "discardRandomCard": "Discard 1 card from your hand at random"
+      }
+    },
+    "darkMaledict": {
+      "label": {
+        "investigatorTakesHorror": "Choose an investigator to take 2 horror",
+        "healDamagedEnemy": "Choose a damaged enemy and heal 2 damage from it",
+        "eachInvestigatorDiscards": "Each investigator chooses and discards a card from their hand"
+      }
+    },
+    "overwhelmingNumbers": {
+      "label": {
+        "doNotPlaceAClue": "Do not place a clue",
+        "testCombat": "Test {combat} (4)",
+        "testAgility": "Test {agility} (4)"
+      }
+    },
+    "resolutions": {
+      "investigatorDefeat": {
+        "title": "Investigator Defeat",
+        "body": "<p>You come to in a moonlit jail cell. Your head pounds like nothing you've ever felt before, and as you try and get someone's attention you feel the flow of time slip around you, and suddenly the sun is high in the sky. You manage to attract the attention of a very confused police officer, who doesn't remember you ever being brought in.</p><p>He asks you a few questions &mdash; which you do your best to answer, though your memories are of little help to you &mdash; before releasing you onto the streets of Arkham, nonplussed but without reason to hold you.</p><p>Emerging from the station, you're forced to duck into an alleyway as you spot an officer approaching, supporting a barely-conscious you. \"Picked this one up right off the street,\" you hear him comment to the desk sergeant. \"Bold as brass, just lying there in a drunken stupor.\" He's not got it quite right, but you can hardly stop to correct him.</p><p class='basic'>Each investigator who was defeated gains the Time Runs Backwards weakness, and must add it to their deck.</p>"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>With your feet firmly on the ground, you take a moment to stop and breathe in the air. Arkham's distinct ashy, slightly mildewed scent fills you with a sense of peace. You're home.</p><p>Your reverie doesn't last long. The Myriad's ritual was disrupted by your efforts, but could still continue. It's daytime now, so presumably it's the next day... or the previous one. You spot a newsagent with a stack of papers on sale, and your heart sinks as you read the date:</p><p>Tuesday, August 26th, 1924</p><p>You're early. You've arrived a whole year before you left.</p>"
+      }
+    }
+  }
+}

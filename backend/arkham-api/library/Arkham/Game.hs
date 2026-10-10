@@ -1399,6 +1399,9 @@ getInvestigatorsMatching MatcherFunc {..} matcher = do
     InvestigatorThatMovedDuringTurn -> flip runMatchesM as \i -> do
       history <- getHistory TurnHistory (toId i)
       pure $ historyMoved history > 0
+    InvestigatorThatMovedDuringRound -> flip runMatchesM as \i -> do
+      history <- getHistory RoundHistory (toId i)
+      pure $ historyMoved history > 0
     InvestigatorWhenCriteria criteria -> flip runMatchesM as $ \i -> passesCriteria (toId i) Nothing GameSource GameSource [] criteria
     NotInvestigator x -> negateMatches x as go
     InvestigatorIfLocation lMatcher i1 i2 -> do

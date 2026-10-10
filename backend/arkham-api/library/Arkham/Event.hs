@@ -8,6 +8,7 @@ import Arkham.Classes
 import Arkham.Custom.Event (customEvent)
 import Arkham.Event.Events
 import Arkham.Event.Runner
+import Arkham.Homebrew.Registry qualified as Registry
 import Arkham.Prelude hiding (catch)
 
 createEvent :: IsCard a => a -> InvestigatorId -> EventId -> Event
@@ -66,7 +67,8 @@ withEventCardCode cCode f = case lookup cCode allEvents of
 
 allEvents :: Map CardCode SomeEventCard
 allEvents =
-  mapFromList
+  (mapFromList (concatMap someEventCardCodes Registry.events) <>)
+    $ mapFromList
     $ concatMap
       someEventCardCodes
       [ -- Night of the Zealot

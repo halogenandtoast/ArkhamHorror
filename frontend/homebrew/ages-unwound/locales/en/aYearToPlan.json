@@ -1,0 +1,30 @@
+{
+  "aYearToPlan": {
+    "heading": "Scenario V",
+    "name": "A Year to Plan",
+    "intro": {
+      "title": "Scenario V: A Year to Plan",
+      "body": "<p>It takes a little time to get used to being in the past. There's a second you here &mdash; you've seen them, though you made sure they didn't see you. That means you don't have a home, or a family, unless you want to meddle with your own past.</p><p>Once you get yourself set up, though, you're able to do some research. A few days at the Miskatonic University library dig up some interesting leads you intend to follow up on. The Myriad are operating in this time, it seems &mdash; so why not interfere with their plans?</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the following encounter sets: *A Year to Plan*, *Missions*, *Myriad*, *Shifting Reality*, *Unravelling Years*, *Dark Cult* and *The Midnight Masks*. These sets are indicated by the following icons:<section class='encounter-sets'><img src='{imgPath}/homebrew/ages-unwound/sets/a-year-to-plan.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/missions.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/myriad.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/shifting-reality.png' /><img src='{imgPath}/homebrew/ages-unwound/sets/unravelling-years.png' /><img src='{setImgPath}/dark-cult.png' /><img src='{setImgPath}/midnight-masks.png' /></section>",
+      "midnightMasks": "When gathering The Midnight Masks encounter set, only gather the 5 treachery cards *(2x False Lead and 3x Hunting Shadow)*. Do not gather the location, act, agenda, or scenario reference cards from that set.",
+      "placeLocations": "Put each City and Wilderness location into play.",
+      "startAt": "Each investigator begins play in Arkham, Massachusetts.",
+      "helpingYourself": "Put the Helping Yourself treachery into play next to the act deck with X resources on it. X is the number of marks under Strange Assistance in your Campaign Log.",
+      "taskDeck": "Shuffle the following treachery cards together to form the task deck: Enemy of my Enemy, A Treasure Unearthed, The Devil You Know, Higher Powers, Entreating the Gods and Up To Something. Place this deck near the scenario reference card.",
+      "setAside": "Set the remainder of the Missions encounter set aside, out of play, along with each copy of Curse of a Thousand Winters."
+    },
+    "resolutions": {
+      "label": {
+        "raisedAPowerfulWarding": "The Myriad raised a powerful warding",
+        "recruitedACruelSorcerer": "The Myriad recruited a cruel sorcerer",
+        "weavedADreadCurse": "The Myriad weaved a dread curse"
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>It's been a long year. It feels like you've been fighting forever, never stopping, never able to relax. One more night, you tell yourself, as you ready to head out. After tonight, whatever happens, your fight will be over.</p><p class='basic'>Record in your Campaign Log that *The ritual is nigh.* For each investigator that did not resign, record that they returned to Arkham late. Then record what the Myriad accomplished with each task you left undone, and each plot you failed to stop.</p>"
+      }
+    }
+  }
+}

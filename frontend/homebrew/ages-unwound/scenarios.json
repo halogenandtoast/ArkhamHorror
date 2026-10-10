@@ -1,0 +1,51 @@
+[
+  {
+    "id": ":ages-unwound:001",
+    "name": "Night of Fire",
+    "campaign": ":ages-unwound",
+    "standalone": false,
+    "i18n": "nightOfFire"
+  },
+  {
+    "id": ":ages-unwound:023",
+    "name": "The Myriad Gentleman",
+    "campaign": ":ages-unwound",
+    "standalone": false,
+    "i18n": "theMyriadGentleman"
+  },
+  {
+    "id": ":ages-unwound:048",
+    "name": "A World Torn Down",
+    "campaign": ":ages-unwound",
+    "standalone": false,
+    "i18n": "aWorldTornDown"
+  },
+  {
+    "id": ":ages-unwound:062",
+    "name": "Unstuck",
+    "campaign": ":ages-unwound",
+    "standalone": false,
+    "i18n": "unstuck"
+  },
+  {
+    "id": ":ages-unwound:105",
+    "name": "A Year to Plan",
+    "campaign": ":ages-unwound",
+    "standalone": false,
+    "i18n": "aYearToPlan"
+  },
+  {
+    "id": ":ages-unwound:155",
+    "name": "A World Torn Down, Again",
+    "campaign": ":ages-unwound",
+    "standalone": false,
+    "i18n": "aWorldTornDownAgain"
+  },
+  {
+    "id": ":ages-unwound:182",
+    "name": "Time Runs Out",
+    "campaign": ":ages-unwound",
+    "standalone": false,
+    "i18n": "timeRunsOut"
+  }
+]

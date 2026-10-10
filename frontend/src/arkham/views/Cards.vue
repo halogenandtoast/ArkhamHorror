@@ -14,11 +14,11 @@ import { shallowRef } from 'vue';
 import { useDbCardStore, ArkhamDBCard } from '@/stores/dbCards'
 import { storeToRefs } from 'pinia'
 import { filterDisplayable, isDevBuild } from '@/arkham/displayRules'
-import { homebrewCampaigns } from '@/arkham/homebrewData'
+import { homebrewCampaigns, homebrewStandaloneScenarios } from '@/arkham/homebrewData'
 import { useSettings } from '@/stores/settings'
 import { useUserStore } from '@/stores/user'
 import { byPrintedNumber, hasLibraryCards, libraryCards, librarySets, loadLibrary } from '@/arkham/customCardLibrary'
-import { imgsrc, isTypingTarget } from '@/arkham/helpers'
+import { campaignSetIcon, isTypingTarget, scenarioSetIcon } from '@/arkham/helpers'
 import { cardGroupKey, groupCards } from '@/arkham/cardDetails'
 
 const { t } = useI18n()
@@ -48,13 +48,26 @@ const isExtraSetFilter = (set: string | null) =>
   (set?.startsWith(CUSTOM_SET_PREFIX) ?? false)
 
 const dev = isDevBuild()
-// Homebrew campaigns are gated the same way as on the new-campaign screen: beta
-// users see the beta ones, dev builds also see the dev ones.
-const visibleHomebrewCampaigns = filterDisplayable(homebrewCampaigns, {
-  alpha: dev,
-  beta: !!useUserStore().currentUser?.beta,
-  dev,
-})
+// Homebrew is gated the same way as on the new-campaign screen: beta users see
+// the beta boxes, dev builds also see the dev ones.
+const displayOptions = { alpha: dev, beta: !!useUserStore().currentUser?.beta, dev }
+
+/* One entry per homebrew box: every campaign this build ships, plus every
+ * standalone scenario, which is a box of its own rather than part of a
+ * campaign. Both namespace their cards the same way (`:<box>:NNN` art), so each
+ * is a single card set. */
+const homebrewBoxes: { id: string; name: string; icon: string }[] = [
+  ...filterDisplayable(homebrewCampaigns, displayOptions).map((campaign) => ({
+    id: campaign.id,
+    name: campaign.name,
+    icon: campaignSetIcon(campaign.id),
+  })),
+  ...filterDisplayable(homebrewStandaloneScenarios, displayOptions).map((scenario) => ({
+    id: scenario.campaign ?? scenario.id,
+    name: scenario.name,
+    icon: scenarioSetIcon(scenario.id),
+  })),
+].sort((a, b) => a.name.localeCompare(b.name))
 const { customCardsEnabled } = storeToRefs(useSettings())
 if (customCardsEnabled.value) loadLibrary()
 
@@ -135,7 +148,7 @@ const query = ref<string>(queryText)
 const view = ref(route.query.view? toView(route.query.view) : View.List)
 const routeChapter = route.query.chapter ? parseInt(route.query.chapter.toString()) : 1
 const activeChapter = ref<number>(
-  routeChapter === EXTRAS_CHAPTER && !visibleHomebrewCampaigns.length && !customCardsEnabled.value ? 1 : routeChapter,
+  routeChapter === EXTRAS_CHAPTER && !homebrewBoxes.length && !customCardsEnabled.value ? 1 : routeChapter,
 )
 
 // Pressing `f` flips every card currently shown in image view. CardImage picks
@@ -264,7 +277,7 @@ const fetchData = async () => {
   }
 
   const officialCards = await fetchCards('both')
-  const homebrewCards = visibleHomebrewCampaigns.length ? await fetchHomebrewCards() : []
+  const homebrewCards = homebrewBoxes.length ? await fetchHomebrewCards() : []
   const sorted = sortCards([
     ...officialCards,
     ...revisedCorePrintings(officialCards),
@@ -291,9 +304,11 @@ interface CardSet {
   max: number
   code: string
   cycle: number
-  // A homebrew campaign's cards, or a set from your own card library, rather
-  // than a printed set.
+  // A homebrew box's cards, or a set from your own card library, rather than a
+  // printed set. A homebrew box brings its own icon, since where that lives
+  // differs between a campaign and a standalone scenario.
   homebrew?: boolean
+  iconSrc?: string
   custom?: boolean
   // Show every card code in [min, max] in image view, greying out the ones the
   // engine hasn't implemented yet. For sets still being built out.
@@ -326,17 +341,15 @@ interface CardSearchIndex {
 }
 
 const homebrewCycle: CardCycle = { name: 'Homebrew', cycle: HOMEBREW_CYCLE, code: 'homebrew' }
-const homebrewSets: CardSet[] = visibleHomebrewCampaigns.map((campaign) => {
-  const id = campaign.id.replace(/^:/, '')
-  return {
-    name: campaign.name,
-    min: 0,
-    max: 0,
-    code: `${HOMEBREW_SET_PREFIX}${id}`,
-    cycle: HOMEBREW_CYCLE,
-    homebrew: true,
-  }
-})
+const homebrewSets: CardSet[] = homebrewBoxes.map((box) => ({
+  name: box.name,
+  min: 0,
+  max: 0,
+  code: `${HOMEBREW_SET_PREFIX}${box.id.replace(/^:/, '')}`,
+  cycle: HOMEBREW_CYCLE,
+  homebrew: true,
+  iconSrc: box.icon,
+}))
 const allCycles: CardCycle[] = homebrewSets.length ? [...cycles, homebrewCycle] : cycles
 const allSets: CardSet[] = [...(sets as CardSet[]), ...homebrewSets]
 
@@ -774,11 +787,6 @@ const cycleIconCode = (cycle: CardCycle): string => {
   return cycleSets(cycle)[0]?.code ?? ''
 }
 
-function homebrewSetImagePath(code: string) {
-  const homebrewId = code.replace(new RegExp(`^${HOMEBREW_SET_PREFIX}`), '')
-  return imgsrc(`homebrew/${homebrewId}/sets/${homebrewId}.png`)
-}
-
 // Sets whose icon ships as an SVG rather than the usual PNG.
 const SVG_SET_ICONS = new Set(['cob'])
 
@@ -786,7 +794,7 @@ const setIconPath = (code: string) =>
   `/img/arkham/encounter-sets/${code}.${SVG_SET_ICONS.has(code) ? 'svg' : 'png'}`
 
 function setIconSrc(set: CardSet) {
-  return set.homebrew ? homebrewSetImagePath(set.code) : setIconPath(set.code)
+  return set.iconSrc ?? setIconPath(set.code)
 }
 
 function cycleIconSrc(cycle: CardCycle) {

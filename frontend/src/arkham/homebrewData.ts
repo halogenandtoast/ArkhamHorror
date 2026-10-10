@@ -109,6 +109,13 @@ export const homebrewScenarios: (Scenario & { i18n: string })[] = Object.values(
   scenarioModules,
 ).flatMap((m) => m.default)
 
+/* A homebrew box with no campaign.json: a single scenario that only ever plays
+on its own. Its cards are namespaced by the box like a campaign's are, so the
+card browser lists one group for it beside the campaigns. Gating lives on the
+scenario entry itself (`beta`/`dev`), as it does on a campaign entry. */
+export const homebrewStandaloneScenarios: (Scenario & { i18n: string })[] =
+  homebrewScenarios.filter((s) => !homebrewCampaigns.some((c) => c.id === s.campaign))
+
 /* A homebrew scenario that plays on its own -- as a standalone game, or added to
 a campaign in progress from the continuation screen -- marks itself
 `sideStory: true` in its scenarios.json and carries what a side story needs

@@ -30,7 +30,7 @@ instance HasAbilities MontereyJackParallel where
     [ playerLimit PerRound
         $ restricted a 1 (Self <> can.search.deck You)
         $ freeReaction
-        $ DiscoveringLastClue #after You (YourLocation <> LocationWithShroud (atLeast 1))
+        $ DiscoveringLastClue #after You (YourLocation <> LocationWithPrintedShroud (atLeast 1))
     ]
 
 instance HasChaosTokenValue MontereyJackParallel where

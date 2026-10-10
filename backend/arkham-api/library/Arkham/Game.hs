@@ -2472,6 +2472,13 @@ getLocationsMatching lmatcher = do
       filterM
         (field LocationShroud . toId >=> maybe (pure False) (`gameValueMatches` gameValueMatcher))
         ls
+    LocationWithPrintedShroud gameValueMatcher -> do
+      filterM
+        ( field LocationPrintedShroud
+            . toId
+            >=> maybe (pure False) (getGameValue >=> (`gameValueMatches` gameValueMatcher))
+        )
+        ls
     LocationWithShroudLessThanOrEqualToLessThanEnemyMaybeField eid fld -> do
       mval <- field fld eid
       case mval of

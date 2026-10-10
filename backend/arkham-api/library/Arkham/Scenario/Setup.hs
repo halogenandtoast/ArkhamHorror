@@ -492,10 +492,19 @@ removeCards xs = do
 doNotShuffleIn :: Monad m => [Card] -> ScenarioBuilderT m ()
 doNotShuffleIn = removeCards
 
+{- | 'removeEachFromDeck' for the other half of the gathered pile: one copy of each def
+leaves 'otherCardsL', where 'gather' puts every double-sided card. A helper that consumes
+a gathered card has to clear both piles, or 'amongGathered' hands the leftover back out.
+-}
+removeEachGathered :: Monad m => [CardDef] -> ScenarioBuilderT m ()
+removeEachGathered defs =
+  otherCardsL %= \cards -> foldl' (\cs m -> deleteFirstMatch ((== m) . toCardDef) cs) cards defs
+
 place :: ReverseQueue m => CardDef -> ScenarioBuilderT m LocationId
 place def = do
   attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
+  removeEachGathered def.defs
   placeLocationCard def
 
 placeLabeled_ :: ReverseQueue m => Text -> CardDef -> ScenarioBuilderT m ()
@@ -505,6 +514,7 @@ placeLabeled :: ReverseQueue m => Text -> CardDef -> ScenarioBuilderT m Location
 placeLabeled lbl def = do
   attrsL . encounterDeckL %= flip removeEachFromDeck def.defs
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck def.defs
+  removeEachGathered def.defs
   lid <- placeLocationCard def
   push $ SetLocationLabel lid lbl
   pure lid
@@ -559,6 +569,7 @@ placeAll :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m ()
 placeAll defs = do
   attrsL . encounterDeckL %= flip removeEachFromDeck defs
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck defs
+  removeEachGathered defs
   placeLocationCards defs
 
 placeAllCapture :: ReverseQueue m => [CardDef] -> ScenarioBuilderT m [LocationId]
@@ -569,6 +580,7 @@ placeOneOf as = do
   def <- sampleOneOf as
   attrsL . encounterDeckL %= flip removeEachFromDeck (sampledFrom as)
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck (sampledFrom as)
+  removeEachGathered (sampledFrom as)
   placeLocationCard def
 
 placeOneOf_ :: (SampledAs as CardDef, ReverseQueue m) => as -> ScenarioBuilderT m ()
@@ -578,18 +590,21 @@ placeGroup :: ReverseQueue m => Text -> [CardDef] -> ScenarioBuilderT m ()
 placeGroup groupName defs = do
   attrsL . encounterDeckL %= flip removeEachFromDeck defs
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck defs
+  removeEachGathered defs
   placeRandomLocationGroupCards groupName defs
 
 placeGroupExact :: ReverseQueue m => Text -> [CardDef] -> ScenarioBuilderT m ()
 placeGroupExact groupName defs = do
   attrsL . encounterDeckL %= flip removeEachFromDeck defs
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck defs
+  removeEachGathered defs
   placeLabeledLocations_ groupName =<< genCards defs
 
 placeGroupCapture :: ReverseQueue m => Text -> [CardDef] -> ScenarioBuilderT m [LocationId]
 placeGroupCapture groupName defs = do
   attrsL . encounterDeckL %= flip removeEachFromDeck defs
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck defs
+  removeEachGathered defs
   placeRandomLocationGroupCardsCapture groupName defs
 
 placeGroupChooseN :: ReverseQueue m => Int -> Text -> NonEmpty CardDef -> ScenarioBuilderT m ()
@@ -870,6 +885,9 @@ pickFrom
 pickFrom defs = do
   attrsL . encounterDeckL %= flip removeEachFromDeck (sampledFrom defs)
   attrsL . encounterDecksL . each . _1 %= flip removeEachFromDeck (sampledFrom defs)
+  -- Every candidate leaves the pile, not just the one picked: the others are the copies
+  -- the scenario decided against.
+  removeEachGathered (sampledFrom defs)
   sampleOneOf defs
 
 placeTokensOnScenarioReference :: ReverseQueue m => Token -> Int -> ScenarioBuilderT m ()

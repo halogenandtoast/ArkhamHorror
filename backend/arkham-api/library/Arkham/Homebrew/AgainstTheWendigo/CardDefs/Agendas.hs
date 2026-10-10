@@ -3,6 +3,10 @@
 Agenda 2's @b@ side is not an agenda at all -- the card flips into the Bestial
 Creature enemy (see @CardDefs.Enemies.bestialCreature@), which is why advancing
 it removes the agenda from the deck instead of continuing it.
+
+Agenda 3's @b@ side, The Wendigo's Attack, is its own agenda here. It replaces
+the current agenda and then stays, so it is stage 4 in the deck rather than a
+flipped stage 3.
 -}
 module Arkham.Homebrew.AgainstTheWendigo.CardDefs.Agendas where
 
@@ -15,11 +19,16 @@ aDarkAndDisturbingValley =
 
 somethingDarkIsComing :: CardDef
 somethingDarkIsComing =
-  ( agenda ":against-the-wendigo:003" "Something Dark Is Coming" 2 Set.HanninahValley
-  )
+  (agenda ":against-the-wendigo:003" "Something Dark Is Coming" 2 Set.HanninahValley)
     { cdOtherSide = Just ":against-the-wendigo:003b"
     }
 
 theWendigoHuntsYou :: CardDef
 theWendigoHuntsYou =
-  agenda ":against-the-wendigo:004" "The Wendigo Hunts You" 3 Set.HanninahValley
+  (agenda ":against-the-wendigo:004" "The Wendigo Hunts You" 3 Set.HanninahValley)
+    { cdOtherSide = Just ":against-the-wendigo:004b"
+    }
+
+theWendigosAttack :: CardDef
+theWendigosAttack =
+  agenda ":against-the-wendigo:004b" "The Wendigo's Attack" 4 Set.HanninahValley

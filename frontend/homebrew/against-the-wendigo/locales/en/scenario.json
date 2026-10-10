@@ -31,16 +31,26 @@
       "glimpsedTheMythos": "having glimpsed the Cthulhu Mythos in this remote, wild corner of the world"
     },
     "resolutions": {
-      "noResolution": "No Resolution",
-      "noResolutionBody": "The trip back to Fort McDonald is terribly trying. You do not have time to heal your wounds on the way, and must quickly leave this valley and its dangers. You finally manage to reach Fort McDonald, which you now perceive as a small island of human civilization in the midst of an ocean of wild darkness.",
-      "resolution1": "Resolution 1",
-      "resolution1Body": "After a brutal fight, the Wendigo staggers back, and emits shrieks that no natural creature could produce. The more wounds it takes, the more its cries seem to come from a human in agony. You strike the final blow and see the terrible creature collapse. When you raise your head, the sight of your opponent leaves you astounded: it is the naked body of a man, lying close to you in a pool of blood, his claws and antlers gone, patches of fur and goat-like hoofs remaining. Somehow you make it back to Fort McDonald.",
-      "resolution2": "Resolution 2",
-      "resolution2Body": "Officers listen to the story of your expedition with suspicion, then with amazement when they see the evidence you have collected. You return to Arkham without looking back, and share with the students' relatives the fate of their loved ones. Although they finally have the answers to their questions, some truths are too terrible to hear. Most end up thanking you for putting an end to this case.",
-      "resolution3": "Resolution 3",
-      "resolution3Body": "Officers listen to your story, particularly attentive when you present them with material evidence of what happened. You return to Arkham exhausted, tormented by this experience, but alive. Although the students' families have some answers, the mysteries that remain will haunt them forever. The few truths unveiled will not be enough to remove the nightmares that have invaded your sleep.",
-      "resolution4": "Resolution 4",
-      "resolution4Body": "Officers listen to the story of your expedition. You dare not tell them everything, lest they take you for a fool. You leave immediately, without looking back, and return to Arkham, prey to terrible nightmares. Having no answer to their questions, the students' relatives are plunged into torments that you understand too well."
+      "noResolution": {
+        "title": "No Resolution",
+        "body": "The trip back to Fort McDonald is terribly trying. You do not have time to heal your wounds on the way, and must quickly leave this valley and its dangers. You finally manage to reach Fort McDonald, which you now perceive as a small island of human civilization in the midst of an ocean of wild darkness."
+      },
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "After a brutal fight, the Wendigo staggers back, and emits shrieks that no natural creature could produce. The more wounds it takes, the more its cries seem to come from a human in agony. You strike the final blow and see the terrible creature collapse. When you raise your head, the sight of your opponent leaves you astounded: it is the naked body of a man, lying close to you in a pool of blood, his claws and antlers gone, patches of fur and goat-like hoofs remaining. Somehow you make it back to Fort McDonald."
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "Officers listen to the story of your expedition with suspicion, then with amazement when they see the evidence you have collected. You return to Arkham without looking back, and share with the students' relatives the fate of their loved ones. Although they finally have the answers to their questions, some truths are too terrible to hear. Most end up thanking you for putting an end to this case."
+      },
+      "resolution3": {
+        "title": "Resolution 3",
+        "body": "Officers listen to your story, particularly attentive when you present them with material evidence of what happened. You return to Arkham exhausted, tormented by this experience, but alive. Although the students' families have some answers, the mysteries that remain will haunt them forever. The few truths unveiled will not be enough to remove the nightmares that have invaded your sleep."
+      },
+      "resolution4": {
+        "title": "Resolution 4",
+        "body": "Officers listen to the story of your expedition. You dare not tell them everything, lest they take you for a fool. You leave immediately, without looking back, and return to Arkham, prey to terrible nightmares. Having no answer to their questions, the students' relatives are plunged into torments that you understand too well."
+      }
     },
     "hanninahsGold": {
       "listenToTheProspector": "Listen to the prospector and attempt to leave the mountains",

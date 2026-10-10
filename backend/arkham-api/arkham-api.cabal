@@ -4145,6 +4145,7 @@ library
       Arkham.Homebrew.AgainstTheWendigo.Agendas.ADarkAndDisturbingValley
       Arkham.Homebrew.AgainstTheWendigo.Agendas.SomethingDarkIsComing
       Arkham.Homebrew.AgainstTheWendigo.Agendas.TheWendigoHuntsYou
+      Arkham.Homebrew.AgainstTheWendigo.Agendas.TheWendigosAttack
       Arkham.Homebrew.AgainstTheWendigo.Assets.CharlieFoxtail
       Arkham.Homebrew.AgainstTheWendigo.Assets.ExpeditionNotebook
       Arkham.Homebrew.AgainstTheWendigo.Assets.GoldMiningRevenues
@@ -4215,7 +4216,9 @@ library
       Arkham.Homebrew.AgainstTheWendigo.Treacheries.OldInjury
       Arkham.Homebrew.AgainstTheWendigo.Treacheries.Rapid
       Arkham.Homebrew.AgainstTheWendigo.Treacheries.Skinwalker
+      Arkham.Homebrew.AgainstTheWendigo.Treacheries.SomethingIsStalkingYou
       Arkham.Homebrew.AgainstTheWendigo.Treacheries.SuddenFlood
+      Arkham.Homebrew.AgainstTheWendigo.Treacheries.TerrifyingVisions
       Arkham.Homebrew.AgainstTheWendigo.Treacheries.TheClearingOfTheSacrifices
       Arkham.Homebrew.AgainstTheWendigo.Treacheries.Trapper
       Arkham.Homebrew.AgainstTheWendigo.Treacheries.UnexpectedObstacles

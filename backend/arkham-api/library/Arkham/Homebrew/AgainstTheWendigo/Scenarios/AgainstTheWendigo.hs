@@ -180,6 +180,7 @@ instance RunMessage AgainstTheWendigo where
         [ Agendas.aDarkAndDisturbingValley
         , Agendas.somethingDarkIsComing
         , Agendas.theWendigoHuntsYou
+        , Agendas.theWendigosAttack
         ]
       setActDeck
         [ Acts.inSearchOfTheMissing
@@ -201,30 +202,27 @@ instance RunMessage AgainstTheWendigo where
     ScenarioResolution r -> scope "resolutions" do
       case r of
         NoResolution -> do
-          flavor $ h "noResolution" >> p "noResolutionBody"
+          resolution "noResolution"
           resignedOrDefeatedTrauma attrs
           studentBranch
         Resolution 1 -> do
-          flavor $ h "resolution1" >> p "resolution1Body"
-          eachInvestigator (`sufferMentalTrauma` 1)
           record YouDefeatedTheWendigo
+          resolution "resolution1"
+          eachInvestigator (`sufferMentalTrauma` 1)
           studentBranch
         Resolution 2 -> do
-          flavor $ h "resolution2" >> p "resolution2Body"
-          eachInvestigator \iid -> push $ HealTrauma iid 0 1
           recordWendigoStillRoams
-          awardScenarioXp attrs NoBonus
+          resolutionWithXp "resolution2" $ awardScenarioXp attrs NoBonus
+          eachInvestigator \iid -> push $ HealTrauma iid 0 1
           epilogue
         Resolution 3 -> do
-          flavor $ h "resolution3" >> p "resolution3Body"
           recordWendigoStillRoams
-          awardScenarioXp attrs NoBonus
+          resolutionWithXp "resolution3" $ awardScenarioXp attrs NoBonus
           epilogue
         Resolution 4 -> do
-          flavor $ h "resolution4" >> p "resolution4Body"
-          eachInvestigator \iid -> searchCollectionForRandomBasicWeakness iid attrs [Madness]
           recordWendigoStillRoams
-          awardScenarioXp attrs $ toBonus "glimpsedTheMythos" 2
+          resolutionWithXp "resolution4" $ awardScenarioXp attrs $ toBonus "glimpsedTheMythos" 2
+          eachInvestigator \iid -> searchCollectionForRandomBasicWeakness iid attrs [Madness]
           epilogue
         _ -> error $ "Unknown resolution: " <> show r
       endOfScenario
@@ -325,11 +323,11 @@ recordWendigoStillRoams = do
 {- | "Each investigator earns experience equal to the Victory X value of each card
 in the victory display", plus a point each for Charlie and for the prospector.
 -}
-awardScenarioXp :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> XpBonus -> m ()
+awardScenarioXp :: (HasI18n, ReverseQueue m) => ScenarioAttrs -> XpBonus -> m Int
 awardScenarioXp attrs extra = do
   savedCharlie <- getHasRecord YouSavedCharlie
   savedProspector <- getHasRecord YouSavedTheGoldProspector
-  allGainXpWithBonus attrs
+  allGainXpWithBonus' attrs
     $ mconcat
     $ [toBonus "savedCharlie" 1 | savedCharlie]
     <> [toBonus "savedTheGoldProspector" 1 | savedProspector]

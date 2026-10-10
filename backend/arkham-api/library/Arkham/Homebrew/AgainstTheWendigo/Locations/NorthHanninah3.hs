@@ -5,11 +5,15 @@ import Arkham.Homebrew.AgainstTheWendigo.Helpers
 import Arkham.Location.Import.Lifted
 
 newtype NorthHanninah3 = NorthHanninah3 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northHanninah3 :: LocationCard NorthHanninah3
 northHanninah3 = location NorthHanninah3 Cards.northHanninah3 3 (PerPlayer 1)
+
+instance HasModifiersFor NorthHanninah3 where
+  -- The scenario's river rule; see 'riverMovementBan'.
+  getModifiersFor (NorthHanninah3 a) = riverMovementBan a
 
 instance HasAbilities NorthHanninah3 where
   getAbilities (NorthHanninah3 a) = extendRevealed a $ riverActions a

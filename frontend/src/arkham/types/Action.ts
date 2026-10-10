@@ -1,23 +1,29 @@
 import * as JsonDecoder from 'ts.data.json';
 
-export type Action = 'Ability' | 'Draw' | 'Engage' | 'Evade' | 'Fight' | 'Investigate' | 'Move' | 'Parley' | 'Play' | 'Resign' | 'Resource' | 'Explore' | 'Circle' | 'Scan'
+/* The backend's Action is an open type: alongside the core actions it carries
+ * `HomebrewAction Text`, so a homebrew campaign declares its own through
+ * `declareHomebrewActions` and they arrive as bare strings like any core name.
+ * Decoding a closed set of literals meant each new homebrew action failed the
+ * whole game payload rather than just going unstyled, so the decoder takes any
+ * string and the names below are only the ones this app compares against. */
+export type CoreAction
+  = 'Activate'
+  | 'Circle'
+  | 'Draw'
+  | 'Engage'
+  | 'Evade'
+  | 'Explore'
+  | 'Fight'
+  | 'Investigate'
+  | 'Move'
+  | 'Parley'
+  | 'Play'
+  | 'Resign'
+  | 'Resource'
 
-export const actionDecoder = JsonDecoder.oneOf<Action>([
-  JsonDecoder.literal('Ability'),
-  JsonDecoder.literal('Draw'),
-  JsonDecoder.literal('Engage'),
-  JsonDecoder.literal('Evade'),
-  JsonDecoder.literal('Fight'),
-  JsonDecoder.literal('Investigate'),
-  JsonDecoder.literal('Move'),
-  JsonDecoder.literal('Parley'),
-  JsonDecoder.literal('Play'),
-  JsonDecoder.literal('Resign'),
-  JsonDecoder.literal('Resource'),
-  JsonDecoder.literal('Explore'),
-  JsonDecoder.literal('Circle'),
-  JsonDecoder.literal('Scan')
-], 'Action')
+export type Action = CoreAction | (string & {})
+
+export const actionDecoder: JsonDecoder.Decoder<Action> = JsonDecoder.string()
 
 export type Actions
   = { tag: 'SingleAction', contents: Action }

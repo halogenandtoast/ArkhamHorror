@@ -10,11 +10,15 @@ import Arkham.Matcher
 import Arkham.Placement
 
 newtype NorthHanninah1 = NorthHanninah1 LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 northHanninah1 :: LocationCard NorthHanninah1
 northHanninah1 = location NorthHanninah1 Cards.northHanninah1 4 (Static 0)
+
+instance HasModifiersFor NorthHanninah1 where
+  -- The scenario's river rule; see 'riverMovementBan'.
+  getModifiersFor (NorthHanninah1 a) = riverMovementBan a
 
 instance HasAbilities NorthHanninah1 where
   getAbilities (NorthHanninah1 a) =

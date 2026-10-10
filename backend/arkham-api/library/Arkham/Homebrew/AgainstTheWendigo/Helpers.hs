@@ -22,25 +22,26 @@ module Arkham.Homebrew.AgainstTheWendigo.Helpers where
 import Arkham.Ability
 import Arkham.Actions (Actions (SingleAction))
 import Arkham.Calculation (GameCalculation (Fixed))
+import Arkham.Card (toCardDef)
 import Arkham.Card.CardCode (HasCardCode)
 import Arkham.ChaosToken
-import Arkham.Classes.HasGame
+import Arkham.Classes.HasModifiersFor (HasModifiersM)
 import Arkham.Classes.HasQueue (push)
 import Arkham.Classes.Query
+import Arkham.Distance (unDistance)
 import Arkham.GameEnv (getDistance)
 import Arkham.Helpers.Investigator (getMaybeLocation)
-import Arkham.Helpers.Modifiers (ModifierType (..))
+import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Helpers.Scenario (getScenarioDeck)
+import Arkham.Helpers.Story (readStory)
 import Arkham.Homebrew.AgainstTheWendigo.Actions (pattern Navigate, pattern WalkAlongTheRiver)
 import Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys (pattern StudentsFateDeck)
 import Arkham.Homebrew.AgainstTheWendigo.Traits (pattern Guide)
 import Arkham.I18n
-import Arkham.Distance (unDistance)
 import Arkham.Id
+import Arkham.Location.Types (LocationAttrs)
 import Arkham.Matcher
-import Arkham.Card (toCardDef)
-import Arkham.Helpers.Story (readStory)
 import Arkham.Message (Message (CheckAttackOfOpportunity, RemoveCardFromScenarioDeck))
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
@@ -63,22 +64,32 @@ scenarioI18n a = campaignI18n $ scope "scenario" a
 riverLocation :: LocationMatcher
 riverLocation = LocationWithTrait River
 
-{- | "Investigators in River locations cannot move or be moved onto another
-River location, unless they perform Walk Along the River or Navigate."
+{- | Navigate's legal destinations, given where the investigator is standing.
 
-Granted by the scenario to each investigator standing on the water, naming every
-*other* river location. Both river actions move with 'forcedMoveTo', which is
-not subject to it.
+Step 2 forbids revealing a location during the action, so the water has to be
+charted before you can set out for it -- which is also why the ability itself
+hides until there is somewhere charted to go. Walk Along the River has no such
+clause: it is the action that does the charting, one location at a time.
 -}
-riverMovementBan :: HasGame m => InvestigatorId -> m [ModifierType]
-riverMovementBan iid =
-  getMaybeLocation iid >>= \case
-    Nothing -> pure []
-    Just lid -> do
-      onTheWater <- lid <=~> riverLocation
-      if not onTheWater
-        then pure []
-        else map CannotEnter <$> select (riverLocation <> not_ (LocationWithId lid))
+navigateDestinations :: LocationMatcher -> LocationMatcher
+navigateDestinations here = riverLocation <> RevealedLocation <> not_ here
+
+{- | "Investigators in River locations cannot move or be moved onto another
+River location, unless they perform Walk Along the River or Navigate. Hunter
+enemies are not affected."
+
+A constant effect every River location carries rather than a Forced ability --
+nothing triggers, so there is nothing to trigger off. Each stretch of water
+tells the investigators standing on a *different* one that they cannot enter it.
+That is also what exempts the Hunters for free: 'CannotEnter' sits on the
+investigator, so an enemy moving along the river never consults it.
+
+Both river actions move with 'forcedMoveTo', which skips the move criteria this
+rides on, so they stay free to cross.
+-}
+riverMovementBan :: HasModifiersM m => LocationAttrs -> m ()
+riverMovementBan a =
+  modifySelect a (InvestigatorAt $ riverLocation <> not_ (be a)) [CannotEnter a.id]
 
 -- * The two river actions
 
@@ -116,13 +127,14 @@ resolveNavigate (toSource -> source) iid = do
   engaged <- select $ enemyEngagedWith iid <> ReadyEnemy
   for_ engaged disengageFromAll
   roundModifier source iid CannotBeEngaged
-  -- The printed step 2 also says you cannot reveal a location during the
-  -- action. Step 3 moves straight to the destination rather than walking the
-  -- river one location at a time, so there is nothing in between to reveal.
+  -- Step 2 also forbids revealing a location during the action. Step 3 moves
+  -- straight to the destination, so nothing in between can be revealed, and
+  -- 'navigateDestinations' keeps the destination itself off the table unless it
+  -- is already charted.
 
   -- Steps 3 and 4: move, then test against the distance travelled.
   start <- getMaybeLocation iid
-  destinations <- select $ riverLocation <> not_ (locationWithInvestigator iid)
+  destinations <- select $ navigateDestinations (locationWithInvestigator iid)
   chooseOrRunOneM iid $ targets destinations \lid -> do
     mdistance <- maybe (pure Nothing) (`getDistance` lid) start
     let steps = maybe 1 (min 3 . max 1 . unDistance) mdistance
@@ -143,10 +155,11 @@ Along the River as ability 1 and @{action}@ Navigate, once per round, as ability
 2. A location using these answers 'UseThisAbility' 1 and 2 with
 'resolveWalkAlongTheRiver' and 'resolveNavigate'.
 -}
-riverActions :: (Sourceable a, HasCardCode a) => a -> [Ability]
+riverActions :: (Sourceable a, HasCardCode a, Be a LocationMatcher) => a -> [Ability]
 riverActions a =
   [ restricted a 1 Here walkAlongTheRiverAction
-  , playerLimit PerRound $ restricted a 2 Here navigateAction
+  , playerLimit PerRound
+      $ restricted a 2 (Here <> exists (navigateDestinations $ be a)) navigateAction
   ]
 
 -- * The recurring chaos-token clause

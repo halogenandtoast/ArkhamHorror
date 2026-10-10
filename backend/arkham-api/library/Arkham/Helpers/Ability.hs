@@ -217,7 +217,7 @@ explicitlyTargetsForcedAbilities = \case
 
 meetsActionRestrictions
   :: HasGame m => InvestigatorId -> [Window] -> Ability -> m Bool
-meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
+meetsActionRestrictions iid ws ab@Ability {..} = go abilityType
  where
   go = \case
     Haunted -> pure False
@@ -227,13 +227,13 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     ForcedWhen _ aType -> go aType
     ActionAbility {actions} ->
       let as = actionsToList actions
-       in if null as then pure True else anyM (canDoAction iid ab) as
+       in if null as then pure True else anyM (canDoAction iid ws ab) as
     FastAbility' _ (AndActions []) -> pure True
-    FastAbility' _ actions -> anyM (canDoAction iid ab) (actionsToList actions)
+    FastAbility' _ actions -> anyM (canDoAction iid ws ab) (actionsToList actions)
     CustomizationReaction {} -> pure True
     ConstantReaction {} -> pure True
     ReactionAbility _ _ actions | null (actionsToList actions) -> pure True
-    ReactionAbility _ _ actions -> anyM (canDoAction iid ab) (actionsToList actions)
+    ReactionAbility _ _ actions -> anyM (canDoAction iid ws ab) (actionsToList actions)
     ForcedAbility _ -> pure True
     SilentForcedAbility _ -> pure True
     ForcedAbilityWithCost _ _ -> pure True
@@ -241,12 +241,13 @@ meetsActionRestrictions iid _ ab@Ability {..} = go abilityType
     ServitorAbility _ -> pure True
     ConstantAbility -> pure False
 
-canDoAction :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
-canDoAction iid ab a = canDoAction' iid ab a
+canDoAction
+  :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> Action -> m Bool
+canDoAction iid ws ab a = canDoAction' iid ws ab a
 
 canDoAction'
-  :: (HasCallStack, HasGame m) => InvestigatorId -> Ability -> Action -> m Bool
-canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
+  :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> Action -> m Bool
+canDoAction' iid ws ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \case
   Action.Fight -> case abilitySource of
     LocationSource _lid -> pure True
     ConcealedCardSource _ -> pure True
@@ -368,8 +369,10 @@ canDoAction' iid ab@Ability {abilitySource, abilityIndex, abilityCardCode} = \ca
       , notNull <$> getScenarioDeck ExplorationDeck
       ]
   Action.Circle -> pure True
+  -- The ability's own windows, not [] -- a window-driven criterion such as
+  -- 'OnLocation' reads them and is unconditionally False without them.
   Action.HomebrewAction t ->
-    maybe (pure True) (passesCriteria iid Nothing abilitySource abilitySource [])
+    maybe (pure True) (passesCriteria iid Nothing abilitySource abilitySource ws)
       $ lookup (Action.HomebrewAction t) homebrewActionAffordability
 
 getCanAffordAbility

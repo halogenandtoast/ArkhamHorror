@@ -10,11 +10,15 @@ import Arkham.Matcher
 import Arkham.Placement
 
 newtype Jetty = Jetty LocationAttrs
-  deriving anyclass (IsLocation, HasModifiersFor)
+  deriving anyclass IsLocation
   deriving newtype (Show, Eq, ToJSON, FromJSON, Entity)
 
 jetty :: LocationCard Jetty
 jetty = location Jetty Cards.jetty 2 (PerPlayer 1)
+
+instance HasModifiersFor Jetty where
+  -- The scenario's river rule; see 'riverMovementBan'.
+  getModifiersFor (Jetty a) = riverMovementBan a
 
 instance HasAbilities Jetty where
   getAbilities (Jetty a) =
@@ -24,12 +28,11 @@ instance HasAbilities Jetty where
          , -- "If no asset card with both Sarcee and Guide traits is in play,
            -- spend 3 resources: Sarcee Guide enters play. Take control of him."
            restricted
-            a
-            3
-            (Here <> notExists (AssetWithTrait Sarcee <> AssetWithTrait Guide))
-            (actionAbilityWithCost $ ResourceCost 3)
+             a
+             3
+             (Here <> notExists (AssetWithTrait Sarcee <> AssetWithTrait Guide))
+             (actionAbilityWithCost $ ResourceCost 3)
          ]
-
 
 instance RunMessage Jetty where
   runMessage msg l@(Jetty attrs) = runQueueT $ case msg of

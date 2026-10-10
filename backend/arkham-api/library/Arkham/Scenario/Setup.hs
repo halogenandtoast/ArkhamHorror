@@ -398,8 +398,14 @@ setAsideWith f as0 = do
         otherCardsL %= filter (/= toCard card)
         pure $ toCard card
       Nothing -> do
-        card <- notFoundInDeck a
-        otherCardsL %= filter (/= toCard card)
+        -- 'gather' keeps every double-sided card -- which is every location -- out of
+        -- the encounter deck, so look in the rest of the gathered pile before minting a
+        -- copy and leaving the gathered one for 'amongGathered' to hand out again.
+        others <- use otherCardsL
+        card <- case findInDeck a (Deck $ onlyEncounterCards others) of
+          Just gathered -> pure $ toCard gathered
+          Nothing -> notFoundInDeck a
+        otherCardsL %= filter (/= card)
 
         for_ (cdOtherSide $ toCardDef card) \otherSide -> do
           otherCardsL %= filter ((`notElem` [otherSide, toCardCode card]) . toCardCode)

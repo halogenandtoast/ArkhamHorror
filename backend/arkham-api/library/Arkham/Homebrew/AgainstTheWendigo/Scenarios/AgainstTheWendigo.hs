@@ -11,7 +11,10 @@ import Arkham.Card
 import Arkham.ChaosToken
 import Arkham.Difficulty
 import Arkham.Helpers.FlavorText
-import Arkham.Helpers.Location (connectBothWays)
+import Arkham.Helpers.Location (addDirectConnection, connectBothWays)
+import Arkham.Helpers.Modifiers (ModifierType (ConnectedToWhen))
+import Arkham.Helpers.Query (getPlayerCount)
+import Arkham.Helpers.Xp (XpBonus (NoBonus), toBonus)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Acts qualified as Acts
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Agendas qualified as Agendas
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Assets qualified as Assets
@@ -22,12 +25,11 @@ import Arkham.Homebrew.AgainstTheWendigo.Helpers
 import Arkham.Homebrew.AgainstTheWendigo.Key
 import Arkham.Homebrew.AgainstTheWendigo.ScenarioDeckKeys (pattern StudentsFateDeck)
 import Arkham.Homebrew.AgainstTheWendigo.Sets qualified as Set
-import Arkham.Helpers.Query (getPlayerCount)
+import Arkham.Id (LocationId)
 import Arkham.Location.Types (Field (LocationClues))
 import Arkham.Matcher
-import Arkham.Projection
 import Arkham.Message.Lifted.Log
-import Arkham.Helpers.Xp (XpBonus (NoBonus), toBonus)
+import Arkham.Projection
 import Arkham.Resolution
 import Arkham.Scenario.Import.Lifted
 import Arkham.Trait (Trait (Madness))
@@ -82,7 +84,7 @@ studentFatePairs =
 instance RunMessage AgainstTheWendigo where
   runMessage msg s@(AgainstTheWendigo attrs) = runQueueT $ scenarioI18n $ case msg of
     PreScenarioSetup -> scope "prologue" do
-      flavor $ h "title" >> p "body1" >> p "body2" >> p "body3"
+      flavor $ h "title" >> p "body"
       pure s
     StandaloneSetup -> do
       setChaosTokens $ chaosBagContents attrs.difficulty
@@ -111,13 +113,15 @@ instance RunMessage AgainstTheWendigo where
       connectBothWays jetty fort
       connectBothWays jetty sarcee
 
-      -- The middle column: the river running north out of the Jetty.
+      -- The middle column: the river running north out of the Jetty. The slots
+      -- are numbered up from the Jetty, so northHanninah1 is the southernmost
+      -- and the map reads these three in reverse.
       shuffledRiver <-
         shuffleM [Locations.northHanninah1, Locations.northHanninah2, Locations.northHanninah3]
-      river <-
+      riverSouthToNorth <-
         for (zip ["northHanninah1", "northHanninah2", "northHanninah3"] shuffledRiver)
           $ uncurry placeLabeled
-      for_ (zip (jetty : river) river) (uncurry connectBothWays)
+      for_ (zip (jetty : riverSouthToNorth) riverSouthToNorth) (uncurry connectBothWays)
 
       -- The outer columns. One Mountain Range is removed at random; the rest are
       -- dealt one to the East and one to the West of each North Hanninah.
@@ -126,9 +130,30 @@ instance RunMessage AgainstTheWendigo where
       removeEvery removedRange
       uncharted <- shuffleM (keptRange <> drop 2 unchartedLocations)
       let slots = ["uncharted" <> tshow (n :: Int) | n <- [1 .. 6]]
-      outer <- for (zip slots uncharted) $ uncurry placeLabeled
-      for_ (zip river (rowPairs outer)) \(mid, neighbours) ->
-        for_ neighbours (connectBothWays mid)
+      outer <- for (zip slots uncharted) \(slot, def) -> (def,) <$> placeLabeled slot def
+
+      -- The rows, read down the map the way the slots are declared above:
+      -- uncharted1 and uncharted2 flank the *northernmost* river location.
+      let rows = zip (reverse riverSouthToNorth) (rowPairs outer)
+
+      {- Each North Hanninah reaches the Uncharted pair flanking it, and each of
+      them reaches back -- except Sinister Taiga, which prints nothing on its
+      unrevealed side. Until it is revealed it is a one-way trip in off the
+      river. -}
+      for_ rows \(mid, neighbours) ->
+        for_ neighbours \(def, lid) -> do
+          addDirectConnection mid lid
+          if def == Locations.sinisterTaiga
+            then revealedConnection lid mid
+            else addDirectConnection lid mid
+
+      {- Revealed, the Taiga also reaches "the Wild locations directly to the
+      North and South". Those print only their own river connection, so the link
+      stays one way out of the Taiga. -}
+      for_ (zip rows (drop 1 rows)) \((_, northRow), (_, southRow)) ->
+        for_ (zip northRow southRow) \((northDef, north), (southDef, south)) -> do
+          when (northDef == Locations.sinisterTaiga) $ revealedConnection north south
+          when (southDef == Locations.sinisterTaiga) $ revealedConnection south north
 
       -- One of each pair of student fates survives; the three survivors are the deck.
       kept <- for studentFatePairs \(a, b) -> do
@@ -161,10 +186,10 @@ instance RunMessage AgainstTheWendigo where
         , Acts.onTheStudentsTrack
         , Acts.northHanninahsMysteries
         ]
-    {- | The scenario reference card: "[tablet]: If you succeed, place 1 clue
-    from the reserve on the Mountain Range." Only this ever puts clues there, so
-    the Mountain Range's own "Forced - if there are 2 clues (3 for a 3 or 4
-    player game): reveal it" is checked here too. -}
+    {- The scenario reference card: "[tablet]: If you succeed, place 1 clue from
+    the reserve on the Mountain Range." Only this ever puts clues there, so the
+    Mountain Range's own "Forced - if there are 2 clues (3 for a 3 or 4 player
+    game): reveal it" is checked here too. -}
     PassedSkillTestWithToken _ Tablet -> do
       ranges <- select $ LocationWithTitle "Mountain Range" <> UnrevealedLocation
       for_ (take 1 ranges) \lid -> do
@@ -284,7 +309,10 @@ studentBranch = do
         , YouHaveDiscoveredNormansFate
         , YouHaveDiscoveredSylviasFate
         ]
-  push $ ScenarioResolution $ Resolution $ if discoveredAll || discovered == 3 then 2 else if discovered > 0 then 3 else 4
+  push
+    $ ScenarioResolution
+    $ Resolution
+    $ if discoveredAll || discovered == 3 then 2 else if discovered > 0 then 3 else 4
 
 {- | "If the Wendigo was still in play at the end of the game, record that you
 know that the Wendigo still roams the North Hanninah valley."
@@ -303,9 +331,17 @@ awardScenarioXp attrs extra = do
   savedProspector <- getHasRecord YouSavedTheGoldProspector
   allGainXpWithBonus attrs
     $ mconcat
-      $ [toBonus "savedCharlie" 1 | savedCharlie]
-      <> [toBonus "savedTheGoldProspector" 1 | savedProspector]
-      <> [extra]
+    $ [toBonus "savedCharlie" 1 | savedCharlie]
+    <> [toBonus "savedTheGoldProspector" 1 | savedProspector]
+    <> [extra]
+
+{- | A connection that exists only on a location's revealed side.
+'addDirectConnection' writes the unrevealed and revealed sides at once, so a
+one-sided connection has to come from a modifier instead.
+-}
+revealedConnection :: ReverseQueue m => LocationId -> LocationId -> m ()
+revealedConnection from dest =
+  gameModifier ScenarioSource from $ ConnectedToWhen RevealedLocation (LocationWithId dest)
 
 -- | The six Uncharted locations, paired off one row at a time.
 rowPairs :: [a] -> [[a]]

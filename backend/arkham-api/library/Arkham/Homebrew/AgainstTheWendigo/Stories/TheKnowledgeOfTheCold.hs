@@ -4,13 +4,17 @@ module Arkham.Homebrew.AgainstTheWendigo.Stories.TheKnowledgeOfTheCold (
 
 import Arkham.Ability
 import Arkham.Card (toCard)
+import Arkham.Helpers.Location (connectBothWays)
 import Arkham.Helpers.Query (getLead)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Locations
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Stories qualified as Cards
+import Arkham.Homebrew.AgainstTheWendigo.Helpers (riverLocation)
 import Arkham.Homebrew.AgainstTheWendigo.Key
+import Arkham.Location.Types (Field (LocationLabel))
 import Arkham.Matcher
 import Arkham.Message.Lifted.Log (record)
 import Arkham.Placement
+import Arkham.Projection
 import Arkham.Story.Import.Lifted
 
 newtype TheKnowledgeOfTheCold = TheKnowledgeOfTheCold StoryAttrs
@@ -46,10 +50,18 @@ instance RunMessage TheKnowledgeOfTheCold where
     UseThisAbility _ (isSource attrs -> True) 1 -> do
       lead <- getLead
       selectForMaybeM (locationIs Locations.templeOfIthaqua) \temple -> do
+        -- Ithaqua is "put into play in place of" the Temple, so it takes over the
+        -- Temple's slot on the map and the Temple's connection to the River
+        -- location directly to its East or West.
+        slot <- field LocationLabel temple
+        rivers <- select $ riverLocation <> connectedFrom (LocationWithId temple)
         addToVictory lead temple
         push $ RemoveLocation temple
-      -- Ithaqua's abilities are all on its revealed side, so it arrives face up.
-      reveal =<< placeLocationCard Locations.ithaqua
+        -- Ithaqua's abilities are all on its revealed side, so it arrives face up.
+        ithaqua <- placeLocationCard Locations.ithaqua
+        reveal ithaqua
+        setLocationLabel ithaqua slot
+        for_ rivers (connectBothWays ithaqua)
       record YouAreTheCustodianOfIthaquasKnowledge
       removeStory attrs
       pure s

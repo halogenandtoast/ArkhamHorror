@@ -2,13 +2,15 @@
 
 The valley is a four-by-three grid. The bottom row (Sarcee Territory, Jetty,
 Fort McDonald) and the middle column (three North Hanninah) are fixed; the six
-Uncharted locations are shuffled into the two outer columns at setup, so every
-one of them prints the same connection rule -- "the River location directly to
-the East or West" -- and the scenario wires the actual connections from the
-grid.
+Uncharted locations are shuffled into the two outer columns at setup.
 
-A location's printed symbol is cosmetic here for that reason: the cards connect
-by compass direction, not by symbol.
+Every location on the water describes its connections by compass direction
+rather than by symbol -- "the River location directly to the East or West", "the
+River locations directly to the North or South" -- so those connections carry no
+symbol here at all and the scenario wires them from the grid. The symbols
+themselves are still printed, and the few connections that really are
+symbol-based (Jetty to Fort McDonald and Sarcee Territory, Impenetrable Forest
+to The Heart of the Forest) stay on the cards.
 -}
 module Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations where
 
@@ -25,7 +27,7 @@ jetty =
     "Jetty"
     [Civilized, River]
     Squiggle
-    [Plus, Triangle, Diamond]
+    [Plus, Diamond]
     Set.HanninahValley
 
 fortMcDonald :: CardDef
@@ -96,11 +98,11 @@ templeOfIthaqua =
       "Mountain Range"
       [Wild]
       Square
-      [Triangle]
+      []
       "Temple of Ithaqua"
       [Wild, Mystical]
       Square
-      [Triangle]
+      []
       Set.HanninahValley
 
 madProspector :: CardDef
@@ -111,11 +113,11 @@ madProspector =
       "Mountain Range"
       [Wild]
       Square
-      [Triangle]
+      []
       "Mad Prospector"
       [Wild]
       Square
-      [Triangle]
+      []
       Set.HanninahValley
 
 impenetrableForest :: CardDef
@@ -126,11 +128,11 @@ impenetrableForest =
       "Impenetrable Forest"
       [Wild]
       Equals
-      [Triangle]
+      []
       "Impenetrable Forest"
       [Wild]
       Equals
-      [Triangle, Heart]
+      [Heart]
       Set.HanninahValley
 
 swamp :: CardDef
@@ -141,11 +143,11 @@ swamp =
       "Swamp"
       [Wild]
       Moon
-      [Triangle]
+      []
       "Swamp"
       [Wild]
       Moon
-      [Triangle]
+      []
       Set.HanninahValley
 
 siteOfAncientStones :: CardDef
@@ -156,11 +158,11 @@ siteOfAncientStones =
       "Site of Ancient Stones"
       [Wild, Mystical]
       Hourglass
-      [Triangle]
+      []
       "Site of Ancient Stones"
       [Wild, Mystical]
       Hourglass
-      [Triangle]
+      []
       Set.HanninahValley
 
 sinisterTaiga :: CardDef
@@ -170,7 +172,7 @@ sinisterTaiga =
     "Sinister Taiga"
     [Wild]
     T
-    [Triangle]
+    []
     Set.HanninahValley
 
 hiddenHut :: CardDef
@@ -180,11 +182,11 @@ hiddenHut =
     "Isolated Land"
     [Wild]
     Circle
-    [Triangle]
+    []
     "Hidden Hut"
     [Wild, Sarcee]
     Circle
-    [Triangle]
+    []
     Set.HanninahValley
 
 -- Locations that only ever arrive from the back of a story card.
@@ -199,7 +201,7 @@ ithaqua =
       "Ithaqua"
       [Mystical]
       Star
-      [Triangle]
+      []
       Set.HanninahValley
   )
     { cdOtherSide = Just ":against-the-wendigo:023"

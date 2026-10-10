@@ -16,6 +16,10 @@
     "youHaveEnoughEvidenceToClearDrNadelmann": "You have enough evidence to clear Dr. Nadelmann.",
     "theWendigoStillRoamsTheNorthHanninahValley": "You know that the Wendigo still roams the North Hanninah valley."
   },
+  "actions": {
+    "Navigate": "Navigate",
+    "WalkAlongTheRiver": "Walk Along the River"
+  },
   "label": {
     "northHanninah": {
       "investigate": "Take control of the Expedition Notebook"

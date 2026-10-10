@@ -10,10 +10,11 @@ import type { Action } from '@/arkham/types/Action';
 import { actionsToList } from '@/arkham/types/Action';
 import { MessageType } from '@/arkham/types/Message';
 import { replaceIcons, formatContent } from '@/arkham/helpers';
+import { homebrewActionScope } from '@/arkham/homebrewData';
 import { handleI18n } from '@/arkham/i18n';
 import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n()
+const { t, te } = useI18n()
 const props = withDefaults(defineProps<{
  game: Game
  ability: AbilityLabel | FightLabel | FightLabelWithSkill | EvadeLabel | EvadeLabelWithSkill | EngageLabel
@@ -195,6 +196,13 @@ const maybeFormat = function(body: string) {
   return body.startsWith("$") ? handleI18n(tformat(body), t) : body
 }
 
+/* A homebrew campaign names its own actions in its own locale scope, so that
+text can live with the rest of the campaign rather than in the core locale. */
+const actionLabel = (action: Action) => {
+  const key = homebrewActionScope(ability.value?.cardCode ?? null, action)
+  return key && te(key) ? t(key) : t(action)
+}
+
 const abilityLabel = computed(() => {
   // don't use isButtonText
   if (isButtonText.value && tooltip.value) {
@@ -285,13 +293,13 @@ const abilityLabel = computed(() => {
     const actionPrefix = total > 0 ? `<span>${replaceIcons("{action}".repeat(total))}</span>` : ""
 
     if (actions.tag === "OrActions") {
-      const labels = actions.contents.map(a => actionsToList(a).map(n => t(n)).join(" "))
+      const labels = actions.contents.map(a => actionsToList(a).map(actionLabel).join(" "))
       return `${actionPrefix}<span>${t('slashOr', labels)}</span>`
     }
 
     const asList = actionsToList(actions)
     if (asList.length === 1) {
-      return `${actionPrefix}<span>${t(asList[0])}</span>`
+      return `${actionPrefix}<span>${actionLabel(asList[0])}</span>`
     }
 
     return replaceIcons("{action}".repeat(totalActionCost(cost)))

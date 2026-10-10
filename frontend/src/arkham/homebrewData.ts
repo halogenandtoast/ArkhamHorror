@@ -75,6 +75,16 @@ export function ultimatumEntryScope(tag: string): string {
   return `${homebrewCampaignScope(`:${parts[1]}`)}.ultimatums.${parts[2]}`
 }
 
+/* Where a homebrew campaign's own action is named for the ability button:
+"c:against-the-wendigo:010" + "WalkAlongTheRiver" ->
+"againstTheWendigo.actions.WalkAlongTheRiver". The core actions are named by a
+root-level key, so a card that is not homebrew gets null and falls back to it. */
+export function homebrewActionScope(cardCode: string | null, action: string): string | null {
+  if (!cardCode) return null
+  const ns = homebrewNamespaceOf(cardCode)
+  return ns ? `${homebrewCampaignScope(ns)}.actions.${action}` : null
+}
+
 const tokenModules = import.meta.glob('@homebrew/*/tokens.json', { eager: true }) as Record<
   string,
   { default: HomebrewTotalsToken[] }

@@ -1,11 +1,12 @@
 module Arkham.Event.Events.TelescopicSight3 (telescopicSight3, telescopicSight3Effect) where
 
 import Arkham.Ability
+import Arkham.Classes.HasGame (HasGame)
 import Arkham.Effect.Import
 import Arkham.Effect.Types (targetL)
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Import.Lifted hiding (choose, targetL)
-import Arkham.ForMovement
+import Arkham.Helpers.CombatTarget (getAttackRangeBonus)
 import Arkham.Helpers.Modifiers (ModifierType (..), modified_, modifyEachMaybe)
 import Arkham.Helpers.Window ()
 import Arkham.Keyword (Keyword (Aloof, Retaliate))
@@ -21,10 +22,18 @@ newtype TelescopicSight3 = TelescopicSight3 EventAttrs
 telescopicSight3 :: EventCard TelescopicSight3
 telescopicSight3 = event TelescopicSight3 Cards.telescopicSight3
 
+{- | How far an attack with the attached asset reaches. This card sets the standard
+range to a connecting location, and Springfield M1903's taboo adds a location to
+whatever that range is, so the two stack.
+-}
+attackRange :: HasGame m => AssetId -> m Int
+attackRange aid = (1 +) <$> getAttackRangeBonus aid
+
 instance HasModifiersFor TelescopicSight3 where
   getModifiersFor (TelescopicSight3 a) =
     case a.placement of
       AttachedToAsset aid _ -> do
+        range <- attackRange aid
         abilities <- select (AbilityOnAsset (AssetWithId aid) <> AbilityIsAction #fight)
         modifyEachMaybe a (map (AbilityTarget a.controller . abilityToRef) abilities) \_ -> do
           lid <- MaybeT $ selectOne $ locationWithInvestigator a.controller
@@ -42,7 +51,7 @@ instance HasModifiersFor TelescopicSight3 where
                     $ handleTaboo
                     $ EnemyWithoutModifier CannotBeAttacked
                     <> NonEliteEnemy
-                    <> at_ (orConnected NotForMovement lid)
+                    <> at_ (withinDistance range lid)
                 ]
       _ -> pure mempty
 
@@ -63,7 +72,10 @@ instance RunMessage TelescopicSight3 where
       chooseTargetM iid assets \asset -> place attrs $ AttachedToAsset asset Nothing
       pure e
     UseThisAbility iid (isSource attrs -> True) 1 -> do
-      createCardEffect Cards.telescopicSight3 Nothing (attrs.ability 1) iid
+      range <- case attrs.placement of
+        AttachedToAsset aid _ -> attackRange aid
+        _ -> pure 1
+      createCardEffect Cards.telescopicSight3 (effectInt range) (attrs.ability 1) iid
       pure e
     _ -> TelescopicSight3 <$> liftRunMessage msg attrs
 
@@ -85,17 +97,19 @@ telescopicSight3Effect = cardEffect TelescopicSight3Effect Cards.telescopicSight
 
 instance HasModifiersFor TelescopicSight3Effect where
   getModifiersFor (TelescopicSight3Effect a) = case a.target.investigator of
-    Just iid ->
+    Just iid -> do
+      let range = fromMaybe 1 ((.int) =<< a.metadata)
       modified_
         a
         iid
-        [ EnemyFightActionCriteria
+        [ AttackRangeIncrease 1
+        , EnemyFightActionCriteria
             $ CriteriaOverride
             $ EnemyCriteria
             $ ThisEnemy
             $ EnemyWithoutModifier CannotBeAttacked
             <> NonEliteEnemy
-            <> at_ (orConnected NotForMovement $ locationWithInvestigator iid)
+            <> at_ (withinDistance range $ locationWithInvestigator iid)
             <> NotEnemy (enemyEngagedWith iid)
         ]
     _ -> pure mempty

@@ -8,7 +8,7 @@ import Arkham.Effect.Runner ()
 import Arkham.Effect.Types
 import Arkham.Event.Cards qualified as Cards
 import Arkham.Event.Runner hiding (targetL)
-import Arkham.ForMovement
+import Arkham.Helpers.CombatTarget (getAttackRangeBonus)
 import Arkham.Helpers.Modifiers
 import Arkham.Helpers.Playable
 import Arkham.Helpers.Source
@@ -51,12 +51,15 @@ instance HasModifiersFor Marksmanship1 where
         guard $ any (`elem` traits) [Firearm, Ranged]
         lid <- MaybeT $ selectOne $ locationWithInvestigator iid
         liftGuardM $ getIsPlayable iid iid (UnpaidCost NeedsAction) [mkWhen DoNotCheckWindow] (toCard a)
+        -- Springfield M1903's taboo reaches a location past whatever this sets, so
+        -- the ability has to be offered that far out too
+        range <- lift $ (1 +) <$> maybe (pure 0) getAttackRangeBonus ab.source.asset
         pure
           [ CanModify
               $ EnemyFightActionCriteria
               $ CriteriaOverride
               $ EnemyCriteria
-              $ ThisEnemy (EnemyWithoutModifier CannotBeAttacked <> at_ (orConnected NotForMovement lid))
+              $ ThisEnemy (EnemyWithoutModifier CannotBeAttacked <> at_ (withinDistance range lid))
           ]
       _ -> error "Invalid branch"
 
@@ -86,7 +89,10 @@ marksmanship1Effect = cardEffect Marksmanship1Effect Cards.marksmanship1
 instance HasModifiersFor Marksmanship1Effect where
   getModifiersFor (Marksmanship1Effect a) =
     case a.target of
-      InvestigatorTarget _ ->
+      InvestigatorTarget iid -> do
+        -- this card is what sets the attack's standard range, so a card worded
+        -- relative to that range (Springfield M1903's taboo) reads it from here
+        modified_ a iid [AttackRangeIncrease 1]
         modifySelectMap a AnyEnemy \eid ->
           [ EnemyFightActionCriteria
               $ CriteriaOverride

@@ -4,7 +4,7 @@ import Arkham.Ability
 import Arkham.Asset.Cards qualified as Cards
 import Arkham.Asset.Import.Lifted
 import Arkham.Asset.Uses
-import Arkham.Helpers.Modifiers (ModifierType (..), modified_)
+import Arkham.Helpers.Modifiers (ModifierType (..), getModifiers, modified_)
 import Arkham.Matcher
 import Arkham.Taboo
 
@@ -42,21 +42,28 @@ instance RunMessage SpringfieldM19034 where
   runMessage msg a@(SpringfieldM19034 attrs) = runQueueT $ case msg of
     UseThisAbility iid (isSource attrs -> True) 1 -> do
       let source = attrs.ability 1
+      let isTabooed = tabooed TabooList19 attrs
+      -- the taboo reaches one location past the standard range, which Telescopic
+      -- Sight (3) extends, so the two stack
+      range <-
+        if isTabooed
+          then (\mods -> 1 + sum [n | AttackRangeIncrease n <- mods]) <$> getModifiers iid
+          else pure 0
       let tabooExtend =
-            if tabooed TabooList19 attrs
+            if isTabooed
               then
                 fightOverride
                   . ( <>
                         oneOf
                           [ EnemyAt $ locationWithInvestigator iid
-                          , NonEliteEnemy <> EnemyAt (connectedTo $ locationWithInvestigator iid)
+                          , NonEliteEnemy <> EnemyAt (withinDistance range $ locationWithInvestigator iid)
                           ]
                     )
               else id
       sid <- getRandom
       skillTestModifiers sid attrs iid $ DamageDealt 2
         : SkillModifier #combat 3
-        : [IgnoreRetaliate | tabooed TabooList19 attrs]
+        : [m | isTabooed, m <- [IgnoreRetaliate, IgnoreAloof]]
       chooseFightEnemyMatch sid iid source (tabooExtend (not_ (enemyEngagedWith iid)))
 
       pure a

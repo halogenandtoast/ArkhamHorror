@@ -127,6 +127,11 @@ data ModifierType
   | AsIfTurn InvestigatorId
   | EnemyAttacksOverride InvestigatorMatcher
   | AttackDealsEitherDamageOrHorror
+  | {- | On an INVESTIGATOR: the standard range of their attacks reaches this many
+    locations further. Read by cards worded relative to that range -- Springfield
+    M1903's taboo adds a location to it.
+    -}
+    AttackRangeIncrease Int
   | AttacksCannotBeCancelled
   | Barricades [LocationId]
   | BaseShroud Int

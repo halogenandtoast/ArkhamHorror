@@ -9026,6 +9026,7 @@ test-suite spec
       Arkham.Asset.Assets.SixthSense4Spec
       Arkham.Asset.Assets.SixthSenseSpec
       Arkham.Asset.Assets.SolemnVowSpec
+      Arkham.Asset.Assets.SpringfieldM19034Spec
       Arkham.Asset.Assets.StrayCatSpec
       Arkham.Asset.Assets.SummonedHound1Spec
       Arkham.Asset.Assets.SurvivalKnifeSpec

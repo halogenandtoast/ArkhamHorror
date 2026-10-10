@@ -49,6 +49,18 @@ export const literalPlaceholders = ['asterisk', 'underscore']
 
 export const runePlaceholder = /{rune([A-Z])}/g
 
+/* The other rune form, and the one we do not control: ArkhamDB/arkham.build put
+ * the glyph in the printed name as a literal token, so `cards_<lang>.json` ships
+ * "Chamber of Records [tdc_rune_m]" and `refName` prefers that over the name the
+ * engine sent. Resolved alongside `{runeM}` rather than instead of it -- the
+ * brace form is ours, used in locale copy, and both must keep working. */
+export const runeTokenPlaceholder = /\[tdc_rune_([A-Za-z])\]/g
+
+/* Either form, as one alternation, for the renderers that split text into nodes
+ * instead of building HTML (the game log). Capture 1 is the brace form's letter,
+ * capture 2 the bracket form's. */
+export const runeSegmentPattern = /{rune([A-Z])}|\[tdc_rune_([A-Za-z])\]/g
+
 export function iconPlaceholderNames(): string[] {
   return [...Object.keys(iconClasses), ...literalPlaceholders, ...Object.keys(homebrewIcons)]
 }

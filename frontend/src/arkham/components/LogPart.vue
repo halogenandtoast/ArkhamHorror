@@ -14,7 +14,7 @@ import { useDbCardStore } from '@/stores/dbCards'
 import { customCardDef, isCustomCardCode } from '@/arkham/customCards'
 import type { LogPart, LogRef } from '@/arkham/types/GameLog'
 import { formatKey, logKeyTitle } from '@/arkham/types/Log'
-import { investigatorClass, type CssClassFlags } from '@/arkham/helpers'
+import { investigatorClass, splitRunes, type CssClassFlags } from '@/arkham/helpers'
 
 const props = defineProps<{ part: LogPart }>()
 
@@ -90,7 +90,16 @@ const plural = computed(() => {
 </script>
 
 <template>
-  <span v-if="part.tag === 'LogText'">{{ part.contents }}</span>
+  <!-- Rune glyphs render as elements, so any text that can carry one is split
+       into segments rather than interpolated whole. See `splitRunes`: a card
+       name arrives from card data, so `v-html` is not a trade worth making. -->
+  <span v-if="part.tag === 'LogText'"
+    ><template v-for="(seg, i) in splitRunes(part.contents)" :key="i"
+      ><i v-if="seg.rune" class="log-rune" :class="`rune-${seg.rune}`" /><template v-else>{{
+        seg.text
+      }}</template></template
+    ></span
+  >
 
   <!-- No variables: plain text. Nesting an <i18n-t> inside another one's slot
        leaves the outer placeholder unsubstituted, so a leaf i18n part must not
@@ -114,7 +123,11 @@ const plural = computed(() => {
     class="log-ref"
     :class="[`log-ref--${part.contents.kind}`, refClass(part.contents)]"
     :data-image-id="refImageId(part.contents)"
-    >{{ refName(part.contents) }}</span
+    ><template v-for="(seg, i) in splitRunes(refName(part.contents))" :key="i"
+      ><i v-if="seg.rune" class="log-rune" :class="`rune-${seg.rune}`" /><template v-else>{{
+        seg.text
+      }}</template></template
+    ></span
   >
 
   <span v-else-if="part.tag === 'LogNumber'" class="log-num">{{ part.contents }}</span>
@@ -197,6 +210,14 @@ const plural = computed(() => {
 
 .log-icon {
   font-style: normal;
+}
+
+/* The glyph comes from the global .rune-* classes (styles/icons.css), which draw
+   it in :before -- this only has to undo the <i> italic and keep it on the text
+   baseline so a rune inside a card name sits level with the name. */
+.log-rune {
+  font-style: normal;
+  vertical-align: baseline;
 }
 
 img.log-token {

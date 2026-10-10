@@ -62,6 +62,7 @@ import Arkham.Game.Utils
 import Arkham.GameEnv
 import Arkham.Helpers
 import Arkham.Helpers.Ability (abilityRidesAlong, isForcedAbility)
+import Arkham.Helpers.Action (getPreventedActions)
 import Arkham.Helpers.ChaosBag (getBagChaosTokens)
 import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization
@@ -4461,7 +4462,16 @@ runPreGameMessage msg g = case msg of
   CheckWindows ws | notNull ws -> do
     if isJust $ modeScenario $ g ^. modeL
       then do
-        pushAll [Do (CheckWindows ws), EndCheckWindow]
+        {- Say so when this window matched an ability someone is forbidden to
+        trigger. Here rather than in @Do (CheckWindows ws)@ because only the
+        @Do@ is re-pushed on a re-check, so this fires once per window and needs
+        no dedupe state. The tick this handler is about to set is not visible to
+        'getPreventedActions' yet, which can only make its entry-tick test
+        stricter -- it under-reports rather than inventing a line. #5821 -}
+        iids <- select UneliminatedInvestigator
+        prevented <- concatForM iids \iid ->
+          map (uncurry $ AbilityPrevented iid) <$> getPreventedActions iid ws
+        pushAll $ prevented <> [Do (CheckWindows ws), EndCheckWindow]
         let tick' = gameWindowTick g + 1
         pure
           $ g

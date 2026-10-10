@@ -94,6 +94,19 @@ abilityCostIsInFlight ability = any isThisAbility <$> getActiveCosts
     ForAbility a -> a.ref == ability.ref
     _ -> False
 
+{- | Fold over an ability's modifiers to apply any 'SetAbilityCriteria' override
+to its printed criteria.
+
+Shared rather than inlined because 'getPreventedActions' reports the abilities
+'getCanPerformAbility' rejected, so the two have to test the same criteria. An
+override visible to only one of them has the log announce an ability that was
+never going to fire.
+-}
+applyCriteriaOverride :: ModifierType -> Criterion -> Criterion
+applyCriteriaOverride = \case
+  SetAbilityCriteria (CriteriaOverride c) -> const c
+  _ -> id
+
 getCanPerformAbility
   :: (HasCallStack, HasGame m) => InvestigatorId -> [Window] -> Ability -> m Bool
 getCanPerformAbility !iid !ws !ability = do
@@ -104,11 +117,7 @@ getCanPerformAbility !iid !ws !ability = do
   abilityModifiers <- getModifiers (AbilityTarget iid ability.ref)
 
   let
-    criteria = foldr setCriteria (abilityCriteria ability) abilityModifiers
-    setCriteria :: ModifierType -> Criterion -> Criterion
-    setCriteria = \case
-      SetAbilityCriteria (CriteriaOverride c) -> const c
-      _ -> id
+    criteria = foldr applyCriteriaOverride (abilityCriteria ability) abilityModifiers
     abWindow = abilityWindowFor ability
 
   runValidT do

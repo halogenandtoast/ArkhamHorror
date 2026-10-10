@@ -18,7 +18,9 @@ instance HasAbilities ChamberOfRecordsEarth where
     extendRevealed
       a
       [ restricted a 1 (Here <> thisExists a (not_ activatedLocation)) actionAbility
-      , mkAbility a 2 $ freeReaction $ DiscoveringLastClue #after You (be a)
+      , -- "After the last clue is discovered from this location" -- impersonal, unlike
+        -- Western Athenaeum's "after you discover", so anyone here may translate it
+        restricted a 2 Here $ freeReaction $ DiscoveringLastClue #after Anyone (be a)
       ]
 
 instance RunMessage ChamberOfRecordsEarth where

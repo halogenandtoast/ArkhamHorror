@@ -557,6 +557,13 @@ data Message
     -}
     ResolveWindowInitiations InvestigatorId [Window] [(Ability, [Window], [Message])]
   | ResolvedAbility Ability -- INTERNAL, See Arbiter of Fates
+  | {- | A window matched an ability the investigator is forbidden to trigger
+    ('CannotTriggerAbilityMatching'), carrying the source of the modifier that
+    forbids it. NARRATION ONLY -- no handler, no game effect. Without it the
+    suppression is invisible: a player holding Infernal Machinery took the last
+    clue out of a Glyph location and nothing happened, with nothing said (#5821).
+    -}
+    AbilityPrevented InvestigatorId Ability Source
   | SkillTestMessage SkillTestMessage
   | ChaosBagMessage ChaosBagMessage
   | SearchMessage SearchMessage

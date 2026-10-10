@@ -627,6 +627,26 @@ oneShot = \case
       -- for this one.
       (key, extra) <- abilityPhrasing (Ab.abilityType ab)
       pure $ action [ikeyPart key (["investigator" ~> who, "source" ~> src] <> extra)]
+  {- An ability a window matched but the investigator may not trigger.
+
+  A 'notice', not an 'action': nothing happened, and the reader needs to know
+  why nothing happened. The blocker is named because that is the whole point of
+  the line -- without it a player sees a window pass over a card that plainly
+  says it should have fired. -}
+  AbilityPrevented iid ab blocker | not ab.basic && notPlayerAbilityIndex ab.index -> Just do
+    who <- investigatorRefFor iid
+    mSource <- sourceRefFor ab.source
+    mBlocker <- sourceRefFor blocker
+    pure do
+      src <- mSource
+      blockedBy <- mBlocker
+      (key, extra) <- preventedPhrasing (Ab.abilityType ab)
+      pure
+        $ notice
+          [ ikeyPart key
+              $ ["investigator" ~> who, "source" ~> src, "blocker" ~> blockedBy]
+              <> extra
+          ]
   -- A location turning face up. The ref is built AFTER the narrator runs on a
   -- still-unrevealed location, so it would draw its back; name it explicitly.
   RevealLocation _ lid -> Just do
@@ -811,6 +831,38 @@ abilityPhrasing = \case
   DelayedAbility inner -> abilityPhrasing inner
   Objective inner -> abilityPhrasing inner
   ForcedWhen _ inner -> abilityPhrasing inner
+  SilentForcedAbility {} -> Nothing
+  Cosmos -> Nothing
+  ConstantAbility -> Nothing
+
+{- | 'abilityPhrasing' for the reaction that did NOT fire.
+
+Reactions only, matching what 'getPreventedActions' collects: a window opens and
+closes on its own, so a suppressed reaction is invisible, while an action or fast
+ability just has no button and would cost a line every player window.
+'Nothing' for everything else, so a widened collector cannot start narrating
+things this wording does not fit.
+
+Forced in particular is never reachable: it is not a 'TriggeredAbility' as far
+as 'isTriggeredAbility' is concerned, which is exactly what exempts it from
+'CannotTriggerAbilityMatching' to begin with.
+-}
+preventedPhrasing :: AbilityType -> Maybe (Text, [(Text, LogPart)])
+preventedPhrasing = \case
+  ReactionAbility {} -> Just ("log.cannotTriggerAbility", ["symbol" ~> LogIcon "reaction"])
+  ConstantReaction {} -> Just ("log.cannotTriggerAbility", ["symbol" ~> LogIcon "reaction"])
+  CustomizationReaction {} -> Just ("log.cannotTriggerAbility", ["symbol" ~> LogIcon "reaction"])
+  -- Wrappers; the kind that matters is inside.
+  DelayedAbility inner -> preventedPhrasing inner
+  Objective inner -> preventedPhrasing inner
+  ForcedWhen _ inner -> preventedPhrasing inner
+  ActionAbility {} -> Nothing
+  AbilityEffect {} -> Nothing
+  ServitorAbility {} -> Nothing
+  FastAbility' {} -> Nothing
+  Haunted -> Nothing
+  ForcedAbility {} -> Nothing
+  ForcedAbilityWithCost {} -> Nothing
   SilentForcedAbility {} -> Nothing
   Cosmos -> Nothing
   ConstantAbility -> Nothing

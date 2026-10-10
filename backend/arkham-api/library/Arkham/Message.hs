@@ -1483,6 +1483,9 @@ pattern CollectSkillTestOptions = SkillTestMessage CollectSkillTestOptions_
 pattern NextSkillTest :: SkillTestId -> Message
 pattern NextSkillTest sid = SkillTestMessage (NextSkillTest_ sid)
 
+pattern RestoreSkillTestForWindow :: Maybe SkillTest -> Message
+pattern RestoreSkillTestForWindow mst = SkillTestMessage (RestoreSkillTestForWindow_ mst)
+
 pattern BeforeSkillTest :: SkillTestId -> Message
 pattern BeforeSkillTest sid = SkillTestMessage (BeforeSkillTest_ sid)
 

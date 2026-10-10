@@ -44,6 +44,11 @@ data SkillTestMessage
   | IncreaseSkillTestDifficulty_ Int
   | ReplaceSkillTestSkill_ FromSkillType ToSkillType
   | RepeatSkillTest_ SkillTestId SkillTestId
+  | {- | Re-seat a test that has already torn down, for the span of its own
+    post-ST.8 window. A repeat declared there runs as a nested test, so the
+    window outlives the test it reports on and has to be able to read it.
+    -}
+    RestoreSkillTestForWindow_ (Maybe SkillTest)
   | SetSkillTestTarget_ Target
   | SetSkillTestResolveFailureInvestigator_ InvestigatorId
   | BeginSkillTestWithPreMessages_ Bool [Message] SkillTest

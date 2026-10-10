@@ -131,23 +131,40 @@ instance RunMessage SkillTest where
       -- A repeat is not the declaring card's own test, so it is deferred here rather than
       -- by 'handleSkillTestNesting': the card's tail must not ride along with it, or an
       -- event that repeats a test (Live and Learn) discards only after the repeat ends.
+      --
+      -- The window it was declared in is after ST.8, outside the test's own steps, so the
+      -- repeat nests inside that window: it runs to completion and then the window
+      -- continues, where a second copy can answer the same failure again. Carry the ask
+      -- across rather than re-emitting it, and re-seat this test for its duration -- it has
+      -- torn down by then, and the window's cards still read it.
+      let
+        isThisWindowAsk = \case
+          Do (CheckWindows ws) -> flip any ws \w -> case windowType w of
+            Window.SkillTestEnded st -> st.id == skillTestId
+            _ -> False
+          _ -> False
+      let
+        -- the declaring card still has a tail in the queue, so the repeat goes where the
+        -- ask sat (after that tail) and the window resumes behind it
+        withResume windowAsk =
+          BeginSkillTestWithPreMessages' [] repeated
+            : concat
+              [ [RestoreSkillTestForWindow (Just s), a, RestoreSkillTestForWindow Nothing]
+              | a <- windowAsk
+              ]
       inSkillTestWindow <- fromQueue $ elem EndSkillTestWindow
       if inSkillTestWindow
         then do
-          -- the test is performed again, not responded to twice, so the window it was
-          -- declared in is over: drop the re-check 'WindowAsk' queued behind the ask, or a
-          -- second Live and Learn is offered against a test that is already being repeated
-          let
-            endedThisTest w = case windowType w of
-              Window.SkillTestEnded st -> st.id == skillTestId
-              _ -> False
-          removeAllMessagesMatching \case
-            Do (CheckWindows ws) -> any endedThisTest ws
-            _ -> False
+          windowAsk <- popMessagesMatching isThisWindowAsk
           -- while this test is still current, so 'EffectNextSkillTestWindow' re-points
           push $ NextSkillTest sid
-          insertAfterMatching [BeginSkillTestWithPreMessages' [] repeated] (== EndSkillTestWindow)
-        else push $ BeginSkillTestWithPreMessages' [] repeated
+          insertAfterMatching (withResume windowAsk) (== EndSkillTestWindow)
+        else
+          -- this test has already torn down and been re-seated for its own window, so there
+          -- is no sentinel left to defer behind
+          findFromQueue isThisWindowAsk >>= \case
+            Just _ -> replaceMessageMatching isThisWindowAsk (withResume . pure)
+            Nothing -> push $ BeginSkillTestWithPreMessages' [] repeated
       pure s
     IncreaseSkillTestDifficulty n -> do
       -- see: faqs/drawing-thin

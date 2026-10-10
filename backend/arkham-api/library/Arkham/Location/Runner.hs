@@ -633,11 +633,22 @@ locationInvestigatorsWithClues :: HasGame m => LocationAttrs -> m [InvestigatorI
 locationInvestigatorsWithClues attrs =
   filterM (fieldMap InvestigatorClues (> 0)) =<< select (investigatorAt $ toId attrs)
 
+applyBaseShroud :: ModifierType -> Int -> Int
+applyBaseShroud (BaseShroud m) _ = m
+applyBaseShroud _ n = n
+
+-- | The printed shroud, which for an "X" shroud location is whatever X works out to.
+getPrintedShroudValueFor :: (HasCallStack, HasGame m) => LocationAttrs -> m Int
+getPrintedShroudValueFor attrs = do
+  modifiers' <- getModifiers (toTarget attrs)
+  base <- getGameValue (fromJustNote "Missing shroud" $ locationShroud attrs)
+  pure $ max 0 $ foldr applyBaseShroud base modifiers'
+
 getModifiedShroudValueFor :: (HasCallStack, HasGame m) => LocationAttrs -> m Int
 getModifiedShroudValueFor attrs = do
   modifiers' <- getModifiers (toTarget attrs)
   base <- getGameValue (fromJustNote "Missing shroud" $ locationShroud attrs)
-  let modifiedBase = foldr applyBaseModifier base modifiers'
+  let modifiedBase = foldr applyBaseShroud base modifiers'
   -- SetShroud is the "set the shroud value to X" effect, which overrides every
   -- other modifier, so it has to be applied last. BaseShroud only replaces the
   -- printed value and can still be modified afterwards.
@@ -651,8 +662,6 @@ getModifiedShroudValueFor attrs = do
           else shroudAfterModifiers
   pure $ max 0 $ foldr applySetModifier floored modifiers'
  where
-  applyBaseModifier (BaseShroud m) _ = m
-  applyBaseModifier _ n = n
   applyModifier (ShroudModifier m) n = n + m
   applyModifier _ n = n
   applySetModifier (SetShroud m) _ = m

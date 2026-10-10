@@ -1552,7 +1552,12 @@ runGameMessage msg g = case msg of
         case attr enemyPlacement enemy of
           AsSwarm _ c -> case toCardOwner c of
             Just owner -> push $ PutCardOnBottomOfDeck owner (Deck.InvestigatorDeck owner) c
-            Nothing -> unlessM (hasCampaignOption UseSwarmPlaceholders) $ error "Missing owner"
+            Nothing -> unlessM (hasCampaignOption UseSwarmPlaceholders) $ case c of
+              -- A scenario effect can slide an encounter card under a host enemy
+              -- (Dark Matter's Duplication). There is no owner's deck to return
+              -- it to, so it leaves play to the encounter discard instead.
+              EncounterCard ec -> push $ AddToEncounterDiscard ec
+              _ -> error "Missing owner"
           _ -> pure ()
 
         zone <-
@@ -1855,6 +1860,7 @@ runGameMessage msg g = case msg of
       & (phaseHistoryL %~ insertHistory iid historyItem)
       & (actionRemovedEntitiesL . skillsL %~ Map.foldr' (\s m -> Map.insert s.id s m) skills')
       & setTurnHistory
+  Msg.RestoreSkillTestForWindow mst -> pure $ g & (skillTestL .~ mst)
   Msg.SkillTestEnded _ -> do
     let abilitiesToResolve = filter abilityTriggersSkillTest (g ^. activeAbilitiesL)
     replaceAllMessagesMatching

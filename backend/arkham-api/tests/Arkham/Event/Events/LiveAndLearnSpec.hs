@@ -64,7 +64,35 @@ spec = describe "Live and Learn" $ do
     applyResults
     location.clues `shouldReturn` 0
 
-  it "a second copy waits for the repeat's own failure" . gameTest $ \self -> do
+  it "a second copy answers the original failure after the repeat resolves" . gameTest $ \self -> do
+    withProp @"intellect" 1 self
+    location <- testLocation & prop @"shroud" 3 & prop @"clues" 2
+    setChaosTokens [Zero]
+    self `moveTo` location
+    liveAndLearn1 <- genCard Events.liveAndLearn
+    liveAndLearn2 <- genCard Events.liveAndLearn
+    self `addToHand` liveAndLearn1
+    self `addToHand` liveAndLearn2
+    investigate self location
+    startSkillTest
+    applyResults
+    -- 1 intellect vs shroud 3, failed by 2
+    location.clues `shouldReturn` 2
+    chooseTarget liveAndLearn1
+    asDefs self.discard `shouldReturn` [Events.liveAndLearn]
+    -- the repeat is nested in the window the first copy was declared in, so it resolves
+    -- first: 1 intellect + 2 vs shroud 3 succeeds and discovers a clue
+    startSkillTest
+    applyResults
+    location.clues `shouldReturn` 1
+    -- then that window continues. The original failure is still its trigger, so the
+    -- second copy can answer it even though the repeat passed
+    chooseTarget liveAndLearn2
+    startSkillTest
+    applyResults
+    location.clues `shouldReturn` 0
+
+  it "the repeat's own failure window comes before the original's" . gameTest $ \self -> do
     withProp @"intellect" 1 self
     location <- testLocation & prop @"shroud" 6 & prop @"clues" 1
     setChaosTokens [Zero]
@@ -78,17 +106,14 @@ spec = describe "Live and Learn" $ do
     applyResults
     -- 1 intellect vs shroud 6, failed by 5
     chooseTarget liveAndLearn1
-    -- repeating the test closes the window it was declared in, so the second copy is
-    -- not on offer yet and the repeat is already under way. It is still a legal
-    -- commit for the repeat (it has a wild icon), so this has to check playability
-    -- rather than the target.
-    assertNotPlayable liveAndLearn2
-    asDefs self.discard `shouldReturn` [Events.liveAndLearn]
     startSkillTest
     applyResults
-    -- 1 intellect + 2 vs shroud 6, failed by 3: now the second copy can respond
+    -- 1 intellect + 2 vs shroud 6 fails too. The repeat is the innermost sequence, so its
+    -- own window is offered first: this skip is what that window needs, and the original's
+    -- is still there behind it for the second copy
+    skipAcrossQuestions
     chooseTarget liveAndLearn2
     asDefs self.discard `shouldMatchListM` [Events.liveAndLearn, Events.liveAndLearn]
-    startSkillTest
-    applyResults
+    -- the skip leaves the seat declining windows, so the second repeat runs without
+    -- stopping at its own commit step
     location.clues `shouldReturn` 1

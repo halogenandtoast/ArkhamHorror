@@ -153,7 +153,7 @@ import Arkham.Location.BreachStatus qualified as Breach
 import Arkham.Location.FloodLevel
 import Arkham.Location.Grid (adjacentPositions, positionColumn, positionRow)
 import Arkham.Location.Group (membershipKey)
-import Arkham.Location.Runner (getModifiedShroudValueFor)
+import Arkham.Location.Runner (getModifiedShroudValueFor, getPrintedShroudValueFor)
 import Arkham.Location.Types (
   Field (..),
   LocationAttrs (..),
@@ -4832,7 +4832,7 @@ instance Projection Location where
       LocationDamage -> pure $ locationDamage attrs
       LocationDoom -> pure $ locationDoom attrs
       LocationPrintedShroud -> case locationShroud of
-        Just ValueX -> Just . Static <$> getModifiedShroudValueFor attrs
+        Just ValueX -> Just . Static <$> getPrintedShroudValueFor attrs
         shroud -> pure shroud
       LocationShroud ->
         if isRevealed l && isJust locationShroud
@@ -4930,9 +4930,11 @@ instance Projection Asset where
           mods <- getModifiers (AssetTarget aid)
           let isSpirit = notNull [() | IsSpirit _ <- mods]
           let
-            modifiedHealth = foldl' applyHealthModifiers n mods
+            modifiedHealth = foldl' applyHealthModifiers (foldl' applyPreHealthModifiers n mods) mods
             applyHealthModifiers h (HealthModifier m) = max 0 (h + m)
             applyHealthModifiers h _ = h
+            applyPreHealthModifiers h (Helpers.HealthModifierWithMin m (Min minVal)) = max (min h minVal) (h + m)
+            applyPreHealthModifiers h _ = h
           pure $ guard (not isSpirit) $> max 0 (modifiedHealth - assetDamage attrs)
       AssetRemainingSanity -> case assetSanity of
         Nothing -> pure Nothing
@@ -5274,12 +5276,15 @@ instance Projection Investigator where
         let
           applyModifier (HealthModifier m) n = max 0 (n + m)
           applyModifier _ n = n
+          applyPreModifier (Helpers.HealthModifierWithMin m (Min minVal)) n = max (min n minVal) (n + m)
+          applyPreModifier _ n = n
           baseHealth = case investigatorForm of
             TransfiguredForm inner ->
               (toAttrs (lookupInvestigator (InvestigatorId inner) investigatorPlayerId)).health
             _ -> investigatorHealth
 
-        foldr applyModifier baseHealth <$> getModifiers attrs
+        mods <- getModifiers attrs
+        pure $ foldr applyModifier (foldr applyPreModifier baseHealth mods) mods
       InvestigatorSanity -> do
         let
           applyModifier (SanityModifier m) n = max 0 (n + m)

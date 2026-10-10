@@ -9,6 +9,7 @@ import Arkham.Ability.Type
 import Arkham.Action
 import Arkham.Card.CardCode
 import {-# SOURCE #-} Arkham.Card.EncounterCard
+import Arkham.ChaosToken.Types (ChaosTokenValue)
 import Arkham.Cost
 import Arkham.Criteria (Criterion (NoRestriction))
 import Arkham.Criteria.Override (CriteriaOverride)
@@ -68,6 +69,20 @@ data Ability = Ability
   only point at which arming it can still matter, and nothing else is ever on offer in the
   windows that follow.
   -}
+  , abilityChaosTokenEffects :: [ChaosTokenValue]
+  {- ^ "I affect these chaos token faces."
+
+  A declaration, not a behaviour: it changes nothing about how the ability
+  resolves, and the ability still has to do the work itself. It exists so
+  'getSkillTestValueBreakdown' can list the effect -- attributed to this card --
+  /before/ a token is revealed, which no modifier can do for an effect that only
+  becomes a modifier once the ability resolves.
+
+  Each entry pairs a face with the value this ability adds to a test when that
+  face is revealed, in the same payload 'AddChaosTokenValue' carries; use
+  'NoModifier' for an effect with no numeric part. 'abilityTooltip' supplies the
+  prose half. Set it with 'affectsChaosToken' / 'affectsChaosTokens'.
+  -}
   }
   deriving stock (Show, Ord, Data)
 
@@ -116,6 +131,7 @@ buildAbility source idx abilityType =
     , abilityEvadeCriteriaOverride = Nothing
     , abilityNonBlocking = False
     , abilityBlocksIn = Nothing
+    , abilityChaosTokenEffects = []
     }
 
 withHighlight :: Targetable target => target -> Ability -> Ability
@@ -156,6 +172,9 @@ instance HasField "limitType" Ability (Maybe AbilityLimitType) where
 
 instance HasField "window" Ability WindowMatcher where
   getField = abilityWindow
+
+instance HasField "chaosTokenEffects" Ability [ChaosTokenValue] where
+  getField = abilityChaosTokenEffects
 
 instance HasField "criteria" Ability Criterion where
   getField = abilityCriteria
@@ -223,6 +242,9 @@ abilityMetadataL = lens abilityMetadata $ \m x -> m {abilityMetadata = x}
 
 abilityTooltipL :: Lens' Ability (Maybe Text)
 abilityTooltipL = lens abilityTooltip $ \m x -> m {abilityTooltip = x}
+
+abilityChaosTokenEffectsL :: Lens' Ability [ChaosTokenValue]
+abilityChaosTokenEffectsL = lens abilityChaosTokenEffects $ \m x -> m {abilityChaosTokenEffects = x}
 
 abilityResultLabelL :: Lens' Ability (Maybe Text)
 abilityResultLabelL = lens abilityResultLabel $ \m x -> m {abilityResultLabel = x}
@@ -293,6 +315,7 @@ instance FromJSON Ability where
     abilityEvadeCriteriaOverride <- o .:? "evadeCriteriaOverride"
     abilityNonBlocking <- o .:? "nonBlocking" .!= False
     abilityBlocksIn <- o .:? "blocksIn"
+    abilityChaosTokenEffects <- o .:? "chaosTokenEffects" .!= []
 
     pure Ability {..}
 

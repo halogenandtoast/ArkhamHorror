@@ -5,6 +5,7 @@ module Arkham.ModifierData (
 import Arkham.Prelude
 
 import Arkham.Campaigns.TheScarletKeys.Key.Id
+import Arkham.Card.CardCode (CardCode)
 import Arkham.ChaosBag.RevealStrategy (RevealStrategy)
 import Arkham.ChaosToken.Types (ChaosTokenFace)
 import Arkham.Id
@@ -94,6 +95,33 @@ instance ToJSON AssetMetadata where
   toJSON = genericToJSON $ aesonOptions $ Just "am"
   toEncoding = genericToEncoding $ aesonOptions $ Just "am"
 
+{- | One card's effect on one chaos token face, as the skill test window shows it.
+
+Gathered by 'getSkillTestValueBreakdown' from two places that mean the same
+thing to a player: an 'AddChaosTokenValue' modifier already in play
+(@ctfeApplied = True@ -- its value is part of 'ctveValue' because the engine
+really will add it), and an ability that declared the effect through
+'abilityChaosTokenEffects' but has not resolved yet (@ctfeApplied = False@).
+
+A card is listed once per face: a declaration is dropped when the same card
+already has the matching modifier applied.
+-}
+data ChaosTokenFaceEffect = ChaosTokenFaceEffect
+  { ctfeName :: Maybe Text
+  -- ^ the card's name, resolved here so the client needs no card lookup
+  , ctfeCardCode :: Maybe CardCode
+  , ctfeValue :: Maybe Int
+  -- ^ the value this adds to the test, when it has a numeric part
+  , ctfeText :: Maybe Text
+  -- ^ the prose half, from the declaring ability's tooltip; may be an i18n key
+  , ctfeApplied :: Bool
+  }
+  deriving stock (Show, Eq, Generic)
+
+instance ToJSON ChaosTokenFaceEffect where
+  toJSON = genericToJSON $ aesonOptions $ Just "ctfe"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "ctfe"
+
 data ChaosTokenValueEntry = ChaosTokenValueEntry
   { ctveFace :: ChaosTokenFace
   , ctveCount :: Int
@@ -101,6 +129,8 @@ data ChaosTokenValueEntry = ChaosTokenValueEntry
   , ctveAutoFail :: Bool
   , ctveAutoSuccess :: Bool
   , ctveRevealsAnother :: Bool
+  , ctveEffects :: [ChaosTokenFaceEffect]
+  -- ^ who else is acting on this face; see 'ChaosTokenFaceEffect'
   }
   deriving stock (Show, Eq, Generic)
 

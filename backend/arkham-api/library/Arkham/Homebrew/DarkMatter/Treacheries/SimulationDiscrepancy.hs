@@ -19,7 +19,10 @@ take 1 horror, and discard Simulation Discrepancy instead."
 -}
 instance HasAbilities SimulationDiscrepancy where
   getAbilities (SimulationDiscrepancy a) =
-    [restricted a 1 (InThreatAreaOf You) $ forced $ WouldDiscoverClues #when You Anywhere (atLeast 1)]
+    [ restricted a 1 (InThreatAreaOf You)
+        $ forced
+        $ WouldDiscoverClues #when You Anywhere (atLeast 1) AnySource
+    ]
 
 instance RunMessage SimulationDiscrepancy where
   runMessage msg t@(SimulationDiscrepancy attrs) = runQueueT $ case msg of

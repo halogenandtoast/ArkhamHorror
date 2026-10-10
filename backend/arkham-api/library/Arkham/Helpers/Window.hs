@@ -2223,13 +2223,14 @@ windowMatches iid rawSource window'@(windowTiming &&& windowType -> (timing', wT
             , gameValueMatches n valueMatcher
             ]
         _ -> noMatch
-    Matcher.WouldDiscoverClues timing whoMatcher whereMatcher valueMatcher ->
+    Matcher.WouldDiscoverClues timing whoMatcher whereMatcher valueMatcher sourceMatcher ->
       guardTiming timing $ \case
-        Window.WouldDiscoverClues who lid _ _ n ->
+        Window.WouldDiscoverClues who lid _ source' n ->
           andM
             [ matchWho iid who (Matcher.replaceThatLocation lid whoMatcher)
             , locationMatches iid source window' lid whereMatcher
             , gameValueMatches n valueMatcher
+            , sourceMatches source' sourceMatcher
             ]
         _ -> noMatch
     Matcher.GainsClues timing whoMatcher valueMatcher -> guardTiming timing $ \case

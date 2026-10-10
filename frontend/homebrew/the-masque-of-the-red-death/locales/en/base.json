@@ -1,0 +1,13 @@
+{
+  "name": "The Masque of the Red Death",
+  "key": {
+    "theRedDeathRavagedArkham": "The Red Death ravaged Arkham.",
+    "theRedDeathWasEnded": "The Red Death was ended."
+  },
+  "debauchery": {
+    "label": {
+      "doomOnFurthestCultistEnemy": "Place 1 doom on the furthest *Cultist* enemy from you",
+      "damageOrHorrorAndDoomOnNearestCultistAsset": "Take 1 damage or horror and place 1 doom on the nearest *Cultist* story asset to you"
+    }
+  }
+}

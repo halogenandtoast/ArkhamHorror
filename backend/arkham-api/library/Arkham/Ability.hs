@@ -19,6 +19,7 @@ import Arkham.Ability.Types qualified
 import Arkham.Action
 import Arkham.Actions
 import Arkham.Card.CardCode
+import Arkham.ChaosToken.Types (ChaosTokenFace, ChaosTokenModifier, ChaosTokenValue (..))
 import Arkham.Constants
 import Arkham.I18n
 import Arkham.Matcher
@@ -161,6 +162,21 @@ onlyOnce = groupLimit PerGame
 
 withTooltip :: Text -> Ability -> Ability
 withTooltip t a = a & abilityTooltipL ?~ t
+
+{- | Declare which chaos token faces this ability affects, so the skill test
+window can show it before a token is revealed.
+
+Replaces whatever was declared before rather than appending, so a shared helper
+may publish a face-only declaration ('NoModifier') that an individual card then
+restates with its own value. Purely informational -- see
+'abilityChaosTokenEffects'.
+-}
+affectsChaosTokens :: [ChaosTokenValue] -> Ability -> Ability
+affectsChaosTokens vs a = a & abilityChaosTokenEffectsL .~ vs
+
+-- | 'affectsChaosTokens' for the common one-face case.
+affectsChaosToken :: ChaosTokenFace -> ChaosTokenModifier -> Ability -> Ability
+affectsChaosToken face modifier = affectsChaosTokens [ChaosTokenValue face modifier]
 
 withI18nTooltip :: HasI18n => Text -> Ability -> Ability
 withI18nTooltip t a = a & abilityTooltipL ?~ scope "tooltips" (toI18n t)
@@ -377,6 +393,7 @@ mkAbility entity idx type' =
     , abilityEvadeCriteriaOverride = Nothing
     , abilityNonBlocking = False
     , abilityBlocksIn = Nothing
+    , abilityChaosTokenEffects = []
     }
 
 applyAbilityModifiers :: Ability -> [ModifierType] -> Ability

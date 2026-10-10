@@ -18,7 +18,8 @@ unbrokenWeb = treachery UnbrokenWeb Cards.unbrokenWeb
 
 instance HasAbilities UnbrokenWeb where
   getAbilities (UnbrokenWeb a) = mapFold a.owner \iid ->
-    [ restricted a 1 OnSameLocation $ freeReaction (WouldDiscoverClues #when You YourLocation $ atLeast 1)
+    [ restricted a 1 OnSameLocation
+        $ freeReaction (WouldDiscoverClues #when You YourLocation (atLeast 1) AnySource)
     , mkAbility a 2 $ forcedOnElimination iid
     ]
 

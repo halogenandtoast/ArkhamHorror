@@ -5,6 +5,7 @@ module Arkham.Helpers.Window.Clue where
 
 import Arkham.Id
 import Arkham.Prelude
+import Arkham.Source (Source)
 import Arkham.Target
 import Arkham.Window
 import Arkham.Window qualified as Window
@@ -20,6 +21,18 @@ getDiscover :: HasCallStack => [Window] -> DiscoverId
 getDiscover =
   fromMaybe (error "missing discovery") . asum . map \case
     (windowType -> Window.WouldDiscoverClues _ _ did _ _) -> Just did
+    _ -> Nothing
+
+{- | The source of the discovery a @WouldDiscoverClues@ window is about.
+
+Prefer the 'Arkham.Matcher.WouldDiscoverClues' source slot for gating a reaction:
+reading the source here happens after the ability has been offered and its limit
+spent. This is for an ability that already matched and now needs the source.
+-}
+discoverSource :: [Window] -> Maybe Source
+discoverSource =
+  asum . map \case
+    (windowType -> Window.WouldDiscoverClues _ _ _ source _) -> Just source
     _ -> Nothing
 
 discoveredCluesAt :: HasCallStack => [Window] -> (LocationId, Int)

@@ -19,7 +19,7 @@ instance HasAbilities Office where
       $ groupLimit PerGame
       $ restricted a 1 Here
       $ freeReaction
-      $ WouldDiscoverClues #when You (be a) (atLeast 1)
+      $ WouldDiscoverClues #when You (be a) (atLeast 1) AnySource
 
 instance RunMessage Office where
   runMessage msg l@(Office attrs) = runQueueT $ case msg of

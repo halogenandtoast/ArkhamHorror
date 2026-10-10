@@ -21,7 +21,7 @@ instance HasAbilities CoverUpAdvanced where
       a
       1
       (OnSameLocation <> CluesOnThis (atLeast 1))
-      (freeReaction (Matcher.WouldDiscoverClues #when You YourLocation $ atLeast 1))
+      (freeReaction (Matcher.WouldDiscoverClues #when You YourLocation (atLeast 1) Matcher.AnySource))
       : [ restricted a 2 (CluesOnThis $ atLeast 1) $ forcedOnElimination iid
         | iid <- maybeToList a.owner
         ]

@@ -27,7 +27,7 @@ instance HasAbilities Newspaper2 where
   getAbilities (Newspaper2 a) =
     [ controlled a 1 (youExist $ InvestigatorWithoutAnyClues <> at_ LocationWithAnyClues)
         $ freeReaction
-        $ Matcher.WouldDiscoverClues #when You YourLocation (atLeast 1)
+        $ Matcher.WouldDiscoverClues #when You YourLocation (atLeast 1) Matcher.AnySource
     ]
 
 instance RunMessage Newspaper2 where

@@ -1,0 +1,83 @@
+{
+  "scenario": {
+    "label": "The Masque of the Red Death",
+    "fullLabel": "The Masque of the Red Death",
+    "intro": {
+      "title": "The Plague",
+      "body": "<p>The Red Death has come to Arkham. With the influenza epidemic of the late 1910's fresh in memory, Arkham is gripped with fear as a new disease arises. St. Mary's Hospital is filled with victims of the Red Death, named for the red stains the disease leaves on the infected. Doctors are helpless to save the public from this unknown threat.</p><p>But the Red Death is no common illness. You are certain after hearing of the frivolous playboy Prospero Prince. The man has a reputation for dabbling in the occult to a degree that even the Silver Twilight Lodge avoids. He has also asserted that he has no fear of the Red Death, and that it will only eradicate the unworthy. If Prospero has a hand in this epidemic, then you must enter his French Hill manor to find proof, and hopefully a method of curing it. And as luck would have it, Prospero is holding a masquerade ball for his host of out-of-town friends this very evening…</p><p class='basic right'>Proceed to _Setup_.</p>"
+    },
+    "setup": {
+      "gatherSets": "Gather all cards from the *The Masque of the Red Death* encounter set. This set is indicated by this icon:<section class='encounter-sets'><img src='{imgPath}/homebrew/the-masque-of-the-red-death/sets/the-masque-of-the-red-death.png' /></section>",
+      "placeLocations": "Put each location into play according to the suggested placement. Each investigator begins play at Grand Ballroom.",
+      "prosperoPrince": "Put Prospero Prince into play at Grand Ballroom.",
+      "dealGuests": "Randomly remove 2 _Guest_ assets from the game. Shuffle the remaining _Guest_ assets and put one into play at each _Manor_ location except Grand Ballroom and Black Chamber.",
+      "setAside": "Set The Red Death and Plague Polyp aside, out of play."
+    },
+    "resolutions": {
+      "resolution1": {
+        "title": "Resolution 1",
+        "body": "<p>_Resolution 1_: Your investigation of Prospero's manor was regrettably a failure. The secrets of the Red Death died in that masquerade ball, along with each of the attendees. Prospero's loyalty to his eldritch patron were misplaced as not even he is spared from the deadly plague. The Red Death will be remembered, but only as a tragedy and a mystery.</p><ul><li>In your Campaign Log, record *the Red Death ravaged Arkham*.</li><li>Each investigator is _killed_.</li><li>The investigators lose the campaign.</li></ul>"
+      },
+      "resolution2": {
+        "title": "Resolution 2",
+        "body": "<p>_Resolution 2_: Your escape was timely, not just for you, but for all of Arkham. You hand over Prospero's materials to the hospital staff, who are able to create a cure for the deadly plague in short order. Thanks to your efforts, the death toll was kept in check, excepting the manor guests.</p><p>There is one grisly memento left from your harrowing experience at the manor – one of Prospero's earlier experiments – that may prove a macabre boon to you.</p><ul><li>In your Campaign Log, record *the Red Death was ended*.</li><li>An investigator may choose to add Plague Polyp to their deck. This card does not count toward that investigator's deck size.</li><li>Each investigator earns experience equal to the Victory X value of each card in the victory display.<ul><li>_Experience_: {xp}</li></ul></li></ul>"
+      }
+    },
+    "guest": {
+      "label": {
+        "cannotLeave": "You cannot leave {name}'s location until the end of the round"
+      }
+    },
+    "aNestOfVipers": {
+      "label": {
+        "placeClues": "As a group, place {count} of your clues on your location",
+        "revealTokens": "In player order, each investigator reveals a token from the chaos bag"
+      }
+    },
+    "underTheSkin": {
+      "label": {
+        "placeClues": "As a group, place {count} of your clues on your location",
+        "revealTokens": "In player order, each investigator reveals a token from the chaos bag"
+      }
+    },
+    "prosperoPrinceGregariousHost": {
+      "label": {
+        "endYourTurn": "Immediately end your turn"
+      }
+    },
+    "theFoxLookingForRelease": {
+      "label": {
+        "discardEvent": "Discard an event from your hand"
+      }
+    },
+    "theMothBurnedByTheFlame": {
+      "label": {
+        "placeDoomOnAnotherCard": "Place 1 doom on any other card"
+      }
+    },
+    "thePeacockCenterOfAffliction": {
+      "label": {
+        "discardAsset": "Discard an asset from your hand"
+      }
+    },
+    "theRavenNotEasilyDisposed": {
+      "label": {
+        "discardSkill": "Discard a skill from your hand"
+      }
+    },
+    "tokens": {
+      "easyStandard": {
+        "skull": "-0. Add each {skull} effect on your location to this token.",
+        "cultist": "-1. If you do not succeed by 2 or more, choose and discard a card from your hand.",
+        "tablet": "-1. If you do not succeed by 2 or more, lose a resource.",
+        "elderThing": "-2. If you do not succeed by 2 or more, take 1 damage or 1 horror."
+      },
+      "hardExpert": {
+        "skull": "-2. Add each {skull} effect on your location to this token.",
+        "cultist": "-2. If you do not succeed by 3 or more, choose and discard a card from your hand.",
+        "tablet": "-2. If you do not succeed by 3 or more, lose a resource.",
+        "elderThing": "-3. If you do not succeed by 3 or more, take 1 damage or 1 horror."
+      }
+    }
+  }
+}

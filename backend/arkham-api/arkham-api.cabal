@@ -5018,6 +5018,68 @@ library
       Arkham.Homebrew.SideStoryDefs
       Arkham.Homebrew.SideStoryEntries
       Arkham.Homebrew.TH
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Acts.TheMidnightHour
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Acts.TheSevenChambers
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Agendas.ANestOfVipers
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Agendas.DiseaseVectors
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Agendas.UnderTheSkin
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.PlaguePolyp
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.ProsperoPrinceGregariousHost
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheDevilsMorbidlyFascinated
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheDevilsMorbidlyFated
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheFoxLookingForAction
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheFoxLookingForRelease
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheMothBurnedByTheFlame
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheMothDrawnToTheFlame
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheOwlReadingHerLast
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheOwlReadingIntoYou
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.ThePeacockCenterOfAffliction
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.ThePeacockCenterOfAttention
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheRavenNotEasilyDisposed
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheRavenNotEasilyImpressed
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheVulturePartOfTheFeast
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheVultureWatchingTheFeast
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheWaspViolentlyEmbraced
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Assets.TheWaspViolentlyMotivated
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.CardDefEntries
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.CardDefs.Acts
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.CardDefs.Agendas
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.CardDefs.Assets
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.CardDefs.Enemies
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.CardDefs.Locations
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.CardDefs.Treacheries
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.CardEntries
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Content
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Defs
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Enemies.InfectedGuest
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Enemies.MaddenedReveler
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Enemies.PestilenceCarrier
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Enemies.ProsperoPrinceDevoteeOfKassogtha
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Enemies.RedSpectre
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Enemies.TheRedDeath
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Helpers
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Import
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Key
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Locations.BlackChamber
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Locations.BlueChamber
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Locations.GrandBallroom
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Locations.GreenChamber
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Locations.OrangeChamber
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Locations.PurpleChamber
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Locations.VioletChamber
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Locations.WhiteChamber
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Scenarios.TheMasqueOfTheRedDeath
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Sets
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.SideStoryDefs
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Traits
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.Debauchery
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.FesteringHorror
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.FreneticDance
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.MorbidVisions
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.ShadowOfDeath
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.SilentScrutiny
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.SuddenSymptoms
+      Arkham.Homebrew.TheMasqueOfTheRedDeath.Treacheries.ViolentCrowd
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.MusicFromAuseilTheatre
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.ThePossessedConductor
       Arkham.Homebrew.TheSymphonyOfErichZann.Acts.UndreamableOrchestra

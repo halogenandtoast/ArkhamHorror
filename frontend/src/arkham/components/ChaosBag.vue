@@ -4,7 +4,7 @@ import { useDebug } from '@/arkham/debug';
 import { Game } from '@/arkham/types/Game';
 import { imgsrc, formatContent } from '@/arkham/helpers';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { ChaosTokenValueEntry, SkillTest } from '@/arkham/types/SkillTest';
+import { ChaosTokenFaceEffect, ChaosTokenValueEntry, SkillTest, chaosTokenEffectDetail } from '@/arkham/types/SkillTest';
 import { MessageType } from '@/arkham/types/Message';
 import { ChaosBag } from '@/arkham/types/ChaosBag';
 import Token from '@/arkham/components/Token.vue';
@@ -50,19 +50,34 @@ const allTokens = computed(() =>
 )
 const allTokenFaces = computed(() => allTokens.value.map(t => t.face))
 
-// Scenario effect text for the symbol tokens. `false` disables `v-tooltip` on the
-// faces that have none.
+// What one card does to a face, as one line: "-1 If you fail, discard a card..."
+function effectDetail(effect: ChaosTokenFaceEffect) {
+  return formatContent(chaosTokenEffectDetail(effect, t))
+}
+
+// The scenario's printed effect for a face, plus every card currently acting on it —
+// the card effects sit alongside the printed one rather than replacing it. `false`
+// disables `v-tooltip` on the faces with nothing to say.
 function tokenTooltip(tokenFace: string) {
+  const lines: string[] = []
   const scenario = props.game.scenario
-  if (!scenario) return false
 
-  const key = chaosTokenEffectKey(scenario, tokenFace)
-  if (!key) return false
+  if (scenario) {
+    const key = chaosTokenEffectKey(scenario, tokenFace)
+    if (key) {
+      const text = t(key)
+      if (text !== key) lines.push(formatContent(text))
+    }
+  }
 
-  const text = t(key)
-  if (text === key) return false
+  for (const effect of valuesByFace.value.get(tokenFace)?.effects ?? []) {
+    const detail = effectDetail(effect)
+    lines.push(effect.name ? `<em>${effect.name}</em>${detail ? `: ${detail}` : ''}` : detail)
+  }
 
-  return { content: formatContent(text), html: true }
+  if (lines.length === 0) return false
+
+  return { content: lines.join('<br>'), html: true }
 }
 
 // Only supplied while a skill test is running; absent means no values and no stats bar.
@@ -102,6 +117,18 @@ const oddsPercent = computed(() => {
 
 const breakdownRows = computed(() =>
   [...(breakdown.value?.tokens ?? [])].sort((a, b) => compareTokenFaces(a.face, b.face))
+)
+
+// Every card effect on every face, flattened for the popover. Kept out of the token
+// grid above so the two-column layout there stays intact.
+const breakdownEffects = computed(() =>
+  breakdownRows.value.flatMap((entry) =>
+    entry.effects.map((effect) => ({
+      face: entry.face,
+      name: effect.name,
+      detail: effectDetail(effect),
+    }))
+  )
 )
 
 const canForceDraw = computed(() => debug.active && tokenAction.value !== -1)
@@ -211,6 +238,14 @@ const choose = (idx: number) => emit('choose', idx)
               <img class="stats__token" :src="chaosTokenImage(entry.face)" />
               <span class="stats__multiplier">&times;{{ entry.count }}</span>
               <span class="stats__value">{{ entryValueLabel(entry) }}</span>
+            </div>
+          </div>
+
+          <div v-if="breakdownEffects.length" class="stats__effects">
+            <div v-for="(effect, idx) in breakdownEffects" :key="`${effect.face}${idx}`" class="stats__effect">
+              <img class="stats__effect-token" :src="chaosTokenImage(effect.face)" />
+              <span v-if="effect.name" class="stats__effect-name">{{ effect.name }}</span>
+              <span class="stats__effect-detail" v-html="effect.detail"></span>
             </div>
           </div>
 
@@ -473,6 +508,39 @@ const choose = (idx: number) => emit('choose', idx)
   margin-left: auto;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+}
+
+.stats__effects {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.stats__effect {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.stats__effect-token {
+  width: 16px;
+  height: auto;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.stats__effect-name {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stats__effect-detail {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .stats__caveat {

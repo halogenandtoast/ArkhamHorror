@@ -187,7 +187,7 @@ data WindowMatcher
   | DiscoveringLastClue Timing Who Where
   | LastClueRemovedFromLocation Timing LocationMatcher
   | DiscoverClues Timing Who Where ValueMatcher
-  | WouldDiscoverClues Timing Who Where ValueMatcher
+  | WouldDiscoverClues Timing Who Where ValueMatcher SourceMatcher
   | GainsClues Timing Who ValueMatcher
   | GainsResources Timing Who SourceMatcher ValueMatcher
   | SpendsResources Timing Who ValueMatcher
@@ -438,6 +438,11 @@ instance FromJSON WindowMatcher where
         case econtents of
           Left (a, b, c) -> pure $ EnemySpawns a (PlacementAt b) c
           Right (a, b, c) -> pure $ EnemySpawns a b c
+      "WouldDiscoverClues" -> do
+        econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
+        case econtents of
+          Left (a, b, c, d) -> pure $ WouldDiscoverClues a b c d AnySource
+          Right (a, b, c, d, e) -> pure $ WouldDiscoverClues a b c d e
       "WouldAddChaosTokensToChaosBag" -> do
         econtents <- (Left <$> o .: "contents") <|> (Right <$> o .: "contents")
         case econtents of

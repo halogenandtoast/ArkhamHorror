@@ -1,0 +1,23 @@
+[
+  {
+    "id": ":the-masque-of-the-red-death:001",
+    "name": "The Masque of the Red Death",
+    "campaign": ":the-masque-of-the-red-death",
+    "i18n": "scenario",
+    "sideStory": true,
+    "beta": true,
+    "xp": 2,
+    "standalone": true,
+    "standaloneDifficulties": ["Standard", "Hard"],
+    "difficultyLevels": {
+      "Standard": [
+        "PlusOne", "Zero", "MinusOne", "MinusOne", "MinusTwo", "MinusThree", "MinusThree", "MinusFour",
+        "Skull", "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ],
+      "Hard": [
+        "Zero", "MinusOne", "MinusTwo", "MinusThree", "MinusFour", "MinusFour", "MinusFive", "MinusSix",
+        "Skull", "Skull", "Skull", "Cultist", "Tablet", "ElderThing", "AutoFail", "ElderSign"
+      ]
+    }
+  }
+]

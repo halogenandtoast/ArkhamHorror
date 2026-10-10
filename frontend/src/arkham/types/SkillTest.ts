@@ -1,5 +1,5 @@
 import * as JsonDecoder from 'ts.data.json';
-import { v2Optional } from '@/arkham/parser';
+import { v2Optional, withDefault } from '@/arkham/parser';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Card, cardDecoder} from '@/arkham/types/Card';
 import { SkillType, skillTypeDecoder} from '@/arkham/types/SkillType';
@@ -45,6 +45,67 @@ const baseValueDecoder = JsonDecoder.oneOf<SkillTestBaseValue>(
   'SkillTestBaseValue',
 );
 
+/**
+ * One card acting on one chaos token face, attributed to that card.
+ *
+ * `applied` means the engine has the modifier already, so the value is part of the
+ * entry's `value`; otherwise the card declared the effect ahead of the reveal and the
+ * value is a prediction (also already folded into `value`).
+ */
+export type ChaosTokenFaceEffect = {
+  name: string | null
+  cardCode: string | null
+  value: number | null
+  /** the prose half; may be an i18n key, so `t()` it and fall back to the raw string */
+  text: string | null
+  applied: boolean
+}
+
+export const chaosTokenFaceEffectDecoder = JsonDecoder.object<ChaosTokenFaceEffect>({
+  name: JsonDecoder.nullable(JsonDecoder.string()),
+  cardCode: JsonDecoder.nullable(JsonDecoder.string()),
+  value: JsonDecoder.nullable(JsonDecoder.number()),
+  text: JsonDecoder.nullable(JsonDecoder.string()),
+  applied: JsonDecoder.boolean(),
+}, 'ChaosTokenFaceEffect')
+
+/**
+ * What one card does to a face, as one string: "-1 If you fail, discard a card...".
+ *
+ * `translate` is vue-i18n's `t`. The backend may hand `text` over either as an i18n
+ * key or as literal prose; keys have no spaces, so only those are worth asking about,
+ * and `t` returns the key itself when there is no entry, which is the raw text anyway.
+ */
+export function chaosTokenEffectParts(
+  effect: ChaosTokenFaceEffect,
+  translate: (key: string) => string,
+): { value: string | null, text: string | null } {
+  return {
+    // `null` means the card's number is only known once it resolves, so there is
+    // nothing to show. A real 0 IS shown: a rule that currently contributes
+    // nothing has to be distinguishable from one that contributes what it reads,
+    // or the listed effects do not add up to the token's value.
+    value: effect.value === null
+      ? null
+      : (effect.value > 0 ? `+${effect.value}` : `${effect.value}`),
+    // The backend may hand `text` over either as an i18n key or as literal prose;
+    // keys have no spaces, so only those are worth asking about, and `t` returns
+    // the key itself when there is no entry, which is the raw text anyway.
+    text: effect.text
+      ? (/\s/.test(effect.text) ? effect.text : translate(effect.text))
+      : null,
+  }
+}
+
+/** The same, flattened to one string, for surfaces that can only show text. */
+export function chaosTokenEffectDetail(
+  effect: ChaosTokenFaceEffect,
+  translate: (key: string) => string,
+): string {
+  const { value, text } = chaosTokenEffectParts(effect, translate)
+  return [value, text].filter((p) => p !== null).join(' — ')
+}
+
 /** One distinct face in the chaos bag and what it is worth right now. */
 export type ChaosTokenValueEntry = {
   face: TokenFace
@@ -55,6 +116,8 @@ export type ChaosTokenValueEntry = {
   autoSuccess: boolean
   /** bless/curse/frost draw another token when revealed */
   revealsAnother: boolean
+  /** absent on a game in flight under an older server, hence the default */
+  effects: ChaosTokenFaceEffect[]
 }
 
 export const chaosTokenValueEntryDecoder = JsonDecoder.object<ChaosTokenValueEntry>({
@@ -64,6 +127,7 @@ export const chaosTokenValueEntryDecoder = JsonDecoder.object<ChaosTokenValueEnt
   autoFail: JsonDecoder.boolean(),
   autoSuccess: JsonDecoder.boolean(),
   revealsAnother: JsonDecoder.boolean(),
+  effects: withDefault<ChaosTokenFaceEffect[]>([], JsonDecoder.array(chaosTokenFaceEffectDecoder, 'ChaosTokenFaceEffect[]')),
 }, 'ChaosTokenValueEntry')
 
 /**

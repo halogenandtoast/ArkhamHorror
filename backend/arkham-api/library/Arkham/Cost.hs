@@ -475,6 +475,9 @@ paymentTargets = toListOf (cosmos . _SpendTokenPayment . _2)
 totalCluePayment :: Payment -> Int
 totalCluePayment = sumOf (cosmos . _CluePayment . _2)
 
+totalDoomPayment :: Payment -> Int
+totalDoomPayment = sumOf (cosmos . _DoomPayment)
+
 totalCluePaymentPerInvestigator :: Payment -> Map InvestigatorId Int
 totalCluePaymentPerInvestigator = Map.fromListWith (+) . toListOf (cosmos . _CluePayment)
 

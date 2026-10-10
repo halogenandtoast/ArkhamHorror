@@ -1,8 +1,11 @@
 // Frontend assets contributed by homebrew campaigns, discovered from the
 // frontend/homebrew/<campaign>/ directories:
 //
-// - `*.css` is injected into the bundle as-is (asset URLs inside should be
-//   absolute, e.g. /img/arkham/homebrew/<campaign>/...).
+// - `*.css` is injected into the bundle by Vite, so a `url()` inside must be
+//   campaign-relative (e.g. ./img/icons/moon.png) to be emitted as a hashed
+//   asset. An origin-absolute /img/arkham/... path is left alone by the build
+//   and then 404s: images are served from the asset host, and the app origin
+//   answers an unknown /img/ path with index.html.
 // - `icons.json` maps icon keys to CSS classes; each entry hooks the text
 //   formatters so `{key}` (i18n/flavor text) and `[key]` (ArkhamDB-style card
 //   text) both render as `<span class="<class>"></span>`.

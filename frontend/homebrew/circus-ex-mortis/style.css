@@ -9,8 +9,8 @@
     width: 1em;
     height: 1em;
     background-color: currentColor;
-    -webkit-mask: url("/img/arkham/homebrew/circus-ex-mortis/icons/moon.png") center/contain no-repeat;
-    mask: url("/img/arkham/homebrew/circus-ex-mortis/icons/moon.png") center/contain no-repeat;
+    -webkit-mask: url("./img/icons/moon.png") center/contain no-repeat;
+    mask: url("./img/icons/moon.png") center/contain no-repeat;
     vertical-align: -0.15em;
   }
 }

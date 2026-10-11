@@ -26,11 +26,6 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 .PHONY: help
 
-## Deploy production (will migrate database)
-deploy:
-	kamal deploy
-.PHONY: deploy
-
 V2_IMAGE       ?= halogenandtoast/arkham-horror
 V2_KUBECONFIG  ?= $(CURDIR)/terraform/kubeconfig
 V2_NAMESPACE   ?= arkham

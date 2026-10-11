@@ -18,7 +18,7 @@ fi
 
 # If the app already got a full DATABASE_URL, leave it alone.
 if [ -z "${DATABASE_URL}" ]; then
-  # Prefer env-injected password first (good for Kamal), then Docker secret file.
+  # Prefer env-injected password first, then Docker secret file.
   if [ -n "${PGPASSWORD}" ]; then
     DB_PASSWORD="${PGPASSWORD}"
   elif [ -n "${POSTGRES_PASSWORD}" ]; then

@@ -623,7 +623,8 @@
     "deleteRoom": "Delete",
     "dropRoom": "Drop",
     "confirmDropRoom": "Drop this room? {n} connected player will be sent back to the home page. | Drop this room? {n} connected players will be sent back to the home page.",
-    "gameStats": "Stats"
+    "gameStats": "Stats",
+    "notifications": "Notifications"
   },
   "calendar": {
     "timePassed": "Time Passed"
@@ -1127,6 +1128,35 @@
     "denyFailed": "Could not deny that submission.",
     "decidedApproved": "Approved by {by} on {at}.",
     "decidedDenied": "Denied by {by} on {at}."
+  },
+  "adminNotifications": {
+    "title": "Site Notifications",
+    "liveWarning": "Writing one publishes it \u2014 there is no draft state",
+    "loading": "Loading notifications\u2026",
+    "loadFailed": "Could not load the notifications.",
+    "empty": "No notifications. The home page shows no banner.",
+    "newLabel": "New notification",
+    "bodyPlaceholder": "What everybody should see on the home page\u2026",
+    "htmlHint": "Rendered as HTML, so <a href=\"\u2026\">links</a> and <strong>emphasis</strong> work.",
+    "preview": "Preview",
+    "dateLabel": "Posted at",
+    "dateHint": "Leave the date empty to post it now. It is only there because the list is ordered by it, so it is how you put a notification above one that is already up.",
+    "publish": "Publish",
+    "publishing": "Publishing\u2026",
+    "published": "Published. It is on the home page now.",
+    "createFailed": "Could not publish that notification.",
+    "edit": "Edit",
+    "editHint": "An edit reaches anybody still seeing this. It does not bring it back for anybody who dismissed it \u2014 dismissal is per-browser and keyed by the notification's id, so re-announcing something means publishing a new one.",
+    "save": "Save",
+    "saved": "Saved.",
+    "saveFailed": "Could not save that notification.",
+    "cancel": "Cancel",
+    "takeDown": "Take down",
+    "confirmTakeDown": "Delete this notification? It disappears from the home page for everybody, and there is no undo.",
+    "confirmTakeDownYes": "Delete it",
+    "deleted": "Taken down.",
+    "deleteFailed": "Could not take that notification down.",
+    "futureDated": "Dated ahead \u2014 already live"
   },
   "gameClosed": "That game has been closed.",
   "adminStats": {

@@ -70,12 +70,47 @@ export const fetchGameReplay = async (gameId: string, step: number): Promise<Fet
 export interface AppNotification {
   id: number;
   body: string;
-  created_at: Date;
+  createdAt: string;
 }
 
 export const fetchNotifications = async (): Promise<AppNotification[]> => {
   const { data } = await api.get('notifications')
   return data
+}
+
+/* --------------------------------------------------- admin: notifications ---
+
+   The home-page banner everybody sees. There is no draft state on the server --
+   the public read has no filter -- so creating one publishes it, and taking one
+   down is a delete. Editing reaches whoever is still seeing it, but not anybody
+   who already dismissed it: dismissal is per-browser and keyed by row id. */
+
+export const fetchAdminNotifications = async (): Promise<AppNotification[]> => {
+  const { data } = await api.get('admin/notifications')
+  return data
+}
+
+/* `createdAt` is what the list is ordered by, so it is settable: without it there
+ * is no way to put a new notification above one that is already up. */
+export const createNotification = async (
+  body: string,
+  createdAt?: string,
+): Promise<AppNotification> => {
+  const { data } = await api.post('admin/notifications', { body, createdAt })
+  return data
+}
+
+// Only what is sent is written, so re-dating one does not resend its body.
+export const updateNotification = async (
+  id: number,
+  changes: { body?: string; createdAt?: string },
+): Promise<AppNotification> => {
+  const { data } = await api.put(`admin/notifications/${id}`, changes)
+  return data
+}
+
+export const deleteNotification = async (id: number): Promise<void> => {
+  await api.delete(`admin/notifications/${id}`)
 }
 
 export const findGame = async (playerId: string): Promise<GameDetailsEntry> => {

@@ -19,12 +19,14 @@ const sections = [
   { key: 'dashboard', path: '/admin', label: 'admin.dashboard', icon: 'gear' },
   { key: 'rooms', path: '/admin/rooms', label: 'admin.rooms', icon: 'layer-group' },
   { key: 'stats', path: '/admin/stats', label: 'admin.gameStats', icon: 'chart-simple' },
+  { key: 'notifications', path: '/admin/notifications', label: 'admin.notifications', icon: 'bullhorn' },
   { key: 'submissions', path: '/admin/submissions', label: 'admin.submissions', icon: 'clipboard-check' },
 ] as const
 
 const byRouteName: Record<string, string> = {
   Rooms: 'rooms',
   AdminGameStats: 'stats',
+  AdminNotifications: 'notifications',
   AdminSubmissions: 'submissions',
 }
 

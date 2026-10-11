@@ -119,6 +119,9 @@
       /game-stats ApiV1AdminGameStatsP:
         / ApiV1AdminGameStatsR GET
         !/refresh ApiV1AdminGameStatsRefreshR POST
+      /notifications ApiV1AdminNotificationsP:
+        / ApiV1AdminNotificationsR GET POST
+        /#NotificationId ApiV1AdminNotificationR GET PUT DELETE
       /card-set-submissions ApiV1AdminCardSetSubmissionsP:
         / ApiV1AdminCardSetSubmissionsR GET
         /#ArkhamCardSetSubmissionId ApiV1AdminCardSetSubmissionP:

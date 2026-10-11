@@ -48,6 +48,14 @@ export default [
         meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Stats" },
       },
       {
+        // The home-page banner. Writing one here publishes it: the public read
+        // has no filter, so there is no draft state to save into.
+        path: 'notifications',
+        name: 'AdminNotifications',
+        component: () => import('@/views/AdminNotifications.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true, title: "Arkham Horror: Notifications" },
+      },
+      {
         // The card marketplace review queue: nothing people submit is listed
         // until it is approved here.
         path: 'submissions',

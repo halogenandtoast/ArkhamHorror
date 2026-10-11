@@ -1,12 +1,11 @@
 module Arkham.Homebrew.AgainstTheWendigo.Locations.HiddenHut (hiddenHut) where
 
 import Arkham.Ability
-import Arkham.Helpers.Modifiers (ModifierType (..), modifySelect)
+import Arkham.Helpers.Modifiers (cannotEnterUnrevealed)
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Locations qualified as Cards
 import Arkham.Homebrew.AgainstTheWendigo.CardDefs.Stories qualified as Stories
 import Arkham.Homebrew.AgainstTheWendigo.Helpers (readStoryAndChoose)
 import Arkham.Location.Import.Lifted
-import Arkham.Matcher
 
 newtype HiddenHut = HiddenHut LocationAttrs
   deriving anyclass IsLocation

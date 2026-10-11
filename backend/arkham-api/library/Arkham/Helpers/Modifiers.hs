@@ -1017,3 +1017,13 @@ everyoneGets
   :: (Sourceable source, HasGame m, MonadWriter (MonoidalMap Target [Modifier]) m)
   => source -> [ModifierType] -> m ()
 everyoneGets attrs = modifySelect attrs Anyone
+
+cannotEnterUnrevealed
+  :: ( HasField "revealed" a Bool
+     , HasField "id" a LocationId
+     , Sourceable a
+     , HasGame m
+     , MonadWriter (MonoidalMap Target [Modifier]) m
+     )
+  => a -> m ()
+cannotEnterUnrevealed a = unless a.revealed $ modifySelect a Anyone [CannotEnter a.id]

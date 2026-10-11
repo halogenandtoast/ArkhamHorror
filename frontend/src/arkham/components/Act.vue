@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ComputedRef, computed, ref, watch } from 'vue'
 import { Dropdown } from 'floating-vue'
+import { LockClosedIcon } from '@heroicons/vue/20/solid'
 import { useCardStore } from '@/stores/cards'
 import { type Game } from '@/arkham/types/Game'
 import { type Card, cardImage, asCardCode, toCardContents } from '@/arkham/types/Card'
@@ -20,7 +21,7 @@ import { AbilityLabel, AbilityMessage, type Message } from '@/arkham/types/Messa
 import { MessageType } from '@/arkham/types/Message'
 import { keyToId } from '@/arkham/types/Key'
 import { cardImg, imgsrc } from '@/arkham/helpers'
-import { resolvedSideArt } from '@/arkham/cardImages'
+import { cardArt, resolvedSideArt, sourceCardCode } from '@/arkham/cardImages'
 import * as Arkham from '@/arkham/types/Act'
 import { useEventStore } from '@/arkham/stores/event'
 import { actContribution, actSpend } from '@/arkham/types/EpicEvent'
@@ -132,6 +133,35 @@ const hasObjective = computed(() =>
     ({ contents }) => 'ability' in contents && contents.ability.type.tag === 'Objective',
   ),
 )
+
+const viewingInvestigator = computed(
+  () => Object.values(props.game.investigators).find((i) => i.playerId === props.playerId) ?? null,
+)
+
+const cannotTriggerFastAbilities = computed(() => {
+  const modifiers = viewingInvestigator.value?.modifiers ?? []
+  return (
+    modifiers.find(
+      (m) => m.type.tag === 'OtherModifier' && m.type.contents === 'CannotTriggerFastAbilities',
+    ) ?? null
+  )
+})
+
+// Outside a player window there is no advance button to miss, so no lock either.
+const blockedObjective = computed(
+  () =>
+    !hasObjective.value
+    && props.act.advanceCost != null
+    && cannotTriggerFastAbilities.value !== null
+    && ArkhamGame.activeQuestionIsPlayerWindow(props.game, props.playerId),
+)
+
+const blockedObjectiveCardCode = computed<string | null>(() => {
+  const m = cannotTriggerFastAbilities.value
+  if (!m) return null
+  if (m.card) return cardArt(toCardContents(m.card).cardCode)
+  return sourceCardCode(m.source, props.game)
+})
 
 function revealFacedownCard(card: Card): Card {
   switch (card.tag) {
@@ -445,8 +475,20 @@ const chooseFromStoryCollection = (choice: number) => {
     <div class="act-row">
       <div
         class="card-container"
-        :class="{ 'act--objective': hasObjective, 'objective-ring': hasObjective }"
+        :class="{
+          'act--objective': hasObjective,
+          'objective-ring': hasObjective,
+          'act--objective-blocked': blockedObjective,
+        }"
       >
+        <span
+          v-if="blockedObjective"
+          class="objective-blocked-badge"
+          :data-image-id="blockedObjectiveCardCode"
+          v-tooltip="$t('objectiveBlockedByFast')"
+        >
+          <LockClosedIcon />
+        </span>
         <img
           :class="{
             'act--can-progress': interactAction !== -1,
@@ -619,6 +661,62 @@ const chooseFromStoryCollection = (choice: number) => {
 
 .act--objective {
   --objective-ring-radius: 6px;
+}
+
+.act--objective-blocked {
+  position: relative;
+  isolation: isolate;
+}
+
+.act--objective-blocked::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border: 2px solid rgba(154, 164, 182, 0.9);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: var(--z-index-1);
+}
+
+.act--objective-blocked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(10, 12, 18, 0.42) 0 5px,
+    rgba(10, 12, 18, 0.14) 5px 10px
+  );
+  pointer-events: none;
+  z-index: var(--z-index-1);
+}
+
+.objective-blocked-badge {
+  --badge-size: clamp(13px, calc(var(--card-width) * 0.3), 18px);
+
+  position: absolute;
+  top: calc(var(--badge-size) / -2.5);
+  right: calc(var(--badge-size) / -2.5);
+  width: var(--badge-size);
+  height: var(--badge-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #1b1f27;
+  border: 1px solid rgba(198, 206, 220, 0.9);
+  color: #e4e9f1;
+  cursor: help;
+  z-index: var(--z-index-7);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Not nested: a nested :deep(svg) compiles to a descendant selector and never matches. */
+.objective-blocked-badge :deep(svg) {
+  display: block;
+  width: calc(var(--badge-size) * 0.55);
+  height: calc(var(--badge-size) * 0.55);
 }
 
 .act-container {

@@ -2,6 +2,7 @@ import * as JsonDecoder from 'ts.data.json';
 import { Card, cardDecoder } from '@/arkham/types/Card';
 import { ArkhamKey, arkhamKeyDecoder } from '@/arkham/types/Key';
 import { Tokens, tokensDecoder } from '@/arkham/types/Token';
+import { v2Optional } from '@/arkham/parser';
 
 export type ActSequence = {
   number: number
@@ -17,6 +18,8 @@ export type Act = {
   cardsUnderneath: Card[];
   breaches: number | null;
   keys: ArkhamKey[];
+  // Presence only; the value is never read.
+  advanceCost?: unknown;
 }
 
 export const actSequenceDecoder = JsonDecoder.
@@ -32,4 +35,5 @@ export const actDecoder = JsonDecoder.object<Act>({
   cardsUnderneath: JsonDecoder.array<Card>(cardDecoder, 'UnderneathCard[]'),
   breaches: JsonDecoder.nullable(JsonDecoder.number()),
   keys: JsonDecoder.array<ArkhamKey>(arkhamKeyDecoder, 'Key[]'),
+  advanceCost: v2Optional(JsonDecoder.succeed()),
 }, 'Act');

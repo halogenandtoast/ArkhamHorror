@@ -240,6 +240,7 @@
   "slashOr": "{0}/{1}",
   "and": "{0} or {1}",
   "cardsUnderneath": "1 Card Underneath | {count} Cards Underneath",
+  "objectiveBlockedByFast": "You cannot trigger fast abilities, so you cannot spend clues to advance",
   "drew": "{iname} drew {name}",
   "Done With Mulligan": "Done With Mulligan",
   "skip": "Skip",

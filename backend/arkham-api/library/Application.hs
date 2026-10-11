@@ -22,11 +22,17 @@ module Application (
 ) where
 
 import Api.Arkham.Helpers (
+  applyMaintenance,
+  loadMaintenance,
   markPubSubAlive,
+  onMaintenanceMessage,
   pubSubHealthChannel,
   pubSubSupervisor,
   roomHeartbeat,
+  roomSourcesFrom,
  )
+import Api.Arkham.Archive (archiveSweeper, restoreWorker)
+import Api.Arkham.Maintenance (maintenanceChannel)
 import Arkham.Metrics qualified as Metrics
 import Config
 import Control.Concurrent.MVar (newMVar)
@@ -86,23 +92,26 @@ import Text.Regex.Posix ((=~))
 
 import Api.Handler.ApiKeys
 import Api.Handler.Arkham.Achievements
+import Api.Handler.Arkham.Admin.Archives
 import Api.Handler.Arkham.Admin.GameStats
 import Api.Handler.Arkham.Admin.Metrics
 import Api.Handler.Arkham.BuildConnection
-import Api.Handler.Arkham.Cards
-import Api.Handler.Arkham.CustomCards
 import Api.Handler.Arkham.CardSetSubmissions
+import Api.Handler.Arkham.Cards
 import Api.Handler.Arkham.CustomCardSets
-import Api.Handler.Arkham.PublishedCardSets
+import Api.Handler.Arkham.CustomCards
 import Api.Handler.Arkham.Decks
 import Api.Handler.Arkham.Events
+import Api.Handler.Arkham.Archive
 import Api.Handler.Arkham.Game.Bug
 import Api.Handler.Arkham.Game.Debug
 import Api.Handler.Arkham.Games
 import Api.Handler.Arkham.Games.Admin
 import Api.Handler.Arkham.Investigators
+import Api.Handler.Arkham.Maintenance
 import Api.Handler.Arkham.Old
 import Api.Handler.Arkham.PendingGames
+import Api.Handler.Arkham.PublishedCardSets
 import Api.Handler.Arkham.Replay
 import Api.Handler.Arkham.Undo
 import Api.Handler.ThirdEdition
@@ -139,18 +148,30 @@ makeFoundation appSettings = do
   appEventRooms <- newMVar mempty
   appThirdEditionRooms <- newMVar mempty
   appPubSubHealth <- newTVarIO =<< getCurrentTime
+  appMaintenance <- newTVarIO Nothing
+
+  -- Closed over by the pub/sub handler below, which is built before the
+  -- foundation exists -- so it gets the room maps, not the 'App'.
+  let maintenanceRooms =
+        roomSourcesFrom appGameRooms appEventRooms appThirdEditionRooms
 
   appMessageBroker <- case appRedisConnectionInfo appSettings of
     Nothing -> pure WebSocketBroker
     Just url -> do
       conn <- checkedConnect =<< fromConnectionUrl url
-      -- The health channel is an INITIAL subscription so 'pubSubForever'
-      -- restores it on every reconnect and the controller is never left with
-      -- zero channels. Per-game channels are added and removed on demand by
-      -- 'getRoomIn' / 'releaseRoomIfEmpty'.
+      -- Come up in whatever mode the fleet is already in: a pod that started
+      -- during a maintenance window must not serve traffic into a locked
+      -- table just because it missed the announcement.
+      loadMaintenance conn >>= applyMaintenance appMaintenance maintenanceRooms
+      -- The health and maintenance channels are INITIAL subscriptions so
+      -- 'pubSubForever' restores them on every reconnect and the controller is
+      -- never left with zero channels. Per-game channels are added and removed
+      -- on demand by 'getRoomIn' / 'releaseRoomIfEmpty'.
       ctrl <-
         newPubSubController
-          [(pubSubHealthChannel, const $ markPubSubAlive appPubSubHealth)]
+          [ (pubSubHealthChannel, const $ markPubSubAlive appPubSubHealth)
+          , (maintenanceChannel, onMaintenanceMessage appMaintenance maintenanceRooms)
+          ]
           []
       -- Supervised, not bare: 'pubSubForever' exits on connection loss and
       -- must be restarted to resubscribe, and it cannot see a half-open
@@ -191,6 +212,13 @@ makeFoundation appSettings = do
   -- serving, so admin counts age out automatically when a pod crashes.
   -- No-op when no Redis broker is configured.
   _ <- forkIO (roomHeartbeat foundation)
+
+  -- The daily sweep that offloads old games' undo history, and the worker that
+  -- picks up a restore whose replica died mid-download. Both poll, both no-op
+  -- when no archive bucket is configured, and the sweep is claimed in the
+  -- database so only one replica runs it. See "Api.Arkham.Archive".
+  _ <- forkIO (archiveSweeper foundation)
+  _ <- forkIO (restoreWorker foundation)
 
   pure foundation
 

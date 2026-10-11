@@ -2,6 +2,7 @@
 
 module Api.Arkham.Helpers where
 
+import Api.Arkham.Maintenance
 import Arkham.Card
 import Arkham.Classes hiding (Entity (..), select)
 import Arkham.Classes.HasGame
@@ -46,6 +47,7 @@ import Database.Redis (
   publish,
   runRedis,
  )
+import Database.Redis qualified as Redis
 import Entity.Arkham.Game
 import Entity.Arkham.LogEntry
 import GHC.Records
@@ -239,6 +241,15 @@ data ApiResponse
   | -- Event membership/group roster changed. Payloads are user-specific, so
     -- clients refetch EventDetails rather than receiving a shared digest.
     EventChanged
+  | {- | A game's undo history came back from cold storage ("Api.Arkham.Archive").
+
+    The board does not change -- the steps behind it do -- so this exists to tell
+    the client that pressed Unarchive that it may stop waiting, and to tell
+    anyone else at the table why undo suddenly works again.
+    -}
+    GameUnarchived
+  | -- | The restore could not be completed; the message says what happened.
+    GameUnarchiveFailed Text
   | {- | The room this socket is attached to has been deleted -- the game was
     deleted, or an admin dropped the room. The socket is torn down right behind
     this message, so it is the last thing the client receives; reconnecting
@@ -425,6 +436,22 @@ lookupRoom gid = do
   roomsVar <- getsApp appGameRooms
   Map.lookup gid <$> liftIO (MVar.readMVar roomsVar)
 
+{- | Publish to a game's room with nothing but the 'App'.
+
+'Api.Handler.Arkham.Games.Shared.publishToRoom' needs 'HasApp', which only the
+handler monad has; the archive workers run on 'forkIO' and hold the foundation
+directly. Same two cases as that function, including dropping the message when
+no Redis broker is configured and nobody is listening -- the next subscriber
+reads the current state from the database anyway.
+-}
+publishFromApp :: Aeson.ToJSON a => App -> ArkhamGameId -> a -> IO ()
+publishFromApp app gameId a = case appMessageBroker app of
+  RedisBroker conn _ ->
+    tryRedis_ $ runRedis conn $ publish (gameChannel gameId) (BSL.toStrict $ Aeson.encode a)
+  WebSocketBroker -> do
+    rooms <- MVar.readMVar (appGameRooms app)
+    for_ (Map.lookup gameId rooms) \room -> broadcastToRoom room (Aeson.encode a)
+
 {- | Cross-server room registry. Two parallel Redis hashes:
 
   * 'roomsHashKey'      gameId -> total WebSocket subscribers
@@ -559,6 +586,90 @@ roomHeartbeat app = case appMessageBroker app of
   keepIfActive (gid, room) = do
     n <- roomClientCount room
     pure $ if n > 0 then Just gid else Nothing
+
+{- | Every websocket room this pod is serving, across all three kinds.
+
+A list of actions rather than the 'App' itself because 'applyMaintenance' is
+called from the pub/sub handler, which is built in 'makeFoundation' BEFORE the
+foundation exists -- the room maps do, so the handler closes over those.
+-}
+roomSources :: App -> [IO [Room]]
+roomSources app =
+  roomSourcesFrom (appGameRooms app) (appEventRooms app) (appThirdEditionRooms app)
+
+-- | 'roomSources' for 'makeFoundation', which holds the maps but no 'App' yet.
+roomSourcesFrom
+  :: MVar (Map ArkhamGameId Room)
+  -> MVar (Map ArkhamEpicEventId Room)
+  -> MVar (Map UUID.UUID Room)
+  -> [IO [Room]]
+roomSourcesFrom games events tables =
+  [ Map.elems <$> MVar.readMVar games
+  , Map.elems <$> MVar.readMVar events
+  , Map.elems <$> MVar.readMVar tables
+  ]
+
+{- | Put this pod into (or out of) maintenance mode and evict the sockets.
+
+Order matters, and it is the same order 'Api.Handler.Arkham.Games.Shared.forceDeleteRoom'
+uses: the notice is broadcast while the subscribers are still reading, then they
+are closed, and each drains its queue before stopping -- so the client learns
+WHY its socket went away instead of just seeing it drop and reconnecting into a
+503. The rooms themselves are left in the map; they hold no resources without
+subscribers, 'roomHeartbeat' skips empty ones, and keeping them means a
+reconnect after the window lands on the room it left rather than rebuilding it.
+
+Idempotent, which matters because the pod that publishes a change also receives
+its own pub/sub message and applies it a second time.
+-}
+applyMaintenance :: TVar (Maybe Maintenance) -> [IO [Room]] -> Maybe Maintenance -> IO ()
+applyMaintenance flag sources mMode = do
+  atomically $ writeTVar flag mMode
+  when (isJust mMode) do
+    rooms <- concat <$> sequence sources
+    for_ rooms \room -> do
+      broadcastToRoom room $ Aeson.encode $ RoomClosed "maintenance"
+      closeRoomSubscribers room
+
+{- | Read the stored mode at pod startup, so a replica that starts (or is
+restarted) during a window comes up refusing traffic rather than serving it
+into a locked table.
+
+Fails OPEN: a Redis blip here returns 'Nothing' and the pod serves normally.
+The other way round, a brief Redis outage would take the whole site down and
+leave no way to bring it back, since the switch itself needs Redis to clear.
+-}
+loadMaintenance :: Connection -> IO (Maybe Maintenance)
+loadMaintenance conn = do
+  res <- try @SomeException $ runRedis conn $ Redis.get maintenanceKey
+  pure $ case res of
+    Right (Right (Just raw)) -> Aeson.decodeStrict raw
+    _ -> Nothing
+
+{- | Turn maintenance mode on ('Just') or off ('Nothing') everywhere.
+
+Applied locally first and published second. Without Redis -- development, and
+any pod whose publish fails -- the local write is the entire mechanism, so the
+switch still works on a single-replica deployment.
+-}
+setMaintenance :: (MonadIO m, HasApp m) => Maybe Maintenance -> m ()
+setMaintenance mMode = do
+  app <- getApp
+  liftIO $ applyMaintenance (appMaintenance app) (roomSources app) mMode
+  withRedis \conn -> runRedis conn do
+    case mMode of
+      Nothing -> void $ Redis.del (maintenanceKey :| [])
+      Just mode -> void $ Redis.set maintenanceKey (BSL.toStrict $ Aeson.encode mode)
+    void $ publish maintenanceChannel (BSL.toStrict $ Aeson.encode mMode)
+
+{- | Pub/sub handler for 'maintenanceChannel'. A payload that does not decode
+is ignored rather than guessed at -- taking the site down, or bringing it back
+up mid-window, on the strength of a malformed message would be worse than
+missing the message.
+-}
+onMaintenanceMessage :: TVar (Maybe Maintenance) -> [IO [Room]] -> ByteString -> IO ()
+onMaintenanceMessage flag sources raw =
+  for_ (Aeson.decodeStrict raw :: Maybe (Maybe Maintenance)) (applyMaintenance flag sources)
 
 {- | Channel every pod subscribes to and publishes a heartbeat on, purely to
 prove the pub/sub path is alive end to end.

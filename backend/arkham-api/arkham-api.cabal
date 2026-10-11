@@ -22,14 +22,18 @@ flag library-only
 
 library
   exposed-modules:
+      Api.Arkham.Archive
       Api.Arkham.Epic
       Api.Arkham.Export
       Api.Arkham.Helpers
+      Api.Arkham.Maintenance
       Api.Arkham.Types.MultiplayerVariant
       Api.Handler.ApiKeys
       Api.Handler.Arkham.Achievements
+      Api.Handler.Arkham.Admin.Archives
       Api.Handler.Arkham.Admin.GameStats
       Api.Handler.Arkham.Admin.Metrics
+      Api.Handler.Arkham.Archive
       Api.Handler.Arkham.BuildConnection
       Api.Handler.Arkham.Cards
       Api.Handler.Arkham.CardSetSubmissions
@@ -43,6 +47,7 @@ library
       Api.Handler.Arkham.Games.Admin
       Api.Handler.Arkham.Games.Shared
       Api.Handler.Arkham.Investigators
+      Api.Handler.Arkham.Maintenance
       Api.Handler.Arkham.Old
       Api.Handler.Arkham.PendingGames
       Api.Handler.Arkham.PublishedCardSets
@@ -8986,6 +8991,7 @@ library
       Entity.Arkham.DeckOverlay
       Entity.Arkham.Epic
       Entity.Arkham.Game
+      Entity.Arkham.GameArchive
       Entity.Arkham.GameRaw
       Entity.Arkham.LogEntry
       Entity.Arkham.Player

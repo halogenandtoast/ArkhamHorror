@@ -1159,6 +1159,20 @@
     "futureDated": "Dated ahead \u2014 already live"
   },
   "gameClosed": "That game has been closed.",
+  "maintenance": {
+    "title": "Down for maintenance",
+    "body": "Arkham Horror is down for scheduled database maintenance.",
+    "reassure": "Your games are saved. Nothing is lost \u2014 when the site comes back, every campaign will be exactly where you left it.",
+    "retry": "Try again"
+  },
+  "archive": {
+    "prompt": "Undoing this far needs history that was archived to save space ({steps} steps), because this game had not been played in a while. Fetch it back?",
+    "retryPrompt": "Fetching this game's undo history did not work last time. Try again?",
+    "restoringBanner": "Fetching this game's undo history\u2026",
+    "alreadyRestoring": "Someone is already fetching this game's undo history. It will be back shortly.",
+    "restored": "Undo history restored. You can undo as far back as you like again.",
+    "restoreFailed": "That game's undo history could not be fetched. Nothing else is affected \u2014 you can keep playing."
+  },
   "adminStats": {
     "title": "Game Stats",
     "loading": "Loading stats…",

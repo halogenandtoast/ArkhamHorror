@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import api from '@/api'
 import GameRow from '@/arkham/components/GameRow.vue'
 import GameFinder from '@/components/admin/GameFinder.vue'
+import Archives from '@/components/admin/Archives.vue'
 import type { GameDetails, GameDetailsEntry } from '@/arkham/types/Game'
 
 type AdminGameDetailsEntry = GameDetails | GameDetailsEntry | { error: string }
@@ -100,6 +101,8 @@ onMounted(() => {
       </header>
       <GameFinder />
     </section>
+
+    <Archives />
 
     <section class="admin-block">
       <header class="section-header">

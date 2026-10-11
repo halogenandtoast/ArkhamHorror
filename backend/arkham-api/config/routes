@@ -21,6 +21,7 @@
       /verify ApiV1ArkhamBuildVerifyR POST
       /decks ApiV1ArkhamBuildDecksR GET
     /site-settings ApiV1SiteSettingsR GET
+    /maintenance ApiV1MaintenanceR GET POST DELETE
     /notifications ApiV1NotificationsR GET
     /3ed ApiV1ThirdEditionP:
       /catalog ApiV1ThirdEditionCatalogR GET
@@ -98,6 +99,8 @@
           /achievements ApiV1ArkhamGameAchievementsR GET
           /custom-cards ApiV1ArkhamGameCustomCardsR GET
           /step ApiV1ArkhamGameStepR GET
+          /archive ApiV1ArkhamGameArchiveR GET
+          /unarchive ApiV1ArkhamGameUnarchiveR PUT
       /events ApiV1ArkhamEventsP:
         / ApiV1ArkhamEventsR GET POST
         /#ArkhamEpicEventId ApiV1ArkhamEventP:
@@ -119,6 +122,10 @@
       /game-stats ApiV1AdminGameStatsP:
         / ApiV1AdminGameStatsR GET
         !/refresh ApiV1AdminGameStatsRefreshR POST
+      /archives ApiV1AdminArchivesP:
+        / ApiV1AdminArchivesR GET
+        !/run ApiV1AdminArchivesRunR POST
+        /#ArkhamGameId ApiV1AdminArchiveGameR POST
       /notifications ApiV1AdminNotificationsP:
         / ApiV1AdminNotificationsR GET POST
         /#NotificationId ApiV1AdminNotificationR GET PUT DELETE

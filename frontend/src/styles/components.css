@@ -90,6 +90,38 @@ h2.title {
   }
 }
 
+/* Maintenance notice. Reuses .error-message for the frame; everything here is
+ * UI chrome, so it stays neutral rather than reaching for --select -- the site
+ * being down is not a choice the game is waiting on. */
+.maintenance {
+  max-width: 44em;
+  margin-inline: auto;
+
+  .box {
+    text-align: center;
+  }
+
+  .reassure {
+    color: var(--title);
+    opacity: 0.75;
+    font-size: 0.9em;
+    margin-top: 0.75em;
+  }
+
+  button {
+    margin-top: 1.25em;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid transparent;
+    color: var(--title);
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+  }
+}
+
 .fade-leave-active,
 .fade-enter-active {
   position: absolute;

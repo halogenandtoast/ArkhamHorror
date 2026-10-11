@@ -591,6 +591,81 @@ export const refreshGameStats = async (): Promise<GameStats> => {
   return data
 }
 
+/* What the nightly archive sweep has reclaimed, for the admin panel.
+ *
+ * `candidates` is capped at `candidateCap`: the backlog is a predicate over the
+ * whole games table, and the page only needs to know whether it is large. */
+export interface ArchiveStatsRow {
+  gameId: string
+  gameName: string
+  state: GameArchiveState
+  steps: number
+  bytes: number
+  archivedAt: string
+  gameUpdatedAt: string
+  restoredAt: string | null
+  error: string | null
+}
+
+export interface ArchiveStats {
+  enabled: boolean
+  /* Whether the nightly job runs. Separate from `enabled`: a configured bucket
+   * makes archiving possible, this is what lets a job pick games itself. */
+  sweepEnabled: boolean
+  bucket: string | null
+  afterMonths: number
+  batchSize: number
+  pauseSeconds: number
+  archived: number
+  restoring: number
+  restored: number
+  failed: number
+  stepsOffloaded: number
+  stepsEverArchived: number
+  bytesStored: number
+  archivedLastDay: number
+  restoredLastWeek: number
+  candidates: number
+  candidateCap: number
+  lastSweepAt: string | null
+  lastSweepMs: number | null
+  recent: ArchiveStatsRow[]
+}
+
+/* Archive one game, chosen by hand -- the way to do it the first time, since a
+ * sweep picks its own games by age.
+ *
+ * Synchronous on the server: the response carries what was stored, or why it
+ * could not be. `force` is needed for a game played in the last day, which is a
+ * guard against a mistyped id rather than against the operation. */
+export const archiveGameNow = async (
+  gameId: string,
+  force = false,
+): Promise<{ game: string; steps: number; bytes: number; key: string }> => {
+  const { data } = await api.post(
+    `admin/archives/${gameId}${force ? '?force=true' : ''}`,
+    {},
+    // A big game is minutes of export, upload and read-back.
+    { timeout: 600000 },
+  )
+  return data
+}
+
+export const fetchArchiveStats = async (): Promise<ArchiveStats> => {
+  const { data } = await api.get('admin/archives')
+  return data
+}
+
+/* Start a sweep now.
+ *
+ * Rarely needed: the server claims a run a minute after every replica starts,
+ * so a deploy kicks one off by itself. Answers as soon as it has started -- a
+ * run drains the whole backlog, which is hours -- and 409s if one already ran in
+ * the last hour, which `force` overrides. */
+export const runArchiveSweep = async (force = false): Promise<void> => {
+  await api.post(`admin/archives/run${force ? '?force=true' : ''}`, {})
+}
+
 // The reason is required: a denial the author cannot act on is worse than silence.
 export const denyCardSetSubmission = async (
   id: string,
@@ -912,6 +987,35 @@ export const undoRound = (gameId: string): Promise<void> =>
  * past, so a stale panel cannot roll a game forwards. */
 export const undoToStep = (gameId: string, step: number): Promise<void> =>
   undoRequest(`arkham/games/${gameId}/undo/step/${step}`, UNDO_MULTI_TIMEOUT_MS)
+
+/* Where a game's undo history is.
+ *
+ * A game nobody has touched in six months has its steps moved to object
+ * storage by a nightly job (see Api.Arkham.Archive); the game plays normally,
+ * but undo has nothing to step back through until they are fetched. The undo
+ * endpoints refuse with 409 and one of these states attached, which is how the
+ * client finds out -- nothing is checked in advance. */
+export type GameArchiveState = 'archived' | 'restoring' | 'restored' | 'failed'
+
+export interface GameArchive {
+  state: GameArchiveState
+  steps: number
+  bytes: number
+  archivedAt: string
+  requestedAt: string | null
+  restoredAt: string | null
+  error: string | null
+}
+
+/* Ask for an archived undo history back.
+ *
+ * Returns as soon as the download is claimed, not when it has finished: the
+ * outcome arrives on the game's websocket as GameUnarchived or
+ * GameUnarchiveFailed. */
+export const unarchiveGame = async (gameId: string): Promise<{ state: GameArchiveState }> => {
+  const { data } = await api.put(`arkham/games/${gameId}/unarchive`)
+  return data
+}
 
 /* Say something in the log. A real engine message rather than a side channel,
  * so it is persisted with a step, reaches the room like any other update, and

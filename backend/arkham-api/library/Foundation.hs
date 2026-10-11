@@ -29,6 +29,7 @@ import Control.Monad.Catch qualified as Catch
 import Data.IntMap.Strict qualified as IntMap
 import UnliftIO.Exception qualified as UnliftIO
 
+import Api.Arkham.Maintenance
 import Arkham.Card.CardCode
 import Arkham.Log.Entry (LogRow)
 import Auth.ApiKey qualified as ApiKey
@@ -55,7 +56,7 @@ import GHC.Records
 import Network.Bugsnag.Exception (AsException (..))
 import Network.Bugsnag.Yesod (bugsnagYesodMiddleware)
 import Network.HTTP.Client.Conduit (HasHttpManager (..), Manager)
-import Network.HTTP.Types (status429)
+import Network.HTTP.Types (status429, status503)
 import Orphans ()
 import ThirdEdition.Store qualified as ThirdEdition
 import Yesod.Core.Types (Logger)
@@ -213,6 +214,13 @@ data App = App
   publishes a heartbeat and watches this timestamp to decide whether the
   subscription is actually alive. See 'pubSubHealthChannel'.
   -}
+  , appMaintenance :: !(TVar (Maybe Maintenance))
+  {- ^ Maintenance mode for this pod: 'Just' while the app is deliberately
+  refusing traffic so the database can be worked on. Seeded from Redis at
+  startup and kept in step across replicas over 'maintenanceChannel', so it
+  is a cache of a shared decision rather than per-pod state. Enforced by
+  'maintenanceMiddleware'.
+  -}
   , appBugsnag :: Bugsnag.Settings
   }
 
@@ -266,7 +274,8 @@ instance Yesod App where
   -- To add it, chain it together with the defaultMiddleware: yesodMiddleware = defaultYesodMiddleware . defaultCsrfMiddleware
   -- For details, see the CSRF documentation in the Yesod.Core.Handler module of the yesod-core package.
   yesodMiddleware :: ToTypedContent res => Handler res -> Handler res
-  yesodMiddleware = bugsnagYesodMiddleware appBugsnag . defaultYesodMiddleware
+  yesodMiddleware =
+    maintenanceMiddleware . bugsnagYesodMiddleware appBugsnag . defaultYesodMiddleware
 
   defaultLayout :: Widget -> Handler Html
   defaultLayout _ = pure ""
@@ -302,6 +311,11 @@ instance Yesod App where
         _ -> do
           _ <- getAdminUser
           pure Authorized
+      -- Authenticated by token inside the handler, deliberately not by
+      -- 'getAdminUser': that reads the users table, which would make the one
+      -- endpoint whose job is to lift a lock on the database the first thing
+      -- to queue up behind it.
+      ApiV1MaintenanceR -> pure Authorized
       ApiV1ArkhamP arkham -> case arkham of
         ApiV1ArkhamGamesP games -> case games of
           ApiV1ArkhamGamesImportR -> pure Authorized
@@ -566,6 +580,52 @@ chargeApiKey now keyId key isWrite = do
            , ArkhamApiKeyUsageWindowStart =. Just (if withinWindow then fromMaybe now windowStart else now)
            ]
        ]
+
+{- | Refuse every request with a 503 while maintenance mode is on.
+
+Composed OUTSIDE 'bugsnagYesodMiddleware' on purpose: a planned 503 is not an
+error report, and six replicas refusing traffic for an hour would bury the real
+exceptions under tens of thousands of them.
+
+The allow-list is not a convenience, it is what keeps the site reachable at
+all. All three Kubernetes probes AND the DigitalOcean load balancer health
+check point at @/health@ (@terraform/app.tf@, @terraform/ingress.tf@), so a
+@/health@ that 503s gets every container restarted and every node pulled out
+of rotation -- taking the maintenance notice down along with the app, and
+making the switch unreachable so it cannot be turned back off.
+'ApiV1MaintenanceR' is allowed through because it IS the off switch, and
+'ApiV1SiteSettingsR' because it is what tells the client to render the notice
+instead of a board that silently fails to load.
+
+In-flight requests are not interrupted, only new ones refused -- which is what
+makes turning the mode on a drain rather than a kill. Whatever is mid-action
+commits, the pool goes idle, and @pgPoolIdleTimeout@ (60s, "Settings") closes
+the connections on its own. Note what that does NOT tell you: the app going
+quiet is not the database being quiet. @pg_stat_activity@ is the only thing
+that can say whether it is safe to take a lock.
+-}
+maintenanceMiddleware :: ToTypedContent res => Handler res -> Handler res
+maintenanceMiddleware handler = do
+  mMode <- getsYesod appMaintenance >>= readTVarIO
+  mRoute <- getCurrentRoute
+  case mMode of
+    Just mode | not (any alwaysServed mRoute) -> do
+      -- Long enough that a client backing off does not hammer six replicas for
+      -- the length of the window, short enough to come back on its own after.
+      addHeader "Retry-After" "120"
+      sendResponseStatus status503
+        $ object
+          [ "maintenance" .= True
+          , "since" .= maintenanceSince mode
+          , "message" .= fromMaybe defaultMaintenanceMessage (maintenanceMessage mode)
+          ]
+    _ -> handler
+ where
+  alwaysServed = \case
+    HealthR -> True
+    ApiP (ApiV1P ApiV1MaintenanceR) -> True
+    ApiP (ApiV1P ApiV1SiteSettingsR) -> True
+    _ -> False
 
 getAdminUser :: Handler (Entity User)
 getAdminUser = do

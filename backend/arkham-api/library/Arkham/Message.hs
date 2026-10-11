@@ -1240,12 +1240,24 @@ data Message
     @InvestigatorActionsPerformed@, so nothing downstream can work out who
     charged what. Nothing in the engine reads this; it exists so the log can
     say "+1 action from Frozen in Fear" instead of leaving the player to
-    wonder where their action went. -}
+    wonder where their action went.
+    -}
     AdditionalCostPaid InvestigatorId Source Cost
+  | {- | Log only: open a block, so everything narrated until it closes is filed
+    under it rather than scattered beside it.
+
+    For an action that resolves in several steps and asks in between -- Against
+    the Wendigo's Navigate -- where neither the narrator nor a skill test can
+    hold the context. See 'Arkham.Game.Base.gameLogBlockStack'. Nothing in the
+    engine reads either of these.
+    -}
+    OpenLogBlock Text
+  | CloseLogBlock Text
   | WhenWillEnterLocation InvestigatorId LocationId
-  | -- | Carries the 'Movement' that caused it, when there was one, so the log
-    -- can tell a move the investigator chose from one a card forced on them.
-    -- 'Nothing' for the synthesised entries: vehicles and @PlaceInvestigator@.
+  | {- | Carries the 'Movement' that caused it, when there was one, so the log
+    can tell a move the investigator chose from one a card forced on them.
+    'Nothing' for the synthesised entries: vehicles and @PlaceInvestigator@.
+    -}
     EnterLocation InvestigatorId LocationId (Maybe Movement)
   | Will Message
   | -- must be called on instance directly

@@ -27,8 +27,9 @@ import Arkham.Card.CardCode (HasCardCode, toCardCode)
 import Arkham.Card.CardDef (CardDef)
 import Arkham.Card.CardType (CardType (TreacheryType))
 import Arkham.ChaosToken
+import Arkham.Classes.GameLogger (HasGameLogger)
 import Arkham.Classes.HasModifiersFor (HasModifiersM)
-import Arkham.Classes.HasQueue (push)
+import Arkham.Classes.HasQueue (push, pushAll)
 import Arkham.Classes.Query
 import Arkham.Distance (unDistance)
 import Arkham.GameEnv (getDistance)
@@ -43,9 +44,20 @@ import Arkham.Homebrew.AgainstTheWendigo.Traits (pattern Guide)
 import Arkham.I18n
 import Arkham.Id
 import Arkham.Location.Types (LocationAttrs)
+import Arkham.Log (ikeyScoped, inGroupOf, notice, opensGroup, sendLog, sendLogs, structure, (~>))
+import Arkham.Log qualified as Log
+import Arkham.Log.Refs (investigatorRefFor)
 import Arkham.Matcher
 import Arkham.Message (
-  Message (CheckAttackOfOpportunity, MoveWithSkillTest, RemoveCardFromScenarioDeck, StoryMessage),
+  Message (
+    CheckAttackOfOpportunity,
+    CloseLogBlock,
+    MoveWithSkillTest,
+    OpenLogBlock,
+    RemoveCardFromScenarioDeck,
+    StoryMessage,
+    Will
+  ),
  )
 import Arkham.Message.Lifted
 import Arkham.Message.Lifted.Choose
@@ -57,6 +69,7 @@ import Arkham.Message.Story (
 import Arkham.Placement (Placement (Global, Unplaced))
 import Arkham.Prelude
 import Arkham.Projection (field)
+import Arkham.SkillType (SkillType (SkillAgility, SkillCombat))
 import Arkham.Source
 import Arkham.Story.Types qualified as Story
 import Arkham.Trait (Trait (River))
@@ -129,36 +142,136 @@ investigator crossed, which is why the move is resolved before the test is
 built. Rapid raises that difficulty and the Guide assets lower the effective
 test, both by reacting to the test this starts.
 -}
-resolveNavigate :: (ReverseQueue m, Sourceable source) => source -> InvestigatorId -> m ()
+resolveNavigate
+  :: (HasGameLogger m, ReverseQueue m, Sourceable source) => source -> InvestigatorId -> m ()
 resolveNavigate (toSource -> source) iid = do
-  -- Step 1: every ready enemy engaged with you attacks.
-  push $ CheckAttackOfOpportunity iid False Nothing
+  key <- beginNavigateLog iid
 
-  -- Step 2: everything disengages, and nothing may re-engage during the action.
-  engaged <- select $ enemyEngagedWith iid <> ReadyEnemy
+  {- Step 1: the attack of opportunity taking the action provokes, written out as
+  a step of its own.
+
+  The ability carries 'noAOO' so the engine does not also provoke one while
+  paying for it. That is not a mechanical change -- it is the same single attack
+  -- but it is the only way to get it inside step 1: the cost is paid behind an
+  ask, and anything queued before that ask resolves behind whatever the answer
+  injects, so no block opened in advance is still open by the time the engine's
+  own attack narrates.
+
+  Both halves, in this order: 'Will' is what arms each enemy's
+  @attackOfOpportunityFlagged@, reading its engagement and exhaustion then, and
+  the bare message does nothing at all to an enemy that was never armed. -}
+  openNavigateStep key 1
+  pushAll
+    [Will (CheckAttackOfOpportunity iid False Nothing), CheckAttackOfOpportunity iid False Nothing]
+  closeNavigateStep key 1
+
+  -- Step 2: EVERY enemy disengages -- the printed step says every enemy, not
+  -- every ready one -- and nothing may re-engage during the action.
+  openNavigateStep key 2
+  engaged <- select $ enemyEngagedWith iid
   for_ engaged disengageFromAll
   roundModifier source iid CannotBeEngaged
+  closeNavigateStep key 2
   -- Step 2 also forbids revealing a location during the action. Step 3 moves
   -- straight to the destination, so nothing in between can be revealed, and
   -- 'navigateDestinations' keeps the destination itself off the table unless it
   -- is already charted.
 
-  -- Steps 3 and 4: move, then test against the distance travelled.
+  -- Steps 3 and 4: move, then test against the distance travelled. Both hang
+  -- off the destination ask, so each closes its own block from in there.
   start <- getMaybeLocation iid
   destinations <- select $ navigateDestinations (locationWithInvestigator iid)
+  openNavigateStep key 3
   chooseOrRunOneM iid $ targets destinations \lid -> do
     mdistance <- maybe (pure Nothing) (`getDistance` lid) start
     let steps = maybe 1 (min 3 . max 1 . unDistance) mdistance
     forcedMoveTo source iid lid
+    closeNavigateStep key 3
+
+    openNavigateStep key 4
     sid <- getRandom
+    -- "If you fail, take 1 damage, or 2 damage if you fail by 3 or more." Both
+    -- riders are created; the amount failed by picks exactly one of them.
+    onFailedByEffect sid (atLeast 3) source iid $ assignDamage iid source 2
+    onFailedByEffect sid (lessThan 3) source iid $ assignDamage iid source 1
     chooseOneM iid $ skillsLabeled [#combat, #agility] \sk ->
       beginSkillTest sid iid source iid sk (Fixed $ 1 + steps)
+    closeNavigateStep key 4
 
-{- | The damage step 4 deals on a failure: "take 1 damage, or 2 damage if you
-fail by 3 or more". The amount failed by rides on the 'FailedSkillTest' message.
+  -- Queued last, so it resolves behind everything the steps queue -- the
+  -- destination ask, the move, the skill test -- and the block covers the whole
+  -- action.
+  push $ CloseLogBlock key
+
+{- | Open the block a whole Navigate action is filed under, and name it.
+
+The block has to outlive the asks in the middle of a navigate -- the
+destination, the skill -- so it is held in game state rather than by the
+narrator, which is rebuilt every action. Everything a step narrates joins that
+step's block, and step 4's skill test makes a block of its own inside step 4's.
+
+The key is random because a block id must be unique for the life of the log:
+the client collects a block by id across the whole of it, so a key reused next
+round would fold two navigates into one.
 -}
-navigateFailureDamage :: Int -> Int
-navigateFailureDamage failedBy = if failedBy >= 3 then 2 else 1
+beginNavigateLog :: (ReverseQueue m, HasGameLogger m) => InvestigatorId -> m Text
+beginNavigateLog iid = do
+  token <- getRandom
+  let key = "navigate:" <> tshow (token :: BatchId)
+  who <- investigatorRefFor iid
+  push $ OpenLogBlock key
+  scenarioI18n
+    $ scope "navigate"
+    $ sendLog
+    $ opensGroup key
+    $ Log.action [ikeyScoped "header" ["investigator" ~> who]]
+  pure key
+
+-- | One step's block, inside the navigate's.
+navigateStepBlock :: Text -> Int -> Text
+navigateStepBlock key n = key <> "/step" <> tshow n
+
+{- | Begin a step: open its block and announce it, as the investigator reaches
+it.
+
+A log entry cannot be queued -- only messages can -- so the rows ride the queue
+as a 'ScenarioSpecific' that the scenario hands straight back to
+'logNavigateStep'. Opened in step order, interleaved with the work each step
+does, so the log reads in the order the action happened rather than announcing
+all four up front.
+-}
+openNavigateStep :: ReverseQueue m => Text -> Int -> m ()
+openNavigateStep key n = do
+  push $ OpenLogBlock (navigateStepBlock key n)
+  scenarioSpecific "navigate.step" (navigateStepBlock key n, n)
+
+{- | End a step, so what the next one does is filed under the next one. Pushed
+after the step's own work, which for steps 3 and 4 means inside the ask that
+work hangs off.
+-}
+closeNavigateStep :: ReverseQueue m => Text -> Int -> m ()
+closeNavigateStep key n = push $ CloseLogBlock (navigateStepBlock key n)
+
+{- | The scenario's end of 'openNavigateStep'.
+
+The banner that names the step is the block's own bar, and the step's printed
+text is the first line inside it; everything the step then does lands under the
+two.
+-}
+logNavigateStep :: HasGameLogger m => Value -> m ()
+logNavigateStep val = do
+  let (gid, n) = toResultDefault ("", 0 :: Int) val
+  scenarioI18n
+    $ scope "navigate"
+    $ sendLogs
+      [ opensGroup gid $ structure [ikeyScoped "stepLabel" ["step" ~> n]]
+      , inGroupOf gid $ notice [ikeyScoped ("step" <> tshow n) (vars n)]
+      ]
+ where
+  -- The icons go in as variables: an i18n variable may not be named after one,
+  -- because the loader escapes those braces into literal text.
+  vars 4 = ["combatIcon" ~> SkillCombat, "agilityIcon" ~> SkillAgility]
+  vars _ = []
 
 {- | The pair of abilities every River location prints: @{action}{action}@ Walk
 Along the River as ability 1 and @{action}@ Navigate, once per round, as ability
@@ -169,6 +282,7 @@ riverActions :: (Sourceable a, HasCardCode a, Be a LocationMatcher) => a -> [Abi
 riverActions a =
   [ restricted a 1 Here walkAlongTheRiverAction
   , playerLimit PerRound
+      $ noAOO
       $ restricted a 2 (Here <> exists (navigateDestinations $ be a)) navigateAction
   ]
 

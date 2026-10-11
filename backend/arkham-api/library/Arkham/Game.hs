@@ -357,6 +357,7 @@ newGame scenarioOrCampaignId seed playerCount difficulty includeTarotReadings =
         , gameAsIfAtIgnored = mempty
         , gameLocationOffsets = mempty
         , gameCardPlayStack = mempty
+        , gameLogBlockStack = mempty
         }
  where
   mode = case scenarioOrCampaignId of

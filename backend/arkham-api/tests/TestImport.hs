@@ -950,6 +950,7 @@ newGame scenario' investigator = do
         , gameAsIfAtIgnored = mempty
         , gameLocationOffsets = mempty
         , gameCardPlayStack = mempty
+        , gameLogBlockStack = mempty
         }
 
   liftIO $ do

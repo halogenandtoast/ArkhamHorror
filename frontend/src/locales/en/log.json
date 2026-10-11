@@ -45,6 +45,7 @@
   "enemySpawned": "{enemy} spawns",
   "enemySpawnedAt": "{enemy} spawns at {location}",
   "engages": "{enemy} engages {investigator}",
+  "disengages": "{enemy} disengages from {investigator}",
   "evades": "{investigator} evades {target}",
   "gainsResources": "{investigator} gains {count} resource | {investigator} gains {count} resources",
   "gainsXp": "{investigator} gains {count} experience",

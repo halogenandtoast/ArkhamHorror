@@ -144,6 +144,12 @@ getSkillTest = gameSkillTest <$> getGame
 getCardPlayStack :: HasGame m => m [CardId]
 getCardPlayStack = gameCardPlayStack <$> getGame
 
+{- | The log blocks a resolving action has opened, innermost last. Log-only; see
+'Arkham.Game.Base.gameLogBlockStack'.
+-}
+getLogBlockStack :: HasGame m => m [Text]
+getLogBlockStack = gameLogBlockStack <$> getGame
+
 getsSkillTest :: HasGame m => (SkillTest -> a) -> m (Maybe a)
 getsSkillTest f = fmap f . gameSkillTest <$> getGame
 

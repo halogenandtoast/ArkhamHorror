@@ -164,7 +164,7 @@ function requestUndo() {
   <li
     v-if="entry.kind === 'Structure'"
     class="log-structure"
-    :class="structureTone ? `log-structure--${structureTone}` : null"
+    :class="[structureTone ? `log-structure--${structureTone}` : null, { 'log-structure--nested': depth > 0 }]"
   >
     <LogPart v-for="(part, i) in entry.body" :key="i" :part="part" />
     <button
@@ -329,6 +329,14 @@ function requestUndo() {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #fff;
+}
+
+/* Inside a block there is no scroller padding to cancel and no new section to
+   open: the band runs to the block's own edges (LogGroupBlock's detail padding)
+   and sits tight against the lines it heads. */
+.log-structure--nested {
+  margin: 5px -10px 1px -12px;
+  padding: 5px 10px 5px 12px;
 }
 
 .log-structure:first-child {

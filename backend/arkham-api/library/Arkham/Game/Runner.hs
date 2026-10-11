@@ -746,6 +746,7 @@ runGameMessage msg g = case msg of
           & (focusedChaosTokensL .~ mempty)
           & (activeCardL .~ Nothing)
           & (activeAbilitiesL .~ mempty)
+          & (logBlockStackL .~ mempty)
           & (actionRemovedEntitiesL .~ mempty)
           & (tombstonesL .~ mempty)
           & (activeAbilitiesL .~ mempty)
@@ -810,6 +811,7 @@ runGameMessage msg g = case msg of
       & (focusedChaosTokensL .~ mempty)
       & (activeCardL .~ Nothing)
       & (activeAbilitiesL .~ mempty)
+      & (logBlockStackL .~ mempty)
       & (playerOrderL .~ (g ^. entitiesL . investigatorsL . to keys))
       & (actionRemovedEntitiesL .~ mempty)
       & (tombstonesL .~ mempty)
@@ -2932,6 +2934,7 @@ runGameMessage msg g = case msg of
       & (activePlayerIdL .~ player)
       & (turnPlayerInvestigatorIdL ?~ x)
       & (activeAbilitiesL .~ mempty)
+      & (logBlockStackL .~ mempty)
       & (actionRemovedEntitiesL .~ mempty)
       & (tombstonesL .~ mempty)
       & (entitiesL %~ clearRemovedEntities)
@@ -4068,6 +4071,9 @@ runGameMessage msg g = case msg of
     case toCardType card of
       AssetType -> runMessage (RemoveAsset (coerce uuid)) g
       _ -> error "Unhandle remove card entity type"
+  -- Log only; see 'gameLogBlockStack'.
+  OpenLogBlock gid -> pure $ g & logBlockStackL %~ (<> [gid])
+  CloseLogBlock gid -> pure $ g & logBlockStackL %~ filter (/= gid)
   UseAbility _ a _ -> pure $ g & activeAbilitiesL %~ (a :)
   ResolvedAbility ab -> do
     -- a queued ResolveWindowInitiations is a set of in-flight abilities: their sources

@@ -15,10 +15,10 @@ import { computed } from 'vue'
 import { ArrowUturnLeftIcon } from '@heroicons/vue/20/solid'
 import LogPart from '@/arkham/components/LogPart.vue'
 import GameLogEntry from '@/arkham/components/GameLogEntry.vue'
-import type { LogEntry, LogItem } from '@/arkham/types/GameLog'
+import type { LogEntry, LogGroupItem } from '@/arkham/types/GameLog'
 
 const props = defineProps<{
-  group: Extract<LogItem, { kind: 'group' }>
+  group: LogGroupItem
   path: string
   isOpen: (path: string) => boolean
   isTail: (path: string) => boolean
@@ -93,18 +93,33 @@ function requestUndo() {
     </component>
 
     <ul v-if="open" class="log-group__detail">
-      <GameLogEntry
-        v-for="(member, i) in group.members"
-        :key="i"
-        :entry="member"
-        :path="`${path}.${i}`"
-        :depth="1"
-        :is-open="isOpen"
-        :is-tail="isTail"
-        :is-pinned="isPinned"
-        :can-undo="false"
-        @toggle="(p, o) => emit('toggle', p, o)"
-      />
+      <template v-for="(member, i) in group.members" :key="member.kind === 'group' ? `g${member.id}` : `e${i}`">
+        <!-- A block inside a block: the skill test a multi-step action starts.
+             It draws itself, so it recurses rather than going through
+             GameLogEntry. -->
+        <LogGroupBlock
+          v-if="member.kind === 'group'"
+          :group="member"
+          :path="`${path}.${i}`"
+          :is-open="isOpen"
+          :is-tail="isTail"
+          :is-pinned="isPinned"
+          :can-undo="false"
+          @toggle="(p, o) => emit('toggle', p, o)"
+          @undo="(step, label) => emit('undo', step, label)"
+        />
+        <GameLogEntry
+          v-else
+          :entry="member.entry"
+          :path="`${path}.${i}`"
+          :depth="1"
+          :is-open="isOpen"
+          :is-tail="isTail"
+          :is-pinned="isPinned"
+          :can-undo="false"
+          @toggle="(p, o) => emit('toggle', p, o)"
+        />
+      </template>
     </ul>
 
     <component
@@ -196,6 +211,16 @@ button.log-group__header:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* A block inside a block sits tighter than one standing in the log column, and
+   a touch lighter so the nesting reads at a glance. Its text stays the size of
+   the text around it: `.log-group`'s own 0.8em would compound with the parent's
+   and shrink every level. */
+.log-group__detail > .log-group {
+  margin: 3px 0;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 1em;
 }
 
 .log-group__band {

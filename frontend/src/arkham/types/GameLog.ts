@@ -303,25 +303,42 @@ export const logEntryDecoder: JsonDecoder.Decoder<LogEntry> = JsonDecoder.object
  * append-only -- rows are deleted by step on undo and nothing is ever rewritten,
  * which is what makes undoing into the middle of a block behave sensibly: the
  * entries from the undone steps go and the rest of the block stays. */
-export type LogItem =
-  | { kind: 'entry'; entry: LogEntry }
-  | { kind: 'group'; id: string; header: LogEntry | null; members: LogEntry[]; summary: LogEntry | null }
+export type LogGroupItem = {
+  kind: 'group'
+  id: string
+  header: LogEntry | null
+  members: LogItem[]
+  summary: LogEntry | null
+}
+
+export type LogItem = { kind: 'entry'; entry: LogEntry } | LogGroupItem
 
 export function groupLogEntries(entries: readonly LogEntry[]): LogItem[] {
   const items: LogItem[] = []
-  const groups = new Map<string, Extract<LogItem, { kind: 'group' }>>()
+  const groups = new Map<string, LogGroupItem>()
+
+  /* A group id is a path. "navigate:x/skillTest:y" is a block inside a block --
+     the skill test a Navigate action's fourth step starts -- so the id carries
+     the nesting and the rows themselves stay flat. A parent that has not been
+     seen yet is created empty, and dissolves below if no row ever names it. */
+  function groupFor(gid: string): LogGroupItem {
+    const seen = groups.get(gid)
+    if (seen) return seen
+    const group: LogGroupItem = { kind: 'group', id: gid, header: null, members: [], summary: null }
+    groups.set(gid, group)
+    const cut = gid.lastIndexOf('/')
+    if (cut === -1) items.push(group)
+    else groupFor(gid.slice(0, cut)).members.push(group)
+    return group
+  }
+
   for (const entry of entries) {
     const gid = entry.group?.id
     if (!gid) {
       items.push({ kind: 'entry', entry })
       continue
     }
-    let group = groups.get(gid)
-    if (!group) {
-      group = { kind: 'group', id: gid, header: null, members: [], summary: null }
-      groups.set(gid, group)
-      items.push(group)
-    }
+    const group = groupFor(gid)
     switch (entry.group?.role) {
       case 'GroupHeader':
         group.header = entry
@@ -330,18 +347,22 @@ export function groupLogEntries(entries: readonly LogEntry[]): LogItem[] {
         group.summary = entry
         break
       default:
-        group.members.push(entry)
+        group.members.push({ kind: 'entry', entry })
     }
   }
-  /* A block with no bar of its own has nothing to collapse to, so its members
-     render as ordinary lines instead of as a box the reader cannot open. That
-     happens legitimately: an undo deletes by step, and a card play's header is
-     written LAST, so undoing one step can leave its members behind. */
-  return items.flatMap(item =>
-    item.kind === 'group' && !item.header && !item.summary
-      ? item.members.map((entry): LogItem => ({ kind: 'entry', entry }))
-      : [item],
-  )
+  return dissolveBarless(items)
+}
+
+/* A block with no bar of its own has nothing to collapse to, so its members
+   render in its place rather than as a box the reader cannot open. That happens
+   legitimately: an undo deletes by step, and a card play's header is written
+   LAST, so undoing one step can leave its members behind. */
+function dissolveBarless(items: LogItem[]): LogItem[] {
+  return items.flatMap(item => {
+    if (item.kind !== 'group') return [item]
+    item.members = dissolveBarless(item.members)
+    return !item.header && !item.summary ? item.members : [item]
+  })
 }
 
 /* Rows an entry occupies when fully expanded: what the "+N" badge counts. */

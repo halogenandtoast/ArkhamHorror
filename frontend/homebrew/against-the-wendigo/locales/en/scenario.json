@@ -23,6 +23,14 @@
         "healHorror": "Heal 2 horror"
       }
     },
+    "navigate": {
+      "header": "{investigator} navigates the river",
+      "stepLabel": "Step {step}",
+      "step1": "Each enemy engaged with you (if they are ready) performs an attack of opportunity.",
+      "step2": "Every enemy disengages you. Until the end of this action, enemies cannot engage you, and you cannot reveal any location.",
+      "step3": "Move to a River location of your choice. Count how many moves it took you to get to your final location (1, 2 or 3 moves at most).",
+      "step4": "Test {combatIcon}(1+X) or {agilityIcon}(1+X), where X is the number of moves you took at step 3 (difficulty of 2, 3 or 4 at most). If you fail, take 1 damage, or 2 damage if you fail by 3 or more."
+    },
     "resolutions": {
       "noResolution": {
         "title": "No Resolution",

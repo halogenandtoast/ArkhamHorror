@@ -83,6 +83,9 @@ studentFatePairs =
 
 instance RunMessage AgainstTheWendigo where
   runMessage msg s@(AgainstTheWendigo attrs) = runQueueT $ scenarioI18n $ case msg of
+    ScenarioSpecific "navigate.step" val -> do
+      logNavigateStep val
+      pure s
     PreScenarioSetup -> scope "prologue" do
       flavor $ h "title" >> p "body"
       pure s

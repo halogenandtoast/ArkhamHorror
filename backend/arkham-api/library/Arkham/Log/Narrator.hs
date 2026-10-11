@@ -89,7 +89,12 @@ import Arkham.Keyword (Keyword (Peril))
 import Arkham.Location.Types (Field (..))
 import Arkham.Log
 import Arkham.Log.Refs
-import Arkham.Matcher (InvestigatorMatcher (ActiveInvestigator), LocationMatcher, replaceYouMatcher)
+import Arkham.Matcher (
+  InvestigatorMatcher (ActiveInvestigator),
+  LocationMatcher,
+  investigatorEngagedWith,
+  replaceYouMatcher,
+ )
 import Arkham.Message
 import Arkham.Message qualified as Msg
 import Arkham.Movement (moveForced)
@@ -455,6 +460,28 @@ oneShot = \case
     enemy <- enemyRefFor eid
     who <- investigatorRefFor iid
     pure $ Just $ mechanic [ikeyPart "log.engages" ["enemy" ~> enemy, "investigator" ~> who]]
+  {- An enemy pulled off everyone it was engaged with.
+
+  The bulk form only, not @DisengageEnemy@: that one is how a successful evade
+  ends, and the log already says "Daisy Walker evades the Ghoul Priest" -- a
+  disengage line after every evade is the same event twice.
+
+  Read before the message is processed, which is the only time the engagement is
+  still there to read. Nobody engaged means nothing to say rather than a line
+  about an enemy standing on its own: a swarm member reaches this with the host's
+  engagement, not its own, and the host gets the line. -}
+  EngageMessage (DisengageEnemyFromAll_ eid) -> Just do
+    enemy <- enemyRefFor eid
+    whos <- traverse investigatorRefFor =<< select (investigatorEngagedWith eid)
+    pure $ case whos of
+      [] -> Nothing
+      _ ->
+        Just
+          $ mechanic
+            [ ikeyPart
+                "log.disengages"
+                ["enemy" ~> enemy, "investigator" ~> LogList (map toLogPart whos)]
+            ]
   HuntMessage (EnemyMove_ eid lid) -> Just do
     enemy <- enemyRefFor eid
     loc <- locationRefFor lid
@@ -1068,7 +1095,7 @@ spawnChoiceLogTag eid = "spawnChoice:" <> idText eid
 either inside or outside a test decides where it belongs.
 -}
 openSkillTestKey :: HasGame m => m (Maybe Text)
-openSkillTestKey = fmap skillTestLogKey <$> getSkillTest
+openSkillTestKey = getSkillTest >>= traverse skillTestBlockKey
 
 {- | The block, written the moment the test begins.
 
@@ -1096,9 +1123,10 @@ renderSkillTestOpening st = do
         )
       (Just ref, Nothing) -> ("log.testOpensVs", [("target", toLogPart ref)])
       (Nothing, _) -> ("log.testOpens", [])
+  blockKey <- skillTestBlockKey st
   pure
     $ Just
-    $ opensGroup (skillTestLogKey st)
+    $ opensGroup blockKey
     $ test
       [ ikeyPart key
           $ [ "investigator" ~> who

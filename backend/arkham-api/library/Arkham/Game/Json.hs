@@ -94,6 +94,7 @@ instance ToJSON Game where
       , "gameAsIfAtIgnored" .= gameAsIfAtIgnored g
       , "gameLocationOffsets" .= gameLocationOffsets g
       , "gameCardPlayStack" .= gameCardPlayStack g
+      , "gameLogBlockStack" .= gameLogBlockStack g
       ]
   toEncoding g =
     pairs
@@ -169,6 +170,7 @@ instance ToJSON Game where
       <> ("gameAsIfAtIgnored" .= gameAsIfAtIgnored g)
       <> ("gameLocationOffsets" .= gameLocationOffsets g)
       <> ("gameCardPlayStack" .= gameCardPlayStack g)
+      <> ("gameLogBlockStack" .= gameLogBlockStack g)
 
 instance FromJSON Game where
   parseJSON = withObject "Game" \o -> do
@@ -257,5 +259,6 @@ instance FromJSON Game where
     gameLocationOffsets <- o .:? "gameLocationOffsets" .!= mempty
     -- .:? with a default: existing saves predate the stack.
     gameCardPlayStack <- o .:? "gameCardPlayStack" .!= mempty
+    gameLogBlockStack <- o .:? "gameLogBlockStack" .!= mempty
 
     pure Game {..}

@@ -93,6 +93,7 @@ import Arkham.Helpers.Criteria
 import Arkham.Helpers.Customization (customizedSlots, hasCustomization)
 import Arkham.Helpers.Doom
 import Arkham.Helpers.Enemy (
+  compositeEnemyGroups,
   enemyEngagedInvestigators,
   getEnemyAttackDamageAndHorror,
   getModifiedKeywords,
@@ -4327,8 +4328,12 @@ enemyMatcherFilter es matcher' = do
                   _ -> pure False
             anyM canBeEngaged iids
     OnlyEnemyEngagedWith investigatorMatcher -> do
-      select (EnemyIsEngagedWith investigatorMatcher) >>= \case
-        [x] -> pure $ filter (\enemy -> enemy.id == x) es
+      -- A composite enemy counts once, not once per card: Cthulhu and the facets on
+      -- the Cthulhu Board are the only enemy engaged with you, so Machete still gets
+      -- its bonus damage.
+      engaged <- select (EnemyIsEngagedWith investigatorMatcher)
+      compositeEnemyGroups engaged >>= \case
+        [grp] -> pure $ filter (\enemy -> enemy.id `elem` grp) es
         _ -> pure []
     EnemyOwnedBy investigatorMatcher -> do
       iids <- select investigatorMatcher

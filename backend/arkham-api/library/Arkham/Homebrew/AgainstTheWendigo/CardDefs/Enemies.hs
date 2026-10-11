@@ -35,6 +35,7 @@ deer =
     , cdHealth = health 3
     , cdEvade = evade 4
     , cdKeywords = singleton Keyword.Aloof
+    , cdHealthDamage = healthDamage 1
     }
 
 wildIndigenous :: CardDef
